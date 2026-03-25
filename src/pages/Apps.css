@@ -1,0 +1,131 @@
+.apps-hero {
+  text-align: center;
+  padding: 60px 20px 80px;
+  position: relative;
+}
+
+.apps-hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-title-app {
+  font-family: 'Dancing Script', cursive;
+  font-size: clamp(3rem, 8vw, 4.5rem);
+  font-weight: 700;
+  margin-bottom: 12px;
+  line-height: 1;
+}
+
+.apps-hero-sub {
+  font-family: 'Cinzel', serif;
+  font-size: 1.6rem;
+  color: white;
+  margin-bottom: 8px;
+}
+
+.apps-hero-desc {
+  color: rgba(255,255,255,0.7);
+  font-size: 0.95rem;
+}
+
+.app-section {
+  padding: 60px 20px;
+}
+
+.app-section-title {
+  text-align: center;
+  font-family: 'Cinzel', serif;
+  font-size: 1.8rem;
+  color: #222;
+  margin-bottom: 6px;
+}
+
+.app-section-sub {
+  text-align: center;
+  color: #666;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+}
+
+.app-download-btns {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 36px;
+}
+
+.app-dl-btn {
+  font-family: 'Dancing Script', cursive;
+  font-size: 1.1rem;
+  padding: 12px 28px;
+  text-decoration: none;
+  display: inline-block;
+  position: relative;
+}
+
+.app-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 40px;
+  max-width: 900px;
+  margin: 0 auto;
+  align-items: start;
+}
+
+.app-phone-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.app-phone-img {
+  max-width: 200px;
+  border-radius: 24px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+.app-features-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.feature-item {
+  text-align: center;
+  padding: 8px;
+}
+
+.feature-icon {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+.feature-label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 4px;
+}
+
+.feature-desc {
+  font-size: 0.82rem;
+  color: #666;
+  line-height: 1.5;
+}
+
+.apps-divider {
+  height: 1px;
+  background: #e5e5e5;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .app-layout {
+    grid-template-columns: 1fr;
+  }
+  .app-features-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}

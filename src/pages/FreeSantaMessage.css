@@ -1,0 +1,30 @@
+.fsm-hero {
+  text-align: center;
+  padding: 60px 20px 80px;
+  position: relative;
+}
+
+.fsm-hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.fsm-title {
+  font-family: 'Dancing Script', cursive;
+  font-size: clamp(3rem, 8vw, 4.5rem);
+  font-weight: 700;
+  margin-bottom: 12px;
+  line-height: 1;
+}
+
+.fsm-sub {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1.2rem, 3vw, 1.6rem);
+  color: white;
+  margin-bottom: 8px;
+}
+
+.fsm-desc {
+  color: rgba(255,255,255,0.75);
+  font-size: 0.95rem;
+}

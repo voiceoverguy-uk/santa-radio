@@ -1,0 +1,106 @@
+.santa-message-section {
+  background: linear-gradient(180deg, #0d1b3e 0%, #1a3a6e 50%, #0d1b3e 100%);
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.santa-message-heading {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 700;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.santa-message-box {
+  background: #b71c1c;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 28px 32px;
+  text-align: left;
+}
+
+.form-error {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 4px;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  color: white;
+  margin-bottom: 12px;
+}
+
+.form-desc {
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+.audio-example {
+  margin-bottom: 16px;
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.85);
+}
+
+.santa-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.santa-form input {
+  padding: 12px 14px;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 4px;
+  background: rgba(255,255,255,0.95);
+  font-size: 0.85rem;
+  color: #333;
+  font-family: 'Open Sans', sans-serif;
+  letter-spacing: 1px;
+}
+
+.santa-form input::placeholder {
+  color: #999;
+  letter-spacing: 1px;
+  font-size: 0.8rem;
+}
+
+.santa-form input:focus {
+  outline: 2px solid #f0d060;
+  border-color: transparent;
+}
+
+.form-submit {
+  margin-top: 6px;
+  font-size: 0.85rem;
+  padding: 14px;
+  width: 100%;
+  border-radius: 4px;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+.success-message {
+  text-align: center;
+  color: white;
+  padding: 20px 0;
+}
+
+.success-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.success-message h3 {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+}
+
+.success-message p {
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
