@@ -60,6 +60,14 @@
   max-width: 500px;
 }
 
+.now-playing-label {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.55);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-right: 4px;
+}
+
 .now-playing-track {
   font-size: 0.95rem;
   color: rgba(255,255,255,0.9);

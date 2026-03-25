@@ -71,6 +71,7 @@ export default function AudioPlayer() {
       </button>
 
       <div className="now-playing">
+        <span className="now-playing-label">Now Playing: </span>
         <span className="now-playing-track">{nowPlaying}</span>
       </div>
     </div>

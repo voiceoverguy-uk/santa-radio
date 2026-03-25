@@ -13,6 +13,12 @@ export default function Home() {
       {/* Hero */}
       <section className="hero starry-bg">
         <div className="hero-content">
+          <img
+            src="https://www.santaradio.co.uk/assets/img/santa-radio-logo.png"
+            alt="Santa Radio Logo"
+            className="hero-logo"
+            onError={e => { e.target.style.display = 'none'; }}
+          />
           <h1 className="hero-title gold-text">Santa Radio</h1>
           <p className="hero-tagline">The World's Best Christmas Radio Station</p>
           <p className="hero-sub">
