@@ -85,6 +85,35 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.4);
 }
 
+.soundboard-btn.active {
+  background: linear-gradient(180deg, #e53935 0%, #b71c1c 100%);
+  box-shadow: 0 0 16px rgba(229, 57, 53, 0.6), 0 4px 12px rgba(0,0,0,0.4);
+  transform: translateY(-2px);
+}
+
+.speaking-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: white;
+  border-radius: 50%;
+  margin-left: 6px;
+  animation: pulse 0.6s ease-in-out infinite alternate;
+  vertical-align: middle;
+}
+
+@keyframes pulse {
+  from { opacity: 0.4; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1.2); }
+}
+
+.soundboard-hint {
+  text-align: center;
+  color: rgba(255,255,255,0.6);
+  font-size: 0.85rem;
+  margin-top: 16px;
+}
+
 @media (max-width: 600px) {
   .soundboard-grid {
     grid-template-columns: repeat(2, 1fr);

@@ -47,7 +47,7 @@ The audio player targets `https://streaming.zeno.fm/yn65fsaurfhvv` — this may 
 
 ## Notes
 
-- Soundboard buttons are styled but do not play real audio (no audio files bundled)
+- Soundboard buttons use the browser's Web Speech API (text-to-speech) to speak Santa phrases with a deep, slow voice setting — clicking a button while it speaks will stop it
 - Celebrity mugshot photos load from the original site's CDN; fallback initials shown on error
 - Santa Message form shows a success state but does not send real data (no backend)
 - Twitter widget is not included (requires auth)
