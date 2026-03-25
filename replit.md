@@ -45,6 +45,13 @@ A faithful React + Vite rebuild of www.santaradio.co.uk — The World's Best Chr
 
 The audio player targets `https://streaming.zeno.fm/yn65fsaurfhvv` — this may need updating if the stream URL changes. Check the original site's Network tab to find the live stream URL.
 
+## Deployment (Vercel)
+
+- `vercel.json` is configured with SPA rewrites so React Router works on page refresh
+- Build command: `npm run build` → outputs to `dist/`
+- Framework: Vite (auto-detected by Vercel)
+- All routes rewrite to `/` for client-side routing
+
 ## Notes
 
 - Soundboard buttons use the browser's Web Speech API (text-to-speech) to speak Santa phrases with a deep, slow voice setting — clicking a button while it speaks will stop it
