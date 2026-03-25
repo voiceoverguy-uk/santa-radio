@@ -54,12 +54,13 @@ The audio player targets `https://streaming.zeno.fm/yn65fsaurfhvv` — this may 
 
 ## Mugshots Data
 
-- 700+ celebrity mugshot images stored locally in `public/mugshot-images/`
-- Data generated from image filenames into `src/data/mugshots.json` (name, role, image path, slug)
+- 730 unique celebrity mugshot images stored locally in `public/mugshot-images/` (extracted from 909 zip entries; 179 were subfolder duplicates)
+- Data generated from image filenames into `src/data/mugshots.json` — 700 unique entries (30 camera-style filenames excluded as they don't encode celebrity info)
+- Reproducible generation script: `node scripts/generate-mugshots.cjs` (extracts zip, parses filenames, generates JSON, validates image paths)
 - Mug Shots page loads 48 at a time with "Load More" pagination for performance
 - Search filters by celebrity name or role
 - Homepage MugshotsPreview pulls 4 featured celebs from the same JSON data
-- Images use `loading="lazy"` for performance with 700+ entries
+- Images use `loading="lazy"` for performance with 700 entries
 
 ## Notes
 
