@@ -1,14 +1,24 @@
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import './MugshotsPreview.css';
+import mugshotsData from '../data/mugshots.json';
 
-const CELEBS = [
-  { name: 'Lisa Maxwell', role: 'Actress', img: 'https://www.santaradio.co.uk/mugshot-images/lisa-maxwell-actress.jpg' },
-  { name: 'Jason Manford', role: 'Comedian & Radio Presenter', img: 'https://www.santaradio.co.uk/mugshot-images/jason-manford-comedian.jpg' },
-  { name: 'Jordan Banjo', role: 'Dancer', img: 'https://www.santaradio.co.uk/mugshot-images/jordan-banjo-dancer.jpg' },
-  { name: 'Tom Milner', role: 'English actor', img: 'https://www.santaradio.co.uk/mugshot-images/tom-milner-actor.jpg' },
+const FEATURED_SLUGS = [
+  'lisa-maxwell-actress',
+  'jason-manford-comedian',
+  'jordan-banjo-dancer',
+  'tom-milner-actor',
 ];
 
 export default function MugshotsPreview() {
+  const celebs = useMemo(() => {
+    const featured = FEATURED_SLUGS
+      .map(slug => mugshotsData.find(m => m.slug === slug))
+      .filter(Boolean);
+    if (featured.length >= 4) return featured;
+    return mugshotsData.slice(0, 4);
+  }, []);
+
   return (
     <section className="mugshots-preview starry-bg">
       <div className="container">
@@ -26,12 +36,12 @@ export default function MugshotsPreview() {
           <Link to="/mugshots" className="mug-link">
             <strong>Click here</strong>
           </Link>{' '}
-          to see over 600 more Celebs with mugs
+          to see over {mugshotsData.length} Celebs with mugs
         </p>
         <div className="mugshots-grid">
-          {CELEBS.map(celeb => (
-            <div key={celeb.name} className="mug-card">
-              <img src={celeb.img} alt={celeb.name} className="mug-photo" />
+          {celebs.map(celeb => (
+            <div key={celeb.slug} className="mug-card">
+              <img src={celeb.image} alt={celeb.name} className="mug-photo" loading="lazy" />
               <div className="mug-info">
                 <strong>{celeb.name}</strong>
                 <span>{celeb.role}</span>

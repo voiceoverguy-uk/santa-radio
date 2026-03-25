@@ -1,20 +1,8 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import './MugShots.css';
+import mugshotsData from '../data/mugshots.json';
 
-const CELEBS = [
-  { name: 'Alexander Armstrong', role: 'Presenter', img: 'https://www.santaradio.co.uk/mugshot-images/alexander-armstrong-presenter.jpg' },
-  { name: 'Bradley Walsh', role: 'TV Personality', img: 'https://www.santaradio.co.uk/mugshot-images/bradley-walsh-tv-personality.jpg' },
-  { name: 'Dene Michaels', role: 'Singer', img: 'https://www.santaradio.co.uk/mugshot-images/dene-michaels-singer.jpg' },
-  { name: 'Lisa Maxwell', role: 'Actress', img: 'https://www.santaradio.co.uk/mugshot-images/lisa-maxwell-actress.jpg' },
-  { name: 'Jason Manford', role: 'Comedian & Radio Presenter', img: 'https://www.santaradio.co.uk/mugshot-images/jason-manford-comedian.jpg' },
-  { name: 'Jordan Banjo', role: 'Dancer', img: 'https://www.santaradio.co.uk/mugshot-images/jordan-banjo-dancer.jpg' },
-  { name: 'Tom Davis', role: 'Actor & Comedian', img: 'https://www.santaradio.co.uk/mugshot-images/tom-davis-actor.jpg' },
-  { name: 'Stephen Hendry', role: 'Snooker player', img: 'https://www.santaradio.co.uk/mugshot-images/stephen-hendry-snooker.jpg' },
-  { name: 'Neil Jones', role: 'Dancer', img: 'https://www.santaradio.co.uk/mugshot-images/neil-jones-dancer.jpg' },
-  { name: 'Ben Fogle', role: 'TV personality', img: 'https://www.santaradio.co.uk/mugshot-images/ben-fogle-tv-personality.jpg' },
-  { name: 'Tom Milner', role: 'English actor', img: 'https://www.santaradio.co.uk/mugshot-images/tom-milner-actor.jpg' },
-  { name: 'Leona Lewis', role: 'Singer', img: 'https://www.santaradio.co.uk/mugshot-images/leona-lewis-singer.jpg' },
-];
+const ITEMS_PER_PAGE = 48;
 
 function getInitials(name) {
   return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
@@ -24,11 +12,25 @@ const colors = ['#b71c1c','#1565c0','#2e7d32','#6a1b9a','#e65100','#00695c','#37
 
 export default function MugShots() {
   const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
 
-  const filtered = CELEBS.filter(c =>
-    c.name.toLowerCase().includes(search.toLowerCase()) ||
-    c.role.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = useMemo(() => {
+    if (!search.trim()) return mugshotsData;
+    const q = search.toLowerCase();
+    return mugshotsData.filter(c =>
+      c.name.toLowerCase().includes(q) ||
+      c.role.toLowerCase().includes(q)
+    );
+  }, [search]);
+
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+  const visible = filtered.slice(0, page * ITEMS_PER_PAGE);
+  const hasMore = page * ITEMS_PER_PAGE < filtered.length;
+
+  const handleSearch = (e) => {
+    setSearch(e.target.value);
+    setPage(1);
+  };
 
   return (
     <main>
@@ -51,26 +53,32 @@ export default function MugShots() {
             sport, all proudly posing with the iconic Santa Radio mug.
           </p>
           <p className="mugshots-count">
-            <span className="count-num">647</span> Celebrity Mugshots and Counting...
+            <span className="count-num">{mugshotsData.length}</span> Celebrity Mugshots and Counting...
           </p>
           <input
             type="text"
             className="mugshots-search"
             placeholder="Search for a Celebrity or Talent"
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={handleSearch}
           />
+          {search && (
+            <p className="mugshots-results-count">
+              Showing {filtered.length} result{filtered.length !== 1 ? 's' : ''}
+            </p>
+          )}
         </div>
       </div>
 
       <div className="mugshots-grid-section starry-bg">
         <div className="container mugshots-grid">
-          {filtered.map((celeb, i) => (
-            <div key={celeb.name} className="mugshot-card">
+          {visible.map((celeb, i) => (
+            <div key={celeb.slug || celeb.name} className="mugshot-card">
               <img
-                src={celeb.img}
+                src={celeb.image}
                 alt={celeb.name}
                 className="mugshot-photo"
+                loading="lazy"
                 onError={e => {
                   e.target.style.display = 'none';
                   e.target.nextSibling.style.display = 'flex';
@@ -92,6 +100,16 @@ export default function MugShots() {
             <p className="no-results">No celebrities found for "{search}"</p>
           )}
         </div>
+        {hasMore && (
+          <div className="mugshots-load-more">
+            <button
+              className="load-more-btn"
+              onClick={() => setPage(p => p + 1)}
+            >
+              Load More ({filtered.length - visible.length} remaining)
+            </button>
+          </div>
+        )}
       </div>
     </main>
   );

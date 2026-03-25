@@ -52,9 +52,18 @@ The audio player targets `https://streaming.zeno.fm/yn65fsaurfhvv` — this may 
 - Framework: Vite (auto-detected by Vercel)
 - All routes rewrite to `/` for client-side routing
 
+## Mugshots Data
+
+- 700+ celebrity mugshot images stored locally in `public/mugshot-images/`
+- Data generated from image filenames into `src/data/mugshots.json` (name, role, image path, slug)
+- Mug Shots page loads 48 at a time with "Load More" pagination for performance
+- Search filters by celebrity name or role
+- Homepage MugshotsPreview pulls 4 featured celebs from the same JSON data
+- Images use `loading="lazy"` for performance with 700+ entries
+
 ## Notes
 
 - Soundboard buttons use the browser's Web Speech API (text-to-speech) to speak Santa phrases with a deep, slow voice setting — clicking a button while it speaks will stop it
-- Celebrity mugshot photos load from the original site's CDN; fallback initials shown on error
+- Celebrity mugshot photos are served locally from `/mugshot-images/`; fallback initials shown on error
 - Santa Message form shows a success state but does not send real data (no backend)
 - Twitter widget is not included (requires auth)
