@@ -23,7 +23,6 @@ export default function MugShots() {
     );
   }, [search]);
 
-  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const visible = filtered.slice(0, page * ITEMS_PER_PAGE);
   const hasMore = page * ITEMS_PER_PAGE < filtered.length;
 
