@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { Helmet } from 'react-helmet-async';
 import './MugShots.css';
 import mugshotsData from '../data/mugshots.json';
 
@@ -33,6 +34,10 @@ export default function MugShots() {
 
   return (
     <main>
+      <Helmet>
+        <title>Celebrity Mug Shots {'\u2013'} Santa Radio</title>
+        <meta name="description" content="Santa Radio Celebrity Mug Shots Hall of Fame! Hundreds of famous faces from TV, radio, music, comedy and sport, all posing with the iconic Santa Radio mug." />
+      </Helmet>
       <div className="mugshots-page-hero starry-bg">
         <div className="mugshots-hero-content">
           <div className="mugshots-page-logo-wrap">
@@ -48,7 +53,7 @@ export default function MugShots() {
             <strong>Ecurb the Elf has been out and about door stopping celebrities with our Santa Radio Mug!</strong>
           </p>
           <p className="mugshots-page-desc">
-            Santa Radio's celebrity mug shots feature hundreds of famous faces from TV, radio, music, comedy and
+            Santa Radio{'\u2019'}s celebrity mug shots feature hundreds of famous faces from TV, radio, music, comedy and
             sport, all proudly posing with the iconic Santa Radio mug.
           </p>
           <p className="mugshots-count">
@@ -96,7 +101,7 @@ export default function MugShots() {
             </div>
           ))}
           {filtered.length === 0 && (
-            <p className="no-results">No celebrities found for "{search}"</p>
+            <p className="no-results">No celebrities found for &ldquo;{search}&rdquo;</p>
           )}
         </div>
         {hasMore && (

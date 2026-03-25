@@ -1,0 +1,41 @@
+.santa-video-section {
+  padding: 60px 20px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  text-align: center;
+}
+
+.santa-video-title {
+  font-family: 'Cinzel', serif;
+  font-size: 2rem;
+  margin-bottom: 30px;
+}
+
+.santa-video-content {
+  max-width: 800px;
+  margin: 0 auto;
+  color: #e0e0e0;
+  font-size: 1.1rem;
+  line-height: 1.8;
+}
+
+.santa-video-content p {
+  margin-bottom: 20px;
+}
+
+.santa-video-cta {
+  margin-top: 30px;
+}
+
+.santa-video-btn {
+  display: inline-block;
+  padding: 14px 36px;
+  font-size: 1.1rem;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 700;
+  transition: transform 0.2s;
+}
+
+.santa-video-btn:hover {
+  transform: scale(1.05);
+}

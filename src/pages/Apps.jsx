@@ -1,3 +1,4 @@
+import { Helmet } from 'react-helmet-async';
 import './Apps.css';
 
 function AppSection({ title, subtitle, imgSrc, features }) {
@@ -34,28 +35,28 @@ function AppSection({ title, subtitle, imgSrc, features }) {
 }
 
 const RADIO_FEATURES = [
-  { icon: '📞', label: 'Leave a message', desc: 'Your child can leave a FREE voicemail message for Santa.' },
-  { icon: '⏪', label: 'Playback', desc: "Playback your Child's message to hear what they asked Santa." },
-  { icon: '📱', label: 'Santa Soundboard', desc: 'Head Elf recorded Santa. Play back some fun festive phrases.' },
-  { icon: '✉️', label: 'Send a message', desc: 'Send a message to Santa and read other messages & replies.' },
-  { icon: '🎁', label: '100% FREE', desc: "It's 100% free with none of those annoying adverts." },
-  { icon: '🎵', label: 'Santa Radio', desc: 'You can also listen and enjoy Santa Radio direct from the app.' },
+  { icon: '\u{1F4DE}', label: 'Leave a message', desc: 'Your child can leave a FREE voicemail message for Santa.' },
+  { icon: '\u23EA', label: 'Playback', desc: "Playback your Child's message to hear what they asked Santa." },
+  { icon: '\u{1F4F1}', label: 'Santa Soundboard', desc: 'Head Elf recorded Santa. Play back some fun festive phrases.' },
+  { icon: '\u2709\uFE0F', label: 'Send a message', desc: 'Send a message to Santa and read other messages & replies.' },
+  { icon: '\u{1F381}', label: '100% FREE', desc: "It's 100% free with none of those annoying adverts." },
+  { icon: '\u{1F3B5}', label: 'Santa Radio', desc: 'You can also listen and enjoy Santa Radio direct from the app.' },
 ];
 
 const VOICEMAIL_FEATURES = [
-  { icon: '📞', label: 'Leave a message', desc: 'Your child can leave a FREE voicemail message for Santa.' },
-  { icon: '⏪', label: 'Playback', desc: "Playback your Child's message to hear what they asked Santa." },
-  { icon: '📱', label: 'Santa Soundboard', desc: 'Head Elf recorded Santa. Play back some fun festive phrases.' },
-  { icon: '✉️', label: 'Send a message', desc: 'Send a message to Santa and read other messages & replies.' },
-  { icon: '🎁', label: '100% FREE', desc: "It's 100% free with none of those annoying adverts." },
-  { icon: '🎵', label: 'Santa Radio', desc: 'You can also listen and enjoy Santa Radio direct from the app.' },
+  { icon: '\u{1F4DE}', label: 'Leave a message', desc: 'Your child can leave a FREE voicemail message for Santa.' },
+  { icon: '\u23EA', label: 'Playback', desc: "Playback your Child's message to hear what they asked Santa." },
+  { icon: '\u{1F4F1}', label: 'Santa Soundboard', desc: 'Head Elf recorded Santa. Play back some fun festive phrases.' },
+  { icon: '\u2709\uFE0F', label: 'Send a message', desc: 'Send a message to Santa and read other messages & replies.' },
+  { icon: '\u{1F381}', label: '100% FREE', desc: "It's 100% free with none of those annoying adverts." },
+  { icon: '\u{1F3B5}', label: 'Santa Radio', desc: 'You can also listen and enjoy Santa Radio direct from the app.' },
 ];
 
 const MESSAGES_FEATURES = [
-  { icon: '🔍', label: "Find your child's name", desc: 'Santa will then play a personal message for your child.' },
-  { icon: '🐦', label: 'Share your message', desc: "Share your child's message on social media or by email." },
-  { icon: '🎁', label: '100% FREE', desc: "It's 100% free with none of those annoying adverts." },
-  { icon: '🎵', label: 'Santa Radio', desc: 'You can also listen and enjoy Santa Radio direct from the app.' },
+  { icon: '\u{1F50D}', label: "Find your child's name", desc: 'Santa will then play a personal message for your child.' },
+  { icon: '\u{1F426}', label: 'Share your message', desc: "Share your child's message on social media or by email." },
+  { icon: '\u{1F381}', label: '100% FREE', desc: "It's 100% free with none of those annoying adverts." },
+  { icon: '\u{1F3B5}', label: 'Santa Radio', desc: 'You can also listen and enjoy Santa Radio direct from the app.' },
 ];
 
 const PHONE_PLACEHOLDER = 'https://www.santaradio.co.uk/assets/img/santa-radio-logo.png';
@@ -63,6 +64,10 @@ const PHONE_PLACEHOLDER = 'https://www.santaradio.co.uk/assets/img/santa-radio-l
 export default function Apps() {
   return (
     <main>
+      <Helmet>
+        <title>Free Christmas Apps {'\u2013'} Santa Radio</title>
+        <meta name="description" content="Download our amazing free Christmas apps featuring Santa / Father Christmas. Available on iOS and Amazon." />
+      </Helmet>
       <div className="apps-hero starry-bg">
         <div className="apps-hero-content">
           <h1 className="hero-title-app gold-text">Santa Radio</h1>

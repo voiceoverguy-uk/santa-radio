@@ -4,28 +4,31 @@ import './Footer.css';
 export default function Footer() {
   return (
     <footer className="footer">
+      <div className="footer-attribution">
+        Brought to life by the Voice of Santa, British Voiceover Artist Guy Harris
+      </div>
       <div className="footer-links">
         <Link to="/">News</Link>
-        <span>·</span>
+        <span>&middot;</span>
         <Link to="/music">Playlist</Link>
-        <span>·</span>
-        <a href="#">FAQ's</a>
-        <span>·</span>
-        <a href="#">Submit your song</a>
-        <span>·</span>
-        <a href="#">Personalised Santa Video Message</a>
-        <span>·</span>
-        <a href="#">Download the app</a>
-        <span>·</span>
+        <span>&middot;</span>
+        <a href="#">FAQ&rsquo;s</a>
+        <span>&middot;</span>
+        <Link to="/submit-a-song">Submit your song</Link>
+        <span>&middot;</span>
+        <a href="https://www.santaradio.co.uk/personalised-santa-video.php" target="_blank" rel="noopener noreferrer">Personalised Santa Video Message</a>
+        <span>&middot;</span>
+        <Link to="/apps">Download the app</Link>
+        <span>&middot;</span>
         <a href="#">Santa Guy</a>
-        <span>·</span>
-        <a href="#">Links</a>
-        <span>·</span>
+        <span>&middot;</span>
+        <Link to="/links">Links</Link>
+        <span>&middot;</span>
         <a href="#">Privacy Policy</a>
-        <span>·</span>
+        <span>&middot;</span>
         <a href="#">TuneIn</a>
-        <span>·</span>
-        <a href="#">Santa Stories</a>
+        <span>&middot;</span>
+        <Link to="/santa-stories">Santa Stories</Link>
       </div>
       <div className="footer-social">
         <a href="https://twitter.com/WeAreSantaRadio" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
@@ -44,7 +47,7 @@ export default function Footer() {
           </svg>
         </a>
       </div>
-      <p className="footer-copy">© 2026 Santa Radio. All Rights Reserved.</p>
+      <p className="footer-copy">&copy; 2026 Santa Radio. All Rights Reserved.</p>
     </footer>
   );
 }

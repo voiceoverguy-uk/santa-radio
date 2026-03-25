@@ -1,0 +1,42 @@
+.submit-hero {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 20px 60px;
+}
+
+.submit-hero-content {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.submit-title {
+  font-family: 'Cinzel', serif;
+  font-size: 2.5rem;
+  margin-bottom: 30px;
+}
+
+.submit-body {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 16px;
+  padding: 40px;
+  text-align: left;
+  color: #f5f5f5;
+  font-size: 1.1rem;
+  line-height: 1.8;
+}
+
+.submit-body a {
+  color: #ffd700;
+  text-decoration: underline;
+}
+
+.submit-body ul {
+  margin: 15px 0 15px 20px;
+}
+
+.submit-body li {
+  margin-bottom: 8px;
+}

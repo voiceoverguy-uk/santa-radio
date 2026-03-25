@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import './Music.css';
 
 const SONGS = [
@@ -52,6 +53,10 @@ export default function Music() {
 
   return (
     <main>
+      <Helmet>
+        <title>Christmas Song Lyrics & Artists {'\u2013'} Santa Radio</title>
+        <meta name="description" content="Discover the biggest online collection of Christmas songs with full lyrics, artists, custom artwork and festive music for every track on Santa Radio." />
+      </Helmet>
       <div className="music-hero starry-bg">
         <div className="music-hero-content">
           <h1 className="music-hero-title gold-text">Santa Radio</h1>
@@ -71,9 +76,9 @@ export default function Music() {
             onChange={e => setSearch(e.target.value)}
           />
           <div className="music-icons">
-            <span title="Shuffle">🔀</span>
-            <span title="Artists">👥</span>
-            <span title="Songs">🎵</span>
+            <span title="Shuffle">{'\u{1F500}'}</span>
+            <span title="Artists">{'\u{1F465}'}</span>
+            <span title="Songs">{'\u{1F3B5}'}</span>
           </div>
         </div>
       </div>
@@ -90,7 +95,7 @@ export default function Music() {
             </div>
           ))}
           {filtered.length === 0 && (
-            <p className="no-results">No songs found for "{search}"</p>
+            <p className="no-results">No songs found for &ldquo;{search}&rdquo;</p>
           )}
         </div>
       </div>

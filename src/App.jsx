@@ -6,6 +6,9 @@ import Apps from './pages/Apps.jsx';
 import Music from './pages/Music.jsx';
 import MugShots from './pages/MugShots.jsx';
 import FreeSantaMessage from './pages/FreeSantaMessage.jsx';
+import SubmitASong from './pages/SubmitASong.jsx';
+import Links from './pages/Links.jsx';
+import SantaStories from './pages/SantaStories.jsx';
 
 export default function App() {
   return (
@@ -17,6 +20,9 @@ export default function App() {
         <Route path="/music" element={<Music />} />
         <Route path="/mugshots" element={<MugShots />} />
         <Route path="/free-santa-message" element={<FreeSantaMessage />} />
+        <Route path="/submit-a-song" element={<SubmitASong />} />
+        <Route path="/links" element={<Links />} />
+        <Route path="/santa-stories" element={<SantaStories />} />
       </Routes>
       <Footer />
     </BrowserRouter>

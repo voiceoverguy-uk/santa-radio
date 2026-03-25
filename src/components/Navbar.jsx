@@ -12,6 +12,7 @@ export default function Navbar() {
     { to: '/free-santa-message', label: 'FREE SANTA MESSAGE' },
     { to: '/music', label: 'MUSIC' },
     { to: '/mugshots', label: 'MUG SHOTS' },
+    { href: 'https://www.santaradio.co.uk/personalised-santa-video.php', label: 'PERSONALISED SANTA VIDEO', external: true },
   ];
 
   return (
@@ -29,14 +30,25 @@ export default function Navbar() {
         </button>
         <ul className={`navbar-links ${menuOpen ? 'open' : ''}`}>
           {links.map(link => (
-            <li key={link.to}>
-              <Link
-                to={link.to}
-                className={location.pathname === link.to ? 'active' : ''}
-                onClick={() => setMenuOpen(false)}
-              >
-                {link.label}
-              </Link>
+            <li key={link.to || link.href}>
+              {link.external ? (
+                <a
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <Link
+                  to={link.to}
+                  className={location.pathname === link.to ? 'active' : ''}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              )}
             </li>
           ))}
         </ul>
