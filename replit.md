@@ -16,9 +16,18 @@ A faithful React + Vite rebuild of www.santaradio.co.uk — The World's Best Chr
 |-------|------|
 | `/` | Home — hero, audio player, countdown, santa message form, soundboard, YouTube, mugshots preview, contact |
 | `/apps` | Apps — Santa Radio App, Santa Voicemail, Santa Messages sections |
-| `/music` | Music — Christmas song lyrics & artists grid with search |
-| `/mugshots` | Mug Shots — celebrity hall of fame with search |
+| `/christmas-music` | Music — Christmas song lyrics & artists grid with search |
+| `/mugshots/all` | Mug Shots — celebrity hall of fame with search |
+| `/mugshots/:slug` | Mugshot Detail — individual celebrity page with photo, name, role, SEO |
+| `/christmas-artist/:id-:slug` | Song Detail — individual song/artist page with lyrics, YouTube, Twitter share |
+| `/christmas-karaoke-lyrics/:id-:slug` | Karaoke Lyrics — karaoke lyrics page for each song |
 | `/free-santa-message` | Free Santa Message — personalised message form |
+
+### Redirects
+| Old URL | New URL |
+|---------|---------|
+| `/music` | `/christmas-music` |
+| `/mugshots` | `/mugshots/all` |
 
 ## Key Components
 
@@ -54,13 +63,32 @@ The audio player targets `https://streaming.zeno.fm/yn65fsaurfhvv` — this may 
 
 ## Mugshots Data
 
-- 730 unique celebrity mugshot images stored locally in `public/mugshot-images/` (extracted from 909 zip entries; 179 were subfolder duplicates)
-- Data generated from image filenames into `src/data/mugshots.json` — 700 unique entries (30 camera-style filenames excluded as they don't encode celebrity info)
-- Reproducible generation script: `node scripts/generate-mugshots.cjs` (extracts zip, parses filenames, generates JSON, validates image paths)
-- Mug Shots page loads 48 at a time with "Load More" pagination for performance
+- 730 unique celebrity mugshot images stored locally in `public/mugshot-images/`
+- `src/data/mugshots.json` — 735 entries with fields: `artist` (name), `song` (slug), `image` (path), `link` (role) matching original DB schema
+- 700 entries from image filenames + 35 additional entries from sitemap to cover all legacy URLs
+- Reproducible generation script: `node scripts/generate-mugshots.cjs` (extracts zip, parses filenames, adds sitemap entries)
+- Mug Shots listing page loads 48 at a time with "Load More" pagination for performance
 - Search filters by celebrity name or role
+- Each mugshot card links to its individual detail page at `/mugshots/{slug}`
 - Homepage MugshotsPreview pulls 4 featured celebs from the same JSON data
-- Images use `loading="lazy"` for performance with 700 entries
+
+## Songs Data
+
+- `src/data/songs.json` — 433 entries with fields: `id`, `artist`, `song`, `info`, `image`, `lyrics`, `link` (slug), `youtube`
+- Generated from original sitemap.xml URL patterns extracted from the PHP zip file
+- Preserves exact `{id}-{slug}` combinations from original indexed URLs
+- Reproducible generation script: `node scripts/generate-songs.cjs` (extracts sitemap from zip)
+- Each song card links to its detail page at `/christmas-artist/{id}-{slug}`
+- Song detail pages include toggleable lyrics, YouTube embed, karaoke link, and Twitter share
+- Karaoke lyrics pages at `/christmas-karaoke-lyrics/{id}-{slug}`
+
+## SEO
+
+- All dynamic pages have per-page `<title>`, meta description, OG tags, Twitter cards via react-helmet-async
+- JSON-LD structured data (BreadcrumbList) on all detail pages
+- MusicRecording schema on song detail pages
+- Canonical URLs set on all pages
+- Old URLs (`/music`, `/mugshots`) redirect to new canonical equivalents
 
 ## Notes
 

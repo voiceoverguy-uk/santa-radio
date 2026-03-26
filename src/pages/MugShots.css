@@ -88,6 +88,8 @@
   align-items: flex-start;
   cursor: pointer;
   transition: transform 0.2s;
+  text-decoration: none;
+  color: inherit;
 }
 
 .mugshot-card:hover {

@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import './MugShots.css';
 import mugshotsData from '../data/mugshots.json';
@@ -19,8 +20,8 @@ export default function MugShots() {
     if (!search.trim()) return mugshotsData;
     const q = search.toLowerCase();
     return mugshotsData.filter(c =>
-      c.name.toLowerCase().includes(q) ||
-      c.role.toLowerCase().includes(q)
+      c.artist.toLowerCase().includes(q) ||
+      c.link.toLowerCase().includes(q)
     );
   }, [search]);
 
@@ -37,6 +38,11 @@ export default function MugShots() {
       <Helmet>
         <title>Celebrity Mug Shots {'\u2013'} Santa Radio</title>
         <meta name="description" content="Santa Radio Celebrity Mug Shots Hall of Fame! Hundreds of famous faces from TV, radio, music, comedy and sport, all posing with the iconic Santa Radio mug." />
+        <meta property="og:title" content="Celebrity Mug Shots – Santa Radio" />
+        <meta property="og:description" content="Santa Radio Celebrity Mug Shots Hall of Fame! Hundreds of famous faces from TV, radio, music, comedy and sport." />
+        <meta property="og:url" content="https://www.santaradio.co.uk/mugshots/all" />
+        <meta name="twitter:card" content="summary" />
+        <link rel="canonical" href="https://www.santaradio.co.uk/mugshots/all" />
       </Helmet>
       <div className="mugshots-page-hero starry-bg">
         <div className="mugshots-hero-content">
@@ -77,10 +83,10 @@ export default function MugShots() {
       <div className="mugshots-grid-section starry-bg">
         <div className="container mugshots-grid">
           {visible.map((celeb, i) => (
-            <div key={celeb.slug || celeb.name} className="mugshot-card">
+            <Link key={celeb.song || celeb.artist} to={`/mugshots/${celeb.song}`} className="mugshot-card">
               <img
                 src={celeb.image}
-                alt={celeb.name}
+                alt={celeb.artist}
                 className="mugshot-photo"
                 loading="lazy"
                 onError={e => {
@@ -92,13 +98,13 @@ export default function MugShots() {
                 className="mugshot-fallback"
                 style={{ background: colors[i % colors.length], display: 'none' }}
               >
-                {getInitials(celeb.name)}
+                {getInitials(celeb.artist)}
               </div>
               <div className="mugshot-info">
-                <strong>{celeb.name}</strong>
-                <span>{celeb.role}</span>
+                <strong>{celeb.artist}</strong>
+                <span>{celeb.link}</span>
               </div>
-            </div>
+            </Link>
           ))}
           {filtered.length === 0 && (
             <p className="no-results">No celebrities found for &ldquo;{search}&rdquo;</p>

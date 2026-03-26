@@ -1,0 +1,88 @@
+.mugshot-detail-page {
+  padding: 40px 20px 80px;
+  min-height: 60vh;
+}
+
+.mugshot-detail-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.mugshot-breadcrumb {
+  margin-bottom: 24px;
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.6);
+}
+
+.mugshot-breadcrumb a {
+  color: #f0d060;
+  text-decoration: none;
+}
+
+.mugshot-breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.mugshot-breadcrumb span {
+  color: rgba(255,255,255,0.9);
+}
+
+.mugshot-detail-card {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+.mugshot-detail-photo {
+  width: 300px;
+  max-width: 100%;
+  border-radius: 4px;
+  border: 3px solid rgba(255,255,255,0.15);
+  flex-shrink: 0;
+}
+
+.mugshot-detail-info {
+  flex: 1;
+}
+
+.mugshot-detail-name {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  color: #f0d060;
+  margin-bottom: 8px;
+}
+
+.mugshot-detail-role {
+  font-size: 1.1rem;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 16px;
+  text-transform: capitalize;
+}
+
+.mugshot-detail-desc {
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.back-link {
+  color: #f0d060;
+  text-decoration: none;
+  font-size: 0.9rem;
+  display: inline-block;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .mugshot-detail-card {
+    flex-direction: column;
+  }
+
+  .mugshot-detail-photo {
+    width: 100%;
+  }
+}

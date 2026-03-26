@@ -13,7 +13,7 @@ const FEATURED_SLUGS = [
 export default function MugshotsPreview() {
   const celebs = useMemo(() => {
     const featured = FEATURED_SLUGS
-      .map(slug => mugshotsData.find(m => m.slug === slug))
+      .map(slug => mugshotsData.find(m => m.song === slug))
       .filter(Boolean);
     if (featured.length >= 4) return featured;
     return mugshotsData.slice(0, 4);
@@ -33,20 +33,20 @@ export default function MugshotsPreview() {
         <p className="section-subtitle mug-sub">
           We gave a Santa Radio Mug to our Autograph hunting Elf. You won't believe how many he got...
           <br />
-          <Link to="/mugshots" className="mug-link">
+          <Link to="/mugshots/all" className="mug-link">
             <strong>Click here</strong>
           </Link>{' '}
           to see over {mugshotsData.length} Celebs with mugs
         </p>
         <div className="mugshots-grid">
           {celebs.map(celeb => (
-            <div key={celeb.slug} className="mug-card">
-              <img src={celeb.image} alt={celeb.name} className="mug-photo" loading="lazy" />
+            <Link key={celeb.song} to={`/mugshots/${celeb.song}`} className="mug-card">
+              <img src={celeb.image} alt={celeb.artist} className="mug-photo" loading="lazy" />
               <div className="mug-info">
-                <strong>{celeb.name}</strong>
-                <span>{celeb.role}</span>
+                <strong>{celeb.artist}</strong>
+                <span>{celeb.link}</span>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

@@ -10,8 +10,8 @@ export default function Navbar() {
     { to: '/', label: 'HOME' },
     { to: '/apps', label: 'APPS' },
     { to: '/free-santa-message', label: 'FREE SANTA MESSAGE' },
-    { to: '/music', label: 'MUSIC' },
-    { to: '/mugshots', label: 'MUG SHOTS' },
+    { to: '/christmas-music', label: 'MUSIC' },
+    { to: '/mugshots/all', label: 'MUG SHOTS' },
     { href: 'https://www.santaradio.co.uk/personalised-santa-video.php', label: 'PERSONALISED SANTA VIDEO', external: true },
   ];
 
@@ -43,7 +43,7 @@ export default function Navbar() {
               ) : (
                 <Link
                   to={link.to}
-                  className={location.pathname === link.to ? 'active' : ''}
+                  className={location.pathname === link.to || location.pathname.startsWith(link.to + '/') ? 'active' : ''}
                   onClick={() => setMenuOpen(false)}
                 >
                   {link.label}

@@ -1,4202 +1,4412 @@
 [
   {
-    "name": "A1 Singers",
-    "role": "",
+    "artist": "A1 Singers",
+    "song": "a1-singers",
     "image": "/mugshot-images/a1-singers.jpg",
-    "slug": "a1-singers"
+    "link": ""
   },
   {
-    "name": "Aaron Ramsdale",
-    "role": "Footballer",
+    "artist": "Aaron Ramsdale",
+    "song": "aaron-ramsdale-footballer",
     "image": "/mugshot-images/aaron-ramsdale-footballer.jpg",
-    "slug": "aaron-ramsdale-footballer"
+    "link": "Footballer"
   },
   {
-    "name": "Adam English",
-    "role": "Radio Presenter",
+    "artist": "Adam English",
+    "song": "adam-english-radio-presenter",
     "image": "/mugshot-images/adam-english-radio-presenter.jpg",
-    "slug": "adam-english-radio-presenter"
+    "link": "Radio Presenter"
   },
   {
-    "name": "Adam Hussain",
-    "role": "Actor",
+    "artist": "Adam Hussain",
+    "song": "adam-hussain-actor",
     "image": "/mugshot-images/adam-hussain-actor.jpg",
-    "slug": "adam-hussain-actor"
+    "link": "Actor"
   },
   {
-    "name": "Adam Kay",
-    "role": "Comedian",
+    "artist": "Adam Kay",
+    "song": "adam-kay-comedian",
     "image": "/mugshot-images/adam-kay-comedian.jpg",
-    "slug": "adam-kay-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Adam Woodyatt",
-    "role": "Eastenders Actor",
+    "artist": "Adam Woodyatt",
+    "song": "adam-woodyatt-eastenders-actor",
     "image": "/mugshot-images/adam-woodyatt-eastenders-actor.jpg",
-    "slug": "adam-woodyatt-eastenders-actor"
+    "link": "Eastenders Actor"
   },
   {
-    "name": "Ade Adepitan Paralympion",
-    "role": "",
+    "artist": "Ade Adepitan Paralympion",
+    "song": "ade-adepitan-paralympion",
     "image": "/mugshot-images/ade-adepitan-paralympion.jpg",
-    "slug": "ade-adepitan-paralympion"
+    "link": ""
   },
   {
-    "name": "Ainsley Harriott",
-    "role": "Presenter Chef",
+    "artist": "Ainsley Harriott",
+    "song": "ainsley-harriott-presenter-chef",
     "image": "/mugshot-images/ainsley-harriott-presenter-chef.jpg",
-    "slug": "ainsley-harriott-presenter-chef"
+    "link": "Presenter Chef"
   },
   {
-    "name": "Ainsley Harriott Len Goodman",
-    "role": "Dancer Chef",
+    "artist": "Ainsley Harriott Len Goodman",
+    "song": "ainsley-harriott-len-goodman-dancer-chef",
     "image": "/mugshot-images/ainsley-harriott-len-goodman-dancer-chef.jpg",
-    "slug": "ainsley-harriott-len-goodman-dancer-chef"
+    "link": "Dancer Chef"
   },
   {
-    "name": "Alan Fletcher",
-    "role": "Actor",
+    "artist": "Alan Fletcher",
+    "song": "alan-fletcher-actor",
     "image": "/mugshot-images/alan-fletcher-actor.jpg",
-    "slug": "alan-fletcher-actor"
+    "link": "Actor"
   },
   {
-    "name": "Alan Halsall And Jack P Shepherd Actors",
-    "role": "",
+    "artist": "Alan Halsall And Jack P Shepherd Actors",
+    "song": "alan-halsall-and-jack-p-shepherd-actors",
     "image": "/mugshot-images/alan-halsall-and-jack-p-shepherd-actors.jpg",
-    "slug": "alan-halsall-and-jack-p-shepherd-actors"
+    "link": ""
   },
   {
-    "name": "Alan Johnson",
-    "role": "Mp",
+    "artist": "Alan Johnson",
+    "song": "alan-johnson-mp",
     "image": "/mugshot-images/alan-johnson-mp.jpg",
-    "slug": "alan-johnson-mp"
+    "link": "Mp"
   },
   {
-    "name": "Aled Jones",
-    "role": "Tv Personality",
+    "artist": "Aled Jones",
+    "song": "aled-jones-tv-personality",
     "image": "/mugshot-images/aled-jones-tv-personality.jpg",
-    "slug": "aled-jones-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Alesha Dixon",
-    "role": "Singer Presenter",
+    "artist": "Alesha Dixon",
+    "song": "alesha-dixon-singer-presenter",
     "image": "/mugshot-images/alesha-dixon-singer-presenter.jpg",
-    "slug": "alesha-dixon-singer-presenter"
+    "link": "Singer Presenter"
   },
   {
-    "name": "Alesha Santa",
-    "role": "",
+    "artist": "Alesha Santa",
+    "song": "alesha-santa",
     "image": "/mugshot-images/alesha-santa.jpg",
-    "slug": "alesha-santa"
+    "link": ""
   },
   {
-    "name": "Alex Belfield",
-    "role": "Vlogger",
+    "artist": "Alex Belfield",
+    "song": "alex-belfield-vlogger",
     "image": "/mugshot-images/alex-belfield-vlogger.jpg",
-    "slug": "alex-belfield-vlogger"
+    "link": "Vlogger"
   },
   {
-    "name": "Alex Horne",
-    "role": "Comedian",
+    "artist": "Alex Horne",
+    "song": "alex-horne-comedian",
     "image": "/mugshot-images/alex-horne-comedian.jpg",
-    "slug": "alex-horne-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Alex Scott",
-    "role": "Footballer",
+    "artist": "Alex Scott",
+    "song": "alex-scott-footballer",
     "image": "/mugshot-images/alex-scott-footballer.jpg",
-    "slug": "alex-scott-footballer"
+    "link": "Footballer"
   },
   {
-    "name": "Alexander Armstrong",
-    "role": "Presenter",
+    "artist": "Alexander Armstrong",
+    "song": "alexander-armstrong-presenter",
     "image": "/mugshot-images/alexander-armstrong-presenter.jpg",
-    "slug": "alexander-armstrong-presenter"
+    "link": "Presenter"
   },
   {
-    "name": "Alfie Boe",
-    "role": "Singer Performer",
+    "artist": "Alfie Boe",
+    "song": "alfie-boe-singer-performer",
     "image": "/mugshot-images/alfie-boe-singer-performer.jpg",
-    "slug": "alfie-boe-singer-performer"
+    "link": "Singer Performer"
   },
   {
-    "name": "Ali Campbell Ub40",
-    "role": "Singer",
+    "artist": "Ali Campbell Ub40",
+    "song": "ali-campbell-ub40-singer",
     "image": "/mugshot-images/ali-campbell-ub40-singer.jpg",
-    "slug": "ali-campbell-ub40-singer"
+    "link": "Singer"
   },
   {
-    "name": "Ali Carter",
-    "role": "Snooker Player",
+    "artist": "Ali Carter",
+    "song": "ali-carter-snooker-player",
     "image": "/mugshot-images/ali-carter-snooker-player.jpg",
-    "slug": "ali-carter-snooker-player"
+    "link": "Snooker Player"
   },
   {
-    "name": "Alice Ede",
-    "role": "Singer",
+    "artist": "Alice Ede",
+    "song": "alice-ede-singer",
     "image": "/mugshot-images/alice-ede-singer.jpg",
-    "slug": "alice-ede-singer"
+    "link": "Singer"
   },
   {
-    "name": "Alistair Mcgowen Impressionist",
-    "role": "",
+    "artist": "Alistair Mcgowen Impressionist",
+    "song": "alistair-mcgowen-impressionist",
     "image": "/mugshot-images/alistair-mcgowen-impressionist.jpg",
-    "slug": "alistair-mcgowen-impressionist"
+    "link": ""
   },
   {
-    "name": "Alistair Sant",
-    "role": "",
+    "artist": "Alistair Mcgowen Impressionist",
+    "song": "alistair-mcgowen-impressionist-actor",
+    "image": "",
+    "link": "Actor"
+  },
+  {
+    "artist": "Alistair Sant",
+    "song": "alistair-sant",
     "image": "/mugshot-images/alistair-sant.jpg",
-    "slug": "alistair-sant"
+    "link": ""
   },
   {
-    "name": "Aljaz Skorjanec",
-    "role": "Dancer",
+    "artist": "Aljaz Skorjanec",
+    "song": "aljaz-skorjanec-dancer",
     "image": "/mugshot-images/aljaz-skorjanec-dancer.jpg",
-    "slug": "aljaz-skorjanec-dancer"
+    "link": "Dancer"
   },
   {
-    "name": "Amanda Holden",
-    "role": "Tv Personality",
+    "artist": "Amanda Holden",
+    "song": "amanda-holden-tv-personality",
     "image": "/mugshot-images/amanda-holden-tv-personality.jpg",
-    "slug": "amanda-holden-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Amanda Lamb",
-    "role": "Tv Presenter",
+    "artist": "Amanda Lamb",
+    "song": "amanda-lamb-tv-presenter",
     "image": "/mugshot-images/amanda-lamb-tv-presenter.jpg",
-    "slug": "amanda-lamb-tv-presenter"
+    "link": "Tv Presenter"
   },
   {
-    "name": "Amanda Owen",
-    "role": "Presenter",
+    "artist": "Amanda Owen",
+    "song": "amanda-owen-presenter",
     "image": "/mugshot-images/amanda-owen-presenter.jpg",
-    "slug": "amanda-owen-presenter"
+    "link": "Presenter"
   },
   {
-    "name": "Amelia Lily",
-    "role": "Singer",
+    "artist": "Amelia Lily",
+    "song": "amelia-lily-singer",
     "image": "/mugshot-images/amelia-lily-singer.jpg",
-    "slug": "amelia-lily-singer"
+    "link": "Singer"
   },
   {
-    "name": "Amy Dowden",
-    "role": "Dancer",
+    "artist": "Amy Dowden",
+    "song": "amy-dowden-dancer",
     "image": "/mugshot-images/amy-dowden-dancer.jpg",
-    "slug": "amy-dowden-dancer"
+    "link": "Dancer"
   },
   {
-    "name": "Andoni Irola Bournemouth",
-    "role": "Manager",
+    "artist": "Andoni Irola Bournemouth",
+    "song": "andoni-irola-bournemouth-manager",
     "image": "/mugshot-images/andoni-irola-bournemouth-manager.jpg",
-    "slug": "andoni-irola-bournemouth-manager"
+    "link": "Manager"
   },
   {
-    "name": "Andrew Dunn",
-    "role": "Actor",
+    "artist": "Andrew Dunn",
+    "song": "andrew-dunn-actor",
     "image": "/mugshot-images/andrew-dunn-actor.jpg",
-    "slug": "andrew-dunn-actor"
+    "link": "Actor"
   },
   {
-    "name": "Andrew Lancel Corrie",
-    "role": "Actor",
+    "artist": "Andrew Lancel Corrie",
+    "song": "andrew-lancel-corrie-actor",
     "image": "/mugshot-images/andrew-lancel-corrie-actor.jpg",
-    "slug": "andrew-lancel-corrie-actor"
+    "link": "Actor"
   },
   {
-    "name": "Andy Crane",
-    "role": "Tv Presenter",
+    "artist": "Andy Crane",
+    "song": "andy-crane-tv-presenter",
     "image": "/mugshot-images/andy-crane-tv-presenter.jpg",
-    "slug": "andy-crane-tv-presenter"
+    "link": "Tv Presenter"
   },
   {
-    "name": "Andy De La Tour",
-    "role": "Actor",
+    "artist": "Andy De La Tour",
+    "song": "andy-de-la-tour-actor",
     "image": "/mugshot-images/andy-de-la-tour-actor.jpg",
-    "slug": "andy-de-la-tour-actor"
+    "link": "Actor"
   },
   {
-    "name": "Andy Freeman",
-    "role": "Dj",
+    "artist": "Andy Freeman",
+    "song": "andy-freeman-dj",
     "image": "/mugshot-images/andy-Freeman-dj.jpg",
-    "slug": "andy-freeman-dj"
+    "link": "Dj"
   },
   {
-    "name": "Andy Hamilton",
-    "role": "Comedian Writer",
+    "artist": "Andy Hamilton",
+    "song": "andy-hamilton-comedian-writer",
     "image": "/mugshot-images/andy-hamilton-comedian-writer.jpg",
-    "slug": "andy-hamilton-comedian-writer"
+    "link": "Comedian Writer"
   },
   {
-    "name": "Angela Scanlon",
-    "role": "Dj",
+    "artist": "Angela Scanlon",
+    "song": "angela-scanlon-dj",
     "image": "/mugshot-images/angela-scanlon-dj.jpg",
-    "slug": "angela-scanlon-dj"
+    "link": "Dj"
   },
   {
-    "name": "Anita Harris",
-    "role": "Tv Personality",
+    "artist": "Anita Harris",
+    "song": "anita-harris-tv-personality",
     "image": "/mugshot-images/anita-harris-tv-personality.jpg",
-    "slug": "anita-harris-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Anna Jane Cassey",
-    "role": "Actress",
+    "artist": "Anna Jane Cassey",
+    "song": "anna-jane-cassey-actress",
     "image": "/mugshot-images/anna-jane-cassey-actress.jpg",
-    "slug": "anna-jane-cassey-actress"
+    "link": "Actress"
   },
   {
-    "name": "Anne Hegerty",
-    "role": "Tv Personality",
+    "artist": "Anne Hegerty",
+    "song": "anne-hegerty-tv-personality",
     "image": "/mugshot-images/anne-hegerty-tv-personality.jpg",
-    "slug": "anne-hegerty-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Ant Middleton",
-    "role": "Tv Personality",
+    "artist": "Ant Middleton",
+    "song": "ant-middleton-tv-personality",
     "image": "/mugshot-images/ant-middleton-tv-personality.jpg",
-    "slug": "ant-middleton-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Anthony Mcgill",
-    "role": "Snooker Player",
+    "artist": "Anthony Mcgill",
+    "song": "anthony-mcgill-snooker-player",
     "image": "/mugshot-images/anthony-mcgill-snooker-player.jpg",
-    "slug": "anthony-mcgill-snooker-player"
+    "link": "Snooker Player"
   },
   {
-    "name": "Anton And Erin Dancers",
-    "role": "",
+    "artist": "Anton And Erin Dancers",
+    "song": "anton-and-erin-dancers",
     "image": "/mugshot-images/anton-and-erin-dancers.jpg",
-    "slug": "anton-and-erin-dancers"
+    "link": ""
   },
   {
-    "name": "Antony Costa Blue",
-    "role": "Singer",
+    "artist": "Antony Costa Blue",
+    "song": "antony-costa-blue-singer",
     "image": "/mugshot-images/antony-costa-blue-singer.jpg",
-    "slug": "antony-costa-blue-singer"
+    "link": "Singer"
   },
   {
-    "name": "Arielle Free",
-    "role": "Dj",
+    "artist": "Arielle Free",
+    "song": "arielle-free-dj",
     "image": "/mugshot-images/arielle-free-dj.jpg",
-    "slug": "arielle-free-dj"
+    "link": "Dj"
   },
   {
-    "name": "Ashley James",
-    "role": "Tv Personality",
+    "artist": "Ashley James",
+    "song": "ashley-james-tv-personality",
     "image": "/mugshot-images/ashley-james-tv-personality.jpg",
-    "slug": "ashley-james-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Astro Ub40",
-    "role": "Singer",
+    "artist": "Astro Ub40",
+    "song": "astro-ub40-singer",
     "image": "/mugshot-images/astro-ub40-singer.jpg",
-    "slug": "astro-ub40-singer"
+    "link": "Singer"
   },
   {
-    "name": "Badly Drawn Boy",
-    "role": "Singer",
+    "artist": "Badly Drawn Boy",
+    "song": "badly-drawn-boy-singer",
     "image": "/mugshot-images/badly-drawn-boy-singer.jpg",
-    "slug": "badly-drawn-boy-singer"
+    "link": "Singer"
   },
   {
-    "name": "Barney Walsh",
-    "role": "Tv Personailty",
+    "artist": "Barney Walsh",
+    "song": "barney-walsh-tv-personailty",
     "image": "/mugshot-images/barney-walsh-tv-personailty.jpg",
-    "slug": "barney-walsh-tv-personailty"
+    "link": "Tv Personailty"
   },
   {
-    "name": "Barry Cryer",
-    "role": "Comedian",
+    "artist": "Barry Cryer",
+    "song": "barry-cryer-comedian",
     "image": "/mugshot-images/barry-cryer-comedian.jpg",
-    "slug": "barry-cryer-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Barry Hearn",
-    "role": "Snooker Chairman",
+    "artist": "Barry Hearn",
+    "song": "barry-hearn-snooker-chairman",
     "image": "/mugshot-images/barry-hearn-snooker-chairman.jpg",
-    "slug": "barry-hearn-snooker-chairman"
+    "link": "Snooker Chairman"
   },
   {
-    "name": "Barry Mcguigan",
-    "role": "Boxer",
+    "artist": "Barry Mcguigan",
+    "song": "barry-mcguigan-boxer",
     "image": "/mugshot-images/barry-mcguigan-boxer.jpg",
-    "slug": "barry-mcguigan-boxer"
+    "link": "Boxer"
   },
   {
-    "name": "Basil Brush",
-    "role": "Presenter",
+    "artist": "Basil Brush",
+    "song": "basil-brush-presenter",
     "image": "/mugshot-images/basil-brush-presenter.jpg",
-    "slug": "basil-brush-presenter"
+    "link": "Presenter"
   },
   {
-    "name": "Batman Superhero",
-    "role": "",
+    "artist": "Batman",
+    "song": "batman-super-hero",
+    "image": "",
+    "link": "Super Hero"
+  },
+  {
+    "artist": "Batman Superhero",
+    "song": "batman-superhero",
     "image": "/mugshot-images/batman-superhero.jpg",
-    "slug": "batman-superhero"
+    "link": ""
   },
   {
-    "name": "Bbc Breakfast",
-    "role": "Reporter Holly Hamilton",
+    "artist": "Bbc Breakfast",
+    "song": "bbc-breakfast-reporter-holly-hamilton",
     "image": "/mugshot-images/bbc-breakfast-reporter-holly-Hamilton.jpg",
-    "slug": "bbc-breakfast-reporter-holly-hamilton"
+    "link": "Reporter Holly Hamilton"
   },
   {
-    "name": "Becky Measures",
-    "role": "Radio Presenter",
+    "artist": "Becky Measures",
+    "song": "becky-measures-radio-presenter",
     "image": "/mugshot-images/becky-measures-radio-presenter.jpg",
-    "slug": "becky-measures-radio-presenter"
+    "link": "Radio Presenter"
   },
   {
-    "name": "Ben Adams A1",
-    "role": "Singer",
+    "artist": "Ben Adams A1",
+    "song": "ben-adams-a1-singer",
     "image": "/mugshot-images/ben-adams-a1-singer.jpg",
-    "slug": "ben-adams-a1-singer"
+    "link": "Singer"
   },
   {
-    "name": "Ben Fogle",
-    "role": "Tv Personality",
+    "artist": "Ben Fogle",
+    "song": "ben-fogle-tv-personality",
     "image": "/mugshot-images/ben-fogle-tv-personality.jpg",
-    "slug": "ben-fogle-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Ben Haenow",
-    "role": "Singer",
+    "artist": "Ben Haenow",
+    "song": "ben-haenow-singer",
     "image": "/mugshot-images/ben-haenow-singer.jpg",
-    "slug": "ben-haenow-singer"
+    "link": "Singer"
   },
   {
-    "name": "Ben Nealon",
-    "role": "Actor Obe",
+    "artist": "Ben Nealon",
+    "song": "ben-nealon-actor-obe",
     "image": "/mugshot-images/ben-nealon-actor-obe.jpeg",
-    "slug": "ben-nealon-actor-obe"
+    "link": "Actor Obe"
   },
   {
-    "name": "Ben Shephard",
-    "role": "Tv Presenter",
+    "artist": "Ben Shephard",
+    "song": "ben-shephard-tv-presenter",
     "image": "/mugshot-images/ben-shephard-tv-presenter.jpg",
-    "slug": "ben-shephard-tv-presenter"
+    "link": "Tv Presenter"
   },
   {
-    "name": "Bernie Clifton",
-    "role": "Entertainer",
+    "artist": "Bernie Clifton",
+    "song": "bernie-clifton-entertainer",
     "image": "/mugshot-images/bernie-clifton-entertainer.jpg",
-    "slug": "bernie-clifton-entertainer"
+    "link": "Entertainer"
   },
   {
-    "name": "Bev Beven Elo",
-    "role": "Singer",
+    "artist": "Bernie Clifton",
+    "song": "bernie-clifton",
+    "image": "",
+    "link": ""
+  },
+  {
+    "artist": "Bev Beven Elo",
+    "song": "bev-beven-elo-singer",
     "image": "/mugshot-images/bev-beven-elo-singer.jpg",
-    "slug": "bev-beven-elo-singer"
+    "link": "Singer"
   },
   {
-    "name": "Beverley Knight",
-    "role": "Singer",
+    "artist": "Beverley Knight",
+    "song": "beverley-knight-singer",
     "image": "/mugshot-images/beverley-knight-singer.jpg",
-    "slug": "beverley-knight-singer"
+    "link": "Singer"
   },
   {
-    "name": "Bez",
-    "role": "Singer",
+    "artist": "Bez",
+    "song": "bez-singer",
     "image": "/mugshot-images/bez-singer.jpg",
-    "slug": "bez-singer"
+    "link": "Singer"
   },
   {
-    "name": "Big John Harrison",
-    "role": "Radio Presenter",
+    "artist": "Big John Harrison",
+    "song": "big-john-harrison-radio-presenter",
     "image": "/mugshot-images/big-john-harrison-radio-presenter.jpg",
-    "slug": "big-john-harrison-radio-presenter"
+    "link": "Radio Presenter"
   },
   {
-    "name": "Big Shaun",
-    "role": "Musician",
+    "artist": "Big Shaun",
+    "song": "big-shaun-musician",
     "image": "/mugshot-images/big-shaun-musician.jpg",
-    "slug": "big-shaun-musician"
+    "link": "Musician"
   },
   {
-    "name": "Bill Bailey",
-    "role": "Comedian",
+    "artist": "Big Shaun",
+    "song": "big-shaun-band-musician",
+    "image": "",
+    "link": "Band Musician"
+  },
+  {
+    "artist": "Bill Bailey",
+    "song": "bill-bailey-comedian",
     "image": "/mugshot-images/bill-bailey-comedian.jpg",
-    "slug": "bill-bailey-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Billy Bragg",
-    "role": "Singer",
+    "artist": "Billy Bragg",
+    "song": "billy-bragg-singer",
     "image": "/mugshot-images/billy-bragg-singer.jpg",
-    "slug": "billy-bragg-singer"
+    "link": "Singer"
   },
   {
-    "name": "Billy Ocean",
-    "role": "Singer Songwriter",
+    "artist": "Billy Ocean",
+    "song": "billy-ocean-singer-songwriter",
     "image": "/mugshot-images/billy-ocean-singer-songwriter.jpg",
-    "slug": "billy-ocean-singer-songwriter"
+    "link": "Singer Songwriter"
   },
   {
-    "name": "Billy Pearce",
-    "role": "Comedian",
+    "artist": "Billy Pearce",
+    "song": "billy-pearce-comedian",
     "image": "/mugshot-images/billy-pearce-comedian.jpg",
-    "slug": "billy-pearce-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Bob Barrett",
-    "role": "Actor",
+    "artist": "Bob Barrett",
+    "song": "bob-barrett-actor",
     "image": "/mugshot-images/bob-barrett-actor.jpg",
-    "slug": "bob-barrett-actor"
+    "link": "Actor"
   },
   {
-    "name": "Bobby Ball",
-    "role": "Comedian",
+    "artist": "Bobby Ball",
+    "song": "bobby-ball-comedian",
     "image": "/mugshot-images/bobby-ball-comedian.jpg",
-    "slug": "bobby-ball-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Bobby Brazier",
-    "role": "Actor",
+    "artist": "Bobby Ball",
+    "song": "bobby-ball",
+    "image": "",
+    "link": ""
+  },
+  {
+    "artist": "Bobby Brazier",
+    "song": "bobby-brazier-actor",
     "image": "/mugshot-images/bobby-brazier-actor.jpg",
-    "slug": "bobby-brazier-actor"
+    "link": "Actor"
   },
   {
-    "name": "Bobby Davro",
-    "role": "Comedian",
+    "artist": "Bobby Davro",
+    "song": "bobby-davro-comedian",
     "image": "/mugshot-images/bobby-davro-comedian.jpg",
-    "slug": "bobby-davro-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Bradley McIntosh",
-    "role": "Singer",
+    "artist": "Bradley McIntosh",
+    "song": "bradley-mcintosh-singer",
     "image": "/mugshot-images/bradley-mcIntosh-singer.jpg",
-    "slug": "bradley-mcintosh-singer"
+    "link": "Singer"
   },
   {
-    "name": "Bradley Walsh",
-    "role": "Tv Personailty",
+    "artist": "Bradley McIntosh",
+    "song": "bradley-mcIntosh-singer",
+    "image": "",
+    "link": "Singer"
+  },
+  {
+    "artist": "Bradley Walsh",
+    "song": "bradley-walsh-tv-personailty",
     "image": "/mugshot-images/bradley-walsh-tv-personailty.jpg",
-    "slug": "bradley-walsh-tv-personailty"
+    "link": "Tv Personailty"
   },
   {
-    "name": "Brendan Cole",
-    "role": "Dancer",
+    "artist": "Brendan Cole",
+    "song": "brendan-cole-dancer",
     "image": "/mugshot-images/brendan-cole-dancer.jpg",
-    "slug": "brendan-cole-dancer"
+    "link": "Dancer"
   },
   {
-    "name": "Brendan O Carroll",
-    "role": "Actor Mrs Brown",
+    "artist": "Brendan O Carroll",
+    "song": "brendan-o-carroll-actor-mrs-brown",
     "image": "/mugshot-images/brendan-o-carroll-actor-mrs-brown.jpg",
-    "slug": "brendan-o-carroll-actor-mrs-brown"
+    "link": "Actor Mrs Brown"
   },
   {
-    "name": "Brendan O Carroll Mrs Brown",
-    "role": "",
+    "artist": "Brendan O Carroll Mrs Brown",
+    "song": "brendan-o-carroll-mrs-brown",
     "image": "/mugshot-images/brendan-o-carroll-mrs-brown.jpg",
-    "slug": "brendan-o-carroll-mrs-brown"
+    "link": ""
   },
   {
-    "name": "Brendan Rodgers Leicester City",
-    "role": "Manager",
+    "artist": "Brendan Ocarroll",
+    "song": "brendan-ocarroll-mrs-brown",
+    "image": "",
+    "link": "Mrs Brown"
+  },
+  {
+    "artist": "Brendan Rodgers Leicester City",
+    "song": "brendan-rodgers-leicester-city-manager",
     "image": "/mugshot-images/brendan-rodgers-leicester-city-manager.jpg",
-    "slug": "brendan-rodgers-leicester-city-manager"
+    "link": "Manager"
   },
   {
-    "name": "Brian Conley",
-    "role": "Comedian",
+    "artist": "Brian Conley",
+    "song": "brian-conley-comedian",
     "image": "/mugshot-images/brian-conley-comedian.jpg",
-    "slug": "brian-conley-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Brian Connelly",
-    "role": "Comedian",
+    "artist": "Brian Connelly",
+    "song": "brian-connelly-comedian",
     "image": "/mugshot-images/brian-connelly-comedian.jpg",
-    "slug": "brian-connelly-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Britains Got Talent 2018 Lost Voice Guy",
-    "role": "",
+    "artist": "Britains Got Talent 2018 Lost Voice Guy",
+    "song": "britains-got-talent-2018-lost-voice-guy",
     "image": "/mugshot-images/britains-got-talent-2018-lost-voice-guy.jpg",
-    "slug": "britains-got-talent-2018-lost-voice-guy"
+    "link": ""
   },
   {
-    "name": "Britains Got Talent Semi Finalists Rosie And Adam",
-    "role": "",
+    "artist": "Britains Got Talent Semi Finalists Rosie And Adam",
+    "song": "britains-got-talent-semi-finalists-rosie-and-adam",
     "image": "/mugshot-images/britains-got-talent-semi-finalists-rosie-and-adam.jpg",
-    "slug": "britains-got-talent-semi-finalists-rosie-and-adam"
+    "link": ""
   },
   {
-    "name": "Brooke Vincent",
-    "role": "Actress",
+    "artist": "Brooke Vincent",
+    "song": "brooke-vincent-actress",
     "image": "/mugshot-images/brooke-vincent-actress.jpg",
-    "slug": "brooke-vincent-actress"
+    "link": "Actress"
   },
   {
-    "name": "Bruno Tonioli",
-    "role": "Dancer",
+    "artist": "Bruno Tonioli",
+    "song": "bruno-tonioli-dancer",
     "image": "/mugshot-images/bruno-tonioli-dancer.jpg",
-    "slug": "bruno-tonioli-dancer"
+    "link": "Dancer"
   },
   {
-    "name": "Calum Best",
-    "role": "Presenter",
+    "artist": "Calum Best",
+    "song": "calum-best-presenter",
     "image": "/mugshot-images/calum-best-presenter.jpg",
-    "slug": "calum-best-presenter"
+    "link": "Presenter"
   },
   {
-    "name": "Calum Lil",
-    "role": "Actor",
+    "artist": "Calum Lil",
+    "song": "calum-lil-actor",
     "image": "/mugshot-images/calum-lil-actor.jpg",
-    "slug": "calum-lil-actor"
+    "link": "Actor"
   },
   {
-    "name": "Calun Best",
-    "role": "Presenter",
+    "artist": "Calun Best",
+    "song": "calun-best-presenter",
     "image": "/mugshot-images/calun-best-presenter.jpg",
-    "slug": "calun-best-presenter"
+    "link": "Presenter"
   },
   {
-    "name": "Calvin Moyo",
-    "role": "Boxer",
+    "artist": "Calvin Moyo",
+    "song": "calvin-moyo-boxer",
     "image": "/mugshot-images/calvin-moyo-boxer.jpg",
-    "slug": "calvin-moyo-boxer"
+    "link": "Boxer"
   },
   {
-    "name": "Captain Sensible",
-    "role": "Singer",
+    "artist": "Captain Sensible",
+    "song": "captain-sensible-singer",
     "image": "/mugshot-images/captain-sensible-singer.jpg",
-    "slug": "captain-sensible-singer"
+    "link": "Singer"
   },
   {
-    "name": "Carlo Ancelotti Everton",
-    "role": "Football Manager",
+    "artist": "Carlo Ancelotti Everton",
+    "song": "carlo-ancelotti-everton-football-manager",
     "image": "/mugshot-images/carlo-ancelotti-everton-football-manager.jpg",
-    "slug": "carlo-ancelotti-everton-football-manager"
+    "link": "Football Manager"
   },
   {
-    "name": "Carol Kirkwood",
-    "role": "Tv Personality",
+    "artist": "Carol Kirkwood",
+    "song": "carol-kirkwood-tv-personality",
     "image": "/mugshot-images/carol-kirkwood-tv-personality.jpg",
-    "slug": "carol-kirkwood-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Catherine Tyldesley",
-    "role": "Actor",
+    "artist": "Catherine Tyldesley",
+    "song": "catherine-tyldesley-actor",
     "image": "/mugshot-images/catherine-tyldesley-actor.jpg",
-    "slug": "catherine-tyldesley-actor"
+    "link": "Actor"
   },
   {
-    "name": "Cbbc Karim And Hacker T Dog",
-    "role": "",
+    "artist": "Cbbc Karim And Hacker T Dog",
+    "song": "cbbc-karim-and-hacker-t-dog",
     "image": "/mugshot-images/cbbc-karim-and-hacker-t-dog.jpg",
-    "slug": "cbbc-karim-and-hacker-t-dog"
+    "link": ""
   },
   {
-    "name": "Charley Webb",
-    "role": "Actress",
+    "artist": "Charley Webb",
+    "song": "charley-webb-actress",
     "image": "/mugshot-images/charley-webb-actress.jpg",
-    "slug": "charley-webb-actress"
+    "link": "Actress"
   },
   {
-    "name": "Charlie Brookes",
-    "role": "Actress",
+    "artist": "Charlie Brookes",
+    "song": "charlie-brookes-actress",
     "image": "/mugshot-images/charlie-brookes-actress.jpg",
-    "slug": "charlie-brookes-actress"
+    "link": "Actress"
   },
   {
-    "name": "Charlie Brooks",
-    "role": "Actress",
+    "artist": "Charlie Brooks",
+    "song": "charlie-brooks-actress",
     "image": "/mugshot-images/charlie-brooks-actress.jpg",
-    "slug": "charlie-brooks-actress"
+    "link": "Actress"
   },
   {
-    "name": "Chas And Dave Musicians",
-    "role": "",
+    "artist": "Chas And Dave Musicians",
+    "song": "chas-and-dave-musicians",
     "image": "/mugshot-images/chas-and-dave-musicians.jpg",
-    "slug": "chas-and-dave-musicians"
+    "link": ""
   },
   {
-    "name": "Cherry Bear Mascot",
-    "role": "",
+    "artist": "Cherry Bear Mascot",
+    "song": "cherry-bear-mascot",
     "image": "/mugshot-images/cherry-bear-mascot.jpg",
-    "slug": "cherry-bear-mascot"
+    "link": ""
   },
   {
-    "name": "Cheryl Fergison",
-    "role": "Actress",
+    "artist": "Cheryl Fergison",
+    "song": "cheryl-fergison-actress",
     "image": "/mugshot-images/cheryl-fergison-actress.jpg",
-    "slug": "cheryl-fergison-actress"
+    "link": "Actress"
   },
   {
-    "name": "Chris Chittell",
-    "role": "Emmerdale Actor",
+    "artist": "Chris Chittell",
+    "song": "chris-chittell-emmerdale-actor",
     "image": "/mugshot-images/chris-chittell-emmerdale-actor.jpg",
-    "slug": "chris-chittell-emmerdale-actor"
+    "link": "Emmerdale Actor"
   },
   {
-    "name": "Chris Eubank",
-    "role": "Boxer",
+    "artist": "Chris Eubank",
+    "song": "chris-eubank-boxer",
     "image": "/mugshot-images/chris-eubank-boxer.jpg",
-    "slug": "chris-eubank-boxer"
+    "link": "Boxer"
   },
   {
-    "name": "Chris Evans",
-    "role": "Radio Personality",
+    "artist": "Chris Eubank",
+    "song": "chris-eubank-jnr-boxer",
+    "image": "",
+    "link": "Jnr Boxer"
+  },
+  {
+    "artist": "Chris Evans",
+    "song": "chris-evans-radio-personality",
     "image": "/mugshot-images/chris-evans-radio-personality.jpg",
-    "slug": "chris-evans-radio-personality"
+    "link": "Radio Personality"
   },
   {
-    "name": "Chris Jarvis",
-    "role": "Tv Presenter",
+    "artist": "Chris Jarvis",
+    "song": "chris-jarvis-tv-presenter",
     "image": "/mugshot-images/chris-jarvis-tv-presenter.jpg",
-    "slug": "chris-jarvis-tv-presenter"
+    "link": "Tv Presenter"
   },
   {
-    "name": "Chris Mason",
-    "role": "Radio Presenter",
+    "artist": "Chris Mason",
+    "song": "chris-mason-radio-presenter",
     "image": "/mugshot-images/chris-mason-radio-presenter.jpg",
-    "slug": "chris-mason-radio-presenter"
+    "link": "Radio Presenter"
   },
   {
-    "name": "Chris Mc Causland",
-    "role": "Comedian",
+    "artist": "Chris Mc Causland",
+    "song": "chris-mc-causland-comedian",
     "image": "/mugshot-images/chris-mc-causland-comedian.jpg",
-    "slug": "chris-mc-causland-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Chris Moyles",
-    "role": "Radio Presenter",
+    "artist": "Chris Moyles",
+    "song": "chris-moyles-radio-presenter",
     "image": "/mugshot-images/chris-moyles-radio-presenter.jpg",
-    "slug": "chris-moyles-radio-presenter"
+    "link": "Radio Presenter"
   },
   {
-    "name": "Chris Ramsey",
-    "role": "Comedian",
+    "artist": "Chris Ramsey",
+    "song": "chris-ramsey-comedian",
     "image": "/mugshot-images/chris-ramsey-comedian.jpg",
-    "slug": "chris-ramsey-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Chris Rodgers",
-    "role": "Bbc Newsreader",
+    "artist": "Chris Rodgers",
+    "song": "chris-rodgers-bbc-newsreader",
     "image": "/mugshot-images/chris-rodgers-bbc-newsreader.jpg",
-    "slug": "chris-rodgers-bbc-newsreader"
+    "link": "Bbc Newsreader"
   },
   {
-    "name": "Chris Rogers",
-    "role": "Bbc Newsreader",
+    "artist": "Chris Rogers",
+    "song": "chris-rogers-bbc-newsreader",
     "image": "/mugshot-images/chris-rogers-bbc-newsreader.jpg",
-    "slug": "chris-rogers-bbc-newsreader"
+    "link": "Bbc Newsreader"
   },
   {
-    "name": "Chris Smith",
-    "role": "Radio Presenter",
+    "artist": "Chris Smith",
+    "song": "chris-smith-radio-presenter",
     "image": "/mugshot-images/chris-smith-radio-presenter.jpg",
-    "slug": "chris-smith-radio-presenter"
+    "link": "Radio Presenter"
   },
   {
-    "name": "Chris Taylor On The Right And Jordan Hames Love Island",
-    "role": "",
+    "artist": "Chris Taylor On The Right And Jordan Hames Love Island",
+    "song": "chris-taylor-on-the-right-and-jordan-hames-love-island",
     "image": "/mugshot-images/chris-taylor-on-the-right-and-jordan-hames-love-island.jpg",
-    "slug": "chris-taylor-on-the-right-and-jordan-hames-love-island"
+    "link": ""
   },
   {
-    "name": "Chris Taylor On The Right And Jordan Hames Love Island 2",
-    "role": "",
+    "artist": "Chris Taylor On The Right And Jordan Hames Love Island 2",
+    "song": "chris-taylor-on-the-right-and-jordan-hames-love-island-2",
     "image": "/mugshot-images/chris-taylor-on-the-right-and-jordan-hames-love-island-2.jpg",
-    "slug": "chris-taylor-on-the-right-and-jordan-hames-love-island-2"
+    "link": ""
   },
   {
-    "name": "Chris Waddle",
-    "role": "Football Legend",
+    "artist": "Chris Waddle",
+    "song": "chris-waddle-football-legend",
     "image": "/mugshot-images/chris-waddle-football-legend.jpg",
-    "slug": "chris-waddle-football-legend"
+    "link": "Football Legend"
   },
   {
-    "name": "Chris Walker",
-    "role": "Actor",
+    "artist": "Chris Walker",
+    "song": "chris-walker-actor",
     "image": "/mugshot-images/chris-walker-actor.jpg",
-    "slug": "chris-walker-actor"
+    "link": "Actor"
   },
   {
-    "name": "Chris Wilder Sheffield United",
-    "role": "Manager",
+    "artist": "Chris Wilder Sheffield United",
+    "song": "chris-wilder-sheffield-united-manager",
     "image": "/mugshot-images/chris-wilder-sheffield-united-manager.jpg",
-    "slug": "chris-wilder-sheffield-united-manager"
+    "link": "Manager"
   },
   {
-    "name": "Chrissie Wunna",
-    "role": "Actress",
+    "artist": "Chrissie Wunna",
+    "song": "chrissie-wunna-actress",
     "image": "/mugshot-images/chrissie-wunna-actress.jpg",
-    "slug": "chrissie-wunna-actress"
+    "link": "Actress"
   },
   {
-    "name": "Christine Lampard",
-    "role": "Tv Personality",
+    "artist": "Christine Lampard",
+    "song": "christine-lampard-tv-personality",
     "image": "/mugshot-images/christine-lampard-tv-personality.jpeg",
-    "slug": "christine-lampard-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Chuckle Brothers",
-    "role": "Tv Presenters",
+    "artist": "Chuckle Brothers",
+    "song": "chuckle-brothers-tv-presenters",
     "image": "/mugshot-images/chuckle-brothers-tv-presenters.jpg",
-    "slug": "chuckle-brothers-tv-presenters"
+    "link": "Tv Presenters"
   },
   {
-    "name": "Claudia Winkleman",
-    "role": "Presenter",
+    "artist": "Chuckle Brothers",
+    "song": "chuckle-brothers",
+    "image": "",
+    "link": ""
+  },
+  {
+    "artist": "Claudia Winkleman",
+    "song": "claudia-winkleman-presenter",
     "image": "/mugshot-images/claudia-winkleman-presenter.jpg",
-    "slug": "claudia-winkleman-presenter"
+    "link": "Presenter"
   },
   {
-    "name": "Cliff Richard",
-    "role": "Singer",
+    "artist": "Cliff Richard",
+    "song": "cliff-richard-singer",
     "image": "/mugshot-images/cliff-richard-singer.jpg",
-    "slug": "cliff-richard-singer"
+    "link": "Singer"
   },
   {
-    "name": "Cliff Thorburn",
-    "role": "Snooker Player",
+    "artist": "Cliff Thorburn",
+    "song": "cliff-thorburn-snooker-player",
     "image": "/mugshot-images/cliff-thorburn-snooker-player.jpg",
-    "slug": "cliff-thorburn-snooker-player"
+    "link": "Snooker Player"
   },
   {
-    "name": "Clinton Baptise Psychic",
-    "role": "",
+    "artist": "Clinton Baptise Psychic",
+    "song": "clinton-baptise-psychic",
     "image": "/mugshot-images/clinton-baptise-psychic.jpg",
-    "slug": "clinton-baptise-psychic"
+    "link": ""
   },
   {
-    "name": "Clive Warren",
-    "role": "Dj",
+    "artist": "Clive Warren",
+    "song": "clive-warren-dj",
     "image": "/mugshot-images/clive-warren-dj.jpg",
-    "slug": "clive-warren-dj"
+    "link": "Dj"
   },
   {
-    "name": "Colin Baker",
-    "role": "Actor Dr Who",
+    "artist": "Clive Warren",
+    "song": "clive-warren",
+    "image": "",
+    "link": ""
+  },
+  {
+    "artist": "Colin Baker",
+    "song": "colin-baker-actor-dr-who",
     "image": "/mugshot-images/colin-Baker-actor-dr-who.jpg",
-    "slug": "colin-baker-actor-dr-who"
+    "link": "Actor Dr Who"
   },
   {
-    "name": "Colin Murray",
-    "role": "Radio Presenter",
+    "artist": "Colin Baker",
+    "song": "colin-Baker-actor-dr-who",
+    "image": "",
+    "link": "Actor Dr Who"
+  },
+  {
+    "artist": "Colin Murray",
+    "song": "colin-murray-radio-presenter",
     "image": "/mugshot-images/colin-murray-radio-presenter.jpg",
-    "slug": "colin-murray-radio-presenter"
+    "link": "Radio Presenter"
   },
   {
-    "name": "Colin Patterson",
-    "role": "Bbc",
+    "artist": "Colin Patterson",
+    "song": "colin-patterson-bbc",
     "image": "/mugshot-images/colin-patterson-bbc.jpg",
-    "slug": "colin-patterson-bbc"
+    "link": "Bbc"
   },
   {
-    "name": "Colson Smith",
-    "role": "Actor",
+    "artist": "Colin Patterson",
+    "song": "colin-patterson-bbc-presenter",
+    "image": "",
+    "link": "Bbc Presenter"
+  },
+  {
+    "artist": "Colson Smith",
+    "song": "colson-smith-actor",
     "image": "/mugshot-images/colson-smith-actor.jpg",
-    "slug": "colson-smith-actor"
+    "link": "Actor"
   },
   {
-    "name": "Coronation Street",
-    "role": "",
+    "artist": "Coronation Street",
+    "song": "coronation-street",
     "image": "/mugshot-images/coronation-street.jpg",
-    "slug": "coronation-street"
+    "link": ""
   },
   {
-    "name": "Craig Charles",
-    "role": "Presenter Actor",
+    "artist": "Corrie Andrew",
+    "song": "corrie-andrew-lancel",
+    "image": "",
+    "link": "Lancel"
+  },
+  {
+    "artist": "Craig Charles",
+    "song": "craig-charles-presenter-actor",
     "image": "/mugshot-images/craig-charles-presenter-actor.jpg",
-    "slug": "craig-charles-presenter-actor"
+    "link": "Presenter Actor"
   },
   {
-    "name": "Craig Gazey",
-    "role": "Actor",
+    "artist": "Craig Gazey",
+    "song": "craig-gazey-actor",
     "image": "/mugshot-images/craig-gazey-actor.jpg",
-    "slug": "craig-gazey-actor"
+    "link": "Actor"
   },
   {
-    "name": "Craig Revel Horwood",
-    "role": "Dancer Presenter",
+    "artist": "Craig Revel Horwood",
+    "song": "craig-revel-horwood-dancer-presenter",
     "image": "/mugshot-images/craig-revel-horwood-dancer-presenter.jpg",
-    "slug": "craig-revel-horwood-dancer-presenter"
+    "link": "Dancer Presenter"
   },
   {
-    "name": "Daisy Wood Davis",
-    "role": "Actress",
+    "artist": "Daisy Wood Davis",
+    "song": "daisy-wood-davis-actress",
     "image": "/mugshot-images/daisy-wood-davis-actress.jpg",
-    "slug": "daisy-wood-davis-actress"
+    "link": "Actress"
   },
   {
-    "name": "Damage Band",
-    "role": "",
+    "artist": "Damage Band",
+    "song": "damage-band",
     "image": "/mugshot-images/damage-band.jpg",
-    "slug": "damage-band"
+    "link": ""
   },
   {
-    "name": "Dame Darcey",
-    "role": "Bussell Dancer",
+    "artist": "Dame Darcey",
+    "song": "dame-darcey-bussell-dancer",
     "image": "/mugshot-images/dame-darcey-bussell-dancer.jpg",
-    "slug": "dame-darcey-bussell-dancer"
+    "link": "Bussell Dancer"
   },
   {
-    "name": "Damian Williams",
-    "role": "Actor",
+    "artist": "Damian Williams",
+    "song": "damian-williams-actor",
     "image": "/mugshot-images/damian-williams-actor.jpg",
-    "slug": "damian-williams-actor"
+    "link": "Actor"
   },
   {
-    "name": "Dan Gillespie The Felling",
-    "role": "Singer",
+    "artist": "Dan Gillespie The Felling",
+    "song": "dan-gillespie-the-felling-singer",
     "image": "/mugshot-images/dan-gillespie-the-felling-singer.jpg",
-    "slug": "dan-gillespie-the-felling-singer"
+    "link": "Singer"
   },
   {
-    "name": "Dan Hatfield",
-    "role": "Tv Personality",
+    "artist": "Dan Hatfield",
+    "song": "dan-hatfield-tv-personality",
     "image": "/mugshot-images/dan-hatfield-tv-personality.jpg",
-    "slug": "dan-hatfield-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Dan Walker",
-    "role": "Bbc Breakfast",
+    "artist": "Dan Walker",
+    "song": "dan-walker-bbc-breakfast",
     "image": "/mugshot-images/dan-walker-bbc-breakfast.jpg",
-    "slug": "dan-walker-bbc-breakfast"
+    "link": "Bbc Breakfast"
   },
   {
-    "name": "Dan Wallker",
-    "role": "Bbc Breakfast",
+    "artist": "Dan Wallker",
+    "song": "dan-wallker-bbc-breakfast",
     "image": "/mugshot-images/dan-wallker-bbc-breakfast.jpg",
-    "slug": "dan-wallker-bbc-breakfast"
+    "link": "Bbc Breakfast"
   },
   {
-    "name": "Dan Wootton",
-    "role": "Itv Showbiz",
+    "artist": "Dan Wootton",
+    "song": "dan-wootton-itv-showbiz",
     "image": "/mugshot-images/dan-wootton-itv-showbiz.jpg",
-    "slug": "dan-wootton-itv-showbiz"
+    "link": "Itv Showbiz"
   },
   {
-    "name": "Dane Baptiste",
-    "role": "Comedian",
+    "artist": "Dane Baptiste",
+    "song": "dane-baptiste-comedian",
     "image": "/mugshot-images/dane-baptiste-comedian.jpg",
-    "slug": "dane-baptiste-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Dane Bowers",
-    "role": "Singer",
+    "artist": "Dane Bowers",
+    "song": "dane-bowers-singer",
     "image": "/mugshot-images/dane-bowers-singer.jpg",
-    "slug": "dane-bowers-singer"
+    "link": "Singer"
   },
   {
-    "name": "Dani Harmer Tracy Beeker",
-    "role": "",
+    "artist": "Dani Harmer Tracy Beeker",
+    "song": "dani-harmer-tracy-beeker",
     "image": "/mugshot-images/dani-harmer-tracy-beeker.jpg",
-    "slug": "dani-harmer-tracy-beeker"
+    "link": ""
   },
   {
-    "name": "Danny Dyer",
-    "role": "Actor Hardman",
+    "artist": "Dani Harmer Tracy Beeker",
+    "song": "dani-harmer-tracy-beeker-actress",
+    "image": "",
+    "link": "Actress"
+  },
+  {
+    "artist": "Danny Dyer",
+    "song": "danny-dyer-actor-hardman",
     "image": "/mugshot-images/danny-dyer-actor-hardman.jpg",
-    "slug": "danny-dyer-actor-hardman"
+    "link": "Actor Hardman"
   },
   {
-    "name": "Danny Rate My Takeaway",
-    "role": "Youtuber",
+    "artist": "Danny Rate My Takeaway",
+    "song": "danny-rate-my-takeaway-youtuber",
     "image": "/mugshot-images/danny-rate-my-takeaway-youtuber.jpg",
-    "slug": "danny-rate-my-takeaway-youtuber"
+    "link": "Youtuber"
   },
   {
-    "name": "Danny Willett Professional",
-    "role": "Golfer",
+    "artist": "Danny Willett Professional",
+    "song": "danny-willett-professional-golfer",
     "image": "/mugshot-images/danny-willett-professional-golfer.jpg",
-    "slug": "danny-willett-professional-golfer"
+    "link": "Golfer"
   },
   {
-    "name": "Dara O Briain",
-    "role": "Comedian Presenter",
+    "artist": "Dara O Briain",
+    "song": "dara-o-briain-comedian-presenter",
     "image": "/mugshot-images/dara-o-briain-comedian-presenter.jpg",
-    "slug": "dara-o-briain-comedian-presenter"
+    "link": "Comedian Presenter"
   },
   {
-    "name": "Darius Campbell",
-    "role": "Singer",
+    "artist": "Darius Campbell",
+    "song": "darius-campbell-singer",
     "image": "/mugshot-images/darius-campbell-singer.jpg",
-    "slug": "darius-campbell-singer"
+    "link": "Singer"
   },
   {
-    "name": "Darren Day",
-    "role": "Actor",
+    "artist": "Darren Day",
+    "song": "darren-day-actor",
     "image": "/mugshot-images/darren-day-actor.jpg",
-    "slug": "darren-day-actor"
+    "link": "Actor"
   },
   {
-    "name": "Dave Allen",
-    "role": "Boxer",
+    "artist": "Dave Allen",
+    "song": "dave-allen-boxer",
     "image": "/mugshot-images/dave-allen-boxer.jpg",
-    "slug": "dave-allen-boxer"
+    "link": "Boxer"
   },
   {
-    "name": "Dave Goreman",
-    "role": "Comedian",
+    "artist": "Dave Goreman",
+    "song": "dave-goreman-comedian",
     "image": "/mugshot-images/dave-goreman-comedian.jpg",
-    "slug": "dave-goreman-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Dave Vitty",
-    "role": "Comedian",
+    "artist": "Dave Vitty",
+    "song": "dave-vitty-comedian",
     "image": "/mugshot-images/dave-vitty-comedian.jpg",
-    "slug": "dave-vitty-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "David Baddiel",
-    "role": "Comedian",
+    "artist": "David Baddiel",
+    "song": "david-baddiel-comedian",
     "image": "/mugshot-images/david-baddiel-comedian.jpg",
-    "slug": "david-baddiel-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "David Badiel",
-    "role": "",
+    "artist": "David Badiel",
+    "song": "david-badiel",
     "image": "/mugshot-images/david-badiel.jpg",
-    "slug": "david-badiel"
+    "link": ""
   },
   {
-    "name": "David Brookes Bournemouth",
-    "role": "Footballer",
+    "artist": "David Brookes Bournemouth",
+    "song": "david-brookes-bournemouth-footballer",
     "image": "/mugshot-images/david-brookes-bournemouth-footballer.jpg",
-    "slug": "david-brookes-bournemouth-footballer"
+    "link": "Footballer"
   },
   {
-    "name": "David Davies Former Executive",
-    "role": "Director Of FA",
+    "artist": "David Davies",
+    "song": "david-davies-former-executive-director-of-FA",
+    "image": "",
+    "link": "Former Executive Director Of FA"
+  },
+  {
+    "artist": "David Davies Former Executive",
+    "song": "david-davies-former-executive-director-of-fa",
     "image": "/mugshot-images/david-davies-former-executive-director-of-FA.jpg",
-    "slug": "david-davies-former-executive-director-of-fa"
+    "link": "Director Of FA"
   },
   {
-    "name": "David Diamante Boxing",
-    "role": "Commentator",
+    "artist": "David Diamante Boxing",
+    "song": "david-diamante-boxing-commentator",
     "image": "/mugshot-images/david-diamante-boxing-commentator.jpg",
-    "slug": "david-diamante-boxing-commentator"
+    "link": "Commentator"
   },
   {
-    "name": "David Dimbleby",
-    "role": "Bbc Television",
+    "artist": "David Dimbleby",
+    "song": "david-dimbleby-bbc-television",
     "image": "/mugshot-images/david-dimbleby-bbc-television.jpg",
-    "slug": "david-dimbleby-bbc-television"
+    "link": "Bbc Television"
   },
   {
-    "name": "David Mitchell",
-    "role": "Comedian",
+    "artist": "David Mitchell",
+    "song": "david-mitchell-comedian",
     "image": "/mugshot-images/david-mitchell-comedian.jpg",
-    "slug": "david-mitchell-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "David Mitchell Guyharris",
-    "role": "",
+    "artist": "David Mitchell Guyharris",
+    "song": "david-mitchell-guyharris",
     "image": "/mugshot-images/david-mitchell-guyharris.jpg",
-    "slug": "david-mitchell-guyharris"
+    "link": ""
   },
   {
-    "name": "David Moyes West Ham",
-    "role": "Manager",
+    "artist": "David Moyes West Ham",
+    "song": "david-moyes-west-ham-manager",
     "image": "/mugshot-images/david-moyes-west-ham-manager.jpg",
-    "slug": "david-moyes-west-ham-manager"
+    "link": "Manager"
   },
   {
-    "name": "David Walliams",
-    "role": "Comedian Writer",
+    "artist": "David Walliams",
+    "song": "david-walliams-comedian-writer",
     "image": "/mugshot-images/david-walliams-comedian-writer.jpg",
-    "slug": "david-walliams-comedian-writer"
+    "link": "Comedian Writer"
   },
   {
-    "name": "Davina",
-    "role": "Presenter",
+    "artist": "Davina",
+    "song": "davina-presenter",
     "image": "/mugshot-images/davina-presenter.jpg",
-    "slug": "davina-presenter"
+    "link": "Presenter"
   },
   {
-    "name": "Davina Mccall",
-    "role": "Tv Presenter",
+    "artist": "Davina",
+    "song": "davina-presenter-television-presenter",
+    "image": "",
+    "link": "Presenter Television Presenter"
+  },
+  {
+    "artist": "Davina Mccall",
+    "song": "davina-mccall-tv-presenter",
     "image": "/mugshot-images/davina-mccall-tv-presenter.jpg",
-    "slug": "davina-mccall-tv-presenter"
+    "link": "Tv Presenter"
   },
   {
-    "name": "Davina Sant",
-    "role": "",
+    "artist": "Davina Sant",
+    "song": "davina-sant",
     "image": "/mugshot-images/davina-sant.jpg",
-    "slug": "davina-sant"
+    "link": ""
   },
   {
-    "name": "Dean Gaffney",
-    "role": "Actor",
+    "artist": "Dean Gaffney",
+    "song": "dean-gaffney-actor",
     "image": "/mugshot-images/dean-gaffney-actor.jpg",
-    "slug": "dean-gaffney-actor"
+    "link": "Actor"
   },
   {
-    "name": "Deidre Sanders",
-    "role": "Tv Personaility",
+    "artist": "Deidre Sanders",
+    "song": "deidre-sanders-tv-personaility",
     "image": "/mugshot-images/deidre-sanders-tv-personaility.jpg",
-    "slug": "deidre-sanders-tv-personaility"
+    "link": "Tv Personaility"
   },
   {
-    "name": "Dene Michaels",
-    "role": "Singer",
+    "artist": "Dene Michaels",
+    "song": "dene-michaels-singer",
     "image": "/mugshot-images/dene-michaels-singer.jpg",
-    "slug": "dene-michaels-singer"
+    "link": "Singer"
   },
   {
-    "name": "Denise Van Outen",
-    "role": "Actress",
+    "artist": "Denise Van Outen",
+    "song": "denise-van-outen-actress",
     "image": "/mugshot-images/denise-van-outen-actress.jpg",
-    "slug": "denise-van-outen-actress"
+    "link": "Actress"
   },
   {
-    "name": "Denise Welsh",
-    "role": "Actress Presenter",
+    "artist": "Denise Welsh",
+    "song": "denise-welsh-actress-presenter",
     "image": "/mugshot-images/denise-welsh-actress-presenter.jpg",
-    "slug": "denise-welsh-actress-presenter"
+    "link": "Actress Presenter"
   },
   {
-    "name": "Dennis Taylor Steve Davis",
-    "role": "Snooker Player",
+    "artist": "Dennis Taylor",
+    "song": "dennis-taylor-snooker-player",
+    "image": "",
+    "link": "Snooker Player"
+  },
+  {
+    "artist": "Dennis Taylor Steve Davis",
+    "song": "dennis-taylor-steve-davis-snooker-player",
     "image": "/mugshot-images/dennis-taylor-steve-davis-snooker-player.jpg",
-    "slug": "dennis-taylor-steve-davis-snooker-player"
+    "link": "Snooker Player"
   },
   {
-    "name": "Dermot O Leary",
-    "role": "Radio Presenter",
+    "artist": "Dermot O Leary",
+    "song": "dermot-o-leary-radio-presenter",
     "image": "/mugshot-images/dermot-o-leary-radio-presenter.jpg",
-    "slug": "dermot-o-leary-radio-presenter"
+    "link": "Radio Presenter"
   },
   {
-    "name": "Diana Vickers",
-    "role": "Singer",
+    "artist": "Diana Vickers",
+    "song": "diana-vickers-singer",
     "image": "/mugshot-images/diana-vickers-singer.jpg",
-    "slug": "diana-vickers-singer"
+    "link": "Singer"
   },
   {
-    "name": "Dianne Buswell",
-    "role": "Dancer",
+    "artist": "Dianne Buswell",
+    "song": "dianne-buswell-dancer",
     "image": "/mugshot-images/dianne-buswell-dancer.jpg",
-    "slug": "dianne-buswell-dancer"
+    "link": "Dancer"
   },
   {
-    "name": "Dick And Dom",
-    "role": "Tv Radio Personalities",
+    "artist": "Dick And Dom",
+    "song": "dick-and-dom-tv-radio-personalities",
     "image": "/mugshot-images/dick-and-dom-tv-radio-personalities.jpg",
-    "slug": "dick-and-dom-tv-radio-personalities"
+    "link": "Tv Radio Personalities"
   },
   {
-    "name": "Dixie Heart Yorkshire",
-    "role": "",
+    "artist": "Dixie Heart Yorkshire",
+    "song": "dixie-heart-yorkshire",
     "image": "/mugshot-images/dixie-heart-yorkshire.jpg",
-    "slug": "dixie-heart-yorkshire"
+    "link": ""
   },
   {
-    "name": "Doctor Ranj",
-    "role": "Tv Personality",
+    "artist": "Doctor Ranj",
+    "song": "doctor-ranj-tv-personality",
     "image": "/mugshot-images/doctor-ranj-tv-personality.jpg",
-    "slug": "doctor-ranj-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Dolly Rose Campbell",
-    "role": "Actress",
+    "artist": "Dolly Rose Campbell",
+    "song": "dolly-rose-campbell-actress",
     "image": "/mugshot-images/dolly-rose-campbell-actress.jpg",
-    "slug": "dolly-rose-campbell-actress"
+    "link": "Actress"
   },
   {
-    "name": "Dominic Byrne",
-    "role": "Radio Presenter",
+    "artist": "Dominic Byrne",
+    "song": "dominic-byrne-radio-presenter",
     "image": "/mugshot-images/dominic-byrne-radio-presenter.jpg",
-    "slug": "dominic-byrne-radio-presenter"
+    "link": "Radio Presenter"
   },
   {
-    "name": "Dominic Dale",
-    "role": "Snooker Player",
+    "artist": "Dominic Dale",
+    "song": "dominic-dale-snooker-player",
     "image": "/mugshot-images/dominic-dale-snooker-player.jpg",
-    "slug": "dominic-dale-snooker-player"
+    "link": "Snooker Player"
   },
   {
-    "name": "Dr Who Dalek",
-    "role": "",
+    "artist": "Dr Who Dalek",
+    "song": "dr-who-dalek",
     "image": "/mugshot-images/dr-who-dalek.jpg",
-    "slug": "dr-who-dalek"
+    "link": ""
   },
   {
-    "name": "Dr Who Tardis",
-    "role": "",
+    "artist": "Dr Who Tardis",
+    "song": "dr-who-tardis",
     "image": "/mugshot-images/dr-who-tardis.jpg",
-    "slug": "dr-who-tardis"
+    "link": ""
   },
   {
-    "name": "Duncan James",
-    "role": "Singer",
+    "artist": "Duncan James",
+    "song": "duncan-james-singer",
     "image": "/mugshot-images/duncan-james-singer.jpg",
-    "slug": "duncan-james-singer"
+    "link": "Singer"
   },
   {
-    "name": "Duncan Wood And Christine Talbot",
-    "role": "Tv Presenters",
+    "artist": "Duncan Wood And Christine Talbot",
+    "song": "duncan-wood-and-christine-talbot-tv-presenters",
     "image": "/mugshot-images/duncan-wood-and-christine-talbot-tv-presenters.jpg",
-    "slug": "duncan-wood-and-christine-talbot-tv-presenters"
+    "link": "Tv Presenters"
   },
   {
-    "name": "Eamon Holmes",
-    "role": "",
+    "artist": "Eamon Holmes",
+    "song": "eamon-holmes",
     "image": "/mugshot-images/Eamon-Holmes.jpg",
-    "slug": "eamon-holmes"
+    "link": ""
   },
   {
-    "name": "Eamonn Holmes",
-    "role": "Tv Personailty",
+    "artist": "Eamonn Holmes",
+    "song": "eamonn-holmes-tv-personailty",
     "image": "/mugshot-images/eamonn-holmes-tv-personailty.jpg",
-    "slug": "eamonn-holmes-tv-personailty"
+    "link": "Tv Personailty"
   },
   {
-    "name": "Eddie Hearn Sports Promoter",
-    "role": "",
+    "artist": "Eddie Hearn Sports Promoter",
+    "song": "eddie-hearn-sports-promoter",
     "image": "/mugshot-images/eddie-hearn-sports-promoter.jpg",
-    "slug": "eddie-hearn-sports-promoter"
+    "link": ""
   },
   {
-    "name": "Eddie Howe Bournmouth Fc",
-    "role": "",
+    "artist": "Eddie Howe Bournmouth Fc",
+    "song": "eddie-howe-bournmouth-fc",
     "image": "/mugshot-images/eddie-howe-bournmouth-fc.jpg",
-    "slug": "eddie-howe-bournmouth-fc"
+    "link": ""
   },
   {
-    "name": "Edele Lynch",
-    "role": "Actress",
+    "artist": "Edele Lynch",
+    "song": "edele-lynch-actress",
     "image": "/mugshot-images/edele-lynch-actress.jpg",
-    "slug": "edele-lynch-actress"
+    "link": "Actress"
   },
   {
-    "name": "Ellie Colton",
-    "role": "Radio Presenter",
+    "artist": "Ellie Colton",
+    "song": "ellie-colton-radio-presenter",
     "image": "/mugshot-images/ellie-colton-radio-presenter.jpg",
-    "slug": "ellie-colton-radio-presenter"
+    "link": "Radio Presenter"
   },
   {
-    "name": "Ellie Goldstien",
-    "role": "Tv Personality",
+    "artist": "Ellie Goldstien",
+    "song": "ellie-goldstien-tv-personality",
     "image": "/mugshot-images/ellie-goldstien-tv-personality.jpg",
-    "slug": "ellie-goldstien-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Ellie Leach",
-    "role": "Actress",
+    "artist": "Ellie Leach",
+    "song": "ellie-leach-actress",
     "image": "/mugshot-images/ellie-leach-actress.jpg",
-    "slug": "ellie-leach-actress"
+    "link": "Actress"
   },
   {
-    "name": "Ellie Simonds",
-    "role": "Swimmer",
+    "artist": "Ellie Simonds",
+    "song": "ellie-simonds-swimmer",
     "image": "/mugshot-images/ellie-simonds-swimmer.jpg",
-    "slug": "ellie-simonds-swimmer"
+    "link": "Swimmer"
   },
   {
-    "name": "Emiliano Marcondes",
-    "role": "Footballer",
+    "artist": "Emiliano Marcondes",
+    "song": "emiliano-marcondes-footballer",
     "image": "/mugshot-images/emiliano-marcondes-footballer.jpg",
-    "slug": "emiliano-marcondes-footballer"
+    "link": "Footballer"
   },
   {
-    "name": "Emily Atack",
-    "role": "Actress",
+    "artist": "Emily Atack",
+    "song": "emily-atack-actress",
     "image": "/mugshot-images/emily-atack-actress.jpg",
-    "slug": "emily-atack-actress"
+    "link": "Actress"
   },
   {
-    "name": "Emma Barton",
-    "role": "Actress",
+    "artist": "Emma Barton",
+    "song": "emma-barton-actress",
     "image": "/mugshot-images/emma-barton-actress.jpg",
-    "slug": "emma-barton-actress"
+    "link": "Actress"
   },
   {
-    "name": "Eubank Sant",
-    "role": "",
+    "artist": "Eubank Sant",
+    "song": "eubank-sant",
     "image": "/mugshot-images/eubank-sant.jpg",
-    "slug": "eubank-sant"
+    "link": ""
   },
   {
-    "name": "Everal A Walsh",
-    "role": "Actor",
+    "artist": "Everal A Walsh",
+    "song": "everal-a-walsh-actor",
     "image": "/mugshot-images/everal-a-walsh-actor.jpg",
-    "slug": "everal-a-walsh-actor"
+    "link": "Actor"
   },
   {
-    "name": "Faye Brookes",
-    "role": "Actress",
+    "artist": "Everal A Walsh",
+    "song": "everal-a-walsh",
+    "image": "",
+    "link": ""
+  },
+  {
+    "artist": "Faye Brookes",
+    "song": "faye-brookes-actress",
     "image": "/mugshot-images/faye-brookes-actress.jpg",
-    "slug": "faye-brookes-actress"
+    "link": "Actress"
   },
   {
-    "name": "Faye Tozer",
-    "role": "Singer Dancer",
+    "artist": "Faye Tozer",
+    "song": "faye-tozer-singer-dancer",
     "image": "/mugshot-images/faye-tozer-singer-dancer.jpg",
-    "slug": "faye-tozer-singer-dancer"
+    "link": "Singer Dancer"
   },
   {
-    "name": "Fern Britton",
-    "role": "Presenter",
+    "artist": "Faye Tozer",
+    "song": "faye-tozer-singer",
+    "image": "",
+    "link": "Singer"
+  },
+  {
+    "artist": "Fern Britton",
+    "song": "fern-britton-presenter",
     "image": "/mugshot-images/fern-britton-presenter.jpg",
-    "slug": "fern-britton-presenter"
+    "link": "Presenter"
   },
   {
-    "name": "Fiona Bruce",
-    "role": "Tv Presenter",
+    "artist": "Fiona Bruce",
+    "song": "fiona-bruce-tv-presenter",
     "image": "/mugshot-images/fiona-bruce-tv-presenter.jpg",
-    "slug": "fiona-bruce-tv-presenter"
+    "link": "Tv Presenter"
   },
   {
-    "name": "Fiona Wade",
-    "role": "Actress",
+    "artist": "Fiona Wade",
+    "song": "fiona-wade-actress",
     "image": "/mugshot-images/fiona-wade-actress.jpg",
-    "slug": "fiona-wade-actress"
+    "link": "Actress"
   },
   {
-    "name": "Fleur East",
-    "role": "Radio Presenter",
+    "artist": "Fleur East",
+    "song": "fleur-east-radio-presenter",
     "image": "/mugshot-images/fleur-east-radio-presenter.jpg",
-    "slug": "fleur-east-radio-presenter"
+    "link": "Radio Presenter"
   },
   {
-    "name": "Frank Lampard",
-    "role": "Footballer",
+    "artist": "Frank Lampard",
+    "song": "frank-lampard-footballer",
     "image": "/mugshot-images/frank-lampard-footballer.jpg",
-    "slug": "frank-lampard-footballer"
+    "link": "Footballer"
   },
   {
-    "name": "Frank Skinner",
-    "role": "Comedian",
+    "artist": "Frank Skinner",
+    "song": "frank-skinner-comedian",
     "image": "/mugshot-images/frank-skinner-comedian.jpg",
-    "slug": "frank-skinner-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Fred Dinage",
-    "role": "Tv Personality",
+    "artist": "Fred Dinage",
+    "song": "fred-dinage-tv-personality",
     "image": "/mugshot-images/fred-dinage-tv-personality.jpg",
-    "slug": "fred-dinage-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Freddie Flintoff England",
-    "role": "Cricketer",
+    "artist": "Freddie Flintoff England",
+    "song": "freddie-flintoff-england-cricketer",
     "image": "/mugshot-images/freddie-flintoff-england-cricketer.jpg",
-    "slug": "freddie-flintoff-england-cricketer"
+    "link": "Cricketer"
   },
   {
-    "name": "Freddie Parrot Face Davies",
-    "role": "Comedian",
+    "artist": "Freddie Parrot Face Davies",
+    "song": "freddie-parrot-face-davies-comedian",
     "image": "/mugshot-images/freddie-parrot-face-davies-comedian.jpg",
-    "slug": "freddie-parrot-face-davies-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Gabby Roslin",
-    "role": "Tv Personality",
+    "artist": "Gabby Roslin",
+    "song": "gabby-roslin-tv-personality",
     "image": "/mugshot-images/gabby-roslin-tv-personality.jpg",
-    "slug": "gabby-roslin-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Gareth Southgate England",
-    "role": "Football Manager",
+    "artist": "Gareth Southgate England",
+    "song": "gareth-southgate-england-football-manager",
     "image": "/mugshot-images/gareth-southgate-england-football-manager.jpg",
-    "slug": "gareth-southgate-england-football-manager"
+    "link": "Football Manager"
   },
   {
-    "name": "Gary O Neil",
-    "role": "Football Manager",
+    "artist": "Gary O Neil",
+    "song": "gary-o-neil-football-manager",
     "image": "/mugshot-images/gary-o-neil-football-manager.jpg",
-    "slug": "gary-o-neil-football-manager"
+    "link": "Football Manager"
   },
   {
-    "name": "Gary Wilmot",
-    "role": "Actor",
+    "artist": "Gary Wilmot",
+    "song": "gary-wilmot-actor",
     "image": "/mugshot-images/gary-wilmot-actor.jpg",
-    "slug": "gary-wilmot-actor"
+    "link": "Actor"
   },
   {
-    "name": "Gayle Lofthouse",
-    "role": "Radio Presenter",
+    "artist": "Gayle Lofthouse",
+    "song": "gayle-lofthouse-radio-presenter",
     "image": "/mugshot-images/gayle-lofthouse-radio-presenter.jpg",
-    "slug": "gayle-lofthouse-radio-presenter"
+    "link": "Radio Presenter"
   },
   {
-    "name": "Gemma Atkinson And Gethin Jones",
-    "role": "Radio Tv Personalities",
+    "artist": "Gemma Atkinson And Gethin Jones",
+    "song": "gemma-atkinson-and-gethin-jones-radio-tv-personalities",
     "image": "/mugshot-images/gemma-atkinson-and-gethin-jones-radio-tv-personalities.jpg",
-    "slug": "gemma-atkinson-and-gethin-jones-radio-tv-personalities"
+    "link": "Radio Tv Personalities"
   },
   {
-    "name": "Gemma Bissix",
-    "role": "Actress",
+    "artist": "Gemma Bissix",
+    "song": "gemma-bissix-actress",
     "image": "/mugshot-images/gemma-bissix-actress.jpg",
-    "slug": "gemma-bissix-actress"
+    "link": "Actress"
   },
   {
-    "name": "Gemma Oaten",
-    "role": "Actress",
+    "artist": "Gemma Oaten",
+    "song": "gemma-oaten-actress",
     "image": "/mugshot-images/gemma-oaten-actress.jpg",
-    "slug": "gemma-oaten-actress"
+    "link": "Actress"
   },
   {
-    "name": "George Alagiah British",
-    "role": "Journalist",
+    "artist": "George Alagiah British",
+    "song": "george-alagiah-british-journalist",
     "image": "/mugshot-images/george-alagiah-british-journalist.jpg",
-    "slug": "george-alagiah-british-journalist"
+    "link": "Journalist"
   },
   {
-    "name": "George Clarke",
-    "role": "Youtuber",
+    "artist": "George Clarke",
+    "song": "george-clarke-youtuber",
     "image": "/mugshot-images/george-clarke-youtuber.jpg",
-    "slug": "george-clarke-youtuber"
+    "link": "Youtuber"
   },
   {
-    "name": "George Ezra",
-    "role": "Singer",
+    "artist": "George Ezra",
+    "song": "george-ezra-singer",
     "image": "/mugshot-images/george-ezra-singer.jpg",
-    "slug": "george-ezra-singer"
+    "link": "Singer"
   },
   {
-    "name": "George Potter Brighton",
-    "role": "Manager",
+    "artist": "George Potter Brighton",
+    "song": "george-potter-brighton-manager",
     "image": "/mugshot-images/george-potter-brighton-manager.jpg",
-    "slug": "george-potter-brighton-manager"
+    "link": "Manager"
   },
   {
-    "name": "George Rainsford",
-    "role": "Actor",
+    "artist": "George Rainsford",
+    "song": "george-rainsford-actor",
     "image": "/mugshot-images/george-rainsford-actor.jpg",
-    "slug": "george-rainsford-actor"
+    "link": "Actor"
   },
   {
-    "name": "George Sampson",
-    "role": "Actor",
+    "artist": "George Sampson",
+    "song": "george-sampson-actor",
     "image": "/mugshot-images/george-sampson-actor.jpg",
-    "slug": "george-sampson-actor"
+    "link": "Actor"
   },
   {
-    "name": "Georgia Toff Toffalo",
-    "role": "",
+    "artist": "Georgia Toff Toffalo",
+    "song": "georgia-toff-toffalo",
     "image": "/mugshot-images/Georgia-Toff-Toffalo.jpg",
-    "slug": "georgia-toff-toffalo"
+    "link": ""
   },
   {
-    "name": "Giovanna Fletcher",
-    "role": "Tv Personality",
+    "artist": "Georgia Toff Toffalo",
+    "song": "georgia-toff-toffalo-tv-personality",
+    "image": "",
+    "link": "Tv Personality"
+  },
+  {
+    "artist": "Giovanna Fletcher",
+    "song": "giovanna-fletcher-tv-personality",
     "image": "/mugshot-images/giovanna-fletcher-tv-personality.jpg",
-    "slug": "giovanna-fletcher-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Gok Wan",
-    "role": "Tv Personality",
+    "artist": "Gok Wan",
+    "song": "gok-wan-tv-personality",
     "image": "/mugshot-images/gok-wan-tv-personality.jpg",
-    "slug": "gok-wan-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Gracie Malloy",
-    "role": "Singer",
+    "artist": "Gracie Malloy",
+    "song": "gracie-malloy-singer",
     "image": "/mugshot-images/gracie-malloy-singer.jpg",
-    "slug": "gracie-malloy-singer"
+    "link": "Singer"
   },
   {
-    "name": "Graeme Garden",
-    "role": "Comedian",
+    "artist": "Graeme Garden",
+    "song": "graeme-garden-comedian",
     "image": "/mugshot-images/graeme-garden-comedian.jpg",
-    "slug": "graeme-garden-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Graziano Prima",
-    "role": "Dancer",
+    "artist": "Graziano Prima",
+    "song": "graziano-prima-dancer",
     "image": "/mugshot-images/graziano-prima-dancer.jpg",
-    "slug": "graziano-prima-dancer"
+    "link": "Dancer"
   },
   {
-    "name": "Greg James",
-    "role": "Radio Presenter Dj",
+    "artist": "Greg James",
+    "song": "greg-james-radio-presenter-dj",
     "image": "/mugshot-images/greg-james-radio-presenter-dj.jpg",
-    "slug": "greg-james-radio-presenter-dj"
+    "link": "Radio Presenter Dj"
   },
   {
-    "name": "Greg Rusedski",
-    "role": "Tennis Player",
+    "artist": "Greg Rusedski",
+    "song": "greg-rusedski-tennis-player",
     "image": "/mugshot-images/greg-rusedski-tennis-player.jpg",
-    "slug": "greg-rusedski-tennis-player"
+    "link": "Tennis Player"
   },
   {
-    "name": "Gwyneth Strong",
-    "role": "Actress",
+    "artist": "Gwyneth Strong",
+    "song": "gwyneth-strong-actress",
     "image": "/mugshot-images/gwyneth-strong-actress.jpg",
-    "slug": "gwyneth-strong-actress"
+    "link": "Actress"
   },
   {
-    "name": "Hacker The Dog",
-    "role": "",
+    "artist": "Hacker The",
+    "song": "hacker-the-dog-cbbc",
+    "image": "",
+    "link": "Dog Cbbc"
+  },
+  {
+    "artist": "Hacker The Dog",
+    "song": "hacker-the-dog",
     "image": "/mugshot-images/Hacker-The-Dog.jpg",
-    "slug": "hacker-the-dog"
+    "link": ""
   },
   {
-    "name": "Hairy Bikers Presenters Chefs",
-    "role": "",
+    "artist": "Hairy Bikers Presenters Chefs",
+    "song": "hairy-bikers-presenters-chefs",
     "image": "/mugshot-images/hairy-bikers-presenters-chefs.jpg",
-    "slug": "hairy-bikers-presenters-chefs"
+    "link": ""
   },
   {
-    "name": "Hamza Yassin",
-    "role": "Tv Presenter",
+    "artist": "Hamza Yassin",
+    "song": "hamza-yassin-tv-presenter",
     "image": "/mugshot-images/hamza-yassin-tv-presenter.jpg",
-    "slug": "hamza-yassin-tv-presenter"
+    "link": "Tv Presenter"
   },
   {
-    "name": "Harry Aikines Aryeetey Gladiator",
-    "role": "",
+    "artist": "Harry Aikines Aryeetey Gladiator",
+    "song": "harry-aikines-aryeetey-gladiator",
     "image": "/mugshot-images/harry-aikines-aryeetey-gladiator.jpg",
-    "slug": "harry-aikines-aryeetey-gladiator"
+    "link": ""
   },
   {
-    "name": "Harry Gration",
-    "role": "Presenter",
+    "artist": "Harry Gration",
+    "song": "harry-gration-presenter",
     "image": "/mugshot-images/harry-gration-presenter.jpg",
-    "slug": "harry-gration-presenter"
+    "link": "Presenter"
   },
   {
-    "name": "Harry Rednapp",
-    "role": "Football Manager",
+    "artist": "Harry Rednapp",
+    "song": "harry-rednapp-football-manager",
     "image": "/mugshot-images/harry-rednapp-football-manager.jpg",
-    "slug": "harry-rednapp-football-manager"
+    "link": "Football Manager"
   },
   {
-    "name": "Hayley Mills",
-    "role": "Actress",
+    "artist": "Hayley Mills",
+    "song": "hayley-mills-actress",
     "image": "/mugshot-images/hayley-mills-actress.jpg",
-    "slug": "hayley-mills-actress"
+    "link": "Actress"
   },
   {
-    "name": "Hayley Tamerddon Corrie",
-    "role": "Actress",
+    "artist": "Hayley Tamerddon Corrie",
+    "song": "hayley-tamerddon-corrie-actress",
     "image": "/mugshot-images/hayley-tamerddon-corrie-actress.jpg",
-    "slug": "hayley-tamerddon-corrie-actress"
+    "link": "Actress"
   },
   {
-    "name": "Hazel Irvine",
-    "role": "Tv Presenter",
+    "artist": "Hazel Irvine",
+    "song": "hazel-irvine-tv-presenter",
     "image": "/mugshot-images/hazel-irvine-tv-presenter.jpg",
-    "slug": "hazel-irvine-tv-presenter"
+    "link": "Tv Presenter"
   },
   {
-    "name": "Heather Small",
-    "role": "Singer",
+    "artist": "Heather Small",
+    "song": "heather-small-singer",
     "image": "/mugshot-images/heather-small-singer.jpg",
-    "slug": "heather-small-singer"
+    "link": "Singer"
   },
   {
-    "name": "Helen Skelton",
-    "role": "Presenter",
+    "artist": "Helen Skelton",
+    "song": "helen-skelton-presenter",
     "image": "/mugshot-images/helen-skelton-presenter.jpg",
-    "slug": "helen-skelton-presenter"
+    "link": "Presenter"
   },
   {
-    "name": "Helen Skelton Blue Peter",
-    "role": "Tv Presenter",
+    "artist": "Helen Skelton Blue Peter",
+    "song": "helen-skelton-blue-peter-tv-presenter",
     "image": "/mugshot-images/helen-skelton-blue-peter-tv-presenter.jpg",
-    "slug": "helen-skelton-blue-peter-tv-presenter"
+    "link": "Tv Presenter"
   },
   {
-    "name": "Howard Middeton Great British Bake Off",
-    "role": "",
+    "artist": "Howard Middeton Great British Bake Off",
+    "song": "howard-middeton-great-british-bake-off",
     "image": "/mugshot-images/howard-middeton-great-british-bake-off.jpg",
-    "slug": "howard-middeton-great-british-bake-off"
+    "link": ""
   },
   {
-    "name": "Huey Morgan Fyc",
-    "role": "Singer",
+    "artist": "Huey Morgan Fyc",
+    "song": "huey-morgan-fyc-singer",
     "image": "/mugshot-images/huey-morgan-fyc-singer.jpg",
-    "slug": "huey-morgan-fyc-singer"
+    "link": "Singer"
   },
   {
-    "name": "Hugh Bonneville",
-    "role": "Actor",
+    "artist": "Hugh Bonneville",
+    "song": "hugh-bonneville-actor",
     "image": "/mugshot-images/hugh-bonneville-actor.jpg",
-    "slug": "hugh-bonneville-actor"
+    "link": "Actor"
   },
   {
-    "name": "Hugh Dennis",
-    "role": "Comedian Actor",
+    "artist": "Hugh Dennis",
+    "song": "hugh-dennis-comedian-actor",
     "image": "/mugshot-images/hugh-dennis-comedian-actor.jpg",
-    "slug": "hugh-dennis-comedian-actor"
+    "link": "Comedian Actor"
   },
   {
-    "name": "Iain Stirling Love Island Voice",
-    "role": "",
+    "artist": "Iain Stirling Love Island Voice",
+    "song": "iain-stirling-love-island-voice",
     "image": "/mugshot-images/iain-stirling-love-island-voice.jpg",
-    "slug": "iain-stirling-love-island-voice"
+    "link": ""
   },
   {
-    "name": "Ian Broudie",
-    "role": "Singer",
+    "artist": "Ian Broudie",
+    "song": "ian-broudie-singer",
     "image": "/mugshot-images/ian-broudie-singer.jpg",
-    "slug": "ian-broudie-singer"
+    "link": "Singer"
   },
   {
-    "name": "Ian Mercer",
-    "role": "Actor",
+    "artist": "Ian Mercer",
+    "song": "ian-mercer-actor",
     "image": "/mugshot-images/ian-mercer-actor.jpg",
-    "slug": "ian-mercer-actor"
+    "link": "Actor"
   },
   {
-    "name": "Ian Reddington",
-    "role": "Eastenders Actor",
+    "artist": "Ian Reddington",
+    "song": "ian-reddington-eastenders-actor",
     "image": "/mugshot-images/ian-reddington-eastenders-actor.jpg",
-    "slug": "ian-reddington-eastenders-actor"
+    "link": "Eastenders Actor"
   },
   {
-    "name": "Ian Waite",
-    "role": "Dancer",
+    "artist": "Ian Waite",
+    "song": "ian-waite-dancer",
     "image": "/mugshot-images/ian-waite-dancer.jpg",
-    "slug": "ian-waite-dancer"
+    "link": "Dancer"
   },
   {
-    "name": "Idea",
-    "role": "",
+    "artist": "Idea",
+    "song": "idea",
     "image": "/mugshot-images/idea.jpg",
-    "slug": "idea"
+    "link": ""
   },
   {
-    "name": "Idris Elba",
-    "role": "Actor",
+    "artist": "Idris Elba",
+    "song": "idris-elba-actor",
     "image": "/mugshot-images/idris-elba-actor.jpg",
-    "slug": "idris-elba-actor"
+    "link": "Actor"
   },
   {
-    "name": "Isabel Hodgins",
-    "role": "Actress",
+    "artist": "Isabel Hodgins",
+    "song": "isabel-hodgins-actress",
     "image": "/mugshot-images/isabel-hodgins-actress.jpg",
-    "slug": "isabel-hodgins-actress"
+    "link": "Actress"
   },
   {
-    "name": "Iwan Thomas",
-    "role": "Athlete",
+    "artist": "Iwan Thomas",
+    "song": "iwan-thomas-athlete",
     "image": "/mugshot-images/iwan-thomas-athlete.jpg",
-    "slug": "iwan-thomas-athlete"
+    "link": "Athlete"
   },
   {
-    "name": "Jack Caroll",
-    "role": "Bgt",
+    "artist": "Jack Caroll",
+    "song": "jack-caroll-bgt",
     "image": "/mugshot-images/jack-caroll-bgt.jpg",
-    "slug": "jack-caroll-bgt"
+    "link": "Bgt"
   },
   {
-    "name": "Jack Carroll",
-    "role": "Bgt",
+    "artist": "Jack Carroll",
+    "song": "jack-carroll-bgt",
     "image": "/mugshot-images/jack-carroll-bgt.jpg",
-    "slug": "jack-carroll-bgt"
+    "link": "Bgt"
   },
   {
-    "name": "Jack Dee",
-    "role": "Comedian",
+    "artist": "Jack Dee",
+    "song": "jack-dee-comedian",
     "image": "/mugshot-images/jack-dee-comedian.jpg",
-    "slug": "jack-dee-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Jack Whitehall",
-    "role": "Actor Comedian",
+    "artist": "Jack Whitehall",
+    "song": "jack-whitehall-actor-comedian",
     "image": "/mugshot-images/jack-whitehall-actor-comedian.jpg",
-    "slug": "jack-whitehall-actor-comedian"
+    "link": "Actor Comedian"
   },
   {
-    "name": "Jackie Smith Politician",
-    "role": "",
+    "artist": "Jackie Smith Politician",
+    "song": "jackie-smith-politician",
     "image": "/mugshot-images/jackie-smith-politician.jpg",
-    "slug": "jackie-smith-politician"
+    "link": ""
   },
   {
-    "name": "Jacqui Abbot Beautiful South",
-    "role": "Singer",
+    "artist": "Jacqui Abbot Beautiful South",
+    "song": "jacqui-abbot-beautiful-south-singer",
     "image": "/mugshot-images/jacqui-abbot-beautiful-south-singer.jpg",
-    "slug": "jacqui-abbot-beautiful-south-singer"
+    "link": "Singer"
   },
   {
-    "name": "Jake Humphrey",
-    "role": "Presenter",
+    "artist": "Jake Humphrey",
+    "song": "jake-humphrey-presenter",
     "image": "/mugshot-images/jake-humphrey-presenter.jpg",
-    "slug": "jake-humphrey-presenter"
+    "link": "Presenter"
   },
   {
-    "name": "Jake Quickenden",
-    "role": "Singer",
+    "artist": "Jake Quickenden",
+    "song": "jake-quickenden-singer",
     "image": "/mugshot-images/jake-quickenden-singer.jpg",
-    "slug": "jake-quickenden-singer"
+    "link": "Singer"
   },
   {
-    "name": "James Acaster",
-    "role": "Comedian",
+    "artist": "James Acaster",
+    "song": "james-acaster-comedian",
     "image": "/mugshot-images/james-acaster-comedian.jpg",
-    "slug": "james-acaster-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "James And Robin Grumbleweeds",
-    "role": "",
+    "artist": "James And Robin Grumbleweeds",
+    "song": "james-and-robin-grumbleweeds",
     "image": "/mugshot-images/james-and-robin-grumbleweeds.jpg",
-    "slug": "james-and-robin-grumbleweeds"
+    "link": ""
   },
   {
-    "name": "James Burrows",
-    "role": "Actor",
+    "artist": "James Burrows",
+    "song": "james-burrows-actor",
     "image": "/mugshot-images/james-burrows-actor.jpg",
-    "slug": "james-burrows-actor"
+    "link": "Actor"
   },
   {
-    "name": "James Cahill",
-    "role": "Snooker Player",
+    "artist": "James Cahill",
+    "song": "james-cahill-snooker-player",
     "image": "/mugshot-images/james-cahill-snooker-player.jpg",
-    "slug": "james-cahill-snooker-player"
+    "link": "Snooker Player"
   },
   {
-    "name": "James Hill",
-    "role": "Tv Personality",
+    "artist": "James Hill",
+    "song": "james-hill-tv-personality",
     "image": "/mugshot-images/james-hill-tv-personality.jpg",
-    "slug": "james-hill-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "James Quinn",
-    "role": "Actor",
+    "artist": "James Quinn",
+    "song": "james-quinn-actor",
     "image": "/mugshot-images/james-quinn-actor.jpg",
-    "slug": "james-quinn-actor"
+    "link": "Actor"
   },
   {
-    "name": "James Redmond",
-    "role": "Actor",
+    "artist": "James Redmond",
+    "song": "james-redmond-actor",
     "image": "/mugshot-images/james-redmond-actor.jpg",
-    "slug": "james-redmond-actor"
+    "link": "Actor"
   },
   {
-    "name": "James Robinson Broadcaster",
-    "role": "",
+    "artist": "James Robinson Broadcaster",
+    "song": "james-robinson-broadcaster",
     "image": "/mugshot-images/james-robinson-broadcaster.jpg",
-    "slug": "james-robinson-broadcaster"
+    "link": ""
   },
   {
-    "name": "Jamie Borthwick",
-    "role": "Actor",
+    "artist": "Jamie Borthwick",
+    "song": "jamie-borthwick-actor",
     "image": "/mugshot-images/jamie-borthwick-actor.jpg",
-    "slug": "jamie-borthwick-actor"
+    "link": "Actor"
   },
   {
-    "name": "Jamie Lomas",
-    "role": "Actor",
+    "artist": "Jamie Lomas",
+    "song": "jamie-lomas-actor",
     "image": "/mugshot-images/jamie-lomas-actor.jpg",
-    "slug": "jamie-lomas-actor"
+    "link": "Actor"
   },
   {
-    "name": "Jamie Raven",
-    "role": "Magician Bgt",
+    "artist": "Jamie Raven",
+    "song": "jamie-raven-magician-bgt",
     "image": "/mugshot-images/jamie-raven-magician-bgt.jpg",
-    "slug": "jamie-raven-magician-bgt"
+    "link": "Magician Bgt"
   },
   {
-    "name": "Jamie Vardy Leicester City England",
-    "role": "Footballer",
+    "artist": "Jamie Vardy Leicester City England",
+    "song": "jamie-vardy-leicester-city-england-footballer",
     "image": "/mugshot-images/jamie-vardy-leicester-city-england-footballer.jpg",
-    "slug": "jamie-vardy-leicester-city-england-footballer"
+    "link": "Footballer"
   },
   {
-    "name": "Janette Manara",
-    "role": "Dancer",
+    "artist": "Janette Manara",
+    "song": "janette-manara-dancer",
     "image": "/mugshot-images/janette-manara-dancer.jpg",
-    "slug": "janette-manara-dancer"
+    "link": "Dancer"
   },
   {
-    "name": "Jarvis Cocker",
-    "role": "Singer",
+    "artist": "Jarvis Cocker",
+    "song": "jarvis-cocker-singer",
     "image": "/mugshot-images/jarvis-cocker-singer.jpg",
-    "slug": "jarvis-cocker-singer"
+    "link": "Singer"
   },
   {
-    "name": "Jason Donovan",
-    "role": "Actor Singer",
+    "artist": "Jarvis Cocker",
+    "song": "jarvis-cocker-pulp-singer",
+    "image": "",
+    "link": "Pulp Singer"
+  },
+  {
+    "artist": "Jason Donovan",
+    "song": "jason-donovan-actor-singer",
     "image": "/mugshot-images/jason-donovan-actor-singer.jpg",
-    "slug": "jason-donovan-actor-singer"
+    "link": "Actor Singer"
   },
   {
-    "name": "Jason Fox Televsion",
-    "role": "Personality",
+    "artist": "Jason Fox Televsion",
+    "song": "jason-fox-televsion-personality",
     "image": "/mugshot-images/jason-fox-televsion-personality.jpg",
-    "slug": "jason-fox-televsion-personality"
+    "link": "Personality"
   },
   {
-    "name": "Jason Manford",
-    "role": "Comedian",
+    "artist": "Jason Manford",
+    "song": "jason-manford-comedian",
     "image": "/mugshot-images/jason-manford-comedian.jpg",
-    "slug": "jason-manford-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Jason Mohammed",
-    "role": "Bbc Sport",
+    "artist": "Jason Mohammed",
+    "song": "jason-mohammed-bbc-sport",
     "image": "/mugshot-images/jason-mohammed-bbc-sport.jpg",
-    "slug": "jason-mohammed-bbc-sport"
+    "link": "Bbc Sport"
   },
   {
-    "name": "Jason Tindal",
-    "role": "Footballer",
+    "artist": "Jason Tindal",
+    "song": "jason-tindal-footballer",
     "image": "/mugshot-images/jason-tindal-footballer.jpg",
-    "slug": "jason-tindal-footballer"
+    "link": "Footballer"
   },
   {
-    "name": "Jason Tindall",
-    "role": "Footballer",
+    "artist": "Jason Tindall",
+    "song": "jason-tindall-footballer",
     "image": "/mugshot-images/jason-tindall-footballer.jpg",
-    "slug": "jason-tindall-footballer"
+    "link": "Footballer"
   },
   {
-    "name": "Jasper Carrott",
-    "role": "Comedian",
+    "artist": "Jasper Carrott",
+    "song": "jasper-carrott-comedian",
     "image": "/mugshot-images/jasper-carrott-comedian.jpg",
-    "slug": "jasper-carrott-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Jb",
-    "role": "Singer",
+    "artist": "Jb",
+    "song": "jb-singer",
     "image": "/mugshot-images/jb-singer.jpg",
-    "slug": "jb-singer"
+    "link": "Singer"
   },
   {
-    "name": "Jeff Mostyn Bournemouth Fc Chairman",
-    "role": "",
+    "artist": "Jeff Mostyn Bournemouth Fc Chairman",
+    "song": "jeff-mostyn-bournemouth-fc-chairman",
     "image": "/mugshot-images/jeff-mostyn-bournemouth-fc-chairman.jpg",
-    "slug": "jeff-mostyn-bournemouth-fc-chairman"
+    "link": ""
   },
   {
-    "name": "Jeffrey Holland",
-    "role": "Actor",
+    "artist": "Jeffrey Holland",
+    "song": "jeffrey-holland-actor",
     "image": "/mugshot-images/jeffrey-holland-actor.jpg",
-    "slug": "jeffrey-holland-actor"
+    "link": "Actor"
   },
   {
-    "name": "Jemma Lucy Reality",
-    "role": "Star",
+    "artist": "Jemma Lucy Reality",
+    "song": "jemma-lucy-reality-star",
     "image": "/mugshot-images/jemma-lucy-reality-star.jpg",
-    "slug": "jemma-lucy-reality-star"
+    "link": "Star"
   },
   {
-    "name": "Jennie Mcalpine",
-    "role": "Actress",
+    "artist": "Jennie Mcalpine",
+    "song": "jennie-mcalpine-actress",
     "image": "/mugshot-images/jennie-mcalpine-actress.jpg",
-    "slug": "jennie-mcalpine-actress"
+    "link": "Actress"
   },
   {
-    "name": "Jennifer Gibney Mrs Browns Boys",
-    "role": "Actress",
+    "artist": "Jennifer Gibney Mrs Browns Boys",
+    "song": "jennifer-gibney-mrs-browns-boys-actress",
     "image": "/mugshot-images/jennifer-gibney-mrs-browns-boys-actress.jpg",
-    "slug": "jennifer-gibney-mrs-browns-boys-actress"
+    "link": "Actress"
   },
   {
-    "name": "Jeremy Kyle",
-    "role": "Tv Personality",
+    "artist": "Jeremy Kyle",
+    "song": "jeremy-kyle-tv-personality",
     "image": "/mugshot-images/jeremy-kyle-tv-personality.jpg",
-    "slug": "jeremy-kyle-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Jeremy Vine",
-    "role": "Radio Presenter",
+    "artist": "Jeremy Vine",
+    "song": "jeremy-vine-radio-presenter",
     "image": "/mugshot-images/jeremy-vine-radio-presenter.jpg",
-    "slug": "jeremy-vine-radio-presenter"
+    "link": "Radio Presenter"
   },
   {
-    "name": "Jermaine Jenus",
-    "role": "Footballer",
+    "artist": "Jermaine Jenus",
+    "song": "jermaine-jenus-footballer",
     "image": "/mugshot-images/jermaine-jenus-footballer.jpg",
-    "slug": "jermaine-jenus-footballer"
+    "link": "Footballer"
   },
   {
-    "name": "Jessica Forrester",
-    "role": "Tv Personality",
+    "artist": "Jessica Forrester",
+    "song": "jessica-forrester-tv-personality",
     "image": "/mugshot-images/jessica-forrester-tv-personality.jpg",
-    "slug": "jessica-forrester-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Jez Edwards",
-    "role": "Tv Presenter",
+    "artist": "Jez Edwards",
+    "song": "jez-edwards-tv-presenter",
     "image": "/mugshot-images/jez-edwards-tv-presenter.jpg",
-    "slug": "jez-edwards-tv-presenter"
+    "link": "Tv Presenter"
   },
   {
-    "name": "Jimmy",
-    "role": "Cricket Comedian",
+    "artist": "Jimmy",
+    "song": "jimmy-cricket-comedian",
     "image": "/mugshot-images/jimmy-cricket-comedian.jpg",
-    "slug": "jimmy-cricket-comedian"
+    "link": "Cricket Comedian"
   },
   {
-    "name": "Jimmy Tarbuck",
-    "role": "Presenter Funnyman",
+    "artist": "Jimmy Tarbuck",
+    "song": "jimmy-tarbuck-presenter-funnyman",
     "image": "/mugshot-images/jimmy-tarbuck-presenter-funnyman.jpg",
-    "slug": "jimmy-tarbuck-presenter-funnyman"
+    "link": "Presenter Funnyman"
   },
   {
-    "name": "Jimmy White",
-    "role": "Snooker Player",
+    "artist": "Jimmy White",
+    "song": "jimmy-white-snooker-player",
     "image": "/mugshot-images/jimmy-white-snooker-player.jpg",
-    "slug": "jimmy-white-snooker-player"
+    "link": "Snooker Player"
   },
   {
-    "name": "Jive Bunny",
-    "role": "Dj Musician",
+    "artist": "Jive Bunny",
+    "song": "jive-bunny-dj-musician",
     "image": "/mugshot-images/jive-bunny-dj-musician.jpg",
-    "slug": "jive-bunny-dj-musician"
+    "link": "Dj Musician"
   },
   {
-    "name": "Joanne Cliffton",
-    "role": "Dancer",
+    "artist": "Joanne Cliffton",
+    "song": "joanne-cliffton-dancer",
     "image": "/mugshot-images/joanne-cliffton-dancer.jpg",
-    "slug": "joanne-cliffton-dancer"
+    "link": "Dancer"
   },
   {
-    "name": "Joanne Clifton",
-    "role": "Dancer",
+    "artist": "Joanne Clifton",
+    "song": "joanne-clifton-dancer",
     "image": "/mugshot-images/joanne-clifton-dancer.jpg",
-    "slug": "joanne-clifton-dancer"
+    "link": "Dancer"
   },
   {
-    "name": "Jodie Prenger",
-    "role": "Actress",
+    "artist": "Jodie Prenger",
+    "song": "jodie-prenger-actress",
     "image": "/mugshot-images/jodie-prenger-actress.jpg",
-    "slug": "jodie-prenger-actress"
+    "link": "Actress"
   },
   {
-    "name": "Jodie Whitticker Waxwork",
-    "role": "",
+    "artist": "Jodie Whitticker Waxwork",
+    "song": "jodie-whitticker-waxwork",
     "image": "/mugshot-images/jodie-whitticker-waxwork.jpg",
-    "slug": "jodie-whitticker-waxwork"
+    "link": ""
   },
   {
-    "name": "Joe Lycett",
-    "role": "Comedian",
+    "artist": "Joe Lycett",
+    "song": "joe-lycett-comedian",
     "image": "/mugshot-images/joe-lycett-comedian.jpg",
-    "slug": "joe-lycett-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Joe Mc Fadden",
-    "role": "Singer",
+    "artist": "Joe Mc Fadden",
+    "song": "joe-mc-fadden-singer",
     "image": "/mugshot-images/joe-mc-fadden-singer.jpg",
-    "slug": "joe-mc-fadden-singer"
+    "link": "Singer"
   },
   {
-    "name": "Joe Mcelderry",
-    "role": "Singer Performer",
+    "artist": "Joe Mcelderry",
+    "song": "joe-mcelderry-singer-performer",
     "image": "/mugshot-images/joe-mcelderry-singer-performer.jpg",
-    "slug": "joe-mcelderry-singer-performer"
+    "link": "Singer Performer"
   },
   {
-    "name": "Joe Mcfadden",
-    "role": "Actor",
+    "artist": "Joe Mcfadden",
+    "song": "joe-mcfadden-actor",
     "image": "/mugshot-images/joe-mcfadden-actor.jpg",
-    "slug": "joe-mcfadden-actor"
+    "link": "Actor"
   },
   {
-    "name": "Joe Pasquale",
-    "role": "Comedian",
+    "artist": "Joe Pasquale",
+    "song": "joe-pasquale-comedian",
     "image": "/mugshot-images/joe-pasquale-comedian.jpg",
-    "slug": "joe-pasquale-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Joe Tasker And Harpz Kaur",
-    "role": "Tv Presenter",
+    "artist": "Joe Tasker And Harpz Kaur",
+    "song": "joe-tasker-and-harpz-kaur-tv-presenter",
     "image": "/mugshot-images/joe-tasker-and-harpz-kaur-tv-presenter.jpg",
-    "slug": "joe-tasker-and-harpz-kaur-tv-presenter"
+    "link": "Tv Presenter"
   },
   {
-    "name": "Joel Ross",
-    "role": "Radio Presenter",
+    "artist": "Joel Ross",
+    "song": "joel-ross-radio-presenter",
     "image": "/mugshot-images/joel-ross-radio-presenter.jpg",
-    "slug": "joel-ross-radio-presenter"
+    "link": "Radio Presenter"
   },
   {
-    "name": "Joey Essex Only Way Is Essex",
-    "role": "",
+    "artist": "Joey Essex Only Way Is Essex",
+    "song": "joey-essex-only-way-is-essex",
     "image": "/mugshot-images/joey-essex-only-way-is-essex.jpg",
-    "slug": "joey-essex-only-way-is-essex"
+    "link": ""
   },
   {
-    "name": "Johannes Radebe",
-    "role": "Dancer",
+    "artist": "Johannes Radebe",
+    "song": "johannes-radebe-dancer",
     "image": "/mugshot-images/johannes-radebe-dancer.jpg",
-    "slug": "johannes-radebe-dancer"
+    "link": "Dancer"
   },
   {
-    "name": "John",
-    "role": "Bishop Comedian",
+    "artist": "John",
+    "song": "john-bishop-comedian",
     "image": "/mugshot-images/john-bishop-comedian.jpg",
-    "slug": "john-bishop-comedian"
+    "link": "Bishop Comedian"
   },
   {
-    "name": "John Barrowman",
-    "role": "Actor",
+    "artist": "John Barrowman",
+    "song": "john-barrowman-actor",
     "image": "/mugshot-images/john-barrowman-actor.jpg",
-    "slug": "john-barrowman-actor"
+    "link": "Actor"
   },
   {
-    "name": "John Challis",
-    "role": "Actor",
+    "artist": "John Challis",
+    "song": "john-challis-actor",
     "image": "/mugshot-images/john-challis-actor.jpg",
-    "slug": "john-challis-actor"
+    "link": "Actor"
   },
   {
-    "name": "John Culshaw Impressionist",
-    "role": "",
+    "artist": "John Culshaw Impressionist",
+    "song": "john-culshaw-impressionist",
     "image": "/mugshot-images/john-culshaw-impressionist.jpg",
-    "slug": "john-culshaw-impressionist"
+    "link": ""
   },
   {
-    "name": "John Maguire",
-    "role": "Tv Reporter",
+    "artist": "John Maguire",
+    "song": "john-maguire-tv-reporter",
     "image": "/mugshot-images/john-maguire-tv-reporter.jpg",
-    "slug": "john-maguire-tv-reporter"
+    "link": "Tv Reporter"
   },
   {
-    "name": "John Marquez",
-    "role": "Actor",
+    "artist": "John Marquez",
+    "song": "john-marquez-actor",
     "image": "/mugshot-images/john-marquez-actor.jpg",
-    "slug": "john-marquez-actor"
+    "link": "Actor"
   },
   {
-    "name": "John Parrott",
-    "role": "Snooker Player",
+    "artist": "John Parrott",
+    "song": "john-parrott-snooker-player",
     "image": "/mugshot-images/john-parrott-snooker-player.jpg",
-    "slug": "john-parrott-snooker-player"
+    "link": "Snooker Player"
   },
   {
-    "name": "John Partridge",
-    "role": "Actor",
+    "artist": "John Partridge",
+    "song": "john-partridge-actor",
     "image": "/mugshot-images/john-partridge-actor.jpg",
-    "slug": "john-partridge-actor"
+    "link": "Actor"
   },
   {
-    "name": "John Sopel",
-    "role": "Correspondent",
+    "artist": "John Sopel",
+    "song": "john-sopel-correspondent",
     "image": "/mugshot-images/john-sopel-correspondent.jpg",
-    "slug": "john-sopel-correspondent"
+    "link": "Correspondent"
   },
   {
-    "name": "John Whaite Bake Off",
-    "role": "Winner",
+    "artist": "John Whaite Bake Off",
+    "song": "john-whaite-bake-off-winner",
     "image": "/mugshot-images/john-whaite-bake-off-winner.jpg",
-    "slug": "john-whaite-bake-off-winner"
+    "link": "Winner"
   },
   {
-    "name": "Johnny Ball",
-    "role": "Tv Presenter",
+    "artist": "Johnny Ball",
+    "song": "johnny-ball-tv-presenter",
     "image": "/mugshot-images/johnny-ball-tv-presenter.jpg",
-    "slug": "johnny-ball-tv-presenter"
+    "link": "Tv Presenter"
   },
   {
-    "name": "Johnny Hates Jazz Singers",
-    "role": "",
+    "artist": "Johnny Hates Jazz Singers",
+    "song": "johnny-hates-jazz-singers",
     "image": "/mugshot-images/johnny-hates-jazz-singers.jpg",
-    "slug": "johnny-hates-jazz-singers"
+    "link": ""
   },
   {
-    "name": "Johnny Vegas",
-    "role": "Actor Comedian",
+    "artist": "Johnny Vegas",
+    "song": "johnny-vegas-actor-comedian",
     "image": "/mugshot-images/johnny-vegas-actor-comedian.jpg",
-    "slug": "johnny-vegas-actor-comedian"
+    "link": "Actor Comedian"
   },
   {
-    "name": "Jon Courtenay",
-    "role": "Comedian",
+    "artist": "Jon Courtenay",
+    "song": "jon-courtenay-comedian",
     "image": "/mugshot-images/jon-courtenay-comedian.jpg",
-    "slug": "jon-courtenay-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Jon Kay",
-    "role": "Tv Presenter",
+    "artist": "Jon Kay",
+    "song": "jon-kay-tv-presenter",
     "image": "/mugshot-images/jon-kay-tv-presenter.jpg",
-    "slug": "jon-kay-tv-presenter"
+    "link": "Tv Presenter"
   },
   {
-    "name": "Jon Richardson",
-    "role": "Comedian",
+    "artist": "Jon Richardson",
+    "song": "jon-richardson-comedian",
     "image": "/mugshot-images/jon-richardson-comedian.jpg",
-    "slug": "jon-richardson-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Jonathan Dimbleby",
-    "role": "Tv Host",
+    "artist": "Jonathan Dimbleby",
+    "song": "jonathan-dimbleby-tv-host",
     "image": "/mugshot-images/jonathan-dimbleby-tv-host.jpg",
-    "slug": "jonathan-dimbleby-tv-host"
+    "link": "Tv Host"
   },
   {
-    "name": "Jonathan Swain",
-    "role": "Gmb Reporter",
+    "artist": "Jonathan Swain",
+    "song": "jonathan-swain-gmb-reporter",
     "image": "/mugshot-images/jonathan-swain-gmb-reporter.jpg",
-    "slug": "jonathan-swain-gmb-reporter"
+    "link": "Gmb Reporter"
   },
   {
-    "name": "Jools Holland",
-    "role": "Musician",
+    "artist": "Jools Holland",
+    "song": "jools-holland-musician",
     "image": "/mugshot-images/jools-holland-musician.jpg",
-    "slug": "jools-holland-musician"
+    "link": "Musician"
   },
   {
-    "name": "Jordan Banjo",
-    "role": "Dancer",
+    "artist": "Jordan Banjo",
+    "song": "jordan-banjo-dancer",
     "image": "/mugshot-images/jordan-banjo-dancer.jpg",
-    "slug": "jordan-banjo-dancer"
+    "link": "Dancer"
   },
   {
-    "name": "Jordan North",
-    "role": "Dj",
+    "artist": "Jordan North",
+    "song": "jordan-north-dj",
     "image": "/mugshot-images/jordan-north-dj.jpg",
-    "slug": "jordan-north-dj"
+    "link": "Dj"
   },
   {
-    "name": "Jordan North Katie Thisleton Cell Spellman Djs",
-    "role": "",
+    "artist": "Jordan North Katie Thisleton Cell Spellman Djs",
+    "song": "jordan-north-katie-thisleton-cell-spellman-djs",
     "image": "/mugshot-images/jordan-north-katie-thisleton-cell-spellman-djs.jpg",
-    "slug": "jordan-north-katie-thisleton-cell-spellman-djs"
+    "link": ""
   },
   {
-    "name": "Jorgie Porter",
-    "role": "Actress",
+    "artist": "Jorgie Porter",
+    "song": "jorgie-porter-actress",
     "image": "/mugshot-images/jorgie-porter-actress.jpg",
-    "slug": "jorgie-porter-actress"
+    "link": "Actress"
   },
   {
-    "name": "Joshua Patterson",
-    "role": "Tv Personality",
+    "artist": "Joshua Patterson",
+    "song": "joshua-patterson-tv-personality",
     "image": "/mugshot-images/joshua-patterson-tv-personality.jpg",
-    "slug": "joshua-patterson-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Josie Gibson",
-    "role": "Tv Personality",
+    "artist": "Josie Gibson",
+    "song": "josie-gibson-tv-personality",
     "image": "/mugshot-images/josie-gibson-tv-personality.jpg",
-    "slug": "josie-gibson-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Jowita Przystal",
-    "role": "Dancer",
+    "artist": "Jowita Przystal",
+    "song": "jowita-przystal-dancer",
     "image": "/mugshot-images/jowita-przystal-dancer.jpg",
-    "slug": "jowita-przystal-dancer"
+    "link": "Dancer"
   },
   {
-    "name": "Julian Caillon",
-    "role": "Dancer",
+    "artist": "Julian Caillon",
+    "song": "julian-caillon-dancer",
     "image": "/mugshot-images/julian-caillon-dancer.jpg",
-    "slug": "julian-caillon-dancer"
+    "link": "Dancer"
   },
   {
-    "name": "Julian Cailon",
-    "role": "Dancer",
+    "artist": "Julian Cailon",
+    "song": "julian-cailon-dancer",
     "image": "/mugshot-images/julian-cailon-dancer.jpg",
-    "slug": "julian-cailon-dancer"
+    "link": "Dancer"
   },
   {
-    "name": "Juliet Mills",
-    "role": "Actress",
+    "artist": "Juliet Mills",
+    "song": "juliet-mills-actress",
     "image": "/mugshot-images/juliet-mills-actress.jpeg",
-    "slug": "juliet-mills-actress"
+    "link": "Actress"
   },
   {
-    "name": "Jurgen Klopp Liverpool",
-    "role": "Manager",
+    "artist": "Jurgen Klopp Liverpool",
+    "song": "jurgen-klopp-liverpool-manager",
     "image": "/mugshot-images/jurgen-klopp-liverpool-manager.jpg",
-    "slug": "jurgen-klopp-liverpool-manager"
+    "link": "Manager"
   },
   {
-    "name": "Kai Widdrington",
-    "role": "Dancer",
+    "artist": "Kai Widdrington",
+    "song": "kai-widdrington-dancer",
     "image": "/mugshot-images/kai-widdrington-dancer.jpg",
-    "slug": "kai-widdrington-dancer"
+    "link": "Dancer"
   },
   {
-    "name": "Kammy Chris Kamara",
-    "role": "Tv Personality",
+    "artist": "Kammy Chris Kamara",
+    "song": "kammy-chris-kamara-tv-personality",
     "image": "/mugshot-images/kammy-chris-kamara-tv-personality.jpg",
-    "slug": "kammy-chris-kamara-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Karen Hauer",
-    "role": "Dancer",
+    "artist": "Karen Hauer",
+    "song": "karen-hauer-dancer",
     "image": "/mugshot-images/karen-hauer-dancer.jpg",
-    "slug": "karen-hauer-dancer"
+    "link": "Dancer"
   },
   {
-    "name": "Karim Zeroual",
-    "role": "Presenter",
+    "artist": "Karim Zeroual",
+    "song": "karim-zeroual-presenter",
     "image": "/mugshot-images/karim-zeroual-presenter.jpg",
-    "slug": "karim-zeroual-presenter"
+    "link": "Presenter"
   },
   {
-    "name": "Kat Deeley",
-    "role": "Tv Presenter",
+    "artist": "Kat Deeley",
+    "song": "kat-deeley-tv-presenter",
     "image": "/mugshot-images/kat-deeley-tv-presenter.jpg",
-    "slug": "kat-deeley-tv-presenter"
+    "link": "Tv Presenter"
   },
   {
-    "name": "Kate Botley",
-    "role": "Bbc Radio2 Presenter",
+    "artist": "Kate Botley",
+    "song": "kate-botley-bbc-radio2-presenter",
     "image": "/mugshot-images/kate-botley-bbc-radio2-presenter.jpg",
-    "slug": "kate-botley-bbc-radio2-presenter"
+    "link": "Bbc Radio2 Presenter"
   },
   {
-    "name": "Kate Garraway",
-    "role": "Tv Presenter",
+    "artist": "Kate Garraway",
+    "song": "kate-garraway-tv-presenter",
     "image": "/mugshot-images/kate-garraway-tv-presenter.jpg",
-    "slug": "kate-garraway-tv-presenter"
+    "link": "Tv Presenter"
   },
   {
-    "name": "Kate Lawler",
-    "role": "Dj",
+    "artist": "Kate Lawler",
+    "song": "kate-lawler-dj",
     "image": "/mugshot-images/kate-lawler-dj.jpg",
-    "slug": "kate-lawler-dj"
+    "link": "Dj"
   },
   {
-    "name": "Katie Mcglynn",
-    "role": "Actress",
+    "artist": "Katie Mcglynn",
+    "song": "katie-mcglynn-actress",
     "image": "/mugshot-images/katie-mcglynn-actress.jpg",
-    "slug": "katie-mcglynn-actress"
+    "link": "Actress"
   },
   {
-    "name": "Katya Jones",
-    "role": "Dancer",
+    "artist": "Katya Jones",
+    "song": "katya-jones-dancer",
     "image": "/mugshot-images/katya-jones-dancer.jpg",
-    "slug": "katya-jones-dancer"
+    "link": "Dancer"
   },
   {
-    "name": "Keir Starmer Prime Minister",
-    "role": "",
+    "artist": "Keir Starmer Prime Minister",
+    "song": "keir-starmer-prime-minister",
     "image": "/mugshot-images/keir-starmer-prime-minister.jpg",
-    "slug": "keir-starmer-prime-minister"
+    "link": ""
   },
   {
-    "name": "Keith Chegwin",
-    "role": "Legend Tv Personality",
+    "artist": "Keith Chegwin",
+    "song": "keith-chegwin-legend-tv-personality",
     "image": "/mugshot-images/keith-chegwin-legend-tv-personality.jpg",
-    "slug": "keith-chegwin-legend-tv-personality"
+    "link": "Legend Tv Personality"
   },
   {
-    "name": "Kell Brook",
-    "role": "Boxer",
+    "artist": "Kell Brook",
+    "song": "kell-brook-boxer",
     "image": "/mugshot-images/kell-brook-boxer.jpg",
-    "slug": "kell-brook-boxer"
+    "link": "Boxer"
   },
   {
-    "name": "Kelle Bryan",
-    "role": "Tv Presenter",
+    "artist": "Kelle Bryan",
+    "song": "kelle-bryan-tv-presenter",
     "image": "/mugshot-images/kelle-bryan-tv-presenter.jpg",
-    "slug": "kelle-bryan-tv-presenter"
+    "link": "Tv Presenter"
   },
   {
-    "name": "Kelvin Fletcher",
-    "role": "Actor",
+    "artist": "Kelvin Fletcher",
+    "song": "kelvin-fletcher-actor",
     "image": "/mugshot-images/kelvin-fletcher-actor.jpg",
-    "slug": "kelvin-fletcher-actor"
+    "link": "Actor"
   },
   {
-    "name": "Ken Docherty",
-    "role": "Snooker Player",
+    "artist": "Ken Docherty",
+    "song": "ken-docherty-snooker-player",
     "image": "/mugshot-images/ken-docherty-snooker-player.jpg",
-    "slug": "ken-docherty-snooker-player"
+    "link": "Snooker Player"
   },
   {
-    "name": "Kerry Katona",
-    "role": "Singer Actress",
+    "artist": "Kerry Katona",
+    "song": "kerry-katona-singer-actress",
     "image": "/mugshot-images/kerry-katona-singer-actress.jpg",
-    "slug": "kerry-katona-singer-actress"
+    "link": "Singer Actress"
   },
   {
-    "name": "Kevin Clifton",
-    "role": "Dancer",
+    "artist": "Kevin Clifton",
+    "song": "kevin-clifton-dancer",
     "image": "/mugshot-images/kevin-clifton-dancer.jpg",
-    "slug": "kevin-clifton-dancer"
+    "link": "Dancer"
   },
   {
-    "name": "Kevin Kennedy",
-    "role": "Actor",
+    "artist": "Kevin Kennedy",
+    "song": "kevin-kennedy-actor",
     "image": "/mugshot-images/kevin-kennedy-actor.jpg",
-    "slug": "kevin-kennedy-actor"
+    "link": "Actor"
   },
   {
-    "name": "Kevin Sinfield",
-    "role": "Rugby Player",
+    "artist": "Kevin Sinfield",
+    "song": "kevin-sinfield-rugby-player",
     "image": "/mugshot-images/kevin-sinfield-rugby-player.jpg",
-    "slug": "kevin-sinfield-rugby-player"
+    "link": "Rugby Player"
   },
   {
-    "name": "Kier Starmer Prime Minister",
-    "role": "",
+    "artist": "Kier Starmer Prime Minister",
+    "song": "kier-starmer-prime-minister",
     "image": "/mugshot-images/kier-starmer-prime-minister.jpg",
-    "slug": "kier-starmer-prime-minister"
+    "link": ""
   },
   {
-    "name": "Kieron Richardson",
-    "role": "Actor",
+    "artist": "Kieron Richardson",
+    "song": "kieron-richardson-actor",
     "image": "/mugshot-images/kieron-richardson-actor.jpg",
-    "slug": "kieron-richardson-actor"
+    "link": "Actor"
   },
   {
-    "name": "Kim Marsh Corrie",
-    "role": "Actress",
+    "artist": "Kim Marsh Corrie",
+    "song": "kim-marsh-corrie-actress",
     "image": "/mugshot-images/kim-marsh-corrie-actress.jpg",
-    "slug": "kim-marsh-corrie-actress"
+    "link": "Actress"
   },
   {
-    "name": "Krank Sant",
-    "role": "",
+    "artist": "Krank Sant",
+    "song": "krank-sant",
     "image": "/mugshot-images/krank-sant.jpg",
-    "slug": "krank-sant"
+    "link": ""
   },
   {
-    "name": "Krankies Comedians",
-    "role": "",
+    "artist": "Krankies Comedians",
+    "song": "krankies-comedians",
     "image": "/mugshot-images/krankies-comedians.jpg",
-    "slug": "krankies-comedians"
+    "link": ""
   },
   {
-    "name": "Krishnan Guru Murthy",
-    "role": "Newsreader",
+    "artist": "Krishnan Guru Murthy",
+    "song": "krishnan-guru-murthy-newsreader",
     "image": "/mugshot-images/krishnan-guru-murthy-newsreader.jpg",
-    "slug": "krishnan-guru-murthy-newsreader"
+    "link": "Newsreader"
   },
   {
-    "name": "Kwoklyn Wan",
-    "role": "Chef",
+    "artist": "Kwoklyn Wan",
+    "song": "kwoklyn-wan-chef",
     "image": "/mugshot-images/kwoklyn-wan-chef.jpg",
-    "slug": "kwoklyn-wan-chef"
+    "link": "Chef"
   },
   {
-    "name": "Kyle Thomlinson",
-    "role": "Bgt 2017",
+    "artist": "Kyle Thomlinson",
+    "song": "kyle-thomlinson-bgt-2017",
     "image": "/mugshot-images/kyle-thomlinson-bgt-2017.jpg",
-    "slug": "kyle-thomlinson-bgt-2017"
+    "link": "Bgt 2017"
   },
   {
-    "name": "Laura Tobin",
-    "role": "Gmb Presenter",
+    "artist": "Laura Tobin",
+    "song": "laura-tobin-gmb-presenter",
     "image": "/mugshot-images/laura-tobin-gmb-presenter.jpg",
-    "slug": "laura-tobin-gmb-presenter"
+    "link": "Gmb Presenter"
   },
   {
-    "name": "Laurel And Hardy Comedians",
-    "role": "",
+    "artist": "Laurel And Hardy Comedians",
+    "song": "laurel-and-hardy-comedians",
     "image": "/mugshot-images/laurel-and-hardy-comedians.jpg",
-    "slug": "laurel-and-hardy-comedians"
+    "link": ""
   },
   {
-    "name": "Lauren Oakley",
-    "role": "Dancer",
+    "artist": "Lauren Oakley",
+    "song": "lauren-oakley-dancer",
     "image": "/mugshot-images/lauren-oakley-dancer.jpg",
-    "slug": "lauren-oakley-dancer"
+    "link": "Dancer"
   },
   {
-    "name": "Lauren Patel",
-    "role": "Actress",
+    "artist": "Lauren Patel",
+    "song": "lauren-patel-actress",
     "image": "/mugshot-images/lauren-patel-actress.jpg",
-    "slug": "lauren-patel-actress"
+    "link": "Actress"
   },
   {
-    "name": "Lauren Platt",
-    "role": "Presenter",
+    "artist": "Lauren Platt",
+    "song": "lauren-platt-presenter",
     "image": "/mugshot-images/lauren-platt-presenter.jpg",
-    "slug": "lauren-platt-presenter"
+    "link": "Presenter"
   },
   {
-    "name": "Lauren Steadman Paralympic",
-    "role": "Athlete",
+    "artist": "Lauren Steadman Paralympic",
+    "song": "lauren-steadman-paralympic-athlete",
     "image": "/mugshot-images/lauren-steadman-paralympic-athlete.jpg",
-    "slug": "lauren-steadman-paralympic-athlete"
+    "link": "Athlete"
   },
   {
-    "name": "Laurie Brett",
-    "role": "Actress",
+    "artist": "Laurie Brett",
+    "song": "laurie-brett-actress",
     "image": "/mugshot-images/laurie-brett-actress.jpg",
-    "slug": "laurie-brett-actress"
+    "link": "Actress"
   },
   {
-    "name": "Lee And Jimmy A1 Singers",
-    "role": "",
+    "artist": "Lee And Jimmy A1 Singers",
+    "song": "lee-and-jimmy-a1-singers",
     "image": "/mugshot-images/lee-and-jimmy-a1-singers.jpg",
-    "slug": "lee-and-jimmy-a1-singers"
+    "link": ""
   },
   {
-    "name": "Lee Latchford Evans Steps",
-    "role": "Singer",
+    "artist": "Lee Latchford Evans Steps",
+    "song": "lee-latchford-evans-steps-singer",
     "image": "/mugshot-images/lee-latchford-evans-steps-singer.jpg",
-    "slug": "lee-latchford-evans-steps-singer"
+    "link": "Singer"
   },
   {
-    "name": "Lee Mack",
-    "role": "Comedian",
+    "artist": "Lee Mack",
+    "song": "lee-mack-comedian",
     "image": "/mugshot-images/lee-mack-comedian.jpg",
-    "slug": "lee-mack-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Leigh Frances",
-    "role": "Tv Personality",
+    "artist": "Leigh Frances",
+    "song": "leigh-frances-tv-personality",
     "image": "/mugshot-images/leigh-frances-tv-personality.jpg",
-    "slug": "leigh-frances-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Leona Norskov",
-    "role": "Singer",
+    "artist": "Leona Norskov",
+    "song": "leona-norskov-singer",
     "image": "/mugshot-images/leona-norskov-singer.jpg",
-    "slug": "leona-norskov-singer"
+    "link": "Singer"
   },
   {
-    "name": "Lesley Garrett",
-    "role": "Singer",
+    "artist": "Lesley Garrett",
+    "song": "lesley-garrett-singer",
     "image": "/mugshot-images/lesley-garrett-singer.jpg",
-    "slug": "lesley-garrett-singer"
+    "link": "Singer"
   },
   {
-    "name": "Lesley Joseph",
-    "role": "Actress",
+    "artist": "Lesley Garrett",
+    "song": "lesley-garrett-soprano-singer",
+    "image": "",
+    "link": "Soprano Singer"
+  },
+  {
+    "artist": "Lesley Joseph",
+    "song": "lesley-joseph-actress",
     "image": "/mugshot-images/lesley-joseph-actress.jpg",
-    "slug": "lesley-joseph-actress"
+    "link": "Actress"
   },
   {
-    "name": "Lesley Sharp",
-    "role": "Actress",
+    "artist": "Lesley Sharp",
+    "song": "lesley-sharp-actress",
     "image": "/mugshot-images/lesley-sharp-actress.jpg",
-    "slug": "lesley-sharp-actress"
+    "link": "Actress"
   },
   {
-    "name": "Lewis Cope",
-    "role": "Actor",
+    "artist": "Lewis Cope",
+    "song": "lewis-cope-actor",
     "image": "/mugshot-images/lewis-cope-actor.jpg",
-    "slug": "lewis-cope-actor"
+    "link": "Actor"
   },
   {
-    "name": "Liam Fox",
-    "role": "Actor",
+    "artist": "Liam Fox",
+    "song": "liam-fox-actor",
     "image": "/mugshot-images/liam-fox-actor.jpg",
-    "slug": "liam-fox-actor"
+    "link": "Actor"
   },
   {
-    "name": "Liesl",
-    "role": "Radio Presenter",
+    "artist": "Liesl",
+    "song": "liesl-radio-presenter",
     "image": "/mugshot-images/liesl-radio-presenter.jpg",
-    "slug": "liesl-radio-presenter"
+    "link": "Radio Presenter"
   },
   {
-    "name": "Linda Nolan Cheryl Ferguson Rebecca Wheatley",
-    "role": "",
+    "artist": "Linda Nolan Cheryl Ferguson Rebecca Wheatley",
+    "song": "linda-nolan-cheryl-ferguson-rebecca-wheatley",
     "image": "/mugshot-images/linda-nolan-cheryl-ferguson-rebecca-wheatley.jpg",
-    "slug": "linda-nolan-cheryl-ferguson-rebecca-wheatley"
+    "link": ""
   },
   {
-    "name": "Linda Purl",
-    "role": "Actress",
+    "artist": "Linda Purl",
+    "song": "linda-purl-actress",
     "image": "/mugshot-images/linda-purl-actress.jpg",
-    "slug": "linda-purl-actress"
+    "link": "Actress"
   },
   {
-    "name": "Lisa Appleton",
-    "role": "Presenter",
+    "artist": "Lisa Appleton",
+    "song": "lisa-appleton-presenter",
     "image": "/mugshot-images/lisa-appleton-presenter.jpg",
-    "slug": "lisa-appleton-presenter"
+    "link": "Presenter"
   },
   {
-    "name": "Lisa Armstrong Make Up Artist",
-    "role": "",
+    "artist": "Lisa Armstrong Make Up Artist",
+    "song": "lisa-armstrong-make-up-artist",
     "image": "/mugshot-images/lisa-armstrong-make-up-artist.jpg",
-    "slug": "lisa-armstrong-make-up-artist"
+    "link": ""
   },
   {
-    "name": "Lisa Faulkner",
-    "role": "Actress",
+    "artist": "Lisa Faulkner",
+    "song": "lisa-faulkner-actress",
     "image": "/mugshot-images/lisa-faulkner-actress.jpg",
-    "slug": "lisa-faulkner-actress"
+    "link": "Actress"
   },
   {
-    "name": "Lisa Maxwell",
-    "role": "Actress",
+    "artist": "Lisa Maxwell",
+    "song": "lisa-maxwell-actress",
     "image": "/mugshot-images/lisa-maxwell-actress.jpg",
-    "slug": "lisa-maxwell-actress"
+    "link": "Actress"
   },
   {
-    "name": "Lisa Snowdon",
-    "role": "Tv Radio Presenter",
+    "artist": "Lisa Snowdon",
+    "song": "lisa-snowdon-tv-radio-presenter",
     "image": "/mugshot-images/lisa-snowdon-tv-radio-presenter.jpg",
-    "slug": "lisa-snowdon-tv-radio-presenter"
+    "link": "Tv Radio Presenter"
   },
   {
-    "name": "Lorna Fitzgerald",
-    "role": "Actress",
+    "artist": "Lorna Fitzgerald",
+    "song": "lorna-fitzgerald-actress",
     "image": "/mugshot-images/lorna-fitzgerald-actress.jpeg",
-    "slug": "lorna-fitzgerald-actress"
+    "link": "Actress"
   },
   {
-    "name": "Louise Minchin",
-    "role": "Presenter",
+    "artist": "Louise Minchin",
+    "song": "louise-minchin-presenter",
     "image": "/mugshot-images/louise-minchin-presenter.jpg",
-    "slug": "louise-minchin-presenter"
+    "link": "Presenter"
   },
   {
-    "name": "Louise Rednapp",
-    "role": "Singer",
+    "artist": "Louise Rednapp",
+    "song": "louise-rednapp-singer",
     "image": "/mugshot-images/louise-rednapp-singer.jpg",
-    "slug": "louise-rednapp-singer"
+    "link": "Singer"
   },
   {
-    "name": "Lucy Beaumont",
-    "role": "Tv Personality",
+    "artist": "Lucy Beaumont",
+    "song": "lucy-beaumont-tv-personality",
     "image": "/mugshot-images/lucy-beaumont-tv-personality.jpg",
-    "slug": "lucy-beaumont-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Lucy Milburn",
-    "role": "Singer",
+    "artist": "Lucy Milburn",
+    "song": "lucy-milburn-singer",
     "image": "/mugshot-images/lucy-milburn-singer.jpg",
-    "slug": "lucy-milburn-singer"
+    "link": "Singer"
   },
   {
-    "name": "Lucy Millburn The Voice Uk",
-    "role": "",
+    "artist": "Lucy Millburn The Voice Uk",
+    "song": "lucy-millburn-the-voice-uk",
     "image": "/mugshot-images/lucy-millburn-the-voice-uk.jpg",
-    "slug": "lucy-millburn-the-voice-uk"
+    "link": ""
   },
   {
-    "name": "Luke Friend X Factor",
-    "role": "Singer",
+    "artist": "Luke Friend X Factor",
+    "song": "luke-friend-x-factor-singer",
     "image": "/mugshot-images/luke-friend-x-factor-singer.jpg",
-    "slug": "luke-friend-x-factor-singer"
+    "link": "Singer"
   },
   {
-    "name": "Luke Kempner",
-    "role": "Comedian",
+    "artist": "Luke Kempner",
+    "song": "luke-kempner-comedian",
     "image": "/mugshot-images/luke-kempner-comedian.jpg",
-    "slug": "luke-kempner-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Lulu",
-    "role": "Singer",
+    "artist": "Lulu",
+    "song": "lulu-singer",
     "image": "/mugshot-images/lulu-singer.jpg",
-    "slug": "lulu-singer"
+    "link": "Singer"
   },
   {
-    "name": "Magid Magid Sheffield",
-    "role": "Lord Mayor",
+    "artist": "Magid Magid Sheffield",
+    "song": "magid-magid-sheffield-lord-mayor",
     "image": "/mugshot-images/magid-magid-sheffield-lord-mayor.jpg",
-    "slug": "magid-magid-sheffield-lord-mayor"
+    "link": "Lord Mayor"
   },
   {
-    "name": "Marc Elliott",
-    "role": "Actor",
+    "artist": "Marc Elliott",
+    "song": "marc-elliott-actor",
     "image": "/mugshot-images/marc-elliott-actor.jpg",
-    "slug": "marc-elliott-actor"
+    "link": "Actor"
   },
   {
-    "name": "Marco Fu",
-    "role": "Snooker Player",
+    "artist": "Marco Fu",
+    "song": "marco-fu-snooker-player",
     "image": "/mugshot-images/marco-fu-snooker-player.jpg",
-    "slug": "marco-fu-snooker-player"
+    "link": "Snooker Player"
   },
   {
-    "name": "Marcus Collins X Factor",
-    "role": "Singer",
+    "artist": "Marcus Collins X Factor",
+    "song": "marcus-collins-x-factor-singer",
     "image": "/mugshot-images/marcus-collins-x-factor-singer.jpg",
-    "slug": "marcus-collins-x-factor-singer"
+    "link": "Singer"
   },
   {
-    "name": "Mark Addy",
-    "role": "Actor",
+    "artist": "Mark Addy",
+    "song": "mark-addy-actor",
     "image": "/mugshot-images/mark-addy-actor.jpg",
-    "slug": "mark-addy-actor"
+    "link": "Actor"
   },
   {
-    "name": "Mark Chappers Chapman",
-    "role": "Radio Presenter",
+    "artist": "Mark Chappers Chapman",
+    "song": "mark-chappers-chapman-radio-presenter",
     "image": "/mugshot-images/mark-chappers-chapman-radio-presenter.jpg",
-    "slug": "mark-chappers-chapman-radio-presenter"
+    "link": "Radio Presenter"
   },
   {
-    "name": "Mark Curry",
-    "role": "Presenter",
+    "artist": "Mark Curry",
+    "song": "mark-curry-presenter",
     "image": "/mugshot-images/mark-curry-presenter.jpg",
-    "slug": "mark-curry-presenter"
+    "link": "Presenter"
   },
   {
-    "name": "Mark Dolan",
-    "role": "Comedian",
+    "artist": "Mark Dolan",
+    "song": "mark-dolan-comedian",
     "image": "/mugshot-images/mark-dolan-comedian.jpg",
-    "slug": "mark-dolan-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Mark Labbett The Chase",
-    "role": "",
+    "artist": "Mark Labbett The Chase",
+    "song": "mark-labbett-the-chase",
     "image": "/mugshot-images/mark-labbett-the-chase.jpg",
-    "slug": "mark-labbett-the-chase"
+    "link": ""
   },
   {
-    "name": "Mark Radcliffe",
-    "role": "Radio Presenter",
+    "artist": "Mark Radcliffe",
+    "song": "mark-radcliffe-radio-presenter",
     "image": "/mugshot-images/mark-radcliffe-radio-presenter.jpg",
-    "slug": "mark-radcliffe-radio-presenter"
+    "link": "Radio Presenter"
   },
   {
-    "name": "Mark Read A1",
-    "role": "Singer",
+    "artist": "Mark Read A1",
+    "song": "mark-read-a1-singer",
     "image": "/mugshot-images/mark-read-a1-singer.jpg",
-    "slug": "mark-read-a1-singer"
+    "link": "Singer"
   },
   {
-    "name": "Mark Riley",
-    "role": "Radio Presenter",
+    "artist": "Mark Riley",
+    "song": "mark-riley-radio-presenter",
     "image": "/mugshot-images/mark-riley-radio-presenter.jpg",
-    "slug": "mark-riley-radio-presenter"
+    "link": "Radio Presenter"
   },
   {
-    "name": "Mark Watson",
-    "role": "Comedian",
+    "artist": "Mark Watson",
+    "song": "mark-watson-comedian",
     "image": "/mugshot-images/mark-watson-comedian.jpg",
-    "slug": "mark-watson-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Markus Brigstock",
-    "role": "Comedian",
+    "artist": "Markus Brigstock",
+    "song": "markus-brigstock-comedian",
     "image": "/mugshot-images/markus-brigstock-comedian.jpg",
-    "slug": "markus-brigstock-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Martin And Gary Kemp",
-    "role": "",
+    "artist": "Martin And Gary Kemp",
+    "song": "martin-and-gary-kemp",
     "image": "/mugshot-images/martin-and-gary-kemp.jpg",
-    "slug": "martin-and-gary-kemp"
+    "link": ""
   },
   {
-    "name": "Martin Fry Abc",
-    "role": "",
+    "artist": "Martin Fry Abc",
+    "song": "martin-fry-abc",
     "image": "/mugshot-images/martin-fry-abc.jpg",
-    "slug": "martin-fry-abc"
+    "link": ""
   },
   {
-    "name": "Martyn Ware Heaven 17",
-    "role": "Musician",
+    "artist": "Martyn Ware Heaven 17",
+    "song": "martyn-ware-heaven-17-musician",
     "image": "/mugshot-images/martyn-ware-heaven-17-musician.jpg",
-    "slug": "martyn-ware-heaven-17-musician"
+    "link": "Musician"
   },
   {
-    "name": "Masie Smith",
-    "role": "Actress",
+    "artist": "Masie Smith",
+    "song": "masie-smith-actress",
     "image": "/mugshot-images/masie-smith-actress.jpg",
-    "slug": "masie-smith-actress"
+    "link": "Actress"
   },
   {
-    "name": "Matt Goss",
-    "role": "Singer",
+    "artist": "Matt Goss",
+    "song": "matt-goss-singer",
     "image": "/mugshot-images/matt-goss-singer.jpg",
-    "slug": "matt-goss-singer"
+    "link": "Singer"
   },
   {
-    "name": "Matt Tibett",
-    "role": "Tv Chef",
+    "artist": "Matt Tibett",
+    "song": "matt-tibett-tv-chef",
     "image": "/mugshot-images/matt-tibett-tv-chef.jpg",
-    "slug": "matt-tibett-tv-chef"
+    "link": "Tv Chef"
   },
   {
-    "name": "Matt Willis",
-    "role": "Singer Busted",
+    "artist": "Matt Willis",
+    "song": "matt-willis-singer-busted",
     "image": "/mugshot-images/matt-willis-singer-busted.jpg",
-    "slug": "matt-willis-singer-busted"
+    "link": "Singer Busted"
   },
   {
-    "name": "Matthew Cottle",
-    "role": "Actor",
+    "artist": "Matthew Cottle",
+    "song": "matthew-cottle-actor",
     "image": "/mugshot-images/matthew-cottle-actor.jpg",
-    "slug": "matthew-cottle-actor"
+    "link": "Actor"
   },
   {
-    "name": "Matthew Kelly",
-    "role": "Tv Personality",
+    "artist": "Matthew Kelly",
+    "song": "matthew-kelly-tv-personality",
     "image": "/mugshot-images/matthew-kelly-tv-personality.jpg",
-    "slug": "matthew-kelly-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Matthew Wolfenden Emerdale",
-    "role": "Actor",
+    "artist": "Matthew Wolfenden Emerdale",
+    "song": "matthew-wolfenden-emerdale-actor",
     "image": "/mugshot-images/matthew-wolfenden-emerdale-actor.jpg",
-    "slug": "matthew-wolfenden-emerdale-actor"
+    "link": "Actor"
   },
   {
-    "name": "Maxwell Caulfield",
-    "role": "Actor",
+    "artist": "Maxwell Caulfield",
+    "song": "maxwell-caulfield-actor",
     "image": "/mugshot-images/maxwell-caulfield-actor.jpeg",
-    "slug": "maxwell-caulfield-actor"
+    "link": "Actor"
   },
   {
-    "name": "Maxwell Thorpe",
-    "role": "Bgt Finalist",
+    "artist": "Maxwell Thorpe",
+    "song": "maxwell-thorpe-bgt-finalist",
     "image": "/mugshot-images/maxwell-thorpe-bgt-finalist.jpg",
-    "slug": "maxwell-thorpe-bgt-finalist"
+    "link": "Bgt Finalist"
   },
   {
-    "name": "Megan Mckenna Reality",
-    "role": "Star",
+    "artist": "Megan Mckenna Reality",
+    "song": "megan-mckenna-reality-star",
     "image": "/mugshot-images/megan-mckenna-reality-star.jpg",
-    "slug": "megan-mckenna-reality-star"
+    "link": "Star"
   },
   {
-    "name": "Melissa Jacques Musical Theatre",
-    "role": "Actress",
+    "artist": "Melissa Jacques Musical Theatre",
+    "song": "melissa-jacques-musical-theatre-actress",
     "image": "/mugshot-images/melissa-jacques-musical-theatre-actress.jpg",
-    "slug": "melissa-jacques-musical-theatre-actress"
+    "link": "Actress"
   },
   {
-    "name": "Michael Ball",
-    "role": "Singer",
+    "artist": "Michael Ball",
+    "song": "michael-ball-singer",
     "image": "/mugshot-images/michael-ball-singer.jpg",
-    "slug": "michael-ball-singer"
+    "link": "Singer"
   },
   {
-    "name": "Michael Palin",
-    "role": "Entertainer",
+    "artist": "Michael Palin",
+    "song": "michael-palin-entertainer",
     "image": "/mugshot-images/michael-palin-entertainer.jpg",
-    "slug": "michael-palin-entertainer"
+    "link": "Entertainer"
   },
   {
-    "name": "Michael Parkinson",
-    "role": "Tv Personality",
+    "artist": "Michael Parkinson",
+    "song": "michael-parkinson-tv-personality",
     "image": "/mugshot-images/michael-parkinson-tv-personality.jpg",
-    "slug": "michael-parkinson-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Michael Portillo",
-    "role": "Presenter",
+    "artist": "Michael Parkinson",
+    "song": "michael-parkinson-tv-personality-broadcaster",
+    "image": "",
+    "link": "Tv Personality Broadcaster"
+  },
+  {
+    "artist": "Michael Portillo",
+    "song": "michael-portillo-presenter",
     "image": "/mugshot-images/michael-portillo-presenter.jpg",
-    "slug": "michael-portillo-presenter"
+    "link": "Presenter"
   },
   {
-    "name": "Michael Praed",
-    "role": "Actor",
+    "artist": "Michael Praed",
+    "song": "michael-praed-actor",
     "image": "/mugshot-images/michael-praed-actor.jpg",
-    "slug": "michael-praed-actor"
+    "link": "Actor"
   },
   {
-    "name": "Michael Sheen",
-    "role": "Actor",
+    "artist": "Michael Sheen",
+    "song": "michael-sheen-actor",
     "image": "/mugshot-images/michael-sheen-actor.jpg",
-    "slug": "michael-sheen-actor"
+    "link": "Actor"
   },
   {
-    "name": "Michael Starke",
-    "role": "Actor",
+    "artist": "Michael Starke",
+    "song": "michael-starke-actor",
     "image": "/mugshot-images/michael-starke-actor.jpg",
-    "slug": "michael-starke-actor"
+    "link": "Actor"
   },
   {
-    "name": "Michaela Tabb",
-    "role": "Snooker Ref",
+    "artist": "Michaela Tabb",
+    "song": "michaela-tabb-snooker-ref",
     "image": "/mugshot-images/michaela-tabb-snooker-ref.jpg",
-    "slug": "michaela-tabb-snooker-ref"
+    "link": "Snooker Ref"
   },
   {
-    "name": "Michelle Collins",
-    "role": "Actress Copy",
+    "artist": "Michelle Collins",
+    "song": "michelle-collins-actress-copy",
     "image": "/mugshot-images/michelle-collins-actress-copy.jpg",
-    "slug": "michelle-collins-actress-copy"
+    "link": "Actress Copy"
   },
   {
-    "name": "Mike Bushell",
-    "role": "Presenter",
+    "artist": "Michelle Collins",
+    "song": "michelle-collins-actress",
+    "image": "",
+    "link": "Actress"
+  },
+  {
+    "artist": "Mike Bushell",
+    "song": "mike-bushell-presenter",
     "image": "/mugshot-images/mike-bushell-presenter.jpg",
-    "slug": "mike-bushell-presenter"
+    "link": "Presenter"
   },
   {
-    "name": "Mike Read",
-    "role": "Radio Presenter",
+    "artist": "Mike Read",
+    "song": "mike-read-radio-presenter",
     "image": "/mugshot-images/mike-read-radio-presenter.jpg",
-    "slug": "mike-read-radio-presenter"
+    "link": "Radio Presenter"
   },
   {
-    "name": "Miles Jupp",
-    "role": "Comedian",
+    "artist": "Miles Jupp",
+    "song": "miles-jupp-comedian",
     "image": "/mugshot-images/miles-jupp-comedian.jpg",
-    "slug": "miles-jupp-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Mitchel Taylor Ella Barnes Reality",
-    "role": "Tv",
+    "artist": "Mitchel Taylor Ella Barnes Reality",
+    "song": "mitchel-taylor-ella-barnes-reality-tv",
     "image": "/mugshot-images/mitchel-taylor-ella-barnes-reality-tv.jpg",
-    "slug": "mitchel-taylor-ella-barnes-reality-tv"
+    "link": "Tv"
   },
   {
-    "name": "Mo Gilligan",
-    "role": "Comedian",
+    "artist": "Mo Gilligan",
+    "song": "mo-gilligan-comedian",
     "image": "/mugshot-images/mo-gilligan-comedian.jpg",
-    "slug": "mo-gilligan-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Molly Mae Love Island",
-    "role": "",
+    "artist": "Molly Mae Love Island",
+    "song": "molly-mae-love-island",
     "image": "/mugshot-images/molly-mae-love-island.jpg",
-    "slug": "molly-mae-love-island"
+    "link": ""
   },
   {
-    "name": "Molly Rainsford",
-    "role": "Tv Personailty",
+    "artist": "Molly Rainsford",
+    "song": "molly-rainsford-tv-personailty",
     "image": "/mugshot-images/molly-rainsford-tv-personailty.jpg",
-    "slug": "molly-rainsford-tv-personailty"
+    "link": "Tv Personailty"
   },
   {
-    "name": "Mollyscott X Factor 2018",
-    "role": "",
+    "artist": "Mollyscott X Factor 2018",
+    "song": "mollyscott-x-factor-2018",
     "image": "/mugshot-images/mollyscott-x-factor-2018.jpg",
-    "slug": "mollyscott-x-factor-2018"
+    "link": ""
   },
   {
-    "name": "Montel Jordan Gladiator",
-    "role": "",
+    "artist": "Montel Jordan Gladiator",
+    "song": "montel-jordan-gladiator",
     "image": "/mugshot-images/montel-jordan-gladiator.jpg",
-    "slug": "montel-jordan-gladiator"
+    "link": ""
   },
   {
-    "name": "Motsi Mabuse",
-    "role": "Strictly Judge Dancer",
+    "artist": "Motsi Mabuse",
+    "song": "motsi-mabuse-strictly-judge-dancer",
     "image": "/mugshot-images/motsi-mabuse-strictly-judge-dancer.jpg",
-    "slug": "motsi-mabuse-strictly-judge-dancer"
+    "link": "Strictly Judge Dancer"
   },
   {
-    "name": "Mr Maker Cbeebies",
-    "role": "Presenter",
+    "artist": "Mr Maker Cbeebies",
+    "song": "mr-maker-cbeebies-presenter",
     "image": "/mugshot-images/mr-maker-cbeebies-presenter.jpg",
-    "slug": "mr-maker-cbeebies-presenter"
+    "link": "Presenter"
   },
   {
-    "name": "Mrs Brown Brendan O Carroll",
-    "role": "",
+    "artist": "Mrs Brown Brendan O Carroll",
+    "song": "mrs-brown-brendan-o-carroll",
     "image": "/mugshot-images/mrs-brown-brendan-o-carroll.jpg",
-    "slug": "mrs-brown-brendan-o-carroll"
+    "link": ""
   },
   {
-    "name": "Mungo Jerry",
-    "role": "Singer",
+    "artist": "Mungo Jerry",
+    "song": "mungo-jerry-singer",
     "image": "/mugshot-images/mungo-jerry-singer.jpg",
-    "slug": "mungo-jerry-singer"
+    "link": "Singer"
   },
   {
-    "name": "Natalie Davies",
-    "role": "Actress",
+    "artist": "Natalie Davies",
+    "song": "natalie-davies-actress",
     "image": "/mugshot-images/natalie-davies-actress.jpg",
-    "slug": "natalie-davies-actress"
+    "link": "Actress"
   },
   {
-    "name": "Natalie Walter",
-    "role": "Actress",
+    "artist": "Natalie Walter",
+    "song": "natalie-walter-actress",
     "image": "/mugshot-images/natalie-walter-actress.jpg",
-    "slug": "natalie-walter-actress"
+    "link": "Actress"
   },
   {
-    "name": "Natasha Hamilton",
-    "role": "Singer",
+    "artist": "Natasha Hamilton",
+    "song": "natasha-hamilton-singer",
     "image": "/mugshot-images/natasha-hamilton-singer.jpg",
-    "slug": "natasha-hamilton-singer"
+    "link": "Singer"
   },
   {
-    "name": "Neil Fox",
-    "role": "Radio Presenter",
+    "artist": "Neil Fox",
+    "song": "neil-fox-radio-presenter",
     "image": "/mugshot-images/neil-fox-radio-presenter.jpg",
-    "slug": "neil-fox-radio-presenter"
+    "link": "Radio Presenter"
   },
   {
-    "name": "Neil Jones",
-    "role": "Dancer",
+    "artist": "Neil Jones",
+    "song": "neil-jones-dancer",
     "image": "/mugshot-images/neil-jones-dancer.jpg",
-    "slug": "neil-jones-dancer"
+    "link": "Dancer"
   },
   {
-    "name": "Neil Mcdermott",
-    "role": "Eastenders Actor",
+    "artist": "Neil Mcdermott",
+    "song": "neil-mcdermott-eastenders-actor",
     "image": "/mugshot-images/neil-mcdermott-eastenders-actor.jpg",
-    "slug": "neil-mcdermott-eastenders-actor"
+    "link": "Eastenders Actor"
   },
   {
-    "name": "Neil Robertson",
-    "role": "Snooker Player",
+    "artist": "Neil Robertson",
+    "song": "neil-robertson-snooker-player",
     "image": "/mugshot-images/neil-robertson-snooker-player.jpg",
-    "slug": "neil-robertson-snooker-player"
+    "link": "Snooker Player"
   },
   {
-    "name": "Nev Wilshire",
-    "role": "Tv Personality",
+    "artist": "Nev Wilshire",
+    "song": "nev-wilshire-tv-personality",
     "image": "/mugshot-images/nev-wilshire-tv-personality.jpg",
-    "slug": "nev-wilshire-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "News Reader George Alagiah",
-    "role": "",
+    "artist": "News Reader George Alagiah",
+    "song": "news-reader-george-alagiah",
     "image": "/mugshot-images/news-reader-george-alagiah.jpg",
-    "slug": "news-reader-george-alagiah"
+    "link": ""
   },
   {
-    "name": "Nick Clegg",
-    "role": "Mp",
+    "artist": "Nick Clegg",
+    "song": "nick-clegg-mp",
     "image": "/mugshot-images/nick-clegg-mp.jpg",
-    "slug": "nick-clegg-mp"
+    "link": "Mp"
   },
   {
-    "name": "Nick Knowles",
-    "role": "Tv Personality",
+    "artist": "Nick Knowles",
+    "song": "nick-knowles-tv-personality",
     "image": "/mugshot-images/nick-knowles-tv-personality.jpg",
-    "slug": "nick-knowles-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Nigel Harman",
-    "role": "Actor",
+    "artist": "Nigel Harman",
+    "song": "nigel-harman-actor",
     "image": "/mugshot-images/nigel-harman-actor.jpg",
-    "slug": "nigel-harman-actor"
+    "link": "Actor"
   },
   {
-    "name": "Nigel Ng",
-    "role": "Comedian",
+    "artist": "Nigel Ng",
+    "song": "nigel-ng-comedian",
     "image": "/mugshot-images/nigel-ng-comedian.jpg",
-    "slug": "nigel-ng-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Nina Wadia",
-    "role": "Actress",
+    "artist": "Nina Wadia",
+    "song": "nina-wadia-actress",
     "image": "/mugshot-images/nina-wadia-actress.jpg",
-    "slug": "nina-wadia-actress"
+    "link": "Actress"
   },
   {
-    "name": "Norman Pace",
-    "role": "Actor Comedian",
+    "artist": "Norman Pace",
+    "song": "norman-pace-actor-comedian",
     "image": "/mugshot-images/norman-pace-actor-comedian.jpg",
-    "slug": "norman-pace-actor-comedian"
+    "link": "Actor Comedian"
   },
   {
-    "name": "Nuno Espirito Santo Wolves",
-    "role": "Manager",
+    "artist": "Nuno Espirito Santo Wolves",
+    "song": "nuno-espirito-santo-wolves-manager",
     "image": "/mugshot-images/nuno-espirito-santo-wolves-manager.jpg",
-    "slug": "nuno-espirito-santo-wolves-manager"
+    "link": "Manager"
   },
   {
-    "name": "Ole Gunnar Solsha Man United",
-    "role": "Manager",
+    "artist": "Ole Gunnar Solsha Man United",
+    "song": "ole-gunnar-solsha-man-united-manager",
     "image": "/mugshot-images/ole-gunnar-solsha-man-united-manager.jpg",
-    "slug": "ole-gunnar-solsha-man-united-manager"
+    "link": "Manager"
   },
   {
-    "name": "Oliceman With Gun",
-    "role": "",
+    "artist": "Oliceman With Gun",
+    "song": "oliceman-with-gun",
     "image": "/mugshot-images/oliceman-with-gun.jpg",
-    "slug": "oliceman-with-gun"
+    "link": ""
   },
   {
-    "name": "Oliver Farnworth",
-    "role": "Actor",
+    "artist": "Oliver Farnworth",
+    "song": "oliver-farnworth-actor",
     "image": "/mugshot-images/oliver-farnworth-actor.jpg",
-    "slug": "oliver-farnworth-actor"
+    "link": "Actor"
   },
   {
-    "name": "Ore Oduba",
-    "role": "Tv Radio Personality",
+    "artist": "Ore Oduba",
+    "song": "ore-oduba-tv-radio-personality",
     "image": "/mugshot-images/ore-oduba-tv-radio-personality.jpg",
-    "slug": "ore-oduba-tv-radio-personality"
+    "link": "Tv Radio Personality"
   },
   {
-    "name": "Oti Mabuse",
-    "role": "Dancer",
+    "artist": "Oti Mabuse",
+    "song": "oti-mabuse-dancer",
     "image": "/mugshot-images/oti-mabuse-dancer.jpg",
-    "slug": "oti-mabuse-dancer"
+    "link": "Dancer"
   },
   {
-    "name": "Pasha Kovalev",
-    "role": "Dancer",
+    "artist": "Pasha Kovalev",
+    "song": "pasha-kovalev-dancer",
     "image": "/mugshot-images/pasha-kovalev-dancer.jpg",
-    "slug": "pasha-kovalev-dancer"
+    "link": "Dancer"
   },
   {
-    "name": "Pat Sharp",
-    "role": "Radio Presenter",
+    "artist": "Pat Sharp",
+    "song": "pat-sharp-radio-presenter",
     "image": "/mugshot-images/pat-sharp-radio-presenter.jpg",
-    "slug": "pat-sharp-radio-presenter"
+    "link": "Radio Presenter"
   },
   {
-    "name": "Patricia Hodge",
-    "role": "Actress",
+    "artist": "Patricia Hodge",
+    "song": "patricia-hodge-actress",
     "image": "/mugshot-images/patricia-hodge-actress.jpg",
-    "slug": "patricia-hodge-actress"
+    "link": "Actress"
   },
   {
-    "name": "Patrick Duffy",
-    "role": "Actor",
+    "artist": "Patrick Duffy",
+    "song": "patrick-duffy-actor",
     "image": "/mugshot-images/patrick-duffy-actor.jpg",
-    "slug": "patrick-duffy-actor"
+    "link": "Actor"
   },
   {
-    "name": "Patrick Kielty",
-    "role": "Comedian Tv Personality",
+    "artist": "Patrick Keilty",
+    "song": "patrick-keilty-comedian-tv-personality",
+    "image": "",
+    "link": "Comedian Tv Personality"
+  },
+  {
+    "artist": "Patrick Kielty",
+    "song": "patrick-kielty-comedian-tv-personality",
     "image": "/mugshot-images/patrick-kielty-comedian-tv-personality.jpg",
-    "slug": "patrick-kielty-comedian-tv-personality"
+    "link": "Comedian Tv Personality"
   },
   {
-    "name": "Paul Barber",
-    "role": "Actor",
+    "artist": "Paul Barber",
+    "song": "paul-barber-actor",
     "image": "/mugshot-images/paul-barber-actor.jpg",
-    "slug": "paul-barber-actor"
+    "link": "Actor"
   },
   {
-    "name": "Paul Burling Impressionist",
-    "role": "Bgt",
+    "artist": "Paul Burling Impressionist",
+    "song": "paul-burling-impressionist-bgt",
     "image": "/mugshot-images/paul-burling-impressionist-bgt.jpg",
-    "slug": "paul-burling-impressionist-bgt"
+    "link": "Bgt"
   },
   {
-    "name": "Paul Burrell",
-    "role": "Royal Butler",
+    "artist": "Paul Burrell",
+    "song": "paul-burrell-royal-butler",
     "image": "/mugshot-images/paul-burrell-royal-butler.jpg",
-    "slug": "paul-burrell-royal-butler"
+    "link": "Royal Butler"
   },
   {
-    "name": "Paul Cashmore",
-    "role": "Tv",
+    "artist": "Paul Burrell",
+    "song": "paul-burrell-royal-buttler",
+    "image": "",
+    "link": "Royal Buttler"
+  },
+  {
+    "artist": "Paul Cashmore",
+    "song": "paul-cashmore-tv",
     "image": "/mugshot-images/paul-cashmore-tv.jpg",
-    "slug": "paul-cashmore-tv"
+    "link": "Tv"
   },
   {
-    "name": "Paul Heaton",
-    "role": "Singer Beautiful South",
+    "artist": "Paul Heaton",
+    "song": "paul-heaton-singer-beautiful-south",
     "image": "/mugshot-images/paul-heaton-singer-beautiful-south.jpg",
-    "slug": "paul-heaton-singer-beautiful-south"
+    "link": "Singer Beautiful South"
   },
   {
-    "name": "Paul Hendy",
-    "role": "Presenter",
+    "artist": "Paul Hendy",
+    "song": "paul-hendy-presenter",
     "image": "/mugshot-images/paul-hendy-presenter.jpg",
-    "slug": "paul-hendy-presenter"
+    "link": "Presenter"
   },
   {
-    "name": "Paul Martin",
-    "role": "Tv Personality",
+    "artist": "Paul Martin",
+    "song": "paul-martin-tv-personality",
     "image": "/mugshot-images/paul-martin-tv-personality.jpg",
-    "slug": "paul-martin-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Paul S Club 7",
-    "role": "Singer",
+    "artist": "Paul S",
+    "song": "Paul-s-club-7-singer",
+    "image": "",
+    "link": "Club 7 Singer"
+  },
+  {
+    "artist": "Paul S Club 7",
+    "song": "paul-s-club-7-singer",
     "image": "/mugshot-images/paul-s-club-7-singer.jpg",
-    "slug": "paul-s-club-7-singer"
+    "link": "Singer"
   },
   {
-    "name": "Paula Lane",
-    "role": "Actress",
+    "artist": "Paula Lane",
+    "song": "paula-lane-actress",
     "image": "/mugshot-images/paula-lane-actress.jpg",
-    "slug": "paula-lane-actress"
+    "link": "Actress"
   },
   {
-    "name": "Paula Wilcox",
-    "role": "Actress",
+    "artist": "Paula Wilcox",
+    "song": "paula-wilcox-actress",
     "image": "/mugshot-images/paula-wilcox-actress.jpg",
-    "slug": "paula-wilcox-actress"
+    "link": "Actress"
   },
   {
-    "name": "Peanut Kaiser Chiefs",
-    "role": "Singer",
+    "artist": "Peanut Kaiser Chiefs",
+    "song": "peanut-kaiser-chiefs-singer",
     "image": "/mugshot-images/peanut-kaiser-chiefs-singer.jpg",
-    "slug": "peanut-kaiser-chiefs-singer"
+    "link": "Singer"
   },
   {
-    "name": "Pep Guardiola Man City",
-    "role": "Manager",
+    "artist": "Pep Guardiola Man City",
+    "song": "pep-guardiola-man-city-manager",
     "image": "/mugshot-images/pep-guardiola-man-city-manager.jpg",
-    "slug": "pep-guardiola-man-city-manager"
+    "link": "Manager"
   },
   {
-    "name": "Pep Guardiola Man City Manaager",
-    "role": "",
+    "artist": "Pep Guardiola Man City Manaager",
+    "song": "pep-guardiola-man-city-manaager",
     "image": "/mugshot-images/pep-guardiola-man-city-manaager.jpg",
-    "slug": "pep-guardiola-man-city-manaager"
+    "link": ""
   },
   {
-    "name": "Perri Kiely",
-    "role": "Dancer",
+    "artist": "Perri Kiely",
+    "song": "perri-kiely-dancer",
     "image": "/mugshot-images/perri-kiely-dancer.jpg",
-    "slug": "perri-kiely-dancer"
+    "link": "Dancer"
   },
   {
-    "name": "Pete Waterman Songwriter",
-    "role": "",
+    "artist": "Pete Waterman",
+    "song": "pete-waterman",
+    "image": "",
+    "link": ""
+  },
+  {
+    "artist": "Pete Waterman Songwriter",
+    "song": "pete-waterman-songwriter",
     "image": "/mugshot-images/pete-waterman-songwriter.jpg",
-    "slug": "pete-waterman-songwriter"
+    "link": ""
   },
   {
-    "name": "Peter Andre",
-    "role": "Tv Personaility",
+    "artist": "Peter Andre",
+    "song": "peter-andre-tv-personaility",
     "image": "/mugshot-images/peter-andre-tv-personaility.jpg",
-    "slug": "peter-andre-tv-personaility"
+    "link": "Tv Personaility"
   },
   {
-    "name": "Peter Crouch",
-    "role": "Footballer",
+    "artist": "Peter Crouch",
+    "song": "peter-crouch-footballer",
     "image": "/mugshot-images/peter-crouch-footballer.jpg",
-    "slug": "peter-crouch-footballer"
+    "link": "Footballer"
   },
   {
-    "name": "Peter Duncan",
-    "role": "Actor",
+    "artist": "Peter Duncan",
+    "song": "peter-duncan-actor",
     "image": "/mugshot-images/peter-duncan-actor.jpg",
-    "slug": "peter-duncan-actor"
+    "link": "Actor"
   },
   {
-    "name": "Peter Ebdon",
-    "role": "Snooker",
+    "artist": "Peter Ebdon",
+    "song": "peter-ebdon-snooker",
     "image": "/mugshot-images/peter-ebdon-snooker.jpg",
-    "slug": "peter-ebdon-snooker"
+    "link": "Snooker"
   },
   {
-    "name": "Phil Jupitas",
-    "role": "Comedian",
+    "artist": "Phil Jupitas",
+    "song": "phil-jupitas-comedian",
     "image": "/mugshot-images/phil-jupitas-comedian.jpg",
-    "slug": "phil-jupitas-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Phil Parkinson",
-    "role": "Football Manager",
+    "artist": "Phil Parkinson",
+    "song": "phil-parkinson-football-manager",
     "image": "/mugshot-images/phil-parkinson-football-manager.jpg",
-    "slug": "phil-parkinson-football-manager"
+    "link": "Football Manager"
   },
   {
-    "name": "Phil Williams",
-    "role": "Radio Presenter",
+    "artist": "Phil Williams",
+    "song": "phil-williams-radio-presenter",
     "image": "/mugshot-images/phil-williams-radio-presenter.jpg",
-    "slug": "phil-williams-radio-presenter"
+    "link": "Radio Presenter"
   },
   {
-    "name": "Philip Glenister",
-    "role": "Actor",
+    "artist": "Philip Glenister",
+    "song": "philip-glenister-actor",
     "image": "/mugshot-images/philip-glenister-actor.jpg",
-    "slug": "philip-glenister-actor"
+    "link": "Actor"
   },
   {
-    "name": "Philip Lowrie",
-    "role": "Actor",
+    "artist": "Philip Lowrie",
+    "song": "philip-lowrie-actor",
     "image": "/mugshot-images/philip-lowrie-actor.jpg",
-    "slug": "philip-lowrie-actor"
+    "link": "Actor"
   },
   {
-    "name": "Phill Jupitus",
-    "role": "Comedian",
+    "artist": "Phill Jupitus",
+    "song": "phill-jupitus-comedian",
     "image": "/mugshot-images/phill-jupitus-comedian.jpg",
-    "slug": "phill-jupitus-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Pippa Tarrant Broadcaster",
-    "role": "",
+    "artist": "Pippa Tarrant Broadcaster",
+    "song": "pippa-tarrant-broadcaster",
     "image": "/mugshot-images/pippa-tarrant-broadcaster.jpg",
-    "slug": "pippa-tarrant-broadcaster"
+    "link": ""
   },
   {
-    "name": "Pixie Lott",
-    "role": "Singer",
+    "artist": "Pixie Lott",
+    "song": "pixie-lott-singer",
     "image": "/mugshot-images/pixie-lott-singer.jpg",
-    "slug": "pixie-lott-singer"
+    "link": "Singer"
   },
   {
-    "name": "Pudsey Bear",
-    "role": "Charity Rep",
+    "artist": "Pudsey Bear",
+    "song": "pudsey-bear-charity-rep",
     "image": "/mugshot-images/pudsey-bear-charity-rep.jpg",
-    "slug": "pudsey-bear-charity-rep"
+    "link": "Charity Rep"
   },
   {
-    "name": "Radzi Chinyanganya",
-    "role": "Presenter",
+    "artist": "Radzi Chinyanganya",
+    "song": "radzi-chinyanganya-presenter",
     "image": "/mugshot-images/radzi-chinyanganya-presenter.jpg",
-    "slug": "radzi-chinyanganya-presenter"
+    "link": "Presenter"
   },
   {
-    "name": "Ralf Little",
-    "role": "Actor",
+    "artist": "Ralf Little",
+    "song": "ralf-little-actor",
     "image": "/mugshot-images/ralf-little-actor.jpg",
-    "slug": "ralf-little-actor"
+    "link": "Actor"
   },
   {
-    "name": "Raven Chapman Terri Harper Stevi Levy Boxers",
-    "role": "",
+    "artist": "Raven Chapman Terri Harper Stevi Levy Boxers",
+    "song": "raven-chapman-terri-harper-stevi-levy-boxers",
     "image": "/mugshot-images/raven-chapman-terri-harper-stevi-levy-boxers.jpg",
-    "slug": "raven-chapman-terri-harper-stevi-levy-boxers"
+    "link": ""
   },
   {
-    "name": "Reanne Evans",
-    "role": "Snooker Player",
+    "artist": "Reanne Evans",
+    "song": "reanne-evans-snooker-player",
     "image": "/mugshot-images/reanne-evans-snooker-player.jpg",
-    "slug": "reanne-evans-snooker-player"
+    "link": "Snooker Player"
   },
   {
-    "name": "Received 1332680933541463",
-    "role": "",
+    "artist": "Received 1332680933541463",
+    "song": "received_1332680933541463",
     "image": "/mugshot-images/received_1332680933541463.jpeg",
-    "slug": "received_1332680933541463"
+    "link": ""
   },
   {
-    "name": "Received 1579725675504308",
-    "role": "",
+    "artist": "Received 1579725675504308",
+    "song": "received_1579725675504308",
     "image": "/mugshot-images/received_1579725675504308.jpeg",
-    "slug": "received_1579725675504308"
+    "link": ""
   },
   {
-    "name": "Received 305611326784511",
-    "role": "",
+    "artist": "Received 305611326784511",
+    "song": "received_305611326784511",
     "image": "/mugshot-images/received_305611326784511.jpeg",
-    "slug": "received_305611326784511"
+    "link": ""
   },
   {
-    "name": "Received 582287048915178",
-    "role": "",
+    "artist": "Received 582287048915178",
+    "song": "received_582287048915178",
     "image": "/mugshot-images/received_582287048915178.jpeg",
-    "slug": "received_582287048915178"
+    "link": ""
   },
   {
-    "name": "Red Arrows Entertainers",
-    "role": "",
+    "artist": "Red Arrows Entertainers",
+    "song": "red-arrows-entertainers",
     "image": "/mugshot-images/red-arrows-entertainers.jpg",
-    "slug": "red-arrows-entertainers"
+    "link": ""
   },
   {
-    "name": "Reginald D Hunter",
-    "role": "Comedian",
+    "artist": "Reginald D Hunter",
+    "song": "reginald-d-hunter-comedian",
     "image": "/mugshot-images/reginald-d-hunter-comedian.jpg",
-    "slug": "reginald-d-hunter-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Rev Richard Cole",
-    "role": "Radio Personality",
+    "artist": "Rev Richard Cole",
+    "song": "rev-richard-cole-radio-personality",
     "image": "/mugshot-images/rev-richard-cole-radio-personality.jpg",
-    "slug": "rev-richard-cole-radio-personality"
+    "link": "Radio Personality"
   },
   {
-    "name": "Rhod Gilbert",
-    "role": "Comedian",
+    "artist": "Rhod Gilbert",
+    "song": "rhod-gilbert-comedian",
     "image": "/mugshot-images/rhod-gilbert-comedian.jpg",
-    "slug": "rhod-gilbert-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Rhod Sant",
-    "role": "",
+    "artist": "Rhod Sant",
+    "song": "rhod-sant",
     "image": "/mugshot-images/rhod-sant.jpg",
-    "slug": "rhod-sant"
+    "link": ""
   },
   {
-    "name": "Richard Arnold",
-    "role": "Gmb Presenter",
+    "artist": "Richard Arnold",
+    "song": "richard-arnold-gmb-presenter",
     "image": "/mugshot-images/richard-arnold-gmb-presenter.jpg",
-    "slug": "richard-arnold-gmb-presenter"
+    "link": "Gmb Presenter"
   },
   {
-    "name": "Richard Blackwood",
-    "role": "Actor",
+    "artist": "Richard Blackwood",
+    "song": "richard-blackwood-actor",
     "image": "/mugshot-images/richard-blackwood-actor.jpg",
-    "slug": "richard-blackwood-actor"
+    "link": "Actor"
   },
   {
-    "name": "Richard Curts",
-    "role": "Writer",
+    "artist": "Richard Curts",
+    "song": "richard-curts-writer",
     "image": "/mugshot-images/richard-curts-writer.jpg",
-    "slug": "richard-curts-writer"
+    "link": "Writer"
   },
   {
-    "name": "Richard Herring",
-    "role": "Comedian",
+    "artist": "Richard Herring",
+    "song": "richard-herring-comedian",
     "image": "/mugshot-images/richard-herring-comedian.jpg",
-    "slug": "richard-herring-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Richie Anderson",
-    "role": "Bbc Radio 2",
+    "artist": "Richie Anderson",
+    "song": "richie-anderson-bbc-radio-2",
     "image": "/mugshot-images/richie-anderson-bbc-radio-2.jpg",
-    "slug": "richie-anderson-bbc-radio-2"
+    "link": "Bbc Radio 2"
   },
   {
-    "name": "Richie Nevell",
-    "role": "Singer",
+    "artist": "Richie Anderson",
+    "song": "richie-anderson",
+    "image": "",
+    "link": ""
+  },
+  {
+    "artist": "Richie Nevell",
+    "song": "richie-nevell-singer",
     "image": "/mugshot-images/richie-nevell-singer.jpg",
-    "slug": "richie-nevell-singer"
+    "link": "Singer"
   },
   {
-    "name": "Rick Astley",
-    "role": "Singer Songwriter",
+    "artist": "Rick Astley",
+    "song": "rick-astley-singer-songwriter",
     "image": "/mugshot-images/rick-astley-singer-songwriter.jpg",
-    "slug": "rick-astley-singer-songwriter"
+    "link": "Singer Songwriter"
   },
   {
-    "name": "Rick Wakeman Music",
-    "role": "",
+    "artist": "Rick Wakeman Music",
+    "song": "rick-wakeman-music",
     "image": "/mugshot-images/rick-wakeman-music.jpg",
-    "slug": "rick-wakeman-music"
+    "link": ""
   },
   {
-    "name": "Ricky Gervais",
-    "role": "Comedian Actor",
+    "artist": "Ricky Gervais",
+    "song": "ricky-gervais-comedian-actor",
     "image": "/mugshot-images/ricky-gervais-comedian-actor.jpg",
-    "slug": "ricky-gervais-comedian-actor"
+    "link": "Comedian Actor"
   },
   {
-    "name": "Ricky Wilson",
-    "role": "Singer",
+    "artist": "Ricky Wilson",
+    "song": "ricky-wilson-singer",
     "image": "/mugshot-images/ricky-wilson-singer.jpg",
-    "slug": "ricky-wilson-singer"
+    "link": "Singer"
   },
   {
-    "name": "Right Said Fred Singers",
-    "role": "",
+    "artist": "Right Said Fred Singers",
+    "song": "right-said-fred-singers",
     "image": "/mugshot-images/right-said-fred-singers.jpg",
-    "slug": "right-said-fred-singers"
+    "link": ""
   },
   {
-    "name": "Rob Beckett",
-    "role": "Comedian",
+    "artist": "Rob Beckett",
+    "song": "rob-beckett-comedian",
     "image": "/mugshot-images/rob-beckett-comedian.jpg",
-    "slug": "rob-beckett-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Rob Brydon",
-    "role": "Comedian",
+    "artist": "Rob Brydon",
+    "song": "rob-brydon-comedian",
     "image": "/mugshot-images/rob-brydon-comedian.jpg",
-    "slug": "rob-brydon-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Rob Edwards Premier League",
-    "role": "Manager Luton",
+    "artist": "Rob Edwards Premier League",
+    "song": "rob-edwards-premier-league-manager-luton",
     "image": "/mugshot-images/rob-edwards-premier-league-manager-luton.jpg",
-    "slug": "rob-edwards-premier-league-manager-luton"
+    "link": "Manager Luton"
   },
   {
-    "name": "Rob Ostlere",
-    "role": "Actor",
+    "artist": "Rob Ostlere",
+    "song": "rob-ostlere-actor",
     "image": "/mugshot-images/rob-ostlere-actor.jpg",
-    "slug": "rob-ostlere-actor"
+    "link": "Actor"
   },
   {
-    "name": "Rob Rinder",
-    "role": "Judge",
+    "artist": "Rob Rinder",
+    "song": "rob-rinder-judge",
     "image": "/mugshot-images/rob-rinder-judge.jpg",
-    "slug": "rob-rinder-judge"
+    "link": "Judge"
   },
   {
-    "name": "Rob Rouse",
-    "role": "Comedian Presenter",
+    "artist": "Rob Rouse",
+    "song": "rob-rouse-comedian-presenter",
     "image": "/mugshot-images/rob-rouse-comedian-presenter.jpg",
-    "slug": "rob-rouse-comedian-presenter"
+    "link": "Comedian Presenter"
   },
   {
-    "name": "Rob Walker",
-    "role": "Bbc Sport",
+    "artist": "Rob Walker",
+    "song": "rob-walker-bbc-sport",
     "image": "/mugshot-images/rob-walker-bbc-sport.jpg",
-    "slug": "rob-walker-bbc-sport"
+    "link": "Bbc Sport"
   },
   {
-    "name": "Robert Carlyle",
-    "role": "Actor",
+    "artist": "Robert Carlyle",
+    "song": "robert-carlyle-actor",
     "image": "/mugshot-images/robert-carlyle-actor.jpeg",
-    "slug": "robert-carlyle-actor"
+    "link": "Actor"
   },
   {
-    "name": "Robert Duncan",
-    "role": "Actor",
+    "artist": "Robert Duncan",
+    "song": "robert-duncan-actor",
     "image": "/mugshot-images/robert-duncan-actor.jpg",
-    "slug": "robert-duncan-actor"
+    "link": "Actor"
   },
   {
-    "name": "Robert Powell",
-    "role": "Actor",
+    "artist": "Robert Powell",
+    "song": "robert-powell-actor",
     "image": "/mugshot-images/robert-powell-actor.jpg",
-    "slug": "robert-powell-actor"
+    "link": "Actor"
   },
   {
-    "name": "Romesh Ranganathan",
-    "role": "Comedian",
+    "artist": "Romesh Ranganathan",
+    "song": "romesh-ranganathan-comedian",
     "image": "/mugshot-images/Romesh-Ranganathan-comedian.jpg",
-    "slug": "romesh-ranganathan-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Ronan Keating",
-    "role": "Singer",
+    "artist": "Romesh Ranganathan",
+    "song": "romesh-ranganathan",
+    "image": "",
+    "link": ""
+  },
+  {
+    "artist": "Ronan Keating",
+    "song": "ronan-keating-singer",
     "image": "/mugshot-images/ronan-keating-singer.jpg",
-    "slug": "ronan-keating-singer"
+    "link": "Singer"
   },
   {
-    "name": "Rory Bremner Impressionist",
-    "role": "",
+    "artist": "Rory Bremner Impressionist",
+    "song": "rory-bremner-impressionist",
     "image": "/mugshot-images/rory-bremner-impressionist.jpg",
-    "slug": "rory-bremner-impressionist"
+    "link": ""
   },
   {
-    "name": "Rose Ayling Ellis",
-    "role": "Actress",
+    "artist": "Rose Ayling Ellis",
+    "song": "rose-ayling-ellis-actress",
     "image": "/mugshot-images/rose-ayling-ellis-actress.jpg",
-    "slug": "rose-ayling-ellis-actress"
+    "link": "Actress"
   },
   {
-    "name": "Rosemary Shrager",
-    "role": "Presenter Chef",
+    "artist": "Rosemary Shrager",
+    "song": "rosemary-shrager-presenter-chef",
     "image": "/mugshot-images/rosemary-shrager-presenter-chef.jpg",
-    "slug": "rosemary-shrager-presenter-chef"
+    "link": "Presenter Chef"
   },
   {
-    "name": "Rosie Jones",
-    "role": "Comedian",
+    "artist": "Rosie Jones",
+    "song": "rosie-jones-comedian",
     "image": "/mugshot-images/rosie-jones-comedian.jpg",
-    "slug": "rosie-jones-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Ross Noble",
-    "role": "Comedian",
+    "artist": "Ross Noble",
+    "song": "ross-noble-comedian",
     "image": "/mugshot-images/ross-noble-comedian.jpg",
-    "slug": "ross-noble-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Roy Chubby Brown",
-    "role": "Comedian",
+    "artist": "Roy Chubby Brown",
+    "song": "roy-chubby-brown-comedian",
     "image": "/mugshot-images/roy-chubby-brown-comedian.jpg",
-    "slug": "roy-chubby-brown-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Roy Hodgeson Crystal Palace",
-    "role": "Football Manager",
+    "artist": "Roy Hodgeson Crystal Palace",
+    "song": "roy-hodgeson-crystal-palace-football-manager",
     "image": "/mugshot-images/roy-hodgeson-crystal-palace-football-manager.jpg",
-    "slug": "roy-hodgeson-crystal-palace-football-manager"
+    "link": "Football Manager"
   },
   {
-    "name": "Roy Hudd",
-    "role": "Comedian",
+    "artist": "Roy Hudd",
+    "song": "roy-hudd-comedian",
     "image": "/mugshot-images/roy-hudd-comedian.jpg",
-    "slug": "roy-hudd-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Roy Wood",
-    "role": "Singer Musician",
+    "artist": "Roy Wood",
+    "song": "roy-wood-singer-musician",
     "image": "/mugshot-images/roy-wood-singer-musician.jpg",
-    "slug": "roy-wood-singer-musician"
+    "link": "Singer Musician"
   },
   {
-    "name": "Ruby Wax",
-    "role": "Tv Personality",
+    "artist": "Ruby Wax",
+    "song": "ruby-wax-tv-personality",
     "image": "/mugshot-images/ruby-wax-tv-personality.jpg",
-    "slug": "ruby-wax-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Rula Lenska",
-    "role": "Actress",
+    "artist": "Rula Lenska",
+    "song": "rula-lenska-actress",
     "image": "/mugshot-images/rula-lenska-actress.jpg",
-    "slug": "rula-lenska-actress"
+    "link": "Actress"
   },
   {
-    "name": "Rupert Hill",
-    "role": "Coronation Street Actor",
+    "artist": "Rupert Hill",
+    "song": "rupert-hill-coronation-street-actor",
     "image": "/mugshot-images/rupert-hill-coronation-street-actor.jpg",
-    "slug": "rupert-hill-coronation-street-actor"
+    "link": "Coronation Street Actor"
   },
   {
-    "name": "Russell Howard",
-    "role": "Comedian",
+    "artist": "Russell Howard",
+    "song": "russell-howard-comedian",
     "image": "/mugshot-images/russell-howard-comedian.jpg",
-    "slug": "russell-howard-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Russell Watson",
-    "role": "Singer",
+    "artist": "Russell Watson",
+    "song": "russell-watson-singer",
     "image": "/mugshot-images/russell-watson-singer.jpg",
-    "slug": "russell-watson-singer"
+    "link": "Singer"
   },
   {
-    "name": "Rustie Lee",
-    "role": "Tv Personality",
+    "artist": "Rustie Lee",
+    "song": "rustie-lee-tv-personality",
     "image": "/mugshot-images/rustie-lee-tv-personality.jpg",
-    "slug": "rustie-lee-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Ruth Madoc",
-    "role": "Actress",
+    "artist": "Ruth Madoc",
+    "song": "ruth-madoc-actress",
     "image": "/mugshot-images/ruth-madoc-actress.jpg",
-    "slug": "ruth-madoc-actress"
+    "link": "Actress"
   },
   {
-    "name": "Ryan Prescott",
-    "role": "Actor",
+    "artist": "Ryan Prescott",
+    "song": "ryan-prescott-actor",
     "image": "/mugshot-images/ryan-prescott-actor.jpg",
-    "slug": "ryan-prescott-actor"
+    "link": "Actor"
   },
   {
-    "name": "Sally Anne Matthews",
-    "role": "Actress",
+    "artist": "Sally Anne Matthews",
+    "song": "sally-anne-matthews-actress",
     "image": "/mugshot-images/sally-anne-matthews-actress.jpg",
-    "slug": "sally-anne-matthews-actress"
+    "link": "Actress"
   },
   {
-    "name": "Sally Nugent",
-    "role": "Tv Presenter",
+    "artist": "Sally Nugent",
+    "song": "sally-nugent-tv-presenter",
     "image": "/mugshot-images/sally-nugent-tv-presenter.jpg",
-    "slug": "sally-nugent-tv-presenter"
+    "link": "Tv Presenter"
   },
   {
-    "name": "Sam Bailey X Factor",
-    "role": "Winner",
+    "artist": "Sam Bailey X Factor",
+    "song": "sam-bailey-x-factor-winner",
     "image": "/mugshot-images/sam-bailey-x-factor-winner.jpg",
-    "slug": "sam-bailey-x-factor-winner"
+    "link": "Winner"
   },
   {
-    "name": "Sam Lavery X Factor",
-    "role": "Singer",
+    "artist": "Sam Lavery X Factor",
+    "song": "sam-lavery-x-factor-singer",
     "image": "/mugshot-images/sam-lavery-x-factor-singer.jpg",
-    "slug": "sam-lavery-x-factor-singer"
+    "link": "Singer"
   },
   {
-    "name": "Sam Lightfoot",
-    "role": "Boxer",
+    "artist": "Sam Lightfoot",
+    "song": "sam-lightfoot-boxer",
     "image": "/mugshot-images/sam-lightfoot-boxer.jpg",
-    "slug": "sam-lightfoot-boxer"
+    "link": "Boxer"
   },
   {
-    "name": "Sam Nixon",
-    "role": "Presenter",
+    "artist": "Sam Nixon",
+    "song": "sam-nixon-presenter",
     "image": "/mugshot-images/sam-nixon-presenter.jpg",
-    "slug": "sam-nixon-presenter"
+    "link": "Presenter"
   },
   {
-    "name": "Sam Thompson",
-    "role": "Dj",
+    "artist": "Sam Thompson",
+    "song": "sam-thompson-dj",
     "image": "/mugshot-images/sam-thompson-dj.jpg",
-    "slug": "sam-thompson-dj"
+    "link": "Dj"
   },
   {
-    "name": "Samantha Bumford",
-    "role": "",
+    "artist": "Samantha Bumford",
+    "song": "samantha-bumford",
     "image": "/mugshot-images/samantha-bumford.jpg",
-    "slug": "samantha-bumford"
+    "link": ""
   },
   {
-    "name": "Samantha Womack Oliver Farnworth Actors",
-    "role": "",
+    "artist": "Samantha Womack Oliver Farnworth Actors",
+    "song": "samantha-womack-oliver-farnworth-actors",
     "image": "/mugshot-images/samantha-womack-oliver-farnworth-actors.jpg",
-    "slug": "samantha-womack-oliver-farnworth-actors"
+    "link": ""
   },
   {
-    "name": "Sandra Marvin",
-    "role": "Actress",
+    "artist": "Sandra Marvin",
+    "song": "sandra-marvin-actress",
     "image": "/mugshot-images/sandra-marvin-actress.jpg",
-    "slug": "sandra-marvin-actress"
+    "link": "Actress"
   },
   {
-    "name": "Santa Father Christmas",
-    "role": "",
+    "artist": "Santa Father Christmas",
+    "song": "santa-father-christmas",
     "image": "/mugshot-images/santa-father-christmas.jpg",
-    "slug": "santa-father-christmas"
+    "link": ""
   },
   {
-    "name": "Santa Mugshots Logo 1",
-    "role": "",
+    "artist": "Santa Mugshots Logo 1",
+    "song": "santa-mugshots-logo-1",
     "image": "/mugshot-images/santa-mugshots-logo-1.png",
-    "slug": "santa-mugshots-logo-1"
+    "link": ""
   },
   {
-    "name": "Sara Cox",
-    "role": "Radio Dj",
+    "artist": "Sara Cox",
+    "song": "sara-cox-radio-dj",
     "image": "/mugshot-images/sara-cox-radio-dj.jpg",
-    "slug": "sara-cox-radio-dj"
+    "link": "Radio Dj"
   },
   {
-    "name": "Sara Davies Dragon",
-    "role": "",
+    "artist": "Sara Davies Dragon",
+    "song": "sara-davies-dragon",
     "image": "/mugshot-images/sara-davies-dragon.jpg",
-    "slug": "sara-davies-dragon"
+    "link": ""
   },
   {
-    "name": "Sarah Beeny",
-    "role": "Presenter",
+    "artist": "Sarah Beeny",
+    "song": "sarah-beeny-presenter",
     "image": "/mugshot-images/sarah-beeny-presenter.jpg",
-    "slug": "sarah-beeny-presenter"
+    "link": "Presenter"
   },
   {
-    "name": "Sarah Jane Buckley",
-    "role": "Actress",
+    "artist": "Sarah Jane Buckley",
+    "song": "sarah-jane-buckley-actress",
     "image": "/mugshot-images/sarah-jane-buckley-actress.jpg",
-    "slug": "sarah-jane-buckley-actress"
+    "link": "Actress"
   },
   {
-    "name": "Sasha Parkinson",
-    "role": "Actress",
+    "artist": "Sasha Parkinson",
+    "song": "sasha-parkinson-actress",
     "image": "/mugshot-images/sasha-parkinson-actress.jpg",
-    "slug": "sasha-parkinson-actress"
+    "link": "Actress"
   },
   {
-    "name": "Scott Mills",
-    "role": "Radio Presenter",
+    "artist": "Scott Mills",
+    "song": "scott-mills-radio-presenter",
     "image": "/mugshot-images/scott-mills-radio-presenter.jpg",
-    "slug": "scott-mills-radio-presenter"
+    "link": "Radio Presenter"
   },
   {
-    "name": "Scott Parker",
-    "role": "Football Manager",
+    "artist": "Scott Parker",
+    "song": "scott-parker-football-manager",
     "image": "/mugshot-images/scott-parker-football-manager.jpg",
-    "slug": "scott-parker-football-manager"
+    "link": "Football Manager"
   },
   {
-    "name": "Scott Parker Fullham",
-    "role": "Manager",
+    "artist": "Scott Parker Fullham",
+    "song": "scott-parker-fullham-manager",
     "image": "/mugshot-images/scott-parker-fullham-manager.jpg",
-    "slug": "scott-parker-fullham-manager"
+    "link": "Manager"
   },
   {
-    "name": "Scott Robinson",
-    "role": "Singer",
+    "artist": "Scott Robinson",
+    "song": "scott-robinson-singer",
     "image": "/mugshot-images/scott-robinson-singer.jpg",
-    "slug": "scott-robinson-singer"
+    "link": "Singer"
   },
   {
-    "name": "Sean Bean",
-    "role": "Actor",
+    "artist": "Sean Bean",
+    "song": "sean-bean-actor",
     "image": "/mugshot-images/sean-bean-actor.jpg",
-    "slug": "sean-bean-actor"
+    "link": "Actor"
   },
   {
-    "name": "Sean Hughes",
-    "role": "Comedian",
+    "artist": "Sean Hughes",
+    "song": "sean-hughes-comedian",
     "image": "/mugshot-images/sean-hughes-comedian.jpg",
-    "slug": "sean-hughes-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Sean Wilson",
-    "role": "Actor",
+    "artist": "Sean Wilson",
+    "song": "sean-wilson-actor",
     "image": "/mugshot-images/sean-wilson-actor.jpg",
-    "slug": "sean-wilson-actor"
+    "link": "Actor"
   },
   {
-    "name": "Seann Walsh",
-    "role": "Comedian",
+    "artist": "Seann Walsh",
+    "song": "seann-walsh-comedian",
     "image": "/mugshot-images/seann-walsh-comedian.jpg",
-    "slug": "seann-walsh-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Seema Jaswal",
-    "role": "Tv Presenter",
+    "artist": "Seema Jaswal",
+    "song": "seema-jaswal-tv-presenter",
     "image": "/mugshot-images/seema-jaswal-tv-presenter.jpg",
-    "slug": "seema-jaswal-tv-presenter"
+    "link": "Tv Presenter"
   },
   {
-    "name": "Self Esteem",
-    "role": "Singer",
+    "artist": "Self Esteem",
+    "song": "self-esteem-singer",
     "image": "/mugshot-images/self-esteem-singer.jpg",
-    "slug": "self-esteem-singer"
+    "link": "Singer"
   },
   {
-    "name": "Shane Richie",
-    "role": "Actor Singer",
+    "artist": "Shane Richie",
+    "song": "shane-richie-actor-singer",
     "image": "/mugshot-images/shane-richie-actor-singer.jpg",
-    "slug": "shane-richie-actor-singer"
+    "link": "Actor Singer"
   },
   {
-    "name": "Shappi Khorsandi",
-    "role": "Comedian",
+    "artist": "Shappi Khorsandi",
+    "song": "shappi-khorsandi-comedian",
     "image": "/mugshot-images/shappi-khorsandi-comedian.jpg",
-    "slug": "shappi-khorsandi-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Shaun Murphy",
-    "role": "Snooker Player",
+    "artist": "Shaun Murphy",
+    "song": "shaun-murphy-snooker-player",
     "image": "/mugshot-images/shaun-murphy-snooker-player.jpg",
-    "slug": "shaun-murphy-snooker-player"
+    "link": "Snooker Player"
   },
   {
-    "name": "Shaun Wallace",
-    "role": "",
+    "artist": "Shaun Wallace",
+    "song": "shaun-wallace",
     "image": "/mugshot-images/shaun-wallace.jpg",
-    "slug": "shaun-wallace"
+    "link": ""
   },
   {
-    "name": "Shaun Walsh",
-    "role": "Comedian",
+    "artist": "Shaun Wallace",
+    "song": "shaun-wallace-dark-destroyer",
+    "image": "",
+    "link": "Dark Destroyer"
+  },
+  {
+    "artist": "Shaun Walsh",
+    "song": "shaun-walsh-comedian",
     "image": "/mugshot-images/shaun-walsh-comedian.jpg",
-    "slug": "shaun-walsh-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Shaun Williamson Barry",
-    "role": "Eastenders Actor",
+    "artist": "Shaun Williamson Barry",
+    "song": "shaun-williamson-barry-eastenders-actor",
     "image": "/mugshot-images/shaun-williamson-barry-eastenders-actor.jpg",
-    "slug": "shaun-williamson-barry-eastenders-actor"
+    "link": "Eastenders Actor"
   },
   {
-    "name": "Shayne Ward",
-    "role": "Singer Actor",
+    "artist": "Shayne Ward",
+    "song": "shayne-ward-singer-actor",
     "image": "/mugshot-images/shayne-ward-singer-actor.jpg",
-    "slug": "shayne-ward-singer-actor"
+    "link": "Singer Actor"
   },
   {
-    "name": "Shelley",
-    "role": "King Actress",
+    "artist": "Shelley",
+    "song": "shelley-king-actress",
     "image": "/mugshot-images/shelley-king-actress.jpg",
-    "slug": "shelley-king-actress"
+    "link": "King Actress"
   },
   {
-    "name": "Shirley Ballas",
-    "role": "Dancer",
+    "artist": "Shirley Ballas",
+    "song": "shirley-ballas-dancer",
     "image": "/mugshot-images/shirley-ballas-dancer.jpg",
-    "slug": "shirley-ballas-dancer"
+    "link": "Dancer"
   },
   {
-    "name": "Shobna Gulati",
-    "role": "Actress",
+    "artist": "Shobna Gulati",
+    "song": "shobna-gulati-actress",
     "image": "/mugshot-images/shobna-gulati-actress.jpg",
-    "slug": "shobna-gulati-actress"
+    "link": "Actress"
   },
   {
-    "name": "Showaddywaddy Band",
-    "role": "",
+    "artist": "Showaddywaddy Band",
+    "song": "showaddywaddy-band",
     "image": "/mugshot-images/showaddywaddy-band.jpg",
-    "slug": "showaddywaddy-band"
+    "link": ""
   },
   {
-    "name": "Showaddywaddy Singers",
-    "role": "",
+    "artist": "Showaddywaddy Singers",
+    "song": "showaddywaddy-singers",
     "image": "/mugshot-images/showaddywaddy-singers.jpg",
-    "slug": "showaddywaddy-singers"
+    "link": ""
   },
   {
-    "name": "Sian Wellby",
-    "role": "Presenter",
+    "artist": "Sian Wellby",
+    "song": "sian-wellby-presenter",
     "image": "/mugshot-images/sian-wellby-presenter.jpg",
-    "slug": "sian-wellby-presenter"
+    "link": "Presenter"
   },
   {
-    "name": "Simon Cowell Waxwork",
-    "role": "",
+    "artist": "Simon Cowell Waxwork",
+    "song": "simon-cowell-waxwork",
     "image": "/mugshot-images/Simon-cowell-waxwork.jpg",
-    "slug": "simon-cowell-waxwork"
+    "link": ""
   },
   {
-    "name": "Simon Reeve",
-    "role": "Author",
+    "artist": "Simon Reeve",
+    "song": "simon-reeve-author",
     "image": "/mugshot-images/simon-reeve-author.jpg",
-    "slug": "simon-reeve-author"
+    "link": "Author"
   },
   {
-    "name": "Simon Rimmer",
-    "role": "Presenter Chef",
+    "artist": "Simon Rimmer",
+    "song": "simon-rimmer-presenter-chef",
     "image": "/mugshot-images/simon-rimmer-presenter-chef.jpg",
-    "slug": "simon-rimmer-presenter-chef"
+    "link": "Presenter Chef"
   },
   {
-    "name": "Sinitta",
-    "role": "Singer",
+    "artist": "Sinitta",
+    "song": "sinitta-singer",
     "image": "/mugshot-images/sinitta-singer.jpg",
-    "slug": "sinitta-singer"
+    "link": "Singer"
   },
   {
-    "name": "Siobhan Fahey",
-    "role": "Actress",
+    "artist": "Siobhan Fahey",
+    "song": "siobhan-fahey-actress",
     "image": "/mugshot-images/siobhan-fahey-actress.jpg",
-    "slug": "siobhan-fahey-actress"
+    "link": "Actress"
   },
   {
-    "name": "Sir David",
-    "role": "Attenbrough Waxwork",
+    "artist": "Sir David",
+    "song": "sir-david-attenbrough-waxwork",
     "image": "/mugshot-images/sir-david-attenbrough-waxwork.jpg",
-    "slug": "sir-david-attenbrough-waxwork"
+    "link": "Attenbrough Waxwork"
   },
   {
-    "name": "Sir Ian",
-    "role": "Mckellen Actor",
+    "artist": "Sir Ian",
+    "song": "sir-ian-mckellen-actor",
     "image": "/mugshot-images/sir-ian-mckellen-actor.jpg",
-    "slug": "sir-ian-mckellen-actor"
+    "link": "Mckellen Actor"
   },
   {
-    "name": "Sir Michael",
-    "role": "Palin",
+    "artist": "Sir Michael",
+    "song": "sir-michael-palin",
     "image": "/mugshot-images/sir-michael-palin.jpg",
-    "slug": "sir-michael-palin"
+    "link": "Palin"
   },
   {
-    "name": "Sophie Ellis Bexter",
-    "role": "Singer",
+    "artist": "Sophie Ellis Bexter",
+    "song": "sophie-ellis-bexter-singer",
     "image": "/mugshot-images/sophie-ellis-bexter-singer.jpg",
-    "slug": "sophie-ellis-bexter-singer"
+    "link": "Singer"
   },
   {
-    "name": "Soraya Vivian",
-    "role": "Singer",
+    "artist": "Soraya Vivian",
+    "song": "soraya-vivian-singer",
     "image": "/mugshot-images/soraya-vivian-singer.jpg",
-    "slug": "soraya-vivian-singer"
+    "link": "Singer"
   },
   {
-    "name": "Spike 911",
-    "role": "Singer",
+    "artist": "Spike 911",
+    "song": "spike-911-singer",
     "image": "/mugshot-images/spike-911-singer.jpg",
-    "slug": "spike-911-singer"
+    "link": "Singer"
   },
   {
-    "name": "Stacey Dooley",
-    "role": "Tv Presenter",
+    "artist": "Stacey Dooley",
+    "song": "stacey-dooley-tv-presenter",
     "image": "/mugshot-images/stacey-dooley-tv-presenter.jpg",
-    "slug": "stacey-dooley-tv-presenter"
+    "link": "Tv Presenter"
   },
   {
-    "name": "Steff Todd",
-    "role": "Comedian",
+    "artist": "Steff Todd",
+    "song": "steff-todd-comedian",
     "image": "/mugshot-images/steff-todd-comedian.jpg",
-    "slug": "steff-todd-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Steph Mcgovern",
-    "role": "",
+    "artist": "Steph Mcgovern",
+    "song": "steph-mcgovern",
     "image": "/mugshot-images/Steph-Mcgovern.jpg",
-    "slug": "steph-mcgovern"
+    "link": ""
   },
   {
-    "name": "Stephanie Hirst",
-    "role": "Radio Presenter",
+    "artist": "Stephanie Hirst",
+    "song": "stephanie-hirst-radio-presenter",
     "image": "/mugshot-images/stephanie-hirst-radio-presenter.jpg",
-    "slug": "stephanie-hirst-radio-presenter"
+    "link": "Radio Presenter"
   },
   {
-    "name": "Stephen Graham",
-    "role": "Actor",
+    "artist": "Stephen Graham",
+    "song": "stephen-graham-actor",
     "image": "/mugshot-images/stephen-graham-actor.jpg",
-    "slug": "stephen-graham-actor"
+    "link": "Actor"
   },
   {
-    "name": "Stephen Hendry",
-    "role": "Snooker Player",
+    "artist": "Stephen Hendry",
+    "song": "stephen-hendry-snooker-player",
     "image": "/mugshot-images/stephen-hendry-snooker-player.jpg",
-    "slug": "stephen-hendry-snooker-player"
+    "link": "Snooker Player"
   },
   {
-    "name": "Stephen Mulhern",
-    "role": "Presenter",
+    "artist": "Stephen Mulhern",
+    "song": "stephen-mulhern-presenter",
     "image": "/mugshot-images/stephen-mulhern-presenter.jpg",
-    "slug": "stephen-mulhern-presenter"
+    "link": "Presenter"
   },
   {
-    "name": "Steve",
-    "role": "Royal Comedian",
+    "artist": "Stephen Mullhern",
+    "song": "stephen-mullhern-presenter",
+    "image": "",
+    "link": "Presenter"
+  },
+  {
+    "artist": "Steve",
+    "song": "steve-royal-comedian",
     "image": "/mugshot-images/steve-royal-comedian.jpg",
-    "slug": "steve-royal-comedian"
+    "link": "Royal Comedian"
   },
   {
-    "name": "Steve Davis Snoker",
-    "role": "Player",
+    "artist": "Steve Davis Snoker",
+    "song": "steve-davis-snoker-player",
     "image": "/mugshot-images/steve-davis-snoker-player.jpg",
-    "slug": "steve-davis-snoker-player"
+    "link": "Player"
   },
   {
-    "name": "Steve Fletcher",
-    "role": "Footballer",
+    "artist": "Steve Fletcher",
+    "song": "steve-fletcher-footballer",
     "image": "/mugshot-images/steve-fletcher-footballer.jpg",
-    "slug": "steve-fletcher-footballer"
+    "link": "Footballer"
   },
   {
-    "name": "Steve Huison",
-    "role": "Actor",
+    "artist": "Steve Huison",
+    "song": "steve-huison-actor",
     "image": "/mugshot-images/steve-huison-actor.jpg",
-    "slug": "steve-huison-actor"
+    "link": "Actor"
   },
   {
-    "name": "Steve Lamacq",
-    "role": "Radio Dj",
+    "artist": "Steve Lamacq",
+    "song": "steve-lamacq-radio-dj",
     "image": "/mugshot-images/steve-lamacq-radio-dj.jpg",
-    "slug": "steve-lamacq-radio-dj"
+    "link": "Radio Dj"
   },
   {
-    "name": "Steve Mcclaren Ex England",
-    "role": "Football Manager",
+    "artist": "Steve Mcclaren Ex England",
+    "song": "steve-mcclaren-ex-england-football-manager",
     "image": "/mugshot-images/steve-mcclaren-ex-england-football-manager.jpg",
-    "slug": "steve-mcclaren-ex-england-football-manager"
+    "link": "Football Manager"
   },
   {
-    "name": "Steve Mcfadden",
-    "role": "Actor Phil Mitchell",
+    "artist": "Steve Mcfadden",
+    "song": "steve-mcfadden-actor-phil-mitchell",
     "image": "/mugshot-images/steve-mcfadden-actor-phil-mitchell.jpg",
-    "slug": "steve-mcfadden-actor-phil-mitchell"
+    "link": "Actor Phil Mitchell"
   },
   {
-    "name": "Steve Mclaren Ex England",
-    "role": "Football Manager",
+    "artist": "Steve Mclaren Ex England",
+    "song": "steve-mclaren-ex-england-football-manager",
     "image": "/mugshot-images/steve-mclaren-ex-england-football-manager.jpg",
-    "slug": "steve-mclaren-ex-england-football-manager"
+    "link": "Football Manager"
   },
   {
-    "name": "Steve Wilson",
-    "role": "Tv Presenter",
+    "artist": "Steve Wilson",
+    "song": "steve-wilson-tv-presenter",
     "image": "/mugshot-images/steve-wilson-tv-presenter.jpg",
-    "slug": "steve-wilson-tv-presenter"
+    "link": "Tv Presenter"
   },
   {
-    "name": "Steven Arnold",
-    "role": "Actor",
+    "artist": "Steven Arnold",
+    "song": "steven-arnold-actor",
     "image": "/mugshot-images/steven-arnold-actor.jpg",
-    "slug": "steven-arnold-actor"
+    "link": "Actor"
   },
   {
-    "name": "Stevi Levy",
-    "role": "Boxer",
+    "artist": "Stevi Levy",
+    "song": "stevi-levy-boxer",
     "image": "/mugshot-images/stevi-levy-boxer.jpg",
-    "slug": "stevi-levy-boxer"
+    "link": "Boxer"
   },
   {
-    "name": "Stu Francis",
-    "role": "Personality",
+    "artist": "Stu Francis",
+    "song": "stu-francis-personality",
     "image": "/mugshot-images/stu-francis-personality.jpg",
-    "slug": "stu-francis-personality"
+    "link": "Personality"
   },
   {
-    "name": "Stuart Bingham",
-    "role": "Snooker Player",
+    "artist": "Stuart Bingham",
+    "song": "stuart-bingham-snooker-player",
     "image": "/mugshot-images/stuart-bingham-snooker-player.jpg",
-    "slug": "stuart-bingham-snooker-player"
+    "link": "Snooker Player"
   },
   {
-    "name": "Stuart Maconie",
-    "role": "Radio Presenter",
+    "artist": "Stuart Maconie",
+    "song": "stuart-maconie-radio-presenter",
     "image": "/mugshot-images/stuart-maconie-radio-presenter.jpg",
-    "slug": "stuart-maconie-radio-presenter"
+    "link": "Radio Presenter"
   },
   {
-    "name": "Sue Davaney",
-    "role": "Actress",
+    "artist": "Sue Davaney",
+    "song": "sue-davaney-actress",
     "image": "/mugshot-images/sue-davaney-actress.jpg",
-    "slug": "sue-davaney-actress"
+    "link": "Actress"
   },
   {
-    "name": "Sue Perkins",
-    "role": "Tv Presenter",
+    "artist": "Sue Perkins",
+    "song": "sue-perkins-tv-presenter",
     "image": "/mugshot-images/sue-perkins-tv-presenter.jpg",
-    "slug": "sue-perkins-tv-presenter"
+    "link": "Tv Presenter"
   },
   {
-    "name": "Sue Pollard",
-    "role": "Actress",
+    "artist": "Sue Pollard",
+    "song": "sue-pollard-actress",
     "image": "/mugshot-images/sue-pollard-actress.jpg",
-    "slug": "sue-pollard-actress"
+    "link": "Actress"
   },
   {
-    "name": "Sugarbabes Band Member Amelle Berrabah",
-    "role": "",
+    "artist": "Sugarbabes Band Member Amelle Berrabah",
+    "song": "sugarbabes-band-member-amelle-berrabah",
     "image": "/mugshot-images/sugarbabes-band-member-amelle-berrabah.jpg",
-    "slug": "sugarbabes-band-member-amelle-berrabah"
+    "link": ""
   },
   {
-    "name": "Susan Calman",
-    "role": "Comedian",
+    "artist": "Susan Calman",
+    "song": "susan-calman-comedian",
     "image": "/mugshot-images/susan-calman-comedian.jpg",
-    "slug": "susan-calman-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Susan Coleman",
-    "role": "Comedian",
+    "artist": "Susan Coleman",
+    "song": "susan-coleman-comedian",
     "image": "/mugshot-images/susan-coleman-comedian.jpg",
-    "slug": "susan-coleman-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Suzanne Shaw",
-    "role": "Singer",
+    "artist": "Suzanne Shaw",
+    "song": "suzanne-shaw-singer",
     "image": "/mugshot-images/suzanne-shaw-singer.jpg",
-    "slug": "suzanne-shaw-singer"
+    "link": "Singer"
   },
   {
-    "name": "Suzie Dent",
-    "role": "Presenter",
+    "artist": "Suzie Dent",
+    "song": "suzie-dent-presenter",
     "image": "/mugshot-images/suzie-dent-presenter.jpg",
-    "slug": "suzie-dent-presenter"
+    "link": "Presenter"
   },
   {
-    "name": "Sydnie Christmas",
-    "role": "Bgt Winner",
+    "artist": "Sydnie Christmas",
+    "song": "sydnie-christmas-bgt-winner",
     "image": "/mugshot-images/sydnie-christmas-bgt-winner.jpg",
-    "slug": "sydnie-christmas-bgt-winner"
+    "link": "Bgt Winner"
   },
   {
-    "name": "Sylvester Mc Coy",
-    "role": "Actor",
+    "artist": "Sylvester Mc Coy",
+    "song": "sylvester-mc-coy-actor",
     "image": "/mugshot-images/sylvester-mc-coy-actor.jpg",
-    "slug": "sylvester-mc-coy-actor"
+    "link": "Actor"
   },
   {
-    "name": "Talitha Wing",
-    "role": "Actress",
+    "artist": "Talitha Wing",
+    "song": "talitha-wing-actress",
     "image": "/mugshot-images/talitha-wing-actress.jpg",
-    "slug": "talitha-wing-actress"
+    "link": "Actress"
   },
   {
-    "name": "Tasha Ghouri",
-    "role": "Tv Personality",
+    "artist": "Tasha Ghouri",
+    "song": "tasha-ghouri-tv-personality",
     "image": "/mugshot-images/tasha-ghouri-tv-personality.jpg",
-    "slug": "tasha-ghouri-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Terry Giffiths",
-    "role": "Snooker Player",
+    "artist": "Terry Giffiths",
+    "song": "terry-giffiths-snooker-player",
     "image": "/mugshot-images/terry-giffiths-snooker-player.jpg",
-    "slug": "terry-giffiths-snooker-player"
+    "link": "Snooker Player"
   },
   {
-    "name": "Terry Waite",
-    "role": "Journalist Writer",
+    "artist": "Terry Waite",
+    "song": "terry-waite-journalist-writer",
     "image": "/mugshot-images/terry-waite-journalist-writer.jpg",
-    "slug": "terry-waite-journalist-writer"
+    "link": "Journalist Writer"
   },
   {
-    "name": "Tess Mug Shot Waxwork",
-    "role": "",
+    "artist": "Tess Mug Shot Waxwork",
+    "song": "tess-mug-shot-waxwork",
     "image": "/mugshot-images/Tess-Mug-Shot-waxwork.jpg",
-    "slug": "tess-mug-shot-waxwork"
+    "link": ""
   },
   {
-    "name": "The Sherlocks Band",
-    "role": "",
+    "artist": "The Sherlocks Band",
+    "song": "the-sherlocks-band",
     "image": "/mugshot-images/the-sherlocks-band.jpg",
-    "slug": "the-sherlocks-band"
+    "link": ""
   },
   {
-    "name": "The Vivienne",
-    "role": "Drag Queen",
+    "artist": "The Vivienne",
+    "song": "the-vivienne-drag-queen",
     "image": "/mugshot-images/the-vivienne-drag-queen.jpg",
-    "slug": "the-vivienne-drag-queen"
+    "link": "Drag Queen"
   },
   {
-    "name": "Thomas Forrester",
-    "role": "Tv Personality",
+    "artist": "Thomas Forrester",
+    "song": "thomas-forrester-tv-personality",
     "image": "/mugshot-images/thomas-forrester-tv-personality.jpg",
-    "slug": "thomas-forrester-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Tilly Ramsey",
-    "role": "Tv Personality",
+    "artist": "Tilly Ramsey",
+    "song": "tilly-ramsey-tv-personality",
     "image": "/mugshot-images/tilly-ramsey-tv-personality.jpg",
-    "slug": "tilly-ramsey-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Tim Brooke Taylor",
-    "role": "Comedian",
+    "artist": "Tim Brooke Taylor",
+    "song": "tim-brooke-taylor-comedian",
     "image": "/mugshot-images/tim-brooke-taylor-comedian.jpg",
-    "slug": "tim-brooke-taylor-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Tim Healy",
-    "role": "Actor",
+    "artist": "Tim Healy",
+    "song": "tim-healy-actor",
     "image": "/mugshot-images/tim-healy-actor.jpg",
-    "slug": "tim-healy-actor"
+    "link": "Actor"
   },
   {
-    "name": "Tim Peake",
-    "role": "Astronaut",
+    "artist": "Tim Peake",
+    "song": "tim-peake-astronaut",
     "image": "/mugshot-images/tim-peake-astronaut.jpg",
-    "slug": "tim-peake-astronaut"
+    "link": "Astronaut"
   },
   {
-    "name": "Timothy West",
-    "role": "Actor",
+    "artist": "Timothy West",
+    "song": "timothy-west-actor",
     "image": "/mugshot-images/timothy-west-actor.jpg",
-    "slug": "timothy-west-actor"
+    "link": "Actor"
   },
   {
-    "name": "Toby Foster",
-    "role": "Bbc Dj",
+    "artist": "Toby Foster",
+    "song": "toby-foster-bbc-dj",
     "image": "/mugshot-images/toby-foster-bbc-dj.jpg",
-    "slug": "toby-foster-bbc-dj"
+    "link": "Bbc Dj"
   },
   {
-    "name": "Toby Tarrant",
-    "role": "Radio Presenter",
+    "artist": "Toby Tarrant",
+    "song": "toby-tarrant-radio-presenter",
     "image": "/mugshot-images/toby-tarrant-radio-presenter.jpg",
-    "slug": "toby-tarrant-radio-presenter"
+    "link": "Radio Presenter"
   },
   {
-    "name": "Tom Allen",
-    "role": "Comedian",
+    "artist": "Tom Allen",
+    "song": "tom-allen-comedian",
     "image": "/mugshot-images/tom-allen-comedian.jpg",
-    "slug": "tom-allen-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Tom Ball",
-    "role": "Entertainer",
+    "artist": "Tom Ball",
+    "song": "tom-ball-entertainer",
     "image": "/mugshot-images/tom-ball-entertainer.jpg",
-    "slug": "tom-ball-entertainer"
+    "link": "Entertainer"
   },
   {
-    "name": "Tom Dailey Olympic Diver",
-    "role": "",
+    "artist": "Tom Dailey Olympic Diver",
+    "song": "tom-dailey-olympic-diver",
     "image": "/mugshot-images/tom-dailey-olympic-diver.jpg",
-    "slug": "tom-dailey-olympic-diver"
+    "link": ""
   },
   {
-    "name": "Tom Daley Olympic Diver",
-    "role": "",
+    "artist": "Tom Daley Olympic Diver",
+    "song": "tom-daley-olympic-diver",
     "image": "/mugshot-images/tom-daley-olympic-diver.jpg",
-    "slug": "tom-daley-olympic-diver"
+    "link": ""
   },
   {
-    "name": "Tom Davis",
-    "role": "Actor Comedian",
+    "artist": "Tom Davis",
+    "song": "tom-davis-actor-comedian",
     "image": "/mugshot-images/tom-davis-actor-comedian.jpg",
-    "slug": "tom-davis-actor-comedian"
+    "link": "Actor Comedian"
   },
   {
-    "name": "Tom Milner",
-    "role": "Actor",
+    "artist": "Tom Milner",
+    "song": "tom-milner-actor",
     "image": "/mugshot-images/tom-milner-actor.jpg",
-    "slug": "tom-milner-actor"
+    "link": "Actor"
   },
   {
-    "name": "Tommy Cannon",
-    "role": "Comedian",
+    "artist": "Tommy Cannon",
+    "song": "tommy-cannon-comedian",
     "image": "/mugshot-images/tommy-cannon-comedian.jpg",
-    "slug": "tommy-cannon-comedian"
+    "link": "Comedian"
   },
   {
-    "name": "Tony Blackburn",
-    "role": "Radio Presenter",
+    "artist": "Tony Blackburn",
+    "song": "tony-blackburn-radio-presenter",
     "image": "/mugshot-images/tony-blackburn-radio-presenter.jpg",
-    "slug": "tony-blackburn-radio-presenter"
+    "link": "Radio Presenter"
   },
   {
-    "name": "Tosin Cole",
-    "role": "Doctor Who Assistant",
+    "artist": "Tosin Cole",
+    "song": "tosin-cole-doctor-who-assistant",
     "image": "/mugshot-images/tosin-Cole-doctor-who-assistant.jpg",
-    "slug": "tosin-cole-doctor-who-assistant"
+    "link": "Doctor Who Assistant"
   },
   {
-    "name": "Tracy Brabin",
-    "role": "Mp Actress",
+    "artist": "Tosin Cole",
+    "song": "tosin-cole",
+    "image": "",
+    "link": ""
+  },
+  {
+    "artist": "Tracy Brabin",
+    "song": "tracy-brabin-mp-actress",
     "image": "/mugshot-images/tracy-brabin-mp-actress.jpg",
-    "slug": "tracy-brabin-mp-actress"
+    "link": "Mp Actress"
   },
   {
-    "name": "Tristan Gemmill Corrie",
-    "role": "Actor",
+    "artist": "Tristan Gemmill Corrie",
+    "song": "tristan-gemmill-corrie-actor",
     "image": "/mugshot-images/tristan-gemmill-corrie-actor.jpg",
-    "slug": "tristan-gemmill-corrie-actor"
+    "link": "Actor"
   },
   {
-    "name": "Tupele Dorgu",
-    "role": "Actress",
+    "artist": "Tupele Dorgu",
+    "song": "tupele-dorgu-actress",
     "image": "/mugshot-images/tupele-dorgu-actress.jpg",
-    "slug": "tupele-dorgu-actress"
+    "link": "Actress"
   },
   {
-    "name": "Tyler West",
-    "role": "Radio Presenter",
+    "artist": "Tyler West",
+    "song": "tyler-west-radio-presenter",
     "image": "/mugshot-images/tyler-west-radio-presenter.jpg",
-    "slug": "tyler-west-radio-presenter"
+    "link": "Radio Presenter"
   },
   {
-    "name": "Tysie Gallagher",
-    "role": "Boxer",
+    "artist": "Tysie Gallagher",
+    "song": "tysie-gallagher-boxer",
     "image": "/mugshot-images/tysie-gallagher-boxer.jpg",
-    "slug": "tysie-gallagher-boxer"
+    "link": "Boxer"
   },
   {
-    "name": "Uefa Trophy",
-    "role": "",
+    "artist": "Uefa Trophy",
+    "song": "uefa-trophy",
     "image": "/mugshot-images/uefa-trophy.jpg",
-    "slug": "uefa-trophy"
+    "link": ""
   },
   {
-    "name": "Vernon Kay",
-    "role": "Radio Presenter",
+    "artist": "Vernon Kay",
+    "song": "vernon-kay-radio-presenter",
     "image": "/mugshot-images/vernon-kay-radio-presenter.jpg",
-    "slug": "vernon-kay-radio-presenter"
+    "link": "Radio Presenter"
   },
   {
-    "name": "Vick Hope",
-    "role": "Dj",
+    "artist": "Vick Hope",
+    "song": "vick-hope-dj",
     "image": "/mugshot-images/vick-hope-dj.jpg",
-    "slug": "vick-hope-dj"
+    "link": "Dj"
   },
   {
-    "name": "Vicky Pattison",
-    "role": "Tv Personality",
+    "artist": "Vicky Pattison",
+    "song": "vicky-pattison-tv-personality",
     "image": "/mugshot-images/vicky-pattison-tv-personality.jpg",
-    "slug": "vicky-pattison-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Viggo Venn",
-    "role": "Entertainer",
+    "artist": "Viggo Venn",
+    "song": "viggo-venn-entertainer",
     "image": "/mugshot-images/viggo-venn-entertainer.jpg",
-    "slug": "viggo-venn-entertainer"
+    "link": "Entertainer"
   },
   {
-    "name": "Vincent Simone",
-    "role": "Dancer",
+    "artist": "Vincent Simone",
+    "song": "vincent-simone-dancer",
     "image": "/mugshot-images/vincent-simone-dancer.jpg",
-    "slug": "vincent-simone-dancer"
+    "link": "Dancer"
   },
   {
-    "name": "Viper Gladiator",
-    "role": "",
+    "artist": "Viper Gladiator",
+    "song": "viper-gladiator",
     "image": "/mugshot-images/viper-gladiator.jpg",
-    "slug": "viper-gladiator"
+    "link": ""
   },
   {
-    "name": "Vogue Williams",
-    "role": "Model",
+    "artist": "Vogue Williams",
+    "song": "vogue-williams-model",
     "image": "/mugshot-images/vogue-williams-model.jpg",
-    "slug": "vogue-williams-model"
+    "link": "Model"
   },
   {
-    "name": "Walliams Sant",
-    "role": "",
+    "artist": "Walliams Sant",
+    "song": "walliams-sant",
     "image": "/mugshot-images/walliams-sant.jpg",
-    "slug": "walliams-sant"
+    "link": ""
   },
   {
-    "name": "Wendi Peters",
-    "role": "Actress",
+    "artist": "Wendi Peters",
+    "song": "wendi-peters-actress",
     "image": "/mugshot-images/wendi-peters-actress.jpg",
-    "slug": "wendi-peters-actress"
+    "link": "Actress"
   },
   {
-    "name": "Wesley Nelson Reality",
-    "role": "Star",
+    "artist": "Wesley Nelson Reality",
+    "song": "wesley-nelson-reality-star",
     "image": "/mugshot-images/wesley-nelson-reality-star.jpg",
-    "slug": "wesley-nelson-reality-star"
+    "link": "Star"
   },
   {
-    "name": "Will Mellor",
-    "role": "Actor",
+    "artist": "Will Mellor",
+    "song": "will-mellor-actor",
     "image": "/mugshot-images/will-mellor-actor.jpg",
-    "slug": "will-mellor-actor"
+    "link": "Actor"
   },
   {
-    "name": "Will Young",
-    "role": "Singer",
+    "artist": "Will Young",
+    "song": "will-young-singer",
     "image": "/mugshot-images/will-young-singer.jpg",
-    "slug": "will-young-singer"
+    "link": "Singer"
   },
   {
-    "name": "Willie Thorne",
-    "role": "Snooker Player",
+    "artist": "Willie Thorne",
+    "song": "willie-thorne-snooker-player",
     "image": "/mugshot-images/willie-thorne-snooker-player.jpg",
-    "slug": "willie-thorne-snooker-player"
+    "link": "Snooker Player"
   },
   {
-    "name": "Wim Snape",
-    "role": "Actor",
+    "artist": "Wim Snape",
+    "song": "wim-snape-actor",
     "image": "/mugshot-images/wim-snape-actor.jpg",
-    "slug": "wim-snape-actor"
+    "link": "Actor"
   },
   {
-    "name": "Woody Ball",
-    "role": "Tv Personality",
+    "artist": "Woody Ball",
+    "song": "woody-ball-tv-personality",
     "image": "/mugshot-images/woody-ball-tv-personality.jpg",
-    "slug": "woody-ball-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Wynne Evans",
-    "role": "Radio Presenter",
+    "artist": "Wynne Evans",
+    "song": "wynne-evans-radio-presenter",
     "image": "/mugshot-images/wynne-evans-radio-presenter.jpg",
-    "slug": "wynne-evans-radio-presenter"
+    "link": "Radio Presenter"
   },
   {
-    "name": "Yvette Cooper",
-    "role": "Mp",
+    "artist": "Yvette Cooper",
+    "song": "yvette-cooper-mp",
     "image": "/mugshot-images/yvette-cooper-mp.jpg",
-    "slug": "yvette-cooper-mp"
+    "link": "Mp"
   },
   {
-    "name": "Zippy",
-    "role": "Tv Personality",
+    "artist": "Zippy",
+    "song": "zippy-tv-personality",
     "image": "/mugshot-images/zippy-tv-personality.jpg",
-    "slug": "zippy-tv-personality"
+    "link": "Tv Personality"
   },
   {
-    "name": "Zoe Ball",
-    "role": "Bbc Radio 2",
+    "artist": "Zoe Ball",
+    "song": "zoe-ball-bbc-radio-2",
     "image": "/mugshot-images/zoe-ball-bbc-radio-2.jpg",
-    "slug": "zoe-ball-bbc-radio-2"
+    "link": "Bbc Radio 2"
   },
   {
-    "name": "Zoe Lyons",
-    "role": "Comedian",
+    "artist": "Zoe Lyons",
+    "song": "zoe-lyons-comedian",
     "image": "/mugshot-images/zoe-Lyons-comedian.jpg",
-    "slug": "zoe-lyons-comedian"
+    "link": "Comedian"
+  },
+  {
+    "artist": "Zoe Lyons",
+    "song": "zoe-lyons",
+    "image": "",
+    "link": ""
   }
 ]

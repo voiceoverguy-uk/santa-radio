@@ -1,39 +1,19 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import './Music.css';
-
-const SONGS = [
-  { artist: 'Cruz Beckham', song: 'If Every Day was Christmas' },
-  { artist: 'Ava Max', song: 'Christmas Without You' },
-  { artist: 'Pat Benatar', song: 'Please Come Home For Christmas' },
-  { artist: 'Leona Lewis', song: "Kiss Me It's Christmas" },
-  { artist: 'Dion', song: 'Christmas (Baby Please Come Home)' },
-  { artist: 'The Beach Boys', song: "I'll Be Home For Christmas" },
-  { artist: 'Kylie Minogue', song: 'Cried Out Christmas' },
-  { artist: 'Jason Mraz', song: 'Winter Wonderland' },
-  { artist: 'Snap!', song: 'Mary Had A Little Boy' },
-  { artist: 'Mariah Carey', song: 'All I Want For Christmas Is You' },
-  { artist: 'Cher', song: 'DJ Play a Christmas Song' },
-  { artist: 'Bing Crosby', song: 'The Christmas Song' },
-  { artist: 'Jon Bon Jovi', song: 'Please Come Home For Christmas' },
-  { artist: 'Gladys Knight & The Pips', song: "It's Christmas Everyday" },
-  { artist: 'Matt Monro', song: "Mary's Boy Child" },
-  { artist: 'Michael Buble', song: 'The Christmas Sweater' },
-  { artist: 'Sam Ryder', song: "You're Christmas to me" },
-  { artist: 'Al Green', song: 'What Christmas Means To Me' },
-  { artist: 'Paul McCartney', song: 'Wonderful Christmastime' },
-  { artist: 'Chuck Berry', song: 'Run Rudolph Run' },
-  { artist: 'John Legend', song: 'Bring Me Love' },
-  { artist: 'Bing Crosby', song: 'God Rest Ye Merry Gentlemen' },
-  { artist: 'Michael Buble', song: 'Winter Wonderland' },
-  { artist: 'Kylie Minogue', song: 'White December' },
-];
+import songsData from '../data/songs.json';
 
 function getInitials(name) {
   return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
 }
 
-function ArtistAvatar({ artist }) {
+function ArtistAvatar({ artist, image }) {
+  if (image) {
+    return (
+      <img src={image} alt={artist} className="artist-avatar-img" />
+    );
+  }
   const colors = ['#b71c1c','#1565c0','#2e7d32','#6a1b9a','#e65100','#00695c','#37474f'];
   const color = colors[artist.charCodeAt(0) % colors.length];
   return (
@@ -46,7 +26,7 @@ function ArtistAvatar({ artist }) {
 export default function Music() {
   const [search, setSearch] = useState('');
 
-  const filtered = SONGS.filter(s =>
+  const filtered = songsData.filter(s =>
     s.artist.toLowerCase().includes(search.toLowerCase()) ||
     s.song.toLowerCase().includes(search.toLowerCase())
   );
@@ -56,6 +36,11 @@ export default function Music() {
       <Helmet>
         <title>Christmas Song Lyrics & Artists {'\u2013'} Santa Radio</title>
         <meta name="description" content="Discover the biggest online collection of Christmas songs with full lyrics, artists, custom artwork and festive music for every track on Santa Radio." />
+        <meta property="og:title" content="Christmas Song Lyrics & Artists – Santa Radio" />
+        <meta property="og:description" content="Discover the biggest online collection of Christmas songs with full lyrics, artists, custom artwork and festive music." />
+        <meta property="og:url" content="https://www.santaradio.co.uk/christmas-music" />
+        <meta name="twitter:card" content="summary" />
+        <link rel="canonical" href="https://www.santaradio.co.uk/christmas-music" />
       </Helmet>
       <div className="music-hero starry-bg">
         <div className="music-hero-content">
@@ -85,14 +70,14 @@ export default function Music() {
 
       <div className="music-grid-section starry-bg">
         <div className="container music-grid">
-          {filtered.map((s, i) => (
-            <div key={i} className="song-card">
-              <ArtistAvatar artist={s.artist} />
+          {filtered.map((s) => (
+            <Link key={`${s.id}-${s.link}`} to={`/christmas-artist/${s.id}-${s.link}`} className="song-card">
+              <ArtistAvatar artist={s.artist} image={s.image} />
               <div className="song-info">
                 <strong>{s.artist}</strong>
                 <span>{s.song}</span>
               </div>
-            </div>
+            </Link>
           ))}
           {filtered.length === 0 && (
             <p className="no-results">No songs found for &ldquo;{search}&rdquo;</p>

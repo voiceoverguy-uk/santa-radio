@@ -10,7 +10,7 @@ export default function Footer() {
       <div className="footer-links">
         <Link to="/">News</Link>
         <span>&middot;</span>
-        <Link to="/music">Playlist</Link>
+        <Link to="/christmas-music">Playlist</Link>
         <span>&middot;</span>
         <a href="#">FAQ&rsquo;s</a>
         <span>&middot;</span>
