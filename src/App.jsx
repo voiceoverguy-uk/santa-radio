@@ -12,6 +12,7 @@ import FreeSantaMessage from './pages/FreeSantaMessage.jsx';
 import SubmitASong from './pages/SubmitASong.jsx';
 import Links from './pages/Links.jsx';
 import SantaStories from './pages/SantaStories.jsx';
+import ArtistDetail from './pages/ArtistDetail.jsx';
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
         <Route path="/mugshots/:slug" element={<MugshotDetail />} />
         <Route path="/christmas-artist/:slug" element={<SongDetail />} />
         <Route path="/christmas-karaoke-lyrics/:slug" element={<KaraokeLyrics />} />
+        <Route path="/artist" element={<ArtistDetail />} />
         <Route path="/free-santa-message" element={<FreeSantaMessage />} />
         <Route path="/submit-a-song" element={<SubmitASong />} />
         <Route path="/links" element={<Links />} />

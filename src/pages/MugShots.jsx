@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import './MugShots.css';
-import mugshotsData from '../data/mugshots.json';
+import mugshotsData from '../data/mugshots.ts';
 
 const ITEMS_PER_PAGE = 48;
 

@@ -102,6 +102,11 @@
   color: inherit;
 }
 
+.song-card-link {
+  text-decoration: none;
+  color: inherit;
+}
+
 .song-card:hover {
   transform: translateY(-4px);
 }

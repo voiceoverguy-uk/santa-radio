@@ -1,0 +1,143 @@
+.artist-detail-page {
+  min-height: 80vh;
+  padding: 2rem 0;
+}
+
+.artist-detail-content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.breadcrumb {
+  padding: 1rem 0;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+.breadcrumb a {
+  color: #f5c518;
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.breadcrumb-sep {
+  margin: 0 0.5rem;
+  color: #888;
+}
+
+.artist-detail-header {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  margin: 2rem 0;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.artist-detail-image-wrap {
+  flex-shrink: 0;
+  width: 200px;
+  height: 200px;
+}
+
+.artist-detail-image {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 3px solid #f5c518;
+}
+
+.artist-detail-avatar {
+  width: 200px;
+  height: 200px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  font-weight: bold;
+  color: #fff;
+  border: 3px solid #f5c518;
+}
+
+.artist-detail-meta {
+  flex: 1;
+}
+
+.artist-detail-name {
+  font-size: 2rem;
+  margin: 0 0 0.5rem;
+}
+
+.artist-detail-song {
+  font-size: 1.4rem;
+  color: #fff;
+  margin: 0 0 1rem;
+  font-weight: 400;
+}
+
+.artist-detail-info {
+  color: #ddd;
+  line-height: 1.6;
+}
+
+.artist-detail-lyrics {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  padding: 2rem;
+  margin: 2rem 0;
+}
+
+.artist-detail-lyrics h3 {
+  color: #f5c518;
+  font-size: 1.3rem;
+  margin: 0 0 1rem;
+}
+
+.lyrics-text {
+  color: #eee;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  font-size: 1rem;
+}
+
+.artist-detail-actions {
+  margin: 2rem 0;
+}
+
+.back-btn {
+  display: inline-block;
+  padding: 0.7rem 1.5rem;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .artist-detail-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .artist-detail-image-wrap {
+    width: 150px;
+    height: 150px;
+  }
+
+  .artist-detail-image,
+  .artist-detail-avatar {
+    width: 150px;
+    height: 150px;
+  }
+
+  .artist-detail-name {
+    font-size: 1.5rem;
+  }
+}

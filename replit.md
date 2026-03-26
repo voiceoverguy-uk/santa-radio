@@ -21,6 +21,7 @@ A faithful React + Vite rebuild of www.santaradio.co.uk — The World's Best Chr
 | `/mugshots/:slug` | Mugshot Detail — individual celebrity page with photo, name, role, SEO |
 | `/christmas-artist/:id-:slug` | Song Detail — individual song/artist page with lyrics, YouTube, Twitter share |
 | `/christmas-karaoke-lyrics/:id-:slug` | Karaoke Lyrics — karaoke lyrics page for each song |
+| `/artist?s={id}` | Artist Detail — legacy URL support for individual song pages |
 | `/free-santa-message` | Free Santa Message — personalised message form |
 
 ### Redirects
@@ -89,6 +90,14 @@ The audio player targets `https://streaming.zeno.fm/yn65fsaurfhvv` — this may 
 - MusicRecording schema on song detail pages
 - Canonical URLs set on all pages
 - Old URLs (`/music`, `/mugshots`) redirect to new canonical equivalents
+
+## SQL Import Tooling
+
+- SQL import script at `scripts/import-sql.js` parses a MySQL dump file and can output populated `src/data/songs.ts`
+  - Usage: `node scripts/import-sql.js path/to/dump.sql`
+  - Handles multi-row INSERTs, SQL string escaping (backslash and doubled-quote), semicolons in strings, and explicit column lists
+- TypeScript data layer files (`src/data/songs.ts`, `src/data/mugshots.ts`) provide typed interfaces for song and mugshot data
+- Legacy URL `/artist?s={id}` supported via ArtistDetail page with SEO meta tags, breadcrumbs, Schema.org structured data
 
 ## Notes
 
