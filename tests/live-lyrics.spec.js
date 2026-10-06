@@ -1,6 +1,35 @@
 import { test, expect } from '@playwright/test';
 import { matchLiveSong } from '../src/data/matchLiveSong.js';
 
+test('waiting messages rotate and reset when the lyrics reader reopens', async ({ page }) => {
+  await page.clock.install();
+  await page.route('**/api/radio-metadata', route => route.fulfill({ json: {
+    current: null, currentStatus: 'unavailable', upcoming: [], upcomingStatus: 'unavailable',
+  } }));
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Lyrics', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Live lyrics' });
+  await expect(dialog).not.toContainText('word-by-word timing');
+  const messages = [
+    'Hang on, Santa is getting the next track ready. Lyrics on the way!',
+    'One moment! An elf has hidden the lyric sheet under the mince pies.',
+    'Hold your reindeer! Santa is finding the words for your next singalong.',
+    'Just a tick! Rudolph is shining a light on the next lyric sheet.',
+    'Bear with us! The elves are untangling the lyrics from the fairy lights.',
+    'Nearly there! Santa is brushing the biscuit crumbs off the songbook.',
+  ];
+  for (const message of messages) {
+    await expect(dialog).toContainText(message);
+    await page.clock.runFor(8000);
+  }
+  await expect(dialog).toContainText(messages[0]);
+  await page.clock.runFor(8000);
+  await page.keyboard.press('Escape');
+  await page.clock.runFor(16000);
+  await page.getByRole('button', { name: 'Lyrics', exact: true }).click();
+  await expect(dialog).toContainText(messages[0]);
+});
+
 test('live matching requires both fields and refuses ambiguous versions', () => {
   expect(matchLiveSong({ artist: 'Bo Selecta', title: 'Bo Selecta - Proper Crimbo' })).toMatchObject({ status: 'ready', song: { id: 66, song: 'Proper Crimbo' } });
   expect(matchLiveSong({ artist: 'Other Artist', title: 'Bo Selecta - Proper Crimbo' }).status).toBe('unmatched');
@@ -56,7 +85,7 @@ test('lyrics reader follows feed changes, clears stale text and leaves audio unt
   await expect(dialog.locator('pre')).toHaveCount(0);
   unavailable = true;
   await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
-  await expect(dialog).toContainText('Current track unavailable.');
+  await expect(dialog).toContainText('Hang on, Santa is getting the next track ready. Lyrics on the way!');
   await expect(dock).toContainText('Santa is selecting the next track');
   await expect(dialog).not.toContainText('Unknown Song');
   unavailable = false;
