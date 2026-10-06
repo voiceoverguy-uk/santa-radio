@@ -1,106 +1,12 @@
-.santa-message-section {
-  background: linear-gradient(180deg, #0d1b3e 0%, #1a3a6e 50%, #0d1b3e 100%);
-  padding: 60px 20px;
-  text-align: center;
-}
-
-.santa-message-heading {
-  font-family: 'Cinzel', serif;
-  font-size: clamp(1.6rem, 4vw, 2.4rem);
-  font-weight: 700;
-  margin-bottom: 24px;
-  text-align: center;
-}
-
-.santa-message-box {
-  background: #b71c1c;
-  border: 2px solid rgba(255,255,255,0.2);
-  border-radius: 8px;
-  max-width: 500px;
-  margin: 0 auto;
-  padding: 28px 32px;
-  text-align: left;
-}
-
-.form-error {
-  background: rgba(255,255,255,0.15);
-  border: 1px solid rgba(255,255,255,0.4);
-  border-radius: 4px;
-  padding: 10px 14px;
-  font-size: 0.9rem;
-  color: white;
-  margin-bottom: 12px;
-}
-
-.form-desc {
-  font-size: 0.88rem;
-  color: rgba(255,255,255,0.9);
-  margin-bottom: 16px;
-  line-height: 1.6;
-}
-
-.audio-example {
-  margin-bottom: 16px;
-  font-size: 0.85rem;
-  color: rgba(255,255,255,0.85);
-}
-
-.santa-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.santa-form input {
-  padding: 12px 14px;
-  border: 1px solid rgba(255,255,255,0.3);
-  border-radius: 4px;
-  background: rgba(255,255,255,0.95);
-  font-size: 0.85rem;
-  color: #333;
-  font-family: 'Open Sans', sans-serif;
-  letter-spacing: 1px;
-}
-
-.santa-form input::placeholder {
-  color: #999;
-  letter-spacing: 1px;
-  font-size: 0.8rem;
-}
-
-.santa-form input:focus {
-  outline: 2px solid #f0d060;
-  border-color: transparent;
-}
-
-.form-submit {
-  margin-top: 6px;
-  font-size: 0.85rem;
-  padding: 14px;
-  width: 100%;
-  border-radius: 4px;
-  text-align: center;
-  letter-spacing: 0.5px;
-}
-
-.success-message {
-  text-align: center;
-  color: white;
-  padding: 20px 0;
-}
-
-.success-icon {
-  font-size: 3rem;
-  display: block;
-  margin-bottom: 12px;
-}
-
-.success-message h3 {
-  font-size: 1.1rem;
-  margin-bottom: 8px;
-}
-
-.success-message p {
-  font-size: 0.9rem;
-  opacity: 0.85;
-}
+.santa-message-section { padding: 95px 0; background: #14382a; border-block: 1px solid #D4AF3725; }
+.message-layout { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 80px; }
+.santa-message-heading { color: var(--cream); font-size: clamp(2rem,3.4vw,3rem); text-align: left; margin-bottom: 24px; }
+.message-intro > p:not(.eyebrow) { font-size: .9rem; color: var(--muted); max-width: 400px; }
+.message-detail-link { display: inline-block; margin-top: 24px; font-size: .78rem; color: var(--gold-light); }
+.santa-message-box { background: #0c2a20; border: 1px solid #D4AF3750; border-radius: 20px; padding: 36px; text-align: left; box-shadow: 0 12px 40px #061c1720; }
+.message-seal { border: 1px solid var(--gold); color: var(--gold-light); font-family: 'Cinzel',serif; display: grid; place-items: center; border-radius: 50%; width: 50px; height: 50px; margin-bottom: 22px; font-size: 1.4rem; }
+.santa-message-box h3 { font-size: 1.25rem; color: var(--gold-light); margin-bottom: 18px; }
+.form-desc { font-size: .86rem; color: var(--muted); }
+.service-notice { font-size: .74rem; color: #c8d3c5; padding: 16px 0 24px; }
+.santa-message-box .btn-red { font-size: .75rem; }
+@media(max-width:767px) { .santa-message-section { padding: 65px 0; } .message-layout { grid-template-columns: 1fr; gap: 32px; } .santa-message-box { padding: 28px; } }

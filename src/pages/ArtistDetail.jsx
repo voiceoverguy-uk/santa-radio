@@ -30,7 +30,7 @@ export default function ArtistDetail() {
     );
   }
 
-  const colors = ['#b71c1c','#1565c0','#2e7d32','#6a1b9a','#e65100','#00695c','#37474f'];
+  const colors = ['#1B4332','#254c3a','#365642','#7c242b'];
   const color = colors[song.artist.charCodeAt(0) % colors.length];
   const metaDescription = song.info || `${song.artist} - ${song.song}. Listen to this Christmas classic on Santa Radio.`;
   const pageTitle = `${song.artist} - ${song.song} - Santa Radio`;

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import Portrait from '../components/Portrait.jsx';
 import './Music.css';
 import songsData from '../data/songs.json';
 
@@ -11,10 +12,10 @@ function getInitials(name) {
 function ArtistAvatar({ artist, image }) {
   if (image) {
     return (
-      <img src={image} alt={artist} className="artist-avatar-img" />
+      <Portrait src={image} alt={artist} className="artist-avatar-img" />
     );
   }
-  const colors = ['#b71c1c','#1565c0','#2e7d32','#6a1b9a','#e65100','#00695c','#37474f'];
+  const colors = ['#1B4332','#254c3a','#365642','#7c242b'];
   const color = colors[artist.charCodeAt(0) % colors.length];
   return (
     <div className="artist-avatar" style={{ background: color }}>
@@ -52,19 +53,16 @@ export default function Music() {
             custom artwork and festive music for every track. Search instantly through hundreds of
             Christmas classics, pop hits and hidden gems. New songs and artist images added regularly.
           </p>
-          <button className="btn-red suggest-btn">Suggest a song</button>
+          <Link to="/submit-a-song" className="btn-red suggest-btn">Suggest a song</Link>
           <input
             type="text"
+            aria-label="Search for a song or artist"
             className="music-search"
             placeholder="Search for a song or artist"
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
-          <div className="music-icons">
-            <span title="Shuffle">{'\u{1F500}'}</span>
-            <span title="Artists">{'\u{1F465}'}</span>
-            <span title="Songs">{'\u{1F3B5}'}</span>
-          </div>
+          <p className="music-results-count" role="status">{filtered.length} songs to explore</p>
         </div>
       </div>
 

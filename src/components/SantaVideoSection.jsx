@@ -7,13 +7,12 @@ export default function SantaVideoSection() {
         <h2 className="section-title santa-video-title gold-text">Personalised Santa Video</h2>
         <div className="santa-video-content">
           <p>
-            Take a magical tour of the North Pole with Santa himself! Our personalised Santa video experience
-            lets your child receive a unique video message from Santa, featuring their name and a magical journey
-            through Santa{'\u2019'}s workshop, the reindeer stables, and the elves{'\u2019'} toy factory.
+            Make time for a special Christmas moment. Find out about personalised Santa videos
+            on the original Santa Radio website.
           </p>
           <p>
-            Watch as Santa reads your child{'\u2019'}s name from his Nice List and delivers a heartfelt Christmas
-            message just for them. It{'\u2019'}s the perfect way to bring the magic of Christmas to life!
+            The link below opens the existing video service in a new tab. Availability and
+            details are provided there; no video is created or purchased on this website.
           </p>
           <div className="santa-video-cta">
             <a
@@ -22,7 +21,7 @@ export default function SantaVideoSection() {
               rel="noopener noreferrer"
               className="btn-red santa-video-btn"
             >
-              Get Your Personalised Santa Video
+              Explore Santa Videos
             </a>
           </div>
         </div>

@@ -10,7 +10,7 @@ function getInitials(name) {
   return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
 }
 
-const colors = ['#b71c1c','#1565c0','#2e7d32','#6a1b9a','#e65100','#00695c','#37474f','#c62828'];
+const colors = ['#1B4332','#254c3a','#365642','#7c242b'];
 
 export default function MugShots() {
   const [search, setSearch] = useState('');
@@ -67,6 +67,7 @@ export default function MugShots() {
           </p>
           <input
             type="text"
+            aria-label="Search celebrity names or roles"
             className="mugshots-search"
             placeholder="Search for a Celebrity or Talent"
             value={search}

@@ -4,6 +4,7 @@ import './Footer.css';
 export default function Footer() {
   return (
     <footer className="footer">
+      <Link to="/" className="footer-wordmark logo-text">Santa Radio</Link>
       <div className="footer-attribution">
         Brought to life by the Voice of Santa, British Voiceover Artist Guy Harris
       </div>
@@ -12,7 +13,7 @@ export default function Footer() {
         <span>&middot;</span>
         <Link to="/christmas-music">Playlist</Link>
         <span>&middot;</span>
-        <a href="#">FAQ&rsquo;s</a>
+        <a href="mailto:santa@santaradio.co.uk?subject=Santa%20Radio%20question">Questions? Email us</a>
         <span>&middot;</span>
         <Link to="/submit-a-song">Submit your song</Link>
         <span>&middot;</span>
@@ -20,13 +21,13 @@ export default function Footer() {
         <span>&middot;</span>
         <Link to="/apps">Download the app</Link>
         <span>&middot;</span>
-        <a href="#">Santa Guy</a>
+        <a href="https://www.santaradio.co.uk" target="_blank" rel="noopener noreferrer">Original Santa Radio</a>
         <span>&middot;</span>
         <Link to="/links">Links</Link>
         <span>&middot;</span>
-        <a href="#">Privacy Policy</a>
+        <a href="mailto:santa@santaradio.co.uk?subject=Privacy%20enquiry">Privacy enquiries</a>
         <span>&middot;</span>
-        <a href="#">TuneIn</a>
+        <a href="https://tunein.com/search/?query=Santa%20Radio" target="_blank" rel="noopener noreferrer">TuneIn</a>
         <span>&middot;</span>
         <Link to="/santa-stories">Santa Stories</Link>
       </div>

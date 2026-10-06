@@ -13,12 +13,16 @@ import SubmitASong from './pages/SubmitASong.jsx';
 import Links from './pages/Links.jsx';
 import SantaStories from './pages/SantaStories.jsx';
 import ArtistDetail from './pages/ArtistDetail.jsx';
+import AudioPlayer from './components/AudioPlayer.jsx';
+import { RadioProvider } from './components/RadioProvider.jsx';
+import './north-pole.css';
 
-export default function App() {
+function App() {
   return (
-    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+    <RadioProvider><BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <a href="#page-content" className="skip-link">Skip to content</a>
       <Navbar />
-      <Routes>
+      <div id="page-content" tabIndex={-1}><Routes>
         <Route path="/" element={<Home />} />
         <Route path="/apps" element={<Apps />} />
         <Route path="/christmas-music" element={<Music />} />
@@ -33,8 +37,10 @@ export default function App() {
         <Route path="/santa-stories" element={<SantaStories />} />
         <Route path="/music" element={<Navigate to="/christmas-music" replace />} />
         <Route path="/mugshots" element={<Navigate to="/mugshots/all" replace />} />
-      </Routes>
+      </Routes></div>
       <Footer />
-    </BrowserRouter>
+      <AudioPlayer />
+    </BrowserRouter></RadioProvider>
   );
 }
+export default App;

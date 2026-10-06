@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import Portrait from './Portrait.jsx';
 import './MugshotsPreview.css';
 import mugshotsData from '../data/mugshots.json';
 
@@ -41,7 +42,7 @@ export default function MugshotsPreview() {
         <div className="mugshots-grid">
           {celebs.map(celeb => (
             <Link key={celeb.song} to={`/mugshots/${celeb.song}`} className="mug-card">
-              <img src={celeb.image} alt={celeb.artist} className="mug-photo" loading="lazy" />
+              <Portrait src={celeb.image} alt={celeb.artist} className="mug-photo" />
               <div className="mug-info">
                 <strong>{celeb.artist}</strong>
                 <span>{celeb.link}</span>

@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import Portrait from '../components/Portrait.jsx';
 import mugshotsData from '../data/mugshots.json';
 import './MugshotDetail.css';
 
@@ -70,7 +71,7 @@ export default function MugshotDetail() {
             <Link to="/">Home</Link> &rsaquo; <Link to="/mugshots/all">Mug Shots</Link> &rsaquo; <span>{celeb.artist}</span>
           </nav>
           <div className="mugshot-detail-card">
-            <img
+            <Portrait
               src={celeb.image}
               alt={`${celeb.artist} with Santa Radio mug`}
               className="mugshot-detail-photo"

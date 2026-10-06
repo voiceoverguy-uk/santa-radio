@@ -144,7 +144,7 @@ export default function SongDetail() {
                 <img src={song.image} alt={`${song.artist} - ${song.song}`} className="song-artwork-img" />
               ) : (
                 <div className="song-artwork-placeholder">
-                  <span className="placeholder-note">{String.fromCodePoint(0x1F3B5)}</span>
+                  <span className="placeholder-note" aria-hidden="true">{song.artist.split(' ').filter(Boolean).map(word => word[0]).slice(0, 2).join('')}</span>
                   <p>{song.artist}</p>
                 </div>
               )}

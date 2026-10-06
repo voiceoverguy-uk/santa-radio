@@ -1,0 +1,106 @@
+/* Shared North Pole treatment, deliberately loaded after legacy page styles. */
+#page-content { min-height: 65dvh; }
+#page-content > main:not(.home-page) { padding-top: 85px; }
+main h1,main h2,main h3 { font-family: 'Cinzel',serif; font-weight: 400; }
+main .gold-text { background: none; -webkit-text-fill-color: var(--gold-light); color: var(--gold-light); filter: none; }
+.fsm-title,.hero-title-app,.music-hero-title { font-family: 'Dancing Script',cursive; }
+.starry-bg { background: var(--navy-dark); }
+.starry-bg::before { display: none; }
+.section-white,.section-light { background: #f3eddc; }
+.music-hero,.mugshots-page-hero,.fsm-hero,.apps-hero,.stories-hero,.submit-hero,.links-hero { background: radial-gradient(ellipse at 50% 0%,#244d39,var(--navy-dark) 75%); padding-top: 70px; padding-bottom: 70px; border-bottom: 1px solid #D4AF3726; }
+.mugshots-page-title,.stories-title,.submit-title,.links-title { color: var(--gold-light); }
+.song-detail-page,.karaoke-page,.mugshot-detail-page,.artist-detail-page { background: var(--navy-dark); min-height: 75dvh; }
+.music-search,.mugshots-search { font-family: 'Inter',sans-serif; background: #fff8e70d; color: var(--cream); border: 1px solid #D4AF3755; border-radius: 30px; padding: 15px 22px; box-shadow: none; }
+.music-search::placeholder,.mugshots-search::placeholder { color: #c1cbbb; }
+.music-grid-section,.mugshots-grid-section { background: #0c281e; padding-top: 50px; }
+.music-grid { grid-template-columns: repeat(4,1fr); gap: 20px; }
+.song-card { background: #153628; border: 1px solid #D4AF372a; border-radius: 16px; padding: 25px 14px; }
+.artist-avatar,.artist-avatar-img { border: 1px solid #D4AF3750; box-shadow: none; }
+.artist-avatar { background: #254c3a !important; font-family: 'Cinzel',serif; font-weight: 400; color: var(--gold-light); }
+.song-info strong,.mug-info strong { color: var(--cream); font-weight: 500; }
+.song-info span,.mug-info span { color: var(--muted); }
+.mugshots-grid { grid-template-columns: repeat(4,1fr); gap: 22px; }
+.mugshot-card,.mug-card { border: 1px solid #D4AF372a; background: #153628; border-radius: 15px; overflow: hidden; }
+.mugshot-photo,.mug-photo { border: none; border-radius: 0; margin: 0; aspect-ratio: 1; width: 100%; object-fit: cover; }
+.mugshot-info,.mug-info { padding: 16px; }
+.mugshot-info strong { color: var(--gold-light); font-weight: 500; font-size: .9rem; }
+.mugshot-info span { color: var(--muted); font-size: .75rem; }
+.mugshots-page-logo-wrap,.mugshots-logo { display: none; }
+.mugshot-fallback { background: #254c3a !important; border: none; border-radius: 0; margin: 0; color: var(--gold-light); }
+.no-results { border: 1px dashed #D4AF3750; background: #153628; border-radius: 14px; color: var(--muted); padding: 45px 24px; }
+.lyrics-toggle-btn,.karaoke-link,.load-more-btn,.contact-btn,.suggest-btn,.app-dl-btn,.karaoke-actions .btn-red { display: inline-flex; align-items: center; justify-content: center; font-family: 'Inter',sans-serif; background: var(--red); border: 1px solid transparent; color: var(--cream); border-radius: 999px; font-weight: 500; font-size: .85rem; text-transform: none; letter-spacing: 0; box-shadow: none; transition: transform .2s ease; }
+.lyrics-toggle-btn:hover,.karaoke-link:hover,.load-more-btn:hover,.contact-btn:hover,.karaoke-actions .btn-red:hover { background: var(--red-dark); border-color: var(--gold); }
+.btn-red::before,.contact-btn::before,.soundboard-btn::before { display: none; }
+.lyrics-text,.song-lyrics-content pre,.karaoke-lyrics-text { font-family: 'Inter',sans-serif; line-height: 1.9; color: #e6ecdf; }
+.song-artwork-placeholder { background: #1B4332; border: 1px solid #D4AF3740; }
+.song-artwork-placeholder .placeholder-note { font-family: 'Cinzel',serif; color: var(--gold-light); }
+.song-lyrics-content,.karaoke-lyrics-display,.artist-detail-header,.artist-detail-lyrics,.stories-body,.links-body,.submit-body { background: #143628; border: 1px solid #D4AF3730; border-radius: 16px; }
+.mugshot-detail-card { background: #123326; border: 1px solid #D4AF3730; border-radius: 16px; padding: 30px; }
+.mugshot-detail-name,.song-detail-artist,.karaoke-artist,.artist-detail-lyrics h3,.back-link,.breadcrumb a,.links-body a,.submit-body a,.count-num { color: var(--gold-light); }
+.app-section-title,.feature-label { color: var(--navy-dark); }
+.app-section-sub,.feature-desc { color: #526252; }
+.app-section { padding: 70px 0; }
+.app-features-grid { gap: 25px; }
+.feature-icon { color: #927330; font-family: 'Cinzel',serif; font-size: 1.5rem; }
+.app-dl-btn { padding: 14px 28px; }
+.apps-divider { background: #D4AF3730; }
+.santa-video-section { background: #081e17; padding: 95px 0; }
+.santa-video-title { font-size: clamp(1.8rem,3.5vw,2.6rem); }
+.santa-video-content { max-width: 680px; color: var(--muted); font-size: .9rem; line-height: 1.9; }
+.santa-video-content .btn-red { font-size: .8rem; }
+.soundboard { background: #15382a; padding: 85px 0; border-block: 1px solid #D4AF3726; }
+.soundboard::before { display: none; }
+.soundboard-title { font-size: clamp(1.8rem,3.5vw,2.6rem); color: var(--cream); }
+.soundboard-subtitle { color: var(--muted); max-width: 660px; font-size: .85rem; margin-inline: auto; }
+.soundboard-grid { max-width: 860px; gap: 12px; }
+.soundboard-btn { background: #102d22; border: 1px solid #D4AF374a; border-radius: 999px; color: var(--gold-light); font: 400 .78rem 'Inter',sans-serif; box-shadow: none; min-height: 47px; }
+.soundboard-btn:disabled { opacity: .75; }
+.soundboard-btn:hover { transform: none; box-shadow: none; }
+.soundboard-hint { font-size: .73rem; color: var(--muted); max-width: 600px; margin: 22px auto 0; }
+.youtube-section { background: #0b271e; padding: 90px 0; }
+.youtube-title { font-size: clamp(1.6rem,3vw,2.4rem); max-width: 700px; color: var(--cream); }
+.tv-frame { max-width: 860px; padding: 8px; border: 1px solid #D4AF3750; border-radius: 18px; background: #18382a; box-shadow: 0 20px 45px #06150f30; }
+.tv-screen { background: #081e17; border: none; border-radius: 10px; box-shadow: none; position: relative; }
+.tv-body { display: none; }
+.video-preview { border: none; display: flex; flex-direction: column; gap: 12px; align-items: center; justify-content: center; width: 100%; height: 100%; background: linear-gradient(#081e1755,#081e17bb),url('/images/north-pole-hero.webp') center / cover; color: var(--cream); font-size: .8rem; }
+.video-preview-icon { display: grid; place-items: center; width: 58px; height: 58px; border-radius: 50%; background: var(--red); border: 1px solid #D4AF3770; }
+.video-disclosure { text-align: center; color: var(--muted); font-size: .7rem; margin-top: 20px; }
+.video-disclosure a { color: var(--gold-light); text-decoration: underline; }
+.mugshots-preview { padding: 90px 0; background: #081e17; }
+.mug-title { font-size: clamp(1.8rem,3.5vw,2.7rem); color: var(--cream); }
+.mug-sub { font-size: .85rem; color: var(--muted); margin: 0 auto 35px; }
+.contact-section { background: #1B4332; color: var(--cream); padding: 70px 0; border-top: 1px solid #D4AF3740; }
+.contact-title { font-family: 'Cinzel',serif; color: var(--cream); font-size: clamp(1.8rem,3vw,2.5rem); font-weight: 400; margin-bottom: 16px; }
+.contact-sub { color: #d0d9c8; font-size: .88rem; margin-bottom: 25px; }
+.contact-btn { padding: 13px 29px; }
+.footer { background: #061911; color: var(--muted); padding: 65px 28px 195px; border-top: 1px solid #D4AF3730; }
+.footer-attribution { font-family: 'Cinzel',serif; color: var(--gold-light); font-weight: 400; font-size: .9rem; max-width: 600px; margin: 0 auto 28px; }
+.footer-links { max-width: 860px; margin: 0 auto; gap: 13px 22px; }
+.footer-links a { color: var(--muted); font-size: .75rem; }
+.footer-links a:hover { color: var(--gold-light); }
+.footer-links span { display: none; }
+.footer-social { margin-top: 30px; }
+.footer-social a { color: var(--gold-light); }
+.footer-copy { color: #a9b9a9; font-size: .65rem; }
+.footer-wordmark { display: inline-block; margin-bottom: 25px; font-size: 2.6rem; }
+.footer-attribution { font-style: normal; }
+.portrait-fallback { display: grid; place-items: center; background: #254c3a; color: var(--gold-light); font-family: 'Cinzel',serif; font-size: 2rem; }
+.artist-detail-avatar { background: #254c3a !important; border-color: #D4AF3750; color: var(--gold-light); font-family: 'Cinzel',serif; font-weight: 400; }
+.artist-detail-image { border-color: #D4AF3750; }
+.music-results-count { font-size: .72rem; color: var(--muted); }
+html[data-effects="off"] *,html[data-effects="off"] *::before,html[data-effects="off"] *::after { animation: none !important; }
+@media(max-width:767px) {
+  .music-grid,.mugshots-grid { grid-template-columns: 1fr; gap: 18px; }
+  .music-grid-section,.mugshots-grid-section { padding-inline: 0; }
+  .song-card { flex-direction: row; text-align: left; padding: 18px; gap: 18px; }
+  .song-info strong { font-size: .9rem; }
+  .artist-avatar,.artist-avatar-img { width: 62px; height: 62px; }
+  .mugshot-card,.mug-card { max-width: 440px; width: 100%; margin-inline: auto; }
+  .mugshot-detail-card { padding: 20px; }
+  .santa-video-section,.soundboard,.youtube-section,.mugshots-preview { padding: 65px 0; }
+  .soundboard-grid { grid-template-columns: repeat(2,1fr); gap: 10px; }
+  .footer { padding-bottom: 185px; }
+  .footer-links { gap: 12px 20px; }
+  .app-layout,.app-features-grid { grid-template-columns: 1fr; }
+  .app-download-btns { flex-direction: column; align-items: center; }
+}

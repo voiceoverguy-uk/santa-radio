@@ -13,7 +13,7 @@ export default function FreeSantaMessage() {
         <div className="fsm-hero-content">
           <h1 className="fsm-title gold-text">Santa Radio</h1>
           <h2 className="fsm-sub">Free Personalised Santa Message</h2>
-          <p className="fsm-desc">Get a FREE, instantly downloadable personalised message from Santa for your child.</p>
+          <p className="fsm-desc">Explore personalised Santa messages. Requests and downloads are not currently available on this website.</p>
         </div>
       </div>
       <SantaMessageForm />

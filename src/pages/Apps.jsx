@@ -20,9 +20,9 @@ function AppSection({ title, subtitle, imgSrc, features }) {
             <img src={imgSrc} alt={title} className="app-phone-img" />
           </div>
           <div className="app-features-grid">
-            {features.map(f => (
+            {features.map((f, index) => (
               <div key={f.label} className="feature-item">
-                <div className="feature-icon">{f.icon}</div>
+                <div className="feature-icon" aria-hidden="true">{String(index + 1).padStart(2, '0')}</div>
                 <h4 className="feature-label">{f.label}</h4>
                 <p className="feature-desc">{f.desc}</p>
               </div>
@@ -35,28 +35,28 @@ function AppSection({ title, subtitle, imgSrc, features }) {
 }
 
 const RADIO_FEATURES = [
-  { icon: '\u{1F4DE}', label: 'Leave a message', desc: 'Your child can leave a FREE voicemail message for Santa.' },
-  { icon: '\u23EA', label: 'Playback', desc: "Playback your Child's message to hear what they asked Santa." },
-  { icon: '\u{1F4F1}', label: 'Santa Soundboard', desc: 'Head Elf recorded Santa. Play back some fun festive phrases.' },
-  { icon: '\u2709\uFE0F', label: 'Send a message', desc: 'Send a message to Santa and read other messages & replies.' },
-  { icon: '\u{1F381}', label: '100% FREE', desc: "It's 100% free with none of those annoying adverts." },
-  { icon: '\u{1F3B5}', label: 'Santa Radio', desc: 'You can also listen and enjoy Santa Radio direct from the app.' },
+  { label: 'Leave a message', desc: 'Your child can leave a FREE voicemail message for Santa.' },
+  { label: 'Playback', desc: "Playback your Child's message to hear what they asked Santa." },
+  { label: 'Santa Soundboard', desc: 'Head Elf recorded Santa. Play back some fun festive phrases.' },
+  { label: 'Send a message', desc: 'Send a message to Santa and read other messages & replies.' },
+  { label: '100% FREE', desc: "It's 100% free with none of those annoying adverts." },
+  { label: 'Santa Radio', desc: 'You can also listen and enjoy Santa Radio direct from the app.' },
 ];
 
 const VOICEMAIL_FEATURES = [
-  { icon: '\u{1F4DE}', label: 'Leave a message', desc: 'Your child can leave a FREE voicemail message for Santa.' },
-  { icon: '\u23EA', label: 'Playback', desc: "Playback your Child's message to hear what they asked Santa." },
-  { icon: '\u{1F4F1}', label: 'Santa Soundboard', desc: 'Head Elf recorded Santa. Play back some fun festive phrases.' },
-  { icon: '\u2709\uFE0F', label: 'Send a message', desc: 'Send a message to Santa and read other messages & replies.' },
-  { icon: '\u{1F381}', label: '100% FREE', desc: "It's 100% free with none of those annoying adverts." },
-  { icon: '\u{1F3B5}', label: 'Santa Radio', desc: 'You can also listen and enjoy Santa Radio direct from the app.' },
+  { label: 'Leave a message', desc: 'Your child can leave a FREE voicemail message for Santa.' },
+  { label: 'Playback', desc: "Playback your Child's message to hear what they asked Santa." },
+  { label: 'Santa Soundboard', desc: 'Head Elf recorded Santa. Play back some fun festive phrases.' },
+  { label: 'Send a message', desc: 'Send a message to Santa and read other messages & replies.' },
+  { label: '100% FREE', desc: "It's 100% free with none of those annoying adverts." },
+  { label: 'Santa Radio', desc: 'You can also listen and enjoy Santa Radio direct from the app.' },
 ];
 
 const MESSAGES_FEATURES = [
-  { icon: '\u{1F50D}', label: "Find your child's name", desc: 'Santa will then play a personal message for your child.' },
-  { icon: '\u{1F426}', label: 'Share your message', desc: "Share your child's message on social media or by email." },
-  { icon: '\u{1F381}', label: '100% FREE', desc: "It's 100% free with none of those annoying adverts." },
-  { icon: '\u{1F3B5}', label: 'Santa Radio', desc: 'You can also listen and enjoy Santa Radio direct from the app.' },
+  { label: "Find your child's name", desc: 'Santa will then play a personal message for your child.' },
+  { label: 'Share your message', desc: "Share your child's message on social media or by email." },
+  { label: '100% FREE', desc: "It's 100% free with none of those annoying adverts." },
+  { label: 'Santa Radio', desc: 'You can also listen and enjoy Santa Radio direct from the app.' },
 ];
 
 const PHONE_PLACEHOLDER = 'https://www.santaradio.co.uk/assets/img/santa-radio-logo.png';

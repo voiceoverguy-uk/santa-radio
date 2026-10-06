@@ -32,24 +32,26 @@ A faithful React + Vite rebuild of www.santaradio.co.uk — The World's Best Chr
 
 ## Key Components
 
-- `src/components/Navbar.jsx` — sticky top navigation
-- `src/components/AudioPlayer.jsx` — HTML5 audio stream player with PLAY NOW button
+- `src/components/Navbar.jsx` — transparent hero navigation, solid on scroll/secondary pages, accessible mobile menu and saved effects preference
+- `src/components/RadioProvider.jsx` — one persistent HTML5 radio instance shared across routes, cancellable loading, timeout/retry, volume and truthful station state
+- `src/components/AudioPlayer.jsx` — persistent compact radio dock and shared hero/navigation controls
 - `src/components/Countdown.jsx` — live Christmas Day countdown timer
-- `src/components/SantaMessageForm.jsx` — personalised Santa message signup form
-- `src/components/Soundboard.jsx` — interactive 16-button Santa phrase soundboard
-- `src/components/YouTubeSection.jsx` — YouTube live stream embed in retro TV frame
+- `src/components/SantaMessageForm.jsx` — message availability disclosure and real email contact; no fake submission or download
+- `src/components/Soundboard.jsx` — 16 interactive festive phrase previews, clearly labelled as device text-to-speech rather than original recordings
+- `src/components/YouTubeSection.jsx` — click-to-load YouTube live stream with direct-channel fallback
 - `src/components/MugshotsPreview.jsx` — 4-celeb preview grid on home page
-- `src/components/ContactSection.jsx` — gold background contact section
+- `src/components/ContactSection.jsx` — forest-green contact section with real email link
 - `src/components/Footer.jsx` — footer with nav links and social icons
 
 ## Design
 
-- Dark navy starry-night backgrounds (`#0d1b3e` / `#071029`)
-- Gold metallic headings using CSS gradients + Dancing Script font
-- Red snow-capped buttons (CSS SVG snow effect on `::before`)
-- Snowy pine tree decoration at section bottoms
-- White/light sections between dark sections
-- Fonts: Dancing Script (logo), Cinzel (headings), Open Sans (body)
+- Cinematic North Pole village hero with original optimised imagery at `/images/north-pole-hero.webp` and mobile crop `/images/north-pole-hero-mobile.webp`
+- Deep forest green `#1B4332` / night green `#081e17`, crimson `#9B111E`, gold `#D4AF37`, cream `#FFF8E7`
+- Cinzel normal-weight headings, Inter body/buttons, existing Dancing Script wordmark
+- Crimson pill buttons and fine gold-outline controls; no cartoon snow caps or tree decorations
+- Four-panel countdown below the hero, editorial welcome, message availability, video, soundboard, livestream, celebrity and contact sections
+- Restrained transform-only snowfall and aurora, saved effects toggle and reduced-motion support
+- `src/north-pole.css` applies the shared visual system to all existing listing/detail/legacy pages without changing routes or data
 
 ## Audio Stream
 
@@ -101,7 +103,7 @@ The audio player targets `https://streaming.zeno.fm/yn65fsaurfhvv` — this may 
 
 ## Notes
 
-- Soundboard buttons use the browser's Web Speech API (text-to-speech) to speak Santa phrases with a deep, slow voice setting — clicking a button while it speaks will stop it
+- Soundboard preserves browser text-to-speech previews with play/stop controls and an explicit disclosure that these are not original Santa recordings.
 - Celebrity mugshot photos are served locally from `/mugshot-images/`; fallback initials shown on error
-- Santa Message form shows a success state but does not send real data (no backend)
+- Santa Message service has no backend. The UI explicitly discloses unavailable requests/downloads and never claims a successful submission; email contact remains available.
 - Twitter widget is not included (requires auth)
