@@ -6,6 +6,10 @@ The user finds the initial Santa Radio rebuild "a bit boring" and wants the colo
 
 The user approved the redesign plan and specifically asked to make buttons and fonts the same as the Base44 version.
 
+Use the user's supplied curved Santa Radio logo in the top banner, not a font-based approximation.
+
+**Why:** The user explicitly reminded us that the supplied logo must be used there.
+
 **Why:** The user supplied this reference as the kind of design they expected, alongside the Santa Radio - North Pole Experience prompt.
 
 **How to apply:** Treat the reference's premium winter setting and rich colours as the visual target when redesigning this project. The uploaded prompt also describes a larger membership product; do not assume a request to review its design authorises implementing all of its commercial features.
