@@ -75,7 +75,7 @@ export const christmasApps = [
     title: 'Christmas Radio',
     subtitle: 'A simpler version of our app, Christmas music 24/7 365 days a year',
     image: christmasRadio,
-    alt: 'Christmas Radio app screen with live Christmas music and a Santa illustration.',
+    alt: 'Christmas Radio app with festive lights, a music playback button, current song artwork and recording controls.',
     width: 750,
     height: 1334,
     downloads: downloads(
