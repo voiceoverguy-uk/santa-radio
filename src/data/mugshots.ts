@@ -9,7 +9,10 @@ export interface Mugshot {
 }
 
 import mugshotsJson from './mugshots.json';
+import { buildCatalogue } from './mugshot-catalogue.js';
 
-const mugshots: Mugshot[] = mugshotsJson as Mugshot[];
+const result = buildCatalogue(mugshotsJson);
+const mugshots: Mugshot[] = result.catalogue;
+export const mugshotAliases = result.aliases;
 
 export default mugshots;

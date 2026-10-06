@@ -1,9 +1,51 @@
 import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
 import { parseRows, reconcile, repair, plainText, socialUrl } from '../scripts/import-mugshots.js';
+import { buildCatalogue, normalizeName } from '../src/data/mugshot-catalogue.js';
 
 const catalogue = JSON.parse(fs.readFileSync('src/data/mugshots.json', 'utf8'));
 const report = JSON.parse(fs.readFileSync('reports/mugshot-import.json', 'utf8'));
+const publicData = buildCatalogue(catalogue);
+
+test('canonical catalogue preserves every old link, biography and available photo', () => {
+  expect(publicData.catalogue).toHaveLength(674);
+  expect(new Set(publicData.catalogue.map(m => normalizeName(m.artist))).size).toBe(674);
+  expect(Object.keys(publicData.aliases)).toHaveLength(735);
+  for (const old of catalogue) {
+    const kept = publicData.catalogue.find(m => m.song === publicData.aliases[old.song]);
+    expect(kept).toBeTruthy();
+    if (old.info) expect(kept.info).toBe(old.info);
+    if (old.image) {
+      expect(kept.image).toBeTruthy();
+      expect(fs.existsSync(`public${kept.image}`)).toBe(true);
+    }
+  }
+  const rows = parseRows(fs.readFileSync('attached_assets/cl57-mugshots_1791308171421.sql', 'utf8'));
+  expect(buildCatalogue(reconcile(catalogue, rows).output)).toEqual(publicData);
+  const audit = JSON.parse(fs.readFileSync('reports/mugshot-audit.json'));
+  expect(audit.review).toHaveLength(674);
+  expect(audit.review.find(r => r.name === 'Johannes Radebe')).toMatchObject({ words: 18, category: 'Very short biography' });
+  expect(audit.review.find(r => r.name === 'Jack Dee').reason).toContain('Jason Tindall');
+});
+
+test('reported duplicate searches show one photo card and old links show full details', async ({ page }) => {
+  for (const [name, alias] of [['Batman', 'batman-super-hero'], ['Bernie Clifton', 'bernie-clifton'], ['Bobby Ball', 'bobby-ball']]) {
+    await page.goto('/mugshots/all');
+    await page.getByRole('textbox', { name: 'Search celebrity names or roles' }).fill(name);
+    await expect(page.locator('.mugshot-card')).toHaveCount(1);
+    const img = page.locator('.mugshot-photo');
+    await img.scrollIntoViewIfNeeded();
+    await expect.poll(() => img.evaluate(i => i.naturalWidth)).toBeGreaterThan(0);
+    await page.goto(`/mugshots/${alias}`);
+    const kept = publicData.catalogue.find(m => m.song === publicData.aliases[alias]);
+    await expect(page.locator('.mugshot-detail-desc')).toHaveText(kept.info);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `https://www.santaradio.co.uk/mugshots/${kept.song}`);
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.goto('/');
+  await expect(page.locator('.mugshots-preview')).toContainText('674');
+});
 
 test('import preserves routes and images and safely handles source text', () => {
   expect(catalogue).toHaveLength(735);

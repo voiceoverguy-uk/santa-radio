@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import { pathToFileURL } from 'node:url';
+import { buildCatalogue } from '../src/data/mugshot-catalogue.js';
 
 // Read SQL literals, never execute SQL. This importer deliberately accepts only
 // the nine-column messages2 schema supplied for Mugshots.
@@ -112,6 +113,10 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   if (!path) throw new Error('Usage: node scripts/import-mugshots.js dump.sql [--write]');
   const existing = JSON.parse(fs.readFileSync('src/data/mugshots.json', 'utf8'));
   const { output, report } = reconcile(existing, parseRows(fs.readFileSync(path, 'utf8')));
+  // Public consumers always use this same canonical projection after an import.
+  const canonical = buildCatalogue(output);
+  report.publicProfiles = canonical.catalogue.length;
+  report.biographyConflicts = canonical.conflicts;
   if (process.argv.includes('--write')) {
     fs.writeFileSync('src/data/mugshots.json', JSON.stringify(output, null, 2) + '\n');
     fs.mkdirSync('reports', { recursive: true });

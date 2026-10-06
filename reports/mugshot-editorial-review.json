@@ -1,0 +1,110 @@
+[
+  {
+    "reason": "generic praise: \"dynamic personality and sharp wit keep his audience coming back for more\" with no specific credits.",
+    "slug": "alex-belfield-vlogger"
+  },
+  {
+    "reason": "generic praise: \"Actor Calum Lil brings charisma to every role\" with no named career credits.",
+    "slug": "calum-lil-actor"
+  },
+  {
+    "reason": "generic praise: \"up-and-coming boxer with a promising future\" with no named career credits.",
+    "slug": "calvin-moyo-boxer"
+  },
+  {
+    "reason": "evident wrong subject: Biography describes \"The Everly Pregnant Brothers\" band instead of the individual Big Sean.",
+    "slug": "big-shaun-musician"
+  },
+  {
+    "reason": "evident wrong subject: Biography describes \"The Everly Pregnant Brothers\" band instead of the individual Big Sean.",
+    "slug": "big-shaun-band-musician"
+  },
+  {
+    "reason": "generic praise: \"engaging hosting style\" with no named career credits.",
+    "slug": "becky-measures-radio-presenter"
+  },
+  {
+    "reason": "broken/truncated text: \"he has also for his musical theatre performances\" and \"echnicolour Dreamcoat\".",
+    "slug": "aled-jones-tv-personality"
+  },
+  {
+    "reason": "dominated by generic praise with no named career credits: \"friendly voice and engaging style\"",
+    "slug": "dixie-heart-yorkshire"
+  },
+  {
+    "reason": "dominated by generic praise with no named career credits: \"sharp humour and easy banter\"",
+    "slug": "dominic-byrne-radio-presenter"
+  },
+  {
+    "reason": "dominated by generic praise with no named career credits: \"quick wit and infectious energy\"",
+    "slug": "ellie-colton-radio-presenter"
+  },
+  {
+    "reason": "dominated by generic praise with no named career credits: \"dynamic and engaging presence\"",
+    "slug": "gayle-lofthouse-radio-presenter"
+  },
+  {
+    "reason": "broken/truncated text: \"Currently playing Dean in @Jamiemusical tour. All links below\"",
+    "slug": "george-sampson-actor"
+  },
+  {
+    "reason": "evident wrong subject: biography describes Jason Tindall's career in football, not the comedian Jack Dee",
+    "slug": "jack-dee-comedian"
+  },
+  {
+    "reason": "dominated by generic praise with no named career credits: \"clear, approachable presenting style\"",
+    "slug": "jessica-forrester-tv-personality"
+  },
+  {
+    "reason": "dominated by generic praise with no named career credits: \"strong stage presence and versatility\"",
+    "slug": "julian-caillon-dancer"
+  },
+  {
+    "reason": "broken/truncated text: '... The brunette troublemaker'",
+    "slug": "lisa-appleton-presenter"
+  },
+  {
+    "reason": "outdated-sounding current-role claims: 'head coach of Premier League club Tottenham Hotspur'",
+    "slug": "nuno-espirito-santo-wolves-manager"
+  },
+  {
+    "reason": "outdated-sounding current-role claims: 'currently the manager of English club Manchester United'",
+    "slug": "ole-gunnar-solsha-man-united-manager"
+  },
+  {
+    "reason": "broken/truncated text: 'Santa Radio MugShots collection!cheer!'",
+    "slug": "paula-lane-actress"
+  },
+  {
+    "reason": "outdated-sounding current-role claims: 'played as a striker for Championship club Stoke City until his transfer to Burnley'",
+    "slug": "peter-crouch-footballer"
+  },
+  {
+    "reason": "broken/truncated text: 'known primarily for romantic comedy films,'",
+    "slug": "richard-curts-writer"
+  },
+  {
+    "reason": "broken/truncated text: \"´Fierce Dance Diva´, Brand Ambassador & B\"",
+    "slug": "soraya-vivian-singer"
+  },
+  {
+    "reason": "broken/truncated text: \"ue Perkins is an English comedian\"",
+    "slug": "sue-perkins-tv-presenter"
+  },
+  {
+    "reason": "biography dominated by generic praise with no named career credits: \"charismatic TV personality, is best known for his engaging on-screen presence\"",
+    "slug": "woody-ball-tv-personality"
+  },
+  {
+    "slug": "showaddywaddy-band",
+    "reason": "Band/group photo differs from showaddywaddy-singers. Confirm intended group membership before merging."
+  },
+  {
+    "slug": "antony-costa-blue-singer",
+    "reason": "Broken prose (\"London n 2007 Antoy\", \"Whle\") and assertion that Blue is no longer active need review."
+  },
+  {
+    "slug": "steve-davis-snoker-player",
+    "reason": "Biography ends at \"dominating snooker\" without explaining the achievement; expand career detail."
+  }
+]

@@ -1,0 +1,30 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "hl1unZOro-afywKZ_gegJ"
+uri = "file://reports/mugshot-research.csv"
+type = "table"
+title = "Celebrity biography research worksheet"
+description = "310 entries grouped by research need, with current biographies, page paths, word counts and a blank replacement-content column."
+logical_id = "1b4ebcc2-5674-4ad1-9585-e1df0c994167"
+content_hash = "sha256:ed053cb0a3509137294e58c3eb7367e9cac4b16be05b51370f5c8b6e38106312"
+size = 113885
+mtime_ms = 1791311432466
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/1b4ebcc2-5674-4ad1-9585-e1df0c994167/b3302738-bd17-470b-945a-cf0b0251e990"
+storage_version_token = "1791311515182728"
+content_type = "text/csv"
+
+[[outputs]]
+id = "02i4DGwKcKdhNyUHzcuiH"
+uri = "file://reports/mugshot-research.html"
+type = "html"
+title = "Readable Mugshot audit report"
+description = "Browse the complete research list, including Johannes, editorial concerns and separate identity-review records."
+logical_id = "c1c0322e-1b31-4494-b918-1277d7c27813"
+content_hash = "sha256:8dfff3c7dbbf39f1e678e6a571505a90c0437e5099697dc7ab60955490f9a1bd"
+size = 143264
+mtime_ms = 1791311432478
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/c1c0322e-1b31-4494-b918-1277d7c27813/1a47694e-cc6a-4ef4-bff6-3be052848817"
+storage_version_token = "1791311516112279"
+content_type = "text/html"

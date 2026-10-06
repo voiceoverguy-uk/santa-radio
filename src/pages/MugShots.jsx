@@ -21,7 +21,7 @@ export default function MugShots() {
     if (!search.trim()) return mugshotsData;
     const q = search.toLowerCase();
     return mugshotsData.filter(c =>
-      c.artist.toLowerCase().includes(q) ||
+      c.searchNames.some(name => name.toLowerCase().includes(q)) ||
       c.link.toLowerCase().includes(q)
     );
   }, [search]);

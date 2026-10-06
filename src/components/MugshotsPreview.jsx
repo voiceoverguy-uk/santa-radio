@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import Portrait from './Portrait.jsx';
 import './MugshotsPreview.css';
-import mugshotsData from '../data/mugshots.json';
+import mugshotsData from '../data/mugshots.ts';
 
 const FEATURED_SLUGS = [
   'lisa-maxwell-actress',

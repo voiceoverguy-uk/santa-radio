@@ -1,13 +1,13 @@
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Portrait from '../components/Portrait.jsx';
-import mugshotsData from '../data/mugshots.json';
+import mugshotsData, { mugshotAliases } from '../data/mugshots.ts';
 import './MugshotDetail.css';
 import './MugshotPhoto.css';
 
 export default function MugshotDetail() {
   const { slug } = useParams();
-  const celeb = mugshotsData.find(m => m.song === slug);
+  const celeb = mugshotsData.find(m => m.song === mugshotAliases[slug]);
 
   if (!celeb) {
     return (
