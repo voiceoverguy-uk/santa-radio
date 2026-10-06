@@ -10,9 +10,10 @@ channel = "stable-24_11"
 packages = ["imagemagick"]
 
 [deployment]
-run = ["node", "index.js"]
+run = ["npm", "start"]
 deploymentTarget = "autoscale"
 ignorePorts = false
+build = ["npm", "run", "build"]
 
 [agent]
 expertMode = true
@@ -44,6 +45,10 @@ outputType = "webview"
 [[ports]]
 localPort = 5000
 externalPort = 80
+
+[[ports]]
+localPort = 5001
+externalPort = 3000
 
 [postMerge]
 path = "scripts/post-merge.sh"
