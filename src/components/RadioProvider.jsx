@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 
 const RadioContext = createContext(null);
-const STREAM_URL = 'https://streaming.zeno.fm/yn65fsaurfhvv';
+const STREAM_URL = 'https://global.citrus3.com:8164/';
 export function RadioProvider({ children }) {
   const audioRef = useRef(null);
   const attempt = useRef(0);

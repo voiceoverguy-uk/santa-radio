@@ -55,7 +55,7 @@ A faithful React + Vite rebuild of www.santaradio.co.uk — The World's Best Chr
 
 ## Audio Stream
 
-The audio player targets `https://streaming.zeno.fm/yn65fsaurfhvv` — this may need updating if the stream URL changes. Check the original site's Network tab to find the live stream URL.
+The audio player targets the user-supplied `https://global.citrus3.com:8164/` endpoint, which serves the Santa Radio live MP3 stream directly.
 
 ## Deployment (Vercel)
 
