@@ -1,26 +1,21 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import Portrait from '../components/Portrait.jsx';
+import { artistArtwork, fallbackArtwork } from '../data/artistArtwork.js';
 import './Music.css';
 import songsData from '../data/songs.json';
 
-function getInitials(name) {
-  return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-}
-
-function ArtistAvatar({ artist, image }) {
-  if (image) {
-    return (
-      <Portrait src={image} alt={artist} className="artist-avatar-img" />
-    );
-  }
-  const colors = ['#1B4332','#254c3a','#365642','#7c242b'];
-  const color = colors[artist.charCodeAt(0) % colors.length];
+function ArtistAvatar({ artist }) {
+  const src = artistArtwork(artist);
   return (
-    <div className="artist-avatar" style={{ background: color }}>
-      <span>{getInitials(artist)}</span>
-    </div>
+    <img key={src} src={src} alt={src === fallbackArtwork ? 'Santa with music notes — temporary artwork' : `${artist} illustrated portrait`}
+      className="artist-avatar-img" width="120" height="120" loading="lazy"
+      onError={event => {
+        if (event.currentTarget.getAttribute('src') !== fallbackArtwork) {
+          event.currentTarget.src = fallbackArtwork;
+          event.currentTarget.alt = 'Santa with music notes — temporary artwork';
+        }
+      }} />
   );
 }
 
@@ -70,7 +65,7 @@ export default function Music() {
         <div className="container music-grid">
           {filtered.map((s) => (
             <Link key={`${s.id}-${s.link}`} to={`/christmas-artist/${s.id}-${s.link}`} className="song-card">
-              <ArtistAvatar artist={s.artist} image={s.image} />
+              <ArtistAvatar artist={s.artist} />
               <div className="song-info">
                 <strong>{s.artist}</strong>
                 <span>{s.song}</span>
