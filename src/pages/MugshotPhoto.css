@@ -1,0 +1,115 @@
+/* Scoped specificity keeps the later North Pole theme's card layout intact.
+   The photo edge is inset so the gallery card's overflow cannot clip it. */
+.mugshots-grid .mugshot-card {
+  transform: none;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.08);
+  transition: transform 240ms ease;
+}
+
+.mugshots-grid .mugshot-card:focus-visible {
+  outline: 2px solid var(--gold-light, #f0d060);
+  outline-offset: 4px;
+}
+
+.mugshot-photo-frame {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  min-width: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 14px rgba(212, 175, 55, 0.12);
+  transition: transform 240ms ease;
+}
+
+.mugshots-grid .mugshot-photo-frame {
+  border-radius: 14px 14px 0 0;
+}
+
+.mugshot-detail-figure .mugshot-photo-frame {
+  border-radius: 4px;
+}
+
+.mugshot-photo-frame::before,
+.mugshot-photo-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.mugshot-photo-frame::before {
+  border: 1px solid rgba(212, 175, 55, 0.48);
+  box-shadow: inset 0 0 10px rgba(212, 175, 55, 0.12);
+}
+
+.mugshot-photo-frame::after {
+  border: 1px solid rgba(244, 220, 140, 0.65);
+  box-shadow: inset 0 0 16px rgba(212, 175, 55, 0.18);
+  opacity: 0.18;
+  transition: opacity 240ms ease;
+}
+
+.mugshot-photo-frame .mugshot-photo,
+.mugshot-photo-frame .mugshot-fallback,
+.mugshot-photo-frame .mugshot-detail-photo {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  border: none;
+  border-radius: inherit;
+}
+
+/* Preserve the grid layout of Portrait's non-interactive fallback. */
+.mugshot-photo-frame .mugshot-detail-photo.portrait-fallback {
+  display: grid;
+  aspect-ratio: 1;
+}
+
+@keyframes mugshot-edge-shimmer {
+  0%, 100% { opacity: 0.18; }
+  50% { opacity: 0.65; }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .mugshots-grid .mugshot-card:hover,
+  .mugshot-detail-figure .mugshot-photo-frame:hover {
+    transform: translateY(-3px);
+  }
+  .mugshots-grid .mugshot-card:hover .mugshot-photo-frame::after,
+  .mugshot-detail-figure .mugshot-photo-frame:hover::after {
+    animation: mugshot-edge-shimmer 2.8s ease-in-out infinite;
+    box-shadow: inset 0 0 20px rgba(212, 175, 55, 0.35), 0 0 18px rgba(212, 175, 55, 0.28);
+  }
+}
+
+.mugshots-grid .mugshot-card:focus-visible .mugshot-photo-frame::after {
+  opacity: 0.65;
+  animation: none;
+}
+
+html[data-effects="off"] .mugshots-grid .mugshot-card,
+html[data-effects="off"] .mugshot-photo-frame {
+  transform: none !important;
+  transition: none;
+}
+
+html[data-effects="off"] .mugshot-photo-frame::after {
+  animation: none !important;
+  opacity: 0.18;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mugshots-grid .mugshot-card,
+  .mugshot-detail-figure .mugshot-photo-frame {
+    transform: none !important;
+    transition: none;
+  }
+
+  .mugshot-photo-frame::after {
+    animation: none !important;
+    opacity: 0.18;
+  }
+}

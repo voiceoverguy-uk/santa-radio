@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import './MugShots.css';
+import './MugshotPhoto.css';
 import mugshotsData from '../data/mugshots.ts';
 
 const ITEMS_PER_PAGE = 48;
@@ -85,6 +86,7 @@ export default function MugShots() {
         <div className="container mugshots-grid">
           {visible.map((celeb, i) => (
             <Link key={celeb.song || celeb.artist} to={`/mugshots/${celeb.song}`} className="mugshot-card">
+              <div className="mugshot-photo-frame">
               <img
                 src={celeb.image}
                 alt={celeb.artist}
@@ -100,6 +102,7 @@ export default function MugShots() {
                 style={{ background: colors[i % colors.length], display: 'none' }}
               >
                 {getInitials(celeb.artist)}
+              </div>
               </div>
               <div className="mugshot-info">
                 <strong>{celeb.artist}</strong>

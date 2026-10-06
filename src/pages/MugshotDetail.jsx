@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import Portrait from '../components/Portrait.jsx';
 import mugshotsData from '../data/mugshots.json';
 import './MugshotDetail.css';
+import './MugshotPhoto.css';
 
 export default function MugshotDetail() {
   const { slug } = useParams();
@@ -28,6 +29,11 @@ export default function MugshotDetail() {
   const pageTitle = celeb.artist;
   const pageDescription = `${celeb.artist}${celeb.link ? ' (' + celeb.link + ')' : ''} posing with the iconic Santa Radio mug. See all celebrity mug shots at Santa Radio.`;
   const imageUrl = `https://www.santaradio.co.uk${celeb.image}`;
+  const biography = typeof celeb.info === 'string' ? celeb.info.trim() : '';
+  const credit = typeof celeb.credit === 'string' ? celeb.credit.trim() : '';
+  const socialUrl = typeof celeb.socialUrl === 'string' &&
+    /^https:\/\/x\.com\/[A-Za-z0-9_]{1,15}$/.test(celeb.socialUrl)
+    ? celeb.socialUrl : '';
 
   return (
     <main>
@@ -71,17 +77,30 @@ export default function MugshotDetail() {
             <Link to="/">Home</Link> &rsaquo; <Link to="/mugshots/all">Mug Shots</Link> &rsaquo; <span>{celeb.artist}</span>
           </nav>
           <div className="mugshot-detail-card">
-            <Portrait
-              src={celeb.image}
-              alt={`${celeb.artist} with Santa Radio mug`}
-              className="mugshot-detail-photo"
-            />
+            <figure className="mugshot-detail-figure">
+              <div className="mugshot-photo-frame">
+                <Portrait
+                  key={celeb.image}
+                  src={celeb.image}
+                  alt={`${celeb.artist} with Santa Radio mug`}
+                  className="mugshot-detail-photo"
+                />
+              </div>
+              {credit && <figcaption className="mugshot-photo-credit">Photo credit: {credit}</figcaption>}
+            </figure>
             <div className="mugshot-detail-info">
               <h1 className="mugshot-detail-name">{celeb.artist}</h1>
               {celeb.link && <p className="mugshot-detail-role">{celeb.link}</p>}
               <p className="mugshot-detail-desc">
-                {celeb.artist} posing with the iconic Santa Radio mug as part of our Celebrity Mug Shots Hall of Fame!
+                {biography || `${celeb.artist} posing with the iconic Santa Radio mug as part of our Celebrity Mug Shots Hall of Fame!`}
               </p>
+              {socialUrl && (
+                <p className="mugshot-social">
+                  <a href={socialUrl} target="_blank" rel="noopener noreferrer">
+                    Follow {celeb.artist} on X
+                  </a>
+                </p>
+              )}
               <Link to="/mugshots/all" className="back-link">← Back to all Mug Shots</Link>
             </div>
           </div>

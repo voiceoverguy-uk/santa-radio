@@ -1,8 +1,11 @@
 export interface Mugshot {
-  name: string;
-  role: string;
+  artist: string;
+  link: string;
   image: string;
-  slug: string;
+  song: string;
+  info?: string;
+  credit?: string;
+  socialUrl?: string;
 }
 
 import mugshotsJson from './mugshots.json';

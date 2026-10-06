@@ -92,10 +92,6 @@
   color: inherit;
 }
 
-.mugshot-card:hover {
-  transform: translateY(-4px);
-}
-
 .mugshot-photo {
   width: 100%;
   aspect-ratio: 1;
