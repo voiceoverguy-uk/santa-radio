@@ -1,8 +1,10 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import useRadioMetadata from './useRadioMetadata.js';
 
 const RadioContext = createContext(null);
 const STREAM_URL = 'https://global.citrus3.com:8164/';
 export function RadioProvider({ children }) {
+  const metadata = useRadioMetadata();
   const audioRef = useRef(null);
   const attempt = useRef(0);
   const timeout = useRef(null);
@@ -49,7 +51,7 @@ export function RadioProvider({ children }) {
     }
   };
   return (
-    <RadioContext.Provider value={{ status, volume, setVolume, error, togglePlay, effects, setEffects }}>
+    <RadioContext.Provider value={{ status, volume, setVolume, error, togglePlay, effects, setEffects, metadata }}>
       <audio ref={audioRef} src={STREAM_URL} preload="none" onError={fail}
         onWaiting={() => {
           setStatus(current => current === 'playing' ? 'loading' : current);

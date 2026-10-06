@@ -1,6 +1,8 @@
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { RadioButton } from '../components/AudioPlayer.jsx';
+import { useRadio } from '../components/RadioProvider.jsx';
+import RadioTracks from '../components/RadioTracks.jsx';
 import Countdown from '../components/Countdown.jsx';
 import Soundboard from '../components/Soundboard.jsx';
 import SantaMessageForm from '../components/SantaMessageForm.jsx';
@@ -11,6 +13,7 @@ import SantaVideoSection from '../components/SantaVideoSection.jsx';
 import './Home.css';
 
 export default function Home() {
+  const { metadata } = useRadio();
   return (
     <main id="main-content" className="home-page">
       <Helmet>
@@ -33,6 +36,12 @@ export default function Home() {
           <p className="hero-note">The World’s Best Christmas Radio Station · All year round</p>
         </div>
         <a href="#christmas-countdown" className="hero-scroll"><span aria-hidden="true" />Step inside the magic</a>
+      </section>
+      <section className="radio-listening-section" aria-label="Live radio songs">
+        <div className="container radio-listening-layout">
+          <div className="radio-listening-current"><RadioTracks metadata={metadata} /></div>
+          <div className="radio-listening-upcoming"><RadioTracks metadata={metadata} kind="upcoming" /></div>
+        </div>
       </section>
       <section id="christmas-countdown" className="countdown-section">
         <div className="container countdown-layout"><div><p className="eyebrow">The most wonderful day</p><h2>Christmas is on its way</h2><p>A little closer to the magic, every day.</p></div><Countdown /></div>

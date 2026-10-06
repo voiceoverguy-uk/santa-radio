@@ -1,0 +1,23 @@
+.radio-tracks { min-width: 0; color: var(--cream); }
+.radio-tracks-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.radio-tracks-label { margin: 0 0 7px; color: var(--gold-light); font-size: .62rem; letter-spacing: .15em; text-transform: uppercase; }
+.radio-track-title { display: block; font-size: .9rem; line-height: 1.45; font-weight: 600; overflow-wrap: anywhere; }
+.radio-track-artist { display: block; margin-top: 2px; color: var(--muted); font-size: .75rem; line-height: 1.5; overflow-wrap: anywhere; }
+.radio-tracks-message { margin: 0; color: var(--muted); font-size: .75rem; line-height: 1.5; }
+.radio-tracks-list { list-style: decimal-leading-zero; margin: 0; padding-left: 26px; }
+.radio-tracks-list li { padding: 7px 0 7px 6px; }
+.radio-tracks-list li::marker { color: var(--gold-light); font-size: .65rem; font-variant-numeric: tabular-nums; }
+.radio-tracks-list li + li { border-top: 1px solid #D4AF3726; }
+.radio-tracks-list .radio-track-title { font-size: .78rem; }
+.radio-tracks-list .radio-track-artist { font-size: .7rem; }
+.radio-tracks-skeleton { display: block; width: 78%; max-width: 260px; height: 10px; margin: 8px 0; border-radius: 3px; background: #D4AF3726; }
+.radio-tracks-skeleton + .radio-tracks-skeleton { width: 48%; height: 8px; }
+.radio-listening-section { padding: 27px 0; background: #0d281f; border-top: 1px solid #D4AF3726; }
+.radio-listening-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; align-items: start; }
+.radio-listening-current { padding: 8px 0; }
+.radio-listening-current .radio-track-title { font-family: 'Cinzel', serif; font-weight: 400; font-size: clamp(1.05rem, 2vw, 1.4rem); }
+.radio-listening-upcoming { padding: 8px 0 8px 28px; border-left: 1px solid #D4AF3726; }
+@media (max-width: 767px) {
+  .radio-listening-layout { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .radio-listening-upcoming { border-left: 0; border-top: 1px solid #D4AF3726; padding: 18px 0 0; }
+}
