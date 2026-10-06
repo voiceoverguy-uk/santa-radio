@@ -31,7 +31,10 @@ export function parseRows(sql) {
 }
 
 const cp1252 = new Map();
-for (let b = 0; b < 256; b++) cp1252.set(new TextDecoder('windows-1252').decode(Uint8Array.of(b)), b);
+for (let b = 0; b < 256; b++) cp1252.set(String.fromCharCode(b), b);
+// Explicit mapping also works on Node builds without full ICU legacy decoders.
+[...'€\u0081‚ƒ„…†‡ˆ‰Š‹Œ\u008dŽ\u008f\u0090‘’“”•–—˜™š›œ\u009džŸ']
+  .forEach((char, index) => cp1252.set(char, 0x80 + index));
 export function repair(text) {
   return text.replace(/[^\x00-\x7f]+/g, run => {
     if (!/[ÃÂâð]/.test(run)) return run;

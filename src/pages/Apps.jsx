@@ -59,7 +59,7 @@ const MESSAGES_FEATURES = [
   { label: 'Santa Radio', desc: 'You can also listen and enjoy Santa Radio direct from the app.' },
 ];
 
-const PHONE_PLACEHOLDER = 'https://www.santaradio.co.uk/assets/img/santa-radio-logo.png';
+const PHONE_PLACEHOLDER = '/images/santa-radio-logo.png';
 
 export default function Apps() {
   return (
@@ -70,7 +70,7 @@ export default function Apps() {
       </Helmet>
       <div className="apps-hero starry-bg">
         <div className="apps-hero-content">
-          <h1 className="hero-title-app gold-text">Santa Radio</h1>
+          <h1 className="hero-title-app"><img className="brand-logo brand-logo-hero" src="/images/santa-radio-logo.png" alt="Santa Radio" width="827" height="190" /></h1>
           <h2 className="apps-hero-sub">Free Christmas Apps</h2>
           <p className="apps-hero-desc">Download our amazing apps featuring Santa / Father Christmas.</p>
         </div>

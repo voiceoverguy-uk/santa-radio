@@ -11,7 +11,7 @@ export default function FreeSantaMessage() {
       </Helmet>
       <div className="fsm-hero starry-bg">
         <div className="fsm-hero-content">
-          <h1 className="fsm-title gold-text">Santa Radio</h1>
+          <h1 className="fsm-title"><img className="brand-logo brand-logo-hero" src="/images/santa-radio-logo.png" alt="Santa Radio" width="827" height="190" /></h1>
           <h2 className="fsm-sub">Free Personalised Santa Message</h2>
           <p className="fsm-desc">Explore personalised Santa messages. Requests and downloads are not currently available on this website.</p>
         </div>

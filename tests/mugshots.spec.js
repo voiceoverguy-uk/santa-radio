@@ -68,7 +68,8 @@ test('gallery pagination, search, hover, focus and motion preferences', async ({
   expect(await animation()).toBe('none');
   await expect(card).toHaveCSS('transform', 'none');
   await page.mouse.move(0, 0);
-  await card.focus();
+  await page.getByRole('textbox', { name: 'Search celebrity names or roles' }).focus();
+  await page.keyboard.press('Tab');
   await expect(card).toHaveCSS('outline-style', 'solid');
   await card.click();
   await expect(page).toHaveURL(/mugshots\/jeremy-kyle-tv-personality$/);

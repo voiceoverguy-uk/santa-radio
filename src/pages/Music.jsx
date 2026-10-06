@@ -45,7 +45,7 @@ export default function Music() {
       </Helmet>
       <div className="music-hero starry-bg">
         <div className="music-hero-content">
-          <h1 className="music-hero-title gold-text">Santa Radio</h1>
+          <h1 className="music-hero-title"><img className="brand-logo brand-logo-hero" src="/images/santa-radio-logo.png" alt="Santa Radio" width="827" height="190" /></h1>
           <h2 className="music-sub-title">Christmas Song Lyrics &amp; Artists</h2>
           <p className="music-sub-desc">Browse Hundreds of Christmas Songs</p>
           <p className="music-description">

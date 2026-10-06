@@ -3,7 +3,9 @@
 #page-content > main:not(.home-page) { padding-top: 85px; }
 main h1,main h2,main h3 { font-family: 'Cinzel',serif; font-weight: 400; }
 main .gold-text { background: none; -webkit-text-fill-color: var(--gold-light); color: var(--gold-light); filter: none; }
-.fsm-title,.hero-title-app,.music-hero-title { font-family: 'Dancing Script',cursive; }
+.brand-logo { display: block; height: auto; max-width: 100%; object-fit: contain; margin-inline: auto; }
+.brand-logo-hero { width: 380px; }
+.brand-logo-footer { width: 280px; }
 .starry-bg { background: var(--navy-dark); }
 .starry-bg::before { display: none; }
 .section-white,.section-light { background: #f3eddc; }
