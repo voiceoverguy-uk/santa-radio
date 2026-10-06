@@ -5,6 +5,7 @@ import { existsSync } from 'node:fs';
 test('all supplied portraits resolve without guessing collaborations', () => {
   const artists = ['Jose Feliciano', 'Holly Johnson', 'The Beach Boys', 'Nat King Cole', 'Jonas Brothers', 'Jona Lewie', 'Barbra Streisand', 'Bruce Springsteen', 'Robbie Williams', 'Brenda Lee', 'Dean Martin', 'Andy Williams', 'Freya Skye', 'Cliff Richard', 'Paul McCartney', 'Mariah Carey', 'Elton John', 'Ed Sheeran', 'Bing Crosby', 'Michael Bublé'];
   artists.push('Taylor Swift', 'Mel & Kim', 'Engelbert Humperdinck', 'Band Aid', 'Kelly Clarkson', 'Chris Rea', 'Ariana Grande', 'Bastille', 'Miley Cyrus', 'Dido', 'Carly Rae Jepsen', 'Darlene Love', 'Coldplay', 'Ed Sheeran & Elton John', 'Kylie Minogue', 'East 17', 'Frank Sinatra', 'Shakin Stevens', 'Elvis Presley', 'Sia');
+  artists.push('Chris De Burgh', 'Pet Shop Boys', 'Gwen Stefani', 'The Jackson 5', 'John Lennon', 'Johnny Mathis', 'Queen', 'Sam Ryder', 'Blossoms', 'Frank Sinatra and Dean Martin', 'Aled Jones', 'Bon Jovi', 'The Darkness', 'Wham!', 'Greg Lake', 'Spice Girls', 'Kelly Clarkson & Ariana Grande', 'The Ronettes', 'Lindsey Lohan');
   for (const artist of artists) {
     expect(artistArtwork(artist)).not.toBe(fallbackArtwork);
     expect(existsSync(`public${artistArtwork(artist)}`)).toBe(true);
@@ -12,7 +13,9 @@ test('all supplied portraits resolve without guessing collaborations', () => {
   expect(artistArtwork('Michael Bublé')).toBe(artistArtwork('Michael Buble'));
   expect(artistArtwork('Kylie Minogue')).toBe('/artist-artwork/kylie-minogue.jpg');
   expect(artistArtwork('Ed Sheeran & Elton John')).toBe('/artist-artwork/elton-john-ed-sheeran.jpg');
-  expect(artistArtwork('Frank Sinatra and Dean Martin')).toBe(fallbackArtwork);
+  expect(artistArtwork('Frank Sinatra and Dean Martin')).toBe('/artist-artwork/dean-martin-and-frank-sinatra.jpg');
+  expect(artistArtwork('Kelly Clarkson & Ariana Grande')).toBe('/artist-artwork/kelly-clarkson-and-ariana-grande.jpg');
+  expect(artistArtwork('Frank Sinatra & Cyndi Lauper')).toBe(fallbackArtwork);
 });
 
 test('catalogue reuses artist artwork and shows Santa for remaining artists', async ({ page }) => {
@@ -31,6 +34,10 @@ test('catalogue reuses artist artwork and shows Santa for remaining artists', as
   await cards.first().scrollIntoViewIfNeeded();
   await expect.poll(() => cards.first().locator('img').evaluate(el => el.naturalWidth)).toBeGreaterThan(0);
   await search.fill('Wham!');
+  await expect(cards.first().locator('img')).toHaveAttribute('src', '/artist-artwork/wham.jpg');
+  await cards.first().scrollIntoViewIfNeeded();
+  await expect.poll(() => cards.first().locator('img').evaluate(el => el.naturalWidth)).toBeGreaterThan(0);
+  await search.fill('Waitresses');
   await expect(cards.first().locator('img')).toHaveAttribute('src', fallbackArtwork);
   await cards.first().scrollIntoViewIfNeeded();
   await expect.poll(() => cards.first().locator('img').evaluate(el => el.naturalWidth)).toBeGreaterThan(0);
