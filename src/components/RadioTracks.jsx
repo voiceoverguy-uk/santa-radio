@@ -35,7 +35,7 @@ export default function RadioTracks({ metadata, kind = 'current', showLabel = tr
         </ol>
       ) : (
         <p className="radio-tracks-message">
-          {current ? 'Current song details are unavailable.' : ready ? 'No upcoming songs listed yet.' : 'Upcoming song details are unavailable.'}
+          {current ? 'Santa is selecting the next track' : ready ? 'No upcoming songs listed yet.' : 'Upcoming song details are unavailable.'}
         </p>
       )}
     </div>

@@ -2,7 +2,10 @@ import songs from './songs.json' with { type: 'json' };
 
 // Add only verified exceptions: { artist: feedArtist, title: feedTitle, songId: catalogueId }.
 // Never strip version labels or guess an artist from a title alone.
-export const liveSongAliases = [];
+export const liveSongAliases = [
+  // Feed repeats the artist in the title; verified against the catalogue lyrics.
+  { artist: 'Bo Selecta', title: 'Bo Selecta - Proper Crimbo', songId: 66 },
+];
 export const normalizeTrackText = text => text.normalize('NFKC').toLowerCase()
   .replace(/[’‘']/g, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim().replace(/\s+/g, ' ');
 

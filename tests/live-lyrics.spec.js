@@ -2,6 +2,8 @@ import { test, expect } from '@playwright/test';
 import { matchLiveSong } from '../src/data/matchLiveSong.js';
 
 test('live matching requires both fields and refuses ambiguous versions', () => {
+  expect(matchLiveSong({ artist: 'Bo Selecta', title: 'Bo Selecta - Proper Crimbo' })).toMatchObject({ status: 'ready', song: { id: 66, song: 'Proper Crimbo' } });
+  expect(matchLiveSong({ artist: 'Other Artist', title: 'Bo Selecta - Proper Crimbo' }).status).toBe('unmatched');
   expect(matchLiveSong({ artist: ' ELTON JOHN ', title: 'Step into Christmas!' })).toMatchObject({ status: 'ready', song: { id: 47 } });
   const songs = [
     { id: 1, artist: 'Artist', song: 'It’s Christmas', lyrics: 'One' },
@@ -44,6 +46,10 @@ test('lyrics reader follows feed changes, clears stale text and leaves audio unt
   await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
   await expect(dialog.locator('pre')).toHaveText(matchLiveSong(current).song.lyrics);
   expect(await dialog.locator('.live-lyrics-reader').evaluate(el => el.scrollTop)).toBe(0);
+  current = { artist: 'Bo Selecta', title: 'Bo Selecta - Proper Crimbo' };
+  await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+  await expect(dialog.locator('pre')).toHaveText(matchLiveSong(current).song.lyrics);
+  await expect(dialog.getByRole('heading', { name: 'Proper Crimbo', exact: true })).toBeVisible();
   current = { artist: 'Unknown Artist', title: 'Unknown Song' };
   await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
   await expect(dialog).toContainText('Lyrics unavailable for this track.');
@@ -51,6 +57,7 @@ test('lyrics reader follows feed changes, clears stale text and leaves audio unt
   unavailable = true;
   await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
   await expect(dialog).toContainText('Current track unavailable.');
+  await expect(dock).toContainText('Santa is selecting the next track');
   await expect(dialog).not.toContainText('Unknown Song');
   unavailable = false;
   current = { artist: 'Elton John', title: 'Step Into Christmas' };
