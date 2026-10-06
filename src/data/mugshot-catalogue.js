@@ -57,5 +57,12 @@ export function buildCatalogue(raw) {
     for (const m of group) aliases[m.song] = canonical.song;
     return canonical;
   }).sort((a, b) => a.artist.localeCompare(b.artist, 'en'));
-  return { catalogue, aliases, conflicts };
+  // Empty source rows can still contribute a photo to a complete profile.
+  // Exclude only after consolidation so those complete profiles survive.
+  const removed = catalogue.filter(m => !m.info.trim());
+  const removedSlugs = new Set(removed.map(m => m.song));
+  for (const [slug, target] of Object.entries(aliases)) {
+    if (removedSlugs.has(target)) delete aliases[slug];
+  }
+  return { catalogue: catalogue.filter(m => !removedSlugs.has(m.song)), aliases, conflicts, removed };
 }

@@ -1,7 +1,161 @@
 {
   "originalCards": 735,
-  "retainedProfiles": 674,
+  "retainedProfiles": 636,
   "removedDuplicateCards": 61,
+  "excludedEmptyProfiles": [
+    {
+      "name": "Alesha Santa",
+      "slug": "alesha-santa"
+    },
+    {
+      "name": "Alice Ede",
+      "slug": "alice-ede-singer"
+    },
+    {
+      "name": "Alistair Sant",
+      "slug": "alistair-sant"
+    },
+    {
+      "name": "Andy Freeman",
+      "slug": "andy-freeman-dj"
+    },
+    {
+      "name": "Bbc Breakfast",
+      "slug": "bbc-breakfast-reporter-holly-hamilton"
+    },
+    {
+      "name": "Britains Got Talent 2018 Lost Voice Guy",
+      "slug": "britains-got-talent-2018-lost-voice-guy"
+    },
+    {
+      "name": "Britains Got Talent Semi Finalists Rosie And Adam",
+      "slug": "britains-got-talent-semi-finalists-rosie-and-adam"
+    },
+    {
+      "name": "Cbbc Karim And Hacker T Dog",
+      "slug": "cbbc-karim-and-hacker-t-dog"
+    },
+    {
+      "name": "Chris Ramsey",
+      "slug": "chris-ramsey-comedian"
+    },
+    {
+      "name": "Chris Taylor On The Right And Jordan Hames Love Island",
+      "slug": "chris-taylor-on-the-right-and-jordan-hames-love-island"
+    },
+    {
+      "name": "Coronation Street",
+      "slug": "coronation-street"
+    },
+    {
+      "name": "Dane Baptiste",
+      "slug": "dane-baptiste-comedian"
+    },
+    {
+      "name": "David Mitchell Guyharris",
+      "slug": "david-mitchell-guyharris"
+    },
+    {
+      "name": "Davina",
+      "slug": "davina-presenter"
+    },
+    {
+      "name": "Davina Sant",
+      "slug": "davina-sant"
+    },
+    {
+      "name": "Dr Who Tardis",
+      "slug": "dr-who-tardis"
+    },
+    {
+      "name": "Eddie Hearn Sports Promoter",
+      "slug": "eddie-hearn-sports-promoter"
+    },
+    {
+      "name": "Eubank Sant",
+      "slug": "eubank-sant"
+    },
+    {
+      "name": "Idea",
+      "slug": "idea"
+    },
+    {
+      "name": "Jodie Whitticker Waxwork",
+      "slug": "jodie-whitticker-waxwork"
+    },
+    {
+      "name": "Krank Sant",
+      "slug": "krank-sant"
+    },
+    {
+      "name": "Kyle Thomlinson",
+      "slug": "kyle-thomlinson-bgt-2017"
+    },
+    {
+      "name": "Linda Nolan Cheryl Ferguson Rebecca Wheatley",
+      "slug": "linda-nolan-cheryl-ferguson-rebecca-wheatley"
+    },
+    {
+      "name": "Magid Magid Sheffield",
+      "slug": "magid-magid-sheffield-lord-mayor"
+    },
+    {
+      "name": "Mollyscott X Factor 2018",
+      "slug": "mollyscott-x-factor-2018"
+    },
+    {
+      "name": "News Reader George Alagiah",
+      "slug": "news-reader-george-alagiah"
+    },
+    {
+      "name": "Oliceman With Gun",
+      "slug": "oliceman-with-gun"
+    },
+    {
+      "name": "Paul S",
+      "slug": "Paul-s-club-7-singer"
+    },
+    {
+      "name": "Peanut Kaiser Chiefs",
+      "slug": "peanut-kaiser-chiefs-singer"
+    },
+    {
+      "name": "Received 1579725675504308",
+      "slug": "received_1579725675504308"
+    },
+    {
+      "name": "Received 305611326784511",
+      "slug": "received_305611326784511"
+    },
+    {
+      "name": "Rhod Sant",
+      "slug": "rhod-sant"
+    },
+    {
+      "name": "Santa Mugshots Logo 1",
+      "slug": "santa-mugshots-logo-1"
+    },
+    {
+      "name": "Simon Cowell Waxwork",
+      "slug": "simon-cowell-waxwork"
+    },
+    {
+      "name": "Sir David",
+      "slug": "sir-david-attenbrough-waxwork"
+    },
+    {
+      "name": "Tess Mug Shot Waxwork",
+      "slug": "tess-mug-shot-waxwork"
+    },
+    {
+      "name": "Walliams Sant",
+      "slug": "walliams-sant"
+    },
+    {
+      "name": "Wesley Nelson Reality",
+      "slug": "wesley-nelson-reality-star"
+    }
+  ],
   "aliases": {
     "a1-singers": "a1-singers",
     "aaron-ramsdale-footballer": "aaron-ramsdale-footballer",
@@ -17,7 +171,6 @@
     "alan-johnson-mp": "alan-johnson-mp",
     "aled-jones-tv-personality": "aled-jones-tv-personality",
     "alesha-dixon-singer-presenter": "alesha-dixon-singer-presenter",
-    "alesha-santa": "alesha-santa",
     "alex-belfield-vlogger": "alex-belfield-vlogger",
     "alex-horne-comedian": "alex-horne-comedian",
     "alex-scott-footballer": "alex-scott-footballer",
@@ -25,10 +178,8 @@
     "alfie-boe-singer-performer": "alfie-boe-singer-performer",
     "ali-campbell-ub40-singer": "ali-campbell-ub40-singer",
     "ali-carter-snooker-player": "ali-carter-snooker-player",
-    "alice-ede-singer": "alice-ede-singer",
     "alistair-mcgowen-impressionist": "alistair-mcgowen-impressionist",
     "alistair-mcgowen-impressionist-actor": "alistair-mcgowen-impressionist",
-    "alistair-sant": "alistair-sant",
     "aljaz-skorjanec-dancer": "aljaz-skorjanec-dancer",
     "amanda-holden-tv-personality": "amanda-holden-tv-personality",
     "amanda-lamb-tv-presenter": "amanda-lamb-tv-presenter",
@@ -41,7 +192,6 @@
     "corrie-andrew-lancel": "andrew-lancel-corrie-actor",
     "andy-crane-tv-presenter": "andy-crane-tv-presenter",
     "andy-de-la-tour-actor": "andy-de-la-tour-actor",
-    "andy-freeman-dj": "andy-freeman-dj",
     "andy-hamilton-comedian-writer": "andy-hamilton-comedian-writer",
     "angela-scanlon-dj": "angela-scanlon-dj",
     "anita-harris-tv-personality": "anita-harris-tv-personality",
@@ -62,7 +212,6 @@
     "basil-brush-presenter": "basil-brush-presenter",
     "batman-super-hero": "batman-superhero",
     "batman-superhero": "batman-superhero",
-    "bbc-breakfast-reporter-holly-hamilton": "bbc-breakfast-reporter-holly-hamilton",
     "becky-measures-radio-presenter": "becky-measures-radio-presenter",
     "ben-adams-a1-singer": "ben-adams-a1-singer",
     "ben-fogle-tv-personality": "ben-fogle-tv-personality",
@@ -97,8 +246,6 @@
     "brendan-rodgers-leicester-city-manager": "brendan-rodgers-leicester-city-manager",
     "brian-conley-comedian": "brian-conley-comedian",
     "brian-connelly-comedian": "brian-conley-comedian",
-    "britains-got-talent-2018-lost-voice-guy": "britains-got-talent-2018-lost-voice-guy",
-    "britains-got-talent-semi-finalists-rosie-and-adam": "britains-got-talent-semi-finalists-rosie-and-adam",
     "brooke-vincent-actress": "brooke-vincent-actress",
     "bruno-tonioli-dancer": "bruno-tonioli-dancer",
     "calum-best-presenter": "calum-best-presenter",
@@ -109,7 +256,6 @@
     "carlo-ancelotti-everton-football-manager": "carlo-ancelotti-everton-football-manager",
     "carol-kirkwood-tv-personality": "carol-kirkwood-tv-personality",
     "catherine-tyldesley-actor": "catherine-tyldesley-actor",
-    "cbbc-karim-and-hacker-t-dog": "cbbc-karim-and-hacker-t-dog",
     "charley-webb-actress": "charley-webb-actress",
     "charlie-brookes-actress": "charlie-brooks-actress",
     "charlie-brooks-actress": "charlie-brooks-actress",
@@ -124,12 +270,9 @@
     "chris-mason-radio-presenter": "chris-mason-radio-presenter",
     "chris-mc-causland-comedian": "chris-mc-causland-comedian",
     "chris-moyles-radio-presenter": "chris-moyles-radio-presenter",
-    "chris-ramsey-comedian": "chris-ramsey-comedian",
     "chris-rodgers-bbc-newsreader": "chris-rogers-bbc-newsreader",
     "chris-rogers-bbc-newsreader": "chris-rogers-bbc-newsreader",
     "chris-smith-radio-presenter": "chris-smith-radio-presenter",
-    "chris-taylor-on-the-right-and-jordan-hames-love-island": "chris-taylor-on-the-right-and-jordan-hames-love-island",
-    "chris-taylor-on-the-right-and-jordan-hames-love-island-2": "chris-taylor-on-the-right-and-jordan-hames-love-island",
     "chris-waddle-football-legend": "chris-waddle-football-legend",
     "chris-walker-actor": "chris-walker-actor",
     "chris-wilder-sheffield-united-manager": "chris-wilder-sheffield-united-manager",
@@ -149,7 +292,6 @@
     "colin-patterson-bbc": "colin-patterson-bbc",
     "colin-patterson-bbc-presenter": "colin-patterson-bbc",
     "colson-smith-actor": "colson-smith-actor",
-    "coronation-street": "coronation-street",
     "craig-charles-presenter-actor": "craig-charles-presenter-actor",
     "craig-gazey-actor": "craig-gazey-actor",
     "craig-revel-horwood-dancer-presenter": "craig-revel-horwood-dancer-presenter",
@@ -162,7 +304,6 @@
     "dan-walker-bbc-breakfast": "dan-walker-bbc-breakfast",
     "dan-wallker-bbc-breakfast": "dan-walker-bbc-breakfast",
     "dan-wootton-itv-showbiz": "dan-wootton-itv-showbiz",
-    "dane-baptiste-comedian": "dane-baptiste-comedian",
     "dane-bowers-singer": "dane-bowers-singer",
     "dani-harmer-tracy-beeker": "dani-harmer-tracy-beeker",
     "dani-harmer-tracy-beeker-actress": "dani-harmer-tracy-beeker",
@@ -183,13 +324,10 @@
     "david-diamante-boxing-commentator": "david-diamante-boxing-commentator",
     "david-dimbleby-bbc-television": "david-dimbleby-bbc-television",
     "david-mitchell-comedian": "david-mitchell-comedian",
-    "david-mitchell-guyharris": "david-mitchell-guyharris",
     "david-moyes-west-ham-manager": "david-moyes-west-ham-manager",
     "david-walliams-comedian-writer": "david-walliams-comedian-writer",
-    "davina-presenter": "davina-presenter",
     "davina-presenter-television-presenter": "davina-mccall-tv-presenter",
     "davina-mccall-tv-presenter": "davina-mccall-tv-presenter",
-    "davina-sant": "davina-sant",
     "dean-gaffney-actor": "dean-gaffney-actor",
     "deidre-sanders-tv-personaility": "deidre-sanders-tv-personaility",
     "dene-michaels-singer": "dene-michaels-singer",
@@ -207,12 +345,10 @@
     "dominic-byrne-radio-presenter": "dominic-byrne-radio-presenter",
     "dominic-dale-snooker-player": "dominic-dale-snooker-player",
     "dr-who-dalek": "dr-who-dalek",
-    "dr-who-tardis": "dr-who-tardis",
     "duncan-james-singer": "duncan-james-singer",
     "duncan-wood-and-christine-talbot-tv-presenters": "duncan-wood-and-christine-talbot-tv-presenters",
     "eamon-holmes": "eamonn-holmes-tv-personailty",
     "eamonn-holmes-tv-personailty": "eamonn-holmes-tv-personailty",
-    "eddie-hearn-sports-promoter": "eddie-hearn-sports-promoter",
     "eddie-howe-bournmouth-fc": "eddie-howe-bournmouth-fc",
     "edele-lynch-actress": "edele-lynch-actress",
     "ellie-colton-radio-presenter": "ellie-colton-radio-presenter",
@@ -222,7 +358,6 @@
     "emiliano-marcondes-footballer": "emiliano-marcondes-footballer",
     "emily-atack-actress": "emily-atack-actress",
     "emma-barton-actress": "emma-barton-actress",
-    "eubank-sant": "eubank-sant",
     "everal-a-walsh-actor": "everal-a-walsh-actor",
     "everal-a-walsh": "everal-a-walsh-actor",
     "faye-brookes-actress": "faye-brookes-actress",
@@ -283,7 +418,6 @@
     "ian-mercer-actor": "ian-mercer-actor",
     "ian-reddington-eastenders-actor": "ian-reddington-eastenders-actor",
     "ian-waite-dancer": "ian-waite-dancer",
-    "idea": "idea",
     "idris-elba-actor": "idris-elba-actor",
     "isabel-hodgins-actress": "isabel-hodgins-actress",
     "iwan-thomas-athlete": "iwan-thomas-athlete",
@@ -335,7 +469,6 @@
     "joanne-cliffton-dancer": "joanne-clifton-dancer",
     "joanne-clifton-dancer": "joanne-clifton-dancer",
     "jodie-prenger-actress": "jodie-prenger-actress",
-    "jodie-whitticker-waxwork": "jodie-whitticker-waxwork",
     "joe-lycett-comedian": "joe-lycett-comedian",
     "joe-mc-fadden-singer": "joe-mc-fadden-singer",
     "joe-mcfadden-actor": "joe-mc-fadden-singer",
@@ -399,11 +532,9 @@
     "kevin-sinfield-rugby-player": "kevin-sinfield-rugby-player",
     "kieron-richardson-actor": "kieron-richardson-actor",
     "kim-marsh-corrie-actress": "kim-marsh-corrie-actress",
-    "krank-sant": "krank-sant",
     "krankies-comedians": "krankies-comedians",
     "krishnan-guru-murthy-newsreader": "krishnan-guru-murthy-newsreader",
     "kwoklyn-wan-chef": "kwoklyn-wan-chef",
-    "kyle-thomlinson-bgt-2017": "kyle-thomlinson-bgt-2017",
     "laura-tobin-gmb-presenter": "laura-tobin-gmb-presenter",
     "laurel-and-hardy-comedians": "laurel-and-hardy-comedians",
     "lauren-oakley-dancer": "lauren-oakley-dancer",
@@ -423,7 +554,6 @@
     "lewis-cope-actor": "lewis-cope-actor",
     "liam-fox-actor": "liam-fox-actor",
     "liesl-radio-presenter": "liesl-radio-presenter",
-    "linda-nolan-cheryl-ferguson-rebecca-wheatley": "linda-nolan-cheryl-ferguson-rebecca-wheatley",
     "linda-purl-actress": "linda-purl-actress",
     "lisa-appleton-presenter": "lisa-appleton-presenter",
     "lisa-armstrong-make-up-artist": "lisa-armstrong-make-up-artist",
@@ -439,7 +569,6 @@
     "luke-friend-x-factor-singer": "luke-friend-x-factor-singer",
     "luke-kempner-comedian": "luke-kempner-comedian",
     "lulu-singer": "lulu-singer",
-    "magid-magid-sheffield-lord-mayor": "magid-magid-sheffield-lord-mayor",
     "marc-elliott-actor": "marc-elliott-actor",
     "marco-fu-snooker-player": "marco-fu-snooker-player",
     "marcus-collins-x-factor-singer": "marcus-collins-x-factor-singer",
@@ -486,7 +615,6 @@
     "mo-gilligan-comedian": "mo-gilligan-comedian",
     "molly-mae-love-island": "molly-mae-love-island",
     "molly-rainsford-tv-personailty": "molly-rainsford-tv-personailty",
-    "mollyscott-x-factor-2018": "mollyscott-x-factor-2018",
     "montel-jordan-gladiator": "montel-jordan-gladiator",
     "motsi-mabuse-strictly-judge-dancer": "motsi-mabuse-strictly-judge-dancer",
     "mr-maker-cbeebies-presenter": "mr-maker-cbeebies-presenter",
@@ -499,7 +627,6 @@
     "neil-mcdermott-eastenders-actor": "neil-mcdermott-eastenders-actor",
     "neil-robertson-snooker-player": "neil-robertson-snooker-player",
     "nev-wilshire-tv-personality": "nev-wilshire-tv-personality",
-    "news-reader-george-alagiah": "news-reader-george-alagiah",
     "nick-clegg-mp": "nick-clegg-mp",
     "nick-knowles-tv-personality": "nick-knowles-tv-personality",
     "nigel-harman-actor": "nigel-harman-actor",
@@ -508,7 +635,6 @@
     "norman-pace-actor-comedian": "norman-pace-actor-comedian",
     "nuno-espirito-santo-wolves-manager": "nuno-espirito-santo-wolves-manager",
     "ole-gunnar-solsha-man-united-manager": "ole-gunnar-solsha-man-united-manager",
-    "oliceman-with-gun": "oliceman-with-gun",
     "oliver-farnworth-actor": "oliver-farnworth-actor",
     "ore-oduba-tv-radio-personality": "ore-oduba-tv-radio-personality",
     "oti-mabuse-dancer": "oti-mabuse-dancer",
@@ -526,11 +652,9 @@
     "paul-heaton-singer-beautiful-south": "paul-heaton-singer-beautiful-south",
     "paul-hendy-presenter": "paul-hendy-presenter",
     "paul-martin-tv-personality": "paul-martin-tv-personality",
-    "Paul-s-club-7-singer": "Paul-s-club-7-singer",
     "paul-s-club-7-singer": "paul-s-club-7-singer",
     "paula-lane-actress": "paula-lane-actress",
     "paula-wilcox-actress": "paula-wilcox-actress",
-    "peanut-kaiser-chiefs-singer": "peanut-kaiser-chiefs-singer",
     "pep-guardiola-man-city-manager": "pep-guardiola-man-city-manager",
     "pep-guardiola-man-city-manaager": "pep-guardiola-man-city-manager",
     "perri-kiely-dancer": "perri-kiely-dancer",
@@ -553,13 +677,10 @@
     "ralf-little-actor": "ralf-little-actor",
     "raven-chapman-terri-harper-stevi-levy-boxers": "raven-chapman-terri-harper-stevi-levy-boxers",
     "reanne-evans-snooker-player": "reanne-evans-snooker-player",
-    "received_1579725675504308": "received_1579725675504308",
-    "received_305611326784511": "received_305611326784511",
     "red-arrows-entertainers": "red-arrows-entertainers",
     "reginald-d-hunter-comedian": "reginald-d-hunter-comedian",
     "rev-richard-cole-radio-personality": "rev-richard-cole-radio-personality",
     "rhod-gilbert-comedian": "rhod-gilbert-comedian",
-    "rhod-sant": "rhod-sant",
     "richard-arnold-gmb-presenter": "richard-arnold-gmb-presenter",
     "richard-blackwood-actor": "richard-blackwood-actor",
     "richard-curts-writer": "richard-curts-writer",
@@ -613,7 +734,6 @@
     "samantha-womack-oliver-farnworth-actors": "samantha-womack-oliver-farnworth-actors",
     "sandra-marvin-actress": "sandra-marvin-actress",
     "santa-father-christmas": "santa-father-christmas",
-    "santa-mugshots-logo-1": "santa-mugshots-logo-1",
     "sara-cox-radio-dj": "sara-cox-radio-dj",
     "sara-davies-dragon": "sara-davies-dragon",
     "sarah-beeny-presenter": "sarah-beeny-presenter",
@@ -643,12 +763,10 @@
     "showaddywaddy-band": "showaddywaddy-band",
     "showaddywaddy-singers": "showaddywaddy-singers",
     "sian-wellby-presenter": "sian-wellby-presenter",
-    "simon-cowell-waxwork": "simon-cowell-waxwork",
     "simon-reeve-author": "simon-reeve-author",
     "simon-rimmer-presenter-chef": "simon-rimmer-presenter-chef",
     "sinitta-singer": "sinitta-singer",
     "siobhan-fahey-actress": "siobhan-fahey-actress",
-    "sir-david-attenbrough-waxwork": "sir-david-attenbrough-waxwork",
     "sir-ian-mckellen-actor": "sir-ian-mckellen-actor",
     "sir-michael-palin": "sir-michael-palin",
     "sophie-ellis-bexter-singer": "sophie-ellis-bexter-singer",
@@ -690,7 +808,6 @@
     "tasha-ghouri-tv-personality": "tasha-ghouri-tv-personality",
     "terry-giffiths-snooker-player": "terry-giffiths-snooker-player",
     "terry-waite-journalist-writer": "terry-waite-journalist-writer",
-    "tess-mug-shot-waxwork": "tess-mug-shot-waxwork",
     "the-sherlocks-band": "the-sherlocks-band",
     "the-vivienne-drag-queen": "the-vivienne-drag-queen",
     "thomas-forrester-tv-personality": "thomas-forrester-tv-personality",
@@ -724,9 +841,7 @@
     "vincent-simone-dancer": "vincent-simone-dancer",
     "viper-gladiator": "viper-gladiator",
     "vogue-williams-model": "vogue-williams-model",
-    "walliams-sant": "walliams-sant",
     "wendi-peters-actress": "wendi-peters-actress",
-    "wesley-nelson-reality-star": "wesley-nelson-reality-star",
     "will-mellor-actor": "will-mellor-actor",
     "will-young-singer": "will-young-singer",
     "willie-thorne-snooker-player": "willie-thorne-snooker-player",
@@ -859,15 +974,6 @@
       "replacement": ""
     },
     {
-      "name": "Alesha Santa",
-      "path": "/mugshots/alesha-santa",
-      "category": "Identity / non-celebrity review",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption. Confirm identity/type first: ambiguous label, fictional character, mascot, object or waxwork.",
-      "biography": "",
-      "replacement": ""
-    },
-    {
       "name": "Alex Belfield",
       "path": "/mugshots/alex-belfield-vlogger",
       "category": "Editorial review",
@@ -931,30 +1037,12 @@
       "replacement": ""
     },
     {
-      "name": "Alice Ede",
-      "path": "/mugshots/alice-ede-singer",
-      "category": "Missing biography",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption.",
-      "biography": "",
-      "replacement": ""
-    },
-    {
       "name": "Alistair McGowan",
       "path": "/mugshots/alistair-mcgowen-impressionist",
       "category": "No screening flag",
       "words": 71,
       "reason": "",
       "biography": "Alistair Charles McGowan is an English impressionist and comic known for The Big Impression. The Big Impression was a huge hit in the UK, and one of the BBC's top comedy programmes – even winning various awards – including a BAFTA in 2003. McGowan's impressions were a prominent feature on British televisions for many years. Some of his best impressions were of Terry Wogan, Tony Blair, Prince Charles, and David Beckham.",
-      "replacement": ""
-    },
-    {
-      "name": "Alistair Sant",
-      "path": "/mugshots/alistair-sant",
-      "category": "Identity / non-celebrity review",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption. Confirm identity/type first: ambiguous label, fictional character, mascot, object or waxwork.",
-      "biography": "",
       "replacement": ""
     },
     {
@@ -1063,15 +1151,6 @@
       "words": 45,
       "reason": "",
       "biography": "Andy de la Tour is an English actor and screenwriter. In films he appeared in Plenty, Notting Hill, the Roman Polanski's Oliver Twist, 44 Inch Chest, and The Confessions, and in television The Young Ones, Filthy Rich & Catflap, Bottom, Kavanagh QC and The Brief.",
-      "replacement": ""
-    },
-    {
-      "name": "Andy Freeman",
-      "path": "/mugshots/andy-freeman-dj",
-      "category": "Missing biography",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption.",
-      "biography": "",
       "replacement": ""
     },
     {
@@ -1243,15 +1322,6 @@
       "words": 36,
       "reason": "Short biography (25–39 words); consider more career detail. Confirm identity/type first: ambiguous label, fictional character, mascot, object or waxwork.",
       "biography": "Batman is a fictional superhero appearing in American comic books published by DC Comics. The character was created by artist Bob Kane and writer Bill Finger, and first appeared in Detective Comics Issue 27, in 1939",
-      "replacement": ""
-    },
-    {
-      "name": "Bbc Breakfast",
-      "path": "/mugshots/bbc-breakfast-reporter-holly-hamilton",
-      "category": "Missing biography",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption.",
-      "biography": "",
       "replacement": ""
     },
     {
@@ -1480,24 +1550,6 @@
       "replacement": ""
     },
     {
-      "name": "Britains Got Talent 2018 Lost Voice Guy",
-      "path": "/mugshots/britains-got-talent-2018-lost-voice-guy",
-      "category": "Missing biography",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption.",
-      "biography": "",
-      "replacement": ""
-    },
-    {
-      "name": "Britains Got Talent Semi Finalists Rosie And Adam",
-      "path": "/mugshots/britains-got-talent-semi-finalists-rosie-and-adam",
-      "category": "Missing biography",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption.",
-      "biography": "",
-      "replacement": ""
-    },
-    {
       "name": "Brooke Vincent",
       "path": "/mugshots/brooke-vincent-actress",
       "category": "No screening flag",
@@ -1576,15 +1628,6 @@
       "words": 32,
       "reason": "Short biography (25–39 words); consider more career detail.",
       "biography": "From Coronation Street to Strictly, Catherine Tyldesley shines on screen and stage. Her Santa Radio MugShot 🎅✨ captures her glamorous Christmas spirit – and yes, she makes holding a mug look fabulous.",
-      "replacement": ""
-    },
-    {
-      "name": "Cbbc Karim And Hacker T Dog",
-      "path": "/mugshots/cbbc-karim-and-hacker-t-dog",
-      "category": "Missing biography",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption.",
-      "biography": "",
       "replacement": ""
     },
     {
@@ -1696,15 +1739,6 @@
       "replacement": ""
     },
     {
-      "name": "Chris Ramsey",
-      "path": "/mugshots/chris-ramsey-comedian",
-      "category": "Missing biography",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption.",
-      "biography": "",
-      "replacement": ""
-    },
-    {
       "name": "Chris Rogers",
       "path": "/mugshots/chris-rogers-bbc-newsreader",
       "category": "No screening flag",
@@ -1720,15 +1754,6 @@
       "words": 34,
       "reason": "Short biography (25–39 words); consider more career detail.",
       "biography": "Christopher Smith, known professionally as Chris Smith, is an English radio newsreader. He is most famous for presenting Newsbeat on BBC Radio 1 and co-hosting the That's What He Said Podcast alongside Greg James.",
-      "replacement": ""
-    },
-    {
-      "name": "Chris Taylor On The Right And Jordan Hames Love Island",
-      "path": "/mugshots/chris-taylor-on-the-right-and-jordan-hames-love-island",
-      "category": "Missing biography",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption.",
-      "biography": "",
       "replacement": ""
     },
     {
@@ -1867,15 +1892,6 @@
       "replacement": ""
     },
     {
-      "name": "Coronation Street",
-      "path": "/mugshots/coronation-street",
-      "category": "Identity / non-celebrity review",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption. Confirm identity/type first: ambiguous label, fictional character, mascot, object or waxwork.",
-      "biography": "",
-      "replacement": ""
-    },
-    {
       "name": "Craig Charles",
       "path": "/mugshots/craig-charles-presenter-actor",
       "category": "No screening flag",
@@ -1972,15 +1988,6 @@
       "words": 46,
       "reason": "",
       "biography": "Dan Wootton is a New Zealand-born journalist and broadcaster. In 2013, he joined The Sun on Sunday and became editor of the Bizarre column the following year. In February 2016, he became associate editor of The Sun and in March 2018 was promoted to executive editor.",
-      "replacement": ""
-    },
-    {
-      "name": "Dane Baptiste",
-      "path": "/mugshots/dane-baptiste-comedian",
-      "category": "Missing biography",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption.",
-      "biography": "",
       "replacement": ""
     },
     {
@@ -2155,15 +2162,6 @@
       "replacement": ""
     },
     {
-      "name": "David Mitchell Guyharris",
-      "path": "/mugshots/david-mitchell-guyharris",
-      "category": "Identity / non-celebrity review",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption. Confirm identity/type first: ambiguous label, fictional character, mascot, object or waxwork.",
-      "biography": "",
-      "replacement": ""
-    },
-    {
       "name": "David Moyes",
       "path": "/mugshots/david-moyes-west-ham-manager",
       "category": "Editorial review",
@@ -2182,30 +2180,12 @@
       "replacement": ""
     },
     {
-      "name": "Davina",
-      "path": "/mugshots/davina-presenter",
-      "category": "Identity / non-celebrity review",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption. Confirm identity/type first: ambiguous label, fictional character, mascot, object or waxwork.",
-      "biography": "",
-      "replacement": ""
-    },
-    {
       "name": "Davina McCall",
       "path": "/mugshots/davina-mccall-tv-presenter",
       "category": "No screening flag",
       "words": 58,
       "reason": "",
       "biography": "Davina Lucy Pascale McCall is an English television presenter and model. She was the presenter of Big Brother during its run on Channel 4 between 2000 and 2010. She has also hosted Channel 4s The Million Pound Drop, Five Minutes to a Fortune and The Jump as well as ITVs Long Lost Family and This Time Next Year.",
-      "replacement": ""
-    },
-    {
-      "name": "Davina Sant",
-      "path": "/mugshots/davina-sant",
-      "category": "Identity / non-celebrity review",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption. Confirm identity/type first: ambiguous label, fictional character, mascot, object or waxwork.",
-      "biography": "",
       "replacement": ""
     },
     {
@@ -2335,15 +2315,6 @@
       "replacement": ""
     },
     {
-      "name": "Dr Who Tardis",
-      "path": "/mugshots/dr-who-tardis",
-      "category": "Identity / non-celebrity review",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption. Confirm identity/type first: ambiguous label, fictional character, mascot, object or waxwork.",
-      "biography": "",
-      "replacement": ""
-    },
-    {
       "name": "Duncan James",
       "path": "/mugshots/duncan-james-singer",
       "category": "No screening flag",
@@ -2368,15 +2339,6 @@
       "words": 65,
       "reason": "",
       "biography": "Eamonn Holmes is a well-known television presenter, celebrated for hosting programmes such as GMTV, Sky News and This Morning. Before moving into broadcasting, Eamonn had early ambitions in football and has spoken about training with Northern Irish side Linfield, attracting interest from major English clubs. He ultimately chose a career in journalism and television instead, becoming one of the UK’s most familiar and trusted presenters.",
-      "replacement": ""
-    },
-    {
-      "name": "Eddie Hearn Sports Promoter",
-      "path": "/mugshots/eddie-hearn-sports-promoter",
-      "category": "Missing biography",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption.",
-      "biography": "",
       "replacement": ""
     },
     {
@@ -2458,15 +2420,6 @@
       "words": 46,
       "reason": "",
       "biography": "Emma Louise Barton is an English actress. She is perhaps best known for the role of Honey Mitchell in EastEnders which she has portrayed on and off since November 2005. Before her role in EastEnders, Barton appeared in Spooks and on stage in plays including Grease.",
-      "replacement": ""
-    },
-    {
-      "name": "Eubank Sant",
-      "path": "/mugshots/eubank-sant",
-      "category": "Identity / non-celebrity review",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption. Confirm identity/type first: ambiguous label, fictional character, mascot, object or waxwork.",
-      "biography": "",
       "replacement": ""
     },
     {
@@ -2974,15 +2927,6 @@
       "replacement": ""
     },
     {
-      "name": "Idea",
-      "path": "/mugshots/idea",
-      "category": "Identity / non-celebrity review",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption. Confirm identity/type first: ambiguous label, fictional character, mascot, object or waxwork.",
-      "biography": "",
-      "replacement": ""
-    },
-    {
       "name": "Idris Elba",
       "path": "/mugshots/idris-elba-actor",
       "category": "No screening flag",
@@ -3412,15 +3356,6 @@
       "words": 52,
       "reason": "",
       "biography": "Jodie Prenger is a renowned British actress and singer, celebrated for her standout role as Nancy in the West End production of Oliver! after winning BBC’s I'd Do Anything. 🌟 Her powerful voice and acting talent have shone in musical theatre and TV, earning her critical acclaim and a devoted fan base.",
-      "replacement": ""
-    },
-    {
-      "name": "Jodie Whitticker Waxwork",
-      "path": "/mugshots/jodie-whitticker-waxwork",
-      "category": "Identity / non-celebrity review",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption. Confirm identity/type first: ambiguous label, fictional character, mascot, object or waxwork.",
-      "biography": "",
       "replacement": ""
     },
     {
@@ -3946,15 +3881,6 @@
       "replacement": ""
     },
     {
-      "name": "Krank Sant",
-      "path": "/mugshots/krank-sant",
-      "category": "Identity / non-celebrity review",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption. Confirm identity/type first: ambiguous label, fictional character, mascot, object or waxwork.",
-      "biography": "",
-      "replacement": ""
-    },
-    {
       "name": "Krishnan Guru-Murthy",
       "path": "/mugshots/krishnan-guru-murthy-newsreader",
       "category": "No screening flag",
@@ -3970,15 +3896,6 @@
       "words": 74,
       "reason": "",
       "biography": "Kwoklyn Wan is a British chef, author and TV presenter celebrated for his expertise in Chinese cuisine. Coming from a family rooted in the restaurant trade, he has shared his skills through television series such as Chinese Food Made Easy and through bestselling cookbooks including Chinese Takeaway Cookbook and Chinese Takeaway in 5. With his approachable teaching style and passion for authentic flavours, Kwoklyn has become a much-loved figure in the UK food scene.",
-      "replacement": ""
-    },
-    {
-      "name": "Kyle Thomlinson",
-      "path": "/mugshots/kyle-thomlinson-bgt-2017",
-      "category": "Missing biography",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption.",
-      "biography": "",
       "replacement": ""
     },
     {
@@ -4144,15 +4061,6 @@
       "replacement": ""
     },
     {
-      "name": "Linda Nolan Cheryl Ferguson Rebecca Wheatley",
-      "path": "/mugshots/linda-nolan-cheryl-ferguson-rebecca-wheatley",
-      "category": "Missing biography",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption.",
-      "biography": "",
-      "replacement": ""
-    },
-    {
       "name": "Linda Purl",
       "path": "/mugshots/linda-purl-actress",
       "category": "No screening flag",
@@ -4276,15 +4184,6 @@
       "words": 70,
       "reason": "",
       "biography": "Lulu Kennedy-Cairns is a renowned Scottish singer-songwriter, famous for her iconic songs in James Bond films, including The Man with the Golden Gun (1974) and To Sir with Love (1967). In the UK, she’s cherished for her hit Shout, performed at the 2014 Commonwealth Games in Glasgow. 🎤 Lulu continues to captivate audiences through her appearances on television shows, including the 2017 episode of Who Do You Think You Are.",
-      "replacement": ""
-    },
-    {
-      "name": "Magid Magid Sheffield",
-      "path": "/mugshots/magid-magid-sheffield-lord-mayor",
-      "category": "Missing biography",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption.",
-      "biography": "",
       "replacement": ""
     },
     {
@@ -4684,15 +4583,6 @@
       "replacement": ""
     },
     {
-      "name": "Mollyscott X Factor 2018",
-      "path": "/mugshots/mollyscott-x-factor-2018",
-      "category": "Missing biography",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption.",
-      "biography": "",
-      "replacement": ""
-    },
-    {
       "name": "Montell Douglas",
       "path": "/mugshots/montel-jordan-gladiator",
       "category": "No screening flag",
@@ -4801,15 +4691,6 @@
       "replacement": ""
     },
     {
-      "name": "News Reader George Alagiah",
-      "path": "/mugshots/news-reader-george-alagiah",
-      "category": "Missing biography",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption.",
-      "biography": "",
-      "replacement": ""
-    },
-    {
       "name": "Nick Clegg",
       "path": "/mugshots/nick-clegg-mp",
       "category": "No screening flag",
@@ -4879,15 +4760,6 @@
       "words": 40,
       "reason": "outdated-sounding current-role claims: 'currently the manager of English club Manchester United' Undated current-role/time-sensitive wording: verify it is still accurate.",
       "biography": "Ole Gunnar Solskjær KSO is a Norwegian professional football manager and former player. He is currently the manager of English club Manchester United. As a player, he played as a forward and spent most of his career with Manchester United.",
-      "replacement": ""
-    },
-    {
-      "name": "Oliceman With Gun",
-      "path": "/mugshots/oliceman-with-gun",
-      "category": "Identity / non-celebrity review",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption. Confirm identity/type first: ambiguous label, fictional character, mascot, object or waxwork.",
-      "biography": "",
       "replacement": ""
     },
     {
@@ -5035,15 +4907,6 @@
       "replacement": ""
     },
     {
-      "name": "Paul S",
-      "path": "/mugshots/Paul-s-club-7-singer",
-      "category": "Identity / non-celebrity review",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption. Confirm identity/type first: ambiguous label, fictional character, mascot, object or waxwork.",
-      "biography": "",
-      "replacement": ""
-    },
-    {
       "name": "Paula Lane",
       "path": "/mugshots/paula-lane-actress",
       "category": "Editorial review",
@@ -5059,15 +4922,6 @@
       "words": 38,
       "reason": "Short biography (25–39 words); consider more career detail.",
       "biography": "Paula Wilcox is an English actress. An established actress with a career spanning over 50 years, she is best known for her role as Chrissy in the popular ITV sitcom Man About The House from 1973 to 1976.",
-      "replacement": ""
-    },
-    {
-      "name": "Peanut Kaiser Chiefs",
-      "path": "/mugshots/peanut-kaiser-chiefs-singer",
-      "category": "Missing biography",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption.",
-      "biography": "",
       "replacement": ""
     },
     {
@@ -5242,24 +5096,6 @@
       "replacement": ""
     },
     {
-      "name": "Received 1579725675504308",
-      "path": "/mugshots/received_1579725675504308",
-      "category": "Identity / non-celebrity review",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption. Confirm identity/type first: ambiguous label, fictional character, mascot, object or waxwork.",
-      "biography": "",
-      "replacement": ""
-    },
-    {
-      "name": "Received 305611326784511",
-      "path": "/mugshots/received_305611326784511",
-      "category": "Identity / non-celebrity review",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption. Confirm identity/type first: ambiguous label, fictional character, mascot, object or waxwork.",
-      "biography": "",
-      "replacement": ""
-    },
-    {
       "name": "Red Arrows",
       "path": "/mugshots/red-arrows-entertainers",
       "category": "No screening flag",
@@ -5302,15 +5138,6 @@
       "words": 64,
       "reason": "",
       "biography": "Rhod Gilbert's is a much-loved Welsh comedian who has been nominated for many different awards, including the 2005 Perrier Best Newcomer Award, 2006's The Times' Top 50 Comedians, Chortle 'Comic's Comc' award, and many more. He has been a regular guest of a range of panel shows including Have I Got News for You, Never Mind the Buzzcocks, and 8 out of 10 Cats.",
-      "replacement": ""
-    },
-    {
-      "name": "Rhod Sant",
-      "path": "/mugshots/rhod-sant",
-      "category": "Identity / non-celebrity review",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption. Confirm identity/type first: ambiguous label, fictional character, mascot, object or waxwork.",
-      "biography": "",
       "replacement": ""
     },
     {
@@ -5764,15 +5591,6 @@
       "replacement": ""
     },
     {
-      "name": "Santa Mugshots Logo 1",
-      "path": "/mugshots/santa-mugshots-logo-1",
-      "category": "Identity / non-celebrity review",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption. Confirm identity/type first: ambiguous label, fictional character, mascot, object or waxwork.",
-      "biography": "",
-      "replacement": ""
-    },
-    {
       "name": "Sara Cox",
       "path": "/mugshots/sara-cox-radio-dj",
       "category": "Editorial review",
@@ -6007,15 +5825,6 @@
       "replacement": ""
     },
     {
-      "name": "Simon Cowell Waxwork",
-      "path": "/mugshots/simon-cowell-waxwork",
-      "category": "Identity / non-celebrity review",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption. Confirm identity/type first: ambiguous label, fictional character, mascot, object or waxwork.",
-      "biography": "",
-      "replacement": ""
-    },
-    {
       "name": "Simon Reeve",
       "path": "/mugshots/simon-reeve-author",
       "category": "Editorial review",
@@ -6049,15 +5858,6 @@
       "words": 43,
       "reason": "",
       "biography": "Siobhan Máire Deirdre Fahey is an Irish singer and musician, whose vocal range is a light contralto. She was a founding member of the 1980s British girl group Bananarama, who had several top 10 hits including the US number one hit single \"Venus\".",
-      "replacement": ""
-    },
-    {
-      "name": "Sir David",
-      "path": "/mugshots/sir-david-attenbrough-waxwork",
-      "category": "Identity / non-celebrity review",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption. Confirm identity/type first: ambiguous label, fictional character, mascot, object or waxwork.",
-      "biography": "",
       "replacement": ""
     },
     {
@@ -6394,15 +6194,6 @@
       "replacement": ""
     },
     {
-      "name": "Tess Mug Shot Waxwork",
-      "path": "/mugshots/tess-mug-shot-waxwork",
-      "category": "Identity / non-celebrity review",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption. Confirm identity/type first: ambiguous label, fictional character, mascot, object or waxwork.",
-      "biography": "",
-      "replacement": ""
-    },
-    {
       "name": "The Krankies",
       "path": "/mugshots/krankies-comedians",
       "category": "No screening flag",
@@ -6691,30 +6482,12 @@
       "replacement": ""
     },
     {
-      "name": "Walliams Sant",
-      "path": "/mugshots/walliams-sant",
-      "category": "Identity / non-celebrity review",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption. Confirm identity/type first: ambiguous label, fictional character, mascot, object or waxwork.",
-      "biography": "",
-      "replacement": ""
-    },
-    {
       "name": "Wendi Peters",
       "path": "/mugshots/wendi-peters-actress",
       "category": "Short biography",
       "words": 34,
       "reason": "Short biography (25–39 words); consider more career detail.",
       "biography": "Wendi Louise Peters is an English actress. Peters began her acting career in theatre, with appearances in various productions including The Scarlet Pimpernel, Guys and Dolls, Into the Woods, Bedroom Farce and Noises Off.",
-      "replacement": ""
-    },
-    {
-      "name": "Wesley Nelson Reality",
-      "path": "/mugshots/wesley-nelson-reality-star",
-      "category": "Missing biography",
-      "words": 0,
-      "reason": "No imported biography; website displays a generic mugshot caption.",
-      "biography": "",
       "replacement": ""
     },
     {

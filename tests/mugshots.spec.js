@@ -7,12 +7,17 @@ const catalogue = JSON.parse(fs.readFileSync('src/data/mugshots.json', 'utf8'));
 const report = JSON.parse(fs.readFileSync('reports/mugshot-import.json', 'utf8'));
 const publicData = buildCatalogue(catalogue);
 
-test('canonical catalogue preserves every old link, biography and available photo', () => {
-  expect(publicData.catalogue).toHaveLength(674);
-  expect(new Set(publicData.catalogue.map(m => normalizeName(m.artist))).size).toBe(674);
-  expect(Object.keys(publicData.aliases)).toHaveLength(735);
+test('canonical catalogue excludes empty profiles and preserves retained details', () => {
+  expect(publicData.catalogue).toHaveLength(636);
+  expect(new Set(publicData.catalogue.map(m => normalizeName(m.artist))).size).toBe(636);
+  expect(publicData.removed).toHaveLength(38);
+  expect(publicData.catalogue.every(m => m.info.trim())).toBe(true);
   for (const old of catalogue) {
     const kept = publicData.catalogue.find(m => m.song === publicData.aliases[old.song]);
+    if (!kept) {
+      expect((old.info || '').trim()).toBe('');
+      continue;
+    }
     expect(kept).toBeTruthy();
     if (old.info) expect(kept.info).toBe(old.info);
     if (old.image) {
@@ -23,7 +28,7 @@ test('canonical catalogue preserves every old link, biography and available phot
   const rows = parseRows(fs.readFileSync('attached_assets/cl57-mugshots_1791308171421.sql', 'utf8'));
   expect(buildCatalogue(reconcile(catalogue, rows).output)).toEqual(publicData);
   const audit = JSON.parse(fs.readFileSync('reports/mugshot-audit.json'));
-  expect(audit.review).toHaveLength(674);
+  expect(audit.review).toHaveLength(636);
   expect(audit.review.find(r => r.name === 'Johannes Radebe')).toMatchObject({ words: 18, category: 'Very short biography' });
   expect(audit.review.find(r => r.name === 'Jack Dee').reason).toContain('Jason Tindall');
 });
@@ -44,7 +49,7 @@ test('reported duplicate searches show one photo card and old links show full de
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.goto('/');
-  await expect(page.locator('.mugshots-preview')).toContainText('674');
+  await expect(page.locator('.mugshots-preview')).toContainText('636');
 });
 
 test('import preserves routes and images and safely handles source text', () => {
@@ -82,9 +87,25 @@ test('full biographies, photo credits, safe social links and mobile layout', asy
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.goto('/mugshots/alesha-santa');
-  await expect(page.locator('.mugshot-detail-desc')).toContainText('posing with');
+  await expect(page.getByRole('heading', { name: 'Celebrity Not Found' })).toBeVisible();
   await expect(page.locator('.mugshot-social')).toHaveCount(0);
   expect(errors).toEqual([]);
+});
+
+test('Davina has one complete profile and zero-word URLs are unavailable', async ({ page }) => {
+  test.setTimeout(120000);
+  await page.goto('/mugshots/all');
+  await page.getByRole('textbox', { name: 'Search celebrity names or roles' }).fill('Davina');
+  await expect(page.locator('.mugshot-card')).toHaveCount(1);
+  await expect(page.locator('.mugshot-card')).toContainText('Davina McCall');
+  await page.locator('.mugshot-card').click();
+  await expect(page).toHaveURL(/davina-mccall-tv-presenter$/);
+  await expect(page.locator('.mugshot-detail-desc')).toContainText('Big Brother');
+  await expect.poll(() => page.locator('.mugshot-detail-photo').evaluate(i => i.naturalWidth)).toBeGreaterThan(0);
+  for (const m of publicData.removed) {
+    await page.goto(`/mugshots/${m.song}`);
+    await expect(page.getByRole('heading', { name: 'Celebrity Not Found' })).toBeVisible();
+  }
 });
 
 test('gallery pagination, search, hover, focus and motion preferences', async ({ page }) => {
