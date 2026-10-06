@@ -6,6 +6,7 @@ import { buildCatalogue, normalizeName } from '../src/data/mugshot-catalogue.js'
 const catalogue = JSON.parse(fs.readFileSync('src/data/mugshots.json', 'utf8'));
 const report = JSON.parse(fs.readFileSync('reports/mugshot-import.json', 'utf8'));
 const publicData = buildCatalogue(catalogue);
+const overrides = JSON.parse(fs.readFileSync('src/data/mugshot-biographies.json', 'utf8'));
 
 test('canonical catalogue excludes empty profiles and preserves retained details', () => {
   expect(publicData.catalogue).toHaveLength(636);
@@ -19,7 +20,7 @@ test('canonical catalogue excludes empty profiles and preserves retained details
       continue;
     }
     expect(kept).toBeTruthy();
-    if (old.info) expect(kept.info).toBe(old.info);
+    if (old.info) expect(kept.info).toBe(overrides[kept.song] || old.info);
     if (old.image) {
       expect(kept.image).toBeTruthy();
       expect(fs.existsSync(`public${kept.image}`)).toBe(true);
@@ -29,7 +30,7 @@ test('canonical catalogue excludes empty profiles and preserves retained details
   expect(buildCatalogue(reconcile(catalogue, rows).output)).toEqual(publicData);
   const audit = JSON.parse(fs.readFileSync('reports/mugshot-audit.json'));
   expect(audit.review).toHaveLength(636);
-  expect(audit.review.find(r => r.name === 'Johannes Radebe')).toMatchObject({ words: 18, category: 'Very short biography' });
+  expect(audit.review.find(r => r.name === 'Johannes Radebe').words).toBeGreaterThan(35);
   expect(audit.review.find(r => r.name === 'Jack Dee').reason).toContain('Jason Tindall');
 });
 
@@ -79,7 +80,7 @@ test('full biographies, photo credits, safe social links and mobile layout', asy
   for (const slug of ['steve-davis-snoker-player', 'jeremy-kyle-tv-personality']) {
     const m = catalogue.find(m => m.song === slug);
     await page.goto(`/mugshots/${slug}`);
-    await expect(page.locator('.mugshot-detail-desc')).toHaveText(m.info);
+    await expect(page.locator('.mugshot-detail-desc')).toHaveText(overrides[publicData.aliases[m.song]] || m.info);
     await expect(page.locator('.mugshot-photo-credit')).toContainText('Bruce Davis');
     await expect(page.getByRole('link', { name: `Follow ${m.artist} on X` })).toHaveAttribute('href', m.socialUrl);
     await expect(page.locator('.mugshot-detail-photo')).toBeVisible();

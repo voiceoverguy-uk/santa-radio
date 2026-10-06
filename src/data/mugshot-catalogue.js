@@ -1,5 +1,6 @@
 // Keep the original import intact: historical URLs and alternative photographs
 // remain recoverable. Only reviewed identities share a public profile.
+import biographies from './mugshot-biographies.json' with { type: 'json' };
 export const identityAliases = {
   'brendan-o-carroll-mrs-brown': 'brendan-o-carroll-actor-mrs-brown',
   'mrs-brown-brendan-o-carroll': 'brendan-o-carroll-actor-mrs-brown',
@@ -30,7 +31,7 @@ export const identityAliases = {
 
 export const normalizeName = s => s.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
 
-export function buildCatalogue(raw) {
+export function buildCatalogue(raw, overrides = biographies) {
   const groups = new Map();
   const bySlug = new Map(raw.map(m => [m.song, m]));
   for (const m of raw) {
@@ -64,5 +65,13 @@ export function buildCatalogue(raw) {
   for (const [slug, target] of Object.entries(aliases)) {
     if (removedSlugs.has(target)) delete aliases[slug];
   }
-  return { catalogue: catalogue.filter(m => !removedSlugs.has(m.song)), aliases, conflicts, removed };
+  const retained = catalogue.filter(m => !removedSlugs.has(m.song));
+  for (const profile of retained) {
+    if (Object.hasOwn(overrides, profile.song)) {
+      const biography = overrides[profile.song];
+      if (typeof biography !== 'string' || !biography.trim()) throw new Error(`Invalid biography override: ${profile.song}`);
+      profile.info = biography;
+    }
+  }
+  return { catalogue: retained, aliases, conflicts, removed };
 }

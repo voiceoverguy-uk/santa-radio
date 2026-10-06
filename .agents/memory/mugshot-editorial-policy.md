@@ -17,3 +17,9 @@ Exclude all profiles with zero biography words from the public gallery and detai
 **Why:** The user explicitly changed the scope from researching empty profiles to removing them.
 
 **How to apply:** Apply the zero-word rule after consolidating duplicates, so an empty duplicate cannot hide a complete profile. Do not restore empty profiles through a later import.
+
+User-supplied researched biographies take precedence over legacy database imports, while the original source remains recoverable. Treat explicit REVIEW notes as holds, not approved replacement copy.
+
+**Why:** The user supplied expanded biographies and approved importing the unflagged entries while leaving Gracie Malloy, Laurel and Hardy, and UEFA Trophy unchanged pending confirmation.
+
+**How to apply:** Preserve approved prose verbatim across future imports; retain held drafts and sources for confirmation without restoring removed profiles or silently changing names, photos or URLs.
