@@ -87,7 +87,7 @@ export default function SongDetail() {
               <h1 className="song-detail-title">{song.song}</h1>
 
               <div className="song-detail-info">
-                <p>{song.info || `Listen to "${song.song}" by ${song.artist} on Santa Radio, the UK's favourite Christmas radio station. Enjoy this festive classic along with hundreds of other Christmas songs, all year round.`}</p>
+                <p>{song.info || 'Artist information for this song is not yet available.'}</p>
               </div>
 
               {!song.lyrics && <p>Lyrics for this song are not yet available.</p>}
@@ -95,12 +95,14 @@ export default function SongDetail() {
                 <div className="song-lyrics-section">
                   <button
                     className="lyrics-toggle-btn"
+                    aria-expanded={showLyrics}
+                    aria-controls="song-lyrics"
                     onClick={() => setShowLyrics(!showLyrics)}
                   >
                     {showLyrics ? 'Hide Lyrics' : 'Show Lyrics'}
                   </button>
                   {showLyrics && (
-                    <div className="song-lyrics-content">
+                    <div id="song-lyrics" className="song-lyrics-content">
                       <pre>{song.lyrics}</pre>
                     </div>
                   )}

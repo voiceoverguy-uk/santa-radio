@@ -1,4 +1,4 @@
-import songs from './songs.json';
+import songs from './songs.json' with { type: 'json' };
 
 export default function findSong(rawSlug = '') {
   const slug = rawSlug.replace(/[?&#]/g, '');

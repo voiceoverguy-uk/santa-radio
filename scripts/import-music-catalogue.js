@@ -1,13 +1,12 @@
 // Import this project's eight-column messages2 export as data; never execute SQL.
 import fs from 'node:fs';
+import { pathToFileURL } from 'node:url';
+import { repair } from './import-mugshots.js';
 
-const path = process.argv[2];
-if (!path) throw new Error('Usage: node scripts/import-music-catalogue.js dump.sql');
-const sql = fs.readFileSync(path, 'utf8');
-const existing = JSON.parse(fs.readFileSync('src/data/songs.json', 'utf8'));
+export function parseMusicRows(sql) {
 const rows = [];
 for (const match of sql.matchAll(/INSERT INTO `messages2` VALUES /g)) {
-  let row = null, value = '', quoted = false;
+  let row = null, value = '', quoted = false, ended = false;
   for (let i = match.index + match[0].length; i < sql.length; i++) {
     const c = sql[i];
     if (quoted) {
@@ -22,47 +21,64 @@ for (const match of sql.matchAll(/INSERT INTO `messages2` VALUES /g)) {
     else if (c === '(') { row = []; value = ''; }
     else if (c === ',' && row) { row.push(value); value = ''; }
     else if (c === ')' && row) { row.push(value); rows.push(row); row = null; }
-    else if (c === ';') break;
+    else if (c === ';') { ended = true; break; }
     else if (row) value += c;
   }
+  if (!ended || quoted || row) throw new Error('Incomplete SQL INSERT');
 }
 if (!rows.length || rows.some(r => r.length !== 8)) throw new Error('Unexpected export schema');
-const normalize = s => s.replace(/&/g, 'and').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
-const slugify = s => s.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/['’]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-function repair(text) {
-  // Only decode suspicious Latin-1 sequences when decoding loses no characters.
-  return text.replace(/[^\x00-\x7f]+/g, run => {
-    if (!/[ÃÂ]/.test(run) || [...run].some(c => c.charCodeAt(0) > 255)) return run;
-    const decoded = Buffer.from(run, 'latin1').toString('utf8');
-    return decoded.includes('\uFFFD') ? run : decoded;
-  }).replace(/\r\n/g, '\n');
+return rows;
 }
+const normalize = s => repair(s).replace(/&/g, 'and').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+const clean = value => value === 'NULL' ? '' : repair(value).replace(/\r\n?/g, '\n').trim();
+export function reconcileMusic(existing, rows) {
 const songs = rows.map(r => ({
-  id: Number(r[0]), song: repair(r[1]), artist: repair(r[2]), image: '',
-  info: repair(r[4]), website: r[5], lyrics: repair(r[6]), youtube: r[7].trim(),
-  link: slugify(`${repair(r[2])} ${repair(r[1])}`), aliases: [],
+  id: Number(r[0]), song: clean(r[1]), artist: clean(r[2]),
+  info: clean(r[4]), website: clean(r[5]), lyrics: clean(r[6]), youtube: clean(r[7]),
 }));
-if (new Set(songs.map(s => s.id)).size !== songs.length) throw new Error('Duplicate database IDs');
+if (songs.some(s => !Number.isSafeInteger(s.id) || s.id < 1) || new Set(songs.map(s => s.id)).size !== songs.length) throw new Error('Invalid or duplicate database IDs');
 const report = [];
-const unresolved = [];
-for (const old of existing) {
+const used = new Set();
+const output = existing.map(old => {
   const url = `${old.id}-${old.link}`;
-  const byName = songs.filter(s => normalize(`${s.artist} ${s.song}`) === normalize(old.link));
+  const names = songs.filter(s => normalize(s.artist) === normalize(old.artist) && normalize(s.song) === normalize(old.song));
+  const routes = songs.filter(s => normalize(`${s.artist} ${s.song}`) === normalize(old.link));
   const byId = songs.find(s => s.id === old.id);
-  const verifiedId = byId && (
-    /^\d+$/.test(old.link) ||
-    normalize(`${byId.artist} ${byId.song}`) === normalize(old.link) ||
-    normalize(`${byId.artist} ${byId.song}`) === normalize(`${old.artist} ${old.song}`)
-  );
-  const match = byName.length === 1 ? byName[0] : verifiedId ? byId : null;
-  if (!match) { unresolved.push(old); report.push({ url, status: 'retained-unmatched' }); continue; }
-  // Historical IDs identify placeholder and mis-split sitemap entries.
-  match.aliases.push(url, ...(old.aliases || []));
-  if (old.image) match.image = old.image;
-  report.push({ url, databaseId: match.id, status: byName.length === 1 ? 'artist-title' : 'historical-id', previousArtist: old.artist, previousSong: old.song, artist: match.artist, song: match.song });
+  const candidates = names.length ? names : routes;
+  const match = candidates.length === 1 ? candidates[0] :
+    candidates.length > 1 && candidates.includes(byId) ? byId : null;
+  if (!match) {
+    report.push({ url, status: candidates.length ? 'ambiguous' : 'unmatched',
+      candidateIds: candidates.map(s => s.id), conflictingId: byId?.id ?? null,
+      reason: 'No unique artist/title or route evidence; ID alone is insufficient.' });
+    return old;
+  }
+  used.add(match.id);
+  const updated = { ...old, artist: match.artist, song: match.song,
+    info: match.info || old.info, lyrics: match.lyrics || old.lyrics,
+    website: /^https?:\/\//i.test(match.website) ? match.website : old.website || '',
+    youtube: /^[\w-]{11}$/.test(match.youtube) ? match.youtube : old.youtube || '' };
+  report.push({ url, databaseId: match.id, status: names.length ? 'artist-title' : 'route-evidence',
+    conflictingId: match.id !== old.id ? old.id : null,
+    previousArtist: old.artist, previousSong: old.song, artist: updated.artist, song: updated.song });
+  return updated;
+});
+return { output, report: { existingRecords: existing.length, databaseRecords: songs.length,
+  matched: report.filter(r => r.databaseId).length, matches: report,
+  unresolved: report.filter(r => !r.databaseId),
+  databaseOnly: songs.filter(s => !used.has(s.id)).map(({ id, artist, song }) => ({ id, artist, song })) } };
 }
-for (const song of songs) song.aliases = [...new Set(song.aliases)];
-fs.writeFileSync('src/data/songs.json', JSON.stringify([...songs, ...unresolved], null, 2) + '\n');
-fs.mkdirSync('reports', { recursive: true });
-fs.writeFileSync('reports/music-import.json', JSON.stringify({ databaseRecords: songs.length, retainedUnmatched: unresolved.length, matches: report }, null, 2) + '\n');
-console.log(`${songs.length} database songs imported; ${unresolved.length} unmatched old entries retained.`);
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const path = process.argv[2];
+  if (!path) throw new Error('Usage: node scripts/import-music-catalogue.js dump.sql [--write]');
+  const existing = JSON.parse(fs.readFileSync('src/data/songs.json', 'utf8'));
+  const result = reconcileMusic(existing, parseMusicRows(fs.readFileSync(path, 'utf8')));
+  if (process.argv.includes('--write')) {
+    fs.writeFileSync('src/data/songs.json', JSON.stringify(result.output, null, 2) + '\n');
+    // Preserve music-import.json as the original 433-route migration evidence.
+    fs.writeFileSync('reports/music-reconciliation.json', JSON.stringify(result.report, null, 2) + '\n');
+  }
+  console.log(JSON.stringify({ records: result.output.length, matched: result.report.matched,
+    unresolved: result.report.unresolved, databaseOnly: result.report.databaseOnly }, null, 2));
+}
