@@ -9,7 +9,7 @@ test('responsive homepage, matching typography, effects and mobile navigation', 
   await expect(page.locator('.hero-actions .btn-red')).toHaveCSS('font-family', /Inter/);
   await expect(page.locator('.hero-picture img')).toHaveJSProperty('complete', true);
   expect(await page.locator('.hero-picture img').evaluate(img => img.naturalWidth)).toBeGreaterThan(0);
-  await page.getByRole('button', { name: 'Effects On' }).click();
+  await page.getByRole('button', { name: 'Snow On' }).click();
   await expect(page.locator('html')).toHaveAttribute('data-effects', 'off');
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-effects', 'off');

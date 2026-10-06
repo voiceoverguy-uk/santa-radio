@@ -122,11 +122,11 @@ test('gallery pagination, search, hover, focus and motion preferences', async ({
   expect(await animation()).toBe('none');
   await card.hover();
   expect(await animation()).toBe('mugshot-edge-shimmer');
-  await page.getByRole('button', { name: 'Effects On', exact: true }).click();
+  await page.getByRole('button', { name: 'Snow On', exact: true }).click();
   await card.hover();
   expect(await animation()).toBe('none');
   await expect(card).toHaveCSS('transform', 'none');
-  await page.getByRole('button', { name: 'Effects Off', exact: true }).click();
+  await page.getByRole('button', { name: 'Snow Off', exact: true }).click();
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await card.hover();
   expect(await animation()).toBe('none');

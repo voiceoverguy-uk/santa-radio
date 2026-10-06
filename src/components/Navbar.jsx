@@ -34,7 +34,7 @@ export default function Navbar() {
         <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-controls="main-menu" aria-label={menuOpen ? 'Close menu' : 'Open menu'}><span /><span /><span /></button>
         <ul id="main-menu" className={`navbar-links ${menuOpen ? 'open' : ''}`}>
           {links.map(link => <li key={link.to}><Link to={link.to} aria-current={location.pathname === link.to ? 'page' : undefined} className={location.pathname === link.to ? 'active' : ''} onClick={() => setMenuOpen(false)}>{link.label}</Link></li>)}
-          <li><button className="effects-toggle" aria-pressed={effects} onClick={() => setEffects(!effects)}>Effects {effects ? 'On' : 'Off'}</button></li>
+          <li><button className="effects-toggle" aria-pressed={effects} onClick={() => setEffects(!effects)}>Snow {effects ? 'On' : 'Off'}</button></li>
           <li className="nav-listen"><RadioButton className="btn-red" /></li>
         </ul>
       </div>
