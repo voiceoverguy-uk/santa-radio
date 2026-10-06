@@ -4,7 +4,7 @@
 .hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg,#061c17b8 0%,#061c1750 54%,#061c1715 100%),linear-gradient(0deg,#081e17 0%,#081e1720 34%,#081e1710 80%); pointer-events: none; }
 .hero-content { position: relative; z-index: 2; max-width: 1160px; width: 100%; margin: auto; padding-top: 20px; }
 .eyebrow { font-family: 'Cinzel',serif; text-transform: uppercase; letter-spacing: .24em; font-size: .64rem; color: var(--gold-light); margin-bottom: 22px; }
-.hero-title { font-family: 'Cinzel',serif; font-weight: 400; color: var(--cream); font-size: clamp(3rem,5.5vw,5.4rem); line-height: 1.1; letter-spacing: -.035em; max-width: 700px; margin-bottom: 25px; }
+.hero-title { font-family: 'Cinzel',serif; font-weight: 400; color: var(--cream); font-size: clamp(2rem,3.2vw,3rem); line-height: 1.2; letter-spacing: -.035em; max-width: 700px; margin-bottom: 25px; }
 .hero-title span { display: block; color: var(--gold-light); }
 .hero-sub { color: var(--cream); font-size: 1.02rem; line-height: 1.65; margin-bottom: 14px; }
 .hero-description { font-size: .88rem; max-width: 410px; color: #e0e5da; margin-bottom: 29px; }
@@ -37,7 +37,7 @@ html[data-effects="off"] .hero-snow,html[data-effects="off"] .hero-aurora { disp
 @media (max-width: 767px) {
   .hero { min-height: 94dvh; padding: 140px 26px 130px; }
   .hero-content { padding: 0; }
-  .hero-title { font-size: clamp(2.8rem,10vw,4rem); }
+  .hero-title { font-size: clamp(1.8rem,6vw,2.4rem); }
   .hero::after { background: linear-gradient(90deg,#081e1790,#081e1735),linear-gradient(0deg,#081e17,#081e1745 80%); }
   .hero-picture img { object-position: 60% center; }
   .hero-scroll { display: none; }

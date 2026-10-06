@@ -29,7 +29,7 @@ export default function Home() {
         <div className="hero-snow" aria-hidden="true">{Array.from({ length: 24 }, (_, i) => <i key={i} style={{ '--x': `${(i * 41 + 7) % 100}%`, '--delay': `${-i * 1.7}s`, '--duration': `${13 + i % 9}s` }} />)}</div>
         <div className="hero-content">
           <p className="eyebrow">A little magic from the North Pole</p>
-          <h1 className="hero-title">Broadcasting live from The North Pole,<br />this is <span>Santa Radio.</span></h1>
+          <h1 className="hero-title">Live from The North Pole,<span>Santa Radio</span></h1>
           <p className="hero-sub">The lights are glowing. The music is playing.<br className="desktop-break" /> Come in and make yourself at home.</p>
           <p className="hero-description">Listen live to Santa Radio, discover festive favourites and share a little Christmas magic with the whole family.</p>
           <div className="hero-actions"><Link to="/free-santa-message" className="btn-red">Discover Santa Messages <span aria-hidden="true">↗</span></Link><RadioButton /></div>
