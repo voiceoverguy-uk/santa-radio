@@ -1,0 +1,3898 @@
+{
+  "databaseRecords": 454,
+  "retainedUnmatched": 1,
+  "matches": [
+    {
+      "url": "82-andy-williams-do-you-hear-what-i-hear",
+      "databaseId": 82,
+      "status": "artist-title",
+      "previousArtist": "Andy Williams",
+      "previousSong": "Do You Hear What I Hear",
+      "artist": "Andy Williams",
+      "song": "Do You Hear What I Hear"
+    },
+    {
+      "url": "242-tevin-campbell-o-holy-night",
+      "databaseId": 242,
+      "status": "artist-title",
+      "previousArtist": "Tevin Campbell",
+      "previousSong": "O Holy Night",
+      "artist": "Tevin Campbell",
+      "song": "O Holy Night"
+    },
+    {
+      "url": "73-backstreet-boys-christmas-time",
+      "databaseId": 73,
+      "status": "artist-title",
+      "previousArtist": "Backstreet Boys",
+      "previousSong": "Christmas Time",
+      "artist": "Backstreet Boys",
+      "song": "Christmas Time"
+    },
+    {
+      "url": "140-paul-potts-ave-maria",
+      "databaseId": 140,
+      "status": "artist-title",
+      "previousArtist": "Paul Potts",
+      "previousSong": "Ave Maria",
+      "artist": "Paul Potts",
+      "song": "Ave Maria"
+    },
+    {
+      "url": "463-peter-lemongello-let-it-snow",
+      "databaseId": 463,
+      "status": "artist-title",
+      "previousArtist": "Peter Lemongello",
+      "previousSong": "Let It Snow",
+      "artist": "Peter Lemongello",
+      "song": "Let it Snow"
+    },
+    {
+      "url": "368-dean-martin-the-christmas-blues",
+      "databaseId": 368,
+      "status": "artist-title",
+      "previousArtist": "Dean Martin",
+      "previousSong": "The Christmas Blues",
+      "artist": "Dean Martin",
+      "song": "The Christmas Blues"
+    },
+    {
+      "url": "86-barenaked-ladies-and-sarah-mclachlan-god-rest-ye-merry-gentlemen",
+      "databaseId": 86,
+      "status": "historical-id",
+      "previousArtist": "Barenaked Ladies And Sarah Mclachlan",
+      "previousSong": "God Rest Ye Merry Gentlemen",
+      "artist": "Barenaked Ladies & Sarah McLachlan",
+      "song": "God Rest Ye Merry Gentlemen"
+    },
+    {
+      "url": "115-glee-cast-christmas-wrapping",
+      "databaseId": 115,
+      "status": "artist-title",
+      "previousArtist": "Glee Cast",
+      "previousSong": "Christmas Wrapping",
+      "artist": "Glee Cast",
+      "song": "Christmas Wrapping"
+    },
+    {
+      "url": "378-frank-sinatra-jingle-bells",
+      "databaseId": 378,
+      "status": "artist-title",
+      "previousArtist": "Frank Sinatra",
+      "previousSong": "Jingle Bells",
+      "artist": "Frank Sinatra",
+      "song": "Jingle Bells"
+    },
+    {
+      "url": "348-bing-crosby-peace-on-earth---little-drummer-boy",
+      "databaseId": 348,
+      "status": "artist-title",
+      "previousArtist": "Bing Crosby Peace On Earth  ",
+      "previousSong": "Little Drummer Boy",
+      "artist": "Bing Crosby",
+      "song": "Peace On Earth - Little Drummer Boy"
+    },
+    {
+      "url": "173-kate-bush-december-will-be-magic-again",
+      "databaseId": 173,
+      "status": "artist-title",
+      "previousArtist": "Kate Bush",
+      "previousSong": "December Will Be Magic Again",
+      "artist": "Kate Bush",
+      "song": "December Will Be Magic Again"
+    },
+    {
+      "url": "250-ronnie-spector-and-darlene-love-rockin-around-the-christmas-tree",
+      "databaseId": 250,
+      "status": "historical-id",
+      "previousArtist": "Ronnie Spector And Darlene Love",
+      "previousSong": "Rockin Around The Christmas Tree",
+      "artist": "Ronnie Spector & Darlene Love",
+      "song": "Rockin Around The Christmas Tree"
+    },
+    {
+      "url": "175-jack-jones-do-you-hear-what-i-hear",
+      "databaseId": 175,
+      "status": "artist-title",
+      "previousArtist": "Jack Jones",
+      "previousSong": "Do You Hear What I Hear",
+      "artist": "Jack Jones",
+      "song": "Do You Hear What I Hear"
+    },
+    {
+      "url": "376-frank-sinatra-have-yourself-a-merry-little-christmas",
+      "databaseId": 376,
+      "status": "artist-title",
+      "previousArtist": "Frank Sinatra",
+      "previousSong": "Have Yourself A Merry Little Christmas",
+      "artist": "Frank Sinatra",
+      "song": "Have Yourself A Merry Little Christmas"
+    },
+    {
+      "url": "439-paul-burling-and-joseph-bell-another-christmas-song",
+      "databaseId": 439,
+      "status": "historical-id",
+      "previousArtist": "Paul Burling And Joseph Bell Another",
+      "previousSong": "Christmas Song",
+      "artist": "Paul Burling & Joseph Bell",
+      "song": "Another Christmas Song"
+    },
+    {
+      "url": "319-michael-buble-all-i-want-for-christmas-is-you",
+      "databaseId": 319,
+      "status": "artist-title",
+      "previousArtist": "Michael Buble",
+      "previousSong": "All I Want For Christmas Is You",
+      "artist": "Michael Buble",
+      "song": "All I Want For Christmas Is You"
+    },
+    {
+      "url": "475-eric-clapton-white-christmas",
+      "databaseId": 475,
+      "status": "artist-title",
+      "previousArtist": "Eric Clapton",
+      "previousSong": "White Christmas",
+      "artist": "Eric Clapton",
+      "song": "White Christmas"
+    },
+    {
+      "url": "150-the-wombles-wombling-merry-christmas",
+      "databaseId": 150,
+      "status": "artist-title",
+      "previousArtist": "The Wombles Wombling",
+      "previousSong": "Merry Christmas",
+      "artist": "The Wombles",
+      "song": "Wombling Merry Christmas"
+    },
+    {
+      "url": "134-michael-buble-ave-maria",
+      "databaseId": 328,
+      "status": "artist-title",
+      "previousArtist": "Michael Buble",
+      "previousSong": "Ave Maria",
+      "artist": "Michael Buble",
+      "song": "Ave Maria"
+    },
+    {
+      "url": "297-barbra-streisand-white-christmas",
+      "databaseId": 297,
+      "status": "artist-title",
+      "previousArtist": "Barbra Streisand",
+      "previousSong": "White Christmas",
+      "artist": "Barbra Streisand",
+      "song": "White Christmas"
+    },
+    {
+      "url": "220-bing-crosby-jingle-bells",
+      "databaseId": 220,
+      "status": "artist-title",
+      "previousArtist": "Bing Crosby",
+      "previousSong": "Jingle Bells",
+      "artist": "Bing Crosby",
+      "song": "Jingle Bells"
+    },
+    {
+      "url": "215-peggy-lee-it-s-christmas-time-again",
+      "databaseId": 215,
+      "status": "artist-title",
+      "previousArtist": "Peggy Lee",
+      "previousSong": "It S Christmas Time Again",
+      "artist": "Peggy Lee",
+      "song": "It's Christmas Time Again"
+    },
+    {
+      "url": "245-the-carpenters-an-old-fashioned-christmas",
+      "databaseId": 245,
+      "status": "artist-title",
+      "previousArtist": "The Carpenters",
+      "previousSong": "An Old Fashioned Christmas",
+      "artist": "The Carpenters",
+      "song": "An Old Fashioned Christmas"
+    },
+    {
+      "url": "481-the-monkees-what-would-santa-do",
+      "databaseId": 481,
+      "status": "artist-title",
+      "previousArtist": "The Monkees",
+      "previousSong": "What Would Santa Do",
+      "artist": "The Monkees",
+      "song": "What Would Santa Do"
+    },
+    {
+      "url": "514-kelly-clarkson-christmas-isnt-canceled",
+      "databaseId": 514,
+      "status": "artist-title",
+      "previousArtist": "Kelly Clarkson",
+      "previousSong": "Christmas Isnt Canceled",
+      "artist": "Kelly Clarkson",
+      "song": "Christmas Isnt Canceled"
+    },
+    {
+      "url": "303-bing-crosby-winter-wonderland",
+      "databaseId": 303,
+      "status": "artist-title",
+      "previousArtist": "Bing Crosby",
+      "previousSong": "Winter Wonderland",
+      "artist": "Bing Crosby",
+      "song": "Winter Wonderland"
+    },
+    {
+      "url": "500-paloma-faith-christmas-prayer",
+      "databaseId": 500,
+      "status": "artist-title",
+      "previousArtist": "Paloma Faith",
+      "previousSong": "Christmas Prayer",
+      "artist": "Paloma Faith",
+      "song": "Christmas Prayer"
+    },
+    {
+      "url": "307-eurythmics-winter-wonderland",
+      "databaseId": 307,
+      "status": "artist-title",
+      "previousArtist": "Eurythmics",
+      "previousSong": "Winter Wonderland",
+      "artist": "Eurythmics",
+      "song": "Winter Wonderland"
+    },
+    {
+      "url": "238-the-seekers-morningtown-ride",
+      "databaseId": 238,
+      "status": "artist-title",
+      "previousArtist": "The Seekers",
+      "previousSong": "Morningtown Ride",
+      "artist": "The Seekers",
+      "song": "Morningtown Ride"
+    },
+    {
+      "url": "440-shakin-stevens-blue-christmas",
+      "databaseId": 440,
+      "status": "artist-title",
+      "previousArtist": "Shakin Stevens",
+      "previousSong": "Blue Christmas",
+      "artist": "Shakin Stevens",
+      "song": "Blue Christmas"
+    },
+    {
+      "url": "137-nat-king-cole-frosty-the-snowman",
+      "databaseId": 137,
+      "status": "artist-title",
+      "previousArtist": "Nat King Cole",
+      "previousSong": "Frosty The Snowman",
+      "artist": "Nat King Cole",
+      "song": "Frosty The Snowman"
+    },
+    {
+      "url": "403-boney-m-mary-s-boy-child---oh-my-lord",
+      "databaseId": 403,
+      "status": "artist-title",
+      "previousArtist": "Boney M",
+      "previousSong": "Mary S Boy Child   Oh My Lord",
+      "artist": "Boney M",
+      "song": "Mary's Boy Child / Oh My Lord"
+    },
+    {
+      "url": "451-olly-murs-last-christmas",
+      "databaseId": 451,
+      "status": "artist-title",
+      "previousArtist": "Olly Murs",
+      "previousSong": "Last Christmas",
+      "artist": "Olly Murs",
+      "song": "Last Christmas"
+    },
+    {
+      "url": "209-bing-crosby-ill-be-home-for-christmas",
+      "databaseId": 209,
+      "status": "artist-title",
+      "previousArtist": "Bing Crosby Ill Be Home For",
+      "previousSong": "Christmas",
+      "artist": "Bing Crosby",
+      "song": "Ill Be Home For Christmas"
+    },
+    {
+      "url": "461-big-big-train-merry-christmas",
+      "databaseId": 461,
+      "status": "artist-title",
+      "previousArtist": "Big Big Train",
+      "previousSong": "Merry Christmas",
+      "artist": "Big Big Train",
+      "song": "Merry Christmas"
+    },
+    {
+      "url": "460-scouting-for-girls-kids-at-christmas",
+      "databaseId": 460,
+      "status": "artist-title",
+      "previousArtist": "Scouting For Girls Kids At",
+      "previousSong": "Christmas",
+      "artist": "Scouting For Girls",
+      "song": "Kids at Christmas"
+    },
+    {
+      "url": "46-frank-sinatra-let-it-snow-let-it-snow-let-it-snow",
+      "databaseId": 46,
+      "status": "artist-title",
+      "previousArtist": "Frank Sinatra",
+      "previousSong": "Let It Snow Let It Snow Let It Snow",
+      "artist": "Frank Sinatra",
+      "song": "Let It Snow! Let It Snow! Let It Snow!"
+    },
+    {
+      "url": "497-goo-goo-dolls-this-is-christmas",
+      "databaseId": 497,
+      "status": "artist-title",
+      "previousArtist": "Goo Goo Dolls",
+      "previousSong": "This Is Christmas",
+      "artist": "Goo Goo Dolls",
+      "song": "This is Christmas"
+    },
+    {
+      "url": "467-kate-neve-honey-come-home-for-christmas",
+      "databaseId": 467,
+      "status": "artist-title",
+      "previousArtist": "Kate Neve Honey",
+      "previousSong": "Come Home For Christmas",
+      "artist": "Kate Neve",
+      "song": "Honey come Home for Christmas"
+    },
+    {
+      "url": "289-the-fireside-singers-we-wish-you-a-merry-christmas",
+      "databaseId": 289,
+      "status": "artist-title",
+      "previousArtist": "The Fireside Singers",
+      "previousSong": "We Wish You A Merry Christmas",
+      "artist": "The Fireside Singers",
+      "song": "We Wish You A Merry Christmas"
+    },
+    {
+      "url": "414-john-denver-rudolph-the-red-nosed-reindeer",
+      "databaseId": 414,
+      "status": "artist-title",
+      "previousArtist": "John Denver",
+      "previousSong": "Rudolph The Red Nosed Reindeer",
+      "artist": "John Denver",
+      "song": "Rudolph The Red Nosed Reindeer"
+    },
+    {
+      "url": "354-bing-crosby-the-twelve-days-of-christmas",
+      "databaseId": 354,
+      "status": "artist-title",
+      "previousArtist": "Bing Crosby",
+      "previousSong": "The Twelve Days Of Christmas",
+      "artist": "Bing Crosby",
+      "song": "The Twelve Days Of Christmas"
+    },
+    {
+      "url": "518-lia-menaker-christmas-alone-but-together-at-home",
+      "databaseId": 518,
+      "status": "artist-title",
+      "previousArtist": "Lia Menaker",
+      "previousSong": "Christmas Alone But Together At Home",
+      "artist": "Lia Menaker",
+      "song": "Christmas Alone (But Together at Home)"
+    },
+    {
+      "url": "169-amy-grant-a-christmas-to-remember",
+      "databaseId": 169,
+      "status": "artist-title",
+      "previousArtist": "Amy Grant",
+      "previousSong": "A Christmas To Remember",
+      "artist": "Amy Grant",
+      "song": "A Christmas To Remember"
+    },
+    {
+      "url": "257-madonna-santa-baby",
+      "databaseId": 257,
+      "status": "artist-title",
+      "previousArtist": "Madonna",
+      "previousSong": "Santa Baby",
+      "artist": "Madonna",
+      "song": "Santa Baby"
+    },
+    {
+      "url": "387-frank-sinatra-and-dean-martin-auld-lang-syne",
+      "databaseId": 387,
+      "status": "artist-title",
+      "previousArtist": "Frank Sinatra",
+      "previousSong": "And Dean Martin Auld Lang Syne",
+      "artist": "Frank Sinatra and Dean Martin",
+      "song": "Auld Lang Syne"
+    },
+    {
+      "url": "176-michael-ball-driving-home-for-christmas",
+      "databaseId": 176,
+      "status": "artist-title",
+      "previousArtist": "Michael Ball Driving Home For",
+      "previousSong": "Christmas",
+      "artist": "Michael Ball",
+      "song": "Driving Home For Christmas"
+    },
+    {
+      "url": "340-bing-crosby-away-in-a-manger",
+      "databaseId": 340,
+      "status": "artist-title",
+      "previousArtist": "Bing Crosby",
+      "previousSong": "Away In A Manger",
+      "artist": "Bing Crosby",
+      "song": "Away In A Manger"
+    },
+    {
+      "url": "187-nat-king-cole-hark-the-herald-angels-sing",
+      "databaseId": 187,
+      "status": "artist-title",
+      "previousArtist": "Nat King Cole",
+      "previousSong": "Hark The Herald Angels Sing",
+      "artist": "Nat King Cole",
+      "song": "Hark The Herald Angels Sing"
+    },
+    {
+      "url": "204-bing-crosby-i-wish-you-a-merry-christmas",
+      "databaseId": 204,
+      "status": "historical-id",
+      "previousArtist": "Bing Crosby",
+      "previousSong": "I Wish You A Merry Christmas",
+      "artist": "Bing Crosby",
+      "song": "I Wish You A Merry Christmas"
+    },
+    {
+      "url": "116-glen-campbell-blue-christmas",
+      "databaseId": 116,
+      "status": "artist-title",
+      "previousArtist": "Glen Campbell",
+      "previousSong": "Blue Christmas",
+      "artist": "Glen Campbell",
+      "song": "Blue Christmas"
+    },
+    {
+      "url": "511-mariah-carey-fall-in-love-at-christmas",
+      "databaseId": 511,
+      "status": "artist-title",
+      "previousArtist": "Mariah Carey Fall In Love At",
+      "previousSong": "Christmas",
+      "artist": "Mariah Carey",
+      "song": "Fall in Love at Christmas"
+    },
+    {
+      "url": "186-frank-sinatra-hark-the-herald-angels-sing",
+      "databaseId": 186,
+      "status": "historical-id",
+      "previousArtist": "Frank Sinatra",
+      "previousSong": "Hark The Herald Angels Sing",
+      "artist": "Frank Sinatra",
+      "song": "Hark The Herald Angels Sing"
+    },
+    {
+      "url": "446-goodies-make-a-daft-noise-for-christmas",
+      "databaseId": 446,
+      "status": "artist-title",
+      "previousArtist": "Goodies Make",
+      "previousSong": "A Daft Noise For Christmas",
+      "artist": "Goodies",
+      "song": "Make a Daft Noise for Christmas"
+    },
+    {
+      "url": "462-james-m-caddell-have-yourself-a-merry-little-christmas",
+      "databaseId": 462,
+      "status": "artist-title",
+      "previousArtist": "James M Caddell",
+      "previousSong": "Have Yourself A Merry Little Christmas",
+      "artist": "James M Caddell",
+      "song": "Have Yourself A Merry Little Christmas"
+    },
+    {
+      "url": "135-mike-oldfield-il-dulci-jubilo",
+      "databaseId": 135,
+      "status": "artist-title",
+      "previousArtist": "Mike Oldfield",
+      "previousSong": "Il Dulci Jubilo",
+      "artist": "Mike Oldfield",
+      "song": "Il Dulci Jubilo"
+    },
+    {
+      "url": "482-on-ember-ft-blend-on-ember",
+      "databaseId": 482,
+      "status": "artist-title",
+      "previousArtist": "On Ember",
+      "previousSong": "Ft Blend On Ember",
+      "artist": "On Ember ft Blend",
+      "song": "on-ember"
+    },
+    {
+      "url": "188-barbra-streisand-have-yourself-a-merry-little-christmas",
+      "databaseId": 188,
+      "status": "artist-title",
+      "previousArtist": "Barbra Streisand",
+      "previousSong": "Have Yourself A Merry Little Christmas",
+      "artist": "Barbra Streisand",
+      "song": "Have Yourself A Merry Little Christmas"
+    },
+    {
+      "url": "102-chris-brown-this-christmas-",
+      "databaseId": 102,
+      "status": "artist-title",
+      "previousArtist": "Chris Brown",
+      "previousSong": "This Christmas ",
+      "artist": "Chris Brown",
+      "song": "This Christmas "
+    },
+    {
+      "url": "456-levi-roots-reggae-reggae-christmas",
+      "databaseId": 456,
+      "status": "artist-title",
+      "previousArtist": "Levi Roots Reggae Reggae",
+      "previousSong": "Christmas",
+      "artist": "Levi Roots",
+      "song": "Reggae Reggae Christmas"
+    },
+    {
+      "url": "236-frank-sinatra-mistletoe-and-holly",
+      "databaseId": 236,
+      "status": "artist-title",
+      "previousArtist": "Frank Sinatra",
+      "previousSong": "Mistletoe And Holly",
+      "artist": "Frank Sinatra",
+      "song": "Mistletoe And Holly"
+    },
+    {
+      "url": "113-geraldine-mcqueen-once-upon-a-christmas-song",
+      "databaseId": 113,
+      "status": "artist-title",
+      "previousArtist": "Geraldine Mcqueen Once Upon",
+      "previousSong": "A Christmas Song",
+      "artist": "Geraldine McQueen",
+      "song": "Once Upon a Christmas Song"
+    },
+    {
+      "url": "111-frank-sinatra-and-cyndi-lauper-santa-claus-is-coming-to-town",
+      "databaseId": 111,
+      "status": "historical-id",
+      "previousArtist": "Frank Sinatra And Cyndi Lauper",
+      "previousSong": "Santa Claus Is Coming To Town",
+      "artist": "Frank Sinatra & Cyndi Lauper",
+      "song": "Santa Claus Is Coming To Town"
+    },
+    {
+      "url": "426-stevie-wonder-silver-bells",
+      "databaseId": 426,
+      "status": "artist-title",
+      "previousArtist": "Stevie Wonder",
+      "previousSong": "Silver Bells",
+      "artist": "Stevie Wonder",
+      "song": "Silver Bells"
+    },
+    {
+      "url": "498-anne-marie-think-of-christmas",
+      "databaseId": 498,
+      "status": "artist-title",
+      "previousArtist": "Anne Marie Think Of",
+      "previousSong": "Christmas",
+      "artist": "Anne-Marie",
+      "song": "Think of Christmas"
+    },
+    {
+      "url": "294-the-fireside-singers-when-a-child-is-born",
+      "databaseId": 294,
+      "status": "artist-title",
+      "previousArtist": "The Fireside Singers",
+      "previousSong": "When A Child Is Born",
+      "artist": "The Fireside Singers",
+      "song": "When A Child Is Born"
+    },
+    {
+      "url": "415-john-legend-what-a-wonderful-world",
+      "databaseId": 415,
+      "status": "artist-title",
+      "previousArtist": "John Legend",
+      "previousSong": "What A Wonderful World",
+      "artist": "John Legend",
+      "song": "What A Wonderful World"
+    },
+    {
+      "url": "51-dean-martin-baby-it-s-cold-outside",
+      "databaseId": 51,
+      "status": "artist-title",
+      "previousArtist": "Dean Martin",
+      "previousSong": "Baby It S Cold Outside",
+      "artist": "Dean Martin",
+      "song": "Baby, It's Cold Outside"
+    },
+    {
+      "url": "231-bonnie-raitt-and-charles-brown-merry-christmas-baby",
+      "databaseId": 231,
+      "status": "historical-id",
+      "previousArtist": "Bonnie Raitt And Charles Brown",
+      "previousSong": "Merry Christmas Baby",
+      "artist": "Bonnie Raitt & Charles Brown",
+      "song": "Merry Christmas Baby"
+    },
+    {
+      "url": "185-andy-williams--happy-holidays",
+      "databaseId": 185,
+      "status": "artist-title",
+      "previousArtist": "Andy Williams",
+      "previousSong": " Happy Holidays",
+      "artist": "Andy Williams ",
+      "song": "Happy Holidays"
+    },
+    {
+      "url": "472-david-archuleta-christmas-every-day",
+      "databaseId": 472,
+      "status": "artist-title",
+      "previousArtist": "David Archuleta",
+      "previousSong": "Christmas Every Day",
+      "artist": "David Archuleta",
+      "song": "Christmas Every Day"
+    },
+    {
+      "url": "343-bing-crosby-here-comes-santa-claus",
+      "databaseId": 343,
+      "status": "artist-title",
+      "previousArtist": "Bing Crosby",
+      "previousSong": "Here Comes Santa Claus",
+      "artist": "Bing Crosby",
+      "song": "Here Comes Santa Claus"
+    },
+    {
+      "url": "326-michael-buble-cold-december-night",
+      "databaseId": 326,
+      "status": "artist-title",
+      "previousArtist": "Michael Buble",
+      "previousSong": "Cold December Night",
+      "artist": "Michael Buble",
+      "song": "Cold December Night"
+    },
+    {
+      "url": "190-doris-day-have-yourself-a-merry-little-christmas",
+      "databaseId": 190,
+      "status": "artist-title",
+      "previousArtist": "Doris Day",
+      "previousSong": "Have Yourself A Merry Little Christmas",
+      "artist": "Doris Day",
+      "song": "Have Yourself A Merry Little Christmas"
+    },
+    {
+      "url": "296-aaron-neville-white-christmas",
+      "databaseId": 296,
+      "status": "artist-title",
+      "previousArtist": "Aaron Neville",
+      "previousSong": "White Christmas",
+      "artist": "Aaron Neville",
+      "song": "White Christmas"
+    },
+    {
+      "url": "356-bing-crosby-i-heard-the-bells-on-christmas-day",
+      "databaseId": 356,
+      "status": "artist-title",
+      "previousArtist": "Bing Crosby",
+      "previousSong": "I Heard The Bells On Christmas Day",
+      "artist": "Bing Crosby",
+      "song": "I Heard The Bells On Christmas Day"
+    },
+    {
+      "url": "148-sarah-mclachlan-river",
+      "databaseId": 148,
+      "status": "artist-title",
+      "previousArtist": "Sarah Mclachlan",
+      "previousSong": "River",
+      "artist": "Sarah McLachlan",
+      "song": "River"
+    },
+    {
+      "url": "103-dana-it-s-gonna-be-a-cold-cold-christmas",
+      "databaseId": 103,
+      "status": "artist-title",
+      "previousArtist": "Dana",
+      "previousSong": "It S Gonna Be A Cold Cold Christmas",
+      "artist": "Dana",
+      "song": "It's Gonna Be A Cold, Cold Christmas"
+    },
+    {
+      "url": "123-jose-feliciano-feliz-navidad",
+      "databaseId": 123,
+      "status": "artist-title",
+      "previousArtist": "Jose Feliciano",
+      "previousSong": "Feliz Navidad",
+      "artist": "Jose Feliciano",
+      "song": "Feliz Navidad"
+    },
+    {
+      "url": "126-kylie-minogue-christmas-wrapping",
+      "databaseId": 126,
+      "status": "artist-title",
+      "previousArtist": "Kylie Minogue",
+      "previousSong": "Christmas Wrapping",
+      "artist": "Kylie Minogue",
+      "song": "Christmas Wrapping"
+    },
+    {
+      "url": "59-christina-aguilera-merry-christmas-baby",
+      "databaseId": 59,
+      "status": "artist-title",
+      "previousArtist": "Christina Aguilera",
+      "previousSong": "Merry Christmas Baby",
+      "artist": "Christina Aguilera",
+      "song": "Merry Christmas Baby"
+    },
+    {
+      "url": "151-frank-sinatra-adeste-fideles",
+      "databaseId": 151,
+      "status": "artist-title",
+      "previousArtist": "Frank Sinatra",
+      "previousSong": "Adeste Fideles",
+      "artist": "Frank Sinatra",
+      "song": "Adeste Fideles"
+    },
+    {
+      "url": "97-boyz-ii-men-the-birth-of-christ",
+      "databaseId": 97,
+      "status": "artist-title",
+      "previousArtist": "Boyz Ii Men",
+      "previousSong": "The Birth Of Christ",
+      "artist": "Boyz II Men",
+      "song": "The Birth Of Christ"
+    },
+    {
+      "url": "493-beverly-knight-a-christmas-wish",
+      "databaseId": 493,
+      "status": "artist-title",
+      "previousArtist": "Beverly Knight",
+      "previousSong": "A Christmas Wish",
+      "artist": "Beverly Knight",
+      "song": "A Christmas Wish"
+    },
+    {
+      "url": "210-bert-jansch-in-the-bleak-midwinter",
+      "databaseId": 210,
+      "status": "artist-title",
+      "previousArtist": "Bert Jansch In",
+      "previousSong": "The Bleak Midwinter",
+      "artist": "Bert Jansch",
+      "song": "In The Bleak Midwinter"
+    },
+    {
+      "url": "213-the-carpenters-it-s-christmas-time",
+      "databaseId": 213,
+      "status": "artist-title",
+      "previousArtist": "The Carpenters",
+      "previousSong": "It S Christmas Time",
+      "artist": "The Carpenters",
+      "song": "It's Christmas Time"
+    },
+    {
+      "url": "521-kelly-clarkson-and-ariana-grande-santa-can-t-you-hear-me",
+      "databaseId": 521,
+      "status": "historical-id",
+      "previousArtist": "Kelly Clarkson And Ariana Grande",
+      "previousSong": "Santa Can T You Hear Me",
+      "artist": "Kelly Clarkson & Ariana Grande",
+      "song": "Santa Can't You Hear Me"
+    },
+    {
+      "url": "80-andy-williams-white-christmas",
+      "databaseId": 80,
+      "status": "artist-title",
+      "previousArtist": "Andy Williams",
+      "previousSong": "White Christmas",
+      "artist": "Andy Williams",
+      "song": "White Christmas"
+    },
+    {
+      "url": "369-dean-martin-let-it-snow-let-it-snow-let-it-snow",
+      "databaseId": 369,
+      "status": "artist-title",
+      "previousArtist": "Dean Martin",
+      "previousSong": "Let It Snow Let It Snow Let It Snow",
+      "artist": "Dean Martin",
+      "song": "Let It Snow! Let It Snow! Let It Snow!"
+    },
+    {
+      "url": "431-whitney-houston-the-first-noel",
+      "databaseId": 431,
+      "status": "artist-title",
+      "previousArtist": "Whitney Houston",
+      "previousSong": "The First Noel",
+      "artist": "Whitney Houston",
+      "song": "The First Noel"
+    },
+    {
+      "url": "441-kurtis-blow-christmas-rappin",
+      "databaseId": 441,
+      "status": "artist-title",
+      "previousArtist": "Kurtis Blow",
+      "previousSong": "Christmas Rappin",
+      "artist": "Kurtis Blow",
+      "song": "Christmas Rappin"
+    },
+    {
+      "url": "315-kylie-minogue-2000-miles",
+      "databaseId": 315,
+      "status": "artist-title",
+      "previousArtist": "Kylie Minogue",
+      "previousSong": "2000 Miles",
+      "artist": "Kylie Minogue",
+      "song": "2000 Miles"
+    },
+    {
+      "url": "309-michael-buble-winter-wonderland",
+      "databaseId": 309,
+      "status": "artist-title",
+      "previousArtist": "Michael Buble",
+      "previousSong": "Winter Wonderland",
+      "artist": "Michael Buble",
+      "song": "Winter Wonderland"
+    },
+    {
+      "url": "196-daniel-mark-baird-hey-santa",
+      "databaseId": 196,
+      "status": "artist-title",
+      "previousArtist": "Daniel Mark Baird Hey",
+      "previousSong": "Santa",
+      "artist": "Daniel Mark Baird",
+      "song": "Hey Santa!"
+    },
+    {
+      "url": "36-jon-bon-jovi-please-come-home-for-christmas",
+      "databaseId": 36,
+      "status": "artist-title",
+      "previousArtist": "Jon Bon Jovi",
+      "previousSong": "Please Come Home For Christmas",
+      "artist": "Jon Bon Jovi",
+      "song": "Please Come Home For Christmas"
+    },
+    {
+      "url": "183-the-ronettes-frosty-the-snowman",
+      "databaseId": 183,
+      "status": "artist-title",
+      "previousArtist": "The Ronettes",
+      "previousSong": "Frosty The Snowman",
+      "artist": "The Ronettes",
+      "song": "Frosty The Snowman"
+    },
+    {
+      "url": "310-david-essex-a-winter-s-tale",
+      "databaseId": 310,
+      "status": "artist-title",
+      "previousArtist": "David Essex",
+      "previousSong": "A Winter S Tale",
+      "artist": "David Essex",
+      "song": "A Winter's Tale"
+    },
+    {
+      "url": "106-donna-summer-winter-melody",
+      "databaseId": 106,
+      "status": "artist-title",
+      "previousArtist": "Donna Summer",
+      "previousSong": "Winter Melody",
+      "artist": "Donna Summer",
+      "song": "Winter Melody"
+    },
+    {
+      "url": "37-johnny-mathis-when-a-child-is-born",
+      "databaseId": 37,
+      "status": "artist-title",
+      "previousArtist": "Johnny Mathis",
+      "previousSong": "When A Child Is Born",
+      "artist": "Johnny Mathis",
+      "song": "When a Child Is Born"
+    },
+    {
+      "url": "23-mel-and-kim-rockin-around-the-christmas-tree",
+      "databaseId": 23,
+      "status": "historical-id",
+      "previousArtist": "Mel And Kim",
+      "previousSong": "Rockin Around The Christmas Tree",
+      "artist": "Mel & Kim",
+      "song": "Rockin around the Christmas tree"
+    },
+    {
+      "url": "382-frank-sinatra-the-christmas-waltz",
+      "databaseId": 382,
+      "status": "artist-title",
+      "previousArtist": "Frank Sinatra",
+      "previousSong": "The Christmas Waltz",
+      "artist": "Frank Sinatra",
+      "song": "The Christmas Waltz"
+    },
+    {
+      "url": "31-kylie-minogue-only-you-feat-james-corden",
+      "databaseId": 31,
+      "status": "artist-title",
+      "previousArtist": "Kylie Minogue",
+      "previousSong": "Only You Feat James Corden",
+      "artist": "Kylie Minogue",
+      "song": "Only You feat James Corden"
+    },
+    {
+      "url": "412-inna-i-need-you-for-christmas",
+      "databaseId": 412,
+      "status": "artist-title",
+      "previousArtist": "Inna",
+      "previousSong": "I Need You For Christmas",
+      "artist": "Inna",
+      "song": "I Need You For Christmas"
+    },
+    {
+      "url": "420-pat-benatar-please-come-home-for-christmas",
+      "databaseId": 420,
+      "status": "artist-title",
+      "previousArtist": "Pat Benatar",
+      "previousSong": "Please Come Home For Christmas",
+      "artist": "Pat Benatar",
+      "song": "Please Come Home For Christmas"
+    },
+    {
+      "url": "256-chuck-berry-run-rudolph-run",
+      "databaseId": 256,
+      "status": "artist-title",
+      "previousArtist": "Chuck Berry",
+      "previousSong": "Run Rudolph Run",
+      "artist": "Chuck Berry",
+      "song": "Run Rudolph Run"
+    },
+    {
+      "url": "218-bobby-helms-jingle-bell-rock",
+      "databaseId": 218,
+      "status": "artist-title",
+      "previousArtist": "Bobby Helms",
+      "previousSong": "Jingle Bell Rock",
+      "artist": "Bobby Helms",
+      "song": "Jingle Bell Rock"
+    },
+    {
+      "url": "494-sabrina-claudio-christmas-blues",
+      "databaseId": 494,
+      "status": "artist-title",
+      "previousArtist": "Sabrina Claudio",
+      "previousSong": "Christmas Blues",
+      "artist": "Sabrina Claudio",
+      "song": "Christmas Blues"
+    },
+    {
+      "url": "158-tom-petty-and-heartbreakers-christmas-all-over-again",
+      "databaseId": 158,
+      "status": "historical-id",
+      "previousArtist": "Tom Petty And Heartbreakers",
+      "previousSong": "Christmas All Over Again",
+      "artist": "Tom Petty & Heartbreakers",
+      "song": "Christmas All Over Again"
+    },
+    {
+      "url": "107-elmo-and-patsy-grandma-got-run-over-by-a-reindeer",
+      "databaseId": 107,
+      "status": "historical-id",
+      "previousArtist": "Elmo And Patsy Grandma Got Run Over By",
+      "previousSong": "A Reindeer",
+      "artist": "Elmo & Patsy",
+      "song": "Grandma Got Run Over By a Reindeer"
+    },
+    {
+      "url": "156-the-carpenters-carol-of-bells",
+      "databaseId": 156,
+      "status": "artist-title",
+      "previousArtist": "The Carpenters",
+      "previousSong": "Carol Of Bells",
+      "artist": "The Carpenters",
+      "song": "Carol Of Bells"
+    },
+    {
+      "url": "366-dean-martin-rudolph-the-red-nosed-reindeer",
+      "databaseId": 366,
+      "status": "artist-title",
+      "previousArtist": "Dean Martin",
+      "previousSong": "Rudolph The Red Nosed Reindeer",
+      "artist": "Dean Martin",
+      "song": "Rudolph The Red-Nosed Reindeer"
+    },
+    {
+      "url": "282-johnny-mathis-sleigh-ride",
+      "databaseId": 282,
+      "status": "artist-title",
+      "previousArtist": "Johnny Mathis",
+      "previousSong": "Sleigh Ride",
+      "artist": "Johnny Mathis",
+      "song": "Sleigh Ride"
+    },
+    {
+      "url": "87-the-beach-boys-little-saint-nick-1991-remix",
+      "databaseId": 87,
+      "status": "artist-title",
+      "previousArtist": "The Beach Boys",
+      "previousSong": "Little Saint Nick 1991 Remix",
+      "artist": "The Beach Boys",
+      "song": "Little Saint Nick (1991 Remix)"
+    },
+    {
+      "url": "143-run-dmc-christmas-is",
+      "databaseId": 143,
+      "status": "artist-title",
+      "previousArtist": "Run Dmc",
+      "previousSong": "Christmas Is",
+      "artist": "Run-DMC",
+      "song": "Christmas Is"
+    },
+    {
+      "url": "300-louis-armstrong-white-christmas",
+      "databaseId": 300,
+      "status": "artist-title",
+      "previousArtist": "Louis Armstrong",
+      "previousSong": "White Christmas",
+      "artist": "Louis Armstrong",
+      "song": "White Christmas"
+    },
+    {
+      "url": "292-vanessa-williams-what-child-is-this",
+      "databaseId": 292,
+      "status": "artist-title",
+      "previousArtist": "Vanessa Williams",
+      "previousSong": "What Child Is This",
+      "artist": "Vanessa Williams",
+      "song": "What Child Is This?"
+    },
+    {
+      "url": "267-the-supremes-santa-claus-is-coming-to-town",
+      "databaseId": 267,
+      "status": "artist-title",
+      "previousArtist": "The Supremes",
+      "previousSong": "Santa Claus Is Coming To Town",
+      "artist": "The Supremes",
+      "song": "Santa Claus Is Coming To Town"
+    },
+    {
+      "url": "308-kylie-minogue-winter-wonderland",
+      "databaseId": 308,
+      "status": "artist-title",
+      "previousArtist": "Kylie Minogue",
+      "previousSong": "Winter Wonderland",
+      "artist": "Kylie Minogue",
+      "song": "Winter Wonderland"
+    },
+    {
+      "url": "301-michael-buble-white-christmas",
+      "databaseId": 301,
+      "status": "artist-title",
+      "previousArtist": "Michael Buble",
+      "previousSong": "White Christmas",
+      "artist": "Michael Buble",
+      "song": "White Christmas"
+    },
+    {
+      "url": "35-jona-lewie-stop-the-cavalry",
+      "databaseId": 35,
+      "status": "artist-title",
+      "previousArtist": "Jona Lewie",
+      "previousSong": "Stop The Cavalry",
+      "artist": "Jona Lewie",
+      "song": "Stop The Cavalry"
+    },
+    {
+      "url": "88-the-beach-boys-santa-claus-is-coming-to-town",
+      "databaseId": 88,
+      "status": "artist-title",
+      "previousArtist": "The Beach Boys",
+      "previousSong": "Santa Claus Is Coming To Town",
+      "artist": "The Beach Boys",
+      "song": "Santa Claus Is Coming To Town"
+    },
+    {
+      "url": "98-bryan-adams-merry-christmas",
+      "databaseId": 98,
+      "status": "artist-title",
+      "previousArtist": "Bryan Adams",
+      "previousSong": "Merry Christmas",
+      "artist": "Bryan Adams",
+      "song": "Merry Christmas"
+    },
+    {
+      "url": "355-bing-crosby-christmas-candles",
+      "databaseId": 355,
+      "status": "artist-title",
+      "previousArtist": "Bing Crosby",
+      "previousSong": "Christmas Candles",
+      "artist": "Bing Crosby",
+      "song": "Christmas Candles"
+    },
+    {
+      "url": "276-wilson-phillips-silent-night",
+      "databaseId": 276,
+      "status": "artist-title",
+      "previousArtist": "Wilson Phillips",
+      "previousSong": "Silent Night",
+      "artist": "Wilson Phillips",
+      "song": "Silent Night"
+    },
+    {
+      "url": "402-the-beach-boys-santa-s-beard",
+      "databaseId": 402,
+      "status": "artist-title",
+      "previousArtist": "The Beach Boys",
+      "previousSong": "Santa S Beard",
+      "artist": "The Beach Boys",
+      "song": "Santa's Beard"
+    },
+    {
+      "url": "90-bette-midler-cool-yule",
+      "databaseId": 90,
+      "status": "artist-title",
+      "previousArtist": "Bette Midler",
+      "previousSong": "Cool Yule",
+      "artist": "Bette Midler",
+      "song": "Cool Yule"
+    },
+    {
+      "url": "450-donny-hathaway-this-christmas",
+      "databaseId": 450,
+      "status": "artist-title",
+      "previousArtist": "Donny Hathaway",
+      "previousSong": "This Christmas",
+      "artist": "Donny Hathaway",
+      "song": "This Christmas"
+    },
+    {
+      "url": "305-dean-martin-winter-wonderland",
+      "databaseId": 305,
+      "status": "artist-title",
+      "previousArtist": "Dean Martin",
+      "previousSong": "Winter Wonderland",
+      "artist": "Dean Martin",
+      "song": "Winter Wonderland"
+    },
+    {
+      "url": "203-saint-etienne-i-was-born-on-christmas-day",
+      "databaseId": 203,
+      "status": "artist-title",
+      "previousArtist": "Saint Etienne",
+      "previousSong": "I Was Born On Christmas Day",
+      "artist": "Saint Etienne",
+      "song": "I Was Born On Christmas Day"
+    },
+    {
+      "url": "69-bill-nighy-christmas-is-all-around",
+      "databaseId": 69,
+      "status": "artist-title",
+      "previousArtist": "Bill Nighy",
+      "previousSong": "Christmas Is All Around",
+      "artist": "Bill Nighy",
+      "song": "Christmas Is All Around"
+    },
+    {
+      "url": "288-robbie-williams-walk-this-sleigh",
+      "databaseId": 288,
+      "status": "artist-title",
+      "previousArtist": "Robbie Williams Walk",
+      "previousSong": "This Sleigh",
+      "artist": "Robbie Williams",
+      "song": "Walk this Sleigh"
+    },
+    {
+      "url": "189-the-carpenters-have-yourself-a-merry-little-christmas",
+      "databaseId": 189,
+      "status": "artist-title",
+      "previousArtist": "The Carpenters",
+      "previousSong": "Have Yourself A Merry Little Christmas",
+      "artist": "The Carpenters",
+      "song": "Have Yourself A Merry Little Christmas"
+    },
+    {
+      "url": "466-nicholas-wells-i-havent-wrapped-a-single-gift",
+      "databaseId": 466,
+      "status": "artist-title",
+      "previousArtist": "Nicholas Wells",
+      "previousSong": "I Havent Wrapped A Single Gift",
+      "artist": "Nicholas Wells",
+      "song": "I havent wrapped a single gift"
+    },
+    {
+      "url": "488-liam-payne-naughty-list",
+      "databaseId": 488,
+      "status": "artist-title",
+      "previousArtist": "Liam Payne",
+      "previousSong": "Naughty List",
+      "artist": "Liam Payne",
+      "song": "Naughty List"
+    },
+    {
+      "url": "212-gladys-knight-and-the-pips-it-s-christmas-everyday",
+      "databaseId": 212,
+      "status": "historical-id",
+      "previousArtist": "Gladys Knight And",
+      "previousSong": "The Pips It S Christmas Everyday",
+      "artist": "Gladys Knight & The Pips",
+      "song": "It's Christmas Everyday"
+    },
+    {
+      "url": "149-spice-girls-christmas-wrapping",
+      "databaseId": 149,
+      "status": "artist-title",
+      "previousArtist": "Spice Girls",
+      "previousSong": "Christmas Wrapping",
+      "artist": "Spice Girls",
+      "song": "Christmas Wrapping"
+    },
+    {
+      "url": "54-darlene-love-all-alone-on-christmas",
+      "databaseId": 54,
+      "status": "artist-title",
+      "previousArtist": "Darlene Love",
+      "previousSong": "All Alone On Christmas",
+      "artist": "Darlene Love",
+      "song": "All Alone On Christmas"
+    },
+    {
+      "url": "161-squeeze-christmas-day",
+      "databaseId": 161,
+      "status": "artist-title",
+      "previousArtist": "Squeeze",
+      "previousSong": "Christmas Day",
+      "artist": "Squeeze",
+      "song": "Christmas Day"
+    },
+    {
+      "url": "400-aaron-neville-christmas-prayer",
+      "databaseId": 400,
+      "status": "artist-title",
+      "previousArtist": "Aaron Neville",
+      "previousSong": "Christmas Prayer",
+      "artist": "Aaron Neville",
+      "song": "Christmas Prayer"
+    },
+    {
+      "url": "388-frankie-goes-to-hollywood-the-power-of-love",
+      "databaseId": 388,
+      "status": "artist-title",
+      "previousArtist": "Frankie Goes To Hollywood",
+      "previousSong": "The Power Of Love",
+      "artist": "Frankie Goes to Hollywood",
+      "song": "The Power of Love"
+    },
+    {
+      "url": "252-burl-ives-rudolph-the-red-nosed-reindeer",
+      "databaseId": 252,
+      "status": "artist-title",
+      "previousArtist": "Burl Ives",
+      "previousSong": "Rudolph The Red Nosed Reindeer",
+      "artist": "Burl Ives",
+      "song": "Rudolph The Red-Nosed Reindeer"
+    },
+    {
+      "url": "458-bananarama-baby-it-s-christmas",
+      "databaseId": 458,
+      "status": "artist-title",
+      "previousArtist": "Bananarama",
+      "previousSong": "Baby It S Christmas",
+      "artist": "Bananarama",
+      "song": "Baby it's Christmas"
+    },
+    {
+      "url": "448-bing-crosby-and-rosemary-clooney-here-comes-santa-claus",
+      "databaseId": 448,
+      "status": "historical-id",
+      "previousArtist": "Bing Crosby And Rosemary Clooney",
+      "previousSong": "Here Comes Santa Claus",
+      "artist": "Bing Crosby & Rosemary Clooney",
+      "song": "Here Comes Santa Claus"
+    },
+    {
+      "url": "322-michael-buble-have-yourself-a-merry-little-christmas",
+      "databaseId": 322,
+      "status": "artist-title",
+      "previousArtist": "Michael Buble",
+      "previousSong": "Have Yourself A Merry Little Christmas",
+      "artist": "Michael Buble",
+      "song": "Have Yourself A Merry Little Christmas"
+    },
+    {
+      "url": "251-bing-crosby-rudolph-the-red-nosed-reindeer",
+      "databaseId": 251,
+      "status": "artist-title",
+      "previousArtist": "Bing Crosby",
+      "previousSong": "Rudolph The Red Nosed Reindeer",
+      "artist": "Bing Crosby",
+      "song": "Rudolph The Red Nosed Reindeer"
+    },
+    {
+      "url": "261-bing-crosby-santa-claus-is-coming-to-town",
+      "databaseId": 261,
+      "status": "artist-title",
+      "previousArtist": "Bing Crosby",
+      "previousSong": "Santa Claus Is Coming To Town",
+      "artist": "Bing Crosby",
+      "song": "Santa Claus Is Coming To Town"
+    },
+    {
+      "url": "145-s-club-7-perfect-christmas",
+      "databaseId": 145,
+      "status": "artist-title",
+      "previousArtist": "S Club 7",
+      "previousSong": "Perfect Christmas",
+      "artist": "S Club 7",
+      "song": "Perfect Christmas"
+    },
+    {
+      "url": "389-sammy-davis-jr-christmas-time-all-over-the-world",
+      "databaseId": 389,
+      "status": "artist-title",
+      "previousArtist": "Sammy Davis Jr",
+      "previousSong": "Christmas Time All Over The World",
+      "artist": "Sammy Davis Jr.",
+      "song": "Christmas Time All Over The World"
+    },
+    {
+      "url": "61-chris-de-burgh-a-spaceman-came-travelling",
+      "databaseId": 61,
+      "status": "artist-title",
+      "previousArtist": "Chris De Burgh",
+      "previousSong": "A Spaceman Came Travelling",
+      "artist": "Chris De Burgh",
+      "song": "A Spaceman Came Travelling"
+    },
+    {
+      "url": "162-kylie-minogue-christmas-isnt-christmas-",
+      "databaseId": 162,
+      "status": "artist-title",
+      "previousArtist": "Kylie Minogue",
+      "previousSong": "Christmas Isnt Christmas ",
+      "artist": "Kylie Minogue",
+      "song": "Christmas Isnt Christmas "
+    },
+    {
+      "url": "422-r-kelly-world-christmas",
+      "status": "retained-unmatched"
+    },
+    {
+      "url": "79-aled-jones-walking-in-the-air",
+      "databaseId": 79,
+      "status": "artist-title",
+      "previousArtist": "Aled Jones",
+      "previousSong": "Walking In The Air",
+      "artist": "Aled Jones",
+      "song": "Walking In The Air"
+    },
+    {
+      "url": "423-jonathan-antoine-ave-maria",
+      "databaseId": 423,
+      "status": "artist-title",
+      "previousArtist": "Jonathan Antoine",
+      "previousSong": "Ave Maria",
+      "artist": "Jonathan Antoine",
+      "song": "Ave Maria"
+    },
+    {
+      "url": "353-bing-crosby-god-rest-ye-merry-gentlemen",
+      "databaseId": 353,
+      "status": "artist-title",
+      "previousArtist": "Bing Crosby",
+      "previousSong": "God Rest Ye Merry Gentlemen",
+      "artist": "Bing Crosby",
+      "song": "God Rest Ye Merry Gentlemen"
+    },
+    {
+      "url": "66-bo-selecta-proper-crimbo",
+      "databaseId": 66,
+      "status": "artist-title",
+      "previousArtist": "Bo Selecta",
+      "previousSong": "Proper Crimbo",
+      "artist": "Bo Selecta",
+      "song": "Proper Crimbo"
+    },
+    {
+      "url": "34-kelly-clarkson-underneath-the-tree",
+      "databaseId": 34,
+      "status": "artist-title",
+      "previousArtist": "Kelly Clarkson",
+      "previousSong": "Underneath The Tree",
+      "artist": "Kelly Clarkson",
+      "song": "Underneath The Tree"
+    },
+    {
+      "url": "408-eternal-amazing-grace",
+      "databaseId": 408,
+      "status": "artist-title",
+      "previousArtist": "Eternal Amazing",
+      "previousSong": "Grace",
+      "artist": "Eternal",
+      "song": "Amazing Grace"
+    },
+    {
+      "url": "141-perry-como-it-s-beginning-to-look-a-lot-like-christmas",
+      "databaseId": 141,
+      "status": "artist-title",
+      "previousArtist": "Perry Como",
+      "previousSong": "It S Beginning To Look A Lot Like Christmas",
+      "artist": "Perry Como",
+      "song": "It's Beginning to Look a Lot Like Christmas"
+    },
+    {
+      "url": "515-taylor-swift-christmas-tree-farm",
+      "databaseId": 515,
+      "status": "artist-title",
+      "previousArtist": "Taylor Swift",
+      "previousSong": "Christmas Tree Farm",
+      "artist": "Taylor Swift",
+      "song": "Christmas Tree Farm"
+    },
+    {
+      "url": "496-blossoms-its-going-to-be-a-cold-winter",
+      "databaseId": 496,
+      "status": "artist-title",
+      "previousArtist": "Blossoms",
+      "previousSong": "Its Going To Be A Cold Winter",
+      "artist": "Blossoms",
+      "song": "Its Going To Be A Cold Winter"
+    },
+    {
+      "url": "195-showaddywaddy-hey-mr-christmas",
+      "databaseId": 195,
+      "status": "artist-title",
+      "previousArtist": "Showaddywaddy Hey Mr",
+      "previousSong": "Christmas",
+      "artist": "Showaddywaddy",
+      "song": "Hey Mr Christmas"
+    },
+    {
+      "url": "260-elvis-presley-santa-bring-my-baby-back-to-me",
+      "databaseId": 260,
+      "status": "artist-title",
+      "previousArtist": "Elvis Presley",
+      "previousSong": "Santa Bring My Baby Back To Me",
+      "artist": "Elvis Presley",
+      "song": "Santa Bring My Baby Back (To Me)"
+    },
+    {
+      "url": "29-kylie-minogue-santa-baby",
+      "databaseId": 29,
+      "status": "artist-title",
+      "previousArtist": "Kylie Minogue",
+      "previousSong": "Santa Baby",
+      "artist": "Kylie Minogue",
+      "song": "Santa Baby"
+    },
+    {
+      "url": "433-the-futureheads-christmas-was-better-in-the-80-s",
+      "databaseId": 433,
+      "status": "artist-title",
+      "previousArtist": "The Futureheads",
+      "previousSong": "Christmas Was Better In The 80 S",
+      "artist": "The Futureheads",
+      "song": "Christmas was better in the 80's"
+    },
+    {
+      "url": "452-cruz-beckham-if-every-day-was-christmas",
+      "databaseId": 452,
+      "status": "artist-title",
+      "previousArtist": "Cruz Beckham",
+      "previousSong": "If Every Day was Christmas",
+      "artist": "Cruz Beckham",
+      "song": "If Every Day was Christmas"
+    },
+    {
+      "url": "271-cliff-richard-santa-s-list",
+      "databaseId": 271,
+      "status": "artist-title",
+      "previousArtist": "Cliff Richard",
+      "previousSong": "Santa S List",
+      "artist": "Cliff Richard",
+      "song": "Santa's List"
+    },
+    {
+      "url": "15-n-sync-i-dont-wanna-spend-one-more-xmas-without-u",
+      "databaseId": 15,
+      "status": "artist-title",
+      "previousArtist": "N Sync",
+      "previousSong": "I Dont Wanna Spend One More Xmas Without U",
+      "artist": "N Sync",
+      "song": "I Dont Wanna Spend One More Xmas Without u"
+    },
+    {
+      "url": "404-britney-spears-my-only-wish-this-year",
+      "databaseId": 404,
+      "status": "artist-title",
+      "previousArtist": "Britney Spears",
+      "previousSong": "My Only Wish This Year",
+      "artist": "Britney Spears",
+      "song": "My Only Wish (This Year)"
+    },
+    {
+      "url": "432-3t-i-need-you-christmas-mix",
+      "databaseId": 432,
+      "status": "artist-title",
+      "previousArtist": "3t",
+      "previousSong": "I Need You Christmas Mix",
+      "artist": "3T",
+      "song": "I Need You (Christmas Mix)"
+    },
+    {
+      "url": "9-scouting-for-girls-christmas-in-the-air-tonight",
+      "databaseId": 9,
+      "status": "artist-title",
+      "previousArtist": "Scouting For Girls",
+      "previousSong": "Christmas In The Air Tonight",
+      "artist": "Scouting For Girls",
+      "song": "Christmas in the air tonight"
+    },
+    {
+      "url": "100-the-carpenters-sleigh-ride",
+      "databaseId": 100,
+      "status": "artist-title",
+      "previousArtist": "The Carpenters",
+      "previousSong": "Sleigh Ride",
+      "artist": "The Carpenters",
+      "song": "Sleigh Ride"
+    },
+    {
+      "url": "25-mariah-carey-oh-santa",
+      "databaseId": 25,
+      "status": "artist-title",
+      "previousArtist": "Mariah Carey",
+      "previousSong": "Oh Santa",
+      "artist": "Mariah Carey",
+      "song": "Oh Santa"
+    },
+    {
+      "url": "177-ronan-keating-fairytale-of-new-york-",
+      "databaseId": 177,
+      "status": "artist-title",
+      "previousArtist": "Ronan Keating",
+      "previousSong": "Fairytale Of New York ",
+      "artist": "Ronan Keating",
+      "song": "Fairytale Of New York "
+    },
+    {
+      "url": "62-bryan-adams-run-rudolph-run",
+      "databaseId": 62,
+      "status": "artist-title",
+      "previousArtist": "Bryan Adams Run",
+      "previousSong": "Rudolph Run",
+      "artist": "Bryan Adams",
+      "song": "Run Rudolph Run"
+    },
+    {
+      "url": "280-barbra-streisand-sleep-in-heavenly-in-peace",
+      "databaseId": 280,
+      "status": "artist-title",
+      "previousArtist": "Barbra Streisand",
+      "previousSong": "Sleep In Heavenly In Peace",
+      "artist": "Barbra Streisand",
+      "song": "Sleep In Heavenly In Peace"
+    },
+    {
+      "url": "468-natalya-k-its-christmas",
+      "databaseId": 468,
+      "status": "artist-title",
+      "previousArtist": "Natalya K",
+      "previousSong": "Its Christmas",
+      "artist": "Natalya K",
+      "song": "Its Christmas"
+    },
+    {
+      "url": "160-alma-cogan-christmas-cards",
+      "databaseId": 160,
+      "status": "artist-title",
+      "previousArtist": "Alma Cogan",
+      "previousSong": "Christmas Cards",
+      "artist": "Alma Cogan",
+      "song": "Christmas Cards"
+    },
+    {
+      "url": "459-andrew-collins-another-christmas-time",
+      "databaseId": 459,
+      "status": "artist-title",
+      "previousArtist": "Andrew Collins Another",
+      "previousSong": "Christmas Time",
+      "artist": "Andrew Collins",
+      "song": "Another Christmas Time"
+    },
+    {
+      "url": "476-gwen-stefani-secret-santa",
+      "databaseId": 476,
+      "status": "artist-title",
+      "previousArtist": "Gwen Stefani Secret",
+      "previousSong": "Santa",
+      "artist": "Gwen Stefani",
+      "song": "Secret Santa"
+    },
+    {
+      "url": "20-michael-buble-christmas-baby-please-come-home",
+      "databaseId": 20,
+      "status": "artist-title",
+      "previousArtist": "Michael Buble",
+      "previousSong": "Christmas Baby Please Come Home",
+      "artist": "Michael Buble",
+      "song": "Christmas (Baby Please Come Home)"
+    },
+    {
+      "url": "247-dean-martin-peace-on-earth-silent-night",
+      "databaseId": 247,
+      "status": "artist-title",
+      "previousArtist": "Dean Martin Peace On Earth",
+      "previousSong": "Silent Night",
+      "artist": "Dean Martin",
+      "song": "Peace On Earth/Silent Night"
+    },
+    {
+      "url": "290-ashanti-we-wish-you-a-merry-xmas",
+      "databaseId": 290,
+      "status": "artist-title",
+      "previousArtist": "Ashanti",
+      "previousSong": "We Wish You A Merry Xmas",
+      "artist": "Ashanti",
+      "song": "We Wish You a Merry Xmas"
+    },
+    {
+      "url": "311-the-magnets-a-winter-s-tale",
+      "databaseId": 311,
+      "status": "artist-title",
+      "previousArtist": "The Magnets",
+      "previousSong": "A Winter S Tale",
+      "artist": "The Magnets",
+      "song": "A Winter's Tale"
+    },
+    {
+      "url": "471-aloe-blacc-i-got-your-christmas-right-here",
+      "databaseId": 471,
+      "status": "artist-title",
+      "previousArtist": "Aloe Blacc",
+      "previousSong": "I Got Your Christmas Right Here",
+      "artist": "Aloe Blacc",
+      "song": "I Got Your Christmas Right Here"
+    },
+    {
+      "url": "57-cliff-richard-mistletoe-and-wine",
+      "databaseId": 57,
+      "status": "artist-title",
+      "previousArtist": "Cliff Richard",
+      "previousSong": "Mistletoe And Wine",
+      "artist": "Cliff Richard",
+      "song": "Mistletoe And Wine"
+    },
+    {
+      "url": "76-andy-williams-it-s-the-most-wonderful-time-of-the-year",
+      "databaseId": 76,
+      "status": "artist-title",
+      "previousArtist": "Andy Williams",
+      "previousSong": "It S The Most Wonderful Time Of The Year",
+      "artist": "Andy Williams",
+      "song": "It's The Most Wonderful Time Of The Year"
+    },
+    {
+      "url": "130-matt-monro-mary-s-boy-child",
+      "databaseId": 130,
+      "status": "artist-title",
+      "previousArtist": "Matt Monro",
+      "previousSong": "Mary's Boy Child",
+      "artist": "Matt Monro",
+      "song": "Mary's Boy Child"
+    },
+    {
+      "url": "11-queen-thank-god-it-s-christmas",
+      "databaseId": 11,
+      "status": "artist-title",
+      "previousArtist": "Queen Thank",
+      "previousSong": "God It S Christmas",
+      "artist": "Queen",
+      "song": "Thank God It's Christmas"
+    },
+    {
+      "url": "32-kylie-minogue-santa-claus-is-coming-to-town",
+      "databaseId": 32,
+      "status": "artist-title",
+      "previousArtist": "Kylie Minogue",
+      "previousSong": "Santa Claus Is Coming To Town",
+      "artist": "Kylie Minogue",
+      "song": "Santa Claus Is Coming To Town"
+    },
+    {
+      "url": "38-john-lennon-happy-xmas-war-is-over",
+      "databaseId": 38,
+      "status": "artist-title",
+      "previousArtist": "John Lennon",
+      "previousSong": "Happy Xmas War Is Over",
+      "artist": "John Lennon",
+      "song": "Happy Xmas (War Is Over)"
+    },
+    {
+      "url": "121-craig-charles-more-like-christmas-eve",
+      "databaseId": 121,
+      "status": "artist-title",
+      "previousArtist": "Craig Charles More Like",
+      "previousSong": "Christmas Eve",
+      "artist": "Craig Charles",
+      "song": "More Like Christmas Eve"
+    },
+    {
+      "url": "411-il-divo-the-power-of-love-la-fuerza-mayor",
+      "databaseId": 411,
+      "status": "artist-title",
+      "previousArtist": "Il Divo",
+      "previousSong": "The Power Of Love La Fuerza Mayor",
+      "artist": "Il Divo",
+      "song": "The Power Of Love (La Fuerza Mayor)"
+    },
+    {
+      "url": "401-aretha-franklin-joy-to-the-world",
+      "databaseId": 401,
+      "status": "artist-title",
+      "previousArtist": "Aretha Franklin",
+      "previousSong": "Joy To The World",
+      "artist": "Aretha Franklin",
+      "song": "Joy To The World"
+    },
+    {
+      "url": "416-johnny-cash-little-drummer-boy",
+      "databaseId": 416,
+      "status": "artist-title",
+      "previousArtist": "Johnny Cash",
+      "previousSong": "Little Drummer Boy",
+      "artist": "Johnny Cash",
+      "song": "Little Drummer Boy"
+    },
+    {
+      "url": "486-heidi-anne-i-aint-spending-christmas-alone",
+      "databaseId": 486,
+      "status": "artist-title",
+      "previousArtist": "Heidi Anne",
+      "previousSong": "I Aint Spending Christmas Alone",
+      "artist": "Heidi Anne",
+      "song": "I aint Spending Christmas Alone"
+    },
+    {
+      "url": "449-nat-king-cole-trio-the-christmas-song",
+      "databaseId": 449,
+      "status": "artist-title",
+      "previousArtist": "Nat King Cole Trio",
+      "previousSong": "The Christmas Song",
+      "artist": "Nat King Cole Trio",
+      "song": "The Christmas Song"
+    },
+    {
+      "url": "226-nat-king-cole-the-little-boy-that-santa-claus-forgot",
+      "databaseId": 226,
+      "status": "artist-title",
+      "previousArtist": "Nat King Cole",
+      "previousSong": "The Little Boy That Santa Claus Forgot",
+      "artist": "Nat King Cole",
+      "song": "The Little Boy That Santa Claus Forgot"
+    },
+    {
+      "url": "264-frank-sinatra-santa-claus-is-coming-to-town",
+      "databaseId": 264,
+      "status": "artist-title",
+      "previousArtist": "Frank Sinatra",
+      "previousSong": "Santa Claus Is Coming To Town",
+      "artist": "Frank Sinatra",
+      "song": "Santa Claus Is Coming To Town"
+    },
+    {
+      "url": "509-ed-sheeran-and-elton-john-merry-christmas",
+      "databaseId": 509,
+      "status": "historical-id",
+      "previousArtist": "Ed Sheeran And Elton John",
+      "previousSong": "Merry Christmas",
+      "artist": "Ed Sheeran & Elton John",
+      "song": "Merry Christmas"
+    },
+    {
+      "url": "223-jamelia-last-christmas",
+      "databaseId": 223,
+      "status": "artist-title",
+      "previousArtist": "Jamelia",
+      "previousSong": "Last Christmas",
+      "artist": "Jamelia",
+      "song": "Last Christmas"
+    },
+    {
+      "url": "265-peggy-lee-santa-claus-is-coming-to-town",
+      "databaseId": 265,
+      "status": "artist-title",
+      "previousArtist": "Peggy Lee",
+      "previousSong": "Santa Claus Is Coming To Town",
+      "artist": "Peggy Lee",
+      "song": "Santa Claus Is Coming To Town"
+    },
+    {
+      "url": "75-ariana-grande-last-christmas",
+      "databaseId": 75,
+      "status": "artist-title",
+      "previousArtist": "Ariana Grande",
+      "previousSong": "Last Christmas",
+      "artist": "Ariana Grande",
+      "song": "Last Christmas"
+    },
+    {
+      "url": "101-the-carpenters-christmas-song",
+      "databaseId": 101,
+      "status": "artist-title",
+      "previousArtist": "The Carpenters",
+      "previousSong": "Christmas Song",
+      "artist": "The Carpenters",
+      "song": "Christmas Song"
+    },
+    {
+      "url": "505-x-mas-donkey-and-the-glittering-balls-decorate-the-christmas-tree",
+      "databaseId": 505,
+      "status": "historical-id",
+      "previousArtist": "X Mas Donkey And",
+      "previousSong": "The Glittering Balls Decorate The Christmas Tree",
+      "artist": "X-mas Donkey & The Glittering Balls",
+      "song": "Decorate the Christmas Tree"
+    },
+    {
+      "url": "207-michael-buble-i-ll-be-home-for-christmas",
+      "databaseId": 207,
+      "status": "artist-title",
+      "previousArtist": "Michael Buble",
+      "previousSong": "I Ll Be Home For Christmas",
+      "artist": "Michael Buble",
+      "song": "I'll Be Home For Christmas"
+    },
+    {
+      "url": "232-chuck-berry-merry-christmas-baby",
+      "databaseId": 232,
+      "status": "artist-title",
+      "previousArtist": "Chuck Berry",
+      "previousSong": "Merry Christmas Baby",
+      "artist": "Chuck Berry",
+      "song": "Merry Christmas Baby"
+    },
+    {
+      "url": "473-def-leppard-we-all-need-christmas",
+      "databaseId": 473,
+      "status": "artist-title",
+      "previousArtist": "Def Leppard",
+      "previousSong": "We All Need Christmas",
+      "artist": "Def Leppard",
+      "song": "We All Need Christmas"
+    },
+    {
+      "url": "383-frank-sinatra-silent-night",
+      "databaseId": 383,
+      "status": "artist-title",
+      "previousArtist": "Frank Sinatra",
+      "previousSong": "Silent Night",
+      "artist": "Frank Sinatra",
+      "song": "Silent Night"
+    },
+    {
+      "url": "14-nat-king-cole-the-christmas-song-",
+      "databaseId": 14,
+      "status": "artist-title",
+      "previousArtist": "Nat King Cole",
+      "previousSong": "The Christmas Song ",
+      "artist": "Nat King Cole",
+      "song": "The Christmas Song "
+    },
+    {
+      "url": "287-mitch-miller-and-the-gang-the-twelve-days-of-christmas",
+      "databaseId": 287,
+      "status": "artist-title",
+      "previousArtist": "Mitch Miller And",
+      "previousSong": "The Gang The Twelve Days Of Christmas",
+      "artist": "Mitch Miller and The Gang",
+      "song": "The Twelve Days Of Christmas"
+    },
+    {
+      "url": "40-the-jackson-5-santa-claus-is-coming-to-town",
+      "databaseId": 40,
+      "status": "artist-title",
+      "previousArtist": "The Jackson 5",
+      "previousSong": "Santa Claus Is Coming To Town",
+      "artist": "The Jackson 5",
+      "song": "Santa Claus Is Coming To Town"
+    },
+    {
+      "url": "136-nat-king-cole-joy-to-the-world",
+      "databaseId": 136,
+      "status": "artist-title",
+      "previousArtist": "Nat King Cole",
+      "previousSong": "Joy To The World",
+      "artist": "Nat King Cole",
+      "song": "Joy To The World"
+    },
+    {
+      "url": "464-kate-grom-all-i-want-for-christmas-is-you",
+      "databaseId": 464,
+      "status": "artist-title",
+      "previousArtist": "Kate Grom",
+      "previousSong": "All I Want For Christmas Is You",
+      "artist": "Kate Grom",
+      "song": "All I want for Christmas is you"
+    },
+    {
+      "url": "503-chris-kamara-i-wish-it-could-be-christmas-everyday",
+      "databaseId": 503,
+      "status": "artist-title",
+      "previousArtist": "Chris Kamara",
+      "previousSong": "I Wish It Could Be Christmas Everyday",
+      "artist": "Chris Kamara",
+      "song": "I Wish It Could Be Christmas Everyday"
+    },
+    {
+      "url": "304-darlene-love-winter-wonderland",
+      "databaseId": 304,
+      "status": "artist-title",
+      "previousArtist": "Darlene Love",
+      "previousSong": "Winter Wonderland",
+      "artist": "Darlene Love",
+      "song": "Winter Wonderland"
+    },
+    {
+      "url": "8-shakin-stevens-merry-christmas-everyone",
+      "databaseId": 8,
+      "status": "artist-title",
+      "previousArtist": "Shakin Stevens",
+      "previousSong": "Merry Christmas Everyone",
+      "artist": "Shakin Stevens",
+      "song": "Merry Christmas Everyone"
+    },
+    {
+      "url": "104-dean-martin-white-christmas",
+      "databaseId": 104,
+      "status": "artist-title",
+      "previousArtist": "Dean Martin",
+      "previousSong": "White Christmas",
+      "artist": "Dean Martin",
+      "song": "White Christmas"
+    },
+    {
+      "url": "499-ava-max-christmas-without-you",
+      "databaseId": 499,
+      "status": "artist-title",
+      "previousArtist": "Ava Max",
+      "previousSong": "Christmas Without You",
+      "artist": "Ava Max",
+      "song": "Christmas Without You"
+    },
+    {
+      "url": "344-bing-crosby-you-re-all-i-want-for-christmas",
+      "databaseId": 344,
+      "status": "artist-title",
+      "previousArtist": "Bing Crosby You Re",
+      "previousSong": "All I Want For Christmas",
+      "artist": "Bing Crosby",
+      "song": "You're All I Want For Christmas"
+    },
+    {
+      "url": "373-frank-sinatra-christmas-dreaming",
+      "databaseId": 373,
+      "status": "artist-title",
+      "previousArtist": "Frank Sinatra",
+      "previousSong": "Christmas Dreaming",
+      "artist": "Frank Sinatra",
+      "song": "Christmas Dreaming"
+    },
+    {
+      "url": "281-bing-crosby-sleigh-ride",
+      "databaseId": 281,
+      "status": "artist-title",
+      "previousArtist": "Bing Crosby",
+      "previousSong": "Sleigh Ride",
+      "artist": "Bing Crosby",
+      "song": "Sleigh Ride"
+    },
+    {
+      "url": "510-gary-barlow-how-christmas-is-supposed-to-be",
+      "databaseId": 510,
+      "status": "artist-title",
+      "previousArtist": "Gary Barlow",
+      "previousSong": "How Christmas Is Supposed To Be",
+      "artist": "Gary Barlow",
+      "song": "How Christmas Is Supposed To Be"
+    },
+    {
+      "url": "314-kylie-minogue-100-degrees-feat-dannii-minogue",
+      "databaseId": 314,
+      "status": "artist-title",
+      "previousArtist": "Kylie Minogue",
+      "previousSong": "100 Degrees Feat Dannii Minogue",
+      "artist": "Kylie Minogue",
+      "song": "100 Degrees feat Dannii Minogue"
+    },
+    {
+      "url": "4-train-shake-up-christmas",
+      "databaseId": 4,
+      "status": "artist-title",
+      "previousArtist": "Train",
+      "previousSong": "Shake Up Christmas",
+      "artist": "Train",
+      "song": "Shake up Christmas"
+    },
+    {
+      "url": "129-louis-armstrong-christmas-in-new-orleans",
+      "databaseId": 129,
+      "status": "artist-title",
+      "previousArtist": "Louis Armstrong",
+      "previousSong": "Christmas In New Orleans",
+      "artist": "Louis Armstrong",
+      "song": "Christmas In New Orleans"
+    },
+    {
+      "url": "316-michael-buble-the-more-you-give",
+      "databaseId": 316,
+      "status": "artist-title",
+      "previousArtist": "Michael Buble",
+      "previousSong": "The More You Give",
+      "artist": "Michael Buble",
+      "song": "The More You Give"
+    },
+    {
+      "url": "246-the-flying-pickets-only-you",
+      "databaseId": 246,
+      "status": "artist-title",
+      "previousArtist": "The Flying",
+      "previousSong": "Pickets Only You",
+      "artist": "The Flying Pickets",
+      "song": "Only You"
+    },
+    {
+      "url": "49-east-17-stay-another-day",
+      "databaseId": 49,
+      "status": "artist-title",
+      "previousArtist": "East 17",
+      "previousSong": "Stay Another Day",
+      "artist": "East 17",
+      "song": "Stay Another Day"
+    },
+    {
+      "url": "428-toni-braxton-holiday-celebrate",
+      "databaseId": 428,
+      "status": "artist-title",
+      "previousArtist": "Toni Braxton",
+      "previousSong": "Holiday Celebrate",
+      "artist": "Toni Braxton",
+      "song": "Holiday Celebrate"
+    },
+    {
+      "url": "507-trent-cokley-miss-us",
+      "databaseId": 507,
+      "status": "artist-title",
+      "previousArtist": "Trent Cokley",
+      "previousSong": "Miss Us",
+      "artist": "Trent Cokley",
+      "song": "Miss Us"
+    },
+    {
+      "url": "269-les-baxter-santa-clause-s-party",
+      "databaseId": 269,
+      "status": "artist-title",
+      "previousArtist": "Les Baxter",
+      "previousSong": "Santa Clause S Party",
+      "artist": "Les Baxter",
+      "song": "Santa Clause's Party"
+    },
+    {
+      "url": "228-johnny-mathis-little-drummer-boy",
+      "databaseId": 228,
+      "status": "artist-title",
+      "previousArtist": "Johnny Mathis",
+      "previousSong": "Little Drummer Boy",
+      "artist": "Johnny Mathis",
+      "song": "Little Drummer Boy"
+    },
+    {
+      "url": "262-bjorn-again-santa-claus-is-coming-to-town",
+      "databaseId": 262,
+      "status": "artist-title",
+      "previousArtist": "Bjorn Again",
+      "previousSong": "Santa Claus Is Coming To Town",
+      "artist": "Bjorn Again",
+      "song": "Santa Claus Is Coming To Town"
+    },
+    {
+      "url": "10-the-ronettes-sleigh-ride",
+      "databaseId": 10,
+      "status": "artist-title",
+      "previousArtist": "The Ronettes",
+      "previousSong": "Sleigh Ride",
+      "artist": "The Ronettes",
+      "song": "Sleigh Ride"
+    },
+    {
+      "url": "430-the-weather-girls-dear-santa-bring-me-a-man-this-christmas",
+      "databaseId": 430,
+      "status": "artist-title",
+      "previousArtist": "The Weather Girls Dear",
+      "previousSong": "Santa Bring Me A Man This Christmas",
+      "artist": "The Weather Girls",
+      "song": "Dear Santa (Bring Me A Man This Christmas)"
+    },
+    {
+      "url": "181-michael-buble-frosty-the-snowman",
+      "databaseId": 181,
+      "status": "artist-title",
+      "previousArtist": "Michael Buble",
+      "previousSong": "Frosty The Snowman",
+      "artist": "Michael Buble",
+      "song": "Frosty The Snowman"
+    },
+    {
+      "url": "84-barbra-streisand-the-christmas-song",
+      "databaseId": 84,
+      "status": "artist-title",
+      "previousArtist": "Barbra Streisand",
+      "previousSong": "The Christmas Song",
+      "artist": "Barbra Streisand",
+      "song": "The Christmas Song"
+    },
+    {
+      "url": "78-abba-happy-new-year",
+      "databaseId": 78,
+      "status": "artist-title",
+      "previousArtist": "Abba Happy",
+      "previousSong": "New Year",
+      "artist": "ABBA",
+      "song": "Happy New Year"
+    },
+    {
+      "url": "259-miss-piggy-santa-baby",
+      "databaseId": 259,
+      "status": "artist-title",
+      "previousArtist": "Miss Piggy",
+      "previousSong": "Santa Baby",
+      "artist": "Miss Piggy",
+      "song": "Santa Baby"
+    },
+    {
+      "url": "96-bobby-vee-christmas-vacation",
+      "databaseId": 96,
+      "status": "artist-title",
+      "previousArtist": "Bobby Vee",
+      "previousSong": "Christmas Vacation",
+      "artist": "Bobby Vee",
+      "song": "Christmas Vacation"
+    },
+    {
+      "url": "91-billy-squier-christmas-is-the-time-to-say-",
+      "databaseId": 91,
+      "status": "artist-title",
+      "previousArtist": "Billy Squier",
+      "previousSong": "Christmas Is The Time To Say ",
+      "artist": "Billy Squier",
+      "song": "Christmas Is the Time to Say "
+    },
+    {
+      "url": "502-raff-pylon-christmas-in-california",
+      "databaseId": 502,
+      "status": "artist-title",
+      "previousArtist": "Raff Pylon",
+      "previousSong": "Christmas In California",
+      "artist": "Raff Pylon",
+      "song": "Christmas in California"
+    },
+    {
+      "url": "153-x-mas-donkey-and-the-glittering-balls-at-the-christmas-ball",
+      "databaseId": 153,
+      "status": "historical-id",
+      "previousArtist": "X Mas Donkey And",
+      "previousSong": "The Glittering Balls At The Christmas Ball",
+      "artist": "X-mas Donkey & The Glittering Balls",
+      "song": "At The Christmas Ball"
+    },
+    {
+      "url": "33-kylie-minogue-it-s-the-most-wonderful-time-of-the-year",
+      "databaseId": 33,
+      "status": "artist-title",
+      "previousArtist": "Kylie Minogue",
+      "previousSong": "It S The Most Wonderful Time Of The Year",
+      "artist": "Kylie Minogue",
+      "song": "It's The Most Wonderful Time Of The Year"
+    },
+    {
+      "url": "205-barbra-streisand-i-wonder-as-i-wander",
+      "databaseId": 205,
+      "status": "artist-title",
+      "previousArtist": "Barbra Streisand",
+      "previousSong": "I Wonder As I Wander",
+      "artist": "Barbra Streisand",
+      "song": "I Wonder As I Wander"
+    },
+    {
+      "url": "55-the-darkness-christmas-time",
+      "databaseId": 55,
+      "status": "artist-title",
+      "previousArtist": "The Darkness",
+      "previousSong": "Christmas Time",
+      "artist": "The Darkness",
+      "song": "Christmas Time"
+    },
+    {
+      "url": "199-state-of-the-heart-i-believe-in-father-christmas",
+      "databaseId": 199,
+      "status": "artist-title",
+      "previousArtist": "State Of",
+      "previousSong": "The Heart I Believe In Father Christmas",
+      "artist": "State of the Heart",
+      "song": "I Believe In Father Christmas"
+    },
+    {
+      "url": "244-nat-king-cole-o-tannenbaum",
+      "databaseId": 244,
+      "status": "artist-title",
+      "previousArtist": "Nat King Cole",
+      "previousSong": "O Tannenbaum",
+      "artist": "Nat King Cole",
+      "song": "O Tannenbaum"
+    },
+    {
+      "url": "333-michael-buble-silver-bells",
+      "databaseId": 333,
+      "status": "artist-title",
+      "previousArtist": "Michael Buble",
+      "previousSong": "Silver Bells",
+      "artist": "Michael Buble",
+      "song": "Silver Bells"
+    },
+    {
+      "url": "44-freiheit-keeping-the-dream-alive",
+      "databaseId": 44,
+      "status": "artist-title",
+      "previousArtist": "Freiheit Keeping",
+      "previousSong": "The Dream Alive",
+      "artist": "Freiheit",
+      "song": "Keeping The Dream Alive"
+    },
+    {
+      "url": "180-frank-sinatra-the-first-noel",
+      "databaseId": 180,
+      "status": "artist-title",
+      "previousArtist": "Frank Sinatra",
+      "previousSong": "The First Noel",
+      "artist": "Frank Sinatra",
+      "song": "The First Noel"
+    },
+    {
+      "url": "39-jason-mraz-winter-wonderland",
+      "databaseId": 39,
+      "status": "artist-title",
+      "previousArtist": "Jason Mraz",
+      "previousSong": "Winter Wonderland",
+      "artist": "Jason Mraz",
+      "song": "Winter Wonderland"
+    },
+    {
+      "url": "492-carly-rae-jepsen-it-s-not-christmas-till-somebody-cries",
+      "databaseId": 492,
+      "status": "artist-title",
+      "previousArtist": "Carly Rae Jepsen",
+      "previousSong": "It S Not Christmas Till Somebody Cries",
+      "artist": "Carly Rae Jepsen",
+      "song": "It's Not Christmas Till Somebody Cries"
+    },
+    {
+      "url": "16-mud-lonely-this-christmas",
+      "databaseId": 16,
+      "status": "artist-title",
+      "previousArtist": "Mud",
+      "previousSong": "Lonely This Christmas",
+      "artist": "Mud",
+      "song": "Lonely This Christmas"
+    },
+    {
+      "url": "118-hilary-duff-santa-claus-lane",
+      "databaseId": 118,
+      "status": "artist-title",
+      "previousArtist": "Hilary Duff",
+      "previousSong": "Santa Claus Lane",
+      "artist": "Hilary Duff",
+      "song": "Santa Claus Lane"
+    },
+    {
+      "url": "224-whigfield-last-christmas",
+      "databaseId": 224,
+      "status": "artist-title",
+      "previousArtist": "Whigfield",
+      "previousSong": "Last Christmas",
+      "artist": "Whigfield",
+      "song": "Last Christmas"
+    },
+    {
+      "url": "302-kylie-minogue-white-december",
+      "databaseId": 302,
+      "status": "artist-title",
+      "previousArtist": "Kylie Minogue",
+      "previousSong": "White December",
+      "artist": "Kylie Minogue",
+      "song": "White December"
+    },
+    {
+      "url": "108-extreme-christmas-time-again",
+      "databaseId": 108,
+      "status": "artist-title",
+      "previousArtist": "Extreme",
+      "previousSong": "Christmas Time Again",
+      "artist": "Extreme",
+      "song": "Christmas Time Again"
+    },
+    {
+      "url": "239-nat-king-cole-mrs-santa-claus",
+      "databaseId": 239,
+      "status": "artist-title",
+      "previousArtist": "Nat King Cole Mrs",
+      "previousSong": "Santa Claus",
+      "artist": "Nat King Cole",
+      "song": "Mrs Santa Claus"
+    },
+    {
+      "url": "216-rizzo-gonzo-it-s-the-most-wonderful-time-of-the-year",
+      "databaseId": 216,
+      "status": "artist-title",
+      "previousArtist": "Rizzo Gonzo",
+      "previousSong": "It S The Most Wonderful Time Of The Year",
+      "artist": "Rizzo Gonzo",
+      "song": "It's The Most Wonderful Time Of The Year"
+    },
+    {
+      "url": "427-swv-give-love-on-christmas-day",
+      "databaseId": 427,
+      "status": "artist-title",
+      "previousArtist": "Swv Give Love On",
+      "previousSong": "Christmas Day",
+      "artist": "SWV",
+      "song": "Give Love On Christmas Day"
+    },
+    {
+      "url": "194-bob-b-soxx-and-blue-jeans-here-comes-santa-claus",
+      "databaseId": 194,
+      "status": "historical-id",
+      "previousArtist": "Bob B Soxx And",
+      "previousSong": "Blue Jeans Here Comes Santa Claus",
+      "artist": "Bob B Soxx & Blue Jeans",
+      "song": "Here Comes Santa Claus"
+    },
+    {
+      "url": "26-louisa-johnson-forever-young",
+      "databaseId": 26,
+      "status": "artist-title",
+      "previousArtist": "Louisa Johnson",
+      "previousSong": "Forever Young",
+      "artist": "Louisa Johnson",
+      "song": "Forever Young"
+    },
+    {
+      "url": "227-the-jackson-5-little-drummer-boy",
+      "databaseId": 227,
+      "status": "artist-title",
+      "previousArtist": "The Jackson 5",
+      "previousSong": "Little Drummer Boy",
+      "artist": "The Jackson 5",
+      "song": "Little Drummer Boy"
+    },
+    {
+      "url": "248-charles-brown-please-come-home-for-christmas",
+      "databaseId": 248,
+      "status": "artist-title",
+      "previousArtist": "Charles Brown",
+      "previousSong": "Please Come Home For Christmas",
+      "artist": "Charles Brown",
+      "song": "Please Come Home For Christmas"
+    },
+    {
+      "url": "293-al-green-what-christmas-means-to-me",
+      "databaseId": 293,
+      "status": "artist-title",
+      "previousArtist": "Al Green",
+      "previousSong": "What Christmas Means To Me",
+      "artist": "Al Green",
+      "song": "What Christmas Means To Me"
+    },
+    {
+      "url": "351-bing-crosby-the-first-noel",
+      "databaseId": 351,
+      "status": "artist-title",
+      "previousArtist": "Bing Crosby",
+      "previousSong": "The First Noel",
+      "artist": "Bing Crosby",
+      "song": "The First Noel"
+    },
+    {
+      "url": "12-pogues-fairytale-of-new-york",
+      "databaseId": 12,
+      "status": "artist-title",
+      "previousArtist": "Pogues Fairytale",
+      "previousSong": "Of New York",
+      "artist": "Pogues",
+      "song": "Fairytale of New York"
+    },
+    {
+      "url": "513-abba-little-things",
+      "databaseId": 513,
+      "status": "artist-title",
+      "previousArtist": "Abba",
+      "previousSong": "Little Things",
+      "artist": "Abba",
+      "song": "Little Things"
+    },
+    {
+      "url": "157-dion-christmas-baby-please-come-home",
+      "databaseId": 157,
+      "status": "artist-title",
+      "previousArtist": "Dion",
+      "previousSong": "Christmas (Baby Please Come Home)",
+      "artist": "Dion",
+      "song": "Christmas (Baby Please Come Home)"
+    },
+    {
+      "url": "253-the-cadillacs-rudolph-the-red-nosed-reindeer",
+      "databaseId": 253,
+      "status": "artist-title",
+      "previousArtist": "The Cadillacs",
+      "previousSong": "Rudolph The Red Nosed Reindeer",
+      "artist": "The Cadillacs",
+      "song": "Rudolph The Red-Nosed Reindeer"
+    },
+    {
+      "url": "490-kelly-clarkson-and-brett-eldredge-under-the-mistletoe",
+      "databaseId": 490,
+      "status": "artist-title",
+      "previousArtist": "Kelly Clarkson And Brett Eldredge Under",
+      "previousSong": "The Mistletoe",
+      "artist": "Kelly Clarkson and Brett Eldredge",
+      "song": "Under The Mistletoe"
+    },
+    {
+      "url": "445-carly-rae-jepsen-last-christmas",
+      "databaseId": 445,
+      "status": "artist-title",
+      "previousArtist": "Carly Rae Jepsen",
+      "previousSong": "Last Christmas",
+      "artist": "Carly Rae Jepsen",
+      "song": "Last Christmas"
+    },
+    {
+      "url": "508-michael-buble-the-christmas-sweater",
+      "databaseId": 508,
+      "status": "artist-title",
+      "previousArtist": "Michael Buble",
+      "previousSong": "The Christmas Sweater",
+      "artist": "Michael Buble",
+      "song": "The Christmas Sweater"
+    },
+    {
+      "url": "272-bing-crosby-silent-night",
+      "databaseId": 272,
+      "status": "artist-title",
+      "previousArtist": "Bing Crosby",
+      "previousSong": "Silent Night",
+      "artist": "Bing Crosby",
+      "song": "Silent Night"
+    },
+    {
+      "url": "263-the-carpenters-santa-claus-is-coming-to-town",
+      "databaseId": 263,
+      "status": "artist-title",
+      "previousArtist": "The Carpenters",
+      "previousSong": "Santa Claus Is Coming To Town",
+      "artist": "The Carpenters",
+      "song": "Santa Claus Is Coming To Town"
+    },
+    {
+      "url": "47-elton-john-step-into-christmas",
+      "databaseId": 47,
+      "status": "artist-title",
+      "previousArtist": "Elton John",
+      "previousSong": "Step Into Christmas",
+      "artist": "Elton John",
+      "song": "Step Into Christmas"
+    },
+    {
+      "url": "330-michael-buble-the-christmas-song",
+      "databaseId": 330,
+      "status": "artist-title",
+      "previousArtist": "Michael Buble",
+      "previousSong": "The Christmas Song",
+      "artist": "Michael Buble",
+      "song": "The Christmas Song"
+    },
+    {
+      "url": "170-the-carpenters-christmas-waltz",
+      "databaseId": 170,
+      "status": "artist-title",
+      "previousArtist": "The Carpenters",
+      "previousSong": "Christmas Waltz",
+      "artist": "The Carpenters",
+      "song": "Christmas Waltz"
+    },
+    {
+      "url": "495-delta-goodrem-only-santa-knows",
+      "databaseId": 495,
+      "status": "artist-title",
+      "previousArtist": "Delta Goodrem Only",
+      "previousSong": "Santa Knows",
+      "artist": "Delta Goodrem",
+      "song": "Only Santa Knows"
+    },
+    {
+      "url": "198-frank-sinatra-i-believe",
+      "databaseId": 198,
+      "status": "artist-title",
+      "previousArtist": "Frank Sinatra",
+      "previousSong": "I Believe",
+      "artist": "Frank Sinatra",
+      "song": "I Believe"
+    },
+    {
+      "url": "89-the-beach-boys-bells-of-christmas",
+      "databaseId": 89,
+      "status": "artist-title",
+      "previousArtist": "The Beach Boys Bells Of",
+      "previousSong": "Christmas",
+      "artist": "The Beach Boys",
+      "song": "Bells Of Christmas"
+    },
+    {
+      "url": "17-miley-cyrus-santa-claus-is-coming-to-town",
+      "databaseId": 17,
+      "status": "artist-title",
+      "previousArtist": "Miley Cyrus",
+      "previousSong": "Santa Claus Is Coming To Town",
+      "artist": "Miley Cyrus",
+      "song": "Santa Claus Is Coming to Town"
+    },
+    {
+      "url": "144-run-dmc-christmas-in-hollis",
+      "databaseId": 144,
+      "status": "artist-title",
+      "previousArtist": "Run DMC",
+      "previousSong": "Christmas In Hollis",
+      "artist": "Run-DMC",
+      "song": "Christmas In Hollis"
+    },
+    {
+      "url": "83-band-aid-do-they-know-it-s-christmas",
+      "databaseId": 83,
+      "status": "artist-title",
+      "previousArtist": "Band Aid",
+      "previousSong": "Do They Know It S Christmas",
+      "artist": "Band Aid",
+      "song": "Do They Know It's Christmas"
+    },
+    {
+      "url": "74-aurora-half-the-world-away",
+      "databaseId": 74,
+      "status": "artist-title",
+      "previousArtist": "Aurora Half",
+      "previousSong": "The World Away",
+      "artist": "Aurora",
+      "song": "Half the World Away"
+    },
+    {
+      "url": "444-johnny-mathis-its-beginning-to-look-a-lot-like-christmas",
+      "databaseId": 444,
+      "status": "artist-title",
+      "previousArtist": "Johnny Mathis",
+      "previousSong": "Its Beginning To Look A Lot Like Christmas",
+      "artist": "Johnny Mathis",
+      "song": "Its Beginning to Look a Lot Like Christmas"
+    },
+    {
+      "url": "324-michael-buble-silent-night",
+      "databaseId": 324,
+      "status": "artist-title",
+      "previousArtist": "Michael Buble",
+      "previousSong": "Silent Night",
+      "artist": "Michael Buble",
+      "song": "Silent Night"
+    },
+    {
+      "url": "6-taylor-swift--santa-baby",
+      "databaseId": 6,
+      "status": "artist-title",
+      "previousArtist": "Taylor Swift ",
+      "previousSong": "Santa Baby",
+      "artist": "Taylor Swift ",
+      "song": "Santa Baby"
+    },
+    {
+      "url": "127-kylie-minogue-every-day-s-like-christmas",
+      "databaseId": 127,
+      "status": "artist-title",
+      "previousArtist": "Kylie Minogue Every Day S Like",
+      "previousSong": "Christmas",
+      "artist": "Kylie Minogue",
+      "song": "Every Day's Like Christmas"
+    },
+    {
+      "url": "249-peggy-lee-ring-those-christmas-bells",
+      "databaseId": 249,
+      "status": "artist-title",
+      "previousArtist": "Peggy Lee Ring Those",
+      "previousSong": "Christmas Bells",
+      "artist": "Peggy Lee",
+      "song": "Ring Those Christmas Bells"
+    },
+    {
+      "url": "2-wham-last-christmas",
+      "databaseId": 2,
+      "status": "artist-title",
+      "previousArtist": "Wham!",
+      "previousSong": "Last Christmas",
+      "artist": "Wham!",
+      "song": "Last Christmas"
+    },
+    {
+      "url": "13-paul-mccartney-wonderful-christmastime",
+      "databaseId": 13,
+      "status": "artist-title",
+      "previousArtist": "Paul McCartney",
+      "previousSong": "Wonderful Christmastime",
+      "artist": "Paul McCartney",
+      "song": "Wonderful Christmastime"
+    },
+    {
+      "url": "65-brenda-lee-rockin-around-the-christmas-tree",
+      "databaseId": 65,
+      "status": "artist-title",
+      "previousArtist": "Brenda Lee",
+      "previousSong": "Rockin Around The Christmas Tree",
+      "artist": "Brenda Lee",
+      "song": "Rockin Around The Christmas Tree"
+    },
+    {
+      "url": "438-andre-parker-pronto-es-navidad",
+      "databaseId": 438,
+      "status": "artist-title",
+      "previousArtist": "Andre Parker",
+      "previousSong": "Pronto Es Navidad",
+      "artist": "Andre Parker",
+      "song": "Pronto es Navidad"
+    },
+    {
+      "url": "133-michael-buble-blue-christmas",
+      "databaseId": 133,
+      "status": "artist-title",
+      "previousArtist": "Michael Buble",
+      "previousSong": "Blue Christmas",
+      "artist": "Michael Buble",
+      "song": "Blue Christmas"
+    },
+    {
+      "url": "410-hall-and-oates-jingle-bell-rock",
+      "databaseId": 410,
+      "status": "historical-id",
+      "previousArtist": "Hall And Oates",
+      "previousSong": "Jingle Bell Rock",
+      "artist": "Hall & Oates",
+      "song": "Jingle Bell Rock"
+    },
+    {
+      "url": "298-darlene-love-white-christmas",
+      "databaseId": 298,
+      "status": "artist-title",
+      "previousArtist": "Darlene Love",
+      "previousSong": "White Christmas",
+      "artist": "Darlene Love",
+      "song": "White Christmas"
+    },
+    {
+      "url": "7-slade-merry-xmas-everybody",
+      "databaseId": 7,
+      "status": "artist-title",
+      "previousArtist": "Slade",
+      "previousSong": "Merry Xmas Everybody",
+      "artist": "Slade",
+      "song": "Merry Xmas Everybody"
+    },
+    {
+      "url": "425-stacie-orrico-christmas-wish",
+      "databaseId": 425,
+      "status": "artist-title",
+      "previousArtist": "Stacie Orrico",
+      "previousSong": "Christmas Wish",
+      "artist": "Stacie Orrico",
+      "song": "Christmas Wish"
+    },
+    {
+      "url": "480-sia-my-old-santa-claus",
+      "databaseId": 480,
+      "status": "artist-title",
+      "previousArtist": "Sia",
+      "previousSong": "My Old Santa Claus",
+      "artist": "Sia",
+      "song": "My Old Santa Claus"
+    },
+    {
+      "url": "41-hanson-what-christmas-means-to-me",
+      "databaseId": 41,
+      "status": "artist-title",
+      "previousArtist": "Hanson",
+      "previousSong": "What Christmas Means To Me",
+      "artist": "Hanson",
+      "song": "What Christmas Means To Me"
+    },
+    {
+      "url": "128-kylie-minogue-let-it-snow",
+      "databaseId": 128,
+      "status": "artist-title",
+      "previousArtist": "Kylie Minogue",
+      "previousSong": "Let It Snow",
+      "artist": "Kylie Minogue",
+      "song": "Let It Snow"
+    },
+    {
+      "url": "27-lisa-hugo-my-christmas-day",
+      "databaseId": 27,
+      "status": "artist-title",
+      "previousArtist": "Lisa Hugo",
+      "previousSong": "My Christmas Day",
+      "artist": "Lisa Hugo",
+      "song": "My Christmas Day"
+    },
+    {
+      "url": "285-graham-parker-and-nona-hendryx-soul-christmas",
+      "databaseId": 285,
+      "status": "historical-id",
+      "previousArtist": "Graham Parker And Nona Hendryx Soul",
+      "previousSong": "Christmas",
+      "artist": "Graham Parker & Nona Hendryx",
+      "song": "Soul Christmas"
+    },
+    {
+      "url": "519-wizzard-i-wish-it-could-be-christmas-everyday",
+      "databaseId": 519,
+      "status": "artist-title",
+      "previousArtist": "Wizzard",
+      "previousSong": "I Wish It Could Be Christmas Everyday",
+      "artist": "Wizzard",
+      "song": "I wish it could be Christmas Everyday"
+    },
+    {
+      "url": "28-leona-lewis-one-more-sleep",
+      "databaseId": 28,
+      "status": "artist-title",
+      "previousArtist": "Leona Lewis",
+      "previousSong": "One More Sleep",
+      "artist": "Leona Lewis",
+      "song": "One More Sleep"
+    },
+    {
+      "url": "58-cliff-richard-saviours-day",
+      "databaseId": 58,
+      "status": "artist-title",
+      "previousArtist": "Cliff Richard",
+      "previousSong": "Saviours Day",
+      "artist": "Cliff Richard",
+      "song": "Saviours Day"
+    },
+    {
+      "url": "208-the-beach-boys-i-ll-be-home-for-christmas",
+      "databaseId": 208,
+      "status": "artist-title",
+      "previousArtist": "The Beach Boys",
+      "previousSong": "I'll Be Home For Christmas",
+      "artist": "The Beach Boys",
+      "song": "I'll Be Home For Christmas"
+    },
+    {
+      "url": "122-jewel-rudolph-the-red-nosed-reindeer",
+      "databaseId": 122,
+      "status": "artist-title",
+      "previousArtist": "Jewel",
+      "previousSong": "Rudolph The Red Nosed Reindeer",
+      "artist": "Jewel",
+      "song": "Rudolph the Red Nosed Reindeer"
+    },
+    {
+      "url": "385-frank-sinatra-i-ll-be-home-for-christmas",
+      "databaseId": 385,
+      "status": "artist-title",
+      "previousArtist": "Frank Sinatra",
+      "previousSong": "I Ll Be Home For Christmas",
+      "artist": "Frank Sinatra",
+      "song": "I'll Be Home For Christmas"
+    },
+    {
+      "url": "379-frank-sinatra-hark-the-herald-angels-sing",
+      "databaseId": 379,
+      "status": "historical-id",
+      "previousArtist": "Frank Sinatra",
+      "previousSong": "Hark The Herald Angels Sing",
+      "artist": "Frank Sinatra",
+      "song": "Hark The Herald Angels Sing"
+    },
+    {
+      "url": "489-megan-trainor-my-kind-of-present",
+      "databaseId": 489,
+      "status": "artist-title",
+      "previousArtist": "Megan Trainor",
+      "previousSong": "My Kind Of Present",
+      "artist": "Megan Trainor",
+      "song": "My Kind Of Present"
+    },
+    {
+      "url": "399-elvis-presley-blue-christmas",
+      "databaseId": 399,
+      "status": "artist-title",
+      "previousArtist": "Elvis Presley",
+      "previousSong": "Blue Christmas",
+      "artist": "Elvis Presley",
+      "song": "Blue Christmas"
+    },
+    {
+      "url": "240-nat-king-cole-o-holy-night",
+      "databaseId": 240,
+      "status": "artist-title",
+      "previousArtist": "Nat King Cole",
+      "previousSong": "O Holy Night",
+      "artist": "Nat King Cole",
+      "song": "O Holy Night"
+    },
+    {
+      "url": "447-charles-jenkins-christmas-music",
+      "databaseId": 447,
+      "status": "artist-title",
+      "previousArtist": "Charles Jenkins",
+      "previousSong": "Christmas Music",
+      "artist": "Charles Jenkins",
+      "song": "Christmas Music"
+    },
+    {
+      "url": "501-jamie-cullum-christmas-never-gets-old",
+      "databaseId": 501,
+      "status": "artist-title",
+      "previousArtist": "Jamie Cullum",
+      "previousSong": "Christmas Never Gets Old",
+      "artist": "Jamie Cullum",
+      "song": "Christmas Never Gets Old"
+    },
+    {
+      "url": "124-josh-groban-it-came-upon-a-midnight-clear",
+      "databaseId": 124,
+      "status": "artist-title",
+      "previousArtist": "Josh Groban",
+      "previousSong": "It Came Upon A Midnight Clear",
+      "artist": "Josh Groban",
+      "song": "It Came Upon a Midnight Clear"
+    },
+    {
+      "url": "457-sia-santa-s-coming-for-us",
+      "databaseId": 457,
+      "status": "artist-title",
+      "previousArtist": "Sia",
+      "previousSong": "Santa S Coming For Us",
+      "artist": "Sia",
+      "song": "Santa's Coming For Us"
+    },
+    {
+      "url": "219-barbra-streisand-jingle-bells",
+      "databaseId": 219,
+      "status": "artist-title",
+      "previousArtist": "Barbra Streisand",
+      "previousSong": "Jingle Bells",
+      "artist": "Barbra Streisand",
+      "song": "Jingle Bells"
+    },
+    {
+      "url": "283-peggy-lee-snow-snow-snow",
+      "databaseId": 283,
+      "status": "artist-title",
+      "previousArtist": "Peggy Lee",
+      "previousSong": "Snow Snow Snow",
+      "artist": "Peggy Lee",
+      "song": "Snow, Snow, Snow"
+    },
+    {
+      "url": "413-the-jackson-5-i-saw-mommy-kissing-santa-claus",
+      "databaseId": 413,
+      "status": "artist-title",
+      "previousArtist": "The Jackson 5",
+      "previousSong": "I Saw Mommy Kissing Santa Claus",
+      "artist": "The Jackson 5",
+      "song": "I Saw Mommy Kissing Santa Claus"
+    },
+    {
+      "url": "230-roger-whittaker-mary-s-boy-child",
+      "databaseId": 230,
+      "status": "artist-title",
+      "previousArtist": "Roger Whittaker",
+      "previousSong": "Mary S Boy Child",
+      "artist": "Roger Whittaker",
+      "song": "Mary's Boy Child"
+    },
+    {
+      "url": "390-sammy-davis-jr-the-christmas-song",
+      "databaseId": 390,
+      "status": "artist-title",
+      "previousArtist": "Sammy Davis Jr",
+      "previousSong": "The Christmas Song",
+      "artist": "Sammy Davis Jr.",
+      "song": "The Christmas Song"
+    },
+    {
+      "url": "178-bing-crosby-faith-of-our-fathers",
+      "databaseId": 178,
+      "status": "artist-title",
+      "previousArtist": "Bing Crosby",
+      "previousSong": "Faith Of Our Fathers",
+      "artist": "Bing Crosby",
+      "song": "Faith Of Our Fathers"
+    },
+    {
+      "url": "424-spice-girls-sleigh-ride",
+      "databaseId": 424,
+      "status": "artist-title",
+      "previousArtist": "Spice Girls",
+      "previousSong": "Sleigh Ride",
+      "artist": "Spice Girls",
+      "song": "Sleigh Ride"
+    },
+    {
+      "url": "258-michael-buble-santa-baby",
+      "databaseId": 258,
+      "status": "artist-title",
+      "previousArtist": "Michael Buble",
+      "previousSong": "Santa Baby",
+      "artist": "Michael Buble",
+      "song": "Santa Baby"
+    },
+    {
+      "url": "478-john-legend-bring-me-love",
+      "databaseId": 478,
+      "status": "artist-title",
+      "previousArtist": "John Legend",
+      "previousSong": "Bring Me Love",
+      "artist": "John Legend",
+      "song": "Bring Me Love"
+    },
+    {
+      "url": "336-bing-crosby-it-s-beginning-to-look-a-lot-like-christmas",
+      "databaseId": 336,
+      "status": "artist-title",
+      "previousArtist": "Bing Crosby",
+      "previousSong": "It S Beginning To Look A Lot Like Christmas",
+      "artist": "Bing Crosby",
+      "song": "It's Beginning To Look A Lot Like Christmas"
+    },
+    {
+      "url": "419-norah-jones-peace",
+      "databaseId": 419,
+      "status": "artist-title",
+      "previousArtist": "Norah Jones",
+      "previousSong": "Peace",
+      "artist": "Norah Jones",
+      "song": "Peace"
+    },
+    {
+      "url": "77-aaron-neville-please-come-home-for-christmas",
+      "databaseId": 77,
+      "status": "artist-title",
+      "previousArtist": "Aaron Neville",
+      "previousSong": "Please Come Home For Christmas",
+      "artist": "Aaron Neville",
+      "song": "Please Come Home for Christmas"
+    },
+    {
+      "url": "435-madison-fayre-california-christmas",
+      "databaseId": 435,
+      "status": "artist-title",
+      "previousArtist": "Madison Fayre California",
+      "previousSong": "Christmas",
+      "artist": "Madison Fayre",
+      "song": "California Christmas"
+    },
+    {
+      "url": "60-chris-rea-driving-home-for-christmas",
+      "databaseId": 60,
+      "status": "artist-title",
+      "previousArtist": "Chris Rea",
+      "previousSong": "Driving Home For Christmas",
+      "artist": "Chris Rea",
+      "song": "Driving Home For Christmas"
+    },
+    {
+      "url": "211-frank-sinatra-it-came-upon-a-midnight-clear",
+      "databaseId": 211,
+      "status": "artist-title",
+      "previousArtist": "Frank Sinatra",
+      "previousSong": "It Came Upon A Midnight Clear",
+      "artist": "Frank Sinatra",
+      "song": "It Came Upon A Midnight Clear"
+    },
+    {
+      "url": "163-shane-macgowan-and-popes-christmas-lullaby",
+      "databaseId": 163,
+      "status": "historical-id",
+      "previousArtist": "Shane Macgowan And Popes",
+      "previousSong": "Christmas Lullaby",
+      "artist": "Shane MacGowan & Popes",
+      "song": "Christmas Lullaby"
+    },
+    {
+      "url": "504-liam-gallagher-all-your-dreaming-of",
+      "databaseId": 504,
+      "status": "artist-title",
+      "previousArtist": "Liam Gallagher",
+      "previousSong": "All Your Dreaming Of",
+      "artist": "Liam Gallagher",
+      "song": "All Your Dreaming Of"
+    },
+    {
+      "url": "85-barbra-streisand-the-best-gift",
+      "databaseId": 85,
+      "status": "artist-title",
+      "previousArtist": "Barbra Streisand",
+      "previousSong": "The Best Gift",
+      "artist": "Barbra Streisand",
+      "song": "The Best Gift"
+    },
+    {
+      "url": "270-scottish-quest-all-stars-santa-is-a-scotsman",
+      "databaseId": 270,
+      "status": "artist-title",
+      "previousArtist": "Scottish Quest",
+      "previousSong": "All Stars Santa Is A Scotsman",
+      "artist": "Scottish Quest All Stars",
+      "song": "Santa is a Scotsman"
+    },
+    {
+      "url": "217-dean-martin-i-ve-got-my-love-to-keep-me-warm",
+      "databaseId": 217,
+      "status": "artist-title",
+      "previousArtist": "Dean Martin",
+      "previousSong": "I Ve Got My Love To Keep Me Warm",
+      "artist": "Dean Martin",
+      "song": "I've Got My Love To Keep Me Warm"
+    },
+    {
+      "url": "479-pentatonix-rockin-around-the-christmas-tree",
+      "databaseId": 479,
+      "status": "artist-title",
+      "previousArtist": "Pentatonix",
+      "previousSong": "Rockin Around The Christmas Tree",
+      "artist": "Pentatonix",
+      "song": "Rockin Around The Christmas Tree"
+    },
+    {
+      "url": "202-the-ronettes-i-saw-mommy-kissing-santa-claus",
+      "databaseId": 202,
+      "status": "artist-title",
+      "previousArtist": "The Ronettes",
+      "previousSong": "I Saw Mommy Kissing Santa Claus",
+      "artist": "The Ronettes",
+      "song": "I Saw Mommy Kissing Santa Claus"
+    },
+    {
+      "url": "421-pet-shop-boys-it-doesn-t-often-snow-at-christmas",
+      "databaseId": 421,
+      "status": "artist-title",
+      "previousArtist": "Pet Shop Boys",
+      "previousSong": "It Doesn T Often Snow At Christmas",
+      "artist": "Pet Shop Boys",
+      "song": "It Doesn't Often Snow At Christmas"
+    },
+    {
+      "url": "138-paul-mccartney-we-all-stand-together",
+      "databaseId": 138,
+      "status": "artist-title",
+      "previousArtist": "Paul Mccartney",
+      "previousSong": "We All Stand Together",
+      "artist": "Paul McCartney",
+      "song": "We All Stand Together"
+    },
+    {
+      "url": "24-mariah-carey-all-i-want-for-christmas-is-you",
+      "databaseId": 24,
+      "status": "artist-title",
+      "previousArtist": "Mariah Carey",
+      "previousSong": "All I Want For Christmas Is You",
+      "artist": "Mariah Carey",
+      "song": "All I Want For Christmas Is You"
+    },
+    {
+      "url": "516-george-ezra-come-on-home-for-christmas",
+      "databaseId": 516,
+      "status": "artist-title",
+      "previousArtist": "George Ezra",
+      "previousSong": "Come On Home For Christmas",
+      "artist": "George Ezra",
+      "song": "Come On Home For Christmas"
+    },
+    {
+      "url": "429-trijntje-oosterhuis-merry-christmas-baby",
+      "databaseId": 429,
+      "status": "artist-title",
+      "previousArtist": "Trijntje Oosterhuis",
+      "previousSong": "Merry Christmas Baby",
+      "artist": "Trijntje Oosterhuis",
+      "song": "Merry Christmas Baby"
+    },
+    {
+      "url": "152-brenda-lee-all-alone-am-i",
+      "databaseId": 152,
+      "status": "artist-title",
+      "previousArtist": "Brenda Lee",
+      "previousSong": "All Alone Am I",
+      "artist": "Brenda Lee",
+      "song": "All Alone Am I"
+    },
+    {
+      "url": "453-jonathan-antoine-christmas-dream-come-true",
+      "databaseId": 453,
+      "status": "artist-title",
+      "previousArtist": "Jonathan Antoine",
+      "previousSong": "Christmas Dream Come True",
+      "artist": "Jonathan Antoine",
+      "song": "Christmas Dream Come True"
+    },
+    {
+      "url": "56-coldplay-christmas-lights",
+      "databaseId": 56,
+      "status": "artist-title",
+      "previousArtist": "Coldplay",
+      "previousSong": "Christmas Lights",
+      "artist": "Coldplay",
+      "song": "Christmas Lights"
+    },
+    {
+      "url": "370-frank-sinatra-white-christmas",
+      "databaseId": 370,
+      "status": "artist-title",
+      "previousArtist": "Frank Sinatra",
+      "previousSong": "White Christmas",
+      "artist": "Frank Sinatra",
+      "song": "White Christmas"
+    },
+    {
+      "url": "275-stevie-nicks-silent-night",
+      "databaseId": 275,
+      "status": "artist-title",
+      "previousArtist": "Stevie Nicks",
+      "previousSong": "Silent Night",
+      "artist": "Stevie Nicks",
+      "song": "Silent Night"
+    },
+    {
+      "url": "70-ben-haenow-something-i-need",
+      "databaseId": 70,
+      "status": "artist-title",
+      "previousArtist": "Ben Haenow Something",
+      "previousSong": "I Need",
+      "artist": "Ben Haenow",
+      "song": "Something I need"
+    },
+    {
+      "url": "5-tom-jones-and-c-matthews-baby-its-cold-outside",
+      "databaseId": 5,
+      "status": "historical-id",
+      "previousArtist": "Tom Jones And C Matthews",
+      "previousSong": "Baby Its Cold Outside",
+      "artist": "Tom Jones & C Matthews",
+      "song": "Baby Its Cold Outside"
+    },
+    {
+      "url": "93-bing-crosby-the-christmas-song",
+      "databaseId": 93,
+      "status": "artist-title",
+      "previousArtist": "Bing Crosby",
+      "previousSong": "The Christmas Song",
+      "artist": "Bing Crosby",
+      "song": "The Christmas Song"
+    },
+    {
+      "url": "172-kylie-minogue-cried-out-christmas",
+      "databaseId": 172,
+      "status": "artist-title",
+      "previousArtist": "Kylie Minogue",
+      "previousSong": "Cried Out Christmas",
+      "artist": "Kylie Minogue",
+      "song": "Cried Out Christmas"
+    },
+    {
+      "url": "193-kylie-minogue-have-yourself-a-merry-little-christmas",
+      "databaseId": 193,
+      "status": "artist-title",
+      "previousArtist": "Kylie Minogue",
+      "previousSong": "Have Yourself A Merry Little Christmas",
+      "artist": "Kylie Minogue",
+      "song": "Have Yourself A Merry Little Christmas"
+    },
+    {
+      "url": "120-james-brown-the-christmas-song",
+      "databaseId": 120,
+      "status": "artist-title",
+      "previousArtist": "James Brown",
+      "previousSong": "The Christmas Song",
+      "artist": "James Brown",
+      "song": "The Christmas Song"
+    },
+    {
+      "url": "405-christina-aguilera-the-christmas-song-chestnuts-roasting-on-an-open-fire",
+      "databaseId": 405,
+      "status": "artist-title",
+      "previousArtist": "Christina Aguilera",
+      "previousSong": "The Christmas Song Chestnuts Roasting On An Open Fire",
+      "artist": "Christina Aguilera",
+      "song": "The Christmas Song (Chestnuts Roasting On An Open Fire)"
+    },
+    {
+      "url": "146-samantha-mumba-all-i-want-for-christmas-is-you",
+      "databaseId": 146,
+      "status": "artist-title",
+      "previousArtist": "Samantha Mumba",
+      "previousSong": "All I Want For Christmas Is You",
+      "artist": "Samantha Mumba",
+      "song": "All I Want For Christmas is You"
+    },
+    {
+      "url": "329-michael-buble-mis-deseos-feliz-navidad",
+      "databaseId": 329,
+      "status": "artist-title",
+      "previousArtist": "Michael Buble",
+      "previousSong": "Mis Deseos Feliz Navidad",
+      "artist": "Michael Buble",
+      "song": "Mis Deseos/Feliz Navidad"
+    },
+    {
+      "url": "469-dan-berk-hanging-like-the-mistletoe",
+      "databaseId": 469,
+      "status": "artist-title",
+      "previousArtist": "Dan Berk Hanging Like",
+      "previousSong": "The Mistletoe",
+      "artist": "Dan Berk",
+      "song": "Hanging Like the Mistletoe"
+    },
+    {
+      "url": "417-kt-tunstall-christmas-baby-please-come-home",
+      "databaseId": 417,
+      "status": "artist-title",
+      "previousArtist": "Kt Tunstall",
+      "previousSong": "Christmas Baby Please Come Home",
+      "artist": "Kt Tunstall",
+      "song": "Christmas (Baby Please Come Home)"
+    },
+    {
+      "url": "278-dean-martin-silver-bells",
+      "databaseId": 278,
+      "status": "artist-title",
+      "previousArtist": "Dean Martin",
+      "previousSong": "Silver Bells",
+      "artist": "Dean Martin",
+      "song": "Silver Bells"
+    },
+    {
+      "url": "443-alexander-o--neal-the-christmas-song",
+      "databaseId": 443,
+      "status": "artist-title",
+      "previousArtist": "Alexander",
+      "previousSong": "O  Neal The Christmas Song",
+      "artist": "Alexander O' Neal",
+      "song": "The Christmas Song"
+    },
+    {
+      "url": "197-michael-buble-holly-jolly-christmas",
+      "databaseId": 197,
+      "status": "artist-title",
+      "previousArtist": "Michael Buble Holly Jolly",
+      "previousSong": "Christmas",
+      "artist": "Michael Buble",
+      "song": "Holly Jolly Christmas"
+    },
+    {
+      "url": "99-the-carpenters-merry-christmas-darling",
+      "databaseId": 99,
+      "status": "historical-id",
+      "previousArtist": "The Carpenters",
+      "previousSong": "Merry Christmas Darling",
+      "artist": "The Carpenters",
+      "song": "Merry Christmas Darling"
+    },
+    {
+      "url": "164-the-band-christmas-must-be-tonight",
+      "databaseId": 164,
+      "status": "artist-title",
+      "previousArtist": "The Band",
+      "previousSong": "Christmas Must Be Tonight",
+      "artist": "The Band",
+      "song": "Christmas Must Be Tonight"
+    },
+    {
+      "url": "192-judy-garland-have-yourself-a-merry-little-christmas",
+      "databaseId": 192,
+      "status": "artist-title",
+      "previousArtist": "Judy Garland",
+      "previousSong": "Have Yourself A Merry Little Christmas",
+      "artist": "Judy Garland",
+      "song": "Have Yourself A Merry Little Christmas"
+    },
+    {
+      "url": "418-natasha-bedingfield-shake-up-christmas",
+      "databaseId": 418,
+      "status": "artist-title",
+      "previousArtist": "Natasha Bedingfield Shake Up",
+      "previousSong": "Christmas",
+      "artist": "Natasha Bedingfield",
+      "song": "Shake Up Christmas"
+    },
+    {
+      "url": "328-michael-buble-ave-maria",
+      "databaseId": 328,
+      "status": "artist-title",
+      "previousArtist": "Michael Buble",
+      "previousSong": "Ave Maria",
+      "artist": "Michael Buble",
+      "song": "Ave Maria"
+    },
+    {
+      "url": "380-frank-sinatra-o-little-town-of-bethlehem",
+      "databaseId": 380,
+      "status": "artist-title",
+      "previousArtist": "Frank Sinatra",
+      "previousSong": "O Little Town Of Bethlehem",
+      "artist": "Frank Sinatra",
+      "song": "O Little Town Of Bethlehem"
+    },
+    {
+      "url": "229-snap-mary-had-a-little-boy",
+      "databaseId": 229,
+      "status": "artist-title",
+      "previousArtist": "Snap!",
+      "previousSong": "Mary Had A Little Boy",
+      "artist": "Snap!",
+      "song": "Mary Had A Little Boy"
+    },
+    {
+      "url": "48-elsa-and-anna-do-you-wanna-build-a-snowman",
+      "databaseId": 48,
+      "status": "artist-title",
+      "previousArtist": "Elsa And Anna",
+      "previousSong": "Do You Wanna Build A Snowman",
+      "artist": "Elsa and Anna",
+      "song": "Do you wanna build a snowman"
+    },
+    {
+      "url": "491-jonas-brothers-i-need-you-christmas",
+      "databaseId": 491,
+      "status": "artist-title",
+      "previousArtist": "Jonas Brothers",
+      "previousSong": "I Need You Christmas",
+      "artist": "Jonas Brothers",
+      "song": "I Need You Christmas"
+    },
+    {
+      "url": "30-kylie-minogue-i-m-gonna-be-warm-this-winter",
+      "databaseId": 30,
+      "status": "artist-title",
+      "previousArtist": "Kylie Minogue",
+      "previousSong": "I M Gonna Be Warm This Winter",
+      "artist": "Kylie Minogue",
+      "song": "I'm Gonna Be Warm This Winter"
+    },
+    {
+      "url": "454-the-osmonds-happy-holiday",
+      "databaseId": 454,
+      "status": "artist-title",
+      "previousArtist": "The Osmonds",
+      "previousSong": "Happy Holiday",
+      "artist": "The Osmonds",
+      "song": "Happy Holiday"
+    },
+    {
+      "url": "241-paul-potts-o-holy-night",
+      "databaseId": 241,
+      "status": "artist-title",
+      "previousArtist": "Paul Potts",
+      "previousSong": "O Holy Night",
+      "artist": "Paul Potts",
+      "song": "O Holy Night"
+    },
+    {
+      "url": "52-david-brent-don-t-cry-it-s-christmas",
+      "databaseId": 52,
+      "status": "artist-title",
+      "previousArtist": "David Brent Don T Cry",
+      "previousSong": "It S Christmas",
+      "artist": "David Brent",
+      "song": "Don't Cry It's Christmas"
+    },
+    {
+      "url": "142-relient-k-sleigh-ride",
+      "databaseId": 142,
+      "status": "artist-title",
+      "previousArtist": "Relient K",
+      "previousSong": "Sleigh Ride",
+      "artist": "Relient K",
+      "song": "Sleigh Ride"
+    },
+    {
+      "url": "237-the-moonglows-mistletoe-and-holly",
+      "databaseId": 237,
+      "status": "artist-title",
+      "previousArtist": "The Moonglows",
+      "previousSong": "Mistletoe And Holly",
+      "artist": "The Moonglows",
+      "song": "Mistletoe And Holly"
+    },
+    {
+      "url": "474-engelbert-humperdinck-around-the-christmas-tree",
+      "databaseId": 474,
+      "status": "artist-title",
+      "previousArtist": "Engelbert Humperdinck Around",
+      "previousSong": "The Christmas Tree",
+      "artist": "Engelbert Humperdinck",
+      "song": "Around the Christmas Tree"
+    },
+    {
+      "url": "67-bing-crosby-white-christmas",
+      "databaseId": 67,
+      "status": "artist-title",
+      "previousArtist": "Bing Crosby",
+      "previousSong": "White Christmas",
+      "artist": "Bing Crosby",
+      "song": "White Christmas"
+    },
+    {
+      "url": "3-waitresses-christmas-wrapping",
+      "databaseId": 3,
+      "status": "artist-title",
+      "previousArtist": "Waitresses",
+      "previousSong": "Christmas Wrapping",
+      "artist": "Waitresses",
+      "song": "Christmas Wrapping"
+    },
+    {
+      "url": "523-heidi-anne-dear-santa",
+      "databaseId": 523,
+      "status": "artist-title",
+      "previousArtist": "Heidi Anne Dear",
+      "previousSong": "Santa",
+      "artist": "Heidi Anne",
+      "song": "Dear Santa"
+    },
+    {
+      "url": "139-paul-mccartney-and-wings-mull-of-kintyre",
+      "databaseId": 139,
+      "status": "historical-id",
+      "previousArtist": "Paul Mccartney",
+      "previousSong": "And Wings Mull Of Kintyre",
+      "artist": "Paul McCartney & Wings",
+      "song": "Mull Of Kintyre"
+    },
+    {
+      "url": "81-andy-williams-let-it-snow-let-it-snow-let-it-snow",
+      "databaseId": 81,
+      "status": "artist-title",
+      "previousArtist": "Andy Williams",
+      "previousSong": "Let It Snow Let It Snow Let It Snow",
+      "artist": "Andy Williams",
+      "song": "Let It Snow! Let It Snow! Let It Snow!"
+    },
+    {
+      "url": "200-the-mills-brothers-i-believe-in-santa-claus",
+      "databaseId": 200,
+      "status": "artist-title",
+      "previousArtist": "The Mills Brothers",
+      "previousSong": "I Believe In Santa Claus",
+      "artist": "The Mills Brothers",
+      "song": "I Believe In Santa Claus"
+    },
+    {
+      "url": "522-jade-10-and-sisters-noel-my-ugly-sweater",
+      "databaseId": 522,
+      "status": "artist-title",
+      "previousArtist": "Jade 10 And Sisters Noel",
+      "previousSong": "My Ugly Sweater",
+      "artist": "Jade 10 and Sisters Noel",
+      "song": "My Ugly Sweater"
+    },
+    {
+      "url": "112-george-michael-december-song-i-dreamed-of-christmas",
+      "databaseId": 112,
+      "status": "artist-title",
+      "previousArtist": "George Michael December Song",
+      "previousSong": "I Dreamed Of Christmas",
+      "artist": "George Michael",
+      "song": "December Song (I Dreamed of Christmas)"
+    },
+    {
+      "url": "335-michael-buble-santa-claus-is-coming-to-town",
+      "databaseId": 335,
+      "status": "artist-title",
+      "previousArtist": "Michael Buble",
+      "previousSong": "Santa Claus Is Coming To Town",
+      "artist": "Michael Buble",
+      "song": "Santa Claus Is Coming To Town"
+    },
+    {
+      "url": "317-michael-buble-jingle-bells",
+      "databaseId": 317,
+      "status": "artist-title",
+      "previousArtist": "Michael Buble",
+      "previousSong": "Jingle Bells",
+      "artist": "Michael Buble",
+      "song": "Jingle Bells"
+    },
+    {
+      "url": "517-jessica-braithwaite-i-still-get-excited-for-christmas",
+      "databaseId": 517,
+      "status": "artist-title",
+      "previousArtist": "Jessica Braithwaite",
+      "previousSong": "I Still Get Excited For Christmas",
+      "artist": "Jessica Braithwaite",
+      "song": "I Still Get Excited For Christmas"
+    },
+    {
+      "url": "291-bob-rivers-we-wish-you-weren-t-living-with-us",
+      "databaseId": 291,
+      "status": "artist-title",
+      "previousArtist": "Bob Rivers",
+      "previousSong": "We Wish You Weren T Living With Us",
+      "artist": "Bob Rivers",
+      "song": "We Wish You Weren't Living With Us"
+    },
+    {
+      "url": "119-hot-chocolate-brand-new-christmas",
+      "databaseId": 119,
+      "status": "artist-title",
+      "previousArtist": "Hot Chocolate Brand New",
+      "previousSong": "Christmas",
+      "artist": "Hot Chocolate",
+      "song": "Brand New Christmas"
+    },
+    {
+      "url": "233-the-carpenters-merry-christmas-darling",
+      "databaseId": 233,
+      "status": "historical-id",
+      "previousArtist": "The Carpenters",
+      "previousSong": "Merry Christmas Darling",
+      "artist": "The Carpenters",
+      "song": "Merry Christmas Darling"
+    },
+    {
+      "url": "114-girls-aloud-not-tonight-santa",
+      "databaseId": 114,
+      "status": "artist-title",
+      "previousArtist": "Girls Aloud",
+      "previousSong": "Not Tonight Santa",
+      "artist": "Girls Aloud",
+      "song": "Not Tonight Santa"
+    },
+    {
+      "url": "43-gabriella-cilmi--warm-this-winter",
+      "databaseId": 43,
+      "status": "artist-title",
+      "previousArtist": "Gabriella Cilmi  Warm",
+      "previousSong": "This Winter",
+      "artist": "Gabriella Cilmi ",
+      "song": "Warm this Winter"
+    },
+    {
+      "url": "222-sammy-davis-jr-jingle-bells",
+      "databaseId": 222,
+      "status": "artist-title",
+      "previousArtist": "Sammy Davis Jr",
+      "previousSong": "Jingle Bells",
+      "artist": "Sammy Davis Jr.",
+      "song": "Jingle Bells"
+    },
+    {
+      "url": "295-matt-monro-when-a-child-is-born",
+      "databaseId": 295,
+      "status": "artist-title",
+      "previousArtist": "Matt Monro",
+      "previousSong": "When A Child Is Born",
+      "artist": "Matt Monro",
+      "song": "When A Child Is Born"
+    },
+    {
+      "url": "334-michael-buble-it-s-beginning-to-look-a-lot-like-christmas",
+      "databaseId": 334,
+      "status": "artist-title",
+      "previousArtist": "Michael Buble",
+      "previousSong": "It S Beginning To Look A Lot Like Christmas",
+      "artist": "Michael Buble",
+      "song": "It's Beginning to Look a Lot Like Christmas"
+    },
+    {
+      "url": "165-luther-vandross-the-christmas-song",
+      "databaseId": 165,
+      "status": "artist-title",
+      "previousArtist": "Luther Vandross",
+      "previousSong": "The Christmas Song",
+      "artist": "Luther Vandross",
+      "song": "The Christmas Song"
+    },
+    {
+      "url": "266-the-pointer-sisters-santa-claus-is-coming-to-town",
+      "databaseId": 266,
+      "status": "artist-title",
+      "previousArtist": "The Pointer Sisters",
+      "previousSong": "Santa Claus Is Coming To Town",
+      "artist": "The Pointer Sisters",
+      "song": "Santa Claus Is Coming To Town"
+    },
+    {
+      "url": "50-dido-christmas-day",
+      "databaseId": 50,
+      "status": "artist-title",
+      "previousArtist": "Dido",
+      "previousSong": "Christmas Day",
+      "artist": "Dido",
+      "song": "Christmas Day"
+    },
+    {
+      "url": "487-robbie-williams-can-t-stop-christmas",
+      "databaseId": 487,
+      "status": "artist-title",
+      "previousArtist": "Robbie Williams Can T Stop",
+      "previousSong": "Christmas",
+      "artist": "Robbie Williams",
+      "song": "Can't stop Christmas"
+    },
+    {
+      "url": "105-dina-carroll-the-perfect-year",
+      "databaseId": 105,
+      "status": "artist-title",
+      "previousArtist": "Dina Carroll",
+      "previousSong": "The Perfect Year",
+      "artist": "Dina Carroll",
+      "song": "The Perfect Year"
+    },
+    {
+      "url": "277-bing-crosby-silver-bells",
+      "databaseId": 277,
+      "status": "artist-title",
+      "previousArtist": "Bing Crosby",
+      "previousSong": "Silver Bells",
+      "artist": "Bing Crosby",
+      "song": "Silver Bells"
+    },
+    {
+      "url": "365-dean-martin-brahms-lullaby",
+      "databaseId": 365,
+      "status": "artist-title",
+      "previousArtist": "Dean Martin",
+      "previousSong": "Brahms Lullaby",
+      "artist": "Dean Martin",
+      "song": "Brahms Lullaby"
+    },
+    {
+      "url": "455-matt-terry-when-christmas-comes-around",
+      "databaseId": 455,
+      "status": "artist-title",
+      "previousArtist": "Matt Terry",
+      "previousSong": "When Christmas Comes Around",
+      "artist": "Matt Terry",
+      "song": "When Christmas comes around"
+    },
+    {
+      "url": "182-mitch-miller-and-the-gang-frosty-the-snowman",
+      "databaseId": 182,
+      "status": "artist-title",
+      "previousArtist": "Mitch Miller And",
+      "previousSong": "The Gang Frosty The Snowman",
+      "artist": "Mitch Miller and The Gang",
+      "song": "Frosty The Snowman"
+    },
+    {
+      "url": "409-faith-evans-soulful-christmas",
+      "databaseId": 409,
+      "status": "artist-title",
+      "previousArtist": "Faith Evans Soulful",
+      "previousSong": "Christmas",
+      "artist": "Faith Evans",
+      "song": "Soulful Christmas"
+    },
+    {
+      "url": "117-hanson-run-rudolph-run",
+      "databaseId": 117,
+      "status": "artist-title",
+      "previousArtist": "Hanson Run",
+      "previousSong": "Rudolph Run",
+      "artist": "Hanson",
+      "song": "Run Rudolph Run"
+    },
+    {
+      "url": "63-bruce-springsteen-santa-claus-is-coming-to-town",
+      "databaseId": 63,
+      "status": "artist-title",
+      "previousArtist": "Bruce Springsteen",
+      "previousSong": "Santa Claus Is Coming To Town",
+      "artist": "Bruce Springsteen",
+      "song": "Santa Claus Is Coming to Town"
+    },
+    {
+      "url": "512-leona-lewis-kiss-me-it-s-christmas",
+      "databaseId": 512,
+      "status": "artist-title",
+      "previousArtist": "Leona Lewis",
+      "previousSong": "Kiss Me It's Christmas",
+      "artist": "Leona Lewis",
+      "song": "Kiss Me It's Christmas"
+    },
+    {
+      "url": "406-corinne-bailey-rae-this-christmas",
+      "databaseId": 406,
+      "status": "artist-title",
+      "previousArtist": "Corinne Bailey Rae",
+      "previousSong": "This Christmas",
+      "artist": "Corinne Bailey Rae",
+      "song": "This Christmas"
+    },
+    {
+      "url": "174-nat-king-cole-deck-the-halls",
+      "databaseId": 174,
+      "status": "artist-title",
+      "previousArtist": "Nat King Cole",
+      "previousSong": "Deck The Halls",
+      "artist": "Nat King Cole",
+      "song": "Deck The Halls"
+    },
+    {
+      "url": "306-doris-day-winter-wonderland",
+      "databaseId": 306,
+      "status": "artist-title",
+      "previousArtist": "Doris Day",
+      "previousSong": "Winter Wonderland",
+      "artist": "Doris Day",
+      "song": "Winter Wonderland"
+    },
+    {
+      "url": "506-marie-lind-unwrap-my-heart",
+      "databaseId": 506,
+      "status": "artist-title",
+      "previousArtist": "Marie Lind Unwrap",
+      "previousSong": "My Heart",
+      "artist": "Marie Lind",
+      "song": "Unwrap my Heart"
+    },
+    {
+      "url": "284-bing-crosby-the-snowman",
+      "databaseId": 284,
+      "status": "artist-title",
+      "previousArtist": "Bing Crosby",
+      "previousSong": "The Snowman",
+      "artist": "Bing Crosby",
+      "song": "The Snowman"
+    },
+    {
+      "url": "53-darlene-love-christmas-baby-please-come-home",
+      "databaseId": 53,
+      "status": "artist-title",
+      "previousArtist": "Darlene Love",
+      "previousSong": "Christmas Baby Please Come Home",
+      "artist": "Darlene Love",
+      "song": "Christmas (Baby Please Come Home)"
+    },
+    {
+      "url": "470-x-mas-donkey-and-the-glittering-balls-its-christmas-time",
+      "databaseId": 470,
+      "status": "historical-id",
+      "previousArtist": "X Mas Donkey And",
+      "previousSong": "The Glittering Balls Its Christmas Time",
+      "artist": "X-mas Donkey & The Glittering Balls",
+      "song": "Its Christmas Time"
+    },
+    {
+      "url": "42-greg-lake-i-believe-in-father-christmas",
+      "databaseId": 42,
+      "status": "artist-title",
+      "previousArtist": "Greg Lake",
+      "previousSong": "I Believe In Father Christmas",
+      "artist": "Greg Lake",
+      "song": "I Believe In Father Christmas"
+    },
+    {
+      "url": "477-jessie-j-this-christmas-day",
+      "databaseId": 477,
+      "status": "artist-title",
+      "previousArtist": "Jessie J",
+      "previousSong": "This Christmas Day",
+      "artist": "Jessie J",
+      "song": "This Christmas Day"
+    },
+    {
+      "url": "345-bing-crosby-i-wish-you-a-merry-christmas",
+      "databaseId": 345,
+      "status": "historical-id",
+      "previousArtist": "Bing Crosby",
+      "previousSong": "I Wish You A Merry Christmas",
+      "artist": "Bing Crosby",
+      "song": "I Wish You A Merry Christmas"
+    },
+    {
+      "url": "254-the-crystals-rudolph-the-red-nosed-reindeer",
+      "databaseId": 254,
+      "status": "artist-title",
+      "previousArtist": "The Crystals",
+      "previousSong": "Rudolph The Red Nosed Reindeer",
+      "artist": "The Crystals",
+      "song": "Rudolph The Red-Nosed Reindeer"
+    },
+    {
+      "url": "37-37",
+      "databaseId": 37,
+      "status": "historical-id",
+      "previousArtist": "37",
+      "previousSong": "37",
+      "artist": "Johnny Mathis",
+      "song": "When a Child Is Born"
+    },
+    {
+      "url": "57-57",
+      "databaseId": 57,
+      "status": "historical-id",
+      "previousArtist": "57",
+      "previousSong": "57",
+      "artist": "Cliff Richard",
+      "song": "Mistletoe And Wine"
+    },
+    {
+      "url": "12-12",
+      "databaseId": 12,
+      "status": "historical-id",
+      "previousArtist": "12",
+      "previousSong": "12",
+      "artist": "Pogues",
+      "song": "Fairytale of New York"
+    },
+    {
+      "url": "67-67",
+      "databaseId": 67,
+      "status": "historical-id",
+      "previousArtist": "67",
+      "previousSong": "67",
+      "artist": "Bing Crosby",
+      "song": "White Christmas"
+    },
+    {
+      "url": "403-403",
+      "databaseId": 403,
+      "status": "historical-id",
+      "previousArtist": "403",
+      "previousSong": "403",
+      "artist": "Boney M",
+      "song": "Mary's Boy Child / Oh My Lord"
+    },
+    {
+      "url": "277-277",
+      "databaseId": 277,
+      "status": "historical-id",
+      "previousArtist": "277",
+      "previousSong": "277",
+      "artist": "Bing Crosby",
+      "song": "Silver Bells"
+    },
+    {
+      "url": "376-376",
+      "databaseId": 376,
+      "status": "historical-id",
+      "previousArtist": "376",
+      "previousSong": "376",
+      "artist": "Frank Sinatra",
+      "song": "Have Yourself A Merry Little Christmas"
+    },
+    {
+      "url": "76-76",
+      "databaseId": 76,
+      "status": "historical-id",
+      "previousArtist": "76",
+      "previousSong": "76",
+      "artist": "Andy Williams",
+      "song": "It's The Most Wonderful Time Of The Year"
+    },
+    {
+      "url": "456-456",
+      "databaseId": 456,
+      "status": "historical-id",
+      "previousArtist": "456",
+      "previousSong": "456",
+      "artist": "Levi Roots",
+      "song": "Reggae Reggae Christmas"
+    }
+  ]
+}

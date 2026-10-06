@@ -1,2 +1,3 @@
 - [Design direction](design-direction.md) — User wants the richer North Pole appearance of the supplied Base44 reference.
 - [Portable package locks](portable-package-locks.md) — Check dependency download URLs stay accessible to Vercel after package changes.
+- [Music catalogue scope](music-catalogue.md) — Include all supplied database songs; the user will decide removals later.

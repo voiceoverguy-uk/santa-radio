@@ -1,18 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import songsData from '../data/songs.json';
+import findSong from '../data/findSong';
 import './KaraokeLyrics.css';
-
-function findSong(rawSlug) {
-  const slug = rawSlug.replace(/[?&#]/g, '');
-  const exactMatch = songsData.find(s => `${s.id}-${s.link}` === slug);
-  if (exactMatch) return exactMatch;
-  if (/^\d+$/.test(slug)) {
-    return songsData.find(s => s.id === parseInt(slug, 10));
-  }
-  const slugPart = slug.replace(/^\d+-/, '');
-  return songsData.find(s => s.link === slugPart);
-}
 
 export default function KaraokeLyrics() {
   const { slug } = useParams();

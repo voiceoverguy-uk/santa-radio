@@ -1,19 +1,8 @@
 import { useParams, Link } from 'react-router-dom';
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import songsData from '../data/songs.json';
+import findSong from '../data/findSong';
 import './SongDetail.css';
-
-function findSong(rawSlug) {
-  const slug = rawSlug.replace(/[?&#]/g, '');
-  const exactMatch = songsData.find(s => `${s.id}-${s.link}` === slug);
-  if (exactMatch) return exactMatch;
-  if (/^\d+$/.test(slug)) {
-    return songsData.find(s => s.id === parseInt(slug, 10));
-  }
-  const slugPart = slug.replace(/^\d+-/, '');
-  return songsData.find(s => s.link === slugPart);
-}
 
 export default function SongDetail() {
   const { slug } = useParams();
@@ -101,6 +90,7 @@ export default function SongDetail() {
                 <p>{song.info || `Listen to "${song.song}" by ${song.artist} on Santa Radio, the UK's favourite Christmas radio station. Enjoy this festive classic along with hundreds of other Christmas songs, all year round.`}</p>
               </div>
 
+              {!song.lyrics && <p>Lyrics for this song are not yet available.</p>}
               {song.lyrics && (
                 <div className="song-lyrics-section">
                   <button
