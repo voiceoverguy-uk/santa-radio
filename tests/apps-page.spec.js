@@ -1,10 +1,13 @@
 import { test, expect } from '@playwright/test';
 
-test('Apps has seven complete sections, real local images and app-specific downloads', async ({ page }) => {
+test('Apps has six complete sections, real local images and app-specific downloads', async ({ page }) => {
   await page.goto('/apps');
-  const titles = ['Santa Radio App', 'Santa Voicemail', 'Santa Messages', 'Christmas Radio', 'Sleeps til Santa', 'Santa Text', 'Santa Dash'];
-  const ids = ['1021183593', '586387813', '1062532143', '1157967613', '949843943', '1024535991', '1057048397'];
-  const amazon = ['B0158MYRBM', 'B00QFP4B18', 'B019MRFDDK', 'B01M18XUXV', 'B00R2PU0BA'];
+  const titles = ['Santa Radio App', 'Santa Voicemail', 'Santa Messages', 'Christmas Radio', 'Santa Text', 'Santa Dash'];
+  const ids = ['1021183593', '586387813', '1062532143', '1157967613', '1024535991', '1057048397'];
+  const amazon = ['B0158MYRBM', 'B00QFP4B18', 'B019MRFDDK', 'B01M18XUXV'];
+  await expect(page.locator('.app-section')).toHaveCount(6);
+  await expect(page.getByRole('heading', { name: 'Sleeps til Santa', exact: true })).toHaveCount(0);
+  await expect(page.locator('a[href*="949843943"], a[href*="B00R2PU0BA"]')).toHaveCount(0);
   for (let i = 0; i < titles.length; i++) {
     const section = page.locator('section').filter({ has: page.getByRole('heading', { name: titles[i], exact: true }) });
     await expect(section).toHaveCount(1);

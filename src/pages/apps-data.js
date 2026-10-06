@@ -2,7 +2,6 @@ import santaRadio from '../assets/apps/santa-radio.jpg';
 import santaVoicemail from '../assets/apps/santa-voicemail.png';
 import santaMessages from '../assets/apps/santa-messages.png';
 import christmasRadio from '../assets/apps/christmas-radio.png';
-import sleepsTilSanta from '../assets/apps/sleeps-til-santa.png';
 import santaText from '../assets/apps/santa-text.png';
 import santaDash from '../assets/apps/santa-dash.png';
 
@@ -90,27 +89,6 @@ export const christmasApps = [
       feature('Send a message', 'Send a message from the app and Santa will reply in 24 hours.', '\ue01e'),
       feature('100% FREE', "It's 100% free to download\nand totally commercial free.", '\ue02f'),
       feature('Background player', 'Save battery life. The app can play\nthe music in the background.', '\ue010'),
-    ],
-  },
-  {
-    id: 'sleepstilsanta',
-    title: 'Sleeps til Santa',
-    subtitle: 'How many sleeps til Santa?',
-    image: sleepsTilSanta,
-    alt: 'Sleeps til Santa app showing the Christmas countdown and Santa’s face.',
-    width: 750,
-    height: 1334,
-    downloads: downloads(
-      'https://itunes.apple.com/gb/app/sleeps-to-santa/id949843943',
-      'https://www.amazon.co.uk/App-Style-Ltd-Sleeps-Santa/dp/B00R2PU0BA',
-    ),
-    features: [
-      feature('Sleeps to go', 'The app shows how many sleeps\nthere are til Santa will arrive.', '\ue075'),
-      feature('Share on Facebook', 'Share how many sleeps on\nyour facebook page.', '\ue00b'),
-      feature('Catchy Tune', "Play the Sleeps to Santa song,\njust press Santa's Face.", '\ue071'),
-      feature('Share on Twitter', 'Share how many sleeps to go on\nyour twitter page.', '\ue009'),
-      feature('See the lyrics', 'See the lyrics to his song and\na sing a long with Santa.', '\ue030'),
-      feature('100% FREE', "It's 100% free with\nno silly irrelevant adverts.", '\ue02f'),
     ],
   },
   {

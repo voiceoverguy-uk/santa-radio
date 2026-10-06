@@ -4,3 +4,4 @@
 - [Music catalogue scope](music-catalogue.md) — Include all supplied database songs; the user will decide removals later.
 - [Legacy export encoding](legacy-export-encoding.md) — Verify Windows-1252 smart punctuation handling in this Node environment.
 - [Mugshot editorial policy](mugshot-editorial-policy.md) — Preserve details when consolidating duplicates; user supplies researched biography replacements.
+- [Apps availability](apps-availability.md) — Keep Sleeps til Santa off the Apps page until the user requests its return.
