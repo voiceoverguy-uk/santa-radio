@@ -29,9 +29,39 @@
 
 .mugshot-detail-card {
   display: flex;
+  flex-wrap: wrap;
   gap: 32px;
   align-items: flex-start;
 }
+
+.mugshot-profile-nav {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  order: 3;
+  border-top: 1px solid rgba(240, 208, 96, 0.12);
+  padding-top: 4px;
+  margin-top: -12px;
+}
+
+.mugshot-neighbour {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 4px;
+  color: var(--gold-light, #f0d060);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.mugshot-neighbour-next { text-align: right; }
+.mugshot-nav-label { font-size: 0.8rem; }
+.mugshot-neighbour[aria-disabled="true"] { opacity: 0.5; }
+.mugshot-neighbour[href]:hover {
+  color: white;
+  text-decoration: underline;
+}
+.mugshot-detail-name:focus { outline: none; }
 
 .mugshot-detail-photo {
   width: 300px;

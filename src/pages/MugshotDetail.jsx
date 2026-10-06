@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { useEffect, useRef } from 'react';
 import Portrait from '../components/Portrait.jsx';
 import mugshotsData, { mugshotAliases } from '../data/mugshots.ts';
 import './MugshotDetail.css';
@@ -8,6 +9,19 @@ import './MugshotPhoto.css';
 export default function MugshotDetail() {
   const { slug } = useParams();
   const celeb = mugshotsData.find(m => m.song === mugshotAliases[slug]);
+  const index = mugshotsData.indexOf(celeb);
+  const previous = index > 0 ? mugshotsData[index - 1] : null;
+  const next = index >= 0 ? mugshotsData[index + 1] : null;
+  const heading = useRef(null);
+  const lastSlug = useRef(slug);
+
+  useEffect(() => {
+    if (lastSlug.current !== slug) {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      heading.current?.focus({ preventScroll: true });
+      lastSlug.current = slug;
+    }
+  }, [slug]);
 
   if (!celeb) {
     return (
@@ -17,7 +31,7 @@ export default function MugshotDetail() {
         </Helmet>
         <div className="mugshot-detail-page starry-bg">
           <div className="container mugshot-detail-content">
-            <h1>Celebrity Not Found</h1>
+            <h1 ref={heading} tabIndex={-1}>Celebrity Not Found</h1>
             <p>Sorry, we couldn't find that celebrity mugshot.</p>
             <Link to="/mugshots/all" className="back-link">← Back to all Mug Shots</Link>
           </div>
@@ -77,6 +91,28 @@ export default function MugshotDetail() {
             <Link to="/">Home</Link> &rsaquo; <Link to="/mugshots/all">Mug Shots</Link> &rsaquo; <span>{celeb.artist}</span>
           </nav>
           <div className="mugshot-detail-card">
+          <nav className="mugshot-profile-nav" aria-label="Browse Mugshots">
+            {[
+              { profile: previous, label: 'Previous', direction: 'previous', arrow: '←' },
+              { profile: next, label: 'Next', direction: 'next', arrow: '→' },
+            ].map(({ profile, label, direction, arrow }) => {
+              const content = <>
+                <span className="mugshot-nav-label">
+                  {direction === 'previous' && <span aria-hidden="true">{arrow} </span>}
+                  {label}
+                  {direction === 'next' && <span aria-hidden="true"> {arrow}</span>}
+                </span>
+              </>;
+              return profile ? (
+                <Link key={direction} className={`mugshot-neighbour mugshot-neighbour-${direction}`}
+                  to={`/mugshots/${profile.song}`} rel={direction === 'previous' ? 'prev' : 'next'}
+                  title={profile.artist} aria-label={`${label} Mugshot: ${profile.artist}`}>{content}</Link>
+              ) : (
+                <span key={direction} className={`mugshot-neighbour mugshot-neighbour-${direction}`}
+                  aria-disabled="true">{content}</span>
+              );
+            })}
+          </nav>
             <figure className="mugshot-detail-figure">
               <div className="mugshot-photo-frame">
                 <Portrait
@@ -89,7 +125,7 @@ export default function MugshotDetail() {
               {credit && <figcaption className="mugshot-photo-credit">Photo credit: {credit}</figcaption>}
             </figure>
             <div className="mugshot-detail-info">
-              <h1 className="mugshot-detail-name">{celeb.artist}</h1>
+              <h1 ref={heading} tabIndex={-1} className="mugshot-detail-name">{celeb.artist}</h1>
               {celeb.link && <p className="mugshot-detail-role">{celeb.link}</p>}
               <p className="mugshot-detail-desc">
                 {biography || `${celeb.artist} posing with the iconic Santa Radio mug as part of our Celebrity Mug Shots Hall of Fame!`}

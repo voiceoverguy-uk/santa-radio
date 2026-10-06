@@ -1,30 +1,52 @@
 import { Helmet } from 'react-helmet-async';
+import { christmasApps } from './apps-data.js';
 import './Apps.css';
 
-function AppSection({ title, subtitle, imgSrc, features }) {
+function AppSection({ app }) {
   return (
-    <section className="app-section section-white">
-      <div className="container">
-        <h2 className="app-section-title">{title}</h2>
-        {subtitle && <p className="app-section-sub">{subtitle}</p>}
-        <div className="app-download-btns">
-          <a href="https://apps.apple.com/gb/app/santa-radio/id1021183593" target="_blank" rel="noopener noreferrer" className="btn-red app-dl-btn">
-            Download on iOS
-          </a>
-          <a href="https://www.amazon.co.uk/gp/product/B013KHIIMM" target="_blank" rel="noopener noreferrer" className="btn-red app-dl-btn">
-            Download on Amazon
-          </a>
+    <section id={app.id} className="app-section" aria-labelledby={`${app.id}-title`}>
+      <div className="apps-container">
+        <div className="app-section-heading">
+          <h2 id={`${app.id}-title`} className="app-section-title">{app.title}</h2>
+          {app.subtitle && <p className="app-section-sub">{app.subtitle}</p>}
+          <div className="app-download-btns">
+            {app.downloads.map(({ platform, href }) => (
+              <a
+                key={platform}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="app-dl-btn"
+                aria-label={`Download ${app.title} on ${platform} (opens in a new tab)`}
+              >
+                Download on {platform}
+              </a>
+            ))}
+          </div>
+          <hr className="app-heading-rule" />
         </div>
-        <div className="app-layout">
+        <div className={`app-layout${app.landscape ? ' app-layout-landscape' : ''}`}>
           <div className="app-phone-wrap">
-            <img src={imgSrc} alt={title} className="app-phone-img" />
+            <div className="app-device">
+              <div className="app-device-screen">
+                <img
+                  src={app.image}
+                  alt={app.alt}
+                  className="app-phone-img"
+                  width={app.width}
+                  height={app.height}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
           </div>
           <div className="app-features-grid">
-            {features.map((f, index) => (
-              <div key={f.label} className="feature-item">
-                <div className="feature-icon" aria-hidden="true">{String(index + 1).padStart(2, '0')}</div>
-                <h4 className="feature-label">{f.label}</h4>
-                <p className="feature-desc">{f.desc}</p>
+            {app.features.map(({ label, desc, icon }) => (
+              <div key={label} className="feature-item">
+                <span className="feature-icon" aria-hidden="true">{icon}</span>
+                <h3 className="feature-label">{label}</h3>
+                <p className="feature-desc">{desc}</p>
               </div>
             ))}
           </div>
@@ -34,71 +56,26 @@ function AppSection({ title, subtitle, imgSrc, features }) {
   );
 }
 
-const RADIO_FEATURES = [
-  { label: 'Leave a message', desc: 'Your child can leave a FREE voicemail message for Santa.' },
-  { label: 'Playback', desc: "Playback your Child's message to hear what they asked Santa." },
-  { label: 'Santa Soundboard', desc: 'Head Elf recorded Santa. Play back some fun festive phrases.' },
-  { label: 'Send a message', desc: 'Send a message to Santa and read other messages & replies.' },
-  { label: '100% FREE', desc: "It's 100% free with none of those annoying adverts." },
-  { label: 'Santa Radio', desc: 'You can also listen and enjoy Santa Radio direct from the app.' },
-];
-
-const VOICEMAIL_FEATURES = [
-  { label: 'Leave a message', desc: 'Your child can leave a FREE voicemail message for Santa.' },
-  { label: 'Playback', desc: "Playback your Child's message to hear what they asked Santa." },
-  { label: 'Santa Soundboard', desc: 'Head Elf recorded Santa. Play back some fun festive phrases.' },
-  { label: 'Send a message', desc: 'Send a message to Santa and read other messages & replies.' },
-  { label: '100% FREE', desc: "It's 100% free with none of those annoying adverts." },
-  { label: 'Santa Radio', desc: 'You can also listen and enjoy Santa Radio direct from the app.' },
-];
-
-const MESSAGES_FEATURES = [
-  { label: "Find your child's name", desc: 'Santa will then play a personal message for your child.' },
-  { label: 'Share your message', desc: "Share your child's message on social media or by email." },
-  { label: '100% FREE', desc: "It's 100% free with none of those annoying adverts." },
-  { label: 'Santa Radio', desc: 'You can also listen and enjoy Santa Radio direct from the app.' },
-];
-
-const PHONE_PLACEHOLDER = '/images/santa-radio-logo.png';
-
 export default function Apps() {
   return (
-    <main>
+    <main className="apps-page">
       <Helmet>
-        <title>Free Christmas Apps {'\u2013'} Santa Radio</title>
+        <title>Free Christmas Apps – Santa Radio</title>
         <meta name="description" content="Download our amazing free Christmas apps featuring Santa / Father Christmas. Available on iOS and Amazon." />
       </Helmet>
-      <div className="apps-hero starry-bg">
+      <div className="apps-hero">
         <div className="apps-hero-content">
-          <h1 className="hero-title-app"><img className="brand-logo brand-logo-hero" src="/images/santa-radio-logo.png" alt="Santa Radio" width="827" height="190" /></h1>
-          <h2 className="apps-hero-sub">Free Christmas Apps</h2>
+          <img className="apps-hero-logo" src="/images/santa-radio-logo.png" alt="Santa Radio" width="827" height="190" />
+          <h1 className="apps-hero-title">Free Christmas Apps</h1>
           <p className="apps-hero-desc">Download our amazing apps featuring Santa / Father Christmas.</p>
         </div>
       </div>
-
-      <AppSection
-        title="Santa Radio App"
-        imgSrc={PHONE_PLACEHOLDER}
-        features={RADIO_FEATURES}
-      />
-
-      <div className="apps-divider" />
-
-      <AppSection
-        title="Santa Voicemail"
-        subtitle="Leave Santa a voicemail message."
-        imgSrc={PHONE_PLACEHOLDER}
-        features={VOICEMAIL_FEATURES}
-      />
-
-      <div className="apps-divider" />
-
-      <AppSection
-        title="Santa Messages"
-        subtitle="Santa has a personal message just for your child."
-        imgSrc={PHONE_PLACEHOLDER}
-        features={MESSAGES_FEATURES}
-      />
+      {christmasApps.map((app, index) => (
+        <div key={app.id}>
+          {index > 0 && <div className="apps-divider" aria-hidden="true" />}
+          <AppSection app={app} />
+        </div>
+      ))}
     </main>
   );
 }

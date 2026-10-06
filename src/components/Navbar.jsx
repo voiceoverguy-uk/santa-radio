@@ -25,7 +25,7 @@ export default function Navbar() {
   const links = [
     { to: '/', label: 'Home' }, { to: '/apps', label: 'Apps' },
     { to: '/free-santa-message', label: 'Santa Messages' }, { to: '/christmas-music', label: 'Music' },
-    { to: '/mugshots/all', label: 'Mug Shots' }, { to: '/santa-stories', label: 'Santa Stories' },
+    { to: '/mugshots/all', label: 'Mug Shots' },
   ];
   return (
     <nav className={`navbar ${scrolled || location.pathname !== '/' ? 'solid' : ''}`} aria-label="Main navigation">
@@ -34,7 +34,6 @@ export default function Navbar() {
         <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-controls="main-menu" aria-label={menuOpen ? 'Close menu' : 'Open menu'}><span /><span /><span /></button>
         <ul id="main-menu" className={`navbar-links ${menuOpen ? 'open' : ''}`}>
           {links.map(link => <li key={link.to}><Link to={link.to} aria-current={location.pathname === link.to ? 'page' : undefined} className={location.pathname === link.to ? 'active' : ''} onClick={() => setMenuOpen(false)}>{link.label}</Link></li>)}
-          <li><a href="https://www.santaradio.co.uk/personalised-santa-video.php" target="_blank" rel="noopener noreferrer">Santa Video</a></li>
           <li><button className="effects-toggle" aria-pressed={effects} onClick={() => setEffects(!effects)}>Effects {effects ? 'On' : 'Off'}</button></li>
           <li className="nav-listen"><RadioButton className="btn-red" /></li>
         </ul>

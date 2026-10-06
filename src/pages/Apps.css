@@ -1,131 +1,275 @@
-.apps-hero {
-  text-align: center;
-  padding: 60px 20px 80px;
-  position: relative;
+@import url('https://fonts.googleapis.com/css2?family=Catamaran:wght@200;300;400&family=Mulish:wght@400&family=Patrick+Hand&display=swap');
+
+@font-face {
+  font-family: 'Apps Line Icons';
+  src: url('../assets/apps/simple-line-icons.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
 }
 
-.apps-hero-content {
+/* Keep the restored live-page body independent of the shared North Pole theme. */
+#page-content > main.apps-page {
+  min-height: 100dvh;
+  padding-top: 85px;
+  background: #faf8f8;
+  color: #333;
+  font-family: 'Mulish', sans-serif;
+}
+
+.apps-page .apps-hero {
+  position: relative;
+  padding: 44px 20px 50px;
+  border: 0;
+  text-align: center;
+  background: #063350 url('../assets/apps/snowy-blue.jpg') center / cover;
+  background-attachment: fixed;
+}
+
+.apps-page .apps-hero-content {
   position: relative;
   z-index: 1;
 }
 
-.hero-title-app {
-  font-family: 'Dancing Script', cursive;
-  font-size: clamp(3rem, 8vw, 4.5rem);
-  font-weight: 700;
-  margin-bottom: 12px;
-  line-height: 1;
+.apps-page .apps-hero-logo {
+  display: block;
+  width: 384px;
+  max-width: 85%;
+  height: auto;
+  margin: 0 auto 20px;
 }
 
-.apps-hero-sub {
-  font-family: 'Cinzel', serif;
-  font-size: 1.6rem;
-  color: white;
-  margin-bottom: 8px;
+.apps-page .apps-hero-title {
+  margin: 0 0 12px;
+  color: #faf8f8;
+  font: 200 36px/1.1 'Catamaran', sans-serif;
+  letter-spacing: 1px;
 }
 
-.apps-hero-desc {
-  color: rgba(255,255,255,0.7);
-  font-size: 0.95rem;
-}
-
-.app-section {
-  padding: 60px 20px;
-}
-
-.app-section-title {
-  text-align: center;
-  font-family: 'Cinzel', serif;
-  font-size: 1.8rem;
-  color: #222;
-  margin-bottom: 6px;
-}
-
-.app-section-sub {
-  text-align: center;
-  color: #666;
-  margin-bottom: 20px;
-  font-size: 0.95rem;
-}
-
-.app-download-btns {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-bottom: 36px;
-}
-
-.app-dl-btn {
-  font-family: 'Dancing Script', cursive;
-  font-size: 1.1rem;
-  padding: 12px 28px;
-  text-decoration: none;
-  display: inline-block;
-  position: relative;
-}
-
-.app-layout {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 40px;
-  max-width: 900px;
-  margin: 0 auto;
-  align-items: start;
-}
-
-.app-phone-wrap {
-  display: flex;
-  justify-content: center;
-}
-
-.app-phone-img {
-  max-width: 200px;
-  border-radius: 24px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-}
-
-.app-features-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-}
-
-.feature-item {
-  text-align: center;
-  padding: 8px;
-}
-
-.feature-icon {
-  font-size: 2rem;
-  margin-bottom: 8px;
-}
-
-.feature-label {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #222;
-  margin-bottom: 4px;
-}
-
-.feature-desc {
-  font-size: 0.82rem;
-  color: #666;
+.apps-page .apps-hero-desc {
+  margin: 0 auto 20px;
+  color: #8c9196;
+  font-size: 18px;
   line-height: 1.5;
 }
 
-.apps-divider {
-  height: 1px;
-  background: #e5e5e5;
-  max-width: 600px;
+.apps-page .app-section {
+  padding: 70px 0 80px;
+  background: #faf8f8;
+}
+
+.apps-page .apps-container {
+  width: 100%;
+  max-width: 1170px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.apps-page .app-section-heading {
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.apps-page .app-section-title {
+  margin: 0 0 10px;
+  color: #333;
+  font: 200 50px/1.1 'Catamaran', sans-serif;
+  letter-spacing: 1px;
+}
+
+.apps-page .app-section-sub {
+  margin: 0;
+  color: #777;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.apps-page .app-download-btns {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  margin: 32px 0 0;
+}
+
+.apps-page .app-dl-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 100px;
+  padding: 22px 33px;
+  border: 1px solid #4c0300;
+  border-radius: 15px;
+  color: #fff8f5;
+  background: #5e0d0c;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,.25),
+    inset 0 0 6px #a23227, inset 0 80px 80px -40px #ac3223,
+    1px 1px 3px rgba(0,0,0,.75);
+  font-family: 'Patrick Hand', cursive;
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 26px;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+  text-shadow: 0 1px 2px rgba(0,0,0,.75);
+  transition: transform .2s ease;
+}
+
+.apps-page .app-dl-btn::before {
+  content: '';
+  display: block;
+  position: absolute;
+  top: -7px;
+  left: -3px;
+  right: 0;
+  height: 23px;
+  pointer-events: none;
+  background: url('../assets/apps/button-snow-1.png') no-repeat left top,
+    url('../assets/apps/button-snow-2.png') no-repeat center top,
+    url('../assets/apps/button-snow-3.png') no-repeat right top;
+}
+
+.apps-page .app-dl-btn:hover {
+  transform: translateY(-2px);
+  color: #fff8f5;
+  border-color: #4c0300;
+}
+
+.apps-page .app-dl-btn:focus-visible {
+  outline: 3px solid #165678;
+  outline-offset: 6px;
+}
+
+.apps-page .app-heading-rule {
+  max-width: 100px;
+  margin: 25px auto 0;
+  border: 0;
+  border-top: 1px solid #ddd;
+}
+
+.apps-page .app-layout {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  align-items: start;
+  gap: 30px;
+  max-width: none;
+  margin: 0;
+}
+
+.apps-page .app-phone-wrap {
+  width: 100%;
+  max-width: 360px;
   margin: 0 auto;
 }
 
-@media (max-width: 768px) {
-  .app-layout {
-    grid-template-columns: 1fr;
-  }
-  .app-features-grid {
-    grid-template-columns: 1fr 1fr;
-  }
+.apps-page .app-device {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1248 / 2518;
+  background: url('../assets/apps/phone-portrait.png') center / 100% 100% no-repeat;
+}
+
+.apps-page .app-device-screen {
+  position: absolute;
+  inset: 11.58% 5.97%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #111;
+}
+
+.apps-page .app-phone-img {
+  display: block;
+  width: 100%;
+  max-width: none;
+  height: auto;
+  border-radius: 0;
+  box-shadow: none;
+  object-fit: contain;
+}
+
+.apps-page .app-features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 25px 30px;
+}
+
+.apps-page .feature-item {
+  padding: 0 10px;
+  text-align: center;
+}
+
+.apps-page .feature-icon {
+  display: inline-block;
+  margin: 0 0 12px;
+  font: normal 80px/1 'Apps Line Icons';
+  color: #bd2b54;
+  background: linear-gradient(to left, #7b4397, #dc2430);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.apps-page .feature-label {
+  margin: 0 0 10px;
+  color: #333;
+  font: 200 30px/1.1 'Catamaran', sans-serif;
+  letter-spacing: 1px;
+}
+
+.apps-page .feature-desc {
+  margin: 0;
+  color: #777;
+  font-size: 18px;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+.apps-page .apps-divider {
+  height: 1px;
+  max-width: 100px;
+  margin: 0 auto;
+  background: #ddd;
+}
+
+.apps-page .app-layout-landscape {
+  grid-template-columns: 1fr;
+  gap: 30px;
+}
+
+.apps-page .app-layout-landscape .app-phone-wrap {
+  max-width: 700px;
+}
+
+.apps-page .app-layout-landscape .app-device {
+  aspect-ratio: 2518 / 1248;
+  background-image: url('../assets/apps/phone-landscape.png');
+}
+
+.apps-page .app-layout-landscape .app-device-screen {
+  inset: 5.97% 11.58% 5.97% 11.38%;
+}
+
+@media (max-width: 991px) {
+  .apps-page .apps-container { max-width: 750px; }
+  .apps-page .app-layout { grid-template-columns: 1fr; gap: 55px; }
+  .apps-page .app-phone-wrap { max-width: 300px; }
+}
+
+@media (max-width: 767px) {
+  .apps-page .apps-hero { padding: 38px 18px 35px; background-attachment: scroll; background-position: center top; background-size: auto 100dvh; }
+  .apps-page .apps-hero-title { font-size: 32px; }
+  .apps-page .app-section { padding: 55px 0 60px; }
+  .apps-page .app-section-title { font-size: 42px; }
+  .apps-page .app-section-sub { padding-inline: 8px; }
+  .apps-page .app-download-btns { flex-direction: column; gap: 22px; }
+  .apps-page .app-dl-btn { max-width: 100%; padding: 20px 25px; font-size: 24px; }
+  .apps-page .app-features-grid { grid-template-columns: 1fr; gap: 38px; }
+  .apps-page .feature-item { max-width: 340px; margin: 0 auto; }
+  .apps-page .feature-label { font-size: 28px; }
+  .apps-page .feature-desc { font-size: 17px; }
 }
