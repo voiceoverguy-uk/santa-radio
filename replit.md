@@ -37,7 +37,7 @@ A faithful React + Vite rebuild of www.santaradio.co.uk — The World's Best Chr
 - `src/components/AudioPlayer.jsx` — persistent compact radio dock and shared hero/navigation controls
 - `src/components/Countdown.jsx` — live Christmas Day countdown timer
 - `src/components/SantaMessageForm.jsx` — message availability disclosure and real email contact; no fake submission or download
-- `src/components/Soundboard.jsx` — 16 interactive festive phrase previews, clearly labelled as device text-to-speech rather than original recordings
+- `src/components/Soundboard.jsx` — 12 original Santa recordings with play/stop controls
 - `src/components/YouTubeSection.jsx` — click-to-load YouTube live stream with direct-channel fallback
 - `src/components/MugshotsPreview.jsx` — 4-celeb preview grid on home page
 - `src/components/ContactSection.jsx` — forest-green contact section with real email link
@@ -103,7 +103,7 @@ The audio player targets the user-supplied `https://global.citrus3.com:8164/` en
 
 ## Notes
 
-- Soundboard preserves browser text-to-speech previews with play/stop controls and an explicit disclosure that these are not original Santa recordings.
+- Soundboard plays user-supplied MP3 files from `public/audio/soundboard/`. Only one clip plays at a time; playback stops on navigation. No text-to-speech fallback.
 - Celebrity mugshot photos are served locally from `/mugshot-images/`; fallback initials shown on error
 - Santa Message service has no backend. The UI explicitly discloses unavailable requests/downloads and never claims a successful submission; email contact remains available.
 - Twitter widget is not included (requires auth)

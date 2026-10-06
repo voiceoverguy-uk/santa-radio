@@ -74,8 +74,12 @@ test('radio shares one audio instance across navigation, supports volume, errors
 
 test('all primary routes render and the soundboard retains working controls', async ({ page }) => {
   await page.addInitScript(() => {
-    window.speechSynthesis.speak = utterance => { window.spokenText = utterance.text; };
-    window.speechSynthesis.cancel = () => {};
+    const NativeAudio = window.Audio;
+    window.Audio = function (src) {
+      const audio = new NativeAudio(src);
+      window.lastSoundboardAudio = audio;
+      return audio;
+    };
   });
   for (const path of ['/apps', '/christmas-music', '/free-santa-message', '/santa-stories', '/submit-a-song', '/links']) {
     await page.goto(path);
@@ -86,7 +90,9 @@ test('all primary routes render and the soundboard retains working controls', as
   const phrase = page.getByRole('button', { name: 'Cookies', exact: true });
   await phrase.click();
   await expect(phrase).toHaveAttribute('aria-pressed', 'true');
-  expect(await page.evaluate(() => window.spokenText)).toContain('I love cookies');
+  await page.waitForFunction(() => window.lastSoundboardAudio?.currentTime > 0);
+  expect(await page.evaluate(() => window.lastSoundboardAudio.src)).toContain('/audio/soundboard/cookies.mp3');
   await phrase.click();
   await expect(phrase).toHaveAttribute('aria-pressed', 'false');
+  expect(await page.evaluate(() => window.lastSoundboardAudio.paused)).toBe(true);
 });
