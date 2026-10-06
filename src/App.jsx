@@ -10,6 +10,7 @@ import SongDetail from './pages/SongDetail.jsx';
 import KaraokeLyrics from './pages/KaraokeLyrics.jsx';
 import FreeSantaMessage from './pages/FreeSantaMessage.jsx';
 import SubmitASong from './pages/SubmitASong.jsx';
+import PrivacyPolicy from './pages/PrivacyPolicy.jsx';
 import Links from './pages/Links.jsx';
 import SantaStories from './pages/SantaStories.jsx';
 import ArtistDetail from './pages/ArtistDetail.jsx';
@@ -25,6 +26,7 @@ function App() {
       <div id="page-content" tabIndex={-1}><Routes>
         <Route path="/" element={<Home />} />
         <Route path="/apps" element={<Apps />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/christmas-music" element={<Music />} />
         <Route path="/mugshots/all" element={<MugShots />} />
         <Route path="/mugshots/:slug" element={<MugshotDetail />} />

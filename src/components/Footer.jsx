@@ -25,7 +25,7 @@ export default function Footer() {
         <span>&middot;</span>
         <Link to="/links">Links</Link>
         <span>&middot;</span>
-        <a href="mailto:santa@santaradio.co.uk?subject=Privacy%20enquiry">Privacy enquiries</a>
+        <Link to="/privacy-policy">Privacy Policy</Link>
         <span>&middot;</span>
         <a href="https://tunein.com/search/?query=Santa%20Radio" target="_blank" rel="noopener noreferrer">TuneIn</a>
         <span>&middot;</span>

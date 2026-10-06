@@ -6,3 +6,4 @@
 - [Mugshot editorial policy](mugshot-editorial-policy.md) — Preserve details when consolidating duplicates; user supplies researched biography replacements.
 - [Apps availability](apps-availability.md) — Keep Sleeps til Santa off the Apps page until the user requests its return.
 - [Music artwork](music-artwork.md) — Reuse supplied artist portraits across songs; Santa with music notes is the temporary fallback.
+- [Privacy scope](privacy-scope.md) — Keep the notice concise; future news signup is opt-in, with no delivery provider selected.
