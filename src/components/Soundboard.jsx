@@ -14,6 +14,14 @@ const PHRASES = [
   { label: 'Merry Christmas', file: 'merry-christmas' },
   { label: 'Naughty or Nice', file: 'naughty-or-nice' },
   { label: 'What Would You Like?', file: 'what-would-you-like' },
+  { label: 'Is Christmas Dinner Ready Yet?', file: 'christmas-dinner-ready' },
+  { label: 'Merry Kiss-Mas', file: 'merry-kiss-mas' },
+  { label: 'No', file: 'no' },
+  { label: 'Yes', file: 'yes' },
+  { label: 'Are You Ready for Christmas?', file: 'ready-for-christmas' },
+  { label: 'Proper Chrimbo', file: 'proper-chrimbo' },
+  { label: 'Goodbye', file: 'goodbye' },
+  { label: 'Ho Ho Ho', file: 'ho-ho-ho' },
 ];
 export default function Soundboard() {
   const [active, setActive] = useState(null);
