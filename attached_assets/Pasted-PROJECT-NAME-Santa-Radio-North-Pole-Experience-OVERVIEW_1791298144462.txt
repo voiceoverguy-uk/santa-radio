@@ -1,0 +1,515 @@
+PROJECT NAME
+
+Santa Radio - North Pole Experience
+
+OVERVIEW
+
+Build a premium Christmas platform that combines:
+
+• Santa Radio live stream • Membership platform • Personalised Santa messages • Customer dashboard • Subscription payments • Nice List certificates • Christmas content
+
+The website should feel like a magical North Pole experience rather than a traditional radio station.
+
+TARGET AUDIENCE
+
+Primary: Parents of children aged 2-12
+
+Secondary: Grandparents purchasing gifts
+
+Tertiary: Christmas enthusiasts
+
+PRIMARY BUSINESS GOAL
+
+Convert visitors into paid members of Santa's Personal Message Club.
+
+Membership price: £15 per family
+
+POSITIONING
+
+Santa Radio is the home of Christmas magic.
+
+Visitors should feel like they have arrived at Santa's workshop.
+
+BRAND PERSONALITY
+
+Warm Magical Premium Trustworthy Family friendly Professional
+
+Avoid: Cheap graphics Cartoon styling Overly childish design Bright flashing elements
+
+VISUAL STYLE
+
+Reference brands:
+
+Lapland UK Disney Christmas John Lewis Christmas campaigns
+
+COLOUR PALETTE
+
+Primary Red: #9B111E
+
+Forest Green: #1B4332
+
+Gold: #D4AF37
+
+Cream: #FFF8E7
+
+Snow White: #FFFFFF
+
+BACKGROUND EFFECTS
+
+Animated snowfall throughout website.
+
+Subtle particle effects.
+
+Occasional twinkling stars.
+
+Slow moving northern lights effect in hero section.
+
+Do not impact performance.
+
+TYPOGRAPHY
+
+Headings: Cinzel
+
+Body: Inter
+
+BUTTON STYLING
+
+Rounded corners.
+
+Soft shadows.
+
+Gold hover effects.
+
+Subtle scale animation.
+
+SITE STRUCTURE
+
+HOME
+
+LISTEN LIVE
+
+SANTA MESSAGES
+
+NICE LIST
+
+SANTA STORIES
+
+MEMBER LOGIN
+
+CONTACT
+
+HOME PAGE
+
+SECTION 1
+
+Full screen hero.
+
+Background:
+
+North Pole village at night.
+
+Snow falling.
+
+Warm lights glowing.
+
+Northern lights in sky.
+
+Headline:
+
+Welcome To The North Pole
+
+Subheadline:
+
+Listen live to Santa Radio and create personalised messages from Santa himself.
+
+Primary button:
+
+Join Santa's Personal Message Club
+
+Secondary button:
+
+Listen Live
+
+Include live radio player directly in hero.
+
+SECTION 2
+
+Countdown To Christmas
+
+Display:
+
+Days Hours Minutes Seconds
+
+Animated festive styling.
+
+SECTION 3
+
+How It Works
+
+Step 1
+
+Choose a message type
+
+Step 2
+
+Tell Santa about your child
+
+Step 3
+
+Receive personalised audio instantly
+
+SECTION 4
+
+Membership Benefits
+
+Unlimited personalised messages
+
+50+ message categories
+
+MP3 downloads
+
+New content every Christmas
+
+Family access
+
+Access until Christmas Day
+
+SECTION 5
+
+Example Audio Messages
+
+Embedded audio players.
+
+Sample recordings.
+
+SECTION 6
+
+Testimonials
+
+Parent reviews.
+
+Star ratings.
+
+Festive card design.
+
+SECTION 7
+
+Pricing
+
+One package only.
+
+Santa's Personal Message Club
+
+£15
+
+Large CTA.
+
+SECTION 8
+
+Footer
+
+Radio links
+
+Legal
+
+Privacy
+
+Contact
+
+Social media
+
+LISTEN LIVE PAGE
+
+Large radio player.
+
+Current song display.
+
+Now playing artwork.
+
+Volume controls.
+
+Share buttons.
+
+Recently played tracks.
+
+Christmas facts sidebar.
+
+SANTA MESSAGE PAGE
+
+Display all available categories.
+
+CATEGORY 1
+
+Christmas Countdown
+
+CATEGORY 2
+
+Christmas Eve
+
+CATEGORY 3
+
+Christmas Morning
+
+CATEGORY 4
+
+Good Behaviour
+
+CATEGORY 5
+
+School Achievement
+
+CATEGORY 6
+
+Sports Achievement
+
+CATEGORY 7
+
+Helping At Home
+
+CATEGORY 8
+
+Birthday
+
+CATEGORY 9
+
+Elf Reports
+
+CATEGORY 10
+
+Reindeer Updates
+
+Each category displayed as premium card.
+
+MESSAGE GENERATOR
+
+Fields:
+
+Child Name
+
+Age
+
+Town
+
+Favourite Hobby
+
+Favourite Animal
+
+Best Friend Name
+
+Achievement
+
+Personal Notes
+
+Generate Message Button
+
+SYSTEM BEHAVIOUR
+
+Generate personalised script.
+
+Create natural sounding Santa audio.
+
+Store audio in customer account.
+
+Allow download.
+
+Allow replay.
+
+MEMBERSHIP SYSTEM
+
+USER REGISTRATION
+
+Name
+
+Email
+
+Password
+
+Accept Terms
+
+Stripe Subscription
+
+PAYMENT SYSTEM
+
+Stripe integration.
+
+Product:
+
+Santa's Personal Message Club
+
+Price:
+
+£15
+
+One-off annual purchase.
+
+MEMBER DASHBOARD
+
+Welcome message.
+
+Recent messages.
+
+Generate new message button.
+
+Download history.
+
+Membership status.
+
+Profile settings.
+
+NICE LIST PAGE
+
+Generate personalised Nice List certificate.
+
+Fields:
+
+Child Name
+
+Town
+
+Year
+
+Certificate generated as PDF.
+
+Download available.
+
+Upsell for non-members.
+
+Free for members.
+
+SANTA STORIES PAGE
+
+Collection of Christmas stories.
+
+Audio player.
+
+Read along mode.
+
+Save favourites.
+
+ADMIN DASHBOARD
+
+ADMIN LOGIN
+
+Secure login.
+
+CONTENT MANAGEMENT
+
+Manage pages.
+
+Manage testimonials.
+
+Manage stories.
+
+Manage audio files.
+
+Manage message categories.
+
+CUSTOMER MANAGEMENT
+
+View members.
+
+View purchases.
+
+View subscription status.
+
+Export customers.
+
+ANALYTICS
+
+Total users.
+
+Total members.
+
+Revenue.
+
+Message generation count.
+
+Most popular message types.
+
+EMAIL AUTOMATION
+
+Welcome email.
+
+Purchase confirmation.
+
+Membership confirmation.
+
+Christmas Eve reminder.
+
+Christmas countdown emails.
+
+RECOVER ABANDONED CHECKOUTS
+
+Enabled.
+
+SEO REQUIREMENTS
+
+Generate schema markup.
+
+Fast loading pages.
+
+Dynamic metadata.
+
+Open Graph support.
+
+XML sitemap.
+
+Blog-ready architecture.
+
+MOBILE EXPERIENCE
+
+Mobile first.
+
+Large buttons.
+
+Fast loading.
+
+Persistent radio player.
+
+Smooth animations.
+
+PERFORMANCE REQUIREMENTS
+
+Page load under 2 seconds.
+
+Optimised images.
+
+Lazy loading.
+
+CDN support.
+
+Accessibility compliant.
+
+SECURITY
+
+SSL.
+
+Secure authentication.
+
+Rate limiting.
+
+Bot protection.
+
+GDPR compliant.
+
+COOKIE CONSENT
+
+Included.
+
+SUCCESS METRIC
+
+Primary KPI:
+
+Membership purchases.
+
+Secondary KPI:
+
+Email signups.
+
+Tertiary KPI:
+
+Radio listening hours.
+
+FINAL OBJECTIVE
+
+Create the UK's most magical Christmas platform that converts listeners into paying members while maintaining Santa Radio as the centre of the experience.

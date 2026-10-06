@@ -1,0 +1,1 @@
+- [Design direction](design-direction.md) — User wants the richer North Pole appearance of the supplied Base44 reference.
