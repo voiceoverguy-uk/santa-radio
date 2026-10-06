@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { christmasApps } from './apps-data.js';
+import AppIcon from './AppIcon.jsx';
 import './Apps.css';
 
 function AppSection({ app }) {
@@ -19,6 +20,7 @@ function AppSection({ app }) {
                 className="app-dl-btn"
                 aria-label={`Download ${app.title} on ${platform} (opens in a new tab)`}
               >
+                <AppIcon name="download" />
                 Download on {platform}
               </a>
             ))}
@@ -27,8 +29,6 @@ function AppSection({ app }) {
         </div>
         <div className={`app-layout${app.landscape ? ' app-layout-landscape' : ''}`}>
           <div className="app-phone-wrap">
-            <div className="app-device">
-              <div className="app-device-screen">
                 <img
                   src={app.image}
                   alt={app.alt}
@@ -38,13 +38,11 @@ function AppSection({ app }) {
                   loading="lazy"
                   decoding="async"
                 />
-              </div>
-            </div>
           </div>
           <div className="app-features-grid">
             {app.features.map(({ label, desc, icon }) => (
               <div key={label} className="feature-item">
-                <span className="feature-icon" aria-hidden="true">{icon}</span>
+                <span className="feature-icon" aria-hidden="true"><AppIcon name={icon} /></span>
                 <h3 className="feature-label">{label}</h3>
                 <p className="feature-desc">{desc}</p>
               </div>

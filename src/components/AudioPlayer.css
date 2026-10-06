@@ -10,6 +10,26 @@
 .is-loading .radio-caption { opacity: .65; }
 .radio-dock { max-height: calc(100dvh - 40px); overflow-y: auto; overscroll-behavior: contain; }
 .radio-station { min-width: 0; }
+.radio-station { padding-right: 36px; }
+.radio-size-toggle {
+  position: absolute; top: 6px; right: 8px; width: 44px; height: 44px;
+  display: grid; place-items: center; border: 0; border-radius: 50%;
+  background: transparent; color: var(--gold-light); cursor: pointer;
+}
+.radio-size-toggle:hover { background: #D4AF371a; }
+.radio-size-toggle:focus-visible { outline: 2px solid var(--gold-light); outline-offset: -3px; }
+.radio-dock.is-minimized {
+  width: 405px; padding: 10px 12px; grid-template-columns: minmax(0, 1fr) auto 36px;
+  gap: 8px; align-items: center;
+}
+.is-minimized .radio-station, .is-minimized .radio-dock-track,
+.is-minimized .radio-volume, .is-minimized .radio-upcoming { display: none; }
+.is-minimized .radio-size-toggle { top: 50%; right: 4px; transform: translateY(-50%); }
+.radio-mini-summary { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.radio-mini-track { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .7rem; color: var(--cream); }
+.radio-mini-error { font-size: .65rem; color: var(--cream); }
+.is-minimized .radio-play { padding: 8px 10px; min-height: 44px; font-size: .7rem; }
+@media (max-width: 600px) { .radio-dock.is-minimized { width: auto; } }
 .radio-dock-track { grid-column: 1 / -1; min-width: 0; padding-top: 10px; border-top: 1px solid #D4AF3726; }
 .radio-dock-track .radio-track-title { font-size: .8rem; }
 .radio-dock-track .radio-track-artist { font-size: .7rem; }
