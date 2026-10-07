@@ -19,3 +19,9 @@ The user’s radio automation uploads song metadata to the legacy Santa Radio we
 **Why:** The verified public metadata URLs use the same main domain as the website. Moving its DNS without preserving the feeds would make the metadata endpoint fetch the new website rather than the automation output.
 
 **How to apply:** Before a domain cutover, establish a stable HTTPS address for the legacy metadata host or preserve routing for the feed paths. Do not promise exact audio synchronization: broadcast metadata may lead a listener’s buffered stream.
+
+The automation's upcoming slots can include station announcements with an empty artist, not just songs.
+
+**Why:** A live feed contained ` - Santa Radio Free Message ID - VO` between two songs. Requiring an artist rejected the entire queue.
+
+**How to apply:** Preserve title-only announcement entries in broadcast order. Never promise that three upcoming slots always mean three songs.

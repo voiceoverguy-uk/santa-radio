@@ -12,7 +12,8 @@ test('all editorial changes resolve without altering historical addresses', () =
       const song = findSong(page.url.split('/').pop());
       expect(song.info).toBe(entry.after);
       expect(song.song).toBe(page.song);
-      expect(song.youtube).toBe(page.youtube);
+      // Video links have since been replaced from the user's audit CSV.
+      // Their current values are checked in youtube-replacements.spec.js.
       for (const alias of song.aliases || []) expect(findSong(alias)).toBe(song);
     }
   }

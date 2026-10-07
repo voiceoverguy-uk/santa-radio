@@ -9,7 +9,8 @@ export function parseTracks(text, limit = 3) {
     const separator = line.indexOf(' - ');
     const artist = line.slice(0, separator).trim();
     const title = line.slice(separator + 3).trim();
-    if (separator < 1 || !artist || !title || line.length > 1000) throw new Error('Invalid track');
+    // Automation announcements can have a title but no artist.
+    if (separator < 0 || !title || line.length > 1000) throw new Error('Invalid track');
     return { artist, title };
   });
 }
@@ -17,8 +18,9 @@ export function parseTracks(text, limit = 3) {
 async function readFeed(filename, limit, fetcher) {
   const url = new URL(filename, ROOT);
   url.searchParams.set('_', String(Date.now()));
-  const response = await fetcher(url, { signal: AbortSignal.timeout(6000), cache: 'no-store', redirect: 'error' });
-  if (!response.ok || !response.headers.get('content-type')?.includes('text/plain')) throw new Error('Feed unavailable');
+  const response = await fetcher(url, { signal: AbortSignal.timeout(filename === 'Next3.txt' ? 3000 : 6000), cache: 'no-store', redirect: 'error' });
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  if (!response.headers.get('content-type')?.includes('text/plain')) throw new Error('Unexpected content type');
   const reader = response.body.getReader();
   let bytes = 0;
   const chunks = [];
@@ -38,23 +40,42 @@ async function readFeed(filename, limit, fetcher) {
   return tracks;
 }
 
-export function createMetadataService(fetcher = fetch, ttl = 10000) {
+export function createMetadataService(fetcher = fetch, ttl = 10000, { clock = Date.now, retryDelay = 500, staleMs = 45000 } = {}) {
   let cached, expires = 0, pending;
+  let lastUpcoming = [], upcomingUpdatedAt = 0;
+  const readUpcoming = async () => {
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try { return await readFeed('Next3.txt', 3, fetcher); }
+      catch (error) {
+        console.warn('[radio-metadata]', 'Next3.txt', `attempt=${attempt}`, error.name, error.message);
+        if (attempt === 2) throw error;
+        await new Promise(resolve => setTimeout(resolve, retryDelay));
+      }
+    }
+  };
   return async () => {
-    if (cached && Date.now() < expires) return cached;
+    if (cached && clock() < expires &&
+        !(cached.upcomingStatus === 'stale' && clock() - upcomingUpdatedAt >= staleMs)) return cached;
     if (pending) return pending;
     pending = (async () => {
       const [now, next] = await Promise.allSettled([
         readFeed('Nowplaying.txt', 1, fetcher),
-        readFeed('Next3.txt', 3, fetcher),
+        readUpcoming(),
       ]);
+      if (now.status === 'rejected') console.warn('[radio-metadata]', 'Nowplaying.txt', now.reason?.message);
+      if (next.status === 'fulfilled') {
+        lastUpcoming = next.value;
+        upcomingUpdatedAt = clock();
+      }
+      const retain = lastUpcoming.length > 0 && clock() - upcomingUpdatedAt < staleMs;
       cached = {
         current: now.status === 'fulfilled' ? now.value[0] : null,
-        upcoming: next.status === 'fulfilled' ? next.value : [],
+        upcoming: next.status === 'fulfilled' ? next.value : retain ? lastUpcoming : [],
         currentStatus: now.status === 'fulfilled' ? 'ready' : 'unavailable',
-        upcomingStatus: next.status === 'fulfilled' ? 'ready' : 'unavailable',
+        upcomingStatus: next.status === 'fulfilled' ? 'ready' : retain ? 'stale' : 'unavailable',
+        upcomingUpdatedAt,
       };
-      expires = Date.now() + ttl;
+      expires = clock() + (next.status === 'fulfilled' ? ttl : Math.min(ttl, 2000));
       return cached;
     })();
     try { return await pending; } finally { pending = null; }

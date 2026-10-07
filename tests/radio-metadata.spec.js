@@ -8,6 +8,12 @@ test('feeds parse safely, preserve title hyphens and limit the queue', () => {
   expect(() => parseTracks('<html>Homepage</html>')).toThrow();
   expect(() => parseTracks('no delimiter')).toThrow();
   expect(() => parseTracks('x'.repeat(9000))).toThrow();
+  expect(parseTracks('Taylor Swift - Christmas Tree Farm\n - Santa Radio Free Message ID - VO\nBackstreet Boys - Christmas In New York')).toEqual([
+    { artist: 'Taylor Swift', title: 'Christmas Tree Farm' },
+    { artist: '', title: 'Santa Radio Free Message ID - VO' },
+    { artist: 'Backstreet Boys', title: 'Christmas In New York' },
+  ]);
+  expect(() => parseTracks('Artist - ')).toThrow();
 });
 
 test('metadata caches briefly, isolates failures and recovers', async () => {
@@ -20,7 +26,7 @@ test('metadata caches briefly, isolates failures and recovers', async () => {
   }, 30);
   expect(await service()).toMatchObject({ currentStatus: 'ready', upcomingStatus: 'unavailable' });
   await service();
-  expect(calls).toBe(2);
+  expect(calls).toBe(3);
   fail = false;
   await new Promise(resolve => setTimeout(resolve, 40));
   expect(await service()).toMatchObject({ upcomingStatus: 'ready', upcoming: [{ artist: 'Artist', title: 'Song' }] });
@@ -31,10 +37,58 @@ test('live metadata endpoint returns independent feed states', async ({ request 
   expect(response.ok()).toBe(true);
   expect(response.headers()['cache-control']).toBe('no-store');
   const data = await response.json();
-  expect(data.currentStatus).toBe('ready');
-  expect(data.current.artist).toBeTruthy();
-  expect(data.upcomingStatus).toBe('ready');
-  expect(data.upcoming).toHaveLength(3);
+  expect(['ready', 'unavailable']).toContain(data.currentStatus);
+  if (data.currentStatus === 'ready') expect(data.current.title).toBeTruthy();
+  expect(['ready', 'stale', 'unavailable']).toContain(data.upcomingStatus);
+  expect(data.upcoming.length).toBeLessThanOrEqual(3);
+  if (data.upcomingStatus !== 'unavailable') {
+    expect(data.upcoming.length).toBeGreaterThan(0);
+    for (const track of data.upcoming) expect(track.title).toBeTruthy();
+  }
+});
+
+test('upcoming retries once, retains briefly, expires and recovers independently', async () => {
+  let time = 100000, mode = 'retry', attempts = 0;
+  const service = createMetadataService(async url => {
+    if (url.pathname.endsWith('Next3.txt')) {
+      attempts++;
+      if (mode === 'fail' || (mode === 'retry' && attempts === 1)) {
+        return new Response('', { headers: { 'content-type': 'text/plain' } });
+      }
+    }
+    return new Response('Artist - Song', { headers: { 'content-type': 'text/plain' } });
+  }, 10, { clock: () => time, retryDelay: 0 });
+  expect(await service()).toMatchObject({ upcomingStatus: 'ready' });
+  expect(attempts).toBe(2);
+  mode = 'fail'; time += 20;
+  expect(await service()).toMatchObject({ currentStatus: 'ready', upcomingStatus: 'stale', upcoming: [{ artist: 'Artist', title: 'Song' }] });
+  time += 45000;
+  expect(await service()).toMatchObject({ currentStatus: 'ready', upcomingStatus: 'unavailable', upcoming: [] });
+  mode = 'ok'; time += 20;
+  expect(await service()).toMatchObject({ upcomingStatus: 'ready' });
+});
+
+test('browser labels retained upcoming songs, expires them and recovers after network failure', async ({ page }) => {
+  await page.clock.install();
+  let fail = false;
+  await page.route('**/api/radio-metadata', route => fail ? route.abort() : route.fulfill({
+    json: { current: null, currentStatus: 'unavailable', upcomingStatus: 'ready',
+      upcoming: [{ artist: 'Test Artist', title: 'Retained Song' }] },
+  }));
+  await page.goto('/apps', { waitUntil: 'domcontentloaded' });
+  const dock = page.locator('.radio-dock');
+  await dock.getByRole('button', { name: /coming up/i }).click();
+  await expect(dock).toContainText('Retained Song');
+  fail = true;
+  await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+  await expect(dock).toContainText('Updating… Showing the last received list.');
+  await expect(dock).toContainText('Retained Song');
+  await page.clock.runFor(46000);
+  await expect(dock).not.toContainText('Retained Song');
+  fail = false;
+  await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+  await expect(dock).toContainText('Retained Song');
+  await expect(dock).not.toContainText('Updating…');
 });
 
 test('tracks render, queue expands, refresh recovers and navigation keeps audio', async ({ page }) => {

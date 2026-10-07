@@ -8,11 +8,13 @@ export default function RadioTracks({ metadata, kind = 'current', showLabel = tr
   const hasTrack = track && (track.title || track.artist);
   const tracks = upcoming.filter(item => item && (item.title || item.artist));
   const loading = status === 'loading';
-  const ready = status === 'ready';
+  const stale = !current && status === 'stale';
+  const ready = status === 'ready' || stale;
 
   return (
     <div className={`radio-tracks radio-tracks-${kind}`} aria-busy={loading} aria-live={current ? 'polite' : 'off'}>
       {showLabel && <p className="radio-tracks-label">{current ? 'On air now' : 'Coming up'}</p>}
+      {stale && <p className="radio-tracks-message" role="status">Updating… Showing the last received list.</p>}
       {loading ? (
         <div role="status">
           <span className="radio-tracks-sr-only">{current ? 'Loading current song…' : 'Loading upcoming songs…'}</span>
@@ -25,7 +27,7 @@ export default function RadioTracks({ metadata, kind = 'current', showLabel = tr
           {track.artist && <span className="radio-track-artist">{track.artist}</span>}
         </div>
       ) : ready && !current && tracks.length > 0 ? (
-        <ol className="radio-tracks-list" aria-label="Upcoming songs in broadcast order">
+        <ol className="radio-tracks-list" aria-label="Upcoming tracks in broadcast order">
           {tracks.slice(0, 3).map((item, index) => (
             <li key={`${index}-${item.artist}-${item.title}`}>
               {item.title && <span className="radio-track-title">{item.title}</span>}
