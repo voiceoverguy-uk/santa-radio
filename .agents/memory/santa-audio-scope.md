@@ -16,6 +16,6 @@ Do not pre-create completed messages for the name catalogue. Store the source na
 
 Preserve the outro's supplied opening padding.
 
-**Why:** The user deliberately added padding to the replacement outro and confirmed that the shorter outro should be used for all messages.
+**Why:** The user deliberately added silence to the start of free-outro.wav to make the gap after the name sound more natural. They corrected the earlier choice of the shorter free-outro2.wav.
 
 **How to apply:** Do not automatically trim leading silence from the outro when mixing or replacing recordings.

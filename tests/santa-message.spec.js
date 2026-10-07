@@ -30,8 +30,8 @@ test('recorded Santa greeting validates names, decodes and downloads the real MP
       return (await context.decodeAudioData(await response.arrayBuffer())).duration;
     } finally { await context.close(); }
   });
-  expect(duration).toBeGreaterThan(40);
-  expect(duration).toBeLessThan(50);
+  expect(duration).toBeGreaterThan(65);
+  expect(duration).toBeLessThan(75);
   await audio.evaluate(async a => { await a.play(); });
   await expect.poll(() => audio.evaluate(a => a.currentTime)).toBeGreaterThan(0);
   const downloadPromise = page.waitForEvent('download');
