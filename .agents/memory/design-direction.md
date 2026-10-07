@@ -42,9 +42,9 @@ The compact player's information area and empty space should expand its details.
 
 Keep the hero countdown compact and visually secondary to the heading and buttons, directly on the artwork with just timer values and labels, without an outer card or introductory headings and copy.
 
-**Why:** The user approved the swapped countdown/Santa-texting arrangement, but found the countdown cluttered and progressively removed its outer box, eyebrow, heading and supporting sentence. They repeatedly asked to make the countdown smaller.
+**Why:** The user approved the swapped countdown/Santa-texting arrangement, but found the countdown cluttered and progressively removed its outer box, eyebrow, heading and supporting sentence. They repeatedly asked to make the countdown smaller, specifically on mobile even after the desktop reduction.
 
-**How to apply:** Preserve that simplicity in future hero changes; do not treat the richer North Pole direction as a request to box every element.
+**How to apply:** Preserve that simplicity in future hero changes; do not treat the richer North Pole direction as a request to box every element. Keep the mobile timer noticeably narrower than the content area, rather than stretching its cells to fill it.
 
 Keep the hero's station/all-year tagline on one line on mobile.
 

@@ -75,7 +75,7 @@ test('homepage keeps the countdown in the hero and plain Santa text in Contact S
   await expect(hero.getByRole('link', { name: 'FREE Santa Message', exact: true })).toHaveAttribute('href', '/free-santa-message');
   const before = await hero.locator('.countdown-unit').last().textContent();
   await expect.poll(() => hero.locator('.countdown-unit').last().textContent()).not.toBe(before);
-  for (const width of [1280, 390, 320]) {
+  for (const width of [1280, 768, 767, 430, 390, 320]) {
     await page.setViewportSize({ width, height: 900 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     const countdown = await hero.locator('.countdown').boundingBox();
@@ -85,6 +85,22 @@ test('homepage keeps the countdown in the hero and plain Santa text in Contact S
     expect(countdown.height).toBeLessThanOrEqual(75);
     const numberSize = await hero.locator('.countdown-unit strong').first().evaluate(element => parseFloat(getComputedStyle(element).fontSize));
     expect(numberSize).toBeLessThanOrEqual(24);
+    if (width < 768) {
+      expect(countdown.width).toBeLessThanOrEqual(281);
+      expect(countdown.height).toBeLessThanOrEqual(57);
+      expect(numberSize).toBeLessThanOrEqual(18);
+    } else {
+      expect(countdown.width).toBeCloseTo(400, 0);
+      await expect(hero.locator('.countdown-unit').first()).toHaveCSS('padding-top', '9px');
+    }
+    const unitBounds = await hero.locator('.countdown-unit').evaluateAll(units => units.map(unit => {
+      const box = unit.getBoundingClientRect();
+      const range = document.createRange();
+      range.selectNodeContents(unit.querySelector('span'));
+      const label = range.getBoundingClientRect();
+      return { top: box.top, fits: label.left >= box.left - 0.5 && label.right <= box.right + 0.5 };
+    }));
+    expect(unitBounds.every(unit => unit.top === unitBounds[0].top && unit.fits)).toBe(true);
     const tagline = await hero.locator('.hero-note').evaluate(element => {
       const range = document.createRange();
       range.selectNodeContents(element);
