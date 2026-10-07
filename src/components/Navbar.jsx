@@ -24,7 +24,7 @@ export default function Navbar() {
   }, [menuOpen]);
   const links = [
     { to: '/', label: 'Home' }, { to: '/apps', label: 'Apps' },
-    { to: '/free-santa-message', label: 'Santa Messages' }, { to: '/christmas-music', label: 'Music' },
+    { to: 'https://ca61f856.sibforms.com/serve/MUIFAIhwMPfiiiUqA62A5oRCcQ2XECHclY6K0JK12yZa4946j_cxBcCMX8WnaypiuD6VHXvsr9zgBtd6_tUE0n7GM7uFeEulcTQ1PzxK_Kd9ZDTOJwqVY14JvjFMteJWKB8F_P-ZSI90U_6rKp_fkXzOaAoFp24iM5u6-JBoORa8GZw3a6yYVMg05C2u2AYJ2KPBf_-cZa9yuiCo', label: 'Santa Message', external: true }, { to: '/christmas-music', label: 'Music' },
     { to: '/mugshots/all', label: 'Mug Shots' },
   ];
   return (
@@ -33,7 +33,10 @@ export default function Navbar() {
         <Link to="/" className="navbar-logo" aria-label="Santa Radio home"><img className="navbar-logo-image" src="/images/santa-radio-logo.png" alt="Santa Radio" width="827" height="190" /></Link>
         <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-controls="main-menu" aria-label={menuOpen ? 'Close menu' : 'Open menu'}><span /><span /><span /></button>
         <ul id="main-menu" className={`navbar-links ${menuOpen ? 'open' : ''}`}>
-          {links.map(link => <li key={link.to}><Link to={link.to} aria-current={location.pathname === link.to ? 'page' : undefined} className={location.pathname === link.to ? 'active' : ''} onClick={() => setMenuOpen(false)}>{link.label}</Link></li>)}
+          {links.map(link => <li key={link.to}>{link.external
+            ? <a href={link.to} target="_blank" rel="noopener noreferrer" title={`${link.label} (opens in a new tab)`} onClick={() => setMenuOpen(false)}>{link.label}</a>
+            : <Link to={link.to} aria-current={location.pathname === link.to ? 'page' : undefined} className={location.pathname === link.to ? 'active' : ''} onClick={() => setMenuOpen(false)}>{link.label}</Link>
+          }</li>)}
           <li><button className="effects-toggle" aria-pressed={effects} onClick={() => setEffects(!effects)}>Snow {effects ? 'On' : 'Off'}</button></li>
           <li className="nav-listen"><RadioButton className="btn-red" /></li>
         </ul>
