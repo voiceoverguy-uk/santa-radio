@@ -1,3 +1,14 @@
+.video-motion-toggle {
+  background: transparent;
+  color: var(--gold-light);
+  border: 1px solid var(--gold-light);
+  border-radius: 999px;
+  padding: 9px 18px;
+  margin-bottom: 14px;
+  cursor: pointer;
+  font: inherit;
+}
+.video-motion-toggle:focus-visible { outline: 2px solid var(--gold-light); outline-offset: 4px; }
 .youtube-section {
   padding: 60px 20px 80px;
   background: linear-gradient(180deg, #071029 0%, #0d1b3e 100%);

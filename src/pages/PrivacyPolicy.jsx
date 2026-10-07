@@ -26,7 +26,7 @@ export default function PrivacyPolicy() {
       <h2>Using the website</h2>
       <p>Your browser remembers your snow preference in local storage and the minimised player setting in session storage. The snow preference remains until changed or cleared; the player preference normally ends with the tab session. You can clear these through browser settings.</p>
       <p>Hosting services process technical information, such as IP addresses and browser/request details, to deliver and protect the website. Radio playback connects to Citrus3. YouTube supplies video embeds, and Google Fonts supplies fonts. Some images load from our legacy website.</p>
-      <p>These services receive connection information and may use cookies or similar technologies under their own privacy notices. The homepage YouTube player opens on request; song and karaoke pages can load YouTube embeds automatically.</p>
+      <p>These services receive connection information and may use cookies or similar technologies under their own privacy notices. The homepage loads a muted YouTube player automatically; song and karaoke pages can also load YouTube embeds automatically.</p>
 
       <h2>Links and external services</h2>
       <p>Links to app stores, social networks, music platforms and personalised video services take you to separate services with their own privacy notices. Check those notices before sharing information. An email link opens your chosen email service; it does not submit a form on this website.</p>

@@ -2,6 +2,12 @@
 name: Radio feed hosting
 description: External hosting constraint for live track information.
 ---
+The homepage live video must autoplay muted and remain muted, with no embedded unmute controls; the radio audio player is separate.
+
+**Why:** The owner explicitly requested “ALWAYS MUTED” when enabling automatic video playback.
+
+**How to apply:** Preserve this constraint when replacing or updating the homepage stream player.
+
 The user’s radio automation uploads song metadata to the legacy Santa Radio web host through FTP. Keep that original host accessible when moving the public domain to a new deployment.
 
 **Why:** The verified public metadata URLs use the same main domain as the website. Moving its DNS without preserving the feeds would make the metadata endpoint fetch the new website rather than the automation output.
