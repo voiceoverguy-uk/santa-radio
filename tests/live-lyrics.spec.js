@@ -7,6 +7,8 @@ test('waiting messages rotate and reset when the lyrics reader reopens', async (
     current: null, currentStatus: 'unavailable', upcoming: [], upcomingStatus: 'unavailable',
   } }));
   await page.goto('/');
+  // Freeze wall-clock progression so assertions cannot advance the rotation themselves.
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
   await page.getByRole('button', { name: 'Lyrics', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'Live lyrics' });
   await expect(dialog).not.toContainText('word-by-word timing');
@@ -51,6 +53,28 @@ test('live matching requires both fields and refuses ambiguous versions', () => 
     [{ artist: 'Verified', title: 'Alternate', songId: 1 }]).song.id).toBe(1);
 });
 
+test('credit suffixes and verified truncated feed titles find the right lyrics', () => {
+  for (const suffix of ['ft.', 'ft', 'feat.', 'featuring', '(ft.)']) {
+    expect(matchLiveSong({ artist: 'Robbie Williams', title: `Bad Sharon ${suffix}` }))
+      .toMatchObject({ status: 'ready', song: { id: 559 } });
+  }
+  for (const [artist, title, id] of [
+    ['Michael Buble', 'Santa Claus Is Co', 335],
+    ['Dean Martin', 'Let It Snow! Let It Snow! Let I', 369],
+    ['Kylie Minogue', 'Only You ft. James Corden', 31],
+    ['Kylie Minogue', '100 Degrees featuring Dannii Minogue', 314],
+  ]) expect(matchLiveSong({ artist, title }).song.id).toBe(id);
+  for (const title of ['Bad Sharon (Live)', 'Bad Sharon Remix', 'Bad', 'Bad Sharon ft. Unknown']) {
+    expect(matchLiveSong({ artist: 'Robbie Williams', title }).status).toBe('unmatched');
+  }
+  expect(matchLiveSong({ artist: 'Wrong Artist', title: 'Bad Sharon ft.' }).status).toBe('unmatched');
+  const ambiguous = [
+    { id: 1, artist: 'Artist', song: 'Song feat. Guest', lyrics: 'One' },
+    { id: 2, artist: 'Artist', song: 'Song featuring Guest', lyrics: 'Two' },
+  ];
+  expect(matchLiveSong({ artist: 'Artist', title: 'Song ft. Guest' }, ambiguous).status).toBe('ambiguous');
+});
+
 test('lyrics reader follows feed changes, clears stale text and leaves audio untouched', async ({ page }) => {
   let current = { artist: 'Elton John', title: 'Step into Christmas' }, unavailable = false;
   await page.route('**/api/radio-metadata', route => route.fulfill({ json: {
@@ -79,6 +103,10 @@ test('lyrics reader follows feed changes, clears stale text and leaves audio unt
   await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
   await expect(dialog.locator('pre')).toHaveText(matchLiveSong(current).song.lyrics);
   await expect(dialog.getByRole('heading', { name: 'Proper Crimbo', exact: true })).toBeVisible();
+  current = { artist: 'Robbie Williams', title: 'Bad Sharon ft.' };
+  await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+  await expect(dialog.getByRole('heading', { name: 'Bad Sharon', exact: true })).toBeVisible();
+  await expect(dialog.locator('pre')).toHaveText(matchLiveSong(current).song.lyrics);
   current = { artist: 'Unknown Artist', title: 'Unknown Song' };
   await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
   await expect(dialog).toContainText('Lyrics unavailable for this track.');

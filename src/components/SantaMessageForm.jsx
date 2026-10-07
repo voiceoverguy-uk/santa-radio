@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { findSantaMessage } from '../data/santaMessages.js';
+import { findSantaMessage, searchSantaNames, santaNames } from '../data/santaMessages.js';
 import { useRadio } from './RadioProvider.jsx';
 import './SantaMessageForm.css';
 
@@ -9,6 +9,11 @@ export default function SantaMessageForm({ showDetailLink = true }) {
   const [message, setMessage] = useState(null);
   const [validation, setValidation] = useState('');
   const [audioError, setAudioError] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [suggesting, setSuggesting] = useState(false);
+  const [activeOption, setActiveOption] = useState(-1);
+  const requestRef = useRef(null);
+  const suggestions = searchSantaNames(name);
   const audioRef = useRef(null);
   const resultRef = useRef(null);
   const inputId = useId();
@@ -17,23 +22,60 @@ export default function SantaMessageForm({ showDetailLink = true }) {
   useEffect(() => {
     if (message) resultRef.current?.focus();
   }, [message]);
+  useEffect(() => () => {
+    if (message?.url) URL.revokeObjectURL(message.url);
+  }, [message]);
+  useEffect(() => () => requestRef.current?.abort(), []);
 
-  const changeName = event => {
+  const updateName = value => {
+    requestRef.current?.abort();
+    requestRef.current = null;
+    setBusy(false);
     audioRef.current?.pause();
-    setName(event.target.value);
+    setName(value);
     setMessage(null);
     setValidation('');
     setAudioError(false);
+    setActiveOption(-1);
   };
-  const submit = event => {
+  const selectName = value => {
+    updateName(value);
+    setSuggesting(false);
+  };
+  const submit = async event => {
     event.preventDefault();
+    if (busy) return;
+    setSuggesting(false);
     audioRef.current?.pause();
     setAudioError(false);
     const recording = findSantaMessage(name);
-    setMessage(recording);
-    setValidation(recording ? '' : name.trim()
-      ? 'We don’t have a recording for that name yet. Only Arabella is available in this experiment.'
-      : 'Please enter a child’s name. Try Arabella, the name available in this experiment.');
+    setMessage(null);
+    if (!recording) {
+      setValidation(name.trim()
+        ? 'We don’t have a recording for that name yet. Choose one of the suggested names.'
+        : 'Please enter a child’s name, then choose a suggestion.');
+      return;
+    }
+    setValidation('');
+    const controller = new AbortController();
+    requestRef.current = controller;
+    setBusy(true);
+    try {
+      const response = await fetch('/api/santa-message', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: recording.id }), signal: controller.signal,
+      });
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'Unable to create the message. Please try again.');
+      }
+      const blob = await response.blob();
+      if (requestRef.current === controller) setMessage({ ...recording, url: URL.createObjectURL(blob) });
+    } catch (error) {
+      if (requestRef.current === controller && error.name !== 'AbortError') setValidation(error.message);
+    } finally {
+      if (requestRef.current === controller) { setBusy(false); requestRef.current = null; }
+    }
   };
   const pauseRadio = () => {
     if (radio?.status === 'playing' || radio?.status === 'loading') radio.togglePlay();
@@ -63,13 +105,31 @@ export default function SantaMessageForm({ showDetailLink = true }) {
       <div className="santa-message-box">
         <div className="message-card-top"><span className="message-seal" aria-hidden="true">S</span><div><p className="message-postmark">The North Pole message desk</p><small>A recorded hello, ready to keep</small></div></div>
         <h3>Find your free Santa greeting</h3>
-        <p className="form-desc">We’re starting with one name: <strong>Arabella</strong>. We hope to bring this little bit of magic to thousands of names in the future.</p>
+        <p className="form-desc">Choose from {santaNames.length} recorded names. Santa’s greeting is mixed especially for your selection when you press Create message.</p>
         <form onSubmit={submit} noValidate>
           <label className="message-name-label" htmlFor={inputId}>Child’s first name</label>
-          <input className="message-name-input" id={inputId} type="text" value={name} onChange={changeName} placeholder="e.g. Arabella" autoComplete="off" autoCapitalize="words" spellCheck={false} aria-invalid={!!validation} aria-describedby={`${inputId}-hint${validation ? ` ${inputId}-error` : ''}`} />
-          <span className="message-name-hint" id={`${inputId}-hint`}>Available now: Arabella. This finds an existing recording; it doesn’t generate a new one.</span>
+          <div className="message-name-picker">
+          <input className="message-name-input" id={inputId} type="text" role="combobox" aria-autocomplete="list" aria-expanded={suggesting && suggestions.length > 0} aria-controls={`${inputId}-options`} aria-activedescendant={suggesting && activeOption >= 0 ? `${inputId}-option-${activeOption}` : undefined} value={name}
+            onChange={event => { updateName(event.target.value); setSuggesting(true); }}
+            onFocus={() => setSuggesting(true)} onBlur={() => setSuggesting(false)}
+            onKeyDown={event => {
+              if (event.key === 'Escape') { setSuggesting(false); setActiveOption(-1); }
+              if ((event.key === 'ArrowDown' || event.key === 'ArrowUp') && suggestions.length) {
+                event.preventDefault(); setSuggesting(true);
+                setActiveOption(current => (current + (event.key === 'ArrowDown' ? 1 : -1) + suggestions.length) % suggestions.length);
+              }
+              if (event.key === 'Enter' && suggesting && activeOption >= 0) { event.preventDefault(); selectName(suggestions[activeOption]); }
+            }}
+            placeholder="Start typing, e.g. Olivia" autoComplete="off" autoCapitalize="words" spellCheck={false} aria-invalid={!!validation} aria-describedby={`${inputId}-hint${validation ? ` ${inputId}-error` : ''}`} />
+          {suggesting && suggestions.length > 0 && <ul className="message-suggestions" id={`${inputId}-options`} role="listbox" aria-label="Available names">
+            {suggestions.map((suggestion, index) => <li key={suggestion} id={`${inputId}-option-${index}`} role="option" aria-selected={index === activeOption}
+              onPointerDown={event => event.preventDefault()} onClick={() => selectName(suggestion)}>{suggestion}</li>)}
+          </ul>}
+          </div>
+          <span className="message-name-hint" id={`${inputId}-hint`} aria-live="polite">{suggesting && name.trim() && !suggestions.length ? 'No matching recording yet. Try another name.' : 'Start typing to find a recorded name.'}</span>
           {validation && <p className="message-validation" id={`${inputId}-error`} role="alert">{validation}</p>}
-          <button className="btn-red message-submit" type="submit">Find Santa’s message <span aria-hidden="true">→</span></button>
+          <button className="btn-red message-submit" type="submit" disabled={busy}>{busy ? 'Mixing Santa’s message…' : 'Create message'} <span aria-hidden="true">→</span></button>
+          {busy && <p role="status" className="message-name-hint">Combining Santa’s voice, the selected name and sleigh bells. Please wait…</p>}
         </form>
         {message && <div className="message-result" ref={resultRef} tabIndex={-1} aria-label={`Santa’s greeting for ${message.name}`}>
           <p className="message-postmark">A greeting is waiting</p>
@@ -80,7 +140,7 @@ export default function SantaMessageForm({ showDetailLink = true }) {
           <a className="message-download" href={message.url} download={message.downloadName}>Download {message.name}’s greeting <span aria-hidden="true">↓</span></a>
           <p className="message-name-hint">On iPhone, you may need to use Share → Save to Files to keep the MP3.</p>
         </div>}
-        <p className="service-notice">Free to listen and download. No signup. The name you type isn’t sent or stored.</p>
+        <p className="service-notice">Free. No signup. Only the selected name is sent to mix your message. The server deletes its temporary MP3 after sending it; download your copy before leaving this page.</p>
       </div>
     </div>
   </section>;

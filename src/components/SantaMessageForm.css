@@ -14,6 +14,11 @@
 .message-name-label { display: block; color: #f6ecd8; font-size: .85rem; margin-bottom: 9px; }
 .message-name-input { display: block; width: 100%; min-height: 52px; padding: 12px 15px; background: #f4eddc; border: 2px solid transparent; color: #19392d; border-radius: 8px; font: inherit; font-size: 1rem; box-sizing: border-box; }
 .message-name-input::placeholder { color: #66766b; }
+.message-name-picker { position: relative; }
+.message-suggestions { position: absolute; top: 100%; left: 0; right: 0; z-index: 5; list-style: none; margin: 6px 0; padding: 5px; border: 1px solid #d4af3760; border-radius: 8px; background: #f4eddc; color: #19392d; box-shadow: 0 8px 20px #0004; }
+.message-suggestions li { padding: 12px; border-radius: 5px; cursor: pointer; }
+.message-suggestions li:hover, .message-suggestions li[aria-selected="true"] { background: #dfd3b7; }
+.message-submit:disabled { opacity: .65; cursor: wait; }
 .message-name-input[aria-invalid="true"] { border-color: #eea49a; }
 .message-name-hint { display: block; color: #becdbc; font-size: .76rem; margin: 10px 0 18px; line-height: 1.6; }
 .message-submit { width: 100%; min-height: 50px; justify-content: center; cursor: pointer; }

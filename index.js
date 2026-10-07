@@ -4,6 +4,7 @@ import { stat, realpath } from 'node:fs/promises';
 import { resolve, extname, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import radioMetadata from './server/radio-metadata.js';
+import santaMessage from './server/santa-message.js';
 
 const root = await realpath(fileURLToPath(new URL('./dist', import.meta.url)));
 const index = resolve(root, 'index.html');
@@ -24,6 +25,7 @@ const server = createServer(async (req, res) => {
     try { pathname = decodeURIComponent(new URL(req.url, 'http://server').pathname); }
     catch { res.writeHead(400).end('Invalid path'); return; }
     if (pathname === '/api/radio-metadata') return await radioMetadata(req, res);
+    if (pathname === '/api/santa-message') return await santaMessage(req, res);
     if (pathname.startsWith('/api/')) { res.writeHead(404).end('Not found'); return; }
     if (pathname.split('/').some(part => part.startsWith('.'))) { res.writeHead(404).end('Not found'); return; }
     if (!['GET', 'HEAD'].includes(req.method)) {
