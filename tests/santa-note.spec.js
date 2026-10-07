@@ -8,7 +8,7 @@ test('plain Santa text in Contact fits every message without oversized reserved 
   const text = page.locator('.santa-note-text');
   await expect(page.locator('.contact-section .santa-note-text')).toBeVisible();
   await expect(text).toContainText('Santa here...');
-  for (const width of [320, 390, 430]) {
+  for (const width of [1280, 320, 390, 430]) {
     await page.setViewportSize({ width, height: 844 });
     const sizes = await text.evaluate((element, notes) => {
       const span = element.querySelector('span');
@@ -30,6 +30,9 @@ test('plain Santa text in Contact fits every message without oversized reserved 
     expect(sizes[0].height).toBeLessThanOrEqual(110);
     expect(sizes.every(size => size.fits)).toBe(true);
     expect(sizes.every(size => size.slotHeight <= size.height + 1)).toBe(true);
+    const note = await text.boundingBox();
+    const email = await page.getByRole('link', { name: 'Send Email', exact: true }).boundingBox();
+    expect(note.y - (email.y + email.height)).toBeGreaterThanOrEqual(39);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
 });
@@ -44,7 +47,7 @@ test('Christmas Eve notes use calendar days and roll over after Christmas Eve', 
   expect(formatSantaNote(santaNotes[3], 78)).toBe("Head Elf tells me we'll be ready in 78 days!");
 });
 
-test('complete Santa lines fade in, rotate without typing or dots, and respect reduced motion', async ({ page }) => {
+test('three animated dots precede each complete fading line without typing and respect reduced motion', async ({ page }) => {
   expect(santaNotes).toHaveLength(51);
   expect(new Set(santaNotes).size).toBe(51);
   const start = new Date('2026-10-07T12:00:00Z');
@@ -56,19 +59,30 @@ test('complete Santa lines fade in, rotate without typing or dots, and respect r
   const text = bubble.locator('.santa-note-text');
   await expect(page.getByText('Sent with Elfie', { exact: true })).toHaveCount(0);
   await expect(bubble.locator('button')).toHaveCount(0);
+  await expect(bubble.locator('.santa-note-dots i')).toHaveCount(3);
+  await expect(bubble.locator('.santa-note-dots')).toBeVisible();
+  await expect(bubble.locator('.santa-note-dots i').first()).not.toHaveCSS('animation-name', 'none');
+  await expect(text).toHaveText('');
+  await page.clock.runFor(1900);
+  await expect(bubble.locator('.santa-note-dots')).toBeVisible();
+  await page.clock.runFor(100);
   await expect(text).toHaveText(`Santa here... ${santaNotes[0]}`);
   await expect(bubble.locator('.santa-note-dots')).toHaveCount(0);
   await expect(text).not.toHaveCSS('animation-name', 'none');
   await page.evaluate(() => { window.firstSantaLine = document.querySelector('.santa-note-text'); });
   await expect(text).toHaveAttribute('aria-label', `Santa here... ${santaNotes[0]}`);
-  await page.clock.runFor(15000);
+  await page.clock.runFor(13000);
   await expect(text).toHaveAttribute('aria-label', `Santa here... ${santaNotes[1]}`);
+  await expect(bubble.locator('.santa-note-dots i')).toHaveCount(3);
+  await expect(text).toHaveText('');
+  await page.clock.runFor(2000);
   await expect(text).toHaveText(`Santa here... ${santaNotes[1]}`);
   await expect(bubble.locator('.santa-note-dots')).toHaveCount(0);
   expect(await page.evaluate(() => window.firstSantaLine !== document.querySelector('.santa-note-text'))).toBe(true);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(text).toHaveCSS('animation-name', 'none');
   await expect(text).toHaveCSS('opacity', '1');
+  await expect(bubble.locator('.santa-note-dots')).toHaveCount(0);
   await expect(text).toHaveText(`Santa here... ${santaNotes[1]}`);
   await expect(bubble.locator('.santa-note-dots')).toHaveCount(0);
   await page.clock.runFor(30000);

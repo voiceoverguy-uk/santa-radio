@@ -24,9 +24,9 @@ Keep Santa's notes as plain text in the Contact Santa Radio section, not in the 
 
 **Why:** After trying the compact bubble, the user asked to revert to “the last one as just text” and place it in the Contact Santa Radio section.
 
-**How to apply:** Keep the space content-sized, without a large reserved area. Fade each complete line in gently, with no typing or dots; preserve rotating humorous messages and reduced-motion support.
+**How to apply:** Keep the space content-sized, without a large reserved area. Show three animated dots briefly, then fade the complete line in, with no letter-by-letter typing. Leave a clear gap below Send Email; preserve rotating humorous messages and reduced-motion support.
 
-**Why for motion and sizing:** The user said the box was too big for the amount of text and asked to “remove the typing text, just fade in the line”.
+**Why for motion and sizing:** The user asked for a fade instead of typing, then explicitly asked to restore the animated three dots and move the message further down from Send Email.
 
 On mobile, the radio player should start minimised on a fresh page load, even if the tab previously remembered an expanded player. Keep manual expansion available and do not collapse it on every internal navigation.
 
