@@ -65,7 +65,7 @@ export default function Soundboard() {
     <div className="container">
       <p className="eyebrow" style={{ textAlign: 'center' }}>From Santa’s workshop</p>
       <h2 className="section-title soundboard-title">Santa Soundboard</h2>
-      <p className="section-subtitle soundboard-subtitle">Hear Santa’s original recordings! Pick a festive phrase below, or explore the <a href="https://apps.apple.com/gb/app/santa-radio/id1021183593" target="_blank" rel="noopener noreferrer" className="soundboard-link">Santa Radio app</a> for more Christmas fun.</p>
+      <p className="section-subtitle soundboard-subtitle">Pick a festive phrase below, or explore the <a href="https://apps.apple.com/gb/app/santa-radio/id1021183593" target="_blank" rel="noopener noreferrer" className="soundboard-link">Santa Radio app</a> for more Christmas fun.</p>
       <div className="soundboard-grid" aria-label="Santa recordings">
         {PHRASES.map(phrase => <button key={phrase.file} className={`soundboard-btn ${active === phrase.file ? 'active' : ''}`} aria-pressed={active === phrase.file} onClick={() => play(phrase)}>{phrase.label}</button>)}
       </div>
