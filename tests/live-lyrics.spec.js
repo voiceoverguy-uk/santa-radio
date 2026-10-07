@@ -75,6 +75,16 @@ test('credit suffixes and verified truncated feed titles find the right lyrics',
   expect(matchLiveSong({ artist: 'Artist', title: 'Song ft. Guest' }, ambiguous).status).toBe('ambiguous');
 });
 
+test('identical historical duplicates work but conflicting lyrics and placeholders do not', () => {
+  expect(matchLiveSong({ artist: 'The Carpenters', title: 'Merry Christmas Darling' }))
+    .toMatchObject({ status: 'ready', song: { id: 99 } });
+  expect(matchLiveSong({ artist: 'Bing Crosby', title: 'I Wish You A Merry Christmas' }))
+    .toMatchObject({ status: 'ready', song: { id: 204 } });
+  expect(matchLiveSong({ artist: 'Frank Sinatra', title: 'Hark The Herald Angels Sing' }).status).toBe('ambiguous');
+  expect(matchLiveSong({ artist: 'Gladys Knight & The Pips', title: "It's Christmas Everyday" }).status).toBe('empty');
+  expect(matchLiveSong({ artist: 'R Kelly World', title: 'Christmas' }).status).toBe('empty');
+});
+
 test('lyrics reader follows feed changes, clears stale text and leaves audio untouched', async ({ page }) => {
   let current = { artist: 'Elton John', title: 'Step into Christmas' }, unavailable = false;
   await page.route('**/api/radio-metadata', route => route.fulfill({ json: {

@@ -18,6 +18,9 @@ const normalizeTitleCredits = text => normalizeTrackText(text)
   .replace(/\s+(?:ft|feat|featuring)$/, '')
   .replace(/\s+(?:ft|featuring)\s+/g, ' feat ');
 
+export const hasUsableLyrics = song => Boolean(song.lyrics?.trim()) &&
+  !/^We are working on it\. If you can help, please use the form below$/i.test(song.lyrics.trim());
+
 export function matchLiveSong(track, catalogue = songs, aliases = liveSongAliases) {
   if (!track || typeof track.artist !== 'string' || typeof track.title !== 'string' ||
       !track.artist.trim() || !track.title.trim()) return { status: 'unavailable' };
@@ -33,7 +36,15 @@ export function matchLiveSong(track, catalogue = songs, aliases = liveSongAliase
     matches = catalogue.filter(s => same(s.artist, track.artist) &&
       normalizeTitleCredits(s.song) === normalizeTitleCredits(track.title));
   }
-  if (matches.length > 1) return { status: 'ambiguous' };
+  if (matches.length > 1) {
+    // Historical duplicates may keep their URLs without blocking identical lyrics.
+    // Different wording or different title/version labels still require review.
+    const first = matches[0];
+    const identical = matches.every(s => s.artist === first.artist && s.song === first.song &&
+      s.lyrics?.trim() === first.lyrics?.trim());
+    if (!identical) return { status: 'ambiguous' };
+    matches = [matches.reduce((a, b) => a.id < b.id ? a : b)];
+  }
   if (!matches.length) return { status: 'unmatched' };
-  return { status: matches[0].lyrics?.trim() ? 'ready' : 'empty', song: matches[0] };
+  return { status: hasUsableLyrics(matches[0]) ? 'ready' : 'empty', song: matches[0] };
 }

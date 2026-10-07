@@ -128,8 +128,8 @@ export default function SantaMessageForm({ showDetailLink = true }) {
           </div>
           <span className="message-name-hint" id={`${inputId}-hint`} aria-live="polite">{suggesting && name.trim() && !suggestions.length ? 'No matching recording yet. Try another name.' : 'Start typing to find a recorded name.'}</span>
           {validation && <p className="message-validation" id={`${inputId}-error`} role="alert">{validation}</p>}
-          <button className="btn-red message-submit" type="submit" disabled={busy}>{busy ? 'Mixing Santa’s message…' : 'Create message'} <span aria-hidden="true">→</span></button>
-          {busy && <p role="status" className="message-name-hint">Combining Santa’s voice, the selected name and sleigh bells. Please wait…</p>}
+          <button className="btn-red message-submit" type="submit" disabled={busy}>{busy ? 'Santa Recording...' : 'Create message'} <span aria-hidden="true">→</span></button>
+          {busy && <p role="status" className="message-name-hint">Santa is recording a personal message for you. Do hold on one moment...</p>}
         </form>
         {message && <div className="message-result" ref={resultRef} tabIndex={-1} aria-label={`Santa’s greeting for ${message.name}`}>
           <p className="message-postmark">A greeting is waiting</p>

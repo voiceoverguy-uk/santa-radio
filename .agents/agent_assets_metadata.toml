@@ -42,3 +42,17 @@ mtime_ms = 1791352336918
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/527797fa-0689-4b02-88e9-7d5fabe53698/9cf32b33-22c1-49aa-8823-d57a591a01a2"
 storage_version_token = "1791352407334672"
 content_type = "audio/mpeg"
+
+[[outputs]]
+id = "KtmMi8Ghwz7OcEBaUgm6r"
+uri = "file://docs/live-lyrics-audit.md"
+type = "text"
+title = "Live lyrics audit"
+description = "Findings from all 455 catalogue records, safe fixes, and entries requiring review."
+logical_id = "1119ed2e-670d-4284-bbc5-555209c33ca9"
+content_hash = "sha256:bce4ae01b4833e607a6b1b1f7e37298df20b34fcd52f1778526987332133477c"
+size = 2846
+mtime_ms = 1791356249866
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/1119ed2e-670d-4284-bbc5-555209c33ca9/5853a082-e7a3-40db-92f1-e0f9bee77752"
+storage_version_token = "1791356289386625"
+content_type = "text/markdown"
