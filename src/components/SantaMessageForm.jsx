@@ -4,6 +4,7 @@ import { findSantaMessage, searchSantaNames, santaNames } from '../data/santaMes
 import { useRadio } from './RadioProvider.jsx';
 import SantaMessageAccessForm from './SantaMessageAccessForm.jsx';
 import { useSantaMessageAccess } from './SantaMessageAccessProvider.jsx';
+import useSantaMessageAllowance from './useSantaMessageAllowance.js';
 import './SantaMessageForm.css';
 
 export default function SantaMessageForm({ showDetailLink = true }) {
@@ -23,6 +24,9 @@ export default function SantaMessageForm({ showDetailLink = true }) {
   const resultRef = useRef(null);
   const inputId = useId();
   const radio = useRadio();
+  const allowance = useSantaMessageAllowance();
+  const coolingDown = allowance.secondsLeft > 0;
+  const countdown = `${Math.floor(allowance.secondsLeft / 60).toString().padStart(2, '0')}:${(allowance.secondsLeft % 60).toString().padStart(2, '0')}`;
 
   useEffect(() => {
     if (hasAccess && !showDetailLink) makerHeadingRef.current?.focus();
@@ -36,6 +40,7 @@ export default function SantaMessageForm({ showDetailLink = true }) {
   useEffect(() => () => requestRef.current?.abort(), []);
 
   const updateName = value => {
+    if (coolingDown) return;
     resumeRadioRef.current = null;
     requestRef.current?.abort();
     requestRef.current = null;
@@ -53,7 +58,7 @@ export default function SantaMessageForm({ showDetailLink = true }) {
   };
   const submit = async event => {
     event.preventDefault();
-    if (busy) return;
+    if (requestRef.current || allowance.pending || coolingDown) return;
     resumeRadioRef.current = null;
     setSuggesting(false);
     audioRef.current?.pause();
@@ -71,18 +76,22 @@ export default function SantaMessageForm({ showDetailLink = true }) {
     requestRef.current = controller;
     setBusy(true);
     try {
-      const response = await fetch('/api/santa-message', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: recording.id }), signal: controller.signal,
-      });
-      if (!response.ok) {
-        const data = await response.json().catch(() => ({}));
-        throw new Error(data.error || 'Unable to create the message. Please try again.');
-      }
-      if (!response.headers.get('content-type')?.startsWith('audio/mpeg')) {
-        throw new Error('The message service did not return an MP3. Please try again shortly.');
-      }
-      const blob = await response.blob();
+      const blob = await allowance.create(async () => {
+        const response = await fetch('/api/santa-message', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: recording.id }), signal: controller.signal,
+        });
+        if (!response.ok) {
+          const data = await response.json().catch(() => ({}));
+          throw new Error(data.error || 'Unable to create the message. Please try again.');
+        }
+        if (!response.headers.get('content-type')?.startsWith('audio/mpeg')) {
+          throw new Error('The message service did not return an MP3. Please try again shortly.');
+        }
+        const blob = await response.blob();
+        if (!blob.size) throw new Error('The message service returned an empty recording. Please try again.');
+        return blob;
+      }, controller.signal);
       if (requestRef.current === controller) setMessage({ ...recording, url: URL.createObjectURL(blob) });
     } catch (error) {
       if (requestRef.current === controller && error.name !== 'AbortError') setValidation(error.message);
@@ -98,6 +107,12 @@ export default function SantaMessageForm({ showDetailLink = true }) {
     const resume = resumeRadioRef.current;
     resumeRadioRef.current = null;
     resume?.();
+  };
+  const listenToRadio = () => {
+    if (!radio || radio.status === 'playing' || radio.status === 'loading') return;
+    resumeRadioRef.current = null;
+    audioRef.current?.pause();
+    radio.togglePlay();
   };
 
   return <section className="santa-message-section" id="santa-messages">
@@ -123,13 +138,23 @@ export default function SantaMessageForm({ showDetailLink = true }) {
       </div>
       <div className={`santa-message-box${hasAccess ? '' : ' message-access-box'}`}>
         <div className="message-card-top"><span className="message-seal" aria-hidden="true">S</span><div><p className="message-postmark">The North Pole message desk</p><small>A recorded hello, ready to keep</small></div></div>
+        <p className="message-allowance-info">Create two free messages, then wait 30 minutes before creating another two.</p>
         {!hasAccess ? <SantaMessageAccessForm /> : <>
         <h3 ref={makerHeadingRef} tabIndex={-1}>Find your free Santa greeting</h3>
         <p className="form-desc">Choose from {santaNames.length} recorded names. Santa’s greeting is mixed especially for your selection when you press Create message.</p>
+        {coolingDown ? <div className="message-wait">
+          <p role="status">You’ve created your two free Santa messages for now. To generate more, please wait 30 minutes. Why not enjoy Christmas music while you wait?</p>
+          <p className="message-countdown">More messages in <span role="timer" aria-live="off">{countdown}</span></p>
+          <button className="message-retry" type="button" onClick={listenToRadio} disabled={!radio || radio.status === 'playing' || radio.status === 'loading'}>
+            {radio?.status === 'playing' ? 'Santa Radio is playing' : radio?.status === 'loading' ? 'Connecting to Santa Radio…' : 'Listen to Santa Radio'}
+          </button>
+          {radio?.error && <p className="message-audio-error" role="alert">{radio.error}</p>}
+        </div> : <p className="message-allowance-info" role="status">{allowance.remaining} free {allowance.remaining === 1 ? 'message' : 'messages'} remaining before the 30-minute wait.</p>}
+        {!allowance.remembered && <p className="message-name-hint" role="status">Your browser can’t remember the message allowance. The limit works while this page is open, but leaving or refreshing may reset it.</p>}
         <form onSubmit={submit} noValidate>
           <label className="message-name-label" htmlFor={inputId}>Child’s first name</label>
           <div className="message-name-picker">
-          <input className="message-name-input" id={inputId} type="text" role="combobox" aria-autocomplete="list" aria-expanded={suggesting && suggestions.length > 0} aria-controls={`${inputId}-options`} aria-activedescendant={suggesting && activeOption >= 0 ? `${inputId}-option-${activeOption}` : undefined} value={name}
+          <input className="message-name-input" id={inputId} type="text" role="combobox" disabled={coolingDown} aria-autocomplete="list" aria-expanded={suggesting && suggestions.length > 0} aria-controls={`${inputId}-options`} aria-activedescendant={suggesting && activeOption >= 0 ? `${inputId}-option-${activeOption}` : undefined} value={name}
             onChange={event => { updateName(event.target.value); setSuggesting(true); }}
             onFocus={() => setSuggesting(true)} onBlur={() => setSuggesting(false)}
             onKeyDown={event => {
@@ -148,8 +173,9 @@ export default function SantaMessageForm({ showDetailLink = true }) {
           </div>
           <span className="message-name-hint" id={`${inputId}-hint`} aria-live="polite">{suggesting && name.trim() && !suggestions.length ? 'No matching recording yet. Try another name.' : 'Start typing to find a recorded name.'}</span>
           {validation && <p className="message-validation" id={`${inputId}-error`} role="alert">{validation}</p>}
-          <button className="btn-red message-submit" type="submit" disabled={busy}>{busy ? 'Santa Recording...' : 'Create message'} <span aria-hidden="true">→</span></button>
+          <button className="btn-red message-submit" type="submit" disabled={busy || allowance.pending || coolingDown}>{busy ? 'Santa Recording...' : 'Create message'} <span aria-hidden="true">→</span></button>
           {busy && <p role="status" className="message-name-hint">Santa is recording a personal message for you. Do hold on one moment...</p>}
+          {!busy && allowance.pending && <p role="status" className="message-name-hint">Another message is being created. Please wait for it to finish.</p>}
         </form>
         {message && <div className="message-result" ref={resultRef} tabIndex={-1} aria-label={`Santa’s greeting for ${message.name}`}>
           <p className="message-postmark">A greeting is waiting</p>
