@@ -81,6 +81,19 @@ test('homepage keeps the countdown in the hero and plain Santa text in Contact S
     const countdown = await hero.locator('.countdown').boundingBox();
     expect(countdown.x).toBeGreaterThanOrEqual(0);
     expect(countdown.x + countdown.width).toBeLessThanOrEqual(width);
+    expect(countdown.width).toBeLessThanOrEqual(401);
+    expect(countdown.height).toBeLessThanOrEqual(75);
+    const numberSize = await hero.locator('.countdown-unit strong').first().evaluate(element => parseFloat(getComputedStyle(element).fontSize));
+    expect(numberSize).toBeLessThanOrEqual(24);
+    const tagline = await hero.locator('.hero-note').evaluate(element => {
+      const range = document.createRange();
+      range.selectNodeContents(element);
+      const bounds = range.getBoundingClientRect();
+      return { lines: range.getClientRects().length, left: bounds.left, right: bounds.right };
+    });
+    expect(tagline.lines).toBe(1);
+    expect(tagline.left).toBeGreaterThanOrEqual(-0.5);
+    expect(tagline.right).toBeLessThanOrEqual(width + 0.5);
     const note = await contact.locator('.santa-note-text').boundingBox();
     const email = await contact.getByRole('link', { name: 'Send Email' }).boundingBox();
     expect(note.y).toBeGreaterThanOrEqual(email.y + email.height);
