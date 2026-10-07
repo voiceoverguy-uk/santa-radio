@@ -1,6 +1,25 @@
 import { test, expect } from '@playwright/test';
 import { matchLiveSong } from '../src/data/matchLiveSong.js';
 
+test('homepage on-air Lyrics opens the live reader and closes outside without stopping audio', async ({ page }) => {
+  await page.route('**/api/radio-metadata', route => route.fulfill({ json: {
+    current: { artist: 'Greg Lake', title: 'I Believe In Father Christmas' },
+    currentStatus: 'ready', upcoming: [], upcomingStatus: 'ready',
+  } }));
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const section = page.getByRole('region', { name: 'Live radio songs' });
+  await expect(section).toContainText('Greg Lake');
+  await page.evaluate(() => { window.lyricsAudio = document.querySelector('audio'); });
+  const trigger = section.getByRole('button', { name: 'Lyrics', exact: true });
+  await trigger.click();
+  const dialog = page.getByRole('dialog', { name: 'Live lyrics' });
+  await expect(dialog.locator('pre')).toContainText(/father Christmas/i);
+  await page.mouse.click(3, 3);
+  await expect(dialog).not.toBeVisible();
+  await expect(trigger).toBeFocused();
+  expect(await page.evaluate(() => window.lyricsAudio === document.querySelector('audio'))).toBe(true);
+});
+
 test('outside click closes lyrics but inside clicks do not, including on mobile', async ({ page }) => {
   await page.route('**/api/radio-metadata', route => route.fulfill({ json: {
     current: { artist: 'Greg Lake', title: 'I Believe In Father Christmas' },
@@ -29,7 +48,7 @@ test('waiting messages rotate and reset when the lyrics reader reopens', async (
   await page.goto('/');
   // Freeze wall-clock progression so assertions cannot advance the rotation themselves.
   await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
-  await page.getByRole('button', { name: 'Lyrics', exact: true }).click();
+  await page.locator('.radio-dock').getByRole('button', { name: 'Lyrics', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'Live lyrics' });
   await expect(dialog).not.toContainText('word-by-word timing');
   const messages = [
@@ -48,7 +67,7 @@ test('waiting messages rotate and reset when the lyrics reader reopens', async (
   await page.clock.runFor(8000);
   await page.keyboard.press('Escape');
   await page.clock.runFor(16000);
-  await page.getByRole('button', { name: 'Lyrics', exact: true }).click();
+  await page.locator('.radio-dock').getByRole('button', { name: 'Lyrics', exact: true }).click();
   await expect(dialog).toContainText(messages[0]);
 });
 

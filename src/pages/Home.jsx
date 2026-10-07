@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { RadioButton } from '../components/AudioPlayer.jsx';
 import { useRadio } from '../components/RadioProvider.jsx';
 import RadioTracks from '../components/RadioTracks.jsx';
+import LiveLyrics from '../components/LiveLyrics.jsx';
 import Countdown from '../components/Countdown.jsx';
 import Soundboard from '../components/Soundboard.jsx';
 import SantaMessageForm from '../components/SantaMessageForm.jsx';
@@ -38,7 +39,10 @@ export default function Home() {
       </section>
       <section className="radio-listening-section" aria-label="Live radio songs">
         <div className="container radio-listening-layout">
-          <div className="radio-listening-current"><RadioTracks metadata={metadata} /></div>
+          <div className="radio-listening-current">
+            <RadioTracks metadata={metadata} />
+            <LiveLyrics metadata={metadata} />
+          </div>
           <div className="radio-listening-upcoming"><RadioTracks metadata={metadata} kind="upcoming" /></div>
         </div>
       </section>
