@@ -32,6 +32,13 @@ export default function AudioPlayer() {
       return !value;
     });
   };
+  const expandPlayer = event => {
+    setMinimized(false);
+    try { sessionStorage.setItem('radio-minimized', 'false'); } catch { /* Optional preference storage. */ }
+    if (event.detail === 0) {
+      requestAnimationFrame(() => dockRef.current?.querySelector('.radio-size-toggle')?.focus());
+    }
+  };
   useEffect(() => {
     if (minimized) return;
     const dock = dockRef.current;
@@ -65,7 +72,9 @@ export default function AudioPlayer() {
   }, [minimized]);
   const upcomingId = useId();
   return (
-    <aside ref={dockRef} onPointerDownCapture={() => { keyboardInteraction.current = false; }} className={`radio-dock ${minimized ? 'is-minimized' : ''} ${status === 'loading' ? 'is-loading' : ''}`} aria-label="Santa Radio player">
+    <aside ref={dockRef} onPointerDownCapture={() => { keyboardInteraction.current = false; }} onClick={event => {
+      if (minimized && !event.target.closest('button, a, input, select, textarea, [role="button"]')) expandPlayer(event);
+    }} className={`radio-dock ${minimized ? 'is-minimized' : ''} ${status === 'loading' ? 'is-loading' : ''}`} aria-label="Santa Radio player">
       <button type="button" className="radio-size-toggle" onClick={toggleSize}
         aria-label={minimized ? 'Expand radio player' : 'Minimise radio player'} aria-expanded={!minimized}
         title={minimized ? 'Expand player' : 'Minimise player'}>
@@ -73,23 +82,19 @@ export default function AudioPlayer() {
           <path d={minimized ? 'm6 15 6-6 6 6' : 'M5 12h14'} />
         </svg>
       </button>
-      {minimized && <div className="radio-mini-summary">
+      {minimized && <button type="button" className="radio-mini-summary" onClick={expandPlayer} aria-label="Show radio details" aria-describedby={`${upcomingId}-track`} aria-expanded="false">
         <span className="radio-eyebrow">SANTA RADIO</span>
-        <span className="radio-mini-track" title={metadata.currentStatus === 'ready' ? `${metadata.current.title} — ${metadata.current.artist}` : undefined}>
+        <span id={`${upcomingId}-track`} className="radio-mini-track" title={metadata.currentStatus === 'ready' ? `${metadata.current.title} — ${metadata.current.artist}` : undefined}>
           {metadata.currentStatus === 'ready' ? `${metadata.current.title} — ${metadata.current.artist}` : 'Christmas music, all year'}
         </span>
         {error && <span className="radio-mini-error" role="status">{error}</span>}
-      </div>}
+      </button>}
       <div className="radio-station">
         <span className="radio-eyebrow"><span className="live-dot active" aria-hidden="true" /> SANTA RADIO LIVE</span>
         {(error || status === 'loading') && <span className="radio-caption" role="status">{error || 'Connecting to the North Pole…'}</span>}
       </div>
       <div className="radio-dock-track"><RadioTracks metadata={metadata} showLabel={false} /><LiveLyrics metadata={metadata} /></div>
-      <RadioButton className="radio-play" onStart={() => {
-        if (!minimized) return;
-        setMinimized(false);
-        try { sessionStorage.setItem('radio-minimized', 'false'); } catch { /* Optional preference storage. */ }
-      }} />
+      <RadioButton className="radio-play" />
       <label className="radio-volume">Volume
         <input aria-label="Radio volume" type="range" min="0" max="1" step=".01" value={volume} onChange={event => setVolume(Number(event.target.value))} />
       </label>

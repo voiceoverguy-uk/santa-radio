@@ -25,7 +25,10 @@
 .is-minimized .radio-station, .is-minimized .radio-dock-track,
 .is-minimized .radio-volume, .is-minimized .radio-upcoming { display: none; }
 .is-minimized .radio-size-toggle { top: 50%; right: 4px; transform: translateY(-50%); }
-.radio-mini-summary { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.radio-mini-summary { min-width: 0; min-height: 44px; width: 100%; display: flex; flex-direction: column; justify-content: center; gap: 4px; border: 0; border-radius: 4px; padding: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.radio-mini-summary:hover .radio-mini-track { color: var(--gold-light); }
+.radio-mini-summary:focus-visible { outline: 2px solid var(--gold-light); outline-offset: -2px; }
+.radio-dock.is-minimized { cursor: pointer; }
 .radio-mini-track { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .7rem; color: var(--cream); }
 .radio-mini-error { font-size: .65rem; color: var(--cream); }
 .is-minimized .radio-play { padding: 8px 10px; min-height: 44px; font-size: .7rem; }

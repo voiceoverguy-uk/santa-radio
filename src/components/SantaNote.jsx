@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { santaNotes, daysUntilChristmasEve, formatSantaNote } from '../data/santaNotes.js';
 import './SantaNote.css';
 
-export default function SantaNote() {
+export default function SantaNote({ variant = 'bubble' }) {
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -40,9 +40,10 @@ export default function SantaNote() {
   }, [message, reducedMotion]);
   const complete = reducedMotion || visible >= message.length;
   const waiting = !reducedMotion && visible === 0;
+  const inline = variant === 'inline';
   return (
-    <div className="santa-note" aria-label="A note from Santa">
-      <p className="santa-note-sender">A message from Santa</p>
+    <div className={`santa-note${inline ? ' santa-note--inline' : ''}`} aria-label="A note from Santa">
+      {!inline && <p className="santa-note-sender">A message from Santa</p>}
       <p className="santa-note-text" aria-label={message}>
         <span aria-hidden="true">
           {waiting ? <span className="santa-note-dots"><i /><i /><i /></span> : complete ? message : message.slice(0, visible)}

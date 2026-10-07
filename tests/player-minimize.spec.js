@@ -1,12 +1,13 @@
 import { test, expect } from '@playwright/test';
 
-test('Listen Live expands the compact player then returns to compact after ten idle seconds', async ({ page }) => {
+test('Listen Live stays compact, details expand it, and ten idle seconds minimise it again', async ({ page }) => {
   await page.addInitScript(() => {
     sessionStorage.setItem('radio-minimized', 'true');
     HTMLMediaElement.prototype.play = function () {
       window.radioPlayCalls = (window.radioPlayCalls || 0) + 1;
       return Promise.resolve();
     };
+    HTMLMediaElement.prototype.load = function () {};
   });
   await page.clock.install({ time: new Date('2026-10-07T00:00:00Z') });
   await page.clock.pauseAt(new Date('2026-10-07T00:00:01Z'));
@@ -14,6 +15,8 @@ test('Listen Live expands the compact player then returns to compact after ten i
   const dock = page.getByRole('complementary', { name: 'Santa Radio player' });
   await expect(dock).toHaveClass(/is-minimized/);
   await dock.getByRole('button', { name: 'Listen Live', exact: true }).click();
+  await expect(dock).toHaveClass(/is-minimized/);
+  await dock.getByRole('button', { name: 'Show radio details' }).click();
   await expect(dock).not.toHaveClass(/is-minimized/);
   await expect(dock.getByRole('button', { name: 'Pause Radio' })).toBeVisible();
   await expect(dock.locator('.radio-station')).toHaveText('SANTA RADIO LIVE');

@@ -1,11 +1,8 @@
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { RadioButton } from '../components/AudioPlayer.jsx';
-import { useRadio } from '../components/RadioProvider.jsx';
-import RadioTracks from '../components/RadioTracks.jsx';
 import SantaNote from '../components/SantaNote.jsx';
 import SantaTrackerBanner from '../tracker/components/SantaTrackerBanner.tsx';
-import LiveLyrics from '../components/LiveLyrics.jsx';
 import Countdown from '../components/Countdown.jsx';
 import Soundboard from '../components/Soundboard.jsx';
 import SantaMessageForm from '../components/SantaMessageForm.jsx';
@@ -16,7 +13,6 @@ import SantaVideoSection from '../components/SantaVideoSection.jsx';
 import './Home.css';
 
 export default function Home() {
-  const { metadata } = useRadio();
   return (
     <main id="main-content" className="home-page">
       <Helmet>
@@ -39,19 +35,7 @@ export default function Home() {
             <Countdown />
           </div>
         </div>
-        <a href="#santa-message-section" className="hero-scroll"><span aria-hidden="true" />Step inside the magic</a>
-      </section>
-      <section className="radio-listening-section" aria-label="Live radio songs">
-        <div className="container radio-listening-layout">
-          <div className="radio-listening-current">
-            <RadioTracks metadata={metadata} />
-            <LiveLyrics metadata={metadata} />
-          </div>
-          <div className="radio-listening-upcoming"><RadioTracks metadata={metadata} kind="upcoming" /></div>
-        </div>
-      </section>
-      <section id="santa-message-section" className="santa-note-section" aria-label="A note from Santa">
-        <div className="container santa-note-layout"><SantaNote /></div>
+      <div className="hero-santa-note"><SantaNote variant="inline" /></div>
       </section>
       <SantaTrackerBanner />
       <SantaMessageForm />

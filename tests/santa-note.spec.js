@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { santaNotes, daysUntilChristmasEve, formatSantaNote } from '../src/data/santaNotes.js';
 
-test('mobile Santa bubble is compact and grows to show longer messages in full', async ({ page }) => {
+test('plain mobile Santa text reserves space and shows every message in full', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/', { waitUntil: 'domcontentloaded' });
@@ -13,7 +13,7 @@ test('mobile Santa bubble is compact and grows to show longer messages in full',
       const span = element.querySelector('span');
       return notes.map(note => {
         span.textContent = `Santa here... ${note}`;
-        // Measure the text itself: the decorative bubble tail extends outside the box.
+        // Measure every rotating line against its reserved unboxed text area.
         const range = document.createRange();
         range.selectNodeContents(span);
         const content = range.getBoundingClientRect();
@@ -25,9 +25,9 @@ test('mobile Santa bubble is compact and grows to show longer messages in full',
         };
       });
     }, santaNotes.map(note => formatSantaNote(note, 78)));
-    expect(sizes[0].height).toBeLessThanOrEqual(80);
+    expect(sizes[0].height).toBeLessThanOrEqual(110);
     expect(sizes.every(size => size.fits)).toBe(true);
-    expect(sizes.some(size => size.height > sizes[0].height)).toBe(true);
+    expect(new Set(sizes.map(size => size.height)).size).toBe(1);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
 });
@@ -42,7 +42,7 @@ test('Christmas Eve notes use calendar days and roll over after Christmas Eve', 
   expect(formatSantaNote(santaNotes[3], 78)).toBe("Head Elf tells me we'll be ready in 78 days!");
 });
 
-test('Santa bubble shows dots, types the whole message slowly and rotates without Pause', async ({ page }) => {
+test('plain Santa text shows dots, types the whole message slowly and rotates without Pause', async ({ page }) => {
   expect(santaNotes).toHaveLength(51);
   expect(new Set(santaNotes).size).toBe(51);
   expect(Math.max(...santaNotes.map(text => (`Santa here... ${text}`).length)) * 60 + 2000).toBeLessThan(8500);
