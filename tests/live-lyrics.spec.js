@@ -80,9 +80,11 @@ test('identical historical duplicates work but conflicting lyrics and placeholde
     .toMatchObject({ status: 'ready', song: { id: 99 } });
   expect(matchLiveSong({ artist: 'Bing Crosby', title: 'I Wish You A Merry Christmas' }))
     .toMatchObject({ status: 'ready', song: { id: 204 } });
-  expect(matchLiveSong({ artist: 'Frank Sinatra', title: 'Hark The Herald Angels Sing' }).status).toBe('ambiguous');
-  expect(matchLiveSong({ artist: 'Gladys Knight & The Pips', title: "It's Christmas Everyday" }).status).toBe('empty');
-  expect(matchLiveSong({ artist: 'R Kelly World', title: 'Christmas' }).status).toBe('empty');
+  expect(matchLiveSong({ artist: 'Frank Sinatra', title: 'Hark The Herald Angels Sing' })).toMatchObject({ status: 'ready', song: { id: 379 } });
+  expect(matchLiveSong({ artist: 'Gladys Knight & The Pips', title: "It's Christmas Everyday" })).toMatchObject({ status: 'ready', song: { song: "When You Love Someone (It's Christmas Everyday)" } });
+  expect(matchLiveSong({ artist: 'Mike Oldfield', title: 'Il Dulci Jubilo' })).toMatchObject({ status: 'ready', song: { song: 'In Dulci Jubilo' } });
+  expect(matchLiveSong({ artist: 'R Kelly World', title: 'Christmas' }).status).toBe('unmatched');
+  expect(matchLiveSong({ artist: 'On Ember ft Blend', title: 'on-ember' }).status).toBe('unmatched');
 });
 
 test('lyrics reader follows feed changes, clears stale text and leaves audio untouched', async ({ page }) => {

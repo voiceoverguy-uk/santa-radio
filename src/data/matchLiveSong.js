@@ -3,6 +3,8 @@ import songs from './songs.json' with { type: 'json' };
 // Add only verified exceptions: { artist: feedArtist, title: feedTitle, songId: catalogueId }.
 // Never strip version labels or guess an artist from a title alone.
 export const liveSongAliases = [
+  { artist: 'Gladys Knight & The Pips', title: "It's Christmas Everyday", songId: 212 },
+  { artist: 'Mike Oldfield', title: 'Il Dulci Jubilo', songId: 135 },
   // Feed repeats the artist in the title; verified against the catalogue lyrics.
   { artist: 'Bo Selecta', title: 'Bo Selecta - Proper Crimbo', songId: 66 },
   // Truncated titles observed in the live feed; explicit rather than fuzzy prefixes.

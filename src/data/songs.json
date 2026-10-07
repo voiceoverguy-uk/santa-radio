@@ -1616,7 +1616,7 @@
   },
   {
     "id": 135,
-    "song": "Il Dulci Jubilo",
+    "song": "In Dulci Jubilo",
     "artist": "Mike Oldfield",
     "image": "",
     "info": "Michael Gordon \"Mike\" Oldfield is an English musician and composer. His work blends progressive rock with world, folk, classical, electronic, ambient, and new-age music.",
@@ -2189,20 +2189,6 @@
     ]
   },
   {
-    "id": 186,
-    "song": "Hark The Herald Angels Sing",
-    "artist": "Frank Sinatra",
-    "image": "",
-    "info": "Francis Albert Sinatra was an American singer, actor, and producer who was one of the most popular and influential musical artists of the 20th century. Sinatra's music has been considered timeless by many. He is one of the best-selling music artists of all time, having sold more than 150 million records worldwide",
-    "website": "https://www.facebook.com/sinatra/",
-    "lyrics": "hark! the herald angels sing\n\"glory to the newborn king!\"\npeace on earth, and mercy mild\ngod and sinners reconciled\njoyful all ye nations rise\njoin the triumph of the skies\nwith th'angelic host proclaim\n\"christ is born in bethlehem.\"\nhark! the herald angels sing\n\"glory to the newborn king!\"\n\nchrist, by highest heav'n adored\nchrist the everlasting lord\nlate in time behold him come\noffspring of the favored one\nveiled in flesh, the godhead see\nhail th'incarnate deity\npleased, as man with men to dwell\njesus, our immanuel!\nhark! the herald angels sing\n\"glory to the newborn king!\"\n\noh, oh, oh\nah\n\nhail! the heav'n born prince of peace!\nhail! the son of righteousness!\nlight and life to all he brings\nris'n with healing in his wings\n\nborn that man no more may die\nborn to raise the sons of earth\nborn to give them second birth\nhark! the herald angels sing\n\"glory to the newborn king!\"\nyeah",
-    "youtube": "0GWFdFqLKZ4",
-    "link": "frank-sinatra-hark-the-herald-angels-sing",
-    "aliases": [
-      "186-frank-sinatra-hark-the-herald-angels-sing"
-    ]
-  },
-  {
     "id": 187,
     "song": "Hark The Herald Angels Sing",
     "artist": "Nat King Cole",
@@ -2512,12 +2498,12 @@
   },
   {
     "id": 212,
-    "song": "It's Christmas Everyday",
+    "song": "When You Love Someone (It's Christmas Everyday)",
     "artist": "Gladys Knight & The Pips",
     "image": "",
     "info": "Gladys Knight & the Pips were an R&B/soul family musical act from Atlanta, Georgia that remained active on the music charts and performing circuit for three decades.",
     "website": "https://www.facebook.com/gladysknight/",
-    "lyrics": "We are working on it. If you can help, please use the form below",
+    "lyrics": "Baby, it's Christmas every day if you love someone\nOh, baby, it's a day you love\nSo oh, it's Christmas Day for now\nAnd not just my holiday Christmas, baby, you love someone...\nI'm so glad we got each other\nOh, it's Christmas, you love it's every day",
     "youtube": "WLw-VWFi7jM",
     "link": "gladys-knight-the-pips-its-christmas-everyday",
     "aliases": [
@@ -4200,11 +4186,13 @@
     "image": "",
     "info": "Francis Albert Sinatra was an American singer, actor, and producer who was one of the most popular and influential musical artists of the 20th century. Sinatra's music has been considered timeless by many. He is one of the best-selling music artists of all time, having sold more than 150 million records worldwide",
     "website": "https://www.facebook.com/sinatra/",
-    "lyrics": "Hark the herald angels sing\nGlory to the new born king\nPeace on earth and mercy mild\nGod and sinners reconciled\n\nJoyful all ye nations rise\nJoin the triumph of the skies\nWith angelic host proclaim\nChrist is born in Bethlehem\n\nHark the herald angels sing\nGlory to the new born king\n\nHail the heav'n-born prince of peace\nHail the son of rightousness\nLight and life to all he brings\nRisen with healing in his wings\n\nMild he lays his glory by\nBorn that man no more may die\nBorn to raise the sons of earth\nBorn to give them second birth\n\nHark the herald angels sing\nGlory to the new born king\n\nHark the herald angels sing\nGlory to the new born king\nPeace on earth and mercy mild\nGod and sinners reconciled\n\nJoyful all ye nations rise\nJoin the triumph of the skies\nWith angelic host proclaim\nChrist is born in Bethlehem\n\nHark the herald angels sing\nGlory to the new born king\n\n(Glory) Glory to the new born king\n\nWith angelic host proclaim\nChrist is born in Bethlehem\n\nHark the herald angels sing\nGlory to the new born\nGlory to the new born\nGlory to the new, born king",
+    "lyrics": "Hark the herald angels sing\nGlory to the new born king\nPeace on earth and mercy mild\nGod and sinners reconciled\n\nJoyful all ye nations rise\nJoin the triumph of the skies\nWith angelic host proclaim\nChrist is born in Bethlehem\n\nHark the herald angels sing\nGlory to the new born king\n\nHail the heav'n-born prince of peace\nHail the son of righteousness\nLight and life to all he brings\nRisen with healing in his wings\n\nMild he lays his glory by\nBorn that man no more may die\nBorn to raise the sons of earth\nBorn to give them second birth\n\nHark the herald angels sing\nGlory to the new born king\n\nHark the herald angels sing\nGlory to the new born king\nPeace on earth and mercy mild\nGod and sinners reconciled\n\nJoyful all ye nations rise\nJoin the triumph of the skies\nWith angelic host proclaim\nChrist is born in Bethlehem\n\nHark the herald angels sing\nGlory to the new born king\n\n(Glory) Glory to the new born king\n\nWith angelic host proclaim\nChrist is born in Bethlehem\n\nHark the herald angels sing\nGlory to the new born\nGlory to the new born\nGlory to the new, born king",
     "youtube": "0GWFdFqLKZ4",
     "link": "frank-sinatra-hark-the-herald-angels-sing",
     "aliases": [
-      "379-frank-sinatra-hark-the-herald-angels-sing"
+      "379-frank-sinatra-hark-the-herald-angels-sing",
+      "186",
+      "186-frank-sinatra-hark-the-herald-angels-sing"
     ]
   },
   {
@@ -5386,20 +5374,6 @@
     ]
   },
   {
-    "id": 482,
-    "song": "on-ember",
-    "artist": "On Ember ft Blend",
-    "image": "",
-    "info": "On Ember is a studio collective led by artist, songwriter Tre Carn. Their current release  \"A Lovers Christmas\", is a romance inspired Holiday tune written and composed by Carn who is well recognized for writing soul-touching songs inspired by Jesus.",
-    "website": "https://mosaicrain.com/",
-    "lyrics": "It’s a Happy Holiday\nGonna call my love and celebrate\nCause Christmas Eve is on it’s way tonight\nTo bring the world delight\n\nIt’s our night  \nAnd I wanna hold you near\nTonight\n\nIt’s Christmas time\nAnd I want too\nStay up all night\nTo be with you\nA little fire inside\nA cozy room \nJust how we like\nJust how we like\n\nThe smell of romance fills the air\nThere’s love in every gift we share\n2 of us kissing here by candlelight  \nUnder the Mistletoe tonight\t\n\nIt’s our night  \nAnd I wanna hold you near\nTonight\n\nIt’s Christmas time\nAnd I want too\nStay up all night\nTo be with you\nA little fire inside\nA cozy room \nJust how we like\nJust how we like\n\nSo darling what is your wish for tell me your wish for Christmas Day\nI want a diamond from the gift store that says I love you baby",
-    "youtube": "xiZUXNZqkc0",
-    "link": "on-ember-ft-blend-on-ember",
-    "aliases": [
-      "482-on-ember-ft-blend-on-ember"
-    ]
-  },
-  {
     "id": 486,
     "song": "I aint Spending Christmas Alone",
     "artist": "Heidi Anne",
@@ -6300,15 +6274,5 @@
     "youtube": "tmy1-mr0RhA",
     "link": "laufey-santa-claus-is-comin-to-town",
     "aliases": []
-  },
-  {
-    "id": 422,
-    "artist": "R Kelly World",
-    "song": "Christmas",
-    "info": "",
-    "image": "",
-    "lyrics": "",
-    "link": "r-kelly-world-christmas",
-    "youtube": ""
   }
 ]

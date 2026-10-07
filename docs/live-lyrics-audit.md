@@ -1,5 +1,9 @@
 # Live lyrics catalogue audit — 7 October 2026
 
+## Subsequent user-approved corrections
+
+The findings below describe the original audit. Since then, the user approved removing R Kelly World and On Ember, consolidating Sinatra into record 379 (the more complete text, without the other entry's stray ad-libs), supplying Gladys Knight's title and lyrics, and correcting Mike Oldfield to In Dulci Jubilo while keeping the instrumental joke. Historical links for retained songs remain valid; old feed titles have aliases. The catalogue now contains 452 records. The Sinatra selection is editorial, not verified against the broadcast audio.
+
 ## Scope
 
 Checked all 455 catalogue records against the live lyrics matcher, including normalized artist/title collisions, exact duplicate records, missing/placeholder lyrics, unusually short entries, suspicious slug-like titles and existing feed aliases. Also compared the currently available live/upcoming feed entries.
