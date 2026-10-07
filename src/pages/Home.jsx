@@ -33,7 +33,7 @@ export default function Home() {
           <p className="eyebrow">A little magic from the North Pole</p>
           <h1 className="hero-title">Live from The North Pole,<span>Santa Radio</span></h1>
           <p className="hero-description">Listen live to Santa Radio, discover festive favourites and share a little Christmas magic with the whole family.</p>
-          <div className="hero-actions"><Link to="/free-santa-message" className="btn-gold">Discover Santa Messages <span aria-hidden="true">↗</span></Link><RadioButton className="btn-red" /></div>
+          <div className="hero-actions"><Link to="/free-santa-message" className="btn-gold">FREE Santa Message <span aria-hidden="true">↗</span></Link><RadioButton className="btn-red" /></div>
           <p className="hero-note">The World’s Best Christmas Radio Station · All year round</p>
           <SantaNote />
         </div>

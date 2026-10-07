@@ -18,7 +18,7 @@ test('homepage, direct visits and existing message navigation all require adult 
   await expect(section.getByRole('textbox', { name: 'First name', exact: true })).toBeVisible();
   await expect(section.getByRole('link', { name: 'privacy policy' })).toHaveAttribute('href', '/privacy-policy');
   await expect(section).not.toContainText('No signup');
-  await page.locator('.hero-actions').getByRole('link', { name: /Discover Santa Messages/ }).click();
+  await page.locator('.hero-actions').getByRole('link', { name: 'FREE Santa Message', exact: true }).click();
   await expect(page).toHaveURL(/\/free-santa-message$/);
   await expect(page.getByRole('button', { name: 'Get my free Santa message' })).toBeVisible();
   await page.goto('/apps');
