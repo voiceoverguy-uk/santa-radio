@@ -13,7 +13,7 @@ export default function Footer() {
         <span>&middot;</span>
         <Link to="/christmas-music">Playlist</Link>
         <span>&middot;</span>
-        <a href="mailto:santa@santaradio.co.uk?subject=Santa%20Radio%20question">Questions? Email us</a>
+        <a href="https://www.santaguy.co.uk" target="_blank" rel="noopener noreferrer">SantaGuy.co.uk</a>
         <span>&middot;</span>
         <Link to="/submit-a-song">Submit your song</Link>
         <span>&middot;</span>

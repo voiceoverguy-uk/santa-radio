@@ -42,6 +42,9 @@ test('homepage and footer omit the promotion while the separate stories route re
   await page.goto('/');
   await expect(page.locator('main')).not.toContainText(/Santa Text Secret Code Words|chance to win|fantastic prizes/i);
   await expect(page.locator('footer a[href="/santa-stories"]')).toHaveCount(0);
+  await expect(page.locator('footer').getByRole('link', { name: 'SantaGuy.co.uk', exact: true }))
+    .toHaveAttribute('href', 'https://www.santaguy.co.uk');
+  await expect(page.locator('footer').getByRole('link', { name: 'Questions? Email us', exact: true })).toHaveCount(0);
   await expect(page.locator('.footer-links > :last-child')).toHaveText('Privacy Policy');
   await expect(page.locator('.footer-links a')).toHaveCount(8);
   await page.goto('/santa-stories');
