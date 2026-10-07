@@ -1,7 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { RadioButton } from '../components/AudioPlayer.jsx';
-import SantaNote from '../components/SantaNote.jsx';
 import SantaTrackerBanner from '../tracker/components/SantaTrackerBanner.tsx';
 import Countdown from '../components/Countdown.jsx';
 import Soundboard from '../components/Soundboard.jsx';
@@ -35,7 +34,6 @@ export default function Home() {
             <Countdown />
           </div>
         </div>
-      <div className="hero-santa-note"><SantaNote variant="inline" /></div>
       </section>
       <SantaTrackerBanner />
       <SantaMessageForm />

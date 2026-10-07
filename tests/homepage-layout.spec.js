@@ -49,7 +49,7 @@ test('desktop player keeps its existing expanded default and remembers minimisin
   await expect(dock).toHaveClass(/is-minimized/);
 });
 
-test('homepage keeps the countdown and compact Santa bubble in the hero with the tracker immediately below', async ({ page }) => {
+test('homepage keeps the countdown in the hero and plain Santa text in Contact Santa Radio', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   const hero = page.locator('.hero');
   await expect(page.locator('.welcome-section')).toHaveCount(0);
@@ -62,11 +62,15 @@ test('homepage keeps the countdown and compact Santa bubble in the hero with the
   await expect(hero.locator('.hero-countdown')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
   await expect(hero.locator('.hero-countdown')).toHaveCSS('border-top-width', '0px');
   await expect(hero.locator('.countdown-unit')).toHaveCount(4);
-  await expect(hero.locator('.santa-note')).toBeVisible();
-  await expect(hero.locator('.santa-note-text')).not.toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
-  await expect(hero.locator('.santa-note-text')).toHaveCSS('border-top-width', '1px');
-  await expect(hero.locator('.santa-note-sender')).toHaveCount(0);
-  await expect(hero.getByText('Sent with Elfie', { exact: true })).toBeVisible();
+  const contact = page.locator('.contact-section');
+  await expect(hero.locator('.santa-note, .hero-santa-note')).toHaveCount(0);
+  await expect(contact.locator('.santa-note')).toBeVisible();
+  await expect(contact.locator('.santa-note-text')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  await expect(contact.locator('.santa-note-text')).toHaveCSS('border-top-width', '0px');
+  await expect(page.locator('.santa-note-sender, .santa-note-caption')).toHaveCount(0);
+  await expect(page.getByText('Sent with Elfie', { exact: true })).toHaveCount(0);
+  await expect(contact.getByRole('heading', { name: 'Contact Santa Radio' })).toBeVisible();
+  await expect(contact.getByRole('link', { name: 'Send Email' })).toHaveAttribute('href', 'mailto:santa@santaradio.co.uk?subject=Enquiry%20from%20Santa%20Radio');
   await expect(page.locator('.santa-note')).toHaveCount(1);
   await expect(hero.getByRole('link', { name: 'FREE Santa Message', exact: true })).toHaveAttribute('href', '/free-santa-message');
   const before = await hero.locator('.countdown-unit').last().textContent();
@@ -77,8 +81,9 @@ test('homepage keeps the countdown and compact Santa bubble in the hero with the
     const countdown = await hero.locator('.countdown').boundingBox();
     expect(countdown.x).toBeGreaterThanOrEqual(0);
     expect(countdown.x + countdown.width).toBeLessThanOrEqual(width);
-    const note = await hero.locator('.santa-note-text').boundingBox();
-    expect(note.y).toBeGreaterThanOrEqual(countdown.y + countdown.height);
+    const note = await contact.locator('.santa-note-text').boundingBox();
+    const email = await contact.getByRole('link', { name: 'Send Email' }).boundingBox();
+    expect(note.y).toBeGreaterThanOrEqual(email.y + email.height);
     expect(note.x).toBeGreaterThanOrEqual(0);
     expect(note.x + note.width).toBeLessThanOrEqual(width);
   }

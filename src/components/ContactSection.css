@@ -49,3 +49,26 @@
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0,0,0,0.4);
 }
+
+.contact-santa-note {
+  width: min(100%, 620px);
+  margin: 18px auto 0;
+}
+
+.contact-santa-note .santa-note {
+  width: 100%;
+  max-width: none;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.contact-santa-note .santa-note-text {
+  margin: 0;
+  color: #e7e8df;
+  font-size: .85rem;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+  text-shadow: 0 1px 6px #061c17a8;
+}
+
+.home-page .contact-section { padding-block: 52px; }

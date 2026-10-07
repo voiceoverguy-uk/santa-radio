@@ -1,4 +1,5 @@
 import './ContactSection.css';
+import SantaNote from './SantaNote.jsx';
 
 export default function ContactSection() {
   return (
@@ -14,6 +15,9 @@ export default function ContactSection() {
         >
           Send Email
         </a>
+        <div className="contact-santa-note">
+          <SantaNote />
+        </div>
       </div>
     </section>
   );
