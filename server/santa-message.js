@@ -6,10 +6,10 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import ffmpegPath from 'ffmpeg-static';
 import { findSantaMessage } from '../src/data/santaMessages.js';
+import { renderArgs } from '../scripts/santa-audio-filters.mjs';
 
 const execute = promisify(execFile);
 const sources = fileURLToPath(new URL('./santa-audio/', import.meta.url));
-const renderer = fileURLToPath(new URL('../scripts/render-santa-message.mjs', import.meta.url));
 let active = 0;
 
 export default async function santaMessage(req, res) {
@@ -26,6 +26,8 @@ export default async function santaMessage(req, res) {
   if (active >= 2) return fail(429, 'Santa is preparing other messages. Please try again in a moment.');
   active++;
   let directory;
+  const started = performance.now();
+  let renderMs;
   try {
     // Vercel parses JSON before calling the function; the local Node server
     // supplies a readable stream instead. Support both without rereading it.
@@ -47,11 +49,14 @@ export default async function santaMessage(req, res) {
     if (!recording) return fail(400, 'That name is not available yet. Choose a suggested name.');
     directory = await mkdtemp(join(tmpdir(), 'santa-message-'));
     const output = join(directory, 'message.mp3');
-    await execute(process.execPath, [renderer,
-      join(sources, 'free-intro.wav'), join(sources, 'names', `${recording.id}.wav`),
-      join(sources, 'free-outro.wav'), join(sources, 'sleighbells.mp3'), output,
-      ffmpegPath,
-    ], { timeout: 90000, maxBuffer: 2 * 1024 * 1024 });
+    const renderStarted = performance.now();
+    // Execute the audio worker directly. Timing out a Node wrapper leaves its
+    // synchronous FFmpeg child alive, competing with subsequent requests.
+    await execute(ffmpegPath, renderArgs(
+      join(sources, 'prepared', 'intro.wav'), join(sources, 'names', `${recording.id}.wav`),
+      join(sources, 'prepared', 'outro.wav'), join(sources, 'sleighbells.mp3'), output, true,
+    ), { timeout: 90000, killSignal: 'SIGKILL', maxBuffer: 64 * 1024 });
+    renderMs = Math.round(performance.now() - renderStarted);
     const audio = await readFile(output);
     res.writeHead(200, {
       'Content-Type': 'audio/mpeg',
@@ -60,9 +65,16 @@ export default async function santaMessage(req, res) {
       'X-Content-Type-Options': 'nosniff',
     });
     res.end(audio);
+    console.info('[santa-message] complete', {
+      renderMs, totalMs: Math.round(performance.now() - started), bytes: audio.length,
+    });
   } catch (error) {
     // Log operational codes only, never submitted names or contact details.
-    console.error('[santa-message] rendering failed', { code: error.code, signal: error.signal });
+    console.error('[santa-message] rendering failed', {
+      code: typeof error.code === 'number' ? error.code : ['ENOENT', 'EACCES', 'ERR_CHILD_PROCESS_STDIO_MAXBUFFER'].includes(error.code) ? error.code : 'RENDER_FAILED',
+      signal: error.signal === 'SIGKILL' ? 'SIGKILL' : null,
+      totalMs: Math.round(performance.now() - started),
+    });
     if (!res.headersSent && !res.destroyed) fail(503, 'The message could not be mixed. Please try again.');
   } finally {
     active--;

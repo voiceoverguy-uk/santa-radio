@@ -31,3 +31,9 @@ The user chose two free messages before a 30-minute wait.
 **Why:** When asked whether the allowance before the wait should be two or three messages, the user selected “Two messages”.
 
 **How to apply:** Use two messages and a 30-minute wait when planning or implementing the free-message allowance; do not substitute three.
+
+Preparing reusable, lossless shared source clips is acceptable; pre-creating personalised greetings is not. Keep the supplied recordings and their editorial waveform/padding intact.
+
+**Why:** The on-demand requirement is about assembling personalised messages at request time, not repeating invariant source processing. Lossless shared preparation reduces CPU and memory without creating a completed-message catalogue.
+
+**How to apply:** Optimise invariant source processing separately from name selection and mixing. Validate waveform equivalence before lossy MP3 encoding; encoded file hashes alone are not an audio-quality comparison.

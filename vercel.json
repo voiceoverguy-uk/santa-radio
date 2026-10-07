@@ -5,7 +5,7 @@
   "functions": {
     "api/santa-message.js": {
       "maxDuration": 120,
-      "includeFiles": "{server/santa-audio/**,scripts/render-santa-message.mjs,node_modules/ffmpeg-static/**}"
+      "includeFiles": "{server/santa-audio/**,scripts/santa-audio-filters.mjs,node_modules/ffmpeg-static/**}"
     }
   },
   "headers": [

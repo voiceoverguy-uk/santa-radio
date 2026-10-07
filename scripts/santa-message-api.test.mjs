@@ -22,7 +22,8 @@ before(async () => {
 after(() => new Promise(resolve => server.close(resolve)));
 
 for (const route of ['/stream', '/parsed']) {
-  test(`Erin creates a playable MP3 with ${route} request handling`, { timeout: 100000 }, async () => {
+  test(`Erin creates a playable MP3 with ${route} request handling`, { timeout: 20000 }, async () => {
+    const started = performance.now();
     const response = await fetch(`${base}${route}`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: 'erin' }),
@@ -37,6 +38,7 @@ for (const route of ['/stream', '/parsed']) {
       '-v', 'error', '-i', 'pipe:0', '-f', 'null', '-',
     ], { input: audio, timeout: 30000 });
     assert.equal(decoded.status, 0, decoded.stderr?.toString());
+    assert.ok(performance.now() - started < 15000, 'End-to-end creation should finish well inside the hosting budget.');
   });
 }
 
@@ -59,4 +61,14 @@ test('GET is rejected by the API rather than returning website HTML', async () =
   assert.equal(response.status, 405);
   assert.equal(response.headers.get('allow'), 'POST');
   assert.ok((await response.json()).error);
+});
+
+test('two simultaneous messages finish and a third is rejected without queuing', { timeout: 20000 }, async () => {
+  const post = () => fetch(`${base}/stream`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: 'erin' }),
+  });
+  const responses = await Promise.all([post(), post(), post()]);
+  assert.deepEqual(responses.map(response => response.status).sort(), [200, 200, 429]);
+  for (const response of responses) await response.arrayBuffer();
 });
