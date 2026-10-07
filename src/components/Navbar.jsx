@@ -24,7 +24,7 @@ export default function Navbar() {
   }, [menuOpen]);
   const links = [
     { to: '/', label: 'Home' }, { to: '/apps', label: 'Apps' },
-    { to: '/free-santa-message', label: 'FREE Santa Message' }, { to: '/christmas-music', label: 'Music' },
+    { to: '/free-santa-message', label: 'FREE Audio Message' }, { to: '/christmas-music', label: 'Music' },
     { to: '/mugshots/all', label: 'Mug Shots' },
   ];
   return (

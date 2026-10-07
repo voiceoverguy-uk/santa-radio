@@ -1,12 +1,19 @@
 import { useEffect, useState } from 'react';
-import { santaNotes } from '../data/santaNotes.js';
+import { santaNotes, daysUntilChristmasEve, formatSantaNote } from '../data/santaNotes.js';
 import './SantaNote.css';
 
 export default function SantaNote() {
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-  const message = `Santa here... ${santaNotes[index]}`;
+  const [days, setDays] = useState(daysUntilChristmasEve);
+  const message = `Santa here... ${formatSantaNote(santaNotes[index], days)}`;
+  useEffect(() => {
+    const refresh = () => setDays(daysUntilChristmasEve());
+    const timer = setInterval(refresh, 1000);
+    window.addEventListener('focus', refresh);
+    return () => { clearInterval(timer); window.removeEventListener('focus', refresh); };
+  }, []);
   useEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
     const update = () => setReducedMotion(media.matches);

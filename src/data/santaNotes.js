@@ -1,7 +1,8 @@
 export const santaNotes = [
   'Merry Christmas... nearly',
-  'Are you ready yet?',
-  'I see supermarkets already have advent calendars!',
+  'Are you ready yet? We are not! Not even close!',
+  'I see supermarkets already have advent calendars! Can you pick one up for me please?',
+  "Head Elf tells me we'll be ready in {christmasEveDays}!",
   'Ho Ho Home is where Christmas is!',
   'Head Elf told me you are on the naughty list! Really??',
   'Rudolph has requested a sat nav. Apparently my shortcuts are legendary.',
@@ -50,3 +51,16 @@ export const santaNotes = [
   'I asked the elves to think outside the box. Now nobody can find the lids.',
   'The sleigh runs on Christmas magic. I run on tea and mild biscuit-related panic.',
 ];
+
+// Compare calendar dates as UTC day numbers to avoid daylight-saving offsets.
+export function daysUntilChristmasEve(now = new Date()) {
+  const year = now.getFullYear();
+  const today = Date.UTC(year, now.getMonth(), now.getDate());
+  let target = Date.UTC(year, 11, 24);
+  if (today > target) target = Date.UTC(year + 1, 11, 24);
+  return Math.round((target - today) / 86400000);
+}
+
+export function formatSantaNote(note, days) {
+  return note.replace('{christmasEveDays}', `${days} ${days === 1 ? 'day' : 'days'}`);
+}
