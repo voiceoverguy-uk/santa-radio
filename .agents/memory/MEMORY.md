@@ -2,6 +2,8 @@
 - [Radio feed hosting](radio-feed-hosting.md) — Preserve legacy feed hosting when moving the main domain; metadata may lead buffered audio.
 - [Portable package locks](portable-package-locks.md) — Check dependency download URLs stay accessible to Vercel after package changes.
 - [Music catalogue scope](music-catalogue.md) — Include all supplied database songs; the user will decide removals later.
+- [Music biography editorial](music-biography-editorial.md) — Sourced, concise British-English biographies; keep Christmas Music separate from Mugshots.
+- [YouTube verification](youtube-verification.md) — Metadata availability is not playback proof; local screenshots can disagree with the proxied preview.
 - [Legacy export encoding](legacy-export-encoding.md) — Verify Windows-1252 smart punctuation handling in this Node environment.
 - [Mugshot editorial policy](mugshot-editorial-policy.md) — Preserve details when consolidating duplicates; user supplies researched biography replacements.
 - [Apps availability](apps-availability.md) — Keep Sleeps til Santa off the Apps page until the user requests its return.

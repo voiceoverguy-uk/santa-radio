@@ -70,6 +70,59 @@
   border-color: transparent;
 }
 
+.music-search-wrap {
+  position: relative;
+  max-width: 440px;
+  margin: 0 auto;
+}
+.music-search-wrap .music-search {
+  padding-left: 44px;
+}
+.music-search-symbol {
+  position: absolute;
+  left: 16px;
+  top: 15px;
+  width: 20px;
+  height: 20px;
+  color: #b39e64;
+  pointer-events: none;
+}
+.music-order-controls {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 14px 0;
+}
+.music-order-controls button {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 1px solid #d4af3755;
+  border-radius: 50%;
+  background: #153628;
+  color: var(--muted);
+  font: inherit;
+  cursor: pointer;
+}
+.music-order-controls button[aria-pressed="true"] {
+  background: #294a34;
+  border-color: var(--gold-light);
+  color: var(--gold-light);
+  box-shadow: inset 0 0 0 1px var(--gold-light);
+}
+.music-order-controls button:hover {
+  color: var(--gold-light);
+  border-color: var(--gold-light);
+}
+.music-order-controls button:focus-visible {
+  outline: 2px solid #f0d060;
+  outline-offset: 3px;
+}
+.music-order-controls svg { width: 24px; height: 24px; }
+
 .music-icons {
   display: flex;
   gap: 20px;

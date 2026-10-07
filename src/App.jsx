@@ -15,6 +15,7 @@ import Links from './pages/Links.jsx';
 import SantaStories from './pages/SantaStories.jsx';
 import ArtistDetail from './pages/ArtistDetail.jsx';
 import AudioPlayer from './components/AudioPlayer.jsx';
+import Snowfall from './components/Snowfall.jsx';
 import { RadioProvider } from './components/RadioProvider.jsx';
 import './north-pole.css';
 
@@ -23,6 +24,7 @@ function App() {
     <RadioProvider><BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <a href="#page-content" className="skip-link">Skip to content</a>
       <Navbar />
+      <Snowfall />
       <div id="page-content" tabIndex={-1}><Routes>
         <Route path="/" element={<Home />} />
         <Route path="/apps" element={<Apps />} />

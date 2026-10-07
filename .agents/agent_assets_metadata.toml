@@ -56,3 +56,17 @@ mtime_ms = 1791356249866
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/1119ed2e-670d-4284-bbc5-555209c33ca9/5853a082-e7a3-40db-92f1-e0f9bee77752"
 storage_version_token = "1791356289386625"
 content_type = "text/markdown"
+
+[[outputs]]
+id = "y7xkbUhmu1epWMOZwlTG2"
+uri = "file://docs/editorial/youtube-links-to-review.csv"
+type = "table"
+title = "YouTube links needing review"
+description = "50 song pages using 49 videos flagged by the catalogue audit. Includes artist, song, page path, video link and check result."
+logical_id = "dd574432-e3b2-4306-94b1-f3fdfaa1a68d"
+content_hash = "sha256:a8d65134ecb67e3cadca465e0785a430347d6d0a57cf8b7463636637c2d7b11c"
+size = 10394
+mtime_ms = 1791359234414
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/dd574432-e3b2-4306-94b1-f3fdfaa1a68d/313110d9-0e37-43e1-9e32-7660727d32a6"
+storage_version_token = "1791359234962782"
+content_type = "text/csv"

@@ -149,7 +149,7 @@ export default function SantaMessageForm({ showDetailLink = true }) {
           <a className="message-download" href={message.url} download={message.downloadName}>Download {message.name}’s greeting <span aria-hidden="true">↓</span></a>
           <p className="message-name-hint">On iPhone, you may need to use Share → Save to Files to keep the MP3.</p>
         </div>}
-        <p className="service-notice">Free. No signup. Only the selected name is sent to mix your message. The server deletes its temporary MP3 after sending it; download your copy before leaving this page.</p>
+        <p className="service-notice">Free. No signup. Head Elf deletes the MP3 after sending it; download your copy before leaving this page.</p>
       </div>
     </div>
   </section>;

@@ -5,6 +5,20 @@ import { artistArtwork, fallbackArtwork } from '../data/artistArtwork.js';
 import './Music.css';
 import songsData from '../data/songs.json';
 
+function shuffleSongs() {
+  const songs = [...songsData];
+  for (let i = songs.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [songs[i], songs[j]] = [songs[j], songs[i]];
+  }
+  return songs;
+}
+
+const alphabeticalSongs = [...songsData].sort((a, b) =>
+  a.artist.localeCompare(b.artist, 'en-GB', { sensitivity: 'base', numeric: true }) ||
+  a.song.localeCompare(b.song, 'en-GB', { sensitivity: 'base', numeric: true })
+);
+
 function ArtistAvatar({ artist }) {
   const src = artistArtwork(artist);
   return (
@@ -21,8 +35,10 @@ function ArtistAvatar({ artist }) {
 
 export default function Music() {
   const [search, setSearch] = useState('');
+  const [order, setOrder] = useState('random');
+  const [randomSongs, setRandomSongs] = useState(shuffleSongs);
 
-  const filtered = songsData.filter(s =>
+  const filtered = (order === 'random' ? randomSongs : alphabeticalSongs).filter(s =>
     s.artist.toLowerCase().includes(search.toLowerCase()) ||
     s.song.toLowerCase().includes(search.toLowerCase())
   );
@@ -49,6 +65,8 @@ export default function Music() {
             Christmas classics, pop hits and hidden gems. New songs and artist images added regularly.
           </p>
           <Link to="/submit-a-song" className="btn-red suggest-btn">Suggest a song</Link>
+          <div className="music-search-wrap">
+          <svg className="music-search-symbol" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="10" cy="10" r="6" /><path d="m15 15 6 6" /></svg>
           <input
             type="text"
             aria-label="Search for a song or artist"
@@ -57,7 +75,16 @@ export default function Music() {
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
-          <p className="music-results-count" role="status">{filtered.length} songs to explore</p>
+          </div>
+          <div className="music-order-controls" role="group" aria-label="Song order">
+            <button type="button" aria-label="Random" aria-pressed={order === 'random'} onClick={() => { setRandomSongs(shuffleSongs()); setOrder('random'); }} title="Random order — shuffle again">
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h3c5 0 7 12 12 12h3m-4-4 4 4-4 4M3 18h3c2 0 4-3 5-5m2-2c2-3 3-5 5-5h3m-4-4 4 4-4 4" /></svg>
+            </button>
+            <button type="button" aria-label="Artist A–Z" aria-pressed={order === 'az'} onClick={() => setOrder('az')} title="Artist A–Z">
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m3 10 3-7 3 7M4 8h4m-5 6h6l-6 7h6M17 3v18m-4-4 4 4 4-4" /></svg>
+            </button>
+          </div>
+          <p className="music-results-count" role="status">{filtered.length} songs to explore · {order === 'random' ? 'Random order' : 'Artist A–Z'}</p>
         </div>
       </div>
 

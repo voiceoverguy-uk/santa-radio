@@ -41,6 +41,7 @@ const portraits = {
   'sia': 'sia',
   'jose feliciano': 'jose-feliciano',
   'holly johnson': 'holly-johnson',
+  'frankie goes to hollywood': 'holly-johnson',
   'the beach boys': 'beach-boys',
   'beach boys': 'beach-boys',
   'nat king cole': 'nat-king-cole',

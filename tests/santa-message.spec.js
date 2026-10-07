@@ -86,7 +86,7 @@ test('suggestions cover all names without rendering until requested', async ({ p
   page.on('request', req => { if (req.url().includes('/api/santa-message')) renders++; });
   await page.goto('/free-santa-message');
   const input = page.getByLabel('Child’s first name');
-  for (const name of ['Arabella', 'Charlotte', 'Freya', 'Harry', 'Jack', 'Jess', 'Layla', 'Olivia']) {
+  for (const name of ['Arabella', 'Charlotte', 'Ed', 'Erin', 'Freya', 'Harry', 'Jack', 'Jess', 'Layla', 'Olivia']) {
     await input.fill(name.slice(0, 2));
     await page.getByRole('option', { name, exact: true }).click();
     await expect(input).toHaveValue(name);

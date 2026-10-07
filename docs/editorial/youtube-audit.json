@@ -1,0 +1,6193 @@
+{
+  "checkedAt": "2026-10-07T07:46:51.096638+00:00",
+  "method": "YouTube oEmbed; failed requests retried once. Metadata availability does not prove playback or regional/embed permission. Failures require review, not automatic removal.",
+  "songCount": 452,
+  "uniqueVideos": 447,
+  "results": [
+    {
+      "video": "-fN49TItkdQ",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "IL DIVO - The Power Of Love (La Fuerza Mayor) (Live Video)",
+      "channel": "IlDivoVEVO",
+      "pages": [
+        {
+          "artist": "Il Divo",
+          "song": "The Power Of Love (La Fuerza Mayor)",
+          "path": "/christmas-artist/411-il-divo-the-power-of-love-la-fuerza-mayor"
+        }
+      ]
+    },
+    {
+      "video": "-tJtsKngXJU",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Frank Sinatra - Have Yourself A Merry Little Christmas (Official Video)",
+      "channel": "FrankSinatraVEVO",
+      "pages": [
+        {
+          "artist": "James M Caddell",
+          "song": "Have Yourself A Merry Little Christmas",
+          "path": "/christmas-artist/462-james-m-caddell-have-yourself-a-merry-little-christmas"
+        }
+      ]
+    },
+    {
+      "video": "-wNhdjoF-6M",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "East 17 - Stay Another Day (Official Video)",
+      "channel": "London Records",
+      "pages": [
+        {
+          "artist": "East 17",
+          "song": "Stay Another Day",
+          "path": "/christmas-artist/49-east-17-stay-another-day"
+        }
+      ]
+    },
+    {
+      "video": "0A8KT365wlA",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Slade",
+          "song": "Merry Xmas Everybody",
+          "path": "/christmas-artist/7-slade-merry-xmas-everybody"
+        }
+      ]
+    },
+    {
+      "video": "0CAIEHNVHkk",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "George Michael - December Song (I Dreamed of Christmas)",
+      "channel": "gmofficial25",
+      "pages": [
+        {
+          "artist": "George Michael",
+          "song": "December Song (I Dreamed of Christmas)",
+          "path": "/christmas-artist/112-george-michael-december-song-i-dreamed-of-christmas"
+        }
+      ]
+    },
+    {
+      "video": "0FTMpAEHz1Q",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Maisie Peters - Together This Christmas (Amazon Original)",
+      "channel": "W8",
+      "pages": [
+        {
+          "artist": "Maisie Peters",
+          "song": "Together This Christmas",
+          "path": "/christmas-artist/536-maisie-peters-together-this-christmas"
+        }
+      ]
+    },
+    {
+      "video": "0GWFdFqLKZ4",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Hark! The herald angels sing - Frank Sinatra",
+      "channel": "buenasuerterecord",
+      "pages": [
+        {
+          "artist": "Frank Sinatra",
+          "song": "Hark The Herald Angels Sing",
+          "path": "/christmas-artist/379-frank-sinatra-hark-the-herald-angels-sing"
+        }
+      ]
+    },
+    {
+      "video": "0Jx0yDTrot4",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Louis Armstrong - White Christmas",
+      "channel": "SophyaAgain",
+      "pages": [
+        {
+          "artist": "Louis Armstrong",
+          "song": "White Christmas",
+          "path": "/christmas-artist/300-louis-armstrong-white-christmas"
+        }
+      ]
+    },
+    {
+      "video": "0bhsXykXxfg",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Michael Bubl\u00e9 - It's Beginning to Look a Lot Like Christmas (Official Music Video)",
+      "channel": "Michael Bubl\u00e9",
+      "pages": [
+        {
+          "artist": "Michael Buble",
+          "song": "It's Beginning to Look a Lot Like Christmas",
+          "path": "/christmas-artist/334-michael-buble-its-beginning-to-look-a-lot-like-christmas"
+        }
+      ]
+    },
+    {
+      "video": "0x5iVAKbGRQ",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "BARBRA STREISAND  have yourself a merry christmas",
+      "channel": "ChristmasCottage",
+      "pages": [
+        {
+          "artist": "Barbra Streisand",
+          "song": "Have Yourself A Merry Little Christmas",
+          "path": "/christmas-artist/188-barbra-streisand-have-yourself-a-merry-little-christmas"
+        }
+      ]
+    },
+    {
+      "video": "0yhI35F2NB0",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Michael Bubl\u00e9 - I'll Be Home For Christmas [Official HD]",
+      "channel": "Michael Bubl\u00e9",
+      "pages": [
+        {
+          "artist": "Michael Buble",
+          "song": "I'll Be Home For Christmas",
+          "path": "/christmas-artist/207-michael-buble-ill-be-home-for-christmas"
+        }
+      ]
+    },
+    {
+      "video": "1-Vn0RsLvNM",
+      "http": 401,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Barbra Streisand",
+          "song": "The Christmas Song",
+          "path": "/christmas-artist/84-barbra-streisand-the-christmas-song"
+        }
+      ]
+    },
+    {
+      "video": "107C8PMY8cM",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Kylie Minogue - Only You feat. James Corden (Official Lyric Video)",
+      "channel": "Kylie Minogue",
+      "pages": [
+        {
+          "artist": "Kylie Minogue",
+          "song": "Only You feat James Corden",
+          "path": "/christmas-artist/31-kylie-minogue-only-you-feat-james-corden"
+        }
+      ]
+    },
+    {
+      "video": "1CDvAeVdyz4",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Pat Benatar - Please Come Home For Christmas",
+      "channel": "Dashcam Riprock",
+      "pages": [
+        {
+          "artist": "Pat Benatar",
+          "song": "Please Come Home For Christmas",
+          "path": "/christmas-artist/420-pat-benatar-please-come-home-for-christmas"
+        }
+      ]
+    },
+    {
+      "video": "1LfuBZqXa-4",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Michael Bubl\u00e9 -  The Christmas Sweater (Official Music Video)",
+      "channel": "Michael Bubl\u00e9",
+      "pages": [
+        {
+          "artist": "Michael Buble",
+          "song": "The Christmas Sweater",
+          "path": "/christmas-artist/508-michael-buble-the-christmas-sweater"
+        }
+      ]
+    },
+    {
+      "video": "1Q5LkxG-36w",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Bing Crosby - I Heard the Bells On Christmas Day // BEST CHRISTMAS SONGS",
+      "channel": "Christmas Essentials",
+      "pages": [
+        {
+          "artist": "Bing Crosby",
+          "song": "I Heard The Bells On Christmas Day",
+          "path": "/christmas-artist/356-bing-crosby-i-heard-the-bells-on-christmas-day"
+        }
+      ]
+    },
+    {
+      "video": "1Wk6pKKi0vE",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Carly Rae Jepsen - Last Christmas (Audio)",
+      "channel": "CarlyRaeJepsenVEVO",
+      "pages": [
+        {
+          "artist": "Carly Rae Jepsen",
+          "song": "Last Christmas",
+          "path": "/christmas-artist/445-carly-rae-jepsen-last-christmas"
+        }
+      ]
+    },
+    {
+      "video": "1XG7sd6DM9U",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Kylie Minogue - Evolution of a Pop Princess (2008) - Documentary",
+      "channel": "KylieLover7",
+      "pages": [
+        {
+          "artist": "Kylie Minogue",
+          "song": "Have Yourself A Merry Little Christmas",
+          "path": "/christmas-artist/193-kylie-minogue-have-yourself-a-merry-little-christmas"
+        }
+      ]
+    },
+    {
+      "video": "1nf6MWbc_0c",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Andy Williams.........White Christmas.",
+      "channel": "Elias G. Aegaleo City. Athens.",
+      "pages": [
+        {
+          "artist": "Andy Williams",
+          "song": "White Christmas",
+          "path": "/christmas-artist/80-andy-williams-white-christmas"
+        }
+      ]
+    },
+    {
+      "video": "1pk-SLQPYJ0",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Frank Sinatra - I'll Be Home For Christmas",
+      "channel": "mjm1799",
+      "pages": [
+        {
+          "artist": "Frank Sinatra",
+          "song": "I'll Be Home For Christmas",
+          "path": "/christmas-artist/385-frank-sinatra-ill-be-home-for-christmas"
+        }
+      ]
+    },
+    {
+      "video": "1q0Q5A0MX3M",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Idina Menzel - We Wish You The Merriest ft. Josh Gad",
+      "channel": "IdinaMenzelVEVO",
+      "pages": [
+        {
+          "artist": "Idina Menzel",
+          "song": "We Wish You The Merriest",
+          "path": "/christmas-artist/530-idina-menzel-we-wish-you-the-merriest"
+        }
+      ]
+    },
+    {
+      "video": "2-GxbygC8ag",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Charles Jenkins - Christmas Music",
+      "channel": "CharlesJenkinsVEVO",
+      "pages": [
+        {
+          "artist": "Charles Jenkins",
+          "song": "Christmas Music",
+          "path": "/christmas-artist/447-charles-jenkins-christmas-music"
+        }
+      ]
+    },
+    {
+      "video": "2HkJHApgKqw",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Jona Lewie - Stop The Cavalry",
+      "channel": "stiffrecordsuk",
+      "pages": [
+        {
+          "artist": "Jona Lewie",
+          "song": "Stop The Cavalry",
+          "path": "/christmas-artist/35-jona-lewie-stop-the-cavalry"
+        }
+      ]
+    },
+    {
+      "video": "2HnyeeK_hMo",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "BARBRA STREISAND sleep in heavenly peace (Silent Night) (LIVE!)",
+      "channel": "STREISANDLAND",
+      "pages": [
+        {
+          "artist": "Barbra Streisand",
+          "song": "Sleep In Heavenly In Peace",
+          "path": "/christmas-artist/280-barbra-streisand-sleep-in-heavenly-in-peace"
+        }
+      ]
+    },
+    {
+      "video": "2TA3IKH8Y5c",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Dean Martin - Let It Snow! Let It Snow! Let It Snow! (Official Audio)",
+      "channel": "DeanMartinVEVO",
+      "pages": [
+        {
+          "artist": "Dean Martin",
+          "song": "Let It Snow! Let It Snow! Let It Snow!",
+          "path": "/christmas-artist/369-dean-martin-let-it-snow-let-it-snow-let-it-snow"
+        }
+      ]
+    },
+    {
+      "video": "2YWfZpaLhHY",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Let It Snow sung by Andy Williams",
+      "channel": "Leroux Louisiana",
+      "pages": [
+        {
+          "artist": "Andy Williams",
+          "song": "Let It Snow! Let It Snow! Let It Snow!",
+          "path": "/christmas-artist/81-andy-williams-let-it-snow-let-it-snow-let-it-snow"
+        }
+      ]
+    },
+    {
+      "video": "2gGRfMtbWm4",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "The Supremes - Santa Claus Is Coming To Town",
+      "channel": "holidaychristmassong",
+      "pages": [
+        {
+          "artist": "The Supremes",
+          "song": "Santa Claus Is Coming To Town",
+          "path": "/christmas-artist/267-the-supremes-santa-claus-is-coming-to-town"
+        }
+      ]
+    },
+    {
+      "video": "2ivBGqYLm3k",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Bette Midler's Cool Yule!",
+      "channel": "missaf",
+      "pages": [
+        {
+          "artist": "Bette Midler",
+          "song": "Cool Yule",
+          "path": "/christmas-artist/90-bette-midler-cool-yule"
+        }
+      ]
+    },
+    {
+      "video": "2mP9T8BQ_bQ",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Nat King Cole",
+          "song": "O Tannenbaum",
+          "path": "/christmas-artist/244-nat-king-cole-o-tannenbaum"
+        }
+      ]
+    },
+    {
+      "video": "2nsMY4LTOA4",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Matt Monro - When A Child Is Born",
+      "channel": "45RPMbyJME ",
+      "pages": [
+        {
+          "artist": "Matt Monro",
+          "song": "When A Child Is Born",
+          "path": "/christmas-artist/295-matt-monro-when-a-child-is-born"
+        }
+      ]
+    },
+    {
+      "video": "2qXSzLF7TUg",
+      "http": 403,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Jonathan Antoine",
+          "song": "Christmas Dream Come True",
+          "path": "/christmas-artist/453-jonathan-antoine-christmas-dream-come-true"
+        }
+      ]
+    },
+    {
+      "video": "2ssAl9Ja5DY",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Kylie Minogue - Santa Claus is Coming to Town (feat. Frank Sinatra) (Visualiser)",
+      "channel": "Kylie Minogue",
+      "pages": [
+        {
+          "artist": "Kylie Minogue",
+          "song": "Santa Claus Is Coming To Town",
+          "path": "/christmas-artist/32-kylie-minogue-santa-claus-is-coming-to-town"
+        }
+      ]
+    },
+    {
+      "video": "323gz5xNZMI",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Michael Bubl\u00e9 - Ave Maria [Official HD]",
+      "channel": "Michael Bubl\u00e9",
+      "pages": [
+        {
+          "artist": "Michael Buble",
+          "song": "Ave Maria",
+          "path": "/christmas-artist/328-michael-buble-ave-maria"
+        }
+      ]
+    },
+    {
+      "video": "33893SFfjUs",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Robbie Williams | Bad Sharon ft. Tyson Fury (Official Lyric Video)",
+      "channel": "Robbie Williams",
+      "pages": [
+        {
+          "artist": "Robbie Williams",
+          "song": "Bad Sharon",
+          "path": "/christmas-artist/559-robbie-williams-bad-sharon"
+        }
+      ]
+    },
+    {
+      "video": "35MNkV1pXUA",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "James Brown",
+          "song": "The Christmas Song",
+          "path": "/christmas-artist/120-james-brown-the-christmas-song"
+        }
+      ]
+    },
+    {
+      "video": "3B5Zcou91yA",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Kylie Minogue - XMAS (Official Video)",
+      "channel": "Kylie Minogue",
+      "pages": [
+        {
+          "artist": "Kylie Minogue",
+          "song": "XMAS",
+          "path": "/christmas-artist/558-kylie-minogue-xmas"
+        }
+      ]
+    },
+    {
+      "video": "3GscxGJxlOY",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Ariana Grande",
+          "song": "Last Christmas",
+          "path": "/christmas-artist/75-ariana-grande-last-christmas"
+        }
+      ]
+    },
+    {
+      "video": "3R2xbFqN_W4",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "O little town of Bethlehem - Frank Sinatra",
+      "channel": "buenasuerterecord",
+      "pages": [
+        {
+          "artist": "Frank Sinatra",
+          "song": "O Little Town Of Bethlehem",
+          "path": "/christmas-artist/380-frank-sinatra-o-little-town-of-bethlehem"
+        }
+      ]
+    },
+    {
+      "video": "3TtWs9nZjWE",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Hot Chocolate - Brand New Christmas",
+      "channel": "VinylRip Disco-Funk",
+      "pages": [
+        {
+          "artist": "Hot Chocolate",
+          "song": "Brand New Christmas",
+          "path": "/christmas-artist/119-hot-chocolate-brand-new-christmas"
+        }
+      ]
+    },
+    {
+      "video": "3Uo0JAUWijM",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "ABBA - Happy New Year (Video)",
+      "channel": "AbbaVEVO",
+      "pages": [
+        {
+          "artist": "ABBA",
+          "song": "Happy New Year",
+          "path": "/christmas-artist/78-abba-happy-new-year"
+        }
+      ]
+    },
+    {
+      "video": "3V4DaaNHFqA",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Camila Cabello - I'll Be Home For Christmas (Amazon Original)",
+      "channel": "CamilaCabelloVEVO",
+      "pages": [
+        {
+          "artist": "Camila Cabello",
+          "song": "Ill Be Home For Christmas",
+          "path": "/christmas-artist/526-camila-cabello-ill-be-home-for-christmas"
+        }
+      ]
+    },
+    {
+      "video": "3WY5dwSEcZo",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Santa Baby",
+      "channel": "Kylie Minogue - Topic",
+      "pages": [
+        {
+          "artist": "Kylie Minogue",
+          "song": "Santa Baby",
+          "path": "/christmas-artist/29-kylie-minogue-santa-baby"
+        }
+      ]
+    },
+    {
+      "video": "3ZT9_H4-hbM",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Gwen Stefani - You Make It Feel Like Christmas (Official Music Video) ft. Blake Shelton",
+      "channel": "GwenStefaniVEVO",
+      "pages": [
+        {
+          "artist": "Gwen Stefani",
+          "song": "You Make It Feel Like Christmas",
+          "path": "/christmas-artist/531-gwen-stefani-you-make-it-feel-like-christmas"
+        }
+      ]
+    },
+    {
+      "video": "3_ZiWMbI7Ik",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Michael Buble - Frosty The Snowman - Christmas 2011",
+      "channel": "fossateam",
+      "pages": [
+        {
+          "artist": "Michael Buble",
+          "song": "Frosty The Snowman",
+          "path": "/christmas-artist/181-michael-buble-frosty-the-snowman"
+        }
+      ]
+    },
+    {
+      "video": "3eQtz2dtIl0",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Freya Skye, Malachi Barton - Snow Angels (From \"ZOMBIES 4: Dawn of the Vampires\")",
+      "channel": "DisneyMusicVEVO",
+      "pages": [
+        {
+          "artist": "Freya Skye",
+          "song": "Snow Angels",
+          "path": "/christmas-artist/557-freya-skye-snow-angels"
+        }
+      ]
+    },
+    {
+      "video": "3tH195XLrWE",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Mariah Carey, Khalid, Kirk Franklin - Fall in Love at Christmas (Official Music Video)",
+      "channel": "MariahCareyVEVO",
+      "pages": [
+        {
+          "artist": "Mariah Carey",
+          "song": "Fall in Love at Christmas",
+          "path": "/christmas-artist/511-mariah-carey-fall-in-love-at-christmas"
+        }
+      ]
+    },
+    {
+      "video": "456SYv0etCs",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "U-MV160 - Aaron Neville - Please Come Home for Christmas",
+      "channel": "mypartofthething",
+      "pages": [
+        {
+          "artist": "Aaron Neville",
+          "song": "Please Come Home for Christmas",
+          "path": "/christmas-artist/77-aaron-neville-please-come-home-for-christmas"
+        }
+      ]
+    },
+    {
+      "video": "4CkErPWZvbc",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "George Ezra - Come On Home For Christmas (Official Video)",
+      "channel": "GeorgeEzraVEVO",
+      "pages": [
+        {
+          "artist": "George Ezra",
+          "song": "Come On Home For Christmas",
+          "path": "/christmas-artist/516-george-ezra-come-on-home-for-christmas"
+        }
+      ]
+    },
+    {
+      "video": "4k3QohvseAk",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Jonathan Antoine | Ave Maria rehearsal",
+      "channel": "Jonathan Antoine",
+      "pages": [
+        {
+          "artist": "Jonathan Antoine",
+          "song": "Ave Maria",
+          "path": "/christmas-artist/423-jonathan-antoine-ave-maria"
+        }
+      ]
+    },
+    {
+      "video": "4pPpxsbqxR8",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Kylie Minogue - It's The Most Wonderful Time Of The Year (Studio Video)",
+      "channel": "Kylie Minogue",
+      "pages": [
+        {
+          "artist": "Kylie Minogue",
+          "song": "It's The Most Wonderful Time Of The Year",
+          "path": "/christmas-artist/33-kylie-minogue-its-the-most-wonderful-time-of-the-year"
+        }
+      ]
+    },
+    {
+      "video": "4xVLeW9UmjE",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Eurythmics - Winter Wonderland",
+      "channel": "peel4me",
+      "pages": [
+        {
+          "artist": "Eurythmics",
+          "song": "Winter Wonderland",
+          "path": "/christmas-artist/307-eurythmics-winter-wonderland"
+        }
+      ]
+    },
+    {
+      "video": "53dlIF75YAs",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Around the Christmas Tree",
+      "channel": "Engelbert Humperdinck - Topic",
+      "pages": [
+        {
+          "artist": "Engelbert Humperdinck",
+          "song": "Around the Christmas Tree",
+          "path": "/christmas-artist/474-engelbert-humperdinck-around-the-christmas-tree"
+        }
+      ]
+    },
+    {
+      "video": "55P80Xfxk0U",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Bing Crosby & The Andrew Sisters - 12 Days Of Christmas (Decca Records 1951)",
+      "channel": "ChristmasTimeTV",
+      "pages": [
+        {
+          "artist": "Bing Crosby",
+          "song": "The Twelve Days Of Christmas",
+          "path": "/christmas-artist/354-bing-crosby-the-twelve-days-of-christmas"
+        }
+      ]
+    },
+    {
+      "video": "56scx2Cdpyw",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Freiheit",
+          "song": "Keeping The Dream Alive",
+          "path": "/christmas-artist/44-freiheit-keeping-the-dream-alive"
+        }
+      ]
+    },
+    {
+      "video": "5MzvrTbw0Mk",
+      "http": 403,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Frank Sinatra & Cyndi Lauper",
+          "song": "Santa Claus Is Coming To Town",
+          "path": "/christmas-artist/111-frank-sinatra-cyndi-lauper-santa-claus-is-coming-to-town"
+        }
+      ]
+    },
+    {
+      "video": "5YMi2LZaJgU",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Dina Carroll - The Perfect Year ( TV Performance )",
+      "channel": "Dina Carroll",
+      "pages": [
+        {
+          "artist": "Dina Carroll",
+          "song": "The Perfect Year",
+          "path": "/christmas-artist/105-dina-carroll-the-perfect-year"
+        }
+      ]
+    },
+    {
+      "video": "5vyMuxxLsD0",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Daryl Hall & John Oates - Jingle Bell Rock (Daryl's Version - HD)",
+      "channel": "hallandoatesVEVO",
+      "pages": [
+        {
+          "artist": "Hall & Oates",
+          "song": "Jingle Bell Rock",
+          "path": "/christmas-artist/410-hall-oates-jingle-bell-rock"
+        }
+      ]
+    },
+    {
+      "video": "5ycWObpi73Y",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Madonna - Santa Baby",
+      "channel": "scrubinc",
+      "pages": [
+        {
+          "artist": "Madonna",
+          "song": "Santa Baby",
+          "path": "/christmas-artist/257-madonna-santa-baby"
+        }
+      ]
+    },
+    {
+      "video": "61uYA6qveOY",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Jackson 5 - Santa Claus is coming to town",
+      "channel": "0x0fish0x0",
+      "pages": [
+        {
+          "artist": "The Jackson 5",
+          "song": "Santa Claus Is Coming To Town",
+          "path": "/christmas-artist/40-the-jackson-5-santa-claus-is-coming-to-town"
+        }
+      ]
+    },
+    {
+      "video": "6PGv6LF9aTg",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Michael Bubl\u00e9 & Bing Crosby - \"White Christmas\" (15 second clip) [Extra]",
+      "channel": "Michael Bubl\u00e9",
+      "pages": [
+        {
+          "artist": "Michael Buble",
+          "song": "White Christmas",
+          "path": "/christmas-artist/301-michael-buble-white-christmas"
+        }
+      ]
+    },
+    {
+      "video": "6Sepqr4h0wc",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Bing Crosby - Sleigh Ride",
+      "channel": "Chris Carr",
+      "pages": [
+        {
+          "artist": "Bing Crosby",
+          "song": "Sleigh Ride",
+          "path": "/christmas-artist/281-bing-crosby-sleigh-ride"
+        }
+      ]
+    },
+    {
+      "video": "6V5mtUff6ik",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Queen - Thank God It's Christmas",
+      "channel": "Ermanno Gandolfi",
+      "pages": [
+        {
+          "artist": "Queen",
+          "song": "Thank God It's Christmas",
+          "path": "/christmas-artist/11-queen-thank-god-its-christmas"
+        }
+      ]
+    },
+    {
+      "video": "6YP7GCXqdqU",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "The Seekers - Morningtown Ride.(1968)",
+      "channel": "Proculled",
+      "pages": [
+        {
+          "artist": "The Seekers",
+          "song": "Morningtown Ride",
+          "path": "/christmas-artist/238-the-seekers-morningtown-ride"
+        }
+      ]
+    },
+    {
+      "video": "6b9BKK27HuQ",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "JOHNNY MATHIS - Sleigh Ride (1958)",
+      "channel": "verycoolsound",
+      "pages": [
+        {
+          "artist": "Johnny Mathis",
+          "song": "Sleigh Ride",
+          "path": "/christmas-artist/282-johnny-mathis-sleigh-ride"
+        }
+      ]
+    },
+    {
+      "video": "76sh1BWCQSc",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "The Ronettes",
+          "song": "Frosty The Snowman",
+          "path": "/christmas-artist/183-the-ronettes-frosty-the-snowman"
+        }
+      ]
+    },
+    {
+      "video": "7Dp1AVQWToc",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Levi Roots & The Source - Reggae Reggae Christmas [Official Video 2017]",
+      "channel": "Reggaeville",
+      "pages": [
+        {
+          "artist": "Levi Roots",
+          "song": "Reggae Reggae Christmas",
+          "path": "/christmas-artist/456-levi-roots-reggae-reggae-christmas"
+        }
+      ]
+    },
+    {
+      "video": "7SKyU1k7juw",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Kylie Minogue - 100 Degrees with Dannii Minogue (Studio Video)",
+      "channel": "Kylie Minogue",
+      "pages": [
+        {
+          "artist": "Kylie Minogue",
+          "song": "100 Degrees feat Dannii Minogue",
+          "path": "/christmas-artist/314-kylie-minogue-100-degrees-feat-dannii-minogue"
+        }
+      ]
+    },
+    {
+      "video": "7ZsiZbsG87g",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "I Wish You A Merry Christmas - Bing Crosby",
+      "channel": "\u2764\ufe0fBest Friendship Is A Rare Gem\u2764\ufe0f",
+      "pages": [
+        {
+          "artist": "Bing Crosby",
+          "song": "I Wish You A Merry Christmas",
+          "path": "/christmas-artist/204-bing-crosby-i-wish-you-a-merry-christmas"
+        },
+        {
+          "artist": "Bing Crosby",
+          "song": "I Wish You A Merry Christmas",
+          "path": "/christmas-artist/345-bing-crosby-i-wish-you-a-merry-christmas"
+        }
+      ]
+    },
+    {
+      "video": "7b6Y3t7epZQ",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Darlene Love - White Christmas (Correctly Balanced Audio)",
+      "channel": "gw7sbo",
+      "pages": [
+        {
+          "artist": "Darlene Love",
+          "song": "White Christmas",
+          "path": "/christmas-artist/298-darlene-love-white-christmas"
+        }
+      ]
+    },
+    {
+      "video": "7nLU5i5Ec7g",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Kelly Clarkson - Christmas Isn't Canceled (Just You) [Official Lyric Video]",
+      "channel": "Kelly Clarkson",
+      "pages": [
+        {
+          "artist": "Kelly Clarkson",
+          "song": "Christmas Isnt Canceled",
+          "path": "/christmas-artist/514-kelly-clarkson-christmas-isnt-canceled"
+        }
+      ]
+    },
+    {
+      "video": "7x0_ul8JzMA",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Bastille - Merry Xmas Everybody - for Nest Audio Sessions",
+      "channel": "BASTILLEvideos",
+      "pages": [
+        {
+          "artist": "Bastille",
+          "song": "Merry Xmas Everybody",
+          "path": "/christmas-artist/542-bastille-merry-xmas-everybody"
+        }
+      ]
+    },
+    {
+      "video": "8ZPCR64A6vI",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "We Wish You Weren't Living With Us - Twisted Christmas",
+      "channel": "Bob Rivers' Twisted Tunes",
+      "pages": [
+        {
+          "artist": "Bob Rivers",
+          "song": "We Wish You Weren't Living With Us",
+          "path": "/christmas-artist/291-bob-rivers-we-wish-you-werent-living-with-us"
+        }
+      ]
+    },
+    {
+      "video": "8kmPz5IbU90",
+      "http": 403,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Geraldine McQueen",
+          "song": "Once Upon a Christmas Song",
+          "path": "/christmas-artist/113-geraldine-mcqueen-once-upon-a-christmas-song"
+        }
+      ]
+    },
+    {
+      "video": "9YkHVaTVA0Q",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Frank Sinatra - Adeste Fideles",
+      "channel": "Istanti Classics",
+      "pages": [
+        {
+          "artist": "Frank Sinatra",
+          "song": "Adeste Fideles",
+          "path": "/christmas-artist/151-frank-sinatra-adeste-fideles"
+        }
+      ]
+    },
+    {
+      "video": "9xUFnGWWtoQ",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Kurtis Blow - Christmas Rappin' (Mercury Records 1979)",
+      "channel": "ChristmasTimeTV",
+      "pages": [
+        {
+          "artist": "Kurtis Blow",
+          "song": "Christmas Rappin",
+          "path": "/christmas-artist/441-kurtis-blow-christmas-rappin"
+        }
+      ]
+    },
+    {
+      "video": "AM4PEt7uts4",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "The Beach Boys - I'll be home for christmas",
+      "channel": "santaclauspapainoel2",
+      "pages": [
+        {
+          "artist": "The Beach Boys",
+          "song": "I'll Be Home For Christmas",
+          "path": "/christmas-artist/208-the-beach-boys-ill-be-home-for-christmas"
+        }
+      ]
+    },
+    {
+      "video": "APOrM9fBH2c",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "I Still Get Excited For Christmas",
+      "channel": "Jessica Braithwaite - Topic",
+      "pages": [
+        {
+          "artist": "Jessica Braithwaite",
+          "song": "I Still Get Excited For Christmas",
+          "path": "/christmas-artist/517-jessica-braithwaite-i-still-get-excited-for-christmas"
+        }
+      ]
+    },
+    {
+      "video": "ASvd0qRi03o",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "ABBA - Little Things (Lyric Video)",
+      "channel": "AbbaVEVO",
+      "pages": [
+        {
+          "artist": "Abba",
+          "song": "Little Things",
+          "path": "/christmas-artist/513-abba-little-things"
+        }
+      ]
+    },
+    {
+      "video": "AT1B21z62tE",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "The Beach Boys christmas - Santa Claus is Comin' To Town",
+      "channel": "S1mpIe",
+      "pages": [
+        {
+          "artist": "The Beach Boys",
+          "song": "Santa Claus Is Coming To Town",
+          "path": "/christmas-artist/88-the-beach-boys-santa-claus-is-coming-to-town"
+        }
+      ]
+    },
+    {
+      "video": "AhnsqWfRyiE",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Dear Santa",
+      "channel": "Heidi Anne - Topic",
+      "pages": [
+        {
+          "artist": "Heidi Anne",
+          "song": "Dear Santa",
+          "path": "/christmas-artist/523-heidi-anne-dear-santa"
+        }
+      ]
+    },
+    {
+      "video": "BK-XCuKgK3w",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Toni Braxton -  Holiday Celebrate",
+      "channel": "tonibraxtonssongs",
+      "pages": [
+        {
+          "artist": "Toni Braxton",
+          "song": "Holiday Celebrate",
+          "path": "/christmas-artist/428-toni-braxton-holiday-celebrate"
+        }
+      ]
+    },
+    {
+      "video": "BW4nXP9N7Fg",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Robbie Williams | Can\u2019t Stop Christmas (Official Lyric Video)",
+      "channel": "Robbie Williams",
+      "pages": [
+        {
+          "artist": "Robbie Williams",
+          "song": "Can't stop Christmas",
+          "path": "/christmas-artist/487-robbie-williams-cant-stop-christmas"
+        }
+      ]
+    },
+    {
+      "video": "BnGoH-TMIs8",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Blue Christmas Live 1968 Elvis Presley",
+      "channel": "A Country State of Mind",
+      "pages": [
+        {
+          "artist": "Elvis Presley",
+          "song": "Blue Christmas",
+          "path": "/christmas-artist/399-elvis-presley-blue-christmas"
+        }
+      ]
+    },
+    {
+      "video": "C5npIU8faLs",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Christmas wish - Stacie Orrico",
+      "channel": "Diep Vu",
+      "pages": [
+        {
+          "artist": "Stacie Orrico",
+          "song": "Christmas Wish",
+          "path": "/christmas-artist/425-stacie-orrico-christmas-wish"
+        }
+      ]
+    },
+    {
+      "video": "CKwcHTpV5e0",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Gwen Stefani - Hot Cocoa (Official Lyric Video)",
+      "channel": "GwenStefaniVEVO",
+      "pages": [
+        {
+          "artist": "Gwen Stefani",
+          "song": "Hot Cocoa",
+          "path": "/christmas-artist/561-gwen-stefani-hot-cocoa"
+        }
+      ]
+    },
+    {
+      "video": "CMFzQhR9dJw",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Dido",
+          "song": "Christmas Day",
+          "path": "/christmas-artist/50-dido-christmas-day"
+        }
+      ]
+    },
+    {
+      "video": "CW8WyWkV-Gk",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Sammy Davis Jr.- It's Christmas Time All Over the World",
+      "channel": "JerryLewisFan02",
+      "pages": [
+        {
+          "artist": "Sammy Davis Jr.",
+          "song": "Christmas Time All Over The World",
+          "path": "/christmas-artist/389-sammy-davis-jr-christmas-time-all-over-the-world"
+        }
+      ]
+    },
+    {
+      "video": "CyfqQSwV1a0",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Michael Buble & Thalia  - Feliz Navidad (Mis Deseos) HDTV live",
+      "channel": "Thang Van Vuong",
+      "pages": [
+        {
+          "artist": "Michael Buble",
+          "song": "Mis Deseos/Feliz Navidad",
+          "path": "/christmas-artist/329-michael-buble-mis-deseos-feliz-navidad"
+        }
+      ]
+    },
+    {
+      "video": "D86ye9nCBLM",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "3T - I Need You (Official Video)",
+      "channel": "3TVEVO",
+      "pages": [
+        {
+          "artist": "3T",
+          "song": "I Need You (Christmas Mix)",
+          "path": "/christmas-artist/432-3t-i-need-you-christmas-mix"
+        }
+      ]
+    },
+    {
+      "video": "DINVlwX9aZM",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Merry Christmas by Big Big Train",
+      "channel": "Big Big Train",
+      "pages": [
+        {
+          "artist": "Big Big Train",
+          "song": "Merry Christmas",
+          "path": "/christmas-artist/461-big-big-train-merry-christmas"
+        }
+      ]
+    },
+    {
+      "video": "DQDMnZGxRl0",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "The Pointer Sisters - Santa Claus Is Coming To Town (Music Video)",
+      "channel": "scamparoo",
+      "pages": [
+        {
+          "artist": "The Pointer Sisters",
+          "song": "Santa Claus Is Coming To Town",
+          "path": "/christmas-artist/266-the-pointer-sisters-santa-claus-is-coming-to-town"
+        }
+      ]
+    },
+    {
+      "video": "DUlaj3b5Whc",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Donna Summer - Winter Melody",
+      "channel": "DISCOANONYMOUS",
+      "pages": [
+        {
+          "artist": "Donna Summer",
+          "song": "Winter Melody",
+          "path": "/christmas-artist/106-donna-summer-winter-melody"
+        }
+      ]
+    },
+    {
+      "video": "DiXjbI3kRus",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Bing Crosby, David Bowie - The Little Drummer Boy / Peace On Earth",
+      "channel": "BingCrosbyVEVO",
+      "pages": [
+        {
+          "artist": "Bing Crosby",
+          "song": "Peace On Earth - Little Drummer Boy",
+          "path": "/christmas-artist/348-bing-crosby-peace-on-earth-little-drummer-boy"
+        }
+      ]
+    },
+    {
+      "video": "DkXIJe8CaIc",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "The Ronettes - Sleigh Ride (Official Music Video)",
+      "channel": "TheRonettesVEVO",
+      "pages": [
+        {
+          "artist": "The Ronettes",
+          "song": "Sleigh Ride",
+          "path": "/christmas-artist/10-the-ronettes-sleigh-ride"
+        }
+      ]
+    },
+    {
+      "video": "DzAL9ELsFRw",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "The Wombles",
+          "song": "Wombling Merry Christmas",
+          "path": "/christmas-artist/150-the-wombles-wombling-merry-christmas"
+        }
+      ]
+    },
+    {
+      "video": "EGKuomlKTbU",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Frank Sinatra - Santa Claus Is Coming To Town",
+      "channel": "finetunes Christmas",
+      "pages": [
+        {
+          "artist": "Frank Sinatra",
+          "song": "Santa Claus Is Coming To Town",
+          "path": "/christmas-artist/264-frank-sinatra-santa-claus-is-coming-to-town"
+        }
+      ]
+    },
+    {
+      "video": "EGue5GYrwZE",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Mitch Miller - Frosty The Snowman // BEST CHRISTMAS SONGS",
+      "channel": "Christmas Essentials",
+      "pages": [
+        {
+          "artist": "Mitch Miller and The Gang",
+          "song": "Frosty The Snowman",
+          "path": "/christmas-artist/182-mitch-miller-and-the-gang-frosty-the-snowman"
+        }
+      ]
+    },
+    {
+      "video": "EH7I-WV0LZA",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Paul McCartney  Wings   Mull of Kintyre  1977",
+      "channel": "Alfred Inglada Rami",
+      "pages": [
+        {
+          "artist": "Paul McCartney & Wings",
+          "song": "Mull Of Kintyre",
+          "path": "/christmas-artist/139-paul-mccartney-wings-mull-of-kintyre"
+        }
+      ]
+    },
+    {
+      "video": "EJsDeLdLFY0",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Michael Buble",
+          "song": "Blue Christmas",
+          "path": "/christmas-artist/133-michael-buble-blue-christmas"
+        }
+      ]
+    },
+    {
+      "video": "EM2Fnp_qnE8",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Kelly Clarkson - Underneath the Tree (Official Video)",
+      "channel": "kellyclarksonVEVO",
+      "pages": [
+        {
+          "artist": "Kelly Clarkson",
+          "song": "Underneath The Tree",
+          "path": "/christmas-artist/34-kelly-clarkson-underneath-the-tree"
+        }
+      ]
+    },
+    {
+      "video": "EMEWokWxbmQ",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Snap!",
+          "song": "Mary Had A Little Boy",
+          "path": "/christmas-artist/229-snap-mary-had-a-little-boy"
+        }
+      ]
+    },
+    {
+      "video": "EZTaWYWP68E",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Sia",
+          "song": "Naughty & Nice",
+          "path": "/christmas-artist/538-sia-naughty-nice"
+        }
+      ]
+    },
+    {
+      "video": "ElmsIGT85tI",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Sia - Candy Cane Lane",
+      "channel": "SiaVEVO",
+      "pages": [
+        {
+          "artist": "Sia",
+          "song": "Candy Cane Lane",
+          "path": "/christmas-artist/537-sia-candy-cane-lane"
+        }
+      ]
+    },
+    {
+      "video": "Em0P9zb3a3k",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Andy Williams - Do You Hear What I Hear?",
+      "channel": "BenThour",
+      "pages": [
+        {
+          "artist": "Andy Williams",
+          "song": "Do You Hear What I Hear",
+          "path": "/christmas-artist/82-andy-williams-do-you-hear-what-i-hear"
+        }
+      ]
+    },
+    {
+      "video": "Ewr-DdIwoJs",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Secret Santa",
+      "channel": "Gwen Stefani - Topic",
+      "pages": [
+        {
+          "artist": "Gwen Stefani",
+          "song": "Secret Santa",
+          "path": "/christmas-artist/476-gwen-stefani-secret-santa"
+        }
+      ]
+    },
+    {
+      "video": "F1njMd3qjq0",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Michael Bubl\u00e9 - The More You Give (The More You'll Have) [OFFICIAL LYRIC VIDEO]",
+      "channel": "Michael Bubl\u00e9",
+      "pages": [
+        {
+          "artist": "Michael Buble",
+          "song": "The More You Give",
+          "path": "/christmas-artist/316-michael-buble-the-more-you-give"
+        }
+      ]
+    },
+    {
+      "video": "FIWh7kRQ9gA",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "You're All I Want for Christmas",
+      "channel": "russmcintire",
+      "pages": [
+        {
+          "artist": "Bing Crosby",
+          "song": "You're All I Want For Christmas",
+          "path": "/christmas-artist/344-bing-crosby-youre-all-i-want-for-christmas"
+        }
+      ]
+    },
+    {
+      "video": "FN85r9qIF_c",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Daniel Mark Baird - Hey Santa! (Official Lyric Video)",
+      "channel": "Daniel Mark Baird",
+      "pages": [
+        {
+          "artist": "Daniel Mark Baird",
+          "song": "Hey Santa!",
+          "path": "/christmas-artist/196-daniel-mark-baird-hey-santa"
+        }
+      ]
+    },
+    {
+      "video": "FTI8CWSiZ40",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Cliff Richard - Saviour's Day (Official Video)",
+      "channel": "Cliff Richard",
+      "pages": [
+        {
+          "artist": "Cliff Richard",
+          "song": "Saviours Day",
+          "path": "/christmas-artist/58-cliff-richard-saviours-day"
+        }
+      ]
+    },
+    {
+      "video": "FjVtLBrPPSc",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "BARBRA STREISAND  i wonder as i wander",
+      "channel": "ChristmasCottage",
+      "pages": [
+        {
+          "artist": "Barbra Streisand",
+          "song": "I Wonder As I Wander",
+          "path": "/christmas-artist/205-barbra-streisand-i-wonder-as-i-wander"
+        }
+      ]
+    },
+    {
+      "video": "Fk33KjJkUxw",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "The Christmas Song (1946) - Bing Crosby",
+      "channel": "Croonr1",
+      "pages": [
+        {
+          "artist": "Bing Crosby",
+          "song": "The Christmas Song",
+          "path": "/christmas-artist/93-bing-crosby-the-christmas-song"
+        }
+      ]
+    },
+    {
+      "video": "G-bErbL5MVc",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Billy Mack (Bill Nighy) - Christmas is all Around 16:9 - 2003 Original Musik Video",
+      "channel": "S. Ginnem",
+      "pages": [
+        {
+          "artist": "Bill Nighy",
+          "song": "Christmas Is All Around",
+          "path": "/christmas-artist/69-bill-nighy-christmas-is-all-around"
+        }
+      ]
+    },
+    {
+      "video": "G0Jv9N7YYLo",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Christmas Alone (But Together at Home)",
+      "channel": "Lia Menaker - Topic",
+      "pages": [
+        {
+          "artist": "Lia Menaker",
+          "song": "Christmas Alone (But Together at Home)",
+          "path": "/christmas-artist/518-lia-menaker-christmas-alone-but-together-at-home"
+        }
+      ]
+    },
+    {
+      "video": "G0QuvuTEGiU",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "David Archuleta - Christmas Every Day (Official Video)",
+      "channel": "davidarchuletaVEVO",
+      "pages": [
+        {
+          "artist": "David Archuleta",
+          "song": "Christmas Every Day",
+          "path": "/christmas-artist/472-david-archuleta-christmas-every-day"
+        }
+      ]
+    },
+    {
+      "video": "G2bx3FzgJ6o",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Mariah Carey - Oh Santa! (Official Music Video) ft. Ariana Grande, Jennifer Hudson",
+      "channel": "MariahCareyVEVO",
+      "pages": [
+        {
+          "artist": "Mariah Carey",
+          "song": "Oh Santa",
+          "path": "/christmas-artist/25-mariah-carey-oh-santa"
+        }
+      ]
+    },
+    {
+      "video": "GJKVDjLt4JU",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Delta Goodrem - Only Santa Knows (Lyric Video)",
+      "channel": "Delta Goodrem",
+      "pages": [
+        {
+          "artist": "Delta Goodrem",
+          "song": "Only Santa Knows",
+          "path": "/christmas-artist/495-delta-goodrem-only-santa-knows"
+        }
+      ]
+    },
+    {
+      "video": "GJmI3QVMrC8",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Bing Crosby - Faith of Our Fathers",
+      "channel": "Natale, Christmas, No\u00ebl, Navidad, Weihnachten, \u30af\u30ea\u30b9\u30de\u30b9, Kersfees",
+      "pages": [
+        {
+          "artist": "Bing Crosby",
+          "song": "Faith Of Our Fathers",
+          "path": "/christmas-artist/178-bing-crosby-faith-of-our-fathers"
+        }
+      ]
+    },
+    {
+      "video": "Gy9ttAwDonc",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Christina Aguilera - The Christmas Song (Chestnuts Roasting Over An Open Fire) (Official Video)",
+      "channel": "CAguileraVEVO",
+      "pages": [
+        {
+          "artist": "Christina Aguilera",
+          "song": "The Christmas Song (Chestnuts Roasting On An Open Fire)",
+          "path": "/christmas-artist/405-christina-aguilera-the-christmas-song-chestnuts-roasting-on-an-open-fire"
+        }
+      ]
+    },
+    {
+      "video": "H2dWHJm-6qM",
+      "http": 403,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Marie Lind",
+          "song": "Unwrap my Heart",
+          "path": "/christmas-artist/506-marie-lind-unwrap-my-heart"
+        }
+      ]
+    },
+    {
+      "video": "H2pQbphEipc",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Andy Williams",
+          "song": "Happy Holidays",
+          "path": "/christmas-artist/185-andy-williams-happy-holidays"
+        }
+      ]
+    },
+    {
+      "video": "H42Edy587hc",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Frank Sinatra - Mistletoe And Holly",
+      "channel": "mjm1799",
+      "pages": [
+        {
+          "artist": "Frank Sinatra",
+          "song": "Mistletoe And Holly",
+          "path": "/christmas-artist/236-frank-sinatra-mistletoe-and-holly"
+        }
+      ]
+    },
+    {
+      "video": "H9UkvOrDx1M",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Def Leppard - We All Need Christmas",
+      "channel": "DefLeppardVEVO",
+      "pages": [
+        {
+          "artist": "Def Leppard",
+          "song": "We All Need Christmas",
+          "path": "/christmas-artist/473-def-leppard-we-all-need-christmas"
+        }
+      ]
+    },
+    {
+      "video": "HDU7XQK0Ou4",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "NSync - In Studio - Christmas Album",
+      "channel": "thesilverd0e",
+      "pages": [
+        {
+          "artist": "N Sync",
+          "song": "I Dont Wanna Spend One More Xmas Without u",
+          "path": "/christmas-artist/15-n-sync-i-dont-wanna-spend-one-more-xmas-without-u"
+        }
+      ]
+    },
+    {
+      "video": "HGVNzgUxE-g",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Barenaked Ladies - \"God Rest Ye Merry Gentlemen/We Three Kings\" Feat. Sarah McLachlan",
+      "channel": "nettwerkbackstage",
+      "pages": [
+        {
+          "artist": "Barenaked Ladies & Sarah McLachlan",
+          "song": "God Rest Ye Merry Gentlemen",
+          "path": "/christmas-artist/86-barenaked-ladies-sarah-mclachlan-god-rest-ye-merry-gentlemen"
+        }
+      ]
+    },
+    {
+      "video": "HN6GHQroP1I",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Little Mix - One I've Been Missing (Official Video)",
+      "channel": "littlemixVEVO",
+      "pages": [
+        {
+          "artist": "Little Mix",
+          "song": "One Ive Been Missing",
+          "path": "/christmas-artist/535-little-mix-one-ive-been-missing"
+        }
+      ]
+    },
+    {
+      "video": "HRyIb9wJ7bU",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Bing Crosby - Christmas Candles",
+      "channel": "SeanBonella",
+      "pages": [
+        {
+          "artist": "Bing Crosby",
+          "song": "Christmas Candles",
+          "path": "/christmas-artist/355-bing-crosby-christmas-candles"
+        }
+      ]
+    },
+    {
+      "video": "HUUhDlRdhr8",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Carpenters - It's Christmas Time/Sleep Well, Little Children",
+      "channel": "neroli8676",
+      "pages": [
+        {
+          "artist": "The Carpenters",
+          "song": "It's Christmas Time",
+          "path": "/christmas-artist/213-the-carpenters-its-christmas-time"
+        }
+      ]
+    },
+    {
+      "video": "HdXWvzEfh1A",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Carly Rae Jepsen - It\u2019s Not Christmas Till Somebody Cries (Official Audio)",
+      "channel": "CarlyRaeJepsenVEVO",
+      "pages": [
+        {
+          "artist": "Carly Rae Jepsen",
+          "song": "It's Not Christmas Till Somebody Cries",
+          "path": "/christmas-artist/492-carly-rae-jepsen-its-not-christmas-till-somebody-cries"
+        }
+      ]
+    },
+    {
+      "video": "HoTyFvZnxL0",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Sleigh Ride - Relient K (HD)",
+      "channel": "Giovana Tsukamoto",
+      "pages": [
+        {
+          "artist": "Relient K",
+          "song": "Sleigh Ride",
+          "path": "/christmas-artist/142-relient-k-sleigh-ride"
+        }
+      ]
+    },
+    {
+      "video": "Hwoe3mXfOxY",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Blue Christmas - Glen Campbell",
+      "channel": "maumau1968",
+      "pages": [
+        {
+          "artist": "Glen Campbell",
+          "song": "Blue Christmas",
+          "path": "/christmas-artist/116-glen-campbell-blue-christmas"
+        }
+      ]
+    },
+    {
+      "video": "IJPc7esgvsA",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Wizzard - I Wish It Could Be Christmas Everyday (Official Music Video) [HD]",
+      "channel": "RHINO",
+      "pages": [
+        {
+          "artist": "Wizzard",
+          "song": "I wish it could be Christmas Everyday",
+          "path": "/christmas-artist/519-wizzard-i-wish-it-could-be-christmas-everyday"
+        }
+      ]
+    },
+    {
+      "video": "IMUSit6KBfk",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Goo Goo Dolls - This is Christmas [Official Music Video]",
+      "channel": "Goo Goo Dolls",
+      "pages": [
+        {
+          "artist": "Goo Goo Dolls",
+          "song": "This is Christmas",
+          "path": "/christmas-artist/497-goo-goo-dolls-this-is-christmas"
+        }
+      ]
+    },
+    {
+      "video": "Ie5I8WapVBI",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Wilson Phillips",
+          "song": "Silent Night",
+          "path": "/christmas-artist/276-wilson-phillips-silent-night"
+        }
+      ]
+    },
+    {
+      "video": "J-8VCL4uSUc",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Train - Shake Up Christmas (Official Video)",
+      "channel": "TrainVEVO",
+      "pages": [
+        {
+          "artist": "Train",
+          "song": "Shake up Christmas",
+          "path": "/christmas-artist/4-train-shake-up-christmas"
+        }
+      ]
+    },
+    {
+      "video": "JN2mOyF7Id4",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Girls Aloud - Not Tonight Santa",
+      "channel": "chelsey c",
+      "pages": [
+        {
+          "artist": "Girls Aloud",
+          "song": "Not Tonight Santa",
+          "path": "/christmas-artist/114-girls-aloud-not-tonight-santa"
+        }
+      ]
+    },
+    {
+      "video": "JNa5tpw202I",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Decorate The Christmas Tree - a Corona Christmas (2020 Version)",
+      "channel": "X-mas Donkey & The Glittering Balls - Topic",
+      "pages": [
+        {
+          "artist": "X-mas Donkey & The Glittering Balls",
+          "song": "Decorate the Christmas Tree",
+          "path": "/christmas-artist/505-x-mas-donkey-the-glittering-balls-decorate-the-christmas-tree"
+        }
+      ]
+    },
+    {
+      "video": "JPm6CheT6rs",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Greg Lake",
+          "song": "I Believe In Father Christmas",
+          "path": "/christmas-artist/42-greg-lake-i-believe-in-father-christmas"
+        }
+      ]
+    },
+    {
+      "video": "JShpmsmptj4",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Nat King Cole",
+          "song": "Frosty The Snowman",
+          "path": "/christmas-artist/137-nat-king-cole-frosty-the-snowman"
+        }
+      ]
+    },
+    {
+      "video": "JcpblDf3Ev8",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Graham Parker & Nona Hendryx - Soul Christmas - 1994 Christmas",
+      "channel": "People Tell Me I Have Too Many Records",
+      "pages": [
+        {
+          "artist": "Graham Parker & Nona Hendryx",
+          "song": "Soul Christmas",
+          "path": "/christmas-artist/285-graham-parker-nona-hendryx-soul-christmas"
+        }
+      ]
+    },
+    {
+      "video": "Jdzo_vPnhio",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Saint Etienne - I Was Born On Christmas Day",
+      "channel": "SaintEtienneVEVO",
+      "pages": [
+        {
+          "artist": "Saint Etienne",
+          "song": "I Was Born On Christmas Day",
+          "path": "/christmas-artist/203-saint-etienne-i-was-born-on-christmas-day"
+        }
+      ]
+    },
+    {
+      "video": "JgCNbfbQltQ",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Nat King Cole / The Little Boy That Santa Claus Forgot",
+      "channel": "JazzysCookie",
+      "pages": [
+        {
+          "artist": "Nat King Cole",
+          "song": "The Little Boy That Santa Claus Forgot",
+          "path": "/christmas-artist/226-nat-king-cole-the-little-boy-that-santa-claus-forgot"
+        }
+      ]
+    },
+    {
+      "video": "JnOBggLe0tY",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Billy Squier - Christmas Is The Time To Say \"I Love You\"",
+      "channel": "Official Billy Squier",
+      "pages": [
+        {
+          "artist": "Billy Squier",
+          "song": "Christmas Is the Time to Say",
+          "path": "/christmas-artist/91-billy-squier-christmas-is-the-time-to-say"
+        }
+      ]
+    },
+    {
+      "video": "JnOLam2AwXY",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Michael Bubl\u00e9 - Santa Baby [Official HD]",
+      "channel": "Michael Bubl\u00e9",
+      "pages": [
+        {
+          "artist": "Michael Buble",
+          "song": "Santa Baby",
+          "path": "/christmas-artist/258-michael-buble-santa-baby"
+        }
+      ]
+    },
+    {
+      "video": "Jszz8SEORr8",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "David Essex - A Winter's Tale",
+      "channel": "Paul\u2019s Archive ",
+      "pages": [
+        {
+          "artist": "David Essex",
+          "song": "A Winter's Tale",
+          "path": "/christmas-artist/310-david-essex-a-winters-tale"
+        }
+      ]
+    },
+    {
+      "video": "K1pPXt5Zc1w",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Pet Shop Boys - It Doesn't Often Snow At Christmas - Live at 02, 2009",
+      "channel": "PetShopBoys Parlophone",
+      "pages": [
+        {
+          "artist": "Pet Shop Boys",
+          "song": "It Doesn't Often Snow At Christmas",
+          "path": "/christmas-artist/421-pet-shop-boys-it-doesnt-often-snow-at-christmas"
+        }
+      ]
+    },
+    {
+      "video": "KB6g5KUM_LI",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "The Fireside Singers",
+          "song": "We Wish You A Merry Christmas",
+          "path": "/christmas-artist/289-the-fireside-singers-we-wish-you-a-merry-christmas"
+        }
+      ]
+    },
+    {
+      "video": "KCZ5uLEFPYQ",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Frank Sinatra - Christmas Dreaming",
+      "channel": "throwaway111",
+      "pages": [
+        {
+          "artist": "Frank Sinatra",
+          "song": "Christmas Dreaming",
+          "path": "/christmas-artist/373-frank-sinatra-christmas-dreaming"
+        }
+      ]
+    },
+    {
+      "video": "KIqDkMxjdtU",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Barbra Streisand - The best gift (live, 1970)",
+      "channel": "Musicchannel Channelmusic",
+      "pages": [
+        {
+          "artist": "Barbra Streisand",
+          "song": "The Best Gift",
+          "path": "/christmas-artist/85-barbra-streisand-the-best-gift"
+        }
+      ]
+    },
+    {
+      "video": "KLXcC8lvogY",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Scouting For Girls - The Road to V Festival (Official Behind the Scenes)",
+      "channel": "Scouting For Girls",
+      "pages": [
+        {
+          "artist": "Scouting For Girls",
+          "song": "Kids at Christmas",
+          "path": "/christmas-artist/460-scouting-for-girls-kids-at-christmas"
+        }
+      ]
+    },
+    {
+      "video": "KO5HaSSus5I",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Bon Jovi - Christmas Isn\u2019t Christmas (Official Music Video)",
+      "channel": "BonJoviVEVO",
+      "pages": [
+        {
+          "artist": "Bon Jovi",
+          "song": "Christmas Isn\u2019t Christmas",
+          "path": "/christmas-artist/549-bon-jovi-christmas-isna-tmt-christmas"
+        }
+      ]
+    },
+    {
+      "video": "KODskj8gd74",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Chris de Burgh - A Spaceman Came Travelling (Stereo)",
+      "channel": "ChrisDeBurghVEVO",
+      "pages": [
+        {
+          "artist": "Chris De Burgh",
+          "song": "A Spaceman Came Travelling",
+          "path": "/christmas-artist/61-chris-de-burgh-a-spaceman-came-travelling"
+        }
+      ]
+    },
+    {
+      "video": "Kegu-erHEig",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Frank Sinatra & Bing Crosby sing Jingle Bells",
+      "channel": "Michael van den Bos",
+      "pages": [
+        {
+          "artist": "Bing Crosby",
+          "song": "Jingle Bells",
+          "path": "/christmas-artist/220-bing-crosby-jingle-bells"
+        }
+      ]
+    },
+    {
+      "video": "KinerYiAaZw",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Merry Christmas, Baby -- Bonnie Raitt & Charles Brown (for mobile)",
+      "channel": "TheBonnieRaitt",
+      "pages": [
+        {
+          "artist": "Bonnie Raitt & Charles Brown",
+          "song": "Merry Christmas Baby",
+          "path": "/christmas-artist/231-bonnie-raitt-charles-brown-merry-christmas-baby"
+        }
+      ]
+    },
+    {
+      "video": "KmddeUJJEuU",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "It's Beginning to Look a Lot Like Christmas (Official Audio)",
+      "channel": "PerryComoVEVO",
+      "pages": [
+        {
+          "artist": "Perry Como",
+          "song": "It's Beginning to Look a Lot Like Christmas",
+          "path": "/christmas-artist/141-perry-como-its-beginning-to-look-a-lot-like-christmas"
+        }
+      ]
+    },
+    {
+      "video": "KnbqzkC3i9k",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Kelly Clarkson and Brett Eldredge - Under The Mistletoe [Official Lyric Video]",
+      "channel": "Kelly Clarkson",
+      "pages": [
+        {
+          "artist": "Kelly Clarkson and Brett Eldredge",
+          "song": "Under The Mistletoe",
+          "path": "/christmas-artist/490-kelly-clarkson-and-brett-eldredge-under-the-mistletoe"
+        }
+      ]
+    },
+    {
+      "video": "Ko3yBFoTm5c",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "The Weather Girls - Dear Santa (Bring Me A Man This Christmas)",
+      "channel": "TheWeatherGirlsVEVO",
+      "pages": [
+        {
+          "artist": "The Weather Girls",
+          "song": "Dear Santa (Bring Me A Man This Christmas)",
+          "path": "/christmas-artist/430-the-weather-girls-dear-santa-bring-me-a-man-this-christmas"
+        }
+      ]
+    },
+    {
+      "video": "L1KEJzfsQEY",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Ava Max - Christmas Without You [Official Audio]",
+      "channel": "Ava Max",
+      "pages": [
+        {
+          "artist": "Ava Max",
+          "song": "Christmas Without You",
+          "path": "/christmas-artist/499-ava-max-christmas-without-you"
+        }
+      ]
+    },
+    {
+      "video": "Lvp2uYJXZ8A",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Dana ~ It's Gonna Be A Cold Cold Christmas",
+      "channel": "BladeSteve2007",
+      "pages": [
+        {
+          "artist": "Dana",
+          "song": "It's Gonna Be A Cold, Cold Christmas",
+          "path": "/christmas-artist/103-dana-its-gonna-be-a-cold-cold-christmas"
+        }
+      ]
+    },
+    {
+      "video": "M47xvJE6GAg",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Dean Martin - Rudolph, The Red-Nosed Reindeer (Visualizer)",
+      "channel": "DeanMartinVEVO",
+      "pages": [
+        {
+          "artist": "Dean Martin",
+          "song": "Rudolph The Red-Nosed Reindeer",
+          "path": "/christmas-artist/366-dean-martin-rudolph-the-red-nosed-reindeer"
+        }
+      ]
+    },
+    {
+      "video": "MHPKvMvMLLw",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Miss Piggy Santa Baby",
+      "channel": "NamiLoverr",
+      "pages": [
+        {
+          "artist": "Miss Piggy",
+          "song": "Santa Baby",
+          "path": "/christmas-artist/259-miss-piggy-santa-baby"
+        }
+      ]
+    },
+    {
+      "video": "MVu4c7dhDRE",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Chuck Berry - Run Rudolph Run (1958)",
+      "channel": "H. Enrique Ch\u00e1vez",
+      "pages": [
+        {
+          "artist": "Chuck Berry",
+          "song": "Run Rudolph Run",
+          "path": "/christmas-artist/256-chuck-berry-run-rudolph-run"
+        }
+      ]
+    },
+    {
+      "video": "Mg06hZnYpwc",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Andr\u00e9 Parker \"Pronto es Navidad\"  (offizielles Video)",
+      "channel": "Andr\u00e9 Parker \u300a Official \u300b",
+      "pages": [
+        {
+          "artist": "Andre Parker",
+          "song": "Pronto es Navidad",
+          "path": "/christmas-artist/438-andre-parker-pronto-es-navidad"
+        }
+      ]
+    },
+    {
+      "video": "MgIwLeASnkw",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Elmo & Patsy - Grandma Got Run Over By A Reindeer",
+      "channel": "ElmoPatsyVEVO",
+      "pages": [
+        {
+          "artist": "Elmo & Patsy",
+          "song": "Grandma Got Run Over By a Reindeer",
+          "path": "/christmas-artist/107-elmo-patsy-grandma-got-run-over-by-a-reindeer"
+        }
+      ]
+    },
+    {
+      "video": "MgrxqvGSguI",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "It's Cristmas by Natalya K",
+      "channel": "Natalya K Music/ \u041d\u0430\u0442\u0430\u043b\u044c\u044f \u041a\u0443\u0434\u0440\u044f\u0432\u0446\u0435\u0432\u0430",
+      "pages": [
+        {
+          "artist": "Natalya K",
+          "song": "Its Christmas",
+          "path": "/christmas-artist/468-natalya-k-its-christmas"
+        }
+      ]
+    },
+    {
+      "video": "MqBF7TiyATo",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Bo Selecta",
+          "song": "Proper Crimbo",
+          "path": "/christmas-artist/66-bo-selecta-proper-crimbo"
+        }
+      ]
+    },
+    {
+      "video": "N66OkeohuMU",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Beverley Knight - A Christmas Wish, The Theme to The Loss Adjuster (Official Video)",
+      "channel": "BeverleyKnightOnVEVO",
+      "pages": [
+        {
+          "artist": "Beverly Knight",
+          "song": "A Christmas Wish",
+          "path": "/christmas-artist/493-beverly-knight-a-christmas-wish"
+        }
+      ]
+    },
+    {
+      "video": "N9itH65j7Jk",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Bobby Vee",
+          "song": "Christmas Vacation",
+          "path": "/christmas-artist/96-bobby-vee-christmas-vacation"
+        }
+      ]
+    },
+    {
+      "video": "NBLnevQ9yKU",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Michael Buble",
+          "song": "Silver Bells",
+          "path": "/christmas-artist/333-michael-buble-silver-bells"
+        }
+      ]
+    },
+    {
+      "video": "NIKRq7NFgEs",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Dean Martin - Brahms' Lullaby (Visualizer)",
+      "channel": "DeanMartinVEVO",
+      "pages": [
+        {
+          "artist": "Dean Martin",
+          "song": "Brahms Lullaby",
+          "path": "/christmas-artist/365-dean-martin-brahms-lullaby"
+        }
+      ]
+    },
+    {
+      "video": "NJ6kJ7GWtv0",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Mud - Lonely This Christmas (Official Video)",
+      "channel": "Mud",
+      "pages": [
+        {
+          "artist": "Mud",
+          "song": "Lonely This Christmas",
+          "path": "/christmas-artist/16-mud-lonely-this-christmas"
+        }
+      ]
+    },
+    {
+      "video": "NRH_BC3of3A",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Natasha Bedingfield - Shake up Christmas (Coca cola christmas Commercial Song)",
+      "channel": "BIFOLCOSnew",
+      "pages": [
+        {
+          "artist": "Natasha Bedingfield",
+          "song": "Shake Up Christmas",
+          "path": "/christmas-artist/418-natasha-bedingfield-shake-up-christmas"
+        }
+      ]
+    },
+    {
+      "video": "NZ6hJNGZ8vg",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Johnny Mathis - When A Child Is Born",
+      "channel": "ClassiChristmaSongs",
+      "pages": [
+        {
+          "artist": "Johnny Mathis",
+          "song": "When a Child Is Born",
+          "path": "/christmas-artist/37-johnny-mathis-when-a-child-is-born"
+        }
+      ]
+    },
+    {
+      "video": "NyoTvgPn0rU",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Frankie Goes To Hollywood - The Power Of Love",
+      "channel": "zttrecords",
+      "pages": [
+        {
+          "artist": "Frankie Goes to Hollywood",
+          "song": "The Power of Love",
+          "path": "/christmas-artist/388-frankie-goes-to-hollywood-the-power-of-love"
+        }
+      ]
+    },
+    {
+      "video": "OR07r0ZMFb8",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "RUN DMC - Christmas In Hollis (Official HD Video)",
+      "channel": "RUNDMCVEVO",
+      "pages": [
+        {
+          "artist": "Run-DMC",
+          "song": "Christmas In Hollis",
+          "path": "/christmas-artist/144-run-dmc-christmas-in-hollis"
+        }
+      ]
+    },
+    {
+      "video": "OXUSdHAVNoM",
+      "http": 403,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Sammy Davis Jr.",
+          "song": "Jingle Bells",
+          "path": "/christmas-artist/222-sammy-davis-jr-jingle-bells"
+        }
+      ]
+    },
+    {
+      "video": "OYzHM5_o6g8",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "The Beach Boys - Santa's beard",
+      "channel": "santaclauspapainoel2",
+      "pages": [
+        {
+          "artist": "The Beach Boys",
+          "song": "Santa's Beard",
+          "path": "/christmas-artist/402-the-beach-boys-santas-beard"
+        }
+      ]
+    },
+    {
+      "video": "Oi4mr72JOn0",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Santa baby - Taylor Swift",
+      "channel": "Cherese Comeros",
+      "pages": [
+        {
+          "artist": "Taylor Swift",
+          "song": "Santa Baby",
+          "path": "/christmas-artist/6-taylor-swift-santa-baby"
+        }
+      ]
+    },
+    {
+      "video": "OlvxvSDOrAA",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Rudolf The Red Nosed Reindeer - John Denver - From Heart To Heart\u00b8 \u2665.\u2022",
+      "channel": "Corviniana",
+      "pages": [
+        {
+          "artist": "John Denver",
+          "song": "Rudolph The Red Nosed Reindeer",
+          "path": "/christmas-artist/414-john-denver-rudolph-the-red-nosed-reindeer"
+        }
+      ]
+    },
+    {
+      "video": "Oswkllz_Lvs",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Donny Hathaway - This Christmas (Official Audio)",
+      "channel": "Christmas 365",
+      "pages": [
+        {
+          "artist": "Donny Hathaway",
+          "song": "This Christmas",
+          "path": "/christmas-artist/450-donny-hathaway-this-christmas"
+        }
+      ]
+    },
+    {
+      "video": "P-vAZabkn3U",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Beach Boys - Little Saint Nick  (Shindig)",
+      "channel": "John1948OneC2",
+      "pages": [
+        {
+          "artist": "The Beach Boys",
+          "song": "Little Saint Nick (1991 Remix)",
+          "path": "/christmas-artist/87-the-beach-boys-little-saint-nick-1991-remix"
+        }
+      ]
+    },
+    {
+      "video": "P8CxQbyhifQ",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Here It Is Christmastime (From \"The Guardians of the Galaxy Holiday Special\")",
+      "channel": "MarvelMusicVEVO",
+      "pages": [
+        {
+          "artist": "Kevin Bacon",
+          "song": "Here It Is Christmastime",
+          "path": "/christmas-artist/525-kevin-bacon-here-it-is-christmastime"
+        }
+      ]
+    },
+    {
+      "video": "P8Ozdqzjigg",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Bing Crosby - White Christmas",
+      "channel": "coffield26",
+      "pages": [
+        {
+          "artist": "Bing Crosby",
+          "song": "White Christmas",
+          "path": "/christmas-artist/67-bing-crosby-white-christmas"
+        }
+      ]
+    },
+    {
+      "video": "PB-a6x6MGGA",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "I saw mommy kissing Santa claus - Jackson 5 [HQ]",
+      "channel": "MeHeartRnB",
+      "pages": [
+        {
+          "artist": "The Jackson 5",
+          "song": "I Saw Mommy Kissing Santa Claus",
+          "path": "/christmas-artist/413-the-jackson-5-i-saw-mommy-kissing-santa-claus"
+        }
+      ]
+    },
+    {
+      "video": "PE7mI8tdB4Y",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Olly Murs covers Wham!'s Last Christmas in the Live Lounge",
+      "channel": "BBC Radio 1",
+      "pages": [
+        {
+          "artist": "Olly Murs",
+          "song": "Last Christmas",
+          "path": "/christmas-artist/451-olly-murs-last-christmas"
+        }
+      ]
+    },
+    {
+      "video": "P_ANhC0QlJE",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Miley Cyrus - Santa Claus Is Coming To Town",
+      "channel": "Disney Portugal Youtube",
+      "pages": [
+        {
+          "artist": "Miley Cyrus",
+          "song": "Santa Claus Is Coming to Town",
+          "path": "/christmas-artist/17-miley-cyrus-santa-claus-is-coming-to-town"
+        }
+      ]
+    },
+    {
+      "video": "PcDVH8DiBnM",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Paul McCartney & The Frog Chorus - We All Stand Together (1984)",
+      "channel": "ronderw",
+      "pages": [
+        {
+          "artist": "Paul McCartney",
+          "song": "We All Stand Together",
+          "path": "/christmas-artist/138-paul-mccartney-we-all-stand-together"
+        }
+      ]
+    },
+    {
+      "video": "Q6zYBOPk4gU",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Doris Day: Have Yourself a Merry Little Christmas",
+      "channel": "dorisdaynet2",
+      "pages": [
+        {
+          "artist": "Doris Day",
+          "song": "Have Yourself A Merry Little Christmas",
+          "path": "/christmas-artist/190-doris-day-have-yourself-a-merry-little-christmas"
+        }
+      ]
+    },
+    {
+      "video": "QYZ7iovEUvs",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Trijntje Oosterhuis, Candy Dulfer - Merry Christmas Baby",
+      "channel": "TrijntjeOosterhuVEVO",
+      "pages": [
+        {
+          "artist": "Trijntje Oosterhuis",
+          "song": "Merry Christmas Baby",
+          "path": "/christmas-artist/429-trijntje-oosterhuis-merry-christmas-baby"
+        }
+      ]
+    },
+    {
+      "video": "Q_yuO8UNGmY",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Ed Sheeran & Elton John - Merry Christmas [Official Video]",
+      "channel": "Ed Sheeran",
+      "pages": [
+        {
+          "artist": "Ed Sheeran & Elton John",
+          "song": "Merry Christmas",
+          "path": "/christmas-artist/509-ed-sheeran-elton-john-merry-christmas"
+        }
+      ]
+    },
+    {
+      "video": "Qk8igut_IQM",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Carol of the Bells- Richard Carpenter",
+      "channel": "TheCarpenters",
+      "pages": [
+        {
+          "artist": "The Carpenters",
+          "song": "Carol Of Bells",
+          "path": "/christmas-artist/156-the-carpenters-carol-of-bells"
+        }
+      ]
+    },
+    {
+      "video": "QmSlIbJt7nU",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Frank Sinatra - The First Noel",
+      "channel": "mjm1799",
+      "pages": [
+        {
+          "artist": "Frank Sinatra",
+          "song": "The First Noel",
+          "path": "/christmas-artist/180-frank-sinatra-the-first-noel"
+        }
+      ]
+    },
+    {
+      "video": "R3QjOPXKhLk",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "The Twelve Days of Christmas",
+      "channel": "Mitch Miller Orchestra - Topic",
+      "pages": [
+        {
+          "artist": "Mitch Miller and The Gang",
+          "song": "The Twelve Days Of Christmas",
+          "path": "/christmas-artist/287-mitch-miller-and-the-gang-the-twelve-days-of-christmas"
+        }
+      ]
+    },
+    {
+      "video": "RH5L_PddfM0",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Frank Sinatra - I Believe",
+      "channel": "Ruth Nineke",
+      "pages": [
+        {
+          "artist": "Frank Sinatra",
+          "song": "I Believe",
+          "path": "/christmas-artist/198-frank-sinatra-i-believe"
+        }
+      ]
+    },
+    {
+      "video": "RhtAM3LYG7A",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Meghan Trainor - Gifts For Me (Official Visualizer)",
+      "channel": "Meghan Trainor",
+      "pages": [
+        {
+          "artist": "Meghan Trainor",
+          "song": "Gifts For Me",
+          "path": "/christmas-artist/562-meghan-trainor-gifts-for-me"
+        }
+      ]
+    },
+    {
+      "video": "RouSe6Ha_F4",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Jamelia-Last Christmas Lyrics",
+      "channel": "morty298",
+      "pages": [
+        {
+          "artist": "Jamelia",
+          "song": "Last Christmas",
+          "path": "/christmas-artist/223-jamelia-last-christmas"
+        }
+      ]
+    },
+    {
+      "video": "S65k5xdB1ew",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Luther Vandross - The Christmas Song (Merry Christmas To You) A&M Records 1992",
+      "channel": "ChristmasTimeTV",
+      "pages": [
+        {
+          "artist": "Luther Vandross",
+          "song": "The Christmas Song",
+          "path": "/christmas-artist/165-luther-vandross-the-christmas-song"
+        }
+      ]
+    },
+    {
+      "video": "SHE0Jo82_34",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Winter Wonderland by Doris Day",
+      "channel": "Theodomus",
+      "pages": [
+        {
+          "artist": "Doris Day",
+          "song": "Winter Wonderland",
+          "path": "/christmas-artist/306-doris-day-winter-wonderland"
+        }
+      ]
+    },
+    {
+      "video": "SHNpS-pnH-M",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "The Futureheads - Christmas Was Better In The 80s",
+      "channel": "TheFutureheadsTV",
+      "pages": [
+        {
+          "artist": "The Futureheads",
+          "song": "Christmas was better in the 80's",
+          "path": "/christmas-artist/433-the-futureheads-christmas-was-better-in-the-80s"
+        }
+      ]
+    },
+    {
+      "video": "SI5RvBmv8rE",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Lauren Spencer Smith - Single On The 25th (Official Acoustic Video)",
+      "channel": "LaurenSpencerSVEVO",
+      "pages": [
+        {
+          "artist": "Lauren Spencer Smith",
+          "song": "Single On The 25th",
+          "path": "/christmas-artist/543-lauren-spencer-smith-single-on-the-25th"
+        }
+      ]
+    },
+    {
+      "video": "SP1rxUw0rQY",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Gary Barlow - How Christmas Is Supposed To Be (Official Video) ft. Sheridan Smith",
+      "channel": "GaryBarlowVEVO",
+      "pages": [
+        {
+          "artist": "Gary Barlow",
+          "song": "How Christmas Is Supposed To Be",
+          "path": "/christmas-artist/510-gary-barlow-how-christmas-is-supposed-to-be"
+        }
+      ]
+    },
+    {
+      "video": "SYKU7DfEJT4",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "AURORA - Half The World Away",
+      "channel": "iamAURORAVEVO",
+      "pages": [
+        {
+          "artist": "Aurora",
+          "song": "Half the World Away",
+          "path": "/christmas-artist/74-aurora-half-the-world-away"
+        }
+      ]
+    },
+    {
+      "video": "SnA52s7qceM",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Michael Bubl\u00e9 - Santa Claus Is Coming To Town [Official Music Video]",
+      "channel": "Michael Bubl\u00e9",
+      "pages": [
+        {
+          "artist": "Michael Buble",
+          "song": "Santa Claus Is Coming To Town",
+          "path": "/christmas-artist/335-michael-buble-santa-claus-is-coming-to-town"
+        }
+      ]
+    },
+    {
+      "video": "TBTbC5ZNYgQ",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Run Rudolph Run",
+      "channel": "Bryan Adams - Topic",
+      "pages": [
+        {
+          "artist": "Bryan Adams",
+          "song": "Run Rudolph Run",
+          "path": "/christmas-artist/62-bryan-adams-run-rudolph-run"
+        }
+      ]
+    },
+    {
+      "video": "THcbQyFtCqg",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Chris Rea",
+          "song": "Driving Home For Christmas",
+          "path": "/christmas-artist/60-chris-rea-driving-home-for-christmas"
+        },
+        {
+          "artist": "Michael Ball",
+          "song": "Driving Home For Christmas",
+          "path": "/christmas-artist/176-michael-ball-driving-home-for-christmas"
+        }
+      ]
+    },
+    {
+      "video": "TPAOBN4Pt-Y",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Carpenters - Have Yourself A Merry Little Christmas",
+      "channel": "neroli8676",
+      "pages": [
+        {
+          "artist": "The Carpenters",
+          "song": "Have Yourself A Merry Little Christmas",
+          "path": "/christmas-artist/189-the-carpenters-have-yourself-a-merry-little-christmas"
+        }
+      ]
+    },
+    {
+      "video": "TnSSVg7Kv5M",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "AL Green - What Christmas means to me",
+      "channel": "Gabiftb",
+      "pages": [
+        {
+          "artist": "Al Green",
+          "song": "What Christmas Means To Me",
+          "path": "/christmas-artist/293-al-green-what-christmas-means-to-me"
+        }
+      ]
+    },
+    {
+      "video": "TzYOJCSWyjU",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Leona Lewis - Kiss Me It's Christmas (Official Video) ft. Ne-Yo",
+      "channel": "leonalewisVEVO",
+      "pages": [
+        {
+          "artist": "Leona Lewis",
+          "song": "Kiss Me It's Christmas",
+          "path": "/christmas-artist/512-leona-lewis-kiss-me-its-christmas"
+        }
+      ]
+    },
+    {
+      "video": "U3YltnBjqZU",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Frank Sinatra",
+          "song": "White Christmas",
+          "path": "/christmas-artist/370-frank-sinatra-white-christmas"
+        }
+      ]
+    },
+    {
+      "video": "UGQUuyrVBoA",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "I Saw Mommy Kissing santa Claus - The Ronettes",
+      "channel": "maumau1968",
+      "pages": [
+        {
+          "artist": "The Ronettes",
+          "song": "I Saw Mommy Kissing Santa Claus",
+          "path": "/christmas-artist/202-the-ronettes-i-saw-mommy-kissing-santa-claus"
+        }
+      ]
+    },
+    {
+      "video": "UNxL2ldJ3K8",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Alexander O'Neal - \"The Christmas Song\"",
+      "channel": "Alexander O'Neal Official",
+      "pages": [
+        {
+          "artist": "Alexander O' Neal",
+          "song": "The Christmas Song",
+          "path": "/christmas-artist/443-alexander-o-neal-the-christmas-song"
+        }
+      ]
+    },
+    {
+      "video": "UV8x7H3DD8Y",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Darlene Love  - Christmas (Baby please come home)",
+      "channel": "BearWalken",
+      "pages": [
+        {
+          "artist": "Darlene Love",
+          "song": "Christmas (Baby Please Come Home)",
+          "path": "/christmas-artist/53-darlene-love-christmas-baby-please-come-home"
+        }
+      ]
+    },
+    {
+      "video": "Ua8TEond0cs",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Another Christmas Time",
+      "channel": "ElGamma PenumbraENTERTAINMENT",
+      "pages": [
+        {
+          "artist": "Andrew Collins",
+          "song": "Another Christmas Time",
+          "path": "/christmas-artist/459-andrew-collins-another-christmas-time"
+        }
+      ]
+    },
+    {
+      "video": "UiGeR0lwpkI",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Vanessa Williams",
+          "song": "What Child Is This?",
+          "path": "/christmas-artist/292-vanessa-williams-what-child-is-this"
+        }
+      ]
+    },
+    {
+      "video": "V4BsSAsuLdU",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Ella Fitzgerald, Louis Armstrong - I've Got My Love To Keep Me Warm (Official Video)",
+      "channel": "LouisArmstrongVEVO",
+      "pages": [
+        {
+          "artist": "Ella Fitzgerald & Louis Armstrong",
+          "song": "Ive Got My Love To Keep Me Warm",
+          "path": "/christmas-artist/529-ella-fitzgerald-louis-armstrong-ive-got-my-love-to-keep-me-warm"
+        }
+      ]
+    },
+    {
+      "video": "V8h5hBaciHU",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "State of The Heart -  I Believe In Father Christmas (Haworth - Bronte Country)",
+      "channel": "mretonboy",
+      "pages": [
+        {
+          "artist": "State of the Heart",
+          "song": "I Believe In Father Christmas",
+          "path": "/christmas-artist/199-state-of-the-heart-i-believe-in-father-christmas"
+        }
+      ]
+    },
+    {
+      "video": "V9BZDpni56Y",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Paul McCartney - Wonderful Christmas Time",
+      "channel": "videosanta69",
+      "pages": [
+        {
+          "artist": "Paul McCartney",
+          "song": "Wonderful Christmastime",
+          "path": "/christmas-artist/13-paul-mccartney-wonderful-christmastime"
+        }
+      ]
+    },
+    {
+      "video": "V9P_rbLwndc",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Bing Crosby",
+          "song": "Here Comes Santa Claus",
+          "path": "/christmas-artist/343-bing-crosby-here-comes-santa-claus"
+        }
+      ]
+    },
+    {
+      "video": "V9mW3c8I4CA",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Showaddywaddy - Hey Mr. Christmas",
+      "channel": "Richard H",
+      "pages": [
+        {
+          "artist": "Showaddywaddy",
+          "song": "Hey Mr Christmas",
+          "path": "/christmas-artist/195-showaddywaddy-hey-mr-christmas"
+        }
+      ]
+    },
+    {
+      "video": "VCvz7uflMIU",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Mike Oldfield - In Dulci Jubilo",
+      "channel": "MikeOldfieldVEVO",
+      "pages": [
+        {
+          "artist": "Mike Oldfield",
+          "song": "In Dulci Jubilo",
+          "path": "/christmas-artist/135-mike-oldfield-il-dulci-jubilo"
+        }
+      ]
+    },
+    {
+      "video": "VQhuoY5h2kE",
+      "http": 403,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "The Darkness",
+          "song": "Christmas Time",
+          "path": "/christmas-artist/55-the-darkness-christmas-time"
+        }
+      ]
+    },
+    {
+      "video": "VUSY9UohMhU",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Michael Bubl\u00e9 - All I Want For Christmas is You [Studio Clip]",
+      "channel": "Michael Bubl\u00e9",
+      "pages": [
+        {
+          "artist": "Michael Buble",
+          "song": "All I Want For Christmas Is You",
+          "path": "/christmas-artist/319-michael-buble-all-i-want-for-christmas-is-you"
+        }
+      ]
+    },
+    {
+      "video": "VaiH0PZIOzM",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "The Mills Brothers - I Believe In Santa Claus (live, 1957)",
+      "channel": "SbrPL",
+      "pages": [
+        {
+          "artist": "The Mills Brothers",
+          "song": "I Believe In Santa Claus",
+          "path": "/christmas-artist/200-the-mills-brothers-i-believe-in-santa-claus"
+        }
+      ]
+    },
+    {
+      "video": "Vtc9lGmppuI",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Christmas time \u266b BAckstreet Boys \u2665 + Lyric",
+      "channel": "thedarkangel64",
+      "pages": [
+        {
+          "artist": "Backstreet Boys",
+          "song": "Christmas Time",
+          "path": "/christmas-artist/73-backstreet-boys-christmas-time"
+        }
+      ]
+    },
+    {
+      "video": "W1VsFceXgwI",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Kylie Minogue - 2000 Miles",
+      "channel": "Ale AN",
+      "pages": [
+        {
+          "artist": "Kylie Minogue",
+          "song": "2000 Miles",
+          "path": "/christmas-artist/315-kylie-minogue-2000-miles"
+        }
+      ]
+    },
+    {
+      "video": "W8MPr_od_ro",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Scouting For Girls - Christmas In The Air (Tonight) (Music Video)",
+      "channel": "Scouting For Girls",
+      "pages": [
+        {
+          "artist": "Scouting For Girls",
+          "song": "Christmas in the air tonight",
+          "path": "/christmas-artist/9-scouting-for-girls-christmas-in-the-air-tonight"
+        }
+      ]
+    },
+    {
+      "video": "WLw-VWFi7jM",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Gladys Knight & The Pips",
+          "song": "When You Love Someone (It's Christmas Everyday)",
+          "path": "/christmas-artist/212-gladys-knight-the-pips-its-christmas-everyday"
+        }
+      ]
+    },
+    {
+      "video": "WXuVQEjhABM",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Carpenters - Sleigh Ride",
+      "channel": "NedNickerson2010 (Robert)",
+      "pages": [
+        {
+          "artist": "The Carpenters",
+          "song": "Sleigh Ride",
+          "path": "/christmas-artist/100-the-carpenters-sleigh-ride"
+        },
+        {
+          "artist": "The Carpenters",
+          "song": "Santa Claus Is Coming To Town",
+          "path": "/christmas-artist/263-the-carpenters-santa-claus-is-coming-to-town"
+        }
+      ]
+    },
+    {
+      "video": "WZaA26kI0XI",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "TEVIN CAMPBELL  OH HOLY NIGHT",
+      "channel": "blk moet27",
+      "pages": [
+        {
+          "artist": "Tevin Campbell",
+          "song": "O Holy Night",
+          "path": "/christmas-artist/242-tevin-campbell-o-holy-night"
+        }
+      ]
+    },
+    {
+      "video": "WaNwEkCeZrE",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Johnny Mathis - It's Beginning to Look a Lot Like Christmas (from Home for Christmas)",
+      "channel": "JohnnyMathisVEVO",
+      "pages": [
+        {
+          "artist": "Johnny Mathis",
+          "song": "Its Beginning to Look a Lot Like Christmas",
+          "path": "/christmas-artist/444-johnny-mathis-its-beginning-to-look-a-lot-like-christmas"
+        }
+      ]
+    },
+    {
+      "video": "WhmYFefm5z8",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Sabrina Claudio & The Weeknd - Christmas Blues (Lyric Video)",
+      "channel": "Sabrina Claudio",
+      "pages": [
+        {
+          "artist": "Sabrina Claudio",
+          "song": "Christmas Blues",
+          "path": "/christmas-artist/494-sabrina-claudio-christmas-blues"
+        }
+      ]
+    },
+    {
+      "video": "WvzjdkY_tlk",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Louisa Johnson - Forever Young (Official Video)",
+      "channel": "LouisaJohnsonVEVO",
+      "pages": [
+        {
+          "artist": "Louisa Johnson",
+          "song": "Forever Young",
+          "path": "/christmas-artist/26-louisa-johnson-forever-young"
+        }
+      ]
+    },
+    {
+      "video": "XHIwCTLe_ns",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Gregory Porter - Christmas Wish",
+      "channel": "GregoryPorterVEVO",
+      "pages": [
+        {
+          "artist": "Gregory Porter",
+          "song": "Christmas Wish",
+          "path": "/christmas-artist/550-gregory-porter-christmas-wish"
+        }
+      ]
+    },
+    {
+      "video": "Xa1hRNNOyGY",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Hanson - What Christmas Means To Me",
+      "channel": "OnionFoot",
+      "pages": [
+        {
+          "artist": "Hanson",
+          "song": "What Christmas Means To Me",
+          "path": "/christmas-artist/41-hanson-what-christmas-means-to-me"
+        }
+      ]
+    },
+    {
+      "video": "Xa2tpRhvaxI",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "The Moonglows",
+          "song": "Mistletoe And Holly",
+          "path": "/christmas-artist/237-the-moonglows-mistletoe-and-holly"
+        }
+      ]
+    },
+    {
+      "video": "XyBmaDEL9Qw",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Shane MacGowan & Popes",
+          "song": "Christmas Lullaby",
+          "path": "/christmas-artist/163-shane-macgowan-popes-christmas-lullaby"
+        }
+      ]
+    },
+    {
+      "video": "Y0MaEsqJRcQ",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Stevie Wonder - Silver Bells (Tamla Records 1967)",
+      "channel": "ChristmasTimeTV",
+      "pages": [
+        {
+          "artist": "Stevie Wonder",
+          "song": "Silver Bells",
+          "path": "/christmas-artist/426-stevie-wonder-silver-bells"
+        }
+      ]
+    },
+    {
+      "video": "Y5bKtRU0Q6c",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "The Band  \"Christmas Must Be Tonight\"",
+      "channel": "Bob Barry",
+      "pages": [
+        {
+          "artist": "The Band",
+          "song": "Christmas Must Be Tonight",
+          "path": "/christmas-artist/164-the-band-christmas-must-be-tonight"
+        }
+      ]
+    },
+    {
+      "video": "Y7VoAXQt5uU",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "New Christmas Music Releases 2020 - Dear Santa - Heidi Anne - Lyric Video - New Christmas Song",
+      "channel": "HeidiAnneMusic",
+      "pages": [
+        {
+          "artist": "Heidi Anne",
+          "song": "I aint Spending Christmas Alone",
+          "path": "/christmas-artist/486-heidi-anne-i-aint-spending-christmas-alone"
+        }
+      ]
+    },
+    {
+      "video": "YPv1J9otAM4",
+      "http": 401,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Elsa and Anna",
+          "song": "Do you wanna build a snowman",
+          "path": "/christmas-artist/48-elsa-and-anna-do-you-wanna-build-a-snowman"
+        }
+      ]
+    },
+    {
+      "video": "YR1ujXx2p-I",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Merry Christmas, Darling - The Carpenters",
+      "channel": "SharonTG",
+      "pages": [
+        {
+          "artist": "The Carpenters",
+          "song": "Merry Christmas Darling",
+          "path": "/christmas-artist/99-the-carpenters-merry-christmas-darling"
+        },
+        {
+          "artist": "The Carpenters",
+          "song": "Merry Christmas Darling",
+          "path": "/christmas-artist/233-the-carpenters-merry-christmas-darling"
+        }
+      ]
+    },
+    {
+      "video": "YUikWMobcz4",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "I Haven't Wrapped A Single Gift - Nicholas Wells",
+      "channel": "Nicholas Wells",
+      "pages": [
+        {
+          "artist": "Nicholas Wells",
+          "song": "I havent wrapped a single gift",
+          "path": "/christmas-artist/466-nicholas-wells-i-havent-wrapped-a-single-gift"
+        }
+      ]
+    },
+    {
+      "video": "YaukRXZzxeo",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Whitney Houston",
+          "song": "The First Noel",
+          "path": "/christmas-artist/431-whitney-houston-the-first-noel"
+        }
+      ]
+    },
+    {
+      "video": "YiSqct-Ei80",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "IT CAME UPON A MIDNIGHT CLEAR - JOSH GROBAN",
+      "channel": "MYJESUSGOD1",
+      "pages": [
+        {
+          "artist": "Josh Groban",
+          "song": "It Came Upon a Midnight Clear",
+          "path": "/christmas-artist/124-josh-groban-it-came-upon-a-midnight-clear"
+        }
+      ]
+    },
+    {
+      "video": "YkW8_UOVZ0w",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Liam Gallagher - All You're Dreaming Of (Official Video)",
+      "channel": "Liam Gallagher",
+      "pages": [
+        {
+          "artist": "Liam Gallagher",
+          "song": "All Your Dreaming Of",
+          "path": "/christmas-artist/504-liam-gallagher-all-your-dreaming-of"
+        }
+      ]
+    },
+    {
+      "video": "YrYnNB2i3fk",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "It's the Most Wonderful Time of the Year",
+      "channel": "GONZO - Topic",
+      "pages": [
+        {
+          "artist": "Rizzo Gonzo",
+          "song": "It's The Most Wonderful Time Of The Year",
+          "path": "/christmas-artist/216-rizzo-gonzo-its-the-most-wonderful-time-of-the-year"
+        }
+      ]
+    },
+    {
+      "video": "YzxVrFFGorI",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Pentatonix - Kid On Christmas (Official Video) ft. Meghan Trainor",
+      "channel": "PentatonixVEVO",
+      "pages": [
+        {
+          "artist": "Pentatonix",
+          "song": "Kid On Christmas",
+          "path": "/christmas-artist/541-pentatonix-kid-on-christmas"
+        }
+      ]
+    },
+    {
+      "video": "ZeyHl1tQeaQ",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Shakin' Stevens - Merry Christmas Everyone (Official Video) [Directors Cut]",
+      "channel": "ShakinStevensVEVO",
+      "pages": [
+        {
+          "artist": "Shakin Stevens",
+          "song": "Merry Christmas Everyone",
+          "path": "/christmas-artist/8-shakin-stevens-merry-christmas-everyone"
+        }
+      ]
+    },
+    {
+      "video": "ZyBDBeexRjE",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Squeeze - Christmas Day (1979)",
+      "channel": "ChristmasRewind",
+      "pages": [
+        {
+          "artist": "Squeeze",
+          "song": "Christmas Day",
+          "path": "/christmas-artist/161-squeeze-christmas-day"
+        }
+      ]
+    },
+    {
+      "video": "_90Q91RAfIU",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Dean Martin- White Christmas",
+      "channel": "JerryLewisFan02",
+      "pages": [
+        {
+          "artist": "Dean Martin",
+          "song": "White Christmas",
+          "path": "/christmas-artist/104-dean-martin-white-christmas"
+        }
+      ]
+    },
+    {
+      "video": "_MD-cxwJ5o8",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Bing Crosby",
+          "song": "Ill Be Home For Christmas",
+          "path": "/christmas-artist/209-bing-crosby-ill-be-home-for-christmas"
+        }
+      ]
+    },
+    {
+      "video": "__kQ1PCP6B0",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Nat King Cole - The Christmas Song (Chestnuts Roasting On An Open Fire)",
+      "channel": "NatKingColeVEVO",
+      "pages": [
+        {
+          "artist": "Nat King Cole",
+          "song": "The Christmas Song",
+          "path": "/christmas-artist/14-nat-king-cole-the-christmas-song"
+        },
+        {
+          "artist": "Nat King Cole Trio",
+          "song": "The Christmas Song",
+          "path": "/christmas-artist/449-nat-king-cole-trio-the-christmas-song"
+        }
+      ]
+    },
+    {
+      "video": "_nYopnZ9Y7g",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Burl Ives",
+          "song": "Rudolph The Red-Nosed Reindeer",
+          "path": "/christmas-artist/252-burl-ives-rudolph-the-red-nosed-reindeer"
+        }
+      ]
+    },
+    {
+      "video": "aLnjjvdvEao",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Aloe Blacc - I Got Your Christmas Right Here (Official Music Video)",
+      "channel": "Aloe Blacc",
+      "pages": [
+        {
+          "artist": "Aloe Blacc",
+          "song": "I Got Your Christmas Right Here",
+          "path": "/christmas-artist/471-aloe-blacc-i-got-your-christmas-right-here"
+        }
+      ]
+    },
+    {
+      "video": "aOJyEqYY9ws",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "California Christmas",
+      "channel": "Madison Fayre - Topic",
+      "pages": [
+        {
+          "artist": "Madison Fayre",
+          "song": "California Christmas",
+          "path": "/christmas-artist/435-madison-fayre-california-christmas"
+        }
+      ]
+    },
+    {
+      "video": "aQvIi4AIwxY",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Ring those christmas bells - Peggy Lee",
+      "channel": "SweChristmas",
+      "pages": [
+        {
+          "artist": "Peggy Lee",
+          "song": "Ring Those Christmas Bells",
+          "path": "/christmas-artist/249-peggy-lee-ring-those-christmas-bells"
+        }
+      ]
+    },
+    {
+      "video": "a_N3Wkk6bxY",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Liam Payne, Dixie D\u2019Amelio - Naughty List (Audio)",
+      "channel": "LiamPayneVEVO",
+      "pages": [
+        {
+          "artist": "Liam Payne",
+          "song": "Naughty List",
+          "path": "/christmas-artist/488-liam-payne-naughty-list"
+        }
+      ]
+    },
+    {
+      "video": "ai4lNW3b9xg",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Darts - White Christmas (Official HD Video)",
+      "channel": "Ultimate Holidays ",
+      "pages": [
+        {
+          "artist": "Darts",
+          "song": "White Christmas",
+          "path": "/christmas-artist/548-darts-white-christmas"
+        }
+      ]
+    },
+    {
+      "video": "alf7q-t-JAw",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "INNA - I Need You for Christmas | Official Music Video",
+      "channel": "INNA",
+      "pages": [
+        {
+          "artist": "Inna",
+          "song": "I Need You For Christmas",
+          "path": "/christmas-artist/412-inna-i-need-you-for-christmas"
+        }
+      ]
+    },
+    {
+      "video": "b0yXJZnkfN0",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "SWV",
+          "song": "Give Love On Christmas Day",
+          "path": "/christmas-artist/427-swv-give-love-on-christmas-day"
+        }
+      ]
+    },
+    {
+      "video": "b9XNyeeJZ2k",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Chris Brown - This Christmas (Official HD Video)",
+      "channel": "ChrisBrownVEVO",
+      "pages": [
+        {
+          "artist": "Chris Brown",
+          "song": "This Christmas",
+          "path": "/christmas-artist/102-chris-brown-this-christmas"
+        }
+      ]
+    },
+    {
+      "video": "bb5QQTdgvoE",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Bananarama - Baby It's Christmas",
+      "channel": "Normski",
+      "pages": [
+        {
+          "artist": "Bananarama",
+          "song": "Baby it's Christmas",
+          "path": "/christmas-artist/458-bananarama-baby-its-christmas"
+        }
+      ]
+    },
+    {
+      "video": "bjQzJAKxTrE",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Do they Know it's Christmas ~ Band Aid 1984",
+      "channel": "PhoneixRising100",
+      "pages": [
+        {
+          "artist": "Band Aid",
+          "song": "Do They Know It's Christmas",
+          "path": "/christmas-artist/83-band-aid-do-they-know-its-christmas"
+        }
+      ]
+    },
+    {
+      "video": "bwNV7TAWN3M",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Wham! - Last Christmas (Official 4K Video)",
+      "channel": "WhamVEVO",
+      "pages": [
+        {
+          "artist": "Wham!",
+          "song": "Last Christmas",
+          "path": "/christmas-artist/2-wham-last-christmas"
+        }
+      ]
+    },
+    {
+      "video": "c3Q9XyhC5P4",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Tom Jones & Cerys Matthews - Baby its Cold Outside - Legendado BR",
+      "channel": "Tiago De Nardi",
+      "pages": [
+        {
+          "artist": "Tom Jones & C Matthews",
+          "song": "Baby Its Cold Outside",
+          "path": "/christmas-artist/5-tom-jones-c-matthews-baby-its-cold-outside"
+        }
+      ]
+    },
+    {
+      "video": "cF_6J7d0EN4",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Sia - Santa's Coming For Us",
+      "channel": "SiaVEVO",
+      "pages": [
+        {
+          "artist": "Sia",
+          "song": "Santa's Coming For Us",
+          "path": "/christmas-artist/457-sia-santas-coming-for-us"
+        }
+      ]
+    },
+    {
+      "video": "cGaPDWMzYGw",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Frank Sinatra - The Christmas Waltz",
+      "channel": "mjm1799",
+      "pages": [
+        {
+          "artist": "Frank Sinatra",
+          "song": "The Christmas Waltz",
+          "path": "/christmas-artist/382-frank-sinatra-the-christmas-waltz"
+        }
+      ]
+    },
+    {
+      "video": "cQLglf-A_PM",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Honey Come Home for Christmas",
+      "channel": "Kate Neve - Topic",
+      "pages": [
+        {
+          "artist": "Kate Neve",
+          "song": "Honey come Home for Christmas",
+          "path": "/christmas-artist/467-kate-neve-honey-come-home-for-christmas"
+        }
+      ]
+    },
+    {
+      "video": "cRwmoBdG0Pk",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Kylie Minogue - Let It Snow (Official Audio)",
+      "channel": "Kylie Minogue",
+      "pages": [
+        {
+          "artist": "Kylie Minogue",
+          "song": "Let It Snow",
+          "path": "/christmas-artist/128-kylie-minogue-let-it-snow"
+        }
+      ]
+    },
+    {
+      "video": "ckdRLrfaFbA",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Les Baxter",
+          "song": "Santa Clause's Party",
+          "path": "/christmas-artist/269-les-baxter-santa-clauses-party"
+        }
+      ]
+    },
+    {
+      "video": "cmm1gt_2SkQ",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Boney M. - Mary's Boy Child (Official Video)",
+      "channel": "BoneyMVEVO",
+      "pages": [
+        {
+          "artist": "Boney M",
+          "song": "Mary's Boy Child / Oh My Lord",
+          "path": "/christmas-artist/403-boney-m-marys-boy-child-oh-my-lord"
+        }
+      ]
+    },
+    {
+      "video": "cnmaz9kfdaI",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Christmas Prayer",
+      "channel": "Paloma Faith - Topic",
+      "pages": [
+        {
+          "artist": "Paloma Faith",
+          "song": "Christmas Prayer",
+          "path": "/christmas-artist/500-paloma-faith-christmas-prayer"
+        }
+      ]
+    },
+    {
+      "video": "crFQpOCDfEc",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Dean Martin - Baby It's Cold Outside",
+      "channel": "Oda",
+      "pages": [
+        {
+          "artist": "Dean Martin",
+          "song": "Baby, It's Cold Outside",
+          "path": "/christmas-artist/51-dean-martin-baby-its-cold-outside"
+        }
+      ]
+    },
+    {
+      "video": "cxdwyvb6w18",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Darlene Love - Winter Wonderland",
+      "channel": "christmastime4u",
+      "pages": [
+        {
+          "artist": "Darlene Love",
+          "song": "Winter Wonderland",
+          "path": "/christmas-artist/304-darlene-love-winter-wonderland"
+        }
+      ]
+    },
+    {
+      "video": "d1FhPKNLZb8",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Ashanti   We Wish You A Merry Christmas",
+      "channel": "Tolga Ferhad",
+      "pages": [
+        {
+          "artist": "Ashanti",
+          "song": "We Wish You a Merry Xmas",
+          "path": "/christmas-artist/290-ashanti-we-wish-you-a-merry-xmas"
+        }
+      ]
+    },
+    {
+      "video": "d82Xzey-4B4",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "It's Beginning To Look Like Christmas",
+      "channel": "Bing Crosby - Topic",
+      "pages": [
+        {
+          "artist": "Bing Crosby",
+          "song": "It's Beginning To Look A Lot Like Christmas",
+          "path": "/christmas-artist/336-bing-crosby-its-beginning-to-look-a-lot-like-christmas"
+        }
+      ]
+    },
+    {
+      "video": "dPmRI1lZKns",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "CHUCK BERRY     Merry Christmas Baby",
+      "channel": "imanuglyfrogtoo",
+      "pages": [
+        {
+          "artist": "Chuck Berry",
+          "song": "Merry Christmas Baby",
+          "path": "/christmas-artist/232-chuck-berry-merry-christmas-baby"
+        }
+      ]
+    },
+    {
+      "video": "dX77dg5lk6c",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "RUN-DMC - Christmas Is",
+      "channel": "UPROXX",
+      "pages": [
+        {
+          "artist": "Run-DMC",
+          "song": "Christmas Is",
+          "path": "/christmas-artist/143-run-dmc-christmas-is"
+        }
+      ]
+    },
+    {
+      "video": "daAG5JfNNFQ",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Fairytale of New York - Ronan Keating and Moya Brennan",
+      "channel": "An Ghaoth Aniar",
+      "pages": [
+        {
+          "artist": "Ronan Keating",
+          "song": "Fairytale Of New York",
+          "path": "/christmas-artist/177-ronan-keating-fairytale-of-new-york"
+        }
+      ]
+    },
+    {
+      "video": "ddhGTyxg2EE",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Coming Home This Christmas (From \"A Very Jonas Christmas Movie\"/Visualizer Video)",
+      "channel": "DisneyMusicVEVO",
+      "pages": [
+        {
+          "artist": "Jonas Brothers",
+          "song": "Coming Home This Christmas",
+          "path": "/christmas-artist/560-jonas-brothers-coming-home-this-christmas"
+        }
+      ]
+    },
+    {
+      "video": "dh0qJTN9wU8",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "The Magnets - \"A Winter's Tale\"",
+      "channel": "TheMagnetsFanclub",
+      "pages": [
+        {
+          "artist": "The Magnets",
+          "song": "A Winter's Tale",
+          "path": "/christmas-artist/311-the-magnets-a-winters-tale"
+        }
+      ]
+    },
+    {
+      "video": "dvFLzuGmBOk",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Peggy Lee",
+          "song": "Santa Claus Is Coming To Town",
+          "path": "/christmas-artist/265-peggy-lee-santa-claus-is-coming-to-town"
+        }
+      ]
+    },
+    {
+      "video": "e2YjOSrqUUU",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Michael Buble\u0301 - Holly Jolly Christmas [Studio Clip]",
+      "channel": "Michael Bubl\u00e9",
+      "pages": [
+        {
+          "artist": "Michael Buble",
+          "song": "Holly Jolly Christmas",
+          "path": "/christmas-artist/197-michael-buble-holly-jolly-christmas"
+        }
+      ]
+    },
+    {
+      "video": "eDqi8ENS1FU",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "ELTON JOHN - STEP INTO CHRISTMAS",
+      "channel": "Shayne T. Pendrick",
+      "pages": [
+        {
+          "artist": "Elton John",
+          "song": "Step Into Christmas",
+          "path": "/christmas-artist/47-elton-john-step-into-christmas"
+        }
+      ]
+    },
+    {
+      "video": "eIzKbGmfBb4",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Cruz Beckham If Everyday Was Christmas (Official Video)",
+      "channel": "ROSS ADAM MUSIC",
+      "pages": [
+        {
+          "artist": "Cruz Beckham",
+          "song": "If Every Day was Christmas",
+          "path": "/christmas-artist/452-cruz-beckham-if-every-day-was-christmas"
+        }
+      ]
+    },
+    {
+      "video": "eT7tbkeFYqM",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "The Carpenters at Christmas (1977) Complete TV Special",
+      "channel": "WhooshWhooshHere",
+      "pages": [
+        {
+          "artist": "The Cadillacs",
+          "song": "Rudolph The Red-Nosed Reindeer",
+          "path": "/christmas-artist/253-the-cadillacs-rudolph-the-red-nosed-reindeer"
+        }
+      ]
+    },
+    {
+      "video": "eljCFAcqczI",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "K.T.Tunstall - Christmas ( Baby Please Come Home )",
+      "channel": "45rpmONLINE",
+      "pages": [
+        {
+          "artist": "Kt Tunstall",
+          "song": "Christmas (Baby Please Come Home)",
+          "path": "/christmas-artist/417-kt-tunstall-christmas-baby-please-come-home"
+        }
+      ]
+    },
+    {
+      "video": "exfDHCIrZoE",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Bj\u00f6rn Again - Santa Claus Is Coming To Town",
+      "channel": "ohnoitisnathan35",
+      "pages": [
+        {
+          "artist": "Bjorn Again",
+          "song": "Santa Claus Is Coming To Town",
+          "path": "/christmas-artist/262-bjorn-again-santa-claus-is-coming-to-town"
+        }
+      ]
+    },
+    {
+      "video": "f37t3m7W-NA",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Kylie Minogue - Every Day's Like Christmas (Official Video)",
+      "channel": "Song des Tages",
+      "pages": [
+        {
+          "artist": "Kylie Minogue",
+          "song": "Every Day's Like Christmas",
+          "path": "/christmas-artist/127-kylie-minogue-every-days-like-christmas"
+        }
+      ]
+    },
+    {
+      "video": "f39DQz7ZsIY",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Kylie Minogue - White Diamond - Full Documentary",
+      "channel": "KylieLover7",
+      "pages": [
+        {
+          "artist": "Kylie Minogue",
+          "song": "White December",
+          "path": "/christmas-artist/302-kylie-minogue-white-december"
+        }
+      ]
+    },
+    {
+      "video": "f8yq9wiaQ4c",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Frank Sinatra Silent Night 2004 Arrangement",
+      "channel": "PASSINGPASTELS",
+      "pages": [
+        {
+          "artist": "Frank Sinatra",
+          "song": "Silent Night",
+          "path": "/christmas-artist/383-frank-sinatra-silent-night"
+        }
+      ]
+    },
+    {
+      "video": "fCtgLx5oxwo",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Christina Aguilera",
+          "song": "Merry Christmas Baby",
+          "path": "/christmas-artist/59-christina-aguilera-merry-christmas-baby"
+        }
+      ]
+    },
+    {
+      "video": "fGemoiLwMDA",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Jessie J - This Christmas Day (Official Lyric Video)",
+      "channel": "Jessie J",
+      "pages": [
+        {
+          "artist": "Jessie J",
+          "song": "This Christmas Day",
+          "path": "/christmas-artist/477-jessie-j-this-christmas-day"
+        }
+      ]
+    },
+    {
+      "video": "fIkIUPVGhP8",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Santa's a Scotsman",
+      "channel": "weirdsalad",
+      "pages": [
+        {
+          "artist": "Scottish Quest All Stars",
+          "song": "Santa is a Scotsman",
+          "path": "/christmas-artist/270-scottish-quest-all-stars-santa-is-a-scotsman"
+        }
+      ]
+    },
+    {
+      "video": "fJbbTjBur4k",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Frank Sinatra & Dean Martin - Auld Lang Syne",
+      "channel": "PM793",
+      "pages": [
+        {
+          "artist": "Frank Sinatra and Dean Martin",
+          "song": "Auld Lang Syne",
+          "path": "/christmas-artist/387-frank-sinatra-and-dean-martin-auld-lang-syne"
+        }
+      ]
+    },
+    {
+      "video": "fQE9_fwCOUk",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Aretha Franklin -Joy To The World",
+      "channel": "naxa321",
+      "pages": [
+        {
+          "artist": "Aretha Franklin",
+          "song": "Joy To The World",
+          "path": "/christmas-artist/401-aretha-franklin-joy-to-the-world"
+        }
+      ]
+    },
+    {
+      "video": "fRcWpUxfpuA",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Peggy Lee - It's Christmas Time Again // BEST CHRISTMAS SONGS",
+      "channel": "Christmas Essentials",
+      "pages": [
+        {
+          "artist": "Peggy Lee",
+          "song": "It's Christmas Time Again",
+          "path": "/christmas-artist/215-peggy-lee-its-christmas-time-again"
+        }
+      ]
+    },
+    {
+      "video": "fXtzy_bKgtk",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "BOB B. SOXX & THE BLUE JEANS - Here Comes Santa Claus (1963)",
+      "channel": "verycoolsound",
+      "pages": [
+        {
+          "artist": "Bob B Soxx & Blue Jeans",
+          "song": "Here Comes Santa Claus",
+          "path": "/christmas-artist/194-bob-b-soxx-blue-jeans-here-comes-santa-claus"
+        }
+      ]
+    },
+    {
+      "video": "ffoSWo-z6mU",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "shakin stevens blue christmas",
+      "channel": "psmarshall100",
+      "pages": [
+        {
+          "artist": "Shakin Stevens",
+          "song": "Blue Christmas",
+          "path": "/christmas-artist/440-shakin-stevens-blue-christmas"
+        }
+      ]
+    },
+    {
+      "video": "g7PKdtoin0o",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Kylie - Christmas Isn't Christmas 'Til You Get Here  (Live from the Royal Albert Hall)",
+      "channel": "Kylie Minogue",
+      "pages": [
+        {
+          "artist": "Kylie Minogue",
+          "song": "Christmas Isnt Christmas",
+          "path": "/christmas-artist/162-kylie-minogue-christmas-isnt-christmas"
+        }
+      ]
+    },
+    {
+      "video": "g7sYCoIqeqI",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Carpenters - Christmas Waltz",
+      "channel": "NedNickerson2010 (Robert)",
+      "pages": [
+        {
+          "artist": "The Carpenters",
+          "song": "Christmas Waltz",
+          "path": "/christmas-artist/170-the-carpenters-christmas-waltz"
+        }
+      ]
+    },
+    {
+      "video": "gCGuCqEUNYk",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "A Christmas to Remember - Amy Grant",
+      "channel": "Sarah Rose",
+      "pages": [
+        {
+          "artist": "Amy Grant",
+          "song": "A Christmas To Remember",
+          "path": "/christmas-artist/169-amy-grant-a-christmas-to-remember"
+        }
+      ]
+    },
+    {
+      "video": "gFtb3EtjEic",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Andy Williams - It's The Most Wonderful Time Of The Year",
+      "channel": "claudettecolbert60",
+      "pages": [
+        {
+          "artist": "Andy Williams",
+          "song": "It's The Most Wonderful Time Of The Year",
+          "path": "/christmas-artist/76-andy-williams-its-the-most-wonderful-time-of-the-year"
+        }
+      ]
+    },
+    {
+      "video": "gWIFpjbsxMY",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Bing Crosby - Santa Claus Is Coming to Town",
+      "channel": "The Best Christmas Songs",
+      "pages": [
+        {
+          "artist": "Bing Crosby",
+          "song": "Santa Claus Is Coming To Town",
+          "path": "/christmas-artist/261-bing-crosby-santa-claus-is-coming-to-town"
+        }
+      ]
+    },
+    {
+      "video": "gaPj1GoDpQw",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Tom Petty & The Heartbreakers - \"Christmas All Over Again\"",
+      "channel": "TURB0lovesTP",
+      "pages": [
+        {
+          "artist": "Tom Petty & Heartbreakers",
+          "song": "Christmas All Over Again",
+          "path": "/christmas-artist/158-tom-petty-heartbreakers-christmas-all-over-again"
+        }
+      ]
+    },
+    {
+      "video": "gnUaF58Kj3Q",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Aaron Neville - White Christmas",
+      "channel": "Mihai P\u0103curari",
+      "pages": [
+        {
+          "artist": "Aaron Neville",
+          "song": "White Christmas",
+          "path": "/christmas-artist/296-aaron-neville-white-christmas"
+        }
+      ]
+    },
+    {
+      "video": "grtP8bMrxCk",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Rockin' Around The Christmas Tree - Pentatonix (From Pentatonix: A Not So Silent Night)",
+      "channel": "Pentatonix",
+      "pages": [
+        {
+          "artist": "Pentatonix",
+          "song": "Rockin Around The Christmas Tree",
+          "path": "/christmas-artist/479-pentatonix-rockin-around-the-christmas-tree"
+        }
+      ]
+    },
+    {
+      "video": "gwASDwcZPgM",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Hanson - Run Rudolph Run",
+      "channel": "NewestAnuk18",
+      "pages": [
+        {
+          "artist": "Hanson",
+          "song": "Run Rudolph Run",
+          "path": "/christmas-artist/117-hanson-run-rudolph-run"
+        }
+      ]
+    },
+    {
+      "video": "hCUit4tMHVg",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "S Club 7",
+          "song": "Perfect Christmas",
+          "path": "/christmas-artist/145-s-club-7-perfect-christmas"
+        }
+      ]
+    },
+    {
+      "video": "hH00gU0kyrI",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "ANOTHER CHRISTMAS SONG- Joseph Bell & Paul Burling",
+      "channel": "Another Xmas Song",
+      "pages": [
+        {
+          "artist": "Paul Burling & Joseph Bell",
+          "song": "Another Christmas Song",
+          "path": "/christmas-artist/439-paul-burling-joseph-bell-another-christmas-song"
+        }
+      ]
+    },
+    {
+      "video": "hLOfyEhMjHs",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Matt Terry debuts When Christmas Comes Around | Final Result | The X Factor UK 2016",
+      "channel": "The X Factor UK",
+      "pages": [
+        {
+          "artist": "Matt Terry",
+          "song": "When Christmas comes around",
+          "path": "/christmas-artist/455-matt-terry-when-christmas-comes-around"
+        }
+      ]
+    },
+    {
+      "video": "hM_WdXSFFwg",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Kristen Bell, Idina Menzel, Josh Gad - Ring in the Season (From \"Olaf's Frozen Adventure\")",
+      "channel": "DisneyMusicVEVO",
+      "pages": [
+        {
+          "artist": "Elsa and Anna",
+          "song": "Ring in the Season",
+          "path": "/christmas-artist/540-elsa-and-anna-ring-in-the-season"
+        }
+      ]
+    },
+    {
+      "video": "h_FV01Diqn0",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Michael Bubl\u00e9 - Christmas In Hollywood BTS Opening Montage",
+      "channel": "Michael Bubl\u00e9",
+      "pages": [
+        {
+          "artist": "Michael Buble",
+          "song": "The Christmas Song",
+          "path": "/christmas-artist/330-michael-buble-the-christmas-song"
+        }
+      ]
+    },
+    {
+      "video": "ha8jCTIff1E",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "All Wrapped Up",
+      "channel": "Susy Wall - Topic",
+      "pages": [
+        {
+          "artist": "Susy Wall",
+          "song": "All Wrapped Up",
+          "path": "/christmas-artist/544-susy-wall-all-wrapped-up"
+        }
+      ]
+    },
+    {
+      "video": "hdnaPAJgAQI",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Mel & Kim - Rockin' Around The Christmas Tree",
+      "channel": "MelandKim",
+      "pages": [
+        {
+          "artist": "Mel & Kim",
+          "song": "Rockin around the Christmas tree",
+          "path": "/christmas-artist/23-mel-kim-rockin-around-the-christmas-tree"
+        }
+      ]
+    },
+    {
+      "video": "hmxD0wjBPAc",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Elvis Presley - Santa Bring My Baby Back To Me",
+      "channel": "SUNtoRCA",
+      "pages": [
+        {
+          "artist": "Elvis Presley",
+          "song": "Santa Bring My Baby Back (To Me)",
+          "path": "/christmas-artist/260-elvis-presley-santa-bring-my-baby-back-to-me"
+        }
+      ]
+    },
+    {
+      "video": "iLEKiHf_yok",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "At The Christmas Ball - by X-mas Donkey & The Glittering Balls",
+      "channel": "X-mas Donkey & The Glittering Balls",
+      "pages": [
+        {
+          "artist": "X-mas Donkey & The Glittering Balls",
+          "song": "At The Christmas Ball",
+          "path": "/christmas-artist/153-x-mas-donkey-the-glittering-balls-at-the-christmas-ball"
+        }
+      ]
+    },
+    {
+      "video": "iM-EZekk72U",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Neon Trees - Holiday Rock (Official Video)",
+      "channel": "NeonTreesVEVO",
+      "pages": [
+        {
+          "artist": "Neon Trees",
+          "song": "Holiday Rock",
+          "path": "/christmas-artist/539-neon-trees-holiday-rock"
+        }
+      ]
+    },
+    {
+      "video": "iM3iuUsn5hc",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Kylie Minogue - Winter Wonderland (Live)",
+      "channel": "J\u00f3zsef Cs\u00e1th",
+      "pages": [
+        {
+          "artist": "Kylie Minogue",
+          "song": "Winter Wonderland",
+          "path": "/christmas-artist/308-kylie-minogue-winter-wonderland"
+        }
+      ]
+    },
+    {
+      "video": "iSgEDKjmT5o",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Bruce Springsteen - Santa Claus Is Comin' To Town - 2007",
+      "channel": "The Stone Pony | Bruce Springsteen Club",
+      "pages": [
+        {
+          "artist": "Bruce Springsteen",
+          "song": "Santa Claus Is Coming to Town",
+          "path": "/christmas-artist/63-bruce-springsteen-santa-claus-is-coming-to-town"
+        }
+      ]
+    },
+    {
+      "video": "ieg-x951OTE",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Alma Cogan - Christmas Cards // Christmas Essentials",
+      "channel": "Christmas Essentials",
+      "pages": [
+        {
+          "artist": "Alma Cogan",
+          "song": "Christmas Cards",
+          "path": "/christmas-artist/160-alma-cogan-christmas-cards"
+        }
+      ]
+    },
+    {
+      "video": "is4NQkUN3AI",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Rockin Around the Christmas Tree - Brenda Lee - HD Audio",
+      "channel": "Best Christmas Songs",
+      "pages": [
+        {
+          "artist": "Brenda Lee",
+          "song": "Rockin Around The Christmas Tree",
+          "path": "/christmas-artist/65-brenda-lee-rockin-around-the-christmas-tree"
+        }
+      ]
+    },
+    {
+      "video": "itcMLwMEeMQ",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Jingle Bell Rock / Bobby Helms 1957",
+      "channel": "Elwood Yodogawa",
+      "pages": [
+        {
+          "artist": "Bobby Helms",
+          "song": "Jingle Bell Rock",
+          "path": "/christmas-artist/218-bobby-helms-jingle-bell-rock"
+        }
+      ]
+    },
+    {
+      "video": "itdNoGtPQ3I",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Charles Brown - Please Come Home For Christmas",
+      "channel": "nemesisofthedevil",
+      "pages": [
+        {
+          "artist": "Charles Brown",
+          "song": "Please Come Home For Christmas",
+          "path": "/christmas-artist/248-charles-brown-please-come-home-for-christmas"
+        }
+      ]
+    },
+    {
+      "video": "ivJ0sHadwUQ",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Spice Girls",
+          "song": "Sleigh Ride",
+          "path": "/christmas-artist/424-spice-girls-sleigh-ride"
+        }
+      ]
+    },
+    {
+      "video": "j-_1-uJ6Ml4",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Leona Lewis - One More Sleep (Official Video)",
+      "channel": "leonalewisVEVO",
+      "pages": [
+        {
+          "artist": "Leona Lewis",
+          "song": "One More Sleep",
+          "path": "/christmas-artist/28-leona-lewis-one-more-sleep"
+        }
+      ]
+    },
+    {
+      "video": "j3YlL1P4ICg",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Christmas Never Gets Old",
+      "channel": "Jamie Cullum - Topic",
+      "pages": [
+        {
+          "artist": "Jamie Cullum",
+          "song": "Christmas Never Gets Old",
+          "path": "/christmas-artist/501-jamie-cullum-christmas-never-gets-old"
+        }
+      ]
+    },
+    {
+      "video": "j8xiRbt6FOE",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "It Came Upon A Midnight Clear - Frank Sinatra (1957)",
+      "channel": "Conoroperson",
+      "pages": [
+        {
+          "artist": "Frank Sinatra",
+          "song": "It Came Upon A Midnight Clear",
+          "path": "/christmas-artist/211-frank-sinatra-it-came-upon-a-midnight-clear"
+        }
+      ]
+    },
+    {
+      "video": "j9jbdgZidu8",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "The Pogues -  Fairytale Of New York (Official Video) [HD Upgrade]",
+      "channel": "ThePoguesOfficial",
+      "pages": [
+        {
+          "artist": "Pogues",
+          "song": "Fairytale of New York",
+          "path": "/christmas-artist/12-pogues-fairytale-of-new-york"
+        }
+      ]
+    },
+    {
+      "video": "jHefeA-hyMA",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Silver Bells - Bing Crosby",
+      "channel": "Joe Dayton",
+      "pages": [
+        {
+          "artist": "Bing Crosby",
+          "song": "Silver Bells",
+          "path": "/christmas-artist/277-bing-crosby-silver-bells"
+        }
+      ]
+    },
+    {
+      "video": "jKj_HfKER4E",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Bing Crosby & Rosemary Clooney - Medley",
+      "channel": "nicoley133",
+      "pages": [
+        {
+          "artist": "Bing Crosby & Rosemary Clooney",
+          "song": "Here Comes Santa Claus",
+          "path": "/christmas-artist/448-bing-crosby-rosemary-clooney-here-comes-santa-claus"
+        }
+      ]
+    },
+    {
+      "video": "jXfLpDuqO6I",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Andy Williams - Happy Holidays w Osmonds",
+      "channel": "Christmas Express",
+      "pages": [
+        {
+          "artist": "The Osmonds",
+          "song": "Happy Holiday",
+          "path": "/christmas-artist/454-the-osmonds-happy-holiday"
+        }
+      ]
+    },
+    {
+      "video": "jdVLcIA9p9g",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Bryan Adams - Merry Christmas",
+      "channel": "Bryan Adams",
+      "pages": [
+        {
+          "artist": "Bryan Adams",
+          "song": "Merry Christmas",
+          "path": "/christmas-artist/98-bryan-adams-merry-christmas"
+        }
+      ]
+    },
+    {
+      "video": "jiYYWDSI_oU",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Sarah McLachlan -- River (with lyrics)",
+      "channel": "indiemusiclover1",
+      "pages": [
+        {
+          "artist": "Sarah McLachlan",
+          "song": "River",
+          "path": "/christmas-artist/148-sarah-mclachlan-river"
+        }
+      ]
+    },
+    {
+      "video": "jof8M0KFhHU",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Matt Monro - Mary`s Boy Child",
+      "channel": "45RPMbyJME ",
+      "pages": [
+        {
+          "artist": "Matt Monro",
+          "song": "Mary's Boy Child",
+          "path": "/christmas-artist/130-matt-monro-marys-boy-child"
+        }
+      ]
+    },
+    {
+      "video": "jtGHJm_2iBM",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "My Christmas Prayer, Tell it Like It Is, Aaron Neville",
+      "channel": "Hopenjoy1963",
+      "pages": [
+        {
+          "artist": "Aaron Neville",
+          "song": "Christmas Prayer",
+          "path": "/christmas-artist/400-aaron-neville-christmas-prayer"
+        }
+      ]
+    },
+    {
+      "video": "k1BtVdmiOP4",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Sia - My Old Santa Claus",
+      "channel": "Sia",
+      "pages": [
+        {
+          "artist": "Sia",
+          "song": "My Old Santa Claus",
+          "path": "/christmas-artist/480-sia-my-old-santa-claus"
+        }
+      ]
+    },
+    {
+      "video": "kOmZNnJDdxQ",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "It\u2019s Going To Be A Cold Winter",
+      "channel": "Blossoms - Topic",
+      "pages": [
+        {
+          "artist": "Blossoms",
+          "song": "Its Going To Be A Cold Winter",
+          "path": "/christmas-artist/496-blossoms-its-going-to-be-a-cold-winter"
+        }
+      ]
+    },
+    {
+      "video": "kPmLR1ZCLEk",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Sammy Davis Jr. - The Christmas Song",
+      "channel": "christmastime4u",
+      "pages": [
+        {
+          "artist": "Sammy Davis Jr.",
+          "song": "The Christmas Song",
+          "path": "/christmas-artist/390-sammy-davis-jr-the-christmas-song"
+        }
+      ]
+    },
+    {
+      "video": "kymi5G51UX0",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "More Like Christmas Eve (Featuring Craig Charles)",
+      "channel": "Jeff Byrd Project",
+      "pages": [
+        {
+          "artist": "Craig Charles",
+          "song": "More Like Christmas Eve",
+          "path": "/christmas-artist/121-craig-charles-more-like-christmas-eve"
+        }
+      ]
+    },
+    {
+      "video": "l1KD3Nxd8AU",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Eternal - Amazing Grace",
+      "channel": "EVK Admin",
+      "pages": [
+        {
+          "artist": "Eternal",
+          "song": "Amazing Grace",
+          "path": "/christmas-artist/408-eternal-amazing-grace"
+        }
+      ]
+    },
+    {
+      "video": "l5KCrS7JS4I",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Rockin' Around The Christmas Tree - Ronnie Spector & Darlene Love",
+      "channel": "DreamsILive",
+      "pages": [
+        {
+          "artist": "Ronnie Spector & Darlene Love",
+          "song": "Rockin Around The Christmas Tree",
+          "path": "/christmas-artist/250-ronnie-spector-darlene-love-rockin-around-the-christmas-tree"
+        }
+      ]
+    },
+    {
+      "video": "lHTE_QQOct8",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Winter Wonderland: Jason Mraz",
+      "channel": "TarynDaniel2",
+      "pages": [
+        {
+          "artist": "Jason Mraz",
+          "song": "Winter Wonderland",
+          "path": "/christmas-artist/39-jason-mraz-winter-wonderland"
+        }
+      ]
+    },
+    {
+      "video": "lkFP0VwpPRY",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Walking In A Winter Wonderland - Dean Martin",
+      "channel": "Thelonious_159",
+      "pages": [
+        {
+          "artist": "Dean Martin",
+          "song": "Winter Wonderland",
+          "path": "/christmas-artist/305-dean-martin-winter-wonderland"
+        }
+      ]
+    },
+    {
+      "video": "lylWDAo9hFw",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Dean Martin - Silver Bells (Official Audio)",
+      "channel": "DeanMartinVEVO",
+      "pages": [
+        {
+          "artist": "Dean Martin",
+          "song": "Silver Bells",
+          "path": "/christmas-artist/278-dean-martin-silver-bells"
+        }
+      ]
+    },
+    {
+      "video": "m3xc5vdOizo",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Michael Bubl\u00e9 | Cold December Night",
+      "channel": "Gary86",
+      "pages": [
+        {
+          "artist": "Michael Buble",
+          "song": "Cold December Night",
+          "path": "/christmas-artist/326-michael-buble-cold-december-night"
+        }
+      ]
+    },
+    {
+      "video": "m7wDCutPVkU",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Bing Crosby, Danny Kaye, Peggy Lee, Trudy Stevens - Snow",
+      "channel": "The Best Christmas Songs",
+      "pages": [
+        {
+          "artist": "Peggy Lee",
+          "song": "Snow, Snow, Snow",
+          "path": "/christmas-artist/283-peggy-lee-snow-snow-snow"
+        }
+      ]
+    },
+    {
+      "video": "mIZ14B65u6k",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Spice Girls - Christmas Wrapping",
+      "channel": "daaselva",
+      "pages": [
+        {
+          "artist": "Spice Girls",
+          "song": "Christmas Wrapping",
+          "path": "/christmas-artist/149-spice-girls-christmas-wrapping"
+        }
+      ]
+    },
+    {
+      "video": "mK6GecDTsEs",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Santa's List",
+      "channel": "CLIFF RICHARD - Topic",
+      "pages": [
+        {
+          "artist": "Cliff Richard",
+          "song": "Santa's List",
+          "path": "/christmas-artist/271-cliff-richard-santas-list"
+        }
+      ]
+    },
+    {
+      "video": "mN3rDTAdM2o",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Taylor Swift - Christmas Tree Farm",
+      "channel": "Taylor Swift",
+      "pages": [
+        {
+          "artist": "Taylor Swift",
+          "song": "Christmas Tree Farm",
+          "path": "/christmas-artist/515-taylor-swift-christmas-tree-farm"
+        }
+      ]
+    },
+    {
+      "video": "mNkwJA27-CU",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Cried out Christmas",
+      "channel": "Kylie Minogue - Topic",
+      "pages": [
+        {
+          "artist": "Kylie Minogue",
+          "song": "Cried Out Christmas",
+          "path": "/christmas-artist/172-kylie-minogue-cried-out-christmas"
+        }
+      ]
+    },
+    {
+      "video": "mUhKp-Rslug",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Don't cry it's Christmas - David Brent",
+      "channel": "stek2007",
+      "pages": [
+        {
+          "artist": "David Brent",
+          "song": "Don't Cry It's Christmas",
+          "path": "/christmas-artist/52-david-brent-dont-cry-its-christmas"
+        }
+      ]
+    },
+    {
+      "video": "mb55F4fHx-c",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Louis Armstrong - Christmas In New Orleans - Lyrics (Paroles)",
+      "channel": "Christmas Songs",
+      "pages": [
+        {
+          "artist": "Louis Armstrong",
+          "song": "Christmas In New Orleans",
+          "path": "/christmas-artist/129-louis-armstrong-christmas-in-new-orleans"
+        }
+      ]
+    },
+    {
+      "video": "mydPL9UXiQs",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Jack Jones  \"Do You Hear What I Hear?\"",
+      "channel": "Bob Barry",
+      "pages": [
+        {
+          "artist": "Jack Jones",
+          "song": "Do You Hear What I Hear",
+          "path": "/christmas-artist/175-jack-jones-do-you-hear-what-i-hear"
+        }
+      ]
+    },
+    {
+      "video": "nBCkXe3ZfoI",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Ed Sheeran - Under the Tree (from \u201cThat Christmas\u201d) | Official Music Video",
+      "channel": "Ed Sheeran",
+      "pages": [
+        {
+          "artist": "Ed Sheeran",
+          "song": "Under the Tree",
+          "path": "/christmas-artist/563-ed-sheeran-under-the-tree"
+        }
+      ]
+    },
+    {
+      "video": "nH9RyySpkU8",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Judy Garland",
+          "song": "Have Yourself A Merry Little Christmas",
+          "path": "/christmas-artist/192-judy-garland-have-yourself-a-merry-little-christmas"
+        }
+      ]
+    },
+    {
+      "video": "nZ6yQgBvuoI",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "\"Have Yourself a Merry Little Christmas\" by Frank Sinatra",
+      "channel": "kate",
+      "pages": [
+        {
+          "artist": "Frank Sinatra",
+          "song": "Have Yourself A Merry Little Christmas",
+          "path": "/christmas-artist/376-frank-sinatra-have-yourself-a-merry-little-christmas"
+        }
+      ]
+    },
+    {
+      "video": "n_OuJnQnwFE",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Anne-Marie - Think of Christmas (From \"Happiest Season\")",
+      "channel": "Warner Records",
+      "pages": [
+        {
+          "artist": "Anne-Marie",
+          "song": "Think of Christmas",
+          "path": "/christmas-artist/498-anne-marie-think-of-christmas"
+        }
+      ]
+    },
+    {
+      "video": "njEAC3dgQN4",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "My Christmas Day / Lisa Hugo / Original Song / Single on iTunes",
+      "channel": "Lisa Hugo",
+      "pages": [
+        {
+          "artist": "Lisa Hugo",
+          "song": "My Christmas Day",
+          "path": "/christmas-artist/27-lisa-hugo-my-christmas-day"
+        }
+      ]
+    },
+    {
+      "video": "nrUWPCWWfLo",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Paul Potts - Oh Holy Night 2007",
+      "channel": "fritz5114",
+      "pages": [
+        {
+          "artist": "Paul Potts",
+          "song": "O Holy Night",
+          "path": "/christmas-artist/241-paul-potts-o-holy-night"
+        }
+      ]
+    },
+    {
+      "video": "nud2TQNahaU",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "The Waitresses - Christmas Wrapping (Music Video)",
+      "channel": "scamparoo",
+      "pages": [
+        {
+          "artist": "Waitresses",
+          "song": "Christmas Wrapping",
+          "path": "/christmas-artist/3-waitresses-christmas-wrapping"
+        }
+      ]
+    },
+    {
+      "video": "nyjHdiLla98",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Michael Bubl\u00e9 & Trinity Boys Choir - Silent Night",
+      "channel": "LiberaFan4Ever",
+      "pages": [
+        {
+          "artist": "Michael Buble",
+          "song": "Silent Night",
+          "path": "/christmas-artist/324-michael-buble-silent-night"
+        }
+      ]
+    },
+    {
+      "video": "nzi7YrJN5FI",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "The Goodies - Make a Daft Noise for Christmas",
+      "channel": "DCLeadboot",
+      "pages": [
+        {
+          "artist": "Goodies",
+          "song": "Make a Daft Noise for Christmas",
+          "path": "/christmas-artist/446-goodies-make-a-daft-noise-for-christmas"
+        }
+      ]
+    },
+    {
+      "video": "oIKt5p3UmXg",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Michael Bubl\u00e9 - Winter Wonderland [Official HD]",
+      "channel": "Michael Bubl\u00e9",
+      "pages": [
+        {
+          "artist": "Michael Buble",
+          "song": "Winter Wonderland",
+          "path": "/christmas-artist/309-michael-buble-winter-wonderland"
+        }
+      ]
+    },
+    {
+      "video": "oIP7vRRCUDo",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Bing Crosby - Rudolph The Red Nosed Reindeer",
+      "channel": "BingCrosbyVEVO",
+      "pages": [
+        {
+          "artist": "Bing Crosby",
+          "song": "Rudolph The Red Nosed Reindeer",
+          "path": "/christmas-artist/251-bing-crosby-rudolph-the-red-nosed-reindeer"
+        }
+      ]
+    },
+    {
+      "video": "oQrgbadXYxE",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Paul Potts - Ave Maria 2007",
+      "channel": "fritz5108",
+      "pages": [
+        {
+          "artist": "Paul Potts",
+          "song": "Ave Maria",
+          "path": "/christmas-artist/140-paul-potts-ave-maria"
+        }
+      ]
+    },
+    {
+      "video": "oTIscYp_VKw",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "This Christmas - Corinne Bailey Rae",
+      "channel": "mileshassle",
+      "pages": [
+        {
+          "artist": "Corinne Bailey Rae",
+          "song": "This Christmas",
+          "path": "/christmas-artist/406-corinne-bailey-rae-this-christmas"
+        }
+      ]
+    },
+    {
+      "video": "or2mMJ6_YCM",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "NAT KING COLE - O HOLY NIGHT",
+      "channel": "NANCYFLORESSANTOS",
+      "pages": [
+        {
+          "artist": "Nat King Cole",
+          "song": "O Holy Night",
+          "path": "/christmas-artist/240-nat-king-cole-o-holy-night"
+        }
+      ]
+    },
+    {
+      "video": "owQ5I5gfmnM",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Walk This Sleigh",
+      "channel": "Robbie Williams - Topic",
+      "pages": [
+        {
+          "artist": "Robbie Williams",
+          "song": "Walk this Sleigh",
+          "path": "/christmas-artist/288-robbie-williams-walk-this-sleigh"
+        }
+      ]
+    },
+    {
+      "video": "p-_3z30_dvs",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Jonas Brothers - I Need You Christmas (Official Audio)",
+      "channel": "JonasBrothersVEVO",
+      "pages": [
+        {
+          "artist": "Jonas Brothers",
+          "song": "I Need You Christmas",
+          "path": "/christmas-artist/491-jonas-brothers-i-need-you-christmas"
+        }
+      ]
+    },
+    {
+      "video": "p07T4dlw2cc",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Frank Sinatra - Jingle Bells (turn on caption to see the lyrics)",
+      "channel": "Ordinary guy",
+      "pages": [
+        {
+          "artist": "Frank Sinatra",
+          "song": "Jingle Bells",
+          "path": "/christmas-artist/378-frank-sinatra-jingle-bells"
+        }
+      ]
+    },
+    {
+      "video": "pZ_RWs5YFP8",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Dean Martin - I've Got My Love To Keep Me Warm (Capitol Records 1959)",
+      "channel": "ChristmasTimeTV",
+      "pages": [
+        {
+          "artist": "Dean Martin",
+          "song": "I've Got My Love To Keep Me Warm",
+          "path": "/christmas-artist/217-dean-martin-ive-got-my-love-to-keep-me-warm"
+        }
+      ]
+    },
+    {
+      "video": "pZiadb3bpOI",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Kate Bush - December Will Be Magic Again (1979 Xmas Special)",
+      "channel": "Symphonyofflowers",
+      "pages": [
+        {
+          "artist": "Kate Bush",
+          "song": "December Will Be Magic Again",
+          "path": "/christmas-artist/173-kate-bush-december-will-be-magic-again"
+        }
+      ]
+    },
+    {
+      "video": "pcPQ4JgMT90",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Nat King Cole - Joy to the World",
+      "channel": "Natale, Christmas, No\u00ebl, Navidad, Weihnachten, \u30af\u30ea\u30b9\u30de\u30b9, Kersfees",
+      "pages": [
+        {
+          "artist": "Nat King Cole",
+          "song": "Joy To The World",
+          "path": "/christmas-artist/136-nat-king-cole-joy-to-the-world"
+        }
+      ]
+    },
+    {
+      "video": "pmtYs_k8WOE",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Norah Jones - Peace",
+      "channel": "Angela Palumbo",
+      "pages": [
+        {
+          "artist": "Norah Jones",
+          "song": "Peace",
+          "path": "/christmas-artist/419-norah-jones-peace"
+        }
+      ]
+    },
+    {
+      "video": "pzJltQjuibA",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Cher - DJ Play a Christmas Song (Macy's Thanksgiving Day Parade)",
+      "channel": "Mr. Ricione",
+      "pages": [
+        {
+          "artist": "Cher",
+          "song": "DJ Play a Christmas Song",
+          "path": "/christmas-artist/551-cher-dj-play-a-christmas-song"
+        }
+      ]
+    },
+    {
+      "video": "qBuu71fdKkg",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Backstreet Boys  - Christmas In New York (Official Music Video)",
+      "channel": "Backstreet Boys",
+      "pages": [
+        {
+          "artist": "Backstreet Boys",
+          "song": "Christmas in New York",
+          "path": "/christmas-artist/524-backstreet-boys-christmas-in-new-york"
+        }
+      ]
+    },
+    {
+      "video": "qPh_4l2bB2k",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Winter Wonderland ~~~ Bing Crosby !",
+      "channel": "manfreadstraw",
+      "pages": [
+        {
+          "artist": "Bing Crosby",
+          "song": "Winter Wonderland",
+          "path": "/christmas-artist/303-bing-crosby-winter-wonderland"
+        }
+      ]
+    },
+    {
+      "video": "qPudS9P4-Us",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Miss Us",
+      "channel": "Trent Cokley - Topic",
+      "pages": [
+        {
+          "artist": "Trent Cokley",
+          "song": "Miss Us",
+          "path": "/christmas-artist/507-trent-cokley-miss-us"
+        }
+      ]
+    },
+    {
+      "video": "qfjSwiy8yxA",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Bing Crosby - Away In A Manger",
+      "channel": "BingCrosbyVEVO",
+      "pages": [
+        {
+          "artist": "Bing Crosby",
+          "song": "Away In A Manger",
+          "path": "/christmas-artist/340-bing-crosby-away-in-a-manger"
+        }
+      ]
+    },
+    {
+      "video": "qgDKtLPp46s",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Flying Pickets - Only You",
+      "channel": "LotharZ",
+      "pages": [
+        {
+          "artist": "The Flying Pickets",
+          "song": "Only You",
+          "path": "/christmas-artist/246-the-flying-pickets-only-you"
+        }
+      ]
+    },
+    {
+      "video": "qzgrYeSI7vs",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Barbra Streisand",
+          "song": "Jingle Bells",
+          "path": "/christmas-artist/219-barbra-streisand-jingle-bells"
+        }
+      ]
+    },
+    {
+      "video": "r1uJPGRfO5Y",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Darlene Love - All Alone On Christmas (Official Video)",
+      "channel": "DarleneLoveVEVO",
+      "pages": [
+        {
+          "artist": "Darlene Love",
+          "song": "All Alone On Christmas",
+          "path": "/christmas-artist/54-darlene-love-all-alone-on-christmas"
+        }
+      ]
+    },
+    {
+      "video": "rMKFRQwkBS8",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Chris Kamara - I Wish It Could Be Christmas Everyday (Official Video)",
+      "channel": "Silva Screen Records",
+      "pages": [
+        {
+          "artist": "Chris Kamara",
+          "song": "I Wish It Could Be Christmas Everyday",
+          "path": "/christmas-artist/503-chris-kamara-i-wish-it-could-be-christmas-everyday"
+        }
+      ]
+    },
+    {
+      "video": "rS2cdmToNGw",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Carpenters - An Old-Fashioned Christmas",
+      "channel": "NedNickerson2010 (Robert)",
+      "pages": [
+        {
+          "artist": "The Carpenters",
+          "song": "An Old Fashioned Christmas",
+          "path": "/christmas-artist/245-the-carpenters-an-old-fashioned-christmas"
+        }
+      ]
+    },
+    {
+      "video": "rSckgBLs3qM",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Gabriella Cilmi - Warm This Winter - New Christmas Song!",
+      "channel": "Rockabilly \u201cDave24v\u201d Dave",
+      "pages": [
+        {
+          "artist": "Gabriella Cilmi",
+          "song": "Warm this Winter",
+          "path": "/christmas-artist/43-gabriella-cilmi-warm-this-winter"
+        }
+      ]
+    },
+    {
+      "video": "rZCEBibnRM8",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Cliff Richard - Mistletoe and Wine (Official Music Video) [HD]",
+      "channel": "RHINO",
+      "pages": [
+        {
+          "artist": "Cliff Richard",
+          "song": "Mistletoe And Wine",
+          "path": "/christmas-artist/57-cliff-richard-mistletoe-and-wine"
+        }
+      ]
+    },
+    {
+      "video": "rka5TbctqG0",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Raff Pylon - Christmas in California Feat. Snoop Dogg (Official Video)",
+      "channel": "Raff Pylon",
+      "pages": [
+        {
+          "artist": "Raff Pylon",
+          "song": "Christmas in California",
+          "path": "/christmas-artist/502-raff-pylon-christmas-in-california"
+        }
+      ]
+    },
+    {
+      "video": "roONz0cHUVo",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "The little drummer boy - Jackson 5 [HQ]",
+      "channel": "MeHeartRnB",
+      "pages": [
+        {
+          "artist": "The Jackson 5",
+          "song": "Little Drummer Boy",
+          "path": "/christmas-artist/227-the-jackson-5-little-drummer-boy"
+        }
+      ]
+    },
+    {
+      "video": "rp7Y0XumBN8",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "John Legend - Bring Me Love (Official Audio)",
+      "channel": "johnlegendVEVO",
+      "pages": [
+        {
+          "artist": "John Legend",
+          "song": "Bring Me Love",
+          "path": "/christmas-artist/478-john-legend-bring-me-love"
+        }
+      ]
+    },
+    {
+      "video": "rqNvqnInE84",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "SILENT NIGHT-PEACE ON EARTH - DEAN MARTIN",
+      "channel": "Guy Miller",
+      "pages": [
+        {
+          "artist": "Dean Martin",
+          "song": "Peace On Earth/Silent Night",
+          "path": "/christmas-artist/247-dean-martin-peace-on-earth-silent-night"
+        }
+      ]
+    },
+    {
+      "video": "rxMEsTcw_pk",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Hark! The Herald Angels Sing - Nat King Cole",
+      "channel": "maumau1968",
+      "pages": [
+        {
+          "artist": "Nat King Cole",
+          "song": "Hark The Herald Angels Sing",
+          "path": "/christmas-artist/187-nat-king-cole-hark-the-herald-angels-sing"
+        }
+      ]
+    },
+    {
+      "video": "s1alBm6vwE4",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Bing Crosby - The First Noel",
+      "channel": "Chris Carr",
+      "pages": [
+        {
+          "artist": "Bing Crosby",
+          "song": "The First Noel",
+          "path": "/christmas-artist/351-bing-crosby-the-first-noel"
+        }
+      ]
+    },
+    {
+      "video": "s7u0idCI1Z4",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Johnny Mathis",
+          "song": "Little Drummer Boy",
+          "path": "/christmas-artist/228-johnny-mathis-little-drummer-boy"
+        }
+      ]
+    },
+    {
+      "video": "sE3uRRFVsmc",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Frank Sinatra - Let It Snow! Let It Snow! Let It Snow! (Official Music Video)",
+      "channel": "FrankSinatraVEVO",
+      "pages": [
+        {
+          "artist": "Frank Sinatra",
+          "song": "Let It Snow! Let It Snow! Let It Snow!",
+          "path": "/christmas-artist/46-frank-sinatra-let-it-snow-let-it-snow-let-it-snow"
+        }
+      ]
+    },
+    {
+      "video": "sFxxQnhT5XQ",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Silent Night - Stevie Nicks",
+      "channel": "Serendipity629",
+      "pages": [
+        {
+          "artist": "Stevie Nicks",
+          "song": "Silent Night",
+          "path": "/christmas-artist/275-stevie-nicks-silent-night"
+        }
+      ]
+    },
+    {
+      "video": "sGncMN3AWdo",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Carpenters - Christmas Song (Chestnuts Roasting On An Open Fire)",
+      "channel": "NedNickerson2010 (Robert)",
+      "pages": [
+        {
+          "artist": "The Carpenters",
+          "song": "Christmas Song",
+          "path": "/christmas-artist/101-the-carpenters-christmas-song"
+        }
+      ]
+    },
+    {
+      "video": "sHnJEUS_cj4",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Christmas Wrapping Kylie Minogue & Iggy Pop",
+      "channel": "Elite Music Studios",
+      "pages": [
+        {
+          "artist": "Kylie Minogue",
+          "song": "Christmas Wrapping",
+          "path": "/christmas-artist/126-kylie-minogue-christmas-wrapping"
+        }
+      ]
+    },
+    {
+      "video": "sQwSzXa_p58",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Dion - Christmas (baby please come home) 1993.wmv",
+      "channel": "barrygioportmorien1",
+      "pages": [
+        {
+          "artist": "Dion",
+          "song": "Christmas (Baby Please Come Home)",
+          "path": "/christmas-artist/157-dion-christmas-baby-please-come-home"
+        }
+      ]
+    },
+    {
+      "video": "sXydDxZpH98",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Nat King Cole - Deck the Halls - Nat King Cole Version",
+      "channel": "Natale, Christmas, No\u00ebl, Navidad, Weihnachten, \u30af\u30ea\u30b9\u30de\u30b9, Kersfees",
+      "pages": [
+        {
+          "artist": "Nat King Cole",
+          "song": "Deck The Halls",
+          "path": "/christmas-artist/174-nat-king-cole-deck-the-halls"
+        }
+      ]
+    },
+    {
+      "video": "sg8Gk1iXEIs",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Katy Perry - Cozy Little Christmas",
+      "channel": "KatyPerryVEVO",
+      "pages": [
+        {
+          "artist": "Katy Perry",
+          "song": "Cozy Little Christmas",
+          "path": "/christmas-artist/528-katy-perry-cozy-little-christmas"
+        }
+      ]
+    },
+    {
+      "video": "slTYj2h6OfY",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Jon Bon Jovi - Please come home for Christmas",
+      "channel": "Murmele",
+      "pages": [
+        {
+          "artist": "Jon Bon Jovi",
+          "song": "Please Come Home For Christmas",
+          "path": "/christmas-artist/36-jon-bon-jovi-please-come-home-for-christmas"
+        }
+      ]
+    },
+    {
+      "video": "t4hJwqlY4i4",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Roger Whittaker & The Black Gospels - Marys Boychild 2008",
+      "channel": "fritz5109",
+      "pages": [
+        {
+          "artist": "Roger Whittaker",
+          "song": "Mary's Boy Child",
+          "path": "/christmas-artist/230-roger-whittaker-marys-boy-child"
+        }
+      ]
+    },
+    {
+      "video": "tLqPDl26sLM",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Winter Things - Ariana Grande (Official Music Video)",
+      "channel": "toulousq",
+      "pages": [
+        {
+          "artist": "Ariana Grande",
+          "song": "Winter Things",
+          "path": "/christmas-artist/527-ariana-grande-winter-things"
+        }
+      ]
+    },
+    {
+      "video": "tXmQK7mE3Ck",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "BARBRA STREISAND white christmas",
+      "channel": "ChristmasCottage",
+      "pages": [
+        {
+          "artist": "Barbra Streisand",
+          "song": "White Christmas",
+          "path": "/christmas-artist/297-barbra-streisand-white-christmas"
+        }
+      ]
+    },
+    {
+      "video": "tcN2XuzWwHc",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "The Fireside Singers - Winter Wonderland",
+      "channel": "Mike Nebeker",
+      "pages": [
+        {
+          "artist": "The Fireside Singers",
+          "song": "When A Child Is Born",
+          "path": "/christmas-artist/294-the-fireside-singers-when-a-child-is-born"
+        }
+      ]
+    },
+    {
+      "video": "tmy1-mr0RhA",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Laufey - Santa Claus Is Comin' To Town (Official Music Video)",
+      "channel": "Laufey",
+      "pages": [
+        {
+          "artist": "Laufey",
+          "song": "Santa Claus Is Comin' To Town",
+          "path": "/christmas-artist/564-laufey-santa-claus-is-comin-to-town"
+        }
+      ]
+    },
+    {
+      "video": "tw_l_9MAHX0",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "I'm Gonna Be Warm This Winter",
+      "channel": "Kylie Minogue - Topic",
+      "pages": [
+        {
+          "artist": "Kylie Minogue",
+          "song": "I'm Gonna Be Warm This Winter",
+          "path": "/christmas-artist/30-kylie-minogue-im-gonna-be-warm-this-winter"
+        }
+      ]
+    },
+    {
+      "video": "tz-A0_O0vUo",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "The Christmas Blues - Dean Martin",
+      "channel": "Teresa Hamilton Koch",
+      "pages": [
+        {
+          "artist": "Dean Martin",
+          "song": "The Christmas Blues",
+          "path": "/christmas-artist/368-dean-martin-the-christmas-blues"
+        }
+      ]
+    },
+    {
+      "video": "uCvP5QCSMs4",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Jade 10 and Sisters Noel - My Ugly Sweater (Animated Lyric Video)",
+      "channel": "Mosaic Rain Recordings",
+      "pages": [
+        {
+          "artist": "Jade 10 and Sisters Noel",
+          "song": "My Ugly Sweater",
+          "path": "/christmas-artist/522-jade-10-and-sisters-noel-my-ugly-sweater"
+        }
+      ]
+    },
+    {
+      "video": "uDhC6BpZv-0",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Kate Grom -  All I Want for Christmas is You",
+      "channel": "Kate Grom",
+      "pages": [
+        {
+          "artist": "Kate Grom",
+          "song": "All I want for Christmas is you",
+          "path": "/christmas-artist/464-kate-grom-all-i-want-for-christmas-is-you"
+        }
+      ]
+    },
+    {
+      "video": "uPamW-WUf50",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Bing Crosby - Silent Night",
+      "channel": "BingCrosbyVEVO",
+      "pages": [
+        {
+          "artist": "Bing Crosby",
+          "song": "Silent Night",
+          "path": "/christmas-artist/272-bing-crosby-silent-night"
+        }
+      ]
+    },
+    {
+      "video": "uWzogONQ_kw",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "EXTREME / Nuno Bettencourt - Christmas Time Again [Lyrics]",
+      "channel": "nitikornbee",
+      "pages": [
+        {
+          "artist": "Extreme",
+          "song": "Christmas Time Again",
+          "path": "/christmas-artist/108-extreme-christmas-time-again"
+        }
+      ]
+    },
+    {
+      "video": "ukR45s2YDDE",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Whigfield - Last Christmas",
+      "channel": "DirtyZ",
+      "pages": [
+        {
+          "artist": "Whigfield",
+          "song": "Last Christmas",
+          "path": "/christmas-artist/224-whigfield-last-christmas"
+        }
+      ]
+    },
+    {
+      "video": "vQZR2jhiYdc",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "02. Hilary Duff- Santa Clause Lane HQ + Lyrics",
+      "channel": "iMusic234",
+      "pages": [
+        {
+          "artist": "Hilary Duff",
+          "song": "Santa Claus Lane",
+          "path": "/christmas-artist/118-hilary-duff-santa-claus-lane"
+        }
+      ]
+    },
+    {
+      "video": "vmw9vHZCbMo",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Eric Clapton - White Christmas (Official Music Video)",
+      "channel": "Eric Clapton",
+      "pages": [
+        {
+          "artist": "Eric Clapton",
+          "song": "White Christmas",
+          "path": "/christmas-artist/475-eric-clapton-white-christmas"
+        }
+      ]
+    },
+    {
+      "video": "vsqeEyzW9NE",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Jewel - Rudolph The Red Nosed Reindeer",
+      "channel": "darwin1981ph",
+      "pages": [
+        {
+          "artist": "Jewel",
+          "song": "Rudolph the Red Nosed Reindeer",
+          "path": "/christmas-artist/122-jewel-rudolph-the-red-nosed-reindeer"
+        }
+      ]
+    },
+    {
+      "video": "vzxLbWuSCPk",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "All I want for Christmas is you by Samantha Mumba with lyrics",
+      "channel": "Sarah Brock",
+      "pages": [
+        {
+          "artist": "Samantha Mumba",
+          "song": "All I Want For Christmas is You",
+          "path": "/christmas-artist/146-samantha-mumba-all-i-want-for-christmas-is-you"
+        }
+      ]
+    },
+    {
+      "video": "w1aLG_TmRY4",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Hanging Like The Mistletoe",
+      "channel": "Dan Berk",
+      "pages": [
+        {
+          "artist": "Dan Berk",
+          "song": "Hanging Like the Mistletoe",
+          "path": "/christmas-artist/469-dan-berk-hanging-like-the-mistletoe"
+        }
+      ]
+    },
+    {
+      "video": "wA-ZgFq6zNM",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Frank Sinatra, Bing Crosby - The Snowman",
+      "channel": "Istanti Classics",
+      "pages": [
+        {
+          "artist": "Bing Crosby",
+          "song": "The Snowman",
+          "path": "/christmas-artist/284-bing-crosby-the-snowman"
+        }
+      ]
+    },
+    {
+      "video": "wLqhduumlgI",
+      "http": 404,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Peter Lemongello",
+          "song": "Let it Snow",
+          "path": "/christmas-artist/463-peter-lemongello-let-it-snow"
+        }
+      ]
+    },
+    {
+      "video": "wP54DA-gmSs",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Lindsay Lohan sings \"Jingle Bell Rock\" | Falling for Christmas | Official Lyric Video | Netflix",
+      "channel": "Netflix",
+      "pages": [
+        {
+          "artist": "Lindsey Lohan",
+          "song": "Jingle Bell Rock",
+          "path": "/christmas-artist/533-lindsey-lohan-jingle-bell-rock"
+        }
+      ]
+    },
+    {
+      "video": "wQt6NmOKzYw",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Aled Jones - Walking In The Air",
+      "channel": "AledJonesVEVO",
+      "pages": [
+        {
+          "artist": "Aled Jones",
+          "song": "Walking In The Air",
+          "path": "/christmas-artist/79-aled-jones-walking-in-the-air"
+        }
+      ]
+    },
+    {
+      "video": "wnApJcGBDFY",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "BRENDA LEE - All Alone Am I",
+      "channel": "BIRDY KITTEN",
+      "pages": [
+        {
+          "artist": "Brenda Lee",
+          "song": "All Alone Am I",
+          "path": "/christmas-artist/152-brenda-lee-all-alone-am-i"
+        }
+      ]
+    },
+    {
+      "video": "wrvebqA8xdM",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Britney Spears My Only Wish (This Year) - Christmas Song. + lyrics",
+      "channel": "Patrycja Stefaniak",
+      "pages": [
+        {
+          "artist": "Britney Spears",
+          "song": "My Only Wish (This Year)",
+          "path": "/christmas-artist/404-britney-spears-my-only-wish-this-year"
+        }
+      ]
+    },
+    {
+      "video": "x330L7EdprQ",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "God Rest Ye Merry Gentlemen by Bing Crosby on 1942 Decca 78.",
+      "channel": "lrh1966",
+      "pages": [
+        {
+          "artist": "Bing Crosby",
+          "song": "God Rest Ye Merry Gentlemen",
+          "path": "/christmas-artist/353-bing-crosby-god-rest-ye-merry-gentlemen"
+        }
+      ]
+    },
+    {
+      "video": "xBBwy5dmLNc",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Michael Bubl\u00e9 - Christmas (Baby Please Come Home) [Studio Clip]",
+      "channel": "Michael Bubl\u00e9",
+      "pages": [
+        {
+          "artist": "Michael Buble",
+          "song": "Christmas (Baby Please Come Home)",
+          "path": "/christmas-artist/20-michael-buble-christmas-baby-please-come-home"
+        }
+      ]
+    },
+    {
+      "video": "xEk_dy4eX3o",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Johnny Cash - The Little Drummer Boy",
+      "channel": "mobiousss",
+      "pages": [
+        {
+          "artist": "Johnny Cash",
+          "song": "Little Drummer Boy",
+          "path": "/christmas-artist/416-johnny-cash-little-drummer-boy"
+        }
+      ]
+    },
+    {
+      "video": "xMtuVP8Mj4o",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Jose Feliciano - Feliz Navidad",
+      "channel": "ognet",
+      "pages": [
+        {
+          "artist": "Jose Feliciano",
+          "song": "Feliz Navidad",
+          "path": "/christmas-artist/123-jose-feliciano-feliz-navidad"
+        }
+      ]
+    },
+    {
+      "video": "xX_eu3c--4M",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Michael Bubl\u00e9 - Have Yourself  A Merry Little Christmas [Studio Clip]",
+      "channel": "Michael Bubl\u00e9",
+      "pages": [
+        {
+          "artist": "Michael Buble",
+          "song": "Have Yourself A Merry Little Christmas",
+          "path": "/christmas-artist/322-michael-buble-have-yourself-a-merry-little-christmas"
+        }
+      ]
+    },
+    {
+      "video": "xlYRqcknVV0",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Boyz II Men- Birth Of Christ(Live)",
+      "channel": "BDizzleNY06",
+      "pages": [
+        {
+          "artist": "Boyz II Men",
+          "song": "The Birth Of Christ",
+          "path": "/christmas-artist/97-boyz-ii-men-the-birth-of-christ"
+        }
+      ]
+    },
+    {
+      "video": "xouJ5tBHX8s",
+      "http": 403,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "John Legend",
+          "song": "What A Wonderful World",
+          "path": "/christmas-artist/415-john-legend-what-a-wonderful-world"
+        }
+      ]
+    },
+    {
+      "video": "xtUgZHQMZtY",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "It's Christmas Time",
+      "channel": "X-mas Donkey & The Glittering Balls - Topic",
+      "pages": [
+        {
+          "artist": "X-mas Donkey & The Glittering Balls",
+          "song": "Its Christmas Time",
+          "path": "/christmas-artist/470-x-mas-donkey-the-glittering-balls-its-christmas-time"
+        }
+      ]
+    },
+    {
+      "video": "y2Htw8nRuTk",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Michael Bubl\u00e9 - Jingle Bells (feat. The Puppini Sisters) [Studio Clip]",
+      "channel": "Michael Bubl\u00e9",
+      "pages": [
+        {
+          "artist": "Michael Buble",
+          "song": "Jingle Bells",
+          "path": "/christmas-artist/317-michael-buble-jingle-bells"
+        }
+      ]
+    },
+    {
+      "video": "y5OBrwv6yd0",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Soulful Christmas",
+      "channel": "Faith Evans - Topic",
+      "pages": [
+        {
+          "artist": "Faith Evans",
+          "song": "Soulful Christmas",
+          "path": "/christmas-artist/409-faith-evans-soulful-christmas"
+        }
+      ]
+    },
+    {
+      "video": "yAHCJqGh6_8",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "THE BEACH BOYS bells of christmas",
+      "channel": "ChristmasCottage",
+      "pages": [
+        {
+          "artist": "The Beach Boys",
+          "song": "Bells Of Christmas",
+          "path": "/christmas-artist/89-the-beach-boys-bells-of-christmas"
+        }
+      ]
+    },
+    {
+      "video": "yRQ_FoeFO3Q",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Bert Jansch - In The Bleak Midwinter (1975)",
+      "channel": "Archy L",
+      "pages": [
+        {
+          "artist": "Bert Jansch",
+          "song": "In The Bleak Midwinter",
+          "path": "/christmas-artist/210-bert-jansch-in-the-bleak-midwinter"
+        }
+      ]
+    },
+    {
+      "video": "yXQViqx6GMY",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Mariah Carey - All I Want For Christmas Is You (Official Video)",
+      "channel": "MariahCareyVEVO",
+      "pages": [
+        {
+          "artist": "Mariah Carey",
+          "song": "All I Want For Christmas Is You",
+          "path": "/christmas-artist/24-mariah-carey-all-i-want-for-christmas-is-you"
+        }
+      ]
+    },
+    {
+      "video": "ymU-S2oIFqY",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Kelly Clarkson & Ariana Grande - Santa, Can\u2019t You Hear Me (Official Live Performance)",
+      "channel": "Ariana Streaming",
+      "pages": [
+        {
+          "artist": "Kelly Clarkson & Ariana Grande",
+          "song": "Santa Can't You Hear Me",
+          "path": "/christmas-artist/521-kelly-clarkson-ariana-grande-santa-cant-you-hear-me"
+        }
+      ]
+    },
+    {
+      "video": "z1rYmzQ8C9Q",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Coldplay - Christmas Lights (Official Video)",
+      "channel": "Coldplay",
+      "pages": [
+        {
+          "artist": "Coldplay",
+          "song": "Christmas Lights",
+          "path": "/christmas-artist/56-coldplay-christmas-lights"
+        }
+      ]
+    },
+    {
+      "video": "z8Vfp48laS8",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "John Lennon - Happy Xmas (War Is Over)",
+      "channel": "TheFabFour14",
+      "pages": [
+        {
+          "artist": "John Lennon",
+          "song": "Happy Xmas (War Is Over)",
+          "path": "/christmas-artist/38-john-lennon-happy-xmas-war-is-over"
+        }
+      ]
+    },
+    {
+      "video": "zDaVdtc_oRE",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "CRYSTALS - Rudolph the Red-Nosed Reindeer (1963)",
+      "channel": "verycoolsound",
+      "pages": [
+        {
+          "artist": "The Crystals",
+          "song": "Rudolph The Red-Nosed Reindeer",
+          "path": "/christmas-artist/254-the-crystals-rudolph-the-red-nosed-reindeer"
+        }
+      ]
+    },
+    {
+      "video": "zL3N3RkNlzc",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Glee - Christmas Wrapping (Official Video) Brittany (Heather Morris) - YouTube.mp4",
+      "channel": "Nicole Zolanski",
+      "pages": [
+        {
+          "artist": "Glee Cast",
+          "song": "Christmas Wrapping",
+          "path": "/christmas-artist/115-glee-cast-christmas-wrapping"
+        }
+      ]
+    },
+    {
+      "video": "zLBaaN2sqlc",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Ben Haenow - Something I Need (Official Video)",
+      "channel": "BenHaenowVEVO",
+      "pages": [
+        {
+          "artist": "Ben Haenow",
+          "song": "Something I need",
+          "path": "/christmas-artist/70-ben-haenow-something-i-need"
+        }
+      ]
+    },
+    {
+      "video": "zTe5v7ae6-U",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Meghan Trainor - My Kind Of Present (Official Audio)",
+      "channel": "MeghanTrainorVEVO",
+      "pages": [
+        {
+          "artist": "Megan Trainor",
+          "song": "My Kind Of Present",
+          "path": "/christmas-artist/489-megan-trainor-my-kind-of-present"
+        }
+      ]
+    },
+    {
+      "video": "zZfEFtSoWBI",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "The Monkees - What Would Santa Do (Official Lyric Video)",
+      "channel": "The Monkees",
+      "pages": [
+        {
+          "artist": "The Monkees",
+          "song": "What Would Santa Do",
+          "path": "/christmas-artist/481-the-monkees-what-would-santa-do"
+        }
+      ]
+    },
+    {
+      "video": "ziG157jZ4-E",
+      "status": "metadata_available",
+      "http": 200,
+      "title": "Sam Ryder - Mountain (Eurovision 2023)",
+      "channel": "Sam Ryder",
+      "pages": [
+        {
+          "artist": "Sam Ryder",
+          "song": "You're Christmas to me",
+          "path": "/christmas-artist/552-sam-ryder-youre-christmas-to-me"
+        }
+      ]
+    },
+    {
+      "video": "zmXzTdmEIAs",
+      "http": 403,
+      "status": "needs_review",
+      "pages": [
+        {
+          "artist": "Nat King Cole",
+          "song": "Mrs Santa Claus",
+          "path": "/christmas-artist/239-nat-king-cole-mrs-santa-claus"
+        }
+      ]
+    }
+  ]
+}

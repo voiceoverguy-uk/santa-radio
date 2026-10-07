@@ -1,0 +1,2069 @@
+{
+  "date": "2026-10-07",
+  "scope": "Christmas Music only; exact artist matches across existing song pages. Only info fields changed. Mugshots excluded. Sources support identity, career highlights and a relevant seasonal recording; unchanged catalogue recordings are listed for review, not all independently re-attributed.",
+  "records": [
+    {
+      "artist": "Frank Sinatra",
+      "after": "Frank Sinatra brought effortless swing and unmistakable style to classics including “My Way” and “Fly Me to the Moon”. His Christmas recordings bring that same warmth to the festive season, with “White Christmas” providing a wonderfully nostalgic moment. Smooth vocals, a little old-school glamour and absolutely no novelty jumper required.",
+      "wordCount": 50,
+      "sources": [
+        "https://www.allmusic.com/artist/frank-sinatra-mn0000792507",
+        "https://www.officialcharts.com/artist/15791/frank-sinatra",
+        "https://www.allmusic.com/album/a-jolly-christmas-from-frank-sinatra-mw0000193934",
+        "https://www.sinatra.com/frank-sinatra-duets-celebrates-20th-anniversary/"
+      ],
+      "pages": [
+        {
+          "id": 46,
+          "url": "/christmas-artist/46-frank-sinatra-let-it-snow-let-it-snow-let-it-snow",
+          "song": "Let It Snow! Let It Snow! Let It Snow!",
+          "youtube": "sE3uRRFVsmc",
+          "before": "Francis Wayne \"Frank\" Sinatra, professionally known as Frank Sinatra Jr., was an American singer, songwriter, and conductor."
+        },
+        {
+          "id": 151,
+          "url": "/christmas-artist/151-frank-sinatra-adeste-fideles",
+          "song": "Adeste Fideles",
+          "youtube": "9YkHVaTVA0Q",
+          "before": "Francis Albert Sinatra was an American singer, actor, and producer who was one of the most popular and influential musical artists of the 20th century. Sinatra's music has been considered timeless by many. He is one of the best-selling music artists of all time, having sold more than 150 million records worldwide"
+        },
+        {
+          "id": 180,
+          "url": "/christmas-artist/180-frank-sinatra-the-first-noel",
+          "song": "The First Noel",
+          "youtube": "QmSlIbJt7nU",
+          "before": "Francis Albert Sinatra was an American singer, actor, and producer who was one of the most popular and influential musical artists of the 20th century. Sinatra's music has been considered timeless by many. He is one of the best-selling music artists of all time, having sold more than 150 million records worldwide"
+        },
+        {
+          "id": 198,
+          "url": "/christmas-artist/198-frank-sinatra-i-believe",
+          "song": "I Believe",
+          "youtube": "RH5L_PddfM0",
+          "before": "Francis Albert Sinatra was an American singer, actor, and producer who was one of the most popular and influential musical artists of the 20th century. Sinatra's music has been considered timeless by many. He is one of the best-selling music artists of all time, having sold more than 150 million records worldwide"
+        },
+        {
+          "id": 211,
+          "url": "/christmas-artist/211-frank-sinatra-it-came-upon-a-midnight-clear",
+          "song": "It Came Upon A Midnight Clear",
+          "youtube": "j8xiRbt6FOE",
+          "before": "Francis Albert Sinatra was an American singer, actor, and producer who was one of the most popular and influential musical artists of the 20th century. Sinatra's music has been considered timeless by many. He is one of the best-selling music artists of all time, having sold more than 150 million records worldwide"
+        },
+        {
+          "id": 236,
+          "url": "/christmas-artist/236-frank-sinatra-mistletoe-and-holly",
+          "song": "Mistletoe And Holly",
+          "youtube": "H42Edy587hc",
+          "before": "Francis Albert Sinatra was an American singer, actor, and producer who was one of the most popular and influential musical artists of the 20th century. Sinatra's music has been considered timeless by many. He is one of the best-selling music artists of all time, having sold more than 150 million records worldwide"
+        },
+        {
+          "id": 264,
+          "url": "/christmas-artist/264-frank-sinatra-santa-claus-is-coming-to-town",
+          "song": "Santa Claus Is Coming To Town",
+          "youtube": "EGKuomlKTbU",
+          "before": "Francis Wayne \"Frank\" Sinatra, professionally known as Frank Sinatra Jr., was an American singer, songwriter, and conductor."
+        },
+        {
+          "id": 370,
+          "url": "/christmas-artist/370-frank-sinatra-white-christmas",
+          "song": "White Christmas",
+          "youtube": "U3YltnBjqZU",
+          "before": "Francis Wayne \"Frank\" Sinatra, professionally known as Frank Sinatra Jr., was an American singer, songwriter, and conductor."
+        },
+        {
+          "id": 373,
+          "url": "/christmas-artist/373-frank-sinatra-christmas-dreaming",
+          "song": "Christmas Dreaming",
+          "youtube": "KCZ5uLEFPYQ",
+          "before": "Francis Wayne \"Frank\" Sinatra, professionally known as Frank Sinatra Jr., was an American singer, songwriter, and conductor."
+        },
+        {
+          "id": 376,
+          "url": "/christmas-artist/376-frank-sinatra-have-yourself-a-merry-little-christmas",
+          "song": "Have Yourself A Merry Little Christmas",
+          "youtube": "nZ6yQgBvuoI",
+          "before": "Francis Wayne \"Frank\" Sinatra, professionally known as Frank Sinatra Jr., was an American singer, songwriter, and conductor."
+        },
+        {
+          "id": 378,
+          "url": "/christmas-artist/378-frank-sinatra-jingle-bells",
+          "song": "Jingle Bells",
+          "youtube": "p07T4dlw2cc",
+          "before": "Francis Albert Sinatra was an American singer, actor, and producer who was one of the most popular and influential musical artists of the 20th century. Sinatra's music has been considered timeless by many. He is one of the best-selling music artists of all time, having sold more than 150 million records worldwide"
+        },
+        {
+          "id": 379,
+          "url": "/christmas-artist/379-frank-sinatra-hark-the-herald-angels-sing",
+          "song": "Hark The Herald Angels Sing",
+          "youtube": "0GWFdFqLKZ4",
+          "before": "Francis Albert Sinatra was an American singer, actor, and producer who was one of the most popular and influential musical artists of the 20th century. Sinatra's music has been considered timeless by many. He is one of the best-selling music artists of all time, having sold more than 150 million records worldwide"
+        },
+        {
+          "id": 380,
+          "url": "/christmas-artist/380-frank-sinatra-o-little-town-of-bethlehem",
+          "song": "O Little Town Of Bethlehem",
+          "youtube": "3R2xbFqN_W4",
+          "before": "Francis Albert Sinatra was an American singer, actor, and producer who was one of the most popular and influential musical artists of the 20th century. Sinatra's music has been considered timeless by many. He is one of the best-selling music artists of all time, having sold more than 150 million records worldwide"
+        },
+        {
+          "id": 382,
+          "url": "/christmas-artist/382-frank-sinatra-the-christmas-waltz",
+          "song": "The Christmas Waltz",
+          "youtube": "cGaPDWMzYGw",
+          "before": "Francis Albert Sinatra was an American singer, actor, and producer who was one of the most popular and influential musical artists of the 20th century. Sinatra's music has been considered timeless by many. He is one of the best-selling music artists of all time, having sold more than 150 million records worldwide"
+        },
+        {
+          "id": 383,
+          "url": "/christmas-artist/383-frank-sinatra-silent-night",
+          "song": "Silent Night",
+          "youtube": "f8yq9wiaQ4c",
+          "before": "Francis Albert Sinatra was an American singer, actor, and producer who was one of the most popular and influential musical artists of the 20th century. Sinatra's music has been considered timeless by many. He is one of the best-selling music artists of all time, having sold more than 150 million records worldwide"
+        },
+        {
+          "id": 385,
+          "url": "/christmas-artist/385-frank-sinatra-ill-be-home-for-christmas",
+          "song": "I'll Be Home For Christmas",
+          "youtube": "1pk-SLQPYJ0",
+          "before": "Francis Albert Sinatra was an American singer, actor, and producer who was one of the most popular and influential musical artists of the 20th century. Sinatra's music has been considered timeless by many. He is one of the best-selling music artists of all time, having sold more than 150 million records worldwide"
+        }
+      ]
+    },
+    {
+      "artist": "Taylor Swift",
+      "after": "Taylor Swift grew from country storyteller into a global pop star, with songs including “Love Story” and “Shake It Off” inspiring enormous singalongs. Her festive repertoire includes “Santa Baby”, recorded for The Taylor Swift Holiday Collection. It’s a playful seasonal detour — even a pop superstar has a Christmas wish list.",
+      "wordCount": 51,
+      "sources": [
+        "https://music.apple.com/us/album/the-taylor-swift-holiday-collection-ep/1440932737"
+      ],
+      "pages": [
+        {
+          "id": 6,
+          "url": "/christmas-artist/6-taylor-swift-santa-baby",
+          "song": "Santa Baby",
+          "youtube": "Oi4mr72JOn0",
+          "before": "Taylor Alison Swift is an American singer-songwriter. One of the most popular contemporary female recording artists, she is known for narrative songs about her personal life, which has received much media attention."
+        },
+        {
+          "id": 515,
+          "url": "/christmas-artist/515-taylor-swift-christmas-tree-farm",
+          "song": "Christmas Tree Farm",
+          "youtube": "mN3rDTAdM2o",
+          "before": "Christmas Tree Farm, from 11-time Grammy winner, and the only woman to ever win Album of the Year three times, Taylor Swift. “The song arrives in time for the holidays and from her No1 record-breaking release of Red (Taylor’s Version)."
+        }
+      ]
+    },
+    {
+      "artist": "Chris De Burgh",
+      "after": "Chris de Burgh has a gift for turning songs into stories, from the mysterious “Don’t Pay the Ferryman” to his romantic ballads. “A Spaceman Came Travelling” takes that storytelling somewhere rather unexpected, imagining a visitor from beyond the stars. A thoughtful Christmas tale, with a different sort of flying visitor to the usual sleigh.",
+      "wordCount": 54,
+      "sources": [
+        "https://www.allmusic.com/artist/chris-de-burgh-mn0000775904",
+        "https://www.officialcharts.com/artist/19831/chris-de-burgh",
+        "https://www.chris-de-burgh.co.uk/track/A-Spaceman-Came-Travelling"
+      ],
+      "pages": [
+        {
+          "id": 61,
+          "url": "/christmas-artist/61-chris-de-burgh-a-spaceman-came-travelling",
+          "song": "A Spaceman Came Travelling",
+          "youtube": "KODskj8gd74",
+          "before": "Christopher John Davison known professionally as Chris de Burgh, is a British-Irish singer-songwriter and instrumentalist. \nHe is an art rock performer who also writes pop-oriented material. \nHe has had several top 40 hits in the UK and two in the US, but he is more popular in other countries, particularly Norway and Brazil.\nHe is most famous for his 1986 love song \"The Lady in Red\", which reached number one in several countries. \nDe Burgh has sold over 45 million albums worldwide."
+        }
+      ]
+    },
+    {
+      "artist": "Pet Shop Boys",
+      "after": "Neil Tennant and Chris Lowe brought thoughtful lyrics and electronic pop together in Pet Shop Boys, breaking through with “West End Girls”. Their seasonal contribution, “It Doesn’t Often Snow at Christmas”, keeps that dry wit intact. It’s a Christmas song with dancing shoes on and a refreshingly realistic view of the British weather.",
+      "wordCount": 53,
+      "sources": [
+        "https://www.officialcharts.com/artist/26802/pet-shop-boys",
+        "https://www.allmusic.com/album/christmas-mw0001950380",
+        "https://www.allmusic.com/artist/pet-shop-boys-mn0000260212"
+      ],
+      "pages": [
+        {
+          "id": 421,
+          "url": "/christmas-artist/421-pet-shop-boys-it-doesnt-often-snow-at-christmas",
+          "song": "It Doesn't Often Snow At Christmas",
+          "youtube": "K1pPXt5Zc1w",
+          "before": "Pet Shop Boys are an English electronic pop duo, formed in London in 1981 and consisting of Neil Tennant and Chris Lowe."
+        }
+      ]
+    },
+    {
+      "artist": "Gwen Stefani",
+      "after": "Gwen Stefani first made her mark fronting No Doubt, whose “Don’t Speak” became a huge hit, before building a solo pop career. Her album You Make It Feel Like Christmas brings that distinctive voice to seasonal songs, including a title-track duet with Blake Shelton. Expect a cheerful meeting of pop energy and traditional Christmas sounds.",
+      "wordCount": 55,
+      "sources": [
+        "https://www.allmusic.com/artist/mn0000546214",
+        "https://www.allmusic.com/album/you-make-it-feel-like-christmas-mw0003107147",
+        "https://www.officialcharts.com/artist/16392/gwen-stefani"
+      ],
+      "pages": [
+        {
+          "id": 476,
+          "url": "/christmas-artist/476-gwen-stefani-secret-santa",
+          "song": "Secret Santa",
+          "youtube": "Ewr-DdIwoJs",
+          "before": "Gwen Renée Stefani is an American singer, songwriter, and actress. She is a co-founder and the lead vocalist of the band No Doubt that experienced major success after their breakthrough studio album Tragic Kingdom"
+        },
+        {
+          "id": 531,
+          "url": "/christmas-artist/531-gwen-stefani-you-make-it-feel-like-christmas",
+          "song": "You Make It Feel Like Christmas",
+          "youtube": "3ZT9_H4-hbM",
+          "before": "Gwen Renée Stefani is an American singer, songwriter, fashion designer and actress. She is a co-founder, lead vocalist, and the primary songwriter of the band No Doubt."
+        },
+        {
+          "id": 561,
+          "url": "/christmas-artist/561-gwen-stefani-hot-cocoa",
+          "song": "Hot Cocoa",
+          "youtube": "CKwcHTpV5e0",
+          "before": "Gwen Renée Stefani Shelton is an American singer-songwriter and fashion designer. Stefani rose to fame as a member and lead vocalist of the band No Doubt, whose hit singles include \"Just a Girl\""
+        }
+      ]
+    },
+    {
+      "artist": "The Jackson 5",
+      "after": "The Jackson 5 brought youthful energy and tightly woven harmonies to Motown, with “I Want You Back” and “ABC” introducing their sound to a huge audience. Their Christmas Album gives familiar songs the same lively treatment. On “Santa Claus Is Coming to Town”, the excitement sounds less like waiting patiently and more like counting every last minute.",
+      "wordCount": 57,
+      "sources": [
+        "https://www.allmusic.com/album/the-christmas-album-mw0000192771",
+        "https://www.allmusic.com/artist/jackson-5-mn0000083013",
+        "https://music.apple.com/au/artist/jackson-5/104063"
+      ],
+      "pages": [
+        {
+          "id": 40,
+          "url": "/christmas-artist/40-the-jackson-5-santa-claus-is-coming-to-town",
+          "song": "Santa Claus Is Coming To Town",
+          "youtube": "61uYA6qveOY",
+          "before": "The Jackson 5, or Jackson Five, also known as The Jacksons in later years, was an American popular music group. Formed in 1964 under the name the Jackson Brothers, the founding members were Jackie, Tito, Jermaine, Marlon and Michael."
+        },
+        {
+          "id": 227,
+          "url": "/christmas-artist/227-the-jackson-5-little-drummer-boy",
+          "song": "Little Drummer Boy",
+          "youtube": "roONz0cHUVo",
+          "before": "The Jackson 5, or Jackson Five, also known as The Jacksons in later years, was an American popular music group. Formed in 1964 under the name the Jackson Brothers, the founding members were Jackie, Tito, Jermaine, Marlon and Michael."
+        },
+        {
+          "id": 413,
+          "url": "/christmas-artist/413-the-jackson-5-i-saw-mommy-kissing-santa-claus",
+          "song": "I Saw Mommy Kissing Santa Claus",
+          "youtube": "PB-a6x6MGGA",
+          "before": "The Jackson 5, or Jackson Five, also known as The Jacksons in later years, was an American popular music group. Formed in 1964 under the name the Jackson Brothers, the founding members were Jackie, Tito, Jermaine, Marlon and Michael."
+        }
+      ]
+    },
+    {
+      "artist": "John Lennon",
+      "after": "John Lennon helped shape pop music with the Beatles before pursuing a solo career that included “Imagine”. Written with Yoko Ono, “Happy Xmas (War Is Over)” brings together their voices, the Plastic Ono Band and the Harlem Community Choir. Its seasonal greeting carries a serious wish for peace, making room for reflection among the celebrations.",
+      "wordCount": 55,
+      "sources": [
+        "https://www.allmusic.com/song/happy-xmas-war-is-over-mt0009060419",
+        "https://www.johnlennon.com/music/singles/happy-xmas-war-is-over",
+        "https://www.officialcharts.com/artist/27904/john-lennon/"
+      ],
+      "pages": [
+        {
+          "id": 38,
+          "url": "/christmas-artist/38-john-lennon-happy-xmas-war-is-over",
+          "song": "Happy Xmas (War Is Over)",
+          "youtube": "z8Vfp48laS8",
+          "before": "John Winston Ono Lennon, MBE was an English singer and songwriter who co-founded the Beatles, the most commercially successful band in the history of popular music. With fellow member Paul McCartney, he formed a celebrated songwriting partnership."
+        }
+      ]
+    },
+    {
+      "artist": "Johnny Mathis",
+      "after": "Johnny Mathis built his career on romantic ballads and a voice that makes even a familiar melody feel intimate. Christmas became an important part of his repertoire, with “When a Child Is Born” reaching the UK Christmas number one spot in 1976. It’s a gentle, hopeful performance for a quieter moment in a busy season.",
+      "wordCount": 55,
+      "sources": [
+        "https://www.officialcharts.com/songs/johnny-mathis-when-a-child-is-born",
+        "https://www.allmusic.com/artist/johnny-mathis-mn0000246885",
+        "https://www.billboard.com/artist/johnny-mathis"
+      ],
+      "pages": [
+        {
+          "id": 37,
+          "url": "/christmas-artist/37-johnny-mathis-when-a-child-is-born",
+          "song": "When a Child Is Born",
+          "youtube": "NZ6hJNGZ8vg",
+          "before": "John Royce \"Johnny\" Mathis is an American singer of popular music and jazz. Starting his career with singles of standard music, he became highly popular as an album artist, with several dozen of his albums achieving gold or platinum status and 73 making the Billboard charts to date."
+        },
+        {
+          "id": 228,
+          "url": "/christmas-artist/228-johnny-mathis-little-drummer-boy",
+          "song": "Little Drummer Boy",
+          "youtube": "s7u0idCI1Z4",
+          "before": "John Royce \"Johnny\" Mathis is an American singer of popular music and jazz. Starting his career with singles of standard music, he became highly popular as an album artist, with several dozen of his albums achieving gold or platinum status and 73 making the Billboard charts to date."
+        },
+        {
+          "id": 282,
+          "url": "/christmas-artist/282-johnny-mathis-sleigh-ride",
+          "song": "Sleigh Ride",
+          "youtube": "6b9BKK27HuQ",
+          "before": "John Royce \"Johnny\" Mathis is an American singer of popular music and jazz. Starting his career with singles of standard music, he became highly popular as an album artist, with several dozen of his albums achieving gold or platinum status and 73 making the Billboard charts to date."
+        },
+        {
+          "id": 444,
+          "url": "/christmas-artist/444-johnny-mathis-its-beginning-to-look-a-lot-like-christmas",
+          "song": "Its Beginning to Look a Lot Like Christmas",
+          "youtube": "WaNwEkCeZrE",
+          "before": "\"It's Beginning to Look a Lot Like Christmas\" is a Christmas song written in 1951 by Meredith Willson. The song was originally titled \"It's Beginning to Look Like Christmas\". The song has been recorded by many artists. This time by Johnny."
+        }
+      ]
+    },
+    {
+      "artist": "Queen",
+      "after": "Queen made rock music theatrical, adventurous and wonderfully singable, with Freddie Mercury’s voice at the centre of songs such as “Bohemian Rhapsody”. Their 1984 single “Thank God It’s Christmas” offers a more reflective celebration. There’s still plenty of feeling in the performance, but this time the invitation is to pause rather than stomp along.",
+      "wordCount": 54,
+      "sources": [
+        "https://www.officialcharts.com/artist/21275/queen",
+        "https://d2p7fadxpro9ow.cloudfront.net/queen/thank-god-its-christmas.html",
+        "https://www.allmusic.com/artist/queen-mn0000858827"
+      ],
+      "pages": [
+        {
+          "id": 11,
+          "url": "/christmas-artist/11-queen-thank-god-its-christmas",
+          "song": "Thank God It's Christmas",
+          "youtube": "6V5mtUff6ik",
+          "before": "Queen are a British rock band that formed in London in 1970. Their classic line-up was Freddie Mercury, Brian May, Roger Taylor, and John Deacon."
+        }
+      ]
+    },
+    {
+      "artist": "Sam Ryder",
+      "after": "Sam Ryder’s soaring voice carried “Space Man” to the Eurovision stage and helped introduce his debut album, There’s Nothing But Space, Man! His festive single “You’re Christmas to Me” swaps the cosmic setting for something closer to home. It’s an exuberant celebration of togetherness, delivered with enough enthusiasm to brighten a rather grey December afternoon.",
+      "wordCount": 55,
+      "sources": [
+        "https://www.allmusic.com/artist/sam-ryder-mn0001088134",
+        "https://www.officialcharts.com/songs/sam-ryder-youre-christmas-to-me",
+        "https://www.officialcharts.com/artist/59608/sam-ryder"
+      ],
+      "pages": [
+        {
+          "id": 552,
+          "url": "/christmas-artist/552-sam-ryder-youre-christmas-to-me",
+          "song": "You're Christmas to me",
+          "youtube": "ziG157jZ4-E",
+          "before": "Sam Ryder Robinson is a British singer, songwriter, producer, composer and social media personality. He rose to prominence in 2020, after posting music covers on TikTok, during the first UK lockdown of the COVID-19 pandemic and signed to Parlophone Records."
+        }
+      ]
+    },
+    {
+      "artist": "Blossoms",
+      "after": "Blossoms are the Stockport band whose self-titled debut album reached number one in 2016. Their melodic indie-pop also has a winter wardrobe: “It’s Going to Be a Cold Winter” arrived alongside “Christmas Eve (Soul Purpose)”. It’s a seasonal change of scenery for the band, with their knack for a memorable tune still firmly in place.",
+      "wordCount": 55,
+      "sources": [
+        "https://www.allmusic.com/artist/blossoms-mn0003457444",
+        "https://www.officialcharts.com/artist/45495/blossoms",
+        "https://musicbrainz.org/artist/bdc343bd-1c45-4a5d-b956-c4429f3dbba5"
+      ],
+      "pages": [
+        {
+          "id": 496,
+          "url": "/christmas-artist/496-blossoms-its-going-to-be-a-cold-winter",
+          "song": "Its Going To Be A Cold Winter",
+          "youtube": "kOmZNnJDdxQ",
+          "before": "Blossoms are an English indie pop band from Stockport, Greater Manchester, England. Formed in 2013, the band consists of Tom Ogden, Charlie Salt, Josh Dewhurst, Joe Donovan and Myles Kellock. They were on the BBC's Sound Of new music list for 2016 where they finished in fourth place."
+        }
+      ]
+    },
+    {
+      "artist": "Aled Jones",
+      "after": "Aled Jones became a familiar voice at Christmas with his 1985 recording of “Walking in the Air”, later building a career in singing and broadcasting. His hit version is separate from Peter Auty’s original performance in The Snowman. That clear, floating melody still offers a little escape from the bustle below, without anyone needing to leave the sofa.",
+      "wordCount": 58,
+      "sources": [
+        "https://www.bbc.com/wales/music/sites/aled-jones/pages/biography.shtml",
+        "https://officialaledjones.com/",
+        "https://www.bbc.co.uk/programmes/p01266pb"
+      ],
+      "pages": [
+        {
+          "id": 79,
+          "url": "/christmas-artist/79-aled-jones-walking-in-the-air",
+          "song": "Walking In The Air",
+          "youtube": "wQt6NmOKzYw",
+          "before": "Aled Jones MBE is a Welsh singer best known for his television work with the BBC and ITV as well as his radio work, mainly for BBC Radio Wales and Classic FM."
+        }
+      ]
+    },
+    {
+      "artist": "Bon Jovi",
+      "after": "Bon Jovi built their reputation on big rock choruses, with Jon Bon Jovi leading the band through hits including “Livin’ on a Prayer”. “Christmas Isn’t Christmas” takes a gentler approach, reflecting on how much the people around us matter at this time of year. It’s a heartfelt change of pace from the stadium singalongs.",
+      "wordCount": 54,
+      "sources": [
+        "https://abcnews.com/GMA/Culture/bon-jovi-releases-new-holiday-tune-christmas-christmas/story?id=104984613",
+        "https://www.allmusic.com/artist/jon-bon-jovi-mn0000821675",
+        "https://www.allmusic.com/artist/bon-jovi-mn0000069534"
+      ],
+      "pages": [
+        {
+          "id": 549,
+          "url": "/christmas-artist/549-bon-jovi-christmas-isna-tmt-christmas",
+          "song": "Christmas Isn’t Christmas",
+          "youtube": "KO5HaSSus5I",
+          "before": "Bon Jovi, a renowned American rock band, is not typically associated with Christmas music. However, if there's a song titled \"Christmas Isn't Christmas\" by Bon Jovi, it might be a lesser-known or unreleased track. The band, led by Jon Bon Jovi, is famous for their rock anthems and ballads."
+        }
+      ]
+    },
+    {
+      "artist": "The Darkness",
+      "after": "The Darkness brought extravagant guitar rock back into the spotlight with Permission to Land and “I Believe in a Thing Called Love”. Their festive single “Christmas Time (Don’t Let the Bells End)” applies the same larger-than-life approach to December. Subtle it isn’t, but sometimes the Christmas playlist has room for a guitar solo as well as a carol.",
+      "wordCount": 58,
+      "sources": [
+        "https://www.allmusic.com/artist/mn0000141683",
+        "https://www.allmusic.com/artist/the-darkness-mn0000141683",
+        "https://www.officialcharts.com/artist/12440/darkness"
+      ],
+      "pages": [
+        {
+          "id": 55,
+          "url": "/christmas-artist/55-the-darkness-christmas-time",
+          "song": "Christmas Time",
+          "youtube": "VQhuoY5h2kE",
+          "before": "The Darkness is a British rock band from Lowestoft, Suffolk, formed in 1999. The band consists of Justin Hawkins, his brother Dan Hawkins, Frankie Poullain and Rufus Taylor."
+        }
+      ]
+    },
+    {
+      "artist": "Wham!",
+      "after": "George Michael and Andrew Ridgeley made Wham! a defining pop duo of the 1980s, with hits including “Wake Me Up Before You Go-Go”. George wrote “Last Christmas”, pairing a bright melody with a bruised-hearted story. Released in 1984, it became a seasonal favourite long before finally claiming the UK Christmas number one spot in 2023.",
+      "wordCount": 55,
+      "sources": [
+        "https://www.officialcharts.com/artist/19823/wham!",
+        "https://www.bbc.com/news/entertainment-arts-55509575",
+        "https://www.theguardian.com/music/2023/dec/22/wham-last-christmas-finally-gets-no-1-39-years-after-release"
+      ],
+      "pages": [
+        {
+          "id": 2,
+          "url": "/christmas-artist/2-wham-last-christmas",
+          "song": "Last Christmas",
+          "youtube": "bwNV7TAWN3M",
+          "before": "Wham! sparked something of a pop revival in the mid-'80s and could arguably be held responsible for sparking off the boy band trend of the '90s."
+        }
+      ]
+    },
+    {
+      "artist": "Greg Lake",
+      "after": "Greg Lake’s voice and musicianship were central to King Crimson and Emerson, Lake & Palmer. His solo single “I Believe in Father Christmas” brings that progressive-rock background to a thoughtful look at childhood wonder and adult expectations. Behind the grand arrangement is something more searching than a simple festive greeting, and all the more memorable for it.",
+      "wordCount": 57,
+      "sources": [
+        "https://www.allmusic.com/artist/greg-lake-mn0000186477",
+        "https://www.theguardian.com/music/2016/dec/08/greg-lake-dies-prog-rock-king-crimson-emerson-palmer",
+        "https://www.bbc.com/news/entertainment-arts-38251936"
+      ],
+      "pages": [
+        {
+          "id": 42,
+          "url": "/christmas-artist/42-greg-lake-i-believe-in-father-christmas",
+          "song": "I Believe In Father Christmas",
+          "youtube": "JPm6CheT6rs",
+          "before": "Gregory Stuart \"Greg\" Lake is an English singer, musician, songwriter and producer. He was a singer and bassist for King Crimson before becoming the bassist, guitarist, singer and lyricist for Emerson, Lake & Palmer."
+        }
+      ]
+    },
+    {
+      "artist": "Spice Girls",
+      "after": "The Spice Girls made “Wannabe” a calling card for their exuberant brand of pop, then became regular visitors to the Christmas charts. Their version of the Waitresses’ “Christmas Wrapping” appeared on the “Goodbye” single. It’s a lively seasonal side trip from a group whose songs rarely require much encouragement to get a singalong started.",
+      "wordCount": 54,
+      "sources": [
+        "https://www.officialcharts.com/songs/spice-girls-too-much",
+        "https://www.allmusic.com/artist/spice-girls-mn0000008828",
+        "https://www.officialcharts.com/songs/spice-girls-2-become-1",
+        "https://en.wikipedia.org/wiki/Goodbye_(Spice_Girls_song)",
+        "https://en.wikipedia.org/wiki/Spice_Girls_discography",
+        "https://www.songfacts.com/facts/spice-girls/goodbye",
+        "https://music.apple.com/us/artist/spice-girls/646793",
+        "https://music.apple.com/us/song/too-much/724614320",
+        "https://music.apple.com/us/playlist/mariah-carey-christmas-essentials/pl.9817234dbdee427a98f5cb0999152cdd"
+      ],
+      "pages": [
+        {
+          "id": 149,
+          "url": "/christmas-artist/149-spice-girls-christmas-wrapping",
+          "song": "Christmas Wrapping",
+          "youtube": "mIZ14B65u6k",
+          "before": "The Spice Girls are an English pop girl group formed in 1994. The group originally consisted of Melanie Brown, Melanie Chisholm, Emma Bunton, Geri Halliwell, and Victoria Beckham"
+        },
+        {
+          "id": 424,
+          "url": "/christmas-artist/424-spice-girls-sleigh-ride",
+          "song": "Sleigh Ride",
+          "youtube": "ivJ0sHadwUQ",
+          "before": "The Spice Girls are an English pop girl group formed in 1994. The group originally consisted of Melanie Brown, Melanie Chisholm, Emma Bunton, Geri Halliwell, and Victoria Beckham"
+        }
+      ]
+    },
+    {
+      "artist": "Kelly Clarkson & Ariana Grande",
+      "after": "Kelly Clarkson and Ariana Grande each have a substantial pop career and a distinctive Christmas repertoire. They join forces on “Santa, Can’t You Hear Me”, recorded for Clarkson’s When Christmas Comes Around… album. This is a collaboration, not a new group: two expressive voices trading lines and meeting in harmonies that give the seasonal wish list extra lift.",
+      "wordCount": 58,
+      "sources": [
+        "https://www.billboard.com/music/music-news/ariana-grande-kelly-clarkson-drop-santa-cant-you-hear-me-live-version-1235180169",
+        "https://www.nbc.com/nbc-insider/kelly-clarkson-ariana-grande-christmas-song",
+        "https://www.allmusic.com/artist/ariana-grande-mn0002264745"
+      ],
+      "pages": [
+        {
+          "id": 521,
+          "url": "/christmas-artist/521-kelly-clarkson-ariana-grande-santa-cant-you-hear-me",
+          "song": "Santa Can't You Hear Me",
+          "youtube": "ymU-S2oIFqY",
+          "before": "Kelly Clarkson and Ariana Grande got into the holiday spirit with their new single “Santa, Can’t You Hear Me”. It's so so good. Click the video link and watch them perform on Kelly's show."
+        }
+      ]
+    },
+    {
+      "artist": "The Ronettes",
+      "after": "The Ronettes helped define 1960s girl-group pop, with Ronnie Spector’s distinctive lead voice making “Be My Baby” instantly recognisable. Their recording of “Sleigh Ride” brings that same spirited character to Christmas. Bright harmonies and a bustling arrangement make this a lively trip through the snow, with no need to check the traffic before setting off.",
+      "wordCount": 55,
+      "sources": [
+        "https://www.officialcharts.com/songs/ronettes-sleigh-ride",
+        "https://www.officialcharts.com/songs/sleigh-ride/",
+        "https://www.billboard.com/music/chart-beat/mariah-carey-all-i-want-for-christmas-is-you-tops-hot-100-ronettes-sleigh-ride-1235014113/"
+      ],
+      "pages": [
+        {
+          "id": 10,
+          "url": "/christmas-artist/10-the-ronettes-sleigh-ride",
+          "song": "Sleigh Ride",
+          "youtube": "DkXIJe8CaIc",
+          "before": "The Ronettes were an American girl group from New York City. One of the most popular groups from the 1960s, they placed nine songs on the Billboard Hot 100, five of which became Top 40 hits."
+        },
+        {
+          "id": 183,
+          "url": "/christmas-artist/183-the-ronettes-frosty-the-snowman",
+          "song": "Frosty The Snowman",
+          "youtube": "76sh1BWCQSc",
+          "before": "The Ronettes were an American girl group from New York City. One of the most popular groups from the 1960s, they placed nine songs on the Billboard Hot 100, five of which became Top 40 hits."
+        },
+        {
+          "id": 202,
+          "url": "/christmas-artist/202-the-ronettes-i-saw-mommy-kissing-santa-claus",
+          "song": "I Saw Mommy Kissing Santa Claus",
+          "youtube": "UGQUuyrVBoA",
+          "before": "The Ronettes were an American girl group from New York City. One of the most popular groups from the 1960s, they placed nine songs on the Billboard Hot 100, five of which became Top 40 hits."
+        }
+      ]
+    },
+    {
+      "artist": "Lindsey Lohan",
+      "after": "Lindsay Lohan is known for films including Mean Girls as well as a parallel career in pop music. She returned to “Jingle Bell Rock” for the soundtrack of Falling for Christmas, giving the familiar song a fresh performance. It’s a cheerful connection between her screen work and singing, with a knowing nod to an earlier movie moment.",
+      "wordCount": 57,
+      "sources": [
+        "https://www.allmusic.com/artist/lindsay-lohan-mn0000831733",
+        "https://www.rollingstone.com/music/music-news/lindsay-lohan-jingle-bell-rock-netflix-film-1234624531",
+        "https://www.lindsaylohan.com/"
+      ],
+      "pages": [
+        {
+          "id": 533,
+          "url": "/christmas-artist/533-lindsey-lohan-jingle-bell-rock",
+          "song": "Jingle Bell Rock",
+          "youtube": "wP54DA-gmSs",
+          "before": "Lindsay Dee Lohan is an American actress and singer. Born in New York City and raised on Long Island, Lohan was signed to Ford Models at the age of three. Having appeared as a regular on the television soap opera Another World at age 10, her breakthrough came in the Walt Disney Pictures film The Parent Trap."
+        }
+      ]
+    },
+    {
+      "artist": "Mel & Kim",
+      "after": "This Mel & Kim pairing is comedian Mel Smith and “Kids in America” singer Kim Wilde, not the Appleby sisters. They teamed up for Comic Relief’s 1987 version of “Rockin’ Around the Christmas Tree”. The combination of pop vocals and comic mischief gives the old favourite a playful twist: a one-off duet with its tongue firmly in its cheek.",
+      "wordCount": 59,
+      "sources": [
+        "https://www.officialcharts.com/artist/18818/kim-wilde",
+        "https://www.allmusic.com/artist/kim-wilde-mn0000103447",
+        "https://www.wilde-life.com/encyclopedia/mel-kim"
+      ],
+      "pages": [
+        {
+          "id": 23,
+          "url": "/christmas-artist/23-mel-kim-rockin-around-the-christmas-tree",
+          "song": "Rockin around the Christmas tree",
+          "youtube": "hdnaPAJgAQI",
+          "before": "A version of the song by Kim Wilde and Mel Smith (credited as \"Mel & Kim\" as a parody of then-popular sister act Mel and Kim), reached No. 3 on the UK Singles Chart during the Christmas 1987."
+        }
+      ]
+    },
+    {
+      "artist": "Engelbert Humperdinck",
+      "after": "Engelbert Humperdinck made his name with romantic hits such as “Release Me” and “The Last Waltz”. His seasonal repertoire includes “Around the Christmas Tree”, from Warmest Christmas Wishes. The familiar richness of his voice suits a song centred on gathering together, offering a relaxed alternative to the more boisterous corners of the Christmas playlist.",
+      "wordCount": 54,
+      "sources": [
+        "https://www.allmusic.com/artist/engelbert-humperdinck-mn0000098081",
+        "https://www.billboard.com/artist/engelbert-humperdinck",
+        "https://www.allmusic.com/artist/engelbert-humperdinck-mn0001212248",
+        "https://www.engelbert.com/news/10-questions-for-engelbert-humperdinck",
+        "https://en.wikipedia.org/wiki/Engelbert_Humperdinck_(composer)",
+        "https://essentiallypop.com/epop/2018/10/engelbert-humperdinck-brings-us-an-early-christmas-gift-with-warmest-christmas-wishes"
+      ],
+      "pages": [
+        {
+          "id": 474,
+          "url": "/christmas-artist/474-engelbert-humperdinck-around-the-christmas-tree",
+          "song": "Around the Christmas Tree",
+          "youtube": "53dlIF75YAs",
+          "before": "Engelbert Humperdinck is an English pop singer. Humperdinck has been described as \"one of the finest middle-of-the-road balladeers around.\" His singles \"Release Me\" and \"The Last Waltz\" both topped the UK music charts in 1967, and sold more than a million copies each."
+        }
+      ]
+    },
+    {
+      "artist": "Band Aid",
+      "after": "Band Aid brought together a temporary line-up of pop performers for famine relief in Ethiopia. Bob Geldof and Midge Ure wrote “Do They Know It’s Christmas?”, recorded in 1984 with voices including George Michael, Boy George and Bono. This is the original recording, rather than one of the later versions, and a significant moment in music fundraising.",
+      "wordCount": 57,
+      "sources": [
+        "https://www.allmusic.com/artist/band-aid-mn0000116630",
+        "https://www.officialcharts.com/songs/band-aid-do-they-know-its-christmas",
+        "https://music.apple.com/us/artist/band-aid/725044408",
+        "https://www.youtube.com/watch?v=bjQzJAKxTrE",
+        "https://www.youtube.com/watch?v=qAM04oF6gHE",
+        "https://www.youtube.com/watch?v=V6_6PzRQ9sQ"
+      ],
+      "pages": [
+        {
+          "id": 83,
+          "url": "/christmas-artist/83-band-aid-do-they-know-its-christmas",
+          "song": "Do They Know It's Christmas",
+          "youtube": "bjQzJAKxTrE",
+          "before": "Band Aid is a charity supergroup featuring mainly British and Irish musicians and recording artists."
+        }
+      ]
+    },
+    {
+      "artist": "Kelly Clarkson",
+      "after": "Kelly Clarkson’s American Idol breakthrough led to a pop career that includes “Since U Been Gone” and “Stronger”. Her Christmas album Wrapped in Red introduced “Underneath the Tree”, co-written with Greg Kurstin. It puts her powerful voice at the centre of a busy, joyful arrangement, making a convincing case for company over anything wrapped in a box.",
+      "wordCount": 57,
+      "sources": [
+        "https://www.billboard.com/music/music-news/ariana-grande-kelly-clarkson-drop-santa-cant-you-hear-me-live-version-1235180169",
+        "https://www.nbc.com/nbc-insider/kelly-clarkson-ariana-grande-christmas-song",
+        "https://www.allmusic.com/artist/ariana-grande-mn0002264745",
+        "https://www.officialcharts.com/songs/kelly-clarkson-underneath-the-tree",
+        "https://www.allmusic.com/song/underneath-the-tree-mt0065212044",
+        "https://www.officialcharts.com/chart-news/wham-last-christmas-number-1-return"
+      ],
+      "pages": [
+        {
+          "id": 34,
+          "url": "/christmas-artist/34-kelly-clarkson-underneath-the-tree",
+          "song": "Underneath The Tree",
+          "youtube": "EM2Fnp_qnE8",
+          "before": "Kelly Brianne Clarkson is an American singer, songwriter, author, and occasional actress. She rose to fame in 2002 after winning the inaugural season of American Idol, and has since been referred to as the \"Original American Idol"
+        },
+        {
+          "id": 514,
+          "url": "/christmas-artist/514-kelly-clarkson-christmas-isnt-canceled",
+          "song": "Christmas Isnt Canceled",
+          "youtube": "7nLU5i5Ec7g",
+          "before": "Kelly Clarkson is celebrating Christmas with a new single, Christmas Isn’t Canceled (Just You). The song heralds her ninth studio album, When Christmas Comes Around, out October 15th via Atlantic Records."
+        }
+      ]
+    },
+    {
+      "artist": "Chris Rea",
+      "after": "Chris Rea combined a distinctive, weathered voice with blues-influenced guitar playing on songs such as “The Road to Hell”. “Driving Home for Christmas” finds him on a rather more welcoming journey. Its unhurried rhythm and everyday observations capture the anticipation of getting back to familiar faces, even when the journey itself takes a little patience.",
+      "wordCount": 55,
+      "sources": [
+        "https://www.bbc.co.uk/news/live/c0q5g3v02qjt",
+        "https://www.officialcharts.com/chart-news/chris-rea-dies-aged-74",
+        "https://www.officialcharts.com/songs/chris-rea-driving-home-for-christmas"
+      ],
+      "pages": [
+        {
+          "id": 60,
+          "url": "/christmas-artist/60-chris-rea-driving-home-for-christmas",
+          "song": "Driving Home For Christmas",
+          "youtube": "THcbQyFtCqg",
+          "before": "Christopher Anton Rea is an English singer-songwriter and guitarist, recognisable for his distinctive, husky voice and slide guitar playing."
+        }
+      ]
+    },
+    {
+      "artist": "Ariana Grande",
+      "after": "Ariana Grande moved from television into a pop career built on expressive vocals and songs including “Problem” and “Thank U, Next”. Her Christmas Kisses EP includes a fresh take on Wham!’s “Last Christmas”. It brings her own vocal character to a familiar seasonal story, rather than simply following the original recording note for note.",
+      "wordCount": 54,
+      "sources": [
+        "https://www.allmusic.com/album/christmas-kisses-mw0002606142",
+        "https://www.allmusic.com/artist/mn0002264745",
+        "https://www.allmusic.com/artist/ariana-grande-mn0002264745"
+      ],
+      "pages": [
+        {
+          "id": 75,
+          "url": "/christmas-artist/75-ariana-grande-last-christmas",
+          "song": "Last Christmas",
+          "youtube": "3GscxGJxlOY",
+          "before": "Ariana Grande-Butera, known professionally as Ariana Grande, is an American singer and actress. She began her career in the Broadway musical 13, before landing the role of Cat Valentine on the Nickelodeon television series Victorious in 2009"
+        },
+        {
+          "id": 527,
+          "url": "/christmas-artist/527-ariana-grande-winter-things",
+          "song": "Winter Things",
+          "youtube": "tLqPDl26sLM",
+          "before": "Ariana Grande-Butera is an American singer, songwriter, and actress. Her four-octave vocal range has received critical acclaim, and her personal life has been the subject of widespread media attention."
+        }
+      ]
+    },
+    {
+      "artist": "Bastille",
+      "after": "Bastille broke through with “Pompeii”, combining Dan Smith’s distinctive voice with a chorus built for communal singing. Their version of Slade’s “Merry Xmas Everybody” brings a familiar Christmas favourite into the band’s repertoire. It’s a chance to hear those well-known words through a different pop voice, while keeping the invitation to join in firmly intact.",
+      "wordCount": 55,
+      "sources": [
+        "https://www.allmusic.com/artist/bastille-mn0002825814",
+        "https://www.allmusic.com/artist/jeremy-paul-mn0001490175",
+        "https://www.allmusic.com/artist/bastille-mn0000318795"
+      ],
+      "pages": [
+        {
+          "id": 542,
+          "url": "/christmas-artist/542-bastille-merry-xmas-everybody",
+          "song": "Merry Xmas Everybody",
+          "youtube": "7x0_ul8JzMA",
+          "before": "Bastille are an English pop rock band formed in 2010. The group began as a solo project by lead vocalist Dan Smith, but later expanded to include keyboardist Kyle Simmons, bassist and guitarist Will Farquarson and drummer Chris \"Woody\" Wood."
+        }
+      ]
+    },
+    {
+      "artist": "Dido",
+      "after": "Dido’s quietly distinctive voice helped make No Angel a breakthrough album, with songs including “Thank You” and “Here with Me”. “Christmas Day” offers a story-led seasonal recording rather than a party anthem. Its wintry atmosphere makes a gentle contrast to the bigger choruses around it, inviting you to listen closely for a few minutes.",
+      "wordCount": 54,
+      "sources": [
+        "https://www.allmusic.com/artist/dido-mn0000217344",
+        "https://www.officialcharts.com/artist/9486/dido",
+        "https://www.billboard.com/artist/dido",
+        "https://open.spotify.com/track/1Z7mHpNkOGCRfa0XfGh0Kr",
+        "https://www.christmasmusic.com/artists/dido",
+        "https://open.spotify.com/track/4vJ1a1WmGBBRQ4dmfh2BD7"
+      ],
+      "pages": [
+        {
+          "id": 50,
+          "url": "/christmas-artist/50-dido-christmas-day",
+          "song": "Christmas Day",
+          "youtube": "CMFzQhR9dJw",
+          "before": "Dido Florian Cloud de Bounevialle O'Malley Armstrong, known as Dido, is an English singer and songwriter. Dido attained international success with her debut album No Angel."
+        }
+      ]
+    },
+    {
+      "artist": "Carly Rae Jepsen",
+      "after": "Carly Rae Jepsen’s “Call Me Maybe” introduced her to a worldwide audience, while albums such as Emotion showed the breadth of her pop songwriting. Her festive song “It’s Not Christmas Till Somebody Cries” takes a wry look at imperfect celebrations. A useful reminder that a family Christmas needn’t resemble a glossy advert to be memorable.",
+      "wordCount": 55,
+      "sources": [
+        "https://www.allmusic.com/artist/carly-rae-jepsen-mn0002089077",
+        "https://www.billboard.com/artist/carly-rae-jepsen",
+        "https://www.officialcharts.com/artist/7347/carly-rae-jepsen"
+      ],
+      "pages": [
+        {
+          "id": 445,
+          "url": "/christmas-artist/445-carly-rae-jepsen-last-christmas",
+          "song": "Last Christmas",
+          "youtube": "1Wk6pKKi0vE",
+          "before": "Carly Rae Jepsen is a Canadian singer, songwriter, and actress. In 2007, she placed third in Canadian Idol season five's competition. Jepsen independently released her debut album, Tug of War, in 2008."
+        },
+        {
+          "id": 492,
+          "url": "/christmas-artist/492-carly-rae-jepsen-its-not-christmas-till-somebody-cries",
+          "song": "It's Not Christmas Till Somebody Cries",
+          "youtube": "HdXWvzEfh1A",
+          "before": "Carly Rae Jepsen is a Canadian singer, songwriter, and actress. Born and raised in Mission, British Columbia, Jepsen performed several lead roles in her high school's musical productions and pursued musical theatre at the Canadian College of Performing Arts in Victoria, BC."
+        }
+      ]
+    },
+    {
+      "artist": "Darlene Love",
+      "after": "Darlene Love’s voice is at the heart of “Christmas (Baby Please Come Home)”, a recording that balances longing with a rush of energy. Her wider career includes 1960s singles such as “(Today I Met) The Boy I’m Gonna Marry”. At Christmas, that expressive delivery gives even the biggest arrangement a wonderfully human centre.",
+      "wordCount": 53,
+      "sources": [
+        "https://www.billboard.com/artist/darlene-love",
+        "https://www.billboard.com/music/pop/darlene-love-the-view-christmas-baby-please-come-home-video-7625498",
+        "https://www.allmusic.com/artist/darlene-love-mn0000575012"
+      ],
+      "pages": [
+        {
+          "id": 53,
+          "url": "/christmas-artist/53-darlene-love-christmas-baby-please-come-home",
+          "song": "Christmas (Baby Please Come Home)",
+          "youtube": "UV8x7H3DD8Y",
+          "before": "Darlene Love is an American popular music singer and actress. She gained prominence in the 1960s for the song \"He's a Rebel,\" a No. 1 American single in 1962, and was one of the artists who performed on the celebrated Christmas album A Christmas Gift for You from Phil Spector."
+        },
+        {
+          "id": 54,
+          "url": "/christmas-artist/54-darlene-love-all-alone-on-christmas",
+          "song": "All Alone On Christmas",
+          "youtube": "r1uJPGRfO5Y",
+          "before": "Darlene Love is an American popular music singer and actress. She gained prominence in the 1960s for the song \"He's a Rebel,\" a No. 1 American single in 1962, and was one of the artists who performed on the celebrated Christmas album A Christmas Gift for You from Phil Spector."
+        },
+        {
+          "id": 298,
+          "url": "/christmas-artist/298-darlene-love-white-christmas",
+          "song": "White Christmas",
+          "youtube": "7b6Y3t7epZQ",
+          "before": "Darlene Love is an American popular music singer and actress. She gained prominence in the 1960s for the song \"He's a Rebel,\" a No. 1 American single in 1962, and was one of the artists who performed on the celebrated Christmas album A Christmas Gift for You from Phil Spector."
+        },
+        {
+          "id": 304,
+          "url": "/christmas-artist/304-darlene-love-winter-wonderland",
+          "song": "Winter Wonderland",
+          "youtube": "cxdwyvb6w18",
+          "before": "Darlene Love is an American popular music singer and actress. She gained prominence in the 1960s for the song \"He's a Rebel,\" a No. 1 American single in 1962, and was one of the artists who performed on the celebrated Christmas album A Christmas Gift for You from Phil Spector."
+        }
+      ]
+    },
+    {
+      "artist": "Coldplay",
+      "after": "Coldplay grew from the intimate appeal of “Yellow” into a band associated with expansive songs and communal choruses. Their 2010 single “Christmas Lights” begins in a more troubled mood before opening into hope. It’s a seasonal song that makes room for mixed feelings, with Chris Martin’s voice guiding the move from reflection towards celebration.",
+      "wordCount": 54,
+      "sources": [
+        "https://www.coldplay.com/release/christmas-lights",
+        "https://www.coldplay.com/song/christmas-lights",
+        "https://www.allmusic.com/artist/coldplay-mn0000775877"
+      ],
+      "pages": [
+        {
+          "id": 56,
+          "url": "/christmas-artist/56-coldplay-christmas-lights",
+          "song": "Christmas Lights",
+          "youtube": "z1rYmzQ8C9Q",
+          "before": "Coldplay are a British rock band formed in 1996 by lead vocalist and keyboardist Chris Martin and lead guitarist Jonny Buckland at University College London."
+        }
+      ]
+    },
+    {
+      "artist": "Ed Sheeran & Elton John",
+      "after": "Ed Sheeran and Elton John bring two generations of British songwriting together on “Merry Christmas”. Released in 2021, their duet reached number one in the UK. Elton’s piano-pop tradition and Ed’s melodic storytelling meet in a song made for sharing, with enough bells and good cheer to make the title feel entirely appropriate.",
+      "wordCount": 53,
+      "sources": [
+        "https://www.officialcharts.com/artist/61604/ed-sheeran-and-elton-john",
+        "https://www.billboard.com/music/chart-beat/elton-john-ed-sheeran-merry-christmas-hot-100-top-40-1235866943",
+        "https://www.allmusic.com/artist/mn0002639628"
+      ],
+      "pages": [
+        {
+          "id": 509,
+          "url": "/christmas-artist/509-ed-sheeran-elton-john-merry-christmas",
+          "song": "Merry Christmas",
+          "youtube": "Q_yuO8UNGmY",
+          "before": "It's about time! Finally Ed Sheeran and Elton John team up for this awesome Christmas Song. All profits from this year’s Christmas period will go to the Ed Sheeran Suffolk Music Foundation.\nSuch a great song to end 2021"
+        }
+      ]
+    },
+    {
+      "artist": "Kylie Minogue",
+      "after": "Kylie Minogue’s pop career stretches from “I Should Be So Lucky” to dance-floor favourites such as “Can’t Get You Out of My Head”. Kylie Christmas brings her playful delivery to seasonal standards and newer songs. “Santa Baby” is a particularly cheeky fit, turning the Christmas wish list into something rather more elaborate than socks.",
+      "wordCount": 54,
+      "sources": [
+        "https://www.officialcharts.com/chart-news/kylie-minogue-christmas-fully-wrapped-number-1-album",
+        "https://www.officialcharts.com/albums/kylie-minogue-kylie-christmas-fully-wrapped",
+        "https://www.officialcharts.com/artist/43484/kylie"
+      ],
+      "pages": [
+        {
+          "id": 29,
+          "url": "/christmas-artist/29-kylie-minogue-santa-baby",
+          "song": "Santa Baby",
+          "youtube": "3WY5dwSEcZo",
+          "before": "Kylie Ann Minogue, OBE, often known simply as Kylie, is an Australian singer, songwriter, and actress. She achieved recognition starring in the Australian soap opera Neighbours, where she played tomboy mechanic Charlene Robinson."
+        },
+        {
+          "id": 30,
+          "url": "/christmas-artist/30-kylie-minogue-im-gonna-be-warm-this-winter",
+          "song": "I'm Gonna Be Warm This Winter",
+          "youtube": "tw_l_9MAHX0",
+          "before": "Kylie Ann Minogue, OBE, often known simply as Kylie, is an Australian singer, songwriter, and actress. She achieved recognition starring in the Australian soap opera Neighbours, where she played tomboy mechanic Charlene Robinson."
+        },
+        {
+          "id": 31,
+          "url": "/christmas-artist/31-kylie-minogue-only-you-feat-james-corden",
+          "song": "Only You feat James Corden",
+          "youtube": "107C8PMY8cM",
+          "before": "Kylie Ann Minogue, OBE, often known simply as Kylie, is an Australian singer, songwriter, and actress. She achieved recognition starring in the Australian soap opera Neighbours, where she played tomboy mechanic Charlene Robinson."
+        },
+        {
+          "id": 32,
+          "url": "/christmas-artist/32-kylie-minogue-santa-claus-is-coming-to-town",
+          "song": "Santa Claus Is Coming To Town",
+          "youtube": "2ssAl9Ja5DY",
+          "before": "Kylie Ann Minogue, OBE, often known simply as Kylie, is an Australian singer, songwriter, and actress. She achieved recognition starring in the Australian soap opera Neighbours, where she played tomboy mechanic Charlene Robinson."
+        },
+        {
+          "id": 33,
+          "url": "/christmas-artist/33-kylie-minogue-its-the-most-wonderful-time-of-the-year",
+          "song": "It's The Most Wonderful Time Of The Year",
+          "youtube": "4pPpxsbqxR8",
+          "before": "Kylie Ann Minogue, OBE, often known simply as Kylie, is an Australian singer, songwriter, and actress. She achieved recognition starring in the Australian soap opera Neighbours, where she played tomboy mechanic Charlene Robinson."
+        },
+        {
+          "id": 126,
+          "url": "/christmas-artist/126-kylie-minogue-christmas-wrapping",
+          "song": "Christmas Wrapping",
+          "youtube": "sHnJEUS_cj4",
+          "before": "Kylie Ann Minogue, OBE, often known simply as Kylie, is an Australian singer, songwriter, and actress. She achieved recognition starring in the Australian soap opera Neighbours, where she played tomboy mechanic Charlene Robinson."
+        },
+        {
+          "id": 127,
+          "url": "/christmas-artist/127-kylie-minogue-every-days-like-christmas",
+          "song": "Every Day's Like Christmas",
+          "youtube": "f37t3m7W-NA",
+          "before": "Kylie Ann Minogue, OBE, often known simply as Kylie, is an Australian singer, songwriter, and actress. She achieved recognition starring in the Australian soap opera Neighbours, where she played tomboy mechanic Charlene Robinson."
+        },
+        {
+          "id": 128,
+          "url": "/christmas-artist/128-kylie-minogue-let-it-snow",
+          "song": "Let It Snow",
+          "youtube": "cRwmoBdG0Pk",
+          "before": "Kylie Ann Minogue, OBE, often known simply as Kylie, is an Australian singer, songwriter, and actress. She achieved recognition starring in the Australian soap opera Neighbours, where she played tomboy mechanic Charlene Robinson."
+        },
+        {
+          "id": 162,
+          "url": "/christmas-artist/162-kylie-minogue-christmas-isnt-christmas",
+          "song": "Christmas Isnt Christmas",
+          "youtube": "g7PKdtoin0o",
+          "before": "Kylie Ann Minogue, OBE, often known simply as Kylie, is an Australian singer, songwriter, and actress. She achieved recognition starring in the Australian soap opera Neighbours, where she played tomboy mechanic Charlene Robinson."
+        },
+        {
+          "id": 172,
+          "url": "/christmas-artist/172-kylie-minogue-cried-out-christmas",
+          "song": "Cried Out Christmas",
+          "youtube": "mNkwJA27-CU",
+          "before": "Kylie Ann Minogue, OBE, often known simply as Kylie, is an Australian singer, songwriter, and actress. She achieved recognition starring in the Australian soap opera Neighbours, where she played tomboy mechanic Charlene Robinson."
+        },
+        {
+          "id": 193,
+          "url": "/christmas-artist/193-kylie-minogue-have-yourself-a-merry-little-christmas",
+          "song": "Have Yourself A Merry Little Christmas",
+          "youtube": "1XG7sd6DM9U",
+          "before": "Kylie Ann Minogue, OBE, often known simply as Kylie, is an Australian singer, songwriter, and actress. She achieved recognition starring in the Australian soap opera Neighbours, where she played tomboy mechanic Charlene Robinson."
+        },
+        {
+          "id": 302,
+          "url": "/christmas-artist/302-kylie-minogue-white-december",
+          "song": "White December",
+          "youtube": "f39DQz7ZsIY",
+          "before": "Kylie Ann Minogue, OBE, often known simply as Kylie, is an Australian singer, songwriter, and actress. She achieved recognition starring in the Australian soap opera Neighbours, where she played tomboy mechanic Charlene Robinson."
+        },
+        {
+          "id": 308,
+          "url": "/christmas-artist/308-kylie-minogue-winter-wonderland",
+          "song": "Winter Wonderland",
+          "youtube": "iM3iuUsn5hc",
+          "before": "Kylie Ann Minogue, OBE, often known simply as Kylie, is an Australian singer, songwriter, and actress. She achieved recognition starring in the Australian soap opera Neighbours, where she played tomboy mechanic Charlene Robinson."
+        },
+        {
+          "id": 314,
+          "url": "/christmas-artist/314-kylie-minogue-100-degrees-feat-dannii-minogue",
+          "song": "100 Degrees feat Dannii Minogue",
+          "youtube": "7SKyU1k7juw",
+          "before": "Kylie Ann Minogue, OBE, often known simply as Kylie, is an Australian singer, songwriter, and actress. She achieved recognition starring in the Australian soap opera Neighbours, where she played tomboy mechanic Charlene Robinson."
+        },
+        {
+          "id": 315,
+          "url": "/christmas-artist/315-kylie-minogue-2000-miles",
+          "song": "2000 Miles",
+          "youtube": "W1VsFceXgwI",
+          "before": "Kylie Ann Minogue, OBE, often known simply as Kylie, is an Australian singer, songwriter, and actress. She achieved recognition starring in the Australian soap opera Neighbours, where she played tomboy mechanic Charlene Robinson."
+        },
+        {
+          "id": 558,
+          "url": "/christmas-artist/558-kylie-minogue-xmas",
+          "song": "XMAS",
+          "youtube": "3B5Zcou91yA",
+          "before": "Kylie Ann Minogue is an Australian singer, songwriter, and actress. Frequently referred to as the \"Princess of Pop\", she has achieved recognition in both the music industry and the fashion world as a major style icon. Her accolades include two Grammy Awards, four Brit Awards and eighteen ARIA Music Awards."
+        }
+      ]
+    },
+    {
+      "artist": "East 17",
+      "after": "East 17 brought a streetwise pop sound to the 1990s, with songs including “House of Love” and “It’s Alright”. Their ballad “Stay Another Day” became the UK Christmas number one in 1994. It wasn’t originally written as a Christmas song, but those bells and the snowy video helped give it a lasting December home.",
+      "wordCount": 54,
+      "sources": [
+        "https://www.officialcharts.com/songs/east-17-stay-another-day",
+        "https://www.officialcharts.com/artist/28015/east-17",
+        "https://www.officialeast17.co.uk/"
+      ],
+      "pages": [
+        {
+          "id": 49,
+          "url": "/christmas-artist/49-east-17-stay-another-day",
+          "song": "Stay Another Day",
+          "youtube": "-wNhdjoF-6M",
+          "before": "East 17 are an English pop boy band group currently consisting of original members John Hendy and Terry Coldwell and newest addition to the line-up Robbie Craig. The original line-up also featured Brian Harvey and Tony Mortimer."
+        }
+      ]
+    },
+    {
+      "artist": "Shakin Stevens",
+      "after": "Shakin’ Stevens brought rock ’n’ roll style to the British pop charts with hits such as “This Ole House” and “Oh Julie”. “Merry Christmas Everyone” became the UK Christmas number one in 1985. Its cheerful bounce makes it a natural party choice, even for anyone whose dancing is usually confined to avoiding the wrapping paper.",
+      "wordCount": 55,
+      "sources": [
+        "https://www.officialcharts.com/artist/50482/shakin-stevens",
+        "https://www.allmusic.com/artist/shakin-stevens-mn0000158173",
+        "https://www.officialcharts.com/songs/shakin-stevens-merry-christmas-everyone"
+      ],
+      "pages": [
+        {
+          "id": 8,
+          "url": "/christmas-artist/8-shakin-stevens-merry-christmas-everyone",
+          "song": "Merry Christmas Everyone",
+          "youtube": "ZeyHl1tQeaQ",
+          "before": "Michael Barratt, known as Shakin Stevens, is a platinum-selling Welsh rock and roll singer and songwriter who was the UK's biggest-selling singles artist of the 1980s."
+        },
+        {
+          "id": 440,
+          "url": "/christmas-artist/440-shakin-stevens-blue-christmas",
+          "song": "Blue Christmas",
+          "youtube": "ffoSWo-z6mU",
+          "before": "Michael Barratt, known as Shakin Stevens, is a platinum-selling Welsh rock and roll singer and songwriter who was the UK's biggest-selling singles artist of the 1980s."
+        }
+      ]
+    },
+    {
+      "artist": "Elvis Presley",
+      "after": "Elvis Presley brought rock ’n’ roll, country and blues into a distinctive musical mix, alongside a gift for heartfelt ballads. His Christmas recordings show both sides, from lively seasonal songs to the yearning “Blue Christmas”. That familiar voice gives the festive repertoire character without needing every song to turn into a full-scale celebration.",
+      "wordCount": 53,
+      "sources": [
+        "https://www.allmusic.com/artist/elvis-mn0000180228",
+        "https://www.allmusic.com/album/elvis-christmas-album-mw0000191441",
+        "https://www.elvisthemusic.com/track/blue-christmas-7"
+      ],
+      "pages": [
+        {
+          "id": 260,
+          "url": "/christmas-artist/260-elvis-presley-santa-bring-my-baby-back-to-me",
+          "song": "Santa Bring My Baby Back (To Me)",
+          "youtube": "hmxD0wjBPAc",
+          "before": "Elvis Aaron Presley was an American singer and actor. Regarded as one of the most significant cultural icons of the 20th century, he is often referred to as \"the King of Rock and Roll\", or simply, \"the King\"."
+        },
+        {
+          "id": 399,
+          "url": "/christmas-artist/399-elvis-presley-blue-christmas",
+          "song": "Blue Christmas",
+          "youtube": "BnGoH-TMIs8",
+          "before": "Elvis Aaron Presley was an American singer and actor. Regarded as one of the most significant cultural icons of the 20th century, he is often referred to as \"the King of Rock and Roll\", or simply, \"the King\"."
+        }
+      ]
+    },
+    {
+      "artist": "Sia",
+      "after": "Sia built a career as both a distinctive singer and a songwriter for other artists, with “Chandelier” becoming one of her signature songs. Everyday Is Christmas brings her melodic instincts to original seasonal material, including “Santa’s Coming for Us”. It’s a colourful alternative to familiar standards, with that unmistakable voice doing much of the decorating.",
+      "wordCount": 55,
+      "sources": [
+        "https://www.billboard.com/culture/lifestyle/sia-deluxe-christmas-album-stream-8482991",
+        "https://www.billboard.com/artist/sia",
+        "https://www.billboard.com/music/pop/sia-new-song-snowman-christmas-album-listen-8031327"
+      ],
+      "pages": [
+        {
+          "id": 457,
+          "url": "/christmas-artist/457-sia-santas-coming-for-us",
+          "song": "Santa's Coming For Us",
+          "youtube": "cF_6J7d0EN4",
+          "before": "Sia Kate Isobelle Furler is an Australian singer-songwriter, record producer and music video director. She started her career as a singer in the local Adelaide acid jazz band Crisp in the mid-1990s."
+        },
+        {
+          "id": 480,
+          "url": "/christmas-artist/480-sia-my-old-santa-claus",
+          "song": "My Old Santa Claus",
+          "youtube": "k1BtVdmiOP4",
+          "before": "Sia Kate Isobelle Furler is an Australian singer, songwriter, record producer and music video director. She started her career as a singer in the acid jazz band Crisp in the mid-1990s in Adelaide. In 1997, when Crisp disbanded, she released her debut studio album titled OnlySee in Australia, but it did not sell well."
+        },
+        {
+          "id": 537,
+          "url": "/christmas-artist/537-sia-candy-cane-lane",
+          "song": "Candy Cane Lane",
+          "youtube": "ElmsIGT85tI",
+          "before": "Sia Kate Isobelle Furler is an Australian singer and songwriter. Born and raised in Adelaide, she started her career as a singer in the acid jazz band Crisp in the mid-1990s. In 1997, when Crisp disbanded, she released her debut studio album, titled OnlySee, in Australia."
+        },
+        {
+          "id": 538,
+          "url": "/christmas-artist/538-sia-naughty-nice",
+          "song": "Naughty & Nice",
+          "youtube": "EZTaWYWP68E",
+          "before": "Sia Kate Isobelle Furler is an Australian singer and songwriter. Born and raised in Adelaide, she started her career as a singer in the acid jazz band Crisp in the mid-1990s."
+        }
+      ]
+    },
+    {
+      "artist": "Jose Feliciano",
+      "after": "José Feliciano is a singer and guitarist whose recordings cross pop and Latin music, including his distinctive interpretation of “Light My Fire”. He wrote “Feliz Navidad”, bringing Spanish and English together in a wonderfully direct Christmas greeting. Its appeal is easy to understand: a warm voice, a welcoming tune and a chorus that invites everyone in.",
+      "wordCount": 56,
+      "sources": [
+        "https://www.josefeliciano.com/",
+        "https://www.billboard.com/music/latin/jose-feliciano-feliz-navidad-remake-50th-anniversary-9491470",
+        "https://music.apple.com/gb/artist/jos%C3%A9-feliciano/249044"
+      ],
+      "pages": [
+        {
+          "id": 123,
+          "url": "/christmas-artist/123-jose-feliciano-feliz-navidad",
+          "song": "Feliz Navidad",
+          "youtube": "xMtuVP8Mj4o",
+          "before": "José Montserrate Feliciano García, better known simply as José Feliciano, is a Puerto Rican singer and songwriter, best known for many international hits, including his rendition of The Doors' \"Light my Fire\""
+        }
+      ]
+    },
+    {
+      "artist": "The Beach Boys",
+      "after": "The Beach Boys made close harmonies and California pop their calling cards, with songs including “Surfin’ U.S.A.”. Their Christmas recordings bring that sound into colder weather, especially on “Little Saint Nick”. The catalogue here includes its 1991 remix, offering the familiar festive tune in a later mix rather than a different song.",
+      "wordCount": 52,
+      "sources": [
+        "https://music.apple.com/us/album/the-beach-boys-christmas-album/1440855604",
+        "https://en.wikipedia.org/wiki/The_Beach_Boys%27_Christmas_Album",
+        "https://thebeachboys.com/blogs/news/december-beach-boys-highlights"
+      ],
+      "pages": [
+        {
+          "id": 87,
+          "url": "/christmas-artist/87-the-beach-boys-little-saint-nick-1991-remix",
+          "song": "Little Saint Nick (1991 Remix)",
+          "youtube": "P-vAZabkn3U",
+          "before": "The Beach Boys are an American rock band formed in Hawthorne, California in 1961. The group's original lineup consisted of brothers Brian, Dennis, and Carl Wilson, their cousin Mike Love, and their friend Al Jardine."
+        },
+        {
+          "id": 88,
+          "url": "/christmas-artist/88-the-beach-boys-santa-claus-is-coming-to-town",
+          "song": "Santa Claus Is Coming To Town",
+          "youtube": "AT1B21z62tE",
+          "before": "The Beach Boys are an American rock band formed in Hawthorne, California in 1961. The group's original lineup consisted of brothers Brian, Dennis, and Carl Wilson, their cousin Mike Love, and their friend Al Jardine."
+        },
+        {
+          "id": 89,
+          "url": "/christmas-artist/89-the-beach-boys-bells-of-christmas",
+          "song": "Bells Of Christmas",
+          "youtube": "yAHCJqGh6_8",
+          "before": "The Beach Boys are an American rock band formed in Hawthorne, California in 1961. The group's original lineup consisted of brothers Brian, Dennis, and Carl Wilson, their cousin Mike Love, and their friend Al Jardine."
+        },
+        {
+          "id": 208,
+          "url": "/christmas-artist/208-the-beach-boys-ill-be-home-for-christmas",
+          "song": "I'll Be Home For Christmas",
+          "youtube": "AM4PEt7uts4",
+          "before": "The Beach Boys are an American rock band formed in Hawthorne, California in 1961. The group's original lineup consisted of brothers Brian, Dennis, and Carl Wilson, their cousin Mike Love, and their friend Al Jardine."
+        },
+        {
+          "id": 402,
+          "url": "/christmas-artist/402-the-beach-boys-santas-beard",
+          "song": "Santa's Beard",
+          "youtube": "OYzHM5_o6g8",
+          "before": "The Beach Boys are an American rock band formed in Hawthorne, California in 1961. The group's original lineup consisted of brothers Brian, Dennis, and Carl Wilson, their cousin Mike Love, and their friend Al Jardine."
+        }
+      ]
+    },
+    {
+      "artist": "Nat King Cole",
+      "after": "Nat King Cole began as a jazz pianist and became a much-loved interpreter of songs, with “Unforgettable” among his signature recordings. His voice is closely associated with “The Christmas Song”, better known to many by its opening mention of chestnuts. It’s an unhurried seasonal welcome, delivered with warmth rather than a need to shout.",
+      "wordCount": 54,
+      "sources": [
+        "https://www.billboard.com/artist/nat-king-cole",
+        "https://www.allmusic.com/artist/nat-king-cole-mn0000317093",
+        "https://www.allmusic.com/album/the-christmas-song-mw0000649998"
+      ],
+      "pages": [
+        {
+          "id": 14,
+          "url": "/christmas-artist/14-nat-king-cole-the-christmas-song",
+          "song": "The Christmas Song",
+          "youtube": "__kQ1PCP6B0",
+          "before": "Nathaniel Adams Coles, known professionally as Nat King Cole, was an American singer who first came to prominence as a leading jazz pianist."
+        },
+        {
+          "id": 136,
+          "url": "/christmas-artist/136-nat-king-cole-joy-to-the-world",
+          "song": "Joy To The World",
+          "youtube": "pcPQ4JgMT90",
+          "before": "Nathaniel Adams Coles, known professionally as Nat King Cole, was an American singer who first came to prominence as a leading jazz pianist."
+        },
+        {
+          "id": 137,
+          "url": "/christmas-artist/137-nat-king-cole-frosty-the-snowman",
+          "song": "Frosty The Snowman",
+          "youtube": "JShpmsmptj4",
+          "before": "Nathaniel Adams Coles, known professionally as Nat King Cole, was an American singer who first came to prominence as a leading jazz pianist."
+        },
+        {
+          "id": 174,
+          "url": "/christmas-artist/174-nat-king-cole-deck-the-halls",
+          "song": "Deck The Halls",
+          "youtube": "sXydDxZpH98",
+          "before": "Nathaniel Adams Coles, known professionally as Nat King Cole, was an American singer who first came to prominence as a leading jazz pianist."
+        },
+        {
+          "id": 187,
+          "url": "/christmas-artist/187-nat-king-cole-hark-the-herald-angels-sing",
+          "song": "Hark The Herald Angels Sing",
+          "youtube": "rxMEsTcw_pk",
+          "before": "Nathaniel Adams Coles, known professionally as Nat King Cole, was an American singer who first came to prominence as a leading jazz pianist."
+        },
+        {
+          "id": 226,
+          "url": "/christmas-artist/226-nat-king-cole-the-little-boy-that-santa-claus-forgot",
+          "song": "The Little Boy That Santa Claus Forgot",
+          "youtube": "JgCNbfbQltQ",
+          "before": "Nathaniel Adams Coles, known professionally as Nat King Cole, was an American singer who first came to prominence as a leading jazz pianist."
+        },
+        {
+          "id": 239,
+          "url": "/christmas-artist/239-nat-king-cole-mrs-santa-claus",
+          "song": "Mrs Santa Claus",
+          "youtube": "zmXzTdmEIAs",
+          "before": "Nathaniel Adams Coles, known professionally as Nat King Cole, was an American singer who first came to prominence as a leading jazz pianist."
+        },
+        {
+          "id": 240,
+          "url": "/christmas-artist/240-nat-king-cole-o-holy-night",
+          "song": "O Holy Night",
+          "youtube": "or2mMJ6_YCM",
+          "before": "Nathaniel Adams Coles, known professionally as Nat King Cole, was an American singer who first came to prominence as a leading jazz pianist."
+        },
+        {
+          "id": 244,
+          "url": "/christmas-artist/244-nat-king-cole-o-tannenbaum",
+          "song": "O Tannenbaum",
+          "youtube": "2mP9T8BQ_bQ",
+          "before": "Nathaniel Adams Coles, known professionally as Nat King Cole, was an American singer who first came to prominence as a leading jazz pianist."
+        }
+      ]
+    },
+    {
+      "artist": "Jonas Brothers",
+      "after": "Kevin, Joe and Nick Jonas built a pop career together before returning from separate projects with the hit “Sucker”. “I Need You Christmas” shows a gentler side of the brothers’ sound. Its nostalgic mood and close vocals offer a quiet seasonal pause, more suited to settling in with the family than starting a kitchen disco.",
+      "wordCount": 55,
+      "sources": [
+        "https://www.allmusic.com/artist/jonas-brothers-mn0000548397",
+        "https://www.officialcharts.com/artist/4118/jonas-brothers",
+        "https://www.billboard.com/artist/jonas-brothers"
+      ],
+      "pages": [
+        {
+          "id": 491,
+          "url": "/christmas-artist/491-jonas-brothers-i-need-you-christmas",
+          "song": "I Need You Christmas",
+          "youtube": "p-_3z30_dvs",
+          "before": "The Jonas Brothers are an American pop rock band. Formed in 2005, they gained popularity from their appearances on the Disney Channel television network. They consist of three brothers: Kevin Jonas, Joe Jonas, and Nick Jonas."
+        },
+        {
+          "id": 560,
+          "url": "/christmas-artist/560-jonas-brothers-coming-home-this-christmas",
+          "song": "Coming Home This Christmas",
+          "youtube": "ddhGTyxg2EE",
+          "before": "The Jonas Brothers are an American pop rock band formed in 2005 comprising brothers Kevin Jonas, Joe Jonas, and Nick Jonas."
+        }
+      ]
+    },
+    {
+      "artist": "Jona Lewie",
+      "after": "Jona Lewie’s individual approach to pop produced “You’ll Always Find Me in the Kitchen at Parties” and the enduring “Stop the Cavalry”. The latter combines an anti-war message with brass-band colour and a longing to be home at Christmas. It’s an unusual seasonal favourite whose memorable tune carries something more serious beneath the surface.",
+      "wordCount": 54,
+      "sources": [
+        "https://www.allmusic.com/artist/jona-lewie-mn0000822398",
+        "http://www.jonalewie.com/?page_id=147",
+        "http://www.jonalewie.com/"
+      ],
+      "pages": [
+        {
+          "id": 35,
+          "url": "/christmas-artist/35-jona-lewie-stop-the-cavalry",
+          "song": "Stop The Cavalry",
+          "youtube": "2HkJHApgKqw",
+          "before": "Jona Lewie is an English singer-songwriter and multi-instrumentalist, best known for his 1980 UK hits \"You'll Always Find Me in the Kitchen at Parties\" and \"Stop the Cavalry\"."
+        }
+      ]
+    },
+    {
+      "artist": "Barbra Streisand",
+      "after": "Barbra Streisand’s career spans the stage, cinema and recording studio, with Funny Girl and “The Way We Were” among its familiar landmarks. Her 1967 release A Christmas Album includes “The Christmas Song” and “The Best Gift”. She brings a storyteller’s attention to these seasonal songs, finding character in the quieter phrases as well as the grand moments.",
+      "wordCount": 57,
+      "sources": [
+        "https://www.barbrastreisand.com/music/christmas-album",
+        "https://www.allmusic.com/artist/barbra-streisand-mn0000855531",
+        "https://www.allmusic.com/album/christmas-memories-mw0000591615"
+      ],
+      "pages": [
+        {
+          "id": 84,
+          "url": "/christmas-artist/84-barbra-streisand-the-christmas-song",
+          "song": "The Christmas Song",
+          "youtube": "1-Vn0RsLvNM",
+          "before": "Barbra Joan \"Barbra\" Streisand is an American singer, songwriter, actress, and filmmaker. Her career spanning six decades, she has become an icon in multiple fields of entertainment, and has been recognised with two Academy Awards."
+        },
+        {
+          "id": 85,
+          "url": "/christmas-artist/85-barbra-streisand-the-best-gift",
+          "song": "The Best Gift",
+          "youtube": "KIqDkMxjdtU",
+          "before": "Barbra Joan \"Barbra\" Streisand is an American singer, songwriter, actress, and filmmaker. Her career spanning six decades, she has become an icon in multiple fields of entertainment, and has been recognised with two Academy Awards."
+        },
+        {
+          "id": 188,
+          "url": "/christmas-artist/188-barbra-streisand-have-yourself-a-merry-little-christmas",
+          "song": "Have Yourself A Merry Little Christmas",
+          "youtube": "0x5iVAKbGRQ",
+          "before": "Barbra Joan \"Barbra\" Streisand is an American singer, songwriter, actress, and filmmaker. Her career spanning six decades, she has become an icon in multiple fields of entertainment, and has been recognised with two Academy Awards."
+        },
+        {
+          "id": 205,
+          "url": "/christmas-artist/205-barbra-streisand-i-wonder-as-i-wander",
+          "song": "I Wonder As I Wander",
+          "youtube": "FjVtLBrPPSc",
+          "before": "Barbra Joan \"Barbra\" Streisand is an American singer, songwriter, actress, and filmmaker. Her career spanning six decades, she has become an icon in multiple fields of entertainment, and has been recognised with two Academy Awards."
+        },
+        {
+          "id": 219,
+          "url": "/christmas-artist/219-barbra-streisand-jingle-bells",
+          "song": "Jingle Bells",
+          "youtube": "qzgrYeSI7vs",
+          "before": "Barbra Joan \"Barbra\" Streisand is an American singer, songwriter, actress, and filmmaker. Her career spanning six decades, she has become an icon in multiple fields of entertainment, and has been recognised with two Academy Awards."
+        },
+        {
+          "id": 280,
+          "url": "/christmas-artist/280-barbra-streisand-sleep-in-heavenly-in-peace",
+          "song": "Sleep In Heavenly In Peace",
+          "youtube": "2HnyeeK_hMo",
+          "before": "Barbra Joan \"Barbra\" Streisand is an American singer, songwriter, actress, and filmmaker. Her career spanning six decades, she has become an icon in multiple fields of entertainment, and has been recognised with two Academy Awards."
+        },
+        {
+          "id": 297,
+          "url": "/christmas-artist/297-barbra-streisand-white-christmas",
+          "song": "White Christmas",
+          "youtube": "tXmQK7mE3Ck",
+          "before": "Barbra Joan \"Barbra\" Streisand is an American singer, songwriter, actress, and filmmaker. Her career spanning six decades, she has become an icon in multiple fields of entertainment, and has been recognised with two Academy Awards."
+        }
+      ]
+    },
+    {
+      "artist": "Bruce Springsteen",
+      "after": "Bruce Springsteen built his reputation on vivid songwriting and energetic performances with the E Street Band, with “Born to Run” a defining moment. His rendition of “Santa Claus Is Coming to Town” brings that live-show spirit to Christmas. It sounds like an invitation to join the crowd, rather than a request to sit quietly by the tree.",
+      "wordCount": 57,
+      "sources": [
+        "https://www.allmusic.com/artist/bruce-springsteen-mn0000530745",
+        "https://www.officialcharts.com/artist/26627/bruce-springsteen",
+        "https://brucespringsteen.net/band/bruce-springsteen"
+      ],
+      "pages": [
+        {
+          "id": 63,
+          "url": "/christmas-artist/63-bruce-springsteen-santa-claus-is-coming-to-town",
+          "song": "Santa Claus Is Coming to Town",
+          "youtube": "iSgEDKjmT5o",
+          "before": "Bruce Frederick Joseph Springsteen (born September 23, 1949) is a singer and songwriter born in New Jersey, United States. \nHe is best known for his work with his E Street Band. Nicknamed \"The Boss\", Springsteen is widely known for his brand of poetic lyrics, Americana, working class and sometimes political sentiments centered on his native New Jersey. \nHis distinctive voice and his lengthy and energetic stage performances, with concerts from the 1970s to the present decade running at up to four hours in length."
+        }
+      ]
+    },
+    {
+      "artist": "Robbie Williams",
+      "after": "Robbie Williams moved from Take That to a solo career encompassing pop anthems and swing standards. His album The Christmas Present combines seasonal favourites with newer songs, giving that showman’s voice another setting. It’s a natural extension of his taste for entertainment, with room for both a heartfelt delivery and a mischievous change of mood.",
+      "wordCount": 55,
+      "sources": [
+        "https://robbiewilliams.com/pages/timeline/entry-album-the-christmas-present",
+        "https://www.allmusic.com/artist/robbie-williams-mn0000227697",
+        "https://robbiewilliams.com/blogs/news/the-christmas-present"
+      ],
+      "pages": [
+        {
+          "id": 288,
+          "url": "/christmas-artist/288-robbie-williams-walk-this-sleigh",
+          "song": "Walk this Sleigh",
+          "youtube": "owQ5I5gfmnM",
+          "before": "Robert Peter \"Robbie\" Williams is an English singer, songwriter and actor. He was a member of the pop group Take That from 1990 to 1995 and again from 2009 to 2012. He has also had commercial success as a solo artist."
+        },
+        {
+          "id": 487,
+          "url": "/christmas-artist/487-robbie-williams-cant-stop-christmas",
+          "song": "Can't stop Christmas",
+          "youtube": "BW4nXP9N7Fg",
+          "before": "Robert Peter Williams is an English singer-songwriter and entertainer. He found fame as a member of the pop group Take That from 1990 to 1995, but achieved greater commercial success with his solo career, beginning in 1996."
+        },
+        {
+          "id": 559,
+          "url": "/christmas-artist/559-robbie-williams-bad-sharon",
+          "song": "Bad Sharon",
+          "youtube": "33893SFfjUs",
+          "before": "Robert Peter Williams (born 13 February 1974)[1] is an English singer and songwriter. He found fame as a member of the pop group Take That from 1990 to 1995, launching a solo career in 1996"
+        }
+      ]
+    },
+    {
+      "artist": "Brenda Lee",
+      "after": "Brenda Lee’s career embraces rockabilly, pop and country, with hits including “I’m Sorry” and “Sweet Nothin’s”. She recorded “Rockin’ Around the Christmas Tree” in 1958, giving the song a confident swing that still feels inviting. It’s a Christmas party favourite with enough bounce to make standing still beside the buffet quite a challenge.",
+      "wordCount": 53,
+      "sources": [
+        "https://www.cbc.ca/arts/q/brenda-lee-shares-the-story-behind-her-holiday-hit-rockin-around-the-christmas-tree-1.7051867",
+        "https://www.brendaleeofficial.com/",
+        "https://www.officialcharts.com/artist/8197/brenda-lee"
+      ],
+      "pages": [
+        {
+          "id": 65,
+          "url": "/christmas-artist/65-brenda-lee-rockin-around-the-christmas-tree",
+          "song": "Rockin Around The Christmas Tree",
+          "youtube": "is4NQkUN3AI",
+          "before": "Brenda Lee is an American performer and the top-charting solo female vocalist of the 1960s. \nShe sang rockabilly, pop and country music, and had 47 US chart hits during the 1960s, and is ranked fourth in that decade surpassed only by Elvis Presley, the Beatles and Ray Charles. \nShe is perhaps best known in the United States for her 1960 hit \"I'm Sorry\", and 1958's \"Rockin' Around the Christmas Tree\", a United States holiday standard for more than 50 years."
+        },
+        {
+          "id": 152,
+          "url": "/christmas-artist/152-brenda-lee-all-alone-am-i",
+          "song": "All Alone Am I",
+          "youtube": "wnApJcGBDFY",
+          "before": "Brenda Lee is an American performer and the top-charting solo female vocalist of the 1960s. She sang rockabilly, pop and country music, and had 47 US chart hits during the 1960s, and is ranked fourth in that decade surpassed only by Elvis Presley, the Beatles and Ray Charles. She is perhaps best known in the United States for her 1960 hit \"I'm Sorry\", and 1958's \"Rockin' Around the Christmas Tree\", a United States holiday standard for more than 50 years."
+        }
+      ]
+    },
+    {
+      "artist": "Dean Martin",
+      "after": "Dean Martin balanced singing, films and television with a relaxed performing style that made songs such as “That’s Amore” feel effortless. His seasonal recordings include “Let It Snow! Let It Snow! Let It Snow!”. There’s an easy warmth to his delivery, as though the winter weather is simply an excellent reason to stay indoors.",
+      "wordCount": 54,
+      "sources": [
+        "https://www.deanamartin.com/album/white-christmas",
+        "https://www.allmusic.com/artist/mn0000813392",
+        "https://www.allmusic.com/artist/dean-martin-mn0000813392"
+      ],
+      "pages": [
+        {
+          "id": 51,
+          "url": "/christmas-artist/51-dean-martin-baby-its-cold-outside",
+          "song": "Baby, It's Cold Outside",
+          "youtube": "crFQpOCDfEc",
+          "before": "Dean Martin was an American singer, actor, comedian, and film producer. \nOne of the most popular and enduring American entertainers of the mid-20th century, Martin was nicknamed the \"King of Cool\" for his seemingly effortless charisma and self-assurance."
+        },
+        {
+          "id": 104,
+          "url": "/christmas-artist/104-dean-martin-white-christmas",
+          "song": "White Christmas",
+          "youtube": "_90Q91RAfIU",
+          "before": "Dean Martin was an American singer, actor, comedian, and film producer. \nOne of the most popular and enduring American entertainers of the mid-20th century, Martin was nicknamed the \"King of Cool\" for his seemingly effortless charisma and self-assurance."
+        },
+        {
+          "id": 217,
+          "url": "/christmas-artist/217-dean-martin-ive-got-my-love-to-keep-me-warm",
+          "song": "I've Got My Love To Keep Me Warm",
+          "youtube": "pZ_RWs5YFP8",
+          "before": "Dean Martin was an American singer, actor, comedian, and film producer. \nOne of the most popular and enduring American entertainers of the mid-20th century, Martin was nicknamed the \"King of Cool\" for his seemingly effortless charisma and self-assurance."
+        },
+        {
+          "id": 247,
+          "url": "/christmas-artist/247-dean-martin-peace-on-earth-silent-night",
+          "song": "Peace On Earth/Silent Night",
+          "youtube": "rqNvqnInE84",
+          "before": "Dean Martin was an American singer, actor, comedian, and film producer. \nOne of the most popular and enduring American entertainers of the mid-20th century, Martin was nicknamed the \"King of Cool\" for his seemingly effortless charisma and self-assurance."
+        },
+        {
+          "id": 278,
+          "url": "/christmas-artist/278-dean-martin-silver-bells",
+          "song": "Silver Bells",
+          "youtube": "lylWDAo9hFw",
+          "before": "Dean Martin was an American singer, actor, comedian, and film producer. \nOne of the most popular and enduring American entertainers of the mid-20th century, Martin was nicknamed the \"King of Cool\" for his seemingly effortless charisma and self-assurance."
+        },
+        {
+          "id": 305,
+          "url": "/christmas-artist/305-dean-martin-winter-wonderland",
+          "song": "Winter Wonderland",
+          "youtube": "lkFP0VwpPRY",
+          "before": "Dean Martin was an American singer, actor, comedian, and film producer. \nOne of the most popular and enduring American entertainers of the mid-20th century, Martin was nicknamed the \"King of Cool\" for his seemingly effortless charisma and self-assurance."
+        },
+        {
+          "id": 365,
+          "url": "/christmas-artist/365-dean-martin-brahms-lullaby",
+          "song": "Brahms Lullaby",
+          "youtube": "NIKRq7NFgEs",
+          "before": "Dean Martin was an American singer, actor, comedian, and film producer. \nOne of the most popular and enduring American entertainers of the mid-20th century, Martin was nicknamed the \"King of Cool\" for his seemingly effortless charisma and self-assurance."
+        },
+        {
+          "id": 366,
+          "url": "/christmas-artist/366-dean-martin-rudolph-the-red-nosed-reindeer",
+          "song": "Rudolph The Red-Nosed Reindeer",
+          "youtube": "M47xvJE6GAg",
+          "before": "Dean Martin was an American singer, actor, comedian, and film producer. \nOne of the most popular and enduring American entertainers of the mid-20th century, Martin was nicknamed the \"King of Cool\" for his seemingly effortless charisma and self-assurance."
+        },
+        {
+          "id": 368,
+          "url": "/christmas-artist/368-dean-martin-the-christmas-blues",
+          "song": "The Christmas Blues",
+          "youtube": "tz-A0_O0vUo",
+          "before": "Dean Martin was an American singer, actor, comedian, and film producer. \nOne of the most popular and enduring American entertainers of the mid-20th century, Martin was nicknamed the \"King of Cool\" for his seemingly effortless charisma and self-assurance."
+        },
+        {
+          "id": 369,
+          "url": "/christmas-artist/369-dean-martin-let-it-snow-let-it-snow-let-it-snow",
+          "song": "Let It Snow! Let It Snow! Let It Snow!",
+          "youtube": "2TA3IKH8Y5c",
+          "before": "Dean Martin was an American singer, actor, comedian, and film producer. \nOne of the most popular and enduring American entertainers of the mid-20th century, Martin was nicknamed the \"King of Cool\" for his seemingly effortless charisma and self-assurance."
+        }
+      ]
+    },
+    {
+      "artist": "Andy Williams",
+      "after": "Andy Williams became closely associated with “Moon River” and a television career that brought his singing into family homes. His recording of “It’s the Most Wonderful Time of the Year” is another familiar calling card. The bright arrangement and welcoming vocal offer Christmas optimism on a grand scale, without requiring the rest of us to hit every note.",
+      "wordCount": 58,
+      "sources": [
+        "https://www.billboard.com/artist/andy-williams",
+        "https://andywilliams.com/the-music",
+        "https://www.allmusic.com/artist/andy-williams-mn0000038466"
+      ],
+      "pages": [
+        {
+          "id": 76,
+          "url": "/christmas-artist/76-andy-williams-its-the-most-wonderful-time-of-the-year",
+          "song": "It's The Most Wonderful Time Of The Year",
+          "youtube": "gFtb3EtjEic",
+          "before": "Howard Andrew \"Andy\" Williams was an American popular music singer. He recorded 44 albums in his career, 15 of which have been gold-certified and three of which have been platinum-certified. He was also nominated for six Grammy Awards."
+        },
+        {
+          "id": 80,
+          "url": "/christmas-artist/80-andy-williams-white-christmas",
+          "song": "White Christmas",
+          "youtube": "idF4-1oGILU",
+          "before": "Howard Andrew \"Andy\" Williams was an American popular music singer. He recorded 44 albums in his career, 15 of which have been gold-certified and three of which have been platinum-certified. He was also nominated for six Grammy Awards."
+        },
+        {
+          "id": 81,
+          "url": "/christmas-artist/81-andy-williams-let-it-snow-let-it-snow-let-it-snow",
+          "song": "Let It Snow! Let It Snow! Let It Snow!",
+          "youtube": "2YWfZpaLhHY",
+          "before": "Howard Andrew \"Andy\" Williams was an American popular music singer. He recorded 44 albums in his career, 15 of which have been gold-certified and three of which have been platinum-certified. He was also nominated for six Grammy Awards."
+        },
+        {
+          "id": 82,
+          "url": "/christmas-artist/82-andy-williams-do-you-hear-what-i-hear",
+          "song": "Do You Hear What I Hear",
+          "youtube": "Em0P9zb3a3k",
+          "before": "Howard Andrew \"Andy\" Williams was an American popular music singer. He recorded 44 albums in his career, 15 of which have been gold-certified and three of which have been platinum-certified. He was also nominated for six Grammy Awards."
+        },
+        {
+          "id": 185,
+          "url": "/christmas-artist/185-andy-williams-happy-holidays",
+          "song": "Happy Holidays",
+          "youtube": "H2pQbphEipc",
+          "before": "Howard Andrew \"Andy\" Williams was an American popular music singer. He recorded 44 albums in his career, 15 of which have been gold-certified and three of which have been platinum-certified. He was also nominated for six Grammy Awards."
+        }
+      ]
+    },
+    {
+      "artist": "Freya Skye",
+      "after": "Freya Skye combines pop singing with screen work, including Disney’s ZOMBIES 4: Dawn of the Vampires. “Snow Angels”, recorded with Malachi Barton, adds a wintry duet to that musical world. Her clear pop delivery gives the song a youthful warmth, offering a different generation’s voice alongside the long-established names on the Christmas playlist.",
+      "wordCount": 53,
+      "sources": [
+        "https://www.allmusic.com/artist/freya-skye-mn0004361731",
+        "https://www.billboard.com/artist/freya-skye",
+        "https://www.officialcharts.com/artist/freya-skye"
+      ],
+      "pages": [
+        {
+          "id": 557,
+          "url": "/christmas-artist/557-freya-skye-snow-angels",
+          "song": "Snow Angels",
+          "youtube": "3eQtz2dtIl0",
+          "before": "Freya Skye Jones is an English singer and actress. She represented the United Kingdom in the Junior Eurovision Song Contest 2022, after which she was signed to Hollywood Records. Skye has also garnered a talent holding deal for projects with Disney Branded Television."
+        }
+      ]
+    },
+    {
+      "artist": "Cliff Richard",
+      "after": "Cliff Richard’s career runs from early rock ’n’ roll with the Shadows to pop favourites including “We Don’t Talk Anymore”. Christmas brought another signature recording in “Mistletoe and Wine”, the UK Christmas number one in 1988. Its traditional imagery and singable chorus offer a familiar seasonal welcome, with room for reflection as well as celebration.",
+      "wordCount": 55,
+      "sources": [
+        "https://www.officialcharts.com/songs/cliff-richard-mistletoe-and-wine/",
+        "https://www.bbc.com/news/entertainment-arts-25333691",
+        "https://www.officialcharts.com/artist/19899/cliff-richard"
+      ],
+      "pages": [
+        {
+          "id": 57,
+          "url": "/christmas-artist/57-cliff-richard-mistletoe-and-wine",
+          "song": "Mistletoe And Wine",
+          "youtube": "rZCEBibnRM8",
+          "before": "Sir Cliff Richard OBE is a British pop singer, musician, performer, actor and philanthropist. Richard has sold more than 250 million records worldwide."
+        },
+        {
+          "id": 58,
+          "url": "/christmas-artist/58-cliff-richard-saviours-day",
+          "song": "Saviours Day",
+          "youtube": "FTI8CWSiZ40",
+          "before": "Sir Cliff Richard OBE is a British pop singer, musician, performer, actor and philanthropist. Richard has sold more than 250 million records worldwide."
+        },
+        {
+          "id": 271,
+          "url": "/christmas-artist/271-cliff-richard-santas-list",
+          "song": "Santa's List",
+          "youtube": "mK6GecDTsEs",
+          "before": "Sir Cliff Richard OBE is a British pop singer, musician, performer, actor and philanthropist. Richard has sold more than 250 million records worldwide."
+        }
+      ]
+    },
+    {
+      "artist": "Paul McCartney",
+      "after": "Paul McCartney’s songwriting helped define the Beatles, before further success with Wings and his solo recordings. “Wonderful Christmastime”, released in 1979, takes a delightfully uncomplicated approach to the season. Its bouncing synthesiser and easy chorus focus on getting together and enjoying the moment, rather than making Christmas any more complicated than it needs to be.",
+      "wordCount": 55,
+      "sources": [
+        "https://www.officialcharts.com/songs/paul-mccartney-wonderful-christmastime",
+        "https://www.paulmccartney.com/discography/singles/wonderful-christmastime",
+        "https://www.officialcharts.com/artist/18538/paul-mccartney"
+      ],
+      "pages": [
+        {
+          "id": 13,
+          "url": "/christmas-artist/13-paul-mccartney-wonderful-christmastime",
+          "song": "Wonderful Christmastime",
+          "youtube": "V9BZDpni56Y",
+          "before": "Sir James Paul McCartney, MBE is an English singer-songwriter, multi-instrumentalist, and composer. With John Lennon, George Harrison, and Ringo Starr, he gained worldwide fame with the rock band the Beatles"
+        },
+        {
+          "id": 138,
+          "url": "/christmas-artist/138-paul-mccartney-we-all-stand-together",
+          "song": "We All Stand Together",
+          "youtube": "PcDVH8DiBnM",
+          "before": "Sir James Paul McCartney, MBE is an English singer-songwriter, multi-instrumentalist, and composer. With John Lennon, George Harrison, and Ringo Starr, he gained worldwide fame with the rock band the Beatles"
+        }
+      ]
+    },
+    {
+      "artist": "Mariah Carey",
+      "after": "Mariah Carey established her pop and R&B career with songs including “Vision of Love” and “Emotions”. Her 1994 album Merry Christmas introduced “All I Want for Christmas Is You”, pairing a romantic wish with a bustling seasonal arrangement. The opening bells hardly need an introduction now; the high notes may still require a little caution at home.",
+      "wordCount": 57,
+      "sources": [
+        "https://www.allmusic.com/artist/mn0000262255",
+        "https://www.billboard.com/music/music-news/mariah-carey-merry-christmas-anniversary-all-i-want-for-christmas-6296926",
+        "https://www.berklee.edu/berklee-now/news/mariah-carey-christmas-album-30th-anniversary"
+      ],
+      "pages": [
+        {
+          "id": 24,
+          "url": "/christmas-artist/24-mariah-carey-all-i-want-for-christmas-is-you",
+          "song": "All I Want For Christmas Is You",
+          "youtube": "yXQViqx6GMY",
+          "before": "Mariah Carey is an American singer, record producer, and actress. In 1990, she rose to fame with the release of"
+        },
+        {
+          "id": 25,
+          "url": "/christmas-artist/25-mariah-carey-oh-santa",
+          "song": "Oh Santa",
+          "youtube": "G2bx3FzgJ6o",
+          "before": "Mariah Carey has debuted a new remix of Oh Santa! featuring Ariana Grande and Jennifer Hudson. \nThe festive track and its official music video were part of Mimi's new Apple TV special Mariah Carey's Magical Christmas Special which is now available to stream."
+        },
+        {
+          "id": 511,
+          "url": "/christmas-artist/511-mariah-carey-fall-in-love-at-christmas",
+          "song": "Fall in Love at Christmas",
+          "youtube": "3tH195XLrWE",
+          "before": "Fall in Love at Christmas is a holiday song by American singers Mariah Carey and Khalid, and American gospel musician Kirk Franklin. It was released on November 5, 2021. The song will be featured on Carey's upcoming Christmas special for Apple TV, called Mariah's Christmas: The Magic Continues, which will be available worldwide in December 2021."
+        }
+      ]
+    },
+    {
+      "artist": "Elton John",
+      "after": "Elton John’s piano-led songwriting and partnership with Bernie Taupin produced songs including “Your Song” and “Rocket Man”. Their 1973 single “Step Into Christmas” brings that exuberance to the festive season. It’s a brisk invitation to celebrate together, with a rolling rhythm that suggests the party has already started before you have found somewhere to put your coat.",
+      "wordCount": 57,
+      "sources": [
+        "https://www.eltonjohn.com/stories/diamond-moments-step-into-christmas",
+        "https://www.eltonjohn.com/stories/step-into-christmas",
+        "https://www.eltonjohn.com/stories/step-into-christmas-turns-50"
+      ],
+      "pages": [
+        {
+          "id": 47,
+          "url": "/christmas-artist/47-elton-john-step-into-christmas",
+          "song": "Step Into Christmas",
+          "youtube": "eDqi8ENS1FU",
+          "before": "Sir Elton Hercules John, CBE is an English singer-songwriter, musician and composer. He has worked with lyricist Bernie Taupin as his songwriting partner since 1967; they have collaborated on more than 30 albums to date."
+        }
+      ]
+    },
+    {
+      "artist": "Ed Sheeran",
+      "after": "Ed Sheeran’s career grew from acoustic songwriting into pop hits including “The A Team”, “Thinking Out Loud” and “Shape of You”. His seasonal recordings include “Under the Tree”, alongside his separate Christmas collaboration with Elton John. Here, the focus is on the more intimate side of his voice, making space for feelings beyond the festivities.",
+      "wordCount": 55,
+      "sources": [
+        "https://www.officialcharts.com/artist/61604/ed-sheeran-and-elton-john",
+        "https://www.billboard.com/music/chart-beat/elton-john-ed-sheeran-merry-christmas-hot-100-top-40-1235866943",
+        "https://www.allmusic.com/artist/mn0002639628",
+        "https://www.officialcharts.com/artist/6692/ED-SHEERAN",
+        "https://www.officialcharts.com/artist/6692/ed-sheeran"
+      ],
+      "pages": [
+        {
+          "id": 563,
+          "url": "/christmas-artist/563-ed-sheeran-under-the-tree",
+          "song": "Under the Tree",
+          "youtube": "nBCkXe3ZfoI",
+          "before": "Edward Christopher Sheeran is an English singer-songwriter. Born in Halifax, West Yorkshire, and raised in Framlingham, Suffolk, he began writing songs around the age of eleven. In early 2011, Sheeran independently released the extended play No. 5 Collaborations Project. He signed with Asylum Records the same year"
+        }
+      ]
+    },
+    {
+      "artist": "Cher",
+      "after": "Cher’s recording career stretches from Sonny & Cher’s “I Got You Babe” to the dance-pop reinvention of “Believe”. “DJ Play a Christmas Song” brings that dance-floor instinct to her album Christmas. It’s a seasonal request with a strong beat behind it, ideal for listeners who would rather celebrate on their feet than sit beside the fire.",
+      "wordCount": 56,
+      "sources": [
+        "https://www.officialcharts.com/songs/cher-dj-play-a-christmas-song",
+        "https://www.officialcharts.com/chart-news/cher-chart-record-dj-play-christmas-song",
+        "https://www.officialcharts.com/artist/11931/cher"
+      ],
+      "pages": [
+        {
+          "id": 551,
+          "url": "/christmas-artist/551-cher-dj-play-a-christmas-song",
+          "song": "DJ Play a Christmas Song",
+          "youtube": "pzJltQjuibA",
+          "before": "Cher, a legendary American singer and actress, has had a remarkable career spanning several decades. She first gained fame as part of the duo Sonny & Cher in the 1960s with hits like \"I Got You Babe.\" Cher went on to establish herself as a solo artist with chart-topping songs such as \"Believe\" and \"If I Could Turn Back Time.\"\n\nIn addition to her music career, Cher has also made a significant impact in the world of acting, winning an Academy Award for her role in the film \"Moonstruck.\" Her influence and iconic status have made her a beloved figure in the world of entertainment in UK GBP and beyond."
+        }
+      ]
+    },
+    {
+      "artist": "Bing Crosby",
+      "after": "Bing Crosby brought an intimate singing style to radio, records and films, becoming closely associated with Irving Berlin’s “White Christmas”. His recording offers a wistful picture of the season rather than a noisy celebration. That easy, conversational voice remains the attraction: a little nostalgia for anyone dreaming of snow, wherever they happen to be listening.",
+      "wordCount": 55,
+      "sources": [
+        "https://www.officialcharts.com/songs/bing-crosby-white-christmas",
+        "https://www.allmusic.com/artist/bing-crosby-mn0000094252",
+        "https://www.billboard.com/pro/white-christmas-bing-crosby-number-1-rewinding-charts"
+      ],
+      "pages": [
+        {
+          "id": 67,
+          "url": "/christmas-artist/67-bing-crosby-white-christmas",
+          "song": "White Christmas",
+          "youtube": "P8Ozdqzjigg",
+          "before": "Harry Lillis \"Bing\" Crosby, Jr. was an American singer and actor. Crosby's trademark warm bass-baritone voice made him the best-selling recording artist of the 20th century, having sold over one billion records, tapes, compact discs and digital downloads around the world."
+        },
+        {
+          "id": 93,
+          "url": "/christmas-artist/93-bing-crosby-the-christmas-song",
+          "song": "The Christmas Song",
+          "youtube": "Fk33KjJkUxw",
+          "before": "Harry Lillis \"Bing\" Crosby, Jr. was an American singer and actor. Crosby's trademark warm bass-baritone voice made him the best-selling recording artist of the 20th century, having sold over one billion records, tapes, compact discs and digital downloads around the world."
+        },
+        {
+          "id": 178,
+          "url": "/christmas-artist/178-bing-crosby-faith-of-our-fathers",
+          "song": "Faith Of Our Fathers",
+          "youtube": "GJmI3QVMrC8",
+          "before": "Harry Lillis \"Bing\" Crosby, Jr. was an American singer and actor. Crosby's trademark warm bass-baritone voice made him the best-selling recording artist of the 20th century, having sold over one billion records, tapes, compact discs and digital downloads around the world."
+        },
+        {
+          "id": 204,
+          "url": "/christmas-artist/204-bing-crosby-i-wish-you-a-merry-christmas",
+          "song": "I Wish You A Merry Christmas",
+          "youtube": "7ZsiZbsG87g",
+          "before": "Harry Lillis \"Bing\" Crosby, Jr. was an American singer and actor. Crosby's trademark warm bass-baritone voice made him the best-selling recording artist of the 20th century, having sold over one billion records, tapes, compact discs and digital downloads around the world."
+        },
+        {
+          "id": 209,
+          "url": "/christmas-artist/209-bing-crosby-ill-be-home-for-christmas",
+          "song": "Ill Be Home For Christmas",
+          "youtube": "_MD-cxwJ5o8",
+          "before": "Harry Lillis Bing Crosby, Jr. was an American singer and actor. Crosby's trademark warm bass-baritone voice made him the best-selling recording artist of the 20th century, having sold over one billion records, tapes, compact discs and digital downloads around the world."
+        },
+        {
+          "id": 220,
+          "url": "/christmas-artist/220-bing-crosby-jingle-bells",
+          "song": "Jingle Bells",
+          "youtube": "Kegu-erHEig",
+          "before": "Harry Lillis \"Bing\" Crosby, Jr. was an American singer and actor. Crosby's trademark warm bass-baritone voice made him the best-selling recording artist of the 20th century, having sold over one billion records, tapes, compact discs and digital downloads around the world."
+        },
+        {
+          "id": 251,
+          "url": "/christmas-artist/251-bing-crosby-rudolph-the-red-nosed-reindeer",
+          "song": "Rudolph The Red Nosed Reindeer",
+          "youtube": "oIP7vRRCUDo",
+          "before": "Harry Lillis \"Bing\" Crosby, Jr. was an American singer and actor. Crosby's trademark warm bass-baritone voice made him the best-selling recording artist of the 20th century, having sold over one billion records, tapes, compact discs and digital downloads around the world."
+        },
+        {
+          "id": 261,
+          "url": "/christmas-artist/261-bing-crosby-santa-claus-is-coming-to-town",
+          "song": "Santa Claus Is Coming To Town",
+          "youtube": "gWIFpjbsxMY",
+          "before": "Harry Lillis Bing Crosby, Jr. was an American singer and actor. Crosby's trademark warm bass-baritone voice made him the best-selling recording artist of the 20th century, having sold over one billion records, tapes, compact discs and digital downloads around the world."
+        },
+        {
+          "id": 272,
+          "url": "/christmas-artist/272-bing-crosby-silent-night",
+          "song": "Silent Night",
+          "youtube": "uPamW-WUf50",
+          "before": "Harry Lillis \"Bing\" Crosby, Jr. was an American singer and actor. Crosby's trademark warm bass-baritone voice made him the best-selling recording artist of the 20th century, having sold over one billion records, tapes, compact discs and digital downloads around the world."
+        },
+        {
+          "id": 277,
+          "url": "/christmas-artist/277-bing-crosby-silver-bells",
+          "song": "Silver Bells",
+          "youtube": "jHefeA-hyMA",
+          "before": "Harry Lillis \"Bing\" Crosby, Jr. was an American singer and actor. Crosby's trademark warm bass-baritone voice made him the best-selling recording artist of the 20th century, having sold over one billion records, tapes, compact discs and digital downloads around the world."
+        },
+        {
+          "id": 281,
+          "url": "/christmas-artist/281-bing-crosby-sleigh-ride",
+          "song": "Sleigh Ride",
+          "youtube": "6Sepqr4h0wc",
+          "before": "Harry Lillis \"Bing\" Crosby, Jr. was an American singer and actor. Crosby's trademark warm bass-baritone voice made him the best-selling recording artist of the 20th century, having sold over one billion records, tapes, compact discs and digital downloads around the world."
+        },
+        {
+          "id": 284,
+          "url": "/christmas-artist/284-bing-crosby-the-snowman",
+          "song": "The Snowman",
+          "youtube": "wA-ZgFq6zNM",
+          "before": "Harry Lillis \"Bing\" Crosby, Jr. was an American singer and actor. Crosby's trademark warm bass-baritone voice made him the best-selling recording artist of the 20th century, having sold over one billion records, tapes, compact discs and digital downloads around the world."
+        },
+        {
+          "id": 303,
+          "url": "/christmas-artist/303-bing-crosby-winter-wonderland",
+          "song": "Winter Wonderland",
+          "youtube": "qPh_4l2bB2k",
+          "before": "Harry Lillis \"Bing\" Crosby, Jr. was an American singer and actor. Crosby's trademark warm bass-baritone voice made him the best-selling recording artist of the 20th century, having sold over one billion records, tapes, compact discs and digital downloads around the world."
+        },
+        {
+          "id": 336,
+          "url": "/christmas-artist/336-bing-crosby-its-beginning-to-look-a-lot-like-christmas",
+          "song": "It's Beginning To Look A Lot Like Christmas",
+          "youtube": "d82Xzey-4B4",
+          "before": "Harry Lillis \"Bing\" Crosby, Jr. was an American singer and actor. Crosby's trademark warm bass-baritone voice made him the best-selling recording artist of the 20th century, having sold over one billion records, tapes, compact discs and digital downloads around the world."
+        },
+        {
+          "id": 340,
+          "url": "/christmas-artist/340-bing-crosby-away-in-a-manger",
+          "song": "Away In A Manger",
+          "youtube": "qfjSwiy8yxA",
+          "before": "Harry Lillis \"Bing\" Crosby, Jr. was an American singer and actor. Crosby's trademark warm bass-baritone voice made him the best-selling recording artist of the 20th century, having sold over one billion records, tapes, compact discs and digital downloads around the world."
+        },
+        {
+          "id": 343,
+          "url": "/christmas-artist/343-bing-crosby-here-comes-santa-claus",
+          "song": "Here Comes Santa Claus",
+          "youtube": "V9P_rbLwndc",
+          "before": "Harry Lillis \"Bing\" Crosby, Jr. was an American singer and actor. Crosby's trademark warm bass-baritone voice made him the best-selling recording artist of the 20th century, having sold over one billion records, tapes, compact discs and digital downloads around the world."
+        },
+        {
+          "id": 344,
+          "url": "/christmas-artist/344-bing-crosby-youre-all-i-want-for-christmas",
+          "song": "You're All I Want For Christmas",
+          "youtube": "FIWh7kRQ9gA",
+          "before": "Harry Lillis \"Bing\" Crosby, Jr. was an American singer and actor. Crosby's trademark warm bass-baritone voice made him the best-selling recording artist of the 20th century, having sold over one billion records, tapes, compact discs and digital downloads around the world."
+        },
+        {
+          "id": 345,
+          "url": "/christmas-artist/345-bing-crosby-i-wish-you-a-merry-christmas",
+          "song": "I Wish You A Merry Christmas",
+          "youtube": "7ZsiZbsG87g",
+          "before": "Harry Lillis \"Bing\" Crosby, Jr. was an American singer and actor. Crosby's trademark warm bass-baritone voice made him the best-selling recording artist of the 20th century, having sold over one billion records, tapes, compact discs and digital downloads around the world."
+        },
+        {
+          "id": 348,
+          "url": "/christmas-artist/348-bing-crosby-peace-on-earth-little-drummer-boy",
+          "song": "Peace On Earth - Little Drummer Boy",
+          "youtube": "DiXjbI3kRus",
+          "before": "Harry Lillis \"Bing\" Crosby, Jr. was an American singer and actor. Crosby's trademark warm bass-baritone voice made him the best-selling recording artist of the 20th century, having sold over one billion records, tapes, compact discs and digital downloads around the world."
+        },
+        {
+          "id": 351,
+          "url": "/christmas-artist/351-bing-crosby-the-first-noel",
+          "song": "The First Noel",
+          "youtube": "s1alBm6vwE4",
+          "before": "Harry Lillis 'Bing' Crosby, Jr. was an American singer and actor. Crosby's trademark warm bass-baritone voice made him the best-selling recording artist of the 20th century, having sold over one billion records, tapes, compact discs and digital downloads around the world."
+        },
+        {
+          "id": 353,
+          "url": "/christmas-artist/353-bing-crosby-god-rest-ye-merry-gentlemen",
+          "song": "God Rest Ye Merry Gentlemen",
+          "youtube": "x330L7EdprQ",
+          "before": "Harry Lillis \"Bing\" Crosby, Jr. was an American singer and actor. Crosby's trademark warm bass-baritone voice made him the best-selling recording artist of the 20th century, having sold over one billion records, tapes, compact discs and digital downloads around the world."
+        },
+        {
+          "id": 354,
+          "url": "/christmas-artist/354-bing-crosby-the-twelve-days-of-christmas",
+          "song": "The Twelve Days Of Christmas",
+          "youtube": "55P80Xfxk0U",
+          "before": "Harry Lillis \"Bing\" Crosby, Jr. was an American singer and actor. Crosby's trademark warm bass-baritone voice made him the best-selling recording artist of the 20th century, having sold over one billion records, tapes, compact discs and digital downloads around the world."
+        },
+        {
+          "id": 355,
+          "url": "/christmas-artist/355-bing-crosby-christmas-candles",
+          "song": "Christmas Candles",
+          "youtube": "HRyIb9wJ7bU",
+          "before": "Harry Lillis \"Bing\" Crosby, Jr. was an American singer and actor. Crosby's trademark warm bass-baritone voice made him the best-selling recording artist of the 20th century, having sold over one billion records, tapes, compact discs and digital downloads around the world."
+        },
+        {
+          "id": 356,
+          "url": "/christmas-artist/356-bing-crosby-i-heard-the-bells-on-christmas-day",
+          "song": "I Heard The Bells On Christmas Day",
+          "youtube": "1Q5LkxG-36w",
+          "before": "Harry Lillis \"Bing\" Crosby, Jr. was an American singer and actor. Crosby's trademark warm bass-baritone voice made him the best-selling recording artist of the 20th century, having sold over one billion records, tapes, compact discs and digital downloads around the world."
+        }
+      ]
+    },
+    {
+      "artist": "Michael Buble",
+      "after": "Michael Bublé combines traditional pop and swing with his own songs, following albums such as Crazy Love with Christmas in 2011. His seasonal repertoire includes “Christmas (Baby Please Come Home)” and “It’s Beginning to Look a Lot Like Christmas”. The appeal is in the relaxed phrasing and generous arrangements: familiar songs given room to breathe and swing.",
+      "wordCount": 57,
+      "sources": [
+        "https://www.michaelbuble.com/",
+        "https://www.michaelbuble.com/news/have-yourself-very-buble-christmas-34606",
+        "https://www.officialcharts.com/artist/13969/michael-bubl_"
+      ],
+      "pages": [
+        {
+          "id": 20,
+          "url": "/christmas-artist/20-michael-buble-christmas-baby-please-come-home",
+          "song": "Christmas (Baby Please Come Home)",
+          "youtube": "xBBwy5dmLNc",
+          "before": "Michael Steven Bublé is a Canadian singer, songwriter, actor and record producer. He became a naturalized Italian citizen in 2005. He has won several awards, including four Grammy Awards and multiple Juno Awards."
+        },
+        {
+          "id": 133,
+          "url": "/christmas-artist/133-michael-buble-blue-christmas",
+          "song": "Blue Christmas",
+          "youtube": "EJsDeLdLFY0",
+          "before": "Michael Steven Bublé is a Canadian singer, songwriter, actor and record producer. He became a naturalized Italian citizen in 2005. He has won several awards, including four Grammy Awards and multiple Juno Awards."
+        },
+        {
+          "id": 181,
+          "url": "/christmas-artist/181-michael-buble-frosty-the-snowman",
+          "song": "Frosty The Snowman",
+          "youtube": "3_ZiWMbI7Ik",
+          "before": "Michael Steven Bublé is a Canadian singer, songwriter, actor and record producer. He became a naturalized Italian citizen in 2005. He has won several awards, including four Grammy Awards and multiple Juno Awards."
+        },
+        {
+          "id": 197,
+          "url": "/christmas-artist/197-michael-buble-holly-jolly-christmas",
+          "song": "Holly Jolly Christmas",
+          "youtube": "e2YjOSrqUUU",
+          "before": "Michael Steven Bublé is a Canadian singer, songwriter, actor and record producer. He became a naturalized Italian citizen in 2005. He has won several awards, including four Grammy Awards and multiple Juno Awards."
+        },
+        {
+          "id": 207,
+          "url": "/christmas-artist/207-michael-buble-ill-be-home-for-christmas",
+          "song": "I'll Be Home For Christmas",
+          "youtube": "0yhI35F2NB0",
+          "before": "Michael Steven Bublé is a Canadian singer, songwriter, actor and record producer. He became a naturalized Italian citizen in 2005. He has won several awards, including four Grammy Awards and multiple Juno Awards."
+        },
+        {
+          "id": 258,
+          "url": "/christmas-artist/258-michael-buble-santa-baby",
+          "song": "Santa Baby",
+          "youtube": "JnOLam2AwXY",
+          "before": "Michael Steven Bublé is a Canadian singer, songwriter, actor and record producer. He became a naturalized Italian citizen in 2005. He has won several awards, including four Grammy Awards and multiple Juno Awards."
+        },
+        {
+          "id": 301,
+          "url": "/christmas-artist/301-michael-buble-white-christmas",
+          "song": "White Christmas",
+          "youtube": "6PGv6LF9aTg",
+          "before": "Michael Steven Bublé is a Canadian singer, songwriter, actor and record producer. He became a naturalized Italian citizen in 2005. He has won several awards, including four Grammy Awards and multiple Juno Awards."
+        },
+        {
+          "id": 309,
+          "url": "/christmas-artist/309-michael-buble-winter-wonderland",
+          "song": "Winter Wonderland",
+          "youtube": "oIKt5p3UmXg",
+          "before": "Michael Steven Bublé is a Canadian singer, songwriter, actor and record producer. He became a naturalized Italian citizen in 2005. He has won several awards, including four Grammy Awards and multiple Juno Awards."
+        },
+        {
+          "id": 316,
+          "url": "/christmas-artist/316-michael-buble-the-more-you-give",
+          "song": "The More You Give",
+          "youtube": "F1njMd3qjq0",
+          "before": "Michael Steven Bublé is a Canadian singer, songwriter, actor and record producer. He became a naturalized Italian citizen in 2005. He has won several awards, including four Grammy Awards and multiple Juno Awards."
+        },
+        {
+          "id": 317,
+          "url": "/christmas-artist/317-michael-buble-jingle-bells",
+          "song": "Jingle Bells",
+          "youtube": "y2Htw8nRuTk",
+          "before": "Michael Steven Bublé is a Canadian singer, songwriter, actor and record producer. He became a naturalized Italian citizen in 2005. He has won several awards, including four Grammy Awards and multiple Juno Awards."
+        },
+        {
+          "id": 319,
+          "url": "/christmas-artist/319-michael-buble-all-i-want-for-christmas-is-you",
+          "song": "All I Want For Christmas Is You",
+          "youtube": "VUSY9UohMhU",
+          "before": "Michael Steven Bublé is a Canadian singer, songwriter, actor and record producer. He became a naturalized Italian citizen in 2005. He has won several awards, including four Grammy Awards and multiple Juno Awards."
+        },
+        {
+          "id": 322,
+          "url": "/christmas-artist/322-michael-buble-have-yourself-a-merry-little-christmas",
+          "song": "Have Yourself A Merry Little Christmas",
+          "youtube": "xX_eu3c--4M",
+          "before": "Michael Steven Bublé is a Canadian singer, songwriter, actor and record producer. He became a naturalized Italian citizen in 2005. He has won several awards, including four Grammy Awards and multiple Juno Awards."
+        },
+        {
+          "id": 324,
+          "url": "/christmas-artist/324-michael-buble-silent-night",
+          "song": "Silent Night",
+          "youtube": "nyjHdiLla98",
+          "before": "Michael Steven Bublé is a Canadian singer, songwriter, actor and record producer. He became a naturalized Italian citizen in 2005. He has won several awards, including four Grammy Awards and multiple Juno Awards."
+        },
+        {
+          "id": 326,
+          "url": "/christmas-artist/326-michael-buble-cold-december-night",
+          "song": "Cold December Night",
+          "youtube": "m3xc5vdOizo",
+          "before": "Michael Steven Bublé is a Canadian singer, songwriter, actor and record producer. He became a naturalized Italian citizen in 2005. He has won several awards, including four Grammy Awards and multiple Juno Awards."
+        },
+        {
+          "id": 328,
+          "url": "/christmas-artist/328-michael-buble-ave-maria",
+          "song": "Ave Maria",
+          "youtube": "323gz5xNZMI",
+          "before": "Michael Steven Bublé is a Canadian singer, songwriter, actor and record producer. He became a naturalized Italian citizen in 2005. He has won several awards, including four Grammy Awards and multiple Juno Awards."
+        },
+        {
+          "id": 329,
+          "url": "/christmas-artist/329-michael-buble-mis-deseos-feliz-navidad",
+          "song": "Mis Deseos/Feliz Navidad",
+          "youtube": "CyfqQSwV1a0",
+          "before": "Michael Steven Bublé is a Canadian singer, songwriter, actor and record producer. He became a naturalized Italian citizen in 2005. He has won several awards, including four Grammy Awards and multiple Juno Awards."
+        },
+        {
+          "id": 330,
+          "url": "/christmas-artist/330-michael-buble-the-christmas-song",
+          "song": "The Christmas Song",
+          "youtube": "h_FV01Diqn0",
+          "before": "Michael Steven Bublé is a Canadian singer, songwriter, actor and record producer. He became a naturalized Italian citizen in 2005. He has won several awards, including four Grammy Awards and multiple Juno Awards."
+        },
+        {
+          "id": 333,
+          "url": "/christmas-artist/333-michael-buble-silver-bells",
+          "song": "Silver Bells",
+          "youtube": "NBLnevQ9yKU",
+          "before": "Michael Steven Bublé is a Canadian singer, songwriter, actor and record producer. He became a naturalized Italian citizen in 2005. He has won several awards, including four Grammy Awards and multiple Juno Awards."
+        },
+        {
+          "id": 334,
+          "url": "/christmas-artist/334-michael-buble-its-beginning-to-look-a-lot-like-christmas",
+          "song": "It's Beginning to Look a Lot Like Christmas",
+          "youtube": "0bhsXykXxfg",
+          "before": "Michael Steven Bublé is a Canadian singer, songwriter, actor and record producer. He became a naturalized Italian citizen in 2005. He has won several awards, including four Grammy Awards and multiple Juno Awards."
+        },
+        {
+          "id": 335,
+          "url": "/christmas-artist/335-michael-buble-santa-claus-is-coming-to-town",
+          "song": "Santa Claus Is Coming To Town",
+          "youtube": "SnA52s7qceM",
+          "before": "Michael Steven Bublé is a Canadian singer, songwriter, actor and record producer. He became a naturalized Italian citizen in 2005. He has won several awards, including four Grammy Awards and multiple Juno Awards."
+        },
+        {
+          "id": 508,
+          "url": "/christmas-artist/508-michael-buble-the-christmas-sweater",
+          "song": "The Christmas Sweater",
+          "youtube": "1LfuBZqXa-4",
+          "before": "Michael Bublé has a new Christmas song.\n\"The Christmas Sweater\" is a new and festive addition to the holidays co-written by Michael Bublé and included in the 10th Anniversary Deluxe Edition of Michael Bublé's Christmas album available globally as of November 26th 2021"
+        }
+      ]
+    }
+  ],
+  "exceptions": [
+    {
+      "artist": "Miley Cyrus",
+      "id": 17,
+      "question": "Which release or live performance is the existing Santa Claus Is Coming to Town video P_ANhC0QlJE from? A reliable attribution for this particular recording was not established; biography unchanged."
+    },
+    {
+      "artist": "Dean Martin and Frank Sinatra",
+      "id": 387,
+      "question": "Which performance or release is Auld Lang Syne video fJbbTjBur4k from, and are both singers actually present? Reliable joint attribution was not established; biography unchanged."
+    },
+    {
+      "artist": "Holly Johnson",
+      "question": "No solo Holly Johnson entry exists. Is the intended page Frankie Goes to Hollywood – The Power of Love (388), or a solo recording? No page created or changed."
+    }
+  ]
+}

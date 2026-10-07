@@ -26,7 +26,6 @@ export default function Home() {
           <img src="/images/north-pole-hero.webp" alt="A snowy North Pole village with warmly lit windows beneath the northern lights" fetchpriority="high" />
         </picture>
         <div className="hero-aurora" aria-hidden="true" />
-        <div className="hero-snow" aria-hidden="true">{Array.from({ length: 24 }, (_, i) => <i key={i} style={{ '--x': `${(i * 41 + 7) % 100}%`, '--delay': `${-i * 1.7}s`, '--duration': `${13 + i % 9}s` }} />)}</div>
         <div className="hero-content">
           <p className="eyebrow">A little magic from the North Pole</p>
           <h1 className="hero-title">Live from The North Pole,<span>Santa Radio</span></h1>
