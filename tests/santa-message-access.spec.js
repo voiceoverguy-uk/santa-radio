@@ -75,7 +75,7 @@ test('confirmed acceptance sends exact fields, ignores external redirect and onl
   await fillAccessForm(page);
   await page.getByRole('button', { name: 'Get my free Santa message' }).click();
   await expect(page).toHaveURL(/\/free-santa-message$/);
-  await expect(page.getByRole('heading', { name: 'Find your free Santa greeting' })).toBeFocused();
+  await expect(page.getByRole('heading', { name: 'Download your free Santa greeting' })).toBeFocused();
   expect(submitted.method()).toBe('POST');
   expect(submitted.headers()['content-type']).toContain('multipart/form-data; boundary=');
   const fields = Object.fromEntries([...submitted.postData().matchAll(/name="([^"]+)"\r\n\r\n([\s\S]*?)\r\n--/g)].map(match => [match[1], match[2]]));

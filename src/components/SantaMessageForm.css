@@ -20,7 +20,6 @@
 .message-suggestions li:hover, .message-suggestions li[aria-selected="true"] { background: #dfd3b7; }
 .message-submit:disabled { opacity: .65; cursor: not-allowed; }
 .message-name-input:disabled { opacity: .7; cursor: not-allowed; }
-.message-allowance-info { color: #ead39a; font-size: .82rem; line-height: 1.65; margin: 0 0 18px; }
 .message-wait { border: 1px solid #d4af3750; border-radius: 10px; padding: 18px; margin-bottom: 24px; background: #14382a; }
 .message-wait p { color: #d0dacd; font-size: .88rem; line-height: 1.75; margin: 0 0 14px; }
 .message-wait .message-countdown { color: #ead39a; }

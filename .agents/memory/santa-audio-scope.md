@@ -32,6 +32,12 @@ The user chose two free messages before a 30-minute wait.
 
 **How to apply:** Use two messages and a 30-minute wait when planning or implementing the free-message allowance; do not substitute three.
 
+Do not tell visitors about the limit until they have created their second message. Keep both generated greetings visible and downloadable, rather than replacing the first when they choose or create another.
+
+**Why:** The user explicitly requested these behaviours after reviewing the initial allowance wording and single-result flow.
+
+**How to apply:** Show the waiting notice only after the second success. Preserve earlier results while names change and while another creation is pending or fails.
+
 Preparing reusable, lossless shared source clips is acceptable; pre-creating personalised greetings is not. Keep the supplied recordings and their editorial waveform/padding intact.
 
 **Why:** The on-demand requirement is about assembling personalised messages at request time, not repeating invariant source processing. Lossless shared preparation reduces CPU and memory without creating a completed-message catalogue.

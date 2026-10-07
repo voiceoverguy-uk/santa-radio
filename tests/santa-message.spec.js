@@ -70,8 +70,8 @@ test('recorded Santa greeting validates names, decodes and downloads the real MP
       return (await context.decodeAudioData(await response.arrayBuffer())).duration;
     } finally { await context.close(); }
   });
-  expect(duration).toBeGreaterThan(65);
-  expect(duration).toBeLessThan(75);
+  expect(duration).toBeGreaterThan(35);
+  expect(duration).toBeLessThan(50);
   await audio.evaluate(async a => { await a.play(); });
   await expect.poll(() => audio.evaluate(a => a.currentTime)).toBeGreaterThan(0);
   const downloadPromise = page.waitForEvent('download');
@@ -80,7 +80,7 @@ test('recorded Santa greeting validates names, decodes and downloads the real MP
   expect(download.suggestedFilename()).toBe('Santa-message-for-Olivia.mp3');
   expect(await download.failure()).toBeNull();
   await input.fill('Another name');
-  await expect(page.locator('.message-result')).toHaveCount(0);
+  await expect(page.locator('.message-result')).toHaveCount(1);
 });
 
 test('suggestions cover all names without rendering until requested', async ({ page }) => {

@@ -13,3 +13,9 @@ Browser checks can also time out during clock setup or screenshot capture, befor
 **Why:** Browser and capture checks have stalled before any relevant UI assertion, even after simplifying their setup and increasing deadlines.
 
 **How to apply:** Distinguish infrastructure timeouts from failed behaviour assertions. After a few different approaches, stop repeating the checks, use cheaper build or source checks where available, and clearly report that browser verification did not complete.
+
+Installed testing guidance can describe a tester configuration that the current callback rejects.
+
+**Why:** The documented testing configuration was rejected as an unknown kind in this workspace.
+
+**How to apply:** When that happens, use the repository's configured Playwright suite directly rather than repeatedly trying undocumented helper configurations.

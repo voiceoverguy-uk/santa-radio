@@ -5,7 +5,6 @@ import { MESSAGE_ALLOWANCE_KEY } from '../src/lib/santaMessageAllowance.js';
 
 const audio = readFileSync('server/santa-audio/sleighbells.mp3');
 const mp3 = { contentType: 'audio/mpeg', body: audio };
-const allowanceText = remaining => `${remaining} free ${remaining === 1 ? 'message' : 'messages'} remaining before the 30-minute wait.`;
 async function create(page, name = 'Olivia') {
   await page.getByLabel('Child’s first name').fill(name);
   await page.getByRole('button', { name: 'Create message', exact: true }).click();
@@ -34,21 +33,37 @@ test('two successes block the third, preserve downloads and offer radio without 
   let calls = 0;
   await page.route('**/api/santa-message', route => { calls++; return route.fulfill(mp3); });
   await openMessageDesk(page);
-  await expect(page.getByText('Create two free messages, then wait 30 minutes before creating another two.')).toBeVisible();
-  await expect(page.getByText(allowanceText(2), { exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Download your free Santa greeting' })).toBeVisible();
+  await expect(page.getByText("Names are being added to Santa's list, so make your selection and press Create message.", { exact: true })).toBeVisible();
+  await expect(page.locator('.santa-message-box')).not.toContainText(/30.minute|messages remaining|message allowance/);
   await create(page);
-  await expect(page.getByText(allowanceText(1), { exact: true })).toBeVisible();
+  await expect(page.locator('.santa-message-box')).not.toContainText(/30.minute|messages remaining|message allowance/);
+  await page.getByLabel('Child’s first name').fill('Erin');
+  await expect(page.getByRole('link', { name: 'Download Olivia’s greeting' })).toBeVisible();
   await create(page, 'Erin');
+  await expect(page.locator('.message-result')).toHaveCount(2);
+  await page.evaluate(() => {
+    const recordings = document.querySelectorAll('.message-result audio');
+    window.recordingPauses = 0;
+    recordings.forEach(recording => { recording.pause = () => { window.recordingPauses++; }; });
+    recordings[0].dispatchEvent(new Event('play'));
+    recordings[1].dispatchEvent(new Event('play'));
+  });
+  expect(await page.evaluate(() => window.recordingPauses)).toBe(2);
+  await expect(page.getByText('(The radio will pause while playing)', { exact: true })).toHaveCount(2);
+  await expect(page.getByText('On iPhone, choose Share → Save to Files to keep the MP3.', { exact: true })).toHaveCount(2);
   await expect(page.getByRole('timer')).toHaveText('30:00');
   await expect(page.getByText('Why not enjoy Christmas music while you wait?', { exact: false })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
   await expect(page.getByLabel('Child’s first name')).toBeDisabled();
   await page.locator('.santa-message-box form').evaluate(form => form.requestSubmit());
   expect(calls).toBe(2);
-  await expect(page.locator('.message-result audio')).toBeVisible();
-  const download = page.waitForEvent('download');
-  await page.getByRole('link', { name: 'Download Erin’s greeting' }).click();
-  expect((await download).suggestedFilename()).toBe('Santa-message-for-Erin.mp3');
+  await expect(page.locator('.message-result audio')).toHaveCount(2);
+  for (const name of ['Olivia', 'Erin']) {
+    const download = page.waitForEvent('download');
+    await page.getByRole('link', { name: `Download ${name}’s greeting` }).click();
+    expect((await download).suggestedFilename()).toBe(`Santa-message-for-${name}.mp3`);
+  }
   expect((await usage(page)).used).toBe(2);
   await page.evaluate(() => {
     window.radioPlays = 0;
@@ -65,6 +80,7 @@ test('two successes block the third, preserve downloads and offer radio without 
     await page.setViewportSize({ width, height: 900 });
     await expect(page.getByRole('timer')).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.locator('.santa-message-box').screenshot({ path: `/tmp/santa-message-wait-${width}.png` });
   }
 });
 
@@ -82,22 +98,26 @@ test('failure, invalid name, non-audio, empty and cancelled requests do not use 
   await page.getByLabel('Child’s first name').fill('Unknown');
   await page.getByRole('button', { name: 'Create message' }).click();
   expect(calls).toBe(0);
+  mode = 'success';
+  await create(page);
   for (const current of ['failed', 'html', 'empty']) {
     mode = current;
     await page.getByLabel('Child’s first name').fill('Olivia');
     await page.getByRole('button', { name: 'Create message' }).click();
     await expect(page.getByRole('alert')).toBeVisible();
-    await expect(page.getByText(allowanceText(2), { exact: true })).toBeVisible();
+    expect((await usage(page)).used).toBe(1);
+    await expect(page.getByRole('link', { name: 'Download Olivia’s greeting' })).toBeVisible();
   }
   mode = 'hold';
   await page.getByRole('button', { name: 'Create message' }).click();
   await expect(page.getByRole('button', { name: 'Santa Recording...' })).toBeDisabled();
   await page.getByLabel('Child’s first name').fill('Erin');
   await expect(page.getByRole('button', { name: 'Create message' })).toBeEnabled();
-  expect((await usage(page)).used).toBe(0);
+  expect((await usage(page)).used).toBe(1);
   mode = 'success';
   await create(page, 'Erin');
-  expect((await usage(page)).used).toBe(1);
+  expect((await usage(page)).used).toBe(2);
+  await expect(page.locator('.message-result')).toHaveCount(2);
 });
 
 test('navigation, reload, a new tab and returning after the deadline preserve and restore the allowance', async ({ page, context }) => {
@@ -105,9 +125,9 @@ test('navigation, reload, a new tab and returning after the deadline preserve an
   await openMessageDesk(page);
   await create(page);
   await page.reload();
-  await expect(page.getByText(allowanceText(1), { exact: true })).toBeVisible();
+  expect((await usage(page)).used).toBe(1);
   await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Home', exact: true }).click();
-  await expect(page.getByText(allowanceText(1), { exact: true })).toBeVisible();
+  expect((await usage(page)).used).toBe(1);
   await create(page, 'Erin');
   const deadline = (await usage(page)).availableAt;
   await page.goto('/apps');
@@ -124,7 +144,7 @@ test('navigation, reload, a new tab and returning after the deadline preserve an
   await expect(newTab.getByRole('timer')).toHaveText('00:01');
   await newTab.evaluate(time => { window.testNow = time; dispatchEvent(new Event('focus')); }, deadline);
   await expect(newTab.getByRole('timer')).toHaveCount(0);
-  await expect(newTab.getByText(allowanceText(2), { exact: true })).toBeVisible();
+  await expect(newTab.getByRole('button', { name: 'Create message' })).toBeEnabled();
   await create(newTab);
   expect((await usage(newTab)).used).toBe(1);
 });
@@ -163,12 +183,13 @@ test('blocked browser storage keeps an in-page allowance and explains its limita
   await page.addInitScript(() => Object.defineProperty(window, 'localStorage', { get() { throw new DOMException('Blocked', 'SecurityError'); } }));
   await page.route('**/api/santa-message', route => route.fulfill(mp3));
   await openMessageDesk(page);
-  await expect(page.getByText(/Your browser can’t remember the message allowance/)).toBeVisible();
+  await expect(page.getByText(/Your browser can’t remember the message allowance/)).toHaveCount(0);
   await create(page);
   await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Home', exact: true }).click();
-  await expect(page.getByText(allowanceText(1), { exact: true })).toBeVisible();
+  await expect(page.locator('.santa-message-box')).not.toContainText(/30.minute|message allowance/);
   await create(page, 'Erin');
   await expect(page.getByRole('timer')).toHaveText('30:00');
+  await expect(page.getByText(/Your browser can’t remember the message allowance/)).toBeVisible();
   await page.reload();
-  await expect(page.getByText(allowanceText(2), { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Create message' })).toBeEnabled();
 });

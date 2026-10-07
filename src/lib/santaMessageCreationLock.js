@@ -12,7 +12,8 @@ async function leaseLock(browser, action) {
     request.onerror = () => reject(new Error('Your browser can’t coordinate message creation. Please allow browser storage or try another browser.'));
     request.onblocked = () => reject(new Error('Please close other message tabs and try again.'));
   });
-  const token = browser.crypto.randomUUID();
+  const token = Array.from(browser.crypto.getRandomValues(new Uint8Array(16)),
+    byte => byte.toString(16).padStart(2, '0')).join('');
   const transact = callback => new Promise((resolve, reject) => {
     const transaction = db.transaction('locks', 'readwrite');
     const table = transaction.objectStore('locks');
