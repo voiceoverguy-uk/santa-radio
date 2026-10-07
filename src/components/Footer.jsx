@@ -6,7 +6,7 @@ export default function Footer() {
     <footer className="footer">
       <Link to="/" className="footer-wordmark" aria-label="Santa Radio home"><img className="brand-logo brand-logo-footer" src="/images/santa-radio-logo.png" alt="Santa Radio" width="827" height="190" /></Link>
       <div className="footer-attribution">
-        Brought to life by the Voice of Santa, British Voiceover Artist Guy Harris
+        Brought to life by the Voice of Santa, British Voiceover Artist <a href="https://www.voiceoverguy.co.uk" target="_blank" rel="noopener noreferrer">Guy Harris</a>
       </div>
       <div className="footer-links">
         <Link to="/">News</Link>
