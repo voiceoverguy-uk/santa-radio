@@ -10,10 +10,10 @@ test('feeds parse safely, preserve title hyphens and limit the queue', () => {
   expect(() => parseTracks('x'.repeat(9000))).toThrow();
   expect(parseTracks('Taylor Swift - Christmas Tree Farm\n - Santa Radio Free Message ID - VO\nBackstreet Boys - Christmas In New York')).toEqual([
     { artist: 'Taylor Swift', title: 'Christmas Tree Farm' },
-    { artist: '', title: 'Santa Radio Free Message ID - VO' },
     { artist: 'Backstreet Boys', title: 'Christmas In New York' },
   ]);
   expect(() => parseTracks('Artist - ')).toThrow();
+  expect(parseTracks(' - Station ID\nSanta Radio - Jingle')).toEqual([]);
 });
 
 test('metadata caches briefly, isolates failures and recovers', async () => {
@@ -32,6 +32,15 @@ test('metadata caches briefly, isolates failures and recovers', async () => {
   expect(await service()).toMatchObject({ upcomingStatus: 'ready', upcoming: [{ artist: 'Artist', title: 'Song' }] });
 });
 
+test('all-jingle feeds are a valid empty queue, not stale song data', async () => {
+  const service = createMetadataService(async () => new Response(' - Santa Radio Free Message ID - VO', {
+    headers: { 'content-type': 'text/plain' },
+  }));
+  expect(await service()).toMatchObject({
+    current: null, currentStatus: 'unavailable', upcoming: [], upcomingStatus: 'ready',
+  });
+});
+
 test('live metadata endpoint returns independent feed states', async ({ request }) => {
   const response = await request.get('/api/radio-metadata');
   expect(response.ok()).toBe(true);
@@ -42,7 +51,6 @@ test('live metadata endpoint returns independent feed states', async ({ request 
   expect(['ready', 'stale', 'unavailable']).toContain(data.upcomingStatus);
   expect(data.upcoming.length).toBeLessThanOrEqual(3);
   if (data.upcomingStatus !== 'unavailable') {
-    expect(data.upcoming.length).toBeGreaterThan(0);
     for (const track of data.upcoming) expect(track.title).toBeTruthy();
   }
 });

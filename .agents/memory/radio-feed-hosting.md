@@ -24,4 +24,4 @@ The automation's upcoming slots can include station announcements with an empty 
 
 **Why:** A live feed contained ` - Santa Radio Free Message ID - VO` between two songs. Requiring an artist rejected the entire queue.
 
-**How to apply:** Preserve title-only announcement entries in broadcast order. Never promise that three upcoming slots always mean three songs.
+**How to apply:** The user clarified these entries are jingles and must be ignored. Filter them out, preserving the remaining songs' broadcast order. Never promise that three upcoming slots always mean three songs.

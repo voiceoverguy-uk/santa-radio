@@ -1,6 +1,26 @@
 import { test, expect } from '@playwright/test';
 import { matchLiveSong } from '../src/data/matchLiveSong.js';
 
+test('outside click closes lyrics but inside clicks do not, including on mobile', async ({ page }) => {
+  await page.route('**/api/radio-metadata', route => route.fulfill({ json: {
+    current: { artist: 'Greg Lake', title: 'I Believe In Father Christmas' },
+    currentStatus: 'ready', upcoming: [], upcomingStatus: 'ready',
+  } }));
+  await page.goto('/apps', { waitUntil: 'domcontentloaded' });
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    const trigger = page.getByRole('button', { name: 'Lyrics', exact: true });
+    await trigger.click();
+    const dialog = page.getByRole('dialog', { name: 'Live lyrics' });
+    await expect(dialog).toBeVisible();
+    await dialog.locator('h3').click();
+    await expect(dialog).toBeVisible();
+    await page.mouse.click(3, 3);
+    await expect(dialog).not.toBeVisible();
+    await expect(trigger).toBeFocused();
+  }
+});
+
 test('waiting messages rotate and reset when the lyrics reader reopens', async ({ page }) => {
   await page.clock.install();
   await page.route('**/api/radio-metadata', route => route.fulfill({ json: {

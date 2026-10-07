@@ -5,14 +5,14 @@ export function parseTracks(text, limit = 3) {
   if (typeof text !== 'string' || text.length > MAX_BYTES || /[<>]/.test(text)) {
     throw new Error('Invalid metadata');
   }
-  return text.replace(/^\uFEFF/, '').split(/\r?\n/).filter(line => line.trim()).slice(0, limit).map(line => {
+  return text.replace(/^\uFEFF/, '').split(/\r?\n/).filter(line => line.trim()).map(line => {
     const separator = line.indexOf(' - ');
     const artist = line.slice(0, separator).trim();
     const title = line.slice(separator + 3).trim();
     // Automation announcements can have a title but no artist.
     if (separator < 0 || !title || line.length > 1000) throw new Error('Invalid track');
     return { artist, title };
-  });
+  }).filter(({ artist, title }) => artist && !/^santa radio\b/i.test(artist) && !/^santa radio\b/i.test(title)).slice(0, limit);
 }
 
 async function readFeed(filename, limit, fetcher) {
@@ -35,8 +35,9 @@ async function readFeed(filename, limit, fetcher) {
   } finally {
     await reader.cancel().catch(() => {});
   }
-  const tracks = parseTracks(Buffer.concat(chunks).toString('utf8'), limit);
-  if (!tracks.length) throw new Error('Empty feed');
+  const text = Buffer.concat(chunks).toString('utf8');
+  if (!text.trim()) throw new Error('Empty feed');
+  const tracks = parseTracks(text, limit);
   return tracks;
 }
 
@@ -69,9 +70,9 @@ export function createMetadataService(fetcher = fetch, ttl = 10000, { clock = Da
       }
       const retain = lastUpcoming.length > 0 && clock() - upcomingUpdatedAt < staleMs;
       cached = {
-        current: now.status === 'fulfilled' ? now.value[0] : null,
+        current: now.status === 'fulfilled' ? now.value[0] ?? null : null,
         upcoming: next.status === 'fulfilled' ? next.value : retain ? lastUpcoming : [],
-        currentStatus: now.status === 'fulfilled' ? 'ready' : 'unavailable',
+        currentStatus: now.status === 'fulfilled' && now.value.length ? 'ready' : 'unavailable',
         upcomingStatus: next.status === 'fulfilled' ? 'ready' : retain ? 'stale' : 'unavailable',
         upcomingUpdatedAt,
       };

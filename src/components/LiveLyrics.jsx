@@ -15,6 +15,12 @@ export default function LiveLyrics({ metadata }) {
   const [open, setOpen] = useState(false);
   const [waitingIndex, setWaitingIndex] = useState(0);
   const dialog = useRef(null);
+  const backdropPress = useRef(false);
+  const outsideDialog = event => {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    return event.clientX < bounds.left || event.clientX > bounds.right ||
+      event.clientY < bounds.top || event.clientY > bounds.bottom;
+  };
   const trigger = useRef(null);
   const reader = useRef(null);
   const titleId = useId();
@@ -45,7 +51,12 @@ export default function LiveLyrics({ metadata }) {
     <button ref={trigger} className="radio-lyrics-button" onClick={() => setOpen(true)}
       aria-haspopup="dialog">Lyrics</button>
     <dialog ref={dialog} className="live-lyrics-dialog" aria-labelledby={titleId}
-      onClose={close}>
+      onClose={close}
+      onPointerDown={event => { backdropPress.current = outsideDialog(event); }}
+      onClick={event => {
+        if (backdropPress.current && outsideDialog(event)) dialog.current.close();
+        backdropPress.current = false;
+      }}>
       <header className="live-lyrics-header">
         <div><h2 id={titleId}>Live lyrics</h2></div>
         <button autoFocus className="live-lyrics-close" onClick={() => dialog.current.close()} aria-label="Close lyrics">Close <span aria-hidden="true">×</span></button>
