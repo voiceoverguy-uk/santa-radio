@@ -2,8 +2,8 @@ import { test, expect } from '@playwright/test';
 import { santaNotes } from '../src/data/santaNotes.js';
 
 test('Santa bubble shows dots, types the whole message slowly and rotates without Pause', async ({ page }) => {
-  expect(santaNotes).toHaveLength(25);
-  expect(new Set(santaNotes).size).toBe(25);
+  expect(santaNotes).toHaveLength(50);
+  expect(new Set(santaNotes).size).toBe(50);
   expect(Math.max(...santaNotes.map(text => (`Santa here... ${text}`).length)) * 60 + 2000).toBeLessThan(8500);
   const start = new Date('2026-10-07T12:00:00Z');
   await page.clock.install({ time: start });
@@ -22,6 +22,8 @@ test('Santa bubble shows dots, types the whole message slowly and rotates withou
   await page.clock.runFor(3000);
   await expect(text).toHaveText(`Santa here... ${santaNotes[0]}`);
   await page.clock.runFor(4880);
+  await expect(text).toHaveAttribute('aria-label', `Santa here... ${santaNotes[0]}`);
+  await page.clock.runFor(5000);
   await expect(text).toHaveAttribute('aria-label', `Santa here... ${santaNotes[1]}`);
   await expect(bubble.locator('.santa-note-dots')).toBeVisible();
   await page.emulateMedia({ reducedMotion: 'reduce' });

@@ -14,7 +14,7 @@ export default function SantaNote() {
     return () => media.removeEventListener('change', update);
   }, []);
   useEffect(() => {
-    const timer = setInterval(() => setIndex(value => (value + 1) % santaNotes.length), 10000);
+    const timer = setInterval(() => setIndex(value => (value + 1) % santaNotes.length), 15000);
     return () => clearInterval(timer);
   }, []);
   useEffect(() => {

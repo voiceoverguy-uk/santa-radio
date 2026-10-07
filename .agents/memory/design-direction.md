@@ -13,3 +13,9 @@ Use the user's latest supplied Santa Radio logo consistently throughout the site
 **Why:** The user supplied this reference as the kind of design they expected, alongside the Santa Radio - North Pole Experience prompt.
 
 **How to apply:** Treat the reference's premium winter setting and rich colours as the visual target when redesigning this project. The uploaded prompt also describes a larger membership product; do not assume a request to review its design authorises implementing all of its commercial features.
+
+Santa's rotating notes should use playful, family-friendly British humour about elves, reindeer, biscuits and everyday North Pole mishaps.
+
+**Why:** The user explicitly praised the generated lines as funny and requested more in the same style.
+
+**How to apply:** Keep future additions in that voice, starting with “Santa here... ” rather than generic promotional copy.
