@@ -14,11 +14,11 @@ Starting Listen Live from the compact radio player should expand it, then minimi
 
 **How to apply:** Keep pause/cancel separate from starting playback; do not expand merely because playback is paused.
 
-The user’s radio automation uploads song metadata to the legacy Santa Radio web host through FTP. Keep that original host accessible when moving the public domain to a new deployment.
+Read song metadata from the user-confirmed public HTTPS feeds on stagcommunications.com, not the retiring Heart Internet host. Do not add a fallback to that host, FTP credentials, paid services or new storage.
 
-**Why:** The verified public metadata URLs use the same main domain as the website. Moving its DNS without preserving the feeds would make the metadata endpoint fetch the new website rather than the automation output.
+**Why:** The user supplied working replacement feeds independent of the main website domain and explicitly ruled out fallback to the retiring host.
 
-**How to apply:** Before a domain cutover, establish a stable HTTPS address for the legacy metadata host or preserve routing for the feed paths. Do not promise exact audio synchronization: broadcast metadata may lead a listener’s buffered stream.
+**How to apply:** Keep reads in the existing website service, with brief shared caching and bounded failures isolated from audio. The site is deployed separately through GitHub to Vercel; development changes do not authorise pushing or publishing. Do not promise exact audio synchronization: broadcast metadata may lead a listener’s buffered stream.
 
 The automation's upcoming slots can include station announcements with an empty artist, not just songs.
 

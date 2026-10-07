@@ -1,4 +1,4 @@
-const ROOT = 'https://www.santaradio.co.uk/radiodocs/';
+const ROOT = 'https://stagcommunications.com/santaradio/';
 const MAX_BYTES = 8192;
 
 export function parseTracks(text, limit = 3) {

@@ -32,6 +32,34 @@ test('metadata caches briefly, isolates failures and recovers', async () => {
   expect(await service()).toMatchObject({ upcomingStatus: 'ready', upcoming: [{ artist: 'Artist', title: 'Song' }] });
 });
 
+test('confirmed HTTPS sources preserve filename case and share concurrent requests', async () => {
+  const urls = [];
+  const service = createMetadataService(async url => {
+    urls.push(`${url.origin}${url.pathname}`);
+    expect(url.searchParams.has('_')).toBe(true);
+    return new Response(url.pathname.endsWith('Nowplaying.txt')
+      ? 'Current Artist - Current Song'
+      : 'First Artist - First Song\nSecond Artist - Second Song\nThird Artist - Third Song',
+    { headers: { 'content-type': 'text/plain' } });
+  });
+  const [first, second] = await Promise.all([service(), service()]);
+  expect(second).toBe(first);
+  expect(await service()).toBe(first);
+  expect(urls).toEqual([
+    'https://stagcommunications.com/santaradio/Nowplaying.txt',
+    'https://stagcommunications.com/santaradio/Next3.txt',
+  ]);
+  expect(first).toMatchObject({
+    currentStatus: 'ready', upcomingStatus: 'ready',
+    current: { artist: 'Current Artist', title: 'Current Song' },
+    upcoming: [
+      { artist: 'First Artist', title: 'First Song' },
+      { artist: 'Second Artist', title: 'Second Song' },
+      { artist: 'Third Artist', title: 'Third Song' },
+    ],
+  });
+});
+
 test('all-jingle feeds are a valid empty queue, not stale song data', async () => {
   const service = createMetadataService(async () => new Response(' - Santa Radio Free Message ID - VO', {
     headers: { 'content-type': 'text/plain' },
