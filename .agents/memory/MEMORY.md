@@ -10,5 +10,6 @@
 - [Music artwork](music-artwork.md) — Reuse supplied artist portraits across songs; Santa with music notes is the temporary fallback.
 - [Privacy scope](privacy-scope.md) — Keep the notice concise; future news signup is opt-in, with no delivery provider selected.
 - [Santa audio scope](santa-audio-scope.md) — MP3-only personalised greetings; typed name lookup, starting with Arabella before a larger recorded library.
+- [Santa message access](santa-message-access-scope.md) — Adult Brevo submission opens this site's MP3 maker; not email verification, email delivery or marketing consent.
 - [Tracker transfer scope](tracker-transfer-scope.md) — Preserve the supplied tracker; Santa Radio hosts it without replacing or redirecting SantaGuy’s existing version.
 - [Preview test timeouts](preview-test-timeouts.md) — Whole-test timeouts can report misleading matcher values even when the captured UI state is correct.
