@@ -2,10 +2,10 @@
 .santa-note-sender { margin: 0 0 8px 14px; font-size: .65rem; letter-spacing: .06em; color: var(--gold-light); }
 .santa-note-text { position: relative; box-sizing: border-box; padding: 15px 20px; min-height: 100px; border: 1px solid #d4af3745; border-radius: 19px 19px 19px 4px; background: #173b2ee8; box-shadow: 0 6px 18px #00150b25; font-size: .88rem; line-height: 1.7; color: var(--cream); }
 .santa-note-text::before { content: ''; position: absolute; bottom: -1px; left: -7px; width: 13px; height: 15px; background: #173b2e; border-left: 1px solid #d4af3745; border-bottom: 1px solid #d4af3745; border-radius: 0 0 0 12px; transform: skewX(-20deg); }
-.santa-note-dots { display: inline-flex; align-items: center; gap: 5px; height: 24px; }
-.santa-note-dots i { display: block; width: 6px; height: 6px; border-radius: 50%; background: var(--gold-light); animation: santa-typing-dot 1s ease-in-out infinite; }
-.santa-note-dots i:nth-child(2) { animation-delay: .15s; }
-.santa-note-dots i:nth-child(3) { animation-delay: .3s; }
-@keyframes santa-typing-dot { 0%, 60%, 100% { opacity: .35; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
+.santa-note-dots { display: inline-flex; align-items: center; gap: 6px; height: 24px; }
+.santa-note-dots i { display: block; width: 8px; height: 8px; border-radius: 50%; background: #c3cdc7; opacity: .4; animation: santa-typing-dot 1.2s ease-in-out infinite; }
+.santa-note-dots i:nth-child(2) { animation-delay: .2s; }
+.santa-note-dots i:nth-child(3) { animation-delay: .4s; }
+@keyframes santa-typing-dot { 0%, 60%, 100% { opacity: .4; transform: scale(.85); } 30% { opacity: 1; transform: scale(1.12); } }
 @media (max-width: 600px) { .santa-note-text { min-height: 128px; } }
 @media (prefers-reduced-motion: reduce) { .santa-note-dots i { animation: none; } }

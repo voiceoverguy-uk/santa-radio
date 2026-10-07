@@ -28,7 +28,7 @@ export default function SantaNote() {
         setVisible(length);
         if (length >= message.length) clearInterval(timer);
       }, 60);
-    }, 900);
+    }, 2000);
     return () => { clearTimeout(delay); clearInterval(timer); };
   }, [message, reducedMotion]);
   const complete = reducedMotion || visible >= message.length;
