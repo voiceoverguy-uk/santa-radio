@@ -4,9 +4,9 @@ description: Why the adult Brevo contact step precedes the existing MP3 maker an
 ---
 The owner wants an adult's first name, surname and email submitted through the supplied Brevo form before immediate access to this website's existing recorded Santa MP3 maker. Successful submission should open the rebuilt site's maker, not an external legacy destination or an email-only access flow.
 
-**Why:** The owner supplied the public CRM form and explicitly confirmed the post-submission destination.
+**Why:** The owner supplied the public CRM form and explicitly confirmed the post-submission destination. After reviewing an updated embed containing a required child's date of birth, they explicitly chose adult contact details only.
 
-**How to apply:** Keep adult contact collection separate from child-name selection and on-demand recorded-audio mixing. Do not promise email delivery of the generated MP3 or introduce a second generator.
+**How to apply:** Keep adult contact collection separate from child-name selection and on-demand recorded-audio mixing. Do not add a child's date of birth just because it appears in a supplied embed; the owner chose to remove that requirement in Brevo. Do not promise email delivery of the generated MP3 or introduce a second generator.
 
 This is a signup-first, tab-session convenience flow, not authentication, email ownership verification or proof of double opt-in. Message access does not establish Santa Radio news or tracker-reminder consent.
 
