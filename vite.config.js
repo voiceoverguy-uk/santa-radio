@@ -4,6 +4,21 @@ import tailwindcss from '@tailwindcss/vite';
 import { fileURLToPath } from 'node:url';
 import radioMetadata from './server/radio-metadata.js';
 import santaMessage from './server/santa-message.js';
+import { trackerPageHtml, isTrackerPreview } from './server/tracker-html.js';
+
+const trackerMetadataPlugin = {
+  name: 'tracker-page-metadata',
+  transformIndexHtml(html, context) {
+    const pathname = new URL(context.originalUrl || context.path, 'http://server').pathname;
+    return trackerPageHtml(html, pathname);
+  },
+  configureServer(server) {
+    server.middlewares.use((req, res, next) => {
+      if (isTrackerPreview(new URL(req.url, 'http://server').pathname)) res.setHeader('X-Robots-Tag', 'noindex, follow');
+      next();
+    });
+  },
+};
 
 const metadataPlugin = {
   name: 'radio-metadata',
@@ -18,7 +33,7 @@ const metadataPlugin = {
 };
 
 export default defineConfig({
-  plugins: [react(), tailwindcss(), metadataPlugin],
+  plugins: [react(), tailwindcss(), metadataPlugin, trackerMetadataPlugin],
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src/tracker', import.meta.url)) },
   },

@@ -2,8 +2,14 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
+  "headers": [
+    { "source": "/santa-tracker/preview", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }] },
+    { "source": "/santa-tracker/preview/", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }] }
+  ],
   "rewrites": [
     { "source": "/api/radio-metadata", "destination": "/api/radio-metadata" },
+    { "source": "/santa-tracker", "destination": "/santa-tracker/index.html" },
+    { "source": "/santa-tracker/preview", "destination": "/santa-tracker/preview/index.html" },
     { "source": "/(.*)", "destination": "/" }
   ]
 }

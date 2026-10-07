@@ -212,10 +212,12 @@ const workshopDispatches = [
 function HolidayPostcard({ message, holiday, isJuly }: { message: string; holiday: HolidayDestination; isJuly?: boolean }) {
   const postcardRef = useRef<HTMLDivElement>(null);
   const [sharing, setSharing] = useState(false);
+  const [shareError, setShareError] = useState("");
 
   const handleShare = useCallback(async () => {
     if (!postcardRef.current || sharing) return;
     setSharing(true);
+    setShareError("");
     try {
       const { toPng } = await import("html-to-image");
       const el = postcardRef.current;
@@ -262,10 +264,18 @@ function HolidayPostcard({ message, holiday, isJuly }: { message: string; holida
       const res = await fetch(dataUrl);
       const blob = await res.blob();
 
+      let shared = false;
       if (navigator.share && navigator.canShare?.({ files: [new File([blob], "santa-postcard.png", { type: "image/png" })] })) {
         const file = new File([blob], "santa-postcard.png", { type: "image/png" });
-        await navigator.share({ files: [file], title: "Santa's Postcard — Santa Radio", text: `A postcard from Santa! 🎅 Follow Santa on Santa Radio: ${TRACKER_URL}`, url: TRACKER_URL });
-      } else {
+        try {
+          await navigator.share({ files: [file], title: "Santa's Postcard — Santa Radio", text: `A postcard from Santa! 🎅 Follow Santa on Santa Radio: ${TRACKER_URL}`, url: TRACKER_URL });
+          shared = true;
+        } catch (error) {
+          if (error instanceof DOMException && error.name === "AbortError") return;
+          // Native sharing can be blocked in an embedded preview. Keep download available.
+        }
+      }
+      if (!shared) {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
@@ -277,6 +287,7 @@ function HolidayPostcard({ message, holiday, isJuly }: { message: string; holida
       }
     } catch (err) {
       console.warn("Postcard share/download failed:", err);
+      setShareError("Santa’s postcard could not be created. Please try again.");
       if (postcardRef.current) {
         postcardRef.current.style.overflow = "";
         postcardRef.current.style.maxWidth = "";
@@ -374,6 +385,7 @@ function HolidayPostcard({ message, holiday, isJuly }: { message: string; holida
           </div>
         </div>
       </div>
+      {shareError && <p role="alert" className="mt-2 text-center text-sm text-santa-gold">{shareError}</p>}
       <div className="flex items-center justify-center gap-3 mt-3">
         <p className="text-xs font-medium text-santa-gold uppercase tracking-wider">
           {isJuly ? "🎄 Christmas in July Postcards" : `${new Date().getFullYear()} Holiday Postcards`}

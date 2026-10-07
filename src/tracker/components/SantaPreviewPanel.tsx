@@ -83,7 +83,7 @@ export default function SantaPreviewPanel({
   const speeds = [1, 10, 60, 300];
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 z-50 max-w-sm ml-auto">
+    <div className="tracker-preview-panel fixed bottom-4 left-4 z-50 max-w-sm" aria-label="Development journey preview">
       <div className="rounded-2xl border border-white/15 bg-[#0a1628]/95 backdrop-blur-lg shadow-2xl overflow-hidden">
         <button
           onClick={() => setExpanded(!expanded)}

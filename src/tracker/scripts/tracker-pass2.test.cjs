@@ -8,9 +8,9 @@ const React = require("react");
 const { renderToStaticMarkup } = require("react-dom/server");
 
 const root = path.resolve(__dirname, "..");
-const canonical = "https://www.santaguy.co.uk/santa-tracker";
+const canonical = "https://santa-radio.replit.app/santa-tracker";
 const intro = "Follow Santa's estimated Christmas Eve journey around the world. Count down to his departure, follow his progress on the world map, and explore the estimated schedule for the big night.";
-const description = "Follow Santa's estimated Christmas Eve journey around the world, with a countdown, updating world map, festive facts and family fun from SantaGuy.";
+const description = "Follow Santa's estimated Christmas Eve journey around the world, with a countdown, updating world map, festive facts and family fun from Santa Radio.";
 
 test("holiday season includes October and ends at midnight UTC on 1 November", () => {
   const { isHolidaySeason } = harness().load("lib/santaRoute.ts");
@@ -71,6 +71,9 @@ function harness(iso = "2026-11-15T12:00:00Z") {
       require(spec) {
         if (spec === "react") return react;
         if (spec === "react/jsx-runtime") return require(spec);
+        if (spec === "react-helmet-async") return { Helmet: () => null };
+        if (spec === "react-router-dom") return { Link: ({ to, children, ...props }) => React.createElement("a", { href: to, ...props }, children) };
+        if (spec.endsWith(".css")) return {};
         if (spec === "lucide-react") return new Proxy({}, { get: () => () => null });
         const name = path.basename(spec);
         if (stubChildren && children[name]) {
@@ -82,6 +85,7 @@ function harness(iso = "2026-11-15T12:00:00Z") {
         else throw new Error(`Unexpected dependency ${spec} in ${file}`);
         if (!path.extname(target)) target += ".tsx";
         if (!fs.existsSync(target) && target.endsWith(".tsx")) target = target.slice(0, -1);
+        if (!fs.existsSync(target) && target.endsWith(".ts")) target = target.slice(0, -3) + ".js";
         return load(path.relative(root, target), stubChildren);
       },
     }, { filename: full });
@@ -127,7 +131,7 @@ test("main route initial server render has exactly one useful H1 and intro in he
   assert.match(mounted, /data-part="map"/);
   assert.match(mounted, /data-part="timeline"/);
   assert.match(mounted, /Countdown to Santa&#x27;s Departure/);
-  assert.match(mounted, /data-part="signup"/);
+  assert.doesNotMatch(mounted, /data-part="signup"/);
   assert.match(mounted, /Check Availability/);
   assert.doesNotMatch(mounted, /Follow Santa as Christmas Eve midnight sweeps/);
 });
@@ -135,7 +139,7 @@ test("main route initial server render has exactly one useful H1 and intro in he
 test("main/preview metadata, July variant, and actual rendered WebPage/breadcrumb identity", () => {
   const { h, page, html } = pageView();
   const main = page.generateMetadata();
-  assert.equal(main.title.absolute, "Santa Tracker | Track Santa's Journey Around the World");
+  assert.equal(main.title.absolute, "Santa Tracker | Track Santa's Journey — Santa Radio");
   assert.equal(main.description, description);
   assert.equal(main.openGraph.description, description);
   assert.equal(main.twitter.description, description);
@@ -151,14 +155,14 @@ test("main/preview metadata, July variant, and actual rendered WebPage/breadcrum
   assert.equal(web.description, description);
   assert.equal(web.url, canonical);
   assert.deepEqual(Object.keys(web.isPartOf), ["@id"]);
-  assert.equal(web.isPartOf["@id"], "https://www.santaguy.co.uk/#website");
+  assert.equal(web.isPartOf["@id"], "https://santa-radio.replit.app/#website");
   assert.deepEqual(crumb.itemListElement.map(({ position, item }) => [position, item]), [
-    [1, "https://www.santaguy.co.uk"], [2, canonical],
+    [1, "https://santa-radio.replit.app"], [2, canonical],
   ]);
   assert.doesNotMatch(JSON.stringify(nodes), /Event|BroadcastEvent|LiveBlogPosting|SoftwareApplication|AggregateRating/);
   const july = harness("2026-07-10T12:00:00Z").load("app/santa-tracker/page.tsx", true).generateMetadata();
-  assert.equal(july.title.absolute, "Christmas in July | Santa Tracker — SantaGuy.co.uk");
-  assert.equal(july.description, "It's Christmas in July! See what Santa's up to mid-year — festive fun, holiday postcards, and countdown to the big night. Track Santa at SantaGuy.co.uk.");
+  assert.equal(july.title.absolute, "Christmas in July | Santa Tracker — Santa Radio");
+  assert.equal(july.description, "It's Christmas in July! See what Santa's up to mid-year — festive fun, holiday postcards, and countdown to the big night. Track Santa on Santa Radio.");
   assert.equal(july.openGraph.description, july.description);
   assert.equal(july.twitter.description, july.description);
   assert.equal(july.alternates.canonical, canonical);
@@ -186,7 +190,7 @@ test("mounted seasonal and preview status/countdown/CTA retain behavior alongsid
     assert.match(html, status, date);
     assert.ok(html.includes(intro.replaceAll("'", "&#x27;")), date);
     assert.equal(html.includes("Countdown to Santa&#x27;s Departure"), count, date);
-    assert.equal(html.includes('data-part="signup"'), count, date);
+    assert.equal(html.includes('data-part="signup"'), false, date);
     assert.match(html, /Check Availability/, date);
     assert.equal((html.match(/<h1\b/g) || []).length, 1);
   }
@@ -321,17 +325,49 @@ test("timeline centers with immediate scrolling for reduced motion and smooth ot
     const timeline = h.load("components/SantaTimeline.tsx").default;
     const nodes = hosts(timeline({ effectiveTime: new h.FixedDate() }));
     const scroller = nodes.find((node) => node.props?.tabIndex === 0);
-    const current = nodes.find((node) => node.props?.ref && node !== scroller);
+    // The source project used React 19's ref-as-prop; the host uses React 18.
+    const current = nodes.find((node) => node.ref && node !== scroller);
     assert.ok(current, "a current stop is available for auto-centering");
     let called;
-    scroller.props.ref.current = {
+    scroller.ref.current = {
       getBoundingClientRect: () => ({ left: 10, width: 400 }),
       scrollLeft: 20,
       scrollTo: (options) => { called = options; },
     };
-    current.props.ref.current = { getBoundingClientRect: () => ({ left: 100, width: 120 }) };
+    current.ref.current = { getBoundingClientRect: () => ({ left: 100, width: 120 }) };
     h.flush();
     assert.equal(called.left, -30);
     assert.equal(called.behavior, behavior);
   }
+});
+
+test("the supplied 44-stop route preserves departure, completion and year rollover", () => {
+  const h = harness();
+  const route = h.load("lib/santaRoute.ts");
+  const stops = h.load("data/santaRouteStops.ts").santaStops;
+  assert.equal(stops.length, 44);
+  assert.equal(new Set(stops.map(stop => stop.id)).size, 44);
+  for (const [iso, mode] of [
+    ["2026-12-24T09:59:59Z", "PREPARING"],
+    ["2026-12-24T10:00:00Z", "LIVE"],
+    ["2026-12-24T23:00:00Z", "LIVE"],
+    ["2026-12-25T09:59:59Z", "LIVE"],
+    ["2026-12-25T10:00:00.001Z", "COMPLETE"],
+    ["2026-12-26T00:00:00Z", "OFF_SEASON"],
+    ["2027-01-01T00:00:00Z", "OFF_SEASON"],
+  ]) {
+    const data = route.getDashboardData(new Date(iso));
+    assert.equal(data.mode, mode, iso);
+    assert.equal(data.totalStops, 44);
+    assert.ok(Number.isFinite(data.mapPosition.x) && Number.isFinite(data.mapPosition.y), iso);
+    if (mode === "COMPLETE") {
+      assert.equal(data.visitedCount, 44);
+      assert.equal(data.progressPercent, 100);
+    }
+  }
+  const rollover = route.getDashboardData(new Date("2027-01-01T00:00:00Z"));
+  assert.equal(rollover.visitedCount, 0);
+  assert.ok(rollover.countdownToChristmasEve.days > 350);
+  assert.equal(route.isDecemberPrep(new Date("2026-12-01T00:00:00Z")), true);
+  assert.equal(route.isDecemberPrep(new Date("2026-12-24T00:00:00Z")), false);
 });

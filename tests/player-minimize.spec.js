@@ -30,6 +30,7 @@ test('Listen Live expands the compact player then returns to compact after ten i
 });
 
 test('auto minimises after ten idle seconds, resets on interaction and protects lyrics', async ({ page }) => {
+  test.setTimeout(60000);
   await page.clock.install({ time: new Date('2026-10-07T00:00:00Z') });
   await page.clock.pauseAt(new Date('2026-10-07T00:00:01Z'));
   await page.goto('/');

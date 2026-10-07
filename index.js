@@ -1,10 +1,11 @@
 import { createServer } from 'node:http';
 import { createReadStream } from 'node:fs';
-import { stat, realpath } from 'node:fs/promises';
+import { stat, realpath, readFile } from 'node:fs/promises';
 import { resolve, extname, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import radioMetadata from './server/radio-metadata.js';
 import santaMessage from './server/santa-message.js';
+import { trackerPageHtml, isTrackerPreview } from './server/tracker-html.js';
 
 const root = await realpath(fileURLToPath(new URL('./dist', import.meta.url)));
 const index = resolve(root, 'index.html');
@@ -45,6 +46,16 @@ const server = createServer(async (req, res) => {
       if (extname(pathname)) { res.writeHead(404).end('Not found'); return; }
       file = index;
       info = await stat(index);
+    }
+    if (isTrackerPreview(pathname)) res.setHeader('X-Robots-Tag', 'noindex, follow');
+    if (file === index && /^\/santa-tracker(?:\/preview)?\/?$/.test(pathname)) {
+      const html = trackerPageHtml(await readFile(index, 'utf8'), pathname);
+      res.writeHead(200, {
+        'Content-Type': types['.html'], 'Content-Length': Buffer.byteLength(html),
+        'X-Content-Type-Options': 'nosniff', 'Cache-Control': 'no-cache',
+      });
+      res.end(req.method === 'HEAD' ? undefined : html);
+      return;
     }
     res.writeHead(200, {
       'Content-Type': types[extname(file)] || 'application/octet-stream',

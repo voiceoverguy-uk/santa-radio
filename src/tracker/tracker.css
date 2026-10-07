@@ -56,7 +56,7 @@
 .tracker-banner { background: var(--navy-dark); border-block: 1px solid #d4af3730; }
 .tracker-banner h2 { font-family: "Cinzel", serif; font-weight: 400; }
 .tracker-banner .text-santa-red { color: var(--gold-light); }
-.tracker-preview-panel { left: 16px; right: auto; max-width: calc(100vw - 32px); max-height: calc(100dvh - 110px); overflow-y: auto; }
+.tracker-preview-panel { left: 16px; right: auto; width: 384px; max-width: calc(100vw - 32px); max-height: calc(100dvh - 110px); overflow-y: auto; }
 @media (max-width: 767px) {
-  .tracker-preview-panel { top: 88px; bottom: auto; }
+  .tracker-preview-panel { top: 88px; bottom: auto; max-height: 45dvh; }
 }
