@@ -1,3 +1,8 @@
+.mugshots-sort { display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 18px; color: var(--muted); font-size: .85rem; }
+.mugshots-sort button { display: grid; place-items: center; width: 48px; height: 48px; color: var(--muted); background: #153628; border: 1px solid #d4af3755; border-radius: 50%; cursor: pointer; }
+.mugshots-sort button[aria-pressed="true"] { color: var(--gold-light); background: #294a34; border-color: var(--gold-light); box-shadow: inset 0 0 0 1px var(--gold-light); }
+.mugshots-sort button:hover { color: var(--gold-light); border-color: var(--gold-light); }
+.mugshots-sort button:focus-visible { outline: 2px solid var(--gold-light); outline-offset: 3px; }
 .mugshots-page-hero {
   text-align: center;
   padding: 50px 20px 60px;

@@ -4,9 +4,12 @@ import RadioTracks from './RadioTracks.jsx';
 import LiveLyrics from './LiveLyrics.jsx';
 import './AudioPlayer.css';
 
-export function RadioButton({ className = 'btn-gold' }) {
+export function RadioButton({ className = 'btn-gold', onStart }) {
   const { status, togglePlay } = useRadio();
-  return <button className={className} onClick={togglePlay} aria-label={status === 'loading' ? 'Cancel loading radio' : undefined}>
+  return <button className={className} onClick={() => {
+    if (status !== 'playing' && status !== 'loading') onStart?.();
+    togglePlay();
+  }} aria-label={status === 'loading' ? 'Cancel loading radio' : undefined}>
     <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
       {status === 'playing' || status === 'loading' ? <path d="M6 4h4v16H6zm8 0h4v16h-4z" /> : <path d="m7 4 14 8-14 8z" />}
     </svg>
@@ -77,11 +80,15 @@ export default function AudioPlayer() {
         {error && <span className="radio-mini-error" role="status">{error}</span>}
       </div>}
       <div className="radio-station">
-        <span className="radio-eyebrow"><span className={status === 'playing' ? 'live-dot active' : 'live-dot'} /> SANTA RADIO LIVE</span>
-        <span className="radio-caption" role="status">{error || (status === 'loading' ? 'Connecting to the North Pole…' : status === 'playing' ? 'Christmas music, all day & night' : 'A little Christmas, whenever you need it')}</span>
+        <span className="radio-eyebrow"><span className="live-dot active" aria-hidden="true" /> SANTA RADIO LIVE</span>
+        {(error || status === 'loading') && <span className="radio-caption" role="status">{error || 'Connecting to the North Pole…'}</span>}
       </div>
-      <div className="radio-dock-track"><RadioTracks metadata={metadata} /><LiveLyrics metadata={metadata} /></div>
-      <RadioButton className="radio-play" />
+      <div className="radio-dock-track"><RadioTracks metadata={metadata} showLabel={false} /><LiveLyrics metadata={metadata} /></div>
+      <RadioButton className="radio-play" onStart={() => {
+        if (!minimized) return;
+        setMinimized(false);
+        try { sessionStorage.setItem('radio-minimized', 'false'); } catch { /* Optional preference storage. */ }
+      }} />
       <label className="radio-volume">Volume
         <input aria-label="Radio volume" type="range" min="0" max="1" step=".01" value={volume} onChange={event => setVolume(Number(event.target.value))} />
       </label>

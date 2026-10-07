@@ -30,7 +30,7 @@
 .radio-mini-error { font-size: .65rem; color: var(--cream); }
 .is-minimized .radio-play { padding: 8px 10px; min-height: 44px; font-size: .7rem; }
 @media (max-width: 600px) { .radio-dock.is-minimized { width: auto; } }
-.radio-dock-track { grid-column: 1 / -1; min-width: 0; padding-top: 10px; border-top: 1px solid #D4AF3726; }
+.radio-dock-track { grid-column: 1 / -1; min-width: 0; }
 .radio-dock-track .radio-track-title { font-size: .8rem; }
 .radio-dock-track .radio-track-artist { font-size: .7rem; }
 .radio-upcoming { grid-column: 1 / -1; min-width: 0; }

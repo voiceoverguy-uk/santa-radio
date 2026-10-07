@@ -1,7 +1,37 @@
 import { test, expect } from '@playwright/test';
 
+test('Listen Live expands the compact player then returns to compact after ten idle seconds', async ({ page }) => {
+  await page.addInitScript(() => {
+    sessionStorage.setItem('radio-minimized', 'true');
+    HTMLMediaElement.prototype.play = function () {
+      window.radioPlayCalls = (window.radioPlayCalls || 0) + 1;
+      return Promise.resolve();
+    };
+  });
+  await page.clock.install({ time: new Date('2026-10-07T00:00:00Z') });
+  await page.clock.pauseAt(new Date('2026-10-07T00:00:01Z'));
+  await page.goto('/');
+  const dock = page.getByRole('complementary', { name: 'Santa Radio player' });
+  await expect(dock).toHaveClass(/is-minimized/);
+  await dock.getByRole('button', { name: 'Listen Live', exact: true }).click();
+  await expect(dock).not.toHaveClass(/is-minimized/);
+  await expect(dock.getByRole('button', { name: 'Pause Radio' })).toBeVisible();
+  await expect(dock.locator('.radio-station')).toHaveText('SANTA RADIO LIVE');
+  await expect(dock.locator('.radio-dock-track .radio-tracks-label')).toHaveCount(0);
+  await expect(dock.locator('.radio-caption')).toHaveCount(0);
+  await page.clock.runFor(9000);
+  await expect(dock).not.toHaveClass(/is-minimized/);
+  await page.clock.runFor(1000);
+  await expect(dock).toHaveClass(/is-minimized/);
+  await expect(dock.getByRole('button', { name: 'Pause Radio' })).toBeVisible();
+  expect(await page.evaluate(() => window.radioPlayCalls)).toBe(1);
+  await dock.getByRole('button', { name: 'Pause Radio' }).click();
+  await expect(dock).toHaveClass(/is-minimized/);
+});
+
 test('auto minimises after ten idle seconds, resets on interaction and protects lyrics', async ({ page }) => {
-  await page.clock.install();
+  await page.clock.install({ time: new Date('2026-10-07T00:00:00Z') });
+  await page.clock.pauseAt(new Date('2026-10-07T00:00:01Z'));
   await page.goto('/');
   const dock = page.getByRole('complementary', { name: 'Santa Radio player' });
   await page.evaluate(() => window.savedAudio = document.querySelector('audio'));

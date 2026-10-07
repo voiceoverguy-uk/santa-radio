@@ -5,7 +5,7 @@ import './MugShots.css';
 import './MugshotPhoto.css';
 import mugshotsData from '../data/mugshots.ts';
 
-const ITEMS_PER_PAGE = 48;
+const ITEMS_PER_PAGE = 100;
 
 function getInitials(name) {
   return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
@@ -16,15 +16,27 @@ const colors = ['#1B4332','#254c3a','#365642','#7c242b'];
 export default function MugShots() {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [order, setOrder] = useState('random');
+  const [randomOrder] = useState(() => {
+    const shuffled = [...mugshotsData];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  });
+  const alphabetical = useMemo(() => [...mugshotsData].sort((a, b) =>
+    a.artist.localeCompare(b.artist, 'en', { sensitivity: 'base', numeric: true })), []);
 
   const filtered = useMemo(() => {
-    if (!search.trim()) return mugshotsData;
-    const q = search.toLowerCase();
-    return mugshotsData.filter(c =>
+    const ordered = order === 'random' ? randomOrder : alphabetical;
+    if (!search.trim()) return ordered;
+    const q = search.trim().toLowerCase();
+    return ordered.filter(c =>
       c.searchNames.some(name => name.toLowerCase().includes(q)) ||
       c.link.toLowerCase().includes(q)
     );
-  }, [search]);
+  }, [search, order, randomOrder, alphabetical]);
 
   const visible = filtered.slice(0, page * ITEMS_PER_PAGE);
   const hasMore = page * ITEMS_PER_PAGE < filtered.length;
@@ -74,6 +86,14 @@ export default function MugShots() {
             value={search}
             onChange={handleSearch}
           />
+          <div className="mugshots-sort" role="group" aria-label="Mugshot order">
+            <button type="button" aria-label="Random order" title="Random order" aria-pressed={order === 'random'} onClick={() => { setOrder('random'); setPage(1); }}>
+              <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h3c5 0 7 12 12 12h3m-4-4 4 4-4 4M3 18h3c2 0 3.5-2 5-5m2-3c1.5-2.5 3-4 5-4h3m-4-4 4 4-4 4" /></svg>
+            </button>
+            <button type="button" aria-label="Alphabetical order" title="Alphabetical (A–Z)" aria-pressed={order === 'alphabetical'} onClick={() => { setOrder('alphabetical'); setPage(1); }}>
+              <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m3 10 3-7 3 7M4 8h4m-5 6h6l-6 7h6M17 3v18m-4-4 4 4 4-4" /></svg>
+            </button>
+          </div>
           {search && (
             <p className="mugshots-results-count">
               Showing {filtered.length} result{filtered.length !== 1 ? 's' : ''}

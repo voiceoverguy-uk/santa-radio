@@ -112,9 +112,9 @@ test('Davina has one complete profile and zero-word URLs are unavailable', async
 test('gallery pagination, search, hover, focus and motion preferences', async ({ page }) => {
   await page.goto('/mugshots/all');
   const cards = page.locator('.mugshot-card');
-  await expect(cards).toHaveCount(48);
+  await expect(cards).toHaveCount(100);
   await page.getByRole('button', { name: /Load More/ }).click();
-  await expect(cards).toHaveCount(96);
+  await expect(cards).toHaveCount(200);
   await page.getByRole('textbox', { name: 'Search celebrity names or roles' }).fill('Jeremy Kyle');
   await expect(cards).toHaveCount(1);
   const card = cards.first(), frame = card.locator('.mugshot-photo-frame');
@@ -133,6 +133,10 @@ test('gallery pagination, search, hover, focus and motion preferences', async ({
   await expect(card).toHaveCSS('transform', 'none');
   await page.mouse.move(0, 0);
   await page.getByRole('textbox', { name: 'Search celebrity names or roles' }).focus();
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('button', { name: 'Random order', exact: true })).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('button', { name: 'Alphabetical order', exact: true })).toBeFocused();
   await page.keyboard.press('Tab');
   await expect(card).toHaveCSS('outline-style', 'solid');
   await card.click();

@@ -8,6 +8,12 @@ Homepage Mugshots must be randomly selected only from profiles whose legacy home
 
 **How to apply:** Preserve eligibility through imports without replacing researched biographies. For merged duplicates, retain the canonical record's approval rather than promoting it merely because another photograph was approved.
 
+The full Mugshots gallery includes all retained profiles, defaults to random order, offers alphabetical ordering, and loads in batches of 100.
+
+**Why:** The owner requested random discovery with an alphabetical option and Load More after 100; homepage approval is not a gallery restriction.
+
+**How to apply:** Keep the shuffled order stable while searching and loading more, without repeated profiles.
+
 Keep one profile per verified celebrity, preserving the available photograph and celebrity details together. Keep historical links usable for retained profiles. Do not conflate group photographs or waxworks with individual people merely because a name overlaps.
 
 **Why:** The user reported duplicate photo/placeholder cards and asked to retain the version containing celebrity details.
