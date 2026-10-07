@@ -1,5 +1,120 @@
 import { test, expect } from '@playwright/test';
 
+const primaryNavigation = [
+  ['Home', '/'], ['Apps', '/apps'], ['FREE Audio Message', '/free-santa-message'],
+  ['Music', '/christmas-music'], ['Mug Shots', '/mugshots/all'], ['Santa Tracker', '/santa-tracker'],
+];
+
+async function expectNavigationFits(page, mobile, checkPageOverflow = true) {
+  const nav = page.getByRole('navigation', { name: 'Main navigation' });
+  if (mobile) {
+    await expect(nav.getByRole('button', { name: 'Open menu' })).toBeVisible();
+    await nav.getByRole('button', { name: 'Open menu' }).click();
+  } else {
+    await expect(nav.locator('.hamburger')).toBeHidden();
+  }
+  for (const [label, href] of primaryNavigation) {
+    await expect(nav.getByRole('link', { name: label, exact: true })).toBeVisible();
+    await expect(nav.getByRole('link', { name: label, exact: true })).toHaveAttribute('href', href);
+  }
+  const layout = await nav.evaluate(element => {
+    const bounds = node => {
+      const { left, right, top, bottom, width, height } = node.getBoundingClientRect();
+      return { left, right, top, bottom, width, height };
+    };
+    const menu = element.querySelector('.navbar-links');
+    return {
+      logo: bounds(element.querySelector('.navbar-logo')),
+      items: [...menu.querySelectorAll('a, button')].map(bounds),
+      menuOverflows: menu.scrollWidth > menu.clientWidth,
+      pageOverflows: document.documentElement.scrollWidth > window.innerWidth,
+      viewport: window.innerWidth,
+    };
+  });
+  if (checkPageOverflow) expect(layout.pageOverflows).toBe(false);
+  expect(layout.menuOverflows).toBe(false);
+  for (const [index, item] of layout.items.entries()) {
+    expect(item.left).toBeGreaterThanOrEqual(0);
+    expect(item.right).toBeLessThanOrEqual(layout.viewport);
+    expect(item.top >= layout.logo.bottom || item.left >= layout.logo.right).toBe(true);
+    if (!mobile) {
+      if (index) expect(item.left).toBeGreaterThanOrEqual(layout.items[index - 1].right);
+      // Each label stays on one line, including the longer Santa Tracker link.
+      const previous = layout.items[0];
+      expect(Math.abs(item.top + item.height / 2 - (previous.top + previous.height / 2))).toBeLessThan(1);
+    }
+  }
+  if (mobile) {
+    await page.keyboard.press('Escape');
+    await expect(nav.locator('.navbar-links')).toBeHidden();
+  }
+}
+
+for (const path of ['/', '/apps']) {
+  test(`larger shared navigation fits desktop, tablet, mobile and enlarged text on ${path}`, async ({ page }) => {
+    test.setTimeout(60000);
+    await page.goto(path);
+    await page.evaluate(() => document.fonts.ready);
+    const nav = page.getByRole('navigation', { name: 'Main navigation' });
+    await expect(nav.getByRole('link', { name: 'Home', exact: true })).toHaveCSS('font-size', '15.2px');
+    await expect(nav.locator('.effects-toggle')).toHaveCSS('font-size', '13.6px');
+    await expect(nav.locator('.nav-listen button')).toHaveCSS('font-size', '14.4px');
+    for (const width of [1440, 1280, 1201, 1200, 1199, 1024, 768, 390, 320]) {
+      await page.setViewportSize({ width, height: 900 });
+      await expectNavigationFits(page, width <= 1200);
+    }
+    // Text-only enlargement: the header must switch menus rather than clip labels.
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.evaluate(() => { document.documentElement.style.fontSize = '32px'; });
+    await expectNavigationFits(page, true);
+    await page.setViewportSize({ width: 390, height: 844 });
+    // Existing homepage countdown overflow at 200% text is separate from the header.
+    // Still verify every menu item's bounds and the menu's own overflow at this size.
+    await expectNavigationFits(page, true, path !== '/');
+  });
+}
+
+test('larger navigation preserves keyboard, active routes, snow and shared radio controls', async ({ page }) => {
+  await page.addInitScript(() => {
+    HTMLMediaElement.prototype.load = function () {};
+    HTMLMediaElement.prototype.pause = function () { this.dispatchEvent(new Event('pause')); };
+    HTMLMediaElement.prototype.play = function () {
+      this.dispatchEvent(new Event('playing'));
+      return Promise.resolve();
+    };
+  });
+  await page.goto('/');
+  const nav = page.getByRole('navigation', { name: 'Main navigation' });
+  await expect(nav.getByRole('link', { name: 'Home', exact: true })).toHaveAttribute('aria-current', 'page');
+  await nav.getByRole('button', { name: 'Snow On' }).click();
+  await expect(page.locator('html')).toHaveAttribute('data-effects', 'off');
+  await nav.getByRole('button', { name: 'Listen Live' }).click();
+  await expect(nav.getByRole('button', { name: 'Pause Radio' })).toBeVisible();
+  await page.evaluate(() => { window.navigationAudio = document.querySelector('audio'); });
+  await nav.getByRole('link', { name: 'Apps', exact: true }).click();
+  await expect(nav.getByRole('link', { name: 'Apps', exact: true })).toHaveAttribute('aria-current', 'page');
+  await page.setViewportSize({ width: 390, height: 844 });
+  const toggle = nav.getByRole('button', { name: 'Open menu' });
+  await toggle.focus();
+  await page.keyboard.press('Enter');
+  await expect(nav.getByRole('button', { name: 'Close menu' })).toHaveAttribute('aria-expanded', 'true');
+  await page.keyboard.press('Tab');
+  await expect(nav.getByRole('link', { name: 'Home', exact: true })).toBeFocused();
+  await nav.getByRole('button', { name: 'Snow Off' }).click();
+  await expect(page.locator('html')).toHaveAttribute('data-effects', 'on');
+  await nav.getByRole('button', { name: 'Pause Radio' }).click();
+  await expect(nav.getByRole('button', { name: 'Listen Live' })).toBeVisible();
+  await nav.getByRole('button', { name: 'Listen Live' }).click();
+  await nav.getByRole('link', { name: 'Music', exact: true }).click();
+  await expect(page).toHaveURL(/christmas-music$/);
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  expect(await page.evaluate(() => window.navigationAudio === document.querySelector('audio'))).toBe(true);
+  await toggle.click();
+  await expect(nav.getByRole('button', { name: 'Pause Radio' })).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+});
+
 test('responsive homepage, matching typography, effects and mobile navigation', async ({ page }) => {
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
@@ -22,16 +137,18 @@ test('responsive homepage, matching typography, effects and mobile navigation', 
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
-  await expect(page.locator('.hero-snow i').first()).toHaveCSS('animation-name', 'none');
+  await page.getByRole('button', { name: 'Open menu' }).click();
+  await page.getByRole('navigation').getByRole('button', { name: 'Snow Off' }).click();
+  await expect(page.locator('.site-snow')).toBeHidden();
   expect(errors).toEqual([]);
 });
 
 test('mugshot search, load more and detail routes survive redesign', async ({ page }) => {
   await page.goto('/mugshots/all');
   const cards = page.locator('.mugshot-card');
-  await expect(cards).toHaveCount(48);
+  await expect(cards).toHaveCount(100);
   await page.getByRole('button', { name: /Load More/i }).click();
-  await expect(cards).toHaveCount(96);
+  await expect(cards).toHaveCount(200);
   await page.locator('.mugshots-search').fill('Lisa Maxwell');
   await expect(cards).toHaveCount(1);
   await cards.first().click();
