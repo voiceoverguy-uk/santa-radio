@@ -1,0 +1,74 @@
+import { test, expect } from '@playwright/test';
+
+test.beforeEach(async ({ context }) => {
+  // No live radio streams or external signups are needed for these UI checks.
+  await context.route('**/*', route => {
+    const url = new URL(route.request().url());
+    return url.hostname === new URL(test.info().project.use.baseURL).hostname
+      ? route.continue() : route.abort();
+  });
+  await context.route('**/api/radio-metadata', route => route.fulfill({
+    json: { available: false, current: null, upcoming: [] },
+  }));
+});
+
+test('mobile player starts minimised, can expand, and starts minimised again after reload', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.addInitScript(() => sessionStorage.setItem('radio-minimized', 'false'));
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const dock = page.getByRole('complementary', { name: 'Santa Radio player' });
+  await expect(dock).toHaveClass(/is-minimized/);
+  await expect(dock.getByRole('button', { name: 'Listen Live', exact: true })).toBeVisible();
+  await dock.getByRole('button', { name: 'Expand radio player' }).click();
+  await expect(dock).not.toHaveClass(/is-minimized/);
+  await expect(dock.getByRole('slider', { name: 'Radio volume' })).toBeVisible();
+  await dock.getByRole('button', { name: 'Minimise radio player' }).click();
+  await expect(dock).toHaveClass(/is-minimized/);
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await expect(dock).toHaveClass(/is-minimized/);
+});
+
+test('mobile player starts minimised when preference storage is unavailable', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.addInitScript(() => {
+    Object.defineProperty(window, 'sessionStorage', {
+      get() { throw new DOMException('Blocked', 'SecurityError'); },
+    });
+  });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('complementary', { name: 'Santa Radio player' })).toHaveClass(/is-minimized/);
+});
+
+test('desktop player keeps its existing expanded default and remembers minimising', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const dock = page.getByRole('complementary', { name: 'Santa Radio player' });
+  await expect(dock).not.toHaveClass(/is-minimized/);
+  await dock.getByRole('button', { name: 'Minimise radio player' }).click();
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await expect(dock).toHaveClass(/is-minimized/);
+});
+
+test('homepage puts the live countdown in the hero and Santa texting in its own lower section', async ({ page }) => {
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const hero = page.locator('.hero');
+  const santaMessage = page.locator('#santa-message-section');
+  await expect(hero.getByRole('heading', { name: 'Christmas is on its way' })).toBeVisible();
+  await expect(hero.locator('.countdown-unit')).toHaveCount(4);
+  await expect(hero.locator('.santa-note')).toHaveCount(0);
+  await expect(santaMessage.locator('.santa-note')).toBeVisible();
+  await expect(page.locator('.santa-note')).toHaveCount(1);
+  await expect(page.locator('.hero-scroll')).toHaveAttribute('href', '#santa-message-section');
+  await expect(hero.getByRole('link', { name: 'FREE Santa Message', exact: true })).toHaveAttribute('href', '/free-santa-message');
+  const before = await hero.locator('.countdown-unit').last().textContent();
+  await expect.poll(() => hero.locator('.countdown-unit').last().textContent()).not.toBe(before);
+  await page.locator('.hero-scroll').click();
+  await expect(page).toHaveURL(/#santa-message-section$/);
+  for (const width of [1280, 390, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    const countdown = await hero.locator('.countdown').boundingBox();
+    expect(countdown.x).toBeGreaterThanOrEqual(0);
+    expect(countdown.x + countdown.width).toBeLessThanOrEqual(width);
+  }
+});

@@ -10,6 +10,15 @@
 .hero-description { font-size: .88rem; max-width: 410px; color: #e0e5da; margin-bottom: 29px; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 14px; }
 .hero-note { font-size: .65rem; margin-top: 24px; color: #d0d7c9; letter-spacing: .04em; }
+.hero-countdown { max-width: 480px; margin-top: 24px; padding: 24px; border: 1px solid #D4AF3750; border-radius: 18px; background: #0c281fd9; box-shadow: 0 18px 48px #00150b45, inset 0 1px #f8ebc010; backdrop-filter: blur(8px); }
+.hero-countdown-copy .eyebrow { margin-bottom: 12px; }
+.hero-countdown-copy h2 { font-family: 'Cinzel',serif; font-size: clamp(1.55rem, 2.5vw, 2.15rem); font-weight: 400; line-height: 1.25; color: var(--cream); margin-bottom: 10px; }
+.hero-countdown-copy > p:last-child { color: #d0d7c9; font-size: .82rem; margin-bottom: 23px; }
+.hero-countdown .countdown { gap: 9px; }
+.hero-countdown .countdown-unit { width: auto; min-width: 0; flex: 1; padding: 14px 8px; background: #17392de8; }
+.hero-countdown .countdown-unit strong { font-size: clamp(1.35rem, 2.3vw, 1.9rem); }
+.hero-countdown .countdown-unit span { letter-spacing: .1em; font-size: .49rem; }
+.hero-countdown .christmas-greeting { color: var(--gold-light); font-family: 'Cinzel',serif; text-align: center; }
 .hero-scroll { position: absolute; bottom: 31px; left: 50%; transform: translateX(-50%); z-index: 3; font-size: .5rem; text-transform: uppercase; letter-spacing: .26em; color: var(--muted); text-align: center; }
 .hero-scroll span { display: block; height: 28px; width: 1px; background: #D4AF3760; margin: 0 auto 12px; }
 .hero-snow { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
@@ -27,6 +36,9 @@ html[data-effects="off"] .hero-snow,html[data-effects="off"] .hero-aurora { disp
 .countdown-unit { border: 1px solid #D4AF3738; border-radius: 12px; width: 90px; padding: 16px 12px; text-align: center; background: #16392b; }
 .countdown-unit strong { display: block; font-family: 'Cinzel',serif; font-weight: 400; font-size: 2rem; color: var(--gold-light); font-variant-numeric: tabular-nums; line-height: 1.3; }
 .countdown-unit span { display: block; font-size: .54rem; text-transform: uppercase; letter-spacing: .15em; color: var(--muted); margin-top: 7px; }
+.santa-note-section { padding: 42px 0; background: #102d22; border-block: 1px solid #D4AF3726; }
+.santa-note-layout { display: flex; justify-content: center; }
+.santa-note-layout .santa-note { width: min(100%, 520px); max-width: none; margin: 0; }
 .welcome-section { padding: 100px 0; background: var(--navy-dark); }
 .welcome-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: center; }
 .welcome-layout h2 { font-size: clamp(2rem,3.5vw,3.1rem); }
@@ -35,8 +47,8 @@ html[data-effects="off"] .hero-snow,html[data-effects="off"] .hero-aurora { disp
 .welcome-links { display: flex; flex-wrap: wrap; gap: 26px; color: var(--gold-light); font-size: .8rem; margin-top: 28px; }
 .welcome-links a { border-bottom: 1px solid #D4AF3745; padding-bottom: 6px; }
 @media (max-width: 767px) {
-  .hero { min-height: 94dvh; padding: 140px 26px 130px; }
-  .hero-content { padding: 0; }
+  .hero { min-height: 94dvh; padding: 128px 26px 110px; }
+  .hero-content { display: block; padding: 0; }
   .hero-title { font-size: clamp(1.8rem,6vw,2.4rem); }
   .hero::after { background: linear-gradient(90deg,#081e1790,#081e1735),linear-gradient(0deg,#081e17,#081e1745 80%); }
   .hero-picture img { object-position: 60% center; }
@@ -45,6 +57,11 @@ html[data-effects="off"] .hero-snow,html[data-effects="off"] .hero-aurora { disp
   .hero-actions { gap: 10px; }
   .hero-actions .btn-red,.hero-actions .btn-gold { font-size: .76rem; padding: 13px 20px; }
   .hero-note { max-width: 280px; }
+  .hero-countdown { margin-top: 28px; padding: 22px 18px; }
+  .hero-countdown .countdown { gap: 7px; }
+  .hero-countdown .countdown-unit { padding: 12px 4px; }
+  .hero-countdown .countdown-unit strong { font-size: clamp(1.35rem, 6vw, 1.7rem); }
+  .hero-countdown .countdown-unit span { font-size: .45rem; letter-spacing: .08em; }
   .eyebrow { font-size: .55rem; }
   .countdown-layout { flex-direction: column; text-align: center; gap: 24px; }
   .countdown { width: 100%; max-width: 400px; gap: 8px; }
@@ -52,5 +69,13 @@ html[data-effects="off"] .hero-snow,html[data-effects="off"] .hero-aurora { disp
   .countdown-unit strong { font-size: 1.7rem; }
   .welcome-section { padding: 65px 0; }
   .welcome-layout { grid-template-columns: 1fr; gap: 25px; }
+  .santa-note-section { padding: 32px 0; }
+}
+@media (max-width: 360px) {
+  .hero { padding-inline: 20px; }
+  .hero-countdown { padding: 18px 12px; }
+  .hero-countdown .countdown { gap: 5px; }
+  .hero-countdown .countdown-unit { padding-inline: 2px; }
+  .hero-countdown .countdown-unit span { font-size: .4rem; }
 }
 @media (prefers-reduced-motion: reduce) { .hero-snow,.hero-aurora { display: none; } }

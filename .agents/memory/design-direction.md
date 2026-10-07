@@ -1,6 +1,6 @@
 ---
 name: Santa Radio visual direction
-description: User's reference and visual expectations for the North Pole redesign.
+description: User's North Pole visual expectations, Santa note voice and mobile player starting state.
 ---
 The user finds the initial Santa Radio rebuild "a bit boring" and wants the colours and appearance of https://santa-radio.base44.app/.
 
@@ -19,3 +19,9 @@ Santa's rotating notes should use playful, family-friendly British humour about 
 **Why:** The user explicitly praised the generated lines as funny and requested more in the same style.
 
 **How to apply:** Keep future additions in that voice, starting with “Santa here... ” rather than generic promotional copy.
+
+On mobile, the radio player should start minimised on a fresh page load, even if the tab previously remembered an expanded player. Keep manual expansion available and do not collapse it on every internal navigation.
+
+**Why:** The user asked for a minimised mobile starting state. Applying this at initial load avoids a saved expanded setting obscuring the phone page, without interrupting browsing.
+
+**How to apply:** Preserve the mobile initial-load rule separately from the desktop remembered preference when changing player controls or persistence.

@@ -35,9 +35,16 @@ export default function Home() {
           <p className="hero-description">Listen live to Santa Radio, discover festive favourites and share a little Christmas magic with the whole family.</p>
           <div className="hero-actions"><Link to="/free-santa-message" className="btn-gold">FREE Santa Message <span aria-hidden="true">↗</span></Link><RadioButton className="btn-red" /></div>
           <p className="hero-note">The World’s Best Christmas Radio Station · All year round</p>
-          <SantaNote />
+          <div id="christmas-countdown" className="hero-countdown">
+            <div className="hero-countdown-copy">
+              <p className="eyebrow">The most wonderful day</p>
+              <h2>Christmas is on its way</h2>
+              <p>A little closer to the magic, every day.</p>
+            </div>
+            <Countdown />
+          </div>
         </div>
-        <a href="#christmas-countdown" className="hero-scroll"><span aria-hidden="true" />Step inside the magic</a>
+        <a href="#santa-message-section" className="hero-scroll"><span aria-hidden="true" />Step inside the magic</a>
       </section>
       <section className="radio-listening-section" aria-label="Live radio songs">
         <div className="container radio-listening-layout">
@@ -48,8 +55,8 @@ export default function Home() {
           <div className="radio-listening-upcoming"><RadioTracks metadata={metadata} kind="upcoming" /></div>
         </div>
       </section>
-      <section id="christmas-countdown" className="countdown-section">
-        <div className="container countdown-layout"><div><p className="eyebrow">The most wonderful day</p><h2>Christmas is on its way</h2><p>A little closer to the magic, every day.</p></div><Countdown /></div>
+      <section id="santa-message-section" className="santa-note-section" aria-label="A note from Santa">
+        <div className="container santa-note-layout"><SantaNote /></div>
       </section>
       <section className="welcome-section">
         <div className="container welcome-layout"><div><p className="eyebrow">Make a little room for Christmas</p><h2>One station.<br /><span>A world of festive joy.</span></h2></div><div><p>From the songs you know by heart to a message from Santa, this is a place for family traditions, familiar voices and the feeling of Christmas.</p><p>Hosted by the UK’s Voice of Santa, Guy Harris. Tune in for Christmas music, whenever the mood takes you.</p><div className="welcome-links"><Link to="/christmas-music">Explore the music <span aria-hidden="true">→</span></Link><Link to="/apps">Take us with you <span aria-hidden="true">→</span></Link></div></div></div>

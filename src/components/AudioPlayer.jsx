@@ -22,6 +22,7 @@ export default function AudioPlayer() {
   const dockRef = useRef(null);
   const keyboardInteraction = useRef(false);
   const [minimized, setMinimized] = useState(() => {
+    if (window.matchMedia('(max-width: 600px)').matches) return true;
     try { return sessionStorage.getItem('radio-minimized') === 'true'; }
     catch { return false; }
   });
