@@ -1,6 +1,18 @@
 import { test, expect } from '@playwright/test';
 import { artistArtwork, fallbackArtwork } from '../src/data/artistArtwork.js';
 import { existsSync } from 'node:fs';
+import songs from '../src/data/songs.json' with { type: 'json' };
+
+test('song pages use shared artist portraits and the Santa fallback', async ({ page }) => {
+  for (const artist of ['Frank Sinatra', 'Kylie Minogue', 'Waitresses']) {
+    const song = songs.find(s => s.artist === artist);
+    await page.goto(`/christmas-artist/${song.id}-${song.link}`);
+    const image = page.locator('.song-artwork-img');
+    await expect(image).toHaveAttribute('src', artistArtwork(artist));
+    await expect.poll(() => image.evaluate(el => el.naturalWidth)).toBeGreaterThan(0);
+    await expect(page.locator('.song-artwork-placeholder')).toHaveCount(0);
+  }
+});
 
 test('all supplied portraits resolve without guessing collaborations', () => {
   const artists = ['Jose Feliciano', 'Holly Johnson', 'The Beach Boys', 'Nat King Cole', 'Jonas Brothers', 'Jona Lewie', 'Barbra Streisand', 'Bruce Springsteen', 'Robbie Williams', 'Brenda Lee', 'Dean Martin', 'Andy Williams', 'Freya Skye', 'Cliff Richard', 'Paul McCartney', 'Mariah Carey', 'Elton John', 'Ed Sheeran', 'Bing Crosby', 'Michael Bublé'];

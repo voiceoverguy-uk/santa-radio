@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import findSong from '../data/findSong';
+import { artistArtwork, fallbackArtwork } from '../data/artistArtwork.js';
 import './SongDetail.css';
 
 export default function SongDetail() {
@@ -132,14 +133,13 @@ export default function SongDetail() {
             </div>
 
             <div className="song-detail-artwork">
-              {song.image ? (
-                <img src={song.image} alt={`${song.artist} - ${song.song}`} className="song-artwork-img" />
-              ) : (
-                <div className="song-artwork-placeholder">
-                  <span className="placeholder-note" aria-hidden="true">{song.artist.split(' ').filter(Boolean).map(word => word[0]).slice(0, 2).join('')}</span>
-                  <p>{song.artist}</p>
-                </div>
-              )}
+              <img key={song.artist} src={artistArtwork(song.artist)} alt={artistArtwork(song.artist) === fallbackArtwork ? 'Santa with music notes' : song.artist} className="song-artwork-img"
+                onError={event => {
+                  if (event.currentTarget.getAttribute('src') !== fallbackArtwork) {
+                    event.currentTarget.src = fallbackArtwork;
+                    event.currentTarget.alt = 'Santa with music notes';
+                  }
+                }} />
             </div>
           </div>
 
