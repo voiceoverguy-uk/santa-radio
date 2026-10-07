@@ -134,7 +134,7 @@ export default function SantaMessageForm({ showDetailLink = true }) {
         {message && <div className="message-result" ref={resultRef} tabIndex={-1} aria-label={`Santa’s greeting for ${message.name}`}>
           <p className="message-postmark">A greeting is waiting</p>
           <h4>For {message.name}, from Santa</h4>
-          <p>Your recorded message is ready. Press play when you’re together. The radio will pause while Santa speaks.</p>
+          <p>Your recorded message is ready. The radio will pause while Santa speaks.</p>
           <audio ref={audioRef} src={message.url} controls preload="none" onPlay={pauseRadio} onError={() => setAudioError(true)} aria-label={`Play Santa’s greeting for ${message.name}`} />
           {audioError && <div role="alert"><p className="message-audio-error">Santa’s recording couldn’t be played. Please try loading it again, or use the download link below.</p><button className="message-retry" type="button" onClick={() => { setAudioError(false); audioRef.current?.load(); }}>Reload recording</button></div>}
           <a className="message-download" href={message.url} download={message.downloadName}>Download {message.name}’s greeting <span aria-hidden="true">↓</span></a>
