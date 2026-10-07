@@ -11,8 +11,6 @@
 .hero-actions { display: flex; flex-wrap: wrap; gap: 14px; }
 .hero-note { font-size: .65rem; margin-top: 24px; color: #d0d7c9; letter-spacing: .04em; }
 .hero-countdown { max-width: 480px; margin-top: 24px; }
-.hero-countdown-copy h2 { font-family: 'Cinzel',serif; font-size: clamp(1.55rem, 2.5vw, 2.15rem); font-weight: 400; line-height: 1.25; color: var(--cream); margin-bottom: 10px; }
-.hero-countdown-copy > p { color: #d0d7c9; font-size: .82rem; margin-bottom: 18px; }
 .hero-countdown .countdown { gap: 9px; }
 .hero-countdown .countdown-unit { width: auto; min-width: 0; flex: 1; padding: 12px 7px; background: #17392de8; }
 .hero-countdown .countdown-unit strong { font-size: clamp(1.25rem, 2.2vw, 1.75rem); }

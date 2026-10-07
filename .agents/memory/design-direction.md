@@ -26,8 +26,8 @@ On mobile, the radio player should start minimised on a fresh page load, even if
 
 **How to apply:** Preserve the mobile initial-load rule separately from the desktop remembered preference when changing player controls or persistence.
 
-Keep the hero countdown presentation simple and directly on the hero artwork, rather than adding another outer card or an extra eyebrow heading.
+Keep the hero countdown directly on the artwork with just timer values and labels, without an outer card or introductory headings and copy.
 
-**Why:** The user approved the swapped countdown/Santa-texting arrangement, but asked to simplify the countdown by removing its outer box and “The most wonderful day”.
+**Why:** The user approved the swapped countdown/Santa-texting arrangement, but found the countdown cluttered and progressively removed its outer box, eyebrow, heading and supporting sentence.
 
 **How to apply:** Preserve that simplicity in future hero changes; do not treat the richer North Pole direction as a request to box every element.
