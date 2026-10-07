@@ -25,3 +25,9 @@ Preserve the outro's supplied opening padding.
 **Why:** The user deliberately added silence to the start of free-outro.wav to make the gap after the name sound more natural. They corrected the earlier choice of the shorter free-outro2.wav.
 
 **How to apply:** Do not automatically trim leading silence from the outro when mixing or replacing recordings.
+
+The user chose two free messages before a 30-minute wait.
+
+**Why:** When asked whether the allowance before the wait should be two or three messages, the user selected “Two messages”.
+
+**How to apply:** Use two messages and a 30-minute wait when planning or implementing the free-message allowance; do not substitute three.
