@@ -1,4 +1,42 @@
 import { test, expect } from '@playwright/test';
+import { readFileSync } from 'node:fs';
+
+test('message completion resumes only previously active radio and respects manual changes', async ({ page }) => {
+  await page.route('**/api/santa-message', route => route.fulfill({
+    contentType: 'audio/wav', body: readFileSync('server/santa-audio/names/olivia.wav'),
+  }));
+  await page.goto('/free-santa-message');
+  await page.evaluate(() => {
+    window.radioPlays = 0;
+    const radio = document.querySelector('audio');
+    radio.play = () => { window.radioPlays++; return Promise.resolve(); };
+    radio.load = () => {};
+    radio.pause = () => {};
+  });
+  await page.getByLabel('Child’s first name').fill('Olivia');
+  await page.getByRole('button', { name: 'Create message' }).click();
+  const message = page.locator('.message-result audio');
+  await expect(message).toBeVisible();
+  const event = type => message.evaluate((audio, type) => audio.dispatchEvent(new Event(type)), type);
+  const dock = page.getByRole('complementary', { name: 'Santa Radio player' });
+  await event('play');
+  await event('ended');
+  expect(await page.evaluate(() => window.radioPlays)).toBe(0);
+  await dock.getByRole('button', { name: 'Listen Live', exact: true }).click();
+  await expect(dock.getByRole('button', { name: 'Pause Radio', exact: true })).toBeVisible();
+  await event('play');
+  await expect(dock.getByRole('button', { name: 'Listen Live', exact: true })).toBeVisible();
+  await event('pause');
+  await event('play');
+  await event('ended');
+  await expect.poll(() => page.evaluate(() => window.radioPlays)).toBe(2);
+  await event('play');
+  await dock.getByRole('button', { name: 'Listen Live', exact: true }).click();
+  await dock.getByRole('button', { name: 'Pause Radio', exact: true }).click();
+  await event('ended');
+  expect(await page.evaluate(() => window.radioPlays)).toBe(3);
+  await expect(dock.getByRole('button', { name: 'Listen Live', exact: true })).toBeVisible();
+});
 
 test('recorded Santa greeting validates names, decodes and downloads the real MP3', async ({ page }) => {
   await page.goto('/free-santa-message');

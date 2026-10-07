@@ -15,6 +15,7 @@ export default function SantaMessageForm({ showDetailLink = true }) {
   const requestRef = useRef(null);
   const suggestions = searchSantaNames(name);
   const audioRef = useRef(null);
+  const resumeRadioRef = useRef(null);
   const resultRef = useRef(null);
   const inputId = useId();
   const radio = useRadio();
@@ -28,6 +29,7 @@ export default function SantaMessageForm({ showDetailLink = true }) {
   useEffect(() => () => requestRef.current?.abort(), []);
 
   const updateName = value => {
+    resumeRadioRef.current = null;
     requestRef.current?.abort();
     requestRef.current = null;
     setBusy(false);
@@ -45,6 +47,7 @@ export default function SantaMessageForm({ showDetailLink = true }) {
   const submit = async event => {
     event.preventDefault();
     if (busy) return;
+    resumeRadioRef.current = null;
     setSuggesting(false);
     audioRef.current?.pause();
     setAudioError(false);
@@ -78,7 +81,13 @@ export default function SantaMessageForm({ showDetailLink = true }) {
     }
   };
   const pauseRadio = () => {
-    if (radio?.status === 'playing' || radio?.status === 'loading') radio.togglePlay();
+    const resume = radio?.pauseForMessage();
+    if (resume) resumeRadioRef.current = resume;
+  };
+  const finishMessage = () => {
+    const resume = resumeRadioRef.current;
+    resumeRadioRef.current = null;
+    resume?.();
   };
 
   return <section className="santa-message-section" id="santa-messages">
@@ -134,8 +143,8 @@ export default function SantaMessageForm({ showDetailLink = true }) {
         {message && <div className="message-result" ref={resultRef} tabIndex={-1} aria-label={`Santa’s greeting for ${message.name}`}>
           <p className="message-postmark">A greeting is waiting</p>
           <h4>For {message.name}, from Santa</h4>
-          <p>Your recorded message is ready. The radio will pause while Santa speaks.</p>
-          <audio ref={audioRef} src={message.url} controls preload="none" onPlay={pauseRadio} onError={() => setAudioError(true)} aria-label={`Play Santa’s greeting for ${message.name}`} />
+          <p>Your personal message is ready. The radio will pause while playing.</p>
+          <audio ref={audioRef} src={message.url} controls preload="none" onPlay={pauseRadio} onEnded={finishMessage} onError={() => { resumeRadioRef.current = null; setAudioError(true); }} aria-label={`Play Santa’s greeting for ${message.name}`} />
           {audioError && <div role="alert"><p className="message-audio-error">Santa’s recording couldn’t be played. Please try loading it again, or use the download link below.</p><button className="message-retry" type="button" onClick={() => { setAudioError(false); audioRef.current?.load(); }}>Reload recording</button></div>}
           <a className="message-download" href={message.url} download={message.downloadName}>Download {message.name}’s greeting <span aria-hidden="true">↓</span></a>
           <p className="message-name-hint">On iPhone, you may need to use Share → Save to Files to keep the MP3.</p>

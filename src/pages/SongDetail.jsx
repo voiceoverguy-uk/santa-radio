@@ -1,7 +1,8 @@
 import { useParams, Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import findSong from '../data/findSong';
+import relatedSongs from '../data/relatedSongs.js';
 import { artistArtwork, fallbackArtwork } from '../data/artistArtwork.js';
 import './SongDetail.css';
 
@@ -9,6 +10,8 @@ export default function SongDetail() {
   const { slug } = useParams();
   const song = findSong(slug);
   const [showLyrics, setShowLyrics] = useState(false);
+  useEffect(() => { setShowLyrics(false); }, [slug]);
+  const moreSongs = relatedSongs(song);
 
   if (!song) {
     return (
@@ -143,6 +146,12 @@ export default function SongDetail() {
             </div>
           </div>
 
+          {moreSongs.length > 0 && <section className="more-artist-songs" aria-labelledby="more-artist-heading">
+            <h2 id="more-artist-heading">More from {song.artist}</h2>
+            <ul>{moreSongs.map(other => <li key={other.id}>
+              <Link to={`/christmas-artist/${other.id}-${other.link}`}>{other.song}<span aria-hidden="true">→</span></Link>
+            </li>)}</ul>
+          </section>}
           <Link to="/christmas-music" className="back-link">← Back to Christmas Music</Link>
         </div>
       </div>

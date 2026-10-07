@@ -27,12 +27,12 @@ export function RadioProvider({ children }) {
     setStatus('error');
     setError('The radio stream is unavailable. Please try again.');
   };
-  const togglePlay = async () => {
+  const togglePlay = async (resumeOnly = false) => {
     const audio = audioRef.current;
     if (!audio) return;
     clearTimeout(timeout.current);
     const token = ++attempt.current;
-    if (status === 'playing' || status === 'loading') {
+    if (!resumeOnly && (status === 'playing' || status === 'loading')) {
       audio.pause();
       setStatus('paused');
       return;
@@ -50,8 +50,19 @@ export function RadioProvider({ children }) {
       if (token === attempt.current) fail();
     }
   };
+  const pauseForMessage = () => {
+    if (status !== 'playing' && status !== 'loading') return null;
+    const token = ++attempt.current;
+    clearTimeout(timeout.current);
+    audioRef.current?.pause();
+    setStatus('paused');
+    // Manual radio actions invalidate this request; never undo the listener's choice.
+    return () => {
+      if (attempt.current === token) return togglePlay(true);
+    };
+  };
   return (
-    <RadioContext.Provider value={{ status, volume, setVolume, error, togglePlay, effects, setEffects, metadata }}>
+    <RadioContext.Provider value={{ status, volume, setVolume, error, togglePlay: () => togglePlay(), pauseForMessage, effects, setEffects, metadata }}>
       <audio ref={audioRef} src={STREAM_URL} preload="none" onError={fail}
         onWaiting={() => {
           setStatus(current => current === 'playing' ? 'loading' : current);
