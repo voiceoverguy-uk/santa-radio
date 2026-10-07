@@ -157,7 +157,7 @@ export default function SantaMessageForm({ showDetailLink = true }) {
           <a className="message-download" href={message.url} download={message.downloadName}>Download {message.name}’s greeting <span aria-hidden="true">↓</span></a>
           <p className="message-name-hint">On iPhone, you may need to use Share → Save to Files to keep the MP3.</p>
         </div>}
-        <p className="service-notice">Free to create and download here. The MP3 isn’t sent by email; download your copy before leaving this page.</p>
+        <p className="service-notice">Free to create and download. The message is not sent by email. Download here before leaving.</p>
         {!sessionRemembered && <p className="message-name-hint" role="status">Your browser can’t remember access. The desk stays open while you browse, but refreshing this tab may ask for your details again.</p>}
         </>}
       </div>
