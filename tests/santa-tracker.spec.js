@@ -23,7 +23,7 @@ test('homepage feature and navigation keep the one existing radio playing', asyn
   });
   await page.goto('/');
   await expect(page.locator('.tracker-banner')).toContainText('Santa');
-  await expect(page.locator('.tracker-banner a')).toHaveAttribute('href', '/santa-tracker');
+  await expect(page.locator('.tracker-banner .tracker-action')).toHaveAttribute('href', '/santa-tracker');
   await page.locator('.hero-actions').getByRole('button', { name: 'Listen Live' }).click();
   await page.getByRole('slider', { name: 'Radio volume' }).fill('0.25');
   await page.evaluate(() => { window.originalAudio = document.querySelector('audio'); });
@@ -278,6 +278,19 @@ test('homepage banner leaves holidays at the same December boundary without relo
   await expect(banner).toContainText('At the North Pole');
   await expect(banner).toContainText("Santa's at the North Pole");
   await expect(banner).not.toContainText('well-earned break');
+});
+
+test('homepage mini map links to the tracker with an accessible name and keyboard focus', async ({ page }) => {
+  test.setTimeout(90000);
+  await page.clock.setFixedTime(new Date('2026-11-15T12:00:00Z'));
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const map = page.getByRole('link', { name: "Open the Santa Tracker: Santa's holiday location" });
+  await expect(map).toHaveAttribute('href', '/santa-tracker');
+  await map.focus();
+  await expect(map).toBeFocused();
+  await expect(map).toHaveCSS('outline-style', 'solid');
+  await map.locator('svg').click();
+  await expect(page).toHaveURL(/\/santa-tracker$/);
 });
 
 for (const [realDate, simulatedDate, holiday] of [

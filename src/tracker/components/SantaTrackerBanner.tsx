@@ -213,12 +213,17 @@ function MiniMap({ holiday }: { holiday: HolidayDestination | null }) {
     : "Santa's at the North Pole";
 
   return (
-    <div className="tracker-map w-full lg:w-[280px] rounded-lg border overflow-hidden">
+    <Link
+      to="/santa-tracker"
+      aria-label={`Open the Santa Tracker: ${caption}`}
+      className="tracker-map block w-full lg:w-[280px] rounded-lg border overflow-hidden"
+    >
       <svg
         viewBox="0 0 1000 500"
         className="w-full"
         style={{ aspectRatio: "2 / 1" }}
         preserveAspectRatio="xMidYMid meet"
+        aria-hidden="true"
       >
         <rect width="1000" height="500" fill="transparent" />
         <g fill="#1B4332" stroke="#52765a" strokeWidth="0.7" opacity="0.82">
@@ -241,9 +246,9 @@ function MiniMap({ holiday }: { holiday: HolidayDestination | null }) {
           🎅
         </text>
       </svg>
-      <div className="tracker-map-caption px-2 py-1.5 text-[10px] text-center">
+      <div className="tracker-map-caption px-2 py-1.5 text-[10px] text-center" aria-hidden="true">
         {caption}
       </div>
-    </div>
+    </Link>
   );
 }

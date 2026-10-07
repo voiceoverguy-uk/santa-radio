@@ -4,7 +4,7 @@ import { openMessageDesk } from './helpers/message-access.js';
 
 test('message completion resumes only previously active radio and respects manual changes', async ({ page }) => {
   await page.route('**/api/santa-message', route => route.fulfill({
-    contentType: 'audio/wav', body: readFileSync('server/santa-audio/names/olivia.wav'),
+    contentType: 'audio/mpeg', body: readFileSync('server/santa-audio/names/olivia.wav'),
   }));
   await openMessageDesk(page);
   await page.evaluate(() => {

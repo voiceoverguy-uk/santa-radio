@@ -4,6 +4,7 @@ import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import ffmpegPath from 'ffmpeg-static';
 import { findSantaMessage } from '../src/data/santaMessages.js';
 
 const execute = promisify(execFile);
@@ -26,11 +27,20 @@ export default async function santaMessage(req, res) {
   active++;
   let directory;
   try {
-    let body = '';
-    for await (const chunk of req) {
-      body += chunk;
-      if (body.length > 1024) return fail(413, 'Request is too large.');
+    // Vercel parses JSON before calling the function; the local Node server
+    // supplies a readable stream instead. Support both without rereading it.
+    let body = req.body;
+    if (body === undefined) {
+      body = '';
+      for await (const chunk of req) {
+        body += chunk;
+        if (Buffer.byteLength(body) > 1024) return fail(413, 'Request is too large.');
+      }
     }
+    if (Buffer.isBuffer(body)) body = body.toString('utf8');
+    else if (body !== null && typeof body === 'object') body = JSON.stringify(body);
+    if (typeof body !== 'string') return fail(400, 'Invalid request.');
+    if (Buffer.byteLength(body) > 1024) return fail(413, 'Request is too large.');
     let data;
     try { data = JSON.parse(body); } catch { return fail(400, 'Invalid request.'); }
     const recording = findSantaMessage(data?.name);
@@ -40,6 +50,7 @@ export default async function santaMessage(req, res) {
     await execute(process.execPath, [renderer,
       join(sources, 'free-intro.wav'), join(sources, 'names', `${recording.id}.wav`),
       join(sources, 'free-outro.wav'), join(sources, 'sleighbells.mp3'), output,
+      ffmpegPath,
     ], { timeout: 90000, maxBuffer: 2 * 1024 * 1024 });
     const audio = await readFile(output);
     res.writeHead(200, {
@@ -49,7 +60,9 @@ export default async function santaMessage(req, res) {
       'X-Content-Type-Options': 'nosniff',
     });
     res.end(audio);
-  } catch {
+  } catch (error) {
+    // Log operational codes only, never submitted names or contact details.
+    console.error('[santa-message] rendering failed', { code: error.code, signal: error.signal });
     if (!res.headersSent && !res.destroyed) fail(503, 'The message could not be mixed. Please try again.');
   } finally {
     active--;

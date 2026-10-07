@@ -201,6 +201,7 @@
 .tracker-banner .tracker-countdown-label { color: var(--tracker-muted); }
 .tracker-banner .tracker-map { background: #0c281e; border-color: #D4AF374a; }
 .tracker-banner .tracker-map-caption { background: #081e17dd; color: #d0d9c8; }
+.tracker-banner .tracker-map:focus-visible { outline: 3px solid #D4AF37; outline-offset: 4px; }
 .tracker-banner .tracker-card-value { color: var(--tracker-cream); font-weight: 500; }
 .santa-tracker .tracker-preview-panel .tracker-meta { color: #c1cbbb; }
 @media (max-width: 767px) {

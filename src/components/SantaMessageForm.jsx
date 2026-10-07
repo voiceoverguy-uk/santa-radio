@@ -79,6 +79,9 @@ export default function SantaMessageForm({ showDetailLink = true }) {
         const data = await response.json().catch(() => ({}));
         throw new Error(data.error || 'Unable to create the message. Please try again.');
       }
+      if (!response.headers.get('content-type')?.startsWith('audio/mpeg')) {
+        throw new Error('The message service did not return an MP3. Please try again shortly.');
+      }
       const blob = await response.blob();
       if (requestRef.current === controller) setMessage({ ...recording, url: URL.createObjectURL(blob) });
     } catch (error) {
@@ -157,7 +160,7 @@ export default function SantaMessageForm({ showDetailLink = true }) {
           <a className="message-download" href={message.url} download={message.downloadName}>Download {message.name}’s greeting <span aria-hidden="true">↓</span></a>
           <p className="message-name-hint">On iPhone, you may need to use Share → Save to Files to keep the MP3.</p>
         </div>}
-        <p className="service-notice">Free to create and download. The message is not sent by email. Download here before leaving.</p>
+        <p className="service-notice">Free to create and download here. The message is not sent by email.</p>
         {!sessionRemembered && <p className="message-name-hint" role="status">Your browser can’t remember access. The desk stays open while you browse, but refreshing this tab may ask for your details again.</p>}
         </>}
       </div>

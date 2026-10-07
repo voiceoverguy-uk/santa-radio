@@ -169,7 +169,7 @@ test('pending form prevents duplicate submissions and adult details never reach 
   });
   await page.route('**/api/santa-message', route => {
     generatorFields = route.request().postDataJSON();
-    return route.fulfill({ contentType: 'audio/wav', body: readFileSync('server/santa-audio/names/olivia.wav') });
+    return route.fulfill({ contentType: 'audio/mpeg', body: readFileSync('server/santa-audio/names/olivia.wav') });
   });
   await page.goto('/free-santa-message');
   await fillAccessForm(page);
