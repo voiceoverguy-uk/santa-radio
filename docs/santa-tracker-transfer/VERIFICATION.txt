@@ -1,0 +1,67 @@
+Export verification
+- Explicit source-file whitelist only; no environment or subscriber data read.
+- All local imports resolve within supplied core/optional modules.
+- Referenced local image assets included.
+- Original source and assets copied byte-for-byte; only stylesheet extraction is derived.
+- Known credential patterns checked in text payloads; no matches.
+- Existing regression tests run against extracted source using preinstalled dependencies.
+- This is not a fresh browser test or a test of the destination project.
+
+TAP version 13
+# Subtest: holiday season includes October and ends at midnight UTC on 1 November
+ok 1 - holiday season includes October and ends at midnight UTC on 1 November
+  ---
+  duration_ms: 296.450766
+  type: 'test'
+  ...
+# Subtest: main route initial server render has exactly one useful H1 and intro in hero; mounted hero keeps same slot
+ok 2 - main route initial server render has exactly one useful H1 and intro in hero; mounted hero keeps same slot
+  ---
+  duration_ms: 236.171662
+  type: 'test'
+  ...
+# Subtest: main/preview metadata, July variant, and actual rendered WebPage/breadcrumb identity
+ok 3 - main/preview metadata, July variant, and actual rendered WebPage/breadcrumb identity
+  ---
+  duration_ms: 274.519973
+  type: 'test'
+  ...
+# Subtest: mounted seasonal and preview status/countdown/CTA retain behavior alongside stable intro
+ok 4 - mounted seasonal and preview status/countdown/CTA retain behavior alongside stable intro
+  ---
+  duration_ms: 308.176528
+  type: 'test'
+  ...
+# Subtest: map SVG has a connected name/summary for route and holiday, preserving visual marker and caption
+ok 5 - map SVG has a connected name/summary for route and holiday, preserving visual marker and caption
+  ---
+  duration_ms: 63.983926
+  type: 'test'
+  ...
+# Subtest: preview native controls expose expansion, switch and selected speed without altering jump/run/reset actions
+ok 6 - preview native controls expose expansion, switch and selected speed without altering jump/run/reset actions
+  ---
+  duration_ms: 32.252295
+  type: 'test'
+  ...
+# Subtest: timeline has textual Visited/Now/Upcoming in both layouts and focusable horizontal scrolling
+ok 7 - timeline has textual Visited/Now/Upcoming in both layouts and focusable horizontal scrolling
+  ---
+  duration_ms: 72.596215
+  type: 'test'
+  ...
+# Subtest: timeline centers with immediate scrolling for reduced motion and smooth otherwise
+ok 8 - timeline centers with immediate scrolling for reduced motion and smooth otherwise
+  ---
+  duration_ms: 113.089687
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2274.360324

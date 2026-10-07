@@ -1,0 +1,72 @@
+{
+  "next": {
+    "version": "16.1.6",
+    "license": "MIT",
+    "optional": false
+  },
+  "react": {
+    "version": "19.2.4",
+    "license": "MIT",
+    "optional": false
+  },
+  "react-dom": {
+    "version": "19.2.4",
+    "license": "MIT",
+    "optional": false
+  },
+  "tailwindcss": {
+    "version": "4.2.1",
+    "license": "MIT",
+    "optional": false
+  },
+  "@tailwindcss/postcss": {
+    "version": "4.2.1",
+    "license": "MIT",
+    "optional": false
+  },
+  "postcss": {
+    "version": "8.5.8",
+    "license": "MIT",
+    "optional": false
+  },
+  "autoprefixer": {
+    "version": "10.4.27",
+    "license": "MIT",
+    "optional": false
+  },
+  "lucide-react": {
+    "version": "0.577.0",
+    "license": "ISC",
+    "optional": false
+  },
+  "html-to-image": {
+    "version": "1.11.13",
+    "license": "MIT",
+    "optional": false
+  },
+  "typescript": {
+    "version": "5.9.3",
+    "license": "Apache-2.0",
+    "optional": false
+  },
+  "@types/node": {
+    "version": "22.13.11",
+    "license": "MIT",
+    "optional": false
+  },
+  "@types/react": {
+    "version": "19.2.14",
+    "license": "MIT",
+    "optional": false
+  },
+  "@types/react-dom": {
+    "version": "19.2.3",
+    "license": "MIT",
+    "optional": false
+  },
+  "resend": {
+    "version": "6.9.3",
+    "license": "MIT",
+    "optional": true
+  }
+}

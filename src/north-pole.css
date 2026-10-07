@@ -1,6 +1,6 @@
 /* Shared North Pole treatment, deliberately loaded after legacy page styles. */
 #page-content { min-height: 65dvh; }
-#page-content > main:not(.home-page) { padding-top: 85px; }
+#page-content > main:not(.home-page):not(.santa-tracker) { padding-top: 85px; }
 main h1,main h2,main h3 { font-family: 'Cinzel',serif; font-weight: 400; }
 main .gold-text { background: none; -webkit-text-fill-color: var(--gold-light); color: var(--gold-light); filter: none; }
 .brand-logo { display: block; height: auto; max-width: 100%; object-fit: contain; margin-inline: auto; }

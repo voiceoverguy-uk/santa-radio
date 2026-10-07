@@ -1,0 +1,62 @@
+/* Supplied tracker utilities only: no global Tailwind preflight/reset.
+   Explicit sources prevent generating utilities from Santa Radio's unrelated UI. */
+@import "tailwindcss/theme.css" layer(theme);
+@tailwind utilities source(none);
+@source "./components";
+@source "./app";
+@theme {
+  --color-santa-red: #9C060B;
+  --color-santa-red-dark: #7A0509;
+  --color-santa-red-light: #C41017;
+  --color-santa-cream: #FFF8F0;
+  --color-santa-gold: #D4A843;
+  --color-santa-green: #1B5E20;
+
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+.star-field {
+  background-image:
+    radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 25% 40%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 45% 10%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 60% 55%, rgba(255,255,255,0.3), transparent),
+    radial-gradient(1px 1px at 75% 25%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 85% 65%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 15% 70%, rgba(255,255,255,0.3), transparent),
+    radial-gradient(1px 1px at 35% 85%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 55% 35%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 90% 45%, rgba(255,255,255,0.3), transparent),
+    radial-gradient(1.5px 1.5px at 5% 50%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1.5px 1.5px at 50% 80%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1.5px 1.5px at 70% 5%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 30% 60%, rgba(255,255,255,0.3), transparent),
+    radial-gradient(1px 1px at 80% 90%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 20% 95%, rgba(255,255,255,0.3), transparent),
+    radial-gradient(1px 1px at 95% 15%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 40% 50%, rgba(255,255,255,0.2), transparent);
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .star-field {
+    animation: none !important;
+  }
+  .animate-pulse {
+    animation: none !important;
+  }
+  svg animate {
+    animation: none !important;
+    display: none;
+  }
+}
+
+.santa-tracker { font-family: "Inter", system-ui, sans-serif; padding-bottom: 80px; background: #0a1628; }
+.santa-tracker :is(h1,h2,h3) { font-family: "Inter", system-ui, sans-serif; }
+.tracker-banner { background: var(--navy-dark); border-block: 1px solid #d4af3730; }
+.tracker-banner h2 { font-family: "Cinzel", serif; font-weight: 400; }
+.tracker-banner .text-santa-red { color: var(--gold-light); }
+.tracker-preview-panel { left: 16px; right: auto; max-width: calc(100vw - 32px); max-height: calc(100dvh - 110px); overflow-y: auto; }
+@media (max-width: 767px) {
+  .tracker-preview-panel { top: 88px; bottom: auto; }
+}

@@ -26,6 +26,7 @@ export default function Navbar() {
     { to: '/', label: 'Home' }, { to: '/apps', label: 'Apps' },
     { to: '/free-santa-message', label: 'FREE Audio Message' }, { to: '/christmas-music', label: 'Music' },
     { to: '/mugshots/all', label: 'Mug Shots' },
+    { to: '/santa-tracker', label: 'Santa Tracker' },
   ];
   return (
     <nav className={`navbar ${scrolled || location.pathname !== '/' ? 'solid' : ''}`} aria-label="Main navigation">

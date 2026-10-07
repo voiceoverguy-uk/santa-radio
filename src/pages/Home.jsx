@@ -4,6 +4,7 @@ import { RadioButton } from '../components/AudioPlayer.jsx';
 import { useRadio } from '../components/RadioProvider.jsx';
 import RadioTracks from '../components/RadioTracks.jsx';
 import SantaNote from '../components/SantaNote.jsx';
+import SantaTrackerBanner from '../tracker/components/SantaTrackerBanner.tsx';
 import LiveLyrics from '../components/LiveLyrics.jsx';
 import Countdown from '../components/Countdown.jsx';
 import Soundboard from '../components/Soundboard.jsx';
@@ -54,6 +55,7 @@ export default function Home() {
       <section className="welcome-section">
         <div className="container welcome-layout"><div><p className="eyebrow">Make a little room for Christmas</p><h2>One station.<br /><span>A world of festive joy.</span></h2></div><div><p>From the songs you know by heart to a message from Santa, this is a place for family traditions, familiar voices and the feeling of Christmas.</p><p>Hosted by the UK’s Voice of Santa, Guy Harris. Tune in for Christmas music, whenever the mood takes you.</p><div className="welcome-links"><Link to="/christmas-music">Explore the music <span aria-hidden="true">→</span></Link><Link to="/apps">Take us with you <span aria-hidden="true">→</span></Link></div></div></div>
       </section>
+      <SantaTrackerBanner />
       <SantaMessageForm />
       <SantaVideoSection />
       <Soundboard />

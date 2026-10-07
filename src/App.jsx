@@ -14,6 +14,8 @@ import PrivacyPolicy from './pages/PrivacyPolicy.jsx';
 import Links from './pages/Links.jsx';
 import SantaStories from './pages/SantaStories.jsx';
 import ArtistDetail from './pages/ArtistDetail.jsx';
+import SantaTrackerPage from './tracker/app/santa-tracker/page.tsx';
+import SantaTrackerPreviewPage from './tracker/app/santa-tracker/preview/page.tsx';
 import AudioPlayer from './components/AudioPlayer.jsx';
 import Snowfall from './components/Snowfall.jsx';
 import { RadioProvider } from './components/RadioProvider.jsx';
@@ -39,6 +41,8 @@ function App() {
         <Route path="/submit-a-song" element={<SubmitASong />} />
         <Route path="/links" element={<Links />} />
         <Route path="/santa-stories" element={<SantaStories />} />
+        <Route path="/santa-tracker" element={<SantaTrackerPage />} />
+        <Route path="/santa-tracker/preview" element={<SantaTrackerPreviewPage />} />
         <Route path="/music" element={<Navigate to="/christmas-music" replace />} />
         <Route path="/mugshots" element={<Navigate to="/mugshots/all" replace />} />
       </Routes></div>

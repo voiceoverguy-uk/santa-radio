@@ -1,0 +1,164 @@
+[
+  {
+    "path": "DEPENDENCIES.json",
+    "bytes": 1306,
+    "sha256": "c5fe0b3e10377292a3238d5bc9c411ce5ddfec17ad57fd6ede05aeef0f2746ee",
+    "origin": "generated export documentation"
+  },
+  {
+    "path": "TRANSFER.md",
+    "bytes": 9390,
+    "sha256": "6739e0555a34f2d699d68d42da54b2b59e30961429b23574a38d9a2c4d7a7c23",
+    "origin": "exports/tracker-transfer/TRANSFER.md"
+  },
+  {
+    "path": "VERIFICATION.txt",
+    "bytes": 2677,
+    "sha256": "21f9aa8d277d6d96b27aaf18f8c4ad1850f288f3f616c21766e11665cef985fe",
+    "origin": "generated export documentation"
+  },
+  {
+    "path": "optional/email-reminders/scheduler-reference.json",
+    "bytes": 131,
+    "sha256": "af3f2508eaa87f2b80dd63ead69467f41fdb3be43e6f648482307a62fe329f2b",
+    "origin": "vercel.json"
+  },
+  {
+    "path": "optional/email-reminders/source/app/api/cron/christmas-eve/route.ts",
+    "bytes": 4555,
+    "sha256": "6af5b40bda83618d11dbcc690b9676c30dbc9ea6104ed237c64cd660918603e8",
+    "origin": "app/api/cron/christmas-eve/route.ts"
+  },
+  {
+    "path": "optional/email-reminders/source/app/api/notify-signup/route.ts",
+    "bytes": 1717,
+    "sha256": "62f3a74271123275b56901b9d316c52433737ff43c0c33e989714568aca268d8",
+    "origin": "app/api/notify-signup/route.ts"
+  },
+  {
+    "path": "optional/email-reminders/source/lib/resendAudience.ts",
+    "bytes": 2352,
+    "sha256": "052731e80da86301a34a30bc2ed97c1bc67eaacf38fec770db601fd8a41591bf",
+    "origin": "lib/resendAudience.ts"
+  },
+  {
+    "path": "optional/homepage-banner/components/SantaTrackerBanner.tsx",
+    "bytes": 9631,
+    "sha256": "2f6254915be48d25b28a5a26c9ec14144d1551df2b831f86d56713a4de90fb56",
+    "origin": "components/SantaTrackerBanner.tsx"
+  },
+  {
+    "path": "source/app/santa-tracker/page.tsx",
+    "bytes": 3310,
+    "sha256": "fbb7bd91bf69dfea1fb8856db5c2dacd3eb96161eed82c37fa983f98e38d8605",
+    "origin": "app/santa-tracker/page.tsx"
+  },
+  {
+    "path": "source/app/santa-tracker/preview/page.tsx",
+    "bytes": 286,
+    "sha256": "9dad96ba94c890668ef8bf3f2d19cf84ca3dcc008074553fe4504f247f2d92d5",
+    "origin": "app/santa-tracker/preview/page.tsx"
+  },
+  {
+    "path": "source/components/NotifySignup.tsx",
+    "bytes": 3861,
+    "sha256": "f3b20a2082d0406a909eda9261e2f9140c67ea14a7b8b2e0e9a2614f3f64ee44",
+    "origin": "components/NotifySignup.tsx"
+  },
+  {
+    "path": "source/components/SantaMap.tsx",
+    "bytes": 5617,
+    "sha256": "69e34108d98657b93b3040e6cd74f136cbf2dd45b739ef18f6606c984a34d4b6",
+    "origin": "components/SantaMap.tsx"
+  },
+  {
+    "path": "source/components/SantaPreviewPanel.tsx",
+    "bytes": 7695,
+    "sha256": "227799c6d073878c978ea5d15734115ab22892cd5113f87f8e7341618347f7f8",
+    "origin": "components/SantaPreviewPanel.tsx"
+  },
+  {
+    "path": "source/components/SantaStats.tsx",
+    "bytes": 7061,
+    "sha256": "30c501970ae25de8fd5bd7104dcdf6e6b18baef2af96ad3ba80c14eb299d6882",
+    "origin": "components/SantaStats.tsx"
+  },
+  {
+    "path": "source/components/SantaStory.tsx",
+    "bytes": 30819,
+    "sha256": "1c0ab5e9ea5e4accf801e93e2483d650b1a4580b98db5ce4744f30a7f6cd2e19",
+    "origin": "components/SantaStory.tsx"
+  },
+  {
+    "path": "source/components/SantaTimeline.tsx",
+    "bytes": 5948,
+    "sha256": "38be32d4f1ec25b4f4e3f8a0ac53dcc7eb21fdaf141a6a6fa4dd0fb37b16b99c",
+    "origin": "components/SantaTimeline.tsx"
+  },
+  {
+    "path": "source/components/SantaTrackerClient.tsx",
+    "bytes": 14024,
+    "sha256": "7b763a73961996d8ba242336ca9bc707c9dc4afd61dafe9e4c0c51411312661b",
+    "origin": "components/SantaTrackerClient.tsx"
+  },
+  {
+    "path": "source/components/StructuredData.tsx",
+    "bytes": 275,
+    "sha256": "2fb96d43bcaa5bc9267e96ad32936c61bf9b39e0cbc0e5fde8f47d4eb72da378",
+    "origin": "components/StructuredData.tsx"
+  },
+  {
+    "path": "source/data/santaHolidays.ts",
+    "bytes": 14094,
+    "sha256": "ed69dc10a901bcd68cdf01d2ea79ea2ba66a2f9dc961cd9488c3a64dd97d216a",
+    "origin": "data/santaHolidays.ts"
+  },
+  {
+    "path": "source/data/santaRouteStops.ts",
+    "bytes": 18858,
+    "sha256": "1962096f22b86edd936644b84d5176b91e73fbe8262426c9f7ea08d40ade7050",
+    "origin": "data/santaRouteStops.ts"
+  },
+  {
+    "path": "source/data/worldMapPaths.ts",
+    "bytes": 22076,
+    "sha256": "9149fb5fed3fe3263ad4f44fbe5312f263f0ede6e33bd5294bc3270b22867e23",
+    "origin": "data/worldMapPaths.ts"
+  },
+  {
+    "path": "source/lib/santaPreview.ts",
+    "bytes": 3745,
+    "sha256": "6bd037aacb4b92756ab697eeafe8b44d136b85f4bf52d418bf3c88734c30e8ce",
+    "origin": "lib/santaPreview.ts"
+  },
+  {
+    "path": "source/lib/santaRoute.ts",
+    "bytes": 15288,
+    "sha256": "bb870155462c1c07c8c5060b88b443f5554320d42b8cf99f33fc7aa2268f6d19",
+    "origin": "lib/santaRoute.ts"
+  },
+  {
+    "path": "source/public/images/santa-post-stamp.png",
+    "bytes": 23297,
+    "sha256": "095ff5722d3a64f2316b8d42b8cb89b6043351d5007c8b8f2c2fc9901a4bc01c",
+    "origin": "public/images/santa-post-stamp.png"
+  },
+  {
+    "path": "source/public/santa-guy-logo-og.png",
+    "bytes": 129982,
+    "sha256": "a2f36e73f442cf9d01e11444692c4c7ea6a88f4435bf772b2adb90399ffd4f7f",
+    "origin": "public/santa-guy-logo-og.png"
+  },
+  {
+    "path": "source/scripts/tracker-pass2.test.cjs",
+    "bytes": 16641,
+    "sha256": "9f517c028a9c1fa64c8dec94ca52349755b8dee2f93189acf937e539c65492d0",
+    "origin": "scripts/tracker-pass2.test.cjs"
+  },
+  {
+    "path": "styles/tracker.css",
+    "bytes": 2057,
+    "sha256": "88cd33d3de187e22ac29701fdfbb7c594c8d47c6abad70a021fa59e9095f5120",
+    "origin": "extracted tracker rules from app/globals.css"
+  }
+]
