@@ -304,7 +304,7 @@ function HolidayPostcard({ message, holiday, isJuly }: { message: string; holida
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div ref={postcardRef} className="relative rounded-lg overflow-hidden shadow-xl border border-amber-200/30 max-w-xl mx-auto" style={{ aspectRatio: "3 / 2" }}>
+      <div ref={postcardRef} className="tracker-postcard relative rounded-lg overflow-hidden shadow-xl border border-amber-200/30 max-w-xl mx-auto" style={{ aspectRatio: "3 / 2" }}>
         <div
           className="absolute inset-0"
           style={{
@@ -321,27 +321,27 @@ function HolidayPostcard({ message, holiday, isJuly }: { message: string; holida
           <div className="relative flex flex-col sm:flex-row h-full">
             <div className="flex-1 p-5 sm:p-6 flex flex-col justify-center">
               <p
-                className="text-gray-800 mb-1"
+                className="postcard-ink mb-1"
                 style={{ fontFamily: "'Caveat', cursive", fontSize: "clamp(1.1rem, 2.6vw, 1.4rem)" }}
               >
                 Hello, Santa here...
               </p>
               <p
-                className="text-gray-800 leading-relaxed transition-opacity duration-700"
+                className="postcard-ink leading-relaxed transition-opacity duration-700"
                 style={{ fontFamily: "'Caveat', cursive", fontSize: "clamp(1.1rem, 2.6vw, 1.4rem)" }}
               >
                 {message}
               </p>
               <p
-                className="text-gray-800 mt-2"
+                className="postcard-ink mt-2"
                 style={{ fontFamily: "'Caveat', cursive", fontSize: "clamp(1.1rem, 2.6vw, 1.4rem)" }}
               >
                 Stay good... Santa x
               </p>
             </div>
 
-            <div className="hidden sm:block w-px bg-gray-400/40 my-5 mx-0 self-stretch" />
-            <div className="block sm:hidden h-px bg-gray-400/40 mx-5" />
+            <div className="postcard-divider hidden sm:block w-px my-5 mx-0 self-stretch" />
+            <div className="postcard-divider block sm:hidden h-px mx-5" />
 
             <div className="sm:w-[220px] p-4 sm:p-5 flex flex-col">
               <div className="flex justify-end w-full">
@@ -356,30 +356,30 @@ function HolidayPostcard({ message, holiday, isJuly }: { message: string; holida
 
               <div className="flex-1 flex items-center">
                 <div className="w-full space-y-1.5">
-                  <p className="text-gray-500 text-[10px] font-bold uppercase tracking-wider mb-1">To:</p>
-                  <p className="text-gray-800 leading-snug" style={{ fontFamily: "'Caveat', cursive", fontSize: "clamp(1.1rem, 2.6vw, 1.4rem)" }}>
+                  <p className="postcard-secondary-ink text-[10px] font-bold uppercase tracking-wider mb-1">To:</p>
+                  <p className="postcard-ink leading-snug" style={{ fontFamily: "'Caveat', cursive", fontSize: "clamp(1.1rem, 2.6vw, 1.4rem)" }}>
                     The Workshop
                   </p>
-                  <div className="border-b border-gray-400/50" />
-                  <p className="text-gray-800 leading-snug" style={{ fontFamily: "'Caveat', cursive", fontSize: "clamp(1.1rem, 2.6vw, 1.4rem)" }}>
+                  <div className="postcard-rule border-b" />
+                  <p className="postcard-ink leading-snug" style={{ fontFamily: "'Caveat', cursive", fontSize: "clamp(1.1rem, 2.6vw, 1.4rem)" }}>
                     1 Candy Cane Lane
                   </p>
-                  <div className="border-b border-gray-400/50" />
-                  <p className="text-gray-800 leading-snug font-medium" style={{ fontFamily: "'Caveat', cursive", fontSize: "clamp(1.1rem, 2.6vw, 1.4rem)" }}>
+                  <div className="postcard-rule border-b" />
+                  <p className="postcard-ink leading-snug font-medium" style={{ fontFamily: "'Caveat', cursive", fontSize: "clamp(1.1rem, 2.6vw, 1.4rem)" }}>
                     North Pole 🎄
                   </p>
-                  <div className="border-b border-gray-400/50" />
+                  <div className="postcard-rule border-b" />
                 </div>
               </div>
 
-              <p className="text-gray-400/60 text-[7px] text-right mt-1 tracking-wide">
+              <p className="postcard-secondary-ink text-[7px] text-right mt-1 tracking-wide">
                 <a href={TRACKER_URL}>{TRACKER_DISPLAY_URL}</a>
               </p>
             </div>
           </div>
 
           <div className="absolute bottom-2 left-5 flex items-center gap-1.5 opacity-40">
-            <span className="text-[9px] text-gray-600 italic">
+            <span className="postcard-secondary-ink text-[9px] italic">
               Sent from {holiday.name} {holiday.emoji}
             </span>
           </div>
@@ -407,13 +407,13 @@ function HolidayPostcard({ message, holiday, isJuly }: { message: string; holida
 function WorkshopDispatch({ message }: { message: string }) {
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="relative rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-6 sm:p-8">
-        <div className="absolute -top-3 left-6 bg-[#0f1d32] px-3 py-1 rounded-full border border-white/10">
+      <div className="tracker-story-card relative p-6 sm:p-8">
+        <div className="tracker-story-label absolute -top-3 left-6 px-3 py-1 rounded-full">
           <span className="text-xs font-medium text-santa-gold uppercase tracking-wider">
             🎄 Workshop Dispatch
           </span>
         </div>
-        <p className="text-gray-300 leading-relaxed text-sm sm:text-base mt-2 transition-opacity duration-700">
+        <p className="tracker-copy leading-relaxed text-sm sm:text-base mt-2 transition-opacity duration-700">
           {message}
         </p>
       </div>
@@ -507,13 +507,13 @@ export default function SantaStory({ effectiveTime, holiday }: SantaStoryProps) 
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="relative rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-6 sm:p-8">
-        <div className="absolute -top-3 left-6 bg-[#0f1d32] px-3 py-1 rounded-full border border-white/10">
+      <div className="tracker-story-card relative p-6 sm:p-8">
+        <div className="tracker-story-label absolute -top-3 left-6 px-3 py-1 rounded-full">
           <span className="text-xs font-medium text-santa-gold uppercase tracking-wider">
             {label}
           </span>
         </div>
-        <p className="text-gray-300 leading-relaxed text-sm sm:text-base mt-2">{story}</p>
+        <p className="tracker-copy leading-relaxed text-sm sm:text-base mt-2">{story}</p>
       </div>
     </div>
   );

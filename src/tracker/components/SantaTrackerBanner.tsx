@@ -22,12 +22,12 @@ export default function SantaTrackerBanner() {
     return (
       <section className="tracker-banner relative overflow-hidden" aria-label="Santa Tracker">
         <div className="absolute inset-0 star-field opacity-60" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
           <div className="text-center">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight">
               Track Santa&apos;s Journey
               <br />
-              <span className="text-santa-red">Around the World</span>
+              <span className="text-santa-gold">Around the World</span>
             </h2>
           </div>
         </div>
@@ -65,19 +65,19 @@ export default function SantaTrackerBanner() {
     : onHoliday && inJuly
     ? "bg-green-400"
     : onHoliday
-    ? "bg-orange-400"
-    : "bg-blue-400";
+    ? "bg-santa-gold"
+    : "bg-green-400";
 
   return (
     <section className="tracker-banner relative overflow-hidden" aria-label="Santa Tracker">
       <div className="absolute inset-0 star-field opacity-60" />
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
         <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8">
 
           <div className="flex-1 text-center lg:text-left lg:max-w-lg">
-            <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-3 py-1.5 mb-4">
+            <div className="tracker-status inline-flex items-center gap-2 rounded-full px-3 py-1.5 mb-4">
               <span className={`w-2 h-2 rounded-full flex-shrink-0 ${dotColor}`} />
-              <span className="text-xs font-medium text-gray-300 uppercase tracking-wider">
+              <span className="text-xs font-medium text-gray-200 uppercase tracking-wider">
                 {statusLabel}
               </span>
             </div>
@@ -85,10 +85,10 @@ export default function SantaTrackerBanner() {
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight">
               Track Santa&apos;s Journey
               <br />
-              <span className="text-santa-red">Around the World</span>
+              <span className="text-santa-gold">Around the World</span>
             </h2>
 
-            <p className="mt-3 text-gray-400 text-sm sm:text-base leading-relaxed max-w-lg mx-auto lg:mx-0">
+            <p className="mt-3 text-gray-300 text-sm sm:text-base leading-relaxed max-w-lg mx-auto lg:mx-0">
               {isLive
                 ? `Santa is live! Follow his Christmas Eve journey in real time. From the Pacific Islands to Hawaii, watch as he delivers gifts to ${(data.estimatedGifts / 1_000_000).toFixed(0)}M+ children.`
                 : isComplete
@@ -103,7 +103,7 @@ export default function SantaTrackerBanner() {
             <div className="mt-5">
               <Link
                 to="/santa-tracker"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-santa-red text-white text-sm font-semibold rounded-lg hover:bg-santa-red-dark transition-colors shadow-lg"
+                className="tracker-action inline-flex items-center gap-2 px-6 py-3 text-sm transition-colors"
               >
                 {isLive ? "Track Santa Now" : "Open the Tracker"}
                 <span aria-hidden="true">&rarr;</span>
@@ -138,24 +138,24 @@ function CountdownDisplay({ countdown }: { countdown: ReturnType<typeof getCount
 
   return (
     <div className="text-center lg:text-right">
-      <p className="text-[10px] uppercase tracking-widest text-gray-500 mb-3">
+      <p className="text-[10px] uppercase tracking-widest text-santa-gold/80 mb-3">
         Countdown to Christmas Eve
       </p>
       <div className="inline-flex items-center gap-2 sm:gap-3">
         {units.map((u, i, arr) => (
           <div key={u.label} className="flex items-center gap-2 sm:gap-3">
             <div className="text-center">
-              <div className="bg-white/5 border border-white/10 rounded-lg px-3 sm:px-4 py-2 sm:py-3 min-w-[52px] sm:min-w-[64px]">
-                <div className="text-xl sm:text-2xl font-bold text-santa-red tabular-nums">
+                <div className="tracker-card rounded-lg px-3 sm:px-4 py-2 sm:py-3 min-w-[52px] sm:min-w-[64px]">
+                <div className="tracker-countdown-value text-xl sm:text-2xl tabular-nums">
                   {String(u.value).padStart(2, "0")}
                 </div>
               </div>
-              <div className="text-[9px] sm:text-[10px] text-gray-500 uppercase tracking-wider mt-1">
+              <div className="tracker-countdown-label text-[9px] sm:text-[10px] uppercase tracking-wider mt-1">
                 {u.label}
               </div>
             </div>
             {i < arr.length - 1 && (
-              <span className="text-gray-600 text-lg font-light mb-4">:</span>
+              <span className="text-santa-gold/70 text-lg font-light mb-4">:</span>
             )}
           </div>
         ))}
@@ -183,12 +183,12 @@ function LiveStats({ data }: { data: ReturnType<typeof getDashboardData> }) {
       {stats.map((s) => (
         <div
           key={s.label}
-          className="bg-white/5 border border-white/10 rounded-xl p-3 text-center"
+          className="tracker-card p-3 text-center"
         >
-          <div className="text-white font-bold text-sm sm:text-base tabular-nums truncate">
+          <div className="text-santa-cream font-medium text-sm sm:text-base tabular-nums truncate">
             {s.value}
           </div>
-          <div className="text-[10px] text-gray-500 uppercase tracking-wider mt-0.5">
+          <div className="text-santa-gold/75 text-[10px] uppercase tracking-wider mt-0.5">
             {s.label}
           </div>
         </div>
@@ -210,7 +210,7 @@ function MiniMap({ holiday }: { holiday: HolidayDestination | null }) {
     : "Santa's at the North Pole";
 
   return (
-    <div className="w-full lg:w-[280px] rounded-lg border border-white/10 bg-[#060e1a] overflow-hidden">
+    <div className="tracker-map w-full lg:w-[280px] rounded-lg border overflow-hidden">
       <svg
         viewBox="0 0 1000 500"
         className="w-full"
@@ -218,12 +218,12 @@ function MiniMap({ holiday }: { holiday: HolidayDestination | null }) {
         preserveAspectRatio="xMidYMid meet"
       >
         <rect width="1000" height="500" fill="transparent" />
-        <g fill="#1e3a5f" stroke="#2a4d6e" strokeWidth="0.5" opacity="0.5">
+        <g fill="#1B4332" stroke="#52765a" strokeWidth="0.7" opacity="0.82">
           {worldMapPaths.map((d, i) => (
             <path key={i} d={d} />
           ))}
         </g>
-        <circle cx={santaX} cy={santaY} r="18" fill="#9C060B" opacity="0.25">
+        <circle cx={santaX} cy={santaY} r="18" fill="#D4AF37" opacity="0.3">
           <animate attributeName="r" values="12;22;12" dur="2s" repeatCount="indefinite" />
           <animate attributeName="opacity" values="0.3;0.1;0.3" dur="2s" repeatCount="indefinite" />
         </circle>
@@ -238,7 +238,7 @@ function MiniMap({ holiday }: { holiday: HolidayDestination | null }) {
           🎅
         </text>
       </svg>
-      <div className="px-2 py-1.5 text-[10px] text-gray-500 text-center">
+      <div className="tracker-map-caption px-2 py-1.5 text-[10px] text-center">
         {caption}
       </div>
     </div>

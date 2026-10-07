@@ -176,10 +176,10 @@ export default function SantaStats({ effectiveTime, holiday }: SantaStatsProps) 
       {cards.map((card, i) => (
         <div
           key={i}
-          className={`relative rounded-xl border p-4 transition-all duration-300 ${
+          className={`tracker-card relative p-4 transition-all duration-300 ${
             card.ukGlow
-              ? "border-santa-red/50 bg-santa-red/10 shadow-[0_0_20px_rgba(156,6,11,0.2)]"
-              : "border-white/10 bg-white/5 backdrop-blur-sm"
+              ? "tracker-card-highlight"
+              : ""
           }`}
         >
           <div className="flex items-center gap-2 text-santa-gold mb-2">
@@ -188,7 +188,7 @@ export default function SantaStats({ effectiveTime, holiday }: SantaStatsProps) 
               {card.label}
             </span>
           </div>
-          <div className="text-white font-semibold text-sm sm:text-base truncate tabular-nums">
+          <div className="tracker-card-value text-sm sm:text-base truncate tabular-nums">
             {card.value}
           </div>
         </div>

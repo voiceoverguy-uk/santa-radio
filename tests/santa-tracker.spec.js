@@ -96,7 +96,7 @@ test('desktop/mobile map, typography and menu fit without horizontal overflow', 
     expect(box.x).toBeGreaterThanOrEqual(0);
     expect(box.x + box.width).toBeLessThanOrEqual(viewport.width + 1);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
-    expect(await page.locator('main h1').evaluate(node => getComputedStyle(node).fontWeight)).toBe('700');
+    expect(await page.locator('main h1').evaluate(node => getComputedStyle(node).fontWeight)).toBe('400');
     await expect(map.locator('text').filter({ hasText: '🎅' })).toHaveCount(1);
     if (viewport.width < 768) {
       await page.getByRole('button', { name: 'Open menu' }).click();
@@ -104,6 +104,58 @@ test('desktop/mobile map, typography and menu fit without horizontal overflow', 
       await page.getByRole('button', { name: 'Close menu' }).click();
     }
   }
+});
+
+test('tracker uses the homepage typography and readable brand accents without changing shared styles', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-07-15T12:00:00Z'));
+  await page.goto('/');
+  const shared = await page.evaluate(() => {
+    const heading = getComputedStyle(document.querySelector('main h1'));
+    const button = getComputedStyle(document.querySelector('.hero-actions .btn-red'));
+    return { font: heading.fontFamily, weight: heading.fontWeight, button: button.backgroundColor };
+  });
+  await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Santa Tracker', exact: true }).click();
+  const tracker = await page.locator('main h1').evaluate(node => {
+    const style = getComputedStyle(node);
+    return { font: style.fontFamily, weight: style.fontWeight, size: parseFloat(style.fontSize) };
+  });
+  expect(tracker.font).toBe(shared.font);
+  expect(tracker.weight).toBe(shared.weight);
+  expect(tracker.size).toBeLessThanOrEqual(48);
+  const contrast = await page.evaluate(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = 1;
+    const context = canvas.getContext('2d');
+    const rgb = color => {
+      context.clearRect(0, 0, 1, 1);
+      context.fillStyle = color;
+      context.fillRect(0, 0, 1, 1);
+      return [...context.getImageData(0, 0, 1, 1).data].slice(0, 3);
+    };
+    const luminance = channels => channels.map(v => {
+      v /= 255;
+      return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+    }).reduce((sum, v, i) => sum + v * [0.2126, 0.7152, 0.0722][i], 0);
+    const background = rgb(getComputedStyle(document.querySelector('main')).backgroundColor);
+    return {
+      background,
+      ratios: [...document.querySelectorAll('main h1 span, main h1 + p, main [class*="tabular-nums"]')].map(node => {
+        const a = luminance(rgb(getComputedStyle(node).color)), b = luminance(background);
+        return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+      }),
+    };
+  });
+  expect(contrast.background[1]).toBeGreaterThan(contrast.background[2]);
+  expect(contrast.background[1]).toBeGreaterThan(contrast.background[0]);
+  expect(contrast.ratios.length).toBeGreaterThanOrEqual(5);
+  for (const ratio of contrast.ratios) expect(ratio).toBeGreaterThanOrEqual(4.5);
+  await expect(page.getByRole('button', { name: 'Share this postcard' })).toBeVisible();
+  await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Home', exact: true }).click();
+  expect(await page.evaluate(() => ({
+    font: getComputedStyle(document.querySelector('main h1')).fontFamily,
+    weight: getComputedStyle(document.querySelector('main h1')).fontWeight,
+    button: getComputedStyle(document.querySelector('.hero-actions .btn-red')).backgroundColor,
+  }))).toEqual(shared);
 });
 
 test('saved simulated dates stay isolated on the preview route and controls avoid the player', async ({ page }) => {

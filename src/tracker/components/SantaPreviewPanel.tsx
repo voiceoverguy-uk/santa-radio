@@ -84,29 +84,29 @@ export default function SantaPreviewPanel({
 
   return (
     <div className="tracker-preview-panel fixed bottom-4 left-4 z-50 max-w-sm" aria-label="Development journey preview">
-      <div className="rounded-2xl border border-white/15 bg-[#0a1628]/95 backdrop-blur-lg shadow-2xl overflow-hidden">
+      <div className="tracker-preview-surface rounded-2xl border backdrop-blur-lg overflow-hidden">
         <button
           onClick={() => setExpanded(!expanded)}
           aria-expanded={expanded}
           aria-controls={controlsId}
-          className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-white/5 transition-colors"
+          className="tracker-preview-toggle w-full flex items-center justify-between px-4 py-3 text-left hover:bg-white/5 transition-colors"
         >
           <div className="flex items-center gap-2">
             {previewState.enabled ? (
               <Eye size={14} className="text-santa-gold" />
             ) : (
-              <EyeOff size={14} className="text-gray-500" />
+              <EyeOff size={14} className="text-santa-cream/60" />
             )}
-            <span className="text-xs font-medium text-white uppercase tracking-wider">
+            <span className="tracker-preview-toggle text-xs font-medium uppercase tracking-wider">
               Preview Controls
             </span>
           </div>
-          <span aria-hidden="true" className="text-gray-500 text-xs">{expanded ? "▼" : "▲"}</span>
+          <span aria-hidden="true" className="text-santa-cream/70 text-xs">{expanded ? "▼" : "▲"}</span>
         </button>
 
-        <div id={controlsId} hidden={!expanded} role="region" aria-label="Preview controls" className="px-4 pb-4 space-y-3 border-t border-white/10">
+        <div id={controlsId} hidden={!expanded} role="region" aria-label="Preview controls" className="px-4 pb-4 space-y-3 border-t border-santa-gold/20">
             <div className="flex items-center justify-between pt-3">
-              <span className="text-xs text-gray-400">Preview Mode</span>
+              <span className="tracker-meta text-xs">Preview Mode</span>
               <button
                 onClick={handleToggle}
                 role="switch"
@@ -126,15 +126,15 @@ export default function SantaPreviewPanel({
 
             {previewState.enabled && (
               <>
-                <div className="bg-black/30 rounded-lg px-3 py-2">
-                  <p className="text-[10px] text-gray-500 uppercase tracking-wider">
+                <div className="tracker-preview-field rounded-lg px-3 py-2">
+                  <p className="tracker-meta text-[10px] uppercase tracking-wider">
                     Simulated Time
                   </p>
                   <p className="text-xs text-white font-mono mt-0.5">{simTime}</p>
                 </div>
 
                 <div>
-                  <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1.5">
+                  <p className="tracker-meta text-[10px] uppercase tracking-wider mb-1.5">
                     Speed
                   </p>
                   <div role="group" aria-label="Preview speed" className="flex gap-1.5">
@@ -145,8 +145,8 @@ export default function SantaPreviewPanel({
                         aria-pressed={previewState.speedMultiplier === s}
                         className={`flex-1 text-xs py-1.5 rounded-lg border transition-colors ${
                           previewState.speedMultiplier === s
-                            ? "border-santa-red bg-santa-red/20 text-white"
-                            : "border-white/10 text-gray-400 hover:border-white/20"
+                          ? "tracker-preview-selected"
+                          : "tracker-preview-control"
                         }`}
                       >
                         {s}×
@@ -156,7 +156,7 @@ export default function SantaPreviewPanel({
                 </div>
 
                 <div>
-                  <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1.5">
+                  <p className="tracker-meta text-[10px] uppercase tracking-wider mb-1.5">
                     Jump To
                   </p>
                   <div className="flex flex-wrap gap-1.5">
@@ -164,7 +164,7 @@ export default function SantaPreviewPanel({
                       <button
                         key={target}
                         onClick={() => handleJump(target)}
-                        className="text-[10px] px-2 py-1 rounded-md border border-white/10 text-gray-400 hover:text-white hover:border-white/20 transition-colors"
+                        className="tracker-preview-control text-[10px] px-2 py-1 rounded-md border transition-colors"
                       >
                         <SkipForward size={10} className="inline mr-1" />
                         {label}
@@ -174,7 +174,7 @@ export default function SantaPreviewPanel({
                 </div>
 
                 <div>
-                  <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1.5">
+                  <p className="tracker-meta text-[10px] uppercase tracking-wider mb-1.5">
                     Run Full Journey
                   </p>
                   <div className="flex gap-1.5">
@@ -182,7 +182,7 @@ export default function SantaPreviewPanel({
                       <button
                         key={m}
                         onClick={() => handleRunFullJourney(m)}
-                        className="flex-1 text-xs py-1.5 rounded-lg border border-white/10 text-gray-400 hover:text-white hover:border-santa-red/30 hover:bg-santa-red/10 transition-colors"
+                        className="tracker-preview-control flex-1 text-xs py-1.5 rounded-lg border transition-colors"
                       >
                         <Play size={10} className="inline mr-1" />
                         {m}min
@@ -193,7 +193,7 @@ export default function SantaPreviewPanel({
 
                 <button
                   onClick={handleReset}
-                  className="w-full text-xs py-2 rounded-lg border border-white/10 text-gray-400 hover:text-white hover:border-white/20 transition-colors flex items-center justify-center gap-1.5"
+                  className="tracker-preview-control w-full text-xs py-2 rounded-lg border transition-colors flex items-center justify-center gap-1.5"
                 >
                   <RotateCcw size={12} />
                   Reset to Real Time

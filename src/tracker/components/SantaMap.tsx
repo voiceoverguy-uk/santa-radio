@@ -25,7 +25,7 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday }: Sant
   }));
 
   return (
-    <div className="relative w-full overflow-hidden rounded-2xl border border-white/10 bg-[#0a1628]">
+    <div className="tracker-map relative w-full overflow-hidden rounded-2xl border bg-[#0c281e]">
       <div className="relative w-full" style={{ aspectRatio: "2 / 1" }}>
         <svg
           viewBox="0 0 1000 500"
@@ -43,8 +43,8 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday }: Sant
           </desc>
           <defs>
             <radialGradient id="glow" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#9C060B" stopOpacity="0.6" />
-              <stop offset="100%" stopColor="#9C060B" stopOpacity="0" />
+              <stop offset="0%" stopColor="#D4AF37" stopOpacity="0.68" />
+              <stop offset="100%" stopColor="#D4AF37" stopOpacity="0" />
             </radialGradient>
             <filter id="pulse-glow">
               <feGaussianBlur stdDeviation="3" result="blur" />
@@ -55,9 +55,9 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday }: Sant
             </filter>
           </defs>
 
-          <rect width="1000" height="500" fill="transparent" />
+          <rect width="1000" height="500" fill="#0c281e" />
 
-          <g opacity="0.15" stroke="#4a6fa5" strokeWidth="0.5" fill="none">
+          <g opacity="0.2" stroke="#D4AF37" strokeWidth="0.5" fill="none">
             {[0, 1, 2, 3, 4, 5, 6].map((i) => (
               <line key={`h${i}`} x1="0" y1={i * 71.4} x2="1000" y2={i * 71.4} />
             ))}
@@ -72,10 +72,10 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday }: Sant
             <polyline
               points={pathPoints.map((p) => `${p.x * 10},${p.y * 5}`).join(" ")}
               fill="none"
-              stroke="#9C060B"
+              stroke="#e6ce86"
               strokeWidth="2"
               strokeDasharray="6,3"
-              opacity="0.5"
+              opacity="0.65"
             />
           )}
 
@@ -103,14 +103,14 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday }: Sant
                         repeatCount="indefinite"
                       />
                     </circle>
-                    <circle cx={sx} cy={sy} r="4" fill="#9C060B" filter="url(#pulse-glow)" />
+                    <circle cx={sx} cy={sy} r="4" fill="#FFF8E7" filter="url(#pulse-glow)" />
                   </>
                 )}
                 {isVisited && !isCurrent && (
-                  <circle cx={sx} cy={sy} r="3" fill="#9C060B" opacity="0.7" />
+                  <circle cx={sx} cy={sy} r="3" fill="#e6ce86" />
                 )}
                 {!isVisited && !isCurrent && (
-                  <circle cx={sx} cy={sy} r="2.5" fill="white" opacity="0.2" />
+                  <circle cx={sx} cy={sy} r="2.5" fill="none" stroke="#bcc9bd" strokeWidth="1.2" opacity="0.8" />
                 )}
               </g>
             );
@@ -136,7 +136,7 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday }: Sant
         </svg>
       </div>
 
-      <div className="absolute bottom-3 left-3 bg-black/50 backdrop-blur-sm rounded-lg px-3 py-1.5 text-xs text-gray-400">
+      <div className="tracker-map-caption absolute bottom-3 left-3 backdrop-blur-sm rounded-lg px-3 py-1.5 text-xs">
         {onHoliday ? "Santa's current holiday location" : "Estimated route based on local midnight across time zones"}
       </div>
     </div>
@@ -145,7 +145,7 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday }: Sant
 
 function ContinentPaths() {
   return (
-    <g fill="#1e3a5f" stroke="#2a4d6e" strokeWidth="0.5" opacity="0.6">
+    <g fill="#1B4332" stroke="#52765a" strokeWidth="0.7" opacity="0.82">
       {worldMapPaths.map((d, i) => (
         <path key={i} d={d} />
       ))}

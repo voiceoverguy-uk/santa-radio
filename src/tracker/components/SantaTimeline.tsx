@@ -40,9 +40,9 @@ export default function SantaTimeline({ effectiveTime }: SantaTimelineProps) {
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-sm border-2 transition-all ${
                     isCurrent
-                      ? "border-santa-red bg-santa-red/20 shadow-[0_0_12px_rgba(156,6,11,0.4)]"
+                      ? "border-santa-gold bg-santa-gold/20 shadow-[0_0_12px_rgba(212,175,55,0.32)]"
                       : isVisited
-                      ? "border-santa-red/50 bg-santa-red/10"
+                      ? "border-santa-red-light/70 bg-santa-red/20"
                       : "border-white/20 bg-white/5"
                   }`}
                 >
@@ -51,7 +51,7 @@ export default function SantaTimeline({ effectiveTime }: SantaTimelineProps) {
                 {i < santaStops.length - 1 && (
                   <div
                     className={`absolute top-8 left-1/2 w-px h-4 -translate-x-1/2 ${
-                      isVisited ? "bg-santa-red/30" : "bg-white/10"
+                      isVisited ? "bg-santa-red-light/60" : "bg-white/20"
                     }`}
                   />
                 )}
@@ -60,18 +60,18 @@ export default function SantaTimeline({ effectiveTime }: SantaTimelineProps) {
                 <div>
                   <p
                     className={`text-sm font-medium truncate ${
-                      isCurrent ? "text-white" : isVisited ? "text-gray-400" : "text-gray-500"
+                      isCurrent ? "tracker-stop-current" : isVisited ? "tracker-stop-visited" : "tracker-stop-upcoming"
                     }`}
                   >
                     {stop.displayLabel}
                   </p>
-                  <p className="text-[10px] text-gray-500 uppercase tracking-wider">
+                  <p className="tracker-meta text-[10px] uppercase tracking-wider">
                     UTC{stop.utcOffset >= 0 ? "+" : ""}{stop.utcOffset}
                   </p>
                 </div>
                 <span className={`flex-shrink-0 text-[10px] rounded-full px-2 py-0.5 uppercase tracking-wider font-medium ${
                   isCurrent
-                    ? "bg-santa-red/20 text-santa-red-light border border-santa-red/30"
+                    ? "tracker-pill"
                     : "text-gray-400"
                 }`}>
                   {isCurrent ? "Now" : isVisited ? "Visited" : "Upcoming"}
@@ -86,11 +86,11 @@ export default function SantaTimeline({ effectiveTime }: SantaTimelineProps) {
         ref={scrollRef}
         tabIndex={0}
         aria-label="Santa's estimated journey timeline; scroll horizontally to see all stops"
-        className="hidden sm:block overflow-x-auto pb-4 scrollbar-thin"
-        style={{ scrollbarColor: "rgba(156,6,11,0.3) transparent" }}
+          className="hidden sm:block overflow-x-auto pb-4 scrollbar-thin"
+        style={{ scrollbarColor: "rgba(212,175,55,0.45) transparent" }}
       >
         <div className="relative min-w-max px-8">
-          <div className="absolute top-5 left-8 right-8 h-px bg-white/10" />
+          <div className="tracker-timeline-line absolute top-5 left-8 right-8 h-px" />
 
           <div className="flex items-start">
             {santaStops.map((stop) => {
@@ -107,9 +107,9 @@ export default function SantaTimeline({ effectiveTime }: SantaTimelineProps) {
                   <div
                     className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center text-base border-2 transition-all ${
                       isCurrent
-                        ? "border-santa-red bg-santa-red/20 shadow-[0_0_16px_rgba(156,6,11,0.5)]"
+                        ? "border-santa-gold bg-santa-gold/20 shadow-[0_0_16px_rgba(212,175,55,0.38)]"
                         : isVisited
-                        ? "border-santa-red/50 bg-santa-red/10"
+                        ? "border-santa-red-light/70 bg-santa-red/20"
                         : "border-white/20 bg-white/5"
                     }`}
                   >
@@ -119,17 +119,17 @@ export default function SantaTimeline({ effectiveTime }: SantaTimelineProps) {
                   <div className="mt-3 text-center">
                     <p
                       className={`text-xs font-medium leading-tight ${
-                        isCurrent ? "text-white" : isVisited ? "text-gray-400" : "text-gray-500"
+                        isCurrent ? "tracker-stop-current" : isVisited ? "tracker-stop-visited" : "tracker-stop-upcoming"
                       }`}
                     >
                       {stop.displayLabel}
                     </p>
-                    <p className="text-[9px] text-gray-600 mt-0.5">
+                    <p className="tracker-meta text-[9px] mt-0.5">
                       UTC{stop.utcOffset >= 0 ? "+" : ""}{stop.utcOffset}
                     </p>
                     <span className={`inline-block mt-1 text-[9px] rounded-full px-1.5 py-0.5 uppercase tracking-wider font-medium ${
                       isCurrent
-                        ? "bg-santa-red/20 text-santa-red-light border border-santa-red/30"
+                        ? "tracker-pill"
                         : "text-gray-400"
                     }`}>
                       {isCurrent ? "Now" : isVisited ? "Visited" : "Upcoming"}

@@ -57,20 +57,20 @@ export default function SantaTrackerPage() {
       <SantaTrackerClient
         introduction={
           <>
-            <nav aria-label="Breadcrumb" className="mb-4 text-xs text-gray-400">
+            <nav aria-label="Breadcrumb" className="tracker-breadcrumb mb-4 text-xs text-gray-400">
               <Link to="/">Santa Radio</Link> <span aria-hidden="true">/</span> Santa Tracker
             </nav>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
+            <h1 className="tracker-heading text-3xl sm:text-4xl lg:text-5xl tracking-tight">
               Track Santa&apos;s Journey
               <br />
-              <span className="text-santa-red">Around the World</span>
+              <span className="tracker-heading-accent">Around the World</span>
             </h1>
-            <p className="mt-4 text-gray-400 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
+            <p className="tracker-copy mt-4 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
               Follow Santa&apos;s estimated Christmas Eve journey around the world.
               Count down to his departure, follow his progress on the world map,
               and explore the estimated schedule for the big night.
             </p>
-            <p className="mt-2 text-xs text-gray-400">Listen to Santa Radio while you follow the festive fun.</p>
+            <p className="tracker-copy mt-2 text-xs">Listen to Santa Radio while you follow the festive fun.</p>
           </>
         }
       />
