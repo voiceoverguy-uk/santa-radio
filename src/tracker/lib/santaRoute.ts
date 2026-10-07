@@ -61,7 +61,7 @@ export interface DashboardData {
 
 export function isHolidaySeason(now: Date): boolean {
   const month = now.getUTCMonth();
-  return month >= 2 && month <= 9;
+  return month >= 2 && month <= 10;
 }
 
 export function isDecemberPrep(now: Date): boolean {

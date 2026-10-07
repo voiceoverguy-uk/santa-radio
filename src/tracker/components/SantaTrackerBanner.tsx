@@ -8,15 +8,18 @@ import { worldMapPaths } from "@/data/worldMapPaths";
 export default function SantaTrackerBanner() {
   const [now, setNow] = useState<Date | null>(null);
   const [holiday, setHoliday] = useState<HolidayDestination | null>(null);
+  const holidaySeason = now !== null && isHolidaySeason(now);
 
   useEffect(() => {
     setNow(new Date());
-    if (isHolidaySeason(new Date())) {
-      setHoliday(getRandomHoliday());
-    }
     const interval = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (!now) return;
+    setHoliday(holidaySeason ? getRandomHoliday() : null);
+  }, [holidaySeason]);
 
   if (!now) {
     return (
@@ -39,7 +42,7 @@ export default function SantaTrackerBanner() {
   const countdown = getCountdownToStart(now);
   const isLive = data.mode === "LIVE";
   const isComplete = data.mode === "COMPLETE";
-  const onHoliday = data.mode === "OFF_SEASON" && holiday !== null;
+  const onHoliday = data.mode === "OFF_SEASON" && holidaySeason && holiday !== null;
   const inJuly = data.mode === "OFF_SEASON" && isChristmasInJuly(now);
 
   const statusLabel = isLive
@@ -96,7 +99,7 @@ export default function SantaTrackerBanner() {
                 : onHoliday && inJuly && holiday
                 ? `It's Christmas in July! Santa's celebrating mid-year festivities while ${holiday.activity.charAt(0).toLowerCase()}${holiday.activity.slice(1)}. Only ${Math.ceil((new Date(now.getFullYear(), 11, 25).getTime() - now.getTime()) / (1000 * 60 * 60 * 24))} days until the real thing!`
                 : onHoliday && holiday
-                ? `Santa's taking a well-earned break! He's currently ${holiday.activity.charAt(0).toLowerCase()}${holiday.activity.slice(1)}. He'll be back at the North Pole on 1 November to start preparing for the big night.`
+                ? `Santa's taking a well-earned break! He's currently ${holiday.activity.charAt(0).toLowerCase()}${holiday.activity.slice(1)}. He'll be back at the North Pole on 1 December to start preparing for the big night.`
                 : "Follow Santa's Christmas Eve journey in real time. Live route updates, fun facts, a countdown, and the full itinerary."}
             </p>
 

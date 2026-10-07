@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Share2 } from "lucide-react";
 import { TRACKER_URL, TRACKER_DISPLAY_URL } from "@/lib/trackerBrand";
-import { getDashboardData, isDecemberPrep, isChristmasInJuly, type HolidayDestination } from "@/lib/santaRoute";
+import { getDashboardData, isDecemberPrep, isHolidaySeason, isChristmasInJuly, type HolidayDestination } from "@/lib/santaRoute";
 
 interface SantaStoryProps {
   effectiveTime: Date;
@@ -15,16 +15,15 @@ const MONTHS = [
   "July", "August", "September", "October", "November", "December",
 ];
 
-function getDateContext() {
-  const now = new Date();
-  const month = MONTHS[now.getMonth()];
-  const year = now.getFullYear();
-  const christmas = new Date(year, 11, 25);
+function getDateContext(now: Date) {
+  const month = MONTHS[now.getUTCMonth()];
+  const year = now.getUTCFullYear();
+  const christmas = new Date(Date.UTC(year, 11, 25));
   if (now > christmas) {
-    christmas.setFullYear(year + 1);
+    christmas.setUTCFullYear(year + 1);
   }
   const daysUntilChristmas = Math.ceil((christmas.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-  const dayOfWeek = now.toLocaleDateString("en-GB", { weekday: "long" });
+  const dayOfWeek = now.toLocaleDateString("en-GB", { weekday: "long", timeZone: "UTC" });
   return { month, year, daysUntilChristmas, dayOfWeek };
 }
 
@@ -425,9 +424,9 @@ export default function SantaStory({ effectiveTime, holiday }: SantaStoryProps) 
   const data = getDashboardData(effectiveTime);
   const inDecemberPrep = data.state === "OFF_SEASON" && isDecemberPrep(effectiveTime);
   const inJuly = data.state === "OFF_SEASON" && isChristmasInJuly(effectiveTime);
-  const onHoliday = data.state === "OFF_SEASON" && !!holiday && !inDecemberPrep;
+  const onHoliday = data.state === "OFF_SEASON" && isHolidaySeason(effectiveTime) && !!holiday;
 
-  const ctx = getDateContext();
+  const ctx = getDateContext(effectiveTime);
   const holidayPostcards = holidayPostcardEntries.map((entry) =>
     typeof entry === "function" ? entry(ctx) : entry
   );

@@ -12,12 +12,12 @@ const canonical = "https://santa-radio.replit.app/santa-tracker";
 const intro = "Follow Santa's estimated Christmas Eve journey around the world. Count down to his departure, follow his progress on the world map, and explore the estimated schedule for the big night.";
 const description = "Follow Santa's estimated Christmas Eve journey around the world, with a countdown, updating world map, festive facts and family fun from Santa Radio.";
 
-test("holiday season includes October and ends at midnight UTC on 1 November", () => {
+test("holiday season includes November and ends at midnight UTC on 1 December", () => {
   const { isHolidaySeason } = harness().load("lib/santaRoute.ts");
-  for (const iso of ["2026-03-01T00:00:00Z", "2026-10-01T00:00:00Z", "2026-10-31T23:59:59.999Z"]) {
+  for (const iso of ["2026-03-01T00:00:00Z", "2026-10-01T00:00:00Z", "2026-11-01T00:00:00Z", "2026-11-30T23:59:59.999Z"]) {
     assert.equal(isHolidaySeason(new Date(iso)), true, iso);
   }
-  for (const iso of ["2026-02-28T23:59:59.999Z", "2026-11-01T00:00:00Z", "2026-12-24T12:00:00Z"]) {
+  for (const iso of ["2026-01-15T12:00:00Z", "2026-02-28T23:59:59.999Z", "2026-12-01T00:00:00Z", "2026-12-24T12:00:00Z"]) {
     assert.equal(isHolidaySeason(new Date(iso)), false, iso);
   }
 });
@@ -183,9 +183,12 @@ test("mounted seasonal and preview status/countdown/CTA retain behavior alongsid
     ["2026-12-24T14:00:00Z", /Delivering Now/, false],
     ["2026-12-25T12:00:00Z", /Journey Complete/, false],
     ["2026-07-10T12:00:00Z", /Christmas in July/, true],
+    ["2026-11-30T23:59:59Z", /On Holiday/, true],
   ]) {
     const { h, page } = pageView(date);
     h.flush();
+    h.render(React.createElement(page.default));
+    h.flush(); // holiday selection follows the effective date after mount
     const html = h.render(React.createElement(page.default));
     assert.match(html, status, date);
     assert.ok(html.includes(intro.replaceAll("'", "&#x27;")), date);
@@ -358,6 +361,7 @@ test("the supplied 44-stop route preserves departure, completion and year rollov
   ]) {
     const data = route.getDashboardData(new Date(iso));
     assert.equal(data.mode, mode, iso);
+    assert.equal(data.speedLabel, mode === "LIVE" ? "6,650,000 mph" : "—", iso);
     assert.equal(data.totalStops, 44);
     assert.ok(Number.isFinite(data.mapPosition.x) && Number.isFinite(data.mapPosition.y), iso);
     if (mode === "COMPLETE") {

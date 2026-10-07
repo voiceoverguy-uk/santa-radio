@@ -2,13 +2,18 @@
 
 import { useEffect, useRef, useState } from "react";
 import { MapPin, Clock, Navigation, Gift, Plane, Globe, Target, Zap } from "lucide-react";
-import { getDashboardData, formatNumber, isChristmasInJuly, type HolidayDestination } from "@/lib/santaRoute";
+import { getDashboardData, formatNumber, isHolidaySeason, isChristmasInJuly, type HolidayDestination } from "@/lib/santaRoute";
 import { holidayDestinations } from "@/data/santaHolidays";
 
 interface SantaStatsProps {
   effectiveTime: Date;
   holiday?: HolidayDestination | null;
 }
+
+const holidaySpeeds = [
+  "Slow", "Horizontal", "Easy", "Very leisurely", "Cruising",
+  "Taking it easy", "Snoozing", "In no rush",
+];
 
 function useCountUp(target: number, duration: number = 800): number {
   const [display, setDisplay] = useState(target);
@@ -57,9 +62,19 @@ export default function SantaStats({ effectiveTime, holiday }: SantaStatsProps) 
   const data = getDashboardData(effectiveTime);
   const isLive = data.mode === "LIVE";
 
-  const onHoliday = data.mode === "OFF_SEASON" && !!holiday;
+  const onHoliday = data.mode === "OFF_SEASON" && isHolidaySeason(effectiveTime) && !!holiday;
   const inJuly = data.mode === "OFF_SEASON" && isChristmasInJuly(effectiveTime);
   const [maybeNext, setMaybeNext] = useState<HolidayDestination | null>(null);
+  const [speedIndex, setSpeedIndex] = useState(0);
+
+  useEffect(() => {
+    setSpeedIndex(0);
+    if (!onHoliday) return;
+    const interval = setInterval(() => {
+      setSpeedIndex((previous) => (previous + 1) % holidaySpeeds.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, [onHoliday]);
 
   useEffect(() => {
     const others = holidayDestinations.filter(d => d.name !== holiday?.name);
@@ -105,8 +120,7 @@ export default function SantaStats({ effectiveTime, holiday }: SantaStatsProps) 
   function getHolidayLocalTime(): string {
     if (!holiday) return "—";
     const offsetHours = Math.round(holiday.lng / 15);
-    const nowUtc = new Date();
-    const localMs = nowUtc.getTime() + offsetHours * 60 * 60 * 1000;
+    const localMs = effectiveTime.getTime() + offsetHours * 60 * 60 * 1000;
     const localDate = new Date(localMs);
     const h = localDate.getUTCHours();
     const m = localDate.getUTCMinutes();
@@ -150,12 +164,12 @@ export default function SantaStats({ effectiveTime, holiday }: SantaStatsProps) 
     {
       icon: <Globe size={18} />,
       label: "Countries Visited",
-      value: onHoliday ? (inJuly ? "Celebrating mid-year!" : "Back on 1 November") : `${animatedVisited} / ${data.visitedCount + data.remainingCount}`,
+      value: onHoliday ? (inJuly ? "Celebrating mid-year!" : "Back on 1 December") : `${animatedVisited} / ${data.visitedCount + data.remainingCount}`,
     },
     {
       icon: <Zap size={18} />,
       label: "Speed",
-      value: data.speedLabel,
+      value: onHoliday ? holidaySpeeds[speedIndex] : data.speedLabel,
     },
   ];
 
@@ -188,7 +202,7 @@ export default function SantaStats({ effectiveTime, holiday }: SantaStatsProps) 
               {card.label}
             </span>
           </div>
-          <div className="tracker-card-value text-sm sm:text-base truncate tabular-nums">
+          <div className="tracker-card-value text-sm sm:text-base break-words tabular-nums">
             {card.value}
           </div>
         </div>

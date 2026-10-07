@@ -53,17 +53,19 @@ function SantaTrackerInner({ showPreview = false, introduction }: SantaTrackerPr
   const [mounted, setMounted] = useState(false);
   const [currentFactIndex, setCurrentFactIndex] = useState(0);
   const [holiday, setHoliday] = useState<HolidayDestination | null>(null);
+  const holidaySeason = effectiveTime !== null && isHolidaySeason(effectiveTime);
 
   useEffect(() => {
     setMounted(true);
-    setEffectiveTime(new Date());
-    if (showPreview) {
-      setPreviewState(loadPreviewState());
-    }
-    if (isHolidaySeason(new Date())) {
-      setHoliday(getRandomHoliday());
-    }
+    const initialPreview = showPreview ? loadPreviewState() : getDefaultPreviewState();
+    setPreviewState(initialPreview);
+    setEffectiveTime(showPreview ? getEffectiveTime(initialPreview) : new Date());
   }, [showPreview]);
+
+  useEffect(() => {
+    if (!effectiveTime) return;
+    setHoliday(holidaySeason ? getRandomHoliday() : null);
+  }, [holidaySeason]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -91,7 +93,7 @@ function SantaTrackerInner({ showPreview = false, introduction }: SantaTrackerPr
   const data = getDashboardData(effectiveTime);
   const isLive = data.mode === "LIVE";
   const isComplete = data.mode === "COMPLETE";
-  const onHoliday = data.mode === "OFF_SEASON" && holiday !== null;
+   const onHoliday = data.mode === "OFF_SEASON" && holidaySeason && holiday !== null;
   const inJuly = data.mode === "OFF_SEASON" && isChristmasInJuly(effectiveTime);
 
   if (onHoliday && holiday) {
@@ -164,7 +166,7 @@ function SantaTrackerInner({ showPreview = false, introduction }: SantaTrackerPr
               : onHoliday && inJuly && holiday
               ? `It's Christmas in July! Santa's celebrating mid-year festivities while ${holiday.activity.charAt(0).toLowerCase()}${holiday.activity.slice(1)}. Festive fun doesn't stop just because it's summer!`
               : onHoliday && holiday
-              ? `Santa's taking a well-earned break! He's currently ${holiday.activity.charAt(0).toLowerCase()}${holiday.activity.slice(1)}. He'll be back at the North Pole on 1 November.`
+               ? `Santa's taking a well-earned break! He's currently ${holiday.activity.charAt(0).toLowerCase()}${holiday.activity.slice(1)}. He'll be back at the North Pole on 1 December.`
               : "Follow Santa as Christmas Eve midnight sweeps across the globe. From the Pacific Islands to Hawaii, watch his estimated journey unfold in real time."}
           </p>}
 
