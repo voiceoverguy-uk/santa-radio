@@ -28,3 +28,17 @@ mtime_ms = 1791311432478
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/c1c0322e-1b31-4494-b918-1277d7c27813/1a47694e-cc6a-4ef4-bff6-3be052848817"
 storage_version_token = "1791311516112279"
 content_type = "text/html"
+
+[[outputs]]
+id = "HU5lc3DdBARuOQpOn-Sg7"
+uri = "file://public/audio/messages/arabella.mp3"
+type = "audio"
+title = "Santa’s message for Arabella — MP3"
+description = "69-second experimental greeting assembled from your recorded intro, Arabella name clip and outro, with quiet sleigh bells."
+logical_id = "527797fa-0689-4b02-88e9-7d5fabe53698"
+content_hash = "sha256:2bb329e66de1ee9bae8dcafa15e0c41240f0a91a950126ea58cfa076e3c86c10"
+size = 1658924
+mtime_ms = 1791352336918
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/527797fa-0689-4b02-88e9-7d5fabe53698/9cf32b33-22c1-49aa-8823-d57a591a01a2"
+storage_version_token = "1791352407334672"
+content_type = "audio/mpeg"

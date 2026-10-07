@@ -1,12 +1,30 @@
-.santa-message-section { padding: 95px 0; background: #14382a; border-block: 1px solid #D4AF3725; }
-.message-layout { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 80px; }
-.santa-message-heading { color: var(--cream); font-size: clamp(2rem,3.4vw,3rem); text-align: left; margin-bottom: 24px; }
-.message-intro > p:not(.eyebrow) { font-size: .9rem; color: var(--muted); max-width: 400px; }
-.message-detail-link { display: inline-block; margin-top: 24px; font-size: .78rem; color: var(--gold-light); }
-.santa-message-box { background: #0c2a20; border: 1px solid #D4AF3750; border-radius: 20px; padding: 36px; text-align: left; box-shadow: 0 12px 40px #061c1720; }
-.message-seal { border: 1px solid var(--gold); color: var(--gold-light); font-family: 'Cinzel',serif; display: grid; place-items: center; border-radius: 50%; width: 50px; height: 50px; margin-bottom: 22px; font-size: 1.4rem; }
-.santa-message-box h3 { font-size: 1.25rem; color: var(--gold-light); margin-bottom: 18px; }
-.form-desc { font-size: .86rem; color: var(--muted); }
-.service-notice { font-size: .74rem; color: #c8d3c5; padding: 16px 0 24px; }
-.santa-message-box .btn-red { font-size: .75rem; }
-@media(max-width:767px) { .santa-message-section { padding: 65px 0; } .message-layout { grid-template-columns: 1fr; gap: 32px; } .santa-message-box { padding: 28px; } }
+.santa-message-section { padding: 88px 0; background: #14382a; border-block: 1px solid #d4af3730; }
+.message-layout { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 64px; }
+.santa-message-heading { color: var(--cream, #f6ecd8); font-size: clamp(2rem,3.4vw,3rem); text-align: left; margin-bottom: 22px; line-height: 1.25; }
+.message-intro > p:not(.eyebrow) { font-size: .95rem; color: #d0dacd; max-width: 420px; line-height: 1.8; }
+.message-detail-link { display: inline-block; margin-top: 22px; font-size: .85rem; color: var(--gold-light, #ead39a); text-decoration: underline; text-underline-offset: 5px; }
+.north-pole-letter { display: block; width: min(100%, 320px); height: auto; margin: 26px 0 0; }
+.santa-message-box { background: #0c2a20; border: 1px solid #d4af3760; border-radius: 20px; padding: 36px; text-align: left; box-shadow: 0 18px 50px #061c1740; position: relative; }
+.message-card-top { display: flex; align-items: center; gap: 14px; padding-bottom: 22px; border-bottom: 1px solid #d4af3730; margin-bottom: 24px; }
+.message-seal { border: 1px solid var(--gold, #d4af37); color: var(--gold-light, #ead39a); font-family: 'Cinzel',serif; display: grid; place-items: center; border-radius: 50%; width: 48px; height: 48px; flex-shrink: 0; font-size: 1.4rem; }
+.message-postmark { color: #ead39a; font-size: .7rem; letter-spacing: .16em; text-transform: uppercase; margin: 0; }
+.message-card-top small { display: block; color: #b8c6b6; font-size: .75rem; margin-top: 5px; }
+.santa-message-box h3 { font-size: 1.25rem; color: var(--gold-light, #ead39a); margin-bottom: 14px; line-height: 1.45; }
+.form-desc { font-size: .88rem; color: #d0dacd; line-height: 1.75; margin-bottom: 22px; }
+.message-name-label { display: block; color: #f6ecd8; font-size: .85rem; margin-bottom: 9px; }
+.message-name-input { display: block; width: 100%; min-height: 52px; padding: 12px 15px; background: #f4eddc; border: 2px solid transparent; color: #19392d; border-radius: 8px; font: inherit; font-size: 1rem; box-sizing: border-box; }
+.message-name-input::placeholder { color: #66766b; }
+.message-name-input[aria-invalid="true"] { border-color: #eea49a; }
+.message-name-hint { display: block; color: #becdbc; font-size: .76rem; margin: 10px 0 18px; line-height: 1.6; }
+.message-submit { width: 100%; min-height: 50px; justify-content: center; cursor: pointer; }
+.santa-message-box .btn-red { font-size: .82rem; }
+.service-notice { font-size: .75rem; color: #b8c6b6; padding-top: 18px; margin-bottom: 0; line-height: 1.7; }
+.message-validation, .message-audio-error { color: #ffc5b8; font-size: .85rem; line-height: 1.6; margin: 0 0 16px; }
+.message-result { margin-top: 26px; padding: 22px 0 0; border-top: 1px solid #d4af3740; }
+.message-result h4 { font-family: 'Cinzel', serif; color: #f6ecd8; font-size: 1.05rem; margin: 8px 0 12px; }
+.message-result p:not(.message-postmark) { color: #d0dacd; font-size: .82rem; line-height: 1.6; }
+.message-result audio { display: block; width: 100%; margin: 16px 0; height: 48px; }
+.message-download { display: inline-flex; align-items: center; gap: 12px; color: #ead39a; font-size: .85rem; text-decoration: underline; text-underline-offset: 5px; padding: 8px 0; }
+.message-retry { display: block; background: transparent; color: #f6ecd8; border: 1px solid #d4af3770; border-radius: 6px; padding: 10px 16px; font: inherit; font-size: .8rem; cursor: pointer; margin-bottom: 12px; }
+.santa-message-section :is(input,button,a,[tabindex]):focus-visible { outline: 3px solid #e7c877; outline-offset: 5px; }
+@media(max-width:767px) { .santa-message-section { padding: 54px 0; } .message-layout { grid-template-columns: 1fr; gap: 30px; } .santa-message-box { padding: 26px 22px; } .north-pole-letter { width: 240px; margin: 20px auto 0; } }

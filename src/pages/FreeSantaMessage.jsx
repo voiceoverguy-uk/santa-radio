@@ -7,16 +7,17 @@ export default function FreeSantaMessage() {
     <main>
       <Helmet>
         <title>Free Personalised Santa Message {'\u2013'} Santa Radio</title>
-        <meta name="description" content="Get a FREE, instantly downloadable personalised message from Santa for your child on Santa Radio." />
+        <meta name="description" content="Find a free recorded Santa greeting for Arabella. Listen or download with no signup. A Santa Radio experiment, with more names planned for the future." />
       </Helmet>
       <div className="fsm-hero starry-bg">
         <div className="fsm-hero-content">
-          <h1 className="fsm-title"><img className="brand-logo brand-logo-hero" src="/images/santa-radio-logo.png" alt="Santa Radio" width="827" height="190" /></h1>
-          <h2 className="fsm-sub">Free Personalised Santa Message</h2>
-          <p className="fsm-desc">Explore personalised Santa messages. Requests and downloads are not currently available on this website.</p>
+          <img className="brand-logo brand-logo-hero" src="/images/santa-radio-logo.png" alt="Santa Radio" width="827" height="190" />
+          <p className="fsm-kicker">Special delivery from the North Pole</p>
+          <h1 className="fsm-sub">Free Personalised Santa Message</h1>
+          <p className="fsm-desc">A familiar name. An unmistakable voice. A recorded Christmas greeting to listen to and keep.</p>
         </div>
       </div>
-      <SantaMessageForm />
+      <SantaMessageForm showDetailLink={false} />
     </main>
   );
 }

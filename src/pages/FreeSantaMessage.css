@@ -1,6 +1,6 @@
 .fsm-hero {
   text-align: center;
-  padding: 60px 20px 80px;
+  padding: 60px 20px 58px;
   position: relative;
 }
 
@@ -9,22 +9,20 @@
   z-index: 1;
 }
 
-.fsm-title {
-  font-family: 'Dancing Script', cursive;
-  font-size: clamp(3rem, 8vw, 4.5rem);
-  font-weight: 700;
-  margin-bottom: 12px;
-  line-height: 1;
-}
+.fsm-kicker { color: #e2c783; font-size: .72rem; text-transform: uppercase; letter-spacing: .18em; margin: 28px 0 14px; }
 
 .fsm-sub {
   font-family: 'Cinzel', serif;
-  font-size: clamp(1.2rem, 3vw, 1.6rem);
-  color: white;
-  margin-bottom: 8px;
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  color: #f6ecd8;
+  margin-bottom: 18px;
+  line-height: 1.4;
 }
 
 .fsm-desc {
-  color: rgba(255,255,255,0.75);
+  color: #ced9cd;
   font-size: 0.95rem;
+  max-width: 530px;
+  margin: 0 auto;
+  line-height: 1.8;
 }
