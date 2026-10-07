@@ -1,33 +1,157 @@
-.links-hero {
-  min-height: 60vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 120px 20px 60px;
+#page-content > main.links-page {
+  min-height: 100dvh;
+  padding: 85px 0 64px;
+  background: var(--navy-dark);
+  color: var(--cream);
+  font-family: 'Inter', sans-serif;
 }
 
-.links-hero-content {
-  max-width: 800px;
-  margin: 0 auto;
+.links-page .links-hero {
+  padding: 58px 24px 38px;
+  background: radial-gradient(ellipse at 50% 0%, #244d39, var(--navy-dark) 78%);
   text-align: center;
 }
 
-.links-title {
+.links-page .links-hero-content { max-width: 690px; margin-inline: auto; }
+.links-page .links-eyebrow {
+  margin: 0 0 16px;
+  color: var(--gold-light);
   font-family: 'Cinzel', serif;
-  font-size: 2.5rem;
-  margin-bottom: 30px;
+  font-size: .62rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
 }
-
-.links-body {
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 16px;
-  padding: 40px;
-  color: #f5f5f5;
-  font-size: 1.1rem;
-  line-height: 1.8;
+.links-page .links-title {
+  margin: 0 0 20px;
+  color: var(--gold-light);
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1.8rem, 3.5vw, 2.65rem);
+  font-weight: 400;
+  line-height: 1.25;
 }
-
-.links-body a {
-  color: #ffd700;
+.links-page .links-intro {
+  margin: 0;
+  color: var(--muted);
+  font-size: .9rem;
+  line-height: 1.85;
+}
+.links-page .links-container { width: min(960px, calc(100% - 48px)); margin-inline: auto; }
+.links-page .links-partners {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  padding: 12px 0 40px;
+}
+.links-page .partner-card {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  border: 1px solid #d4af3738;
+  border-radius: 12px;
+  background: #153628;
+}
+.links-page .partner-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 104px;
+  margin-bottom: 18px;
+}
+.links-page .partner-banner img {
+  display: block;
+  width: 100%;
+  max-width: 370px;
+  height: 104px;
+  object-fit: contain;
+}
+.links-page .partner-heading {
+  margin: 0 0 8px;
+  color: var(--cream);
+  font-family: 'Cinzel', serif;
+  font-size: 1.05rem;
+  line-height: 1.4;
+  font-weight: 400;
+}
+.links-page .partner-description {
+  margin: 0 0 17px;
+  color: var(--muted);
+  font-size: .8rem;
+  line-height: 1.75;
+}
+.links-page .partner-visit {
+  align-self: flex-start;
+  margin-top: auto;
+  padding-top: 10px;
+  color: var(--gold-light);
+  font-size: .76rem;
   text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.links-page .external-note { font-size: .67rem; opacity: .85; }
+.links-page .links-tunein {
+  padding: 25px;
+  border: 1px solid #d4af3738;
+  border-radius: 12px;
+  background: #102d22;
+}
+.links-page .links-section-title {
+  margin: 0 0 10px;
+  color: var(--cream);
+  font-family: 'Cinzel', serif;
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 1.4;
+}
+.links-page .links-tunein p {
+  max-width: 690px;
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: .82rem;
+  line-height: 1.75;
+}
+.links-page .tunein-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; }
+.links-page .tunein-load {
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 1px solid #d4af3760;
+  border-radius: 7px;
+  background: #244d39;
+  color: var(--gold-light);
+  font: inherit;
+  font-size: .8rem;
+  cursor: pointer;
+}
+.links-page .tunein-load:hover { background: #2d5a43; }
+.links-page .tunein-link, .links-page .links-contact a {
+  color: var(--gold-light);
+  font-size: .8rem;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.links-page .tunein-frame {
+  display: block;
+  width: 100%;
+  height: 100px;
+  margin: 20px 0 0;
+  border: 0;
+  border-radius: 6px;
+}
+.links-page .links-contact {
+  margin-top: 30px;
+  padding: 22px 10px 0;
+  border-top: 1px solid #d4af3726;
+  text-align: center;
+}
+.links-page .links-contact p { margin: 0; color: var(--muted); font-size: .82rem; line-height: 1.8; }
+.links-page a:focus-visible, .links-page button:focus-visible {
+  outline: 2px solid var(--gold-light);
+  outline-offset: 5px;
+}
+@media (max-width: 767px) {
+  .links-page .links-hero { padding: 42px 20px 28px; }
+  .links-page .links-container { width: calc(100% - 36px); }
+  .links-page .links-partners { grid-template-columns: 1fr; gap: 14px; padding-bottom: 28px; }
+  .links-page .partner-card { padding: 18px; }
+  .links-page .links-tunein { padding: 20px; }
+  .links-page .tunein-actions { align-items: flex-start; flex-direction: column; }
 }

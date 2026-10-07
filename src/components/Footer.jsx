@@ -17,19 +17,15 @@ export default function Footer() {
         <span>&middot;</span>
         <Link to="/submit-a-song">Submit your song</Link>
         <span>&middot;</span>
-        <a href="https://www.santaradio.co.uk/personalised-santa-video.php" target="_blank" rel="noopener noreferrer">Personalised Santa Video Message</a>
+        <a href="https://festivestudio.co.uk/" target="_blank" rel="noopener noreferrer">Personalised Santa Video Message</a>
         <span>&middot;</span>
         <Link to="/apps">Download the app</Link>
-        <span>&middot;</span>
-        <a href="https://www.santaradio.co.uk" target="_blank" rel="noopener noreferrer">Original Santa Radio</a>
         <span>&middot;</span>
         <Link to="/links">Links</Link>
         <span>&middot;</span>
         <Link to="/privacy-policy">Privacy Policy</Link>
         <span>&middot;</span>
         <a href="https://tunein.com/search/?query=Santa%20Radio" target="_blank" rel="noopener noreferrer">TuneIn</a>
-        <span>&middot;</span>
-        <Link to="/santa-stories">Santa Stories</Link>
       </div>
       <div className="footer-social">
         <a href="https://twitter.com/WeAreSantaRadio" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
