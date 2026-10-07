@@ -3,7 +3,11 @@ import './PrivacyPolicy.css';
 
 export default function PrivacyPolicy() {
   return <main className="privacy-page">
-    <Helmet><title>Privacy Policy — Santa Radio</title><meta name="description" content="How Santa Radio handles your information, browser preferences and privacy choices." /></Helmet>
+    <Helmet>
+      <title>Privacy Policy — Santa Radio</title>
+      <meta name="description" content="How Santa Radio handles your information, browser preferences and privacy choices." />
+      <link rel="canonical" href="https://santa-radio.replit.app/privacy-policy" />
+    </Helmet>
     <article className="privacy-content">
       <p className="eyebrow">Santa Radio</p>
       <h1>Privacy Policy</h1>
@@ -23,6 +27,9 @@ export default function PrivacyPolicy() {
       <p>Your browser remembers your snow preference in local storage and the minimised player setting in session storage. The snow preference remains until changed or cleared; the player preference normally ends with the tab session. You can clear these through browser settings.</p>
       <p>Hosting services process technical information, such as IP addresses and browser/request details, to deliver and protect the website. Radio playback connects to Citrus3. YouTube supplies video embeds, and Google Fonts supplies fonts. Some images load from our legacy website.</p>
       <p>These services receive connection information and may use cookies or similar technologies under their own privacy notices. The homepage YouTube player opens on request; song and karaoke pages can load YouTube embeds automatically.</p>
+
+      <h2>Links and external services</h2>
+      <p>Links to app stores, social networks, music platforms and personalised video services take you to separate services with their own privacy notices. Check those notices before sharing information. An email link opens your chosen email service; it does not submit a form on this website.</p>
 
       <h2>Editorial content and retention</h2>
       <p>We publish artist and celebrity photos and biographies for the station’s editorial features, relying on legitimate interests. Contact us about accuracy, privacy or removal concerns.</p>
