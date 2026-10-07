@@ -9,7 +9,7 @@ export default function ContactSection() {
           For Press or Corporate, feedback and suggestions, get in touch.
         </p>
         <a
-          href="mailto:santa@santaradio.co.uk?subject=Contact%20Santa%20Radio&body=How%20can%20we%20help?"
+          href="mailto:santa@santaradio.co.uk?subject=Enquiry%20from%20Santa%20Radio"
           className="contact-btn btn-red"
         >
           Send Email

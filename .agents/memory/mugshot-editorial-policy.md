@@ -2,6 +2,12 @@
 name: Mugshot editorial policy
 description: User ownership of biography research and cautious identity consolidation.
 ---
+Homepage Mugshots must be randomly selected only from profiles whose legacy homepage flag is Yes; never fill remaining spaces with unapproved profiles.
+
+**Why:** The owner used this flag as their A-list approval and explicitly requested its restoration.
+
+**How to apply:** Preserve eligibility through imports without replacing researched biographies. For merged duplicates, retain the canonical record's approval rather than promoting it merely because another photograph was approved.
+
 Keep one profile per verified celebrity, preserving the available photograph and celebrity details together. Keep historical links usable for retained profiles. Do not conflate group photographs or waxworks with individual people merely because a name overlaps.
 
 **Why:** The user reported duplicate photo/placeholder cards and asked to retain the version containing celebrity details.

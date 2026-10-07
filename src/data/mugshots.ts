@@ -6,6 +6,7 @@ export interface Mugshot {
   info?: string;
   credit?: string;
   socialUrl?: string;
+  homepage?: boolean;
 }
 
 import mugshotsJson from './mugshots.json';

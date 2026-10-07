@@ -1,4 +1,4 @@
-import { useId, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { useRadio } from './RadioProvider.jsx';
 import RadioTracks from './RadioTracks.jsx';
 import LiveLyrics from './LiveLyrics.jsx';
@@ -16,6 +16,8 @@ export function RadioButton({ className = 'btn-gold' }) {
 export default function AudioPlayer() {
   const { status, volume, setVolume, error, metadata } = useRadio();
   const [upcomingOpen, setUpcomingOpen] = useState(false);
+  const dockRef = useRef(null);
+  const keyboardInteraction = useRef(false);
   const [minimized, setMinimized] = useState(() => {
     try { return sessionStorage.getItem('radio-minimized') === 'true'; }
     catch { return false; }
@@ -26,9 +28,40 @@ export default function AudioPlayer() {
       return !value;
     });
   };
+  useEffect(() => {
+    if (minimized) return;
+    const dock = dockRef.current;
+    let timer;
+    const restart = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        // Never hide the reader or controls a keyboard user is focused on.
+        if (dock.querySelector('dialog[open]') ||
+            (keyboardInteraction.current && dock.contains(document.activeElement))) {
+          restart();
+          return;
+        }
+        setMinimized(true);
+        try { sessionStorage.setItem('radio-minimized', 'true'); } catch { /* Optional storage. */ }
+        if (dock.contains(document.activeElement)) dock.querySelector('.radio-size-toggle')?.focus();
+      }, 10000);
+    };
+    const interact = event => {
+      if (event.type === 'keydown' || event.type === 'focusin') keyboardInteraction.current = true;
+      if (event.type === 'pointerdown' || (event.type === 'click' && event.detail > 0)) keyboardInteraction.current = false;
+      restart();
+    };
+    const events = ['pointermove', 'pointerdown', 'click', 'keydown', 'input', 'focusin', 'focusout', 'wheel', 'close'];
+    events.forEach(event => dock.addEventListener(event, interact, true));
+    restart();
+    return () => {
+      clearTimeout(timer);
+      events.forEach(event => dock.removeEventListener(event, interact, true));
+    };
+  }, [minimized]);
   const upcomingId = useId();
   return (
-    <aside className={`radio-dock ${minimized ? 'is-minimized' : ''} ${status === 'loading' ? 'is-loading' : ''}`} aria-label="Santa Radio player">
+    <aside ref={dockRef} onPointerDownCapture={() => { keyboardInteraction.current = false; }} className={`radio-dock ${minimized ? 'is-minimized' : ''} ${status === 'loading' ? 'is-loading' : ''}`} aria-label="Santa Radio player">
       <button type="button" className="radio-size-toggle" onClick={toggleSize}
         aria-label={minimized ? 'Expand radio player' : 'Minimise radio player'} aria-expanded={!minimized}
         title={minimized ? 'Expand player' : 'Minimise player'}>

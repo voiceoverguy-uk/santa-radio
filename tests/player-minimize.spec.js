@@ -1,5 +1,37 @@
 import { test, expect } from '@playwright/test';
 
+test('auto minimises after ten idle seconds, resets on interaction and protects lyrics', async ({ page }) => {
+  await page.clock.install();
+  await page.goto('/');
+  const dock = page.getByRole('complementary', { name: 'Santa Radio player' });
+  await page.evaluate(() => window.savedAudio = document.querySelector('audio'));
+  await page.clock.runFor(9000);
+  await expect(dock).not.toHaveClass(/is-minimized/);
+  await dock.dispatchEvent('pointermove');
+  await page.clock.runFor(9000);
+  await expect(dock).not.toHaveClass(/is-minimized/);
+  await page.clock.runFor(1000);
+  await expect(dock).toHaveClass(/is-minimized/);
+  await dock.getByRole('button', { name: 'Expand radio player' }).click();
+  await page.clock.runFor(10000);
+  await expect(dock).toHaveClass(/is-minimized/);
+  await dock.getByRole('button', { name: 'Expand radio player' }).click();
+  await dock.getByRole('button', { name: 'Lyrics', exact: true }).click();
+  await page.clock.runFor(20000);
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await expect(dock).not.toHaveClass(/is-minimized/);
+  await page.getByRole('button', { name: 'Close lyrics' }).click();
+  await page.locator('h1').click();
+  await page.clock.runFor(10000);
+  await expect(dock).toHaveClass(/is-minimized/);
+  await dock.getByRole('button', { name: 'Expand radio player' }).click();
+  await dock.getByRole('slider').focus();
+  await page.keyboard.press('ArrowLeft');
+  await page.clock.runFor(20000);
+  await expect(dock).not.toHaveClass(/is-minimized/);
+  expect(await page.evaluate(() => window.savedAudio === document.querySelector('audio'))).toBe(true);
+});
+
 test('player minimises, stays small while browsing, and restores without audio interruption', async ({ page }) => {
   await page.route('**/api/radio-metadata', route => route.fulfill({ json: {
     current: { artist: 'Elton John', title: 'Step Into Christmas' },

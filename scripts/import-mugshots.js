@@ -74,7 +74,7 @@ export function socialUrl(raw) {
 const norm = value => repair(value).replace(/&/g, 'and').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
 
 export function reconcile(existing, rows) {
-  const source = rows.map(r => ({ id: Number(r[0]), slug: r[1].trim(), name: plainText(r[2]), image: r[3].trim(), info: plainText(r[4]), role: plainText(r[5]), credit: plainText(r[6]), socialUrl: socialUrl(r[7]), rawSocial: r[7] }));
+  const source = rows.map(r => ({ id: Number(r[0]), slug: r[1].trim(), name: plainText(r[2]), image: r[3].trim(), info: plainText(r[4]), role: plainText(r[5]), credit: plainText(r[6]), socialUrl: socialUrl(r[7]), rawSocial: r[7], homepage: r[8].trim().toLowerCase() === 'yes' }));
   const matches = [], unmatched = [], ambiguous = [], used = new Set(), disputed = new Set();
   const output = existing.map(old => {
     let method = 'slug';
@@ -87,17 +87,17 @@ export function reconcile(existing, rows) {
       method = 'name';
       candidates = source.filter(s => norm(s.name) === norm(old.artist));
     }
-    const publicContent = s => JSON.stringify([s.slug, s.name, s.image, s.info, s.role, s.credit, s.socialUrl]);
+    const publicContent = s => JSON.stringify([s.slug, s.name, s.image, s.info, s.role, s.credit, s.socialUrl, s.homepage]);
     const identicalDuplicates = candidates.length > 1 && new Set(candidates.map(publicContent)).size === 1;
     if (candidates.length !== 1 && !identicalDuplicates) {
       candidates.forEach(s => disputed.add(s.id));
       (candidates.length ? ambiguous : unmatched).push({ slug: old.song, name: old.artist, candidateIds: candidates.map(s => s.id) });
-      return old;
+      return { ...old, homepage: false };
     }
     const s = candidates[0];
     candidates.forEach(s => used.add(s.id));
     matches.push({ slug: old.song, image: old.image, sourceId: s.id, method, ...(identicalDuplicates ? { identicalSourceIds: candidates.map(s => s.id) } : {}) });
-    return { ...old, artist: s.name || old.artist, link: s.role || old.link, info: s.info, credit: s.credit, socialUrl: s.socialUrl };
+    return { ...old, artist: s.name || old.artist, link: s.role || old.link, info: s.info, credit: s.credit, socialUrl: s.socialUrl, homepage: s.homepage };
   });
   const duplicates = [...new Set(source.map(s => s.slug))].filter(slug => source.filter(s => s.slug === slug).length > 1);
   return { output, report: {
@@ -121,6 +121,12 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     fs.writeFileSync('src/data/mugshots.json', JSON.stringify(output, null, 2) + '\n');
     fs.mkdirSync('reports', { recursive: true });
     fs.writeFileSync('reports/mugshot-import.json', JSON.stringify(report, null, 2) + '\n');
+  }
+  if (process.argv.includes('--homepage-only')) {
+    // Restore eligibility without overwriting researched prose, names or photographs.
+    fs.writeFileSync('src/data/mugshots.json', JSON.stringify(existing.map((record, index) => ({
+      ...record, homepage: output[index].homepage === true,
+    })), null, 2) + '\n');
   }
   console.log(JSON.stringify({ ...report, matches: report.matches.length }, null, 2));
 }
