@@ -61,6 +61,8 @@ test('required fields, email validation, autocomplete and keyboard errors are ac
 });
 
 test('confirmed acceptance sends exact fields, ignores external redirect and only remembers an access flag', async ({ page }) => {
+  // Several full navigations on the proxied preview share one test deadline.
+  test.setTimeout(90000);
   let submitted;
   const urls = [];
   page.on('request', request => urls.push(request.url()));
@@ -133,6 +135,29 @@ test('provider field errors are safe text and a successful retry opens access', 
   await page.getByRole('button', { name: 'Get my free Santa message' }).click();
   await expect(page.getByLabel('Child’s first name')).toBeVisible();
 });
+
+for (const [field, explanation] of [
+  ['CHILD_DATE_OF_BIRTH', 'still requires a child’s date of birth'],
+  ['ADDITIONAL_PROVIDER_FIELD', 'requires an extra field'],
+]) {
+  test(`unsupported provider field ${field} explains the settings mismatch without collecting extra data`, async ({ page }) => {
+    await mockBrevo(page, { success: false, errors: { [field]: '<img src=x onerror="window.unsafeBrevo=true">Required' } });
+    await page.goto('/free-santa-message');
+    await fillAccessForm(page);
+    await page.getByRole('button', { name: 'Get my free Santa message' }).click();
+    await expect(page.getByRole('alert')).toContainText(explanation);
+    await expect(page.getByRole('alert')).toContainText('contact Santa Radio');
+    await expect(page.getByLabel('Child’s first name')).toHaveCount(0);
+    await expect(page.locator(`input[name="${field}"]`)).toHaveCount(0);
+    await expect(page.locator('.santa-message-access img')).toHaveCount(0);
+    expect(await page.evaluate(() => window.unsafeBrevo)).toBeUndefined();
+    for (const [name, value] of Object.entries(adult)) {
+      await expect(page.locator(`input[name="${name}"]`)).toHaveValue(value);
+    }
+    expect(await page.evaluate(key => sessionStorage.getItem(key), MESSAGE_ACCESS_KEY)).toBeNull();
+    await expect(page.getByRole('button', { name: 'Get my free Santa message' })).toBeEnabled();
+  });
+}
 
 test('pending form prevents duplicate submissions and adult details never reach the audio generator', async ({ page }) => {
   let release, calls = 0, generatorFields;

@@ -12,4 +12,5 @@
 - [Santa audio scope](santa-audio-scope.md) — MP3-only personalised greetings; typed name lookup, starting with Arabella before a larger recorded library.
 - [Santa message access](santa-message-access-scope.md) — Adult Brevo submission opens this site's MP3 maker; not email verification, email delivery or marketing consent.
 - [Tracker transfer scope](tracker-transfer-scope.md) — Preserve the supplied tracker; Santa Radio hosts it without replacing or redirecting SantaGuy’s existing version.
+- [Tracker holiday dates](tracker-holiday-dates.md) — Santa stays on holiday through 30 November; returns to the North Pole on 1 December.
 - [Preview test timeouts](preview-test-timeouts.md) — Whole-test timeouts can report misleading matcher values even when the captured UI state is correct.

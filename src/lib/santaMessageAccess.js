@@ -55,10 +55,24 @@ export async function submitMessageAccess(fields, signal) {
   // An HTTP 200, a truthy string or a legacy redirect is NOT acceptance.
   if (response.ok && data?.success === true) return;
   const fieldErrors = {};
-  for (const field of ['FIRSTNAME', 'LASTNAME', 'EMAIL']) {
+  const supportedFields = ['FIRSTNAME', 'LASTNAME', 'EMAIL'];
+  const submittedFields = [...supportedFields, 'email_address_check', 'locale'];
+  const providerErrors = data?.errors;
+  const unsupportedFields = providerErrors && typeof providerErrors === 'object' && !Array.isArray(providerErrors)
+    ? Object.keys(providerErrors).filter(field => !submittedFields.includes(field))
+    : [];
+  for (const field of supportedFields) {
     if (data?.errors && Object.hasOwn(data.errors, field)) {
       fieldErrors[field] = plainText(data.errors[field], 'Please check this field and try again.');
     }
+  }
+  if (unsupportedFields.length) {
+    throw new MessageAccessError(
+      unsupportedFields.includes('CHILD_DATE_OF_BIRTH')
+        ? 'The message desk’s Brevo form still requires a child’s date of birth. This website only collects adult contact details. Please contact Santa Radio so we can correct the form settings.'
+        : 'The message desk’s signup form requires an extra field that this website doesn’t collect. Please contact Santa Radio so we can correct the form settings.',
+      fieldErrors,
+    );
   }
   throw new MessageAccessError(
     plainText(data?.message, 'Your details could not be accepted. Please check them and try again.'),
