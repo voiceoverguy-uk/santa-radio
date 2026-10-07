@@ -19,11 +19,12 @@ import SantaTrackerPreviewPage from './tracker/app/santa-tracker/preview/page.ts
 import AudioPlayer from './components/AudioPlayer.jsx';
 import Snowfall from './components/Snowfall.jsx';
 import { RadioProvider } from './components/RadioProvider.jsx';
+import { SantaMessageAccessProvider } from './components/SantaMessageAccessProvider.jsx';
 import './north-pole.css';
 
 function App() {
   return (
-    <RadioProvider><BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+    <RadioProvider><SantaMessageAccessProvider><BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <a href="#page-content" className="skip-link">Skip to content</a>
       <Navbar />
       <Snowfall />
@@ -48,7 +49,7 @@ function App() {
       </Routes></div>
       <Footer />
       <AudioPlayer />
-    </BrowserRouter></RadioProvider>
+    </BrowserRouter></SantaMessageAccessProvider></RadioProvider>
   );
 }
 export default App;

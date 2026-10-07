@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test('footer opens a readable privacy policy without adding signup functionality', async ({ page }) => {
+test('footer opens a readable privacy policy with separate message access and news consent', async ({ page }) => {
   await page.goto('/');
   await page.evaluate(() => window.originalAudio = document.querySelector('audio'));
   await page.locator('footer').getByRole('link', { name: 'Privacy Policy', exact: true }).click();
@@ -10,6 +10,9 @@ test('footer opens a readable privacy policy without adding signup functionality
   await expect(article).toContainText('VoiceoverGuy Ltd');
   await expect(article).toContainText('News signup is not yet available here.');
   await expect(article).toContainText('until you unsubscribe');
+  await expect(article).toContainText('These details are sent to Brevo for message access');
+  await expect(article).toContainText('does not give consent for Santa Radio news or tracker reminders');
+  await expect(article).not.toContainText('requests are not currently connected');
   await expect(article.getByRole('link', { name: 'santa@santaradio.co.uk' })).toHaveAttribute('href', 'mailto:santa@santaradio.co.uk');
   await expect(article.locator('form, input')).toHaveCount(0);
   expect(await page.evaluate(() => window.originalAudio === document.querySelector('audio'))).toBe(true);

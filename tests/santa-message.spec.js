@@ -1,11 +1,12 @@
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
+import { openMessageDesk } from './helpers/message-access.js';
 
 test('message completion resumes only previously active radio and respects manual changes', async ({ page }) => {
   await page.route('**/api/santa-message', route => route.fulfill({
     contentType: 'audio/wav', body: readFileSync('server/santa-audio/names/olivia.wav'),
   }));
-  await page.goto('/free-santa-message');
+  await openMessageDesk(page);
   await page.evaluate(() => {
     window.radioPlays = 0;
     const radio = document.querySelector('audio');
@@ -39,7 +40,8 @@ test('message completion resumes only previously active radio and respects manua
 });
 
 test('recorded Santa greeting validates names, decodes and downloads the real MP3', async ({ page }) => {
-  await page.goto('/free-santa-message');
+  test.setTimeout(120000);
+  await openMessageDesk(page);
   const input = page.getByLabel('Child’s first name');
   const submit = page.getByRole('button', { name: 'Create message' });
   await submit.click();
@@ -84,7 +86,7 @@ test('recorded Santa greeting validates names, decodes and downloads the real MP
 test('suggestions cover all names without rendering until requested', async ({ page }) => {
   let renders = 0;
   page.on('request', req => { if (req.url().includes('/api/santa-message')) renders++; });
-  await page.goto('/free-santa-message');
+  await openMessageDesk(page);
   const input = page.getByLabel('Child’s first name');
   for (const name of ['Arabella', 'Callie', 'Charlotte', 'Darren', 'Ed', 'Erin', 'Freya', 'Harry', 'Jack', 'Jess', 'Jessica', 'Layla', 'Olivia']) {
     await input.fill(name.slice(0, 2));
@@ -103,7 +105,7 @@ test('suggestions cover all names without rendering until requested', async ({ p
 
 test('message desk fits a phone screen', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/free-santa-message');
+  await openMessageDesk(page);
   await expect(page.getByLabel('Child’s first name')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });

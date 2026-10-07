@@ -1,0 +1,158 @@
+.santa-message-box.message-access-box { background: #081e1738; box-shadow: none; }
+
+.santa-message-access {
+  color: #f6ecd8;
+  text-align: left;
+  animation: santa-access-arrive 420ms ease both;
+}
+
+.santa-message-access__step {
+  color: #ead39a;
+  font-size: .68rem;
+  font-weight: 600;
+  letter-spacing: .16em;
+  line-height: 1.5;
+  margin: 0 0 8px;
+  text-transform: uppercase;
+}
+
+.santa-message-access h3 {
+  color: #ead39a;
+  font-size: 1.22rem;
+  line-height: 1.45;
+  margin: 0 0 10px;
+}
+
+.santa-message-access__intro {
+  color: #d0dacd;
+  font-size: .86rem;
+  line-height: 1.75;
+  margin: 0 0 21px;
+  max-width: 54ch;
+}
+
+.santa-message-access__form {
+  display: grid;
+  gap: 16px;
+}
+
+.santa-message-access__field label {
+  color: #f6ecd8;
+  display: block;
+  font-size: .84rem;
+  line-height: 1.5;
+  margin-bottom: 7px;
+}
+
+.santa-message-access__field label span {
+  color: #e6ce86;
+}
+
+.santa-message-access__field input {
+  appearance: none;
+  background: #f4eddc;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  color: #19392d;
+  display: block;
+  font: inherit;
+  font-size: 1rem;
+  min-height: 50px;
+  padding: 11px 14px;
+  width: 100%;
+}
+
+.santa-message-access__field input:focus-visible {
+  border-color: #d4af37;
+  outline: 3px solid #e7c877;
+  outline-offset: 3px;
+}
+
+.santa-message-access__field input[aria-invalid="true"] {
+  border-color: #e8a398;
+}
+
+.santa-message-access__field-error,
+.santa-message-access__error {
+  color: #ffc5b8;
+  font-size: .8rem;
+  line-height: 1.55;
+  margin: 7px 0 0;
+}
+
+.santa-message-access__error {
+  border-left: 2px solid #b62332;
+  margin: 0;
+  padding: 3px 0 3px 11px;
+}
+
+.santa-message-access__honeypot {
+  height: 1px;
+  left: -10000px;
+  overflow: hidden;
+  position: absolute;
+  top: auto;
+  width: 1px;
+}
+
+.santa-message-access__submit {
+  align-items: center;
+  display: inline-flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 2px;
+  min-height: 52px;
+  width: 100%;
+}
+
+.santa-message-access__submit:disabled {
+  cursor: wait;
+  opacity: .72;
+}
+
+.santa-message-access__submit:focus-visible,
+.santa-message-access a:focus-visible {
+  outline: 3px solid #e7c877;
+  outline-offset: 5px;
+}
+
+.santa-message-access__status {
+  color: #d0dacd;
+  font-size: .78rem;
+  line-height: 1.6;
+  margin: -7px 0 0;
+}
+
+.santa-message-access__privacy,
+.santa-message-access__delivery {
+  color: #b8c6b6;
+  font-size: .74rem;
+  line-height: 1.65;
+  margin: 15px 0 0;
+}
+
+.santa-message-access__privacy a {
+  color: #ead39a;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.santa-message-access__delivery {
+  border-top: 1px solid #d4af3730;
+  margin-top: 12px;
+  padding-top: 12px;
+}
+
+@keyframes santa-access-arrive {
+  from { opacity: 0; transform: translateY(7px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .santa-message-access { animation: none; }
+}
+
+@media (max-width: 480px) {
+  .santa-message-access__form { gap: 14px; }
+  .santa-message-access__field input { min-height: 52px; }
+}

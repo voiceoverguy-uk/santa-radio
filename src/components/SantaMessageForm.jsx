@@ -2,9 +2,13 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { findSantaMessage, searchSantaNames, santaNames } from '../data/santaMessages.js';
 import { useRadio } from './RadioProvider.jsx';
+import SantaMessageAccessForm from './SantaMessageAccessForm.jsx';
+import { useSantaMessageAccess } from './SantaMessageAccessProvider.jsx';
 import './SantaMessageForm.css';
 
 export default function SantaMessageForm({ showDetailLink = true }) {
+  const { hasAccess, sessionRemembered } = useSantaMessageAccess();
+  const makerHeadingRef = useRef(null);
   const [name, setName] = useState('');
   const [message, setMessage] = useState(null);
   const [validation, setValidation] = useState('');
@@ -20,6 +24,9 @@ export default function SantaMessageForm({ showDetailLink = true }) {
   const inputId = useId();
   const radio = useRadio();
 
+  useEffect(() => {
+    if (hasAccess && !showDetailLink) makerHeadingRef.current?.focus();
+  }, [hasAccess, showDetailLink]);
   useEffect(() => {
     if (message) resultRef.current?.focus();
   }, [message]);
@@ -95,7 +102,7 @@ export default function SantaMessageForm({ showDetailLink = true }) {
       <div className="message-intro">
         <p className="eyebrow">A little North Pole experiment</p>
         <h2 className="santa-message-heading">Their name.<br />Santa’s voice.<br />A little Christmas magic.</h2>
-        <p>A real recorded greeting from Santa, with your child’s name in it. Find their message, press play together, or save it for a special Christmas moment.</p>
+        <p>A real recorded greeting from Santa, with your child’s name in it. Open the message desk with your adult contact details, then choose a recorded name, listen together and download your free MP3.</p>
         <svg className="north-pole-letter" viewBox="0 0 360 240" fill="none" aria-hidden="true">
           <ellipse cx="180" cy="218" rx="114" ry="10" fill="#09291e" />
           <path d="M47 103L178 28L311 103" stroke="#d9bc72" strokeWidth="2" />
@@ -111,9 +118,10 @@ export default function SantaMessageForm({ showDetailLink = true }) {
         </svg>
         {showDetailLink && <Link to="/free-santa-message" className="message-detail-link">Visit Santa’s message desk <span aria-hidden="true">→</span></Link>}
       </div>
-      <div className="santa-message-box">
+      <div className={`santa-message-box${hasAccess ? '' : ' message-access-box'}`}>
         <div className="message-card-top"><span className="message-seal" aria-hidden="true">S</span><div><p className="message-postmark">The North Pole message desk</p><small>A recorded hello, ready to keep</small></div></div>
-        <h3>Find your free Santa greeting</h3>
+        {!hasAccess ? <SantaMessageAccessForm /> : <>
+        <h3 ref={makerHeadingRef} tabIndex={-1}>Find your free Santa greeting</h3>
         <p className="form-desc">Choose from {santaNames.length} recorded names. Santa’s greeting is mixed especially for your selection when you press Create message.</p>
         <form onSubmit={submit} noValidate>
           <label className="message-name-label" htmlFor={inputId}>Child’s first name</label>
@@ -149,7 +157,9 @@ export default function SantaMessageForm({ showDetailLink = true }) {
           <a className="message-download" href={message.url} download={message.downloadName}>Download {message.name}’s greeting <span aria-hidden="true">↓</span></a>
           <p className="message-name-hint">On iPhone, you may need to use Share → Save to Files to keep the MP3.</p>
         </div>}
-        <p className="service-notice">Free. No signup. Head Elf deletes the MP3 after sending it; download your copy before leaving this page.</p>
+        <p className="service-notice">Free to create and download here. The MP3 isn’t sent by email; download your copy before leaving this page.</p>
+        {!sessionRemembered && <p className="message-name-hint" role="status">Your browser can’t remember access. The desk stays open while you browse, but refreshing this tab may ask for your details again.</p>}
+        </>}
       </div>
     </div>
   </section>;

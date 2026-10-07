@@ -7,7 +7,7 @@ export default function FreeSantaMessage() {
     <main>
       <Helmet>
         <title>Free Personalised Santa Message {'\u2013'} Santa Radio</title>
-        <meta name="description" content="Choose a recorded name and create a free personalised Santa greeting. Preview and download your freshly mixed MP3, with no signup." />
+        <meta name="description" content="Open Santa’s message desk with your adult contact details, then choose a recorded name and create, preview and download a free personalised Santa MP3 greeting." />
       </Helmet>
       <div className="fsm-hero starry-bg">
         <div className="fsm-hero-content">
