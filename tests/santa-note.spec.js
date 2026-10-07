@@ -1,6 +1,37 @@
 import { test, expect } from '@playwright/test';
 import { santaNotes, daysUntilChristmasEve, formatSantaNote } from '../src/data/santaNotes.js';
 
+test('mobile Santa bubble is compact and grows to show longer messages in full', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const text = page.locator('.santa-note-text');
+  await expect(text).toContainText('Santa here...');
+  for (const width of [320, 390, 430]) {
+    await page.setViewportSize({ width, height: 844 });
+    const sizes = await text.evaluate((element, notes) => {
+      const span = element.querySelector('span');
+      return notes.map(note => {
+        span.textContent = `Santa here... ${note}`;
+        // Measure the text itself: the decorative bubble tail extends outside the box.
+        const range = document.createRange();
+        range.selectNodeContents(span);
+        const content = range.getBoundingClientRect();
+        const box = element.getBoundingClientRect();
+        return {
+          height: box.height,
+          fits: content.top >= box.top && content.bottom <= box.bottom
+            && content.left >= box.left && content.right <= box.right,
+        };
+      });
+    }, santaNotes.map(note => formatSantaNote(note, 78)));
+    expect(sizes[0].height).toBeLessThanOrEqual(80);
+    expect(sizes.every(size => size.fits)).toBe(true);
+    expect(sizes.some(size => size.height > sizes[0].height)).toBe(true);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+});
+
 test('Christmas Eve notes use calendar days and roll over after Christmas Eve', () => {
   expect(daysUntilChristmasEve(new Date(2026, 9, 7, 23, 59))).toBe(78);
   expect(daysUntilChristmasEve(new Date(2026, 11, 23, 12))).toBe(1);
