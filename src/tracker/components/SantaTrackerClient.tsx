@@ -286,7 +286,7 @@ function SantaTrackerInner({ showPreview = false, introduction }: SantaTrackerPr
               Check Availability
             </a>
             <p className="tracker-copy mt-4 text-xs">
-              Santa’s voice by <a href="https://www.santaguy.co.uk/" className="tracker-link" target="_blank" rel="noopener noreferrer">Guy Harris</a>
+              Santa’s voice by <a href="https://www.voiceoverguy.co.uk" className="tracker-link" target="_blank" rel="noopener noreferrer">Guy Harris</a>
             </p>
           </div>
         </div>

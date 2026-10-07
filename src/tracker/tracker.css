@@ -119,7 +119,7 @@
   border-color: #D4AF3770;
   box-shadow: inset 0 0 0 1px #D4AF3712;
 }
-.santa-tracker .tracker-card-value { color: var(--tracker-cream); font-weight: 500; }
+.santa-tracker .tracker-card-value { color: var(--tracker-cream); font-weight: 500; white-space: normal; overflow-wrap: anywhere; overflow: visible; text-overflow: clip; }
 .santa-tracker .tracker-pill { background: #102d22; border: 1px solid #D4AF374a; color: var(--tracker-gold); }
 .santa-tracker .tracker-timeline-line { background: #D4AF3740; }
 .santa-tracker .tracker-stop-current { color: var(--tracker-cream); }

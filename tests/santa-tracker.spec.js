@@ -61,7 +61,7 @@ test('direct route metadata, assets and preview noindex are available before Jav
   await expect(page.getByRole('navigation', { name: 'Breadcrumb' })).toContainText('Santa Radio');
   expect(await page.locator('a[href*="/santa-tracker/preview"]').count()).toBe(0);
   expect(await page.locator('main form').count()).toBe(0);
-  await expect(page.locator('main').getByRole('link', { name: 'Guy Harris', exact: true })).toHaveAttribute('href', 'https://www.santaguy.co.uk/');
+  await expect(page.locator('main').getByRole('link', { name: 'Guy Harris', exact: true })).toHaveAttribute('href', 'https://www.voiceoverguy.co.uk');
 });
 
 for (const [date, text] of [
