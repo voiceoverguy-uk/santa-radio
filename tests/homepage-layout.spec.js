@@ -54,6 +54,10 @@ test('homepage puts the live countdown in the hero and Santa texting in its own 
   const hero = page.locator('.hero');
   const santaMessage = page.locator('#santa-message-section');
   await expect(hero.getByRole('heading', { name: 'Christmas is on its way' })).toBeVisible();
+  await expect(hero.getByText('The most wonderful day', { exact: true })).toHaveCount(0);
+  await expect(hero.getByText('Closer to the magic, every day.', { exact: true })).toBeVisible();
+  await expect(hero.locator('.hero-countdown')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  await expect(hero.locator('.hero-countdown')).toHaveCSS('border-top-width', '0px');
   await expect(hero.locator('.countdown-unit')).toHaveCount(4);
   await expect(hero.locator('.santa-note')).toHaveCount(0);
   await expect(santaMessage.locator('.santa-note')).toBeVisible();

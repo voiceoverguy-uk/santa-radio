@@ -37,9 +37,8 @@ export default function Home() {
           <p className="hero-note">The World’s Best Christmas Radio Station · All year round</p>
           <div id="christmas-countdown" className="hero-countdown">
             <div className="hero-countdown-copy">
-              <p className="eyebrow">The most wonderful day</p>
               <h2>Christmas is on its way</h2>
-              <p>A little closer to the magic, every day.</p>
+              <p>Closer to the magic, every day.</p>
             </div>
             <Countdown />
           </div>
