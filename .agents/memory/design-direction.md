@@ -20,11 +20,11 @@ Santa's rotating notes should use playful, family-friendly British humour about 
 
 **How to apply:** Keep future additions in that voice, starting with “Santa here... ” rather than generic promotional copy.
 
-Present Santa's typing animation as plain text at the bottom of the homepage hero, not a separate speech-bubble section. Keep song details in the radio player rather than repeating them in another homepage block.
+Keep Santa's notes at the bottom of the homepage hero in a small message bubble with “Sent with Elfie” underneath. Show dots briefly, then the entire message at once, without letter-by-letter writing. Keep song details in the radio player rather than repeating them in another homepage block.
 
-**Why:** The user wanted less clutter and asked for the text to replace “Step inside the magic”, noting that the mini player already shows song information.
+**Why:** The user wanted less clutter, then supplied a compact “Sent with Siri” message reference and requested “Sent with Elfie”, dots followed by the message, and no writing animation.
 
-**How to apply:** Preserve the animation and reduced-motion support when changing its presentation.
+**How to apply:** Keep the bubble compact rather than restoring a large separate section. Preserve rotating humorous messages and reduced-motion support.
 
 On mobile, the radio player should start minimised on a fresh page load, even if the tab previously remembered an expanded player. Keep manual expansion available and do not collapse it on every internal navigation.
 

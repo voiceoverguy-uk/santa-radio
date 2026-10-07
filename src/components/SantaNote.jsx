@@ -4,8 +4,8 @@ import './SantaNote.css';
 
 export default function SantaNote({ variant = 'bubble' }) {
   const [index, setIndex] = useState(0);
-  const [visible, setVisible] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const [readyMessage, setReadyMessage] = useState(null);
   const [days, setDays] = useState(daysUntilChristmasEve);
   const message = `Santa here... ${formatSantaNote(santaNotes[index], days)}`;
   useEffect(() => {
@@ -25,30 +25,26 @@ export default function SantaNote({ variant = 'bubble' }) {
     return () => clearInterval(timer);
   }, []);
   useEffect(() => {
-    setVisible(0);
-    if (reducedMotion) return;
-    let length = 0;
-    let timer;
-    const delay = setTimeout(() => {
-      timer = setInterval(() => {
-        length++;
-        setVisible(length);
-        if (length >= message.length) clearInterval(timer);
-      }, 60);
-    }, 2000);
-    return () => { clearTimeout(delay); clearInterval(timer); };
+    if (reducedMotion) {
+      setReadyMessage(message);
+      return undefined;
+    }
+    const timer = setTimeout(() => setReadyMessage(message), 2000);
+    return () => clearTimeout(timer);
   }, [message, reducedMotion]);
-  const complete = reducedMotion || visible >= message.length;
-  const waiting = !reducedMotion && visible === 0;
+  const waiting = !reducedMotion && readyMessage !== message;
   const inline = variant === 'inline';
   return (
     <div className={`santa-note${inline ? ' santa-note--inline' : ''}`} aria-label="A note from Santa">
       {!inline && <p className="santa-note-sender">A message from Santa</p>}
-      <p className="santa-note-text" aria-label={message}>
-        <span aria-hidden="true">
-          {waiting ? <span className="santa-note-dots"><i /><i /><i /></span> : complete ? message : message.slice(0, visible)}
-        </span>
-      </p>
+      <div className={inline ? 'santa-note-inline-group' : undefined}>
+        <p className="santa-note-text" aria-label={message}>
+          <span aria-hidden="true">
+            {waiting ? <span className="santa-note-dots"><i /><i /><i /></span> : message}
+          </span>
+        </p>
+        {inline && <p className="santa-note-caption">Sent with Elfie</p>}
+      </div>
     </div>
   );
 }

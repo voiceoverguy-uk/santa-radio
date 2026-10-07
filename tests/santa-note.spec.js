@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { santaNotes, daysUntilChristmasEve, formatSantaNote } from '../src/data/santaNotes.js';
 
-test('plain mobile Santa text reserves space and shows every message in full', async ({ page }) => {
+test('compact mobile Santa bubbles show every message in full without moving the reserved slot', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/', { waitUntil: 'domcontentloaded' });
@@ -13,21 +13,22 @@ test('plain mobile Santa text reserves space and shows every message in full', a
       const span = element.querySelector('span');
       return notes.map(note => {
         span.textContent = `Santa here... ${note}`;
-        // Measure every rotating line against its reserved unboxed text area.
+        // Measure every complete rotating message, including the longest ones.
         const range = document.createRange();
         range.selectNodeContents(span);
         const content = range.getBoundingClientRect();
         const box = element.getBoundingClientRect();
         return {
           height: box.height,
+          slotHeight: element.closest('.hero-santa-note').getBoundingClientRect().height,
           fits: content.top >= box.top && content.bottom <= box.bottom
             && content.left >= box.left && content.right <= box.right,
         };
       });
     }, santaNotes.map(note => formatSantaNote(note, 78)));
-    expect(sizes[0].height).toBeLessThanOrEqual(110);
+    expect(sizes[0].height).toBeLessThanOrEqual(80);
     expect(sizes.every(size => size.fits)).toBe(true);
-    expect(new Set(sizes.map(size => size.height)).size).toBe(1);
+    expect(new Set(sizes.map(size => size.slotHeight)).size).toBe(1);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
 });
@@ -42,10 +43,9 @@ test('Christmas Eve notes use calendar days and roll over after Christmas Eve', 
   expect(formatSantaNote(santaNotes[3], 78)).toBe("Head Elf tells me we'll be ready in 78 days!");
 });
 
-test('plain Santa text shows dots, types the whole message slowly and rotates without Pause', async ({ page }) => {
+test('Santa shows dots then the entire message at once, rotates and respects reduced motion', async ({ page }) => {
   expect(santaNotes).toHaveLength(51);
   expect(new Set(santaNotes).size).toBe(51);
-  expect(Math.max(...santaNotes.map(text => (`Santa here... ${text}`).length)) * 60 + 2000).toBeLessThan(8500);
   const start = new Date('2026-10-07T12:00:00Z');
   await page.clock.install({ time: start });
   await page.clock.pauseAt(new Date(start.getTime() + 1000));
@@ -53,26 +53,35 @@ test('plain Santa text shows dots, types the whole message slowly and rotates wi
   await expect(page.getByRole('link', { name: 'FREE Audio Message', exact: true })).toBeVisible();
   const bubble = page.locator('.santa-note');
   const text = bubble.locator('.santa-note-text');
+  await expect(bubble.getByText('Sent with Elfie', { exact: true })).toBeVisible();
   await expect(bubble.locator('button')).toHaveCount(0);
   await expect(bubble.locator('.santa-note-dots')).toBeVisible();
   await expect(text).toHaveText('');
   await page.clock.runFor(1900);
   await expect(bubble.locator('.santa-note-dots')).toBeVisible();
   await expect(text).toHaveText('');
-  await page.clock.runFor(220);
-  await expect(text).toHaveText('Sa');
-  await page.clock.runFor(3000);
+  await page.clock.runFor(100);
   await expect(text).toHaveText(`Santa here... ${santaNotes[0]}`);
-  await page.clock.runFor(4880);
+  await expect(bubble.locator('.santa-note-dots')).toHaveCount(0);
   await expect(text).toHaveAttribute('aria-label', `Santa here... ${santaNotes[0]}`);
-  await page.clock.runFor(5000);
+  await page.clock.runFor(13000);
   await expect(text).toHaveAttribute('aria-label', `Santa here... ${santaNotes[1]}`);
   await expect(bubble.locator('.santa-note-dots')).toBeVisible();
-  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(text).toHaveText('');
+  await page.clock.runFor(1900);
+  await expect(text).toHaveText('');
+  await page.clock.runFor(100);
   await expect(text).toHaveText(`Santa here... ${santaNotes[1]}`);
+  await page.clock.runFor(13000);
+  await expect(text).toHaveText('');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(text).toHaveText(`Santa here... ${santaNotes[2]}`);
   await expect(bubble.locator('.santa-note-dots')).toHaveCount(0);
-  await page.clock.runFor(30000);
+  await page.clock.runFor(15000);
   await expect(text).toHaveText("Santa here... Head Elf tells me we'll be ready in 78 days!");
+  await page.clock.setSystemTime(new Date('2026-10-08T12:00:00Z'));
+  await page.clock.runFor(1000);
+  await expect(text).toHaveText("Santa here... Head Elf tells me we'll be ready in 77 days!");
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });

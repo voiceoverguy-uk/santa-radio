@@ -49,7 +49,7 @@ test('desktop player keeps its existing expanded default and remembers minimisin
   await expect(dock).toHaveClass(/is-minimized/);
 });
 
-test('homepage keeps the countdown and plain Santa text in the hero with the tracker immediately below', async ({ page }) => {
+test('homepage keeps the countdown and compact Santa bubble in the hero with the tracker immediately below', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   const hero = page.locator('.hero');
   await expect(page.locator('.welcome-section')).toHaveCount(0);
@@ -62,10 +62,11 @@ test('homepage keeps the countdown and plain Santa text in the hero with the tra
   await expect(hero.locator('.hero-countdown')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
   await expect(hero.locator('.hero-countdown')).toHaveCSS('border-top-width', '0px');
   await expect(hero.locator('.countdown-unit')).toHaveCount(4);
-  await expect(hero.locator('.santa-note--inline')).toBeVisible();
-  await expect(hero.locator('.santa-note-text')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
-  await expect(hero.locator('.santa-note-text')).toHaveCSS('border-top-width', '0px');
+  await expect(hero.locator('.santa-note')).toBeVisible();
+  await expect(hero.locator('.santa-note-text')).not.toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  await expect(hero.locator('.santa-note-text')).toHaveCSS('border-top-width', '1px');
   await expect(hero.locator('.santa-note-sender')).toHaveCount(0);
+  await expect(hero.getByText('Sent with Elfie', { exact: true })).toBeVisible();
   await expect(page.locator('.santa-note')).toHaveCount(1);
   await expect(hero.getByRole('link', { name: 'FREE Santa Message', exact: true })).toHaveAttribute('href', '/free-santa-message');
   const before = await hero.locator('.countdown-unit').last().textContent();
