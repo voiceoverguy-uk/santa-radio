@@ -24,8 +24,6 @@ export default function Footer() {
         <Link to="/links">Links</Link>
         <span>&middot;</span>
         <Link to="/privacy-policy">Privacy Policy</Link>
-        <span>&middot;</span>
-        <a href="https://tunein.com/search/?query=Santa%20Radio" target="_blank" rel="noopener noreferrer">TuneIn</a>
       </div>
       <div className="footer-social">
         <a href="https://twitter.com/WeAreSantaRadio" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
