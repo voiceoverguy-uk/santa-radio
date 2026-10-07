@@ -31,3 +31,9 @@ Keep the hero countdown directly on the artwork with just timer values and label
 **Why:** The user approved the swapped countdown/Santa-texting arrangement, but found the countdown cluttered and progressively removed its outer box, eyebrow, heading and supporting sentence.
 
 **How to apply:** Preserve that simplicity in future hero changes; do not treat the richer North Pole direction as a request to box every element.
+
+Prioritise reaching the tracker and soundboard quickly over additional introductory sections on the homepage.
+
+**Why:** The user wanted to remove repeated introductory copy “to get to the fun stuff quicker like the tracker and the sound board”.
+
+**How to apply:** Avoid reintroducing a large promotional section between the introduction and interactive content unless the user requests it.

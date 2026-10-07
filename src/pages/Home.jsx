@@ -53,9 +53,6 @@ export default function Home() {
       <section id="santa-message-section" className="santa-note-section" aria-label="A note from Santa">
         <div className="container santa-note-layout"><SantaNote /></div>
       </section>
-      <section className="welcome-section">
-        <div className="container welcome-layout"><div><p className="eyebrow">Make a little room for Christmas</p><h2>One station.<br /><span>A world of festive joy.</span></h2></div><div><p>From the songs you know by heart to a message from Santa, this is a place for family traditions, familiar voices and the feeling of Christmas.</p><p>Hosted by the UK’s Voice of Santa, Guy Harris. Tune in for Christmas music, whenever the mood takes you.</p><div className="welcome-links"><Link to="/christmas-music">Explore the music <span aria-hidden="true">→</span></Link><Link to="/apps">Take us with you <span aria-hidden="true">→</span></Link></div></div></div>
-      </section>
       <SantaTrackerBanner />
       <SantaMessageForm />
       <SantaVideoSection />

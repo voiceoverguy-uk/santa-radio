@@ -36,13 +36,6 @@ html[data-effects="off"] .hero-snow,html[data-effects="off"] .hero-aurora { disp
 .santa-note-section { padding: 42px 0; background: #102d22; border-block: 1px solid #D4AF3726; }
 .santa-note-layout { display: flex; justify-content: center; }
 .santa-note-layout .santa-note { width: min(100%, 520px); max-width: none; margin: 0; }
-.welcome-section { padding: 100px 0; background: var(--navy-dark); }
-.welcome-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: center; }
-.welcome-layout h2 { font-size: clamp(2rem,3.5vw,3.1rem); }
-.welcome-layout h2 span { color: var(--gold-light); }
-.welcome-layout p:not(.eyebrow) { color: var(--muted); margin-bottom: 18px; font-size: .9rem; }
-.welcome-links { display: flex; flex-wrap: wrap; gap: 26px; color: var(--gold-light); font-size: .8rem; margin-top: 28px; }
-.welcome-links a { border-bottom: 1px solid #D4AF3745; padding-bottom: 6px; }
 @media (max-width: 767px) {
   .hero { min-height: 94dvh; padding: 128px 26px 110px; }
   .hero-content { display: block; padding: 0; }
@@ -64,8 +57,6 @@ html[data-effects="off"] .hero-snow,html[data-effects="off"] .hero-aurora { disp
   .countdown { width: 100%; max-width: 400px; gap: 8px; }
   .countdown-unit { width: auto; padding: 15px 7px; }
   .countdown-unit strong { font-size: 1.7rem; }
-  .welcome-section { padding: 65px 0; }
-  .welcome-layout { grid-template-columns: 1fr; gap: 25px; }
   .santa-note-section { padding: 32px 0; }
 }
 @media (max-width: 360px) {

@@ -126,7 +126,7 @@ test('tracks render, queue expands, refresh recovers and navigation keeps audio'
   title = 'New Song';
   await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
   await expect(dock).toContainText('New Song');
-  await page.locator('.welcome-links').getByRole('link', { name: /Explore the music/ }).click();
+  await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Music', exact: true }).click();
   expect(await page.evaluate(() => window.originalAudio === document.querySelector('audio'))).toBe(true);
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
