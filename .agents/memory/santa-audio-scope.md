@@ -1,13 +1,13 @@
+---
+name: Personalised Santa audio scope
+description: Audio-only product direction and incremental name-library rollout.
+---
 The on-demand audio service must be portable to Vercel, not merely functional in Replit preview. Do not assume system-installed audio tools or source recordings are available in an external serverless runtime.
 
 **Why:** Replit's preview and the Vercel deployment have different routing, file inclusion and executable availability; preview success alone does not establish that visitors can generate an MP3.
 
 **How to apply:** Preserve on-demand mixing rather than batch-generating completed greetings. Package its runtime resources explicitly, handle the hosting provider's request format, and verify an actual MP3 response after a new live deployment.
 
----
-name: Personalised Santa audio scope
-description: Audio-only product direction and incremental name-library rollout.
----
 The user wants personalised Santa audio messages ending in an MP3, not video. Start with Arabella as an experiment and a typed first-name box; they intend to upload thousands of recorded names later.
 
 **Why:** The user explicitly corrected the proposed video and described the intended audio workflow.
