@@ -13,3 +13,9 @@ Do not pre-create completed messages for the name catalogue. Store the source na
 **Why:** The user explicitly corrected batch generation: “We don't want a database full of completed names.”
 
 **How to apply:** Future work must replace the pre-rendered experiment with on-demand assembly. Do not batch-render newly uploaded names. Temporary output retention should be bounded rather than a permanent catalogue of completed MP3s.
+
+Preserve the outro's supplied opening padding.
+
+**Why:** The user deliberately added padding to the replacement outro and confirmed that the shorter outro should be used for all messages.
+
+**How to apply:** Do not automatically trim leading silence from the outro when mixing or replacing recordings.

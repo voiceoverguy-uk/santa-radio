@@ -11,13 +11,13 @@ if (inputs.length !== 5) {
 }
 const [intro, name, outro, bells, output] = inputs;
 mkdirSync(dirname(output), { recursive: true });
-// Trim only outer silence, keeping pauses within the performance.
-const voice = 'aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo,' +
-  'silenceremove=start_periods=1:start_duration=0.02:start_threshold=-48dB,' +
+// The outro's opening padding is an intentional editorial pause.
+const voice = preserveOpening => 'aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo,' +
+  (preserveOpening ? '' : 'silenceremove=start_periods=1:start_duration=0.02:start_threshold=-48dB,') +
   'areverse,silenceremove=start_periods=1:start_duration=0.02:start_threshold=-48dB,areverse,' +
   'loudnorm=I=-18:TP=-2:LRA=11,aresample=48000,' +
   'afade=t=in:d=0.005,areverse,afade=t=in:d=0.005,areverse,apad=pad_dur=0.10';
-const filter = [0, 1, 2].map(i => `[${i}:a]${voice}[v${i}]`).join(';') +
+const filter = [0, 1, 2].map(i => `[${i}:a]${voice(i === 2)}[v${i}]`).join(';') +
   ';[v0][v1][v2]concat=n=3:v=0:a=1[speech];' +
   '[3:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo,' +
   'loudnorm=I=-34:TP=-9:LRA=7,aresample=48000,afade=t=in:d=1[bells];' +
