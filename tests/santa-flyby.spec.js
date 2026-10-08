@@ -10,7 +10,7 @@ async function sampleFlight(page, time) {
   }, time);
 }
 
-test('a distant Santa climbs at twenty degrees every twenty seconds', async ({ page }) => {
+test('a distant Santa climbs at seven degrees every thirty seconds', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto('/');
   const overlay = page.locator('.santa-flyby');
@@ -18,25 +18,25 @@ test('a distant Santa climbs at twenty degrees every twenty seconds', async ({ p
   await expect(overlay).toHaveAttribute('aria-hidden', 'true');
   await expect(overlay).toHaveCSS('pointer-events', 'none');
   await expect(silhouette).toHaveAttribute('focusable', 'false');
-  await expect(silhouette).toHaveCSS('animation-duration', '20s');
+  await expect(silhouette).toHaveCSS('animation-duration', '30s');
   await expect(silhouette).toHaveCSS('animation-iteration-count', 'infinite');
   const heading = await page.locator('.hero-title').boundingBox();
   const eyebrow = await page.locator('.hero .eyebrow').boundingBox();
-  const before = await sampleFlight(page, 4000);
-  const during = await sampleFlight(page, 6000);
+  const before = await sampleFlight(page, 6000);
+  const during = await sampleFlight(page, 9000);
   expect(during.x).toBeGreaterThan(before.x + 100);
   const run = during.x + during.width / 2 - (before.x + before.width / 2);
   const rise = before.y + before.height / 2 - (during.y + during.height / 2);
-  expect(Math.atan2(rise, run) * 180 / Math.PI).toBeCloseTo(20, 1);
+  expect(Math.atan2(rise, run) * 180 / Math.PI).toBeCloseTo(7, 1);
   expect(during.opacity).toBeGreaterThan(.5);
   expect(during.width).toBeLessThan(200);
   expect(during.y + during.height).toBeLessThan(heading.y);
   expect(during.y + during.height).toBeLessThan(eyebrow.y);
   await expect(page.locator('.hero-picture img')).toHaveAttribute('src', '/images/north-pole-hero.webp');
   await page.screenshot({ path: '/tmp/santa-flyby-desktop.png' });
-  const gap = await sampleFlight(page, 19000);
+  const gap = await sampleFlight(page, 28500);
   expect(gap.opacity).toBe(0);
-  const repeat = await sampleFlight(page, 26000);
+  const repeat = await sampleFlight(page, 39000);
   expect(repeat.x).toBeCloseTo(during.x, 1);
   expect(repeat.opacity).toBeCloseTo(during.opacity, 1);
   // Resuming proves it really moves, rather than being just a static overlay.
@@ -49,12 +49,12 @@ test('the small mobile silhouette stays above the heading without overflow', asy
   for (const width of [390, 320]) {
     await page.setViewportSize({ width, height: 844 });
     await page.goto('/');
-    await expect(page.locator('.santa-flyby-silhouette')).toHaveCSS('animation-duration', '20s');
-    const before = await sampleFlight(page, 4000);
-    const during = await sampleFlight(page, 6000);
+    await expect(page.locator('.santa-flyby-silhouette')).toHaveCSS('animation-duration', '30s');
+    const before = await sampleFlight(page, 6000);
+    const during = await sampleFlight(page, 9000);
     const run = during.x + during.width / 2 - (before.x + before.width / 2);
     const rise = before.y + before.height / 2 - (during.y + during.height / 2);
-    expect(Math.atan2(rise, run) * 180 / Math.PI).toBeCloseTo(20, 1);
+    expect(Math.atan2(rise, run) * 180 / Math.PI).toBeCloseTo(7, 1);
     const heading = await page.locator('.hero-title').boundingBox();
     const eyebrow = await page.locator('.hero .eyebrow').boundingBox();
     expect(during.width).toBeLessThan(115);

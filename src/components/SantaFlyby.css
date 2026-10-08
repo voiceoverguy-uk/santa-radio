@@ -15,27 +15,27 @@
   height: auto;
   opacity: 0;
   filter: drop-shadow(0 1px 2px rgb(2 12 9 / 25%));
-  /* Rise/run is tan(20deg); anchor the line to the visible left edge. */
-  transform: translate3d(-24vw, calc(24vw * 0.3639702343), 0) scale(.82) rotate(-20deg);
+  /* Rise/run is tan(7deg); anchor the line to the visible left edge. */
+  transform: translate3d(-24vw, calc(24vw * 0.1227845609), 0) scale(.82) rotate(-7deg);
   transform-origin: center;
-  animation: santa-distant-crossing 20s linear infinite;
+  animation: santa-distant-crossing 30s linear infinite;
 }
 
 @keyframes santa-distant-crossing {
   0%, 9% {
     opacity: 0;
-    transform: translate3d(-24vw, calc(24vw * 0.3639702343), 0) scale(.82) rotate(-20deg);
+    transform: translate3d(-24vw, calc(24vw * 0.1227845609), 0) scale(.82) rotate(-7deg);
   }
   12% {
     opacity: .76;
   }
   84% {
     opacity: .76;
-    transform: translate3d(112vw, calc(-112vw * 0.3639702343), 0) scale(1) rotate(-20deg);
+    transform: translate3d(112vw, calc(-112vw * 0.1227845609), 0) scale(1) rotate(-7deg);
   }
   88%, 100% {
     opacity: 0;
-    transform: translate3d(112vw, calc(-112vw * 0.3639702343), 0) scale(1) rotate(-20deg);
+    transform: translate3d(112vw, calc(-112vw * 0.1227845609), 0) scale(1) rotate(-7deg);
   }
 }
 
@@ -47,24 +47,24 @@ html[data-effects="off"] .santa-flyby {
   .santa-flyby-silhouette {
     top: 94px;
     width: clamp(78px, 23vw, 112px);
-    transform: translate3d(-30vw, calc(30vw * 0.3639702343), 0) scale(.72) rotate(-20deg);
+    transform: translate3d(-30vw, calc(30vw * 0.1227845609), 0) scale(.72) rotate(-7deg);
   }
 
   @keyframes santa-distant-crossing {
     0%, 9% {
       opacity: 0;
-      transform: translate3d(-30vw, calc(30vw * 0.3639702343), 0) scale(.72) rotate(-20deg);
+      transform: translate3d(-30vw, calc(30vw * 0.1227845609), 0) scale(.72) rotate(-7deg);
     }
     12% {
       opacity: .72;
     }
     84% {
       opacity: .72;
-      transform: translate3d(115vw, calc(-115vw * 0.3639702343), 0) scale(.88) rotate(-20deg);
+      transform: translate3d(115vw, calc(-115vw * 0.1227845609), 0) scale(.88) rotate(-7deg);
     }
     88%, 100% {
       opacity: 0;
-      transform: translate3d(115vw, calc(-115vw * 0.3639702343), 0) scale(.88) rotate(-20deg);
+      transform: translate3d(115vw, calc(-115vw * 0.1227845609), 0) scale(.88) rotate(-7deg);
     }
   }
 }
