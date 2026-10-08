@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Share2 } from "lucide-react";
-import { TRACKER_URL, TRACKER_DISPLAY_URL } from "@/lib/trackerBrand";
+import { TRACKER_URL } from "@/lib/trackerBrand";
 import { getDashboardData, isDecemberPrep, isHolidaySeason, isChristmasInJuly, type HolidayDestination } from "@/lib/santaRoute";
 
 interface SantaStoryProps {
@@ -371,13 +371,10 @@ function HolidayPostcard({ message, holiday, isJuly }: { message: string; holida
                 </div>
               </div>
 
-              <p className="postcard-secondary-ink text-[7px] text-right mt-1 tracking-wide">
-                <a href={TRACKER_URL}>{TRACKER_DISPLAY_URL}</a>
-              </p>
             </div>
           </div>
 
-          <div className="absolute bottom-2 left-5 flex items-center gap-1.5 opacity-40">
+          <div className="absolute bottom-2 left-5 flex items-center gap-1.5 opacity-70">
             <span className="postcard-secondary-ink text-[9px] italic">
               Sent from {holiday.name} {holiday.emoji}
             </span>
