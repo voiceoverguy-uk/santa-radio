@@ -21,6 +21,7 @@ import Snowfall from './components/Snowfall.jsx';
 import { RadioProvider } from './components/RadioProvider.jsx';
 import { SantaMessageAccessProvider } from './components/SantaMessageAccessProvider.jsx';
 import './north-pole.css';
+import './north-pole-glow.css';
 
 function App() {
   return (

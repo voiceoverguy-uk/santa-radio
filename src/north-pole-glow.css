@@ -1,0 +1,158 @@
+/*
+ * Shared soft-gold hover for the site's actual card and panel surfaces.
+ * Kept deliberately explicit so labels, media, controls and decorative
+ * containers do not inherit a glow.
+ */
+:is(
+  .hero-countdown .countdown-unit,
+  .countdown-section .countdown-unit,
+  .santa-tracker .tracker-countdown-unit,
+  .tracker-banner .tracker-countdown-unit,
+  .song-card,
+  .mugshot-card,
+  .mug-card,
+  .no-results,
+  .mugshot-detail-card,
+  .feature-item,
+  .tv-frame,
+  .song-artwork-placeholder,
+  .song-lyrics-content,
+  .song-youtube-embed,
+  .karaoke-video,
+  .karaoke-lyrics-display,
+  .artist-detail-header,
+  .artist-detail-lyrics,
+  .stories-body,
+  .links-body,
+  .submit-body,
+  .privacy-content,
+  .partner-card,
+  .tunein-frame,
+  .santa-message-box:not(:has(.message-wait:hover)),
+  .message-wait,
+  .live-lyrics-dialog,
+  .santa-tracker .tracker-card,
+  .tracker-banner .tracker-card,
+  .santa-tracker .tracker-story-card,
+  .santa-tracker .tracker-cta,
+  .santa-tracker .tracker-map,
+  .tracker-banner .tracker-map,
+  .santa-tracker .tracker-preview-surface,
+  .radio-dock
+) {
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :is(
+    .hero-countdown .countdown-unit,
+    .countdown-section .countdown-unit,
+    .santa-tracker .tracker-countdown-unit,
+    .tracker-banner .tracker-countdown-unit,
+    .song-card,
+    .mugshot-card,
+    .mug-card,
+    .no-results,
+    .mugshot-detail-card,
+    .feature-item,
+    .tv-frame,
+    .song-artwork-placeholder,
+    .song-lyrics-content,
+    .song-youtube-embed,
+    .karaoke-video,
+    .karaoke-lyrics-display,
+    .artist-detail-header,
+    .artist-detail-lyrics,
+    .stories-body,
+    .links-body,
+    .submit-body,
+    .privacy-content,
+    .partner-card,
+    .tunein-frame,
+    .santa-message-box:not(:has(.message-wait:hover)),
+    .message-wait,
+    .live-lyrics-dialog,
+    .santa-tracker .tracker-card,
+    .tracker-banner .tracker-card,
+    .santa-tracker .tracker-story-card,
+    .santa-tracker .tracker-cta,
+    .santa-tracker .tracker-map,
+    .tracker-banner .tracker-map,
+    .santa-tracker .tracker-preview-surface,
+    .radio-dock
+  ):hover {
+    border-color: #e6ce86;
+    box-shadow: 0 0 0 1px #e6ce8630, 0 0 16px 3px #e6ce8645;
+  }
+
+  .santa-message-box:has(.message-wait:hover) {
+    border-color: #d4af3760;
+    box-shadow: 0 18px 50px #061c1740;
+  }
+
+  /* Keep the floating radio's existing depth beneath the shared halo. */
+  .radio-dock:hover {
+    box-shadow: 0 0 0 1px #e6ce8630, 0 0 16px 3px #e6ce8645, 0 12px 40px #06150f66;
+  }
+
+  .santa-tracker .tracker-card-highlight:hover {
+    box-shadow: 0 0 0 1px #e6ce8630, 0 0 16px 3px #e6ce8645, inset 0 0 0 1px #D4AF3712;
+  }
+
+  .santa-tracker .tracker-preview-surface:hover {
+    box-shadow: 0 0 0 1px #e6ce8630, 0 0 16px 3px #e6ce8645, 0 18px 50px #06150f70;
+  }
+}
+
+.song-card:focus-visible,
+.mugshot-card:focus-visible,
+.mug-card:focus-visible,
+.partner-card:focus-visible,
+.tunein-frame:focus-visible,
+.santa-tracker .tracker-map:focus-visible,
+.tracker-banner .tracker-map:focus-visible {
+  border-color: #e6ce86;
+  box-shadow: 0 0 0 1px #e6ce8630, 0 0 16px 3px #e6ce8645;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(
+    .hero-countdown .countdown-unit,
+    .countdown-section .countdown-unit,
+    .santa-tracker .tracker-countdown-unit,
+    .tracker-banner .tracker-countdown-unit,
+    .song-card,
+    .mugshot-card,
+    .mug-card,
+    .no-results,
+    .mugshot-detail-card,
+    .feature-item,
+    .tv-frame,
+    .song-artwork-placeholder,
+    .song-lyrics-content,
+    .song-youtube-embed,
+    .karaoke-video,
+    .karaoke-lyrics-display,
+    .artist-detail-header,
+    .artist-detail-lyrics,
+    .stories-body,
+    .links-body,
+    .submit-body,
+    .privacy-content,
+    .partner-card,
+    .tunein-frame,
+    .santa-message-box:not(:has(.message-wait:hover)),
+    .message-wait,
+    .live-lyrics-dialog,
+    .santa-tracker .tracker-card,
+    .tracker-banner .tracker-card,
+    .santa-tracker .tracker-story-card,
+    .santa-tracker .tracker-cta,
+    .santa-tracker .tracker-map,
+    .tracker-banner .tracker-map,
+    .santa-tracker .tracker-preview-surface,
+    .radio-dock
+  ) {
+    transition: none;
+  }
+}
