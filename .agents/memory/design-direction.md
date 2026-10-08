@@ -69,3 +69,9 @@ The site's shared gold box glow includes the Santa soundboard buttons, not just 
 **Why:** The user clarified that the soundboard boxes should glow too after the broader all-boxes change omitted them.
 
 **How to apply:** Do not exclude the soundboard simply because its boxes are buttons. Preserve audio controls and distinguish playing/disabled states when adjusting decorative effects.
+
+The user loves the current snowy North Pole village and northern-lights background.
+
+**Why:** They explicitly said “I love the background you made” when requesting a distant Santa flyby.
+
+**How to apply:** Preserve that backdrop when tuning the flyby; keep the silhouette as a separate decorative overlay rather than replacing or baking it into the artwork.

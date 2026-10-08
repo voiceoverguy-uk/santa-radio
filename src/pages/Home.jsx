@@ -9,6 +9,7 @@ import YouTubeSection from '../components/YouTubeSection.jsx';
 import MugshotsPreview from '../components/MugshotsPreview.jsx';
 import ContactSection from '../components/ContactSection.jsx';
 import SantaVideoSection from '../components/SantaVideoSection.jsx';
+import SantaFlyby from '../components/SantaFlyby.jsx';
 import './Home.css';
 
 export default function Home() {
@@ -24,6 +25,7 @@ export default function Home() {
           <img src="/images/north-pole-hero.webp" alt="A snowy North Pole village with warmly lit windows beneath the northern lights" fetchpriority="high" />
         </picture>
         <div className="hero-aurora" aria-hidden="true" />
+        <SantaFlyby />
         <div className="hero-content">
           <p className="eyebrow">A little magic from the North Pole</p>
           <h1 className="hero-title">Live from The North Pole,<span>Santa Radio</span></h1>
