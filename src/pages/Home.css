@@ -12,7 +12,7 @@
 .hero-note { font-size: .65rem; margin-top: 24px; color: #d0d7c9; letter-spacing: .04em; }
 .hero-countdown { max-width: 400px; margin-top: 24px; }
 .hero-countdown .countdown { gap: 8px; }
-.hero-countdown .countdown-unit { width: auto; min-width: 0; flex: 1; padding: 9px 6px; background: #17392de8; }
+.hero-countdown .countdown-unit { width: auto; min-width: 0; flex: 1; padding: 9px 6px; background: #17392de8; transition: border-color 180ms ease, box-shadow 180ms ease; }
 .hero-countdown .countdown-unit strong { font-size: clamp(1.15rem, 2vw, 1.5rem); }
 .hero-countdown .countdown-unit span { letter-spacing: .08em; font-size: .5rem; }
 .hero-countdown .christmas-greeting { color: var(--gold-light); font-family: 'Cinzel',serif; text-align: center; }
@@ -62,5 +62,14 @@ html[data-effects="off"] .hero-snow,html[data-effects="off"] .hero-aurora { disp
   .hero-countdown .countdown { gap: 5px; }
   .hero-countdown .countdown-unit { padding-inline: 2px; }
   .hero-countdown .countdown-unit span { font-size: .46rem; }
+}
+@media (hover: hover) and (pointer: fine) {
+  .hero-countdown .countdown-unit:hover {
+    border-color: #e6ce86;
+    box-shadow: 0 0 0 1px #e6ce8630, 0 0 16px 3px #e6ce8645;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-countdown .countdown-unit { transition: none; }
 }
 @media (prefers-reduced-motion: reduce) { .hero-snow,.hero-aurora { display: none; } }

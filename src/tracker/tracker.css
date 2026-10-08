@@ -93,6 +93,8 @@
 .santa-tracker .tracker-countdown-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; width: 100%; max-width: 396px; margin-inline: auto; }
 .santa-tracker .tracker-countdown-cell { display: block; }
 .santa-tracker .tracker-countdown-unit { padding: 16px 12px; border: 1px solid #D4AF3738; border-radius: 12px; background: #16392b; }
+.santa-tracker .tracker-countdown-unit,
+.tracker-banner .tracker-countdown-unit { transition: border-color 180ms ease, box-shadow 180ms ease; }
 .santa-tracker .tracker-countdown-unit .tracker-countdown-value { font-size: 2rem; line-height: 1.3; }
 .santa-tracker .tracker-countdown-unit .tracker-countdown-label { margin-top: 7px; font-size: .54rem; letter-spacing: .15em; }
 .santa-tracker .tracker-countdown-separator { display: none; }
@@ -213,4 +215,15 @@
   .santa-tracker .tracker-preview-panel { top: 88px; bottom: auto; max-height: 45dvh; }
   .santa-tracker .tracker-hero { padding-top: 100px; padding-bottom: 56px; }
   .santa-tracker .tracker-cta { padding: 28px 22px; }
+}
+@media (hover: hover) and (pointer: fine) {
+  .santa-tracker .tracker-countdown-unit:hover,
+  .tracker-banner .tracker-countdown-unit:hover {
+    border-color: #e6ce86;
+    box-shadow: 0 0 0 1px #e6ce8630, 0 0 16px 3px #e6ce8645;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .santa-tracker .tracker-countdown-unit,
+  .tracker-banner .tracker-countdown-unit { transition: none; }
 }
