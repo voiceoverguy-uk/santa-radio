@@ -1,5 +1,4 @@
 import { Helmet } from "react-helmet-async";
-import { Link } from "react-router-dom";
 import StructuredData from "@/components/StructuredData";
 import SantaTrackerClient from "@/components/SantaTrackerClient";
 import { getTrackerMetadata, TRACKER_ORIGIN, TRACKER_URL } from "@/lib/trackerBrand";
@@ -57,9 +56,6 @@ export default function SantaTrackerPage() {
       <SantaTrackerClient
         introduction={
           <>
-            <nav aria-label="Breadcrumb" className="tracker-breadcrumb mb-4 text-xs text-gray-400">
-              <Link to="/">Santa Radio</Link> <span aria-hidden="true">/</span> Santa Tracker
-            </nav>
             <h1 className="tracker-heading text-3xl sm:text-4xl lg:text-5xl tracking-tight">
               Track Santa&apos;s Journey
               <br />
