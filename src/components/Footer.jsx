@@ -4,7 +4,7 @@ import './Footer.css';
 export default function Footer() {
   return (
     <footer className="footer">
-      <Link to="/" className="footer-wordmark" aria-label="Santa Radio home"><img className="brand-logo brand-logo-footer" src="/images/santa-radio-logo.png" alt="Santa Radio" width="827" height="190" /></Link>
+      <Link to="/" className="footer-wordmark" aria-label="Santa Radio home"><img className="brand-logo brand-logo-footer" src="/images/santa-radio-gold-nav.webp" alt="Santa Radio" width="630" height="188" /></Link>
       <div className="footer-attribution">
         Brought to life by the Voice of Santa, British Voiceover Artist <a href="https://www.voiceoverguy.co.uk" target="_blank" rel="noopener noreferrer">Guy Harris</a>
       </div>

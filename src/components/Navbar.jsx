@@ -31,7 +31,7 @@ export default function Navbar() {
   return (
     <nav className={`navbar ${scrolled || location.pathname !== '/' ? 'solid' : ''}`} aria-label="Main navigation">
       <div className="navbar-inner">
-        <Link to="/" className="navbar-logo" aria-label="Santa Radio home"><img className="navbar-logo-image" src="/images/santa-radio-logo.png" alt="Santa Radio" width="827" height="190" /></Link>
+        <Link to="/" className="navbar-logo" aria-label="Santa Radio home"><img className="navbar-logo-image" src="/images/santa-radio-gold-nav.webp" alt="Santa Radio" width="630" height="188" /></Link>
         <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-controls="main-menu" aria-label={menuOpen ? 'Close menu' : 'Open menu'}><span /><span /><span /></button>
         <ul id="main-menu" className={`navbar-links ${menuOpen ? 'open' : ''}`}>
           {links.map(link => <li key={link.to}>{link.external
