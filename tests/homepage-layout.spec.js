@@ -1,5 +1,19 @@
 import { test, expect } from '@playwright/test';
 
+test('desktop swaps Mug Shots and personalised video while mobile keeps its section order', async ({ page }) => {
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const desktop = ['hero', 'tracker-banner', 'santa-message-section', 'mugshots-preview', 'soundboard', 'youtube-section', 'santa-video-section', 'contact-section'];
+  const mobile = ['hero', 'tracker-banner', 'santa-message-section', 'santa-video-section', 'soundboard', 'youtube-section', 'mugshots-preview', 'contact-section'];
+  for (const width of [1280, 768, 767, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    const order = await page.locator('.home-page > section').evaluateAll(sections =>
+      sections.map(section => ({ name: section.classList[0], top: section.getBoundingClientRect().top }))
+        .sort((a, b) => a.top - b.top).map(section => section.name));
+    expect(order).toEqual(width >= 768 ? desktop : mobile);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+});
+
 test('Explore Santa Videos opens the supplied Festive Studio campaign URL in a new tab', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   const link = page.getByRole('link', { name: 'Explore Santa Videos', exact: true });
