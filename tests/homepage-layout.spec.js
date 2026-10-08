@@ -1,5 +1,14 @@
 import { test, expect } from '@playwright/test';
 
+test('Explore Santa Videos opens the supplied Festive Studio campaign URL in a new tab', async ({ page }) => {
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const link = page.getByRole('link', { name: 'Explore Santa Videos', exact: true });
+  await expect(link).toHaveAttribute('href', 'https://festivestudio.com/?utm_source=santaradio&utm_medium=website&utm_campaign=2024');
+  await expect(link).toHaveAttribute('target', '_blank');
+  await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+  await expect(page.locator('.santa-video-section')).toContainText('on Festive Studio.');
+});
+
 test.beforeEach(async ({ context }) => {
   // No live radio streams or external signups are needed for these UI checks.
   await context.route('**/*', route => {

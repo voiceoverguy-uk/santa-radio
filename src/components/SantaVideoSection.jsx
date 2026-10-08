@@ -8,7 +8,7 @@ export default function SantaVideoSection() {
         <div className="santa-video-content">
           <p>
             Make time for a special Christmas moment. Find out about personalised Santa videos
-            on the original Santa Radio website.
+            on Festive Studio.
           </p>
           <p>
             The link below opens the existing video service in a new tab. Availability and
@@ -16,7 +16,7 @@ export default function SantaVideoSection() {
           </p>
           <div className="santa-video-cta">
             <a
-              href="https://www.santaradio.co.uk/personalised-santa-video.php"
+              href="https://festivestudio.com/?utm_source=santaradio&utm_medium=website&utm_campaign=2024"
               target="_blank"
               rel="noopener noreferrer"
               className="btn-red santa-video-btn"
