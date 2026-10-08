@@ -38,7 +38,7 @@ export default function Navbar() {
             ? <a href={link.to} target="_blank" rel="noopener noreferrer" title={`${link.label} (opens in a new tab)`} onClick={() => setMenuOpen(false)}>{link.label}</a>
             : <Link to={link.to} aria-current={location.pathname === link.to ? 'page' : undefined} className={location.pathname === link.to ? 'active' : ''} onClick={() => setMenuOpen(false)}>{link.label}</Link>
           }</li>)}
-          <li><button className="effects-toggle" aria-pressed={effects} onClick={() => setEffects(!effects)}>Snow {effects ? 'On' : 'Off'}</button></li>
+          <li><button type="button" className="effects-toggle" aria-pressed={effects} title={effects ? 'Turn snow off' : 'Turn snow on'} onClick={() => setEffects(current => !current)}>Snow {effects ? 'On' : 'Off'}</button></li>
           <li className="nav-listen"><RadioButton className="btn-red" /></li>
         </ul>
       </div>

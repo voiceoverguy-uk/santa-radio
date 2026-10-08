@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import useRadioMetadata from './useRadioMetadata.js';
+import useSnowEffects from './useSnowEffects.js';
 
 const RadioContext = createContext(null);
 const STREAM_URL = 'https://global.citrus3.com:8164/';
@@ -11,13 +12,7 @@ export function RadioProvider({ children }) {
   const [status, setStatus] = useState('idle');
   const [volume, setVolume] = useState(.7);
   const [error, setError] = useState('');
-  const [effects, setEffects] = useState(() => {
-    try { return localStorage.getItem('santa-effects') !== 'off'; } catch { return true; }
-  });
-  useEffect(() => {
-    document.documentElement.dataset.effects = effects ? 'on' : 'off';
-    try { localStorage.setItem('santa-effects', effects ? 'on' : 'off'); } catch { /* Storage is optional. */ }
-  }, [effects]);
+  const { effects, setEffects } = useSnowEffects();
   useEffect(() => { if (audioRef.current) audioRef.current.volume = volume; }, [volume]);
   useEffect(() => () => clearTimeout(timeout.current), []);
   const fail = () => {

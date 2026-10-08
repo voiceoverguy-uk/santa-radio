@@ -57,3 +57,9 @@ Prioritise reaching the tracker and soundboard quickly over additional introduct
 **Why:** The user wanted to remove repeated introductory copy “to get to the fun stuff quicker like the tracker and the sound board”.
 
 **How to apply:** Avoid reintroducing a large promotional section between the introduction and interactive content unless the user requests it.
+
+Snow should respect a visitor's reduced-motion setting by default, but an explicit Snow On choice should enable snowfall only, without enabling other decorative motion.
+
+**Why:** The user reported that snow worked on their Safari Mac but not for other visitors. Reduced-motion settings could hide snow permanently despite the switch saying On. Accessibility defaults must not make this deliberate opt-in control ineffective.
+
+**How to apply:** Keep the switch label aligned with actual snowfall. Treat historical automatically saved On settings as defaults, not proof that a visitor explicitly opted into motion.

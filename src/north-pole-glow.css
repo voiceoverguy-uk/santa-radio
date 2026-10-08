@@ -38,7 +38,8 @@
   .santa-tracker .tracker-map,
   .tracker-banner .tracker-map,
   .santa-tracker .tracker-preview-surface,
-  .radio-dock
+  .radio-dock,
+  .soundboard-btn:not(.active):not(:disabled)
 ) {
   transition: border-color 180ms ease, box-shadow 180ms ease;
 }
@@ -79,7 +80,8 @@
     .santa-tracker .tracker-map,
     .tracker-banner .tracker-map,
     .santa-tracker .tracker-preview-surface,
-    .radio-dock
+    .radio-dock,
+    .soundboard-btn:not(.active):not(:disabled)
   ):hover {
     border-color: #e6ce86;
     box-shadow: 0 0 0 1px #e6ce8630, 0 0 16px 3px #e6ce8645;
@@ -110,7 +112,8 @@
 .partner-card:focus-visible,
 .tunein-frame:focus-visible,
 .santa-tracker .tracker-map:focus-visible,
-.tracker-banner .tracker-map:focus-visible {
+.tracker-banner .tracker-map:focus-visible,
+.soundboard-btn:not(.active):not(:disabled):focus-visible {
   border-color: #e6ce86;
   box-shadow: 0 0 0 1px #e6ce8630, 0 0 16px 3px #e6ce8645;
 }
@@ -151,7 +154,8 @@
     .santa-tracker .tracker-map,
     .tracker-banner .tracker-map,
     .santa-tracker .tracker-preview-surface,
-    .radio-dock
+    .radio-dock,
+    .soundboard-btn:not(.active):not(:disabled)
   ) {
     transition: none;
   }

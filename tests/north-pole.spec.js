@@ -139,7 +139,9 @@ test('responsive homepage, matching typography, effects and mobile navigation', 
   await page.goto('/');
   await page.getByRole('button', { name: 'Open menu' }).click();
   await page.getByRole('navigation').getByRole('button', { name: 'Snow Off' }).click();
-  await expect(page.locator('.site-snow')).toBeHidden();
+  await expect(page.locator('.site-snow')).toBeVisible();
+  await expect(page.locator('.site-snow i').first()).toHaveCSS('animation-name', 'site-snowfall');
+  await expect(page.locator('.hero-aurora')).toBeHidden();
   expect(errors).toEqual([]);
 });
 

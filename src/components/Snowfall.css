@@ -20,4 +20,9 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .site-snow { display: none; }
+  /* A deliberate Snow On choice enables snow only, not other site motion. */
+  html[data-snow-motion="on"] .site-snow { display: block; }
+  html[data-snow-motion="on"] .site-snow i {
+    animation: site-snowfall var(--duration) var(--delay) linear infinite !important;
+  }
 }
