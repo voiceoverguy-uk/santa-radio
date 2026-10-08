@@ -63,3 +63,9 @@ Snow should respect a visitor's reduced-motion setting by default, but an explic
 **Why:** The user reported that snow worked on their Safari Mac but not for other visitors. Reduced-motion settings could hide snow permanently despite the switch saying On. Accessibility defaults must not make this deliberate opt-in control ineffective.
 
 **How to apply:** Keep the switch label aligned with actual snowfall. Treat historical automatically saved On settings as defaults, not proof that a visitor explicitly opted into motion.
+
+The site's shared gold box glow includes the Santa soundboard buttons, not just passive cards and panels.
+
+**Why:** The user clarified that the soundboard boxes should glow too after the broader all-boxes change omitted them.
+
+**How to apply:** Do not exclude the soundboard simply because its boxes are buttons. Preserve audio controls and distinguish playing/disabled states when adjusting decorative effects.
