@@ -9,3 +9,9 @@ Avoid generic praise, repetitive festive sparkle, gossip, inflated superlatives,
 **Why:** The user requested “Doesn’t need to be big, but maybe fun too??” and explicitly separated this work from Mugshots.
 
 **How to apply:** Match existing pages and recordings before writing. Use official artist/label sites or reputable music references, retaining sources and before/after copy in an internal editorial record. Describe joint performances accurately, not as permanent groups. Leave ambiguous attribution unchanged and report the specific question. Preserve page addresses, artwork, songs, lyrics and players.
+
+The user confirmed on 9 October 2026 that the station's upstream audio/now-playing artist naming has been corrected to “Meghan Trainor”.
+
+**Why:** The user explicitly said song playback will now only use the official spelling.
+
+**How to apply:** Do not assume the station still supplies “Megan Trainor” or request another upstream correction without evidence from the live feed.

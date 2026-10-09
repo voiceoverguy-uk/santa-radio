@@ -32,7 +32,7 @@ export default function SongDetail() {
 
   const pageTitle = `${song.artist} - ${song.song} - Santa Radio`;
   const pageDescription = song.info || `Listen to "${song.song}" by ${song.artist} on Santa Radio, the UK's favourite Christmas radio station. Enjoy this festive classic along with hundreds of other Christmas songs.`;
-  const songSlug = slug;
+  const songSlug = `${song.id}-${song.link}`;
   const twitterShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(`Listening to ${song.song} by ${song.artist} on Santa Radio!`)}&url=${encodeURIComponent(`https://www.santaradio.co.uk/christmas-artist/${songSlug}`)}`;
 
   return (
