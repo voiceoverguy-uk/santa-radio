@@ -1,4 +1,11 @@
 const portraits = {
+  'abba': 'abba.webp',
+  'johnny cash': 'johnny-cash.webp',
+  'the carpenters': 'the-carpenters.webp',
+  'pogues': 'the-pogues.webp',
+  'the pogues': 'the-pogues.webp',
+  'slade': 'slade.webp',
+  'wizzard': 'wizzard.webp',
   'chris de burgh': 'chris-de-burgh',
   'pet shop boys': 'pet-shop-boys',
   'gwen stefani': 'gwen-stefani',
@@ -66,5 +73,6 @@ const portraits = {
 export const fallbackArtwork = '/artist-artwork/santa-music.svg';
 export function artistArtwork(artist) {
   const key = artist.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().trim().replace(/\s+/g, ' ');
-  return portraits[key] ? `/artist-artwork/${portraits[key]}.jpg` : fallbackArtwork;
+  const portrait = portraits[key];
+  return portrait ? `/artist-artwork/${portrait}${portrait.endsWith('.webp') ? '' : '.jpg'}` : fallbackArtwork;
 }
