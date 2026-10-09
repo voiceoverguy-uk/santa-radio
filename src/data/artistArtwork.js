@@ -1,4 +1,9 @@
 const portraits = {
+  'john legend': 'john-legend',
+  'madonna': 'madonna',
+  'kate bush': 'kate-bush',
+  'eurythmics': 'eurythmics',
+  'bobby helms': 'bobby-helms',
   'perry como': 'perry-como',
   'mud': 'mud',
   'chuck berry': 'chuck-berry',
@@ -84,7 +89,7 @@ const portraits = {
   'michael buble': 'michael-buble',
 };
 
-export const fallbackArtwork = '/artist-artwork/santa-music.svg';
+export const fallbackArtwork = '/artist-artwork/santa-fallback.webp';
 export function artistArtwork(artist) {
   const key = artist.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().trim().replace(/\s+/g, ' ');
   const portrait = portraits[key];
