@@ -13,3 +13,9 @@ The user subsequently requested removing R Kelly World — Christmas and On Embe
 **Why:** These are explicit editorial decisions made after the catalogue audit.
 
 **How to apply:** Future imports must not reintroduce those removed entries or the Sinatra duplicate. The user supplied the replacement Gladys Knight lyrics; preserve that editorial choice.
+
+The user confirms Meghan Trainor's radio audio and metadata have already been corrected upstream.
+
+**Why:** The remaining spelling work is confined to the catalogue and maintained references, not the radio service.
+
+**How to apply:** Use Meghan Trainor as the official credit; retain misspelled song URLs only for compatibility. Do not change upstream audio or metadata services for this correction.
