@@ -22,7 +22,7 @@ test('all six portraits are compact WebP files and keep existing artwork intact'
     expect(bytes.length).toBeLessThan(100000);
   }
   expect(artistArtwork('The Pogues')).toBe('/artist-artwork/the-pogues.webp');
-  expect(artistArtwork('Queen')).toBe('/artist-artwork/queen.jpg');
+  expect(artistArtwork('Queen')).toBe('/artist-artwork/queen.webp');
 });
 
 test('each artist shows the new portrait on all catalogue cards and song details', async ({ page }) => {

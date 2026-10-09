@@ -11,3 +11,9 @@ The user is supplying artist illustrations in batches for /christmas-music. Reus
 The user confirmed that their Holly Johnson request means Frankie Goes to Hollywood, and explicitly wants Holly Johnson's portrait used for that band.
 
 **Why:** The user approved this specific exception to the solo-versus-band matching rule.
+
+Keep supplied uploads and legacy JPEG originals when creating optimised WebP delivery copies.
+
+**Why:** Optimisation should not destroy the source artwork or break old direct image URLs; retaining originals also avoids using an already compressed WebP as a future editing master.
+
+**How to apply:** Serve the optimised copy through the artwork mapping, but do not delete originals merely to reduce page downloads—the browser only downloads the referenced file.

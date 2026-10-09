@@ -1,4 +1,18 @@
 const portraits = {
+  'perry como': 'perry-como',
+  'mud': 'mud',
+  'chuck berry': 'chuck-berry',
+  'aretha franklin': 'aretha-franklin',
+  'louis armstrong': 'louis-armstrong',
+  'whitney houston': 'whitney-houston',
+  'katy perry': 'katy-perry',
+  'cher': 'cher',
+  'britney spears': 'britney-spears',
+  'leona lewis': 'leona-lewis',
+  'george michael': 'george-michael',
+  'james brown': 'james-brown',
+  'stevie wonder': 'stevie-wonder',
+  'boney m': 'boney-m',
   'abba': 'abba.webp',
   'johnny cash': 'johnny-cash.webp',
   'the carpenters': 'the-carpenters.webp',
@@ -74,5 +88,5 @@ export const fallbackArtwork = '/artist-artwork/santa-music.svg';
 export function artistArtwork(artist) {
   const key = artist.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().trim().replace(/\s+/g, ' ');
   const portrait = portraits[key];
-  return portrait ? `/artist-artwork/${portrait}${portrait.endsWith('.webp') ? '' : '.jpg'}` : fallbackArtwork;
+  return portrait ? `/artist-artwork/${portrait}${portrait.endsWith('.webp') ? '' : '.webp'}` : fallbackArtwork;
 }

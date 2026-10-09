@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { artistArtwork, fallbackArtwork } from '../src/data/artistArtwork.js';
-import { existsSync } from 'node:fs';
+import { existsSync, readdirSync, statSync } from 'node:fs';
 import songs from '../src/data/songs.json' with { type: 'json' };
 
 test('song pages use shared artist portraits and the Santa fallback', async ({ page }) => {
@@ -23,10 +23,10 @@ test('all supplied portraits resolve without guessing collaborations', () => {
     expect(existsSync(`public${artistArtwork(artist)}`)).toBe(true);
   }
   expect(artistArtwork('Michael Bublé')).toBe(artistArtwork('Michael Buble'));
-  expect(artistArtwork('Kylie Minogue')).toBe('/artist-artwork/kylie-minogue.jpg');
-  expect(artistArtwork('Ed Sheeran & Elton John')).toBe('/artist-artwork/elton-john-ed-sheeran.jpg');
-  expect(artistArtwork('Frank Sinatra and Dean Martin')).toBe('/artist-artwork/dean-martin-and-frank-sinatra.jpg');
-  expect(artistArtwork('Kelly Clarkson & Ariana Grande')).toBe('/artist-artwork/kelly-clarkson-and-ariana-grande.jpg');
+  expect(artistArtwork('Kylie Minogue')).toBe('/artist-artwork/kylie-minogue.webp');
+  expect(artistArtwork('Ed Sheeran & Elton John')).toBe('/artist-artwork/elton-john-ed-sheeran.webp');
+  expect(artistArtwork('Frank Sinatra and Dean Martin')).toBe('/artist-artwork/dean-martin-and-frank-sinatra.webp');
+  expect(artistArtwork('Kelly Clarkson & Ariana Grande')).toBe('/artist-artwork/kelly-clarkson-and-ariana-grande.webp');
   expect(artistArtwork('Frank Sinatra & Cyndi Lauper')).toBe(fallbackArtwork);
 });
 
@@ -37,16 +37,16 @@ test('catalogue reuses artist artwork and shows Santa for remaining artists', as
   const cards = page.locator('.song-card');
   expect(await cards.count()).toBeGreaterThan(1);
   for (const card of await cards.all()) {
-    await expect(card.locator('img')).toHaveAttribute('src', '/artist-artwork/michael-buble.jpg');
+    await expect(card.locator('img')).toHaveAttribute('src', '/artist-artwork/michael-buble.webp');
   }
   await cards.first().scrollIntoViewIfNeeded();
   await expect.poll(() => cards.first().locator('img').evaluate(el => el.naturalWidth)).toBeGreaterThan(0);
   await search.fill('Kylie');
-  await expect(cards.first().locator('img')).toHaveAttribute('src', '/artist-artwork/kylie-minogue.jpg');
+  await expect(cards.first().locator('img')).toHaveAttribute('src', '/artist-artwork/kylie-minogue.webp');
   await cards.first().scrollIntoViewIfNeeded();
   await expect.poll(() => cards.first().locator('img').evaluate(el => el.naturalWidth)).toBeGreaterThan(0);
   await search.fill('Wham!');
-  await expect(cards.first().locator('img')).toHaveAttribute('src', '/artist-artwork/wham.jpg');
+  await expect(cards.first().locator('img')).toHaveAttribute('src', '/artist-artwork/wham.webp');
   await cards.first().scrollIntoViewIfNeeded();
   await expect.poll(() => cards.first().locator('img').evaluate(el => el.naturalWidth)).toBeGreaterThan(0);
   await search.fill('Waitresses');
@@ -57,4 +57,22 @@ test('catalogue reuses artist artwork and shows Santa for remaining artists', as
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await cards.first().click();
   await expect(page).toHaveURL(/christmas-artist/);
+});
+
+test('every existing JPEG portrait has a smaller WebP replacement', () => {
+  const originals = readdirSync('public/artist-artwork').filter(file => file.endsWith('.jpg'));
+  expect(originals.length).toBeGreaterThan(0);
+  for (const original of originals) {
+    const replacement = original.replace(/\.jpg$/, '.webp');
+    expect(existsSync(`public/artist-artwork/${replacement}`)).toBe(true);
+    expect(statSync(`public/artist-artwork/${replacement}`).size)
+      .toBeLessThan(statSync(`public/artist-artwork/${original}`).size);
+  }
+  for (const song of songs) {
+    const image = artistArtwork(song.artist);
+    if (image !== fallbackArtwork) {
+      expect(image.endsWith('.webp')).toBe(true);
+      expect(existsSync(`public${image}`)).toBe(true);
+    }
+  }
 });
