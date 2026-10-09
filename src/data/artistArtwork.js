@@ -1,4 +1,9 @@
 const portraits = {
+  'liam gallagher': 'liam-gallagher',
+  'gary barlow': 'gary-barlow',
+  'backstreet boys': 'backstreet-boys',
+  'bryan adams': 'bryan-adams',
+  'christina aguilera': 'christina-aguilera',
   'john legend': 'john-legend',
   'madonna': 'madonna',
   'kate bush': 'kate-bush',
