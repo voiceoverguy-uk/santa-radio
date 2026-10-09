@@ -75,15 +75,15 @@ main .gold-text { background: none; -webkit-text-fill-color: var(--gold-light); 
 .contact-title { font-family: 'Cinzel',serif; color: var(--cream); font-size: clamp(1.8rem,3vw,2.5rem); font-weight: 400; margin-bottom: 16px; }
 .contact-sub { color: #d0d9c8; font-size: .88rem; margin-bottom: 25px; }
 .contact-btn { padding: 13px 29px; }
-.footer { background: #061911; color: var(--muted); padding: 65px 28px 28px; border-top: 1px solid #D4AF3730; }
-.footer-attribution { font-family: 'Cinzel',serif; color: var(--gold-light); font-weight: 400; font-size: .9rem; max-width: 600px; margin: 0 auto 28px; }
+.footer { background: #061911; color: var(--muted); padding: 24px 20px 20px; border-top: 1px solid #D4AF3730; }
+.footer-attribution { font-family: 'Cinzel',serif; color: var(--gold-light); font-weight: 400; font-size: .9rem; max-width: 600px; margin: 0 auto 12px; }
 .footer-links { max-width: 860px; margin: 0 auto; gap: 13px 22px; }
 .footer-links a { color: var(--muted); font-size: .75rem; }
 .footer-links a:hover { color: var(--gold-light); }
 .footer-links span { display: none; }
-.footer-social { margin-top: 30px; }
+.footer-social { margin: 14px 0 10px; }
 .footer-social a { color: var(--gold-light); }
-.footer-copy { color: #a9b9a9; font-size: .65rem; }
+.footer-copy { color: #a9b9a9; font-size: .65rem; margin: 0; }
 .footer-wordmark { display: inline-block; margin-bottom: 25px; font-size: 2.6rem; }
 .footer-attribution { font-style: normal; }
 .portrait-fallback { display: grid; place-items: center; background: #254c3a; color: var(--gold-light); font-family: 'Cinzel',serif; font-size: 2rem; }
@@ -101,8 +101,8 @@ html[data-effects="off"] *,html[data-effects="off"] *::before,html[data-effects=
   .mugshot-detail-card { padding: 20px; }
   .santa-video-section,.soundboard,.youtube-section,.mugshots-preview { padding: 65px 0; }
   .soundboard-grid { grid-template-columns: repeat(2,1fr); gap: 10px; }
-  .footer { padding-bottom: 24px; }
-  .footer-links { gap: 12px 20px; }
+  .footer { padding-bottom: 20px; }
+  .footer-links { gap: 8px 16px; }
   .app-layout,.app-features-grid { grid-template-columns: 1fr; }
   .app-download-btns { flex-direction: column; align-items: center; }
 }
