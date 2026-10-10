@@ -4,15 +4,9 @@ import { Helmet } from 'react-helmet-async';
 import { artistArtwork, fallbackArtwork } from '../data/artistArtwork.js';
 import './Music.css';
 import songsData from '../data/songs.json';
+import { randomSongOrder } from '../data/randomSongOrder.js';
 
-function shuffleSongs() {
-  const songs = [...songsData];
-  for (let i = songs.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [songs[i], songs[j]] = [songs[j], songs[i]];
-  }
-  return songs;
-}
+const shuffleSongs = () => randomSongOrder(songsData);
 
 const alphabeticalSongs = [...songsData].sort((a, b) =>
   a.artist.localeCompare(b.artist, 'en-GB', { sensitivity: 'base', numeric: true }) ||

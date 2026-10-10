@@ -4,6 +4,12 @@ description: User-supplied artist illustrations and temporary catalogue artwork 
 ---
 The user is supplying artist illustrations in batches for /christmas-music. Reuse each artist's supplied image across their songs; use the user's supplied Santa cartoon for other artists until more artwork arrives.
 
+In random catalogue order, artists with their own artwork must appear before artists using the Santa fallback. Shuffle within both groups; leave A–Z alphabetical.
+
+**Why:** The user explicitly requested artwork-first random ordering so the initial grid showcases supplied portraits.
+
+**How to apply:** Use the shared artwork resolver to decide priority, so newly supplied portraits join the first group without maintaining a separate priority list.
+
 **Why:** The user requested replacing the circles and initials with their artwork, with a temporary Santa image for everyone else. They later supplied a new Santa cartoon and explicitly requested it for artists without cartoons.
 
 **How to apply:** Match complete artist names, allowing accents and harmless formatting differences. Do not equate a solo performer with a band or collaboration without confirmation.
