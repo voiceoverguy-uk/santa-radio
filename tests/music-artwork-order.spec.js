@@ -19,8 +19,12 @@ function expectArtworkFirst(ordered) {
 
 test('random ordering prioritises portraits, shuffles both groups and preserves every song', () => {
   const snapshot = JSON.stringify(songs);
-  const first = randomSongOrder(songs, () => 0);
-  const second = randomSongOrder(songs, () => 0.999);
+  const seededRandom = seed => () => {
+    seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+    return seed / 4294967296;
+  };
+  const first = randomSongOrder(songs, seededRandom(1));
+  const second = randomSongOrder(songs, seededRandom(2));
   for (const ordered of [first, second]) {
     expectArtworkFirst(ordered);
     expect(ordered.map(song => song.id).sort((a, b) => a - b)).toEqual(songs.map(song => song.id).sort((a, b) => a - b));
