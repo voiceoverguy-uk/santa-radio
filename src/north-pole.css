@@ -23,7 +23,7 @@ main .gold-text { background: none; -webkit-text-fill-color: var(--gold-light); 
 .song-info span,.mug-info span { color: var(--muted); }
 .mugshots-grid { grid-template-columns: repeat(4,1fr); gap: 22px; }
 .mugshot-card,.mug-card { border: 1px solid #D4AF372a; background: #153628; border-radius: 15px; overflow: hidden; }
-.mugshot-photo,.mug-photo { border: none; border-radius: 0; margin: 0; aspect-ratio: 1; width: 100%; object-fit: cover; }
+.mugshot-photo,.mug-photo { border: none; border-radius: 0; margin: 0; aspect-ratio: 1; width: 100%; height: auto; object-fit: cover; }
 .mugshot-info,.mug-info { padding: 16px; }
 .mugshot-info strong { color: var(--gold-light); font-weight: 500; font-size: .9rem; }
 .mugshot-info span { color: var(--muted); font-size: .75rem; }
