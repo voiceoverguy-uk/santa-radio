@@ -4,8 +4,8 @@ A faithful React + Vite rebuild of www.santaradio.co.uk — The World's Best Chr
 
 ## Architecture
 
-- **Framework**: React 18 + Vite 5
-- **Routing**: React Router DOM v6
+- **Framework**: React 18 + Vite 6
+- **Routing**: React Router DOM v7
 - **Styling**: Plain CSS (no UI library) — custom Christmas theme
 - **Port**: 5000 (webview)
 - **No backend** — pure frontend, static data

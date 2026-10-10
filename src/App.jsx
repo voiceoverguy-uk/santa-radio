@@ -25,7 +25,7 @@ import './north-pole-glow.css';
 
 function App() {
   return (
-    <RadioProvider><SantaMessageAccessProvider><BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+    <RadioProvider><SantaMessageAccessProvider><BrowserRouter>
       <a href="#page-content" className="skip-link">Skip to content</a>
       <Navbar />
       <Snowfall />
