@@ -19,13 +19,14 @@ test('feed covers every mapping and approved alias without changing website URLs
     assert.equal(resolved.pathname, image.path);
   }
   for (const artist of ['Chris Kamara', 'Liam Gallagher', 'Gary Barlow', 'Backstreet Boys',
-    'Bryan Adams', 'Christina Aguilera', 'John Legend', 'Madonna', 'Kate Bush', 'Eurythmics', 'Bobby Helms']) {
+    'Bryan Adams', 'Christina Aguilera', 'John Legend', 'Madonna', 'Kate Bush', 'Eurythmics', 'Bobby Helms',
+    'Meghan Trainor', 'Pentatonix', 'Tom Petty & Heartbreakers', 'Hall & Oates']) {
     assert.equal(feed.artists[mapping.normalizeArtistName(artist)].path, mapping.artistArtwork(artist));
   }
   assert.deepEqual(feed.artists['frankie goes to hollywood'], feed.artists['holly johnson']);
   assert.deepEqual(feed.artists['the pogues'], feed.artists.pogues);
   assert.equal(feed.artists[mapping.normalizeArtistName('  Michael Bublé ')].path, mapping.artistArtwork('Michael Bublé'));
-  for (const artist of ['Unknown Artist', 'Meghan Trainor', 'Oasis', 'Take That', 'constructor', 'toString', '__proto__']) {
+  for (const artist of ['Unknown Artist', 'Tevin Campbell', 'Oasis', 'Take That', 'constructor', 'toString', '__proto__']) {
     assert.equal(mapping.artistArtwork(artist), feed.fallback.path);
     assert.equal(Object.hasOwn(feed.artists, mapping.normalizeArtistName(artist)), false);
   }

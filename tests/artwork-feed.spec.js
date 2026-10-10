@@ -12,7 +12,8 @@ test('development feed is public JSON and its versioned images load cross-origin
   expect(feed.artists['chris kamara'].path).toBe('/artist-artwork/chris-kamara.webp');
   expect(feed.artists['george michael'].path).toBe('/artist-artwork/george-michael.webp');
   expect(feed.fallback.path).toBe('/artist-artwork/santa-fallback.webp');
-  expect(feed.artists['meghan trainor']).toBeUndefined();
+  expect(feed.artists['meghan trainor'].path).toBe('/artist-artwork/meghan-trainor.webp');
+  expect(feed.artists['tevin campbell']).toBeUndefined();
   expect(feed.schemaVersion).toBe(1);
   expect(feed.version).toMatch(/^[a-f0-9]{64}$/);
   const origin = new URL(response.url()).origin;
