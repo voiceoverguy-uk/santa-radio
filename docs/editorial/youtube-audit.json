@@ -19,11 +19,21 @@
       ]
     },
     {
-      "video": "-tJtsKngXJU",
-      "status": "metadata_available",
-      "http": 200,
-      "title": "Frank Sinatra - Have Yourself A Merry Little Christmas (Official Video)",
-      "channel": "FrankSinatraVEVO",
+      "video": "hFF9T4BiCSU",
+      "status": "needs_review",
+      "http": 401,
+      "metadataMethod": "YouTube watch-page extraction confirms title and channel; direct oEmbed request returned Unauthorized.",
+      "title": "You're a Mean One Mr. Grinch",
+      "channel": "James Caddell",
+      "replacementReview": {
+        "checkedAt": "2026-10-10",
+        "previousVideo": "-tJtsKngXJU",
+        "approval": "Owner explicitly approved this different-song video after being informed that it does not match the page title or lyrics.",
+        "songMatch": false,
+        "playback": "embedding_disabled_by_video_owner",
+        "playbackEvidence": "On both existing pages the iframe references the replacement. Clicking the player in the proxied development song page produced: Playback on other websites has been disabled by the video owner. Video currentTime=0, paused=true, readyState=0.",
+        "completion": "Blocked: replacement does not play embedded. Owner must enable embedding or supply an embeddable alternative."
+      },
       "pages": [
         {
           "artist": "James M Caddell",
