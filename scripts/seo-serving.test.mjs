@@ -1,8 +1,44 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { spawn } from 'node:child_process';
-import { readFile } from 'node:fs/promises';
+import { spawn, execFileSync } from 'node:child_process';
+import { readFile, mkdtemp, cp, symlink, rm } from 'node:fs/promises';
+import { join, resolve } from 'node:path';
+import { tmpdir } from 'node:os';
 import publicPage from '../api/public-page.js';
+
+test('deployment-style document package runs without any TypeScript source or Node type stripping', async t => {
+  const directory = await mkdtemp(join(tmpdir(), 'santa-vercel-documents-'));
+  t.after(() => rm(directory, { recursive: true, force: true }));
+  for (const path of ['api/public-page.js', 'server/public-html.js', 'src/seo', 'src/data', 'dist/server', 'package.json']) {
+    await cp(path, join(directory, path), {
+      recursive: true,
+      filter: source => !/\.(?:ts|tsx|jsx)$/.test(source),
+    });
+  }
+  await symlink(resolve('node_modules'), join(directory, 'node_modules'), 'dir');
+  const output = execFileSync(process.execPath, ['--no-experimental-strip-types', '--input-type=module', '-e', `
+    import assert from 'node:assert/strict';
+    import handler from './api/public-page.js';
+    for (const [path, status] of [
+      ['/', 200], ['/christmas-music', 200], ['/mugshots/all', 200],
+      ['/santa-tracker', 200], ['/artist?s=3', 308], ['/artist?s=14', 308],
+      ['/spanish/mugshots/mugshots/jermaine', 404],
+    ]) {
+      const url = new URL(path, 'https://www.santaradio.co.uk');
+      url.searchParams.set('__sr_route', url.pathname);
+      const response = {
+        setHeader() {},
+        status(value) { this.code = value; return this; },
+        end(body) { this.body = body; },
+      };
+      await handler({ method: 'GET', url: '/api/public-page' + url.search }, response);
+      assert.equal(response.code, status, path);
+      if (status === 200) assert.ok(response.body.includes('<h1'), path);
+    }
+    console.log('Deployment-style package passed');
+  `], { cwd: directory, encoding: 'utf8', timeout: 30000 });
+  assert.match(output, /Deployment-style package passed/);
+});
 
 test('built Node server returns actual pages, permanent redirects, images, API responses and error statuses', async t => {
   const child = spawn(process.execPath, ['index.js', '--port=0'], { stdio: ['ignore', 'pipe', 'pipe'] });
