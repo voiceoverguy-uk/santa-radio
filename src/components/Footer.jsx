@@ -23,6 +23,9 @@ export default function Footer() {
         <Link to="/links">Links</Link>
         <span>&middot;</span>
         <Link to="/privacy-policy">Privacy Policy</Link>
+        <span>&middot;</span>
+        <button className="cookie-settings-link" onClick={() =>
+          window.dispatchEvent(new Event('santaradio:cookie-settings'))}>Cookie settings</button>
       </div>
       <div className="footer-social">
         <a href="https://www.instagram.com/santaradiouk/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">

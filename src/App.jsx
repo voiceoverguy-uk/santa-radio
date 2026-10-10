@@ -24,6 +24,7 @@ import './north-pole.css';
 import './north-pole-glow.css';
 import NotFound from './seo/NotFound.jsx';
 import StaticPageSeo from './seo/StaticPageSeo.jsx';
+import MarketingConsent from './components/MarketingConsent.jsx';
 
 function App({ Router = BrowserRouter, routerProps = {} }) {
   return (
@@ -54,6 +55,7 @@ function App({ Router = BrowserRouter, routerProps = {} }) {
       </Routes></div>
       <Footer />
       <AudioPlayer />
+      <MarketingConsent />
     </Router></SantaMessageAccessProvider></RadioProvider>
   );
 }

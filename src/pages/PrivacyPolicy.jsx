@@ -11,7 +11,7 @@ export default function PrivacyPolicy() {
     <article className="privacy-content">
       <p className="eyebrow">Santa Radio</p>
       <h1>Privacy Policy</h1>
-      <p className="privacy-date">Added <time dateTime="2026-10-07">7 October 2026</time></p>
+      <p className="privacy-date">Updated <time dateTime="2026-10-10">10 October 2026</time></p>
       <p>Santa Radio is operated by VoiceoverGuy Ltd. For privacy questions, email <a href="mailto:santa@santaradio.co.uk">santa@santaradio.co.uk</a>.</p>
       <p>This notice covers this rebuilt website, not separate apps or linked services. You can browse and listen without an account. We do not sell personal data.</p>
 
@@ -34,6 +34,12 @@ export default function PrivacyPolicy() {
       <p>To manage the free-message allowance, local storage remembers only how many messages you have created and when the 30-minute wait ends. This works across visits and tabs in the same browser until cleared; it does not track your identity or IP address. Browsers without tab-lock support also use a temporary, randomly identified request lock in IndexedDB, valid for up to three minutes, to prevent simultaneous message requests. If local storage is unavailable, the allowance is remembered only while the page stays open.</p>
       <p>Hosting services process technical information, such as IP addresses and browser/request details, to deliver and protect the website. Radio playback connects to Citrus3. YouTube supplies video embeds, and Google Fonts supplies fonts. Some images load from our legacy website.</p>
       <p>These services receive connection information and may use cookies or similar technologies under their own privacy notices. The homepage loads a muted YouTube player automatically; song and karaoke pages can also load YouTube embeds automatically.</p>
+
+      <h2>Optional marketing cookies — Meta Pixel</h2>
+      <p>Only after you accept marketing cookies, we load the Meta Pixel to measure page visits and the effectiveness of our Facebook and Instagram adverts, and to help Meta show relevant advertising. Meta can receive visited page addresses, connection information such as your IP address, browser/device details and advertising identifiers. This may link your visit to a Meta account.</p>
+      <p>Our lawful basis for this optional advertising tracking is consent. Rejecting it does not stop you browsing, listening or making Santa messages. We send page-view events only; we do not add names, email addresses, message-maker selections or form contents to the pixel, and automatic event detection and advanced matching are not enabled.</p>
+      <p>Your choice is remembered in local storage for up to 180 days, then we ask again. If you accept, Meta may set advertising cookies such as <code>_fbp</code> and <code>_fbc</code>. See <a href="https://www.facebook.com/privacy/policy/" target="_blank" rel="noopener noreferrer">Meta’s Privacy Policy</a> and <a href="https://www.facebook.com/policies/cookies/" target="_blank" rel="noopener noreferrer">Cookie Policy</a> for its processing, retention and international-transfer information.</p>
+      <p>You can change your choice or withdraw consent at any time using <strong>Cookie settings</strong> in the footer. Rejecting stops further pixel events and removes accessible Meta advertising cookies from this website; it does not undo information already sent to Meta. This choice controls the Meta Pixel, not the separate radio, video or font services described above.</p>
 
       <h2>Links and external services</h2>
       <p>Links to app stores, social networks, music platforms and personalised video services take you to separate services with their own privacy notices. Check those notices before sharing information. An email link opens your chosen email service; it does not submit a form on this website.</p>
