@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile, stat } from 'node:fs/promises';
 import { createServer } from 'vite';
-import { songs, mugs, songMetadata, mugMetadata, identity, performers, songPath, mugPath, ORIGIN } from '../src/seo/catalogue.js';
+import { songs, mugs, songMetadata, mugMetadata, identity, performers, performanceKind, songPath, mugPath, ORIGIN } from '../src/seo/catalogue.js';
 import { canonicalPaths, aliases, legacyMatches, resolvePublicRequest } from '../src/seo/routes.js';
 import { sitemap, robots } from '../server/public-html.js';
 
@@ -63,8 +63,11 @@ test('sitemap, aliases, variants, legacy identity mappings and error routes', ()
     assert.equal(resolvePublicRequest(target).status, 200, `${old}: redirect chain/loop`);
   }
   assert.ok(resolvePublicRequest('/artist?s=3').location.includes('pat-benatar'));
-  assert.equal(legacyMatches.filter(row => !row.target).length, 1);
-  assert.equal(resolvePublicRequest('/artist?s=14').noindex, true);
+  assert.equal(legacyMatches.filter(row => !row.target).length, 0);
+  const gladysPath = songPath(songs.find(song => song.artist === 'Gladys Knight & The Pips'));
+  assert.deepEqual(resolvePublicRequest('/artist?s=14'), { status: 308, location: gladysPath });
+  assert.deepEqual(resolvePublicRequest('/artist?s=14&utm_source=archive'), { status: 308, location: `${gladysPath}?utm_source=archive` });
+  assert.equal(resolvePublicRequest('/artist?s=212').status, 404, 'catalogue IDs must not be treated as legacy IDs');
   for (const path of ['/unknown', '/mugshots/unknown', '/christmas-artist/unknown', '/christmas-karaoke-lyrics/unknown', '/artist?s=999']) assert.equal(resolvePublicRequest(path).status, 404);
   assert.equal(resolvePublicRequest('/santa-tracker/preview').noindex, true);
 });
@@ -80,6 +83,43 @@ test('performers, groups, collaborations, characters and photo credits stay trut
     assert.equal(photo.contentUrl, `${ORIGIN}${mug.image}`);
     if (mug.credit) assert.equal(photo.creditText, `Photo credit: ${mug.credit}`);
   }
+});
+test('researched music credits preserve source records and do not reclassify uncertain performers', async () => {
+  const rawSongs = JSON.parse(await readFile('src/data/songs.json', 'utf8'));
+  const expected = new Map([
+    [5, [['Person', 'Tom Jones'], ['Person', 'Cerys Matthews']]],
+    [435, [['MusicGroup', 'Madison Fayre']]],
+    [439, [['Person', 'Paul Burling'], ['Person', 'Joseph Bell']]],
+    [463, [['Person', 'Peter Lemongello']]],
+    [464, [['Person', 'Kate Grom']]],
+    [466, [['Person', 'Nicholas Wells']]],
+    [467, [['Person', 'Kate Neve']]],
+    [507, [['Person', 'Trent Cokley']]],
+    ...[153, 470, 505].map(id => [id, [['MusicGroup', 'X-mas Donkey & The Glittering Balls']]]),
+  ]);
+  for (const [id, credits] of expected) {
+    const song = songs.find(s => s.id === id);
+    assert.deepEqual(song, rawSongs.find(s => s.id === id), 'no source copy changes');
+    assert.deepEqual(performers(song).map(entity => [entity['@type'], entity.name]), credits);
+    assert.equal(performanceKind(song), credits.length > 1 ? 'Collaboration' : credits[0][0] === 'MusicGroup' ? 'Music group' : 'Individual performer');
+    const recording = songMetadata(song).graph.find(entity => entity['@type'] === 'MusicRecording');
+    assert.equal(recording.creditText, `Catalogue performer credit: ${song.artist}`);
+    assert.deepEqual(recording.byArtist, performers(song));
+  }
+  for (const id of [459, 462, 522]) {
+    const song = songs.find(s => s.id === id);
+    assert.deepEqual(performers(song), []);
+    assert.equal(performanceKind(song), 'Catalogue performer credit');
+    assert.ok(!('byArtist' in songMetadata(song).graph.find(n => n['@type'] === 'MusicRecording')));
+  }
+  for (const id of [48, 52, 66, 113, 216, 259, 540]) {
+    const song = songs.find(s => s.id === id);
+    assert.deepEqual(performers(song), []);
+    assert.equal(performanceKind(song), 'Character performance');
+  }
+  // Music research does not classify a shared-name Mugshot with no subject evidence.
+  assert.equal(identity('Madison Fayre'), null);
+  assert.equal(identity('Trent Cokley'), null);
 });
 test('Tracker seasons, precise fractional offsets, regional clocks and UK consistency', async () => {
   const server = await createServer({ server: { middlewareMode: true }, appType: 'custom' });

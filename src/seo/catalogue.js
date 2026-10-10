@@ -44,6 +44,19 @@ const collaborations = {
   'Barenaked Ladies & Sarah McLachlan': ['Barenaked Ladies', 'Sarah McLachlan'],
 };
 const entityId = name => `${ORIGIN}/#performer-${encodeURIComponent(name.toLowerCase())}`;
+// Music-only evidence decisions: docs/editorial/music-credit-verification.md.
+// Do not change photo-subject classification or rewrite supplied catalogue credits.
+const verifiedMusicCredits = {
+  'Tom Jones & C Matthews': [['Person', 'Tom Jones'], ['Person', 'Cerys Matthews']],
+  'Madison Fayre': [['MusicGroup', 'Madison Fayre']],
+  'X-mas Donkey & The Glittering Balls': [['MusicGroup', 'X-mas Donkey & The Glittering Balls']],
+  'Paul Burling & Joseph Bell': [['Person', 'Paul Burling'], ['Person', 'Joseph Bell']],
+  'Peter Lemongello': [['Person', 'Peter Lemongello']],
+  'Kate Grom': [['Person', 'Kate Grom']],
+  'Nicholas Wells': [['Person', 'Nicholas Wells']],
+  'Kate Neve': [['Person', 'Kate Neve']],
+  'Trent Cokley': [['Person', 'Trent Cokley']],
+};
 export function identity(name, biography = '', role = '') {
   if (characters.has(name) || /waxwork|fictional character|impersonat|trophy/i.test(role)) return null;
   if (comedyGroups.has(name)) return { '@type': 'PerformingGroup', '@id': entityId(name), name };
@@ -59,6 +72,7 @@ export function identity(name, biography = '', role = '') {
   return null;
 }
 export function performers(song) {
+  if (verifiedMusicCredits[song.artist]) return verifiedMusicCredits[song.artist].map(([type, name]) => ({ '@type': type, '@id': entityId(name), name }));
   if (collaborations[song.artist]) return collaborations[song.artist].map(name => ({ '@type': groups.has(name) ? 'MusicGroup' : 'Person', '@id': entityId(name), name }));
   const entity = identity(song.artist, song.info);
   return entity ? [entity] : [];
@@ -71,6 +85,10 @@ export function artworkAlt(song) {
 export const songDescription = song => `Explore “${song.song}” by ${song.artist}: lyrics${song.youtube ? ', the linked video' : ''} and artist background on Santa Radio.`;
 export function performanceKind(song) {
   if (characters.has(song.artist)) return 'Character performance';
+  if (verifiedMusicCredits[song.artist]) {
+    const credits = verifiedMusicCredits[song.artist];
+    return credits.length > 1 ? 'Collaboration' : credits[0][0] === 'MusicGroup' ? 'Music group' : 'Individual performer';
+  }
   if (collaborations[song.artist]) return 'Collaboration';
   const entity = identity(song.artist, song.info);
   return entity?.['@type'] === 'MusicGroup' ? 'Music group' : entity?.['@type'] === 'Person' ? 'Individual performer' : 'Catalogue performer credit';

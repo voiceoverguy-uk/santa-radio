@@ -9,8 +9,18 @@ for (const song of songs) {
   aliases.set(`/christmas-artist/${song.link}`, songPath(song));
 }
 const normalizeIdentity = value => value.normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
+// Verified shortened legacy title, not a shared numeric-ID assumption.
+// AllMusic lists the full title; the retained catalogue URL and existing live
+// feed alias document the local title correction. See the editorial evidence.
+const verifiedLegacyTitles = [{
+  artist: 'Gladys Knight & The Pips',
+  title: "It's Christmas Everyday",
+  catalogueTitle: "When You Love Someone (It's Christmas Everyday)",
+}];
 export const legacyMatches = legacySongs.map(legacy => {
-  const matches = songs.filter(song => normalizeIdentity(song.artist) === normalizeIdentity(legacy.artist) && normalizeIdentity(song.song) === normalizeIdentity(legacy.song));
+  const verified = verifiedLegacyTitles.find(row => normalizeIdentity(row.artist) === normalizeIdentity(legacy.artist) && normalizeIdentity(row.title) === normalizeIdentity(legacy.song));
+  const title = verified?.catalogueTitle || legacy.song;
+  const matches = songs.filter(song => normalizeIdentity(song.artist) === normalizeIdentity(legacy.artist) && normalizeIdentity(song.song) === normalizeIdentity(title));
   return { legacy, target: matches.length === 1 ? songPath(matches[0]) : null };
 });
 for (const [alias, slug] of Object.entries(mugAliases)) {

@@ -26,13 +26,14 @@ test('built Node server returns actual pages, permanent redirects, images, API r
     const html = await response.text();
     assert.ok(html.includes(word), path); assert.ok(html.includes('<h1'), path);
   }
-  for (const [path, target] of [['/music', '/christmas-music'], ['/santa-tracker/', '/santa-tracker'], ['/artist?s=3', '/christmas-artist/420-pat-benatar-please-come-home-for-christmas']]) {
+  for (const [path, target] of [['/music', '/christmas-music'], ['/santa-tracker/', '/santa-tracker'], ['/artist?s=3', '/christmas-artist/420-pat-benatar-please-come-home-for-christmas'], ['/artist?s=14', '/christmas-artist/212-gladys-knight-the-pips-its-christmas-everyday'], ['/artist?s=14&utm_source=archive', '/christmas-artist/212-gladys-knight-the-pips-its-christmas-everyday?utm_source=archive']]) {
     const response = await get(path); assert.equal(response.status, 308); assert.equal(response.headers.get('location'), target);
   }
   for (const path of ['/unknown', '/christmas-artist/unknown', '/mugshots/unknown', '/images/unknown.png', '/api/unknown', '/server/entry-server.js'])
     assert.equal((await get(path)).status, 404, path);
-  const ambiguous = await get('/artist?s=14');
-  assert.equal(ambiguous.status, 200); assert.match(ambiguous.headers.get('x-robots-tag'), /noindex/);
+  const gladys = await get('/christmas-artist/212-gladys-knight-the-pips-its-christmas-everyday');
+  assert.equal(gladys.status, 200);
+  assert.ok((await gladys.text()).includes('When You Love Someone'));
   const preview = await get('/santa-tracker/preview');
   assert.match(preview.headers.get('x-robots-tag'), /noindex/);
   assert.ok(!(await preview.text()).includes('application/ld+json'));
@@ -57,19 +58,19 @@ test('Vercel document handler preserves statuses, metadata and relative location
     assert.ok(expression.test(path), path);
   for (const path of ['/artist-artwork/catalogue.json', '/images/santa-tracker-share.png', '/api/santa-message'])
     assert.ok(!expression.test(path), path);
-  for (const [path, status] of [['/christmas-artist/3-waitresses-christmas-wrapping', 200], ['/unknown', 404], ['/music', 308], ['/artist?s=14', 200], ['/santa-tracker/preview', 200]]) {
+  for (const [path, status] of [['/christmas-artist/3-waitresses-christmas-wrapping', 200], ['/unknown', 404], ['/music', 308], ['/artist?s=14', 308], ['/artist?s=14&utm_source=archive', 308], ['/artist?s=999', 404], ['/santa-tracker/preview', 200]]) {
     const url = new URL(path, 'https://www.santaradio.co.uk');
     const query = new URLSearchParams(url.search);
     query.set('__sr_route', url.pathname);
     const response = { headers: {}, setHeader(k, v) { this.headers[k] = v; }, status(code) { this.statusCode = code; return this; }, end(body) { this.body = body; return this; } };
     await publicPage({ method: 'GET', url: `/api/public-page?${query}` }, response);
     assert.equal(response.statusCode, status, path);
-    if (status === 308) assert.equal(response.headers.Location, '/christmas-music');
+    if (status === 308) assert.equal(response.headers.Location, path === '/music' ? '/christmas-music' : '/christmas-artist/212-gladys-knight-the-pips-its-christmas-everyday' + (path.includes('utm_source') ? '?utm_source=archive' : ''));
     else {
       if (!path.includes('preview')) assert.ok(response.body.includes('<h1'), path);
       if (!path.includes('preview')) assert.ok(response.body.includes('www.santaradio.co.uk'), path);
     }
-    if (status === 404 || path.includes('preview') || path.startsWith('/artist?'))
+    if (status === 404 || path.includes('preview'))
       assert.match(response.headers['X-Robots-Tag'], /noindex/);
   }
 });

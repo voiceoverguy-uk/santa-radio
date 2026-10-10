@@ -8,9 +8,9 @@ Prepared for review only. No publish or DNS operation was performed.
 - No host-wide redirects: Replit preview, same-origin APIs and external artwork integrations remain usable.
 - Public React pages are server-rendered during development and pre-rendered during production builds. Their initial HTML includes actual headings, biographies, links, lyrics, metadata and JSON-LD. The production Tracker renders on request so its initial seasonal display does not become stale.
 - Production Node serves the built pages, explicit relative redirects and actual 404s. Vercel configuration includes an equivalent document handler for aliases, unknown routes and legacy queries.
-- Sitemap: 1,546 intended canonical pages: 450 recordings, 450 separate sing-along pages, 636 mug photographs and ten static pages. Preview, historical aliases and the unresolved legacy query page are excluded.
+- Sitemap: 1,546 intended canonical pages: 450 recordings, 450 separate sing-along pages, 636 mug photographs and ten static pages. Preview and historical aliases, including legacy query URLs, are excluded.
 - The 452 source recordings remain in the source data. Identical recording pairs 233→99 and 345→204 consolidate public URLs without deleting their source records.
-- 23 legacy queries match an exact normalized artist/title identity. The unmatched Gladys Knight & The Pips query remains available and noindexed.
+- 23 legacy queries match an exact normalized artist/title identity. The Gladys Knight & The Pips query now matches through a verified shortened-title alias, so all 24 legacy queries redirect directly to their established canonical pages. See `docs/editorial/music-credit-verification.md` for evidence and the remaining uncertain music credits.
 - The random/gallery approval order and Load More remain, alongside a permanent linked A–Z directory.
 - All distinct retained celebrity photos and existing credits remain.
 - Schema uses WebPage/CollectionPage, MusicRecording, supported Person/MusicGroup/PerformingGroup subjects, ImageObject, ItemList and visible breadcrumbs. No celebrity ProfilePage, invented rating/date/endorsement or uncertain sameAs links.
