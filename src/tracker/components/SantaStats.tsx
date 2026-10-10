@@ -138,8 +138,8 @@ export default function SantaStats({ effectiveTime, holiday }: SantaStatsProps) 
     },
     {
       icon: <Clock size={18} />,
-      label: "Local Time",
-      value: onHoliday ? getHolidayLocalTime() : data.localTimeAtStop,
+      label: onHoliday ? "Postcard Clock (approx.)" : data.state === "IN_TRANSIT" ? "Last Stop’s Local Time" : "Stop’s Local Time",
+      value: onHoliday ? getHolidayLocalTime() : data.localTimeAtStop === "—" ? "—" : `${data.localTimeAtStop} · ${data.localClockPlace}`,
     },
     {
       icon: <Navigation size={18} />,
@@ -153,22 +153,22 @@ export default function SantaStats({ effectiveTime, holiday }: SantaStatsProps) 
     },
     {
       icon: <Gift size={18} />,
-      label: "Gifts Delivered",
+      label: "Estimated Gifts",
       value: isLive || data.mode === "COMPLETE" ? formatNumber(animatedGifts) : onHoliday ? funGifts : "—",
     },
     {
       icon: <Plane size={18} />,
-      label: "Distance Flown",
+      label: "Estimated Distance",
       value: isLive || data.mode === "COMPLETE" ? `${formatNumber(Math.round(animatedDistance * 0.621371))} miles` : onHoliday ? funDistance : "—",
     },
     {
       icon: <Globe size={18} />,
-      label: "Countries Visited",
+      label: "Route Stops",
       value: onHoliday ? (inJuly ? "Celebrating mid-year!" : "Back on 1 December") : `${animatedVisited} / ${data.visitedCount + data.remainingCount}`,
     },
     {
       icon: <Zap size={18} />,
-      label: "Speed",
+      label: "Estimated Speed",
       value: onHoliday ? holidaySpeeds[speedIndex] : data.speedLabel,
     },
   ];

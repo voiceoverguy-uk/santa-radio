@@ -3,7 +3,9 @@ import { createMessageAllowance } from '../lib/santaMessageAllowance.js';
 
 let allowance;
 export default function useSantaMessageAllowance() {
-  allowance ||= createMessageAllowance(window);
-  const state = useSyncExternalStore(allowance.subscribe, allowance.getSnapshot);
-  return { ...state, create: allowance.create };
+  const store = typeof window === 'undefined'
+    ? createMessageAllowance(undefined)
+    : (allowance ||= createMessageAllowance(window));
+  const state = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getSnapshot);
+  return { ...state, create: store.create };
 }

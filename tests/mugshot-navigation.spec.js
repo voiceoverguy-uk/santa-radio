@@ -41,7 +41,7 @@ test('neighbour navigation updates full profile, metadata and focus without repl
   await expect(page.locator('.mugshot-detail-name')).toBeFocused();
   await expect(page.locator('.mugshot-detail-desc')).toHaveText(next.info);
   await expect(page.locator('.mugshot-detail-photo')).toHaveAttribute('src', next.image);
-  await expect(page).toHaveTitle(next.artist);
+  await expect(page).toHaveTitle(`${next.artist} — Mug Photo | Santa Radio`);
   await expect(page.locator('link[rel=canonical]')).toHaveAttribute('href', `https://www.santaradio.co.uk${url(next)}`);
   if (next.credit) await expect(page.locator('.mugshot-photo-credit')).toContainText(next.credit);
   else await expect(page.locator('.mugshot-photo-credit')).toHaveCount(0);

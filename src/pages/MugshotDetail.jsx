@@ -5,6 +5,9 @@ import Portrait from '../components/Portrait.jsx';
 import mugshotsData, { mugshotAliases } from '../data/mugshots.ts';
 import './MugshotDetail.css';
 import './MugshotPhoto.css';
+import PageSeo from '../seo/PageSeo.jsx';
+import Breadcrumbs from '../seo/Breadcrumbs.jsx';
+import { mugMetadata } from '../seo/catalogue.js';
 
 export default function MugshotDetail() {
   const { slug } = useParams();
@@ -28,6 +31,7 @@ export default function MugshotDetail() {
       <main>
         <Helmet>
           <title>Celebrity Not Found – Santa Radio</title>
+          <meta name="robots" content="noindex, follow" />
         </Helmet>
         <div className="mugshot-detail-page starry-bg">
           <div className="container mugshot-detail-content">
@@ -40,56 +44,19 @@ export default function MugshotDetail() {
     );
   }
 
-  const pageTitle = celeb.artist;
-  const pageDescription = `${celeb.artist}${celeb.link ? ' (' + celeb.link + ')' : ''} posing with the iconic Santa Radio mug. See all celebrity mug shots at Santa Radio.`;
-  const imageUrl = `https://www.santaradio.co.uk${celeb.image}`;
   const biography = typeof celeb.info === 'string' ? celeb.info.trim() : '';
   const credit = typeof celeb.credit === 'string' ? celeb.credit.trim() : '';
   const socialUrl = typeof celeb.socialUrl === 'string' &&
+    !['Maxwell Thorpe', 'Patricia Hodge', 'Jacqui Abbot'].includes(celeb.artist) &&
     /^https:\/\/x\.com\/[A-Za-z0-9_]{1,15}$/.test(celeb.socialUrl)
     ? celeb.socialUrl : '';
 
   return (
     <main>
-      <Helmet>
-        <title>{pageTitle}</title>
-        <meta name="description" content={pageDescription} />
-        <meta property="og:title" content={pageTitle} />
-        <meta property="og:description" content={pageDescription} />
-        <meta property="og:image" content={imageUrl} />
-        <meta property="og:type" content="profile" />
-        <meta property="og:url" content={`https://www.santaradio.co.uk/mugshots/${celeb.song}`} />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={pageTitle} />
-        <meta name="twitter:description" content={pageDescription} />
-        <meta name="twitter:image" content={imageUrl} />
-        <link rel="canonical" href={`https://www.santaradio.co.uk/mugshots/${celeb.song}`} />
-        <script type="application/ld+json">{JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "BreadcrumbList",
-          "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.santaradio.co.uk/" },
-            { "@type": "ListItem", "position": 2, "name": "Mug Shots", "item": "https://www.santaradio.co.uk/mugshots/all" },
-            { "@type": "ListItem", "position": 3, "name": celeb.artist, "item": `https://www.santaradio.co.uk/mugshots/${celeb.song}` }
-          ]
-        })}</script>
-        <script type="application/ld+json">{JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Organization",
-          "name": "Santa Radio",
-          "url": "https://www.santaradio.co.uk",
-          "logo": "https://www.santaradio.co.uk/santa-radio-logo.png",
-          "sameAs": [
-            "https://twitter.com/WeAreSantaRadio",
-            "https://facebook.com/santaradio"
-          ]
-        })}</script>
-      </Helmet>
+      <PageSeo metadata={mugMetadata(celeb)} />
+      <Breadcrumbs items={[['Home', '/'], ['Mug Shots', '/mugshots/all'], [celeb.artist, `/mugshots/${celeb.song}`]]} />
       <div className="mugshot-detail-page starry-bg">
         <div className="container mugshot-detail-content">
-          <nav className="mugshot-breadcrumb">
-            <Link to="/">Home</Link> &rsaquo; <Link to="/mugshots/all">Mug Shots</Link> &rsaquo; <span>{celeb.artist}</span>
-          </nav>
           <div className="mugshot-detail-card">
           <nav className="mugshot-profile-nav" aria-label="Browse Mugshots">
             {[
@@ -133,7 +100,7 @@ export default function MugshotDetail() {
               {socialUrl && (
                 <p className="mugshot-social">
                   <a href={socialUrl} target="_blank" rel="noopener noreferrer">
-                    Follow {celeb.artist} on X
+                    Legacy social link (identity unverified)
                   </a>
                 </p>
               )}

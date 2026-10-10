@@ -17,7 +17,7 @@ function readPreference() {
 export default function useSnowEffects() {
   const [preference, setPreference] = useState(readPreference);
   const [reducedMotion, setReducedMotion] = useState(
-    () => window.matchMedia(MOTION_QUERY).matches,
+    () => typeof window !== 'undefined' && window.matchMedia(MOTION_QUERY).matches,
   );
   const effects = preference === 'on' || (preference === 'auto' && !reducedMotion);
 

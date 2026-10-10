@@ -1,0 +1,75 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { spawn } from 'node:child_process';
+import { readFile } from 'node:fs/promises';
+import publicPage from '../api/public-page.js';
+
+test('built Node server returns actual pages, permanent redirects, images, API responses and error statuses', async t => {
+  const child = spawn(process.execPath, ['index.js', '--port=0'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  t.after(() => child.kill('SIGTERM'));
+  const port = await new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => reject(new Error('Production server did not start')), 10000);
+    child.once('exit', code => { clearTimeout(timeout); reject(new Error(`Production server exited: ${code}`)); });
+    child.stdout.on('data', data => {
+      const match = data.toString().match(/listening on port (\d+)/);
+      if (match) { clearTimeout(timeout); resolve(match[1]); }
+    });
+    child.stderr.on('data', data => console.error(data.toString()));
+  });
+  const get = path => fetch(`http://127.0.0.1:${port}${path}`, { redirect: 'manual' });
+  for (const [path, word] of [
+    ['/', 'Santa Radio'], ['/christmas-music', 'Christmas Song Lyrics'],
+    ['/christmas-artist/3-waitresses-christmas-wrapping', 'Artist background'],
+    ['/mugshots/a1-singers', 'Bruce Davis'], ['/santa-tracker', 'Is this real GPS tracking?'],
+  ]) {
+    const response = await get(path); assert.equal(response.status, 200, path);
+    const html = await response.text();
+    assert.ok(html.includes(word), path); assert.ok(html.includes('<h1'), path);
+  }
+  for (const [path, target] of [['/music', '/christmas-music'], ['/santa-tracker/', '/santa-tracker'], ['/artist?s=3', '/christmas-artist/420-pat-benatar-please-come-home-for-christmas']]) {
+    const response = await get(path); assert.equal(response.status, 308); assert.equal(response.headers.get('location'), target);
+  }
+  for (const path of ['/unknown', '/christmas-artist/unknown', '/mugshots/unknown', '/images/unknown.png', '/api/unknown', '/server/entry-server.js'])
+    assert.equal((await get(path)).status, 404, path);
+  const ambiguous = await get('/artist?s=14');
+  assert.equal(ambiguous.status, 200); assert.match(ambiguous.headers.get('x-robots-tag'), /noindex/);
+  const preview = await get('/santa-tracker/preview');
+  assert.match(preview.headers.get('x-robots-tag'), /noindex/);
+  assert.ok(!(await preview.text()).includes('application/ld+json'));
+  const image = await get('/images/santa-tracker-share.png');
+  assert.equal(image.status, 200); assert.equal(image.headers.get('content-type'), 'image/png');
+  const bytes = Buffer.from(await image.arrayBuffer());
+  assert.equal(bytes.readUInt32BE(16), 1200); assert.equal(bytes.readUInt32BE(20), 630);
+  assert.match((await get('/mugshot-thumbnails/a1-singers-320.webp')).headers.get('content-type'), /image\/webp/);
+  const artwork = await get('/artist-artwork/catalogue.json');
+  assert.equal(artwork.status, 200); assert.equal(artwork.headers.get('access-control-allow-origin'), '*');
+  assert.equal((await get('/api/santa-message')).status, 405);
+  assert.equal((await get('/sitemap.xml')).status, 200);
+});
+
+test('Vercel document handler preserves statuses, metadata and relative locations without hosting changes', async () => {
+  const config = JSON.parse(await readFile('vercel.json', 'utf8'));
+  const filesystem = config.routes.findIndex(route => route.handle === 'filesystem');
+  const documentRoute = config.routes.findIndex(route => route.src?.includes('christmas-artist'));
+  assert.ok(documentRoute < filesystem);
+  const expression = new RegExp(`^${config.routes[documentRoute].src}$`);
+  for (const path of ['/', '/christmas-music', '/artist', '/santa-tracker/', '/santa-tracker/preview', '/mugshots/a1-singers'])
+    assert.ok(expression.test(path), path);
+  for (const path of ['/artist-artwork/catalogue.json', '/images/santa-tracker-share.png', '/api/santa-message'])
+    assert.ok(!expression.test(path), path);
+  for (const [path, status] of [['/christmas-artist/3-waitresses-christmas-wrapping', 200], ['/unknown', 404], ['/music', 308], ['/artist?s=14', 200], ['/santa-tracker/preview', 200]]) {
+    const url = new URL(path, 'https://www.santaradio.co.uk');
+    const query = new URLSearchParams(url.search);
+    query.set('__sr_route', url.pathname);
+    const response = { headers: {}, setHeader(k, v) { this.headers[k] = v; }, status(code) { this.statusCode = code; return this; }, end(body) { this.body = body; return this; } };
+    await publicPage({ method: 'GET', url: `/api/public-page?${query}` }, response);
+    assert.equal(response.statusCode, status, path);
+    if (status === 308) assert.equal(response.headers.Location, '/christmas-music');
+    else {
+      if (!path.includes('preview')) assert.ok(response.body.includes('<h1'), path);
+      if (!path.includes('preview')) assert.ok(response.body.includes('www.santaradio.co.uk'), path);
+    }
+    if (status === 404 || path.includes('preview') || path.startsWith('/artist?'))
+      assert.match(response.headers['X-Robots-Tag'], /noindex/);
+  }
+});

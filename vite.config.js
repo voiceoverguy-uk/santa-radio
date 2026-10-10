@@ -6,6 +6,7 @@ import radioMetadata from './server/radio-metadata.js';
 import santaMessage from './server/santa-message.js';
 import { trackerPageHtml, isTrackerPreview } from './server/tracker-html.js';
 import artworkFeedPlugin from './scripts/artwork-feed-plugin.mjs';
+import publicPagesPlugin from './server/public-pages-plugin.js';
 
 const trackerMetadataPlugin = {
   name: 'tracker-page-metadata',
@@ -33,8 +34,10 @@ const metadataPlugin = {
   },
 };
 
-export default defineConfig({
-  plugins: [react(), tailwindcss(), artworkFeedPlugin(), metadataPlugin, trackerMetadataPlugin],
+export default defineConfig(({ isSsrBuild }) => ({
+  publicDir: isSsrBuild ? false : 'public',
+  ssr: { resolve: { externalConditions: ['module-sync', 'node'] } },
+  plugins: [react(), tailwindcss(), artworkFeedPlugin(), metadataPlugin, publicPagesPlugin()],
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src/tracker', import.meta.url)) },
   },
@@ -43,4 +46,4 @@ export default defineConfig({
     port: 5000,
     allowedHosts: true,
   },
-});
+}));

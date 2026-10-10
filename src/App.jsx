@@ -22,12 +22,15 @@ import { RadioProvider } from './components/RadioProvider.jsx';
 import { SantaMessageAccessProvider } from './components/SantaMessageAccessProvider.jsx';
 import './north-pole.css';
 import './north-pole-glow.css';
+import NotFound from './seo/NotFound.jsx';
+import StaticPageSeo from './seo/StaticPageSeo.jsx';
 
-function App() {
+function App({ Router = BrowserRouter, routerProps = {} }) {
   return (
-    <RadioProvider><SantaMessageAccessProvider><BrowserRouter>
+    <RadioProvider><SantaMessageAccessProvider><Router {...routerProps}>
       <a href="#page-content" className="skip-link">Skip to content</a>
       <Navbar />
+      <StaticPageSeo />
       <Snowfall />
       <div id="page-content" tabIndex={-1}><Routes>
         <Route path="/" element={<Home />} />
@@ -47,10 +50,11 @@ function App() {
         <Route path="/santa-tracker/preview" element={<SantaTrackerPreviewPage />} />
         <Route path="/music" element={<Navigate to="/christmas-music" replace />} />
         <Route path="/mugshots" element={<Navigate to="/mugshots/all" replace />} />
+        <Route path="*" element={<NotFound />} />
       </Routes></div>
       <Footer />
       <AudioPlayer />
-    </BrowserRouter></SantaMessageAccessProvider></RadioProvider>
+    </Router></SantaMessageAccessProvider></RadioProvider>
   );
 }
 export default App;

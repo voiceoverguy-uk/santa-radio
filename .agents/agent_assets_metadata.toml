@@ -70,3 +70,17 @@ mtime_ms = 1791359234414
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/dd574432-e3b2-4306-94b1-f3fdfaa1a68d/313110d9-0e37-43e1-9e32-7660727d32a6"
 storage_version_token = "1791359234962782"
 content_type = "text/csv"
+
+[[outputs]]
+id = "ffzhN6p2ul7XIQFv9qKk3"
+uri = "file://generated-artifacts/seo-editorial-review.csv"
+type = "table"
+title = "Santa Radio editorial review"
+description = "Unresolved classifications, legacy recording matching and existing external links that have not been verified. These identities are withheld from schema."
+logical_id = "73d2b718-2974-4a21-a2a1-3b890160c9c5"
+content_hash = "sha256:8c560fc7ba9c433cc414e31be2805608a7f3fe3a2b6a26fad42e948d774ebdb8"
+size = 135404
+mtime_ms = 1791656114326
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/73d2b718-2974-4a21-a2a1-3b890160c9c5/ef0aa515-9cba-483d-b666-c2091d7bd3d0"
+storage_version_token = "1791657667169426"
+content_type = "text/csv"

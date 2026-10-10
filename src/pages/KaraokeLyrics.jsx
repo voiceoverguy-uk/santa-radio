@@ -2,6 +2,8 @@ import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import findSong from '../data/findSong';
 import './KaraokeLyrics.css';
+import PageSeo from '../seo/PageSeo.jsx';
+import { pageMetadata, songMetadata } from '../seo/catalogue.js';
 
 export default function KaraokeLyrics() {
   const { slug } = useParams();
@@ -12,6 +14,7 @@ export default function KaraokeLyrics() {
       <main>
         <Helmet>
           <title>Karaoke Lyrics Not Found – Santa Radio</title>
+          <meta name="robots" content="noindex, follow" />
         </Helmet>
         <div className="karaoke-page starry-bg">
           <div className="container karaoke-content">
@@ -25,44 +28,16 @@ export default function KaraokeLyrics() {
   }
 
   const songSlug = slug;
-  const pageTitle = `${song.artist} - ${song.song} Karaoke Lyrics - Santa Radio`;
-  const pageDescription = `Sing along to "${song.song}" by ${song.artist} with karaoke lyrics from Santa Radio, the UK's favourite Christmas radio station.`;
 
   return (
     <main>
-      <Helmet>
-        <title>{pageTitle}</title>
-        <meta name="description" content={pageDescription} />
-        <meta property="og:title" content={pageTitle} />
-        <meta property="og:description" content={pageDescription} />
-        <meta property="og:type" content="music.song" />
-        <meta property="og:url" content={`https://www.santaradio.co.uk/christmas-karaoke-lyrics/${songSlug}`} />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content={pageTitle} />
-        <meta name="twitter:description" content={pageDescription} />
-        <link rel="canonical" href={`https://www.santaradio.co.uk/christmas-karaoke-lyrics/${songSlug}`} />
-        <script type="application/ld+json">{JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "BreadcrumbList",
-          "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.santaradio.co.uk/" },
-            { "@type": "ListItem", "position": 2, "name": "Christmas Music", "item": "https://www.santaradio.co.uk/christmas-music" },
-            { "@type": "ListItem", "position": 3, "name": `${song.artist} - ${song.song}`, "item": `https://www.santaradio.co.uk/christmas-artist/${songSlug}` },
-            { "@type": "ListItem", "position": 4, "name": "Karaoke Lyrics", "item": `https://www.santaradio.co.uk/christmas-karaoke-lyrics/${songSlug}` }
-          ]
-        })}</script>
-        <script type="application/ld+json">{JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Organization",
-          "name": "Santa Radio",
-          "url": "https://www.santaradio.co.uk",
-          "logo": "https://www.santaradio.co.uk/santa-radio-logo.png",
-          "sameAs": [
-            "https://twitter.com/WeAreSantaRadio",
-            "https://facebook.com/santaradio"
-          ]
-        })}</script>
-      </Helmet>
+      <PageSeo metadata={pageMetadata({
+        path: `/christmas-karaoke-lyrics/${songSlug}`,
+        title: `${song.song} — ${song.artist} | Sing-Along Lyrics — Santa Radio`,
+        description: `Read the lyrics to “${song.song}” by ${song.artist} and sing along with the linked recording on Santa Radio.`,
+        image: songMetadata(song).image, imageAlt: songMetadata(song).imageAlt,
+        crumbs: [['Home', '/'], ['Christmas Music', '/christmas-music'], [`${song.song} — ${song.artist}`, `/christmas-artist/${songSlug}`], ['Sing-Along Lyrics', `/christmas-karaoke-lyrics/${songSlug}`]],
+      })} />
       <div className="karaoke-page starry-bg">
         <div className="container karaoke-content">
           <nav className="karaoke-breadcrumb">
@@ -70,15 +45,17 @@ export default function KaraokeLyrics() {
           </nav>
 
           <h2 className="karaoke-artist">{song.artist}</h2>
-          <h1 className="karaoke-title">{song.song} – Karaoke Lyrics</h1>
+          <h1 className="karaoke-title">{song.song} — {song.artist}: Sing-Along Lyrics</h1>
+          <p>Sing along using the lyrics below. The linked performance is not necessarily an instrumental karaoke track.</p>
 
           {song.youtube && (
             <div className="karaoke-video">
               <iframe
                 width="100%"
                 height="315"
+                loading="lazy"
                 src={`https://www.youtube.com/embed/${song.youtube}`}
-                title={`${song.artist} - ${song.song} Karaoke`}
+                title={`${song.artist} - ${song.song}: linked video`}
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen

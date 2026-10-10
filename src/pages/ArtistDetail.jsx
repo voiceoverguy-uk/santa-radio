@@ -44,7 +44,7 @@ export default function ArtistDetail() {
         "@type": "Organization",
         "name": "Santa Radio",
         "url": "https://www.santaradio.co.uk",
-        "logo": "https://www.santaradio.co.uk/santa-radio-logo.png"
+        "logo": "https://www.santaradio.co.uk/images/santa-radio-logo.png"
       },
       {
         "@type": "BreadcrumbList",
@@ -75,6 +75,7 @@ export default function ArtistDetail() {
   return (
     <main>
       <Helmet>
+        <meta name="robots" content="noindex, follow" />
         <title>{pageTitle}</title>
         <meta name="description" content={metaDescription} />
         <link rel="canonical" href={pageUrl} />

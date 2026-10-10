@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
 import { artistArtwork, fallbackArtwork } from '../data/artistArtwork.js';
 import './Music.css';
-import songsData from '../data/songs.json';
+import { songs as songsData, collectionMetadata, artworkAlt } from '../seo/catalogue.js';
+import PageSeo from '../seo/PageSeo.jsx';
+import Breadcrumbs from '../seo/Breadcrumbs.jsx';
 import { randomSongOrder } from '../data/randomSongOrder.js';
 
 const shuffleSongs = () => randomSongOrder(songsData);
@@ -16,7 +17,7 @@ const alphabeticalSongs = [...songsData].sort((a, b) =>
 function ArtistAvatar({ artist }) {
   const src = artistArtwork(artist);
   return (
-    <img key={src} src={src} alt={src === fallbackArtwork ? 'Santa with music notes — temporary artwork' : `${artist} illustrated portrait`}
+    <img key={src} src={src} alt={artworkAlt({ artist })}
       className="artist-avatar-img" width="120" height="120" loading="lazy"
       onError={event => {
         if (event.currentTarget.getAttribute('src') !== fallbackArtwork) {
@@ -39,24 +40,16 @@ export default function Music() {
 
   return (
     <main>
-      <Helmet>
-        <title>Christmas Song Lyrics & Artists {'\u2013'} Santa Radio</title>
-        <meta name="description" content="Discover the biggest online collection of Christmas songs with full lyrics, artists, custom artwork and festive music for every track on Santa Radio." />
-        <meta property="og:title" content="Christmas Song Lyrics & Artists – Santa Radio" />
-        <meta property="og:description" content="Discover the biggest online collection of Christmas songs with full lyrics, artists, custom artwork and festive music." />
-        <meta property="og:url" content="https://www.santaradio.co.uk/christmas-music" />
-        <meta name="twitter:card" content="summary" />
-        <link rel="canonical" href="https://www.santaradio.co.uk/christmas-music" />
-      </Helmet>
+      <PageSeo metadata={collectionMetadata('music')} />
       <div className="music-hero starry-bg">
         <div className="music-hero-content">
-          <h1 className="music-hero-title"><img className="brand-logo brand-logo-hero" src="/images/santa-radio-logo.png" alt="Santa Radio" width="827" height="190" /></h1>
-          <h2 className="music-sub-title">Christmas Song Lyrics &amp; Artists</h2>
+          <div className="music-hero-title"><img className="brand-logo brand-logo-hero" src="/images/santa-radio-logo.png" alt="Santa Radio" width="827" height="190" /></div>
+          <h1 className="music-sub-title">Christmas Song Lyrics &amp; Artists</h1>
           <p className="music-sub-desc">Browse Hundreds of Christmas Songs</p>
           <p className="music-description">
-            Discover the biggest online collection of Christmas songs — with full lyrics, artists,
-            custom artwork and festive music for every track. Search instantly through hundreds of
-            Christmas classics, pop hits and hidden gems. New songs and artist images added regularly.
+            Explore {songsData.length} Christmas recordings with lyrics and artist background,
+            illustrated portraits or Santa Radio artwork, and linked videos where available.
+            Browse Christmas classics, pop hits and hidden gems.
           </p>
           <Link to="/submit-a-song" className="btn-red suggest-btn">Suggest a song</Link>
           <div className="music-search-wrap">
@@ -82,6 +75,7 @@ export default function Music() {
         </div>
       </div>
 
+      <Breadcrumbs items={[['Home', '/'], ['Christmas Music', '/christmas-music']]} />
       <div className="music-grid-section starry-bg">
         <div className="container music-grid">
           {filtered.map((s) => (

@@ -6,7 +6,7 @@ export default function PrivacyPolicy() {
     <Helmet>
       <title>Privacy Policy — Santa Radio</title>
       <meta name="description" content="How Santa Radio handles your information, browser preferences and privacy choices." />
-      <link rel="canonical" href="https://santa-radio.replit.app/privacy-policy" />
+      <link rel="canonical" href="https://www.santaradio.co.uk/privacy-policy" />
     </Helmet>
     <article className="privacy-content">
       <p className="eyebrow">Santa Radio</p>

@@ -4,7 +4,7 @@ import './SantaNote.css';
 
 export default function SantaNote() {
   const [index, setIndex] = useState(0);
-  const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const [reducedMotion, setReducedMotion] = useState(() => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const [readyMessage, setReadyMessage] = useState(null);
   const [days, setDays] = useState(daysUntilChristmasEve);
   const message = `Santa here... ${formatSantaNote(santaNotes[index], days)}`;

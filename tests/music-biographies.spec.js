@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import songs from '../src/data/songs.json' with { type: 'json' };
 import record from '../docs/editorial/christmas-music-changes.json' with { type: 'json' };
 import findSong from '../src/data/findSong.js';
+import { songDescription } from '../src/seo/catalogue.js';
 
 test('all editorial changes resolve without altering historical addresses', () => {
   for (const entry of record.records) {
@@ -28,13 +29,13 @@ for (const entry of record.records) {
     const song = songs.find(s => s.id === target.id);
     await page.route('https://www.youtube.com/**', route => route.abort());
     await page.goto(target.url, { waitUntil: 'domcontentloaded' });
-    await expect(page.locator('.song-detail-info')).toHaveText(entry.after);
+    await expect(page.locator('.song-detail-info p')).toHaveText(entry.after);
     for (const selector of ['meta[name="description"]', 'meta[property="og:description"]', 'meta[name="twitter:description"]']) {
-      await expect(page.locator(`${selector}[data-rh="true"]`)).toHaveAttribute('content', entry.after);
+      await expect(page.locator(`${selector}[data-rh="true"]`)).toHaveAttribute('content', songDescription(song));
     }
     if (song.youtube) await expect(page.locator('.song-detail-main iframe')).toHaveAttribute('src', new RegExp(song.youtube));
     if (song.lyrics) {
-      await page.getByRole('button', { name: 'Show Lyrics', exact: true }).click();
+      await page.locator('details summary').click();
       await expect(page.locator('#song-lyrics')).toContainText(song.lyrics);
     }
     await expect(page.getByRole('complementary', { name: 'Santa Radio player' })).toBeVisible();

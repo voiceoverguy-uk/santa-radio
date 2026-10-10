@@ -1,0 +1,13 @@
+.seo-breadcrumbs {max-width:1100px;margin:1rem auto;padding:12px 1rem 0;font-size:.875rem}
+.seo-breadcrumbs ol {display:flex;flex-wrap:wrap;gap:.5rem;list-style:none;padding:0}
+.seo-breadcrumbs li:not(:last-child)::after {content:" /";margin-left:.5rem}
+.seo-directory,.tracker-questions {max-width:1100px;margin:2rem auto;padding:1.5rem;color:inherit}
+.seo-directory ul {columns:3;list-style:none;padding:0}
+.seo-directory li {break-inside:avoid;margin:.5rem 0}
+.seo-directory a {text-decoration:underline}
+.tracker-questions p {line-height:1.7}
+.song-lyrics-section summary {cursor:pointer;padding:1rem;border:1px solid currentColor;border-radius:.75rem}
+.song-lyrics-content pre {white-space:pre-wrap;overflow-wrap:anywhere}
+.song-recording-summary {line-height:1.7}
+.song-artwork-img {height:auto}
+@media(max-width:650px){.seo-directory ul{columns:1}}

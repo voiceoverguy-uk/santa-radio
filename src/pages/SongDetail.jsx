@@ -1,16 +1,16 @@
 import { useParams, Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import findSong from '../data/findSong';
 import relatedSongs from '../data/relatedSongs.js';
 import { artistArtwork, fallbackArtwork } from '../data/artistArtwork.js';
 import './SongDetail.css';
+import PageSeo from '../seo/PageSeo.jsx';
+import Breadcrumbs from '../seo/Breadcrumbs.jsx';
+import { songMetadata, songDescription, artworkAlt, performanceKind } from '../seo/catalogue.js';
 
 export default function SongDetail() {
   const { slug } = useParams();
   const song = findSong(slug);
-  const [showLyrics, setShowLyrics] = useState(false);
-  useEffect(() => { setShowLyrics(false); }, [slug]);
   const moreSongs = relatedSongs(song);
 
   if (!song) {
@@ -18,6 +18,7 @@ export default function SongDetail() {
       <main>
         <Helmet>
           <title>Song Not Found – Santa Radio</title>
+          <meta name="robots" content="noindex, follow" />
         </Helmet>
         <div className="song-detail-page starry-bg">
           <div className="container song-detail-content">
@@ -30,86 +31,38 @@ export default function SongDetail() {
     );
   }
 
-  const pageTitle = `${song.artist} - ${song.song} - Santa Radio`;
-  const pageDescription = song.info || `Listen to "${song.song}" by ${song.artist} on Santa Radio, the UK's favourite Christmas radio station. Enjoy this festive classic along with hundreds of other Christmas songs.`;
+  const pageDescription = songDescription(song);
   const songSlug = `${song.id}-${song.link}`;
   const twitterShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(`Listening to ${song.song} by ${song.artist} on Santa Radio!`)}&url=${encodeURIComponent(`https://www.santaradio.co.uk/christmas-artist/${songSlug}`)}`;
 
   return (
     <main>
-      <Helmet>
-        <title>{pageTitle}</title>
-        <meta name="description" content={pageDescription} />
-        <meta property="og:title" content={pageTitle} />
-        <meta property="og:description" content={pageDescription} />
-        {song.image && <meta property="og:image" content={song.image} />}
-        <meta property="og:type" content="music.song" />
-        <meta property="og:url" content={`https://www.santaradio.co.uk/christmas-artist/${songSlug}`} />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={pageTitle} />
-        <meta name="twitter:description" content={pageDescription} />
-        {song.image && <meta name="twitter:image" content={song.image} />}
-        <link rel="canonical" href={`https://www.santaradio.co.uk/christmas-artist/${songSlug}`} />
-        <script type="application/ld+json">{JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "BreadcrumbList",
-          "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.santaradio.co.uk/" },
-            { "@type": "ListItem", "position": 2, "name": "Christmas Music", "item": "https://www.santaradio.co.uk/christmas-music" },
-            { "@type": "ListItem", "position": 3, "name": `${song.artist} - ${song.song}`, "item": `https://www.santaradio.co.uk/christmas-artist/${songSlug}` }
-          ]
-        })}</script>
-        <script type="application/ld+json">{JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "MusicRecording",
-          "name": song.song,
-          "byArtist": { "@type": "MusicGroup", "name": song.artist },
-          "url": `https://www.santaradio.co.uk/christmas-artist/${songSlug}`
-        })}</script>
-        <script type="application/ld+json">{JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Organization",
-          "name": "Santa Radio",
-          "url": "https://www.santaradio.co.uk",
-          "logo": "https://www.santaradio.co.uk/santa-radio-logo.png",
-          "sameAs": [
-            "https://twitter.com/WeAreSantaRadio",
-            "https://facebook.com/santaradio"
-          ]
-        })}</script>
-      </Helmet>
+      <PageSeo metadata={songMetadata(song)} />
+      <Breadcrumbs items={[['Home', '/'], ['Christmas Music', '/christmas-music'], [`${song.song} — ${song.artist}`, `/christmas-artist/${songSlug}`]]} />
       <div className="song-detail-page starry-bg">
         <div className="container song-detail-content">
-          <nav className="song-breadcrumb">
-            <Link to="/">Home</Link> &rsaquo; <Link to="/christmas-music">Christmas Music</Link> &rsaquo; <span>{song.artist}</span>
-          </nav>
 
           <div className="song-detail-layout">
             <div className="song-detail-main">
-              <h2 className="song-detail-artist">{song.artist}</h2>
-              <h1 className="song-detail-title">{song.song}</h1>
+              <p className="song-detail-artist">{song.artist}</p>
+              <h1 className="song-detail-title">{song.song} — {song.artist}</h1>
+              <p className="song-recording-summary">{pageDescription}</p>
+              <p>{performanceKind(song)}: {song.artist}</p>
+              <Link to={`/christmas-karaoke-lyrics/${songSlug}`}>Open the full sing-along lyrics page</Link>
 
               <div className="song-detail-info">
+                <h2>Artist background</h2>
                 <p>{song.info || 'Artist information for this song is not yet available.'}</p>
               </div>
 
               {!song.lyrics && <p>Lyrics for this song are not yet available.</p>}
               {song.lyrics && (
-                <div className="song-lyrics-section">
-                  <button
-                    className="lyrics-toggle-btn"
-                    aria-expanded={showLyrics}
-                    aria-controls="song-lyrics"
-                    onClick={() => setShowLyrics(!showLyrics)}
-                  >
-                    {showLyrics ? 'Hide Lyrics' : 'Show Lyrics'}
-                  </button>
-                  {showLyrics && (
+                <details className="song-lyrics-section" key={songSlug}>
+                  <summary>Show Lyrics — {song.song}</summary>
                     <div id="song-lyrics" className="song-lyrics-content">
                       <pre>{song.lyrics}</pre>
                     </div>
-                  )}
-                </div>
+                </details>
               )}
 
               {song.youtube && (
@@ -117,6 +70,7 @@ export default function SongDetail() {
                   <iframe
                     width="100%"
                     height="315"
+                    loading="lazy"
                     src={`https://www.youtube.com/embed/${song.youtube}`}
                     title={`${song.artist} - ${song.song}`}
                     frameBorder="0"
@@ -134,7 +88,7 @@ export default function SongDetail() {
             </div>
 
             <div className="song-detail-artwork">
-              <img key={song.artist} src={artistArtwork(song.artist)} alt={artistArtwork(song.artist) === fallbackArtwork ? 'Santa with music notes' : song.artist} className="song-artwork-img"
+              <img key={song.artist} src={artistArtwork(song.artist)} alt={artworkAlt(song)} width="512" height="512" className="song-artwork-img"
                 onError={event => {
                   if (event.currentTarget.getAttribute('src') !== fallbackArtwork) {
                     event.currentTarget.src = fallbackArtwork;

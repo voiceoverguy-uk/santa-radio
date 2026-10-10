@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Santa Radio Santa Tracker">
+<rect width="1200" height="630" fill="#0a1628"/><circle cx="1000" cy="340" r="230" fill="#163e36"/><path d="M770 340h460M1000 110v460M800 220h400M800 460h400" stroke="#d4af37" stroke-opacity=".45" stroke-width="4"/><ellipse cx="1000" cy="340" rx="120" ry="230" fill="none" stroke="#d4af37" stroke-opacity=".45" stroke-width="4"/>
+<text x="70" y="170" fill="#d4af37" font-family="Arial,sans-serif" font-size="48" font-weight="bold">SANTA RADIO</text><text x="70" y="300" fill="white" font-family="Arial,sans-serif" font-size="80" font-weight="bold">Santa Tracker</text><text x="70" y="380" fill="white" font-family="Arial,sans-serif" font-size="30">An estimated Christmas Eve journey</text><text x="70" y="525" fill="#d4af37" font-family="Arial,sans-serif" font-size="28">www.santaradio.co.uk/santa-tracker</text>
+</svg>

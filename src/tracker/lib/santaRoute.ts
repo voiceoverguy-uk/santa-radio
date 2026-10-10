@@ -2,6 +2,7 @@ import {
   santaStops,
   TRACKER_CONSTANTS,
   getStopArrivalDate,
+  getStopUtcOffset,
   type SantaStop,
 } from "@/data/santaRouteStops";
 import { holidayDestinations, type HolidayDestination } from "@/data/santaHolidays";
@@ -38,6 +39,7 @@ export interface DashboardData {
   currentStopFlag: string;
   currentStopRegion: string;
   localTimeAtStop: string;
+  localClockPlace: string;
   nextStopName: string;
   nextStopFlag: string;
   etaText: string;
@@ -104,7 +106,7 @@ function getStopArrivals(year: number): { stop: SantaStop; arrival: Date }[] {
   return santaStops.map((stop) => ({
     stop,
     arrival: getStopArrivalDate(stop, year),
-  }));
+  })).sort((a, b) => a.arrival.getTime() - b.arrival.getTime());
 }
 
 export function getSeasonalTrackerMode(now: Date): SeasonalMode {
@@ -137,7 +139,7 @@ export function getSantaTrackerState(now: Date): TrackerState {
     const ukArrival = ukStop.arrival.getTime();
     const windowMs = TRACKER_CONSTANTS.ukSpecialWindowHours * 60 * 60 * 1000;
     const nowMs = now.getTime();
-    if (nowMs >= ukArrival - windowMs && nowMs <= ukArrival + ukStop.stop.dwellMinutes * 60 * 1000) {
+    if (nowMs >= ukArrival - windowMs && nowMs < ukArrival + ukStop.stop.dwellMinutes * 60 * 1000) {
       return "UK_SPECIAL_WINDOW";
     }
   }
@@ -148,7 +150,7 @@ export function getSantaTrackerState(now: Date): TrackerState {
     const dwellMs = stop.dwellMinutes * 60 * 1000;
     const nowMs = now.getTime();
 
-    if (nowMs >= arrivalMs && nowMs <= arrivalMs + dwellMs) {
+    if (nowMs >= arrivalMs && nowMs < arrivalMs + dwellMs) {
       return "LIVE_AT_STOP";
     }
   }
@@ -163,6 +165,11 @@ export function getCurrentStop(now: Date): SantaStop | null {
   const year = getChristmasEveYear(now);
   const arrivals = getStopArrivals(year);
   const nowMs = now.getTime();
+
+  // Shared-offset regions arrive together. Keep the highlighted UK stop, clock
+  // and map consistent throughout its real estimated delivery window.
+  const uk = arrivals.find(a => a.stop.milestoneType === "uk");
+  if (uk && nowMs >= uk.arrival.getTime() && nowMs < uk.arrival.getTime() + uk.stop.dwellMinutes * 60000) return uk.stop;
 
   for (let i = arrivals.length - 1; i >= 0; i--) {
     if (nowMs >= arrivals[i].arrival.getTime()) {
@@ -235,6 +242,8 @@ export function getInterpolatedMapPosition(now: Date): MapPosition {
     const last = santaStops[santaStops.length - 1];
     return { lat: last.lat, lng: last.lng, ...latLngToXY(last.lat, last.lng) };
   }
+  const currentStop = getCurrentStop(now);
+  if (currentStop?.milestoneType === "uk") return { lat: currentStop.lat, lng: currentStop.lng, ...latLngToXY(currentStop.lat, currentStop.lng) };
 
   const year = getChristmasEveYear(now);
   const arrivals = getStopArrivals(year);
@@ -356,7 +365,7 @@ function getStatusTexts(state: TrackerState, current: SantaStop | null, next: Sa
       }
       return {
         headline: "Santa is Approaching the UK!",
-        subtext: `Currently delivering in ${current?.name || "Europe"} — the UK is next!`,
+        subtext: `Estimated deliveries in ${current?.name || "Europe"} — the UK window starts at midnight UTC`,
       };
     case "LIVE_AT_STOP":
       return {
@@ -426,7 +435,8 @@ export function getDashboardData(now: Date): DashboardData {
     currentStopName: state === "IN_TRANSIT" && next ? `En route to ${next.name}` : (current?.name || "North Pole"),
     currentStopFlag: state === "IN_TRANSIT" && next ? "✈️" : (current?.flag || "🎅"),
     currentStopRegion: state === "IN_TRANSIT" && next ? next.region : (current?.region || "Arctic"),
-    localTimeAtStop: current ? formatLocalTime(current.utcOffset, now) : "—",
+    localTimeAtStop: current ? formatLocalTime(getStopUtcOffset(current, now.getUTCFullYear()), now) : "—",
+    localClockPlace: current?.name || "North Pole",
     nextStopName: next?.name || "—",
     nextStopFlag: next?.flag || "",
     etaText,

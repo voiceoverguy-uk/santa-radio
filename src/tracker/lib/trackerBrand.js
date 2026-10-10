@@ -1,8 +1,8 @@
-// Verified current Santa Radio published host. Update this when its domain moves.
-export const TRACKER_ORIGIN = 'https://santa-radio.replit.app';
+// Owner-approved preferred public address; do not force preview/API host redirects.
+export const TRACKER_ORIGIN = 'https://www.santaradio.co.uk';
 export const TRACKER_URL = `${TRACKER_ORIGIN}/santa-tracker`;
-export const TRACKER_DISPLAY_URL = 'santa-radio.replit.app/santa-tracker';
-export const TRACKER_IMAGE = `${TRACKER_ORIGIN}/images/santa-radio-logo.png`;
+export const TRACKER_DISPLAY_URL = 'www.santaradio.co.uk/santa-tracker';
+export const TRACKER_IMAGE = `${TRACKER_ORIGIN}/images/santa-tracker-share.png`;
 export const SANTA_VOICE_URL = 'https://www.santaguy.co.uk/hire-santa-voice';
 
 export function getTrackerMetadata(now = new Date()) {
@@ -20,7 +20,7 @@ export function getTrackerMetadata(now = new Date()) {
     openGraph: {
       title, description, url: TRACKER_URL, type: 'website', locale: 'en_GB',
       siteName: 'Santa Radio',
-      images: [{ url: TRACKER_IMAGE, width: 827, height: 190, alt: 'Santa Radio' }],
+       images: [{ url: TRACKER_IMAGE, width: 1200, height: 630, alt: 'Santa Radio — estimated Christmas Eve journey' }],
     },
     twitter: {
       card: 'summary_large_image', title, description, images: [TRACKER_IMAGE],

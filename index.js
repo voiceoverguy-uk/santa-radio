@@ -7,6 +7,8 @@ import radioMetadata from './server/radio-metadata.js';
 import santaMessage from './server/santa-message.js';
 import { trackerPageHtml, isTrackerPreview } from './server/tracker-html.js';
 import { artworkHeaders } from './server/artwork-feed.js';
+import { resolvePublicRequest } from './src/seo/routes.js';
+import { publicPageHtml } from './server/public-html.js';
 
 const root = await realpath(fileURLToPath(new URL('./dist', import.meta.url)));
 const index = resolve(root, 'index.html');
@@ -31,9 +33,21 @@ const server = createServer(async (req, res) => {
     if (pathname === '/api/radio-metadata') return await radioMetadata(req, res);
     if (pathname === '/api/santa-message') return await santaMessage(req, res);
     if (pathname.startsWith('/api/')) { res.writeHead(404).end('Not found'); return; }
+    if (pathname === '/server' || pathname.startsWith('/server/')) { res.writeHead(404).end('Not found'); return; }
     if (pathname.split('/').some(part => part.startsWith('.'))) { res.writeHead(404).end('Not found'); return; }
     if (!['GET', 'HEAD'].includes(req.method)) {
       res.writeHead(405, { Allow: 'GET, HEAD' }).end(); return;
+    }
+    if (!extname(pathname)) {
+      const route = resolvePublicRequest(req.url);
+      if (route.location) { res.writeHead(route.status, { Location: route.location }); res.end(); return; }
+      if (route.noindex || route.status !== 200) res.setHeader('X-Robots-Tag', 'noindex, follow');
+      if (route.status !== 200 || pathname === '/artist' || pathname === '/santa-tracker') {
+        const { render } = await import('./dist/server/entry-server.js');
+        const body = publicPageHtml(await readFile(resolve(root, 'server/shell.html'), 'utf8'), render(req.url));
+        res.writeHead(route.status, { 'Content-Type': types['.html'], 'Cache-Control': 'no-cache', 'Content-Length': Buffer.byteLength(body) });
+        res.end(req.method === 'HEAD' ? undefined : body); return;
+      }
     }
     let file = resolve(root, `.${pathname}`);
     if (file !== root && !file.startsWith(root + sep)) { res.writeHead(403).end(); return; }
@@ -42,6 +56,7 @@ const server = createServer(async (req, res) => {
       file = await realpath(file);
       if (file !== root && !file.startsWith(root + sep)) { res.writeHead(403).end(); return; }
       info = await stat(file);
+      if (info.isDirectory()) { file = resolve(file, 'index.html'); info = await stat(file); }
     } catch (error) {
       if (!['ENOENT', 'ENOTDIR'].includes(error.code)) throw error;
     }

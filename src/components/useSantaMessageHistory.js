@@ -5,13 +5,15 @@ import { useSyncExternalStore } from 'react';
 let messages = [];
 const listeners = new Set();
 const getSnapshot = () => messages;
+const serverMessages = [];
+const getServerSnapshot = () => serverMessages;
 const subscribe = listener => {
   listeners.add(listener);
   return () => listeners.delete(listener);
 };
 
 export default function useSantaMessageHistory() {
-  const history = useSyncExternalStore(subscribe, getSnapshot);
+  const history = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const remember = (recording, blob) => {
     const url = URL.createObjectURL(blob);
     const next = [...messages, {

@@ -3,27 +3,24 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "functions": {
+    "api/public-page.js": {
+      "includeFiles": "dist/server/**"
+    },
     "api/santa-message.js": {
       "maxDuration": 120,
       "includeFiles": "{server/santa-audio/**,scripts/santa-audio-filters.mjs,node_modules/ffmpeg-static/**}"
     }
   },
-  "headers": [
-    { "source": "/artist-artwork/:path*", "headers": [
-      { "key": "Access-Control-Allow-Origin", "value": "*" },
-      { "key": "Access-Control-Allow-Methods", "value": "GET, HEAD, OPTIONS" },
-      { "key": "Cache-Control", "value": "no-cache" },
-      { "key": "X-Content-Type-Options", "value": "nosniff" }
-    ] },
-    { "source": "/santa-tracker/preview", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }] },
-    { "source": "/santa-tracker/preview/", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }] }
-  ],
-  "rewrites": [
-    { "source": "/artist-artwork/:path*", "destination": "/artist-artwork/:path*" },
-    { "source": "/api/radio-metadata", "destination": "/api/radio-metadata" },
-    { "source": "/api/santa-message", "destination": "/api/santa-message" },
-    { "source": "/santa-tracker", "destination": "/santa-tracker/index.html" },
-    { "source": "/santa-tracker/preview", "destination": "/santa-tracker/preview/index.html" },
-    { "source": "/(.*)", "destination": "/" }
+  "routes": [
+    { "src": "/artist-artwork/(.*)", "headers": {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+      "Cache-Control": "no-cache",
+      "X-Content-Type-Options": "nosniff"
+    }, "continue": true },
+    { "src": "/server(?:/.*)?", "dest": "/api/public-page?__sr_route=/404" },
+    { "src": "/((?:apps|privacy-policy|christmas-music|mugshots|christmas-artist|christmas-karaoke-lyrics|free-santa-message|submit-a-song|links|santa-stories|santa-tracker|music|artist)(?:/.*)?|)", "dest": "/api/public-page?__sr_route=/$1" },
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/api/public-page?__sr_route=/$1" }
   ]
 }

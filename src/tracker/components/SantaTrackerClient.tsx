@@ -232,7 +232,7 @@ function SantaTrackerInner({ showPreview = false, introduction }: SantaTrackerPr
       <section className="px-4 sm:px-6 pb-12">
         <div className="max-w-6xl mx-auto">
           <h2 className="tracker-section-title text-lg sm:text-xl mb-4">
-            Live Dashboard
+              Updating Estimated Dashboard
           </h2>
           <SantaStats effectiveTime={effectiveTime} holiday={onHoliday ? holiday : undefined} />
         </div>

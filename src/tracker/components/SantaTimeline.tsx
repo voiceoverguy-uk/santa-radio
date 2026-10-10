@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useEffect } from "react";
-import { santaStops } from "@/data/santaRouteStops";
+import { santaStops, getStopUtcOffset, getStopArrivalDate } from "@/data/santaRouteStops";
 import { getVisitedStops, getCurrentStopId } from "@/lib/santaRoute";
 
 interface SantaTimelineProps {
@@ -9,6 +9,7 @@ interface SantaTimelineProps {
 }
 
 export default function SantaTimeline({ effectiveTime }: SantaTimelineProps) {
+  const routeStops = [...santaStops].sort((a, b) => getStopArrivalDate(a, effectiveTime.getUTCFullYear()).getTime() - getStopArrivalDate(b, effectiveTime.getUTCFullYear()).getTime());
   const visited = getVisitedStops(effectiveTime);
   const currentId = getCurrentStopId(effectiveTime);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -30,7 +31,7 @@ export default function SantaTimeline({ effectiveTime }: SantaTimelineProps) {
   return (
     <div className="max-w-6xl mx-auto">
       <div className="sm:hidden space-y-2">
-        {santaStops.map((stop, i) => {
+        {routeStops.map((stop, i) => {
           const isVisited = visited.has(stop.id);
           const isCurrent = stop.id === currentId;
 
@@ -66,7 +67,7 @@ export default function SantaTimeline({ effectiveTime }: SantaTimelineProps) {
                     {stop.displayLabel}
                   </p>
                   <p className="tracker-meta text-[10px] uppercase tracking-wider">
-                    UTC{stop.utcOffset >= 0 ? "+" : ""}{stop.utcOffset}
+                    Representative clock: UTC{getStopUtcOffset(stop, effectiveTime.getUTCFullYear()) >= 0 ? "+" : ""}{getStopUtcOffset(stop, effectiveTime.getUTCFullYear())}
                   </p>
                 </div>
                 <span className={`flex-shrink-0 text-[10px] rounded-full px-2 py-0.5 uppercase tracking-wider font-medium ${
@@ -93,7 +94,7 @@ export default function SantaTimeline({ effectiveTime }: SantaTimelineProps) {
           <div className="tracker-timeline-line absolute top-5 left-8 right-8 h-px" />
 
           <div className="flex items-start">
-            {santaStops.map((stop) => {
+            {routeStops.map((stop) => {
               const isVisited = visited.has(stop.id);
               const isCurrent = stop.id === currentId;
 
@@ -125,7 +126,7 @@ export default function SantaTimeline({ effectiveTime }: SantaTimelineProps) {
                       {stop.displayLabel}
                     </p>
                     <p className="tracker-meta text-[9px] mt-0.5">
-                      UTC{stop.utcOffset >= 0 ? "+" : ""}{stop.utcOffset}
+                       UTC{getStopUtcOffset(stop, effectiveTime.getUTCFullYear()) >= 0 ? "+" : ""}{getStopUtcOffset(stop, effectiveTime.getUTCFullYear())}
                     </p>
                     <span className={`inline-block mt-1 text-[9px] rounded-full px-1.5 py-0.5 uppercase tracking-wider font-medium ${
                       isCurrent

@@ -4,6 +4,7 @@ export interface SantaStop {
   region: string;
   flag: string;
   utcOffset: number;
+  timeZone?: string;
   lat: number;
   lng: number;
   dwellMinutes: number;
@@ -39,24 +40,26 @@ export const santaStops: SantaStop[] = [
   },
   {
     id: "fiji",
-    name: "Fiji & Tonga",
+    name: "Fiji",
     region: "Pacific",
     flag: "🇫🇯",
-    utcOffset: 13,
+    utcOffset: 12,
+    timeZone: "Pacific/Fiji",
     lat: -17.8,
     lng: 177.97,
     dwellMinutes: 20,
     funFact:
       "In Fiji, Christmas falls in the middle of summer. Families celebrate with a 'lovo' feast — food cooked underground in an earth oven wrapped in banana leaves.",
     milestoneType: "major",
-    displayLabel: "Fiji & Tonga",
+    displayLabel: "Fiji",
   },
   {
     id: "new-zealand",
     name: "New Zealand",
     region: "Oceania",
     flag: "🇳🇿",
-    utcOffset: 12,
+    utcOffset: 13,
+    timeZone: "Pacific/Auckland",
     lat: -41.3,
     lng: 174.8,
     dwellMinutes: 30,
@@ -641,13 +644,48 @@ export const santaStops: SantaStop[] = [
   },
 ];
 
-export function getStopArrivalUtcHour(stop: SantaStop): number {
-  return 24 - stop.utcOffset;
+// Representative places for broad route regions; Christmas-time offsets come
+// from IANA rules rather than longitude or year-round standard time.
+const routeTimeZones: Record<string, string> = {
+  pacific: "Pacific/Kiritimati", fiji: "Pacific/Fiji", "new-zealand": "Pacific/Auckland",
+  australia: "Australia/Sydney", japan: "Asia/Tokyo", "south-korea": "Asia/Seoul",
+  china: "Asia/Hong_Kong", philippines: "Asia/Manila", singapore: "Asia/Singapore",
+  indonesia: "Asia/Jakarta", thailand: "Asia/Bangkok", bangladesh: "Asia/Dhaka",
+  india: "Asia/Kolkata", pakistan: "Asia/Karachi", "middle-east": "Asia/Dubai",
+  "east-africa": "Africa/Nairobi", turkey: "Europe/Istanbul", greece: "Europe/Athens",
+  "south-africa": "Africa/Johannesburg", "eastern-europe": "Europe/Warsaw",
+  italy: "Europe/Rome", germany: "Europe/Berlin", netherlands: "Europe/Amsterdam",
+  switzerland: "Europe/Zurich", spain: "Europe/Madrid", france: "Europe/Paris",
+  scandinavia: "Europe/Stockholm", uk: "Europe/London", ireland: "Europe/Dublin",
+  iceland: "Atlantic/Reykjavik", "west-africa": "Africa/Lagos",
+  "south-america-east": "America/Sao_Paulo", argentina: "America/Argentina/Buenos_Aires",
+  peru: "America/Lima", caribbean: "America/Jamaica", "canada-east": "America/Toronto",
+  "eastern-usa": "America/New_York", florida: "America/New_York",
+  "central-usa": "America/Chicago", mexico: "America/Mexico_City",
+  "mountain-usa": "America/Denver", "west-coast": "America/Los_Angeles",
+  alaska: "America/Anchorage", hawaii: "Pacific/Honolulu",
+};
+export function getStopUtcOffset(stop: SantaStop, year = new Date().getUTCFullYear()): number {
+  const zone = stop.timeZone || routeTimeZones[stop.id];
+  if (!zone) return stop.utcOffset; // Synthetic test stops explicitly supply their offset.
+  const value = new Intl.DateTimeFormat('en-GB', { timeZone: zone, timeZoneName: 'shortOffset' })
+    .formatToParts(new Date(Date.UTC(year, 11, 25))).find(part => part.type === 'timeZoneName')!.value;
+  if (value === 'GMT') return 0;
+  const match = value.match(/^GMT([+-])(\d+)(?::(\d+))?$/);
+  if (!match) throw new Error(`Cannot interpret Christmas offset for ${zone}: ${value}`);
+  return (Number(match[2]) + Number(match[3] || 0) / 60) * (match[1] === '-' ? -1 : 1);
+}
+for (const stop of santaStops) {
+  stop.timeZone = routeTimeZones[stop.id];
+  stop.utcOffset = getStopUtcOffset(stop);
+}
+
+export function getStopArrivalUtcHour(stop: SantaStop, year = new Date().getUTCFullYear()): number {
+  return 24 - getStopUtcOffset(stop, year);
 }
 
 export function getStopArrivalDate(stop: SantaStop, year: number): Date {
-  const hour = getStopArrivalUtcHour(stop);
-  const date = new Date(Date.UTC(year, 11, 24, 0, 0, 0));
-  date.setUTCHours(date.getUTCHours() + hour);
-  return date;
+  const hour = getStopArrivalUtcHour(stop, year);
+  // Milliseconds preserve half-hour offsets; Date.setUTCHours truncates fractions.
+  return new Date(Date.UTC(year, 11, 24) + hour * 60 * 60 * 1000);
 }

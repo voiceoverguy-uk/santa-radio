@@ -1,4 +1,5 @@
 server/santa-audio/prepared/
+/generated-artifacts/
 # Logs
 logs
 *.log

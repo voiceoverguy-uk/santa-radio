@@ -1,9 +1,12 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
 import './MugShots.css';
 import './MugshotPhoto.css';
 import mugshotsData from '../data/mugshots.ts';
+import PageSeo from '../seo/PageSeo.jsx';
+import Breadcrumbs from '../seo/Breadcrumbs.jsx';
+import { collectionMetadata } from '../seo/catalogue.js';
+import { mugSrcSet } from '../seo/mugImages.js';
 
 const ITEMS_PER_PAGE = 100;
 
@@ -52,15 +55,8 @@ export default function MugShots() {
 
   return (
     <main>
-      <Helmet>
-        <title>Celebrity Mug Shots {'\u2013'} Santa Radio</title>
-        <meta name="description" content="Santa Radio Celebrity Mug Shots Hall of Fame! Hundreds of famous faces from TV, radio, music, comedy and sport, all posing with the iconic Santa Radio mug." />
-        <meta property="og:title" content="Celebrity Mug Shots – Santa Radio" />
-        <meta property="og:description" content="Santa Radio Celebrity Mug Shots Hall of Fame! Hundreds of famous faces from TV, radio, music, comedy and sport." />
-        <meta property="og:url" content="https://www.santaradio.co.uk/mugshots/all" />
-        <meta name="twitter:card" content="summary" />
-        <link rel="canonical" href="https://www.santaradio.co.uk/mugshots/all" />
-      </Helmet>
+      <PageSeo metadata={collectionMetadata('mugs')} />
+      <Breadcrumbs items={[['Home', '/'], ['Mug Shots', '/mugshots/all']]} />
       <div className="mugshots-page-hero starry-bg">
         <div className="mugshots-hero-content">
           <div className="mugshots-page-logo-wrap">
@@ -113,7 +109,10 @@ export default function MugShots() {
               <div className="mugshot-photo-frame">
               <img
                 src={celeb.image}
-                alt={celeb.artist}
+                srcSet={mugSrcSet(celeb.image)}
+                sizes="(max-width: 600px) 44vw, (max-width: 1000px) 30vw, 220px"
+                alt={`${celeb.artist} with a Santa Radio mug`}
+                width="1000" height="1200"
                 className="mugshot-photo"
                 loading="lazy"
                 onError={e => {
@@ -149,6 +148,11 @@ export default function MugShots() {
           </div>
         )}
       </div>
+      <section className="seo-directory" aria-labelledby="mug-directory-heading">
+        <h2 id="mug-directory-heading">All celebrity mug photographs — A–Z</h2>
+        <p>Friendly photographs with Santa Radio mugs, not criminal mugshots. Every retained profile is linked below; no Load More click is needed.</p>
+        <ul>{alphabetical.map(celeb => <li key={celeb.song}><Link to={`/mugshots/${celeb.song}`}>{celeb.artist}</Link></li>)}</ul>
+      </section>
     </main>
   );
 }
