@@ -1,6 +1,7 @@
 // Keep the original import intact: historical URLs and alternative photographs
 // remain recoverable. Only reviewed identities share a public profile.
 import biographies from './mugshot-biographies.json' with { type: 'json' };
+import { normalizePhotoCredit } from './mugshot-credit.js';
 export const identityAliases = {
   'brendan-o-carroll-mrs-brown': 'brendan-o-carroll-actor-mrs-brown',
   'mrs-brown-brendan-o-carroll': 'brendan-o-carroll-actor-mrs-brown',
@@ -52,6 +53,7 @@ export function buildCatalogue(raw, overrides = biographies) {
     for (const field of ['info', 'link', 'credit', 'socialUrl', 'image']) {
       if (!canonical[field]) canonical[field] = ranked.find(m => m[field])?.[field] || '';
     }
+    canonical.credit = normalizePhotoCredit(canonical.credit);
     const bios = [...new Set(group.map(m => m.info).filter(Boolean))];
     if (bios.length > 1) conflicts.push({ slug: canonical.song, reason: 'Conflicting biographies: retained primary text; review alternatives in raw catalogue.' });
     canonical.searchNames = [...new Set(group.map(m => m.artist))];

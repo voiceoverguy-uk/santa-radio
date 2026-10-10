@@ -2,6 +2,12 @@
 name: Mugshot editorial policy
 description: User ownership of biography research and cautious identity consolidation.
 ---
+Correct known photographer-credit misspellings without reassigning photos credited to other people or filling in missing attributions.
+
+**Why:** The user explicitly chose to fix existing Bruce credits only and preserve other attributions.
+
+**How to apply:** Normalise approved variants, but do not infer a photographer from an unrelated social handle or a missing credit.
+
 Homepage Mugshots must be randomly selected only from profiles whose legacy homepage flag is Yes; never fill remaining spaces with unapproved profiles.
 
 **Why:** The owner used this flag as their A-list approval and explicitly requested its restoration.
