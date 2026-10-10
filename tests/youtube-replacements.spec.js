@@ -26,6 +26,6 @@ test('replacement embeds render and requested video removal preserves the song p
   await expect(page.locator('.song-youtube-embed iframe')).toHaveAttribute('src', 'https://www.youtube.com/embed/WM7M7zSMJcw');
   const removed = replacements.find(row => row['NEW YT LINK'] === 'REMOVE VIDEO OPTION');
   await page.goto(removed['Page path'], { waitUntil: 'domcontentloaded' });
-  await expect(page.locator('h1')).toHaveText(removed.Song);
+  await expect(page.locator('h1')).toHaveText(`${removed.Song} — ${removed.Artist}`);
   await expect(page.locator('.song-youtube-embed')).toHaveCount(0);
 });

@@ -75,3 +75,9 @@ The user loves the current snowy North Pole village and northern-lights backgrou
 **Why:** They explicitly said “I love the background you made” when requesting a distant Santa flyby.
 
 **How to apply:** Preserve that backdrop when tuning the flyby; keep the silhouette as a separate decorative overlay rather than replacing or baking it into the artwork.
+
+Mugshot profile photographs should share the Chuckle Brothers' display proportions, including taller originals, without cropping or stretching.
+
+**Why:** The user noticed Christine Lampard was taller and approved standardising the seven exceptions to the other 642 profiles after being offered full-photo preservation.
+
+**How to apply:** Keep a consistent profile frame when adding photographs with different proportions; do not silently crop originals to make them match.

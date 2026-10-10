@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import findSong from '../data/findSong';
+import SongVideo from '../components/SongVideo.jsx';
 import './KaraokeLyrics.css';
 import PageSeo from '../seo/PageSeo.jsx';
 import { pageMetadata, songMetadata } from '../seo/catalogue.js';
@@ -48,20 +49,8 @@ export default function KaraokeLyrics() {
           <h1 className="karaoke-title">{song.song} — {song.artist}: Sing-Along Lyrics</h1>
           <p>Sing along using the lyrics below. The linked performance is not necessarily an instrumental karaoke track.</p>
 
-          {song.youtube && (
-            <div className="karaoke-video">
-              <iframe
-                width="100%"
-                height="315"
-                loading="lazy"
-                src={`https://www.youtube.com/embed/${song.youtube}`}
-                title={`${song.artist} - ${song.song}: linked video`}
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
-          )}
+          <SongVideo song={song} className="karaoke-video"
+            title={`${song.artist} - ${song.song}: linked video`} />
 
           <div className="karaoke-lyrics-display">
             {song.lyrics ? (

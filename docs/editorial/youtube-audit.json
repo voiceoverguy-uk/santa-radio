@@ -32,7 +32,7 @@
         "songMatch": false,
         "playback": "embedding_disabled_by_video_owner",
         "playbackEvidence": "On both existing pages the iframe references the replacement. Clicking the player in the proxied development song page produced: Playback on other websites has been disabled by the video owner. Video currentTime=0, paused=true, readyState=0.",
-        "completion": "Blocked: replacement does not play embedded. Owner must enable embedding or supply an embeddable alternative."
+        "completion": "Both music and karaoke pages offer the approved replacement via Watch on YouTube instead of a known-blocked embed; browser tests verify the destination and preserved song, artist, lyrics and URLs. Direct YouTube playback check returned LOGIN_REQUIRED (Sign in to confirm you're not a bot); actual playback remains unverified. On-site playback requires the video owner to enable embedding or an approved alternative."
       },
       "pages": [
         {

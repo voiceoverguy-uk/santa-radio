@@ -6,6 +6,7 @@ import { artistArtwork, fallbackArtwork } from '../data/artistArtwork.js';
 import './SongDetail.css';
 import PageSeo from '../seo/PageSeo.jsx';
 import Breadcrumbs from '../seo/Breadcrumbs.jsx';
+import SongVideo from '../components/SongVideo.jsx';
 import { songMetadata, songDescription, artworkAlt, performanceKind } from '../seo/catalogue.js';
 
 export default function SongDetail() {
@@ -65,20 +66,7 @@ export default function SongDetail() {
                 </details>
               )}
 
-              {song.youtube && (
-                <div className="song-youtube-embed">
-                  <iframe
-                    width="100%"
-                    height="315"
-                    loading="lazy"
-                    src={`https://www.youtube.com/embed/${song.youtube}`}
-                    title={`${song.artist} - ${song.song}`}
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
-                </div>
-              )}
+              <SongVideo song={song} className="song-youtube-embed" />
 
               <div className="song-detail-actions">
                 <a href={twitterShareUrl} target="_blank" rel="noopener noreferrer" className="twitter-share-link">
