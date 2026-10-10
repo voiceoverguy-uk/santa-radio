@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn, execFileSync } from 'node:child_process';
-import { readFile, mkdtemp, cp, symlink, rm } from 'node:fs/promises';
-import { join, resolve } from 'node:path';
+import { readFile, mkdtemp, cp, rm } from 'node:fs/promises';
+import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import publicPage from '../api/public-page.js';
 
@@ -15,13 +15,15 @@ test('deployment-style document package needs neither TypeScript nor runtime Rea
       filter: source => !/\.(?:ts|tsx|jsx)$/.test(source),
     });
   }
-  await symlink(resolve('node_modules'), join(directory, 'node_modules'), 'dir');
+  // Deliberately omit node_modules entirely: the function must ship everything
+  // it needs instead of passing only because workspace packages are available.
   // Reject all runtime UI package resolution to catch Vercel's
   // CommonJS/ESM mismatches, which workspace imports alone cannot reproduce.
   const loader = 'data:text/javascript,' + encodeURIComponent(`
+    import { isBuiltin } from 'node:module';
     export function resolve(specifier, context, nextResolve) {
       if (!specifier.startsWith('.') && !specifier.startsWith('/') &&
-          !specifier.startsWith('file:') && !specifier.startsWith('node:'))
+          !specifier.startsWith('file:') && !isBuiltin(specifier))
         throw new Error('UI dependencies must not be resolved by the serverless runtime: ' + specifier);
       return nextResolve(specifier, context);
     }

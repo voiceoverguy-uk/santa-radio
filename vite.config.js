@@ -39,7 +39,7 @@ export default defineConfig(({ isSsrBuild }) => ({
   ssr: {
     // Keep the runtime Tracker renderer self-contained. Vercel's package
     // resolution differs from local Node for some React/CommonJS dependencies.
-    noExternal: true,
+    noExternal: isSsrBuild ? true : undefined,
     resolve: { externalConditions: ['module-sync', 'node'] },
   },
   plugins: [react(), tailwindcss(), artworkFeedPlugin(), metadataPlugin, publicPagesPlugin()],

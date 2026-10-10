@@ -26,8 +26,14 @@ Serverless document handlers must not import uncompiled TypeScript source at run
 
 **How to apply:** Share runtime data through JavaScript or JSON and keep types in wrappers used by the frontend build. Test an isolated function package without TypeScript files and with Node type stripping disabled; a whole-workspace import test is insufficient.
 
-Bundle react-helmet-async into the SSR output rather than externalising it.
+Bundle all UI dependencies into the SSR output rather than externalising them.
 
 **Why:** The workspace resolved its ESM exports successfully, but Vercel resolved a CommonJS entry and crashed on the named Helmet export. Local Node rendering alone did not reproduce that resolution difference.
 
-**How to apply:** Retain the SSR noExternal setting for this package and exercise the compiled handler with runtime Helmet resolution blocked. Verify live document responses after a Vercel rebuild before declaring the outage repaired.
+**How to apply:** Enable SSR noExternal for production builds only; Vite's development module evaluator cannot run raw CommonJS React modules. Exercise the compiled handler without node_modules and with external package resolution blocked. Verify live document responses after a Vercel rebuild before declaring the outage repaired.
+
+Serve ordinary Vercel document requests from the real application's pre-rendered build pages; reserve runtime React rendering for the time-sensitive Tracker.
+
+**Why:** Multiple deployment-only module-resolution failures took down every document because all pages loaded the SSR renderer at request time, even though the build already generated complete HTML.
+
+**How to apply:** Package generated document HTML with the function, preserve canonical redirects and real error statuses, and keep Tracker rendering time-sensitive. Do not substitute empty app-shell HTML or fabricated SEO-only content.
