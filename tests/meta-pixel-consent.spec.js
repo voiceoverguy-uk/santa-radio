@@ -5,6 +5,9 @@ const pixelId = '2258928314674162';
 
 async function mockPixel(page) {
   const requests = [];
+  await page.route('https://www.googletagmanager.com/gtag/**', route =>
+    route.fulfill({ contentType: 'application/javascript', body: '' }));
+  await page.route(/https:\/\/[^/]*google-analytics\.com\//, route => route.abort());
   await page.route('https://connect.facebook.net/**', async route => {
     requests.push(route.request().url());
     await route.fulfill({ contentType: 'application/javascript', body: `
@@ -21,8 +24,8 @@ async function mockPixel(page) {
 
 const views = page => page.evaluate(() => (window.__metaCalls || [])
   .filter(args => args[0] === 'trackSingle' && args[2] === 'PageView'));
-const accept = page => page.getByRole('button', { name: 'Accept marketing cookies', exact: true });
-const reject = page => page.getByRole('button', { name: 'Reject marketing cookies', exact: true });
+const accept = page => page.getByRole('button', { name: 'Accept all', exact: true });
+const reject = page => page.getByRole('button', { name: 'Reject optional cookies', exact: true });
 
 test('no Meta request, script, beacon or events before consent, including navigation', async ({ page }) => {
   const requests = await mockPixel(page);

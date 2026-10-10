@@ -11,7 +11,7 @@
   width: min(100% - 24px, 720px);
   margin-inline: auto;
   box-sizing: border-box;
-  max-height: calc(100dvh - 120px);
+  max-height: calc(100dvh - var(--audio-player-height, 88px) - 24px);
   overflow-y: auto;
   display: flex;
   align-items: center;
@@ -65,19 +65,75 @@
   color: var(--consent-ink);
 }
 
-.marketing-consent-actions {
-  flex: 0 0 auto;
+.marketing-consent-options {
+  min-width: 0;
+  margin: 12px 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.marketing-consent-options legend {
+  margin-bottom: 8px;
+  padding: 0;
+  color: var(--consent-gold);
+  font: 500 0.72rem/1.3 'Inter', sans-serif;
+  letter-spacing: 0.035em;
+}
+
+.marketing-consent-options label {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 9px;
+  min-width: 0;
+  padding: 5px 0;
+  color: var(--consent-ink);
+  cursor: pointer;
+}
+
+.marketing-consent-options input[type='checkbox'] {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  accent-color: var(--consent-gold);
+  cursor: pointer;
+}
+
+.marketing-consent-options label span {
+  display: block;
+  min-width: 0;
+  font: 400 0.76rem/1.35 'Inter', sans-serif;
+  overflow-wrap: anywhere;
+}
+
+.marketing-consent-options label strong {
+  display: block;
+  margin-bottom: 2px;
+  color: var(--consent-ink);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.marketing-consent-options label small {
+  display: block;
+  color: var(--consent-muted);
+  font: inherit;
+}
+
+.marketing-consent-actions {
+  flex: 0 1 220px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: center;
   gap: 9px;
   max-width: 100%;
 }
 
 .marketing-consent-actions button {
   min-height: 42px;
-  min-width: 142px;
-  padding: 10px 15px;
+  min-width: 0;
+  width: 100%;
+  padding: 9px 10px;
   border: 1px solid var(--consent-gold);
   border-radius: 999px;
   color: #f3eddc;
@@ -85,7 +141,12 @@
   font: 500 0.78rem/1.2 'Inter', sans-serif;
   text-align: center;
   cursor: pointer;
+  overflow-wrap: anywhere;
   transition: background-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.marketing-consent-actions button:nth-child(3) {
+  grid-column: 1 / -1;
 }
 
 .marketing-consent-actions button:hover {
@@ -100,6 +161,7 @@
 /* Equal visual weight is deliberate: neither consent choice is preselected. */
 .marketing-consent-actions button:focus-visible,
 .marketing-consent-copy a:focus-visible,
+.marketing-consent-options input[type='checkbox']:focus-visible,
 .footer .cookie-settings-link:focus-visible {
   outline: 3px solid #f4d97d;
   outline-offset: 3px;
@@ -107,12 +169,9 @@
 
 .marketing-consent-actions button:focus:not(:focus-visible),
 .marketing-consent-copy a:focus:not(:focus-visible),
+.marketing-consent-options input[type='checkbox']:focus:not(:focus-visible),
 .footer .cookie-settings-link:focus:not(:focus-visible) {
   outline: none;
-}
-
-.marketing-consent-actions button:last-child:nth-child(3) {
-  min-width: 110px;
 }
 
 .footer .cookie-settings-link {
@@ -149,6 +208,10 @@
     gap: 13px;
   }
 
+  .marketing-consent-options {
+    flex: 0 1 auto;
+  }
+
   .marketing-consent-copy h2 {
     font-size: 0.98rem;
   }
@@ -158,9 +221,7 @@
   }
 
   .marketing-consent-actions {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    justify-content: stretch;
+    flex: 0 1 auto;
     gap: 8px;
   }
 
@@ -171,9 +232,6 @@
     padding-inline: 9px;
   }
 
-  .marketing-consent-actions button:last-child:nth-child(3) {
-    grid-column: 1 / -1;
-  }
 }
 
 @media (max-width: 360px) {
@@ -184,6 +242,16 @@
   }
 
   .marketing-consent-actions button {
+    font-size: 0.72rem;
+    padding-inline: 6px;
+  }
+
+  .marketing-consent-options label {
+    gap: 7px;
+  }
+
+  .marketing-consent-options label span,
+  .marketing-consent-options label small {
     font-size: 0.72rem;
   }
 }
