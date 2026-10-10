@@ -8,6 +8,12 @@ Correct known photographer-credit misspellings without reassigning photos credit
 
 **How to apply:** Normalise approved variants, but do not infer a photographer from an unrelated social handle or a missing credit.
 
+The owner confirmed Bruce Davis as the photographer for all 14 supplied additions: Debbie Arnold, John Altman, Jim Davidson, DJ Spoony, Mel C, James Bye, Kim Medcalf, Danny Posthill, Lorraine Kelly, Nicky Campbell, Paddington Bear, Maddi Fearn, Amelle Berrabah and Brian Blessed.
+
+**Why:** The owner explicitly approved “Bruce Davis for all 14”; this is a confirmed attribution, not permission to infer credits for future uploads.
+
+**How to apply:** Preserve Bruce Davis on these photographs through future imports; ask for the credit on other new photographs when it is not supplied.
+
 Homepage Mugshots must be randomly selected only from profiles whose legacy homepage flag is Yes; never fill remaining spaces with unapproved profiles.
 
 **Why:** The owner used this flag as their A-list approval and explicitly requested its restoration.

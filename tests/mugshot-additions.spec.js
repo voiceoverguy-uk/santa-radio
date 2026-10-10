@@ -30,6 +30,7 @@ for (const name of names) {
     await card.click();
     await expect(page.locator('h1')).toHaveText(name);
     await expect(page.locator('.mugshot-detail-desc')).toHaveText(profile.info);
+    await expect(page.locator('.mugshot-photo-credit')).toHaveText('Photo credit: Bruce Davis');
     const portrait = page.locator('.mugshot-detail-photo');
     await expect.poll(() => portrait.evaluate(node => node.complete && node.naturalWidth > 0)).toBe(true);
     expect(await portrait.evaluate(node => node.currentSrc)).toMatch(/\.webp$/);
