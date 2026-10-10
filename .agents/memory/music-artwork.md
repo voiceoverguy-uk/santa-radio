@@ -17,3 +17,9 @@ Keep supplied uploads and legacy JPEG originals when creating optimised WebP del
 **Why:** Optimisation should not destroy the source artwork or break old direct image URLs; retaining originals also avoids using an already compressed WebP as a future editing master.
 
 **How to apply:** Serve the optimised copy through the artwork mapping, but do not delete originals merely to reduce page downloads—the browser only downloads the referenced file.
+
+Artwork updates are intended for both the website and the separate iOS app, using one shared live catalogue rather than independently maintained lists.
+
+**Why:** The user reported new portraits appearing on the website but not in the iOS app and requested a shared update process.
+
+**How to apply:** Preserve the shared-catalogue contract when adding artwork. Website changes must be published before a production mobile client can retrieve them; do not claim iOS verification without checking the separate app. Replacement images must invalidate mobile caches even when the current track is unchanged.

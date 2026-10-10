@@ -9,10 +9,17 @@
     }
   },
   "headers": [
+    { "source": "/artist-artwork/:path*", "headers": [
+      { "key": "Access-Control-Allow-Origin", "value": "*" },
+      { "key": "Access-Control-Allow-Methods", "value": "GET, HEAD, OPTIONS" },
+      { "key": "Cache-Control", "value": "no-cache" },
+      { "key": "X-Content-Type-Options", "value": "nosniff" }
+    ] },
     { "source": "/santa-tracker/preview", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }] },
     { "source": "/santa-tracker/preview/", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }] }
   ],
   "rewrites": [
+    { "source": "/artist-artwork/:path*", "destination": "/artist-artwork/:path*" },
     { "source": "/api/radio-metadata", "destination": "/api/radio-metadata" },
     { "source": "/api/santa-message", "destination": "/api/santa-message" },
     { "source": "/santa-tracker", "destination": "/santa-tracker/index.html" },

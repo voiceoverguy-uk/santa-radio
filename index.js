@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import radioMetadata from './server/radio-metadata.js';
 import santaMessage from './server/santa-message.js';
 import { trackerPageHtml, isTrackerPreview } from './server/tracker-html.js';
+import { artworkHeaders } from './server/artwork-feed.js';
 
 const root = await realpath(fileURLToPath(new URL('./dist', import.meta.url)));
 const index = resolve(root, 'index.html');
@@ -25,6 +26,8 @@ const server = createServer(async (req, res) => {
     let pathname;
     try { pathname = decodeURIComponent(new URL(req.url, 'http://server').pathname); }
     catch { res.writeHead(400).end('Invalid path'); return; }
+    artworkHeaders(req, res, () => {});
+    if (res.writableEnded) return;
     if (pathname === '/api/radio-metadata') return await radioMetadata(req, res);
     if (pathname === '/api/santa-message') return await santaMessage(req, res);
     if (pathname.startsWith('/api/')) { res.writeHead(404).end('Not found'); return; }
@@ -77,5 +80,5 @@ const server = createServer(async (req, res) => {
 });
 
 const port = Number(process.argv.find(arg => arg.startsWith('--port='))?.slice(7) || 5000);
-server.listen(port, '0.0.0.0', () => console.log(`Santa Radio production server listening on port ${port}`));
+server.listen(port, '0.0.0.0', () => console.log(`Santa Radio production server listening on port ${server.address().port}`));
 process.on('SIGTERM', () => server.close());

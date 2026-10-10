@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import radioMetadata from './server/radio-metadata.js';
 import santaMessage from './server/santa-message.js';
 import { trackerPageHtml, isTrackerPreview } from './server/tracker-html.js';
+import artworkFeedPlugin from './scripts/artwork-feed-plugin.mjs';
 
 const trackerMetadataPlugin = {
   name: 'tracker-page-metadata',
@@ -33,7 +34,7 @@ const metadataPlugin = {
 };
 
 export default defineConfig({
-  plugins: [react(), tailwindcss(), metadataPlugin, trackerMetadataPlugin],
+  plugins: [react(), tailwindcss(), artworkFeedPlugin(), metadataPlugin, trackerMetadataPlugin],
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src/tracker', import.meta.url)) },
   },

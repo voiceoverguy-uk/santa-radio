@@ -7,6 +7,8 @@
     "dev": "node scripts/prepare-santa-audio.mjs && vite --host 0.0.0.0 --port 5000",
     "build": "node scripts/prepare-santa-audio.mjs && vite build && node scripts/build-tracker-pages.mjs",
     "preview": "vite preview",
+    "test:artwork": "node --test scripts/artwork-feed.test.mjs",
+    "test:artwork-production": "node --test scripts/artwork-feed-serving.test.mjs",
     "test:santa-audio": "node scripts/prepare-santa-audio.mjs && node --test scripts/santa-render.test.mjs scripts/santa-message-api.test.mjs",
     "test:e2e": "playwright test"
   },

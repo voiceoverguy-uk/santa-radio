@@ -1,4 +1,4 @@
-const portraits = {
+export const artistPortraits = Object.freeze({
   'chris kamara': 'chris-kamara',
   'liam gallagher': 'liam-gallagher',
   'gary barlow': 'gary-barlow',
@@ -93,11 +93,12 @@ const portraits = {
   'ed sheeran': 'ed-sheeran',
   'bing crosby': 'bing-crosby',
   'michael buble': 'michael-buble',
-};
+});
 
 export const fallbackArtwork = '/artist-artwork/santa-fallback.webp';
+export const normalizeArtistName = artist => artist.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().trim().replace(/\s+/g, ' ');
 export function artistArtwork(artist) {
-  const key = artist.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().trim().replace(/\s+/g, ' ');
-  const portrait = portraits[key];
+  const key = normalizeArtistName(artist);
+  const portrait = Object.hasOwn(artistPortraits, key) ? artistPortraits[key] : undefined;
   return portrait ? `/artist-artwork/${portrait}${portrait.endsWith('.webp') ? '' : '.webp'}` : fallbackArtwork;
 }
