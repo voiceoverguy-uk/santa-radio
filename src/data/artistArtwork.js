@@ -1,4 +1,7 @@
 export const artistPortraits = Object.freeze({
+  'waitresses': 'waitresses',
+  'the waitresses': 'waitresses',
+  'scouting for girls': 'scouting-for-girls',
   'tom petty & heartbreakers': 'tom-petty-and-the-heartbreakers',
   'tom petty & the heartbreakers': 'tom-petty-and-the-heartbreakers',
   'tom petty and the heartbreakers': 'tom-petty-and-the-heartbreakers',

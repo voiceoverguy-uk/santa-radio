@@ -7,7 +7,7 @@ const artists = ['John Legend', 'Madonna', 'Kate Bush', 'Eurythmics', 'Bobby Hel
 
 test('new portraits and the shared Santa image are compact WebP files', () => {
   expect(fallbackArtwork).toBe('/artist-artwork/santa-fallback.webp');
-  expect(artistArtwork('Waitresses')).toBe(fallbackArtwork);
+  expect(artistArtwork('Tevin Campbell')).toBe(fallbackArtwork);
   expect(artistArtwork('Unknown Artist')).toBe(fallbackArtwork);
   for (const path of [...artists.map(artistArtwork), fallbackArtwork]) {
     const bytes = fs.readFileSync(`public${path}`);

@@ -49,7 +49,7 @@ test('catalogue reuses artist artwork and shows Santa for remaining artists', as
   await expect(cards.first().locator('img')).toHaveAttribute('src', '/artist-artwork/wham.webp');
   await cards.first().scrollIntoViewIfNeeded();
   await expect.poll(() => cards.first().locator('img').evaluate(el => el.naturalWidth)).toBeGreaterThan(0);
-  await search.fill('Waitresses');
+  await search.fill('Tevin Campbell');
   await expect(cards.first().locator('img')).toHaveAttribute('src', fallbackArtwork);
   await cards.first().scrollIntoViewIfNeeded();
   await expect.poll(() => cards.first().locator('img').evaluate(el => el.naturalWidth)).toBeGreaterThan(0);
