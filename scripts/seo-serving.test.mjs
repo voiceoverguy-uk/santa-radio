@@ -16,7 +16,16 @@ test('deployment-style document package runs without any TypeScript source or No
     });
   }
   await symlink(resolve('node_modules'), join(directory, 'node_modules'), 'dir');
-  const output = execFileSync(process.execPath, ['--no-experimental-strip-types', '--input-type=module', '-e', `
+  // Reject runtime Helmet resolution so this also catches Vercel's
+  // CommonJS/ESM mismatch, which a workspace import alone cannot reproduce.
+  const loader = 'data:text/javascript,' + encodeURIComponent(`
+    export function resolve(specifier, context, nextResolve) {
+      if (specifier === 'react-helmet-async')
+        throw new Error('Helmet must be bundled, not resolved by the serverless runtime');
+      return nextResolve(specifier, context);
+    }
+  `);
+  const output = execFileSync(process.execPath, ['--no-experimental-strip-types', '--experimental-loader', loader, '--input-type=module', '-e', `
     import assert from 'node:assert/strict';
     import handler from './api/public-page.js';
     for (const [path, status] of [

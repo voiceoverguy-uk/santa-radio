@@ -36,7 +36,12 @@ const metadataPlugin = {
 
 export default defineConfig(({ isSsrBuild }) => ({
   publicDir: isSsrBuild ? false : 'public',
-  ssr: { resolve: { externalConditions: ['module-sync', 'node'] } },
+  ssr: {
+    // Vercel can resolve this package through its CommonJS entry. Bundle it
+    // instead of relying on Node's detection of CommonJS named exports.
+    noExternal: ['react-helmet-async'],
+    resolve: { externalConditions: ['module-sync', 'node'] },
+  },
   plugins: [react(), tailwindcss(), artworkFeedPlugin(), metadataPlugin, publicPagesPlugin()],
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src/tracker', import.meta.url)) },
