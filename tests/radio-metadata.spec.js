@@ -81,36 +81,41 @@ test('browser refreshes current song after five seconds and pauses while hidden'
   const time = new Date('2026-10-10T12:00:00Z');
   await page.clock.install({ time });
   await page.clock.pauseAt(time);
-  let requests = 0;
+  let requests = 0, title = 'Previous Track';
   await page.route('**/api/radio-metadata', route => {
     requests++;
     return route.fulfill({
-      json: { current: { artist: 'Test Artist', title: `Test Track ${requests}` },
+      json: { current: { artist: 'Test Artist', title },
         upcoming: [], currentStatus: 'ready', upcomingStatus: 'ready' },
     });
   });
   await page.goto('/apps', { waitUntil: 'domcontentloaded' });
   const dock = page.locator('.radio-dock');
-  await expect(dock).toContainText('Test Track 1');
+  await expect(dock).toContainText('Previous Track');
+  // React StrictMode can start and abort an initial request before remounting.
+  const initialRequests = requests;
+  title = 'New Track';
   await page.clock.runFor(4999);
-  expect(requests).toBe(1);
+  expect(requests).toBe(initialRequests);
+  await expect(dock).toContainText('Previous Track');
   await page.clock.runFor(1);
-  await expect(dock).toContainText('Test Track 2');
-  expect(requests).toBe(2);
-  await expect(dock).not.toContainText('Test Track 1');
+  await expect(dock).toContainText('New Track');
+  expect(requests).toBe(initialRequests + 1);
+  await expect(dock).not.toContainText('Previous Track');
   await page.evaluate(() => {
     window.radioTestHidden = true;
     Object.defineProperty(document, 'hidden', { configurable: true, get: () => window.radioTestHidden });
     document.dispatchEvent(new Event('visibilitychange'));
   });
   await page.clock.runFor(10000);
-  expect(requests).toBe(2);
+  expect(requests).toBe(initialRequests + 1);
+  title = 'Resumed Track';
   await page.evaluate(() => {
     window.radioTestHidden = false;
     document.dispatchEvent(new Event('visibilitychange'));
   });
-  await expect(dock).toContainText('Test Track 3');
-  expect(requests).toBe(3);
+  await expect(dock).toContainText('Resumed Track');
+  expect(requests).toBe(initialRequests + 2);
 });
 
 test('all-jingle feeds are a valid empty queue, not stale song data', async () => {
