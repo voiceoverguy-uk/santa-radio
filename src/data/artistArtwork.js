@@ -1,4 +1,5 @@
 const portraits = {
+  'chris kamara': 'chris-kamara',
   'liam gallagher': 'liam-gallagher',
   'gary barlow': 'gary-barlow',
   'backstreet boys': 'backstreet-boys',
