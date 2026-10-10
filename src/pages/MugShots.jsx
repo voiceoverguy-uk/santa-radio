@@ -23,7 +23,11 @@ export default function MugShots() {
       const j = Math.floor(Math.random() * (i + 1));
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
-    return shuffled;
+    // Preserve the owner's original YES selections as the first random group.
+    return [
+      ...shuffled.filter(celeb => celeb.homepage === true),
+      ...shuffled.filter(celeb => celeb.homepage !== true),
+    ];
   });
   const alphabetical = useMemo(() => [...mugshotsData].sort((a, b) =>
     a.artist.localeCompare(b.artist, 'en', { sensitivity: 'base', numeric: true })), []);
