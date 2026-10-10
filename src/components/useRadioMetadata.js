@@ -48,7 +48,7 @@ export default function useRadioMetadata() {
         if (!stopped && controller === request) commit(unavailable);
       } finally {
         clearTimeout(timeout);
-        if (!stopped && controller === request) timer = setTimeout(refresh, retry ? 3000 : 15000);
+        if (!stopped && controller === request) timer = setTimeout(refresh, retry ? 3000 : 5000);
       }
     };
     const visibility = () => {

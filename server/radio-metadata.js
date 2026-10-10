@@ -41,7 +41,7 @@ async function readFeed(filename, limit, fetcher) {
   return tracks;
 }
 
-export function createMetadataService(fetcher = fetch, ttl = 10000, { clock = Date.now, retryDelay = 500, staleMs = 45000 } = {}) {
+export function createMetadataService(fetcher = fetch, ttl = 3000, { clock = Date.now, retryDelay = 500, staleMs = 45000 } = {}) {
   let cached, expires = 0, pending;
   let lastUpcoming = [], upcomingUpdatedAt = 0;
   const readUpcoming = async () => {

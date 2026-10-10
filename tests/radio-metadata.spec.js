@@ -60,6 +60,59 @@ test('confirmed HTTPS sources preserve filename case and share concurrent reques
   });
 });
 
+test('default server cache expires after three seconds and fetches the new current song', async () => {
+  let time = 100000, calls = 0, title = 'Previous Song';
+  const service = createMetadataService(async () => {
+    calls++;
+    return new Response(`Artist - ${title}`, { headers: { 'content-type': 'text/plain' } });
+  }, undefined, { clock: () => time });
+  const first = await service();
+  expect(first.current.title).toBe('Previous Song');
+  title = 'New Song';
+  time += 2999;
+  expect(await service()).toBe(first);
+  expect(calls).toBe(2);
+  time += 1;
+  expect((await service()).current.title).toBe('New Song');
+  expect(calls).toBe(4);
+});
+
+test('browser refreshes current song after five seconds and pauses while hidden', async ({ page }) => {
+  const time = new Date('2026-10-10T12:00:00Z');
+  await page.clock.install({ time });
+  await page.clock.pauseAt(time);
+  let requests = 0;
+  await page.route('**/api/radio-metadata', route => {
+    requests++;
+    return route.fulfill({
+      json: { current: { artist: 'Test Artist', title: `Test Track ${requests}` },
+        upcoming: [], currentStatus: 'ready', upcomingStatus: 'ready' },
+    });
+  });
+  await page.goto('/apps', { waitUntil: 'domcontentloaded' });
+  const dock = page.locator('.radio-dock');
+  await expect(dock).toContainText('Test Track 1');
+  await page.clock.runFor(4999);
+  expect(requests).toBe(1);
+  await page.clock.runFor(1);
+  await expect(dock).toContainText('Test Track 2');
+  expect(requests).toBe(2);
+  await expect(dock).not.toContainText('Test Track 1');
+  await page.evaluate(() => {
+    window.radioTestHidden = true;
+    Object.defineProperty(document, 'hidden', { configurable: true, get: () => window.radioTestHidden });
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  await page.clock.runFor(10000);
+  expect(requests).toBe(2);
+  await page.evaluate(() => {
+    window.radioTestHidden = false;
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  await expect(dock).toContainText('Test Track 3');
+  expect(requests).toBe(3);
+});
+
 test('all-jingle feeds are a valid empty queue, not stale song data', async () => {
   const service = createMetadataService(async () => new Response(' - Santa Radio Free Message ID - VO', {
     headers: { 'content-type': 'text/plain' },
