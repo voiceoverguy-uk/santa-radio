@@ -11,7 +11,13 @@ for (const path of [...canonicalPaths, '/santa-tracker/preview', '/404']) {
   if (result.status !== 200 && path !== '/404') throw new Error(`Cannot pre-render ${path}: ${result.status}`);
   const directory = path === '/' ? 'dist' : `dist${path}`;
   await mkdir(directory, { recursive: true });
-  await writeFile(`${directory}/index.html`, publicPageHtml(template, result));
+  const html = publicPageHtml(template, result);
+  await writeFile(`${directory}/index.html`, html);
+  // Include the same real, fully rendered pages inside the document function.
+  // Ordinary requests must not need React or its dependencies at runtime.
+  const functionDirectory = `dist/server/pages${path === '/' ? '' : path}`;
+  await mkdir(functionDirectory, { recursive: true });
+  await writeFile(`${functionDirectory}/index.html`, html);
 }
 await writeFile('dist/sitemap.xml', sitemap());
 await writeFile('dist/robots.txt', robots());

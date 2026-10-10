@@ -37,9 +37,9 @@ const metadataPlugin = {
 export default defineConfig(({ isSsrBuild }) => ({
   publicDir: isSsrBuild ? false : 'public',
   ssr: {
-    // Vercel can resolve this package through its CommonJS entry. Bundle it
-    // instead of relying on Node's detection of CommonJS named exports.
-    noExternal: ['react-helmet-async'],
+    // Keep the runtime Tracker renderer self-contained. Vercel's package
+    // resolution differs from local Node for some React/CommonJS dependencies.
+    noExternal: true,
     resolve: { externalConditions: ['module-sync', 'node'] },
   },
   plugins: [react(), tailwindcss(), artworkFeedPlugin(), metadataPlugin, publicPagesPlugin()],

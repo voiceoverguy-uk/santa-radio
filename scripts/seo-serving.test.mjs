@@ -6,7 +6,7 @@ import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import publicPage from '../api/public-page.js';
 
-test('deployment-style document package runs without any TypeScript source or Node type stripping', async t => {
+test('deployment-style document package needs neither TypeScript nor runtime React package resolution', async t => {
   const directory = await mkdtemp(join(tmpdir(), 'santa-vercel-documents-'));
   t.after(() => rm(directory, { recursive: true, force: true }));
   for (const path of ['api/public-page.js', 'server/public-html.js', 'src/seo', 'src/data', 'dist/server', 'package.json']) {
@@ -16,12 +16,13 @@ test('deployment-style document package runs without any TypeScript source or No
     });
   }
   await symlink(resolve('node_modules'), join(directory, 'node_modules'), 'dir');
-  // Reject runtime Helmet resolution so this also catches Vercel's
-  // CommonJS/ESM mismatch, which a workspace import alone cannot reproduce.
+  // Reject all runtime UI package resolution to catch Vercel's
+  // CommonJS/ESM mismatches, which workspace imports alone cannot reproduce.
   const loader = 'data:text/javascript,' + encodeURIComponent(`
     export function resolve(specifier, context, nextResolve) {
-      if (specifier === 'react-helmet-async')
-        throw new Error('Helmet must be bundled, not resolved by the serverless runtime');
+      if (!specifier.startsWith('.') && !specifier.startsWith('/') &&
+          !specifier.startsWith('file:') && !specifier.startsWith('node:'))
+        throw new Error('UI dependencies must not be resolved by the serverless runtime: ' + specifier);
       return nextResolve(specifier, context);
     }
   `);
@@ -29,20 +30,25 @@ test('deployment-style document package runs without any TypeScript source or No
     import assert from 'node:assert/strict';
     import handler from './api/public-page.js';
     for (const [path, status] of [
-      ['/', 200], ['/christmas-music', 200], ['/mugshots/all', 200],
+      ['/', 200], ['/apps', 200], ['/christmas-music', 200], ['/mugshots/all', 200],
+      ['/mugshots/debbie-arnold-actress', 200], ['/free-santa-message', 200],
+      ['/christmas-artist/3-waitresses-christmas-wrapping', 200],
       ['/santa-tracker', 200], ['/artist?s=3', 308], ['/artist?s=14', 308],
       ['/spanish/mugshots/mugshots/jermaine', 404],
     ]) {
       const url = new URL(path, 'https://www.santaradio.co.uk');
       url.searchParams.set('__sr_route', url.pathname);
       const response = {
-        setHeader() {},
+        headers: {},
+        setHeader(key, value) { this.headers[key] = value; },
         status(value) { this.code = value; return this; },
         end(body) { this.body = body; },
       };
       await handler({ method: 'GET', url: '/api/public-page' + url.search }, response);
       assert.equal(response.code, status, path);
       if (status === 200) assert.ok(response.body.includes('<h1'), path);
+      if (status === 200 && path !== '/santa-tracker')
+        assert.equal(response.headers['X-Santa-Page-Mode'], 'prerendered', path);
     }
     console.log('Deployment-style package passed');
   `], { cwd: directory, encoding: 'utf8', timeout: 30000 });
