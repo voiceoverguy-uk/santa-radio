@@ -82,8 +82,15 @@ test('feed is deterministic and replacement bytes change both image URL and cata
 });
 
 test('fallback replacements and new mappings change the feed automatically', async () => {
-  const before = await buildArtworkFeed(mapping);
-  const after = await buildArtworkFeed(mapping, {
+  // Keep this scenario independent of which artists now have real portraits.
+  const { 'susy wall': omitted, ...portraits } = mapping.artistPortraits;
+  const scenarioMapping = {
+    ...mapping,
+    artistPortraits: portraits,
+    artistArtwork: artist => artist === 'susy wall' ? mapping.fallbackArtwork : mapping.artistArtwork(artist),
+  };
+  const before = await buildArtworkFeed(scenarioMapping);
+  const after = await buildArtworkFeed(scenarioMapping, {
     readImage: async path => {
       const original = await readFile(`public${path}`);
       return path === mapping.fallbackArtwork ? Buffer.concat([original, Buffer.from('replacement')]) : original;
@@ -94,9 +101,9 @@ test('fallback replacements and new mappings change the feed automatically', asy
   assert.deepEqual(before.artists['susy wall'], before.fallback);
   assert.deepEqual(after.artists['susy wall'], after.fallback);
   const extended = {
-    ...mapping,
-    artistPortraits: { ...mapping.artistPortraits, 'new test artist': 'chris-kamara' },
-    artistArtwork: artist => artist === 'new test artist' ? '/artist-artwork/chris-kamara.webp' : mapping.artistArtwork(artist),
+    ...scenarioMapping,
+    artistPortraits: { ...scenarioMapping.artistPortraits, 'new test artist': 'chris-kamara' },
+    artistArtwork: artist => artist === 'new test artist' ? '/artist-artwork/chris-kamara.webp' : scenarioMapping.artistArtwork(artist),
   };
   const added = await buildArtworkFeed(extended);
   assert.deepEqual(added.artists['new test artist'], before.artists['chris kamara']);

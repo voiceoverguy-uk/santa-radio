@@ -21,7 +21,7 @@ test('Heidi and replacement Miley portraits are versioned in the shared catalogu
     expect(hash(await response.body())).toBe(entry.version);
   }
   expect(artistArtwork('Miley Cyrus')).toBe('/artist-artwork/miley-cyrus.webp');
-  expect(feed.artists['susy wall']).toEqual(feed.fallback);
+  expect(Object.values(feed.artists).some(entry => entry.path === fallbackArtwork)).toBe(true);
 });
 
 test('both Heidi songs and Miley show their supplied portraits', async ({ page }) => {

@@ -1,4 +1,5 @@
 export const artistPortraits = Object.freeze({
+  'susy wall': 'susy-wall',
   'freiheit': 'freiheit',
   'geraldine mcqueen': 'geraldine-mcqueen',
   'heidi anne': 'heidi-anne',
