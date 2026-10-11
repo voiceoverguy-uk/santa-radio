@@ -5,7 +5,6 @@ import relatedSongs from '../data/relatedSongs.js';
 import { artistArtwork, fallbackArtwork } from '../data/artistArtwork.js';
 import './SongDetail.css';
 import PageSeo from '../seo/PageSeo.jsx';
-import Breadcrumbs from '../seo/Breadcrumbs.jsx';
 import SongVideo from '../components/SongVideo.jsx';
 import { songMetadata, songDescription, artworkAlt, performanceKind } from '../seo/catalogue.js';
 
@@ -39,7 +38,6 @@ export default function SongDetail() {
   return (
     <main>
       <PageSeo metadata={songMetadata(song)} />
-      <Breadcrumbs items={[['Home', '/'], ['Christmas Music', '/christmas-music'], [`${song.song} — ${song.artist}`, `/christmas-artist/${songSlug}`]]} />
       <div className="song-detail-page starry-bg">
         <div className="container song-detail-content">
 

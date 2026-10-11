@@ -2,6 +2,12 @@
 name: Santa Radio visual direction
 description: User's North Pole visual expectations, Santa note voice and mobile player starting state.
 ---
+Do not show a breadcrumb/path trail on Christmas artist/song pages.
+
+**Why:** The user said “remove the path. we don't need to show it”.
+
+**How to apply:** Keep those pages free of visible breadcrumb trails; retain ordinary navigation and the back-to-music link.
+
 The user finds the initial Santa Radio rebuild "a bit boring" and wants the colours and appearance of https://santa-radio.base44.app/.
 
 The user approved the redesign plan and specifically asked to make buttons and fonts the same as the Base44 version.
