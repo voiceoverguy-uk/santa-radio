@@ -39,8 +39,12 @@ mobile release was performed as part of this work.
 ```
 
 All actual hashes are 64 lowercase hexadecimal characters. `artists` includes
-every explicitly mapped portrait and approved alias, not every singer in the
-song catalogue. An absent key means use `fallback`. No fuzzy matching is needed.
+every artist in the song catalogue plus explicitly mapped portraits and approved
+aliases. Artists without their own portrait have an explicit entry matching
+`fallback`, supporting clients that only look up artist keys. Artists outside
+the catalogue still require the client to use `fallback` for absent keys.
+Adding a portrait automatically replaces that artist's Santa entry and changes
+its versioned URL and the catalogue version. No fuzzy matching is needed.
 The feed is deterministic: it has no timestamp that changes on every build.
 
 Normalise the complete artist name exactly as the website does:

@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import songs from '../src/data/songs.json' with { type: 'json' };
 
 export const artworkFeedPath = '/artist-artwork/catalogue.json';
 const digest = bytes => createHash('sha256').update(bytes).digest('hex');
@@ -20,7 +21,13 @@ export async function buildArtworkFeed(mapping, { readImage = path => readFile(r
     const version = digest(bytes);
     return [path, { path, version, url: `${path}?v=${version}` }];
   })));
-  const artists = Object.fromEntries(Object.keys(mapping.artistPortraits).sort().map(key =>
+  // Explicit Santa entries support mobile clients that only look up artist keys.
+  // Keep the portrait mapping separate so website artwork-first ordering stays intact.
+  const artistKeys = [...new Set([
+    ...Object.keys(mapping.artistPortraits),
+    ...songs.map(song => mapping.normalizeArtistName(song.artist)),
+  ])].sort();
+  const artists = Object.fromEntries(artistKeys.map(key =>
     [key, images.get(mapping.artistArtwork(key))]));
   const content = {
     schemaVersion: 1,

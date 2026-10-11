@@ -34,7 +34,9 @@ test('feed covers every mapping and approved alias without changing website URLs
   assert.equal(feed.schemaVersion, 1);
   assert.equal(feed.refreshAfterSeconds, 300);
   assert.equal(feed.fallback.path, mapping.fallbackArtwork);
-  assert.deepEqual(Object.keys(feed.artists).sort(), Object.keys(mapping.artistPortraits).sort());
+  const songs = JSON.parse(await readFile('src/data/songs.json', 'utf8'));
+  const keys = [...new Set([...Object.keys(mapping.artistPortraits), ...songs.map(song => mapping.normalizeArtistName(song.artist))])].sort();
+  assert.deepEqual(Object.keys(feed.artists).sort(), keys);
   for (const [artist, image] of Object.entries(feed.artists)) {
     assert.equal(image.path, mapping.artistArtwork(artist));
     assert.match(image.version, /^[a-f0-9]{64}$/);
@@ -53,7 +55,12 @@ test('feed covers every mapping and approved alias without changing website URLs
   assert.equal(feed.artists[mapping.normalizeArtistName('  Michael Bublé ')].path, mapping.artistArtwork('Michael Bublé'));
   for (const artist of ['Unknown Artist', 'Tevin Campbell', 'Oasis', 'Take That', 'constructor', 'toString', '__proto__']) {
     assert.equal(mapping.artistArtwork(artist), feed.fallback.path);
-    assert.equal(Object.hasOwn(feed.artists, mapping.normalizeArtistName(artist)), false);
+    const key = mapping.normalizeArtistName(artist);
+    if (songs.some(song => mapping.normalizeArtistName(song.artist) === key)) {
+      assert.deepEqual(feed.artists[key], feed.fallback);
+    } else {
+      assert.equal(Object.hasOwn(feed.artists, key), false);
+    }
   }
 });
 
@@ -84,6 +91,8 @@ test('fallback replacements and new mappings change the feed automatically', asy
   });
   assert.notEqual(before.fallback.url, after.fallback.url);
   assert.notEqual(before.version, after.version);
+  assert.deepEqual(before.artists['susy wall'], before.fallback);
+  assert.deepEqual(after.artists['susy wall'], after.fallback);
   const extended = {
     ...mapping,
     artistPortraits: { ...mapping.artistPortraits, 'new test artist': 'chris-kamara' },
@@ -92,6 +101,14 @@ test('fallback replacements and new mappings change the feed automatically', asy
   const added = await buildArtworkFeed(extended);
   assert.deepEqual(added.artists['new test artist'], before.artists['chris kamara']);
   assert.notEqual(added.version, before.version);
+  const portraitAdded = await buildArtworkFeed({
+    ...mapping,
+    artistPortraits: { ...mapping.artistPortraits, 'susy wall': 'chris-kamara' },
+    artistArtwork: artist => artist === 'susy wall' ? '/artist-artwork/chris-kamara.webp' : mapping.artistArtwork(artist),
+  });
+  assert.deepEqual(portraitAdded.artists['susy wall'], before.artists['chris kamara']);
+  assert.notEqual(portraitAdded.artists['susy wall'].url, before.artists['susy wall'].url);
+  assert.notEqual(portraitAdded.version, before.version);
 });
 
 test('missing or invalid files fail clearly instead of publishing bad artwork entries', async () => {

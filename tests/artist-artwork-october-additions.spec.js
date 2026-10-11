@@ -3,11 +3,11 @@ import fs from 'node:fs';
 import { createHash } from 'node:crypto';
 import { artistArtwork, fallbackArtwork } from '../src/data/artistArtwork.js';
 
-const artists = ['Liam Payne', 'Mel & Kim', 'Idina Menzel'];
+const artists = ['Liam Payne', 'Mel & Kim', 'Idina Menzel', 'Maisie Peters', 'Kevin Bacon'];
 const songs = JSON.parse(fs.readFileSync('src/data/songs.json', 'utf8'));
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 
-test('three supplied portraits and the Santa fallback are served through the shared feed', async ({ request }) => {
+test('supplied portraits and explicit Santa entries are served through the shared feed', async ({ request }) => {
   const response = await request.get('/artist-artwork/catalogue.json');
   expect(response.ok()).toBe(true);
   const feed = await response.json();
@@ -23,14 +23,18 @@ test('three supplied portraits and the Santa fallback are served through the sha
     expect(hash(await served.body())).toBe(image.version);
   }
   expect(artistArtwork('Susy Wall')).toBe(fallbackArtwork);
-  expect(feed.artists['susy wall']).toBeUndefined();
+  expect(feed.artists['susy wall']).toEqual(feed.fallback);
+  for (const song of songs) {
+    const key = song.artist.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().trim().replace(/\s+/g, ' ');
+    expect(feed.artists[key].path).toBe(artistArtwork(song.artist));
+  }
   expect(feed.fallback.path).toBe(fallbackArtwork);
   const fallback = await request.get(feed.fallback.url);
   expect(fallback.ok()).toBe(true);
   expect(hash(await fallback.body())).toBe(feed.fallback.version);
 });
 
-test('all three artist portraits and an unmapped artist load on song pages', async ({ page }) => {
+test('all supplied artist portraits and an unmapped artist load on song pages', async ({ page }) => {
   await page.route('**/*youtube.com/**', route => route.abort());
   for (const artist of [...artists, 'Susy Wall']) {
     const song = songs.find(song => song.artist === artist);

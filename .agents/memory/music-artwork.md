@@ -35,3 +35,9 @@ Artwork updates are intended for both the website and the separate iOS app, usin
 **Why:** The user reported new portraits appearing on the website but not in the iOS app and requested a shared update process.
 
 **How to apply:** Preserve the shared-catalogue contract when adding artwork. Website changes must be published before a production mobile client can retrieve them; do not claim iOS verification without checking the separate app. Replacement images must invalidate mobile caches even when the current track is unchanged.
+
+Include explicit Santa entries for all song-catalogue artists without supplied portraits in the shared feed, while keeping genuine portrait mappings separate.
+
+**Why:** The user approved this server-side workaround for missing fallback artwork in the separate app, to avoid requiring an app update.
+
+**How to apply:** Do not label Santa entries as genuine portraits or change artwork-first website ordering. New supplied portraits should automatically replace their feed entries; app behaviour still needs separate verification.
