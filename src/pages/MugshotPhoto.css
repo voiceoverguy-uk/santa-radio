@@ -32,7 +32,10 @@
 }
 
 .mugshot-detail-figure .mugshot-photo-frame .mugshot-detail-photo {
-  height: 100%;
+  /* Size the image box independently of its intrinsic photograph proportions.
+     An auto-height frame cannot reliably supply a percentage image height. */
+  aspect-ratio: 5 / 6;
+  height: auto;
   object-fit: contain;
 }
 

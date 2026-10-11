@@ -2,6 +2,12 @@
 name: Mugshot editorial policy
 description: User ownership of biography research and cautious identity consolidation.
 ---
+Profile-photo standardisation must preserve each complete photograph without cropping or distortion; discreet side space is acceptable for taller photographs.
+
+**Why:** The owner explicitly chose full photographs in matching frames rather than cropped replacements.
+
+**How to apply:** Keep original photograph files and credits unchanged when adjusting profile presentation. This does not authorise gallery or homepage redesigns.
+
 Correct known photographer-credit misspellings without reassigning photos credited to other people or filling in missing attributions.
 
 **Why:** The user explicitly chose to fix existing Bruce credits only and preserve other attributions.
