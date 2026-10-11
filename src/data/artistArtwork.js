@@ -1,4 +1,11 @@
 export const artistPortraits = Object.freeze({
+  'bill nighy': 'bill-nighy',
+  'aloe blacc': 'aloe-blacc',
+  'elsa and anna': 'elsa-and-anna',
+  'elsa & anna': 'elsa-and-anna',
+  'bing crosby & rosemary clooney': 'bing-crosby-and-rosemary-clooney',
+  'bing crosby and rosemary clooney': 'bing-crosby-and-rosemary-clooney',
+  'gregory porter': 'gregory-porter',
   'waitresses': 'waitresses',
   'the waitresses': 'waitresses',
   'scouting for girls': 'scouting-for-girls',

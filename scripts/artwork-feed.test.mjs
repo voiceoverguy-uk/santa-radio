@@ -4,6 +4,31 @@ import { readFile } from 'node:fs/promises';
 import * as mapping from '../src/data/artistArtwork.js';
 import { buildArtworkFeed } from '../server/artwork-feed.js';
 
+test('five supplied portraits match the existing songs and versioned feed', async () => {
+  const songs = JSON.parse(await readFile('src/data/songs.json', 'utf8'));
+  const feed = await buildArtworkFeed(mapping);
+  const expected = [
+    ['Bill Nighy', 'bill-nighy'],
+    ['Aloe Blacc', 'aloe-blacc'],
+    ['Elsa and Anna', 'elsa-and-anna'],
+    ['Bing Crosby & Rosemary Clooney', 'bing-crosby-and-rosemary-clooney'],
+    ['Gregory Porter', 'gregory-porter'],
+  ];
+  for (const [artist, filename] of expected) {
+    assert.ok(songs.some(song => song.artist === artist), `${artist} has an existing song`);
+    const path = `/artist-artwork/${filename}.webp`;
+    assert.equal(mapping.artistArtwork(artist), path);
+    const image = await readFile(`public${path}`);
+    assert.equal(image.subarray(8, 12).toString(), 'WEBP');
+    assert.ok(image.length < 100000, `${artist} image is optimised`);
+    assert.equal(feed.artists[mapping.normalizeArtistName(artist)].path, path);
+  }
+  assert.equal(mapping.artistArtwork('Elsa & Anna'), mapping.artistArtwork('Elsa and Anna'));
+  assert.equal(mapping.artistArtwork('Bing Crosby and Rosemary Clooney'), mapping.artistArtwork('Bing Crosby & Rosemary Clooney'));
+  assert.equal(mapping.artistArtwork('Bing Crosby'), '/artist-artwork/bing-crosby.webp');
+  assert.equal(mapping.artistArtwork('Rosemary Clooney'), mapping.fallbackArtwork);
+});
+
 test('feed covers every mapping and approved alias without changing website URLs', async () => {
   const feed = await buildArtworkFeed(mapping);
   assert.equal(feed.schemaVersion, 1);
