@@ -1,4 +1,8 @@
 export const artistPortraits = Object.freeze({
+  'ava max': 'ava-max',
+  'n sync': 'n-sync',
+  'nsync': 'n-sync',
+  '*nsync': 'n-sync',
   'david archuleta': 'david-archuleta',
   'bo selecta': 'bo-selecta',
   'jon bon jovi': 'jon-bon-jovi',
