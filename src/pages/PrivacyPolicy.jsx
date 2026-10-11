@@ -13,34 +13,40 @@ export default function PrivacyPolicy() {
       <h1>Privacy Policy</h1>
       <p className="privacy-date">Updated <time dateTime="2026-10-11">11 October 2026</time></p>
       <p>The Santa Radio website and Christmas Radio UK app are operated by VoiceoverGuy Ltd. For privacy questions, email <a href="mailto:santa@santaradio.co.uk">santa@santaradio.co.uk</a>.</p>
-      <p>This notice covers the Santa Radio website and the Christmas Radio iPhone and iPad app, also known as Christmas Radio UK. The app-specific section below explains how the native app handles information. Website-only features, including forms, Santa audio messages, embedded videos and optional analytics or marketing cookies, are separate from the native app. External services may also have their own privacy notices.</p>
+      <p>This notice covers the current Santa Radio website and the newly rebuilt Christmas Radio UK native app for iPhone and iPad, version 35.0. The app-specific section below explains how that version handles information. Website-only features, including forms, Santa audio messages, embedded videos and optional analytics or marketing cookies, are separate from the native app. External services may also have their own privacy notices.</p>
       <p>You can browse and listen without an account. We do not sell personal data.</p>
 
       <section aria-labelledby="christmas-radio-privacy">
-        <h2 id="christmas-radio-privacy">Christmas Radio iPhone and iPad app</h2>
+        <h2 id="christmas-radio-privacy">Christmas Radio UK — native iPhone and iPad app, version 35.0</h2>
         <h3>Using the app</h3>
-        <p>You can listen to Christmas Radio without creating an account. The native app does not ask you to provide your name, email address or other contact details.</p>
-        <p>The app does not contain advertising or analytics SDKs, Google Analytics or Meta Pixel. It does not access your advertising identifier, microphone, camera, contacts, photo library or device location. Background playback, AirPlay and CarPlay are audio-playback features and do not involve microphone recording.</p>
+        <p>The app plays the live Christmas Radio stream and displays Now Playing, Up Next and artist artwork. Listening does not require a mandatory account or submission of your name, email address or other contact details.</p>
+        <p>Background audio lets listening continue when the app is not on screen. AirPlay and CarPlay provide playback and audio-routing controls on compatible devices. These listening features do not require you to record your voice, take a photograph or upload a selfie, and do not require microphone, camera, contacts, photo-library or location access for radio playback.</p>
+        <p>This description applies to Christmas Radio UK version 35.0, not every app carrying the Santa Radio name. Online listening still involves the technical connections described below; it should not be understood as a promise that no data is collected or that all third-party processing has been ruled out.</p>
 
         <h3>Information stored on your device</h3>
-        <p>The app remembers your Snowfall, Blizzard and Festive lights preferences on your device. It also stores copies of artist artwork and recent song information to reduce downloads and display previously available information when a connection is unavailable.</p>
+        <p>Optional Snowfall, Blizzard and Festive lights effects can be switched on or off. The app remembers those preferences on your device. It also stores copies of artist artwork and recent song information to reduce downloads and display previously available information when a connection is unavailable. Cached song information is not a recording of the live broadcast.</p>
         <p>The app does not upload these saved preferences or cached copies to us. iOS may remove cached files automatically. Deleting the app, rather than offloading it, removes its local data from that installation. Device settings may also be included in backups managed by Apple; deleting the app does not necessarily remove existing backups.</p>
 
         <h3>Connections needed for radio playback</h3>
         <p>The app connects over HTTPS to Citrus3, at global.citrus3.com, to receive the live radio stream, and to Santa Radio, at www.santaradio.co.uk, to obtain current and upcoming song information and artist artwork. Vercel hosts the website and its song-information and artwork services.</p>
-        <p>These connections necessarily disclose your IP address and normal technical request information to the relevant servers. This can include request times, requested resources and information supplied by the networking software. Requests may indicate when you connect to the stream or request song information and artwork.</p>
+        <p>These connections necessarily disclose your IP address and normal technical request information to the relevant servers. This can include request times, requested resources, connection duration and device or networking-software information supplied with a request. Stream, metadata and artwork requests may indicate when you listen or which song information and images you request.</p>
         <p>The app does not create an account-based personal listening-history profile. However, the relevant servers or hosting providers may maintain connection logs or listener statistics.</p>
 
         <h3>Provider processing and retention</h3>
-        <p>Vercel and Citrus3 may process technical connection information to operate their hosting and streaming services. Their retention periods and any international processing or transfers depend on the applicable provider arrangements and privacy notices. Contact us for information about the arrangements relevant to the app.</p>
+        <p>Vercel and Citrus3 may process technical connection information to deliver their hosting and streaming services, maintain reliability and security, and produce operational or listener statistics. Hosting, access and error logs may be held separately from information cached on your device. Local cache deletion does not control server-log retention.</p>
+        <p>Provider log retention periods, processing locations and any international transfers or safeguards depend on the applicable service arrangements. We do not specify a fixed retention period where it has not been confirmed. See <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer">Vercel’s Privacy Policy</a> for its general practices, and contact us for information about the arrangements relevant to this service. A provider’s general notice does not necessarily describe every setting on our account.</p>
         <p>Deleting the app does not delete information already retained by these providers. Optional website marketing is separate from native app use and requires the consent described below; using the app does not enrol you in marketing.</p>
 
         <h3>Opening the website</h3>
-        <p>If you open the Santa Radio website from the app, the website’s privacy information and cookie choices apply to that website visit. Website analytics and marketing cookies are not embedded in the native app.</p>
+        <p>If you open the Santa Radio website from the app, the website’s privacy information and cookie choices apply to that website visit. The website’s Google Analytics and Meta Pixel settings describe website visits, not a blanket statement about native-app SDKs or all third-party processing. Accepting website cookies does not automatically give consent for separate app tracking.</p>
 
         <h3>Privacy questions and your rights</h3>
         <p>For questions about the app’s handling of information, or to exercise applicable data-protection rights, <a href="mailto:santa@santaradio.co.uk">email us about app privacy</a>. The rights and complaints information elsewhere in this policy also applies to the app.</p>
       </section>
+
+      <h2>Other Santa Radio and tvOS apps</h2>
+      <p>Older Santa Radio iPhone or iPad apps, tvOS apps and other linked apps may have different features, permissions and data practices. The version 35.0 description above must not be applied to them automatically. In particular, it is not a claim that no Santa Radio app has ever used a microphone, camera, photo library, selfies or voice-message recordings.</p>
+      <p>Check the privacy information and permission prompts for the particular app and version you use. If an older app links to this page and you need information about a feature not described here, contact us with its name, version and platform. Device settings let you review permissions, but withdrawing permission does not erase recordings or information already submitted to a service.</p>
 
       <h2>When you contact us</h2>
       <p>Email enquiries and song submissions share your email address and whatever you include, such as an artist name, song title, link or biography. We use this information to respond or consider submissions for airplay. Our lawful basis is legitimate interests: running the station and handling messages people choose to send us, while respecting their privacy.</p>
@@ -48,7 +54,7 @@ export default function PrivacyPolicy() {
 
       <h2>Free Santa audio messages</h2>
       <p>An adult or parent provides their first name, surname and email address through a Brevo form to access our personalised Santa audio message maker. These details are sent to Brevo for message access; they are not sent to the audio generator. Access opens when Brevo accepts the form, not when email ownership or any double opt-in is verified.</p>
-      <p>You then choose a child’s recorded first name. That selection is sent to our message generator to mix the greeting. You can listen to and download the MP3 on this website; we do not email the generated recording. The temporary server copy is removed after it is sent to your browser.</p>
+      <p>You then choose a child’s first name from the available prerecorded clips. That selection is sent to our message generator to mix the greeting. This is a personalised MP3 assembled from existing recordings, not a microphone recording made by you or your child. You can listen to and download the MP3 on this website; we do not email the generated recording. The generator removes its temporary working copy when the request finishes; copies you download remain under your control.</p>
       <p>Requesting a free Santa message does not give consent for Santa Radio news or tracker reminders. Contact us if you have questions about the contact details submitted for message access.</p>
 
       <h2>Optional Santa Radio news</h2>
@@ -56,10 +62,11 @@ export default function PrivacyPolicy() {
       <p>We will keep subscription details until you unsubscribe. You can withdraw consent at any time by unsubscribing or emailing us. We may keep a minimal suppression record to respect your opt-out.</p>
 
       <h2>Using the website</h2>
+      <p>The current website does not offer microphone recording, camera capture or selfie-upload features. Images and feature descriptions on the Apps page are not requests for access to your device. This statement is about the website, not the permissions or recording features of separate apps.</p>
       <p>Your browser remembers your snow preference in local storage and the minimised player setting in session storage. The snow preference remains until changed or cleared; the player preference normally ends with the tab session. You can clear these through browser settings.</p>
       <p>The message desk also remembers a non-sensitive access flag in session storage for the current tab session. Your adult names and email address are not stored in browser storage or added to page addresses. If session storage is unavailable, access lasts while you browse in the tab but refreshing may ask you to submit again.</p>
       <p>To manage the free-message allowance, local storage remembers only how many messages you have created and when the 30-minute wait ends. This works across visits and tabs in the same browser until cleared; it does not track your identity or IP address. Browsers without tab-lock support also use a temporary, randomly identified request lock in IndexedDB, valid for up to three minutes, to prevent simultaneous message requests. If local storage is unavailable, the allowance is remembered only while the page stays open.</p>
-      <p>Hosting services process technical information, such as IP addresses and browser/request details, to deliver and protect the website. Radio playback connects to Citrus3. YouTube supplies video embeds, and Google Fonts supplies fonts. Some images load from our legacy website.</p>
+      <p>Hosting services, including Vercel, process technical information such as IP addresses and browser/request details to deliver and protect the website. Radio playback connects to Citrus3. YouTube supplies video embeds, Google Fonts supplies fonts, and Brevo processes the adult details submitted for message access. Some images load from our legacy website. Each recipient may receive technical connection information when its resource is requested, even without an account or optional analytics cookies.</p>
       <p>These services receive connection information and may use cookies or similar technologies under their own privacy notices. The homepage loads a muted YouTube player automatically; song and karaoke pages can also load YouTube embeds automatically.</p>
 
       <h2>Optional analytics cookies — Google Analytics</h2>
@@ -79,10 +86,11 @@ export default function PrivacyPolicy() {
 
       <h2>Editorial content and retention</h2>
       <p>We publish artist and celebrity photos and biographies for the station’s editorial features, relying on legitimate interests. Contact us about accuracy, privacy or removal concerns.</p>
-      <p>We keep enquiries and submissions only as long as needed to handle them, follow up or resolve relevant issues. Editorial material may remain while relevant; we review concerns and remove or correct content where appropriate. Legal obligations or disputes may require longer retention. Service providers have their own retention arrangements.</p>
+      <p>We keep enquiries and submissions only as long as needed to handle them, follow up or resolve relevant issues. Editorial material may remain while relevant; we review concerns and remove or correct content where appropriate. Legal obligations or disputes may require longer retention. Brevo contact records, provider logs and listener statistics have separate retention arrangements; removal of a temporary MP3 or local app cache does not remove those records. Contact us about retention or a deletion request for information you have submitted.</p>
 
       <h2>Your choices and rights</h2>
       <p>Depending on the circumstances, you can request access, correction, deletion, restriction or portability of your information, and object to processing based on legitimate interests. Withdrawing consent does not affect earlier lawful processing. Email us to exercise your rights. You can also complain to the UK Information Commissioner’s Office at <a href="https://ico.org.uk/make-a-complaint/">ico.org.uk</a>.</p>
+      <p>These rights apply to relevant website and app information, subject to the conditions and exemptions in data-protection law. You may be asked for proportionate information to verify your identity and identify the records concerned. We normally respond within one month; if a lawful extension is needed, we will explain it. Where a third party acts as a separate controller, you may also need to contact that provider.</p>
     </article>
   </main>;
 }

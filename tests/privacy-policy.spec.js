@@ -3,13 +3,16 @@ import { test, expect } from '@playwright/test';
 test('policy covers the confirmed native app separately from website marketing', async ({ page }) => {
   await page.goto('/privacy-policy');
   const article = page.locator('article');
-  const app = page.getByRole('region', { name: 'Christmas Radio iPhone and iPad app' });
+  const app = page.getByRole('region', { name: 'Christmas Radio UK — native iPhone and iPad app, version 35.0' });
   await expect(app).toBeVisible();
   await expect(article).not.toContainText('not separate apps');
   await expect(article.locator('time')).toHaveAttribute('datetime', '2026-10-11');
   for (const text of [
-    'does not contain advertising or analytics SDKs',
-    'does not access your advertising identifier, microphone, camera, contacts, photo library or device location',
+    'Now Playing, Up Next and artist artwork',
+    'does not require a mandatory account',
+    'Background audio',
+    'AirPlay and CarPlay',
+    'do not require microphone, camera, contacts, photo-library or location access for radio playback',
     'Snowfall, Blizzard and Festive lights',
     'does not upload these saved preferences or cached copies',
     'rather than offloading it',
@@ -21,13 +24,20 @@ test('policy covers the confirmed native app separately from website marketing',
     'connection logs or listener statistics',
     'Deleting the app does not delete information already retained',
     'using the app does not enrol you in marketing',
-    'Website analytics and marketing cookies are not embedded',
+    'not a blanket statement about native-app SDKs',
+    'does not automatically give consent for separate app tracking',
     'rights and complaints information elsewhere',
   ]) await expect(app).toContainText(text);
   await expect(app.getByRole('link', { name: 'email us about app privacy' }))
     .toHaveAttribute('href', 'mailto:santa@santaradio.co.uk');
   await expect(app.locator('a[href*="replit.com"]')).toHaveCount(0);
   await expect(app).not.toContainText('[Before publishing');
+  await expect(app).not.toContainText('does not contain advertising or analytics SDKs');
+  await expect(app).not.toContainText('no tracking');
+  await expect(article).toContainText('Older Santa Radio iPhone or iPad apps, tvOS apps');
+  await expect(article).toContainText('not a microphone recording made by you or your child');
+  await expect(article).toContainText('The current website does not offer microphone recording');
+  await expect(article).toContainText('normally respond within one month');
   await expect(article).toContainText('We do not sell personal data.');
 });
 
