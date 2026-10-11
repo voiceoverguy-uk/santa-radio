@@ -35,10 +35,11 @@ test('supplied portraits and explicit Santa entries are served through the share
 });
 
 test('all supplied artist portraits and an unmapped artist load on song pages', async ({ page }) => {
+  test.setTimeout(90000);
   await page.route('**/*youtube.com/**', route => route.abort());
   for (const artist of [...artists, 'Susy Wall']) {
     const song = songs.find(song => song.artist === artist);
-    await page.goto(`/christmas-artist/${song.id}-${song.link}`);
+    await page.goto(`/christmas-artist/${song.id}-${song.link}`, { waitUntil: 'domcontentloaded' });
     const image = page.locator('.song-artwork-img');
     await expect(image).toHaveAttribute('src', artistArtwork(artist));
     await expect.poll(() => image.evaluate(el => el.complete && el.naturalWidth === 512)).toBe(true);

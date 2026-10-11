@@ -69,8 +69,10 @@ test('HEAD and OPTIONS work, missing images are 404 not the HTML homepage', asyn
 
 test('Vercel configuration includes public feed/image access and preserves asset routing', async () => {
   const config = JSON.parse(await readFile('vercel.json', 'utf8'));
-  const artwork = config.headers.find(item => item.source === '/artist-artwork/:path*');
-  assert.equal(artwork.headers.find(header => header.key === 'Access-Control-Allow-Origin').value, '*');
-  assert.equal(artwork.headers.find(header => header.key === 'Cache-Control').value, 'no-cache');
-  assert.deepEqual(config.rewrites[0], { source: '/artist-artwork/:path*', destination: '/artist-artwork/:path*' });
+  const artwork = config.routes.find(item => item.src === '/artist-artwork/(.*)');
+  assert.equal(artwork.headers['Access-Control-Allow-Origin'], '*');
+  assert.equal(artwork.headers['Cache-Control'], 'no-cache');
+  assert.equal(artwork.continue, true);
+  assert.equal(artwork.dest, undefined);
+  assert.ok(config.routes.some(route => route.handle === 'filesystem'));
 });
