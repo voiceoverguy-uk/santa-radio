@@ -1,0 +1,46 @@
+.now-playing-artwork {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .now-playing-artwork {
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    right: 0;
+    display: grid;
+    place-items: center;
+    width: clamp(220px, 20vw, 270px);
+    aspect-ratio: 1;
+    padding: 9px;
+    overflow: hidden;
+    transform: translateY(-50%);
+    border: 1px solid #d4af3770;
+    border-radius: 14px;
+    background: #102d26b8;
+    box-shadow: 0 14px 38px #06150f52, inset 0 0 0 1px #fff8e708;
+    transition: border-color 180ms ease, box-shadow 180ms ease;
+    backdrop-filter: blur(3px);
+  }
+
+  .now-playing-artwork img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 7px;
+  }
+}
+
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  .now-playing-artwork:hover {
+    border-color: #e6ce86;
+    box-shadow: 0 0 0 1px #e6ce8630, 0 0 16px 3px #e6ce8645, 0 14px 38px #06150f52;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .now-playing-artwork {
+    transition: none;
+  }
+}

@@ -1,6 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { RadioButton } from '../components/AudioPlayer.jsx';
+import NowPlayingArtwork from '../components/NowPlayingArtwork.jsx';
 import SantaTrackerBanner from '../tracker/components/SantaTrackerBanner.tsx';
 import Countdown from '../components/Countdown.jsx';
 import Soundboard from '../components/Soundboard.jsx';
@@ -26,15 +27,18 @@ export default function Home() {
         </picture>
         <div className="hero-aurora" aria-hidden="true" />
         <SantaFlyby />
-        <div className="hero-content">
-          <p className="eyebrow">A little magic from the North Pole</p>
-          <h1 className="hero-title">Live from The North Pole,<span>Santa Radio</span></h1>
-          <p className="hero-description">Listen live to Santa Radio, discover festive favourites and share a little Christmas magic with the whole family.</p>
-          <div className="hero-actions"><Link to="/free-santa-message" className="btn-gold">FREE Santa Message <span aria-hidden="true">↗</span></Link><RadioButton className="btn-red" /></div>
-          <p className="hero-note">The World’s Best Christmas Radio Station · All year round</p>
-          <div id="christmas-countdown" className="hero-countdown">
-            <Countdown />
+        <div className="hero-layout">
+          <div className="hero-content">
+            <p className="eyebrow">A little magic from the North Pole</p>
+            <h1 className="hero-title">Live from The North Pole,<span>Santa Radio</span></h1>
+            <p className="hero-description">Listen live to Santa Radio, discover festive favourites and share a little Christmas magic with the whole family.</p>
+            <div className="hero-actions"><Link to="/free-santa-message" className="btn-gold">FREE Santa Message <span aria-hidden="true">↗</span></Link><RadioButton className="btn-red" /></div>
+            <p className="hero-note">The World’s Best Christmas Radio Station · All year round</p>
+            <div id="christmas-countdown" className="hero-countdown">
+              <Countdown />
+            </div>
           </div>
+          <NowPlayingArtwork />
         </div>
       </section>
       <SantaTrackerBanner />

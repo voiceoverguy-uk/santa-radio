@@ -2,6 +2,7 @@
 .hero-picture { position: absolute; inset: 0; }
 .hero-picture img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
 .hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg,#061c17b8 0%,#061c1750 54%,#061c1715 100%),linear-gradient(0deg,#081e17 0%,#081e1720 34%,#081e1710 80%); pointer-events: none; }
+.hero-layout { position: relative; z-index: 2; width: 100%; max-width: 1160px; margin: auto; }
 .hero-content { position: relative; z-index: 2; max-width: 1160px; width: 100%; margin: auto; padding-top: 20px; }
 .eyebrow { font-family: 'Cinzel',serif; text-transform: uppercase; letter-spacing: .24em; font-size: .64rem; color: var(--gold-light); margin-bottom: 22px; }
 .hero-title { font-family: 'Cinzel',serif; font-weight: 400; color: var(--cream); font-size: clamp(2rem,3.2vw,3rem); line-height: 1.2; letter-spacing: -.035em; max-width: 700px; margin-bottom: 25px; }
@@ -56,6 +57,10 @@ html[data-effects="off"] .hero-snow,html[data-effects="off"] .hero-aurora { disp
   .countdown { width: 100%; max-width: 400px; gap: 8px; }
   .countdown-unit { width: auto; padding: 15px 7px; }
   .countdown-unit strong { font-size: 1.7rem; }
+}
+@media (min-width: 1024px) {
+  .hero-content { margin-inline: 0; }
+  .hero-layout:has(.now-playing-artwork) .hero-content { max-width: calc(100% - clamp(220px, 20vw, 270px) - 48px); }
 }
 @media (max-width: 360px) {
   .hero { padding-inline: 20px; }

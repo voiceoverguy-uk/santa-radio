@@ -8,6 +8,12 @@ Do not show a breadcrumb/path trail on Christmas artist/song pages.
 
 **How to apply:** Keep those pages free of visible breadcrumb trails; retain ordinary navigation and the back-to-music link.
 
+Show the current artist's artwork on the right of the homepage hero during desktop radio playback, with a thin frame and the same gold hover glow as other homepage boxes. Keep it off mobile.
+
+**Why:** The user explicitly requested this desktop-only listening enhancement.
+
+**How to apply:** Preserve the North Pole backdrop and existing player; use shared artist artwork and Santa fallback without adding duplicate song-detail blocks.
+
 The user finds the initial Santa Radio rebuild "a bit boring" and wants the colours and appearance of https://santa-radio.base44.app/.
 
 The user approved the redesign plan and specifically asked to make buttons and fonts the same as the Base44 version.
