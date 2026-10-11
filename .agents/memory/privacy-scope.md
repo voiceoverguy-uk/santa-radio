@@ -1,8 +1,14 @@
 ---
 name: Privacy scope
-description: Owner-approved limits on the website privacy notice and future news signup.
+description: Owner-approved website and native-app privacy scope and consent boundaries.
 ---
-The owner wants a simple, concise policy with minimal company details, covering the rebuilt website rather than obsolete app permissions or old automatic marketing enrolment.
+The owner wants a simple, concise policy with minimal company details. It now also covers Christmas Radio UK for iPhone and iPad, but this does not establish coverage of the separate Santa Radio native app.
+
+The owner confirmed the supplied Christmas Radio UK privacy draft accurately describes that separate project's native app: no tracking/advertising SDKs or sensitive permissions; visual preferences, artwork and recent song information stay on the device. Website marketing must remain separate from native app use.
+
+**Why:** The owner confirmed the other project's app description when authorising the shared policy update; this workspace does not contain the native source.
+
+**How to apply:** Treat these as owner-confirmed product facts, not evidence of an iOS code audit. Do not equate local caching with server-side data collection or assume that providers retain no logs. Vercel hosting was confirmed, but provider log retention, lawful bases and transfer safeguards still require verification before a compliance-complete notice or App Store disclosure.
 
 Future news signup must be voluntary and specifically for Santa Radio news/information, with subscriptions kept until unsubscribe. No marketing provider has been selected; Mailchimp was only an example.
 

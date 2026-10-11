@@ -1,5 +1,36 @@
 import { test, expect } from '@playwright/test';
 
+test('policy covers the confirmed native app separately from website marketing', async ({ page }) => {
+  await page.goto('/privacy-policy');
+  const article = page.locator('article');
+  const app = page.getByRole('region', { name: 'Christmas Radio iPhone and iPad app' });
+  await expect(app).toBeVisible();
+  await expect(article).not.toContainText('not separate apps');
+  await expect(article.locator('time')).toHaveAttribute('datetime', '2026-10-11');
+  for (const text of [
+    'does not contain advertising or analytics SDKs',
+    'does not access your advertising identifier, microphone, camera, contacts, photo library or device location',
+    'Snowfall, Blizzard and Festive lights',
+    'does not upload these saved preferences or cached copies',
+    'rather than offloading it',
+    'does not necessarily remove existing backups',
+    'global.citrus3.com',
+    'www.santaradio.co.uk',
+    'Vercel hosts',
+    'your IP address',
+    'connection logs or listener statistics',
+    'Deleting the app does not delete information already retained',
+    'using the app does not enrol you in marketing',
+    'Website analytics and marketing cookies are not embedded',
+    'rights and complaints information elsewhere',
+  ]) await expect(app).toContainText(text);
+  await expect(app.getByRole('link', { name: 'email us about app privacy' }))
+    .toHaveAttribute('href', 'mailto:santa@santaradio.co.uk');
+  await expect(app.locator('a[href*="replit.com"]')).toHaveCount(0);
+  await expect(app).not.toContainText('[Before publishing');
+  await expect(article).toContainText('We do not sell personal data.');
+});
+
 test('footer opens a readable privacy policy with separate message access and news consent', async ({ page }) => {
   await page.goto('/');
   await page.evaluate(() => window.originalAudio = document.querySelector('audio'));
@@ -29,7 +60,7 @@ test('policy direct loads, refreshes and metadata work on desktop and mobile', a
     await page.reload();
     await expect(page).toHaveTitle('Privacy Policy — Santa Radio');
     await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /browser preferences/);
-    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://santa-radio.replit.app/privacy-policy');
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://www.santaradio.co.uk/privacy-policy');
     await expect(page.locator('h1')).toHaveCount(1);
     await expect(page.locator('h1')).toBeInViewport();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);

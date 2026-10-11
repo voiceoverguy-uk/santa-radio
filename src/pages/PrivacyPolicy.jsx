@@ -5,15 +5,42 @@ export default function PrivacyPolicy() {
   return <main className="privacy-page">
     <Helmet>
       <title>Privacy Policy — Santa Radio</title>
-      <meta name="description" content="How Santa Radio handles your information, browser preferences and privacy choices." />
+      <meta name="description" content="Privacy information for the Santa Radio website and Christmas Radio UK app, including browser preferences, app storage and privacy choices." />
       <link rel="canonical" href="https://www.santaradio.co.uk/privacy-policy" />
     </Helmet>
     <article className="privacy-content">
       <p className="eyebrow">Santa Radio</p>
       <h1>Privacy Policy</h1>
-      <p className="privacy-date">Updated <time dateTime="2026-10-10">10 October 2026</time></p>
-      <p>Santa Radio is operated by VoiceoverGuy Ltd. For privacy questions, email <a href="mailto:santa@santaradio.co.uk">santa@santaradio.co.uk</a>.</p>
-      <p>This notice covers this rebuilt website, not separate apps or linked services. You can browse and listen without an account. We do not sell personal data.</p>
+      <p className="privacy-date">Updated <time dateTime="2026-10-11">11 October 2026</time></p>
+      <p>The Santa Radio website and Christmas Radio UK app are operated by VoiceoverGuy Ltd. For privacy questions, email <a href="mailto:santa@santaradio.co.uk">santa@santaradio.co.uk</a>.</p>
+      <p>This notice covers the Santa Radio website and the Christmas Radio iPhone and iPad app, also known as Christmas Radio UK. The app-specific section below explains how the native app handles information. Website-only features, including forms, Santa audio messages, embedded videos and optional analytics or marketing cookies, are separate from the native app. External services may also have their own privacy notices.</p>
+      <p>You can browse and listen without an account. We do not sell personal data.</p>
+
+      <section aria-labelledby="christmas-radio-privacy">
+        <h2 id="christmas-radio-privacy">Christmas Radio iPhone and iPad app</h2>
+        <h3>Using the app</h3>
+        <p>You can listen to Christmas Radio without creating an account. The native app does not ask you to provide your name, email address or other contact details.</p>
+        <p>The app does not contain advertising or analytics SDKs, Google Analytics or Meta Pixel. It does not access your advertising identifier, microphone, camera, contacts, photo library or device location. Background playback, AirPlay and CarPlay are audio-playback features and do not involve microphone recording.</p>
+
+        <h3>Information stored on your device</h3>
+        <p>The app remembers your Snowfall, Blizzard and Festive lights preferences on your device. It also stores copies of artist artwork and recent song information to reduce downloads and display previously available information when a connection is unavailable.</p>
+        <p>The app does not upload these saved preferences or cached copies to us. iOS may remove cached files automatically. Deleting the app, rather than offloading it, removes its local data from that installation. Device settings may also be included in backups managed by Apple; deleting the app does not necessarily remove existing backups.</p>
+
+        <h3>Connections needed for radio playback</h3>
+        <p>The app connects over HTTPS to Citrus3, at global.citrus3.com, to receive the live radio stream, and to Santa Radio, at www.santaradio.co.uk, to obtain current and upcoming song information and artist artwork. Vercel hosts the website and its song-information and artwork services.</p>
+        <p>These connections necessarily disclose your IP address and normal technical request information to the relevant servers. This can include request times, requested resources and information supplied by the networking software. Requests may indicate when you connect to the stream or request song information and artwork.</p>
+        <p>The app does not create an account-based personal listening-history profile. However, the relevant servers or hosting providers may maintain connection logs or listener statistics.</p>
+
+        <h3>Provider processing and retention</h3>
+        <p>Vercel and Citrus3 may process technical connection information to operate their hosting and streaming services. Their retention periods and any international processing or transfers depend on the applicable provider arrangements and privacy notices. Contact us for information about the arrangements relevant to the app.</p>
+        <p>Deleting the app does not delete information already retained by these providers. Optional website marketing is separate from native app use and requires the consent described below; using the app does not enrol you in marketing.</p>
+
+        <h3>Opening the website</h3>
+        <p>If you open the Santa Radio website from the app, the website’s privacy information and cookie choices apply to that website visit. Website analytics and marketing cookies are not embedded in the native app.</p>
+
+        <h3>Privacy questions and your rights</h3>
+        <p>For questions about the app’s handling of information, or to exercise applicable data-protection rights, <a href="mailto:santa@santaradio.co.uk">email us about app privacy</a>. The rights and complaints information elsewhere in this policy also applies to the app.</p>
+      </section>
 
       <h2>When you contact us</h2>
       <p>Email enquiries and song submissions share your email address and whatever you include, such as an artist name, song title, link or biography. We use this information to respond or consider submissions for airplay. Our lawful basis is legitimate interests: running the station and handling messages people choose to send us, while respecting their privacy.</p>
