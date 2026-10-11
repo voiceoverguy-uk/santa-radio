@@ -1,4 +1,7 @@
 export const artistPortraits = Object.freeze({
+  'train': 'train',
+  'ella fitzgerald & louis armstrong': 'ella-fitzgerald-and-louis-armstrong',
+  'ella fitzgerald and louis armstrong': 'ella-fitzgerald-and-louis-armstrong',
   'ava max': 'ava-max',
   'n sync': 'n-sync',
   'nsync': 'n-sync',
