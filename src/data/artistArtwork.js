@@ -1,4 +1,6 @@
 export const artistPortraits = Object.freeze({
+  'david archuleta': 'david-archuleta',
+  'bo selecta': 'bo-selecta',
   'jon bon jovi': 'jon-bon-jovi',
   'toni braxton': 'toni-braxton',
   'susy wall': 'susy-wall',
