@@ -14,6 +14,12 @@ The owner wants to track search performance for “Online christmas music” and
 
 **How to apply:** Distinguish query performance and keyword targeting from structured-data enhancement reports. Valid schema and successful live URL tests do not establish indexing or rankings.
 
+Legacy `/personalised-santa-message/all` and `/personalised-santa-message/{Name}` URLs have historical visibility for Santa-message searches.
+
+**Why:** The owner supplied Search Console page-level results identifying these URLs for “message from santa” and Santa-message queries.
+
+**How to apply:** Include this route family when auditing migrations and preserving equivalent destinations. Do not assume search history automatically transfers to a differently named audio-maker URL.
+
 Initial public HTML should come from the real application templates, not independent SEO-only copies.
 
 **Why:** The owner wants meaningful content without JavaScript while preserving the existing player, galleries, paths and seasonal behaviour. Separate template copies would diverge.
