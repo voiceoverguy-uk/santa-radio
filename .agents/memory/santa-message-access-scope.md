@@ -26,6 +26,12 @@ The owner confirmed the name-collecting staff login is “great”.
 
 **How to apply:** Preserve that staff-login approach when planning related private admin features. This feedback does not independently verify all production saving or ledger operations.
 
+Do not assume Replit-managed Clerk supports the separately Vercel-hosted website.
+
+**Why:** On 12 October 2026, management inspection confirmed managed Clerk and official Replit documentation stated that this setup is intended for Replit-served apps, not external deployments such as Vercel. Preview login success therefore did not establish live-host compatibility.
+
+**How to apply:** Recheck management status and current documentation when addressing live authentication. Agree a compatible authentication/hosting approach with the owner before migrating providers or moving hosting. Do not copy managed development keys as an assumed production fix.
+
 Do not implement FTP, Mark's server integration or text-file uploads for missing-name requests. Keep the database-backed request system and protected staff ledger; staff-only TXT downloads are permitted.
 
 **Why:** The owner explicitly cancelled the earlier FTP-copy plan and requested database-backed saving plus protected ledger downloads instead.
