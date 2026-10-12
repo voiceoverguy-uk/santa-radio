@@ -18,6 +18,12 @@ The user confirmed that their Holly Johnson request means Frankie Goes to Hollyw
 
 **Why:** The user approved this specific exception to the solo-versus-band matching rule.
 
+Use Paul Burling's supplied solo portrait for the Paul Burling & Joseph Bell joint credit too.
+
+**Why:** The user explicitly approved this exception when asked about the joint credit.
+
+**How to apply:** Keep this exception specific to that collaboration, not other joint credits or Joseph Bell alone.
+
 Keep supplied uploads and legacy JPEG originals when creating optimised WebP delivery copies.
 
 **Why:** Optimisation should not destroy the source artwork or break old direct image URLs; retaining originals also avoids using an already compressed WebP as a future editing master.

@@ -1,4 +1,8 @@
 export const artistPortraits = Object.freeze({
+  'laufey': 'laufey',
+  'paul burling': 'paul-burling',
+  'paul burling & joseph bell': 'paul-burling',
+  'paul burling and joseph bell': 'paul-burling',
   'anne-marie': 'anne-marie',
   'tom jones & c matthews': 'tom-jones-and-cerys-matthews',
   'tom jones & cerys matthews': 'tom-jones-and-cerys-matthews',
