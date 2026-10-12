@@ -17,7 +17,7 @@ export async function mockBrevo(page, json = { success: true }, status = 200) {
   }));
 }
 
-export async function openMessageDesk(page, { mockNames = true } = {}) {
+export async function openMessageDesk(page, { mockNames = true, path = '/free-santa-message' } = {}) {
   await mockBrevo(page);
   if (mockNames) await page.route('**/api/santa-names?*', route => {
     const query = new URL(route.request().url()).searchParams.get('q').trim().toLowerCase();
@@ -26,7 +26,7 @@ export async function openMessageDesk(page, { mockNames = true } = {}) {
       hostedCount: 0, warning: null,
     } });
   });
-  await page.goto('/free-santa-message');
+  await page.goto(path);
   const reject = page.getByRole('button', { name: 'Reject optional cookies', exact: true });
   if (await reject.isVisible()) await reject.click();
   await fillAccessForm(page);

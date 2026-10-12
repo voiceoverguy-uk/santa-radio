@@ -25,3 +25,9 @@ The automation's upcoming slots can include station announcements with an empty 
 **Why:** A live feed contained ` - Santa Radio Free Message ID - VO` between two songs. Requiring an artist rejected the entire queue.
 
 **How to apply:** The user clarified these entries are jingles and must be ignored. Filter them out, preserving the remaining songs' broadcast order. Never promise that three upcoming slots always mean three songs.
+
+The owner reports that PHP on the hosting used for the FTP-supplied now/next song data has been upgraded from 5.4 to 8.4.
+
+**Why:** The owner supplied this hosting update.
+
+**How to apply:** Account for PHP 8.4 compatibility when advising on scripts on that hosting. Do not assume other hosting environments received the same upgrade.

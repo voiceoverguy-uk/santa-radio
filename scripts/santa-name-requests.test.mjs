@@ -15,18 +15,22 @@ test('London seasonal confirmations change on December 1 and reset in January', 
   assert.match(nameRequestConfirmation(new Date('2027-01-01T00:00:00Z')), /in a week/);
   assert.match(nameRequestConfirmation(new Date('2026-10-01T00:00:00Z')), /to see if Santa has added it/);
 });
-test('admin authorization requires the verified primary address on the server allowlist', () => {
-  const user = { primaryEmailAddressId: 'email-1', emailAddresses: [{ id: 'email-1', emailAddress: 'OWNER@EXAMPLE.TEST', verification: { status: 'verified' } }] };
-  assert.equal(approvedAdmin(user, 'owner@example.test'), true);
-  assert.equal(approvedAdmin(user, 'other@example.test'), false);
-  assert.equal(approvedAdmin(user, ''), false);
+test('admin authorization requires exactly the verified primary owner address regardless of env allowlists', () => {
+  const user = { primaryEmailAddressId: 'email-1', emailAddresses: [{ id: 'email-1', emailAddress: 'ADMIN@SANTARADIO.CO.UK', verification: { status: 'verified' } }] };
+  assert.equal(approvedAdmin(user), true);
+  assert.equal(approvedAdmin({}), false);
   user.emailAddresses[0].verification.status = 'unverified';
-  assert.equal(approvedAdmin(user, 'owner@example.test'), false);
+  assert.equal(approvedAdmin(user), false);
+  user.emailAddresses[0].verification.status = 'verified';
   user.primaryEmailAddressId = 'unrelated';
-  assert.equal(approvedAdmin(user, 'owner@example.test'), false);
+  assert.equal(approvedAdmin(user), false);
+  user.primaryEmailAddressId = 'email-1';
+  user.emailAddresses[0].emailAddress = 'other@example.test';
+  assert.equal(approvedAdmin(user, 'other@example.test'), false);
 });
 function response() {
-  return { code: 200, headers: {}, set(key, value) { this.headers[key] = value; return this; }, status(code) { this.code = code; return this; }, json(body) { this.body = body; return this; } };
+  return { code: 200, headers: {}, set(key, value) { this.headers[key] = value; return this; }, status(code) { this.code = code; return this; },
+    json(body) { this.body = body; return this; }, send(body) { this.body = body; return this; } };
 }
 test('unauthenticated and unapproved users never reach the database listing', async () => {
   for (const status of [401, 403]) {

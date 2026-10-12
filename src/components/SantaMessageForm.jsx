@@ -9,6 +9,7 @@ import useSantaMessageHistory from './useSantaMessageHistory.js';
 import useSantaNames from './useSantaNames.js';
 import { randomSantaExample, santaNamePlaceholder } from '../lib/santaNamePlaceholder.js';
 import { normaliseRequestedName } from '../lib/santaNameRequests.js';
+import { nameRequestToken } from '../lib/santaNameRequestTokens.js';
 import './SantaNameRequest.css';
 import './SantaMessageForm.css';
 
@@ -85,20 +86,26 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
     const requestKey = requested.key;
     nameRequestRef.current = controller;
     setNameRequest({ key: requestKey, status: 'pending', message: '' });
+    const timeout = setTimeout(() => controller.abort(new Error('Saving took too long. Please retry; the same request will not be counted twice.')), 25000);
+    let storageWarning = '';
     try {
+      const token = nameRequestToken(requestKey);
+      storageWarning = token.remembered ? '' : 'Your browser cannot remember retries after a refresh. Keep this page open when retrying.';
       const response = await fetch('/api/name-requests', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: requested.name }),
+        body: JSON.stringify({ name: requested.name, requestId: token.id }),
         signal: controller.signal,
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.error || data.message || 'Santa could not save that request. Please try again.');
-      if (typeof data.message !== 'string' || !data.message.trim()) {
+      if (data.saved !== true || data.name !== requested.name ||
+          typeof data.message !== 'string' || !data.message.trim()) {
         throw new Error('Santa’s request desk returned an unexpected reply. Please try again.');
       }
       if (nameRequestRef.current === controller && normaliseRequestedName(name)?.key === requestKey) {
-        setNameRequest({ key: requestKey, status: 'success', message: data.message });
+        setNameRequest({ key: requestKey, status: 'success', message: data.message,
+          warning: storageWarning });
       }
     } catch (error) {
       if (nameRequestRef.current === controller && error.name !== 'AbortError' &&
@@ -107,9 +114,11 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
           key: requestKey,
           status: 'error',
           message: error.message || 'Santa could not save that request. Please try again.',
+          warning: storageWarning,
         });
       }
     } finally {
+      clearTimeout(timeout);
       if (nameRequestRef.current === controller) nameRequestRef.current = null;
     }
   };
@@ -273,14 +282,16 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
             return canRequest ? <div className="name-request">
               <button className="name-request-button" type="button"
                 onClick={submitNameRequest}
-                disabled={visibleRequest?.status === 'pending'}
+                 disabled={['pending', 'success'].includes(visibleRequest?.status)}
                 aria-describedby={visibleRequest && visibleRequest.status !== 'idle' ? `${inputId}-request-status` : undefined}>
                 {visibleRequest?.status === 'pending' ? 'Sending request…'
                   : visibleRequest?.status === 'error' ? 'Retry name request'
+                    : visibleRequest?.status === 'success' ? 'Request saved'
                     : 'Request this name'}
               </button>
               {visibleRequest?.status === 'pending' && <p className="name-request-note" id={`${inputId}-request-status`} role="status">Sending this request to Santa’s list. This won’t create a recording or use your message allowance.</p>}
               {visibleRequest?.status === 'success' && <p className="name-request-note success" id={`${inputId}-request-status`} role="status">{visibleRequest.message}</p>}
+              {visibleRequest?.warning && <p className="name-request-note">{visibleRequest.warning}</p>}
               {visibleRequest?.status === 'error' && <p className="name-request-note" id={`${inputId}-request-status`} role="alert">{visibleRequest.message} You can retry when you’re ready.</p>}
             </div> : null;
           })()}

@@ -18,3 +18,4 @@
 - [Preview test timeouts](preview-test-timeouts.md) — Whole-test timeouts can report misleading matcher values even when the captured UI state is correct.
 - [Browser text bounds](browser-text-bounds.md) — Allow subpixel rounding in inline-text containment checks to avoid false cropping failures.
 - [SEO delivery rules](seo-delivery.md) — Owner prefers www; keep preview/integrations on their hosts. Validate built Node SSR as well as Vite rendering.
+- [Workspace environment label](workspace-environment-label.md) — Do not infer a production database target from the environment label alone.

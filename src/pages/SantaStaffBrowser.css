@@ -1,3 +1,5 @@
+.staff-list-switch { display: flex; flex-wrap: wrap; gap: 10px; margin: 24px 0; }
+.staff-feedback { color: #e9d6a1; padding: 12px 0; }
 .staff-page { min-height: 65dvh; padding: 132px 20px 76px; color: #f6ecd8; background: radial-gradient(ellipse at 50% 0%, #244d39 0%, #102b20 70%); }
 .staff-wrap { width: min(100%, 1040px); margin: 0 auto; }
 .staff-brand { display: block; width: min(220px, 65vw); height: auto; margin: 0 auto 30px; }
