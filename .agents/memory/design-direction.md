@@ -93,3 +93,9 @@ Mugshot profile photographs should share the Chuckle Brothers' display proportio
 **Why:** The user noticed Christine Lampard was taller and approved standardising the seven exceptions to the other 642 profiles after being offered full-photo preservation.
 
 **How to apply:** Keep a consistent profile frame when adding photographs with different proportions; do not silently crop originals to make them match.
+
+Link-preview graphics should use the newer straight gold Santa Radio logo, not the curved logo, and the site's green colours. The supplied Santa-with-headphones illustration can be included.
+
+**Why:** The user said the graphic shown when pasting the site URL into an email looked weak and requested these brand elements.
+
+**How to apply:** Use the supplied straight logo artwork for share-card designs, with clear branding that remains readable at email-thumbnail sizes.

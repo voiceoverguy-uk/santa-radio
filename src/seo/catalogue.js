@@ -6,6 +6,8 @@ import { artistArtwork, fallbackArtwork } from '../data/artistArtwork.js';
 export const ORIGIN = 'https://www.santaradio.co.uk';
 export const absolute = path => new URL(path, ORIGIN).href;
 export const brandImage = '/images/santa-radio-logo.png';
+export const shareImage = '/images/santa-radio-share-green.jpg';
+export const shareImageAlt = 'Santa Radio — Christmas music 24/7, with Santa wearing headphones and the straight gold Santa Radio logo';
 export const songPath = song => `/christmas-artist/${song.id}-${song.link}`;
 export const mugPath = mug => `/mugshots/${mug.song}`;
 // Confirmed identical artist, title, lyrics and video. Keep every historical URL.
@@ -98,12 +100,13 @@ export const identityGraph = [
   { '@type': 'Organization', '@id': `${ORIGIN}/#organization`, name: 'Santa Radio', url: `${ORIGIN}/`, logo: { '@type': 'ImageObject', url: absolute(brandImage), width: 827, height: 190 } },
   { '@type': 'WebSite', '@id': `${ORIGIN}/#website`, name: 'Santa Radio', url: `${ORIGIN}/`, inLanguage: 'en-GB', publisher: { '@id': `${ORIGIN}/#organization` } },
 ];
-export function pageMetadata({ path, title, description, image = brandImage, imageAlt = 'Santa Radio', crumbs = [], nodes = [], collection = false, noindex = false }) {
+export function pageMetadata({ path, title, description, image = shareImage, imageAlt = image === shareImage ? shareImageAlt : 'Santa Radio', imageWidth = image === shareImage ? 1200 : undefined, imageHeight = image === shareImage ? 630 : undefined, imageType = image === shareImage ? 'image/jpeg' : undefined, crumbs = [], nodes = [], collection = false, noindex = false }) {
   const url = absolute(path);
-  return { path, title, description, image: absolute(image), imageAlt, url, noindex, graph: [
+  const dimensions = imageWidth && imageHeight ? { width: imageWidth, height: imageHeight } : {};
+  return { path, title, description, image: absolute(image), imageAlt, imageWidth, imageHeight, imageType, url, noindex, graph: [
     ...identityGraph,
     { '@type': collection ? 'CollectionPage' : 'WebPage', '@id': `${url}#webpage`, url, name: title, description, inLanguage: 'en-GB', isPartOf: { '@id': `${ORIGIN}/#website` }, publisher: { '@id': `${ORIGIN}/#organization` }, primaryImageOfPage: { '@id': `${url}#image` }, ...(nodes[0] ? { mainEntity: { '@id': nodes[0]['@id'] } } : {}) },
-    { '@type': 'ImageObject', '@id': `${url}#image`, contentUrl: absolute(image), url: absolute(image), caption: imageAlt },
+    { '@type': 'ImageObject', '@id': `${url}#image`, contentUrl: absolute(image), url: absolute(image), caption: imageAlt, ...dimensions },
     ...(crumbs.length ? [{ '@type': 'BreadcrumbList', '@id': `${url}#breadcrumbs`, itemListElement: crumbs.map(([name, link], i) => ({ '@type': 'ListItem', position: i + 1, name, item: absolute(link) })) }] : []),
     ...nodes,
   ] };
@@ -192,5 +195,6 @@ export function trackerMetadata() {
   return pageMetadata({ path: '/santa-tracker', title: "Santa Tracker | Track Santa's Journey — Santa Radio",
     description: 'Track Santa on Santa Radio’s estimated Christmas Eve journey. Explore the countdown to departure, updating map, holiday postcards and Christmas questions.',
     image: '/images/santa-tracker-share.png', imageAlt: 'Santa Radio — Santa Tracker: an estimated Christmas Eve journey',
+    imageWidth: 1200, imageHeight: 630, imageType: 'image/png',
     crumbs: [['Home', '/'], ['Santa Tracker', '/santa-tracker']] });
 }

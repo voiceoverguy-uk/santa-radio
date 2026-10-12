@@ -9,6 +9,9 @@ export default function PageSeo({ metadata: m }) {
     <meta property="og:url" content={m.url} /><meta property="og:type" content="website" />
     <meta property="og:site_name" content="Santa Radio" /><meta property="og:locale" content="en_GB" />
     <meta property="og:image" content={m.image} /><meta property="og:image:alt" content={m.imageAlt} />
+    {m.imageWidth && <meta property="og:image:width" content={m.imageWidth} />}
+    {m.imageHeight && <meta property="og:image:height" content={m.imageHeight} />}
+    {m.imageType && <meta property="og:image:type" content={m.imageType} />}
     <meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content={m.title} />
     <meta name="twitter:description" content={m.description} /><meta name="twitter:image" content={m.image} />
     <meta name="twitter:image:alt" content={m.imageAlt} />

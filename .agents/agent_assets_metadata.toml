@@ -84,3 +84,17 @@ mtime_ms = 1791656114326
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/73d2b718-2974-4a21-a2a1-3b890160c9c5/ef0aa515-9cba-483d-b666-c2091d7bd3d0"
 storage_version_token = "1791657667169426"
 content_type = "text/csv"
+
+[[outputs]]
+id = "8Ap7uMvD3IiQCzT0bEtUX"
+uri = "file://public/images/santa-radio-share-green.jpg"
+type = "image"
+title = "Santa Radio — new link-preview graphic"
+description = "Straight gold logo, deep green site colours and your Santa illustration. Ready-to-use 1200 × 630 JPEG."
+logical_id = "64c051f7-0368-459f-b7d5-5c4a3c4f6ced"
+content_hash = "sha256:03823a5e0bd04753f3f199e0af904e8113f2371f348a1562696c5da79d70828f"
+size = 136146
+mtime_ms = 1791805958715
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/64c051f7-0368-459f-b7d5-5c4a3c4f6ced/ef23e6cb-678d-4533-8891-9599d9de7614"
+storage_version_token = "1791806341397545"
+content_type = "image/jpeg"

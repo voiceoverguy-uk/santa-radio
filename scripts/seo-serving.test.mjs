@@ -106,6 +106,10 @@ test('built Node server returns actual pages, permanent redirects, images, API r
   assert.equal(image.status, 200); assert.equal(image.headers.get('content-type'), 'image/png');
   const bytes = Buffer.from(await image.arrayBuffer());
   assert.equal(bytes.readUInt32BE(16), 1200); assert.equal(bytes.readUInt32BE(20), 630);
+  const shareImage = await get('/images/santa-radio-share-green.jpg');
+  assert.equal(shareImage.status, 200);
+  assert.equal(shareImage.headers.get('content-type'), 'image/jpeg');
+  assert.deepEqual(Buffer.from(await shareImage.arrayBuffer()), await readFile('public/images/santa-radio-share-green.jpg'));
   assert.match((await get('/mugshot-thumbnails/a1-singers-320.webp')).headers.get('content-type'), /image\/webp/);
   const artwork = await get('/artist-artwork/catalogue.json');
   assert.equal(artwork.status, 200); assert.equal(artwork.headers.get('access-control-allow-origin'), '*');
