@@ -1,4 +1,8 @@
 export const artistPortraits = Object.freeze({
+  'jason mraz': 'jason-mraz',
+  'the pointer sisters': 'pointer-sisters',
+  'pointer sisters': 'pointer-sisters',
+  'camila cabello': 'camila-cabello',
   'train': 'train',
   'ella fitzgerald & louis armstrong': 'ella-fitzgerald-and-louis-armstrong',
   'ella fitzgerald and louis armstrong': 'ella-fitzgerald-and-louis-armstrong',
