@@ -8,6 +8,12 @@ Use https://www.santaradio.co.uk as the preferred public identity and canonical 
 
 **How to apply:** Keep internal requests/redirects relative. Publishing and host/DNS changes need separate owner permission.
 
+The owner wants to track search performance for “Online christmas music” and “Christmas Radio”, amongst other terms.
+
+**Why:** The owner explicitly named these searches when reviewing Google Search Console enhancements.
+
+**How to apply:** Distinguish query performance and keyword targeting from structured-data enhancement reports. Valid schema and successful live URL tests do not establish indexing or rankings.
+
 Initial public HTML should come from the real application templates, not independent SEO-only copies.
 
 **Why:** The owner wants meaningful content without JavaScript while preserving the existing player, galleries, paths and seasonal behaviour. Separate template copies would diverge.
