@@ -11,10 +11,10 @@ async function setup(page, { failPlayback = false } = {}) {
     };
   }, { failPlayback });
   await page.route(/youtube\.com|googlevideo\.com|global\.citrus3\.com/, route => route.abort());
-  const state = { artist: 'Cher', unavailable: false };
+  const state = { artist: 'Cher', title: 'Christmas Song', unavailable: false };
   await page.route('**/api/radio-metadata', route => route.fulfill({
     json: {
-      current: state.unavailable ? null : { artist: state.artist, title: 'Christmas Song' },
+      current: state.unavailable ? null : { artist: state.artist, title: state.title },
       currentStatus: state.unavailable ? 'unavailable' : 'ready',
       upcoming: [], upcomingStatus: 'ready',
     },
@@ -24,6 +24,67 @@ async function setup(page, { failPlayback = false } = {}) {
   if (await rejectCookies.isVisible()) await rejectCookies.click();
   return state;
 }
+
+for (const width of [1280, 390]) test(`artwork song info matches both fields, updates and navigates at ${width}px`, async ({ page }) => {
+  await page.setViewportSize({ width, height: 900 });
+  const state = await setup(page);
+  state.artist = 'John Legend';
+  state.title = 'Bring Me Love';
+  await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+  await page.locator('.hero-actions').getByRole('button', { name: 'Listen Live', exact: true }).click();
+  const card = page.locator('.now-playing-artwork');
+  const info = card.getByRole('link');
+  await expect(info).toBeVisible();
+  await expect(info).toHaveAttribute('href', '/christmas-artist/478-john-legend-bring-me-love');
+  await expect(info).toHaveAttribute('aria-label', /Bring Me Love.*John Legend/);
+  const frame = await card.boundingBox();
+  const button = await info.boundingBox();
+  expect(button.width).toBeGreaterThanOrEqual(44);
+  expect(button.height).toBeGreaterThanOrEqual(44);
+  expect(button.x).toBeGreaterThan(frame.x + frame.width / 2);
+  expect(button.y).toBeGreaterThan(frame.y + frame.height / 2);
+  expect(button.x + button.width).toBeLessThanOrEqual(frame.x + frame.width);
+  expect(button.y + button.height).toBeLessThanOrEqual(frame.y + frame.height);
+  await info.focus();
+  await page.keyboard.press('Tab');
+  await page.keyboard.press('Shift+Tab');
+  await expect(info).toBeFocused();
+  expect(await info.evaluate(el => getComputedStyle(el).outlineStyle)).toBe('solid');
+  await card.evaluate(el => el.scrollIntoView({ block: 'center' }));
+  fs.mkdirSync('generated-artifacts', { recursive: true });
+  await page.screenshot({ path: `generated-artifacts/artwork-song-info-${width}.jpg` });
+
+  // Same artist, different song must change the destination.
+  state.title = 'What A Wonderful World';
+  await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+  await expect(info).toHaveAttribute('href', '/christmas-artist/415-john-legend-what-a-wonderful-world');
+  // A title belonging to another artist must never produce a link.
+  state.artist = 'Cher';
+  await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+  await expect(info).toHaveCount(0);
+  state.artist = 'John Legend';
+  await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+  await expect(info).toBeVisible();
+  await info.click();
+  await expect(page).toHaveURL(/\/christmas-artist\/415-john-legend-what-a-wonderful-world$/);
+  await expect(page.getByRole('heading', { name: 'What A Wonderful World — John Legend', exact: true })).toBeVisible();
+  await expect(page.getByRole('complementary', { name: 'Santa Radio player' })
+    .getByRole('button', { name: 'Pause Radio', exact: true })).toBeVisible();
+});
+
+test('artwork info is absent for unmatched or unavailable tracks', async ({ page }) => {
+  const state = await setup(page);
+  await page.locator('.hero-actions').getByRole('button', { name: 'Listen Live', exact: true }).click();
+  const card = page.locator('.now-playing-artwork');
+  await expect(card).toBeVisible();
+  await expect(card.getByRole('link')).toHaveCount(0);
+  state.title = 'DJ Play a Christmas Song';
+  await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+  await expect(card.getByRole('link')).toHaveAttribute('href', '/christmas-artist/551-cher-dj-play-a-christmas-song');
+  state.unavailable = true;
+  await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+  await expect(card.getByRole('link')).toHaveCount(0);
+});
 
 test('desktop play reveals artwork on the right, updates artists and glows on hover', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
@@ -51,7 +112,7 @@ test('desktop play reveals artwork on the right, updates artists and glows on ho
   await expect(card.locator('img')).toHaveAttribute('src', '/artist-artwork/santa-fallback.webp');
   state.unavailable = true;
   await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
-  await expect(card).toHaveAttribute('aria-label', 'Santa Radio artwork');
+  await expect(card).toHaveAttribute('aria-label', 'Santa Radio now-playing artwork');
   await page.locator('.hero-actions').getByRole('button', { name: 'Pause Radio' }).click();
   await expect(card).toHaveCount(0);
 });
