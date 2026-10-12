@@ -36,6 +36,7 @@ export function resolvePublicRequest(raw) {
   try { path = decodeURIComponent(url.pathname); } catch { return { status: 400 }; }
   // Never redirect hosts: preview, audio feeds, integrations and API calls stay same-origin.
   const normalized = path.length > 1 ? path.replace(/\/+$/, '') : path;
+  if (/^\/(?:request-names|sign-in|sign-up)(?:\/|$)/.test(normalized)) return { status: 200, noindex: true };
   const messageLink = normalized.match(/^\/personalised-santa-message(?:\/([^/]+))?$/i);
   if (messageLink) {
     if (!messageLink[1] || messageLink[1].toLowerCase() === 'all') {

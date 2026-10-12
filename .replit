@@ -65,3 +65,8 @@ externalPort = 3001
 [postMerge]
 path = "scripts/post-merge.sh"
 timeoutMs = 60000
+
+[userenv]
+
+[userenv.shared]
+SANTA_REQUEST_ADMIN_EMAILS = "admin@santaradio.co.uk"

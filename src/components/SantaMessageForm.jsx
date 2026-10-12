@@ -8,6 +8,8 @@ import useSantaMessageAllowance from './useSantaMessageAllowance.js';
 import useSantaMessageHistory from './useSantaMessageHistory.js';
 import useSantaNames from './useSantaNames.js';
 import { randomSantaExample, santaNamePlaceholder } from '../lib/santaNamePlaceholder.js';
+import { normaliseRequestedName } from '../lib/santaNameRequests.js';
+import './SantaNameRequest.css';
 import './SantaMessageForm.css';
 
 export default function SantaMessageForm({ showDetailLink = true, initialName = '' }) {
@@ -23,6 +25,8 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const [suggesting, setSuggesting] = useState(false);
   const [activeOption, setActiveOption] = useState(-1);
   const requestRef = useRef(null);
+  const nameRequestRef = useRef(null);
+  const [nameRequest, setNameRequest] = useState({ key: '', status: 'idle', message: '' });
   const nameSearch = useSantaNames(name, hasAccess);
   const suggestions = nameSearch.records;
   const verifiedSelectedRecord = selectedRecord && selectedRecord.name === name.trim()
@@ -53,10 +57,16 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
     if (messages.length) resultRef.current?.focus();
     setAudioErrors(previous => Object.fromEntries(messages.map(message => [message.key, previous[message.key] || false])));
   }, [messages]);
-  useEffect(() => () => requestRef.current?.abort(), []);
+  useEffect(() => () => {
+    requestRef.current?.abort();
+    nameRequestRef.current?.abort();
+  }, []);
 
   const updateName = value => {
     if (coolingDown) return;
+    nameRequestRef.current?.abort();
+    nameRequestRef.current = null;
+    setNameRequest({ key: '', status: 'idle', message: '' });
     resumeRadioRef.current = null;
     requestRef.current?.abort();
     requestRef.current = null;
@@ -66,6 +76,42 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
     setSelectedRecord(null);
     setValidation('');
     setActiveOption(-1);
+  };
+  const submitNameRequest = async () => {
+    const requested = normaliseRequestedName(name);
+    if (!requested || nameSearch.loading || nameSearch.error || nameSearch.warning || suggestions.length) return;
+    if (nameRequestRef.current) return;
+    const controller = new AbortController();
+    const requestKey = requested.key;
+    nameRequestRef.current = controller;
+    setNameRequest({ key: requestKey, status: 'pending', message: '' });
+    try {
+      const response = await fetch('/api/name-requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: requested.name }),
+        signal: controller.signal,
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || data.message || 'Santa could not save that request. Please try again.');
+      if (typeof data.message !== 'string' || !data.message.trim()) {
+        throw new Error('Santa’s request desk returned an unexpected reply. Please try again.');
+      }
+      if (nameRequestRef.current === controller && normaliseRequestedName(name)?.key === requestKey) {
+        setNameRequest({ key: requestKey, status: 'success', message: data.message });
+      }
+    } catch (error) {
+      if (nameRequestRef.current === controller && error.name !== 'AbortError' &&
+        normaliseRequestedName(name)?.key === requestKey) {
+        setNameRequest({
+          key: requestKey,
+          status: 'error',
+          message: error.message || 'Santa could not save that request. Please try again.',
+        });
+      }
+    } finally {
+      if (nameRequestRef.current === controller) nameRequestRef.current = null;
+    }
   };
   const selectName = record => {
     updateName(record.name);
@@ -219,6 +265,25 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
               ? 'The full hosted name list could not be checked. Try refreshing the names.'
               : 'No matching recording yet. Try another name.'}
           </p>}
+          {(() => {
+            const requested = normaliseRequestedName(name);
+            const canRequest = !!requested && !nameSearch.loading && !nameSearch.error &&
+              !nameSearch.warning && suggestions.length === 0;
+            const visibleRequest = canRequest && (nameRequest.key === requested.key ? nameRequest : null);
+            return canRequest ? <div className="name-request">
+              <button className="name-request-button" type="button"
+                onClick={submitNameRequest}
+                disabled={visibleRequest?.status === 'pending'}
+                aria-describedby={visibleRequest && visibleRequest.status !== 'idle' ? `${inputId}-request-status` : undefined}>
+                {visibleRequest?.status === 'pending' ? 'Sending request…'
+                  : visibleRequest?.status === 'error' ? 'Retry name request'
+                    : 'Request this name'}
+              </button>
+              {visibleRequest?.status === 'pending' && <p className="name-request-note" id={`${inputId}-request-status`} role="status">Sending this request to Santa’s list. This won’t create a recording or use your message allowance.</p>}
+              {visibleRequest?.status === 'success' && <p className="name-request-note success" id={`${inputId}-request-status`} role="status">{visibleRequest.message}</p>}
+              {visibleRequest?.status === 'error' && <p className="name-request-note" id={`${inputId}-request-status`} role="alert">{visibleRequest.message} You can retry when you’re ready.</p>}
+            </div> : null;
+          })()}
           {validation && <p className="message-validation" id={`${inputId}-error`} role="alert">{validation}</p>}
           <button className="btn-red message-submit" type="submit" disabled={busy || allowance.pending || coolingDown || searchPending}>{busy ? 'Santa Recording...' : 'Create message'} <span aria-hidden="true">→</span></button>
           {busy && <p role="status" className="message-name-hint">Santa is recording a personal message for you. Do hold on one moment...</p>}

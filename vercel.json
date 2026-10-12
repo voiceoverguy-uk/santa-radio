@@ -15,6 +15,7 @@
     }
   },
   "routes": [
+    { "src": "/api/__clerk/(.*)", "dest": "/api/__clerk/[...path]" },
     { "src": "/artist-artwork/(.*)", "headers": {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",

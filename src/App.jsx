@@ -25,6 +25,7 @@ import './north-pole-glow.css';
 import NotFound from './seo/NotFound.jsx';
 import StaticPageSeo from './seo/StaticPageSeo.jsx';
 import MarketingConsent from './components/MarketingConsent.jsx';
+import SantaStaffShell from './components/SantaStaffShell.jsx';
 
 function App({ Router = BrowserRouter, routerProps = {} }) {
   return (
@@ -44,6 +45,9 @@ function App({ Router = BrowserRouter, routerProps = {} }) {
         <Route path="/christmas-karaoke-lyrics/:slug" element={<KaraokeLyrics />} />
         <Route path="/artist" element={<ArtistDetail />} />
         <Route path="/free-santa-message" element={<FreeSantaMessage />} />
+        <Route path="/request-names" element={<SantaStaffShell mode="admin" />} />
+        <Route path="/sign-in/*" element={<SantaStaffShell mode="sign-in" />} />
+        <Route path="/sign-up/*" element={<SantaStaffShell mode="sign-up" />} />
         <Route path="/submit-a-song" element={<SubmitASong />} />
         <Route path="/links" element={<Links />} />
         <Route path="/santa-stories" element={<SantaStories />} />

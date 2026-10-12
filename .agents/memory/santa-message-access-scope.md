@@ -10,9 +10,15 @@ The owner wants an adult's first name, surname and email submitted through the s
 
 This is a signup-first, tab-session convenience flow, not authentication, email ownership verification or proof of double opt-in. Message access does not establish Santa Radio news or tracker-reminder consent.
 
-**Why:** The approved scope deliberately excludes accounts, secure backend authorisation, marketing enrolment and email automation changes.
+**Why:** The approved visitor-access scope deliberately excludes accounts, secure backend authorisation, marketing enrolment and email automation changes.
 
 **How to apply:** Do not add API credentials or connected-service changes to replace the supplied public form without a new request. Confirm owner approval before submitting real test contacts or changing Brevo autoresponders, list settings or double-opt-in configuration.
+
+Staff-only sign-in for the private missing-name request ledger is separate from this visitor-access flow.
+
+**Why:** The owner approved protected staff access to requested names, without asking visitors to create accounts or attaching adult contact details to their name requests.
+
+**How to apply:** Keep staff authentication confined to the private ledger and staff sign-in pages. Preserve the existing adult Brevo step for the public MP3 maker.
 
 The uploaded Brevo embed can differ from the current hosted form's required fields. Inspect the live form's field requirements, not just its CORS headers or JavaScript submission protocol.
 

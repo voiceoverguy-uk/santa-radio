@@ -1,0 +1,10 @@
+.santa-staff-shell { min-height: 62dvh; display: grid; place-items: center; padding: 58px 20px; background: radial-gradient(ellipse at 50% 0%, #244d39 0%, #102b20 67%); color: #f6ecd8; }
+.santa-staff-loading { width: min(100%, 490px); padding: 42px clamp(22px, 5vw, 52px); text-align: center; background: #0c2a20; border: 1px solid #d4af3760; border-radius: 18px; box-shadow: 0 18px 50px #061c1740; }
+.santa-staff-logo { width: min(260px, 72%); height: auto; display: block; margin: 0 auto 28px; }
+.santa-staff-loading h1 { margin: 0 0 12px; color: #ead39a; font: 400 clamp(1.4rem, 5vw, 2rem)/1.35 'Cinzel', serif; }
+.santa-staff-loading p { color: #d0dacd; font-size: .92rem; line-height: 1.7; margin: 0 auto 18px; }
+.santa-staff-loading a, .santa-staff-loading button { color: #ead39a; }
+.santa-staff-loading .santa-staff-wait { width: 32px; height: 32px; margin: 20px auto 0; border: 1px solid #d4af3760; border-top-color: #ead39a; border-radius: 50%; animation: santa-staff-turn 1.2s linear infinite; }
+.santa-staff-shell .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+@keyframes santa-staff-turn { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .santa-staff-loading .santa-staff-wait { animation: none; } }

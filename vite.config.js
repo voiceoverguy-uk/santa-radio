@@ -5,6 +5,8 @@ import { fileURLToPath } from 'node:url';
 import radioMetadata from './server/radio-metadata.js';
 import santaMessage from './server/santa-message.js';
 import santaNames from './server/santa-names.js';
+import nameRequests from './server/name-requests.js';
+import { CLERK_PROXY_PATH, clerkProxyMiddleware } from './server/middlewares/clerkProxyMiddleware.js';
 import { trackerPageHtml, isTrackerPreview } from './server/tracker-html.js';
 import artworkFeedPlugin from './scripts/artwork-feed-plugin.mjs';
 import publicPagesPlugin from './server/public-pages-plugin.js';
@@ -26,11 +28,15 @@ const trackerMetadataPlugin = {
 const metadataPlugin = {
   name: 'radio-metadata',
   configureServer(server) {
+    server.middlewares.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
+    server.middlewares.use('/api/name-requests', nameRequests);
     server.middlewares.use('/api/radio-metadata', radioMetadata);
     server.middlewares.use('/api/santa-message', santaMessage);
     server.middlewares.use('/api/santa-names', santaNames);
   },
   configurePreviewServer(server) {
+    server.middlewares.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
+    server.middlewares.use('/api/name-requests', nameRequests);
     server.middlewares.use('/api/radio-metadata', radioMetadata);
     server.middlewares.use('/api/santa-message', santaMessage);
     server.middlewares.use('/api/santa-names', santaNames);

@@ -6,6 +6,8 @@ import { fileURLToPath } from 'node:url';
 import radioMetadata from './server/radio-metadata.js';
 import santaMessage from './server/santa-message.js';
 import santaNames from './server/santa-names.js';
+import nameRequests from './server/name-requests.js';
+import { CLERK_PROXY_PATH, clerkProxyMiddleware } from './server/middlewares/clerkProxyMiddleware.js';
 import { trackerPageHtml, isTrackerPreview } from './server/tracker-html.js';
 import { artworkHeaders } from './server/artwork-feed.js';
 import { resolvePublicRequest } from './src/seo/routes.js';
@@ -24,6 +26,7 @@ const types = {
   '.pdf': 'application/pdf',
 };
 
+const clerkProxy = clerkProxyMiddleware();
 const server = createServer(async (req, res) => {
   try {
     let pathname;
@@ -31,6 +34,8 @@ const server = createServer(async (req, res) => {
     catch { res.writeHead(400).end('Invalid path'); return; }
     artworkHeaders(req, res, () => {});
     if (res.writableEnded) return;
+    if (pathname.startsWith(`${CLERK_PROXY_PATH}/`)) return clerkProxy(req, res, () => res.writeHead(404).end());
+    if (pathname === '/api/name-requests') return nameRequests(req, res);
     if (pathname === '/api/radio-metadata') return await radioMetadata(req, res);
     if (pathname === '/api/santa-message') return await santaMessage(req, res);
     if (pathname === '/api/santa-names') return await santaNames(req, res);
@@ -44,7 +49,7 @@ const server = createServer(async (req, res) => {
       const route = resolvePublicRequest(req.url);
       if (route.location) { res.writeHead(route.status, { Location: route.location }); res.end(); return; }
       if (route.noindex || route.status !== 200) res.setHeader('X-Robots-Tag', 'noindex, follow');
-      if (route.status !== 200 || pathname === '/artist' || pathname === '/santa-tracker') {
+      if (route.status !== 200 || route.noindex || pathname === '/artist' || pathname === '/santa-tracker') {
         const { render } = await import('./dist/server/entry-server.js');
         const body = publicPageHtml(await readFile(resolve(root, 'server/shell.html'), 'utf8'), render(req.url));
         res.writeHead(route.status, { 'Content-Type': types['.html'], 'Cache-Control': 'no-cache', 'Content-Length': Buffer.byteLength(body) });

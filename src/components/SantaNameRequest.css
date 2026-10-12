@@ -1,0 +1,8 @@
+.name-request { margin: 2px 0 18px; }
+.name-request-button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 44px; padding: 10px 16px; border: 1px solid #d4af3780; border-radius: 7px; background: #153a2b; color: #f0d99d; font: inherit; font-size: .82rem; cursor: pointer; transition: transform .18s ease, opacity .18s ease; }
+.name-request-button:hover:not(:disabled) { background: #1b4936; transform: translateY(-1px); }
+.name-request-button:disabled { opacity: .68; cursor: wait; }
+.name-request-note { margin: 9px 0 0; font-size: .8rem; line-height: 1.6; color: #c9d6c6; }
+.name-request-note[role="alert"] { color: #ffc5b8; }
+.name-request-note.success { color: #e7d59e; }
+.name-request :is(button,a):focus-visible { outline: 3px solid #e7c877; outline-offset: 4px; }
