@@ -193,7 +193,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
               }
               if (event.key === 'Enter' && suggesting && activeOption >= 0 && suggestions[activeOption]) { event.preventDefault(); selectName(suggestions[activeOption]); }
             }}
-            placeholder={santaNamePlaceholder(exampleName, nameSearch.hostedCount)} autoComplete="off" autoCapitalize="words" spellCheck={false} aria-invalid={!!validation} aria-describedby={`${inputId}-hint${validation ? ` ${inputId}-error` : ''}`} />
+            placeholder={santaNamePlaceholder(exampleName)} autoComplete="off" autoCapitalize="words" spellCheck={false} aria-invalid={!!validation} aria-describedby={`${inputId}-hint${validation ? ` ${inputId}-error` : ''}`} />
           {suggesting && suggestions.length > 0 && <ul className="message-suggestions" id={`${inputId}-options`} role="listbox" aria-label="Available names">
             {suggestions.map((suggestion, index) => <li key={suggestion.id} id={`${inputId}-option-${index}`} role="option" aria-selected={index === activeOption}
               onPointerDown={event => event.preventDefault()} onClick={() => selectName(suggestion)}>{suggestion.name}</li>)}

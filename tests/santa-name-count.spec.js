@@ -16,18 +16,18 @@ test('hosted total appears before typing, stays independent of matches and refre
   await expect(page.getByText('274 names available to download', { exact: true })).toBeVisible();
   await expect(page.getByLabel('Child’s first name')).toHaveValue('');
   const input = page.getByLabel('Child’s first name');
-  await expect(input).toHaveAttribute('placeholder', /^Start typing, eg\. [A-Za-z]+, over 274 names available$/);
+  await expect(input).toHaveAttribute('placeholder', /^Start typing, eg\. [A-Za-z]+$/);
   const example = (await input.getAttribute('placeholder')).match(/eg\. ([^,]+)/)[1];
   expect(popularSantaExamples).toContain(example);
   total = 275;
   await page.clock.fastForward(75_000);
   await expect(page.getByText('275 names available to download', { exact: true })).toBeVisible();
-  await expect(input).toHaveAttribute('placeholder', `Start typing, eg. ${example}, over 275 names available`);
+  await expect(input).toHaveAttribute('placeholder', `Start typing, eg. ${example}`);
   await page.getByLabel('Child’s first name').fill('Dem');
   await expect(page.getByRole('option', { name: 'Demrie', exact: true })).toBeVisible();
   await expect(page.getByText('275 names available to download', { exact: true })).toBeVisible();
   expect(renders).toBe(0);
-  await expect(input).toHaveAttribute('placeholder', `Start typing, eg. ${example}, over 275 names available`);
+  await expect(input).toHaveAttribute('placeholder', `Start typing, eg. ${example}`);
 });
 
 test('unavailable inventory does not invent a zero total and a retry restores the count', async ({ page }) => {
@@ -53,14 +53,14 @@ test('large totals fit on mobile and genuine empty inventory displays zero', asy
   } }));
   await openMessageDesk(page, { mockNames: false });
   await expect(page.getByText('12,345 names available to download', { exact: true })).toBeVisible();
-  await expect(page.getByLabel('Child’s first name')).toHaveAttribute('placeholder', /over 12,345 names available$/);
+  await expect(page.getByLabel('Child’s first name')).toHaveAttribute('placeholder', /^Start typing, eg\. [A-Za-z]+$/);
   const placeholderFits = await page.getByLabel('Child’s first name').evaluate((input, names) => {
     const style = getComputedStyle(input), placeholder = getComputedStyle(input, '::placeholder');
     const canvas = document.createElement('canvas'), context = canvas.getContext('2d');
     context.font = `${placeholder.fontWeight} ${placeholder.fontSize} ${placeholder.fontFamily}`;
     const width = input.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
-    return names.every(name =>
-      context.measureText(`Start typing, eg. ${name}, over 12,345 names available`).width <= width + 0.5);
+    return parseFloat(placeholder.fontSize) >= 14 && names.every(name =>
+      context.measureText(`Start typing, eg. ${name}`).width <= width + 0.5);
   }, popularSantaExamples);
   expect(placeholderFits).toBe(true);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -76,7 +76,7 @@ test('the random example is chosen on page load, not when searching or refreshin
   } }));
   await openMessageDesk(page, { mockNames: false });
   const input = page.getByLabel('Child’s first name');
-  await expect(input).toHaveAttribute('placeholder', 'Start typing, eg. Sadie, over 826 names available');
+  await expect(input).toHaveAttribute('placeholder', 'Start typing, eg. Sadie');
   await input.fill('Sad');
-  await expect(input).toHaveAttribute('placeholder', 'Start typing, eg. Sadie, over 826 names available');
+  await expect(input).toHaveAttribute('placeholder', 'Start typing, eg. Sadie');
 });

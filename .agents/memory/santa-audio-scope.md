@@ -63,3 +63,9 @@ Preparing reusable, lossless shared source clips is acceptable; pre-creating per
 **Why:** The on-demand requirement is about assembling personalised messages at request time, not repeating invariant source processing. Lossless shared preparation reduces CPU and memory without creating a completed-message catalogue.
 
 **How to apply:** Optimise invariant source processing separately from name selection and mixing. Validate waveform equivalence before lossy MP3 encoding; encoded file hashes alone are not an audio-quality comparison.
+
+Missing-name request confirmations use “check back in a week” before 1 December, then “check back in a couple of days” from 1 December onwards.
+
+**Why:** The owner explicitly requested this annual change in the suggested return interval, while saying visitors should check whether the name is available.
+
+**How to apply:** Treat this as a seasonal invitation to check availability, not a guarantee that a recording will be created by that date.

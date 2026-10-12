@@ -12,11 +12,11 @@ test('all 200 supplied entries can be randomly chosen without filtering by recor
   assert.equal(popularSantaExamples.filter(name => name === 'Olivia').length, 2);
 });
 
-test('placeholder uses the live total, requested wording and British number formatting', () => {
-  assert.equal(santaNamePlaceholder('Olivia', 826), 'Start typing, eg. Olivia, over 826 names available');
-  assert.equal(santaNamePlaceholder('Freya', 12345), 'Start typing, eg. Freya, over 12,345 names available');
-  assert.equal(santaNamePlaceholder('Harry', 1), 'Start typing, eg. Harry, over 1 name available');
-  assert.equal(santaNamePlaceholder('Jack', 0), 'Start typing, eg. Jack, 0 names available');
+test('placeholder shows a name example without repeating any inventory total', () => {
+  assert.equal(santaNamePlaceholder('Olivia', 826), 'Start typing, eg. Olivia');
+  assert.equal(santaNamePlaceholder('Freya', 12345), 'Start typing, eg. Freya');
+  assert.equal(santaNamePlaceholder('Harry', 1), 'Start typing, eg. Harry');
+  assert.equal(santaNamePlaceholder('Jack', 0), 'Start typing, eg. Jack');
   for (const count of [null, undefined, -1, '826', NaN]) {
     assert.equal(santaNamePlaceholder('Jack', count), 'Start typing, eg. Jack');
   }

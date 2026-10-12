@@ -29,9 +29,9 @@
 .message-name-input[aria-invalid="true"] { border-color: #eea49a; }
 .message-name-hint { display: block; color: #becdbc; font-size: .76rem; margin: 10px 0 18px; line-height: 1.6; }
 .message-name-count { color: #ead6a6; font-size: .85rem; font-weight: 600; }
-.message-name-input::placeholder { font-size: .75rem; }
+.message-name-input::placeholder { font-size: .9375rem; }
 @media (max-width: 480px) {
-  .message-name-input::placeholder { font-size: .578125rem; }
+  .message-name-input::placeholder { font-size: .875rem; }
 }
 .message-search-status, .message-search-notice { color: #d0dacd; font-size: .8rem; line-height: 1.6; margin: 10px 0 16px; }
 .message-search-notice { padding: 13px 15px; border: 1px solid #d4af3750; border-radius: 8px; background: #14382a; }
