@@ -33,6 +33,9 @@ export default function Home() {
             <h1 className="hero-title">Live from The North Pole,<span>Santa Radio</span></h1>
             <p className="hero-description">Listen live to Santa Radio, discover festive favourites and share a little Christmas magic with the whole family.</p>
             <div className="hero-actions"><Link to="/free-santa-message" className="btn-gold">FREE Santa Message <span aria-hidden="true">↗</span></Link><RadioButton className="btn-red" /></div>
+            <a className="app-store-badge" href="https://apps.apple.com/gb/app/santa-radio/id1021183593" target="_blank" rel="noopener noreferrer" aria-label="Download Santa Radio on the App Store (opens in a new tab)">
+              <img src="/images/download-on-the-app-store.svg" width="149.58" height="50" alt="" />
+            </a>
             <p className="hero-note">The World’s Best Christmas Radio Station · All year round</p>
             <div id="christmas-countdown" className="hero-countdown">
               <Countdown />
