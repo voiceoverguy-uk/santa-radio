@@ -29,6 +29,23 @@ test('five supplied portraits match the existing songs and versioned feed', asyn
   assert.equal(mapping.artistArtwork('Rosemary Clooney'), mapping.fallbackArtwork);
 });
 
+test('Sia replacement is shared across her songs and invalidates cached artwork', async () => {
+  const current = await buildArtworkFeed(mapping);
+  const previous = await buildArtworkFeed({
+    ...mapping,
+    artistArtwork: artist => mapping.normalizeArtistName(artist) === 'sia'
+      ? '/artist-artwork/sia.webp' : mapping.artistArtwork(artist),
+  });
+  assert.equal(mapping.artistArtwork('Sia'), '/artist-artwork/sia-festive.webp');
+  assert.equal(current.artists.sia.path, mapping.artistArtwork('Sia'));
+  assert.notEqual(current.artists.sia.version, previous.artists.sia.version);
+  assert.notEqual(current.version, previous.version);
+  const songs = JSON.parse(await readFile('src/data/songs.json', 'utf8'));
+  const siaSongs = songs.filter(song => mapping.normalizeArtistName(song.artist) === 'sia');
+  assert.ok(siaSongs.length > 0);
+  for (const song of siaSongs) assert.equal(mapping.artistArtwork(song.artist), current.artists.sia.path);
+});
+
 test('feed covers every mapping and approved alias without changing website URLs', async () => {
   const feed = await buildArtworkFeed(mapping);
   assert.equal(feed.schemaVersion, 1);

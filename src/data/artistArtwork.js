@@ -139,7 +139,7 @@ export const artistPortraits = Object.freeze({
   'frank sinatra': 'frank-sinatra',
   'shakin stevens': 'shakin-stevens',
   'elvis presley': 'elvis-presley',
-  'sia': 'sia',
+  'sia': 'sia-festive',
   'jose feliciano': 'jose-feliciano',
   'holly johnson': 'holly-johnson',
   'frankie goes to hollywood': 'holly-johnson',
