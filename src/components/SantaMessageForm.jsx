@@ -2,7 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useRadio } from './RadioProvider.jsx';
 import SantaMessageAccessForm from './SantaMessageAccessForm.jsx';
-import SantaMessageShare from './SantaMessageShare.jsx';
+import SantaMessageShare, { SantaGreetingShare } from './SantaMessageShare.jsx';
 import { useSantaMessageAccess } from './SantaMessageAccessProvider.jsx';
 import useSantaMessageAllowance from './useSantaMessageAllowance.js';
 import useSantaMessageHistory from './useSantaMessageHistory.js';
@@ -241,6 +241,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
           }}>Reload recording</button></div>}
           <a className="message-download" href={message.url} download={message.downloadName}>Download {message.name}’s greeting <span aria-hidden="true">↓</span></a>
           <p className="message-name-hint">On iPhone, choose Share → Save to Files to keep the MP3.</p>
+          <SantaGreetingShare message={message} />
         </div>)}
         <p className="service-notice">Free to create and download here. The message is not sent by email.</p>
         {!sessionRemembered && <p className="message-name-hint" role="status">Your browser can’t remember access. The desk stays open while you browse, but refreshing this tab may ask for your details again.</p>}

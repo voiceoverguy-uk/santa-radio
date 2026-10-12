@@ -46,11 +46,11 @@ Preserve the outro's supplied opening padding.
 
 **How to apply:** Do not automatically trim leading silence from the outro when mixing or replacing recordings.
 
-The user chose two free messages before a 30-minute wait.
+Keep two free messages before a 10-minute wait.
 
-**Why:** When asked whether the allowance before the wait should be two or three messages, the user selected “Two messages”.
+**Why:** The user selected “Two messages”; the current approved sharing scope specifies preserving the subsequently shortened 10-minute wait.
 
-**How to apply:** Use two messages and a 30-minute wait when planning or implementing the free-message allowance; do not substitute three.
+**How to apply:** Preserve two messages and a 10-minute wait when extending the maker; sharing or downloading an existing greeting must not consume allowance.
 
 Do not tell visitors about the limit until they have created their second message. Keep both generated greetings visible and downloadable, rather than replacing the first when they choose or create another.
 

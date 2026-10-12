@@ -8,6 +8,49 @@ const shareData = {
   url: shareUrl,
 };
 
+// File sharing is deliberately separate from the public-maker invitation.
+// Keep this synchronous until navigator.share so the click's activation survives.
+export function SantaGreetingShare({ message }) {
+  const [busy, setBusy] = useState(false);
+  const [status, setStatus] = useState('');
+  const [failed, setFailed] = useState(false);
+  const sharing = useRef(false);
+
+  const share = async () => {
+    if (sharing.current) return;
+    sharing.current = true;
+    setBusy(true);
+    setStatus('');
+    setFailed(false);
+    try {
+      const file = new File([message.blob], message.downloadName, { type: 'audio/mpeg' });
+      const data = { files: [file] };
+      if (typeof navigator.share !== 'function' ||
+          typeof navigator.canShare !== 'function' || !navigator.canShare(data)) {
+        setStatus('This browser can’t share MP3 files directly. Use the download link above, then attach the MP3 in your messaging app.');
+        return;
+      }
+      await navigator.share(data);
+      setStatus('Greeting passed to your chosen sharing app.');
+    } catch (error) {
+      if (error.name !== 'AbortError') {
+        setFailed(true);
+        setStatus('Your greeting couldn’t be shared. Please try again, or use the download link above and attach the MP3 in your messaging app.');
+      }
+    } finally {
+      sharing.current = false;
+      setBusy(false);
+    }
+  };
+
+  return <div className="message-share">
+    <button className="message-retry" type="button" onClick={share} disabled={busy}>
+      {busy ? 'Opening greeting share options…' : 'Share this greeting'}
+    </button>
+    {status && <p className="message-share-status" role={failed ? 'alert' : 'status'}>{status}</p>}
+  </div>;
+}
+
 export default function SantaMessageShare() {
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState('');

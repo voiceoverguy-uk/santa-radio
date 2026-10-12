@@ -17,7 +17,7 @@ export default function useSantaMessageHistory() {
   const remember = (recording, blob) => {
     const url = URL.createObjectURL(blob);
     const next = [...messages, {
-      ...recording, key: url, url,
+      ...recording, key: url, url, blob,
     }].slice(-2);
     for (const previous of messages) {
       if (!next.includes(previous)) URL.revokeObjectURL(previous.url);
