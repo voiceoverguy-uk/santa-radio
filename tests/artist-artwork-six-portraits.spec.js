@@ -6,7 +6,7 @@ import songs from '../src/data/songs.json' with { type: 'json' };
 
 const portraits = [
   ['Anne-Marie', 'anne-marie'],
-  ['Tom Jones & C Matthews', 'tom-jones-and-cerys-matthews'],
+  ['Tom Jones & Cerys Matthews', 'tom-jones-and-cerys-matthews'],
   ['Jona Lewie', 'jona-lewie', '8588b58ca205194d14827259e2d611dfd94d91bada8869e949bcd51763b38a93'],
   ['Paul McCartney', 'paul-mc-cartney', '62645885c221ca60ab9300861c4a0b1959e50e20c9f38101d5750c495f701499'],
   ['Michael Buble', 'michael-buble', 'd6ad0433bb1179fa563f1a494a30be02eadfaf14ddb70851c626cceb5b0c5262'],
@@ -38,6 +38,11 @@ for (const [artist, filename, oldVersion] of portraits) {
     const image = page.locator('.song-artwork-img');
     await expect(image).toHaveAttribute('src', path);
     await expect.poll(() => image.evaluate(el => el.complete && el.naturalWidth === 512 && el.naturalHeight === 512)).toBe(true);
+    if (artist === 'Tom Jones & Cerys Matthews') {
+      await expect(page.getByRole('heading', { name: `${song.song} — ${artist}`, exact: true })).toBeVisible();
+      await expect(page.locator('main')).not.toContainText('Tom Jones & C Matthews');
+      await expect(page).toHaveTitle(/Tom Jones & Cerys Matthews/);
+    }
   });
 }
 

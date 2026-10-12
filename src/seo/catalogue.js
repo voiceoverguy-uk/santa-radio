@@ -47,7 +47,7 @@ const entityId = name => `${ORIGIN}/#performer-${encodeURIComponent(name.toLower
 // Music-only evidence decisions: docs/editorial/music-credit-verification.md.
 // Do not change photo-subject classification or rewrite supplied catalogue credits.
 const verifiedMusicCredits = {
-  'Tom Jones & C Matthews': [['Person', 'Tom Jones'], ['Person', 'Cerys Matthews']],
+  'Tom Jones & Cerys Matthews': [['Person', 'Tom Jones'], ['Person', 'Cerys Matthews']],
   'Madison Fayre': [['MusicGroup', 'Madison Fayre']],
   'X-mas Donkey & The Glittering Balls': [['MusicGroup', 'X-mas Donkey & The Glittering Balls']],
   'Paul Burling & Joseph Bell': [['Person', 'Paul Burling'], ['Person', 'Joseph Bell']],
