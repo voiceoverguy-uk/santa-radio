@@ -20,6 +20,12 @@ Staff-only sign-in for the private missing-name request ledger is separate from 
 
 **How to apply:** Keep staff authentication confined to the private ledger and staff sign-in pages. Preserve the existing adult Brevo step for the public MP3 maker.
 
+The missing-name FTP text file is a private additional copy, not a replacement for the database or protected request ledger.
+
+**Why:** The owner explicitly chose “Keep /request-names and add a private FTP copy”.
+
+**How to apply:** Preserve the existing request storage and staff page. Keep exports separate from publicly readable now/next song feeds.
+
 The uploaded Brevo embed can differ from the current hosted form's required fields. Inspect the live form's field requirements, not just its CORS headers or JavaScript submission protocol.
 
 **Why:** Read-only inspection found a required child date-of-birth field in the hosted form that was absent from the supplied adult-contact-only embed; mocked acceptance tests could not reveal that mismatch.
