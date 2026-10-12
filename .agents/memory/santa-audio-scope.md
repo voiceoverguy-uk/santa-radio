@@ -8,6 +8,12 @@ The owner-hosted name folder can fail as a directory page while individual WAV U
 
 **How to apply:** Verify individual audio and inventory discovery separately. Use an owner-uploaded standalone listing beside the recordings; do not change the external WordPress installation or request FTP credentials to fix discovery.
 
+The user wants the number of names on FTP ready to go, displayed as “(number) names available to download.”
+
+**Why:** The user asked for the hosted-library size beside the name search.
+
+**How to apply:** Count entries in the hosted recording inventory, not the combined hosted and bundled catalogue. Do not substitute a zero total when the hosted list cannot be read.
+
 The on-demand audio service must be portable to Vercel, not merely functional in Replit preview. Do not assume system-installed audio tools or source recordings are available in an external serverless runtime.
 
 **Why:** Replit's preview and the Vercel deployment have different routing, file inclusion and executable availability; preview success alone does not establish that visitors can generate an MP3.

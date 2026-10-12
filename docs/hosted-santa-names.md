@@ -31,6 +31,12 @@ merge different pronunciation recordings.
 
 - The validated inventory is cached for 60 seconds per server process; failures
   are cached for 10 seconds to avoid repeatedly hitting a broken host.
+- The form shows “N names available to download”, counting only hosted inventory
+  entries, not bundled recordings or filtered suggestions. It loads before
+  typing and refreshes every 75 seconds while the page is visible, or when
+  returning to the tab. If the list is unavailable, the total is unavailable,
+  not zero. Counting reads the inventory only; it does not download WAVs or
+  create greetings.
 - Searches are debounced and superseded responses discarded. Results contain
   only name identifiers, display labels and safe download filenames.
 - Existing bundled recordings remain available if the hosted index fails, with

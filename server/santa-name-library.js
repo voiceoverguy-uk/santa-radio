@@ -97,7 +97,8 @@ export function createNameLibrary({ fetcher = fetch, now = Date.now } = {}) {
       const matches = prefix ? [...records.values()].filter(record =>
         [record.name, record.id, ...(record.aliases || [])].some(name => key(name).startsWith(prefix))) : [];
       return { records: matches.sort((a, b) => a.name.localeCompare(b.name, 'en-GB')).slice(0, 20)
-        .map(({ id, name, downloadName }) => ({ id, name, downloadName })), warning };
+        .map(({ id, name, downloadName }) => ({ id, name, downloadName })),
+        hostedCount: warning ? null : hosted.length, warning };
     },
     async resolve(input) {
       if (typeof input !== 'string' || !ID.test(input)) return null;

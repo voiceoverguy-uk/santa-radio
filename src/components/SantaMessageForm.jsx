@@ -157,6 +157,11 @@ export default function SantaMessageForm({ showDetailLink = true }) {
         {!hasAccess ? <SantaMessageAccessForm /> : <>
         <h3 ref={makerHeadingRef} tabIndex={-1}>Download your free Santa greeting</h3>
         <p className="form-desc">Names are being added to Santa's list, so make your selection and press Create message.</p>
+        <p className="message-name-hint message-name-count" role="status">
+          {nameSearch.hostedCount !== null
+            ? `${nameSearch.hostedCount.toLocaleString('en-GB')} ${nameSearch.hostedCount === 1 ? 'name' : 'names'} available to download`
+            : nameSearch.loading ? 'Checking how many names are available…' : 'Name total temporarily unavailable.'}
+        </p>
         {coolingDown ? <div className="message-wait">
           <p role="status">You’ve created your two free Santa messages for now. To generate more, please wait 30 minutes. Why not enjoy Christmas music while you wait?</p>
           <p className="message-countdown">More messages in <span role="timer" aria-live="off">{countdown}</span></p>

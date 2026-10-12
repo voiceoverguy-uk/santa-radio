@@ -17,6 +17,10 @@ test('hosted inventory, display names, exact filenames and aliases are verified'
   const found = await library.search(' de ');
   assert.deepEqual(found.records, [{ id: 'demrie', name: 'Demrie', downloadName: 'Santa-message-for-Demrie.mp3' }]);
   assert.equal(found.warning, null);
+  assert.equal(found.hostedCount, 1, 'Only hosted recordings count, not the 13 bundled names.');
+  const initial = await library.search('');
+  assert.equal(initial.hostedCount, 1);
+  assert.deepEqual(initial.records, [], 'The total is available before typing a name.');
   assert.equal((await library.resolve('demrie')).source, 'hosted');
   assert.equal(await library.resolve('../../outside'), null);
   assert.equal(await library.resolve('https://evil.test/audio.wav'), null);
@@ -36,11 +40,13 @@ test('cache deduplicates requests, refreshes new names after a minute and caches
   assert.equal((await library.search('flora')).records.length, 0);
   now = 60_001;
   assert.equal((await library.search('flora')).records[0].name, 'Flora');
+  assert.equal((await library.search('')).hostedCount, 2);
   assert.equal(calls, 2);
   now += 60_001;
   fail = true;
   const unavailable = await library.search('flora');
   assert.match(unavailable.warning, /hosted name list is unavailable/);
+  assert.equal(unavailable.hostedCount, null, 'An outage must not look like zero names.');
   assert.deepEqual(unavailable.records, []);
   assert.equal((await library.search('erin')).records[0].id, 'erin');
   assert.equal((await library.resolve('erin')).id, 'erin');
@@ -50,6 +56,18 @@ test('cache deduplicates requests, refreshes new names after a minute and caches
   fail = false;
   assert.equal((await library.search('flora')).warning, null);
   assert.equal(calls, 4);
+});
+
+test('hosted count includes all inventory entries, not only the filtered or capped search results', async () => {
+  const library = createNameLibrary({ fetcher: async () => response(manifest(
+    Array.from({ length: 25 }, (_, i) => ({ id: `anna-${i}`, name: 'Anna', file: `anna-${i}.wav` })),
+  )) });
+  const results = await library.search('anna');
+  assert.equal(results.records.length, 20);
+  assert.equal(results.hostedCount, 25);
+  assert.equal((await library.search('not-recorded')).hostedCount, 25);
+  const empty = createNameLibrary({ fetcher: async () => response(manifest([])) });
+  assert.equal((await empty.search('')).hostedCount, 0);
 });
 
 test('hosted name overrides local only while inventory is valid', async () => {

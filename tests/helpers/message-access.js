@@ -23,7 +23,7 @@ export async function openMessageDesk(page, { mockNames = true } = {}) {
     const query = new URL(route.request().url()).searchParams.get('q').trim().toLowerCase();
     return route.fulfill({ json: {
       records: santaNames.filter(name => name.toLowerCase().startsWith(query)).map(findSantaMessage),
-      warning: null,
+      hostedCount: 0, warning: null,
     } });
   });
   await page.goto('/free-santa-message');
