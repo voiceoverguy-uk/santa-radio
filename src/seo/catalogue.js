@@ -108,6 +108,43 @@ export function pageMetadata({ path, title, description, image = brandImage, ima
     ...nodes,
   ] };
 }
+export function homeMetadata() {
+  return pageMetadata({
+    path: '/',
+    title: 'Santa Radio | Christmas Radio & Online Christmas Music',
+    description: 'Listen to Christmas radio and online Christmas music 24/7 on Santa Radio, hosted by the UK’s Voice of Santa. Enjoy festive favourites all year round.',
+  });
+}
+
+export const appsBreadcrumbs = [['Home', '/'], ['Apps', '/apps']];
+
+export function appsMetadata(apps) {
+  const url = absolute('/apps');
+  return pageMetadata({
+    path: '/apps',
+    title: 'Free Christmas Apps | Santa Radio',
+    description: 'Explore Santa Radio’s free Christmas apps, including live Christmas music, Santa messages and festive games. Find iOS and Amazon download links.',
+    collection: true,
+    crumbs: appsBreadcrumbs,
+    // Catalogue the apps actually shown. SoftwareApplication rich results need
+    // verified, visible ratings/reviews; do not fabricate these or emit an
+    // incomplete rich-result candidate from the legacy feature copy.
+    nodes: [{
+      '@type': 'ItemList',
+      '@id': `${url}#list`,
+      name: 'Santa Radio Christmas apps',
+      numberOfItems: apps.length,
+      itemListElement: apps.map((app, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: app.title,
+        url: `${url}#${app.id}`,
+        description: (app.subtitle || app.alt).replace(/\s+/g, ' ').trim(),
+        image: absolute(app.image),
+      })),
+    }],
+  });
+}
 export function songMetadata(song) {
   const path = songPath(song), url = absolute(path), artist = performers(song);
   return pageMetadata({ path, title: `${song.song} — ${song.artist} | Santa Radio`, description: songDescription(song), image: artistArtwork(song.artist), imageAlt: artworkAlt(song),

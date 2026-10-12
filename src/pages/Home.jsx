@@ -1,4 +1,5 @@
-import { Helmet } from 'react-helmet-async';
+import PageSeo from '../seo/PageSeo.jsx';
+import { homeMetadata } from '../seo/catalogue.js';
 import { Link } from 'react-router-dom';
 import { RadioButton } from '../components/AudioPlayer.jsx';
 import NowPlayingArtwork from '../components/NowPlayingArtwork.jsx';
@@ -16,10 +17,7 @@ import './Home.css';
 export default function Home() {
   return (
     <main id="main-content" className="home-page">
-      <Helmet>
-        <title>Santa Radio {'\u2013'} The World{'\u2019'}s Best Christmas Radio Station</title>
-        <meta name="description" content="Stream the best Christmas songs 24/7 on Santa Radio, hosted by the UK\u2019s Voice of Santa. Tune in all year for festive hits, apps and personalised Santa fun!" />
-      </Helmet>
+      <PageSeo metadata={homeMetadata()} />
       <section className="hero">
         <picture className="hero-picture">
           <source media="(max-width: 600px)" srcSet="/images/north-pole-hero-mobile.webp" />
@@ -31,7 +29,7 @@ export default function Home() {
           <div className="hero-content">
             <p className="eyebrow">A little magic from the North Pole</p>
             <h1 className="hero-title">Live from The North Pole,<span>Santa Radio</span></h1>
-            <p className="hero-description">Listen live to Santa Radio, discover festive favourites and share a little Christmas magic with the whole family.</p>
+            <p className="hero-description">Enjoy online Christmas music 24/7 on Santa Radio, your Christmas radio station all year round. Listen live to festive classics and family favourites.</p>
             <div className="hero-actions"><Link to="/free-santa-message" className="btn-gold">FREE Santa Message <span aria-hidden="true">↗</span></Link><RadioButton className="btn-red" /></div>
             <a className="app-store-badge" href="https://apps.apple.com/gb/app/santa-radio/id1021183593" target="_blank" rel="noopener noreferrer" aria-label="Download Santa Radio on the App Store (opens in a new tab)">
               <img src="/images/download-on-the-app-store.svg" width="149.58" height="50" alt="" />

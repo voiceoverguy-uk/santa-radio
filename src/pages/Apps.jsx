@@ -1,4 +1,6 @@
-import { Helmet } from 'react-helmet-async';
+import PageSeo from '../seo/PageSeo.jsx';
+import Breadcrumbs from '../seo/Breadcrumbs.jsx';
+import { appsMetadata, appsBreadcrumbs } from '../seo/catalogue.js';
 import { christmasApps } from './apps-data.js';
 import AppIcon from './AppIcon.jsx';
 import './Apps.css';
@@ -57,10 +59,7 @@ function AppSection({ app }) {
 export default function Apps() {
   return (
     <main className="apps-page">
-      <Helmet>
-        <title>Free Christmas Apps – Santa Radio</title>
-        <meta name="description" content="Download our amazing free Christmas apps featuring Santa / Father Christmas. Available on iOS and Amazon." />
-      </Helmet>
+      <PageSeo metadata={appsMetadata(christmasApps)} />
       <div className="apps-hero">
         <div className="apps-hero-content">
           <img className="apps-hero-logo" src="/images/santa-radio-logo.png" alt="Santa Radio" width="827" height="190" />
@@ -68,6 +67,7 @@ export default function Apps() {
           <p className="apps-hero-desc">Download our amazing apps featuring Santa / Father Christmas.</p>
         </div>
       </div>
+      <Breadcrumbs items={appsBreadcrumbs} />
       {christmasApps.map((app, index) => (
         <div key={app.id}>
           {index > 0 && <div className="apps-divider" aria-hidden="true" />}
