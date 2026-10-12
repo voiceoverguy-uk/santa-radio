@@ -133,13 +133,14 @@ export function appsMetadata(apps) {
   const url = absolute('/apps');
   return pageMetadata({
     path: '/apps',
-    title: 'Free Christmas Apps | Santa Radio',
-    description: 'Explore Santa Radio’s free Christmas apps, including live Christmas music, Santa messages and festive games. Find iOS and Amazon download links.',
+    title: 'Christmas Apps — Store Prices & Ratings | Santa Radio',
+    description: 'Explore Santa Radio’s Christmas apps, including music, Santa messages and festive games. See checked iOS and Amazon store links, prices and store ratings.',
     collection: true,
     crumbs: appsBreadcrumbs,
-    // Catalogue the apps actually shown. SoftwareApplication rich results need
-    // verified, visible ratings/reviews; do not fabricate these or emit an
-    // incomplete rich-result candidate from the legacy feature copy.
+    // Store ratings are displayed with attribution, NOT republished as our
+    // AggregateRating: Google's review guidelines prohibit aggregating ratings
+    // from other websites. Without eligible first-party reviews, retain only
+    // catalogue markup (even when store identity and price are verified).
     nodes: [{
       '@type': 'ItemList',
       '@id': `${url}#list`,

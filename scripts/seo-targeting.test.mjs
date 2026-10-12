@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { homeMetadata, appsMetadata, appsBreadcrumbs, messageMetadata, messageBreadcrumbs, ORIGIN } from '../src/seo/catalogue.js';
+import { appStoreVerification, storeCheckedAt, storeCheckedLabel, amazonDeviceSource } from '../src/pages/apps-store-verification.js';
 
 const readGraphs = html => [...html.matchAll(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)]
   .flatMap(match => JSON.parse(match[1])['@graph']);
@@ -61,11 +62,69 @@ test('Apps schema matches the visible catalogue, breadcrumbs and real screenshot
     assert.ok(html.includes(`src="${new URL(item.image).pathname}"`));
   }
   const crumbs = graphs.find(node => node['@type'] === 'BreadcrumbList').itemListElement;
+  assert.deepEqual(crumbs.map(item => item.position), [1, 2]);
+  assert.ok(crumbs.every(item => item['@type'] === 'ListItem'));
   assert.deepEqual(crumbs.map(item => [item.name, item.item]), appsBreadcrumbs.map(([name, path]) => [name, `${ORIGIN}${path}`]));
   assert.ok(html.includes('aria-label="Breadcrumb"'));
   assert.ok(html.includes('aria-current="page">Apps</span>'));
   assert.equal(graphs.filter(node => node['@type'] === 'CollectionPage').length, 1);
   assert.ok(!JSON.stringify(graphs).match(/aggregateRating|SoftwareApplication|MobileApplication|InStock|Sleeps til Santa/i));
+});
+
+test('generated Apps HTML visibly attributes every store snapshot without importing ratings into schema', async () => {
+  // React SSR inserts hydration separators between text nodes; these are not
+  // visible content and must not affect checks of what readers actually see.
+  const html = (await readFile('dist/apps/index.html', 'utf8')).replace(/<!--[\s\S]*?-->/g, '');
+  assert.match(html, /<h1[^>]*>Christmas Apps<\/h1>/);
+  assert.ok(!html.includes('Free Christmas Apps'));
+  assert.ok(!html.includes('100% FREE'));
+  assert.ok(html.includes(`href="${amazonDeviceSource}"`));
+  assert.ok(html.includes('installation and playback on your device have not been tested'));
+  assert.ok(html.includes('not reviews collected by Santa Radio'));
+  assert.ok(html.includes('Screenshots and feature descriptions are from the legacy catalogue'));
+  assert.equal(Object.values(appStoreVerification).flat().length, 10);
+  for (const [id, stores] of Object.entries(appStoreVerification)) {
+    const section = html.match(new RegExp(`<section id="${id}"[\\s\\S]*?<\\/section>`))?.[0];
+    assert.ok(section, `missing section ${id}`);
+    for (const store of stores) {
+      assert.ok(section.includes(`href="${store.source}"`), `${id} source not visible`);
+      assert.ok(section.includes(`>${store.name}</strong>`), `${id} store identity not visible`);
+      assert.ok(section.includes(`Developer: ${store.developer}`));
+      assert.ok(section.includes(`>${store.price}</strong>`));
+      assert.ok(section.includes(`>${store.rating} out of 5</strong>`));
+      assert.ok(section.includes(`${store.ratingCount} ratings`));
+      assert.ok(section.includes(`(${store.region})</a>`));
+      assert.ok(section.includes(`<time dateTime="${storeCheckedAt}">${storeCheckedLabel}</time>`));
+      if (store.minimumIOS) assert.ok(section.includes(`Requires iOS ${store.minimumIOS} or later`));
+      if (store.inAppPurchases) assert.ok(section.includes('In-app purchases'));
+    }
+  }
+  const originalDestinations = [
+    'https://apps.apple.com/us/app/santa-radio/id1021183593',
+    'https://www.amazon.com/App-Style-Ltd-Santa-Radio/dp/B0158MYRBM',
+    'https://itunes.apple.com/us/app/santa-voicemail/id586387813',
+    'http://www.amazon.com/App-Style-Ltd-Santa-Voicemail/dp/B00QFP4B18',
+    'https://itunes.apple.com/gb/app/santa-messages/id1062532143',
+    'http://www.amazon.co.uk/Santa-Messages-Free-Festive-Fun/dp/B019MRFDDK',
+    'https://itunes.apple.com/gb/app/christmas-radio-uk/id1157967613',
+    'https://www.amazon.co.uk/VoiceoverGuy-Ltd-Christmas-Radio/dp/B01M18XUXV',
+    'https://itunes.apple.com/gb/app/santa-text/id1024535991',
+    'https://itunes.apple.com/gb/app/santa-dash-from-santa-guy/id1057048397',
+  ];
+  for (const href of originalDestinations) assert.ok(html.includes(`href="${href}"`), `legacy destination changed: ${href}`);
+  // The shared WebSite/WebPage publisher is legitimate; only app-specific
+  // offers/ratings are excluded, not the site's existing identity graph.
+  assert.ok(!JSON.stringify(readGraphs(html)).match(/aggregateRating|SoftwareApplication|MobileApplication|"offers"/));
+});
+
+test('store snapshots do not turn verified or unverified apps into ineligible rich-result candidates', () => {
+  const entries = [
+    { id: 'santaradio', title: 'Santa Radio', alt: 'Radio', image: '/radio.jpg', store: appStoreVerification.santaradio },
+    { id: 'unverified', title: 'Unverified', alt: 'Unknown', image: '/unknown.jpg' },
+  ];
+  const graph = appsMetadata(entries).graph;
+  assert.equal(graph.find(node => node['@type'] === 'ItemList').numberOfItems, 2);
+  assert.ok(!JSON.stringify(graph).match(/aggregateRating|SoftwareApplication|MobileApplication|"offers"/));
 });
 
 test('app catalogue markup follows supplied entries instead of a separate hardcoded list', () => {

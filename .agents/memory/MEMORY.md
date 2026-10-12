@@ -8,6 +8,7 @@
 - [Legacy export encoding](legacy-export-encoding.md) — Verify Windows-1252 smart punctuation handling in this Node environment.
 - [Mugshot editorial policy](mugshot-editorial-policy.md) — Preserve details when consolidating duplicates; user supplies researched biography replacements.
 - [Apps availability](apps-availability.md) — Keep Sleeps til Santa off the Apps page until the user requests its return.
+- [Apps ratings eligibility](apps-ratings-eligibility.md) — Verified store ratings are attributed information, not eligible first-party review markup.
 - [Music artwork](music-artwork.md) — Reuse supplied artist portraits across songs; Santa with music notes is the temporary fallback.
 - [Privacy scope](privacy-scope.md) — Christmas Radio UK app facts are owner-confirmed; keep website marketing separate and verify provider logging arrangements.
 - [Santa audio scope](santa-audio-scope.md) — MP3-only personalised greetings; typed name lookup, starting with Arabella before a larger recorded library.

@@ -13,11 +13,11 @@ const downloads = (ios, amazon) => [
   ...(amazon ? [{ platform: 'Amazon', href: amazon }] : []),
 ];
 const voicemailFeatures = [
-  feature('Leave a message', 'Your child can leave a FREE\nvoicemail message for Santa.', 'microphone'),
+  feature('Leave a message', 'Your child can leave a recorded\nvoicemail message for Santa.', 'microphone'),
   feature('Playback', 'Playback your Childs message to\nhear what they asked Santa.', 'play'),
   feature('Santa Soundboard', 'Head Elf recorded Santa.\nPlay back some fun festive phrases.', 'sound'),
   feature('Send a message', 'Send a message to Santa and\nread other messages & replies.', 'message'),
-  feature('100% FREE', "It's 100% free with none of\nthose annoying adverts.", 'gift'),
+  feature('Download price', 'Check the verified store details above.\nPrices differ between platforms.', 'gift'),
   feature('Santa Radio', 'You can also listen and enjoy\nSanta Radio direct from the app.', 'radio'),
 ];
 
@@ -33,7 +33,14 @@ export const christmasApps = [
       'https://apps.apple.com/us/app/santa-radio/id1021183593',
       'https://www.amazon.com/App-Style-Ltd-Santa-Radio/dp/B0158MYRBM',
     ),
-    features: voicemailFeatures,
+    features: [
+      feature('Christmas music', 'Listen to Christmas music\naround the clock.', 'radio'),
+      feature('Now playing', 'See the current artist and song\nand what is coming up next.', 'play'),
+      feature('Background player', 'Keep listening while using other apps\nor locking your screen.', 'sound'),
+      feature('Sleep timer', 'Set a timer for your\nChristmas listening.', 'clock'),
+      feature('Free on iOS', 'No subscription or in-app purchases\nin the verified Apple listing.', 'gift'),
+      feature('Santa Tracker', 'Explore the Santa Tracker\nin the current iOS app.', 'search'),
+    ],
   },
   {
     id: 'santavoicemail',
@@ -65,7 +72,7 @@ export const christmasApps = [
       feature("Find your child's name", 'Santa will then play a\npersonal message for your child.', 'search'),
       feature('Share your message', 'Share your childs message on\nsocial media or by email.', 'share'),
       feature('Over 600 names', "Loaded with top boys & girls names.\nSubmit yours if it's missing.", 'users'),
-      feature('FREE', "It's a free app ready to download\nwith no annoying adverts.", 'gift'),
+      feature('Download price', 'Check the verified store details above.\nPrices differ between platforms.', 'gift'),
       feature('Schedule a message', 'Surprise? Set to ring your child in\n10, 30, or 60 seconds.', 'clock'),
       feature('Santa Radio', 'Listen to Santa Radio live\ndirect from our App.', 'radio'),
     ],
@@ -87,7 +94,7 @@ export const christmasApps = [
       feature('Record a Message', 'Record a message. You may hear it\non Santa’s Little Helpers Show.', 'microphone'),
       feature('Share', "Share a photo of who's playing\non your favourite social media.", 'camera'),
       feature('Send a message', 'Send a message from the app and Santa will reply in 24 hours.', 'message'),
-      feature('100% FREE', "It's 100% free to download\nand totally commercial free.", 'gift'),
+      feature('Download price', 'Check the verified store details above.\nPrices differ between platforms.', 'gift'),
       feature('Background player', 'Save battery life. The app can play\nthe music in the background.', 'sound'),
     ],
   },
@@ -102,8 +109,8 @@ export const christmasApps = [
     downloads: downloads('https://itunes.apple.com/gb/app/santa-text/id1024535991'),
     features: [
       feature('Text Santa', 'You can have a full text chat\nwith Santa. Watch him reply.', 'message'),
-      feature('Free Festive Fun', 'Reply with funny answers.\nSee what Santa says back.', 'smile'),
-      feature('No charges', "The text's are automatic and replies\nare made by the Santa auto-bot.", 'shield'),
+      feature('Festive Fun', 'Reply with funny answers.\nSee what Santa says back.', 'smile'),
+      feature('Automatic replies', 'Replies are made by the Santa auto-bot.\nPaid download; optional in-app purchases.', 'shield'),
       feature('Santa Radio', 'Enjoy listening to Santa Radio\ndirect from the app too.', 'radio'),
       feature('No call charges', 'No internet required. Its all done\nwith a little Santa magic.', 'phone'),
       feature('Code Words', 'Get the secret code words from\nFacebook to unlock more fun.', 'key'),
@@ -120,12 +127,12 @@ export const christmasApps = [
     landscape: true,
     downloads: downloads('https://itunes.apple.com/gb/app/santa-dash-from-santa-guy/id1057048397'),
     features: [
-      feature('Fun Game', 'Great free fun festive game.\nGreat for all ages over Christmas.', 'game'),
+      feature('Fun Game', 'A festive jumping game.\nGreat for all ages over Christmas.', 'game'),
       feature('How far can you go?', 'See how far you can get,\nthen post your score on Twitter.', 'trophy'),
       feature('Collect the pies', 'Jump over the buildings\nand collect the mince pies. Easy?', 'pie'),
       feature('Links to other apps', 'It also links out to our other apps.\nHave you got them all yet?', 'link'),
       feature('Play with friends', 'Login to Game Centre and play with friends.\nWhy not send a challenge to others?', 'users'),
-      feature('100% FREE', "It's 100% free with no annoying adverts.\nWe know... how do we do it?", 'gift'),
+      feature('Download price', 'The verified UK iOS listing\nshows a £0.99 download price.', 'gift'),
     ],
   },
 ];
