@@ -20,6 +20,12 @@ Staff-only sign-in for the private missing-name request ledger is separate from 
 
 **How to apply:** Keep staff authentication confined to the private ledger and staff sign-in pages. Preserve the existing adult Brevo step for the public MP3 maker.
 
+The owner confirmed the name-collecting staff login is “great”.
+
+**Why:** The owner explicitly approved the login experience.
+
+**How to apply:** Preserve that staff-login approach when planning related private admin features. This feedback does not independently verify all production saving or ledger operations.
+
 Do not implement FTP, Mark's server integration or text-file uploads for missing-name requests. Keep the database-backed request system and protected staff ledger; staff-only TXT downloads are permitted.
 
 **Why:** The owner explicitly cancelled the earlier FTP-copy plan and requested database-backed saving plus protected ledger downloads instead.
