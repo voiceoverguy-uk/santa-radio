@@ -19,3 +19,9 @@ The uploaded Brevo embed can differ from the current hosted form's required fiel
 **Why:** Read-only inspection found a required child date-of-birth field in the hosted form that was absent from the supplied adult-contact-only embed; mocked acceptance tests could not reveal that mismatch.
 
 **How to apply:** Resolve extra required personal-data fields with the owner before declaring the integration complete. Do not silently collect additional child data, send invented values or bypass provider acceptance.
+
+The recovery panel's “Share with friends” action is an invitation to the public message maker, not delivery of the visitor's MP3 or access state.
+
+**Why:** It accompanies the invitation to tell friends while Santa recovers. Friends should choose their own recordings through the adult-access flow, without receiving a child's name or the visitor's contact details.
+
+**How to apply:** Share the clean public maker URL without name/access parameters. Treat sharing a completed MP3 as a separate, explicitly labelled action.

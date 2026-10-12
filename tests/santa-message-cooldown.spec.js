@@ -34,7 +34,7 @@ test('two successes block the third, preserve downloads and offer radio without 
   await page.route('**/api/santa-message', route => { calls++; return route.fulfill(mp3); });
   await openMessageDesk(page);
   await expect(page.getByRole('heading', { name: 'Download your free Santa greeting' })).toBeVisible();
-  await expect(page.getByText("Names are being added to Santa's list, so make your selection and press Create message.", { exact: true })).toBeVisible();
+  await expect(page.getByText("New names are being made available all the time to Santa's list, so make your selection and press Create message.", { exact: true })).toBeVisible();
   await expect(page.locator('.santa-message-box')).not.toContainText(/30.minute|messages remaining|message allowance/);
   await create(page);
   await expect(page.locator('.santa-message-box')).not.toContainText(/30.minute|messages remaining|message allowance/);
@@ -52,8 +52,9 @@ test('two successes block the third, preserve downloads and offer radio without 
   expect(await page.evaluate(() => window.recordingPauses)).toBe(2);
   await expect(page.getByText('(The radio will pause while playing)', { exact: true })).toHaveCount(2);
   await expect(page.getByText('On iPhone, choose Share → Save to Files to keep the MP3.', { exact: true })).toHaveCount(2);
-  await expect(page.getByRole('timer')).toHaveText('30:00');
-  await expect(page.getByText('Why not enjoy Christmas music while you wait?', { exact: false })).toBeVisible();
+  await expect(page.getByRole('timer')).toHaveText('10:00');
+  await expect(page.getByText('You’ve created two free Santa messages for now. Please allow Santa 10 minutes to recover to generate more. Meanwhile why not enjoy Christmas music while you wait or tell your friends?', { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Share with friends', exact: true })).toBeEnabled();
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
   await expect(page.getByLabel('Child’s first name')).toBeDisabled();
   await page.locator('.santa-message-box form').evaluate(form => form.requestSubmit());
@@ -132,14 +133,14 @@ test('navigation, reload, a new tab and returning after the deadline preserve an
   const deadline = (await usage(page)).availableAt;
   await page.goto('/apps');
   await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'FREE Audio Message', exact: true }).click();
-  await expect(page.getByRole('timer')).toHaveText('30:00');
+  await expect(page.getByRole('timer')).toHaveText('10:00');
   const newTab = await context.newPage();
   await mockBrevo(newTab);
   await newTab.goto('/free-santa-message');
   await expect(newTab.getByRole('button', { name: 'Get my free Santa message' })).toBeVisible();
   await fillAccessForm(newTab);
   await newTab.getByRole('button', { name: 'Get my free Santa message' }).click();
-  await expect(newTab.getByRole('timer')).toHaveText('30:00');
+  await expect(newTab.getByRole('timer')).toHaveText('10:00');
   await newTab.evaluate(time => { window.testNow = time; dispatchEvent(new Event('focus')); }, deadline - 1000);
   await expect(newTab.getByRole('timer')).toHaveText('00:01');
   await newTab.evaluate(time => { window.testNow = time; dispatchEvent(new Event('focus')); }, deadline);
@@ -188,7 +189,7 @@ test('blocked browser storage keeps an in-page allowance and explains its limita
   await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Home', exact: true }).click();
   await expect(page.locator('.santa-message-box')).not.toContainText(/30.minute|message allowance/);
   await create(page, 'Erin');
-  await expect(page.getByRole('timer')).toHaveText('30:00');
+  await expect(page.getByRole('timer')).toHaveText('10:00');
   await expect(page.getByText(/Your browser can’t remember the message allowance/)).toBeVisible();
   await page.reload();
   await expect(page.getByRole('button', { name: 'Create message' })).toBeEnabled();

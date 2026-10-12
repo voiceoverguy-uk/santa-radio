@@ -2,7 +2,8 @@ import { withMessageCreationLock } from './santaMessageCreationLock.js';
 
 export const MESSAGE_ALLOWANCE_KEY = 'santa-message-allowance';
 export const MESSAGE_ALLOWANCE = 2;
-export const MESSAGE_COOLDOWN_MS = 30 * 60 * 1000;
+export const MESSAGE_COOLDOWN_MS = 10 * 60 * 1000;
+const LEGACY_COOLDOWN_MS = 30 * 60 * 1000;
 const empty = () => ({ used: 0, availableAt: 0 });
 
 function normalise(value, now) {
@@ -13,7 +14,7 @@ function normalise(value, now) {
 }
 
 // One store per open page, shared by all form instances. Browser storage contains
-// only a count/deadline, never adult contact details, selected names or audio.
+// only usage and timing, never adult contact details, selected names or audio.
 export function createMessageAllowance(browser, now = () => Date.now()) {
   let memory = empty(), remembered = true, pending = false, snapshot;
   const listeners = new Set();
@@ -29,7 +30,19 @@ export function createMessageAllowance(browser, now = () => Date.now()) {
     if (remembered) {
       try {
         const raw = browser.localStorage.getItem(MESSAGE_ALLOWANCE_KEY);
-        try { memory = normalise(JSON.parse(raw), now()); }
+        try {
+          const saved = JSON.parse(raw);
+          memory = normalise(saved, now());
+          // Older records had a 30-minute deadline and no duration marker.
+          // Keep their original start time, rather than starting a new wait.
+          const savedDuration = Number.isSafeInteger(saved?.cooldownMs) && saved.cooldownMs > 0
+            ? saved.cooldownMs : LEGACY_COOLDOWN_MS;
+          if (memory.used === MESSAGE_ALLOWANCE && savedDuration !== MESSAGE_COOLDOWN_MS) {
+            memory = normalise({
+              ...memory, availableAt: memory.availableAt - savedDuration + MESSAGE_COOLDOWN_MS,
+            }, now());
+          }
+        }
         catch { memory = empty(); }
       } catch { remembered = false; }
     }
@@ -95,7 +108,7 @@ export function createMessageAllowance(browser, now = () => Date.now()) {
               availableAt: state.used + 1 === MESSAGE_ALLOWANCE ? now() + MESSAGE_COOLDOWN_MS : 0,
             };
             if (remembered) {
-              try { browser.localStorage.setItem(MESSAGE_ALLOWANCE_KEY, JSON.stringify(memory)); }
+              try { browser.localStorage.setItem(MESSAGE_ALLOWANCE_KEY, JSON.stringify({ ...memory, cooldownMs: MESSAGE_COOLDOWN_MS })); }
               catch { remembered = false; }
             }
             refresh();

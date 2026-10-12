@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useRadio } from './RadioProvider.jsx';
 import SantaMessageAccessForm from './SantaMessageAccessForm.jsx';
+import SantaMessageShare from './SantaMessageShare.jsx';
 import { useSantaMessageAccess } from './SantaMessageAccessProvider.jsx';
 import useSantaMessageAllowance from './useSantaMessageAllowance.js';
 import useSantaMessageHistory from './useSantaMessageHistory.js';
@@ -162,18 +163,19 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         <div className="message-card-top"><span className="message-seal" aria-hidden="true">S</span><div><p className="message-postmark">The North Pole message desk</p><small>A recorded hello, ready to keep</small></div></div>
         {!hasAccess ? <SantaMessageAccessForm /> : <>
         <h3 ref={makerHeadingRef} tabIndex={-1}>Download your free Santa greeting</h3>
-        <p className="form-desc">Names are being added to Santa's list, so make your selection and press Create message.</p>
+        <p className="form-desc">New names are being made available all the time to Santa's list, so make your selection and press Create message.</p>
         <p className="message-name-hint message-name-count" role="status">
           {nameSearch.hostedCount !== null
             ? `${nameSearch.hostedCount.toLocaleString('en-GB')} ${nameSearch.hostedCount === 1 ? 'name' : 'names'} available to download`
             : nameSearch.loading ? 'Checking how many names are available…' : 'Name total temporarily unavailable.'}
         </p>
         {coolingDown ? <div className="message-wait">
-          <p role="status">You’ve created your two free Santa messages for now. To generate more, please wait 30 minutes. Why not enjoy Christmas music while you wait?</p>
+          <p role="status">You’ve created two free Santa messages for now. Please allow Santa 10 minutes to recover to generate more. Meanwhile why not enjoy Christmas music while you wait or tell your friends?</p>
           <p className="message-countdown">More messages in <span role="timer" aria-live="off">{countdown}</span></p>
           <button className="message-retry" type="button" onClick={listenToRadio} disabled={!radio || radio.status === 'playing' || radio.status === 'loading'}>
             {radio?.status === 'playing' ? 'Santa Radio is playing' : radio?.status === 'loading' ? 'Connecting to Santa Radio…' : 'Listen to Santa Radio'}
           </button>
+          <SantaMessageShare />
           {radio?.error && <p className="message-audio-error" role="alert">{radio.error}</p>}
         </div> : null}
         {coolingDown && !allowance.remembered && <p className="message-name-hint" role="status">Your browser can’t remember the message allowance. The limit works while this page is open, but leaving or refreshing may reset it.</p>}
