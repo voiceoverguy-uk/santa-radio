@@ -28,6 +28,12 @@
 .message-retry:disabled { opacity: .7; cursor: default; }
 .message-name-input[aria-invalid="true"] { border-color: #eea49a; }
 .message-name-hint { display: block; color: #becdbc; font-size: .76rem; margin: 10px 0 18px; line-height: 1.6; }
+.message-search-status, .message-search-notice { color: #d0dacd; font-size: .8rem; line-height: 1.6; margin: 10px 0 16px; }
+.message-search-notice { padding: 13px 15px; border: 1px solid #d4af3750; border-radius: 8px; background: #14382a; }
+.message-search-notice p { margin: 0 0 8px; }
+.message-search-notice p:last-of-type { margin-bottom: 0; }
+.message-search-notice .message-retry { margin: 12px 0 0; }
+.message-search-error { border-color: #eea49a80; }
 .message-submit { width: 100%; min-height: 50px; justify-content: center; cursor: pointer; }
 .santa-message-box .btn-red { font-size: .82rem; }
 .service-notice { font-size: .75rem; color: #b8c6b6; padding-top: 18px; margin-bottom: 0; line-height: 1.7; }

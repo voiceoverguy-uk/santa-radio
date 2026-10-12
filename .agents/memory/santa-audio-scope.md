@@ -2,6 +2,12 @@
 name: Personalised Santa audio scope
 description: Audio-only product direction and incremental name-library rollout.
 ---
+The owner-hosted name folder can fail as a directory page while individual WAV URLs still work. In October 2026, the directory was routed through an incompatible WordPress/PHP installation.
+
+**Why:** Repeated directory requests returned HTTP 500, but a directly addressed supplied WAV downloaded and produced a playable greeting.
+
+**How to apply:** Verify individual audio and inventory discovery separately. Use an owner-uploaded standalone listing beside the recordings; do not change the external WordPress installation or request FTP credentials to fix discovery.
+
 The on-demand audio service must be portable to Vercel, not merely functional in Replit preview. Do not assume system-installed audio tools or source recordings are available in an external serverless runtime.
 
 **Why:** Replit's preview and the Vercel deployment have different routing, file inclusion and executable availability; preview success alone does not establish that visitors can generate an MP3.

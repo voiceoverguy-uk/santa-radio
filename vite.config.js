@@ -4,6 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { fileURLToPath } from 'node:url';
 import radioMetadata from './server/radio-metadata.js';
 import santaMessage from './server/santa-message.js';
+import santaNames from './server/santa-names.js';
 import { trackerPageHtml, isTrackerPreview } from './server/tracker-html.js';
 import artworkFeedPlugin from './scripts/artwork-feed-plugin.mjs';
 import publicPagesPlugin from './server/public-pages-plugin.js';
@@ -27,10 +28,12 @@ const metadataPlugin = {
   configureServer(server) {
     server.middlewares.use('/api/radio-metadata', radioMetadata);
     server.middlewares.use('/api/santa-message', santaMessage);
+    server.middlewares.use('/api/santa-names', santaNames);
   },
   configurePreviewServer(server) {
     server.middlewares.use('/api/radio-metadata', radioMetadata);
     server.middlewares.use('/api/santa-message', santaMessage);
+    server.middlewares.use('/api/santa-names', santaNames);
   },
 };
 

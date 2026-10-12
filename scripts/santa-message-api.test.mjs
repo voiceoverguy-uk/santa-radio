@@ -3,7 +3,12 @@ import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { spawnSync } from 'node:child_process';
 import ffmpegPath from 'ffmpeg-static';
-import handler from '../api/santa-message.js';
+import { createSantaMessageHandler } from '../server/santa-message.js';
+import { createNameLibrary } from '../server/santa-name-library.js';
+
+const handler = createSantaMessageHandler(createNameLibrary({
+  fetcher: async () => new Response(JSON.stringify({ version: 1, names: [] })),
+}));
 
 let server;
 let base;

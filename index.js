@@ -5,6 +5,7 @@ import { resolve, extname, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import radioMetadata from './server/radio-metadata.js';
 import santaMessage from './server/santa-message.js';
+import santaNames from './server/santa-names.js';
 import { trackerPageHtml, isTrackerPreview } from './server/tracker-html.js';
 import { artworkHeaders } from './server/artwork-feed.js';
 import { resolvePublicRequest } from './src/seo/routes.js';
@@ -32,6 +33,7 @@ const server = createServer(async (req, res) => {
     if (res.writableEnded) return;
     if (pathname === '/api/radio-metadata') return await radioMetadata(req, res);
     if (pathname === '/api/santa-message') return await santaMessage(req, res);
+    if (pathname === '/api/santa-names') return await santaNames(req, res);
     if (pathname.startsWith('/api/')) { res.writeHead(404).end('Not found'); return; }
     if (pathname === '/server' || pathname.startsWith('/server/')) { res.writeHead(404).end('Not found'); return; }
     if (pathname.split('/').some(part => part.startsWith('.'))) { res.writeHead(404).end('Not found'); return; }

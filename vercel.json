@@ -9,6 +9,9 @@
     "api/santa-message.js": {
       "maxDuration": 120,
       "includeFiles": "{server/santa-audio/**,scripts/santa-audio-filters.mjs,node_modules/ffmpeg-static/**}"
+    },
+    "api/santa-names.js": {
+      "maxDuration": 15
     }
   },
   "routes": [

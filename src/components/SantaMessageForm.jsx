@@ -1,17 +1,18 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { findSantaMessage, searchSantaNames } from '../data/santaMessages.js';
 import { useRadio } from './RadioProvider.jsx';
 import SantaMessageAccessForm from './SantaMessageAccessForm.jsx';
 import { useSantaMessageAccess } from './SantaMessageAccessProvider.jsx';
 import useSantaMessageAllowance from './useSantaMessageAllowance.js';
 import useSantaMessageHistory from './useSantaMessageHistory.js';
+import useSantaNames from './useSantaNames.js';
 import './SantaMessageForm.css';
 
 export default function SantaMessageForm({ showDetailLink = true }) {
   const { hasAccess, sessionRemembered } = useSantaMessageAccess();
   const makerHeadingRef = useRef(null);
   const [name, setName] = useState('');
+  const [selectedRecord, setSelectedRecord] = useState(null);
   const { messages, remember } = useSantaMessageHistory();
   const [validation, setValidation] = useState('');
   const [audioErrors, setAudioErrors] = useState({});
@@ -19,7 +20,15 @@ export default function SantaMessageForm({ showDetailLink = true }) {
   const [suggesting, setSuggesting] = useState(false);
   const [activeOption, setActiveOption] = useState(-1);
   const requestRef = useRef(null);
-  const suggestions = searchSantaNames(name);
+  const nameSearch = useSantaNames(name, hasAccess);
+  const suggestions = nameSearch.records;
+  const verifiedSelectedRecord = selectedRecord && selectedRecord.name === name.trim()
+    ? selectedRecord : null;
+  const exactMatch = !nameSearch.loading && !nameSearch.error
+    ? suggestions.find(record => record.name.normalize('NFKC').toLocaleLowerCase('en-GB') ===
+      name.normalize('NFKC').trim().toLocaleLowerCase('en-GB')) : null;
+  const resolvedRecord = verifiedSelectedRecord || exactMatch;
+  const searchPending = name.trim() !== '' && nameSearch.loading && !verifiedSelectedRecord;
   const audioRef = useRef(null);
   const audioRefs = useRef(new Map());
   const resumeRadioRef = useRef(null);
@@ -47,11 +56,13 @@ export default function SantaMessageForm({ showDetailLink = true }) {
     setBusy(false);
     audioRef.current?.pause();
     setName(value);
+    setSelectedRecord(null);
     setValidation('');
     setActiveOption(-1);
   };
-  const selectName = value => {
-    updateName(value);
+  const selectName = record => {
+    updateName(record.name);
+    setSelectedRecord(record);
     setSuggesting(false);
   };
   const submit = async event => {
@@ -60,10 +71,12 @@ export default function SantaMessageForm({ showDetailLink = true }) {
     resumeRadioRef.current = null;
     setSuggesting(false);
     audioRef.current?.pause();
-    const recording = findSantaMessage(name);
+    const recording = resolvedRecord;
     if (!recording) {
       setValidation(name.trim()
-        ? 'We don’t have a recording for that name yet. Choose one of the suggested names.'
+        ? nameSearch.error || nameSearch.warning || (nameSearch.loading
+          ? 'Please wait while Santa checks the name list.'
+          : 'We don’t have a recording for that name yet. Choose one of the suggested names.')
         : 'Please enter a child’s name, then choose a suggestion.');
       return;
     }
@@ -165,17 +178,34 @@ export default function SantaMessageForm({ showDetailLink = true }) {
                 event.preventDefault(); setSuggesting(true);
                 setActiveOption(current => (current + (event.key === 'ArrowDown' ? 1 : -1) + suggestions.length) % suggestions.length);
               }
-              if (event.key === 'Enter' && suggesting && activeOption >= 0) { event.preventDefault(); selectName(suggestions[activeOption]); }
+              if (event.key === 'Enter' && suggesting && activeOption >= 0 && suggestions[activeOption]) { event.preventDefault(); selectName(suggestions[activeOption]); }
             }}
             placeholder="Start typing, e.g. Olivia" autoComplete="off" autoCapitalize="words" spellCheck={false} aria-invalid={!!validation} aria-describedby={`${inputId}-hint${validation ? ` ${inputId}-error` : ''}`} />
           {suggesting && suggestions.length > 0 && <ul className="message-suggestions" id={`${inputId}-options`} role="listbox" aria-label="Available names">
-            {suggestions.map((suggestion, index) => <li key={suggestion} id={`${inputId}-option-${index}`} role="option" aria-selected={index === activeOption}
-              onPointerDown={event => event.preventDefault()} onClick={() => selectName(suggestion)}>{suggestion}</li>)}
+            {suggestions.map((suggestion, index) => <li key={suggestion.id} id={`${inputId}-option-${index}`} role="option" aria-selected={index === activeOption}
+              onPointerDown={event => event.preventDefault()} onClick={() => selectName(suggestion)}>{suggestion.name}</li>)}
           </ul>}
           </div>
-          <span className="message-name-hint" id={`${inputId}-hint`} aria-live="polite">{suggesting && name.trim() && !suggestions.length ? 'No matching recording yet. Try another name.' : 'Start typing to find a recorded name.'}</span>
+          <span className="message-name-hint" id={`${inputId}-hint`} aria-live="polite">
+            {verifiedSelectedRecord ? `${verifiedSelectedRecord.name} is selected.` : 'Start typing to find a recorded name.'}
+          </span>
+          {nameSearch.loading && name.trim() && <p className="message-search-status" role="status">Checking Santa’s hosted name list…</p>}
+          {nameSearch.warning && <div className="message-search-notice" role="status">
+            <p>{nameSearch.warning}</p>
+            <p>Only existing local recordings are known right now; this list may be incomplete.</p>
+            <button className="message-retry" type="button" onClick={nameSearch.refresh}>Refresh name list</button>
+          </div>}
+          {nameSearch.error && <div className="message-search-notice message-search-error" role="alert">
+            <p>{nameSearch.error}</p>
+            <button className="message-retry" type="button" onClick={nameSearch.refresh}>Retry name search</button>
+          </div>}
+          {!nameSearch.loading && !nameSearch.error && name.trim() && !suggestions.length && <p className="message-search-status" role="status">
+            {nameSearch.warning
+              ? 'The full hosted name list could not be checked. Try refreshing the names.'
+              : 'No matching recording yet. Try another name.'}
+          </p>}
           {validation && <p className="message-validation" id={`${inputId}-error`} role="alert">{validation}</p>}
-          <button className="btn-red message-submit" type="submit" disabled={busy || allowance.pending || coolingDown}>{busy ? 'Santa Recording...' : 'Create message'} <span aria-hidden="true">→</span></button>
+          <button className="btn-red message-submit" type="submit" disabled={busy || allowance.pending || coolingDown || searchPending}>{busy ? 'Santa Recording...' : 'Create message'} <span aria-hidden="true">→</span></button>
           {busy && <p role="status" className="message-name-hint">Santa is recording a personal message for you. Do hold on one moment...</p>}
           {!busy && allowance.pending && <p role="status" className="message-name-hint">Another message is being created. Please wait for it to finish.</p>}
         </form>
