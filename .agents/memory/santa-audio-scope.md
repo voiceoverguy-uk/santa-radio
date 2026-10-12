@@ -9,6 +9,7 @@ The owner-hosted name folder can fail as a directory page while individual WAV U
 **How to apply:** Verify individual audio and inventory discovery separately. Use an owner-uploaded standalone listing beside the recordings; do not change the external WordPress installation or request FTP credentials to fix discovery.
 
 The user wants the number of names on FTP ready to go, displayed as “(number) names available to download.”
+The input placeholder should say “Start typing, eg. (name), over (number) names available”, with a random popular-name example and the currently available count.
 
 **Why:** The user asked for the hosted-library size beside the name search.
 

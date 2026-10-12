@@ -6,6 +6,7 @@ import { useSantaMessageAccess } from './SantaMessageAccessProvider.jsx';
 import useSantaMessageAllowance from './useSantaMessageAllowance.js';
 import useSantaMessageHistory from './useSantaMessageHistory.js';
 import useSantaNames from './useSantaNames.js';
+import { randomSantaExample, santaNamePlaceholder } from '../lib/santaNamePlaceholder.js';
 import './SantaMessageForm.css';
 
 export default function SantaMessageForm({ showDetailLink = true }) {
@@ -13,6 +14,7 @@ export default function SantaMessageForm({ showDetailLink = true }) {
   const makerHeadingRef = useRef(null);
   const [name, setName] = useState('');
   const [selectedRecord, setSelectedRecord] = useState(null);
+  const [exampleName, setExampleName] = useState('Olivia');
   const { messages, remember } = useSantaMessageHistory();
   const [validation, setValidation] = useState('');
   const [audioErrors, setAudioErrors] = useState({});
@@ -42,6 +44,9 @@ export default function SantaMessageForm({ showDetailLink = true }) {
   useEffect(() => {
     if (hasAccess && !showDetailLink) makerHeadingRef.current?.focus();
   }, [hasAccess, showDetailLink]);
+  // Keep server/client hydration deterministic; choose once on the client,
+  // rather than changing the example whenever the user types or counts refresh.
+  useEffect(() => { setExampleName(randomSantaExample()); }, []);
   useEffect(() => {
     if (messages.length) resultRef.current?.focus();
     setAudioErrors(previous => Object.fromEntries(messages.map(message => [message.key, previous[message.key] || false])));
@@ -185,7 +190,7 @@ export default function SantaMessageForm({ showDetailLink = true }) {
               }
               if (event.key === 'Enter' && suggesting && activeOption >= 0 && suggestions[activeOption]) { event.preventDefault(); selectName(suggestions[activeOption]); }
             }}
-            placeholder="Start typing, e.g. Olivia" autoComplete="off" autoCapitalize="words" spellCheck={false} aria-invalid={!!validation} aria-describedby={`${inputId}-hint${validation ? ` ${inputId}-error` : ''}`} />
+            placeholder={santaNamePlaceholder(exampleName, nameSearch.hostedCount)} autoComplete="off" autoCapitalize="words" spellCheck={false} aria-invalid={!!validation} aria-describedby={`${inputId}-hint${validation ? ` ${inputId}-error` : ''}`} />
           {suggesting && suggestions.length > 0 && <ul className="message-suggestions" id={`${inputId}-options`} role="listbox" aria-label="Available names">
             {suggestions.map((suggestion, index) => <li key={suggestion.id} id={`${inputId}-option-${index}`} role="option" aria-selected={index === activeOption}
               onPointerDown={event => event.preventDefault()} onClick={() => selectName(suggestion)}>{suggestion.name}</li>)}

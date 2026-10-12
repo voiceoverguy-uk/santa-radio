@@ -14,13 +14,18 @@ test('hosted total appears before typing, stays independent of matches and refre
   await openMessageDesk(page, { mockNames: false });
   await expect(page.getByText('274 names available to download', { exact: true })).toBeVisible();
   await expect(page.getByLabel('Child’s first name')).toHaveValue('');
+  const input = page.getByLabel('Child’s first name');
+  await expect(input).toHaveAttribute('placeholder', /^Start typing, eg\. (Olivia|Harry|Jack|Freya), over 274 names available$/);
+  const example = (await input.getAttribute('placeholder')).match(/eg\. ([^,]+)/)[1];
   total = 275;
   await page.clock.fastForward(75_000);
   await expect(page.getByText('275 names available to download', { exact: true })).toBeVisible();
+  await expect(input).toHaveAttribute('placeholder', `Start typing, eg. ${example}, over 275 names available`);
   await page.getByLabel('Child’s first name').fill('Dem');
   await expect(page.getByRole('option', { name: 'Demrie', exact: true })).toBeVisible();
   await expect(page.getByText('275 names available to download', { exact: true })).toBeVisible();
   expect(renders).toBe(0);
+  await expect(input).toHaveAttribute('placeholder', `Start typing, eg. ${example}, over 275 names available`);
 });
 
 test('unavailable inventory does not invent a zero total and a retry restores the count', async ({ page }) => {
@@ -32,6 +37,7 @@ test('unavailable inventory does not invent a zero total and a retry restores th
   await openMessageDesk(page, { mockNames: false });
   await expect(page.getByText('Name total temporarily unavailable.', { exact: true })).toBeVisible();
   await expect(page.getByText('0 names available to download', { exact: true })).toHaveCount(0);
+  await expect(page.getByLabel('Child’s first name')).toHaveAttribute('placeholder', /^Start typing, eg\. (Olivia|Harry|Jack|Freya)$/);
   failed = false;
   await page.getByRole('button', { name: 'Refresh name list' }).click();
   await expect(page.getByText('1 name available to download', { exact: true })).toBeVisible();
@@ -45,8 +51,30 @@ test('large totals fit on mobile and genuine empty inventory displays zero', asy
   } }));
   await openMessageDesk(page, { mockNames: false });
   await expect(page.getByText('12,345 names available to download', { exact: true })).toBeVisible();
+  await expect(page.getByLabel('Child’s first name')).toHaveAttribute('placeholder', /over 12,345 names available$/);
+  const placeholderFits = await page.getByLabel('Child’s first name').evaluate(input => {
+    const style = getComputedStyle(input), placeholder = getComputedStyle(input, '::placeholder');
+    const canvas = document.createElement('canvas'), context = canvas.getContext('2d');
+    context.font = `${placeholder.fontWeight} ${placeholder.fontSize} ${placeholder.fontFamily}`;
+    const width = input.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+    return ['Olivia', 'Harry', 'Jack', 'Freya'].every(name =>
+      context.measureText(`Start typing, eg. ${name}, over 12,345 names available`).width <= width + 0.5);
+  });
+  expect(placeholderFits).toBe(true);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   total = 0;
   await page.getByLabel('Child’s first name').fill('Unknown');
   await expect(page.getByText('0 names available to download', { exact: true })).toBeVisible();
+});
+
+test('the random example is chosen on page load, not when searching or refreshing', async ({ page }) => {
+  await page.addInitScript(() => { Math.random = () => 0.999999; });
+  await page.route('**/api/santa-names?*', route => route.fulfill({ json: {
+    records: [], hostedCount: 826, warning: null,
+  } }));
+  await openMessageDesk(page, { mockNames: false });
+  const input = page.getByLabel('Child’s first name');
+  await expect(input).toHaveAttribute('placeholder', 'Start typing, eg. Freya, over 826 names available');
+  await input.fill('Fre');
+  await expect(input).toHaveAttribute('placeholder', 'Start typing, eg. Freya, over 826 names available');
 });
