@@ -12,7 +12,7 @@
     "test:artwork-production": "node --test scripts/artwork-feed-serving.test.mjs",
     "test:santa-audio": "node scripts/prepare-santa-audio.mjs && node --test scripts/santa-render.test.mjs scripts/santa-message-api.test.mjs",
     "test:e2e": "playwright test",
-    "test:seo": "node --test scripts/seo-validation.test.mjs scripts/seo-serving.test.mjs scripts/seo-targeting.test.mjs"
+    "test:seo": "node --test scripts/seo-validation.test.mjs scripts/seo-serving.test.mjs scripts/seo-targeting.test.mjs scripts/santa-message-links.test.mjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.1",

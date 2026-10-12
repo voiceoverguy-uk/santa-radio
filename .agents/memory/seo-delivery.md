@@ -20,6 +20,12 @@ Legacy `/personalised-santa-message/all` and `/personalised-santa-message/{Name}
 
 **How to apply:** Include this route family when auditing migrations and preserving equivalent destinations. Do not assume search history automatically transfers to a differently named audio-maker URL.
 
+Consolidate historical message-name links onto one canonical audio maker, carrying the requested name as a search parameter rather than creating thousands of near-identical indexable pages.
+
+**Why:** The current maker provides the same personalised-audio workflow for all names. Consolidation preserves the old links' purpose without claiming that a recording exists merely because a name appeared in an old URL.
+
+**How to apply:** Retain the requested name through the adult-access handoff, check actual recording availability, keep the maker's canonical URL free of name parameters, and never create audio automatically from an incoming link.
+
 Initial public HTML should come from the real application templates, not independent SEO-only copies.
 
 **Why:** The owner wants meaningful content without JavaScript while preserving the existing player, galleries, paths and seasonal behaviour. Separate template copies would diverge.

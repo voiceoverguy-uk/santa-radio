@@ -116,6 +116,17 @@ export function homeMetadata() {
   });
 }
 
+export const messageBreadcrumbs = [['Home', '/'], ['Santa Message', '/free-santa-message']];
+
+export function messageMetadata() {
+  return pageMetadata({
+    path: '/free-santa-message',
+    title: 'Free Personalised Santa Message (MP3 Audio) | Santa Radio',
+    description: 'Create a free personalised message from Santa with your child’s name. Choose a recorded name, listen to the Santa audio greeting and download your MP3.',
+    crumbs: messageBreadcrumbs,
+  });
+}
+
 export const appsBreadcrumbs = [['Home', '/'], ['Apps', '/apps']];
 
 export function appsMetadata(apps) {

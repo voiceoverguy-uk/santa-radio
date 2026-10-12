@@ -1,23 +1,27 @@
-import { Helmet } from 'react-helmet-async';
+import { useSearchParams } from 'react-router-dom';
+import PageSeo from '../seo/PageSeo.jsx';
+import Breadcrumbs from '../seo/Breadcrumbs.jsx';
+import { messageMetadata, messageBreadcrumbs } from '../seo/catalogue.js';
+import { santaMessageRequestedName } from '../seo/santaMessageLinks.js';
 import SantaMessageForm from '../components/SantaMessageForm.jsx';
 import './FreeSantaMessage.css';
 
 export default function FreeSantaMessage() {
+  const [params] = useSearchParams();
+  const requestedName = santaMessageRequestedName(params.get('name'));
   return (
     <main>
-      <Helmet>
-        <title>Free Personalised Santa Message {'\u2013'} Santa Radio</title>
-        <meta name="description" content="Open Santa’s message desk with your adult contact details, then choose a recorded name and create, preview and download a free personalised Santa MP3 greeting." />
-      </Helmet>
+      <PageSeo metadata={messageMetadata()} />
       <div className="fsm-hero starry-bg">
         <div className="fsm-hero-content">
           <img className="brand-logo brand-logo-hero" src="/images/santa-radio-logo.png" alt="Santa Radio" width="827" height="190" />
           <p className="fsm-kicker">Special delivery from the North Pole</p>
           <h1 className="fsm-sub">Free Personalised Santa Message</h1>
-          <p className="fsm-desc">A familiar name. An unmistakable voice. A recorded Christmas greeting to listen to and keep.</p>
+          <p className="fsm-desc">Create a free message from Santa with your child’s name. Choose a recorded name, listen to a personalised Santa audio greeting and download your MP3 to keep.</p>
         </div>
       </div>
-      <SantaMessageForm showDetailLink={false} />
+      <Breadcrumbs items={messageBreadcrumbs} />
+      <SantaMessageForm key={requestedName} showDetailLink={false} initialName={requestedName} />
     </main>
   );
 }

@@ -1,12 +1,32 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { homeMetadata, appsMetadata, appsBreadcrumbs, ORIGIN } from '../src/seo/catalogue.js';
+import { homeMetadata, appsMetadata, appsBreadcrumbs, messageMetadata, messageBreadcrumbs, ORIGIN } from '../src/seo/catalogue.js';
 
 const readGraphs = html => [...html.matchAll(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)]
   .flatMap(match => JSON.parse(match[1])['@graph']);
 const headValue = (html, name) => html.match(new RegExp(`<meta[^>]*(?:name|property)="${name}"[^>]*content="([^"]+)"`))?.[1];
 const decode = value => value?.replace(/&amp;/g, '&').replace(/&#x27;/g, "'");
+
+test('Santa message initial HTML targets audio searches with consistent metadata and breadcrumbs', async () => {
+  const html = await readFile('dist/free-santa-message/index.html', 'utf8');
+  const m = messageMetadata();
+  assert.equal(decode(html.match(/<title[^>]*>(.*?)<\/title>/s)?.[1]), m.title);
+  assert.match(m.title, /Santa Message.*MP3 Audio/);
+  for (const name of ['description', 'og:description', 'twitter:description'])
+    assert.equal(decode(headValue(html, name)), m.description);
+  for (const name of ['og:title', 'twitter:title'])
+    assert.equal(decode(headValue(html, name)), m.title);
+  assert.match(html, /Create a free message from Santa/);
+  assert.ok(html.includes('personalised Santa audio greeting'));
+  assert.ok(html.includes(`rel="canonical" href="${ORIGIN}/free-santa-message"`));
+  const graphs = readGraphs(html);
+  assert.equal(graphs.filter(node => node['@type'] === 'WebPage').length, 1);
+  assert.equal(graphs.find(node => node['@type'] === 'WebPage').description, m.description);
+  assert.deepEqual(graphs.find(node => node['@type'] === 'BreadcrumbList').itemListElement.map(item => [item.name, item.item]),
+    messageBreadcrumbs.map(([name, path]) => [name, ORIGIN + path]));
+  assert.ok(!JSON.stringify(graphs).match(/SoftwareApplication|aggregateRating|AudioObject|VideoObject/));
+});
 
 test('homepage uses consistent search targeting in initial content, metadata and schema', async () => {
   const html = await readFile('dist/index.html', 'utf8');

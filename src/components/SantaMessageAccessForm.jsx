@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import SantaMessageAccessCard from './SantaMessageAccessCard.jsx';
 import { useSantaMessageAccess } from './SantaMessageAccessProvider.jsx';
 import { ACCESS_REQUEST_TIMEOUT_MS, MessageAccessError, submitMessageAccess, validateAccessFields } from '../lib/santaMessageAccess.js';
@@ -15,6 +15,7 @@ export default function SantaMessageAccessForm() {
   const requestRef = useRef(null);
   const { grantAccess } = useSantaMessageAccess();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => () => {
     requestRef.current?.abort();
@@ -58,7 +59,9 @@ export default function SantaMessageAccessForm() {
       grantAccess();
       setFields(emptyFields);
       // Never follow Brevo's optional legacy external redirect.
-      navigate('/free-santa-message');
+      // Already on the maker: retain the requested name and tracking query.
+      // Homepage submissions still open the standalone maker as before.
+      if (location.pathname !== '/free-santa-message') navigate('/free-santa-message');
     } catch (failure) {
       if (requestRef.current !== controller) return;
       if (failure instanceof MessageAccessError) {

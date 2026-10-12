@@ -9,10 +9,10 @@ import useSantaNames from './useSantaNames.js';
 import { randomSantaExample, santaNamePlaceholder } from '../lib/santaNamePlaceholder.js';
 import './SantaMessageForm.css';
 
-export default function SantaMessageForm({ showDetailLink = true }) {
+export default function SantaMessageForm({ showDetailLink = true, initialName = '' }) {
   const { hasAccess, sessionRemembered } = useSantaMessageAccess();
   const makerHeadingRef = useRef(null);
-  const [name, setName] = useState('');
+  const [name, setName] = useState(initialName);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [exampleName, setExampleName] = useState('Olivia');
   const { messages, remember } = useSantaMessageHistory();
@@ -27,8 +27,9 @@ export default function SantaMessageForm({ showDetailLink = true }) {
   const verifiedSelectedRecord = selectedRecord && selectedRecord.name === name.trim()
     ? selectedRecord : null;
   const exactMatch = !nameSearch.loading && !nameSearch.error
-    ? suggestions.find(record => record.name.normalize('NFKC').toLocaleLowerCase('en-GB') ===
-      name.normalize('NFKC').trim().toLocaleLowerCase('en-GB')) : null;
+    ? suggestions.find(record => [record.name, record.id].some(value =>
+      value.normalize('NFKC').toLocaleLowerCase('en-GB') ===
+      name.normalize('NFKC').trim().toLocaleLowerCase('en-GB'))) : null;
   const resolvedRecord = verifiedSelectedRecord || exactMatch;
   const searchPending = name.trim() !== '' && nameSearch.loading && !verifiedSelectedRecord;
   const audioRef = useRef(null);
@@ -197,7 +198,9 @@ export default function SantaMessageForm({ showDetailLink = true }) {
           </ul>}
           </div>
           <span className="message-name-hint" id={`${inputId}-hint`} aria-live="polite">
-            {verifiedSelectedRecord ? `${verifiedSelectedRecord.name} is selected.` : 'Start typing to find a recorded name.'}
+            {verifiedSelectedRecord ? `${verifiedSelectedRecord.name} is selected.`
+              : exactMatch ? `A recording for ${exactMatch.name} is available.`
+              : 'Start typing to find a recorded name.'}
           </span>
           {nameSearch.loading && name.trim() && <p className="message-search-status" role="status">Checking Santa’s hosted name list…</p>}
           {nameSearch.warning && <div className="message-search-notice" role="status">

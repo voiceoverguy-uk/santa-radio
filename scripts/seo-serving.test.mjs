@@ -36,6 +36,7 @@ test('deployment-style document package needs neither TypeScript nor runtime Rea
       ['/mugshots/debbie-arnold-actress', 200], ['/free-santa-message', 200],
       ['/christmas-artist/3-waitresses-christmas-wrapping', 200],
       ['/santa-tracker', 200], ['/artist?s=3', 308], ['/artist?s=14', 308],
+      ['/personalised-santa-message/all', 308], ['/personalised-santa-message/Cooper', 308],
       ['/spanish/mugshots/mugshots/jermaine', 404],
     ]) {
       const url = new URL(path, 'https://www.santaradio.co.uk');
@@ -84,6 +85,17 @@ test('built Node server returns actual pages, permanent redirects, images, API r
   }
   for (const path of ['/unknown', '/christmas-artist/unknown', '/mugshots/unknown', '/images/unknown.png', '/api/unknown', '/server/entry-server.js'])
     assert.equal((await get(path)).status, 404, path);
+  for (const [path, target] of [
+    ['/personalised-santa-message/all', '/free-santa-message'],
+    ['/personalised-santa-message/Cooper?utm_source=google', '/free-santa-message?utm_source=google&name=Cooper'],
+  ]) {
+    const response = await get(path);
+    assert.equal(response.status, 308);
+    assert.equal(response.headers.get('location'), target);
+    const destination = await get(target);
+    assert.equal(destination.status, 200);
+    assert.ok((await destination.text()).includes(`rel="canonical" href="https://www.santaradio.co.uk/free-santa-message"`));
+  }
   const gladys = await get('/christmas-artist/212-gladys-knight-the-pips-its-christmas-everyday');
   assert.equal(gladys.status, 200);
   assert.ok((await gladys.text()).includes('When You Love Someone'));
@@ -107,7 +119,7 @@ test('Vercel document handler preserves statuses, metadata and relative location
   const documentRoute = config.routes.findIndex(route => route.src?.includes('christmas-artist'));
   assert.ok(documentRoute < filesystem);
   const expression = new RegExp(`^${config.routes[documentRoute].src}$`);
-  for (const path of ['/', '/christmas-music', '/artist', '/santa-tracker/', '/santa-tracker/preview', '/mugshots/a1-singers'])
+  for (const path of ['/', '/christmas-music', '/artist', '/santa-tracker/', '/santa-tracker/preview', '/mugshots/a1-singers', '/personalised-santa-message/all', '/personalised-santa-message/Cooper'])
     assert.ok(expression.test(path), path);
   for (const path of ['/artist-artwork/catalogue.json', '/images/santa-tracker-share.png', '/api/santa-message'])
     assert.ok(!expression.test(path), path);

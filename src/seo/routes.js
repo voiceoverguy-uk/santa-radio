@@ -1,5 +1,6 @@
 import { songs, mugs, songPath, mugPath, songRedirects, mugAliases } from './catalogue.js';
 import legacySongs from '../data/legacy-songs.js';
+import { santaMessageRequestedName } from './santaMessageLinks.js';
 export const staticPages = ['/', '/apps', '/privacy-policy', '/christmas-music', '/mugshots/all', '/free-santa-message', '/submit-a-song', '/links', '/santa-stories', '/santa-tracker'];
 export const canonicalPaths = [...staticPages, ...songs.map(songPath), ...mugs.map(mugPath), ...songs.map(s => `/christmas-karaoke-lyrics/${s.id}-${s.link}`)];
 const paths = new Set(canonicalPaths);
@@ -35,6 +36,17 @@ export function resolvePublicRequest(raw) {
   try { path = decodeURIComponent(url.pathname); } catch { return { status: 400 }; }
   // Never redirect hosts: preview, audio feeds, integrations and API calls stay same-origin.
   const normalized = path.length > 1 ? path.replace(/\/+$/, '') : path;
+  const messageLink = normalized.match(/^\/personalised-santa-message(?:\/([^/]+))?$/i);
+  if (messageLink) {
+    if (!messageLink[1] || messageLink[1].toLowerCase() === 'all') {
+      url.searchParams.delete('name');
+    } else {
+      const name = santaMessageRequestedName(messageLink[1]);
+      if (!name) return { status: 404 };
+      url.searchParams.set('name', name);
+    }
+    return { status: 308, location: '/free-santa-message' + url.search };
+  }
   const target = aliases.get(normalized);
   if (target) return { status: 308, location: target + url.search };
   if (normalized !== path && (paths.has(normalized) || normalized === '/santa-tracker/preview'))
