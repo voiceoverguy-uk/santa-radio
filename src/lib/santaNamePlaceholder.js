@@ -1,5 +1,5 @@
-// Popular-name examples with real recordings in the existing bundled library.
-export const popularSantaExamples = ['Olivia', 'Harry', 'Jack', 'Freya'];
+import { popularSantaExamples } from '../data/santaPlaceholderNames.js';
+export { popularSantaExamples };
 
 export function randomSantaExample(random = Math.random) {
   return popularSantaExamples[Math.floor(random() * popularSantaExamples.length)];

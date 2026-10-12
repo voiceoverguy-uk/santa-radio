@@ -8,10 +8,17 @@ The owner-hosted name folder can fail as a directory page while individual WAV U
 
 **How to apply:** Verify individual audio and inventory discovery separately. Use an owner-uploaded standalone listing beside the recordings; do not change the external WordPress installation or request FTP credentials to fix discovery.
 
+Hosted recording labels can contain digits, including numbered variants. Preserve these labels and identifiers rather than assuming every catalogue entry is a letters-only first name.
+
+**Why:** A newly uploaded numbered WAV was readable and safely listed by the host, but letters-only display-label validation rejected the entire inventory.
+
+**How to apply:** Keep label validation compatible with safe file-derived alphanumeric labels while retaining strict filename, identifier and path checks. Do not strip variant suffixes or merge separate recordings without the owner's editorial direction.
+
 The user wants the number of names on FTP ready to go, displayed as “(number) names available to download.”
 The input placeholder should say “Start typing, eg. (name), over (number) names available”, with a random popular-name example and the currently available count.
+Choose random placeholder names from the user's supplied 200-entry British/American boys/girls list, not the recording database.
 
-**Why:** The user asked for the hosted-library size beside the name search.
+**Why:** The user asked for the hosted-library size beside the name search and explicitly requested their supplied list for random examples.
 
 **How to apply:** Count entries in the hosted recording inventory, not the combined hosted and bundled catalogue. Do not substitute a zero total when the hosted list cannot be read.
 

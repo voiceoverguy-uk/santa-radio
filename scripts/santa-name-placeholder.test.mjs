@@ -1,15 +1,15 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { findSantaMessage } from '../src/data/santaMessages.js';
 import { popularSantaExamples, randomSantaExample, santaNamePlaceholder } from '../src/lib/santaNamePlaceholder.js';
 
-test('every random popular example corresponds to a real available recording', () => {
+test('all 200 supplied entries can be randomly chosen without filtering by recordings', () => {
+  assert.equal(popularSantaExamples.length, 200);
   popularSantaExamples.forEach((name, i) => {
     assert.equal(randomSantaExample(() => (i + 0.5) / popularSantaExamples.length), name);
-    assert.equal(findSantaMessage(name)?.name, name);
   });
-  assert.equal(randomSantaExample(() => 0), 'Olivia');
-  assert.equal(randomSantaExample(() => 0.999999), 'Freya');
+  assert.equal(randomSantaExample(() => 0), 'Muhammad');
+  assert.equal(randomSantaExample(() => 0.999999), 'Sadie');
+  assert.equal(popularSantaExamples.filter(name => name === 'Olivia').length, 2);
 });
 
 test('placeholder uses the live total, requested wording and British number formatting', () => {

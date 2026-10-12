@@ -9,7 +9,9 @@ const MAX_INDEX_BYTES = 2 * 1024 * 1024;
 const MAX_WAV_BYTES = 10 * 1024 * 1024;
 const ID = /^[a-z0-9][a-z0-9'-]{0,79}$/;
 const FILE = /^[a-zA-Z0-9][a-zA-Z0-9'_-]{0,79}\.wav$/i;
-const NAME = /^[\p{L}\p{M}][\p{L}\p{M} '-]{0,79}$/u;
+// The host's index derives labels from safe filenames, including numeric
+// recording variants such as dixie3.wav. Digits do not change path safety.
+const NAME = /^[\p{L}\p{M}0-9][\p{L}\p{M}0-9 '-]{0,79}$/u;
 const key = input => input.normalize('NFKC').trim().toLocaleLowerCase('en-GB');
 export const localRecords = santaNames.map(name => ({ ...findSantaMessage(name), source: 'local' }));
 

@@ -78,6 +78,22 @@ test('hosted name overrides local only while inventory is valid', async () => {
   assert.equal((await library.resolve('olivia')).id, 'olivia');
 });
 
+test('numbered recording labels do not break the hosted library or its total', async () => {
+  const entries = [
+    demrie,
+    { id: 'dixie3', name: 'Dixie3', file: 'dixie3.wav', aliases: ['Dixie 3'] },
+    { id: '3dixie', name: '3Dixie', file: '3dixie.wav' },
+  ];
+  const library = createNameLibrary({ fetcher: async () => response(manifest(entries)) });
+  assert.equal((await library.search('')).hostedCount, 3);
+  const results = await library.search('dix');
+  assert.equal(results.warning, null);
+  assert.deepEqual(results.records.map(record => record.id), ['dixie3']);
+  assert.equal((await library.resolve('dixie3')).file, 'dixie3.wav');
+  assert.equal((await library.search('3')).records[0].name, '3Dixie');
+  assert.equal((await library.search('Demrie')).records[0].id, 'demrie');
+});
+
 test('untrusted inventory paths, controls, duplicate identifiers and invalid JSON fail explicitly', () => {
   for (const item of [
     { ...demrie, file: '../demrie.wav' }, { ...demrie, file: 'https://evil.test/demrie.wav' },
