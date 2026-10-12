@@ -2,7 +2,7 @@
 name: Personalised Santa audio scope
 description: Audio-only product direction and incremental name-library rollout.
 ---
-The owner-hosted name folder can fail as a directory page while individual WAV URLs still work. In October 2026, the directory was routed through an incompatible WordPress/PHP installation.
+The owner-hosted name folder can fail as a directory page while individual WAV URLs and a standalone PHP listing still work. In October 2026, the directory was routed through an incompatible WordPress/PHP installation, but an owner-uploaded standalone listing ran successfully.
 
 **Why:** Repeated directory requests returned HTTP 500, but a directly addressed supplied WAV downloaded and produced a playable greeting.
 

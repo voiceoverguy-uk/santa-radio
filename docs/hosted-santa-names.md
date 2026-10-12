@@ -53,3 +53,10 @@ local WAV as a mocked hosted source; it is not proof that all remote names work.
 Run the hosted-name browser tests and existing message allowance/access tests.
 After host setup, independently verify real search and actual MP3 generation;
 local preview checks do not prove live Vercel behaviour.
+
+The owner's uploaded index was verified with 64 entries. Every listed remote WAV
+passed format/duration validation and every name appeared through the real
+Preview search endpoint. A mobile browser generated, played and downloaded
+Demrie's greeting through the real mixer; only the Brevo access response was
+mocked to avoid creating a test contact. Publishing and live Vercel verification
+are separate steps.
