@@ -69,3 +69,9 @@ Missing-name request confirmations use “check back in a week” before 1 Decem
 **Why:** The owner explicitly requested this annual change in the suggested return interval, while saying visitors should check whether the name is available.
 
 **How to apply:** Treat this as a seasonal invitation to check availability, not a guarantee that a recording will be created by that date.
+
+Public example greetings are playback-only in the website interface. Do not offer downloads or sharing of the supplied boy/girl samples. This restriction does not apply to the personalised greetings visitors create and download.
+
+**Why:** The owner requested examples on the homepage and free audio message page, specifying “Don't allow a user to download. Only play it.”
+
+**How to apply:** Keep sample playback separate from the maker's downloadable results. Remove sample download controls and links, but do not claim browser-playable audio is completely download-proof.

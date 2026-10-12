@@ -38,11 +38,20 @@ export default function Soundboard() {
     audio.load();
   };
   useEffect(() => stop, []);
+  useEffect(() => {
+    const stopForExample = () => {
+      stop();
+      setActive(null);
+    };
+    document.addEventListener('santa-radio:example-start', stopForExample);
+    return () => document.removeEventListener('santa-radio:example-start', stopForExample);
+  }, []);
   const play = async phrase => {
     const sameClip = audioRef.current?.dataset.clip === phrase.file;
     stop();
     setError('');
     if (sameClip) { setActive(null); return; }
+    document.dispatchEvent(new CustomEvent('santa-radio:soundboard-start'));
     const audio = new Audio(`/audio/soundboard/${phrase.file}.mp3`);
     audio.dataset.clip = phrase.file;
     audioRef.current = audio;

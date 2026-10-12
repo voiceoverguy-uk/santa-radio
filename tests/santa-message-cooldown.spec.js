@@ -53,7 +53,7 @@ test('two successes block the third, preserve downloads and offer radio without 
   await expect(page.getByText('(The radio will pause while playing)', { exact: true })).toHaveCount(2);
   await expect(page.getByText('On iPhone, choose Share → Save to Files to keep the MP3.', { exact: true })).toHaveCount(2);
   await expect(page.getByRole('timer')).toHaveText('10:00');
-  await expect(page.getByText('You’ve created two free Santa messages for now. Please allow Santa 10 minutes to recover to generate more. Meanwhile why not enjoy Christmas music while you wait or tell your friends?', { exact: true })).toBeVisible();
+  await expect(page.getByText('You’ve created 2 Free Santa messages for now. Please allow Santa 10 minutes to recover before he records more. Meanwhile why not enjoy Santa Radio Christmas music while you wait or tell your friends?', { exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Share with friends', exact: true })).toBeEnabled();
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
   await expect(page.getByLabel('Child’s first name')).toBeDisabled();

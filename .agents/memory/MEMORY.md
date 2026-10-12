@@ -17,5 +17,6 @@
 - [Tracker holiday dates](tracker-holiday-dates.md) — Santa stays on holiday through 30 November; returns to the North Pole on 1 December.
 - [Preview test timeouts](preview-test-timeouts.md) — Whole-test timeouts can report misleading matcher values even when the captured UI state is correct.
 - [Browser text bounds](browser-text-bounds.md) — Allow subpixel rounding in inline-text containment checks to avoid false cropping failures.
+- [Keyboard focus checks](keyboard-focus-checks.md) — Programmatic focus after pointer use may not activate focus-visible; verify with real keyboard navigation.
 - [SEO delivery rules](seo-delivery.md) — Owner prefers www; keep preview/integrations on their hosts. Validate built Node SSR as well as Vite rendering.
 - [Workspace environment label](workspace-environment-label.md) — Do not infer a production database target from the environment label alone.

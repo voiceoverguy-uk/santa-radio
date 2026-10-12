@@ -2,6 +2,8 @@ import { test, expect } from '@playwright/test';
 
 test('all soundboard buttons share the gold glow without changing size', async ({ page }) => {
   await page.goto('/');
+  const rejectCookies = page.getByRole('button', { name: 'Reject optional cookies', exact: true });
+  if (await rejectCookies.isVisible()) await rejectCookies.click();
   const buttons = page.locator('.soundboard-btn');
   await expect(buttons).toHaveCount(20);
   for (const button of await buttons.all()) {
@@ -18,6 +20,9 @@ test('all soundboard buttons share the gold glow without changing size', async (
   await page.mouse.move(0, 0);
   const first = buttons.first();
   await first.focus();
+  await page.keyboard.press('Tab');
+  await page.keyboard.press('Shift+Tab');
+  await expect(first).toBeFocused();
   await expect.poll(() => first.evaluate(el => getComputedStyle(el).boxShadow)).toContain('16px 3px');
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(first).toHaveCSS('transition-duration', '0s');

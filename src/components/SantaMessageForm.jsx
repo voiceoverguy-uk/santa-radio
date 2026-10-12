@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useRadio } from './RadioProvider.jsx';
+import SantaMessageExample from './SantaMessageExample.jsx';
 import SantaMessageAccessForm from './SantaMessageAccessForm.jsx';
 import SantaMessageShare, { SantaGreetingShare } from './SantaMessageShare.jsx';
 import { useSantaMessageAccess } from './SantaMessageAccessProvider.jsx';
@@ -199,6 +200,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         <p className="eyebrow">A little North Pole experiment</p>
         <h2 className="santa-message-heading">Their name.<br />Santa’s voice.<br />A little Christmas magic.</h2>
         <p>A real recorded greeting from Santa, with your child’s name in it. Open the message desk with your adult contact details, then choose a recorded name, listen together and download your free MP3.</p>
+        <SantaMessageExample />
         <svg className="north-pole-letter" viewBox="0 0 360 240" fill="none" aria-hidden="true">
           <ellipse cx="180" cy="218" rx="114" ry="10" fill="#09291e" />
           <path d="M47 103L178 28L311 103" stroke="#d9bc72" strokeWidth="2" />
@@ -225,7 +227,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
             : nameSearch.loading ? 'Checking how many names are available…' : 'Name total temporarily unavailable.'}
         </p>
         {coolingDown ? <div className="message-wait">
-          <p role="status">You’ve created two free Santa messages for now. Please allow Santa 10 minutes to recover to generate more. Meanwhile why not enjoy Christmas music while you wait or tell your friends?</p>
+          <p role="status">You’ve created 2 Free Santa messages for now. Please allow Santa 10 minutes to recover before he records more. Meanwhile why not enjoy Santa Radio Christmas music while you wait or tell your friends?</p>
           <p className="message-countdown">More messages in <span role="timer" aria-live="off">{countdown}</span></p>
           <button className="message-retry" type="button" onClick={listenToRadio} disabled={!radio || radio.status === 'playing' || radio.status === 'loading'}>
             {radio?.status === 'playing' ? 'Santa Radio is playing' : radio?.status === 'loading' ? 'Connecting to Santa Radio…' : 'Listen to Santa Radio'}
