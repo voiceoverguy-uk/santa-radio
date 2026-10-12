@@ -20,11 +20,11 @@ Staff-only sign-in for the private missing-name request ledger is separate from 
 
 **How to apply:** Keep staff authentication confined to the private ledger and staff sign-in pages. Preserve the existing adult Brevo step for the public MP3 maker.
 
-The missing-name FTP text file is a private additional copy, not a replacement for the database or protected request ledger.
+Do not implement FTP, Mark's server integration or text-file uploads for missing-name requests. Keep the database-backed request system and protected staff ledger; staff-only TXT downloads are permitted.
 
-**Why:** The owner explicitly chose “Keep /request-names and add a private FTP copy”.
+**Why:** The owner explicitly cancelled the earlier FTP-copy plan and requested database-backed saving plus protected ledger downloads instead.
 
-**How to apply:** Preserve the existing request storage and staff page. Keep exports separate from publicly readable now/next song feeds.
+**How to apply:** Repair and extend the existing request storage and staff page without remote file uploads. Do not revive the withdrawn FTP approach.
 
 The uploaded Brevo embed can differ from the current hosted form's required fields. Inspect the live form's field requirements, not just its CORS headers or JavaScript submission protocol.
 
