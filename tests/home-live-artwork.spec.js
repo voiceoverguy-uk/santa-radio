@@ -56,13 +56,41 @@ test('desktop play reveals artwork on the right, updates artists and glows on ho
   await expect(card).toHaveCount(0);
 });
 
-test('artwork remains hidden on phones and tablets, and fits smaller desktops', async ({ page }) => {
+test('mobile play shows artwork below the countdown; tablets stay hidden and desktops keep the right-hand layout', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await setup(page);
-  await page.locator('.hero-actions').getByRole('button', { name: 'Listen Live', exact: true }).click();
+  const state = await setup(page);
   const card = page.locator('.now-playing-artwork');
-  await expect(card).toBeHidden();
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await expect(card).toHaveCount(0);
+  await page.locator('.hero-actions').getByRole('button', { name: 'Listen Live', exact: true }).click();
+  await expect(card).toBeVisible();
+  await expect(card.locator('img')).toHaveAttribute('src', '/artist-artwork/cher.webp');
+  await expect.poll(() => card.locator('img').evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+  for (const [width, height] of [[320, 568], [390, 844], [430, 932], [667, 375], [767, 900]]) {
+    await page.setViewportSize({ width, height });
+    const frame = await card.boundingBox();
+    const countdown = await page.locator('.hero-countdown').boundingBox();
+    const tracker = await page.locator('.tracker-banner').boundingBox();
+    expect(frame.y).toBeGreaterThan(countdown.y + countdown.height);
+    expect(frame.x).toBeGreaterThanOrEqual(0);
+    expect(frame.x + frame.width).toBeLessThanOrEqual(width);
+    expect(frame.width).toBeCloseTo(frame.height, 1);
+    expect(frame.y + frame.height).toBeLessThan(tracker.y);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+  fs.mkdirSync('generated-artifacts', { recursive: true });
+  await card.scrollIntoViewIfNeeded();
+  await page.screenshot({ path: 'generated-artifacts/home-live-artwork-mobile.jpg' });
+  state.artist = 'Ava Max';
+  await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+  await expect(card.locator('img')).toHaveAttribute('src', '/artist-artwork/ava-max.webp');
+  state.artist = 'An artist without supplied artwork';
+  await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+  await expect(card.locator('img')).toHaveAttribute('src', '/artist-artwork/santa-fallback.webp');
+  await page.getByRole('complementary', { name: 'Santa Radio player' }).getByRole('button', { name: 'Pause Radio', exact: true }).click();
+  await expect(card).toHaveCount(0);
+  await page.getByRole('complementary', { name: 'Santa Radio player' }).getByRole('button', { name: 'Listen Live', exact: true }).click();
+  await expect(card).toBeVisible();
   await page.setViewportSize({ width: 820, height: 900 });
   await expect(card).toBeHidden();
   await page.setViewportSize({ width: 1024, height: 800 });
@@ -85,10 +113,12 @@ test('failed artwork falls back safely; reduced motion disables transitions', as
   expect(await card.evaluate(el => getComputedStyle(el).transitionDuration)).toBe('0s');
 });
 
-test('unsuccessful playback does not show a playing-artist card', async ({ page }) => {
-  await page.setViewportSize({ width: 1280, height: 900 });
+for (const width of [390, 1280]) {
+test(`unsuccessful playback does not show a playing-artist card at ${width}px`, async ({ page }) => {
+  await page.setViewportSize({ width, height: 900 });
   await setup(page, { failPlayback: true });
   await page.locator('.hero-actions').getByRole('button', { name: 'Listen Live', exact: true }).click();
   await expect(page.locator('.hero-actions').getByRole('button', { name: 'Try Again' })).toBeVisible();
   await expect(page.locator('.now-playing-artwork')).toHaveCount(0);
 });
+}

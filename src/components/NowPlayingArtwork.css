@@ -2,6 +2,33 @@
   display: none;
 }
 
+@media (max-width: 767px) {
+  .hero-layout:has(.now-playing-artwork) .now-playing-artwork {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: min(100%, 248px);
+    aspect-ratio: 1;
+    margin: 28px auto 0;
+    padding: 8px;
+    overflow: hidden;
+    border: 1px solid #d4af3770;
+    border-radius: 14px;
+    background: #102d26b8;
+    box-shadow: 0 14px 38px #06150f52, inset 0 0 0 1px #fff8e708;
+    backdrop-filter: blur(3px);
+  }
+
+  .now-playing-artwork img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 7px;
+  }
+}
+
 @media (min-width: 1024px) {
   .now-playing-artwork {
     position: absolute;

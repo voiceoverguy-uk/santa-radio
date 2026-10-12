@@ -8,9 +8,9 @@ Do not show a breadcrumb/path trail on Christmas artist/song pages.
 
 **How to apply:** Keep those pages free of visible breadcrumb trails; retain ordinary navigation and the back-to-music link.
 
-Show the current artist's artwork on the right of the homepage hero during desktop radio playback, with a thin frame and the same gold hover glow as other homepage boxes. Keep it off mobile.
+Show the current artist's artwork on the right of the homepage hero during desktop radio playback, with a thin frame and the same gold hover glow as other homepage boxes. Also show it beneath the countdown on mobile while playing; hide it when paused.
 
-**Why:** The user explicitly requested this desktop-only listening enhancement.
+**Why:** The user originally requested desktop-only artwork, then requested mobile artwork too after showing the unused space beneath the countdown.
 
 **How to apply:** Preserve the North Pole backdrop and existing player; use shared artist artwork and Santa fallback without adding duplicate song-detail blocks.
 
