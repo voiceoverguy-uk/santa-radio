@@ -42,6 +42,12 @@ Artwork updates are intended for both the website and the separate iOS app, usin
 
 **How to apply:** Preserve the shared-catalogue contract when adding artwork. Website changes must be published before a production mobile client can retrieve them; do not claim iOS verification without checking the separate app. Replacement images must invalidate mobile caches even when the current track is unchanged.
 
+Song-specific artwork is an exception to the shared rollout: introduce it on the website only first, keeping the current artist portraits and app feed unchanged. A special image for one song must not replace the artist's image for their other songs. The owner may consider song-specific app support at the next app update; that work is not yet authorised.
+
+**Why:** The owner confirmed “make it work on web only first” and used a special image for just one Michael Bublé song as the intended behaviour.
+
+**How to apply:** Add website-only, verified song assignments ahead of the artist fallback. Filenames matching a song-page slug, such as ariana-grande-last-christmas, are sufficient handoff clues to check against the catalogue; ask when ambiguous rather than guessing. Preserve the app's existing artist-only contract until separate app work is agreed.
+
 Include explicit Santa entries for all song-catalogue artists without supplied portraits in the shared feed, while keeping genuine portrait mappings separate.
 
 **Why:** The user approved this server-side workaround for missing fallback artwork in the separate app, to avoid requiring an app update.
