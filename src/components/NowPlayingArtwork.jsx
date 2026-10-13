@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useRadio } from './RadioProvider.jsx';
-import { artistArtwork, fallbackArtwork } from '../data/artistArtwork.js';
 import { matchLiveSong } from '../data/matchLiveSong.js';
 import { songPath } from '../seo/catalogue.js';
+import SongArtwork from './SongArtwork.jsx';
 import './NowPlayingArtwork.css';
 
 export default function NowPlayingArtwork() {
@@ -12,12 +11,7 @@ export default function NowPlayingArtwork() {
   const artist = current?.artist?.trim() || '';
   const matchedSong = metadata?.currentStatus === 'ready' ? matchLiveSong(current).song : null;
   const hasArtistArtwork = metadata?.currentStatus === 'ready' && artist.length > 0;
-  const artwork = hasArtistArtwork ? artistArtwork(artist) : fallbackArtwork;
-  const [imageSrc, setImageSrc] = useState(artwork);
-
-  useEffect(() => {
-    setImageSrc(artwork);
-  }, [artwork]);
+  const artworkSong = matchedSong || (hasArtistArtwork ? { artist } : null);
 
   if (status !== 'playing') return null;
 
@@ -27,16 +21,11 @@ export default function NowPlayingArtwork() {
       role="group"
       aria-label={matchedSong ? `Now playing: ${matchedSong.song} by ${matchedSong.artist}` : artist ? `Now playing artwork for ${artist}` : 'Santa Radio now-playing artwork'}
     >
-      <img
-        key={artwork}
-        src={imageSrc}
-        alt={imageSrc !== fallbackArtwork ? `Illustrated artwork for ${artist}` : 'Santa Radio branded Christmas artwork'}
+      <SongArtwork
+        song={artworkSong}
         width="512"
         height="512"
         decoding="async"
-        onError={() => {
-          if (imageSrc !== fallbackArtwork) setImageSrc(fallbackArtwork);
-        }}
       />
       {matchedSong && (
         <Link

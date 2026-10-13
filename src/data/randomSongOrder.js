@@ -1,4 +1,5 @@
-import { artistArtwork, fallbackArtwork } from './artistArtwork.js';
+import { fallbackArtwork } from './artistArtwork.js';
+import { songArtwork } from './songArtwork.js';
 
 export function randomSongOrder(catalogue, random = Math.random) {
   const songs = [...catalogue];
@@ -10,7 +11,7 @@ export function randomSongOrder(catalogue, random = Math.random) {
   const portraits = [];
   const placeholders = [];
   for (const song of songs) {
-    (artistArtwork(song.artist) === fallbackArtwork ? placeholders : portraits).push(song);
+    (songArtwork(song) === fallbackArtwork ? placeholders : portraits).push(song);
   }
   return [...portraits, ...placeholders];
 }

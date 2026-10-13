@@ -2,11 +2,11 @@ import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import findSong from '../data/findSong';
 import relatedSongs from '../data/relatedSongs.js';
-import { artistArtwork, fallbackArtwork } from '../data/artistArtwork.js';
 import './SongDetail.css';
 import PageSeo from '../seo/PageSeo.jsx';
 import SongVideo from '../components/SongVideo.jsx';
-import { songMetadata, songDescription, artworkAlt, performanceKind } from '../seo/catalogue.js';
+import SongArtwork from '../components/SongArtwork.jsx';
+import { songMetadata, songDescription, performanceKind } from '../seo/catalogue.js';
 
 export default function SongDetail() {
   const { slug } = useParams();
@@ -74,13 +74,7 @@ export default function SongDetail() {
             </div>
 
             <div className="song-detail-artwork">
-              <img key={song.artist} src={artistArtwork(song.artist)} alt={artworkAlt(song)} width="512" height="512" className="song-artwork-img"
-                onError={event => {
-                  if (event.currentTarget.getAttribute('src') !== fallbackArtwork) {
-                    event.currentTarget.src = fallbackArtwork;
-                    event.currentTarget.alt = 'Santa with music notes';
-                  }
-                }} />
+              <SongArtwork song={song} width="512" height="512" className="song-artwork-img" />
             </div>
           </div>
 

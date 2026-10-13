@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { artistArtwork, fallbackArtwork } from '../data/artistArtwork.js';
+import SongArtwork from '../components/SongArtwork.jsx';
 import './Music.css';
-import { songs as songsData, collectionMetadata, artworkAlt } from '../seo/catalogue.js';
+import { songs as songsData, collectionMetadata } from '../seo/catalogue.js';
 import PageSeo from '../seo/PageSeo.jsx';
 import Breadcrumbs from '../seo/Breadcrumbs.jsx';
 import { randomSongOrder } from '../data/randomSongOrder.js';
@@ -14,17 +14,9 @@ const alphabeticalSongs = [...songsData].sort((a, b) =>
   a.song.localeCompare(b.song, 'en-GB', { sensitivity: 'base', numeric: true })
 );
 
-function ArtistAvatar({ artist }) {
-  const src = artistArtwork(artist);
+function ArtistAvatar({ song }) {
   return (
-    <img key={src} src={src} alt={artworkAlt({ artist })}
-      className="artist-avatar-img" width="120" height="120" loading="lazy"
-      onError={event => {
-        if (event.currentTarget.getAttribute('src') !== fallbackArtwork) {
-          event.currentTarget.src = fallbackArtwork;
-          event.currentTarget.alt = 'Santa with music notes — temporary artwork';
-        }
-      }} />
+    <SongArtwork song={song} className="artist-avatar-img" width="120" height="120" loading="lazy" />
   );
 }
 
@@ -80,7 +72,7 @@ export default function Music() {
         <div className="container music-grid">
           {filtered.map((s) => (
             <Link key={`${s.id}-${s.link}`} to={`/christmas-artist/${s.id}-${s.link}`} className="song-card">
-              <ArtistAvatar artist={s.artist} />
+              <ArtistAvatar song={s} />
               <div className="song-info">
                 <strong>{s.artist}</strong>
                 <span>{s.song}</span>

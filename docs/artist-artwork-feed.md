@@ -99,6 +99,27 @@ must be revalidated; native caches still need the complete versioned image URL.
 
 ## Adding and replacing artwork here
 
+### Website-only song images
+
+Individual recordings can have a website-only illustration in addition to their artist portrait.
+These include Ariana Grande's **Last Christmas** (catalogue ID 75) and **Winter Things**
+(catalogue ID 527), each with its own supplied illustration. This changes the website's music card, song page,
+social image and reliably matched homepage artwork, not the artist-based mobile feed.
+
+Supply an image named after the song-page slug, such as `ariana-grande-last-christmas.png`.
+Check its artist, title and catalogue ID before explicitly assigning it in
+`src/data/songArtwork.js`; ask if a filename is ambiguous. Preserve the original,
+optimise a WebP delivery copy without cropping the composition, and retain the existing
+artist image. Do not automatically infer assignments from uploaded filenames.
+
+Website image errors fall back from the special song image to the artist portrait,
+then Santa. Unknown or ambiguous live tracks must not select another song's special image.
+The website-only resolver must not be used to generate this mobile feed: its existing
+artist mappings, addresses, schema and version calculations remain unchanged.
+Song-specific support in the separate apps requires separately agreed future work.
+
+### Shared artist portraits
+
 1. Preserve the original upload; create the optimised WebP under `public/artist-artwork`.
 2. Add or update the single mapping in `src/data/artistArtwork.js`.
 3. Development serves fresh feed data through Vite. Production builds emit

@@ -2,6 +2,7 @@ import rawSongs from '../data/songs.json' with { type: 'json' };
 import rawMugs from '../data/mugshots.json' with { type: 'json' };
 import { buildCatalogue } from '../data/mugshot-catalogue.js';
 import { artistArtwork, fallbackArtwork } from '../data/artistArtwork.js';
+import { songArtwork } from '../data/songArtwork.js';
 
 export const ORIGIN = 'https://www.santaradio.co.uk';
 export const absolute = path => new URL(path, ORIGIN).href;
@@ -80,7 +81,8 @@ export function performers(song) {
   return entity ? [entity] : [];
 }
 export function artworkAlt(song) {
-  if (artistArtwork(song.artist) === fallbackArtwork) return 'Santa Radio branded artwork: Santa with music notes';
+  if (songArtwork(song) === fallbackArtwork) return 'Santa Radio branded artwork: Santa with music notes';
+  if (songArtwork(song) !== artistArtwork(song.artist)) return `Illustrated artwork for ${song.song} by ${song.artist}`;
   if (song.artist === 'Frankie Goes to Hollywood') return 'Illustration of Holly Johnson, singer with Frankie Goes to Hollywood';
   return `${song.artist} illustrated artwork`;
 }
@@ -162,7 +164,7 @@ export function appsMetadata(apps) {
 }
 export function songMetadata(song) {
   const path = songPath(song), url = absolute(path), artist = performers(song);
-  return pageMetadata({ path, title: `${song.song} — ${song.artist} | Santa Radio`, description: songDescription(song), image: artistArtwork(song.artist), imageAlt: artworkAlt(song),
+  return pageMetadata({ path, title: `${song.song} — ${song.artist} | Santa Radio`, description: songDescription(song), image: songArtwork(song), imageAlt: artworkAlt(song),
     crumbs: [['Home', '/'], ['Christmas Music', '/christmas-music'], [`${song.song} — ${song.artist}`, path]],
     nodes: [{ '@type': 'MusicRecording', '@id': `${url}#recording`, name: song.song, url, description: songDescription(song), creditText: `Catalogue performer credit: ${song.artist}`, ...(artist.length ? { byArtist: artist } : {}), image: { '@id': `${url}#image` } }] });
 }

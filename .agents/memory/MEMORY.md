@@ -20,3 +20,4 @@
 - [Keyboard focus checks](keyboard-focus-checks.md) — Programmatic focus after pointer use may not activate focus-visible; verify with real keyboard navigation.
 - [SEO delivery rules](seo-delivery.md) — Owner prefers www; keep preview/integrations on their hosts. Validate built Node SSR as well as Vite rendering.
 - [Workspace environment label](workspace-environment-label.md) — Do not infer a production database target from the environment label alone.
+- [Workspace verification](workspace-verification-baselines.md) — Recheck files after task-environment transitions; earlier edits and temporary baselines may be absent.
