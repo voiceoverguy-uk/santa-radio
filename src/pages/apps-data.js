@@ -7,6 +7,7 @@ import santaMessages from '../assets/apps/santa-messages.png';
 import christmasRadio from '../assets/apps/christmas-radio.png';
 import santaText from '../assets/apps/santa-text.png';
 import santaDash from '../assets/apps/santa-dash.png';
+import santaRadioMac from '../assets/apps/santa-radio-mac.webp';
 
 // Source copy and destination URLs: https://www.santaradio.co.uk/free-christmas-apps/
 // Preserve legacy URLs verbatim; a link does not guarantee current store availability.
@@ -145,3 +146,14 @@ export const christmasApps = [
     ],
   },
 ];
+
+export const macAppListing = {
+  id: 'santa-radio-mac',
+  title: 'Santa Radio for Mac',
+  subtitle: 'Play Santa Radio and see the current song and artist.',
+  image: santaRadioMac,
+  alt: 'Screenshot of the Santa Radio Mac app interface showing the current track, song and artist, and a Play button.',
+  width: 788,
+  height: 1328,
+  status: 'Coming soon',
+};

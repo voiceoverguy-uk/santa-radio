@@ -327,6 +327,82 @@
   text-align: right;
 }
 
+.apps-page .mac-app-showcase {
+  padding: 76px 0 82px;
+  border-bottom: 1px solid #d4af3740;
+  background: radial-gradient(ellipse at 50% 0%, #244d39 0%, transparent 62%), #10291f;
+}
+
+.apps-page .mac-app-inner {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: clamp(30px, 6vw, 76px);
+}
+
+.apps-page .mac-app-copy { max-width: 460px; }
+
+.apps-page .apps-page-eyebrow {
+  margin: 0 0 16px;
+  color: var(--gold-light);
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .16em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.apps-page .mac-app-copy .app-section-title { margin-bottom: 18px; }
+
+.apps-page .mac-app-description {
+  margin: 0;
+  color: var(--muted);
+  font-size: .95rem;
+  line-height: 1.8;
+}
+
+.apps-page .mac-app-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  margin: 24px 0 0;
+  padding: 8px 16px;
+  border: 1px solid #d4af3780;
+  border-radius: 999px;
+  background: #153628;
+  color: var(--gold-light);
+  font-size: .85rem;
+  font-weight: 600;
+  letter-spacing: .03em;
+}
+
+.apps-page .mac-app-figure {
+  width: 100%;
+  max-width: 420px;
+  min-width: 0;
+  margin: 0 auto;
+  padding: 9px;
+  border: 1px solid #d4af3760;
+  border-radius: 15px;
+  background: #0b2019;
+  box-shadow: 0 22px 55px #06150f50;
+}
+
+.apps-page .mac-app-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.apps-page .mac-app-figure figcaption {
+  padding: 10px 4px 1px;
+  color: var(--muted);
+  font-size: .72rem;
+  letter-spacing: .04em;
+  text-align: right;
+}
+
 @media (max-width: 767px) {
   .apps-page .apps-hero { padding: 48px 20px 52px; }
   .apps-page .apps-hero-logo { width: 250px; margin-bottom: 26px; }
@@ -340,6 +416,10 @@
   .apps-page .app-dl-btn { width: min(100%, 280px); }
   .apps-page .apple-tv-showcase { padding: 52px 0 58px; }
   .apps-page .apple-tv-inner { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .apps-page .mac-app-showcase { padding: 52px 0 58px; }
+  .apps-page .mac-app-inner { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .apps-page .mac-app-copy { max-width: 560px; margin-inline: auto; text-align: center; }
+  .apps-page .mac-app-figure { width: min(100%, 380px); padding: 6px; }
   .apps-page .apple-tv-copy { max-width: 560px; margin-inline: auto; text-align: center; }
   .apps-page .apple-tv-instruction { display: inline-block; text-align: left; }
   .apps-page .apple-tv-figure { width: 100%; padding: 6px; }

@@ -161,6 +161,50 @@ test('Apps has six complete sections, real local images and app-specific downloa
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
+test('Mac app listing shows its supplied interface and Coming soon without a store link', async ({ page }) => {
+  await page.goto('/apps');
+  const section = page.getByRole('region', { name: 'Santa Radio for Mac' });
+  await expect(section).toBeVisible();
+  await expect(section.getByRole('heading', { name: 'Santa Radio for Mac', exact: true })).toBeVisible();
+  await expect(section.getByRole('status')).toHaveText('Coming soon');
+  await expect(section).toContainText('Play Santa Radio and see the current song and artist.');
+  await expect(section.getByRole('link')).toHaveCount(0);
+  await expect(section.getByRole('button')).toHaveCount(0);
+
+  const image = section.getByRole('img', {
+    name: 'Screenshot of the Santa Radio Mac app interface showing the current track, song and artist, and a Play button.',
+  });
+  const imageUrl = await image.getAttribute('src');
+  expect(imageUrl).toMatch(/\.webp/);
+  const response = await page.request.get(imageUrl);
+  expect(response.ok()).toBe(true);
+  expect((await response.body()).length).toBeLessThan(250000);
+
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await image.scrollIntoViewIfNeeded();
+    await expect.poll(() => image.evaluate(el => [el.naturalWidth, el.naturalHeight])).toEqual([788, 1328]);
+    const bounds = await image.boundingBox();
+    expect(bounds.width).toBeGreaterThan(200);
+    expect(bounds.width / bounds.height).toBeCloseTo(788 / 1328, 2);
+    expect(bounds.x).toBeGreaterThanOrEqual(0);
+    expect(bounds.x + bounds.width).toBeLessThanOrEqual(width);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+
+  const graph = JSON.parse(await page.locator('script[type="application/ld+json"]').textContent());
+  const appList = graph['@graph'].find(node => node['@type'] === 'ItemList');
+  expect(appList.numberOfItems).toBe(7);
+  expect(appList.itemListElement.at(-1)).toMatchObject({
+    name: 'Santa Radio for Mac',
+    url: 'https://www.santaradio.co.uk/apps#santa-radio-mac',
+    description: 'Play Santa Radio and see the current song and artist.',
+  });
+  expect(JSON.stringify(graph)).not.toMatch(/aggregateRating|SoftwareApplication|MobileApplication|"offers"/);
+  await expect(page.locator('.app-section')).toHaveCount(6);
+  await expect(page.getByRole('region', { name: 'Available FREE on Apple TV' })).toBeVisible();
+});
+
 test('Apple TV has its own free big-screen section and a responsive supplied screenshot', async ({ page }) => {
   await page.goto('/apps');
   await page.getByRole('button', { name: 'Reject optional cookies', exact: true }).click();

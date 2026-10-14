@@ -1,7 +1,7 @@
 import PageSeo from '../seo/PageSeo.jsx';
 import Breadcrumbs from '../seo/Breadcrumbs.jsx';
 import { appsMetadata, appsBreadcrumbs } from '../seo/catalogue.js';
-import { christmasApps } from './apps-data.js';
+import { christmasApps, macAppListing } from './apps-data.js';
 import { appStoreVerification, storeCheckedAt, storeCheckedLabel, amazonDeviceSource } from './apps-store-verification.js';
 import appleTvScreenshot from '../assets/apps/santa-radio-apple-tv.webp';
 import AppIcon from './AppIcon.jsx';
@@ -108,10 +108,36 @@ function AppleTvShowcase() {
   );
 }
 
+function MacAppShowcase({ app }) {
+  return (
+    <section id={app.id} className="mac-app-showcase" aria-labelledby={`${app.id}-title`}>
+      <div className="apps-container mac-app-inner">
+        <div className="mac-app-copy">
+          <p className="apps-page-eyebrow">Mac app</p>
+          <h2 id={`${app.id}-title`} className="app-section-title">{app.title}</h2>
+          <p className="mac-app-description">{app.subtitle}</p>
+          <p className="mac-app-status" role="status">{app.status}</p>
+        </div>
+        <figure className="mac-app-figure">
+          <img
+            src={app.image}
+            alt={app.alt}
+            width={app.width}
+            height={app.height}
+            loading="lazy"
+            decoding="async"
+          />
+          <figcaption>Santa Radio Mac app interface</figcaption>
+        </figure>
+      </div>
+    </section>
+  );
+}
+
 export default function Apps() {
   return (
     <main className="apps-page">
-      <PageSeo metadata={appsMetadata(christmasApps)} />
+      <PageSeo metadata={appsMetadata([...christmasApps, macAppListing])} />
       <div className="apps-hero">
         <div className="apps-hero-content">
           <img className="apps-hero-logo" src="/images/santa-radio-logo.png" alt="Santa Radio" width="827" height="190" />
@@ -129,7 +155,12 @@ export default function Apps() {
         <div key={app.id}>
           {index > 0 && <div className="apps-divider" aria-hidden="true" />}
           <AppSection app={app} />
-          {index === 0 && <AppleTvShowcase />}
+          {index === 0 && (
+            <>
+              <AppleTvShowcase />
+              <MacAppShowcase app={macAppListing} />
+            </>
+          )}
         </div>
       ))}
     </main>
