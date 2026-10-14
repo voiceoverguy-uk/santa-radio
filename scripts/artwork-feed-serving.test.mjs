@@ -67,6 +67,30 @@ test('HEAD and OPTIONS work, missing images are 404 not the HTML homepage', asyn
   assert.equal(missing.status, 404);
 });
 
+test('built Elvis page and SSR share the song image without altering other recordings', async () => {
+  const { render } = await import('../dist/server/entry-server.js');
+  for (const [path, artwork] of [
+    ['/christmas-artist/399-elvis-presley-blue-christmas', '/artist-artwork/elvis-presley-blue-christmas.webp'],
+    ['/christmas-artist/260-elvis-presley-santa-bring-my-baby-back-to-me', '/artist-artwork/elvis-presley.webp'],
+    ['/christmas-artist/116-glen-campbell-blue-christmas', '/artist-artwork/glen-campbell.webp'],
+  ]) {
+    const response = await fetch(new URL(path, base));
+    assert.equal(response.status, 200);
+    const served = await response.text();
+    const ssr = render(path);
+    for (const html of [served, `${ssr.head}${ssr.markup}`]) {
+      assert.ok(html.includes(`src="${artwork}"`), path);
+      for (const tag of ['property="og:image"', 'name="twitter:image"']) {
+        assert.ok(html.includes(`${tag} content="https://www.santaradio.co.uk${artwork}"`), path);
+      }
+      assert.ok(html.includes(`"contentUrl":"https://www.santaradio.co.uk${artwork}"`), path);
+    }
+  }
+  const image = await fetch(new URL('/artist-artwork/elvis-presley-blue-christmas.webp', base));
+  assert.equal(image.status, 200);
+  assert.equal(image.headers.get('content-type'), 'image/webp');
+});
+
 test('Vercel configuration includes public feed/image access and preserves asset routing', async () => {
   const config = JSON.parse(await readFile('vercel.json', 'utf8'));
   const artwork = config.routes.find(item => item.src === '/artist-artwork/(.*)');

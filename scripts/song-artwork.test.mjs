@@ -14,6 +14,40 @@ const winterThings = songs.find(song => song.id === 527);
 const special = '/artist-artwork/ariana-grande-last-christmas.webp';
 const winterSpecial = '/artist-artwork/ariana-grande-winter-things.webp';
 const usual = '/artist-artwork/ariana-grande.webp';
+const elvisBlue = songs.find(song => song.id === 399);
+const elvisSpecial = '/artist-artwork/elvis-presley-blue-christmas.webp';
+const elvisUsual = '/artist-artwork/elvis-presley.webp';
+
+test('Elvis Blue Christmas override requires its exact verified recording', () => {
+  assert.equal(elvisBlue.artist, 'Elvis Presley');
+  assert.equal(elvisBlue.song, 'Blue Christmas');
+  assert.equal(elvisBlue.link, 'elvis-presley-blue-christmas');
+  assert.equal(songArtwork(elvisBlue), elvisSpecial);
+  assert.deepEqual(songArtworkCandidates(elvisBlue), [elvisSpecial, elvisUsual, artistMapping.fallbackArtwork]);
+  for (const other of songs.filter(song =>
+    song.id !== 399 && (song.artist === 'Elvis Presley' || song.song === 'Blue Christmas'))) {
+    assert.equal(songArtwork(other), artistMapping.artistArtwork(other.artist));
+  }
+  assert.equal(songArtwork({ ...elvisBlue, song: 'Another recording' }), elvisUsual);
+  assert.equal(songArtwork({ ...elvisBlue, artist: 'Michael Buble' }), artistMapping.artistArtwork('Michael Buble'));
+  assert.equal(songArtwork({ ...elvisBlue, id: 99999 }), elvisUsual);
+  assert.equal(songArtwork(matchLiveSong({ artist: 'Elvis Presley', title: 'Blue Christmas' }).song), elvisSpecial);
+  const metadata = songMetadata(elvisBlue);
+  assert.ok(metadata.image.endsWith(elvisSpecial));
+  assert.ok(metadata.graph.find(node => node['@type'] === 'ImageObject').contentUrl.endsWith(elvisSpecial));
+  assert.equal(artworkAlt(elvisBlue), 'Illustrated artwork for Blue Christmas by Elvis Presley');
+});
+
+test('Elvis delivery image is optimised and does not enter the artist-only app feed', async () => {
+  const image = await readFile(`public${elvisSpecial}`);
+  assert.equal(image.subarray(8, 12).toString(), 'WEBP');
+  assert.ok(image.length < 100000);
+  const original = await readFile('attached_assets/elvis-presley-blue-christmas_1791994904265.png');
+  assert.equal(original.subarray(1, 4).toString(), 'PNG');
+  const feed = await buildArtworkFeed(artistMapping);
+  assert.equal(feed.artists['elvis presley'].path, elvisUsual);
+  assert.ok(!JSON.stringify(feed).includes(elvisSpecial));
+});
 
 test('Ariana recordings get their own verified website overrides, not the app portrait', () => {
   assert.equal(songArtwork(lastChristmas), special);

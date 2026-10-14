@@ -9,6 +9,11 @@ export const songPortraits = Object.freeze({
     title: 'Last Christmas',
     path: '/artist-artwork/ariana-grande-last-christmas.webp',
   }),
+  399: Object.freeze({
+    artist: 'Elvis Presley',
+    title: 'Blue Christmas',
+    path: '/artist-artwork/elvis-presley-blue-christmas.webp',
+  }),
   527: Object.freeze({
     artist: 'Ariana Grande',
     title: 'Winter Things',

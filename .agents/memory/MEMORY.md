@@ -20,6 +20,7 @@
 - [Browser text bounds](browser-text-bounds.md) — Allow subpixel rounding in inline-text containment checks to avoid false cropping failures.
 - [Browser scroll checks](browser-scroll-verification.md) — Settle scrolling and account for the fixed radio dock before measuring or capturing interaction states.
 - [Keyboard focus checks](keyboard-focus-checks.md) — Programmatic focus after pointer use may not activate focus-visible; verify with real keyboard navigation.
+- [Browser image failure checks](browser-image-cache-checks.md) — Decoded artwork can survive network interception; use fresh loads for request-failure tests.
 - [SEO delivery rules](seo-delivery.md) — Owner prefers www; keep preview/integrations on their hosts. Validate built Node SSR as well as Vite rendering.
 - [Workspace environment label](workspace-environment-label.md) — Do not infer a production database target from the environment label alone.
 - [Workspace verification](workspace-verification-baselines.md) — Recheck files after task-environment transitions; earlier edits and temporary baselines may be absent.
