@@ -4,7 +4,7 @@ import { readFile, stat } from 'node:fs/promises';
 const canonical = 'https://santa-radio.replit.app/santa-tracker';
 
 test.beforeEach(async ({ page }) => {
-  await page.route('**/api/radio-metadata', route => route.fulfill({
+  await page.route('**/api/radio-metadata*', route => route.fulfill({
     json: { available: false, current: null, upcoming: [] },
   }));
 });

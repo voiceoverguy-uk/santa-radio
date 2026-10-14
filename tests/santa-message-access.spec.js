@@ -6,7 +6,7 @@ import { MESSAGE_ACCESS_KEY, ACCESS_REQUEST_TIMEOUT_MS } from '../src/lib/santaM
 test.beforeEach(async ({ page }) => {
   // Every submission is intercepted; this suite must never create CRM contacts.
   await mockBrevo(page, { success: false, message: 'Test request was not accepted.' });
-  await page.route('**/api/radio-metadata', route => route.fulfill({
+  await page.route('**/api/radio-metadata*', route => route.fulfill({
     json: { available: false, current: null, upcoming: [] },
   }));
 });

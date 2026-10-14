@@ -44,7 +44,7 @@ test.beforeEach(async ({ page }) => {
     json: { success: false, message: 'Intercepted test request.' },
     headers: { 'Access-Control-Allow-Origin': '*' },
   }));
-  await page.route('**/api/radio-metadata', route => route.fulfill({
+  await page.route('**/api/radio-metadata*', route => route.fulfill({
     json: { available: false, current: null, upcoming: [] },
   }));
 });

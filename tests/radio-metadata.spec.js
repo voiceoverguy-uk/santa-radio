@@ -23,7 +23,7 @@ test('metadata caches briefly, isolates failures and recovers', async () => {
     expect(url.searchParams.has('_')).toBe(true);
     if (url.pathname.endsWith('Next3.txt') && fail) return new Response('<html/>', { headers: { 'content-type': 'text/html' } });
     return new Response('Artist - Song', { headers: { 'content-type': 'text/plain' } });
-  }, 30);
+  }, 30, { retryDelay: 0 });
   expect(await service()).toMatchObject({ currentStatus: 'ready', upcomingStatus: 'unavailable' });
   await service();
   expect(calls).toBe(3);
@@ -82,8 +82,8 @@ test('browser refreshes current song after five seconds and pauses while hidden'
   await page.clock.install({ time });
   await page.clock.pauseAt(time);
   let requests = 0, title = 'Previous Track';
-  await page.route('**/api/radio-metadata', route => {
-    requests++;
+  await page.route('**/api/radio-metadata*', route => {
+    if (new URL(route.request().url()).searchParams.get('part') === 'current') requests++;
     return route.fulfill({
       json: { current: { artist: 'Test Artist', title },
         upcoming: [], currentStatus: 'ready', upcomingStatus: 'ready' },
@@ -165,7 +165,7 @@ test('upcoming retries once, retains briefly, expires and recovers independently
 test('browser labels retained upcoming songs, expires them and recovers after network failure', async ({ page }) => {
   await page.clock.install();
   let fail = false;
-  await page.route('**/api/radio-metadata', route => fail ? route.abort() : route.fulfill({
+  await page.route('**/api/radio-metadata*', route => fail ? route.abort() : route.fulfill({
     json: { current: null, currentStatus: 'unavailable', upcomingStatus: 'ready',
       upcoming: [{ artist: 'Test Artist', title: 'Retained Song' }] },
   }));
@@ -187,7 +187,7 @@ test('browser labels retained upcoming songs, expires them and recovers after ne
 
 test('tracks render, queue expands, refresh recovers and navigation keeps audio', async ({ page }) => {
   let failed = false, title = 'Christmas Song';
-  await page.route('**/api/radio-metadata', route => route.fulfill({
+  await page.route('**/api/radio-metadata*', route => route.fulfill({
     json: failed
       ? { current: null, upcoming: [], currentStatus: 'unavailable', upcomingStatus: 'unavailable' }
       : { current: { artist: 'Test Artist', title }, upcoming: [

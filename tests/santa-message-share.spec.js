@@ -110,7 +110,7 @@ test.describe('completed greeting sharing', () => {
       return url.hostname === new URL(test.info().project.use.baseURL).hostname || url.protocol === 'blob:'
         ? route.continue() : route.abort();
     });
-    await page.route('**/api/radio-metadata', route => route.fulfill({ json: { available: false, current: null, upcoming: [] } }));
+    await page.route('**/api/radio-metadata*', route => route.fulfill({ json: { available: false, current: null, upcoming: [] } }));
     await page.route('**/api/santa-message', route => {
       renders++;
       const { name } = route.request().postDataJSON();

@@ -30,7 +30,7 @@ test.beforeEach(async ({ context }) => {
     return url.hostname === new URL(test.info().project.use.baseURL).hostname
       ? route.continue() : route.abort();
   });
-  await context.route('**/api/radio-metadata', route => route.fulfill({
+  await context.route('**/api/radio-metadata*', route => route.fulfill({
     json: { available: false, current: null, upcoming: [] },
   }));
 });

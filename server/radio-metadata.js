@@ -42,7 +42,9 @@ async function readFeed(filename, limit, fetcher) {
 }
 
 export function createMetadataService(fetcher = fetch, ttl = 3000, { clock = Date.now, retryDelay = 500, staleMs = 45000 } = {}) {
-  let cached, expires = 0, pending;
+  const current = { cached: null, expires: 0, pending: null };
+  const upcoming = { cached: null, expires: 0, pending: null };
+  let combined, combinedCurrent, combinedUpcoming;
   let lastUpcoming = [], upcomingUpdatedAt = 0;
   const readUpcoming = async () => {
     for (let attempt = 1; attempt <= 2; attempt++) {
@@ -54,32 +56,56 @@ export function createMetadataService(fetcher = fetch, ttl = 3000, { clock = Dat
       }
     }
   };
-  return async () => {
-    if (cached && clock() < expires &&
-        !(cached.upcomingStatus === 'stale' && clock() - upcomingUpdatedAt >= staleMs)) return cached;
-    if (pending) return pending;
-    pending = (async () => {
-      const [now, next] = await Promise.allSettled([
-        readFeed('Nowplaying.txt', 1, fetcher),
-        readUpcoming(),
-      ]);
-      if (now.status === 'rejected') console.warn('[radio-metadata]', 'Nowplaying.txt', now.reason?.message);
-      if (next.status === 'fulfilled') {
-        lastUpcoming = next.value;
-        upcomingUpdatedAt = clock();
+  const getCurrent = async () => {
+    if (current.cached && clock() < current.expires) return current.cached;
+    if (current.pending) return current.pending;
+    current.pending = (async () => {
+      try {
+        const tracks = await readFeed('Nowplaying.txt', 1, fetcher);
+        current.cached = { current: tracks[0] ?? null, currentStatus: tracks.length ? 'ready' : 'unavailable' };
+      } catch (error) {
+        console.warn('[radio-metadata]', 'Nowplaying.txt', error.message);
+        current.cached = { current: null, currentStatus: 'unavailable' };
       }
+      current.expires = clock() + (current.cached.currentStatus === 'ready' ? ttl : Math.min(ttl, 2000));
+      return current.cached;
+    })();
+    try { return await current.pending; } finally { current.pending = null; }
+  };
+  const getUpcoming = async () => {
+    if (upcoming.cached && clock() < upcoming.expires &&
+        !(upcoming.cached.upcomingStatus === 'stale' && clock() - upcomingUpdatedAt >= staleMs)) return upcoming.cached;
+    if (upcoming.pending) return upcoming.pending;
+    upcoming.pending = (async () => {
+      let ready = false;
+      try {
+        lastUpcoming = await readUpcoming();
+        upcomingUpdatedAt = clock();
+        ready = true;
+      } catch { /* Keep only the bounded last successful queue, never current-song data. */ }
       const retain = lastUpcoming.length > 0 && clock() - upcomingUpdatedAt < staleMs;
-      cached = {
-        current: now.status === 'fulfilled' ? now.value[0] ?? null : null,
-        upcoming: next.status === 'fulfilled' ? next.value : retain ? lastUpcoming : [],
-        currentStatus: now.status === 'fulfilled' && now.value.length ? 'ready' : 'unavailable',
-        upcomingStatus: next.status === 'fulfilled' ? 'ready' : retain ? 'stale' : 'unavailable',
+      upcoming.cached = {
+        upcoming: ready || retain ? lastUpcoming : [],
+        upcomingStatus: ready ? 'ready' : retain ? 'stale' : 'unavailable',
         upcomingUpdatedAt,
       };
-      expires = clock() + (next.status === 'fulfilled' ? ttl : Math.min(ttl, 2000));
-      return cached;
+      upcoming.expires = clock() + (ready ? ttl : Math.min(ttl, 2000));
+      return upcoming.cached;
     })();
-    try { return await pending; } finally { pending = null; }
+    try { return await upcoming.pending; } finally { upcoming.pending = null; }
+  };
+  return async (part = 'all') => {
+    if (part === 'current') return getCurrent();
+    if (part === 'upcoming') return getUpcoming();
+    if (part !== 'all') throw new Error('Invalid metadata part');
+    // Preserve the legacy combined response without making website current reads wait.
+    const [now, next] = await Promise.all([getCurrent(), getUpcoming()]);
+    if (combinedCurrent !== now || combinedUpcoming !== next) {
+      combined = { ...now, ...next };
+      combinedCurrent = now;
+      combinedUpcoming = next;
+    }
+    return combined;
   };
 }
 
@@ -92,5 +118,10 @@ export default async function handler(req, res) {
     return res.end();
   }
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
-  res.end(JSON.stringify(await getMetadata()));
+  const part = new URL(req.url, 'http://server').searchParams.get('part') ?? 'all';
+  if (!['all', 'current', 'upcoming'].includes(part)) {
+    res.statusCode = 400;
+    return res.end(JSON.stringify({ error: 'Invalid metadata part' }));
+  }
+  res.end(JSON.stringify(await getMetadata(part)));
 }

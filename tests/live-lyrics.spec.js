@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { matchLiveSong } from '../src/data/matchLiveSong.js';
 
 test('homepage on-air Lyrics opens the live reader and closes outside without stopping audio', async ({ page }) => {
-  await page.route('**/api/radio-metadata', route => route.fulfill({ json: {
+  await page.route('**/api/radio-metadata*', route => route.fulfill({ json: {
     current: { artist: 'Greg Lake', title: 'I Believe In Father Christmas' },
     currentStatus: 'ready', upcoming: [], upcomingStatus: 'ready',
   } }));
@@ -21,7 +21,7 @@ test('homepage on-air Lyrics opens the live reader and closes outside without st
 });
 
 test('outside click closes lyrics but inside clicks do not, including on mobile', async ({ page }) => {
-  await page.route('**/api/radio-metadata', route => route.fulfill({ json: {
+  await page.route('**/api/radio-metadata*', route => route.fulfill({ json: {
     current: { artist: 'Greg Lake', title: 'I Believe In Father Christmas' },
     currentStatus: 'ready', upcoming: [], upcomingStatus: 'ready',
   } }));
@@ -42,7 +42,7 @@ test('outside click closes lyrics but inside clicks do not, including on mobile'
 
 test('waiting messages rotate and reset when the lyrics reader reopens', async ({ page }) => {
   await page.clock.install();
-  await page.route('**/api/radio-metadata', route => route.fulfill({ json: {
+  await page.route('**/api/radio-metadata*', route => route.fulfill({ json: {
     current: null, currentStatus: 'unavailable', upcoming: [], upcomingStatus: 'unavailable',
   } }));
   await page.goto('/');
@@ -128,7 +128,7 @@ test('identical historical duplicates work but conflicting lyrics and placeholde
 
 test('lyrics reader follows feed changes, clears stale text and leaves audio untouched', async ({ page }) => {
   let current = { artist: 'Elton John', title: 'Step into Christmas' }, unavailable = false;
-  await page.route('**/api/radio-metadata', route => route.fulfill({ json: {
+  await page.route('**/api/radio-metadata*', route => route.fulfill({ json: {
     current: unavailable ? null : current, currentStatus: unavailable ? 'unavailable' : 'ready',
     upcoming: [], upcomingStatus: 'ready',
   } }));

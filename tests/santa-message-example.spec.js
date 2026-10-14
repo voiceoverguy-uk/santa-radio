@@ -17,7 +17,7 @@ async function visit(page, path = '/') {
     };
   });
   await page.route(/youtube\.com|googlevideo\.com|global\.citrus3\.com/, route => route.abort());
-  await page.route('**/api/radio-metadata', route => route.fulfill({
+  await page.route('**/api/radio-metadata*', route => route.fulfill({
     json: { current: { artist: 'John Legend', title: 'Bring Me Love' },
       currentStatus: 'ready', upcoming: [], upcomingStatus: 'ready' },
   }));

@@ -5,11 +5,11 @@ import useSnowEffects from './useSnowEffects.js';
 const RadioContext = createContext(null);
 const STREAM_URL = 'https://global.citrus3.com:8164/';
 export function RadioProvider({ children }) {
-  const metadata = useRadioMetadata();
   const audioRef = useRef(null);
   const attempt = useRef(0);
   const timeout = useRef(null);
   const [status, setStatus] = useState('idle');
+  const metadata = useRadioMetadata(status === 'playing' || status === 'loading');
   const [volume, setVolume] = useState(.7);
   const [error, setError] = useState('');
   const { effects, setEffects } = useSnowEffects();

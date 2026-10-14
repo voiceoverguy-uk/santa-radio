@@ -22,7 +22,7 @@ test.beforeEach(async ({ context }) => {
     return url.hostname === new URL(test.info().project.use.baseURL).hostname || url.protocol === 'blob:'
       ? route.continue() : route.abort();
   });
-  await context.route('**/api/radio-metadata', route => route.fulfill({ json: { available: false, current: null, upcoming: [] } }));
+  await context.route('**/api/radio-metadata*', route => route.fulfill({ json: { available: false, current: null, upcoming: [] } }));
   await context.addInitScript(() => {
     window.testNow = 1801915200000;
     Date.now = () => window.testNow;

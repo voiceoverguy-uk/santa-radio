@@ -12,7 +12,7 @@ async function setup(page, { failPlayback = false } = {}) {
   }, { failPlayback });
   await page.route(/youtube\.com|googlevideo\.com|global\.citrus3\.com/, route => route.abort());
   const state = { artist: 'Cher', title: 'Christmas Song', unavailable: false };
-  await page.route('**/api/radio-metadata', route => route.fulfill({
+  await page.route('**/api/radio-metadata*', route => route.fulfill({
     json: {
       current: state.unavailable && !state.retainCurrent ? null : { artist: state.artist, title: state.title },
       currentStatus: state.unavailable ? 'unavailable' : 'ready',

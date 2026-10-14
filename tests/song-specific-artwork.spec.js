@@ -59,7 +59,7 @@ for (const width of [1280, 390]) {
       HTMLMediaElement.prototype.play = function () { return Promise.resolve(); };
     });
     const state = { artist: 'Elvis Presley', title: 'Blue Christmas' };
-    await page.route('**/api/radio-metadata', route => route.fulfill({
+    await page.route('**/api/radio-metadata*', route => route.fulfill({
       json: { current: state, currentStatus: 'ready', upcoming: [], upcomingStatus: 'ready' },
     }));
     await visit(page, '/');
@@ -164,7 +164,7 @@ test('live homepage artwork tracks artist and title and resets after an image fa
     HTMLMediaElement.prototype.play = function () { return Promise.resolve(); };
   });
   const state = { artist: 'Ariana Grande', title: 'Last Christmas', currentStatus: 'ready' };
-  await page.route('**/api/radio-metadata', route => route.fulfill({
+  await page.route('**/api/radio-metadata*', route => route.fulfill({
     json: { current: state.currentStatus === 'ready' ? { artist: state.artist, title: state.title } : null,
       currentStatus: state.currentStatus, upcoming: [], upcomingStatus: 'ready' },
   }));

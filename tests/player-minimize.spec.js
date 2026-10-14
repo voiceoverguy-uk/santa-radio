@@ -67,7 +67,7 @@ test('auto minimises after ten idle seconds, resets on interaction and protects 
 });
 
 test('player minimises, stays small while browsing, and restores without audio interruption', async ({ page }) => {
-  await page.route('**/api/radio-metadata', route => route.fulfill({ json: {
+  await page.route('**/api/radio-metadata*', route => route.fulfill({ json: {
     current: { artist: 'Elton John', title: 'Step Into Christmas' },
     currentStatus: 'ready', upcomingStatus: 'ready', upcoming: [],
   } }));
