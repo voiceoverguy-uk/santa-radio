@@ -78,3 +78,11 @@ test('corrected, conflicting and unavailable routes render honestly', async ({ p
   await page.goto('/christmas-karaoke-lyrics/422-r-kelly-world-christmas');
   await expect(page.locator('.karaoke-no-lyrics')).toContainText('not yet available');
 });
+
+test('Elvis Presley Blue Christmas page uses the requested YouTube video', async ({ page }) => {
+  await page.route('**/youtube.com/**', route => route.abort());
+  await page.goto('/christmas-artist/399-elvis-presley-blue-christmas');
+  await expect(page.locator('.song-detail-artist')).toHaveText('Elvis Presley');
+  await expect(page.locator('.song-youtube-embed iframe'))
+    .toHaveAttribute('src', 'https://www.youtube.com/embed/3KK6sMo8NBY');
+});
