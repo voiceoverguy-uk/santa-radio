@@ -14,6 +14,17 @@ export const mugPath = mug => `/mugshots/${mug.song}`;
 // Confirmed identical artist, title, lyrics and video. Keep every historical URL.
 export const duplicateRecordings = new Map([[233, 99], [345, 204]]);
 export const songs = rawSongs.filter(s => !duplicateRecordings.has(s.id));
+export const songsByArtistAZ = [...songs].sort((a, b) =>
+  a.artist.localeCompare(b.artist, 'en-GB', { sensitivity: 'base', numeric: true }) ||
+  a.song.localeCompare(b.song, 'en-GB', { sensitivity: 'base', numeric: true })
+);
+export function songNeighbours(song) {
+  const index = songsByArtistAZ.findIndex(candidate => candidate.id === song?.id);
+  return {
+    previous: index > 0 ? songsByArtistAZ[index - 1] : null,
+    next: index >= 0 && index < songsByArtistAZ.length - 1 ? songsByArtistAZ[index + 1] : null,
+  };
+}
 export const { catalogue: mugs, aliases: mugAliases } = buildCatalogue(rawMugs);
 export const songRedirects = new Map();
 for (const song of rawSongs) {

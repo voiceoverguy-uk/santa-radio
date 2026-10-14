@@ -2,17 +2,12 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import SongArtwork from '../components/SongArtwork.jsx';
 import './Music.css';
-import { songs as songsData, collectionMetadata } from '../seo/catalogue.js';
+import { songs as songsData, songsByArtistAZ, collectionMetadata } from '../seo/catalogue.js';
 import PageSeo from '../seo/PageSeo.jsx';
 import Breadcrumbs from '../seo/Breadcrumbs.jsx';
 import { randomSongOrder } from '../data/randomSongOrder.js';
 
 const shuffleSongs = () => randomSongOrder(songsData);
-
-const alphabeticalSongs = [...songsData].sort((a, b) =>
-  a.artist.localeCompare(b.artist, 'en-GB', { sensitivity: 'base', numeric: true }) ||
-  a.song.localeCompare(b.song, 'en-GB', { sensitivity: 'base', numeric: true })
-);
 
 function ArtistAvatar({ song }) {
   return (
@@ -25,7 +20,7 @@ export default function Music() {
   const [order, setOrder] = useState('random');
   const [randomSongs, setRandomSongs] = useState(shuffleSongs);
 
-  const filtered = (order === 'random' ? randomSongs : alphabeticalSongs).filter(s =>
+  const filtered = (order === 'random' ? randomSongs : songsByArtistAZ).filter(s =>
     s.artist.toLowerCase().includes(search.toLowerCase()) ||
     s.song.toLowerCase().includes(search.toLowerCase())
   );

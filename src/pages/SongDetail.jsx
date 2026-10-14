@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import findSong from '../data/findSong';
+import { songNeighbours } from '../seo/catalogue.js';
 import relatedSongs from '../data/relatedSongs.js';
 import './SongDetail.css';
 import PageSeo from '../seo/PageSeo.jsx';
@@ -32,6 +33,7 @@ export default function SongDetail() {
   }
 
   const songSlug = `${song.id}-${song.link}`;
+  const { previous, next } = songNeighbours(song);
   const twitterShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(`Listening to ${song.song} by ${song.artist} on Santa Radio!`)}&url=${encodeURIComponent(`https://www.santaradio.co.uk/christmas-artist/${songSlug}`)}`;
 
   return (
@@ -39,6 +41,35 @@ export default function SongDetail() {
       <PageSeo metadata={songMetadata(song)} />
       <div className="song-detail-page starry-bg">
         <div className="container song-detail-content">
+
+          <nav className="song-navigation" aria-label="Browse Christmas songs">
+            {previous ? (
+              <Link className="song-navigation-link song-navigation-previous"
+                to={`/christmas-artist/${previous.id}-${previous.link}`}
+                aria-label={`Previous song: ${previous.song} by ${previous.artist}`}>
+                <span className="song-navigation-direction">← Previous</span>
+                <span className="song-navigation-title">{previous.song} — {previous.artist}</span>
+              </Link>
+            ) : (
+              <span className="song-navigation-link song-navigation-previous is-unavailable" aria-disabled="true">
+                <span className="song-navigation-direction">← Previous</span>
+                <span className="song-navigation-title">First song in the catalogue</span>
+              </span>
+            )}
+            {next ? (
+              <Link className="song-navigation-link song-navigation-next"
+                to={`/christmas-artist/${next.id}-${next.link}`}
+                aria-label={`Next song: ${next.song} by ${next.artist}`}>
+                <span className="song-navigation-direction">Next →</span>
+                <span className="song-navigation-title">{next.song} — {next.artist}</span>
+              </Link>
+            ) : (
+              <span className="song-navigation-link song-navigation-next is-unavailable" aria-disabled="true">
+                <span className="song-navigation-direction">Next →</span>
+                <span className="song-navigation-title">Last song in the catalogue</span>
+              </span>
+            )}
+          </nav>
 
           <div className="song-detail-layout">
             <div className="song-detail-main">
