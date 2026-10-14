@@ -113,16 +113,11 @@
   margin-top: 27px;
 }
 
-.submit-song-page .song-form-grid,
-.submit-song-page .song-phone-grid {
+.submit-song-page .song-form-grid {
   display: grid;
   align-items: start;
   gap: 17px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.submit-song-page .song-phone-grid {
-  grid-template-columns: minmax(132px, .72fr) minmax(0, 2fr);
 }
 
 .submit-song-page .song-field {
@@ -206,6 +201,52 @@
   font-size: .8rem;
   line-height: 1.5;
   margin: 6px 0 0;
+}
+
+.submit-song-page .song-criteria-field {
+  min-width: 0;
+}
+
+.submit-song-page .song-criteria-label {
+  align-items: center;
+  border: 1px solid #d4af3740;
+  border-radius: 9px;
+  color: var(--song-cream);
+  cursor: pointer;
+  display: flex;
+  gap: 12px;
+  line-height: 1.45;
+  min-height: 48px;
+  padding: 10px 13px;
+  transition: background-color .18s ease, border-color .18s ease;
+}
+
+.submit-song-page .song-criteria-label:hover {
+  background: #081e1745;
+  border-color: #ead39a8a;
+}
+
+.submit-song-page .song-criteria-label input {
+  accent-color: var(--song-gold-bright);
+  flex: 0 0 auto;
+  height: 21px;
+  margin: 0;
+  width: 21px;
+}
+
+.submit-song-page .song-criteria-label input:focus-visible {
+  outline: 2px solid var(--song-gold-bright);
+  outline-offset: 4px;
+}
+
+.submit-song-page .song-criteria-label input[aria-invalid="true"] {
+  outline: 2px solid #c65b52;
+  outline-offset: 2px;
+}
+
+.submit-song-page .song-criteria-label:has(input:disabled) {
+  cursor: wait;
+  opacity: .72;
 }
 
 .submit-song-page .song-guidance,
@@ -322,8 +363,7 @@
     margin-top: 23px;
   }
 
-  .submit-song-page .song-form-grid,
-  .submit-song-page .song-phone-grid {
+  .submit-song-page .song-form-grid {
     grid-template-columns: minmax(0, 1fr);
     gap: 15px;
   }
@@ -363,6 +403,10 @@
   .submit-song-page .song-field textarea,
   .submit-song-page .song-field select,
   .submit-song-page .song-submit-button {
+    transition: none;
+  }
+
+  .submit-song-page .song-criteria-label {
     transition: none;
   }
 }

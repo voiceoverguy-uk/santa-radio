@@ -9,7 +9,7 @@ import { brevoUrl, fillAccessForm, mockBrevo } from './helpers/message-access.js
 const songUrl = `${SONG_FORM_URL}?isAjax=1`;
 const details = {
   FIRSTNAME: 'Testartist', LASTNAME: 'Example', EMAIL: 'artist@example.test',
-  'COMPANY:name': 'Test Artist — Christmas Song. https://example.test/listen A festive recording.',
+  'COMPANY:name': 'Test Artist — Christmas Song. https://example.test/listen A festive recording. Santa Radio promotion: https://example.test/promotion',
 };
 
 async function mockSong(page, json = { success: true }, status = 200) {
@@ -26,9 +26,10 @@ async function fillSong(page) {
   for (const [name, value] of Object.entries(details)) {
     await page.locator(`[name="${name}"]`).fill(value);
   }
+  await page.getByRole('checkbox', { name: 'Have you met the criteria?' }).check();
 }
 function submit(page) {
-  return page.getByRole('button', { name: 'Submit your song', exact: true }).click();
+  return page.getByRole('button', { name: 'Submit your song request form', exact: true }).click();
 }
 async function outgoing(request) {
   const data = await new Response(request.postDataBuffer(), {
@@ -59,14 +60,16 @@ test('embed contract, hosted country choices and separate endpoint stay exact', 
 });
 
 test('validation rejects over-limit values even if browser limits are bypassed', () => {
-  const fields = { ...details, SMS: '', SMS__COUNTRY_CODE: '+44' };
+  const fields = { ...details, criteriaMet: true };
   expect(validateSongFields(fields)).toEqual({});
   expect(validateSongFields({ ...fields, FIRSTNAME: 'x'.repeat(201), LASTNAME: 'x'.repeat(201),
-    'COMPANY:name': 'x'.repeat(501), SMS__COUNTRY_CODE: 'invalid' })).toEqual({
+    'COMPANY:name': 'x'.repeat(501) })).toEqual({
     FIRSTNAME: 'Please keep your first name to 200 characters or fewer.',
     LASTNAME: 'Please keep your surname to 200 characters or fewer.',
     'COMPANY:name': 'Please keep your message to 500 characters or fewer.',
-    SMS__COUNTRY_CODE: 'Please choose a country code.',
+  });
+  expect(validateSongFields({ ...fields, criteriaMet: false })).toEqual({
+    criteriaMet: 'Please confirm that you have met all five criteria.',
   });
 });
 
@@ -89,14 +92,15 @@ test('required errors, email validation and message guidance are accessible', as
   await expect(page.locator('#song-EMAIL-error')).toContainText('valid email');
   await expect(page.locator('#song-message-help')).toContainText('artist name, song title, a listening link');
   const checklist = page.getByRole('region', { name: 'Before you send your song' });
-  await expect(checklist).toContainText('all four items');
+  await expect(checklist).toContainText('all five items');
   await expect(checklist.getByRole('listitem')).toHaveText([
     'Artist name', 'Song title',
     'A link to the song (YouTube, SoundCloud, Spotify etc.)',
     'A short bio or description',
+    'A link to any promotion of Santa Radio',
   ]);
   await expect(checklist).toContainText('within 500 characters');
-  await expect(checklist).toContainText('check that your listening link works');
+  await expect(checklist).toContainText('both your listening and promotion links work');
   expect(await checklist.evaluate(section =>
     Boolean(section.compareDocumentPosition(document.querySelector('.song-submission-form')) & Node.DOCUMENT_POSITION_FOLLOWING),
   )).toBe(true);
@@ -132,16 +136,16 @@ test('explicit acceptance sends only exact fields, stays on site and grants no m
   await submit(page);
   await expect(page.getByRole('heading', { name: 'Thank you for your song submission' })).toBeVisible();
   expect(payload).toEqual({
-    ...details, SMS: '', SMS__COUNTRY_CODE: '+44', email_address_check: '', locale: 'en',
+    ...details, email_address_check: '', locale: 'en',
   });
   await expect(page).toHaveURL(/\/submit-a-song$/);
   expect(await page.evaluate(key => sessionStorage.getItem(key), MESSAGE_ACCESS_KEY)).toBeNull();
   await expect(page.locator('.song-form-success')).toBeFocused();
-  await expect(page.getByRole('button', { name: 'Submit your song', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Submit your song request form', exact: true })).toHaveCount(0);
   await expect(page.locator('main')).toContainText('not a promise of airplay or a reply');
 });
 
-test('optional local phone and selected country code pass through unchanged', async ({ page }) => {
+test('phone fields are removed and promotion link is included in the message sent to Brevo', async ({ page }) => {
   let payload;
   await page.route(songUrl, async route => {
     payload = await outgoing(route.request());
@@ -149,23 +153,30 @@ test('optional local phone and selected country code pass through unchanged', as
   });
   await openForm(page);
   await fillSong(page);
-  await page.getByLabel('Country code').selectOption('+33');
-  await page.getByLabel('Phone number (optional)').fill('06 12 34 56 78');
+  await expect(page.getByLabel('Country code')).toHaveCount(0);
+  await expect(page.getByLabel('Phone number (optional)')).toHaveCount(0);
+  await expect(page.locator('.song-privacy').first()).not.toContainText('phone');
   await submit(page);
   await expect(page.locator('.song-form-success')).toBeVisible();
-  expect(payload.SMS).toBe('06 12 34 56 78');
-  expect(payload.SMS__COUNTRY_CODE).toBe('+33');
+  expect(payload).not.toHaveProperty('SMS');
+  expect(payload).not.toHaveProperty('SMS__COUNTRY_CODE');
+  expect(payload).not.toHaveProperty('criteriaMet');
+  expect(payload['COMPANY:name']).toContain('https://example.test/promotion');
 });
 
-test('optional phone errors and honeypot cannot masquerade as success', async ({ page }) => {
+test('criteria must be confirmed and honeypot cannot masquerade as success', async ({ page }) => {
   let requests = 0;
   page.on('request', request => { if (request.url() === songUrl) requests++; });
   await openForm(page);
   await fillSong(page);
-  await page.getByLabel('Phone number (optional)').fill('not a number');
+  const confirmation = page.getByRole('checkbox', { name: 'Have you met the criteria?' });
+  await confirmation.uncheck();
   await submit(page);
-  await expect(page.locator('#song-SMS-error')).toContainText('local phone number');
-  await page.getByLabel('Phone number (optional)').fill('');
+  await expect(page.locator('#song-criteriaMet-error')).toContainText('all five criteria');
+  await expect(confirmation).toBeFocused();
+  await expect(confirmation).toHaveAttribute('aria-invalid', 'true');
+  expect(requests).toBe(0);
+  await confirmation.check();
   await page.locator('[name="email_address_check"]').evaluate(el => {
     const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
     setter.call(el, 'bot value');
@@ -187,15 +198,14 @@ for (const [label, json, status] of [
     await mockSong(page, json, status);
     await openForm(page);
     await fillSong(page);
-    await page.getByLabel('Phone number (optional)').fill('07700 900123');
     await submit(page);
     await expect(page.getByRole('alert')).toBeVisible();
     await expect(page.locator('.song-form-success')).toHaveCount(0);
     for (const [name, value] of Object.entries(details)) {
       await expect(page.locator(`[name="${name}"]`)).toHaveValue(value);
     }
-    await expect(page.getByLabel('Phone number (optional)')).toHaveValue('07700 900123');
-    await expect(page.getByRole('button', { name: 'Submit your song', exact: true })).toBeEnabled();
+    await expect(page.getByRole('checkbox', { name: 'Have you met the criteria?' })).toBeChecked();
+    await expect(page.getByRole('button', { name: 'Submit your song request form', exact: true })).toBeEnabled();
   });
 }
 
@@ -225,19 +235,17 @@ test('opaque response cannot confirm submission', async ({ page }) => {
   await expect(page.locator('.song-form-success')).toHaveCount(0);
 });
 
-test('message and phone provider errors render safely and successful retry works', async ({ page }) => {
+test('message provider errors render safely and successful retry works', async ({ page }) => {
   await mockSong(page, { success: false,
     message: '<img src=x onerror="window.injected=true">Please review your details.',
     errors: {
       'COMPANY:name': '<script>window.injected=true</script>Message needs a link.',
-      SMS: '<b>Phone number is not valid for this country.</b>',
     },
   });
   await openForm(page);
   await fillSong(page);
   await submit(page);
   await expect(page.locator('#song-COMPANY-name-error')).toContainText('Message needs a link.');
-  await expect(page.locator('#song-SMS-error')).toHaveText('Phone number is not valid for this country.');
   await expect(page.locator('[name="COMPANY:name"]')).toBeFocused();
   expect(await page.evaluate(() => window.injected)).toBeUndefined();
   await expect(page.locator('.song-form-alert img, .song-field-error script, .song-field-error b')).toHaveCount(0);
@@ -270,7 +278,7 @@ test('pending state prevents duplicate submissions and editing', async ({ page }
   await expect(page.getByRole('button', { name: 'Submitting your song…' })).toBeDisabled();
   await expect(page.locator('.song-pending')).toBeVisible();
   await expect(page.locator('[name="COMPANY:name"]')).toHaveAttribute('readonly', '');
-  await expect(page.getByLabel('Country code')).toBeDisabled();
+  await expect(page.getByRole('checkbox', { name: 'Have you met the criteria?' })).toBeDisabled();
   await page.locator('form.song-submission-form').evaluate(form => {
     form.requestSubmit(); form.requestSubmit();
   });
@@ -330,7 +338,7 @@ test('navigation cancels in-flight submission and back opens a fresh form withou
   await page.goBack();
   await expect(page.getByLabel('First name')).toHaveValue('');
   await expect(page.locator('.song-form-success')).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Submit your song', exact: true })).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Submit your song request form', exact: true })).toBeEnabled();
   const storage = await page.evaluate(() => JSON.stringify([localStorage, sessionStorage]));
   expect(storage).not.toContain(details.EMAIL);
   expect(storage).not.toContain(details['COMPANY:name']);
@@ -342,7 +350,8 @@ test('music and footer links reach the form and privacy separates contact purpos
   await expect(page.getByLabel('First name')).toBeVisible();
   await page.locator('footer a[href="/privacy-policy"]').click();
   await expect(page.getByRole('heading', { name: 'Song submissions', exact: true })).toBeVisible();
-  await expect(page.locator('article')).toContainText('phone number and country code, but these are optional');
+  await expect(page.locator('article')).toContainText('a link to any promotion of Santa Radio');
+  await expect(page.locator('article')).not.toContainText('phone number and country code, but these are optional');
   await expect(page.locator('article')).toContainText('does not open the message maker or give consent for marketing');
   await page.locator('footer').getByRole('link', { name: 'Submit your song', exact: true }).click();
   await expect(page.getByLabel('Message', { exact: false })).toBeVisible();
@@ -377,7 +386,7 @@ for (const width of [320, 390, 1280]) {
     // Real keyboard navigation, not programmatic focus-visible approximation.
     await page.keyboard.press('Tab');
     await expect(page.getByLabel('First name')).toBeFocused();
-    for (const label of ['Surname', 'Email address', 'Message', 'Country code', 'Phone number (optional)']) {
+    for (const label of ['Surname', 'Email address', 'Message']) {
       await page.keyboard.press('Tab');
       const control = page.getByLabel(label, { exact: false });
       await expect(control).toBeFocused();
@@ -389,9 +398,14 @@ for (const width of [320, 390, 1280]) {
         return bounds.top >= 100 && (bounds.right <= dock.left || bounds.left >= dock.right || bounds.bottom <= dock.top);
       })).toBe(true);
     }
+    await page.keyboard.press('Tab');
+    const confirmation = page.getByRole('checkbox', { name: 'Have you met the criteria?' });
+    await expect(confirmation).toBeFocused();
+    await page.keyboard.press('Space');
+    await expect(confirmation).toBeChecked();
     await page.keyboard.press('Tab'); // Privacy link.
     await page.keyboard.press('Tab'); // Submit.
-    const button = page.getByRole('button', { name: 'Submit your song', exact: true });
+    const button = page.getByRole('button', { name: 'Submit your song request form', exact: true });
     await expect(button).toBeFocused();
     await expect.poll(() => button.evaluate(el => {
       const bounds = el.getBoundingClientRect();

@@ -3,7 +3,7 @@ export const SONG_FORM_URL = 'https://ca61f856.sibforms.com/serve/MUIFAIGpu7eOZ4
 export const SONG_REQUEST_TIMEOUT_MS = 15000;
 export const emptySongFields = {
   FIRSTNAME: '', LASTNAME: '', EMAIL: '', 'COMPANY:name': '',
-  SMS: '', SMS__COUNTRY_CODE: '+44', email_address_check: '',
+  criteriaMet: false, email_address_check: '',
 };
 
 // Country/dialling-code pairs from the supplied embed, including shared codes.
@@ -13,9 +13,8 @@ export const songCountries = countryPairs.split(' ').map(pair => {
   const [country, code] = pair.split(':');
   return { country, code };
 }).sort((a, b) => a.country === 'GB' ? -1 : b.country === 'GB' ? 1 : 0);
-const countryCodes = new Set(songCountries.map(({ code }) => code));
 const requiredFields = ['FIRSTNAME', 'LASTNAME', 'EMAIL', 'COMPANY:name'];
-const supportedFields = [...requiredFields, 'SMS', 'SMS__COUNTRY_CODE'];
+const supportedFields = requiredFields;
 
 export function validateSongFields(fields) {
   const errors = {};
@@ -32,13 +31,8 @@ export function validateSongFields(fields) {
   else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     errors.EMAIL = 'Please enter a valid email address, such as name@example.com.';
   }
-  // Brevo validates country-specific numbers. Accept common local formatting
-  // here without guessing or rewriting national prefixes.
-  if (fields.SMS?.trim() && !/^[\d\s().-]+$/.test(fields.SMS.trim())) {
-    errors.SMS = 'Enter a local phone number using digits, spaces, brackets or hyphens, with the country code selected separately.';
-  }
-  if (!countryCodes.has(fields.SMS__COUNTRY_CODE)) {
-    errors.SMS__COUNTRY_CODE = 'Please choose a country code.';
+  if (fields.criteriaMet !== true) {
+    errors.criteriaMet = 'Please confirm that you have met all five criteria.';
   }
   return errors;
 }
@@ -57,6 +51,10 @@ export class SongSubmissionError extends Error {
 }
 
 export async function submitSong(fields, signal) {
+  const validation = validateSongFields(fields);
+  if (Object.keys(validation).length) {
+    throw new SongSubmissionError('Please check the highlighted details.', validation);
+  }
   const body = new FormData();
   for (const name of supportedFields) body.append(name, fields[name].trim());
   body.append('email_address_check', fields.email_address_check || '');
