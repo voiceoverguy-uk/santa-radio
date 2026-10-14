@@ -113,6 +113,52 @@
   margin-top: 27px;
 }
 
+.submit-song-page .contact-modes {
+  border: 0;
+  padding: 0;
+  margin: 0 0 24px;
+  min-width: 0;
+}
+
+.submit-song-page .contact-modes legend {
+  color: var(--song-gold);
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.submit-song-page .contact-mode-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.submit-song-page .contact-mode-options label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 10px 13px;
+  border: 1px solid #d4af3775;
+  border-radius: 9px;
+  cursor: pointer;
+}
+
+.submit-song-page .contact-mode-options input {
+  accent-color: var(--song-gold-bright);
+  width: 21px;
+  height: 21px;
+  margin: 0;
+}
+
+.submit-song-page .contact-mode-options input:focus-visible {
+  outline: 2px solid var(--song-gold-bright);
+  outline-offset: 4px;
+}
+
+.submit-song-page .contact-modes:disabled {
+  opacity: .72;
+}
+
 .submit-song-page .song-form-grid {
   display: grid;
   align-items: start;

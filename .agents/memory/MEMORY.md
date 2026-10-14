@@ -10,7 +10,8 @@
 - [Apps availability](apps-availability.md) — Keep Sleeps til Santa off the Apps page until the user requests its return.
 - [Apps ratings eligibility](apps-ratings-eligibility.md) — Verified store ratings are attributed information, not eligible first-party review markup.
 - [Music artwork](music-artwork.md) — Reuse supplied artist portraits across songs; Santa with music notes is the temporary fallback.
-- [Contact routing](contact-submission-routing.md) — Direct song submissions to the footer submission link, not the general contact email.
+- [Contact routing](contact-submission-routing.md) — Shared general/song form uses the owner-approved Brevo destination and exact field contract.
+- [Contact mode navigation](contact-mode-navigation.md) — Keep controlled choices separate from delayed URL transitions; verify arrow keys and history.
 - [Privacy scope](privacy-scope.md) — Christmas Radio UK app facts are owner-confirmed; keep website marketing separate and verify provider logging arrangements.
 - [Santa audio scope](santa-audio-scope.md) — MP3-only personalised greetings; typed name lookup, starting with Arabella before a larger recorded library.
 - [Santa message access](santa-message-access-scope.md) — Adult Brevo submission opens this site's MP3 maker; not email verification, email delivery or marketing consent.

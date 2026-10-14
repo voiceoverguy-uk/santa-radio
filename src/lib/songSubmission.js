@@ -16,7 +16,7 @@ export const songCountries = countryPairs.split(' ').map(pair => {
 const requiredFields = ['FIRSTNAME', 'LASTNAME', 'EMAIL', 'COMPANY:name'];
 const supportedFields = requiredFields;
 
-export function validateSongFields(fields) {
+export function validateSongFields(fields, mode = 'song') {
   const errors = {};
   for (const [name, label, limit] of [
     ['FIRSTNAME', 'first name', 200], ['LASTNAME', 'surname', 200],
@@ -31,7 +31,7 @@ export function validateSongFields(fields) {
   else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     errors.EMAIL = 'Please enter a valid email address, such as name@example.com.';
   }
-  if (fields.criteriaMet !== true) {
+  if (mode === 'song' && fields.criteriaMet !== true) {
     errors.criteriaMet = 'Please confirm that you have met all five criteria.';
   }
   return errors;
@@ -50,10 +50,13 @@ export class SongSubmissionError extends Error {
   }
 }
 
-export async function submitSong(fields, signal) {
-  const validation = validateSongFields(fields);
+export async function submitSong(fields, signal, mode = 'song') {
+  const validation = validateSongFields(fields, mode);
   if (Object.keys(validation).length) {
     throw new SongSubmissionError('Please check the highlighted details.', validation);
+  }
+  if (fields.email_address_check) {
+    throw new SongSubmissionError('Your message could not be sent. Please try again.');
   }
   const body = new FormData();
   for (const name of supportedFields) body.append(name, fields[name].trim());
@@ -86,12 +89,12 @@ export async function submitSong(fields, signal) {
   );
   if (unknownFields.length) {
     throw new SongSubmissionError(
-      `Brevo requires a field this song form does not collect (${unknownFields.map(field => safeText(field, 'unknown field')).join(', ')}). Please contact Santa Radio so we can check the form settings.`,
+      `Brevo requires a field this contact form does not collect (${unknownFields.map(field => safeText(field, 'unknown field')).join(', ')}). Please contact Santa Radio so we can check the form settings.`,
       fieldErrors,
     );
   }
   throw new SongSubmissionError(
-    safeText(data?.message, 'Your song submission was not accepted. Please check your details and try again.'),
+    safeText(data?.message, 'Your message was not accepted. Please check your details and try again.'),
     fieldErrors,
   );
 }

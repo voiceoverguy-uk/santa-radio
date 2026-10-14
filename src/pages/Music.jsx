@@ -38,7 +38,7 @@ export default function Music() {
             illustrated portraits or Santa Radio artwork, and linked videos where available.
             Browse Christmas classics, pop hits and hidden gems.
           </p>
-          <Link to="/submit-a-song" className="btn-red suggest-btn">Suggest a song</Link>
+          <Link to="/submit-a-song?mode=song" className="btn-red suggest-btn">Suggest a song</Link>
           <div className="music-search-wrap">
           <svg className="music-search-symbol" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="10" cy="10" r="6" /><path d="m15 15 6 6" /></svg>
           <input

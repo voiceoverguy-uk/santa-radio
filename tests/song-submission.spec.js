@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import {
-  SONG_FORM_URL, SONG_REQUEST_TIMEOUT_MS, songCountries, validateSongFields,
+  SONG_FORM_URL, SONG_REQUEST_TIMEOUT_MS, songCountries, validateSongFields, submitSong,
 } from '../src/lib/songSubmission.js';
 import { MESSAGE_ACCESS_KEY } from '../src/lib/santaMessageAccess.js';
 import { brevoUrl, fillAccessForm, mockBrevo } from './helpers/message-access.js';
@@ -17,19 +17,19 @@ async function mockSong(page, json = { success: true }, status = 200) {
     status, json, headers: { 'Access-Control-Allow-Origin': '*' },
   }));
 }
-async function openForm(page) {
-  await page.goto('/submit-a-song');
+async function openForm(page, mode = 'song') {
+  await page.goto(mode === 'song' ? '/submit-a-song?mode=song' : '/submit-a-song');
   const reject = page.getByRole('button', { name: 'Reject optional cookies', exact: true });
   if (await reject.isVisible()) await reject.click();
 }
-async function fillSong(page) {
+async function fillSong(page, criteria = true) {
   for (const [name, value] of Object.entries(details)) {
     await page.locator(`[name="${name}"]`).fill(value);
   }
-  await page.getByRole('checkbox', { name: 'Have you met the criteria?' }).check();
+  if (criteria) await page.getByRole('checkbox', { name: 'Have you met the criteria?' }).check();
 }
 function submit(page) {
-  return page.getByRole('button', { name: 'Submit your song request form', exact: true }).click();
+  return page.getByRole('button', { name: 'Submit song', exact: true }).click();
 }
 async function outgoing(request) {
   const data = await new Response(request.postDataBuffer(), {
@@ -71,6 +71,73 @@ test('validation rejects over-limit values even if browser limits are bypassed',
   expect(validateSongFields({ ...fields, criteriaMet: false })).toEqual({
     criteriaMet: 'Please confirm that you have met all five criteria.',
   });
+  expect(validateSongFields({ ...fields, criteriaMet: false }, 'general')).toEqual({});
+});
+
+test('submission layer rejects missing song criteria and honeypots before any request', async () => {
+  await expect(submitSong(details, new AbortController().signal, 'song'))
+    .rejects.toMatchObject({ fieldErrors: { criteriaMet: 'Please confirm that you have met all five criteria.' } });
+  await expect(submitSong({ ...details, email_address_check: 'bot' }, new AbortController().signal, 'general'))
+    .rejects.toThrow('could not be sent');
+});
+
+for (const path of ['/submit-a-song', '/submit-a-song?mode=invalid', '/submit-a-song?mode=general']) {
+  test(`general enquiry defaults correctly at ${path}`, async ({ page }) => {
+    await page.goto(path);
+    await expect(page.getByRole('group', { name: 'What are you contacting us about?' })).toBeVisible();
+    await expect(page.getByRole('radio', { name: 'General enquiry' })).toBeChecked();
+    await expect(page.getByRole('radio', { name: 'Song submission' })).not.toBeChecked();
+    await expect(page.locator('main').getByRole('checkbox')).toHaveCount(0);
+    await expect(page.locator('.song-requirements')).toHaveCount(0);
+    await expect(page.locator('main')).not.toContainText('airplay');
+    await expect(page.locator('#song-message-help')).not.toContainText('artist name');
+    await expect(page.getByRole('button', { name: 'Send enquiry', exact: true })).toBeVisible();
+    await expect(page).toHaveTitle('Contact Santa Radio | General Enquiries & Song Submissions');
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://www.santaradio.co.uk/submit-a-song');
+  });
+}
+
+test('general enquiry accepts without criteria using the exact provider fields and no access grant', async ({ page }) => {
+  let payload;
+  await page.route(songUrl, async route => {
+    payload = await outgoing(route.request());
+    await route.fulfill({ json: { success: true } });
+  });
+  await openForm(page, 'general');
+  await fillSong(page, false);
+  await page.getByLabel('Message', { exact: false }).fill('A general press enquiry.');
+  await page.getByRole('button', { name: 'Send enquiry', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Thank you for your enquiry' })).toBeVisible();
+  expect(payload).toEqual({ ...details, 'COMPANY:name': 'A general press enquiry.', email_address_check: '', locale: 'en' });
+  await expect(page.locator('.song-form-success')).toBeFocused();
+  await expect(page.locator('main')).not.toContainText('airplay');
+  await expect(page.locator('.song-form-success')).toContainText('does not confirm delivery to our inbox');
+  expect(await page.evaluate(key => sessionStorage.getItem(key), MESSAGE_ACCESS_KEY)).toBeNull();
+});
+
+test('mode switching retains drafts, clears stale errors and requires fresh criteria even through history', async ({ page }) => {
+  await openForm(page);
+  await fillSong(page);
+  await page.getByLabel('Email address').fill('invalid');
+  await submit(page);
+  await expect(page.getByRole('alert')).toBeVisible();
+  await page.getByRole('radio', { name: 'General enquiry' }).check();
+  await expect(page.getByRole('alert')).toHaveCount(0);
+  await expect(page.locator('[aria-invalid="true"]')).toHaveCount(0);
+  await expect(page.getByLabel('Email address')).toHaveValue('invalid');
+  await expect(page.getByLabel('Message', { exact: false })).toHaveValue(details['COMPANY:name']);
+  await page.goBack();
+  await expect(page.getByRole('radio', { name: 'Song submission' })).toBeChecked();
+  await expect(page.getByRole('checkbox', { name: 'Have you met the criteria?' })).not.toBeChecked();
+  await page.getByLabel('Email address').fill(details.EMAIL);
+  await submit(page);
+  await expect(page.locator('#song-criteriaMet-error')).toBeVisible();
+  await page.goForward();
+  await expect(page.getByRole('radio', { name: 'General enquiry' })).toBeChecked();
+  await expect(page.locator('#song-criteriaMet-error')).toHaveCount(0);
+  await expect(page.getByRole('alert')).toHaveCount(0);
+  await page.getByRole('radio', { name: 'Song submission' }).check();
+  await expect(page.getByRole('checkbox', { name: 'Have you met the criteria?' })).not.toBeChecked();
 });
 
 test('required errors, email validation and message guidance are accessible', async ({ page }) => {
@@ -138,10 +205,10 @@ test('explicit acceptance sends only exact fields, stays on site and grants no m
   expect(payload).toEqual({
     ...details, email_address_check: '', locale: 'en',
   });
-  await expect(page).toHaveURL(/\/submit-a-song$/);
+  await expect(page).toHaveURL(/\/submit-a-song\?mode=song$/);
   expect(await page.evaluate(key => sessionStorage.getItem(key), MESSAGE_ACCESS_KEY)).toBeNull();
   await expect(page.locator('.song-form-success')).toBeFocused();
-  await expect(page.getByRole('button', { name: 'Submit your song request form', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Submit song', exact: true })).toHaveCount(0);
   await expect(page.locator('main')).toContainText('not a promise of airplay or a reply');
 });
 
@@ -194,18 +261,93 @@ for (const [label, json, status] of [
   ['HTTP failure despite success flag', { success: true }, 500],
   ['null JSON', null, 200],
 ]) {
-  test(`${label} retains every entry for retry without confirmation`, async ({ page }) => {
+  for (const mode of ['general', 'song']) {
+  test(`${mode}: ${label} retains every entry for retry without confirmation`, async ({ page }) => {
     await mockSong(page, json, status);
-    await openForm(page);
-    await fillSong(page);
-    await submit(page);
+    await openForm(page, mode);
+    await fillSong(page, mode === 'song');
+    await page.getByRole('button', { name: mode === 'song' ? 'Submit song' : 'Send enquiry', exact: true }).click();
     await expect(page.getByRole('alert')).toBeVisible();
     await expect(page.locator('.song-form-success')).toHaveCount(0);
     for (const [name, value] of Object.entries(details)) {
       await expect(page.locator(`[name="${name}"]`)).toHaveValue(value);
     }
-    await expect(page.getByRole('checkbox', { name: 'Have you met the criteria?' })).toBeChecked();
-    await expect(page.getByRole('button', { name: 'Submit your song request form', exact: true })).toBeEnabled();
+    if (mode === 'song') await expect(page.getByRole('checkbox', { name: 'Have you met the criteria?' })).toBeChecked();
+    await expect(page.getByRole('button', { name: mode === 'song' ? 'Submit song' : 'Send enquiry', exact: true })).toBeEnabled();
+  });
+  }
+}
+
+test('general pending request locks modes and duplicate sends; timeout keeps the draft', async ({ page }) => {
+  await page.clock.install();
+  let requests = 0;
+  await page.route(songUrl, () => { requests++; });
+  await openForm(page, 'general');
+  await fillSong(page, false);
+  await page.getByRole('button', { name: 'Send enquiry', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Sending your enquiry…' })).toBeDisabled();
+  await expect(page.getByRole('radio', { name: 'Song submission' })).toBeDisabled();
+  await expect(page.getByRole('radio', { name: 'General enquiry' })).toBeDisabled();
+  await expect(page.getByLabel('Message', { exact: false })).toHaveAttribute('readonly', '');
+  await page.locator('.song-submission-form').evaluate(form => { form.requestSubmit(); form.requestSubmit(); });
+  expect(requests).toBe(1);
+  await page.clock.runFor(SONG_REQUEST_TIMEOUT_MS + 100);
+  await expect(page.getByRole('alert')).toContainText('took too long');
+  await expect(page.getByRole('radio', { name: 'Song submission' })).toBeEnabled();
+  await expect(page.getByLabel('Email address')).toHaveValue(details.EMAIL);
+  await mockSong(page);
+  await page.getByRole('button', { name: 'Send enquiry', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Thank you for your enquiry' })).toBeVisible();
+});
+
+test('history changes cannot switch the displayed mode during an active request', async ({ page }) => {
+  let release;
+  await page.route(songUrl, async route => {
+    await new Promise(resolve => { release = resolve; });
+    await route.fulfill({ json: { success: false } });
+  });
+  await openForm(page, 'general');
+  await page.getByRole('radio', { name: 'Song submission' }).check();
+  await expect(page.getByRole('radio', { name: 'Song submission' })).toBeChecked();
+  await fillSong(page);
+  await submit(page);
+  await expect(page.locator('.song-pending')).toBeVisible();
+  await page.goBack();
+  await expect(page).toHaveURL(/\/submit-a-song$/);
+  await expect(page.getByRole('radio', { name: 'Song submission' })).toBeChecked();
+  await expect(page.getByRole('radio', { name: 'General enquiry' })).toBeDisabled();
+  release();
+  await expect(page.getByRole('radio', { name: 'General enquiry' })).toBeChecked();
+  await expect(page.getByLabel('Email address')).toHaveValue(details.EMAIL);
+  await expect(page.getByRole('alert')).toHaveCount(0);
+});
+
+for (const mode of ['general', 'song']) {
+  test(`${mode}: history during pending acceptance preserves the submitted confirmation`, async ({ page }) => {
+    let release;
+    let requests = 0;
+    await page.route(songUrl, async route => {
+      requests++;
+      await new Promise(resolve => { release = resolve; });
+      await route.fulfill({ json: { success: true } });
+    });
+    await openForm(page, mode === 'song' ? 'general' : 'song');
+    await page.getByRole('radio', { name: mode === 'song' ? 'Song submission' : 'General enquiry' }).check();
+    await fillSong(page, mode === 'song');
+    await page.getByRole('button', { name: mode === 'song' ? 'Submit song' : 'Send enquiry', exact: true }).click();
+    await expect(page.locator('.song-pending')).toBeVisible();
+    await page.goBack();
+    await expect(page.getByRole('radio', { name: mode === 'song' ? 'Song submission' : 'General enquiry' })).toBeChecked();
+    release();
+    await expect(page.getByRole('heading', { name: mode === 'song' ? 'Thank you for your song submission' : 'Thank you for your enquiry' })).toBeVisible();
+    await expect(page.locator('.song-form-success')).toBeFocused();
+    await expect(page.locator('.song-submission-form')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: /^(Submit song|Send enquiry)$/ })).toHaveCount(0);
+    expect(requests).toBe(1);
+    // A new, intentional navigation after acceptance can open a fresh form.
+    await page.goForward();
+    await expect(page.getByRole('button', { name: mode === 'song' ? 'Submit song' : 'Send enquiry', exact: true })).toBeVisible();
+    await expect(page.getByLabel('Email address')).toHaveValue('');
   });
 }
 
@@ -279,6 +421,8 @@ test('pending state prevents duplicate submissions and editing', async ({ page }
   await expect(page.locator('.song-pending')).toBeVisible();
   await expect(page.locator('[name="COMPANY:name"]')).toHaveAttribute('readonly', '');
   await expect(page.getByRole('checkbox', { name: 'Have you met the criteria?' })).toBeDisabled();
+  await expect(page.getByRole('radio', { name: 'General enquiry' })).toBeDisabled();
+  await expect(page.getByRole('radio', { name: 'Song submission' })).toBeDisabled();
   await page.locator('form.song-submission-form').evaluate(form => {
     form.requestSubmit(); form.requestSubmit();
   });
@@ -322,7 +466,7 @@ test('HTTP redirects are not followed or treated as acceptance', async ({ page }
   await submit(page);
   await expect(page.getByRole('alert')).toBeVisible();
   expect(redirected).toBe(false);
-  await expect(page).toHaveURL(/\/submit-a-song$/);
+  await expect(page).toHaveURL(/\/submit-a-song\?mode=song$/);
 });
 
 test('navigation cancels in-flight submission and back opens a fresh form without saved contacts', async ({ page }) => {
@@ -338,25 +482,30 @@ test('navigation cancels in-flight submission and back opens a fresh form withou
   await page.goBack();
   await expect(page.getByLabel('First name')).toHaveValue('');
   await expect(page.locator('.song-form-success')).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Submit your song request form', exact: true })).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Submit song', exact: true })).toBeEnabled();
   const storage = await page.evaluate(() => JSON.stringify([localStorage, sessionStorage]));
   expect(storage).not.toContain(details.EMAIL);
   expect(storage).not.toContain(details['COMPANY:name']);
 });
 
-test('music and footer links reach the form and privacy separates contact purposes', async ({ page }) => {
+test('home, music and footer links select the correct shared form mode', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('link', { name: 'Get in touch', exact: true }).click();
+  await expect(page.getByRole('radio', { name: 'General enquiry' })).toBeChecked();
   await page.goto('/christmas-music');
   await page.getByRole('link', { name: 'Suggest a song', exact: true }).click();
+  await expect(page.getByRole('radio', { name: 'Song submission' })).toBeChecked();
   await expect(page.getByLabel('First name')).toBeVisible();
   await page.locator('footer a[href="/privacy-policy"]').click();
   await expect(page.getByRole('heading', { name: 'Song submissions', exact: true })).toBeVisible();
   await expect(page.locator('article')).toContainText('a link to any promotion of Santa Radio');
   await expect(page.locator('article')).not.toContainText('phone number and country code, but these are optional');
-  await expect(page.locator('article')).toContainText('does not open the message maker or give consent for marketing');
+  await expect(page.locator('article')).toContainText('do not open the message maker or give consent for marketing');
   await page.locator('footer').getByRole('link', { name: 'Submit your song', exact: true }).click();
   await expect(page.getByLabel('Message', { exact: false })).toBeVisible();
   await expect(page.locator('main')).not.toContainText('songs@santaradio.co.uk');
-  await expect(page.locator('.song-privacy')).toContainText(['Brevo', 'general enquiries']);
+  await expect(page.getByRole('radio', { name: 'Song submission' })).toBeChecked();
+  await expect(page.locator('.song-privacy')).toContainText('Brevo');
 });
 
 test('song submission does not alter the independent Santa-message access flow', async ({ page }) => {
@@ -375,6 +524,35 @@ test('song submission does not alter the independent Santa-message access flow',
 });
 
 for (const width of [320, 390, 1280]) {
+  test(`general form keyboard path fits ${width}px and clears the fixed dock`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 850 });
+    await openForm(page, 'general');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Enter');
+    await page.keyboard.press('Tab');
+    await expect(page.getByRole('radio', { name: 'General enquiry' })).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(page.getByLabel('First name')).toBeFocused();
+    for (const label of ['Surname', 'Email address', 'Message']) {
+      await page.keyboard.press('Tab');
+      await expect(page.getByLabel(label, { exact: false })).toBeFocused();
+    }
+    await page.keyboard.press('Tab'); // Privacy link, no song criteria in this mode.
+    await page.keyboard.press('Tab');
+    const button = page.getByRole('button', { name: 'Send enquiry', exact: true });
+    await expect(button).toBeFocused();
+    await expect.poll(() => button.evaluate(el => {
+      const bounds = el.getBoundingClientRect();
+      const dock = document.querySelector('.radio-dock').getBoundingClientRect();
+      return bounds.top >= 100 && bounds.bottom <= dock.top;
+    })).toBe(true);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await mockSong(page);
+    await fillSong(page, false);
+    await button.click();
+    await expect(page.getByRole('heading', { name: 'Thank you for your enquiry' })).toBeVisible();
+  });
+
   test(`form fits ${width}px, keyboard focus and controls avoid the fixed radio`, async ({ page }) => {
     await page.setViewportSize({ width, height: 850 });
     await openForm(page);
@@ -384,6 +562,12 @@ for (const width of [320, 390, 1280]) {
     await page.keyboard.press('Enter');
     await expect(page.locator('#page-content')).toBeFocused();
     // Real keyboard navigation, not programmatic focus-visible approximation.
+    await page.keyboard.press('Tab');
+    await expect(page.getByRole('radio', { name: 'Song submission' })).toBeFocused();
+    await page.keyboard.press('ArrowLeft');
+    await expect(page.getByRole('radio', { name: 'General enquiry' })).toBeChecked();
+    await page.keyboard.press('ArrowRight');
+    await expect(page.getByRole('radio', { name: 'Song submission' })).toBeChecked();
     await page.keyboard.press('Tab');
     await expect(page.getByLabel('First name')).toBeFocused();
     for (const label of ['Surname', 'Email address', 'Message']) {
@@ -405,7 +589,7 @@ for (const width of [320, 390, 1280]) {
     await expect(confirmation).toBeChecked();
     await page.keyboard.press('Tab'); // Privacy link.
     await page.keyboard.press('Tab'); // Submit.
-    const button = page.getByRole('button', { name: 'Submit your song request form', exact: true });
+    const button = page.getByRole('button', { name: 'Submit song', exact: true });
     await expect(button).toBeFocused();
     await expect.poll(() => button.evaluate(el => {
       const bounds = el.getBoundingClientRect();

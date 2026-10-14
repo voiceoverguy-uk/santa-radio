@@ -3,7 +3,7 @@ import PageSeo from './PageSeo.jsx';
 import { pageMetadata } from './catalogue.js';
 const pages = {
   '/privacy-policy': ['Privacy Policy | Santa Radio', 'Read how Santa Radio handles privacy, website information and optional submissions.'],
-  '/submit-a-song': ['Suggest a Christmas Song | Santa Radio', 'Suggest a Christmas recording for Santa Radio’s music catalogue.'],
+  '/submit-a-song': ['Contact Santa Radio | General Enquiries & Song Submissions', 'Get in touch with Santa Radio for general enquiries or submit a Christmas recording for airplay consideration using our shared contact form.'],
   '/links': ['Christmas Links | Santa Radio', 'Explore the festive websites and services linked by Santa Radio.'],
   '/santa-stories': ['Santa Stories | Santa Radio', 'Explore Santa Radio’s Santa stories and festive listening.'],
 };

@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import {
   emptySongFields, SONG_REQUEST_TIMEOUT_MS,
   SongSubmissionError, submitSong, validateSongFields,
@@ -8,6 +7,10 @@ import {
 import './SubmitASong.css';
 
 export default function SubmitASong() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const requestedMode = searchParams.get('mode') === 'song' ? 'song' : 'general';
+  const [mode, setMode] = useState(requestedMode);
+  const isSong = mode === 'song';
   const [fields, setFields] = useState(emptySongFields);
   const [errors, setErrors] = useState({});
   const [error, setError] = useState('');
@@ -16,6 +19,36 @@ export default function SubmitASong() {
   const formRef = useRef(null);
   const successRef = useRef(null);
   const requestRef = useRef(null);
+  const lastRequestedMode = useRef(requestedMode);
+  const latestRequestedMode = useRef(requestedMode);
+  latestRequestedMode.current = requestedMode;
+
+  // History navigation also changes the mode. Hold the submitted mode until
+  // the active request finishes. On failure apply the current address; on
+  // acceptance keep the submitted mode and confirmation visible.
+  useEffect(() => {
+    if (requestRef.current || requestedMode === lastRequestedMode.current) return;
+    lastRequestedMode.current = requestedMode;
+    setMode(requestedMode);
+    setFields(previous => ({ ...previous, criteriaMet: false }));
+    setErrors({});
+    setError('');
+    setAccepted(false);
+  }, [requestedMode, pending]);
+
+  const changeMode = nextMode => {
+    if (requestRef.current || nextMode === mode) return;
+    const next = new URLSearchParams(searchParams);
+    if (nextMode === 'song') next.set('mode', 'song');
+    else next.delete('mode');
+    // Update controlled radios in the same event, not a later effect.
+    setMode(nextMode);
+    setFields(previous => ({ ...previous, criteriaMet: false }));
+    setErrors({});
+    setError('');
+    setAccepted(false);
+    setSearchParams(next, { preventScrollReset: true });
+  };
 
   useEffect(() => () => {
     const request = requestRef.current;
@@ -57,7 +90,7 @@ export default function SubmitASong() {
   const onSubmit = async event => {
     event.preventDefault();
     if (requestRef.current || accepted) return;
-    const validation = validateSongFields(fields);
+    const validation = validateSongFields(fields, mode);
     setErrors(validation);
     setError('');
     if (Object.keys(validation).length) {
@@ -66,7 +99,7 @@ export default function SubmitASong() {
       return;
     }
     if (fields.email_address_check) {
-      setError('Your submission could not be sent. Please try again.');
+      setError('Your message could not be sent. Please try again.');
       return;
     }
     const request = { controller: new AbortController(), timedOut: false, timeout: null };
@@ -77,9 +110,12 @@ export default function SubmitASong() {
     }, SONG_REQUEST_TIMEOUT_MS);
     setPending(true);
     try {
-      await submitSong(fields, request.controller.signal);
+      await submitSong(fields, request.controller.signal, mode);
       if (requestRef.current !== request) return;
       request.controller.signal.throwIfAborted();
+      // Consume any address change made while pending without replacing the
+      // accepted confirmation with a fresh form. Later navigation still works.
+      lastRequestedMode.current = latestRequestedMode.current;
       setAccepted(true);
       setFields(emptySongFields);
     } catch (failure) {
@@ -91,7 +127,7 @@ export default function SubmitASong() {
       } else {
         setError(request.timedOut
           ? 'Brevo took too long to respond, so we couldn’t confirm acceptance. Your entries are still here; please try again.'
-          : 'We couldn’t confirm your submission with Brevo. Check your connection and try again; your entries are still here.');
+          : 'We couldn’t confirm your message with Brevo. Check your connection and try again; your entries are still here.');
       }
     } finally {
       clearTimeout(request.timeout);
@@ -119,14 +155,20 @@ export default function SubmitASong() {
 
   return (
     <main className="submit-song-page">
-      <Helmet>
-        <title>How do I submit a song to Santa Radio?</title>
-        <meta name="description" content="Find out how to submit your Christmas song to Santa Radio for airplay consideration." />
-      </Helmet>
       <div className="submit-hero starry-bg">
         <div className="submit-hero-content">
-          <h1 className="submit-title gold-text">Submit a song to Santa Radio</h1>
+          <h1 className="submit-title gold-text">{isSong ? 'Submit a song to Santa Radio' : 'Get in touch with Santa Radio'}</h1>
           <div className="submit-body" onFocusCapture={keepFocusVisible}>
+            <fieldset className="contact-modes" disabled={pending}>
+              <legend>What are you contacting us about?</legend>
+              <div className="contact-mode-options">
+                <label><input type="radio" name="contact-mode" value="general" checked={!isSong}
+                  onChange={() => changeMode('general')} /> General enquiry</label>
+                <label><input type="radio" name="contact-mode" value="song" checked={isSong}
+                  onChange={() => changeMode('song')} /> Song submission</label>
+              </div>
+            </fieldset>
+            {isSong ? <>
             <p>Have a Christmas recording you’d like us to consider? Send your details and a listening link below. No audio upload is needed.</p>
             <section className="song-requirements" aria-labelledby="song-requirements-title">
               <h2 id="song-requirements-title">Before you send your song</h2>
@@ -141,10 +183,14 @@ export default function SubmitASong() {
               <p>Keep the complete message within 500 characters. Please check that both your listening and promotion links work before sending.</p>
             </section>
             <p>Submissions are considered for airplay, but sending a song does not guarantee a playlist place or an individual reply.</p>
+            </> : <p>For press and corporate enquiries, feedback or suggestions, send us your details and message below.</p>}
             {accepted ? <div className="song-form-success" role="status" tabIndex={-1} ref={successRef}>
-              <h2>Thank you for your song submission</h2>
-              <p>Brevo has accepted your submission for Santa Radio to consider. This is not a promise of airplay or a reply.</p>
-              <Link to="/christmas-music">Explore Christmas music</Link>
+              <h2>{isSong ? 'Thank you for your song submission' : 'Thank you for your enquiry'}</h2>
+              <p>{isSong
+                ? 'Brevo has accepted your submission for Santa Radio to consider. This is not a promise of airplay or a reply.'
+                : 'Brevo has accepted your enquiry for Santa Radio to handle. This does not guarantee an individual reply.'}</p>
+              <p>Provider acceptance does not confirm delivery to our inbox.</p>
+              <Link to={isSong ? '/christmas-music' : '/'}>{isSong ? 'Explore Christmas music' : 'Return to Santa Radio'}</Link>
             </div> : <form className="song-submission-form" ref={formRef} onSubmit={onSubmit} noValidate aria-busy={pending}>
               <p className="song-guidance">Fields marked * are required.</p>
               <div className="song-form-grid">
@@ -152,10 +198,12 @@ export default function SubmitASong() {
                 {field('LASTNAME', 'Surname', { autocomplete: 'family-name', limit: 200 })}
               </div>
               {field('EMAIL', 'Email address', { autocomplete: 'email', type: 'email' })}
-              <p className="song-guidance" id="song-message-help">Include the artist name, song title, a listening link (such as YouTube, SoundCloud or Spotify), a short bio or description, and a link to any promotion of Santa Radio. Keep the whole message within 500 characters and check both links work.</p>
+              <p className="song-guidance" id="song-message-help">{isSong
+                ? 'Include the artist name, song title, a listening link (such as YouTube, SoundCloud or Spotify), a short bio or description, and a link to any promotion of Santa Radio. Keep the whole message within 500 characters and check both links work.'
+                : 'Tell us about your enquiry. Keep your message within 500 characters and share only necessary details.'}</p>
               {field('COMPANY:name', 'Message', { textarea: true, limit: 500, help: 'song-message-help song-message-count' })}
               <p className="song-character-count" id="song-message-count">{fields['COMPANY:name'].length} / 500 characters</p>
-              <div className="song-criteria-field">
+              {isSong && <div className="song-criteria-field">
                 <label className="song-criteria-label" htmlFor="song-criteriaMet">
                   <input id="song-criteriaMet" name="criteriaMet" type="checkbox"
                     checked={fields.criteriaMet === true}
@@ -165,19 +213,20 @@ export default function SubmitASong() {
                   <span>Have you met the criteria?</span>
                 </label>
                 {errors.criteriaMet && <p className="song-field-error" id="song-criteriaMet-error">{errors.criteriaMet}</p>}
-              </div>
+              </div>}
               <div className="song-honeypot" aria-hidden="true">
                 <label htmlFor="song-website">Leave this field empty</label>
                 <input id="song-website" name="email_address_check" type="text" tabIndex={-1} autoComplete="off"
                   value={fields.email_address_check} onChange={event => onChange('email_address_check', event.target.value)} />
               </div>
               <input type="hidden" name="locale" value="en" />
-              <p className="song-privacy">Your name, email and song message are sent to Brevo to handle your song submission. This does not give consent for marketing. Read our <Link to="/privacy-policy">privacy policy</Link>.</p>
+              <p className="song-privacy">Your name, email and message are sent to Brevo to handle your {isSong ? 'song submission' : 'enquiry'}. This does not give consent for marketing. Read our <Link to="/privacy-policy">privacy policy</Link>.</p>
               {error && <p className="song-form-alert" role="alert">{error}</p>}
-              <button className="song-submit-button" type="submit" disabled={pending}>{pending ? 'Submitting your song…' : 'Submit your song request form'}</button>
+              <button className="song-submit-button" type="submit" disabled={pending}>{pending
+                ? (isSong ? 'Submitting your song…' : 'Sending your enquiry…')
+                : (isSong ? 'Submit song' : 'Send enquiry')}</button>
               {pending && <p className="song-pending" role="status">Waiting for Brevo to confirm acceptance. Please don’t submit again.</p>}
             </form>}
-            <p className="song-privacy">For general enquiries, rather than song submissions, <a href="mailto:santa@santaradio.co.uk">email Santa Radio</a>.</p>
           </div>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import './ContactSection.css';
 import SantaNote from './SantaNote.jsx';
+import { Link } from 'react-router-dom';
 
 export default function ContactSection() {
   return (
@@ -10,14 +11,14 @@ export default function ContactSection() {
           For press and corporate enquiries, feedback or suggestions, please get in touch.
         </p>
         <p className="contact-sub">
-          <strong>Submitting a song?</strong> Please use <strong>“Submit your song” in the footer</strong>, not the email button.
+          You can also choose Song submission on our contact form to send a Christmas recording for consideration.
         </p>
-        <a
-          href="mailto:santa@santaradio.co.uk?subject=Enquiry%20from%20Santa%20Radio"
+        <Link
+          to="/submit-a-song"
           className="contact-btn btn-red"
         >
-          Email for general enquiries
-        </a>
+          Get in touch
+        </Link>
         <div className="contact-santa-note">
           <SantaNote />
         </div>

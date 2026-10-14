@@ -1,5 +1,24 @@
 import { test, expect } from '@playwright/test';
 
+test('shared contact privacy describes both modes without claiming inbox delivery or consent', async ({ page }) => {
+  await page.goto('/privacy-policy');
+  const article = page.locator('article');
+  for (const text of [
+    'General enquiry or Song submission',
+    'a message of up to 500 characters',
+    'same dedicated Brevo form',
+    'General enquiries do not require these song criteria',
+    'not sent as a separate Brevo attribute',
+    'do not open the message maker or give consent for marketing',
+    'not verified delivery to our inbox',
+  ]) await expect(article).toContainText(text);
+  await expect(article).not.toContainText('Song submissions use the separate form');
+  await expect(article.getByRole('link', { name: 'shared contact form', exact: true }))
+    .toHaveAttribute('href', '/submit-a-song');
+  await expect(article.getByRole('link', { name: 'Song submission on the shared contact form', exact: true }))
+    .toHaveAttribute('href', '/submit-a-song?mode=song');
+});
+
 test('policy covers the confirmed native app separately from website marketing', async ({ page }) => {
   await page.goto('/privacy-policy');
   const article = page.locator('article');

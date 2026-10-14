@@ -31,7 +31,7 @@ test('plain Santa text in Contact fits every message without oversized reserved 
     expect(sizes.every(size => size.fits)).toBe(true);
     expect(sizes.every(size => size.slotHeight <= size.height + 1)).toBe(true);
     const note = await text.boundingBox();
-    const email = await page.getByRole('link', { name: 'Email for general enquiries', exact: true }).boundingBox();
+    const email = await page.getByRole('link', { name: 'Get in touch', exact: true }).boundingBox();
     expect(note.y - (email.y + email.height)).toBeGreaterThanOrEqual(39);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }

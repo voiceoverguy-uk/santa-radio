@@ -1,12 +1,12 @@
 ---
 name: Contact and song submission routing
-description: Direct song submissions to the footer submission link, not the general contact email.
+description: Shared contact form routing and owner-approved provider contract.
 ---
-Song submissions should use the submission link in the footer, not the general contact email.
+General enquiries and song submissions use one shared form. General enquiry is the default; song entry links preselect Song submission.
 
-**Why:** The owner wants to stop people using the contact email link to submit songs.
+**Why:** The owner approved the existing Brevo destination for both: general enquiries are infrequent and everything goes to the same inbox. This supersedes separate general-email and song-form routing.
 
-**How to apply:** Make the distinction explicit in contact copy and button wording. Keep the general contact route for press/corporate enquiries, feedback and suggestions.
+**How to apply:** Keep the two modes distinct in guidance and confirmation, without adding provider attributes, lists or automations to separate their routing.
 
 Treat the owner's supplied song form as the provider contract, including unusual attribute mappings. Do not replace an unusual message mapping with a conventional contact field merely because it looks more familiar.
 
