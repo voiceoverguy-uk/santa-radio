@@ -1,5 +1,142 @@
 import { test, expect } from '@playwright/test';
 
+const slideLabels = ['Radio', 'Artists', 'MugShots', 'Tracker'];
+async function openSlideshow(page) {
+  await page.clock.install();
+  await page.clock.pauseAt(new Date());
+  await page.goto('/apps');
+  const carousel = page.getByRole('region', { name: 'Santa Radio current iOS app screenshots' });
+  for (const label of slideLabels) {
+    await expect(carousel.getByRole('button', { name: `Show ${label} screenshot` })).toBeEnabled();
+  }
+  await page.mouse.move(0, 0);
+  return carousel;
+}
+
+async function expectSlide(carousel, label) {
+  await expect(carousel.getByRole('button', { name: `Show ${label} screenshot` })).toHaveAttribute('aria-pressed', 'true');
+  await expect(carousel.locator('.is-active')).toHaveCount(1);
+  await expect(carousel.locator('.app-screenshots-caption')).toHaveText(`${label} · ${slideLabels.indexOf(label) + 1} of 4`);
+}
+
+test('current iOS screenshots are local, optimised, ordered and loop every five seconds', async ({ page }) => {
+  const carousel = await openSlideshow(page);
+  const images = carousel.locator('img');
+  await expect(images).toHaveCount(4);
+  for (let i = 0; i < 4; i++) {
+    const image = images.nth(i);
+    expect(await image.getAttribute('src')).toMatch(/^\/.*\.webp/);
+    expect(await image.evaluate(el => [el.naturalWidth, el.naturalHeight])).toEqual([660, 1434]);
+    const response = await page.request.get(await image.getAttribute('src'));
+    expect(response.ok()).toBe(true);
+    expect((await response.body()).length).toBeLessThan(250000);
+  }
+  await expectSlide(carousel, 'Radio');
+  await page.clock.fastForward(4999);
+  await expectSlide(carousel, 'Radio');
+  await page.clock.fastForward(1);
+  await expectSlide(carousel, 'Artists');
+  for (const label of ['MugShots', 'Tracker', 'Radio']) {
+    await page.clock.fastForward(5000);
+    await expectSlide(carousel, label);
+  }
+  await expect(carousel).toContainText('iOS screenshots only');
+  await expect(page.locator('.app-store-notice')).toContainText('Other app screenshots');
+});
+
+test('manual selection, pause, hover, keyboard focus and hidden tabs suspend rotation', async ({ page }) => {
+  const carousel = await openSlideshow(page);
+  await carousel.getByRole('button', { name: 'Show Tracker screenshot' }).click();
+  await expectSlide(carousel, 'Tracker');
+  await page.clock.fastForward(10000);
+  await expectSlide(carousel, 'Tracker');
+  await carousel.getByRole('button', { name: 'Pause slideshow' }).click();
+  await page.locator('h1').click();
+  await page.mouse.move(0, 0);
+  await page.clock.fastForward(10000);
+  await expectSlide(carousel, 'Tracker');
+  await carousel.getByRole('button', { name: 'Resume slideshow' }).click();
+  await page.clock.fastForward(10000);
+  await expectSlide(carousel, 'Tracker'); // focused controls still suspend it
+  await page.locator('h1').click();
+  await carousel.hover();
+  await page.clock.fastForward(10000);
+  await expectSlide(carousel, 'Tracker');
+  await page.mouse.move(0, 0);
+  await page.evaluate(() => {
+    Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  await page.clock.fastForward(10000);
+  await expectSlide(carousel, 'Tracker');
+  await page.evaluate(() => {
+    delete document.hidden;
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  await page.clock.fastForward(5000);
+  await expectSlide(carousel, 'Radio');
+  await carousel.getByRole('button', { name: 'Show Radio screenshot' }).focus();
+  await page.keyboard.press('Tab');
+  const artists = carousel.getByRole('button', { name: 'Show Artists screenshot' });
+  await expect(artists).toBeFocused();
+  expect(await artists.evaluate(el => getComputedStyle(el).outlineStyle)).toBe('solid');
+  await page.keyboard.press('Enter');
+  await expectSlide(carousel, 'Artists');
+  await page.clock.fastForward(10000);
+  await expectSlide(carousel, 'Artists');
+});
+
+test('reduced motion starts static and all slides share an uncropped stable responsive frame', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const carousel = await openSlideshow(page);
+  await expect(carousel.getByRole('button', { name: 'Resume slideshow' })).toBeVisible();
+  await page.clock.fastForward(20000);
+  await expectSlide(carousel, 'Radio');
+  for (const width of [1280, 390, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    const before = await carousel.boundingBox();
+    for (const label of slideLabels) {
+      await carousel.getByRole('button', { name: `Show ${label} screenshot` }).click();
+      await expectSlide(carousel, label);
+      const after = await carousel.boundingBox();
+      expect(after.width).toBeCloseTo(before.width, 1);
+      expect(after.height).toBeCloseTo(before.height, 1);
+      const image = await carousel.locator('.is-active').evaluate(el => {
+        const rect = el.getBoundingClientRect();
+        const style = getComputedStyle(el);
+        return { ratio: rect.width / rect.height, fit: style.objectFit, transition: style.transitionDuration };
+      });
+      expect(image.ratio).toBeCloseTo(660 / 1434, 3);
+      expect(image.fit).toBe('contain');
+      expect(image.transition).toBe('0s');
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+});
+
+test('an unloaded next screenshot never replaces the ready image', async ({ page }) => {
+  let release;
+  const held = new Promise(resolve => { release = resolve; });
+  await page.route('**/santa-radio-ios-artists*', async route => {
+    if (route.request().resourceType() !== 'image') return route.continue();
+    await held;
+    await route.continue();
+  });
+  await page.clock.install();
+  await page.clock.pauseAt(new Date());
+  await page.goto('/apps', { waitUntil: 'domcontentloaded' });
+  const carousel = page.getByRole('region', { name: 'Santa Radio current iOS app screenshots' });
+  await expect(carousel.getByRole('button', { name: 'Show Radio screenshot' })).toBeEnabled();
+  await expect(carousel.getByRole('button', { name: 'Show Artists screenshot' })).toBeDisabled();
+  await page.mouse.move(0, 0);
+  await page.clock.fastForward(10000);
+  await expectSlide(carousel, 'Radio');
+  release();
+  await expect(carousel.getByRole('button', { name: 'Show Artists screenshot' })).toBeEnabled();
+  await page.clock.fastForward(5000);
+  await expectSlide(carousel, 'Artists');
+});
+
 test('Apps has six complete sections, real local images and app-specific downloads', async ({ page }) => {
   await page.goto('/apps');
   const titles = ['Santa Radio App', 'Santa Voicemail', 'Santa Messages', 'Christmas Radio', 'Santa Text', 'Santa Dash'];

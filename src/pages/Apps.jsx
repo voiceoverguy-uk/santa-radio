@@ -4,6 +4,7 @@ import { appsMetadata, appsBreadcrumbs } from '../seo/catalogue.js';
 import { christmasApps } from './apps-data.js';
 import { appStoreVerification, storeCheckedAt, storeCheckedLabel, amazonDeviceSource } from './apps-store-verification.js';
 import AppIcon from './AppIcon.jsx';
+import AppScreenshots from './AppScreenshots.jsx';
 import './Apps.css';
 
 function StoreDetails({ app }) {
@@ -52,7 +53,7 @@ function AppSection({ app }) {
           <hr className="app-heading-rule" />
         </div>
         <div className={`app-layout${app.landscape ? ' app-layout-landscape' : ''}`}>
-          <div className="app-phone-wrap">
+          {app.screenshots ? <AppScreenshots slides={app.screenshots} /> : <div className="app-phone-wrap">
                 <img
                   src={app.image}
                   alt={app.alt}
@@ -62,7 +63,7 @@ function AppSection({ app }) {
                   loading="lazy"
                   decoding="async"
                 />
-          </div>
+          </div>}
           <div className="app-features-grid">
             {app.features.map(({ label, desc, icon }) => (
               <div key={label} className="feature-item">
@@ -93,7 +94,7 @@ export default function Apps() {
       <div className="apps-container app-store-notice">
         <p>Store details checked on <time dateTime={storeCheckedAt}>{storeCheckedLabel}</time>. Prices and ratings are specific to the linked US or UK storefront and may change. Abbreviated rating counts are shown as the store displays them. These are store ratings, not reviews collected by Santa Radio.</p>
         <p>Amazon has ended Appstore support for ordinary Android mobile devices; its Appstore continues on Fire devices. This does not confirm that every app works on every Fire device. <a href={amazonDeviceSource} target="_blank" rel="noopener noreferrer">Read Amazon’s device support notice</a>.</p>
-        <p>Screenshots and feature descriptions are from the legacy catalogue; current features may differ. The original destination links have been retained.</p>
+        <p>Santa Radio’s screenshots show the current iOS app, not the Amazon version. Other app screenshots and catalogue feature descriptions are from the legacy catalogue; current features may differ. The original destination links have been retained.</p>
       </div>
       {christmasApps.map((app, index) => (
         <div key={app.id}>
