@@ -5,6 +5,7 @@ import { readFile, mkdtemp, cp, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import publicPage from '../api/public-page.js';
+import { shareImage as radioShareImage, shareImageAlt, ORIGIN } from '../src/seo/catalogue.js';
 
 test('deployment-style document package needs neither TypeScript nor runtime React package resolution', async t => {
   const directory = await mkdtemp(join(tmpdir(), 'santa-vercel-documents-'));
@@ -79,6 +80,13 @@ test('built Node server returns actual pages, permanent redirects, images, API r
     const response = await get(path); assert.equal(response.status, 200, path);
     const html = await response.text();
     assert.ok(html.includes(word), path); assert.ok(html.includes('<h1'), path);
+    if (['/', '/christmas-music'].includes(path)) {
+      const head = html.split('</head>')[0];
+      for (const name of ['og:image', 'twitter:image'])
+        assert.match(head, new RegExp(`(?:property|name)="${name}" content="${ORIGIN + radioShareImage}"`));
+      assert.ok(head.includes(shareImageAlt));
+      assert.ok(!head.includes('/images/santa-radio-share-green.jpg'));
+    }
   }
   for (const [path, target] of [['/music', '/christmas-music'], ['/santa-tracker/', '/santa-tracker'], ['/artist?s=3', '/christmas-artist/420-pat-benatar-please-come-home-for-christmas'], ['/artist?s=14', '/christmas-artist/212-gladys-knight-the-pips-its-christmas-everyday'], ['/artist?s=14&utm_source=archive', '/christmas-artist/212-gladys-knight-the-pips-its-christmas-everyday?utm_source=archive']]) {
     const response = await get(path); assert.equal(response.status, 308); assert.equal(response.headers.get('location'), target);
@@ -106,10 +114,10 @@ test('built Node server returns actual pages, permanent redirects, images, API r
   assert.equal(image.status, 200); assert.equal(image.headers.get('content-type'), 'image/png');
   const bytes = Buffer.from(await image.arrayBuffer());
   assert.equal(bytes.readUInt32BE(16), 1200); assert.equal(bytes.readUInt32BE(20), 630);
-  const shareImage = await get('/images/santa-radio-share-green.jpg');
+  const shareImage = await get(radioShareImage);
   assert.equal(shareImage.status, 200);
   assert.equal(shareImage.headers.get('content-type'), 'image/jpeg');
-  assert.deepEqual(Buffer.from(await shareImage.arrayBuffer()), await readFile('public/images/santa-radio-share-green.jpg'));
+  assert.deepEqual(Buffer.from(await shareImage.arrayBuffer()), await readFile(`public${radioShareImage}`));
   assert.match((await get('/mugshot-thumbnails/a1-singers-320.webp')).headers.get('content-type'), /image\/webp/);
   const artwork = await get('/artist-artwork/catalogue.json');
   assert.equal(artwork.status, 200); assert.equal(artwork.headers.get('access-control-allow-origin'), '*');

@@ -105,3 +105,9 @@ Link-preview graphics should use the newer straight gold Santa Radio logo, not t
 **Why:** The user said the graphic shown when pasting the site URL into an email looked weak and requested these brand elements.
 
 **How to apply:** Use the supplied straight logo artwork for share-card designs, with clear branding that remains readable at email-thumbnail sizes.
+
+Keep the default radio sharing artwork simple: Santa Radio on the left, the exact wording “Christmas Music 24 hours a day” beneath it, Santa on the right, and a prominent “Listen Live” graphic. Omit the embedded domain, secondary tagline and decorative dividers.
+
+**Why:** The owner found the earlier card's small text and decorations difficult to read in phone messaging previews.
+
+**How to apply:** Judge future artwork at approximately 350 pixels wide, not only at full resolution. This direction concerns the static sharing graphic, not the homepage, player, app artwork or page-specific pictures.

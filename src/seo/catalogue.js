@@ -7,8 +7,8 @@ import { songArtwork } from '../data/songArtwork.js';
 export const ORIGIN = 'https://www.santaradio.co.uk';
 export const absolute = path => new URL(path, ORIGIN).href;
 export const brandImage = '/images/santa-radio-logo.png';
-export const shareImage = '/images/santa-radio-share-green.jpg';
-export const shareImageAlt = 'Santa Radio — Christmas music 24/7, with Santa wearing headphones and the straight gold Santa Radio logo';
+export const shareImage = '/images/santa-radio-share-green-v2.jpg';
+export const shareImageAlt = 'Santa Radio — Christmas Music 24 hours a day. Listen Live. Santa wearing headphones on the right.';
 export const songPath = song => `/christmas-artist/${song.id}-${song.link}`;
 export const mugPath = mug => `/mugshots/${mug.song}`;
 // Confirmed identical artist, title, lyrics and video. Keep every historical URL.

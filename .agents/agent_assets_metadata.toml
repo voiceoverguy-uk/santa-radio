@@ -98,3 +98,17 @@ mtime_ms = 1791805958715
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/64c051f7-0368-459f-b7d5-5c4a3c4f6ced/ef23e6cb-678d-4533-8891-9599d9de7614"
 storage_version_token = "1791806341397545"
 content_type = "image/jpeg"
+
+[[outputs]]
+id = "jZhXozGDewEuRo-CuXWZD"
+uri = "file://generated-artifacts/santa-radio-share-preview.html"
+type = "html"
+title = "Simplified Santa Radio sharing artwork"
+description = "The finished 1200 × 630 artwork, with a 350-pixel-wide phone preview beneath it."
+logical_id = "4dea3124-270c-47c1-a1c7-11d17e7fc023"
+content_hash = "sha256:f4d5b36459192925a383d7a2f2f079cf54be1e5fbfda500502e27311b2ffa910"
+size = 341472
+mtime_ms = 1792003235838
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/4dea3124-270c-47c1-a1c7-11d17e7fc023/c7f9b34c-c935-4e13-916d-c62ad6dd36f5"
+storage_version_token = "1792003366027927"
+content_type = "text/html"

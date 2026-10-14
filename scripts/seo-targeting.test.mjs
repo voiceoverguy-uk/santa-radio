@@ -10,6 +10,7 @@ const headValue = (html, name) => html.match(new RegExp(`<meta[^>]*(?:name|prope
 const decode = value => value?.replace(/&amp;/g, '&').replace(/&#x27;/g, "'");
 
 test('generic links advertise one opaque, full-size green share card in initial HTML', async () => {
+  assert.equal(shareImage, '/images/santa-radio-share-green-v2.jpg', 'use a new URL rather than cached old artwork');
   const bytes = await readFile(`public${shareImage}`);
   assert.equal(bytes.readUInt16BE(0), 0xffd8, 'the share image is a JPEG');
   assert.ok(bytes.length < 250000, 'link-preview image remains lightweight');
@@ -36,12 +37,23 @@ test('generic links advertise one opaque, full-size green share card in initial 
     assert.equal(headValue(head, 'og:image:height'), '630');
     assert.equal(headValue(head, 'og:image:type'), 'image/jpeg');
     assert.equal(headValue(head, 'og:image:alt'), shareImageAlt);
+     assert.equal(headValue(head, 'twitter:image:alt'), shareImageAlt);
+     assert.ok(!head.includes('/images/santa-radio-share-green.jpg'));
     assert.ok(!head.includes('/assets/img/santa-radio-logo.jpg'));
     const primary = readGraphs(html).find(node => node['@type'] === 'ImageObject');
     assert.equal(primary.contentUrl, ORIGIN + shareImage);
     assert.equal(primary.width, 1200);
     assert.equal(primary.height, 630);
   }
+});
+
+test('fallback document tags match the refreshed generic sharing metadata', async () => {
+  const html = await readFile('index.html', 'utf8');
+  for (const name of ['og:image', 'twitter:image']) assert.equal(headValue(html, name), ORIGIN + shareImage);
+  for (const name of ['og:image:alt', 'twitter:image:alt']) assert.equal(headValue(html, name), shareImageAlt);
+  assert.equal(headValue(html, 'og:image:width'), '1200');
+  assert.equal(headValue(html, 'og:image:height'), '630');
+  assert.equal(headValue(html, 'og:image:type'), 'image/jpeg');
 });
 
 test('sharing artwork is separate from the organisation logo and page-specific pictures', () => {
