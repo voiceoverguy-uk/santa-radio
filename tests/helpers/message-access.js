@@ -3,7 +3,8 @@ import { BREVO_FORM_URL } from '../../src/lib/santaMessageAccess.js';
 import { santaNames, findSantaMessage } from '../../src/data/santaMessages.js';
 
 export const brevoUrl = `${BREVO_FORM_URL}?isAjax=1`;
-export const adult = { FIRSTNAME: 'Testparent', LASTNAME: 'Example', EMAIL: 'parent@example.test' };
+// Unique surname avoids mistaking SantaMessageExample asset URLs for leaked PII.
+export const adult = { FIRSTNAME: 'Testparent', LASTNAME: 'AccessFixtureSurname', EMAIL: 'parent@example.test' };
 
 export async function fillAccessForm(page) {
   for (const [field, value] of Object.entries(adult)) {

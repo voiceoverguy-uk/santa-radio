@@ -6,7 +6,7 @@ test('policy covers the confirmed native app separately from website marketing',
   const app = page.getByRole('region', { name: 'Christmas Radio UK — native iPhone and iPad app, version 35.0' });
   await expect(app).toBeVisible();
   await expect(article).not.toContainText('not separate apps');
-  await expect(article.locator('time')).toHaveAttribute('datetime', '2026-10-11');
+  await expect(article.locator('time')).toHaveAttribute('datetime', '2026-10-14');
   for (const text of [
     'Now Playing, Up Next and artist artwork',
     'does not require a mandatory account',
