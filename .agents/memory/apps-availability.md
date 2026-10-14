@@ -13,3 +13,9 @@ Use the homepage's visual style for the Apps page, rather than copying the legac
 **Why:** The user reversed the earlier visual-copy request and explicitly asked for matching fonts, buttons, borders, boxes and appropriate icons.
 
 **How to apply:** Preserve app content and screenshots, but use the current site's design for surrounding presentation.
+
+Santa Radio is available free on Apple TV, as confirmed by the owner. Present its supplied big-screen image as a separate Apple TV experience, not as an iOS app screenshot.
+
+**Why:** The owner specifically requested a new Apple TV section and supplied an Apple TV screenshot.
+
+**How to apply:** Keep iOS and Apple TV screenshots distinct. Do not assume the existing iOS App Store URL is a direct tvOS install link; add a TV download button only after its destination is verified.

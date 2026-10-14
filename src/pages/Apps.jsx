@@ -3,6 +3,7 @@ import Breadcrumbs from '../seo/Breadcrumbs.jsx';
 import { appsMetadata, appsBreadcrumbs } from '../seo/catalogue.js';
 import { christmasApps } from './apps-data.js';
 import { appStoreVerification, storeCheckedAt, storeCheckedLabel, amazonDeviceSource } from './apps-store-verification.js';
+import appleTvScreenshot from '../assets/apps/santa-radio-apple-tv.webp';
 import AppIcon from './AppIcon.jsx';
 import AppScreenshots from './AppScreenshots.jsx';
 import './Apps.css';
@@ -79,6 +80,34 @@ function AppSection({ app }) {
   );
 }
 
+function AppleTvShowcase() {
+  return (
+    <section className="apple-tv-showcase" aria-labelledby="apple-tv-title">
+      <div className="apps-container apple-tv-inner">
+        <div className="apple-tv-copy">
+          <p className="apple-tv-eyebrow">The big-screen experience</p>
+          <h2 id="apple-tv-title">Available FREE on Apple TV</h2>
+          <p className="apple-tv-description">
+            Enjoy Santa Radio on your Apple TV. Listen live, see what’s playing and explore the festive scene on the big screen.
+          </p>
+          <p className="apple-tv-instruction">Find Santa Radio in the App Store on your Apple TV.</p>
+        </div>
+        <figure className="apple-tv-figure">
+          <img
+            src={appleTvScreenshot}
+            alt="Santa Radio on Apple TV, showing live Christmas music and festive controls in Santa’s workshop."
+            width="1920"
+            height="1080"
+            loading="lazy"
+            decoding="async"
+          />
+          <figcaption>Santa Radio on the big screen</figcaption>
+        </figure>
+      </div>
+    </section>
+  );
+}
+
 export default function Apps() {
   return (
     <main className="apps-page">
@@ -94,12 +123,13 @@ export default function Apps() {
       <div className="apps-container app-store-notice">
         <p>Store details checked on <time dateTime={storeCheckedAt}>{storeCheckedLabel}</time>. Prices and ratings are specific to the linked US or UK storefront and may change. Abbreviated rating counts are shown as the store displays them. These are store ratings, not reviews collected by Santa Radio.</p>
         <p>Amazon has ended Appstore support for ordinary Android mobile devices; its Appstore continues on Fire devices. This does not confirm that every app works on every Fire device. <a href={amazonDeviceSource} target="_blank" rel="noopener noreferrer">Read Amazon’s device support notice</a>.</p>
-        <p>Santa Radio’s screenshots show the current iOS app, not the Amazon version. Other app screenshots and catalogue feature descriptions are from the legacy catalogue; current features may differ. The original destination links have been retained.</p>
+        <p>Santa Radio’s catalogue screenshots show the current iOS app, not the Amazon version. The separate Apple TV image below shows the big-screen experience; it is not an iOS screenshot. Other app screenshots and catalogue feature descriptions are from the legacy catalogue; current features may differ. The original destination links have been retained.</p>
       </div>
       {christmasApps.map((app, index) => (
         <div key={app.id}>
           {index > 0 && <div className="apps-divider" aria-hidden="true" />}
           <AppSection app={app} />
+          {index === 0 && <AppleTvShowcase />}
         </div>
       ))}
     </main>

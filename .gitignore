@@ -139,4 +139,5 @@ test-results/
 playwright-report/
 # Supplied full-resolution iOS originals; the site uses optimised derivatives.
 attached_assets/Screenshot_iPhone_17_Pro_Max_14-10-2026_at_*.png
+attached_assets/Screenshot_Apple_TV_4K_*.png
 /generated-artifacts/

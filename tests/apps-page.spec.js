@@ -161,6 +161,51 @@ test('Apps has six complete sections, real local images and app-specific downloa
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
+test('Apple TV has its own free big-screen section and a responsive supplied screenshot', async ({ page }) => {
+  await page.goto('/apps');
+  await page.getByRole('button', { name: 'Reject optional cookies', exact: true }).click();
+  const section = page.getByRole('region', { name: 'Available FREE on Apple TV' });
+  await expect(section).toBeVisible();
+  await expect(section).toContainText('Find Santa Radio in the App Store on your Apple TV.');
+  await expect(section.getByRole('link')).toHaveCount(0);
+  const image = section.getByRole('img', { name: /Santa Radio on Apple TV/i });
+  await expect(image).toHaveAttribute('width', '1920');
+  await expect(image).toHaveAttribute('height', '1080');
+  const imageUrl = await image.getAttribute('src');
+  expect(imageUrl).toMatch(/^\//);
+  expect(imageUrl).toMatch(/\.webp/);
+  const response = await page.request.get(imageUrl);
+  expect(response.ok()).toBe(true);
+  expect((await response.body()).length).toBeLessThan(500000);
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    if (width === 390) {
+      // A fresh phone visit starts with the radio dock minimised.
+      await page.reload();
+      await expect(page.locator('.radio-dock')).toHaveClass(/is-minimized/);
+    }
+    await section.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
+    if (width === 1280) await page.evaluate(() => window.scrollBy({ top: 90, behavior: 'instant' }));
+    await expect.poll(() => image.evaluate(el => [el.naturalWidth, el.naturalHeight])).toEqual([1920, 1080]);
+    const bounds = await image.boundingBox();
+    expect(bounds.width).toBeGreaterThan(250);
+    expect(bounds.width / bounds.height).toBeCloseTo(16 / 9, 1);
+    expect(bounds.x).toBeGreaterThanOrEqual(0);
+    expect(bounds.x + bounds.width).toBeLessThanOrEqual(width);
+    const dock = await page.locator('.radio-dock').boundingBox();
+    const overlap = bounds.y + bounds.height - dock.y;
+    if (overlap > 0) {
+      await page.evaluate(distance => window.scrollBy({ top: distance, behavior: 'instant' }), overlap + 24);
+    }
+    const visibleImage = await image.boundingBox();
+    expect(visibleImage.y + visibleImage.height).toBeLessThanOrEqual(dock.y);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.screenshot({ path: `generated-artifacts/apps-apple-tv-${width}.jpg` });
+  }
+  await expect(page.locator('.app-section')).toHaveCount(6);
+  await expect(page.getByRole('region', { name: 'Santa Radio current iOS app screenshots' })).toBeVisible();
+});
+
 test('shared menus omit Stories and Video and Apps navigation preserves audio', async ({ page }) => {
   await page.goto('/mugshots/a1-singers');
   const menu = page.getByRole('navigation', { name: 'Main navigation' });
