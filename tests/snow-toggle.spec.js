@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import fs from 'node:fs';
 
 async function expectFallingSnow(page) {
   const snow = page.locator('.site-snow');
@@ -13,6 +14,8 @@ async function expectFallingSnow(page) {
 test('Chrome snow turns off/on, moves and persists through reload/navigation', async ({ page }) => {
   await page.goto('/');
   const toggle = page.locator('.effects-toggle');
+  await expect(page.getByRole('navigation', { name: 'Main navigation' }).locator('.effects-toggle')).toHaveCount(0);
+  await expect(page.getByRole('contentinfo').locator('.effects-toggle')).toHaveCount(1);
   await expect(toggle).toHaveText('Snow On');
   await expectFallingSnow(page);
   await toggle.click();
@@ -101,7 +104,6 @@ test('mobile touch snow switch works with reduced motion', async ({ browser }) =
   try {
     const page = await context.newPage();
     await page.goto(`${test.info().project.use.baseURL}/`);
-    await page.getByRole('button', { name: 'Open menu' }).tap();
     await page.locator('.effects-toggle').tap();
     await expectFallingSnow(page);
     await page.locator('.effects-toggle').tap();
@@ -110,3 +112,32 @@ test('mobile touch snow switch works with reduced motion', async ({ browser }) =
     await context.close();
   }
 });
+
+for (const width of [1280, 390]) {
+  test(`footer snow control supports keyboard and fits at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/apps');
+    const toggle = page.getByRole('contentinfo').locator('.effects-toggle');
+    await expect(toggle).toHaveText('Snow On');
+    await page.getByRole('button', { name: 'Reject optional cookies', exact: true }).click();
+    await toggle.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
+    await toggle.focus();
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Shift+Tab');
+    await expect(toggle).toBeFocused();
+    expect(await toggle.evaluate(el => getComputedStyle(el).outlineStyle)).toBe('solid');
+    const box = await toggle.boundingBox();
+    expect(box.height).toBeGreaterThanOrEqual(44);
+    expect(box.x).toBeGreaterThanOrEqual(0);
+    expect(box.x + box.width).toBeLessThanOrEqual(width);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    fs.mkdirSync('generated-artifacts', { recursive: true });
+    await page.screenshot({ path: `generated-artifacts/snow-footer-${width}.jpg` });
+    await page.keyboard.press('Enter');
+    await expect(toggle).toHaveText('Snow Off');
+    await expect(page.locator('.site-snow')).toHaveCount(0);
+    await page.keyboard.press('Space');
+    await expect(toggle).toHaveText('Snow On');
+    await expectFallingSnow(page);
+  });
+}

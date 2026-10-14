@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { RadioButton } from './AudioPlayer.jsx';
-import { useRadio } from './RadioProvider.jsx';
 import './Navbar.css';
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
-  const { effects, setEffects } = useRadio();
   useEffect(() => {
     const update = () => setScrolled(window.scrollY > 40);
     update();
@@ -38,7 +36,6 @@ export default function Navbar() {
             ? <a href={link.to} target="_blank" rel="noopener noreferrer" title={`${link.label} (opens in a new tab)`} onClick={() => setMenuOpen(false)}>{link.label}</a>
             : <Link to={link.to} aria-current={location.pathname === link.to ? 'page' : undefined} className={location.pathname === link.to ? 'active' : ''} onClick={() => setMenuOpen(false)}>{link.label}</Link>
           }</li>)}
-          <li><button type="button" className="effects-toggle" aria-pressed={effects} title={effects ? 'Turn snow off' : 'Turn snow on'} onClick={() => setEffects(current => !current)}>Snow {effects ? 'On' : 'Off'}</button></li>
           <li className="nav-listen"><RadioButton className="btn-red" /></li>
         </ul>
       </div>

@@ -7,7 +7,6 @@
 .navbar-links { display: flex; list-style: none; gap: 16px; align-items: center; }
 .navbar-links a { font-size: .95rem; color: #e1e6dc; white-space: nowrap; }
 .navbar-links a:hover,.navbar-links a.active { color: var(--gold-light); }
-.effects-toggle { font-size: .85rem; border: 1px solid #D4AF3740; border-radius: 30px; background: transparent; color: var(--gold-light); padding: 7px 12px; white-space: nowrap; }
 .nav-listen .btn-red { padding: 9px 18px; font-size: .9rem; white-space: nowrap; }
 .hamburger { display: none; border: 1px solid #D4AF3750; background: #0b251e80; border-radius: 8px; padding: 12px; flex-direction: column; gap: 5px; }
 .hamburger span { width: 22px; height: 1px; background: var(--cream); }
@@ -20,5 +19,4 @@
   .navbar-links.open { display: flex; }
   .navbar-links a { display: block; padding: 11px 0; }
   .navbar-links li:last-child { margin-top: 15px; }
-  .effects-toggle { margin-top: 8px; }
 }

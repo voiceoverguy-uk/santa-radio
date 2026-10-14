@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
+import { useRadio } from './RadioProvider.jsx';
 import './Footer.css';
 
 export default function Footer() {
+  const { effects, setEffects } = useRadio();
   return (
     <footer className="footer">
       <div className="footer-attribution">
@@ -26,6 +28,17 @@ export default function Footer() {
         <span>&middot;</span>
         <button className="cookie-settings-link" onClick={() =>
           window.dispatchEvent(new Event('santaradio:cookie-settings'))}>Cookie settings</button>
+      </div>
+      <div className="footer-effects">
+        <button
+          type="button"
+          className="effects-toggle"
+          aria-pressed={effects}
+          title={effects ? 'Turn snow off' : 'Turn snow on'}
+          onClick={() => setEffects(current => !current)}
+        >
+          Snow {effects ? 'On' : 'Off'}
+        </button>
       </div>
       <div className="footer-social">
         <a href="https://www.instagram.com/santaradiouk/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">

@@ -74,7 +74,9 @@ Prioritise reaching the tracker and soundboard quickly over additional introduct
 
 **How to apply:** Avoid reintroducing a large promotional section between the introduction and interactive content unless the user requests it.
 
-Snow should respect a visitor's reduced-motion setting by default, but an explicit Snow On choice should enable snowfall only, without enabling other decorative motion.
+Snow should be on by default, with the On/Off switch in the footer rather than the top navigation. Continue respecting a visitor's reduced-motion setting by default, but an explicit Snow On choice should enable snowfall only, without enabling other decorative motion.
+
+**Why for placement:** The user asked to move the switch to the footer to clean up the top navigation bar.
 
 **Why:** The user reported that snow worked on their Safari Mac but not for other visitors. Reduced-motion settings could hide snow permanently despite the switch saying On. Accessibility defaults must not make this deliberate opt-in control ineffective.
 

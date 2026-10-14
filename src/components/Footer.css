@@ -35,6 +35,44 @@
   color: #555;
 }
 
+.footer-effects {
+  display: flex;
+  justify-content: center;
+  max-width: 100%;
+  margin: 0 auto 16px;
+}
+
+.footer .effects-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  max-width: 100%;
+  padding: 8px 16px;
+  border: 1px solid #b59a45;
+  border-radius: 999px;
+  background: #173b2d;
+  color: #e2c66f;
+  font: inherit;
+  font-size: 0.82rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.footer .effects-toggle:hover {
+  background: #214b38;
+  border-color: #d1b65e;
+  color: #f0d98c;
+}
+
+.footer .effects-toggle:focus-visible {
+  outline: 2px solid #f0d98c;
+  outline-offset: 3px;
+}
+
 .footer-social {
   display: flex;
   justify-content: center;
@@ -55,4 +93,16 @@
 .footer-copy {
   color: #666;
   font-size: 0.78rem;
+}
+
+/* Leave room to scroll footer controls clear of the floating player on phones
+   and narrow tablets, including when its details are expanded. */
+@media (max-width: 900px) {
+  .footer {
+    padding-bottom: 96px;
+  }
+
+  .footer:has(~ .radio-dock:not(.is-minimized)) {
+    padding-bottom: 320px;
+  }
 }

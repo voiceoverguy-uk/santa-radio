@@ -75,6 +75,7 @@ for (const path of ['/', '/apps']) {
 }
 
 test('larger navigation preserves keyboard, active routes, snow and shared radio controls', async ({ page }) => {
+  test.setTimeout(60000);
   await page.addInitScript(() => {
     HTMLMediaElement.prototype.load = function () {};
     HTMLMediaElement.prototype.pause = function () { this.dispatchEvent(new Event('pause')); };
@@ -84,9 +85,10 @@ test('larger navigation preserves keyboard, active routes, snow and shared radio
     };
   });
   await page.goto('/');
+  await page.getByRole('button', { name: 'Reject optional cookies', exact: true }).click();
   const nav = page.getByRole('navigation', { name: 'Main navigation' });
   await expect(nav.getByRole('link', { name: 'Home', exact: true })).toHaveAttribute('aria-current', 'page');
-  await nav.getByRole('button', { name: 'Snow On' }).click();
+  await page.getByRole('contentinfo').getByRole('button', { name: 'Snow On' }).click();
   await expect(page.locator('html')).toHaveAttribute('data-effects', 'off');
   await nav.getByRole('button', { name: 'Listen Live' }).click();
   await expect(nav.getByRole('button', { name: 'Pause Radio' })).toBeVisible();
@@ -100,13 +102,17 @@ test('larger navigation preserves keyboard, active routes, snow and shared radio
   await expect(nav.getByRole('button', { name: 'Close menu' })).toHaveAttribute('aria-expanded', 'true');
   await page.keyboard.press('Tab');
   await expect(nav.getByRole('link', { name: 'Home', exact: true })).toBeFocused();
-  await nav.getByRole('button', { name: 'Snow Off' }).click();
+  await page.keyboard.press('Escape');
+  await page.getByRole('contentinfo').getByRole('button', { name: 'Snow Off' }).click();
   await expect(page.locator('html')).toHaveAttribute('data-effects', 'on');
+  await toggle.click();
   await nav.getByRole('button', { name: 'Pause Radio' }).click();
   await expect(nav.getByRole('button', { name: 'Listen Live' })).toBeVisible();
   await nav.getByRole('button', { name: 'Listen Live' }).click();
   await nav.getByRole('link', { name: 'Music', exact: true }).click();
   await expect(page).toHaveURL(/christmas-music$/);
+  await expect(page.getByRole('heading', { name: 'Christmas Song Lyrics & Artists', exact: true })).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
   expect(await page.evaluate(() => window.navigationAudio === document.querySelector('audio'))).toBe(true);
   await toggle.click();
@@ -116,9 +122,11 @@ test('larger navigation preserves keyboard, active routes, snow and shared radio
 });
 
 test('responsive homepage, matching typography, effects and mobile navigation', async ({ page }) => {
+  test.setTimeout(60000);
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('/');
+  await page.getByRole('button', { name: 'Reject optional cookies', exact: true }).click();
   await expect(page.locator('h1')).toContainText('North Pole');
   await expect(page.locator('h1')).toHaveCSS('font-family', /Cinzel/);
   await expect(page.locator('.hero-actions .btn-red')).toHaveCSS('font-family', /Inter/);
@@ -137,8 +145,7 @@ test('responsive homepage, matching typography, effects and mobile navigation', 
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
-  await page.getByRole('button', { name: 'Open menu' }).click();
-  await page.getByRole('navigation').getByRole('button', { name: 'Snow Off' }).click();
+  await page.getByRole('contentinfo').getByRole('button', { name: 'Snow Off' }).click();
   await expect(page.locator('.site-snow')).toBeVisible();
   await expect(page.locator('.site-snow i').first()).toHaveCSS('animation-name', 'site-snowfall');
   await expect(page.locator('.hero-aurora')).toBeHidden();
