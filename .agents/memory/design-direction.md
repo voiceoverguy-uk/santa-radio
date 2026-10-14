@@ -32,7 +32,11 @@ Santa's rotating notes should use playful, family-friendly British humour about 
 
 **How to apply:** Keep future additions in that voice, starting with “Santa here... ” rather than generic promotional copy.
 
-Keep Santa's notes as plain text in the Contact Santa Radio section, not in the hero or a speech bubble. Do not include “Sent with Elfie”. Keep song details in the radio player rather than repeating them in another homepage block.
+Keep Santa's notes as plain text in the Contact Santa Radio section, not in the hero or a speech bubble. Do not include “Sent with Elfie”. Do not add a separate song-details section; the existing now-playing artwork card may include a compact live caption.
+
+**Why for the artwork caption:** The owner explicitly requested the artist on the first line and song title on the second beneath the playing artwork, superseding the earlier preference against repeating track details there.
+
+**How to apply the caption:** Display actual live metadata independently of catalogue matching, retaining the square picture and its overlaid information button. Keep the existing desktop/mobile placement and playing-only visibility.
 
 **Why:** After trying the compact bubble, the user asked to revert to “the last one as just text” and place it in the Contact Santa Radio section.
 

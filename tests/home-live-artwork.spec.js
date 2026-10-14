@@ -14,7 +14,7 @@ async function setup(page, { failPlayback = false } = {}) {
   const state = { artist: 'Cher', title: 'Christmas Song', unavailable: false };
   await page.route('**/api/radio-metadata', route => route.fulfill({
     json: {
-      current: state.unavailable ? null : { artist: state.artist, title: state.title },
+      current: state.unavailable && !state.retainCurrent ? null : { artist: state.artist, title: state.title },
       currentStatus: state.unavailable ? 'unavailable' : 'ready',
       upcoming: [], upcomingStatus: 'ready',
     },
@@ -37,7 +37,7 @@ for (const width of [1280, 390]) test(`artwork song info matches both fields, up
   await expect(info).toBeVisible();
   await expect(info).toHaveAttribute('href', '/christmas-artist/478-john-legend-bring-me-love');
   await expect(info).toHaveAttribute('aria-label', /Bring Me Love.*John Legend/);
-  const frame = await card.boundingBox();
+  const frame = await card.locator('.now-playing-artwork__image').boundingBox();
   const button = await info.boundingBox();
   expect(button.width).toBeGreaterThanOrEqual(44);
   expect(button.height).toBeGreaterThanOrEqual(44);
@@ -134,7 +134,9 @@ test('mobile play shows artwork below the countdown; tablets stay hidden and des
     expect(frame.y).toBeGreaterThan(countdown.y + countdown.height);
     expect(frame.x).toBeGreaterThanOrEqual(0);
     expect(frame.x + frame.width).toBeLessThanOrEqual(width);
-    expect(frame.width).toBeCloseTo(frame.height, 1);
+    const picture = await card.locator('.now-playing-artwork__image').boundingBox();
+    expect(picture.width).toBeCloseTo(picture.height, 1);
+    expect(frame.height).toBeGreaterThan(picture.height);
     expect(frame.y + frame.height).toBeLessThan(tracker.y);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
@@ -182,4 +184,107 @@ test(`unsuccessful playback does not show a playing-artist card at ${width}px`, 
   await expect(page.locator('.hero-actions').getByRole('button', { name: 'Try Again' })).toBeVisible();
   await expect(page.locator('.now-playing-artwork')).toHaveCount(0);
 });
+}
+
+for (const width of [1280, 390]) {
+  test(`live caption updates, wraps and clears stale details at ${width}px`, async ({ page }) => {
+    test.setTimeout(60000);
+    await page.setViewportSize({ width, height: 900 });
+    const state = await setup(page);
+    await page.locator('.hero-actions').getByRole('button', { name: 'Listen Live', exact: true }).click();
+    const card = page.locator('.now-playing-artwork');
+    const artist = card.locator('.now-playing-artwork__artist');
+    const title = card.locator('.now-playing-artwork__title');
+    const caption = card.locator('.now-playing-artwork__caption');
+    const picture = card.locator('.now-playing-artwork__image');
+    const refresh = () => page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+    const assertLayout = async () => {
+      const imageBox = await picture.boundingBox();
+      const captionBox = await caption.boundingBox();
+      const cardBox = await card.boundingBox();
+      const heroBox = await page.locator('.hero').boundingBox();
+      expect(imageBox.width).toBeCloseTo(imageBox.height, 1);
+      expect(captionBox.y).toBeGreaterThanOrEqual(imageBox.y + imageBox.height);
+      expect(captionBox.x).toBeGreaterThanOrEqual(cardBox.x);
+      expect(captionBox.x + captionBox.width).toBeLessThanOrEqual(cardBox.x + cardBox.width + 0.5);
+      expect(cardBox.y).toBeGreaterThanOrEqual(heroBox.y);
+      expect(cardBox.y + cardBox.height).toBeLessThanOrEqual(heroBox.y + heroBox.height + 0.5);
+      expect(await caption.evaluate(el => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    };
+    // Both live fields are displayed even though this recording is unmatched.
+    await expect(artist).toHaveText('Cher');
+    await expect(title).toHaveText('Christmas Song');
+    await expect(card.getByRole('link')).toHaveCount(0);
+    await assertLayout();
+    state.artist = 'Ariana Grande';
+    state.title = 'Last Christmas';
+    await refresh();
+    await expect(artist).toHaveText(state.artist);
+    await expect(title).toHaveText(state.title);
+    await expect(card.locator('img')).toHaveAttribute('src', '/artist-artwork/ariana-grande-last-christmas.webp');
+    const info = card.getByRole('link');
+    await expect(info).toHaveAttribute('href', '/christmas-artist/75-ariana-grande-last-christmas');
+    const imageBox = await picture.boundingBox();
+    const infoBox = await info.boundingBox();
+    expect(infoBox.y + infoBox.height).toBeLessThanOrEqual(imageBox.y + imageBox.height);
+    expect(infoBox.x + infoBox.width).toBeLessThanOrEqual(imageBox.x + imageBox.width);
+    await card.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
+    if (width < 768) {
+      const visibleCaption = await caption.boundingBox();
+      const dock = await page.getByRole('complementary', { name: 'Santa Radio player' }).boundingBox();
+      expect(visibleCaption.y + visibleCaption.height).toBeLessThanOrEqual(dock.y);
+    }
+    fs.mkdirSync('generated-artifacts', { recursive: true });
+    await page.screenshot({ path: `generated-artifacts/live-artwork-caption-${width}.jpg` });
+    state.title = 'Winter Things';
+    await refresh();
+    await expect(title).toHaveText('Winter Things');
+    await expect(card.locator('img')).toHaveAttribute('src', '/artist-artwork/ariana-grande-winter-things.webp');
+    state.title = 'A live recording without a catalogue page';
+    await refresh();
+    await expect(title).toHaveText(state.title);
+    await expect(info).toHaveCount(0);
+    state.artist = 'A long artist credit with featured singers '.repeat(2) + 'A'.repeat(100);
+    state.title = 'An extended festive song title '.repeat(2) + 'T'.repeat(100);
+    await refresh();
+    await expect(artist).toHaveText(state.artist);
+    await expect(title).toHaveText(state.title);
+    await assertLayout();
+    state.artist = '  Ariana Grande  ';
+    state.title = '   ';
+    await refresh();
+    await expect(artist).toHaveText('Ariana Grande');
+    await expect(title).toHaveCount(0);
+    state.artist = ' ';
+    state.title = '  Winter Things  ';
+    await refresh();
+    await expect(artist).toHaveCount(0);
+    await expect(title).toHaveText('Winter Things');
+    await expect(card.locator('img')).toHaveAttribute('src', '/artist-artwork/santa-fallback.webp');
+    state.title = '';
+    await refresh();
+    await expect(card.locator('.now-playing-artwork__fallback')).toHaveText('Santa Radio live');
+    await expect(artist).toHaveCount(0);
+    await expect(title).toHaveCount(0);
+    // An unavailable payload may still carry previous values; none may leak.
+    state.artist = 'Ariana Grande';
+    state.title = 'Last Christmas';
+    state.retainCurrent = true;
+    state.unavailable = true;
+    await refresh();
+    await expect(card.locator('.now-playing-artwork__fallback')).toHaveText('Santa Radio live');
+    await expect(card).not.toContainText('Ariana Grande');
+    await expect(card).not.toContainText('Last Christmas');
+    await expect(card).toHaveAttribute('aria-label', 'Santa Radio now-playing artwork');
+    const playButton = page.locator('.hero-actions').getByRole('button', { name: 'Pause Radio', exact: true });
+    await playButton.click();
+    await expect(card).toHaveCount(0);
+    await page.locator('.hero-actions').getByRole('button', { name: 'Listen Live', exact: true }).click();
+    await expect(card.locator('.now-playing-artwork__fallback')).toHaveText('Santa Radio live');
+    state.unavailable = false;
+    await refresh();
+    await expect(artist).toHaveText('Ariana Grande');
+    await expect(title).toHaveText('Last Christmas');
+  });
 }

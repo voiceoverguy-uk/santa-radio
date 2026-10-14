@@ -2,6 +2,44 @@
   display: none;
 }
 
+.now-playing-artwork__image {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.now-playing-artwork__image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 7px;
+}
+
+.now-playing-artwork__caption {
+  min-width: 0;
+  color: #f3e9c8;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.now-playing-artwork__artist,
+.now-playing-artwork__fallback {
+  color: #e6ce86;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.now-playing-artwork__title {
+  margin-top: 3px;
+  color: #f3e9c8;
+  font-size: .8rem;
+  line-height: 1.4;
+}
+
 .now-playing-artwork__info {
   position: absolute;
   right: 16px;
@@ -47,12 +85,14 @@
     position: relative;
     z-index: 2;
     display: grid;
-    place-items: center;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    gap: 10px;
     width: min(100%, 248px);
-    aspect-ratio: 1;
     margin: 28px auto 0;
     padding: 8px;
-    overflow: hidden;
+    box-sizing: border-box;
+    overflow: visible;
     border: 1px solid #d4af3770;
     border-radius: 14px;
     background: #102d26b8;
@@ -60,13 +100,6 @@
     backdrop-filter: blur(3px);
   }
 
-  .now-playing-artwork img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    border-radius: 7px;
-  }
 }
 
 @media (min-width: 1024px) {
@@ -76,11 +109,13 @@
     top: 50%;
     right: 0;
     display: grid;
-    place-items: center;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    gap: 10px;
     width: clamp(220px, 20vw, 270px);
-    aspect-ratio: 1;
     padding: 9px;
-    overflow: hidden;
+    box-sizing: border-box;
+    overflow: visible;
     transform: translateY(-50%);
     border: 1px solid #d4af3770;
     border-radius: 14px;
@@ -90,12 +125,8 @@
     backdrop-filter: blur(3px);
   }
 
-  .now-playing-artwork img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    border-radius: 7px;
+  .now-playing-artwork__caption {
+    padding: 0 3px 2px;
   }
 }
 
