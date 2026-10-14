@@ -93,7 +93,10 @@ test('homepage keeps the countdown in the hero and plain Santa text in Contact S
   await expect(page.locator('.santa-note-sender, .santa-note-caption')).toHaveCount(0);
   await expect(page.getByText('Sent with Elfie', { exact: true })).toHaveCount(0);
   await expect(contact.getByRole('heading', { name: 'Contact Santa Radio' })).toBeVisible();
-  await expect(contact.getByRole('link', { name: 'Send Email' })).toHaveAttribute('href', 'mailto:santa@santaradio.co.uk?subject=Enquiry%20from%20Santa%20Radio');
+  await expect(contact).toContainText('For press and corporate enquiries, feedback or suggestions, please get in touch.');
+  await expect(contact).toContainText('Submitting a song? Please use “Submit your song” in the footer, not the email button.');
+  await expect(contact.getByRole('link', { name: 'Email for general enquiries', exact: true })).toHaveAttribute('href', 'mailto:santa@santaradio.co.uk?subject=Enquiry%20from%20Santa%20Radio');
+  await expect(page.locator('.footer-links').getByRole('link', { name: 'Submit your song', exact: true })).toHaveAttribute('href', '/submit-a-song');
   await expect(page.locator('.santa-note')).toHaveCount(1);
   await expect(hero.getByRole('link', { name: 'FREE Santa Message', exact: true })).toHaveAttribute('href', '/free-santa-message');
   const before = await hero.locator('.countdown-unit').last().textContent();
@@ -134,7 +137,7 @@ test('homepage keeps the countdown in the hero and plain Santa text in Contact S
     expect(tagline.left).toBeGreaterThanOrEqual(-0.5);
     expect(tagline.right).toBeLessThanOrEqual(width + 0.5);
     const note = await contact.locator('.santa-note-text').boundingBox();
-    const email = await contact.getByRole('link', { name: 'Send Email' }).boundingBox();
+    const email = await contact.getByRole('link', { name: 'Email for general enquiries', exact: true }).boundingBox();
     expect(note.y).toBeGreaterThanOrEqual(email.y + email.height);
     expect(note.x).toBeGreaterThanOrEqual(0);
     expect(note.x + note.width).toBeLessThanOrEqual(width);
