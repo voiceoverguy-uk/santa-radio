@@ -137,4 +137,6 @@ dist
 # Browser test output
 test-results/
 playwright-report/
+# Supplied full-resolution iOS originals; the site uses optimised derivatives.
+attached_assets/Screenshot_iPhone_17_Pro_Max_14-10-2026_at_*.png
 /generated-artifacts/
