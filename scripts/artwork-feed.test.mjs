@@ -4,6 +4,20 @@ import { readFile } from 'node:fs/promises';
 import * as mapping from '../src/data/artistArtwork.js';
 import { buildArtworkFeed } from '../server/artwork-feed.js';
 
+test('Corinne Bailey Rae uses her supplied portrait in the catalogue and shared artwork feed', async () => {
+  const songs = JSON.parse(await readFile('src/data/songs.json', 'utf8'));
+  const artistSongs = songs.filter(song => song.artist === 'Corinne Bailey Rae');
+  assert.ok(artistSongs.length > 0);
+  const path = '/artist-artwork/corinne-bailey-rae.webp';
+  for (const song of artistSongs) assert.equal(mapping.artistArtwork(song.artist), path);
+  assert.equal(mapping.artistArtwork('  CORINNE  BAILEY RAE  '), path);
+  const image = await readFile(`public${path}`);
+  assert.equal(image.subarray(8, 12).toString(), 'WEBP');
+  assert.ok(image.length < 100000);
+  const feed = await buildArtworkFeed(mapping);
+  assert.equal(feed.artists['corinne bailey rae'].path, path);
+});
+
 test('five supplied portraits match the existing songs and versioned feed', async () => {
   const songs = JSON.parse(await readFile('src/data/songs.json', 'utf8'));
   const feed = await buildArtworkFeed(mapping);
