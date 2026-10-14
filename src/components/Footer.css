@@ -46,31 +46,81 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 9px;
   min-width: 44px;
   min-height: 44px;
   max-width: 100%;
-  padding: 8px 16px;
-  border: 1px solid #b59a45;
-  border-radius: 999px;
-  background: #173b2d;
-  color: #e2c66f;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #e6ce86;
   font: inherit;
   font-size: 0.82rem;
   line-height: 1.2;
   white-space: nowrap;
   cursor: pointer;
-  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+  transition: color 0.2s;
 }
 
 .footer .effects-toggle:hover {
-  background: #214b38;
-  border-color: #d1b65e;
   color: #f0d98c;
+}
+
+.effects-toggle-label {
+  color: #f0d98c;
+  font-weight: 500;
+}
+
+.effects-toggle-track {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 34px;
+  align-items: center;
+  width: 34px;
+  height: 19px;
+  padding: 2px;
+  border: 1px solid #b89537;
+  border-radius: 999px;
+  background: #123326;
+}
+
+.effects-toggle-thumb {
+  display: block;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #e6ce86;
+  box-shadow: 0 1px 2px #06191180;
+  transform: translateX(0);
+  transition: transform 180ms ease;
+}
+
+.footer .effects-toggle[aria-checked="true"] .effects-toggle-track {
+  border-color: #d4af37;
+  background: #1b4332;
+}
+
+.footer .effects-toggle[aria-checked="true"] .effects-toggle-thumb {
+  transform: translateX(15px);
+}
+
+.effects-toggle-state {
+  min-width: 18px;
+  color: #bcc9bd;
+  font-size: 0.76rem;
+  text-align: left;
 }
 
 .footer .effects-toggle:focus-visible {
   outline: 2px solid #f0d98c;
   outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .effects-toggle-thumb {
+    transition: none;
+  }
 }
 
 .footer-social {

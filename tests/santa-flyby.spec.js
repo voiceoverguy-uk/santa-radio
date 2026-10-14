@@ -68,9 +68,9 @@ test('the small mobile silhouette stays above the heading without overflow', asy
 test('Snow Off hides the flyby and reduced motion never enables it', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('.santa-flyby')).toBeVisible();
-  await page.locator('.effects-toggle').click();
+  await page.getByRole('switch', { name: 'Snow', checked: true }).click();
   await expect(page.locator('.santa-flyby')).toBeHidden();
-  await page.locator('.effects-toggle').click();
+  await page.getByRole('switch', { name: 'Snow', checked: false }).click();
   await expect(page.locator('.santa-flyby')).toBeVisible();
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(page.locator('.santa-flyby')).toBeHidden();

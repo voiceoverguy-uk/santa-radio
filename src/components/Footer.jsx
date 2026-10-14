@@ -33,11 +33,19 @@ export default function Footer() {
         <button
           type="button"
           className="effects-toggle"
-          aria-pressed={effects}
+          role="switch"
+          aria-checked={effects}
+          aria-label="Snow"
           title={effects ? 'Turn snow off' : 'Turn snow on'}
           onClick={() => setEffects(current => !current)}
         >
-          Snow {effects ? 'On' : 'Off'}
+          <span className="effects-toggle-label">Snow</span>
+          <span className="effects-toggle-track" aria-hidden="true">
+            <span className="effects-toggle-thumb" />
+          </span>
+          <span className="effects-toggle-state" aria-hidden="true">
+            {effects ? 'On' : 'Off'}
+          </span>
         </button>
       </div>
       <div className="footer-social">

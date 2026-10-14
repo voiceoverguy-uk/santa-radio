@@ -31,7 +31,7 @@ test('homepage displays four approved profiles and keeps them stable during inte
   const eligible = new Set(catalogue.filter(x => x.homepage).map(x => `/mugshots/${x.song}`));
   expect(urls.every(url => eligible.has(url))).toBe(true);
   expect(new Set(urls).size).toBe(4);
-  await page.getByRole('button', { name: 'Snow On', exact: true }).click();
+  await page.getByRole('switch', { name: 'Snow', checked: true }).click();
   expect(await cards.evaluateAll(elements => elements.map(el => el.getAttribute('href')))).toEqual(urls);
   await cards.first().click();
   await expect(page).toHaveURL(new RegExp(urls[0]));

@@ -5,15 +5,15 @@ test('snow works across routes and remembers off after reload', async ({ page })
   const nav = page.getByRole('navigation', { name: 'Main navigation' });
   const footer = page.getByRole('contentinfo');
   await expect(page.locator('.site-snow i')).toHaveCount(24);
-  await expect(nav.getByRole('button', { name: /^Snow / })).toHaveCount(0);
-  await footer.getByRole('button', { name: 'Snow On', exact: true }).click();
+  await expect(nav.getByRole('switch', { name: 'Snow', exact: true })).toHaveCount(0);
+  await footer.getByRole('switch', { name: 'Snow', checked: true }).click();
   await expect(page.locator('.site-snow')).toHaveCount(0);
   await nav.getByRole('link', { name: 'Music', exact: true }).click();
-  await expect(footer.getByRole('button', { name: 'Snow Off' })).toHaveAttribute('aria-pressed', 'false');
+  await expect(footer.getByRole('switch', { name: 'Snow', exact: true })).not.toBeChecked();
   await expect(page.locator('.site-snow')).toHaveCount(0);
   await page.reload({ waitUntil: 'domcontentloaded' });
   await expect(page.locator('.site-snow')).toHaveCount(0);
-  await footer.getByRole('button', { name: 'Snow Off', exact: true }).click();
+  await footer.getByRole('switch', { name: 'Snow', checked: false }).click();
   for (const label of ['Home', 'FREE Audio Message', 'Mug Shots']) {
     await nav.getByRole('link', { name: label, exact: true }).click();
     await expect(page.locator('.site-snow i')).toHaveCount(24);

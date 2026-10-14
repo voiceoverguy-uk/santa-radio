@@ -54,10 +54,11 @@ for (const path of ['/', '/apps']) {
   test(`larger shared navigation fits desktop, tablet, mobile and enlarged text on ${path}`, async ({ page }) => {
     test.setTimeout(60000);
     await page.goto(path);
+    await page.getByRole('button', { name: 'Reject optional cookies', exact: true }).click();
     await page.evaluate(() => document.fonts.ready);
     const nav = page.getByRole('navigation', { name: 'Main navigation' });
     await expect(nav.getByRole('link', { name: 'Home', exact: true })).toHaveCSS('font-size', '15.2px');
-    await expect(nav.locator('.effects-toggle')).toHaveCSS('font-size', '13.6px');
+    await expect(nav.getByRole('switch', { name: 'Snow', exact: true })).toHaveCount(0);
     await expect(nav.locator('.nav-listen button')).toHaveCSS('font-size', '14.4px');
     for (const width of [1440, 1280, 1201, 1200, 1199, 1024, 768, 390, 320]) {
       await page.setViewportSize({ width, height: 900 });
@@ -88,7 +89,7 @@ test('larger navigation preserves keyboard, active routes, snow and shared radio
   await page.getByRole('button', { name: 'Reject optional cookies', exact: true }).click();
   const nav = page.getByRole('navigation', { name: 'Main navigation' });
   await expect(nav.getByRole('link', { name: 'Home', exact: true })).toHaveAttribute('aria-current', 'page');
-  await page.getByRole('contentinfo').getByRole('button', { name: 'Snow On' }).click();
+  await page.getByRole('contentinfo').getByRole('switch', { name: 'Snow', checked: true }).click();
   await expect(page.locator('html')).toHaveAttribute('data-effects', 'off');
   await nav.getByRole('button', { name: 'Listen Live' }).click();
   await expect(nav.getByRole('button', { name: 'Pause Radio' })).toBeVisible();
@@ -103,7 +104,7 @@ test('larger navigation preserves keyboard, active routes, snow and shared radio
   await page.keyboard.press('Tab');
   await expect(nav.getByRole('link', { name: 'Home', exact: true })).toBeFocused();
   await page.keyboard.press('Escape');
-  await page.getByRole('contentinfo').getByRole('button', { name: 'Snow Off' }).click();
+  await page.getByRole('contentinfo').getByRole('switch', { name: 'Snow', checked: false }).click();
   await expect(page.locator('html')).toHaveAttribute('data-effects', 'on');
   await toggle.click();
   await nav.getByRole('button', { name: 'Pause Radio' }).click();
@@ -132,7 +133,7 @@ test('responsive homepage, matching typography, effects and mobile navigation', 
   await expect(page.locator('.hero-actions .btn-red')).toHaveCSS('font-family', /Inter/);
   await expect(page.locator('.hero-picture img')).toHaveJSProperty('complete', true);
   expect(await page.locator('.hero-picture img').evaluate(img => img.naturalWidth)).toBeGreaterThan(0);
-  await page.getByRole('button', { name: 'Snow On' }).click();
+  await page.getByRole('switch', { name: 'Snow', checked: true }).click();
   await expect(page.locator('html')).toHaveAttribute('data-effects', 'off');
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-effects', 'off');
@@ -145,7 +146,7 @@ test('responsive homepage, matching typography, effects and mobile navigation', 
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
-  await page.getByRole('contentinfo').getByRole('button', { name: 'Snow Off' }).click();
+  await page.getByRole('contentinfo').getByRole('switch', { name: 'Snow', checked: false }).click();
   await expect(page.locator('.site-snow')).toBeVisible();
   await expect(page.locator('.site-snow i').first()).toHaveCSS('animation-name', 'site-snowfall');
   await expect(page.locator('.hero-aurora')).toBeHidden();
