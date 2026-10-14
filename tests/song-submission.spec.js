@@ -9,7 +9,7 @@ import { brevoUrl, fillAccessForm, mockBrevo } from './helpers/message-access.js
 const songUrl = `${SONG_FORM_URL}?isAjax=1`;
 const details = {
   FIRSTNAME: 'Testartist', LASTNAME: 'Example', EMAIL: 'artist@example.test',
-  'COMPANY:name': 'Test Artist — Christmas Song. https://example.test/listen A festive recording. Santa Radio promotion: https://example.test/promotion',
+  MESSAGE: 'Test Artist — Christmas Song. https://example.test/listen A festive recording. Santa Radio promotion: https://example.test/promotion',
 };
 
 async function mockSong(page, json = { success: true }, status = 200) {
@@ -49,9 +49,11 @@ test.beforeEach(async ({ page }) => {
   }));
 });
 
-test('embed contract, hosted country choices and separate endpoint stay exact', () => {
+test('historical embed retains the previous mapping and the separate endpoint stays exact', () => {
   const embed = readFileSync('attached_assets/Pasted--Begin-Brevo-Form-START-We-recommend-to-place-the-below_1791994223545.txt', 'utf8');
   expect(embed).toContain(`action="${SONG_FORM_URL}"`);
+  // Historical evidence only, not an assertion of the current live contract.
+  expect(embed).toContain('name="COMPANY:name"');
   expect(songUrl).not.toBe(brevoUrl);
   const select = embed.match(/<select[^>]*name="SMS__COUNTRY_CODE"[\s\S]*?<\/select>/)[0];
   const choices = [...select.matchAll(/<option value="([^"]+)"[^>]*>\s*\+\d+\s+([A-Z]+)\s*<\/option>/g)]
@@ -63,10 +65,10 @@ test('validation rejects over-limit values even if browser limits are bypassed',
   const fields = { ...details, criteriaMet: true };
   expect(validateSongFields(fields)).toEqual({});
   expect(validateSongFields({ ...fields, FIRSTNAME: 'x'.repeat(201), LASTNAME: 'x'.repeat(201),
-    'COMPANY:name': 'x'.repeat(501) })).toEqual({
+    MESSAGE: 'x'.repeat(501) })).toEqual({
     FIRSTNAME: 'Please keep your first name to 200 characters or fewer.',
     LASTNAME: 'Please keep your surname to 200 characters or fewer.',
-    'COMPANY:name': 'Please keep your message to 500 characters or fewer.',
+    MESSAGE: 'Please keep your message to 500 characters or fewer.',
   });
   expect(validateSongFields({ ...fields, criteriaMet: false })).toEqual({
     criteriaMet: 'Please confirm that you have met all five criteria.',
@@ -80,6 +82,39 @@ test('submission layer rejects missing song criteria and honeypots before any re
   await expect(submitSong({ ...details, email_address_check: 'bot' }, new AbortController().signal, 'general'))
     .rejects.toThrow('could not be sent');
 });
+
+for (const mode of ['general', 'song']) {
+  test(`${mode}: message remains required on the website even though Brevo makes it optional`, async ({ page }) => {
+    const fields = { ...details, criteriaMet: true };
+    for (const MESSAGE of ['', '   ', '\n\t']) {
+      expect(validateSongFields({ ...fields, MESSAGE }, mode)).toEqual({
+        MESSAGE: 'Please enter your message.',
+      });
+      await expect(submitSong({ ...fields, MESSAGE }, new AbortController().signal, mode))
+        .rejects.toMatchObject({ fieldErrors: { MESSAGE: 'Please enter your message.' } });
+    }
+    expect(validateSongFields({ ...fields, MESSAGE: 'x'.repeat(501) }, mode)).toEqual({
+      MESSAGE: 'Please keep your message to 500 characters or fewer.',
+    });
+    let requests = 0;
+    page.on('request', request => { if (request.url() === songUrl) requests++; });
+    await openForm(page, mode);
+    await fillSong(page, mode === 'song');
+    const message = page.locator('[name="MESSAGE"]');
+    await expect(message).toHaveAttribute('required', '');
+    await expect(message).toHaveAttribute('maxlength', '500');
+    await expect(page.locator('[name="COMPANY:name"]')).toHaveCount(0);
+    await message.fill('   ');
+    await expect(page.locator('#song-message-count')).toHaveText('3 / 500 characters');
+    await page.getByRole('button', { name: mode === 'song' ? 'Submit song' : 'Send enquiry', exact: true }).click();
+    await expect(message).toBeFocused();
+    await expect(page.locator('#song-MESSAGE-error')).toHaveText('Please enter your message.');
+    await message.fill('Draft');
+    await expect(message).toHaveAttribute('aria-invalid', 'false');
+    await expect(page.locator('#song-message-count')).toHaveText('5 / 500 characters');
+    expect(requests).toBe(0);
+  });
+}
 
 for (const path of ['/submit-a-song', '/submit-a-song?mode=invalid', '/submit-a-song?mode=general']) {
   test(`general enquiry defaults correctly at ${path}`, async ({ page }) => {
@@ -105,10 +140,14 @@ test('general enquiry accepts without criteria using the exact provider fields a
   });
   await openForm(page, 'general');
   await fillSong(page, false);
-  await page.getByLabel('Message', { exact: false }).fill('A general press enquiry.');
+  for (const name of ['FIRSTNAME', 'LASTNAME', 'EMAIL']) {
+    await page.locator(`[name="${name}"]`).fill(`  ${details[name]}  `);
+  }
+  await page.getByLabel('Message', { exact: false }).fill('  A general press enquiry.  ');
   await page.getByRole('button', { name: 'Send enquiry', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Thank you for your enquiry' })).toBeVisible();
-  expect(payload).toEqual({ ...details, 'COMPANY:name': 'A general press enquiry.', email_address_check: '', locale: 'en' });
+  expect(payload).toEqual({ ...details, MESSAGE: 'A general press enquiry.', email_address_check: '', locale: 'en' });
+  expect(payload).not.toHaveProperty('COMPANY:name');
   await expect(page.locator('.song-form-success')).toBeFocused();
   await expect(page.locator('main')).not.toContainText('airplay');
   await expect(page.locator('.song-form-success')).toContainText('does not confirm delivery to our inbox');
@@ -125,7 +164,7 @@ test('mode switching retains drafts, clears stale errors and requires fresh crit
   await expect(page.getByRole('alert')).toHaveCount(0);
   await expect(page.locator('[aria-invalid="true"]')).toHaveCount(0);
   await expect(page.getByLabel('Email address')).toHaveValue('invalid');
-  await expect(page.getByLabel('Message', { exact: false })).toHaveValue(details['COMPANY:name']);
+  await expect(page.getByLabel('Message', { exact: false })).toHaveValue(details.MESSAGE);
   await page.goBack();
   await expect(page.getByRole('radio', { name: 'Song submission' })).toBeChecked();
   await expect(page.getByRole('checkbox', { name: 'Have you met the criteria?' })).not.toBeChecked();
@@ -184,7 +223,7 @@ test('name and message limits hold and whitespace-only fields cannot submit', as
   await page.getByLabel('Surname').fill('b'.repeat(201));
   await expect(page.getByLabel('Surname')).toHaveValue('b'.repeat(200));
   await page.getByLabel('Message', { exact: false }).fill('m'.repeat(501));
-  await expect(page.locator('[name="COMPANY:name"]')).toHaveValue('m'.repeat(500));
+  await expect(page.locator('[name="MESSAGE"]')).toHaveValue('m'.repeat(500));
   await expect(page.locator('#song-message-count')).toHaveText('500 / 500 characters');
   await page.getByLabel('First name').fill('   ');
   await submit(page);
@@ -199,12 +238,15 @@ test('explicit acceptance sends only exact fields, stays on site and grants no m
   });
   await openForm(page);
   await fillSong(page);
-  await page.getByLabel('First name').fill(`  ${details.FIRSTNAME}  `);
+  for (const [name, value] of Object.entries(details)) {
+    await page.locator(`[name="${name}"]`).fill(`  ${value}  `);
+  }
   await submit(page);
   await expect(page.getByRole('heading', { name: 'Thank you for your song submission' })).toBeVisible();
   expect(payload).toEqual({
     ...details, email_address_check: '', locale: 'en',
   });
+  expect(payload).not.toHaveProperty('COMPANY:name');
   await expect(page).toHaveURL(/\/submit-a-song\?mode=song$/);
   expect(await page.evaluate(key => sessionStorage.getItem(key), MESSAGE_ACCESS_KEY)).toBeNull();
   await expect(page.locator('.song-form-success')).toBeFocused();
@@ -228,7 +270,7 @@ test('phone fields are removed and promotion link is included in the message sen
   expect(payload).not.toHaveProperty('SMS');
   expect(payload).not.toHaveProperty('SMS__COUNTRY_CODE');
   expect(payload).not.toHaveProperty('criteriaMet');
-  expect(payload['COMPANY:name']).toContain('https://example.test/promotion');
+  expect(payload.MESSAGE).toContain('https://example.test/promotion');
 });
 
 test('criteria must be confirmed and honeypot cannot masquerade as success', async ({ page }) => {
@@ -359,7 +401,7 @@ test('malformed HTML cannot confirm submission', async ({ page }) => {
   await fillSong(page);
   await submit(page);
   await expect(page.getByRole('alert')).toContainText('unexpected response');
-  await expect(page.locator('[name="COMPANY:name"]')).toHaveValue(details['COMPANY:name']);
+  await expect(page.locator('[name="MESSAGE"]')).toHaveValue(details.MESSAGE);
   await expect(page.locator('.song-form-success')).toHaveCount(0);
 });
 
@@ -377,24 +419,36 @@ test('opaque response cannot confirm submission', async ({ page }) => {
   await expect(page.locator('.song-form-success')).toHaveCount(0);
 });
 
-test('message provider errors render safely and successful retry works', async ({ page }) => {
+for (const mode of ['general', 'song']) {
+test(`${mode}: MESSAGE provider errors render safely and successful retry sends retained fields`, async ({ page }) => {
   await mockSong(page, { success: false,
     message: '<img src=x onerror="window.injected=true">Please review your details.',
     errors: {
-      'COMPANY:name': '<script>window.injected=true</script>Message needs a link.',
+      MESSAGE: '<script>window.injected=true</script>Message needs a link.',
     },
   });
-  await openForm(page);
-  await fillSong(page);
-  await submit(page);
-  await expect(page.locator('#song-COMPANY-name-error')).toContainText('Message needs a link.');
-  await expect(page.locator('[name="COMPANY:name"]')).toBeFocused();
+  await openForm(page, mode);
+  await fillSong(page, mode === 'song');
+  const button = page.getByRole('button', { name: mode === 'song' ? 'Submit song' : 'Send enquiry', exact: true });
+  await button.click();
+  await expect(page.locator('#song-MESSAGE-error')).toContainText('Message needs a link.');
+  await expect(page.locator('[name="MESSAGE"]')).toBeFocused();
+  for (const [name, value] of Object.entries(details)) {
+    await expect(page.locator(`[name="${name}"]`)).toHaveValue(value);
+  }
   expect(await page.evaluate(() => window.injected)).toBeUndefined();
   await expect(page.locator('.song-form-alert img, .song-field-error script, .song-field-error b')).toHaveCount(0);
-  await mockSong(page);
-  await submit(page);
+  let payload;
+  await page.route(songUrl, async route => {
+    payload = await outgoing(route.request());
+    await route.fulfill({ json: { success: true } });
+  });
+  await button.click();
   await expect(page.locator('.song-form-success')).toBeVisible();
+  expect(payload).toEqual({ ...details, email_address_check: '', locale: 'en' });
+  expect(payload).not.toHaveProperty('COMPANY:name');
 });
+}
 
 test('unexpected required provider fields report the exact configuration problem', async ({ page }) => {
   await mockSong(page, { success: false, errors: { EXTRA_REQUIRED: 'Required' } });
@@ -419,7 +473,7 @@ test('pending state prevents duplicate submissions and editing', async ({ page }
   await submit(page);
   await expect(page.getByRole('button', { name: 'Submitting your song…' })).toBeDisabled();
   await expect(page.locator('.song-pending')).toBeVisible();
-  await expect(page.locator('[name="COMPANY:name"]')).toHaveAttribute('readonly', '');
+  await expect(page.locator('[name="MESSAGE"]')).toHaveAttribute('readonly', '');
   await expect(page.getByRole('checkbox', { name: 'Have you met the criteria?' })).toBeDisabled();
   await expect(page.getByRole('radio', { name: 'General enquiry' })).toBeDisabled();
   await expect(page.getByRole('radio', { name: 'Song submission' })).toBeDisabled();
@@ -437,7 +491,7 @@ test('network failure is an explicit retry state', async ({ page }) => {
   await fillSong(page);
   await submit(page);
   await expect(page.getByRole('alert')).toContainText('Check your connection');
-  await expect(page.locator('[name="COMPANY:name"]')).toHaveValue(details['COMPANY:name']);
+  await expect(page.locator('[name="MESSAGE"]')).toHaveValue(details.MESSAGE);
 });
 
 test('timeout aborts the request, retains entries and allows retry', async ({ page }) => {
@@ -485,7 +539,7 @@ test('navigation cancels in-flight submission and back opens a fresh form withou
   await expect(page.getByRole('button', { name: 'Submit song', exact: true })).toBeEnabled();
   const storage = await page.evaluate(() => JSON.stringify([localStorage, sessionStorage]));
   expect(storage).not.toContain(details.EMAIL);
-  expect(storage).not.toContain(details['COMPANY:name']);
+  expect(storage).not.toContain(details.MESSAGE);
 });
 
 test('home, music and footer links select the correct shared form mode', async ({ page }) => {

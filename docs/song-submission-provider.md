@@ -1,38 +1,60 @@
-# Song submission provider contract
+# Shared contact/song submission provider contract
 
-The owner's attached Brevo embed is the submission contract. The song form is
-independent of the Santa-message access endpoint and does not grant access or
-store contact details locally.
+General enquiries and song submissions use the owner's unchanged dedicated
+public Brevo endpoint (`SONG_FORM_URL` in `src/lib/songSubmission.js`).
+This is independent of the Santa-message access endpoint: it does not grant
+message-maker access or store contact details locally.
 
-## Read-only checks
+## Read-only hosted-form check
 
-On 14 October 2026, a GET of the dedicated public hosted form returned HTTP 200
-and matched the supplied fields: required `FIRSTNAME` and `LASTNAME` (200
-characters each), required `EMAIL`, required `COMPANY:name` (500 characters),
-optional `SMS`, `SMS__COUNTRY_CODE` with `data-country-code="GB"`, the
-`email_address_check` honeypot and `locale=en`. No upload or CAPTCHA field was
-present.
+On 14 October 2026, a fresh GET of the dedicated hosted form returned HTTP 200:
 
-A read-only GET with `Origin: https://www.santaradio.co.uk` returned
-`Access-Control-Allow-Origin: https://www.santaradio.co.uk`. The provider's
-public script submits multipart `FormData` by POST to the form action with
-`?isAjax=1`, then reads JSON `success`, `message` and `errors`. Its native
-field-error selector omits textarea controls, so the site handles errors for
-`COMPANY:name` itself.
+| Field | Current hosted control | Website behaviour |
+| --- | --- | --- |
+| `FIRSTNAME` | Required input, maxlength 200 | Separate required first name |
+| `LASTNAME` | Required input, maxlength 200 | Separate required surname |
+| `EMAIL` | Required input | Required email, validated before sending |
+| `MESSAGE` | Optional textarea, maxlength 500 | Required non-blank message, maxlength 500 |
+| `email_address_check` | Hidden honeypot | Must remain empty |
+| `locale` | Hidden input, value `en` | Sends `en` |
 
-The site preserves the embedded phone-country choices and sends the selected
-country code separately from the local phone text; it does not guess national
-prefix transformations. Brevo performs country-specific number validation.
-No provider script or stylesheet is installed globally.
+The hosted form's relative action resolves to the same dedicated endpoint.
+`COMPANY:name` is absent. The owner's attached embed is historical evidence of
+the previous required `COMPANY:name` textarea, not the current message contract.
+The website now uses `MESSAGE` throughout state, controls, validation, counting,
+payload and provider field-error handling. It does not send both message keys.
+
+The hosted form still offers optional `SMS` and `SMS__COUNTRY_CODE` controls.
+The website deliberately neither collects nor sends phone numbers or country
+codes. Song criteria are a website-only confirmation, not a Brevo attribute.
+No new fields, uploads or CAPTCHA were observed.
+
+The GET with `Origin: https://www.santaradio.co.uk` returned
+`Access-Control-Allow-Origin: https://www.santaradio.co.uk`. The website sends
+multipart `FormData` to the dedicated action with `?isAjax=1`, using JSON
+`success`, `message` and `errors`. Only an OK, non-opaque response with boolean
+`success: true` confirms provider acceptance. No provider script or stylesheet
+is installed globally.
 
 ## Verification boundary
 
-Browser tests intercept all Brevo submissions. They verify outgoing mappings,
-strict boolean acceptance, safe errors, retries, cancellation, keyboard use
-and layout, not provider storage or automatic emails. The production build
-and Node SSR are checked separately.
+Browser tests intercept all Brevo submissions; no test POST reaches Brevo.
+They verify exact non-empty, trimmed `FIRSTNAME`, `LASTNAME`, `EMAIL` and
+`MESSAGE` values alongside the honeypot and locale, and absence of `COMPANY:name`,
+phone fields and criteria in outgoing requests for both modes. They also check
+required entry, character limits/counting, safe `MESSAGE` errors, draft retention,
+retries, cancellation, mode navigation, acceptance-only confirmation, keyboard
+use and layout. The independent Santa-message access regression suite and
+production build are checked separately.
 
-No live POST, real test contact, Brevo account setting change, list change or
-automation change was made. Read-only hosted-form checks cannot establish that
-Brevo will persist the unusual message mapping, retain contacts for a
-particular period or send an email. Those checks need separate owner approval.
+These checks prove the outgoing mapping, not Brevo's saved-record persistence,
+notification delivery or email personalization. The supplied screenshots show
+first-name personalization working only; they do not prove surname or message
+persistence. `FIRSTNAME` and `LASTNAME` already match the current hosted contract.
+Correcting the message key must not be described as fixing the missing surname
+or notification template.
+
+To investigate those provider-side questions, ask the owner for a saved-record
+view and notification-template view, or obtain separate approval for a live test.
+No live POST, real test contact, email, provider attribute/list/automation change
+or publishing is authorised by this mapping correction.

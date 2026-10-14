@@ -8,11 +8,11 @@ General enquiries and song submissions use one shared form. General enquiry is t
 
 **How to apply:** Keep the two modes distinct in guidance and confirmation, without adding provider attributes, lists or automations to separate their routing.
 
-Treat the owner's supplied song form as the provider contract, including unusual attribute mappings. Do not replace an unusual message mapping with a conventional contact field merely because it looks more familiar.
+Use the current read-only hosted song form to confirm the provider field contract. Treat the owner's supplied embed as historical evidence when the hosted form differs; do not guess field mappings.
 
-**Why:** The owner specifically required the supplied mappings and excluded Brevo attribute, list and automation changes. Read-only form inspection and mocked acceptance do not establish actual record persistence.
+**Why:** The hosted message contract changed after the original supplied embed. The owner authorised alignment with the confirmed live field, but excluded Brevo attribute, list and automation changes. Read-only form inspection and mocked acceptance do not establish actual record persistence.
 
-**How to apply:** Preserve the contract when maintaining song submission. If the provider rejects its configuration, report the exact mismatch rather than inventing replacement fields. A live persistence or automatic-email check needs separate owner approval.
+**How to apply:** Recheck the hosted contract when maintaining song submission and report unexpected differences. Do not attribute missing surname personalization or claim persisted messages based on outgoing requests. A live persistence or automatic-email check needs separate owner approval.
 
 Song submissions must not collect a phone number or country code. Their message criteria include a link to any promotion of Santa Radio, alongside the artist, song, listening link and short bio or description.
 
