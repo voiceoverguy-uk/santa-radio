@@ -30,6 +30,7 @@ for (const entry of record.records) {
     await page.route('https://www.youtube.com/**', route => route.abort());
     await page.goto(target.url, { waitUntil: 'domcontentloaded' });
     await expect(page.locator('.song-detail-info p')).toHaveText(entry.after);
+    await expect(page.locator('.song-recording-summary')).toHaveCount(0);
     for (const selector of ['meta[name="description"]', 'meta[property="og:description"]', 'meta[name="twitter:description"]']) {
       await expect(page.locator(`${selector}[data-rh="true"]`)).toHaveAttribute('content', songDescription(song));
     }
