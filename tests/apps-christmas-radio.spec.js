@@ -29,7 +29,7 @@ test('Christmas Radio delivers four ordered full-size local promotions with app-
   await ready(carousel);
   await expect(carousel.getByRole('group', { name: 'Choose a Christmas Radio promotional image' })).toBeVisible();
   await expect(carousel.locator('figcaption')).toHaveText(regionName);
-  await expect(carousel).toContainText('not interactive website controls');
+  await expect(carousel.locator('.app-screenshots-note')).toHaveCount(0);
   await expect(carousel).not.toContainText('iOS screenshots only');
   await expect(carousel.getByRole('button')).toHaveCount(5);
   for (let index = 0; index < 4; index++) {
@@ -50,8 +50,7 @@ test('Christmas Radio delivers four ordered full-size local promotions with app-
   await expect(section.getByRole('link', { name: /Download on Amazon Appstore/ })).toHaveAttribute('href', 'https://www.amazon.co.uk/VoiceoverGuy-Ltd-Christmas-Radio/dp/B01M18XUXV');
   await expect(section.locator('.app-store-card, .app-store-details')).toHaveCount(0);
   await expect(section.locator('.feature-label')).toHaveText(['Christmas Music 24/7', 'Record a Message', 'Share', 'Send a message', 'Download price', 'Background player']);
-  await expect(page.locator('.app-store-notice')).toContainText('Christmas Radio’s four promotional images were supplied by the owner');
-  await expect(page.locator('.app-store-notice')).toContainText('Other app screenshots and catalogue feature descriptions are from the legacy catalogue');
+  await expect(page.locator('.app-store-notice')).toHaveCount(0);
 });
 
 test('Christmas Radio holds for five seconds, crossfades and wraps independently of the other slideshows', async ({ page }) => {

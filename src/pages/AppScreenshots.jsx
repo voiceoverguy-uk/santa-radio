@@ -7,7 +7,6 @@ export default function AppScreenshots({
   regionLabel = 'Santa Radio current iOS app screenshots',
   selectionLabel = 'Choose an iOS screenshot',
   imageType = 'screenshot',
-  note = 'iOS screenshots only; the Amazon app’s appearance may differ.',
   maxWidth = 285,
 }) {
   const [active, setActive] = useState(0);
@@ -106,7 +105,6 @@ export default function AppScreenshots({
           {paused ? 'Resume slideshow' : 'Pause slideshow'}
         </button>
       </div>
-      {note && <p className="app-screenshots-note">{note}</p>}
       </div>
       {Object.keys(failed).length > 0 && <p role="status" className="app-screenshots-note">Some {imageType}s could not load. Please reload to try again.</p>}
     </figure>

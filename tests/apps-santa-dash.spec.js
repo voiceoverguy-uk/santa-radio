@@ -28,12 +28,21 @@ test('Santa Dash serves three full-size ordered local promotions and preserves i
   await expectSlide(carousel, 0);
   await expect(carousel.locator('figcaption')).toHaveText('Santa Dash promotional artwork');
   await expect(carousel.getByRole('group', { name: 'Choose Santa Dash promotional artwork' })).toBeVisible();
-  await expect(carousel).not.toContainText('not live gameplay or interactive website controls');
+  await expect(carousel.locator('.app-screenshots-note')).toHaveCount(0);
   await expect(carousel).not.toContainText('iOS screenshots only');
   await expect(carousel.locator('img')).toHaveCount(3);
   await expect(carousel.getByRole('button')).toHaveCount(4);
   for (let index = 0; index < 3; index++) {
     const image = carousel.locator('img').nth(index);
+    const frame = await image.evaluate(el => {
+      const rect = el.getBoundingClientRect();
+      const style = getComputedStyle(el);
+      return { ratio: rect.width / rect.height, fit: style.objectFit, x: rect.x, right: rect.right };
+    });
+    expect(frame.ratio).toBeCloseTo(1672 / 941, 3);
+    expect(frame.fit).toBe('contain');
+    expect(frame.x).toBeGreaterThanOrEqual(0);
+    expect(frame.right).toBeLessThanOrEqual(await page.evaluate(() => innerWidth));
     const src = await image.getAttribute('src');
     expect(src).toMatch(new RegExp(`^/.*santa-dash-promo-${index + 1}.*\\.webp`));
     expect(await image.evaluate(el => [el.naturalWidth, el.naturalHeight])).toEqual([1672, 941]);
@@ -59,7 +68,7 @@ test('Santa Dash serves three full-size ordered local promotions and preserves i
     'Login to Game Centre and play with friends.\nWhy not send a challenge to others?',
     'Check the linked App Store\nfor current pricing.',
   ]);
-  await expect(page.locator('.app-store-notice')).toContainText('Santa Dash’s three owner-supplied promotional artworks are not live gameplay.');
+  await expect(page.locator('.app-store-notice')).toHaveCount(0);
 });
 
 test('Santa Dash holds each artwork for five seconds, fades and wraps without coupling other slideshows', async ({ page }) => {
@@ -88,9 +97,11 @@ test('Santa Dash holds each artwork for five seconds, fades and wraps without co
     await other.hover();
     await page.mouse.move(0, 0);
   }
+  const beforeFrame = await carousel.boundingBox();
   const before = await Promise.all(others.map(other => other.locator('.app-screenshots-caption').textContent()));
   await page.clock.fastForward(5000);
   await expectSlide(carousel, 0);
+  expect(await carousel.boundingBox()).toEqual(beforeFrame);
   for (const [index, other] of others.entries()) {
     await expect(other.locator('.app-screenshots-caption')).not.toHaveText(before[index]);
   }

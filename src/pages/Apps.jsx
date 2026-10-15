@@ -1,8 +1,6 @@
 import PageSeo from '../seo/PageSeo.jsx';
-import Breadcrumbs from '../seo/Breadcrumbs.jsx';
-import { appsMetadata, appsBreadcrumbs } from '../seo/catalogue.js';
+import { appsMetadata } from '../seo/catalogue.js';
 import { appleWatchScreenshots, christmasApps, macAppListing } from './apps-data.js';
-import { amazonDeviceSource } from './apps-store-verification.js';
 import appleTvScreenshot from '../assets/apps/santa-radio-apple-tv.webp';
 import AppIcon from './AppIcon.jsx';
 import AppScreenshots from './AppScreenshots.jsx';
@@ -15,22 +13,6 @@ function AppSection({ app }) {
         <div className="app-section-heading">
           <h2 id={`${app.id}-title`} className="app-section-title">{app.title}</h2>
           {app.subtitle && <p className="app-section-sub">{app.subtitle}</p>}
-          <div className="app-download-btns">
-            {app.downloads.map(({ platform, href }) => (
-              <a
-                key={platform}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="app-dl-btn"
-                aria-label={`Download on ${platform === 'iOS' ? 'the App Store' : 'Amazon Appstore'} — ${app.title} (opens in a new tab)`}
-              >
-                <AppIcon name="download" />
-                Download on {platform === 'iOS' ? 'the App Store' : 'Amazon Appstore'}
-              </a>
-            ))}
-          </div>
-          <hr className="app-heading-rule" />
         </div>
         <div className={`app-layout${app.landscape ? ' app-layout-landscape' : ''}${app.screenshots ? ' app-layout-with-slideshow' : ''}`}>
           {app.screenshots ? <AppScreenshots slides={app.screenshots} {...app.slideshow} /> : <div className="app-phone-wrap">
@@ -53,6 +35,22 @@ function AppSection({ app }) {
             ))}
           </div>
         </div>
+        <div className="app-download-btns">
+          {app.downloads.map(({ platform, href }) => (
+            <a
+              key={platform}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="app-dl-btn"
+              aria-label={`Download on ${platform === 'iOS' ? 'the App Store' : 'Amazon Appstore'} — ${app.title} (opens in a new tab)`}
+            >
+              <AppIcon name="download" />
+              Download on {platform === 'iOS' ? 'the App Store' : 'Amazon Appstore'}
+            </a>
+          ))}
+        </div>
+        <hr className="app-heading-rule" />
       </div>
     </section>
   );
@@ -106,7 +104,6 @@ function AppleWatchShowcase() {
           heading="Santa Radio on Apple Watch"
           regionLabel="Santa Radio Apple Watch promotional images"
           selectionLabel="Choose an Apple Watch promotional image"
-          note="Promotional images only; controls shown here do not control playback."
           maxWidth={420}
         />
       </div>
@@ -150,11 +147,6 @@ export default function Apps() {
           <h1 className="apps-hero-title">Christmas Apps</h1>
           <p className="apps-hero-desc">Christmas music, Santa messages and festive games. Check the linked stores for current pricing.</p>
         </div>
-      </div>
-      <Breadcrumbs items={appsBreadcrumbs} />
-      <div className="apps-container app-store-notice">
-        <p>Amazon has ended Appstore support for ordinary Android mobile devices; its Appstore continues on Fire devices. This does not confirm that every app works on every Fire device. <a href={amazonDeviceSource} target="_blank" rel="noopener noreferrer">Read Amazon’s device support notice</a>.</p>
-        <p>Santa Radio’s catalogue screenshots show the current iOS app, not the Amazon version. Christmas Radio’s four promotional images were supplied by the owner; they do not show the Amazon version. Santa Text, Santa Voicemail and Santa Messages also use owner-supplied promotional artwork, not Amazon app screenshots. Santa Dash’s three owner-supplied promotional artworks are not live gameplay. Controls and download banners shown in promotional artwork are part of the images, not interactive website controls. The Apple Watch promotional images show the Watch experience. The separate Apple TV image below shows the big-screen experience; it is not an iOS screenshot. Other app screenshots and catalogue feature descriptions are from the legacy catalogue; current features may differ. The original destination links have been retained.</p>
       </div>
       {christmasApps.map((app, index) => (
         <div key={app.id}>

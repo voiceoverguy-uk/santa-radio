@@ -2,6 +2,50 @@ import { test, expect } from '@playwright/test';
 import { appDownloads, obsoleteStoreCopy } from './fixtures/apps-downloads.js';
 
 const slideLabels = ['Radio', 'Artists', 'MugShots', 'Tracker'];
+
+test('Apps introduction is uncluttered on desktop and phones while navigation and SEO remain intact', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/apps');
+  await page.getByRole('button', { name: 'Reject optional cookies', exact: true }).click();
+  for (const width of [1280, 390, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/apps');
+    await expect(page.locator('.app-store-notice, .seo-breadcrumbs')).toHaveCount(0);
+    await expect(page.getByRole('navigation', { name: 'Breadcrumb', exact: true })).toHaveCount(0);
+    await expect(page.locator('main')).not.toContainText('Amazon has ended Appstore support');
+    await expect(page.locator('main')).not.toContainText('Santa Radio’s catalogue screenshots show');
+    await expect(page.locator('main')).not.toContainText('The original destination links have been retained.');
+    await expect(page.locator('.apps-hero + div > .app-section').first()).toHaveAttribute('id', 'santaradio');
+    const gap = await page.locator('#santaradio').evaluate(section => {
+      const hero = document.querySelector('.apps-hero').getBoundingClientRect();
+      return {
+        section: section.getBoundingClientRect().top - hero.bottom,
+        heading: section.querySelector('h2').getBoundingClientRect().top - hero.bottom,
+      };
+    });
+    expect(gap.section).toBeCloseTo(0, 1);
+    expect(gap.heading).toBeCloseTo(width >= 768 ? 76 : 52, 1);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await expect(page).toHaveTitle('Christmas Apps — App Store Downloads | Santa Radio');
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://www.santaradio.co.uk/apps');
+    const graph = JSON.parse(await page.locator('script[type="application/ld+json"]').textContent());
+    expect(graph['@graph'].find(node => node['@type'] === 'BreadcrumbList').itemListElement).toEqual([
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.santaradio.co.uk/' },
+      { '@type': 'ListItem', position: 2, name: 'Apps', item: 'https://www.santaradio.co.uk/apps' },
+    ]);
+    const menu = page.getByRole('navigation', { name: 'Main navigation' });
+    if (width < 768) await menu.getByRole('button', { name: 'Open menu' }).click();
+    await menu.getByRole('link', { name: 'Music', exact: true }).click();
+    await expect(page).toHaveURL(/\/christmas-music$/);
+    await expect(page.getByRole('navigation', { name: 'Breadcrumb', exact: true })).toBeVisible();
+    if (width < 768) await menu.getByRole('button', { name: 'Open menu' }).click();
+    await menu.getByRole('link', { name: 'Apps', exact: true }).click();
+    await expect(page).toHaveURL(/\/apps$/);
+    await expect(page.getByRole('heading', { name: 'Christmas Apps', exact: true })).toBeVisible();
+    await expect(page.locator('.app-store-notice, .seo-breadcrumbs')).toHaveCount(0);
+  }
+});
+
 async function openSlideshow(page) {
   await page.clock.install();
   await page.clock.pauseAt(new Date());
@@ -41,8 +85,8 @@ test('current iOS screenshots are local, optimised, ordered and loop every five 
     await page.clock.fastForward(5000);
     await expectSlide(carousel, label);
   }
-  await expect(carousel).toContainText('iOS screenshots only');
-  await expect(page.locator('.app-store-notice')).toContainText('Other app screenshots');
+  await expect(carousel.locator('.app-screenshots-note')).toHaveCount(0);
+  await expect(page.locator('.app-store-notice')).toHaveCount(0);
 });
 
 test('manual selection, pause, hover, keyboard focus and hidden tabs suspend rotation', async ({ page }) => {
@@ -169,8 +213,8 @@ test('store panels are removed, copy and metadata are accurate and downloads wor
   await expect(page.locator('.apps-hero-desc')).toContainText('Check the linked stores for current pricing.');
   await expect(page).toHaveTitle('Christmas Apps — App Store Downloads | Santa Radio');
   await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /App Store and Amazon Appstore download links and device showcases/);
-  await expect(page.locator('.app-store-notice')).toContainText('its Appstore continues on Fire devices');
-  await expect(page.locator('.app-store-notice')).toContainText('not interactive website controls');
+  await expect(page.locator('.app-store-notice')).toHaveCount(0);
+  await expect(page.getByRole('navigation', { name: 'Breadcrumb', exact: true })).toHaveCount(0);
 
   // Test real new-tab activation without depending on external stores' uptime.
   await page.context().route(/https?:\/\/(apps\.apple\.com|itunes\.apple\.com|www\.amazon\.(com|co\.uk))\//, route =>
@@ -209,14 +253,16 @@ test('store panels are removed, copy and metadata are accurate and downloads wor
         }
       }
       const gap = await section.evaluate(el => {
-        const heading = el.querySelector('.app-section-heading').getBoundingClientRect();
         const layout = el.querySelector('.app-layout').getBoundingClientRect();
         const buttons = el.querySelector('.app-download-btns').getBoundingClientRect();
-        return { content: layout.top - heading.bottom, buttons: layout.top - buttons.bottom };
+        return {
+          buttonsAfterContent: buttons.top - layout.bottom,
+          order: Boolean(el.querySelector('.app-layout').compareDocumentPosition(el.querySelector('.app-download-btns')) & Node.DOCUMENT_POSITION_FOLLOWING),
+        };
       });
-      expect(gap.content).toBeGreaterThanOrEqual(0);
-      expect(gap.content).toBeLessThanOrEqual(38);
-      expect(gap.buttons).toBeLessThanOrEqual(70);
+      expect(gap.buttonsAfterContent).toBeGreaterThanOrEqual(0);
+      expect(gap.buttonsAfterContent).toBeLessThanOrEqual(38);
+      expect(gap.order).toBe(true);
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
@@ -276,7 +322,7 @@ test('Santa Text, Santa Voicemail and Santa Messages show complete optimised own
     }
     await image.screenshot({ path: `generated-artifacts/apps-${id}-new-artwork.jpg` });
   }
-  await expect(page.locator('.app-store-notice')).toContainText('Santa Text, Santa Voicemail and Santa Messages also use owner-supplied promotional artwork');
+  await expect(page.locator('.app-store-notice')).toHaveCount(0);
 });
 
 test('Mac app listing shows complete promotional artwork and Coming soon without a store link', async ({ page }) => {

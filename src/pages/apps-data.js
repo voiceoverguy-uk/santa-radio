@@ -114,7 +114,6 @@ export const christmasApps = [
       regionLabel: 'Christmas Radio promotional images',
       selectionLabel: 'Choose a Christmas Radio promotional image',
       imageType: 'promotional image',
-      note: 'Owner-supplied Christmas Radio promotional images, not Amazon app screenshots. Playback and settings controls shown in the artwork are not interactive website controls.',
     },
     downloads: downloads(
       'https://itunes.apple.com/gb/app/christmas-radio-uk/id1157967613',
@@ -166,7 +165,6 @@ export const christmasApps = [
       regionLabel: 'Santa Dash promotional artwork',
       selectionLabel: 'Choose Santa Dash promotional artwork',
       imageType: 'promotional artwork',
-      note: null,
       maxWidth: 760,
     },
     downloads: downloads('https://itunes.apple.com/gb/app/santa-dash-from-santa-guy/id1057048397'),

@@ -55,7 +55,7 @@ test('Watch follows iOS, precedes TV/Mac and explains paired-iPhone playback wit
     expect((await response.body()).length).toBeLessThan(250000);
   }
   const ios = page.getByRole('region', { name: 'Santa Radio current iOS app screenshots' });
-  await expect(ios).toContainText('iOS screenshots only; the Amazon app’s appearance may differ.');
+  await expect(ios.locator('.app-screenshots-note')).toHaveCount(0);
   await expect(ios.getByRole('group', { name: 'Choose an iOS screenshot' })).toHaveCount(1);
 });
 

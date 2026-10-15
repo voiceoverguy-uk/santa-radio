@@ -108,7 +108,7 @@ test('homepage uses consistent search targeting in initial content, metadata and
   assert.ok(html.includes(`rel="canonical" href="${ORIGIN}/"`));
 });
 
-test('Apps schema matches the visible catalogue, breadcrumbs and real screenshots', async () => {
+test('Apps schema matches the visible catalogue and screenshots while retaining structured breadcrumbs only', async () => {
   const html = await readFile('dist/apps/index.html', 'utf8');
   const graphs = readGraphs(html);
   const list = graphs.find(node => node['@type'] === 'ItemList');
@@ -125,23 +125,22 @@ test('Apps schema matches the visible catalogue, breadcrumbs and real screenshot
   assert.deepEqual(crumbs.map(item => item.position), [1, 2]);
   assert.ok(crumbs.every(item => item['@type'] === 'ListItem'));
   assert.deepEqual(crumbs.map(item => [item.name, item.item]), appsBreadcrumbs.map(([name, path]) => [name, `${ORIGIN}${path}`]));
-  assert.ok(html.includes('aria-label="Breadcrumb"'));
-  assert.ok(html.includes('aria-current="page">Apps</span>'));
+  assert.doesNotMatch(html, /seo-breadcrumbs|aria-label="Breadcrumb"|aria-current="page">Apps<\/span>/);
   assert.equal(graphs.filter(node => node['@type'] === 'CollectionPage').length, 1);
   assert.ok(!JSON.stringify(graphs).match(/aggregateRating|SoftwareApplication|MobileApplication|InStock|Sleeps til Santa/i));
 });
 
-test('generated Apps HTML retains downloads and guidance without store panels or ratings schema', async () => {
+test('generated Apps HTML retains downloads without introduction notices, store panels or ratings schema', async () => {
   // React SSR inserts hydration separators between text nodes; these are not
   // visible content and must not affect checks of what readers actually see.
   const html = (await readFile('dist/apps/index.html', 'utf8')).replace(/<!--[\s\S]*?-->/g, '');
   assert.match(html, /<h1[^>]*>Christmas Apps<\/h1>/);
   assert.ok(!html.includes('Free Christmas Apps'));
   assert.ok(!html.includes('100% FREE'));
-  assert.ok(html.includes(`href="${amazonDeviceSource}"`));
-  assert.ok(html.includes('This does not confirm that every app works on every Fire device.'));
-  assert.ok(html.includes('Other app screenshots and catalogue feature descriptions are from the legacy catalogue'));
-  assert.doesNotMatch(html, /app-store-details|app-store-card/);
+  assert.ok(!html.includes(`href="${amazonDeviceSource}"`));
+  assert.ok(!html.includes('This does not confirm that every app works on every Fire device.'));
+  assert.ok(!html.includes('Other app screenshots and catalogue feature descriptions are from the legacy catalogue'));
+  assert.doesNotMatch(html, /app-store-notice|app-store-details|app-store-card/);
   assert.doesNotMatch(html, obsoleteStoreCopy);
   for (const app of appDownloads) {
     const section = html.match(new RegExp(`<section id="${app.id}"[\\s\\S]*?<\\/section>`))?.[0];
