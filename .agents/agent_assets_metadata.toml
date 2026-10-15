@@ -112,3 +112,143 @@ mtime_ms = 1792003235838
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/4dea3124-270c-47c1-a1c7-11d17e7fc023/c7f9b34c-c935-4e13-916d-c62ad6dd36f5"
 storage_version_token = "1792003366027927"
 content_type = "text/html"
+
+[[outputs]]
+id = "nmirlKZFmPrSj9f7XPHFt"
+uri = "file://generated-artifacts/north-pole-panorama-4096x1242.png"
+type = "image"
+title = "North Pole Panorama — 4096 × 1242 PNG"
+description = "Continuous snowy Alpine landscape with warm timber chalets, fir trees, rugged mountains and green aurora. Exact 4096 × 1242 pixel PNG, approximately 5 MB. Proportionally upscaled from generated artwork; no stretching. Existing website and app artwork are unchanged."
+logical_id = "75d397ea-ff9e-437f-8d57-fbcc53760cf9"
+content_hash = "sha256:807f57fdd4bd47a22f7d6c1af4fdabe6875c1e78cdd6bf7204c228c7ebafb035"
+size = 5001253
+mtime_ms = 1792075536930
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/75d397ea-ff9e-437f-8d57-fbcc53760cf9/dd5b66df-ef54-4e6e-b84f-b752be2db0a6"
+storage_version_token = "1792075584572330"
+content_type = "image/png"
+
+[[outputs]]
+id = "KmRgL_tmPf69XVKewFg76"
+uri = "file://generated-artifacts/santa-dash/santa-dash-loading-2208x1242.png"
+type = "image"
+title = "Santa Dash — New Loading Screen"
+description = "Exact 2208 × 1242 PNG featuring your northern-lights village, a straight gold Santa Dash title and a Tap to start prompt. Original artwork remains unchanged."
+logical_id = "718e9ae1-3687-4c95-a5b6-ee672b9fce1d"
+content_hash = "sha256:6dc1cbf9ce43905a151fff0572f3a3cb885068b520b4c7b1ed5425e56d7c7059"
+size = 2975025
+mtime_ms = 1792076105547
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/718e9ae1-3687-4c95-a5b6-ee672b9fce1d/a9cc1617-3fea-46b9-b3e9-cda42ea2def8"
+storage_version_token = "1792076131662692"
+content_type = "image/png"
+
+[[outputs]]
+id = "LlZcdQOCYPGpJmPvk4gTi"
+uri = "file://generated-artifacts/santas-shed-panorama-4096x1242.png"
+type = "image"
+title = "Inside Santa’s Shed — 4096 × 1242 PNG"
+description = "One continuous extra-long timber workshop for horizontal scrolling, with toy-making benches, presents, Santa’s sleigh, a warm stove and northern lights outside the window. Exact 4096 × 1242 PNG, approximately 4.7 MB. Proportionally upscaled from generated panoramic artwork; not stretched. Existing artwork remains unchanged."
+logical_id = "5c46bec3-9921-4222-a2fd-63766fa58913"
+content_hash = "sha256:777be01295eba562bb2b07c7db99896dcbdf5f310471a477807a890301ad890e"
+size = 4668987
+mtime_ms = 1792076254906
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/5c46bec3-9921-4222-a2fd-63766fa58913/5e543c5d-4bb9-4def-a782-600907dd3b94"
+storage_version_token = "1792076276063658"
+content_type = "image/png"
+
+[[outputs]]
+id = "DnYXr-pbHiy9bLGE9EzjF"
+uri = "file://generated-artifacts/santa-dash/santa-dash-loading-large-tap-2208x1242.png"
+type = "image"
+title = "Santa Dash — Bigger Tap to Start"
+description = "Updated 2208 × 1242 PNG with a much larger Tap to start prompt positioned directly beneath Santa Dash. The title and northern-lights background are unchanged."
+logical_id = "58c5c796-534f-42c3-aa19-2812f8e35fc1"
+content_hash = "sha256:e9ca5f8230ecab02581a99afb839c03628919272f65a33e3d01f1b6900e7dc8b"
+size = 2952848
+mtime_ms = 1792076318233
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/58c5c796-534f-42c3-aa19-2812f8e35fc1/90206674-8f25-4a91-80cf-01c99e7ec7f8"
+storage_version_token = "1792076333057072"
+content_type = "image/png"
+
+[[outputs]]
+id = "YMriIZga4g6ZUwEV1hkLy"
+uri = "file://generated-artifacts/christmas-town-panorama-4096x1242.png"
+type = "image"
+title = "Christmas Town — Distant Rooftop Background"
+description = "Exact 4096 × 1242 PNG, approximately 4.5 MB. Side-on snowy Christmas town with houses, chimneys, warm windows and northern lights, set back for separate rooftop platforms and the running character in front. Proportionally upscaled panoramic artwork; no stretching. Existing artwork is unchanged."
+logical_id = "3fc7503e-92e4-4c9f-a231-134f07c832b3"
+content_hash = "sha256:475442c2bdfe232500bab98fafb724721a61e68642760a3380ba5381d042358c"
+size = 4456048
+mtime_ms = 1792076906338
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/3fc7503e-92e4-4c9f-a231-134f07c832b3/3a99f15d-37de-4c4b-a5b2-f0a25a3fc5cd"
+storage_version_token = "1792076935477175"
+content_type = "image/png"
+
+[[outputs]]
+id = "hZlCMGq2iX1_jZhiDIzbZ"
+uri = "file://generated-artifacts/santa-dash/santa-dash-end-screen-2208x1242.png"
+type = "image"
+title = "Santa Dash — Christmas End Screen"
+description = "Exact 2208 × 1242 PNG with your northern-lights village background and gold Christmas-style Distance, Level Bonus, Phones and TOTAL lettering. Label positions and sizes match the original reference, leaving room to their right for game-generated scores. Original artwork remains unchanged."
+logical_id = "059da29c-7304-4760-96bd-7e7fe3eedbcc"
+content_hash = "sha256:11da4b53014d80a6baa07d1b5f7d3b94a13616c8ea9c051a80d8390c31b5ea11"
+size = 4417777
+mtime_ms = 1792077137006
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/059da29c-7304-4760-96bd-7e7fe3eedbcc/d0b63e1f-017c-4f6e-bfb5-2ca6785d9287"
+storage_version_token = "1792077166296890"
+content_type = "image/png"
+
+[[outputs]]
+id = "3wf9kgoCb_ahrfeTuFkjB"
+uri = "file://generated-artifacts/santa-dash/controls-christmas-214x74.png"
+type = "image"
+title = "Christmas Controls Button — 214 × 74"
+description = "Transparent PNG, exactly the original size. Deep green, gold Christmas lettering and edging, a red accent, holly and snow."
+logical_id = "9e6e62d8-ae82-4073-b46e-9e2b3d7dcbb0"
+content_hash = "sha256:5180e01212be203f5eea62f4de73e13841e6613d95f4e2f596bd3648c093bace"
+size = 16037
+mtime_ms = 1792077378642
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/9e6e62d8-ae82-4073-b46e-9e2b3d7dcbb0/dffda626-e853-481f-a5c6-22ce4eddb1a8"
+storage_version_token = "1792077402284746"
+content_type = "image/png"
+
+[[outputs]]
+id = "SqEeCSWmC2Nn6Ac-nxXVT"
+uri = "file://generated-artifacts/santa-dash/treasures-christmas-216x74.png"
+type = "image"
+title = "Christmas Treasures Button — 216 × 74"
+description = "Transparent PNG, exactly the original size. Matching deep green and gold Christmas styling with holly and snow."
+logical_id = "5181e5b4-a4c8-4229-b028-1d28c52cf991"
+content_hash = "sha256:4ecdc09820d59c3a809a73f9e9cfef93e5b912e0ecb237f4b8d497e0939dea36"
+size = 16982
+mtime_ms = 1792077378753
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/5181e5b4-a4c8-4229-b028-1d28c52cf991/9af978c5-fadc-45d6-a635-a86cdf737e0e"
+storage_version_token = "1792077403073651"
+content_type = "image/png"
+
+[[outputs]]
+id = "wt8BDYM7n3K1qk1HX-4To"
+uri = "file://generated-artifacts/santa-dash/santa-dash-end-screen-aligned-2208x1242.png"
+type = "image"
+title = "Santa Dash End Screen — Raised Labels"
+description = "Updated 2208 × 1242 PNG. Distance, Level Bonus and Phones are raised by 24 pixels; TOTAL is raised by 48 pixels to better align with the scores in your in-game screenshot. Horizontal positions, lettering sizes and background are unchanged."
+logical_id = "afb306d2-258c-499f-b509-89e715f52572"
+content_hash = "sha256:592107924025c036e89725e1d06feb78e7b0af7ab11eb2722ec086bf7ebadb03"
+size = 4419998
+mtime_ms = 1792077452978
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/afb306d2-258c-499f-b509-89e715f52572/35c7b51b-5bf3-4417-900b-c4679e482e81"
+storage_version_token = "1792077469249557"
+content_type = "image/png"
+
+[[outputs]]
+id = "limAREU4u_VFz-42lUJkU"
+uri = "file://generated-artifacts/santa-dash/santa-radio-treasures-ad-2208x1242.png"
+type = "image"
+title = "Santa Radio Advert — Santa Dash Treasures Screen"
+description = "Exact 2208 × 1242 PNG with your Santa Radio logo and Santa artwork, northern lights, a large App Store download badge and Start Screen return button. App Store touch rectangle from top-left: x 142, y 808, width 720, height 241. Link this area in Xcode to https://apps.apple.com/gb/app/santa-radio/id1021183593."
+logical_id = "9bfbc5ac-6146-492f-a6b7-a9767d58565f"
+content_hash = "sha256:6e78d0161aaa9aad8d68b003f35958dc8d93d0425c8c2da01a3a94f3bd0e0b56"
+size = 2844909
+mtime_ms = 1792078362624
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/9bfbc5ac-6146-492f-a6b7-a9767d58565f/a9f160f6-95de-48f3-8682-4ef0d8b4ee0a"
+storage_version_token = "1792078400349518"
+content_type = "image/png"
