@@ -222,35 +222,61 @@ test('store panels are removed, copy and metadata are accurate and downloads wor
   }
 });
 
-test('Santa Text and Santa Voicemail show complete optimised owner artwork at desktop and phone widths', async ({ page }) => {
+test('Santa Text, Santa Voicemail and Santa Messages show complete optimised owner artwork at desktop and phone widths', async ({ page }) => {
   await page.goto('/apps');
   await page.getByRole('button', { name: 'Reject optional cookies', exact: true }).click();
-  for (const id of ['santatext', 'santavoicemail']) {
+  await page.getByRole('button', { name: 'Minimise radio player', exact: true }).click();
+  for (const [id, filename, intrinsicWidth, intrinsicHeight] of [
+    ['santatext', 'santa-text', 851, 1849],
+    ['santavoicemail', 'santa-voicemail', 851, 1849],
+    ['santamessages', 'santa-messages', 941, 1672],
+  ]) {
     const section = page.locator(`#${id}`);
     const image = section.locator('img');
     const src = await image.getAttribute('src');
-    expect(src).toMatch(new RegExp(`^/.*santa-${id === 'santatext' ? 'text' : 'voicemail'}-promo.*\\.webp`));
-    await expect(image).toHaveAttribute('width', '851');
-    await expect(image).toHaveAttribute('height', '1849');
+    expect(src).toMatch(new RegExp(`^/.*${filename}-promo.*\\.webp`));
+    await expect(image).toHaveAttribute('width', String(intrinsicWidth));
+    await expect(image).toHaveAttribute('height', String(intrinsicHeight));
     await expect(image).toHaveAttribute('alt', /promotional artwork/);
+    if (id === 'santamessages') {
+      await expect(image).toHaveAttribute('alt', /Santa beside a phone showing Arabella.*Pick a name, Hear Santa and Schedule a message/);
+      await expect(section.locator('.app-section-sub')).toHaveText('Santa has a personal message just for your child.');
+      await expect(section.locator('.feature-label')).toHaveText([
+        "Find your child's name", 'Share your message', 'Over 600 names',
+        'Download price', 'Schedule a message', 'Santa Radio',
+      ]);
+      await expect(section.getByRole('button')).toHaveCount(0);
+    }
     const response = await page.request.get(src);
     expect(response.ok()).toBe(true);
     expect(response.headers()['content-type']).toMatch(/image\/webp/);
     expect((await response.body()).length).toBeLessThan(500000);
     for (const width of [1280, 390, 320]) {
       await page.setViewportSize({ width, height: 1000 });
-      await image.scrollIntoViewIfNeeded();
-      await expect.poll(() => image.evaluate(el => [el.naturalWidth, el.naturalHeight])).toEqual([851, 1849]);
+      await image.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
+      await expect.poll(() => image.evaluate(el => [el.naturalWidth, el.naturalHeight])).toEqual([intrinsicWidth, intrinsicHeight]);
       const bounds = await image.boundingBox();
-      expect(bounds.width / bounds.height).toBeCloseTo(851 / 1849, 3);
+      expect(bounds.width / bounds.height).toBeCloseTo(intrinsicWidth / intrinsicHeight, 3);
       expect(bounds.x).toBeGreaterThanOrEqual(0);
       expect(bounds.x + bounds.width).toBeLessThanOrEqual(width);
       expect(await image.evaluate(el => getComputedStyle(el).objectFit)).toBe('contain');
+      const frame = await section.locator('.app-phone-wrap').boundingBox();
+      expect(bounds.y).toBeGreaterThanOrEqual(frame.y);
+      expect(bounds.y + bounds.height).toBeLessThanOrEqual(frame.y + frame.height);
+      // Intrinsic attributes reserve the same full portrait size before decoding.
+      const reservedHeight = bounds.width * intrinsicHeight / intrinsicWidth;
+      expect(bounds.height).toBeCloseTo(reservedHeight, 1);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      if (id === 'santamessages') {
+        const dock = await page.locator('.radio-dock').boundingBox();
+        expect(bounds.y).toBeGreaterThanOrEqual(85);
+        expect(bounds.y + bounds.height).toBeLessThanOrEqual(dock.y);
+        await image.screenshot({ path: `generated-artifacts/apps-santamessages-${width}.jpg` });
+      }
     }
     await image.screenshot({ path: `generated-artifacts/apps-${id}-new-artwork.jpg` });
   }
-  await expect(page.locator('.app-store-notice')).toContainText('Santa Text and Santa Voicemail also use owner-supplied promotional artwork');
+  await expect(page.locator('.app-store-notice')).toContainText('Santa Text, Santa Voicemail and Santa Messages also use owner-supplied promotional artwork');
 });
 
 test('Mac app listing shows complete promotional artwork and Coming soon without a store link', async ({ page }) => {

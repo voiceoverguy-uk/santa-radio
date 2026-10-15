@@ -45,9 +45,6 @@ test('built Apps HTML starts on Christmas Radio image 1 and serves all four WebP
   }
   const graph = JSON.parse(html.match(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/)[1]);
   assert.doesNotMatch(JSON.stringify(graph), /aggregateRating|SoftwareApplication|MobileApplication|"offers"/);
-  const mac = visibleHtml.match(/<section id="santa-radio-mac"[\s\S]*?<\/section>/)?.[0];
-  assert.match(mac, /Coming soon/);
-  assert.doesNotMatch(mac, /<a\b/);
   assert.match(visibleHtml, /Find Santa Radio in the App Store on your Apple TV/);
   const section = html.match(/<section id="christmasradio"[\s\S]*?<\/section>/)?.[0];
   assert.ok(section, 'Christmas Radio must be in the initial HTML');
@@ -93,13 +90,24 @@ test('built Apps HTML starts on Christmas Radio image 1 and serves all four WebP
   const macBytes = Buffer.from(await macAsset.arrayBuffer());
   assert.equal(macBytes.toString('ascii', 8, 12), 'WEBP');
   assert.ok(macBytes.length < 250000, 'Mac artwork must stay within its existing 250 kB budget');
-  for (const [id, filename] of [['santatext', 'santa-text'], ['santavoicemail', 'santa-voicemail']]) {
+  assert.match(visibleHtml, /Santa Text, Santa Voicemail and Santa Messages also use owner-supplied promotional artwork/);
+  assert.match(visibleHtml, /not interactive website controls/);
+  for (const [id, filename, width, height] of [
+    ['santatext', 'santa-text', 851, 1849],
+    ['santavoicemail', 'santa-voicemail', 851, 1849],
+    ['santamessages', 'santa-messages', 941, 1672],
+  ]) {
     const app = html.match(new RegExp(`<section id="${id}"[\\s\\S]*?<\\/section>`))?.[0];
     assert.ok(app, `${id} must be in the initial HTML`);
     const image = app.match(/<img\b[^>]*>/)?.[0];
     assert.ok(image);
-    assert.match(image, /width="851" height="1849"/);
+    assert.match(image, new RegExp(`width="${width}" height="${height}"`));
     assert.match(image, /promotional artwork/);
+    if (id === 'santamessages') {
+      assert.match(image, /Santa beside a phone showing Arabella.*Pick a name, Hear Santa and Schedule a message/);
+      assert.match(app, /Santa has a personal message just for your child\./);
+      assert.doesNotMatch(app, /<button\b|app-screenshots/);
+    }
     const src = image.match(/src="([^"]+)"/)?.[1];
     assert.match(src, new RegExp(`^/assets/${filename}-promo-.*\\.webp$`));
     const asset = await get(src);

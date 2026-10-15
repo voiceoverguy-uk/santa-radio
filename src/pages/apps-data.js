@@ -5,7 +5,7 @@ import santaRadioTracker from '../assets/apps/santa-radio-ios-tracker.webp';
 import santaRadioWatchControls from '../assets/apps/santa-radio-watch-controls.webp';
 import santaRadioWatchArtwork from '../assets/apps/santa-radio-watch-artwork.webp';
 import santaVoicemail from '../assets/apps/santa-voicemail-promo.webp';
-import santaMessages from '../assets/apps/santa-messages.png';
+import santaMessages from '../assets/apps/santa-messages-promo.webp';
 import christmasRadio from '../assets/apps/christmas-radio-promo-1.webp';
 import christmasRadioPromo2 from '../assets/apps/christmas-radio-promo-2.webp';
 import christmasRadioPromo3 from '../assets/apps/christmas-radio-promo-3.webp';
@@ -76,9 +76,9 @@ export const christmasApps = [
     title: 'Santa Messages',
     subtitle: 'Santa has a personal message just for your child.',
     image: santaMessages,
-    alt: 'Santa Messages app screen for choosing a child’s name and playing a personal message from Santa.',
-    width: 750,
-    height: 1334,
+    alt: 'SantaGuy Santa Messages promotional artwork with Santa beside a phone showing Arabella and signs reading Pick a name, Hear Santa and Schedule a message.',
+    width: 941,
+    height: 1672,
     downloads: downloads(
       'https://itunes.apple.com/gb/app/santa-messages/id1062532143',
       'http://www.amazon.co.uk/Santa-Messages-Free-Festive-Fun/dp/B019MRFDDK',
