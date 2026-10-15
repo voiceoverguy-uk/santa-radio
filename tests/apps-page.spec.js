@@ -253,8 +253,11 @@ test('Santa Text and Santa Voicemail show complete optimised owner artwork at de
   await expect(page.locator('.app-store-notice')).toContainText('Santa Text and Santa Voicemail also use owner-supplied promotional artwork');
 });
 
-test('Mac app listing shows its supplied interface and Coming soon without a store link', async ({ page }) => {
+test('Mac app listing shows complete promotional artwork and Coming soon without a store link', async ({ page }) => {
   await page.goto('/apps');
+  await page.getByRole('button', { name: 'Reject optional cookies', exact: true }).click();
+  await page.getByRole('button', { name: 'Minimise radio player', exact: true }).click();
+  await expect(page.locator('.radio-dock')).toHaveClass(/is-minimized/);
   const section = page.getByRole('region', { name: 'Santa Radio for Mac' });
   await expect(section).toBeVisible();
   await expect(section.getByRole('heading', { name: 'Santa Radio for Mac', exact: true })).toBeVisible();
@@ -264,24 +267,35 @@ test('Mac app listing shows its supplied interface and Coming soon without a sto
   await expect(section.getByRole('button')).toHaveCount(0);
 
   const image = section.getByRole('img', {
-    name: 'Screenshot of the Santa Radio Mac app interface showing the current track, song and artist, and a Play button.',
+    name: 'Santa Radio for Mac promotional artwork: Festive music for your desktop, with a laptop in a Christmas scene and icons for live Christmas music, snow effect, Xmas lights and playback controls.',
   });
+  await expect(image).toHaveAttribute('width', '941');
+  await expect(image).toHaveAttribute('height', '1672');
+  await expect(section.locator('figcaption')).toHaveText('Santa Radio for Mac promotional artwork');
   const imageUrl = await image.getAttribute('src');
-  expect(imageUrl).toMatch(/\.webp/);
+  expect(imageUrl).toMatch(/^\/.*santa-radio-mac.*\.webp/);
   const response = await page.request.get(imageUrl);
   expect(response.ok()).toBe(true);
+  expect(response.headers()['content-type']).toMatch(/image\/webp/);
   expect((await response.body()).length).toBeLessThan(250000);
 
-  for (const width of [1280, 390]) {
-    await page.setViewportSize({ width, height: 900 });
-    await image.scrollIntoViewIfNeeded();
-    await expect.poll(() => image.evaluate(el => [el.naturalWidth, el.naturalHeight])).toEqual([788, 1328]);
+  for (const width of [1280, 390, 320]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await image.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
+    await expect.poll(() => image.evaluate(el => [el.naturalWidth, el.naturalHeight])).toEqual([941, 1672]);
     const bounds = await image.boundingBox();
     expect(bounds.width).toBeGreaterThan(200);
-    expect(bounds.width / bounds.height).toBeCloseTo(788 / 1328, 2);
+    expect(bounds.width / bounds.height).toBeCloseTo(941 / 1672, 3);
     expect(bounds.x).toBeGreaterThanOrEqual(0);
     expect(bounds.x + bounds.width).toBeLessThanOrEqual(width);
+    const figure = await section.locator('figure').boundingBox();
+    expect(bounds.y).toBeGreaterThanOrEqual(figure.y);
+    expect(bounds.y + bounds.height).toBeLessThanOrEqual(figure.y + figure.height);
+    const dock = await page.locator('.radio-dock').boundingBox();
+    expect(bounds.y).toBeGreaterThanOrEqual(85);
+    expect(bounds.y + bounds.height).toBeLessThanOrEqual(dock.y);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await section.screenshot({ path: `generated-artifacts/apps-mac-${width}.jpg` });
   }
 
   const graph = JSON.parse(await page.locator('script[type="application/ld+json"]').textContent());

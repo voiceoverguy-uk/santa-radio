@@ -171,9 +171,9 @@ export const macAppListing = {
   title: 'Santa Radio for Mac',
   subtitle: 'Play Santa Radio and see the current song and artist.',
   image: santaRadioMac,
-  alt: 'Screenshot of the Santa Radio Mac app interface showing the current track, song and artist, and a Play button.',
-  width: 788,
-  height: 1328,
+  alt: 'Santa Radio for Mac promotional artwork: Festive music for your desktop, with a laptop in a Christmas scene and icons for live Christmas music, snow effect, Xmas lights and playback controls.',
+  width: 941,
+  height: 1672,
   status: 'Coming soon',
 };
 

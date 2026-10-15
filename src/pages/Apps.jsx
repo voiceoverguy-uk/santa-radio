@@ -134,7 +134,7 @@ function MacAppShowcase({ app }) {
             loading="lazy"
             decoding="async"
           />
-          <figcaption>Santa Radio Mac app interface</figcaption>
+          <figcaption>Santa Radio for Mac promotional artwork</figcaption>
         </figure>
       </div>
     </section>

@@ -74,6 +74,25 @@ test('built Apps HTML starts on Christmas Radio image 1 and serves all four WebP
   assert.match(html, /Santa Radio Apple Watch promotional images/);
   assert.match(html, /Available FREE on Apple TV/);
   assert.match(html, /Santa Radio for Mac/);
+  const mac = html.match(/<section id="santa-radio-mac"[\s\S]*?<\/section>/)?.[0];
+  assert.ok(mac, 'Mac promotional artwork must be in the initial HTML');
+  assert.match(mac, /Play Santa Radio and see the current song and artist\./);
+  assert.match(mac, /role="status">Coming soon/);
+  assert.doesNotMatch(mac, /<a\b|<button\b/);
+  assert.match(mac, /<figcaption>Santa Radio for Mac promotional artwork<\/figcaption>/);
+  const macImage = mac.match(/<img\b[^>]*>/)?.[0];
+  assert.ok(macImage);
+  assert.match(macImage, /width="941" height="1672"/);
+  assert.match(macImage, /alt="Santa Radio for Mac promotional artwork: Festive music for your desktop,/);
+  assert.match(macImage, /icons for live Christmas music, snow effect, Xmas lights and playback controls\./);
+  const macSrc = macImage.match(/src="([^"]+)"/)?.[1];
+  assert.match(macSrc, /^\/assets\/santa-radio-mac-.*\.webp$/);
+  const macAsset = await get(macSrc);
+  assert.equal(macAsset.status, 200);
+  assert.match(macAsset.headers.get('content-type'), /image\/webp/);
+  const macBytes = Buffer.from(await macAsset.arrayBuffer());
+  assert.equal(macBytes.toString('ascii', 8, 12), 'WEBP');
+  assert.ok(macBytes.length < 250000, 'Mac artwork must stay within its existing 250 kB budget');
   for (const [id, filename] of [['santatext', 'santa-text'], ['santavoicemail', 'santa-voicemail']]) {
     const app = html.match(new RegExp(`<section id="${id}"[\\s\\S]*?<\\/section>`))?.[0];
     assert.ok(app, `${id} must be in the initial HTML`);
