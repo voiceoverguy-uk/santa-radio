@@ -1,8 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const labels = ['Playback controls', 'Song artwork'];
 const regionName = 'Santa Radio Apple Watch promotional images';
-const button = (carousel, label) => carousel.getByRole('button', { name: `Show ${label} screenshot` });
 
 async function openWatch(page, waitUntil = 'load') {
   await page.clock.install();
@@ -14,14 +12,18 @@ async function openWatch(page, waitUntil = 'load') {
 }
 
 async function ready(carousel) {
-  for (const label of labels) await expect(button(carousel, label)).toBeEnabled();
+  await expect.poll(() => carousel.locator('img').evaluateAll(images =>
+    images.every(image => image.complete && image.naturalWidth > 0)
+  )).toBe(true);
+  await carousel.locator('img').evaluateAll(images => Promise.all(images.map(image => image.decode())));
 }
 
 async function expectSlide(carousel, index) {
-  await expect(button(carousel, labels[index])).toHaveAttribute('aria-pressed', 'true');
   await expect(carousel.locator('.is-active')).toHaveCount(1);
-  await expect(carousel.locator('.app-screenshots-caption')).toHaveText(`${labels[index]} · ${index + 1} of 2`);
+  await expect(carousel.locator('img').nth(index)).toHaveClass(/is-active/);
   await expect(carousel.locator('.is-active')).toHaveAttribute('aria-hidden', 'false');
+  await expect(carousel.locator('.app-screenshots-caption, .app-screenshots-controls, .app-screenshots-dots, .app-screenshots-toggle')).toHaveCount(0);
+  await expect(carousel.getByRole('button')).toHaveCount(0);
 }
 
 test('Watch follows iOS, precedes TV/Mac and explains paired-iPhone playback without unsupported claims', async ({ page }) => {
@@ -33,7 +35,7 @@ test('Watch follows iOS, precedes TV/Mac and explains paired-iPhone playback wit
   await expect(section).toContainText('not live website controls');
   await expect(section).not.toContainText(/Amazon|iOS screenshots|watchOS|FREE/);
   await expect(section.getByRole('link')).toHaveCount(0);
-  await expect(carousel.getByRole('group', { name: 'Choose an Apple Watch promotional image' })).toBeVisible();
+  await expect(carousel.getByRole('button')).toHaveCount(0);
   expect(await page.locator('#santaradio').evaluate(el => el.nextElementSibling.className)).toBe('apple-watch-showcase');
   expect(await section.evaluate(el => el.nextElementSibling.className)).toBe('apple-tv-showcase');
   await expect(page.locator('.app-section')).toHaveCount(6);
@@ -56,7 +58,7 @@ test('Watch follows iOS, precedes TV/Mac and explains paired-iPhone playback wit
   }
   const ios = page.getByRole('region', { name: 'Santa Radio current iOS app screenshots' });
   await expect(ios.locator('.app-screenshots-note')).toHaveCount(0);
-  await expect(ios.getByRole('group', { name: 'Choose an iOS screenshot' })).toHaveCount(1);
+  await expect(ios.getByRole('button')).toHaveCount(0);
 });
 
 test('Watch gently crossfades every five seconds and loops independently of iOS', async ({ page }) => {
@@ -75,34 +77,21 @@ test('Watch gently crossfades every five seconds and loops independently of iOS'
   await expectSlide(carousel, 0);
 });
 
-test('Watch pause/resume, hover, keyboard selection, focus and tab visibility suspend rotation', async ({ page }) => {
+test('Watch hover and tab visibility suspend automatic rotation', async ({ page }) => {
   const carousel = await openWatch(page);
   await ready(carousel);
-  await button(carousel, labels[0]).focus();
-  await page.keyboard.press('Tab');
-  await expect(button(carousel, labels[1])).toBeFocused();
-  expect(await button(carousel, labels[1]).evaluate(el => getComputedStyle(el).outlineStyle)).toBe('solid');
-  await page.keyboard.press('Enter');
-  await expectSlide(carousel, 1);
-  await page.clock.fastForward(10000);
-  await expectSlide(carousel, 1);
-  await carousel.getByRole('button', { name: 'Pause slideshow' }).click();
-  await page.locator('h1').click();
-  await page.mouse.move(0, 0);
-  await page.clock.fastForward(10000);
-  await expectSlide(carousel, 1);
-  await carousel.getByRole('button', { name: 'Resume slideshow' }).click();
-  await page.clock.fastForward(10000);
-  await expectSlide(carousel, 1);
-  await page.locator('h1').click();
   await carousel.hover();
   await page.clock.fastForward(10000);
-  await expectSlide(carousel, 1);
+  await expectSlide(carousel, 0);
   await page.mouse.move(0, 0);
+  await page.clock.fastForward(5000);
+  await expectSlide(carousel, 1);
+  await carousel.hover();
   await page.evaluate(() => {
     Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
     document.dispatchEvent(new Event('visibilitychange'));
   });
+  await page.mouse.move(0, 0);
   await page.clock.fastForward(10000);
   await expectSlide(carousel, 1);
   await page.evaluate(() => {
@@ -113,33 +102,29 @@ test('Watch pause/resume, hover, keyboard selection, focus and tab visibility su
   await expectSlide(carousel, 0);
 });
 
-test('Watch reduced motion is static, manually selectable and uncropped at desktop and phone sizes', async ({ page }) => {
+test('Watch reduced motion is static and uncropped at desktop and phone sizes', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   const carousel = await openWatch(page);
   await ready(carousel);
-  await expect(carousel.getByRole('button', { name: 'Resume slideshow' })).toBeVisible();
+  await expect(carousel.getByRole('button')).toHaveCount(0);
   await page.clock.fastForward(20000);
   await expectSlide(carousel, 0);
   for (const width of [1280, 390, 320]) {
     await page.setViewportSize({ width, height: 900 });
     const before = await carousel.boundingBox();
-    for (let index = 0; index < 2; index++) {
-      await button(carousel, labels[index]).click();
-      await expectSlide(carousel, index);
-      const after = await carousel.boundingBox();
-      expect(after.width).toBeCloseTo(before.width, 1);
-      expect(after.height).toBeCloseTo(before.height, 1);
-      const image = await carousel.locator('.is-active').evaluate(el => {
-        const rect = el.getBoundingClientRect();
-        const style = getComputedStyle(el);
-        return { ratio: rect.width / rect.height, fit: style.objectFit, transition: style.transitionDuration, x: rect.x, right: rect.right };
-      });
-      expect(image.ratio).toBeCloseTo(1800 / 2600, 3);
-      expect(image.fit).toBe('contain');
-      expect(image.transition).toBe('0s');
-      expect(image.x).toBeGreaterThanOrEqual(0);
-      expect(image.right).toBeLessThanOrEqual(width);
-    }
+    const after = await carousel.boundingBox();
+    expect(after.width).toBeCloseTo(before.width, 1);
+    expect(after.height).toBeCloseTo(before.height, 1);
+    const image = await carousel.locator('.is-active').evaluate(el => {
+      const rect = el.getBoundingClientRect();
+      const style = getComputedStyle(el);
+      return { ratio: rect.width / rect.height, fit: style.objectFit, transition: style.transitionDuration, x: rect.x, right: rect.right };
+    });
+    expect(image.ratio).toBeCloseTo(1800 / 2600, 3);
+    expect(image.fit).toBe('contain');
+    expect(image.transition).toBe('0s');
+    expect(image.x).toBeGreaterThanOrEqual(0);
+    expect(image.right).toBeLessThanOrEqual(width);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await page.locator('.apple-watch-showcase').screenshot({ path: `generated-artifacts/apps-watch-${width}.jpg` });
   }
@@ -154,12 +139,10 @@ test('Watch waits for the next image to decode before enabling or rotating to it
     await route.continue();
   });
   const carousel = await openWatch(page, 'domcontentloaded');
-  await expect(button(carousel, labels[0])).toBeEnabled();
-  await expect(button(carousel, labels[1])).toBeDisabled();
   await page.clock.fastForward(10000);
   await expectSlide(carousel, 0);
   release();
-  await expect(button(carousel, labels[1])).toBeEnabled();
+  await ready(carousel);
   await page.clock.fastForward(5000);
   await expectSlide(carousel, 1);
 });
@@ -169,8 +152,7 @@ test('Watch image failures are announced without replacing the ready image or sh
     route.request().resourceType() === 'image' ? route.abort() : route.continue()
   ));
   const carousel = await openWatch(page);
-  await expect(button(carousel, labels[0])).toBeEnabled();
-  await expect(button(carousel, labels[1])).toBeDisabled();
+  await expect.poll(() => carousel.locator('img').nth(0).evaluate(image => image.complete && image.naturalWidth > 0)).toBe(true);
   await expect(carousel.getByRole('status')).toContainText('Some screenshots could not load.');
   const before = await carousel.locator('.app-screenshots-frame').boundingBox();
   await page.clock.fastForward(20000);

@@ -1,8 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const labels = ['From the makers of Santa Radio', 'Over 100k downloads', 'Christmas music 365 days a year', 'Make it feel like Christmas'];
 const regionName = 'Christmas Radio promotional images';
-const button = (carousel, index) => carousel.getByRole('button', { name: `Show ${labels[index]} promotional image`, exact: true });
 
 async function open(page, waitUntil = 'load') {
   await page.clock.install();
@@ -14,24 +12,27 @@ async function open(page, waitUntil = 'load') {
 }
 
 async function ready(carousel) {
-  for (let index = 0; index < 4; index++) await expect(button(carousel, index)).toBeEnabled();
+  await expect.poll(() => carousel.locator('img').evaluateAll(images =>
+    images.every(image => image.complete && image.naturalWidth > 0)
+  )).toBe(true);
+  await carousel.locator('img').evaluateAll(images => Promise.all(images.map(image => image.decode())));
 }
 
 async function expectSlide(carousel, index) {
-  await expect(button(carousel, index)).toHaveAttribute('aria-pressed', 'true');
   await expect(carousel.locator('.is-active')).toHaveCount(1);
   await expect(carousel.locator('.is-active')).toHaveAttribute('aria-hidden', 'false');
-  await expect(carousel.locator('.app-screenshots-caption')).toHaveText(`${labels[index]} · ${index + 1} of 4`);
+  await expect(carousel.locator('img').nth(index)).toHaveClass(/is-active/);
+  await expect(carousel.locator('.app-screenshots-caption, .app-screenshots-controls, .app-screenshots-dots, .app-screenshots-toggle')).toHaveCount(0);
+  await expect(carousel.getByRole('button')).toHaveCount(0);
 }
 
 test('Christmas Radio delivers four ordered full-size local promotions with app-specific labels and unchanged listing', async ({ page }) => {
   const carousel = await open(page);
   await ready(carousel);
-  await expect(carousel.getByRole('group', { name: 'Choose a Christmas Radio promotional image' })).toBeVisible();
   await expect(carousel.locator('figcaption')).toHaveText(regionName);
   await expect(carousel.locator('.app-screenshots-note')).toHaveCount(0);
   await expect(carousel).not.toContainText('iOS screenshots only');
-  await expect(carousel.getByRole('button')).toHaveCount(5);
+  await expect(carousel.getByRole('button')).toHaveCount(0);
   for (let index = 0; index < 4; index++) {
     const image = carousel.locator('img').nth(index);
     const src = await image.getAttribute('src');
@@ -68,52 +69,32 @@ test('Christmas Radio holds for five seconds, crossfades and wraps independently
     await page.clock.fastForward(5000);
     await expectSlide(carousel, index);
   }
-  await carousel.getByRole('button', { name: 'Pause slideshow' }).click();
-  await page.locator('h1').click();
-  await page.mouse.move(0, 0);
   const ios = page.getByRole('region', { name: 'Santa Radio current iOS app screenshots' });
   const watch = page.getByRole('region', { name: 'Santa Radio Apple Watch promotional images' });
-  for (const other of [ios, watch]) {
-    for (const control of await other.locator('.app-screenshots-dot').all()) await expect(control).toBeEnabled();
-    await other.hover();
-    await page.mouse.move(0, 0);
-  }
-  const before = await Promise.all([ios, watch].map(other => other.locator('.app-screenshots-caption').textContent()));
+  for (const other of [ios, watch]) await ready(other);
+  const before = await Promise.all([ios, watch].map(other => other.locator('.is-active').getAttribute('src')));
+  await carousel.hover();
   await page.clock.fastForward(5000);
   await expectSlide(carousel, 0);
-  for (const [index, other] of [ios, watch].entries()) {
-    await expect(other.locator('.app-screenshots-caption')).not.toHaveText(before[index]);
-  }
+  for (const [index, other] of [ios, watch].entries())
+    await expect(other.locator('.is-active')).not.toHaveAttribute('src', before[index]);
 });
 
-test('Christmas Radio supports keyboard selection, pause/resume, focus, hover and hidden-tab safeguards', async ({ page }) => {
+test('Christmas Radio hover and hidden-tab safeguards suspend automatic rotation', async ({ page }) => {
   const carousel = await open(page);
   await ready(carousel);
-  await button(carousel, 0).focus();
-  await page.keyboard.press('Tab');
-  await expect(button(carousel, 1)).toBeFocused();
-  expect(await button(carousel, 1).evaluate(el => getComputedStyle(el).outlineStyle)).toBe('solid');
-  await page.keyboard.press('Enter');
-  await expectSlide(carousel, 1);
-  await page.clock.fastForward(10000);
-  await expectSlide(carousel, 1);
-  await carousel.getByRole('button', { name: 'Pause slideshow' }).click();
-  await page.locator('h1').click();
-  await page.mouse.move(0, 0);
-  await page.clock.fastForward(10000);
-  await expectSlide(carousel, 1);
-  await carousel.getByRole('button', { name: 'Resume slideshow' }).click();
-  await page.clock.fastForward(10000);
-  await expectSlide(carousel, 1);
-  await page.locator('h1').click();
   await carousel.hover();
   await page.clock.fastForward(10000);
-  await expectSlide(carousel, 1);
+  await expectSlide(carousel, 0);
   await page.mouse.move(0, 0);
+  await page.clock.fastForward(5000);
+  await expectSlide(carousel, 1);
+  await carousel.hover();
   await page.evaluate(() => {
     Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
     document.dispatchEvent(new Event('visibilitychange'));
   });
+  await page.mouse.move(0, 0);
   await page.clock.fastForward(10000);
   await expectSlide(carousel, 1);
   await page.evaluate(() => {
@@ -128,35 +109,31 @@ test('Christmas Radio reduced motion is static with a stable, uncropped frame on
   await page.emulateMedia({ reducedMotion: 'reduce' });
   const carousel = await open(page);
   await ready(carousel);
-  await expect(carousel.getByRole('button', { name: 'Resume slideshow' })).toBeVisible();
+  await expect(carousel.getByRole('button')).toHaveCount(0);
   await page.clock.fastForward(20000);
   await expectSlide(carousel, 0);
   for (const width of [1280, 390, 320]) {
     await page.setViewportSize({ width, height: 900 });
     const before = await carousel.boundingBox();
-    for (let index = 0; index < 4; index++) {
-      await button(carousel, index).click();
-      await expectSlide(carousel, index);
-      const after = await carousel.boundingBox();
-      expect(after.width).toBeCloseTo(before.width, 1);
-      expect(after.height).toBeCloseTo(before.height, 1);
-      const image = await carousel.locator('.is-active').evaluate(el => {
-        const rect = el.getBoundingClientRect();
-        const style = getComputedStyle(el);
-        return { ratio: rect.width / rect.height, fit: style.objectFit, transition: style.transitionDuration, x: rect.x, right: rect.right };
-      });
-      expect(image.ratio).toBeCloseTo(851 / 1849, 3);
-      expect(image.fit).toBe('contain');
-      expect(image.transition).toBe('0s');
-      expect(image.x).toBeGreaterThanOrEqual(0);
-      expect(image.right).toBeLessThanOrEqual(width);
-    }
+    const after = await carousel.boundingBox();
+    expect(after.width).toBeCloseTo(before.width, 1);
+    expect(after.height).toBeCloseTo(before.height, 1);
+    const image = await carousel.locator('.is-active').evaluate(el => {
+      const rect = el.getBoundingClientRect();
+      const style = getComputedStyle(el);
+      return { ratio: rect.width / rect.height, fit: style.objectFit, transition: style.transitionDuration, x: rect.x, right: rect.right };
+    });
+    expect(image.ratio).toBeCloseTo(851 / 1849, 3);
+    expect(image.fit).toBe('contain');
+    expect(image.transition).toBe('0s');
+    expect(image.x).toBeGreaterThanOrEqual(0);
+    expect(image.right).toBeLessThanOrEqual(width);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await carousel.screenshot({ path: `generated-artifacts/apps-christmas-radio-${width}.jpg` });
   }
 });
 
-test('Christmas Radio waits for decoded artwork before rotation or manual selection', async ({ page }) => {
+test('Christmas Radio waits for decoded artwork before automatic rotation', async ({ page }) => {
   let release;
   const held = new Promise(resolve => { release = resolve; });
   await page.route('**/christmas-radio-promo-2*', async route => {
@@ -165,8 +142,6 @@ test('Christmas Radio waits for decoded artwork before rotation or manual select
     await route.continue();
   });
   const carousel = await open(page, 'domcontentloaded');
-  await expect(button(carousel, 0)).toBeEnabled();
-  await expect(button(carousel, 1)).toBeDisabled();
   await page.clock.fastForward(10000);
   await expectSlide(carousel, 0);
   release();
@@ -180,8 +155,6 @@ test('Christmas Radio image failures keep the ready artwork and report a promoti
     route.request().resourceType() === 'image' ? route.abort() : route.continue()
   ));
   const carousel = await open(page);
-  await expect(button(carousel, 0)).toBeEnabled();
-  await expect(button(carousel, 1)).toBeDisabled();
   await expect(carousel.getByRole('status')).toHaveText('Some promotional images could not load. Please reload to try again.');
   const before = await carousel.locator('.app-screenshots-frame').boundingBox();
   await page.clock.fastForward(20000);

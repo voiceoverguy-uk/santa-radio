@@ -112,7 +112,6 @@ export const christmasApps = [
     slideshow: {
       heading: 'Christmas Radio promotional images',
       regionLabel: 'Christmas Radio promotional images',
-      selectionLabel: 'Choose a Christmas Radio promotional image',
       imageType: 'promotional image',
     },
     downloads: downloads(
@@ -163,7 +162,6 @@ export const christmasApps = [
     slideshow: {
       heading: 'Santa Dash promotional artwork',
       regionLabel: 'Santa Dash promotional artwork',
-      selectionLabel: 'Choose Santa Dash promotional artwork',
       imageType: 'promotional artwork',
       maxWidth: 760,
     },

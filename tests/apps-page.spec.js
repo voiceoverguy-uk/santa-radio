@@ -51,17 +51,22 @@ async function openSlideshow(page) {
   await page.clock.pauseAt(new Date());
   await page.goto('/apps');
   const carousel = page.getByRole('region', { name: 'Santa Radio current iOS app screenshots' });
-  for (const label of slideLabels) {
-    await expect(carousel.getByRole('button', { name: `Show ${label} screenshot` })).toBeEnabled();
-  }
+  await expect.poll(() => carousel.locator('img').evaluateAll(images =>
+    images.every(image => image.complete && image.naturalWidth > 0)
+  )).toBe(true);
+  await carousel.locator('img').evaluateAll(images => Promise.all(images.map(image => image.decode())));
   await page.mouse.move(0, 0);
   return carousel;
 }
 
 async function expectSlide(carousel, label) {
-  await expect(carousel.getByRole('button', { name: `Show ${label} screenshot` })).toHaveAttribute('aria-pressed', 'true');
   await expect(carousel.locator('.is-active')).toHaveCount(1);
-  await expect(carousel.locator('.app-screenshots-caption')).toHaveText(`${label} · ${slideLabels.indexOf(label) + 1} of 4`);
+  await expect(carousel.locator('.is-active')).toHaveAttribute('aria-hidden', 'false');
+  await expect(carousel.locator('img[aria-hidden="false"]')).toHaveCount(1);
+  await expect(carousel.locator('.app-screenshots-caption, .app-screenshots-controls, .app-screenshots-dots, .app-screenshots-toggle')).toHaveCount(0);
+  await expect(carousel.getByRole('button')).toHaveCount(0);
+  const index = slideLabels.indexOf(label);
+  await expect(carousel.locator('img').nth(index)).toHaveClass(/is-active/);
 }
 
 test('current iOS screenshots are local, optimised, ordered and loop every five seconds', async ({ page }) => {
@@ -89,72 +94,52 @@ test('current iOS screenshots are local, optimised, ordered and loop every five 
   await expect(page.locator('.app-store-notice')).toHaveCount(0);
 });
 
-test('manual selection, pause, hover, keyboard focus and hidden tabs suspend rotation', async ({ page }) => {
+test('hover and hidden tabs suspend automatic rotation', async ({ page }) => {
   const carousel = await openSlideshow(page);
-  await carousel.getByRole('button', { name: 'Show Tracker screenshot' }).click();
-  await expectSlide(carousel, 'Tracker');
-  await page.clock.fastForward(10000);
-  await expectSlide(carousel, 'Tracker');
-  await carousel.getByRole('button', { name: 'Pause slideshow' }).click();
-  await page.locator('h1').click();
-  await page.mouse.move(0, 0);
-  await page.clock.fastForward(10000);
-  await expectSlide(carousel, 'Tracker');
-  await carousel.getByRole('button', { name: 'Resume slideshow' }).click();
-  await page.clock.fastForward(10000);
-  await expectSlide(carousel, 'Tracker'); // focused controls still suspend it
-  await page.locator('h1').click();
   await carousel.hover();
   await page.clock.fastForward(10000);
-  await expectSlide(carousel, 'Tracker');
+  await expectSlide(carousel, 'Radio');
+  await page.clock.fastForward(10000);
+  await expectSlide(carousel, 'Radio');
   await page.mouse.move(0, 0);
+  await page.clock.fastForward(5000);
+  await expectSlide(carousel, 'Artists');
+  await carousel.hover();
   await page.evaluate(() => {
     Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
     document.dispatchEvent(new Event('visibilitychange'));
   });
+  await page.mouse.move(0, 0);
   await page.clock.fastForward(10000);
-  await expectSlide(carousel, 'Tracker');
+  await expectSlide(carousel, 'Artists');
   await page.evaluate(() => {
     delete document.hidden;
     document.dispatchEvent(new Event('visibilitychange'));
   });
   await page.clock.fastForward(5000);
-  await expectSlide(carousel, 'Radio');
-  await carousel.getByRole('button', { name: 'Show Radio screenshot' }).focus();
-  await page.keyboard.press('Tab');
-  const artists = carousel.getByRole('button', { name: 'Show Artists screenshot' });
-  await expect(artists).toBeFocused();
-  expect(await artists.evaluate(el => getComputedStyle(el).outlineStyle)).toBe('solid');
-  await page.keyboard.press('Enter');
-  await expectSlide(carousel, 'Artists');
-  await page.clock.fastForward(10000);
-  await expectSlide(carousel, 'Artists');
+  await expectSlide(carousel, 'MugShots');
 });
 
-test('reduced motion starts static and all slides share an uncropped stable responsive frame', async ({ page }) => {
+test('reduced motion is static and all slides share an uncropped stable responsive frame', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   const carousel = await openSlideshow(page);
-  await expect(carousel.getByRole('button', { name: 'Resume slideshow' })).toBeVisible();
+  await expect(carousel.getByRole('button')).toHaveCount(0);
   await page.clock.fastForward(20000);
   await expectSlide(carousel, 'Radio');
   for (const width of [1280, 390, 320]) {
     await page.setViewportSize({ width, height: 900 });
     const before = await carousel.boundingBox();
-    for (const label of slideLabels) {
-      await carousel.getByRole('button', { name: `Show ${label} screenshot` }).click();
-      await expectSlide(carousel, label);
-      const after = await carousel.boundingBox();
-      expect(after.width).toBeCloseTo(before.width, 1);
-      expect(after.height).toBeCloseTo(before.height, 1);
-      const image = await carousel.locator('.is-active').evaluate(el => {
-        const rect = el.getBoundingClientRect();
-        const style = getComputedStyle(el);
-        return { ratio: rect.width / rect.height, fit: style.objectFit, transition: style.transitionDuration };
-      });
-      expect(image.ratio).toBeCloseTo(660 / 1434, 3);
-      expect(image.fit).toBe('contain');
-      expect(image.transition).toBe('0s');
-    }
+    const after = await carousel.boundingBox();
+    expect(after.width).toBeCloseTo(before.width, 1);
+    expect(after.height).toBeCloseTo(before.height, 1);
+    const image = await carousel.locator('.is-active').evaluate(el => {
+      const rect = el.getBoundingClientRect();
+      const style = getComputedStyle(el);
+      return { ratio: rect.width / rect.height, fit: style.objectFit, transition: style.transitionDuration };
+    });
+    expect(image.ratio).toBeCloseTo(660 / 1434, 3);
+    expect(image.fit).toBe('contain');
+    expect(image.transition).toBe('0s');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
 });
@@ -171,13 +156,13 @@ test('an unloaded next screenshot never replaces the ready image', async ({ page
   await page.clock.pauseAt(new Date());
   await page.goto('/apps', { waitUntil: 'domcontentloaded' });
   const carousel = page.getByRole('region', { name: 'Santa Radio current iOS app screenshots' });
-  await expect(carousel.getByRole('button', { name: 'Show Radio screenshot' })).toBeEnabled();
-  await expect(carousel.getByRole('button', { name: 'Show Artists screenshot' })).toBeDisabled();
+  await expect(carousel.locator('.is-active')).toHaveCount(1);
   await page.mouse.move(0, 0);
   await page.clock.fastForward(10000);
   await expectSlide(carousel, 'Radio');
   release();
-  await expect(carousel.getByRole('button', { name: 'Show Artists screenshot' })).toBeEnabled();
+  await expect.poll(() => carousel.locator('img').nth(1).evaluate(image => image.complete && image.naturalWidth > 0)).toBe(true);
+  await carousel.locator('img').nth(1).evaluate(image => image.decode());
   await page.clock.fastForward(5000);
   await expectSlide(carousel, 'Artists');
 });
@@ -229,6 +214,7 @@ test('store panels are removed, copy and metadata are accurate and downloads wor
       for (const [index, [store, href]] of stores.entries()) {
         const link = links.nth(index);
         await expect(link).toHaveText(`Download on ${store}`);
+        await expect(link).toHaveAttribute('aria-label', `Download on ${store} — ${app.title} (opens in a new tab)`);
         await expect(link).toHaveAttribute('href', href);
         await expect(link).toHaveAttribute('target', '_blank');
         await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
@@ -242,6 +228,8 @@ test('store panels are removed, copy and metadata are accurate and downloads wor
         expect(bounds.height).toBeGreaterThanOrEqual(48);
         expect(bounds.x).toBeGreaterThanOrEqual(0);
         expect(bounds.x + bounds.width).toBeLessThanOrEqual(width);
+        expect(bounds.y).toBeGreaterThanOrEqual(0);
+        expect(bounds.y + bounds.height).toBeLessThanOrEqual(900);
         for (const activate of [() => page.keyboard.press('Enter'), () => link.click()]) {
           const opened = page.waitForEvent('popup');
           await activate();
@@ -253,15 +241,18 @@ test('store panels are removed, copy and metadata are accurate and downloads wor
         }
       }
       const gap = await section.evaluate(el => {
-        const layout = el.querySelector('.app-layout').getBoundingClientRect();
+        const features = el.querySelector('.app-features-grid').getBoundingClientRect();
         const buttons = el.querySelector('.app-download-btns').getBoundingClientRect();
+        const textColumn = el.querySelector('.app-copy');
         return {
-          buttonsAfterContent: buttons.top - layout.bottom,
-          order: Boolean(el.querySelector('.app-layout').compareDocumentPosition(el.querySelector('.app-download-btns')) & Node.DOCUMENT_POSITION_FOLLOWING),
+          buttonsAfterContent: buttons.top - features.bottom,
+          inTextColumn: textColumn.contains(el.querySelector('.app-download-btns')),
+          order: Boolean(el.querySelector('.app-features-grid').compareDocumentPosition(el.querySelector('.app-download-btns')) & Node.DOCUMENT_POSITION_FOLLOWING),
         };
       });
       expect(gap.buttonsAfterContent).toBeGreaterThanOrEqual(0);
-      expect(gap.buttonsAfterContent).toBeLessThanOrEqual(38);
+      expect(gap.buttonsAfterContent).toBeLessThanOrEqual(30);
+      expect(gap.inTextColumn).toBe(true);
       expect(gap.order).toBe(true);
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);

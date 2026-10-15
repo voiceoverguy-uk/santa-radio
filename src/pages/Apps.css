@@ -81,8 +81,8 @@
 .apps-page .app-download-btns {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: flex-start;
   gap: 12px;
   margin-top: 25px;
 }
@@ -164,6 +164,10 @@
   gap: clamp(24px, 3vw, 36px);
 }
 
+.apps-page .app-copy {
+  min-width: 0;
+}
+
 @media (min-width: 768px) {
   /* Share the real heading row, including wrapped titles, rather than guessing
      a top offset. The cards start beside the image, not its caption heading. */
@@ -180,14 +184,10 @@
     align-self: stretch;
   }
 
-  .apps-page .app-layout-with-slideshow:not(.app-layout-landscape) .app-screenshots-body {
-    min-width: 0;
-    align-self: start;
-  }
-
-  .apps-page .app-layout-with-slideshow:not(.app-layout-landscape) > .app-features-grid {
+  .apps-page .app-layout-with-slideshow:not(.app-layout-landscape) > .app-copy {
     grid-column: 2;
     grid-row: 2;
+    min-width: 0;
   }
 }
 
@@ -446,7 +446,7 @@
   .apps-page .app-section-heading { margin-bottom: 30px; }
   .apps-page .app-layout { grid-template-columns: 1fr; gap: 28px; }
   .apps-page .app-features-grid { grid-template-columns: 1fr; gap: 22px; }
-  .apps-page .app-download-btns { flex-direction: column; align-items: center; }
+  .apps-page .app-download-btns { flex-direction: column; align-items: stretch; }
   .apps-page .app-dl-btn { width: min(100%, 280px); }
   .apps-page .apple-tv-showcase { padding: 52px 0 58px; }
   .apps-page .apple-tv-inner { grid-template-columns: minmax(0, 1fr); gap: 28px; }

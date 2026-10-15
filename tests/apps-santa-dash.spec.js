@@ -1,8 +1,5 @@
 import { test, expect } from '@playwright/test';
 
-const labels = ['A festive rooftop adventure', 'Leap across rooftops', 'Join Santa and collect mince pies'];
-const button = (carousel, index) => carousel.getByRole('button', { name: `Show ${labels[index]} promotional artwork`, exact: true });
-
 async function open(page) {
   await page.clock.install();
   await page.clock.pauseAt(new Date());
@@ -11,27 +8,30 @@ async function open(page) {
   const minimise = page.getByRole('button', { name: 'Minimise radio player', exact: true });
   if (await minimise.isVisible()) await minimise.click();
   const carousel = page.getByRole('region', { name: 'Santa Dash promotional artwork', exact: true });
-  for (let index = 0; index < 3; index++) await expect(button(carousel, index)).toBeEnabled();
+  await expect.poll(() => carousel.locator('img').evaluateAll(images =>
+    images.every(image => image.complete && image.naturalWidth > 0)
+  )).toBe(true);
+  await carousel.locator('img').evaluateAll(images => Promise.all(images.map(image => image.decode())));
   await page.mouse.move(0, 0);
   return carousel;
 }
 
 async function expectSlide(carousel, index) {
-  await expect(button(carousel, index)).toHaveAttribute('aria-pressed', 'true');
   await expect(carousel.locator('.is-active')).toHaveCount(1);
   await expect(carousel.locator('.is-active')).toHaveAttribute('aria-hidden', 'false');
-  await expect(carousel.locator('.app-screenshots-caption')).toHaveText(`${labels[index]} · ${index + 1} of 3`);
+  await expect(carousel.locator('img').nth(index)).toHaveClass(/is-active/);
+  await expect(carousel.locator('.app-screenshots-caption, .app-screenshots-controls, .app-screenshots-dots, .app-screenshots-toggle')).toHaveCount(0);
+  await expect(carousel.getByRole('button')).toHaveCount(0);
 }
 
 test('Santa Dash serves three full-size ordered local promotions and preserves its listing', async ({ page }) => {
   const carousel = await open(page);
   await expectSlide(carousel, 0);
   await expect(carousel.locator('figcaption')).toHaveText('Santa Dash promotional artwork');
-  await expect(carousel.getByRole('group', { name: 'Choose Santa Dash promotional artwork' })).toBeVisible();
   await expect(carousel.locator('.app-screenshots-note')).toHaveCount(0);
   await expect(carousel).not.toContainText('iOS screenshots only');
   await expect(carousel.locator('img')).toHaveCount(3);
-  await expect(carousel.getByRole('button')).toHaveCount(4);
+  await expect(carousel.getByRole('button')).toHaveCount(0);
   for (let index = 0; index < 3; index++) {
     const image = carousel.locator('img').nth(index);
     const frame = await image.evaluate(el => {
@@ -84,56 +84,42 @@ test('Santa Dash holds each artwork for five seconds, fades and wraps without co
     await page.clock.fastForward(5000);
     await expectSlide(carousel, index);
   }
-  await carousel.getByRole('button', { name: 'Pause slideshow' }).click();
-  await page.locator('h1').click();
-  await page.mouse.move(0, 0);
   const others = [
     'Santa Radio current iOS app screenshots',
     'Santa Radio Apple Watch promotional images',
     'Christmas Radio promotional images',
   ].map(name => page.getByRole('region', { name, exact: true }));
-  for (const other of others) {
-    for (const control of await other.locator('.app-screenshots-dot').all()) await expect(control).toBeEnabled();
-    await other.hover();
-    await page.mouse.move(0, 0);
-  }
+  for (const other of others)
+    await expect.poll(() => other.locator('img').evaluateAll(images =>
+      images.every(image => image.complete && image.naturalWidth > 0)
+    )).toBe(true);
+  for (const other of others)
+    await other.locator('img').evaluateAll(images => Promise.all(images.map(image => image.decode())));
   const beforeFrame = await carousel.boundingBox();
-  const before = await Promise.all(others.map(other => other.locator('.app-screenshots-caption').textContent()));
+  const before = await Promise.all(others.map(other => other.locator('.is-active').getAttribute('src')));
+  await carousel.hover();
   await page.clock.fastForward(5000);
-  await expectSlide(carousel, 0);
+  await expectSlide(carousel, 0); // Hover suspends this slideshow only.
   expect(await carousel.boundingBox()).toEqual(beforeFrame);
   for (const [index, other] of others.entries()) {
-    await expect(other.locator('.app-screenshots-caption')).not.toHaveText(before[index]);
+    await expect(other.locator('.is-active')).not.toHaveAttribute('src', before[index]);
   }
 });
 
-test('Santa Dash supports keyboard selection, pause/resume, focus, hover and hidden-tab suspension', async ({ page }) => {
+test('Santa Dash hover and hidden tabs suspend automatic rotation', async ({ page }) => {
   const carousel = await open(page);
-  await button(carousel, 0).focus();
-  await page.keyboard.press('Tab');
-  await expect(button(carousel, 1)).toBeFocused();
-  expect(await button(carousel, 1).evaluate(el => getComputedStyle(el).outlineStyle)).toBe('solid');
-  await page.keyboard.press('Enter');
-  await expectSlide(carousel, 1);
-  await page.clock.fastForward(10000);
-  await expectSlide(carousel, 1);
-  await carousel.getByRole('button', { name: 'Pause slideshow' }).click();
-  await page.locator('h1').click();
-  await page.mouse.move(0, 0);
-  await page.clock.fastForward(10000);
-  await expectSlide(carousel, 1);
-  await carousel.getByRole('button', { name: 'Resume slideshow' }).click();
-  await page.clock.fastForward(10000);
-  await expectSlide(carousel, 1);
-  await page.locator('h1').click();
   await carousel.hover();
   await page.clock.fastForward(10000);
-  await expectSlide(carousel, 1);
+  await expectSlide(carousel, 0);
   await page.mouse.move(0, 0);
+  await page.clock.fastForward(5000);
+  await expectSlide(carousel, 1);
+  await carousel.hover();
   await page.evaluate(() => {
     Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
     document.dispatchEvent(new Event('visibilitychange'));
   });
+  await page.mouse.move(0, 0);
   await page.clock.fastForward(10000);
   await expectSlide(carousel, 1);
   await page.evaluate(() => {
@@ -147,39 +133,29 @@ test('Santa Dash supports keyboard selection, pause/resume, focus, hover and hid
 test('Santa Dash reduced motion is static with stable uncropped landscape artwork above feature cards', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   const carousel = await open(page);
-  await expect(carousel.getByRole('button', { name: 'Resume slideshow' })).toBeVisible();
+  await expect(carousel.getByRole('button')).toHaveCount(0);
   await page.clock.fastForward(20000);
   await expectSlide(carousel, 0);
   for (const width of [1440, 1024, 768, 390, 320]) {
     await page.setViewportSize({ width, height: 1000 });
     const before = await carousel.boundingBox();
     expect(before.width).toBeCloseTo(Math.min(760, width - (width >= 768 ? 48 : 36)), 1);
-    for (let index = 0; index < 3; index++) {
-      await button(carousel, index).click();
-      await expectSlide(carousel, index);
-      const after = await carousel.boundingBox();
-      expect(after.width).toBeCloseTo(before.width, 1);
-      expect(after.height).toBeCloseTo(before.height, 1);
-      const image = await carousel.locator('.is-active').evaluate(el => {
-        const rect = el.getBoundingClientRect();
-        const style = getComputedStyle(el);
-        return { ratio: rect.width / rect.height, fit: style.objectFit, transition: style.transitionDuration, x: rect.x, right: rect.right };
-      });
-      expect(image.ratio).toBeCloseTo(1672 / 941, 3);
-      expect(image.fit).toBe('contain');
-      expect(image.transition).toBe('0s');
-      expect(image.x).toBeGreaterThanOrEqual(0);
-      expect(image.right).toBeLessThanOrEqual(width);
-      const cards = await page.locator('#santadash .app-features-grid').boundingBox();
-      expect(cards.y).toBeGreaterThanOrEqual(after.y + after.height + 27);
-    }
+    const after = await carousel.boundingBox();
+    expect(after.width).toBeCloseTo(before.width, 1);
+    expect(after.height).toBeCloseTo(before.height, 1);
+    const image = await carousel.locator('.is-active').evaluate(el => {
+      const rect = el.getBoundingClientRect();
+      const style = getComputedStyle(el);
+      return { ratio: rect.width / rect.height, fit: style.objectFit, transition: style.transitionDuration, x: rect.x, right: rect.right };
+    });
+    expect(image.ratio).toBeCloseTo(1672 / 941, 3);
+    expect(image.fit).toBe('contain');
+    expect(image.transition).toBe('0s');
+    expect(image.x).toBeGreaterThanOrEqual(0);
+    expect(image.right).toBeLessThanOrEqual(width);
+    const cards = await page.locator('#santadash .app-features-grid').boundingBox();
+    expect(cards.y).toBeGreaterThanOrEqual(after.y + after.height + 27);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await carousel.screenshot({ path: `generated-artifacts/apps-santa-dash-${width}.jpg` });
   }
-  // Reduced-motion visitors can explicitly opt in; focus and hover still suspend it.
-  await carousel.getByRole('button', { name: 'Resume slideshow' }).click();
-  await page.locator('h1').click();
-  await page.mouse.move(0, 0);
-  await page.clock.fastForward(5000);
-  await expectSlide(carousel, 0);
 });

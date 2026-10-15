@@ -26,29 +26,31 @@ function AppSection({ app }) {
                   decoding="async"
                 />
           </div>}
-          <div className="app-features-grid">
-            {app.features.map(({ label, desc }) => (
-              <div key={label} className="feature-item">
-                <h3 className="feature-label">{label}</h3>
-                <p className="feature-desc">{desc}</p>
-              </div>
-            ))}
+          <div className="app-copy">
+            <div className="app-features-grid">
+              {app.features.map(({ label, desc }) => (
+                <div key={label} className="feature-item">
+                  <h3 className="feature-label">{label}</h3>
+                  <p className="feature-desc">{desc}</p>
+                </div>
+              ))}
+            </div>
+            <div className="app-download-btns">
+              {app.downloads.map(({ platform, href }) => (
+                <a
+                  key={platform}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="app-dl-btn"
+                  aria-label={`Download on ${platform === 'iOS' ? 'the App Store' : 'Amazon Appstore'} — ${app.title} (opens in a new tab)`}
+                >
+                  <AppIcon name="download" />
+                  Download on {platform === 'iOS' ? 'the App Store' : 'Amazon Appstore'}
+                </a>
+              ))}
+            </div>
           </div>
-        </div>
-        <div className="app-download-btns">
-          {app.downloads.map(({ platform, href }) => (
-            <a
-              key={platform}
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="app-dl-btn"
-              aria-label={`Download on ${platform === 'iOS' ? 'the App Store' : 'Amazon Appstore'} — ${app.title} (opens in a new tab)`}
-            >
-              <AppIcon name="download" />
-              Download on {platform === 'iOS' ? 'the App Store' : 'Amazon Appstore'}
-            </a>
-          ))}
         </div>
         <hr className="app-heading-rule" />
       </div>
@@ -103,7 +105,6 @@ function AppleWatchShowcase() {
           slides={appleWatchScreenshots}
           heading="Santa Radio on Apple Watch"
           regionLabel="Santa Radio Apple Watch promotional images"
-          selectionLabel="Choose an Apple Watch promotional image"
           maxWidth={420}
         />
       </div>
