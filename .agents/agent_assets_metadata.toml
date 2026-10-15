@@ -266,3 +266,31 @@ mtime_ms = 1792095987319
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/17337716-0c6c-4291-ade5-f8f6883e75bd/bb92a54a-64da-43e7-baef-7970ee0bfeec"
 storage_version_token = "1792096041565342"
 content_type = "image/png"
+
+[[outputs]]
+id = "wCBskMedACFgfN4yWwRmO"
+uri = "file://generated-artifacts/santa-radio-preview/Santa-Radio-App-Preview-886x1920-30s.mp4"
+type = "video"
+title = "Download Santa Radio App Preview"
+description = "First 30 seconds • 886 × 1920 portrait • H.264 MP4 • constant 30 fps • 10.3 MB • silent, matching the original recording."
+logical_id = "c74ede29-c2ac-4b81-8721-c2e24b22e0bb"
+content_hash = "sha256:ca11e78c5fdef53f31933cae4daabc9eb2c888a85bb88b64865cb644b09aa062"
+size = 10319066
+mtime_ms = 1792101536759
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/c74ede29-c2ac-4b81-8721-c2e24b22e0bb/9b077c69-a25e-4a27-b928-5aac4bfd5ebf"
+storage_version_token = "1792101573276377"
+content_type = "video/mp4"
+
+[[outputs]]
+id = "jJHh22scfrzGLXBBVsJ_S"
+uri = "file://generated-artifacts/santa-radio-preview/Santa-Radio-App-Preview-Apple-Compatible.mp4"
+type = "video"
+title = "Download revised Santa Radio App Preview"
+description = "Revised export: 886 × 1920, first 30 seconds, constant 30 fps, H.264 High Profile Level 4.0, approximately 11 Mbps, BT.709, silent stereo AAC track. 41 MB. Locally verified; App Store Connect acceptance still requires an upload test."
+logical_id = "d7b45782-32e6-40da-9c20-22aa7538c049"
+content_hash = "sha256:4144b882f4de71e73a5233b0be987b6162b7c27f326ef7600be4b2e92b10ecd1"
+size = 41019032
+mtime_ms = 1792102073030
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/d7b45782-32e6-40da-9c20-22aa7538c049/417b6af8-14d2-46b1-9568-f4018c0ccf6f"
+storage_version_token = "1792102125508761"
+content_type = "video/mp4"
