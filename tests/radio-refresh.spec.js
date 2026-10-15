@@ -106,7 +106,7 @@ test('slow upcoming request cannot block changing current title; its failure can
   await expect(dock).toContainText(title);
 });
 
-test('five-second current and ten-second queue polling follow playback and visibility independently', async ({ page }) => {
+test('five-second current and queue polling follow playback and visibility independently', async ({ page }) => {
   let title = 'Initial Song';
   const requests = { current: 0, upcoming: 0 };
   const dock = await setup(page, route => {
@@ -119,12 +119,12 @@ test('five-second current and ten-second queue polling follow playback and visib
   const initial = { ...requests };
   await page.clock.runFor(4999);
   expect(requests).toEqual(initial);
-  title = 'Five Second Song';
   await page.clock.runFor(1);
   await expect(dock).toContainText(title);
-  expect(requests).toEqual({ current: initial.current + 1, upcoming: initial.upcoming });
-  await page.clock.runFor(5000);
   await expect.poll(() => requests.upcoming).toBe(initial.upcoming + 1);
+  expect(requests.current).toBe(initial.current + 1);
+  await page.clock.runFor(5000);
+  await expect.poll(() => requests.upcoming).toBe(initial.upcoming + 2);
   await hide(page, true);
   const hidden = { ...requests };
   await page.clock.runFor(10000);
@@ -146,7 +146,9 @@ test('five-second current and ten-second queue polling follow playback and visib
   title = 'Returned Song';
   await hide(page, false);
   await expect(dock).toContainText(title);
-  await expect.poll(() => requests.upcoming).toBe(paused.upcoming + 1);
+  // Return refresh and a changed-current follow-up can share an active queue
+  // read, then perform one bounded follow-up rather than aborting it.
+  await expect.poll(() => requests.upcoming).toBe(paused.upcoming + 2);
 });
 
 test('return clears expired values while fresh reads are pending and canceled reads cannot win', async ({ page }) => {
@@ -190,6 +192,99 @@ test('current network failures do not erase ready upcoming and recover after thr
   await page.clock.runFor(3000);
   await expect(dock).toContainText('Current Song');
 });
+
+test('current changes promptly refresh a queue whose five-second timer is not yet due', async ({ page }) => {
+  let title = 'Previous Song', queueCalls = 0, held, hold = false;
+  const dock = await setup(page, route => {
+    if (partOf(route) === 'current') return route.fulfill({ json: currentData(title) });
+    queueCalls++;
+    if (hold) { held = route; return; }
+    return route.fulfill({ json: nextData('Bryan Adams Next') });
+  });
+  await expect(dock).toContainText(title);
+  await expect(dock.locator('.radio-tracks-upcoming')).toContainText('Bryan Adams Next');
+  const initial = queueCalls;
+  hold = true;
+  await page.clock.runFor(5000);
+  await expect.poll(() => Boolean(held)).toBe(true);
+  await page.clock.runFor(2000);
+  await held.fulfill({ json: nextData('One More Sleep') });
+  await expect(dock.locator('.radio-tracks-upcoming')).toContainText('One More Sleep');
+  hold = false;
+  title = 'One More Sleep';
+  await page.clock.runFor(3000);
+  await expect(dock).toContainText(title);
+  await expect(dock.locator('.radio-tracks-upcoming')).toContainText('Bryan Adams Next');
+  expect(queueCalls).toBe(initial + 2); // Normal queue timer was due at twelve seconds.
+});
+
+test('multiple current transitions coalesce behind a slow queue instead of aborting or overlapping it', async ({ page }) => {
+  let title = 'Previous Song', queueCalls = 0, held, hold = false;
+  const dock = await setup(page, route => {
+    if (partOf(route) === 'current') return route.fulfill({ json: currentData(title) });
+    queueCalls++;
+    if (hold) { held = route; return; }
+    return route.fulfill({ json: nextData('Fresh Queue') });
+  });
+  await expect(dock.locator('.radio-tracks-upcoming')).toContainText('Fresh Queue');
+  const initial = queueCalls;
+  hold = true;
+  await page.clock.runFor(5000);
+  await expect.poll(() => Boolean(held)).toBe(true);
+  title = 'One More Sleep';
+  await dock.locator('.radio-play').click();
+  await expect(dock).toContainText(title);
+  expect(queueCalls).toBe(initial + 1);
+  title = 'Christmas Time';
+  await dock.locator('.radio-play').click();
+  await expect(dock).toContainText(title);
+  expect(queueCalls).toBe(initial + 1);
+  hold = false;
+  await held.fulfill({ json: nextData('Late Queue') });
+  await expect(dock.locator('.radio-tracks-upcoming')).toContainText('Fresh Queue');
+  expect(queueCalls).toBe(initial + 2);
+  await page.clock.runFor(4999);
+  expect(queueCalls).toBe(initial + 2);
+});
+
+for (const order of ['current-first', 'queue-first']) {
+  test(`website consumes reconciled shared Leona transition (${order})`, async ({ page }) => {
+    let time = Date.parse('2026-10-14T12:00:00Z'), now = 'Previous Artist - Previous Song';
+    let queue = 'Leona Lewis - One More Sleep\n - Santa Radio Announcement\nBryan Adams - Christmas Time\nLeona Lewis - One More Sleep';
+    let fail = false;
+    const service = createMetadataService(async url => {
+      if (url.pathname.endsWith('Nowplaying.txt')) return text(now);
+      if (fail) throw new Error('Queue offline');
+      return text(queue);
+    }, undefined, { clock: () => time, retryDelay: 0 });
+    const dock = await setup(page, async route => route.fulfill({ json: await service(partOf(route)) }));
+    const list = dock.locator('.radio-tracks-upcoming li');
+    await expect(dock.locator('.radio-tracks-current')).toContainText('Previous Song');
+    await expect(list.first()).toContainText('One More Sleep');
+    if (order === 'queue-first') {
+      queue = 'Bryan Adams - Christmas Time\nLeona Lewis - One More Sleep';
+      time += 5000;
+      await page.clock.runFor(5000);
+      await expect(list.first()).toContainText('Christmas Time');
+      await expect(dock.locator('.radio-tracks-current')).toContainText('Previous Song');
+    } else fail = true; // Retained raw queue must also receive the shared correction.
+    now = 'Leona Lewis - One More Sleep';
+    time += 5000;
+    await page.clock.runFor(5000);
+    await expect(dock.locator('.radio-tracks-current')).toContainText('One More Sleep');
+    await expect(list.first()).toContainText('Christmas Time');
+    await expect(list).toHaveCount(2);
+    await expect(list.nth(1)).toContainText('One More Sleep'); // Valid later repeat.
+    if (order === 'current-first') {
+      await expect(dock.locator('.radio-tracks-upcoming')).toContainText('Updating…');
+      fail = false;
+      queue = 'Bryan Adams - Christmas Time\nLeona Lewis - One More Sleep';
+      time += 5000;
+      await page.clock.runFor(5000);
+      await expect(dock.locator('.radio-tracks-upcoming')).not.toContainText('Updating…');
+    }
+  });
+}
 
 test('separate API modes and invalid requests preserve no-store HTTP behavior', async ({ request }) => {
   for (const part of ['current', 'upcoming']) {

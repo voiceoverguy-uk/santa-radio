@@ -1,3 +1,5 @@
+import { trackIdentity } from '../src/lib/radio-track-identity.js';
+
 const ROOT = 'https://stagcommunications.com/santaradio/';
 const MAX_BYTES = 8192;
 
@@ -41,10 +43,11 @@ async function readFeed(filename, limit, fetcher) {
   return tracks;
 }
 
-export function createMetadataService(fetcher = fetch, ttl = 3000, { clock = Date.now, retryDelay = 500, staleMs = 45000 } = {}) {
+export function createMetadataService(fetcher = fetch, ttl = 1000, { clock = Date.now, retryDelay = 500, staleMs = 45000 } = {}) {
   const current = { cached: null, expires: 0, pending: null };
   const upcoming = { cached: null, expires: 0, pending: null };
   let combined, combinedCurrent, combinedUpcoming;
+  let reconciled, reconciledRaw, reconciledIdentity;
   let lastUpcoming = [], upcomingUpdatedAt = 0;
   const readUpcoming = async () => {
     for (let attempt = 1; attempt <= 2; attempt++) {
@@ -96,10 +99,26 @@ export function createMetadataService(fetcher = fetch, ttl = 3000, { clock = Dat
   };
   return async (part = 'all') => {
     if (part === 'current') return getCurrent();
-    if (part === 'upcoming') return getUpcoming();
-    if (part !== 'all') throw new Error('Invalid metadata part');
-    // Preserve the legacy combined response without making website current reads wait.
-    const [now, next] = await Promise.all([getCurrent(), getUpcoming()]);
+    if (!['all', 'upcoming'].includes(part)) throw new Error('Invalid metadata part');
+    // Upcoming-only consumers also need a current identity on a cold service.
+    // Current-only requests never wait for the queue. Use the latest completed
+    // current read, not an earlier snapshot captured before a slow queue read.
+    await Promise.all([getCurrent(), getUpcoming()]);
+    const now = current.cached;
+    // A slow current read must not extend a stale queue's original deadline.
+    if (upcoming.cached.upcomingStatus === 'stale' && clock() - upcomingUpdatedAt >= staleMs) {
+      upcoming.cached = { ...upcoming.cached, upcoming: [], upcomingStatus: 'unavailable' };
+    }
+    const raw = upcoming.cached;
+    const identity = trackIdentity(now.current);
+    if (reconciledRaw !== raw || reconciledIdentity !== identity) {
+      reconciled = identity && identity === trackIdentity(raw.upcoming[0])
+        ? { ...raw, upcoming: raw.upcoming.slice(1) } : raw;
+      reconciledRaw = raw;
+      reconciledIdentity = identity;
+    }
+    const next = reconciled;
+    if (part === 'upcoming') return next;
     if (combinedCurrent !== now || combinedUpcoming !== next) {
       combined = { ...now, ...next };
       combinedCurrent = now;

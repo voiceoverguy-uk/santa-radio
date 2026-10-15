@@ -29,7 +29,7 @@ test('metadata caches briefly, isolates failures and recovers', async () => {
   expect(calls).toBe(3);
   fail = false;
   await new Promise(resolve => setTimeout(resolve, 40));
-  expect(await service()).toMatchObject({ upcomingStatus: 'ready', upcoming: [{ artist: 'Artist', title: 'Song' }] });
+  expect(await service()).toMatchObject({ upcomingStatus: 'ready', upcoming: [] });
 });
 
 test('confirmed HTTPS sources preserve filename case and share concurrent requests', async () => {
@@ -60,7 +60,7 @@ test('confirmed HTTPS sources preserve filename case and share concurrent reques
   });
 });
 
-test('default server cache expires after three seconds and fetches the new current song', async () => {
+test('default server cache expires after one second and fetches the new current song', async () => {
   let time = 100000, calls = 0, title = 'Previous Song';
   const service = createMetadataService(async () => {
     calls++;
@@ -69,7 +69,7 @@ test('default server cache expires after three seconds and fetches the new curre
   const first = await service();
   expect(first.current.title).toBe('Previous Song');
   title = 'New Song';
-  time += 2999;
+  time += 999;
   expect(await service()).toBe(first);
   expect(calls).toBe(2);
   time += 1;
@@ -155,7 +155,7 @@ test('upcoming retries once, retains briefly, expires and recovers independently
   expect(await service()).toMatchObject({ upcomingStatus: 'ready' });
   expect(attempts).toBe(2);
   mode = 'fail'; time += 20;
-  expect(await service()).toMatchObject({ currentStatus: 'ready', upcomingStatus: 'stale', upcoming: [{ artist: 'Artist', title: 'Song' }] });
+  expect(await service()).toMatchObject({ currentStatus: 'ready', upcomingStatus: 'stale', upcoming: [] });
   time += 45000;
   expect(await service()).toMatchObject({ currentStatus: 'ready', upcomingStatus: 'unavailable', upcoming: [] });
   mode = 'ok'; time += 20;

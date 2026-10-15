@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { trackIdentity } from '../lib/radio-track-identity.js';
 
 const empty = { current: null, upcoming: [], currentStatus: 'loading', upcomingStatus: 'loading' };
 const STALE_MS = 45000;
@@ -13,12 +14,14 @@ export default function useRadioMetadata(listening = false) {
 
   useEffect(() => {
     let stopped = false, expiryTimer, lastUpcoming = [], lastUpdated = 0, currentUpdated = 0;
+    let lastCurrentIdentity = null, transitionRefresh = false;
     const channels = {
       current: { timer: null, request: null },
       upcoming: { timer: null, request: null },
     };
     const allowed = part => !document.hidden || (part === 'current' && listeningRef.current);
     const stopChannel = part => {
+      if (part === 'upcoming') transitionRefresh = false;
       const channel = channels[part];
       clearTimeout(channel.timer);
       channel.timer = null;
@@ -75,10 +78,19 @@ export default function useRadioMetadata(listening = false) {
         if (part === 'current') {
           retry = data.currentStatus !== 'ready';
           currentUpdated = Date.now();
+          const identity = data.currentStatus === 'ready' ? trackIdentity(data.current) : null;
+          const changed = identity && lastCurrentIdentity && identity !== lastCurrentIdentity;
+          if (identity) lastCurrentIdentity = identity;
           setMetadata(previous => ({
             ...previous, current: data.currentStatus === 'ready' ? data.current : null,
             currentStatus: data.currentStatus,
           }));
+          if (changed && allowed('upcoming')) {
+            // Keep the active queue read; coalesce any number of transitions
+            // into one follow-up, since its response may predate the new song.
+            if (channels.upcoming.request) transitionRefresh = true;
+            else refresh('upcoming');
+          }
         } else commitUpcoming(data);
       } catch {
         retry = true;
@@ -92,8 +104,13 @@ export default function useRadioMetadata(listening = false) {
         clearTimeout(request.timeout);
         if (!stopped && channel.request === request) {
           channel.request = null;
-          if (allowed(part)) channel.timer = setTimeout(() => refresh(part),
-            part === 'upcoming' ? 10000 : retry ? 3000 : 5000);
+          if (allowed(part)) {
+            if (part === 'upcoming' && transitionRefresh) {
+              transitionRefresh = false;
+              refresh(part);
+            } else channel.timer = setTimeout(() => refresh(part),
+              part === 'current' && retry ? 3000 : 5000);
+          }
         }
       }
     };

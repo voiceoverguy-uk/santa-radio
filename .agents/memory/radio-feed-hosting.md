@@ -31,3 +31,9 @@ The owner reports that PHP on the hosting used for the FTP-supplied now/next son
 **Why:** The owner supplied this hosting update.
 
 **How to apply:** Account for PHP 8.4 compatibility when advising on scripts on that hosting. Do not assume other hosting environments received the same upgrade.
+
+The owner confirms the iPhone app consumes website data. Treat now/next duplication as a shared-service issue worth investigating, not an app-only issue requiring native source first.
+
+**Why:** The owner explicitly confirmed the dependency when showing the same song as current and first upcoming.
+
+**How to apply:** Fix and verify the website's shared contract. Separately establish the app's exact request URL and polling from evidence; the dependency alone does not identify either or prove device success.
