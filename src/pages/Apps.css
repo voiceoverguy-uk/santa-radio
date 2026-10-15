@@ -177,6 +177,33 @@
   gap: 12px;
 }
 
+@media (min-width: 768px) {
+  /* Share the real heading row, including wrapped titles, rather than guessing
+     a top offset. The cards start beside the image, not its caption heading. */
+  .apps-page .app-layout-with-slideshow {
+    grid-template-rows: auto auto;
+    row-gap: 0;
+  }
+
+  .apps-page .app-layout-with-slideshow > .app-screenshots {
+    display: grid;
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    grid-template-rows: subgrid;
+    align-self: stretch;
+  }
+
+  .apps-page .app-layout-with-slideshow .app-screenshots-body {
+    min-width: 0;
+    align-self: start;
+  }
+
+  .apps-page .app-layout-with-slideshow > .app-features-grid {
+    grid-column: 2;
+    grid-row: 2;
+  }
+}
+
 .apps-page .feature-item {
   padding: 16px;
   border: 1px solid #d4af372a;

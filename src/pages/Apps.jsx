@@ -32,7 +32,7 @@ function AppSection({ app }) {
           </div>
           <hr className="app-heading-rule" />
         </div>
-        <div className={`app-layout${app.landscape ? ' app-layout-landscape' : ''}`}>
+        <div className={`app-layout${app.landscape ? ' app-layout-landscape' : ''}${app.screenshots ? ' app-layout-with-slideshow' : ''}`}>
           {app.screenshots ? <AppScreenshots slides={app.screenshots} {...app.slideshow} /> : <div className="app-phone-wrap">
                 <img
                   src={app.image}

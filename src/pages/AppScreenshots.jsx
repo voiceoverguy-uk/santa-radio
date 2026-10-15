@@ -66,6 +66,7 @@ export default function AppScreenshots({
       }}
     >
       <figcaption className="app-screenshots-heading">{heading}</figcaption>
+      <div className="app-screenshots-body">
       <div className="app-screenshots-frame">
         <div className="app-screenshots-stack" style={{ aspectRatio: `${slides[0].width} / ${slides[0].height}` }}>
           {slides.map((slide, index) => (
@@ -106,6 +107,7 @@ export default function AppScreenshots({
         </button>
       </div>
       <p className="app-screenshots-note">{note}</p>
+      </div>
       {Object.keys(failed).length > 0 && <p role="status" className="app-screenshots-note">Some {imageType}s could not load. Please reload to try again.</p>}
     </figure>
   );
