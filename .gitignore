@@ -1,5 +1,6 @@
 server/santa-audio/prepared/
 /generated-artifacts/
+attached_assets/santa-dash-app-image-*.png
 attached_assets/christmas-radio-app-*.png
 # Logs
 logs
