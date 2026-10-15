@@ -19,3 +19,9 @@ Santa Radio is available free on Apple TV, as confirmed by the owner. Present it
 **Why:** The owner specifically requested a new Apple TV section and supplied an Apple TV screenshot.
 
 **How to apply:** Keep iOS and Apple TV screenshots distinct. Do not assume the existing iOS App Store URL is a direct tvOS install link; add a TV download button only after its destination is verified.
+
+The owner describes Apple Watch as a companion for viewing song, artist and artwork and starting/pausing Santa Radio on a paired iPhone, not standalone Watch streaming.
+
+**Why:** This is the owner's confirmed product scope; the promotional artwork is not permission to infer additional native capabilities.
+
+**How to apply:** Do not invent watchOS requirements, pricing or a Watch-specific store destination. Keep promotional screenshots distinct from live website playback controls.

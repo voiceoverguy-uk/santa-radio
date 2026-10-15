@@ -1,7 +1,7 @@
 /* Accessible, stable screenshot carousel styling. Inherits the Apps page palette. */
 .apps-page .app-screenshots {
   width: 100%;
-  max-width: 285px;
+  max-width: var(--app-screenshots-max-width, 285px);
   min-width: 0;
   margin: 0 auto;
 }

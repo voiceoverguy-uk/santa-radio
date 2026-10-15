@@ -1,7 +1,7 @@
 import PageSeo from '../seo/PageSeo.jsx';
 import Breadcrumbs from '../seo/Breadcrumbs.jsx';
 import { appsMetadata, appsBreadcrumbs } from '../seo/catalogue.js';
-import { christmasApps, macAppListing } from './apps-data.js';
+import { appleWatchScreenshots, christmasApps, macAppListing } from './apps-data.js';
 import { appStoreVerification, storeCheckedAt, storeCheckedLabel, amazonDeviceSource } from './apps-store-verification.js';
 import appleTvScreenshot from '../assets/apps/santa-radio-apple-tv.webp';
 import AppIcon from './AppIcon.jsx';
@@ -108,6 +108,34 @@ function AppleTvShowcase() {
   );
 }
 
+function AppleWatchShowcase() {
+  return (
+    <section className="apple-watch-showcase" aria-labelledby="apple-watch-title">
+      <div className="apps-container apple-watch-inner">
+        <div className="apple-watch-copy">
+          <p className="apps-page-eyebrow">A little closer to the music</p>
+          <h2 id="apple-watch-title">Now available on Apple Watch</h2>
+          <p className="apple-watch-description">
+            View the current song, artist and artwork, then start or pause playback on your paired iPhone.
+          </p>
+          <p className="apple-watch-instruction">
+            Music plays on your paired iPhone, not as standalone streaming from Apple Watch.
+          </p>
+          <p className="apple-watch-note">These promotional images show the Watch experience; they are not live website controls.</p>
+        </div>
+        <AppScreenshots
+          slides={appleWatchScreenshots}
+          heading="Santa Radio on Apple Watch"
+          regionLabel="Santa Radio Apple Watch promotional images"
+          selectionLabel="Choose an Apple Watch promotional image"
+          note="Promotional images only; controls shown here do not control playback."
+          maxWidth={420}
+        />
+      </div>
+    </section>
+  );
+}
+
 function MacAppShowcase({ app }) {
   return (
     <section id={app.id} className="mac-app-showcase" aria-labelledby={`${app.id}-title`}>
@@ -157,6 +185,7 @@ export default function Apps() {
           <AppSection app={app} />
           {index === 0 && (
             <>
+              <AppleWatchShowcase />
               <AppleTvShowcase />
               <MacAppShowcase app={macAppListing} />
             </>

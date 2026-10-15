@@ -1,7 +1,14 @@
 import { useEffect, useState } from 'react';
 import './AppScreenshots.css';
 
-export default function AppScreenshots({ slides }) {
+export default function AppScreenshots({
+  slides,
+  heading = 'Current iOS app',
+  regionLabel = 'Santa Radio current iOS app screenshots',
+  selectionLabel = 'Choose an iOS screenshot',
+  note = 'iOS screenshots only; the Amazon app’s appearance may differ.',
+  maxWidth = 285,
+}) {
   const [active, setActive] = useState(0);
   const [ready, setReady] = useState({});
   const [failed, setFailed] = useState({});
@@ -48,7 +55,8 @@ export default function AppScreenshots({ slides }) {
       className="app-screenshots"
       role="region"
       aria-roledescription="carousel"
-      aria-label="Santa Radio current iOS app screenshots"
+      aria-label={regionLabel}
+      style={{ '--app-screenshots-max-width': `${maxWidth}px` }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onFocusCapture={() => setFocused(true)}
@@ -56,7 +64,7 @@ export default function AppScreenshots({ slides }) {
         if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false);
       }}
     >
-      <figcaption className="app-screenshots-heading">Current iOS app</figcaption>
+      <figcaption className="app-screenshots-heading">{heading}</figcaption>
       <div className="app-screenshots-frame">
         <div className="app-screenshots-stack" style={{ aspectRatio: `${slides[0].width} / ${slides[0].height}` }}>
           {slides.map((slide, index) => (
@@ -79,7 +87,7 @@ export default function AppScreenshots({ slides }) {
         {slides[active].label} · {active + 1} of {slides.length}
       </p>
       <div className="app-screenshots-controls">
-        <div className="app-screenshots-dots" role="group" aria-label="Choose an iOS screenshot">
+        <div className="app-screenshots-dots" role="group" aria-label={selectionLabel}>
           {slides.map((slide, index) => (
             <button
               key={slide.label}
@@ -96,7 +104,7 @@ export default function AppScreenshots({ slides }) {
           {paused ? 'Resume slideshow' : 'Pause slideshow'}
         </button>
       </div>
-      <p className="app-screenshots-note">iOS screenshots only; the Amazon app’s appearance may differ.</p>
+      <p className="app-screenshots-note">{note}</p>
       {Object.keys(failed).length > 0 && <p role="status" className="app-screenshots-note">Some screenshots could not load. Please reload to try again.</p>}
     </figure>
   );

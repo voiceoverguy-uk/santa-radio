@@ -2,6 +2,8 @@ import santaRadio from '../assets/apps/santa-radio-ios-radio.webp';
 import santaRadioArtists from '../assets/apps/santa-radio-ios-artists.webp';
 import santaRadioMugshots from '../assets/apps/santa-radio-ios-mugshots.webp';
 import santaRadioTracker from '../assets/apps/santa-radio-ios-tracker.webp';
+import santaRadioWatchControls from '../assets/apps/santa-radio-watch-controls.webp';
+import santaRadioWatchArtwork from '../assets/apps/santa-radio-watch-artwork.webp';
 import santaVoicemail from '../assets/apps/santa-voicemail.png';
 import santaMessages from '../assets/apps/santa-messages.png';
 import christmasRadio from '../assets/apps/christmas-radio.png';
@@ -157,3 +159,22 @@ export const macAppListing = {
   height: 1328,
   status: 'Coming soon',
 };
+
+export const appleWatchScreenshots = [
+  // Owner originals: 01-christmas-music-a-tap-away_1792060890579.png and
+  // 02-see-whats-playing_1792060890579.png; both 1800 × 2600, preserved in full-size WebP derivatives.
+  {
+    label: 'Playback controls',
+    image: santaRadioWatchControls,
+    width: 1800,
+    height: 2600,
+    alt: 'Santa Radio Apple Watch promotional image showing White December by Kylie Minogue, song artwork and a Pause control for playback on the paired iPhone.',
+  },
+  {
+    label: 'Song artwork',
+    image: santaRadioWatchArtwork,
+    width: 1800,
+    height: 2600,
+    alt: 'Santa Radio Apple Watch promotional image showing the song artwork, artist Kylie Minogue and title White December, sent from the paired iPhone.',
+  },
+];
