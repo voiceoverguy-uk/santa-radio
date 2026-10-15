@@ -106,7 +106,7 @@ export default function AppScreenshots({
           {paused ? 'Resume slideshow' : 'Pause slideshow'}
         </button>
       </div>
-      <p className="app-screenshots-note">{note}</p>
+      {note && <p className="app-screenshots-note">{note}</p>}
       </div>
       {Object.keys(failed).length > 0 && <p role="status" className="app-screenshots-note">Some {imageType}s could not load. Please reload to try again.</p>}
     </figure>

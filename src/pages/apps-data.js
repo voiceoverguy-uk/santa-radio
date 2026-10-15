@@ -166,7 +166,7 @@ export const christmasApps = [
       regionLabel: 'Santa Dash promotional artwork',
       selectionLabel: 'Choose Santa Dash promotional artwork',
       imageType: 'promotional artwork',
-      note: 'Owner-supplied Santa Dash promotional artwork, not live gameplay or interactive website controls.',
+      note: null,
       maxWidth: 760,
     },
     downloads: downloads('https://itunes.apple.com/gb/app/santa-dash-from-santa-guy/id1057048397'),

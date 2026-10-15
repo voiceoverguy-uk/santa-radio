@@ -2,7 +2,6 @@ import { test, expect } from '@playwright/test';
 
 const surfaces = [
   ['/', ['.radio-dock', '.santa-message-box', '.tv-frame', '.mug-card', '.tracker-card']],
-  ['/apps', ['.feature-item']],
   ['/christmas-music', ['.song-card']],
   ['/mugshots/all', ['.mugshot-card']],
   ['/links', ['.partner-card']],
@@ -44,18 +43,20 @@ test('interactive song cards keep keyboard focus and gain the gold glow', async 
   await expect.poll(() => card.evaluate(el => getComputedStyle(el).boxShadow)).toContain('16px 3px');
 });
 
-test('touch cards do not retain hover glows and passive panels stay passive', async ({ browser }) => {
+test('unboxed app feature descriptions stay passive on mobile', async ({ browser }) => {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   try {
     const page = await context.newPage();
     await page.goto(`${test.info().project.use.baseURL}/apps`, { waitUntil: 'domcontentloaded' });
-    const card = page.locator('.feature-item').first();
-    const restingShadow = await card.evaluate(el => getComputedStyle(el).boxShadow);
-    await card.tap();
-    await expect(card).toHaveCSS('box-shadow', restingShadow);
-    expect(await card.getAttribute('tabindex')).toBeNull();
-    expect(await card.getAttribute('role')).toBeNull();
-    await expect(card).not.toHaveCSS('cursor', 'pointer');
+    const feature = page.locator('.feature-item').first();
+    await expect(feature).toBeVisible();
+    await feature.tap();
+    await expect(feature).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    await expect(feature).toHaveCSS('border-top-style', 'none');
+    await expect(feature).toHaveCSS('box-shadow', 'none');
+    expect(await feature.getAttribute('tabindex')).toBeNull();
+    expect(await feature.getAttribute('role')).toBeNull();
+    await expect(feature).not.toHaveCSS('cursor', 'pointer');
   } finally {
     await context.close();
   }

@@ -174,7 +174,8 @@
 .apps-page .app-features-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  align-content: start;
+  gap: clamp(24px, 3vw, 36px);
 }
 
 @media (min-width: 768px) {
@@ -205,42 +206,25 @@
 }
 
 .apps-page .feature-item {
-  padding: 16px;
-  border: 1px solid #d4af372a;
-  border-radius: 12px;
-  background: #153628;
+  min-width: 0;
+  padding: 0;
   text-align: left;
 }
 
-.apps-page .feature-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  margin-bottom: 10px;
-  border: 1px solid #d4af3740;
-  border-radius: 9px;
-  background: #102d22;
-  color: var(--gold-light);
-}
-
-.apps-page .feature-icon svg { width: 18px; height: 18px; }
-
 .apps-page .feature-label {
-  margin: 0 0 6px;
+  margin: 0 0 8px;
   color: var(--cream);
   font-family: 'Cinzel', serif;
   font-weight: 400;
-  font-size: .95rem;
+  font-size: .92rem;
   line-height: 1.4;
 }
 
 .apps-page .feature-desc {
   margin: 0;
   color: var(--muted);
-  font-size: .82rem;
-  line-height: 1.6;
+  font-size: .86rem;
+  line-height: 1.7;
   white-space: pre-line;
   overflow-wrap: anywhere;
 }
@@ -475,8 +459,7 @@
   .apps-page .app-section { padding: 52px 0 58px; }
   .apps-page .app-section-heading { margin-bottom: 30px; }
   .apps-page .app-layout { grid-template-columns: 1fr; gap: 28px; }
-  .apps-page .app-features-grid { grid-template-columns: 1fr; gap: 12px; }
-  .apps-page .feature-item { padding: 16px; }
+  .apps-page .app-features-grid { grid-template-columns: 1fr; gap: 22px; }
   .apps-page .app-download-btns { flex-direction: column; align-items: center; }
   .apps-page .app-dl-btn { width: min(100%, 280px); }
   .apps-page .apple-tv-showcase { padding: 52px 0 58px; }

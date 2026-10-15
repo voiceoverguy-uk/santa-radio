@@ -28,7 +28,7 @@ test('Santa Dash serves three full-size ordered local promotions and preserves i
   await expectSlide(carousel, 0);
   await expect(carousel.locator('figcaption')).toHaveText('Santa Dash promotional artwork');
   await expect(carousel.getByRole('group', { name: 'Choose Santa Dash promotional artwork' })).toBeVisible();
-  await expect(carousel).toContainText('not live gameplay or interactive website controls');
+  await expect(carousel).not.toContainText('not live gameplay or interactive website controls');
   await expect(carousel).not.toContainText('iOS screenshots only');
   await expect(carousel.locator('img')).toHaveCount(3);
   await expect(carousel.getByRole('button')).toHaveCount(4);

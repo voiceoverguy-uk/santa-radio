@@ -45,9 +45,8 @@ function AppSection({ app }) {
                 />
           </div>}
           <div className="app-features-grid">
-            {app.features.map(({ label, desc, icon }) => (
+            {app.features.map(({ label, desc }) => (
               <div key={label} className="feature-item">
-                <span className="feature-icon" aria-hidden="true"><AppIcon name={icon} /></span>
                 <h3 className="feature-label">{label}</h3>
                 <p className="feature-desc">{desc}</p>
               </div>

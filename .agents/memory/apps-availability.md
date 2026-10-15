@@ -10,9 +10,9 @@ Exclude Sleeps til Santa from the Apps page for now; leave the other apps unchan
 
 Use the homepage's visual style for the Apps page, rather than copying the legacy live site's appearance.
 
-**Why:** The user reversed the earlier visual-copy request and explicitly asked for matching fonts, buttons, borders, boxes and appropriate icons.
+**Why:** The user reversed the earlier visual-copy request and asked for matching site styling. They later said boxed feature text distracts from app images and repeated: “No boxes.”
 
-**How to apply:** Preserve app content and screenshots, but use the current site's design for surrounding presentation.
+**How to apply:** Preserve app content and screenshots and the current site's theme. Keep app feature descriptions as simple, unboxed text rather than feature cards, with the app images as the focus.
 
 Santa Radio is available free on Apple TV, as confirmed by the owner. Present its supplied big-screen image as a separate Apple TV experience, not as an iOS app screenshot.
 
