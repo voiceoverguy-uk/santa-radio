@@ -11,7 +11,9 @@ import christmasRadioPromo2 from '../assets/apps/christmas-radio-promo-2.webp';
 import christmasRadioPromo3 from '../assets/apps/christmas-radio-promo-3.webp';
 import christmasRadioPromo4 from '../assets/apps/christmas-radio-promo-4.webp';
 import santaText from '../assets/apps/santa-text-promo.webp';
-import santaDash from '../assets/apps/santa-dash.png';
+import santaDash from '../assets/apps/santa-dash-promo-1.webp';
+import santaDashPromo2 from '../assets/apps/santa-dash-promo-2.webp';
+import santaDashPromo3 from '../assets/apps/santa-dash-promo-3.webp';
 import santaRadioMac from '../assets/apps/santa-radio-mac.webp';
 
 // Source copy and destination URLs: https://www.santaradio.co.uk/free-christmas-apps/
@@ -150,10 +152,23 @@ export const christmasApps = [
     title: 'Santa Dash',
     subtitle: 'How far can you go while collecting mince pies?',
     image: santaDash,
-    alt: 'Santa Dash landscape game screen with Santa jumping over snowy rooftops to collect mince pies.',
-    width: 1334,
-    height: 750,
+    alt: 'Santa Dash promotional artwork: A festive rooftop adventure for all the family, with Santa jumping towards mince pies above a snowy village under the northern lights.',
+    width: 1672,
+    height: 941,
     landscape: true,
+    screenshots: [
+      { label: 'A festive rooftop adventure', image: santaDash, width: 1672, height: 941, alt: 'Santa Dash promotional artwork: A festive rooftop adventure for all the family, with Santa jumping towards mince pies above a snowy village under the northern lights.' },
+      { label: 'Leap across rooftops', image: santaDashPromo2, width: 1672, height: 941, alt: 'Santa Dash promotional artwork: Leap across rooftops, grab the pies and dodge the hazards, with Santa, mince pies, a glowing chimney, slippery ice and a snowman.' },
+      { label: 'Join Santa and collect mince pies', image: santaDashPromo3, width: 1672, height: 941, alt: 'Santa Dash promotional artwork: Join Santa and help him collect mince pies as he jumps across rooftops on a snowy evening, with icy roofs, a launch chimney and a snowman.' },
+    ],
+    slideshow: {
+      heading: 'Santa Dash promotional artwork',
+      regionLabel: 'Santa Dash promotional artwork',
+      selectionLabel: 'Choose Santa Dash promotional artwork',
+      imageType: 'promotional artwork',
+      note: 'Owner-supplied Santa Dash promotional artwork, not live gameplay or interactive website controls.',
+      maxWidth: 760,
+    },
     downloads: downloads('https://itunes.apple.com/gb/app/santa-dash-from-santa-guy/id1057048397'),
     features: [
       feature('Fun Game', 'A festive jumping game.\nGreat for all ages over Christmas.', 'game'),

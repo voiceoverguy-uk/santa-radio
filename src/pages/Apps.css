@@ -180,12 +180,12 @@
 @media (min-width: 768px) {
   /* Share the real heading row, including wrapped titles, rather than guessing
      a top offset. The cards start beside the image, not its caption heading. */
-  .apps-page .app-layout-with-slideshow {
+  .apps-page .app-layout-with-slideshow:not(.app-layout-landscape) {
     grid-template-rows: auto auto;
     row-gap: 0;
   }
 
-  .apps-page .app-layout-with-slideshow > .app-screenshots {
+  .apps-page .app-layout-with-slideshow:not(.app-layout-landscape) > .app-screenshots {
     display: grid;
     grid-column: 1;
     grid-row: 1 / span 2;
@@ -193,12 +193,12 @@
     align-self: stretch;
   }
 
-  .apps-page .app-layout-with-slideshow .app-screenshots-body {
+  .apps-page .app-layout-with-slideshow:not(.app-layout-landscape) .app-screenshots-body {
     min-width: 0;
     align-self: start;
   }
 
-  .apps-page .app-layout-with-slideshow > .app-features-grid {
+  .apps-page .app-layout-with-slideshow:not(.app-layout-landscape) > .app-features-grid {
     grid-column: 2;
     grid-row: 2;
   }

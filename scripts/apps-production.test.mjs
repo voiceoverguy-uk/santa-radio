@@ -4,7 +4,7 @@ import { spawn } from 'node:child_process';
 import { appDownloads, obsoleteStoreCopy } from '../tests/fixtures/apps-downloads.js';
 
 // Run after npm run build; exercise the actual Node production server, not Vite.
-test('built Apps HTML starts on Christmas Radio image 1 and serves all four WebP assets', async t => {
+test('built Apps HTML starts on first promotional images and serves all local WebP assets', async t => {
   const child = spawn(process.execPath, ['index.js', '--port=0'], { stdio: ['ignore', 'pipe', 'pipe'] });
   t.after(() => child.kill('SIGTERM'));
   const port = await new Promise((resolve, reject) => {
@@ -71,6 +71,29 @@ test('built Apps HTML starts on Christmas Radio image 1 and serves all four WebP
   assert.match(html, /Santa Radio Apple Watch promotional images/);
   assert.match(html, /Available FREE on Apple TV/);
   assert.match(html, /Santa Radio for Mac/);
+  const dash = html.match(/<section id="santadash"[\s\S]*?<\/section>/)?.[0];
+  assert.ok(dash, 'Santa Dash must be in the initial HTML');
+  assert.match(dash, /aria-label="Santa Dash promotional artwork"/);
+  assert.match(dash, /--app-screenshots-max-width:760px/);
+  assert.match(dash, /not live gameplay or interactive website controls/);
+  assert.match(visibleHtml, /Santa Dash’s three owner-supplied promotional artworks are not live gameplay/);
+  const dashImages = [...dash.matchAll(/<img\b[^>]*>/g)].map(match => match[0]);
+  assert.equal(dashImages.length, 3);
+  for (const [index, image] of dashImages.entries()) {
+    const src = image.match(/src="([^"]+)"/)?.[1];
+    assert.match(src, new RegExp(`^/assets/santa-dash-promo-${index + 1}-.*\\.webp$`));
+    assert.match(image, /width="1672" height="941"/);
+    assert.match(image, /alt="Santa Dash promotional artwork:/);
+    assert.equal(image.includes(' is-active'), index === 0);
+    assert.match(image, new RegExp(`aria-hidden="${index !== 0}"`));
+    const asset = await get(src);
+    assert.equal(asset.status, 200);
+    assert.match(asset.headers.get('content-type'), /image\/webp/);
+    const bytes = Buffer.from(await asset.arrayBuffer());
+    assert.equal(bytes.toString('ascii', 8, 12), 'WEBP');
+    assert.ok(bytes.length < 400000);
+  }
+  assert.match(dash.replace(/<!--.*?-->/g, ''), /A festive rooftop adventure · 1 of 3/);
   const mac = html.match(/<section id="santa-radio-mac"[\s\S]*?<\/section>/)?.[0];
   assert.ok(mac, 'Mac promotional artwork must be in the initial HTML');
   assert.match(mac, /Play Santa Radio and see the current song and artist\./);
