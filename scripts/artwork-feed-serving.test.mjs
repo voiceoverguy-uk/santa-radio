@@ -70,6 +70,7 @@ test('HEAD and OPTIONS work, missing images are 404 not the HTML homepage', asyn
 test('built Elvis page and SSR share the song image without altering other recordings', async () => {
   const { render } = await import('../dist/server/entry-server.js');
   for (const [path, artwork] of [
+    ['/christmas-artist/61-chris-de-burgh-a-spaceman-came-travelling', '/artist-artwork/chris-de-burgh.webp'],
     ['/christmas-artist/399-elvis-presley-blue-christmas', '/artist-artwork/elvis-presley-blue-christmas.webp'],
     ['/christmas-artist/260-elvis-presley-santa-bring-my-baby-back-to-me', '/artist-artwork/elvis-presley.webp'],
     ['/christmas-artist/116-glen-campbell-blue-christmas', '/artist-artwork/glen-campbell.webp'],
@@ -89,6 +90,19 @@ test('built Elvis page and SSR share the song image without altering other recor
   const image = await fetch(new URL('/artist-artwork/elvis-presley-blue-christmas.webp', base));
   assert.equal(image.status, 200);
   assert.equal(image.headers.get('content-type'), 'image/webp');
+});
+
+test('built Chris De Burgh delivery image matches the replacement advertised in the artist feed', async () => {
+  const path = '/artist-artwork/chris-de-burgh.webp';
+  const feed = await (await fetch(new URL(artworkFeedPath, base))).json();
+  const response = await fetch(new URL(feed.artists['chris de burgh'].url, base));
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get('content-type'), 'image/webp');
+  const image = Buffer.from(await response.arrayBuffer());
+  assert.deepEqual(image, await readFile(`public${path}`));
+  assert.equal(createHash('sha256').update(image).digest('hex'), feed.artists['chris de burgh'].version);
+  const catalogue = await (await fetch(new URL('/christmas-music', base))).text();
+  assert.ok(catalogue.includes(`src="${path}"`));
 });
 
 test('Vercel configuration includes public feed/image access and preserves asset routing', async () => {

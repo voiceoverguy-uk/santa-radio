@@ -48,6 +48,12 @@ Song-specific artwork is an exception to the shared rollout: introduce it on the
 
 **How to apply:** Add website-only, verified song assignments ahead of the artist fallback. Filenames matching a song-page slug, such as ariana-grande-last-christmas, are sufficient handoff clues to check against the catalogue; ask when ambiguous rather than guessing. Preserve the app's existing artist-only contract until separate app work is agreed.
 
+The astronaut-and-Nativity illustration supplied for Chris De Burgh replaces his shared artist picture; it is not a song-only exception.
+
+**Why:** The owner clarified, “The image I uploaded was to overwrite the existing pic of Chris de burgh”.
+
+**How to apply:** Treat this illustration as his shared artist artwork, including the existing artist-only feed. This specific clarification does not authorise shared replacements for other song-specific illustrations.
+
 Include explicit Santa entries for all song-catalogue artists without supplied portraits in the shared feed, while keeping genuine portrait mappings separate.
 
 **Why:** The user approved this server-side workaround for missing fallback artwork in the separate app, to avoid requiring an app update.

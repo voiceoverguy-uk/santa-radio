@@ -8,6 +8,7 @@ import { matchLiveSong } from '../src/data/matchLiveSong.js';
 import { songMetadata, artworkAlt } from '../src/seo/catalogue.js';
 import { randomSongOrder } from '../src/data/randomSongOrder.js';
 import { buildArtworkFeed } from '../server/artwork-feed.js';
+import { createHash } from 'node:crypto';
 
 const lastChristmas = songs.find(song => song.id === 75);
 const winterThings = songs.find(song => song.id === 527);
@@ -17,6 +18,48 @@ const usual = '/artist-artwork/ariana-grande.webp';
 const elvisBlue = songs.find(song => song.id === 399);
 const elvisSpecial = '/artist-artwork/elvis-presley-blue-christmas.webp';
 const elvisUsual = '/artist-artwork/elvis-presley.webp';
+
+test('Chris De Burgh replacement is shared artist artwork, not a song-only override', async () => {
+  const spaceman = songs.find(song => song.id === 61);
+  const path = '/artist-artwork/chris-de-burgh.webp';
+  assert.equal(spaceman.artist, 'Chris De Burgh');
+  assert.equal(spaceman.song, 'A Spaceman Came Travelling');
+  assert.equal(artistMapping.artistArtwork(spaceman.artist), path);
+  assert.equal(songArtwork(spaceman), path);
+  assert.deepEqual(songArtworkCandidates(spaceman), [path, artistMapping.fallbackArtwork]);
+  // The owner clarified that this replaces the artist picture for all recordings.
+  assert.equal(songArtwork({ ...spaceman, id: 99999, song: 'Another recording' }), path);
+  assert.equal(songArtwork({ ...spaceman, artist: 'Wham!' }), artistMapping.artistArtwork('Wham!'));
+  assert.equal(songArtwork(matchLiveSong({ artist: spaceman.artist, title: spaceman.song }).song), path);
+  assert.equal(matchLiveSong({ artist: spaceman.artist, title: 'Unknown recording' }).song, undefined);
+  const metadata = songMetadata(spaceman);
+  assert.equal(metadata.image, `https://www.santaradio.co.uk${path}`);
+  assert.equal(metadata.graph.find(node => node['@type'] === 'ImageObject').contentUrl, metadata.image);
+  const image = await readFile(`public${path}`);
+  assert.equal(image.subarray(8, 12).toString(), 'WEBP');
+  assert.ok(image.length < 100000);
+  const hash = createHash('sha256').update(image).digest('hex');
+  assert.notEqual(hash, '9480863562b26d224ef5405abce23f2d3c1916df6a034d6bb65c6301613a1e00',
+    'must not regress to the previous artist portrait');
+  const original = await readFile('attached_assets/chris-de-burgh_1792051593491.png');
+  assert.equal(original.subarray(1, 4).toString(), 'PNG');
+  const feed = await buildArtworkFeed(artistMapping);
+  assert.equal(feed.schemaVersion, 1);
+  assert.equal(feed.artists['chris de burgh'].path, path);
+  assert.equal(feed.artists['chris de burgh'].version, hash);
+  assert.equal(feed.artists['chris de burgh'].url, `${path}?v=${hash}`);
+  const changed = await buildArtworkFeed(artistMapping, {
+    readImage: async candidate => {
+      const bytes = await readFile(`public${candidate}`);
+      return candidate === path ? Buffer.concat([bytes, Buffer.from('replacement test')]) : bytes;
+    },
+  });
+  assert.notEqual(changed.version, feed.version);
+  assert.notEqual(changed.artists['chris de burgh'].url, feed.artists['chris de burgh'].url);
+  for (const [artist, entry] of Object.entries(feed.artists)) {
+    if (artist !== 'chris de burgh') assert.deepEqual(changed.artists[artist], entry);
+  }
+});
 
 test('Elvis Blue Christmas override requires its exact verified recording', () => {
   assert.equal(elvisBlue.artist, 'Elvis Presley');
