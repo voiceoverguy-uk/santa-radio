@@ -149,14 +149,12 @@ export function appsMetadata(apps) {
   const url = absolute('/apps');
   return pageMetadata({
     path: '/apps',
-    title: 'Christmas Apps — Store Prices & Ratings | Santa Radio',
-    description: 'Explore Santa Radio’s Christmas apps, including music, Santa messages and festive games. See checked iOS and Amazon store links, prices and store ratings.',
+    title: 'Christmas Apps — App Store Downloads | Santa Radio',
+    description: 'Explore Santa Radio’s Christmas apps, including music, Santa messages and festive games. Find App Store and Amazon Appstore download links and device showcases.',
     collection: true,
     crumbs: appsBreadcrumbs,
-    // Store ratings are displayed with attribution, NOT republished as our
-    // AggregateRating: Google's review guidelines prohibit aggregating ratings
-    // from other websites. Without eligible first-party reviews, retain only
-    // catalogue markup (even when store identity and price are verified).
+    // Third-party store ratings are not eligible first-party reviews.
+    // Retain catalogue-only markup without app offers or aggregate ratings.
     nodes: [{
       '@type': 'ItemList',
       '@id': `${url}#list`,

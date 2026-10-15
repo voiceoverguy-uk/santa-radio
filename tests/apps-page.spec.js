@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { appDownloads, obsoleteStoreCopy } from './fixtures/apps-downloads.js';
 
 const slideLabels = ['Radio', 'Artists', 'MugShots', 'Tracker'];
 async function openSlideshow(page) {
@@ -139,26 +140,86 @@ test('an unloaded next screenshot never replaces the ready image', async ({ page
 
 test('Apps has six complete sections, real local images and app-specific downloads', async ({ page }) => {
   await page.goto('/apps');
-  const titles = ['Santa Radio App', 'Santa Voicemail', 'Santa Messages', 'Christmas Radio', 'Santa Text', 'Santa Dash'];
-  const ids = ['1021183593', '586387813', '1062532143', '1157967613', '1024535991', '1057048397'];
-  const amazon = ['B0158MYRBM', 'B00QFP4B18', 'B019MRFDDK', 'B01M18XUXV'];
   await expect(page.locator('.app-section')).toHaveCount(6);
   await expect(page.getByRole('heading', { name: 'Sleeps til Santa', exact: true })).toHaveCount(0);
   await expect(page.locator('a[href*="949843943"], a[href*="B00R2PU0BA"]')).toHaveCount(0);
-  for (let i = 0; i < titles.length; i++) {
-    const section = page.locator('section').filter({ has: page.getByRole('heading', { name: titles[i], exact: true }) });
+  for (const app of appDownloads) {
+    const section = page.getByRole('region', { name: app.title, exact: true });
     await expect(section).toHaveCount(1);
     const image = section.locator('img').first();
     await image.scrollIntoViewIfNeeded();
     await expect.poll(() => image.evaluate(el => el.naturalWidth)).toBeGreaterThan(0);
     expect(await image.getAttribute('src')).toMatch(/^\//);
     await expect(section.locator('.feature-item')).toHaveCount(6);
-    await expect(section.getByRole('link', { name: /on iOS/i })).toHaveAttribute('href', new RegExp(ids[i]));
-    if (amazon[i]) await expect(section.getByRole('link', { name: /on Amazon/i })).toHaveAttribute('href', new RegExp(amazon[i]));
-    else await expect(section.getByRole('link', { name: /on Amazon/i })).toHaveCount(0);
+    await expect(section.getByRole('link', { name: /Download on the App Store/ })).toHaveAttribute('href', app.apple);
+    if (app.amazon) await expect(section.getByRole('link', { name: /Download on Amazon Appstore/ })).toHaveAttribute('href', app.amazon);
+    else await expect(section.getByRole('link', { name: /Download on Amazon Appstore/ })).toHaveCount(0);
   }
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test('store panels are removed, copy and metadata are accurate and downloads work by pointer and keyboard at all widths', async ({ page }) => {
+  test.setTimeout(120000);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/apps');
+  await page.getByRole('button', { name: 'Reject optional cookies', exact: true }).click();
+  await expect(page.locator('.app-store-card, .app-store-details')).toHaveCount(0);
+  await expect(page.locator('main')).not.toContainText(obsoleteStoreCopy);
+  await expect(page.locator('.apps-hero-desc')).toContainText('Check the linked stores for current pricing.');
+  await expect(page).toHaveTitle('Christmas Apps — App Store Downloads | Santa Radio');
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /App Store and Amazon Appstore download links and device showcases/);
+  await expect(page.locator('.app-store-notice')).toContainText('its Appstore continues on Fire devices');
+  await expect(page.locator('.app-store-notice')).toContainText('not interactive website controls');
+
+  // Test real new-tab activation without depending on external stores' uptime.
+  await page.context().route(/https?:\/\/(apps\.apple\.com|itunes\.apple\.com|www\.amazon\.(com|co\.uk))\//, route =>
+    route.fulfill({ contentType: 'text/html', body: '<title>Store listing destination</title>' }));
+  for (const width of [1280, 390, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const app of appDownloads) {
+      const section = page.locator(`#${app.id}`);
+      const links = section.locator('.app-dl-btn');
+      await expect(links).toHaveCount(app.amazon ? 2 : 1);
+      const stores = [['the App Store', app.apple], ...(app.amazon ? [['Amazon Appstore', app.amazon]] : [])];
+      for (const [index, [store, href]] of stores.entries()) {
+        const link = links.nth(index);
+        await expect(link).toHaveText(`Download on ${store}`);
+        await expect(link).toHaveAttribute('href', href);
+        await expect(link).toHaveAttribute('target', '_blank');
+        await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+        // Tab from each link to its successor (or back) exercises actual keyboard focus.
+        await link.focus();
+        await page.keyboard.press('Shift+Tab');
+        await page.keyboard.press('Tab');
+        await expect(link).toBeFocused();
+        expect(await link.evaluate(el => getComputedStyle(el).outlineStyle)).toBe('solid');
+        const bounds = await link.boundingBox();
+        expect(bounds.height).toBeGreaterThanOrEqual(48);
+        expect(bounds.x).toBeGreaterThanOrEqual(0);
+        expect(bounds.x + bounds.width).toBeLessThanOrEqual(width);
+        for (const activate of [() => page.keyboard.press('Enter'), () => link.click()]) {
+          const opened = page.waitForEvent('popup');
+          await activate();
+          const popup = await opened;
+          await popup.waitForLoadState();
+          expect(popup.url()).toBe(href);
+          await popup.close();
+          await page.mouse.move(0, 0);
+        }
+      }
+      const gap = await section.evaluate(el => {
+        const heading = el.querySelector('.app-section-heading').getBoundingClientRect();
+        const layout = el.querySelector('.app-layout').getBoundingClientRect();
+        const buttons = el.querySelector('.app-download-btns').getBoundingClientRect();
+        return { content: layout.top - heading.bottom, buttons: layout.top - buttons.bottom };
+      });
+      expect(gap.content).toBeGreaterThanOrEqual(0);
+      expect(gap.content).toBeLessThanOrEqual(38);
+      expect(gap.buttons).toBeLessThanOrEqual(70);
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
 });
 
 test('Santa Text and Santa Voicemail show complete optimised owner artwork at desktop and phone widths', async ({ page }) => {

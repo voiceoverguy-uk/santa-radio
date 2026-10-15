@@ -131,16 +131,6 @@
   border-top: 1px solid #d4af3750;
 }
 
-.apps-page .app-store-details {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
-  gap: 16px;
-  max-width: 850px;
-  margin: 24px auto 0;
-  text-align: left;
-}
-
-.apps-page .app-store-card,
 .apps-page .app-store-notice {
   padding: 20px;
   border: 1px solid #d4af3750;
@@ -151,11 +141,8 @@
   overflow-wrap: anywhere;
 }
 
-.apps-page .app-store-card h3 { margin: 0 0 12px; font-size: 1rem; }
-.apps-page .app-store-card p,
 .apps-page .app-store-notice p { margin: 8px 0; }
 .apps-page .app-store-notice { margin-top: 24px; }
-.apps-page .app-store-details a,
 .apps-page .app-store-notice a { color: var(--gold-light); text-decoration: underline; }
 
 .apps-page .app-layout {

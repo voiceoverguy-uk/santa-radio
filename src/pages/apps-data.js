@@ -26,7 +26,7 @@ const voicemailFeatures = [
   feature('Playback', 'Playback your Childs message to\nhear what they asked Santa.', 'play'),
   feature('Santa Soundboard', 'Head Elf recorded Santa.\nPlay back some fun festive phrases.', 'sound'),
   feature('Send a message', 'Send a message to Santa and\nread other messages & replies.', 'message'),
-  feature('Download price', 'Check the verified store details above.\nPrices differ between platforms.', 'gift'),
+  feature('Download price', 'Check the linked stores\nfor current pricing.', 'gift'),
   feature('Santa Radio', 'You can also listen and enjoy\nSanta Radio direct from the app.', 'radio'),
 ];
 
@@ -87,7 +87,7 @@ export const christmasApps = [
       feature("Find your child's name", 'Santa will then play a\npersonal message for your child.', 'search'),
       feature('Share your message', 'Share your childs message on\nsocial media or by email.', 'share'),
       feature('Over 600 names', "Loaded with top boys & girls names.\nSubmit yours if it's missing.", 'users'),
-      feature('Download price', 'Check the verified store details above.\nPrices differ between platforms.', 'gift'),
+      feature('Download price', 'Check the linked stores\nfor current pricing.', 'gift'),
       feature('Schedule a message', 'Surprise? Set to ring your child in\n10, 30, or 60 seconds.', 'clock'),
       feature('Santa Radio', 'Listen to Santa Radio live\ndirect from our App.', 'radio'),
     ],
@@ -123,7 +123,7 @@ export const christmasApps = [
       feature('Record a Message', 'Record a message. You may hear it\non Santa’s Little Helpers Show.', 'microphone'),
       feature('Share', "Share a photo of who's playing\non your favourite social media.", 'camera'),
       feature('Send a message', 'Send a message from the app and Santa will reply in 24 hours.', 'message'),
-      feature('Download price', 'Check the verified store details above.\nPrices differ between platforms.', 'gift'),
+      feature('Download price', 'Check the linked stores\nfor current pricing.', 'gift'),
       feature('Background player', 'Save battery life. The app can play\nthe music in the background.', 'sound'),
     ],
   },
@@ -161,7 +161,7 @@ export const christmasApps = [
       feature('Collect the pies', 'Jump over the buildings\nand collect the mince pies. Easy?', 'pie'),
       feature('Links to other apps', 'It also links out to our other apps.\nHave you got them all yet?', 'link'),
       feature('Play with friends', 'Login to Game Centre and play with friends.\nWhy not send a challenge to others?', 'users'),
-      feature('Download price', 'The verified UK iOS listing\nshows a £0.99 download price.', 'gift'),
+      feature('Download price', 'Check the linked App Store\nfor current pricing.', 'gift'),
     ],
   },
 ];

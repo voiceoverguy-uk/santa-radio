@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { homeMetadata, appsMetadata, appsBreadcrumbs, messageMetadata, messageBreadcrumbs, pageMetadata, shareImage, shareImageAlt, brandImage, trackerMetadata, ORIGIN } from '../src/seo/catalogue.js';
-import { appStoreVerification, storeCheckedAt, storeCheckedLabel, amazonDeviceSource } from '../src/pages/apps-store-verification.js';
+import { amazonDeviceSource } from '../src/pages/apps-store-verification.js';
+import { appDownloads, obsoleteStoreCopy } from '../tests/fixtures/apps-downloads.js';
 
 const readGraphs = html => [...html.matchAll(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)]
   .flatMap(match => JSON.parse(match[1])['@graph']);
@@ -112,9 +113,9 @@ test('Apps schema matches the visible catalogue, breadcrumbs and real screenshot
   const graphs = readGraphs(html);
   const list = graphs.find(node => node['@type'] === 'ItemList');
   const sections = [...html.matchAll(/<section id="([^"]+)" class="app-section"/g)].map(match => match[1]);
-  assert.equal(list.numberOfItems, 6);
-  assert.equal(list.numberOfItems, sections.length);
-  assert.deepEqual(list.itemListElement.map(item => new URL(item.url).hash.slice(1)), sections);
+  assert.equal(sections.length, 6);
+  assert.equal(list.numberOfItems, 7);
+  assert.deepEqual(list.itemListElement.map(item => new URL(item.url).hash.slice(1)), [...sections, 'santa-radio-mac']);
   for (const [index, item] of list.itemListElement.entries()) {
     assert.equal(item.position, index + 1);
     assert.ok(html.includes(`>${item.name}</h2>`));
@@ -130,7 +131,7 @@ test('Apps schema matches the visible catalogue, breadcrumbs and real screenshot
   assert.ok(!JSON.stringify(graphs).match(/aggregateRating|SoftwareApplication|MobileApplication|InStock|Sleeps til Santa/i));
 });
 
-test('generated Apps HTML visibly attributes every store snapshot without importing ratings into schema', async () => {
+test('generated Apps HTML retains downloads and guidance without store panels or ratings schema', async () => {
   // React SSR inserts hydration separators between text nodes; these are not
   // visible content and must not affect checks of what readers actually see.
   const html = (await readFile('dist/apps/index.html', 'utf8')).replace(/<!--[\s\S]*?-->/g, '');
@@ -138,24 +139,18 @@ test('generated Apps HTML visibly attributes every store snapshot without import
   assert.ok(!html.includes('Free Christmas Apps'));
   assert.ok(!html.includes('100% FREE'));
   assert.ok(html.includes(`href="${amazonDeviceSource}"`));
-  assert.ok(html.includes('installation and playback on your device have not been tested'));
-  assert.ok(html.includes('not reviews collected by Santa Radio'));
-  assert.ok(html.includes('Screenshots and feature descriptions are from the legacy catalogue'));
-  assert.equal(Object.values(appStoreVerification).flat().length, 10);
-  for (const [id, stores] of Object.entries(appStoreVerification)) {
-    const section = html.match(new RegExp(`<section id="${id}"[\\s\\S]*?<\\/section>`))?.[0];
-    assert.ok(section, `missing section ${id}`);
-    for (const store of stores) {
-      assert.ok(section.includes(`href="${store.source}"`), `${id} source not visible`);
-      assert.ok(section.includes(`>${store.name}</strong>`), `${id} store identity not visible`);
-      assert.ok(section.includes(`Developer: ${store.developer}`));
-      assert.ok(section.includes(`>${store.price}</strong>`));
-      assert.ok(section.includes(`>${store.rating} out of 5</strong>`));
-      assert.ok(section.includes(`${store.ratingCount} ratings`));
-      assert.ok(section.includes(`(${store.region})</a>`));
-      assert.ok(section.includes(`<time dateTime="${storeCheckedAt}">${storeCheckedLabel}</time>`));
-      if (store.minimumIOS) assert.ok(section.includes(`Requires iOS ${store.minimumIOS} or later`));
-      if (store.inAppPurchases) assert.ok(section.includes('In-app purchases'));
+  assert.ok(html.includes('This does not confirm that every app works on every Fire device.'));
+  assert.ok(html.includes('Other app screenshots and catalogue feature descriptions are from the legacy catalogue'));
+  assert.doesNotMatch(html, /app-store-details|app-store-card/);
+  assert.doesNotMatch(html, obsoleteStoreCopy);
+  for (const app of appDownloads) {
+    const section = html.match(new RegExp(`<section id="${app.id}"[\\s\\S]*?<\\/section>`))?.[0];
+    assert.ok(section, `missing section ${app.id}`);
+    assert.ok(section.includes(`href="${app.apple}"`));
+    assert.ok(section.includes('Download on the App Store</a>'));
+    if (app.amazon) {
+      assert.ok(section.includes(`href="${app.amazon}"`));
+      assert.ok(section.includes('Download on Amazon Appstore</a>'));
     }
   }
   const originalDestinations = [
@@ -178,7 +173,7 @@ test('generated Apps HTML visibly attributes every store snapshot without import
 
 test('store snapshots do not turn verified or unverified apps into ineligible rich-result candidates', () => {
   const entries = [
-    { id: 'santaradio', title: 'Santa Radio', alt: 'Radio', image: '/radio.jpg', store: appStoreVerification.santaradio },
+    { id: 'santaradio', title: 'Santa Radio', alt: 'Radio', image: '/radio.jpg', store: [{ rating: '4.6', ratingCount: '1.1K', price: 'Free' }] },
     { id: 'unverified', title: 'Unverified', alt: 'Unknown', image: '/unknown.jpg' },
   ];
   const graph = appsMetadata(entries).graph;

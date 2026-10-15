@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
+import { appDownloads, obsoleteStoreCopy } from '../tests/fixtures/apps-downloads.js';
 
 // Run after npm run build; exercise the actual Node production server, not Vite.
 test('built Apps HTML starts on Christmas Radio image 1 and serves all four WebP assets', async t => {
@@ -20,6 +21,34 @@ test('built Apps HTML starts on Christmas Radio image 1 and serves all four WebP
   const response = await get('/apps');
   assert.equal(response.status, 200);
   const html = await response.text();
+  const visibleHtml = html.replace(/<!--[\s\S]*?-->/g, '');
+  assert.doesNotMatch(visibleHtml, /app-store-card|app-store-details/);
+  assert.doesNotMatch(visibleHtml, obsoleteStoreCopy);
+  assert.match(visibleHtml, /Check the linked stores for current pricing/);
+  assert.match(visibleHtml, /<title[^>]*>Christmas Apps — App Store Downloads \| Santa Radio<\/title>/);
+  assert.match(visibleHtml, /App Store and Amazon Appstore download links and device showcases/);
+  assert.match(visibleHtml, /its Appstore continues on Fire devices/);
+  assert.match(visibleHtml, /Other app screenshots and catalogue feature descriptions are from the legacy catalogue/);
+  assert.equal((html.match(/class="app-section"/g) || []).length, 6);
+  for (const app of appDownloads) {
+    const appHtml = visibleHtml.match(new RegExp(`<section id="${app.id}"[\\s\\S]*?<\\/section>`))?.[0];
+    assert.ok(appHtml, `${app.title} must remain in initial HTML`);
+    assert.ok(appHtml.includes(app.title));
+    assert.equal((appHtml.match(/class="feature-item"/g) || []).length, 6);
+    const links = [...appHtml.matchAll(/<a\b[^>]*>[\s\S]*?<\/a>/g)].map(match => match[0]);
+    assert.equal(links.length, app.amazon ? 2 : 1);
+    for (const [index, [store, href]] of [['the App Store', app.apple], ...(app.amazon ? [['Amazon Appstore', app.amazon]] : [])].entries()) {
+      assert.ok(links[index].includes(`href="${href}"`));
+      assert.match(links[index], /target="_blank" rel="noopener noreferrer"/);
+      assert.ok(links[index].includes(`Download on ${store}</a>`));
+    }
+  }
+  const graph = JSON.parse(html.match(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/)[1]);
+  assert.doesNotMatch(JSON.stringify(graph), /aggregateRating|SoftwareApplication|MobileApplication|"offers"/);
+  const mac = visibleHtml.match(/<section id="santa-radio-mac"[\s\S]*?<\/section>/)?.[0];
+  assert.match(mac, /Coming soon/);
+  assert.doesNotMatch(mac, /<a\b/);
+  assert.match(visibleHtml, /Find Santa Radio in the App Store on your Apple TV/);
   const section = html.match(/<section id="christmasradio"[\s\S]*?<\/section>/)?.[0];
   assert.ok(section, 'Christmas Radio must be in the initial HTML');
   assert.match(section, /aria-label="Christmas Radio promotional images"/);
