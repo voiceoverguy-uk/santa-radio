@@ -161,6 +161,37 @@ test('Apps has six complete sections, real local images and app-specific downloa
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
+test('Santa Text and Santa Voicemail show complete optimised owner artwork at desktop and phone widths', async ({ page }) => {
+  await page.goto('/apps');
+  await page.getByRole('button', { name: 'Reject optional cookies', exact: true }).click();
+  for (const id of ['santatext', 'santavoicemail']) {
+    const section = page.locator(`#${id}`);
+    const image = section.locator('img');
+    const src = await image.getAttribute('src');
+    expect(src).toMatch(new RegExp(`^/.*santa-${id === 'santatext' ? 'text' : 'voicemail'}-promo.*\\.webp`));
+    await expect(image).toHaveAttribute('width', '851');
+    await expect(image).toHaveAttribute('height', '1849');
+    await expect(image).toHaveAttribute('alt', /promotional artwork/);
+    const response = await page.request.get(src);
+    expect(response.ok()).toBe(true);
+    expect(response.headers()['content-type']).toMatch(/image\/webp/);
+    expect((await response.body()).length).toBeLessThan(500000);
+    for (const width of [1280, 390, 320]) {
+      await page.setViewportSize({ width, height: 1000 });
+      await image.scrollIntoViewIfNeeded();
+      await expect.poll(() => image.evaluate(el => [el.naturalWidth, el.naturalHeight])).toEqual([851, 1849]);
+      const bounds = await image.boundingBox();
+      expect(bounds.width / bounds.height).toBeCloseTo(851 / 1849, 3);
+      expect(bounds.x).toBeGreaterThanOrEqual(0);
+      expect(bounds.x + bounds.width).toBeLessThanOrEqual(width);
+      expect(await image.evaluate(el => getComputedStyle(el).objectFit)).toBe('contain');
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    }
+    await image.screenshot({ path: `generated-artifacts/apps-${id}-new-artwork.jpg` });
+  }
+  await expect(page.locator('.app-store-notice')).toContainText('Santa Text and Santa Voicemail also use owner-supplied promotional artwork');
+});
+
 test('Mac app listing shows its supplied interface and Coming soon without a store link', async ({ page }) => {
   await page.goto('/apps');
   const section = page.getByRole('region', { name: 'Santa Radio for Mac' });

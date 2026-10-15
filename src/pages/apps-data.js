@@ -4,10 +4,13 @@ import santaRadioMugshots from '../assets/apps/santa-radio-ios-mugshots.webp';
 import santaRadioTracker from '../assets/apps/santa-radio-ios-tracker.webp';
 import santaRadioWatchControls from '../assets/apps/santa-radio-watch-controls.webp';
 import santaRadioWatchArtwork from '../assets/apps/santa-radio-watch-artwork.webp';
-import santaVoicemail from '../assets/apps/santa-voicemail.png';
+import santaVoicemail from '../assets/apps/santa-voicemail-promo.webp';
 import santaMessages from '../assets/apps/santa-messages.png';
-import christmasRadio from '../assets/apps/christmas-radio.png';
-import santaText from '../assets/apps/santa-text.png';
+import christmasRadio from '../assets/apps/christmas-radio-promo-1.webp';
+import christmasRadioPromo2 from '../assets/apps/christmas-radio-promo-2.webp';
+import christmasRadioPromo3 from '../assets/apps/christmas-radio-promo-3.webp';
+import christmasRadioPromo4 from '../assets/apps/christmas-radio-promo-4.webp';
+import santaText from '../assets/apps/santa-text-promo.webp';
 import santaDash from '../assets/apps/santa-dash.png';
 import santaRadioMac from '../assets/apps/santa-radio-mac.webp';
 
@@ -59,9 +62,9 @@ export const christmasApps = [
     title: 'Santa Voicemail',
     subtitle: 'Leave Santa a voicemail message.',
     image: santaVoicemail,
-    alt: 'Santa Voicemail app screen for leaving and playing back a message for Santa.',
-    width: 750,
-    height: 1334,
+    alt: 'Santa Voicemail promotional artwork with Santa, a phone showing Call Santa, Call the Workshop, Naughty List Hotline and Santa Soundboard, and a Download Now banner.',
+    width: 851,
+    height: 1849,
     downloads: downloads(
       'https://itunes.apple.com/us/app/santa-voicemail/id586387813',
       'http://www.amazon.com/App-Style-Ltd-Santa-Voicemail/dp/B00QFP4B18',
@@ -94,9 +97,23 @@ export const christmasApps = [
     title: 'Christmas Radio',
     subtitle: 'A simpler version of our app, Christmas music 24/7 365 days a year',
     image: christmasRadio,
-    alt: 'Christmas Radio app with festive lights, a music playback button, current song artwork and recording controls.',
-    width: 750,
-    height: 1334,
+    alt: 'Christmas Radio promotional image: From the makers of Santa Radio, with Santa beside a phone showing Naughty & Nice by Sia and a 24/7 Festive Favourites banner.',
+    width: 851,
+    height: 1849,
+    // Numbered owner originals are all 851 × 1849; derivatives preserve the full artwork.
+    screenshots: [
+      { label: 'From the makers of Santa Radio', image: christmasRadio, width: 851, height: 1849, alt: 'Christmas Radio promotional image: From the makers of Santa Radio, with Santa beside a phone showing Naughty & Nice by Sia and a 24/7 Festive Favourites banner.' },
+      { label: 'Over 100k downloads', image: christmasRadioPromo2, width: 851, height: 1849, alt: 'Christmas Radio promotional image: Over 100k Downloads, The UK’s festive soundtrack, with a phone showing Christmas Tree Farm by Taylor Swift among festive lights and presents.' },
+      { label: 'Christmas music 365 days a year', image: christmasRadioPromo3, width: 851, height: 1849, alt: 'Christmas Radio promotional image: Christmas Music 365 Days a Year, Live radio, fun jingles and festive magic, with a phone showing Christmas Tree Farm by Taylor Swift.' },
+      { label: 'Make it feel like Christmas', image: christmasRadioPromo4, width: 851, height: 1849, alt: 'Christmas Radio promotional image: Make It Feel Like Christmas, with a phone settings screen showing AirPlay, Snowfall, Blizzard and Festive lights options surrounded by Christmas lights.' },
+    ],
+    slideshow: {
+      heading: 'Christmas Radio promotional images',
+      regionLabel: 'Christmas Radio promotional images',
+      selectionLabel: 'Choose a Christmas Radio promotional image',
+      imageType: 'promotional image',
+      note: 'Owner-supplied Christmas Radio promotional images, not Amazon app screenshots. Playback and settings controls shown in the artwork are not interactive website controls.',
+    },
     downloads: downloads(
       'https://itunes.apple.com/gb/app/christmas-radio-uk/id1157967613',
       'https://www.amazon.co.uk/VoiceoverGuy-Ltd-Christmas-Radio/dp/B01M18XUXV',
@@ -115,9 +132,9 @@ export const christmasApps = [
     title: 'Santa Text',
     subtitle: 'Text Santa and the Father Christmas auto-bot will reply.',
     image: santaText,
-    alt: 'Santa Text app showing a text conversation with Santa.',
-    width: 750,
-    height: 1334,
+    alt: 'Santa Text promotional artwork with Santa and a reindeer beside a phone showing Message Santa, Santa Postcards and Just Ask Santa, surrounded by festive lights and presents.',
+    width: 851,
+    height: 1849,
     downloads: downloads('https://itunes.apple.com/gb/app/santa-text/id1024535991'),
     features: [
       feature('Text Santa', 'You can have a full text chat\nwith Santa. Watch him reply.', 'message'),

@@ -6,6 +6,7 @@ export default function AppScreenshots({
   heading = 'Current iOS app',
   regionLabel = 'Santa Radio current iOS app screenshots',
   selectionLabel = 'Choose an iOS screenshot',
+  imageType = 'screenshot',
   note = 'iOS screenshots only; the Amazon app’s appearance may differ.',
   maxWidth = 285,
 }) {
@@ -93,7 +94,7 @@ export default function AppScreenshots({
               key={slide.label}
               type="button"
               className="app-screenshots-dot"
-              aria-label={`Show ${slide.label} screenshot`}
+              aria-label={`Show ${slide.label} ${imageType}`}
               aria-pressed={active === index}
               disabled={!ready[index]}
               onClick={() => setActive(index)}
@@ -105,7 +106,7 @@ export default function AppScreenshots({
         </button>
       </div>
       <p className="app-screenshots-note">{note}</p>
-      {Object.keys(failed).length > 0 && <p role="status" className="app-screenshots-note">Some screenshots could not load. Please reload to try again.</p>}
+      {Object.keys(failed).length > 0 && <p role="status" className="app-screenshots-note">Some {imageType}s could not load. Please reload to try again.</p>}
     </figure>
   );
 }
