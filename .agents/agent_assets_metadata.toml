@@ -252,3 +252,17 @@ mtime_ms = 1792078362624
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/9bfbc5ac-6146-492f-a6b7-a9767d58565f/a9f160f6-95de-48f3-8682-4ef0d8b4ee0a"
 storage_version_token = "1792078400349518"
 content_type = "image/png"
+
+[[outputs]]
+id = "b1YuvuQ_w30onLsC_rBVw"
+uri = "file://attached_assets/santa-dash-treasures-advert.png"
+type = "image"
+title = "Santa Radio Advert — Santa Dash Treasures Screen"
+description = "Newly recreated landscape PNG, 2208 × 1242 pixels. Static artwork using genuine Santa Radio branding and the supplied app screenshot, with a prominent App Store badge."
+logical_id = "17337716-0c6c-4291-ade5-f8f6883e75bd"
+content_hash = "sha256:fb2f57fc4419dea43238f742dc11c3aa9fe7cb7f4b4132126ad3d4081628c3c8"
+size = 2667267
+mtime_ms = 1792095987319
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/17337716-0c6c-4291-ade5-f8f6883e75bd/bb92a54a-64da-43e7-baef-7970ee0bfeec"
+storage_version_token = "1792096041565342"
+content_type = "image/png"
