@@ -28,7 +28,7 @@ export async function openMessageDesk(page, { mockNames = true, path = '/free-sa
     } });
   });
   await page.goto(path);
-  const reject = page.getByRole('button', { name: 'Reject optional cookies', exact: true });
+  const reject = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await reject.isVisible()) await reject.click();
   await fillAccessForm(page);
   await page.getByRole('button', { name: 'Get my free Santa message' }).evaluate(

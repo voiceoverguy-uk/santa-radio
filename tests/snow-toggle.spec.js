@@ -124,7 +124,7 @@ test('mobile touch snow switch works with reduced motion', async ({ browser }) =
   try {
     const page = await context.newPage();
     await page.goto(`${test.info().project.use.baseURL}/`);
-    await page.getByRole('button', { name: 'Reject optional cookies', exact: true }).tap();
+    await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).tap();
     await expectSnowState(page, false);
     await snowSwitch(page).tap();
     await expectSnowState(page, true);
@@ -143,7 +143,7 @@ for (const width of [1280, 390]) {
     await page.goto('/apps');
     const toggle = page.getByRole('contentinfo').getByRole('switch', { name: 'Snow', exact: true });
     await expectSnowState(page, true);
-    await page.getByRole('button', { name: 'Reject optional cookies', exact: true }).click();
+    await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
     await toggle.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
     await toggle.focus();
     await page.keyboard.press('Tab');
@@ -174,7 +174,7 @@ for (const width of [1280, 390]) {
 test('phone footer switch remains reachable above compact and expanded radio', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/apps');
-  await page.getByRole('button', { name: 'Reject optional cookies', exact: true }).click();
+  await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
   const toggle = snowSwitch(page);
   const dock = page.locator('.radio-dock');
   for (const expanded of [false, true]) {

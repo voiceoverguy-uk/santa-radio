@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import './PrivacyPolicy.css';
+import CookiePolicySection from './CookiePolicySection.jsx';
 
 export default function PrivacyPolicy() {
   return <main className="privacy-page">
@@ -11,10 +12,11 @@ export default function PrivacyPolicy() {
     <article className="privacy-content">
       <p className="eyebrow">Santa Radio</p>
       <h1>Privacy Policy</h1>
-      <p className="privacy-date">Updated <time dateTime="2026-10-14">14 October 2026</time></p>
+      <p className="privacy-date">Updated <time dateTime="2026-10-20">20 October 2026</time></p>
       <p>The Santa Radio website and Christmas Radio UK app are operated by VoiceoverGuy Ltd. For privacy questions, email <a href="mailto:santa@santaradio.co.uk">santa@santaradio.co.uk</a>.</p>
       <p>This notice covers the current Santa Radio website and the newly rebuilt Christmas Radio UK native app for iPhone and iPad, version 35.0. The app-specific section below explains how that version handles information. Website-only features, including forms, Santa audio messages, embedded videos and optional analytics or marketing cookies, are separate from the native app. External services may also have their own privacy notices.</p>
       <p>You can browse and listen without an account. We do not sell personal data.</p>
+      <CookiePolicySection />
 
       <section aria-labelledby="christmas-radio-privacy">
         <h2 id="christmas-radio-privacy">Christmas Radio UK — native iPhone and iPad app, version 35.0</h2>
@@ -67,26 +69,13 @@ export default function PrivacyPolicy() {
 
       <h2>Using the website</h2>
       <p>The current website does not offer microphone recording, camera capture or selfie-upload features. Images and feature descriptions on the Apps page are not requests for access to your device. This statement is about the website, not the permissions or recording features of separate apps.</p>
-      <p>Your browser remembers your snow preference in local storage and the minimised player setting in session storage. The snow preference remains until changed or cleared; the player preference normally ends with the tab session. You can clear these through browser settings.</p>
-      <p>The message desk also remembers a non-sensitive access flag in session storage for the current tab session. Your adult names and email address are not stored in browser storage or added to page addresses. If session storage is unavailable, access lasts while you browse in the tab but refreshing may ask you to submit again.</p>
-      <p>To manage the free-message allowance, local storage remembers only how many messages you have created and when the 10-minute wait ends. This works across visits and tabs in the same browser until cleared; it does not track your identity or IP address. Browsers without tab-lock support also use a temporary, randomly identified request lock in IndexedDB, valid for up to three minutes, to prevent simultaneous message requests. If local storage is unavailable, the allowance is remembered only while the page stays open.</p>
       <h2>Requests for missing Santa names</h2>
       <p>If you choose “Request this name”, we save the requested first name, request dates and a request count in a private database so approved Santa Radio staff can review which recordings listeners would like. We do not attach your adult contact details or email address to the request, and this does not sign you up for marketing or promise that a recording will be made.</p>
       <p>A necessary request-control cookie lasts up to seven days. Short-lived, randomly identified technical records help prevent repeated requests being counted twice and limit excessive submissions. These records stop being used after at most seven days and are removed during subsequent request processing. The requested-name list is kept while needed to review and plan recordings. Only authorised staff can view it. Staff sign-in is provided by Clerk, which processes staff account details and authentication cookies under <a href="https://clerk.com/legal/privacy" target="_blank" rel="noopener noreferrer">its privacy notice</a>. Visitors do not need a Clerk account to request a name.</p>
       <p>Hosting services, including Vercel, process technical information such as IP addresses and browser/request details to deliver and protect the website. Radio playback connects to Citrus3. YouTube supplies video embeds, Google Fonts supplies fonts, and Brevo processes general enquiries and song submissions and, separately, adult details submitted for message access. Some images load from our legacy website. Each recipient may receive technical connection information when its resource is requested, even without an account or optional analytics cookies.</p>
-      <p>These services receive connection information and may use cookies or similar technologies under their own privacy notices. The homepage loads a muted YouTube player automatically; song and karaoke pages can also load YouTube embeds automatically.</p>
-
-      <h2>Optional analytics cookies — Google Analytics</h2>
-      <p>Only after you accept analytics cookies, we load Google Analytics to understand visits and which pages are used. Google receives page-view information, connection information such as your IP address, browser/device details and cookie identifiers. Google Analytics does not log or store individual IP addresses.</p>
-      <p>Our lawful basis is consent. Analytics and Meta marketing have separate choices: accepting one does not require accepting the other. Rejecting either does not stop you browsing, listening or making Santa messages. Our page-view tracking excludes query strings and fragments from page and referrer addresses, and does not send names, email addresses, form contents or message-maker selections. Google advertising signals and advertising personalisation are disabled in our tag.</p>
-      <p>If you accept, Google may set first-party cookies such as <code>_ga</code> and <code>_ga_FGL2HBXZ92</code>, configured here to expire after up to 180 days. See <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google’s Privacy Policy</a> for its processing, retention and international-transfer information. Analytics report retention also depends on the settings in our Google Analytics account.</p>
-      <p>You can withdraw analytics consent using <strong>Cookie settings</strong> in the footer. This disables further Google Analytics collection on this site and removes accessible Google Analytics cookies. It does not undo information already sent to Google.</p>
-
-      <h2>Optional marketing cookies — Meta Pixel</h2>
-      <p>Only after you accept marketing cookies, we load the Meta Pixel to measure page visits and the effectiveness of our Facebook and Instagram adverts, and to help Meta show relevant advertising. Meta can receive visited page addresses, connection information such as your IP address, browser/device details and advertising identifiers. This may link your visit to a Meta account.</p>
-      <p>Our lawful basis for this optional advertising tracking is consent. Rejecting it does not stop you browsing, listening or making Santa messages. We send page-view events only; we do not add names, email addresses, message-maker selections or form contents to the pixel, and automatic event detection and advanced matching are not enabled.</p>
-      <p>Your choice is remembered in local storage for up to 180 days, then we ask again. If you accept, Meta may set advertising cookies such as <code>_fbp</code> and <code>_fbc</code>. See <a href="https://www.facebook.com/privacy/policy/" target="_blank" rel="noopener noreferrer">Meta’s Privacy Policy</a> and <a href="https://www.facebook.com/policies/cookies/" target="_blank" rel="noopener noreferrer">Cookie Policy</a> for its processing, retention and international-transfer information.</p>
-      <p>You can change your choices or withdraw consent at any time using <strong>Cookie settings</strong> in the footer. Rejecting marketing stops further pixel events and removes accessible Meta advertising cookies from this website; it does not undo information already sent to Meta. Your analytics and marketing choices are remembered for up to 180 days, then we ask again. These choices do not control the separate radio, video or font services described above.</p>
+      <p>Optional YouTube and TuneIn embeds are controlled by the external-media choice described above.
+        Ordinary hosting, live-radio and requested-feature connections still disclose technical request
+        information even when optional cookies are declined.</p>
 
       <h2>Links and external services</h2>
       <p>Links to app stores, social networks, music platforms and personalised video services take you to separate services with their own privacy notices. Check those notices before sharing information. An email link opens your chosen email service; it does not submit a form on this website.</p>

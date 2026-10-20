@@ -6,7 +6,7 @@ const slideLabels = ['Radio', 'Artists', 'MugShots', 'Tracker'];
 test('Apps introduction is uncluttered on desktop and phones while navigation and SEO remain intact', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/apps');
-  await page.getByRole('button', { name: 'Reject optional cookies', exact: true }).click();
+  await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
   for (const width of [1280, 390, 320]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/apps');
@@ -192,7 +192,7 @@ test('store panels are removed, copy and metadata are accurate and downloads wor
   test.setTimeout(120000);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/apps');
-  await page.getByRole('button', { name: 'Reject optional cookies', exact: true }).click();
+  await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
   await expect(page.locator('.app-store-card, .app-store-details')).toHaveCount(0);
   await expect(page.locator('main')).not.toContainText(obsoleteStoreCopy);
   await expect(page.locator('.apps-hero-desc')).toContainText('Check the linked stores for current pricing.');
@@ -261,7 +261,7 @@ test('store panels are removed, copy and metadata are accurate and downloads wor
 
 test('Santa Text, Santa Voicemail and Santa Messages show complete optimised owner artwork at desktop and phone widths', async ({ page }) => {
   await page.goto('/apps');
-  await page.getByRole('button', { name: 'Reject optional cookies', exact: true }).click();
+  await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
   await page.getByRole('button', { name: 'Minimise radio player', exact: true }).click();
   for (const [id, filename, intrinsicWidth, intrinsicHeight] of [
     ['santatext', 'santa-text', 851, 1849],
@@ -318,7 +318,7 @@ test('Santa Text, Santa Voicemail and Santa Messages show complete optimised own
 
 test('Mac app listing shows complete promotional artwork and Coming soon without a store link', async ({ page }) => {
   await page.goto('/apps');
-  await page.getByRole('button', { name: 'Reject optional cookies', exact: true }).click();
+  await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
   await page.getByRole('button', { name: 'Minimise radio player', exact: true }).click();
   await expect(page.locator('.radio-dock')).toHaveClass(/is-minimized/);
   const section = page.getByRole('region', { name: 'Santa Radio for Mac' });
@@ -376,7 +376,7 @@ test('Mac app listing shows complete promotional artwork and Coming soon without
 
 test('Apple TV has its own free big-screen section and a responsive supplied screenshot', async ({ page }) => {
   await page.goto('/apps');
-  await page.getByRole('button', { name: 'Reject optional cookies', exact: true }).click();
+  await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
   const section = page.getByRole('region', { name: 'Available FREE on Apple TV' });
   await expect(section).toBeVisible();
   await expect(section).toContainText('Find Santa Radio in the App Store on your Apple TV.');

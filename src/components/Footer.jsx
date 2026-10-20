@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useRadio } from './RadioProvider.jsx';
 import './Footer.css';
+import { openCookieSettings } from '../privacy/cookieConsent.js';
 
 export default function Footer() {
   const { effects, setEffects } = useRadio();
@@ -26,8 +27,7 @@ export default function Footer() {
         <span>&middot;</span>
         <Link to="/privacy-policy">Privacy Policy</Link>
         <span>&middot;</span>
-        <button className="cookie-settings-link" onClick={() =>
-          window.dispatchEvent(new Event('santaradio:cookie-settings'))}>Cookie settings</button>
+        <button type="button" className="cookie-settings-link" onClick={openCookieSettings}>Cookie settings</button>
       </div>
       <div className="footer-effects">
         <button

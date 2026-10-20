@@ -54,7 +54,7 @@ for (const path of ['/', '/apps']) {
   test(`larger shared navigation fits desktop, tablet, mobile and enlarged text on ${path}`, async ({ page }) => {
     test.setTimeout(60000);
     await page.goto(path);
-    await page.getByRole('button', { name: 'Reject optional cookies', exact: true }).click();
+    await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
     await page.evaluate(() => document.fonts.ready);
     const nav = page.getByRole('navigation', { name: 'Main navigation' });
     await expect(nav.getByRole('link', { name: 'Home', exact: true })).toHaveCSS('font-size', '15.2px');
@@ -86,7 +86,7 @@ test('larger navigation preserves keyboard, active routes, snow and shared radio
     };
   });
   await page.goto('/');
-  await page.getByRole('button', { name: 'Reject optional cookies', exact: true }).click();
+  await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
   const nav = page.getByRole('navigation', { name: 'Main navigation' });
   await expect(nav.getByRole('link', { name: 'Home', exact: true })).toHaveAttribute('aria-current', 'page');
   await page.getByRole('contentinfo').getByRole('switch', { name: 'Snow', checked: true }).click();
@@ -127,7 +127,7 @@ test('responsive homepage, matching typography, effects and mobile navigation', 
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('/');
-  await page.getByRole('button', { name: 'Reject optional cookies', exact: true }).click();
+  await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
   await expect(page.locator('h1')).toContainText('North Pole');
   await expect(page.locator('h1')).toHaveCSS('font-family', /Cinzel/);
   await expect(page.locator('.hero-actions .btn-red')).toHaveCSS('font-family', /Inter/);

@@ -1,85 +1,131 @@
-/* North Pole consent panel — intentionally scoped to the consent region. */
+/* Compact North Pole consent panel; the radio player remains unobstructed. */
 .marketing-consent {
-  --consent-ink: #f3eddc;
-  --consent-muted: #c1cbbb;
+  --consent-ink: #f5f0df;
+  --consent-muted: #c6d2c8;
   --consent-gold: #e2c66b;
-  --consent-border: rgb(226 198 107 / 38%);
+  --consent-green: #153628;
+  --consent-line: rgb(226 198 107 / 42%);
   position: fixed;
   z-index: 1200;
   inset-inline: max(12px, env(safe-area-inset-left)) max(12px, env(safe-area-inset-right));
-  bottom: calc(var(--audio-player-height, 88px) + max(12px, env(safe-area-inset-bottom)));
-  width: min(100% - 24px, 720px);
-  margin-inline: auto;
-  box-sizing: border-box;
+  bottom: calc(var(--audio-player-height, 88px) + max(10px, env(safe-area-inset-bottom)));
+  width: min(100% - 24px, 680px);
   max-height: calc(100dvh - var(--audio-player-height, 88px) - 24px);
-  overflow-y: auto;
-  display: flex;
+  margin-inline: auto;
+  padding: 16px 18px 13px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(250px, 0.9fr);
   align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  padding: 20px 22px;
+  column-gap: 22px;
+  row-gap: 10px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  box-sizing: border-box;
   color: var(--consent-ink);
-  background: linear-gradient(135deg, #173b2c 0%, #0b281e 100%);
-  border: 1px solid var(--consent-border);
+  background: linear-gradient(135deg, #1b4231 0%, #102d22 100%);
+  border: 1px solid var(--consent-line);
   border-radius: 14px;
-  box-shadow: 0 12px 36px rgb(3 16 11 / 42%);
-  animation: consent-arrive 260ms ease-out both;
+  box-shadow: 0 10px 30px rgb(3 16 11 / 38%);
+  animation: consent-arrive 220ms ease-out both;
 }
 
 .marketing-consent *,
 .marketing-consent *::before,
-.marketing-consent *::after {
-  box-sizing: border-box;
-}
+.marketing-consent *::after { box-sizing: border-box; }
 
-.marketing-consent-copy {
-  min-width: 0;
-  flex: 1 1 auto;
-}
+.marketing-consent-copy { min-width: 0; }
 
 .marketing-consent-copy h2 {
-  margin: 0 0 5px;
+  margin: 0 0 4px;
   color: var(--consent-gold);
   font-family: 'Cinzel', Georgia, serif;
-  font-size: 1.05rem;
+  font-size: 1.02rem;
   font-weight: 400;
-  line-height: 1.3;
+  line-height: 1.28;
 }
 
 .marketing-consent-copy p {
+  max-width: 54ch;
   margin: 0;
-  max-width: 52ch;
   color: var(--consent-muted);
-  font: 400 0.82rem/1.55 'Inter', sans-serif;
+  font: 400 0.875rem/1.45 'Inter', sans-serif;
   overflow-wrap: anywhere;
 }
 
 .marketing-consent-copy a {
   color: var(--consent-gold);
   text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.marketing-consent-copy a:hover { color: var(--consent-ink); }
+
+.marketing-consent-actions {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.marketing-consent-actions button {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px 11px;
+  border: 1px solid var(--consent-gold);
+  border-radius: 999px;
+  color: var(--consent-ink);
+  background: #254c3a;
+  font: 500 0.85rem/1.25 'Inter', sans-serif;
+  text-align: center;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  transition: background-color 150ms ease, transform 150ms ease;
+}
+.marketing-consent-actions button:hover { background: #356348; transform: translateY(-1px); }
+.marketing-consent-actions button:active { transform: translateY(0); }
+
+.marketing-consent-links {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  padding-top: 1px;
+  color: var(--consent-muted);
+  font: 400 0.73rem/1.4 'Inter', sans-serif;
+}
+.marketing-consent-links a,
+.marketing-consent-links button {
+  color: var(--consent-gold);
+  text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
 }
-
-.marketing-consent-copy a:hover {
-  color: var(--consent-ink);
-}
-
-.marketing-consent-options {
-  min-width: 0;
-  margin: 12px 0 0;
+.marketing-consent-links button {
+  margin: 0;
   padding: 0;
   border: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
 }
+.marketing-consent-links a:hover,
+.marketing-consent-links button:hover { color: var(--consent-ink); }
 
+.marketing-consent-options {
+  grid-column: 1 / -1;
+  min-width: 0;
+  margin: 0;
+  padding: 10px 0 2px;
+  border: 0;
+  border-top: 1px solid rgb(226 198 107 / 22%);
+}
 .marketing-consent-options legend {
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   padding: 0;
   color: var(--consent-gold);
-  font: 500 0.72rem/1.3 'Inter', sans-serif;
-  letter-spacing: 0.035em;
+  font: 500 0.73rem/1.35 'Inter', sans-serif;
 }
-
 .marketing-consent-options label {
   display: flex;
   align-items: flex-start;
@@ -89,7 +135,6 @@
   color: var(--consent-ink);
   cursor: pointer;
 }
-
 .marketing-consent-options input[type='checkbox'] {
   flex: 0 0 18px;
   width: 18px;
@@ -98,81 +143,62 @@
   accent-color: var(--consent-gold);
   cursor: pointer;
 }
-
 .marketing-consent-options label span {
   display: block;
   min-width: 0;
   font: 400 0.76rem/1.35 'Inter', sans-serif;
   overflow-wrap: anywhere;
 }
-
 .marketing-consent-options label strong {
   display: block;
-  margin-bottom: 2px;
+  margin-bottom: 1px;
   color: var(--consent-ink);
   font-size: 0.78rem;
   font-weight: 600;
 }
-
 .marketing-consent-options label small {
   display: block;
   color: var(--consent-muted);
   font: inherit;
 }
 
-.marketing-consent-actions {
-  flex: 0 1 220px;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-content: center;
-  gap: 9px;
-  max-width: 100%;
+/* Settings use the same panel, with the choices and controls in a clear sequence. */
+.marketing-consent.is-settings {
+  grid-template-columns: minmax(0, 1fr) minmax(245px, 0.82fr);
+  align-items: start;
+  row-gap: 11px;
+  padding-top: 17px;
+  padding-bottom: 15px;
 }
-
-.marketing-consent-actions button {
-  min-height: 42px;
-  min-width: 0;
-  width: 100%;
-  padding: 9px 10px;
-  border: 1px solid var(--consent-gold);
-  border-radius: 999px;
-  color: #f3eddc;
-  background: #254c3a;
-  font: 500 0.78rem/1.2 'Inter', sans-serif;
-  text-align: center;
-  cursor: pointer;
-  overflow-wrap: anywhere;
-  transition: background-color 160ms ease, color 160ms ease, transform 160ms ease;
+.marketing-consent.is-settings .marketing-consent-copy { grid-column: 1 / -1; }
+.marketing-consent.is-settings .marketing-consent-copy h2 { font-size: 1.04rem; }
+.marketing-consent.is-settings .marketing-consent-copy p { max-width: 68ch; }
+.marketing-consent.is-settings .marketing-consent-options {
+  grid-column: 1;
+  grid-row: 2 / span 2;
+  border-top: 0;
+  padding: 0;
 }
-
-.marketing-consent-actions button:nth-child(3) {
+.marketing-consent.is-settings .marketing-consent-actions {
+  grid-column: 2;
+  grid-row: 2;
+}
+.marketing-consent.is-settings .marketing-consent-links {
+  grid-column: 2;
+  grid-row: 3;
+  justify-content: flex-end;
+}
+.marketing-consent.is-settings .marketing-consent-actions button:last-child {
   grid-column: 1 / -1;
 }
 
-.marketing-consent-actions button:hover {
-  background: #356348;
-  transform: translateY(-1px);
-}
-
-.marketing-consent-actions button:active {
-  transform: translateY(0);
-}
-
-/* Equal visual weight is deliberate: neither consent choice is preselected. */
-.marketing-consent-actions button:focus-visible,
-.marketing-consent-copy a:focus-visible,
-.marketing-consent-options input[type='checkbox']:focus-visible,
+.marketing-consent :focus-visible,
 .footer .cookie-settings-link:focus-visible {
   outline: 3px solid #f4d97d;
   outline-offset: 3px;
 }
-
-.marketing-consent-actions button:focus:not(:focus-visible),
-.marketing-consent-copy a:focus:not(:focus-visible),
-.marketing-consent-options input[type='checkbox']:focus:not(:focus-visible),
-.footer .cookie-settings-link:focus:not(:focus-visible) {
-  outline: none;
-}
+.marketing-consent :focus:not(:focus-visible),
+.footer .cookie-settings-link:focus:not(:focus-visible) { outline: none; }
 
 .footer .cookie-settings-link {
   display: inline;
@@ -186,81 +212,57 @@
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
   cursor: pointer;
-  transition: color 160ms ease;
+  transition: color 150ms ease;
 }
-
-.footer .cookie-settings-link:hover {
-  color: var(--gold-light, #e2c66b);
-}
+.footer .cookie-settings-link:hover { color: var(--gold-light, #e2c66b); }
 
 @keyframes consent-arrive {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @media (max-width: 620px) {
-  .marketing-consent {
-    bottom: calc(var(--audio-player-height, 88px) + max(8px, env(safe-area-inset-bottom)));
+  .marketing-consent,
+  .marketing-consent.is-settings {
+    inset-inline: max(10px, env(safe-area-inset-left)) max(10px, env(safe-area-inset-right));
     width: min(100% - 20px, 520px);
-    padding: 16px;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 13px;
+    max-height: calc(100dvh - var(--audio-player-height, 88px) - 18px);
+    padding: 14px;
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 10px;
   }
-
-  .marketing-consent-options {
-    flex: 0 1 auto;
+  .marketing-consent.is-settings .marketing-consent-copy,
+  .marketing-consent.is-settings .marketing-consent-options,
+  .marketing-consent.is-settings .marketing-consent-actions,
+  .marketing-consent.is-settings .marketing-consent-links {
+    grid-column: 1;
+    grid-row: auto;
   }
-
-  .marketing-consent-copy h2 {
-    font-size: 0.98rem;
+  .marketing-consent-copy h2 { font-size: 0.98rem; }
+  .marketing-consent-copy p { font-size: 0.875rem; }
+  .marketing-consent-actions { gap: 7px; }
+  .marketing-consent-actions button { padding-inline: 8px; }
+  .marketing-consent-links { justify-content: center; gap: 14px; }
+  .marketing-consent.is-settings .marketing-consent-options {
+    padding-top: 8px;
+    border-top: 1px solid rgb(226 198 107 / 22%);
   }
-
-  .marketing-consent-copy p {
-    font-size: 0.78rem;
-  }
-
-  .marketing-consent-actions {
-    flex: 0 1 auto;
-    gap: 8px;
-  }
-
-  .marketing-consent-actions button {
-    min-width: 0;
-    width: 100%;
-    min-height: 44px;
-    padding-inline: 9px;
-  }
-
+  .marketing-consent.is-settings .marketing-consent-links { justify-content: flex-end; }
 }
 
-@media (max-width: 360px) {
-  .marketing-consent {
+@media (max-width: 350px) {
+  .marketing-consent,
+  .marketing-consent.is-settings {
     inset-inline: 8px;
     width: calc(100% - 16px);
-    padding: 14px;
+    padding: 12px;
   }
-
-  .marketing-consent-actions button {
-    font-size: 0.72rem;
-    padding-inline: 6px;
-  }
-
-  .marketing-consent-options label {
-    gap: 7px;
-  }
-
-  .marketing-consent-options label span,
-  .marketing-consent-options label small {
-    font-size: 0.72rem;
-  }
+  .marketing-consent-actions button { padding-inline: 5px; font-size: 0.8rem; }
+  .marketing-consent-options label { gap: 7px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .marketing-consent,
   .marketing-consent-actions button,
-  .footer .cookie-settings-link {
-    animation: none;
-    transition: none;
-  }
+  .footer .cookie-settings-link { animation: none; transition: none; }
 }

@@ -6,7 +6,7 @@ async function open(page, waitUntil = 'load') {
   await page.clock.install();
   await page.clock.pauseAt(new Date());
   await page.goto('/apps', { waitUntil });
-  await page.getByRole('button', { name: 'Reject optional cookies', exact: true }).click();
+  await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
   await page.mouse.move(0, 0);
   return page.getByRole('region', { name: regionName, exact: true });
 }

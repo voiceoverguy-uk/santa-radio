@@ -1,56 +1,56 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import {
-  CONSENT_KEY, LEGACY_CONSENT_KEY, CONSENT_DURATION, SETTINGS_EVENT,
-  readConsentRecord, savedConsent, saveConsent,
-} from '../privacy/cookieConsent.js';
+import { EMPTY_CHOICES, SETTINGS_EVENT } from '../privacy/cookieConsent.js';
+import { useCookieConsent } from '../privacy/CookieConsentProvider.jsx';
 import { trackPageView, revokeMarketing } from '../privacy/marketingConsent.js';
 import { trackAnalyticsPageView, revokeAnalytics } from '../privacy/googleAnalytics.js';
 import './MarketingConsent.css';
 
+const allChoices = { analytics: true, marketing: true, media: true };
+const toDraft = choice => ({
+  analytics: choice?.analytics === true, marketing: choice?.marketing === true,
+  media: choice?.media === true,
+});
+
 export default function MarketingConsent() {
   const { pathname } = useLocation();
-  const [ready, setReady] = useState(false);
-  const [choice, setChoice] = useState(null);
+  const { ready, choice, chooseConsent, storageWarning, dismissStorageWarning } = useCookieConsent();
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [storageWarning, setStorageWarning] = useState(false);
-  const [draft, setDraft] = useState({ analytics: false, marketing: false });
+  const [draft, setDraft] = useState(EMPTY_CHOICES);
+  const [playerClearance, setPlayerClearance] = useState(88);
   const heading = useRef(null);
   const opener = useRef(null);
+  const settingsTrigger = useRef(null);
 
   useEffect(() => {
-    const stored = savedConsent();
-    setChoice(stored);
-    setDraft({ analytics: stored?.analytics === true, marketing: stored?.marketing === true });
-    setReady(true);
-    const open = () => {
-      opener.current = document.activeElement;
-      setSettingsOpen(true);
-    };
-    const synchronise = event => {
-      if ([CONSENT_KEY, LEGACY_CONSENT_KEY, null].includes(event.key)) {
-        const next = event.key === null ? null : event.key === CONSENT_KEY
-          ? readConsentRecord(event.newValue) : savedConsent();
-        if (!next?.marketing) revokeMarketing();
-        if (!next?.analytics) revokeAnalytics();
-        setChoice(next);
-        setDraft({ analytics: next?.analytics === true, marketing: next?.marketing === true });
-      }
-    };
-    window.addEventListener(SETTINGS_EVENT, open);
-    window.addEventListener('storage', synchronise);
+    const player = document.querySelector('.radio-dock');
+    if (!player) return;
+    const measure = () => setPlayerClearance(Math.ceil(window.innerHeight - player.getBoundingClientRect().top));
+    const observer = new ResizeObserver(measure);
+    observer.observe(player);
+    window.addEventListener('resize', measure);
+    measure();
     return () => {
-      window.removeEventListener(SETTINGS_EVENT, open);
-      window.removeEventListener('storage', synchronise);
+      observer.disconnect();
+      window.removeEventListener('resize', measure);
     };
   }, []);
 
   useEffect(() => {
+    const open = () => {
+      opener.current = document.activeElement;
+      setSettingsOpen(true);
+    };
+    window.addEventListener(SETTINGS_EVENT, open);
+    return () => window.removeEventListener(SETTINGS_EVENT, open);
+  }, []);
+
+  useEffect(() => {
     if (settingsOpen) {
-      setDraft({ analytics: choice?.analytics === true, marketing: choice?.marketing === true });
+      setDraft(toDraft(choice));
       heading.current?.focus();
     }
-  }, [settingsOpen]);
+  }, [settingsOpen, choice]);
 
   useEffect(() => {
     if (!ready) return;
@@ -60,80 +60,76 @@ export default function MarketingConsent() {
     else revokeAnalytics();
   }, [ready, choice, pathname]);
 
-  useEffect(() => {
-    if (!ready || choice === null || storageWarning) return;
-    let timer;
-    {
-      const checkExpiry = () => {
-        const remaining = choice.savedAt + CONSENT_DURATION - Date.now();
-        if (remaining <= 0) {
-          revokeMarketing();
-          revokeAnalytics();
-          setChoice(null);
-          setDraft({ analytics: false, marketing: false });
-        } else {
-          timer = window.setTimeout(checkExpiry, Math.min(remaining, 2147483647));
-        }
-      };
-      checkExpiry();
-    }
-    return () => window.clearTimeout(timer);
-  }, [ready, choice, storageWarning]);
-
-  const choose = next => {
-    if (!next.marketing) revokeMarketing();
-    if (!next.analytics) revokeAnalytics();
-    const { record, saved } = saveConsent(next);
-    setStorageWarning(!saved);
-    setChoice(record);
-    setDraft(next);
+  const closeSettings = () => {
     setSettingsOpen(false);
-    opener.current?.focus();
+    requestAnimationFrame(() => {
+      if (opener.current?.isConnected) opener.current.focus();
+      else settingsTrigger.current?.focus();
+    });
   };
-
+  const choose = next => {
+    chooseConsent(next);
+    closeSettings();
+  };
   const complete = choice !== null && typeof choice.analytics === 'boolean';
   if (!ready || (complete && !settingsOpen && !storageWarning)) return null;
   if (complete && !settingsOpen && storageWarning) {
-    return <section className="marketing-consent" aria-label="Cookie preference status" aria-live="polite">
+    return <section className="marketing-consent" style={{ '--audio-player-height': `${playerClearance}px` }}
+      aria-label="Cookie preference status" aria-live="polite">
       <p>Your choice applies to this visit. Your browser could not save it for future visits.</p>
-      <button onClick={() => { setStorageWarning(false); }}>Dismiss</button>
+      <button type="button" onClick={dismissStorageWarning}>Dismiss</button>
     </section>;
   }
 
   return (
-    <section className="marketing-consent" role="region" aria-labelledby="marketing-consent-title">
+    <section className={`marketing-consent${settingsOpen ? ' is-settings' : ''}`}
+      style={{ '--audio-player-height': `${playerClearance}px` }}
+      role="region" aria-labelledby="marketing-consent-title"
+      onKeyDown={event => { if (settingsOpen && event.key === 'Escape') closeSettings(); }}>
       <div className="marketing-consent-copy">
-        <h2 id="marketing-consent-title" ref={heading} tabIndex={-1}>Your cookie choices</h2>
-        <p>Choose separately whether to allow Google Analytics and Meta marketing cookies.
-          You can reject both and still browse, listen and make Santa messages.
-          {' '}<Link to="/privacy-policy">Privacy Policy</Link></p>
-        <fieldset className="marketing-consent-options">
-          <legend>Cookie choices</legend>
-          <label>
-            <input type="checkbox" checked={draft.analytics} onChange={event =>
-              setDraft(current => ({ ...current, analytics: event.target.checked }))} />
-            <span><strong>Analytics cookies</strong><small>Google Analytics measures visits and which pages are used.</small></span>
-          </label>
-          <label>
-            <input type="checkbox" checked={draft.marketing} onChange={event =>
-              setDraft(current => ({ ...current, marketing: event.target.checked }))} />
-            <span><strong>Marketing cookies</strong><small>Meta measures adverts and helps show relevant adverts on Facebook and Instagram.</small></span>
-          </label>
-        </fieldset>
-        {settingsOpen && choice && <>
-          <p>Current choice: analytics cookies {choice.analytics === null ? 'not yet chosen' : choice.analytics ? 'accepted' : 'rejected'}.</p>
-          <p>Current choice: marketing cookies {choice.marketing ? 'accepted' : 'rejected'}.</p>
-        </>}
-        {!complete && choice && <p>Your earlier Meta choice is kept. Google Analytics needs a separate choice.</p>}
+        <h2 id="marketing-consent-title" ref={heading} tabIndex={-1}>
+          {settingsOpen ? 'Cookie settings' : 'A quick word about cookies'}
+        </h2>
+        {settingsOpen ? <>
+          <p>Necessary storage keeps your choices and requested features working. Optional choices are yours;
+            you can still browse, listen and access Santa messages without them.</p>
+          <fieldset className="marketing-consent-options">
+            <legend>Optional choices</legend>
+            <label>
+              <input type="checkbox" checked={draft.analytics} onChange={event =>
+                setDraft(current => ({ ...current, analytics: event.target.checked }))} />
+              <span><strong>Analytics cookies</strong><small>Google Analytics helps us understand visits and which pages are used.</small></span>
+            </label>
+            <label>
+              <input type="checkbox" checked={draft.marketing} onChange={event =>
+                setDraft(current => ({ ...current, marketing: event.target.checked }))} />
+              <span><strong>Marketing cookies</strong><small>Meta measures adverts and helps show relevant advertising on Facebook and Instagram.</small></span>
+            </label>
+            <label>
+              <input type="checkbox" checked={draft.media} onChange={event =>
+                setDraft(current => ({ ...current, media: event.target.checked }))} />
+              <span><strong>External media</strong><small>YouTube videos and the optional TuneIn player can use cookies and device information for playback, analytics and advertising. Not needed for our live radio.</small></span>
+            </label>
+          </fieldset>
+          <p>Saved for up to 180 days. Turning a choice off stops future optional activity here; it cannot undo data already sent.</p>
+        </> : <p>Necessary storage keeps things working. Optional Google Analytics helps us understand visits;
+          Meta measures adverts and helps show relevant advertising. Accept all also enables YouTube and TuneIn media.</p>}
+        {!complete && choice && <p>Your earlier Meta choice is kept. Analytics and external media need their own permission.</p>}
       </div>
       <div className="marketing-consent-actions">
-        <button onClick={() => choose({ analytics: true, marketing: true })}>Accept all</button>
-        <button onClick={() => choose({ analytics: false, marketing: false })}>Reject optional cookies</button>
-        <button onClick={() => choose(draft)}>Save choices</button>
-        {settingsOpen && complete && <button onClick={() => {
-          setSettingsOpen(false);
-          opener.current?.focus();
-        }}>Close settings</button>}
+        {settingsOpen
+          ? <button type="button" onClick={() => choose(draft)}>Save choices</button>
+          : <button type="button" onClick={() => choose(allChoices)}>Accept all</button>}
+        <button type="button" onClick={() => choose(EMPTY_CHOICES)}>Decline optional cookies</button>
+      </div>
+      <div className="marketing-consent-links">
+        {settingsOpen
+          ? <button type="button" onClick={closeSettings}>Close settings</button>
+          : <button type="button" ref={settingsTrigger} aria-expanded={false} onClick={event => {
+            opener.current = event.currentTarget;
+            setSettingsOpen(true);
+          }}>Cookie settings</button>}
+        <Link to="/privacy-policy">Privacy Policy</Link>
       </div>
     </section>
   );

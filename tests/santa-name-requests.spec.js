@@ -100,7 +100,7 @@ test('staff routes are noindex and the live API rejects anonymous readers', asyn
   expect(route.headers()['x-robots-tag']).toContain('noindex');
   expect(await route.text()).toContain('noindex, nofollow');
   await page.goto('/request-names');
-  const reject = page.getByRole('button', { name: 'Reject optional cookies', exact: true });
+  const reject = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await reject.isVisible()) await reject.click();
   await expect(page.getByRole('link', { name: 'Sign in to view requests', exact: true })).toBeVisible({ timeout: 15000 });
   await expect(page.getByRole('table')).toHaveCount(0);

@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('all soundboard buttons share the gold glow without changing size', async ({ page }) => {
   await page.goto('/');
-  const rejectCookies = page.getByRole('button', { name: 'Reject optional cookies', exact: true });
+  const rejectCookies = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await rejectCookies.isVisible()) await rejectCookies.click();
   const buttons = page.locator('.soundboard-btn');
   await expect(buttons).toHaveCount(20);

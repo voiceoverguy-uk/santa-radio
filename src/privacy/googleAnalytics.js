@@ -4,6 +4,7 @@ let initialised = false;
 let active = false;
 let lastPath = null;
 let previousPage = '';
+let scriptLoaded = false;
 
 function cleanUrl(value) {
   try {
@@ -40,6 +41,7 @@ export function trackAnalyticsPageView(pathname) {
     script.id = 'santaradio-google-analytics';
     script.async = true;
     script.src = `https://www.googletagmanager.com/gtag/js?id=${MEASUREMENT_ID}`;
+    script.onload = () => { scriptLoaded = true; };
     script.onerror = () => console.warn('Google Analytics could not load; analytics may be blocked.');
     document.head.appendChild(script);
   } else if (!active) {
@@ -64,6 +66,17 @@ export function revokeAnalytics() {
   // Google documents this flag as disabling collection, including automatic
   // events. Set it BEFORE updating consent to avoid denied-state pings.
   window[DISABLE_KEY] = true;
+  // A slow-loading tag must not replay page views or a grant queued before
+  // withdrawal. Keep configuration/default-denied commands for a later opt-in.
+  const queue = window.dataLayer;
+  if (!scriptLoaded && Array.isArray(queue)) {
+    for (let index = queue.length - 1; index >= 0; index--) {
+      const command = queue[index];
+      if ((command?.[0] === 'event' && command?.[2]?.send_to === MEASUREMENT_ID) ||
+          (command?.[0] === 'consent' && command?.[1] === 'update' &&
+           command?.[2]?.analytics_storage === 'granted')) queue.splice(index, 1);
+    }
+  }
   if (active && window.gtag) window.gtag('consent', 'update', {
     analytics_storage: 'denied', ad_storage: 'denied',
     ad_user_data: 'denied', ad_personalization: 'denied',

@@ -1,3 +1,5 @@
+import ExternalMediaConsent from './ExternalMediaConsent.jsx';
+
 export default function SongVideo({ song, className, title }) {
   if (!song.youtube) return null;
 
@@ -14,12 +16,14 @@ export default function SongVideo({ song, className, title }) {
 
   return (
     <div className={className}>
+      <ExternalMediaConsent provider="YouTube" href={`https://www.youtube.com/watch?v=${song.youtube}`}>
       <iframe width="100%" height="315" loading="lazy"
         src={`https://www.youtube.com/embed/${song.youtube}`}
         title={title || `${song.artist} - ${song.song}`}
         frameBorder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen />
+      </ExternalMediaConsent>
     </div>
   );
 }

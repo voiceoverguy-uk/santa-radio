@@ -19,7 +19,7 @@ async function mockSong(page, json = { success: true }, status = 200) {
 }
 async function openForm(page, mode = 'song') {
   await page.goto(mode === 'song' ? '/submit-a-song?mode=song' : '/submit-a-song');
-  const reject = page.getByRole('button', { name: 'Reject optional cookies', exact: true });
+  const reject = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await reject.isVisible()) await reject.click();
 }
 async function fillSong(page, criteria = true) {

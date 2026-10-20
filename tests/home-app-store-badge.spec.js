@@ -12,7 +12,7 @@ test.beforeEach(async ({ context, page }) => {
     json: { available: false, current: null, upcoming: [] },
   }));
   await page.goto('/', { waitUntil: 'domcontentloaded' });
-  const reject = page.getByRole('button', { name: 'Reject optional cookies', exact: true });
+  const reject = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await reject.isVisible()) await reject.click();
 });
 

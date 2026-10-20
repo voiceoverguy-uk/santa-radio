@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import './Links.css';
+import { useCookieConsent } from '../privacy/CookieConsentProvider.jsx';
+import ExternalMediaConsent from '../components/ExternalMediaConsent.jsx';
 
 const partners = [
   { name: 'Xmas Radio', url: 'https://xmasradio.mobi', image: '/images/links/xmas-radio.png' },
@@ -21,6 +23,7 @@ const partners = [
 
 export default function Links() {
   const [tuneInLoaded, setTuneInLoaded] = useState(false);
+  const { mediaAllowed } = useCookieConsent();
 
   return (
     <main className="links-page">
@@ -58,10 +61,10 @@ export default function Links() {
           <p>Listen through TuneIn, here or on their website.</p>
           <p id="tunein-disclosure">
             Loading the player connects your browser to TuneIn, a third-party service that may use cookies and
-            receive information such as your IP address. It will not load until you choose to load it.
+            receive information such as your IP address. It will not load until you allow external media and choose to load it.
           </p>
           <div className="tunein-actions">
-            <button
+            {mediaAllowed && <button
               className="tunein-load"
               type="button"
               aria-describedby="tunein-disclosure"
@@ -69,11 +72,12 @@ export default function Links() {
               onClick={() => setTuneInLoaded((loaded) => !loaded)}
             >
               {tuneInLoaded ? 'Unload TuneIn player' : 'Load TuneIn player'}
-            </button>
+            </button>}
             <a className="tunein-link" href="https://tunein.com/radio/Santa-Radio-s252505/" target="_blank" rel="noopener noreferrer">
               Open Santa Radio on TuneIn <span className="external-note">(opens in a new tab)</span>
             </a>
           </div>
+          <ExternalMediaConsent provider="TuneIn" href="https://tunein.com/radio/Santa-Radio-s252505/" onEnable={() => setTuneInLoaded(true)}>
           {tuneInLoaded && (
             <iframe
               className="tunein-frame"
@@ -82,6 +86,7 @@ export default function Links() {
               allow="autoplay"
             />
           )}
+          </ExternalMediaConsent>
         </section>
         <section className="links-contact" aria-label="Get in touch">
           <p>

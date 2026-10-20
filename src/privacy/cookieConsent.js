@@ -4,14 +4,19 @@ export { CONSENT_DURATION };
 export const CONSENT_KEY = 'santaradio-cookie-consent-v2';
 export const LEGACY_CONSENT_KEY = LEGACY_KEY;
 export const SETTINGS_EVENT = 'santaradio:cookie-settings';
+export const EMPTY_CHOICES = Object.freeze({ analytics: false, marketing: false, media: false });
+export const openCookieSettings = () => window.dispatchEvent(new Event(SETTINGS_EVENT));
 
 export function readConsentRecord(value) {
   try {
     const record = JSON.parse(value);
     if (record?.version !== 2 || typeof record.analytics !== 'boolean' ||
-        typeof record.marketing !== 'boolean' || !Number.isFinite(record.savedAt) ||
+        typeof record.marketing !== 'boolean' ||
+        (record.media !== undefined && typeof record.media !== 'boolean') || !Number.isFinite(record.savedAt) ||
         record.savedAt > Date.now() || Date.now() - record.savedAt >= CONSENT_DURATION) return null;
-    return record;
+    // Existing valid preferences stay valid. A previously absent media choice
+    // is not permission to contact YouTube or TuneIn.
+    return { ...record, media: record.media === true };
   } catch { return null; }
 }
 
@@ -23,13 +28,14 @@ export function savedConsent() {
     const legacyValue = localStorage.getItem(LEGACY_KEY);
     const legacyChoice = readConsent(legacyValue);
     if (!legacyChoice) return null;
-    return { analytics: null, marketing: legacyChoice === 'accepted',
+    return { analytics: null, marketing: legacyChoice === 'accepted', media: false,
       savedAt: JSON.parse(legacyValue).savedAt };
   } catch { return null; }
 }
 
 export function saveConsent(choices) {
-  const record = { version: 2, analytics: choices.analytics, marketing: choices.marketing, savedAt: Date.now() };
+  const record = { version: 2, analytics: choices.analytics === true,
+    marketing: choices.marketing === true, media: choices.media === true, savedAt: Date.now() };
   try {
     localStorage.setItem(CONSENT_KEY, JSON.stringify(record));
     return { record, saved: true };

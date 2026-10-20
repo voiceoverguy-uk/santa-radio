@@ -23,6 +23,8 @@ test('all 50 supplied video changes match their exact song pages', () => {
 test('replacement embeds render and requested video removal preserves the song page', async ({ page }) => {
   await page.route('https://www.youtube.com/**', route => route.abort());
   await page.goto(replacements[0]['Page path'], { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('.song-youtube-embed iframe')).toHaveCount(0);
+  await page.locator('.song-youtube-embed').getByRole('button', { name: 'Enable external media', exact: true }).click();
   await expect(page.locator('.song-youtube-embed iframe')).toHaveAttribute('src', 'https://www.youtube.com/embed/WM7M7zSMJcw');
   const removed = replacements.find(row => row['NEW YT LINK'] === 'REMOVE VIDEO OPTION');
   await page.goto(removed['Page path'], { waitUntil: 'domcontentloaded' });

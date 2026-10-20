@@ -20,7 +20,7 @@ async function setup(page, { failPlayback = false } = {}) {
     },
   }));
   await page.goto('/', { waitUntil: 'domcontentloaded' });
-  const rejectCookies = page.getByRole('button', { name: 'Reject optional cookies', exact: true });
+  const rejectCookies = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await rejectCookies.isVisible()) await rejectCookies.click();
   return state;
 }

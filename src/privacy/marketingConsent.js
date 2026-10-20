@@ -66,6 +66,12 @@ export function trackPageView(pathname) {
 
 export function revokeMarketing() {
   lastPath = null;
+  // Do not replay queued grants/PageViews if withdrawal beats script loading.
+  if (Array.isArray(window.fbq?.queue)) {
+    window.fbq.queue = window.fbq.queue.filter(command =>
+      !(command[0] === 'trackSingle' && command[1] === PIXEL_ID) &&
+      !(command[0] === 'consent' && command[1] === 'grant'));
+  }
   if (window.fbq) window.fbq('consent', 'revoke');
   // Remove accessible first-party pixel cookies, including parent-domain cookies.
   const parts = window.location.hostname.split('.');

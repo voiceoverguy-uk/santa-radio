@@ -9,7 +9,7 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function prepare(page) {
   await page.route(/youtube\.com|googlevideo\.com|global\.citrus3\.com/, route => route.abort());
   await openMessageDesk(page, { mockNames: false });
-  const reject = page.getByRole('button', { name: 'Reject optional cookies', exact: true });
+  const reject = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await reject.isVisible()) await reject.click();
 }
 

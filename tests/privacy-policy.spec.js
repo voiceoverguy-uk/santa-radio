@@ -25,7 +25,7 @@ test('policy covers the confirmed native app separately from website marketing',
   const app = page.getByRole('region', { name: 'Christmas Radio UK — native iPhone and iPad app, version 35.0' });
   await expect(app).toBeVisible();
   await expect(article).not.toContainText('not separate apps');
-  await expect(article.locator('time')).toHaveAttribute('datetime', '2026-10-14');
+  await expect(article.locator('time')).toHaveAttribute('datetime', '2026-10-20');
   for (const text of [
     'Now Playing, Up Next and artist artwork',
     'does not require a mandatory account',
@@ -108,7 +108,8 @@ test('homepage and footer omit the promotion while the separate stories route re
   await expect(page.locator('footer').getByRole('link', { name: 'SantaGuy.co.uk', exact: true }))
     .toHaveAttribute('href', 'https://www.santaguy.co.uk');
   await expect(page.locator('footer').getByRole('link', { name: 'Questions? Email us', exact: true })).toHaveCount(0);
-  await expect(page.locator('.footer-links > :last-child')).toHaveText('Privacy Policy');
+  await expect(page.locator('.footer-links > :last-child')).toHaveText('Cookie settings');
+  await expect(page.locator('footer').getByRole('button', { name: 'Cookie settings', exact: true })).toBeVisible();
   await expect(page.locator('.footer-links a')).toHaveCount(8);
   await page.goto('/santa-stories');
   await page.reload();
@@ -137,7 +138,7 @@ test('keyboard footer navigation preserves active radio and volume in both direc
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(/\/privacy-policy$/);
   await expect(page.locator('.radio-dock').getByRole('button', { name: 'Pause Radio' })).toBeVisible();
-  await page.locator('footer').getByRole('link', { name: 'Santa Radio home' }).click();
+  await page.locator('footer').getByRole('link', { name: 'News', exact: true }).click();
   await expect(page.locator('h1')).toContainText('North Pole');
   expect(await page.evaluate(() => ({
     sameAudio: window.originalAudio === document.querySelector('audio'),

@@ -30,7 +30,7 @@ async function expectSquareArtwork(image, path) {
 async function visit(page, path) {
   await page.route(/youtube\.com|googlevideo\.com|global\.citrus3\.com/, route => route.abort());
   await page.goto(path, { waitUntil: 'domcontentloaded' });
-  const reject = page.getByRole('button', { name: 'Reject optional cookies', exact: true });
+  const reject = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await reject.isVisible()) await reject.click();
 }
 

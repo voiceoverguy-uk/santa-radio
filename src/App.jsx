@@ -25,11 +25,12 @@ import './north-pole-glow.css';
 import NotFound from './seo/NotFound.jsx';
 import StaticPageSeo from './seo/StaticPageSeo.jsx';
 import MarketingConsent from './components/MarketingConsent.jsx';
+import { CookieConsentProvider } from './privacy/CookieConsentProvider.jsx';
 import SantaStaffShell from './components/SantaStaffShell.jsx';
 
 function App({ Router = BrowserRouter, routerProps = {} }) {
   return (
-    <RadioProvider><SantaMessageAccessProvider><Router {...routerProps}>
+    <RadioProvider><SantaMessageAccessProvider><CookieConsentProvider><Router {...routerProps}>
       <a href="#page-content" className="skip-link">Skip to content</a>
       <Navbar />
       <StaticPageSeo />
@@ -60,7 +61,7 @@ function App({ Router = BrowserRouter, routerProps = {} }) {
       <Footer />
       <AudioPlayer />
       <MarketingConsent />
-    </Router></SantaMessageAccessProvider></RadioProvider>
+    </Router></CookieConsentProvider></SantaMessageAccessProvider></RadioProvider>
   );
 }
 export default App;

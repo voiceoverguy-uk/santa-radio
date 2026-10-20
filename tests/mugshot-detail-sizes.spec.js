@@ -20,7 +20,7 @@ async function compareProfiles(page, width, baseURL = '') {
       const photo = page.locator('.mugshot-detail-photo');
       await expect(photo).toHaveAttribute('src', profile.image);
       await expect.poll(() => photo.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
-      const rejectCookies = page.getByRole('button', { name: 'Reject optional cookies' });
+      const rejectCookies = page.getByRole('button', { name: 'Decline optional cookies' });
       if (await rejectCookies.isVisible()) await rejectCookies.click();
       const dimensions = await photo.evaluate(img => {
         const rect = img.getBoundingClientRect();

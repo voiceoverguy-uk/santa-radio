@@ -33,3 +33,17 @@ The owner confirmed Google Analytics Enhanced Measurement is switched off for th
 **Why:** The site sends its own navigation page views; Enhanced Measurement can independently send history-based views and automatic interaction events.
 
 **How to apply:** Keep this account-side setting off while using manual page views. Do not ask the owner to repeat the setup unless there is evidence that the setting changed.
+
+## Cookie experience and embedded providers
+
+Keep the first cookie choice compact, with optional details rather than compulsory settings.
+
+**Why:** The owner says: “We are a fun radio station and don't want to put people off.”
+
+**How to apply:** Preserve one-click accept and decline, equal treatment of saved acceptance and refusal, and uninterrupted core radio and separate Santa-message access.
+
+Media permission is not a promise that embedded providers are tracking-free when this site's analytics and marketing are off.
+
+**Why:** A real browser check showed YouTube contacting DoubleClick and setting its own cookies after media-only permission, with this site's Google Analytics and Meta still disabled. Third-party cookies remained after unloading the iframe because the site cannot delete another domain's cookies.
+
+**How to apply:** Clearly disclose embedded providers' own analytics and advertising in the media choice. Do not infer media permission from older tracker choices or promise that withdrawal erases third-party storage or already-sent data.

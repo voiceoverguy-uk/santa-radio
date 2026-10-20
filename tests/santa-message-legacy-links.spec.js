@@ -22,7 +22,7 @@ async function setup(page, records = [{ id: 'cooper', name: 'Cooper', downloadNa
 }
 
 async function openAccess(page) {
-  const reject = page.getByRole('button', { name: 'Reject optional cookies', exact: true });
+  const reject = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await reject.isVisible()) await reject.click();
   await fillAccessForm(page);
   const button = page.getByRole('button', { name: 'Get my free Santa message' });

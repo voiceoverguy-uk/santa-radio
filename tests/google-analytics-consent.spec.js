@@ -6,7 +6,9 @@ const id = 'G-FGL2HBXZ92';
 const analytics = page => page.getByRole('checkbox', { name: /Analytics cookies/ });
 const marketing = page => page.getByRole('checkbox', { name: /Marketing cookies/ });
 const save = page => page.getByRole('button', { name: 'Save choices', exact: true });
-const settings = page => page.getByRole('button', { name: 'Cookie settings', exact: true });
+const settings = page => page.locator('footer').getByRole('button', { name: 'Cookie settings', exact: true });
+const openInitialSettings = page => page.locator('.marketing-consent-links')
+  .getByRole('button', { name: 'Cookie settings', exact: true }).click();
 const views = page => page.evaluate(() => (window.dataLayer || [])
   .map(args => Array.from(args)).filter(args => args[0] === 'event' && args[1] === 'page_view'));
 const metaViews = page => page.evaluate(() => (window.__metaCalls || [])
@@ -38,11 +40,13 @@ async function mockTrackers(page) {
 test('neither optional tracker loads before choosing or after rejecting, including reload', async ({ page }) => {
   const requests = await mockTrackers(page);
   await page.goto('/privacy-policy');
+  await expect(page.getByRole('checkbox')).toHaveCount(0);
+  await openInitialSettings(page);
   await expect(analytics(page)).not.toBeChecked();
   await expect(marketing(page)).not.toBeChecked();
   expect(requests).toEqual({ google: [], meta: [], beacons: [] });
   await page.locator('.navbar').getByRole('link', { name: 'Apps', exact: true }).click();
-  await page.getByRole('button', { name: 'Reject optional cookies', exact: true }).click();
+  await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
   await page.reload();
   await expect(save(page)).toHaveCount(0);
   expect(requests).toEqual({ google: [], meta: [], beacons: [] });
@@ -52,6 +56,7 @@ test('neither optional tracker loads before choosing or after rejecting, includi
 test('analytics only loads one head tag, records the right property, and survives reload', async ({ page }) => {
   const requests = await mockTrackers(page);
   await page.goto('/privacy-policy');
+  await openInitialSettings(page);
   await analytics(page).check();
   // Ticking a box is not consent until saved.
   expect(requests.google).toHaveLength(0);
@@ -80,6 +85,7 @@ test('analytics only loads one head tag, records the right property, and survive
 test('marketing only never loads Google', async ({ page }) => {
   const requests = await mockTrackers(page);
   await page.goto('/privacy-policy');
+  await openInitialSettings(page);
   await marketing(page).check();
   await save(page).click();
   await expect.poll(() => metaViews(page)).toHaveLength(1);
@@ -153,6 +159,7 @@ test('old Meta acceptance does not silently grant analytics permission', async (
   await page.addInitScript(key => localStorage.setItem(key,
     JSON.stringify({ version: 1, choice: 'accepted', savedAt: Date.now() })), legacyKey);
   await page.goto('/privacy-policy');
+  await openInitialSettings(page);
   await expect(marketing(page)).toBeChecked();
   await expect(analytics(page)).not.toBeChecked();
   await expect.poll(() => metaViews(page)).toHaveLength(1);
@@ -171,10 +178,11 @@ test('expired or malformed new choices cannot revive old Meta acceptance', async
       marketing: true, savedAt: Date.now() - 181 * 86400000 }));
   }, { key, legacyKey });
   await page.goto('/privacy-policy');
-  await expect(save(page)).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Accept all', exact: true })).toBeVisible();
   expect(requests).toEqual({ google: [], meta: [], beacons: [] });
   await page.evaluate(key => localStorage.setItem(key, 'bad-json'), key);
   await page.reload();
+  await openInitialSettings(page);
   await expect(analytics(page)).not.toBeChecked();
   await expect(marketing(page)).not.toBeChecked();
   expect(requests).toEqual({ google: [], meta: [], beacons: [] });
@@ -183,6 +191,7 @@ test('expired or malformed new choices cannot revive old Meta acceptance', async
 test('another tab changing choices stops analytics in the original tab', async ({ page, context }) => {
   await mockTrackers(page);
   await page.goto('/privacy-policy');
+  await openInitialSettings(page);
   await analytics(page).check();
   await save(page).click();
   await expect.poll(() => views(page)).toHaveLength(1);
@@ -200,6 +209,7 @@ test('another tab changing choices stops analytics in the original tab', async (
 test('page view payloads exclude query strings and fragments', async ({ page }) => {
   await mockTrackers(page);
   await page.goto('/privacy-policy?email=should-not-be-tracked@example.test#private');
+  await openInitialSettings(page);
   await analytics(page).check();
   await save(page).click();
   await expect.poll(() => views(page)).toHaveLength(1);
@@ -216,6 +226,7 @@ test('blocked storage warns that the saved selections apply only to the visit', 
     Object.defineProperty(Storage.prototype, 'setItem', { value() { throw new Error('Blocked'); } });
   });
   await page.goto('/privacy-policy');
+  await openInitialSettings(page);
   await analytics(page).check();
   await save(page).click();
   await expect.poll(() => views(page)).toHaveLength(1);

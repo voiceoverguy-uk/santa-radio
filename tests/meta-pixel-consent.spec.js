@@ -25,7 +25,8 @@ async function mockPixel(page) {
 const views = page => page.evaluate(() => (window.__metaCalls || [])
   .filter(args => args[0] === 'trackSingle' && args[2] === 'PageView'));
 const accept = page => page.getByRole('button', { name: 'Accept all', exact: true });
-const reject = page => page.getByRole('button', { name: 'Reject optional cookies', exact: true });
+const reject = page => page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+const settings = page => page.locator('footer').getByRole('button', { name: 'Cookie settings', exact: true });
 
 test('no Meta request, script, beacon or events before consent, including navigation', async ({ page }) => {
   const requests = await mockPixel(page);
@@ -51,7 +52,7 @@ test('accept loads once, sends the correct pixel PageView and tracks SPA navigat
     .toEqual([['set', 'autoConfig', false, pixelId]]);
   await page.locator('.navbar').getByRole('link', { name: 'Apps', exact: true }).click();
   await expect.poll(async () => (await views(page)).length).toBe(2);
-  await page.getByRole('button', { name: 'Cookie settings', exact: true }).click();
+  await settings(page).click();
   await page.getByRole('button', { name: 'Close settings', exact: true }).click();
   expect((await views(page)).length).toBe(2);
   await page.reload();
@@ -68,9 +69,9 @@ test('reject persists through navigation and reload without loading Meta', async
   await expect(accept(page)).toHaveCount(0);
   expect(requests).toHaveLength(0);
   expect(await page.evaluate(() => typeof window.fbq)).toBe('undefined');
-  await page.getByRole('button', { name: 'Cookie settings', exact: true }).click();
-  await expect(page.getByText('Current choice: marketing cookies rejected.')).toBeVisible();
-  await expect(accept(page)).toBeVisible();
+  await settings(page).click();
+  await expect(page.getByRole('checkbox', { name: /Marketing cookies/ })).not.toBeChecked();
+  await expect(page.getByRole('button', { name: 'Save choices', exact: true })).toBeVisible();
 });
 
 test('withdrawal revokes consent, removes Meta cookies and stops further PageViews', async ({ page, context }) => {
@@ -79,7 +80,7 @@ test('withdrawal revokes consent, removes Meta cookies and stops further PageVie
   await accept(page).click();
   await expect.poll(async () => (await views(page)).length).toBe(1);
   await page.evaluate(() => { document.cookie = '_fbp=test; Path=/'; document.cookie = '_fbc=test; Path=/'; });
-  await page.getByRole('button', { name: 'Cookie settings', exact: true }).click();
+  await settings(page).click();
   await reject(page).click();
   expect(await page.evaluate(() => window.__metaCalls.at(-1))).toEqual(['consent', 'revoke']);
   expect((await context.cookies()).filter(cookie => ['_fbp', '_fbc'].includes(cookie.name))).toHaveLength(0);
@@ -124,7 +125,7 @@ test('rejecting in another tab stops tracking in an already accepted tab', async
   const second = await context.newPage();
   await mockPixel(second);
   await second.goto('/privacy-policy');
-  await second.getByRole('button', { name: 'Cookie settings', exact: true }).click();
+  await settings(second).click();
   await reject(second).click();
   await expect.poll(() => page.evaluate(() => window.__metaCalls.at(-1)))
     .toEqual(['consent', 'revoke']);

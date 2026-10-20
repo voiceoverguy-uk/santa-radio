@@ -4,7 +4,7 @@ async function open(page) {
   await page.clock.install();
   await page.clock.pauseAt(new Date());
   await page.goto('/apps');
-  await page.getByRole('button', { name: 'Reject optional cookies', exact: true }).click();
+  await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
   const minimise = page.getByRole('button', { name: 'Minimise radio player', exact: true });
   if (await minimise.isVisible()) await minimise.click();
   const carousel = page.getByRole('region', { name: 'Santa Dash promotional artwork', exact: true });

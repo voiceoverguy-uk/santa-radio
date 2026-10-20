@@ -1,0 +1,87 @@
+/* Small, readable consent surface sized to live inside TV and phone embeds. */
+.external-media-placeholder {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(5px, 1.5vw, 10px);
+  padding: clamp(8px, 3vw, 20px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  box-sizing: border-box;
+  color: #f5f0df;
+  background: linear-gradient(145deg, #173b2c, #10291f);
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+}
+.external-media-placeholder p {
+  max-width: 38ch;
+  flex-shrink: 0;
+  margin: 0;
+  color: #d5dfd4;
+  font-size: .875rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.external-media-placeholder .btn-gold {
+  flex: 0 0 auto;
+  min-height: 44px;
+  max-width: 100%;
+  padding: 7px clamp(10px, 3vw, 18px);
+  border: 1px solid #f0d77e;
+  border-radius: 999px;
+  color: #243a2c;
+  background: #e2c66b;
+  font: 600 .875rem/1.2 'Inter', sans-serif;
+  text-align: center;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  transition: background-color 150ms ease, transform 150ms ease;
+}
+.external-media-placeholder .btn-gold:hover { background: #f0d77e; transform: translateY(-1px); }
+.external-media-placeholder a {
+  max-width: 100%;
+  color: #f0d77e;
+  flex-shrink: 0;
+  font-size: .85rem;
+  line-height: 1.35;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+}
+.external-media-placeholder .external-media-note {
+  max-width: 42ch;
+  color: #c6d2c8;
+  font-size: .8rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+.external-media-placeholder :focus-visible,
+.external-media-manage:focus-visible {
+  outline: 3px solid #f4d97d;
+  outline-offset: 3px;
+}
+.external-media-manage {
+  min-height: 40px;
+  padding: 7px 14px;
+  border: 1px solid rgb(226 198 107 / 75%);
+  border-radius: 999px;
+  color: #f5f0df;
+  background: #254c3a;
+  font: 500 .78rem/1.25 'Inter', sans-serif;
+  cursor: pointer;
+  transition: background-color 150ms ease, transform 150ms ease;
+}
+.external-media-manage:hover { background: #356348; transform: translateY(-1px); }
+@media (max-width: 480px) {
+  .external-media-placeholder { gap: 10px; padding: 12px; }
+  .external-media-placeholder .btn-gold { padding-inline: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .external-media-placeholder .btn-gold,
+  .external-media-manage { transition: none; }
+}

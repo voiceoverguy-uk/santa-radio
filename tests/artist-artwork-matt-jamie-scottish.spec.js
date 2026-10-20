@@ -27,7 +27,7 @@ test('three supplied pictures match the catalogue and versioned shared feed', as
 test('music cards and each song page show the right picture on desktop and mobile', async ({ page }) => {
   await page.route(/youtube\.com|googlevideo\.com|global\.citrus3\.com/, route => route.abort());
   await page.goto('/christmas-music', { waitUntil: 'domcontentloaded' });
-  const reject = page.getByRole('button', { name: 'Reject optional cookies', exact: true });
+  const reject = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await reject.isVisible()) await reject.click();
   const search = page.getByRole('textbox', { name: 'Search for a song or artist' });
   for (const artist of artists) {
