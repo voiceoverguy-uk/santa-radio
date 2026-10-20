@@ -10,6 +10,7 @@ import { CLERK_PROXY_PATH, clerkProxyMiddleware } from './server/middlewares/cle
 import { trackerPageHtml, isTrackerPreview } from './server/tracker-html.js';
 import artworkFeedPlugin from './scripts/artwork-feed-plugin.mjs';
 import publicPagesPlugin from './server/public-pages-plugin.js';
+import { santaAudioRecipeVersion } from './scripts/santa-audio-recipe.mjs';
 
 const trackerMetadataPlugin = {
   name: 'tracker-page-metadata',
@@ -44,6 +45,7 @@ const metadataPlugin = {
 };
 
 export default defineConfig(({ isSsrBuild }) => ({
+  define: { __SANTA_AUDIO_RECIPE__: JSON.stringify(santaAudioRecipeVersion()) },
   publicDir: isSsrBuild ? false : 'public',
   ssr: {
     // Keep the runtime Tracker renderer self-contained. Vercel's package

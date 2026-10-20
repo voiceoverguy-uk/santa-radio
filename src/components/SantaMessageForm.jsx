@@ -12,6 +12,7 @@ import { santaNameKey } from '../lib/santaNameSearch.js';
 import { randomSantaExample, santaNamePlaceholder } from '../lib/santaNamePlaceholder.js';
 import { normaliseRequestedName } from '../lib/santaNameRequests.js';
 import { nameRequestToken } from '../lib/santaNameRequestTokens.js';
+import { trySavedSantaGreeting } from '../lib/savedSantaGreeting.js';
 import './SantaNameRequest.css';
 import './SantaMessageForm.css';
 
@@ -150,6 +151,8 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
     setBusy(true);
     try {
       const blob = await allowance.create(async () => {
+        const saved = await trySavedSantaGreeting(recording, controller.signal);
+        if (saved) return saved;
         const response = await fetch('/api/santa-message', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name: recording.id }), signal: controller.signal,
