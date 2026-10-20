@@ -27,6 +27,35 @@ async function isolateProviders(page) {
   return requests;
 }
 
+test('homepage webcam links use the new stream while consent gates and unloads the embed', async ({ page }) => {
+  const requests = await isolateProviders(page);
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const webcam = page.locator('.youtube-section');
+  const video = webcam.locator('iframe');
+  const placeholderLink = webcam.getByRole('link', { name: 'Open on YouTube instead (new tab)', exact: true });
+  const directLink = webcam.getByRole('link', { name: 'Watch directly on YouTube', exact: true });
+  for (const link of [placeholderLink, directLink]) {
+    await expect(link).toHaveAttribute('href', 'https://www.youtube.com/watch?v=mMrHniQJNCM');
+    await expect(link).toHaveAttribute('target', '_blank');
+    await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+  }
+  await expect(video).toHaveCount(0);
+  await decline(page).click();
+  await expect(video).toHaveCount(0);
+  await expect(webcam.getByRole('button', { name: 'Pause video', exact: true })).toHaveCount(0);
+  expect(requests).toHaveLength(0);
+  await webcam.getByRole('button', { name: 'Enable external media', exact: true }).click();
+  await expect(video).toHaveAttribute('src',
+    'https://www.youtube.com/embed/mMrHniQJNCM?si=O7nNcINykyWwgyXC&autoplay=1&mute=1&controls=0&disablekb=1&playsinline=1');
+  expect(await stored(page)).toMatchObject({ analytics: false, marketing: false, media: true });
+  await expect(placeholderLink).toHaveCount(0);
+  await expect(directLink).toHaveAttribute('href', 'https://www.youtube.com/watch?v=mMrHniQJNCM');
+  await footerSettings(page).click();
+  await decline(page).click();
+  await expect(video).toHaveCount(0);
+  await expect(placeholderLink).toHaveAttribute('href', 'https://www.youtube.com/watch?v=mMrHniQJNCM');
+});
+
 test('compact first layer has equal one-click choices, optional settings, and player clearance', async ({ page }) => {
   await isolateProviders(page);
   for (const width of [320, 390, 1280]) {
