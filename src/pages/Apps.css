@@ -298,7 +298,12 @@
   gap: clamp(30px, 6vw, 76px);
 }
 
-.apps-page .apple-tv-copy { max-width: 430px; }
+.apps-page .apple-tv-copy {
+  width: 100%;
+  min-width: 0;
+  max-width: 430px;
+  overflow-wrap: anywhere;
+}
 
 .apps-page .apple-tv-eyebrow {
   margin: 0 0 16px;
