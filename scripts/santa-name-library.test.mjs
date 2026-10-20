@@ -1,6 +1,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readFile, mkdtemp, rm, readdir } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { spawnSync } from 'node:child_process';
+import ffmpeg from 'ffmpeg-static';
 import {
   createNameLibrary, parseNameIndex, validateNameWav, fetchLimited, NAMES_INDEX, NAMES_ROOT,
 } from '../server/santa-name-library.js';
@@ -130,4 +134,74 @@ test('real name WAV validates; HTML, truncated audio and oversized duration are 
   const format = forged.indexOf('fmt ');
   forged.writeUInt32LE(1, format + 16); // Inconsistent sample rate / byte rate.
   assert.throws(() => validateNameWav(forged));
+});
+
+test('more than 9000 mixed-format names retain exact case and numbered variants', async () => {
+  const entries = Array.from({ length: 9501 }, (_, i) => ({
+    id: `name${i}`, name: `Name${i}`, file: `NaMe${i}.${i % 2 ? 'MP3' : 'WaV'}`,
+  }));
+  const library = createNameLibrary({ fetcher: async () => response(manifest(entries)) });
+  assert.equal((await library.search('')).hostedCount, 9501);
+  assert.equal((await library.resolve('name9500')).file, 'NaMe9500.WaV');
+  assert.equal((await library.search('Name9500')).records[0].id, 'name9500');
+  for (const pair of [
+    ['Anna.mp3', 'anna.WAV'], ['Anna-Marie.mp3', 'Anna_Marie.MP3'],
+  ]) {
+    assert.throws(() => parseNameIndex(manifest(pair.map(file => ({
+      id: file.slice(0, -4).toLowerCase().replaceAll('_', '-'), name: 'Anna', file,
+    })))), { code: 'INDEX_DUPLICATE' });
+  }
+  assert.throws(() => parseNameIndex(Buffer.alloc(2 * 1024 * 1024 + 1)), { code: 'INDEX_SIZE' });
+  assert.throws(() => parseNameIndex(manifest(Array(20001).fill(demrie))), { code: 'INDEX_FORMAT' });
+});
+
+test('MP3 downloads decode in isolated files, preserve case and reject invalid or long audio', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'santa-mp3-test-'));
+  const encode = seconds => {
+    const result = spawnSync(ffmpeg, ['-v', 'error', '-f', 'lavfi', '-i',
+      'sine=frequency=523:sample_rate=44100', '-t', String(seconds), '-c:a', 'libmp3lame',
+      '-threads', '1', '-f', 'mp3', 'pipe:1'], { timeout: 10000 });
+    assert.equal(result.status, 0);
+    return result.stdout;
+  };
+  let bytes = encode(0.6);
+  const library = createNameLibrary({ fetcher: async url => {
+    assert.equal(url, `${NAMES_ROOT}DiXiE3.MP3`);
+    return response(bytes);
+  } });
+  const record = { source: 'hosted', file: 'DiXiE3.MP3' };
+  try {
+    await Promise.all([0, 1].map(async i => {
+      const path = join(directory, `${i}.wav`);
+      await library.download(record, path);
+      validateNameWav(await readFile(path));
+    }));
+    for (const invalid of [
+      Buffer.from('<html>WordPress database error</html>'),
+      Buffer.from('#EXTM3U\nhttps://evil.test/audio.mp3'),
+      bytes.subarray(0, 25), encode(31.5),
+    ]) {
+      bytes = invalid;
+      await assert.rejects(library.download(record, join(directory, 'bad.wav')), { code: 'INVALID_MP3' });
+      assert.deepEqual((await readdir(directory)).sort(), ['0.wav', '1.wav']);
+    }
+    bytes = Buffer.alloc(10 * 1024 * 1024 + 1);
+    await assert.rejects(library.download(record, join(directory, 'bad.wav')), { code: 'UPSTREAM_SIZE' });
+  } finally { await rm(directory, { recursive: true, force: true }); }
+});
+
+test('a stalled upstream request is aborted rather than returning an empty inventory', async t => {
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  const request = fetchLimited(NAMES_INDEX, 1024, async (_, { signal }) => new Promise((_, reject) => {
+    signal.addEventListener('abort', () => reject(new Error('Aborted')), { once: true });
+  }));
+  const rejected = assert.rejects(request, { code: 'UPSTREAM_FETCH' });
+  t.mock.timers.tick(10000);
+  await rejected;
+});
+
+test('PHP and renameable TXT downloads are identical standalone source', async () => {
+  const source = await readFile('public/downloads/names-index.php', 'utf8');
+  assert.equal(await readFile('public/downloads/names-index.php.txt', 'utf8'), source);
+  assert.doesNotMatch(source, /(?:require|include)\s*[\('"]/);
 });

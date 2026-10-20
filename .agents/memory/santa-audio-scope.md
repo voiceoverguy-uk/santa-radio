@@ -8,11 +8,11 @@ The owner-hosted name folder can fail as a directory page while individual WAV U
 
 **How to apply:** Verify individual audio and inventory discovery separately. Use an owner-uploaded standalone listing beside the recordings; do not change the external WordPress installation or request FTP credentials to fix discovery.
 
-The owner moved the recorded-name files to a new drive. Their replacement FTP-folder screenshot supplied on 20 October 2026 shows MP3 recordings. They confirmed they only have FTP access and expect the website to retrieve the names through that connection.
+The owner moved the recorded-name files to a new drive and confirmed the replacement MP3 library is publicly accessible over HTTPS. Keep discovery through a standalone owner-uploaded PHP inventory, not direct FTP or a manually maintained list.
 
-**Why:** The owner reported the storage move and asked to reconnect the name library and resend its listing file.
+**Why:** The owner confirmed the public HTTPS directory after initially describing FTP access. An individual MP3 was readable while the directory/index still returned a WordPress database error; FTP transport is unnecessary for the agreed approach.
 
-**How to apply:** Investigate server-side encrypted FTP retrieval and MP3 support for the replacement library, verifying hosting-runtime connectivity and TLS before switching. Do not require an HTTPS address as a prerequisite or reuse the old WAV listing unchanged. This concerns reading name recordings, not FTP uploads of missing-name requests or changes to the radio metadata feeds.
+**How to apply:** Verify discovery and an actual finished hosted greeting separately after the owner uploads the index. Do not revive FTP integration, repair WordPress, bulk-download the library or infer success from one working audio URL. Keep missing-name requests and radio feeds separate.
 
 Hosted recording labels can contain digits, including numbered variants. Preserve these labels and identifiers rather than assuming every catalogue entry is a letters-only first name.
 

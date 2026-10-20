@@ -1,4 +1,7 @@
-import { writeFile } from 'node:fs/promises';
+import { readFile, writeFile, rm } from 'node:fs/promises';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+import ffmpegPath from 'ffmpeg-static';
 import { findSantaMessage, santaNames } from '../src/data/santaMessages.js';
 
 export const NAMES_ROOT = 'https://stagcommunications.com/santaradio/names/';
@@ -6,9 +9,10 @@ export const NAMES_INDEX = `${NAMES_ROOT}names-index.php`;
 const CACHE_MS = 60_000;
 const FAIL_CACHE_MS = 10_000;
 const MAX_INDEX_BYTES = 2 * 1024 * 1024;
-const MAX_WAV_BYTES = 10 * 1024 * 1024;
+const MAX_AUDIO_BYTES = 10 * 1024 * 1024;
+const execute = promisify(execFile);
 const ID = /^[a-z0-9][a-z0-9'-]{0,79}$/;
-const FILE = /^[a-zA-Z0-9][a-zA-Z0-9'_-]{0,79}\.wav$/i;
+const FILE = /^[a-zA-Z0-9][a-zA-Z0-9'_-]{0,79}\.(?:mp3|wav)$/i;
 // The host's index derives labels from safe filenames, including numeric
 // recording variants such as dixie3.wav. Digits do not change path safety.
 const NAME = /^[\p{L}\p{M}0-9][\p{L}\p{M}0-9 '-]{0,79}$/u;
@@ -48,6 +52,7 @@ export async function fetchLimited(url, limit, fetcher = fetch) {
 }
 
 export function parseNameIndex(bytes) {
+  if (bytes.length > MAX_INDEX_BYTES) throw new NameLibraryError('INDEX_SIZE');
   let data;
   try { data = JSON.parse(bytes.toString('utf8')); } catch { throw new NameLibraryError('INDEX_JSON'); }
   if (data?.version !== 1 || !Array.isArray(data.names) || data.names.length > 20_000) throw new NameLibraryError('INDEX_FORMAT');
@@ -58,8 +63,9 @@ export function parseNameIndex(bytes) {
       item.file.slice(0, -4).toLowerCase().replace(/_/g, '-') !== item.id ||
       typeof item.name !== 'string' || !NAME.test(item.name) ||
       (item.aliases !== undefined && (!Array.isArray(item.aliases) || item.aliases.length > 12 ||
-        item.aliases.some(alias => typeof alias !== 'string' || !NAME.test(alias)))) ||
-      seen.has(item.id)) throw new NameLibraryError('INDEX_ENTRY');
+        item.aliases.some(alias => typeof alias !== 'string' || !NAME.test(alias)))))
+      throw new NameLibraryError('INDEX_ENTRY');
+    if (seen.has(item.id)) throw new NameLibraryError('INDEX_DUPLICATE');
     seen.add(item.id);
     return { id: item.id, name: item.name, file: item.file, aliases: item.aliases || [],
       source: 'hosted', downloadName: `Santa-message-for-${item.name}.mp3` };
@@ -117,11 +123,39 @@ export function createNameLibrary({ fetcher = fetch, now = Date.now } = {}) {
     async download(record, destination) {
       if (record.source !== 'hosted' || !FILE.test(record.file)) throw new NameLibraryError('INVALID_RECORDING');
       const url = new URL(encodeURIComponent(record.file), NAMES_ROOT);
-      const bytes = await fetchLimited(url.href, MAX_WAV_BYTES, fetcher);
-      validateNameWav(bytes);
-      await writeFile(destination, bytes, { flag: 'wx', mode: 0o600 });
+      const bytes = await fetchLimited(url.href, MAX_AUDIO_BYTES, fetcher);
+      if (/\.wav$/i.test(record.file)) {
+        validateNameWav(bytes);
+        await writeFile(destination, bytes, { flag: 'wx', mode: 0o600 });
+      } else {
+        await decodeNameMp3(bytes, destination);
+      }
     },
   };
+}
+
+// The caller provides a private per-request temporary directory. Force the MP3
+// demuxer/decoder, so a disguised playlist cannot load another URL or local file.
+// Decode at most 31 seconds: anything exceeding the 30-second limit is rejected,
+// not silently shortened. Mono 48k PCM bounds the intermediate to under 3 MiB.
+async function decodeNameMp3(bytes, destination) {
+  const input = `${destination}.mp3`;
+  await writeFile(input, bytes, { flag: 'wx', mode: 0o600 });
+  try {
+    await execute(ffmpegPath, [
+      '-hide_banner', '-nostdin', '-v', 'error', '-xerror', '-err_detect', 'explode',
+      '-protocol_whitelist', 'file,pipe', '-f', 'mp3', '-c:a', 'mp3',
+      '-threads', '1', '-i', input, '-map', '0:a:0', '-vn', '-sn', '-dn',
+      '-t', '31', '-ac', '1', '-ar', '48000', '-c:a', 'pcm_s16le',
+      '-threads', '1', '-f', 'wav', '-n', destination,
+    ], { timeout: 10_000, killSignal: 'SIGKILL', maxBuffer: 64 * 1024 });
+    validateNameWav(await readFile(destination));
+  } catch {
+    await rm(destination, { force: true }).catch(() => {});
+    throw new NameLibraryError('INVALID_MP3');
+  } finally {
+    await rm(input, { force: true });
+  }
 }
 
 // Bound duration and accept only ordinary PCM/float WAVs before invoking FFmpeg.

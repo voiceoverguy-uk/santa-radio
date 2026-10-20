@@ -8,14 +8,20 @@ import { createNameLibrary, NAMES_INDEX, NAMES_ROOT } from '../server/santa-name
 import { createSantaMessageHandler } from '../server/santa-message.js';
 import { createSantaNamesHandler } from '../server/santa-names.js';
 
-test('hosted name is fetched only for creation and produces a decodable MP3', { timeout: 30000 }, async () => {
+for (const format of ['wav', 'MP3']) test(`hosted ${format} is fetched only for creation and mixed into the greeting`, { timeout: 30000 }, async () => {
   let downloads = 0;
-  const nameBytes = await readFile('server/santa-audio/names/erin.wav');
+  let nameBytes = await readFile('server/santa-audio/names/erin.wav');
+  if (format === 'MP3') {
+    const encoded = spawnSync(ffmpeg, ['-v', 'error', '-i', 'pipe:0', '-c:a', 'libmp3lame',
+      '-threads', '1', '-f', 'mp3', 'pipe:1'], { input: nameBytes, timeout: 10000 });
+    assert.equal(encoded.status, 0);
+    nameBytes = encoded.stdout;
+  }
   const library = createNameLibrary({ fetcher: async url => {
     if (url === NAMES_INDEX) return new Response(JSON.stringify({ version: 1, names: [
-      { id: 'demrie', name: 'Demrie', file: 'demrie.wav' },
+      { id: 'demrie', name: 'Demrie', file: `Demrie.${format}` },
     ] }));
-    assert.equal(url, `${NAMES_ROOT}demrie.wav`);
+    assert.equal(url, `${NAMES_ROOT}Demrie.${format}`);
     downloads++;
     return new Response(nameBytes);
   } });
@@ -37,6 +43,12 @@ test('hosted name is fetched only for creation and produces a decodable MP3', { 
     assert.equal(downloads, 1);
     const decoded = spawnSync(ffmpeg, ['-v', 'error', '-i', 'pipe:0', '-f', 'null', '-'], { input: bytes, timeout: 10000 });
     assert.equal(decoded.status, 0);
+    nameBytes = Buffer.from('<html>database error</html>');
+    const failed = await fetch(`${base}/api/santa-message`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'demrie' }),
+    });
+    assert.equal(failed.status, 503);
+    assert.match((await failed.json()).error, /recording could not be loaded or mixed/);
     const malformed = await fetch(`${base}/api/santa-message`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: '../escape' }),
     });

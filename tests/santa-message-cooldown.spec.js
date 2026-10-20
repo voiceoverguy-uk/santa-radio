@@ -187,6 +187,8 @@ test('blocked browser storage keeps an in-page allowance and explains its limita
   await expect(page.getByText(/Your browser can’t remember the message allowance/)).toHaveCount(0);
   await create(page);
   await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Home', exact: true }).click();
+  // Wait for navigation to replace the old form before filling the new one.
+  await expect(page.getByRole('heading', { name: 'Live from The North Pole, Santa Radio' })).toBeVisible();
   await expect(page.locator('.santa-message-box')).not.toContainText(/30.minute|message allowance/);
   await create(page, 'Erin');
   await expect(page.getByRole('timer')).toHaveText('10:00');
