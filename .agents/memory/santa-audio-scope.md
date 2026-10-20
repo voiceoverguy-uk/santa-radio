@@ -14,6 +14,12 @@ The owner moved the recorded-name files to a new drive and confirmed the replace
 
 **How to apply:** Verify discovery and an actual finished hosted greeting separately after the owner uploads the index. Do not revive FTP integration, repair WordPress, bulk-download the library or infer success from one working audio URL. Keep missing-name requests and radio feeds separate.
 
+Do not request further bulk renaming or deletion of hosted recordings to solve inventory compatibility. Treat punctuation, case and accent variants as potentially distinct recordings, not editorial duplicates.
+
+**Why:** The owner already removed an underscore/hyphen collision. The agreed approach is to support real-world filenames and preserve exact remote identities, not keep changing the library to fit a lossy identifier rule.
+
+**How to apply:** Keep search equivalence separate from identity. A filtered remote inventory cannot explain omitted directory entries; require complete private directory evidence before attributing count differences to exclusion categories.
+
 Hosted recording labels can contain digits, including numbered variants. Preserve these labels and identifiers rather than assuming every catalogue entry is a letters-only first name.
 
 **Why:** A newly uploaded numbered WAV was readable and safely listed by the host, but letters-only display-label validation rejected the entire inventory.

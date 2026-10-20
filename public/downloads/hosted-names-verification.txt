@@ -1,0 +1,59 @@
+HOSTED SANTA NAMES — VERIFIED 20 OCTOBER 2026
+
+The live HTTPS index returned 9,774 recordings and passed the website parser.
+The supplied snapshot has 9,773. The net increase is caidhain.mp3; ten other
+filenames changed only in case. No remote files were changed by this work.
+
+9,997 minus the original 9,773 = 224.
+9,997 minus the later live 9,774 = 223.
+
+These are differences between reported totals, not proven excluded recordings.
+No complete directory evidence was provided. The filtered index cannot show
+what it omits. We cannot identify all missing files, say they are non-audio,
+or attribute them all to invalid filenames. No further renaming is requested.
+
+PREVIEW EVIDENCE
+Real search found Demrie in the hosted catalogue (not the bundled names).
+Two actual greetings played in the browser and downloaded successfully.
+Both downloads matched an independent mix of the exact hosted demrie.mp3,
+existing intro/outro with padding and existing music, byte for byte.
+Both download links survived; the two-message allowance blocked a third.
+Brevo acceptance alone was intercepted using fictional details in an isolated
+test browser; no real marketing submission or production bypass was made.
+This verifies the selected audio source and mix, not an editorial pronunciation
+judgement. No production release or new-upload refresh was verified.
+
+REPLACEMENT INVENTORY
+Download names-index.php from this Preview's /downloads/ directory.
+Upload ONE script, named names-index.php, beside the recordings.
+names-index.php.txt is an ALTERNATIVE download of identical source: remove
+.txt if using that option. Do not upload both. Only the owner uploads it.
+The replacement preserves spaces, Unicode accents, apostrophes, hyphens,
+underscores, numbers and exact case, with distinct filename-derived IDs.
+The website accepts both old version-1 and new version-2 inventories.
+The replacement's operation on the external host awaits the owner's upload.
+
+SAFE WAY TO OBTAIN THE MISSING EVIDENCE
+Using the hosting terminal (or ask the hosting administrator), run:
+
+  cd /actual/path/to/santaradio/names
+  php names-index.php --diagnose > "$HOME/santa-name-directory-report.json"
+
+Keep the report outside the public web root and share it privately.
+This is the SAME replacement script, not a second PHP upload.
+It reads metadata, does not alter files, and has no public web diagnostic mode.
+Non-audio filenames are not disclosed. Reasons are counted once each in order:
+symlink, directory, non-regular file, unreadable, non-audio extension,
+malformed UTF-8, unsupported filename, included.
+Audio filenames include exact byte evidence, reasons and a spaces flag.
+CLI readability can differ from the web account; ask the host to check this.
+
+Also capture names-index.php's normal JSON at the same time. Supply both files
+privately to make an evidence-based list of space-containing audio filenames,
+excluded recordings and their reasons. The project includes:
+
+  node scripts/report-santa-directory.mjs diagnostic.json inventory.json generated-artifacts/private-name-report.txt
+
+Without that directory evidence, a definitive excluded-file report is not
+possible. If no terminal is available, request a complete private directory
+metadata export from the host; do not send FTP credentials or download all audio.

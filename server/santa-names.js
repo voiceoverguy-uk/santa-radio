@@ -13,8 +13,10 @@ export function createSantaNamesHandler(library = santaNameLibrary) {
       return send(405, { error: 'Use the name search to find a recording.' });
     }
     const url = new URL(req.url, 'http://server');
+    try { decodeURIComponent(url.search.replace(/\+/g, ' ')); }
+    catch { return send(400, { error: 'The name search contains malformed UTF-8 or URL encoding.' }); }
     const query = url.searchParams.get('q') || '';
-    if (query.length > 80 || /[\u0000-\u001f]/.test(query)) return send(400, { error: 'Please enter a first name.' });
+    if ([...query].length > 80 || /[\u0000-\u001f\u007f]/.test(query)) return send(400, { error: 'Please enter a first name.' });
     try { send(200, await library.search(query)); }
     catch { send(503, { error: 'The name list could not be loaded. Please try again.' }); }
   };

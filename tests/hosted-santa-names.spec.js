@@ -1,10 +1,47 @@
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { openMessageDesk } from './helpers/message-access.js';
+import { filenameId } from '../server/santa-name-library.js';
 
 const recording = (id, name) => ({ id, name, downloadName: `Santa-message-for-${name}.mp3` });
 const demrie = recording('demrie', 'Demrie');
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+test('Unicode and apostrophe equivalents require a distinct selection when ambiguous', async ({ page }) => {
+  const files = ['Seán.mp3', 'Sea\u0301n.mp3', "O'Conner.mp3", 'O’Conner.mp3', 'Mary Jane.MP3', 'ana_kayla.mp3', 'ana-kayla.mp3', 'Dixie3.mp3'];
+  let selected;
+  await page.route('**/api/santa-names?*', route => {
+    const key = text => text.normalize('NFC').toLowerCase().replace(/’/g, "'");
+    const query = key(new URL(route.request().url()).searchParams.get('q'));
+    return route.fulfill({ json: { hostedCount: files.length, warning: null,
+      records: files.filter(file => key(file).startsWith(query)).map(file => ({
+        ...recording(filenameId(file), file.slice(0, -4)), variant: file,
+      })) } });
+  });
+  await page.route('**/api/santa-message', route => {
+    selected = route.request().postDataJSON().name;
+    return route.fulfill({ contentType: 'audio/mpeg', body: readFileSync('server/santa-audio/sleighbells.mp3') });
+  });
+  await prepare(page);
+  const input = page.getByLabel('Child’s first name');
+  await input.fill('SEÁN');
+  await expect(page.getByRole('option')).toHaveCount(2);
+  await input.press('Escape');
+  await page.getByRole('button', { name: 'Create message' }).evaluate(element => element.scrollIntoView({ block: 'center', behavior: 'instant' }));
+  await page.getByRole('button', { name: 'Create message' }).click();
+  expect(selected).toBeUndefined();
+  await input.focus();
+  await page.getByRole('option').nth(1).click();
+  await page.getByRole('button', { name: 'Create message' }).click();
+  await expect(page.locator('.message-result')).toHaveCount(1);
+  expect(selected).toBe(filenameId(files[1]));
+  await input.fill("o'conner");
+  await expect(page.getByRole('option')).toHaveCount(2);
+  await page.getByRole('option').nth(1).click();
+  await page.getByRole('button', { name: 'Create message' }).click();
+  await expect(page.locator('.message-result')).toHaveCount(2);
+  expect(selected).toBe(filenameId(files[3]));
+});
 
 async function prepare(page) {
   await page.route(/youtube\.com|googlevideo\.com|global\.citrus3\.com/, route => route.abort());

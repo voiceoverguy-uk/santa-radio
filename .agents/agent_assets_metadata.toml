@@ -294,3 +294,31 @@ mtime_ms = 1792102073030
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/d7b45782-32e6-40da-9c20-22aa7538c049/417b6af8-14d2-46b1-9568-f4018c0ccf6f"
 storage_version_token = "1792102125508761"
 content_type = "video/mp4"
+
+[[outputs]]
+id = "4r1Aybbji3QZQ3iQNj2OV"
+uri = "file://public/downloads/hosted-names-verification.txt"
+type = "text"
+title = "Hosted names: verification and count report"
+description = "Observed 9,774-recording catalogue, Preview results, and safe owner-run instructions to investigate the count difference."
+logical_id = "1ebf144b-be66-4f22-8f5e-9a18271194b9"
+content_hash = "sha256:cd7f0691a7660cd62955d5f722416c6dfeeb93117d2f62a26c87f218100915a7"
+size = 3300
+mtime_ms = 1792527151520
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/1ebf144b-be66-4f22-8f5e-9a18271194b9/02397ed4-f58c-4537-825f-effa60386ee2"
+storage_version_token = "1792527477544772"
+content_type = "text/plain"
+
+[[outputs]]
+id = "La1d7gNHiJoDh6Pxr1j7c"
+uri = "file://generated-artifacts/hosted-names/real-demrie-1.mp3"
+type = "audio"
+title = "Tested hosted greeting — Demrie"
+description = "The real Preview download, using the hosted name recording and existing intro, padded outro and music."
+logical_id = "8a55e762-cd86-4196-8fb6-605c381f8eb2"
+content_hash = "sha256:ad9193e08fe4e8c32a0fabc1f24bf0b28443a57b733c41f71ac2b5cc96f4dcf8"
+size = 1015056
+mtime_ms = 1792526884296
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/8a55e762-cd86-4196-8fb6-605c381f8eb2/5a141459-6663-4a78-b828-29feed3caee0"
+storage_version_token = "1792527478640701"
+content_type = "audio/mpeg"

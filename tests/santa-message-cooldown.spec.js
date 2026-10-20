@@ -1,12 +1,15 @@
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
-import { openMessageDesk, mockBrevo, fillAccessForm } from './helpers/message-access.js';
+import { openMessageDesk, mockBrevo, fillAccessForm, mockSantaNames } from './helpers/message-access.js';
 import { MESSAGE_ALLOWANCE_KEY } from '../src/lib/santaMessageAllowance.js';
 
 const audio = readFileSync('server/santa-audio/sleighbells.mp3');
 const mp3 = { contentType: 'audio/mpeg', body: audio };
 async function create(page, name = 'Olivia') {
   await page.getByLabel('Child’s first name').fill(name);
+  await expect(page.getByRole('option', { name, exact: true })).toBeVisible();
+  await page.getByLabel('Child’s first name').press('Escape');
+  await page.getByRole('button', { name: 'Create message', exact: true }).evaluate(element => element.scrollIntoView({ block: 'center', behavior: 'instant' }));
   await page.getByRole('button', { name: 'Create message', exact: true }).click();
   await expect(page.getByRole('heading', { name: `For ${name}, from Santa` })).toBeVisible();
 }
@@ -23,6 +26,7 @@ test.beforeEach(async ({ context }) => {
       ? route.continue() : route.abort();
   });
   await context.route('**/api/radio-metadata*', route => route.fulfill({ json: { available: false, current: null, upcoming: [] } }));
+  await mockSantaNames(context);
   await context.addInitScript(() => {
     window.testNow = 1801915200000;
     Date.now = () => window.testNow;
@@ -128,6 +132,8 @@ test('navigation, reload, a new tab and returning after the deadline preserve an
   await page.reload();
   expect((await usage(page)).used).toBe(1);
   await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Home', exact: true }).click();
+  await expect(page).toHaveURL('/');
+  await expect(page.getByRole('heading', { name: 'Live from The North Pole, Santa Radio' })).toBeVisible();
   expect((await usage(page)).used).toBe(1);
   await create(page, 'Erin');
   const deadline = (await usage(page)).availableAt;

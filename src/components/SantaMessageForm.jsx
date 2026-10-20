@@ -8,6 +8,7 @@ import { useSantaMessageAccess } from './SantaMessageAccessProvider.jsx';
 import useSantaMessageAllowance from './useSantaMessageAllowance.js';
 import useSantaMessageHistory from './useSantaMessageHistory.js';
 import useSantaNames from './useSantaNames.js';
+import { santaNameKey } from '../lib/santaNameSearch.js';
 import { randomSantaExample, santaNamePlaceholder } from '../lib/santaNamePlaceholder.js';
 import { normaliseRequestedName } from '../lib/santaNameRequests.js';
 import { nameRequestToken } from '../lib/santaNameRequestTokens.js';
@@ -33,10 +34,10 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const suggestions = nameSearch.records;
   const verifiedSelectedRecord = selectedRecord && selectedRecord.name === name.trim()
     ? selectedRecord : null;
-  const exactMatch = !nameSearch.loading && !nameSearch.error
-    ? suggestions.find(record => [record.name, record.id].some(value =>
-      value.normalize('NFKC').toLocaleLowerCase('en-GB') ===
-      name.normalize('NFKC').trim().toLocaleLowerCase('en-GB'))) : null;
+  const exactMatches = !nameSearch.loading && !nameSearch.error
+    ? suggestions.filter(record => santaNameKey(record.name) === santaNameKey(name)) : [];
+  // Equivalent spelling can identify multiple recordings. Require a choice.
+  const exactMatch = exactMatches.length === 1 ? exactMatches[0] : null;
   const resolvedRecord = verifiedSelectedRecord || exactMatch;
   const searchPending = name.trim() !== '' && nameSearch.loading && !verifiedSelectedRecord;
   const audioRef = useRef(null);
@@ -253,7 +254,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
             placeholder={santaNamePlaceholder(exampleName)} autoComplete="off" autoCapitalize="words" spellCheck={false} aria-invalid={!!validation} aria-describedby={`${inputId}-hint${validation ? ` ${inputId}-error` : ''}`} />
           {suggesting && suggestions.length > 0 && <ul className="message-suggestions" id={`${inputId}-options`} role="listbox" aria-label="Available names">
             {suggestions.map((suggestion, index) => <li key={suggestion.id} id={`${inputId}-option-${index}`} role="option" aria-selected={index === activeOption}
-              onPointerDown={event => event.preventDefault()} onClick={() => selectName(suggestion)}>{suggestion.name}</li>)}
+              onPointerDown={event => event.preventDefault()} onClick={() => selectName(suggestion)}>{suggestion.name}{suggestion.variant && <small> — {suggestion.variant}</small>}</li>)}
           </ul>}
           </div>
           <span className="message-name-hint" id={`${inputId}-hint`} aria-live="polite">

@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import ffmpeg from 'ffmpeg-static';
 import {
-  createNameLibrary, parseNameIndex, validateNameWav, fetchLimited, NAMES_INDEX, NAMES_ROOT,
+  createNameLibrary, parseNameIndex, validateNameWav, fetchLimited, NAMES_INDEX, NAMES_ROOT, filenameId,
 } from '../server/santa-name-library.js';
 
 const demrie = { id: 'demrie', name: 'Demrie', file: 'demrie.wav', aliases: ['Dem'] };
@@ -29,6 +29,7 @@ test('hosted inventory, display names, exact filenames and aliases are verified'
   assert.equal(await library.resolve('../../outside'), null);
   assert.equal(await library.resolve('https://evil.test/audio.wav'), null);
   assert.equal(await library.resolve({ url: 'anything' }), null);
+  assert.equal(await library.resolve('erin\n'), null);
 });
 
 test('cache deduplicates requests, refreshes new names after a minute and caches failures briefly', async () => {
@@ -107,6 +108,28 @@ test('untrusted inventory paths, controls, duplicate identifiers and invalid JSO
   assert.throws(() => parseNameIndex(manifest([demrie, demrie])));
   assert.throws(() => parseNameIndex(Buffer.from('WordPress error')));
   assert.throws(() => parseNameIndex(Buffer.from('{"version":1,"names":null}')));
+});
+
+test('version 2 exact-byte identities support Unicode and punctuation without merging; legacy remains readable', async () => {
+  const files = ['Mary Jane.MP3', 'Seán.mp3', 'Sea\u0301n.mp3', "O'Conner.wav", 'O’Conner.wav',
+    'ana_kayla.mp3', 'ana-kayla.mp3', 'Dixie3.WaV', 'Dixie3.mp3'];
+  const entries = files.map(file => ({ id: filenameId(file), file, name: file.slice(0, -4) }));
+  const bytes = Buffer.from(JSON.stringify({ version: 2, names: entries }));
+  assert.equal(new Set(parseNameIndex(bytes).map(record => record.id)).size, files.length);
+  const library = createNameLibrary({ fetcher: async () => response(bytes) });
+  for (const entry of entries) assert.equal((await library.resolve(entry.id)).file, entry.file);
+  assert.equal((await library.search('SEÁN')).records.length, 2);
+  assert.equal((await library.search("o'conner")).records.length, 2);
+  assert.equal((await library.search('O’CONNER')).records.length, 2);
+  assert.equal((await library.search('Mary J')).records[0].id, filenameId(files[0]));
+  assert.equal(parseNameIndex(manifest())[0].id, 'demrie');
+  for (const file of ['../bad.mp3', 'a/b.mp3', 'a\\b.mp3', 'bad%20name.mp3', 'x.mp3\n',
+    'x\u0000.mp3', 'x\u007f.mp3', 'x\u202e.mp3', 'x?.mp3', 'x#.mp3']) {
+    assert.throws(() => parseNameIndex(Buffer.from(JSON.stringify({ version: 2, names: [
+      { id: filenameId(file), file, name: 'Safe' },
+    ] }))), { code: 'INDEX_ENTRY' });
+  }
+  assert.throws(() => parseNameIndex(Buffer.from([0xff])), { code: 'INDEX_ENCODING' });
 });
 
 test('fetch is bounded, HTTPS URLs are fixed by callers and redirects are rejected', async () => {

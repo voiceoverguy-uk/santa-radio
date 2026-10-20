@@ -2,6 +2,8 @@ import { readFile, writeFile, rm } from 'node:fs/promises';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import ffmpegPath from 'ffmpeg-static';
+import { createHash } from 'node:crypto';
+import { santaNameKey as key } from '../src/lib/santaNameSearch.js';
 import { findSantaMessage, santaNames } from '../src/data/santaMessages.js';
 
 export const NAMES_ROOT = 'https://stagcommunications.com/santaradio/names/';
@@ -11,12 +13,13 @@ const FAIL_CACHE_MS = 10_000;
 const MAX_INDEX_BYTES = 2 * 1024 * 1024;
 const MAX_AUDIO_BYTES = 10 * 1024 * 1024;
 const execute = promisify(execFile);
-const ID = /^[a-z0-9][a-z0-9'-]{0,79}$/;
-const FILE = /^[a-zA-Z0-9][a-zA-Z0-9'_-]{0,79}\.(?:mp3|wav)$/i;
+const LEGACY_ID = /^[a-z0-9][a-z0-9'-]{0,79}$(?![\s\S])/;
+const ID = /^(?:f-[a-f0-9]{64}|[a-z0-9][a-z0-9'-]{0,79})$(?![\s\S])/;
+const FILE = /^[\p{L}\p{M}0-9][\p{L}\p{M}0-9 '’_-]{0,79}\.(?:mp3|wav)$(?![\s\S])/iu;
 // The host's index derives labels from safe filenames, including numeric
 // recording variants such as dixie3.wav. Digits do not change path safety.
-const NAME = /^[\p{L}\p{M}0-9][\p{L}\p{M}0-9 '-]{0,79}$/u;
-const key = input => input.normalize('NFKC').trim().toLocaleLowerCase('en-GB');
+const NAME = /^[\p{L}\p{M}0-9][\p{L}\p{M}0-9 '’_-]{0,79}$(?![\s\S])/u;
+export const filenameId = file => `f-${createHash('sha256').update(file, 'utf8').digest('hex')}`;
 export const localRecords = santaNames.map(name => ({ ...findSantaMessage(name), source: 'local' }));
 
 export class NameLibraryError extends Error {
@@ -54,13 +57,18 @@ export async function fetchLimited(url, limit, fetcher = fetch) {
 export function parseNameIndex(bytes) {
   if (bytes.length > MAX_INDEX_BYTES) throw new NameLibraryError('INDEX_SIZE');
   let data;
-  try { data = JSON.parse(bytes.toString('utf8')); } catch { throw new NameLibraryError('INDEX_JSON'); }
-  if (data?.version !== 1 || !Array.isArray(data.names) || data.names.length > 20_000) throw new NameLibraryError('INDEX_FORMAT');
+  let text;
+  try { text = new TextDecoder('utf-8', { fatal: true }).decode(bytes); }
+  catch { throw new NameLibraryError('INDEX_ENCODING'); }
+  try { data = JSON.parse(text); } catch { throw new NameLibraryError('INDEX_JSON'); }
+  if (![1, 2].includes(data?.version) || !Array.isArray(data.names) || data.names.length > 20_000) throw new NameLibraryError('INDEX_FORMAT');
   const seen = new Set();
   return data.names.map(item => {
     if (!item || typeof item.id !== 'string' || !ID.test(item.id) ||
       typeof item.file !== 'string' || !FILE.test(item.file) ||
-      item.file.slice(0, -4).toLowerCase().replace(/_/g, '-') !== item.id ||
+      (data.version === 2 ? filenameId(item.file) !== item.id :
+        !LEGACY_ID.test(item.id) || !/^[a-zA-Z0-9][a-zA-Z0-9'_-]{0,79}\.(mp3|wav)$/i.test(item.file) ||
+        item.file.slice(0, -4).toLowerCase().replace(/_/g, '-') !== item.id) ||
       typeof item.name !== 'string' || !NAME.test(item.name) ||
       (item.aliases !== undefined && (!Array.isArray(item.aliases) || item.aliases.length > 12 ||
         item.aliases.some(alias => typeof alias !== 'string' || !NAME.test(alias)))))
@@ -99,13 +107,19 @@ export function createNameLibrary({ fetcher = fetch, now = Date.now } = {}) {
       let warning = null;
       try { hosted = await catalogue(); }
       catch { warning = 'The hosted name list is unavailable. Only existing recordings are shown. Please try refreshing the names shortly.'; }
-      const records = new Map(localRecords.map(record => [record.id, record]));
+      const hostedKeys = new Set(hosted.map(record => key(record.name)));
+      const labelCounts = new Map();
+      for (const record of hosted) labelCounts.set(key(record.name), (labelCounts.get(key(record.name)) || 0) + 1);
+      const records = new Map(localRecords.filter(record => !hostedKeys.has(key(record.name))).map(record => [record.id, record]));
       for (const record of hosted) records.set(record.id, record);
       const prefix = key(input);
       const matches = prefix ? [...records.values()].filter(record =>
-        [record.name, record.id, ...(record.aliases || [])].some(name => key(name).startsWith(prefix))) : [];
+        [record.name, record.file?.slice(0, -4) || record.id, ...(record.aliases || [])].some(name => key(name).startsWith(prefix))) : [];
       return { records: matches.sort((a, b) => a.name.localeCompare(b.name, 'en-GB')).slice(0, 20)
-        .map(({ id, name, downloadName }) => ({ id, name, downloadName })),
+        .map(({ id, name, downloadName, file }) => ({
+          id, name, downloadName,
+          ...(labelCounts.get(key(name)) > 1 ? { variant: file } : {}),
+        })),
         hostedCount: warning ? null : hosted.length, warning };
     },
     async resolve(input) {

@@ -19,3 +19,9 @@ Installed testing guidance can describe a tester configuration that the current 
 **Why:** The documented testing configuration was rejected as an unknown kind in this workspace.
 
 **How to apply:** When that happens, use the repository's configured Playwright suite directly rather than repeatedly trying undocumented helper configurations.
+
+On the proxied Preview, Playwright's captured network response body can disagree with the bytes actually used by a browser audio blob/download.
+
+**Why:** A real MP3 downloaded and played correctly but failed a comparison against the captured response body. Comparing the download to the browser's blob bytes passed, and an independent render of the exact remote source matched byte for byte.
+
+**How to apply:** When only a captured-response binary comparison fails, verify the actual download, browser blob and independent decoder before diagnosing audio corruption. Do not weaken playback or source-identity checks.

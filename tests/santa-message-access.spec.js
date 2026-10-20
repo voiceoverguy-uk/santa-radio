@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
-import { adult, brevoUrl, fillAccessForm, mockBrevo } from './helpers/message-access.js';
+import { adult, brevoUrl, fillAccessForm, mockBrevo, mockSantaNames } from './helpers/message-access.js';
 import { MESSAGE_ACCESS_KEY, ACCESS_REQUEST_TIMEOUT_MS } from '../src/lib/santaMessageAccess.js';
 
 test.beforeEach(async ({ page }) => {
@@ -160,6 +160,7 @@ for (const [field, explanation] of [
 }
 
 test('pending form prevents duplicate submissions and adult details never reach the audio generator', async ({ page }) => {
+  await mockSantaNames(page);
   let release, calls = 0, generatorFields;
   const held = new Promise(resolve => { release = resolve; });
   await page.route(brevoUrl, async route => {
@@ -172,6 +173,8 @@ test('pending form prevents duplicate submissions and adult details never reach 
     return route.fulfill({ contentType: 'audio/mpeg', body: readFileSync('server/santa-audio/names/olivia.wav') });
   });
   await page.goto('/free-santa-message');
+  const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+  if (await decline.isVisible()) await decline.click();
   await fillAccessForm(page);
   await page.locator('.santa-message-access form').evaluate(form => { form.requestSubmit(); form.requestSubmit(); });
   await expect(page.getByRole('button', { name: 'Opening the message desk…' })).toBeDisabled();
@@ -181,6 +184,9 @@ test('pending form prevents duplicate submissions and adult details never reach 
   release();
   await expect(page.getByLabel('Child’s first name')).toBeVisible();
   await page.getByLabel('Child’s first name').fill('Olivia');
+  await expect(page.getByRole('option', { name: 'Olivia', exact: true })).toBeVisible();
+  await page.getByLabel('Child’s first name').press('Escape');
+  await page.getByRole('button', { name: 'Create message' }).evaluate(element => element.scrollIntoView({ block: 'center', behavior: 'instant' }));
   await page.getByRole('button', { name: 'Create message' }).click();
   await expect(page.locator('.message-result')).toBeVisible();
   expect(generatorFields).toEqual({ name: 'olivia' });
