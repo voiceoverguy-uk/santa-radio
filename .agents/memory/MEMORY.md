@@ -29,3 +29,4 @@
 - [Santa Dash scenery](santa-dash-scenery.md) — Rooftop-running backdrops need a side view with the Christmas town set back behind playable platforms.
 - [Artwork browser rendering](artwork-browser-rendering.md) — Prefer system Chromium for static artwork if the downloaded browser lacks shared libraries.
 - [App Preview compatibility](app-preview-compatibility.md) — Dimensions alone are insufficient; check Apple's H.264 level, bitrate and audio requirements before exporting.
+- [Browser engine environment](browser-engine-environment.md) — Linux WebKit may need multimedia plugins even for idle audio; empty-page launch is not route verification.
