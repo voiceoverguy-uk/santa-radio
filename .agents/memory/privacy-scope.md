@@ -4,6 +4,12 @@ description: Owner-approved website and native-app privacy scope and consent bou
 ---
 The owner wants a simple, concise policy with minimal company details. It now also covers Christmas Radio UK for iPhone and iPad, but this does not establish coverage of the separate Santa Radio native app.
 
+The cookie experience should offer an immediate, equally prominent accept-or-decline choice, with settings optional rather than compulsory.
+
+**Why:** The owner says: “We are a fun radio station and don't want to put people off.”
+
+**How to apply:** Keep first-layer wording concise and friendly, put detailed explanations in optional layers, and preserve independent choices, withdrawal and radio access rather than simplifying by removing real controls.
+
 The owner confirmed the supplied Christmas Radio UK privacy draft accurately describes that separate project's native app: no tracking/advertising SDKs or sensitive permissions; visual preferences, artwork and recent song information stay on the device. Website marketing must remain separate from native app use.
 
 **Why:** The owner confirmed the other project's app description when authorising the shared policy update; this workspace does not contain the native source.
