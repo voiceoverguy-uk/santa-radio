@@ -1,19 +1,34 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { RadioButton } from './AudioPlayer.jsx';
+import { scrollToSantaMessageDesk } from '../lib/scrollToSantaMessageDesk.js';
 import './Navbar.css';
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const openMessageDesk = event => {
+    setMenuOpen(false);
+    // Repeat visits to the current route don't remount its entry effect.
+    // Only an ordinary click should reposition this tab, not "open in new tab".
+    if (/^\/free-santa-message\/?$/.test(location.pathname) &&
+        !event.defaultPrevented && event.button === 0 &&
+        !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
+      scrollToSantaMessageDesk();
+    }
+  };
   useEffect(() => {
     const update = () => setScrolled(window.scrollY > 40);
     update();
     window.addEventListener('scroll', update, { passive: true });
     return () => window.removeEventListener('scroll', update);
   }, []);
-  useEffect(() => { setMenuOpen(false); window.scrollTo(0, 0); }, [location.pathname]);
+  useEffect(() => {
+    setMenuOpen(false);
+    // The standalone message page owns its initial section position.
+    if (!/^\/free-santa-message\/?$/.test(location.pathname)) window.scrollTo(0, 0);
+  }, [location.pathname]);
   useEffect(() => {
     if (!menuOpen) return;
     const close = event => { if (event.key === 'Escape') setMenuOpen(false); };
@@ -38,7 +53,7 @@ export default function Navbar() {
             ? <a href={link.to} target="_blank" rel="noopener noreferrer" title={`${link.label} (opens in a new tab)`} onClick={() => setMenuOpen(false)}>{link.label}</a>
             : <Link to={link.to} aria-current={location.pathname === link.to ? 'page' : undefined} className={location.pathname === link.to ? 'active' : ''} onClick={() => setMenuOpen(false)}>{link.label}</Link>
           }</li>)}
-          <li><Link to="/free-santa-message" className="btn-red nav-message" aria-current={location.pathname === '/free-santa-message' ? 'page' : undefined} onClick={() => setMenuOpen(false)}>FREE Santa Message</Link></li>
+          <li><Link to="/free-santa-message" className="btn-red nav-message" aria-current={location.pathname === '/free-santa-message' ? 'page' : undefined} onClick={openMessageDesk}>FREE Santa Message</Link></li>
         </ul>
       </div>
     </nav>

@@ -40,6 +40,19 @@ for (const [path, width] of [['/', 1280], ['/free-santa-message', 390]]) {
     page.on('download', () => downloads++);
     await visit(page, path);
     await expect(start(page)).toBeVisible();
+    const appearance = await start(page).evaluate(button => {
+      const style = getComputedStyle(button);
+      const bounds = button.getBoundingClientRect();
+      return {
+        height: bounds.height, left: bounds.left, right: bounds.right,
+        fontSize: parseFloat(style.fontSize), shadow: style.boxShadow,
+      };
+    });
+    expect(appearance.height).toBeGreaterThanOrEqual(56);
+    expect(appearance.fontSize).toBeGreaterThanOrEqual(15);
+    expect(appearance.shadow).not.toBe('none');
+    expect(appearance.left).toBeGreaterThanOrEqual(0);
+    expect(appearance.right).toBeLessThanOrEqual(width);
     expect(sampleRequests).toBe(0);
     for (const variant of ['boy', 'girl', 'boy']) {
       await start(page).focus();
@@ -70,7 +83,8 @@ test('rotation persists between pages and navigation stops the old recording', a
   await start(page).click();
   await expect.poll(() => sample(page).evaluate(audio => audio.currentTime)).toBeGreaterThan(0);
   const oldAudio = await sample(page).elementHandle();
-  await page.getByRole('link', { name: 'FREE Santa Message', exact: true }).click();
+  await page.getByRole('navigation', { name: 'Main navigation' })
+    .getByRole('link', { name: 'FREE Santa Message', exact: true }).click();
   await expect(page).toHaveURL(/\/free-santa-message$/);
   expect(await oldAudio.evaluate(audio => audio.paused)).toBe(true);
   await start(page).click();

@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import findSong from '../data/findSong';
 import SongVideo from '../components/SongVideo.jsx';
 import './KaraokeLyrics.css';
+import LyricsMessageLink from '../components/LyricsMessageLink.jsx';
 import PageSeo from '../seo/PageSeo.jsx';
 import { pageMetadata, songMetadata } from '../seo/catalogue.js';
 
@@ -60,6 +61,7 @@ export default function KaraokeLyrics() {
             )}
           </div>
 
+          <LyricsMessageLink />
           <div className="karaoke-actions">
             <Link to={`/christmas-artist/${songSlug}`} className="btn-red">View Artist Page</Link>
             <Link to="/christmas-music" className="back-link">← Back to Christmas Music</Link>

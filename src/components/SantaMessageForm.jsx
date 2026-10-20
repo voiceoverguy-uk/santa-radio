@@ -19,6 +19,7 @@ import './SantaMessageForm.css';
 export default function SantaMessageForm({ showDetailLink = true, initialName = '' }) {
   const { hasAccess, sessionRemembered } = useSantaMessageAccess();
   const makerHeadingRef = useRef(null);
+  const previousAccess = useRef(hasAccess);
   const [name, setName] = useState(initialName);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [exampleName, setExampleName] = useState('Olivia');
@@ -52,7 +53,12 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const countdown = `${Math.floor(allowance.secondsLeft / 60).toString().padStart(2, '0')}:${(allowance.secondsLeft % 60).toString().padStart(2, '0')}`;
 
   useEffect(() => {
-    if (hasAccess && !showDetailLink) makerHeadingRef.current?.focus();
+    if (hasAccess && !showDetailLink) {
+      // Keep the unlock announcement, but don't override page-entry positioning
+      // for returning visitors or a changed requested-name query.
+      makerHeadingRef.current?.focus({ preventScroll: previousAccess.current });
+    }
+    previousAccess.current = hasAccess;
   }, [hasAccess, showDetailLink]);
   // Keep server/client hydration deterministic; choose once on the client,
   // rather than changing the example whenever the user types or counts refresh.

@@ -1,6 +1,6 @@
 import PageSeo from '../seo/PageSeo.jsx';
 import { homeMetadata } from '../seo/catalogue.js';
-import { Link } from 'react-router-dom';
+import { scrollToSantaMessageDesk } from '../lib/scrollToSantaMessageDesk.js';
 import { RadioButton } from '../components/AudioPlayer.jsx';
 import NowPlayingArtwork from '../components/NowPlayingArtwork.jsx';
 import SantaTrackerBanner from '../tracker/components/SantaTrackerBanner.tsx';
@@ -30,7 +30,14 @@ export default function Home() {
             <p className="eyebrow">A little magic from the North Pole</p>
             <h1 className="hero-title">Live from The North Pole,<span>Santa Radio</span></h1>
             <p className="hero-description">Enjoy online Christmas music 24/7 on Santa Radio, your Christmas radio station all year round. Listen live to festive classics and family favourites.</p>
-            <div className="hero-actions"><Link to="/free-santa-message" className="btn-gold">FREE Santa Message <span aria-hidden="true">↗</span></Link><RadioButton className="btn-red" /></div>
+            <div className="hero-actions">
+              <a href="#santa-messages" className="btn-gold" onClick={event => {
+                if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                event.preventDefault();
+                scrollToSantaMessageDesk();
+              }}>FREE Santa Message <span aria-hidden="true">↓</span></a>
+              <RadioButton className="btn-red" />
+            </div>
             <a className="app-store-badge" href="https://apps.apple.com/gb/app/santa-radio/id1021183593" target="_blank" rel="noopener noreferrer" aria-label="Download Santa Radio on the App Store (opens in a new tab)">
               <img src="/images/download-on-the-app-store.svg" width="149.58" height="50" alt="" />
             </a>

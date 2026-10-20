@@ -1,4 +1,4 @@
-.navbar { position: fixed; top: 0; width: 100%; z-index: 1000; background: linear-gradient(#081e1770,transparent); container: santa-navigation / inline-size; }
+.navbar { position: fixed; top: 0; width: 100%; z-index: 1000; background: linear-gradient(#081e1770,transparent); border-bottom: 1px solid transparent; container: santa-navigation / inline-size; }
 .navbar.solid { background: #0b251ef5; border-bottom: 1px solid #D4AF3720; backdrop-filter: blur(12px); }
 .navbar-inner { display: flex; align-items: center; justify-content: space-between; max-width: 1320px; margin: auto; padding: 23px 32px; gap: 24px; }
 .logo-text { font-family: 'Dancing Script',cursive; font-size: 2.15rem; font-weight: 700; color: var(--gold-light); line-height: 1; white-space: nowrap; }

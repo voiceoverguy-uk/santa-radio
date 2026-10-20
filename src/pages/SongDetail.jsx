@@ -7,6 +7,7 @@ import './SongDetail.css';
 import PageSeo from '../seo/PageSeo.jsx';
 import SongVideo from '../components/SongVideo.jsx';
 import SongArtwork from '../components/SongArtwork.jsx';
+import LyricsMessageLink from '../components/LyricsMessageLink.jsx';
 import { songMetadata, performanceKind } from '../seo/catalogue.js';
 
 export default function SongDetail() {
@@ -90,6 +91,7 @@ export default function SongDetail() {
                     <div id="song-lyrics" className="song-lyrics-content">
                       <pre>{song.lyrics}</pre>
                     </div>
+                    <LyricsMessageLink />
                 </details>
               )}
 

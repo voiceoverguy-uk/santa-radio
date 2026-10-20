@@ -2,6 +2,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import songs from '../data/songs.ts';
 import './ArtistDetail.css';
+import LyricsMessageLink from '../components/LyricsMessageLink.jsx';
 
 function getInitials(name) {
   return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
@@ -136,6 +137,7 @@ export default function ArtistDetail() {
           </div>
 
           {song.lyrics && (
+            <>
             <div className="artist-detail-lyrics">
               <h3>Lyrics</h3>
               <div className="lyrics-text">
@@ -144,6 +146,8 @@ export default function ArtistDetail() {
                 ))}
               </div>
             </div>
+            <LyricsMessageLink />
+            </>
           )}
 
           <div className="artist-detail-actions">

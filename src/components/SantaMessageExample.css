@@ -7,26 +7,28 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 11px;
-  min-height: 48px;
+  gap: 12px;
+  min-height: 56px;
   max-width: 100%;
-  padding: 10px 17px;
-  border: 1px solid #d4af37a6;
+  padding: 13px 22px;
+  border: 1px solid #e8ce82;
   border-radius: 999px;
   background: #0c2a20;
   color: #f2dfae;
   font: inherit;
-  font-size: .88rem;
+  font-size: 1rem;
   font-weight: 650;
   line-height: 1.35;
   text-align: left;
   cursor: pointer;
-  transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+  box-shadow: 0 0 0 1px #d4af3726, 0 0 16px #d4af3740, 0 0 32px #d4af3726;
+  transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 }
 
 .santa-message-example__button:hover {
   background: #1b4936;
   border-color: #e8ce82;
+  box-shadow: 0 0 0 1px #e8ce8240, 0 0 20px #d4af3760, 0 0 38px #d4af3733;
   transform: translateY(-1px);
 }
 
@@ -42,13 +44,13 @@
 .santa-message-example__mark {
   display: grid;
   place-items: center;
-  width: 24px;
-  height: 24px;
-  flex: 0 0 24px;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
   border: 1px solid #d4af3780;
   border-radius: 50%;
   color: #e6c66d;
-  font-size: .68rem;
+  font-size: .75rem;
   line-height: 1;
 }
 
@@ -75,7 +77,7 @@
   .santa-message-example__button {
     width: 100%;
     padding-inline: 14px;
-    font-size: .84rem;
+    font-size: .94rem;
   }
 }
 

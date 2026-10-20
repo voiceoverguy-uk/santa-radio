@@ -1,0 +1,13 @@
+.lyrics-message-link {
+  display: flex;
+  justify-content: flex-end;
+  margin: 16px 0 24px;
+}
+
+.lyrics-message-link > .btn-red {
+  max-width: 100%;
+  min-height: 44px;
+  padding: 9px 18px;
+  font-size: .9rem;
+  text-align: center;
+}

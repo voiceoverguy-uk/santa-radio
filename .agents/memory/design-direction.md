@@ -8,6 +8,18 @@ Do not show a breadcrumb/path trail on Christmas artist/song pages.
 
 **How to apply:** Keep those pages free of visible breadcrumb trails; retain ordinary navigation and the back-to-music link.
 
+The top-nav “FREE Santa Message” link should land at “Their name. Santa’s voice. A little Christmas magic.” and the message desk, rather than the introductory banner.
+
+**Why:** The user repeated this destination request with screenshots of both the navigation button and the desired landing area.
+
+**How to apply:** Preserve that destination for navigation into the page and deliberate repeat clicks while already there; normal scrolling and form use must remain undisturbed.
+
+The homepage hero's “FREE Santa Message” button should scroll to the message section on the homepage, not open the separate message page.
+
+**Why:** The user explicitly distinguished the homepage button from the top navigation link.
+
+**How to apply:** Keep these two entry points distinct; the top navigation still opens the separate message page.
+
 Show the current artist's artwork on the right of the homepage hero during desktop radio playback, with a thin frame and the same gold hover glow as other homepage boxes. Also show it beneath the countdown on mobile while playing; hide it when paused.
 
 **Why:** The user originally requested desktop-only artwork, then requested mobile artwork too after showing the unused space beneath the countdown.
