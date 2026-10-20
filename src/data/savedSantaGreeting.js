@@ -1,7 +1,7 @@
 // Manual, Arabella-only approval. Never infer freshness from the public filename.
 export const savedSantaGreeting = {
   enabled: true, // Set false to disable the pilot.
-  recipeVersion: 'arabella-v1-74cef1f891899be6c99a03a37d937d5ebf0dce79e787cbe1f18a0e877a62a0d9',
+  recipeVersion: 'arabella-v1-4900681d3a817336adcae1449c8953c449bd77626f1d53474b539f1ff95b7f2b',
   nameFile: 'arabella.mp3',
   nameSha256: '281f2161924963e2341b60276ff9649790fc25dfe54d280b1f16cfc3a958e41c',
   recordingIds: ['arabella', 'f-8f196b4d6dd82cb9350cedd1429f7e11e184f8137ae7a165db004017a634c466'],

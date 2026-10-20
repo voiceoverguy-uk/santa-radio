@@ -7,12 +7,13 @@ import { fileURLToPath } from 'node:url';
 import ffmpegPath from 'ffmpeg-static';
 import { santaNameLibrary } from './santa-name-library.js';
 import { renderArgs } from '../scripts/santa-audio-filters.mjs';
+import { santaSavedCache, eligibleArabella } from './santa-saved-cache.js';
 
 const execute = promisify(execFile);
 const sources = fileURLToPath(new URL('./santa-audio/', import.meta.url));
 let active = 0;
 
-export function createSantaMessageHandler(library = santaNameLibrary) {
+export function createSantaMessageHandler(library = santaNameLibrary, cache = santaSavedCache) {
 return async function santaMessage(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   const fail = (status, error) => {
@@ -48,22 +49,33 @@ return async function santaMessage(req, res) {
     try { data = JSON.parse(body); } catch { return fail(400, 'Invalid request.'); }
     const recording = await library.resolve(data?.name);
     if (!recording) return fail(400, 'That name is not available yet. Choose a suggested name.');
-    directory = await mkdtemp(join(tmpdir(), 'santa-message-'));
-    const output = join(directory, 'message.mp3');
-    let nameClip = join(sources, 'names', `${recording.id}.wav`);
-    if (recording.source === 'hosted') {
-      nameClip = join(directory, 'name.wav');
-      await library.download(recording, nameClip);
+    let prepared;
+    if (eligibleArabella(recording)) {
+      try { prepared = await cache.prepare(recording, library); }
+      catch { console.info('[santa-cache]', { event: 'prepare', code: 'REVISION_UNAVAILABLE' }); }
     }
-    const renderStarted = performance.now();
-    // Execute the audio worker directly. Timing out a Node wrapper leaves its
-    // synchronous FFmpeg child alive, competing with subsequent requests.
-    await execute(ffmpegPath, renderArgs(
-      join(sources, 'prepared', 'intro.wav'), nameClip,
-      join(sources, 'prepared', 'outro.wav'), join(sources, 'sleighbells.mp3'), output, true,
-    ), { timeout: 90000, killSignal: 'SIGKILL', maxBuffer: 64 * 1024 });
-    renderMs = Math.round(performance.now() - renderStarted);
-    const audio = await readFile(output);
+    const generate = async () => {
+      directory = await mkdtemp(join(tmpdir(), 'santa-message-'));
+      const output = join(directory, 'message.mp3');
+      let nameClip = join(sources, 'names', `${recording.id}.wav`);
+      if (recording.source === 'hosted') {
+        nameClip = join(directory, 'name.wav');
+        await library.download(recording, nameClip, prepared?.sourceBytes);
+      }
+      const renderStarted = performance.now();
+      // Execute the audio worker directly. Timing out a Node wrapper leaves its
+      // synchronous FFmpeg child alive, competing with subsequent requests.
+      await execute(ffmpegPath, renderArgs(
+        join(sources, 'prepared', 'intro.wav'), nameClip,
+        join(sources, 'prepared', 'outro.wav'), join(sources, 'sleighbells.mp3'), output, true,
+      ), { timeout: 90000, killSignal: 'SIGKILL', maxBuffer: 64 * 1024 });
+      renderMs = Math.round(performance.now() - renderStarted);
+      const audio = await readFile(output);
+      if (prepared && performance.now() - started < 95000) await cache.publish(prepared, audio);
+      return audio;
+    };
+    const audio = eligibleArabella(recording)
+      ? await cache.singleFlight(prepared?.identity.key || recording.id, generate) : await generate();
     const asciiFilename = recording.downloadName.normalize('NFKD').replace(/\p{M}/gu, '').replace(/[^\x20-\x7e]/g, '_');
     res.writeHead(200, {
       'Content-Type': 'audio/mpeg',

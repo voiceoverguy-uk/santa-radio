@@ -15,12 +15,15 @@ export const recipeFiles = [
   'node_modules/ffmpeg-static/package.json',
 ];
 
-export function santaAudioRecipeVersion(read = path => readFileSync(new URL(`../${path}`, import.meta.url))) {
+export function santaAudioRecipeVersion(
+  read = path => readFileSync(new URL(`../${path}`, import.meta.url)),
+  nameSha256 = savedSantaGreeting.nameSha256,
+) {
   const hash = createHash('sha256');
   hash.update(JSON.stringify({
     schema: 'arabella-saved-greeting-v1',
     nameFile: savedSantaGreeting.nameFile,
-    nameSha256: savedSantaGreeting.nameSha256,
+    nameSha256,
   }));
   for (const path of recipeFiles) {
     hash.update(path);

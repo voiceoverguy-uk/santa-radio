@@ -8,7 +8,11 @@
     },
     "api/santa-message.js": {
       "maxDuration": 120,
-      "includeFiles": "{server/santa-audio/**,scripts/santa-audio-filters.mjs,node_modules/ffmpeg-static/**}"
+      "includeFiles": "{server/santa-audio/**,server/santa-message.js,server/santa-name-library.js,scripts/santa-audio-*.mjs,scripts/prepare-santa-audio.mjs,node_modules/ffmpeg-static/**}"
+    },
+    "api/santa-greeting.js": {
+      "maxDuration": 20,
+      "includeFiles": "{server/santa-audio/**,server/santa-message.js,server/santa-name-library.js,scripts/santa-audio-*.mjs,scripts/prepare-santa-audio.mjs,node_modules/ffmpeg-static/package.json}"
     },
     "api/santa-names.js": {
       "maxDuration": 15

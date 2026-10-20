@@ -1,5 +1,11 @@
 # Arabella-only saved-greeting pilot
 
+**Superseded implementation:** see [secure FTPS extension](arabella-ftps-cache.md)
+for current lookup, source-revision checking, upload settings and verification.
+The CORS failure below is historical: the owner subsequently added the MP3 CORS
+rule and real preview/www browser fetches passed. The manual file remains
+untouched; legacy reuse is explicitly approved by current recipe and checksum.
+
 ## Scope and operation
 
 Only the exact `arabella.mp3` recording IDs are eligible. No automatic uploads,

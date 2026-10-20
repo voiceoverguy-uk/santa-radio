@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import radioMetadata from './server/radio-metadata.js';
 import santaMessage from './server/santa-message.js';
 import santaNames from './server/santa-names.js';
+import santaGreeting from './server/santa-greeting.js';
 import nameRequests from './server/name-requests.js';
 import { CLERK_PROXY_PATH, clerkProxyMiddleware } from './server/middlewares/clerkProxyMiddleware.js';
 import { trackerPageHtml, isTrackerPreview } from './server/tracker-html.js';
@@ -39,6 +40,7 @@ const server = createServer(async (req, res) => {
     if (pathname === '/api/radio-metadata') return await radioMetadata(req, res);
     if (pathname === '/api/santa-message') return await santaMessage(req, res);
     if (pathname === '/api/santa-names') return await santaNames(req, res);
+    if (pathname === '/api/santa-greeting') return await santaGreeting(req, res);
     if (pathname.startsWith('/api/')) { res.writeHead(404).end('Not found'); return; }
     if (pathname === '/server' || pathname.startsWith('/server/')) { res.writeHead(404).end('Not found'); return; }
     if (pathname.split('/').some(part => part.startsWith('.'))) { res.writeHead(404).end('Not found'); return; }

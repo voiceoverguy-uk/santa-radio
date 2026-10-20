@@ -31,7 +31,7 @@ export async function fetchLimited(url, limit, fetcher = fetch) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 10_000);
   try {
-    const response = await fetcher(url, { redirect: 'error', signal: controller.signal });
+    const response = await fetcher(url, { redirect: 'error', cache: 'no-store', signal: controller.signal });
     if (!response.ok || response.redirected) throw new NameLibraryError('UPSTREAM_STATUS');
     if (Number(response.headers.get('content-length')) > limit) throw new NameLibraryError('UPSTREAM_SIZE');
     const reader = response.body?.getReader();
@@ -134,10 +134,13 @@ export function createNameLibrary({ fetcher = fetch, now = Date.now } = {}) {
         throw error;
       }
     },
-    async download(record, destination) {
+    async sourceBytes(record) {
       if (record.source !== 'hosted' || !FILE.test(record.file)) throw new NameLibraryError('INVALID_RECORDING');
       const url = new URL(encodeURIComponent(record.file), NAMES_ROOT);
-      const bytes = await fetchLimited(url.href, MAX_AUDIO_BYTES, fetcher);
+      return fetchLimited(url.href, MAX_AUDIO_BYTES, fetcher);
+    },
+    async download(record, destination, sourceBytes) {
+      const bytes = sourceBytes || await this.sourceBytes(record);
       if (/\.wav$/i.test(record.file)) {
         validateNameWav(bytes);
         await writeFile(destination, bytes, { flag: 'wx', mode: 0o600 });
