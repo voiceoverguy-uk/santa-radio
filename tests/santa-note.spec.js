@@ -54,7 +54,7 @@ test('three animated dots precede each complete fading line without typing and r
   await page.clock.install({ time: start });
   await page.clock.pauseAt(new Date(start.getTime() + 1000));
   await page.goto('/', { waitUntil: 'domcontentloaded' });
-  await expect(page.getByRole('link', { name: 'FREE Audio Message', exact: true })).toBeVisible();
+  await expect(page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'FREE Santa Message', exact: true })).toBeVisible();
   const bubble = page.locator('.santa-note');
   const text = bubble.locator('.santa-note-text');
   await expect(page.getByText('Sent with Elfie', { exact: true })).toHaveCount(0);

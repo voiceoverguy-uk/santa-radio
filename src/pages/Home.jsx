@@ -42,8 +42,8 @@ export default function Home() {
           <NowPlayingArtwork />
         </div>
       </section>
-      <SantaTrackerBanner />
       <SantaMessageForm />
+      <SantaTrackerBanner />
       <SantaVideoSection />
       <Soundboard />
       <YouTubeSection />

@@ -22,7 +22,7 @@ export default function Navbar() {
   }, [menuOpen]);
   const links = [
     { to: '/', label: 'Home' }, { to: '/apps', label: 'Apps' },
-    { to: '/free-santa-message', label: 'FREE Audio Message' }, { to: '/christmas-music', label: 'Music' },
+    { radio: true }, { to: '/christmas-music', label: 'Music' },
     { to: '/mugshots/all', label: 'Mug Shots' },
     { to: '/santa-tracker', label: 'Santa Tracker' },
   ];
@@ -32,11 +32,13 @@ export default function Navbar() {
         <Link to="/" className="navbar-logo" aria-label="Santa Radio home"><img className="navbar-logo-image" src="/images/santa-radio-gold-nav.webp" alt="Santa Radio" width="630" height="188" /></Link>
         <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-controls="main-menu" aria-label={menuOpen ? 'Close menu' : 'Open menu'}><span /><span /><span /></button>
         <ul id="main-menu" className={`navbar-links ${menuOpen ? 'open' : ''}`}>
-          {links.map(link => <li key={link.to}>{link.external
+          {links.map(link => <li key={link.radio ? 'radio' : link.to} className={link.radio ? 'nav-listen' : undefined}>{link.radio
+            ? <RadioButton className="nav-radio" />
+            : link.external
             ? <a href={link.to} target="_blank" rel="noopener noreferrer" title={`${link.label} (opens in a new tab)`} onClick={() => setMenuOpen(false)}>{link.label}</a>
             : <Link to={link.to} aria-current={location.pathname === link.to ? 'page' : undefined} className={location.pathname === link.to ? 'active' : ''} onClick={() => setMenuOpen(false)}>{link.label}</Link>
           }</li>)}
-          <li className="nav-listen"><RadioButton className="btn-red" /></li>
+          <li><Link to="/free-santa-message" className="btn-red nav-message" aria-current={location.pathname === '/free-santa-message' ? 'page' : undefined} onClick={() => setMenuOpen(false)}>FREE Santa Message</Link></li>
         </ul>
       </div>
     </nav>

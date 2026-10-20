@@ -34,7 +34,7 @@ test.beforeEach(async ({ context }) => {
 });
 
 test('two successes block the third, preserve downloads and offer radio without restarting playback', async ({ page }) => {
-  let calls = 0;
+    let calls = 0, release;
   await page.route('**/api/santa-message', route => { calls++; return route.fulfill(mp3); });
   await openMessageDesk(page);
   await expect(page.getByRole('heading', { name: 'Download your free Santa greeting' })).toBeVisible();
@@ -138,7 +138,7 @@ test('navigation, reload, a new tab and returning after the deadline preserve an
   await create(page, 'Erin');
   const deadline = (await usage(page)).availableAt;
   await page.goto('/apps');
-  await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'FREE Audio Message', exact: true }).click();
+  await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'FREE Santa Message', exact: true }).click();
   await expect(page.getByRole('timer')).toHaveText('10:00');
   const newTab = await context.newPage();
   await mockBrevo(newTab);

@@ -2,14 +2,16 @@ import { test, expect } from '@playwright/test';
 
 test('desktop swaps Mug Shots and personalised video while mobile keeps its section order', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
-  const desktop = ['hero', 'tracker-banner', 'santa-message-section', 'mugshots-preview', 'soundboard', 'youtube-section', 'santa-video-section', 'contact-section'];
-  const mobile = ['hero', 'tracker-banner', 'santa-message-section', 'santa-video-section', 'soundboard', 'youtube-section', 'mugshots-preview', 'contact-section'];
+  const desktop = ['hero', 'santa-message-section', 'tracker-banner', 'mugshots-preview', 'soundboard', 'youtube-section', 'santa-video-section', 'contact-section'];
+  const mobile = ['hero', 'santa-message-section', 'tracker-banner', 'santa-video-section', 'soundboard', 'youtube-section', 'mugshots-preview', 'contact-section'];
   for (const width of [1280, 768, 767, 390]) {
     await page.setViewportSize({ width, height: 900 });
     const order = await page.locator('.home-page > section').evaluateAll(sections =>
       sections.map(section => ({ name: section.classList[0], top: section.getBoundingClientRect().top }))
         .sort((a, b) => a.top - b.top).map(section => section.name));
     expect(order).toEqual(width >= 768 ? desktop : mobile);
+    expect(await page.locator('.home-page > section').evaluateAll(sections =>
+      sections.slice(0, 3).map(section => section.classList[0]))).toEqual(['hero', 'santa-message-section', 'tracker-banner']);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
 });
@@ -76,7 +78,7 @@ test('homepage keeps the countdown in the hero and plain Santa text in Contact S
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   const hero = page.locator('.hero');
   await expect(page.locator('.welcome-section')).toHaveCount(0);
-  await expect(page.locator('.hero + .tracker-banner')).toHaveCount(1);
+  await expect(page.locator('.hero + .santa-message-section + .tracker-banner')).toHaveCount(1);
   await expect(page.locator('.radio-listening-section, .santa-note-section, .hero-scroll')).toHaveCount(0);
   await expect(page.locator('.soundboard')).toHaveCount(1);
   await expect(hero.getByRole('heading', { name: 'Christmas is on its way' })).toHaveCount(0);

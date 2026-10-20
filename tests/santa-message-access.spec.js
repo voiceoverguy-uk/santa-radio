@@ -22,7 +22,7 @@ test('homepage, direct visits and existing message navigation all require adult 
   await expect(page).toHaveURL(/\/free-santa-message$/);
   await expect(page.getByRole('button', { name: 'Get my free Santa message' })).toBeVisible();
   await page.goto('/apps');
-  await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'FREE Audio Message', exact: true }).click();
+  await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'FREE Santa Message', exact: true }).click();
   await expect(page.getByLabel('Child’s first name')).toHaveCount(0);
   await page.reload();
   await expect(page.getByRole('textbox', { name: 'Surname', exact: true })).toBeVisible();

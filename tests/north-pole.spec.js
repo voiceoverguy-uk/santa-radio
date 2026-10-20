@@ -1,8 +1,9 @@
 import { test, expect } from '@playwright/test';
 
 const primaryNavigation = [
-  ['Home', '/'], ['Apps', '/apps'], ['FREE Audio Message', '/free-santa-message'],
+  ['Home', '/'], ['Apps', '/apps'],
   ['Music', '/christmas-music'], ['Mug Shots', '/mugshots/all'], ['Santa Tracker', '/santa-tracker'],
+  ['FREE Santa Message', '/free-santa-message'],
 ];
 
 async function expectNavigationFits(page, mobile, checkPageOverflow = true) {
@@ -17,6 +18,17 @@ async function expectNavigationFits(page, mobile, checkPageOverflow = true) {
     await expect(nav.getByRole('link', { name: label, exact: true })).toBeVisible();
     await expect(nav.getByRole('link', { name: label, exact: true })).toHaveAttribute('href', href);
   }
+  await expect(nav.locator('.navbar-links').locator('a, button')).toHaveText([
+    'Home', 'Apps', 'Listen Live', 'Music', 'Mug Shots', 'Santa Tracker', 'FREE Santa Message',
+  ]);
+  const radio = nav.getByRole('button', { name: 'Listen Live', exact: true });
+  await expect(radio).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  await expect(radio).toHaveCSS('color', 'rgb(225, 230, 220)');
+  const message = nav.getByRole('link', { name: 'FREE Santa Message', exact: true });
+  await expect(message).toHaveCSS('background-color', 'rgb(155, 17, 30)');
+  await expect(message).toHaveCSS('color', 'rgb(255, 248, 231)');
+  await expect(message).toHaveCSS('padding-left', '18px');
+  await expect(nav.getByText('FREE Audio Message', { exact: true })).toHaveCount(0);
   const layout = await nav.evaluate(element => {
     const bounds = node => {
       const { left, right, top, bottom, width, height } = node.getBoundingClientRect();
@@ -59,7 +71,7 @@ for (const path of ['/', '/apps']) {
     const nav = page.getByRole('navigation', { name: 'Main navigation' });
     await expect(nav.getByRole('link', { name: 'Home', exact: true })).toHaveCSS('font-size', '15.2px');
     await expect(nav.getByRole('switch', { name: 'Snow', exact: true })).toHaveCount(0);
-    await expect(nav.locator('.nav-listen button')).toHaveCSS('font-size', '14.4px');
+    await expect(nav.locator('.nav-listen button')).toHaveCSS('font-size', '15.2px');
     for (const width of [1440, 1280, 1201, 1200, 1199, 1024, 768, 390, 320]) {
       await page.setViewportSize({ width, height: 900 });
       await expectNavigationFits(page, width <= 1200);
@@ -72,6 +84,10 @@ for (const path of ['/', '/apps']) {
     // Existing homepage countdown overflow at 200% text is separate from the header.
     // Still verify every menu item's bounds and the menu's own overflow at this size.
     await expectNavigationFits(page, true, path !== '/');
+    await page.setViewportSize({ width: 320, height: 844 });
+    // At 320px/200% text, existing Apple TV page copy also exceeds the viewport;
+    // keep this navigation check scoped to the menu and its controls.
+    await expectNavigationFits(page, true, false);
   });
 }
 

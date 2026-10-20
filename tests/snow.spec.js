@@ -14,7 +14,7 @@ test('snow works across routes and remembers off after reload', async ({ page })
   await page.reload({ waitUntil: 'domcontentloaded' });
   await expect(page.locator('.site-snow')).toHaveCount(0);
   await footer.getByRole('switch', { name: 'Snow', checked: false }).click();
-  for (const label of ['Home', 'FREE Audio Message', 'Mug Shots']) {
+  for (const label of ['Home', 'FREE Santa Message', 'Mug Shots']) {
     await nav.getByRole('link', { name: label, exact: true }).click();
     await expect(page.locator('.site-snow i')).toHaveCount(24);
     await expect(page.locator('.site-snow')).toHaveCSS('pointer-events', 'none');
