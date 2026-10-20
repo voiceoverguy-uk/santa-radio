@@ -8,6 +8,12 @@ The owner-hosted name folder can fail as a directory page while individual WAV U
 
 **How to apply:** Verify individual audio and inventory discovery separately. Use an owner-uploaded standalone listing beside the recordings; do not change the external WordPress installation or request FTP credentials to fix discovery.
 
+The owner moved the recorded-name files to a new drive. Their replacement FTP-folder screenshot supplied on 20 October 2026 shows MP3 recordings.
+
+**Why:** The owner reported the storage move and asked to reconnect the name library and resend its listing file.
+
+**How to apply:** Confirm the new folder's HTTPS mapping and support its actual audio format before reconnecting it. Do not assume the old WAV listing can be reused unchanged or infer a public web address from the FTP account.
+
 Hosted recording labels can contain digits, including numbered variants. Preserve these labels and identifiers rather than assuming every catalogue entry is a letters-only first name.
 
 **Why:** A newly uploaded numbered WAV was readable and safely listed by the host, but letters-only display-label validation rejected the entire inventory.
