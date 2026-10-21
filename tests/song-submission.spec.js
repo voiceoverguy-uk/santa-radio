@@ -577,7 +577,8 @@ test('home, music and footer links select the correct shared form mode', async (
   await page.getByRole('link', { name: 'Get in touch', exact: true }).click();
   await expect(page.getByRole('radio', { name: 'General enquiry' })).toBeChecked();
   await page.goto('/christmas-music');
-  await page.getByRole('link', { name: 'Suggest a song', exact: true }).click();
+  await page.locator('footer').getByRole('link', { name: 'Submit your song', exact: true }).click();
+  await expect(page).toHaveURL(/\/submit-a-song\?mode=song$/);
   await expect(page.getByRole('radio', { name: 'Song submission' })).toBeChecked();
   await expect(page.getByLabel('First name')).toBeVisible();
   await page.locator('footer a[href="/privacy-policy"]').click();

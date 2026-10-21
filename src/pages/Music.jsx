@@ -4,7 +4,6 @@ import SongArtwork from '../components/SongArtwork.jsx';
 import './Music.css';
 import { songs as songsData, songsByArtistAZ, collectionMetadata } from '../seo/catalogue.js';
 import PageSeo from '../seo/PageSeo.jsx';
-import Breadcrumbs from '../seo/Breadcrumbs.jsx';
 import { randomSongOrder } from '../data/randomSongOrder.js';
 
 const shuffleSongs = () => randomSongOrder(songsData);
@@ -30,15 +29,13 @@ export default function Music() {
       <PageSeo metadata={collectionMetadata('music')} />
       <div className="music-hero starry-bg">
         <div className="music-hero-content">
-          <div className="music-hero-title"><img className="brand-logo brand-logo-hero" src="/images/santa-radio-logo.png" alt="Santa Radio" width="827" height="190" /></div>
           <h1 className="music-sub-title">Christmas Song Lyrics &amp; Artists</h1>
           <p className="music-sub-desc">Browse Hundreds of Christmas Songs</p>
           <p className="music-description">
-            Explore {songsData.length} Christmas recordings with lyrics and artist background,
-            illustrated portraits or Santa Radio artwork, and linked videos where available.
+            {songsData.length} Christmas songs with lyrics, artist info and linked videos.
             Browse Christmas classics, pop hits and hidden gems.
           </p>
-          <Link to="/submit-a-song?mode=song" className="btn-red suggest-btn">Suggest a song</Link>
+          <div className="music-browse-controls">
           <div className="music-search-wrap">
           <svg className="music-search-symbol" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="10" cy="10" r="6" /><path d="m15 15 6 6" /></svg>
           <input
@@ -58,11 +55,10 @@ export default function Music() {
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m3 10 3-7 3 7M4 8h4m-5 6h6l-6 7h6M17 3v18m-4-4 4 4 4-4" /></svg>
             </button>
           </div>
-          <p className="music-results-count" role="status">{filtered.length} songs to explore · {order === 'random' ? 'Random order' : 'Artist A–Z'}</p>
+          </div>
         </div>
       </div>
 
-      <Breadcrumbs items={[['Home', '/'], ['Christmas Music', '/christmas-music']]} />
       <div className="music-grid-section starry-bg">
         <div className="container music-grid">
           {filtered.map((s) => (

@@ -1,11 +1,12 @@
 import { test, expect } from '@playwright/test';
+import { songs } from '../src/seo/catalogue.js';
 
 test('music starts shuffled, sorts A–Z and filters without reshuffling', async ({ page }) => {
   await page.goto('/christmas-music', { waitUntil: 'domcontentloaded' });
   const cards = page.locator('.song-card');
   const random = page.getByRole('button', { name: 'Random', exact: true });
   await expect(random).toHaveAttribute('aria-pressed', 'true');
-  await expect(cards).toHaveCount(452);
+  await expect(cards).toHaveCount(songs.length);
   const initial = await cards.evaluateAll(els => els.map(el => el.getAttribute('href')));
   const search = page.getByRole('textbox', { name: 'Search for a song or artist' });
   await search.fill('Sinatra');

@@ -11,14 +11,6 @@
   margin: 0 auto;
 }
 
-.music-hero-title {
-  font-family: 'Dancing Script', cursive;
-  font-size: clamp(3rem, 8vw, 4.5rem);
-  font-weight: 700;
-  margin-bottom: 12px;
-  line-height: 1;
-}
-
 .music-sub-title {
   font-family: 'Cinzel', serif;
   font-size: clamp(1.2rem, 3vw, 1.7rem);
@@ -42,13 +34,6 @@
   margin-right: auto;
 }
 
-.suggest-btn {
-  margin-bottom: 20px;
-  font-family: 'Dancing Script', cursive;
-  font-size: 1.2rem;
-  padding: 12px 32px;
-}
-
 .music-search {
   width: 100%;
   max-width: 440px;
@@ -70,13 +55,22 @@
   border-color: transparent;
 }
 
+.music-browse-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 558px;
+  margin: 0 auto;
+}
+
 .music-search-wrap {
   position: relative;
-  max-width: 440px;
-  margin: 0 auto;
+  flex: 1;
+  min-width: 0;
 }
 .music-search-wrap .music-search {
   padding-left: 44px;
+  margin-bottom: 0;
 }
 .music-search-symbol {
   position: absolute;
@@ -90,9 +84,9 @@
 .music-order-controls {
   display: flex;
   justify-content: center;
-  flex-wrap: wrap;
+  flex-shrink: 0;
   gap: 10px;
-  margin: 14px 0;
+  margin: 0;
 }
 .music-order-controls button {
   display: grid;

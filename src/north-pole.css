@@ -89,7 +89,6 @@ main .gold-text { background: none; -webkit-text-fill-color: var(--gold-light); 
 .portrait-fallback { display: grid; place-items: center; background: #254c3a; color: var(--gold-light); font-family: 'Cinzel',serif; font-size: 2rem; }
 .artist-detail-avatar { background: #254c3a !important; border-color: #D4AF3750; color: var(--gold-light); font-family: 'Cinzel',serif; font-weight: 400; }
 .artist-detail-image { border-color: #D4AF3750; }
-.music-results-count { font-size: .72rem; color: var(--muted); }
 html[data-effects="off"] *,html[data-effects="off"] *::before,html[data-effects="off"] *::after { animation: none !important; }
 @media(max-width:767px) {
   .music-grid,.mugshots-grid { grid-template-columns: 1fr; gap: 18px; }
