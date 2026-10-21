@@ -96,6 +96,7 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
   const isComplete = data.mode === "COMPLETE";
    const onHoliday = data.mode === "OFF_SEASON" && holidaySeason && holiday !== null;
   const inJuly = data.mode === "OFF_SEASON" && isChristmasInJuly(effectiveTime);
+  const showStatusMessage = !heading || isLive || isComplete || Boolean(onHoliday && holiday);
 
   if (onHoliday && holiday) {
     data.holiday = holiday;
@@ -167,7 +168,13 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
 
           {introCopy}
 
-          {(!heading || isLive || isComplete || (onHoliday && holiday)) && <p className="tracker-copy mt-4 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
+          {introCopy && showStatusMessage && (
+            <div className="tracker-copy-divider" aria-hidden="true">
+              <span className="tracker-copy-divider-flourish" />
+            </div>
+          )}
+
+          {showStatusMessage && <p className="tracker-copy tracker-status-message mt-4 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
             {isLive || isComplete
               ? data.statusSubtext
               : onHoliday && inJuly && holiday

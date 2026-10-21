@@ -89,6 +89,31 @@
 .santa-tracker .tracker-shell > section:not(.tracker-hero) { padding-inline: 28px; }
 .santa-tracker .tracker-hero .tracker-copy { font-size: .9rem; line-height: 1.9; max-width: 660px; margin-inline: auto; }
 .santa-tracker .tracker-hero .tracker-copy.text-xs { font-size: .73rem; line-height: 1.65; }
+.santa-tracker .tracker-copy-divider {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  width: min(100%, 26rem);
+  margin: .55rem auto;
+  color: var(--tracker-gold);
+}
+.santa-tracker .tracker-copy-divider::before,
+.santa-tracker .tracker-copy-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #e6ce8680);
+}
+.santa-tracker .tracker-copy-divider::after {
+  background: linear-gradient(90deg, #e6ce8680, transparent);
+}
+.santa-tracker .tracker-copy-divider-flourish::before {
+  content: "✦";
+  display: block;
+  font-family: Georgia, serif;
+  font-size: .72rem;
+  line-height: 1;
+}
 .santa-tracker .tracker-section-title { font-size: clamp(1.4rem, 2.4vw, 2rem); }
 .santa-tracker .tracker-countdown-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; width: 100%; max-width: 396px; margin-inline: auto; }
 .santa-tracker .tracker-countdown-cell { display: block; }
@@ -244,6 +269,7 @@
 .santa-tracker .tracker-preview-panel .tracker-meta { color: #c1cbbb; }
 @media (max-width: 767px) {
   .santa-tracker .tracker-heading { font-size: clamp(1.8rem, 6vw, 2.4rem); }
+  .santa-tracker .tracker-copy-divider { width: min(72vw, 26rem); }
   .santa-tracker .tracker-shell > section:not(.tracker-hero) { padding-inline: 24px; }
   .santa-tracker .tracker-countdown-grid { gap: 8px; }
   .santa-tracker .tracker-countdown-unit { padding: 15px 7px; }

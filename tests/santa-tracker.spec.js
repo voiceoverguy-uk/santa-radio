@@ -140,6 +140,33 @@ test('desktop/mobile map, typography and menu fit without horizontal overflow', 
   }
 });
 
+test('gold divider stays centred between the introduction and seasonal message', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-11-15T12:00:00Z'));
+  for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 }]) {
+    await page.setViewportSize(viewport);
+    await page.goto('/santa-tracker');
+    const divider = page.locator('.tracker-copy-divider');
+    await expect(divider).toBeVisible();
+    await expect(divider).toHaveAttribute('aria-hidden', 'true');
+    const dividerBox = await divider.boundingBox();
+    const introBox = await page.locator('.tracker-hero .tracker-copy').nth(1).boundingBox();
+    const statusMessageBox = await page.locator('.tracker-status-message').boundingBox();
+    expect(dividerBox.y).toBeGreaterThan(introBox.y + introBox.height - 1);
+    expect(statusMessageBox.y).toBeGreaterThan(dividerBox.y + dividerBox.height);
+    expect(Math.abs(dividerBox.x + dividerBox.width / 2 - viewport.width / 2)).toBeLessThanOrEqual(1);
+    expect(dividerBox.width).toBeGreaterThan(200);
+    expect(dividerBox.width).toBeLessThanOrEqual(416);
+  }
+});
+
+test('tracker omits the gold divider when no status message follows the introduction', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-12-12T12:00:00Z'));
+  await page.goto('/santa-tracker');
+  await expect(page.locator('.tracker-hero .tracker-copy')).toHaveCount(2);
+  await expect(page.locator('.tracker-status-message')).toHaveCount(0);
+  await expect(page.locator('.tracker-copy-divider')).toHaveCount(0);
+});
+
 test('tracker uses the homepage typography and readable brand accents without changing shared styles', async ({ page }) => {
   await page.clock.setFixedTime(new Date('2026-07-15T12:00:00Z'));
   await page.goto('/');
