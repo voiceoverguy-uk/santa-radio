@@ -1,4 +1,4 @@
-.radio-dock { position: fixed; z-index: 1100; bottom: 20px; right: 24px; width: 405px; padding: 17px 20px; display: grid; grid-template-columns: 1fr auto; gap: 12px; border: 1px solid #D4AF374a; border-radius: 16px; background: #0a241bee; box-shadow: 0 12px 40px #06150f66; backdrop-filter: blur(12px); }
+.radio-dock { box-sizing: border-box; position: fixed; z-index: 1100; bottom: 20px; right: 24px; width: min(405px, calc(100vw - 24px)); padding: 17px 20px; display: grid; grid-template-columns: 1fr auto; gap: 12px; border: 1px solid #D4AF374a; border-radius: 16px; background: #0a241bee; box-shadow: 0 12px 40px #06150f66; backdrop-filter: blur(12px); }
 .radio-station { display: flex; flex-direction: column; grid-column: 1 / -1; }
 .radio-eyebrow { font-size: .65rem; letter-spacing: .16em; color: var(--gold-light); display: flex; align-items: center; gap: 8px; }
 .live-dot { width: 6px; height: 6px; border-radius: 50%; background: #83978a; }
@@ -42,6 +42,10 @@
 .radio-upcoming-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
 .radio-upcoming-panel { max-height: min(190px, 30dvh); overflow-y: auto; overscroll-behavior: contain; padding-right: 8px; }
 .radio-upcoming-toggle:focus-visible, .radio-upcoming-panel:focus-visible, .radio-play:focus-visible, .radio-volume input:focus-visible { outline: 2px solid var(--gold-light); outline-offset: 4px; }
+.radio-top-ten-trigger { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 40px; padding: 8px 0 0; border: 0; border-top: 1px solid #D4AF3726; margin-top: 8px; background: transparent; color: var(--gold-light); font: inherit; font-size: .7rem; text-align: left; cursor: pointer; }
+.radio-top-ten-trigger span { font-size: .9rem; transition: transform .18s ease; }
+.radio-top-ten-trigger:hover span { transform: translate(2px, -2px); }
+.radio-top-ten-trigger:focus-visible { outline: 2px solid var(--gold-light); outline-offset: 3px; }
 @media (max-width: 600px) { .radio-dock { max-height: calc(100dvh - 20px); } }
 @media (prefers-reduced-motion: reduce) { .radio-upcoming-toggle svg { transition: none; } }
 @media (max-width: 600px) { .radio-dock { bottom: 10px; right: 12px; left: 12px; width: auto; padding: 12px 16px; gap: 8px; } .radio-caption { font-size: .66rem; } }

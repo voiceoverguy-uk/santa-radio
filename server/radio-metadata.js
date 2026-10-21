@@ -3,7 +3,7 @@ import { trackIdentity } from '../src/lib/radio-track-identity.js';
 const ROOT = 'https://stagcommunications.com/santaradio/';
 const MAX_BYTES = 8192;
 
-export function parseTracks(text, limit = 3) {
+export function parseEntries(text) {
   if (typeof text !== 'string' || text.length > MAX_BYTES || /[<>]/.test(text)) {
     throw new Error('Invalid metadata');
   }
@@ -14,10 +14,12 @@ export function parseTracks(text, limit = 3) {
     // Automation announcements can have a title but no artist.
     if (separator < 0 || !title || line.length > 1000) throw new Error('Invalid track');
     return { artist, title };
-  }).filter(({ artist, title }) => artist && !/^santa radio\b/i.test(artist) && !/^santa radio\b/i.test(title)).slice(0, limit);
+  });
 }
+export const isRadioSong = ({ artist, title }) => Boolean(artist) && !/^santa radio\b/i.test(artist) && !/^santa radio\b/i.test(title);
+export const parseTracks = (text, limit = 3) => parseEntries(text).filter(isRadioSong).slice(0, limit);
 
-async function readFeed(filename, limit, fetcher) {
+async function readFeed(filename, limit, fetcher, parser = parseTracks) {
   const url = new URL(filename, ROOT);
   url.searchParams.set('_', String(Date.now()));
   const response = await fetcher(url, { signal: AbortSignal.timeout(filename === 'Next3.txt' ? 3000 : 6000), cache: 'no-store', redirect: 'error' });
@@ -39,8 +41,18 @@ async function readFeed(filename, limit, fetcher) {
   }
   const text = Buffer.concat(chunks).toString('utf8');
   if (!text.trim()) throw new Error('Empty feed');
-  const tracks = parseTracks(text, limit);
+  const tracks = parser(text, limit);
   return tracks;
+}
+
+// Uncached, current-only read for the independent history worker. A valid
+// announcement is a transition; malformed or failed reads are never transitions.
+export async function readCurrentSnapshot(fetcher = fetch) {
+  return readFeed('Nowplaying.txt', 1, fetcher, text => {
+    const entries = parseEntries(text);
+    if (entries.length !== 1) throw new Error('Expected one current entry');
+    return isRadioSong(entries[0]) ? entries[0] : null;
+  });
 }
 
 export function createMetadataService(fetcher = fetch, ttl = 1000, { clock = Date.now, retryDelay = 500, staleMs = 45000 } = {}) {

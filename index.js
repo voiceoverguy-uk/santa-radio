@@ -4,6 +4,7 @@ import { stat, realpath, readFile } from 'node:fs/promises';
 import { resolve, extname, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import radioMetadata from './server/radio-metadata.js';
+import radioTopTen from './server/radio-top-ten.js';
 import santaMessage from './server/santa-message.js';
 import santaNames from './server/santa-names.js';
 import santaGreeting from './server/santa-greeting.js';
@@ -38,6 +39,7 @@ const server = createServer(async (req, res) => {
     if (pathname.startsWith(`${CLERK_PROXY_PATH}/`)) return clerkProxy(req, res, () => res.writeHead(404).end());
     if (pathname === '/api/name-requests') return nameRequests(req, res);
     if (pathname === '/api/radio-metadata') return await radioMetadata(req, res);
+    if (pathname === '/api/radio-top-ten') return await radioTopTen(req, res);
     if (pathname === '/api/santa-message') return await santaMessage(req, res);
     if (pathname === '/api/santa-names') return await santaNames(req, res);
     if (pathname === '/api/santa-greeting') return await santaGreeting(req, res);

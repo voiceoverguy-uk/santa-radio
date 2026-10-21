@@ -14,11 +14,17 @@ Starting Listen Live from the compact radio player should expand it, then minimi
 
 **How to apply:** Keep pause/cancel separate from starting playback; do not expand merely because playback is paused.
 
-Read song metadata from the user-confirmed public HTTPS feeds on stagcommunications.com, not the retiring Heart Internet host. Do not add a fallback to that host, FTP credentials, paid services or new storage.
+Read song metadata from the user-confirmed public HTTPS feeds on stagcommunications.com, not the retiring Heart Internet host. Do not add a fallback to that host, FTP credentials or paid services. The owner confirms automation already uploads Nowplaying.txt; history collection must reuse it rather than request another export.
 
 **Why:** The user supplied working replacement feeds independent of the main website domain and explicitly ruled out fallback to the retiring host.
 
 **How to apply:** Keep reads in the existing website service, with brief shared caching and bounded failures isolated from audio. The site is deployed separately through GitHub to Vercel; development changes do not authorise pushing or publishing. Do not promise exact audio synchronization: broadcast metadata may lead a listener’s buffered stream.
+
+The owner authorises code for persistent song history, but production storage and independently running collector hosting must be confirmed before activation.
+
+**Why:** The Top Ten request explicitly distinguishes code readiness from live collection and does not authorise publication, remote schema changes, paid provisioning or a production worker.
+
+**How to apply:** Obtain approval before remote activation and verify durable storage plus collection with no visitors before claiming station-wide history is active.
 
 The automation's upcoming slots can include station announcements with an empty artist, not just songs.
 

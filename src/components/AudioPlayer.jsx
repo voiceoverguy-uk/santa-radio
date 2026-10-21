@@ -1,7 +1,8 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { useRadio } from './RadioProvider.jsx';
 import RadioTracks from './RadioTracks.jsx';
 import LiveLyrics from './LiveLyrics.jsx';
+import { RadioTopTenPanel, useRadioTopTen } from './RadioTopTen.jsx';
 import './AudioPlayer.css';
 
 export function RadioButton({ className = 'btn-gold', onStart }) {
@@ -19,6 +20,7 @@ export function RadioButton({ className = 'btn-gold', onStart }) {
 export default function AudioPlayer() {
   const { status, volume, setVolume, error, metadata } = useRadio();
   const [upcomingOpen, setUpcomingOpen] = useState(false);
+  const { open: openTopTen, close: closeTopTen, isOpen: topTenOpen, registerDock, panelId } = useRadioTopTen();
   const dockRef = useRef(null);
   const keyboardInteraction = useRef(false);
   const [minimized, setMinimized] = useState(() => {
@@ -27,18 +29,23 @@ export default function AudioPlayer() {
     catch { return false; }
   });
   const toggleSize = () => {
+    if (!minimized && topTenOpen) closeTopTen({ returnFocus: false });
     setMinimized(value => {
       try { sessionStorage.setItem('radio-minimized', String(!value)); } catch { /* Optional preference storage. */ }
       return !value;
     });
   };
-  const expandPlayer = event => {
+  const expandPlayer = useCallback(event => {
     setMinimized(false);
     try { sessionStorage.setItem('radio-minimized', 'false'); } catch { /* Optional preference storage. */ }
-    if (event.detail === 0) {
+    if (event?.detail === 0) {
       requestAnimationFrame(() => dockRef.current?.querySelector('.radio-size-toggle')?.focus());
     }
-  };
+  }, []);
+  useEffect(() => {
+    registerDock({ expand: expandPlayer });
+    return () => registerDock({ expand: null });
+  }, [expandPlayer, registerDock]);
   useEffect(() => {
     if (minimized) return;
     const dock = dockRef.current;
@@ -47,7 +54,7 @@ export default function AudioPlayer() {
       clearTimeout(timer);
       timer = setTimeout(() => {
         // Never hide the reader or controls a keyboard user is focused on.
-        if (dock.querySelector('dialog[open]') ||
+        if (topTenOpen || dock.querySelector('dialog[open]') ||
             (keyboardInteraction.current && dock.contains(document.activeElement))) {
           restart();
           return;
@@ -69,7 +76,7 @@ export default function AudioPlayer() {
       clearTimeout(timer);
       events.forEach(event => dock.removeEventListener(event, interact, true));
     };
-  }, [minimized]);
+  }, [minimized, topTenOpen]);
   const upcomingId = useId();
   return (
     <aside ref={dockRef} onPointerDownCapture={() => { keyboardInteraction.current = false; }} onClick={event => {
@@ -106,7 +113,13 @@ export default function AudioPlayer() {
         <div id={upcomingId} className="radio-upcoming-panel" hidden={!upcomingOpen || minimized} tabIndex={upcomingOpen && !minimized ? 0 : -1} role="region" aria-label="Coming up on Santa Radio">
           <RadioTracks metadata={metadata} kind="upcoming" showLabel={false} />
         </div>
+        {!minimized && <button id={`${upcomingId}-top-ten-trigger`} type="button" className="radio-top-ten-trigger"
+          aria-expanded={topTenOpen} aria-controls={panelId}
+          onClick={event => topTenOpen ? closeTopTen() : openTopTen(event.currentTarget)}>
+          Yesterday’s Top 10 <span aria-hidden="true">{topTenOpen ? '−' : '↗'}</span>
+        </button>}
       </div>
+      {!minimized && <RadioTopTenPanel />}
     </aside>
   );
 }

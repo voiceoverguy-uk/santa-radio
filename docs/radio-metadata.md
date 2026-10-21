@@ -61,6 +61,10 @@ retiring Heart Internet host. HTML is rejected rather than displayed as music.
 Broadcast metadata can lead buffered audio. No precise synchronization or
 upcoming start times are promised.
 
+The independent history worker shares the bounded current-feed reader, not this
+request cache. See [radio-history.md](radio-history.md) for observed-transition
+limits, isolated storage, coverage, and the approval required before activation.
+
 ## iPhone evidence and limits
 
 The owner confirms the iPhone app consumes website data. The supplied screenshot

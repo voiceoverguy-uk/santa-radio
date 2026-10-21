@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { fileURLToPath } from 'node:url';
 import radioMetadata from './server/radio-metadata.js';
+import radioTopTen from './server/radio-top-ten.js';
 import santaMessage from './server/santa-message.js';
 import santaNames from './server/santa-names.js';
 import santaGreeting from './server/santa-greeting.js';
@@ -33,6 +34,7 @@ const metadataPlugin = {
     server.middlewares.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
     server.middlewares.use('/api/name-requests', nameRequests);
     server.middlewares.use('/api/radio-metadata', radioMetadata);
+    server.middlewares.use('/api/radio-top-ten', radioTopTen);
     server.middlewares.use('/api/santa-message', santaMessage);
     server.middlewares.use('/api/santa-names', santaNames);
     server.middlewares.use('/api/santa-greeting', santaGreeting);
@@ -41,6 +43,7 @@ const metadataPlugin = {
     server.middlewares.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
     server.middlewares.use('/api/name-requests', nameRequests);
     server.middlewares.use('/api/radio-metadata', radioMetadata);
+    server.middlewares.use('/api/radio-top-ten', radioTopTen);
     server.middlewares.use('/api/santa-message', santaMessage);
     server.middlewares.use('/api/santa-names', santaNames);
     server.middlewares.use('/api/santa-greeting', santaGreeting);

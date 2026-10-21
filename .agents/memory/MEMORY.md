@@ -1,6 +1,7 @@
 - [Design direction](design-direction.md) — Base44-inspired North Pole appearance; mobile radio should start minimised.
 - [Partnership banner direction](partnership-visual-direction.md) — Muted gold wrapping-paper pattern, not more village scenery; matching thin gold top and bottom lines.
 - [Radio feed hosting](radio-feed-hosting.md) — Use the confirmed independent HTTPS feeds; no retiring-host fallback. Metadata may lead buffered audio.
+- [Radio chart presentation](radio-chart-presentation.md) — Yesterday's chart belongs in a small player panel, not a large pop-out.
 - [Portable package locks](portable-package-locks.md) — Check dependency download URLs stay accessible to Vercel after package changes.
 - [Dependency merges and Preview](dependency-merge-preview.md) — Running dev servers may retain obsolete module paths after dependencies are replaced.
 - [Music catalogue scope](music-catalogue.md) — Include all supplied database songs; the user will decide removals later.

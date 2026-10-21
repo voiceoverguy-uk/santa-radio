@@ -27,10 +27,11 @@ import StaticPageSeo from './seo/StaticPageSeo.jsx';
 import MarketingConsent from './components/MarketingConsent.jsx';
 import { CookieConsentProvider } from './privacy/CookieConsentProvider.jsx';
 import SantaStaffShell from './components/SantaStaffShell.jsx';
+import { RadioTopTenProvider } from './components/RadioTopTen.jsx';
 
 function App({ Router = BrowserRouter, routerProps = {} }) {
   return (
-    <RadioProvider><SantaMessageAccessProvider><CookieConsentProvider><Router {...routerProps}>
+    <RadioProvider><RadioTopTenProvider><SantaMessageAccessProvider><CookieConsentProvider><Router {...routerProps}>
       <a href="#page-content" className="skip-link">Skip to content</a>
       <Navbar />
       <StaticPageSeo />
@@ -61,7 +62,7 @@ function App({ Router = BrowserRouter, routerProps = {} }) {
       <Footer />
       <AudioPlayer />
       <MarketingConsent />
-    </Router></CookieConsentProvider></SantaMessageAccessProvider></RadioProvider>
+    </Router></CookieConsentProvider></SantaMessageAccessProvider></RadioTopTenProvider></RadioProvider>
   );
 }
 export default App;

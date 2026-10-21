@@ -10,6 +10,40 @@
   max-width: 700px;
   margin: 0 auto;
 }
+.music-top-ten-callout {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: min(100%, 510px);
+  min-height: 76px;
+  margin: 0 auto 34px;
+  padding: 12px 18px;
+  border: 1px solid #d4af3766;
+  border-radius: 10px;
+  background: linear-gradient(110deg, #173e2c, #123323);
+  color: #f6eed9;
+  text-align: left;
+  box-shadow: 0 12px 28px #06180f38, inset 0 1px #ffffff0a;
+  cursor: pointer;
+  transition: transform .18s ease, border-color .18s ease;
+}
+.music-top-ten-callout:hover { transform: translateY(-2px); border-color: #e3c76e; }
+.music-top-ten-callout:focus-visible { outline: 2px solid #f0d060; outline-offset: 4px; }
+.music-top-ten-mark {
+  display: grid;
+  place-items: center;
+  flex: 0 0 46px;
+  height: 46px;
+  border: 1px solid #d4af3770;
+  border-radius: 50%;
+  color: #e2c96e;
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 1rem;
+}
+.music-top-ten-callout > span:nth-child(2) { display: flex; flex: 1; flex-direction: column; gap: 4px; }
+.music-top-ten-callout strong { font-family: 'Cinzel', Georgia, serif; font-size: .92rem; font-weight: 600; }
+.music-top-ten-callout small { color: #c4cebd; font-size: .72rem; }
+.music-top-ten-callout svg { width: 21px; height: 21px; fill: none; stroke: #e0c568; stroke-width: 1.6; }
 
 .music-sub-title {
   font-family: 'Cinzel', serif;
