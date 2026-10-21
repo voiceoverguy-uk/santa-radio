@@ -4,8 +4,10 @@ export default function CookiePolicySection() {
   return <section className="cookie-policy-summary" aria-labelledby="cookie-overview">
     <h2 id="cookie-overview">Cookies: the short version</h2>
     <p>Necessary storage keeps your choices and requested features working. Optional Google Analytics helps us
-      understand visits; Meta measures adverts and helps show relevant advertising. YouTube videos and the
-      optional TuneIn player stay off until you allow external media.</p>
+      understand visits; Meta measures adverts and helps show relevant advertising. The homepage TV loads
+      YouTube automatically on a first visit, after checking saved preferences. YouTube may use cookies and
+      device information for playback, analytics and advertising before you make a choice. Other YouTube
+      videos and the optional TuneIn player stay off until you allow external media.</p>
     <p>You can decline optional cookies and still browse, listen to our live radio and access Santa messages,
       subject to the separate adult-access and message-allowance requirements. Accept all allows analytics,
       marketing and external media; settings lets you choose them separately. We remember acceptance and refusal
@@ -66,11 +68,16 @@ export default function CookiePolicySection() {
 
     <details className="cookie-details">
       <summary>External media — YouTube and TuneIn</summary>
-      <p>We do not load YouTube or the optional TuneIn embed until you allow external media in the banner,
+      <p>The homepage live TV is an exception: it loads YouTube automatically when no saved preference exists,
+        without recording consent or enabling our Google Analytics, Meta, song videos or TuneIn.
+        Saved refusals and older preferences without media permission keep it off. Decline optional cookies
+        or save External media unchecked to unload it, including in other open tabs. Expired or damaged
+        preferences keep it off until you choose again; clearing browser storage can restore the first-visit default.</p>
+      <p>Other YouTube videos and the optional TuneIn embed wait until you allow external media in the banner,
         settings or an informed content placeholder. Enabling this category allows both providers, without
         changing your analytics or marketing choices. TuneIn also has its own load/unload control. Older saved
         analytics or Meta choices do not automatically enable this category.</p>
-      <p>When enabled, these services receive technical connection information and may use cookies or similar
+      <p>When loaded, including automatically on the homepage, these services receive technical connection information and may use cookies or similar
         storage, for playback, measurement, personalisation or advertising under their own policies. YouTube
         may use session cookies such as <code>YSC</code> and persistent visitor cookies; provider cookies can
         outlast our media permission or the tab. Their lifetimes depend on the provider, account and browser

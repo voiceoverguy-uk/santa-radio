@@ -108,12 +108,15 @@ export default function MarketingConsent() {
             <label>
               <input type="checkbox" checked={draft.media} onChange={event =>
                 setDraft(current => ({ ...current, media: event.target.checked }))} />
-              <span><strong>External media</strong><small>YouTube videos and the optional TuneIn player can use cookies and device information for playback, analytics and advertising. Not needed for our live radio.</small></span>
+              <span><strong>External media</strong><small>YouTube videos and the optional TuneIn player can use cookies and device information for playback, analytics and advertising. The homepage TV loads automatically before a choice is saved; saving this unchecked turns it off too. Other embeds wait for permission. Not needed for our live radio.</small></span>
             </label>
           </fieldset>
-          <p>Saved for up to 180 days. Turning a choice off stops future optional activity here; it cannot undo data already sent.</p>
+          <p>Saved for up to 180 days. Turning a choice off stops future optional activity here; it cannot undo data already sent or remove third-party cookies.</p>
         </> : <p>Necessary storage keeps things working. Optional Google Analytics helps us understand visits;
-          Meta measures adverts and helps show relevant advertising. Accept all also enables YouTube and TuneIn media.</p>}
+          Meta measures adverts and helps show relevant advertising. The homepage TV loads YouTube automatically,
+          which may use cookies and device information for playback, analytics and advertising.
+          Decline turns it off. Other YouTube videos and TuneIn wait for external-media permission.
+          Accept all enables all three categories; automatic TV loading does not enable Google Analytics or Meta.</p>}
         {!complete && choice && <p>Your earlier Meta choice is kept. Analytics and external media need their own permission.</p>}
       </div>
       <div className="marketing-consent-actions">

@@ -13,9 +13,9 @@ test('unreachable webcam keeps its direct YouTube link and can be unloaded', asy
   const webcam = page.locator('.youtube-section');
   const directLink = webcam.getByRole('link', { name: 'Watch directly on YouTube', exact: true });
   await expect(webcam.locator('iframe')).toHaveCount(0);
-  expect(embedRequests).toBe(0);
+  expect(embedRequests).toBe(1);
   await webcam.getByRole('button', { name: 'Enable external media' }).click();
-  await expect.poll(() => embedRequests).toBe(1);
+  await expect.poll(() => embedRequests).toBe(2);
   await expect(directLink).toBeVisible();
   await expect(directLink).toHaveAttribute('href', 'https://www.youtube.com/watch?v=mMrHniQJNCM');
   await expect(directLink).toHaveAttribute('target', '_blank');
@@ -29,7 +29,7 @@ test('unreachable webcam keeps its direct YouTube link and can be unloaded', asy
   await expect(webcam.getByRole('link', { name: 'Open on YouTube instead (new tab)' })).toBeVisible();
 });
 
-test('permitted webcam autoplays muted and pause/resume leaves radio untouched', async ({ page }) => {
+test('automatic webcam attempts muted inline autoplay and pause/resume leaves radio untouched', async ({ page }) => {
   await page.route('https://www.youtube.com/embed/**', route => route.fulfill({ contentType: 'text/html', body: 'Mock video provider' }));
   await page.addInitScript(() => {
     window.radioCalls = { play: 0, pause: 0 };
@@ -42,11 +42,9 @@ test('permitted webcam autoplays muted and pause/resume leaves radio untouched',
     HTMLMediaElement.prototype.pause = function () { window.radioCalls.pause++; };
   });
   await page.goto('/');
-  await page.locator('.marketing-consent').getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
   await expect(page.locator('.radio-dock')).toBeVisible();
   await page.evaluate(() => window.originalRadioAudio = document.querySelector('audio'));
   await page.locator('.radio-dock').getByRole('button', { name: 'Listen Live', exact: true }).click();
-  await page.locator('.tv-screen').getByRole('button', { name: 'Enable external media' }).click();
   const video = page.locator('.tv-screen iframe');
   await expect(video).toHaveCount(1);
   const url = new URL(await video.getAttribute('src'));

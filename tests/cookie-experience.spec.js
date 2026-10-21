@@ -27,23 +27,38 @@ async function isolateProviders(page) {
   return requests;
 }
 
-test('homepage webcam links use the new stream while consent gates and unloads the embed', async ({ page }) => {
+test('fresh homepage TV loads without recording consent or flashing an off notice, and decline unloads it', async ({ page }) => {
   const requests = await isolateProviders(page);
+  await page.addInitScript(() => {
+    window.__tvOffFlashed = false;
+    new MutationObserver(records => {
+      for (const record of records) for (const node of record.addedNodes) {
+        if (node.nodeType === 1 && (node.matches('.youtube-section .external-media-placeholder') ||
+          node.querySelector('.youtube-section .external-media-placeholder'))) window.__tvOffFlashed = true;
+      }
+    }).observe(document, { childList: true, subtree: true });
+  });
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   const webcam = page.locator('.youtube-section');
   const video = webcam.locator('iframe');
   const placeholderLink = webcam.getByRole('link', { name: 'Open on YouTube instead (new tab)', exact: true });
   const directLink = webcam.getByRole('link', { name: 'Watch directly on YouTube', exact: true });
-  for (const link of [placeholderLink, directLink]) {
+  await expect(video).toHaveCount(1);
+  await expect(webcam.locator('.external-media-placeholder')).toHaveCount(0);
+  expect(await page.evaluate(() => window.__tvOffFlashed)).toBe(false);
+  expect(await stored(page)).toBeNull();
+  await expect(page.locator('#santaradio-google-analytics, #santaradio-meta-pixel')).toHaveCount(0);
+  await expect.poll(() => requests.length).toBe(1);
+  expect(requests[0]).toContain('youtube.com/embed/mMrHniQJNCM');
+  for (const link of [directLink]) {
     await expect(link).toHaveAttribute('href', 'https://www.youtube.com/watch?v=mMrHniQJNCM');
     await expect(link).toHaveAttribute('target', '_blank');
     await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   }
-  await expect(video).toHaveCount(0);
   await decline(page).click();
   await expect(video).toHaveCount(0);
   await expect(webcam.getByRole('button', { name: 'Pause video', exact: true })).toHaveCount(0);
-  expect(requests).toHaveLength(0);
+  expect(requests).toHaveLength(1);
   await webcam.getByRole('button', { name: 'Enable external media', exact: true }).click();
   await expect(video).toHaveAttribute('src',
     'https://www.youtube.com/embed/mMrHniQJNCM?si=O7nNcINykyWwgyXC&autoplay=1&mute=1&controls=0&disablekb=1&playsinline=1');
@@ -116,8 +131,11 @@ for (const analytics of [false, true]) {
           await expect(checkbox).not.toBeChecked();
           await checkbox.setChecked(enabled);
         }
-        // Changing a draft must not contact providers.
-        await expect(page.locator('#santaradio-google-analytics, #santaradio-meta-pixel, iframe')).toHaveCount(0);
+        // The automatic homepage exception remains active, but drafts never
+        // grant site tracking or save media permission.
+        await expect(page.locator('#santaradio-google-analytics, #santaradio-meta-pixel')).toHaveCount(0);
+        await expect(page.locator('.youtube-section iframe')).toHaveCount(1);
+        expect(await stored(page)).toBeNull();
         await save(page).click();
         await expect(region(page)).toHaveCount(0);
         expect(await stored(page)).toMatchObject({ analytics, marketing, media });
@@ -152,16 +170,91 @@ test('existing valid preferences keep their timestamp and never imply media perm
   expect((await stored(page)).savedAt).toBe(savedAt);
 });
 
-test('media is opt-in on home, song, karaoke and TuneIn, and withdrawal unloads it across tabs', async ({ page, context }) => {
+for (const media of [false, true]) {
+  test(`saved media=${media} resolves before homepage provider loading`, async ({ page }) => {
+    const requests = await isolateProviders(page);
+    const record = { version: 2, analytics: false, marketing: false, media, savedAt: Date.now() };
+    await page.addInitScript(({ key, record }) => localStorage.setItem(key, JSON.stringify(record)), { key, record });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('.tv-screen')).toHaveAttribute('aria-busy', 'false');
+    await expect(page.locator('.youtube-section iframe')).toHaveCount(media ? 1 : 0);
+    await expect(page.locator('.youtube-section .external-media-placeholder')).toHaveCount(media ? 0 : 1);
+    if (media) await expect.poll(() => requests.length).toBe(1);
+    else expect(requests).toHaveLength(0);
+    expect(await stored(page)).toEqual(record);
+    await expect(page.locator('#santaradio-google-analytics, #santaradio-meta-pixel')).toHaveCount(0);
+  });
+}
+
+test('a fresh default-on TV honours refusal and acceptance from another tab without granting tracking', async ({ page, context }) => {
+  await isolateProviders(page);
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('.youtube-section iframe')).toHaveCount(1);
+  const second = await context.newPage();
+  await isolateProviders(second);
+  await second.goto('/privacy-policy', { waitUntil: 'domcontentloaded' });
+  await decline(second).click();
+  await expect(page.locator('.youtube-section iframe')).toHaveCount(0);
+  await footerSettings(second).click();
+  await region(second).getByRole('checkbox', { name: /External media/ }).check();
+  await save(second).click();
+  await expect(page.locator('.youtube-section iframe')).toHaveCount(1);
+  await expect(page.locator('#santaradio-google-analytics, #santaradio-meta-pixel')).toHaveCount(0);
+  expect(await stored(page)).toMatchObject({ analytics: false, marketing: false, media: true });
+});
+
+for (const value of ['expired acceptance', 'expired refusal', 'damaged', 'legacy refusal']) {
+  test(`${value} does not revive automatic homepage loading`, async ({ page }) => {
+    const requests = await isolateProviders(page);
+    await page.addInitScript(({ key, value }) => {
+      if (value === 'legacy refusal') localStorage.setItem('santaradio-marketing-consent-v1', JSON.stringify({
+        version: 1, choice: 'rejected', savedAt: Date.now(),
+      }));
+      else localStorage.setItem(key, value === 'damaged' ? '{broken' : JSON.stringify({
+        version: 2, analytics: false, marketing: false, media: value === 'expired acceptance',
+        savedAt: Date.now() - 181 * 86400000,
+      }));
+    }, { key, value });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('.youtube-section .external-media-placeholder')).toHaveCount(1);
+    await expect(page.locator('iframe')).toHaveCount(0);
+    expect(requests).toHaveLength(0);
+  });
+}
+
+test('automatic TV and refused TV both fit narrow mobile screens', async ({ page }) => {
+  await isolateProviders(page);
+  for (const width of [320, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('.tv-screen')).toHaveAttribute('aria-busy', 'false');
+    const frame = await page.locator('.tv-frame').boundingBox();
+    expect(frame.x).toBeGreaterThanOrEqual(0);
+    expect(frame.x + frame.width).toBeLessThanOrEqual(width);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    if (width === 320) {
+      await expect(page.locator('.youtube-section iframe')).toHaveCount(1);
+      await decline(page).click();
+    }
+    await expect(page.locator('.youtube-section .external-media-placeholder')).toHaveCount(1);
+    await expect(page.locator('.youtube-section').getByRole('button', { name: 'Enable external media' })).toBeEnabled();
+  }
+});
+
+test('homepage default never grants song, karaoke or TuneIn permission, and withdrawal unloads across tabs', async ({ page, context }) => {
   test.setTimeout(60000);
   const requests = await isolateProviders(page);
-  for (const path of ['/', '/christmas-artist/60-chris-rea-driving-home-for-christmas',
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('iframe')).toHaveCount(1);
+  expect(await stored(page)).toBeNull();
+  await expect.poll(() => requests.length).toBe(1);
+  for (const path of ['/christmas-artist/60-chris-rea-driving-home-for-christmas',
     '/christmas-karaoke-lyrics/60-chris-rea-driving-home-for-christmas', '/links']) {
     await page.goto(path, { waitUntil: 'domcontentloaded' });
     await expect(page.locator('iframe')).toHaveCount(0);
     await expect(page.locator('.external-media-placeholder')).toHaveCount(1);
   }
-  expect(requests).toHaveLength(0);
+  expect(requests).toHaveLength(1);
   await decline(page).click();
   await page.locator('.external-media-placeholder').getByRole('button', { name: 'Enable external media' }).click();
   await expect(page.locator('iframe[src*="tunein.com/embed"]')).toHaveCount(1);
@@ -403,8 +496,9 @@ test('blocked third-party storage does not break consent-gated players or adult 
       </script>` });
   });
   await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await expect(page.frameLocator('iframe').getByText('Mock player: storage blocked')).toBeVisible();
   await decline(page).click();
-  expect(frames).toHaveLength(0);
+  expect(frames).toHaveLength(1);
   await page.locator('.external-media-placeholder').getByRole('button', { name: 'Enable external media' }).click();
   await expect(page.frameLocator('iframe').getByText('Mock player: storage blocked')).toBeVisible();
   await page.goto('/links', { waitUntil: 'domcontentloaded' });

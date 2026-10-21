@@ -1,5 +1,40 @@
 # Cookie browser verification
 
+## Homepage TV loading exception — 21 October 2026
+
+The homepage TV now loads automatically after preference hydration only when no
+saved current or legacy record exists. This is a homepage loading policy, not
+consent. It does not save a record or enable song/karaoke videos, TuneIn,
+Google Analytics or Meta. Existing refusals, older records without media
+permission, expired records and damaged records keep it off. Unreadable
+preference storage also keeps it off until the visitor makes a visit-only choice.
+Expiry in an open tab unloads the TV rather than returning to the first-visit
+default. Clearing browser storage can restore the first-visit default on reload.
+
+The cookie suite checks fresh loading without an off-notice flash, saved media
+acceptance/refusal before any provider request, independent tracking choices,
+decline after automatic loading, cross-tab refusal/re-enabling, expiry, older
+and damaged records, unchanged song/karaoke/TuneIn gates, and mobile bounds.
+`tests/video-autoplay.spec.js` checks muted inline autoplay parameters and
+pause/resume without changing the separate radio element. It cannot guarantee
+that the provider or browser actually plays the video.
+
+Build first, then run the compiled-server hydration checks:
+
+```sh
+npm run build
+npx playwright test tests/homepage-tv-production.spec.js --project=chromium
+```
+
+These use a temporary local Node production server, not a production deployment.
+Provider frames are mocked; no claim is made about actual provider cookies,
+advertising behaviour, real-device autoplay or legal compliance. The older
+engine results below describe the earlier opt-in policy, not this exception.
+The updated Chromium cookie checks, video controls and compiled-server
+hydration checks passed. Firefox and WebKit could not launch in this workspace
+because their Playwright executables are missing; no current result is claimed
+for those engines.
+
 ## Recorded result — 20 October 2026
 
 | Engine | Result |
@@ -82,8 +117,9 @@ continuity; the original audio element, play/pause calls and visible playing
 state are checked. These are consent/lifecycle tests, not proof of audible
 streaming or third-party playback.
 
-No application consent components, radio feeds, authentication or tracking
-configuration were changed.
+The 20 October checks changed no application consent components, radio feeds,
+authentication or tracking configuration. The homepage-only exception described
+above is a subsequent application policy change.
 
 ## Environment and interpretation
 

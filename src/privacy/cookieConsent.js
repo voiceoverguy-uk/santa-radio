@@ -7,6 +7,15 @@ export const SETTINGS_EVENT = 'santaradio:cookie-settings';
 export const EMPTY_CHOICES = Object.freeze({ analytics: false, marketing: false, media: false });
 export const openCookieSettings = () => window.dispatchEvent(new Event(SETTINGS_EVENT));
 
+// Only a genuinely new visit gets the homepage exception. Keep damaged,
+// expired and older records conservative rather than reviving media loading.
+export function hasNoSavedConsent() {
+  try {
+    return localStorage.getItem(CONSENT_KEY) === null &&
+      localStorage.getItem(LEGACY_CONSENT_KEY) === null;
+  } catch { return false; }
+}
+
 export function readConsentRecord(value) {
   try {
     const record = JSON.parse(value);

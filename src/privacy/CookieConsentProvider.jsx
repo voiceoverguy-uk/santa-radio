@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import {
   CONSENT_KEY, LEGACY_CONSENT_KEY, CONSENT_DURATION,
-  readConsentRecord, savedConsent, saveConsent,
+  readConsentRecord, savedConsent, saveConsent, hasNoSavedConsent,
 } from './cookieConsent.js';
 import { revokeAnalytics } from './googleAnalytics.js';
 import { revokeMarketing } from './marketingConsent.js';
@@ -16,10 +16,12 @@ function revokeUnselected(record) {
 export function CookieConsentProvider({ children }) {
   const [choice, setChoice] = useState(null);
   const [ready, setReady] = useState(false);
+  const [homepageDefault, setHomepageDefault] = useState(false);
   const [storageWarning, setStorageWarning] = useState(false);
 
   useEffect(() => {
     const stored = savedConsent();
+    setHomepageDefault(hasNoSavedConsent());
     revokeUnselected(stored);
     setChoice(stored);
     setReady(true);
@@ -28,6 +30,7 @@ export function CookieConsentProvider({ children }) {
       const next = event.key === null ? null : event.key === CONSENT_KEY
         ? readConsentRecord(event.newValue) : savedConsent();
       revokeUnselected(next);
+      setHomepageDefault(false);
       setChoice(next);
       setStorageWarning(false);
     };
@@ -43,6 +46,7 @@ export function CookieConsentProvider({ children }) {
       const remaining = choice.savedAt + CONSENT_DURATION - Date.now();
       if (remaining <= 0) {
         revokeUnselected(null);
+        setHomepageDefault(false);
         setChoice(null);
         setStorageWarning(false);
       } else {
@@ -61,6 +65,7 @@ export function CookieConsentProvider({ children }) {
   const chooseConsent = useCallback(next => {
     // Revoke before updating React state or storage, including queued events.
     revokeUnselected(next);
+    setHomepageDefault(false);
     const { record, saved } = saveConsent(next);
     setChoice(record);
     setStorageWarning(!saved);
@@ -74,8 +79,11 @@ export function CookieConsentProvider({ children }) {
 
   const mediaAllowed = ready && choice?.media === true &&
     choice.savedAt + CONSENT_DURATION > Date.now();
+  // This is a loading policy, never consent: other embeds and tracking must
+  // continue to use their explicit choices, not this homepage-only exception.
+  const homepageTVAllowed = ready && (mediaAllowed || (homepageDefault && choice === null));
   return <CookieConsentContext.Provider value={{
-    ready, choice, chooseConsent, mediaAllowed, enableMedia, storageWarning,
+    ready, choice, chooseConsent, mediaAllowed, homepageTVAllowed, enableMedia, storageWarning,
     dismissStorageWarning: () => setStorageWarning(false),
   }}>{children}</CookieConsentContext.Provider>;
 }

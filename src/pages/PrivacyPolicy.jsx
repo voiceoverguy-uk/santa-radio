@@ -12,7 +12,7 @@ export default function PrivacyPolicy() {
     <article className="privacy-content">
       <p className="eyebrow">Santa Radio</p>
       <h1>Privacy Policy</h1>
-      <p className="privacy-date">Updated <time dateTime="2026-10-20">20 October 2026</time></p>
+      <p className="privacy-date">Updated <time dateTime="2026-10-21">21 October 2026</time></p>
       <p>The Santa Radio website and Christmas Radio UK app are operated by VoiceoverGuy Ltd. For privacy questions, email <a href="mailto:santa@santaradio.co.uk">santa@santaradio.co.uk</a>.</p>
       <p>This notice covers the current Santa Radio website and the newly rebuilt Christmas Radio UK native app for iPhone and iPad, version 35.0. The app-specific section below explains how that version handles information. Website-only features, including forms, Santa audio messages, embedded videos and optional analytics or marketing cookies, are separate from the native app. External services may also have their own privacy notices.</p>
       <p>You can browse and listen without an account. We do not sell personal data.</p>
@@ -73,7 +73,11 @@ export default function PrivacyPolicy() {
       <p>If you choose “Request this name”, we save the requested first name, request dates and a request count in a private database so approved Santa Radio staff can review which recordings listeners would like. We do not attach your adult contact details or email address to the request, and this does not sign you up for marketing or promise that a recording will be made.</p>
       <p>A necessary request-control cookie lasts up to seven days. Short-lived, randomly identified technical records help prevent repeated requests being counted twice and limit excessive submissions. These records stop being used after at most seven days and are removed during subsequent request processing. The requested-name list is kept while needed to review and plan recordings. Only authorised staff can view it. Staff sign-in is provided by Clerk, which processes staff account details and authentication cookies under <a href="https://clerk.com/legal/privacy" target="_blank" rel="noopener noreferrer">its privacy notice</a>. Visitors do not need a Clerk account to request a name.</p>
       <p>Hosting services, including Vercel, process technical information such as IP addresses and browser/request details to deliver and protect the website. Radio playback connects to Citrus3. YouTube supplies video embeds, Google Fonts supplies fonts, and Brevo processes general enquiries and song submissions and, separately, adult details submitted for message access. Some images load from our legacy website. Each recipient may receive technical connection information when its resource is requested, even without an account or optional analytics cookies.</p>
-      <p>Optional YouTube and TuneIn embeds are controlled by the external-media choice described above.
+      <p>The homepage YouTube TV loads automatically on a first visit after saved preferences are checked,
+        and may involve provider cookies, analytics and advertising before you choose. It respects saved
+        refusals and can be turned off in Cookie settings. Other YouTube and TuneIn embeds wait for
+        external-media permission as described above. Automatic TV loading does not grant consent for
+        site analytics, marketing or other media, and turning it off cannot erase data already sent or third-party cookies.
         Ordinary hosting, live-radio and requested-feature connections still disclose technical request
         information even when optional cookies are declined.</p>
 
