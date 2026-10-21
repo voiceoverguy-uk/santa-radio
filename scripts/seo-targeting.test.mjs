@@ -4,11 +4,54 @@ import { readFile } from 'node:fs/promises';
 import { homeMetadata, appsMetadata, appsBreadcrumbs, messageMetadata, messageBreadcrumbs, pageMetadata, shareImage, shareImageAlt, brandImage, trackerMetadata, ORIGIN } from '../src/seo/catalogue.js';
 import { amazonDeviceSource } from '../src/pages/apps-store-verification.js';
 import { appDownloads, obsoleteStoreCopy } from '../tests/fixtures/apps-downloads.js';
+import { assertFaviconHead, faviconFiles } from './favicon-checks.mjs';
 
 const readGraphs = html => [...html.matchAll(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)]
   .flatMap(match => JSON.parse(match[1])['@graph']);
 const headValue = (html, name) => html.match(new RegExp(`<meta[^>]*(?:name|property)="${name}"[^>]*content="([^"]+)"`))?.[1];
 const decode = value => value?.replace(/&amp;/g, '&').replace(/&#x27;/g, "'");
+
+test('local favicons have real square PNG and multi-size ICO data matching their declarations', async () => {
+  const png = await readFile('public/favicon.png');
+  assert.deepEqual([...png.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
+  assert.equal(png.toString('ascii', 12, 16), 'IHDR');
+  assert.deepEqual([png.readUInt32BE(16), png.readUInt32BE(20)], [192, 192]);
+  const ico = await readFile('public/favicon.ico');
+  assert.equal(ico.readUInt16LE(0), 0);
+  assert.equal(ico.readUInt16LE(2), 1, 'ICO, not a renamed image');
+  assert.equal(ico.readUInt16LE(4), 3);
+  const sizes = [];
+  for (let i = 0; i < 3; i++) {
+    const offset = 6 + i * 16;
+    const width = ico[offset] || 256;
+    const height = ico[offset + 1] || 256;
+    assert.equal(width, height);
+    sizes.push(width);
+    const length = ico.readUInt32LE(offset + 8);
+    const start = ico.readUInt32LE(offset + 12);
+    assert.ok(start >= 54 && start + length <= ico.length, 'complete ICO image payload');
+    // These small browser frames use conventional Windows DIB pixels.
+    assert.equal(ico.readUInt32LE(start), 40);
+    assert.equal(ico.readInt32LE(start + 4), width);
+    assert.equal(ico.readInt32LE(start + 8), height * 2, 'DIB includes colour and mask');
+  }
+  assert.deepEqual(sizes.sort((a, b) => a - b), [16, 32, 48]);
+  for (const [path] of faviconFiles)
+    assert.deepEqual(await readFile(`dist${path}`), await readFile(`public${path}`));
+});
+
+test('source, pre-rendered pages and runtime shell preserve the same crawlable favicon declarations', async () => {
+  for (const file of [
+    'index.html', 'dist/index.html', 'dist/apps/index.html',
+    'dist/christmas-artist/3-waitresses-christmas-wrapping/index.html',
+    'dist/mugshots/all/index.html', 'dist/santa-tracker/index.html',
+    'dist/server/pages/index.html', 'dist/server/shell.html',
+  ]) assertFaviconHead(await readFile(file, 'utf8'));
+  const robots = await readFile('dist/robots.txt', 'utf8');
+  assert.match(robots, /User-agent: \*\nAllow: \//);
+  assert.doesNotMatch(robots, /Disallow:/i);
+  assert.doesNotMatch((await readFile('dist/index.html', 'utf8')).split('</head>')[0], /noindex|noimageindex/i);
+});
 
 test('generic links advertise one opaque, full-size green share card in initial HTML', async () => {
   assert.equal(shareImage, '/images/santa-radio-share-green-v2.jpg', 'use a new URL rather than cached old artwork');

@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import publicPage from '../api/public-page.js';
 import { shareImage as radioShareImage, shareImageAlt, ORIGIN } from '../src/seo/catalogue.js';
+import { assertFaviconHead, assertFaviconResponse, faviconFiles } from './favicon-checks.mjs';
 
 test('deployment-style document package needs neither TypeScript nor runtime React package resolution', async t => {
   const directory = await mkdtemp(join(tmpdir(), 'santa-vercel-documents-'));
@@ -78,7 +79,9 @@ test('built Node server returns actual pages, permanent redirects, images, API r
     ['/mugshots/a1-singers', 'Bruce Davis'], ['/santa-tracker', 'Is this real GPS tracking?'],
   ]) {
     const response = await get(path); assert.equal(response.status, 200, path);
+    assert.equal(response.headers.get('x-robots-tag'), null, path);
     const html = await response.text();
+    assertFaviconHead(html);
     assert.ok(html.includes(word), path); assert.ok(html.includes('<h1'), path);
     if (['/', '/christmas-music'].includes(path)) {
       const head = html.split('</head>')[0];
@@ -123,6 +126,31 @@ test('built Node server returns actual pages, permanent redirects, images, API r
   assert.equal(artwork.status, 200); assert.equal(artwork.headers.get('access-control-allow-origin'), '*');
   assert.equal((await get('/api/santa-message')).status, 405);
   assert.equal((await get('/sitemap.xml')).status, 200);
+  for (const [path, type] of faviconFiles) {
+    const bytes = await readFile(`public${path}`);
+    await assertFaviconResponse(await get(path), bytes, { type });
+    await assertFaviconResponse(await fetch(`http://127.0.0.1:${port}${path}`, { method: 'HEAD', redirect: 'manual' }), bytes, { type, head: true });
+  }
+});
+
+test('development SSR advertises working favicon images without document fallbacks', { timeout: 60000 }, async t => {
+  const { createServer } = await import('vite');
+  const server = await createServer({ server: { port: 0, host: '127.0.0.1' } });
+  t.after(() => server.close());
+  await server.listen();
+  const base = `http://127.0.0.1:${server.httpServer.address().port}`;
+  for (const [path, type] of faviconFiles) {
+    const bytes = await readFile(`public${path}`);
+    await assertFaviconResponse(await fetch(base + path, { redirect: 'manual' }), bytes, { type });
+    await assertFaviconResponse(await fetch(base + path, { method: 'HEAD', redirect: 'manual' }), bytes, { type, head: true });
+  }
+  for (const path of ['/', '/apps', '/santa-tracker']) {
+    const response = await fetch(base + path);
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('x-robots-tag'), null);
+    assertFaviconHead(await response.text());
+  }
+  assert.match(await (await fetch(base + '/robots.txt')).text(), /User-agent: \*\nAllow: \//);
 });
 
 test('Vercel document handler preserves statuses, metadata and relative locations without hosting changes', async () => {
@@ -130,6 +158,16 @@ test('Vercel document handler preserves statuses, metadata and relative location
   const filesystem = config.routes.findIndex(route => route.handle === 'filesystem');
   const documentRoute = config.routes.findIndex(route => route.src?.includes('christmas-artist'));
   assert.ok(documentRoute < filesystem);
+  for (const [path] of faviconFiles) {
+    // Simulate Vercel's ordered routing: each icon must reach the existing
+    // filesystem file before the catch-all document function can rewrite it.
+    for (const route of config.routes.slice(0, filesystem)) {
+      if (!route.src || !new RegExp(`^${route.src}$`).test(path)) continue;
+      assert.ok(!route.dest, `${path} must not be rewritten to a document`);
+      assert.doesNotMatch(JSON.stringify(route.headers || {}), /noindex|noimageindex/i);
+    }
+    assert.deepEqual(await readFile(`dist${path}`), await readFile(`public${path}`));
+  }
   const expression = new RegExp(`^${config.routes[documentRoute].src}$`);
   for (const path of ['/', '/christmas-music', '/artist', '/santa-tracker/', '/santa-tracker/preview', '/mugshots/a1-singers', '/personalised-santa-message/all', '/personalised-santa-message/Cooper'])
     assert.ok(expression.test(path), path);
@@ -144,6 +182,7 @@ test('Vercel document handler preserves statuses, metadata and relative location
     assert.equal(response.statusCode, status, path);
     if (status === 308) assert.equal(response.headers.Location, path === '/music' ? '/christmas-music' : '/christmas-artist/212-gladys-knight-the-pips-its-christmas-everyday' + (path.includes('utm_source') ? '?utm_source=archive' : ''));
     else {
+      assertFaviconHead(response.body);
       if (!path.includes('preview')) assert.ok(response.body.includes('<h1'), path);
       if (!path.includes('preview')) assert.ok(response.body.includes('www.santaradio.co.uk'), path);
     }
