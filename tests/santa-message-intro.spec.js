@@ -46,6 +46,6 @@ for (const width of [320, 390, 768, 1440]) {
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
     await expect(page.getByRole('button', { name: 'Get my free Santa message' })).toBeVisible();
-    await expect(page.getByLabel('First Name')).toHaveCount(0);
+    await expect(page.locator('.message-name-label')).toHaveCount(0);
   });
 }

@@ -70,6 +70,19 @@
   line-height: 1.25;
 }
 
+.apps-page #santamessages .app-section-title,
+.apps-page #christmasradio .app-section-title,
+.apps-page #santatext .app-section-title {
+  color: var(--gold-light);
+  font-family: 'Dancing Script', cursive;
+  font-size: clamp(2rem, 4.2vw, 3rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: normal;
+  text-transform: none;
+  text-shadow: 0 0 16px rgb(212 175 55 / 28%);
+}
+
 .apps-page .app-section-sub {
   max-width: 650px;
   margin: 0 auto;

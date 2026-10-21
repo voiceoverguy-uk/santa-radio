@@ -128,4 +128,10 @@ Keep the default radio sharing artwork simple: Santa Radio on the left, the exac
 
 **Why:** The owner found the earlier card's small text and decorations difficult to read in phone messaging previews.
 
+Selected Apps headings and the footer attribution should use the existing Dancing Script font with Santa Radio gold emphasis to echo the wordmark.
+
+**Why:** The user asked for the Santa Messages, Christmas Radio and Santa Text headings, plus the attribution, to stand out in the logo's font style.
+
+**How to apply:** Use Dancing Script for these text treatments; retain the supplied logo artwork anywhere the actual wordmark appears.
+
 **How to apply:** Judge future artwork at approximately 350 pixels wide, not only at full resolution. This direction concerns the static sharing graphic, not the homepage, player, app artwork or page-specific pictures.

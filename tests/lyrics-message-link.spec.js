@@ -64,7 +64,7 @@ for (const width of [1440, 390]) {
           const nav = document.querySelector('.navbar').getBoundingClientRect();
           return Math.round(layout.top - nav.bottom);
         })).toBe(24);
-        await expect(page.getByLabel('First Name')).toHaveCount(0);
+        await expect(page.locator('.message-name-label')).toHaveCount(0);
       }
     });
   }

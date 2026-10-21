@@ -316,6 +316,23 @@ test('Santa Text, Santa Voicemail and Santa Messages show complete optimised own
   await expect(page.locator('.app-store-notice')).toHaveCount(0);
 });
 
+test('featured app titles and footer attribution use the Santa Radio script style', async ({ page }) => {
+  await page.goto('/apps');
+  await page.evaluate(() => document.fonts.ready);
+  for (const title of ['Santa Messages', 'Christmas Radio', 'Santa Text']) {
+    const heading = page.getByRole('heading', { name: title, exact: true });
+    await expect(heading).toBeVisible();
+    const style = await heading.evaluate(element => getComputedStyle(element));
+    expect(style.fontFamily).toContain('Dancing Script');
+    expect(style.fontWeight).toBe('700');
+    expect(style.color).toBe('rgb(230, 206, 134)');
+  }
+  const attribution = page.locator('.footer-attribution');
+  const footerStyle = await attribution.evaluate(element => getComputedStyle(element));
+  expect(footerStyle.fontFamily).toContain('Dancing Script');
+  expect(footerStyle.fontWeight).toBe('700');
+});
+
 test('Mac app listing shows complete promotional artwork and Coming soon without a store link', async ({ page }) => {
   await page.goto('/apps');
   await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();

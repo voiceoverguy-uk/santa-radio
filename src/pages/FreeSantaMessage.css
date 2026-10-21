@@ -9,7 +9,7 @@
   z-index: 1;
 }
 
-.fsm-kicker { color: #e2c783; font-size: .72rem; text-transform: uppercase; letter-spacing: .18em; margin: 28px 0 14px; }
+.fsm-kicker { color: #e2c783; font-size: .72rem; text-transform: uppercase; letter-spacing: .18em; margin: 0 0 14px; }
 
 .fsm-sub {
   font-family: 'Cinzel', serif;

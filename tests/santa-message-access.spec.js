@@ -21,10 +21,18 @@ test('adult access shows the requested news disclosure with an internal privacy 
   }
 });
 
+test('message page keeps the header logo without repeating it in the hero', async ({ page }) => {
+  await page.goto('/free-santa-message');
+  await expect(page.locator('.navbar-logo-image')).toBeVisible();
+  await expect(page.locator('.fsm-hero .brand-logo-hero')).toHaveCount(0);
+  await expect(page.locator('.fsm-kicker')).toBeVisible();
+  await expect(page.locator('.fsm-sub')).toBeVisible();
+});
+
 test('homepage, direct visits and existing message navigation all require adult access', async ({ page }) => {
   await page.goto('/');
   const section = page.locator('.santa-message-section');
-  await expect(section.getByLabel('First Name')).toHaveCount(0);
+  await expect(section.locator('.message-name-label')).toHaveCount(0);
   await expect(section.getByRole('textbox', { name: 'First name', exact: true })).toBeVisible();
   await expect(section.getByRole('link', { name: 'privacy policy' })).toHaveAttribute('href', '/privacy-policy');
   await expect(section).not.toContainText('No signup');
@@ -33,7 +41,7 @@ test('homepage, direct visits and existing message navigation all require adult 
   await expect(page.getByRole('button', { name: 'Get my free Santa message' })).toBeVisible();
   await page.goto('/apps');
   await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'FREE Santa Message', exact: true }).click();
-  await expect(page.getByLabel('First Name')).toHaveCount(0);
+  await expect(page.locator('.message-name-label')).toHaveCount(0);
   await page.reload();
   await expect(page.getByRole('textbox', { name: 'Surname', exact: true })).toBeVisible();
   await expect(page.locator('meta[name="description"]')).not.toHaveAttribute('content', /no signup/i);
@@ -107,7 +115,7 @@ test('confirmed acceptance sends exact fields, ignores external redirect and onl
   const newTab = await page.context().newPage();
   await newTab.goto('/free-santa-message');
   await expect(newTab.getByRole('button', { name: 'Get my free Santa message' })).toBeVisible();
-  await expect(newTab.getByLabel('First Name')).toHaveCount(0);
+  await expect(newTab.locator('.message-name-label')).toHaveCount(0);
   await newTab.close();
 });
 
@@ -125,7 +133,7 @@ for (const [name, response] of [
     await fillAccessForm(page);
     await page.getByRole('button', { name: 'Get my free Santa message' }).click();
     await expect(page.locator('.santa-message-access').getByRole('alert')).toBeVisible();
-    await expect(page.getByLabel('First Name')).toHaveCount(0);
+    await expect(page.locator('.message-name-label')).toHaveCount(0);
     await expect(page.locator('input[name="EMAIL"]')).toHaveValue(adult.EMAIL);
     await expect(page.getByRole('button', { name: 'Get my free Santa message' })).toBeEnabled();
     expect(await page.evaluate(key => sessionStorage.getItem(key), MESSAGE_ACCESS_KEY)).toBeNull();
@@ -160,7 +168,7 @@ for (const [field, explanation] of [
     await page.getByRole('button', { name: 'Get my free Santa message' }).click();
     await expect(page.getByRole('alert')).toContainText(explanation);
     await expect(page.getByRole('alert')).toContainText('contact Santa Radio');
-    await expect(page.getByLabel('First Name')).toHaveCount(0);
+    await expect(page.locator('.message-name-label')).toHaveCount(0);
     await expect(page.locator(`input[name="${field}"]`)).toHaveCount(0);
     await expect(page.locator('.santa-message-access img')).toHaveCount(0);
     expect(await page.evaluate(() => window.unsafeBrevo)).toBeUndefined();
@@ -193,7 +201,7 @@ test('pending form prevents duplicate submissions and adult details never reach 
   await expect(page.getByRole('button', { name: 'Opening the message desk…' })).toBeDisabled();
   await expect(page.locator('input[name="FIRSTNAME"]')).toHaveAttribute('readonly', '');
   await expect.poll(() => calls).toBe(1);
-  await expect(page.getByLabel('First Name')).toHaveCount(0);
+  await expect(page.locator('.message-name-label')).toHaveCount(0);
   release();
   await expect(page.getByLabel('First Name')).toBeVisible();
   await page.getByLabel('First Name').fill('Olivia');
@@ -216,7 +224,7 @@ test('timeout remains locked, retains details and allows retry without waiting f
   await page.clock.runFor(ACCESS_REQUEST_TIMEOUT_MS + 100);
   await expect(page.getByRole('alert')).toContainText('took too long');
   await expect(page.locator('input[name="EMAIL"]')).toHaveValue(adult.EMAIL);
-  await expect(page.getByLabel('First Name')).toHaveCount(0);
+  await expect(page.locator('.message-name-label')).toHaveCount(0);
   await mockBrevo(page);
   await page.getByRole('button', { name: 'Get my free Santa message' }).click();
   await expect(page.getByLabel('First Name')).toBeVisible();
@@ -228,7 +236,7 @@ test('network failure is an explicit locked retry state', async ({ page }) => {
   await fillAccessForm(page);
   await page.getByRole('button', { name: 'Get my free Santa message' }).click();
   await expect(page.getByRole('alert')).toContainText('Check your connection');
-  await expect(page.getByLabel('First Name')).toHaveCount(0);
+  await expect(page.locator('.message-name-label')).toHaveCount(0);
   await expect(page.locator('input[name="EMAIL"]')).toHaveValue(adult.EMAIL);
 });
 
@@ -248,7 +256,7 @@ test('opaque responses cannot unlock access', async ({ page }) => {
   await fillAccessForm(page);
   await page.getByRole('button', { name: 'Get my free Santa message' }).click();
   await expect(page.getByRole('alert')).toContainText('couldn’t confirm');
-  await expect(page.getByLabel('First Name')).toHaveCount(0);
+  await expect(page.locator('.message-name-label')).toHaveCount(0);
 });
 
 test('blocked session storage uses in-memory accepted access without storing adult details', async ({ page }) => {

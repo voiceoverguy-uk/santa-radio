@@ -43,7 +43,6 @@ export default function FreeSantaMessage() {
       <PageSeo metadata={messageMetadata()} />
       <div className="fsm-hero starry-bg">
         <div className="fsm-hero-content">
-          <img className="brand-logo brand-logo-hero" src="/images/santa-radio-logo.png" alt="Santa Radio" width="827" height="190" />
           <p className="fsm-kicker">Special delivery from the North Pole</p>
           <h1 className="fsm-sub">Free Personalised Santa Message</h1>
           <p className="fsm-desc">Create a free message from Santa with your child’s name. Choose a recorded name, listen to a personalised Santa audio greeting and download your MP3 to keep.</p>

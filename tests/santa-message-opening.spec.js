@@ -137,7 +137,7 @@ for (const width of [1440, 390]) {
       await expectLanding(page, width);
       await expect(page).toHaveURL(originalUrl);
       await expect(page.locator('main.home-page')).toHaveCount(1);
-      await expect(page.getByLabel('First Name')).toHaveCount(0);
+      await expect(page.locator('.message-name-label')).toHaveCount(0);
       await expect(page.locator('.santa-message-section').getByRole('link', { name: 'Visit Santa’s message desk' })).toHaveAttribute('href', '/free-santa-message');
       await scrollTo(page, 0);
       await expectStayedAt(page, 0);

@@ -35,7 +35,7 @@ test('old catalogue goes to the generic maker and preserves the adult gate', asy
   const requests = await setup(page);
   await page.goto('/personalised-santa-message/all');
   await expect(page).toHaveURL(/\/free-santa-message$/);
-  await expect(page.getByLabel('First Name')).toHaveCount(0);
+  await expect(page.locator('.message-name-label')).toHaveCount(0);
   expect(requests.searches).toEqual([]);
   expect(requests.renders).toEqual([]);
   await openAccess(page);
@@ -47,7 +47,7 @@ test('old name link carries a verified recording without submitting access or cr
   const requests = await setup(page);
   await page.goto('/personalised-santa-message/Cooper?utm_source=google');
   await expect(page).toHaveURL(/\/free-santa-message\?utm_source=google&name=Cooper$/);
-  await expect(page.getByLabel('First Name')).toHaveCount(0);
+  await expect(page.locator('.message-name-label')).toHaveCount(0);
   expect(requests.searches).toEqual([]);
   expect(requests.renders).toEqual([]);
   await openAccess(page);
