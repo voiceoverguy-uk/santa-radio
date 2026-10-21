@@ -28,6 +28,18 @@ Google Analytics and Meta advertising tracking require separate, explicit analyt
 
 **How to apply:** Preserve independent opt-in and withdrawal controls when changing tracking. These choices are separate from news subscriptions and Santa message access; do not add an unconditional tracking script or no-JavaScript tracking image.
 
+Partnership enquiry analytics measures opening the homepage invitation, not a submitted or accepted enquiry.
+
+**Why:** The requested scope explicitly preserves the existing general enquiry workflow and excludes contact details and free-form messages from tracking.
+
+**How to apply:** Report invitation activations as opens, not completed enquiries. Do not add form attribution or submission tracking without a separate request.
+
+Use the site's existing Google Analytics integration for consent-gated custom events; analytics access authorisation alone does not prove that a Replit-hosted tracker exists on the published site.
+
+**Why:** This site's hosting and existing consent setup must remain functional without assuming an injected tracker. A test-only replacement tracker can make event tests pass while the published app sends nothing.
+
+**How to apply:** Inspect the actual provider and test its real command queue, stubbing only network loading or deliberate failure cases. Do not introduce a second analytics provider just for custom events.
+
 The owner confirmed Google Analytics Enhanced Measurement is switched off for the Santa Radio web stream, with a screenshot of the account setting.
 
 **Why:** The site sends its own navigation page views; Enhanced Measurement can independently send history-based views and automatic interaction events.

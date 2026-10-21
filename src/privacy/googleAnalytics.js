@@ -62,6 +62,16 @@ export function trackAnalyticsPageView(pathname) {
   lastPath = pathname;
 }
 
+export function trackAnalyticsEvent(name, data) {
+  if (typeof window === 'undefined' || !active || window[DISABLE_KEY]) return;
+  try {
+    const result = window.gtag?.('event', name, { ...data, send_to: MEASUREMENT_ID });
+    result?.catch?.(() => {});
+  } catch {
+    // Optional analytics must never prevent the requested action.
+  }
+}
+
 export function revokeAnalytics() {
   // Google documents this flag as disabling collection, including automatic
   // events. Set it BEFORE updating consent to avoid denied-state pings.

@@ -1,6 +1,7 @@
 import PageSeo from '../seo/PageSeo.jsx';
 import { homeMetadata } from '../seo/catalogue.js';
 import { scrollToSantaMessageDesk } from '../lib/scrollToSantaMessageDesk.js';
+import { useTrackEvent } from '../privacy/useTrackEvent.js';
 import { RadioButton } from '../components/AudioPlayer.jsx';
 import NowPlayingArtwork from '../components/NowPlayingArtwork.jsx';
 import SantaTrackerBanner from '../tracker/components/SantaTrackerBanner.tsx';
@@ -15,6 +16,13 @@ import SantaFlyby from '../components/SantaFlyby.jsx';
 import './Home.css';
 
 export default function Home() {
+  const trackEvent = useTrackEvent();
+  const trackPartnership = event => {
+    if (event.defaultPrevented ||
+        (event.type === 'click' ? event.button !== 0 : event.button !== 1)) return;
+    trackEvent('partnership_enquiry_opened', { location: 'homepage_partnership', destination: '/submit-a-song' });
+  };
+
   return (
     <main id="main-content" className="home-page">
       <PageSeo metadata={homeMetadata()} />
@@ -57,7 +65,8 @@ export default function Home() {
             <p className="partnership-strip__body">Got a Christmas market, festive event or unique Christmas product? Join Santa Radio with website and app banners, plus an on-air credit every hour.</p>
             <p className="partnership-strip__supporting">Heard across web, apps, CarPlay, Apple TV and the Mac app.</p>
           </div>
-          <a className="partnership-strip__button" href="/submit-a-song">Let’s talk Christmas →</a>
+          <a className="partnership-strip__button" href="/submit-a-song"
+            onClick={trackPartnership} onAuxClick={trackPartnership}>Let’s talk Christmas →</a>
         </div>
       </section>
       <SantaMessageForm />
