@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
 
-test('desktop swaps Mug Shots and personalised video while mobile keeps its section order', async ({ page }) => {
+test('homepage keeps its desktop and mobile section order without the paused video promotion', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
-  const desktop = ['hero', 'partnership-strip', 'santa-message-section', 'tracker-banner', 'mugshots-preview', 'soundboard', 'youtube-section', 'santa-video-section', 'contact-section'];
-  const mobile = ['hero', 'partnership-strip', 'santa-message-section', 'tracker-banner', 'santa-video-section', 'soundboard', 'youtube-section', 'mugshots-preview', 'contact-section'];
+  const desktop = ['hero', 'partnership-strip', 'santa-message-section', 'tracker-banner', 'mugshots-preview', 'soundboard', 'youtube-section', 'contact-section'];
+  const mobile = ['hero', 'partnership-strip', 'santa-message-section', 'tracker-banner', 'soundboard', 'youtube-section', 'mugshots-preview', 'contact-section'];
   for (const width of [1280, 768, 767, 390]) {
     await page.setViewportSize({ width, height: 900 });
     const order = await page.locator('.home-page > section').evaluateAll(sections =>
@@ -16,13 +16,12 @@ test('desktop swaps Mug Shots and personalised video while mobile keeps its sect
   }
 });
 
-test('Explore Santa Videos opens the supplied Festive Studio campaign URL in a new tab', async ({ page }) => {
+test('personalised video promotion is temporarily absent while free audio messages remain', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
-  const link = page.getByRole('link', { name: 'Explore Santa Videos', exact: true });
-  await expect(link).toHaveAttribute('href', 'https://festivestudio.com/?utm_source=santaradio&utm_medium=website&utm_campaign=2024');
-  await expect(link).toHaveAttribute('target', '_blank');
-  await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
-  await expect(page.locator('.santa-video-section')).toContainText('on Festive Studio.');
+  await expect(page.getByRole('heading', { name: 'Personalised Santa Video', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'Explore Santa Videos', exact: true })).toHaveCount(0);
+  await expect(page.locator('.santa-video-section')).toHaveCount(0);
+  await expect(page.locator('.santa-message-section')).toHaveCount(1);
 });
 
 test.beforeEach(async ({ context }) => {

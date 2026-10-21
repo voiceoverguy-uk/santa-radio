@@ -81,10 +81,10 @@ export default function SantaMessageAccessCard({
       </form>
 
       <p className="santa-message-access__privacy">
-        Your adult contact details are sent to Brevo to open the message desk, not to sign you up for Santa Radio news. Read our <Link to="/privacy-policy">privacy policy</Link>.
+        Your details are stored for Santa Radio news or updates. Read our <Link to="/privacy-policy">privacy policy</Link>.
       </p>
       <p className="santa-message-access__delivery">
-        Once you create your greeting, download the MP3 here — it won’t be sent by email.
+        Create your greeting, download and share - it won’t be sent by email.
       </p>
     </section>
   );

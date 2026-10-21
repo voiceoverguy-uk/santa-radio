@@ -10,6 +10,9 @@ for (const width of [1440, 1201, 1200, 390, 320]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/');
     await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
+    const preview = page.locator('.mugshots-preview');
+    await expect(preview.getByRole('heading', { name: 'Celebrity Mugshots', exact: true })).toBeVisible();
+    await expect(preview.getByRole('heading', { name: 'Mug Shots', exact: true })).toHaveCount(0);
     const nav = page.getByRole('navigation', { name: 'Main navigation' });
     const mobile = width <= 1200;
     if (mobile) {

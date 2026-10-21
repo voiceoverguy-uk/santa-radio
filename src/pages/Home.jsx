@@ -11,7 +11,6 @@ import SantaMessageForm from '../components/SantaMessageForm.jsx';
 import YouTubeSection from '../components/YouTubeSection.jsx';
 import MugshotsPreview from '../components/MugshotsPreview.jsx';
 import ContactSection from '../components/ContactSection.jsx';
-import SantaVideoSection from '../components/SantaVideoSection.jsx';
 import SantaFlyby from '../components/SantaFlyby.jsx';
 import './Home.css';
 
@@ -71,7 +70,7 @@ export default function Home() {
       </section>
       <SantaMessageForm />
       <SantaTrackerBanner />
-      <SantaVideoSection />
+      {/* Personalised video promotion temporarily removed; SantaVideoSection and its styles are retained for restoration. */}
       <Soundboard />
       <YouTubeSection />
       <MugshotsPreview />

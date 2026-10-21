@@ -11,6 +11,16 @@ test.beforeEach(async ({ page }) => {
   }));
 });
 
+test('adult access shows the requested news disclosure with an internal privacy link', async ({ page }) => {
+  for (const path of ['/', '/free-santa-message']) {
+    await page.goto(path);
+    const disclosure = page.locator('.santa-message-access__privacy');
+    await expect(disclosure).toHaveText('Your details are stored for Santa Radio news or updates. Read our privacy policy.');
+    await expect(disclosure.getByRole('link', { name: 'privacy policy', exact: true })).toHaveAttribute('href', '/privacy-policy');
+    await expect(page.locator('.santa-message-access__delivery')).toHaveText('Create your greeting, download and share - it won’t be sent by email.');
+  }
+});
+
 test('homepage, direct visits and existing message navigation all require adult access', async ({ page }) => {
   await page.goto('/');
   const section = page.locator('.santa-message-section');

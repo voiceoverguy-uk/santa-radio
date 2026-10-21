@@ -2,6 +2,12 @@
 name: Santa Radio visual direction
 description: User's North Pole visual expectations, Santa note voice and mobile player starting state.
 ---
+The current navigation page should have an animated underline in the website's gold colour.
+
+**Why:** The owner requested an animated line beneath the active navigation heading on arrival.
+
+**How to apply:** Preserve a visible current-page indicator, respect reduced-motion preferences, and keep keyboard focus distinct.
+
 Do not show a breadcrumb/path trail on Christmas artist/song pages.
 
 **Why:** The user said “remove the path. we don't need to show it”.

@@ -41,6 +41,14 @@ export default function Navbar() {
     { to: '/mugshots/all', label: 'Celebrity Mugshots' },
     { to: '/santa-tracker', label: 'Santa Tracker' },
   ];
+  const pathname = location.pathname.replace(/\/+$/, '') || '/';
+  const isActive = to => {
+    if (to === '/mugshots/all') return /^\/mugshots(?:\/|$)/.test(pathname);
+    if (to === '/christmas-music') {
+      return /^\/(?:christmas-music|christmas-artist|christmas-karaoke-lyrics)(?:\/|$)/.test(pathname);
+    }
+    return pathname === to || (to !== '/' && pathname.startsWith(`${to}/`));
+  };
   return (
     <nav className={`navbar ${scrolled || location.pathname !== '/' ? 'solid' : ''}`} aria-label="Main navigation">
       <div className="navbar-inner">
@@ -51,9 +59,9 @@ export default function Navbar() {
             ? <RadioButton className="nav-radio" />
             : link.external
             ? <a href={link.to} target="_blank" rel="noopener noreferrer" title={`${link.label} (opens in a new tab)`} onClick={() => setMenuOpen(false)}>{link.label}</a>
-            : <Link to={link.to} aria-current={location.pathname === link.to ? 'page' : undefined} className={location.pathname === link.to ? 'active' : ''} onClick={() => setMenuOpen(false)}>{link.label}</Link>
+            : <Link to={link.to} aria-current={isActive(link.to) ? 'page' : undefined} className={isActive(link.to) ? 'active' : ''} onClick={() => setMenuOpen(false)}>{link.label}</Link>
           }</li>)}
-          <li><Link to="/free-santa-message" className="btn-red nav-message" aria-current={location.pathname === '/free-santa-message' ? 'page' : undefined} onClick={openMessageDesk}>FREE Santa Message</Link></li>
+          <li><Link to="/free-santa-message" className="btn-red nav-message" aria-current={isActive('/free-santa-message') ? 'page' : undefined} onClick={openMessageDesk}>FREE Santa Message</Link></li>
         </ul>
       </div>
     </nav>

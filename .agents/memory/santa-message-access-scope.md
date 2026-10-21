@@ -8,11 +8,11 @@ The owner wants an adult's first name, surname and email submitted through the s
 
 **How to apply:** Keep adult contact collection separate from child-name selection and on-demand recorded-audio mixing. Do not add a child's date of birth just because it appears in a supplied embed; the owner chose to remove that requirement in Brevo. Do not promise email delivery of the generated MP3 or introduce a second generator.
 
-This is a signup-first, tab-session convenience flow, not authentication, email ownership verification or proof of double opt-in. Message access does not establish Santa Radio news or tracker-reminder consent.
+This is a signup-first, tab-session convenience flow, not authentication, email ownership verification or proof of double opt-in. The owner now requests the adult-access disclosure: “Your details are stored for Santa Radio news or updates. Read our privacy policy.”
 
-**Why:** The approved visitor-access scope deliberately excludes accounts, secure backend authorisation, marketing enrolment and email automation changes.
+**Why:** On 21 October 2026 the owner explicitly replaced the previous no-news-signup wording. This was a wording request, not verification or configuration of Brevo marketing enrolment or email automation.
 
-**How to apply:** Do not add API credentials or connected-service changes to replace the supplied public form without a new request. Confirm owner approval before submitting real test contacts or changing Brevo autoresponders, list settings or double-opt-in configuration.
+**How to apply:** Preserve the owner-requested disclosure. Do not infer verified mailing-list behaviour or double opt-in from that text alone. Do not add API credentials or connected-service changes to replace the supplied public form without a new request. Confirm owner approval before submitting real test contacts or changing Brevo autoresponders, list settings or double-opt-in configuration.
 
 Staff-only sign-in for the private missing-name request ledger is separate from this visitor-access flow.
 

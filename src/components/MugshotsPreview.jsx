@@ -18,7 +18,7 @@ export default function MugshotsPreview() {
             className="mugshots-header-img"
           />
         </div>
-        <h2 className="section-title mug-title">Mug Shots</h2>
+        <h2 className="section-title mug-title">Celebrity Mugshots</h2>
         <p className="section-subtitle mug-sub">
           We gave a Santa Radio Mug to our Autograph hunting Elf. You won't believe how many he got...
           <br />

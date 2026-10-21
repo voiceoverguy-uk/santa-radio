@@ -1,5 +1,34 @@
 import { test, expect } from '@playwright/test';
 
+test('unreachable webcam keeps its direct YouTube link and can be unloaded', async ({ page }) => {
+  let embedRequests = 0;
+  await page.route('https://www.youtube.com/embed/**', route => {
+    embedRequests++;
+    return route.abort('failed');
+  });
+  await page.goto('/');
+  await page.locator('.marketing-consent').getByRole('button', {
+    name: 'Decline optional cookies', exact: true,
+  }).click();
+  const webcam = page.locator('.youtube-section');
+  const directLink = webcam.getByRole('link', { name: 'Watch directly on YouTube', exact: true });
+  await expect(webcam.locator('iframe')).toHaveCount(0);
+  expect(embedRequests).toBe(0);
+  await webcam.getByRole('button', { name: 'Enable external media' }).click();
+  await expect.poll(() => embedRequests).toBe(1);
+  await expect(directLink).toBeVisible();
+  await expect(directLink).toHaveAttribute('href', 'https://www.youtube.com/watch?v=mMrHniQJNCM');
+  await expect(directLink).toHaveAttribute('target', '_blank');
+  await expect(directLink).toHaveAttribute('rel', 'noopener noreferrer');
+  await page.locator('footer').getByRole('button', { name: 'Cookie settings', exact: true }).click();
+  await page.locator('.marketing-consent').getByRole('button', {
+    name: 'Decline optional cookies', exact: true,
+  }).click();
+  await expect(webcam.locator('iframe')).toHaveCount(0);
+  await expect(directLink).toBeVisible();
+  await expect(webcam.getByRole('link', { name: 'Open on YouTube instead (new tab)' })).toBeVisible();
+});
+
 test('permitted webcam autoplays muted and pause/resume leaves radio untouched', async ({ page }) => {
   await page.route('https://www.youtube.com/embed/**', route => route.fulfill({ contentType: 'text/html', body: 'Mock video provider' }));
   await page.addInitScript(() => {
