@@ -201,8 +201,8 @@ export default function SubmitASong() {
               <p className="song-guidance" id="song-message-help">{isSong
                 ? 'Include the artist name, song title, a listening link (such as YouTube, SoundCloud or Spotify), a short bio or description, and a link to any promotion of Santa Radio. Keep the whole message within 500 characters and check both links work.'
                 : 'Tell us about your enquiry. Keep your message within 500 characters and share only necessary details.'}</p>
-              {field('MESSAGE', 'Message', { textarea: true, limit: 500, help: 'song-message-help song-message-count' })}
-              <p className="song-character-count" id="song-message-count">{fields.MESSAGE.length} / 500 characters</p>
+              {field('SONG_REQUEST', 'Message', { textarea: true, limit: 500, help: 'song-message-help song-message-count' })}
+              <p className="song-character-count" id="song-message-count">{fields.SONG_REQUEST.length} / 500 characters</p>
               {isSong && <div className="song-criteria-field">
                 <label className="song-criteria-label" htmlFor="song-criteriaMet">
                   <input id="song-criteriaMet" name="criteriaMet" type="checkbox"

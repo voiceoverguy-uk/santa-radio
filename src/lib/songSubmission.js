@@ -2,7 +2,7 @@
 export const SONG_FORM_URL = 'https://ca61f856.sibforms.com/serve/MUIFAIGpu7eOZ4mJ0tp-P1-PI-OWQj9209ioBc9iOd-ae3zbwsfaG67xp9R4DlwMgef_Yrr_6g63CPf0CZwITEPVEiaplfqCoR1vb0rEY3jp6ILn1smesmu6rFzGW7ujefLd6MWuIaFyLkoCrl9qNjsEE54J0rYAvUqyNt6NIlWxNcK1b-e3RWmCwY79SD66R2zFRxj-Ff4vyhA5';
 export const SONG_REQUEST_TIMEOUT_MS = 15000;
 export const emptySongFields = {
-  FIRSTNAME: '', LASTNAME: '', EMAIL: '', MESSAGE: '',
+  FIRSTNAME: '', LASTNAME: '', EMAIL: '', SONG_REQUEST: '',
   criteriaMet: false, email_address_check: '',
 };
 
@@ -13,15 +13,15 @@ export const songCountries = countryPairs.split(' ').map(pair => {
   const [country, code] = pair.split(':');
   return { country, code };
 }).sort((a, b) => a.country === 'GB' ? -1 : b.country === 'GB' ? 1 : 0);
-// MESSAGE is optional on Brevo's hosted form, but required on this website.
-const requiredFields = ['FIRSTNAME', 'LASTNAME', 'EMAIL', 'MESSAGE'];
+// The hosted form and website both require SONG_REQUEST (placeholder MESSAGE).
+const requiredFields = ['FIRSTNAME', 'LASTNAME', 'EMAIL', 'SONG_REQUEST'];
 const supportedFields = requiredFields;
 
 export function validateSongFields(fields, mode = 'song') {
   const errors = {};
   for (const [name, label, limit] of [
     ['FIRSTNAME', 'first name', 200], ['LASTNAME', 'surname', 200],
-    ['MESSAGE', 'message', 500],
+    ['SONG_REQUEST', 'message', 500],
   ]) {
     const value = fields[name] || '';
     if (!value.trim()) errors[name] = `Please enter your ${label}.`;

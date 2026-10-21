@@ -8,7 +8,7 @@ General enquiries and song submissions use one shared form. General enquiry is t
 
 **How to apply:** Keep the two modes distinct in guidance and confirmation, without adding provider attributes, lists or automations to separate their routing.
 
-Use the current read-only hosted song form to confirm the provider field contract. Treat the owner's supplied embed as historical evidence when the hosted form differs; do not guess field mappings.
+Use the current read-only hosted song form and the newest owner-supplied embed to confirm the provider field contract. Older embeds may be historical evidence; a visible placeholder is not a provider attribute name. Report disagreements rather than guessing field mappings.
 
 **Why:** The hosted message contract changed after the original supplied embed. The owner authorised alignment with the confirmed live field, but excluded Brevo attribute, list and automation changes. Read-only form inspection and mocked acceptance do not establish actual record persistence.
 

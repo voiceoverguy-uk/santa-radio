@@ -6,11 +6,13 @@ import { render } from '../dist/server/entry-server.js';
 test('built Node SSR exposes the query-selected song contract and shared canonical metadata', () => {
   const page = render('/submit-a-song?mode=song');
   assert.equal(page.status, 200);
-  for (const field of ['FIRSTNAME', 'LASTNAME', 'EMAIL', 'COMPANY:name', 'criteriaMet', 'email_address_check']) {
+  for (const field of ['FIRSTNAME', 'LASTNAME', 'EMAIL', 'SONG_REQUEST', 'criteriaMet', 'email_address_check']) {
     assert.ok(page.markup.includes(`name="${field}"`), field);
   }
   assert.ok(page.markup.includes('name="locale" value="en"'));
-  assert.match(page.markup, /maxlength="500"/i);
+  assert.match(page.markup, /<textarea[^>]*name="SONG_REQUEST"[^>]*required=""[^>]*maxLength="500"/i);
+  assert.ok(!page.markup.includes('name="MESSAGE"'));
+  assert.ok(!page.markup.includes('name="COMPANY:name"'));
   assert.ok(!page.markup.includes('name="SMS"'));
   assert.ok(!page.markup.includes('name="SMS__COUNTRY_CODE"'));
   assert.ok(page.markup.includes('Have you met the criteria?'));
@@ -22,7 +24,9 @@ test('built Node SSR exposes the query-selected song contract and shared canonic
 
 test('production pre-rendered shared page defaults to general enquiry with accurate privacy disclosure', async () => {
   const html = await readFile('dist/submit-a-song/index.html', 'utf8');
-  assert.ok(html.includes('name="COMPANY:name"'));
+  assert.match(html, /<textarea[^>]*name="SONG_REQUEST"[^>]*required=""[^>]*maxLength="500"/i);
+  assert.ok(!html.includes('name="MESSAGE"'));
+  assert.ok(!html.includes('name="COMPANY:name"'));
   assert.ok(html.includes('Your name, email and message are sent to Brevo'));
   assert.ok(html.includes('General enquiry'));
   assert.ok(html.includes('Send enquiry'));
