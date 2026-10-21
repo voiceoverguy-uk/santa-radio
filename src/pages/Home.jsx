@@ -49,6 +49,17 @@ export default function Home() {
           <NowPlayingArtwork />
         </div>
       </section>
+      <section className="partnership-strip" aria-labelledby="partnership-heading">
+        <div className="partnership-strip__inner">
+          <div className="partnership-strip__copy">
+            <p className="partnership-strip__eyebrow">A LITTLE CHRISTMAS PARTNERSHIP</p>
+            <h2 id="partnership-heading" className="partnership-strip__heading">Your Christmas magic. Our festive soundtrack.</h2>
+            <p className="partnership-strip__body">Got a Christmas market, festive event or unique Christmas product? Join Santa Radio with website and app banners, plus an on-air credit every hour.</p>
+            <p className="partnership-strip__supporting">Heard across web, apps, CarPlay, Apple TV and the Mac app.</p>
+          </div>
+          <a className="partnership-strip__button" href="/submit-a-song">Let’s talk Christmas →</a>
+        </div>
+      </section>
       <SantaMessageForm />
       <SantaTrackerBanner />
       <SantaVideoSection />

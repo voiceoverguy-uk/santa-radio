@@ -7,4 +7,4 @@ The partnership banner should look distinct from the normal snowy homepage backg
 
 **Why:** The owner preferred the gold patterned proposal to the reused village scenery, saying “yes better thank you”, then requested a wrapping-paper treatment and a top line matching the bottom.
 
-**How to apply:** Preserve this direction when refining partnership mockups. Approval of the visual direction is not permission to implement it: keep website changes separate until explicitly requested.
+**How to apply:** Preserve this direction when refining the partnership banner. The owner subsequently explicitly approved website implementation and chose the existing general contact form for enquiries, not a separate advertising enquiry workflow. Keep app advertising placements and publishing separate from this homepage invitation.
