@@ -38,7 +38,7 @@ export default function Navbar() {
   const links = [
     { to: '/', label: 'Home' }, { to: '/apps', label: 'Apps' },
     { radio: true }, { to: '/christmas-music', label: 'Music' },
-    { to: '/mugshots/all', label: 'Mug Shots' },
+    { to: '/mugshots/all', label: 'Celebrity Mugshots' },
     { to: '/santa-tracker', label: 'Santa Tracker' },
   ];
   return (

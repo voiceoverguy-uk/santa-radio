@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 const primaryNavigation = [
   ['Home', '/'], ['Apps', '/apps'],
-  ['Music', '/christmas-music'], ['Mug Shots', '/mugshots/all'], ['Santa Tracker', '/santa-tracker'],
+  ['Music', '/christmas-music'], ['Celebrity Mugshots', '/mugshots/all'], ['Santa Tracker', '/santa-tracker'],
   ['FREE Santa Message', '/free-santa-message'],
 ];
 
@@ -19,7 +19,7 @@ async function expectNavigationFits(page, mobile, checkPageOverflow = true) {
     await expect(nav.getByRole('link', { name: label, exact: true })).toHaveAttribute('href', href);
   }
   await expect(nav.locator('.navbar-links').locator('a, button')).toHaveText([
-    'Home', 'Apps', 'Listen Live', 'Music', 'Mug Shots', 'Santa Tracker', 'FREE Santa Message',
+    'Home', 'Apps', 'Listen Live', 'Music', 'Celebrity Mugshots', 'Santa Tracker', 'FREE Santa Message',
   ]);
   const radio = nav.getByRole('button', { name: 'Listen Live', exact: true });
   await expect(radio).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
@@ -156,7 +156,7 @@ test('responsive homepage, matching typography, effects and mobile navigation', 
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(page.getByRole('button', { name: 'Open menu' })).toBeVisible();
   await page.getByRole('button', { name: 'Open menu' }).click();
-  await page.getByRole('navigation').getByRole('link', { name: 'Mug Shots' }).click();
+  await page.getByRole('navigation').getByRole('link', { name: 'Celebrity Mugshots' }).click();
   await expect(page).toHaveURL(/mugshots\/all$/);
   await expect(page.getByRole('button', { name: 'Open menu' })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);

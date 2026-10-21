@@ -45,7 +45,7 @@ for (const width of [1280, 320]) {
     await expect(heroRadio).toHaveText('Pause Radio');
     await expect(dockRadio).toHaveText('Pause Radio');
     await page.evaluate(() => { window.originalRadio = document.querySelector('audio'); });
-    // Keyboard order remains radio, Music, Mug Shots, Tracker, final message CTA.
+    // Keyboard order remains radio, Music, Celebrity Mugshots, Tracker, final message CTA.
     for (let i = 0; i < 4; i++) await page.keyboard.press('Tab');
     const message = nav.getByRole('link', { name: 'FREE Santa Message', exact: true });
     await expect(message).toBeFocused();

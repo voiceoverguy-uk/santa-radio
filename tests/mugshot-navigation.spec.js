@@ -5,6 +5,40 @@ import { buildCatalogue } from '../src/data/mugshot-catalogue.js';
 const { catalogue, aliases } = buildCatalogue(JSON.parse(fs.readFileSync('src/data/mugshots.json', 'utf8')));
 const url = m => `/mugshots/${m.song}`;
 
+for (const width of [1440, 1201, 1200, 390, 320]) {
+  test(`Celebrity Mugshots navigation opens the gallery by keyboard at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
+    const nav = page.getByRole('navigation', { name: 'Main navigation' });
+    const mobile = width <= 1200;
+    if (mobile) {
+      await nav.getByRole('button', { name: 'Open menu', exact: true }).focus();
+      await page.keyboard.press('Enter');
+    }
+    const mugshots = nav.getByRole('link', { name: 'Celebrity Mugshots', exact: true });
+    await expect(mugshots).toBeVisible();
+    await expect(mugshots).toHaveAttribute('href', '/mugshots/all');
+    await expect(nav.getByRole('link', { name: 'Mug Shots', exact: true })).toHaveCount(0);
+    await nav.getByRole('link', { name: 'Music', exact: true }).focus();
+    await page.keyboard.press('Tab');
+    await expect(mugshots).toBeFocused();
+    await expect(mugshots).toHaveCSS('outline-style', 'solid');
+    await page.keyboard.press('Enter');
+    await expect(page).toHaveURL(/\/mugshots\/all$/);
+    await expect(page.locator('.mugshots-grid')).toBeVisible();
+    if (mobile) {
+      await expect(nav.getByRole('button', { name: 'Open menu', exact: true })).toHaveAttribute('aria-expanded', 'false');
+      await expect(nav.locator('#main-menu')).toBeHidden();
+    }
+    // Mobile navigation deliberately closes on arrival; its active state still updates.
+    const activeLink = nav.getByRole('link', { name: 'Celebrity Mugshots', exact: true, includeHidden: true });
+    await expect(activeLink).toHaveAttribute('aria-current', 'page');
+    await expect(activeLink).toHaveClass('active');
+    await expect(activeLink).toHaveCSS('color', 'rgb(230, 206, 134)');
+  });
+}
+
 test('every retained profile and alias has a valid position in the gallery sequence', () => {
   expect(new Set(catalogue.map(m => m.song)).size).toBe(catalogue.length);
   for (const [slug, canonical] of Object.entries(aliases)) {
