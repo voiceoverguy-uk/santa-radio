@@ -47,6 +47,8 @@ test('direct route metadata, assets and preview noindex are available before Jav
   expect(html).toContain("Santa Tracker | Track Santa's Journey");
   expect(html).toContain(`rel="canonical" href="${canonical}"`);
   expect(html).toContain('property="og:site_name" content="Santa Radio"');
+  expect(html).toMatch(/"@type"\s*:\s*"BreadcrumbList"/);
+  expect(html).toContain('https://www.santaradio.co.uk/santa-tracker#breadcrumbs');
   const preview = await request.get('/santa-tracker/preview');
   // The development proxy also appends its own non-indexing directives.
   expect(preview.headers()['x-robots-tag']).toContain('noindex, follow');
@@ -88,16 +90,23 @@ for (const [date, text] of [
 }
 
 test('desktop/mobile map, typography and menu fit without horizontal overflow', async ({ page }) => {
-  await page.clock.setFixedTime(new Date('2026-12-24T14:00:00Z'));
+  await page.clock.setFixedTime(new Date('2026-12-24T09:00:00Z'));
   for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 }]) {
     await page.setViewportSize(viewport);
     await page.goto('/santa-tracker');
     const map = page.locator('main svg[role="img"]');
     await expect(map).toBeVisible();
-    const box = await map.boundingBox();
+    await expect(page.getByRole('navigation', { name: 'Breadcrumb' })).toHaveCount(0);
+    const box = await page.locator('.tracker-map').boundingBox();
+    const headingBox = await page.locator('main h1').boundingBox();
+    const descriptionBox = await page.locator('.tracker-hero .tracker-copy').first().boundingBox();
+    const countdownBox = await page.getByText("Countdown to Santa's Departure").boundingBox();
     expect(box.width).toBeGreaterThan(250);
     expect(box.x).toBeGreaterThanOrEqual(0);
     expect(box.x + box.width).toBeLessThanOrEqual(viewport.width + 1);
+    expect(box.y).toBeGreaterThanOrEqual(headingBox.y + headingBox.height);
+    expect(descriptionBox.y).toBeGreaterThanOrEqual(box.y + box.height);
+    expect(countdownBox.y).toBeGreaterThanOrEqual(box.y + box.height);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
     expect(await page.locator('main h1').evaluate(node => getComputedStyle(node).fontWeight)).toBe('400');
     await expect(map.locator('text').filter({ hasText: '🎅' })).toHaveCount(1);

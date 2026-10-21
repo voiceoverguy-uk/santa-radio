@@ -31,7 +31,8 @@ const funFacts = [
 
 interface SantaTrackerProps {
   showPreview?: boolean;
-  introduction?: ReactNode;
+  heading?: ReactNode;
+  introCopy?: ReactNode;
 }
 
 function TrackerHero({ children }: { children: ReactNode }) {
@@ -46,7 +47,7 @@ function TrackerHero({ children }: { children: ReactNode }) {
   );
 }
 
-function SantaTrackerInner({ showPreview = false, introduction }: SantaTrackerProps) {
+function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTrackerProps) {
 
   const [previewState, setPreviewState] = useState<PreviewState>(getDefaultPreviewState);
   const [effectiveTime, setEffectiveTime] = useState<Date | null>(null);
@@ -87,7 +88,7 @@ function SantaTrackerInner({ showPreview = false, introduction }: SantaTrackerPr
   }, []);
 
   if (!mounted || !effectiveTime) {
-    return <TrackerSkeleton introduction={introduction} />;
+    return <TrackerSkeleton heading={heading} introCopy={introCopy} />;
   }
 
   const data = getDashboardData(effectiveTime);
@@ -154,13 +155,19 @@ function SantaTrackerInner({ showPreview = false, introduction }: SantaTrackerPr
             </span>
           </div>
 
-          {introduction ?? <h1 className="tracker-heading text-3xl sm:text-4xl lg:text-5xl tracking-tight">
+          {heading ?? <h1 className="tracker-heading text-3xl sm:text-4xl lg:text-5xl tracking-tight">
             Track Santa&apos;s Journey
             <br />
             <span className="tracker-heading-accent">Around the World</span>
           </h1>}
 
-          {(!introduction || isLive || isComplete || (onHoliday && holiday)) && <p className="tracker-copy mt-4 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
+          <div className="mt-8 w-full">
+            <SantaMap effectiveTime={effectiveTime} mapPosition={data.mapPosition} onHoliday={onHoliday} />
+          </div>
+
+          {introCopy}
+
+          {(!heading || isLive || isComplete || (onHoliday && holiday)) && <p className="tracker-copy mt-4 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
             {isLive || isComplete
               ? data.statusSubtext
               : onHoliday && inJuly && holiday
@@ -222,12 +229,6 @@ function SantaTrackerInner({ showPreview = false, introduction }: SantaTrackerPr
             </div>
           )}
       </TrackerHero>
-
-      <section className="px-4 sm:px-6 pb-12">
-        <div className="max-w-6xl mx-auto">
-          <SantaMap effectiveTime={effectiveTime} mapPosition={data.mapPosition} onHoliday={onHoliday} />
-        </div>
-      </section>
 
       <section className="px-4 sm:px-6 pb-12">
         <div className="max-w-6xl mx-auto">
@@ -305,14 +306,15 @@ function SantaTrackerInner({ showPreview = false, introduction }: SantaTrackerPr
   );
 }
 
-function TrackerSkeleton({ introduction }: { introduction?: ReactNode }) {
-  if (introduction) {
+function TrackerSkeleton({ heading, introCopy }: Pick<SantaTrackerProps, "heading" | "introCopy">) {
+  if (heading) {
     return (
       <div className="tracker-shell min-h-screen text-white">
         <TrackerHero>
           {/* Reserve the existing status badge's space without inventing a status. */}
           <div aria-hidden="true" className="h-8 mb-6" />
-          {introduction}
+          {heading}
+          {introCopy}
           <div role="status" className="tracker-meta mt-8 text-sm">
             Loading Santa Tracker...
           </div>
@@ -330,10 +332,10 @@ function TrackerSkeleton({ introduction }: { introduction?: ReactNode }) {
   );
 }
 
-export default function SantaTrackerClient({ showPreview = false, introduction }: SantaTrackerProps) {
+export default function SantaTrackerClient({ showPreview = false, heading, introCopy }: SantaTrackerProps) {
   return (
-    <Suspense fallback={<TrackerSkeleton introduction={introduction} />}>
-      <SantaTrackerInner showPreview={showPreview} introduction={introduction} />
+    <Suspense fallback={<TrackerSkeleton heading={heading} introCopy={introCopy} />}>
+      <SantaTrackerInner showPreview={showPreview} heading={heading} introCopy={introCopy} />
     </Suspense>
   );
 }

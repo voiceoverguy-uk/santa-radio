@@ -29,6 +29,7 @@
 - [SEO delivery rules](seo-delivery.md) — Owner prefers www; keep preview/integrations on their hosts. Validate built Node SSR as well as Vite rendering.
 - [Workspace environment label](workspace-environment-label.md) — Do not infer a production database target from the environment label alone.
 - [Workspace verification](workspace-verification-baselines.md) — Recheck files after task-environment transitions; earlier edits and temporary baselines may be absent.
+- [Tracker verification baselines](tracker-test-baselines.md) — Check tracker route output against current metadata before attributing unrelated full-suite failures to a layout change.
 - [Panoramic image exports](panoramic-image-exports.md) — Check generated canvas dimensions; wide prompts can still return square images.
 - [Santa Dash scenery](santa-dash-scenery.md) — Rooftop-running backdrops need a side view with the Christmas town set back behind playable platforms.
 - [Artwork browser rendering](artwork-browser-rendering.md) — Prefer system Chromium for static artwork if the downloaded browser lacks shared libraries.
