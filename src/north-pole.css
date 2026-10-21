@@ -10,7 +10,7 @@ main .gold-text { background: none; -webkit-text-fill-color: var(--gold-light); 
 .starry-bg::before { display: none; }
 .section-white,.section-light { background: #f3eddc; }
 .music-hero,.mugshots-page-hero,.fsm-hero,.apps-hero,.stories-hero,.submit-hero,.links-hero { background: radial-gradient(ellipse at 50% 0%,#244d39,var(--navy-dark) 75%); padding-top: 70px; padding-bottom: 70px; border-bottom: 1px solid #D4AF3726; }
-.mugshots-page-title,.stories-title,.submit-title,.links-title { color: var(--gold-light); }
+.music-sub-title,.mugshots-page-title,.stories-title,.submit-title,.links-title { color: var(--gold-light); }
 .song-detail-page,.karaoke-page,.mugshot-detail-page,.artist-detail-page { background: var(--navy-dark); min-height: 75dvh; }
 .music-search,.mugshots-search { font-family: 'Inter',sans-serif; background: #fff8e70d; color: var(--cream); border: 1px solid #D4AF3755; border-radius: 30px; padding: 15px 22px; box-shadow: none; }
 .music-search::placeholder,.mugshots-search::placeholder { color: #c1cbbb; }
