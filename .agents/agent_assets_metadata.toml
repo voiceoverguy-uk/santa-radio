@@ -322,3 +322,31 @@ mtime_ms = 1792526884296
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/8a55e762-cd86-4196-8fb6-605c381f8eb2/5a141459-6663-4a78-b828-29feed3caee0"
 storage_version_token = "1792527478640701"
 content_type = "audio/mpeg"
+
+[[outputs]]
+id = "dSfd_Zd2UgevvRdxsBmBN"
+uri = "file://generated-artifacts/partnership-mockups/desktop.png"
+type = "image"
+title = "Desktop proposal — gold Christmas wrapping paper"
+description = "Updated desktop PNG with muted gold presents, bows, stars and fir sprigs on deep green, framed by matching thin gold top and bottom lines. Shown in the existing homepage context; proposed design only."
+logical_id = "273f8a50-43d6-4053-9b92-442d4c6e80c7"
+content_hash = "sha256:5cf14d1d2049c40b2cfc3917d4f278a39f9931a6e5c1def9e542de7a19bfef40"
+size = 2161598
+mtime_ms = 1792541397620
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/273f8a50-43d6-4053-9b92-442d4c6e80c7/d59a8592-9451-4789-a7e8-17b143b91337"
+storage_version_token = "1792541414506298"
+content_type = "image/png"
+
+[[outputs]]
+id = "IQDnfNPusvvZZztJjBmMu"
+uri = "file://generated-artifacts/partnership-mockups/mobile.png"
+type = "image"
+title = "Mobile proposal — gold Christmas wrapping paper"
+description = "Updated mobile PNG with the same gold wrapping-paper pattern and matching top and bottom lines. Exact copy and stacked button retained; website unchanged."
+logical_id = "9b4f1cb1-a869-4c7c-b1c0-3bbecca089f0"
+content_hash = "sha256:382f8e17bcb80604c0c5048793840c919cab23527cafd8692920bba3fd53a812"
+size = 671584
+mtime_ms = 1792541400072
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/9b4f1cb1-a869-4c7c-b1c0-3bbecca089f0/9daf19bd-b75f-4ed7-98a7-ff5e709e6578"
+storage_version_token = "1792541415494837"
+content_type = "image/png"
