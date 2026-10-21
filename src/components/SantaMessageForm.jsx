@@ -208,8 +208,8 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
     <div className="container message-layout">
       <div className="message-intro">
         <p className="eyebrow">A little North Pole experiment</p>
-        <h2 className="santa-message-heading">Their name.<br />Santa’s voice.<br />A little Christmas magic.</h2>
-        <p>A real recorded greeting from Santa, with your child’s name in it. Open the message desk with your adult contact details, then choose a recorded name, listen together and download your free MP3.</p>
+        <h2 className="santa-message-heading">Their name.<br />Santa’s voice.</h2>
+        <p>A real recorded greeting from Santa, not an AI voice, with your child’s name in it. Open the message desk with your adult contact details, then choose a recorded name, listen together and download your free MP3.</p>
         <SantaMessageExample />
         <svg className="north-pole-letter" viewBox="0 0 360 240" fill="none" aria-hidden="true">
           <ellipse cx="180" cy="218" rx="114" ry="10" fill="#09291e" />
