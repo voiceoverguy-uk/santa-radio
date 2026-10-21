@@ -55,6 +55,8 @@ for (const width of [1280, 390, 320]) {
 
 test('other page branding, breadcrumbs and song submission stay available', async ({ page }) => {
   await page.goto('/mugshots/all', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('navigation', { name: 'Breadcrumb', exact: true })).toHaveCount(0);
+  await page.goto('/mugshots/jeremy-kyle-tv-personality', { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('navigation', { name: 'Breadcrumb', exact: true })).toBeVisible();
   await page.goto('/free-santa-message', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('.brand-logo-hero')).toBeVisible();

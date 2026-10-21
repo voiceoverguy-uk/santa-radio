@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
 import { parseRows, reconcile, repair, plainText, socialUrl } from '../scripts/import-mugshots.js';
 import { buildCatalogue, normalizeName } from '../src/data/mugshot-catalogue.js';
+import { collectionMetadata } from '../src/seo/catalogue.js';
 
 const catalogue = JSON.parse(fs.readFileSync('src/data/mugshots.json', 'utf8'));
 const report = JSON.parse(fs.readFileSync('reports/mugshot-import.json', 'utf8'));
@@ -141,6 +142,49 @@ test('gallery pagination, search, hover, focus and motion preferences', async ({
   await expect(card).toHaveCSS('outline-style', 'solid');
   await card.click();
   await expect(page).toHaveURL(/mugshots\/jeremy-kyle-tv-personality$/);
+});
+
+test('gallery header hides its visible breadcrumb, preserves SEO metadata, and adapts its controls', async ({ page }) => {
+  for (const width of [1280, 768, 601, 390, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/mugshots/all', { waitUntil: 'domcontentloaded' });
+
+    const main = page.locator('main');
+    const hero = page.locator('.mugshots-page-hero');
+    const controls = page.locator('.mugshots-controls');
+    const search = page.getByRole('textbox', { name: 'Search celebrity names or roles' });
+    const order = page.getByRole('group', { name: 'Mugshot order' });
+    await expect(page.getByRole('navigation', { name: 'Breadcrumb', exact: true })).toHaveCount(0);
+    expect(await main.evaluate(el => el.firstElementChild.classList.contains('mugshots-page-hero'))).toBe(true);
+
+    const graph = await page.locator('script[type="application/ld+json"]').evaluateAll(scripts =>
+      scripts.flatMap(script => JSON.parse(script.textContent)['@graph'] || []));
+    expect(graph.find(node => node['@type'] === 'BreadcrumbList')).toEqual(
+      collectionMetadata('mugs').graph.find(node => node['@type'] === 'BreadcrumbList'));
+
+    const searchBox = await search.boundingBox();
+    const orderBox = await order.boundingBox();
+    expect(searchBox).toBeTruthy();
+    expect(orderBox).toBeTruthy();
+    expect(orderBox.x + orderBox.width).toBeLessThanOrEqual(width);
+    if (width > 600) {
+      expect(orderBox.x).toBeGreaterThan(searchBox.x + searchBox.width);
+      expect(Math.abs(orderBox.y + orderBox.height / 2 - searchBox.y - searchBox.height / 2)).toBeLessThan(1);
+    } else {
+      expect(orderBox.y).toBeGreaterThan(searchBox.y + searchBox.height);
+      for (const button of await order.locator('button').all()) {
+        expect((await button.boundingBox()).height).toBeGreaterThanOrEqual(44);
+      }
+    }
+
+    await search.fill('Jeremy Kyle');
+    await expect(page.locator('.mugshot-card')).toHaveCount(1);
+    await page.getByRole('button', { name: 'Alphabetical order', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'Alphabetical order', exact: true })).toHaveAttribute('aria-pressed', 'true');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await expect(hero).toBeVisible();
+    await expect(controls).toBeVisible();
+  }
 });
 
 test('missing photos keep a usable fallback', async ({ page }) => {

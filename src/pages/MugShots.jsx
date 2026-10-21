@@ -4,7 +4,6 @@ import './MugShots.css';
 import './MugshotPhoto.css';
 import mugshotsData from '../data/mugshots.ts';
 import PageSeo from '../seo/PageSeo.jsx';
-import Breadcrumbs from '../seo/Breadcrumbs.jsx';
 import { collectionMetadata } from '../seo/catalogue.js';
 import { mugSrcSet } from '../seo/mugImages.js';
 
@@ -56,7 +55,6 @@ export default function MugShots() {
   return (
     <main>
       <PageSeo metadata={collectionMetadata('mugs')} />
-      <Breadcrumbs items={[['Home', '/'], ['Mug Shots', '/mugshots/all']]} />
       <div className="mugshots-page-hero starry-bg">
         <div className="mugshots-hero-content">
           <div className="mugshots-page-logo-wrap">
@@ -78,21 +76,23 @@ export default function MugShots() {
           <p className="mugshots-count">
             <span className="count-num">{mugshotsData.length}</span> Celebrity Mugshots and Counting...
           </p>
-          <input
-            type="text"
-            aria-label="Search celebrity names or roles"
-            className="mugshots-search"
-            placeholder="Search for a Celebrity or Talent"
-            value={search}
-            onChange={handleSearch}
-          />
-          <div className="mugshots-sort" role="group" aria-label="Mugshot order">
-            <button type="button" aria-label="Random order" title="Random order" aria-pressed={order === 'random'} onClick={() => { setOrder('random'); setPage(1); }}>
-              <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h3c5 0 7 12 12 12h3m-4-4 4 4-4 4M3 18h3c2 0 3.5-2 5-5m2-3c1.5-2.5 3-4 5-4h3m-4-4 4 4-4 4" /></svg>
-            </button>
-            <button type="button" aria-label="Alphabetical order" title="Alphabetical (A–Z)" aria-pressed={order === 'alphabetical'} onClick={() => { setOrder('alphabetical'); setPage(1); }}>
-              <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m3 10 3-7 3 7M4 8h4m-5 6h6l-6 7h6M17 3v18m-4-4 4 4 4-4" /></svg>
-            </button>
+          <div className="mugshots-controls">
+            <input
+              type="text"
+              aria-label="Search celebrity names or roles"
+              className="mugshots-search"
+              placeholder="Search for a Celebrity or Talent"
+              value={search}
+              onChange={handleSearch}
+            />
+            <div className="mugshots-sort" role="group" aria-label="Mugshot order">
+              <button type="button" aria-label="Random order" title="Random order" aria-pressed={order === 'random'} onClick={() => { setOrder('random'); setPage(1); }}>
+                <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h3c5 0 7 12 12 12h3m-4-4 4 4-4 4M3 18h3c2 0 3.5-2 5-5m2-3c1.5-2.5 3-4 5-4h3m-4-4 4 4-4 4" /></svg>
+              </button>
+              <button type="button" aria-label="Alphabetical order" title="Alphabetical (A–Z)" aria-pressed={order === 'alphabetical'} onClick={() => { setOrder('alphabetical'); setPage(1); }}>
+                <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m3 10 3-7 3 7M4 8h4m-5 6h6l-6 7h6M17 3v18m-4-4 4 4 4-4" /></svg>
+              </button>
+            </div>
           </div>
           {search && (
             <p className="mugshots-results-count">
