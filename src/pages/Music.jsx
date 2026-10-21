@@ -5,7 +5,6 @@ import './Music.css';
 import { songs as songsData, songsByArtistAZ, collectionMetadata } from '../seo/catalogue.js';
 import PageSeo from '../seo/PageSeo.jsx';
 import { randomSongOrder } from '../data/randomSongOrder.js';
-import { useRadioTopTen } from '../components/RadioTopTen.jsx';
 
 const shuffleSongs = () => randomSongOrder(songsData);
 
@@ -19,7 +18,6 @@ export default function Music() {
   const [search, setSearch] = useState('');
   const [order, setOrder] = useState('random');
   const [randomSongs, setRandomSongs] = useState(shuffleSongs);
-  const { open: openTopTen, isOpen: topTenOpen, panelId } = useRadioTopTen();
 
   const filtered = (order === 'random' ? randomSongs : songsByArtistAZ).filter(s =>
     s.artist.toLowerCase().includes(search.toLowerCase()) ||
@@ -31,12 +29,6 @@ export default function Music() {
       <PageSeo metadata={collectionMetadata('music')} />
       <div className="music-hero starry-bg">
         <div className="music-hero-content">
-          <button type="button" className="music-top-ten-callout" aria-expanded={topTenOpen} aria-controls={panelId}
-            onClick={event => openTopTen(event.currentTarget, { expandDock: true })}>
-            <span className="music-top-ten-mark" aria-hidden="true">10</span>
-            <span><strong>Yesterday’s Top Xmas Songs</strong><small>Hear what played on Santa Radio</small></span>
-            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h13m-5-5 5 5-5 5" /></svg>
-          </button>
           <h1 className="music-sub-title">Christmas Song Lyrics &amp; Artists</h1>
           <p className="music-sub-desc">Browse Hundreds of Christmas Songs</p>
           <p className="music-description">

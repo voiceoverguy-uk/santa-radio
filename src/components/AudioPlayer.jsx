@@ -3,6 +3,7 @@ import { useRadio } from './RadioProvider.jsx';
 import RadioTracks from './RadioTracks.jsx';
 import LiveLyrics from './LiveLyrics.jsx';
 import { RadioTopTenPanel, useRadioTopTen } from './RadioTopTen.jsx';
+import topTenIndicator from '../assets/radio-top-ten-indicator.png';
 import './AudioPlayer.css';
 
 export function RadioButton({ className = 'btn-gold', onStart }) {
@@ -116,7 +117,9 @@ export default function AudioPlayer() {
         {!minimized && <button id={`${upcomingId}-top-ten-trigger`} type="button" className="radio-top-ten-trigger"
           aria-expanded={topTenOpen} aria-controls={panelId}
           onClick={event => topTenOpen ? closeTopTen() : openTopTen(event.currentTarget)}>
-          Yesterday’s Top 10 <span aria-hidden="true">{topTenOpen ? '−' : '↗'}</span>
+          Yesterday’s Top 10 <span className="radio-top-ten-indicator" aria-hidden="true">
+            {topTenOpen ? '−' : <img src={topTenIndicator} alt="" />}
+          </span>
         </button>}
       </div>
       {!minimized && <RadioTopTenPanel />}

@@ -8,6 +8,21 @@ const chart = (state = 'partial', songs = [
   nextRefreshAt: '2026-10-21T23:00:00Z', state, songs, coverage: {},
 });
 const title = 'Yesterday’s Top Ten Songs';
+const triggerName = 'Yesterday’s Top 10';
+
+async function openPlayer(page) {
+  const dock = page.getByRole('complementary', { name: 'Santa Radio player' });
+  const expandButton = dock.getByRole('button', { name: 'Expand radio player' });
+  if (await expandButton.isVisible()) await expandButton.click();
+  return dock;
+}
+
+async function expectMusicCalloutRemoved(page) {
+  await expect(page.locator('.music-top-ten-callout')).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'Christmas Song Lyrics & Artists' })).toBeVisible();
+  await expect(page.getByRole('textbox', { name: 'Search for a song or artist' })).toBeVisible();
+}
+
 test.beforeEach(async ({ page }) => {
   await page.route('**/api/radio-metadata*', route => route.fulfill({ json: {
     current: { artist: 'Leona Lewis', title: 'One More Sleep' }, currentStatus: 'ready',
@@ -23,20 +38,25 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test('both triggers share a compact in-player panel; playback, focus and idle work', async ({ page }) => {
+test('the player trigger opens the compact panel; playback, keyboard focus and idle work', async ({ page }) => {
   await page.clock.install({ time: new Date('2026-10-21T11:59Z') });
   await page.clock.pauseAt(new Date('2026-10-21T12:00Z'));
   await page.route('**/api/radio-top-ten', route => route.fulfill({ json: chart() }));
   await page.goto('/christmas-music');
   await page.getByRole('button', { name: 'Decline optional cookies' }).click();
   await expect(page.getByRole('dialog')).not.toBeVisible();
-  const dock = page.getByRole('complementary', { name: 'Santa Radio player' });
-  if (await dock.getByRole('button', { name: 'Expand radio player' }).isVisible()) await dock.getByRole('button', { name: 'Expand radio player' }).click();
+  await expectMusicCalloutRemoved(page);
+  const dock = await openPlayer(page);
   await dock.getByRole('button', { name: 'Listen Live', exact: true }).click();
   await expect(dock.getByRole('button', { name: 'Pause Radio', exact: true })).toBeVisible();
   const before = await page.evaluate(() => { window.originalRadio=document.querySelector('audio'); return window.audioCalls; });
-  const playerTrigger = dock.getByRole('button', { name: 'Yesterday’s Top 10' });
-  await playerTrigger.click();
+  const playerTrigger = dock.getByRole('button', { name: triggerName });
+  await expect(playerTrigger).toHaveAttribute('aria-expanded', 'false');
+  await expect(playerTrigger.locator('img')).toBeVisible();
+  await playerTrigger.focus();
+  await page.keyboard.press('Enter');
+  await expect(playerTrigger).toHaveAttribute('aria-expanded', 'true');
+  await expect(playerTrigger.locator('img')).toHaveCount(0);
   const dialog = dock.getByRole('region', { name: title });
   await expect(dialog).toBeVisible();
   await expect(dialog).toContainText('Most played on Santa Radio yesterday');
@@ -56,12 +76,11 @@ test('both triggers share a compact in-player panel; playback, focus and idle wo
   await page.keyboard.press('Escape');
   await page.clock.runFor(30);
   await expect(playerTrigger).toBeFocused();
-  const musicTrigger = page.getByRole('button', { name: 'Yesterday’s Top Xmas Songs' });
-  await musicTrigger.click();
+  await playerTrigger.click();
   await expect(dialog).toBeVisible();
   await dialog.getByRole('button', { name: 'Close yesterday’s top ten' }).click();
   await page.clock.runFor(30);
-  await expect(musicTrigger).toBeFocused();
+  await expect(playerTrigger).toBeFocused();
   expect(await page.evaluate(() => window.audioCalls)).toEqual(before);
   expect(await page.evaluate(() => window.originalRadio===document.querySelector('audio'))).toBe(true);
   await playerTrigger.click();
@@ -86,7 +105,10 @@ test('mobile starts minimised, full ten rows scroll and broken portraits fall ba
   await page.goto('/christmas-music');
   await page.getByRole('button', { name: 'Decline optional cookies' }).click();
   await expect(page.locator('.radio-dock')).toHaveClass(/is-minimized/);
-  await page.getByRole('button', { name: 'Yesterday’s Top Xmas Songs' }).click();
+  await expectMusicCalloutRemoved(page);
+  const dock = await openPlayer(page);
+  await expect(dock.getByRole('button', { name: triggerName })).toBeVisible();
+  await dock.getByRole('button', { name: triggerName }).click();
   const dialog = page.getByRole('region', { name: title });
   await expect(page.locator('.radio-dock')).not.toHaveClass(/is-minimized/);
   await expect(dialog.getByRole('button', { name: 'Close yesterday’s top ten' })).toBeFocused();
@@ -102,7 +124,7 @@ test('mobile starts minimised, full ten rows scroll and broken portraits fall ba
   await expect(dialog.locator('li').last()).toBeInViewport();
   await page.screenshot({ path: 'generated-artifacts/compact-top-ten-mobile.png' });
   await page.keyboard.press('Escape');
-  await expect(page.getByRole('button', { name: 'Yesterday’s Top Xmas Songs' })).toBeFocused();
+  await expect(dock.getByRole('button', { name: triggerName })).toBeFocused();
 });
 
 test('loading, inactive, initial, partial empty, empty, errors and retry are honest', async ({ page }) => {
@@ -114,7 +136,9 @@ test('loading, inactive, initial, partial empty, empty, errors and retry are hon
   });
   await page.goto('/christmas-music');
   await page.getByRole('button', { name: 'Decline optional cookies' }).click();
-  const trigger=page.getByRole('button',{name:'Yesterday’s Top Xmas Songs'});
+  const dock = await openPlayer(page);
+  await expectMusicCalloutRemoved(page);
+  const trigger=dock.getByRole('button',{name:triggerName});
   await trigger.click();
   const dialog=page.getByRole('region',{name:title});
   await expect(dialog.getByRole('status')).toBeVisible();
@@ -145,7 +169,9 @@ test('an open player panel refreshes at UK midnight and never keeps the previous
   });
   await page.goto('/christmas-music');
   await page.getByRole('button', { name: 'Decline optional cookies' }).click();
-  await page.getByRole('button',{name:'Yesterday’s Top Xmas Songs'}).click();
+  const dock=await openPlayer(page);
+  await expectMusicCalloutRemoved(page);
+  await dock.getByRole('button',{name:triggerName}).click();
   const dialog=page.getByRole('region',{name:title});
   await expect(dialog).toContainText('Wednesday, 1 July 2026');
   await page.clock.runFor(2100);
