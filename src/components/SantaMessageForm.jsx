@@ -231,7 +231,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         <div className="message-card-top"><span className="message-seal" aria-hidden="true">S</span><div><p className="message-postmark">The North Pole message desk</p><small>A recorded hello, ready to keep</small></div></div>
         {!hasAccess ? <SantaMessageAccessForm /> : <>
         <h3 ref={makerHeadingRef} tabIndex={-1}>Download your free Santa greeting</h3>
-        <p className="form-desc">Hey {greetingName || 'there'}, search for the name and press Create message.</p>
+        <p className="form-desc">Hey {greetingName || 'there'}, Search for the name and press Create message.</p>
         <p className="message-name-hint message-name-count" role="status">
           {nameSearch.hostedCount !== null
             ? `${nameSearch.hostedCount.toLocaleString('en-GB')} ${nameSearch.hostedCount === 1 ? 'name' : 'names'} available`

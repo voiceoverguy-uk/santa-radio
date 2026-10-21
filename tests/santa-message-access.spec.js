@@ -86,7 +86,7 @@ test('confirmed acceptance sends exact fields, ignores external redirect and onl
   await page.getByRole('button', { name: 'Get my free Santa message' }).click();
   await expect(page).toHaveURL(/\/free-santa-message$/);
   await expect(page.getByRole('heading', { name: 'Download your free Santa greeting' })).toBeFocused();
-  await expect(page.locator('.form-desc')).toHaveText(`Hey ${adult.FIRSTNAME}, search for the name and press Create message.`);
+  await expect(page.locator('.form-desc')).toHaveText(`Hey ${adult.FIRSTNAME}, Search for the name and press Create message.`);
   await expect(page.getByLabel('First Name')).toBeVisible();
   await expect(page.getByText('Start typing to find a recorded name.', { exact: true })).toHaveCount(0);
   expect(submitted.method()).toBe('POST');
@@ -125,7 +125,7 @@ for (const [name, response] of [
     await fillAccessForm(page);
     await page.getByRole('button', { name: 'Get my free Santa message' }).click();
     await expect(page.locator('.santa-message-access').getByRole('alert')).toBeVisible();
-    await expect(page.getByLabel('Child’s first name')).toHaveCount(0);
+    await expect(page.getByLabel('First Name')).toHaveCount(0);
     await expect(page.locator('input[name="EMAIL"]')).toHaveValue(adult.EMAIL);
     await expect(page.getByRole('button', { name: 'Get my free Santa message' })).toBeEnabled();
     expect(await page.evaluate(key => sessionStorage.getItem(key), MESSAGE_ACCESS_KEY)).toBeNull();
@@ -146,7 +146,7 @@ test('provider field errors are safe text and a successful retry opens access', 
   await expect(page.locator('input[name="FIRSTNAME"]')).toHaveValue(adult.FIRSTNAME);
   await mockBrevo(page);
   await page.getByRole('button', { name: 'Get my free Santa message' }).click();
-  await expect(page.getByLabel('Child’s first name')).toBeVisible();
+  await expect(page.getByLabel('First Name')).toBeVisible();
 });
 
 for (const [field, explanation] of [
@@ -160,7 +160,7 @@ for (const [field, explanation] of [
     await page.getByRole('button', { name: 'Get my free Santa message' }).click();
     await expect(page.getByRole('alert')).toContainText(explanation);
     await expect(page.getByRole('alert')).toContainText('contact Santa Radio');
-    await expect(page.getByLabel('Child’s first name')).toHaveCount(0);
+    await expect(page.getByLabel('First Name')).toHaveCount(0);
     await expect(page.locator(`input[name="${field}"]`)).toHaveCount(0);
     await expect(page.locator('.santa-message-access img')).toHaveCount(0);
     expect(await page.evaluate(() => window.unsafeBrevo)).toBeUndefined();
@@ -193,12 +193,12 @@ test('pending form prevents duplicate submissions and adult details never reach 
   await expect(page.getByRole('button', { name: 'Opening the message desk…' })).toBeDisabled();
   await expect(page.locator('input[name="FIRSTNAME"]')).toHaveAttribute('readonly', '');
   await expect.poll(() => calls).toBe(1);
-  await expect(page.getByLabel('Child’s first name')).toHaveCount(0);
+  await expect(page.getByLabel('First Name')).toHaveCount(0);
   release();
-  await expect(page.getByLabel('Child’s first name')).toBeVisible();
-  await page.getByLabel('Child’s first name').fill('Olivia');
+  await expect(page.getByLabel('First Name')).toBeVisible();
+  await page.getByLabel('First Name').fill('Olivia');
   await expect(page.getByRole('option', { name: 'Olivia', exact: true })).toBeVisible();
-  await page.getByLabel('Child’s first name').press('Escape');
+  await page.getByLabel('First Name').press('Escape');
   await page.getByRole('button', { name: 'Create message' }).evaluate(element => element.scrollIntoView({ block: 'center', behavior: 'instant' }));
   await page.getByRole('button', { name: 'Create message' }).click();
   await expect(page.locator('.message-result')).toBeVisible();
@@ -216,10 +216,10 @@ test('timeout remains locked, retains details and allows retry without waiting f
   await page.clock.runFor(ACCESS_REQUEST_TIMEOUT_MS + 100);
   await expect(page.getByRole('alert')).toContainText('took too long');
   await expect(page.locator('input[name="EMAIL"]')).toHaveValue(adult.EMAIL);
-  await expect(page.getByLabel('Child’s first name')).toHaveCount(0);
+  await expect(page.getByLabel('First Name')).toHaveCount(0);
   await mockBrevo(page);
   await page.getByRole('button', { name: 'Get my free Santa message' }).click();
-  await expect(page.getByLabel('Child’s first name')).toBeVisible();
+  await expect(page.getByLabel('First Name')).toBeVisible();
 });
 
 test('network failure is an explicit locked retry state', async ({ page }) => {
@@ -228,7 +228,7 @@ test('network failure is an explicit locked retry state', async ({ page }) => {
   await fillAccessForm(page);
   await page.getByRole('button', { name: 'Get my free Santa message' }).click();
   await expect(page.getByRole('alert')).toContainText('Check your connection');
-  await expect(page.getByLabel('Child’s first name')).toHaveCount(0);
+  await expect(page.getByLabel('First Name')).toHaveCount(0);
   await expect(page.locator('input[name="EMAIL"]')).toHaveValue(adult.EMAIL);
 });
 
@@ -248,7 +248,7 @@ test('opaque responses cannot unlock access', async ({ page }) => {
   await fillAccessForm(page);
   await page.getByRole('button', { name: 'Get my free Santa message' }).click();
   await expect(page.getByRole('alert')).toContainText('couldn’t confirm');
-  await expect(page.getByLabel('Child’s first name')).toHaveCount(0);
+  await expect(page.getByLabel('First Name')).toHaveCount(0);
 });
 
 test('blocked session storage uses in-memory accepted access without storing adult details', async ({ page }) => {
@@ -259,10 +259,10 @@ test('blocked session storage uses in-memory accepted access without storing adu
   await page.goto('/free-santa-message');
   await fillAccessForm(page);
   await page.getByRole('button', { name: 'Get my free Santa message' }).click();
-  await expect(page.getByLabel('Child’s first name')).toBeVisible();
+  await expect(page.getByLabel('First Name')).toBeVisible();
   await expect(page.getByText(/Your browser can’t remember access/)).toBeVisible();
   await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Home', exact: true }).click();
-  await expect(page.getByLabel('Child’s first name')).toBeVisible();
+  await expect(page.getByLabel('First Name')).toBeVisible();
   await page.reload();
   await expect(page.getByRole('button', { name: 'Get my free Santa message' })).toBeVisible();
 });
