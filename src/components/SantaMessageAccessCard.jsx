@@ -81,7 +81,7 @@ export default function SantaMessageAccessCard({
       </form>
 
       <p className="santa-message-access__privacy">
-        Your details are stored for Santa Radio news or updates. Read our <Link to="/privacy-policy">privacy policy</Link>.
+        Your details are stored for news or updates. Read our <Link to="/privacy-policy">privacy policy</Link>.
       </p>
       <p className="santa-message-access__delivery">
         Create your greeting, download and share - it won’t be sent by email.

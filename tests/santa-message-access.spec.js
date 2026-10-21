@@ -15,7 +15,7 @@ test('adult access shows the requested news disclosure with an internal privacy 
   for (const path of ['/', '/free-santa-message']) {
     await page.goto(path);
     const disclosure = page.locator('.santa-message-access__privacy');
-    await expect(disclosure).toHaveText('Your details are stored for Santa Radio news or updates. Read our privacy policy.');
+    await expect(disclosure).toHaveText('Your details are stored for news or updates. Read our privacy policy.');
     await expect(disclosure.getByRole('link', { name: 'privacy policy', exact: true })).toHaveAttribute('href', '/privacy-policy');
     await expect(page.locator('.santa-message-access__delivery')).toHaveText('Create your greeting, download and share - it won’t be sent by email.');
   }
