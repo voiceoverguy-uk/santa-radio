@@ -148,13 +148,6 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
       )}
 
       <TrackerHero>
-          <div className="tracker-status inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-6">
-            <span className={`w-2 h-2 rounded-full ${statusColor} animate-pulse`} />
-            <span className="text-xs font-medium uppercase tracking-wider">
-              {statusLabel}
-            </span>
-          </div>
-
           {heading ?? <h1 className="tracker-heading text-3xl sm:text-4xl lg:text-5xl tracking-tight">
             Track Santa&apos;s Journey
             <br />
@@ -163,6 +156,13 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
 
           <div className="mt-8 w-full">
             <SantaMap effectiveTime={effectiveTime} mapPosition={data.mapPosition} onHoliday={onHoliday} />
+          </div>
+
+          <div className="tracker-status inline-flex items-center gap-2 rounded-full px-4 py-1.5 mt-3 mb-6">
+            <span className={`w-2 h-2 rounded-full ${statusColor} animate-pulse`} />
+            <span className="text-xs font-medium uppercase tracking-wider">
+              {statusLabel}
+            </span>
           </div>
 
           {introCopy}
@@ -288,9 +288,6 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
             >
               Check Availability
             </a>
-            <p className="tracker-copy mt-4 text-xs">
-              Santa’s voice by <a href="https://www.voiceoverguy.co.uk" className="tracker-link" target="_blank" rel="noopener noreferrer">Guy Harris</a>
-            </p>
           </div>
         </div>
       </section>

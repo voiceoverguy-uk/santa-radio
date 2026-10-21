@@ -14,7 +14,7 @@ test.beforeAll(async () => {
 
 async function createArabella(page) {
   await openMessageDesk(page);
-  await page.getByLabel('Child’s first name').fill('Arabella');
+  await page.getByLabel('First Name').fill('Arabella');
   await page.getByRole('option', { name: 'Arabella', exact: true }).click();
   await page.getByRole('button', { name: 'Create message', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'For Arabella, from Santa' })).toBeVisible({ timeout: 90000 });

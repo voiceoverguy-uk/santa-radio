@@ -39,5 +39,5 @@ export async function openMessageDesk(page, { mockNames = true, path = '/free-sa
     element => element.scrollIntoView({ block: 'center', behavior: 'instant' }),
   );
   await page.getByRole('button', { name: 'Get my free Santa message' }).click();
-  await expect(page.getByLabel('Child’s first name')).toBeVisible();
+  await expect(page.getByLabel('First Name')).toBeVisible();
 }

@@ -14,7 +14,7 @@ test('message completion resumes only previously active radio and respects manua
     radio.load = () => {};
     radio.pause = () => {};
   });
-  await page.getByLabel('Child’s first name').fill('Olivia');
+  await page.getByLabel('First Name').fill('Olivia');
   await page.getByRole('button', { name: 'Create message' }).click();
   const message = page.locator('.message-result audio');
   await expect(message).toBeVisible();
@@ -42,7 +42,7 @@ test('message completion resumes only previously active radio and respects manua
 test('recorded Santa greeting validates names, decodes and downloads the real MP3', async ({ page }) => {
   test.setTimeout(120000);
   await openMessageDesk(page);
-  const input = page.getByLabel('Child’s first name');
+  const input = page.getByLabel('First Name');
   const submit = page.getByRole('button', { name: 'Create message' });
   await submit.click();
   await expect(page.getByRole('alert')).toContainText('Please enter');
@@ -87,7 +87,7 @@ test('suggestions cover all names without rendering until requested', async ({ p
   let renders = 0;
   page.on('request', req => { if (req.url().includes('/api/santa-message')) renders++; });
   await openMessageDesk(page);
-  const input = page.getByLabel('Child’s first name');
+  const input = page.getByLabel('First Name');
   for (const name of ['Arabella', 'Callie', 'Charlotte', 'Darren', 'Ed', 'Erin', 'Freya', 'Harry', 'Jack', 'Jess', 'Jessica', 'Layla', 'Olivia']) {
     await input.fill(name.slice(0, 2));
     await page.getByRole('option', { name, exact: true }).click();
@@ -106,6 +106,6 @@ test('suggestions cover all names without rendering until requested', async ({ p
 test('message desk fits a phone screen', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openMessageDesk(page);
-  await expect(page.getByLabel('Child’s first name')).toBeVisible();
+  await expect(page.getByLabel('First Name')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });

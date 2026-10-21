@@ -17,7 +17,7 @@ import './SantaNameRequest.css';
 import './SantaMessageForm.css';
 
 export default function SantaMessageForm({ showDetailLink = true, initialName = '' }) {
-  const { hasAccess, sessionRemembered } = useSantaMessageAccess();
+  const { hasAccess, greetingName, sessionRemembered } = useSantaMessageAccess();
   const makerHeadingRef = useRef(null);
   const previousAccess = useRef(hasAccess);
   const [name, setName] = useState(initialName);
@@ -209,7 +209,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
       <div className="message-intro">
         <p className="eyebrow">A little North Pole experiment</p>
         <h2 className="santa-message-heading">FREE Personalised message from Santa</h2>
-        <h3 className="santa-message-subheading">Their name.<br />Santa’s voice.</h3>
+        <h3 className="santa-message-subheading">Their name. Santa’s voice.</h3>
         <p>A real recorded greeting from Santa, not an AI voice, with your child’s name in it. Open the message desk with your adult contact details, then choose a recorded name, listen together and download your free MP3.</p>
         <SantaMessageExample />
         <svg className="north-pole-letter" viewBox="0 0 360 240" fill="none" aria-hidden="true">
@@ -231,10 +231,10 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         <div className="message-card-top"><span className="message-seal" aria-hidden="true">S</span><div><p className="message-postmark">The North Pole message desk</p><small>A recorded hello, ready to keep</small></div></div>
         {!hasAccess ? <SantaMessageAccessForm /> : <>
         <h3 ref={makerHeadingRef} tabIndex={-1}>Download your free Santa greeting</h3>
-        <p className="form-desc">New names are being made available all the time to Santa's list, so make your selection and press Create message.</p>
+        <p className="form-desc">Hey {greetingName || 'there'}, search for the name and press Create message.</p>
         <p className="message-name-hint message-name-count" role="status">
           {nameSearch.hostedCount !== null
-            ? `${nameSearch.hostedCount.toLocaleString('en-GB')} ${nameSearch.hostedCount === 1 ? 'name' : 'names'} available to download`
+            ? `${nameSearch.hostedCount.toLocaleString('en-GB')} ${nameSearch.hostedCount === 1 ? 'name' : 'names'} available`
             : nameSearch.loading ? 'Checking how many names are available…' : 'Name total temporarily unavailable.'}
         </p>
         {coolingDown ? <div className="message-wait">
@@ -248,7 +248,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         </div> : null}
         {coolingDown && !allowance.remembered && <p className="message-name-hint" role="status">Your browser can’t remember the message allowance. The limit works while this page is open, but leaving or refreshing may reset it.</p>}
         <form onSubmit={submit} noValidate>
-          <label className="message-name-label" htmlFor={inputId}>Child’s first name</label>
+          <label className="message-name-label" htmlFor={inputId}>First Name</label>
           <div className="message-name-picker">
           <input className="message-name-input" id={inputId} type="text" role="combobox" disabled={coolingDown} aria-autocomplete="list" aria-expanded={suggesting && suggestions.length > 0} aria-controls={`${inputId}-options`} aria-activedescendant={suggesting && activeOption >= 0 ? `${inputId}-option-${activeOption}` : undefined} value={name}
             onChange={event => { updateName(event.target.value); setSuggesting(true); }}
@@ -270,7 +270,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
           <span className="message-name-hint" id={`${inputId}-hint`} aria-live="polite">
             {verifiedSelectedRecord ? `${verifiedSelectedRecord.name} is selected.`
               : exactMatch ? `A recording for ${exactMatch.name} is available.`
-              : 'Start typing to find a recorded name.'}
+              : ''}
           </span>
           {nameSearch.loading && name.trim() && <p className="message-search-status" role="status">Checking Santa’s hosted name list…</p>}
           {nameSearch.warning && <div className="message-search-notice" role="status">

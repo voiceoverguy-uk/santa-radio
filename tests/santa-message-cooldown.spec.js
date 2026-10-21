@@ -6,9 +6,9 @@ import { MESSAGE_ALLOWANCE_KEY } from '../src/lib/santaMessageAllowance.js';
 const audio = readFileSync('server/santa-audio/sleighbells.mp3');
 const mp3 = { contentType: 'audio/mpeg', body: audio };
 async function create(page, name = 'Olivia') {
-  await page.getByLabel('Child’s first name').fill(name);
+  await page.getByLabel('First Name').fill(name);
   await expect(page.getByRole('option', { name, exact: true })).toBeVisible();
-  await page.getByLabel('Child’s first name').press('Escape');
+  await page.getByLabel('First Name').press('Escape');
   await page.getByRole('button', { name: 'Create message', exact: true }).evaluate(element => element.scrollIntoView({ block: 'center', behavior: 'instant' }));
   await page.getByRole('button', { name: 'Create message', exact: true }).click();
   await expect(page.getByRole('heading', { name: `For ${name}, from Santa` })).toBeVisible();
@@ -42,7 +42,7 @@ test('two successes block the third, preserve downloads and offer radio without 
   await expect(page.locator('.santa-message-box')).not.toContainText(/30.minute|messages remaining|message allowance/);
   await create(page);
   await expect(page.locator('.santa-message-box')).not.toContainText(/30.minute|messages remaining|message allowance/);
-  await page.getByLabel('Child’s first name').fill('Erin');
+  await page.getByLabel('First Name').fill('Erin');
   await expect(page.getByRole('link', { name: 'Download Olivia’s greeting' })).toBeVisible();
   await create(page, 'Erin');
   await expect(page.locator('.message-result')).toHaveCount(2);
@@ -60,7 +60,7 @@ test('two successes block the third, preserve downloads and offer radio without 
   await expect(page.getByText('You’ve created 2 Free Santa messages for now. Please allow Santa 10 minutes to recover before he records more. Meanwhile why not enjoy Santa Radio Christmas music while you wait or tell your friends?', { exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Share with friends', exact: true })).toBeEnabled();
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
-  await expect(page.getByLabel('Child’s first name')).toBeDisabled();
+  await expect(page.getByLabel('First Name')).toBeDisabled();
   await page.locator('.santa-message-box form').evaluate(form => form.requestSubmit());
   expect(calls).toBe(2);
   await expect(page.locator('.message-result audio')).toHaveCount(2);
@@ -100,14 +100,14 @@ test('failure, invalid name, non-audio, empty and cancelled requests do not use 
     return route.fulfill(mp3);
   });
   await openMessageDesk(page);
-  await page.getByLabel('Child’s first name').fill('Unknown');
+  await page.getByLabel('First Name').fill('Unknown');
   await page.getByRole('button', { name: 'Create message' }).click();
   expect(calls).toBe(0);
   mode = 'success';
   await create(page);
   for (const current of ['failed', 'html', 'empty']) {
     mode = current;
-    await page.getByLabel('Child’s first name').fill('Olivia');
+    await page.getByLabel('First Name').fill('Olivia');
     await page.getByRole('button', { name: 'Create message' }).click();
     await expect(page.getByRole('alert')).toBeVisible();
     expect((await usage(page)).used).toBe(1);
@@ -116,7 +116,7 @@ test('failure, invalid name, non-audio, empty and cancelled requests do not use 
   mode = 'hold';
   await page.getByRole('button', { name: 'Create message' }).click();
   await expect(page.getByRole('button', { name: 'Santa Recording...' })).toBeDisabled();
-  await page.getByLabel('Child’s first name').fill('Erin');
+  await page.getByLabel('First Name').fill('Erin');
   await expect(page.getByRole('button', { name: 'Create message' })).toBeEnabled();
   expect((await usage(page)).used).toBe(1);
   mode = 'success';
@@ -170,8 +170,8 @@ for (const legacy of [false, true]) {
     await create(page);
     const second = await context.newPage();
     await openMessageDesk(second);
-    await page.getByLabel('Child’s first name').fill('Erin');
-    await second.getByLabel('Child’s first name').fill('Olivia');
+    await page.getByLabel('First Name').fill('Erin');
+    await second.getByLabel('First Name').fill('Olivia');
     await Promise.all([
       page.getByRole('button', { name: 'Create message' }).click(),
       second.getByRole('button', { name: 'Create message' }).click(),

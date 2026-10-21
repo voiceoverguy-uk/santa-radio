@@ -102,6 +102,42 @@
 .santa-tracker .tracker-heading-accent { color: var(--tracker-gold); }
 .santa-tracker .tracker-section-title { color: var(--tracker-gold); font-weight: 400; }
 .santa-tracker .tracker-copy { color: var(--tracker-muted); }
+.santa-tracker .tracker-questions {
+  max-width: 1104px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  color: var(--tracker-cream);
+}
+.santa-tracker .tracker-questions h2 {
+  margin-bottom: 1rem;
+  color: var(--tracker-gold);
+  font-size: clamp(1.25rem, 2vw, 1.7rem);
+}
+.santa-tracker .tracker-questions details {
+  border-top: 1px solid #d4af3740;
+}
+.santa-tracker .tracker-questions details:last-of-type {
+  border-bottom: 1px solid #d4af3740;
+}
+.santa-tracker .tracker-questions summary {
+  padding: .9rem 2rem .9rem 0;
+  color: var(--tracker-cream);
+  cursor: pointer;
+  font-family: 'Cinzel', serif;
+  line-height: 1.45;
+}
+.santa-tracker .tracker-questions summary::marker {
+  color: var(--tracker-gold);
+}
+.santa-tracker .tracker-questions details p {
+  padding: 0 0 1rem;
+  color: var(--tracker-muted);
+  line-height: 1.7;
+}
+.santa-tracker .tracker-questions > p {
+  margin-top: 1.25rem;
+  line-height: 1.7;
+}
 .santa-tracker .tracker-meta { color: #c1cbbb; }
 .santa-tracker .tracker-status {
   background: #fff8e70b;

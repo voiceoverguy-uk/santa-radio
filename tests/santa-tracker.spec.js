@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { readFile, stat } from 'node:fs/promises';
 
-const canonical = 'https://santa-radio.replit.app/santa-tracker';
+const canonical = 'https://www.santaradio.co.uk/santa-tracker';
 
 test.beforeEach(async ({ page }) => {
   await page.route('**/api/radio-metadata*', route => route.fulfill({
@@ -63,7 +63,26 @@ test('direct route metadata, assets and preview noindex are available before Jav
   await expect(page.getByRole('navigation', { name: 'Breadcrumb' })).toHaveCount(0);
   expect(await page.locator('a[href*="/santa-tracker/preview"]').count()).toBe(0);
   expect(await page.locator('main form').count()).toBe(0);
-  await expect(page.locator('main').getByRole('link', { name: 'Guy Harris', exact: true })).toHaveAttribute('href', 'https://www.voiceoverguy.co.uk');
+  await expect(page.locator('main')).not.toContainText('Santa’s voice by Guy Harris');
+  await expect(page.locator('.tracker-hero')).toContainText(
+    'The countdown is on until departure. Until then, it looks like Santa is touring the world on holiday. Keep up with the countdown, holiday postcards and festive facts. Keep checking back!',
+  );
+});
+
+test('tracker questions use expandable, keyboard-accessible question controls', async ({ page }) => {
+  await page.goto('/santa-tracker');
+  const questions = page.locator('.tracker-questions details');
+  await expect(questions).toHaveCount(6);
+  const first = questions.first();
+  const answer = first.locator('p');
+  await expect(answer).toBeHidden();
+  await first.locator('summary').focus();
+  await page.keyboard.press('Enter');
+  await expect(first).toHaveAttribute('open', '');
+  await expect(answer).toBeVisible();
+  await page.keyboard.press('Enter');
+  await expect(first).not.toHaveAttribute('open', '');
+  await expect(answer).toBeHidden();
 });
 
 for (const [date, text] of [
@@ -98,6 +117,7 @@ test('desktop/mobile map, typography and menu fit without horizontal overflow', 
     await expect(map).toBeVisible();
     await expect(page.getByRole('navigation', { name: 'Breadcrumb' })).toHaveCount(0);
     const box = await page.locator('.tracker-map').boundingBox();
+    const statusBox = await page.locator('.tracker-status').boundingBox();
     const headingBox = await page.locator('main h1').boundingBox();
     const descriptionBox = await page.locator('.tracker-hero .tracker-copy').first().boundingBox();
     const countdownBox = await page.getByText("Countdown to Santa's Departure").boundingBox();
@@ -105,7 +125,9 @@ test('desktop/mobile map, typography and menu fit without horizontal overflow', 
     expect(box.x).toBeGreaterThanOrEqual(0);
     expect(box.x + box.width).toBeLessThanOrEqual(viewport.width + 1);
     expect(box.y).toBeGreaterThanOrEqual(headingBox.y + headingBox.height);
+    expect(statusBox.y).toBeGreaterThanOrEqual(box.y + box.height);
     expect(descriptionBox.y).toBeGreaterThanOrEqual(box.y + box.height);
+    expect(statusBox.y + statusBox.height).toBeLessThan(descriptionBox.y);
     expect(countdownBox.y).toBeGreaterThanOrEqual(box.y + box.height);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
     expect(await page.locator('main h1').evaluate(node => getComputedStyle(node).fontWeight)).toBe('400');

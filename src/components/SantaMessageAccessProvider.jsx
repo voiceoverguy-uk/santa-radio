@@ -10,12 +10,14 @@ export function SantaMessageAccessProvider({ children }) {
     catch { return false; }
   });
   const [sessionRemembered, setSessionRemembered] = useState(true);
-  const grantAccess = () => {
+  const [greetingName, setGreetingName] = useState('');
+  const grantAccess = firstName => {
+    setGreetingName(typeof firstName === 'string' ? firstName.trim() : '');
     try { sessionStorage.setItem(MESSAGE_ACCESS_KEY, 'granted'); }
     catch { setSessionRemembered(false); }
     setHasAccess(true);
   };
-  return <MessageAccessContext.Provider value={{ hasAccess, grantAccess, sessionRemembered }}>
+  return <MessageAccessContext.Provider value={{ hasAccess, grantAccess, greetingName, sessionRemembered }}>
     {children}
   </MessageAccessContext.Provider>;
 }

@@ -19,8 +19,8 @@ test('real hosted catalogue, selection, playback, downloads and two-message allo
     if (new URL(request.url()).pathname === '/api/santa-message' && request.method() === 'POST') renders++;
   });
   await openMessageDesk(page, { mockNames: false });
-  await expect(page.locator('.message-name-count')).toHaveText(`${catalogue.length.toLocaleString('en-GB')} names available to download`, { timeout: 20000 });
-  const input = page.getByLabel('Child’s first name');
+  await expect(page.locator('.message-name-count')).toHaveText(`${catalogue.length.toLocaleString('en-GB')} names available`, { timeout: 20000 });
+  const input = page.getByLabel('First Name');
   await input.fill('Demr');
   await expect(page.getByRole('option', { name: 'Demrie', exact: true })).toBeVisible();
   expect(renders).toBe(0);

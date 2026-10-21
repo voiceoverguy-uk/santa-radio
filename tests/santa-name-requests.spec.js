@@ -13,7 +13,7 @@ test('a missing name can be requested without generating audio or consuming allo
     return route.fulfill({ json: { saved: true, name: payload.name, duplicate: false, message: confirmation } });
   });
   await openMessageDesk(page);
-  await page.getByLabel('Child’s first name').fill('Replit');
+  await page.getByLabel('First Name').fill('Replit');
   await expect(page.getByRole('button', { name: 'Request this name', exact: true })).toBeVisible();
   const before = await page.evaluate(key => localStorage.getItem(key), MESSAGE_ALLOWANCE_KEY);
   await page.getByRole('button', { name: 'Request this name', exact: true }).click();
@@ -22,7 +22,7 @@ test('a missing name can be requested without generating audio or consuming allo
   expect(payload.requestId).toMatch(/^[a-f0-9-]{36}$/);
   expect(submissions).toBe(1); expect(renders).toBe(0);
   expect(await page.evaluate(key => localStorage.getItem(key), MESSAGE_ALLOWANCE_KEY)).toBe(before);
-  await page.getByLabel('Child’s first name').fill('Olivia');
+  await page.getByLabel('First Name').fill('Olivia');
   await expect(page.getByRole('button', { name: 'Request this name', exact: true })).toHaveCount(0);
   await expect(page.getByText(confirmation, { exact: true })).toHaveCount(0);
 });
@@ -37,7 +37,7 @@ for (const path of ['/', '/free-santa-message']) test(`request failure is shown 
       : route.fulfill({ json: { saved: true, name: 'Replit', duplicate: false, message: confirmation } });
   });
   await openMessageDesk(page, { path });
-  await page.getByLabel('Child’s first name').fill('Replit');
+  await page.getByLabel('First Name').fill('Replit');
   await page.getByRole('button', { name: 'Request this name', exact: true }).click();
   await expect(page.locator('.name-request-note[role="alert"]')).toContainText('Requests are temporarily unavailable.');
   await expect(page.getByText(confirmation, { exact: true })).toHaveCount(0);
@@ -49,13 +49,13 @@ for (const path of ['/', '/free-santa-message']) test(`request failure is shown 
 
 test('invalid names and an unavailable inventory never offer a false missing-name request', async ({ page }) => {
   await openMessageDesk(page);
-  await page.getByLabel('Child’s first name').fill('<script>');
+  await page.getByLabel('First Name').fill('<script>');
   await expect(page.getByText('No matching recording yet. Try another name.', { exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Request this name', exact: true })).toHaveCount(0);
   await page.route('**/api/santa-names?*', route => route.fulfill({ json: {
     records: [], hostedCount: null, warning: 'The hosted name list is unavailable.',
   } }));
-  await page.getByLabel('Child’s first name').fill('Replit');
+  await page.getByLabel('First Name').fill('Replit');
   await expect(page.getByText('The hosted name list is unavailable.', { exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Request this name', exact: true })).toHaveCount(0);
 });
@@ -67,12 +67,12 @@ test('pending requests ignore repeated clicks and do not attach stale confirmati
     calls++; await held; await route.fulfill({ json: { saved: true, name: 'Replit', duplicate: false, message: confirmation } }).catch(() => {});
   });
   await openMessageDesk(page);
-  await page.getByLabel('Child’s first name').fill('Replit');
+  await page.getByLabel('First Name').fill('Replit');
   const button = page.getByRole('button', { name: 'Request this name', exact: true });
   await button.evaluate(el => { el.click(); el.click(); });
   await expect.poll(() => calls).toBe(1);
   await expect(page.locator('.name-request-button')).toBeDisabled();
-  await page.getByLabel('Child’s first name').fill('Olivia');
+  await page.getByLabel('First Name').fill('Olivia');
   release();
   await expect(page.getByRole('option', { name: 'Olivia', exact: true })).toBeVisible();
   await expect(page.getByText(confirmation, { exact: true })).toHaveCount(0);
@@ -83,7 +83,7 @@ test('mobile request confirmation uses the server seasonal message and fits with
   const december = confirmation.replace('a week', 'a couple of days');
   await page.route('**/api/name-requests', route => route.fulfill({ json: { saved: true, name: 'Replit', message: december } }));
   await openMessageDesk(page);
-  await page.getByLabel('Child’s first name').fill('Replit');
+  await page.getByLabel('First Name').fill('Replit');
   await page.getByRole('button', { name: 'Request this name', exact: true }).click();
   await expect(page.getByText(december, { exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
@@ -113,13 +113,13 @@ for (const path of ['/', '/free-santa-message']) test(`real saving and normal mi
   try {
     await openMessageDesk(page, { path, mockNames: false });
     for (const value of ['Eranes', 'Replit']) {
-      await page.getByLabel('Child’s first name').fill(value);
+      await page.getByLabel('First Name').fill(value);
       await expect(page.getByRole('button', { name: 'Request this name', exact: true })).toBeVisible();
       await expect(page.locator('.name-request [role="alert"]')).toHaveCount(0);
     }
     await page.locator('.name-request').evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
     await page.screenshot({ path: `generated-artifacts/name-request-normal-${path === '/' ? 'home' : 'mobile'}.jpg` });
-    await page.getByLabel('Child’s first name').fill(name);
+    await page.getByLabel('First Name').fill(name);
     await page.getByRole('button', { name: 'Request this name', exact: true }).click();
     await expect(page.getByRole('button', { name: 'Request saved', exact: true })).toBeDisabled();
     await expect(page.getByText(confirmation, { exact: true })).toBeVisible();
@@ -135,7 +135,7 @@ for (const path of ['/', '/free-santa-message']) test(`real saving and normal mi
 test('a 200 without a saved acknowledgement is not success', async ({ page }) => {
   await page.route('**/api/name-requests', route => route.fulfill({ json: { name: 'Replit', message: confirmation } }));
   await openMessageDesk(page);
-  await page.getByLabel('Child’s first name').fill('Replit');
+  await page.getByLabel('First Name').fill('Replit');
   await page.getByRole('button', { name: 'Request this name', exact: true }).click();
   await expect(page.locator('.name-request [role="alert"]')).toContainText('unexpected reply');
   await expect(page.getByText(confirmation, { exact: true })).toHaveCount(0);
@@ -159,7 +159,7 @@ test('a lost real committed first response retries safely without its visitor co
       }
     });
     await openMessageDesk(page);
-    await page.getByLabel('Child’s first name').fill(name);
+    await page.getByLabel('First Name').fill(name);
     await page.getByRole('button', { name: 'Request this name', exact: true }).click();
     await expect(page.getByRole('button', { name: 'Retry name request', exact: true })).toBeVisible();
     await expect(page.getByText(confirmation, { exact: true })).toHaveCount(0);
@@ -189,7 +189,7 @@ test('privacy-blocked storage and older UUID support still allow a safe in-page 
       : route.fulfill({ json: { saved: true, name: 'Replit', message: confirmation } });
   });
   await openMessageDesk(page);
-  await page.getByLabel('Child’s first name').fill('Replit');
+  await page.getByLabel('First Name').fill('Replit');
   await page.getByRole('button', { name: 'Request this name', exact: true }).click();
   await expect(page.getByText('Your browser cannot remember retries after a refresh. Keep this page open when retrying.')).toBeVisible();
   await page.getByRole('button', { name: 'Retry name request', exact: true }).click();

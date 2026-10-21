@@ -23,7 +23,7 @@ test('Unicode and apostrophe equivalents require a distinct selection when ambig
     return route.fulfill({ contentType: 'audio/mpeg', body: readFileSync('server/santa-audio/sleighbells.mp3') });
   });
   await prepare(page);
-  const input = page.getByLabel('Child’s first name');
+  const input = page.getByLabel('First Name');
   await input.fill('SEÁN');
   await expect(page.getByRole('option')).toHaveCount(2);
   await input.press('Escape');
@@ -59,7 +59,7 @@ test('hosted selection uses its identifier, retains downloads and does not rende
   });
   await page.setViewportSize({ width: 390, height: 844 });
   await prepare(page);
-  const input = page.getByLabel('Child’s first name');
+  const input = page.getByLabel('First Name');
   await input.fill('dem');
   await expect(page.getByRole('option', { name: 'Demrie', exact: true })).toBeVisible();
   expect(posts).toHaveLength(0);
@@ -87,7 +87,7 @@ test('rapid input ignores old results and exact typed names work without choosin
     return route.fulfill({ contentType: 'audio/mpeg', body: readFileSync('server/santa-audio/names/erin.wav') });
   });
   await prepare(page);
-  const input = page.getByLabel('Child’s first name');
+  const input = page.getByLabel('First Name');
   await input.fill('de');
   await expect(page.getByText('Checking Santa’s hosted name list…')).toBeVisible();
   await delay(240);
@@ -106,13 +106,13 @@ test('inventory failures are explicit and retry can recover a previously missing
     ? route.fulfill({ json: { records: [], warning: 'The hosted name list is unavailable. Only existing recordings are shown.' } })
     : route.fulfill({ json: { records: [demrie], warning: null } }));
   await prepare(page);
-  await page.getByLabel('Child’s first name').fill('Demrie');
+  await page.getByLabel('First Name').fill('Demrie');
   await expect(page.getByText('The hosted name list is unavailable. Only existing recordings are shown.', { exact: true })).toBeVisible();
   await expect(page.getByText('No matching recording yet. Try another name.', { exact: true })).toHaveCount(0);
   await expect(page.getByText('No matching hosted recording was found.', { exact: true })).toHaveCount(0);
   failed = false;
   await page.getByRole('button', { name: 'Refresh name list' }).click();
-  await page.getByLabel('Child’s first name').focus();
+  await page.getByLabel('First Name').focus();
   await expect(page.getByRole('option', { name: 'Demrie', exact: true })).toBeVisible();
 });
 
@@ -125,7 +125,7 @@ test('endpoint errors and missing audio show a useful error, do not consume allo
     ? route.fulfill({ status: 503, json: { error: 'The recording could not be loaded or mixed. Please try again.' } })
     : route.fulfill({ contentType: 'audio/mpeg', body: readFileSync('server/santa-audio/names/erin.wav') }));
   await prepare(page);
-  const input = page.getByLabel('Child’s first name');
+  const input = page.getByLabel('First Name');
   await input.fill('Demrie');
   await expect(page.getByRole('button', { name: 'Retry name search' })).toBeVisible();
   searchFailed = false;
@@ -143,7 +143,7 @@ test('homepage message form uses the same hosted search after session access is 
   await page.route('**/api/santa-names?*', route => route.fulfill({ json: { records: [demrie], warning: null } }));
   await prepare(page);
   await page.goto('/', { waitUntil: 'domcontentloaded' });
-  const input = page.getByLabel('Child’s first name');
+  const input = page.getByLabel('First Name');
   await input.fill('Dem');
   await expect(page.getByRole('option', { name: 'Demrie', exact: true })).toBeVisible();
   await input.press('Escape');

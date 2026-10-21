@@ -13,7 +13,8 @@ async function settled(page) {
 async function expectLanding(page, width) {
   await settled(page);
   await expect(page.locator('.santa-message-heading')).toHaveText('FREE Personalised message from Santa');
-  await expect(page.locator('.santa-message-subheading')).toHaveText('Their name.Santa’s voice.');
+  await expect(page.locator('.santa-message-subheading')).toHaveText('Their name. Santa’s voice.');
+  await expect(page.locator('.santa-message-subheading')).toHaveCSS('white-space', 'nowrap');
   await expect(page.getByRole('button', { name: 'Hear an example message', exact: true })).toBeVisible();
   await expect.poll(() => page.evaluate(() => {
     const layout = document.querySelector('#santa-messages .message-layout').getBoundingClientRect();
@@ -38,6 +39,7 @@ async function expectLanding(page, width) {
     expect(geometry.desk.top).toBeGreaterThan(geometry.nav.bottom);
     expect(geometry.heading.top).toBeLessThan(300);
     expect(geometry.desk.top).toBeLessThan(300);
+    expect(geometry.desk.top - geometry.intro.top).toBeCloseTo(24, 0);
     expect(geometry.intro.right).toBeLessThan(geometry.desk.left);
   } else {
     expect(geometry.intro.top - geometry.nav.bottom).toBeCloseTo(24, 0);
@@ -135,7 +137,7 @@ for (const width of [1440, 390]) {
       await expectLanding(page, width);
       await expect(page).toHaveURL(originalUrl);
       await expect(page.locator('main.home-page')).toHaveCount(1);
-      await expect(page.getByLabel('Child’s first name')).toHaveCount(0);
+      await expect(page.getByLabel('First Name')).toHaveCount(0);
       await expect(page.locator('.santa-message-section').getByRole('link', { name: 'Visit Santa’s message desk' })).toHaveAttribute('href', '/free-santa-message');
       await scrollTo(page, 0);
       await expectStayedAt(page, 0);
@@ -177,7 +179,7 @@ for (const width of [1440, 390]) {
       await finishFocusScroll(page);
       await expectStayedAt(page, await page.evaluate(() => scrollY));
       await page.getByRole('button', { name: 'Get my free Santa message' }).click();
-      const input = page.getByLabel('Child’s first name');
+      const input = page.getByLabel('First Name');
       await expect(input).toHaveValue('Olivia');
       await expect(page.getByRole('heading', { name: 'Download your free Santa greeting' })).toBeFocused();
       await settled(page);
@@ -208,9 +210,9 @@ for (const width of [1440, 390]) {
         history.pushState({}, '', '/free-santa-message?name=Noel');
         dispatchEvent(new PopStateEvent('popstate'));
       });
-      await expect(page.getByLabel('Child’s first name')).toHaveValue('Noel');
+      await expect(page.getByLabel('First Name')).toHaveValue('Noel');
       await expectStayedAt(page, 0);
-      await expect(page.getByLabel('Child’s first name')).not.toBeFocused();
+      await expect(page.getByLabel('First Name')).not.toBeFocused();
     });
   });
 }

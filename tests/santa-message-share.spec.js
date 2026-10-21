@@ -131,7 +131,7 @@ test.describe('completed greeting sharing', () => {
   });
 
   async function create(page, name = 'Olivia') {
-    await page.getByLabel('Child’s first name').fill(name);
+    await page.getByLabel('First Name').fill(name);
     await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
     await page.getByRole('button', { name: 'Create message', exact: true }).click();
     const result = page.getByLabel(`Santa’s greeting for ${name}`, { exact: true });

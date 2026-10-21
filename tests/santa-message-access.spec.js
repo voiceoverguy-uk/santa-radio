@@ -24,7 +24,7 @@ test('adult access shows the requested news disclosure with an internal privacy 
 test('homepage, direct visits and existing message navigation all require adult access', async ({ page }) => {
   await page.goto('/');
   const section = page.locator('.santa-message-section');
-  await expect(section.getByLabel('Child’s first name')).toHaveCount(0);
+  await expect(section.getByLabel('First Name')).toHaveCount(0);
   await expect(section.getByRole('textbox', { name: 'First name', exact: true })).toBeVisible();
   await expect(section.getByRole('link', { name: 'privacy policy' })).toHaveAttribute('href', '/privacy-policy');
   await expect(section).not.toContainText('No signup');
@@ -33,7 +33,7 @@ test('homepage, direct visits and existing message navigation all require adult 
   await expect(page.getByRole('button', { name: 'Get my free Santa message' })).toBeVisible();
   await page.goto('/apps');
   await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'FREE Santa Message', exact: true }).click();
-  await expect(page.getByLabel('Child’s first name')).toHaveCount(0);
+  await expect(page.getByLabel('First Name')).toHaveCount(0);
   await page.reload();
   await expect(page.getByRole('textbox', { name: 'Surname', exact: true })).toBeVisible();
   await expect(page.locator('meta[name="description"]')).not.toHaveAttribute('content', /no signup/i);
@@ -86,6 +86,9 @@ test('confirmed acceptance sends exact fields, ignores external redirect and onl
   await page.getByRole('button', { name: 'Get my free Santa message' }).click();
   await expect(page).toHaveURL(/\/free-santa-message$/);
   await expect(page.getByRole('heading', { name: 'Download your free Santa greeting' })).toBeFocused();
+  await expect(page.locator('.form-desc')).toHaveText(`Hey ${adult.FIRSTNAME}, search for the name and press Create message.`);
+  await expect(page.getByLabel('First Name')).toBeVisible();
+  await expect(page.getByText('Start typing to find a recorded name.', { exact: true })).toHaveCount(0);
   expect(submitted.method()).toBe('POST');
   expect(submitted.headers()['content-type']).toContain('multipart/form-data; boundary=');
   const fields = Object.fromEntries([...submitted.postData().matchAll(/name="([^"]+)"\r\n\r\n([\s\S]*?)\r\n--/g)].map(match => [match[1], match[2]]));
@@ -97,14 +100,14 @@ test('confirmed acceptance sends exact fields, ignores external redirect and onl
     expect(urls.join('\n')).not.toContain(value);
   }
   await page.reload();
-  await expect(page.getByLabel('Child’s first name')).toBeVisible();
+  await expect(page.getByLabel('First Name')).toBeVisible();
   await page.goto('/');
-  await expect(page.getByLabel('Child’s first name')).toBeVisible();
+  await expect(page.getByLabel('First Name')).toBeVisible();
   await expect(page.locator('.santa-message-access')).toHaveCount(0);
   const newTab = await page.context().newPage();
   await newTab.goto('/free-santa-message');
   await expect(newTab.getByRole('button', { name: 'Get my free Santa message' })).toBeVisible();
-  await expect(newTab.getByLabel('Child’s first name')).toHaveCount(0);
+  await expect(newTab.getByLabel('First Name')).toHaveCount(0);
   await newTab.close();
 });
 

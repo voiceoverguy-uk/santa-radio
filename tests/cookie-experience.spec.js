@@ -516,6 +516,6 @@ test('blocked third-party storage does not break consent-gated players or adult 
   await access.locator('input[name="LASTNAME"]').fill('Parent');
   await access.locator('input[name="EMAIL"]').fill('parent@example.test');
   await access.getByRole('button', { name: 'Get my free Santa message', exact: true }).click();
-  await expect(page.getByLabel('Child’s first name')).toBeVisible();
+  await expect(page.getByLabel('First Name')).toBeVisible();
   expect(await stored(page)).toMatchObject({ analytics: false, marketing: false, media: false });
 });

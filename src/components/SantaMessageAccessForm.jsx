@@ -56,7 +56,7 @@ export default function SantaMessageAccessForm() {
       await submitMessageAccess(fields, controller.signal);
       if (requestRef.current !== controller) return;
       controller.signal.throwIfAborted();
-      grantAccess();
+      grantAccess(fields.FIRSTNAME);
       setFields(emptyFields);
       // Never follow Brevo's optional legacy external redirect.
       // Already on the maker: retain the requested name and tracking query.
