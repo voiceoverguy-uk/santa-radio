@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { RadioButton } from './AudioPlayer.jsx';
 import { scrollToSantaMessageDesk } from '../lib/scrollToSantaMessageDesk.js';
+import useNavigationHighlight from './useNavigationHighlight.js';
 import './Navbar.css';
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const highlight = useNavigationHighlight(location.key);
   const openMessageDesk = event => {
     setMenuOpen(false);
     // Repeat visits to the current route don't remount its entry effect.
@@ -54,14 +56,17 @@ export default function Navbar() {
       <div className="navbar-inner">
         <Link to="/" className="navbar-logo" aria-label="Santa Radio home"><img className="navbar-logo-image" src="/images/santa-radio-gold-nav.webp" alt="Santa Radio" width="630" height="188" /></Link>
         <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-controls="main-menu" aria-label={menuOpen ? 'Close menu' : 'Open menu'}><span /><span /><span /></button>
-        <ul id="main-menu" className={`navbar-links ${menuOpen ? 'open' : ''}`}>
-          {links.map(link => <li key={link.radio ? 'radio' : link.to} className={link.radio ? 'nav-listen' : undefined}>{link.radio
+        <ul id="main-menu" ref={highlight.menuRef} style={highlight.style} {...highlight.handlers}
+          data-interacting={highlight.target ? 'true' : undefined} className={`navbar-links ${menuOpen ? 'open' : ''}`}>
+          {links.map(link => <li key={link.radio ? 'radio' : link.to} data-nav-key={link.radio ? 'radio' : link.to}
+            data-highlighted={highlight.target === (link.radio ? 'radio' : link.to) ? 'true' : undefined}
+            className={link.radio ? 'nav-listen' : undefined}>{link.radio
             ? <RadioButton className="nav-radio" />
             : link.external
             ? <a href={link.to} target="_blank" rel="noopener noreferrer" title={`${link.label} (opens in a new tab)`} onClick={() => setMenuOpen(false)}>{link.label}</a>
             : <Link to={link.to} aria-current={isActive(link.to) ? 'page' : undefined} className={isActive(link.to) ? 'active' : ''} onClick={() => setMenuOpen(false)}>{link.label}</Link>
           }</li>)}
-          <li><Link to="/free-santa-message" className="btn-red nav-message" aria-current={isActive('/free-santa-message') ? 'page' : undefined} onClick={openMessageDesk}>FREE Santa Message</Link></li>
+          <li data-nav-key="/free-santa-message" data-highlighted={highlight.target === '/free-santa-message' ? 'true' : undefined}><Link to="/free-santa-message" className="btn-red nav-message" aria-current={isActive('/free-santa-message') ? 'page' : undefined} onClick={openMessageDesk}>FREE Santa Message</Link></li>
         </ul>
       </div>
     </nav>

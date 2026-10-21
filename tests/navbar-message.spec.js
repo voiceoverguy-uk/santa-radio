@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { expectHighlight } from './helpers/navbar-highlight.js';
 
 test.beforeEach(async ({ page }) => {
   await page.route('**/api/radio-metadata*', route => route.fulfill({
@@ -29,6 +30,7 @@ for (const width of [1280, 320]) {
     await radio.focus();
     await page.keyboard.press('Space');
     await expect(radio).toHaveText('Connecting…');
+    if (width > 1200) await expectHighlight(nav, radio);
     await expect(radio).toHaveAccessibleName('Cancel loading radio');
     await expect(radio).toHaveCSS('outline-style', 'solid');
     await expect(heroRadio).toHaveText('Connecting…');
@@ -38,10 +40,12 @@ for (const width of [1280, 320]) {
     await page.evaluate(() => { window.mediaMode = 'failure'; });
     await page.keyboard.press('Enter');
     await expect(radio).toHaveText('Try Again');
+    if (width > 1200) await expectHighlight(nav, radio);
     await expect(dockRadio).toHaveText('Try Again');
     await page.evaluate(() => { window.mediaMode = 'success'; });
     await page.keyboard.press('Space');
     await expect(radio).toHaveText('Pause Radio');
+    if (width > 1200) await expectHighlight(nav, radio);
     await expect(heroRadio).toHaveText('Pause Radio');
     await expect(dockRadio).toHaveText('Pause Radio');
     await page.evaluate(() => { window.originalRadio = document.querySelector('audio'); });
