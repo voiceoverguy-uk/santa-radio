@@ -1,6 +1,7 @@
 .santa-message-section { padding: 88px 0; background: #14382a; border-block: 1px solid #d4af3730; }
 .message-layout { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 64px; }
-.santa-message-heading { color: var(--cream, #f6ecd8); font-size: clamp(2rem,3.4vw,3rem); text-align: left; margin-bottom: 22px; line-height: 1.25; }
+.santa-message-heading { color: var(--cream, #f6ecd8); font-size: clamp(2rem,3.4vw,3rem); text-align: left; margin-bottom: 16px; line-height: 1.25; overflow-wrap: anywhere; }
+.santa-message-subheading { color: var(--cream, #f6ecd8); font-size: clamp(1.25rem,2vw,1.75rem); text-align: left; margin-bottom: 22px; line-height: 1.4; }
 .message-intro > p:not(.eyebrow) { font-size: .95rem; color: #d0dacd; max-width: 420px; line-height: 1.8; }
 .message-detail-link { display: inline-block; margin-top: 22px; font-size: .85rem; color: var(--gold-light, #ead39a); text-decoration: underline; text-underline-offset: 5px; }
 .north-pole-letter { display: block; width: min(100%, 320px); height: auto; margin: 26px 0 0; }

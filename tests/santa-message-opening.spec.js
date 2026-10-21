@@ -12,6 +12,9 @@ async function settled(page) {
 
 async function expectLanding(page, width) {
   await settled(page);
+  await expect(page.locator('.santa-message-heading')).toHaveText('FREE Personalised message from Santa');
+  await expect(page.locator('.santa-message-subheading')).toHaveText('Their name.Santa’s voice.');
+  await expect(page.getByRole('button', { name: 'Hear an example message', exact: true })).toBeVisible();
   await expect.poll(() => page.evaluate(() => {
     const layout = document.querySelector('#santa-messages .message-layout').getBoundingClientRect();
     const nav = document.querySelector('.navbar').getBoundingClientRect();
