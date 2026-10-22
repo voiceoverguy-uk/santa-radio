@@ -58,7 +58,7 @@ export default function SantaTimeline({ effectiveTime }: SantaTimelineProps) {
                 )}
               </div>
               <div className="flex-1 min-w-0 flex items-center justify-between gap-2">
-                <div>
+                <div className="min-w-0">
                   <p
                     className={`text-sm font-medium truncate ${
                       isCurrent ? "tracker-stop-current" : isVisited ? "tracker-stop-visited" : "tracker-stop-upcoming"

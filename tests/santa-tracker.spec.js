@@ -167,6 +167,65 @@ test('gold divider stays centred between the introduction and tracker updates', 
   }
 });
 
+test('tracker copy and divider remain readable at 200% text zoom', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-11-15T12:00:00Z'));
+  for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 }]) {
+    await page.setViewportSize(viewport);
+    await page.goto('/santa-tracker');
+    await page.addStyleTag({ content: 'html { font-size: 200% !important; }' });
+
+    const intro = page.locator('.tracker-hero .tracker-copy').nth(1);
+    const seasonalMessage = page.locator('.tracker-status-message');
+    const divider = page.locator('.tracker-copy-divider');
+    await expect(intro).toContainText('The countdown is on until departure.');
+    await expect(seasonalMessage).toContainText("Santa's taking a well-earned break");
+    await expect(divider).toBeVisible();
+
+    const zoomedLayout = await page.evaluate(() => {
+      const textBounds = node => {
+        const range = document.createRange();
+        range.selectNodeContents(node);
+        const rects = [...range.getClientRects()];
+        return rects.reduce((bounds, rect) => ({
+          left: Math.min(bounds.left, rect.left),
+          right: Math.max(bounds.right, rect.right),
+          top: Math.min(bounds.top, rect.top),
+          bottom: Math.max(bounds.bottom, rect.bottom),
+        }), { left: Infinity, right: -Infinity, top: Infinity, bottom: -Infinity });
+      };
+      const paragraphBounds = node => {
+        const rect = node.getBoundingClientRect();
+        return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom };
+      };
+      return {
+        rootFontSize: parseFloat(getComputedStyle(document.documentElement).fontSize),
+        documentWidth: document.documentElement.scrollWidth,
+        viewportWidth: innerWidth,
+        introText: textBounds(document.querySelectorAll('.tracker-hero .tracker-copy')[1]),
+        introParagraph: paragraphBounds(document.querySelectorAll('.tracker-hero .tracker-copy')[1]),
+        seasonalText: textBounds(document.querySelector('.tracker-status-message')),
+        seasonalParagraph: paragraphBounds(document.querySelector('.tracker-status-message')),
+      };
+    });
+    const dividerBox = await divider.boundingBox();
+
+    expect(zoomedLayout.rootFontSize).toBe(32);
+    expect(zoomedLayout.documentWidth).toBeLessThanOrEqual(zoomedLayout.viewportWidth + 1);
+    for (const [text, paragraph] of [
+      [zoomedLayout.introText, zoomedLayout.introParagraph],
+      [zoomedLayout.seasonalText, zoomedLayout.seasonalParagraph],
+    ]) {
+      expect(text.left).toBeGreaterThanOrEqual(paragraph.left - 0.5);
+      expect(text.right).toBeLessThanOrEqual(paragraph.right + 0.5);
+      expect(text.top).toBeGreaterThanOrEqual(paragraph.top - 0.5);
+      expect(text.bottom).toBeLessThanOrEqual(paragraph.bottom + 0.5);
+    }
+    expect(dividerBox.y).toBeGreaterThanOrEqual(zoomedLayout.introText.bottom - 0.5);
+    expect(zoomedLayout.seasonalText.top).toBeGreaterThanOrEqual(dividerBox.y + dividerBox.height - 0.5);
+    expect(Math.abs(dividerBox.x + dividerBox.width / 2 - viewport.width / 2)).toBeLessThanOrEqual(1);
+  }
+});
+
 test('tracker omits the gold divider when no status message follows the introduction', async ({ page }) => {
   await page.clock.setFixedTime(new Date('2026-12-12T12:00:00Z'));
   await page.goto('/santa-tracker');
