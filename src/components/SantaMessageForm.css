@@ -50,6 +50,10 @@
 .message-result p:not(.message-postmark) { color: #d0dacd; font-size: .82rem; line-height: 1.6; }
 .message-result audio { display: block; width: 100%; margin: 16px 0; height: 48px; }
 .message-download { display: inline-flex; align-items: center; gap: 12px; color: #ead39a; font-size: .85rem; text-decoration: underline; text-underline-offset: 5px; padding: 8px 0; }
+.message-certificate-button { background: transparent; border: 0; font: inherit; font-size: .85rem; text-align: left; cursor: pointer; min-height: 44px; line-height: 1.6; }
+.message-certificate-button:disabled { opacity: .7; cursor: wait; }
+.message-certificate .message-name-hint { margin-top: 2px; }
+.message-result > .message-download { min-height: 44px; }
 .message-retry { display: block; background: transparent; color: #f6ecd8; border: 1px solid #d4af3770; border-radius: 6px; padding: 10px 16px; font: inherit; font-size: .8rem; cursor: pointer; margin-bottom: 12px; }
 .message-share { margin-top: 12px; }
 .message-share .message-retry { width: 100%; margin-bottom: 0; }

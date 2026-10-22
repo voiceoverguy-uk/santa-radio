@@ -7,3 +7,9 @@ After a task-environment transition, verify the current files before relying on 
 **Why:** During an accepted-task transition, early uncommitted artwork edits and a temporary feed baseline were absent from the subsequently observed workspace. Earlier successful tool results did not describe the later filesystem.
 
 **How to apply:** Reconcile the current filesystem with the authorised plan. Do not assume temporary files persist across environments, or reconstruct a purported pre-change baseline from modified code. For feed compatibility, unchanged checked-in mappings, generator and source image bytes can provide a reliable reference.
+
+Check the aggregate branch diff, not only a clean working-tree status, when completion flags unrelated deletions.
+
+**Why:** A pre-merge checkpoint had already committed unrelated upload deletions before implementation began, so ordinary status showed none of them although the aggregate diff still contained them.
+
+**How to apply:** Identify the earlier deletion commit, compare current paths before restoring, and recover only the missing original files from the preceding tree. Preserve later uploads and avoid regenerating unrelated catalogues.

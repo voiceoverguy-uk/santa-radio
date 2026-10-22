@@ -38,12 +38,12 @@ test('two successes block the third, preserve downloads and offer radio without 
   await page.route('**/api/santa-message', route => { calls++; return route.fulfill(mp3); });
   await openMessageDesk(page);
   await expect(page.getByRole('heading', { name: 'Download your free Santa greeting' })).toBeVisible();
-  await expect(page.getByText("New names are being made available all the time to Santa's list, so make your selection and press Create message.", { exact: true })).toBeVisible();
+  await expect(page.locator('.form-desc')).toContainText('Search for the name and press Create message.');
   await expect(page.locator('.santa-message-box')).not.toContainText(/30.minute|messages remaining|message allowance/);
   await create(page);
   await expect(page.locator('.santa-message-box')).not.toContainText(/30.minute|messages remaining|message allowance/);
   await page.getByLabel('First Name').fill('Erin');
-  await expect(page.getByRole('link', { name: 'Download Olivia’s greeting' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Download your audio' })).toBeVisible();
   await create(page, 'Erin');
   await expect(page.locator('.message-result')).toHaveCount(2);
   await page.evaluate(() => {
@@ -66,7 +66,7 @@ test('two successes block the third, preserve downloads and offer radio without 
   await expect(page.locator('.message-result audio')).toHaveCount(2);
   for (const name of ['Olivia', 'Erin']) {
     const download = page.waitForEvent('download');
-    await page.getByRole('link', { name: `Download ${name}’s greeting` }).click();
+    await page.getByLabel(`Santa’s greeting for ${name}`, { exact: true }).getByRole('link', { name: 'Download your audio' }).click();
     expect((await download).suggestedFilename()).toBe(`Santa-message-for-${name}.mp3`);
   }
   expect((await usage(page)).used).toBe(2);
@@ -111,7 +111,7 @@ test('failure, invalid name, non-audio, empty and cancelled requests do not use 
     await page.getByRole('button', { name: 'Create message' }).click();
     await expect(page.getByRole('alert')).toBeVisible();
     expect((await usage(page)).used).toBe(1);
-    await expect(page.getByRole('link', { name: 'Download Olivia’s greeting' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Download your audio' })).toBeVisible();
   }
   mode = 'hold';
   await page.getByRole('button', { name: 'Create message' }).click();

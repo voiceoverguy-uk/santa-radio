@@ -39,7 +39,7 @@ test('real hosted catalogue, selection, playback, downloads and two-message allo
     expect(await audio.evaluate(element => element.error)).toBeNull();
     await audio.evaluate(element => element.pause());
     const downloadPromise = page.waitForEvent('download');
-    await page.getByRole('link', { name: 'Download Demrie’s greeting' }).nth(i).click();
+    await page.getByRole('link', { name: 'Download your audio' }).nth(i).click();
     const download = await downloadPromise;
     expect(download.suggestedFilename()).toBe('Santa-message-for-Demrie.mp3');
     await mkdir('generated-artifacts/hosted-names', { recursive: true });
@@ -57,7 +57,7 @@ test('real hosted catalogue, selection, playback, downloads and two-message allo
   await expect(input).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
   await expect(page.getByText('You’ve created 2 Free Santa messages for now.', { exact: false })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Download Demrie’s greeting' })).toHaveCount(2);
+  await expect(page.getByRole('link', { name: 'Download your audio' })).toHaveCount(2);
   expect(renders).toBe(2);
   await page.screenshot({ path: 'generated-artifacts/hosted-names/real-preview-result.jpg', fullPage: true });
 });

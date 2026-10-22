@@ -1,0 +1,54 @@
+make these two changes. This is draft wording based on the current native app, not legal advice. Confirm the operator and provider details before publishing.
+
+1. Replace the sentence that excludes apps
+Replace:
+
+This notice covers this rebuilt website, not separate apps or linked services.
+
+With:
+
+This notice covers the Santa Radio website and the Christmas Radio iPhone and iPad app, also known as Christmas Radio UK. The app-specific section below explains how the native app handles information. Website-only features, including forms, Santa audio messages, embedded videos and optional analytics or marketing cookies, are separate from the native app. External services may also have their own privacy notices.
+
+2. Add this section to the policy
+Christmas Radio iPhone and iPad app
+Using the app
+
+You can listen to Christmas Radio without creating an account. The native app does not ask you to provide your name, email address or other contact details.
+
+The app does not contain advertising or analytics SDKs, Google Analytics or Meta Pixel. It does not access your advertising identifier, microphone, camera, contacts, photo library or device location. Background playback, AirPlay and CarPlay are audio-playback features and do not involve microphone recording.
+
+Information stored on your device
+
+The app remembers your Snowfall, Blizzard and Festive lights preferences on your device. It also stores copies of artist artwork and recent song information to reduce downloads and display previously available information when a connection is unavailable.
+
+The app does not upload these saved preferences or cached copies to us. iOS may remove cached files automatically. Deleting the app, rather than offloading it, removes its local data from that installation. Device settings may also be included in backups managed by Apple; deleting the app does not necessarily remove existing backups.
+
+Connections needed for radio playback
+
+The app connects over HTTPS to:
+
+Citrus3, at global.citrus3.com, to receive the live radio stream.
+Santa Radio, at www.santaradio.co.uk, to obtain current and upcoming song information and artist artwork.
+These connections necessarily disclose your IP address and normal technical request information to the relevant servers. This can include request times, requested resources and information supplied by the networking software. Requests may indicate when you connect to the stream or request song information and artwork.
+
+The app does not create an account-based personal listening-history profile. However, the relevant servers or hosting providers may maintain connection logs or listener statistics.
+
+Provider processing and retention
+
+[Before publishing, add the confirmed purposes, lawful basis, retention periods—or the criteria used to determine them—for app-related connection logs and listener statistics. Identify relevant hosting providers and any international processing or transfers, including applicable safeguards.]
+
+Deleting the app does not delete information already retained by these providers.
+
+Opening the website
+
+If you open the Santa Radio website from the app, the website’s privacy information and cookie choices apply to that website visit. Website analytics and marketing cookies are not embedded in the native app.
+
+Privacy questions and your rights
+
+For questions about the app’s handling of information, or to exercise applicable data-protection rights, contact [santa@santaradio.co.uk](https://replit.com/@voiceoverguy-uk/Christmas-Radio-UK-Native-iOS). The rights and complaints information elsewhere in this policy also applies to the app.
+
+Before getting it added
+Confirm VoiceoverGuy Ltd is also the legal operator of Christmas Radio and that the contact email is appropriate.
+Replace the bracketed provider-processing paragraph with verified details from your hosting arrangements and Citrus3. Don’t invent a retention period.
+Update the policy’s revision date when the changes go live.
+Don’t select “Data Not Collected” in App Store Connect solely because the app has no analytics SDKs; first check the providers’ actual data practices.

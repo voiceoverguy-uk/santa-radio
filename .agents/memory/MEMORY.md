@@ -37,3 +37,5 @@
 - [Browser engine environment](browser-engine-environment.md) — Linux WebKit may need multimedia plugins even for idle audio; empty-page launch is not route verification.
 - [Personalised video promotion](personalised-video-promotion.md) — Homepage section is temporarily withdrawn; preserve its code until the owner asks to restore it.
 - [Mugshot sound preferences](mugshot-sound-preferences.md) — Snow/effects and reduced-motion controls are visual preferences, not a site-wide audio mute.
+- [Nice List artwork scope](certificate-artwork-scope.md) — Exact approved master, name only; browser-local certificates stay independent of audio and public sharing.
+- [Python TLS trust](python-tls-trust.md) — Package downloads may need an explicit system certificate path; never disable TLS verification.

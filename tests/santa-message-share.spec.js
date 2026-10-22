@@ -174,7 +174,7 @@ test.describe('completed greeting sharing', () => {
       });
       await expect(result.locator('audio')).toBeVisible();
       const downloadPromise = page.waitForEvent('download');
-      await result.getByRole('link', { name: `Download ${name}’s greeting` }).click();
+      await result.getByRole('link', { name: 'Download your audio' }).click();
       expect((await downloadPromise).suggestedFilename()).toBe(payload.filename);
     }
     expect(await allowance(page)).toBe(before);
@@ -220,7 +220,7 @@ test.describe('completed greeting sharing', () => {
       await expect(result.getByRole(mode.includes('throws') || mode.includes('fails') ? 'alert' : 'status')).toContainText('download link above');
       await expect(result.getByRole('button', { name: 'Share this greeting' })).toBeEnabled();
       const downloadPromise = page.waitForEvent('download');
-      await result.getByRole('link', { name: 'Download Olivia’s greeting' }).click();
+      await result.getByRole('link', { name: 'Download your audio' }).click();
       const download = await downloadPromise;
       expect(download.suggestedFilename()).toBe('Santa-message-for-Olivia.mp3');
       expect(await download.failure()).toBeNull();

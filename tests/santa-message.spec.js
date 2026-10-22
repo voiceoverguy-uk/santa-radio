@@ -75,7 +75,7 @@ test('recorded Santa greeting validates names, decodes and downloads the real MP
   await audio.evaluate(async a => { await a.play(); });
   await expect.poll(() => audio.evaluate(a => a.currentTime)).toBeGreaterThan(0);
   const downloadPromise = page.waitForEvent('download');
-  await page.getByRole('link', { name: 'Download Olivia’s greeting' }).click();
+  await page.getByRole('link', { name: 'Download your audio' }).click();
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toBe('Santa-message-for-Olivia.mp3');
   expect(await download.failure()).toBeNull();

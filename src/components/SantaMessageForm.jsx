@@ -8,6 +8,7 @@ import { useSantaMessageAccess } from './SantaMessageAccessProvider.jsx';
 import useSantaMessageAllowance from './useSantaMessageAllowance.js';
 import useSantaMessageHistory from './useSantaMessageHistory.js';
 import useSantaNames from './useSantaNames.js';
+import NiceListCertificateDownload from './NiceListCertificateDownload.jsx';
 import { santaNameKey } from '../lib/santaNameSearch.js';
 import { randomSantaExample, santaNamePlaceholder } from '../lib/santaNamePlaceholder.js';
 import { normaliseRequestedName } from '../lib/santaNameRequests.js';
@@ -328,8 +329,9 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
             setAudioErrors(previous => ({ ...previous, [message.key]: false }));
             audioRefs.current.get(message.key)?.load();
           }}>Reload recording</button></div>}
-          <a className="message-download" href={message.url} download={message.downloadName}>Download {message.name}’s greeting <span aria-hidden="true">↓</span></a>
+          <a className="message-download" href={message.url} download={message.downloadName}>Download your audio <span aria-hidden="true">↓</span></a>
           <p className="message-name-hint">On iPhone, choose Share → Save to Files to keep the MP3.</p>
+          <NiceListCertificateDownload message={message} />
           <SantaGreetingShare message={message} />
         </div>)}
         <p className="service-notice">Free to create and download here. The message is not sent by email.</p>

@@ -1,0 +1,93 @@
+We are doing a faithful rebuild/migration of the existing Santa Radio website for Vercel hosting.
+
+This is NOT a redesign.
+This is NOT a rebrand.
+This is NOT a content rewrite.
+
+The goal is to reproduce the current live site as closely as possible so that Google sees the new Vercel-hosted version as the same website, with the same SEO signals, same page intent, same wording, same metadata, and same URL structure wherever possible.
+
+CRITICAL RULES
+1. Preserve the existing page structure, wording, headings, copy, internal links, URL slugs, metadata, and overall layout as closely as possible.
+2. Keep all visible text exactly the same unless a technical reason makes that impossible.
+3. Keep all existing meta titles, meta descriptions, canonical behaviour, heading hierarchy, alt text, and internal linking structure wherever possible.
+4. Do not shorten, modernise, improve, rewrite, or “optimise” the copy yet.
+5. Do not rename pages, folders, assets, image filenames, or URLs unless absolutely necessary.
+6. If any URL must change, create a proper 301 redirect and clearly document it.
+7. Preserve as much SEO equity / “Google juice” as possible.
+8. Build the new site so that to a user and to Google it appears to be the same site, just cleaner and hosted on Vercel.
+9. Use placeholder handling only for assets that are genuinely missing, and label those clearly.
+10. Keep the existing Christmas / Santa branding and tone intact.
+
+TECHNICAL GOALS
+- Rebuild the site in a clean Vercel-friendly structure.
+- Preserve all public-facing URLs wherever possible.
+- Preserve the existing navigation, footer links, key sections, and page hierarchy.
+- Reuse the original downloaded assets wherever possible, including images, logos, icons, fonts, and other static files.
+- Maintain the same stream/player functionality using the live stream URL already identified.
+- Maintain any live now-playing / artist-title functionality if currently powered by txt or metadata endpoints.
+- Ensure the site is crawlable and indexable.
+- Generate a sitemap.xml and robots.txt consistent with the old site structure.
+- Add proper 301 redirects for any unavoidable legacy paths.
+- Avoid redirect chains.
+- Keep the site lightweight and fast.
+
+DATABASE / DYNAMIC CONTENT
+Two sections are database-driven and must be preserved:
+1. Mugshots page(s) – driven from an SQL database export.
+2. Songs page – also driven from a database export / admin-managed data source.
+
+There is also a separate admin system created by Duncan that manages some of this content.
+For now:
+- rebuild the front-end output faithfully
+- inspect the database exports and determine the schema/fields needed
+- preserve page output, URLs, titles and content structure
+- create a safe plan for reconnecting or recreating these dynamic sections without changing their public-facing SEO footprint
+- do not invent new field names or restructure public output unless necessary
+- if needed, build temporary import scripts or local JSON mirrors from the SQL export to preserve output during the migration
+
+ASSET HANDLING
+I will provide the downloaded old site files and folders.
+Use them to restore:
+- images
+- logos
+- icons
+- favicons
+- fonts
+- downloadable files
+- CSS or styling clues
+- JS behaviour where needed
+
+When assets are missing, use clearly named placeholders and identify exactly which original asset is still required.
+
+OUTPUT REQUIRED
+Please do the following in order:
+
+PHASE 1 – AUDIT THE OLD SITE FILES
+- inspect the supplied downloaded website files and folders
+- identify the current page structure
+- identify reusable assets
+- identify CSS, fonts, JS, image directories, icons, and any data files
+- identify which pages are static vs database-driven
+- identify any obvious SEO-critical elements to preserve
+
+PHASE 2 – BUILD A FAITHFUL VERCEL VERSION
+- create the Vercel-compatible site structure
+- recreate the existing pages as faithfully as possible
+- preserve visible wording and meta data
+- preserve URLs and internal linking
+- wire up the existing stream and now-playing sources where possible
+
+PHASE 3 – SEO SAFETY CHECK
+- verify titles, descriptions, canonicals, headings, and internal links match the original
+- verify redirects where needed
+- verify no accidental noindex tags
+- verify image paths and important assets
+- verify the rebuild does not lose SEO value
+
+IMPORTANT
+Think like a migration specialist, not a designer.
+The existing site has Google history and authority.
+We are protecting that first.
+We can refine and improve later, but phase one must be a faithful rebuild.
+
+Please begin by telling me exactly which folders/files from the old downloaded site you want me to upload into Replit first, in priority order, so you can reconstruct the site accurately.

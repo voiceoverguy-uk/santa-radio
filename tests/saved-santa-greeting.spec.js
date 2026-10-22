@@ -46,7 +46,7 @@ test('CORS-enabled saved hit has zero generation calls and preserves bytes, play
   await audio.evaluate(element => element.play());
   await expect.poll(() => audio.evaluate(element => element.currentTime)).toBeGreaterThan(0);
   const downloadPromise = page.waitForEvent('download');
-  await page.getByRole('link', { name: 'Download Arabella’s greeting' }).click();
+  await page.getByRole('link', { name: 'Download your audio' }).click();
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toBe('Santa-message-for-Arabella.mp3');
   expect(await readFile(await download.path())).toEqual(savedBytes);
@@ -95,7 +95,7 @@ test('actual server-versioned lookup and direct browser saved hit perform zero r
   await audio.evaluate(element => element.play());
   await expect.poll(() => audio.evaluate(element => element.currentTime)).toBeGreaterThan(0);
   const pending = page.waitForEvent('download');
-  await page.getByRole('link', { name: 'Download Arabella’s greeting' }).click();
+  await page.getByRole('link', { name: 'Download your audio' }).click();
   const download = await pending;
   expect(download.suggestedFilename()).toBe('Santa-message-for-Arabella.mp3');
   expect(await readFile(await download.path())).toEqual(savedBytes);

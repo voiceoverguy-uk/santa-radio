@@ -67,7 +67,7 @@ test('hosted selection uses its identifier, retains downloads and does not rende
   await input.press('Enter');
   await expect(input).toHaveValue('Demrie');
   await page.getByRole('button', { name: 'Create message' }).click();
-  await expect(page.getByRole('link', { name: 'Download Demrie’s greeting' })).toHaveAttribute('download', 'Santa-message-for-Demrie.mp3');
+  await expect(page.getByRole('link', { name: 'Download your audio' })).toHaveAttribute('download', 'Santa-message-for-Demrie.mp3');
   expect(posts).toEqual([{ name: 'demrie' }]);
   await input.fill('Other');
   await expect(page.locator('.message-result')).toHaveCount(1);
@@ -96,7 +96,7 @@ test('rapid input ignores old results and exact typed names work without choosin
   await delay(600);
   await expect(page.getByRole('option', { name: 'Demrie', exact: true })).toHaveCount(0);
   await page.getByRole('button', { name: 'Create message' }).click();
-  await expect(page.getByRole('link', { name: 'Download Flora’s greeting' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Download your audio' })).toBeVisible();
   expect(chosen).toEqual({ name: 'flora' });
 });
 
@@ -135,7 +135,7 @@ test('endpoint errors and missing audio show a useful error, do not consume allo
   await expect(page.locator('.message-result')).toHaveCount(0);
   audioFailed = false;
   await page.getByRole('button', { name: 'Create message' }).click();
-  await expect(page.getByRole('link', { name: 'Download Demrie’s greeting' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Download your audio' })).toBeVisible();
   await expect(page.getByText('You’ve created your two free Santa messages for now.', { exact: false })).toHaveCount(0);
 });
 
