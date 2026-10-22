@@ -7,7 +7,7 @@ import { openMessageDesk } from './helpers/message-access.js';
 import { MESSAGE_ALLOWANCE_KEY } from '../src/lib/santaMessageAllowance.js';
 
 const audio = readFileSync('server/santa-audio/sleighbells.mp3');
-const names = ['Olivia', 'Alexandria-Catherine Elizabeth Montgomery-Worthington', "Élodie O’Neill-Sáenz", 'Erin'];
+const names = ['Olivia', 'Alexandria-Catherine Elizabeth Montgomery-Worthington', "Élodie O’Neill-Sáenz", 'Erin', "Jean-Luc D'Ávila", 'Olivia   Rose'];
 const records = names.map((name, index) => ({
   id: `opaque-recording-${index}`, name, downloadName: `audio-${index}.mp3`,
 }));
@@ -64,7 +64,8 @@ async function downloadCertificate(page, result, file) {
   const pending = page.waitForEvent('download');
   await certificateButton(result).click();
   const download = await pending;
-  expect(download.suggestedFilename()).toBe('Santa-Radio-Nice-List-Certificate.pdf');
+  const name = (await result.getAttribute('aria-label')).replace('Santa’s greeting for ', '');
+  expect(download.suggestedFilename()).toBe(`Santa-Radio-Nice-List-Certificate-${name.replace(/\s+/g, ' ').trim()}.pdf`);
   expect(download.url()).toMatch(/^blob:/);
   if (file) {
     await mkdir('generated-artifacts/nice-list', { recursive: true });
@@ -79,7 +80,27 @@ async function downloadCertificate(page, result, file) {
   return bytes;
 }
 
-for (const [index, file] of ['normal', 'long', 'unicode'].entries()) {
+test('browser filename handling strips unsafe separators and controls without losing accents', async ({ page }) => {
+  await page.goto('/free-santa-message');
+  const filenames = await page.evaluate(async () => {
+    const { certificateDownloadFilename } = await import('/src/lib/niceListCertificate.js');
+    return ["  Élodie   O’Neill-Sáenz  ", "Jean-Luc D'Ávila", '../Olivia\\Rose', 'Olivia\u0000\u202e', 'É'.repeat(300)]
+      .map(certificateDownloadFilename);
+  });
+  expect(filenames.slice(0, 4)).toEqual([
+    'Santa-Radio-Nice-List-Certificate-Élodie O’Neill-Sáenz.pdf',
+    "Santa-Radio-Nice-List-Certificate-Jean-Luc D'Ávila.pdf",
+    'Santa-Radio-Nice-List-Certificate--Olivia-Rose.pdf',
+    'Santa-Radio-Nice-List-Certificate-Olivia.pdf',
+  ]);
+  for (const filename of filenames) {
+    expect(filename).not.toMatch(/[<>:"/\\|?*\p{Cc}\p{Cf}]/u);
+    expect(filename).toMatch(/\.pdf$/);
+    expect(Buffer.byteLength(filename)).toBeLessThan(255);
+  }
+});
+
+for (const [index, file] of [[0, 'normal'], [1, 'long'], [2, 'unicode'], [4, 'apostrophe'], [5, 'whitespace']]) {
   test(`downloads actual ${file} PDF with canonical display spelling and no recipient requests`, async ({ page }) => {
     const generations = await setup(page);
     const result = await create(page, index);
@@ -148,7 +169,7 @@ for (const mobile of [false, true]) {
 test('asset failure and retry never regenerate audio or alter allowance, playback, download or sharing', async ({ page }) => {
   const generations = await setup(page);
   let failures = 0;
-  await page.route('**/certificates/nice-list/CertificateSerif.ttf', route => {
+  await page.route('**/certificates/nice-list/GreatVibes-Regular.ttf', route => {
     if (++failures === 1) return route.fulfill({ status: 503, body: 'Unavailable' });
     return route.continue();
   });

@@ -26,14 +26,14 @@ export default function NiceListCertificateDownload({ message }) {
     busy.current = true;
     setStatus('loading');
     try {
-      const blob = cached.current || await (await import('../lib/niceListCertificate.js'))
-        .personaliseNiceListCertificate(message.name);
+      const { personaliseNiceListCertificate, certificateDownloadFilename } = await import('../lib/niceListCertificate.js');
+      const blob = cached.current || await personaliseNiceListCertificate(message.name);
       if (!active.current) return;
       cached.current = blob;
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = 'Santa-Radio-Nice-List-Certificate.pdf';
+      link.download = certificateDownloadFilename(message.name);
       document.body.append(link);
       try { link.click(); } finally { link.remove(); }
       // Give browsers time to consume the download before revoking. Also

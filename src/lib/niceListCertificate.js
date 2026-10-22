@@ -3,9 +3,30 @@ import { PDFDocument, rgb } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 
 export const CERTIFICATE_MASTER = '/certificates/nice-list/master.pdf';
-export const CERTIFICATE_FONT = '/certificates/nice-list/CertificateSerif.ttf';
+export const CERTIFICATE_FONT = '/certificates/nice-list/GreatVibes-Regular.ttf';
 const mm = value => value * 72 / 25.4;
+// Great Vibes' contextual ligatures collide with unrelated Unicode entries in
+// pdf-lib's full-font character map. Keep individual script letters so PDF
+// extraction/accessibility preserves the actual name as well as its appearance.
+const fontFeatures = { calt: false, liga: false, clig: false };
 let assets;
+
+export function certificateDownloadFilename(name) {
+  // Only the local download label uses this value, never a URL or metadata.
+  const safe = String(name ?? '').normalize('NFC')
+    .replace(/[\p{Cc}\p{Cf}]/gu, '')
+    .replace(/[<>:"/\\|?*]/g, '-')
+    .replace(/\s+/gu, ' ').trim().replace(/^[. ]+|[. ]+$/g, '');
+  // Leave room for the fixed prefix/extension under common 255-byte limits.
+  let recipient = '';
+  const encoder = new TextEncoder();
+  for (const character of safe) {
+    if (encoder.encode(recipient + character).length > 160) break;
+    recipient += character;
+  }
+  recipient = recipient.replace(/[. ]+$/g, '');
+  return `Santa-Radio-Nice-List-Certificate-${recipient || 'Recipient'}.pdf`;
+}
 
 async function loadAssets() {
   if (!assets) {
@@ -27,7 +48,7 @@ export function fitCertificateName(name, font) {
   }
   // Match pdf-lib's actual glyph placement: glyph advances, without GPOS
   // kerning/offsets. Measure ink bounds (not just font-wide ascent/descent).
-  const { glyphs } = font.layout(name);
+  const { glyphs } = font.layout(name, { ...fontFeatures });
   let advance = 0;
   let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
   for (const glyph of glyphs) {
@@ -42,21 +63,25 @@ export function fitCertificateName(name, font) {
     advance += glyph.advanceWidth;
   }
   if (!Number.isFinite(minX) || maxX <= minX) throw new Error('Empty certificate name');
-  // Baseline is 96 mm from the top, within the 77–101 mm safe area.
-  const size = Math.min(mm(11.3),
+  // Double the original nominal size. Fit ink uniformly, including script
+  // flourishes and accents, within the unchanged 77–101 mm name area.
+  const size = Math.min(mm(22.6),
     mm(221) * font.unitsPerEm / (maxX - minX),
-    maxY > 0 ? mm(19) * font.unitsPerEm / maxY : Infinity,
-    minY < 0 ? mm(5) * font.unitsPerEm / -minY : Infinity);
+    mm(24) * font.unitsPerEm / (maxY - minY));
   const scale = size / font.unitsPerEm;
+  // Retain the approved baseline where possible; move it only enough to
+  // contain tall accents or deep script descenders.
+  const y = Math.max(mm(109) - minY * scale,
+    Math.min(mm(114), mm(133) - maxY * scale));
   return {
     size,
     x: mm(148.5) - (minX + maxX) * scale / 2,
-    y: mm(210 - 96),
+    y,
     bounds: {
       left: mm(148.5) - (maxX - minX) * scale / 2,
       right: mm(148.5) + (maxX - minX) * scale / 2,
-      bottom: mm(210 - 96) + minY * scale,
-      top: mm(210 - 96) + maxY * scale,
+      bottom: y + minY * scale,
+      top: y + maxY * scale,
     },
   };
 }
@@ -81,9 +106,8 @@ async function buildCertificate(name, [master, fontBytes]) {
   if (Math.abs(page.getWidth() - mm(297)) > .1 ||
       Math.abs(page.getHeight() - mm(210)) > .1) throw new Error('Unexpected certificate size');
   pdf.registerFontkit(fontkit);
-  // This supplied static instance has composite glyphs that fontkit's subset
-  // writer does not preserve reliably. Embed it whole so every letter renders.
-  const font = await pdf.embedFont(fontBytes, { subset: false });
+  // Keep the supplied script font whole, including composite accented glyphs.
+  const font = await pdf.embedFont(fontBytes, { subset: false, features: { ...fontFeatures } });
   page.drawText(name, {
     x: fitted.x, y: fitted.y, size: fitted.size, font,
     color: rgb(241 / 255, 217 / 255, 149 / 255),

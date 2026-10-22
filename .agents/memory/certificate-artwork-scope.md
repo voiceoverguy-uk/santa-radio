@@ -13,3 +13,9 @@ Embed the supplied font in full rather than subsetting it.
 **Why:** The fontkit subset writer omitted visible letters from this particular supplied static font even though PDF text extraction returned the correct name. Full embedding rendered correctly.
 
 **How to apply:** Verify the actual rasterised output, not only ToUnicode extraction. Keep full embedding unless a replacement implementation is visually checked with normal, long and accented/punctuated names.
+
+Font changes must preserve both the visible name and its extracted PDF text.
+
+**Why:** The supplied script font could render contextual ligatures correctly while PDF extraction substituted unrelated Unicode letters. A visual-only check would miss incorrect spelling for copying and assistive readers.
+
+**How to apply:** When changing fonts or shaping options, compare extracted canonical names as well as actual ink bounds and rasterised PDFs, including long names containing common letter pairs.
