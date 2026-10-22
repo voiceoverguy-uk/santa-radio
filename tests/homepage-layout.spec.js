@@ -2,8 +2,8 @@ import { test, expect } from '@playwright/test';
 
 test('homepage keeps its desktop and mobile section order without the paused video promotion', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
-  const desktop = ['hero', 'partnership-strip', 'santa-message-section', 'tracker-banner', 'mugshots-preview', 'soundboard', 'youtube-section', 'contact-section'];
-  const mobile = ['hero', 'partnership-strip', 'santa-message-section', 'tracker-banner', 'soundboard', 'youtube-section', 'mugshots-preview', 'contact-section'];
+  const desktop = ['hero', 'partnership-strip', 'santa-message-section', 'tracker-banner', 'soundboard', 'santa-dash-promo', 'mugshots-preview', 'youtube-section', 'contact-section'];
+  const mobile = ['hero', 'partnership-strip', 'santa-message-section', 'tracker-banner', 'soundboard', 'santa-dash-promo', 'youtube-section', 'mugshots-preview', 'contact-section'];
   for (const width of [1280, 768, 767, 390]) {
     await page.setViewportSize({ width, height: 900 });
     const order = await page.locator('.home-page > section').evaluateAll(sections =>
@@ -99,7 +99,7 @@ test('homepage keeps the countdown in the hero and plain Santa text in Contact S
   await expect(contact.getByRole('link', { name: 'Get in touch', exact: true })).toHaveAttribute('href', '/submit-a-song');
   await expect(page.locator('.footer-links').getByRole('link', { name: 'Submit your song', exact: true })).toHaveAttribute('href', '/submit-a-song?mode=song');
   await expect(page.locator('.santa-note')).toHaveCount(1);
-  await expect(hero.getByRole('link', { name: 'FREE Santa Message', exact: true })).toHaveAttribute('href', '/free-santa-message');
+  await expect(hero.getByRole('link', { name: 'FREE Santa Message', exact: true })).toHaveAttribute('href', '#santa-messages');
   const before = await hero.locator('.countdown-unit').last().textContent();
   await expect.poll(() => hero.locator('.countdown-unit').last().textContent()).not.toBe(before);
   for (const width of [1280, 768, 767, 430, 390, 320]) {

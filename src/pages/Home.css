@@ -105,6 +105,101 @@
   outline: 2px solid var(--cream);
   outline-offset: 4px;
 }
+.santa-dash-promo {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(32px, 5vw, 58px) max(6vw, 24px);
+  border-block: 1px solid #d4af3750;
+  background:
+    radial-gradient(ellipse at 50% 0%, #2e553b80 0%, transparent 58%),
+    linear-gradient(145deg, #10291f, #091c17 70%);
+}
+.santa-dash-promo__inner {
+  width: 100%;
+  max-width: 1160px;
+  margin: 0 auto;
+  text-align: center;
+}
+.santa-dash-promo__eyebrow {
+  margin-bottom: 8px;
+  color: var(--gold-light);
+  font-family: 'Cinzel',serif;
+  font-size: .62rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+}
+.santa-dash-promo__title {
+  margin: 0 0 22px;
+  color: var(--cream);
+  font-size: clamp(1.35rem, 3vw, 2rem);
+  line-height: 1.3;
+}
+.santa-dash-promo__artwork-link {
+  display: block;
+  width: 100%;
+  border: 1px solid #d4af3770;
+  background: #071a20;
+  box-shadow: 0 18px 48px #030d0b70;
+}
+.santa-dash-promo__artwork-link:focus-visible {
+  outline: 2px solid var(--gold-light);
+  outline-offset: 5px;
+}
+.santa-dash-promo__artwork-stage {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1600 / 554;
+}
+.santa-dash-promo__artwork {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.santa-dash-promo__artwork--first {
+  animation: santa-dash-first 8s ease-in-out infinite;
+}
+.santa-dash-promo__artwork--second {
+  animation: santa-dash-second 8s ease-in-out infinite;
+}
+@keyframes santa-dash-first {
+  0%, 46% { opacity: 1; }
+  54%, 96% { opacity: 0; }
+  100% { opacity: 1; }
+}
+@keyframes santa-dash-second {
+  0%, 46% { opacity: 0; }
+  54%, 96% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.santa-dash-promo__download {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  margin-top: 20px;
+  padding: 11px 20px;
+  border: 1px solid #d4af37;
+  border-radius: 2px;
+  background: #172f23;
+  color: var(--cream);
+  font-family: 'Cinzel',serif;
+  font-size: .76rem;
+  line-height: 1.45;
+  transition: transform 180ms ease, background-color 180ms ease;
+}
+.santa-dash-promo__download:hover {
+  transform: translateY(-2px);
+  background: #23432f;
+}
+.santa-dash-promo__download:focus-visible {
+  outline: 2px solid var(--gold-light);
+  outline-offset: 4px;
+}
 .hero-snow { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
 .hero-snow i { position: absolute; left: var(--x); top: -10px; width: 3px; height: 3px; border-radius: 50%; background: #fff8e79c; animation: snowfall var(--duration) var(--delay) linear infinite; }
 .hero-aurora { position: absolute; top: 0; left: 0; width: 100%; height: 45%; background: radial-gradient(ellipse at 45% 0%,#84b48820,transparent 65%); animation: aurora 22s ease-in-out infinite alternate; pointer-events: none; }
@@ -122,8 +217,7 @@ html[data-effects="off"] .hero-snow,html[data-effects="off"] .hero-aurora { disp
 .countdown-unit span { display: block; font-size: .54rem; text-transform: uppercase; letter-spacing: .15em; color: var(--muted); margin-top: 7px; }
 @media (min-width: 768px) {
   .home-page { display: grid; grid-template-columns: minmax(0, 1fr); }
-  .home-page > .mugshots-preview { grid-row: 5; }
-  .home-page > .santa-video-section { grid-row: 8; }
+  .home-page > .mugshots-preview { grid-row: 7; }
 }
 @media (max-width: 767px) {
   .partnership-strip { padding: 26px 24px 27px; }
@@ -133,6 +227,10 @@ html[data-effects="off"] .hero-snow,html[data-effects="off"] .hero-aurora { disp
   .partnership-strip__body { font-size: .78rem; }
   .partnership-strip__supporting { font-size: .62rem; line-height: 1.5; }
   .partnership-strip__button { align-self: flex-start; min-height: 44px; }
+  .santa-dash-promo { padding: 34px 16px 38px; }
+  .santa-dash-promo__title { margin-bottom: 16px; }
+  .santa-dash-promo__eyebrow { font-size: .53rem; }
+  .santa-dash-promo__download { max-width: 100%; padding-inline: 16px; font-size: .69rem; }
   .hero { display: block; min-height: 94dvh; padding: 128px 26px 140px; }
   .hero-content { display: block; padding: 0; }
   .hero-title { font-size: clamp(1.8rem,6vw,2.4rem); }
@@ -171,6 +269,8 @@ html[data-effects="off"] .hero-snow,html[data-effects="off"] .hero-aurora { disp
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hero-countdown .countdown-unit,.partnership-strip__button { transition: none; }
+  .hero-countdown .countdown-unit,.partnership-strip__button,.santa-dash-promo__download { transition: none; }
+  .santa-dash-promo__artwork { animation: none; }
+  .santa-dash-promo__artwork--second { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { .hero-snow,.hero-aurora { display: none; } }
