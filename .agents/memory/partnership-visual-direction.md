@@ -3,8 +3,8 @@ name: Partnership banner visual direction
 description: Owner-approved pattern direction for the Christmas partnership banner proposals.
 ---
 
-The partnership banner should look distinct from the normal snowy homepage background: muted gold Christmas wrapping-paper pattern on deep green, with matching thin gold lines at the top and bottom.
+The homepage partnership banner uses near-black Christmas wrapping paper with a restrained gold festive pattern and fine gold top and bottom edges. Keep all banner copy and the call-to-action label white; do not extend this styling to app advertising placements.
 
-**Why:** The owner preferred the gold patterned proposal to the reused village scenery, saying “yes better thank you”, then requested a wrapping-paper treatment and a top line matching the bottom.
+**Why:** The owner explicitly requested a black-and-gold restyle with white writing while preserving the existing partnership content and navigation.
 
-**How to apply:** Preserve this direction when refining the partnership banner. The owner subsequently explicitly approved website implementation and chose the existing general contact form for enquiries, not a separate advertising enquiry workflow. Keep app advertising placements and publishing separate from this homepage invitation.
+**How to apply:** Preserve the existing general contact form routing and analytics interaction. Keep app advertising placements and publishing separate from this homepage invitation.

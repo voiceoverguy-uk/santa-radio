@@ -41,6 +41,11 @@ test('partnership banner preserves the approved copy and fits desktop and narrow
         width: box.width, adjacent: Math.abs(previous.bottom - box.top) < 1 && Math.abs(next.top - box.bottom) < 1,
         fits: texts.every(Boolean), topBorder: style.borderTopWidth, bottomBorder: style.borderBottomWidth,
         topColour: style.borderTopColor, bottomColour: style.borderBottomColor,
+        backgroundColour: style.backgroundColor,
+        copyColours: [...element.querySelectorAll('h2, p, a')].map(node => getComputedStyle(node).color),
+        buttonColour: getComputedStyle(element.querySelector('a')).color,
+        buttonBackground: getComputedStyle(element.querySelector('a')).backgroundColor,
+        pattern: style.backgroundImage,
       };
     });
     expect(geometry.width).toBe(width);
@@ -49,6 +54,12 @@ test('partnership banner preserves the approved copy and fits desktop and narrow
     expect(geometry.topBorder).toBe('1px');
     expect(geometry.bottomBorder).toBe('1px');
     expect(geometry.topColour).toBe(geometry.bottomColour);
+    expect(geometry.backgroundColour).toBe('rgb(11, 11, 11)');
+    expect(geometry.copyColours.every(colour => colour === 'rgb(255, 255, 255)')).toBe(true);
+    expect(geometry.buttonColour).toBe('rgb(255, 255, 255)');
+    expect(geometry.buttonBackground).toBe('rgb(33, 26, 14)');
+    expect(geometry.pattern).toContain('data:image/svg+xml');
+    expect(geometry.pattern).toContain('%23C6A85C');
     const titleBox = await heading.boundingBox();
     const buttonBox = await button.boundingBox();
     if (width >= 1024) expect(buttonBox.x).toBeGreaterThan(titleBox.x + titleBox.width);
@@ -60,6 +71,18 @@ test('partnership banner preserves the approved copy and fits desktop and narrow
       await page.screenshot({ path: `generated-artifacts/partnership-checks/${width}.png` });
     }
   }
+
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const reducedMotionStyles = await button.evaluate(element => ({
+    color: getComputedStyle(element).color,
+    background: getComputedStyle(element).backgroundColor,
+    transitionDuration: getComputedStyle(element).transitionDuration,
+    pattern: getComputedStyle(element.closest('.partnership-strip')).backgroundImage,
+  }));
+  expect(reducedMotionStyles.color).toBe('rgb(255, 255, 255)');
+  expect(reducedMotionStyles.background).toBe('rgb(33, 26, 14)');
+  expect(reducedMotionStyles.transitionDuration).toBe('0s');
+  expect(reducedMotionStyles.pattern).toContain('%23C6A85C');
 });
 
 test('keyboard activation opens the existing general contact form', async ({ page }) => {
