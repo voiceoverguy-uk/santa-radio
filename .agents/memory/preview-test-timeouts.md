@@ -14,6 +14,12 @@ Browser checks can also time out during clock setup or screenshot capture, befor
 
 **How to apply:** Distinguish infrastructure timeouts from failed behaviour assertions. After a few different approaches, stop repeating the checks, use cheaper build or source checks where available, and clearly report that browser verification did not complete.
 
+Consent prompts can intercept clicks in unrelated UI tests and make existing end-to-end checks fail before reaching their intended interaction.
+
+**Why:** A player minimisation test's heading click was intercepted by the marketing-consent panel in a fresh browser session.
+
+**How to apply:** Check the captured blocker before attributing a browser-test failure to the changed feature; initialize consent state in tests that need unobstructed page interaction.
+
 Installed testing guidance can describe a tester configuration that the current callback rejects.
 
 **Why:** The documented testing configuration was rejected as an unknown kind in this workspace.

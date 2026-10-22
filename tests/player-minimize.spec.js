@@ -84,7 +84,7 @@ test('player minimises, stays small while browsing, and restores without audio i
   });
   await dock.getByRole('button', { name: 'Minimise radio player' }).click();
   await expect(dock.getByRole('slider')).toBeHidden();
-  await expect(dock.getByRole('button', { name: 'Coming up' })).toBeHidden();
+  await expect(dock.getByRole('button', { name: 'Playing Next' })).toBeHidden();
   await expect(dock.getByRole('button', { name: 'Listen Live', exact: true })).toBeVisible();
   expect((await dock.boundingBox()).height).toBeLessThan(originalHeight / 2);
   await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Music', exact: true }).click();

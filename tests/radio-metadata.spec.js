@@ -171,7 +171,8 @@ test('browser labels retained upcoming songs, expires them and recovers after ne
   }));
   await page.goto('/apps', { waitUntil: 'domcontentloaded' });
   const dock = page.locator('.radio-dock');
-  await dock.getByRole('button', { name: /coming up/i }).click();
+  await dock.getByRole('button', { name: 'Playing Next' }).click();
+  await expect(dock.getByRole('region', { name: 'Playing Next on Santa Radio' })).toBeVisible();
   await expect(dock).toContainText('Retained Song');
   fail = true;
   await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
@@ -199,11 +200,33 @@ test('tracks render, queue expands, refresh recovers and navigation keeps audio'
   await page.goto('/');
   const dock = page.getByRole('complementary', { name: 'Santa Radio player' });
   await expect(dock).toContainText('Christmas Song');
-  const toggle = dock.getByRole('button', { name: /coming up/i });
+  const toggle = dock.getByRole('button', { name: 'Playing Next' });
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
   await toggle.click();
   await expect(dock).toContainText('Upcoming Song');
   await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  const queue = dock.getByRole('region', { name: 'Playing Next on Santa Radio' });
+  await expect(queue).toBeVisible();
+  await toggle.click();
+  await expect(queue).toBeHidden();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await toggle.click();
+  await expect(queue).toBeVisible();
+  for (const viewport of [{ width: 1280, height: 800 }, { width: 390, height: 844 }]) {
+    await page.setViewportSize(viewport);
+    const fits = await page.evaluate(() => {
+      const label = document.querySelector('.radio-upcoming-toggle span');
+      const toggle = label?.closest('button');
+      if (!label || !toggle) return false;
+      const textRange = document.createRange();
+      textRange.selectNodeContents(label);
+      const textBounds = textRange.getBoundingClientRect();
+      const buttonBounds = toggle.getBoundingClientRect();
+      return textBounds.left >= buttonBounds.left && textBounds.right <= buttonBounds.right;
+    });
+    expect(fits).toBe(true);
+  }
+  await page.setViewportSize({ width: 1280, height: 800 });
   await page.evaluate(() => { window.originalAudio = document.querySelector('audio'); document.dispatchEvent(new Event('visibilitychange')); });
   failed = true;
   await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
