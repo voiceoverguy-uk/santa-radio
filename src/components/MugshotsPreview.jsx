@@ -4,6 +4,7 @@ import Portrait from './Portrait.jsx';
 import './MugshotsPreview.css';
 import mugshotsData from '../data/mugshots.ts';
 import { selectHomepageMugshots } from '../data/homepageMugshots.js';
+import { mugshotShutterEvents } from '../audio/mugshotShutter.js';
 
 export default function MugshotsPreview() {
   const celebs = useMemo(() => selectHomepageMugshots(mugshotsData), []);
@@ -29,7 +30,7 @@ export default function MugshotsPreview() {
         </p>
         <div className="mugshots-grid">
           {celebs.map(celeb => (
-            <Link key={celeb.song} to={`/mugshots/${celeb.song}`} className="mug-card">
+            <Link key={celeb.song} to={`/mugshots/${celeb.song}`} className="mug-card" {...mugshotShutterEvents}>
               <Portrait src={celeb.image} alt={celeb.artist} className="mug-photo" />
               <div className="mug-info">
                 <strong>{celeb.artist}</strong>

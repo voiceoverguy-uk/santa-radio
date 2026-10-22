@@ -36,3 +36,4 @@
 - [App Preview compatibility](app-preview-compatibility.md) — Dimensions alone are insufficient; check Apple's H.264 level, bitrate and audio requirements before exporting.
 - [Browser engine environment](browser-engine-environment.md) — Linux WebKit may need multimedia plugins even for idle audio; empty-page launch is not route verification.
 - [Personalised video promotion](personalised-video-promotion.md) — Homepage section is temporarily withdrawn; preserve its code until the owner asks to restore it.
+- [Mugshot sound preferences](mugshot-sound-preferences.md) — Snow/effects and reduced-motion controls are visual preferences, not a site-wide audio mute.
