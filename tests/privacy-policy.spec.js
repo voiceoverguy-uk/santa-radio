@@ -69,7 +69,8 @@ test('policy describes the confirmed Android app without borrowing unverified iO
   for (const text of [
     'without creating an account',
     'uses HTTPS connections',
-    'www.santaradio.co.uk',
+    'receive live audio from Citrus3 at global.citrus3.com:8164',
+    'separately requests current and upcoming song information and artist artwork from Santa Radio at www.santaradio.co.uk over HTTPS',
     'your IP address',
     'App preferences and cached content are stored on your device and are not uploaded to us',
     'does not include advertising or analytics SDKs',
