@@ -73,7 +73,6 @@ export default function Home() {
       <SantaMessageForm />
       <SantaTrackerBanner />
       {/* Personalised video promotion temporarily removed; SantaVideoSection and its styles are retained for restoration. */}
-      <Soundboard />
       <section className="santa-dash-promo" aria-labelledby="santa-dash-promo-title">
         <div className="santa-dash-promo__inner">
           <p className="santa-dash-promo__eyebrow">A festive rooftop adventure</p>
@@ -116,6 +115,7 @@ export default function Home() {
           </a>
         </div>
       </section>
+      <Soundboard />
       <YouTubeSection />
       <MugshotsPreview />
       <ContactSection />

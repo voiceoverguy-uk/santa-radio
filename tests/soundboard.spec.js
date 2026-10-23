@@ -4,6 +4,9 @@ test('all soundboard buttons share the gold glow without changing size', async (
   await page.goto('/');
   const rejectCookies = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await rejectCookies.isVisible()) await rejectCookies.click();
+  // Keep automation's scrolling from moving the target out from under the
+  // pointer mid-hover; this test checks the glow, not smooth scrolling.
+  await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
   const buttons = page.locator('.soundboard-btn');
   await expect(buttons).toHaveCount(20);
   for (const button of await buttons.all()) {

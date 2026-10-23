@@ -2,14 +2,24 @@ import { test, expect } from '@playwright/test';
 
 test('homepage keeps its desktop and mobile section order without the paused video promotion', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
-  const desktop = ['hero', 'partnership-strip', 'santa-message-section', 'tracker-banner', 'soundboard', 'santa-dash-promo', 'mugshots-preview', 'youtube-section', 'contact-section'];
-  const mobile = ['hero', 'partnership-strip', 'santa-message-section', 'tracker-banner', 'soundboard', 'santa-dash-promo', 'youtube-section', 'mugshots-preview', 'contact-section'];
+  const desktop = ['hero', 'partnership-strip', 'santa-message-section', 'tracker-banner', 'santa-dash-promo', 'soundboard', 'mugshots-preview', 'youtube-section', 'contact-section'];
+  const mobile = ['hero', 'partnership-strip', 'santa-message-section', 'tracker-banner', 'santa-dash-promo', 'soundboard', 'youtube-section', 'mugshots-preview', 'contact-section'];
   for (const width of [1280, 768, 767, 390]) {
     await page.setViewportSize({ width, height: 900 });
     const order = await page.locator('.home-page > section').evaluateAll(sections =>
       sections.map(section => ({ name: section.classList[0], top: section.getBoundingClientRect().top }))
         .sort((a, b) => a.top - b.top).map(section => section.name));
     expect(order).toEqual(width >= 768 ? desktop : mobile);
+    await expect(page.locator('.home-page > .santa-dash-promo')).toHaveCount(1);
+    await expect(page.locator('.home-page > .soundboard')).toHaveCount(1);
+    await expect(page.locator('.tracker-banner + .santa-dash-promo + .soundboard')).toHaveCount(1);
+    const bounds = await page.locator('.home-page > .tracker-banner, .home-page > .santa-dash-promo, .home-page > .soundboard')
+      .evaluateAll(sections => sections.map(section => {
+        const rect = section.getBoundingClientRect();
+        return { top: rect.top, bottom: rect.bottom };
+      }));
+    expect(bounds[1].top).toBeCloseTo(bounds[0].bottom, 0);
+    expect(bounds[2].top).toBeCloseTo(bounds[1].bottom, 0);
     expect(await page.locator('.home-page > section').evaluateAll(sections =>
       sections.slice(0, 4).map(section => section.classList[0]))).toEqual(['hero', 'partnership-strip', 'santa-message-section', 'tracker-banner']);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
