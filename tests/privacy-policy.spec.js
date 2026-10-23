@@ -25,7 +25,7 @@ test('policy covers the confirmed native app separately from website marketing',
   const app = page.getByRole('region', { name: 'Christmas Radio UK — native iPhone and iPad app, version 35.0' });
   await expect(app).toBeVisible();
   await expect(article).not.toContainText('not separate apps');
-  await expect(article.locator('time')).toHaveAttribute('datetime', '2026-10-21');
+  await expect(article.locator('time')).toHaveAttribute('datetime', '2026-10-23');
   await expect(article).toContainText('The homepage YouTube TV loads automatically on a first visit');
   await expect(article).toContainText('turning it off cannot erase data already sent or third-party cookies');
   for (const text of [
@@ -55,11 +55,37 @@ test('policy covers the confirmed native app separately from website marketing',
   await expect(app).not.toContainText('[Before publishing');
   await expect(app).not.toContainText('does not contain advertising or analytics SDKs');
   await expect(app).not.toContainText('no tracking');
-  await expect(article).toContainText('Older Santa Radio iPhone or iPad apps, tvOS apps');
+  await expect(article).toContainText('Older Santa Radio iPhone or iPad apps, older Android app versions, tvOS apps');
   await expect(article).toContainText('not a microphone recording made by you or your child');
   await expect(article).toContainText('The current website does not offer microphone recording');
   await expect(article).toContainText('normally respond within one month');
   await expect(article).toContainText('We do not sell personal data.');
+});
+
+test('policy describes the confirmed Android app without borrowing unverified iOS or provider claims', async ({ page }) => {
+  await page.goto('/privacy-policy');
+  const app = page.getByRole('region', { name: 'Christmas Radio UK — Android app' });
+  await expect(app).toBeVisible();
+  for (const text of [
+    'without creating an account',
+    'uses HTTPS connections',
+    'www.santaradio.co.uk',
+    'your IP address',
+    'App preferences and cached content are stored on your device and are not uploaded to us',
+    'does not include advertising or analytics SDKs',
+    'programming is broadcast without adverts',
+    'The Tracker is optional and opens in your external browser',
+    'intended for listeners of all ages',
+    'may maintain connection logs or listener statistics',
+    'do not specify a fixed retention period where it has not been confirmed',
+    'rights and complaints information elsewhere',
+  ]) await expect(app).toContainText(text);
+  await expect(app).not.toContainText('AirPlay and CarPlay');
+  await expect(app).not.toContainText('microphone, camera, contacts');
+  await expect(app).not.toContainText('Vercel and Citrus3');
+  await expect(app).toContainText('not a claim of compliance with children’s privacy laws or Google Play Families requirements');
+  await expect(app.getByRole('link', { name: 'email us about app privacy' }))
+    .toHaveAttribute('href', 'mailto:santa@santaradio.co.uk');
 });
 
 test('footer opens a readable privacy policy with separate message access and news consent', async ({ page }) => {

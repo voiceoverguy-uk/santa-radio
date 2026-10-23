@@ -12,9 +12,9 @@ export default function PrivacyPolicy() {
     <article className="privacy-content">
       <p className="eyebrow">Santa Radio</p>
       <h1>Privacy Policy</h1>
-      <p className="privacy-date">Updated <time dateTime="2026-10-21">21 October 2026</time></p>
+        <p className="privacy-date">Updated <time dateTime="2026-10-23">23 October 2026</time></p>
       <p>The Santa Radio website and Christmas Radio UK app are operated by VoiceoverGuy Ltd. For privacy questions, email <a href="mailto:santa@santaradio.co.uk">santa@santaradio.co.uk</a>.</p>
-      <p>This notice covers the current Santa Radio website and the newly rebuilt Christmas Radio UK native app for iPhone and iPad, version 35.0. The app-specific section below explains how that version handles information. Website-only features, including forms, Santa audio messages, embedded videos and optional analytics or marketing cookies, are separate from the native app. External services may also have their own privacy notices.</p>
+        <p>This notice covers the current Santa Radio website and the Christmas Radio UK native apps for iPhone and iPad, version 35.0, and Android. The app-specific sections below explain how each app handles information. Website-only features, including forms, Santa audio messages, embedded videos and optional analytics or marketing cookies, are separate from the native apps. External services may also have their own privacy notices.</p>
       <p>You can browse and listen without an account. We do not sell personal data.</p>
       <CookiePolicySection />
 
@@ -46,8 +46,27 @@ export default function PrivacyPolicy() {
         <p>For questions about the app’s handling of information, or to exercise applicable data-protection rights, <a href="mailto:santa@santaradio.co.uk">email us about app privacy</a>. The rights and complaints information elsewhere in this policy also applies to the app.</p>
       </section>
 
+      <section aria-labelledby="android-radio-privacy">
+        <h2 id="android-radio-privacy">Christmas Radio UK — Android app</h2>
+        <h3>Using the app</h3>
+        <p>The app plays the live Christmas Radio stream and displays current and upcoming song information and artist artwork. You can listen without creating an account or providing your name, email address or other contact details.</p>
+        <p>The app uses HTTPS connections to receive the radio stream and to request current and upcoming song information and artist artwork from Santa Radio at www.santaradio.co.uk. These requests necessarily disclose your IP address and normal technical request information to the relevant services. This can include request times, requested resources, connection duration and device or networking-software information supplied with a request. Stream, metadata and artwork requests may indicate when you listen or which information and images you request.</p>
+        <p>The app does not include advertising or analytics SDKs, and Santa Radio programming is broadcast without adverts. These facts do not mean that no technical information is processed to provide the stream, song information or artwork.</p>
+
+        <h3>Information stored on your device</h3>
+        <p>App preferences and cached content are stored on your device and are not uploaded to us. Local storage is separate from technical information that streaming, website or hosting services may receive through your requests. Removing the app does not delete information already retained by those services.</p>
+
+        <h3>Service providers and the Tracker</h3>
+        <p>The services needed to provide the stream, song information and artwork may maintain connection logs or listener statistics. Provider-specific retention periods, processing locations and any international transfers or safeguards depend on the applicable service arrangements. We do not specify a fixed retention period where it has not been confirmed. Contact us for information about arrangements relevant to this service.</p>
+        <p>The Tracker is optional and opens in your external browser. The website’s privacy information and cookie choices apply to that visit. External services may also have their own privacy notices. Using the app does not enrol you in marketing.</p>
+        <p>The app is intended for listeners of all ages. This describes its intended audience and is not a claim of compliance with children’s privacy laws or Google Play Families requirements.</p>
+
+        <h3>Privacy questions and your rights</h3>
+        <p>For questions about the app’s handling of information, or to exercise applicable data-protection rights, <a href="mailto:santa@santaradio.co.uk">email us about app privacy</a>. The rights and complaints information elsewhere in this policy also applies to the app.</p>
+      </section>
+
       <h2>Other Santa Radio and tvOS apps</h2>
-      <p>Older Santa Radio iPhone or iPad apps, tvOS apps and other linked apps may have different features, permissions and data practices. The version 35.0 description above must not be applied to them automatically. In particular, it is not a claim that no Santa Radio app has ever used a microphone, camera, photo library, selfies or voice-message recordings.</p>
+      <p>Older Santa Radio iPhone or iPad apps, older Android app versions, tvOS apps and other linked apps may have different features, permissions and data practices. The descriptions above must not be applied to them automatically. In particular, they are not claims that no Santa Radio app has ever used a microphone, camera, photo library, selfies or voice-message recordings.</p>
       <p>Check the privacy information and permission prompts for the particular app and version you use. If an older app links to this page and you need information about a feature not described here, contact us with its name, version and platform. Device settings let you review permissions, but withdrawing permission does not erase recordings or information already submitted to a service.</p>
 
       <h2>When you contact us</h2>

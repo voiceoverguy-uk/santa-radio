@@ -16,6 +16,12 @@ The owner confirmed the supplied Christmas Radio UK privacy draft accurately des
 
 **How to apply:** Treat these as owner-confirmed product facts, not evidence of an iOS code audit. Do not equate local caching with server-side data collection or assume that providers retain no logs. Vercel hosting was confirmed, but provider log retention, lawful bases and transfer safeguards still require verification before a compliance-complete notice or App Store disclosure.
 
+The owner supplied confirmed facts for the separate Christmas Radio UK Android app: account-free listening; HTTPS radio streaming and song metadata/artwork requests from www.santaradio.co.uk; local-only preferences and cache; no advertising or analytics SDKs; advert-free station programming; an optional Tracker that opens in an external browser; and an all-ages intended audience.
+
+**Why:** These facts came from the owner's Android privacy draft, but this workspace contains no Android app source or release manifest to verify them.
+
+**How to apply:** Do not infer exact absent Android permissions from the iOS list; the supplied draft did not name them. Do not claim provider logging, retention, purposes, lawful bases, processing locations or transfer safeguards are verified, or imply children's-law or Google Play Families compliance. Recheck shipped endpoints and included SDKs before treating the description as build-verified.
+
 Future news signup must be voluntary and specifically for Santa Radio news/information, with subscriptions kept until unsubscribe. No marketing provider has been selected; Mailchimp was only an example.
 
 **Why:** These are explicit owner instructions, not evidence that signup or a delivery provider is implemented.
