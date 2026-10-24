@@ -67,9 +67,12 @@ test('HEAD and OPTIONS work, missing images are 404 not the HTML homepage', asyn
   assert.equal(missing.status, 404);
 });
 
-test('built Elvis page and SSR share the song image without altering other recordings', async () => {
+test('built pages and SSR share verified song images without altering other recordings', async () => {
   const { render } = await import('../dist/server/entry-server.js');
   for (const [path, artwork] of [
+    ['/christmas-artist/24-mariah-carey-all-i-want-for-christmas-is-you', '/artist-artwork/mariah-carey-all-i-want-for-christmas-is-you.webp'],
+    ['/christmas-artist/25-mariah-carey-oh-santa', '/artist-artwork/mariah-carey.webp'],
+    ['/christmas-artist/319-michael-buble-all-i-want-for-christmas-is-you', '/artist-artwork/michael-buble.webp'],
     ['/christmas-artist/61-chris-de-burgh-a-spaceman-came-travelling', '/artist-artwork/chris-de-burgh.webp'],
     ['/christmas-artist/399-elvis-presley-blue-christmas', '/artist-artwork/elvis-presley-blue-christmas.webp'],
     ['/christmas-artist/260-elvis-presley-santa-bring-my-baby-back-to-me', '/artist-artwork/elvis-presley.webp'],
@@ -87,9 +90,13 @@ test('built Elvis page and SSR share the song image without altering other recor
       assert.ok(html.includes(`"contentUrl":"https://www.santaradio.co.uk${artwork}"`), path);
     }
   }
-  const image = await fetch(new URL('/artist-artwork/elvis-presley-blue-christmas.webp', base));
-  assert.equal(image.status, 200);
-  assert.equal(image.headers.get('content-type'), 'image/webp');
+  for (const path of ['/artist-artwork/elvis-presley-blue-christmas.webp',
+    '/artist-artwork/mariah-carey-all-i-want-for-christmas-is-you.webp']) {
+    const image = await fetch(new URL(path, base));
+    assert.equal(image.status, 200);
+    assert.equal(image.headers.get('content-type'), 'image/webp');
+    assert.deepEqual(Buffer.from(await image.arrayBuffer()), await readFile(`public${path}`));
+  }
 });
 
 test('built Chris De Burgh delivery image matches the replacement advertised in the artist feed', async () => {

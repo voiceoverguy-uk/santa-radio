@@ -4,6 +4,11 @@ import { normalizeTrackText } from './matchLiveSong.js';
 // Website-only assignments, never added to the artist-based mobile feed.
 // Verify the catalogue ID, artist and title before assigning a supplied image.
 export const songPortraits = Object.freeze({
+  24: Object.freeze({
+    artist: 'Mariah Carey',
+    title: 'All I Want For Christmas Is You',
+    path: '/artist-artwork/mariah-carey-all-i-want-for-christmas-is-you.webp',
+  }),
   75: Object.freeze({
     artist: 'Ariana Grande',
     title: 'Last Christmas',

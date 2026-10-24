@@ -11,12 +11,18 @@ const elvisUsual = '/artist-artwork/elvis-presley.webp';
 const elvisPage = '/christmas-artist/399-elvis-presley-blue-christmas';
 const otherElvisPage = '/christmas-artist/260-elvis-presley-santa-bring-my-baby-back-to-me';
 const otherBluePage = '/christmas-artist/116-glen-campbell-blue-christmas';
+const mariahSpecial = '/artist-artwork/mariah-carey-all-i-want-for-christmas-is-you.webp';
+const mariahUsual = '/artist-artwork/mariah-carey.webp';
+const mariahPage = '/christmas-artist/24-mariah-carey-all-i-want-for-christmas-is-you';
+const ohSantaPage = '/christmas-artist/25-mariah-carey-oh-santa';
+const michaelPage = '/christmas-artist/319-michael-buble-all-i-want-for-christmas-is-you';
 
 async function expectSquareArtwork(image, path) {
   await expect(image).toHaveAttribute('src', path);
   await image.scrollIntoViewIfNeeded();
-  await expect.poll(() => image.evaluate(el =>
-    el.complete && el.naturalWidth === 512 && el.naturalHeight === 512)).toBe(true);
+  const pixels = path === mariahUsual ? 500 : 512;
+  await expect.poll(() => image.evaluate((el, pixels) =>
+    el.complete && el.naturalWidth === pixels && el.naturalHeight === pixels, pixels)).toBe(true);
   const size = await image.evaluate(el => {
     const styles = getComputedStyle(el);
     return {
@@ -35,6 +41,92 @@ async function visit(page, path) {
 }
 
 for (const width of [1280, 390]) {
+  test(`Mariah artwork, catalogue isolation and sharing images are correct at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await visit(page, mariahPage);
+    await expectSquareArtwork(page.locator('.song-detail-artwork img'), mariahSpecial);
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('All I Want For Christmas Is You — Mariah Carey');
+    await expect(page.locator('.song-detail-artwork img')).toHaveAttribute('alt',
+      'Illustrated artwork for All I Want For Christmas Is You by Mariah Carey');
+    for (const selector of ['meta[property="og:image"]', 'meta[name="twitter:image"]']) {
+      await expect(page.locator(selector)).toHaveAttribute('content', `https://www.santaradio.co.uk${mariahSpecial}`);
+    }
+    await page.goto('/christmas-music');
+    await page.getByPlaceholder('Search for a song or artist').fill('Mariah Carey');
+    await expectSquareArtwork(page.locator(`a.song-card[href="${mariahPage}"] img`), mariahSpecial);
+    await expectSquareArtwork(page.locator(`a.song-card[href="${ohSantaPage}"] img`), mariahUsual);
+    await page.getByPlaceholder('Search for a song or artist').fill('All I Want For Christmas Is You');
+    await expectSquareArtwork(page.locator(`a.song-card[href="${michaelPage}"] img`), '/artist-artwork/michael-buble.webp');
+    for (const [path, artwork] of [[ohSantaPage, mariahUsual], [michaelPage, '/artist-artwork/michael-buble.webp']]) {
+      await page.goto(path);
+      await expectSquareArtwork(page.locator('.song-detail-artwork img'), artwork);
+      await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', `https://www.santaradio.co.uk${artwork}`);
+    }
+  });
+
+  test(`live Mariah artwork matches only her recording and resets after failure at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.addInitScript(() => {
+      HTMLMediaElement.prototype.load = function () {};
+      HTMLMediaElement.prototype.pause = function () {};
+      HTMLMediaElement.prototype.play = function () { return Promise.resolve(); };
+    });
+    const state = { artist: 'Mariah Carey', title: 'All I Want For Christmas Is You' };
+    await page.route('**/api/radio-metadata*', route => route.fulfill({
+      json: { current: state, currentStatus: 'ready', upcoming: [], upcomingStatus: 'ready' },
+    }));
+    await visit(page, '/');
+    await page.locator('.hero-actions').getByRole('button', { name: 'Listen Live', exact: true }).click();
+    const image = page.locator('.now-playing-artwork img');
+    const info = page.locator('.now-playing-artwork').getByRole('link');
+    await expectSquareArtwork(image, mariahSpecial);
+    await expect(info).toHaveAttribute('href', mariahPage);
+    for (const [artist, title, artwork, path] of [
+      ['Mariah Carey', 'Oh Santa', mariahUsual, ohSantaPage],
+      ['Michael Buble', 'All I Want For Christmas Is You', '/artist-artwork/michael-buble.webp', michaelPage],
+      ['Mariah Carey', 'All I Want For Christmas Is You', mariahSpecial, mariahPage],
+    ]) {
+      Object.assign(state, { artist, title });
+      await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+      await expectSquareArtwork(image, artwork);
+      await expect(info).toHaveAttribute('href', path);
+    }
+    // A decoded image may be cached; use error events for live-state recovery.
+    await image.dispatchEvent('error');
+    await expectSquareArtwork(image, mariahUsual);
+    await image.dispatchEvent('error');
+    await expectSquareArtwork(image, fallback);
+    await expect(info).toHaveAttribute('href', mariahPage);
+    state.title = 'Unknown recording';
+    await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+    await expectSquareArtwork(image, mariahUsual);
+    await expect(info).toHaveCount(0);
+    state.title = 'All I Want For Christmas Is You';
+    await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+    await expectSquareArtwork(image, mariahSpecial);
+  });
+
+  test(`Mariah failed artwork falls back to her portrait then Santa at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    let requests = 0;
+    await page.route(`**${mariahSpecial}`, route => { requests++; return route.abort(); });
+    await visit(page, mariahPage);
+    const image = page.locator('.song-detail-artwork img');
+    await expectSquareArtwork(image, mariahUsual);
+    await expect(image).toHaveAttribute('alt', 'Mariah Carey illustrated artwork');
+    await page.route(`**${mariahUsual}`, route => route.abort());
+    await page.reload();
+    await expectSquareArtwork(image, fallback);
+    await expect(image).toHaveAttribute('alt', /Santa Radio/);
+    expect(requests).toBeLessThanOrEqual(4);
+    const settled = requests;
+    await page.waitForTimeout(300);
+    expect(requests).toBe(settled);
+    await page.goto('/christmas-music');
+    await page.getByPlaceholder('Search for a song or artist').fill('Mariah Carey');
+    await expectSquareArtwork(page.locator(`a.song-card[href="${mariahPage}"] img`), fallback);
+  });
+
   test(`Elvis artwork, catalogue isolation and sharing images are correct at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await visit(page, elvisPage);

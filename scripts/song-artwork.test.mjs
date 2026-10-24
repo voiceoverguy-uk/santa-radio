@@ -19,6 +19,43 @@ const elvisBlue = songs.find(song => song.id === 399);
 const elvisSpecial = '/artist-artwork/elvis-presley-blue-christmas.webp';
 const elvisUsual = '/artist-artwork/elvis-presley.webp';
 
+test('Mariah illustration is restricted to the verified recording and website metadata', async () => {
+  const song = songs.find(song => song.id === 24);
+  const special = '/artist-artwork/mariah-carey-all-i-want-for-christmas-is-you.webp';
+  const usual = '/artist-artwork/mariah-carey.webp';
+  assert.equal(song.artist, 'Mariah Carey');
+  assert.equal(song.song, 'All I Want For Christmas Is You');
+  assert.equal(songArtwork(song), special);
+  assert.deepEqual(songArtworkCandidates(song), [special, usual, artistMapping.fallbackArtwork]);
+  for (const other of songs.filter(other => other.id !== 24)) {
+    assert.notEqual(songArtwork(other), special, `Unexpected assignment to ${other.id}`);
+  }
+  for (const changed of [
+    { ...song, id: 99999 },
+    { ...song, song: 'Oh Santa' },
+    { ...song, artist: 'Michael Buble' },
+    { artist: song.artist, song: song.song },
+  ]) {
+    assert.equal(songArtwork(changed), artistMapping.artistArtwork(changed.artist));
+  }
+  assert.equal(songArtwork(matchLiveSong({ artist: song.artist, title: song.song }).song), special);
+  const metadata = songMetadata(song);
+  assert.equal(metadata.image, `https://www.santaradio.co.uk${special}`);
+  assert.equal(metadata.graph.find(node => node['@type'] === 'ImageObject').contentUrl, metadata.image);
+  assert.equal(artworkAlt(song), `Illustrated artwork for ${song.song} by ${song.artist}`);
+  const original = await readFile('attached_assets/all-i-want-for-christmas-is-you_1792861390204.png');
+  assert.equal(createHash('sha256').update(original).digest('hex'),
+    '1195dfc1f6662b7196804979b7677391694a9a83811ef8a845d5ed7eecfb4228');
+  const image = await readFile(`public${special}`);
+  assert.equal(image.subarray(8, 12).toString(), 'WEBP');
+  assert.ok(image.length < 100000);
+  const feed = await buildArtworkFeed(artistMapping);
+  assert.equal(feed.artists['mariah carey'].path, usual);
+  assert.equal(feed.artists['mariah carey'].version,
+    '4bef6208657c34d9790d45bd150a1532bcabcc294cabeec25803440f4c18e607');
+  assert.ok(!JSON.stringify(feed).includes(special));
+});
+
 test('Chris De Burgh replacement is shared artist artwork, not a song-only override', async () => {
   const spaceman = songs.find(song => song.id === 61);
   const path = '/artist-artwork/chris-de-burgh.webp';
