@@ -36,6 +36,6 @@ test('production pre-rendered shared page defaults to general enquiry with accur
   const privacy = render('/privacy-policy');
   assert.ok(privacy.markup.includes('Song submissions'));
   assert.ok(privacy.markup.includes('do not open the message maker or give consent for marketing'));
-  assert.ok(privacy.markup.includes('same dedicated Brevo form'));
+   assert.ok(privacy.markup.includes('separate dedicated Brevo forms'));
   assert.ok(privacy.markup.includes('not verified delivery to our inbox'));
 });

@@ -1,19 +1,22 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './helpers/provider-test.js';
 import { readFileSync } from 'node:fs';
 import {
-  SONG_FORM_URL, SONG_REQUEST_TIMEOUT_MS, songCountries, validateSongFields, submitSong,
+  GENERAL_FORM_URL, SONG_FORM_URL, SONG_REQUEST_TIMEOUT_MS, songCountries, validateSongFields, submitSong,
 } from '../src/lib/songSubmission.js';
 import { MESSAGE_ACCESS_KEY } from '../src/lib/santaMessageAccess.js';
 import { brevoUrl, fillAccessForm, mockBrevo } from './helpers/message-access.js';
 
 const songUrl = `${SONG_FORM_URL}?isAjax=1`;
+const generalUrl = `${GENERAL_FORM_URL}?isAjax=1`;
+const destination = mode => mode === 'song' ? songUrl : generalUrl;
 const details = {
   FIRSTNAME: 'Testartist', LASTNAME: 'Example', EMAIL: 'artist@example.test',
   SONG_REQUEST: 'Test Artist — Christmas Song. https://example.test/listen A festive recording. Santa Radio promotion: https://example.test/promotion',
 };
 
-async function mockSong(page, json = { success: true }, status = 200) {
-  await page.route(songUrl, route => route.fulfill({
+async function mockSong(page, json = { success: true }, status = 200, mode = 'song') {
+  await page.route(destination(mode), route => route.fulfill({
     status, json, headers: { 'Access-Control-Allow-Origin': '*' },
   }));
 }
@@ -42,19 +45,20 @@ async function outgoing(request) {
 }
 
 test.beforeEach(async ({ page }) => {
-  // Catch ALL provider destinations before any page loads. No real contacts.
-  await page.route('https://*.sibforms.com/serve/**', route => route.fulfill({
-    json: { success: false, message: 'Intercepted test request.' },
-    headers: { 'Access-Control-Allow-Origin': '*' },
-  }));
+  // The automatic context guard blocks and fails unexpected provider POSTs.
   await page.route('**/api/radio-metadata*', route => route.fulfill({
     json: { available: false, current: null, upcoming: [] },
   }));
 });
 
-test('current supplied embed requires SONG_REQUEST at the unchanged dedicated endpoint', () => {
-  const embed = readFileSync('attached_assets/brevo_form_song_submission_1792592730052.rtf', 'utf8');
-  expect(embed).toContain(SONG_FORM_URL);
+test('latest song action is exact and distinct from unchanged general and Santa access destinations', () => {
+  const embed = readFileSync('attached_assets/Song_Suggestion_Form_1793023903195.rtf', 'utf8');
+  expect(embed.match(/action="([^"]+)"/)[1]).toBe(SONG_FORM_URL);
+  const previous = readFileSync('attached_assets/brevo_form_song_submission_1792592730052.rtf', 'utf8');
+  // The older RTF wraps the action in an RTF HYPERLINK field.
+  expect(previous.match(/action="[\s\S]*?(https:\/\/[^"}\s]+)/)[1]).toBe(GENERAL_FORM_URL);
+  expect(generalUrl).not.toBe(songUrl);
+  expect(generalUrl).not.toBe(brevoUrl);
   const textarea = embed.match(/<textarea\b[^>]*>/)[0];
   expect(textarea).toContain('name="SONG_REQUEST"');
   expect(textarea).toContain('maxlength="500"');
@@ -70,7 +74,7 @@ test('current supplied embed requires SONG_REQUEST at the unchanged dedicated en
 
 test('historical embed retains the previous mapping and country choices', () => {
   const embed = readFileSync('attached_assets/Pasted--Begin-Brevo-Form-START-We-recommend-to-place-the-below_1791994223545.txt', 'utf8');
-  expect(embed).toContain(`action="${SONG_FORM_URL}"`);
+  expect(embed).toContain(`action="${GENERAL_FORM_URL}"`);
   // Historical evidence only, not an assertion of the current live contract.
   expect(embed).toContain('name="COMPANY:name"');
   expect(songUrl).not.toBe(brevoUrl);
@@ -116,7 +120,7 @@ for (const mode of ['general', 'song']) {
       SONG_REQUEST: 'Please keep your message to 500 characters or fewer.',
     });
     let requests = 0;
-    page.on('request', request => { if (request.url() === songUrl) requests++; });
+    page.on('request', request => { if (request.url().includes('.sibforms.com/')) requests++; });
     await openForm(page, mode);
     await fillSong(page, mode === 'song');
     const message = page.locator('[name="SONG_REQUEST"]');
@@ -160,7 +164,7 @@ for (const path of ['/submit-a-song', '/submit-a-song?mode=invalid', '/submit-a-
 
 test('general enquiry accepts without criteria using the exact provider fields and no access grant', async ({ page }) => {
   let payload;
-  await page.route(songUrl, async route => {
+  await page.route(generalUrl, async route => {
     payload = await outgoing(route.request());
     await route.fulfill({ json: { success: true } });
   });
@@ -332,7 +336,7 @@ for (const [label, json, status] of [
 ]) {
   for (const mode of ['general', 'song']) {
   test(`${mode}: ${label} retains every entry for retry without confirmation`, async ({ page }) => {
-    await mockSong(page, json, status);
+    await mockSong(page, json, status, mode);
     await openForm(page, mode);
     await fillSong(page, mode === 'song');
     await page.getByRole('button', { name: mode === 'song' ? 'Submit song' : 'Send enquiry', exact: true }).click();
@@ -350,7 +354,7 @@ for (const [label, json, status] of [
 test('general pending request locks modes and duplicate sends; timeout keeps the draft', async ({ page }) => {
   await page.clock.install();
   let requests = 0;
-  await page.route(songUrl, () => { requests++; });
+  await page.route(generalUrl, () => { requests++; });
   await openForm(page, 'general');
   await fillSong(page, false);
   await page.getByRole('button', { name: 'Send enquiry', exact: true }).click();
@@ -364,14 +368,16 @@ test('general pending request locks modes and duplicate sends; timeout keeps the
   await expect(page.getByRole('alert')).toContainText('took too long');
   await expect(page.getByRole('radio', { name: 'Song submission' })).toBeEnabled();
   await expect(page.getByLabel('Email address')).toHaveValue(details.EMAIL);
-  await mockSong(page);
+  await mockSong(page, { success: true }, 200, 'general');
   await page.getByRole('button', { name: 'Send enquiry', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Thank you for your enquiry' })).toBeVisible();
 });
 
 test('history changes cannot switch the displayed mode during an active request', async ({ page }) => {
   let release;
+  let submitted;
   await page.route(songUrl, async route => {
+    submitted = route.request();
     await new Promise(resolve => { release = resolve; });
     await route.fulfill({ json: { success: false } });
   });
@@ -385,6 +391,8 @@ test('history changes cannot switch the displayed mode during an active request'
   await expect(page).toHaveURL(/\/submit-a-song$/);
   await expect(page.getByRole('radio', { name: 'Song submission' })).toBeChecked();
   await expect(page.getByRole('radio', { name: 'General enquiry' })).toBeDisabled();
+  expect(submitted.url()).toBe(songUrl);
+  expect(await outgoing(submitted)).toEqual({ ...details, email_address_check: '', locale: 'en' });
   release();
   await expect(page.getByRole('radio', { name: 'General enquiry' })).toBeChecked();
   await expect(page.getByLabel('Email address')).toHaveValue(details.EMAIL);
@@ -395,7 +403,9 @@ for (const mode of ['general', 'song']) {
   test(`${mode}: history during pending acceptance preserves the submitted confirmation`, async ({ page }) => {
     let release;
     let requests = 0;
-    await page.route(songUrl, async route => {
+    await page.route(destination(mode), async route => {
+      expect(route.request().url()).toBe(destination(mode));
+      expect(await outgoing(route.request())).toEqual({ ...details, email_address_check: '', locale: 'en' });
       requests++;
       await new Promise(resolve => { release = resolve; });
       await route.fulfill({ json: { success: true } });
@@ -453,7 +463,7 @@ test(`${mode}: SONG_REQUEST provider errors render safely and successful retry s
     errors: {
       SONG_REQUEST: '<script>window.injected=true</script>Message needs a link.',
     },
-  });
+  }, 200, mode);
   await openForm(page, mode);
   await fillSong(page, mode === 'song');
   const button = page.getByRole('button', { name: mode === 'song' ? 'Submit song' : 'Send enquiry', exact: true });
@@ -469,7 +479,7 @@ test(`${mode}: SONG_REQUEST provider errors render safely and successful retry s
   expect(await page.evaluate(() => window.injected)).toBeUndefined();
   await expect(page.locator('.song-form-alert img, .song-field-error script, .song-field-error b')).toHaveCount(0);
   let payload;
-  await page.route(songUrl, async route => {
+  await page.route(destination(mode), async route => {
     payload = await outgoing(route.request());
     await route.fulfill({ json: { success: true } });
   });
@@ -562,6 +572,10 @@ test('navigation cancels in-flight submission and back opens a fresh form withou
   await expect(page.locator('.song-pending')).toBeVisible();
   await page.locator('footer a[href="/privacy-policy"]').click();
   await expect(page).toHaveURL(/\/privacy-policy$/);
+  // Router transitions may update the address before committing the new page.
+  // Wait for unmount (and its abort) before releasing the provider response.
+  await expect(page.getByRole('heading', { name: 'Privacy Policy', exact: true })).toBeVisible();
+  await expect(page.locator('.song-pending')).toHaveCount(0);
   await heldRoute.fulfill({ json: { success: true } }).catch(() => {});
   await page.goBack();
   await expect(page.getByLabel('First name')).toHaveValue('');
@@ -604,7 +618,7 @@ test('song submission does not alter the independent Santa-message access flow',
   await expect(page.getByRole('button', { name: 'Get my free Santa message' })).toBeVisible();
   await fillAccessForm(page);
   await page.getByRole('button', { name: 'Get my free Santa message' }).click();
-  await expect(page.getByLabel('Child’s first name')).toBeVisible();
+  await expect(page.getByLabel('First Name', { exact: true })).toBeVisible();
   expect(await page.evaluate(key => sessionStorage.getItem(key), MESSAGE_ACCESS_KEY)).toBeTruthy();
 });
 
@@ -632,7 +646,7 @@ for (const width of [320, 390, 1280]) {
       return bounds.top >= 100 && bounds.bottom <= dock.top;
     })).toBe(true);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    await mockSong(page);
+    await mockSong(page, { success: true }, 200, 'general');
     await fillSong(page, false);
     await button.click();
     await expect(page.getByRole('heading', { name: 'Thank you for your enquiry' })).toBeVisible();

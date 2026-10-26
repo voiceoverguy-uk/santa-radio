@@ -1,12 +1,12 @@
 ---
 name: Contact and song submission routing
-description: Shared contact form routing and owner-approved provider contract.
+description: Shared contact page with distinct owner-approved song and general destinations.
 ---
 General enquiries and song submissions use one shared form. General enquiry is the default; song entry links preselect Song submission.
 
-**Why:** The owner approved the existing Brevo destination for both: general enquiries are infrequent and everything goes to the same inbox. This supersedes separate general-email and song-form routing.
+**Why:** The owner supplied a new Song Suggestion Form action for song submissions only. This supersedes the earlier approval to share the old destination; General enquiry must keep its existing destination and behaviour.
 
-**How to apply:** Keep the two modes distinct in guidance and confirmation, without adding provider attributes, lists or automations to separate their routing.
+**How to apply:** Preserve separate provider destinations as well as mode-specific guidance and confirmation. Do not add provider attributes, lists or automations to separate routing, or reroute the independent Santa-message signup flow.
 
 Use the current read-only hosted song form and the newest owner-supplied embed to confirm the provider field contract. Older embeds may be historical evidence; a visible placeholder is not a provider attribute name. Report disagreements rather than guessing field mappings.
 

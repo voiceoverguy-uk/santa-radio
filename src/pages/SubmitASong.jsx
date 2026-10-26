@@ -102,7 +102,7 @@ export default function SubmitASong() {
       setError('Your message could not be sent. Please try again.');
       return;
     }
-    const request = { controller: new AbortController(), timedOut: false, timeout: null };
+    const request = { mode, controller: new AbortController(), timedOut: false, timeout: null };
     requestRef.current = request;
     request.timeout = setTimeout(() => {
       request.timedOut = true;
@@ -110,7 +110,7 @@ export default function SubmitASong() {
     }, SONG_REQUEST_TIMEOUT_MS);
     setPending(true);
     try {
-      await submitSong(fields, request.controller.signal, mode);
+      await submitSong(fields, request.controller.signal, request.mode);
       if (requestRef.current !== request) return;
       request.controller.signal.throwIfAborted();
       // Consume any address change made while pending without replacing the

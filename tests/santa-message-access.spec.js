@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './helpers/provider-test.js';
 import { readFileSync } from 'node:fs';
 import { adult, brevoUrl, fillAccessForm, mockBrevo, mockSantaNames } from './helpers/message-access.js';
 import { MESSAGE_ACCESS_KEY, ACCESS_REQUEST_TIMEOUT_MS } from '../src/lib/santaMessageAccess.js';
@@ -210,7 +211,10 @@ test('pending form prevents duplicate submissions and adult details never reach 
   await page.getByRole('button', { name: 'Create message' }).evaluate(element => element.scrollIntoView({ block: 'center', behavior: 'instant' }));
   await page.getByRole('button', { name: 'Create message' }).click();
   await expect(page.locator('.message-result')).toBeVisible();
-  expect(generatorFields).toEqual({ name: 'olivia' });
+  // The greeting allowance also selects an outro; adult contact details must
+  // still be absent from the complete generator payload.
+  expect(generatorFields).toEqual({ name: 'olivia', outro: expect.any(Number) });
+  expect([1, 2]).toContain(generatorFields.outro);
 });
 
 test('timeout remains locked, retains details and allows retry without waiting for the provider', async ({ page }) => {

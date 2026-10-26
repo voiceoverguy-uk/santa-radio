@@ -1,5 +1,6 @@
-// Dedicated public form supplied by the owner; never use the Santa access form.
-export const SONG_FORM_URL = 'https://ca61f856.sibforms.com/serve/MUIFAIGpu7eOZ4mJ0tp-P1-PI-OWQj9209ioBc9iOd-ae3zbwsfaG67xp9R4DlwMgef_Yrr_6g63CPf0CZwITEPVEiaplfqCoR1vb0rEY3jp6ILn1smesmu6rFzGW7ujefLd6MWuIaFyLkoCrl9qNjsEE54J0rYAvUqyNt6NIlWxNcK1b-e3RWmCwY79SD66R2zFRxj-Ff4vyhA5';
+// Separate owner-supplied public destinations; neither is the Santa access form.
+export const GENERAL_FORM_URL = 'https://ca61f856.sibforms.com/serve/MUIFAIGpu7eOZ4mJ0tp-P1-PI-OWQj9209ioBc9iOd-ae3zbwsfaG67xp9R4DlwMgef_Yrr_6g63CPf0CZwITEPVEiaplfqCoR1vb0rEY3jp6ILn1smesmu6rFzGW7ujefLd6MWuIaFyLkoCrl9qNjsEE54J0rYAvUqyNt6NIlWxNcK1b-e3RWmCwY79SD66R2zFRxj-Ff4vyhA5';
+export const SONG_FORM_URL = 'https://ca61f856.sibforms.com/serve/MUIFAHo-_p9zX-veVdI1MT61eYw_K65GmtGftzIcBNHGcQyO9QCBsXr-YNr6tWl-SueYKR588f8AspMGUl4lTvpufjdHRN6C8kb89x3McgboZ6nmADwHcrwf89iFCD_t1VrttitnnHxzAajCyvnNyFGk5Rvhs1faF4qyNWmTXbip8CJl_Wd7BdB_vc00tfH2EMPYVbpqI3xC53vh';
 export const SONG_REQUEST_TIMEOUT_MS = 15000;
 export const emptySongFields = {
   FIRSTNAME: '', LASTNAME: '', EMAIL: '', SONG_REQUEST: '',
@@ -63,7 +64,8 @@ export async function submitSong(fields, signal, mode = 'song') {
   for (const name of supportedFields) body.append(name, fields[name].trim());
   body.append('email_address_check', fields.email_address_check || '');
   body.append('locale', 'en');
-  const response = await fetch(`${SONG_FORM_URL}?isAjax=1`, {
+  const destination = mode === 'song' ? SONG_FORM_URL : GENERAL_FORM_URL;
+  const response = await fetch(`${destination}?isAjax=1`, {
     method: 'POST', body, signal, mode: 'cors', credentials: 'omit',
     redirect: 'error', cache: 'no-store',
   });

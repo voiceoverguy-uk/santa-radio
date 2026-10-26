@@ -12,7 +12,7 @@ export default function PrivacyPolicy() {
     <article className="privacy-content">
       <p className="eyebrow">Santa Radio</p>
       <h1>Privacy Policy</h1>
-        <p className="privacy-date">Updated <time dateTime="2026-10-23">23 October 2026</time></p>
+        <p className="privacy-date">Updated <time dateTime="2026-10-26">26 October 2026</time></p>
       <p>The Santa Radio website and Christmas Radio UK app are operated by VoiceoverGuy Ltd. For privacy questions, email <a href="mailto:santa@santaradio.co.uk">santa@santaradio.co.uk</a>.</p>
         <p>This notice covers the current Santa Radio website and the Christmas Radio UK native apps for iPhone and iPad, version 35.0, and Android. The app-specific sections below explain how each app handles information. Website-only features, including forms, Santa audio messages, embedded videos and optional analytics or marketing cookies, are separate from the native apps. External services may also have their own privacy notices.</p>
       <p>You can browse and listen without an account. We do not sell personal data.</p>
@@ -70,7 +70,7 @@ export default function PrivacyPolicy() {
       <p>Check the privacy information and permission prompts for the particular app and version you use. If an older app links to this page and you need information about a feature not described here, contact us with its name, version and platform. Device settings let you review permissions, but withdrawing permission does not erase recordings or information already submitted to a service.</p>
 
       <h2>When you contact us</h2>
-      <p>Our <a href="/submit-a-song">shared contact form</a> lets you choose General enquiry or Song submission. Both collect your first name, surname, email address and a message of up to 500 characters, sent directly to the same dedicated Brevo form to handle your enquiry or consider your recording. If you email us instead, you share your email address and whatever you include. Our lawful basis is legitimate interests: running the station and handling messages people choose to send us, while respecting their privacy.</p>
+      <p>Our <a href="/submit-a-song">shared contact form</a> lets you choose General enquiry or Song submission. Both collect your first name, surname, email address and a message of up to 500 characters, sent directly to separate dedicated Brevo forms according to your selection to handle your enquiry or consider your recording. If you email us instead, you share your email address and whatever you include. Our lawful basis is legitimate interests: running the station and handling messages people choose to send us, while respecting their privacy.</p>
       <p>Please have a parent or carer handle enquiries involving children and share only necessary details.</p>
 
       <h2>Song submissions</h2>
