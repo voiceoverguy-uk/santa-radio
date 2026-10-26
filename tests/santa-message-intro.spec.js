@@ -31,9 +31,10 @@ for (const width of [320, 390, 768, 1440]) {
     expect(hierarchy.subSize).toBeLessThan(hierarchy.mainSize * .75);
     expect(hierarchy.subTop).toBeGreaterThan(hierarchy.mainBottom);
     expect(hierarchy.lines).toBe('Their name. Santa’s voice.');
-    const example = intro.getByRole('button', { name: 'Hear an example message', exact: true });
+    const example = intro.getByRole('button', { name: 'Hear an example audio message', exact: true });
     await expect(example).toBeVisible();
     await expect(example).toBeEnabled();
+    await expect(intro.locator('h3.santa-message-subheading + .santa-message-example + p')).toHaveText(introduction);
     for (const element of [heading, subheading, paragraph, example]) {
       const bounds = await element.evaluate(node => {
         const rect = node.getBoundingClientRect();

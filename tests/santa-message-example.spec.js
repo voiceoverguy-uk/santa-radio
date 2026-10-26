@@ -27,7 +27,7 @@ async function visit(page, path = '/') {
   if (await reject.isVisible()) await reject.click();
 }
 
-const start = page => page.getByRole('button', { name: 'Hear an example message', exact: true });
+const start = page => page.getByRole('button', { name: 'Hear an example audio message', exact: true });
 const stop = page => page.getByRole('button', { name: 'Stop example message', exact: true });
 const sample = page => page.locator('audio[src*="/audio/examples/"]');
 const dock = page => page.getByRole('complementary', { name: 'Santa Radio player' });

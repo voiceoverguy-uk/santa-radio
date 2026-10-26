@@ -160,7 +160,7 @@ export default function SantaMessageExample() {
       <span className="santa-message-example__mark" aria-hidden="true">
         {state === 'idle' ? '▶' : '■'}
       </span>
-      {state === 'idle' ? 'Hear an example message' : 'Stop example message'}
+      {state === 'idle' ? 'Hear an example audio message' : 'Stop example message'}
     </button>
     {state === 'loading' && <p className="santa-message-example__status" role="status">Loading Santa’s example…</p>}
     {error && <p className="santa-message-example__error" id="santa-message-example-error" role="alert">{error}</p>}
