@@ -35,7 +35,7 @@ for (const route of ['/stream', '/parsed']) {
     });
     assert.equal(response.status, 200);
     assert.equal(response.headers.get('content-type'), 'audio/mpeg');
-    assert.match(response.headers.get('content-disposition'), /Santa-message-for-Erin\.mp3/);
+    assert.match(response.headers.get('content-disposition'), /santa-recorded-message-for-Erin\.mp3/);
     assert.equal(response.headers.get('cache-control'), 'no-store');
     const audio = Buffer.from(await response.arrayBuffer());
     assert.ok(audio.length > 100000);

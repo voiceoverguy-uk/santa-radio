@@ -4,7 +4,7 @@ import { promisify } from 'node:util';
 import ffmpegPath from 'ffmpeg-static';
 import { createHash } from 'node:crypto';
 import { santaNameKey as key } from '../src/lib/santaNameSearch.js';
-import { findSantaMessage, santaNames } from '../src/data/santaMessages.js';
+import { findSantaMessage, santaNames, santaMessageDownloadName } from '../src/data/santaMessages.js';
 
 export const NAMES_ROOT = 'https://stagcommunications.com/santaradio/names/';
 export const NAMES_INDEX = `${NAMES_ROOT}names-index.php`;
@@ -76,7 +76,7 @@ export function parseNameIndex(bytes) {
     if (seen.has(item.id)) throw new NameLibraryError('INDEX_DUPLICATE');
     seen.add(item.id);
     return { id: item.id, name: item.name, file: item.file, aliases: item.aliases || [],
-      source: 'hosted', downloadName: `Santa-message-for-${item.name}.mp3` };
+      source: 'hosted', downloadName: santaMessageDownloadName(item.name) };
   });
 }
 

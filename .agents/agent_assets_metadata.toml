@@ -350,3 +350,87 @@ mtime_ms = 1792541400072
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/9b4f1cb1-a869-4c7c-b1c0-3bbecca089f0/9daf19bd-b75f-4ed7-98a7-ff5e709e6578"
 storage_version_token = "1792541415494837"
 content_type = "image/png"
+
+[[outputs]]
+id = "sacjwvo4RSZwHnNjgrVM7"
+uri = "file://generated-artifacts/extended-santa/extended-santa-sample-1.mp3"
+type = "audio"
+title = "Extended Santa — Sample 1"
+description = "Arabella • age 9 • teamwork • jigsaw puzzle • bûche de Noël • The Enchanted Forest. Voice only, 87.21 seconds; recorded pauses retained."
+logical_id = "d50dab4f-c9d6-4413-8cfc-2486809b9496"
+content_hash = "sha256:9deefe9ffe794f47f801b281521ca67d204769bafbe013d4f662ecc11b9dbe2e"
+size = 2094645
+mtime_ms = 1793024144037
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/d50dab4f-c9d6-4413-8cfc-2486809b9496/af09a43f-6ad9-4064-8378-d1c29b99dd73"
+storage_version_token = "1793024395163729"
+content_type = "audio/mpeg"
+
+[[outputs]]
+id = "AjL4SzqHKRBIWMSijjrHQ"
+uri = "file://generated-artifacts/extended-santa/extended-santa-sample-2.mp3"
+type = "audio"
+title = "Extended Santa — Sample 2"
+description = "Arabella • age 13 • musical instrument • gardening • turrón • Camelot. Voice only, 87.63 seconds; recorded pauses retained."
+logical_id = "ad39e447-d75c-41eb-9ca2-c4720ca1b866"
+content_hash = "sha256:20152d1782d65fdb6d0d5d27f23898e3c875f5ff8d7e68130b9648c91169bb4e"
+size = 2104676
+mtime_ms = 1793024148761
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/ad39e447-d75c-41eb-9ca2-c4720ca1b866/362f541f-df28-4395-839f-1c760330e21d"
+storage_version_token = "1793024396392165"
+content_type = "audio/mpeg"
+
+[[outputs]]
+id = "swZhWk6vjrPpeGQq2UvOg"
+uri = "file://generated-artifacts/extended-santa/listening-notes.txt"
+type = "text"
+title = "Extended Santa — Listening notes and technical results"
+description = "Exact selections, durations, render times, source root, achievement lead-in findings and timestamps to review. Automated checks are distinguished from listening approval."
+logical_id = "703f8d87-75de-4657-bbb5-7211c7714c60"
+content_hash = "sha256:841cea3df22b70396d4e8c78e8a3345ab245a75f81ed2f220521eb66a63326d5"
+size = 7797
+mtime_ms = 1793024353914
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/703f8d87-75de-4657-bbb5-7211c7714c60/2b948ca6-675d-493b-8819-2fbe1ace07e5"
+storage_version_token = "1793024396997052"
+content_type = "text/plain"
+
+[[outputs]]
+id = "izVDoDCGdB-AtiqSxNDwq"
+uri = "file://generated-artifacts/extended-santa/extended-santa-sample-1-with-sleigh-bells.mp3"
+type = "audio"
+title = "Extended Santa — with sleigh bells"
+description = "Arabella, age 9, teamwork, jigsaw puzzle, bûche de Noël and the Enchanted Forest. Your supplied bells mixed underneath at the free maker’s background level. 87.21 seconds."
+logical_id = "0b77090b-7390-4a0b-8db2-ee8f4d774a53"
+content_hash = "sha256:1416413c308838959f70c5ca1600a8566ebce8d73d51cf0744b809a3bcb36266"
+size = 2094645
+mtime_ms = 1793024756657
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/0b77090b-7390-4a0b-8db2-ee8f4d774a53/9fd9b18b-3fc2-4714-984f-0c327a020335"
+storage_version_token = "1793024792923863"
+content_type = "audio/mpeg"
+
+[[outputs]]
+id = "YmdQIwdYLUAEzMHdYWrsu"
+uri = "file://generated-artifacts/extended-santa/santa-recorded-message-for-Arabella.mp3"
+type = "audio"
+title = "santa-recorded-message-for-Arabella.mp3"
+description = "The same extended Arabella message with sleigh bells, now using your uniform filename. Audio unchanged."
+logical_id = "0cc144f7-a7e9-41eb-9338-fb66cacf33ca"
+content_hash = "sha256:1416413c308838959f70c5ca1600a8566ebce8d73d51cf0744b809a3bcb36266"
+size = 2094645
+mtime_ms = 1793024956022
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/0cc144f7-a7e9-41eb-9338-fb66cacf33ca/68ca4120-7514-46c4-8da5-c2f5a95f78a9"
+storage_version_token = "1793024995328112"
+content_type = "audio/mpeg"
+
+[[outputs]]
+id = "IpXinPL1OXcvxWCuYB5v7"
+uri = "file://generated-artifacts/extended-santa/bells-plus-3db/santa-recorded-message-for-Arabella.mp3"
+type = "audio"
+title = "santa-recorded-message-for-Arabella.mp3 — louder bells (+3 dB)"
+description = "Same 87.21-second extended Arabella message, with the sleigh bells raised 3 dB; the voice level is unchanged. Previous version remains available above."
+logical_id = "b91f3729-d492-4400-8b15-fa60e918f235"
+content_hash = "sha256:10677b109a19e1e61e14ed12a9fbac37bd0654a6795492af5e376c3b973d4b16"
+size = 2094645
+mtime_ms = 1793025060654
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/b91f3729-d492-4400-8b15-fa60e918f235/b84989e6-de7f-42f1-b399-e8b7c4e1a0e7"
+storage_version_token = "1793025108112902"
+content_type = "audio/mpeg"

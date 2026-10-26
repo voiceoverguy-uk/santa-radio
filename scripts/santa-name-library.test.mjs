@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import ffmpeg from 'ffmpeg-static';
+import { findSantaMessage, santaMessageDownloadName } from '../src/data/santaMessages.js';
 import {
   createNameLibrary, parseNameIndex, validateNameWav, fetchLimited, NAMES_INDEX, NAMES_ROOT, filenameId,
 } from '../server/santa-name-library.js';
@@ -13,13 +14,28 @@ const demrie = { id: 'demrie', name: 'Demrie', file: 'demrie.wav', aliases: ['De
 const manifest = (names = [demrie]) => Buffer.from(JSON.stringify({ version: 1, names }));
 const response = bytes => new Response(bytes);
 
+test('local and hosted downloads use the uniform filename without changing the display name', () => {
+  assert.equal(findSantaMessage('arabella').downloadName, 'santa-recorded-message-for-Arabella.mp3');
+  const names = ['Élodie', 'Mary Jane', "O'Brien"];
+  for (const name of names) {
+    assert.equal(santaMessageDownloadName(name), `santa-recorded-message-for-${name}.mp3`);
+    const file = `${name}.wav`;
+    const [record] = parseNameIndex(Buffer.from(JSON.stringify({
+      version: 2, names: [{ id: filenameId(file), name, file }],
+    })));
+    assert.equal(record.name, name);
+    assert.equal(record.file, file, 'Source filenames must not be renamed');
+    assert.equal(record.downloadName, `santa-recorded-message-for-${name}.mp3`);
+  }
+});
+
 test('hosted inventory, display names, exact filenames and aliases are verified', async () => {
   const library = createNameLibrary({ fetcher: async url => {
     assert.equal(url, NAMES_INDEX);
     return response(manifest());
   } });
   const found = await library.search(' de ');
-  assert.deepEqual(found.records, [{ id: 'demrie', name: 'Demrie', downloadName: 'Santa-message-for-Demrie.mp3' }]);
+  assert.deepEqual(found.records, [{ id: 'demrie', name: 'Demrie', downloadName: 'santa-recorded-message-for-Demrie.mp3' }]);
   assert.equal(found.warning, null);
   assert.equal(found.hostedCount, 1, 'Only hosted recordings count, not the 13 bundled names.');
   const initial = await library.search('');
