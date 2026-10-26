@@ -462,3 +462,45 @@ mtime_ms = 1793025350587
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/83be27fc-79bf-4d77-b3a7-74336fafe00c/835a5db7-f4f8-4aee-8030-b5ee32237f5d"
 storage_version_token = "1793025619198737"
 content_type = "application/pdf"
+
+[[outputs]]
+id = "Yi4C_ZBvmEiY4G07d9bsR"
+uri = "file://generated-artifacts/tracker-map/desktop.png"
+type = "image"
+title = "Larger homepage tracker — desktop"
+description = "The 440px world map with countdown above and introduction alongside."
+logical_id = "e3458b25-8943-43eb-b246-8a2b5b081e49"
+content_hash = "sha256:5e3538c89dc1675908515c621d3dd1ddfcb70b1d726478c9ef54b77cf6e256e9"
+size = 265433
+mtime_ms = 1793030318140
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/e3458b25-8943-43eb-b246-8a2b5b081e49/7c3e259c-c2fe-4f11-ad2f-698f303d2f48"
+storage_version_token = "1793030328139713"
+content_type = "image/png"
+
+[[outputs]]
+id = "P5t4lorHQpougppXvNoES"
+uri = "file://generated-artifacts/tracker-map/phone.png"
+type = "image"
+title = "Homepage tracker — phone"
+description = "Stacked layout checked at a 390px phone width."
+logical_id = "bedc7886-0f8b-41e5-b325-0dff66c1a68c"
+content_hash = "sha256:016e744330d7b2aa3a8f3c53bbc0ed85843ea048b171bc55fb47d6cd14e6618c"
+size = 142062
+mtime_ms = 1793030318152
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/bedc7886-0f8b-41e5-b325-0dff66c1a68c/c477e555-d098-4d1d-935e-54988371ed78"
+storage_version_token = "1793030329144859"
+content_type = "image/png"
+
+[[outputs]]
+id = "4sKb0RqAhUBtEg9ZHkEH7"
+uri = "file://generated-artifacts/tracker-map/desktop-without-countdown.png"
+type = "image"
+title = "Updated tracker banner"
+description = "Larger 560px map with the duplicate countdown removed."
+logical_id = "d19137e5-f43d-4202-8d2a-60eb7fb87ff4"
+content_hash = "sha256:d2541eeee4de03a793db47b2896a7e1914028825df1fbdf192091e850274cdb3"
+size = 222571
+mtime_ms = 1793030750348
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/d19137e5-f43d-4202-8d2a-60eb7fb87ff4/db373189-3a77-4c69-8c03-4150a01cb3ca"
+storage_version_token = "1793030777746829"
+content_type = "image/png"

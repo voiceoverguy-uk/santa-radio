@@ -411,12 +411,82 @@ test('homepage mini map links to the tracker with an accessible name and keyboar
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   const map = page.getByRole('link', { name: "Open the Santa Tracker: Santa's holiday location" });
   await expect(map).toHaveAttribute('href', '/santa-tracker');
-  await map.focus();
+  await page.locator('.tracker-banner .tracker-action').focus();
+  await page.keyboard.press('Tab');
   await expect(map).toBeFocused();
   await expect(map).toHaveCSS('outline-style', 'solid');
   await map.locator('svg').click();
   await expect(page).toHaveURL(/\/santa-tracker$/);
 });
+
+for (const [date, holiday] of [
+  ['2026-11-15T12:00:00Z', true],
+  ['2026-12-12T12:00:00Z', false],
+]) {
+  test(`homepage enlarged map preserves location and leaves the countdown in the hero at ${date}`, async ({ page }) => {
+    await pauseClock(page, date);
+    await page.goto('/');
+    const banner = page.locator('.tracker-banner');
+    const caption = holiday ? "Santa's holiday location" : "Santa's at the North Pole";
+    const map = banner.getByRole('link', { name: `Open the Santa Tracker: ${caption}` });
+    await expect(map).toBeVisible();
+    await expect(map.locator('.tracker-map-caption')).toHaveText(caption);
+    const marker = map.locator('svg text');
+    const x = Number(await marker.getAttribute('x'));
+    const y = Number(await marker.getAttribute('y'));
+    if (holiday) {
+      expect(x).toBeGreaterThan(0);
+      expect(x).toBeLessThan(1000);
+      expect(y).toBeGreaterThan(0);
+      expect(y).toBeLessThan(500);
+      await expect(banner).toContainText('North Pole on 1 December');
+    } else {
+      expect(x).toBe(500);
+      expect(y).toBe(0);
+      await expect(banner.locator('.tracker-status')).toContainText('At the North Pole');
+    }
+    await expect(banner.locator('.tracker-countdown-value')).toHaveCount(0);
+    const countdown = page.locator('.hero-countdown .countdown-unit strong');
+    await expect(countdown).toHaveCount(4);
+    const before = await countdown.allTextContents();
+    await page.clock.runFor(1000);
+    const after = await countdown.allTextContents();
+    const seconds = values => values.reduce((sum, value, i) => sum + Number(value) * [86400, 3600, 60, 1][i], 0);
+    expect(seconds(before) - seconds(after)).toBe(1);
+    await expect(marker).toHaveAttribute('x', String(x));
+    await expect(marker).toHaveAttribute('y', String(y));
+  });
+}
+
+for (const [date, complete] of [
+  ['2026-12-24T14:00:00Z', false],
+  ['2026-12-25T11:00:00Z', true],
+]) {
+  test(`homepage retains ${complete ? 'completed' : 'live'} statistics instead of the map`, async ({ page }) => {
+    await page.clock.setFixedTime(new Date(date));
+    for (const width of [1280, 768, 320]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto('/');
+      const banner = page.locator('.tracker-banner');
+      await expect(banner.locator('.tracker-status')).toContainText(complete ? 'Journey Complete' : 'Delivering in');
+      await expect(banner.locator('.tracker-map, .tracker-countdown-value')).toHaveCount(0);
+      const cards = banner.locator('.tracker-banner-visual .tracker-card');
+      await expect(cards).toHaveCount(4);
+      for (const label of ['Journey Progress', 'Regions Visited', 'Gifts Delivered', 'Current Location']) {
+        await expect(cards.filter({ hasText: label })).toBeVisible();
+      }
+      await expect(cards.first().locator('div').first()).toHaveText(complete ? '100.0%' : '16.7%');
+      await expect(cards.nth(2).locator('div').first()).toHaveText(complete ? '2.5B' : '417M');
+      await expect(banner.locator('.tracker-action')).toContainText(complete ? 'Open the Tracker' : 'Track Santa Now');
+      await expect(banner.locator('.tracker-action')).toHaveAttribute('href', '/santa-tracker');
+      const statsBox = await banner.locator('.tracker-banner-visual > div').boundingBox();
+      if (width === 1280) expect(statsBox.width).toBe(256);
+      expect(statsBox.x).toBeGreaterThanOrEqual(0);
+      expect(statsBox.x + statsBox.width).toBeLessThanOrEqual(width);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    }
+  });
+}
 
 for (const [realDate, simulatedDate, holiday] of [
   ['2026-12-12T12:00:00Z', '2026-11-30T23:59:53Z', true],

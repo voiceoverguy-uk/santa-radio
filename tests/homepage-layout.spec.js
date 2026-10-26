@@ -1,5 +1,48 @@
 import { test, expect } from '@playwright/test';
 
+test('homepage tracker enlarges the full-world map on desktop and stacks within smaller viewports', async ({ page }, testInfo) => {
+  await page.clock.setFixedTime(new Date('2026-11-15T12:00:00Z'));
+  await page.addInitScript(() => sessionStorage.setItem('radio-minimized', 'true'));
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
+  const banner = page.locator('.home-page > .tracker-banner');
+  const map = banner.locator('.tracker-map');
+  await expect(map).toBeVisible();
+  await expect(banner).not.toContainText('Countdown to Christmas Eve');
+  await expect(banner.locator('.tracker-countdown-value')).toHaveCount(0);
+  await expect(page.locator('.hero-countdown .countdown-unit')).toHaveCount(4);
+  for (const width of [1440, 1280, 1024, 820, 768, 390, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    const mapBox = await map.boundingBox();
+    const svg = map.locator('svg');
+    const svgBox = await svg.boundingBox();
+    const copyBox = await banner.locator('.tracker-banner-copy').boundingBox();
+    expect(mapBox.width).toBeGreaterThanOrEqual(Math.min(400, width - 32));
+    expect(mapBox.width).toBeLessThanOrEqual(560);
+    expect(mapBox.x).toBeGreaterThanOrEqual(0);
+    expect(mapBox.x + mapBox.width).toBeLessThanOrEqual(width);
+    expect(svgBox.width / svgBox.height).toBeCloseTo(2, 2);
+    await expect(svg).toHaveAttribute('viewBox', '0 0 1000 500');
+    await expect(svg).toHaveAttribute('preserveAspectRatio', 'xMidYMid meet');
+    await expect(svg.locator('text')).toHaveText('🎅');
+    await expect(map.locator('.tracker-map-caption')).toBeVisible();
+    await expect(map).toHaveCSS('border-top-width', '1px');
+    if (width >= 1024) {
+      expect(mapBox.width).toBeGreaterThanOrEqual(width >= 1280 ? 550 : 470);
+      expect(copyBox.width).toBeGreaterThanOrEqual(400);
+      expect(copyBox.x + copyBox.width + 31).toBeLessThanOrEqual(mapBox.x);
+      expect(mapBox.y).toBeLessThan(copyBox.y + copyBox.height);
+    } else {
+      expect(mapBox.y).toBeGreaterThanOrEqual(copyBox.y + copyBox.height);
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    if (width === 1280 || width === 390) {
+      await banner.evaluate(node => window.scrollTo({ top: window.scrollY + node.getBoundingClientRect().top - 100, behavior: 'instant' }));
+      await banner.screenshot({ path: testInfo.outputPath(`homepage-tracker-${width}.png`), animations: 'disabled' });
+    }
+  }
+});
+
 test('homepage keeps its desktop and mobile section order without the paused video promotion', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   const desktop = ['hero', 'partnership-strip', 'santa-message-section', 'tracker-banner', 'santa-dash-promo', 'soundboard', 'mugshots-preview', 'youtube-section', 'contact-section'];

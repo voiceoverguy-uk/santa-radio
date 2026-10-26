@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getDashboardData, getCountdownToStart, isHolidaySeason, isChristmasInJuly, getRandomHoliday, type HolidayDestination } from "@/lib/santaRoute";
+import { getDashboardData, isHolidaySeason, isChristmasInJuly, getRandomHoliday, type HolidayDestination } from "@/lib/santaRoute";
 import { worldMapPaths } from "@/data/worldMapPaths";
 
 export default function SantaTrackerBanner() {
@@ -39,7 +39,6 @@ export default function SantaTrackerBanner() {
   }
 
   const data = getDashboardData(now);
-  const countdown = getCountdownToStart(now);
   const isLive = data.mode === "LIVE";
   const isComplete = data.mode === "COMPLETE";
   const onHoliday = data.mode === "OFF_SEASON" && holidaySeason && holiday !== null;
@@ -75,9 +74,9 @@ export default function SantaTrackerBanner() {
     <section className="tracker-banner relative overflow-hidden" aria-label="Santa Tracker">
       <div className="absolute inset-0 star-field opacity-60" />
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-        <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8">
+        <div className={`${!isLive && !isComplete ? "tracker-banner-map-layout " : ""}flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8`}>
 
-          <div className="flex-1 text-center lg:text-left lg:max-w-lg">
+          <div className="tracker-banner-copy flex-1 text-center lg:text-left lg:max-w-lg">
             <div className="tracker-status inline-flex items-center gap-2 rounded-full px-3 py-1.5 mb-4">
               <span className={`w-2 h-2 rounded-full flex-shrink-0 ${dotColor}`} />
               <span className="text-xs font-medium text-gray-200 uppercase tracking-wider">
@@ -114,12 +113,11 @@ export default function SantaTrackerBanner() {
             </div>
           </div>
 
-          <div className="flex-shrink-0 w-full lg:w-auto">
+          <div className="tracker-banner-visual flex-shrink-0 w-full lg:w-auto">
             {isLive || isComplete ? (
               <LiveStats data={data} />
             ) : (
-              <div className="flex flex-col items-center lg:items-end gap-4">
-                <CountdownDisplay countdown={countdown} />
+              <div className="flex w-full items-center justify-center lg:justify-end">
                 <MiniMap holiday={onHoliday ? holiday : null} />
               </div>
             )}
@@ -128,42 +126,6 @@ export default function SantaTrackerBanner() {
         </div>
       </div>
     </section>
-  );
-}
-
-function CountdownDisplay({ countdown }: { countdown: ReturnType<typeof getCountdownToStart> }) {
-  const units = [
-    { label: "Days", value: countdown.days },
-    { label: "Hours", value: countdown.hours },
-    { label: "Mins", value: countdown.minutes },
-    { label: "Secs", value: countdown.seconds },
-  ];
-
-  return (
-    <div className="text-center lg:text-right">
-      <p className="text-[10px] uppercase tracking-widest text-santa-gold/80 mb-3">
-        Countdown to Christmas Eve
-      </p>
-      <div className="inline-flex items-center gap-2 sm:gap-3">
-        {units.map((u, i, arr) => (
-          <div key={u.label} className="flex items-center gap-2 sm:gap-3">
-            <div className="text-center">
-                <div className="tracker-card rounded-lg px-3 sm:px-4 py-2 sm:py-3 min-w-[52px] sm:min-w-[64px]">
-                <div className="tracker-countdown-value text-xl sm:text-2xl tabular-nums">
-                  {String(u.value).padStart(2, "0")}
-                </div>
-              </div>
-              <div className="tracker-countdown-label text-[9px] sm:text-[10px] uppercase tracking-wider mt-1">
-                {u.label}
-              </div>
-            </div>
-            {i < arr.length - 1 && (
-              <span className="text-santa-gold/70 text-lg font-light mb-4">:</span>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
   );
 }
 
@@ -216,7 +178,7 @@ function MiniMap({ holiday }: { holiday: HolidayDestination | null }) {
     <Link
       to="/santa-tracker"
       aria-label={`Open the Santa Tracker: ${caption}`}
-      className="tracker-map block w-full lg:w-[280px] rounded-lg border overflow-hidden"
+      className="tracker-map tracker-banner-map block w-full rounded-lg border overflow-hidden"
     >
       <svg
         viewBox="0 0 1000 500"

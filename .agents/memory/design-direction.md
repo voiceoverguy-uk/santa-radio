@@ -80,6 +80,12 @@ Keep the hero countdown compact and visually secondary to the heading and button
 
 **How to apply:** Preserve that simplicity in future hero changes; do not treat the richer North Pole direction as a request to box every element. Keep the mobile timer noticeably narrower than the content area, rather than stretching its cells to fill it.
 
+Do not repeat the countdown in the homepage Santa Tracker banner; use that space for a larger map instead.
+
+**Why:** The user said “we can lose the countdown as we have further up on the homepage. Then make the map bigger again to fill the space.”
+
+**How to apply:** Keep the homepage hero countdown and separate full tracker countdown intact when adjusting the banner.
+
 Keep the hero's station/all-year tagline on one line on mobile.
 
 **Why:** The user explicitly objected to “round” wrapping onto a lower line and asked for one line.
