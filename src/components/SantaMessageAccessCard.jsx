@@ -26,7 +26,7 @@ export default function SantaMessageAccessCard({
   return (
     <section className="santa-message-access" aria-labelledby={`${id}-title`}>
       <p className="santa-message-access__step">A note for the grown-up</p>
-      <h3 id={`${id}-title`}>First, open Santa’s message desk</h3>
+      <h3 id={`${id}-title`}>First, open Santa’s recording studio</h3>
       <p className="santa-message-access__intro">
         Add your details for immediate access to a free, downloadable Santa greeting. Next, you’ll choose a recorded name for your child.
       </p>
@@ -74,7 +74,7 @@ export default function SantaMessageAccessCard({
 
         {error && <p className="santa-message-access__error" role="alert">{error}</p>}
         <button className="btn-red santa-message-access__submit" type="submit" disabled={pending}>
-          {pending ? 'Opening the message desk…' : 'Get my free Santa message'}
+          {pending ? 'Opening the recording studio…' : 'Get my free Santa message'}
           {!pending && <span aria-hidden="true">→</span>}
         </button>
         {pending && <p className="santa-message-access__status" role="status">Opening your access to Santa’s recorded greetings.</p>}

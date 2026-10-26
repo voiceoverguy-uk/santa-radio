@@ -8,6 +8,18 @@ Use the supplied approved blank certificate, not a recreation. Add only the comp
 
 **How to apply:** Keep personalisation local to the browser, separate from audio allowance and public invitation sharing. Certificate failure must not affect audio; do not add recipient storage or remote certificate delivery.
 
+Named certificate PDFs supplied for previews are examples, not replacement personalisation masters. An audio attachment alongside those examples does not authorise replacing the existing example audio.
+
+**Why:** The owner requested named examples as promotional previews while explicitly keeping both the personalised PDF generator and example recordings unchanged.
+
+**How to apply:** Preserve the examples’ supplied artwork and names; treat changes to the certificate master or example audio as separate requests.
+
+Keep the promotional certificate box aligned left with the introduction and sized to fit its text area, not centred at a strict percentage reduction. Keep automatic rotation, no name-selection buttons, no pause control and no “Showing…” status line. Clicking the visible example enlarges that example.
+
+**Why:** After requesting a 30% reduction, the owner clarified that it looked too small and should align left and fit the outlined text area. They explicitly removed the extra controls and status text.
+
+**How to apply:** Preserve enlargement and reduced-motion behaviour when refining the compact preview.
+
 Embed the supplied font in full rather than subsetting it.
 
 **Why:** The fontkit subset writer omitted visible letters from this particular supplied static font even though PDF text extraction returned the correct name. Full embedding rendered correctly.

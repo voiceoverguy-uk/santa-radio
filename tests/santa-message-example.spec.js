@@ -4,6 +4,7 @@ import fs from 'node:fs';
 async function visit(page, path = '/') {
   // Keep samples real; only replace the external live-radio stream for deterministic tests.
   await page.addInitScript(() => {
+    sessionStorage.setItem('santa-radio-example-last', 'charlotte');
     const play = HTMLMediaElement.prototype.play;
     const load = HTMLMediaElement.prototype.load;
     HTMLMediaElement.prototype.load = function () {
@@ -32,7 +33,7 @@ const sample = page => page.locator('audio[src*="/audio/examples/"]');
 const dock = page => page.getByRole('complementary', { name: 'Santa Radio player' });
 
 for (const [path, width] of [['/', 1280], ['/free-santa-message', 390]]) {
-  test(`real samples alternate with playback-only controls on ${path}`, async ({ page }) => {
+  test(`real samples rotate with playback-only controls on ${path}`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     let sampleRequests = 0;
     let downloads = 0;
@@ -54,7 +55,7 @@ for (const [path, width] of [['/', 1280], ['/free-santa-message', 390]]) {
     expect(appearance.left).toBeGreaterThanOrEqual(0);
     expect(appearance.right).toBeLessThanOrEqual(width);
     expect(sampleRequests).toBe(0);
-    for (const variant of ['boy', 'girl', 'boy']) {
+    for (const variant of ['boy', 'girl', 'ayla', 'mohani', 'charlotte', 'boy']) {
       await start(page).focus();
       await page.keyboard.press('Enter');
       await expect(stop(page)).toBeVisible();
@@ -81,6 +82,7 @@ for (const [path, width] of [['/', 1280], ['/free-santa-message', 390]]) {
 test('rotation persists between pages and navigation stops the old recording', async ({ page }) => {
   await visit(page);
   await start(page).click();
+  await expect(sample(page)).toHaveAttribute('src', '/audio/examples/santa-message-boy.mp3');
   await expect.poll(() => sample(page).evaluate(audio => audio.currentTime)).toBeGreaterThan(0);
   const oldAudio = await sample(page).elementHandle();
   await page.getByRole('navigation', { name: 'Main navigation' })
@@ -89,6 +91,10 @@ test('rotation persists between pages and navigation stops the old recording', a
   expect(await oldAudio.evaluate(audio => audio.paused)).toBe(true);
   await start(page).click();
   await expect(sample(page)).toHaveAttribute('src', '/audio/examples/santa-message-girl.mp3');
+  await expect.poll(() => sample(page).evaluate(audio => audio.currentTime)).toBeGreaterThan(0);
+  await stop(page).click();
+  await start(page).click();
+  await expect(sample(page)).toHaveAttribute('src', '/audio/examples/santa-message-ayla.mp3');
   await expect.poll(() => sample(page).evaluate(audio => audio.currentTime)).toBeGreaterThan(0);
   await stop(page).click();
 });
@@ -127,13 +133,18 @@ test('failed playback offers retry without advancing rotation and restores the r
   await visit(page);
   await page.locator('.hero-actions').getByRole('button', { name: 'Listen Live', exact: true }).click();
   await page.route('**/audio/examples/*.mp3', route => route.fulfill({ status: 503, body: 'Unavailable' }));
+  let attempted = '';
+  page.on('request', request => {
+    if (request.url().includes('/audio/examples/')) attempted = new URL(request.url()).pathname;
+  });
   await start(page).click();
   await expect(page.getByRole('alert').filter({ hasText: /example|recording|try/i })).toBeVisible();
+  expect(attempted).toBe('/audio/examples/santa-message-boy.mp3');
   await expect(start(page)).toBeEnabled();
   await expect(dock(page).getByRole('button', { name: 'Pause Radio', exact: true })).toBeVisible();
   await page.unroute('**/audio/examples/*.mp3');
   await start(page).click();
-  await expect(sample(page)).toHaveAttribute('src', '/audio/examples/santa-message-boy.mp3');
+  await expect(sample(page)).toHaveAttribute('src', attempted);
   await expect.poll(() => sample(page).evaluate(audio => audio.currentTime)).toBeGreaterThan(0);
   await stop(page).click();
 });

@@ -61,7 +61,8 @@ test('two successes block the third, preserve downloads and offer radio without 
     recordings[1].dispatchEvent(new Event('play'));
   });
   expect(await page.evaluate(() => window.recordingPauses)).toBe(2);
-  await expect(page.getByText('(The radio will pause while playing)', { exact: true })).toHaveCount(2);
+  await expect(page.getByText('(The radio will pause while playing)', { exact: true })).toHaveCount(0);
+  await expect(page.locator('.message-wait .message-result')).toHaveCount(2);
   await expect(page.getByText('On iPhone, choose Share → Save to Files to keep the MP3.', { exact: true })).toHaveCount(2);
   await expect(page.getByRole('timer')).toHaveText('10:00');
   await expect(page.getByText('You’ve created 2 Free Santa messages for now. Please allow Santa 10 minutes to recover before he records more. Meanwhile why not enjoy Santa Radio Christmas music while you wait or tell your friends?', { exact: true })).toBeVisible();
@@ -154,6 +155,8 @@ test('navigation, reload, a new tab and returning after the deadline preserve an
   await fillAccessForm(newTab);
   await newTab.getByRole('button', { name: 'Get my free Santa message' }).click();
   await expect(newTab.getByRole('timer')).toHaveText('10:00');
+  await expect(newTab.locator('.message-wait')).toContainText('This tab no longer holds those recordings.');
+  await expect(newTab.locator('.message-wait .message-download')).toHaveCount(0);
   await newTab.evaluate(time => { window.testNow = time; dispatchEvent(new Event('focus')); }, deadline - 1000);
   await expect(newTab.getByRole('timer')).toHaveText('00:01');
   await newTab.evaluate(time => { window.testNow = time; dispatchEvent(new Event('focus')); }, deadline);

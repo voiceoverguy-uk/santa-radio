@@ -4,8 +4,7 @@
 .santa-message-heading { color: var(--cream, #f6ecd8); font-size: clamp(2rem,3.4vw,3rem); text-align: left; margin-bottom: 16px; line-height: 1.25; overflow-wrap: anywhere; }
 .santa-message-subheading { color: var(--cream, #f6ecd8); font-size: clamp(1rem,1.7vw,1.4rem); text-align: left; margin-bottom: 22px; line-height: 1.4; white-space: nowrap; }
 .message-intro > p:not(.eyebrow) { font-size: .95rem; color: #d0dacd; max-width: 420px; line-height: 1.8; }
-.message-detail-link { display: inline-block; margin-top: 22px; font-size: .85rem; color: var(--gold-light, #ead39a); text-decoration: underline; text-underline-offset: 5px; }
-.north-pole-letter { display: block; width: min(100%, 320px); height: auto; margin: 26px 0 0; }
+.message-intro .santa-certificate-examples { margin-top: 24px; }
 .santa-message-box { background: #0c2a20; border: 1px solid #d4af3760; border-radius: 20px; padding: 36px; text-align: left; box-shadow: 0 18px 50px #061c1740; position: relative; }
 .message-card-top { display: flex; align-items: center; gap: 14px; padding-bottom: 22px; border-bottom: 1px solid #d4af3730; margin-bottom: 24px; }
 .message-seal { border: 1px solid var(--gold, #d4af37); color: var(--gold-light, #ead39a); font-family: 'Cinzel',serif; display: grid; place-items: center; border-radius: 50%; width: 48px; height: 48px; flex-shrink: 0; font-size: 1.4rem; }
@@ -50,6 +49,19 @@
 .message-result p:not(.message-postmark) { color: #d0dacd; font-size: .82rem; line-height: 1.6; }
 .message-result audio { display: block; width: 100%; margin: 16px 0; height: 48px; }
 .message-download { display: inline-flex; align-items: center; gap: 12px; color: #ead39a; font-size: .85rem; text-decoration: underline; text-underline-offset: 5px; padding: 8px 0; }
+.message-download:not(:disabled) { border-radius: 5px; box-shadow: 0 0 9px #d4af3726; animation: message-download-glow 3.5s ease-in-out infinite; }
+@keyframes message-download-glow {
+  0%, 100% { box-shadow: 0 0 9px #d4af3726; }
+  50% { box-shadow: 0 0 16px #d4af3752; }
+}
+.message-download:disabled { animation: none; box-shadow: none; }
+.message-wait-downloads-title { color: #ead39a; font-size: .95rem; margin: 20px 0 0; }
+.message-wait-downloads { margin-bottom: 22px; }
+.message-wait-downloads .message-result { margin-top: 14px; padding-top: 14px; }
+.message-wait-downloads .message-result > .message-postmark { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .message-download:not(:disabled) { animation: none; box-shadow: 0 0 12px #d4af3738; }
+}
 .message-certificate-button { background: transparent; border: 0; font: inherit; font-size: .85rem; text-align: left; cursor: pointer; min-height: 44px; line-height: 1.6; }
 .message-certificate-button:disabled { opacity: .7; cursor: wait; }
 .message-certificate .message-name-hint { margin-top: 2px; }

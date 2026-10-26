@@ -1,5 +1,4 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useRadio } from './RadioProvider.jsx';
 import SantaMessageExample from './SantaMessageExample.jsx';
 import SantaMessageAccessForm from './SantaMessageAccessForm.jsx';
@@ -9,6 +8,7 @@ import useSantaMessageAllowance from './useSantaMessageAllowance.js';
 import useSantaMessageHistory from './useSantaMessageHistory.js';
 import useSantaNames from './useSantaNames.js';
 import NiceListCertificateDownload from './NiceListCertificateDownload.jsx';
+import SantaCertificateExamples from './SantaCertificateExamples.jsx';
 import { santaNameKey } from '../lib/santaNameSearch.js';
 import { randomSantaExample, santaNamePlaceholder } from '../lib/santaNamePlaceholder.js';
 import { normaliseRequestedName } from '../lib/santaNameRequests.js';
@@ -205,42 +205,54 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
     radio.togglePlay();
   };
 
+  const renderResults = () => messages.map((message, index) => <div key={message.key} className="message-result" ref={index === messages.length - 1 ? resultRef : null} tabIndex={-1} aria-label={`Santa’s greeting for ${message.name}`}>
+    <p className="message-postmark">A greeting is waiting</p>
+    <h4>For {message.name}, from Santa</h4>
+    <audio ref={audio => {
+      if (audio) audioRefs.current.set(message.key, audio);
+      else audioRefs.current.delete(message.key);
+    }} src={message.url} controls preload="none" onPlay={pauseRadio} onEnded={finishMessage} onError={event => {
+      if (audioRef.current === event.currentTarget) resumeRadioRef.current = null;
+      setAudioErrors(previous => ({ ...previous, [message.key]: true }));
+    }} aria-label={`Play Santa’s greeting for ${message.name}`} />
+    {audioErrors[message.key] && <div role="alert"><p className="message-audio-error">Santa’s recording couldn’t be played. Please try loading it again, or use the download link below.</p><button className="message-retry" type="button" onClick={() => {
+      setAudioErrors(previous => ({ ...previous, [message.key]: false }));
+      audioRefs.current.get(message.key)?.load();
+    }}>Reload recording</button></div>}
+    <a className="message-download" href={message.url} download={message.downloadName}>Download your audio <span aria-hidden="true">↓</span></a>
+    <p className="message-name-hint">On iPhone, choose Share → Save to Files to keep the MP3.</p>
+    <NiceListCertificateDownload message={message} />
+    <SantaGreetingShare message={message} />
+  </div>);
+
   return <section className="santa-message-section" id="santa-messages">
     <div className="container message-layout">
       <div className="message-intro">
         <p className="eyebrow">A little North Pole experiment</p>
         <h2 className="santa-message-heading">FREE Personalised message from Santa</h2>
         <h3 className="santa-message-subheading">Their name. Santa’s voice.</h3>
-        <p>A real recorded greeting from Santa, not an AI voice, with your child’s name in it. Open the message desk with your adult contact details, then choose a recorded name, listen together and download your free MP3.</p>
+        <p>A real recorded greeting from Santa, not an AI voice, with your child’s name in it. Open the recording studio with your contact details, then choose a recorded name, listen together and instantly download your free MP3 and Nice List Certificate.</p>
         <SantaMessageExample />
-        <svg className="north-pole-letter" viewBox="0 0 360 240" fill="none" aria-hidden="true">
-          <ellipse cx="180" cy="218" rx="114" ry="10" fill="#09291e" />
-          <path d="M47 103L178 28L311 103" stroke="#d9bc72" strokeWidth="2" />
-          <path d="M65 66H292V182H65z" fill="#f0e3c3" transform="rotate(-7 178 124)" />
-          <path d="M108 91L247 74M112 105L232 90" stroke="#b5a47f" strokeWidth="2" />
-          <path d="M47 103H311V207H47z" fill="#ead6a6" />
-          <path d="M47 207L155 128M311 207L205 128" stroke="#c3a46b" strokeWidth="2" />
-          <path d="M47 103L180 170L311 103" fill="#f6e9ca" stroke="#c3a46b" strokeWidth="2" strokeLinejoin="round" />
-          <circle cx="180" cy="161" r="24" fill="#a82f36" stroke="#c46c58" strokeWidth="3" />
-          <path d="M190 150C184 144 170 145 170 153C170 162 190 156 190 167C190 175 176 177 169 170" stroke="#efcf8d" strokeWidth="2" strokeLinecap="round" />
-          <path d="M26 61V77M18 69H34M329 46V66M319 56H339M329 166V178M323 172H335" stroke="#d9bc72" strokeWidth="2" strokeLinecap="round" />
-          <circle cx="42" cy="158" r="2" fill="#d9bc72" /><circle cx="290" cy="39" r="2" fill="#d9bc72" />
-        </svg>
-        {showDetailLink && <Link to="/free-santa-message" className="message-detail-link">Visit Santa’s message desk <span aria-hidden="true">→</span></Link>}
+        <SantaCertificateExamples />
       </div>
       <div className={`santa-message-box${hasAccess ? '' : ' message-access-box'}`}>
-        <div className="message-card-top"><span className="message-seal" aria-hidden="true">S</span><div><p className="message-postmark">The North Pole message desk</p><small>A recorded hello, ready to keep</small></div></div>
-        {!hasAccess ? <SantaMessageAccessForm /> : <>
-        <h3 ref={makerHeadingRef} tabIndex={-1}>Download your free Santa greeting</h3>
-        <p className="form-desc">Hey {greetingName || 'there'}, Search for the name and press Create message.</p>
+        <div className="message-card-top"><span className="message-seal" aria-hidden="true">S</span><div><p className="message-postmark">The North Pole Recording Studio</p><small>A recorded hello, ready to keep</small></div></div>
         <p className="message-name-hint message-name-count" role="status">
           {nameSearch.hostedCount !== null
             ? `${nameSearch.hostedCount.toLocaleString('en-GB')} ${nameSearch.hostedCount === 1 ? 'name' : 'names'} available`
             : nameSearch.loading ? 'Checking how many names are available…' : 'Name total temporarily unavailable.'}
         </p>
+        {nameSearch.hostedCount === null && !nameSearch.loading && !hasAccess &&
+          <button className="message-retry" type="button" onClick={nameSearch.refresh}>Retry name total</button>}
+        {!hasAccess ? <SantaMessageAccessForm /> : <>
+        <h3 ref={makerHeadingRef} tabIndex={-1}>Download your free Santa greeting</h3>
+        <p className="form-desc">Hey {greetingName || 'there'}, Search for the name and press Create message.</p>
         {coolingDown ? <div className="message-wait">
           <p role="status">You’ve created 2 Free Santa messages for now. Please allow Santa 10 minutes to recover before he records more. Meanwhile why not enjoy Santa Radio Christmas music while you wait or tell your friends?</p>
           <p className="message-countdown">More messages in <span role="timer" aria-live="off">{countdown}</span></p>
+          <h4 className="message-wait-downloads-title">Still time to save your greetings</h4>
+          {!messages.length && <p>This tab no longer holds those recordings. Previously saved audio and certificates remain on your device. New recordings will be available when the wait ends.</p>}
+          <div className="message-wait-downloads">{renderResults()}</div>
           <button className="message-retry" type="button" onClick={listenToRadio} disabled={!radio || radio.status === 'playing' || radio.status === 'loading'}>
             {radio?.status === 'playing' ? 'Santa Radio is playing' : radio?.status === 'loading' ? 'Connecting to Santa Radio…' : 'Listen to Santa Radio'}
           </button>
@@ -314,28 +326,9 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
           {busy && <p role="status" className="message-name-hint">Santa is recording a personal message for you. Do hold on one moment...</p>}
           {!busy && allowance.pending && <p role="status" className="message-name-hint">Another message is being created. Please wait for it to finish.</p>}
         </form>
-        {messages.map((message, index) => <div key={message.key} className="message-result" ref={index === messages.length - 1 ? resultRef : null} tabIndex={-1} aria-label={`Santa’s greeting for ${message.name}`}>
-          <p className="message-postmark">A greeting is waiting</p>
-          <h4>For {message.name}, from Santa</h4>
-          <p>(The radio will pause while playing)</p>
-          <audio ref={audio => {
-            if (audio) audioRefs.current.set(message.key, audio);
-            else audioRefs.current.delete(message.key);
-          }} src={message.url} controls preload="none" onPlay={pauseRadio} onEnded={finishMessage} onError={event => {
-            if (audioRef.current === event.currentTarget) resumeRadioRef.current = null;
-            setAudioErrors(previous => ({ ...previous, [message.key]: true }));
-          }} aria-label={`Play Santa’s greeting for ${message.name}`} />
-          {audioErrors[message.key] && <div role="alert"><p className="message-audio-error">Santa’s recording couldn’t be played. Please try loading it again, or use the download link below.</p><button className="message-retry" type="button" onClick={() => {
-            setAudioErrors(previous => ({ ...previous, [message.key]: false }));
-            audioRefs.current.get(message.key)?.load();
-          }}>Reload recording</button></div>}
-          <a className="message-download" href={message.url} download={message.downloadName}>Download your audio <span aria-hidden="true">↓</span></a>
-          <p className="message-name-hint">On iPhone, choose Share → Save to Files to keep the MP3.</p>
-          <NiceListCertificateDownload message={message} />
-          <SantaGreetingShare message={message} />
-        </div>)}
+        {!coolingDown && renderResults()}
         <p className="service-notice">Free to create and download here. The message is not sent by email.</p>
-        {!sessionRemembered && <p className="message-name-hint" role="status">Your browser can’t remember access. The desk stays open while you browse, but refreshing this tab may ask for your details again.</p>}
+        {!sessionRemembered && <p className="message-name-hint" role="status">Your browser can’t remember access. The studio stays open while you browse, but refreshing this tab may ask for your details again.</p>}
         </>}
       </div>
     </div>

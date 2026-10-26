@@ -49,7 +49,7 @@ export async function submitMessageAccess(fields, signal) {
   try { data = await response.json(); }
   catch (error) {
     if (signal.aborted) throw error;
-    throw new MessageAccessError('The message desk received an unexpected response. Please try again.');
+    throw new MessageAccessError('The recording studio received an unexpected response. Please try again.');
   }
   signal.throwIfAborted();
   // An HTTP 200, a truthy string or a legacy redirect is NOT acceptance.
@@ -69,8 +69,8 @@ export async function submitMessageAccess(fields, signal) {
   if (unsupportedFields.length) {
     throw new MessageAccessError(
       unsupportedFields.includes('CHILD_DATE_OF_BIRTH')
-        ? 'The message desk’s Brevo form still requires a child’s date of birth. This website only collects adult contact details. Please contact Santa Radio so we can correct the form settings.'
-        : 'The message desk’s signup form requires an extra field that this website doesn’t collect. Please contact Santa Radio so we can correct the form settings.',
+        ? 'The recording studio’s Brevo form still requires a child’s date of birth. This website only collects adult contact details. Please contact Santa Radio so we can correct the form settings.'
+        : 'The recording studio’s signup form requires an extra field that this website doesn’t collect. Please contact Santa Radio so we can correct the form settings.',
       fieldErrors,
     );
   }

@@ -36,7 +36,7 @@ test('old catalogue goes to the generic maker and preserves the adult gate', asy
   await page.goto('/personalised-santa-message/all');
   await expect(page).toHaveURL(/\/free-santa-message$/);
   await expect(page.locator('.message-name-label')).toHaveCount(0);
-  expect(requests.searches).toEqual([]);
+  expect(requests.searches.every(query => query === '')).toBe(true);
   expect(requests.renders).toEqual([]);
   await openAccess(page);
   await expect(page.getByLabel('First Name')).toHaveValue('');
@@ -48,7 +48,7 @@ test('old name link carries a verified recording without submitting access or cr
   await page.goto('/personalised-santa-message/Cooper?utm_source=google');
   await expect(page).toHaveURL(/\/free-santa-message\?utm_source=google&name=Cooper$/);
   await expect(page.locator('.message-name-label')).toHaveCount(0);
-  expect(requests.searches).toEqual([]);
+  expect(requests.searches.every(query => query === '')).toBe(true);
   expect(requests.renders).toEqual([]);
   await openAccess(page);
   await expect(page.getByLabel('First Name')).toHaveValue('Cooper');
@@ -74,12 +74,14 @@ test('an unavailable legacy name stays explicit and cannot generate a different 
   await expect(page.getByText('A recording for Cooper is available.', { exact: true })).toBeVisible();
 });
 
-test('a legacy filename identifier resolves only against the verified search result', async ({ page }) => {
+test('a legacy filename with different display spelling requires the verified suggestion', async ({ page }) => {
   const requests = await setup(page, [{ id: 'mary-anne', name: 'Mary Anne', downloadName: 'Santa-message-for-Mary Anne.mp3' }]);
   await page.goto('/personalised-santa-message/Mary-Anne');
   await openAccess(page);
   await expect(page.getByLabel('First Name')).toHaveValue('Mary-Anne');
-  await expect(page.getByText('A recording for Mary Anne is available.', { exact: true })).toBeVisible();
+  await page.getByLabel('First Name').focus();
+  await page.getByRole('option', { name: 'Mary Anne', exact: true }).click();
+  await expect(page.getByText('Mary Anne is selected.', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Create message', exact: true }).click();
   await expect(page.getByText('Test render unavailable.', { exact: true })).toBeVisible();
   expect(requests.renders).toEqual([{ name: 'mary-anne' }]);

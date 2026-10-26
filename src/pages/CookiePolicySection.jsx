@@ -22,7 +22,7 @@ export default function CookiePolicySection() {
       <p>Your browser remembers your snow preference in local storage and the minimised player setting in session
         storage. The snow preference remains until changed or cleared; the player preference normally ends with
         the tab session. You can clear these through browser settings.</p>
-      <p>The message desk also remembers a non-sensitive access flag in session storage for the current tab
+      <p>The recording studio also remembers a non-sensitive access flag in session storage for the current tab
         session. Your adult names and email address are not stored in browser storage or added to page addresses.
         If session storage is unavailable, access lasts while you browse in the tab but refreshing may ask you
         to submit again.</p>

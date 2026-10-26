@@ -88,8 +88,14 @@ Missing-name request confirmations use “check back in a week” before 1 Decem
 
 **How to apply:** Treat this as a seasonal invitation to check availability, not a guarantee that a recording will be created by that date.
 
-Public example greetings are playback-only in the website interface. Do not offer downloads or sharing of the supplied boy/girl samples. This restriction does not apply to the personalised greetings visitors create and download.
+Public example greetings are playback-only in the website interface. Do not offer downloads or sharing of the supplied samples. This restriction does not apply to the personalised greetings visitors create and download.
 
 **Why:** The owner requested examples on the homepage and free audio message page, specifying “Don't allow a user to download. Only play it.”
 
 **How to apply:** Keep sample playback separate from the maker's downloadable results. Remove sample download controls and links, but do not claim browser-playable audio is completely download-proof.
+
+When expanding the example-message rotation, preserve the first example for fresh visitors while treating a remembered example as the last successfully played item. Keep progression user-initiated; do not start the next recording automatically.
+
+**Why:** The owner asked to add three more recordings to the rotation, not to autoplay audio. An earlier two-item rotation used the previous final example as its starting cursor; extending the list exposed a different first sample until the fresh-start rule was made explicit.
+
+**How to apply:** Check fresh visitors, returning tabs with older saved rotation values, failed playback and cross-page navigation whenever the example list changes.

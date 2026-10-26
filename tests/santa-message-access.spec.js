@@ -198,7 +198,7 @@ test('pending form prevents duplicate submissions and adult details never reach 
   if (await decline.isVisible()) await decline.click();
   await fillAccessForm(page);
   await page.locator('.santa-message-access form').evaluate(form => { form.requestSubmit(); form.requestSubmit(); });
-  await expect(page.getByRole('button', { name: 'Opening the message desk…' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Opening the recording studio…' })).toBeDisabled();
   await expect(page.locator('input[name="FIRSTNAME"]')).toHaveAttribute('readonly', '');
   await expect.poll(() => calls).toBe(1);
   await expect(page.locator('.message-name-label')).toHaveCount(0);
@@ -220,7 +220,7 @@ test('timeout remains locked, retains details and allows retry without waiting f
   await page.goto('/free-santa-message');
   await fillAccessForm(page);
   await page.getByRole('button', { name: 'Get my free Santa message' }).click();
-  await expect(page.getByRole('button', { name: 'Opening the message desk…' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Opening the recording studio…' })).toBeDisabled();
   await page.clock.runFor(ACCESS_REQUEST_TIMEOUT_MS + 100);
   await expect(page.getByRole('alert')).toContainText('took too long');
   await expect(page.locator('input[name="EMAIL"]')).toHaveValue(adult.EMAIL);

@@ -1,0 +1,187 @@
+.santa-certificate-examples {
+  --certificate-cream: var(--cream, #f6ecd8);
+  --certificate-gold: var(--gold, #d4af37);
+  --certificate-gold-light: var(--gold-light, #ead39a);
+  --certificate-green: #0c2a20;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 420px;
+  margin-inline: 0;
+  padding: 15px;
+  color: var(--certificate-cream);
+  background: var(--certificate-green);
+  border: 1px solid #d4af3760;
+  border-radius: 16px;
+  box-shadow: 0 14px 36px #061c1730;
+}
+
+.santa-certificate-examples *,
+.santa-certificate-dialog * {
+  box-sizing: border-box;
+}
+
+.santa-certificate-examples__heading {
+  margin-bottom: 10px;
+}
+
+.santa-certificate-examples__eyebrow {
+  margin: 0 0 5px;
+  color: var(--certificate-gold-light);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.santa-certificate-examples h3 {
+  margin: 0;
+  color: var(--certificate-cream);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: clamp(1rem, 2.1vw, 1.1rem);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.santa-certificate-examples__stage {
+  display: grid;
+  min-height: 0;
+  aspect-ratio: 1800 / 1273;
+  place-items: center;
+  overflow: hidden;
+  padding: 10px;
+  background: #081e17;
+  border: 1px solid #d4af3740;
+  border-radius: 10px;
+}
+
+.santa-certificate-examples__preview {
+  position: relative;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  cursor: zoom-in;
+}
+
+.santa-certificate-examples__image {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  transition: transform 180ms ease;
+}
+
+.santa-certificate-examples__preview:hover .santa-certificate-examples__image {
+  transform: scale(1.025);
+}
+
+.santa-certificate-examples__zoom-hint {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  padding: 6px 9px;
+  color: #f6ecd8;
+  background: #0c2a20e8;
+  border: 1px solid #d4af3760;
+  border-radius: 5px;
+  font-size: 0.68rem;
+  letter-spacing: 0.03em;
+}
+
+.santa-certificate-examples :is(button, [tabindex]):focus-visible,
+.santa-certificate-dialog :is(button, [tabindex]):focus-visible {
+  outline: 3px solid #e7c877;
+  outline-offset: 4px;
+}
+
+.santa-certificate-dialog {
+  margin: auto;
+  width: min(94vw, 980px);
+  max-width: 980px;
+  max-height: 92dvh;
+  padding: 0;
+  overflow: auto;
+  color: var(--certificate-cream);
+  background: #0c2a20;
+  border: 1px solid #d4af37a0;
+  border-radius: 12px;
+  box-shadow: 0 24px 80px #0009;
+}
+
+.santa-certificate-dialog::backdrop {
+  background: #061c17d9;
+}
+
+.santa-certificate-dialog__content {
+  padding: clamp(12px, 2.5vw, 24px);
+}
+
+.santa-certificate-dialog__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+.santa-certificate-dialog__top p { flex: 1; }
+.santa-certificate-dialog__artwork { overflow: auto; max-height: calc(92dvh - 120px); }
+.santa-certificate-dialog__artwork.is-zoomed img { width: 1200px; max-width: none; max-height: none; margin: 0; }
+.santa-certificate-dialog__help { color: #d0dacd; font-size: .8rem; line-height: 1.6; margin: 12px 0 0; }
+
+.santa-certificate-dialog__top p {
+  margin: 0;
+  color: var(--certificate-gold-light);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 1rem;
+}
+
+.santa-certificate-dialog__close {
+  min-height: 42px;
+  padding: 8px 15px;
+  color: var(--certificate-cream);
+  background: transparent;
+  border: 1px solid #d4af3780;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.santa-certificate-dialog__image {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: calc(92dvh - 100px);
+  margin: 0 auto;
+  object-fit: contain;
+}
+
+@media (max-width: 480px) {
+  .santa-certificate-examples {
+    padding: 12px;
+  }
+
+  .santa-certificate-examples__stage {
+    padding: 6px;
+  }
+  .santa-certificate-dialog__top { flex-wrap: wrap; gap: 8px; }
+  .santa-certificate-dialog__top p { flex-basis: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .santa-certificate-examples *,
+  .santa-certificate-dialog * {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

@@ -1,14 +1,20 @@
 import { useEffect, useState } from 'react';
 
+// Reuse the public inventory on immediate SPA navigation after signup. Never
+// cache recipient queries, errors or local-only fallback totals.
+let publicInventory = null;
+
 export default function useSantaNames(query, enabled) {
   const [retry, setRetry] = useState(0);
   const [hostedCount, setHostedCount] = useState(null);
-  const [state, setState] = useState({ query: '', records: [], loading: false, warning: '', error: '' });
-  const input = query.trim();
+  const [state, setState] = useState({ query: '', records: [], loading: true, warning: '', error: '' });
+  // The empty-query inventory supplies the public total. Name selection stays
+  // gated, and unlocking an empty form reuses this request rather than refetching.
+  const input = enabled ? query.trim() : '';
   useEffect(() => {
-    if (!enabled) {
-      setState({ query: input, records: [], loading: false, warning: '', error: '' });
-      setHostedCount(null);
+    if (!input && retry === 0 && publicInventory && Date.now() - publicInventory.at < 60_000) {
+      setHostedCount(publicInventory.data.hostedCount);
+      setState({ query: input, records: publicInventory.data.records, loading: false, warning: '', error: '' });
       return;
     }
     const controller = new AbortController();
@@ -17,6 +23,7 @@ export default function useSantaNames(query, enabled) {
     const timer = setTimeout(async () => {
       fetchTimer = setTimeout(() => {
         controller.abort();
+        publicInventory = null;
         setHostedCount(null);
         setState({ query: input, records: [], loading: false, warning: '',
           error: 'The name search took too long. Please try again.' });
@@ -34,21 +41,25 @@ export default function useSantaNames(query, enabled) {
           typeof record.downloadName !== 'string') ||
           (data.warning !== null && typeof data.warning !== 'string')) throw new Error('The name list could not be loaded. Please try again.');
         if (!controller.signal.aborted) {
+          if (data.warning || !Number.isSafeInteger(data.hostedCount) || data.hostedCount < 0) publicInventory = null;
+          if (!input && !data.warning && Number.isSafeInteger(data.hostedCount) && data.hostedCount >= 0) {
+            publicInventory = { at: Date.now(), data };
+          }
           setHostedCount(!data.warning && Number.isSafeInteger(data.hostedCount) && data.hostedCount >= 0
             ? data.hostedCount : null);
           setState({ query: input, records: data.records, loading: false, warning: data.warning || '', error: '' });
         }
       } catch (error) {
         if (!controller.signal.aborted) {
+          publicInventory = null;
           setHostedCount(null);
           setState({ query: input, records: [], loading: false, warning: '', error: error.message });
         }
       } finally { clearTimeout(fetchTimer); }
     }, input ? 180 : 0);
     return () => { clearTimeout(timer); clearTimeout(fetchTimer); controller.abort(); };
-  }, [input, enabled, retry]);
+  }, [input, retry]);
   useEffect(() => {
-    if (!enabled) return;
     const refreshVisible = () => {
       if (document.visibilityState === 'visible') setRetry(value => value + 1);
     };
@@ -59,11 +70,11 @@ export default function useSantaNames(query, enabled) {
       clearInterval(timer);
       document.removeEventListener('visibilitychange', refreshVisible);
     };
-  }, [enabled]);
+  }, []);
   const current = state.query === input;
   return {
-    ...state, hostedCount, records: current ? state.records : [],
-    loading: enabled && (!current || state.loading),
+    ...state, hostedCount, records: enabled && current ? state.records : [],
+    loading: !current || state.loading,
     warning: current ? state.warning : '', error: current ? state.error : '',
     refresh: () => setRetry(value => value + 1),
   };

@@ -70,8 +70,8 @@ export default function SantaMessageAccessForm() {
         focusInvalid(failure.fieldErrors);
       } else {
         setError(timedOut
-          ? 'The message desk took too long to respond. Your details are still here; please try again.'
-          : 'We couldn’t reach the message desk. Check your connection and try again.');
+          ? 'The recording studio took too long to respond. Your details are still here; please try again.'
+          : 'We couldn’t reach the recording studio. Check your connection and try again.');
       }
     } finally {
       clearTimeout(timeout);

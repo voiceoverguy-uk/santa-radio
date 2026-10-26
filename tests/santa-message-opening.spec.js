@@ -138,7 +138,7 @@ for (const width of [1440, 390]) {
       await expect(page).toHaveURL(originalUrl);
       await expect(page.locator('main.home-page')).toHaveCount(1);
       await expect(page.locator('.message-name-label')).toHaveCount(0);
-      await expect(page.locator('.santa-message-section').getByRole('link', { name: 'Visit Santa’s message desk' })).toHaveAttribute('href', '/free-santa-message');
+      await expect(page.locator('.santa-message-section').getByRole('link', { name: 'Visit Santa’s message desk' })).toHaveCount(0);
       await scrollTo(page, 0);
       await expectStayedAt(page, 0);
       await link.focus();
@@ -182,6 +182,8 @@ for (const width of [1440, 390]) {
       const input = page.getByLabel('First Name');
       await expect(input).toHaveValue('Olivia');
       await expect(page.getByRole('heading', { name: 'Download your free Santa greeting' })).toBeFocused();
+      await expect(page.getByText('A recording for Olivia is available.', { exact: true })).toBeVisible();
+      await finishFocusScroll(page);
       await settled(page);
       await scrollTo(page, 0);
       await expectStayedAt(page, 0);

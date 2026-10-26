@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const introduction = 'A real recorded greeting from Santa, not an AI voice, with your child’s name in it. Open the message desk with your adult contact details, then choose a recorded name, listen together and download your free MP3.';
+const introduction = 'A real recorded greeting from Santa, not an AI voice, with your child’s name in it. Open the recording studio with your contact details, then choose a recorded name, listen together and instantly download your free MP3 and Nice List Certificate.';
 
 for (const width of [320, 390, 768, 1440]) {
   test(`recorded voice introduction is clear and contained at ${width}px`, async ({ page }) => {
@@ -10,11 +10,11 @@ for (const width of [320, 390, 768, 1440]) {
     const heading = intro.locator('h2');
     await expect(heading).toHaveText('FREE Personalised message from Santa');
     const subheading = intro.locator('h2 + h3.santa-message-subheading');
-    await expect(subheading).toHaveText('Their name.Santa’s voice.');
-    await expect(subheading.locator('br')).toHaveCount(1);
+    await expect(subheading).toHaveText('Their name. Santa’s voice.');
     await expect(intro.locator('.eyebrow')).toHaveText('A little North Pole experiment');
     const paragraph = intro.locator(':scope > p').nth(1);
     await expect(paragraph).toHaveText(introduction);
+    await expect(intro.getByRole('heading', { name: 'FREE Certificate examples', exact: true })).toBeVisible();
     await expect(paragraph).toBeVisible();
     await page.evaluate(() => document.fonts.ready);
     const hierarchy = await intro.evaluate(node => {
@@ -30,7 +30,7 @@ for (const width of [320, 390, 768, 1440]) {
     });
     expect(hierarchy.subSize).toBeLessThan(hierarchy.mainSize * .75);
     expect(hierarchy.subTop).toBeGreaterThan(hierarchy.mainBottom);
-    expect(hierarchy.lines).toBe('Their name.\nSanta’s voice.');
+    expect(hierarchy.lines).toBe('Their name. Santa’s voice.');
     const example = intro.getByRole('button', { name: 'Hear an example message', exact: true });
     await expect(example).toBeVisible();
     await expect(example).toBeEnabled();

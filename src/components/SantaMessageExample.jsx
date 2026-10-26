@@ -6,6 +6,9 @@ const ROTATION_KEY = 'santa-radio-example-last';
 const EXAMPLES = [
   { key: 'boy', src: '/audio/examples/santa-message-boy.mp3' },
   { key: 'girl', src: '/audio/examples/santa-message-girl.mp3' },
+  { key: 'ayla', src: '/audio/examples/santa-message-ayla.mp3' },
+  { key: 'mohani', src: '/audio/examples/santa-message-mohani.mp3' },
+  { key: 'charlotte', src: '/audio/examples/santa-message-charlotte.mp3' },
 ];
 
 let lastSuccessfulExample = null;
@@ -13,11 +16,11 @@ let lastSuccessfulExample = null;
 function getLastSuccessfulExample() {
   try {
     const stored = window.sessionStorage.getItem(ROTATION_KEY);
-    if (stored === 'boy' || stored === 'girl') return stored;
+    if (EXAMPLES.some(example => example.key === stored)) return stored;
   } catch {
     // Private browsing and locked-down storage use the in-memory rotation.
   }
-  return lastSuccessfulExample || 'girl';
+  return lastSuccessfulExample || EXAMPLES[EXAMPLES.length - 1].key;
 }
 
 function rememberSuccessfulExample(key) {
@@ -112,7 +115,8 @@ export default function SantaMessageExample() {
 
     setError('');
     const previous = getLastSuccessfulExample();
-    const example = EXAMPLES.find(item => item.key !== previous) || EXAMPLES[0];
+    const index = EXAMPLES.findIndex(item => item.key === previous);
+    const example = EXAMPLES[(index + 1) % EXAMPLES.length];
     const audio = audioRef.current;
     if (!audio) return;
 

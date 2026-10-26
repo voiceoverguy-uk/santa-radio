@@ -8,6 +8,12 @@ Before capturing an interaction state or measuring its viewport position, ensure
 
 **How to apply:** Use instant scrolling for capture-only positioning, or wait for the intended position before measuring. An element inside the viewport can still be obscured by fixed controls; verify the relevant caption or button against those controls rather than only the viewport bounds.
 
+Do not treat a scroll helper's “element is not attached” error alone as proof that retained controls were lost.
+
+**Why:** After internal navigation, Playwright’s `scrollIntoViewIfNeeded` repeatedly failed for retained greeting downloads, while instant positioning followed by actual keyboard and touch downloads passed.
+
+**How to apply:** Re-resolve the live locator and use instant positioning when testing download interaction rather than scrolling itself. Keep the real activation and downloaded-file assertions; do not replace them with forced clicks.
+
 For hover-style tests, disable smooth scrolling in the test page before positioning the pointer; do not change the application's scrolling behaviour to satisfy the check.
 
 **Why:** After a homepage section move, a button briefly acquired the expected hover style, then ongoing scrolling moved it away from the stationary pointer and produced a persistent false failure.

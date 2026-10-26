@@ -137,12 +137,13 @@ for (const mobile of [false, true]) {
     await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
     await page.getByRole('link', { name: 'Santa Radio home', exact: true }).click();
     await expect(page).toHaveURL(/\/$/);
-    await expect(page.getByRole('link', { name: 'Visit Santa’s message desk' })).toBeVisible();
+    await expect(page.locator('.message-card-top')).toContainText('The North Pole Recording Studio');
+    await expect(page.locator('.message-wait .message-result')).toHaveCount(2);
     for (const [index, file] of [[0, 'two-first'], [2, 'two-second']]) {
       const result = page.getByLabel(`Santa’s greeting for ${names[index]}`, { exact: true });
       const button = certificateButton(result);
       await expect(button).toBeEnabled();
-      await button.scrollIntoViewIfNeeded();
+      await button.evaluate(element => element.scrollIntoView({ block: 'center', behavior: 'instant' }));
       const pending = page.waitForEvent('download');
       if (mobile) await button.tap();
       else {
@@ -209,14 +210,14 @@ test('repeated activation is single-flight; navigation discards pending completi
   page.on('download', () => { downloads++; });
   await page.getByRole('link', { name: 'Santa Radio home', exact: true }).click();
   await expect(page).toHaveURL(/\/$/);
-  await expect(page.getByRole('link', { name: 'Visit Santa’s message desk' })).toBeVisible();
+  await expect(page.locator('.message-card-top')).toContainText('The North Pole Recording Studio');
   release();
   const returned = page.getByLabel(`Santa’s greeting for ${names[0]}`, { exact: true });
   await downloadCertificate(page, returned);
   expect(downloads).toBe(1);
   const urls = await page.evaluate(() => window.createdBlobUrls.filter(item => item.type === 'application/pdf').map(item => item.url));
   expect(urls).toHaveLength(1);
-  await page.getByRole('link', { name: 'Visit Santa’s message desk' }).click();
+  await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'FREE Santa Message', exact: true }).click();
   await expect.poll(() => page.evaluate(() => window.revokedBlobUrls)).toEqual(expect.arrayContaining(urls));
   expect(generations()).toBe(1);
 });
