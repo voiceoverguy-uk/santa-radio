@@ -2,9 +2,9 @@
 name: Nice List certificate artwork scope
 description: Owner-approved design and privacy boundaries for personalised certificates.
 ---
-Use the supplied approved blank certificate, not a recreation. Add only the completed recording's canonical display name; no year or extra wording.
+Preserve the supplied certificate's foreground artwork. Its background is now authorised to use the actual homepage snowy North Pole image across the full A4 landscape page, not the original blank emerald left extension. Add only the completed recording's canonical display name; no year or extra wording.
 
-**Why:** The owner explicitly approved the larger decorative Santa Claus signature, gold wax-style seal, gold line and absence of a name-field rectangle.
+**Why:** The owner explicitly approved the larger decorative Santa Claus signature, gold wax-style seal, gold line and absence of a name-field rectangle, then authorised replacing the background while retaining those elements.
 
 **How to apply:** Keep personalisation local to the browser, separate from audio allowance and public invitation sharing. Certificate failure must not affect audio; do not add recipient storage or remote certificate delivery.
 
@@ -12,7 +12,7 @@ Named certificate PDFs supplied for previews are examples, not replacement perso
 
 **Why:** The owner requested named examples as promotional previews while explicitly keeping both the personalised PDF generator and example recordings unchanged.
 
-**How to apply:** Preserve the examples’ supplied artwork and names; treat changes to the certificate master or example audio as separate requests.
+**How to apply:** Edward and Ayla should match the current master and real local personalisation process, not the old supplied example artwork. Keep original uploads intact and treat example audio as separate.
 
 Keep the promotional certificate box aligned left with the introduction and sized to fit its text area, not centred at a strict percentage reduction. Keep automatic rotation, no name-selection buttons, no pause control and no “Showing…” status line. Clicking the visible example enlarges that example.
 

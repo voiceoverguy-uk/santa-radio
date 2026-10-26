@@ -130,6 +130,36 @@ for (const width of [390, 1280]) {
   }
 }
 
+for (const path of ['/', '/free-santa-message']) {
+  for (const viewport of [{ width: 1280, height: 500 }, { width: 844, height: 390 }]) {
+    test(`fit includes all borders and zoom scrolls on short ${viewport.width}px screen on ${path}`, async ({ page }) => {
+      await page.setViewportSize(viewport);
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      await visit(page, path);
+      await page.getByRole('button', { name: "Open Edward's certificate example" }).click();
+      const dialog = page.getByRole('dialog', { name: "Edward's certificate example" });
+      const artwork = dialog.getByRole('region', { name: 'Certificate artwork' });
+      const image = artwork.locator('img');
+      await expect(image).toBeVisible();
+      const checkFit = async () => {
+        const frame = await artwork.boundingBox(), bounds = await image.boundingBox();
+        expect(bounds.x).toBeGreaterThanOrEqual(frame.x - 1);
+        expect(bounds.y).toBeGreaterThanOrEqual(frame.y - 1);
+        expect(bounds.x + bounds.width).toBeLessThanOrEqual(frame.x + frame.width + 1);
+        expect(bounds.y + bounds.height).toBeLessThanOrEqual(frame.y + frame.height + 1);
+        expect(await artwork.evaluate(node => node.scrollHeight - node.clientHeight)).toBeLessThanOrEqual(1);
+      };
+      await checkFit();
+      await dialog.getByRole('button', { name: 'Zoom in to read' }).click();
+      expect(await artwork.evaluate(node => node.scrollWidth > node.clientWidth)).toBe(true);
+      await artwork.evaluate(node => { node.scrollLeft = node.scrollWidth; node.scrollTop = node.scrollHeight; });
+      expect(await artwork.evaluate(node => node.scrollLeft)).toBeGreaterThan(0);
+      await dialog.getByRole('button', { name: 'Fit full certificate' }).click();
+      await checkFit();
+    });
+  }
+}
+
 test('automatic rotation pauses during interaction and enlargement and respects reduced motion', async ({ page }) => {
   await page.clock.install();
   await visit(page, '/free-santa-message');

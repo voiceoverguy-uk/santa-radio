@@ -131,7 +131,7 @@
   margin-bottom: 12px;
 }
 .santa-certificate-dialog__top p { flex: 1; }
-.santa-certificate-dialog__artwork { overflow: auto; max-height: calc(92dvh - 120px); }
+.santa-certificate-dialog__artwork { overflow: auto; max-height: calc(92dvh - 160px); }
 .santa-certificate-dialog__artwork.is-zoomed img { width: 1200px; max-width: none; max-height: none; margin: 0; }
 .santa-certificate-dialog__help { color: #d0dacd; font-size: .8rem; line-height: 1.6; margin: 12px 0 0; }
 
@@ -159,7 +159,9 @@
   width: auto;
   height: auto;
   max-width: 100%;
-  max-height: calc(92dvh - 100px);
+  /* Share the artwork region's height limit: otherwise fit mode clips the
+     bottom border on short screens even though object-fit is contain. */
+  max-height: calc(92dvh - 160px);
   margin: 0 auto;
   object-fit: contain;
 }

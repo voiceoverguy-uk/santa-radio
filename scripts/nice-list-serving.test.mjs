@@ -21,6 +21,14 @@ test('built Node SSR serves the exact generic master and font without loading ce
     if (file.endsWith('.pdf')) assert.match(response.headers.get('content-type'), /application\/pdf/);
     assert.deepEqual(Buffer.from(await response.arrayBuffer()), await readFile(`public/certificates/nice-list/${file}`));
   }
+  for (const name of ['edward', 'ayla']) {
+    const path = `/certificates/examples/${name}.webp`;
+    const response = await get(path);
+    assert.equal(response.status, 200);
+    assert.match(response.headers.get('content-type'), /image\/webp/);
+    assert.equal(response.headers.get('cache-control'), 'no-cache');
+    assert.deepEqual(Buffer.from(await response.arrayBuffer()), await readFile(`public${path}`));
+  }
   for (const path of ['/', '/free-santa-message']) {
     const response = await get(path);
     assert.equal(response.status, 200);

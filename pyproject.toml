@@ -1,0 +1,10 @@
+[project]
+name = "repl-nix-workspace"
+version = "0.1.0"
+description = "Offline certificate artwork generation and verification tools"
+requires-python = ">=3.13"
+dependencies = [
+    "pillow>=13.0.0",
+    "pymupdf>=2.0",
+]
+
