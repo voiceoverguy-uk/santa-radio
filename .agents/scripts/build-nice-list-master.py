@@ -15,6 +15,8 @@ OUTPUT = ROOT / "generated-artifacts/nice-list"
 OUTPUT.mkdir(parents=True, exist_ok=True)
 PACK = ROOT / "attached_assets/Santa-Radio-Nice-List-Editable-Pack_1792688054818.zip"
 SOURCE_PDF = "Santa-Radio-Nice-List-Editable-Pack/Santa-Radio-Nice-List-A4.pdf"
+DARK_TEAL = (2, 20, 23)
+BACKGROUND_FADE = .20
 
 with zipfile.ZipFile(PACK) as archive:
     document = pymupdf.open(stream=archive.read(SOURCE_PDF), filetype="pdf")
@@ -47,8 +49,17 @@ for y in range(size[1]):
         centre = math.exp(-((xx - .5) / .34) ** 6)
         lettering = math.exp(-((yy - .63) / .32) ** 8)
         alpha = .20 + .24 * centre * lettering
-        pixels[x, y] = (2, 20, 23, round(255 * alpha))
+        pixels[x, y] = (*DARK_TEAL, round(255 * alpha))
 scene = Image.alpha_composite(scene.convert("RGBA"), overlay).convert("RGB")
+# Reproduce the pre-trial master for comparison; never fade an already-faded
+# master. Only the raster background changes, not any foreground PDF objects.
+scene.save(OUTPUT / "snowy-background-before.png")
+document.update_object(background["xref"],
+                       f"<</Type /XObject /Subtype /Image /Width {size[0]} "
+                       f"/Height {size[1]} /ColorSpace /DeviceRGB /BitsPerComponent 8>>")
+document.update_stream(background["xref"], scene.tobytes(), compress=True)
+document.save(OUTPUT / "before.pdf", deflate=True, no_new_id=True)
+scene = Image.blend(scene, Image.new("RGB", size, DARK_TEAL), BACKGROUND_FADE)
 scene.save(OUTPUT / "snowy-background.png")
 # Replace the image object's data directly: this leaves the original page
 # stream (all text, strokes and seal paths) byte-for-byte unchanged.
@@ -67,6 +78,7 @@ with pymupdf.open(target) as result:
     assert abs(result[0].rect.width - 297 * 72 / 25.4) < .1
     assert abs(result[0].rect.height - 210 * 72 / 25.4) < .1
     assert result[0].get_text() == original_text
+    assert result.metadata == original_metadata
     assert result.xref_stream(result[0].get_contents()[0]) == original_content
     result[0].get_pixmap(matrix=pymupdf.Matrix(1.5, 1.5)).save(OUTPUT / "blank.png")
 print(f"Rebuilt {target.relative_to(ROOT)}; original foreground preserved")

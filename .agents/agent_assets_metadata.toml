@@ -434,3 +434,31 @@ mtime_ms = 1793025060654
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/b91f3729-d492-4400-8b15-fa60e918f235/b84989e6-de7f-42f1-b399-e8b7c4e1a0e7"
 storage_version_token = "1793025108112902"
 content_type = "audio/mpeg"
+
+[[outputs]]
+id = "Rd2PidbMxLphZZL8sES-h"
+uri = "file://generated-artifacts/nice-list/background-comparison.html"
+type = "html"
+title = "Certificate background — before and after"
+description = "Side-by-side Edward and Ayla certificates showing the previous background and the 20% dark-teal fade trial."
+logical_id = "9e20dd72-708f-4a94-811e-0d1c75b7e55a"
+content_hash = "sha256:eb008930ae3f89ab27dc8d8157d6bc608219e301cbcc32692679d09d18efd110"
+size = 988987
+mtime_ms = 1793025567396
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/9e20dd72-708f-4a94-811e-0d1c75b7e55a/42378bcc-eaeb-40a1-aa3a-a4c59ff5fa9a"
+storage_version_token = "1793025617828946"
+content_type = "text/html"
+
+[[outputs]]
+id = "iVT6t8yDypzEuR3Fkkrjd"
+uri = "file://generated-artifacts/nice-list/examples/edward.pdf"
+type = "pdf"
+title = "Updated Edward certificate PDF"
+description = "A4 landscape example generated through the real local personalisation process with the faded background."
+logical_id = "83be27fc-79bf-4d77-b3a7-74336fafe00c"
+content_hash = "sha256:32b9c50510aa9a8b611dde518457c1c9cbc31dcc41c0ee698cc591211b06940e"
+size = 4711542
+mtime_ms = 1793025350587
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/83be27fc-79bf-4d77-b3a7-74336fafe00c/835a5db7-f4f8-4aee-8030-b5ee32237f5d"
+storage_version_token = "1793025619198737"
+content_type = "application/pdf"

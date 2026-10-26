@@ -20,6 +20,12 @@ Keep the promotional certificate box aligned left with the introduction and size
 
 **How to apply:** Preserve enlargement and reduced-motion behaviour when refining the compact preview.
 
+The background fade trial means retaining 80% of the existing treated snowy scene and blending 20% towards its existing deep dark teal, not towards white or by reducing the whole certificate's opacity.
+
+**Why:** The requested trial is intended to make the existing light gold wording and name stand out while keeping the foreground artwork untouched.
+
+**How to apply:** Apply the same background-only treatment to the master and website examples. Keep before/after comparisons available without adding a visitor-facing setting.
+
 Embed the supplied font in full rather than subsetting it.
 
 **Why:** The fontkit subset writer omitted visible letters from this particular supplied static font even though PDF text extraction returned the correct name. Full embedding rendered correctly.
