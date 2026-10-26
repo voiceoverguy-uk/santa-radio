@@ -1,4 +1,5 @@
 - [Design direction](design-direction.md) — Base44-inspired North Pole appearance; mobile radio should start minimised.
+- [Santa offer appearance](santa-offer-visual-direction.md) — Full length, 30% backdrop; FREE itself shimmers, no flanking stars or top ornament; recognisable holly.
 - [Partnership banner direction](partnership-visual-direction.md) — Muted gold wrapping-paper pattern, not more village scenery; matching thin gold top and bottom lines.
 - [Radio feed hosting](radio-feed-hosting.md) — Use the confirmed independent HTTPS feeds; no retiring-host fallback. Metadata may lead buffered audio.
 - [Radio chart presentation](radio-chart-presentation.md) — Yesterday's chart belongs in a small player panel, not a large pop-out.
@@ -42,3 +43,5 @@
 - [Local audio inspection](local-audio-inspection.md) — FFmpeg PCM input avoids local speech-decoder API mismatches; transcription is not listening verification.
 - [Santa download naming](santa-download-naming.md) — Use santa-recorded-message-for-(NAME).mp3 for downloads; leave hosted source and cache URLs alone.
 - [Workshop choice controls](workshop-choice-controls.md) — All choice categories use horizontal scrollers except names, which use live search.
+- [Virtual-clock screenshots](browser-test-clocks.md) — Finish or disable entrance animations before capturing delayed interfaces under a virtual browser clock.
+- [Message-maker counters](santa-name-counter-direction.md) — Start 50 below the real total; add one every five seconds, capped at the real total.

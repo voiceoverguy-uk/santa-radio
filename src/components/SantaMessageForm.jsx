@@ -7,6 +7,7 @@ import { useSantaMessageAccess } from './SantaMessageAccessProvider.jsx';
 import useSantaMessageAllowance from './useSantaMessageAllowance.js';
 import useSantaMessageHistory from './useSantaMessageHistory.js';
 import useSantaNames from './useSantaNames.js';
+import useSantaNameCounter from './useSantaNameCounter.js';
 import NiceListCertificateDownload from './NiceListCertificateDownload.jsx';
 import SantaCertificateExamples from './SantaCertificateExamples.jsx';
 import { santaNameKey } from '../lib/santaNameSearch.js';
@@ -14,6 +15,7 @@ import { randomSantaExample, santaNamePlaceholder } from '../lib/santaNamePlaceh
 import { normaliseRequestedName } from '../lib/santaNameRequests.js';
 import { nameRequestToken } from '../lib/santaNameRequestTokens.js';
 import { trySavedSantaGreeting } from '../lib/savedSantaGreeting.js';
+import { scrollToSantaMessageDesk } from '../lib/scrollToSantaMessageDesk.js';
 import './SantaNameRequest.css';
 import './SantaMessageForm.css';
 
@@ -34,6 +36,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const nameRequestRef = useRef(null);
   const [nameRequest, setNameRequest] = useState({ key: '', status: 'idle', message: '' });
   const nameSearch = useSantaNames(name, hasAccess);
+  const displayedNameCount = useSantaNameCounter(nameSearch.hostedCount);
   const suggestions = nameSearch.records;
   const verifiedSelectedRecord = selectedRecord && selectedRecord.name === name.trim()
     ? selectedRecord : null;
@@ -54,12 +57,18 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const countdown = `${Math.floor(allowance.secondsLeft / 60).toString().padStart(2, '0')}:${(allowance.secondsLeft % 60).toString().padStart(2, '0')}`;
 
   useEffect(() => {
+    let frame;
     if (hasAccess && !showDetailLink) {
-      // Keep the unlock announcement, but don't override page-entry positioning
-      // for returning visitors or a changed requested-name query.
-      makerHeadingRef.current?.focus({ preventScroll: previousAccess.current });
+      // Announce the unlocked studio without letting native focus scroll past
+      // the section introduction. Page entry handles new/returning visits;
+      // successful signup on this page explicitly returns to the section.
+      makerHeadingRef.current?.focus({ preventScroll: true });
+      // Let removal of the focused signup fields finish (including the
+      // browser's scroll anchoring) before measuring the section destination.
+      if (!previousAccess.current) frame = requestAnimationFrame(scrollToSantaMessageDesk);
     }
     previousAccess.current = hasAccess;
+    return () => cancelAnimationFrame(frame);
   }, [hasAccess, showDetailLink]);
   // Keep server/client hydration deterministic; choose once on the client,
   // rather than changing the example whenever the user types or counts refresh.
@@ -237,9 +246,9 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
       </div>
       <div className={`santa-message-box${hasAccess ? '' : ' message-access-box'}`}>
         <div className="message-card-top"><span className="message-seal" aria-hidden="true">S</span><div><p className="message-postmark">The North Pole Recording Studio</p><small>A recorded hello, ready to keep</small></div></div>
-        <p className="message-name-hint message-name-count" role="status">
-          {nameSearch.hostedCount !== null
-            ? `${nameSearch.hostedCount.toLocaleString('en-GB')} ${nameSearch.hostedCount === 1 ? 'name' : 'names'} available`
+        <p className="message-name-hint message-name-count" role="status" aria-live="off">
+          {displayedNameCount !== null
+            ? `${displayedNameCount.toLocaleString('en-GB')} ${displayedNameCount === 1 ? 'name' : 'names'} available`
             : nameSearch.loading ? 'Checking how many names are available…' : 'Name total temporarily unavailable.'}
         </p>
         {nameSearch.hostedCount === null && !nameSearch.loading && !hasAccess &&

@@ -165,7 +165,7 @@ for (const width of [1440, 390]) {
       await expectStayedAt(page, 0);
     });
 
-    test('prefilled names, typing, unlocking and creating a greeting do not repeat the opening scroll', async ({ page }) => {
+    test('successful signup returns to the section; typing and creating do not repeat that scroll', async ({ page }) => {
       await page.route('**/api/santa-message', route => route.fulfill({
         contentType: 'audio/mpeg', body: readFileSync('server/santa-audio/names/olivia.wav'),
       }));
@@ -183,6 +183,7 @@ for (const width of [1440, 390]) {
       await expect(input).toHaveValue('Olivia');
       await expect(page.getByRole('heading', { name: 'Download your free Santa greeting' })).toBeFocused();
       await expect(page.getByText('A recording for Olivia is available.', { exact: true })).toBeVisible();
+      await expectLanding(page, width);
       await finishFocusScroll(page);
       await settled(page);
       await scrollTo(page, 0);
@@ -200,6 +201,32 @@ for (const width of [1440, 390]) {
       await page.reload();
       await expectLanding(page, width);
       await expect(input).toHaveValue('Olivia');
+    });
+
+    test('failed signup keeps details in place and only accepted retry scrolls to the section', async ({ page }) => {
+      await mockBrevo(page, { success: false, message: 'Please try again.' });
+      await page.goto('/free-santa-message');
+      await expectLanding(page, width);
+      const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+      if (await decline.isVisible()) await decline.click();
+      await fillAccessForm(page);
+      await page.getByRole('button', { name: 'Get my free Santa message' }).click();
+      await expect(page.getByRole('alert')).toContainText('Please try again.');
+      await expect(page.locator('input[name="EMAIL"]')).not.toHaveValue('');
+      await page.evaluate(() => {
+        const original = window.scrollTo.bind(window);
+        window.signupScrollCalls = [];
+        window.scrollTo = (...args) => { window.signupScrollCalls.push(args); return original(...args); };
+      });
+      // Retrying a refusal must not trigger the successful-unlock positioning.
+      await page.getByRole('button', { name: 'Get my free Santa message' }).click();
+      await expect(page.getByRole('alert')).toContainText('Please try again.');
+      expect(await page.evaluate(() => window.signupScrollCalls.length)).toBe(0);
+      await mockBrevo(page);
+      await page.getByRole('button', { name: 'Get my free Santa message' }).click();
+      await expectLanding(page, width);
+      await expect(page.getByRole('heading', { name: 'Download your free Santa greeting' })).toBeFocused();
+      await page.screenshot({ path: `generated-artifacts/santa-signup-scroll-${width}.png`, animations: 'disabled' });
     });
 
     test('a query-only name change preserves scroll and does not focus the child input', async ({ page }) => {

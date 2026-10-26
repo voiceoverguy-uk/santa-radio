@@ -28,6 +28,7 @@ import MarketingConsent from './components/MarketingConsent.jsx';
 import { CookieConsentProvider } from './privacy/CookieConsentProvider.jsx';
 import SantaStaffShell from './components/SantaStaffShell.jsx';
 import { RadioTopTenProvider } from './components/RadioTopTen.jsx';
+import SantaMessageOffer from './components/SantaMessageOffer.jsx';
 
 function App({ Router = BrowserRouter, routerProps = {} }) {
   return (
@@ -62,6 +63,7 @@ function App({ Router = BrowserRouter, routerProps = {} }) {
       <Footer />
       <AudioPlayer />
       <MarketingConsent />
+      <SantaMessageOffer />
     </Router></CookieConsentProvider></SantaMessageAccessProvider></RadioTopTenProvider></RadioProvider>
   );
 }

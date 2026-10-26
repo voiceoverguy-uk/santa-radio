@@ -4,6 +4,42 @@ import { popularSantaExamples } from '../src/data/santaPlaceholderNames.js';
 
 const demrie = { id: 'demrie', name: 'Demrie', downloadName: 'Santa-message-for-Demrie.mp3' };
 
+for (const path of ['/', '/free-santa-message']) {
+  test(`public counter starts 50 low, adds one every five seconds and stops at the real total on ${path}`, async ({ page }) => {
+    await page.clock.install();
+    await page.addInitScript(() => sessionStorage.setItem('santa-message-offer-shown', 'shown'));
+    await page.route('**/api/santa-names?*', route => route.fulfill({ json: {
+      records: [], hostedCount: 9775, warning: null,
+    } }));
+    await page.goto(path);
+    const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+    if (await decline.isVisible()) await decline.click();
+    const counter = page.locator('.message-name-count');
+    await expect(counter).toHaveText('9,725 names available');
+    await expect(counter).toHaveAttribute('aria-live', 'off');
+    await page.clock.runFor(5000);
+    await expect(counter).toHaveText('9,726 names available');
+    await page.clock.runFor(245_000);
+    await expect(counter).toHaveText('9,775 names available');
+    await page.clock.runFor(15_000);
+    await expect(counter).toHaveText('9,775 names available');
+    await expect(page.getByRole('combobox')).toHaveCount(0);
+  });
+}
+
+test('small totals never start negative and stop with correct singular wording', async ({ page }) => {
+  await page.clock.install();
+  await page.route('**/api/santa-names?*', route => route.fulfill({ json: {
+    records: [], hostedCount: 1, warning: null,
+  } }));
+  await openMessageDesk(page, { mockNames: false });
+  await expect(page.locator('.message-name-count')).toHaveText('0 names available');
+  await page.clock.runFor(5000);
+  await expect(page.locator('.message-name-count')).toHaveText('1 name available');
+  await page.clock.runFor(10_000);
+  await expect(page.locator('.message-name-count')).toHaveText('1 name available');
+});
+
 test('hosted total appears before typing, stays independent of matches and refreshes new uploads', async ({ page }) => {
   await page.clock.install();
   let total = 274, renders = 0;
@@ -13,19 +49,19 @@ test('hosted total appears before typing, stays independent of matches and refre
     return route.fulfill({ json: { records: q ? [demrie] : [], hostedCount: total, warning: null } });
   });
   await openMessageDesk(page, { mockNames: false });
-  await expect(page.getByText('274 names available', { exact: true })).toBeVisible();
+  await expect(page.getByText('224 names available', { exact: true })).toBeVisible();
   await expect(page.getByLabel('First Name')).toHaveValue('');
   const input = page.getByLabel('First Name');
   await expect(input).toHaveAttribute('placeholder', /^Start typing, eg\. [A-Za-z]+$/);
   const example = (await input.getAttribute('placeholder')).match(/eg\. ([^,]+)/)[1];
   expect(popularSantaExamples).toContain(example);
   total = 275;
-  await page.clock.fastForward(75_000);
-  await expect(page.getByText('275 names available', { exact: true })).toBeVisible();
+  await page.clock.runFor(75_000);
+  await expect(page.getByText('239 names available', { exact: true })).toBeVisible();
   await expect(input).toHaveAttribute('placeholder', `Start typing, eg. ${example}`);
   await page.getByLabel('First Name').fill('Dem');
   await expect(page.getByRole('option', { name: 'Demrie', exact: true })).toBeVisible();
-  await expect(page.getByText('275 names available', { exact: true })).toBeVisible();
+  await expect(page.getByText('239 names available', { exact: true })).toBeVisible();
   expect(renders).toBe(0);
   await expect(input).toHaveAttribute('placeholder', `Start typing, eg. ${example}`);
 });
@@ -42,7 +78,7 @@ test('unavailable inventory does not invent a zero total and a retry restores th
   await expect(page.getByLabel('First Name')).toHaveAttribute('placeholder', /^Start typing, eg\. [A-Za-z]+$/);
   failed = false;
   await page.getByRole('button', { name: 'Refresh name list' }).click();
-  await expect(page.getByText('1 name available', { exact: true })).toBeVisible();
+  await expect(page.getByText('0 names available', { exact: true })).toBeVisible();
 });
 
 test('large totals fit on mobile and genuine empty inventory displays zero', async ({ page }) => {
@@ -52,7 +88,7 @@ test('large totals fit on mobile and genuine empty inventory displays zero', asy
     records: [], hostedCount: total, warning: null,
   } }));
   await openMessageDesk(page, { mockNames: false });
-  await expect(page.getByText('12,345 names available', { exact: true })).toBeVisible();
+  await expect(page.getByText('12,295 names available', { exact: true })).toBeVisible();
   await expect(page.getByLabel('First Name')).toHaveAttribute('placeholder', /^Start typing, eg\. [A-Za-z]+$/);
   const placeholderFits = await page.getByLabel('First Name').evaluate((input, names) => {
     const style = getComputedStyle(input), placeholder = getComputedStyle(input, '::placeholder');

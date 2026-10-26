@@ -37,13 +37,13 @@ for (const path of ['/', '/free-santa-message']) {
     await expect(page.getByRole('button', { name: 'Get my free Santa message' })).toBeEnabled();
     mode = 'one';
     await page.getByRole('button', { name: 'Retry name total' }).click();
-    await expect(page.locator('.message-name-count')).toHaveText('1 name available');
+    await expect(page.locator('.message-name-count')).toHaveText('0 names available');
     expect(requests).toBe(2);
     expect(await page.getByRole('combobox').count()).toBe(0);
     // A new public visit gets the hosted value, not a screenshot constant.
     mode = 'many';
     await page.reload();
-    await expect(page.locator('.message-name-count')).toHaveText('12,345 names available');
+    await expect(page.locator('.message-name-count')).toHaveText('12,295 names available');
     await expect(page.locator('.message-card-top')).toContainText('The North Pole Recording Studio');
     await expect(page.getByRole('link', { name: 'Visit Santa’s message desk' })).toHaveCount(0);
   });
@@ -57,11 +57,11 @@ test('empty-query inventory is reused when access unlocks in place', async ({ pa
   });
   await mockBrevo(page);
   await visit(page, '/free-santa-message');
-  await expect(page.locator('.message-name-count')).toHaveText('9,775 names available');
+  await expect(page.locator('.message-name-count')).toHaveText('9,725 names available');
   await fillAccessForm(page);
   await page.getByRole('button', { name: 'Get my free Santa message' }).click();
   await expect(page.getByRole('combobox')).toBeVisible();
-  await expect(page.locator('.message-name-count')).toHaveText('9,775 names available');
+  await expect(page.locator('.message-name-count')).toHaveText('9,725 names available');
   expect(requests).toBe(1);
 });
 

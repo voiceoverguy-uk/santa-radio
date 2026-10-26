@@ -18,6 +18,7 @@ export function CookieConsentProvider({ children }) {
   const [ready, setReady] = useState(false);
   const [homepageDefault, setHomepageDefault] = useState(false);
   const [storageWarning, setStorageWarning] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   useEffect(() => {
     const stored = savedConsent();
@@ -84,6 +85,7 @@ export function CookieConsentProvider({ children }) {
   const homepageTVAllowed = ready && (mediaAllowed || (homepageDefault && choice === null));
   return <CookieConsentContext.Provider value={{
     ready, choice, chooseConsent, mediaAllowed, homepageTVAllowed, enableMedia, storageWarning,
+    settingsOpen, setSettingsOpen,
     dismissStorageWarning: () => setStorageWarning(false),
   }}>{children}</CookieConsentContext.Provider>;
 }

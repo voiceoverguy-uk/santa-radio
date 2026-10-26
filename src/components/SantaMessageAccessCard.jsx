@@ -10,8 +10,11 @@ export default function SantaMessageAccessCard({
   onChange,
   onSubmit,
   formRef,
+  variant = 'inline',
+  onPrivacyNavigate,
 }) {
   const id = useId();
+  const offer = variant === 'offer';
   const fieldIds = {
     FIRSTNAME: `${id}-first-name`,
     LASTNAME: `${id}-surname`,
@@ -24,11 +27,12 @@ export default function SantaMessageAccessCard({
   ];
 
   return (
-    <section className="santa-message-access" aria-labelledby={`${id}-title`}>
+    <section className={`santa-message-access${offer ? ' santa-message-access--offer' : ''}`} aria-labelledby={offer ? undefined : `${id}-title`}>
       <p className="santa-message-access__step">A note for the grown-up</p>
-      <h3 id={`${id}-title`}>First, open Santa’s recording studio</h3>
+      {!offer && <h3 id={`${id}-title`}>First, open Santa’s recording studio</h3>}
       <p className="santa-message-access__intro">
-        Add your details for immediate access to a free, downloadable Santa greeting. Next, you’ll choose a recorded name for your child.
+        {offer ? 'These are your details. You’ll choose your child’s recorded name next.'
+          : 'Add your details for immediate access to a free, downloadable Santa greeting. Next, you’ll choose a recorded name for your child.'}
       </p>
 
       <form className="santa-message-access__form" ref={formRef} onSubmit={onSubmit} noValidate>
@@ -73,18 +77,26 @@ export default function SantaMessageAccessCard({
         <input type="hidden" name="locale" value="en" />
 
         {error && <p className="santa-message-access__error" role="alert">{error}</p>}
-        <button className="btn-red santa-message-access__submit" type="submit" disabled={pending}>
+        {offer ? <div className="santa-offer-unlock">
+          <span className="santa-offer-unlock-sparkle santa-offer-unlock-sparkle--before" aria-hidden="true" />
+          <button className="btn-red santa-message-access__submit" type="submit" disabled={pending}>
+            <span className="santa-offer-unlock-sheen" aria-hidden="true" />
+            {pending ? 'Opening the recording studio…' : 'Unlock my free Santa message'}
+          </button>
+          <span className="santa-offer-unlock-sparkle santa-offer-unlock-sparkle--after" aria-hidden="true" />
+        </div> : <button className="btn-red santa-message-access__submit" type="submit" disabled={pending}>
           {pending ? 'Opening the recording studio…' : 'Get my free Santa message'}
           {!pending && <span aria-hidden="true">→</span>}
-        </button>
+        </button>}
         {pending && <p className="santa-message-access__status" role="status">Opening your access to Santa’s recorded greetings.</p>}
       </form>
 
       <p className="santa-message-access__privacy">
-        Your details are stored for news or updates. Read our <Link to="/privacy-policy">privacy policy</Link>.
+        Your details are stored for news or updates. Read our <Link to="/privacy-policy" onClick={onPrivacyNavigate}>privacy policy</Link>.
       </p>
       <p className="santa-message-access__delivery">
-        Create your greeting, download and share - it won’t be sent by email.
+        {offer ? 'Create your greeting, download instantly and share - not sent by email.'
+          : 'Create your greeting, download and share - it won’t be sent by email.'}
       </p>
     </section>
   );

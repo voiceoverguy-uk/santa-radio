@@ -8,6 +8,12 @@ The owner wants an adult's first name, surname and email submitted through the s
 
 **How to apply:** Keep adult contact collection separate from child-name selection and on-demand recorded-audio mixing. Do not add a child's date of birth just because it appears in a supplied embed; the owner chose to remove that requirement in Brevo. Do not promise email delivery of the generated MP3 or introduce a second generator.
 
+After successful signup, return the visitor to the “FREE Personalised message from Santa” section, rather than letting focus scroll directly past its introduction.
+
+**Why:** The owner explicitly requested this post-signup destination. It is a one-time success action, not a reason to reposition the page during name selection or recording.
+
+**How to apply:** Keep the studio unlock announcement accessible while preserving the section-level landing position. Failed signup must retain the entered details without this success scroll.
+
 This is a signup-first, tab-session convenience flow, not authentication, email ownership verification or proof of double opt-in. The owner now requests the adult-access disclosure: “Your details are stored for Santa Radio news or updates. Read our privacy policy.”
 
 **Why:** On 21 October 2026 the owner explicitly replaced the previous no-news-signup wording. This was a wording request, not verification or configuration of Brevo marketing enrolment or email automation.
@@ -19,6 +25,12 @@ Staff-only sign-in for the private missing-name request ledger is separate from 
 **Why:** The owner approved protected staff access to requested names, without asking visitors to create accounts or attaching adult contact details to their name requests.
 
 **How to apply:** Keep staff authentication confined to the private ledger and staff sign-in pages. Preserve the existing adult Brevo step for the public MP3 maker.
+
+The pop-up should not include an “I am an adult” radio confirmation. Keep the unlock button directly beneath the adult email field.
+
+**Why:** After trying the confirmation, the owner requested its removal and restoration of the unlock button’s position.
+
+**How to apply:** Preserve the adult-contact explanation and the existing accepted-signup requirement, but do not add another confirmation or provider field.
 
 The owner confirmed the name-collecting staff login is “great”.
 

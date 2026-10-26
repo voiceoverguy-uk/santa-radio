@@ -14,8 +14,7 @@ const toDraft = choice => ({
 
 export default function MarketingConsent() {
   const { pathname } = useLocation();
-  const { ready, choice, chooseConsent, storageWarning, dismissStorageWarning } = useCookieConsent();
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  const { ready, choice, chooseConsent, storageWarning, dismissStorageWarning, settingsOpen, setSettingsOpen } = useCookieConsent();
   const [draft, setDraft] = useState(EMPTY_CHOICES);
   const [playerClearance, setPlayerClearance] = useState(88);
   const heading = useRef(null);
