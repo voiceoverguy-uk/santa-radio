@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
+import { certificateExamples } from '../src/lib/santaCertificateExamples.js';
 
 test('built Node SSR serves the exact generic master and font without loading certificate work into documents', async t => {
   const child = spawn(process.execPath, ['index.js', '--port=0'], { stdio: ['ignore', 'pipe', 'pipe'] });
@@ -21,8 +22,7 @@ test('built Node SSR serves the exact generic master and font without loading ce
     if (file.endsWith('.pdf')) assert.match(response.headers.get('content-type'), /application\/pdf/);
     assert.deepEqual(Buffer.from(await response.arrayBuffer()), await readFile(`public/certificates/nice-list/${file}`));
   }
-  for (const name of ['edward', 'ayla']) {
-    const path = `/certificates/examples/${name}.webp`;
+  for (const { src: path } of certificateExamples) {
     const response = await get(path);
     assert.equal(response.status, 200);
     assert.match(response.headers.get('content-type'), /image\/webp/);

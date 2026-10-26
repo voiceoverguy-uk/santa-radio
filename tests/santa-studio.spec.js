@@ -65,7 +65,7 @@ test('empty-query inventory is reused when access unlocks in place', async ({ pa
   expect(requests).toBe(1);
 });
 
-for (const width of [390, 1280]) {
+for (const width of [320, 390, 1280]) {
   for (const path of ['/', '/free-santa-message']) {
     test(`both exact certificate examples enlarge accessibly at ${width}px on ${path}`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
@@ -92,7 +92,61 @@ for (const width of [390, 1280]) {
           await page.clock.fastForward(5100);
         }
         const opener = examples.getByRole('button', { name: `Open ${name}'s certificate example`, exact: true });
+        await opener.scrollIntoViewIfNeeded();
+        await page.mouse.move(0, 0);
+        const compactImage = opener.locator('img');
+        await expect(compactImage).toHaveJSProperty('complete', true);
+        const checkCompactFrame = async (state) => {
+          // Advance CSS transitions as well as the rotation clock before measuring.
+          await page.clock.runFor(300);
+          const geometry = await stage.evaluate(node => {
+            const button = node.querySelector('button');
+            const image = node.querySelector('img');
+            const style = getComputedStyle(button);
+            return {
+              stage: node.getBoundingClientRect().toJSON(),
+              button: button.getBoundingClientRect().toJSON(),
+              image: image.getBoundingClientRect().toJSON(),
+              hint: node.querySelector('span').getBoundingClientRect().toJSON(),
+              focusVisible: button.matches(':focus-visible'),
+              outline: parseFloat(style.outlineWidth) + parseFloat(style.outlineOffset),
+              outlineColor: style.outlineColor,
+            };
+          });
+          const { stage: frame, button, image, hint } = geometry;
+          expect(image.width / image.height).toBeCloseTo(1800 / 1273, 2);
+          const gaps = [image.left - frame.left, image.top - frame.top,
+            frame.right - image.right, frame.bottom - image.bottom];
+          for (const gap of gaps) expect(gap).toBeGreaterThan(1);
+          expect(gaps[0]).toBeCloseTo(gaps[2], 0);
+          expect(gaps[1]).toBeCloseTo(gaps[3], 0);
+          // The label must not obscure the internal artwork frame (~3–4% inset).
+          expect(hint.right).toBeLessThan(image.right - image.width * .037);
+          expect(hint.bottom).toBeLessThan(image.bottom - image.height * .041);
+          if (state === 'focus') {
+            expect(geometry.focusVisible).toBe(true);
+            expect(geometry.outlineColor).toBe('rgb(231, 200, 119)');
+            expect(geometry.outline).toBeGreaterThanOrEqual(7);
+            expect(button.left - geometry.outline).toBeGreaterThan(frame.left + 1);
+            expect(button.top - geometry.outline).toBeGreaterThan(frame.top + 1);
+            expect(button.right + geometry.outline).toBeLessThan(frame.right - 1);
+            expect(button.bottom + geometry.outline).toBeLessThan(frame.bottom - 1);
+          }
+          await examples.screenshot({ path: `generated-artifacts/studio/compact-${name}-${width}-${path === '/' ? 'home' : 'maker'}-${state}.png` });
+        };
+        await checkCompactFrame('rest');
+        await opener.hover();
+        await checkCompactFrame('hover');
+        // Hover continues to pause rotation for the complete five-second cycle.
+        await page.clock.fastForward(5100);
+        await expect(opener).toHaveAttribute('aria-label', `Open ${name}'s certificate example`);
+        await page.mouse.move(0, 0);
+        // Establish real keyboard modality rather than relying on focus() alone.
         await opener.focus();
+        await page.keyboard.press('Shift+Tab');
+        await page.keyboard.press('Tab');
+        await expect(opener).toBeFocused();
+        await checkCompactFrame('focus');
         await page.keyboard.press('Enter');
         const dialog = page.getByRole('dialog', { name: `${name}'s certificate example`, exact: true });
         await expect(dialog).toBeVisible();
@@ -184,6 +238,49 @@ test('automatic rotation pauses during interaction and enlargement and respects 
   await page.clock.fastForward(13000);
   await expect(image).toHaveAttribute('src', '/certificates/examples/ayla.webp');
 });
+
+for (const width of [320, 1280]) {
+  for (const path of ['/', '/free-santa-message']) {
+    test(`all named certificate examples rotate and open correctly at ${width}px on ${path}`, async ({ page }) => {
+      test.setTimeout(90000);
+      await page.setViewportSize({ width, height: 900 });
+      await page.clock.install();
+      await visit(page, path);
+      const examples = page.locator('.santa-certificate-examples');
+      const image = examples.locator('.santa-certificate-examples__image');
+      const names = ['Edward', 'Ayla', 'Erin', 'Charlotte', 'Freya', 'Harry',
+        'Arabella', 'Jessica', 'Charlie', 'Olivia', 'Oliver'];
+      // Verify the uninterrupted complete cycle separately from modal checks.
+      // Frozen clocks can delay native dialog close/focus events; fresh visits
+      // below keep those events from interfering with the next rotation.
+      await page.mouse.move(0, 0);
+      for (const name of names) {
+        await expect(image).toHaveAttribute('src', `/certificates/examples/${name.toLowerCase()}.webp`);
+        await page.clock.runFor(5000);
+      }
+      await expect(image).toHaveAttribute('src', '/certificates/examples/edward.webp');
+      for (const [index, name] of names.entries()) {
+        await visit(page, path);
+        await page.mouse.move(0, 0);
+        await page.clock.runFor(index * 5000 + 100);
+        const src = `/certificates/examples/${name.toLowerCase()}.webp`;
+        await expect(image).toHaveAttribute('src', src);
+        await expect(image).toHaveJSProperty('complete', true);
+        await expect(image).toHaveJSProperty('naturalWidth', 1800);
+        await expect(image).toHaveJSProperty('naturalHeight', 1273);
+        const opener = examples.getByRole('button', { name: `Open ${name}'s certificate example`, exact: true });
+        await opener.click();
+        const dialog = page.getByRole('dialog', { name: `${name}'s certificate example`, exact: true });
+        await expect(dialog.locator('img')).toHaveAttribute('src', src);
+        await page.clock.fastForward(5100);
+        await expect(dialog.locator('img')).toHaveAttribute('src', src);
+        await page.keyboard.press('Escape');
+        await expect(dialog).not.toBeVisible();
+        await expect(opener).toBeFocused();
+      }
+    });
+  }
+}
 
 test('waiting downloads can repeat without generation, allowance or timer changes; reload is honest', async ({ page }) => {
   test.setTimeout(90000);

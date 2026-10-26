@@ -1,18 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { certificateExamples as certificates } from "../lib/santaCertificateExamples.js";
 import "./SantaCertificateExamples.css";
-
-const certificates = [
-  {
-    name: "Edward",
-    src: "/certificates/examples/edward.webp",
-    alt: "Example Official Nice List Certificate for Edward",
-  },
-  {
-    name: "Ayla",
-    src: "/certificates/examples/ayla.webp",
-    alt: "Example Official Nice List Certificate for Ayla",
-  },
-];
 
 function prefersReducedMotion() {
   return typeof window !== "undefined"
