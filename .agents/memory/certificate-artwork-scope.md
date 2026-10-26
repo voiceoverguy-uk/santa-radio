@@ -2,11 +2,17 @@
 name: Nice List certificate artwork scope
 description: Owner-approved design and privacy boundaries for personalised certificates.
 ---
-Preserve the supplied certificate's foreground artwork. Its background is now authorised to use the actual homepage snowy North Pole image across the full A4 landscape page, not the original blank emerald left extension. Add only the completed recording's canonical display name; no year or extra wording.
+Preserve the supplied certificate's foreground artwork except for the explicitly authorised removal of the decorative top Santa Radio logo and modest enlargement/repositioning of “Official Nice List Certificate”. Keep all other Santa Radio references. Its background is authorised to use the actual homepage snowy North Pole image across the full A4 landscape page, not the original blank emerald left extension. Personalise with the completed recording's canonical display name and the approved humorous Nice status line; no year or other extra wording.
 
-**Why:** The owner explicitly approved the larger decorative Santa Claus signature, gold wax-style seal, gold line and absence of a name-field rectangle, then authorised replacing the background while retaining those elements.
+**Why:** The owner explicitly approved the larger decorative Santa Claus signature, gold wax-style seal, gold line and absence of a name-field rectangle, then authorised replacing the background while retaining those elements. Their later heading feedback explicitly superseded preservation of the top wordmark only.
 
 **How to apply:** Keep personalisation local to the browser, separate from audio allowance and public invitation sharing. Certificate failure must not affect audio; do not add recipient storage or remote certificate delivery.
+
+Include “Based on behaviour this year, you are awarded XX% Nice status!” beneath the main heading, with a randomly chosen whole-number percentage from 75 to 95 inclusive for each newly generated certificate.
+
+**Why:** The owner requested this as a funny addition to the certificate.
+
+**How to apply:** Keep it part of the actual personalised PDF and website examples, not just interface text. Generate a new random draw for each certificate download, including repeated downloads, without regenerating audio or consuming message allowance.
 
 Named certificate PDFs supplied for previews are examples, not replacement personalisation masters. An audio attachment alongside those examples does not authorise replacing the existing example audio.
 

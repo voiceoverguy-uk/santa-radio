@@ -1,4 +1,4 @@
-"""Replace only the supplied PDF's background, preserving its vector foreground.
+"""Reproduce the approved snowy master with narrowly scoped heading changes.
 
 Run from the repository root with Python, Pillow and PyMuPDF installed.
 The original editable-pack upload is read-only; no font/layout recreation.
@@ -24,6 +24,15 @@ page = document[0]
 original_text = page.get_text()
 original_content = document.xref_stream(page.get_contents()[0])
 original_metadata = document.metadata
+# Remove the actual transparent logo placement, never paint over the scenery.
+# Exact source matches deliberately fail if the uploaded artwork ever changes.
+logo = b"q\n187.0866 0 0 63.90237 327.4016 491.6882 cm\n/FormXob.f1e46eefde6d0d719a564ec74673f77e Do\nQ\n"
+heading = b"BT 1 0 0 1 229.4569 447.874 Tm /F2+0 34 Tf 40.8 TL (Official Nice List Certificate) Tj T* ET"
+# 40/34 = 17.65% larger, using the same embedded serif and gold colour.
+# Centre on the original advance width; raise into the space the logo released.
+revised_heading = b"BT 1 0 0 1 195.6649 480 Tm /F2+0 40 Tf 48 TL (Official Nice List Certificate) Tj T* ET"
+assert original_content.count(logo) == original_content.count(heading) == 1
+approved_content = original_content.replace(logo, b"").replace(heading, revised_heading)
 # Identify the full-bleed image by its placement, not an unstable object number.
 backgrounds = [
     info for info in page.get_image_info(xrefs=True)
@@ -61,13 +70,13 @@ document.update_stream(background["xref"], scene.tobytes(), compress=True)
 document.save(OUTPUT / "before.pdf", deflate=True, no_new_id=True)
 scene = Image.blend(scene, Image.new("RGB", size, DARK_TEAL), BACKGROUND_FADE)
 scene.save(OUTPUT / "snowy-background.png")
-# Replace the image object's data directly: this leaves the original page
-# stream (all text, strokes and seal paths) byte-for-byte unchanged.
+# Replace background data directly and change only the two approved placements.
 document.update_object(background["xref"],
                        f"<</Type /XObject /Subtype /Image /Width {size[0]} "
                        f"/Height {size[1]} /ColorSpace /DeviceRGB /BitsPerComponent 8>>")
 document.update_stream(background["xref"], scene.tobytes(), compress=True)
-assert document.xref_stream(page.get_contents()[0]) == original_content
+document.update_stream(page.get_contents()[0], approved_content, compress=True)
+assert document.xref_stream(page.get_contents()[0]) == approved_content
 assert page.get_text() == original_text
 assert document.metadata == original_metadata
 target = ROOT / "public/certificates/nice-list/master.pdf"
@@ -79,6 +88,6 @@ with pymupdf.open(target) as result:
     assert abs(result[0].rect.height - 210 * 72 / 25.4) < .1
     assert result[0].get_text() == original_text
     assert result.metadata == original_metadata
-    assert result.xref_stream(result[0].get_contents()[0]) == original_content
+    assert result.xref_stream(result[0].get_contents()[0]) == approved_content
     result[0].get_pixmap(matrix=pymupdf.Matrix(1.5, 1.5)).save(OUTPUT / "blank.png")
-print(f"Rebuilt {target.relative_to(ROOT)}; original foreground preserved")
+print(f"Rebuilt {target.relative_to(ROOT)}; only logo/title foreground changed")

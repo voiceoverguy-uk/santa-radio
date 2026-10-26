@@ -1,6 +1,7 @@
 """Render actual certificate downloads for visual checks (requires PyMuPDF)."""
 from pathlib import Path
 import pymupdf
+import re
 
 directory = Path("generated-artifacts/nice-list")
 directory.mkdir(parents=True, exist_ok=True)
@@ -27,7 +28,16 @@ for path in directory.glob("*.pdf"):
         pix.save(path.with_suffix(".png"))
         if path.stem in expected_names:
             name = expected_names[path.stem]
-            assert page.get_text().removesuffix(name + "\n") == master_text
+            assert re.fullmatch(re.escape(master_text + name + "\n") +
+                                r"Based on behaviour this year, you are awarded (?:7[5-9]|8[0-9]|9[0-5])% Nice status!\n",
+                                page.get_text())
+            status = next(span for block in page.get_text("dict", flags=0)["blocks"]
+                          for line in block["lines"] for span in line["spans"]
+                          if span["text"].startswith("Based on behaviour"))
+            assert status["font"] == "CertificateSerif-Regular"
+            assert status["color"] == 0xf1d995
+            assert 130 < status["bbox"][1] < status["bbox"][3] < 158
+            assert abs((status["bbox"][0] + status["bbox"][2]) / 2 - page.rect.width / 2) < .01
             assert doc.metadata == master.metadata | {"format": "PDF 1.7"}
             # Every pixel outside the approved name safe area stays identical.
             expected = master_pix.samples
@@ -39,10 +49,15 @@ for path in directory.glob("*.pdf"):
                 row_start = y * pix.stride
                 for x in range(pix.width):
                     offset = row_start + x * 3
-                    if actual[offset:offset + 3] != expected[offset:offset + 3]:
+                    if top - 1 <= y <= bottom + 1 and actual[offset:offset + 3] != expected[offset:offset + 3]:
                         changed_x.append(x)
                         changed_y.append(y)
-                if top - 1 <= y <= bottom + 1:
+                if status["bbox"][1] * 1.5 - 1 <= y <= status["bbox"][3] * 1.5 + 1:
+                    # Only the centred subtitle bounds may differ on these rows.
+                    start, end = int(status["bbox"][0] * 1.5) - 1, int(status["bbox"][2] * 1.5) + 2
+                    assert actual[row_start:row_start + start * 3] == expected[row_start:row_start + start * 3]
+                    assert actual[row_start + end * 3:row_start + pix.stride] == expected[row_start + end * 3:row_start + pix.stride]
+                elif top - 1 <= y <= bottom + 1:
                     for start, end in [(0, int(left) - 1), (int(right) + 2, pix.width)]:
                         assert actual[row_start + start * 3:row_start + end * 3] == expected[row_start + start * 3:row_start + end * 3]
                 else:

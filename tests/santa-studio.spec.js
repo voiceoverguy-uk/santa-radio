@@ -317,7 +317,7 @@ test('waiting downloads can repeat without generation, allowance or timer change
     for (let repetition = 0; repetition < 2; repetition++) {
       let pending = page.waitForEvent('download');
       await result.getByRole('link', { name: 'Download your audio' }).click();
-      expect((await pending).suggestedFilename()).toBe(`Santa-message-for-${name}.mp3`);
+      expect((await pending).suggestedFilename()).toBe(`santa-recorded-message-for-${name}.mp3`);
       pending = page.waitForEvent('download');
       await result.getByRole('button', { name: /(?:Download|Retry) your Nice List certificate/ }).click();
       expect((await pending).suggestedFilename()).toContain(`${name}.pdf`);

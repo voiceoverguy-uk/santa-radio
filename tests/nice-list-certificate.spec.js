@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { readFile, mkdir } from 'node:fs/promises';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { PDFDocument } from 'pdf-lib';
+import { PDFDocument, decodePDFRawStream } from 'pdf-lib';
 import { openMessageDesk } from './helpers/message-access.js';
 import { MESSAGE_ALLOWANCE_KEY } from '../src/lib/santaMessageAllowance.js';
 
@@ -122,6 +122,24 @@ for (const [index, file] of [[0, 'normal'], [1, 'long'], [2, 'unicode'], [4, 'ap
     expect(stored).not.toContain(names[index]);
   });
 }
+
+test('every download rolls a fresh Nice status without regenerating audio or using allowance', async ({ page }) => {
+  const generations = await setup(page);
+  const result = await create(page, 0);
+  const before = await usage(page);
+  for (const [roll, score] of [[0, 75], [1 - Number.EPSILON, 95]]) {
+    await page.evaluate(value => { Math.random = () => value; }, roll);
+    const pending = page.waitForEvent('download');
+    await certificateButton(result).click();
+    const download = await pending;
+    const pdf = await PDFDocument.load(await readFile(await download.path()), { updateMetadata: false });
+    const content = pdf.getPage(0).node.Contents().asArray().map(ref =>
+      Buffer.from(decodePDFRawStream(pdf.context.lookup(ref)).decode()).toString()).join('\n');
+    expect(content).toContain(`Based on behaviour this year, you are awarded ${score}% Nice status!`);
+    expect(generations()).toBe(1);
+    expect(await usage(page)).toBe(before);
+  }
+});
 
 for (const mobile of [false, true]) {
   test(`two identities survive SPA return and cooldown with ${mobile ? 'touch' : 'keyboard'} controls`, async ({ browser }) => {

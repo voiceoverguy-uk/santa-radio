@@ -4,7 +4,6 @@ export default function NiceListCertificateDownload({ message }) {
   const [status, setStatus] = useState('idle');
   const busy = useRef(false);
   const active = useRef(true);
-  const cached = useRef(null);
   const pendingUrls = useRef(new Map());
   const descriptionId = useId();
   useEffect(() => {
@@ -12,7 +11,6 @@ export default function NiceListCertificateDownload({ message }) {
     const urls = pendingUrls.current;
     return () => {
       active.current = false;
-      cached.current = null;
       for (const [url, timer] of urls) {
         clearTimeout(timer);
         URL.revokeObjectURL(url);
@@ -27,9 +25,10 @@ export default function NiceListCertificateDownload({ message }) {
     setStatus('loading');
     try {
       const { personaliseNiceListCertificate, certificateDownloadFilename } = await import('../lib/niceListCertificate.js');
-      const blob = cached.current || await personaliseNiceListCertificate(message.name);
+      // Generate afresh so every certificate download rolls a new Nice status.
+      // The shared generic PDF/font assets remain cached by the builder.
+      const blob = await personaliseNiceListCertificate(message.name);
       if (!active.current) return;
-      cached.current = blob;
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;

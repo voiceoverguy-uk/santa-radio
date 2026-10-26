@@ -3,12 +3,36 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { PDFDocument, PDFRawStream, decodePDFRawStream } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
-import { certificateDownloadFilename, fitCertificateName, personaliseNiceListCertificate } from '../src/lib/niceListCertificate.js';
+import { certificateDownloadFilename, fitCertificateName, niceStatusPercentage, personaliseNiceListCertificate } from '../src/lib/niceListCertificate.js';
 
 const master = await readFile('public/certificates/nice-list/master.pdf');
 const fontBytes = await readFile('public/certificates/nice-list/GreatVibes-Regular.ttf');
 const metrics = fontkit.create(fontBytes);
 const mm = n => n * 72 / 25.4;
+
+test('Nice status covers every whole number from 75 to 95 inclusive', () => {
+  assert.equal(niceStatusPercentage(() => 0), 75);
+  assert.equal(niceStatusPercentage(() => 1 - Number.EPSILON), 95);
+  for (let index = 0; index < 21; index++) {
+    assert.equal(niceStatusPercentage(() => (index + .5) / 21), 75 + index);
+  }
+});
+
+test('each new certificate rolls its own gold status line using the master serif', async t => {
+  const random = t.mock.method(Math, 'random', () => 0);
+  for (const [roll, score] of [[0, 75], [.5, 85], [1 - Number.EPSILON, 95]]) {
+    random.mock.mockImplementation(() => roll);
+    const blob = await personaliseNiceListCertificate('Olivia', [master, fontBytes]);
+    const pdf = await PDFDocument.load(await blob.arrayBuffer(), { updateMetadata: false });
+    const streams = pdf.getPage(0).node.Contents().asArray().map(ref =>
+      Buffer.from(decodePDFRawStream(pdf.context.lookup(ref)).decode()).toString());
+    const status = streams.filter(stream => stream.includes('Based on behaviour'));
+    assert.equal(status.length, 1);
+    assert.ok(status[0].includes(`Based on behaviour this year, you are awarded ${score}% Nice status!`));
+    assert.match(status[0], /0.945098 0.85098 0.584314 rg/);
+    assert.match(status[0], /\/F2\+0 14.5 Tf/);
+  }
+});
 
 for (const name of ['Olivia', 'Alexandria-Catherine Elizabeth Montgomery-Worthington',
   "Élodie O’Neill-Sáenz", "Jean-Luc D'Ávila", 'A\u0301ine', 'gjpqy', '  Olivia   Rose  ']) {

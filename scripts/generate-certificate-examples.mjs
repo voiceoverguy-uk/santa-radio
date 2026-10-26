@@ -1,4 +1,4 @@
-// Requires Poppler (pdftoppm) and libwebp (cwebp). Existing examples are kept.
+// Requires Poppler (pdftoppm) and libwebp (cwebp). Use --replace after master changes.
 import { existsSync } from 'node:fs';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
@@ -6,6 +6,7 @@ import { certificateExamples } from '../src/lib/santaCertificateExamples.js';
 import { personaliseNiceListCertificate } from '../src/lib/niceListCertificate.js';
 
 const workdir = 'generated-artifacts/certificate-examples';
+const replace = process.argv.includes('--replace');
 await mkdir(workdir, { recursive: true });
 const assets = await Promise.all([
   'public/certificates/nice-list/master.pdf',
@@ -14,7 +15,7 @@ const assets = await Promise.all([
 
 for (const { name, src } of certificateExamples) {
   const destination = `public${src}`;
-  if (existsSync(destination)) continue;
+  if (!replace && existsSync(destination)) continue;
   const stem = `${workdir}/${name.toLowerCase()}`;
   const pdf = await personaliseNiceListCertificate(name, assets);
   await writeFile(`${stem}.pdf`, Buffer.from(await pdf.arrayBuffer()));

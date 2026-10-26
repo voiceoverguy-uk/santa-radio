@@ -1,5 +1,5 @@
 // Loaded only on a certificate click. No recipient data leaves this module.
-import { PDFDocument, rgb } from 'pdf-lib';
+import { PDFDocument, PDFName, PDFDict, PDFArray, PDFNumber, rgb } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 
 export const CERTIFICATE_MASTER = '/certificates/nice-list/master.pdf';
@@ -10,6 +10,29 @@ const mm = value => value * 72 / 25.4;
 // extraction/accessibility preserves the actual name as well as its appearance.
 const fontFeatures = { calt: false, liga: false, clig: false };
 let assets;
+
+export function niceStatusPercentage(random = Math.random) {
+  // Inclusive whole-number range: all 21 scores are equally likely.
+  return 75 + Math.floor(random() * 21);
+}
+
+function addNiceStatus(pdf, page) {
+  const text = `Based on behaviour this year, you are awarded ${niceStatusPercentage()}% Nice status!`;
+  // Reuse the master's actual embedded serif and its ASCII width table:
+  // no extra font fetch, replacement font, or recipient-dependent metadata.
+  const serif = page.node.Resources().lookup(PDFName.of('Font'), PDFDict)
+    .lookup(PDFName.of('F2+0'), PDFDict);
+  const widths = serif.lookup(PDFName.of('Widths'), PDFArray);
+  const first = serif.lookup(PDFName.of('FirstChar'), PDFNumber).asNumber();
+  const size = 14.5;
+  const width = [...text].reduce((sum, character) =>
+    sum + widths.lookup(character.charCodeAt(0) - first, PDFNumber).asNumber(), 0) * size / 1000;
+  const x = (page.getWidth() - width) / 2;
+  // Between the enlarged title and its existing decorative divider.
+  const stream = pdf.context.flateStream(
+    `q\n0.945098 0.85098 0.584314 rg\nBT /F2+0 ${size} Tf 1 0 0 1 ${x} 450 Tm (${text}) Tj ET\nQ\n`);
+  page.node.addContentStream(pdf.context.register(stream));
+}
 
 export function certificateDownloadFilename(name) {
   // Only the local download label uses this value, never a URL or metadata.
@@ -112,6 +135,7 @@ async function buildCertificate(name, [master, fontBytes]) {
     x: fitted.x, y: fitted.y, size: fitted.size, font,
     color: rgb(241 / 255, 217 / 255, 149 / 255),
   });
+  addNiceStatus(pdf, page);
   // Keep the master's generic metadata; never set a recipient title/author.
   return new Blob([await pdf.save()], { type: 'application/pdf' });
 }
