@@ -31,7 +31,7 @@ for (const route of ['/stream', '/parsed']) {
     const started = performance.now();
     const response = await fetch(`${base}${route}`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: 'erin' }),
+      body: JSON.stringify({ name: 'erin', outro: route === '/stream' ? 1 : 2 }),
     });
     assert.equal(response.status, 200);
     assert.equal(response.headers.get('content-type'), 'audio/mpeg');
@@ -50,6 +50,8 @@ for (const route of ['/stream', '/parsed']) {
 test('unsupported names, malformed JSON and oversized bodies return useful errors', async () => {
   for (const [body, status] of [
     ['{"name":"not-a-recorded-name"}', 400],
+    [JSON.stringify({ name: 'erin', outro: 3 }), 400],
+    [JSON.stringify({ name: 'erin' }), 400],
     ['not JSON', 400],
     [JSON.stringify({ name: 'erin', extra: 'x'.repeat(1100) }), 413],
   ]) {
@@ -71,7 +73,7 @@ test('GET is rejected by the API rather than returning website HTML', async () =
 test('two simultaneous messages finish and a third is rejected without queuing', { timeout: 20000 }, async () => {
   const post = () => fetch(`${base}/stream`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: 'erin' }),
+    body: JSON.stringify({ name: 'erin', outro: 1 }),
   });
   const responses = await Promise.all([post(), post(), post()]);
   assert.deepEqual(responses.map(response => response.status).sort(), [200, 200, 429]);

@@ -157,12 +157,12 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
     requestRef.current = controller;
     setBusy(true);
     try {
-      const blob = await allowance.create(async () => {
-        const saved = await trySavedSantaGreeting(recording, controller.signal);
+      const blob = await allowance.create(async outro => {
+        const saved = await trySavedSantaGreeting(recording, controller.signal, { outro });
         if (saved) return saved;
         const response = await fetch('/api/santa-message', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: recording.id }), signal: controller.signal,
+          body: JSON.stringify({ name: recording.id, outro }), signal: controller.signal,
         });
         if (!response.ok) {
           const data = await response.json().catch(() => ({}));

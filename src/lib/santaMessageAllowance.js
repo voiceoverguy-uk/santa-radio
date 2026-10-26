@@ -1,6 +1,7 @@
 import { withMessageCreationLock } from './santaMessageCreationLock.js';
 
 export const MESSAGE_ALLOWANCE_KEY = 'santa-message-allowance';
+export const SANTA_LAST_OUTRO_KEY = 'santa-message-last-outro';
 export const MESSAGE_ALLOWANCE = 2;
 export const MESSAGE_COOLDOWN_MS = 10 * 60 * 1000;
 const LEGACY_COOLDOWN_MS = 30 * 60 * 1000;
@@ -16,7 +17,7 @@ function normalise(value, now) {
 // One store per open page, shared by all form instances. Browser storage contains
 // only usage and timing, never adult contact details, selected names or audio.
 export function createMessageAllowance(browser, now = () => Date.now()) {
-  let memory = empty(), remembered = true, pending = false, snapshot;
+  let memory = empty(), remembered = true, pending = false, snapshot, lastOutro = null;
   const listeners = new Set();
   let interval;
   try {
@@ -97,7 +98,14 @@ export function createMessageAllowance(browser, now = () => Date.now()) {
         return await withMessageCreationLock(browser, remembered, async commit => {
           signal.throwIfAborted();
           if (read().used >= MESSAGE_ALLOWANCE) throw new Error('To generate more, please wait for the countdown to finish.');
-          const result = await generate();
+          if (remembered) {
+            try {
+              const savedOutro = Number(browser.localStorage.getItem(SANTA_LAST_OUTRO_KEY));
+              if (savedOutro === 1 || savedOutro === 2) lastOutro = savedOutro;
+            } catch { remembered = false; }
+          }
+          const outro = lastOutro === null ? (Math.random() < 0.5 ? 1 : 2) : 3 - lastOutro;
+          const result = await generate(outro);
           signal.throwIfAborted();
           await commit(() => {
             signal.throwIfAborted();
@@ -107,8 +115,12 @@ export function createMessageAllowance(browser, now = () => Date.now()) {
               used: state.used + 1,
               availableAt: state.used + 1 === MESSAGE_ALLOWANCE ? now() + MESSAGE_COOLDOWN_MS : 0,
             };
+            lastOutro = outro;
             if (remembered) {
-              try { browser.localStorage.setItem(MESSAGE_ALLOWANCE_KEY, JSON.stringify({ ...memory, cooldownMs: MESSAGE_COOLDOWN_MS })); }
+              try {
+                browser.localStorage.setItem(MESSAGE_ALLOWANCE_KEY, JSON.stringify({ ...memory, cooldownMs: MESSAGE_COOLDOWN_MS }));
+                browser.localStorage.setItem(SANTA_LAST_OUTRO_KEY, String(outro));
+              }
               catch { remembered = false; }
             }
             refresh();

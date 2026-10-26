@@ -34,8 +34,13 @@ test.beforeEach(async ({ context }) => {
 });
 
 test('two successes block the third, preserve downloads and offer radio without restarting playback', async ({ page }) => {
-    let calls = 0, release;
-  await page.route('**/api/santa-message', route => { calls++; return route.fulfill(mp3); });
+  let calls = 0;
+  const outros = [];
+  await page.route('**/api/santa-message', route => {
+    calls++;
+    outros.push(route.request().postDataJSON().outro);
+    return route.fulfill(mp3);
+  });
   await openMessageDesk(page);
   await expect(page.getByRole('heading', { name: 'Download your free Santa greeting' })).toBeVisible();
   await expect(page.locator('.form-desc')).toContainText('Search for the name and press Create message.');
@@ -45,6 +50,8 @@ test('two successes block the third, preserve downloads and offer radio without 
   await page.getByLabel('First Name').fill('Erin');
   await expect(page.getByRole('link', { name: 'Download your audio' })).toBeVisible();
   await create(page, 'Erin');
+  expect([1, 2]).toContain(outros[0]);
+  expect(outros).toEqual([outros[0], 3 - outros[0]]);
   await expect(page.locator('.message-result')).toHaveCount(2);
   await page.evaluate(() => {
     const recordings = document.querySelectorAll('.message-result audio');

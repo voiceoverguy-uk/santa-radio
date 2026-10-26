@@ -7,12 +7,14 @@ import { voiceFilter } from './santa-audio-filters.mjs';
 const source = new URL('../server/santa-audio/', import.meta.url);
 const prepared = new URL('prepared/', source);
 mkdirSync(prepared, { recursive: true });
-for (const [input, output, preserveOpening] of [
-  ['free-intro.wav', 'intro.wav', false], ['free-outro.wav', 'outro.wav', true],
+for (const [input, output] of [
+  ['free-intro.mp3', 'intro.wav'],
+  ['free-outro-1.mp3', 'outro-1.wav'],
+  ['free-outro-2.mp3', 'outro-2.wav'],
 ]) {
   const result = spawnSync(ffmpeg, ['-hide_banner', '-nostdin', '-loglevel', 'error',
     '-y', '-threads', '1', '-filter_threads', '1',
-    '-i', fileURLToPath(new URL(input, source)), '-af', voiceFilter(preserveOpening),
+    '-i', fileURLToPath(new URL(input, source)), '-af', voiceFilter(),
     '-c:a', 'pcm_f32le', '-ar', '48000', '-map_metadata', '-1',
     fileURLToPath(new URL(output, prepared)),
   ], { timeout: 60000, stdio: ['ignore', 'ignore', 'pipe'] });

@@ -17,25 +17,25 @@ export function validManifest(value, identity) {
 
 export function createSavedGreetingCache({
   publisher = createFtpsPublisher(), fetcher = fetch,
-  recipe = nameSha => santaAudioRecipeVersion(undefined, nameSha),
+  recipe = (nameSha, outro) => santaAudioRecipeVersion(undefined, nameSha, outro),
   log = (event, code) => console.info('[santa-cache]', { event, code }),
 } = {}) {
   const pending = new Map();
-  const prepare = async (record, library) => {
+  const prepare = async (record, library, outro = 1) => {
     if (!eligibleArabella(record) || !library.sourceBytes) return null;
     // Read compressed source bytes, NOT decode/render. A same-filename remote
     // replacement must change identity without relying on a manual version bump.
     const sourceBytes = await library.sourceBytes(record);
     const nameSha256 = digest(sourceBytes);
-    const recipeVersion = recipe(nameSha256);
+    const recipeVersion = recipe(nameSha256, outro);
     const key = `arabella-${digest(Buffer.from(recipeVersion))}`;
     return { sourceBytes, identity: { key, recipeVersion, nameSha256 } };
   };
   return {
     prepare,
-    async lookup(record, library) {
+    async lookup(record, library, outro = 1) {
       try {
-        const prepared = await prepare(record, library);
+        const prepared = await prepare(record, library, outro);
         if (!prepared) return null;
         const { identity } = prepared;
         try {

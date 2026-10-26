@@ -3,16 +3,17 @@ import { savedSantaGreeting } from '../data/savedSantaGreeting.js';
 // No opaque/no-cors response: the existing Blob player/download/share flow needs
 // readable bytes. Every failure is a cache miss, except cancellation by the user.
 export async function trySavedSantaGreeting(record, signal, {
-  pilot = savedSantaGreeting, fetcher = fetch, cryptoImpl = globalThis.crypto, timeoutMs = 5000,
+  pilot = savedSantaGreeting, fetcher = fetch, cryptoImpl = globalThis.crypto, timeoutMs = 5000, outro = 1,
 } = {}) {
   signal?.throwIfAborted();
-  if (!pilot.enabled || !pilot.recordingIds.includes(record.id) || !cryptoImpl?.subtle) return null;
+  if (!pilot.enabled || !pilot.recordingIds.includes(record.id) || !cryptoImpl?.subtle ||
+      (outro !== 1 && outro !== 2)) return null;
   const controller = new AbortController();
   const cancel = () => controller.abort(signal.reason);
   signal?.addEventListener('abort', cancel, { once: true });
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const lookup = await fetcher(`/api/santa-greeting?name=${encodeURIComponent(record.id)}`, {
+    const lookup = await fetcher(`/api/santa-greeting?name=${encodeURIComponent(record.id)}&outro=${outro}`, {
       cache: 'no-store', signal: controller.signal, credentials: 'same-origin',
     });
     if (!lookup.ok) return null;

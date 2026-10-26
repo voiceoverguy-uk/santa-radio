@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createMessageAllowance, MESSAGE_ALLOWANCE_KEY, MESSAGE_COOLDOWN_MS } from '../src/lib/santaMessageAllowance.js';
+import { createMessageAllowance, MESSAGE_ALLOWANCE_KEY, MESSAGE_COOLDOWN_MS, SANTA_LAST_OUTRO_KEY } from '../src/lib/santaMessageAllowance.js';
 
 function environment() {
   const values = new Map();
@@ -39,6 +39,24 @@ test('two successes start a full 10-minute wait, not a window from the first mes
   let calls = 0;
   await assert.rejects(store.create(() => { calls++; return success(); }, signal()), /countdown/);
   assert.equal(calls, 0);
+});
+
+test('outros alternate after success, across refreshes and cooldowns, but not after failed or cancelled attempts', async () => {
+  const browser = environment();
+  let now = 100000;
+  const store = createMessageAllowance(browser, () => now);
+  const picked = [];
+  const make = outro => { picked.push(outro); return Promise.resolve('recording'); };
+  await store.create(make, signal());
+  await assert.rejects(store.create(() => Promise.reject(new Error('failed')), signal()), /failed/);
+  assert.equal(browser.localStorage.getItem(SANTA_LAST_OUTRO_KEY), String(picked[0]));
+  const reopened = createMessageAllowance(browser, () => now);
+  await reopened.create(make, signal());
+  assert.deepEqual(picked, [picked[0], 3 - picked[0]]);
+  now += MESSAGE_COOLDOWN_MS + 1;
+  const next = createMessageAllowance(browser, () => now);
+  await next.create(make, signal());
+  assert.deepEqual(picked, [picked[0], 3 - picked[0], picked[0]]);
 });
 
 test('reopening uses the saved allowance and absolute deadline; expiry restores two', async () => {

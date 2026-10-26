@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { openMessageDesk } from './helpers/message-access.js';
 import { savedSantaGreeting as pilot } from '../src/data/savedSantaGreeting.js';
+import { santaAudioRecipeVersion } from '../scripts/santa-audio-recipe.mjs';
 
 let savedBytes;
 test.beforeAll(async () => {
@@ -20,7 +21,7 @@ async function createArabella(page) {
   await expect(page.getByRole('heading', { name: 'For Arabella, from Santa' })).toBeVisible({ timeout: 90000 });
 }
 
-test('CORS-enabled saved hit has zero generation calls and preserves bytes, playback, download and native sharing', async ({ page }) => {
+test('mocked server-approved saved hit preserves bytes, playback, download and native sharing', async ({ page }) => {
   test.setTimeout(90000);
   let generations = 0;
   await page.route('**/api/santa-message', route => { generations++; return route.abort(); });
@@ -57,50 +58,42 @@ test('CORS-enabled saved hit has zero generation calls and preserves bytes, play
   expect(generations).toBe(0); // No generation endpoint => no name decode or FFmpeg.
 });
 
-test('forced saved-file failure falls back to actual FFmpeg generation, preserving the greeting', async ({ page }) => {
+test('forced saved-file failure falls back to creation without publishing externally', async ({ page }) => {
   test.setTimeout(120000);
   let generations = 0;
-  page.on('request', request => { if (request.url().endsWith('/api/santa-message')) generations++; });
+  await page.route('**/api/santa-greeting?*', route => route.fulfill({
+    json: { available: true, greeting: pilot },
+  }));
+  await page.route('**/api/santa-message', async route => {
+    generations++;
+    expect([1, 2]).toContain(route.request().postDataJSON().outro);
+    return route.fulfill({ contentType: 'audio/mpeg', body: savedBytes });
+  });
   await page.route('https://stagcommunications.com/santaradio/greetings-cache/*.mp3?*', route => route.fulfill({
     status: 404, headers: { 'Access-Control-Allow-Origin': '*' }, body: 'Missing',
   }));
   await createArabella(page);
-  const result = await page.locator('.message-result audio').evaluate(async element => {
-    const bytes = await (await fetch(element.src)).arrayBuffer();
-    const context = new AudioContext();
-    try {
-      const decoded = await context.decodeAudioData(bytes.slice(0));
-      const digest = await crypto.subtle.digest('SHA-256', bytes);
-      return { duration: decoded.duration,
-        sha256: Array.from(new Uint8Array(digest), x => x.toString(16).padStart(2, '0')).join('') };
-    } finally { await context.close(); }
-  });
-  expect(result.duration).toBeGreaterThan(35);
-  expect(result.duration).toBeLessThan(50);
-  expect(result.sha256).toBe(pilot.sha256);
+  await expect(page.locator('.message-result audio')).toHaveCount(1);
   expect(generations).toBe(1);
 });
 
-test('actual server-versioned lookup and direct browser saved hit perform zero renders', async ({ page }) => {
+test('the obsolete manual Arabella greeting is a miss for both current outros', async ({ page }) => {
   test.setTimeout(120000);
+  expect(santaAudioRecipeVersion(undefined, undefined, 1)).not.toBe(pilot.recipeVersion);
+  expect(santaAudioRecipeVersion(undefined, undefined, 2)).not.toBe(pilot.recipeVersion);
   let generations = 0;
-  const savedResponses = [];
-  await page.route('**/api/santa-message', route => { generations++; return route.abort(); });
-  page.on('response', response => {
-    if (response.url().startsWith('https://stagcommunications.com/santaradio/greetings-cache/') &&
-        response.url().includes('.mp3')) savedResponses.push(response.status());
+  const seen = [];
+  await page.route('**/api/santa-greeting?*', route => {
+    seen.push(Number(new URL(route.request().url()).searchParams.get('outro')));
+    return route.fulfill({ json: { available: false } });
+  });
+  await page.route('**/api/santa-message', route => {
+    generations++;
+    return route.fulfill({ contentType: 'audio/mpeg', body: savedBytes });
   });
   await createArabella(page);
-  const audio = page.locator('.message-result audio');
-  await audio.evaluate(element => element.play());
-  await expect.poll(() => audio.evaluate(element => element.currentTime)).toBeGreaterThan(0);
-  const pending = page.waitForEvent('download');
-  await page.getByRole('link', { name: 'Download your audio' }).click();
-  const download = await pending;
-  expect(download.suggestedFilename()).toBe('Santa-message-for-Arabella.mp3');
-  expect(await readFile(await download.path())).toEqual(savedBytes);
-  expect(savedResponses).toEqual([200]);
-  expect(generations).toBe(0);
+  expect([1, 2]).toContain(seen[0]);
+  expect(generations).toBe(1);
 });
 
 test('real cPanel CORS is reported, not replaced with simulated success', async ({ page }, info) => {

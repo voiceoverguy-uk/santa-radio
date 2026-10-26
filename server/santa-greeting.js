@@ -12,8 +12,10 @@ export function createSantaGreetingHandler(library = santaNameLibrary, cache = s
     }
     try {
       const name = new URL(req.url, 'http://server').searchParams.get('name');
+      const outro = Number(new URL(req.url, 'http://server').searchParams.get('outro'));
+      if (outro !== 1 && outro !== 2) throw new RangeError('Invalid Santa outro.');
       const record = await library.resolve(name);
-      const descriptor = await cache.lookup(record, library);
+      const descriptor = await cache.lookup(record, library, outro);
       res.end(JSON.stringify(descriptor ? { available: true, greeting: descriptor } : { available: false }));
     } catch { res.end(JSON.stringify({ available: false })); }
   };

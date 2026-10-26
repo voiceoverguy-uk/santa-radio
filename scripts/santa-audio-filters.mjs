@@ -1,14 +1,13 @@
 // Keep the editorial processing identical for build-time shared clips and
-// on-demand name clips. Never remove the outro's supplied opening padding.
-export const voiceFilter = preserveOpening => 'aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo,' +
-  (preserveOpening ? '' : 'silenceremove=start_periods=1:start_duration=0.02:start_threshold=-48dB,') +
-  'areverse,silenceremove=start_periods=1:start_duration=0.02:start_threshold=-48dB,areverse,' +
+// on-demand name clips. All pauses and joins come from the recordings themselves:
+// no silence trimming, padding, overlap or crossfade on any voice segment.
+export const voiceFilter = () => 'aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo,' +
   'loudnorm=I=-18:TP=-2:LRA=11,aresample=48000,' +
-  'afade=t=in:d=0.005,areverse,afade=t=in:d=0.005,areverse,apad=pad_dur=0.10';
+  'afade=t=in:d=0.005,areverse,afade=t=in:d=0.005,areverse';
 
 export function renderArgs(intro, name, outro, bells, output, prepared = false) {
   const filter = [0, 1, 2].map(i =>
-    `[${i}:a]${prepared && i !== 1 ? 'aformat=sample_fmts=fltp:channel_layouts=stereo' : voiceFilter(i === 2)}[v${i}]`).join(';') +
+    `[${i}:a]${prepared && i !== 1 ? 'aformat=sample_fmts=fltp:channel_layouts=stereo' : voiceFilter()}[v${i}]`).join(';') +
     ';[v0][v1][v2]concat=n=3:v=0:a=1[speech];' +
     '[3:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo,' +
     'loudnorm=I=-34:TP=-9:LRA=7,aresample=48000,afade=t=in:d=1[bells];' +

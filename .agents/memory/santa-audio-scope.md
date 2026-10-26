@@ -52,11 +52,17 @@ Do not pre-create completed messages for the name catalogue. Store the source na
 
 **How to apply:** Future work must replace the pre-rendered experiment with on-demand assembly. Do not batch-render newly uploaded names. Temporary output retention should be bounded rather than a permanent catalogue of completed MP3s.
 
-Preserve the outro's supplied opening padding.
+Preserve all deliberately recorded silence on every supplied voice clip.
 
-**Why:** The user deliberately added silence to the start of free-outro.wav to make the gap after the name sound more natural. They corrected the earlier choice of the shorter free-outro2.wav.
+**Why:** The owner wants intro, selected name and outro to stitch naturally using the recordings' own timing, including leading, internal and trailing silence. This extends the earlier instruction to preserve the outro's opening padding.
 
-**How to apply:** Do not automatically trim leading silence from the outro when mixing or replacing recordings.
+**How to apply:** Do not trim silence, append gaps, overlap or crossfade voice segments, whether bundled or hosted WAV/MP3. Keep loudness and peak safeguards without shortening recordings.
+
+For personalised messages, use the owner's MP3 intro and alternate between the two supplied MP3 outros after each successful creation. The first may use either; the next must use the other, including across page refreshes and cooldowns. Failed or cancelled creations must not advance the rotation.
+
+**Why:** The owner explicitly requested MP3 sources and alternating endings so consecutive messages do not repeat the same outro.
+
+**How to apply:** Keep the selected outro consistent through rendering and any saved-greeting lookup or publication. Preserve the timing in the MP3 recordings.
 
 Keep two free messages before a 10-minute wait.
 

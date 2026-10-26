@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import { trySavedSantaGreeting } from '../src/lib/savedSantaGreeting.js';
 import { savedSantaGreeting } from '../src/data/savedSantaGreeting.js';
 import { recipeFiles, santaAudioRecipeVersion } from './santa-audio-recipe.mjs';
+import { createSavedGreetingCache } from '../server/santa-saved-cache.js';
 
 const bytes = Buffer.from('test-only pinned MP3 bytes');
 const pilot = {
@@ -77,10 +78,28 @@ test('stalled body times out promptly; user cancellation is not treated as a mis
   await assert.rejects(request, { name: 'AbortError' });
 });
 
-test('approval matches current recipe; each tracked ingredient/implementation change invalidates it', () => {
-  assert.equal(santaAudioRecipeVersion(), savedSantaGreeting.recipeVersion);
+test('old manual approval cannot bypass the new intro and timing recipe; every ingredient invalidates it', () => {
+  assert.notEqual(santaAudioRecipeVersion(), savedSantaGreeting.recipeVersion);
+  assert.notEqual(santaAudioRecipeVersion(undefined, undefined, 1),
+    santaAudioRecipeVersion(undefined, undefined, 2), 'Outro variants must not share a cache key.');
   const baseline = santaAudioRecipeVersion(path => Buffer.from(path));
   for (const changed of recipeFiles) {
     assert.notEqual(santaAudioRecipeVersion(path => Buffer.from(path + (path === changed ? 'changed' : ''))), baseline);
   }
+});
+
+test('old remote manifests and the old manual Arabella file are misses with the current recipe', async () => {
+  let calls = 0;
+  const cache = createSavedGreetingCache({
+    fetcher: async () => {
+      calls++;
+      return Response.json({ schema: 1, recipeVersion: savedSantaGreeting.recipeVersion,
+        nameSha256: savedSantaGreeting.nameSha256 });
+    },
+    publisher: async () => assert.fail('Invalidation checks must never publish'),
+    log: () => {},
+  });
+  const library = { sourceBytes: async () => bytes };
+  assert.equal(await cache.lookup({ id: 'arabella', source: 'hosted', file: 'arabella.mp3' }, library), null);
+  assert.equal(calls, 1);
 });

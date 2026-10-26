@@ -47,11 +47,12 @@ return async function santaMessage(req, res) {
     if (Buffer.byteLength(body) > 1024) return fail(413, 'Request is too large.');
     let data;
     try { data = JSON.parse(body); } catch { return fail(400, 'Invalid request.'); }
+    if (data?.outro !== 1 && data?.outro !== 2) return fail(400, 'Invalid outro selection.');
     const recording = await library.resolve(data?.name);
     if (!recording) return fail(400, 'That name is not available yet. Choose a suggested name.');
     let prepared;
     if (eligibleArabella(recording)) {
-      try { prepared = await cache.prepare(recording, library); }
+      try { prepared = await cache.prepare(recording, library, data.outro); }
       catch { console.info('[santa-cache]', { event: 'prepare', code: 'REVISION_UNAVAILABLE' }); }
     }
     const generate = async () => {
@@ -67,7 +68,7 @@ return async function santaMessage(req, res) {
       // synchronous FFmpeg child alive, competing with subsequent requests.
       await execute(ffmpegPath, renderArgs(
         join(sources, 'prepared', 'intro.wav'), nameClip,
-        join(sources, 'prepared', 'outro.wav'), join(sources, 'sleighbells.mp3'), output, true,
+        join(sources, 'prepared', `outro-${data.outro}.wav`), join(sources, 'sleighbells.mp3'), output, true,
       ), { timeout: 90000, killSignal: 'SIGKILL', maxBuffer: 64 * 1024 });
       renderMs = Math.round(performance.now() - renderStarted);
       const audio = await readFile(output);
@@ -75,7 +76,7 @@ return async function santaMessage(req, res) {
       return audio;
     };
     const audio = eligibleArabella(recording)
-      ? await cache.singleFlight(prepared?.identity.key || recording.id, generate) : await generate();
+      ? await cache.singleFlight(prepared?.identity.key || `${recording.id}-${data.outro}`, generate) : await generate();
     const asciiFilename = recording.downloadName.normalize('NFKD').replace(/\p{M}/gu, '').replace(/[^\x20-\x7e]/g, '_');
     res.writeHead(200, {
       'Content-Type': 'audio/mpeg',

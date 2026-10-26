@@ -16,12 +16,12 @@ try {
     const prepared = renderer === 'prepared';
     const direct = prepared || renderer === 'unprepared';
     const audioArgs = direct ? renderArgs(
-      resolve(prepared ? 'server/santa-audio/prepared/intro.wav' : 'server/santa-audio/free-intro.wav'),
+      resolve(prepared ? 'server/santa-audio/prepared/intro.wav' : 'server/santa-audio/free-intro.mp3'),
       resolve('server/santa-audio/names/arabella.wav'),
-      resolve(prepared ? 'server/santa-audio/prepared/outro.wav' : 'server/santa-audio/free-outro.wav'),
+      resolve(prepared ? 'server/santa-audio/prepared/outro-1.wav' : 'server/santa-audio/free-outro-1.mp3'),
       resolve('server/santa-audio/sleighbells.mp3'), join(dir, `${index}.mp3`), prepared) : null;
-    const args = direct ? audioArgs : [resolve(renderer), resolve('server/santa-audio/free-intro.wav'),
-      resolve('server/santa-audio/names/arabella.wav'), resolve('server/santa-audio/free-outro.wav'),
+    const args = direct ? audioArgs : [resolve(renderer), resolve('server/santa-audio/free-intro.mp3'),
+      resolve('server/santa-audio/names/arabella.wav'), resolve('server/santa-audio/free-outro-1.mp3'),
       resolve('server/santa-audio/sleighbells.mp3'), join(dir, `${index}.mp3`), ffmpeg];
     let executable = direct ? ffmpeg : process.execPath;
     let commandArgs = args;
