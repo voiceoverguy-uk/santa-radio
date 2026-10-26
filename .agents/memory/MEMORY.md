@@ -41,3 +41,4 @@
 - [Python TLS trust](python-tls-trust.md) — Package downloads may need an explicit system certificate path; never disable TLS verification.
 - [Local audio inspection](local-audio-inspection.md) — FFmpeg PCM input avoids local speech-decoder API mismatches; transcription is not listening verification.
 - [Santa download naming](santa-download-naming.md) — Use santa-recorded-message-for-(NAME).mp3 for downloads; leave hosted source and cache URLs alone.
+- [Workshop choice controls](workshop-choice-controls.md) — All choice categories use horizontal scrollers except names, which use live search.
