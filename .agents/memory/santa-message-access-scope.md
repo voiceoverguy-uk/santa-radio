@@ -62,8 +62,8 @@ The free maker offers one successful message followed by a 30-minute wait. Choos
 
 **How to apply:** Keep failures and cancellations free of usage charges and preserve downloads, certificates, invitation sharing and radio during the wait. Existing timed waits retain their original start when adapting to the new duration. An older single success had no creation timestamp, so it receives one persisted wait from upgrade, never a wait restarted on every refresh.
 
-The recovery panel's “Share with friends” action is an invitation to the public message maker, not delivery of the visitor's MP3 or access state.
+Completed free greetings should offer one compact share icon for the personalised MP3, without separate “Listen to Santa Radio” or “Share with friends” buttons.
 
-**Why:** It accompanies the invitation to tell friends while Santa recovers. Friends should choose their own recordings through the adult-access flow, without receiving a child's name or the visitor's contact details.
+**Why:** The owner asked to reduce clutter because the mini player already provides the radio control. This supersedes the earlier recovery-panel invitation button.
 
-**How to apply:** Share the clean public maker URL without name/access parameters. Treat sharing a completed MP3 as a separate, explicitly labelled action.
+**How to apply:** Keep MP3 sharing distinct from sharing the public maker URL. Retain an accessible name and a comfortable tap target for the icon, preserve file-sharing/download fallbacks, and do not expose a greeting-share action when the recording is no longer available.

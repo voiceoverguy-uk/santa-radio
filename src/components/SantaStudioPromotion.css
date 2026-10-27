@@ -236,8 +236,9 @@
   }
 
   .santa-studio-promotion h3 {
-    font-size: clamp(1.12rem, 5vw, 1.35rem);
+    font-size: clamp(1rem, 4.5vw, 1.35rem);
   }
+  .santa-studio-promotion__title-line { display: block; }
 }
 
 @media (max-width: 360px) {

@@ -6,13 +6,13 @@ export default function SantaStudioPromotion() {
   const navigate = useNavigate();
 
   return (
-    <section className="santa-studio-promotion" aria-labelledby="santa-studio-title">
+    <section id="santa-studio-promotion" className="santa-studio-promotion" aria-labelledby="santa-studio-title">
       <div className="santa-studio-promotion__intro">
         <div className="santa-studio-promotion__topline">
           <span className="santa-studio-promotion__seal" aria-hidden="true">S</span>
           <p className="santa-studio-promotion__eyebrow">A little more magic</p>
         </div>
-        <h3 id="santa-studio-title">Santa’s Message Maker Studio</h3>
+        <h3 id="santa-studio-title" tabIndex={-1}>Santa’s <span className="santa-studio-promotion__title-line">Message Maker Studio</span></h3>
         <p className="santa-studio-promotion__copy">
           Santa can mention more than just their name. Choose their age, activities, achievements, country and festive treats.
         </p>

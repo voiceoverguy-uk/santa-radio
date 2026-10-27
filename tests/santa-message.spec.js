@@ -58,7 +58,7 @@ test('recorded Santa greeting validates names, decodes and downloads the real MP
   await input.press('Enter');
   await expect(input).toHaveValue('Olivia');
   await submit.click();
-  await expect(page.getByRole('heading', { name: 'For Olivia, from Santa' })).toBeVisible({ timeout: 90000 });
+  await expect(page.getByRole('heading', { name: 'To Olivia from Santa' })).toBeVisible({ timeout: 90000 });
   const audio = page.locator('.message-result audio');
   await expect(audio).not.toHaveAttribute('autoplay');
   expect(await audio.evaluate(a => a.paused)).toBe(true);

@@ -392,7 +392,7 @@
   .smw-preview-note { padding: 14px 17px; }
   .smw-builder { padding: 20px 17px 22px; border-radius: 20px; }
   .smw-builder-head { align-items: center; }
-  .smw-step-labels { gap: 4px; }
+  .smw-step-labels { display: none; }
   .smw-step-labels li { font-size: .57rem; }
   .smw-stage, .smw-review { padding-top: 22px; }
   .smw-options { grid-template-columns: 1fr; gap: 9px; margin-top: 18px; }

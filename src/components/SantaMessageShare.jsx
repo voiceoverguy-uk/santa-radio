@@ -44,8 +44,12 @@ export function SantaGreetingShare({ message }) {
   };
 
   return <div className="message-share">
-    <button className="message-retry" type="button" onClick={share} disabled={busy}>
-      {busy ? 'Opening greeting share options…' : 'Share this greeting'}
+    <button className="message-share-icon" type="button" onClick={share} disabled={busy}
+      aria-label={busy ? 'Opening greeting share options…' : 'Share this greeting'}
+      title="Share this greeting" aria-busy={busy}>
+      <svg aria-hidden="true" width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 15V3m-4 4 4-4 4 4M7 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-2" />
+      </svg>
     </button>
     {status && <p className="message-share-status" role={failed ? 'alert' : 'status'}>{status}</p>}
   </div>;

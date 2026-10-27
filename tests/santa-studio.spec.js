@@ -15,6 +15,29 @@ test.beforeEach(async ({ page }) => {
   await page.route('**/api/radio-metadata*', route => route.fulfill({ json: { available: false, current: null, upcoming: [] } }));
 });
 
+test('mobile Studio promotion title breaks after Santa’s and keeps the second line together', async ({ page }) => {
+  for (const width of [320, 390, 430]) {
+    await page.setViewportSize({ width, height: 844 });
+    await visit(page, '/free-santa-message');
+    await page.evaluate(() => document.fonts.ready);
+    const heading = page.locator('#santa-studio-title');
+    await expect(heading).toHaveText('Santa’s Message Maker Studio');
+    const lines = await heading.evaluate(node => {
+      const second = node.querySelector('span');
+      const range = document.createRange();
+      range.selectNodeContents(second);
+      return { display: getComputedStyle(second).display, height: range.getBoundingClientRect().height,
+        lineHeight: parseFloat(getComputedStyle(second).lineHeight), width: node.scrollWidth, available: node.clientWidth };
+    });
+    expect(lines.display).toBe('block');
+    expect(lines.height).toBeLessThanOrEqual(lines.lineHeight + 3);
+    expect(lines.width).toBeLessThanOrEqual(lines.available + 1);
+    if (width === 390) await page.locator('.santa-studio-promotion').screenshot({ path: 'test-results/studio-promotion-title-mobile.png' });
+  }
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await expect(page.locator('.santa-studio-promotion__title-line')).toHaveCSS('display', 'inline');
+});
+
 for (const path of ['/', '/free-santa-message']) {
   test(`public live total, honest failure and retry without unlocking on ${path}`, async ({ page }) => {
     let mode = 'hold', release;
@@ -309,7 +332,7 @@ test('waiting downloads can repeat without generation, allowance or timer change
     await page.getByLabel('First Name').fill(name);
     await page.getByRole('option', { name, exact: true }).click();
     await page.getByRole('button', { name: 'Create message', exact: true }).click();
-    await expect(page.getByRole('heading', { name: `For ${name}, from Santa` })).toBeVisible();
+    await expect(page.getByRole('heading', { name: `To ${name} from Santa` })).toBeVisible();
   }
   const before = await page.evaluate(key => localStorage.getItem(key), MESSAGE_ALLOWANCE_KEY);
   const wait = page.locator('.message-wait');

@@ -18,7 +18,7 @@ async function createArabella(page) {
   await page.getByLabel('First Name').fill('Arabella');
   await page.getByRole('option', { name: 'Arabella', exact: true }).click();
   await page.getByRole('button', { name: 'Create message', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'For Arabella, from Santa' })).toBeVisible({ timeout: 90000 });
+  await expect(page.getByRole('heading', { name: 'To Arabella from Santa' })).toBeVisible({ timeout: 90000 });
 }
 
 test('mocked server-approved saved hit preserves bytes, playback, download and native sharing', async ({ page }) => {

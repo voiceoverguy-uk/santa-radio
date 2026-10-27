@@ -2,7 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { useRadio } from './RadioProvider.jsx';
 import SantaMessageExample from './SantaMessageExample.jsx';
 import SantaMessageAccessForm from './SantaMessageAccessForm.jsx';
-import SantaMessageShare, { SantaGreetingShare } from './SantaMessageShare.jsx';
+import { SantaGreetingShare } from './SantaMessageShare.jsx';
 import { useSantaMessageAccess } from './SantaMessageAccessProvider.jsx';
 import useSantaMessageAllowance from './useSantaMessageAllowance.js';
 import useSantaMessageHistory from './useSantaMessageHistory.js';
@@ -18,7 +18,7 @@ import { randomSantaExample, santaNamePlaceholder } from '../lib/santaNamePlaceh
 import { normaliseRequestedName } from '../lib/santaNameRequests.js';
 import { nameRequestToken } from '../lib/santaNameRequestTokens.js';
 import { trySavedSantaGreeting } from '../lib/savedSantaGreeting.js';
-import { scrollToSantaMessageDesk } from '../lib/scrollToSantaMessageDesk.js';
+import { settleSantaMessageDeskAfterEntry } from '../lib/scrollToSantaMessageDesk.js';
 import './SantaNameRequest.css';
 import './SantaMessageForm.css';
 
@@ -36,6 +36,8 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const [busy, setBusy] = useState(false);
   const [suggesting, setSuggesting] = useState(false);
   const [activeOption, setActiveOption] = useState(-1);
+  const suggestionTouchRef = useRef(null);
+  const suppressTouchClickRef = useRef(false);
   const requestRef = useRef(null);
   const nameRequestRef = useRef(null);
   const [nameRequest, setNameRequest] = useState({ key: '', status: 'idle', message: '' });
@@ -62,6 +64,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
 
   useEffect(() => {
     let frame;
+    let stopSettling;
     if (hasAccess && !showDetailLink) {
       // Announce the unlocked studio without letting native focus scroll past
       // the section introduction. Page entry handles new/returning visits;
@@ -69,16 +72,24 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
       makerHeadingRef.current?.focus({ preventScroll: true });
       // Let removal of the focused signup fields finish (including the
       // browser's scroll anchoring) before measuring the section destination.
-      if (!previousAccess.current) frame = requestAnimationFrame(scrollToSantaMessageDesk);
+      if (!previousAccess.current) frame = requestAnimationFrame(() => {
+        stopSettling = settleSantaMessageDeskAfterEntry();
+      });
     }
     previousAccess.current = hasAccess;
-    return () => cancelAnimationFrame(frame);
+    return () => {
+      cancelAnimationFrame(frame);
+      stopSettling?.();
+    };
   }, [hasAccess, showDetailLink]);
   // Keep server/client hydration deterministic; choose once on the client,
   // rather than changing the example whenever the user types or counts refresh.
   useEffect(() => { setExampleName(randomSantaExample()); }, []);
   useEffect(() => {
-    if (messages.length) resultRef.current?.focus();
+    if (messages.length) {
+      makerHeadingRef.current?.focus({ preventScroll: true });
+      makerHeadingRef.current?.scrollIntoView({ block: 'start', behavior: 'instant' });
+    }
     setAudioErrors(previous => Object.fromEntries(messages.map(message => [message.key, previous[message.key] || false])));
   }, [messages]);
   useEffect(() => () => {
@@ -211,16 +222,19 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
     resumeRadioRef.current = null;
     resume?.();
   };
-  const listenToRadio = () => {
-    if (!radio || radio.status === 'playing' || radio.status === 'loading') return;
-    resumeRadioRef.current = null;
-    audioRef.current?.pause();
-    radio.togglePlay();
+  const showMoreMagic = () => {
+    const promotion = document.getElementById('santa-studio-promotion');
+    const navigation = document.querySelector('.navbar');
+    if (!promotion || !navigation) return;
+    promotion.querySelector('#santa-studio-title')?.focus({ preventScroll: true });
+    window.scrollTo({
+      top: Math.max(0, window.scrollY + promotion.getBoundingClientRect().top - navigation.getBoundingClientRect().bottom - 16),
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+    });
   };
-
   const renderResults = () => messages.map((message, index) => <div key={message.key} className="message-result" ref={index === messages.length - 1 ? resultRef : null} tabIndex={-1} aria-label={`Santa’s greeting for ${message.name}`}>
     <p className="message-postmark">A greeting is waiting</p>
-    <h4>For {message.name}, from Santa</h4>
+    <h4>To {message.name} from Santa</h4>
     <audio ref={audio => {
       if (audio) audioRefs.current.set(message.key, audio);
       else audioRefs.current.delete(message.key);
@@ -270,27 +284,27 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         {nameSearch.hostedCount === null && !nameSearch.loading && !hasAccess &&
           <button className="message-retry" type="button" onClick={nameSearch.refresh}>Retry name total</button>}
         {!hasAccess ? <SantaMessageAccessForm /> : <>
-        <h3 ref={makerHeadingRef} tabIndex={-1}>Download your free Santa greeting</h3>
-        <p className="form-desc">Hey {greetingName || 'there'}, Search for the name and press Create message.</p>
+        <h3 ref={makerHeadingRef} tabIndex={-1}>{messages.length ? 'Download your free message' : 'Download your free Santa greeting'}</h3>
+        {!!messages.length && <div className="message-wait-downloads">
+          {renderResults()}
+          <button className="message-more-magic" type="button" onClick={showMoreMagic}>more magic?</button>
+        </div>}
         {coolingDown ? <div className="message-wait">
           <SantaCooldownNotice />
           <p className="message-countdown">More messages in <span role="timer" aria-live="off">{countdown}</span></p>
-          <h4 className="message-wait-downloads-title">Still time to save your greetings</h4>
           {!messages.length && <p>This tab no longer holds those recordings. Previously saved audio and certificates remain on your device. New recordings will be available when the wait ends.</p>}
-          <div className="message-wait-downloads">{renderResults()}</div>
-          <button className="message-retry" type="button" onClick={listenToRadio} disabled={!radio || radio.status === 'playing' || radio.status === 'loading'}>
-            {radio?.status === 'playing' ? 'Santa Radio is playing' : radio?.status === 'loading' ? 'Connecting to Santa Radio…' : 'Listen to Santa Radio'}
-          </button>
-          <SantaMessageShare />
-          {radio?.error && <p className="message-audio-error" role="alert">{radio.error}</p>}
         </div> : null}
         {coolingDown && !allowance.remembered && <p className="message-name-hint" role="status">Your browser can’t remember the message allowance. The limit works while this page is open, but leaving or refreshing may reset it.</p>}
+        {!coolingDown && <>
+        <p className="form-desc">Hey {greetingName || 'there'}, Search for the name and press Create message.</p>
         <form onSubmit={submit} noValidate>
           <label className="message-name-label" htmlFor={inputId}>First Name</label>
           <div className="message-name-picker">
           <input className="message-name-input" id={inputId} type="text" role="combobox" disabled={coolingDown} aria-autocomplete="list" aria-expanded={suggesting && suggestions.length > 0} aria-controls={`${inputId}-options`} aria-activedescendant={suggesting && activeOption >= 0 ? `${inputId}-option-${activeOption}` : undefined} value={name}
             onChange={event => { updateName(event.target.value); setSuggesting(true); }}
-            onFocus={() => setSuggesting(true)} onBlur={() => setSuggesting(false)}
+            onFocus={() => setSuggesting(true)} onBlur={() => {
+              if (!suggestionTouchRef.current) setSuggesting(false);
+            }}
             onKeyDown={event => {
               if (event.key === 'Escape') { setSuggesting(false); setActiveOption(-1); }
               if ((event.key === 'ArrowDown' || event.key === 'ArrowUp') && suggestions.length) {
@@ -302,7 +316,34 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
             placeholder={santaNamePlaceholder(exampleName)} autoComplete="off" autoCapitalize="words" spellCheck={false} aria-invalid={!!validation} aria-describedby={`${inputId}-hint${validation ? ` ${inputId}-error` : ''}`} />
           {suggesting && suggestions.length > 0 && <ul className="message-suggestions" id={`${inputId}-options`} role="listbox" aria-label="Available names">
             {suggestions.map((suggestion, index) => <li key={suggestion.id} id={`${inputId}-option-${index}`} role="option" aria-selected={index === activeOption}
-              onPointerDown={event => event.preventDefault()} onClick={() => selectName(suggestion)}>{suggestion.name}{suggestion.variant && <small> — {suggestion.variant}</small>}</li>)}
+              onPointerDown={event => {
+                // Keep focus in the input. iOS can suppress the compatibility
+                // click after this, so touch selection completes on pointerup.
+                event.preventDefault();
+                suppressTouchClickRef.current = event.pointerType === 'touch';
+                suggestionTouchRef.current = event.pointerType === 'touch'
+                  ? { id: suggestion.id, pointerId: event.pointerId, x: event.clientX, y: event.clientY, moved: false } : null;
+              }}
+              onPointerMove={event => {
+                const touch = suggestionTouchRef.current;
+                if (touch && Math.hypot(event.clientX - touch.x, event.clientY - touch.y) > 10) touch.moved = true;
+              }}
+              onPointerUp={event => {
+                const touch = suggestionTouchRef.current;
+                suggestionTouchRef.current = null;
+                if (!touch || touch.pointerId !== event.pointerId) return;
+                event.preventDefault();
+                if (!touch.moved && touch.id === suggestion.id
+                  && Math.hypot(event.clientX - touch.x, event.clientY - touch.y) <= 10) selectName(suggestion);
+                else if (document.activeElement?.id !== inputId) setSuggesting(false);
+              }}
+              onPointerCancel={() => {
+                suggestionTouchRef.current = null;
+                if (document.activeElement?.id !== inputId) setSuggesting(false);
+              }}
+              onClick={event => {
+                if (!suppressTouchClickRef.current || event.detail === 0) selectName(suggestion);
+              }}>{suggestion.name}{suggestion.variant && <small> — {suggestion.variant}</small>}</li>)}
           </ul>}
           </div>
           <span className="message-name-hint" id={`${inputId}-hint`} aria-live="polite">
@@ -351,8 +392,8 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
           {busy && <p role="status" className="message-name-hint">Santa is recording a personal message for you. Do hold on one moment...</p>}
           {!busy && allowance.pending && <p role="status" className="message-name-hint">Another message is being created. Please wait for it to finish.</p>}
         </form>
-        {!coolingDown && renderResults()}
-        <p className="service-notice">Free to create and download here. The message is not sent by email.</p>
+        </>}
+        <p className="service-notice">Free to create and download. Messages are not sent by email.</p>
         {!sessionRemembered && <p className="message-name-hint" role="status">Your browser can’t remember access. The studio stays open while you browse, but refreshing this tab may ask for your details again.</p>}
         </>}
       </div>

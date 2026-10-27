@@ -53,6 +53,20 @@ async function photograph(page, file) {
   await page.screenshot({ path: file, fullPage: true });
 }
 
+test('Studio hides progress captions only on mobile, retaining the bars and current step', async ({ page }) => {
+  await open(page);
+  for (const width of [320, 390, 430, 760, 768, 1440]) {
+    await page.setViewportSize({ width, height: 844 });
+    await expect(page.locator('.smw-progress-segment')).toHaveCount(6);
+    await expect(page.locator('.smw-progress')).toBeVisible();
+    await expect(page.locator('.smw-step-count')).toBeVisible();
+    if (width <= 760) await expect(page.locator('.smw-step-labels')).toBeHidden();
+    else await expect(page.locator('.smw-step-labels')).toBeVisible();
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.locator('.smw-builder').screenshot({ path: 'test-results/workshop-progress-mobile.png' });
+});
+
 test('Studio hides the radio dock and footer only on mobile and restores them elsewhere', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await open(page);

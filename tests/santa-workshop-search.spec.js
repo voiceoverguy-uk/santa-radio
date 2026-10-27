@@ -84,7 +84,7 @@ for (const viewport of [{ width: 1365, height: 900 }, { width: 320, height: 568 
       }
       if (index === 6) {
         await expect(page.locator('.smw-choice-search label')).toHaveCount(0);
-        await expect(input).toHaveAttribute('placeholder', 'Try a country or fantasy');
+        await expect(input).toHaveAttribute('placeholder', 'tell Santa which country?');
       }
       const countBeforeTyping = catalogueRequests;
       await input.fill(term.toUpperCase());

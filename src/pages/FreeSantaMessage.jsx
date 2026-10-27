@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import PageSeo from '../seo/PageSeo.jsx';
 import { messageMetadata } from '../seo/catalogue.js';
 import { santaMessageRequestedName } from '../seo/santaMessageLinks.js';
-import { scrollToSantaMessageDesk } from '../lib/scrollToSantaMessageDesk.js';
+import { settleSantaMessageDeskAfterEntry } from '../lib/scrollToSantaMessageDesk.js';
 import SantaMessageForm from '../components/SantaMessageForm.jsx';
 import './FreeSantaMessage.css';
 
@@ -13,6 +13,7 @@ export default function FreeSantaMessage() {
   useEffect(() => {
     let cancelled = false;
     let frame;
+    let stopSettling;
     const restoration = window.history.scrollRestoration;
     window.history.scrollRestoration = 'manual';
     const cancel = () => { cancelled = true; };
@@ -21,19 +22,20 @@ export default function FreeSantaMessage() {
     events.forEach(event => window.addEventListener(event, cancel, { passive: true }));
 
     // Font metrics can change both the banner height and the centred columns.
-    // Position once when they are ready, never after the visitor starts using
-    // the page. No resize observer or form-state dependency should pull them back.
+    // Position when they are ready. On touch-sized screens, allow the keyboard
+    // to settle briefly; interaction always cancels any remaining correction.
     document.fonts.ready.then(() => {
       if (cancelled) return;
       frame = requestAnimationFrame(() => {
         stopListening();
         if (cancelled) return;
-        scrollToSantaMessageDesk();
+        stopSettling = settleSantaMessageDeskAfterEntry();
       });
     });
     return () => {
       cancelled = true;
       cancelAnimationFrame(frame);
+      stopSettling?.();
       stopListening();
       window.history.scrollRestoration = restoration;
     };

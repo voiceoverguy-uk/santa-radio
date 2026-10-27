@@ -12,6 +12,44 @@ test.beforeEach(async ({ page }) => {
   }));
 });
 
+for (const width of [390, 834]) {
+  for (const entry of ['/', '/free-santa-message']) {
+    test(`signup scrolls to the free maker below navigation at ${width}px from ${entry}`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 1000 });
+      await mockBrevo(page);
+      await mockSantaNames(page);
+      await page.goto(entry);
+      const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+      if (await decline.isVisible()) await decline.click();
+      await fillAccessForm(page);
+      await page.getByRole('button', { name: 'Get my free Santa message', exact: true }).click();
+      await expect(page).toHaveURL(/\/free-santa-message$/);
+      await expect(page.getByLabel('First Name', { exact: true })).toBeVisible();
+      const aligned = () => page.evaluate(() => Math.abs(
+        document.querySelector('#santa-messages .message-layout').getBoundingClientRect().top
+        - document.querySelector('.navbar').getBoundingClientRect().bottom - 24,
+      ) < 2);
+      await expect.poll(aligned).toBe(true);
+      // Model the browser moving the page as the software keyboard closes.
+      await page.evaluate(() => {
+        window.scrollBy({ top: 100, behavior: 'instant' });
+        window.visualViewport?.dispatchEvent(new Event('resize'));
+      });
+      await expect.poll(aligned).toBe(true);
+      // Real interaction ends correction; later viewport changes must not
+      // pull the visitor back after they have chosen to move elsewhere.
+      const manualPosition = await page.evaluate(() => {
+        window.dispatchEvent(new Event('touchstart'));
+        window.scrollBy({ top: 100, behavior: 'instant' });
+        window.visualViewport?.dispatchEvent(new Event('resize'));
+        return window.scrollY;
+      });
+      await page.waitForTimeout(250);
+      expect(await page.evaluate(() => scrollY)).toBe(manualPosition);
+    });
+  }
+}
+
 test('adult access shows the requested news disclosure with an internal privacy link', async ({ page }) => {
   for (const path of ['/', '/free-santa-message']) {
     await page.goto(path);
