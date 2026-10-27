@@ -101,6 +101,15 @@ export default function PrivacyPolicy() {
         Ordinary hosting, live-radio and requested-feature connections still disclose technical request
         information even when optional cookies are declined.</p>
 
+      <section aria-labelledby="youtube-privacy">
+        <h2 id="youtube-privacy">YouTube</h2>
+        <p>This homepage TV loads YouTube automatically unless a saved preference keeps it off.
+          YouTube may use cookies and device information for playback, analytics and advertising.
+          Turn it off in Cookie settings or choose Decline optional cookies.
+          It attempts muted inline autoplay, subject to your browser. Use Listen Live for sound.
+          {' '}<a href="https://www.youtube.com/watch?v=mMrHniQJNCM" target="_blank" rel="noopener noreferrer">Watch directly on YouTube</a>.</p>
+      </section>
+
       <h2>Links and external services</h2>
       <p>Links to app stores, social networks, music platforms and personalised video services take you to separate services with their own privacy notices. Check those notices before sharing information. An email link opens your chosen email service; it does not submit a form on this website.</p>
 

@@ -6,7 +6,7 @@ test('shared contact privacy describes both modes without claiming inbox deliver
   for (const text of [
     'General enquiry or Song submission',
     'a message of up to 500 characters',
-    'same dedicated Brevo form',
+    'separate dedicated Brevo forms',
     'General enquiries do not require these song criteria',
     'not sent as a separate Brevo attribute',
     'do not open the message maker or give consent for marketing',
@@ -25,7 +25,7 @@ test('policy covers the confirmed native app separately from website marketing',
   const app = page.getByRole('region', { name: 'Christmas Radio UK — native iPhone and iPad app, version 35.0' });
   await expect(app).toBeVisible();
   await expect(article).not.toContainText('not separate apps');
-  await expect(article.locator('time')).toHaveAttribute('datetime', '2026-10-23');
+  await expect(article.locator('time')).toHaveAttribute('datetime', '2026-10-26');
   await expect(article).toContainText('The homepage YouTube TV loads automatically on a first visit');
   await expect(article).toContainText('turning it off cannot erase data already sent or third-party cookies');
   for (const text of [
@@ -111,6 +111,25 @@ test('footer opens a readable privacy policy with separate message access and ne
   await expect(article).toContainText('Your choices and rights');
 });
 
+test('policy YouTube disclosure matches the homepage wording and safe direct link', async ({ page }) => {
+  await page.goto('/');
+  const homepageLink = page.locator('.video-disclosure').getByRole('link', { name: 'Watch directly on YouTube', exact: true });
+  const destination = await homepageLink.getAttribute('href');
+  const target = await homepageLink.getAttribute('target');
+  const rel = await homepageLink.getAttribute('rel');
+  expect(destination).toBe('https://www.youtube.com/watch?v=mMrHniQJNCM');
+  await page.goto('/privacy-policy');
+  const youtube = page.getByRole('region', { name: 'YouTube', exact: true });
+  await expect(youtube.locator('p')).toHaveText('This homepage TV loads YouTube automatically unless a saved preference keeps it off. YouTube may use cookies and device information for playback, analytics and advertising. Turn it off in Cookie settings or choose Decline optional cookies. It attempts muted inline autoplay, subject to your browser. Use Listen Live for sound. Watch directly on YouTube.');
+  const link = youtube.getByRole('link', { name: 'Watch directly on YouTube', exact: true });
+  await expect(link).toHaveAttribute('href', destination);
+  await expect(link).toHaveAttribute('target', target);
+  await expect(link).toHaveAttribute('rel', rel);
+  expect(target).toBe('_blank');
+  expect(rel.split(' ')).toEqual(expect.arrayContaining(['noopener', 'noreferrer']));
+  await expect(youtube.locator('xpath=ancestor::details')).toHaveCount(0);
+});
+
 test('policy direct loads, refreshes and metadata work on desktop and mobile', async ({ page }) => {
   for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: 900 });
@@ -127,6 +146,15 @@ test('policy direct loads, refreshes and metadata work on desktop and mobile', a
     await expect(page.getByRole('link', { name: 'Skip to content' })).toBeFocused();
     await page.keyboard.press('Enter');
     await expect(page.locator('#page-content')).toBeFocused();
+    const youtube = page.getByRole('region', { name: 'YouTube', exact: true });
+    const heading = youtube.getByRole('heading', { name: 'YouTube', exact: true, level: 2 });
+    await expect(heading).toBeVisible();
+    await heading.scrollIntoViewIfNeeded();
+    await expect(heading).toBeInViewport();
+    await expect(youtube.locator('p')).toBeVisible();
+    await expect(youtube.getByRole('link', { name: 'Watch directly on YouTube', exact: true }))
+      .toHaveAttribute('href', 'https://www.youtube.com/watch?v=mMrHniQJNCM');
+    expect(await youtube.locator('p').evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
   }
 });
 
