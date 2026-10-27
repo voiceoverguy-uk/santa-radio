@@ -21,7 +21,7 @@ export default function SongVideo({ song, className, title }) {
         src={`https://www.youtube.com/embed/${song.youtube}`}
         title={title || `${song.artist} - ${song.song}`}
         frameBorder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
         allowFullScreen />
       </ExternalMediaConsent>
     </div>

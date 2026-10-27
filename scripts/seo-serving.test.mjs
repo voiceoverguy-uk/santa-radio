@@ -73,6 +73,24 @@ test('built Node server returns actual pages, permanent redirects, images, API r
     child.stderr.on('data', data => console.error(data.toString()));
   });
   const get = path => fetch(`http://127.0.0.1:${port}${path}`, { redirect: 'manual' });
+  const mugshotsLogo = '/mugshot-images/santa-mugshots-logo-1.png';
+  for (const path of ['/', '/mugshots/all']) {
+    const response = await get(path);
+    assert.equal(response.status, 200);
+    const html = await response.text();
+    assert.ok(html.includes(`src="${mugshotsLogo}"`), path);
+    assert.ok(!html.includes('/santa-radio-celebrity-mugshots.png'), path);
+  }
+  const logoBytes = await readFile(`public${mugshotsLogo}`);
+  const logo = await get(mugshotsLogo);
+  assert.equal(logo.status, 200);
+  assert.match(logo.headers.get('content-type'), /^image\/png/);
+  assert.deepEqual(Buffer.from(await logo.arrayBuffer()), logoBytes);
+  assert.deepEqual(logoBytes.subarray(0, 8), Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]));
+  const logoHead = await fetch(`http://127.0.0.1:${port}${mugshotsLogo}`, { method: 'HEAD', redirect: 'manual' });
+  assert.equal(logoHead.status, 200);
+  assert.match(logoHead.headers.get('content-type'), /^image\/png/);
+  assert.equal((await logoHead.arrayBuffer()).byteLength, 0);
   for (const [path, word] of [
     ['/', 'Santa Radio'], ['/christmas-music', 'Christmas Song Lyrics'],
     ['/christmas-artist/3-waitresses-christmas-wrapping', 'Artist background'],
@@ -169,6 +187,12 @@ test('Vercel document handler preserves statuses, metadata and relative location
     assert.deepEqual(await readFile(`dist${path}`), await readFile(`public${path}`));
   }
   const expression = new RegExp(`^${config.routes[documentRoute].src}$`);
+  const mugshotsLogo = '/mugshot-images/santa-mugshots-logo-1.png';
+  for (const route of config.routes.slice(0, filesystem)) {
+    if (route.src && new RegExp(`^${route.src}$`).test(mugshotsLogo))
+      assert.ok(!route.dest, 'Mug Shots logo must reach the filesystem, not a document rewrite');
+  }
+  assert.deepEqual(await readFile(`dist${mugshotsLogo}`), await readFile(`public${mugshotsLogo}`));
   for (const path of ['/', '/christmas-music', '/artist', '/santa-tracker/', '/santa-tracker/preview', '/mugshots/a1-singers', '/personalised-santa-message/all', '/personalised-santa-message/Cooper'])
     assert.ok(expression.test(path), path);
   for (const path of ['/artist-artwork/catalogue.json', '/images/santa-tracker-share.png', '/api/santa-message'])

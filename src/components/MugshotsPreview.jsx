@@ -14,7 +14,7 @@ export default function MugshotsPreview() {
       <div className="container">
         <div className="mugshots-logo">
           <img
-            src="https://www.santaradio.co.uk/santa-radio-celebrity-mugshots.png"
+            src="/mugshot-images/santa-mugshots-logo-1.png"
             alt="Celebrity Mugshots"
             className="mugshots-header-img"
           />

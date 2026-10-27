@@ -9,6 +9,36 @@ const report = JSON.parse(fs.readFileSync('reports/mugshot-import.json', 'utf8')
 const publicData = buildCatalogue(catalogue);
 const overrides = JSON.parse(fs.readFileSync('src/data/mugshot-biographies.json', 'utf8'));
 
+test('homepage and gallery decode the same-origin Mug Shots logo without the retired remote request', async ({ page }) => {
+  const remoteRequests = [];
+  page.on('request', request => {
+    if (request.url().includes('/santa-radio-celebrity-mugshots.png')) remoteRequests.push(request.url());
+  });
+  await page.route('https://www.youtube.com/embed/**', route => route.fulfill({ contentType: 'text/html', body: '' }));
+  for (const [path, selector, alt] of [
+    ['/', '.mugshots-header-img', 'Celebrity Mugshots'],
+    ['/mugshots/all', '.mugshots-page-logo', 'Mug Shots'],
+  ]) {
+    const responsePromise = page.waitForResponse(response =>
+      new URL(response.url()).pathname === '/mugshot-images/santa-mugshots-logo-1.png');
+    await page.goto(path, { waitUntil: 'domcontentloaded' });
+    const response = await responsePromise;
+    expect(response.status()).toBe(200);
+    expect(response.headers()['content-type']).toMatch(/^image\/png/);
+    const logo = page.locator(selector);
+    await expect(logo).toHaveAttribute('src', '/mugshot-images/santa-mugshots-logo-1.png');
+    await expect(logo).toHaveAttribute('alt', alt);
+    await logo.scrollIntoViewIfNeeded();
+    await expect(logo).toBeVisible();
+    expect(await logo.evaluate(async image => {
+      await image.decode();
+      return image.naturalWidth > 0 && image.naturalHeight > 0 &&
+        new URL(image.currentSrc).origin === location.origin;
+    })).toBe(true);
+  }
+  expect(remoteRequests).toEqual([]);
+});
+
 test('canonical catalogue excludes empty profiles and preserves retained details', () => {
   expect(publicData.catalogue).toHaveLength(636);
   expect(new Set(publicData.catalogue.map(m => normalizeName(m.artist))).size).toBe(636);

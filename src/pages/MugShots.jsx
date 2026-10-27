@@ -60,10 +60,9 @@ export default function MugShots() {
         <div className="mugshots-hero-content">
           <div className="mugshots-page-logo-wrap">
             <img
-              src="https://www.santaradio.co.uk/santa-radio-celebrity-mugshots.png"
+              src="/mugshot-images/santa-mugshots-logo-1.png"
               alt="Mug Shots"
               className="mugshots-page-logo"
-              onError={e => { e.target.style.display = 'none'; }}
             />
           </div>
           <h1 className="mugshots-page-title">Santa Radio Celebrity Mug Shots Hall of Fame!</h1>
