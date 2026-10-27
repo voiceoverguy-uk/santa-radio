@@ -1,5 +1,79 @@
 import { test, expect } from '@playwright/test';
 
+const privacySections = [
+  ['Website & cookies', 'cookie-overview'],
+  ['YouTube', 'youtube-privacy'],
+  ['iPhone/iPad app', 'christmas-radio-privacy'],
+  ['Android app', 'android-radio-privacy'],
+  ['Choices & rights', 'privacy-choices'],
+];
+
+for (const width of [1440, 390, 320]) {
+  test(`section navigation is keyboard accessible and fits at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/privacy-policy');
+    await page.locator('.marketing-consent').getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
+    const consentBefore = await page.evaluate(() => localStorage.getItem('santaradio-cookie-consent-v2'));
+    const nav = page.getByRole('navigation', { name: 'Privacy policy sections', exact: true });
+    await expect(nav.getByRole('link')).toHaveCount(privacySections.length);
+    for (const [label, id] of privacySections) {
+      const link = nav.getByRole('link', { name: label, exact: true });
+      await expect(link).toHaveAttribute('href', `#${id}`);
+      await link.focus();
+      // Use an actual keyboard transition to check the visible focus treatment.
+      await page.keyboard.press('Shift+Tab');
+      await page.keyboard.press('Tab');
+      await expect(link).toBeFocused();
+      expect(await link.evaluate(el => getComputedStyle(el).outlineStyle)).not.toBe('none');
+      const box = await link.boundingBox();
+      expect(box.x).toBeGreaterThanOrEqual(0);
+      expect(box.x + box.width).toBeLessThanOrEqual(width);
+      expect(box.height).toBeGreaterThanOrEqual(40);
+      await page.keyboard.press('Enter');
+      const heading = page.locator(`h2#${id}`);
+      await expect(page).toHaveURL(new RegExp(`/privacy-policy#${id}$`));
+      await expect(heading).toBeFocused();
+      await expect(heading).toBeInViewport();
+      await expect.poll(async () => {
+        const target = await heading.boundingBox();
+        const header = await page.locator('.navbar').boundingBox();
+        const dock = await page.locator('.radio-dock').boundingBox();
+        return target.y >= header.y + header.height && target.y + target.height <= dock.y;
+      }).toBe(true);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    }
+    expect(await page.evaluate(() => localStorage.getItem('santaradio-cookie-consent-v2'))).toBe(consentBefore);
+    await expect(page.locator('#santaradio-google-analytics, #santaradio-meta-pixel, article iframe')).toHaveCount(0);
+    await page.locator('article').getByRole('button', { name: 'Cookie settings', exact: true }).click();
+    await expect(page.locator('.marketing-consent').getByRole('button', { name: 'Save choices', exact: true })).toBeVisible();
+  });
+}
+
+test('section links support direct visits, refresh and browser history', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/privacy-policy');
+  await page.locator('.marketing-consent').getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
+  for (const [, id] of privacySections) {
+    await page.goto(`/privacy-policy#${id}`);
+    await page.reload();
+    await expect(page.locator(`h2#${id}`)).toBeFocused();
+    await expect(page.locator(`h2#${id}`)).toBeInViewport();
+  }
+  const nav = page.getByRole('navigation', { name: 'Privacy policy sections', exact: true });
+  await nav.getByRole('link', { name: 'YouTube', exact: true }).click();
+  await nav.getByRole('link', { name: 'Android app', exact: true }).click();
+  await page.goBack();
+  await expect(page.locator('#youtube-privacy')).toBeFocused();
+  await expect(page.locator('#youtube-privacy')).toBeInViewport();
+  await page.goForward();
+  await expect(page.locator('#android-radio-privacy')).toBeFocused();
+  await expect(page.locator('#android-radio-privacy')).toBeInViewport();
+  // Unknown and malformed fragments must leave the policy usable.
+  await page.goto('/privacy-policy#%invalid');
+  await expect(page.getByRole('heading', { name: 'Privacy Policy', exact: true })).toBeVisible();
+});
+
 test('shared contact privacy describes both modes without claiming inbox delivery or consent', async ({ page }) => {
   await page.goto('/privacy-policy');
   const article = page.locator('article');

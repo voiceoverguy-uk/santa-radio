@@ -3,16 +3,37 @@ import { Helmet } from 'react-helmet-async';
 import './PrivacyPolicy.css';
 import CookiePolicySection from './CookiePolicySection.jsx';
 
+const privacySectionIds = [
+  'cookie-overview',
+  'youtube-privacy',
+  'christmas-radio-privacy',
+  'android-radio-privacy',
+  'privacy-choices',
+];
+
 export default function PrivacyPolicy() {
   useEffect(() => {
-    // Run after the navigation's scroll reset, including on direct fragment loads.
-    if (window.location.hash !== '#youtube-privacy') return;
-    const frame = requestAnimationFrame(() => {
-      const heading = document.getElementById('youtube-privacy');
-      heading?.scrollIntoView({ block: 'start', behavior: 'instant' });
-      heading?.focus({ preventScroll: true });
-    });
-    return () => cancelAnimationFrame(frame);
+    let frame;
+    const focusFragmentHeading = () => {
+      cancelAnimationFrame(frame);
+      const id = window.location.hash.slice(1);
+      if (!privacySectionIds.includes(id)) return;
+      // Run after the navigation's scroll reset, including on direct fragment loads.
+      frame = requestAnimationFrame(() => {
+        const heading = document.getElementById(id);
+        if (!heading) return;
+        heading.setAttribute('tabindex', '-1');
+        heading.scrollIntoView({ block: 'start', behavior: 'instant' });
+        heading.focus({ preventScroll: true });
+      });
+    };
+
+    focusFragmentHeading();
+    window.addEventListener('hashchange', focusFragmentHeading);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener('hashchange', focusFragmentHeading);
+    };
   }, []);
 
   return <main className="privacy-page">
@@ -28,10 +49,17 @@ export default function PrivacyPolicy() {
       <p>The Santa Radio website and Christmas Radio UK app are operated by VoiceoverGuy Ltd. For privacy questions, email <a href="mailto:santa@santaradio.co.uk">santa@santaradio.co.uk</a>.</p>
         <p>This notice covers the current Santa Radio website and the Christmas Radio UK native apps for iPhone and iPad, version 35.0, and Android. The app-specific sections below explain how each app handles information. Website-only features, including forms, Santa audio messages, embedded videos and optional analytics or marketing cookies, are separate from the native apps. External services may also have their own privacy notices.</p>
       <p>You can browse and listen without an account. We do not sell personal data.</p>
+      <nav className="privacy-section-nav" aria-label="Privacy policy sections">
+        <a href="#cookie-overview">Website &amp; cookies</a>
+        <a href="#youtube-privacy">YouTube</a>
+        <a href="#christmas-radio-privacy">iPhone/iPad app</a>
+        <a href="#android-radio-privacy">Android app</a>
+        <a href="#privacy-choices">Choices &amp; rights</a>
+      </nav>
       <CookiePolicySection />
 
       <section aria-labelledby="christmas-radio-privacy">
-        <h2 id="christmas-radio-privacy">Christmas Radio UK — native iPhone and iPad app, version 35.0</h2>
+        <h2 id="christmas-radio-privacy" tabIndex="-1">Christmas Radio UK — native iPhone and iPad app, version 35.0</h2>
         <h3>Using the app</h3>
         <p>The app plays the live Christmas Radio stream and displays Now Playing, Up Next and artist artwork. Listening does not require a mandatory account or submission of your name, email address or other contact details.</p>
         <p>Background audio lets listening continue when the app is not on screen. AirPlay and CarPlay provide playback and audio-routing controls on compatible devices. These listening features do not require you to record your voice, take a photograph or upload a selfie, and do not require microphone, camera, contacts, photo-library or location access for radio playback.</p>
@@ -59,7 +87,7 @@ export default function PrivacyPolicy() {
       </section>
 
       <section aria-labelledby="android-radio-privacy">
-        <h2 id="android-radio-privacy">Christmas Radio UK — Android app</h2>
+        <h2 id="android-radio-privacy" tabIndex="-1">Christmas Radio UK — Android app</h2>
         <h3>Using the app</h3>
         <p>The app plays the live Christmas Radio stream and displays current and upcoming song information and artist artwork. You can listen without creating an account or providing your name, email address or other contact details.</p>
         <p>The app uses HTTPS connections to receive live audio from Citrus3 at global.citrus3.com:8164. It separately requests current and upcoming song information and artist artwork from Santa Radio at www.santaradio.co.uk over HTTPS. These requests necessarily disclose your IP address and normal technical request information to the relevant services. This can include request times, requested resources, connection duration and device or networking-software information supplied with a request. Stream, metadata and artwork requests may indicate when you listen or which information and images you request.</p>
@@ -129,7 +157,7 @@ export default function PrivacyPolicy() {
       <p>We publish artist and celebrity photos and biographies for the station’s editorial features, relying on legitimate interests. Contact us about accuracy, privacy or removal concerns.</p>
       <p>We keep enquiries and submissions only as long as needed to handle them, follow up or resolve relevant issues. Editorial material may remain while relevant; we review concerns and remove or correct content where appropriate. Legal obligations or disputes may require longer retention. Brevo contact records, provider logs and listener statistics have separate retention arrangements; removal of a temporary MP3 or local app cache does not remove those records. Contact us about retention or a deletion request for information you have submitted.</p>
 
-      <h2>Your choices and rights</h2>
+      <h2 id="privacy-choices" tabIndex="-1">Your choices and rights</h2>
       <p>Depending on the circumstances, you can request access, correction, deletion, restriction or portability of your information, and object to processing based on legitimate interests. Withdrawing consent does not affect earlier lawful processing. Email us to exercise your rights. You can also complain to the UK Information Commissioner’s Office at <a href="https://ico.org.uk/make-a-complaint/">ico.org.uk</a>.</p>
       <p>These rights apply to relevant website and app information, subject to the conditions and exemptions in data-protection law. You may be asked for proportionate information to verify your identity and identify the records concerned. We normally respond within one month; if a lawful extension is needed, we will explain it. Where a third party acts as a separate controller, you may also need to contact that provider.</p>
     </article>
