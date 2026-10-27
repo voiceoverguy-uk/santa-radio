@@ -185,22 +185,16 @@ test('footer opens a readable privacy policy with separate message access and ne
   await expect(article).toContainText('Your choices and rights');
 });
 
-test('policy YouTube disclosure matches the homepage wording and safe direct link', async ({ page }) => {
+test('YouTube privacy wording remains in the policy without repeating beneath the homepage player', async ({ page }) => {
   await page.goto('/');
-  const homepageLink = page.locator('.video-disclosure').getByRole('link', { name: 'Watch directly on YouTube', exact: true });
-  const destination = await homepageLink.getAttribute('href');
-  const target = await homepageLink.getAttribute('target');
-  const rel = await homepageLink.getAttribute('rel');
-  expect(destination).toBe('https://www.youtube.com/watch?v=mMrHniQJNCM');
+  await expect(page.locator('.youtube-section .video-disclosure')).toHaveCount(0);
   await page.goto('/privacy-policy');
   const youtube = page.getByRole('region', { name: 'YouTube', exact: true });
   await expect(youtube.locator('p')).toHaveText('This homepage TV loads YouTube automatically unless a saved preference keeps it off. YouTube may use cookies and device information for playback, analytics and advertising. Turn it off in Cookie settings or choose Decline optional cookies. It attempts muted inline autoplay, subject to your browser. Use Listen Live for sound. Watch directly on YouTube.');
   const link = youtube.getByRole('link', { name: 'Watch directly on YouTube', exact: true });
-  await expect(link).toHaveAttribute('href', destination);
-  await expect(link).toHaveAttribute('target', target);
-  await expect(link).toHaveAttribute('rel', rel);
-  expect(target).toBe('_blank');
-  expect(rel.split(' ')).toEqual(expect.arrayContaining(['noopener', 'noreferrer']));
+  await expect(link).toHaveAttribute('href', 'https://www.youtube.com/watch?v=mMrHniQJNCM');
+  await expect(link).toHaveAttribute('target', '_blank');
+  await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   await expect(youtube.locator('xpath=ancestor::details')).toHaveCount(0);
 });
 

@@ -36,7 +36,7 @@ test('song and karaoke videos grant fullscreen only after media consent and unlo
   }
 });
 
-test('unreachable webcam keeps its direct YouTube link and can be unloaded', async ({ page }) => {
+test('unreachable webcam can be enabled and unloaded without a disclosure below it', async ({ page }) => {
   let embedRequests = 0;
   await page.route('https://www.youtube.com/embed/**', route => {
     embedRequests++;
@@ -47,21 +47,17 @@ test('unreachable webcam keeps its direct YouTube link and can be unloaded', asy
     name: 'Decline optional cookies', exact: true,
   }).click();
   const webcam = page.locator('.youtube-section');
-  const directLink = webcam.getByRole('link', { name: 'Watch directly on YouTube', exact: true });
+  await expect(webcam.locator('.video-disclosure')).toHaveCount(0);
   await expect(webcam.locator('iframe')).toHaveCount(0);
   expect(embedRequests).toBe(1);
   await webcam.getByRole('button', { name: 'Enable external media' }).click();
   await expect.poll(() => embedRequests).toBe(2);
-  await expect(directLink).toBeVisible();
-  await expect(directLink).toHaveAttribute('href', 'https://www.youtube.com/watch?v=mMrHniQJNCM');
-  await expect(directLink).toHaveAttribute('target', '_blank');
-  await expect(directLink).toHaveAttribute('rel', 'noopener noreferrer');
+  await expect(webcam.getByRole('link', { name: 'Watch directly on YouTube', exact: true })).toHaveCount(0);
   await page.locator('footer').getByRole('button', { name: 'Cookie settings', exact: true }).click();
   await page.locator('.marketing-consent').getByRole('button', {
     name: 'Decline optional cookies', exact: true,
   }).click();
   await expect(webcam.locator('iframe')).toHaveCount(0);
-  await expect(directLink).toBeVisible();
   await expect(webcam.getByRole('link', { name: 'Open on YouTube instead (new tab)' })).toBeVisible();
 });
 
@@ -102,14 +98,13 @@ test('automatic webcam attempts muted inline autoplay and pause/resume leaves ra
   await expect(video).toHaveAttribute('src', url.href);
   await expect(video).toHaveAttribute('allow', 'autoplay; encrypted-media');
   await expect(video).not.toHaveAttribute('allowfullscreen');
-  const directLink = page.locator('.youtube-section').getByRole('link', { name: 'Watch directly on YouTube', exact: true });
-  await expect(directLink).toHaveAttribute('href', 'https://www.youtube.com/watch?v=mMrHniQJNCM');
+  await expect(page.locator('.youtube-section .video-disclosure')).toHaveCount(0);
   await page.locator('footer').getByRole('button', { name: 'Cookie settings', exact: true }).click();
   await page.locator('.marketing-consent').getByRole('button', {
     name: 'Decline optional cookies', exact: true,
   }).click();
   await expect(video).toHaveCount(0);
-  await expect(directLink).toBeVisible();
+  await expect(page.locator('.youtube-section .video-disclosure')).toHaveCount(0);
   expect(await page.evaluate(() => window.originalRadioAudio === document.querySelector('audio'))).toBe(true);
   expect(await page.evaluate(() => window.radioCalls)).toEqual({ play: 1, pause: 0 });
   await expect(page.locator('.radio-dock').getByRole('button', { name: 'Pause Radio', exact: true })).toBeVisible();

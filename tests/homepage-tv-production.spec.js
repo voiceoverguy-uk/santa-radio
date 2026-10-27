@@ -30,7 +30,7 @@ for (const media of [null, false, true]) {
     const response = await request.get(origin);
     expect(response.status()).toBe(200);
     const html = await response.text();
-    expect(html).toContain('This homepage TV loads YouTube automatically');
+    expect(html).not.toContain('This homepage TV loads YouTube automatically');
     expect(html).toContain('aria-busy="true"');
     expect(html).not.toContain('<iframe');
     expect(html).not.toContain('YouTube is off');

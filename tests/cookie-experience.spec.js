@@ -42,7 +42,7 @@ test('fresh homepage TV loads without recording consent or flashing an off notic
   const webcam = page.locator('.youtube-section');
   const video = webcam.locator('iframe');
   const placeholderLink = webcam.getByRole('link', { name: 'Open on YouTube instead (new tab)', exact: true });
-  const directLink = webcam.getByRole('link', { name: 'Watch directly on YouTube', exact: true });
+  await expect(webcam.locator('.video-disclosure')).toHaveCount(0);
   await expect(video).toHaveCount(1);
   await expect(webcam.locator('.external-media-placeholder')).toHaveCount(0);
   expect(await page.evaluate(() => window.__tvOffFlashed)).toBe(false);
@@ -50,11 +50,6 @@ test('fresh homepage TV loads without recording consent or flashing an off notic
   await expect(page.locator('#santaradio-google-analytics, #santaradio-meta-pixel')).toHaveCount(0);
   await expect.poll(() => requests.length).toBe(1);
   expect(requests[0]).toContain('youtube.com/embed/mMrHniQJNCM');
-  for (const link of [directLink]) {
-    await expect(link).toHaveAttribute('href', 'https://www.youtube.com/watch?v=mMrHniQJNCM');
-    await expect(link).toHaveAttribute('target', '_blank');
-    await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
-  }
   await decline(page).click();
   await expect(video).toHaveCount(0);
   await expect(webcam.getByRole('button', { name: 'Pause video', exact: true })).toHaveCount(0);
@@ -64,7 +59,6 @@ test('fresh homepage TV loads without recording consent or flashing an off notic
     'https://www.youtube.com/embed/mMrHniQJNCM?si=O7nNcINykyWwgyXC&autoplay=1&mute=1&controls=0&disablekb=1&playsinline=1&fs=0');
   expect(await stored(page)).toMatchObject({ analytics: false, marketing: false, media: true });
   await expect(placeholderLink).toHaveCount(0);
-  await expect(directLink).toHaveAttribute('href', 'https://www.youtube.com/watch?v=mMrHniQJNCM');
   await footerSettings(page).click();
   await decline(page).click();
   await expect(video).toHaveCount(0);
