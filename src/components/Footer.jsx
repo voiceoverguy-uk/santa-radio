@@ -1,12 +1,13 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useRadio } from './RadioProvider.jsx';
 import './Footer.css';
 import { openCookieSettings } from '../privacy/cookieConsent.js';
 
 export default function Footer() {
+  const { pathname } = useLocation();
   const { effects, setEffects } = useRadio();
   return (
-    <footer className="footer">
+    <footer className={`footer${pathname.replace(/\/+$/, '') === '/santa-message-workshop' ? ' is-studio-footer' : ''}`}>
       <div className="footer-attribution">
         Brought to life by the Voice of Santa, British Voiceover Artist <a href="https://www.voiceoverguy.co.uk" target="_blank" rel="noopener noreferrer">Guy Harris</a>
       </div>

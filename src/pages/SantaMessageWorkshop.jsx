@@ -368,17 +368,17 @@ export default function SantaMessageWorkshop() {
       <div className="smw-shell">
         <header className="smw-intro">
           <div className="smw-title-wrap">
-            <p className="smw-eyebrow"><span aria-hidden="true" /> A little North Pole daydream</p>
+            <p className="smw-eyebrow"><span aria-hidden="true" /> A little North Pole Magic</p>
             <h1>Santa’s Message<br className="smw-title-break" /> Maker Studio</h1>
             <p className="smw-intro-copy">Try the little details that could make a longer Santa greeting feel wonderfully theirs.</p>
           </div>
-          <aside className="smw-preview-note" aria-label="Design preview notice">
+          <aside className="smw-preview-note" aria-label="Studio test notice">
             <span className="smw-preview-mark" aria-hidden="true">
               <svg viewBox="0 0 20 20" focusable="false"><path d="m10 1.5 2.2 6.3 6.3 2.2-6.3 2.2L10 18.5l-2.2-6.3-6.3-2.2 6.3-2.2L10 1.5Z" /></svg>
             </span>
             <div>
-              <strong>Design preview</strong>
-              <p>You’re in the friends-only Studio test. Choose your details, then review them. Extended message recording and downloads aren’t connected yet. Your tester code is for preview access, not a paid voucher.</p>
+              <strong>It's the little details that matter...</strong>
+              <p>You’re in the friends-only Message Maker Studio test. Please try all of the sections and give us some feedback.</p>
             </div>
           </aside>
         </header>

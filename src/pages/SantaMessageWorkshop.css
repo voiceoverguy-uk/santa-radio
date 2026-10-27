@@ -1,5 +1,7 @@
 .smw-page {
   overflow-anchor: none;
+  overflow-x: clip;
+  min-width: 0;
   --smw-evergreen: #123326;
   --smw-evergreen-deep: #0b241a;
   --smw-panel: #173b2b;
@@ -17,8 +19,18 @@
 }
 
 .smw-shell {
-  width: min(100%, 1080px);
+  width: 100%;
+  max-width: 1080px;
+  min-width: 0;
   margin: 0 auto;
+}
+/* Let Safari shrink grid/flex items to the phone width instead of their
+   contents' intrinsic width, including while fonts and the catalogue load. */
+.smw-shell > *,
+.smw-intro > *,
+.smw-preview-note > div {
+  min-width: 0;
+  max-width: 100%;
 }
 #page-content > main.smw-page { padding-top: 130px; }
 .smw-page :is(button, .smw-choice) { scroll-margin-bottom: var(--smw-dock-clearance, 280px); }
@@ -134,7 +146,7 @@
   margin: 0;
   list-style: none;
 }
-.smw-step-labels li { overflow: hidden; color: #aebdaf; font-size: .64rem; text-overflow: ellipsis; white-space: nowrap; }
+.smw-step-labels li { min-width: 0; flex: 1 1 0; overflow: hidden; color: #aebdaf; font-size: .64rem; text-overflow: ellipsis; white-space: nowrap; }
 .smw-step-labels li.is-current { color: var(--smw-gold-light); }
 
 .smw-stage { padding-top: 26px; }
@@ -370,8 +382,9 @@
 .smw-visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 
 @media (max-width: 760px) {
-  .smw-page { padding: 25px 17px 310px; }
-  .smw-intro { grid-template-columns: 1fr; gap: 14px; margin-bottom: 18px; }
+  .smw-page { min-height: 0; padding: 25px 17px max(16px, env(safe-area-inset-bottom)); }
+  .smw-explainer, .smw-footer-note { display: none; }
+  .smw-intro { grid-template-columns: minmax(0, 1fr); gap: 14px; margin-bottom: 18px; }
   .smw-title-wrap { padding-top: 3px; }
   .smw-title-break { display: initial; }
   .smw-intro h1 { font-size: clamp(2rem, 8vw, 2.8rem); }

@@ -1,3 +1,7 @@
+@media (max-width: 760px) {
+  .footer.is-studio-footer { display: none; }
+}
+
 .footer {
   background: #1a1a1a;
   color: #ccc;

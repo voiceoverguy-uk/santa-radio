@@ -24,7 +24,10 @@ export default function MarketingConsent() {
   useEffect(() => {
     const player = document.querySelector('.radio-dock');
     if (!player) return;
-    const measure = () => setPlayerClearance(Math.ceil(window.innerHeight - player.getBoundingClientRect().top));
+    const measure = () => {
+      const bounds = player.getBoundingClientRect();
+      setPlayerClearance(bounds.height > 0 ? Math.max(0, Math.ceil(window.innerHeight - bounds.top)) : 0);
+    };
     const observer = new ResizeObserver(measure);
     observer.observe(player);
     window.addEventListener('resize', measure);

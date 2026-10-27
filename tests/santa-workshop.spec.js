@@ -11,6 +11,22 @@ const hostedRecords = [
   { id: 'dixie3', name: 'Dixie', variant: 'dixie3.wav' },
 ];
 
+test('mobile first load keeps Studio panels inside the viewport without horizontal panning', async ({ page }) => {
+  for (const width of [320, 390, 430]) {
+    await page.setViewportSize({ width, height: 844 });
+    await open(page);
+    const overflow = await page.locator('.smw-page').evaluate(root =>
+      [root, ...root.querySelectorAll('.smw-shell, .smw-intro, .smw-preview-note, .smw-builder, .smw-stage, .smw-activity-preview-layout')]
+        .map(node => ({ element: node.className, left: node.getBoundingClientRect().left, right: node.getBoundingClientRect().right }))
+        .filter(rect => rect.left < -1 || rect.right > innerWidth + 1));
+    expect(overflow, `Studio panel bounds at ${width}px`).toEqual([]);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width + 1);
+    await page.evaluate(() => window.scrollTo({ left: 150, top: 0, behavior: 'instant' }));
+    expect(await page.evaluate(() => scrollX)).toBe(0);
+    if (width === 430) await page.screenshot({ path: 'test-results/studio-mobile-first-load.png' });
+  }
+});
+
 test.beforeEach(async ({ page }) => {
   await unlockWorkshop(page);
   await page.route('**/api/santa-workshop-catalogue', route => route.fulfill({ json: workshopCatalogueFixture }));
@@ -37,6 +53,22 @@ async function photograph(page, file) {
   await page.screenshot({ path: file, fullPage: true });
 }
 
+test('Studio hides the radio dock and footer only on mobile and restores them elsewhere', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await open(page);
+  await expect(page.locator('.radio-dock')).toBeHidden();
+  await expect(page.locator('.footer')).toBeHidden();
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await expect(page.locator('.radio-dock')).toBeVisible();
+  await expect(page.locator('.footer')).toBeVisible();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(page.locator('.radio-dock')).toBeHidden();
+  await expect(page.locator('.footer')).toBeHidden();
+  await page.goto('/');
+  await expect(page.locator('.radio-dock')).toBeVisible();
+  await expect(page.locator('.footer')).toBeVisible();
+});
+
 async function browseToAge(page, label) {
   const wheel = page.getByRole('listbox', { name: 'Their age', exact: true });
   await wheel.focus();
@@ -58,6 +90,18 @@ async function openAgeStage(page) {
 async function complete(page, keyboard = false) {
   for (let index = 0; index < answers.length; index++) {
     await expect(page.locator('.smw-step-count')).toHaveText(`Step ${index + 1} of 6`);
+    if (page.viewportSize().width <= 760) {
+      await expect(page.locator('.radio-dock')).toBeHidden();
+      const bounds = await page.locator('.smw-builder').evaluate(node => {
+        const rect = node.getBoundingClientRect();
+        window.scrollTo({ left: 100, top: scrollY, behavior: 'instant' });
+        return { left: rect.left, right: rect.right, viewport: innerWidth, scroll: scrollX, width: document.documentElement.scrollWidth };
+      });
+      expect(bounds.left).toBeGreaterThanOrEqual(0);
+      expect(bounds.right).toBeLessThanOrEqual(bounds.viewport + 1);
+      expect(bounds.width).toBeLessThanOrEqual(bounds.viewport + 1);
+      expect(bounds.scroll).toBe(0);
+    }
     await expect(page.locator('.smw-activity-wording')).not.toContainText('A wording preview');
     await expect(page.locator('.smw-sound-toggle')).toHaveCount(index === 0 ? 1 : 0);
     if (index > 0) await expect(page.locator('.smw-activity-wording-quote')).not.toContainText('—');
@@ -916,6 +960,11 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 320, height: 568 }
     await page.getByRole('button', { name: 'Change Working hard at' }).click();
     await page.getByRole('option', { name: 'Playing a musical instrument', exact: true }).click();
     await page.getByRole('button', { name: 'Return to review' }).click();
+    await expect(page.locator('.radio-dock')).toBeHidden();
+    expect(await page.evaluate(() => {
+      window.scrollTo({ left: 100, top: scrollY, behavior: 'instant' });
+      return scrollX === 0 && document.documentElement.scrollWidth <= innerWidth + 1;
+    })).toBe(true);
     await expect(page.locator('.smw-summary')).toContainText('Playing a musical instrument');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
     const controls = await page.locator('.smw-page button').evaluateAll(nodes => nodes.map(node => {
@@ -923,11 +972,11 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 320, height: 568 }
       return { height: rect.height, minimum: node.matches('.smw-name-preview-button') ? 44 : 56, fits: node.scrollWidth <= node.clientWidth + 1 };
     }));
     expect(controls.every(control => control.height >= control.minimum && control.fits)).toBe(true);
-    // Keyboard focus must bring the action above the real floating player.
+    // With the mobile player hidden, keyboard focus must keep the action in view.
     await page.getByRole('button', { name: 'Back', exact: true }).focus();
     const clearance = await page.evaluate(() => ({
       bottom: document.activeElement.getBoundingClientRect().bottom,
-      dockTop: document.querySelector('.radio-dock').getBoundingClientRect().top,
+      dockTop: innerHeight,
     }));
     expect(clearance.bottom).toBeLessThanOrEqual(clearance.dockTop);
   });
@@ -936,6 +985,10 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 320, height: 568 }
 test('desktop and phone review screenshots, explainer arrangement and unchanged navigation', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1100 });
   await open(page);
+  await expect(page.locator('.smw-explainer')).toBeVisible();
+  await expect(page.getByRole('complementary', { name: 'Studio test notice' }).locator('strong')).toHaveText("It's the little details that matter...");
+  await expect(page.getByRole('complementary', { name: 'Studio test notice' }).locator('p')).toHaveText('You’re in the friends-only Message Maker Studio test. Please try all of the sections and give us some feedback.');
+  await expect(page.locator('.smw-footer-note')).toBeVisible();
   await photograph(page, 'generated-artifacts/workshop/desktop-clean.png');
   const cards = await page.locator('.smw-explainer-card').evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect().top));
   expect(new Set(cards).size).toBe(1);
@@ -946,7 +999,12 @@ test('desktop and phone review screenshots, explainer arrangement and unchanged 
   await photograph(page, 'generated-artifacts/workshop/mobile-review.png');
   await page.reload();
   await photograph(page, 'generated-artifacts/workshop/mobile-clean.png');
-  const tops = await page.locator('.smw-explainer-card').evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect().top));
-  expect(tops[1]).toBeGreaterThan(tops[0]);
-  expect(tops[2]).toBeGreaterThan(tops[1]);
+  await expect(page.locator('.smw-explainer')).toBeHidden();
+  await expect(page.locator('.smw-footer-note')).toBeHidden();
+  await expect(page.locator('.smw-builder')).toBeVisible();
+  await expect(page.locator('.footer')).toBeHidden();
+  const bottomGap = await page.evaluate(() =>
+    document.querySelector('.smw-page').getBoundingClientRect().bottom
+    - document.querySelector('.smw-builder').getBoundingClientRect().bottom);
+  expect(bottomGap).toBeLessThanOrEqual(34);
 });

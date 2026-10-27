@@ -9,6 +9,9 @@
 .radio-volume input { width: 100%; accent-color: var(--gold); }
 .is-loading .radio-caption { opacity: .65; }
 .radio-dock { max-height: calc(100dvh - 40px); overflow-y: auto; overscroll-behavior: contain; }
+@media (max-width: 760px) {
+  .radio-dock.is-studio-player { display: none; }
+}
 .radio-station { min-width: 0; }
 .radio-station { padding-right: 36px; }
 .radio-size-toggle {
