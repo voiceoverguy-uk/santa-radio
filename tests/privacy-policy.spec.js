@@ -130,6 +130,56 @@ test('policy YouTube disclosure matches the homepage wording and safe direct lin
   await expect(youtube.locator('xpath=ancestor::details')).toHaveCount(0);
 });
 
+for (const width of [1440, 390]) {
+  test(`cookie external-media link reaches YouTube by keyboard without changing choices at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    const providerRequests = [];
+    await page.route(/https:\/\/(?:www\.youtube\.com\/embed\/|tunein\.com\/embed\/|www\.googletagmanager\.com\/|connect\.facebook\.net\/)/, route => {
+      providerRequests.push(route.request().url());
+      return route.fulfill({ body: '' });
+    });
+    await page.goto('/privacy-policy');
+    await page.locator('.marketing-consent').getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
+    const choices = await page.evaluate(() => localStorage.getItem('santaradio-cookie-consent-v2'));
+    const summary = page.locator('.cookie-details summary').filter({ hasText: 'External media — YouTube and TuneIn' });
+    await summary.focus();
+    await page.keyboard.press('Enter');
+    const link = page.getByRole('link', { name: 'Read the YouTube section of this Privacy Policy', exact: true });
+    await page.keyboard.press('Tab');
+    await expect(link).toBeFocused();
+    await expect(link).toHaveCSS('outline-style', 'solid');
+    await expect(link).toHaveAttribute('href', '#youtube-privacy');
+    await page.keyboard.press('Enter');
+    await expect(page).toHaveURL(/\/privacy-policy#youtube-privacy$/);
+    const heading = page.getByRole('heading', { name: 'YouTube', exact: true });
+    await expect(heading).toBeFocused();
+    await expect(heading).toBeInViewport();
+    expect(await heading.evaluate(el => el.getBoundingClientRect().top)).toBeGreaterThanOrEqual(100);
+    await page.keyboard.press('Tab');
+    await expect(page.getByRole('region', { name: 'YouTube', exact: true })
+      .getByRole('link', { name: 'Watch directly on YouTube', exact: true })).toBeFocused();
+    expect(await page.evaluate(() => localStorage.getItem('santaradio-cookie-consent-v2'))).toBe(choices);
+    expect(providerRequests).toEqual([]);
+    await expect(page.locator('iframe')).toHaveCount(0);
+  });
+
+  test(`YouTube privacy fragment works on direct navigation and refresh at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/privacy-policy#youtube-privacy');
+    const heading = page.getByRole('heading', { name: 'YouTube', exact: true });
+    for (const refresh of [false, true]) {
+      if (refresh) await page.reload();
+      await expect(heading).toBeInViewport();
+      expect(await heading.evaluate(el => el.getBoundingClientRect().top)).toBeGreaterThanOrEqual(100);
+      await expect(page.getByRole('region', { name: 'YouTube', exact: true })).toContainText('Turn it off in Cookie settings');
+      expect(await page.evaluate(() => localStorage.getItem('santaradio-cookie-consent-v2'))).toBeNull();
+      await expect(page.locator('iframe')).toHaveCount(0);
+    }
+  });
+}
+
 test('policy direct loads, refreshes and metadata work on desktop and mobile', async ({ page }) => {
   for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: 900 });

@@ -68,6 +68,7 @@ export default function CookiePolicySection() {
 
     <details className="cookie-details">
       <summary>External media — YouTube and TuneIn</summary>
+      <p><a href="#youtube-privacy">Read the YouTube section of this Privacy Policy</a> for details about the homepage TV.</p>
       <p>The homepage live TV is an exception: it loads YouTube automatically when no saved preference exists,
         without recording consent or enabling our Google Analytics, Meta, song videos or TuneIn.
         Saved refusals and older preferences without media permission keep it off. Decline optional cookies

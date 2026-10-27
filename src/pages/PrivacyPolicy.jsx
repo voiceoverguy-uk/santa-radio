@@ -1,8 +1,20 @@
+import { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import './PrivacyPolicy.css';
 import CookiePolicySection from './CookiePolicySection.jsx';
 
 export default function PrivacyPolicy() {
+  useEffect(() => {
+    // Run after the navigation's scroll reset, including on direct fragment loads.
+    if (window.location.hash !== '#youtube-privacy') return;
+    const frame = requestAnimationFrame(() => {
+      const heading = document.getElementById('youtube-privacy');
+      heading?.scrollIntoView({ block: 'start', behavior: 'instant' });
+      heading?.focus({ preventScroll: true });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
   return <main className="privacy-page">
     <Helmet>
       <title>Privacy Policy — Santa Radio</title>
@@ -102,7 +114,7 @@ export default function PrivacyPolicy() {
         information even when optional cookies are declined.</p>
 
       <section aria-labelledby="youtube-privacy">
-        <h2 id="youtube-privacy">YouTube</h2>
+        <h2 id="youtube-privacy" tabIndex={-1}>YouTube</h2>
         <p>This homepage TV loads YouTube automatically unless a saved preference keeps it off.
           YouTube may use cookies and device information for playback, analytics and advertising.
           Turn it off in Cookie settings or choose Decline optional cookies.
