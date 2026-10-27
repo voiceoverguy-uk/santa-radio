@@ -48,3 +48,4 @@
 - [Cooldown price comparison](santa-cooldown-comparison.md) — Keep the gift comparison steady while the page is open; refresh may choose another.
 - [Santa workshop scope](santa-workshop-scope.md) — Design trial comes before audio connection; offline samples are not catalogue or service approval.
 - [Workshop preview permission](workshop-preview-permission.md) — Shared preview gate is separate from signup/staff access; use persistent limits and ephemeral test passwords.
+- [Large asset delivery](asset-delivery-limits.md) — Attachments have a 100 MiB limit; preserve large handovers with verified lossless transport parts.

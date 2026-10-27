@@ -1,0 +1,7 @@
+I’ve attached a sanitised export of the current Santa Radio website source, including the latest Santa Tracker and enlarged homepage map. Please read README-TRACKER-HANDOVER.md, TRACKER-GUIDE.md and VERIFICATION.md before adapting it in this iOS/Apple TV project. This is not the older imported tracker ZIP.
+
+Public references: https://www.santaradio.co.uk/santa-tracker and https://www.santaradio.co.uk/. The live tracker was reachable and visually checked when exported, but deployment/source parity is not guaranteed; use the included source as the snapshot.
+
+The tracker is a clock-driven estimated journey using bundled stops and time-zone calculations, not GPS or an external live feed. No tracking API key, database or original Replit server needs to stay running. Please preserve its actual route logic and current appearance rather than recreating them or porting unrelated radio, signup, staff or greeting services.
+
+This is React/Vite/TypeScript/CSS source, not Swift/SwiftUI or a native tvOS implementation. Decide the supported integration approach for this project and verify Apple TV focus/remote/accessibility and real iOS/tvOS devices; do not assume a tvOS WebView or claim device compatibility from browser checks. The guide lists entry points, assets, timing boundaries, preview controls, tests and known limitations.

@@ -8,6 +8,18 @@ Preserve the supplied tracker's content, calculations and functionality rather t
 
 **How to apply:** Keep future adaptations narrow; a framework migration or functional tracker redesign needs a new explicit request.
 
+For an app-project handover, export the current shareable website source rather
+than reusing the original imported tracker archive. Distinguish a reachable
+published reference from proof that production matches the exported source.
+
+**Why:** The owner requested the latest website appearance and enlarged homepage
+map for a separate iOS/Apple TV project; an earlier transfer archive is not an
+up-to-date source snapshot.
+
+**How to apply:** Preserve source and assets, sanitise operational data and
+credentials, and document actual live verification separately. Native adaptation
+and device compatibility remain the receiving project's work.
+
 Tracker presentation should match the actual established Santa Radio homepage and Christmas Music styling, not retain the imported blue theme. Use the site's heading/body typography, green surfaces, readable gold/cream accents, red actions and matching cards, borders and spacing; preserve intentional handwritten postcards and festive effects.
 
 **Why:** After the transfer, the owner explicitly requested brand-matching styling while leaving content, calculations, preview behaviour, radio and cross-promotion intact.

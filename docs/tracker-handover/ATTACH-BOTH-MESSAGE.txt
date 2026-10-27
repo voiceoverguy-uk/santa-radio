@@ -1,0 +1,3 @@
+I've attached BOTH parts of the current Santa Radio source handover. Extract both into the same directory, run python3 assemble-handover.py, then extract the verified complete ZIP and read README-TRACKER-HANDOVER.md, TRACKER-GUIDE.md and VERIFICATION.md.
+
+Public references: https://www.santaradio.co.uk/santa-tracker and https://www.santaradio.co.uk/. This is current source, including the enlarged homepage map, not the old transfer archive. It is a clock-driven estimated journey, not GPS: no tracking backend, API key, database or original Replit server is required. Preserve its logic and appearance. Native iOS/tvOS adaptation and real Apple-device validation remain this project's work.

@@ -644,3 +644,59 @@ mtime_ms = 1793109593620
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/cb0f669b-a5cb-4a70-af17-2c30ff629337/166e73ea-46b2-4dcb-ad27-6b5d899d2de3"
 storage_version_token = "1793109632119414"
 content_type = "image/png"
+
+[[outputs]]
+id = "0eyGAcBPqqubp_drYmQuY"
+uri = "file://generated-artifacts/tracker-handover/santa-radio-tracker-handover-part-1-of-2.zip"
+type = "unspecified"
+title = "Santa Tracker handover — part 1 of 2"
+description = "Download BOTH parts and attach both to the other project. Includes lossless source-archive chunk, assembly instructions and checksum. About 95 MB."
+logical_id = "481bf8da-0511-42ef-bcff-cff0d6efa961"
+content_hash = "sha256:26c8c9437487d3dd0b0e0c56b36df0f093edbecb28970c3251206bf2fcb9b3dd"
+size = 95277048
+mtime_ms = 1793112018292
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/481bf8da-0511-42ef-bcff-cff0d6efa961/27f3e5b5-c5da-4066-9cab-51e6b7b9c67c"
+storage_version_token = "1793112044884825"
+content_type = "application/octet-stream"
+
+[[outputs]]
+id = "-nr6MXfWCIGGyvkZN_AvO"
+uri = "file://generated-artifacts/tracker-handover/santa-radio-tracker-handover-part-2-of-2.zip"
+type = "unspecified"
+title = "Santa Tracker handover — part 2 of 2"
+description = "Required second part. Both parts reconstruct the complete verified website source ZIP without removing public artwork. About 95 MB."
+logical_id = "f0bf16b0-e087-449f-8e05-71dcc0e64aaa"
+content_hash = "sha256:eddf24b72a7026053a6c73747ede02c0d33ec89a7c3ba46f756bb43ba58205e1"
+size = 95277048
+mtime_ms = 1793112018689
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/f0bf16b0-e087-449f-8e05-71dcc0e64aaa/56fed7fc-0c66-4912-b11e-43ceb7e1b450"
+storage_version_token = "1793112048653408"
+content_type = "application/octet-stream"
+
+[[outputs]]
+id = "CDofCLrMkqYDk7Gv2Q-qQ"
+uri = "file://generated-artifacts/tracker-handover/DOWNLOAD-PARTS-SHA256.txt"
+type = "text"
+title = "Download checksums"
+description = "SHA-256 checksums for both delivery ZIPs; the complete source ZIP checksum is also included inside each part."
+logical_id = "11f9fd40-cc91-49a5-8a9f-a10bcf626550"
+content_hash = "sha256:d915f8bc07afe38a52e1ac9974836576e18ce9544c43ade2fe12afe75388cd2f"
+size = 222
+mtime_ms = 1793112019323
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/11f9fd40-cc91-49a5-8a9f-a10bcf626550/ed9aae4d-90a6-476b-853b-8143968ad620"
+storage_version_token = "1793112049520919"
+content_type = "text/plain"
+
+[[outputs]]
+id = "1spN28_poIBKHC3COdLDw"
+uri = "file://docs/tracker-handover/ATTACH-BOTH-MESSAGE.txt"
+type = "text"
+title = "Paste into the other project"
+description = "Attach BOTH ZIPs in your iOS/Apple TV project and paste this short handover message into its chat."
+logical_id = "1df67f7a-ec9e-440c-a06f-ad7733706a5c"
+content_hash = "sha256:b799a67a2ba867bf66834cdb0cba3f75fbe1e1505f56e6073560bdcf155c6580"
+size = 694
+mtime_ms = 1793111994898
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/1df67f7a-ec9e-440c-a06f-ad7733706a5c/da18c06f-90f6-476d-90fe-99136f1e93ec"
+storage_version_token = "1793112050430461"
+content_type = "text/plain"
