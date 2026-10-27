@@ -110,6 +110,7 @@ The audio player targets the user-supplied `https://global.citrus3.com:8164/` en
 - Replace or remove a numbered Secret to revoke that code's sessions without revoking the others. The running server must receive the updated environment before a change takes effect.
 - Access uses a short-lived HttpOnly cookie, server-side checks and the existing persistent attempt limiter. Keep codes out of URLs, browser storage, logs and source.
 - Browser checks use generated isolated codes via `playwright.workshop.config.js`; never use the owner's real codes in tests.
+- Recovery and hosting instructions: `docs/workshop-preview-access.md`. `npm run workshop:preflight -- --database` reports only safe validity/read-only storage checks for the environment where it runs. Workspace configuration does not establish Vercel Production readiness; hosting changes and redeployment need separate approval.
 
 - Soundboard plays user-supplied MP3 files from `public/audio/soundboard/`. Only one clip plays at a time; playback stops on navigation. No text-to-speech fallback.
 - Celebrity mugshot photos are served locally from `/mugshot-images/`; fallback initials shown on error

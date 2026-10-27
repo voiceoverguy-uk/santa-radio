@@ -4,6 +4,8 @@ import { createServer } from 'node:http';
 import { randomBytes, createHmac } from 'node:crypto';
 import { createWorkshopAccessHandler, consumeWorkshopAttempt, issueWorkshopToken, hasWorkshopAccess, workshopSession, WORKSHOP_COOKIE, WORKSHOP_SESSION_MS } from '../server/santa-workshop-access.js';
 import { databasePool } from '../server/name-request-store.js';
+import { workshopSettings, workshopConfigured } from '../server/santa-workshop-settings.js';
+import { configurationReport, storageReport } from './workshop-access-preflight.mjs';
 
 const at = 1800000000000;
 const config = {
@@ -131,16 +133,25 @@ test('missing or duplicate codes, bad expiry and unavailable shared limiter fail
     { ...config, codes: [] }, { ...config, signingSecret: '' },
     { ...config, expiresAt: NaN }, { ...config, codes: [{ id: '1', code: '' }] },
     { ...config, codes: [{ id: '1', code: 'duplicate' }, { id: '2', code: 'duplicate' }] },
+    { ...config, signingSecret: randomBytes(15).toString('hex') },
+    { ...config, codes: [{ id: '6', code: randomBytes(24).toString('hex') }] },
+    { ...config, codes: [{ id: '1', code: 'x'.repeat(81) }] },
+    { ...config, codes: [{ id: '1', code: randomBytes(24).toString('hex') }, { id: '1', code: randomBytes(24).toString('hex') }] },
+    { ...config, codes: null }, { ...config, codes: [null] },
   ]) {
-    await withServer({ getSettings: () => missing }, async ({ url, post }) => {
-      assert.equal((await fetch(url)).status, 503);
-      assert.equal((await post()).status, 503);
+    await withServer({ getSettings: () => missing, consumeAttempt: () => assert.fail('Configuration failure must not reach storage') }, async ({ url, post }) => {
+      for (const reply of [await fetch(url), await post()]) {
+        assert.equal(reply.status, 503);
+        assert.equal(reply.headers.get('set-cookie'), null);
+        assert.deepEqual(await reply.json(), { error: 'Tester access is not configured yet. Please try again later.' });
+      }
     });
   }
   await withServer({ consumeAttempt: async () => { throw new Error(config.codes[0].code); } }, async ({ post }) => {
     const reply = await post();
     assert.equal(reply.status, 503);
-    assert.ok(!(await reply.text()).includes(config.codes[0].code));
+    assert.equal(reply.headers.get('set-cookie'), null);
+    assert.deepEqual(await reply.json(), { error: 'Workshop access is temporarily unavailable. Please try again.' });
   });
   await withServer({ consumeAttempt: async () => ({ allowed: false, retryAfter: 300 }) }, async ({ post }) => {
     const reply = await post();
@@ -148,6 +159,68 @@ test('missing or duplicate codes, bad expiry and unavailable shared limiter fail
     assert.equal(reply.headers.get('retry-after'), '300');
     assert.equal(reply.headers.get('set-cookie'), null);
   });
+});
+
+test('safe preflight shares runtime validation and never emits configured values', () => {
+  const env = {
+    ...Object.fromEntries(config.codes.map(entry => [`SANTA_STUDIO_TEST_CODE_${entry.id}`, entry.code])),
+    SESSION_SECRET: config.signingSecret,
+    SANTA_STUDIO_TEST_EXPIRES_AT: '2026-11-30T23:59:59Z',
+  };
+  const report = configurationReport(env, Date.parse('2026-10-27T00:00:00Z'));
+  assert.equal(report.configured, true);
+  assert.equal(report.approvedDeadline, true);
+  assert.equal(report.testOpen, true);
+  assert.equal(report.slots.filter(slot => slot.active).length, 5);
+  for (const value of Object.values(env)) assert.ok(!JSON.stringify(report).includes(value));
+  assert.equal(configurationReport(env, Date.parse(env.SANTA_STUDIO_TEST_EXPIRES_AT)).testOpen, false);
+  for (const [key, value, failedCheck] of [
+    ['SANTA_STUDIO_TEST_CODE_2', env.SANTA_STUDIO_TEST_CODE_1, 'codesDistinct'],
+    ['SESSION_SECRET', randomBytes(15).toString('hex'), 'signingSecretValid'],
+    ['SANTA_STUDIO_TEST_EXPIRES_AT', 'not-a-date', 'expiryParseable'],
+    ['SANTA_STUDIO_TEST_CODE_1', 'x'.repeat(81), 'activeCodesValid'],
+  ]) {
+    const invalid = { ...env, [key]: value };
+    const result = configurationReport(invalid);
+    assert.equal(result.checks[failedCheck], false);
+    assert.equal(result.configured, workshopConfigured(workshopSettings(invalid)));
+    assert.equal(result.configured, false);
+  }
+  assert.equal(configurationReport({ SANTA_WORKSHOP_PASSWORD: randomBytes(24).toString('hex') }).configured, false);
+  const revoked = { ...env, SANTA_STUDIO_TEST_CODE_1: '  ' };
+  assert.equal(configurationReport(revoked).configured, true);
+  assert.equal(configurationReport(revoked).slots[0].active, false);
+  assert.equal(workshopSettings({ ...env, SANTA_STUDIO_TEST_CODE_1: ` ${env.SANTA_STUDIO_TEST_CODE_1} ` }).codes[0].code, env.SANTA_STUDIO_TEST_CODE_1);
+});
+
+test('storage preflight uses only read-only queries, releases clients and redacts failures', async () => {
+  for (const failure of [null, '42P01', '42703', '42501', '08006']) {
+    const queries = [];
+    let released = false;
+    const client = {
+      query: async sql => {
+        queries.push(sql);
+        if (failure && sql.startsWith('SELECT bucket_key')) throw Object.assign(new Error(config.signingSecret), { code: failure });
+        return { rows: [{ privileges: true, uniqueKey: true, attemptDefault: true, noRowSecurity: true }] };
+      },
+      release: () => { released = true; },
+    };
+    const report = await storageReport({ connect: async () => client });
+    assert.equal(report.ready, !failure);
+    assert.equal(report.checked, true);
+    assert.equal(released, true);
+    assert.equal(queries[0], 'BEGIN READ ONLY');
+    assert.equal(queries.at(-1), 'ROLLBACK');
+    assert.ok(queries.slice(1, -1).every(sql => sql.trim().startsWith('SELECT')));
+    assert.ok(!JSON.stringify(report).includes(config.signingSecret));
+  }
+  for (const key of ['privileges', 'uniqueKey', 'attemptDefault', 'noRowSecurity']) {
+    const checks = { privileges: true, uniqueKey: true, attemptDefault: true, noRowSecurity: true, [key]: false };
+    const report = await storageReport({ connect: async () => ({ query: async () => ({ rows: [checks] }), release() {} }) });
+    assert.equal(report.ready, false);
+  }
+  const disconnected = await storageReport({ connect: async () => { throw new Error(config.signingSecret); } });
+  assert.deepEqual(disconnected, { checked: true, ready: false, reason: 'database_unavailable' });
 });
 
 test('shared database limiter bounds parallel attempts and resets at the window boundary', { skip: !process.env.DATABASE_URL }, async () => {

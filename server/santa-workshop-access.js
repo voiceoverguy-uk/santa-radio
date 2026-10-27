@@ -1,6 +1,7 @@
 import express from 'express';
 import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 import { databasePool } from './name-request-store.js';
+import { workshopSettings as settings, workshopConfigured as configured } from './santa-workshop-settings.js';
 
 export const WORKSHOP_COOKIE = 'santa-workshop-preview';
 export const WORKSHOP_SESSION_MS = 12 * 3600000;
@@ -9,20 +10,6 @@ const hash = value => createHash('sha256').update(value).digest();
 const equal = (a, b) => timingSafeEqual(hash(a), hash(b));
 const mac = (value, config) => createHmac('sha256', config.signingSecret)
   .update('studio-test:v2:').update(value).digest('base64url');
-const settings = () => ({
-  codes: Array.from({ length: 5 }, (_, index) => ({
-    id: String(index + 1), code: process.env[`SANTA_STUDIO_TEST_CODE_${index + 1}`]?.trim(),
-  })).filter(entry => entry.code),
-  signingSecret: process.env.SESSION_SECRET,
-  expiresAt: Date.parse(process.env.SANTA_STUDIO_TEST_EXPIRES_AT || ''),
-});
-const configured = config => Array.isArray(config.codes) && config.codes.length > 0 && config.codes.length <= 5
-  && config.codes.every(entry => /^[1-5]$/.test(entry.id) && typeof entry.code === 'string'
-    && entry.code.length > 0 && entry.code.length <= 80)
-  && new Set(config.codes.map(entry => entry.id)).size === config.codes.length
-  && new Set(config.codes.map(entry => entry.code)).size === config.codes.length
-  && Number.isSafeInteger(config.expiresAt)
-  && typeof config.signingSecret === 'string' && config.signingSecret.length >= 32;
 const sessionMac = (payload, entry, config) => mac(`session:${hash(entry.code).toString('hex')}:${payload}`, config);
 
 export function issueWorkshopToken(config, now = Date.now(), codeId = config.codes?.[0]?.id) {
