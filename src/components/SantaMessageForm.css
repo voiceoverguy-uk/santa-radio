@@ -55,6 +55,9 @@
 .message-submit { width: 100%; min-height: 50px; justify-content: center; cursor: pointer; }
 .santa-message-box .btn-red { font-size: .82rem; }
 .service-notice { font-size: .75rem; color: #b8c6b6; padding-top: 18px; margin-bottom: 0; line-height: 1.7; }
+.workshop-coming-soon { color: #b8c6b6; font-size: .75rem; margin: 4px 0 0; line-height: 1.7; }
+.workshop-coming-soon button { min-height: 0; padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
+.workshop-coming-soon button:focus-visible { outline: 2px solid #e7c877; outline-offset: 3px; border-radius: 2px; }
 .message-validation, .message-audio-error { color: #ffc5b8; font-size: .85rem; line-height: 1.6; margin: 0 0 16px; }
 .message-result { margin-top: 26px; padding: 22px 0 0; border-top: 1px solid #d4af3740; }
 .message-result h4 { font-family: 'Cinzel', serif; color: #f6ecd8; font-size: 1.05rem; margin: 8px 0 12px; }

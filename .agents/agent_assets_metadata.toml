@@ -532,3 +532,17 @@ mtime_ms = 1793042217081
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/123bef10-3aec-4727-92b4-0a0ab8d2eb38/9b7964e7-4e46-49d8-999e-de89a5309dcd"
 storage_version_token = "1793042261993360"
 content_type = "image/png"
+
+[[outputs]]
+id = "Eg7ylhqgDl240RvhfqjU9"
+uri = "file://generated-artifacts/workshop-access/preview.html"
+type = "html"
+title = "Hidden workshop access preview"
+description = "Screenshots of the discreet maker entry and festive password dialog, captured with an isolated test session."
+logical_id = "e1e6843d-1d5b-445f-812b-7a32e54a4597"
+content_hash = "sha256:7f682bbc02fe2b51ab0d5d842815515f957a048b231e684b573da3589f1bafc0"
+size = 38055
+mtime_ms = 1793072985841
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/e1e6843d-1d5b-445f-812b-7a32e54a4597/037ae9a0-cb3a-42a6-85a9-ec4a50edf01f"
+storage_version_token = "1793073013190844"
+content_type = "text/html"

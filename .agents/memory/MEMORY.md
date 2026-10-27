@@ -46,3 +46,4 @@
 - [Virtual-clock screenshots](browser-test-clocks.md) — Finish or disable entrance animations before capturing delayed interfaces under a virtual browser clock.
 - [Message-maker counters](santa-name-counter-direction.md) — Start 50 below the real total; add one every five seconds, capped at the real total.
 - [Santa workshop scope](santa-workshop-scope.md) — Design trial comes before audio connection; offline samples are not catalogue or service approval.
+- [Workshop preview permission](workshop-preview-permission.md) — Shared preview gate is separate from signup/staff access; use persistent limits and ephemeral test passwords.

@@ -30,6 +30,7 @@ import { CookieConsentProvider } from './privacy/CookieConsentProvider.jsx';
 import SantaStaffShell from './components/SantaStaffShell.jsx';
 import { RadioTopTenProvider } from './components/RadioTopTen.jsx';
 import SantaMessageOffer from './components/SantaMessageOffer.jsx';
+import WorkshopAccessGate from './components/WorkshopAccessGate.jsx';
 
 function App({ Router = BrowserRouter, routerProps = {} }) {
   return (
@@ -49,7 +50,7 @@ function App({ Router = BrowserRouter, routerProps = {} }) {
         <Route path="/christmas-karaoke-lyrics/:slug" element={<KaraokeLyrics />} />
         <Route path="/artist" element={<ArtistDetail />} />
         <Route path="/free-santa-message" element={<FreeSantaMessage />} />
-        <Route path="/santa-message-workshop" element={<SantaMessageWorkshop />} />
+        <Route path="/santa-message-workshop" element={<WorkshopAccessGate><SantaMessageWorkshop /></WorkshopAccessGate>} />
         <Route path="/request-names" element={<SantaStaffShell mode="admin" />} />
         <Route path="/sign-in/*" element={<SantaStaffShell mode="sign-in" />} />
         <Route path="/sign-up/*" element={<SantaStaffShell mode="sign-up" />} />

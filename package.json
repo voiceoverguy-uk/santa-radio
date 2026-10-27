@@ -16,6 +16,8 @@
     "test:artwork-production": "node --test scripts/artwork-feed-serving.test.mjs",
     "test:santa-audio": "node scripts/prepare-santa-audio.mjs && node --test --test-concurrency=1 scripts/santa-render.test.mjs scripts/hosted-santa-render.test.mjs scripts/santa-message-api.test.mjs scripts/saved-santa-greeting.test.mjs scripts/santa-ftps.test.mjs scripts/santa-message-allowance.test.mjs",
     "test:e2e": "playwright test",
+    "test:workshop-access": "node --test scripts/santa-workshop-access.test.mjs",
+    "test:workshop": "playwright test --config playwright.workshop.config.js",
     "test:cookies": "playwright test tests/cookie-experience.spec.js",
     "test:apps-production": "node --test scripts/apps-production.test.mjs",
     "test:seo": "node --test scripts/seo-validation.test.mjs scripts/seo-serving.test.mjs scripts/seo-targeting.test.mjs scripts/santa-message-links.test.mjs"

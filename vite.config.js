@@ -2,11 +2,13 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { fileURLToPath } from 'node:url';
+import { readFile } from 'node:fs/promises';
 import radioMetadata from './server/radio-metadata.js';
 import radioTopTen from './server/radio-top-ten.js';
 import santaMessage from './server/santa-message.js';
 import santaNames from './server/santa-names.js';
 import workshopCatalogue from './server/santa-workshop-catalogue.js';
+import workshopAccess, { workshopDocumentHeaders } from './server/santa-workshop-access.js';
 import santaGreeting from './server/santa-greeting.js';
 import nameRequests from './server/name-requests.js';
 import { CLERK_PROXY_PATH, clerkProxyMiddleware } from './server/middlewares/clerkProxyMiddleware.js';
@@ -33,6 +35,8 @@ const metadataPlugin = {
   name: 'radio-metadata',
   configureServer(server) {
     server.middlewares.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
+    server.middlewares.use(workshopDocumentHeaders);
+    server.middlewares.use('/api/santa-workshop-access', workshopAccess);
     server.middlewares.use('/api/name-requests', nameRequests);
     server.middlewares.use('/api/radio-metadata', radioMetadata);
     server.middlewares.use('/api/radio-top-ten', radioTopTen);
@@ -43,6 +47,21 @@ const metadataPlugin = {
   },
   configurePreviewServer(server) {
     server.middlewares.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
+    server.middlewares.use(workshopDocumentHeaders);
+    server.middlewares.use('/api/santa-workshop-access', workshopAccess);
+    // Vite's SPA preview fallback otherwise serves the pre-rendered homepage.
+    // Serve only the locked, noindex document; access is checked after hydration.
+    server.middlewares.use(async (req, res, next) => {
+      if (!/^\/santa-message-workshop\/?$/.test(new URL(req.url, 'http://server').pathname)) return next();
+      if (!['GET', 'HEAD'].includes(req.method)) {
+        res.writeHead(405, { Allow: 'GET, HEAD' }); return res.end();
+      }
+      try {
+        const html = await readFile(new URL('./dist/santa-message-workshop/index.html', import.meta.url), 'utf8');
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'private, no-store' });
+        res.end(req.method === 'HEAD' ? undefined : html);
+      } catch { res.writeHead(503); res.end('Build the workshop preview before starting preview mode.'); }
+    });
     server.middlewares.use('/api/name-requests', nameRequests);
     server.middlewares.use('/api/radio-metadata', radioMetadata);
     server.middlewares.use('/api/radio-top-ten', radioTopTen);

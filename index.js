@@ -8,6 +8,7 @@ import radioTopTen from './server/radio-top-ten.js';
 import santaMessage from './server/santa-message.js';
 import santaNames from './server/santa-names.js';
 import workshopCatalogue from './server/santa-workshop-catalogue.js';
+import workshopAccess from './server/santa-workshop-access.js';
 import santaGreeting from './server/santa-greeting.js';
 import nameRequests from './server/name-requests.js';
 import { CLERK_PROXY_PATH, clerkProxyMiddleware } from './server/middlewares/clerkProxyMiddleware.js';
@@ -39,6 +40,7 @@ const server = createServer(async (req, res) => {
     if (res.writableEnded) return;
     if (pathname.startsWith(`${CLERK_PROXY_PATH}/`)) return clerkProxy(req, res, () => res.writeHead(404).end());
     if (pathname === '/api/name-requests') return nameRequests(req, res);
+    if (pathname === '/api/santa-workshop-access') return workshopAccess(req, res);
     if (pathname === '/api/radio-metadata') return await radioMetadata(req, res);
     if (pathname === '/api/radio-top-ten') return await radioTopTen(req, res);
     if (pathname === '/api/santa-message') return await santaMessage(req, res);
@@ -58,7 +60,7 @@ const server = createServer(async (req, res) => {
       if (route.status !== 200 || route.noindex || pathname === '/artist' || pathname === '/santa-tracker') {
         const { render } = await import('./dist/server/entry-server.js');
         const body = publicPageHtml(await readFile(resolve(root, 'server/shell.html'), 'utf8'), render(req.url));
-        res.writeHead(route.status, { 'Content-Type': types['.html'], 'Cache-Control': 'no-cache', 'Content-Length': Buffer.byteLength(body) });
+        res.writeHead(route.status, { 'Content-Type': types['.html'], 'Cache-Control': pathname === '/santa-message-workshop' ? 'private, no-store' : 'no-cache', 'Content-Length': Buffer.byteLength(body) });
         res.end(req.method === 'HEAD' ? undefined : body); return;
       }
     }

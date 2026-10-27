@@ -12,7 +12,8 @@ export default async function handler(req, res) {
   if (route.location) { res.setHeader('Location', route.location); return res.status(route.status).end(); }
   if (route.noindex || route.status !== 200) res.setHeader('X-Robots-Tag', 'noindex, follow');
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+  res.setHeader('Cache-Control', path === '/santa-message-workshop' ? 'private, no-store' : 'public, max-age=0, must-revalidate');
+  if (path === '/santa-message-workshop') res.setHeader('Vercel-CDN-Cache-Control', 'no-store');
   if (req.method === 'HEAD') return res.status(route.status).end();
   const pathname = route.status === 200 ? decodeURIComponent(path) : '/404';
   if (pathname === '/santa-tracker' || pathname === '/santa-tracker/preview') {

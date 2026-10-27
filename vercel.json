@@ -19,6 +19,9 @@
     },
     "api/santa-workshop-catalogue.js": {
       "maxDuration": 15
+    },
+    "api/santa-workshop-access.js": {
+      "maxDuration": 20
     }
   },
   "routes": [

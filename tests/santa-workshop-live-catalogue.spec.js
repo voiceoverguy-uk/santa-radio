@@ -1,5 +1,8 @@
 import { expect } from '@playwright/test';
 import { test } from './helpers/provider-test.js';
+import { unlockWorkshop } from './helpers/workshop-access.js';
+
+test.beforeEach(async ({ page }) => { await unlockWorkshop(page); });
 
 for (const initialWidth of [390, 1365]) {
 test(`live HTTPS categories ${initialWidth}: mobile flow and full-list desktop achievement scrolling without recipient requests or storage`, async ({ page, request }) => {

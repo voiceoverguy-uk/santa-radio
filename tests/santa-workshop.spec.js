@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import { test } from './helpers/provider-test.js';
 import { workshopCatalogueFixture } from './fixtures/workshop-catalogue.js';
+import { unlockWorkshop } from './helpers/workshop-access.js';
 
 const path = '/santa-message-workshop';
 const answers = ['Demrie', '9 years old', 'Teamwork', 'Completing a jigsaw puzzle', 'Bûche de Noël', 'The Enchanted Forest — Fantasy place'];
@@ -11,6 +12,7 @@ const hostedRecords = [
 ];
 
 test.beforeEach(async ({ page }) => {
+  await unlockWorkshop(page);
   await page.route('**/api/santa-workshop-catalogue', route => route.fulfill({ json: workshopCatalogueFixture }));
   await page.route('**/api/radio-metadata*', route => route.fulfill({ json: { available: false, current: null, upcoming: [] } }));
   await page.route('**/api/santa-names?inventory=hosted', route => route.fulfill({
@@ -443,6 +445,7 @@ test('full journey, missing choices, back and category editing retain answers wi
   const forbidden = [];
   page.on('request', request => {
     if (/\/api\/(?:santa-|name-requests)|sibforms|google-analytics|facebook\.com\/tr/.test(request.url()) &&
+        !(request.method() === 'GET' && request.url().endsWith('/api/santa-workshop-access')) &&
         !request.url().endsWith('/api/santa-names?inventory=hosted') &&
         !request.url().endsWith('/api/santa-workshop-catalogue')) forbidden.push(request.url());
   });
@@ -618,7 +621,7 @@ test('sound-alike hint and final spelling change update output previews only, wi
   delete before.session['radio-minimized'];
   delete after.session['radio-minimized'];
   expect(after).toEqual(before);
-  expect(requests.every(url => url.endsWith('/api/santa-names?inventory=hosted') ||
+  expect(requests.every(url => url.endsWith('/api/santa-workshop-access') || url.endsWith('/api/santa-names?inventory=hosted') ||
     url.endsWith('/api/santa-workshop-catalogue'))).toBe(true);
   await expect(page).toHaveURL(new RegExp(`${path}$`));
   await expect(page.locator('.smw-page audio, .smw-page [download]')).toHaveCount(0);

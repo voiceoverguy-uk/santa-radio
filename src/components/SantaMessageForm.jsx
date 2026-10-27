@@ -12,6 +12,7 @@ import NiceListCertificateDownload from './NiceListCertificateDownload.jsx';
 import SantaCertificateExamples from './SantaCertificateExamples.jsx';
 import SantaCooldownNotice from './SantaCooldownNotice.jsx';
 import SantaVoiceTagline from './SantaVoiceTagline.jsx';
+import WorkshopPasswordDialog from './WorkshopPasswordForm.jsx';
 import { santaNameKey } from '../lib/santaNameSearch.js';
 import { randomSantaExample, santaNamePlaceholder } from '../lib/santaNamePlaceholder.js';
 import { normaliseRequestedName } from '../lib/santaNameRequests.js';
@@ -37,6 +38,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const requestRef = useRef(null);
   const nameRequestRef = useRef(null);
   const [nameRequest, setNameRequest] = useState({ key: '', status: 'idle', message: '' });
+  const [workshopDialogOpen, setWorkshopDialogOpen] = useState(false);
   const nameSearch = useSantaNames(name, hasAccess);
   const displayedNameCount = useSantaNameCounter(nameSearch.hostedCount);
   const suggestions = nameSearch.records;
@@ -345,6 +347,10 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         </form>
         {!coolingDown && renderResults()}
         <p className="service-notice">Free to create and download here. The message is not sent by email.</p>
+        {hasAccess && !showDetailLink && <>
+          <p className="workshop-coming-soon">More customisable options <button type="button" onClick={() => setWorkshopDialogOpen(true)} aria-label="Open Santa workshop preview">coming soon</button>.</p>
+          {workshopDialogOpen && <WorkshopPasswordDialog open onClose={() => setWorkshopDialogOpen(false)} />}
+        </>}
         {!sessionRemembered && <p className="message-name-hint" role="status">Your browser can’t remember access. The studio stays open while you browse, but refreshing this tab may ask for your details again.</p>}
         </>}
       </div>

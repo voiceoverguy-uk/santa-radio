@@ -34,7 +34,7 @@ export default function publicPagesPlugin() {
           const result = render(req.url);
           const template = await server.transformIndexHtml(req.url, await readFile('index.html', 'utf8'));
           if (result.noindex || result.status !== 200) res.setHeader('X-Robots-Tag', 'noindex, follow');
-          res.writeHead(result.status, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' });
+          res.writeHead(result.status, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': path === '/santa-message-workshop' ? 'private, no-store' : 'no-cache' });
           res.end(req.method === 'HEAD' ? undefined : publicPageHtml(template, result));
         } catch (error) { server.ssrFixStacktrace(error); next(error); }
       });

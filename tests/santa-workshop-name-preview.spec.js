@@ -1,6 +1,9 @@
 import { expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { test } from './helpers/provider-test.js';
+import { unlockWorkshop } from './helpers/workshop-access.js';
+
+test.beforeEach(async ({ page }) => { await unlockWorkshop(page); });
 import { workshopCatalogueFixture as workshopCatalogue } from './fixtures/workshop-catalogue.js';
 
 const root = 'https://stagcommunications.com/santaradio/names/';

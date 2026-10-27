@@ -1,6 +1,9 @@
 import { expect } from '@playwright/test';
 import { test } from './helpers/provider-test.js';
 import { workshopCatalogueFixture } from './fixtures/workshop-catalogue.js';
+import { unlockWorkshop } from './helpers/workshop-access.js';
+
+test.beforeEach(async ({ page }) => { await unlockWorkshop(page); });
 
 const catalogue = structuredClone(workshopCatalogueFixture);
 const choice = (id, label) => ({ id, label, file: `fixture/${id}.wav` });

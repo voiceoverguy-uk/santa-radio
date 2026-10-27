@@ -1,5 +1,8 @@
 import { expect } from '@playwright/test';
 import { test } from './helpers/provider-test.js';
+import { unlockWorkshop } from './helpers/workshop-access.js';
+
+test.beforeEach(async ({ page }) => { await unlockWorkshop(page); });
 import { workshopCatalogueFixture } from './fixtures/workshop-catalogue.js';
 
 const fixture = structuredClone(workshopCatalogueFixture);
