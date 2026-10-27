@@ -8,11 +8,11 @@ The owner wants an adult's first name, surname and email submitted through the s
 
 **How to apply:** Keep adult contact collection separate from child-name selection and on-demand recorded-audio mixing. Do not add a child's date of birth just because it appears in a supplied embed; the owner chose to remove that requirement in Brevo. Do not promise email delivery of the generated MP3 or introduce a second generator.
 
-After successful signup, return the visitor to the “FREE Personalised message from Santa” section, rather than letting focus scroll directly past its introduction.
+After successful free-maker signup on mobile, scroll to the top of the unlocked North Pole Recording Studio card immediately below the navigation, skipping the introductory text and certificate examples. Desktop retains the section-level landing position.
 
-**Why:** The owner explicitly requested this post-signup destination. It is a one-time success action, not a reason to reposition the page during name selection or recording.
+**Why:** The owner repeated the mobile requirement and supplied a screenshot with the recording card beneath the navigation. This supersedes the earlier mobile section-introduction destination.
 
-**How to apply:** Keep the studio unlock announcement accessible while preserving the section-level landing position. Failed signup must retain the entered details without this success scroll.
+**How to apply:** Apply this to the free name/email signup, including signup started on the homepage, not Studio tester-code entry. Keep the unlock announcement accessible, accommodate the mobile keyboard closing, and stop correcting when the visitor interacts. Failed signup must retain the entered details without this success scroll.
 
 This is a signup-first, tab-session convenience flow, not authentication, email ownership verification or proof of double opt-in. The owner now requests the adult-access disclosure: “Your details are stored for Santa Radio news or updates. Read our privacy policy.”
 

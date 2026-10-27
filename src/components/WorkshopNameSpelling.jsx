@@ -59,46 +59,44 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
     onChange('');
     setDraft('');
     setError('');
+    setIsEditing(false);
     returnFocus();
   };
 
   return (
-    <section className="smw-written-name" aria-label="Written name for your keepsakes">
+    <section className="smw-written-name" aria-label="Written name for your keepsakes" data-download-name={downloadName}>
       <div className="smw-written-name-header">
         <div className="smw-written-name-record">
-          <span className="smw-written-name-record-label">Recorded name · audio stays as chosen</span>
+          <span className="smw-written-name-record-label">Recorded name</span>
           <strong>{recordedName}</strong>
         </div>
-
-        {!isEditing && (
-          <div className="smw-written-name-controls">
-            <button
-              ref={changeButtonRef}
-              className="smw-written-name-button"
-              type="button"
-              onClick={beginEditing}
-            >
-              Change spelling
-            </button>
-            {spelling && (
-              <button
-                className="smw-written-name-reset"
-                type="button"
-                onClick={useRecordedSpelling}
-              >
-                Use recorded spelling
-              </button>
-            )}
-          </div>
-        )}
       </div>
 
-      <p className="smw-written-name-explainer">
-        Spelling only; Santa’s pronunciation stays the same.
-      </p>
+      <dl className="smw-written-name-previews">
+        <div className="smw-written-name-preview">
+          <dt>Certificate name preview</dt>
+          <dd>
+            <span className="smw-written-name-value">{writtenName}</span>
+            <button
+              ref={changeButtonRef}
+              className="smw-change smw-written-name-edit"
+              type="button"
+              onClick={beginEditing}
+              aria-label="Edit certificate name"
+              aria-expanded={isEditing}
+              aria-controls={`${fieldId}-editor`}
+              title="Edit certificate name"
+            >
+              <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m16 4 4 4M4 20l4-1 12-12a2.83 2.83 0 0 0-4-4L4 15z" />
+              </svg>
+            </button>
+          </dd>
+        </div>
+      </dl>
 
       {isEditing && (
-        <form className="smw-written-name-editor" onSubmit={commitSpelling} noValidate>
+        <form id={`${fieldId}-editor`} className="smw-written-name-editor" onSubmit={commitSpelling} noValidate>
           <label className="smw-written-name-label" htmlFor={fieldId}>Name spelling</label>
           <input
             ref={inputRef}
@@ -112,7 +110,7 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
               if (error) setError('');
             }}
             aria-invalid={!!error}
-            aria-describedby={`${fieldId}-help${error ? ` ${fieldId}-error` : ''}`}
+            aria-describedby={error ? `${fieldId}-error` : undefined}
             autoComplete="off"
             onKeyDown={event => {
               if (event.key === 'Escape') {
@@ -121,30 +119,15 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
               }
             }}
           />
-          <p className="smw-written-name-help" id={`${fieldId}-help`}>
-            Used on the certificate and in the MP3 filename only. The chosen audio recording does not change.
-          </p>
           {error && <p className="smw-written-name-error" id={`${fieldId}-error`} role="alert">{error}</p>}
           <div className="smw-written-name-controls">
             <button className="smw-written-name-button" type="submit">Use this spelling</button>
             <button className="smw-written-name-reset" type="button" onClick={cancelEditing}>Cancel</button>
+            {spelling && <button className="smw-written-name-reset" type="button" onClick={useRecordedSpelling}>Use recorded spelling</button>}
           </div>
         </form>
       )}
 
-      <dl className="smw-written-name-previews">
-        <div className="smw-written-name-preview">
-          <dt>Certificate name preview</dt>
-          <dd>{writtenName}</dd>
-        </div>
-        <div className="smw-written-name-preview">
-          <dt>MP3 filename preview</dt>
-          <dd>{downloadName}</dd>
-        </div>
-      </dl>
-      <p className="smw-written-name-preview-note">
-        Previews only. This workshop does not create a certificate or MP3.
-      </p>
       {canSuggestSpelling && (
         <WorkshopSpellingSuggestion
           name={writtenName}

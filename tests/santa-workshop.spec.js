@@ -117,19 +117,18 @@ async function complete(page, keyboard = false) {
       expect(bounds.scroll).toBe(0);
     }
     await expect(page.locator('.smw-activity-wording')).not.toContainText('A wording preview');
-    await expect(page.locator('.smw-sound-toggle')).toHaveCount(index === 0 ? 1 : 0);
+    await expect(page.locator('.smw-sound-toggle')).toHaveCount(0);
     if (index > 0) await expect(page.locator('.smw-activity-wording-quote')).not.toContainText('—');
     if (index === 3) await expect(page.locator('.smw-stage-heading h3')).toHaveText('What deserves an extra celebration?');
     if (index === 4) {
-      await expect(page.locator('.smw-stage-heading h3')).toHaveText('What might they leave out for Santa?');
-      await expect(page.locator('.smw-stage-heading p')).toHaveText("We're sure this will make Santa happy.");
+      await expect(page.locator('.smw-stage-heading h3')).toHaveText('What might they leave Santa?');
+      await expect(page.locator('.smw-stage-heading p')).toHaveCount(0);
     }
     if (index === 5) await expect(page.locator('.smw-stage-heading h3')).toHaveText('Santa would like to know where he’s going?');
     if (!index) {
       await expect(page.getByText('Quiet workshop feedback only; independent of Santa Radio playback.', { exact: true })).toHaveCount(0);
-      await expect(page.locator('.smw-sound-toggle').locator('..')).toHaveClass('smw-actions');
       const search = page.getByRole('combobox', { name: 'Search recorded names', exact: true });
-      await expect(page.locator('.smw-stage-heading p')).toHaveText('Search the available names in Santa’s library. We should have yours!');
+      await expect(page.locator('.smw-stage-heading p')).toHaveCount(0);
       const introCard = page.getByRole('complementary', { name: 'Santa will say…', exact: true });
       await expect(introCard).toContainText('Ho ho ho, hello, Santa here… I’ve a very special message for… ah yes…');
       await expect(introCard).not.toContainText('Preview wording only.');
@@ -139,8 +138,6 @@ async function complete(page, keyboard = false) {
         await search.press('Enter');
       } else await page.getByRole('option', { name: answers[0], exact: true }).click();
       await expect(page.locator('.smw-name-status')).toContainText(answers[0]);
-      await page.keyboard.press('Tab');
-      await expect(page.locator('.smw-sound-toggle')).toBeFocused();
       await page.keyboard.press('Tab');
       await expect(page.locator('.smw-button-next')).toBeFocused();
       await page.keyboard.press('Enter');
@@ -365,7 +362,7 @@ for (const viewport of [
 
 for (const viewport of [{ width: 1365, height: 900 }, { width: 390, height: 844 }]) {
   for (const entry of ['pointer', 'keyboard']) {
-    test(`name entry ${viewport.width} ${entry}: focus raises the panel once without interrupting typing or choosing`, async ({ page }) => {
+    test(`name entry ${viewport.width} ${entry}: focus keeps typing and choosing stable`, async ({ page }) => {
       await page.setViewportSize(viewport);
       await page.emulateMedia({ reducedMotion: 'no-preference' });
       await open(page);
@@ -381,7 +378,7 @@ for (const viewport of [{ width: 1365, height: 900 }, { width: 390, height: 844 
       const search = page.getByRole('combobox', { name: 'Search recorded names', exact: true });
       const nameCard = page.getByRole('complementary', { name: 'Santa will say…', exact: true });
       await expect(nameCard).toContainText('Ho ho ho, hello, Santa here… I’ve a very special message for… ah yes…');
-      await expect(page.locator('.smw-stage-heading p')).toHaveText('Search the available names in Santa’s library. We should have yours!');
+      await expect(page.locator('.smw-stage-heading p')).toHaveCount(0);
       const searchBox = await search.boundingBox();
       const cardBox = await nameCard.boundingBox();
       if (viewport.width > 900) {
@@ -405,12 +402,19 @@ for (const viewport of [{ width: 1365, height: 900 }, { width: 390, height: 844 
         const focusedCardBox = await nameCard.boundingBox();
         expect(Math.abs(focusedCardBox.y - focusedSearchBox.y)).toBeLessThanOrEqual(1);
       }
-      await expect.poll(() => page.evaluate(() => Math.abs(
-        document.querySelector('.smw-builder').getBoundingClientRect().top
-        - document.querySelector('.navbar').getBoundingClientRect().bottom - 16,
-      ))).toBeLessThanOrEqual(1);
-      const raisedTop = await page.locator('.smw-builder').evaluate(node => node.getBoundingClientRect().top);
-      expect(initialTop - raisedTop).toBeGreaterThan(50);
+      if (viewport.width > 1024) {
+        await expect.poll(() => page.evaluate(() => {
+        const intended = scrollY + document.querySelector('.smw-builder').getBoundingClientRect().top
+          - document.querySelector('.navbar').getBoundingClientRect().bottom - 16;
+        // Short mobile stages cannot be aligned past the end of the document.
+        const maximum = document.documentElement.scrollHeight - innerHeight;
+        return Math.abs(scrollY - Math.min(Math.max(0, intended), maximum));
+        })).toBeLessThanOrEqual(1);
+        const raisedTop = await page.locator('.smw-builder').evaluate(node => node.getBoundingClientRect().top);
+        expect(initialTop - raisedTop).toBeGreaterThan(50);
+      } else {
+        await expect(search).toBeInViewport();
+      }
       const y = await page.evaluate(() => scrollY);
       await search.pressSequentially('Dem');
       await expect(page.getByRole('option', { name: 'Demrie', exact: true })).toBeVisible();
@@ -421,7 +425,7 @@ for (const viewport of [{ width: 1365, height: 900 }, { width: 390, height: 844 
         await search.press('Enter');
       } else await page.getByRole('option', { name: 'Demrie', exact: true }).click();
       await expect(page.locator('.smw-name-status')).toContainText('Demrie');
-      expect(await page.evaluate(() => window.__entryAlignCalls)).toBe(1);
+      expect(await page.evaluate(() => window.__entryAlignCalls)).toBe(viewport.width > 1024 ? 1 : 0);
       expect(await page.evaluate(() => scrollY)).toBe(y);
       await expect(search).toHaveValue('Demrie');
       if (entry === 'pointer') {
@@ -443,8 +447,12 @@ for (const viewport of [
     await open(page);
     if (viewport.enlarged) await page.addStyleTag({ content: 'html { font-size: 200%; }' });
     const builder = page.locator('.smw-builder');
+    await expect(page.locator('.smw-intro-copy')).toHaveText("It's all about the little details ...");
+    await expect(page.locator('.smw-catalogue-review-note')).toHaveCount(0);
     let baseline;
     const checkAnchor = async () => {
+      await expect(page.locator('.smw-intro-copy')).toHaveText("It's all about the little details ...");
+      await expect(page.locator('.smw-catalogue-review-note')).toHaveCount(0);
       await expect.poll(async () => {
         return page.evaluate(() => Math.abs(
           document.querySelector('.smw-builder').getBoundingClientRect().top
@@ -462,12 +470,8 @@ for (const viewport of [
       await expect(page.locator('.smw-stage-heading h3')).toBeFocused();
     };
     await expect(page.getByRole('button', { name: 'Back', exact: true })).toHaveCount(0);
-    const soundBox = await page.locator('.smw-sound-toggle').boundingBox();
-    const actionBox = await page.locator('.smw-actions').boundingBox();
-    const inputBox = await page.getByRole('combobox', { name: 'Search recorded names', exact: true }).boundingBox();
-    expect(Math.abs(soundBox.x - actionBox.x)).toBeLessThanOrEqual(1);
-    expect(soundBox.y).toBeGreaterThanOrEqual(inputBox.y + inputBox.height);
-    expect(soundBox.height).toBeGreaterThanOrEqual(56);
+    await expect(page.locator('.smw-sound-toggle')).toHaveCount(0);
+    await expect(page.locator('.smw-button-next')).toBeVisible();
     await page.locator('.smw-button-next').click();
     await expect(page.locator('.smw-validation')).toContainText('Please choose');
     await expect(page.locator('.smw-step-count')).toHaveText('Step 1 of 6');
@@ -481,8 +485,17 @@ for (const viewport of [
         await page.getByRole('listbox').press('Home');
       } else {
         await expect(page.locator('.smw-summary')).toBeVisible();
+        await expect(page.locator('.smw-summary .smw-change')).toHaveCount(6);
+        for (const edit of await page.locator('.smw-summary .smw-change').all()) {
+          await expect(edit).toHaveText('');
+          await expect(edit.locator('svg')).toBeVisible();
+          const box = await edit.boundingBox();
+          expect(box.width).toBeGreaterThanOrEqual(44);
+          expect(box.height).toBeGreaterThanOrEqual(44);
+        }
         await expect(page.locator('.smw-sound-toggle')).toHaveCount(0);
         await checkAnchor();
+        if (viewport.width === 390) await page.locator('.smw-summary').screenshot({ path: 'test-results/studio-review-edit-icons.png' });
       }
     }
     await page.getByRole('button', { name: 'Change Their name', exact: true }).click();
@@ -551,7 +564,8 @@ test('full journey, missing choices, back and category editing retain answers wi
   await page.getByRole('button', { name: 'Back', exact: true }).click();
   await expect(page.getByRole('option', { name: answers[5], exact: true })).toHaveAttribute('aria-selected', 'true');
   await page.getByRole('button', { name: 'Review my choices' }).click();
-  await expect(page.locator('.smw-audio-disclaimer')).toContainText('No recording has been made');
+  await expect(page.locator('.smw-audio-disclaimer')).toHaveCount(0);
+  await expect(page.locator('.smw-written-name-preview-note')).toHaveCount(0);
   await expect(page.locator('.smw-page audio, .smw-page [download], .smw-page input[type=email]')).toHaveCount(0);
   expect(await storage()).toEqual(before);
   await expect(page).toHaveURL(new RegExp(`${path}$`));
@@ -626,17 +640,21 @@ test('sound-alike hint and final spelling change update output previews only, wi
   await expect(page.locator('.smw-name-empty')).toContainText('This won’t change the name Santa says');
   await complete(page);
   const section = page.getByRole('region', { name: 'Written name for your keepsakes' });
-  await expect(section).toContainText('santa-message-for-Demrie.mp3');
-  const change = section.getByRole('button', { name: 'Change spelling', exact: true });
-  await expect(section.locator('.smw-written-name-explainer')).toHaveText('Spelling only; Santa’s pronunciation stays the same.');
-  const recordedBox = await section.locator('.smw-written-name-record').boundingBox();
+  await expect(section).toHaveAttribute('data-download-name', 'santa-message-for-Demrie.mp3');
+  await expect(section).not.toContainText('.mp3');
+  await expect(section).not.toContainText('MP3 filename preview');
+  const change = section.getByRole('button', { name: 'Edit certificate name', exact: true });
+  await expect(section.getByRole('button', { name: 'Change spelling', exact: true })).toHaveCount(0);
+  await expect(section.locator('.smw-written-name-explainer, .smw-written-name-help')).toHaveCount(0);
+  await expect(section.locator('.smw-written-name-preview')).toHaveCount(1);
+  const valueBox = await section.locator('.smw-written-name-value').boundingBox();
   const changeBox = await change.boundingBox();
-  expect(changeBox.x).toBeGreaterThanOrEqual(recordedBox.x + recordedBox.width + 8);
-  expect(Math.abs((changeBox.y + changeBox.height / 2) - (recordedBox.y + recordedBox.height / 2))).toBeLessThanOrEqual(1);
-  const previewBoxes = await section.locator('.smw-written-name-preview').evaluateAll(nodes =>
-    nodes.map(node => ({ y: node.getBoundingClientRect().y })));
-  expect(Math.abs(previewBoxes[0].y - previewBoxes[1].y)).toBeLessThanOrEqual(1);
-  expect((await section.locator('.smw-written-name-previews').boundingBox()).height).toBeLessThan(50);
+  expect(changeBox.x).toBeGreaterThanOrEqual(valueBox.x + valueBox.width + 8);
+  expect(Math.abs((changeBox.y + changeBox.height / 2) - (valueBox.y + valueBox.height / 2))).toBeLessThanOrEqual(1);
+  expect(changeBox.width).toBeGreaterThanOrEqual(44);
+  expect(changeBox.height).toBeGreaterThanOrEqual(44);
+  await expect(change.locator('svg')).toBeVisible();
+  await expect(change).toHaveText('');
   await change.click();
   const input = section.getByRole('textbox', { name: 'Name spelling', exact: true });
   await expect(input).toBeFocused();
@@ -644,30 +662,33 @@ test('sound-alike hint and final spelling change update output previews only, wi
   await input.press('Enter');
   await expect(input).toHaveAttribute('aria-invalid', 'true');
   await expect(section.getByRole('alert')).toContainText('Use letters');
-  await expect(section).toContainText('santa-message-for-Demrie.mp3');
+  await expect(section).toHaveAttribute('data-download-name', 'santa-message-for-Demrie.mp3');
   await input.fill('Demree');
   await expect(section.getByRole('alert')).toHaveCount(0);
   await input.press('Enter');
   await expect(change).toBeFocused();
-  await expect(section.locator('.smw-written-name-preview dd').first()).toHaveText('Demree');
-  await expect(section).toContainText('santa-message-for-Demree.mp3');
+  await expect(section.locator('.smw-written-name-value')).toHaveText('Demree');
+  await expect(section).toHaveAttribute('data-download-name', 'santa-message-for-Demree.mp3');
+  await expect(section).not.toContainText('.mp3');
   await expect(page.locator('.smw-summary-row').first()).toContainText('Demrie');
   await expect(section.locator('.smw-written-name-record strong')).toHaveText('Demrie');
   await page.getByRole('button', { name: 'Change Extra celebration' }).click();
   await page.getByRole('option', { name: 'Planting and caring for a garden', exact: true }).click();
   await page.getByRole('button', { name: 'Return to review' }).click();
-  await expect(section).toContainText('santa-message-for-Demree.mp3');
+  await expect(section).toHaveAttribute('data-download-name', 'santa-message-for-Demree.mp3');
   await change.click();
   await input.fill('Cancelled');
   await input.press('Escape');
   await expect(change).toBeFocused();
-  await expect(section).toContainText('santa-message-for-Demree.mp3');
+  await expect(section).toHaveAttribute('data-download-name', 'santa-message-for-Demree.mp3');
   await section.screenshot({ path: 'generated-artifacts/workshop/name-spelling-desktop.png' });
   await page.setViewportSize({ width: 320, height: 568 });
   await page.addStyleTag({ content: 'html { font-size: 200%; }' });
   expect(await section.evaluate(node => node.scrollWidth <= node.clientWidth + 1)).toBe(true);
+  await change.click();
   await section.getByRole('button', { name: 'Use recorded spelling' }).click();
-  await expect(section).toContainText('santa-message-for-Demrie.mp3');
+  await expect(section).toHaveAttribute('data-download-name', 'santa-message-for-Demrie.mp3');
+  await expect(change).toBeFocused();
   await change.click();
   await input.fill('Demree');
   await input.press('Enter');
@@ -676,7 +697,7 @@ test('sound-alike hint and final spelling change update output previews only, wi
   await search.fill('Za');
   await page.getByRole('option', { name: 'Zara', exact: true }).click();
   await page.getByRole('button', { name: 'Return to review' }).click();
-  await expect(section).toContainText('santa-message-for-Zara.mp3');
+  await expect(section).toHaveAttribute('data-download-name', 'santa-message-for-Zara.mp3');
   await expect(section).not.toContainText('Demree');
   const after = await page.evaluate(() => ({ local: { ...localStorage }, session: { ...sessionStorage } }));
   // The existing radio independently stores its responsive minimised state.
@@ -702,7 +723,7 @@ test('sending a spelling suggestion is separate, minimal and retry-safe', async 
   });
   await open(page);
   await complete(page);
-  await page.getByRole('button', { name: 'Change spelling', exact: true }).click();
+  await page.getByRole('button', { name: 'Edit certificate name', exact: true }).click();
   await page.getByRole('textbox', { name: 'Name spelling' }).fill('Demree');
   await page.getByRole('button', { name: 'Use this spelling', exact: true }).click();
   expect(sent).toHaveLength(0);
@@ -737,13 +758,13 @@ test('suggestion needs a matching saved acknowledgment and a new spelling starts
   });
   await open(page);
   await complete(page);
-  await page.getByRole('button', { name: 'Change spelling', exact: true }).click();
+  await page.getByRole('button', { name: 'Edit certificate name', exact: true }).click();
   await page.getByRole('textbox', { name: 'Name spelling' }).fill('Demree');
   await page.getByRole('button', { name: 'Use this spelling', exact: true }).click();
   const suggestion = page.getByRole('region', { name: 'Optional: suggest this spelling' });
   await suggestion.getByRole('button').click();
   await expect(suggestion.getByRole('alert')).toContainText('did not confirm');
-  await page.getByRole('button', { name: 'Change spelling', exact: true }).click();
+  await page.getByRole('button', { name: 'Edit certificate name', exact: true }).click();
   await page.getByRole('textbox', { name: 'Name spelling' }).fill('Demri');
   await page.getByRole('button', { name: 'Use this spelling', exact: true }).click();
   await expect(suggestion.getByRole('button')).toHaveText('Send this spelling to Santa’s list');

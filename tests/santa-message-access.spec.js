@@ -15,7 +15,7 @@ test.beforeEach(async ({ page }) => {
 for (const width of [390, 834]) {
   for (const entry of ['/', '/free-santa-message']) {
     test(`signup scrolls to the free maker below navigation at ${width}px from ${entry}`, async ({ page }) => {
-      await page.setViewportSize({ width, height: 1000 });
+      await page.setViewportSize({ width, height: width < 768 ? 844 : 1000 });
       await mockBrevo(page);
       await mockSantaNames(page);
       await page.goto(entry);
@@ -25,11 +25,16 @@ for (const width of [390, 834]) {
       await page.getByRole('button', { name: 'Get my free Santa message', exact: true }).click();
       await expect(page).toHaveURL(/\/free-santa-message$/);
       await expect(page.getByLabel('First Name', { exact: true })).toBeVisible();
-      const aligned = () => page.evaluate(() => Math.abs(
-        document.querySelector('#santa-messages .message-layout').getBoundingClientRect().top
+      const aligned = () => page.evaluate(selector => Math.abs(
+        document.querySelector(selector).getBoundingClientRect().top
         - document.querySelector('.navbar').getBoundingClientRect().bottom - 24,
-      ) < 2);
+      ) < 2, width < 768 ? '#santa-messages .santa-message-box' : '#santa-messages .message-layout');
       await expect.poll(aligned).toBe(true);
+      if (width < 768) {
+        await expect(page.getByLabel('First Name', { exact: true })).toBeInViewport();
+        await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeInViewport();
+        await page.screenshot({ path: `test-results/mobile-after-signup-${entry === '/' ? 'home' : 'maker'}.png` });
+      }
       // Model the browser moving the page as the software keyboard closes.
       await page.evaluate(() => {
         window.scrollBy({ top: 100, behavior: 'instant' });

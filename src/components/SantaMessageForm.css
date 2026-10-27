@@ -67,8 +67,8 @@
 }
 .message-download:disabled { animation: none; box-shadow: none; }
 .message-wait-downloads { margin-bottom: 22px; }
-.message-more-magic { display: block; width: 100%; min-height: 48px; margin-top: 18px; padding: 10px 16px; border: 1px solid #d4af3770; border-radius: 8px; background: #173b2b; color: #ead39a; font: inherit; font-size: .88rem; cursor: pointer; }
-.message-more-magic:hover { background: #1d4934; }
+.message-more-magic { display: flex; width: 100%; min-height: 48px; margin-top: 18px; padding: 10px 16px; font-size: .88rem; cursor: pointer; }
+.message-more-magic:hover { background: var(--red-dark); }
 .message-more-magic:focus-visible { outline: 2px solid #ead39a; outline-offset: 4px; }
 .message-wait-downloads .message-result { margin-top: 14px; padding-top: 14px; }
 .message-wait-downloads .message-result > .message-postmark { display: none; }

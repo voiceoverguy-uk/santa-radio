@@ -16,6 +16,7 @@ const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLa
 function alignWorkshopBuilder(builder) {
   if (!builder) return;
   const headerBottom = document.querySelector('.navbar')?.getBoundingClientRect().bottom || 0;
+  builder.style.setProperty('--smw-header-clearance', `${headerBottom + 16}px`);
   const builderTop = builder.getBoundingClientRect().top;
   const top = builderTop + window.scrollY - headerBottom - 16;
   window.scrollTo({ top: Math.max(0, top), behavior: 'instant' });
@@ -26,7 +27,6 @@ const stages = [
     key: 'name',
     label: 'Their name',
     heading: 'What name should Santa say?',
-    description: 'Search the available names in Santa’s library. We should have yours!',
     wording: 'Ho ho ho, hello, Santa here… I’ve a very special message for… ah yes…',
   },
   {
@@ -41,7 +41,6 @@ const stages = [
     label: 'Something they do',
     reviewLabel: 'Working hard at',
     heading: 'What have they been working hard at?',
-    description: 'Pick a little detail Santa might have heard about.',
     wording: 'I’ve heard you’ve been super good, in fact, positively amazing this year… trying especially hard at…',
   },
   {
@@ -49,15 +48,13 @@ const stages = [
     label: 'An achievement',
     reviewLabel: 'Extra celebration',
     heading: 'What deserves an extra celebration?',
-    description: 'Choose something they have accomplished.',
     wording: 'I was also delighted to hear how amazing you’ve been at…',
   },
   {
     key: 'treat',
     label: 'A festive treat',
     reviewLabel: 'A festive treat for Santa',
-    heading: 'What might they leave out for Santa?',
-    description: "We're sure this will make Santa happy.",
+    heading: 'What might they leave Santa?',
     wording: 'We do like a little treat when we arrive on Christmas Eve… and… I know you like to leave me…',
   },
   {
@@ -158,13 +155,6 @@ function validateWorkshopCatalogue(payload) {
   return { ...payload, categories };
 }
 
-function hasPositiveCount(value) {
-  if (typeof value === 'number') return Number.isFinite(value) && value > 0;
-  if (Array.isArray(value)) return value.some(hasPositiveCount);
-  if (value && typeof value === 'object') return Object.values(value).some(hasPositiveCount);
-  return false;
-}
-
 function getSoundStatusMessage(status) {
   const statusType = typeof status === 'string'
     ? status
@@ -183,9 +173,9 @@ function getSoundStatusMessage(status) {
     || /error|block|fail|denied|unavailable|unlock|gesture|could not|cannot|unable/i.test(message);
   if (!issue) return '';
   if (typeof status === 'string' && /^(error|blocked|failed|unavailable)$/i.test(status.trim())) {
-    return 'Your browser blocked a workshop sound. Try another interaction or turn workshop sounds off.';
+    return 'Your browser blocked a workshop sound. You can continue without sound.';
   }
-  return message || 'Your browser blocked a workshop sound. Try another interaction or turn workshop sounds off.';
+  return message || 'Your browser blocked a workshop sound. You can continue without sound.';
 }
 
 export default function SantaMessageWorkshop() {
@@ -202,8 +192,6 @@ export default function SantaMessageWorkshop() {
     message: '',
   });
   const {
-    enabled: workshopSoundsEnabled,
-    toggleEnabled: toggleWorkshopSounds,
     prepare,
     playTick,
     playNext,
@@ -213,6 +201,7 @@ export default function SantaMessageWorkshop() {
   const pageRef = useRef(null);
   const builderRef = useRef(null);
   const keyboardFocus = useRef(false);
+  const nameEntryAligned = useRef(false);
   const stageHeading = useRef(null);
   const previousStageIndex = useRef(stageIndex);
   const stage = stages[stageIndex];
@@ -225,9 +214,6 @@ export default function SantaMessageWorkshop() {
     ? !!selectedName && !!choices.name
     : !!stage && hasCatalogueOptions && catalogueOptions.some(record => record.id === choices[stage.key]);
   const canContinue = !isReview && hasCurrentStageChoice;
-  const hasReviewFiles = catalogueState.status === 'ready'
-    && (hasPositiveCount(catalogueState.catalogue?.needsReviewCounts)
-      || hasPositiveCount(catalogueState.catalogue?.excludedAudioCounts));
 
   useEffect(() => {
     const dock = document.querySelector('.radio-dock');
@@ -297,16 +283,10 @@ export default function SantaMessageWorkshop() {
   useBrowserLayoutEffect(() => {
     if (previousStageIndex.current === stageIndex) return;
     previousStageIndex.current = stageIndex;
-    // Anchor the panel before paint without overlapping smooth-scroll jobs.
-    const alignBuilder = () => alignWorkshopBuilder(builderRef.current);
-    alignBuilder();
+    // Reposition once, before paint. A second write on the next frame can
+    // visibly fight Safari's keyboard/viewport adjustment.
+    alignWorkshopBuilder(builderRef.current);
     stageHeading.current?.focus({ preventScroll: true });
-    // One correction after child effects/layout settle, not a continuous scroll
-    // lock. Do not undo the extra scrolling needed to reveal keyboard focus.
-    const frame = window.requestAnimationFrame(() => {
-      if (!keyboardFocus.current) alignBuilder();
-    });
-    return () => window.cancelAnimationFrame(frame);
   }, [stageIndex]);
 
   const choose = (key, value) => {
@@ -342,10 +322,15 @@ export default function SantaMessageWorkshop() {
       onKeyDownCapture={() => { keyboardFocus.current = true; }}
       onPointerDownCapture={() => { keyboardFocus.current = false; }}
       onFocusCapture={event => {
-      if (stageIndex === 0 && event.target.matches('.smw-name-search')) {
+      // The mobile browser already pans a text field into the keyboard's
+      // visible area. An additional application scroll fights that movement.
+      if (window.matchMedia('(max-width: 1024px), (pointer: coarse)').matches
+          && event.target.matches('input, textarea, [contenteditable="true"]')) return;
+       if (stageIndex === 0 && event.target.matches('.smw-name-search') && !nameEntryAligned.current) {
         // Entering the first field starts the workshop visually, without moving
         // focus away from the input or reacting to each keystroke/result change.
-        alignWorkshopBuilder(builderRef.current);
+         nameEntryAligned.current = true;
+         alignWorkshopBuilder(builderRef.current);
       }
       if (!keyboardFocus.current) return;
       if (!event.target.matches('input, button, [role=listbox], .smw-stage-heading h3')) return;
@@ -370,7 +355,7 @@ export default function SantaMessageWorkshop() {
           <div className="smw-title-wrap">
             <p className="smw-eyebrow"><span aria-hidden="true" /> A little North Pole Magic</p>
             <h1>Santa’s Message<br className="smw-title-break" /> Maker Studio</h1>
-            <p className="smw-intro-copy">Try the little details that could make a longer Santa greeting feel wonderfully theirs.</p>
+            <p className="smw-intro-copy">It's all about the little details ...</p>
           </div>
           <aside className="smw-preview-note" aria-label="Studio test notice">
             <span className="smw-preview-mark" aria-hidden="true">
@@ -407,19 +392,13 @@ export default function SantaMessageWorkshop() {
               <li key={item.key} className={index === stageIndex ? 'is-current' : ''}>{item.label}</li>
             ))}
           </ol>
-          {hasReviewFiles && (
-            <p className="smw-catalogue-review-note" role="status">
-              Some source files need review and are not selectable yet.
-            </p>
-          )}
-
           {!isReview ? (
             <div className="smw-stage" key={stage.key}>
               <div className="smw-stage-heading">
                 <span className="smw-stage-number">{String(stageIndex + 1).padStart(2, '0')}</span>
                 <div>
                   <h3 ref={stageHeading} tabIndex="-1">{stage.heading}</h3>
-                  <p>{stage.description}</p>
+                  {stage.description && <p>{stage.description}</p>}
                 </div>
               </div>
               {stage.key === 'name' ? (
@@ -503,14 +482,6 @@ export default function SantaMessageWorkshop() {
               {stage.note && <p className="smw-stage-note">{stage.note}</p>}
               <p className="smw-validation" id="smw-validation" role="alert">{error}</p>
               <div className="smw-actions">
-                {stageIndex === 0 && <button
-                  className="smw-sound-toggle"
-                  type="button"
-                  aria-pressed={workshopSoundsEnabled}
-                  onClick={toggleWorkshopSounds}
-                >
-                  Workshop sounds: {workshopSoundsEnabled ? 'On' : 'Off'}
-                </button>}
                 {(stageIndex > 0 || editing) && <button className="smw-button smw-button-back" type="button" onClick={goBack}>
                   <span aria-hidden="true">←</span> Back
                 </button>}
@@ -542,8 +513,10 @@ export default function SantaMessageWorkshop() {
                           ?.find(record => record.id === choices[item.key])?.label
                           || 'This choice is no longer available.'}</dd>
                     </div>
-                    <button type="button" className="smw-change" onClick={() => editStage(index)} aria-label={`Change ${item.reviewLabel || item.label}`}>
-                      Change <span aria-hidden="true">→</span>
+                    <button type="button" className="smw-change" onClick={() => editStage(index)} aria-label={`Change ${item.reviewLabel || item.label}`} title={`Edit ${item.reviewLabel || item.label}`}>
+                      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="m16 4 4 4M4 20l4-1 12-12a2.83 2.83 0 0 0-4-4L4 15z" />
+                      </svg>
                     </button>
                   </div>
                 ))}
@@ -555,7 +528,6 @@ export default function SantaMessageWorkshop() {
                 spelling={nameSpelling}
                 onChange={setNameSpelling}
               />
-              <p className="smw-audio-disclaimer">This is a design preview only. No recording has been made; MP3 creation will be connected later.</p>
               <div className="smw-actions">
                 <button className="smw-button smw-button-back" type="button" onClick={goBack}>
                   <span aria-hidden="true">←</span> Back

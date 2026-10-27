@@ -36,7 +36,7 @@
 }
 
 .smw-choice-wheel-frame {
-  --choice-wheel-height: clamp(240px, 34vh, 320px);
+  --choice-wheel-height: 220px;
   position: relative;
   width: min(100%, 640px);
   height: var(--choice-wheel-height);
@@ -80,9 +80,9 @@
   position: relative;
   display: grid;
   box-sizing: border-box;
-  min-height: max(58px, 3.5rem);
+  min-height: max(46px, 2.875rem);
   place-items: center;
-  padding: 12px clamp(15px, 4vw, 34px);
+  padding: 8px clamp(15px, 4vw, 34px);
   scroll-snap-align: center;
   scroll-snap-stop: normal;
   color: #bdcbbd;
@@ -165,7 +165,7 @@
   }
 
   .smw-choice-wheel-frame {
-    --choice-wheel-height: 280px;
+    --choice-wheel-height: 200px;
   }
 
   .smw-choice-wheel-option {
@@ -174,7 +174,7 @@
   }
 
   .smw-choice-wheel-fade {
-    height: 44px;
+    height: 30px;
   }
 }
 

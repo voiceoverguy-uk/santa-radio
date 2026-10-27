@@ -86,11 +86,17 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   // rather than changing the example whenever the user types or counts refresh.
   useEffect(() => { setExampleName(randomSantaExample()); }, []);
   useEffect(() => {
+    let stopSettling;
     if (messages.length) {
       makerHeadingRef.current?.focus({ preventScroll: true });
-      makerHeadingRef.current?.scrollIntoView({ block: 'start', behavior: 'instant' });
+      if (window.matchMedia('(max-width: 767px)').matches) {
+        stopSettling = settleSantaMessageDeskAfterEntry(makerHeadingRef.current);
+      } else {
+        makerHeadingRef.current?.scrollIntoView({ block: 'start', behavior: 'instant' });
+      }
     }
     setAudioErrors(previous => Object.fromEntries(messages.map(message => [message.key, previous[message.key] || false])));
+    return () => stopSettling?.();
   }, [messages]);
   useEffect(() => () => {
     requestRef.current?.abort();
@@ -287,7 +293,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         <h3 ref={makerHeadingRef} tabIndex={-1}>{messages.length ? 'Download your free message' : 'Download your free Santa greeting'}</h3>
         {!!messages.length && <div className="message-wait-downloads">
           {renderResults()}
-          <button className="message-more-magic" type="button" onClick={showMoreMagic}>more magic?</button>
+          <button className="btn-red message-more-magic" type="button" onClick={showMoreMagic}>more magic?</button>
         </div>}
         {coolingDown ? <div className="message-wait">
           <SantaCooldownNotice />

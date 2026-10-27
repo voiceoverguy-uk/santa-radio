@@ -68,6 +68,23 @@ for (const width of [390, 1440]) {
     const heading = page.getByRole('heading', { name: 'Download your free message', exact: true });
     await expect(heading).toBeFocused();
     await expect(heading).toBeInViewport();
+    if (width < 768) {
+      const aligned = () => page.evaluate(() => Math.abs(
+        document.querySelector('.santa-message-box > h3').getBoundingClientRect().top
+          - document.querySelector('.navbar').getBoundingClientRect().bottom - 24,
+      ) < 2);
+      await expect.poll(aligned).toBe(true);
+      // Keep the completion destination after the software keyboard closes.
+      await page.evaluate(() => {
+        window.scrollBy({ top: 100, behavior: 'instant' });
+        window.visualViewport?.dispatchEvent(new Event('resize'));
+      });
+      await expect.poll(aligned).toBe(true);
+      await page.screenshot({ path: 'test-results/mobile-completed-message-position.png' });
+    }
+    await page.mouse.move(0, 0);
+    await expect(page.getByRole('button', { name: 'more magic?', exact: true }))
+      .toHaveCSS('background-color', 'rgb(155, 17, 30)');
     await expect(page.getByRole('heading', { name: 'To Olivia from Santa', exact: true })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Download your audio' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Download your Nice List certificate' })).toBeVisible();

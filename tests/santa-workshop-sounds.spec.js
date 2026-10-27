@@ -23,7 +23,7 @@ async function name(page) {
 }
 const attempts = page => page.evaluate(() => [...window.__workshopPlays]);
 
-test('Continue and wheel feedback occur only for valid deliberate actions and can be muted independently', async ({ page }) => {
+test('Continue and wheel feedback remain enabled without a sound toggle', async ({ page }) => {
   await page.addInitScript(() => {
     window.__workshopPlays = [];
     const original = HTMLMediaElement.prototype.play;
@@ -67,15 +67,12 @@ test('Continue and wheel feedback occur only for valid deliberate actions and ca
   expect(await attempts(page)).toHaveLength(count);
   await expect(page.locator('.smw-sound-toggle')).toHaveCount(0);
   await page.getByRole('button', { name: 'Back', exact: true }).click();
-  const toggle = page.locator('.smw-page').getByRole('button', { name: /sounds/i });
-  await expect(toggle).toHaveAttribute('aria-pressed', 'true');
-  await toggle.click();
-  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.locator('.smw-page').getByRole('button', { name: /sounds/i })).toHaveCount(0);
   await page.locator('.smw-button-next').click();
   await expect(page.locator('.smw-sound-toggle')).toHaveCount(0);
   await age.press('ArrowDown');
   await page.locator('.smw-button-next').click();
-  expect(await attempts(page)).toHaveLength(count);
+  expect(await attempts(page)).toHaveLength(count + 3);
   await expect(page.locator('.smw-step-count')).toHaveText('Step 3 of 6');
   expect(await storage()).toEqual(before);
   await page.reload();
@@ -98,8 +95,7 @@ test('browser-blocked sound reports the issue but never blocks Continue', async 
   await expect(page.locator('.smw-page')).toContainText('Your browser blocked workshop sounds');
   await expect(page.locator('.smw-sound-toggle')).toHaveCount(0);
   await page.getByRole('button', { name: 'Back', exact: true }).click();
-  await page.locator('.smw-page').getByRole('button', { name: /sounds/i }).click();
-  await expect(page.locator('.smw-page')).not.toContainText('Your browser blocked workshop sounds');
+  await expect(page.locator('.smw-page').getByRole('button', { name: /sounds/i })).toHaveCount(0);
   await page.locator('.smw-button-next').click();
   await page.getByRole('listbox', { name: 'Their age', exact: true }).press('End');
   await page.locator('.smw-button-next').click();

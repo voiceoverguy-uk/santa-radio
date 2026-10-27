@@ -128,7 +128,8 @@ test(`live HTTPS categories ${initialWidth}: mobile flow and full-list desktop a
   await page.getByRole('button', { name: 'Return to review' }).click();
   await expect(page.locator('.smw-summary')).toContainText('Camelot — Fantasy place');
   for (const label of selected.slice(0, -1)) await expect(page.locator('.smw-summary')).toContainText(label);
-  await expect(page.locator('.smw-audio-disclaimer')).toContainText('No recording has been made');
+  await expect(page.locator('.smw-audio-disclaimer')).toHaveCount(0);
+  await expect(page.locator('.smw-written-name-preview-note')).toHaveCount(0);
   expect(await storage()).toEqual(initialStorage);
   expect(posts).toEqual([]);
   // StrictMode replays mount effects in development, cancelling the first GET.

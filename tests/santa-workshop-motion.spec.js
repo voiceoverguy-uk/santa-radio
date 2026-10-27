@@ -101,11 +101,116 @@ for (const category of ['age', 'activity']) {
   });
 }
 
+test('all mobile choice wheels use compact heights and closer, tappable options', async ({ page }) => {
+  await openAge(page);
+  for (let step = 0; step < 5; step++) {
+    const wheel = page.getByRole('listbox');
+    const dimensions = await wheel.evaluate(node => ({
+      height: node.clientHeight,
+      rows: [...node.querySelectorAll('[role=option]')].map(row => row.getBoundingClientRect().height),
+    }));
+    expect(dimensions.height).toBeLessThanOrEqual(200);
+    expect(Math.min(...dimensions.rows)).toBeGreaterThanOrEqual(44);
+    expect(Math.min(...dimensions.rows)).toBeLessThanOrEqual(46);
+    await wheel.press('Home');
+    await expect(wheel.locator('[aria-selected=true]')).toHaveCount(1);
+    await wheel.press('End');
+    await expect(wheel.locator('[aria-selected=true]')).toHaveCount(1);
+    if (step !== 4) await page.locator('.smw-button-next').click();
+  }
+  await page.locator('.smw-filtered-wheel').screenshot({ path: 'test-results/compact-studio-wheel-mobile.png' });
+});
+
+test('mobile step changes reposition once and keep short steps clear of the bottom scroll limit', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await openAge(page);
+  await page.evaluate(() => {
+    window.__transitionScrolls = 0;
+    const original = window.scrollTo;
+    window.scrollTo = function (...args) { window.__transitionScrolls++; return original.apply(this, args); };
+  });
+  const check = async () => {
+    await frames(page);
+    expect(await page.evaluate(() => window.__transitionScrolls)).toBe(1);
+    expect(await page.evaluate(() => Math.abs(
+      document.querySelector('.smw-builder').getBoundingClientRect().top
+      - document.querySelector('.navbar').getBoundingClientRect().bottom - 16,
+    ))).toBeLessThanOrEqual(1);
+    await expect(page.locator('.smw-stage-heading h3')).toBeFocused();
+    await page.evaluate(() => { window.__transitionScrolls = 0; });
+  };
+  // Returning to the short name step previously left the panel pinned to the
+  // document bottom instead of the intended header anchor.
+  await page.getByRole('button', { name: 'Back', exact: true }).click();
+  await check();
+  await page.locator('.smw-button-next').click();
+  await check();
+  for (let step = 0; step < 5; step++) {
+    await page.getByRole('listbox').press('End');
+    await page.locator('.smw-button-next').click();
+    await check();
+  }
+});
+
+test('first mobile name-field focus, keyboard resize and refocus never trigger application scrolling', async ({ page }) => {
+  await page.goto('/santa-message-workshop');
+  const decline = page.getByRole('button', { name: 'Decline optional cookies' });
+  if (await decline.isVisible()) await decline.click();
+  const input = page.getByRole('combobox', { name: 'Search recorded names' });
+  await page.evaluate(() => document.fonts.ready);
+  await frames(page);
+  await page.evaluate(() => {
+    window.__refocusScrolls = 0;
+    for (const key of ['scrollTo', 'scrollBy']) {
+      const original = window[key];
+      window[key] = function (...args) { window.__refocusScrolls++; return original.apply(this, args); };
+    }
+  });
+  await input.click();
+  expect(await page.evaluate(() => window.__refocusScrolls)).toBe(0);
+  await page.evaluate(() => {
+    window.visualViewport?.dispatchEvent(new Event('resize'));
+    document.activeElement.blur();
+  });
+  await input.focus();
+  await input.pressSequentially('Dem');
+  await expect(page.getByRole('option', { name: 'Demrie', exact: true })).toBeVisible();
+  expect(await page.evaluate(() => window.__refocusScrolls)).toBe(0);
+});
+
+test('all mobile category searches avoid iPhone focus zoom without disabling pinch zoom', async ({ page }) => {
+  await openAge(page);
+  await page.getByRole('listbox').press('End');
+  await page.locator('.smw-button-next').click();
+  for (const label of ['Search activities', 'Search achievements', 'Search treats', 'Search locations']) {
+    const input = page.getByRole('searchbox', { name: label, exact: true });
+    await expect(input).toBeVisible();
+    expect(await input.evaluate(node => parseFloat(getComputedStyle(node).fontSize))).toBeGreaterThanOrEqual(16);
+    await expect(page.locator('html')).toHaveCSS('scroll-behavior', 'auto');
+    await page.evaluate(() => {
+      window.__fieldFocusScrolls = 0;
+      for (const key of ['scrollTo', 'scrollBy']) {
+        const original = window[key];
+        window[key] = function (...args) { window.__fieldFocusScrolls++; return original.apply(this, args); };
+      }
+    });
+    await input.click();
+    expect(await page.evaluate(() => window.__fieldFocusScrolls)).toBe(0);
+    await input.fill('a');
+    await input.clear();
+    await page.getByRole('listbox').press('End');
+    if (label !== 'Search locations') await page.locator('.smw-button-next').click();
+  }
+  await expect(page.locator('.smw-page')).toHaveCSS('touch-action', 'pan-y pinch-zoom');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1 && scrollX === 0)).toBe(true);
+});
+
 test('a native touch swipe can pass multiple age rows instead of stopping at each one', async ({ page }) => {
   await openAge(page);
   const wheel = page.getByRole('listbox', { name: 'Their age', exact: true });
   await wheel.scrollIntoViewIfNeeded();
   const box = await wheel.boundingBox();
+  const pagePosition = await page.evaluate(() => ({ x: scrollX, y: scrollY }));
   const client = await page.context().newCDPSession(page);
   try {
     const x = box.x + box.width / 2, y = box.y + box.height * .85;
@@ -117,5 +222,6 @@ test('a native touch swipe can pass multiple age rows instead of stopping at eac
     await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
     await expect.poll(() => wheel.evaluate(node => node.scrollTop)).toBeGreaterThan(96);
     await expect(wheel.locator('[aria-selected=true]')).toHaveCount(1);
+    expect(await page.evaluate(() => ({ x: scrollX, y: scrollY }))).toEqual(pagePosition);
   } finally { await client.detach(); }
 });

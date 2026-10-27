@@ -34,10 +34,10 @@
 }
 
 .smw-age-wheel {
-  --wheel-row-height: max(48px, 3rem);
+  --wheel-row-height: max(44px, 2.75rem);
   position: relative;
   width: min(100%, 360px);
-  height: calc(var(--wheel-row-height) * 5);
+  height: calc(var(--wheel-row-height) * 4.5);
   overflow: hidden;
   border: 1px solid #d4af3770;
   border-radius: 12px;
@@ -73,7 +73,7 @@
   min-height: var(--wheel-row-height);
   align-items: center;
   justify-items: center;
-  padding: 8px 12px;
+  padding: 6px 12px;
   scroll-snap-align: center;
   scroll-snap-stop: normal;
   color: #aebdaf;

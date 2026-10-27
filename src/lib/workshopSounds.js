@@ -57,7 +57,7 @@ export function createWorkshopSounds({
       }).catch(error => {
         if (disposed || !enabled || token !== generation) return;
         notify(error?.name === 'NotAllowedError'
-          ? 'Your browser blocked workshop sounds. Switch sounds off and on to enable them.'
+          ? 'Your browser blocked workshop sounds. You can continue without sound.'
           : 'Workshop sounds could not be played. You can still use every choice.');
       });
     } catch {
