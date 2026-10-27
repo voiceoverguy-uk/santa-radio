@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { openMessageDesk, mockBrevo, fillAccessForm, mockSantaNames } from './helpers/message-access.js';
 import { MESSAGE_ALLOWANCE_KEY } from '../src/lib/santaMessageAllowance.js';
+import { SANTA_GIFT_COMPARISONS } from '../src/components/SantaCooldownNotice.jsx';
 
 const audio = readFileSync('server/santa-audio/sleighbells.mp3');
 const mp3 = { contentType: 'audio/mpeg', body: audio };
@@ -61,7 +62,9 @@ test('one success blocks another for thirty minutes, preserves downloads and off
   await expect(page.locator('.message-wait .message-result')).toHaveCount(1);
   await expect(page.getByText('On iPhone, choose Share → Save to Files to keep the MP3.', { exact: true })).toHaveCount(1);
   await expect(page.getByRole('timer')).toHaveText('30:00');
-  await expect(page.locator('.message-recovery-copy')).toHaveText('You’ve created a Free Santa message. Please allow Santa 30 minutes to recover before he records more. Coming soon, you can personalise your message more for the price of a Crayola light up Santa. Meanwhile, why not tell your friends and then enjoy Santa Radio Christmas music while you wait.');
+  const gift = await page.getByTestId('santa-gift-comparison').textContent();
+  expect(SANTA_GIFT_COMPARISONS).toContain(gift);
+  await expect(page.locator('.message-recovery-copy')).toHaveText(`You’ve created a Free Santa message. Please allow Santa 30 mins to recover before he records more. Coming soon! You can personalise your message further for the price of (${gift}). Meanwhile, why not tell friends and enjoy Santa Radio Christmas music while you wait.`);
   await expect(page.getByRole('button', { name: 'Share with friends', exact: true })).toBeEnabled();
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
   await expect(page.getByLabel('First Name')).toBeDisabled();
@@ -93,29 +96,56 @@ test('one success blocks another for thirty minutes, preserves downloads and off
   }
 });
 
-test('all twelve gift comparisons rotate during the wait without changing usage', async ({ page }) => {
+test('gift comparison stays fixed through timer ticks and navigation', async ({ page }) => {
+  await page.addInitScript(() => {
+    Math.random = () => Number(sessionStorage.getItem('test-gift-random') || 0);
+  });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.route('**/api/santa-message', route => route.fulfill(mp3));
   await openMessageDesk(page);
   await page.clock.install({ time: new Date(await page.evaluate(() => Date.now())) });
   await create(page);
   const before = await usage(page);
-  const gifts = [
-    'a Crayola light up Santa', 'a pair of fluffy socks', 'a Nivea for Men gift set',
-    'a tub of Celebrations', 'a Maltesers gift box', 'a box of Lindt chocolate truffles',
-    'a Card Factory novelty gift mug', 'some Cadbury Santa socks',
-    'three Highland cow pens from NEXT', 'a Christmas puzzle book from The Works',
-    'a tub of HEROES chocolates', 'a Habitat decorative glass bauble',
-  ];
   const comparison = page.getByTestId('santa-gift-comparison');
   await expect(comparison).toHaveAttribute('aria-live', 'off');
-  for (const gift of gifts) {
-    await expect(comparison).toHaveText(gift);
+  await expect(comparison).toHaveText(SANTA_GIFT_COMPARISONS[0]);
+  for (let tick = 0; tick < 12; tick++) {
     await page.clock.runFor(8000);
+    await expect(comparison).toHaveText(SANTA_GIFT_COMPARISONS[0]);
   }
-  await expect(comparison).toHaveText(gifts[0]);
   expect(await usage(page)).toEqual(before);
   await expect(page.getByRole('link', { name: 'Download your audio', exact: true })).toBeVisible();
+  // A remount during ordinary navigation must not pick another comparison.
+  await page.evaluate(() => { Math.random = () => .999999; });
+  await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Home', exact: true }).click();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(comparison).toHaveText(SANTA_GIFT_COMPARISONS[0]);
+});
+
+test('refresh can choose any gift without changing the allowance', async ({ page }) => {
+  await page.addInitScript(() => {
+    Math.random = () => Number(sessionStorage.getItem('test-gift-random') || 0);
+  });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.route('**/api/santa-message', route => route.fulfill(mp3));
+  await openMessageDesk(page);
+  await create(page);
+  const before = await usage(page);
+  const comparison = page.getByTestId('santa-gift-comparison');
+  for (const [index, gift] of SANTA_GIFT_COMPARISONS.entries()) {
+    await page.evaluate(value => sessionStorage.setItem('test-gift-random', String(value)),
+      (index + .5) / SANTA_GIFT_COMPARISONS.length);
+    await page.reload();
+    await expect(comparison).toHaveText(gift);
+    expect(await usage(page)).toEqual(before);
+    await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
+  }
+  await page.getByRole('button', { name: 'Minimise radio player', exact: true }).click();
+  await page.locator('.message-recovery-copy').evaluate(node =>
+    node.scrollIntoView({ block: 'center', behavior: 'instant' }));
+  await page.locator('.message-recovery-copy').screenshot({
+    path: 'generated-artifacts/cooldown/stable-gift-comparison.png', animations: 'disabled',
+  });
 });
 
 test('failure, invalid name, non-audio, empty and cancelled requests do not use the allowance', async ({ page }) => {

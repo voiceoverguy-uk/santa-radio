@@ -12,7 +12,7 @@ import NiceListCertificateDownload from './NiceListCertificateDownload.jsx';
 import SantaCertificateExamples from './SantaCertificateExamples.jsx';
 import SantaCooldownNotice from './SantaCooldownNotice.jsx';
 import SantaVoiceTagline from './SantaVoiceTagline.jsx';
-import WorkshopPasswordDialog from './WorkshopPasswordForm.jsx';
+import SantaStudioPromotion from './SantaStudioPromotion.jsx';
 import { santaNameKey } from '../lib/santaNameSearch.js';
 import { randomSantaExample, santaNamePlaceholder } from '../lib/santaNamePlaceholder.js';
 import { normaliseRequestedName } from '../lib/santaNameRequests.js';
@@ -29,6 +29,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const [name, setName] = useState(initialName);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [exampleName, setExampleName] = useState('Olivia');
+  const [activeExampleName, setActiveExampleName] = useState(null);
   const { messages, remember } = useSantaMessageHistory();
   const [validation, setValidation] = useState('');
   const [audioErrors, setAudioErrors] = useState({});
@@ -38,7 +39,6 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const requestRef = useRef(null);
   const nameRequestRef = useRef(null);
   const [nameRequest, setNameRequest] = useState({ key: '', status: 'idle', message: '' });
-  const [workshopDialogOpen, setWorkshopDialogOpen] = useState(false);
   const nameSearch = useSantaNames(name, hasAccess);
   const displayedNameCount = useSantaNameCounter(nameSearch.hostedCount);
   const suggestions = nameSearch.records;
@@ -244,12 +244,16 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         <p className="eyebrow">A little North Pole experiment</p>
         <h2 className="santa-message-heading">FREE Personalised message from Santa</h2>
         <SantaVoiceTagline />
-        <SantaMessageExample />
-        <p>A real recorded message from Santa, aka Father Christmas. Not an AI voice, and with your child’s name in it. Open the recording studio with your contact details, choose your chosen name from thousands, listen together and instantly download your free personalised message from Santa and Nice List Certificate.</p>
-        <SantaCertificateExamples />
+        <SantaMessageExample onExampleNameChange={setActiveExampleName} />
+        <p>A real human recorded message from Santa, aka Father Christmas with childs name. Not an AI voice! Open the recording studio, add your contact details, choose name from thousands, listen and instantly download your short FREE personalised message from Santa and Nice List Certificate.</p>
+        <SantaCertificateExamples activeExampleName={activeExampleName} />
       </div>
+      <div className="santa-message-aside">
       <div className={`santa-message-box${hasAccess ? '' : ' message-access-box'}`}>
-        <div className="message-card-top"><span className="message-seal" aria-hidden="true">S</span><div><p className="message-postmark">The North Pole Recording Studio</p><small>A recorded hello, ready to keep</small></div></div>
+        <div className="message-card-top">
+          <span className="message-seal" aria-hidden="true">S</span>
+          <div className="message-card-heading">
+            <p className="message-postmark">The North Pole Recording Studio</p>
         <div className="message-name-status">
           <p className="message-name-hint message-name-count" role="status" aria-live="off">
             {displayedNameCount !== null
@@ -260,6 +264,8 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
             <span className="message-recording-dot" aria-hidden="true" />
             Recording
           </span>}
+        </div>
+          </div>
         </div>
         {nameSearch.hostedCount === null && !nameSearch.loading && !hasAccess &&
           <button className="message-retry" type="button" onClick={nameSearch.refresh}>Retry name total</button>}
@@ -347,12 +353,10 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         </form>
         {!coolingDown && renderResults()}
         <p className="service-notice">Free to create and download here. The message is not sent by email.</p>
-        {hasAccess && !showDetailLink && <>
-          <p className="workshop-coming-soon">More customisable options <button type="button" onClick={() => setWorkshopDialogOpen(true)} aria-label="Open Santa workshop preview">coming soon</button>.</p>
-          {workshopDialogOpen && <WorkshopPasswordDialog open onClose={() => setWorkshopDialogOpen(false)} />}
-        </>}
         {!sessionRemembered && <p className="message-name-hint" role="status">Your browser can’t remember access. The studio stays open while you browse, but refreshing this tab may ask for your details again.</p>}
         </>}
+      </div>
+      <SantaStudioPromotion />
       </div>
     </div>
   </section>;

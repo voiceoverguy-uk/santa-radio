@@ -8,31 +8,48 @@ const WINDOW_MS = 15 * 60000;
 const hash = value => createHash('sha256').update(value).digest();
 const equal = (a, b) => timingSafeEqual(hash(a), hash(b));
 const mac = (value, config) => createHmac('sha256', config.signingSecret)
-  .update(`workshop-preview:v1:${config.password}:`).update(value).digest('base64url');
+  .update('studio-test:v2:').update(value).digest('base64url');
 const settings = () => ({
-  password: process.env.SANTA_WORKSHOP_PASSWORD,
+  codes: Array.from({ length: 5 }, (_, index) => ({
+    id: String(index + 1), code: process.env[`SANTA_STUDIO_TEST_CODE_${index + 1}`]?.trim(),
+  })).filter(entry => entry.code),
   signingSecret: process.env.SESSION_SECRET,
+  expiresAt: Date.parse(process.env.SANTA_STUDIO_TEST_EXPIRES_AT || ''),
 });
-const configured = config => typeof config.password === 'string' && config.password.length > 0
+const configured = config => Array.isArray(config.codes) && config.codes.length > 0 && config.codes.length <= 5
+  && config.codes.every(entry => /^[1-5]$/.test(entry.id) && typeof entry.code === 'string'
+    && entry.code.length > 0 && entry.code.length <= 80)
+  && new Set(config.codes.map(entry => entry.id)).size === config.codes.length
+  && new Set(config.codes.map(entry => entry.code)).size === config.codes.length
+  && Number.isSafeInteger(config.expiresAt)
   && typeof config.signingSecret === 'string' && config.signingSecret.length >= 32;
+const sessionMac = (payload, entry, config) => mac(`session:${hash(entry.code).toString('hex')}:${payload}`, config);
 
-export function issueWorkshopToken(config, now = Date.now()) {
-  const payload = `v1.${now + WORKSHOP_SESSION_MS}.${randomBytes(24).toString('base64url')}`;
-  return `${payload}.${mac(payload, config)}`;
+export function issueWorkshopToken(config, now = Date.now(), codeId = config.codes?.[0]?.id) {
+  const entry = config.codes?.find(item => item.id === codeId);
+  if (!configured(config) || !entry || config.expiresAt <= now) throw new Error('Tester access is unavailable.');
+  const payload = `v2.${entry.id}.${now}.${Math.min(now + WORKSHOP_SESSION_MS, config.expiresAt)}.${randomBytes(24).toString('base64url')}`;
+  return `${payload}.${sessionMac(payload, entry, config)}`;
+}
+
+export function workshopSession(req, config = settings(), now = Date.now()) {
+  if (!configured(config) || config.expiresAt <= now) return null;
+  const cookie = req.headers?.cookie || '';
+  if (typeof cookie !== 'string' || cookie.length > 16384) return null;
+  const tokens = cookie.split(';').map(part => part.trim()).filter(part => part.startsWith(`${WORKSHOP_COOKIE}=`));
+  if (tokens.length !== 1) return null;
+  const raw = tokens[0].slice(WORKSHOP_COOKIE.length + 1);
+  if (!/^v2\.[1-5]\.\d{13}\.\d{13}\.[A-Za-z0-9_-]{32}\.[A-Za-z0-9_-]{43}$/.test(raw)) return null;
+  const [version, id, issued, expires, nonce, signature] = raw.split('.');
+  const entry = config.codes.find(item => item.id === id);
+  const expiry = Number(expires);
+  if (!entry || Number(issued) > now || expiry <= now || expiry > Number(issued) + WORKSHOP_SESSION_MS
+    || expiry > config.expiresAt || !equal(signature, sessionMac(`${version}.${id}.${issued}.${expires}.${nonce}`, entry, config))) return null;
+  return { expiresAt: expiry };
 }
 
 export function hasWorkshopAccess(req, config = settings(), now = Date.now()) {
-  if (!configured(config)) return false;
-  const cookie = req.headers.cookie || '';
-  if (typeof cookie !== 'string' || cookie.length > 16384) return false;
-  const tokens = cookie.split(';').map(part => part.trim()).filter(part => part.startsWith(`${WORKSHOP_COOKIE}=`));
-  if (tokens.length !== 1) return false;
-  const raw = tokens[0].slice(WORKSHOP_COOKIE.length + 1);
-  if (!/^v1\.\d{13}\.[A-Za-z0-9_-]{32}\.[A-Za-z0-9_-]{43}$/.test(raw)) return false;
-  const [version, expires, nonce, signature] = raw.split('.');
-  const expiry = Number(expires);
-  return expiry > now && expiry <= now + WORKSHOP_SESSION_MS
-    && equal(signature, mac(`${version}.${expires}.${nonce}`, config));
+  return workshopSession(req, config, now) !== null;
 }
 
 // Shared atomic PostgreSQL buckets work across serverless instances/restarts.
@@ -50,7 +67,7 @@ export async function consumeWorkshopAttempt(req, config, now = Date.now()) {
     await client.query('BEGIN');
     await client.query('DELETE FROM santa_name_request_limits WHERE expires_at <= $1', [new Date(now)]);
     for (const [identity, limit] of [['global', 150], [`address:${address}`, 10]]) {
-      const key = `workshop:${window}:${mac(identity, config)}`;
+      const key = `workshop-tests:${window}:${mac(`rate:${identity}`, config)}`;
       const result = await client.query(`INSERT INTO santa_name_request_limits(bucket_key, expires_at)
         VALUES($1,$2) ON CONFLICT(bucket_key) DO UPDATE
         SET attempts=santa_name_request_limits.attempts+1
@@ -95,34 +112,44 @@ export function createWorkshopAccessHandler({ getSettings = settings, consumeAtt
         const origin = new URL(req.headers.origin);
         if (!host || origin.origin !== `${protocol}://${host}` || req.headers['sec-fetch-site'] === 'cross-site') throw new Error();
       } catch { return res.status(403).json({ error: 'Please open the workshop from this website and try again.' }); }
-      if (!req.is('application/json')) return res.status(415).json({ error: 'Please send the password using the workshop form.' });
+      if (!req.is('application/json')) return res.status(415).json({ error: 'Please send your tester code using the Studio form.' });
     }
     next();
   });
   app.use(express.json({ limit: '2kb', strict: true }));
   app.use(async (req, res) => {
     const config = getSettings();
-    if (!configured(config)) return res.status(503).json({ error: 'Workshop preview access is not configured yet. Please try again later.' });
-    if (req.method === 'GET') return res.json({ authorized: hasWorkshopAccess(req, config, now()) });
-    if (!req.body || Object.keys(req.body).length !== 1 || typeof req.body.password !== 'string'
-      || !req.body.password.length || Buffer.byteLength(req.body.password) > 1024) {
-      return res.status(400).json({ error: 'Enter a password of up to 1,024 bytes.' });
+    if (!configured(config)) return res.status(503).json({ error: 'Tester access is not configured yet. Please try again later.' });
+    const time = now();
+    if (time >= config.expiresAt) return res.status(410).json({ authorized: false, error: 'This friends-only test has closed. The Studio is coming soon.' });
+    if (req.method === 'GET') {
+      const session = workshopSession(req, config, time);
+      return res.json(session ? { authorized: true, ...session } : { authorized: false });
+    }
+    if (!req.body || Object.keys(req.body).length !== 1 || typeof req.body.code !== 'string'
+      || !req.body.code.trim().length || req.body.code.trim().length > 80) {
+      return res.status(400).json({ error: 'Enter a tester code of up to 80 characters.' });
     }
     try {
-      const limit = await consumeAttempt(req, config, now());
+      const limit = await consumeAttempt(req, config, time);
       if (!limit.allowed) return res.set('Retry-After', String(limit.retryAfter)).status(429)
-        .json({ error: 'Too many password attempts. Please wait a few minutes before trying again.' });
-      if (!equal(req.body.password, config.password)) return res.status(401).json({ error: 'That password is not correct. Please try again.' });
+        .json({ error: 'Too many code attempts. Please wait a few minutes before trying again.' });
+      // Compare all active codes without exposing which slot matched.
+      let matched;
+      for (const entry of config.codes) if (equal(req.body.code.trim(), entry.code)) matched = entry;
+      if (!matched) return res.status(401).json({ error: 'That tester code is not valid. Please check it and try again.' });
+      const grantTime = now();
+      if (grantTime >= config.expiresAt) return res.status(410).json({ authorized: false, error: 'This friends-only test has closed. The Studio is coming soon.' });
       const secure = req.socket?.encrypted || req.headers['x-forwarded-proto']?.split(',')[0]?.trim() === 'https';
-      res.set('Set-Cookie', `${WORKSHOP_COOKIE}=${issueWorkshopToken(config, now())}; Path=/; HttpOnly; SameSite=Strict${secure ? '; Secure' : ''}`);
-      return res.json({ authorized: true });
+      res.set('Set-Cookie', `${WORKSHOP_COOKIE}=${issueWorkshopToken(config, grantTime, matched.id)}; Path=/; HttpOnly; SameSite=Strict${secure ? '; Secure' : ''}`);
+      return res.json({ authorized: true, expiresAt: Math.min(grantTime + WORKSHOP_SESSION_MS, config.expiresAt) });
     } catch {
       // Never log passwords, cookies, connection strings or raw exceptions.
       return res.status(503).json({ error: 'Workshop access is temporarily unavailable. Please try again.' });
     }
   });
   app.use((error, _req, res, _next) => res.status(error.status === 413 ? 413 : 400)
-    .json({ error: 'Please send a valid, short password request.' }));
+    .json({ error: 'Please send a valid, short tester-code request.' }));
   return app;
 }
 

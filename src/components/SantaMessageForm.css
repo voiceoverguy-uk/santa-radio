@@ -1,19 +1,18 @@
 .santa-message-section { padding: 88px 0; background: #14382a; border-block: 1px solid #d4af3730; }
 .message-layout { display: grid; grid-template-columns: 1fr 1fr; align-items: start; gap: 64px; }
-.message-layout > .santa-message-box { margin-top: 24px; }
 .santa-message-heading { color: var(--cream, #f6ecd8); font-size: clamp(2rem,3.4vw,3rem); text-align: left; margin-bottom: 16px; line-height: 1.25; overflow-wrap: anywhere; }
 .santa-message-subheading { color: var(--cream, #f6ecd8); font-size: clamp(1rem,1.7vw,1.4rem); text-align: left; margin-bottom: 22px; line-height: 1.4; white-space: nowrap; }
 .santa-voice-tagline { position: relative; margin-bottom: 22px; }
 .santa-voice-tagline .santa-message-subheading { margin-bottom: 0; white-space: normal; }
-.santa-real-voice { min-height: 44px; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; text-decoration: underline dotted #d4af3780; text-underline-offset: 5px; white-space: nowrap; cursor: help; }
-.santa-voice-tooltip { position: absolute; z-index: 20; top: 100%; left: 0; width: max-content; max-width: min(100%, 300px); padding: 12px 15px; border: 1px solid #d4af3780; border-radius: 10px; background: #fff8e7; color: #19392d; font-family: 'Inter', sans-serif; font-size: .85rem; line-height: 1.5; overflow-wrap: anywhere; box-shadow: 0 8px 20px #0004; }
+.santa-voice-info { display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; min-width: 44px; min-height: 44px; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; text-decoration: none; cursor: help; }
+.santa-voice-tooltip { position: absolute; z-index: 20; top: 100%; left: 0; width: max-content; max-width: min(100%, 300px); padding: 5px 8px; border: 0; border-radius: 2px; background: #214a39; color: #f6ecd8; font-family: 'Inter', sans-serif; font-size: .75rem; line-height: 1.4; overflow-wrap: anywhere; box-shadow: none; }
 .message-intro > p:not(.eyebrow) { font-size: .95rem; color: #d0dacd; max-width: 420px; line-height: 1.8; }
 .message-intro .santa-certificate-examples { margin-top: 24px; }
 .santa-message-box { background: #0c2a20; border: 1px solid #d4af3760; border-radius: 20px; padding: 36px; text-align: left; box-shadow: 0 18px 50px #061c1740; position: relative; }
 .message-card-top { display: flex; align-items: center; gap: 14px; padding-bottom: 22px; border-bottom: 1px solid #d4af3730; margin-bottom: 24px; }
 .message-seal { border: 1px solid var(--gold, #d4af37); color: var(--gold-light, #ead39a); font-family: 'Cinzel',serif; display: grid; place-items: center; border-radius: 50%; width: 48px; height: 48px; flex-shrink: 0; font-size: 1.4rem; }
-.message-postmark { color: #ead39a; font-size: .7rem; letter-spacing: .16em; text-transform: uppercase; margin: 0; }
-.message-card-top small { display: block; color: #b8c6b6; font-size: .75rem; margin-top: 5px; }
+.message-card-heading { min-width: 0; flex: 1; }
+.message-postmark { color: #ead39a; font-size: .7rem; letter-spacing: .16em; text-transform: uppercase; margin: 0; overflow-wrap: anywhere; }
 .santa-message-box h3 { font-size: 1.25rem; color: var(--gold-light, #ead39a); margin-bottom: 14px; line-height: 1.45; }
 .form-desc { font-size: .88rem; color: #d0dacd; line-height: 1.75; margin-bottom: 22px; }
 .message-name-label { display: block; color: #f6ecd8; font-size: .85rem; margin-bottom: 9px; }
@@ -33,8 +32,8 @@
 .message-retry:disabled { opacity: .7; cursor: default; }
 .message-name-input[aria-invalid="true"] { border-color: #eea49a; }
 .message-name-hint { display: block; color: #becdbc; font-size: .76rem; margin: 10px 0 18px; line-height: 1.6; }
-.message-name-count { color: #ead6a6; font-size: .85rem; font-weight: 600; }
-.message-name-status { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; margin: 10px 0 18px; }
+.message-name-count { color: #ead6a6; font-size: .75rem; font-weight: 600; }
+.message-name-status { display: flex; align-items: center; justify-content: flex-start; flex-wrap: wrap; gap: 8px 12px; margin: 5px 0 0; }
 .message-name-status > .message-name-count { margin: 0; }
 .message-recording-indicator { display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0; color: #f6ecd8; font-size: .75rem; line-height: 1.6; white-space: nowrap; }
 .message-recording-dot { width: 8px; height: 8px; flex-shrink: 0; border-radius: 50%; background: #f45a60; box-shadow: 0 0 7px #f45a6055; animation: message-recording-pulse 1.6s ease-in-out infinite; }
@@ -55,9 +54,6 @@
 .message-submit { width: 100%; min-height: 50px; justify-content: center; cursor: pointer; }
 .santa-message-box .btn-red { font-size: .82rem; }
 .service-notice { font-size: .75rem; color: #b8c6b6; padding-top: 18px; margin-bottom: 0; line-height: 1.7; }
-.workshop-coming-soon { color: #b8c6b6; font-size: .75rem; margin: 4px 0 0; line-height: 1.7; }
-.workshop-coming-soon button { min-height: 0; padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
-.workshop-coming-soon button:focus-visible { outline: 2px solid #e7c877; outline-offset: 3px; border-radius: 2px; }
 .message-validation, .message-audio-error { color: #ffc5b8; font-size: .85rem; line-height: 1.6; margin: 0 0 16px; }
 .message-result { margin-top: 26px; padding: 22px 0 0; border-top: 1px solid #d4af3740; }
 .message-result h4 { font-family: 'Cinzel', serif; color: #f6ecd8; font-size: 1.05rem; margin: 8px 0 12px; }

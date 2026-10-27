@@ -1,0 +1,35 @@
+import { useNavigate } from 'react-router-dom';
+import { WorkshopPasswordForm } from './WorkshopPasswordForm.jsx';
+import './SantaStudioPromotion.css';
+
+export default function SantaStudioPromotion() {
+  const navigate = useNavigate();
+
+  return (
+    <section className="santa-studio-promotion" aria-labelledby="santa-studio-title">
+      <div className="santa-studio-promotion__intro">
+        <div className="santa-studio-promotion__topline">
+          <span className="santa-studio-promotion__seal" aria-hidden="true">S</span>
+          <p className="santa-studio-promotion__eyebrow">A little more magic</p>
+        </div>
+        <h3 id="santa-studio-title">Santa’s Message Maker Studio</h3>
+        <p className="santa-studio-promotion__copy">
+          Santa can mention more than just their name. Choose their age, activities, achievements, country and festive treats.
+        </p>
+        <div className="santa-studio-promotion__preview">
+          <span className="santa-studio-promotion__preview-label">Coming soon</span>
+          <img
+            className="santa-studio-promotion__artwork"
+            src="/images/santa-studio-headphones.webp"
+            alt="Santa wearing headphones at a festive message-making microphone"
+          />
+        </div>
+      </div>
+
+      <WorkshopPasswordForm
+        variant="promotion"
+        onAuthorized={() => navigate('/santa-message-workshop')}
+      />
+    </section>
+  );
+}

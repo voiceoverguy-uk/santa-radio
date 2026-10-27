@@ -26,6 +26,12 @@ Keep the promotional certificate box aligned left with the introduction and size
 
 **How to apply:** Preserve enlargement and reduced-motion behaviour when refining the compact preview.
 
+When a visitor plays a sample greeting, show the certificate for that sample’s name and hold it for the duration of playback. Release it back to the normal rotation when playback finishes or is stopped.
+
+**Why:** The owner asked for the certificate to jump to the name about to play instead of continuing to show unrelated names during the recording.
+
+**How to apply:** Keep the pairing consistent on the homepage and dedicated message page. Matching the sample is an explicit visitor action, so it still applies with reduced motion; only automatic rotation remains suppressed.
+
 The background fade trial means retaining 80% of the existing treated snowy scene and blending 20% towards its existing deep dark teal, not towards white or by reducing the whole certificate's opacity.
 
 **Why:** The requested trial is intended to make the existing light gold wording and name stand out while keeping the foreground artwork untouched.

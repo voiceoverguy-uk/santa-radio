@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { certificateExamples as certificates } from "../lib/santaCertificateExamples.js";
+import { certificateExamples as certificates, allCertificateExamples } from "../lib/santaCertificateExamples.js";
 import "./SantaCertificateExamples.css";
 
 function prefersReducedMotion() {
@@ -7,7 +7,7 @@ function prefersReducedMotion() {
     && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-export default function SantaCertificateExamples() {
+export default function SantaCertificateExamples({ activeExampleName = null }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(prefersReducedMotion);
   const [hovered, setHovered] = useState(false);
@@ -18,15 +18,21 @@ export default function SantaCertificateExamples() {
   const closeButtonRef = useRef(null);
   const previewButtonRef = useRef(null);
 
-  const selectedCertificate = certificates[selectedIndex];
+  const activeCertificate = allCertificateExamples.find(item => item.name === activeExampleName);
+  const selectedCertificate = activeCertificate || certificates[selectedIndex];
 
   useEffect(() => {
-    if (reducedMotion || hovered || focused || enlarged) return undefined;
+    const index = certificates.findIndex(item => item.name === activeExampleName);
+    if (index >= 0) setSelectedIndex(index);
+  }, [activeExampleName]);
+
+  useEffect(() => {
+    if (activeExampleName || reducedMotion || hovered || focused || enlarged) return undefined;
     const timer = window.setInterval(() => {
       setSelectedIndex((index) => (index + 1) % certificates.length);
     }, 5000);
     return () => window.clearInterval(timer);
-  }, [reducedMotion, hovered, focused, enlarged]);
+  }, [activeExampleName, reducedMotion, hovered, focused, enlarged]);
 
   useEffect(() => {
     const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -73,7 +79,6 @@ export default function SantaCertificateExamples() {
       }}
     >
       <div className="santa-certificate-examples__heading">
-        <p className="santa-certificate-examples__eyebrow">From Santa’s North Pole studio</p>
         <h3 id="santa-certificate-examples-title">FREE Certificate examples</h3>
       </div>
 

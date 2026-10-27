@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
-import { certificateExamples } from '../src/lib/santaCertificateExamples.js';
+import { allCertificateExamples as certificateExamples } from '../src/lib/santaCertificateExamples.js';
 
 test('built Node SSR serves the exact generic master and font without loading certificate work into documents', async t => {
   const child = spawn(process.execPath, ['index.js', '--port=0'], { stdio: ['ignore', 'pipe', 'pipe'] });

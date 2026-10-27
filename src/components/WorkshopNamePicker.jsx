@@ -191,7 +191,10 @@ export default function WorkshopNamePicker({ selected, onSelect, invalid }) {
           maxLength={80}
           value={query}
           onChange={handleSearchChange}
-          onFocus={() => setIsOpen(true)}
+          onFocus={() => {
+            window.clearTimeout(blurTimer.current);
+            setIsOpen(true);
+          }}
           onBlur={() => {
             blurTimer.current = window.setTimeout(() => {
               setIsOpen(false);

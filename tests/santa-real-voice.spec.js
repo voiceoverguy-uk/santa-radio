@@ -14,11 +14,22 @@ for (const path of ['/', '/free-santa-message']) {
     await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
     const tagline = page.locator('.santa-voice-tagline');
     await expect(tagline.getByRole('heading')).toHaveText('Their name. Santa’s REAL VOICE.');
-    const trigger = tagline.getByRole('button', { name: 'REAL VOICE.', exact: true });
+    const trigger = tagline.getByRole('button', { name: 'About Santa’s real voice', exact: true });
     const tooltip = page.getByRole('tooltip');
     await expect(tooltip).toBeHidden();
+    await tagline.getByRole('heading').hover({ position: { x: 5, y: 5 } });
+    await expect(tooltip).toBeHidden();
+    await expect(tagline.getByRole('heading')).toHaveCSS('text-decoration-line', 'none');
+    await expect(trigger).toHaveCSS('text-decoration-line', 'none');
+    await expect(trigger.locator('svg')).toHaveAttribute('aria-hidden', 'true');
+    expect(await trigger.evaluate(node =>
+      node.parentElement.tagName === 'H3' && node.parentElement.lastElementChild === node)).toBe(true);
     await trigger.hover();
     await expect(tooltip).toHaveText('This is NOT another AI voice');
+    expect(await tooltip.evaluate(node => parseFloat(getComputedStyle(node).fontSize))).toBeLessThan(13);
+    expect(await tooltip.evaluate(node => parseFloat(getComputedStyle(node).paddingTop))).toBeLessThanOrEqual(6);
+    await expect(tooltip).toHaveCSS('box-shadow', 'none');
+    await expect(tooltip).toHaveCSS('border-top-width', '0px');
     await tooltip.hover();
     await expect(tooltip).toBeVisible();
     await page.mouse.move(0, 0);
@@ -45,7 +56,9 @@ for (const path of ['/', '/free-santa-message']) {
     expect(await tagline.evaluate(element => element.scrollWidth <= element.clientWidth + 1)).toBe(true);
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.addStyleTag({ content: 'html { font-size: 100%; }' });
-    await trigger.focus();
-    await tagline.screenshot({ path: `generated-artifacts/workshop/real-voice-${path === '/' ? 'home' : 'maker'}.png` });
+    await tagline.evaluate(node => node.scrollIntoView({ block: 'center', behavior: 'instant' }));
+    await trigger.hover();
+    await expect(tooltip).toBeVisible();
+    await page.screenshot({ path: `generated-artifacts/workshop/real-voice-${path === '/' ? 'home' : 'maker'}.png`, animations: 'disabled' });
   });
 }

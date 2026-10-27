@@ -1,11 +1,13 @@
 import { test, expect } from '@playwright/test';
 
-const introduction = 'A real recorded message from Santa, aka Father Christmas. Not an AI voice, and with your child’s name in it. Open the recording studio with your contact details, choose your chosen name from thousands, listen together and instantly download your free personalised message from Santa and Nice List Certificate.';
+const introduction = 'A real human recorded message from Santa, aka Father Christmas with childs name. Not an AI voice! Open the recording studio, add your contact details, choose name from thousands, listen and instantly download your short FREE personalised message from Santa and Nice List Certificate.';
 
 for (const width of [320, 390, 768, 1440]) {
   test(`recorded voice introduction is clear and contained at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto('/free-santa-message');
+    const heroDescription = page.locator('.fsm-desc');
+    await expect(heroDescription).toHaveText('Create a free message from Santa with your child’s name. Choose a name, ask Santa to record it, then enjoy your personalised Santa audio greeting to download and keep.');
     const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
     if (await decline.isVisible()) await decline.click();
     const intro = page.locator('.message-intro');
@@ -27,7 +29,7 @@ for (const width of [320, 390, 768, 1440]) {
         subSize: parseFloat(getComputedStyle(sub).fontSize),
         mainBottom: main.getBoundingClientRect().bottom,
         subTop: sub.getBoundingClientRect().top,
-        lines: sub.innerText,
+        lines: sub.innerText.trim(),
       };
     });
     expect(hierarchy.subSize).toBeLessThan(hierarchy.mainSize * .75);
@@ -37,7 +39,7 @@ for (const width of [320, 390, 768, 1440]) {
     await expect(example).toBeVisible();
     await expect(example).toBeEnabled();
     await expect(intro.locator('.santa-voice-tagline + .santa-message-example + p')).toHaveText(introduction);
-    for (const element of [heading, subheading, paragraph, example]) {
+    for (const element of [heroDescription, heading, subheading, paragraph, example]) {
       const bounds = await element.evaluate(node => {
         const rect = node.getBoundingClientRect();
         return { left: rect.left, right: rect.right, viewport: innerWidth,

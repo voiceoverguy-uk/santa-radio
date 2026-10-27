@@ -13,7 +13,7 @@ The owner chose to try an isolated design-first extended-message workshop before
 
 **Why:** The owner wants to review the page experience first without replacing or changing the existing free maker.
 
-**How to apply:** Keep the trial separate and unpromoted. Do not interpret approval of its design as approval to connect recordings, publish a full catalogue or change existing signup and message permissions.
+**How to apply:** Keep the trial separate from the existing free maker. The owner now wants it introduced publicly on the homepage with a voucher-code option while payment options are undecided. Do not interpret promotion or design approval as approval to connect full-message recordings or change the free maker’s signup and message permissions.
 
 The first workshop stage must use the actual FTP-hosted name list, not a fixed Arabella example.
 

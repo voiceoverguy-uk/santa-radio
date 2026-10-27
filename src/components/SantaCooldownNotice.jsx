@@ -15,18 +15,22 @@ export const SANTA_GIFT_COMPARISONS = [
   'a Habitat decorative glass bauble',
 ];
 
+// Keep the choice for this page visit, including client-side navigation.
+// Choose in the effect so server and initial client markup still agree.
+let pageGiftIndex;
+
 export default function SantaCooldownNotice() {
   const [giftIndex, setGiftIndex] = useState(0);
   useEffect(() => {
-    const timer = setInterval(() => setGiftIndex(index => (index + 1) % SANTA_GIFT_COMPARISONS.length), 8000);
-    return () => clearInterval(timer);
+    pageGiftIndex ??= Math.floor(Math.random() * SANTA_GIFT_COMPARISONS.length);
+    setGiftIndex(pageGiftIndex);
   }, []);
   return (
     <p className="message-recovery-copy">
-      <span role="status">You’ve created a Free Santa message. Please allow Santa 30 minutes to recover before he records more.</span>
-      {' '}Coming soon, you can personalise your message more for the price of{' '}
-      <span aria-live="off" data-testid="santa-gift-comparison">{SANTA_GIFT_COMPARISONS[giftIndex]}</span>.
-      {' '}Meanwhile, why not tell your friends and then enjoy Santa Radio Christmas music while you wait.
+      <span role="status">You’ve created a Free Santa message. Please allow Santa 30 mins to recover before he records more.</span>
+      {' '}Coming soon! You can personalise your message further for the price of (
+      <span aria-live="off" data-testid="santa-gift-comparison">{SANTA_GIFT_COMPARISONS[giftIndex]}</span>).
+      {' '}Meanwhile, why not tell friends and enjoy Santa Radio Christmas music while you wait.
     </p>
   );
 }

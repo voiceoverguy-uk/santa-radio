@@ -1,3 +1,4 @@
+import { hasWorkshopAccess } from './santa-workshop-access.js';
 import { createHash } from 'node:crypto';
 
 export const WORKSHOP_ROOT = 'https://stagcommunications.com/santaradio/names/personalised-message/';
@@ -141,7 +142,7 @@ export function createWorkshopCatalogue({ fetcher = fetch, clock = Date.now, ttl
 }
 
 export const workshopCatalogue = createWorkshopCatalogue();
-export function createWorkshopCatalogueHandler(load = workshopCatalogue) {
+export function createWorkshopCatalogueHandler(load = workshopCatalogue, authorize = hasWorkshopAccess) {
   return async (req, res) => {
     res.setHeader('Cache-Control', 'no-store');
     res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -154,6 +155,7 @@ export function createWorkshopCatalogueHandler(load = workshopCatalogue) {
       res.setHeader('Allow', 'GET');
       return send(405, { error: 'Use GET to load Santa’s workshop choices.' });
     }
+    if (!authorize(req)) return send(403, { error: 'Enter a valid tester code to open Santa’s Studio.', code: 'STUDIO_ACCESS_REQUIRED' });
     try { return send(200, await load()); }
     catch { return send(503, { error: 'Santa’s recorded choices could not be loaded. Please try again.' }); }
   };

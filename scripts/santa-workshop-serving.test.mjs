@@ -17,7 +17,9 @@ test('workshop is directly accessible but never canonical or in the sitemap', ()
 });
 
 function assertPreview(html) {
-  assert.match(html, /Santa’s Message Workshop/);
+  assert.match(html, /Santa’s Message Maker Studio/);
+  assert.match(html, /workshop-gate/);
+  assert.doesNotMatch(html, /smw-builder/);
   assert.match(html, /name="robots" content="noindex, follow"/);
   assert.doesNotMatch(html, /rel="canonical"/);
   assert.doesNotMatch(html, /Page not found/);

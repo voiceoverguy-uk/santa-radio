@@ -1,0 +1,269 @@
+.santa-studio-promotion {
+  --studio-ink: #19392d;
+  --studio-paper: #f2ead8;
+  --studio-paper-deep: #e9ddc2;
+  --studio-gold: #a27c32;
+  --studio-muted: #56675a;
+  position: relative;
+  overflow: hidden;
+  padding: clamp(19px, 2.4vw, 26px);
+  border: 1px solid #d4af3770;
+  border-radius: 16px;
+  background:
+    radial-gradient(ellipse at 100% 0%, #fff9e770, transparent 48%),
+    var(--studio-paper);
+  color: var(--studio-ink);
+  box-shadow: 0 10px 28px #061c1720;
+}
+
+.santa-studio-promotion__topline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  grid-area: topline;
+}
+
+.santa-studio-promotion__seal {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  place-items: center;
+  border: 1px solid var(--studio-gold);
+  border-radius: 50%;
+  color: #806023;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 1rem;
+}
+
+.santa-studio-promotion__eyebrow {
+  margin: 0;
+  color: #6d572b;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.santa-studio-promotion__intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 88px;
+  grid-template-areas:
+    "topline badge artwork"
+    "title title artwork"
+    "copy copy copy";
+  align-items: start;
+  column-gap: 16px;
+  row-gap: 6px;
+  min-width: 0;
+  margin-bottom: 14px;
+}
+
+.santa-studio-promotion__preview {
+  display: contents;
+}
+
+.santa-studio-promotion__preview-label {
+  grid-area: badge;
+  align-self: center;
+  justify-self: start;
+  flex: 0 1 auto;
+  padding: 5px 8px;
+  border: 1px solid #a27c3240;
+  border-radius: 999px;
+  color: #615332;
+  font-size: 0.68rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.santa-studio-promotion__artwork {
+  grid-area: artwork;
+  align-self: center;
+  display: block;
+  width: 88px;
+  height: 88px;
+  flex: 0 0 88px;
+  border: 2px solid #fff9e9;
+  border-radius: 11px;
+  object-fit: cover;
+  object-position: center 42%;
+  box-shadow: 0 2px 8px #19392d24;
+}
+
+.santa-studio-promotion h3 {
+  grid-area: title;
+  min-width: 0;
+  max-width: none;
+  margin: 0;
+  color: var(--studio-ink);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: clamp(1.12rem, 1.7vw, 1.42rem);
+  font-weight: 600;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.santa-studio-promotion__copy {
+  grid-area: copy;
+  max-width: 46ch;
+  min-width: 0;
+  margin: 0;
+  color: #334c3d;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+.santa-studio-promotion__voucher {
+  margin: 0 0 12px;
+  color: var(--studio-muted);
+  font-size: 0.76rem;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.santa-studio-promotion .workshop-password-form--promotion {
+  gap: 9px;
+  margin-top: 0;
+}
+
+.santa-studio-promotion .workshop-password-form--promotion label {
+  color: #334c3d;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.santa-studio-promotion .workshop-password-form--promotion input {
+  min-width: 0;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid #8e9a83;
+  border-radius: 6px;
+  background: #fff9e9;
+  color: var(--studio-ink);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.santa-studio-promotion .workshop-password-form--promotion input::placeholder {
+  color: #56675a;
+  opacity: 1;
+}
+
+.santa-studio-promotion .workshop-password-form--promotion input:focus-visible {
+  outline: 3px solid #765a20;
+  outline-offset: 3px;
+}
+
+.santa-studio-promotion .workshop-password-form--promotion button {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid #8e3227;
+  border-radius: 7px;
+  background: #9b392d;
+  color: #fff5df;
+  font-size: 0.84rem;
+  font-weight: 700;
+  line-height: 1.35;
+  transition: background-color 160ms ease, transform 160ms ease;
+}
+
+.santa-studio-promotion .workshop-password-form--promotion button:not(:disabled):hover {
+  background: #842c23;
+  transform: translateY(-1px);
+}
+
+.santa-studio-promotion .workshop-password-form--promotion button:focus-visible {
+  outline: 3px solid #765a20;
+  outline-offset: 4px;
+}
+
+.santa-studio-promotion .workshop-password-form--promotion button:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.santa-studio-promotion .workshop-password-form--promotion .workshop-password-error {
+  color: #842c23;
+}
+
+.santa-message-aside {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  align-content: start;
+  gap: 18px;
+}
+
+.santa-message-aside > .santa-message-box { min-width: 0; }
+
+@media (min-width: 768px) {
+  .message-layout > .santa-message-aside {
+    margin-top: 24px;
+  }
+}
+
+@media (max-width: 767px) {
+  .santa-studio-promotion {
+    padding: 20px;
+  }
+
+  .santa-studio-promotion__topline {
+    gap: 8px;
+  }
+
+  .santa-studio-promotion__intro {
+    grid-template-columns: minmax(0, 1fr) 82px;
+    grid-template-areas:
+      "topline artwork"
+      "badge artwork"
+      "title title"
+      "copy copy";
+    column-gap: 8px;
+    row-gap: 7px;
+  }
+
+  .santa-studio-promotion__artwork {
+    width: 82px;
+    height: 82px;
+    flex-basis: 82px;
+  }
+
+  .santa-studio-promotion h3 {
+    font-size: clamp(1.12rem, 5vw, 1.35rem);
+  }
+}
+
+@media (max-width: 360px) {
+  .santa-studio-promotion__topline {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 260px) {
+  .santa-studio-promotion__intro {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "topline"
+      "badge"
+      "artwork"
+      "title"
+      "copy";
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .santa-studio-promotion .workshop-password-form--promotion button {
+    transition: none;
+  }
+
+  .santa-studio-promotion .workshop-password-form--promotion button:not(:disabled):hover {
+    transform: none;
+  }
+}

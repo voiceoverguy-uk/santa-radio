@@ -7,11 +7,25 @@ Keep the workshop shared-password permission separate from adult Santa signup
 and staff authentication. Treat it as an understated preview entry, not a claim
 that shipped JavaScript or public recording inventories are confidential.
 
-**Why:** The owner explicitly scoped this as a lightweight preview gate and
-excluded individual accounts, public promotion and asset confidentiality.
+**Why:** The owner originally scoped this as a lightweight private preview gate,
+excluding individual accounts and asset confidentiality. They subsequently
+requested public homepage promotion and a voucher-code option while payments
+remain undecided.
 
-**How to apply:** Preserve the dedicated-maker-only entry and existing workshop
-behaviour. Do not turn success into signup permission or connect extended audio.
+**How to apply:** The dedicated-maker-only entry restriction is superseded by the
+request for homepage promotion. The owner initially chose optional voucher entry
+before creation, then explicitly changed the scope to **Coming soon, with Studio
+access limited to friends testing with a code for a couple of weeks**. This
+supersedes public exploration without a code. Keep the tester-code entry in the
+homepage Studio advert, separate from free-greeting signup. Do not connect
+extended audio or treat testing access as paid voucher redemption.
+
+Use five different tester codes, independently controllable rather than one shared code.
+
+**Why:** The owner said, “i will send out 5 different codes so we can control them.”
+
+**How to apply:** Keep each code separately revocable and keep actual values exclusively in Secrets, never this memory or source files.
+
 Use generated temporary server passwords in browser checks, never the owner's
 real shared password in fixtures, screenshots, logs or browser storage.
 

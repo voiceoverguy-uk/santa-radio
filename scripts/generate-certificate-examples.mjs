@@ -2,7 +2,7 @@
 import { existsSync } from 'node:fs';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
-import { certificateExamples } from '../src/lib/santaCertificateExamples.js';
+import { allCertificateExamples as certificateExamples } from '../src/lib/santaCertificateExamples.js';
 import { personaliseNiceListCertificate } from '../src/lib/niceListCertificate.js';
 
 const workdir = 'generated-artifacts/certificate-examples';

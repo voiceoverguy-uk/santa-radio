@@ -259,6 +259,7 @@ export default function SantaMessageWorkshop() {
           headers: { Accept: 'application/json' },
         });
         if (!response.ok) {
+          if (response.status === 403) window.dispatchEvent(new Event('santa-workshop-access-change'));
           throw new Error(`Santa’s hosted choice list could not be loaded (status ${response.status}).`);
         }
         let payload;
@@ -359,7 +360,7 @@ export default function SantaMessageWorkshop() {
     }}>
       <PageSeo metadata={pageMetadata({
         path: '/santa-message-workshop',
-        title: 'Santa’s Message Workshop Preview | Santa Radio',
+         title: 'Santa’s Message Maker Studio Preview | Santa Radio',
         description: 'Try a little design preview of a longer personalised Santa greeting. No audio is created or saved.',
         noindex: true,
       })} />
@@ -368,7 +369,7 @@ export default function SantaMessageWorkshop() {
         <header className="smw-intro">
           <div className="smw-title-wrap">
             <p className="smw-eyebrow"><span aria-hidden="true" /> A little North Pole daydream</p>
-            <h1>Santa’s Message<br className="smw-title-break" /> Workshop</h1>
+            <h1>Santa’s Message<br className="smw-title-break" /> Maker Studio</h1>
             <p className="smw-intro-copy">Try the little details that could make a longer Santa greeting feel wonderfully theirs.</p>
           </div>
           <aside className="smw-preview-note" aria-label="Design preview notice">
@@ -377,7 +378,7 @@ export default function SantaMessageWorkshop() {
             </span>
             <div>
               <strong>Design preview</strong>
-              <p>Choices come from Santa’s hosted file inventory and stay in your browser unless you choose to send a spelling suggestion. No signup and no audio created; audio creation is not connected yet.</p>
+              <p>You’re in the friends-only Studio test. Choose your details, then review them. Extended message recording and downloads aren’t connected yet. Your tester code is for preview access, not a paid voucher.</p>
             </div>
           </aside>
         </header>

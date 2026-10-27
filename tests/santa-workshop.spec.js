@@ -107,6 +107,11 @@ async function complete(page, keyboard = false) {
     if (keyboard) {
       // Each wheel is a single tab stop; Space chooses the centred item.
       await page.keyboard.press('Tab');
+      // Searchable categories have their filter field before the wheel.
+      if (await page.getByRole('searchbox').count()) {
+        await expect(page.getByRole('searchbox')).toBeFocused();
+        await page.keyboard.press('Tab');
+      }
       await expect(page.getByRole('listbox')).toBeFocused();
       await page.keyboard.press('Space');
       await expect(option).toHaveAttribute('aria-selected', 'true');
@@ -928,7 +933,7 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 320, height: 568 }
   });
 }
 
-test('desktop and phone review screenshots, explainer arrangement and no public promotion', async ({ page }) => {
+test('desktop and phone review screenshots, explainer arrangement and unchanged navigation', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1100 });
   await open(page);
   await photograph(page, 'generated-artifacts/workshop/desktop-clean.png');

@@ -4,8 +4,16 @@ export const certificateExampleNames = [
   'Arabella', 'Jessica', 'Charlie', 'Olivia', 'Oliver',
 ];
 
-export const certificateExamples = certificateExampleNames.map(name => ({
+const certificateForName = name => ({
   name,
   src: `/certificates/examples/${name.toLowerCase()}.webp`,
   alt: `Example Official Nice List Certificate for ${name}`,
-}));
+});
+
+export const certificateExamples = certificateExampleNames.map(certificateForName);
+
+// Mohani is available for matching audio without changing the normal rotation.
+export const allCertificateExamples = [
+  ...certificateExamples,
+  certificateForName('Mohani'),
+];

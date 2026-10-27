@@ -24,16 +24,6 @@
   margin-bottom: 10px;
 }
 
-.santa-certificate-examples__eyebrow {
-  margin: 0 0 5px;
-  color: var(--certificate-gold-light);
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.13em;
-  line-height: 1.4;
-  text-transform: uppercase;
-}
-
 .santa-certificate-examples h3 {
   margin: 0;
   color: var(--certificate-cream);

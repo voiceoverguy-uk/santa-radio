@@ -9,7 +9,7 @@ test('Vercel access entry exports the exact shared server handler', () => {
   assert.equal(vercelAccess, sharedAccess);
 });
 
-test('Vercel workshop document is locked, noindex and never public cached', async () => {
+test('Vercel Studio document is locked, noindex and never public cached', async () => {
   const headers = {};
   let status, body;
   const res = {
@@ -25,5 +25,6 @@ test('Vercel workshop document is locked, noindex and never public cached', asyn
   assert.match(body, /workshop-gate/);
   assert.match(body, /noindex/);
   assert.doesNotMatch(body, /smw-builder|What name should Santa say/);
+  assert.doesNotMatch(body, /Enter the workshop password/);
   assert.doesNotMatch(await readFile('dist/sitemap.xml', 'utf8'), /santa-message-workshop/);
 });

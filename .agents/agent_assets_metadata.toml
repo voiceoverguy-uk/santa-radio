@@ -546,3 +546,101 @@ mtime_ms = 1793072985841
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/e1e6843d-1d5b-445f-812b-7a32e54a4597/037ae9a0-cb3a-42a6-85a9-ec4a50edf01f"
 storage_version_token = "1793073013190844"
 content_type = "text/html"
+
+[[outputs]]
+id = "bTjHmWN7FSwkjWrnls9xu"
+uri = "file://generated-artifacts/recording-alignment/maker-1280-public-100.png"
+type = "image"
+title = "Recording beside the counter"
+description = "Corrected shared status row with a compact gap between the name count and Recording indicator."
+logical_id = "9e34c091-0d73-4e44-b4d2-bfa89261ca1e"
+content_hash = "sha256:57ab6fe5fbc3526c136fc3e6b823301acff373f655d52cfc6cb56b613002ab19"
+size = 4415
+mtime_ms = 1793098265492
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/9e34c091-0d73-4e44-b4d2-bfa89261ca1e/ec82525c-a097-46f9-b1b6-1f0bd1ae9ad7"
+storage_version_token = "1793098283719607"
+content_type = "image/png"
+
+[[outputs]]
+id = "cS-1wmB14Ruj_OJTXovdX"
+uri = "file://generated-artifacts/recording-alignment/home-320-unlocked-200.png"
+type = "image"
+title = "Phone layout with enlarged text"
+description = "At 320px and 200% text, the status wraps safely and keeps the red dot with Recording."
+logical_id = "7485d4a3-a5f1-47ee-a726-5d4a9189aba6"
+content_hash = "sha256:cc4a26823f262d55480d5c6cf13883167a06880105b391a01b786eac0f28b2f0"
+size = 9156
+mtime_ms = 1793098250476
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/7485d4a3-a5f1-47ee-a726-5d4a9189aba6/ef7472ff-d791-4732-ae6e-1111f5e5c997"
+storage_version_token = "1793098285339727"
+content_type = "image/png"
+
+[[outputs]]
+id = "gLC5bqQYy7_6YrOqJoCL0"
+uri = "file://generated-artifacts/studio-promotion/homepage-layout-clean.png"
+type = "image"
+title = "New homepage Studio advert"
+description = "The existing free greeting remains separate, with a compact Studio preview advert underneath the signup card."
+logical_id = "9d7884f7-0bb3-429c-90ea-06ab1df19966"
+content_hash = "sha256:3c0e9708cd0c90a8e7c909453f01eb6bbcef8e2d7ef06f83bc5d9c452b2b51a9"
+size = 393689
+mtime_ms = 1793100810934
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/9d7884f7-0bb3-429c-90ea-06ab1df19966/2bfa869b-3d80-460e-ae64-45b45d638ef0"
+storage_version_token = "1793100847815157"
+content_type = "image/png"
+
+[[outputs]]
+id = "9_dv_aEWTPr9EG9TNNXpe"
+uri = "file://generated-artifacts/studio-promotion/phone-offers-clean.png"
+type = "image"
+title = "Phone layout"
+description = "The free greeting and Studio promotion stack clearly on a phone."
+logical_id = "67d66371-464e-4702-9ec0-b6d12f22f86f"
+content_hash = "sha256:95816e593e628ec96d134913151e51adea521f84045bcaaf6535050cd039f251"
+size = 130834
+mtime_ms = 1793100811199
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/67d66371-464e-4702-9ec0-b6d12f22f86f/29e6b5a3-5a8f-401e-9f10-d100088f9773"
+storage_version_token = "1793100848567700"
+content_type = "image/png"
+
+[[outputs]]
+id = "QdJPc1-bK0dM1kGy32c6q"
+uri = "file://public/images/north-pole-hero.webp"
+type = "image"
+title = "Download the Santa Radio homepage background"
+description = "north-pole-hero.webp — 1024 × 1024 pixels. The snowy North Pole village and Northern Lights image used on the homepage."
+logical_id = "cc17d0f2-7bba-4a66-9524-aeb8e6599da4"
+content_hash = "sha256:6077c819379ea3c89e250a6504702447a4aa61c64abe4fef865d60ff0cb27f34"
+size = 131644
+mtime_ms = 1791298489249
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/cc17d0f2-7bba-4a66-9524-aeb8e6599da4/0ebb6286-6436-45d0-858c-06cbdf2affbc"
+storage_version_token = "1793109284658181"
+content_type = "image/webp"
+
+[[outputs]]
+id = "1nd8agv6xpu1gQ2pk_Uxz"
+uri = "file://generated-artifacts/north-pole-4k/north-pole-hero-3840x2160.webp"
+type = "image"
+title = "Download the 3840 × 2160 background — WebP"
+description = "Widescreen North Pole remake with snowy chalets and Northern Lights. Approximately 953 KB. Generated artwork cropped proportionally and upscaled to exact 4K dimensions; not native 4K generation."
+logical_id = "7db6e04c-4919-47a6-9f9b-79b07e911364"
+content_hash = "sha256:d45d7a60178817bec2e727edaeeec9a14b7bfd3d199f74cffcae9fd80c1b38c0"
+size = 975486
+mtime_ms = 1793109595460
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/7db6e04c-4919-47a6-9f9b-79b07e911364/79ef3c23-cd18-4336-88dd-21e79b802b64"
+storage_version_token = "1793109630655792"
+content_type = "image/webp"
+
+[[outputs]]
+id = "IhdLxAeSQdw4nOavn4Uf0"
+uri = "file://generated-artifacts/north-pole-4k/north-pole-hero-3840x2160.png"
+type = "image"
+title = "Download the 3840 × 2160 background — PNG"
+description = "PNG export of the same widescreen remake, approximately 8.2 MB. Exact 3840 × 2160 pixels; upscaled from generated artwork. The website background has not been replaced."
+logical_id = "cb0f669b-a5cb-4a70-af17-2c30ff629337"
+content_hash = "sha256:d9fbef864f090039cabd055fe65b0d2ccd4bcb15a0eecf06dbabec5b5b9a53d7"
+size = 8584690
+mtime_ms = 1793109593620
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/cb0f669b-a5cb-4a70-af17-2c30ff629337/166e73ea-46b2-4dcb-ad27-6b5d899d2de3"
+storage_version_token = "1793109632119414"
+content_type = "image/png"

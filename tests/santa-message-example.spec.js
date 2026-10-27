@@ -55,12 +55,18 @@ for (const [path, width] of [['/', 1280], ['/free-santa-message', 390]]) {
     expect(appearance.left).toBeGreaterThanOrEqual(0);
     expect(appearance.right).toBeLessThanOrEqual(width);
     expect(sampleRequests).toBe(0);
-    for (const variant of ['boy', 'girl', 'ayla', 'mohani', 'charlotte', 'boy']) {
+    for (const [variant, name] of [
+      ['boy', 'Harry'], ['girl', 'Arabella'], ['ayla', 'Ayla'],
+      ['mohani', 'Mohani'], ['charlotte', 'Charlotte'], ['boy', 'Harry'],
+    ]) {
       await start(page).focus();
       await page.keyboard.press('Enter');
       await expect(stop(page)).toBeVisible();
       await expect(sample(page)).toHaveAttribute('src', `/audio/examples/santa-message-${variant}.mp3`);
       await expect.poll(() => sample(page).evaluate(audio => audio.currentTime)).toBeGreaterThan(0);
+      const certificate = page.locator('.santa-certificate-examples__image');
+      await expect(certificate).toHaveAttribute('src', `/certificates/examples/${name.toLowerCase()}.webp`);
+      await expect(certificate).toHaveJSProperty('naturalWidth', 1800);
       await expect(sample(page)).not.toHaveAttribute('controls', /.*/);
       await expect(sample(page)).toHaveAttribute('controlslist', /nodownload/);
       await expect(sample(page)).toHaveJSProperty('disableRemotePlayback', true);

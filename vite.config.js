@@ -50,7 +50,7 @@ const metadataPlugin = {
     server.middlewares.use(workshopDocumentHeaders);
     server.middlewares.use('/api/santa-workshop-access', workshopAccess);
     // Vite's SPA preview fallback otherwise serves the pre-rendered homepage.
-    // Serve only the locked, noindex document; access is checked after hydration.
+    // Serve the standalone noindex Studio preview instead of the homepage.
     server.middlewares.use(async (req, res, next) => {
       if (!/^\/santa-message-workshop\/?$/.test(new URL(req.url, 'http://server').pathname)) return next();
       if (!['GET', 'HEAD'].includes(req.method)) {

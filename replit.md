@@ -103,6 +103,14 @@ The audio player targets the user-supplied `https://global.citrus3.com:8164/` en
 
 ## Notes
 
+### Studio tester access
+
+- The Studio uses server-only `SANTA_STUDIO_TEST_CODE_1` through `SANTA_STUDIO_TEST_CODE_5` Secrets, not the former `SANTA_WORKSHOP_PASSWORD`.
+- `SANTA_STUDIO_TEST_EXPIRES_AT` is a required ISO expiry setting; the test closes at `2026-11-30T23:59:59Z` (end of 30 November 2026, UK time).
+- Replace or remove a numbered Secret to revoke that code's sessions without revoking the others. The running server must receive the updated environment before a change takes effect.
+- Access uses a short-lived HttpOnly cookie, server-side checks and the existing persistent attempt limiter. Keep codes out of URLs, browser storage, logs and source.
+- Browser checks use generated isolated codes via `playwright.workshop.config.js`; never use the owner's real codes in tests.
+
 - Soundboard plays user-supplied MP3 files from `public/audio/soundboard/`. Only one clip plays at a time; playback stops on navigation. No text-to-speech fallback.
 - Celebrity mugshot photos are served locally from `/mugshot-images/`; fallback initials shown on error
 - Santa Message service has no backend. The UI explicitly discloses unavailable requests/downloads and never claims a successful submission; email contact remains available.

@@ -13,3 +13,9 @@ Text range height and scrollHeight can exceed a heading's line box without clipp
 **Why:** Cinzel's font metrics produced vertical overflow in enlarged headings even when the text rendered fully. Treating that alone as clipping caused false failures.
 
 **How to apply:** For horizontal reflow checks, measure horizontal line bounds and container widths. For vertical clipping, check clipping ancestors rather than assuming every line-box overhang is hidden.
+
+Find the element responsible for a page-wide enlarged-text overflow before attributing it to the component being changed.
+
+**Why:** A new promotion fit its own bounds, while an unrelated existing page heading caused the full document to overflow at 200% text. Nested grid minimum sizing also needed a separate local check.
+
+**How to apply:** Check the changed content and its layout parent, not only each child's scrollWidth. Keep ordinary page-width checks; label any deliberately scoped enlarged-text check rather than claiming the entire page passes.

@@ -4,11 +4,11 @@ import './SantaMessageExample.css';
 
 const ROTATION_KEY = 'santa-radio-example-last';
 const EXAMPLES = [
-  { key: 'boy', src: '/audio/examples/santa-message-boy.mp3' },
-  { key: 'girl', src: '/audio/examples/santa-message-girl.mp3' },
-  { key: 'ayla', src: '/audio/examples/santa-message-ayla.mp3' },
-  { key: 'mohani', src: '/audio/examples/santa-message-mohani.mp3' },
-  { key: 'charlotte', src: '/audio/examples/santa-message-charlotte.mp3' },
+  { key: 'boy', name: 'Harry', src: '/audio/examples/santa-message-boy.mp3' },
+  { key: 'girl', name: 'Arabella', src: '/audio/examples/santa-message-girl.mp3' },
+  { key: 'ayla', name: 'Ayla', src: '/audio/examples/santa-message-ayla.mp3' },
+  { key: 'mohani', name: 'Mohani', src: '/audio/examples/santa-message-mohani.mp3' },
+  { key: 'charlotte', name: 'Charlotte', src: '/audio/examples/santa-message-charlotte.mp3' },
 ];
 
 let lastSuccessfulExample = null;
@@ -32,7 +32,7 @@ function rememberSuccessfulExample(key) {
   }
 }
 
-export default function SantaMessageExample() {
+export default function SantaMessageExample({ onExampleNameChange } = {}) {
   const radio = useRadio();
   const audioRef = useRef(null);
   const sessionRef = useRef(null);
@@ -44,6 +44,7 @@ export default function SantaMessageExample() {
     const session = sessionRef.current;
     if (!session) return;
     sessionRef.current = null;
+    onExampleNameChange?.(null);
     session.audio.pause();
     try { session.audio.currentTime = 0; } catch {
       // The media may not have loaded metadata yet.
@@ -58,7 +59,7 @@ export default function SantaMessageExample() {
     } else {
       session.resumeRadio = null;
     }
-  }, []);
+  }, [onExampleNameChange]);
   stopRef.current = stopPlayback;
 
   const markStarted = session => {
@@ -71,6 +72,7 @@ export default function SantaMessageExample() {
   const finishPlayback = (session, { failed = false, resumeRadio = true } = {}) => {
     if (sessionRef.current !== session) return;
     sessionRef.current = null;
+    onExampleNameChange?.(null);
     session.audio.pause();
     try { session.audio.currentTime = 0; } catch {
       // The media may not have loaded metadata yet.
@@ -134,6 +136,7 @@ export default function SantaMessageExample() {
       started: false,
     };
     sessionRef.current = session;
+    onExampleNameChange?.(example.name);
     setState('loading');
     audio.src = example.src;
     audio.load();

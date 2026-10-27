@@ -99,3 +99,9 @@ When expanding the example-message rotation, preserve the first example for fres
 **Why:** The owner asked to add three more recordings to the rotation, not to autoplay audio. An earlier two-item rotation used the previous final example as its starting cursor; extending the list exposed a different first sample until the fresh-start rule was made explicit.
 
 **How to apply:** Check fresh visitors, returning tabs with older saved rotation values, failed playback and cross-page navigation whenever the example list changes.
+
+Keep the real-voice tagline un-underlined, with a small information button at the end to trigger its explanation.
+
+**Why:** The owner asked to replace the underlined text trigger with an “(i)” button.
+
+**How to apply:** Preserve the tooltip wording and keyboard/touch access, but do not make hovering over the whole tagline open it.

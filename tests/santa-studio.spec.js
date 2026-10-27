@@ -72,6 +72,8 @@ for (const width of [320, 390, 1280]) {
       await page.clock.install();
       await visit(page, path);
       const examples = page.locator('.santa-certificate-examples');
+      await expect(examples).not.toContainText('From Santa’s North Pole studio');
+      await expect(examples.getByRole('heading', { name: 'FREE Certificate examples', exact: true })).toBeVisible();
       await examples.evaluate(node => node.scrollIntoView({ block: 'center', behavior: 'instant' }));
       await expect(examples.getByRole('button', { name: /^(Edward|Ayla|Pause rotation|Resume rotation)$/ })).toHaveCount(0);
       await expect(examples).not.toContainText('Showing');

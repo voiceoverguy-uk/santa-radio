@@ -9,7 +9,7 @@ Start each message-maker counter 50 below the actual inventory total and increas
 
 **How to apply:** Apply this presentation consistently wherever the message maker appears. Leave the real inventory, name search and recording availability unchanged; do not invent a total when the inventory request fails.
 
-Show a blinking red dot and “Recording” beside the names-available count.
+Show a blinking red dot and “Recording” immediately beside the names-available count with a compact gap, not at the card’s far-right edge. Allow wrapping while keeping the dot with its label.
 
 **Why:** The owner reminded us this studio indicator was intended beside the counter, supplying the names-count screenshot.
 

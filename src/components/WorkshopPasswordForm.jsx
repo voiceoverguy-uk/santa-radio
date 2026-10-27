@@ -6,12 +6,13 @@ const ACCESS_URL = '/api/santa-workshop-access';
 const WORKSHOP_PATH = '/santa-message-workshop';
 const REQUEST_TIMEOUT = 15000;
 
-export function WorkshopPasswordForm({ onAuthorized, compact = false, active = true, requestControlRef }) {
+export function WorkshopPasswordForm({ onAuthorized, compact = false, active = true, requestControlRef, variant = 'gate' }) {
   const inputId = useId();
-  const [password, setPassword] = useState('');
+  const [code, setCode] = useState('');
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
   const requestRef = useRef(null);
+  const inputRef = useRef(null);
 
   useEffect(() => () => requestRef.current?.abort(), []);
   useEffect(() => {
@@ -19,13 +20,19 @@ export function WorkshopPasswordForm({ onAuthorized, compact = false, active = t
     requestRef.current?.abort();
     requestRef.current = null;
     setPending(false);
-    setPassword('');
+    setCode('');
     setError('');
   }, [active]);
 
   const submit = async event => {
     event.preventDefault();
-    if (requestRef.current || pending || !password) return;
+    if (requestRef.current || pending) return;
+    const submittedCode = code.trim();
+    if (!submittedCode) {
+      setError('Enter your tester code to continue.');
+      inputRef.current?.focus();
+      return;
+    }
     const controller = new AbortController();
     requestRef.current = controller;
     if (requestControlRef) requestControlRef.current = controller;
@@ -42,16 +49,32 @@ export function WorkshopPasswordForm({ onAuthorized, compact = false, active = t
         credentials: 'same-origin',
         cache: 'no-store',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ code: submittedCode }),
         signal: controller.signal,
       });
       const data = await response.json().catch(() => ({}));
-      if (controller.signal.aborted) return;
-      if (!response.ok || data.authorized !== true) {
-        throw new Error(data.error || 'That password was not accepted. Please try again.');
+      if (controller.signal.aborted) {
+        if (timedOut) throw new DOMException('Access request timed out.', 'AbortError');
+        return;
       }
-      setPassword('');
-      onAuthorized();
+      if (!response.ok) {
+        const messages = {
+          400: 'Enter a valid tester code and try again.',
+          401: 'That tester code was not recognised. Please check it and try again.',
+          403: 'That tester code cannot be used for this friends test.',
+          410: 'This friends test has ended. Access is no longer available.',
+          429: 'Too many attempts. Please wait a little before trying again.',
+          503: 'The access service is temporarily unavailable. Please try again.',
+        };
+        throw new Error(messages[response.status] || 'Access could not be confirmed. Please try again.');
+      }
+      if (data.authorized !== true || !Number.isFinite(data.expiresAt)
+        || data.expiresAt <= Date.now()) {
+        throw new Error('The access service returned an unexpected reply. Please try again.');
+      }
+      setCode('');
+      window.dispatchEvent(new CustomEvent('santa-workshop-access-change'));
+      onAuthorized?.({ expiresAt: data.expiresAt });
     } catch (requestError) {
       if (requestRef.current !== controller || requestError.name === 'AbortError') {
         if (timedOut && requestRef.current === controller) {
@@ -70,23 +93,32 @@ export function WorkshopPasswordForm({ onAuthorized, compact = false, active = t
     }
   };
 
-  return <form className={`workshop-password-form${compact ? ' workshop-password-form--compact' : ''}`} onSubmit={submit}>
-    <label htmlFor={inputId}>Workshop password</label>
+  return <form
+    className={`workshop-password-form${compact ? ' workshop-password-form--compact' : ''}${variant === 'promotion' ? ' workshop-password-form--promotion' : ''}`}
+    onSubmit={submit}
+    noValidate
+  >
+    <label htmlFor={inputId}>{variant === 'promotion' ? 'Voucher code' : 'Tester code (required)'}</label>
     <input
+      ref={inputRef}
       id={inputId}
       type="password"
-      value={password}
-      onChange={event => { setPassword(event.target.value); setError(''); }}
-      autoComplete="current-password"
+      value={code}
+      placeholder="Enter your Voucher code to continue."
+      onChange={event => { setCode(event.target.value.slice(0, 80)); setError(''); }}
+      autoComplete="off"
+      autoCapitalize="off"
+      spellCheck={false}
+      maxLength={80}
       required
-      maxLength={1024}
+      aria-required="true"
       disabled={pending}
       aria-invalid={!!error}
       aria-describedby={error ? `${inputId}-error` : undefined}
     />
     {error && <p className="workshop-password-error" id={`${inputId}-error`} role="alert">{error}</p>}
-    <button type="submit" disabled={pending || !password}>
-      {pending ? 'Checking…' : 'Enter workshop'}
+    <button type="submit" disabled={pending}>
+      {pending ? 'Checking code…' : 'Create your bespoke message'}
     </button>
   </form>;
 }
@@ -174,7 +206,7 @@ export default function WorkshopPasswordDialog({ open, onClose }) {
       <button type="button" className="workshop-dialog-close" aria-label="Close workshop access" onClick={close}>×</button>
     </div>
     <h2 id="workshop-password-title">Santa’s message workshop</h2>
-    <p id="workshop-password-description">Enter the workshop password to continue.</p>
+    <p id="workshop-password-description">Enter your tester code to join the friends test.</p>
     <WorkshopPasswordForm active={open} onAuthorized={authorized} requestControlRef={requestControlRef} />
   </dialog>;
 }

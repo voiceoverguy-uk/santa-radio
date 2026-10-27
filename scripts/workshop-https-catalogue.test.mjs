@@ -146,7 +146,7 @@ test('HTML, bad JSON/UTF8, oversized and failed remote inventories fail explicit
 
 test('catalogue endpoint is read-only, ignores recipient queries and has safe failure/noindex headers', async () => {
   let calls = 0;
-  const handler = createWorkshopCatalogueHandler(async () => { calls++; return parseWorkshopCatalogue(inventory()); });
+  const handler = createWorkshopCatalogueHandler(async () => { calls++; return parseWorkshopCatalogue(inventory()); }, () => true);
   const run = async (method = 'GET', fn = handler) => {
     const result = { headers: {} };
     await fn({ method, url: '/?name=MustNotBeForwarded&age=5' }, {
@@ -160,10 +160,14 @@ test('catalogue endpoint is read-only, ignores recipient queries and has safe fa
   assert.equal(calls, 1);
   assert.equal((await run('POST')).status, 405);
   assert.equal(calls, 1);
-  const failure = await run('GET', createWorkshopCatalogueHandler(async () => { throw Error('private path /secret'); }));
+  const failure = await run('GET', createWorkshopCatalogueHandler(async () => { throw Error('private path /secret'); }, () => true));
   assert.equal(failure.status, 503);
   assert.equal(failure.headers['cache-control'], 'no-store');
   assert.equal(failure.headers['x-robots-tag'], 'noindex, nofollow');
   assert.doesNotMatch(JSON.stringify(failure.data), /secret/);
   assert.ok(!failure.data.categories);
+  const locked = await run('GET', createWorkshopCatalogueHandler(async () => { calls++; return {}; }, () => false));
+  assert.equal(locked.status, 403);
+  assert.equal(calls, 1);
+  assert.equal(locked.data.code, 'STUDIO_ACCESS_REQUIRED');
 });

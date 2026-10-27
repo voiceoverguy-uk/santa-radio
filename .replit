@@ -49,6 +49,7 @@ externalPort = 80
 [[ports]]
 localPort = 5001
 externalPort = 3000
+exposeLocalhost = true
 
 [[ports]]
 localPort = 5012
@@ -74,3 +75,4 @@ timeoutMs = 60000
 
 [userenv.shared]
 SANTA_REQUEST_ADMIN_EMAILS = "admin@santaradio.co.uk"
+SANTA_STUDIO_TEST_EXPIRES_AT = "2026-11-30T23:59:59Z"
