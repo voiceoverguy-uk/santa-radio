@@ -24,6 +24,7 @@ test('song and karaoke videos grant fullscreen only after media consent and unlo
     await expect(video).toHaveAttribute('allow',
       'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen');
     expect(new URL(await video.getAttribute('src')).searchParams.has('autoplay')).toBe(false);
+    expect(new URL(await video.getAttribute('src')).searchParams.has('fs')).toBe(false);
     expect(await video.evaluate(frame => frame.featurePolicy.allowsFeature('fullscreen'))).toBe(true);
     await page.locator('footer').getByRole('button', { name: 'Cookie settings', exact: true }).click();
     await page.locator('.marketing-consent').getByRole('button', {
@@ -85,11 +86,12 @@ test('automatic webcam attempts muted inline autoplay and pause/resume leaves ra
   const url = new URL(await video.getAttribute('src'));
   expect(url.origin).toBe('https://www.youtube.com');
   expect(url.pathname).toBe('/embed/mMrHniQJNCM');
-  for (const [name, value] of Object.entries({ si: 'O7nNcINykyWwgyXC', autoplay: '1', mute: '1', controls: '0', disablekb: '1', playsinline: '1' })) {
+  for (const [name, value] of Object.entries({ si: 'O7nNcINykyWwgyXC', autoplay: '1', mute: '1', controls: '0', disablekb: '1', playsinline: '1', fs: '0' })) {
     expect(url.searchParams.get(name)).toBe(value);
   }
   await expect(video).toHaveAttribute('allow', 'autoplay; encrypted-media');
   await expect(video).not.toHaveAttribute('allowfullscreen');
+  expect(await video.evaluate(frame => frame.featurePolicy.allowsFeature('fullscreen'))).toBe(false);
   await expect(video).toHaveAttribute('inert', '');
   await expect(video).toHaveAttribute('tabindex', '-1');
   await expect(video).toHaveCSS('pointer-events', 'none');
@@ -98,6 +100,16 @@ test('automatic webcam attempts muted inline autoplay and pause/resume leaves ra
   await expect(page.locator('.tv-screen')).toContainText('Live video paused');
   await page.getByRole('button', { name: 'Resume muted video' }).click();
   await expect(video).toHaveAttribute('src', url.href);
+  await expect(video).toHaveAttribute('allow', 'autoplay; encrypted-media');
+  await expect(video).not.toHaveAttribute('allowfullscreen');
+  const directLink = page.locator('.youtube-section').getByRole('link', { name: 'Watch directly on YouTube', exact: true });
+  await expect(directLink).toHaveAttribute('href', 'https://www.youtube.com/watch?v=mMrHniQJNCM');
+  await page.locator('footer').getByRole('button', { name: 'Cookie settings', exact: true }).click();
+  await page.locator('.marketing-consent').getByRole('button', {
+    name: 'Decline optional cookies', exact: true,
+  }).click();
+  await expect(video).toHaveCount(0);
+  await expect(directLink).toBeVisible();
   expect(await page.evaluate(() => window.originalRadioAudio === document.querySelector('audio'))).toBe(true);
   expect(await page.evaluate(() => window.radioCalls)).toEqual({ play: 1, pause: 0 });
   await expect(page.locator('.radio-dock').getByRole('button', { name: 'Pause Radio', exact: true })).toBeVisible();
