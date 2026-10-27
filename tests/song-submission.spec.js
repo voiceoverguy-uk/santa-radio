@@ -181,7 +181,9 @@ test('general enquiry accepts without criteria using the exact provider fields a
   expect(payload).not.toHaveProperty('COMPANY:name');
   await expect(page.locator('.song-form-success')).toBeFocused();
   await expect(page.locator('main')).not.toContainText('airplay');
-  await expect(page.locator('.song-form-success')).toContainText('does not confirm delivery to our inbox');
+  await expect(page.locator('.song-form-success')).toContainText("Santa can't answer every message but rest assured it will be read by Head Elf at the very least.");
+  await expect(page.locator('.song-form-success')).not.toContainText('Provider acceptance');
+  await expect(page.getByRole('link', { name: 'Return to Santa Radio', exact: true })).toHaveAttribute('href', 'https://www.santaradio.co.uk/');
   expect(await page.evaluate(key => sessionStorage.getItem(key), MESSAGE_ACCESS_KEY)).toBeNull();
 });
 

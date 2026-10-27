@@ -188,9 +188,10 @@ export default function SubmitASong() {
               <h2>{isSong ? 'Thank you for your song submission' : 'Thank you for your enquiry'}</h2>
               <p>{isSong
                 ? 'Brevo has accepted your submission for Santa Radio to consider. This is not a promise of airplay or a reply.'
-                : 'Brevo has accepted your enquiry for Santa Radio to handle. This does not guarantee an individual reply.'}</p>
-              <p>Provider acceptance does not confirm delivery to our inbox.</p>
-              <Link to={isSong ? '/christmas-music' : '/'}>{isSong ? 'Explore Christmas music' : 'Return to Santa Radio'}</Link>
+                : "Santa can't answer every message but rest assured it will be read by Head Elf at the very least."}</p>
+              {isSong && <p>Provider acceptance does not confirm delivery to our inbox.</p>}
+              {isSong ? <Link to="/christmas-music">Explore Christmas music</Link>
+                : <a href="https://www.santaradio.co.uk/">Return to Santa Radio</a>}
             </div> : <form className="song-submission-form" ref={formRef} onSubmit={onSubmit} noValidate aria-busy={pending}>
               <p className="song-guidance">Fields marked * are required.</p>
               <div className="song-form-grid">
