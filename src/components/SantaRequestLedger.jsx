@@ -170,7 +170,24 @@ export default function SantaRequestLedger({ email, onSignOut }) {
           <caption className="sr-only">{result.total} entries in the {status} list</caption>
           <thead><tr><th scope="col">First name</th><th scope="col">Requests</th><th scope="col">First requested</th>
             <th scope="col">Most recent</th><th scope="col">{status === 'completed' ? 'Recorded on' : 'Action'}</th></tr></thead>
-          <tbody>{result.requests.map(item => <tr key={item.id}><td>{item.name}</td>
+          <tbody>{result.requests.map(item => <tr key={item.id}><td>
+            <div>{item.name}</div>
+            {Array.isArray(item.recordingSuggestions) && item.recordingSuggestions.length > 0 && (
+              <ul className="staff-recording-suggestions">
+                {item.recordingSuggestions.map((suggestion, index) => {
+                  const file = typeof suggestion?.file === 'string' ? suggestion.file : '';
+                  const count = Number.isSafeInteger(suggestion?.count) && suggestion.count >= 0
+                    ? suggestion.count.toLocaleString('en-GB')
+                    : 'Count unavailable';
+                  return <li key={String(suggestion?.id ?? `${file}-${index}`)}>
+                    <div><strong>Recording used:</strong> {typeof suggestion?.name === 'string' ? suggestion.name : 'Name unavailable'}</div>
+                    <div><strong>Recording file:</strong> <code>{file || 'File unavailable'}</code></div>
+                    <div><strong>Suggestions:</strong> {count}</div>
+                  </li>;
+                })}
+              </ul>
+            )}
+          </td>
             <td className="staff-count">{item.count.toLocaleString('en-GB')}</td>
             <td>{formatDate(item.firstRequestedAt)}</td><td>{formatDate(item.lastRequestedAt)}</td>
             <td>{status === 'completed' ? formatDate(item.recordedAt) : <button className="staff-button" type="button"

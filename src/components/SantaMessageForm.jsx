@@ -10,6 +10,8 @@ import useSantaNames from './useSantaNames.js';
 import useSantaNameCounter from './useSantaNameCounter.js';
 import NiceListCertificateDownload from './NiceListCertificateDownload.jsx';
 import SantaCertificateExamples from './SantaCertificateExamples.jsx';
+import SantaCooldownNotice from './SantaCooldownNotice.jsx';
+import SantaVoiceTagline from './SantaVoiceTagline.jsx';
 import { santaNameKey } from '../lib/santaNameSearch.js';
 import { randomSantaExample, santaNamePlaceholder } from '../lib/santaNamePlaceholder.js';
 import { normaliseRequestedName } from '../lib/santaNameRequests.js';
@@ -239,25 +241,31 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
       <div className="message-intro">
         <p className="eyebrow">A little North Pole experiment</p>
         <h2 className="santa-message-heading">FREE Personalised message from Santa</h2>
-        <h3 className="santa-message-subheading">Their name. Santa’s voice.</h3>
+        <SantaVoiceTagline />
         <SantaMessageExample />
-        <p>A real recorded greeting from Santa, not an AI voice, with your child’s name in it. Open the recording studio with your contact details, then choose a recorded name, listen together and instantly download your free MP3 and Nice List Certificate.</p>
+        <p>A real recorded message from Santa, aka Father Christmas. Not an AI voice, and with your child’s name in it. Open the recording studio with your contact details, choose your chosen name from thousands, listen together and instantly download your free personalised message from Santa and Nice List Certificate.</p>
         <SantaCertificateExamples />
       </div>
       <div className={`santa-message-box${hasAccess ? '' : ' message-access-box'}`}>
         <div className="message-card-top"><span className="message-seal" aria-hidden="true">S</span><div><p className="message-postmark">The North Pole Recording Studio</p><small>A recorded hello, ready to keep</small></div></div>
-        <p className="message-name-hint message-name-count" role="status" aria-live="off">
-          {displayedNameCount !== null
-            ? `${displayedNameCount.toLocaleString('en-GB')} ${displayedNameCount === 1 ? 'name' : 'names'} available`
-            : nameSearch.loading ? 'Checking how many names are available…' : 'Name total temporarily unavailable.'}
-        </p>
+        <div className="message-name-status">
+          <p className="message-name-hint message-name-count" role="status" aria-live="off">
+            {displayedNameCount !== null
+              ? `${displayedNameCount.toLocaleString('en-GB')} ${displayedNameCount === 1 ? 'name' : 'names'} available`
+              : nameSearch.loading ? 'Checking how many names are available…' : 'Name total temporarily unavailable.'}
+          </p>
+          {nameSearch.hostedCount > 0 && <span className="message-recording-indicator" title="North Pole recording studio">
+            <span className="message-recording-dot" aria-hidden="true" />
+            Recording
+          </span>}
+        </div>
         {nameSearch.hostedCount === null && !nameSearch.loading && !hasAccess &&
           <button className="message-retry" type="button" onClick={nameSearch.refresh}>Retry name total</button>}
         {!hasAccess ? <SantaMessageAccessForm /> : <>
         <h3 ref={makerHeadingRef} tabIndex={-1}>Download your free Santa greeting</h3>
         <p className="form-desc">Hey {greetingName || 'there'}, Search for the name and press Create message.</p>
         {coolingDown ? <div className="message-wait">
-          <p role="status">You’ve created 2 Free Santa messages for now. Please allow Santa 10 minutes to recover before he records more. Meanwhile why not enjoy Santa Radio Christmas music while you wait or tell your friends?</p>
+          <SantaCooldownNotice />
           <p className="message-countdown">More messages in <span role="timer" aria-live="off">{countdown}</span></p>
           <h4 className="message-wait-downloads-title">Still time to save your greetings</h4>
           {!messages.length && <p>This tab no longer holds those recordings. Previously saved audio and certificates remain on your device. New recordings will be available when the wait ends.</p>}

@@ -1,0 +1,117 @@
+.smw-spelling-suggestion {
+  min-width: 0;
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid #d4af3750;
+  border-radius: 10px;
+  background: #fff8e707;
+}
+
+.smw-spelling-suggestion-heading {
+  margin: 0;
+  color: var(--smw-gold-light, #e6ce86);
+  font-size: .92rem;
+  line-height: 1.45;
+}
+
+.smw-spelling-suggestion-disclosure {
+  margin: 7px 0 0;
+  color: #c4d0c3;
+  font-size: .8rem;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.smw-spelling-suggestion-pair {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+  gap: 4px 10px;
+  min-width: 0;
+  margin: 10px 0 0;
+  padding: 10px 0;
+  border-block: 1px solid #d4af3728;
+  font-size: .8rem;
+  line-height: 1.45;
+}
+
+.smw-spelling-suggestion-pair span {
+  color: #aebdaf;
+}
+
+.smw-spelling-suggestion-pair strong {
+  min-width: 0;
+  color: var(--smw-cream, #fff8e7);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.smw-spelling-suggestion-button {
+  display: inline-flex;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 56px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 11px;
+  padding: 11px 15px;
+  border: 1px solid #d4af378a;
+  border-radius: 9px;
+  background: #d4af3715;
+  color: var(--smw-gold-light, #e6ce86);
+  font: inherit;
+  font-size: .86rem;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .16s ease, background-color .16s ease, transform .16s ease, opacity .16s ease;
+}
+
+.smw-spelling-suggestion-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: var(--smw-gold, #d4af37);
+  background: #d4af3722;
+}
+
+.smw-spelling-suggestion-button:focus-visible {
+  outline: 2px solid var(--smw-gold-light, #e6ce86);
+  outline-offset: 3px;
+}
+
+.smw-spelling-suggestion-button:disabled {
+  cursor: default;
+  opacity: .72;
+}
+
+.smw-spelling-suggestion-status {
+  margin: 9px 0 0;
+  color: var(--smw-gold-light, #e6ce86);
+  font-size: .8rem;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.smw-spelling-suggestion-status.is-error {
+  color: #ffc5b8;
+}
+
+@media (max-width: 420px) {
+  .smw-spelling-suggestion {
+    padding: 12px;
+  }
+
+  .smw-spelling-suggestion-pair {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
+  }
+
+  .smw-spelling-suggestion-pair strong {
+    margin-bottom: 5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .smw-spelling-suggestion-button {
+    transition: none;
+  }
+}

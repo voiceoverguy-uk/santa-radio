@@ -19,3 +19,11 @@ CREATE TABLE IF NOT EXISTS santa_name_request_history (
   first_requested_at timestamptz NOT NULL, last_requested_at timestamptz NOT NULL,
   recorded_at timestamptz NOT NULL
 );
+CREATE TABLE IF NOT EXISTS santa_name_recording_suggestions (
+  request_key text NOT NULL REFERENCES santa_name_requests(request_key),
+  recording_id text NOT NULL, recorded_name text NOT NULL, recording_file text NOT NULL,
+  request_count integer NOT NULL DEFAULT 1 CHECK (request_count > 0),
+  PRIMARY KEY (request_key, recording_id)
+);
+ALTER TABLE santa_name_request_history
+  ADD COLUMN IF NOT EXISTS recording_suggestions jsonb NOT NULL DEFAULT '[]'::jsonb;

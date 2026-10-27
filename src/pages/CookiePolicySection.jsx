@@ -27,7 +27,7 @@ export default function CookiePolicySection() {
         If session storage is unavailable, access lasts while you browse in the tab but refreshing may ask you
         to submit again.</p>
       <p>To manage the free-message allowance, local storage remembers only how many messages you have created and
-        when the 10-minute wait ends. This works across visits and tabs in the same browser until cleared; it
+        when the 30-minute wait ends after your one free message. This works across visits and tabs in the same browser until cleared; it
         does not track your identity or IP address. Browsers without tab-lock support also use a temporary,
         randomly identified request lock in IndexedDB, valid for up to three minutes, to prevent simultaneous
         message requests. If local storage is unavailable, the allowance is remembered only while the page stays open.</p>

@@ -2,8 +2,8 @@ import { withMessageCreationLock } from './santaMessageCreationLock.js';
 
 export const MESSAGE_ALLOWANCE_KEY = 'santa-message-allowance';
 export const SANTA_LAST_OUTRO_KEY = 'santa-message-last-outro';
-export const MESSAGE_ALLOWANCE = 2;
-export const MESSAGE_COOLDOWN_MS = 10 * 60 * 1000;
+export const MESSAGE_ALLOWANCE = 1;
+export const MESSAGE_COOLDOWN_MS = 30 * 60 * 1000;
 const LEGACY_COOLDOWN_MS = 30 * 60 * 1000;
 const empty = () => ({ used: 0, availableAt: 0 });
 
@@ -16,8 +16,8 @@ function normalise(value, now) {
 
 // One store per open page, shared by all form instances. Browser storage contains
 // only usage and timing, never adult contact details, selected names or audio.
-export function createMessageAllowance(browser, now = () => Date.now()) {
-  let memory = empty(), remembered = true, pending = false, snapshot, lastOutro = null;
+export function createMessageAllowance(browser, now = () => Date.now(), random = Math.random) {
+  let memory = empty(), remembered = true, pending = false, snapshot;
   const listeners = new Set();
   let interval;
   try {
@@ -31,20 +31,23 @@ export function createMessageAllowance(browser, now = () => Date.now()) {
     if (remembered) {
       try {
         const raw = browser.localStorage.getItem(MESSAGE_ALLOWANCE_KEY);
-        try {
-          const saved = JSON.parse(raw);
-          memory = normalise(saved, now());
-          // Older records had a 30-minute deadline and no duration marker.
-          // Keep their original start time, rather than starting a new wait.
-          const savedDuration = Number.isSafeInteger(saved?.cooldownMs) && saved.cooldownMs > 0
+        let saved;
+        try { saved = JSON.parse(raw); } catch { saved = null; }
+        let restored = saved;
+        // Old two-message records with a deadline retain their original start.
+        // A single old success had no timestamp: start one wait and persist it
+        // immediately so returning to the page never restarts that wait.
+        if (saved?.used === 1 && saved.availableAt === 0) {
+          restored = { used: 1, availableAt: now() + MESSAGE_COOLDOWN_MS };
+        } else if ((saved?.used === 1 || saved?.used === 2) &&
+                   Number.isSafeInteger(saved.availableAt) && saved.availableAt > 0) {
+          const duration = Number.isSafeInteger(saved.cooldownMs) && saved.cooldownMs > 0
             ? saved.cooldownMs : LEGACY_COOLDOWN_MS;
-          if (memory.used === MESSAGE_ALLOWANCE && savedDuration !== MESSAGE_COOLDOWN_MS) {
-            memory = normalise({
-              ...memory, availableAt: memory.availableAt - savedDuration + MESSAGE_COOLDOWN_MS,
-            }, now());
-          }
+          restored = { used: 1, availableAt: saved.availableAt - duration + MESSAGE_COOLDOWN_MS };
         }
-        catch { memory = empty(); }
+        memory = normalise(restored, now());
+        const canonical = JSON.stringify({ ...memory, cooldownMs: MESSAGE_COOLDOWN_MS });
+        if (raw !== canonical) browser.localStorage.setItem(MESSAGE_ALLOWANCE_KEY, canonical);
       } catch { remembered = false; }
     }
     return memory = normalise(memory, now());
@@ -98,13 +101,7 @@ export function createMessageAllowance(browser, now = () => Date.now()) {
         return await withMessageCreationLock(browser, remembered, async commit => {
           signal.throwIfAborted();
           if (read().used >= MESSAGE_ALLOWANCE) throw new Error('To generate more, please wait for the countdown to finish.');
-          if (remembered) {
-            try {
-              const savedOutro = Number(browser.localStorage.getItem(SANTA_LAST_OUTRO_KEY));
-              if (savedOutro === 1 || savedOutro === 2) lastOutro = savedOutro;
-            } catch { remembered = false; }
-          }
-          const outro = lastOutro === null ? (Math.random() < 0.5 ? 1 : 2) : 3 - lastOutro;
+          const outro = random() < 0.5 ? 1 : 2;
           const result = await generate(outro);
           signal.throwIfAborted();
           await commit(() => {
@@ -115,7 +112,6 @@ export function createMessageAllowance(browser, now = () => Date.now()) {
               used: state.used + 1,
               availableAt: state.used + 1 === MESSAGE_ALLOWANCE ? now() + MESSAGE_COOLDOWN_MS : 0,
             };
-            lastOutro = outro;
             if (remembered) {
               try {
                 browser.localStorage.setItem(MESSAGE_ALLOWANCE_KEY, JSON.stringify({ ...memory, cooldownMs: MESSAGE_COOLDOWN_MS }));

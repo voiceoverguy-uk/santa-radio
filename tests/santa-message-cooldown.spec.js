@@ -33,7 +33,7 @@ test.beforeEach(async ({ context }) => {
   });
 });
 
-test('two successes block the third, preserve downloads and offer radio without restarting playback', async ({ page }) => {
+test('one success blocks another for thirty minutes, preserves downloads and offers radio', async ({ page }) => {
   let calls = 0;
   const outros = [];
   await page.route('**/api/santa-message', route => {
@@ -46,38 +46,34 @@ test('two successes block the third, preserve downloads and offer radio without 
   await expect(page.locator('.form-desc')).toContainText('Search for the name and press Create message.');
   await expect(page.locator('.santa-message-box')).not.toContainText(/30.minute|messages remaining|message allowance/);
   await create(page);
-  await expect(page.locator('.santa-message-box')).not.toContainText(/30.minute|messages remaining|message allowance/);
-  await page.getByLabel('First Name').fill('Erin');
   await expect(page.getByRole('link', { name: 'Download your audio' })).toBeVisible();
-  await create(page, 'Erin');
   expect([1, 2]).toContain(outros[0]);
-  expect(outros).toEqual([outros[0], 3 - outros[0]]);
-  await expect(page.locator('.message-result')).toHaveCount(2);
+  expect(outros).toHaveLength(1);
+  await expect(page.locator('.message-result')).toHaveCount(1);
   await page.evaluate(() => {
     const recordings = document.querySelectorAll('.message-result audio');
     window.recordingPauses = 0;
     recordings.forEach(recording => { recording.pause = () => { window.recordingPauses++; }; });
     recordings[0].dispatchEvent(new Event('play'));
-    recordings[1].dispatchEvent(new Event('play'));
   });
-  expect(await page.evaluate(() => window.recordingPauses)).toBe(2);
+  expect(await page.evaluate(() => window.recordingPauses)).toBe(0);
   await expect(page.getByText('(The radio will pause while playing)', { exact: true })).toHaveCount(0);
-  await expect(page.locator('.message-wait .message-result')).toHaveCount(2);
-  await expect(page.getByText('On iPhone, choose Share → Save to Files to keep the MP3.', { exact: true })).toHaveCount(2);
-  await expect(page.getByRole('timer')).toHaveText('10:00');
-  await expect(page.getByText('You’ve created 2 Free Santa messages for now. Please allow Santa 10 minutes to recover before he records more. Meanwhile why not enjoy Santa Radio Christmas music while you wait or tell your friends?', { exact: true })).toBeVisible();
+  await expect(page.locator('.message-wait .message-result')).toHaveCount(1);
+  await expect(page.getByText('On iPhone, choose Share → Save to Files to keep the MP3.', { exact: true })).toHaveCount(1);
+  await expect(page.getByRole('timer')).toHaveText('30:00');
+  await expect(page.locator('.message-recovery-copy')).toHaveText('You’ve created a Free Santa message. Please allow Santa 30 minutes to recover before he records more. Coming soon, you can personalise your message more for the price of a Crayola light up Santa. Meanwhile, why not tell your friends and then enjoy Santa Radio Christmas music while you wait.');
   await expect(page.getByRole('button', { name: 'Share with friends', exact: true })).toBeEnabled();
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
   await expect(page.getByLabel('First Name')).toBeDisabled();
   await page.locator('.santa-message-box form').evaluate(form => form.requestSubmit());
-  expect(calls).toBe(2);
-  await expect(page.locator('.message-result audio')).toHaveCount(2);
-  for (const name of ['Olivia', 'Erin']) {
+  expect(calls).toBe(1);
+  await expect(page.locator('.message-result audio')).toHaveCount(1);
+  for (const name of ['Olivia']) {
     const download = page.waitForEvent('download');
     await page.getByLabel(`Santa’s greeting for ${name}`, { exact: true }).getByRole('link', { name: 'Download your audio' }).click();
-    expect((await download).suggestedFilename()).toBe(`Santa-message-for-${name}.mp3`);
+    expect((await download).suggestedFilename()).toBe(`santa-recorded-message-for-${name}.mp3`);
   }
-  expect((await usage(page)).used).toBe(2);
+  expect((await usage(page)).used).toBe(1);
   await page.evaluate(() => {
     window.radioPlays = 0;
     const radio = document.querySelector('audio');
@@ -88,13 +84,38 @@ test('two successes block the third, preserve downloads and offer radio without 
   await page.getByRole('button', { name: 'Listen to Santa Radio', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Santa Radio is playing', exact: true })).toBeDisabled();
   expect(await page.evaluate(() => window.radioPlays)).toBe(1);
-  expect(calls).toBe(2);
+  expect(calls).toBe(1);
   for (const width of [1280, 390]) {
     await page.setViewportSize({ width, height: 900 });
     await expect(page.getByRole('timer')).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await page.locator('.santa-message-box').screenshot({ path: `/tmp/santa-message-wait-${width}.png` });
   }
+});
+
+test('all twelve gift comparisons rotate during the wait without changing usage', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.route('**/api/santa-message', route => route.fulfill(mp3));
+  await openMessageDesk(page);
+  await page.clock.install({ time: new Date(await page.evaluate(() => Date.now())) });
+  await create(page);
+  const before = await usage(page);
+  const gifts = [
+    'a Crayola light up Santa', 'a pair of fluffy socks', 'a Nivea for Men gift set',
+    'a tub of Celebrations', 'a Maltesers gift box', 'a box of Lindt chocolate truffles',
+    'a Card Factory novelty gift mug', 'some Cadbury Santa socks',
+    'three Highland cow pens from NEXT', 'a Christmas puzzle book from The Works',
+    'a tub of HEROES chocolates', 'a Habitat decorative glass bauble',
+  ];
+  const comparison = page.getByTestId('santa-gift-comparison');
+  await expect(comparison).toHaveAttribute('aria-live', 'off');
+  for (const gift of gifts) {
+    await expect(comparison).toHaveText(gift);
+    await page.clock.runFor(8000);
+  }
+  await expect(comparison).toHaveText(gifts[0]);
+  expect(await usage(page)).toEqual(before);
+  await expect(page.getByRole('link', { name: 'Download your audio', exact: true })).toBeVisible();
 });
 
 test('failure, invalid name, non-audio, empty and cancelled requests do not use the allowance', async ({ page }) => {
@@ -113,12 +134,17 @@ test('failure, invalid name, non-audio, empty and cancelled requests do not use 
   expect(calls).toBe(0);
   mode = 'success';
   await create(page);
+  await page.evaluate(key => {
+    window.testNow = JSON.parse(localStorage.getItem(key)).availableAt;
+    dispatchEvent(new Event('focus'));
+  }, MESSAGE_ALLOWANCE_KEY);
+  await expect(page.getByRole('button', { name: 'Create message' })).toBeEnabled();
   for (const current of ['failed', 'html', 'empty']) {
     mode = current;
     await page.getByLabel('First Name').fill('Olivia');
     await page.getByRole('button', { name: 'Create message' }).click();
     await expect(page.getByRole('alert')).toBeVisible();
-    expect((await usage(page)).used).toBe(1);
+    expect((await usage(page)).used).toBe(0);
     await expect(page.getByRole('link', { name: 'Download your audio' })).toBeVisible();
   }
   mode = 'hold';
@@ -126,10 +152,10 @@ test('failure, invalid name, non-audio, empty and cancelled requests do not use 
   await expect(page.getByRole('button', { name: 'Santa Recording...' })).toBeDisabled();
   await page.getByLabel('First Name').fill('Erin');
   await expect(page.getByRole('button', { name: 'Create message' })).toBeEnabled();
-  expect((await usage(page)).used).toBe(1);
+  expect((await usage(page)).used).toBe(0);
   mode = 'success';
   await create(page, 'Erin');
-  expect((await usage(page)).used).toBe(2);
+  expect((await usage(page)).used).toBe(1);
   await expect(page.locator('.message-result')).toHaveCount(2);
 });
 
@@ -143,18 +169,17 @@ test('navigation, reload, a new tab and returning after the deadline preserve an
   await expect(page).toHaveURL('/');
   await expect(page.getByRole('heading', { name: 'Live from The North Pole, Santa Radio' })).toBeVisible();
   expect((await usage(page)).used).toBe(1);
-  await create(page, 'Erin');
   const deadline = (await usage(page)).availableAt;
   await page.goto('/apps');
   await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'FREE Santa Message', exact: true }).click();
-  await expect(page.getByRole('timer')).toHaveText('10:00');
+  await expect(page.getByRole('timer')).toHaveText('30:00');
   const newTab = await context.newPage();
   await mockBrevo(newTab);
   await newTab.goto('/free-santa-message');
   await expect(newTab.getByRole('button', { name: 'Get my free Santa message' })).toBeVisible();
   await fillAccessForm(newTab);
   await newTab.getByRole('button', { name: 'Get my free Santa message' }).click();
-  await expect(newTab.getByRole('timer')).toHaveText('10:00');
+  await expect(newTab.getByRole('timer')).toHaveText('30:00');
   await expect(newTab.locator('.message-wait')).toContainText('This tab no longer holds those recordings.');
   await expect(newTab.locator('.message-wait .message-download')).toHaveCount(0);
   await newTab.evaluate(time => { window.testNow = time; dispatchEvent(new Event('focus')); }, deadline - 1000);
@@ -167,17 +192,16 @@ test('navigation, reload, a new tab and returning after the deadline preserve an
 });
 
 for (const legacy of [false, true]) {
-  test(`simultaneous tabs cannot create a third message (${legacy ? 'IndexedDB fallback' : 'Web Locks'})`, async ({ page, context }) => {
+  test(`simultaneous tabs cannot create a second message (${legacy ? 'IndexedDB fallback' : 'Web Locks'})`, async ({ page, context }) => {
     if (legacy) await context.addInitScript(() => Object.defineProperty(navigator, 'locks', { value: undefined }));
     let calls = 0, release;
     const held = new Promise(resolve => { release = resolve; });
     await context.route('**/api/santa-message', async route => {
       calls++;
-      if (calls === 2) await held;
+      if (calls === 1) await held;
       return route.fulfill(mp3);
     });
     await openMessageDesk(page);
-    await create(page);
     const second = await context.newPage();
     await openMessageDesk(second);
     await page.getByLabel('First Name').fill('Erin');
@@ -186,13 +210,13 @@ for (const legacy of [false, true]) {
       page.getByRole('button', { name: 'Create message' }).click(),
       second.getByRole('button', { name: 'Create message' }).click(),
     ]);
-    await expect.poll(() => calls).toBe(2);
+    await expect.poll(() => calls).toBe(1);
     await expect.poll(async () => (await page.getByRole('alert').count()) + (await second.getByRole('alert').count())).toBe(1);
     release();
     await expect(page.getByRole('timer')).toBeVisible();
     await expect(second.getByRole('timer')).toBeVisible();
-    expect((await usage(page)).used).toBe(2);
-    expect(calls).toBe(2);
+    expect((await usage(page)).used).toBe(1);
+    expect(calls).toBe(1);
   });
 }
 
@@ -205,9 +229,7 @@ test('blocked browser storage keeps an in-page allowance and explains its limita
   await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Home', exact: true }).click();
   // Wait for navigation to replace the old form before filling the new one.
   await expect(page.getByRole('heading', { name: 'Live from The North Pole, Santa Radio' })).toBeVisible();
-  await expect(page.locator('.santa-message-box')).not.toContainText(/30.minute|message allowance/);
-  await create(page, 'Erin');
-  await expect(page.getByRole('timer')).toHaveText('10:00');
+  await expect(page.getByRole('timer')).toHaveText('30:00');
   await expect(page.getByText(/Your browser can’t remember the message allowance/)).toBeVisible();
   await page.reload();
   await expect(page.getByRole('button', { name: 'Create message' })).toBeEnabled();

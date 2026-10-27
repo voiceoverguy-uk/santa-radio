@@ -1,0 +1,86 @@
+.smw-activity-preview-layout.smw-searchable-layout {
+  grid-template-areas: "wheel wording" "wheel search";
+  grid-template-rows: auto auto;
+  row-gap: 18px;
+}
+.smw-filtered-wheel { grid-area: wheel; }
+.smw-filtered-wheel > .smw-choice-wheel-field { margin-top: 0; }
+.smw-searchable-layout > .smw-activity-wording { grid-area: wording; }
+.smw-choice-search { grid-area: search; align-self: start; }
+.smw-choice-search label { display: block; margin-bottom: 9px; font-size: .9rem; font-weight: 600; }
+.smw-choice-search-controls { display: flex; gap: 8px; align-items: stretch; min-width: 0; }
+.smw-choice-search input {
+  width: 100%;
+  min-width: 0;
+  min-height: 56px;
+  padding: 13px 12px;
+  border: 1px solid #d4af3780;
+  border-radius: 10px;
+  color: var(--smw-evergreen);
+  background: var(--smw-cream);
+  font: inherit;
+  font-size: .9rem;
+}
+.smw-choice-search input::placeholder { color: #4b6155; opacity: 1; }
+.smw-choice-search input:focus-visible { outline: 2px solid var(--smw-gold-light); outline-offset: 2px; }
+.smw-choice-search button {
+  flex-shrink: 0;
+  min-height: 56px;
+  padding: 10px 12px;
+  border: 1px solid #d4af3780;
+  border-radius: 10px;
+  color: var(--smw-cream);
+  background: transparent;
+  font: inherit;
+  font-size: .85rem;
+  cursor: pointer;
+}
+.smw-choice-search button:disabled { opacity: .5; cursor: default; }
+.smw-search-empty {
+  display: grid;
+  align-content: center;
+  min-height: 300px;
+  padding: 22px;
+  border: 1px solid #d4af3766;
+  border-radius: 14px;
+  text-align: center;
+}
+.smw-search-empty p { margin: 8px 0; }
+@media (min-width: 901px) {
+  .smw-activity-preview-layout.smw-searchable-achievement {
+    grid-template-areas: "wheel wording" "wheel search" "wheel .";
+    grid-template-rows: minmax(min-content, 1fr) auto auto;
+    row-gap: 0;
+  }
+  .smw-searchable-achievement > .smw-filtered-wheel,
+  .smw-searchable-achievement .smw-filtered-wheel > .smw-choice-wheel-field {
+    display: grid;
+    grid-row: 1 / -1;
+    grid-template-rows: subgrid;
+  }
+  .smw-searchable-achievement .smw-choice-wheel-frame {
+    grid-row: 1 / 3;
+    height: auto;
+    min-height: var(--choice-wheel-height);
+    align-self: stretch;
+    /* Wheel spacers follow the viewport size; they must not size it in return. */
+    contain: size;
+  }
+  .smw-searchable-achievement .smw-choice-wheel-scroll {
+    /* Anchor the scrolling viewport to the frame, not its option/spacer content. */
+    position: absolute;
+    inset: 0;
+  }
+  .smw-searchable-achievement .smw-choice-wheel-status { grid-row: 3; }
+  .smw-searchable-achievement .smw-search-empty { grid-row: 1 / 3; }
+  .smw-activity-preview-layout.smw-searchable-achievement > .smw-choice-search {
+    align-self: end;
+    margin-top: 18px;
+  }
+}
+@media (max-width: 900px) {
+  .smw-activity-preview-layout.smw-searchable-layout {
+    grid-template-areas: "search" "wheel" "wording";
+    grid-template-rows: auto auto auto;
+  }
+}

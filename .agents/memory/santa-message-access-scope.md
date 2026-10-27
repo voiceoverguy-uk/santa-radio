@@ -56,6 +56,12 @@ The uploaded Brevo embed can differ from the current hosted form's required fiel
 
 **How to apply:** Resolve extra required personal-data fields with the owner before declaring the integration complete. Do not silently collect additional child data, send invented values or bypass provider acceptance.
 
+The free maker offers one successful message followed by a 30-minute wait. Choose randomly between the two existing outros for each eligible creation, rather than alternating them. The waiting copy rotates the owner's gift comparisons for a future more-personalised service.
+
+**Why:** The owner revised the allowance after further research, explicitly replacing the two-message, ten-minute policy. Gift comparisons are coming-soon copy, not approval to start charging.
+
+**How to apply:** Keep failures and cancellations free of usage charges and preserve downloads, certificates, invitation sharing and radio during the wait. Existing timed waits retain their original start when adapting to the new duration. An older single success had no creation timestamp, so it receives one persisted wait from upgrade, never a wait restarted on every refresh.
+
 The recovery panel's “Share with friends” action is an invitation to the public message maker, not delivery of the visitor's MP3 or access state.
 
 **Why:** It accompanies the invitation to tell friends while Santa recovers. Friends should choose their own recordings through the adult-access flow, without receiving a child's name or the visitor's contact details.

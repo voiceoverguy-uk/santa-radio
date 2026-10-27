@@ -42,6 +42,7 @@
 - [Python TLS trust](python-tls-trust.md) — Package downloads may need an explicit system certificate path; never disable TLS verification.
 - [Local audio inspection](local-audio-inspection.md) — FFmpeg PCM input avoids local speech-decoder API mismatches; transcription is not listening verification.
 - [Santa download naming](santa-download-naming.md) — Use santa-recorded-message-for-(NAME).mp3 for downloads; leave hosted source and cache URLs alone.
-- [Workshop choice controls](workshop-choice-controls.md) — All choice categories use horizontal scrollers except names, which use live search.
+- [Workshop choice controls](workshop-choice-controls.md) — Searchable names, a vertical age wheel, other category scrollers and later MP3 direction.
 - [Virtual-clock screenshots](browser-test-clocks.md) — Finish or disable entrance animations before capturing delayed interfaces under a virtual browser clock.
 - [Message-maker counters](santa-name-counter-direction.md) — Start 50 below the real total; add one every five seconds, capped at the real total.
+- [Santa workshop scope](santa-workshop-scope.md) — Design trial comes before audio connection; offline samples are not catalogue or service approval.

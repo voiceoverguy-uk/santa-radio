@@ -1,0 +1,223 @@
+.smw-name-picker {
+  margin-top: 22px;
+}
+
+.smw-name-search-label {
+  display: block;
+  margin-bottom: 9px;
+  color: var(--smw-cream, #fff8e7);
+  font-size: .9rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.smw-name-combobox {
+  position: relative;
+  z-index: 4;
+}
+
+.smw-name-search {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 58px;
+  padding: 15px 17px;
+  border: 2px solid transparent;
+  border-radius: 9px;
+  outline: 0;
+  background: #f4eddc;
+  color: #19392d;
+  font: inherit;
+  font-size: 1rem;
+  transition: border-color .16s ease, box-shadow .16s ease;
+}
+
+.smw-name-search::placeholder {
+  color: #66766b;
+}
+
+.smw-name-search:hover {
+  border-color: #d4af3770;
+}
+
+.smw-name-search:focus-visible,
+.smw-name-search[aria-expanded="true"] {
+  border-color: var(--smw-gold-light, #e6ce86);
+  outline: 2px solid var(--smw-gold-light, #e6ce86);
+  outline-offset: -4px;
+  box-shadow: inset 0 0 0 2px var(--smw-gold-light, #e6ce86);
+}
+
+.smw-name-search[aria-invalid="true"] {
+  border-color: #eea49a;
+}
+
+.smw-name-dropdown {
+  position: absolute;
+  top: calc(100% + 5px);
+  right: 0;
+  left: 0;
+  z-index: 6;
+  max-height: min(300px, 42dvh);
+  overflow-y: auto;
+  margin: 0;
+  padding: 5px;
+  border: 1px solid #d4af3770;
+  border-radius: 9px;
+  background: #f4eddc;
+  color: #19392d;
+  box-shadow: 0 12px 26px #061c174a;
+  list-style: none;
+}
+
+.smw-name-option {
+  display: flex;
+  min-height: 56px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+  flex-wrap: wrap;
+}
+
+.smw-name-option small {
+  color: #66766b;
+  font-size: .8rem;
+  text-align: right;
+}
+
+.smw-name-option:hover,
+.smw-name-option.is-active {
+  background: #dfd3b7;
+}
+
+.smw-name-option.is-selected > span:first-child {
+  font-weight: 700;
+}
+
+.smw-name-status,
+.smw-name-prompt,
+.smw-name-loading,
+.smw-name-empty,
+.smw-name-refine,
+.smw-name-error-panel {
+  margin: 11px 0 0;
+  color: #c4d0c3;
+  font-size: .82rem;
+  line-height: 1.55;
+}
+
+.smw-name-status strong {
+  color: var(--smw-gold-light, #e6ce86);
+  font-weight: 600;
+}
+
+.smw-name-count {
+  margin: 8px 0 0;
+  color: #ead6a6;
+  font-size: .76rem;
+}
+
+.smw-name-empty {
+  color: #d7dfd2;
+}
+
+.smw-name-empty p { margin: 0; }
+.smw-name-empty .smw-name-soundalike {
+  margin-top: 10px;
+  padding: 12px 15px;
+  border-left: 2px solid var(--smw-gold-light, #e6ce86);
+  border-radius: 0 8px 8px 0;
+  background: #d4af370d;
+  color: var(--smw-cream, #fff8e7);
+}
+.smw-name-error-panel {
+  padding: 12px 14px;
+  border: 1px solid #eea49a80;
+  border-radius: 8px;
+  color: #f0b7ad;
+}
+
+.smw-name-error-panel p {
+  margin: 0;
+}
+
+.smw-name-retry {
+  min-height: 56px;
+  margin-top: 11px;
+  padding: 9px 15px;
+  border: 1px solid #d4af3770;
+  border-radius: 8px;
+  background: #d4af370d;
+  color: var(--smw-gold-light, #e6ce86);
+  font: inherit;
+  font-size: .84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color .16s ease, background-color .16s ease, transform .16s ease;
+}
+
+.smw-name-retry:hover {
+  transform: translateY(-1px);
+  border-color: var(--smw-gold, #d4af37);
+  background: #d4af3719;
+}
+
+.smw-name-retry:focus-visible {
+  outline: 2px solid var(--smw-gold-light, #e6ce86);
+  outline-offset: 3px;
+}
+
+.smw-name-skeletons {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.smw-name-skeleton {
+  display: block;
+  height: 48px;
+  border: 1px solid #d4af3740;
+  border-radius: 8px;
+  background: linear-gradient(100deg, #fff8e707 25%, #fff8e718 42%, #fff8e707 62%);
+  background-size: 220% 100%;
+  animation: smw-name-shimmer 1.5s ease-in-out infinite;
+}
+
+.smw-name-picker .smw-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@keyframes smw-name-shimmer {
+  to { background-position-x: -220%; }
+}
+
+@media (max-width: 480px) {
+  .smw-name-picker {
+    margin-top: 18px;
+  }
+
+  .smw-name-search {
+    min-height: 58px;
+    padding-inline: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .smw-name-search,
+  .smw-name-retry {
+    transition: none;
+  }
+
+  .smw-name-skeleton {
+    animation: none;
+  }
+}

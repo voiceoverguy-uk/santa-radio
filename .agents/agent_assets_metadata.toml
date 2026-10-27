@@ -504,3 +504,31 @@ mtime_ms = 1793030750348
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/d19137e5-f43d-4202-8d2a-60eb7fb87ff4/db373189-3a77-4c69-8c03-4150a01cb3ca"
 storage_version_token = "1793030777746829"
 content_type = "image/png"
+
+[[outputs]]
+id = "9kTyHNnsXoWHasFec1xEs"
+uri = "file://generated-artifacts/workshop/live-review-desktop.png"
+type = "image"
+title = "Workshop preview — desktop"
+description = "Review using live HTTPS catalogue choices, including a month-age recording and a clearly labelled fantasy destination."
+logical_id = "a7da4009-1820-49fe-853f-c8b9f407880d"
+content_hash = "sha256:c48feaf965e2394a1b2f9a95645eeeba96640d9965e7477b3ec3f303f2fb562f"
+size = 556108
+mtime_ms = 1793042217597
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/a7da4009-1820-49fe-853f-c8b9f407880d/5fcd1b71-977b-4bf7-ae26-6585c4f2d892"
+storage_version_token = "1793042261133182"
+content_type = "image/png"
+
+[[outputs]]
+id = "N0pI-sSosPA26Z8--KleC"
+uri = "file://generated-artifacts/workshop/live-review-mobile.png"
+type = "image"
+title = "Workshop preview — phone"
+description = "Phone review with real hosted category choices. Audio generation remains unconnected."
+logical_id = "123bef10-3aec-4727-92b4-0a0ab8d2eb38"
+content_hash = "sha256:b06da70094c5789d70aaee75a376e012368a1696007bdacdbbac37fd9b47ddb3"
+size = 361860
+mtime_ms = 1793042217081
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/123bef10-3aec-4727-92b4-0a0ab8d2eb38/9b7964e7-4e46-49d8-999e-de89a5309dcd"
+storage_version_token = "1793042261993360"
+content_type = "image/png"

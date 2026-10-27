@@ -24,58 +24,56 @@ function environment() {
 const signal = () => new AbortController().signal;
 const success = () => Promise.resolve('recording');
 
-test('two successes start a full 10-minute wait, not a window from the first message', async () => {
+test('one success starts a full 30-minute wait and blocks further creation', async () => {
   const browser = environment();
   let now = 100000;
   const store = createMessageAllowance(browser, () => now);
-  assert.equal(store.getSnapshot().remaining, 2);
-  assert.equal(await store.create(success, signal()), 'recording');
   assert.equal(store.getSnapshot().remaining, 1);
-  now += 3600000;
-  await store.create(success, signal());
-  assert.equal(MESSAGE_COOLDOWN_MS, 600000);
-  assert.equal(store.getSnapshot().secondsLeft, 600);
-  assert.deepEqual(JSON.parse(browser.localStorage.getItem(MESSAGE_ALLOWANCE_KEY)), { used: 2, availableAt: now + MESSAGE_COOLDOWN_MS, cooldownMs: MESSAGE_COOLDOWN_MS });
+  assert.equal(await store.create(success, signal()), 'recording');
+  assert.equal(store.getSnapshot().remaining, 0);
+  assert.equal(MESSAGE_COOLDOWN_MS, 1800000);
+  assert.equal(store.getSnapshot().secondsLeft, 1800);
+  assert.deepEqual(JSON.parse(browser.localStorage.getItem(MESSAGE_ALLOWANCE_KEY)), { used: 1, availableAt: now + MESSAGE_COOLDOWN_MS, cooldownMs: MESSAGE_COOLDOWN_MS });
   let calls = 0;
   await assert.rejects(store.create(() => { calls++; return success(); }, signal()), /countdown/);
   assert.equal(calls, 0);
 });
 
-test('outros alternate after success, across refreshes and cooldowns, but not after failed or cancelled attempts', async () => {
+test('each creation randomly selects either outro, allowing repeats across cooldowns and refreshes', async () => {
   const browser = environment();
   let now = 100000;
-  const store = createMessageAllowance(browser, () => now);
+  const store = createMessageAllowance(browser, () => now, () => 0);
   const picked = [];
   const make = outro => { picked.push(outro); return Promise.resolve('recording'); };
   await store.create(make, signal());
+  now += MESSAGE_COOLDOWN_MS + 1;
   await assert.rejects(store.create(() => Promise.reject(new Error('failed')), signal()), /failed/);
   assert.equal(browser.localStorage.getItem(SANTA_LAST_OUTRO_KEY), String(picked[0]));
-  const reopened = createMessageAllowance(browser, () => now);
+  const reopened = createMessageAllowance(browser, () => now, () => 0);
   await reopened.create(make, signal());
-  assert.deepEqual(picked, [picked[0], 3 - picked[0]]);
+  assert.deepEqual(picked, [1, 1]);
   now += MESSAGE_COOLDOWN_MS + 1;
-  const next = createMessageAllowance(browser, () => now);
+  const next = createMessageAllowance(browser, () => now, () => 0.99);
   await next.create(make, signal());
-  assert.deepEqual(picked, [picked[0], 3 - picked[0], picked[0]]);
+  assert.deepEqual(picked, [1, 1, 2]);
 });
 
-test('reopening uses the saved allowance and absolute deadline; expiry restores two', async () => {
+test('reopening uses the saved absolute deadline; expiry restores one message', async () => {
   const browser = environment();
   let now = 100000;
   const first = createMessageAllowance(browser, () => now);
   await first.create(success, signal());
   const reopened = createMessageAllowance(browser, () => now);
-  assert.equal(reopened.getSnapshot().remaining, 1);
-  await reopened.create(success, signal());
+  assert.equal(reopened.getSnapshot().remaining, 0);
   now += 60000;
   const returned = createMessageAllowance(browser, () => now);
-  assert.equal(returned.getSnapshot().secondsLeft, 540);
+  assert.equal(returned.getSnapshot().secondsLeft, 1740);
   now += MESSAGE_COOLDOWN_MS;
   returned.refresh();
-  assert.equal(returned.getSnapshot().remaining, 2);
+  assert.equal(returned.getSnapshot().remaining, 1);
   assert.equal(returned.getSnapshot().secondsLeft, 0);
   await returned.create(success, signal());
-  assert.equal(returned.getSnapshot().remaining, 1);
+  assert.equal(returned.getSnapshot().remaining, 0);
 });
 
 test('errors, already cancelled and cancelled in-flight requests do not count', async () => {
@@ -88,14 +86,13 @@ test('errors, already cancelled and cancelled in-flight requests do not count', 
   assert.equal(calls, 0);
   const inFlight = new AbortController();
   await assert.rejects(store.create(() => { inFlight.abort(); return success(); }, inFlight.signal), /abort/i);
-  assert.equal(store.getSnapshot().remaining, 2);
+  assert.equal(store.getSnapshot().remaining, 1);
   assert.equal(store.getSnapshot().pending, false);
 });
 
 test('simultaneous form instances and tabs cannot consume the last allowance twice', async () => {
   const browser = environment();
   const one = createMessageAllowance(browser), two = createMessageAllowance(browser);
-  await one.create(success, signal());
   let release;
   const held = one.create(() => new Promise(resolve => { release = resolve; }), signal());
   await new Promise(resolve => setImmediate(resolve));
@@ -114,17 +111,17 @@ test('blocked reads and writes explicitly use shared in-page memory', async () =
   const store = createMessageAllowance(browser);
   assert.equal(store.getSnapshot().remembered, false);
   await store.create(success, signal());
-  await store.create(success, signal());
-  assert.equal(store.getSnapshot().secondsLeft, 600);
+  assert.equal(store.getSnapshot().secondsLeft, 1800);
   await assert.rejects(store.create(success, signal()), /countdown/);
 });
 
 test('storage becoming unwritable after a success preserves the existing usage', async () => {
   const browser = environment();
   const store = createMessageAllowance(browser);
-  await store.create(success, signal());
-  browser.localStorage.setItem = () => { throw new Error('full'); };
-  await store.create(success, signal());
+  await store.create(() => {
+    browser.localStorage.setItem = () => { throw new Error('full'); };
+    return success();
+  }, signal());
   assert.equal(store.getSnapshot().remembered, false);
   assert.equal(store.getSnapshot().remaining, 0);
 });
@@ -134,7 +131,7 @@ test('malformed saved state cannot crash or leave an impossible allowance', () =
     const browser = environment();
     browser.localStorage.setItem(MESSAGE_ALLOWANCE_KEY, raw);
     const store = createMessageAllowance(browser);
-    assert.equal(store.getSnapshot().remaining, 2);
+    assert.equal(store.getSnapshot().remaining, 1);
   }
 });
 
@@ -147,37 +144,54 @@ test('storage and focus events refresh subscribers, without leaking listeners on
   const event = new Event('storage');
   Object.defineProperty(event, 'key', { value: MESSAGE_ALLOWANCE_KEY });
   browser.dispatchEvent(event);
-  assert.equal(store.getSnapshot().secondsLeft, 600);
+  assert.equal(store.getSnapshot().secondsLeft, 1800);
   now += MESSAGE_COOLDOWN_MS;
   browser.dispatchEvent(new Event('focus'));
-  assert.equal(store.getSnapshot().remaining, 2);
+  assert.equal(store.getSnapshot().remaining, 1);
   unsubscribe();
   const count = notifications;
   browser.dispatchEvent(new Event('focus'));
   assert.equal(notifications, count);
 });
 
-test('legacy 30-minute deadlines become ten minutes from the original second creation', async () => {
+test('previous ten-minute deadlines migrate once to thirty minutes from their original start', async () => {
   const browser = environment();
   const createdAt = 1000000;
   let now = createdAt + 2 * 60000;
-  browser.localStorage.setItem(MESSAGE_ALLOWANCE_KEY, JSON.stringify({ used: 2, availableAt: createdAt + 30 * 60000 }));
+  browser.localStorage.setItem(MESSAGE_ALLOWANCE_KEY, JSON.stringify({ used: 2, availableAt: createdAt + 10 * 60000, cooldownMs: 10 * 60000 }));
   const store = createMessageAllowance(browser, () => now);
-  assert.equal(store.getSnapshot().secondsLeft, 480);
+  assert.equal(store.getSnapshot().secondsLeft, 1680);
   store.refresh();
-  assert.equal(store.getSnapshot().secondsLeft, 480, 'refresh must not shorten the deadline again');
-  now = createdAt + 10 * 60000;
+  assert.equal(store.getSnapshot().secondsLeft, 1680, 'refresh must not move the deadline again');
+  assert.equal(createMessageAllowance(browser, () => now).getSnapshot().secondsLeft, 1680);
+  now = createdAt + 30 * 60000;
   store.refresh();
-  assert.equal(store.getSnapshot().remaining, 2);
+  assert.equal(store.getSnapshot().remaining, 1);
   await store.create(success, signal());
-  await store.create(success, signal());
-  assert.equal(store.getSnapshot().secondsLeft, 600);
-  assert.equal(createMessageAllowance(browser, () => now).getSnapshot().secondsLeft, 600);
+  assert.equal(store.getSnapshot().secondsLeft, 1800);
+  assert.equal(createMessageAllowance(browser, () => now).getSnapshot().secondsLeft, 1800);
 });
 
-test('a legacy wait already over ten minutes old is finished immediately', () => {
+test('unmarked legacy thirty-minute waits keep their original deadline', () => {
   const browser = environment();
   const now = 10000000;
   browser.localStorage.setItem(MESSAGE_ALLOWANCE_KEY, JSON.stringify({ used: 2, availableAt: now + 19 * 60000 }));
-  assert.equal(createMessageAllowance(browser, () => now).getSnapshot().remaining, 2);
+  assert.equal(createMessageAllowance(browser, () => now).getSnapshot().secondsLeft, 19 * 60);
+});
+
+test('an old single success without a timestamp starts one persisted wait, not a rolling wait', async () => {
+  const browser = environment();
+  let now = 100000;
+  browser.localStorage.setItem(MESSAGE_ALLOWANCE_KEY, JSON.stringify({ used: 1, availableAt: 0, cooldownMs: 600000 }));
+  const store = createMessageAllowance(browser, () => now);
+  assert.equal(store.getSnapshot().secondsLeft, 1800);
+  now += 60000;
+  store.refresh();
+  assert.equal(store.getSnapshot().secondsLeft, 1740);
+  assert.equal(createMessageAllowance(browser, () => now).getSnapshot().secondsLeft, 1740);
+  now += 29 * 60000;
+  store.refresh();
+  assert.equal(store.getSnapshot().remaining, 1);
+  await store.create(success, signal());
+  assert.equal(store.getSnapshot().secondsLeft, 1800);
 });

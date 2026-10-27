@@ -67,7 +67,10 @@ export default function Home() {
             <p className="partnership-strip__supporting">Heard across web, apps, CarPlay, Apple TV and the Mac app.</p>
           </div>
           <a className="partnership-strip__button" href="/submit-a-song"
-            onClick={trackPartnership} onAuxClick={trackPartnership}>Let’s talk Christmas →</a>
+            onClick={trackPartnership} onAuxClick={trackPartnership}>
+            <span className="partnership-strip__button-title">2026 Sponsorship</span>
+            <span>Let’s talk Christmas →</span>
+          </a>
         </div>
       </section>
       <SantaMessageForm />

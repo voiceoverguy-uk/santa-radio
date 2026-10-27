@@ -43,3 +43,26 @@ test('isolated staff UI does not reveal rows or offer downloads after rejection'
   await expect(page.getByRole('table')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Download TXT' })).toBeDisabled();
 });
+
+test('isolated private ledger shows requested spelling with source recording and count in both views', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const date = '2026-10-26T12:00:00.000Z';
+  await page.route('**/api/name-requests**', route => {
+    const status = new URL(route.request().url()).searchParams.get('status');
+    return route.fulfill({ json: { status, total: 1, page: 1, pageSize: 100, requests: [{
+      id: 'fixture-suggestion', name: 'Kellllie', count: 3, firstRequestedAt: date, lastRequestedAt: date,
+      recordedAt: status === 'completed' ? date : null,
+      recordingSuggestions: [{ id: 'fixture-kelley', name: 'Kelley', file: 'kelley3.wav', count: 2 }],
+    }] } });
+  });
+  await page.goto('/tests/fixtures/request-ledger.html');
+  for (const view of ['Outstanding names', 'Completed history']) {
+    await page.getByRole('button', { name: view, exact: true }).click();
+    await expect(page.locator('.staff-table tbody')).toContainText('Kellllie');
+    await expect(page.locator('.staff-recording-suggestions')).toContainText('Recording used: Kelley');
+    await expect(page.locator('.staff-recording-suggestions')).toContainText('kelley3.wav');
+    await expect(page.locator('.staff-recording-suggestions')).toContainText('Suggestions: 2');
+  }
+  await page.screenshot({ path: 'generated-artifacts/workshop/spelling-suggestions-ledger-mobile.png' });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+});

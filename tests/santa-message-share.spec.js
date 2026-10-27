@@ -12,13 +12,13 @@ test.beforeEach(async ({ context }, testInfo) => {
     Date.now = () => 1801915200000;
     localStorage.setItem(key, JSON.stringify(legacy
       ? { used: 2, availableAt: Date.now() + 25 * 60000 }
-      : { used: 2, availableAt: Date.now() + duration, cooldownMs: duration }));
+      : { used: 1, availableAt: Date.now() + duration, cooldownMs: duration }));
   }, { key: MESSAGE_ALLOWANCE_KEY, duration: MESSAGE_COOLDOWN_MS, legacy: testInfo.title.startsWith('an existing') });
 });
 
 async function open(page) {
   await openMessageDesk(page);
-  await expect(page.getByRole('timer')).toHaveText('10:00');
+  await expect(page.getByRole('timer')).toHaveText('30:00');
   await expect(page.getByRole('button', { name: 'Share with friends', exact: true })).toBeVisible();
 }
 
@@ -86,12 +86,12 @@ test('unavailable sharing and blocked clipboard leave a selectable link on mobil
   await expect(page.getByLabel('Link to share')).toHaveAttribute('readonly', '');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   await page.locator('.message-wait').evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
-  await page.screenshot({ path: 'generated-artifacts/santa-message-ten-minute-share-mobile.jpg' });
+  await page.screenshot({ path: 'generated-artifacts/santa-message-thirty-minute-share-mobile.jpg' });
 });
 
-test('an existing 30-minute wait is shortened without restarting it', async ({ page }) => {
+test('an existing 30-minute wait keeps its original deadline without restarting it', async ({ page }) => {
   await openMessageDesk(page);
-  await expect(page.getByRole('timer')).toHaveText('05:00');
+  await expect(page.getByRole('timer')).toHaveText('25:00');
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
 });
 });
@@ -131,6 +131,15 @@ test.describe('completed greeting sharing', () => {
   });
 
   async function create(page, name = 'Olivia') {
+    // Additional retained greetings must come from a later eligible period.
+    if (await page.getByRole('timer').count()) {
+      await page.evaluate(key => {
+        const deadline = JSON.parse(localStorage.getItem(key)).availableAt;
+        Date.now = () => deadline;
+        dispatchEvent(new Event('focus'));
+      }, MESSAGE_ALLOWANCE_KEY);
+      await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
+    }
     await page.getByLabel('First Name').fill(name);
     await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
     await page.getByRole('button', { name: 'Create message', exact: true }).click();
@@ -148,7 +157,7 @@ test.describe('completed greeting sharing', () => {
     await openMessageDesk(page);
     await create(page);
     await create(page, 'Erin');
-    await expect(page.getByRole('timer')).toHaveText('10:00');
+    await expect(page.getByRole('timer')).toHaveText('30:00');
     const before = await allowance(page);
     // Both greetings are retained across SPA navigation, not fetched again.
     await page.getByRole('link', { name: 'Santa Radio home', exact: true }).click();
@@ -169,7 +178,7 @@ test.describe('completed greeting sharing', () => {
       });
       expect(payload).toEqual({
         keys: ['files'], count: 1, isFile: true,
-        filename: `Santa-message-for-${name}.mp3`, type: 'audio/mpeg',
+        filename: `santa-recorded-message-for-${name}.mp3`, type: 'audio/mpeg',
         hash: createHash('sha256').update(recordings[name]).digest('hex'), sameFileChecked: true,
       });
       await expect(result.locator('audio')).toBeVisible();
@@ -222,7 +231,7 @@ test.describe('completed greeting sharing', () => {
       const downloadPromise = page.waitForEvent('download');
       await result.getByRole('link', { name: 'Download your audio' }).click();
       const download = await downloadPromise;
-      expect(download.suggestedFilename()).toBe('Santa-message-for-Olivia.mp3');
+      expect(download.suggestedFilename()).toBe('santa-recorded-message-for-Olivia.mp3');
       expect(await download.failure()).toBeNull();
       expect(await allowance(page)).toBe(before);
       expect(renders).toBe(1);

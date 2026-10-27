@@ -8,3 +8,9 @@ Start each message-maker counter 50 below the actual inventory total and increas
 **Why:** The owner wants slow “website magic”, not a rapid count-up. They explicitly said it need not reach the actual figure unless the visitor stays on the page.
 
 **How to apply:** Apply this presentation consistently wherever the message maker appears. Leave the real inventory, name search and recording availability unchanged; do not invent a total when the inventory request fails.
+
+Show a blinking red dot and “Recording” beside the names-available count.
+
+**Why:** The owner reminded us this studio indicator was intended beside the counter, supplying the names-count screenshot.
+
+**How to apply:** Treat it as North Pole studio presentation, separate from an individual message's creation/busy state. Keep the text steady and respect reduced-motion preferences with a static dot; do not change actual recording or inventory behaviour.

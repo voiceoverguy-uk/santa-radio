@@ -1,0 +1,185 @@
+.smw-age-carousel {
+  --age-gold: var(--smw-gold, #d4af37);
+  --age-gold-light: var(--smw-gold-light, #e6ce86);
+  --age-cream: var(--smw-cream, #fff8e7);
+  width: 100%;
+  min-width: 0;
+  margin-top: 22px;
+}
+
+.smw-age-carousel-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.smw-age-carousel-label {
+  color: var(--age-cream);
+  font-weight: 600;
+}
+
+.smw-age-carousel-range {
+  color: var(--age-gold-light);
+  font-size: .8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.smw-age-carousel-instruction {
+  margin: 0 0 12px;
+  color: #c4d0c3;
+  font-size: .8rem;
+  line-height: 1.5;
+}
+
+.smw-age-wheel {
+  --wheel-row-height: max(48px, 3rem);
+  position: relative;
+  width: min(100%, 360px);
+  height: calc(var(--wheel-row-height) * 5);
+  overflow: hidden;
+  border: 1px solid #d4af3770;
+  border-radius: 12px;
+  background: #0c2a20;
+}
+
+.smw-age-wheel-scroll {
+  position: relative;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-snap-type: y proximity;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  touch-action: pan-y;
+  outline: 0;
+}
+
+.smw-age-wheel-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.smw-age-wheel-spacer {
+  height: calc(var(--wheel-row-height) * 2);
+  scroll-snap-align: none;
+}
+
+.smw-age-wheel-option {
+  position: relative;
+  display: grid;
+  box-sizing: border-box;
+  min-height: var(--wheel-row-height);
+  align-items: center;
+  justify-items: center;
+  padding: 8px 12px;
+  scroll-snap-align: center;
+  scroll-snap-stop: normal;
+  color: #aebdaf;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.4;
+  text-align: center;
+  overflow-wrap: anywhere;
+  opacity: .57;
+  user-select: none;
+  cursor: pointer;
+  transition: opacity .16s ease, color .16s ease;
+}
+
+.smw-age-wheel-option > span {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+.smw-age-wheel-option.is-centered {
+  position: relative;
+  z-index: 1;
+  color: var(--age-cream);
+  opacity: 1;
+}
+
+.smw-age-wheel-option.is-centered::before {
+  position: absolute;
+  z-index: 0;
+  inset: 2px 9px;
+  border: 1px solid #d4af3780;
+  border-radius: 8px;
+  background: #d4af3712;
+  content: '';
+}
+
+.smw-age-wheel-number,
+.smw-age-wheel-unit {
+  position: relative;
+  z-index: 1;
+}
+
+.smw-age-wheel-option.is-selected {
+  color: var(--age-gold-light);
+  font-weight: 500;
+}
+
+.smw-age-wheel-number {
+  min-width: 2ch;
+  font-family: 'Cinzel', serif;
+  font-size: 1.3rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.smw-age-wheel-unit {
+  font-size: .84rem;
+}
+
+.smw-age-wheel-edge {
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  left: 0;
+  height: 72px;
+  pointer-events: none;
+}
+
+.smw-age-wheel-edge-top {
+  top: 0;
+  background: linear-gradient(#0c2a20 0%, #0c2a20dd 25%, transparent 100%);
+}
+
+.smw-age-wheel-edge-bottom {
+  bottom: 0;
+  background: linear-gradient(0deg, #0c2a20 0%, #0c2a20dd 25%, transparent 100%);
+}
+
+.smw-age-wheel:focus-within {
+  outline: 2px solid var(--age-gold-light);
+  outline-offset: 3px;
+}
+
+.smw-age-wheel.is-invalid {
+  border-color: #eea49a;
+}
+
+.smw-age-wheel-status {
+  min-height: 1.4em;
+  margin: 9px 0 0;
+  color: var(--age-gold-light);
+  font-size: .82rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 480px) {
+  .smw-age-carousel {
+    margin-top: 18px;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .smw-age-wheel-option {
+    transition: none;
+  }
+}

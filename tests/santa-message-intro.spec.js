@@ -1,16 +1,18 @@
 import { test, expect } from '@playwright/test';
 
-const introduction = 'A real recorded greeting from Santa, not an AI voice, with your child’s name in it. Open the recording studio with your contact details, then choose a recorded name, listen together and instantly download your free MP3 and Nice List Certificate.';
+const introduction = 'A real recorded message from Santa, aka Father Christmas. Not an AI voice, and with your child’s name in it. Open the recording studio with your contact details, choose your chosen name from thousands, listen together and instantly download your free personalised message from Santa and Nice List Certificate.';
 
 for (const width of [320, 390, 768, 1440]) {
   test(`recorded voice introduction is clear and contained at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto('/free-santa-message');
+    const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+    if (await decline.isVisible()) await decline.click();
     const intro = page.locator('.message-intro');
     const heading = intro.locator('h2');
     await expect(heading).toHaveText('FREE Personalised message from Santa');
-    const subheading = intro.locator('h2 + h3.santa-message-subheading');
-    await expect(subheading).toHaveText('Their name. Santa’s voice.');
+    const subheading = intro.locator('h2 + .santa-voice-tagline h3.santa-message-subheading');
+    await expect(subheading).toHaveText('Their name. Santa’s REAL VOICE.');
     await expect(intro.locator('.eyebrow')).toHaveText('A little North Pole experiment');
     const paragraph = intro.locator(':scope > p').nth(1);
     await expect(paragraph).toHaveText(introduction);
@@ -30,11 +32,11 @@ for (const width of [320, 390, 768, 1440]) {
     });
     expect(hierarchy.subSize).toBeLessThan(hierarchy.mainSize * .75);
     expect(hierarchy.subTop).toBeGreaterThan(hierarchy.mainBottom);
-    expect(hierarchy.lines).toBe('Their name. Santa’s voice.');
+    expect(hierarchy.lines).toBe('Their name. Santa’s REAL VOICE.');
     const example = intro.getByRole('button', { name: 'Hear an example audio message', exact: true });
     await expect(example).toBeVisible();
     await expect(example).toBeEnabled();
-    await expect(intro.locator('h3.santa-message-subheading + .santa-message-example + p')).toHaveText(introduction);
+    await expect(intro.locator('.santa-voice-tagline + .santa-message-example + p')).toHaveText(introduction);
     for (const element of [heading, subheading, paragraph, example]) {
       const bounds = await element.evaluate(node => {
         const rect = node.getBoundingClientRect();

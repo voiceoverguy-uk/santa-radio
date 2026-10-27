@@ -286,7 +286,9 @@ test('waiting downloads can repeat without generation, allowance or timer change
   test.setTimeout(90000);
   const audio = readFileSync('server/santa-audio/sleighbells.mp3');
   let generations = 0;
-  await page.addInitScript(() => { Date.now = () => 1801915200000; });
+  await page.addInitScript(() => {
+    Date.now = () => Number(sessionStorage.getItem('test-message-now')) || 1801915200000;
+  });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.route('**/api/santa-message', route => {
     generations++;
@@ -294,6 +296,14 @@ test('waiting downloads can repeat without generation, allowance or timer change
   });
   await openMessageDesk(page);
   for (const name of ['Olivia', 'Erin']) {
+    if (name === 'Erin') {
+      await page.evaluate(key => {
+        const deadline = JSON.parse(localStorage.getItem(key)).availableAt;
+        sessionStorage.setItem('test-message-now', String(deadline));
+        dispatchEvent(new Event('focus'));
+      }, MESSAGE_ALLOWANCE_KEY);
+      await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
+    }
     await page.getByLabel('First Name').fill(name);
     await page.getByRole('option', { name, exact: true }).click();
     await page.getByRole('button', { name: 'Create message', exact: true }).click();
@@ -325,11 +335,11 @@ test('waiting downloads can repeat without generation, allowance or timer change
   }
   expect(generations).toBe(2);
   expect(await page.evaluate(key => localStorage.getItem(key), MESSAGE_ALLOWANCE_KEY)).toBe(before);
-  await expect(page.getByRole('timer')).toHaveText('10:00');
+  await expect(page.getByRole('timer')).toHaveText('30:00');
   await page.reload();
   await expect(page.locator('.message-wait')).toContainText('This tab no longer holds those recordings.');
   await expect(page.locator('.message-wait')).toContainText('Previously saved audio and certificates remain on your device.');
   await expect(page.locator('.message-result')).toHaveCount(0);
-  await expect(page.getByRole('timer')).toHaveText('10:00');
+  await expect(page.getByRole('timer')).toHaveText('30:00');
   expect(generations).toBe(2);
 });

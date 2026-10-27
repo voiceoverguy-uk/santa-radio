@@ -17,6 +17,9 @@ test('partnership banner preserves the approved copy and fits desktop and narrow
   const banner = page.locator('.partnership-strip');
   const heading = banner.getByRole('heading', { name: 'Your Christmas magic. Our festive soundtrack.', exact: true });
   const button = banner.getByRole('link', { name: /Let’s talk Christmas/ });
+  await expect(button).toHaveAccessibleName('2026 Sponsorship Let’s talk Christmas →');
+  await expect(button).toHaveAttribute('href', '/submit-a-song');
+  await expect(button.getByText('2026 Sponsorship', { exact: true })).toHaveCount(1);
   await expect(banner.getByText('A LITTLE CHRISTMAS PARTNERSHIP', { exact: true })).toHaveCount(1);
   await expect(heading).toHaveCount(1);
   await expect(banner.getByText('Got a Christmas market, festive event or unique Christmas product? Join Santa Radio with website and app banners, plus an on-air credit every hour.', { exact: true })).toHaveCount(1);
@@ -62,6 +65,12 @@ test('partnership banner preserves the approved copy and fits desktop and narrow
     expect(geometry.pattern).toContain('%23C6A85C');
     const titleBox = await heading.boundingBox();
     const buttonBox = await button.boundingBox();
+    expect(buttonBox.height).toBeGreaterThanOrEqual(72);
+    expect(buttonBox.width).toBeGreaterThanOrEqual(210);
+    const sponsorshipBox = await button.locator('.partnership-strip__button-title').boundingBox();
+    const invitationBox = await button.getByText('Let’s talk Christmas →', { exact: true }).boundingBox();
+    expect(sponsorshipBox.y + sponsorshipBox.height).toBeLessThanOrEqual(invitationBox.y);
+    expect(await button.evaluate(element => element.scrollWidth <= element.clientWidth + 1)).toBe(true);
     if (width >= 1024) expect(buttonBox.x).toBeGreaterThan(titleBox.x + titleBox.width);
     if (width <= 767) expect(buttonBox.y).toBeGreaterThan(titleBox.y + titleBox.height);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);

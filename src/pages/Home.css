@@ -80,11 +80,16 @@
 }
 .partnership-strip__button {
   display: inline-flex;
+  flex-direction: column;
+  gap: 5px;
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
-  min-height: 46px;
-  padding: 11px 22px;
+  box-sizing: border-box;
+  min-width: min(210px, 100%);
+  max-width: 100%;
+  min-height: 72px;
+  padding: 14px 24px;
   border: 1px solid #d4b96d;
   border-radius: 2px;
   background: #211a0e;
@@ -96,6 +101,7 @@
   text-align: center;
   transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease;
 }
+.partnership-strip__button-title { font-size: .88rem; }
 .partnership-strip__button:hover {
   transform: translateY(-2px);
   border-color: #e2cb85;
@@ -226,7 +232,7 @@ html[data-effects="off"] .hero-snow,html[data-effects="off"] .hero-aurora { disp
   .partnership-strip__heading { font-size: clamp(1.12rem, 5.2vw, 1.4rem); }
   .partnership-strip__body { font-size: .78rem; }
   .partnership-strip__supporting { font-size: .62rem; line-height: 1.5; }
-  .partnership-strip__button { align-self: flex-start; min-height: 44px; }
+  .partnership-strip__button { align-self: flex-start; }
   .santa-dash-promo { padding: 34px 16px 38px; }
   .santa-dash-promo__title { margin-bottom: 16px; }
   .santa-dash-promo__eyebrow { font-size: .53rem; }

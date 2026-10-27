@@ -71,7 +71,8 @@ entered and the live proof succeeds.
 
 The browser asks `/api/santa-greeting?name=...` for a validated descriptor, then
 fetches the MP3 **directly from cPanel** into the existing Blob workflow.
-Playback, download filename, sharing and the two-message allowance are unchanged.
+Playback, download filename and sharing are unchanged. The visitor allowance is
+one free message followed by a 30-minute wait.
 
 The server reads the current compressed name source and hashes its **actual
 bytes** without decoding. Its recipe fingerprint also covers original shared

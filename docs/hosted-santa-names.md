@@ -145,7 +145,7 @@ and the diagnostic steps for the owner.
   forced MP3 demuxer/decoder, file/pipe protocols only, 31-second bounded
   decoding, mono 48 kHz intermediate, 10-second kill timeout and cleanup.
 - Shared intro/outro padding, music, on-demand mixing, temporary cleanup,
-  two concurrent renders and two-message/10-minute visitor allowance remain.
+  two concurrent renders and one-message/30-minute visitor allowance remain.
   Downloading earlier greetings does not consume another allowance.
 - Missing-name requests, radio feeds and marketing submission code are unchanged.
 

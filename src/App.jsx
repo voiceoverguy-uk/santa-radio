@@ -9,6 +9,7 @@ import MugshotDetail from './pages/MugshotDetail.jsx';
 import SongDetail from './pages/SongDetail.jsx';
 import KaraokeLyrics from './pages/KaraokeLyrics.jsx';
 import FreeSantaMessage from './pages/FreeSantaMessage.jsx';
+import SantaMessageWorkshop from './pages/SantaMessageWorkshop.jsx';
 import SubmitASong from './pages/SubmitASong.jsx';
 import PrivacyPolicy from './pages/PrivacyPolicy.jsx';
 import Links from './pages/Links.jsx';
@@ -48,6 +49,7 @@ function App({ Router = BrowserRouter, routerProps = {} }) {
         <Route path="/christmas-karaoke-lyrics/:slug" element={<KaraokeLyrics />} />
         <Route path="/artist" element={<ArtistDetail />} />
         <Route path="/free-santa-message" element={<FreeSantaMessage />} />
+        <Route path="/santa-message-workshop" element={<SantaMessageWorkshop />} />
         <Route path="/request-names" element={<SantaStaffShell mode="admin" />} />
         <Route path="/sign-in/*" element={<SantaStaffShell mode="sign-in" />} />
         <Route path="/sign-up/*" element={<SantaStaffShell mode="sign-up" />} />

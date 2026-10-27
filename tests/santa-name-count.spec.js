@@ -17,6 +17,15 @@ for (const path of ['/', '/free-santa-message']) {
     const counter = page.locator('.message-name-count');
     await expect(counter).toHaveText('9,725 names available');
     await expect(counter).toHaveAttribute('aria-live', 'off');
+    const indicator = page.locator('.message-recording-indicator');
+    await expect(indicator).toHaveText('Recording');
+    await expect(indicator).toBeVisible();
+    const dot = indicator.locator('.message-recording-dot');
+    await expect(dot).toHaveAttribute('aria-hidden', 'true');
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await expect(dot).toHaveCSS('animation-name', 'message-recording-pulse');
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await expect(dot).toHaveCSS('animation-name', 'none');
     await page.clock.runFor(5000);
     await expect(counter).toHaveText('9,726 names available');
     await page.clock.runFor(245_000);
@@ -24,6 +33,10 @@ for (const path of ['/', '/free-santa-message']) {
     await page.clock.runFor(15_000);
     await expect(counter).toHaveText('9,775 names available');
     await expect(page.getByRole('combobox')).toHaveCount(0);
+    await page.locator('.message-name-status').screenshot({
+      path: `generated-artifacts/workshop/recording-indicator-${path === '/' ? 'home' : 'maker'}.png`,
+      animations: 'disabled',
+    });
   });
 }
 
@@ -74,6 +87,7 @@ test('unavailable inventory does not invent a zero total and a retry restores th
   } }));
   await openMessageDesk(page, { mockNames: false });
   await expect(page.getByText('Name total temporarily unavailable.', { exact: true })).toBeVisible();
+  await expect(page.locator('.message-recording-indicator')).toHaveCount(0);
   await expect(page.getByText('0 names available', { exact: true })).toHaveCount(0);
   await expect(page.getByLabel('First Name')).toHaveAttribute('placeholder', /^Start typing, eg\. [A-Za-z]+$/);
   failed = false;
@@ -89,6 +103,11 @@ test('large totals fit on mobile and genuine empty inventory displays zero', asy
   } }));
   await openMessageDesk(page, { mockNames: false });
   await expect(page.getByText('12,295 names available', { exact: true })).toBeVisible();
+  await expect(page.locator('.message-recording-indicator')).toBeVisible();
+  await page.addStyleTag({ content: 'html { font-size: 200%; }' });
+  expect(await page.locator('.message-name-status').evaluate(element =>
+    element.scrollWidth <= element.clientWidth + 1)).toBe(true);
+  await page.addStyleTag({ content: 'html { font-size: 100%; }' });
   await expect(page.getByLabel('First Name')).toHaveAttribute('placeholder', /^Start typing, eg\. [A-Za-z]+$/);
   const placeholderFits = await page.getByLabel('First Name').evaluate((input, names) => {
     const style = getComputedStyle(input), placeholder = getComputedStyle(input, '::placeholder');
@@ -103,6 +122,7 @@ test('large totals fit on mobile and genuine empty inventory displays zero', asy
   total = 0;
   await page.getByLabel('First Name').fill('Unknown');
   await expect(page.getByText('0 names available', { exact: true })).toBeVisible();
+  await expect(page.locator('.message-recording-indicator')).toHaveCount(0);
 });
 
 test('the random example is chosen on page load, not when searching or refreshing', async ({ page }) => {

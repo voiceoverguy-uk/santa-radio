@@ -50,8 +50,9 @@ export function resolvePublicRequest(raw) {
   }
   const target = aliases.get(normalized);
   if (target) return { status: 308, location: target + url.search };
-  if (normalized !== path && (paths.has(normalized) || normalized === '/santa-tracker/preview'))
+  if (normalized !== path && (paths.has(normalized) || normalized === '/santa-tracker/preview' || normalized === '/santa-message-workshop'))
     return { status: 308, location: normalized + url.search };
+  if (normalized === '/santa-message-workshop') return { status: 200, noindex: true };
   if (normalized === '/santa-tracker/preview') return { status: 200, noindex: true };
   if (normalized === '/artist') {
     const id = url.searchParams.get('s');

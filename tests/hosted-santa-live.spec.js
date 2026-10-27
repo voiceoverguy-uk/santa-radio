@@ -3,9 +3,9 @@ import { readFile, mkdir } from 'node:fs/promises';
 import { openMessageDesk } from './helpers/message-access.js';
 import { fetchLimited, parseNameIndex, NAMES_INDEX, localRecords } from '../server/santa-name-library.js';
 
-// Explicitly opt in: real read-only host GETs and two on-demand Preview renders.
+// Explicitly opt in: real read-only host GETs and one on-demand Preview render.
 // Only Brevo acceptance is intercepted, in this isolated browser context.
-test('real hosted catalogue, selection, playback, downloads and two-message allowance in Preview', async ({ page }, info) => {
+test('real hosted catalogue, selection, playback, downloads and one-message allowance in Preview', async ({ page }, info) => {
   test.skip(process.env.HOSTED_SANTA_LIVE_TEST !== '1', 'Opt in with HOSTED_SANTA_LIVE_TEST=1; never target production.');
   expect(new URL(info.project.use.baseURL).hostname).toMatch(/(?:\.replit\.dev|^127\.0\.0\.1|^localhost)$/);
   test.setTimeout(120000);
@@ -25,7 +25,7 @@ test('real hosted catalogue, selection, playback, downloads and two-message allo
   await expect(page.getByRole('option', { name: 'Demrie', exact: true })).toBeVisible();
   expect(renders).toBe(0);
   await page.getByRole('option', { name: 'Demrie', exact: true }).click();
-  for (let i = 0; i < 2; i++) {
+  for (let i = 0; i < 1; i++) {
     const responsePromise = page.waitForResponse(response => new URL(response.url()).pathname === '/api/santa-message');
     await page.getByRole('button', { name: 'Create message', exact: true }).click();
     const response = await responsePromise;
@@ -56,8 +56,8 @@ test('real hosted catalogue, selection, playback, downloads and two-message allo
   }
   await expect(input).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
-  await expect(page.getByText('You’ve created 2 Free Santa messages for now.', { exact: false })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Download your audio' })).toHaveCount(2);
-  expect(renders).toBe(2);
+  await expect(page.getByText('You’ve created a Free Santa message.', { exact: false })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Download your audio' })).toHaveCount(1);
+  expect(renders).toBe(1);
   await page.screenshot({ path: 'generated-artifacts/hosted-names/real-preview-result.jpg', fullPage: true });
 });

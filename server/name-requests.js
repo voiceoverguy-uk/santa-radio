@@ -6,6 +6,7 @@ import { publishableKeyFromHost } from '@clerk/shared/keys';
 import { getClerkProxyHost } from './middlewares/clerkProxyMiddleware.js';
 import { normaliseRequestedName, nameRequestConfirmation } from '../src/lib/santaNameRequests.js';
 import { saveNameRequest, listNameRequests, recordNameRequest } from './name-request-store.js';
+import { santaNameLibrary } from './santa-name-library.js';
 
 const COOKIE = 'santa-name-request-visitor';
 const digest = value => createHmac('sha256', process.env.SESSION_SECRET).update(value).digest('hex');
@@ -34,7 +35,7 @@ function visitor(req, res) {
   return { visitorKey: digest(`visitor:${id}`), bucketKey: digest(`limit:${id}:${Math.floor(Date.now() / 3600000)}`) };
 }
 export function createNameRequestHandler({ checkAdmin = authorize, save = saveNameRequest, list = listNameRequests,
-  record = recordNameRequest, identify = visitor } = {}) {
+  record = recordNameRequest, identify = visitor, library = santaNameLibrary } = {}) {
   return async (req, res) => {
     let stage = 'validation';
     res.set('Cache-Control', 'no-store');
@@ -51,12 +52,33 @@ export function createNameRequestHandler({ checkAdmin = authorize, save = saveNa
             !/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(req.body.requestId))) {
           return res.status(400).json({ error: 'Invalid request identifier. Please refresh and try again.' });
         }
+        if (req.body?.recordingId !== undefined) {
+          if (typeof req.body.recordingId !== 'string' ||
+              !/^(?:f-[a-f0-9]{64}|[a-z0-9][a-z0-9'-]{0,79})$/.test(req.body.recordingId) ||
+              !req.body.requestId) {
+            return res.status(400).json({ error: 'Please choose a recorded name before sending a spelling suggestion.' });
+          }
+          stage = 'hosted-recording';
+          // Only accept current hosted identities. Never trust a visitor-supplied
+          // audio filename, label or arbitrary URL, and never fetch their spelling.
+          const source = (await library.catalogue()).find(item => item.id === req.body.recordingId);
+          if (!source || source.source !== 'hosted') {
+            return res.status(400).json({ error: 'That recording is no longer in the hosted list. Please choose a recorded name again.' });
+          }
+          if (normaliseRequestedName(source.name)?.key === name.key) {
+            return res.status(400).json({ error: 'This spelling already matches the selected recorded name.' });
+          }
+          name.sourceRecording = { id: source.id, name: source.name, file: source.file };
+        }
         stage = 'visitor-signing';
         const { visitorKey, bucketKey } = identify(req, res);
         if (req.body?.requestId) name.submissionKey = digest(`submission:${req.body.requestId.toLowerCase()}`);
         stage = 'save';
         const result = await save(name, visitorKey, bucketKey);
-        return res.json({ ...result, saved: true, name: name.name, message: nameRequestConfirmation() });
+        return res.json({ ...result, saved: true, name: name.name,
+          message: name.sourceRecording
+            ? 'Your spelling and chosen recording have been sent to Santa’s private list for review. This does not promise a new recording.'
+            : nameRequestConfirmation() });
       }
       if (req.method === 'GET' || req.method === 'PATCH') {
         stage = 'authorization';
@@ -79,10 +101,12 @@ export function createNameRequestHandler({ checkAdmin = authorize, save = saveNa
         if (!download) return res.json(result);
         const date = value => value ? new Date(value).toISOString() : '';
         const rows = result.requests.map(item => [item.name, item.count, date(item.firstRequestedAt),
-          date(item.lastRequestedAt), date(item.recordedAt)].join('\t'));
+          date(item.lastRequestedAt), date(item.recordedAt),
+          (item.recordingSuggestions || []).map(suggestion =>
+            `${suggestion.name} [${suggestion.file}; ${suggestion.id}] (${suggestion.count})`).join(' | ')].join('\t'));
         return res.set('Content-Type', 'text/plain; charset=utf-8')
           .set('Content-Disposition', `attachment; filename="santa-name-requests-${status}.txt"`)
-          .send(['First name\tRequests\tFirst requested (UTC)\tLatest request (UTC)\tRecorded (UTC)', ...rows].join('\r\n') + '\r\n');
+          .send(['First name\tRequests\tFirst requested (UTC)\tLatest request (UTC)\tRecorded (UTC)\tSuggested source recordings (counts)', ...rows].join('\r\n') + '\r\n');
       }
       return res.set('Allow', 'GET, POST, PATCH').status(405).json({ error: 'Method not allowed.' });
     } catch (error) {

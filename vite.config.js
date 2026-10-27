@@ -6,6 +6,7 @@ import radioMetadata from './server/radio-metadata.js';
 import radioTopTen from './server/radio-top-ten.js';
 import santaMessage from './server/santa-message.js';
 import santaNames from './server/santa-names.js';
+import workshopCatalogue from './server/santa-workshop-catalogue.js';
 import santaGreeting from './server/santa-greeting.js';
 import nameRequests from './server/name-requests.js';
 import { CLERK_PROXY_PATH, clerkProxyMiddleware } from './server/middlewares/clerkProxyMiddleware.js';
@@ -37,6 +38,7 @@ const metadataPlugin = {
     server.middlewares.use('/api/radio-top-ten', radioTopTen);
     server.middlewares.use('/api/santa-message', santaMessage);
     server.middlewares.use('/api/santa-names', santaNames);
+    server.middlewares.use('/api/santa-workshop-catalogue', workshopCatalogue);
     server.middlewares.use('/api/santa-greeting', santaGreeting);
   },
   configurePreviewServer(server) {
@@ -46,6 +48,7 @@ const metadataPlugin = {
     server.middlewares.use('/api/radio-top-ten', radioTopTen);
     server.middlewares.use('/api/santa-message', santaMessage);
     server.middlewares.use('/api/santa-names', santaNames);
+    server.middlewares.use('/api/santa-workshop-catalogue', workshopCatalogue);
     server.middlewares.use('/api/santa-greeting', santaGreeting);
   },
 };

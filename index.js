@@ -7,6 +7,7 @@ import radioMetadata from './server/radio-metadata.js';
 import radioTopTen from './server/radio-top-ten.js';
 import santaMessage from './server/santa-message.js';
 import santaNames from './server/santa-names.js';
+import workshopCatalogue from './server/santa-workshop-catalogue.js';
 import santaGreeting from './server/santa-greeting.js';
 import nameRequests from './server/name-requests.js';
 import { CLERK_PROXY_PATH, clerkProxyMiddleware } from './server/middlewares/clerkProxyMiddleware.js';
@@ -42,6 +43,7 @@ const server = createServer(async (req, res) => {
     if (pathname === '/api/radio-top-ten') return await radioTopTen(req, res);
     if (pathname === '/api/santa-message') return await santaMessage(req, res);
     if (pathname === '/api/santa-names') return await santaNames(req, res);
+    if (pathname === '/api/santa-workshop-catalogue') return await workshopCatalogue(req, res);
     if (pathname === '/api/santa-greeting') return await santaGreeting(req, res);
     if (pathname.startsWith('/api/')) { res.writeHead(404).end('Not found'); return; }
     if (pathname === '/server' || pathname.startsWith('/server/')) { res.writeHead(404).end('Not found'); return; }
