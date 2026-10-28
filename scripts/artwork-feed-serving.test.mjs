@@ -5,6 +5,9 @@ import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import * as mapping from '../src/data/artistArtwork.js';
 import { buildArtworkFeed, artworkFeedPath } from '../server/artwork-feed.js';
+import { exactSongArtwork, observedLivePairs } from './fixtures/exact-song-artwork.js';
+import songs from '../src/data/songs.json' with { type: 'json' };
+import { songPath } from '../src/seo/catalogue.js';
 
 let server;
 let base;
@@ -26,6 +29,35 @@ before(async () => {
 after(async () => {
   if (server && server.exitCode === null) {
     await new Promise(resolve => { server.once('exit', resolve); server.kill(); });
+  }
+});
+
+test('eight exact images and observed joint credits survive production pages and direct SSR', async () => {
+  const { render } = await import('../dist/server/entry-server.js');
+  const unrelated = songs.filter(song =>
+    exactSongArtwork.some(expected => expected.artist === song.artist) &&
+    !exactSongArtwork.some(expected => expected.id === song.id)
+  ).map(song => ({ id: song.id, path: mapping.artistArtwork(song.artist) }));
+  for (const expected of [...exactSongArtwork, ...observedLivePairs, ...unrelated]) {
+    const song = songs.find(song => song.id === expected.id);
+    const path = songPath(song);
+    const response = await fetch(new URL(path, base));
+    assert.equal(response.status, 200, path);
+    const ssr = render(path);
+    for (const html of [await response.text(), `${ssr.head}${ssr.markup}`]) {
+      assert.ok(html.includes(`src="${expected.path}"`), path);
+      for (const tag of ['property="og:image"', 'name="twitter:image"']) {
+        assert.ok(html.includes(`${tag} content="https://www.santaradio.co.uk${expected.path}"`), path);
+      }
+      assert.ok(html.includes(`"contentUrl":"https://www.santaradio.co.uk${expected.path}"`), path);
+      assert.ok(html.includes(song.artist.replaceAll('&', '&amp;')), 'Canonical credit retained');
+    }
+  }
+  for (const { path } of exactSongArtwork) {
+    const response = await fetch(new URL(path, base));
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('content-type'), 'image/webp');
+    assert.deepEqual(Buffer.from(await response.arrayBuffer()), await readFile(`public${path}`));
   }
 });
 

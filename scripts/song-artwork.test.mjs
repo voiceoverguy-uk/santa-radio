@@ -9,6 +9,7 @@ import { songMetadata, artworkAlt } from '../src/seo/catalogue.js';
 import { randomSongOrder } from '../src/data/randomSongOrder.js';
 import { buildArtworkFeed } from '../server/artwork-feed.js';
 import { createHash } from 'node:crypto';
+import { exactSongArtwork, observedLivePairs } from './fixtures/exact-song-artwork.js';
 
 const lastChristmas = songs.find(song => song.id === 75);
 const winterThings = songs.find(song => song.id === 527);
@@ -18,6 +19,75 @@ const usual = '/artist-artwork/ariana-grande.webp';
 const elvisBlue = songs.find(song => song.id === 399);
 const elvisSpecial = '/artist-artwork/elvis-presley-blue-christmas.webp';
 const elvisUsual = '/artist-artwork/elvis-presley.webp';
+
+for (const expected of exactSongArtwork) {
+  test(`${expected.id}: supplied illustration stays recording-specific across website and live metadata`, async () => {
+    const song = songs.find(song => song.id === expected.id);
+    assert.equal(song.artist, expected.artist);
+    assert.equal(song.song, expected.title);
+    assert.equal(songArtwork(song), expected.path);
+    assert.deepEqual(songArtworkCandidates(song), [...new Set([
+      expected.path, artistMapping.artistArtwork(song.artist), artistMapping.fallbackArtwork,
+    ])]);
+    assert.equal(songArtwork(matchLiveSong({ artist: song.artist, title: song.song }).song), expected.path);
+    for (const other of songs.filter(other => other.id !== song.id)) {
+      assert.notEqual(songArtwork(other), expected.path, `Leaked to ${other.id}`);
+    }
+    for (const changed of [
+      { ...song, id: 99999 }, { ...song, song: `${song.song} (Live)` },
+      { ...song, artist: 'Unrelated performer' }, { artist: song.artist, song: song.song },
+    ]) assert.equal(songArtwork(changed), artistMapping.artistArtwork(changed.artist));
+    const meta = songMetadata(song);
+    assert.equal(meta.image, `https://www.santaradio.co.uk${expected.path}`);
+    assert.equal(meta.graph.find(node => node['@type'] === 'ImageObject').contentUrl, meta.image);
+    const bytes = await readFile(`public${expected.path}`);
+    assert.equal(bytes.subarray(0, 4).toString(), 'RIFF');
+    assert.equal(bytes.subarray(8, 12).toString(), 'WEBP');
+    assert.ok(bytes.length < 150000, 'Delivery derivative should remain small');
+  });
+}
+
+test('other recordings keep portraits and the mobile feed contains no song overrides', async () => {
+  const artists = new Set(exactSongArtwork.map(song => song.artist));
+  const ids = new Set(exactSongArtwork.map(song => song.id));
+  for (const song of songs.filter(song => artists.has(song.artist) && !ids.has(song.id))) {
+    assert.equal(songArtwork(song), artistMapping.artistArtwork(song.artist), `${song.id}`);
+  }
+  // The current catalogue has only these four Sia songs; protect additional tracks too.
+  assert.equal(songArtwork({ id: 99999, artist: 'Sia', song: 'Snowman' }),
+    '/artist-artwork/sia-festive.webp');
+  const feed = await buildArtworkFeed(artistMapping);
+  for (const expected of exactSongArtwork) {
+    assert.ok(!JSON.stringify(feed).includes(expected.path));
+    assert.equal(feed.artists[artistMapping.normalizeArtistName(expected.artist)].path,
+      artistMapping.artistArtwork(expected.artist));
+  }
+});
+
+test('observed shortened credits resolve only their verified recordings, retaining joint credits', () => {
+  for (const pair of observedLivePairs) {
+    const matched = matchLiveSong(pair);
+    assert.equal(matched.song?.id, pair.id);
+    assert.equal(matched.song.artist, pair.credit);
+    assert.equal(songArtwork(matched.song), pair.path);
+    for (const track of [
+      { ...pair, title: `${pair.title} (Live)` },
+      { ...pair, title: 'Unknown Christmas Song' },
+      { ...pair, artist: 'Joseph Bell' },
+      { ...pair, artist: 'Tom Jones' },
+      { ...pair, artist: 'Unrelated performer' },
+    ]) assert.equal(matchLiveSong(track).song, undefined, JSON.stringify(track));
+    assert.equal(matchLiveSong(pair, []).status, 'unmatched');
+    assert.equal(matchLiveSong(pair, songs, [
+      { ...pair, songId: pair.id }, { ...pair, songId: 99999 },
+    ]).status, 'ambiguous');
+    const canonical = songs.find(song => song.id === pair.id);
+    assert.equal(matchLiveSong({ artist: canonical.artist, title: canonical.song }).song.id, pair.id);
+  }
+  // Short upload filenames are not permission to accept shortened radio titles.
+  assert.equal(matchLiveSong({ artist: 'Frank Sinatra', title: 'Let It Snow' }).song, undefined);
+  assert.equal(matchLiveSong({ artist: 'Sia', title: 'Naughty and Nice' }).song, undefined);
+});
 
 test('Mariah illustration is restricted to the verified recording and website metadata', async () => {
   const song = songs.find(song => song.id === 24);

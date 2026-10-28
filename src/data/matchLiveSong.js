@@ -10,6 +10,9 @@ export const liveSongAliases = [
   // Truncated titles observed in the live feed; explicit rather than fuzzy prefixes.
   { artist: 'Michael Buble', title: 'Santa Claus Is Co', songId: 335 },
   { artist: 'Dean Martin', title: 'Let It Snow! Let It Snow! Let I', songId: 369 },
+  // Observed metadata uses shortened performer credits for these recordings only.
+  { artist: 'Paul Burling', title: 'Another Christmas Song', songId: 439 },
+  { artist: 'Tom Jones & C Matthews', title: 'Baby, Its Cold Outside', songId: 5 },
 ];
 export const normalizeTrackText = text => text.normalize('NFKC').toLowerCase()
   .replace(/[’‘']/g, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim().replace(/\s+/g, ' ');

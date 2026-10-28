@@ -59,3 +59,9 @@ Include explicit Santa entries for all song-catalogue artists without supplied p
 **Why:** The user approved this server-side workaround for missing fallback artwork in the separate app, to avoid requiring an app update.
 
 **How to apply:** Do not label Santa entries as genuine portraits or change artwork-first website ordering. New supplied portraits should automatically replace their feed entries; app behaviour still needs separate verification.
+
+Keep artist-artwork lookup separate from native song/profile lookup when diagnosing app failures.
+
+**Why:** A supplied native screenshot reported “No matching profile could be opened” for a shortened joint credit even though the public artist aliases and clean image bytes were available. An artist alias is not a profile alias.
+
+**How to apply:** Verify the public image path read-only, then request the native catalogue source and lookup/refresh diagnostics before blaming missing artwork, stale data or caching. Website song aliases do not automatically change the separate app.

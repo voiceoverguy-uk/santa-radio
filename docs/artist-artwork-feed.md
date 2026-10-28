@@ -118,6 +118,12 @@ The website-only resolver must not be used to generate this mobile feed: its exi
 artist mappings, addresses, schema and version calculations remain unchanged.
 Song-specific support in the separate apps requires separately agreed future work.
 
+For the eight additional recording illustrations and the Paul Burling / abbreviated
+Tom Jones & C Matthews matching investigation, see
+[the exact-song and native lookup handoff](song-artwork-native-handoff.md).
+It records public image/hash checks separately from native profile lookup, which
+cannot be diagnosed from this artist-only feed alone.
+
 ### Shared artist portraits
 
 1. Preserve the original upload; create the optimised WebP under `public/artist-artwork`.
