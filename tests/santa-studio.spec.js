@@ -38,6 +38,35 @@ test('mobile Studio promotion title breaks after Santa’s and keeps the second 
   await expect(page.locator('.santa-studio-promotion__title-line')).toHaveCSS('display', 'inline');
 });
 
+test('Purchase sits below the voucher submit button and does not open the Studio', async ({ page }) => {
+  let accessRequests = 0;
+  await page.route('**/api/santa-workshop-access', route => {
+    accessRequests++;
+    return route.fulfill({ status: 401, json: { authorized: false } });
+  });
+  await page.setViewportSize({ width: 320, height: 844 });
+  await visit(page, '/free-santa-message');
+
+  const promotion = page.locator('.santa-studio-promotion');
+  const submit = promotion.getByRole('button', { name: 'Create your bespoke message', exact: true });
+  const purchase = promotion.getByRole('button', { name: 'Purchase', exact: true });
+  await expect(purchase).toBeVisible();
+  const submitBox = await submit.boundingBox();
+  const purchaseBox = await purchase.boundingBox();
+  expect(purchaseBox.y).toBeGreaterThanOrEqual(submitBox.y + submitBox.height);
+  expect(purchaseBox.width).toBeGreaterThanOrEqual(submitBox.width - 1);
+  expect(await purchase.evaluate(node => node.form)).toBeNull();
+
+  await submit.focus();
+  await page.keyboard.press('Tab');
+  await expect(purchase).toBeFocused();
+  await expect(purchase).toHaveCSS('min-height', '44px');
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/\/free-santa-message$/);
+  await expect(page.locator('.smw-builder')).toHaveCount(0);
+  expect(accessRequests).toBe(0);
+});
+
 for (const path of ['/', '/free-santa-message']) {
   test(`public live total, honest failure and retry without unlocking on ${path}`, async ({ page }) => {
     let mode = 'hold', release;

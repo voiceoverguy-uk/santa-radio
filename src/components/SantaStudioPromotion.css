@@ -189,6 +189,32 @@
   cursor: wait;
 }
 
+.santa-studio-promotion__purchase {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 9px;
+  padding: 10px 14px;
+  border: 1px solid #806023;
+  border-radius: 7px;
+  background: #f7efd9;
+  color: var(--studio-ink);
+  font-size: 0.84rem;
+  font-weight: 700;
+  line-height: 1.35;
+  cursor: pointer;
+  transition: background-color 160ms ease, transform 160ms ease;
+}
+
+.santa-studio-promotion__purchase:hover {
+  background: #e9ddc2;
+  transform: translateY(-1px);
+}
+
+.santa-studio-promotion__purchase:focus-visible {
+  outline: 3px solid #765a20;
+  outline-offset: 4px;
+}
+
 .santa-studio-promotion .workshop-password-form--promotion .workshop-password-error {
   color: #842c23;
 }
@@ -265,6 +291,14 @@
   }
 
   .santa-studio-promotion .workshop-password-form--promotion button:not(:disabled):hover {
+    transform: none;
+  }
+
+  .santa-studio-promotion__purchase {
+    transition: none;
+  }
+
+  .santa-studio-promotion__purchase:hover {
     transform: none;
   }
 }

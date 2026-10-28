@@ -30,6 +30,9 @@ export default function SantaStudioPromotion() {
         variant="promotion"
         onAuthorized={() => navigate('/santa-message-workshop')}
       />
+      <button className="santa-studio-promotion__purchase" type="button">
+        Purchase
+      </button>
     </section>
   );
 }

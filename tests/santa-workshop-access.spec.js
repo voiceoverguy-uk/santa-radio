@@ -215,7 +215,13 @@ for (const path of ['/', '/free-santa-message']) {
       await expect(promo).not.toContainText('Have a voucher? You can enter it below.');
       await expect(promo.getByLabel('Voucher code', { exact: true })).toBeVisible();
       await expect(promo).not.toContainText('(optional)');
-      await expect(promo.getByRole('button', { name: 'Create your bespoke message', exact: true })).toBeVisible();
+      const voucherSubmit = promo.getByRole('button', { name: 'Create your bespoke message', exact: true });
+      const purchase = promo.getByRole('button', { name: 'Purchase', exact: true });
+      await expect(voucherSubmit).toBeVisible();
+      await expect(purchase).toBeVisible();
+      const submitBox = await voucherSubmit.boundingBox();
+      const purchaseBox = await purchase.boundingBox();
+      expect(purchaseBox.y).toBeGreaterThanOrEqual(submitBox.y + submitBox.height);
       await expect(promo.getByLabel(codeLabel, { exact: true })).toHaveAttribute('placeholder', 'Enter your Voucher code to continue.');
       await expect(promo.getByLabel(codeLabel, { exact: true })).toHaveAttribute('required', '');
       await expect(promo.locator('a[href="/santa-message-workshop"]')).toHaveCount(0);
