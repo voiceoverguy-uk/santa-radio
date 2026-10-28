@@ -40,6 +40,12 @@ Google Analytics and Meta advertising tracking require separate, explicit analyt
 
 **How to apply:** Preserve independent opt-in and withdrawal controls when changing tracking. These choices are separate from news subscriptions and Santa message access; do not add an unconditional tracking script or no-JavaScript tracking image.
 
+The Santa Tracker and all its subroutes must be analytics- and marketing-free for everyone, regardless of cookie consent, saved preferences, or internal navigation.
+
+**Why:** The owner explicitly authorised this broader exception to protect the existing released Android app, which loads an unmarked tracker URL and cannot yet be identified reliably. This replaces the earlier app-only scope, not the consent rules for other website pages.
+
+**How to apply:** Do not require a URL marker or infer native-app identity from storage restrictions or a synthetic WebView user agent. Keep the tracker exception active after entering from an already-tracked page; suppress late third-party telemetry without reloading or interrupting the shared radio. Preserve consent-based tracking elsewhere. Website changes must reach the existing Vercel deployment before claiming protection for the released app; do not publish unrelated pending work.
+
 Partnership enquiry analytics measures opening the homepage invitation, not a submitted or accepted enquiry.
 
 **Why:** The requested scope explicitly preserves the existing general enquiry workflow and excludes contact details and free-form messages from tracking.

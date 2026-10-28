@@ -1,3 +1,5 @@
+import { isTrackerPath, trackerTrackingDisabled } from './trackerPrivacy.js';
+
 export const MEASUREMENT_ID = 'G-FGL2HBXZ92';
 const DISABLE_KEY = `ga-disable-${MEASUREMENT_ID}`;
 let initialised = false;
@@ -15,6 +17,10 @@ function cleanUrl(value) {
 }
 
 export function trackAnalyticsPageView(pathname) {
+  if (isTrackerPath(pathname) || trackerTrackingDisabled()) {
+    revokeAnalytics();
+    return;
+  }
   window[DISABLE_KEY] = false;
   window.dataLayer = window.dataLayer || [];
   window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
@@ -63,7 +69,7 @@ export function trackAnalyticsPageView(pathname) {
 }
 
 export function trackAnalyticsEvent(name, data) {
-  if (typeof window === 'undefined' || !active || window[DISABLE_KEY]) return;
+  if (typeof window === 'undefined' || trackerTrackingDisabled() || !active || window[DISABLE_KEY]) return;
   try {
     const result = window.gtag?.('event', name, { ...data, send_to: MEASUREMENT_ID });
     result?.catch?.(() => {});

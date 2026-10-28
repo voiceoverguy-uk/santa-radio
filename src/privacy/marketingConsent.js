@@ -1,3 +1,5 @@
+import { isTrackerPath, trackerTrackingDisabled } from './trackerPrivacy.js';
+
 export const CONSENT_KEY = 'santaradio-marketing-consent-v1';
 export const CONSENT_DURATION = 180 * 24 * 60 * 60 * 1000;
 export const PIXEL_ID = '2258928314674162';
@@ -32,6 +34,10 @@ let initialised = false;
 let lastPath = null;
 
 export function trackPageView(pathname) {
+  if (isTrackerPath(pathname) || trackerTrackingDisabled()) {
+    revokeMarketing();
+    return;
+  }
   if (!window.fbq) {
     const pixel = function (...args) {
       if (pixel.callMethod) pixel.callMethod.apply(pixel, args);

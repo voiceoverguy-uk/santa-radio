@@ -4,6 +4,7 @@ import { EMPTY_CHOICES, SETTINGS_EVENT } from '../privacy/cookieConsent.js';
 import { useCookieConsent } from '../privacy/CookieConsentProvider.jsx';
 import { trackPageView, revokeMarketing } from '../privacy/marketingConsent.js';
 import { trackAnalyticsPageView, revokeAnalytics } from '../privacy/googleAnalytics.js';
+import { isTrackerPath } from '../privacy/trackerPrivacy.js';
 import './MarketingConsent.css';
 
 const allChoices = { analytics: true, marketing: true, media: true };
@@ -56,6 +57,11 @@ export default function MarketingConsent() {
 
   useEffect(() => {
     if (!ready) return;
+    if (isTrackerPath(pathname)) {
+      revokeMarketing();
+      revokeAnalytics();
+      return;
+    }
     if (choice?.marketing) trackPageView(pathname);
     else revokeMarketing();
     if (choice?.analytics) trackAnalyticsPageView(pathname);
