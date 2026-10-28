@@ -39,15 +39,15 @@ export default function PrivacyPolicy() {
   return <main className="privacy-page">
     <Helmet>
       <title>Privacy Policy — Santa Radio</title>
-      <meta name="description" content="Privacy information for the Santa Radio website and Christmas Radio UK app, including browser preferences, app storage and privacy choices." />
+      <meta name="description" content="Privacy information for the Santa Radio website, Santa Radio for Android and Christmas Radio UK for iPhone and iPad, including app storage, embedded content and privacy choices." />
       <link rel="canonical" href="https://www.santaradio.co.uk/privacy-policy" />
     </Helmet>
     <article className="privacy-content">
       <p className="eyebrow">Santa Radio</p>
       <h1>Privacy Policy</h1>
-        <p className="privacy-date">Updated <time dateTime="2026-10-26">26 October 2026</time></p>
-      <p>The Santa Radio website and Christmas Radio UK app are operated by VoiceoverGuy Ltd. For privacy questions, email <a href="mailto:santa@santaradio.co.uk">santa@santaradio.co.uk</a>.</p>
-        <p>This notice covers the current Santa Radio website and the Christmas Radio UK native apps for iPhone and iPad, version 35.0, and Android. The app-specific sections below explain how each app handles information. Website-only features, including forms, Santa audio messages, embedded videos and optional analytics or marketing cookies, are separate from the native apps. External services may also have their own privacy notices.</p>
+      <p className="privacy-date">Updated <time dateTime="2026-10-28">28 October 2026</time></p>
+      <p>The Santa Radio website, Santa Radio for Android and Christmas Radio UK app for iPhone and iPad are operated by VoiceoverGuy Ltd. For privacy questions, email <a href="mailto:santa@santaradio.co.uk">santa@santaradio.co.uk</a>.</p>
+      <p>This notice covers the current Santa Radio website, Christmas Radio UK for iPhone and iPad, version 35.0, and Santa Radio for Android, version 35.0. The app-specific sections below explain how each app handles information. Website features, including forms, Santa audio messages, embedded videos and optional analytics or marketing cookies, are distinct from native app features, but website content can also be displayed inside an app. The website and third-party disclosures therefore also matter for embedded web content. External services may have their own privacy notices.</p>
       <p>You can browse and listen without an account. We do not sell personal data.</p>
       <nav className="privacy-section-nav" aria-label="Privacy policy sections">
         <a href="#cookie-overview">Website &amp; cookies</a>
@@ -87,22 +87,37 @@ export default function PrivacyPolicy() {
       </section>
 
       <section aria-labelledby="android-radio-privacy">
-        <h2 id="android-radio-privacy" tabIndex="-1">Christmas Radio UK — Android app</h2>
+        <h2 id="android-radio-privacy" tabIndex="-1">Santa Radio for Android — version 35.0</h2>
         <h3>Using the app</h3>
-        <p>The app plays the live Christmas Radio stream and displays current and upcoming song information and artist artwork. You can listen without creating an account or providing your name, email address or other contact details.</p>
-        <p>The app uses HTTPS connections to receive live audio from Citrus3 at global.citrus3.com:8164. It separately requests current and upcoming song information and artist artwork from Santa Radio at www.santaradio.co.uk over HTTPS. These requests necessarily disclose your IP address and normal technical request information to the relevant services. This can include request times, requested resources, connection duration and device or networking-software information supplied with a request. Stream, metadata and artwork requests may indicate when you listen or which information and images you request.</p>
-        <p>The app does not include advertising or analytics SDKs, and Santa Radio programming is broadcast without adverts. These facts do not mean that no technical information is processed to provide the stream, song information or artwork.</p>
+        <p>Santa Radio for Android, version 35.0, is operated by VoiceoverGuy Ltd. It plays live radio and displays current and upcoming song information and artist artwork. You can listen without creating an account or providing your name, email address or other contact details. The native app does not create an account-based listening-history profile, and native listening does not subscribe you to marketing.</p>
+        <p>The native app has no advertising or analytics SDKs. The owner confirms that the radio stream and Santa Tracker contain no adverts or sponsorship messages. This does not mean that no data is collected or processed: listening and displaying online content involve the connections described below, and embedded website content has separate optional integrations.</p>
+
+        <h3>Permissions and decorative effects</h3>
+        <p>The signed Android version 35.0 release requests no microphone, camera, contacts, location, photo-library or physical-activity recognition permissions. The Santa Tracker displays Santa’s route, not the listener’s GPS location.</p>
+        <p>Optional foreground shake and tilt effects process motion readings locally. The app code does not upload those readings to station servers. System reduced-motion and low-power settings adjust decorative effects.</p>
 
         <h3>Information stored on your device</h3>
-        <p>App preferences and cached content are stored on your device and are not uploaded to us. Local storage is separate from technical information that streaming, website or hosting services may receive through your requests. Removing the app does not delete information already retained by those services.</p>
+        <p>The app stores display and sound preferences, the Present Stack best score and game settings, catalogue information and cached artwork locally. Its app code does not upload preferences, scores or motion readings to station servers.</p>
+        <p>Android backup and device-transfer settings can separately copy eligible app data. Local storage therefore does not mean that app data can never leave the device. Clearing app storage or uninstalling removes local app data from that installation, but does not necessarily erase existing backups, browser storage or records held by service providers.</p>
 
-        <h3>Service providers and the Tracker</h3>
-        <p>The services needed to provide the stream, song information and artwork may maintain connection logs or listener statistics. Provider-specific retention periods, processing locations and any international transfers or safeguards depend on the applicable service arrangements. We do not specify a fixed retention period where it has not been confirmed. Contact us for information about arrangements relevant to this service.</p>
-        <p>The Tracker is optional and opens in your external browser. The website’s privacy information and cookie choices apply to that visit. External services may also have their own privacy notices. Using the app does not enrol you in marketing.</p>
-        <p>The app is intended for listeners of all ages. This describes its intended audience and is not a claim of compliance with children’s privacy laws or Google Play Families requirements.</p>
+        <h3>Connections and external services</h3>
+        <p>The app uses HTTPS connections to receive live audio from Citrus3 at global.citrus3.com:8164. Current and upcoming song feeds come from stagcommunications.com. Catalogue information, artwork and the Tracker come from the Vercel-hosted Santa Radio website at santa-radio-three.vercel.app. Google Fonts, at fonts.googleapis.com and fonts.gstatic.com, supplies fonts for the embedded Tracker. External links connect to the website, social network or app store you select.</p>
+        <p>These requests reveal your IP address and ordinary request, device and network information to the relevant services. This may include request times, requested content, connection duration and information supplied by your device or networking software. Requests can indicate listening times or the content you request. A service may infer an approximate location from an IP address; that is different from accessing your device’s GPS location.</p>
+
+        <h3>The embedded Tracker and external browser</h3>
+        <p>The optional Santa Tracker can be embedded in the Android app or opened in an external browser. The embedded view uses JavaScript and incognito mode, with DOM storage and shared and third-party cookies disabled. These limits do not eliminate network requests or server processing, and are not proof that the shipped WebView can never load tracking.</p>
+        <p>The website bundle includes optional Google Analytics and Meta integrations, conditional on Analytics and Marketing choices respectively, with both defaults off. Disabling DOM storage does not itself enforce a permanent opt-out: a choice can apply to the current website visit even if it cannot be saved. Google Fonts requests are separate from those optional tracking choices.</p>
+        <p>The website’s <a href="#cookie-overview">cookie choices and third-party disclosures</a>, including the <a href="#youtube-privacy">YouTube information</a> where relevant, also apply to embedded website content. An ordinary external browser has its own settings and storage, separate from the app’s embedded view. Neither incognito mode nor these storage and cookie limits establishes children’s privacy compliance.</p>
+
+        <h3>Provider records and retention</h3>
+        <p>Streaming, feed and hosting services may maintain connection and error logs or listener statistics. These provider records are separate from local app data; clearing storage or uninstalling does not control their retention or erase information already received.</p>
+        <p>The owner does not know the actual station and feed logging arrangements, retention periods, processing locations or international-transfer safeguards. We do not state precise periods or assume particular provider contracts or legal bases where these have not been confirmed. For questions about these arrangements, email <a href="mailto:santa@santaradio.co.uk">santa@santaradio.co.uk</a>. A provider’s general privacy notice may not describe the settings or arrangements for this service.</p>
+
+        <h3>Children and external forms</h3>
+        <p>The intended audience includes all ages, including children. Parents or carers should handle external forms involving children. The review of applicable children’s privacy requirements, including COPPA, GDPR and Google Play Families requirements, remains open; the intended audience and this notice are not a claim of compliance or certification.</p>
 
         <h3>Privacy questions and your rights</h3>
-        <p>For questions about the app’s handling of information, or to exercise applicable data-protection rights, <a href="mailto:santa@santaradio.co.uk">email us about app privacy</a>. The rights and complaints information elsewhere in this policy also applies to the app.</p>
+        <p>For questions about the app’s handling of information, or to exercise applicable data-protection rights, <a href="mailto:santa@santaradio.co.uk">email us about app privacy</a>. See <a href="#privacy-choices">Your choices and rights</a> for the applicable rights and complaints information. We can help identify relevant services and coordinate requests with providers where appropriate; a provider holding records separately may also need to handle your request directly.</p>
       </section>
 
       <h2>Other Santa Radio and tvOS apps</h2>

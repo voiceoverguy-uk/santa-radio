@@ -99,7 +99,8 @@ test('policy covers the confirmed native app separately from website marketing',
   const app = page.getByRole('region', { name: 'Christmas Radio UK — native iPhone and iPad app, version 35.0' });
   await expect(app).toBeVisible();
   await expect(article).not.toContainText('not separate apps');
-  await expect(article.locator('time')).toHaveAttribute('datetime', '2026-10-26');
+  await expect(article.locator('time')).toHaveAttribute('datetime', '2026-10-28');
+  await expect(article.locator('time')).toHaveText('28 October 2026');
   await expect(article).toContainText('The homepage YouTube TV loads automatically on a first visit');
   await expect(article).toContainText('turning it off cannot erase data already sent or third-party cookies');
   for (const text of [
@@ -136,31 +137,67 @@ test('policy covers the confirmed native app separately from website marketing',
   await expect(article).toContainText('We do not sell personal data.');
 });
 
-test('policy describes the confirmed Android app without borrowing unverified iOS or provider claims', async ({ page }) => {
+test('policy describes the Android release, embedded Tracker and unconfirmed provider arrangements', async ({ page }) => {
   await page.goto('/privacy-policy');
-  const app = page.getByRole('region', { name: 'Christmas Radio UK — Android app' });
+  const app = page.getByRole('region', { name: 'Santa Radio for Android — version 35.0' });
   await expect(app).toBeVisible();
   for (const text of [
+    'operated by VoiceoverGuy Ltd',
     'without creating an account',
+    'does not create an account-based listening-history profile',
+    'native listening does not subscribe you to marketing',
+    'native app has no advertising or analytics SDKs',
+    'stream and Santa Tracker contain no adverts or sponsorship messages',
+    'does not mean that no data is collected',
+    'signed Android version 35.0 release requests no microphone, camera, contacts, location, photo-library or physical-activity recognition permissions',
+    'Santa’s route, not the listener’s GPS location',
+    'Optional foreground shake and tilt effects process motion readings locally',
+    'System reduced-motion and low-power settings',
+    'display and sound preferences',
+    'Present Stack best score and game settings',
+    'catalogue information and cached artwork locally',
+    'does not upload preferences, scores or motion readings to station servers',
+    'Android backup and device-transfer settings can separately copy eligible app data',
+    'does not necessarily erase existing backups, browser storage or records held by service providers',
     'uses HTTPS connections',
     'receive live audio from Citrus3 at global.citrus3.com:8164',
-    'separately requests current and upcoming song information and artist artwork from Santa Radio at www.santaradio.co.uk over HTTPS',
+    'Current and upcoming song feeds come from stagcommunications.com',
+    'Catalogue information, artwork and the Tracker come from the Vercel-hosted Santa Radio website at santa-radio-three.vercel.app',
+    'fonts.googleapis.com and fonts.gstatic.com',
+    'website, social network or app store you select',
     'your IP address',
-    'App preferences and cached content are stored on your device and are not uploaded to us',
-    'does not include advertising or analytics SDKs',
-    'programming is broadcast without adverts',
-    'The Tracker is optional and opens in your external browser',
-    'intended for listeners of all ages',
-    'may maintain connection logs or listener statistics',
-    'do not specify a fixed retention period where it has not been confirmed',
-    'rights and complaints information elsewhere',
+    'ordinary request, device and network information',
+    'Requests can indicate listening times or the content you request',
+    'approximate location from an IP address',
+    'different from accessing your device’s GPS location',
+    'can be embedded in the Android app or opened in an external browser',
+    'JavaScript and incognito mode, with DOM storage and shared and third-party cookies disabled',
+    'do not eliminate network requests or server processing',
+    'not proof that the shipped WebView can never load tracking',
+    'optional Google Analytics and Meta integrations',
+    'conditional on Analytics and Marketing choices respectively, with both defaults off',
+    'a choice can apply to the current website visit even if it cannot be saved',
+    'Google Fonts requests are separate from those optional tracking choices',
+    'ordinary external browser has its own settings and storage',
+    'may maintain connection and error logs or listener statistics',
+    'owner does not know the actual station and feed logging arrangements, retention periods, processing locations or international-transfer safeguards',
+    'do not state precise periods or assume particular provider contracts or legal bases',
+    'intended audience includes all ages, including children',
+    'Parents or carers should handle external forms involving children',
+    'COPPA, GDPR and Google Play Families requirements, remains open',
+    'not a claim of compliance or certification',
+    'coordinate requests with providers where appropriate',
   ]) await expect(app).toContainText(text);
   await expect(app).not.toContainText('AirPlay and CarPlay');
-  await expect(app).not.toContainText('microphone, camera, contacts');
-  await expect(app).not.toContainText('Vercel and Citrus3');
-  await expect(app).toContainText('not a claim of compliance with children’s privacy laws or Google Play Families requirements');
+  await expect(app).not.toContainText('www.santaradio.co.uk over HTTPS');
+  await expect(app).not.toContainText('The Tracker is optional and opens in your external browser');
   await expect(app.getByRole('link', { name: 'email us about app privacy' }))
     .toHaveAttribute('href', 'mailto:santa@santaradio.co.uk');
+  await expect(app.getByRole('link', { name: 'Your choices and rights', exact: true }))
+    .toHaveAttribute('href', '#privacy-choices');
+  await expect(app.getByRole('link', { name: 'cookie choices and third-party disclosures', exact: true }))
+    .toHaveAttribute('href', '#cookie-overview');
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://www.santaradio.co.uk/privacy-policy');
 });
 
 test('footer opens a readable privacy policy with separate message access and news consent', async ({ page }) => {
