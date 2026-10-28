@@ -18,6 +18,7 @@ import publicPagesPlugin from './server/public-pages-plugin.js';
 import { santaAudioRecipeVersion } from './scripts/santa-audio-recipe.mjs';
 import stripeWebhook from './server/stripe-webhook.js';
 import studioPaidAccess from './server/santa-studio-purchase.js';
+import studioCheckout from './server/santa-studio-checkout.js';
 
 const trackerMetadataPlugin = {
   name: 'tracker-page-metadata',
@@ -39,6 +40,7 @@ const metadataPlugin = {
     server.middlewares.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
     server.middlewares.use('/api/stripe/webhook', stripeWebhook);
     server.middlewares.use('/api/santa-studio-access', studioPaidAccess);
+    server.middlewares.use('/api/santa-studio-checkout', studioCheckout);
     server.middlewares.use(workshopDocumentHeaders);
     server.middlewares.use('/api/santa-workshop-access', workshopAccess);
     server.middlewares.use('/api/name-requests', nameRequests);
@@ -53,6 +55,7 @@ const metadataPlugin = {
     server.middlewares.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
     server.middlewares.use('/api/stripe/webhook', stripeWebhook);
     server.middlewares.use('/api/santa-studio-access', studioPaidAccess);
+    server.middlewares.use('/api/santa-studio-checkout', studioCheckout);
     server.middlewares.use(workshopDocumentHeaders);
     server.middlewares.use('/api/santa-workshop-access', workshopAccess);
     // Vite's SPA preview fallback otherwise serves the pre-rendered homepage.

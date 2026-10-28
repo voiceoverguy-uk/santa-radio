@@ -1,4 +1,5 @@
 import { hasWorkshopAccess } from './santa-workshop-access.js';
+import { hasPaidStudioAccess } from './santa-studio-purchase.js';
 import { createHash } from 'node:crypto';
 
 export const WORKSHOP_ROOT = 'https://stagcommunications.com/santaradio/names/personalised-message/';
@@ -142,7 +143,10 @@ export function createWorkshopCatalogue({ fetcher = fetch, clock = Date.now, ttl
 }
 
 export const workshopCatalogue = createWorkshopCatalogue();
-export function createWorkshopCatalogueHandler(load = workshopCatalogue, authorize = hasWorkshopAccess) {
+export async function hasStudioAccess(req) {
+  return hasWorkshopAccess(req) || await hasPaidStudioAccess(req);
+}
+export function createWorkshopCatalogueHandler(load = workshopCatalogue, authorize = hasStudioAccess) {
   return async (req, res) => {
     res.setHeader('Cache-Control', 'no-store');
     res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -155,8 +159,10 @@ export function createWorkshopCatalogueHandler(load = workshopCatalogue, authori
       res.setHeader('Allow', 'GET');
       return send(405, { error: 'Use GET to load Santa’s workshop choices.' });
     }
-    if (!authorize(req)) return send(403, { error: 'Enter a valid tester code to open Santa’s Studio.', code: 'STUDIO_ACCESS_REQUIRED' });
-    try { return send(200, await load()); }
+    try {
+      if (!await authorize(req)) return send(403, { error: 'Use a valid tester code or a confirmed sandbox purchase to open Santa’s Studio.', code: 'STUDIO_ACCESS_REQUIRED' });
+      return send(200, await load());
+    }
     catch { return send(503, { error: 'Santa’s recorded choices could not be loaded. Please try again.' }); }
   };
 }

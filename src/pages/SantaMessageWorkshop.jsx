@@ -1,4 +1,5 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { StudioAccessContext } from '../lib/studioAccessContext.js';
 import useWorkshopSounds from '../hooks/useWorkshopSounds.js';
 import PageSeo from '../seo/PageSeo.jsx';
 import { pageMetadata } from '../seo/catalogue.js';
@@ -177,6 +178,7 @@ function getSoundStatusMessage(status) {
 }
 
 export default function SantaMessageWorkshop() {
+  const accessKind = useContext(StudioAccessContext);
   const [stageIndex, setStageIndex] = useState(0);
   const [choices, setChoices] = useState(emptyChoices);
   const [selectedName, setSelectedName] = useState(null);
@@ -361,7 +363,9 @@ export default function SantaMessageWorkshop() {
             </span>
             <div>
               <strong>It's the little details that matter...</strong>
-              <p>You’re in the friends-only Message Maker Studio test. Please try all of the sections and give us some feedback.</p>
+              <p>{accessKind === 'paid-sandbox'
+                ? 'Sandbox test payment confirmed — no real money moved. This preview opens the Studio choices only. Bundle downloads and email return links are not connected yet.'
+                : 'You’re in the friends-only Message Maker Studio test. Please try all of the sections and give us some feedback.'}</p>
             </div>
           </aside>
         </header>

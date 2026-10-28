@@ -39,6 +39,28 @@ export async function prepareSandboxPurchaseStore(pool = databasePool()) {
     claim_sha256 char(64) NOT NULL,
     granted_at timestamptz NOT NULL DEFAULT now()
   )`);
+  await pool.query(`CREATE TABLE IF NOT EXISTS public.santa_studio_checkout_attempts (
+    claim_sha256 char(64) PRIMARY KEY, checkout_session_id text, generation integer NOT NULL DEFAULT 0
+  )`);
+  await pool.query(`CREATE TABLE IF NOT EXISTS public.santa_studio_checkout_limits (
+    bucket_key text PRIMARY KEY, attempts integer NOT NULL DEFAULT 1, expires_at timestamptz NOT NULL
+  )`);
+}
+
+export function studioClaimFromRequest(req) {
+  if (String(req.headers.cookie || '').length > 16384) return null;
+  const cookies = String(req.headers.cookie || '').split(';').map(part => part.trim())
+    .filter(part => part.startsWith(`${STUDIO_PAID_COOKIE}=`));
+  const raw = cookies.length === 1 && cookies[0].slice(STUDIO_PAID_COOKIE.length + 1);
+  const match = typeof raw === 'string' && raw.length < 300
+    && /^(cs_test_[A-Za-z0-9]+)\.([A-Za-z0-9_-]{43})$/.exec(raw);
+  return match ? { sessionId: match[1], claimToken: match[2] } : null;
+}
+
+export async function hasPaidStudioAccess(req) {
+  const claim = studioClaimFromRequest(req);
+  if (!claim) return false;
+  return (await confirmSandboxPurchase({ ...claim, stripe: await getUncachableStripeClient() })).authorized;
 }
 
 export async function confirmSandboxPurchase({
@@ -73,14 +95,10 @@ export function createStudioPaidAccessHandler({
     res.set('Cache-Control', 'private, no-store');
     res.set('X-Robots-Tag', 'noindex, nofollow');
     if (req.method !== 'GET') return res.set('Allow', 'GET').status(405).end();
-    const cookies = String(req.headers.cookie || '').split(';').map(part => part.trim())
-      .filter(part => part.startsWith(`${STUDIO_PAID_COOKIE}=`));
-    const raw = cookies.length === 1 && cookies[0].slice(STUDIO_PAID_COOKIE.length + 1);
-    const match = typeof raw === 'string' && raw.length < 300
-      && /^(cs_test_[A-Za-z0-9]+)\.([A-Za-z0-9_-]{43})$/.exec(raw);
-    if (!match) return res.json({ authorized: false });
+    const claim = studioClaimFromRequest(req);
+    if (!claim) return res.json({ authorized: false });
     try {
-      const result = await confirm({ sessionId: match[1], claimToken: match[2], stripe: await getStripe() });
+      const result = await confirm({ ...claim, stripe: await getStripe() });
       return res.json({ authorized: result.authorized });
     } catch {
       return res.status(503).json({ authorized: false, error: 'Sandbox payment could not be checked.' });
