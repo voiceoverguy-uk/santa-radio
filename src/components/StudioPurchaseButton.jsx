@@ -2,6 +2,13 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function StudioPurchaseButton() {
+  // Build-time guard: public browser bundles and server-rendered pages must
+  // never expose sandbox controls, even if an API reports availability.
+  if (!import.meta.env.DEV) return null;
+  return <SandboxPurchaseButton />;
+}
+
+function SandboxPurchaseButton() {
   const navigate = useNavigate();
   const location = useLocation();
   const [available, setAvailable] = useState(false);

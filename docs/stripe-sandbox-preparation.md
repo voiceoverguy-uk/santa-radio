@@ -12,6 +12,7 @@
 - One actual £6.50 sandbox Checkout payment was completed using Stripe's standard test card, and a separate unpaid checkout was expired. These were integration checks, not purchases through the website's Purchase button.
 - Nothing was published. No live Stripe resource was read or changed.
 - The homepage Purchase button now opens sandbox Checkout. A server-confirmed test payment opens the Studio UI and its protected choices. Free greetings, voucher access and Studio audio generation are unchanged.
+- Sandbox purchase controls are development-build only. Public builds omit the entire control and its explanatory/cancellation text, in both server and browser rendering, without probing checkout readiness. Coming soon and voucher access remain visible. Verify after building with `node scripts/verify-studio-purchase-display.mjs`; this display check makes no Stripe writes.
 
 ## Workspace commands
 
