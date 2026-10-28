@@ -27,8 +27,8 @@ No regeneration limits or paid-access expiry have been agreed.
 
 **How to apply:** Do not introduce a regeneration cap or access expiry, and do not carry the private tester session's timing rules into paid access.
 
-The owner reports a working MMS generator. Locate and trace that actual flow before changing it; the free short-message generator is not evidence that the full paid family bundle is delivered.
+The extended audio-stitching demo exists but has not been connected to Studio selections. This does not block sandbox payment setup; it is not evidence that the full paid family bundle is delivered.
 
-**Why:** The owner challenged the audit's design-preview description and requested investigation before any generation changes or delivery claims.
+**Why:** The owner resolved the generator discrepancy and explicitly authorised sandbox setup to continue independently.
 
-**How to apply:** Distinguish the current workshop UI, the free generator and any separately hosted or supplied MMS generator. Ask for its route or source when it cannot be located rather than replacing it.
+**How to apply:** Preserve the separate demo and free generator. Do not claim complete bundle delivery until Studio selections and all bundle outputs are connected and verified.
