@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import * as mapping from '../src/data/artistArtwork.js';
+import { songArtwork, songPortraits } from '../src/data/songArtwork.js';
 import { buildArtworkFeed } from '../server/artwork-feed.js';
 
 test('Sam Ryder keeps his shared artwork path with a new content version after cropping', async () => {
@@ -18,6 +19,23 @@ test('Sam Ryder keeps his shared artwork path with a new content version after c
   // Original white-rimmed WebP: changing bytes, not the URL contract, clears caches.
   assert.notEqual(version, 'cea5319e6220af6276ab738749c1c721f9bdf65b92eeb44c468e9b96cd69bcb4');
   assert.ok(bytes.length < 100000);
+});
+
+test('Greg Lake replacement stays shared and advertises the replacement bytes', async () => {
+  const songs = JSON.parse(await readFile('src/data/songs.json', 'utf8'));
+  const song = songs.find(song => song.artist === 'Greg Lake');
+  assert.equal(song.song, 'I Believe In Father Christmas');
+  assert.equal(Object.hasOwn(songPortraits, song.id), false);
+  const path = '/artist-artwork/greg-lake.webp';
+  assert.equal(mapping.artistArtwork('  GREG  LAKE  '), path);
+  assert.equal(songArtwork(song), path);
+  const bytes = await readFile(`public${path}`);
+  const version = createHash('sha256').update(bytes).digest('hex');
+  // Pin the supplied illustration, not the previous beige portrait.
+  assert.equal(version, 'cba78ed5ba483d0ee64eec28aa8112185ad2ebfdc30fed44e68930aa36b2d148');
+  assert.notEqual(version, '8702f179b6a42e80d2a4b952c3fd8220187064221f26bfc850a1e6a4cab68219');
+  const feed = await buildArtworkFeed(mapping);
+  assert.deepEqual(feed.artists['greg lake'], { path, version, url: `${path}?v=${version}` });
 });
 
 test('Corinne Bailey Rae uses her supplied portrait in the catalogue and shared artwork feed', async () => {

@@ -74,6 +74,7 @@ test('built pages and SSR share verified song images without altering other reco
     ['/christmas-artist/25-mariah-carey-oh-santa', '/artist-artwork/mariah-carey.webp'],
     ['/christmas-artist/319-michael-buble-all-i-want-for-christmas-is-you', '/artist-artwork/michael-buble.webp'],
     ['/christmas-artist/61-chris-de-burgh-a-spaceman-came-travelling', '/artist-artwork/chris-de-burgh.webp'],
+    ['/christmas-artist/42-greg-lake-i-believe-in-father-christmas', '/artist-artwork/greg-lake.webp'],
     ['/christmas-artist/399-elvis-presley-blue-christmas', '/artist-artwork/elvis-presley-blue-christmas.webp'],
     ['/christmas-artist/260-elvis-presley-santa-bring-my-baby-back-to-me', '/artist-artwork/elvis-presley.webp'],
     ['/christmas-artist/116-glen-campbell-blue-christmas', '/artist-artwork/glen-campbell.webp'],
@@ -99,18 +100,20 @@ test('built pages and SSR share verified song images without altering other reco
   }
 });
 
-test('built Chris De Burgh delivery image matches the replacement advertised in the artist feed', async () => {
-  const path = '/artist-artwork/chris-de-burgh.webp';
-  const feed = await (await fetch(new URL(artworkFeedPath, base))).json();
-  const response = await fetch(new URL(feed.artists['chris de burgh'].url, base));
-  assert.equal(response.status, 200);
-  assert.equal(response.headers.get('content-type'), 'image/webp');
-  const image = Buffer.from(await response.arrayBuffer());
-  assert.deepEqual(image, await readFile(`public${path}`));
-  assert.equal(createHash('sha256').update(image).digest('hex'), feed.artists['chris de burgh'].version);
-  const catalogue = await (await fetch(new URL('/christmas-music', base))).text();
-  assert.ok(catalogue.includes(`src="${path}"`));
-});
+for (const [artist, filename] of [['chris de burgh', 'chris-de-burgh'], ['greg lake', 'greg-lake']]) {
+  test(`built ${artist} delivery image matches the replacement advertised in the artist feed`, async () => {
+    const path = `/artist-artwork/${filename}.webp`;
+    const feed = await (await fetch(new URL(artworkFeedPath, base))).json();
+    const response = await fetch(new URL(feed.artists[artist].url, base));
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('content-type'), 'image/webp');
+    const image = Buffer.from(await response.arrayBuffer());
+    assert.deepEqual(image, await readFile(`public${path}`));
+    assert.equal(createHash('sha256').update(image).digest('hex'), feed.artists[artist].version);
+    const catalogue = await (await fetch(new URL('/christmas-music', base))).text();
+    assert.ok(catalogue.includes(`src="${path}"`));
+  });
+}
 
 test('Vercel configuration includes public feed/image access and preserves asset routing', async () => {
   const config = JSON.parse(await readFile('vercel.json', 'utf8'));
