@@ -75,7 +75,7 @@ main .gold-text { background: none; -webkit-text-fill-color: var(--gold-light); 
 .contact-sub { color: #d0d9c8; font-size: .88rem; margin-bottom: 25px; }
 .contact-btn { padding: 13px 29px; }
 .footer { background: #061911; color: var(--muted); padding: 24px 20px 20px; border-top: 1px solid #D4AF3730; }
-.footer-attribution { font-family: 'Dancing Script',cursive; color: var(--gold-light); font-weight: 700; font-size: clamp(1.15rem, 2.1vw, 1.55rem); font-style: normal; line-height: 1.35; max-width: 900px; margin: 0 auto 18px; text-shadow: 0 0 12px rgb(212 175 55 / 24%); }
+.footer-attribution { font-family: 'Inter',sans-serif; color: var(--gold-light); font-weight: 700; font-size: clamp(1.15rem, 2.1vw, 1.55rem); font-style: normal; line-height: 1.35; max-width: 900px; margin: 0 auto 18px; text-shadow: 0 0 12px rgb(212 175 55 / 24%); }
 .footer-links { max-width: 860px; margin: 0 auto; gap: 13px 22px; }
 .footer-links a { color: var(--muted); font-size: .75rem; }
 .footer-links a:hover { color: var(--gold-light); }
