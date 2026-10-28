@@ -193,6 +193,9 @@ for (const viewport of [
   test(`step two to six wording ${viewport.width}: quote layout, clean wheels and preserved choices`, async ({ page }) => {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await openAgeStage(page);
+    await expect(page.locator('.smw-stage-heading h3')).toHaveText('How old are they?');
+    await expect(page.locator('.smw-stage-heading p')).toHaveCount(0);
+    await expect(page.getByText('Choose the age to help remind Santa.', { exact: true })).toHaveCount(0);
     if (viewport.enlarged) await page.addStyleTag({ content: 'html { font-size: 200%; }' });
     const ageCard = page.getByRole('complementary', { name: 'Santa will say…', exact: true }).filter({ hasText: 'Hello, Santa here' });
     await expect(ageCard).toContainText('Hello, Santa here… I’ve a very special message for… ah yes… Demrie. But have I got the right one? Let me check your age. I believe you are…');
@@ -324,6 +327,10 @@ for (const viewport of [
     await expect(page.locator('.smw-sound-toggle')).toHaveCount(0);
     await expect(page.getByText('Quiet workshop feedback only; independent of Santa Radio playback.', { exact: true })).toHaveCount(0);
     await expect(page.getByRole('listbox', { name: 'A magical place', exact: true })).toHaveAccessibleName('A magical place');
+    await expect(page.locator('.smw-stage-heading h3')).toHaveText('Santa would like to know where he’s going?');
+    await expect(page.locator('.smw-stage-heading p')).toHaveCount(0);
+    await expect(page.getByText('Choose from real places, space destinations and storybook places.', { exact: true })).toHaveCount(0);
+    await expect(page.locator('.smw-stage-note')).toHaveText('The list includes countries and real places. Fantasy places and space destinations are labelled separately.');
     expect(await page.locator('.smw-choice-wheel-heading, .smw-choice-wheel-hint').evaluateAll(nodes => nodes.length === 2 && nodes.every(node => {
       const rect = node.getBoundingClientRect();
       return getComputedStyle(node).clipPath === 'inset(50%)' && rect.width <= 1 && rect.height <= 1;
@@ -819,7 +826,9 @@ test('long-text categories use wider wheels with validation, scrolling and retai
 test('compact vertical wheel offers all 63 hosted month/year ages without preselection and retains the last age', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1100 });
   await openAgeStage(page);
-  await expect(page.locator('.smw-stage-heading p')).toHaveText('Choose the age to help remind Santa.');
+  await expect(page.locator('.smw-stage-heading h3')).toHaveText('How old are they?');
+  await expect(page.locator('.smw-stage-heading p')).toHaveCount(0);
+  await expect(page.getByText('Choose the age to help remind Santa.', { exact: true })).toHaveCount(0);
   await expect(page.locator('.smw-age-carousel-range')).toHaveCount(0);
   await expect(page.getByText('The wheel includes only age files present in Santa’s hosted inventory.', { exact: true })).toHaveCount(0);
   expect(await page.locator('.smw-age-carousel-heading, .smw-age-carousel-instruction').evaluateAll(nodes => nodes.length === 2 && nodes.every(node => {

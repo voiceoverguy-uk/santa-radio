@@ -33,7 +33,6 @@ const stages = [
     key: 'age',
     label: 'Age',
     heading: 'How old are they?',
-    description: 'Choose the age to help remind Santa.',
     wording: 'Hello, Santa here… I’ve a very special message for… ah yes… {name}. But have I got the right one? Let me check your age. I believe you are…',
   },
   {
@@ -62,7 +61,6 @@ const stages = [
     label: 'A magical place',
     reviewLabel: 'Santa will be flying in to',
     heading: 'Santa would like to know where he’s going?',
-    description: 'Choose from real places, space destinations and storybook places.',
     wording: 'Anyway, as I sit here reading this, Head Elf has just reminded me where we’re coming to… Ah yes…',
     note: 'The list includes countries and real places. Fantasy places and space destinations are labelled separately.',
   },
