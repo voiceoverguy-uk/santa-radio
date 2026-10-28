@@ -11,7 +11,7 @@
 - The native server credential reader and standard managed webhook sync now work. The initial missing-key diagnosis was a response-field mismatch, not a proxy-only authentication restriction.
 - One actual £6.50 sandbox Checkout payment was completed using Stripe's standard test card, and a separate unpaid checkout was expired. These were integration checks, not purchases through the website's Purchase button.
 - Nothing was published. No live Stripe resource was read or changed.
-- The homepage Purchase button, free greetings, voucher access and Studio audio remain unchanged. New backend-only sandbox notification and access-check routes do not unlock the existing Studio UI.
+- The homepage Purchase button now opens sandbox Checkout. A server-confirmed test payment opens the Studio UI and its protected choices. Free greetings, voucher access and Studio audio generation are unchanged.
 
 ## Workspace commands
 
@@ -21,6 +21,8 @@ node scripts/prepare-stripe-sandbox.mjs
 node --test scripts/stripe-payments.test.mjs
 node scripts/setup-stripe-sandbox.mjs
 node scripts/verify-stripe-sandbox.mjs --run-sandbox-payments
+node --test scripts/stripe-checkout.test.mjs
+node scripts/verify-studio-purchase.mjs --run-sandbox-payments
 ```
 
 Product preparation uses `@replit/connectors-sdk`. It refuses deployment/non-workspace execution, verifies explicit test mode before writes, uses tagged sandbox products and idempotency keys, and rejects ambiguous offers. Do not mount this preparation script as a public endpoint.
@@ -41,7 +43,7 @@ The installed sync package is the current npm version (1.0.0). Its documented 20
 
 The raw-body `/api/stripe/webhook` delegates signature verification and processing to `sync.processWebhook()`. It rejects live-mode bodies, malformed input and missing signatures without granting any entitlement.
 
-`/api/santa-studio-access` is a sandbox backend check only. It requires both a private 256-bit bearer claim and a fresh server-side retrieval of a completed, paid Checkout session. It verifies the exact existing test price/product, quantity, £6.50 GBP totals, one-off mode and successful PaymentIntent. It never trusts success query parameters, cookies alone, notification bodies or a stored entitlement alone. The application access table uses unique Checkout and PaymentIntent IDs; it does not duplicate the Stripe catalogue. No paid-access expiry or generation limit has been added.
+`/api/santa-studio-access` requires both a private 256-bit bearer claim and a fresh server-side retrieval of a completed, paid Checkout session. It verifies the exact existing test price/product, quantity, £6.50 GBP totals, one-off mode and successful PaymentIntent. It never trusts success query parameters, cookies alone, notification bodies or a stored entitlement alone. The application access table uses unique Checkout and PaymentIntent IDs; it does not duplicate the Stripe catalogue. No paid-access expiry or generation limit has been added.
 
 Verified against the actual sandbox and PostgreSQL:
 
@@ -56,13 +58,24 @@ Verified against the actual sandbox and PostgreSQL:
 
 Automated fixture/unit checks cover pending, failed, cancelled, live-mode, wrong-price, wrong-product, wrong-currency, wrong-amount, subscription, extra-item and missing-proof cases, plus stale signatures, ambiguous credential selection and fail-closed Stripe errors. These simulated cases are not reported as additional real sandbox transactions.
 
-All 35 Stripe automated checks and all 15 free-message/voucher-access regression checks passed. The full browser/SSR build also passed. No customer-login or signed-in Studio UI was changed or verified.
+The original 35 Stripe automated checks and 15 free-message/voucher regression checks passed.
+
+## Connected browser purchase flow
+
+- Readiness creates an HttpOnly, Secure, signed random checkout claim. POST requires the configured development origin, rejects cross-site requests and accepts no client price or redirect override.
+- PostgreSQL limits checkout attempts and serialises starts for each private claim. Existing open checkouts are reused, including concurrent clicks. Stripe idempotency keys protect retries if a database commit fails. Expired checkout sessions can be replaced; this does not limit paid access or regeneration.
+- Before redirect, the server sets a separate HttpOnly Secure payment cookie. It is not payment proof: both the Studio gate and catalogue require the existing verified-payment check. Stripe returns to the fixed Studio URL; the private claim is never put in that URL.
+- The tester-code path is checked first and retains its existing rules. Paid access does not inherit the tester expiry.
+- Cancellation displays an explicit notice and grants no new access. Pending/unconfirmed returns stay locked with a retry check.
+- The UI clearly says sandbox only, provides Stripe's standard test-card details and explains that this unlocks choices, not the unconnected bundle outputs or email delivery.
+- Cookies are browser sessions; no paid entitlement expiry is introduced. Until secure return emails are implemented, use the same browser session to return.
+
+The actual homepage button was tested through hosted Checkout, cancellation, retry, a successful test payment, automatic return to Studio, access to the protected catalogue, reload and repeat purchase clicks. Concurrent starts reused one session; the final entitlement count was one. A fresh browser with forged success parameters remained locked and received 403 from the catalogue.
+
+All 64 current automated checks (Stripe, checkout, catalogue, vouchers and free MP3 generation) passed, as did the actual browser purchase journey and full browser/SSR build. The paid Studio UI was verified using browser automation.
 
 ## Not yet implemented
 
-- The Purchase button is not wired to checkout.
-- The browser claim-creation/cookie-issuance and purchase-return flow are not wired. The integration check supplied a private test claim directly; no public endpoint issues claims yet.
-- The backend payment-access check is not connected to the existing Studio gate.
 - A transactional email sender still needs connecting for secure guest return links.
 - The separate extended audio-stitching demo is not connected to Studio selections; the family bundle outputs are not delivered.
 
