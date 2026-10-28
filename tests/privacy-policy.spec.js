@@ -213,7 +213,9 @@ test('footer opens a readable privacy policy with separate message access and ne
   await expect(article).toContainText('These details are sent to Brevo for message access');
   await expect(article).toContainText('does not give consent for Santa Radio news or tracker reminders');
   await expect(article).not.toContainText('requests are not currently connected');
-  await expect(article.getByRole('link', { name: 'santa@santaradio.co.uk' })).toHaveAttribute('href', 'mailto:santa@santaradio.co.uk');
+  for (const contact of await article.getByRole('link', { name: 'santa@santaradio.co.uk', exact: true }).all()) {
+    await expect(contact).toHaveAttribute('href', 'mailto:santa@santaradio.co.uk');
+  }
   await expect(article.locator('form, input')).toHaveCount(0);
   expect(await page.evaluate(() => window.originalAudio === document.querySelector('audio'))).toBe(true);
   await page.setViewportSize({ width: 390, height: 844 });
@@ -291,7 +293,7 @@ test('policy direct loads, refreshes and metadata work on desktop and mobile', a
     await page.goto('/privacy-policy');
     await page.reload();
     await expect(page).toHaveTitle('Privacy Policy — Santa Radio');
-    await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /browser preferences/);
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /Santa Radio for Android.*iPhone and iPad.*embedded content/);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://www.santaradio.co.uk/privacy-policy');
     await expect(page.locator('h1')).toHaveCount(1);
     await expect(page.locator('h1')).toBeInViewport();
