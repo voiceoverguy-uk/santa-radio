@@ -16,6 +16,8 @@ import { trackerPageHtml, isTrackerPreview } from './server/tracker-html.js';
 import { artworkHeaders } from './server/artwork-feed.js';
 import { resolvePublicRequest } from './src/seo/routes.js';
 import { publicPageHtml } from './server/public-html.js';
+import stripeWebhook from './server/stripe-webhook.js';
+import studioPaidAccess from './server/santa-studio-purchase.js';
 
 const root = await realpath(fileURLToPath(new URL('./dist', import.meta.url)));
 const index = resolve(root, 'index.html');
@@ -40,6 +42,8 @@ const server = createServer(async (req, res) => {
     if (res.writableEnded) return;
     if (pathname.startsWith(`${CLERK_PROXY_PATH}/`)) return clerkProxy(req, res, () => res.writeHead(404).end());
     if (pathname === '/api/name-requests') return nameRequests(req, res);
+    if (pathname === '/api/stripe/webhook') return stripeWebhook(req, res);
+    if (pathname === '/api/santa-studio-access') return studioPaidAccess(req, res);
     if (pathname === '/api/santa-workshop-access') return workshopAccess(req, res);
     if (pathname === '/api/radio-metadata') return await radioMetadata(req, res);
     if (pathname === '/api/radio-top-ten') return await radioTopTen(req, res);

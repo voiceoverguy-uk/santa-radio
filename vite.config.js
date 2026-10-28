@@ -16,6 +16,8 @@ import { trackerPageHtml, isTrackerPreview } from './server/tracker-html.js';
 import artworkFeedPlugin from './scripts/artwork-feed-plugin.mjs';
 import publicPagesPlugin from './server/public-pages-plugin.js';
 import { santaAudioRecipeVersion } from './scripts/santa-audio-recipe.mjs';
+import stripeWebhook from './server/stripe-webhook.js';
+import studioPaidAccess from './server/santa-studio-purchase.js';
 
 const trackerMetadataPlugin = {
   name: 'tracker-page-metadata',
@@ -35,6 +37,8 @@ const metadataPlugin = {
   name: 'radio-metadata',
   configureServer(server) {
     server.middlewares.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
+    server.middlewares.use('/api/stripe/webhook', stripeWebhook);
+    server.middlewares.use('/api/santa-studio-access', studioPaidAccess);
     server.middlewares.use(workshopDocumentHeaders);
     server.middlewares.use('/api/santa-workshop-access', workshopAccess);
     server.middlewares.use('/api/name-requests', nameRequests);
@@ -47,6 +51,8 @@ const metadataPlugin = {
   },
   configurePreviewServer(server) {
     server.middlewares.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
+    server.middlewares.use('/api/stripe/webhook', stripeWebhook);
+    server.middlewares.use('/api/santa-studio-access', studioPaidAccess);
     server.middlewares.use(workshopDocumentHeaders);
     server.middlewares.use('/api/santa-workshop-access', workshopAccess);
     // Vite's SPA preview fallback otherwise serves the pre-rendered homepage.
