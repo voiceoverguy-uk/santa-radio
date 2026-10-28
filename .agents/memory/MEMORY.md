@@ -49,3 +49,4 @@
 - [Santa workshop scope](santa-workshop-scope.md) — Design trial comes before audio connection; offline samples are not catalogue or service approval.
 - [Workshop preview permission](workshop-preview-permission.md) — Shared preview gate is separate from signup/staff access; use persistent limits and ephemeral test passwords.
 - [Large asset delivery](asset-delivery-limits.md) — Attachments have a 100 MiB limit; preserve large handovers with verified lossless transport parts.
+- [Native audio styling](native-audio-styling.md) — Chromium can paint its native media panel over the audio element background; style the WebKit panel as well.

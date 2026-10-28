@@ -1,11 +1,10 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function NiceListCertificateDownload({ message }) {
   const [status, setStatus] = useState('idle');
   const busy = useRef(false);
   const active = useRef(true);
   const pendingUrls = useRef(new Map());
-  const descriptionId = useId();
   useEffect(() => {
     active.current = true;
     const urls = pendingUrls.current;
@@ -52,13 +51,11 @@ export default function NiceListCertificateDownload({ message }) {
 
   return <div className="message-certificate">
     <button className="message-download message-certificate-button" type="button"
-      onClick={download} disabled={status === 'loading'} aria-busy={status === 'loading'}
-      aria-describedby={descriptionId}>
+      onClick={download} disabled={status === 'loading'} aria-busy={status === 'loading'}>
       {status === 'loading' ? 'Preparing your Nice List certificate…'
         : status === 'error' ? 'Retry your Nice List certificate'
           : 'Download your Nice List certificate'} <span aria-hidden="true">↓</span>
     </button>
-    <p className="message-name-hint" id={descriptionId}>A4 landscape PDF · personalised for {message.name}</p>
     {status === 'loading' && <p role="status">Preparing the certificate in your browser…</p>}
     {status === 'ready' && <p role="status">Your certificate download is ready.</p>}
     {status === 'error' && <p role="alert">Your certificate couldn’t be prepared. Retry the certificate above. Your audio is still available and retrying won’t use any message allowance.</p>}

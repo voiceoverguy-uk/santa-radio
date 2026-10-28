@@ -230,13 +230,16 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const renderResults = () => messages.map((message, index) => <div key={message.key} className="message-result" ref={index === messages.length - 1 ? resultRef : null} tabIndex={-1} aria-label={`Santa’s greeting for ${message.name}`}>
     <p className="message-postmark">A greeting is waiting</p>
     <h4>To {message.name} from Santa</h4>
-    <audio ref={audio => {
-      if (audio) audioRefs.current.set(message.key, audio);
-      else audioRefs.current.delete(message.key);
-    }} src={message.url} controls preload="none" onPlay={pauseRadio} onEnded={finishMessage} onError={event => {
-      if (audioRef.current === event.currentTarget) resumeRadioRef.current = null;
-      setAudioErrors(previous => ({ ...previous, [message.key]: true }));
-    }} aria-label={`Play Santa’s greeting for ${message.name}`} />
+    <div className="message-player-row">
+      <audio ref={audio => {
+        if (audio) audioRefs.current.set(message.key, audio);
+        else audioRefs.current.delete(message.key);
+      }} src={message.url} controls preload="none" onPlay={pauseRadio} onEnded={finishMessage} onError={event => {
+        if (audioRef.current === event.currentTarget) resumeRadioRef.current = null;
+        setAudioErrors(previous => ({ ...previous, [message.key]: true }));
+      }} aria-label={`Play Santa’s greeting for ${message.name}`} />
+      <SantaGreetingShare message={message} />
+    </div>
     {audioErrors[message.key] && <div role="alert"><p className="message-audio-error">Santa’s recording couldn’t be played. Please try loading it again, or use the download link below.</p><button className="message-retry" type="button" onClick={() => {
       setAudioErrors(previous => ({ ...previous, [message.key]: false }));
       audioRefs.current.get(message.key)?.load();
@@ -246,9 +249,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         <a className="message-download" href={message.url} download={message.downloadName}>Download your audio <span aria-hidden="true">↓</span></a>
         <NiceListCertificateDownload message={message} />
       </div>
-      <SantaGreetingShare message={message} />
     </div>
-    <p className="message-name-hint">On iPhone, choose Share → Save to Files to keep the MP3.</p>
   </div>);
 
   return <section className="santa-message-section" id="santa-messages">

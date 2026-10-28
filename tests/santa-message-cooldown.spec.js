@@ -53,10 +53,20 @@ for (const path of ['/', '/free-santa-message']) {
 
       const result = page.getByLabel('Santa’s greeting for Olivia', { exact: true });
       const promo = page.locator('#santa-studio-promotion');
+      const playerRow = result.locator('.message-player-row');
+      const player = result.locator('audio');
       await expect(result.locator('audio')).toBeVisible();
+      await expect(playerRow).toBeVisible();
       await expect(result.getByRole('link', { name: 'Download your audio' })).toBeVisible();
       await expect(result.getByRole('button', { name: 'Download your Nice List certificate' })).toBeVisible();
       await expect(result.getByRole('button', { name: 'Share this greeting', exact: true })).toBeVisible();
+      await expect(result.getByText(/A4 landscape PDF|Share → Save to Files/)).toHaveCount(0);
+      await expect(result.locator('.message-certificate .message-name-hint')).toHaveCount(0);
+      expect(await player.evaluate(element => getComputedStyle(element).backgroundColor)).toBe('rgb(212, 175, 55)');
+      expect(await player.evaluate(element => getComputedStyle(element, '::-webkit-media-controls-panel').backgroundColor)).toBe('rgb(212, 175, 55)');
+      expect(await player.evaluate(element => element.controls)).toBe(true);
+      await player.evaluate(element => element.focus());
+      await expect(player).toBeFocused();
       await expect(promo).toHaveCount(1);
       await expect(promo).toContainText('When the Studio launches');
       await expect(promo).toContainText('age, activities, achievements, country and festive treats');
@@ -74,11 +84,15 @@ for (const path of ['/', '/free-santa-message']) {
       const downloadLink = await result.getByRole('link', { name: 'Download your audio' }).boundingBox();
       const certificate = await result.getByRole('button', { name: 'Download your Nice List certificate' }).boundingBox();
       const share = await result.getByRole('button', { name: 'Share this greeting', exact: true }).boundingBox();
+      const playerBox = await player.boundingBox();
       const actionsBox = await actions.boundingBox();
       expect(share.width).toBe(48);
       expect(share.x + share.width).toBeLessThanOrEqual(actionsBox.x + actionsBox.width + 1);
       expect(share.x).toBeGreaterThan(downloadLink.x);
       expect(share.x).toBeGreaterThan(certificate.x);
+      expect(Math.abs(playerBox.y + playerBox.height / 2 - (share.y + share.height / 2))).toBeLessThanOrEqual(1);
+      expect(share.x).toBeGreaterThanOrEqual(playerBox.x + playerBox.width);
+      expect(playerBox.width).toBeLessThan((await playerRow.boundingBox()).width);
       if (width === 390) {
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
         await result.screenshot({ path: 'test-results/completed-message-mobile.png' });
