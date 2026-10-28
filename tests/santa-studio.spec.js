@@ -335,7 +335,7 @@ test('waiting downloads can repeat without generation, allowance or timer change
     await expect(page.getByRole('heading', { name: `To ${name} from Santa` })).toBeVisible();
   }
   const before = await page.evaluate(key => localStorage.getItem(key), MESSAGE_ALLOWANCE_KEY);
-  const wait = page.locator('.message-wait');
+  const wait = page.locator('.message-wait-downloads');
   await expect(wait.locator('.message-result')).toHaveCount(2);
   await expect(page.locator('.message-result')).toHaveCount(2);
   let fontRequests = 0;
@@ -360,11 +360,11 @@ test('waiting downloads can repeat without generation, allowance or timer change
   }
   expect(generations).toBe(2);
   expect(await page.evaluate(key => localStorage.getItem(key), MESSAGE_ALLOWANCE_KEY)).toBe(before);
-  await expect(page.getByRole('timer')).toHaveText('30:00');
+  await expect(page.getByRole('timer')).toHaveCount(0);
   await page.reload();
-  await expect(page.locator('.message-wait')).toContainText('This tab no longer holds those recordings.');
-  await expect(page.locator('.message-wait')).toContainText('Previously saved audio and certificates remain on your device.');
+  await expect(page.locator('.message-cooldown-status')).toContainText('isn’t saved by this site');
+  await expect(page.locator('.message-cooldown-status')).toContainText('next free message will be available at');
   await expect(page.locator('.message-result')).toHaveCount(0);
-  await expect(page.getByRole('timer')).toHaveText('30:00');
+  await expect(page.getByRole('timer')).toHaveCount(0);
   expect(generations).toBe(2);
 });

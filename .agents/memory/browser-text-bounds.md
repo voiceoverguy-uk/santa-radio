@@ -14,6 +14,12 @@ Text range height and scrollHeight can exceed a heading's line box without clipp
 
 **How to apply:** For horizontal reflow checks, measure horizontal line bounds and container widths. For vertical clipping, check clipping ancestors rather than assuming every line-box overhang is hidden.
 
+Do not count `Range.getClientRects()` as visual lines when a heading contains nested inline text.
+
+**Why:** Chromium returned multiple text-fragment rectangles for a heading that visibly occupied one line, causing a strict line-count assertion to fail.
+
+**How to apply:** To check a single-line heading, compare its element height with its computed line height; use range rectangles for fragment containment only after checking how nested text nodes are represented.
+
 Find the element responsible for a page-wide enlarged-text overflow before attributing it to the component being changed.
 
 **Why:** A new promotion fit its own bounds, while an unrelated existing page heading caused the full document to overflow at 200% text. Nested grid minimum sizing also needed a separate local check.

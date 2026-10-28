@@ -82,6 +82,27 @@ for (const path of ['/', '/free-santa-message']) {
   });
 }
 
+test('the completion card retains its voucher route into the authorized Studio', async ({ page }) => {
+  await page.addInitScript(() => sessionStorage.setItem('santa-message-access', 'granted'));
+  await page.route('**/api/santa-workshop-access', route => route.fulfill({
+    json: { authorized: true, expiresAt: Date.now() + 120000 },
+  }));
+  await page.route('**/api/santa-message', route => route.fulfill({
+    contentType: 'audio/mpeg', body: Buffer.from('ID3-workshop-access-fixture'),
+  }));
+  await visit(page, '/free-santa-message');
+  await page.getByLabel('First Name').fill('Demrie');
+  await page.getByRole('option', { name: 'Demrie', exact: true }).click();
+  await page.getByRole('button', { name: 'Create message', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'To Demrie from Santa' })).toBeVisible();
+  const promotion = page.locator('#santa-studio-promotion');
+  await expect(promotion).toHaveCount(1);
+  await promotion.getByLabel(codeLabel, { exact: true }).fill('COMPLETION-CARD-TEST-CODE');
+  await promotion.getByRole('button', { name: 'Create your bespoke message', exact: true }).click();
+  await expect(page).toHaveURL(/\/santa-message-workshop$/);
+  await expect(page.getByRole('heading', { name: 'What name should Santa say?' })).toBeVisible();
+});
+
 test('all five isolated codes are accepted by the real endpoint, not the former shared password', async ({ page }) => {
   const origin = new URL((await page.request.get(accessURL)).url()).origin;
   for (let slot = 1; slot <= 5; slot++) {
@@ -207,9 +228,9 @@ for (const path of ['/', '/free-santa-message']) {
           return heading.top - topline.bottom;
         })).toBeLessThanOrEqual(32);
         expect(await promo.getByRole('heading').evaluate(node => {
-          const range = document.createRange(); range.selectNodeContents(node);
-          return range.getClientRects().length;
-        })).toBe(1);
+          const lineHeight = parseFloat(getComputedStyle(node).lineHeight);
+          return node.getBoundingClientRect().height <= lineHeight + 1;
+        })).toBe(true);
       }
       for (const size of [100, 200]) {
         await page.addStyleTag({ content: `html { font-size: ${size}%; }` });

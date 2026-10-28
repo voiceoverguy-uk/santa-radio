@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { PDFDocument, decodePDFRawStream } from 'pdf-lib';
 import { openMessageDesk } from './helpers/message-access.js';
-import { MESSAGE_ALLOWANCE_KEY } from '../src/lib/santaMessageAllowance.js';
+import { MESSAGE_ALLOWANCE_KEY, MESSAGE_COOLDOWN_MS } from '../src/lib/santaMessageAllowance.js';
 
 const audio = readFileSync('server/santa-audio/sleighbells.mp3');
 const names = ['Olivia', 'Alexandria-Catherine Elizabeth Montgomery-Worthington', "Élodie O’Neill-Sáenz", 'Erin', "Jean-Luc D'Ávila", 'Olivia   Rose'];
@@ -52,6 +52,13 @@ async function setup(page) {
 }
 
 async function create(page, index) {
+  if (!(await page.getByRole('button', { name: 'Create message', exact: true }).count())) {
+    await page.evaluate(key => {
+      window.testNow = JSON.parse(localStorage.getItem(key)).availableAt;
+      dispatchEvent(new Event('focus'));
+    }, MESSAGE_ALLOWANCE_KEY);
+    await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
+  }
   await page.getByLabel('First Name').fill(names[index].slice(0, 4).toLocaleLowerCase());
   await page.getByRole('option', { name: names[index], exact: true }).click();
   await page.getByRole('button', { name: 'Create message', exact: true }).click();
@@ -104,7 +111,12 @@ for (const [index, file] of [[0, 'normal'], [1, 'long'], [2, 'unicode'], [4, 'ap
   test(`downloads actual ${file} PDF with canonical display spelling and no recipient requests`, async ({ page }) => {
     const generations = await setup(page);
     const result = await create(page, index);
-    // A later form change must not alter the certificate.
+      // Wait out the allowance so a later search cannot alter this result's PDF.
+      await page.evaluate(key => {
+        window.testNow = JSON.parse(localStorage.getItem(key)).availableAt;
+        dispatchEvent(new Event('focus'));
+      }, MESSAGE_ALLOWANCE_KEY);
+      await expect(page.getByLabel('First Name')).toBeVisible();
     await page.getByLabel('First Name').fill('other selection');
     await expect(page.getByText('No matching recording yet. Try another name.', { exact: true })).toBeVisible();
     const before = await usage(page);
@@ -152,11 +164,11 @@ for (const mobile of [false, true]) {
     await create(page, 0);
     await create(page, 2);
     const before = await usage(page);
-    await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
+    await expect(page.getByRole('button', { name: 'Create message', exact: true })).toHaveCount(0);
     await page.getByRole('link', { name: 'Santa Radio home', exact: true }).click();
     await expect(page).toHaveURL(/\/$/);
     await expect(page.locator('.message-card-top')).toContainText('The North Pole Recording Studio');
-    await expect(page.locator('.message-wait .message-result')).toHaveCount(2);
+    await expect(page.locator('.message-wait-downloads .message-result')).toHaveCount(2);
     for (const [index, file] of [[0, 'two-first'], [2, 'two-second']]) {
       const result = page.getByLabel(`Santa’s greeting for ${names[index]}`, { exact: true });
       const button = certificateButton(result);
@@ -263,7 +275,7 @@ test('third greeting evicts only the oldest result and revokes its audio and cer
   await downloadCertificate(page, first);
   const firstUrls = await page.evaluate(() => window.createdBlobUrls.map(item => item.url));
   await create(page, 3);
-  await page.evaluate(() => { window.testNow += 11 * 60000; });
+  await page.evaluate(duration => { window.testNow += duration; }, MESSAGE_COOLDOWN_MS);
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
   await create(page, 2);
   await expect(first).toHaveCount(0);

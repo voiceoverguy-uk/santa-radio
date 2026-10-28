@@ -60,7 +60,6 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const radio = useRadio();
   const allowance = useSantaMessageAllowance();
   const coolingDown = allowance.secondsLeft > 0;
-  const countdown = `${Math.floor(allowance.secondsLeft / 60).toString().padStart(2, '0')}:${(allowance.secondsLeft % 60).toString().padStart(2, '0')}`;
 
   useEffect(() => {
     let frame;
@@ -228,16 +227,6 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
     resumeRadioRef.current = null;
     resume?.();
   };
-  const showMoreMagic = () => {
-    const promotion = document.getElementById('santa-studio-promotion');
-    const navigation = document.querySelector('.navbar');
-    if (!promotion || !navigation) return;
-    promotion.querySelector('#santa-studio-title')?.focus({ preventScroll: true });
-    window.scrollTo({
-      top: Math.max(0, window.scrollY + promotion.getBoundingClientRect().top - navigation.getBoundingClientRect().bottom - 16),
-      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
-    });
-  };
   const renderResults = () => messages.map((message, index) => <div key={message.key} className="message-result" ref={index === messages.length - 1 ? resultRef : null} tabIndex={-1} aria-label={`Santa’s greeting for ${message.name}`}>
     <p className="message-postmark">A greeting is waiting</p>
     <h4>To {message.name} from Santa</h4>
@@ -252,10 +241,14 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
       setAudioErrors(previous => ({ ...previous, [message.key]: false }));
       audioRefs.current.get(message.key)?.load();
     }}>Reload recording</button></div>}
-    <a className="message-download" href={message.url} download={message.downloadName}>Download your audio <span aria-hidden="true">↓</span></a>
+    <div className="message-download-actions">
+      <div className="message-download-links">
+        <a className="message-download" href={message.url} download={message.downloadName}>Download your audio <span aria-hidden="true">↓</span></a>
+        <NiceListCertificateDownload message={message} />
+      </div>
+      <SantaGreetingShare message={message} />
+    </div>
     <p className="message-name-hint">On iPhone, choose Share → Save to Files to keep the MP3.</p>
-    <NiceListCertificateDownload message={message} />
-    <SantaGreetingShare message={message} />
   </div>);
 
   return <section className="santa-message-section" id="santa-messages">
@@ -293,13 +286,9 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         <h3 ref={makerHeadingRef} tabIndex={-1}>{messages.length ? 'Download your free message' : 'Download your free Santa greeting'}</h3>
         {!!messages.length && <div className="message-wait-downloads">
           {renderResults()}
-          <button className="btn-red message-more-magic" type="button" onClick={showMoreMagic}>more magic?</button>
+          <SantaStudioPromotion />
         </div>}
-        {coolingDown ? <div className="message-wait">
-          <SantaCooldownNotice />
-          <p className="message-countdown">More messages in <span role="timer" aria-live="off">{countdown}</span></p>
-          {!messages.length && <p>This tab no longer holds those recordings. Previously saved audio and certificates remain on your device. New recordings will be available when the wait ends.</p>}
-        </div> : null}
+        {coolingDown && !messages.length && <SantaCooldownNotice availableAt={allowance.availableAt} />}
         {coolingDown && !allowance.remembered && <p className="message-name-hint" role="status">Your browser can’t remember the message allowance. The limit works while this page is open, but leaving or refreshing may reset it.</p>}
         {!coolingDown && <>
         <p className="form-desc">Hey {greetingName || 'there'}, Search for the name and press Create message.</p>
@@ -403,7 +392,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         {!sessionRemembered && <p className="message-name-hint" role="status">Your browser can’t remember access. The studio stays open while you browse, but refreshing this tab may ask for your details again.</p>}
         </>}
       </div>
-      <SantaStudioPromotion />
+      {!messages.length && <SantaStudioPromotion />}
       </div>
     </div>
   </section>;

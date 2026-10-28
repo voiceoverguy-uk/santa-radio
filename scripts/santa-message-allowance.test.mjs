@@ -24,18 +24,18 @@ function environment() {
 const signal = () => new AbortController().signal;
 const success = () => Promise.resolve('recording');
 
-test('one success starts a full 30-minute wait and blocks further creation', async () => {
+test('one success starts a full two-hour wait and blocks further creation', async () => {
   const browser = environment();
   let now = 100000;
   const store = createMessageAllowance(browser, () => now);
   assert.equal(store.getSnapshot().remaining, 1);
   assert.equal(await store.create(success, signal()), 'recording');
   assert.equal(store.getSnapshot().remaining, 0);
-  assert.equal(MESSAGE_COOLDOWN_MS, 1800000);
-  assert.equal(store.getSnapshot().secondsLeft, 1800);
+  assert.equal(MESSAGE_COOLDOWN_MS, 7200000);
+  assert.equal(store.getSnapshot().secondsLeft, 7200);
   assert.deepEqual(JSON.parse(browser.localStorage.getItem(MESSAGE_ALLOWANCE_KEY)), { used: 1, availableAt: now + MESSAGE_COOLDOWN_MS, cooldownMs: MESSAGE_COOLDOWN_MS });
   let calls = 0;
-  await assert.rejects(store.create(() => { calls++; return success(); }, signal()), /countdown/);
+  await assert.rejects(store.create(() => { calls++; return success(); }, signal()), /next free message will be available at/);
   assert.equal(calls, 0);
 });
 
@@ -67,7 +67,7 @@ test('reopening uses the saved absolute deadline; expiry restores one message', 
   assert.equal(reopened.getSnapshot().remaining, 0);
   now += 60000;
   const returned = createMessageAllowance(browser, () => now);
-  assert.equal(returned.getSnapshot().secondsLeft, 1740);
+  assert.equal(returned.getSnapshot().secondsLeft, 7140);
   now += MESSAGE_COOLDOWN_MS;
   returned.refresh();
   assert.equal(returned.getSnapshot().remaining, 1);
@@ -100,7 +100,7 @@ test('simultaneous form instances and tabs cannot consume the last allowance twi
   await assert.rejects(two.create(success, signal()), /Another message/);
   release('recording');
   await held;
-  await assert.rejects(two.create(success, signal()), /countdown/);
+  await assert.rejects(two.create(success, signal()), /next free message will be available at/);
   two.refresh();
   assert.equal(two.getSnapshot().remaining, 0);
 });
@@ -111,8 +111,8 @@ test('blocked reads and writes explicitly use shared in-page memory', async () =
   const store = createMessageAllowance(browser);
   assert.equal(store.getSnapshot().remembered, false);
   await store.create(success, signal());
-  assert.equal(store.getSnapshot().secondsLeft, 1800);
-  await assert.rejects(store.create(success, signal()), /countdown/);
+  assert.equal(store.getSnapshot().secondsLeft, 7200);
+  await assert.rejects(store.create(success, signal()), /next free message will be available at/);
 });
 
 test('storage becoming unwritable after a success preserves the existing usage', async () => {
@@ -144,7 +144,7 @@ test('storage and focus events refresh subscribers, without leaking listeners on
   const event = new Event('storage');
   Object.defineProperty(event, 'key', { value: MESSAGE_ALLOWANCE_KEY });
   browser.dispatchEvent(event);
-  assert.equal(store.getSnapshot().secondsLeft, 1800);
+  assert.equal(store.getSnapshot().secondsLeft, 7200);
   now += MESSAGE_COOLDOWN_MS;
   browser.dispatchEvent(new Event('focus'));
   assert.equal(store.getSnapshot().remaining, 1);
@@ -154,29 +154,33 @@ test('storage and focus events refresh subscribers, without leaking listeners on
   assert.equal(notifications, count);
 });
 
-test('previous ten-minute deadlines migrate once to thirty minutes from their original start', async () => {
+test('previous ten-minute deadlines migrate once to two hours from their original start', async () => {
   const browser = environment();
   const createdAt = 1000000;
   let now = createdAt + 2 * 60000;
   browser.localStorage.setItem(MESSAGE_ALLOWANCE_KEY, JSON.stringify({ used: 2, availableAt: createdAt + 10 * 60000, cooldownMs: 10 * 60000 }));
   const store = createMessageAllowance(browser, () => now);
-  assert.equal(store.getSnapshot().secondsLeft, 1680);
+  assert.equal(store.getSnapshot().secondsLeft, 7080);
   store.refresh();
-  assert.equal(store.getSnapshot().secondsLeft, 1680, 'refresh must not move the deadline again');
-  assert.equal(createMessageAllowance(browser, () => now).getSnapshot().secondsLeft, 1680);
-  now = createdAt + 30 * 60000;
+  assert.equal(store.getSnapshot().secondsLeft, 7080, 'refresh must not move the deadline again');
+  assert.equal(createMessageAllowance(browser, () => now).getSnapshot().secondsLeft, 7080);
+  now = createdAt + 120 * 60000;
   store.refresh();
   assert.equal(store.getSnapshot().remaining, 1);
   await store.create(success, signal());
-  assert.equal(store.getSnapshot().secondsLeft, 1800);
-  assert.equal(createMessageAllowance(browser, () => now).getSnapshot().secondsLeft, 1800);
+  assert.equal(store.getSnapshot().secondsLeft, 7200);
+  assert.equal(createMessageAllowance(browser, () => now).getSnapshot().secondsLeft, 7200);
 });
 
-test('unmarked legacy thirty-minute waits keep their original deadline', () => {
+test('unmarked legacy thirty-minute waits migrate from their original success time', () => {
   const browser = environment();
   const now = 10000000;
   browser.localStorage.setItem(MESSAGE_ALLOWANCE_KEY, JSON.stringify({ used: 2, availableAt: now + 19 * 60000 }));
-  assert.equal(createMessageAllowance(browser, () => now).getSnapshot().secondsLeft, 19 * 60);
+  const store = createMessageAllowance(browser, () => now);
+  assert.equal(store.getSnapshot().secondsLeft, 109 * 60);
+  assert.deepEqual(JSON.parse(browser.localStorage.getItem(MESSAGE_ALLOWANCE_KEY)), {
+    used: 1, availableAt: now + 109 * 60000, cooldownMs: MESSAGE_COOLDOWN_MS,
+  });
 });
 
 test('an old single success without a timestamp starts one persisted wait, not a rolling wait', async () => {
@@ -184,14 +188,14 @@ test('an old single success without a timestamp starts one persisted wait, not a
   let now = 100000;
   browser.localStorage.setItem(MESSAGE_ALLOWANCE_KEY, JSON.stringify({ used: 1, availableAt: 0, cooldownMs: 600000 }));
   const store = createMessageAllowance(browser, () => now);
-  assert.equal(store.getSnapshot().secondsLeft, 1800);
+  assert.equal(store.getSnapshot().secondsLeft, 7200);
   now += 60000;
   store.refresh();
-  assert.equal(store.getSnapshot().secondsLeft, 1740);
-  assert.equal(createMessageAllowance(browser, () => now).getSnapshot().secondsLeft, 1740);
-  now += 29 * 60000;
+  assert.equal(store.getSnapshot().secondsLeft, 7140);
+  assert.equal(createMessageAllowance(browser, () => now).getSnapshot().secondsLeft, 7140);
+  now += 119 * 60000;
   store.refresh();
   assert.equal(store.getSnapshot().remaining, 1);
   await store.create(success, signal());
-  assert.equal(store.getSnapshot().secondsLeft, 1800);
+  assert.equal(store.getSnapshot().secondsLeft, 7200);
 });

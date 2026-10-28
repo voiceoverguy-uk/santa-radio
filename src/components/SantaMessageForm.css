@@ -24,11 +24,7 @@
 .message-suggestions li:hover, .message-suggestions li[aria-selected="true"] { background: #dfd3b7; }
 .message-submit:disabled { opacity: .65; cursor: not-allowed; }
 .message-name-input:disabled { opacity: .7; cursor: not-allowed; }
-.message-wait { border: 1px solid #d4af3750; border-radius: 10px; padding: 18px; margin-bottom: 24px; background: #14382a; }
-.message-wait p { color: #d0dacd; font-size: .88rem; line-height: 1.75; margin: 0 0 14px; }
-.message-wait .message-countdown { color: #ead39a; }
-.message-countdown span { font-size: 1.3rem; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.message-wait .message-retry { width: 100%; margin-bottom: 0; min-height: 44px; }
+.message-cooldown-status { color: #d0dacd; font-size: .84rem; line-height: 1.65; margin: 0 0 20px; }
 .message-retry:disabled { opacity: .7; cursor: default; }
 .message-name-input[aria-invalid="true"] { border-color: #eea49a; }
 .message-name-hint { display: block; color: #becdbc; font-size: .76rem; margin: 10px 0 18px; line-height: 1.6; }
@@ -67,11 +63,9 @@
 }
 .message-download:disabled { animation: none; box-shadow: none; }
 .message-wait-downloads { margin-bottom: 22px; }
-.message-more-magic { display: flex; width: 100%; min-height: 48px; margin-top: 18px; padding: 10px 16px; font-size: .88rem; cursor: pointer; }
-.message-more-magic:hover { background: var(--red-dark); }
-.message-more-magic:focus-visible { outline: 2px solid #ead39a; outline-offset: 4px; }
 .message-wait-downloads .message-result { margin-top: 14px; padding-top: 14px; }
 .message-wait-downloads .message-result > .message-postmark { display: none; }
+.message-wait-downloads > .santa-studio-promotion { margin: 22px 0 0; }
 @media (prefers-reduced-motion: reduce) {
   .message-download:not(:disabled) { animation: none; box-shadow: 0 0 12px #d4af3738; }
 }
@@ -79,14 +73,19 @@
 .message-certificate-button:disabled { opacity: .7; cursor: wait; }
 .message-certificate .message-name-hint { margin-top: 2px; }
 .message-result > .message-download { min-height: 44px; }
+.message-download-actions { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 8px 14px; min-width: 0; }
+.message-download-links { display: flex; flex: 1 1 auto; flex-wrap: wrap; align-items: flex-start; gap: 8px 18px; min-width: 0; }
+.message-download-links > .message-download { min-height: 44px; }
+.message-download-links .message-certificate { min-width: 0; }
 .message-retry { display: block; background: transparent; color: #f6ecd8; border: 1px solid #d4af3770; border-radius: 6px; padding: 10px 16px; font: inherit; font-size: .8rem; cursor: pointer; margin-bottom: 12px; }
-.message-share { margin-top: 12px; }
+.message-share { display: contents; }
 .message-share-icon { display: inline-grid; place-items: center; width: 48px; height: 48px; padding: 0; border: 1px solid #d4af3760; border-radius: 10px; background: transparent; color: #ead39a; cursor: pointer; }
 .message-share-icon:hover { background: #d4af3712; }
 .message-share-icon:focus-visible { outline: 2px solid #ead39a; outline-offset: 4px; }
 .message-share-icon:disabled { cursor: wait; opacity: .65; }
+.message-download-actions .message-share-icon { margin-left: auto; }
 .message-share .message-retry { width: 100%; margin-bottom: 0; }
-.message-share .message-share-status { margin: 12px 0 0; font-size: .8rem; }
+.message-share .message-share-status { flex: 1 0 100%; margin: 0; font-size: .8rem; text-align: right; }
 .message-share-link { display: block; margin-top: 12px; font-size: .8rem; }
 .message-share-link input { display: block; width: 100%; min-width: 0; margin-top: 6px; padding: 10px; border: 1px solid #d4af3770; border-radius: 6px; background: #081e17; color: #f6ecd8; font: inherit; }
 .santa-message-section :is(input,button,a,[tabindex]):focus-visible { outline: 3px solid #e7c877; outline-offset: 5px; }

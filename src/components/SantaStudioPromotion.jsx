@@ -14,7 +14,7 @@ export default function SantaStudioPromotion() {
         </div>
         <h3 id="santa-studio-title" tabIndex={-1}>Santa’s <span className="santa-studio-promotion__title-line">Message Maker Studio</span></h3>
         <p className="santa-studio-promotion__copy">
-          Santa can mention more than just their name. Choose their age, activities, achievements, country and festive treats.
+          When the Studio launches, you’ll be able to add age, activities, achievements, country and festive treats. Each Studio message will include a free personalised Nice List certificate. The basic free greeting includes one too.
         </p>
         <div className="santa-studio-promotion__preview">
           <span className="santa-studio-promotion__preview-label">Coming soon</span>

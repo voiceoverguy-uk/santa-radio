@@ -3,9 +3,23 @@ import { withMessageCreationLock } from './santaMessageCreationLock.js';
 export const MESSAGE_ALLOWANCE_KEY = 'santa-message-allowance';
 export const SANTA_LAST_OUTRO_KEY = 'santa-message-last-outro';
 export const MESSAGE_ALLOWANCE = 1;
-export const MESSAGE_COOLDOWN_MS = 30 * 60 * 1000;
+export const MESSAGE_COOLDOWN_MS = 2 * 60 * 60 * 1000;
 const LEGACY_COOLDOWN_MS = 30 * 60 * 1000;
 const empty = () => ({ used: 0, availableAt: 0 });
+
+export function messageAvailabilityTime(availableAt) {
+  return new Intl.DateTimeFormat('en-GB', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(availableAt));
+}
+
+export function messageAvailabilityMessage(availableAt) {
+  return `Your next free message will be available at ${messageAvailabilityTime(availableAt)}.`;
+}
 
 function normalise(value, now) {
   if (!value || !Number.isInteger(value.used) || value.used < 0 || value.used > MESSAGE_ALLOWANCE ||
@@ -100,14 +114,15 @@ export function createMessageAllowance(browser, now = () => Date.now(), random =
       try {
         return await withMessageCreationLock(browser, remembered, async commit => {
           signal.throwIfAborted();
-          if (read().used >= MESSAGE_ALLOWANCE) throw new Error('To generate more, please wait for the countdown to finish.');
+          const current = read();
+          if (current.used >= MESSAGE_ALLOWANCE) throw new Error(messageAvailabilityMessage(current.availableAt));
           const outro = random() < 0.5 ? 1 : 2;
           const result = await generate(outro);
           signal.throwIfAborted();
           await commit(() => {
             signal.throwIfAborted();
             const state = read();
-            if (state.used >= MESSAGE_ALLOWANCE) throw new Error('To generate more, please wait for the countdown to finish.');
+            if (state.used >= MESSAGE_ALLOWANCE) throw new Error(messageAvailabilityMessage(state.availableAt));
             memory = {
               used: state.used + 1,
               availableAt: state.used + 1 === MESSAGE_ALLOWANCE ? now() + MESSAGE_COOLDOWN_MS : 0,

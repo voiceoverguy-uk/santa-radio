@@ -14,14 +14,15 @@ test.beforeEach(async ({ context }, testInfo) => {
   }, { key: MESSAGE_ALLOWANCE_KEY, duration: MESSAGE_COOLDOWN_MS, legacy: testInfo.title.startsWith('an existing') });
 });
 
-async function open(page, timer = '30:00') {
+async function open(page) {
   await mockBrevo(page);
   await page.goto('/free-santa-message');
   const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await decline.isVisible()) await decline.click();
   await fillAccessForm(page);
   await page.getByRole('button', { name: 'Get my free Santa message', exact: true }).click();
-  await expect(page.getByRole('timer')).toHaveText(timer);
+  await expect(page.locator('.message-cooldown-status')).toContainText('next free message will be available at');
+  await expect(page.getByRole('timer')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Share with friends', exact: true })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Listen to Santa Radio', exact: true })).toHaveCount(0);
 }
@@ -33,8 +34,11 @@ test('recovery without a retained recording has no duplicate actions or fake gre
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toHaveCount(0);
 });
 
-test('an existing 30-minute wait keeps its original deadline without restarting it', async ({ page }) => {
-  await open(page, '25:00');
+test('an existing legacy 30-minute wait migrates from its original success time', async ({ page }) => {
+  await open(page);
+  const saved = await page.evaluate(key => JSON.parse(localStorage.getItem(key)), MESSAGE_ALLOWANCE_KEY);
+  expect(saved.availableAt).toBe(1801915200000 + 115 * 60000);
+  expect(saved.cooldownMs).toBe(MESSAGE_COOLDOWN_MS);
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toHaveCount(0);
 });
 });
@@ -75,7 +79,7 @@ test.describe('completed greeting sharing', () => {
 
   async function create(page, name = 'Olivia') {
     // Additional retained greetings must come from a later eligible period.
-    if (await page.getByRole('timer').count()) {
+    if (!(await page.getByRole('button', { name: 'Create message', exact: true }).count())) {
       await page.evaluate(key => {
         const deadline = JSON.parse(localStorage.getItem(key)).availableAt;
         Date.now = () => deadline;
@@ -100,7 +104,7 @@ test.describe('completed greeting sharing', () => {
     await openMessageDesk(page);
     await create(page);
     await create(page, 'Erin');
-    await expect(page.getByRole('timer')).toHaveText('30:00');
+    await expect(page.getByRole('timer')).toHaveCount(0);
     const before = await allowance(page);
     // Both greetings are retained across SPA navigation, not fetched again.
     await page.getByRole('link', { name: 'Santa Radio home', exact: true }).click();
