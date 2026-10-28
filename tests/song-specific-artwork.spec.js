@@ -16,6 +16,9 @@ const mariahUsual = '/artist-artwork/mariah-carey.webp';
 const mariahPage = '/christmas-artist/24-mariah-carey-all-i-want-for-christmas-is-you';
 const ohSantaPage = '/christmas-artist/25-mariah-carey-oh-santa';
 const michaelPage = '/christmas-artist/319-michael-buble-all-i-want-for-christmas-is-you';
+const katySpecial = '/artist-artwork/katy-perry-cozy-little-christmas.webp';
+const katyUsual = '/artist-artwork/katy-perry.webp';
+const katyPage = '/christmas-artist/528-katy-perry-cozy-little-christmas';
 
 async function expectSquareArtwork(image, path) {
   await expect(image).toHaveAttribute('src', path);
@@ -41,6 +44,67 @@ async function visit(page, path) {
 }
 
 for (const width of [1280, 390]) {
+  test(`Katy Perry song artwork, sharing image and live fallback are correct at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await visit(page, katyPage);
+    const detailImage = page.locator('.song-detail-artwork img');
+    await expect(detailImage).toHaveAttribute('src', katySpecial);
+    await expect(detailImage).toHaveAttribute('alt',
+      'Illustrated artwork for Cozy Little Christmas by Katy Perry');
+    await expect.poll(() => detailImage.evaluate(el =>
+      el.complete && el.naturalWidth === 1024 && el.naturalHeight === 1024)).toBe(true);
+    const detailSize = await detailImage.evaluate(el => ({
+      width: el.getBoundingClientRect().width,
+      height: el.getBoundingClientRect().height,
+    }));
+    expect(Math.abs(detailSize.width - detailSize.height)).toBeLessThanOrEqual(1);
+    for (const selector of ['meta[property="og:image"]', 'meta[name="twitter:image"]']) {
+      await expect(page.locator(selector)).toHaveAttribute('content',
+        `https://www.santaradio.co.uk${katySpecial}`);
+    }
+
+    await page.goto('/christmas-music');
+    await page.getByPlaceholder('Search for a song or artist').fill('Katy Perry');
+    const cardImage = page.locator(`a.song-card[href="${katyPage}"] img`);
+    await expect(cardImage).toHaveAttribute('src', katySpecial);
+    await expect.poll(() => cardImage.evaluate(el =>
+      el.complete && el.naturalWidth === 1024 && el.naturalHeight === 1024)).toBe(true);
+
+    await page.addInitScript(() => {
+      HTMLMediaElement.prototype.load = function () {};
+      HTMLMediaElement.prototype.pause = function () {};
+      HTMLMediaElement.prototype.play = function () { return Promise.resolve(); };
+    });
+    const state = { artist: 'Katy Perry', title: 'Cozy Little Christmas' };
+    await page.route('**/api/radio-metadata*', route => route.fulfill({
+      json: { current: state, currentStatus: 'ready', upcoming: [], upcomingStatus: 'ready' },
+    }));
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    const reject = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+    if (await reject.isVisible()) await reject.click();
+    await page.locator('.hero-actions').getByRole('button', { name: 'Listen Live', exact: true }).click();
+    const liveImage = page.locator('.now-playing-artwork img');
+    const info = page.locator('.now-playing-artwork').getByRole('link');
+    await expect(liveImage).toHaveAttribute('src', katySpecial);
+    await expect(info).toHaveAttribute('href', katyPage);
+    await expect.poll(() => liveImage.evaluate(el =>
+      el.complete && el.naturalWidth === 1024 && el.naturalHeight === 1024)).toBe(true);
+    await liveImage.dispatchEvent('error');
+    await expect(liveImage).toHaveAttribute('src', katyUsual);
+    await liveImage.dispatchEvent('error');
+    await expect(liveImage).toHaveAttribute('src', fallback);
+
+    state.title = 'Unknown recording';
+    await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+    await expect(liveImage).toHaveAttribute('src', katyUsual);
+    await expect(info).toHaveCount(0);
+    state.artist = 'Wham!';
+    state.title = 'Cozy Little Christmas';
+    await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+    await expect(liveImage).toHaveAttribute('src', '/artist-artwork/wham.webp');
+    await expect(info).toHaveCount(0);
+  });
+
   test(`Mariah artwork, catalogue isolation and sharing images are correct at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await visit(page, mariahPage);

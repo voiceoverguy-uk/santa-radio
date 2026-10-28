@@ -49,6 +49,11 @@ export const songPortraits = Object.freeze({
     title: 'Winter Things',
     path: '/artist-artwork/ariana-grande-winter-things.webp',
   }),
+  528: Object.freeze({
+    artist: 'Katy Perry',
+    title: 'Cozy Little Christmas',
+    path: '/artist-artwork/katy-perry-cozy-little-christmas.webp',
+  }),
   537: Object.freeze({
     artist: 'Sia',
     title: 'Candy Cane Lane',

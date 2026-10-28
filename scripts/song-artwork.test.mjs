@@ -199,6 +199,51 @@ test('Elvis delivery image is optimised and does not enter the artist-only app f
   assert.ok(!JSON.stringify(feed).includes(elvisSpecial));
 });
 
+test('Katy Perry illustration is restricted to the verified recording and website metadata', async () => {
+  const cozy = songs.find(song => song.id === 528);
+  const special = '/artist-artwork/katy-perry-cozy-little-christmas.webp';
+  const usual = '/artist-artwork/katy-perry.webp';
+  assert.ok(cozy);
+  assert.equal(cozy.artist, 'Katy Perry');
+  assert.equal(cozy.song, 'Cozy Little Christmas');
+  assert.equal(songArtwork(cozy), special);
+  assert.deepEqual(songArtworkCandidates(cozy), [special, usual, artistMapping.fallbackArtwork]);
+
+  for (const changed of [
+    { ...cozy, id: 99999 },
+    { ...cozy, song: 'Another recording' },
+    { ...cozy, artist: 'Wham!' },
+    { artist: cozy.artist, song: cozy.song },
+  ]) {
+    assert.equal(songArtwork(changed), artistMapping.artistArtwork(changed.artist));
+  }
+  for (const other of songs.filter(song => song.id !== cozy.id)) {
+    assert.notEqual(songArtwork(other), special, `Unexpected assignment to ${other.id}`);
+  }
+  assert.equal(songArtwork(matchLiveSong({
+    artist: 'Katy Perry', title: 'Cozy Little Christmas',
+  }).song), special);
+  assert.equal(matchLiveSong({
+    artist: 'Katy Perry', title: 'Unknown recording',
+  }).song, undefined);
+
+  const metadata = songMetadata(cozy);
+  assert.equal(metadata.image, `https://www.santaradio.co.uk${special}`);
+  assert.equal(metadata.graph.find(node => node['@type'] === 'ImageObject').contentUrl, metadata.image);
+  assert.equal(artworkAlt(cozy), 'Illustrated artwork for Cozy Little Christmas by Katy Perry');
+
+  const image = await readFile(`public${special}`);
+  assert.equal(image.subarray(0, 4).toString(), 'RIFF');
+  assert.equal(image.subarray(8, 12).toString(), 'WEBP');
+  assert.ok(image.length < 180000);
+  const original = await readFile('attached_assets/katy-perry-cozy-little-christmas_1793230138590.png');
+  assert.equal(original.subarray(1, 4).toString(), 'PNG');
+
+  const feed = await buildArtworkFeed(artistMapping);
+  assert.equal(feed.artists['katy perry'].path, usual);
+  assert.ok(!JSON.stringify(feed).includes(special));
+});
+
 test('Ariana recordings get their own verified website overrides, not the app portrait', () => {
   assert.equal(songArtwork(lastChristmas), special);
   assert.equal(songArtwork(winterThings), winterSpecial);
