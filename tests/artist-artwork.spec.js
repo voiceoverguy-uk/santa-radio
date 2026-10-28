@@ -3,6 +3,39 @@ import { artistArtwork, fallbackArtwork } from '../src/data/artistArtwork.js';
 import { existsSync, readdirSync, statSync } from 'node:fs';
 import songs from '../src/data/songs.json' with { type: 'json' };
 
+for (const width of [390, 1440]) {
+  test(`Sam Ryder cropped artwork loads on his song page and catalogue at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    const song = songs.find(song => song.artist === 'Sam Ryder');
+    const path = '/artist-artwork/sam-ryder.webp';
+    await page.goto(`/christmas-artist/${song.id}-${song.link}`);
+    const image = page.locator('.song-artwork-img');
+    await expect(image).toHaveAttribute('src', path);
+    await expect.poll(() => image.evaluate(el => el.naturalWidth)).toBe(500);
+    await expect(image).toHaveCSS('border-top-width', '3px');
+    await expect(image).toHaveCSS('border-top-color', 'rgba(255, 255, 255, 0.15)');
+    // Check decoded image bytes, independently of the unchanged CSS frame.
+    // The original has white padding at all four corners; internal snow is valid.
+    const corners = await image.evaluate(el => {
+      const canvas = document.createElement('canvas');
+      canvas.width = canvas.height = 500;
+      const context = canvas.getContext('2d');
+      context.drawImage(el, 0, 0);
+      return [[0, 0], [499, 0], [0, 499], [499, 499]].map(([x, y]) =>
+        Array.from(context.getImageData(x, y, 1, 1).data).slice(0, 3));
+    });
+    for (const pixel of corners) expect(Math.min(...pixel)).toBeLessThan(225);
+    await page.goto('/christmas-music');
+    await page.getByRole('textbox', { name: 'Search for a song or artist' }).fill('Sam Ryder');
+    const card = page.locator('.song-card').filter({ hasText: song.artist });
+    await expect(card).toHaveCount(1);
+    await card.scrollIntoViewIfNeeded();
+    await expect(card.locator('img')).toHaveAttribute('src', path);
+    await expect.poll(() => card.locator('img').evaluate(el => el.naturalWidth)).toBe(500);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  });
+}
+
 test('song pages use shared artist portraits and the Santa fallback', async ({ page }) => {
   for (const artist of ['Frank Sinatra', 'Kylie Minogue', 'Waitresses']) {
     const song = songs.find(s => s.artist === artist);

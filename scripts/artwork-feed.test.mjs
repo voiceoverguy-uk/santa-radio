@@ -1,8 +1,24 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import * as mapping from '../src/data/artistArtwork.js';
 import { buildArtworkFeed } from '../server/artwork-feed.js';
+
+test('Sam Ryder keeps his shared artwork path with a new content version after cropping', async () => {
+  const path = '/artist-artwork/sam-ryder.webp';
+  const bytes = await readFile(`public${path}`);
+  const feed = await buildArtworkFeed(mapping);
+  const entry = feed.artists['sam ryder'];
+  const version = createHash('sha256').update(bytes).digest('hex');
+  assert.equal(mapping.artistArtwork('Sam Ryder'), path);
+  assert.equal(entry.path, path);
+  assert.equal(entry.version, version);
+  assert.equal(entry.url, `${path}?v=${version}`);
+  // Original white-rimmed WebP: changing bytes, not the URL contract, clears caches.
+  assert.notEqual(version, 'cea5319e6220af6276ab738749c1c721f9bdf65b92eeb44c468e9b96cd69bcb4');
+  assert.ok(bytes.length < 100000);
+});
 
 test('Corinne Bailey Rae uses her supplied portrait in the catalogue and shared artwork feed', async () => {
   const songs = JSON.parse(await readFile('src/data/songs.json', 'utf8'));
