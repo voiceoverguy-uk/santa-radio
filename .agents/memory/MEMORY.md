@@ -51,3 +51,4 @@
 - [Large asset delivery](asset-delivery-limits.md) — Attachments have a 100 MiB limit; preserve large handovers with verified lossless transport parts.
 - [Native audio styling](native-audio-styling.md) — Chromium can paint its native media panel over the audio element background; style the WebKit panel as well.
 - [Santa Studio paid bundle](santa-studio-purchase-scope.md) — £6.50 guest family bundle; preserve the live product, keep free access separate, and do not invent expiry or regeneration caps.
+- [Stripe connector compatibility](stripe-connector-compatibility.md) — SDK proxy authentication can work while the older managed-sync credential template cannot obtain a secret key.
