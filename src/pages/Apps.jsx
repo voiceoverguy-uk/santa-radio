@@ -144,7 +144,6 @@ export default function Apps() {
       <PageSeo metadata={appsMetadata([...christmasApps, macAppListing])} />
       <div className="apps-hero">
         <div className="apps-hero-content">
-          <img className="apps-hero-logo" src="/images/santa-radio-logo.png" alt="Santa Radio" width="827" height="190" />
           <h1 className="apps-hero-title">Christmas Apps</h1>
           <p className="apps-hero-desc">Christmas music, Santa messages and festive games. Check the linked stores for current pricing.</p>
         </div>

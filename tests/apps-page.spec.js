@@ -3,6 +3,33 @@ import { appDownloads, obsoleteStoreCopy } from './fixtures/apps-downloads.js';
 
 const slideLabels = ['Radio', 'Artists', 'MugShots', 'Tracker'];
 
+test('Apps hero starts with Christmas Apps without a logo or leftover space at desktop and phone widths', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/apps');
+  await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
+  for (const width of [1280, 390, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    const hero = page.locator('.apps-hero');
+    await expect(hero.getByRole('heading', { name: 'Christmas Apps', level: 1, exact: true })).toBeVisible();
+    await expect(hero.locator('img, .apps-hero-logo')).toHaveCount(0);
+    await expect(hero.locator('.apps-hero-content > :first-child')).toHaveClass('apps-hero-title');
+    const heroSpacing = await hero.evaluate(element => {
+      const bounds = element.getBoundingClientRect();
+      const heading = element.querySelector('h1').getBoundingClientRect();
+      const description = element.querySelector('.apps-hero-desc').getBoundingClientRect();
+      return {
+        top: heading.top - bounds.top,
+        description: description.top - heading.bottom,
+        bottom: bounds.bottom - description.bottom,
+      };
+    });
+    expect(heroSpacing.top).toBeCloseTo(width >= 768 ? 72 : 48, 1);
+    expect(heroSpacing.description).toBeCloseTo(22, 1);
+    // Includes the hero's one-pixel bottom border.
+    expect(heroSpacing.bottom).toBeCloseTo(width >= 768 ? 77 : 53, 1);
+  }
+});
+
 test('Apps introduction is uncluttered on desktop and phones while navigation and SEO remain intact', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/apps');

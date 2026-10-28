@@ -19,14 +19,6 @@
   margin-inline: auto;
 }
 
-.apps-page .apps-hero-logo {
-  display: block;
-  width: 300px;
-  max-width: 80%;
-  height: auto;
-  margin: 0 auto 32px;
-}
-
 .apps-page .apps-hero-title {
   margin: 0 0 22px;
   color: var(--gold-light);
@@ -445,7 +437,6 @@
 
 @media (max-width: 767px) {
   .apps-page .apps-hero { padding: 48px 20px 52px; }
-  .apps-page .apps-hero-logo { width: 250px; margin-bottom: 26px; }
   .apps-page .apps-container { width: calc(100% - 36px); }
   .apps-page .app-section { padding: 52px 0 58px; }
   .apps-page .app-section-heading { margin-bottom: 30px; }
