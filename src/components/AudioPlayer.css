@@ -45,10 +45,6 @@
 .radio-upcoming-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
 .radio-upcoming-panel { max-height: min(190px, 30dvh); overflow-y: auto; overscroll-behavior: contain; padding-right: 8px; }
 .radio-upcoming-toggle:focus-visible, .radio-upcoming-panel:focus-visible, .radio-play:focus-visible, .radio-volume input:focus-visible { outline: 2px solid var(--gold-light); outline-offset: 4px; }
-.radio-top-ten-trigger { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 40px; padding: 8px 0 0; border: 0; border-top: 1px solid #D4AF3726; margin-top: 8px; background: transparent; color: var(--gold-light); font: inherit; font-size: .7rem; text-align: left; cursor: pointer; }
-.radio-top-ten-indicator { display: grid; place-items: center; width: 35px; min-height: 23px; flex-shrink: 0; font-size: 1rem; }
-.radio-top-ten-indicator img { display: block; width: 35px; height: 23px; object-fit: contain; }
-.radio-top-ten-trigger:focus-visible { outline: 2px solid var(--gold-light); outline-offset: 3px; }
 @media (max-width: 600px) { .radio-dock { max-height: calc(100dvh - 20px); } }
 @media (prefers-reduced-motion: reduce) { .radio-upcoming-toggle svg { transition: none; } }
 @media (max-width: 600px) { .radio-dock { bottom: 10px; right: 12px; left: 12px; width: auto; padding: 12px 16px; gap: 8px; } .radio-caption { font-size: .66rem; } }

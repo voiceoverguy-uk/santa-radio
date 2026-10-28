@@ -1,13 +1,9 @@
 ---
-name: Radio chart presentation
-description: Owner prefers yesterday's chart inside the player, not a separate modal.
+name: Radio chart scope
+description: Owner's decision to remove Yesterday's Top Ten from the interface.
 ---
-Yesterday's Top Ten should open as a small window inside the radio player rather
-than a large pop-out. Keep the song list compact and scrollable.
+Do not restore Yesterday's Top Ten in the desktop or mobile radio player.
 
-**Why:** The owner found the separate chart box too large and explicitly requested
-a small window inside the player instead.
+**Why:** The user no longer wants the feature displayed, superseding the earlier compact-panel direction.
 
-**How to apply:** Preserve this presentation when changing the chart or its entry
-points. Both entry points should reach the same player panel without interrupting
-audio. Do not restore a full-screen or large modal for the chart.
+**How to apply:** Keep the chart row and panel absent. Historical listening data, collection jobs and chart API endpoints are outside the removal scope.
