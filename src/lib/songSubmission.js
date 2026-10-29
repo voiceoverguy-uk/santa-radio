@@ -5,6 +5,7 @@ export const SONG_REQUEST_TIMEOUT_MS = 15000;
 export const emptySongFields = {
   FIRSTNAME: '', LASTNAME: '', EMAIL: '', SONG_REQUEST: '',
   criteriaMet: false, email_address_check: '',
+  sponsorBrand: '', sponsorWebsite: '', sponsorCampaign: '', sponsorLaunchDate: '',
 };
 
 // Country/dialling-code pairs from the supplied embed, including shared codes.
@@ -22,7 +23,7 @@ export function validateSongFields(fields, mode = 'song') {
   const errors = {};
   for (const [name, label, limit] of [
     ['FIRSTNAME', 'first name', 200], ['LASTNAME', 'surname', 200],
-    ['SONG_REQUEST', 'message', 500],
+    ...(mode === 'sponsorship' ? [] : [['SONG_REQUEST', 'message', 500]]),
   ]) {
     const value = fields[name] || '';
     if (!value.trim()) errors[name] = `Please enter your ${label}.`;
@@ -36,7 +37,51 @@ export function validateSongFields(fields, mode = 'song') {
   if (mode === 'song' && fields.criteriaMet !== true) {
     errors.criteriaMet = 'Please confirm that you have met all five criteria.';
   }
+  if (mode === 'sponsorship') {
+    for (const [name, label, limit] of [
+      ['sponsorBrand', 'company or brand', 80],
+      ['sponsorWebsite', 'website', 200],
+      ['sponsorCampaign', 'product or campaign description', 220],
+      ['sponsorLaunchDate', 'preferred launch date', 10],
+    ]) {
+      const value = fields[name]?.trim() || '';
+      if (!value) errors[name] = `Please enter your ${label}.`;
+      else if (value.length > limit) errors[name] = `Please keep your ${label} to ${limit} characters or fewer.`;
+    }
+    if (fields.sponsorWebsite?.trim()) {
+      try {
+        const website = new URL(fields.sponsorWebsite.trim());
+        if (!['http:', 'https:'].includes(website.protocol)) throw new Error('Unsupported protocol');
+      } catch {
+        errors.sponsorWebsite = 'Please enter a website address beginning with https:// or http://.';
+      }
+    }
+    if (fields.sponsorLaunchDate?.trim()) {
+      const value = fields.sponsorLaunchDate.trim();
+      const date = new Date(`${value}T00:00:00.000Z`);
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(value) || Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== value) {
+        errors.sponsorLaunchDate = 'Please choose a valid preferred launch date.';
+      } else if (value < '2026-11-01' || value > '2026-12-31') {
+        errors.sponsorLaunchDate = 'Please choose a launch date between 1 November and 31 December 2026.';
+      }
+    }
+    if (!Object.keys(errors).length && buildSponsorshipMessage(fields).length > 500) {
+      errors.sponsorCampaign = 'Please shorten these details so the complete sponsorship enquiry fits the 500-character message limit.';
+    }
+  }
   return errors;
+}
+
+export function buildSponsorshipMessage(fields) {
+  const contact = [fields.FIRSTNAME, fields.LASTNAME].map(value => value?.trim()).filter(Boolean).join(' ');
+  return [
+    '2026 Christmas sponsorship enquiry: £2,500, 1 November–31 December 2026',
+    `Brand: ${fields.sponsorBrand?.trim() || ''}`,
+    `Contact: ${contact}`,
+    `Website: ${fields.sponsorWebsite?.trim() || ''}`,
+    `Preferred launch: ${fields.sponsorLaunchDate?.trim() || ''}`,
+    `Campaign: ${fields.sponsorCampaign?.trim() || ''}`,
+  ].join('\n');
 }
 
 function safeText(value, fallback) {
@@ -61,7 +106,10 @@ export async function submitSong(fields, signal, mode = 'song') {
     throw new SongSubmissionError('Your message could not be sent. Please try again.');
   }
   const body = new FormData();
-  for (const name of supportedFields) body.append(name, fields[name].trim());
+  for (const name of supportedFields) {
+    body.append(name, (name === 'SONG_REQUEST' && mode === 'sponsorship'
+      ? buildSponsorshipMessage(fields) : fields[name]).trim());
+  }
   body.append('email_address_check', fields.email_address_check || '');
   body.append('locale', 'en');
   const destination = mode === 'song' ? SONG_FORM_URL : GENERAL_FORM_URL;

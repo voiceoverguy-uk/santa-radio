@@ -15,16 +15,15 @@ test('partnership banner preserves the approved copy and fits desktop and narrow
   const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await decline.isVisible()) await decline.click();
   const banner = page.locator('.partnership-strip');
-  const heading = banner.getByRole('heading', { name: 'Your Christmas magic. Our festive soundtrack.', exact: true });
-  const button = banner.getByRole('link', { name: /Let’s talk Christmas/ });
-  await expect(button).toHaveAccessibleName('2026 Sponsorship Let’s talk Christmas →');
-  await expect(button).toHaveAttribute('href', '/submit-a-song');
-  await expect(button.getByText('2026 Sponsorship', { exact: true })).toHaveCount(1);
-  await expect(banner.getByText('A LITTLE CHRISTMAS PARTNERSHIP', { exact: true })).toHaveCount(1);
+  const heading = banner.getByRole('heading', { name: 'Your brand. Part of their Christmas.', exact: true });
+  const button = banner.getByRole('link', { name: 'Explore Christmas sponsorship →', exact: true });
+  await expect(button).toHaveAttribute('href', '/submit-a-song?mode=sponsorship');
+  await expect(banner.getByText('CHRISTMAS PARTNERSHIP 2026', { exact: true })).toHaveCount(1);
   await expect(heading).toHaveCount(1);
-  await expect(banner.getByText('Got a Christmas market, festive event or unique Christmas product? Join Santa Radio with website and app banners, plus an on-air credit every hour.', { exact: true })).toHaveCount(1);
-  await expect(banner.getByText('Heard across web, apps, CarPlay, Apple TV and the Mac app.', { exact: true })).toHaveCount(1);
-  await expect(button).toHaveAttribute('href', '/submit-a-song');
+  await expect(banner.getByText('Put your Christmas brand alongside Santa Radio, with two recorded sponsor mentions every hour, 24/7; a banner on every website page and your branding when our apps open—through 31 December.', { exact: true })).toHaveCount(1);
+  await expect(banner.getByText('65,000 website active users in 2025 · Approx. 247,000 cumulative Apple app units across our streaming apps', { exact: true })).toHaveCount(1);
+  await expect(banner).not.toContainText('£2,500');
+  await expect(button).toHaveAttribute('href', '/submit-a-song?mode=sponsorship');
 
   for (const width of [1440, 1024, 768, 767, 390, 320]) {
     await page.setViewportSize({ width, height: 1000 });
@@ -57,19 +56,19 @@ test('partnership banner preserves the approved copy and fits desktop and narrow
     expect(geometry.topBorder).toBe('1px');
     expect(geometry.bottomBorder).toBe('1px');
     expect(geometry.topColour).toBe(geometry.bottomColour);
-    expect(geometry.backgroundColour).toBe('rgb(11, 11, 11)');
-    expect(geometry.copyColours.every(colour => colour === 'rgb(255, 255, 255)')).toBe(true);
-    expect(geometry.buttonColour).toBe('rgb(255, 255, 255)');
-    expect(geometry.buttonBackground).toBe('rgb(33, 26, 14)');
+    expect(geometry.backgroundColour).toBe('rgb(7, 23, 16)');
+    expect(geometry.copyColours).toEqual([
+      'rgb(224, 200, 127)', 'rgb(255, 250, 240)',
+      'rgb(246, 242, 232)', 'rgb(221, 201, 133)', 'rgb(255, 250, 240)',
+    ]);
+    expect(geometry.buttonColour).toBe('rgb(255, 250, 240)');
+    expect(geometry.buttonBackground).toBe('rgb(16, 39, 27)');
     expect(geometry.pattern).toContain('data:image/svg+xml');
     expect(geometry.pattern).toContain('%23C6A85C');
     const titleBox = await heading.boundingBox();
     const buttonBox = await button.boundingBox();
-    expect(buttonBox.height).toBeGreaterThanOrEqual(72);
-    expect(buttonBox.width).toBeGreaterThanOrEqual(210);
-    const sponsorshipBox = await button.locator('.partnership-strip__button-title').boundingBox();
-    const invitationBox = await button.getByText('Let’s talk Christmas →', { exact: true }).boundingBox();
-    expect(sponsorshipBox.y + sponsorshipBox.height).toBeLessThanOrEqual(invitationBox.y);
+    expect(buttonBox.height).toBeGreaterThanOrEqual(56);
+    expect(buttonBox.width).toBeGreaterThanOrEqual(width <= 767 ? width - 40 : 246);
     expect(await button.evaluate(element => element.scrollWidth <= element.clientWidth + 1)).toBe(true);
     if (width >= 1024) expect(buttonBox.x).toBeGreaterThan(titleBox.x + titleBox.width);
     if (width <= 767) expect(buttonBox.y).toBeGreaterThan(titleBox.y + titleBox.height);
@@ -88,13 +87,13 @@ test('partnership banner preserves the approved copy and fits desktop and narrow
     transitionDuration: getComputedStyle(element).transitionDuration,
     pattern: getComputedStyle(element.closest('.partnership-strip')).backgroundImage,
   }));
-  expect(reducedMotionStyles.color).toBe('rgb(255, 255, 255)');
-  expect(reducedMotionStyles.background).toBe('rgb(33, 26, 14)');
+  expect(reducedMotionStyles.color).toBe('rgb(255, 250, 240)');
+  expect(reducedMotionStyles.background).toBe('rgb(16, 39, 27)');
   expect(reducedMotionStyles.transitionDuration).toBe('0s');
   expect(reducedMotionStyles.pattern).toContain('%23C6A85C');
 });
 
-test('keyboard activation opens the existing general contact form', async ({ page }) => {
+test('keyboard activation opens the sponsorship enquiry mode', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 1000 });
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
@@ -109,8 +108,8 @@ test('keyboard activation opens the existing general contact form', async ({ pag
   expect(await button.evaluate(element => element.matches(':focus-visible') &&
     getComputedStyle(element).outlineStyle !== 'none')).toBe(true);
   await page.keyboard.press('Enter');
-  await expect(page).toHaveURL(/\/submit-a-song$/);
-  await expect(page.getByRole('heading', { name: 'Get in touch with Santa Radio', exact: true })).toBeVisible();
-  await expect(page.getByRole('radio', { name: 'General enquiry', exact: true })).toBeChecked();
+  await expect(page).toHaveURL(/\/submit-a-song\?mode=sponsorship$/);
+  await expect(page.getByRole('heading', { name: 'Christmas sponsorship enquiry', exact: true })).toBeVisible();
+  await expect(page.getByRole('radio', { name: 'Christmas sponsorship', exact: true })).toBeChecked();
   await expect(page.locator('form input[name="EMAIL"]')).toBeVisible();
 });

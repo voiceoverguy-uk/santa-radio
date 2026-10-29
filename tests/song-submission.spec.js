@@ -2,7 +2,8 @@ import { expect } from '@playwright/test';
 import { test } from './helpers/provider-test.js';
 import { readFileSync } from 'node:fs';
 import {
-  GENERAL_FORM_URL, SONG_FORM_URL, SONG_REQUEST_TIMEOUT_MS, songCountries, validateSongFields, submitSong,
+  buildSponsorshipMessage, GENERAL_FORM_URL, SONG_FORM_URL, SONG_REQUEST_TIMEOUT_MS,
+  songCountries, validateSongFields, submitSong,
 } from '../src/lib/songSubmission.js';
 import { MESSAGE_ACCESS_KEY } from '../src/lib/santaMessageAccess.js';
 import { brevoUrl, fillAccessForm, mockBrevo } from './helpers/message-access.js';
@@ -14,6 +15,11 @@ const details = {
   FIRSTNAME: 'Testartist', LASTNAME: 'Example', EMAIL: 'artist@example.test',
   SONG_REQUEST: 'Test Artist — Christmas Song. https://example.test/listen A festive recording. Santa Radio promotion: https://example.test/promotion',
 };
+const sponsorshipDetails = {
+  FIRSTNAME: 'Ruth', LASTNAME: 'Example', EMAIL: 'ruth@example.test',
+  sponsorBrand: 'North Pole Treats', sponsorWebsite: 'https://northpoletreats.example',
+  sponsorCampaign: 'Festive food hampers for families.', sponsorLaunchDate: '2026-11-01',
+};
 
 async function mockSong(page, json = { success: true }, status = 200, mode = 'song') {
   await page.route(destination(mode), route => route.fulfill({
@@ -21,7 +27,8 @@ async function mockSong(page, json = { success: true }, status = 200, mode = 'so
   }));
 }
 async function openForm(page, mode = 'song') {
-  await page.goto(mode === 'song' ? '/submit-a-song?mode=song' : '/submit-a-song');
+  await page.goto(mode === 'song' || mode === 'sponsorship'
+    ? `/submit-a-song?mode=${mode}` : '/submit-a-song');
   const reject = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await reject.isVisible()) await reject.click();
 }
@@ -97,6 +104,51 @@ test('validation rejects over-limit values even if browser limits are bypassed',
     criteriaMet: 'Please confirm that you have met all five criteria.',
   });
   expect(validateSongFields({ ...fields, criteriaMet: false }, 'general')).toEqual({});
+});
+
+test('sponsorship validation builds a bounded, correctly dated general-enquiry message', () => {
+  expect(validateSongFields(sponsorshipDetails, 'sponsorship')).toEqual({});
+  const message = buildSponsorshipMessage(sponsorshipDetails);
+  expect(message).toContain('2026 Christmas sponsorship enquiry: £2,500, 1 November–31 December 2026');
+  expect(message).toContain('Brand: North Pole Treats');
+  expect(message).toContain('Contact: Ruth Example');
+  expect(message).toContain('Preferred launch: 2026-11-01');
+  expect(message.length).toBeLessThanOrEqual(500);
+  expect(validateSongFields({ ...sponsorshipDetails, sponsorWebsite: 'not-a-url' }, 'sponsorship'))
+    .toMatchObject({ sponsorWebsite: expect.stringContaining('https://') });
+  expect(validateSongFields({ ...sponsorshipDetails, sponsorLaunchDate: '2026-02-30' }, 'sponsorship'))
+    .toMatchObject({ sponsorLaunchDate: expect.stringContaining('valid') });
+  expect(validateSongFields({ ...sponsorshipDetails, sponsorLaunchDate: '2027-01-01' }, 'sponsorship'))
+    .toMatchObject({ sponsorLaunchDate: expect.stringContaining('between 1 November') });
+  expect(validateSongFields({
+    ...sponsorshipDetails, sponsorBrand: 'B'.repeat(80), FIRSTNAME: 'R'.repeat(200),
+    LASTNAME: 'E'.repeat(200), sponsorWebsite: 'https://example.com',
+    sponsorCampaign: 'C'.repeat(220),
+  }, 'sponsorship')).toMatchObject({
+    sponsorCampaign: expect.stringContaining('500-character'),
+  });
+});
+
+test('sponsorship mode reuses general enquiry provider fields and message destination', async () => {
+  let payload;
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async (url, options) => {
+    expect(url).toBe(generalUrl);
+    payload = Object.fromEntries(options.body);
+    return new Response(JSON.stringify({ success: true }), {
+      status: 200, headers: { 'Content-Type': 'application/json' },
+    });
+  };
+  try {
+    await submitSong(sponsorshipDetails, new AbortController().signal, 'sponsorship');
+    expect(payload).toEqual({
+      FIRSTNAME: 'Ruth', LASTNAME: 'Example', EMAIL: 'ruth@example.test',
+      SONG_REQUEST: buildSponsorshipMessage(sponsorshipDetails),
+      email_address_check: '', locale: 'en',
+    });
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });
 
 test('submission layer rejects missing song criteria and honeypots before any request', async () => {
@@ -185,6 +237,55 @@ test('general enquiry accepts without criteria using the exact provider fields a
   await expect(page.locator('.song-form-success')).not.toContainText('Provider acceptance');
   await expect(page.getByRole('link', { name: 'Return to Santa Radio', exact: true })).toHaveAttribute('href', 'https://www.santaradio.co.uk/');
   expect(await page.evaluate(key => sessionStorage.getItem(key), MESSAGE_ACCESS_KEY)).toBeNull();
+});
+
+test('sponsorship enquiry uses the general form, preserves entries on rejection and confirms acceptance accurately', async ({ page }) => {
+  const attempts = [];
+  await page.route(generalUrl, async route => {
+    attempts.push(await outgoing(route.request()));
+    await route.fulfill(attempts.length === 1
+      ? { status: 400, json: { success: false, message: 'Temporary test rejection.' } }
+      : { status: 200, json: { success: true } });
+  });
+  await openForm(page, 'sponsorship');
+  await expect(page.getByRole('radio', { name: 'Christmas sponsorship', exact: true })).toBeChecked();
+  await expect(page.getByRole('heading', { name: 'Christmas sponsorship enquiry', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '£2,500 · 1 November–31 December 2026' })).toBeVisible();
+  await expect(page.locator('.sponsorship-offer')).toContainText('2,928 on-air broadcasts');
+  await expect(page.locator('.sponsorship-evidence')).toContainText('not deduplicated people or current or active listeners');
+  await expect(page.getByRole('button', { name: 'Send sponsorship enquiry', exact: true })).toBeVisible();
+  await expect(page.locator('[name="COMPANY:name"], [name="MESSAGE"]')).toHaveCount(0);
+
+  await page.getByLabel('Company or brand').fill(sponsorshipDetails.sponsorBrand);
+  await page.getByLabel('Contact first name').fill(sponsorshipDetails.FIRSTNAME);
+  await page.getByLabel('Contact surname').fill(sponsorshipDetails.LASTNAME);
+  await page.getByLabel('Email address').fill(sponsorshipDetails.EMAIL);
+  await page.getByLabel('Brand website').fill(sponsorshipDetails.sponsorWebsite);
+  await page.getByLabel('Product or campaign description').fill(sponsorshipDetails.sponsorCampaign);
+  await page.getByLabel('Preferred launch date').fill(sponsorshipDetails.sponsorLaunchDate);
+  const send = page.getByRole('button', { name: 'Send sponsorship enquiry', exact: true });
+  await send.click();
+  await expect(page.getByRole('alert')).toHaveText('Temporary test rejection.');
+  await expect(page.getByLabel('Company or brand')).toHaveValue(sponsorshipDetails.sponsorBrand);
+  await expect(page.getByLabel('Preferred launch date')).toHaveValue(sponsorshipDetails.sponsorLaunchDate);
+
+  await send.click();
+  await expect(page.getByRole('heading', { name: 'Thank you for your sponsorship enquiry' })).toBeVisible();
+  await expect(page.locator('.song-form-success')).toContainText('does not confirm delivery to Santa Radio’s inbox');
+  const expectedMessage = buildSponsorshipMessage(sponsorshipDetails).replace(/\n/g, '\r\n');
+  expect(attempts).toHaveLength(2);
+  for (const payload of attempts) {
+    expect(payload).toEqual({
+      FIRSTNAME: sponsorshipDetails.FIRSTNAME,
+      LASTNAME: sponsorshipDetails.LASTNAME,
+      EMAIL: sponsorshipDetails.EMAIL,
+      SONG_REQUEST: expectedMessage,
+      email_address_check: '',
+      locale: 'en',
+    });
+    expect(payload).not.toHaveProperty('sponsorBrand');
+    expect(payload).not.toHaveProperty('COMPANY:name');
+  }
 });
 
 test('mode switching retains drafts, clears stale errors and requires fresh criteria even through history', async ({ page }) => {

@@ -21,7 +21,7 @@ export default function Home() {
   const trackPartnership = event => {
     if (event.defaultPrevented ||
         (event.type === 'click' ? event.button !== 0 : event.button !== 1)) return;
-    trackEvent('partnership_enquiry_opened', { location: 'homepage_partnership', destination: '/submit-a-song' });
+    trackEvent('partnership_enquiry_opened', { location: 'homepage_partnership', destination: '/submit-a-song?mode=sponsorship' });
   };
 
   return (
@@ -61,15 +61,14 @@ export default function Home() {
       <section className="partnership-strip" aria-labelledby="partnership-heading">
         <div className="partnership-strip__inner">
           <div className="partnership-strip__copy">
-            <p className="partnership-strip__eyebrow">A LITTLE CHRISTMAS PARTNERSHIP</p>
-            <h2 id="partnership-heading" className="partnership-strip__heading">Your Christmas magic. Our festive soundtrack.</h2>
-            <p className="partnership-strip__body">Got a Christmas market, festive event or unique Christmas product? Join Santa Radio with website and app banners, plus an on-air credit every hour.</p>
-            <p className="partnership-strip__supporting">Heard across web, apps, CarPlay, Apple TV and the Mac app.</p>
+            <p className="partnership-strip__eyebrow">CHRISTMAS PARTNERSHIP 2026</p>
+            <h2 id="partnership-heading" className="partnership-strip__heading">Your brand. Part of their Christmas.</h2>
+            <p className="partnership-strip__body">Put your Christmas brand alongside Santa Radio, with two recorded sponsor mentions every hour, 24/7; a banner on every website page and your branding when our apps open—through 31 December.</p>
+            <p className="partnership-strip__supporting">65,000 website active users in 2025 · Approx. 247,000 cumulative Apple app units across our streaming apps</p>
           </div>
-          <a className="partnership-strip__button" href="/submit-a-song"
+          <a className="partnership-strip__button" href="/submit-a-song?mode=sponsorship"
             onClick={trackPartnership} onAuxClick={trackPartnership}>
-            <span className="partnership-strip__button-title">2026 Sponsorship</span>
-            <span>Let’s talk Christmas →</span>
+            <span>Explore Christmas sponsorship →</span>
           </a>
         </div>
       </section>

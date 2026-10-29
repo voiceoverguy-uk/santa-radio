@@ -107,6 +107,75 @@
   margin: 0;
 }
 
+.submit-song-page .sponsorship-offer {
+  margin: 24px 0;
+  padding: clamp(18px, 3.5vw, 28px);
+  border: 1px solid #d4af3780;
+  border-radius: 12px;
+  background:
+    linear-gradient(145deg, #173b2c 0%, #102d22 72%, #0d291f 100%);
+  box-shadow: inset 0 1px 0 #f3e3b20d, 0 12px 30px #04150f35;
+}
+
+.submit-song-page .sponsorship-offer__eyebrow {
+  margin: 0 0 7px;
+  color: var(--song-gold);
+  font-family: 'Cinzel', serif;
+  font-size: .72rem;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.submit-song-page .sponsorship-offer h2 {
+  margin: 0 0 15px;
+  color: var(--song-gold-bright);
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1.18rem, 3.1vw, 1.65rem);
+  line-height: 1.4;
+  text-wrap: balance;
+}
+
+.submit-song-page .sponsorship-offer ul {
+  margin: 0 0 16px 20px;
+  padding: 0;
+}
+
+.submit-song-page .sponsorship-offer li {
+  margin: 0 0 8px;
+}
+
+.submit-song-page .sponsorship-offer p:last-child {
+  margin: 0;
+  color: #d4dfd1;
+  font-size: .9rem;
+  line-height: 1.65;
+}
+
+.submit-song-page .sponsorship-evidence {
+  margin: 22px 0;
+  padding: 17px 20px;
+  border-left: 2px solid #d4af3780;
+  background: #081e1745;
+}
+
+.submit-song-page .sponsorship-evidence h2 {
+  margin: 0 0 8px;
+  color: var(--song-gold);
+  font-size: .94rem;
+  letter-spacing: .04em;
+}
+
+.submit-song-page .sponsorship-evidence p {
+  margin: 0 0 8px;
+  color: var(--song-muted);
+  font-size: .78rem;
+  line-height: 1.65;
+}
+
+.submit-song-page .sponsorship-evidence p:last-child {
+  margin-bottom: 0;
+}
+
 .submit-song-page .song-submission-form {
   display: grid;
   gap: 20px;

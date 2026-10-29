@@ -21,13 +21,13 @@
 .hero-countdown .countdown-unit span { letter-spacing: .08em; font-size: .5rem; }
 .hero-countdown .christmas-greeting { color: var(--gold-light); font-family: 'Cinzel',serif; text-align: center; }
 .partnership-strip {
-  --partnership-black: #0b0b0b;
+  --partnership-black: #071710;
   --partnership-gold: #c6a85c;
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  padding: 30px max(6vw,24px) 32px;
-  color: #fff;
+  padding: clamp(28px, 4vw, 42px) max(6vw,24px);
+  color: #fffaf0;
   background-color: var(--partnership-black);
   background-image: url('./partnership-pattern.svg');
   background-repeat: repeat;
@@ -38,74 +38,75 @@
   position: absolute;
   z-index: -1;
   inset: 0;
-  background: linear-gradient(90deg, #0b0b0b22 0%, #0b0b0b08 58%, #0b0b0b22 100%);
+  background: linear-gradient(90deg, #07171040 0%, #07171014 58%, #07171040 100%);
   content: '';
 }
 .partnership-strip__inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: clamp(28px, 5vw, 72px);
+  gap: clamp(28px, 5vw, 64px);
   width: 100%;
-  max-width: 1160px;
+  max-width: 1240px;
   margin: 0 auto;
 }
-.partnership-strip__copy { max-width: 790px; }
+.partnership-strip__copy { max-width: 790px; min-width: 0; }
 .partnership-strip__eyebrow {
-  margin-bottom: 5px;
-  color: #fff;
+  margin: 0 0 8px;
+  color: #e0c87f;
   font-family: 'Cinzel',serif;
-  font-size: .57rem;
-  letter-spacing: .2em;
+  font-size: .62rem;
+  line-height: 1.5;
+  letter-spacing: .19em;
 }
 .partnership-strip__heading {
-  margin: 0 0 8px;
-  color: #fff;
+  margin: 0 0 10px;
+  color: #fffaf0;
   font-family: 'Cinzel',serif;
-  font-size: clamp(1.15rem, 2vw, 1.55rem);
-  line-height: 1.3;
-  letter-spacing: -.015em;
+  font-size: clamp(1.3rem, 2.2vw, 1.85rem);
+  line-height: 1.24;
+  letter-spacing: -.02em;
+  overflow-wrap: anywhere;
 }
 .partnership-strip__body {
-  max-width: 720px;
-  color: #fff;
-  font-size: .82rem;
-  line-height: 1.55;
+  max-width: 740px;
+  color: #f6f2e8;
+  font-size: .91rem;
+  line-height: 1.65;
 }
 .partnership-strip__supporting {
-  margin-top: 8px;
-  color: #fff;
-  font-size: .65rem;
-  letter-spacing: .025em;
+  margin-top: 12px;
+  color: #ddc985;
+  font-size: .72rem;
+  line-height: 1.55;
+  letter-spacing: .015em;
 }
 .partnership-strip__button {
   display: inline-flex;
-  flex-direction: column;
-  gap: 5px;
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  min-width: min(210px, 100%);
+  min-width: min(246px, 100%);
   max-width: 100%;
-  min-height: 72px;
-  padding: 14px 24px;
+  min-height: 60px;
+  padding: 15px 21px;
   border: 1px solid #d4b96d;
   border-radius: 2px;
-  background: #211a0e;
-  color: #fff;
+  background: #10271b;
+  color: #fffaf0;
   font-family: 'Cinzel',serif;
-  font-size: .72rem;
-  font-weight: 500;
-  line-height: 1.35;
+  font-size: .75rem;
+  font-weight: 600;
+  line-height: 1.5;
   text-align: center;
+  text-wrap: balance;
   transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease;
 }
-.partnership-strip__button-title { font-size: .88rem; }
 .partnership-strip__button:hover {
   transform: translateY(-2px);
   border-color: #e2cb85;
-  background-color: #302513;
+  background-color: #193927;
 }
 .partnership-strip__button:focus-visible {
   outline: 2px solid var(--cream);
@@ -226,13 +227,13 @@ html[data-effects="off"] .hero-snow,html[data-effects="off"] .hero-aurora { disp
   .home-page > .mugshots-preview { grid-row: 7; }
 }
 @media (max-width: 767px) {
-  .partnership-strip { padding: 26px 24px 27px; }
-  .partnership-strip__inner { align-items: stretch; flex-direction: column; gap: 18px; }
-  .partnership-strip__eyebrow { font-size: .52rem; }
-  .partnership-strip__heading { font-size: clamp(1.12rem, 5.2vw, 1.4rem); }
-  .partnership-strip__body { font-size: .78rem; }
-  .partnership-strip__supporting { font-size: .62rem; line-height: 1.5; }
-  .partnership-strip__button { align-self: flex-start; }
+  .partnership-strip { padding: 29px max(20px, 6vw) 30px; }
+  .partnership-strip__inner { align-items: stretch; flex-direction: column; gap: 19px; }
+  .partnership-strip__eyebrow { font-size: .56rem; letter-spacing: .15em; }
+  .partnership-strip__heading { max-width: 22ch; font-size: clamp(1.25rem, 6vw, 1.65rem); }
+  .partnership-strip__body { font-size: .88rem; line-height: 1.62; }
+  .partnership-strip__supporting { font-size: .72rem; line-height: 1.6; overflow-wrap: anywhere; }
+  .partnership-strip__button { align-self: stretch; width: 100%; min-width: 0; min-height: 56px; padding-inline: 16px; }
   .santa-dash-promo { padding: 34px 16px 38px; }
   .santa-dash-promo__title { margin-bottom: 16px; }
   .santa-dash-promo__eyebrow { font-size: .53rem; }
