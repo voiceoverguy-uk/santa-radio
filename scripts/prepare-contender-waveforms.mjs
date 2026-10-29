@@ -6,10 +6,19 @@ import ffmpeg from 'ffmpeg-static';
 
 const assets = new URL('../public/contenders/', import.meta.url);
 const output = new URL('waveforms/', assets);
+// Optional filenames allow supplied replacements to be prepared independently.
+// The default full run still fails on missing recordings rather than hiding them.
+const requested = process.argv.slice(2);
+const names = (await readdir(assets)).filter(name => name.endsWith('.mp3')).sort();
+for (const name of requested) {
+  if (!names.includes(name)) throw new Error(`Unknown contender recording: ${name}`);
+}
+const catalogue = requested.length
+  ? JSON.parse(await readFile(new URL('../src/lib/contender-waveforms.json', import.meta.url), 'utf8'))
+  : {};
 await mkdir(output, { recursive: true });
-const catalogue = {};
 const bins = 360;
-for (const name of (await readdir(assets)).filter(name => name.endsWith('.mp3')).sort()) {
+for (const name of names.filter(name => !requested.length || requested.includes(name))) {
   const source = new URL(name, assets);
   const bytes = await readFile(source);
   const hash = createHash('sha256').update('mono8k-peak360-v1:').update(bytes).digest('hex').slice(0, 24);
