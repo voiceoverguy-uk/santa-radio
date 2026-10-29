@@ -55,3 +55,9 @@ Serve ordinary Vercel document requests from the real application's pre-rendered
 **Why:** Multiple deployment-only module-resolution failures took down every document because all pages loaded the SSR renderer at request time, even though the build already generated complete HTML.
 
 **How to apply:** Package generated document HTML with the function, preserve canonical redirects and real error statuses, and keep Tracker rendering time-sensitive. Do not substitute empty app-shell HTML or fabricated SEO-only content.
+
+Treat numeric legacy artist queries as an independent historical identity namespace, not as current catalogue IDs.
+
+**Why:** Different retained generations assign the same numbers to different recordings. The owner requires evidence-backed destinations and preservation of already-established historical identities, not convenient numeric matches.
+
+**How to apply:** Verify the original route's lookup semantics and original source identity before extending a mapping. Do not overwrite established mappings from another generation. The evidence handover in `docs/search-console-legacy-links.md` explains the retained archive and SQL relationship.

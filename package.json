@@ -21,7 +21,7 @@
     "test:workshop": "playwright test --config playwright.workshop.config.js",
     "test:cookies": "playwright test tests/cookie-experience.spec.js",
     "test:apps-production": "node --test scripts/apps-production.test.mjs",
-    "test:seo": "node --test scripts/seo-validation.test.mjs scripts/seo-serving.test.mjs scripts/seo-targeting.test.mjs scripts/santa-message-links.test.mjs"
+    "test:seo": "node --test scripts/seo-validation.test.mjs scripts/seo-serving.test.mjs scripts/seo-targeting.test.mjs scripts/santa-message-links.test.mjs scripts/search-console-legacy.test.mjs"
   },
   "dependencies": {
     "@clerk/backend": "^3.23.2",

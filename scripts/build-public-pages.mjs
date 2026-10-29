@@ -24,7 +24,7 @@ await writeFile('dist/robots.txt', robots());
 await writeFile('dist/404.html', publicPageHtml(template, render('/404')));
 // The shell retains hashed scripts/styles but no homepage body for dynamic responses.
 await writeFile('dist/server/shell.html', template);
-console.log(`Pre-rendered ${canonicalPaths.length} canonical pages. Legacy identity matches: ${legacyMatches.filter(r => r.target).length}/24.`);
+console.log(`Pre-rendered ${canonicalPaths.length} canonical pages. Legacy identity matches: ${legacyMatches.filter(r => r.target).length}/${legacyMatches.length}.`);
 await mkdir('dist/mugshot-thumbnails', { recursive: true });
 let cursor = 0, originalBytes = 0, thumbnailBytes = 0;
 await Promise.all(Array.from({ length: 4 }, async () => {

@@ -25,6 +25,13 @@ const songs = [
   { id: 22, artist: 'Bing Crosby', song: 'God Rest Ye Merry Gentlemen', info: '', image: '', lyrics: '' },
   { id: 23, artist: 'Michael Buble', song: 'Winter Wonderland', info: '', image: '', lyrics: '' },
   { id: 24, artist: 'Kylie Minogue', song: 'White December', info: '', image: '', lyrics: '' },
+  // Additional historical identities verified against retained artist.php's
+  // messages2 lookup AND the original SQL rows, not today's catalogue IDs.
+  // Evidence: docs/search-console-legacy-links.md. Do not replace IDs 1–24.
+  { id: 140, artist: 'Paul Potts', song: 'Ave Maria', info: '', image: '', lyrics: '' },
+  { id: 200, artist: 'The Mills Brothers', song: 'I Believe In Santa Claus', info: '', image: '', lyrics: '' },
+  { id: 314, artist: 'Kylie Minogue', song: '100 Degrees feat Dannii Minogue', info: '', image: '', lyrics: '' },
+  { id: 494, artist: 'Sabrina Claudio', song: 'Christmas Blues', info: '', image: '', lyrics: '' },
 ];
 
 export default songs;

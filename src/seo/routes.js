@@ -24,6 +24,22 @@ export const legacyMatches = legacySongs.map(legacy => {
   const matches = songs.filter(song => normalizeIdentity(song.artist) === normalizeIdentity(legacy.artist) && normalizeIdentity(song.song) === normalizeIdentity(title));
   return { legacy, target: matches.length === 1 ? songPath(matches[0]) : null };
 });
+// Exact reported slug identities only. Never parse a numeric prefix as a
+// historical ID, or accept arbitrary current IDs/slugs in the old query route.
+const verifiedArtistQueries = new Map([
+  ['84-barbra-streisand-the-christmas-song', ['Barbra Streisand', 'The Christmas Song']],
+  ['450-donny-hathaway-this-christmas', ['Donny Hathaway', 'This Christmas']],
+].map(([query, [artist, title]]) => {
+  const matches = songs.filter(song => song.artist === artist && song.song === title && `${song.id}-${song.link}` === query);
+  return [query, matches.length === 1 ? songPath(matches[0]) : null];
+}));
+// Exact malformed addresses from the export; no general slash/hyphen rewriting.
+for (const [old, target] of [
+  ['/christmas-karaoke-lyrics/christmas-karaoke-lyrics/369-dean-martin-let-it-snow-let-it-snow-let-it-snow', '/christmas-karaoke-lyrics/369-dean-martin-let-it-snow-let-it-snow-let-it-snow'],
+  ['/christmas-karaoke-lyrics/564-laufey-santa-claus-is-comin--to-town', '/christmas-karaoke-lyrics/564-laufey-santa-claus-is-comin-to-town'],
+]) {
+  if (paths.has(target)) aliases.set(old, target);
+}
 for (const [alias, slug] of Object.entries(mugAliases)) {
   if (alias !== slug && mugs.some(m => m.song === slug)) aliases.set(`/mugshots/${alias}`, `/mugshots/${slug}`);
 }
@@ -55,12 +71,14 @@ export function resolvePublicRequest(raw) {
   if (normalized === '/santa-message-workshop') return { status: 200, noindex: true };
   if (normalized === '/santa-tracker/preview') return { status: 200, noindex: true };
   if (normalized === '/artist') {
+    if (url.searchParams.getAll('s').length !== 1) return { status: 404, noindex: true };
     const id = url.searchParams.get('s');
+    const verifiedTarget = verifiedArtistQueries.get(id);
     const match = /^\d+$/.test(id || '') && legacyMatches.find(row => row.legacy.id === Number(id));
-    if (!match) return { status: 404, noindex: true };
-    if (match.target) {
+    if (!match && !verifiedTarget) return { status: 404, noindex: true };
+    if (verifiedTarget || match.target) {
       url.searchParams.delete('s');
-      return { status: 308, location: match.target + (url.searchParams.size ? `?${url.searchParams}` : '') };
+      return { status: 308, location: (verifiedTarget || match.target) + (url.searchParams.size ? `?${url.searchParams}` : '') };
     }
     return { status: 200, noindex: true };
   }
