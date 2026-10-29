@@ -50,6 +50,9 @@ for (const name of ['Olivia', 'Alexandria-Catherine Elizabeth Montgomery-Worthin
 }
 
 test('reusable generation rolls a fresh Nice status for each certificate', async ({ page }) => {
+  // Two full-font PDFs cross the browser boundary in this test. Leave enough
+  // time for the development preview; keep both endpoint-score assertions.
+  test.setTimeout(90000);
   for (const [roll, score] of [[0, 75], [1 - Number.EPSILON, 95]]) {
     const bytes = await page.evaluate(async roll => {
       Math.random = () => roll;

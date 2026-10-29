@@ -8,8 +8,10 @@ const audio = readFileSync('server/santa-audio/sleighbells.mp3');
 async function noFreeCertificates(page) {
   await expect(page.locator('.santa-certificate-examples, .santa-certificate-dialog, .message-certificate')).toHaveCount(0);
   await expect(page.locator('.message-intro, .message-result').filter({ hasText: /certificate/i })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: /certificate/i })).toHaveCount(0);
-  await expect(page.getByRole('link', { name: /certificate/i })).toHaveCount(0);
+  const freeFlow = page.locator('.message-result, .message-intro');
+  await expect(freeFlow.getByRole('button', { name: /certificate/i })).toHaveCount(0);
+  await expect(freeFlow.getByRole('link', { name: /certificate/i })).toHaveCount(0);
+  await expect(page.locator('#santa-studio-promotion .studio-gifts')).toHaveCount(1);
 }
 
 test.beforeEach(async ({ page }) => {
@@ -35,7 +37,9 @@ for (const path of ['/', '/free-santa-message']) {
       let generations = 0;
       const certificateRequests = [];
       page.on('request', request => {
-        if (request.url().includes('/certificates/')) certificateRequests.push(request.url());
+        // Public paid-promotion artwork/fonts are allowed; the free flow must
+        // never invoke the retained PDF generator or fetch its master.
+        if (request.url().includes('/certificates/') && request.url().endsWith('.pdf')) certificateRequests.push(request.url());
       });
       await page.route('**/api/santa-message', route => {
         generations++;

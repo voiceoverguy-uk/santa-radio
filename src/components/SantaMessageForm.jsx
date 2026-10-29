@@ -27,6 +27,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const [name, setName] = useState(initialName);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [exampleName, setExampleName] = useState('Olivia');
+  const [activeExampleName, setActiveExampleName] = useState(null);
   const { messages, remember } = useSantaMessageHistory();
   const [validation, setValidation] = useState('');
   const [audioErrors, setAudioErrors] = useState({});
@@ -257,7 +258,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         <p className="eyebrow">A little North Pole experiment</p>
         <h2 className="santa-message-heading">FREE Personalised message from Santa</h2>
         <SantaVoiceTagline />
-        <SantaMessageExample />
+        <SantaMessageExample onExampleNameChange={setActiveExampleName} />
         <p>No AI here. A real HUMAN recorded message from Santa, aka Father Christmas with your chosen name. Click to enter Studio B, add your contact details, choose the name from <span className="message-intro-name-count">{availableNamesText}</span> currently, create and instantly download your short FREE personalised message from Santa.</p>
       </div>
       <div className="santa-message-aside">
@@ -283,7 +284,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         <h3 ref={makerHeadingRef} tabIndex={-1}>{messages.length ? 'Download your free message' : 'Download your free Santa greeting'}</h3>
         {!!messages.length && <div className="message-wait-downloads">
           {renderResults()}
-          <SantaStudioPromotion />
+          <SantaStudioPromotion activeExampleName={activeExampleName} />
         </div>}
         {coolingDown && !messages.length && <SantaCooldownNotice availableAt={allowance.availableAt} />}
         {coolingDown && !allowance.remembered && <p className="message-name-hint" role="status">Your browser can’t remember the message allowance. The limit works while this page is open, but leaving or refreshing may reset it.</p>}
@@ -389,7 +390,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         {!sessionRemembered && <p className="message-name-hint" role="status">Your browser can’t remember access. The studio stays open while you browse, but refreshing this tab may ask for your details again.</p>}
         </>}
       </div>
-      {!messages.length && <SantaStudioPromotion />}
+      {!messages.length && <SantaStudioPromotion activeExampleName={activeExampleName} />}
       </div>
     </div>
   </section>;
