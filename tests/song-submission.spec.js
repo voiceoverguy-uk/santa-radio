@@ -243,9 +243,10 @@ test('sponsorship enquiry uses the general form, preserves entries on rejection 
   const attempts = [];
   await page.route(generalUrl, async route => {
     attempts.push(await outgoing(route.request()));
-    await route.fulfill(attempts.length === 1
+    await route.fulfill({ ...(attempts.length === 1
       ? { status: 400, json: { success: false, message: 'Temporary test rejection.' } }
-      : { status: 200, json: { success: true } });
+      : { status: 200, json: { success: true } }),
+      headers: { 'Access-Control-Allow-Origin': '*' } });
   });
   await openForm(page, 'sponsorship');
   await expect(page.getByRole('radio', { name: 'Christmas sponsorship', exact: true })).toBeChecked();

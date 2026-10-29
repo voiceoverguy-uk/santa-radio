@@ -70,6 +70,9 @@ export default function SubmitASong() {
   };
   const keepFocusVisible = event => {
     const control = event.target;
+    // Moving a pointer-focused button between press and release can cancel
+    // its click. This helper is for keyboard/validation focus only.
+    if (!control.matches(':focus-visible')) return;
     // Native keyboard scrolling does not account for the fixed radio dock.
     // Measure after it settles; only move focus targets that would be covered.
     requestAnimationFrame(() => {
@@ -231,7 +234,7 @@ export default function SubmitASong() {
               {isSponsorship ? <>
                 <p className="song-guidance" id="sponsorship-campaign-help">Briefly describe the product or campaign you would like to promote.</p>
                 {field('sponsorCampaign', 'Product or campaign description', {
-                  textarea: true, limit: 220, help: 'sponsorship-campaign-help',
+                  textarea: true, limit: 220, help: 'sponsorship-campaign-help song-message-count',
                 })}
                 {field('sponsorLaunchDate', 'Preferred launch date', {
                   type: 'date', autocomplete: 'off', limit: 10,

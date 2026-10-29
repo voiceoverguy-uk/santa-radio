@@ -132,7 +132,8 @@ export async function submitSong(fields, signal, mode = 'song') {
     ? data.errors : {};
   for (const field of supportedFields) {
     if (Object.hasOwn(providerErrors, field)) {
-      fieldErrors[field] = safeText(providerErrors[field], 'Please check this field and try again.');
+      const visibleField = mode === 'sponsorship' && field === 'SONG_REQUEST' ? 'sponsorCampaign' : field;
+      fieldErrors[visibleField] = safeText(providerErrors[field], 'Please check this field and try again.');
     }
   }
   const unknownFields = Object.keys(providerErrors).filter(

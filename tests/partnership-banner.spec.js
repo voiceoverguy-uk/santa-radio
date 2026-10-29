@@ -68,7 +68,9 @@ test('partnership banner preserves the approved copy and fits desktop and narrow
     const titleBox = await heading.boundingBox();
     const buttonBox = await button.boundingBox();
     expect(buttonBox.height).toBeGreaterThanOrEqual(56);
-    expect(buttonBox.width).toBeGreaterThanOrEqual(width <= 767 ? width - 40 : 246);
+    expect(buttonBox.width).toBeGreaterThanOrEqual(246);
+    if (width <= 767) expect(buttonBox.width).toBeCloseTo(
+      await button.evaluate(element => element.parentElement.getBoundingClientRect().width), 0);
     expect(await button.evaluate(element => element.scrollWidth <= element.clientWidth + 1)).toBe(true);
     if (width >= 1024) expect(buttonBox.x).toBeGreaterThan(titleBox.x + titleBox.width);
     if (width <= 767) expect(buttonBox.y).toBeGreaterThan(titleBox.y + titleBox.height);
