@@ -8,6 +8,7 @@
   "scripts": {
     "radio:collect": "node scripts/radio-history-collector.mjs",
     "test:radio-history": "node --test scripts/radio-history.test.mjs",
+    "test:radio-ssr": "node --test scripts/radio-ssr.test.mjs",
     "start": "node index.js",
     "dev": "node scripts/prepare-santa-audio.mjs && vite --host 0.0.0.0 --port 5000",
     "build": "node scripts/prepare-santa-audio.mjs && vite build && vite build --ssr src/entry-server.jsx --outDir dist/server && node scripts/build-public-pages.mjs",

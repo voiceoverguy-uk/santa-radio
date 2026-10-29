@@ -5,6 +5,7 @@
 - [Radio chart scope](radio-chart-presentation.md) — Yesterday's Top Ten is no longer wanted in the interface; retain history collection and API.
 - [Portable package locks](portable-package-locks.md) — Check dependency download URLs stay accessible to Vercel after package changes.
 - [Dependency merges and Preview](dependency-merge-preview.md) — Running dev servers may retain obsolete module paths after dependencies are replaced.
+- [SSR context reloads](ssr-context-reloads.md) — A passing cold render does not rule out mismatched context identities in warm Vite SSR modules.
 - [Music catalogue scope](music-catalogue.md) — Include all supplied database songs; the user will decide removals later.
 - [Music biography editorial](music-biography-editorial.md) — Sourced, concise British-English biographies; keep Christmas Music separate from Mugshots.
 - [YouTube verification](youtube-verification.md) — Metadata availability is not playback proof; local screenshots can disagree with the proxied preview.

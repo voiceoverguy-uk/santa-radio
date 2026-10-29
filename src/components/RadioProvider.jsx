@@ -1,8 +1,9 @@
-import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import useRadioMetadata from './useRadioMetadata.js';
 import useSnowEffects from './useSnowEffects.js';
+import { RadioContext } from './radio-context.js';
+export { useRadio } from './radio-context.js';
 
-const RadioContext = createContext(null);
 const STREAM_URL = 'https://global.citrus3.com:8164/';
 export function RadioProvider({ children }) {
   const audioRef = useRef(null);
@@ -96,4 +97,3 @@ export function RadioProvider({ children }) {
     </RadioContext.Provider>
   );
 }
-export function useRadio() { return useContext(RadioContext); }
