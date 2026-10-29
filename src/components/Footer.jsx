@@ -9,15 +9,12 @@ export default function Footer() {
   const { effects, setEffects } = useRadio();
   return (
     <footer className={`footer${pathname.replace(/\/+$/, '') === '/santa-message-workshop' ? ' is-studio-footer' : ''}`}>
-      <div className="footer-attribution">
-        Brought to life by the Voice of Santa, British Voiceover Artist <a href="https://www.voiceoverguy.co.uk" target="_blank" rel="noopener noreferrer">Guy Harris</a>
-      </div>
       <div className="footer-links">
         <Link to="/">News</Link>
         <span>&middot;</span>
         <Link to="/christmas-music">Playlist</Link>
         <span>&middot;</span>
-        <a href="https://www.santaguy.co.uk" target="_blank" rel="noopener noreferrer">SantaGuy.co.uk</a>
+        <a href="https://www.santaguy.co.uk" target="_blank" rel="noopener noreferrer">Voice of Santa</a>
         <span>&middot;</span>
         <Link to="/submit-a-song?mode=song">Submit your song</Link>
         <span>&middot;</span>

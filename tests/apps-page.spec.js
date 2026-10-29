@@ -343,7 +343,7 @@ test('Santa Text, Santa Voicemail and Santa Messages show complete optimised own
   await expect(page.locator('.app-store-notice')).toHaveCount(0);
 });
 
-test('featured app titles and footer attribution use the Santa Radio script style', async ({ page }) => {
+test('featured app titles use the Santa Radio script style', async ({ page }) => {
   await page.goto('/apps');
   await page.evaluate(() => document.fonts.ready);
   for (const title of ['Santa Messages', 'Christmas Radio', 'Santa Text']) {
@@ -354,10 +354,19 @@ test('featured app titles and footer attribution use the Santa Radio script styl
     expect(style.fontWeight).toBe('700');
     expect(style.color).toBe('rgb(230, 206, 134)');
   }
-  const attribution = page.locator('.footer-attribution');
-  const footerStyle = await attribution.evaluate(element => getComputedStyle(element));
-  expect(footerStyle.fontFamily).toContain('Dancing Script');
-  expect(footerStyle.fontWeight).toBe('700');
+});
+
+test('apps page voice credit uses standard footer styling', async ({ page }) => {
+  await page.goto('/apps');
+  const footer = page.locator('footer');
+  await expect(footer.locator('.footer-attribution')).toHaveCount(0);
+  const credit = footer.getByRole('link', { name: 'Voice of Santa', exact: true });
+  await expect(credit).toHaveAttribute('href', 'https://www.santaguy.co.uk');
+  expect(await credit.evaluate(element => {
+    const style = getComputedStyle(element);
+    const standard = getComputedStyle(element.parentElement.querySelector('a'));
+    return ['fontFamily', 'fontSize', 'fontWeight', 'color'].every(key => style[key] === standard[key]);
+  })).toBe(true);
 });
 
 test('Mac app listing shows complete promotional artwork and Coming soon without a store link', async ({ page }) => {

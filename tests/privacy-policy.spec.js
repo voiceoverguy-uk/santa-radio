@@ -319,16 +319,67 @@ test('homepage and footer omit the promotion while the separate stories route re
   await page.goto('/');
   await expect(page.locator('main')).not.toContainText(/Santa Text Secret Code Words|chance to win|fantastic prizes/i);
   await expect(page.locator('footer a[href="/santa-stories"]')).toHaveCount(0);
-  await expect(page.locator('footer').getByRole('link', { name: 'SantaGuy.co.uk', exact: true }))
+  await expect(page.locator('footer').getByRole('link', { name: 'Voice of Santa', exact: true }))
     .toHaveAttribute('href', 'https://www.santaguy.co.uk');
   await expect(page.locator('footer').getByRole('link', { name: 'Questions? Email us', exact: true })).toHaveCount(0);
   await expect(page.locator('.footer-links > :last-child')).toHaveText('Cookie settings');
   await expect(page.locator('footer').getByRole('button', { name: 'Cookie settings', exact: true })).toBeVisible();
-  await expect(page.locator('.footer-links a')).toHaveCount(8);
+  await expect(page.locator('.footer-links a')).toHaveCount(9);
   await page.goto('/santa-stories');
   await page.reload();
   await expect(page.getByRole('heading', { name: 'Santa Text Secret Code Words' })).toBeVisible();
 });
+
+for (const width of [1440, 390, 320]) {
+  test(`footer has one standard keyboard-accessible voice credit at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/privacy-policy');
+    await page.locator('.marketing-consent').getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
+    const footer = page.locator('footer');
+    const links = footer.locator('.footer-links');
+    const credit = links.getByRole('link', { name: 'Voice of Santa', exact: true });
+    await expect(credit).toHaveCount(1);
+    await expect(footer.locator('a[href="https://www.santaguy.co.uk"]')).toHaveCount(1);
+    await expect(credit).toHaveAttribute('href', 'https://www.santaguy.co.uk');
+    await expect(credit).toHaveAttribute('target', '_blank');
+    await expect(credit).toHaveAttribute('rel', 'noopener noreferrer');
+    await expect(footer.locator('.footer-attribution')).toHaveCount(0);
+    await expect(footer).not.toContainText(/Brought to life|British Voiceover Artist|Guy Harris|SantaGuy\.co\.uk/);
+    expect(await credit.evaluate(el => {
+      const own = getComputedStyle(el);
+      const standard = getComputedStyle(el.parentElement.querySelector('a'));
+      return ['fontSize', 'fontFamily', 'fontWeight', 'fontStyle', 'color'].every(key => own[key] === standard[key]);
+    })).toBe(true);
+    await expect(links.getByRole('link')).toHaveText([
+      'News', 'Playlist', 'Voice of Santa', 'Submit your song',
+      'Personalised Santa Video Message', 'Download the app', 'Links',
+      'Privacy Policy', 'Photo usage and licensing',
+    ]);
+    await links.getByRole('link', { name: 'Playlist', exact: true }).focus();
+    await page.keyboard.press('Tab');
+    await expect(credit).toBeFocused();
+    expect(await credit.evaluate(el => getComputedStyle(el).outlineStyle)).not.toBe('none');
+    for (const link of await links.getByRole('link').all()) {
+      const box = await link.boundingBox();
+      expect(box.x).toBeGreaterThanOrEqual(0);
+      expect(box.x + box.width).toBeLessThanOrEqual(width);
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    const snow = footer.getByRole('switch', { name: 'Snow', exact: true });
+    const before = await snow.getAttribute('aria-checked');
+    await snow.focus();
+    await page.keyboard.press('Space');
+    await expect(snow).toHaveAttribute('aria-checked', before === 'true' ? 'false' : 'true');
+    for (const social of ['Instagram', 'Facebook']) {
+      await expect(footer.getByRole('link', { name: social, exact: true })).toBeVisible();
+    }
+    await expect(footer.locator('.footer-copy')).toHaveText('© 2026 Santa Radio. All Rights Reserved.');
+    await footer.getByRole('button', { name: 'Cookie settings', exact: true }).focus();
+    await page.keyboard.press('Enter');
+    await expect(page.locator('.marketing-consent').getByRole('button', { name: 'Save choices', exact: true })).toBeVisible();
+  });
+}
 
 test('keyboard footer navigation preserves active radio and volume in both directions', async ({ page }) => {
   // Test navigation continuity independently of upstream stream availability.
