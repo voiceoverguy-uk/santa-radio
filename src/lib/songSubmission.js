@@ -6,6 +6,7 @@ export const emptySongFields = {
   FIRSTNAME: '', LASTNAME: '', EMAIL: '', SONG_REQUEST: '',
   criteriaMet: false, email_address_check: '',
   sponsorBrand: '', sponsorWebsite: '', sponsorCampaign: '', sponsorLaunchDate: '',
+  lyricsLink: '', instrumental: false, audioLink: '', artworkLink: '', hostPermission: false,
 };
 
 // Country/dialling-code pairs from the supplied embed, including shared codes.
@@ -36,6 +37,17 @@ export function validateSongFields(fields, mode = 'song') {
   }
   if (mode === 'song' && fields.criteriaMet !== true) {
     errors.criteriaMet = 'Please confirm that you have met all five criteria.';
+  }
+  if (mode === 'song') {
+    for (const name of ['audioLink', 'artworkLink', ...(fields.instrumental === true ? [] : ['lyricsLink'])]) {
+      try {
+        const value = fields[name];
+        const url = new URL(value);
+        if (typeof value !== 'string' || value.length > 400 || url.protocol !== 'https:' || url.username || url.password) throw new Error();
+      } catch { errors[name] = 'Provide a secure https:// link, up to 400 characters, with no embedded credentials.'; }
+    }
+    if (fields.hostPermission !== true) errors.hostPermission = 'Please confirm permission to host and broadcast this recording and artwork.';
+    if (buildSongMessage(fields).length > 500) errors.SONG_REQUEST = 'The complete message, including lyrics, media links and permission, exceeds 500 characters. Shorten your details or use shorter secure links; nothing has been sent.';
   }
   if (mode === 'sponsorship') {
     for (const [name, label, limit] of [
@@ -84,6 +96,16 @@ export function buildSponsorshipMessage(fields) {
   ].join('\n');
 }
 
+export function buildSongMessage(fields) {
+  return [
+    fields.SONG_REQUEST?.trim() || '',
+    fields.instrumental === true ? 'Lyrics: instrumental (no vocals)' : `Full lyrics: ${fields.lyricsLink?.trim() || ''}`,
+    `Audio: ${fields.audioLink?.trim() || ''}`,
+    `Artwork: ${fields.artworkLink?.trim() || ''}`,
+    `Permission to host/broadcast recording & artwork: ${fields.hostPermission === true ? 'confirmed' : 'NOT confirmed'}`,
+  ].join('\n');
+}
+
 function safeText(value, fallback) {
   if (typeof value !== 'string') return fallback;
   return value.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim().slice(0, 500) || fallback;
@@ -108,7 +130,8 @@ export async function submitSong(fields, signal, mode = 'song') {
   const body = new FormData();
   for (const name of supportedFields) {
     body.append(name, (name === 'SONG_REQUEST' && mode === 'sponsorship'
-      ? buildSponsorshipMessage(fields) : fields[name]).trim());
+      ? buildSponsorshipMessage(fields) : name === 'SONG_REQUEST' && mode === 'song'
+        ? buildSongMessage(fields) : fields[name]).trim());
   }
   body.append('email_address_check', fields.email_address_check || '');
   body.append('locale', 'en');

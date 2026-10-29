@@ -3,6 +3,7 @@ import { publishableKeyFromHost } from '@clerk/react/internal';
 import { Link, useNavigate } from 'react-router-dom';
 import './SantaStaffBrowser.css';
 import SantaRequestLedger from '../components/SantaRequestLedger.jsx';
+import ContendersStaff from '../components/ContendersStaff.jsx';
 
 const clerkPubKey = publishableKeyFromHost(
   window.location.hostname,
@@ -101,10 +102,10 @@ function RequestLedger() {
   </div></main>;
   if (!isSignedIn) return <AdminLanding />;
 
-  return <SantaRequestLedger
+  return <><SantaRequestLedger
     key={`${user?.id}:${user?.primaryEmailAddress?.emailAddress}:${user?.primaryEmailAddress?.verification?.status}`}
     email={user?.primaryEmailAddress?.emailAddress}
-    onSignOut={() => signOut({ redirectUrl: '/' })} />;
+    onSignOut={() => signOut({ redirectUrl: '/' })} /><div className="staff-page"><ContendersStaff /></div></>;
 }
 
 function BrowserStaffPage({ mode }) {

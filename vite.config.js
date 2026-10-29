@@ -11,6 +11,7 @@ import workshopCatalogue from './server/santa-workshop-catalogue.js';
 import workshopAccess, { workshopDocumentHeaders } from './server/santa-workshop-access.js';
 import santaGreeting from './server/santa-greeting.js';
 import nameRequests from './server/name-requests.js';
+import christmasContenders from './server/christmas-contenders.js';
 import { CLERK_PROXY_PATH, clerkProxyMiddleware } from './server/middlewares/clerkProxyMiddleware.js';
 import { trackerPageHtml, isTrackerPreview } from './server/tracker-html.js';
 import artworkFeedPlugin from './scripts/artwork-feed-plugin.mjs';
@@ -45,6 +46,7 @@ const metadataPlugin = {
     server.middlewares.use(workshopDocumentHeaders);
     server.middlewares.use('/api/santa-workshop-access', workshopAccess);
     server.middlewares.use('/api/name-requests', nameRequests);
+    server.middlewares.use('/api/christmas-contenders', christmasContenders);
     server.middlewares.use('/api/radio-metadata', radioMetadata);
     server.middlewares.use('/api/radio-top-ten', radioTopTen);
     server.middlewares.use('/api/santa-message', santaMessage);
@@ -73,6 +75,7 @@ const metadataPlugin = {
       } catch { res.writeHead(503); res.end('Build the workshop preview before starting preview mode.'); }
     });
     server.middlewares.use('/api/name-requests', nameRequests);
+    server.middlewares.use('/api/christmas-contenders', christmasContenders);
     server.middlewares.use('/api/radio-metadata', radioMetadata);
     server.middlewares.use('/api/radio-top-ten', radioTopTen);
     server.middlewares.use('/api/santa-message', santaMessage);

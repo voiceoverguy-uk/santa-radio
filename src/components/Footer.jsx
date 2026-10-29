@@ -18,6 +18,8 @@ export default function Footer() {
         <span>&middot;</span>
         <Link to="/submit-a-song?mode=song">Submit your song</Link>
         <span>&middot;</span>
+        <Link to="/christmas-contenders">Christmas Contenders · Preview</Link>
+        <span>&middot;</span>
         <a href="https://festivestudio.co.uk/" target="_blank" rel="noopener noreferrer">Personalised Santa Video Message</a>
         <span>&middot;</span>
         <Link to="/apps">Download the app</Link>

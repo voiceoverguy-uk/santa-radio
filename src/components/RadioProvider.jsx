@@ -8,6 +8,8 @@ export function RadioProvider({ children }) {
   const audioRef = useRef(null);
   const attempt = useRef(0);
   const timeout = useRef(null);
+  const contender = useRef(null);
+  const owner = useRef('radio');
   const [status, setStatus] = useState('idle');
   const metadata = useRadioMetadata(status === 'playing' || status === 'loading');
   const [volume, setVolume] = useState(.7);
@@ -33,12 +35,18 @@ export function RadioProvider({ children }) {
       return;
     }
     setError('');
+    owner.current = 'radio';
+    contender.current?.pause();
+    contender.current = null;
     setStatus('loading');
     audio.load();
     timeout.current = setTimeout(fail, 20000);
     try {
       await audio.play();
-      if (token !== attempt.current) return;
+       if (token !== attempt.current) {
+         if (owner.current !== 'radio') audio.pause();
+         return;
+       }
       clearTimeout(timeout.current);
       setStatus('playing');
     } catch {
@@ -56,15 +64,33 @@ export function RadioProvider({ children }) {
       if (attempt.current === token) return togglePlay(true);
     };
   };
+  const claimContender = audio => {
+    if (contender.current && contender.current !== audio) contender.current.pause();
+    contender.current = audio;
+    owner.current = 'contender';
+    attempt.current += 1;
+    clearTimeout(timeout.current);
+    audioRef.current?.pause();
+    // Cancels a pending radio play promise as well as buffered playback.
+    audioRef.current?.load();
+    setStatus('paused');
+  };
+  const releaseContender = audio => {
+    audio?.pause();
+    if (contender.current === audio) contender.current = null;
+  };
   return (
-    <RadioContext.Provider value={{ status, volume, setVolume, error, togglePlay: () => togglePlay(), pauseForMessage, effects, setEffects, metadata }}>
+    <RadioContext.Provider value={{ status, volume, setVolume, error, togglePlay: () => togglePlay(), pauseForMessage, claimContender, releaseContender, effects, setEffects, metadata }}>
       <audio ref={audioRef} src={STREAM_URL} preload="none" onError={fail}
         onWaiting={() => {
           setStatus(current => current === 'playing' ? 'loading' : current);
           clearTimeout(timeout.current);
           timeout.current = setTimeout(fail, 20000);
         }}
-        onPlaying={() => { clearTimeout(timeout.current); setStatus('playing'); }}
+        onPlaying={() => {
+          if (owner.current !== 'radio') { audioRef.current?.pause(); return; }
+          clearTimeout(timeout.current); setStatus('playing');
+        }}
         onEnded={() => setStatus('paused')} />
       {children}
     </RadioContext.Provider>

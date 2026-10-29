@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
-  buildSponsorshipMessage, emptySongFields, SONG_REQUEST_TIMEOUT_MS,
+  buildSponsorshipMessage, buildSongMessage, emptySongFields, SONG_REQUEST_TIMEOUT_MS,
   SongSubmissionError, submitSong, validateSongFields,
 } from '../lib/songSubmission.js';
 import './SubmitASong.css';
@@ -188,9 +188,10 @@ export default function SubmitASong() {
                 <li>A short bio or description</li>
                 <li>A link to any promotion of Santa Radio</li>
               </ul>
-              <p>Keep the complete message within 500 characters. Please check that both your listening and promotion links work before sending.</p>
+              <p>Keep the complete serialized message, including the lyrics, media links and rights confirmation below, within 500 characters. Please check that all links work before sending.</p>
             </section>
             <p>Submissions are considered for airplay, but sending a song does not guarantee a playlist place or an individual reply.</p>
+            <p>We manually screen full lyrics for explicit content and family suitability before approving any entry. Secure media and document links only: no file uploads or automatic public appearance. Any competition submission cutoff will be shown on <Link to="/christmas-contenders">Christmas Contenders</Link>.</p>
             </> : isSponsorship ? <>
               <p>For Christmas-related brands—including gifts, decorations, festive food and attractions—ask about joining Santa Radio’s Christmas 2026 campaign.</p>
               <section className="sponsorship-offer" aria-labelledby="sponsorship-offer-title">
@@ -248,7 +249,18 @@ export default function SubmitASong() {
                   ? 'Include the artist name, song title, a listening link (such as YouTube, SoundCloud or Spotify), a short bio or description, and a link to any promotion of Santa Radio. Keep the whole message within 500 characters and check both links work.'
                   : 'Tell us about your enquiry. Keep your message within 500 characters and share only necessary details.'}</p>
                 {field('SONG_REQUEST', 'Message', { textarea: true, limit: 500, help: 'song-message-help song-message-count' })}
-                <p className="song-character-count" id="song-message-count">{fields.SONG_REQUEST.length} / 500 characters</p>
+                <p className="song-character-count" id="song-message-count" role={isSong && buildSongMessage(fields).length > 500 ? 'alert' : undefined}>{isSong ? buildSongMessage(fields).length : fields.SONG_REQUEST.length} / 500 characters{isSong && ' in the complete message sent to Brevo'}</p>
+              </>}
+              {isSong && <>
+                <label className="song-criteria-label"><input type="checkbox" name="instrumental" checked={fields.instrumental} disabled={pending}
+                  onChange={event => onChange('instrumental', event.target.checked)} /> This is instrumental, with no sung or spoken lyrics</label>
+                {!fields.instrumental && field('lyricsLink', 'Secure full-lyrics document or page link', { type:'url',limit:400,placeholder:'https://…' })}
+                {field('audioLink', 'Secure audio file or listening link', { type:'url',limit:400,placeholder:'https://…' })}
+                {field('artworkLink', 'Secure artwork link', { type:'url',limit:400,placeholder:'https://…' })}
+                <label className="song-criteria-label"><input type="checkbox" name="hostPermission" checked={fields.hostPermission} disabled={pending}
+                  required aria-invalid={Boolean(errors.hostPermission)} aria-describedby={errors.hostPermission ? 'song-permission-error' : undefined}
+                  onChange={event => onChange('hostPermission', event.target.checked)} /> I have permission for Santa Radio to host and broadcast this recording and use its artwork</label>
+                {errors.hostPermission && <p id="song-permission-error" className="song-field-error">{errors.hostPermission}</p>}
               </>}
               {isSong && <div className="song-criteria-field">
                 <label className="song-criteria-label" htmlFor="song-criteriaMet">
@@ -268,7 +280,7 @@ export default function SubmitASong() {
               </div>
               <input type="hidden" name="locale" value="en" />
               <p className="song-privacy">{isSong
-                ? 'Your name, email and message are sent to Brevo to handle your song submission.'
+                ? 'Your name, email, message, lyrics/instrumental declaration, media links and rights confirmation are sent privately to Brevo to handle your song submission. Use shareable review links, not private credentials or personal documents.'
                 : isSponsorship
                   ? 'Your contact name, email, brand, website, preferred launch date and campaign description are sent to Brevo as your enquiry.'
                   : 'Your name, email and message are sent to Brevo to handle your enquiry.'} This does not give consent for marketing. Read our <Link to="/privacy-policy">privacy policy</Link>.</p>

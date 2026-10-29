@@ -1,0 +1,176 @@
+.contender-wave-player {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  min-width: 0;
+  width: 100%;
+}
+
+.contender-wave-player audio { display: none; }
+
+.contender-wave-player__toggle {
+  align-items: center;
+  background: #ead39a;
+  border: 1px solid #f4e6bd;
+  border-radius: 50%;
+  color: #173b2c;
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 38px;
+  height: 38px;
+  justify-content: center;
+  padding: 0;
+  transition: transform .16s ease, background-color .16s ease;
+  width: 38px;
+}
+
+.contender-wave-player__toggle:hover:not(:disabled) {
+  background: #f5e3a5;
+  transform: scale(1.05);
+}
+
+.contender-wave-player__toggle:focus-visible {
+  outline: 3px solid #fff0af;
+  outline-offset: 3px;
+}
+
+.contender-wave-player__toggle:disabled { cursor: not-allowed; opacity: .55; }
+
+.contender-wave-player__icon {
+  border-bottom: 7px solid transparent;
+  border-left: 10px solid currentColor;
+  border-top: 7px solid transparent;
+  height: 0;
+  margin-left: 3px;
+  width: 0;
+}
+
+.contender-wave-player__toggle.is-playing .contender-wave-player__icon {
+  border: 0;
+  height: 13px;
+  margin-left: 0;
+  position: relative;
+  width: 12px;
+}
+
+.contender-wave-player__toggle.is-playing .contender-wave-player__icon::before,
+.contender-wave-player__toggle.is-playing .contender-wave-player__icon::after {
+  background: currentColor;
+  content: '';
+  height: 13px;
+  position: absolute;
+  top: 0;
+  width: 4px;
+}
+
+.contender-wave-player__toggle.is-playing .contender-wave-player__icon::before { left: 0; }
+.contender-wave-player__toggle.is-playing .contender-wave-player__icon::after { right: 0; }
+
+.contender-wave-player__track {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.contender-wave-player__times {
+  align-items: center;
+  color: #e5d5a5;
+  display: flex;
+  font: 600 .66rem/1.2 'Cinzel', serif;
+  font-variant-numeric: tabular-nums;
+  justify-content: space-between;
+  margin-bottom: 3px;
+}
+
+.contender-wave-player__wave {
+  height: 40px;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.contender-wave-player__bars {
+  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(var(--wave-bin-count, 360), minmax(0, 1fr));
+  height: 100%;
+  pointer-events: none;
+  width: 100%;
+}
+
+.contender-wave-player__bars i {
+  background: #9f936d;
+  border-radius: 1px;
+  height: var(--peak-height);
+  min-height: 3px;
+  opacity: .78;
+  transition: background-color .12s ease;
+}
+
+.contender-wave-player__bars i.is-played { background: #f3d86e; opacity: 1; }
+
+.contender-wave-player__seek {
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  height: 40px;
+  inset: 0;
+  margin: 0;
+  opacity: .01;
+  position: absolute;
+  touch-action: pan-y;
+  width: 100%;
+}
+
+.contender-wave-player__seek::-webkit-slider-runnable-track {
+  background: transparent;
+  height: 40px;
+}
+
+.contender-wave-player__seek::-moz-range-track {
+  background: transparent;
+  height: 40px;
+}
+
+.contender-wave-player__seek::-webkit-slider-thumb {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  height: 40px;
+  width: 14px;
+}
+
+.contender-wave-player__seek::-moz-range-thumb {
+  background: transparent;
+  border: 0;
+  height: 40px;
+  width: 14px;
+}
+
+.contender-wave-player__seek:focus-visible {
+  opacity: .35;
+  outline: 2px solid #fff0af;
+  outline-offset: -2px;
+}
+
+.contender-wave-player__wave.is-unavailable .contender-wave-player__seek { cursor: pointer; }
+
+.contender-wave-player__notice {
+  color: #c2cec0;
+  display: block;
+  font-size: .64rem;
+  line-height: 1.35;
+  margin-top: 3px;
+}
+
+@media (max-width: 560px) {
+  .contender-wave-player { gap: 9px; }
+  .contender-wave-player__toggle { flex-basis: 34px; height: 34px; width: 34px; }
+  .contender-wave-player__wave,
+  .contender-wave-player__seek,
+  .contender-wave-player__seek::-webkit-slider-runnable-track,
+  .contender-wave-player__seek::-moz-range-track { height: 40px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contender-wave-player__toggle { transition: none; }
+}

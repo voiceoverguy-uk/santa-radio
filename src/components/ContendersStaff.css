@@ -1,0 +1,8 @@
+.contenders-staff {margin: 24px auto; max-width: 1000px;}
+.contenders-staff fieldset {border:1px solid #c5b78e;padding:18px;margin:20px 0;min-width:0;}
+.contenders-staff label {display:block;margin:12px 0;}
+.contenders-staff input:not([type=checkbox]),.contenders-staff select {display:block;width:100%;padding:10px;font:inherit;color:#173629;background:#fffaf0;border:1px solid #c5b78e;border-radius:5px;}
+.contenders-staff input[type=checkbox] {width:20px;height:20px;vertical-align:middle;}
+.contenders-staff button {padding:10px 16px;margin:6px;border:1px solid #c5b78e;border-radius:8px;background:#8d2026;color:#fff8e7;cursor:pointer;font:inherit;}
+.contenders-staff li {overflow-wrap:anywhere;margin:12px 0;}
+.contenders-staff button:focus-visible,.contenders-staff input:focus-visible,.contenders-staff select:focus-visible {outline:3px solid #b89228;outline-offset:3px;}

@@ -54,3 +54,4 @@
 - [Stripe connector diagnosis](stripe-connector-compatibility.md) — Inspect response field names before treating template errors as failed provisioning; preserve the working sandbox connection.
 - [Preview cookie attributes](preview-cookie-attributes.md) — The preview proxy can rewrite SameSite; test server attributes separately and keep explicit request-origin checks.
 - [Raw request targets](raw-request-targets.md) — Exact doubled-separator exports must survive pre-routing middleware; resolver-only checks miss failures and app-shell fallbacks.
+- [Christmas Contenders scope](christmas-contenders-scope.md) — One-choice first build; votes inform editorial consideration; owner must choose any earlier submission cutoff.

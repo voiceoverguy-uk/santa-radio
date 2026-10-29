@@ -15,7 +15,7 @@ export function approvedAdmin(user) {
   return primary?.verification?.status === 'verified' &&
     primary.emailAddress?.toLowerCase() === 'admin@santaradio.co.uk';
 }
-async function authorize(req) {
+export async function authorize(req) {
   const { userId } = getAuth(req);
   if (!userId) return 401;
   const user = await createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY }).users.getUser(userId);

@@ -11,6 +11,7 @@ import workshopCatalogue from './server/santa-workshop-catalogue.js';
 import workshopAccess from './server/santa-workshop-access.js';
 import santaGreeting from './server/santa-greeting.js';
 import nameRequests from './server/name-requests.js';
+import christmasContenders from './server/christmas-contenders.js';
 import { CLERK_PROXY_PATH, clerkProxyMiddleware } from './server/middlewares/clerkProxyMiddleware.js';
 import { trackerPageHtml, isTrackerPreview } from './server/tracker-html.js';
 import { artworkHeaders } from './server/artwork-feed.js';
@@ -44,6 +45,7 @@ const server = createServer(async (req, res) => {
     if (res.writableEnded) return;
     if (pathname.startsWith(`${CLERK_PROXY_PATH}/`)) return clerkProxy(req, res, () => res.writeHead(404).end());
     if (pathname === '/api/name-requests') return nameRequests(req, res);
+    if (pathname === '/api/christmas-contenders') return christmasContenders(req, res);
     if (pathname === '/api/stripe/webhook') return stripeWebhook(req, res);
     if (pathname === '/api/santa-studio-access') return studioPaidAccess(req, res);
     if (pathname === '/api/santa-studio-checkout') return studioCheckout(req, res);

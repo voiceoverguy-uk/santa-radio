@@ -4,7 +4,7 @@ import { santaMessageRequestedName } from './santaMessageLinks.js';
 import { alternateProfileRedirects } from './alternateRedirects.js';
 import { publicRequestUrl } from './requestUrl.js';
 import { reportedMissingAliases, reportedLyricsQueries } from './reportedMissingLinks.js';
-export const staticPages = ['/', '/apps', '/privacy-policy', mugPhotoTermsPath, '/christmas-music', '/mugshots/all', '/free-santa-message', '/submit-a-song', '/links', '/santa-stories', '/santa-tracker'];
+export const staticPages = ['/', '/apps', '/privacy-policy', mugPhotoTermsPath, '/christmas-music', '/mugshots/all', '/free-santa-message', '/submit-a-song', '/christmas-contenders', '/links', '/santa-stories', '/santa-tracker'];
 export const canonicalPaths = [...staticPages, ...songs.map(songPath), ...mugs.map(mugPath), ...songs.map(s => `/christmas-karaoke-lyrics/${s.id}-${s.link}`)];
 const paths = new Set(canonicalPaths);
 export const aliases = new Map([['/music', '/christmas-music'], ['/mugshots', '/mugshots/all'], ...songRedirects]);
