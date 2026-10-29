@@ -33,7 +33,7 @@
       "X-Content-Type-Options": "nosniff"
     }, "continue": true },
     { "src": "/server(?:/.*)?", "dest": "/api/public-page?__sr_route=/404" },
-    { "src": "/((?:apps|privacy-policy|christmas-music|mugshots|christmas-artist|christmas-karaoke-lyrics|free-santa-message|santa-message-workshop|personalised-santa-message|submit-a-song|links|santa-stories|santa-tracker|music|artist)(?:/.*)?|)", "dest": "/api/public-page?__sr_route=/$1" },
+    { "src": "/((?:apps|privacy-policy|photo-usage-and-licensing|christmas-music|mugshots|christmas-artist|christmas-karaoke-lyrics|free-santa-message|santa-message-workshop|personalised-santa-message|submit-a-song|links|santa-stories|santa-tracker|music|artist)(?:/.*)?|)", "dest": "/api/public-page?__sr_route=/$1" },
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/api/public-page?__sr_route=/$1" }
   ]

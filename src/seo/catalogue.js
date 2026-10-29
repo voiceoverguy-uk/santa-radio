@@ -6,6 +6,8 @@ import { songArtwork } from '../data/songArtwork.js';
 
 export const ORIGIN = 'https://www.santaradio.co.uk';
 export const absolute = path => new URL(path, ORIGIN).href;
+export const mugPhotoTermsPath = '/photo-usage-and-licensing';
+export const mugPhotoLicense = absolute(mugPhotoTermsPath);
 export const brandImage = '/images/santa-radio-logo.png';
 export const shareImage = '/images/santa-radio-share-green-v2.jpg';
 export const shareImageAlt = 'Santa Radio — Christmas Music 24 hours a day. Listen Live. Santa wearing headphones on the right.';
@@ -113,13 +115,13 @@ export const identityGraph = [
   { '@type': 'Organization', '@id': `${ORIGIN}/#organization`, name: 'Santa Radio', url: `${ORIGIN}/`, logo: { '@type': 'ImageObject', url: absolute(brandImage), width: 827, height: 190 } },
   { '@type': 'WebSite', '@id': `${ORIGIN}/#website`, name: 'Santa Radio', url: `${ORIGIN}/`, inLanguage: 'en-GB', publisher: { '@id': `${ORIGIN}/#organization` } },
 ];
-export function pageMetadata({ path, title, description, image = shareImage, imageAlt = image === shareImage ? shareImageAlt : 'Santa Radio', imageWidth = image === shareImage ? 1200 : undefined, imageHeight = image === shareImage ? 630 : undefined, imageType = image === shareImage ? 'image/jpeg' : undefined, crumbs = [], nodes = [], collection = false, noindex = false }) {
+export function pageMetadata({ path, title, description, image = shareImage, imageAlt = image === shareImage ? shareImageAlt : 'Santa Radio', imageWidth = image === shareImage ? 1200 : undefined, imageHeight = image === shareImage ? 630 : undefined, imageType = image === shareImage ? 'image/jpeg' : undefined, imageLicense, crumbs = [], nodes = [], collection = false, noindex = false }) {
   const url = absolute(path);
   const dimensions = imageWidth && imageHeight ? { width: imageWidth, height: imageHeight } : {};
   return { path, title, description, image: absolute(image), imageAlt, imageWidth, imageHeight, imageType, url, noindex, graph: [
     ...identityGraph,
     { '@type': collection ? 'CollectionPage' : 'WebPage', '@id': `${url}#webpage`, url, name: title, description, inLanguage: 'en-GB', isPartOf: { '@id': `${ORIGIN}/#website` }, publisher: { '@id': `${ORIGIN}/#organization` }, primaryImageOfPage: { '@id': `${url}#image` }, ...(nodes[0] ? { mainEntity: { '@id': nodes[0]['@id'] } } : {}) },
-    { '@type': 'ImageObject', '@id': `${url}#image`, contentUrl: absolute(image), url: absolute(image), caption: imageAlt, ...dimensions },
+    { '@type': 'ImageObject', '@id': `${url}#image`, contentUrl: absolute(image), url: absolute(image), caption: imageAlt, ...dimensions, ...(imageLicense ? { license: imageLicense } : {}) },
     ...(crumbs.length ? [{ '@type': 'BreadcrumbList', '@id': `${url}#breadcrumbs`, itemListElement: crumbs.map(([name, link], i) => ({ '@type': 'ListItem', position: i + 1, name, item: absolute(link) })) }] : []),
     ...nodes,
   ] };
@@ -179,10 +181,10 @@ export function songMetadata(song) {
 }
 export function mugMetadata(mug) {
   const path = mugPath(mug), url = absolute(path), entity = identity(mug.artist, mug.info, mug.link);
-  return pageMetadata({ path, title: `${mug.artist} — Mug Photo | Santa Radio`, description: mugDescription(mug), image: mug.image, imageAlt: `${mug.artist} with a Santa Radio mug`,
+  return pageMetadata({ path, title: `${mug.artist} — Mug Photo | Santa Radio`, description: mugDescription(mug), image: mug.image, imageAlt: `${mug.artist} with a Santa Radio mug`, imageLicense: mugPhotoLicense,
     crumbs: [['Home', '/'], ['Mug Shots', '/mugshots/all'], [mug.artist, path]],
     nodes: [
-      { '@type': 'ImageObject', '@id': `${url}#photograph`, contentUrl: absolute(mug.image), caption: `${mug.artist} with a Santa Radio mug`, ...(mug.credit ? { creditText: `Photo credit: ${mug.credit}` } : {}), ...(entity ? { about: entity } : {}) },
+      { '@type': 'ImageObject', '@id': `${url}#photograph`, contentUrl: absolute(mug.image), license: mugPhotoLicense, caption: `${mug.artist} with a Santa Radio mug`, ...(mug.credit ? { creditText: `Photo credit: ${mug.credit}` } : {}), ...(entity ? { about: entity } : {}) },
       ...(entity ? [entity] : []),
     ] });
 }

@@ -12,6 +12,8 @@ import FreeSantaMessage from './pages/FreeSantaMessage.jsx';
 import SantaMessageWorkshop from './pages/SantaMessageWorkshop.jsx';
 import SubmitASong from './pages/SubmitASong.jsx';
 import PrivacyPolicy from './pages/PrivacyPolicy.jsx';
+import PhotoLicensing from './pages/PhotoLicensing.jsx';
+import { mugPhotoTermsPath } from './seo/catalogue.js';
 import Links from './pages/Links.jsx';
 import SantaStories from './pages/SantaStories.jsx';
 import ArtistDetail from './pages/ArtistDetail.jsx';
@@ -42,6 +44,7 @@ function App({ Router = BrowserRouter, routerProps = {} }) {
         <Route path="/" element={<Home />} />
         <Route path="/apps" element={<Apps />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path={mugPhotoTermsPath} element={<PhotoLicensing />} />
         <Route path="/christmas-music" element={<Music />} />
         <Route path="/mugshots/all" element={<MugShots />} />
         <Route path="/mugshots/:slug" element={<MugshotDetail />} />

@@ -2,6 +2,12 @@
 name: Mugshot editorial policy
 description: User ownership of biography research and cautious identity consolidation.
 ---
+Santa Radio owns all Mugshot photographs. Bruce Davis takes photographs for the owner and website, supplying them for the owner to use and own. Photographer attribution is separate from ownership.
+
+**Why:** The owner explicitly confirmed ownership and clarified Bruce's role when requesting public photo reuse terms.
+
+**How to apply:** Keep existing image-specific credits, including other photographers. Do not identify Bruce as copyright holder or extend the Mugshot ownership claim to music artwork, logos or third-party assets.
+
 Profile-photo standardisation must preserve each complete photograph without cropping or distortion; discreet side space is acceptable for taller photographs.
 
 **Why:** The owner explicitly chose full photographs in matching frames rather than cropped replacements.

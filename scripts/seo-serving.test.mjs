@@ -5,7 +5,8 @@ import { readFile, mkdtemp, cp, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import publicPage from '../api/public-page.js';
-import { shareImage as radioShareImage, shareImageAlt, ORIGIN } from '../src/seo/catalogue.js';
+import { shareImage as radioShareImage, shareImageAlt, ORIGIN, mugs, mugPath, mugPhotoTermsPath, mugPhotoLicense } from '../src/seo/catalogue.js';
+import { assertMugPhotoHtml } from './mugshot-licensing-checks.mjs';
 import { assertFaviconHead, assertFaviconResponse, faviconFiles } from './favicon-checks.mjs';
 
 test('deployment-style document package needs neither TypeScript nor runtime React package resolution', async t => {
@@ -36,6 +37,7 @@ test('deployment-style document package needs neither TypeScript nor runtime Rea
     for (const [path, status] of [
       ['/', 200], ['/apps', 200], ['/christmas-music', 200], ['/mugshots/all', 200],
       ['/mugshots/debbie-arnold-actress', 200], ['/free-santa-message', 200],
+      ['/photo-usage-and-licensing', 200],
       ['/christmas-artist/3-waitresses-christmas-wrapping', 200],
       ['/santa-tracker', 200], ['/artist?s=3', 308], ['/artist?s=14', 308],
       ['/personalised-santa-message/all', 308], ['/personalised-santa-message/Cooper', 308],
@@ -58,6 +60,21 @@ test('deployment-style document package needs neither TypeScript nor runtime Rea
     console.log('Deployment-style package passed');
   `], { cwd: directory, encoding: 'utf8', timeout: 30000 });
   assert.match(output, /Deployment-style package passed/);
+});
+
+test('production document handler serves licensed photographs across the entire catalogue', async () => {
+  for (const mug of mugs) {
+    const response = {
+      headers: {},
+      setHeader(key, value) { this.headers[key] = value; },
+      status(code) { this.statusCode = code; return this; },
+      end(body) { this.body = body; },
+    };
+    await publicPage({ method: 'GET', url: mugPath(mug) }, response);
+    assert.equal(response.statusCode, 200, mug.song);
+    assert.equal(response.headers['X-Santa-Page-Mode'], 'prerendered');
+    assertMugPhotoHtml(response.body, mug);
+  }
 });
 
 test('built Node server returns actual pages, permanent redirects, images, API responses and error statuses', async t => {
@@ -95,10 +112,16 @@ test('built Node server returns actual pages, permanent redirects, images, API r
     ['/', 'Santa Radio'], ['/christmas-music', 'Christmas Song Lyrics'],
     ['/christmas-artist/3-waitresses-christmas-wrapping', 'Artist background'],
     ['/mugshots/a1-singers', 'Bruce Davis'], ['/santa-tracker', 'Is this real GPS tracking?'],
+    [mugPhotoTermsPath, 'Photo usage and licensing'],
   ]) {
     const response = await get(path); assert.equal(response.status, 200, path);
     assert.equal(response.headers.get('x-robots-tag'), null, path);
     const html = await response.text();
+    if (path === mugPhotoTermsPath) {
+      assert.ok(html.includes(`rel="canonical" href="${mugPhotoLicense}"`));
+      assert.ok(html.includes('href="/submit-a-song?mode=general"'));
+    }
+    if (path === '/mugshots/a1-singers') assertMugPhotoHtml(html, mugs.find(mug => mug.song === 'a1-singers'));
     assertFaviconHead(html);
     assert.ok(html.includes(word), path); assert.ok(html.includes('<h1'), path);
     if (['/', '/christmas-music'].includes(path)) {
@@ -193,7 +216,7 @@ test('Vercel document handler preserves statuses, metadata and relative location
       assert.ok(!route.dest, 'Mug Shots logo must reach the filesystem, not a document rewrite');
   }
   assert.deepEqual(await readFile(`dist${mugshotsLogo}`), await readFile(`public${mugshotsLogo}`));
-  for (const path of ['/', '/christmas-music', '/artist', '/santa-tracker/', '/santa-tracker/preview', '/mugshots/a1-singers', '/personalised-santa-message/all', '/personalised-santa-message/Cooper'])
+  for (const path of ['/', '/christmas-music', '/artist', '/santa-tracker/', '/santa-tracker/preview', '/mugshots/a1-singers', mugPhotoTermsPath, '/personalised-santa-message/all', '/personalised-santa-message/Cooper'])
     assert.ok(expression.test(path), path);
   for (const path of ['/artist-artwork/catalogue.json', '/images/santa-tracker-share.png', '/api/santa-message'])
     assert.ok(!expression.test(path), path);

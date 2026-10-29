@@ -115,6 +115,14 @@
   overflow-wrap: anywhere;
 }
 
+.mugshot-photo-credit a {
+  display: inline-block;
+  padding-block: 6px;
+  color: var(--gold-light, #f0d060);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .mugshot-social {
   margin-bottom: 24px;
 }

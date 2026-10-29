@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useRadio } from './RadioProvider.jsx';
 import './Footer.css';
 import { openCookieSettings } from '../privacy/cookieConsent.js';
+import { mugPhotoTermsPath } from '../seo/catalogue.js';
 
 export default function Footer() {
   const { pathname } = useLocation();
@@ -27,6 +28,8 @@ export default function Footer() {
         <Link to="/links">Links</Link>
         <span>&middot;</span>
         <Link to="/privacy-policy">Privacy Policy</Link>
+        <span>&middot;</span>
+        <Link to={mugPhotoTermsPath}>Photo usage and licensing</Link>
         <span>&middot;</span>
         <button type="button" className="cookie-settings-link" onClick={openCookieSettings}>Cookie settings</button>
       </div>

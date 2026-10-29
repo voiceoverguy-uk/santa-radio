@@ -7,7 +7,7 @@ import './MugshotDetail.css';
 import './MugshotPhoto.css';
 import PageSeo from '../seo/PageSeo.jsx';
 import Breadcrumbs from '../seo/Breadcrumbs.jsx';
-import { mugMetadata } from '../seo/catalogue.js';
+import { mugMetadata, mugPhotoTermsPath } from '../seo/catalogue.js';
 
 export default function MugshotDetail() {
   const { slug } = useParams();
@@ -89,7 +89,10 @@ export default function MugshotDetail() {
                   className="mugshot-detail-photo"
                 />
               </div>
-              {credit && <figcaption className="mugshot-photo-credit">Photo credit: {credit}</figcaption>}
+              <figcaption className="mugshot-photo-credit">
+                {credit && <span>Photo credit: {credit}<br /></span>}
+                <Link to={mugPhotoTermsPath}>Photo usage and licensing</Link>
+              </figcaption>
             </figure>
             <div className="mugshot-detail-info">
               <h1 ref={heading} tabIndex={-1} className="mugshot-detail-name">{celeb.artist}</h1>

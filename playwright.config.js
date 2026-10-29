@@ -8,7 +8,7 @@ export default defineConfig({
   testDir: './tests',
   workers: 1,
   use: {
-    baseURL: process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : 'http://127.0.0.1:5000',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || (process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : 'http://127.0.0.1:5000'),
     // Bundled Firefox/WebKit do not use the workspace proxy's certificate store.
     // This applies only to the ephemeral development host, never the app itself.
     ignoreHTTPSErrors: Boolean(process.env.REPLIT_DEV_DOMAIN),

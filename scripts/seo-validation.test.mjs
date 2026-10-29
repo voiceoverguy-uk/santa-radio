@@ -2,9 +2,49 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile, stat } from 'node:fs/promises';
 import { createServer } from 'vite';
-import { songs, mugs, songMetadata, mugMetadata, identity, performers, performanceKind, songPath, mugPath, ORIGIN } from '../src/seo/catalogue.js';
+import { songs, mugs, songMetadata, mugMetadata, identity, performers, performanceKind, songPath, mugPath, ORIGIN, mugPhotoTermsPath, mugPhotoLicense } from '../src/seo/catalogue.js';
+import { assertMugPhotoGraph, assertMugPhotoHtml, readGraph } from './mugshot-licensing-checks.mjs';
 import { canonicalPaths, aliases, legacyMatches, resolvePublicRequest } from '../src/seo/routes.js';
 import { sitemap, robots } from '../server/public-html.js';
+
+test('every retained Mugshot licenses both photo nodes without changing attribution or unrelated imagery', async () => {
+  assert.equal(mugs.length, 649);
+  const otherCredits = new Map([
+    ['amelia-lily-singer', 'Photo: Matthew Stone'],
+    ['danny-rate-my-takeaway-youtuber', '@voiceoverman'],
+    ['kammy-chris-kamara-tv-personality', 'VoiceoverGuy'],
+    ['lucy-milburn-singer', 'Celebrity Stalker'],
+    ['richard-blackwood-actor', 'Photo: Matthew Stone'],
+  ]);
+  for (const [slug, credit] of otherCredits) assert.equal(mugs.find(m => m.song === slug).credit, credit);
+  assert.equal(mugs.find(m => m.song === 'a1-singers').credit, 'Bruce Davis');
+  assert.equal(mugs.find(m => m.song === 'stephen-graham-actor').credit, '');
+  for (const mug of mugs) {
+    assertMugPhotoGraph(mugMetadata(mug).graph, mug);
+    assertMugPhotoHtml(await readFile(`dist${mugPath(mug)}/index.html`, 'utf8'), mug);
+  }
+  for (const path of canonicalPaths.filter(path => !mugs.some(mug => mugPath(mug) === path))) {
+    const html = await readFile(`dist${path === '/' ? '' : path}/index.html`, 'utf8');
+    for (const node of readGraph(html)) {
+      assert.equal(node.license, undefined, `${path}: no Mugshot terms on unrelated imagery`);
+      assert.equal(node.copyrightHolder, undefined, `${path}: no ownership added`);
+    }
+  }
+  assert.ok(sitemap().includes(`<loc>${mugPhotoLicense}</loc>`));
+  assert.deepEqual(resolvePublicRequest(mugPhotoTermsPath), { status: 200 });
+  assert.deepEqual(resolvePublicRequest(`${mugPhotoTermsPath}/`), { status: 308, location: mugPhotoTermsPath });
+  const html = await readFile(`dist${mugPhotoTermsPath}/index.html`, 'utf8');
+  assert.ok(html.includes(`rel="canonical" href="${mugPhotoLicense}"`));
+  assert.match(html, /name="robots" content="index, follow"/);
+  assert.match(html, /<h1>Photo usage and licensing<\/h1>/);
+  assert.match(html, /Santa Radio is the copyright owner and rights holder/);
+  assert.match(html, /Except where applicable law permits otherwise/);
+  assert.match(html, /credit does not identify him as the copyright holder/);
+  assert.match(html, /href="\/submit-a-song\?mode=general"/);
+  assert.match(html, /do not cover unrelated music artwork, logos or third-party assets/);
+  const footer = html.match(/<footer[\s\S]*?<\/footer>/)?.[0];
+  assert.ok(footer?.includes(`href="${mugPhotoTermsPath}"`));
+});
 
 test('full retained inventories have unique, concise metadata and real image files', async () => {
   assert.equal(songs.length, 450); assert.equal(mugs.length, 649);
