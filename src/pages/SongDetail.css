@@ -177,9 +177,90 @@
 }
 
 .song-artwork-img {
+  display: block;
   width: 100%;
   border-radius: 4px;
   border: 3px solid rgba(255,255,255,0.15);
+}
+
+.song-artwork-enlarge {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--gold-light, #ead39a);
+  font: inherit;
+  cursor: zoom-in;
+}
+
+.song-artwork-hint {
+  display: block;
+  padding: 8px;
+  font-size: 0.85rem;
+  text-decoration: underline;
+}
+
+.song-artwork-enlarge:focus-visible,
+.song-artwork-close:focus-visible {
+  outline: 3px solid var(--gold, #d4af37);
+  outline-offset: 4px;
+}
+
+.song-artwork-dialog {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 16px;
+  border: 0;
+  background: transparent;
+  color: var(--cream, #f6ecd8);
+}
+
+.song-artwork-dialog[open] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.song-artwork-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+.song-artwork-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 100%;
+}
+
+.song-artwork-close {
+  align-self: flex-end;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid var(--gold, #d4af37);
+  border-radius: 6px;
+  background: #14382a;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.song-artwork-enlarged {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: min(100%, 1100px);
+  max-height: calc(100vh - 140px);
+  max-height: calc(100dvh - 140px);
+  object-fit: contain;
 }
 
 .song-artwork-placeholder {

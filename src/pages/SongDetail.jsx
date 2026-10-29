@@ -6,7 +6,7 @@ import relatedSongs from '../data/relatedSongs.js';
 import './SongDetail.css';
 import PageSeo from '../seo/PageSeo.jsx';
 import SongVideo from '../components/SongVideo.jsx';
-import SongArtwork from '../components/SongArtwork.jsx';
+import SongArtworkViewer from '../components/SongArtworkViewer.jsx';
 import LyricsMessageLink from '../components/LyricsMessageLink.jsx';
 import { songMetadata, performanceKind } from '../seo/catalogue.js';
 
@@ -105,7 +105,7 @@ export default function SongDetail() {
             </div>
 
             <div className="song-detail-artwork">
-              <SongArtwork song={song} width="512" height="512" className="song-artwork-img" />
+              <SongArtworkViewer key={songSlug} song={song} />
             </div>
           </div>
 
