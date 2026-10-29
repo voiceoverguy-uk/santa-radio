@@ -25,3 +25,9 @@ Distinguish application scroll resets from the browser's native scroll anchoring
 **Why:** A cancellation check observed a small viewport adjustment even though an instrumented `scrollTo` confirmed the application had made no additional scroll call. Pixel movement alone did not prove a repeated opening scroll.
 
 **How to apply:** For cancellation-specific tests, use a stable boundary such as the page top or instrument the scroll calls; keep separate settled-geometry assertions for the actual destination.
+
+Focus-triggered scrolling can cancel a pointer activation if it moves a button between press and release.
+
+**Why:** Contact-form checks intermittently left a valid form unchanged without starting a request when the focus handler repositioned the clicked Send button.
+
+**How to apply:** Restrict keyboard visibility scrolling to keyboard/validation focus rather than pointer-focused buttons. Preserve real clicks in tests; forcing them would hide this interaction problem.
