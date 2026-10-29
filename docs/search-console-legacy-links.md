@@ -1,5 +1,9 @@
 # Search Console legacy-link repair
 
+For the separate audit of the other music URLs in the retained historical
+sitemap, see [Historical music sitemap audit](historical-music-links-audit.md).
+That audit makes no further route changes.
+
 ## Status and scope — 29 October 2026
 
 These are **local, unreleased repairs**. No publishing, DNS, host-redirect or Search Console actions were performed.
