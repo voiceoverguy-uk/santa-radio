@@ -15,7 +15,7 @@ test('development feed is public JSON and its versioned images load cross-origin
   expect(feed.artists['meghan trainor'].path).toBe('/artist-artwork/meghan-trainor.webp');
   expect(feed.artists['mariah carey'].path).toBe('/artist-artwork/mariah-carey.webp');
   expect(feed.artists['mariah carey'].version).toBe('4bef6208657c34d9790d45bd150a1532bcabcc294cabeec25803440f4c18e607');
-  expect(JSON.stringify(feed)).not.toContain('/artist-artwork/mariah-carey-all-i-want-for-christmas-is-you.webp');
+  expect(feed.recordings['24'].image.path).toBe('/artist-artwork/mariah-carey-all-i-want-for-christmas-is-you.webp');
   expect(feed.artists['tevin campbell']).toEqual(feed.fallback);
   expect(feed.schemaVersion).toBe(1);
   expect(feed.version).toMatch(/^[a-f0-9]{64}$/);
@@ -37,7 +37,7 @@ test('development feed is public JSON and its versioned images load cross-origin
     const feed = await (await fetch(`${base}/artist-artwork/catalogue.json`)).json();
     const image = new Image();
     image.crossOrigin = 'anonymous';
-    image.src = new URL(feed.artists['chris kamara'].url, base).href;
+    image.src = new URL(feed.recordings['24'].image.url, base).href;
     await image.decode();
     return { width: image.naturalWidth, version: feed.version };
   }, origin);

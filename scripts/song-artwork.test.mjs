@@ -20,7 +20,7 @@ const elvisBlue = songs.find(song => song.id === 399);
 const elvisSpecial = '/artist-artwork/elvis-presley-blue-christmas.webp';
 const elvisUsual = '/artist-artwork/elvis-presley.webp';
 
-test('Bad Sharon preserves the supplied PNG and leaves the shared Robbie portrait and mobile feed unchanged', async () => {
+test('Bad Sharon preserves the supplied PNG and shared Robbie portrait alongside its recording entry', async () => {
   const original = await readFile('attached_assets/robbie-williams-bad-sharon_1793232959684.png');
   assert.equal(createHash('sha256').update(original).digest('hex'),
     '057656b51d1cddce2ca4e9c95fe8fa1990e703a9c0a59283d1f033f0f3957b3e');
@@ -30,7 +30,7 @@ test('Bad Sharon preserves the supplied PNG and leaves the shared Robbie portrai
   const feed = await buildArtworkFeed(artistMapping);
   assert.equal(feed.artists['robbie williams'].path, path);
   assert.equal(feed.artists['robbie williams'].version, originalPortraitHash);
-  assert.ok(!JSON.stringify(feed).includes('/artist-artwork/robbie-williams-bad-sharon.webp'));
+  assert.equal(feed.recordings['559'].image.path, '/artist-artwork/robbie-williams-bad-sharon.webp');
 });
 
 for (const expected of exactSongArtwork) {
@@ -60,7 +60,7 @@ for (const expected of exactSongArtwork) {
   });
 }
 
-test('other recordings keep portraits and the mobile feed contains no song overrides', async () => {
+test('other recordings keep portraits and shared recording entries do not replace artist entries', async () => {
   const artists = new Set(exactSongArtwork.map(song => song.artist));
   const ids = new Set(exactSongArtwork.map(song => song.id));
   for (const song of songs.filter(song => artists.has(song.artist) && !ids.has(song.id))) {
@@ -71,7 +71,7 @@ test('other recordings keep portraits and the mobile feed contains no song overr
     '/artist-artwork/sia-festive.webp');
   const feed = await buildArtworkFeed(artistMapping);
   for (const expected of exactSongArtwork) {
-    assert.ok(!JSON.stringify(feed).includes(expected.path));
+    assert.equal(feed.recordings[String(expected.id)].image.path, expected.path);
     assert.equal(feed.artists[artistMapping.normalizeArtistName(expected.artist)].path,
       artistMapping.artistArtwork(expected.artist));
   }
@@ -136,7 +136,7 @@ test('Mariah illustration is restricted to the verified recording and website me
   assert.equal(feed.artists['mariah carey'].path, usual);
   assert.equal(feed.artists['mariah carey'].version,
     '4bef6208657c34d9790d45bd150a1532bcabcc294cabeec25803440f4c18e607');
-  assert.ok(!JSON.stringify(feed).includes(special));
+  assert.equal(feed.recordings['24'].image.path, special);
 });
 
 test('Chris De Burgh replacement is shared artist artwork, not a song-only override', async () => {
@@ -201,7 +201,7 @@ test('Elvis Blue Christmas override requires its exact verified recording', () =
   assert.equal(artworkAlt(elvisBlue), 'Illustrated artwork for Blue Christmas by Elvis Presley');
 });
 
-test('Elvis delivery image is optimised and does not enter the artist-only app feed', async () => {
+test('Elvis delivery image is optimised and enters recordings without replacing his artist portrait', async () => {
   const image = await readFile(`public${elvisSpecial}`);
   assert.equal(image.subarray(8, 12).toString(), 'WEBP');
   assert.ok(image.length < 100000);
@@ -209,7 +209,7 @@ test('Elvis delivery image is optimised and does not enter the artist-only app f
   assert.equal(original.subarray(1, 4).toString(), 'PNG');
   const feed = await buildArtworkFeed(artistMapping);
   assert.equal(feed.artists['elvis presley'].path, elvisUsual);
-  assert.ok(!JSON.stringify(feed).includes(elvisSpecial));
+  assert.equal(feed.recordings['399'].image.path, elvisSpecial);
 });
 
 test('Katy Perry illustration is restricted to the verified recording and website metadata', async () => {
@@ -254,7 +254,7 @@ test('Katy Perry illustration is restricted to the verified recording and websit
 
   const feed = await buildArtworkFeed(artistMapping);
   assert.equal(feed.artists['katy perry'].path, usual);
-  assert.ok(!JSON.stringify(feed).includes(special));
+  assert.equal(feed.recordings['528'].image.path, special);
 });
 
 test('Ariana recordings get their own verified website overrides, not the app portrait', () => {
@@ -312,7 +312,7 @@ test('song-specific social metadata is isolated and random ordering preserves so
   assert.ok(ordered.slice(firstFallback).every(song => songArtwork(song) === artistMapping.fallbackArtwork));
 });
 
-test('optimised supplied artwork is WebP and the app feed remains artist-only', async () => {
+test('optimised supplied artwork is WebP and the feed adds recordings to its existing fields', async () => {
   const image = await readFile(`public${special}`);
   assert.equal(image.subarray(8, 12).toString(), 'WEBP');
   assert.ok(image.length < 100000);
@@ -320,7 +320,7 @@ test('optimised supplied artwork is WebP and the app feed remains artist-only', 
   assert.equal(feed.schemaVersion, 1);
   assert.equal(feed.artists['ariana grande'].path, usual);
   assert.equal(Object.hasOwn(feed.artists, 'ariana grande last christmas'), false);
-  assert.ok(!JSON.stringify(feed).includes(special));
-  assert.ok(!JSON.stringify(feed).includes(winterSpecial));
-  assert.deepEqual(Object.keys(feed).sort(), ['artists', 'fallback', 'refreshAfterSeconds', 'schemaVersion', 'version']);
+  assert.equal(feed.recordings['75'].image.path, special);
+  assert.equal(feed.recordings['527'].image.path, winterSpecial);
+  assert.deepEqual(Object.keys(feed).sort(), ['artists', 'fallback', 'recordings', 'refreshAfterSeconds', 'schemaVersion', 'version']);
 });

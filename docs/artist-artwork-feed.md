@@ -1,22 +1,27 @@
-# Shared artist artwork: mobile handoff
+# Shared artwork feed
 
-## Status and address
+## Status and publication gate
 
-Feed path: **`/artist-artwork/catalogue.json`** on the published website.
-This is a public JSON resource, not an HTML artist page or a JavaScript bundle.
-Use the confirmed published website origin configured in the mobile project.
-Do not use a Replit development hostname for a released app.
+Public path: **`/artist-artwork/catalogue.json`**. Schema version remains **1**.
+This work adds `recordings` without changing `artists`, `fallback`,
+`refreshAfterSeconds` (300), artist image paths or their versioned URL format.
+It does not publish the website, switch an origin or release an app.
 
-The feed is implemented in this website. The separate iOS project has not been
-edited or verified: its source and existing feed contract were not provided.
-The screenshot's report that the app refreshes its gallery/player catalogue is
-not proof that it already consumes this new endpoint.
+The supplied native-project handoff reports that iOS currently extracts website
+scripts from **https://santa-radio-three.vercel.app**, retains website song IDs,
+receives only artist/title in live metadata, and does **not** consume this feed.
+Some approved bundled images have priority, including Sia assignments. These are
+reported source-inspection findings, not an installed-device test here.
 
-**Publish this website before connecting production mobile clients.** A change
-in this workspace does not change a previously published feed. No website or
-mobile release was performed as part of this work.
+Before publication, identify existing feed consumers and verify their decoders
+accept unknown top-level fields. Local tests prove the old fields are unchanged
+and simulate an artist-only reader; they cannot prove compatibility with unavailable
+older native source or every deployed client. A strict decoder may need updating.
+Agree and verify one production feed origin with the native maintainer; do not
+assume www is already the app's configured origin. See the
+[copyable iOS handoff](song-artwork-native-handoff.md) for implementation and release checks.
 
-## Schema version 1
+## Additive schema version 1
 
 ```json
 {
@@ -24,134 +29,103 @@ mobile release was performed as part of this work.
   "refreshAfterSeconds": 300,
   "fallback": {
     "path": "/artist-artwork/santa-fallback.webp",
-    "version": "<SHA-256 of image bytes>",
+    "version": "<64-character lowercase SHA-256 of image bytes>",
     "url": "/artist-artwork/santa-fallback.webp?v=<same SHA-256>"
   },
   "artists": {
-    "chris kamara": {
-      "path": "/artist-artwork/chris-kamara.webp",
-      "version": "<SHA-256 of image bytes>",
-      "url": "/artist-artwork/chris-kamara.webp?v=<same SHA-256>"
+    "ariana grande": {
+      "path": "/artist-artwork/ariana-grande.webp",
+      "version": "<image SHA-256>",
+      "url": "/artist-artwork/ariana-grande.webp?v=<same SHA-256>"
     }
   },
-  "version": "<SHA-256 of schema, refresh interval, mappings and image versions>"
+  "recordings": {
+    "75": {
+      "artist": "Ariana Grande",
+      "title": "Last Christmas",
+      "image": {
+        "path": "/artist-artwork/ariana-grande-last-christmas.webp",
+        "version": "6eeaec84dd39b5c5eb1fd4ab3b7444fa9222e4c21befa8420b061d8ffdf2a48d",
+        "url": "/artist-artwork/ariana-grande-last-christmas.webp?v=6eeaec84dd39b5c5eb1fd4ab3b7444fa9222e4c21befa8420b061d8ffdf2a48d"
+      }
+    }
+  },
+  "version": "<SHA-256 of deterministic content excluding this version field>"
 }
 ```
 
-All actual hashes are 64 lowercase hexadecimal characters. `artists` includes
-every artist in the song catalogue plus explicitly mapped portraits and approved
-aliases. Artists without their own portrait have an explicit entry matching
-`fallback`, supporting clients that only look up artist keys. Artists outside
-the catalogue still require the client to use `fallback` for absent keys.
-Adding a portrait automatically replaces that artist's Santa entry and changes
-its versioned URL and the catalogue version. No fuzzy matching is needed.
-The feed is deterministic: it has no timestamp that changes on every build.
+This is an abbreviated shape, not the full feed. No image addresses are renamed.
+`recordings` keys are string website recording IDs, not artist keys or stream IDs.
+Only explicitly assigned recordings appear; absence means use the artist/Santa
+fallback, not missing catalogue data. Canonical artist and title come from the
+website catalogue after validation of the assignment.
 
-Normalise the complete artist name exactly as the website does:
+`artists` still includes every catalogue artist, supplied portrait keys and
+approved artist aliases. A catalogue artist without a portrait has an explicit
+Santa entry. Absent artist keys also fall back to Santa. Song images never
+replace artist portraits.
 
-```js
-function normalizeArtistName(name) {
-  return name.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()
-    .trim().replace(/\s+/g, ' ');
-}
+Normalise artist keys with NFD, remove combining marks, lowercase, trim and
+collapse whitespace; preserve punctuation and full collaboration credits.
+Do not split names, guess aliases or infer song assignments from filenames.
 
-function artworkUrl(feed, artist, feedUrl) {
-  const key = normalizeArtistName(artist);
-  const image = Object.hasOwn(feed.artists, key) ? feed.artists[key] : feed.fallback;
-  return new URL(image.url, feedUrl).href;
-}
-```
+## Source and validation
 
-Resolve `url` against the actual feed URL, not the app's own origin. For redirected
-feeds use the final response URL where available. Always use **`url`**, including
-its `?v=` query, for image requests and native image cache keys. `path` is the
-unversioned compatibility address, not the recommended mobile cache key.
+- `src/data/artistArtwork.js`: the existing artist mappings and Santa fallback.
+- `src/data/songArtwork.js`: the single shared list of exact song assignments.
+- `src/data/songs.json`: stable website IDs and canonical artist/title.
+- `server/artwork-feed.js`: validates each assigned ID resolves to exactly one
+  catalogue entry with the same artist/title; validates paths and readable WebP
+  signatures; hashes bytes with SHA-256. Missing or invalid assigned files fail
+  the request/build explicitly, never disappear silently from a successful feed.
+- Vite reloads artist, song and catalogue modules for development requests.
+  Production builds emit `dist/artist-artwork/catalogue.json`; there is no second
+  manually maintained JSON list.
 
-Accents, casing and extra spaces are ignored; punctuation is preserved. Do not
-split collaborations, drop band prefixes or equate a solo artist with a band.
-Approved exceptions (such as Holly Johnson for Frankie Goes to Hollywood) are
-already explicit keys in the feed.
+All current song assignments are shared, including Bad Sharon. This supersedes
+their previous website-only feed exclusion, not their precise recording scope.
+Website cards, pages, sharing metadata and live matching are unchanged, including
+song → artist → Santa failure handling.
 
-## One shared mobile store
+Output is deterministic, with no build timestamp. The overall version covers
+schema, interval, artists, fallback, recording identities/mappings and image
+versions. Replacing bytes at the same path changes the image hash, full URL and
+overall version. Adding/removing/reassigning a recording changes the overall
+version even if the referenced image already exists. Unchanged image hashes
+and artist entries remain stable.
 
-- Fetch with no credentials at app launch; refresh on foreground/resume when
-  the last successful refresh is at least `refreshAfterSeconds` old.
-- While open, refresh at that interval; offer manual refresh when appropriate.
-  Use request timeouts and prevent overlapping fetches. Do not poll in the background.
-- Validate HTTP success, JSON schema version, required fallback, mapping shape,
-  image URL origin/path and hash fields before atomically replacing cached data.
-  An HTML response from an old hosting rewrite is an error, not an empty catalogue.
-- Store the last successfully validated feed for offline use. A network or parse
-  failure must retain that feed and expose a retryable refresh error, not erase
-  existing artist portraits. With no cached feed, use the app's bundled offline
-  Santa placeholder until a successful fetch.
-- Refresh the gallery, radio player and iPhone lock-screen artwork from this
-  **same store**. When the feed version changes, recompute artwork for the current
-  track even if its artist/title have not changed. Pass the full versioned URL
-  to the native Now Playing artwork loader too.
-- On a particular image failure, try the feed's versioned Santa fallback once;
-  if it also fails, use the offline placeholder. Avoid recursive error loops.
-- Never append random timestamps: content hashes change only when bytes change.
+## Delivery and refresh
 
-The public feed/images allow anonymous cross-origin browser access, including a
-separately hosted web preview. Servers use `Cache-Control: no-cache` so responses
-must be revalidated; native caches still need the complete versioned image URL.
+JSON and images remain anonymous resources with `Access-Control-Allow-Origin: *`
+and `Cache-Control: no-cache`; GET, HEAD and OPTIONS retain their existing handling.
+No credentials are needed. Resolve each returned `url` against the final feed
+response URL and retain its full `?v=` query in network and decoded-image caches.
+`path` is the old unversioned compatibility address, not a replacement cache key.
 
-## Adding and replacing artwork here
+Fetch at launch; refresh while open every 300 seconds and on foreground/resume
+when due; allow manual refresh. Do not poll in the background. Validate HTTP,
+JSON, schema, entries and safe same-origin artwork URLs, then atomically store
+the last good feed. Keep that feed offline or on errors; expose a retryable error
+instead of clearing it. With no cached feed, use the approved offline placeholder.
 
-### Website-only song images
+A changed feed version must recompute visible and native Now Playing artwork
+even when metadata has not changed. A failed recording image tries the versioned
+artist image, then feed Santa, then offline Santa, each at most once.
+See the handoff for ambiguity and approved bundled-image rules.
 
-Individual recordings can have a website-only illustration in addition to their artist portrait.
-These include Ariana Grande's **Last Christmas** (catalogue ID 75) and **Winter Things**
-(catalogue ID 527), each with its own supplied illustration. This changes the website's music card, song page,
-social image and reliably matched homepage artwork, not the artist-based mobile feed.
-
-Supply an image named after the song-page slug, such as `ariana-grande-last-christmas.png`.
-Check its artist, title and catalogue ID before explicitly assigning it in
-`src/data/songArtwork.js`; ask if a filename is ambiguous. Preserve the original,
-optimise a WebP delivery copy without cropping the composition, and retain the existing
-artist image. Do not automatically infer assignments from uploaded filenames.
-
-Website image errors fall back from the special song image to the artist portrait,
-then Santa. Unknown or ambiguous live tracks must not select another song's special image.
-The website-only resolver must not be used to generate this mobile feed: its existing
-artist mappings, addresses, schema and version calculations remain unchanged.
-Song-specific support in the separate apps requires separately agreed future work.
-
-For the eight additional recording illustrations and the Paul Burling / abbreviated
-Tom Jones & C Matthews matching investigation, see
-[the exact-song and native lookup handoff](song-artwork-native-handoff.md).
-It records public image/hash checks separately from native profile lookup, which
-cannot be diagnosed from this artist-only feed alone.
-
-### Shared artist portraits
-
-1. Preserve the original upload; create the optimised WebP under `public/artist-artwork`.
-2. Add or update the single mapping in `src/data/artistArtwork.js`.
-3. Development serves fresh feed data through Vite. Production builds emit
-   `dist/artist-artwork/catalogue.json` automatically; no JSON list is edited manually.
-4. Missing or invalid mapped WebP files fail the feed/build explicitly.
-5. Publish the website, then check the feed and image URLs on the intended origin.
-   The mobile app sees the update on its next successful refresh after connection.
-
-Replacing an image at its existing filename changes its image hash, versioned URL
-and overall feed version automatically. Existing unversioned inbound image links
-continue to work. Website music cards/details keep their existing resolver and URLs.
-
-## Checks
+## Local checks
 
 ```sh
 npm run test:artwork
+node --test scripts/song-artwork.test.mjs
 npm run build
 npm run test:artwork-production
-npx playwright test tests/artwork-feed.spec.js tests/chris-kamara-artwork.spec.js tests/artist-artwork-new-portraits.spec.js
+npx playwright test --project=chromium tests/artwork-feed.spec.js tests/exact-song-artwork.spec.js tests/song-specific-artwork.spec.js
 ```
 
-Production tests launch a temporary local Node server against the built files,
-verify every unique image's served bytes against its advertised hash, and check
-headers and missing-file handling. Vercel configuration is checked locally;
-no live Vercel deployment was changed or tested.
-
-Still required in the separate mobile project: connect this contract, then check
-Chris Kamara and George Michael in the gallery, current-track player and lock
-screen, test a replacement at the same filename, and test offline/resume behaviour.
+Development checks use an isolated Vite server to exercise live assignment edits
+without restarting or altering the real mappings. Development and built Node
+delivery check every unique image against its advertised SHA-256. Production
+tests also cover served/prerendered/direct SSR artwork, headers, missing files and
+Vercel routing configuration. Local Vercel configuration checks are not a live
+hosting check. Publication and actual iPhone/CarPlay checks remain separate.

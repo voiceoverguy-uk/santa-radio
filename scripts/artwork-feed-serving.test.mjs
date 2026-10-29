@@ -74,7 +74,8 @@ test('production build emits exactly the source-derived feed', async () => {
 
 test('every unique served image matches the advertised hash, including fallback', async () => {
   const feed = await (await fetch(new URL(artworkFeedPath, base))).json();
-  const entries = [...new Map([feed.fallback, ...Object.values(feed.artists)].map(image => [image.url, image])).values()];
+  const entries = [...new Map([feed.fallback, ...Object.values(feed.artists),
+    ...Object.values(feed.recordings).map(recording => recording.image)].map(image => [image.url, image])).values()];
   for (const image of entries) {
     const response = await fetch(new URL(image.url, base));
     assert.equal(response.status, 200, image.url);

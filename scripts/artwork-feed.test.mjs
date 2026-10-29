@@ -5,6 +5,82 @@ import { createHash } from 'node:crypto';
 import * as mapping from '../src/data/artistArtwork.js';
 import { songArtwork, songPortraits } from '../src/data/songArtwork.js';
 import { buildArtworkFeed } from '../server/artwork-feed.js';
+import songs from '../src/data/songs.json' with { type: 'json' };
+
+test('every website recording assignment is shared with canonical identity and content-derived image', async () => {
+  const feed = await buildArtworkFeed(mapping);
+  const legacy = await buildArtworkFeed(mapping, { recordingMapping: {} });
+  // Local artist-only consumer simulation: proves field invariants, not unavailable native decoders.
+  for (const key of ['schemaVersion', 'refreshAfterSeconds', 'fallback', 'artists']) {
+    assert.deepEqual(feed[key], legacy[key]);
+  }
+  assert.deepEqual(Object.keys(feed.recordings), Object.keys(songPortraits).sort((a, b) => Number(a) - Number(b)));
+  for (const [id, assignment] of Object.entries(songPortraits)) {
+    const song = songs.find(song => String(song.id) === id);
+    const version = createHash('sha256').update(await readFile(`public${assignment.path}`)).digest('hex');
+    assert.deepEqual(feed.recordings[id], {
+      artist: song.artist, title: song.song,
+      image: { path: assignment.path, version, url: `${assignment.path}?v=${version}` },
+    });
+    assert.equal(songArtwork(song), assignment.path);
+  }
+  assert.equal(feed.recordings['559'].title, 'Bad Sharon');
+  assert.notEqual(feed.recordings['75'].image.url, feed.recordings['527'].image.url);
+  assert.equal(feed.artists['ariana grande'].path, '/artist-artwork/ariana-grande.webp');
+  assert.notEqual(feed.version, legacy.version);
+  assert.deepEqual(await buildArtworkFeed(mapping, {
+    recordingMapping: Object.fromEntries(Object.entries(songPortraits).reverse()),
+  }), feed, 'mapping insertion order must not affect output');
+});
+
+test('recording replacements, reassignment, addition and removal invalidate the overall version only as needed', async () => {
+  const before = await buildArtworkFeed(mapping);
+  const after = await buildArtworkFeed(mapping, {
+    readImage: async path => {
+      const bytes = await readFile(`public${path}`);
+      return path === songPortraits[75].path ? Buffer.concat([bytes, Buffer.from('replacement')]) : bytes;
+    },
+  });
+  assert.notEqual(after.recordings['75'].image.url, before.recordings['75'].image.url);
+  assert.notEqual(after.version, before.version);
+  assert.deepEqual(after.artists, before.artists);
+  assert.deepEqual(after.recordings['527'], before.recordings['527']);
+  const remapped = await buildArtworkFeed(mapping, {
+    recordingMapping: { ...songPortraits, 75: { ...songPortraits[75], path: songPortraits[527].path } },
+  });
+  assert.notEqual(remapped.version, before.version);
+  assert.equal(remapped.recordings['75'].image.url, before.recordings['527'].image.url);
+  const { 75: removed, ...remaining } = songPortraits;
+  const reduced = await buildArtworkFeed(mapping, { recordingMapping: remaining });
+  assert.notEqual(reduced.version, before.version);
+  assert.equal(Object.hasOwn(reduced.recordings, '75'), false);
+  assert.deepEqual(reduced.artists, before.artists);
+  assert.deepEqual(await buildArtworkFeed(mapping, { recordingMapping: { ...remaining, 75: removed } }), before);
+});
+
+test('invalid recording identities, paths and image files fail explicitly', async () => {
+  const build = (recordingMapping, options = {}) => buildArtworkFeed(mapping, { recordingMapping, ...options });
+  for (const id of ['999999', '075', '__proto__']) {
+    await assert.rejects(build(Object.fromEntries([[id, songPortraits[75]]])),
+      /must identify exactly one catalogue song/);
+  }
+  await assert.rejects(build({ 75: songPortraits[75] }, {
+    catalogue: [...songs, songs.find(song => song.id === 75)],
+  }), /must identify exactly one catalogue song/);
+  for (const assignment of [null, { ...songPortraits[75], artist: 'Wham!' },
+    { ...songPortraits[75], title: 'Last Christmas (Live)' }]) {
+    await assert.rejects(build({ 75: assignment }), /artist\/title does not match canonical catalogue/);
+  }
+  for (const path of [undefined, '/artist-artwork/../secret.webp', 'https://example.test/a.webp']) {
+    await assert.rejects(build({ 75: { ...songPortraits[75], path } }), /Invalid artwork path/);
+  }
+  await assert.rejects(build({ 75: { ...songPortraits[75], path: '/artist-artwork/nonexistent.webp' } }),
+    /missing or unreadable image.*nonexistent/);
+  await assert.rejects(build({ 75: songPortraits[75] }, {
+    readImage: async path => path === songPortraits[75].path
+      ? Buffer.from('invalid recording image') : readFile(`public${path}`),
+  }), /invalid WebP.*ariana-grande-last-christmas/);
+});
 
 test('Sam Ryder keeps his shared artwork path with a new content version after cropping', async () => {
   const path = '/artist-artwork/sam-ryder.webp';

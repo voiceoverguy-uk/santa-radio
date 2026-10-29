@@ -1,174 +1,248 @@
-# Exact song artwork and native lookup handoff
+# Copyable iOS handoff: exact-recording artwork
 
-## Website changes (not yet published by this work)
+## Please implement feed consumption before claiming parity
 
-These are **website-only recording assignments**, not replacement artist portraits.
-Each is checked by catalogue ID, full artist credit and title. Cards, detail pages,
-Open Graph/Twitter/JSON-LD images and reliably matched live artwork use the same
-resolver. Failed images try the existing artist portrait, then Santa.
+The website now generates an additive schema-version-1 artwork feed at
+`/artist-artwork/catalogue.json`. It shares the existing song-specific assignments
+as well as unchanged artist portraits and Santa fallback. **The app must implement
+feed consumption before automatic website/app artwork parity is possible.**
 
-| ID | Catalogue artist | Exact title | Delivery filename in `/artist-artwork/` |
-| --- | --- | --- | --- |
-| 557 | Freya Skye | Snow Angels | `freya-skye-snow-angels.webp` |
-| 46 | Frank Sinatra | Let It Snow! Let It Snow! Let It Snow! | `frank-sinatra-let-it-snow.webp` |
-| 40 | The Jackson 5 | Santa Claus Is Coming To Town | `jackson-5-santa-claus-is-coming-to-town.webp` |
-| 43 | Gabriella Cilmi | Warm this Winter | `gabriella-cilmi-warm-this-winter.webp` |
-| 537 | Sia | Candy Cane Lane | `sia-candy-cane-lane.webp` |
-| 538 | Sia | Naughty & Nice | `sia-naughty-and-nice.webp` |
-| 480 | Sia | My Old Santa Claus | `sia-my-old-santa-claus.webp` |
-| 457 | Sia | Santa's Coming For Us | `sia-santas-coming-for-us.webp` |
+The supplied native handoff
+(`attached_assets/Pasted-The-iOS-native-artwork-selector-also-supports-song-spec_1793266434686.txt`)
+reports:
 
-All eight original PNG uploads remain in `attached_assets/`. Delivery WebPs are
-512 × 512, approximately 103–132 KB rather than the 2.7–3.1 MiB originals.
-Conversion uses sRGB, aspect-preserving resize, centred transparent square padding,
-metadata stripping and WebP quality 84. Seven originals are 1254 × 1254;
-`sia-santas-coming-for-us_1793156002084.png` is 1278 × 1230, fitted to approximately
-512 × 493 with transparent top/bottom padding. Nothing is stretched or centre-cropped.
+- App catalogue extraction currently reads published scripts from
+  **https://santa-radio-three.vercel.app**, not the artwork JSON feed.
+- Website recording IDs are retained, but live metadata supplies only artist/title.
+  A shared ID in live metadata has not been verified.
+- Native song-specific lock-screen/CarPlay selection exists; automatic feed parity
+  does not. Approved bundled images, including recent Sia artwork, can take priority.
+- Foreground checks run about every minute using image headers, not this feed's
+  SHA-256 contract.
 
-### Duplicate review
+These findings are from the supplied source/HTTP inspection, not independent
+inspection of the separate native source or an installed-iPhone test here.
+No native files, bundled precedence, origin settings or releases were changed.
 
-Checked `src/data/songs.json` and the original
-`attached_assets/cl57-thesongs_1791303552293.sql` export, parsing the latter without
-reimporting it. Each of these eight artist/title pairs has exactly one record in
-each source, with the IDs above. Gabriella's SQL credit has trailing whitespace,
-not an additional recording. Other Sinatra and Jackson 5 songs have different
-titles; versions by other performers are not these recordings.
-The old SQL video for Sia's **Naughty & Nice** differs from today's catalogue
-video, but it is still the same single ID, not a second record to assign.
-No bulk deduplication, redirect changes, video changes or extra song assignments
-were made. Unrelated Sia recordings (including future additions such as
-**Snowman**) retain `sia-festive.webp`.
+## Exact contract
 
-### Two narrow website match exceptions
+Retain schemaVersion **1**, `artists`, `fallback`, `refreshAfterSeconds: 300`
+and the overall `version`. Add optional `recordings` for clients upgrading from
+older feeds; interpret an absent `recordings` as `{}`. New website output always
+includes the object.
 
-| Observed radio metadata | Canonical website recording | Website path |
+```ts
+type Image = { path: string; version: string; url: string };
+type ArtworkFeed = {
+  schemaVersion: 1;
+  refreshAfterSeconds: number;
+  fallback: Image;
+  artists: Record<string, Image>;
+  recordings?: Record<string, {
+    artist: string;
+    title: string;
+    image: Image;
+  }>;
+  version: string;
+};
+```
+
+`version` on each image is the lowercase 64-character SHA-256 of served image
+bytes; `url` is `path + "?v=" + version`. The feed version is a deterministic
+SHA-256 including all recording identities/mappings/image versions and the old
+fields (excluding the feed's own version). Do not calculate it from pretty-printed
+JSON on the client. No timestamps or Last-Modified heuristics are required.
+
+Actual local recording entries (abbreviated feed; hashes change on replacement):
+
+```json
+{
+  "recordings": {
+    "75": {
+      "artist": "Ariana Grande",
+      "title": "Last Christmas",
+      "image": {
+        "path": "/artist-artwork/ariana-grande-last-christmas.webp",
+        "version": "6eeaec84dd39b5c5eb1fd4ab3b7444fa9222e4c21befa8420b061d8ffdf2a48d",
+        "url": "/artist-artwork/ariana-grande-last-christmas.webp?v=6eeaec84dd39b5c5eb1fd4ab3b7444fa9222e4c21befa8420b061d8ffdf2a48d"
+      }
+    },
+    "527": {
+      "artist": "Ariana Grande",
+      "title": "Winter Things",
+      "image": {
+        "path": "/artist-artwork/ariana-grande-winter-things.webp",
+        "version": "ec86848472a981a378b0f1fd1a58a5f95feff75192733ef3bf0a7fb5542271c3",
+        "url": "/artist-artwork/ariana-grande-winter-things.webp?v=ec86848472a981a378b0f1fd1a58a5f95feff75192733ef3bf0a7fb5542271c3"
+      }
+    },
+    "559": {
+      "artist": "Robbie Williams",
+      "title": "Bad Sharon",
+      "image": {
+        "path": "/artist-artwork/robbie-williams-bad-sharon.webp",
+        "version": "da49799b75954e4226249e831166c543c596c79cf2a34005996a5350390d4b1f",
+        "url": "/artist-artwork/robbie-williams-bad-sharon.webp?v=da49799b75954e4226249e831166c543c596c79cf2a34005996a5350390d4b1f"
+      }
+    }
+  }
+}
+```
+
+All current assigned IDs:
+
+| ID | Canonical artist | Canonical title |
 | --- | --- | --- |
-| `Paul Burling` / `Another Christmas Song` | **439**, Paul Burling & Joseph Bell / Another Christmas Song | `/christmas-artist/439-paul-burling-joseph-bell-another-christmas-song` |
-| `Tom Jones & C Matthews` / `Baby, Its Cold Outside` | **5**, Tom Jones & Cerys Matthews / Baby Its Cold Outside | `/christmas-artist/5-tom-jones-c-matthews-baby-its-cold-outside` |
+| 24 | Mariah Carey | All I Want For Christmas Is You |
+| 40 | The Jackson 5 | Santa Claus Is Coming To Town |
+| 43 | Gabriella Cilmi | Warm this Winter |
+| 46 | Frank Sinatra | Let It Snow! Let It Snow! Let It Snow! |
+| 75 | Ariana Grande | Last Christmas |
+| 399 | Elvis Presley | Blue Christmas |
+| 457 | Sia | Santa's Coming For Us |
+| 480 | Sia | My Old Santa Claus |
+| 527 | Ariana Grande | Winter Things |
+| 528 | Katy Perry | Cozy Little Christmas |
+| 537 | Sia | Candy Cane Lane |
+| 538 | Sia | Naughty & Nice |
+| 557 | Freya Skye | Snow Angels |
+| 559 | Robbie Williams | Bad Sharon |
 
-Before these changes, `matchLiveSong` returned `unmatched` for both observed
-pairs despite artist artwork resolving correctly. The two explicit pair aliases
-now select their canonical pages and existing clean portraits, retaining the
-full joint credits. Ordinary punctuation/case normalisation still applies.
-There is no artist-wide credit rewrite, title-only lookup, fuzzy prefix match,
-or stripping of `(Live)`/other version labels. Unknown titles and unrelated
-performers remain unmatched; conflicting aliases remain ambiguous.
-This website matcher is **not evidence of the native client's lookup behaviour**.
+This table is explanatory, not a second source to maintain in the app. Generate
+native indexes from the downloaded feed. Artists stay portraits: e.g. `artists["sia"]`
+still uses `sia-festive.webp`, and Robbie Williams keeps his general portrait.
+Unassigned recordings such as Mariah's Oh Santa must not inherit her other song's
+illustration. Sharing this feed does not approve new images or broader assignments.
 
-## What was verified on the public website
+## Matching and fallback rules
 
-Read-only check: **28 October 2026, 03:19 UTC**, at the supplied public address
-`https://www.santaradio.co.uk/artist-artwork/catalogue.json`.
+1. Use a website recording ID only when its provenance/equivalence has been
+   verified for that selected catalogue record. Treat keys as strings. Do not use
+   a stream provider's unrelated ID, assume numbers are shared, or reuse the
+   previously playing track's ID. Reject conflicts with available artist/title.
+2. With live artist/title only, match **both** against canonical recording pairs.
+   Prefer equality; allow conservative Unicode/case/whitespace/punctuation
+   normalisation, but preserve words, credited collaborators and version labels
+   such as `(Live)`, remix, acoustic, remaster and years. Do not strip a version
+   label, fuzzy-match a prefix, match a title alone or rewrite all artist credits.
+3. Check the full native catalogue for ambiguity, not just this small assigned
+   subset. Multiple possible recordings mean **artist portrait**, even if only one
+   candidate has a feed image. Require a verified unique identity before using its
+   `recordings[id]`. Conflicting aliases are also ambiguous. Do not choose the first
+   match or silently copy the website's historical duplicate coalescing.
+4. Add only explicitly verified **artist-and-title pair** aliases. Website aliases
+   are not automatically delivered by this feed. For example the website accepts
+   `Paul Burling` / `Another Christmas Song` as ID 439 with canonical joint credit
+   Paul Burling & Joseph Bell, and `Tom Jones & C Matthews` / `Baby, Its Cold Outside`
+   as ID 5 with canonical Tom Jones & Cerys Matthews. Both use existing artist
+   portraits, not new recording images. Solo Joseph Bell or other Tom Jones titles
+   must not gain these matches. Do not infer aliases from image filenames.
+5. Bad Sharon's canonical title is exactly `Bad Sharon`. The website has a narrow
+   rule for a dangling `ft.` credit with no name. That is not permission to strip
+   real featured names/version labels globally; independently verify native support.
+6. Resolve the chosen recording image, otherwise the normalised full artist key,
+   otherwise feed Santa. On download/decode failure, try recording → artist →
+   feed Santa → approved offline placeholder, deduplicating URLs and trying each
+   once. Unknown/ambiguous tracks must clear the previous recording choice.
+7. Profile lookup is separate: missing artist biography/profile data must not block
+   an otherwise valid artwork lookup. This task does not repair native navigation.
 
-- Feed: HTTP **200**, `application/json; charset=utf-8`, `schemaVersion: 1`,
-  `Cache-Control: no-cache`, `Access-Control-Allow-Origin: *`,
-  `Access-Control-Allow-Methods: GET, HEAD, OPTIONS`.
-- Published feed version at that check:
-  `15268b69dd62739c59669e7aeacea8f7b799178b49083c20ed128d717f0005e1`.
-- All six alias entries below exist. Fetching each entry's complete **versioned**
-  `url` returned **200 image/webp**, with the same no-cache/CORS headers.
-  Image bytes matched both the advertised SHA-256 and the local clean WebP.
-- Both images had `Last-Modified: Wed, 28 Oct 2026 02:57:29 GMT`.
-  Paul image ETag: `"26688642960b898cf71480f274132598"`;
-  Tom/Cerys ETag: `"2437e738ada5d20b67319887f765ebbb"`.
-  Responses reported `x-vercel-cache: HIT`; that alone says nothing about an
-  individual device's catalogue or native decoded-image cache.
+Artist-key normalisation is the website's existing contract:
 
-| Expected normalised artist keys | Existing path | SHA-256 / `v` query |
-| --- | --- | --- |
-| `paul burling`, `paul burling & joseph bell`, `paul burling and joseph bell` | `/artist-artwork/paul-burling.webp` | `2ccc294a71ad9c0d8a0e3d2dbc225c25425bd84773663d9eb83dfde1ae4d9c4b` |
-| `tom jones & c matthews`, `tom jones & cerys matthews`, `tom jones and cerys matthews` | `/artist-artwork/tom-jones-and-cerys-matthews.webp` | `43463b9d51b4d9e46cff9805394b29453a301a276c22272a907c84f00e539a21` |
+```js
+const artistKey = name => name.normalize('NFD').replace(/\p{M}/gu, '')
+  .toLowerCase().trim().replace(/\s+/g, ' ');
+```
 
-The exact URL is each path above plus `?v=` and its full hash. These public images
-are **not missing** at the time checked. This does not prove that the app requests
-this endpoint, looks up these keys, or has refreshed its own catalogue.
+Artist punctuation and collaboration credits remain significant. Approved
+artist aliases are explicit `artists` keys; they are not automatic song aliases.
 
-The existing artist mappings, generator/schema, these clean images and Sia's
-general portrait are unchanged. The complete locally generated artist-only feed
-was compared before/after and is identical, including its version
-`8edad85140e046c4118fa06e64203bb4f7906e88022cb9713bc870223fdb047e`.
-That local version differs from the published snapshot; no cause or app cache
-state is inferred from that difference. The eight song images do not enter the
-mobile feed. Mobile song-specific artwork needs a separately agreed contract
-and client implementation.
+## Copyable implementation checklist
 
-## Screenshot evidence, not image masters
+In the separate `artifacts/santa-radio-mobile/` project:
 
-The following three supplied files were reviewed but never installed as artwork:
+- `lib/catalogue.ts`: keep catalogue IDs and provenance. Read this JSON feed rather
+  than extracting artwork assignments from minified website scripts. Do not
+  replace profile/song catalogue data with the much smaller artwork feed.
+- `hooks/useCatalogue.ts`: add a shared validated feed store, last successful
+  refresh time, feed version and offline persistence. Validate HTTP success,
+  JSON content, schema 1, required old fields, optional recordings, SHA-256 fields
+  and same-origin `/artist-artwork/` URLs before an atomic swap. Tolerate unknown
+  additive fields. Reject HTML/error responses and unsafe URLs.
+- Fetch anonymously at launch, every advertised 300 seconds while open, on
+  foreground/resume when due, and on manual refresh. Use timeouts, prevent overlap
+  and do not background-poll. Keep the last good feed on network/parse errors and
+  expose retryable errors, not an empty successful catalogue.
+- `lib/live-artwork.ts`: build recording and artist indexes with the matching
+  rules above. Keep resolution independent from profile availability.
+- `hooks/useLiveArtwork.ts` and `components/CatalogueGallery.tsx`: use this same
+  store/selection for selected songs, live player and gallery. Resolve returned
+  image `url` against the **final feed response URL**, retaining the complete query.
+- `plugins/santa-lock-screen.swift`: pass the same selected identity and image
+  version/full URL to native Now Playing/CarPlay. On feed version change recompute
+  the current selection even if the track did not change; replace decoded artwork
+  and native map references, not just the downloaded JSON.
+- Cache by full versioned URL (or origin + path + SHA-256), never only artist,
+  unchanged track ID, bare path, ETag or Last-Modified. A replacement at the same
+  filename must bypass the old decoded-image cache. Verify downloaded hashes when
+  practical and handle decode/hash failures explicitly.
+- Cancel or disregard outdated image requests after track/feed changes so an
+  older asynchronous download cannot overwrite newer Now Playing artwork.
 
-- `Screenshot_2026-10-28_at_02.40.42_1793155992843.png`: native player displaying
-  **Another Christmas Song / Paul Burling**, with a Santa placeholder.
-- `Baby_Its_Cold_Outside_—_Tom_Jones_&_Cerys_Matthews_Santa_Radio_1793156142640.png`:
-  website page showing the existing Tom/Cerys illustration.
-- `Screenshot_2026-10-28_at_02.00.02_1793156142641.png`: native **Artists** screen
-  displaying **Baby, Its Cold Outside / Tom Jones & C Matthews** and
-  “This artist is not in the available catalogue. No matching profile could be
-  opened.” with “Try updating catalogue”.
+### Safe migration of approved bundled images
 
-The last message concerns **profile lookup**, not proof of an artwork download
-failure. Artist artwork and song/profile matching are separate paths.
+Inventory current overrides, their exact recording scope and approval first.
+For each one, compare the proposed website assignment and actual image on the
+agreed published origin. Preserve approved bundle precedence until equivalence is
+explicitly verified; do not remove Sia overrides in bulk. Once approved, move that
+specific recording to feed-first with the bundle as offline fallback. Roll out
+incrementally and retain a rollback path. If images differ, ask the owner to resolve
+the difference rather than overwriting an approved image. Local website tests do
+not establish equivalence to unavailable bundled bytes.
 
-## Native-project checks required before diagnosis or repair
+## Publication and release coordination
 
-Please supply the actual iOS project/source (or relevant lookup/store code) and
-sanitised diagnostics. No device verification, native code change, rebuild or
-release has been performed here. The private catalogue source, app version,
-normalisation, route construction, refresh result and cache state are unknown.
+1. Confirm old feed consumers tolerate additive fields. Local field-invariance
+   tests are evidence for the contract, **not** universal native compatibility.
+   Obtain older-client decoder/source or representative client tests before
+   publication; update strict clients first if necessary.
+2. Agree the feed origin with the native maintainer. The reported current origin
+   is the Vercel address above; www is not assumed configured. Do not change DNS
+   or the app's origin as part of this work. Resolve redirects and images on the
+   agreed origin and verify anonymous JSON, CORS/no-cache headers and image hashes.
+3. Publish the website through the normal authorised process, then check all
+   14 recording entries and old artist fields on that actual origin. Workspace
+   output is not a published update. No deployment happens automatically here.
+4. Implement/integrate the native feed store, matching, caching and approved bundle
+   migration. Coordinate availability with website publication; older feeds without
+   recordings should safely remain artist-only.
+5. Test on actual iPhone and CarPlay before an independently authorised app release:
+   two Ariana songs, all four Sia songs, Bad Sharon, an unassigned song by those
+   artists, different performers of the same title, live/version-label mismatch,
+   ambiguous metadata, image failure, offline launch/resume, manual/timed refresh,
+   and a same-filename replacement while the current track stays unchanged.
+   Check gallery, player, lock screen and CarPlay select the same approved image.
+   Record app version, OS/device, resolved feed origin/version and selected image
+   hash. Do not treat a simulated browser test as a device check.
 
-1. **Identify the two sources independently.** Record the actual resolved URL,
-   HTTP status/content type, schema/version and last successful refresh time for
-   (a) artist artwork and (b) artist/song profiles. Check whether “Try updating
-   catalogue” refreshes both stores or only one. Do not assume the profile
-   catalogue is `/artist-artwork/catalogue.json`, which contains no song IDs or
-   profile routes.
-2. **Trace raw metadata through lookup.** Capture the two exact artist/title pairs
-   above, then log the normalised artist key, profile-match input, selected ID,
-   page route and failure reason. Check the abbreviated credit against full
-   catalogue credits and preserve both names on canonical profiles.
-   If the native project has an independent matcher, add only verified
-   recording-pair aliases for **439** and **5**, with tests for unrelated titles,
-   solo Tom Jones/Joseph Bell, live versions, ambiguity and missing records.
-   Do not assume the website alias table is automatically downloaded by the app.
-3. **Check the profile data and indexing.** Confirm the current native catalogue
-   actually contains canonical IDs 439 and 5, their titles/full credits and
-   usable page destinations. Verify decoding/indexing does not drop joint credits
-   or depend on a guessed artist slug. Check that profile lookup does not gate
-   otherwise valid artist artwork (or vice versa).
-4. **Check artwork resolution separately.** With `paul burling` and
-   `tom jones & c matthews`, inspect the selected entries against the table above.
-   Use the full returned `url` resolved against the final feed response URL.
-   Record status, downloaded hash and decoding errors. Preserve the `?v=` query
-   in URLCache, third-party image cache and Now Playing artwork keys; do not
-   silently reduce them to a path, artist name or unchanged track ID.
-5. **Test refresh/cache propagation, not just download success.** On launch,
-   foreground, manual update and the advertised 300-second interval, confirm a
-   validated feed atomically replaces the last good one. A changed feed version
-   must recompute current player/gallery/lock-screen artwork even when the track
-   is unchanged. Inspect cached feed version, in-memory models, disk image cache,
-   negative “no profile” cache and refresh error handling separately. Test cold
-   start, warm refresh, offline/resume and recovery; do not label caching the
-   cause without observing these values.
+## Verification boundaries
 
-## Website verification
-
-- `node --test scripts/song-artwork.test.mjs scripts/artwork-feed.test.mjs`:
-  **28 passed**.
-- `npm run build`: client, Node SSR and **1,559** canonical prerenders succeeded.
-  Existing bundle-size and unresolved `/images/north-pole-hero.webp` warnings
-  remain outside this task.
-- `npm run test:artwork-production`: **8 passed**, including built/served and
-  direct SSR images/OG/Twitter/JSON-LD, unchanged feed and served image bytes.
-- Chromium: `tests/exact-song-artwork.spec.js`,
-  `tests/song-specific-artwork.spec.js`, `tests/home-live-artwork.spec.js`,
-  `tests/live-lyrics.spec.js`, `tests/artist-artwork-paul-burling.spec.js`:
-  **39 passed, 1 pre-existing failure**. All six new tests passed, covering all
-  eight recordings at desktop/phone widths, live pairs, fallback and padding.
-  The old first lyrics test still expects a `Live radio songs` homepage region
-  absent from both the pre-task and current identical `Home.jsx`.
-  It was not changed to expand this artwork task.
-- App-preview screenshot inspected the Sia **Santa's Coming For Us** phone page;
-  browser checks also inspected the rendered square image bounds and transparent
-  padding. Stream playback and metadata were controlled fixtures in live UI tests,
-  not a claim that these tracks were broadcast or tested on an iPhone.
-
-No website publication, DNS/metadata-feed changes or iOS release was performed.
+- Local run on **29 October 2026**: 13 feed/development checks, 22 website
+  song-artwork unit checks, 8 built-production checks and 25 focused Chromium
+  checks passed (**68 total**). `npm run build` completed client, Node SSR and
+  1,559 canonical prerenders. Existing bundle-size/unresolved-image build warnings
+  were not changed by this feed work. The mobile-width artwork page was also
+  inspected in app preview; no native screen was inspected.
+- **Locally verified website behaviour:** canonical identity and all 14 assignment
+  entries, unchanged artist/fallback fields, deterministic hashes, replacement and
+  mapping invalidation, clear invalid/missing-file errors, development hot mapping
+  refresh, development/built served image bytes, SSR/prerendered images and focused
+  Chromium website artwork/fallback checks. See commands in
+  [shared artwork feed documentation](artist-artwork-feed.md).
+- **Publication still needed:** older-consumer compatibility evidence, agreed
+  production origin, authorised publication and checks on the actual published
+  feed/images. No live-origin verification is claimed for this extension.
+- **Native changes still needed:** feed consumption, shared store, matching/cache
+  integration, native Now Playing refresh and safe bundle migration.
+- **Device checks:** none performed here. No installed-iPhone, lock-screen or
+  CarPlay parity is claimed. No iOS release was made.

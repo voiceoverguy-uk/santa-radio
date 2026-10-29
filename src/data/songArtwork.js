@@ -1,7 +1,7 @@
 import { artistArtwork, fallbackArtwork, normalizeArtistName } from './artistArtwork.js';
 import { normalizeTrackText } from './matchLiveSong.js';
 
-// Website-only assignments, never added to the artist-based mobile feed.
+// Exact-recording assignments shared by the website and public artwork feed.
 // Verify the catalogue ID, artist and title before assigning a supplied image.
 export const songPortraits = Object.freeze({
   24: Object.freeze({

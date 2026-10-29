@@ -42,11 +42,11 @@ Artwork updates are intended for both the website and the separate iOS app, usin
 
 **How to apply:** Preserve the shared-catalogue contract when adding artwork. Website changes must be published before a production mobile client can retrieve them; do not claim iOS verification without checking the separate app. Replacement images must invalidate mobile caches even when the current track is unchanged.
 
-Song-specific artwork is an exception to the shared rollout: introduce it on the website only first, keeping the current artist portraits and app feed unchanged. A special image for one song must not replace the artist's image for their other songs. The owner may consider song-specific app support at the next app update; that work is not yet authorised.
+Share existing verified song-specific website assignments in the additive recording feed, without broadening their exact song scope or replacing artist portraits.
 
-**Why:** The owner confirmed “make it work on web only first” and used a special image for just one Michael Bublé song as the intended behaviour.
+**Why:** The owner initially requested web-only song artwork, then authorised sharing the existing exact-recording assignments through an additive feed. This supersedes only the feed exclusion, not precise song assignments or native bundle approval.
 
-**How to apply:** Add website-only, verified song assignments ahead of the artist fallback. Filenames matching a song-page slug, such as ariana-grande-last-christmas, are sufficient handoff clues to check against the catalogue; ask when ambiguous rather than guessing. Preserve the app's existing artist-only contract until separate app work is agreed.
+**How to apply:** Generate recording entries from the website assignments, not a second list. Retain old artist fields and require older-consumer compatibility checks before publication. Native feed adoption and approved bundled-image migration remain separate work; website tests cannot establish device parity.
 
 The astronaut-and-Nativity illustration supplied for Chris De Burgh replaces his shared artist picture; it is not a song-only exception.
 

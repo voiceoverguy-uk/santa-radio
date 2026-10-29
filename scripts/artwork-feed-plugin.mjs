@@ -14,7 +14,12 @@ export default function artworkFeedPlugin() {
         try {
           // Vite invalidates this module when mappings change, so no restart or second list is needed.
           const liveMapping = await server.ssrLoadModule('/src/data/artistArtwork.js');
-          const feed = await buildArtworkFeed(liveMapping);
+          const liveSongs = await server.ssrLoadModule('/src/data/songArtwork.js');
+          const catalogue = await server.ssrLoadModule('/src/data/songs.json');
+          const feed = await buildArtworkFeed(liveMapping, {
+            recordingMapping: liveSongs.songPortraits,
+            catalogue: catalogue.default,
+          });
           const body = JSON.stringify(feed, null, 2);
           res.writeHead(200, {
             'Content-Type': 'application/json; charset=utf-8',
