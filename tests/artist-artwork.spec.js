@@ -4,6 +4,32 @@ import { existsSync, readdirSync, statSync } from 'node:fs';
 import songs from '../src/data/songs.json' with { type: 'json' };
 
 for (const width of [390, 1440]) {
+  test(`Bad Sharon loads its own artwork without changing other Robbie recordings at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    const recordings = songs.filter(song => song.artist === 'Robbie Williams');
+    expect(recordings.map(song => song.id).sort((a, b) => a - b)).toEqual([288, 487, 559]);
+    const expectedPath = song => song.id === 559
+      ? '/artist-artwork/robbie-williams-bad-sharon.webp'
+      : '/artist-artwork/robbie-williams.webp';
+    await page.goto('/christmas-music');
+    await page.getByRole('textbox', { name: 'Search for a song or artist' }).fill('Robbie Williams');
+    await expect(page.locator('.song-card')).toHaveCount(recordings.length);
+    for (const song of recordings) {
+      const card = page.locator(`.song-card[href="/christmas-artist/${song.id}-${song.link}"]`);
+      await card.scrollIntoViewIfNeeded();
+      await expect(card.locator('img')).toHaveAttribute('src', expectedPath(song));
+      await expect.poll(() => card.locator('img').evaluate(el => el.complete && el.naturalWidth > 0)).toBe(true);
+    }
+    for (const song of recordings) {
+      await page.goto(`/christmas-artist/${song.id}-${song.link}`);
+      const image = page.locator('.song-artwork-img');
+      await expect(image).toHaveAttribute('src', expectedPath(song));
+      await expect.poll(() => image.evaluate(el => el.complete && el.naturalWidth > 0)).toBe(true);
+    }
+  });
+}
+
+for (const width of [390, 1440]) {
   test(`Sam Ryder cropped artwork loads on his song page and catalogue at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     const song = songs.find(song => song.artist === 'Sam Ryder');

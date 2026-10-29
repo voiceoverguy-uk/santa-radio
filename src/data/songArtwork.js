@@ -69,6 +69,11 @@ export const songPortraits = Object.freeze({
     title: 'Snow Angels',
     path: '/artist-artwork/freya-skye-snow-angels.webp',
   }),
+  559: Object.freeze({
+    artist: 'Robbie Williams',
+    title: 'Bad Sharon',
+    path: '/artist-artwork/robbie-williams-bad-sharon.webp',
+  }),
 });
 
 export function songArtworkCandidates(song, overrides = songPortraits) {

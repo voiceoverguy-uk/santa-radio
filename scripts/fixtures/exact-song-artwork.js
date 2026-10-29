@@ -1,5 +1,6 @@
-// Independent expectations for the eight supplied recording illustrations.
+// Independent expectations for supplied recording illustrations.
 export const exactSongArtwork = [
+  [559, 'Robbie Williams', 'Bad Sharon', 'robbie-williams-bad-sharon'],
   [557, 'Freya Skye', 'Snow Angels', 'freya-skye-snow-angels'],
   [46, 'Frank Sinatra', 'Let It Snow! Let It Snow! Let It Snow!', 'frank-sinatra-let-it-snow'],
   [40, 'The Jackson 5', 'Santa Claus Is Coming To Town', 'jackson-5-santa-claus-is-coming-to-town'],

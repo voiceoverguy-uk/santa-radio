@@ -20,6 +20,19 @@ const elvisBlue = songs.find(song => song.id === 399);
 const elvisSpecial = '/artist-artwork/elvis-presley-blue-christmas.webp';
 const elvisUsual = '/artist-artwork/elvis-presley.webp';
 
+test('Bad Sharon preserves the supplied PNG and leaves the shared Robbie portrait and mobile feed unchanged', async () => {
+  const original = await readFile('attached_assets/robbie-williams-bad-sharon_1793232959684.png');
+  assert.equal(createHash('sha256').update(original).digest('hex'),
+    '057656b51d1cddce2ca4e9c95fe8fa1990e703a9c0a59283d1f033f0f3957b3e');
+  const path = '/artist-artwork/robbie-williams.webp';
+  const originalPortraitHash = 'f81988405715c3ea03d4d08d8a589fd609f0cd3207d1f6f7064b61bcf78d4014';
+  assert.equal(createHash('sha256').update(await readFile(`public${path}`)).digest('hex'), originalPortraitHash);
+  const feed = await buildArtworkFeed(artistMapping);
+  assert.equal(feed.artists['robbie williams'].path, path);
+  assert.equal(feed.artists['robbie williams'].version, originalPortraitHash);
+  assert.ok(!JSON.stringify(feed).includes('/artist-artwork/robbie-williams-bad-sharon.webp'));
+});
+
 for (const expected of exactSongArtwork) {
   test(`${expected.id}: supplied illustration stays recording-specific across website and live metadata`, async () => {
     const song = songs.find(song => song.id === expected.id);

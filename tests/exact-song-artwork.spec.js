@@ -19,7 +19,7 @@ async function loaded(image, path) {
 }
 
 for (const width of [1280, 390]) {
-  test(`all eight cards, detail images and sharing metadata are isolated at ${width}px`, async ({ page }) => {
+  test(`all supplied cards, detail images and sharing metadata are isolated at ${width}px`, async ({ page }) => {
     test.setTimeout(90000);
     await page.setViewportSize({ width, height: 900 });
     await prepare(page);
