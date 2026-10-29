@@ -46,6 +46,32 @@ for (const [alias, slug] of Object.entries(mugAliases)) {
 for (const [old, replacement] of songRedirects) {
   aliases.set(old.replace('/christmas-artist/', '/christmas-karaoke-lyrics/'), replacement.replace('/christmas-artist/', '/christmas-karaoke-lyrics/'));
 }
+// Exact malformed links in the Duplicate without user-selected canonical export.
+// Full slug + retained source identities were verified, not inferred from IDs.
+// Keep lyrics as lyrics and take punctuation/profile aliases straight to their
+// final page. Never strip arbitrary prefixes. Evidence and all 32 report rows:
+// docs/search-console-duplicate-links.md and its CSV.
+for (const [old, target] of [
+  ['/mugshots/rob-walker-bbc-sport/all', '/mugshots/all'],
+  ['/mugshots/rob-walker-bbc-sport/everal-a-walsh', '/mugshots/everal-a-walsh-actor'],
+  ['/santa-messages/christmas-artist/mugshots/jeff-mostyn-bournemouth-fc-chairman', '/mugshots/jeff-mostyn-bournemouth-fc-chairman'],
+  ['/santa-messages/christmas-artist/mugshots/mark-radcliffe-radio-presenter', '/mugshots/mark-radcliffe-radio-presenter'],
+  ['/santa-messages/christmas-karaoke-lyrics/216-rizzo-gonzo-it-s-the-most-wonderful-time-of-the-year', '/christmas-karaoke-lyrics/216-rizzo-gonzo-its-the-most-wonderful-time-of-the-year'],
+  ['/santa-messages/christmas-artist/413-the-jackson-5-i-saw-mommy-kissing-santa-claus', '/christmas-artist/413-the-jackson-5-i-saw-mommy-kissing-santa-claus'],
+  ['/santa-messages/christmas-karaoke-lyrics/120-james-brown-the-christmas-song', '/christmas-karaoke-lyrics/120-james-brown-the-christmas-song'],
+  ['/santa-messages/christmas-karaoke-lyrics/89-the-beach-boys-bells-of-christmas', '/christmas-karaoke-lyrics/89-the-beach-boys-bells-of-christmas'],
+  ['/santa-messages/mugshots/christmas-artist/137-nat-king-cole-frosty-the-snowman', '/christmas-artist/137-nat-king-cole-frosty-the-snowman'],
+  ['/santa-messages/christmas-karaoke-lyrics/401-aretha-franklin-joy-to-the-world', '/christmas-karaoke-lyrics/401-aretha-franklin-joy-to-the-world'],
+  ['/santa-messages/christmas-karaoke-lyrics/311-the-magnets-a-winter-s-tale', '/christmas-karaoke-lyrics/311-the-magnets-a-winters-tale'],
+  ['/santa-messages/christmas-artist/213-the-carpenters-it-s-christmas-time', '/christmas-artist/213-the-carpenters-its-christmas-time'],
+  ['/santa-messages/christmas-artist/199-state-of-the-heart-i-believe-in-father-christmas', '/christmas-artist/199-state-of-the-heart-i-believe-in-father-christmas'],
+  ['/santa-messages/christmas-artist/252-burl-ives-rudolph-the-red-nosed-reindeer', '/christmas-artist/252-burl-ives-rudolph-the-red-nosed-reindeer'],
+  ['/santa-messages/mugshots/christmas-artist/10-the-ronettes-sleigh-ride', '/christmas-artist/10-the-ronettes-sleigh-ride'],
+  ['/santa-messages/mugshots/christmas-artist/93-bing-crosby-the-christmas-song', '/christmas-artist/93-bing-crosby-the-christmas-song'],
+  ['/santa-messages/christmas-artist/180-frank-sinatra-the-first-noel', '/christmas-artist/180-frank-sinatra-the-first-noel'],
+]) {
+  if (paths.has(target)) aliases.set(old, target);
+}
 export function resolvePublicRequest(raw) {
   const url = new URL(raw, 'https://www.santaradio.co.uk');
   let path;

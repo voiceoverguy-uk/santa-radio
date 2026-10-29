@@ -1,5 +1,10 @@
 # Search Console legacy-link repair
 
+For the separate 32-URL **Duplicate without user-selected canonical** export,
+see [Duplicate-report legacy links](search-console-duplicate-links.md).
+Its exact nested-link additions do not change the historical numeric mappings
+documented here.
+
 For the separate audit of the other music URLs in the retained historical
 sitemap, see [Historical music sitemap audit](historical-music-links-audit.md).
 That audit makes no further route changes.
