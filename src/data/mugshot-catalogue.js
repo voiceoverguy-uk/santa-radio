@@ -1,6 +1,7 @@
 // Keep the original import intact: historical URLs and alternative photographs
 // remain recoverable. Only reviewed identities share a public profile.
 import biographies from './mugshot-biographies.json' with { type: 'json' };
+import editorialOverrides from './mugshot-editorial-overrides.json' with { type: 'json' };
 import { normalizePhotoCredit } from './mugshot-credit.js';
 export const identityAliases = {
   'brendan-o-carroll-mrs-brown': 'brendan-o-carroll-actor-mrs-brown',
@@ -60,6 +61,16 @@ export function buildCatalogue(raw, overrides = biographies) {
     for (const m of group) aliases[m.song] = canonical.song;
     return canonical;
   }).sort((a, b) => a.artist.localeCompare(b.artist, 'en'));
+  for (const profile of catalogue) {
+    if (Object.hasOwn(overrides, profile.song)) {
+      const biography = overrides[profile.song];
+      if (typeof biography !== 'string' || !biography.trim()) throw new Error(`Invalid biography override: ${profile.song}`);
+      profile.info = biography;
+    }
+    const editorial = editorialOverrides[profile.song];
+    if (typeof editorial?.artist === 'string') profile.artist = editorial.artist;
+    if (typeof editorial?.role === 'string') profile.link = editorial.role;
+  }
   // Empty source rows can still contribute a photo to a complete profile.
   // Exclude only after consolidation so those complete profiles survive.
   const removed = catalogue.filter(m => !m.info.trim());
@@ -69,11 +80,11 @@ export function buildCatalogue(raw, overrides = biographies) {
   }
   const retained = catalogue.filter(m => !removedSlugs.has(m.song));
   for (const profile of retained) {
-    if (Object.hasOwn(overrides, profile.song)) {
-      const biography = overrides[profile.song];
-      if (typeof biography !== 'string' || !biography.trim()) throw new Error(`Invalid biography override: ${profile.song}`);
-      profile.info = biography;
-    }
+    const editorial = editorialOverrides[profile.song];
+    if (typeof editorial?.homepage === 'boolean') profile.homepage = editorial.homepage;
   }
+  retained.sort((a, b) =>
+    Number(b.homepage === true) - Number(a.homepage === true) ||
+    a.artist.localeCompare(b.artist, 'en', { sensitivity: 'base', numeric: true }));
   return { catalogue: retained, aliases, conflicts, removed };
 }

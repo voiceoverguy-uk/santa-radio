@@ -16,7 +16,7 @@ test('152 exact replacements preserve every other field and 3 flagged biographie
   expect(result.overrides).toEqual(overrides);
   expect(result.report.applied).toHaveLength(152);
   expect(result.report.skipped.map(r => r.name)).toEqual(['Gracie Malloy', 'Laurel and Hardy', 'UEFA Trophy']);
-  expect(current.catalogue).toHaveLength(636);
+  expect(current.catalogue).toHaveLength(664);
   expect(current.removed).toEqual(original.removed);
   expect(current.aliases).toEqual(original.aliases);
   for (const profile of current.catalogue) {

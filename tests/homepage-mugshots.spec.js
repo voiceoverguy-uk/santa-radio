@@ -8,9 +8,18 @@ const raw = JSON.parse(fs.readFileSync('src/data/mugshots.json', 'utf8'));
 const catalogue = buildCatalogue(raw).catalogue;
 test('SQL Yes eligibility survives import and sampling never includes unapproved profiles', () => {
   const rows = parseRows(fs.readFileSync('attached_assets/cl57-mugshots_1791308171421.sql', 'utf8'));
-  const restored = reconcile(raw, rows).output;
-  expect(raw.map(x => x.homepage)).toEqual(restored.map(x => x.homepage));
-  expect(raw.filter(x => x.homepage)).toHaveLength(141);
+  const restored = buildCatalogue(reconcile(raw, rows).output).catalogue;
+  expect(restored.map(x => [x.song, x.homepage])).toEqual(catalogue.map(x => [x.song, x.homepage]));
+  expect(catalogue.filter(x => x.homepage)).toHaveLength(149);
+  for (const slug of [
+    'alex-james-musician', 'gyles-brandreth-tv-personality', 'harry-enfield-tv-personality',
+    'sam-ryder-musician', 'paul-nicholas-actor', 'rylan-tv-star', 'emma-willis-tv-personality',
+  ]) expect(catalogue.find(x => x.song === slug)?.homepage).toBe(true);
+  for (const slug of [
+    'angry-ginge-celeb-winner', 'steve-bracknall-podcaster', 'paris-fury-boxing-wife',
+    'sharon-marshall-queen-of-soaps', 'tom-swarbrick-tv-personality', 'bryony-gordon-author',
+    'matt-edmondson-and-mollie-king', 'chris-ramsey-comedian',
+  ]) expect(catalogue.find(x => x.song === slug)?.homepage).toBe(false);
   for (let i = 0; i < 50; i++) {
     const selected = selectHomepageMugshots(catalogue);
     expect(selected).toHaveLength(4);

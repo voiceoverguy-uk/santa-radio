@@ -19,7 +19,7 @@ test('pages and native lyrics work without JavaScript', async ({ browser }) => {
   await page.locator('details summary').click();
   await expect(page.locator('#song-lyrics pre')).toBeVisible();
   await page.goto('/mugshots/all');
-  await expect(page.locator('.seo-directory a')).toHaveCount(636);
+  await expect(page.locator('.seo-directory a')).toHaveCount(664);
   await page.goto('/santa-tracker');
   await expect(page.getByRole('heading', { name: 'Your Santa Tracker questions' })).toBeVisible();
   await expect(page.getByText('Is this real GPS tracking?')).toBeVisible();
@@ -41,7 +41,7 @@ test('rendered mobile pages retain navigation, gallery controls and compact play
   await expect(page.locator('.mugshot-card')).toHaveCount(100);
   await page.getByRole('button', { name: /Load More/ }).click();
   await expect(page.locator('.mugshot-card')).toHaveCount(200);
-  await expect(page.locator('.seo-directory a')).toHaveCount(636);
+  await expect(page.locator('.seo-directory a')).toHaveCount(664);
   const width = await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth);
   expect(width).toBe(true); expect(errors).toEqual([]);
 });
@@ -60,7 +60,7 @@ test('HTTP redirects, robots, sitemap, real images, errors and preview exclusion
   const sitemap = await request.get('/sitemap.xml');
   expect(sitemap.headers()['content-type']).toContain('application/xml');
   const xml = await sitemap.text();
-  expect((xml.match(/<loc>/g) || []).length).toBe(1546);
+  expect((xml.match(/<loc>/g) || []).length).toBe(1575);
   expect(xml).not.toContain('/preview');
   expect(await (await request.get('/robots.txt')).text()).toContain('https://www.santaradio.co.uk/sitemap.xml');
   for (const [path, type] of [

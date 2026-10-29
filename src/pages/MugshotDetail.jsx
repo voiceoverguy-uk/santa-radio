@@ -7,7 +7,7 @@ import './MugshotDetail.css';
 import './MugshotPhoto.css';
 import PageSeo from '../seo/PageSeo.jsx';
 import Breadcrumbs from '../seo/Breadcrumbs.jsx';
-import { mugMetadata, mugPhotoTermsPath } from '../seo/catalogue.js';
+import { mugImageAlt, mugMetadata, mugPhotoTermsPath } from '../seo/catalogue.js';
 
 export default function MugshotDetail() {
   const { slug } = useParams();
@@ -85,7 +85,7 @@ export default function MugshotDetail() {
                 <Portrait
                   key={celeb.image}
                   src={celeb.image}
-                  alt={`${celeb.artist} with Santa Radio mug`}
+                  alt={mugImageAlt(celeb)}
                   className="mugshot-detail-photo"
                 />
               </div>

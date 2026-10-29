@@ -26,17 +26,17 @@ The owner confirmed Bruce Davis as the photographer for all 14 supplied addition
 
 **How to apply:** Preserve Bruce Davis on these photographs through future imports; ask for the credit on other new photographs when it is not supplied.
 
-Homepage Mugshots must be randomly selected only from profiles whose legacy homepage flag is Yes; never fill remaining spaces with unapproved profiles.
+Call the priority celebrity group **A-List** in project conversations, documentation, reports, and user-facing editor labels. A-List membership continues to use the existing `homepage` boolean and legacy CSV `Yes` value.
 
-**Why:** The owner used this flag as their A-list approval and explicitly requested its restoration.
+**Why:** The owner clarified that A-List is the agreed name; `Yes` is only the legacy CSV value.
 
-**How to apply:** Preserve eligibility through imports without replacing researched biographies. For merged duplicates, retain the canonical record's approval rather than promoting it merely because another photograph was approved.
+**How to apply:** Keep the existing boolean and CSV representation unchanged for import and mobile-catalogue compatibility. Do not migrate data or add a public badge/redesign solely for this terminology convention.
 
-The full Mugshots gallery includes all retained profiles, defaults to random order with the original YES-approved profiles first, offers alphabetical ordering, and loads in batches of 100. Shuffle within approved and unapproved groups; do not invent a new A-list.
+The A-List includes the existing approved profiles and the seven additions Rylan, Emma Willis, Gyles Brandreth, Harry Enfield, Paul Nicholas, Alex James, and Sam Ryder. A-List profiles precede non-featured profiles in the full gallery and app-facing catalogue.
 
-**Why:** The owner requested random discovery with an alphabetical option and Load More after 100, then asked to prioritise the original YES selections as their big names/A-listers. Homepage approval is not a gallery restriction.
+**Why:** The owner asked to preserve existing A-List choices and place the seven additions in that priority group without creating a rank among them.
 
-**How to apply:** Keep the shuffled order stable while searching and loading more, without repeated profiles.
+**How to apply:** Preserve the established order within the A-List; random gallery mode may shuffle within the A-List and non-featured groups while keeping the A-List first. Keep the alphabetical view A-List-first, and retain stable ordering while searching or loading more.
 
 Keep one profile per verified celebrity, preserving the available photograph and celebrity details together. Keep historical links usable for retained profiles. Do not conflate group photographs or waxworks with individual people merely because a name overlaps.
 

@@ -31,8 +31,10 @@ const negatives = [...new Set([
   '/messages/mugshots/sir-michael-palin-tv-personality',
   '/messages/mugshots/mugshots/sam-ryder-musician',
   '/messages/mugshots/mugshots/steve-bracknall-podcaster',
-  '/search?q=%7Bsearch_term_string%7D', '/mugshots/bryony-gordon-author',
-  ...decisions.filter(d => d[10] === '404').map(d => requestPath(d[0])),
+  '/search?q=%7Bsearch_term_string%7D',
+  ...decisions.filter(d => d[10] === '404')
+    .map(d => requestPath(d[0]))
+    .filter(path => !mugs.some(mug => mugPath(mug) === path)),
 ])];
 const variants = [
   ['/free-santa-message?name=Arthur', '/free-santa-message'],
@@ -68,7 +70,8 @@ test('all 507 exact URLs, dates and live evidence remain reproducible and reconc
     }
     assert.ok(d[6] && d[8] && d[9] && d[14], r.url);
     const local = resolvePublicRequest(r.url);
-    assert.equal(local.status, Number(d[10]), r.url);
+    const activeProfile = mugs.some(mug => mugPath(mug) === url.pathname);
+    assert.equal(local.status, activeProfile ? 200 : Number(d[10]), r.url);
     if (url.pathname === '/free-santa-message') {
       assert.deepEqual(local, { status: 200 });
       assert.equal(d[12], ORIGIN + '/free-santa-message');

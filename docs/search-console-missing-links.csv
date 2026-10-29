@@ -1,5 +1,5 @@
 URL,Last crawled,Baseline,Outcome,Destination,Artist,Title,Evidence
-https://www.santaradio.co.uk/mugshots/paris-fury-boxing-wife,2026-10-24,404,retain-404,,,,profile-absent
+https://www.santaradio.co.uk/mugshots/paris-fury-boxing-wife,2026-10-24,404,retain-profile,/mugshots/paris-fury-boxing-wife,Paris Fury,,approved-biography
 https://www.santaradio.co.uk/mugshots/liesl-soards-radio-presenter,2026-10-24,404,redirect-profile,/mugshots/liesl-radio-presenter,Liesl Soards,,profile-liesl
 https://www.santaradio.co.uk/christmas-artist/430-the-weather-girls-dear-santa-bring-me-a-man-this-christmas-,2026-10-24,404,redirect-artist,/christmas-artist/430-the-weather-girls-dear-santa-bring-me-a-man-this-christmas,The Weather Girls,Dear Santa (Bring Me A Man This Christmas),music
 https://www.santaradio.co.uk/christmas-artist/292-vanessa-williams-what-child-is-this-,2026-10-24,404,redirect-artist,/christmas-artist/292-vanessa-williams-what-child-is-this,Vanessa Williams,What Child Is This?,music
@@ -14,12 +14,12 @@ http://santaradio.co.uk/blog/top-christmas-songs,2026-10-23,404,retain-404,,,,bl
 https://www.santaradio.co.uk/blog/top-10-christmas-films-to-watch-on-netflix-and-amazon-prime,2026-10-23,404,retain-404,,,,blog
 https://www.santaradio.co.uk/messages/mugshots/bez-singer,2026-10-23,404,redirect-profile,/mugshots/bez-singer,Mark Berry - Bez,,profile-nested
 https://www.santaradio.co.uk/free-christmas-apps/,2026-10-23,404,redirect-apps,/apps,,,apps
-https://www.santaradio.co.uk/mugshots/alex-james-musician,2026-10-23,404,retain-404,,,,profile-absent
+https://www.santaradio.co.uk/mugshots/alex-james-musician,2026-10-23,404,retain-profile,/mugshots/alex-james-musician,Alex James,,approved-biography
 https://www.santaradio.co.uk/christmas-radio-apps/,2026-10-23,404,owner-decision,,,,radio-apps
 https://www.santaradio.co.uk/tunein,2026-10-23,404,redirect-tunein,/links,,,tunein
 https://www.santaradio.co.uk/blog/the-10-greatest-christmas-songs-of-all-time,2026-10-23,404,retain-404,,,,blog
 https://www.santaradio.co.uk/schedule/,2026-10-23,404,retain-404,,,,schedule
-https://www.santaradio.co.uk/mugshots/chris-ramsey-comedian,2026-10-23,404,retain-404,,,,profile-no-biography
+https://www.santaradio.co.uk/mugshots/chris-ramsey-comedian,2026-10-23,404,retain-profile,/mugshots/chris-ramsey-comedian,Chris Ramsey,,approved-biography
 https://www.santaradio.co.uk/mugshots/wesley-nelson-reality-star,2026-10-23,404,retain-404,,,,profile-no-biography
 https://santaradio.co.uk/blog/the-10-greatest-christmas-songs-of-all-time,2026-10-23,404,retain-404,,,,blog
 https://www.santaradio.co.uk/santa-messages/Hermione,2026-10-23,404,owner-decision,,,,santa-name

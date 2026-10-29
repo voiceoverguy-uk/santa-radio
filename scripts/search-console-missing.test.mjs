@@ -111,8 +111,8 @@ test('all three original CSV members and all 64 exact examples remain accounted 
   assert.deepEqual(metadata, [{ Property: 'Sitemap', Value: 'All known pages' }, { Property: 'Issue', Value: 'Not found (404)' }]);
   assert.equal(chart.find(r => r.Date === '2026-10-05')['Affected pages'], '25');
   for (const day of ['20', '21', '22', '23']) assert.equal(chart.find(r => r.Date === `2026-10-${day}`)['Affected pages'], '64');
-  assert.equal(cases.filter(r => r.target).length, 42);
-  assert.equal(cases.filter(r => r.outcome === 'retain-404').length, 15);
+  assert.equal(cases.filter(r => r.target).length, 45);
+  assert.equal(cases.filter(r => r.outcome === 'retain-404').length, 12);
   assert.equal(cases.filter(r => r.outcome === 'owner-decision').length, 7);
   assert.ok(cases.every(r => r.baseline === '404' && r.evidence));
   assert.ok(cases.some(r => r.raw.startsWith('http://santaradio.co.uk/')));
@@ -141,8 +141,12 @@ test('destinations are full retained identities; original SQL supports music, wi
   const rawMugs = JSON.parse(await readFile('src/data/mugshots.json', 'utf8'));
   for (const slug of ['chris-ramsey-comedian', 'wesley-nelson-reality-star']) {
     assert.ok(rawMugs.find(m => m.song === slug));
-    assert.ok(!mugs.find(m => m.song === slug), 'Do not restore a biography-free source row');
   }
+  const chris = mugs.find(m => m.song === 'chris-ramsey-comedian');
+  assert.equal(chris?.artist, 'Chris Ramsey');
+  assert.match(chris?.info || '', /^Chris Ramsey is a comedian and presenter from South Shields/);
+  assert.equal(chris.image, '/mugshot-images/chris-ramsey-comedian.jpg');
+  assert.equal(mugs.find(m => m.song === 'wesley-nelson-reality-star'), undefined, 'Keep unrelated biography-free records excluded');
   const php = name => execFileSync('unzip', ['-p', 'attached_assets/Public_Folder_Santa_Radio_PHP_Files_1774459903533.zip', name], { encoding: 'utf8' });
   assert.ok(php('newmenu.php').includes('https://www.santaradio.co.uk/free-christmas-apps'));
   assert.ok(php('live.php').includes('id1021183593'));
@@ -151,23 +155,31 @@ test('destinations are full retained identities; original SQL supports music, wi
 
 test('shared resolver gives one relative permanent hop or a deliberate genuine error for every row', () => {
   for (const row of cases) {
-    assert.deepEqual(resolvePublicRequest(row.raw), row.target ? { status: 308, location: row.target } : { status: 404 }, row.raw);
+    const expectedDirectProfile = row.outcome === 'retain-profile';
+    assert.deepEqual(resolvePublicRequest(row.raw), expectedDirectProfile
+      ? { status: 200 }
+      : row.target ? { status: 308, location: row.target } : { status: 404 }, row.raw);
     if (row.target) {
       assert.deepEqual(resolvePublicRequest(row.target), { status: 200 });
       assert.ok(canonicalPaths.includes(row.target));
       assert.equal(new URL(row.target, 'https://preview.example').origin, 'https://preview.example');
     }
-    assert.ok(!sitemap().includes(`<loc>${row.raw}</loc>`));
+    if (expectedDirectProfile) {
+      assert.equal((sitemap().match(new RegExp(`<loc>${ORIGIN}${row.target}</loc>`, 'g')) || []).length, 1);
+    } else {
+      assert.ok(!sitemap().includes(`<loc>${row.raw}</loc>`));
+    }
   }
   for (const path of invalid) assert.equal(resolvePublicRequest(path).status, 404, path);
 });
 
 async function checkServing(get) {
   for (const row of cases) {
+    const directProfile = row.outcome === 'retain-profile';
     for (const method of ['GET', 'HEAD']) {
       const response = await get(row.raw, method);
-      assert.equal(response.status, row.target ? 308 : 404, row.raw);
-      assert.equal(response.headers.get('location'), row.target || null, row.raw);
+      assert.equal(response.status, directProfile ? 200 : row.target ? 308 : 404, row.raw);
+      assert.equal(response.headers.get('location'), directProfile ? null : row.target || null, row.raw);
       if (method === 'HEAD') assert.equal(await response.text(), '');
       else if (!row.target) {
         assert.match(response.headers.get('x-robots-tag'), /noindex/);
@@ -190,8 +202,14 @@ async function checkServing(get) {
     url.searchParams.set('next', 'https://evil.example');
     const queryResponse = await get(url.href);
     const expected = row.target + '?utm_source=archive&tag=one&tag=two&next=https%3A%2F%2Fevil.example';
-    assert.equal(queryResponse.headers.get('location'), expected, row.raw);
-    assertDocument(await (await get(expected)).text(), row);
+    if (directProfile) {
+      assert.equal(queryResponse.status, 200, row.raw);
+      assert.equal(queryResponse.headers.get('location'), null, row.raw);
+      assertDocument(await queryResponse.text(), row);
+    } else {
+      assert.equal(queryResponse.headers.get('location'), expected, row.raw);
+      assertDocument(await (await get(expected)).text(), row);
+    }
     // Encoded punctuation is the same exact path identity, not another slug.
     if (url.pathname.includes('&')) {
       const encoded = await get(url.pathname.replaceAll('&', '%26'));

@@ -1,0 +1,135 @@
+{
+  "alex-james-musician": {
+    "artist": "Alex James",
+    "role": "Musician & Author",
+    "homepage": true,
+    "sources": ["https://www.alexjames.co/pages/about-alex"]
+  },
+  "gyles-brandreth-tv-personality": {
+    "artist": "Gyles Brandreth",
+    "role": "Broadcaster & Author",
+    "homepage": true,
+    "sources": ["https://www.gylesbrandreth.net/biography"]
+  },
+  "angry-ginge-celeb-winner": {
+    "artist": "Angry Ginge",
+    "role": "Streamer & TV Personality",
+    "homepage": false,
+    "sources": [
+      "https://www.itv.com/news/granada/2025-12-09/who-is-im-a-celeb-winner-angry-ginge",
+      "https://www.itv.com/news/2025-12-07/im-a-celebrity-winner-crowned-in-jungle-finale"
+    ]
+  },
+  "harry-enfield-tv-personality": {
+    "artist": "Harry Enfield",
+    "role": "Comedian, Actor & Writer",
+    "homepage": true,
+    "sources": [
+      "https://www.comedy.co.uk/people/harry_enfield/",
+      "https://www.comedy.co.uk/tv/harry_and_paul/",
+      "https://www.balloonent.co.uk/about"
+    ]
+  },
+  "sam-ryder-musician": {
+    "artist": "Sam Ryder",
+    "role": "Singer & Songwriter",
+    "homepage": true,
+    "sources": ["https://www.eurovision.com/eurovision-song-contest/turin-2022/participants/sam-ryder-1/"]
+  },
+  "paul-nicholas-actor": {
+    "artist": "Paul Nicholas",
+    "role": "Actor & Singer",
+    "homepage": true,
+    "sources": ["https://futermanrose.co.uk/nicholas.html"]
+  },
+  "steve-bracknall-podcaster": {
+    "artist": "Steve Bracknall",
+    "role": "Comedy Character & Podcaster",
+    "homepage": false,
+    "sources": [
+      "https://www.manchestertheatres.com/event/steve-bracknall",
+      "https://www.coalitionpresents.com/talent/steve-bracknall"
+    ]
+  },
+  "paris-fury-boxing-wife": {
+    "artist": "Paris Fury",
+    "role": "Author & TV Personality",
+    "homepage": false,
+    "sources": ["https://www.hachette.co.uk/contributor/paris-fury/"]
+  },
+  "sharon-marshall-queen-of-soaps": {
+    "artist": "Sharon Marshall",
+    "role": "TV Presenter & Soap Writer",
+    "homepage": false,
+    "sources": [
+      "https://www.itv.com/thismorning/articles/sharon-marshall",
+      "https://www.sheilland.com/sharon-marshall"
+    ]
+  },
+  "tom-swarbrick-tv-personality": {
+    "artist": "Tom Swarbrick",
+    "role": "Radio Presenter & Journalist",
+    "homepage": false,
+    "sources": [
+      "https://www.lbc.co.uk/article/tom-swarbrick-lbc-drivetime-programme-DWzHNj_2/",
+      "https://www.johnnoel.com/wp-content/uploads/2021/11/Tom-Swarbrick.pdf"
+    ]
+  },
+  "bryony-gordon-author": {
+    "artist": "Bryony Gordon",
+    "role": "Author & Journalist",
+    "homepage": false,
+    "sources": [
+      "https://www.penguin.co.uk/authors/310503/bryony-gordon",
+      "https://www.hachette.co.uk/contributor/bryony-gordon-2/"
+    ]
+  },
+  "matt-edmondson-and-mollie-king": {
+    "artist": "Matt Edmondson & Mollie King",
+    "role": "Radio Presenters",
+    "homepage": false,
+    "sources": [
+      "https://moneymanagementuk.com/talent/matt-edmondson",
+      "https://www.insanity.com/talent/mollie-king"
+    ]
+  },
+  "rylan-tv-star": {
+    "artist": "Rylan",
+    "role": "TV & Radio Presenter",
+    "homepage": true,
+    "sources": ["https://www.ymugroup.com/talent/rylan/"]
+  },
+  "emma-willis-tv-personality": {
+    "artist": "Emma Willis",
+    "role": "TV Presenter",
+    "homepage": true,
+    "sources": ["https://www.ymugroup.com/talent/emma-willis/"]
+  },
+  "chris-ramsey-comedian": {
+    "artist": "Chris Ramsey",
+    "role": "Comedian & Presenter",
+    "homepage": false,
+    "sources": [
+      "https://www.chrisramseycomedy.com/about",
+      "https://www.comedy.co.uk/people/chris_ramsey/"
+    ]
+  },
+  "brian-blessed-actor": {
+    "homepage": true
+  },
+  "dj-spoony-dj": {
+    "homepage": true
+  },
+  "jim-davidson-comedian": {
+    "homepage": true
+  },
+  "lorraine-kelly-tv-presenter": {
+    "homepage": true
+  },
+  "mel-spice-girl-singer": {
+    "homepage": true
+  },
+  "nicky-campbell-radio-presenter": {
+    "homepage": true
+  }
+}

@@ -4,7 +4,7 @@ import './MugShots.css';
 import './MugshotPhoto.css';
 import mugshotsData from '../data/mugshots.ts';
 import PageSeo from '../seo/PageSeo.jsx';
-import { collectionMetadata } from '../seo/catalogue.js';
+import { collectionMetadata, mugImageAlt } from '../seo/catalogue.js';
 import { mugSrcSet } from '../seo/mugImages.js';
 import { mugshotShutterEvents } from '../audio/mugshotShutter.js';
 
@@ -33,6 +33,7 @@ export default function MugShots() {
     ];
   });
   const alphabetical = useMemo(() => [...mugshotsData].sort((a, b) =>
+    Number(b.homepage === true) - Number(a.homepage === true) ||
     a.artist.localeCompare(b.artist, 'en', { sensitivity: 'base', numeric: true })), []);
 
   const filtered = useMemo(() => {
@@ -111,7 +112,7 @@ export default function MugShots() {
                 src={celeb.image}
                 srcSet={mugSrcSet(celeb.image)}
                 sizes="(max-width: 600px) 44vw, (max-width: 1000px) 30vw, 220px"
-                alt={`${celeb.artist} with a Santa Radio mug`}
+                alt={mugImageAlt(celeb)}
                 width="1000" height="1200"
                 className="mugshot-photo"
                 loading="lazy"

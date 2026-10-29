@@ -74,6 +74,10 @@ The audio player targets the user-supplied `https://global.citrus3.com:8164/` en
 - Search filters by celebrity name or role
 - Each mugshot card links to its individual detail page at `/mugshots/{slug}`
 - Homepage MugshotsPreview pulls 4 featured celebs from the same JSON data
+- Call the priority celebrity group **A-List** in project conversations, documentation, reports, and user-facing editor labels.
+- The seven additions in the A-List are Rylan, Emma Willis, Gyles Brandreth, Harry Enfield, Paul Nicholas, Alex James, and Sam Ryder.
+- Keep the existing `homepage` boolean and legacy CSV `Yes` value for compatibility; do not rename or migrate them, or add a public badge/redesign for this terminology change.
+- A-List profiles precede non-featured profiles in the Mugshots gallery and app-facing catalogue; preserve the established order within the featured group.
 
 ## Songs Data
 

@@ -8,7 +8,7 @@ import { canonicalPaths, aliases, legacyMatches, resolvePublicRequest } from '..
 import { sitemap, robots } from '../server/public-html.js';
 
 test('every retained Mugshot licenses both photo nodes without changing attribution or unrelated imagery', async () => {
-  assert.equal(mugs.length, 649);
+  assert.equal(mugs.length, 664);
   const otherCredits = new Map([
     ['amelia-lily-singer', 'Photo: Matthew Stone'],
     ['danny-rate-my-takeaway-youtuber', '@voiceoverman'],
@@ -47,7 +47,7 @@ test('every retained Mugshot licenses both photo nodes without changing attribut
 });
 
 test('full retained inventories have unique, concise metadata and real image files', async () => {
-  assert.equal(songs.length, 450); assert.equal(mugs.length, 649);
+  assert.equal(songs.length, 450); assert.equal(mugs.length, 664);
   for (const [rows, metadata] of [[songs, songMetadata], [mugs, mugMetadata]]) {
     const titles = new Set(), descriptions = new Set(), urls = new Set();
     for (const row of rows) {

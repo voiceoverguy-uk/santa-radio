@@ -40,9 +40,9 @@ test('homepage and gallery decode the same-origin Mug Shots logo without the ret
 });
 
 test('canonical catalogue excludes empty profiles and preserves retained details', () => {
-  expect(publicData.catalogue).toHaveLength(636);
-  expect(new Set(publicData.catalogue.map(m => normalizeName(m.artist))).size).toBe(636);
-  expect(publicData.removed).toHaveLength(38);
+  expect(publicData.catalogue).toHaveLength(664);
+  expect(new Set(publicData.catalogue.map(m => normalizeName(m.artist))).size).toBe(664);
+  expect(publicData.removed).toHaveLength(37);
   expect(publicData.catalogue.every(m => m.info.trim())).toBe(true);
   for (const old of catalogue) {
     const kept = publicData.catalogue.find(m => m.song === publicData.aliases[old.song]);
@@ -58,7 +58,16 @@ test('canonical catalogue excludes empty profiles and preserves retained details
     }
   }
   const rows = parseRows(fs.readFileSync('attached_assets/cl57-mugshots_1791308171421.sql', 'utf8'));
-  expect(buildCatalogue(reconcile(catalogue, rows).output)).toEqual(publicData);
+  const imported = buildCatalogue(reconcile(catalogue, rows).output);
+  const withoutSearchNames = records => records.map(({ searchNames, ...profile }) => profile);
+  expect(withoutSearchNames(imported.catalogue)).toEqual(withoutSearchNames(publicData.catalogue));
+  for (const [slug, sourceName] of [
+    ['angry-ginge-celeb-winner', 'AngryGinge'],
+    ['rylan-tv-star', 'Rylan Clark'],
+  ]) expect(imported.catalogue.find(profile => profile.song === slug).searchNames).toContain(sourceName);
+  expect(imported.aliases).toEqual(publicData.aliases);
+  expect(imported.conflicts).toEqual(publicData.conflicts);
+  expect(imported.removed).toEqual(publicData.removed);
   const audit = JSON.parse(fs.readFileSync('reports/mugshot-audit.json'));
   expect(audit.review).toHaveLength(636);
   expect(audit.review.find(r => r.name === 'Johannes Radebe').words).toBeGreaterThan(35);
@@ -81,13 +90,13 @@ test('reported duplicate searches show one photo card and old links show full de
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.goto('/');
-  await expect(page.locator('.mugshots-preview')).toContainText('636');
+  await expect(page.locator('.mugshots-preview')).toContainText('664');
 });
 
 test('import preserves routes and images and safely handles source text', () => {
-  expect(catalogue).toHaveLength(735);
+  expect(catalogue).toHaveLength(762);
   expect(report.matched).toBe(672);
-  expect(new Set(catalogue.map(m => m.song)).size).toBe(735);
+  expect(new Set(catalogue.map(m => m.song)).size).toBe(762);
   for (const entry of report.matches) {
     const m = catalogue.find(m => m.song === entry.slug);
     expect(m.image).toBe(entry.image);

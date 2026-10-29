@@ -74,6 +74,7 @@ const verifiedMusicCredits = {
   'Trent Cokley': [['Person', 'Trent Cokley']],
 };
 export function identity(name, biography = '', role = '') {
+  if (name === 'Steve Bracknall') return null;
   if (characters.has(name) || /waxwork|fictional character|impersonat|trophy/i.test(role)) return null;
   if (comedyGroups.has(name)) return { '@type': 'PerformingGroup', '@id': entityId(name), name };
   if (groups.has(name)) return { '@type': 'MusicGroup', '@id': entityId(name), name };
@@ -111,6 +112,10 @@ export function performanceKind(song) {
   return entity?.['@type'] === 'MusicGroup' ? 'Music group' : entity?.['@type'] === 'Person' ? 'Individual performer' : 'Catalogue performer credit';
 }
 export const mugDescription = mug => `${mug.artist}${mug.link ? ` (${mug.link})` : ''}, pictured with a Santa Radio mug. View the photograph${mug.credit ? `, credited to ${mug.credit}` : ''}, and biography.`;
+export function mugImageAlt(mug) {
+  if (mug.artist === 'Steve Bracknall') return 'Chris McClure as Steve Bracknall with a Santa Radio mug';
+  return `${mug.artist} with a Santa Radio mug`;
+}
 export const identityGraph = [
   { '@type': 'Organization', '@id': `${ORIGIN}/#organization`, name: 'Santa Radio', url: `${ORIGIN}/`, logo: { '@type': 'ImageObject', url: absolute(brandImage), width: 827, height: 190 } },
   { '@type': 'WebSite', '@id': `${ORIGIN}/#website`, name: 'Santa Radio', url: `${ORIGIN}/`, inLanguage: 'en-GB', publisher: { '@id': `${ORIGIN}/#organization` } },
@@ -180,12 +185,18 @@ export function songMetadata(song) {
     nodes: [{ '@type': 'MusicRecording', '@id': `${url}#recording`, name: song.song, url, description: songDescription(song), creditText: `Catalogue performer credit: ${song.artist}`, ...(artist.length ? { byArtist: artist } : {}), image: { '@id': `${url}#image` } }] });
 }
 export function mugMetadata(mug) {
-  const path = mugPath(mug), url = absolute(path), entity = identity(mug.artist, mug.info, mug.link);
-  return pageMetadata({ path, title: `${mug.artist} — Mug Photo | Santa Radio`, description: mugDescription(mug), image: mug.image, imageAlt: `${mug.artist} with a Santa Radio mug`, imageLicense: mugPhotoLicense,
+  const path = mugPath(mug), url = absolute(path);
+  const entities = mug.artist === 'Matt Edmondson & Mollie King'
+    ? ['Matt Edmondson', 'Mollie King'].map(name => ({ '@type': 'Person', '@id': entityId(name), name }))
+    : mug.artist === 'Steve Bracknall'
+      ? [{ '@type': 'Character', '@id': `${ORIGIN}/#character-steve-bracknall`, name: mug.artist, description: mug.info }]
+      : [identity(mug.artist, mug.info, mug.link)].filter(Boolean);
+  const subject = entities.length === 1 ? entities[0] : entities;
+  return pageMetadata({ path, title: `${mug.artist} — Mug Photo | Santa Radio`, description: mugDescription(mug), image: mug.image, imageAlt: mugImageAlt(mug), imageLicense: mugPhotoLicense,
     crumbs: [['Home', '/'], ['Mug Shots', '/mugshots/all'], [mug.artist, path]],
     nodes: [
-      { '@type': 'ImageObject', '@id': `${url}#photograph`, contentUrl: absolute(mug.image), license: mugPhotoLicense, caption: `${mug.artist} with a Santa Radio mug`, ...(mug.credit ? { creditText: `Photo credit: ${mug.credit}` } : {}), ...(entity ? { about: entity } : {}) },
-      ...(entity ? [entity] : []),
+      { '@type': 'ImageObject', '@id': `${url}#photograph`, contentUrl: absolute(mug.image), license: mugPhotoLicense, caption: mugImageAlt(mug), ...(mug.credit ? { creditText: `Photo credit: ${mug.credit}` } : {}), ...(entities.length ? { about: subject } : {}) },
+      ...entities,
     ] });
 }
 export function collectionMetadata(kind) {
