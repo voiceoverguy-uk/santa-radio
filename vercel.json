@@ -33,6 +33,15 @@
       "X-Content-Type-Options": "nosniff"
     }, "continue": true },
     { "src": "/server(?:/.*)?", "dest": "/api/public-page?__sr_route=/404" },
+    { "src": "/christmas-karaoke-lyrics/163-shane-macgowan-(?:&|%26)-popes-christmas-lullaby", "dest": "/api/public-page?__sr_route=/christmas-karaoke-lyrics/163-shane-macgowan-%26-popes-christmas-lullaby" },
+    { "src": "/christmas-karaoke-lyrics/231-bonnie-raitt-(?:&|%26)-charles-brown-merry-christmas-baby", "dest": "/api/public-page?__sr_route=/christmas-karaoke-lyrics/231-bonnie-raitt-%26-charles-brown-merry-christmas-baby" },
+    { "src": "/christmas-karaoke-lyrics/5-tom-jones-(?:&|%26)-c-matthews-baby-its-cold-outside", "dest": "/api/public-page?__sr_route=/christmas-karaoke-lyrics/5-tom-jones-%26-c-matthews-baby-its-cold-outside" },
+    { "src": "/christmas-artist/285-graham-parker-(?:&|%26)-nona-hendryx-soul-christmas", "dest": "/api/public-page?__sr_route=/christmas-artist/285-graham-parker-%26-nona-hendryx-soul-christmas" },
+    { "src": "/christmas-artist/538-sia-naughty-(?:&|%26)-nice", "dest": "/api/public-page?__sr_route=/christmas-artist/538-sia-naughty-%26-nice" },
+    { "src": "/christmas-artist/158-tom-petty-(?:&|%26)-heartbreakers-christmas-all-over-again", "dest": "/api/public-page?__sr_route=/christmas-artist/158-tom-petty-%26-heartbreakers-christmas-all-over-again" },
+    { "src": "/christmas-karaoke-lyrics/139-paul-mccartney-(?:&|%26)-wings-mull-of-kintyre", "dest": "/api/public-page?__sr_route=/christmas-karaoke-lyrics/139-paul-mccartney-%26-wings-mull-of-kintyre" },
+    { "src": "/christmas-artist/410-hall-(?:&|%26)-oates-jingle-bell-rock", "dest": "/api/public-page?__sr_route=/christmas-artist/410-hall-%26-oates-jingle-bell-rock" },
+    { "src": "/christmas-artist/111-frank-sinatra-(?:&|%26)-cyndi-lauper-santa-claus-is-coming-to-town", "dest": "/api/public-page?__sr_route=/christmas-artist/111-frank-sinatra-%26-cyndi-lauper-santa-claus-is-coming-to-town" },
     { "src": "/((?:apps|privacy-policy|photo-usage-and-licensing|christmas-music|mugshots|christmas-artist|christmas-karaoke-lyrics|free-santa-message|santa-message-workshop|personalised-santa-message|submit-a-song|links|santa-stories|santa-tracker|music|artist)(?:/.*)?|)", "dest": "/api/public-page?__sr_route=/$1" },
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/api/public-page?__sr_route=/$1" }

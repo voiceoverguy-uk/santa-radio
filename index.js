@@ -60,8 +60,10 @@ const server = createServer(async (req, res) => {
     if (!['GET', 'HEAD'].includes(req.method)) {
       res.writeHead(405, { Allow: 'GET, HEAD' }).end(); return;
     }
-    if (!extname(pathname)) {
-      const route = resolvePublicRequest(req.url);
+    const route = resolvePublicRequest(req.url);
+    // A dot in a reviewed historical slug (for example Sammy Davis Jr.) is
+    // punctuation, not an asset extension. Resolve exact redirects first.
+    if (!extname(pathname) || route.location) {
       if (route.location) { res.writeHead(route.status, { Location: route.location }); res.end(); return; }
       if (route.noindex || route.status !== 200) res.setHeader('X-Robots-Tag', 'noindex, follow');
       if (route.status !== 200 || route.noindex || pathname === '/artist' || pathname === '/santa-tracker') {

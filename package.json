@@ -24,7 +24,7 @@
     "audit:discovered": "node scripts/audit-discovered-pages.mjs --live",
     "report:discovered": "node scripts/report-discovered-pages.mjs",
     "test:discovered": "node --test --test-concurrency=1 scripts/discovered-pages.test.mjs",
-    "test:seo": "node --test scripts/seo-validation.test.mjs scripts/seo-serving.test.mjs scripts/seo-targeting.test.mjs scripts/santa-message-links.test.mjs scripts/search-console-legacy.test.mjs scripts/search-console-duplicate.test.mjs scripts/search-console-alternate.test.mjs scripts/discovered-pages.test.mjs scripts/search-console-crawled.test.mjs"
+    "test:seo": "node --test scripts/seo-validation.test.mjs scripts/seo-serving.test.mjs scripts/seo-targeting.test.mjs scripts/santa-message-links.test.mjs scripts/search-console-legacy.test.mjs scripts/search-console-duplicate.test.mjs scripts/search-console-alternate.test.mjs scripts/discovered-pages.test.mjs scripts/search-console-crawled.test.mjs scripts/search-console-missing.test.mjs"
   },
   "dependencies": {
     "@clerk/backend": "^3.23.2",

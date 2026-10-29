@@ -67,3 +67,9 @@ Require evidence of resource type as well as identity before redirecting asset-l
 **Why:** Search Console exports can contain extensionless image-directory addresses whose final segments match real profile slugs. That proves a possible person, not that an image request is equivalent to an HTML biography.
 
 **How to apply:** Keep an unproven asset address as a truthful error until its original resource/purpose is established. Do not turn it into a biography redirect merely because a profile exists.
+
+Preserve path punctuation when transporting an original request path inside a rewrite query parameter.
+
+**Why:** The legacy export contains literal ampersands in song paths. Interpolating an unescaped capture into a query payload can split the path before shared resolution, even when development SSR handles the same address correctly.
+
+**How to apply:** Test the ordered hosting rewrite as well as the document handler, using literal and percent-encoded punctuation. Encode query payloads before parsing; do not broaden slug normalisation to compensate for transport damage. A simulated rewrite is not proof of the released edge response.

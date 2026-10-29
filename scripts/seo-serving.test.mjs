@@ -197,7 +197,7 @@ test('development SSR advertises working favicon images without document fallbac
 test('Vercel document handler preserves statuses, metadata and relative locations without hosting changes', async () => {
   const config = JSON.parse(await readFile('vercel.json', 'utf8'));
   const filesystem = config.routes.findIndex(route => route.handle === 'filesystem');
-  const documentRoute = config.routes.findIndex(route => route.src?.includes('christmas-artist'));
+  const documentRoute = config.routes.findIndex(route => route.src?.includes('christmas-artist') && route.dest === '/api/public-page?__sr_route=/$1');
   assert.ok(documentRoute < filesystem);
   for (const [path] of faviconFiles) {
     // Simulate Vercel's ordered routing: each icon must reach the existing

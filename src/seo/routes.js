@@ -3,6 +3,7 @@ import legacySongs from '../data/legacy-songs.js';
 import { santaMessageRequestedName } from './santaMessageLinks.js';
 import { alternateProfileRedirects } from './alternateRedirects.js';
 import { publicRequestUrl } from './requestUrl.js';
+import { reportedMissingAliases, reportedLyricsQueries } from './reportedMissingLinks.js';
 export const staticPages = ['/', '/apps', '/privacy-policy', mugPhotoTermsPath, '/christmas-music', '/mugshots/all', '/free-santa-message', '/submit-a-song', '/links', '/santa-stories', '/santa-tracker'];
 export const canonicalPaths = [...staticPages, ...songs.map(songPath), ...mugs.map(mugPath), ...songs.map(s => `/christmas-karaoke-lyrics/${s.id}-${s.link}`)];
 const paths = new Set(canonicalPaths);
@@ -102,6 +103,10 @@ for (const [old, target] of alternateProfileRedirects) {
   if (!paths.has(target) || aliases.has(old)) throw new Error(`Invalid alternate-report redirect: ${old}`);
   aliases.set(old, target);
 }
+for (const [old, target] of reportedMissingAliases) {
+  if (!paths.has(target)) throw new Error(`Missing reviewed redirect destination: ${target}`);
+  aliases.set(old, target);
+}
 export function resolvePublicRequest(raw) {
   const url = publicRequestUrl(raw);
   let path;
@@ -126,6 +131,13 @@ export function resolvePublicRequest(raw) {
     return { status: 308, location: normalized + url.search };
   if (normalized === '/santa-message-workshop') return { status: 200, noindex: true };
   if (normalized === '/santa-tracker/preview') return { status: 200, noindex: true };
+  if (normalized === '/christmas-song-lyrics') {
+    if (url.searchParams.getAll('s').length !== 1) return { status: 404, noindex: true };
+    const target = reportedLyricsQueries.get(url.searchParams.get('s'));
+    if (!target) return { status: 404, noindex: true };
+    url.searchParams.delete('s');
+    return { status: 308, location: target + (url.searchParams.size ? `?${url.searchParams}` : '') };
+  }
   if (normalized === '/artist') {
     if (url.searchParams.getAll('s').length !== 1) return { status: 404, noindex: true };
     let id = url.searchParams.get('s');
