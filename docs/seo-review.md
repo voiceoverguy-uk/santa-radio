@@ -2,6 +2,12 @@
 
 Prepared for review only. No publish or DNS operation was performed.
 
+For the separate 447-URL **Discovered — currently not indexed** export, see
+[the complete discovered-page audit](search-console-discovered/README.md),
+including the full live evidence, CSV inventory, portable HTML report and
+owner Search Console checklist. This does not change the older review's
+historical counts or duplicate other export repairs.
+
 ## Delivery
 
 - Preferred public identity and canonicals: https://www.santaradio.co.uk.
