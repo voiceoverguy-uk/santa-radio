@@ -1,0 +1,26 @@
+{
+  "count": 507,
+  "classifications": {
+    "intentional-name-canonical": 230,
+    "canonical-content": 166,
+    "unsupported-profile": 11,
+    "established-alias": 5,
+    "legacy-lyrics-scope": 1,
+    "unsupported-placeholder-search": 1,
+    "repair-profile": 85,
+    "unproven-asset-resource": 7,
+    "ambiguous-profile": 1
+  },
+  "canonicalRelationships": {
+    "alternate consolidates to clean maker": 230,
+    "unavailable: TLS hostname/certificate failure": 19,
+    "final destination self-canonical": 154,
+    "HTTP 404: not a canonical success": 104
+  },
+  "builtDocumentLinksToReportedBadPaths": [],
+  "builtSitemapBadPaths": [],
+  "liveSitemapBadPaths": [],
+  "canonicalDestinationsMissingFromBuiltSitemap": [],
+  "canonicalDestinationsMissingFromLiveSitemap": [],
+  "builtDocumentCount": 1560
+}

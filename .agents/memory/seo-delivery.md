@@ -61,3 +61,9 @@ Treat numeric legacy artist queries as an independent historical identity namesp
 **Why:** Different retained generations assign the same numbers to different recordings. The owner requires evidence-backed destinations and preservation of already-established historical identities, not convenient numeric matches.
 
 **How to apply:** Verify the original route's lookup semantics and original source identity before extending a mapping. Do not overwrite established mappings from another generation. The evidence handover in `docs/search-console-legacy-links.md` explains the retained archive and SQL relationship.
+
+Require evidence of resource type as well as identity before redirecting asset-like historical addresses to public documents.
+
+**Why:** Search Console exports can contain extensionless image-directory addresses whose final segments match real profile slugs. That proves a possible person, not that an image request is equivalent to an HTML biography.
+
+**How to apply:** Keep an unproven asset address as a truthful error until its original resource/purpose is established. Do not turn it into a biography redirect merely because a profile exists.

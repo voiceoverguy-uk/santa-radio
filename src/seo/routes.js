@@ -1,6 +1,7 @@
 import { songs, mugs, songPath, mugPath, songRedirects, mugAliases, mugPhotoTermsPath } from './catalogue.js';
 import legacySongs from '../data/legacy-songs.js';
 import { santaMessageRequestedName } from './santaMessageLinks.js';
+import { alternateProfileRedirects } from './alternateRedirects.js';
 export const staticPages = ['/', '/apps', '/privacy-policy', mugPhotoTermsPath, '/christmas-music', '/mugshots/all', '/free-santa-message', '/submit-a-song', '/links', '/santa-stories', '/santa-tracker'];
 export const canonicalPaths = [...staticPages, ...songs.map(songPath), ...mugs.map(mugPath), ...songs.map(s => `/christmas-karaoke-lyrics/${s.id}-${s.link}`)];
 const paths = new Set(canonicalPaths);
@@ -71,6 +72,11 @@ for (const [old, target] of [
   ['/santa-messages/christmas-artist/180-frank-sinatra-the-first-noel', '/christmas-artist/180-frank-sinatra-the-first-noel'],
 ]) {
   if (paths.has(target)) aliases.set(old, target);
+}
+// Additional verified document links only; other report repairs stay above.
+for (const [old, target] of alternateProfileRedirects) {
+  if (!paths.has(target) || aliases.has(old)) throw new Error(`Invalid alternate-report redirect: ${old}`);
+  aliases.set(old, target);
 }
 export function resolvePublicRequest(raw) {
   const url = new URL(raw, 'https://www.santaradio.co.uk');

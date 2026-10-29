@@ -1,0 +1,6448 @@
+{
+  "archive": "attached_assets/Alternate_page_with_proper_canonical_tag_1793271286217.zip",
+  "archiveSha256": "47dd6c796ef685e2d7b29e984ff8c13db01e9ff190a13161ba1213c6118bdb99",
+  "purpose": "Additional repair destination verification, not original export rows",
+  "metadata": [
+    [
+      "Property",
+      "Value"
+    ],
+    [
+      "Sitemap",
+      "All known pages"
+    ],
+    [
+      "Issue",
+      "Alternate page with proper canonical tag"
+    ]
+  ],
+  "chart": [
+    [
+      "Date",
+      "Affected pages"
+    ],
+    [
+      "2026-08-05",
+      "263"
+    ],
+    [
+      "2026-08-06",
+      "267"
+    ],
+    [
+      "2026-08-07",
+      "267"
+    ],
+    [
+      "2026-08-08",
+      "280"
+    ],
+    [
+      "2026-08-09",
+      "280"
+    ],
+    [
+      "2026-08-10",
+      "280"
+    ],
+    [
+      "2026-08-11",
+      "283"
+    ],
+    [
+      "2026-08-12",
+      "283"
+    ],
+    [
+      "2026-08-13",
+      "283"
+    ],
+    [
+      "2026-08-14",
+      "283"
+    ],
+    [
+      "2026-08-15",
+      "285"
+    ],
+    [
+      "2026-08-16",
+      "285"
+    ],
+    [
+      "2026-08-17",
+      "285"
+    ],
+    [
+      "2026-08-18",
+      "288"
+    ],
+    [
+      "2026-08-19",
+      "288"
+    ],
+    [
+      "2026-08-20",
+      "288"
+    ],
+    [
+      "2026-08-21",
+      "288"
+    ],
+    [
+      "2026-08-22",
+      "292"
+    ],
+    [
+      "2026-08-23",
+      "292"
+    ],
+    [
+      "2026-08-24",
+      "292"
+    ],
+    [
+      "2026-08-25",
+      "292"
+    ],
+    [
+      "2026-08-26",
+      "292"
+    ],
+    [
+      "2026-08-27",
+      "292"
+    ],
+    [
+      "2026-08-28",
+      "292"
+    ],
+    [
+      "2026-08-29",
+      "292"
+    ],
+    [
+      "2026-08-30",
+      "292"
+    ],
+    [
+      "2026-08-31",
+      "292"
+    ],
+    [
+      "2026-09-01",
+      "292"
+    ],
+    [
+      "2026-09-02",
+      "292"
+    ],
+    [
+      "2026-09-03",
+      "292"
+    ],
+    [
+      "2026-09-04",
+      "292"
+    ],
+    [
+      "2026-09-05",
+      "296"
+    ],
+    [
+      "2026-09-06",
+      "296"
+    ],
+    [
+      "2026-09-07",
+      "296"
+    ],
+    [
+      "2026-09-08",
+      "296"
+    ],
+    [
+      "2026-09-09",
+      "296"
+    ],
+    [
+      "2026-09-10",
+      "296"
+    ],
+    [
+      "2026-09-11",
+      "296"
+    ],
+    [
+      "2026-09-12",
+      "296"
+    ],
+    [
+      "2026-09-13",
+      "296"
+    ],
+    [
+      "2026-09-14",
+      "296"
+    ],
+    [
+      "2026-09-15",
+      "295"
+    ],
+    [
+      "2026-09-16",
+      "295"
+    ],
+    [
+      "2026-09-17",
+      "295"
+    ],
+    [
+      "2026-09-18",
+      "295"
+    ],
+    [
+      "2026-09-19",
+      "295"
+    ],
+    [
+      "2026-09-20",
+      "295"
+    ],
+    [
+      "2026-09-21",
+      "295"
+    ],
+    [
+      "2026-09-22",
+      "304"
+    ],
+    [
+      "2026-09-23",
+      "304"
+    ],
+    [
+      "2026-09-24",
+      "304"
+    ],
+    [
+      "2026-09-25",
+      "304"
+    ],
+    [
+      "2026-09-26",
+      "304"
+    ],
+    [
+      "2026-09-27",
+      "304"
+    ],
+    [
+      "2026-09-28",
+      "304"
+    ],
+    [
+      "2026-09-29",
+      "304"
+    ],
+    [
+      "2026-09-30",
+      "304"
+    ],
+    [
+      "2026-10-01",
+      "304"
+    ],
+    [
+      "2026-10-02",
+      "304"
+    ],
+    [
+      "2026-10-03",
+      "304"
+    ],
+    [
+      "2026-10-04",
+      "304"
+    ],
+    [
+      "2026-10-05",
+      "300"
+    ],
+    [
+      "2026-10-06",
+      "300"
+    ],
+    [
+      "2026-10-07",
+      "300"
+    ],
+    [
+      "2026-10-08",
+      "300"
+    ],
+    [
+      "2026-10-09",
+      "300"
+    ],
+    [
+      "2026-10-10",
+      "310"
+    ],
+    [
+      "2026-10-11",
+      "310"
+    ],
+    [
+      "2026-10-12",
+      "310"
+    ],
+    [
+      "2026-10-13",
+      "348"
+    ],
+    [
+      "2026-10-14",
+      "348"
+    ],
+    [
+      "2026-10-15",
+      "348"
+    ],
+    [
+      "2026-10-16",
+      "348"
+    ],
+    [
+      "2026-10-17",
+      "408"
+    ],
+    [
+      "2026-10-18",
+      "408"
+    ],
+    [
+      "2026-10-19",
+      "408"
+    ],
+    [
+      "2026-10-20",
+      "507"
+    ],
+    [
+      "2026-10-21",
+      "507"
+    ],
+    [
+      "2026-10-22",
+      "507"
+    ],
+    [
+      "2026-10-23",
+      "507"
+    ]
+  ],
+  "method": "curl GET; normal TLS/hostname verification; concurrency 3; no retry; 35s request limit; max 8 redirects; public requests without cookies or credentials",
+  "rows": [
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/lee-latchford-evans-steps-singer",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/lee-latchford-evans-steps-singer",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/lee-latchford-evans-steps-singer",
+        "identity": {
+          "person": "Lee Latchford Evans",
+          "role": "Steps Singer"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:43.077Z",
+        "url": "https://www.santaradio.co.uk/mugshots/lee-latchford-evans-steps-singer",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/lee-latchford-evans-steps-singer",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/lee-latchford-evans-steps-singer"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Lee Latchford Evans — Mug Photo | Santa Radio",
+        "h1": [
+          "Lee Latchford Evans"
+        ],
+        "rootTextLength": 1390,
+        "sha256": "4994002accecd3ea0cf069994cd886e042131c40c031618d17715b0988c194d2",
+        "bytes": 16734
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/rob-ostlere-actor",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/rob-ostlere-actor",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/rob-ostlere-actor",
+        "identity": {
+          "person": "Rob Ostlere",
+          "role": "Actor"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:43.082Z",
+        "url": "https://www.santaradio.co.uk/mugshots/rob-ostlere-actor",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/rob-ostlere-actor",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/rob-ostlere-actor"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Rob Ostlere — Mug Photo | Santa Radio",
+        "h1": [
+          "Rob Ostlere"
+        ],
+        "rootTextLength": 1192,
+        "sha256": "c14b1d5ca3135af69697676a1987218413d03fb729d3ede0ba7b7401d0e20643",
+        "bytes": 16102
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/patricia-hodge-actress",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/patricia-hodge-actress",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/patricia-hodge-actress",
+        "identity": {
+          "person": "Patricia Hodge",
+          "role": "Actress"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:43.085Z",
+        "url": "https://www.santaradio.co.uk/mugshots/patricia-hodge-actress",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/patricia-hodge-actress",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/patricia-hodge-actress"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Patricia Hodge — Mug Photo | Santa Radio",
+        "h1": [
+          "Patricia Hodge"
+        ],
+        "rootTextLength": 1203,
+        "sha256": "c100b19d7ad5eeaa78510331c4c809042ce6ebbe76ca46fff3e6d308b49aa9b0",
+        "bytes": 16145
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/ben-fogle-tv-personality",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/ben-fogle-tv-personality",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/ben-fogle-tv-personality",
+        "identity": {
+          "person": "Ben Fogle",
+          "role": "TV personality"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:43.398Z",
+        "url": "https://www.santaradio.co.uk/mugshots/ben-fogle-tv-personality",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/ben-fogle-tv-personality",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/ben-fogle-tv-personality"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Ben Fogle — Mug Photo | Santa Radio",
+        "h1": [
+          "Ben Fogle"
+        ],
+        "rootTextLength": 1481,
+        "sha256": "1e994ca4212985827be1cf7181d6a165e0d1501341554a3be309e246e2b10ef1",
+        "bytes": 16287
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/the-sherlocks-band",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/the-sherlocks-band",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/the-sherlocks-band",
+        "identity": {
+          "person": "The Sherlocks",
+          "role": "Musicians"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:43.406Z",
+        "url": "https://www.santaradio.co.uk/mugshots/the-sherlocks-band",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/the-sherlocks-band",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/the-sherlocks-band"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "The Sherlocks — Mug Photo | Santa Radio",
+        "h1": [
+          "The Sherlocks"
+        ],
+        "rootTextLength": 1453,
+        "sha256": "ef0ae3a63c88ec4b5db2dac86876fcd2895d4833c41b7ba6a1040e410ea468f9",
+        "bytes": 16436
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/lee-mack-comedian",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/lee-mack-comedian",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/lee-mack-comedian",
+        "identity": {
+          "person": "Lee Mack",
+          "role": "Comedian"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:43.410Z",
+        "url": "https://www.santaradio.co.uk/mugshots/lee-mack-comedian",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/lee-mack-comedian",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/lee-mack-comedian"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Lee Mack — Mug Photo | Santa Radio",
+        "h1": [
+          "Lee Mack"
+        ],
+        "rootTextLength": 1352,
+        "sha256": "54a9ed2ff1c12dee8a018dfe3bb39d73780c51f1814a179ffb2dc92dedbb15b5",
+        "bytes": 16243
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/richard-curts-writer",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/richard-curts-writer",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/richard-curts-writer",
+        "identity": {
+          "person": "Richard Curtis",
+          "role": "Writer"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:43.496Z",
+        "url": "https://www.santaradio.co.uk/mugshots/richard-curts-writer",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/richard-curts-writer",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/richard-curts-writer"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Richard Curtis — Mug Photo | Santa Radio",
+        "h1": [
+          "Richard Curtis"
+        ],
+        "rootTextLength": 1342,
+        "sha256": "5edb1bb654668a4286fcd70c19929d061ac80ad0a8c44d6d0cc4c36ebd9e1667",
+        "bytes": 16043
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/jonathan-dimbleby-tv-host",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/jonathan-dimbleby-tv-host",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/jonathan-dimbleby-tv-host",
+        "identity": {
+          "person": "Jonathan Dimbleby",
+          "role": "British presenter"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:43.502Z",
+        "url": "https://www.santaradio.co.uk/mugshots/jonathan-dimbleby-tv-host",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/jonathan-dimbleby-tv-host",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/jonathan-dimbleby-tv-host"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Jonathan Dimbleby — Mug Photo | Santa Radio",
+        "h1": [
+          "Jonathan Dimbleby"
+        ],
+        "rootTextLength": 1423,
+        "sha256": "2799bc19a4399b1bb6cdedf5bae5a2bc3636ffcb409a6b987b15bcb6978129c8",
+        "bytes": 16625
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/chris-chittell-emmerdale-actor",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/chris-chittell-emmerdale-actor",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/chris-chittell-emmerdale-actor",
+        "identity": {
+          "person": "Chris Chittell",
+          "role": "Actor"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:43.531Z",
+        "url": "https://www.santaradio.co.uk/mugshots/chris-chittell-emmerdale-actor",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/chris-chittell-emmerdale-actor",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/chris-chittell-emmerdale-actor"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Chris Chittell — Mug Photo | Santa Radio",
+        "h1": [
+          "Chris Chittell"
+        ],
+        "rootTextLength": 1220,
+        "sha256": "b604461da3d5e163672ddb77246516d54515cc5163ce969c17aa555d31d7dc91",
+        "bytes": 16432
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/viper-gladiator",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/viper-gladiator",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/viper-gladiator",
+        "identity": {
+          "person": "Viper",
+          "role": "Gladiator"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:43.603Z",
+        "url": "https://www.santaradio.co.uk/mugshots/viper-gladiator",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/viper-gladiator",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/viper-gladiator"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Viper — Mug Photo | Santa Radio",
+        "h1": [
+          "Viper"
+        ],
+        "rootTextLength": 1330,
+        "sha256": "9d99114662d53a0a18d23c2cad9f9b31c9c63f11066dadc3388776c839696a54",
+        "bytes": 15997
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/robert-carlyle-actor",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/robert-carlyle-actor",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/robert-carlyle-actor",
+        "identity": {
+          "person": "Robert Carlyle",
+          "role": "Actor"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:43.621Z",
+        "url": "https://www.santaradio.co.uk/mugshots/robert-carlyle-actor",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/robert-carlyle-actor",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/robert-carlyle-actor"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Robert Carlyle — Mug Photo | Santa Radio",
+        "h1": [
+          "Robert Carlyle"
+        ],
+        "rootTextLength": 1406,
+        "sha256": "a6718680415230b3ca2dafbd414a73138b60678f9dfe5e405d13ebbeab63147e",
+        "bytes": 16421
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/fern-britton-presenter",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/fern-britton-presenter",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/fern-britton-presenter",
+        "identity": {
+          "person": "Fern Britton",
+          "role": "Television presenter"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:43.650Z",
+        "url": "https://www.santaradio.co.uk/mugshots/fern-britton-presenter",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/fern-britton-presenter",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/fern-britton-presenter"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Fern Britton — Mug Photo | Santa Radio",
+        "h1": [
+          "Fern Britton"
+        ],
+        "rootTextLength": 1354,
+        "sha256": "0feaec52305f89e0d5f22de7a7668a9d84b615696c2faefdbb48e38a546c4971",
+        "bytes": 16426
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/kevin-kennedy-actor",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/kevin-kennedy-actor",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/kevin-kennedy-actor",
+        "identity": {
+          "person": "Kevin Kennedy",
+          "role": "Actor"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:43.684Z",
+        "url": "https://www.santaradio.co.uk/mugshots/kevin-kennedy-actor",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/kevin-kennedy-actor",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/kevin-kennedy-actor"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Kevin Kennedy — Mug Photo | Santa Radio",
+        "h1": [
+          "Kevin Kennedy"
+        ],
+        "rootTextLength": 1334,
+        "sha256": "f1aabf416d7e91eb45cf044b16da2870dd7a80c8e8b519b124caab13a13c2eb2",
+        "bytes": 16209
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/steve-mcfadden-actor-phil-mitchell",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/steve-mcfadden-actor-phil-mitchell",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/steve-mcfadden-actor-phil-mitchell",
+        "identity": {
+          "person": "Steve McFadden",
+          "role": "Actor"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:43.735Z",
+        "url": "https://www.santaradio.co.uk/mugshots/steve-mcfadden-actor-phil-mitchell",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/steve-mcfadden-actor-phil-mitchell",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/steve-mcfadden-actor-phil-mitchell"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Steve McFadden — Mug Photo | Santa Radio",
+        "h1": [
+          "Steve McFadden"
+        ],
+        "rootTextLength": 1369,
+        "sha256": "0c0220939e7bc3100896dfca4800df491a4d0dc2a0350015eaad0b442f6a6999",
+        "bytes": 16657
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/james-cahill-snooker-player",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/james-cahill-snooker-player",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/james-cahill-snooker-player",
+        "identity": {
+          "person": "James Cahill",
+          "role": "English snooker player"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:43.798Z",
+        "url": "https://www.santaradio.co.uk/mugshots/james-cahill-snooker-player",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/james-cahill-snooker-player",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/james-cahill-snooker-player"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "James Cahill — Mug Photo | Santa Radio",
+        "h1": [
+          "James Cahill"
+        ],
+        "rootTextLength": 1310,
+        "sha256": "103ce1f2283d098d73733beca17496eb8aa7cf73c8fe2e2dcaeb6bc9615efcd4",
+        "bytes": 16256
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/chas-and-dave-musicians",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/chas-and-dave-musicians",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/chas-and-dave-musicians",
+        "identity": {
+          "person": "Chas & Dave",
+          "role": "Pop duo"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:43.819Z",
+        "url": "https://www.santaradio.co.uk/mugshots/chas-and-dave-musicians",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/chas-and-dave-musicians",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/chas-and-dave-musicians"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Chas &amp; Dave — Mug Photo | Santa Radio",
+        "h1": [
+          "Chas &amp; Dave"
+        ],
+        "rootTextLength": 1299,
+        "sha256": "2d6039312a2be2e9cdef5e024f22053048ad1b69dc2fe72e5487d25275c9158c",
+        "bytes": 16368
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/chris-mason-radio-presenter",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/chris-mason-radio-presenter",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/chris-mason-radio-presenter",
+        "identity": {
+          "person": "Chris Mason",
+          "role": "Radio Presenter"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:43.888Z",
+        "url": "https://www.santaradio.co.uk/mugshots/chris-mason-radio-presenter",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/chris-mason-radio-presenter",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/chris-mason-radio-presenter"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Chris Mason — Mug Photo | Santa Radio",
+        "h1": [
+          "Chris Mason"
+        ],
+        "rootTextLength": 1267,
+        "sha256": "9f7f4aaf0254eb9b45868f86ec576b3a56ef895e3a56579dc17074da33b050f6",
+        "bytes": 16409
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/leigh-frances-tv-personality",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/leigh-frances-tv-personality",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/leigh-frances-tv-personality",
+        "identity": {
+          "person": "Leigh Frances",
+          "role": "TV Personality"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:43.920Z",
+        "url": "https://www.santaradio.co.uk/mugshots/leigh-frances-tv-personality",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/leigh-frances-tv-personality",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/leigh-frances-tv-personality"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Leigh Frances — Mug Photo | Santa Radio",
+        "h1": [
+          "Leigh Frances"
+        ],
+        "rootTextLength": 1399,
+        "sha256": "85ea7e93bac66e3b71c8560682bd4b8fd041d1b6d06f67b6fb201606532df8b3",
+        "bytes": 16364
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/amelia-lily-singer",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/amelia-lily-singer",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/amelia-lily-singer",
+        "identity": {
+          "person": "Amelia Lily",
+          "role": "Singer"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:43.949Z",
+        "url": "https://www.santaradio.co.uk/mugshots/amelia-lily-singer",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/amelia-lily-singer",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/amelia-lily-singer"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Amelia Lily — Mug Photo | Santa Radio",
+        "h1": [
+          "Amelia Lily"
+        ],
+        "rootTextLength": 1247,
+        "sha256": "0c9fd2298cd5cd8f799a066ce61746874a335966c187ce8f063543fe5a944f22",
+        "bytes": 16242
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/stephanie-hirst-radio-presenter",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/stephanie-hirst-radio-presenter",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/stephanie-hirst-radio-presenter",
+        "identity": {
+          "person": "Stephanie Hirst",
+          "role": "Radio Presenter"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:44.013Z",
+        "url": "https://www.santaradio.co.uk/mugshots/stephanie-hirst-radio-presenter",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/stephanie-hirst-radio-presenter",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/stephanie-hirst-radio-presenter"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Stephanie Hirst — Mug Photo | Santa Radio",
+        "h1": [
+          "Stephanie Hirst"
+        ],
+        "rootTextLength": 1373,
+        "sha256": "e88e49aee872e9b218f91dd17dff9174c571ec5aa843eb5e8e85e1362ad0e126",
+        "bytes": 16643
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/siobhan-fahey-actress",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/siobhan-fahey-actress",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/siobhan-fahey-actress",
+        "identity": {
+          "person": "Siobhan Fahey",
+          "role": "Singer"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:44.021Z",
+        "url": "https://www.santaradio.co.uk/mugshots/siobhan-fahey-actress",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/siobhan-fahey-actress",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/siobhan-fahey-actress"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Siobhan Fahey — Mug Photo | Santa Radio",
+        "h1": [
+          "Siobhan Fahey"
+        ],
+        "rootTextLength": 1249,
+        "sha256": "10201dd34881039e03d484dba1dacc458e8f5686dae50d57ad8509f131371ab5",
+        "bytes": 16258
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/david-dimbleby-bbc-television",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/david-dimbleby-bbc-television",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/david-dimbleby-bbc-television",
+        "identity": {
+          "person": "David Dimbleby",
+          "role": "British journalist"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:44.082Z",
+        "url": "https://www.santaradio.co.uk/mugshots/david-dimbleby-bbc-television",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/david-dimbleby-bbc-television",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/david-dimbleby-bbc-television"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "David Dimbleby — Mug Photo | Santa Radio",
+        "h1": [
+          "David Dimbleby"
+        ],
+        "rootTextLength": 1514,
+        "sha256": "40948328d98df60b069a8eb2da9f18f1cd6e396b66a71133d0997217bf8fc26d",
+        "bytes": 16755
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/tom-allen-comedian",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/tom-allen-comedian",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/tom-allen-comedian",
+        "identity": {
+          "person": "Tom Allen",
+          "role": "Comedian"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:44.107Z",
+        "url": "https://www.santaradio.co.uk/mugshots/tom-allen-comedian",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/tom-allen-comedian",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/tom-allen-comedian"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Tom Allen — Mug Photo | Santa Radio",
+        "h1": [
+          "Tom Allen"
+        ],
+        "rootTextLength": 1434,
+        "sha256": "e2d3e57fae348434805006a90ba276ab1cce427d0ff280007993349882deed76",
+        "bytes": 16334
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/paul-barber-actor",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/paul-barber-actor",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/paul-barber-actor",
+        "identity": {
+          "person": "Paul Barber",
+          "role": "Actor"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:44.143Z",
+        "url": "https://www.santaradio.co.uk/mugshots/paul-barber-actor",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/paul-barber-actor",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/paul-barber-actor"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Paul Barber — Mug Photo | Santa Radio",
+        "h1": [
+          "Paul Barber"
+        ],
+        "rootTextLength": 1328,
+        "sha256": "ac67421deec4cf4cc63cd0742466ed859485339ad6c510d2f00c7e21c7970557",
+        "bytes": 16265
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/sara-cox-radio-dj",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/sara-cox-radio-dj",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/sara-cox-radio-dj",
+        "identity": {
+          "person": "Sara Cox",
+          "role": "Radio Presenter"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:44.169Z",
+        "url": "https://www.santaradio.co.uk/mugshots/sara-cox-radio-dj",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/sara-cox-radio-dj",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/sara-cox-radio-dj"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Sara Cox — Mug Photo | Santa Radio",
+        "h1": [
+          "Sara Cox"
+        ],
+        "rootTextLength": 1279,
+        "sha256": "4c772f4f9a224584821c9faf9b331c74fec2c5969dfb2a04d97bc1055a82c9b9",
+        "bytes": 16162
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/showaddywaddy-band",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/showaddywaddy-band",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/showaddywaddy-band",
+        "identity": {
+          "person": "Showaddywaddy Band",
+          "role": "Band"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:44.228Z",
+        "url": "https://www.santaradio.co.uk/mugshots/showaddywaddy-band",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/showaddywaddy-band",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/showaddywaddy-band"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Showaddywaddy Band — Mug Photo | Santa Radio",
+        "h1": [
+          "Showaddywaddy Band"
+        ],
+        "rootTextLength": 1295,
+        "sha256": "e7aee2f5659ab59bf09992083efff7a0b432ec59f776b3e7b1e0c0c7e92cc42a",
+        "bytes": 16350
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/self-esteem-singer",
+      "crawled": null,
+      "overlaps": [
+        {
+          "scope": "discovered",
+          "match": "exact-url"
+        }
+      ],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/self-esteem-singer",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/self-esteem-singer",
+        "identity": {
+          "person": "Self Esteem",
+          "role": "Singer"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:44.233Z",
+        "url": "https://www.santaradio.co.uk/mugshots/self-esteem-singer",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/self-esteem-singer",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/self-esteem-singer"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Self Esteem — Mug Photo | Santa Radio",
+        "h1": [
+          "Self Esteem"
+        ],
+        "rootTextLength": 1375,
+        "sha256": "77fc7d97e0fae4848eef52ecbc4e887a12c00e058746c896f8f5786b4b3869c5",
+        "bytes": 16310
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/damian-williams-actor",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/damian-williams-actor",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/damian-williams-actor",
+        "identity": {
+          "person": "Damian Williams",
+          "role": "Actor"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:44.282Z",
+        "url": "https://www.santaradio.co.uk/mugshots/damian-williams-actor",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/damian-williams-actor",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/damian-williams-actor"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Damian Williams — Mug Photo | Santa Radio",
+        "h1": [
+          "Damian Williams"
+        ],
+        "rootTextLength": 1376,
+        "sha256": "99eb6078533fcb00a3fb54d50333e52f85d9ef4c2c354a7828e727406d0d2d9d",
+        "bytes": 16416
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/billy-bragg-singer",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/billy-bragg-singer",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/billy-bragg-singer",
+        "identity": {
+          "person": "Billy Bragg",
+          "role": "Singer"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:44.312Z",
+        "url": "https://www.santaradio.co.uk/mugshots/billy-bragg-singer",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/billy-bragg-singer",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/billy-bragg-singer"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Billy Bragg — Mug Photo | Santa Radio",
+        "h1": [
+          "Billy Bragg"
+        ],
+        "rootTextLength": 1306,
+        "sha256": "9eb9a90952a5d9596783d7f14a66060d7edd3925499a2af6cd05730319e6716c",
+        "bytes": 16233
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/michael-sheen-actor",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/michael-sheen-actor",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/michael-sheen-actor",
+        "identity": {
+          "person": "Michael Sheen",
+          "role": "Actor"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:44.361Z",
+        "url": "https://www.santaradio.co.uk/mugshots/michael-sheen-actor",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/michael-sheen-actor",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/michael-sheen-actor"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Michael Sheen — Mug Photo | Santa Radio",
+        "h1": [
+          "Michael Sheen"
+        ],
+        "rootTextLength": 1387,
+        "sha256": "70d782f713e10f83c2ed174a484322e0f90277d8e5d6b45425ab0f18522889bf",
+        "bytes": 16372
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/tommy-cannon-comedian",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/tommy-cannon-comedian",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/tommy-cannon-comedian",
+        "identity": {
+          "person": "Tommy Cannon",
+          "role": "Entertainer & Actor"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:44.368Z",
+        "url": "https://www.santaradio.co.uk/mugshots/tommy-cannon-comedian",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/tommy-cannon-comedian",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/tommy-cannon-comedian"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Tommy Cannon — Mug Photo | Santa Radio",
+        "h1": [
+          "Tommy Cannon"
+        ],
+        "rootTextLength": 1316,
+        "sha256": "730d8c6a5e20127f80e4382e66a4ab19f694fc3de2c1a5228c0a530d6cee7402",
+        "bytes": 16384
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/vincent-simone-dancer",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/vincent-simone-dancer",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/vincent-simone-dancer",
+        "identity": {
+          "person": "Vincent Simone",
+          "role": "Dancer"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:44.439Z",
+        "url": "https://www.santaradio.co.uk/mugshots/vincent-simone-dancer",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/vincent-simone-dancer",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/vincent-simone-dancer"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Vincent Simone — Mug Photo | Santa Radio",
+        "h1": [
+          "Vincent Simone"
+        ],
+        "rootTextLength": 1269,
+        "sha256": "14834591e1fce93a1e06fc3e48960cddf2a9665ec1a6a7660a1da1ee63170e73",
+        "bytes": 16281
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/dermot-o-leary-radio-presenter",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/dermot-o-leary-radio-presenter",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/dermot-o-leary-radio-presenter",
+        "identity": {
+          "person": "Dermot O Leary",
+          "role": "Radio Presenter"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:44.446Z",
+        "url": "https://www.santaradio.co.uk/mugshots/dermot-o-leary-radio-presenter",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/dermot-o-leary-radio-presenter",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/dermot-o-leary-radio-presenter"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Dermot O Leary — Mug Photo | Santa Radio",
+        "h1": [
+          "Dermot O Leary"
+        ],
+        "rootTextLength": 1392,
+        "sha256": "bf880ebfb08c5f637e21d54022a19135d79cb9374e180dd1118c4a9609464d10",
+        "bytes": 16648
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/right-said-fred-singers",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/right-said-fred-singers",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/right-said-fred-singers",
+        "identity": {
+          "person": "Right Said Fred",
+          "role": "Singers"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:44.500Z",
+        "url": "https://www.santaradio.co.uk/mugshots/right-said-fred-singers",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/right-said-fred-singers",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/right-said-fred-singers"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Right Said Fred — Mug Photo | Santa Radio",
+        "h1": [
+          "Right Said Fred"
+        ],
+        "rootTextLength": 1291,
+        "sha256": "c04c8ddfc03e11788f978965533d43411a72778a91f11a49346f658db9105d61",
+        "bytes": 16386
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/hugh-dennis-comedian-actor",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/hugh-dennis-comedian-actor",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/hugh-dennis-comedian-actor",
+        "identity": {
+          "person": "Hugh Dennis",
+          "role": "Actor & Comedian"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:44.519Z",
+        "url": "https://www.santaradio.co.uk/mugshots/hugh-dennis-comedian-actor",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/hugh-dennis-comedian-actor",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/hugh-dennis-comedian-actor"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Hugh Dennis — Mug Photo | Santa Radio",
+        "h1": [
+          "Hugh Dennis"
+        ],
+        "rootTextLength": 1308,
+        "sha256": "617c161e2b9a214289c43276a6c5d8d9e2cf7f6facf1c7d0ec2425c7e380c05c",
+        "bytes": 16448
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/reginald-d-hunter-comedian",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/reginald-d-hunter-comedian",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/reginald-d-hunter-comedian",
+        "identity": {
+          "person": "Reginald D Hunter",
+          "role": "Comedian"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:44.563Z",
+        "url": "https://www.santaradio.co.uk/mugshots/reginald-d-hunter-comedian",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/reginald-d-hunter-comedian",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/reginald-d-hunter-comedian"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Reginald D Hunter — Mug Photo | Santa Radio",
+        "h1": [
+          "Reginald D Hunter"
+        ],
+        "rootTextLength": 1406,
+        "sha256": "b9368bf645d817650ff93b0d5e437a3628f1b98c0207dd3a9e65e1d9ff72eb4b",
+        "bytes": 16614
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/nev-wilshire-tv-personality",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/nev-wilshire-tv-personality",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/nev-wilshire-tv-personality",
+        "identity": {
+          "person": "Nev Wilshire",
+          "role": "TV Personality"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:44.590Z",
+        "url": "https://www.santaradio.co.uk/mugshots/nev-wilshire-tv-personality",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/nev-wilshire-tv-personality",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/nev-wilshire-tv-personality"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Nev Wilshire — Mug Photo | Santa Radio",
+        "h1": [
+          "Nev Wilshire"
+        ],
+        "rootTextLength": 1406,
+        "sha256": "6deb995f6af6e46b09badb8a1c46f755a8561493d6dde91ee0b498c7e0ada70a",
+        "bytes": 16331
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/helen-skelton-presenter",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/helen-skelton-presenter",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/helen-skelton-presenter",
+        "identity": {
+          "person": "Helen Skelton",
+          "role": "Television presenter"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:44.644Z",
+        "url": "https://www.santaradio.co.uk/mugshots/helen-skelton-presenter",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/helen-skelton-presenter",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/helen-skelton-presenter"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Helen Skelton — Mug Photo | Santa Radio",
+        "h1": [
+          "Helen Skelton"
+        ],
+        "rootTextLength": 1454,
+        "sha256": "eccd1ea98461803b3c7044acf32fed603b32bcc48228af4d91308a54a4920b53",
+        "bytes": 16588
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/matthew-wolfenden-emerdale-actor",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/matthew-wolfenden-emerdale-actor",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/matthew-wolfenden-emerdale-actor",
+        "identity": {
+          "person": "Matthew Wolfenden",
+          "role": "Actor"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:44.659Z",
+        "url": "https://www.santaradio.co.uk/mugshots/matthew-wolfenden-emerdale-actor",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/matthew-wolfenden-emerdale-actor",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/matthew-wolfenden-emerdale-actor"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Matthew Wolfenden — Mug Photo | Santa Radio",
+        "h1": [
+          "Matthew Wolfenden"
+        ],
+        "rootTextLength": 1341,
+        "sha256": "162a6979fd51a95c0c6dcbe5fa71407565e7ff20198b3712cf5f3def21b739e0",
+        "bytes": 16653
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/captain-sensible-singer",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/captain-sensible-singer",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/captain-sensible-singer",
+        "identity": {
+          "person": "Captain Sensible",
+          "role": "Singer"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:44.716Z",
+        "url": "https://www.santaradio.co.uk/mugshots/captain-sensible-singer",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/captain-sensible-singer",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/captain-sensible-singer"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Captain Sensible — Mug Photo | Santa Radio",
+        "h1": [
+          "Captain Sensible"
+        ],
+        "rootTextLength": 1360,
+        "sha256": "f1e3e6bb73ab1cf14fd077963e3633c1a9c88635e3e22bafe64a48b165abf3ed",
+        "bytes": 16488
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/wim-snape-actor",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/wim-snape-actor",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/wim-snape-actor",
+        "identity": {
+          "person": "Wim Snape",
+          "role": "Actor"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:44.726Z",
+        "url": "https://www.santaradio.co.uk/mugshots/wim-snape-actor",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/wim-snape-actor",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/wim-snape-actor"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Wim Snape — Mug Photo | Santa Radio",
+        "h1": [
+          "Wim Snape"
+        ],
+        "rootTextLength": 1327,
+        "sha256": "56699d9ccb120bcc36105983a840dd532f3b225dde0a544df89563c7d5848333",
+        "bytes": 16164
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/mike-read-radio-presenter",
+      "crawled": null,
+      "overlaps": [
+        {
+          "scope": "legacy",
+          "match": "same-path-other-host"
+        }
+      ],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/mike-read-radio-presenter",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/mike-read-radio-presenter",
+        "identity": {
+          "person": "Mike Read",
+          "role": "Radio Presenter"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:44.806Z",
+        "url": "https://www.santaradio.co.uk/mugshots/mike-read-radio-presenter",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/mike-read-radio-presenter",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/mike-read-radio-presenter"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Mike Read — Mug Photo | Santa Radio",
+        "h1": [
+          "Mike Read"
+        ],
+        "rootTextLength": 1480,
+        "sha256": "5a60127f60eac40af26c38bbd34a453b31f421e9669bc5696bf2116d1d763835",
+        "bytes": 16529
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/christine-lampard-tv-personality",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/christine-lampard-tv-personality",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/christine-lampard-tv-personality",
+        "identity": {
+          "person": "Christine Lampard",
+          "role": "TV personality"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:44.820Z",
+        "url": "https://www.santaradio.co.uk/mugshots/christine-lampard-tv-personality",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/christine-lampard-tv-personality",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/christine-lampard-tv-personality"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Christine Lampard — Mug Photo | Santa Radio",
+        "h1": [
+          "Christine Lampard"
+        ],
+        "rootTextLength": 1395,
+        "sha256": "13c15db1f8307e4b78918746b5047789b2e25537a5bf0fcc5017e8ece185f5d2",
+        "bytes": 16395
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/pixie-lott-singer",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/pixie-lott-singer",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/pixie-lott-singer",
+        "identity": {
+          "person": "Pixie Lott",
+          "role": "Singer & Songwriter"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:44.846Z",
+        "url": "https://www.santaradio.co.uk/mugshots/pixie-lott-singer",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/pixie-lott-singer",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/pixie-lott-singer"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Pixie Lott — Mug Photo | Santa Radio",
+        "h1": [
+          "Pixie Lott"
+        ],
+        "rootTextLength": 1419,
+        "sha256": "e30c1e840453e1ebf3e511234472f49a2370192876819260b75789b8b8daccd2",
+        "bytes": 16384
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/ben-haenow-singer",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/ben-haenow-singer",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/ben-haenow-singer",
+        "identity": {
+          "person": "Ben Haenow",
+          "role": "Singer & Songwriter"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:44.886Z",
+        "url": "https://www.santaradio.co.uk/mugshots/ben-haenow-singer",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/ben-haenow-singer",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/ben-haenow-singer"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Ben Haenow — Mug Photo | Santa Radio",
+        "h1": [
+          "Ben Haenow"
+        ],
+        "rootTextLength": 1334,
+        "sha256": "502a826dcec8687ef4ccc1b41073cb5e25d502748243735fb4504a1d74919062",
+        "bytes": 16277
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/charley-webb-actress",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/charley-webb-actress",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/charley-webb-actress",
+        "identity": {
+          "person": "Charley Webb",
+          "role": "British actress"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:44.934Z",
+        "url": "https://www.santaradio.co.uk/mugshots/charley-webb-actress",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/charley-webb-actress",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/charley-webb-actress"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Charley Webb — Mug Photo | Santa Radio",
+        "h1": [
+          "Charley Webb"
+        ],
+        "rootTextLength": 1381,
+        "sha256": "ed136ead65ce1146f150554fac7a9a46dae39cfa5def0c64e3c4eea05fb8da7e",
+        "bytes": 16312
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/ryan-prescott-actor",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/ryan-prescott-actor",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/ryan-prescott-actor",
+        "identity": {
+          "person": "Ryan Prescott",
+          "role": "Actor"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:44.947Z",
+        "url": "https://www.santaradio.co.uk/mugshots/ryan-prescott-actor",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/ryan-prescott-actor",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/ryan-prescott-actor"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Ryan Prescott — Mug Photo | Santa Radio",
+        "h1": [
+          "Ryan Prescott"
+        ],
+        "rootTextLength": 1210,
+        "sha256": "eeadb0cd700fd61b7e884ca7c9805e2799a15dd9def85e6fd8602a692be1580c",
+        "bytes": 16200
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/russell-howard-comedian",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/russell-howard-comedian",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/russell-howard-comedian",
+        "identity": {
+          "person": "Russell Howard",
+          "role": "Russell HowComedianard"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:45.005Z",
+        "url": "https://www.santaradio.co.uk/mugshots/russell-howard-comedian",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/russell-howard-comedian",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/russell-howard-comedian"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Russell Howard — Mug Photo | Santa Radio",
+        "h1": [
+          "Russell Howard"
+        ],
+        "rootTextLength": 1423,
+        "sha256": "b8671cb3ac2bc20610e0529af20b54386150d3b74d26e5d585b4454921c36389",
+        "bytes": 16576
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/james-robinson-broadcaster",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/james-robinson-broadcaster",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/james-robinson-broadcaster",
+        "identity": {
+          "person": "James Robinson",
+          "role": "Broadcaster"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:45.020Z",
+        "url": "https://www.santaradio.co.uk/mugshots/james-robinson-broadcaster",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/james-robinson-broadcaster",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/james-robinson-broadcaster"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "James Robinson — Mug Photo | Santa Radio",
+        "h1": [
+          "James Robinson"
+        ],
+        "rootTextLength": 1400,
+        "sha256": "288c528642495a0f7230ae76a3e5f655376e908b4b37e5422fe82245aaa2772d",
+        "bytes": 16555
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/jennie-mcalpine-actress",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/jennie-mcalpine-actress",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/jennie-mcalpine-actress",
+        "identity": {
+          "person": "Jennie McAlpine",
+          "role": "British television actress"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:45.081Z",
+        "url": "https://www.santaradio.co.uk/mugshots/jennie-mcalpine-actress",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/jennie-mcalpine-actress",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/jennie-mcalpine-actress"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Jennie McAlpine — Mug Photo | Santa Radio",
+        "h1": [
+          "Jennie McAlpine"
+        ],
+        "rootTextLength": 1303,
+        "sha256": "7b23757f76e99c9830a40643b7f623888e52d30ee17d81a79062a6b8989cf11d",
+        "bytes": 16495
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/danny-rate-my-takeaway-youtuber",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/danny-rate-my-takeaway-youtuber",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/danny-rate-my-takeaway-youtuber",
+        "identity": {
+          "person": "Danny Malin",
+          "role": "You Tuber"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:45.088Z",
+        "url": "https://www.santaradio.co.uk/mugshots/danny-rate-my-takeaway-youtuber",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/danny-rate-my-takeaway-youtuber",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/danny-rate-my-takeaway-youtuber"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Danny Malin — Mug Photo | Santa Radio",
+        "h1": [
+          "Danny Malin"
+        ],
+        "rootTextLength": 1371,
+        "sha256": "87add702244002fb39b6eed8a3292a7edfb1592bae450d4efad26b4fe51a392c",
+        "bytes": 16346
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/jeff-mostyn-bournemouth-fc-chairman",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/jeff-mostyn-bournemouth-fc-chairman",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/jeff-mostyn-bournemouth-fc-chairman",
+        "identity": {
+          "person": "Jeff Mostyn",
+          "role": "Businessperson"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:45.145Z",
+        "url": "https://www.santaradio.co.uk/mugshots/jeff-mostyn-bournemouth-fc-chairman",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/jeff-mostyn-bournemouth-fc-chairman",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/jeff-mostyn-bournemouth-fc-chairman"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Jeff Mostyn — Mug Photo | Santa Radio",
+        "h1": [
+          "Jeff Mostyn"
+        ],
+        "rootTextLength": 1378,
+        "sha256": "274015c5746bc492730324a983ed8c3f176959f154f6a9c6e6a916e12ea2037a",
+        "bytes": 16402
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/luke-friend-x-factor-singer",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/luke-friend-x-factor-singer",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/luke-friend-x-factor-singer",
+        "identity": {
+          "person": "Luke Friend",
+          "role": "Singer"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:45.168Z",
+        "url": "https://www.santaradio.co.uk/mugshots/luke-friend-x-factor-singer",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/luke-friend-x-factor-singer",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/luke-friend-x-factor-singer"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Luke Friend — Mug Photo | Santa Radio",
+        "h1": [
+          "Luke Friend"
+        ],
+        "rootTextLength": 1238,
+        "sha256": "02d1de825d1ae38ffa390a30591aa7fcd78eaf079812cc6b7f51bbdc55ce5472",
+        "bytes": 16327
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/stephen-mulhern-presenter",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/stephen-mulhern-presenter",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/stephen-mulhern-presenter",
+        "identity": {
+          "person": "Stephen Mulhern",
+          "role": "Television presenter"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:45.214Z",
+        "url": "https://www.santaradio.co.uk/mugshots/stephen-mulhern-presenter",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/stephen-mulhern-presenter",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/stephen-mulhern-presenter"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Stephen Mulhern — Mug Photo | Santa Radio",
+        "h1": [
+          "Stephen Mulhern"
+        ],
+        "rootTextLength": 1323,
+        "sha256": "71997d49ac5f7b4774ab19774e7576d4b4c2e1a20de25ea0aa9b24cea6416216",
+        "bytes": 16519
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/natasha-hamilton-singer",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/natasha-hamilton-singer",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/natasha-hamilton-singer",
+        "identity": {
+          "person": "Natasha Hamilton",
+          "role": "Singer"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:45.231Z",
+        "url": "https://www.santaradio.co.uk/mugshots/natasha-hamilton-singer",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/natasha-hamilton-singer",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/natasha-hamilton-singer"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Natasha Hamilton — Mug Photo | Santa Radio",
+        "h1": [
+          "Natasha Hamilton"
+        ],
+        "rootTextLength": 1484,
+        "sha256": "a008e6450a943972f57120692c4069ce43b444f034bc5ab1957c035e0b94f9a8",
+        "bytes": 16607
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/dave-goreman-comedian",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/dave-goreman-comedian",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/dave-goreman-comedian",
+        "identity": {
+          "person": "Dave Gorman",
+          "role": "Comedian"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:45.290Z",
+        "url": "https://www.santaradio.co.uk/mugshots/dave-goreman-comedian",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/dave-goreman-comedian",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/dave-goreman-comedian"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Dave Gorman — Mug Photo | Santa Radio",
+        "h1": [
+          "Dave Gorman"
+        ],
+        "rootTextLength": 1487,
+        "sha256": "133adc2d7e39b0d7b58497bfcb97feff6ab5565a2afbe090517fbaab1e47e801",
+        "bytes": 16460
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/harry-rednapp-football-manager",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/harry-rednapp-football-manager",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/harry-rednapp-football-manager",
+        "identity": {
+          "person": "Harry Redknapp",
+          "role": "Football Manager"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:45.296Z",
+        "url": "https://www.santaradio.co.uk/mugshots/harry-rednapp-football-manager",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/harry-rednapp-football-manager",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/harry-rednapp-football-manager"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Harry Redknapp — Mug Photo | Santa Radio",
+        "h1": [
+          "Harry Redknapp"
+        ],
+        "rootTextLength": 1301,
+        "sha256": "66ba8a3d7db0d71e1d5cfe6b60e37a3f401856b993f87db3e1bad626d4a86771",
+        "bytes": 16536
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/michaela-tabb-snooker-ref",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/michaela-tabb-snooker-ref",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/michaela-tabb-snooker-ref",
+        "identity": {
+          "person": "Michaela Tabb",
+          "role": "Association football referee"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:45.362Z",
+        "url": "https://www.santaradio.co.uk/mugshots/michaela-tabb-snooker-ref",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/michaela-tabb-snooker-ref",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/michaela-tabb-snooker-ref"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Michaela Tabb — Mug Photo | Santa Radio",
+        "h1": [
+          "Michaela Tabb"
+        ],
+        "rootTextLength": 1498,
+        "sha256": "4cdddcd4c622bac5db326c08832a934590e8d21b58cc57516e9ffef95fe29c37",
+        "bytes": 16473
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/chris-walker-actor",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/chris-walker-actor",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/chris-walker-actor",
+        "identity": {
+          "person": "Chris Walker",
+          "role": "Actor"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:45.377Z",
+        "url": "https://www.santaradio.co.uk/mugshots/chris-walker-actor",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/chris-walker-actor",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/chris-walker-actor"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Chris Walker — Mug Photo | Santa Radio",
+        "h1": [
+          "Chris Walker"
+        ],
+        "rootTextLength": 1350,
+        "sha256": "ee551715aedb2ba065f94c28310ac7911d35876c5ba9818caa6e64419de45786",
+        "bytes": 16315
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/matt-goss-singer",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/matt-goss-singer",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/matt-goss-singer",
+        "identity": {
+          "person": "Matt Goss",
+          "role": "Singer"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:45.468Z",
+        "url": "https://www.santaradio.co.uk/mugshots/matt-goss-singer",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/matt-goss-singer",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/matt-goss-singer"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Matt Goss — Mug Photo | Santa Radio",
+        "h1": [
+          "Matt Goss"
+        ],
+        "rootTextLength": 1296,
+        "sha256": "518f8935897e467f65278a483964527659b1899a29c5b803d51800a29479ae6c",
+        "bytes": 16149
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/faye-brookes-actress",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/faye-brookes-actress",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/faye-brookes-actress",
+        "identity": {
+          "person": "Faye Brookes",
+          "role": "Actor"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:45.500Z",
+        "url": "https://www.santaradio.co.uk/mugshots/faye-brookes-actress",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/faye-brookes-actress",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/faye-brookes-actress"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Faye Brookes — Mug Photo | Santa Radio",
+        "h1": [
+          "Faye Brookes"
+        ],
+        "rootTextLength": 1471,
+        "sha256": "e734f7dd57c04c5ee03c5c310145776bc34eb95ecf39a32c95798abe1e446920",
+        "bytes": 16455
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/ian-mercer-actor",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/ian-mercer-actor",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/ian-mercer-actor",
+        "identity": {
+          "person": "Ian Mercer",
+          "role": "Actor"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:45.557Z",
+        "url": "https://www.santaradio.co.uk/mugshots/ian-mercer-actor",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/ian-mercer-actor",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/ian-mercer-actor"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Ian Mercer — Mug Photo | Santa Radio",
+        "h1": [
+          "Ian Mercer"
+        ],
+        "rootTextLength": 1212,
+        "sha256": "30fd7af4ecc62d6244ab57951e9e755722c1d02e54569c38124064dfd29b420b",
+        "bytes": 15977
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/ashley-james-tv-personality",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/ashley-james-tv-personality",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/ashley-james-tv-personality",
+        "identity": {
+          "person": "Ashley James",
+          "role": "TV personality"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:45.560Z",
+        "url": "https://www.santaradio.co.uk/mugshots/ashley-james-tv-personality",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/ashley-james-tv-personality",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/ashley-james-tv-personality"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Ashley James — Mug Photo | Santa Radio",
+        "h1": [
+          "Ashley James"
+        ],
+        "rootTextLength": 1428,
+        "sha256": "a9de29fed1a0fc7e3b517b4827b11407cd06a035ab040addc7a24e1d79574cba",
+        "bytes": 16214
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/alfie-boe-singer-performer",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/alfie-boe-singer-performer",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/alfie-boe-singer-performer",
+        "identity": {
+          "person": "Alfie Boe",
+          "role": "Tenor"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:45.647Z",
+        "url": "https://www.santaradio.co.uk/mugshots/alfie-boe-singer-performer",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/alfie-boe-singer-performer",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/alfie-boe-singer-performer"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Alfie Boe — Mug Photo | Santa Radio",
+        "h1": [
+          "Alfie Boe"
+        ],
+        "rootTextLength": 1426,
+        "sha256": "506a6c349ff490f754344db4561a46c20fbc272c798136788965962ba40527f9",
+        "bytes": 16484
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/tom-ball-entertainer",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/tom-ball-entertainer",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/tom-ball-entertainer",
+        "identity": {
+          "person": "Tom Ball",
+          "role": "Entertainer"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:45.671Z",
+        "url": "https://www.santaradio.co.uk/mugshots/tom-ball-entertainer",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/tom-ball-entertainer",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/tom-ball-entertainer"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Tom Ball — Mug Photo | Santa Radio",
+        "h1": [
+          "Tom Ball"
+        ],
+        "rootTextLength": 1344,
+        "sha256": "f1eea5968c0cc322b5ee4cf723df129708506a0300407ed545f7b2a37f2ce85e",
+        "bytes": 16164
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/matt-willis-singer-busted",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/matt-willis-singer-busted",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/matt-willis-singer-busted",
+        "identity": {
+          "person": "Matt Willis",
+          "role": "Singer"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:45.683Z",
+        "url": "https://www.santaradio.co.uk/mugshots/matt-willis-singer-busted",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/matt-willis-singer-busted",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/matt-willis-singer-busted"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Matt Willis — Mug Photo | Santa Radio",
+        "h1": [
+          "Matt Willis"
+        ],
+        "rootTextLength": 1359,
+        "sha256": "c65a6e6f2df619786bbd01e52636eb7b4474c0579d5f7dd711e9a02d4d71afda",
+        "bytes": 16417
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/toby-foster-bbc-dj",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/toby-foster-bbc-dj",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/toby-foster-bbc-dj",
+        "identity": {
+          "person": "Toby Foster",
+          "role": "Radio Presenter"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:45.741Z",
+        "url": "https://www.santaradio.co.uk/mugshots/toby-foster-bbc-dj",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/toby-foster-bbc-dj",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/toby-foster-bbc-dj"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Toby Foster — Mug Photo | Santa Radio",
+        "h1": [
+          "Toby Foster"
+        ],
+        "rootTextLength": 1295,
+        "sha256": "d380b41e1f53fe97cca04e01b82dad3f246a16ea7626d25dc4d4087c7f369d1d",
+        "bytes": 16259
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/ellie-goldstien-tv-personality",
+      "crawled": null,
+      "overlaps": [
+        {
+          "scope": "discovered",
+          "match": "exact-url"
+        }
+      ],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/ellie-goldstien-tv-personality",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/ellie-goldstien-tv-personality",
+        "identity": {
+          "person": "Ellie Goldstein",
+          "role": "TV personality"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:45.766Z",
+        "url": "https://www.santaradio.co.uk/mugshots/ellie-goldstien-tv-personality",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/ellie-goldstien-tv-personality",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/ellie-goldstien-tv-personality"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Ellie Goldstein — Mug Photo | Santa Radio",
+        "h1": [
+          "Ellie Goldstein"
+        ],
+        "rootTextLength": 1483,
+        "sha256": "cbb2abc00f0c82fa130388db28d8d54f15c8e766e24fa3abd3c1ca0357d4c89c",
+        "bytes": 16392
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/mark-riley-radio-presenter",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/mark-riley-radio-presenter",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/mark-riley-radio-presenter",
+        "identity": {
+          "person": "Mark Riley",
+          "role": "Radio presenter"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:45.795Z",
+        "url": "https://www.santaradio.co.uk/mugshots/mark-riley-radio-presenter",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/mark-riley-radio-presenter",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/mark-riley-radio-presenter"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Mark Riley — Mug Photo | Santa Radio",
+        "h1": [
+          "Mark Riley"
+        ],
+        "rootTextLength": 1444,
+        "sha256": "3c99dc410a599d28887573842334693e29f6095d1877fdc906ae2bd0318592e3",
+        "bytes": 16522
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/lulu-singer",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/lulu-singer",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/lulu-singer",
+        "identity": {
+          "person": "Lulu",
+          "role": "Singer"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:45.857Z",
+        "url": "https://www.santaradio.co.uk/mugshots/lulu-singer",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/lulu-singer",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/lulu-singer"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Lulu — Mug Photo | Santa Radio",
+        "h1": [
+          "Lulu"
+        ],
+        "rootTextLength": 1400,
+        "sha256": "f1b2107640822b106bfba919338b5f416400040b4dea49311ddc315a40ca1e30",
+        "bytes": 16076
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/brendan-cole-dancer",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/brendan-cole-dancer",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/brendan-cole-dancer",
+        "identity": {
+          "person": "Brendan Cole",
+          "role": "British Pro Dancer"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:45.866Z",
+        "url": "https://www.santaradio.co.uk/mugshots/brendan-cole-dancer",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/brendan-cole-dancer",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/brendan-cole-dancer"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Brendan Cole — Mug Photo | Santa Radio",
+        "h1": [
+          "Brendan Cole"
+        ],
+        "rootTextLength": 1429,
+        "sha256": "a935c2bc35c2f1bf0b58d2b667f7cf223f6357a7daff68c4560fea8e00720da8",
+        "bytes": 16470
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/aaron-ramsdale-footballer",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/aaron-ramsdale-footballer",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/aaron-ramsdale-footballer",
+        "identity": {
+          "person": "Aaron Ramsdale",
+          "role": "Footballer"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:45.944Z",
+        "url": "https://www.santaradio.co.uk/mugshots/aaron-ramsdale-footballer",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/aaron-ramsdale-footballer",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/aaron-ramsdale-footballer"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Aaron Ramsdale — Mug Photo | Santa Radio",
+        "h1": [
+          "Aaron Ramsdale"
+        ],
+        "rootTextLength": 1283,
+        "sha256": "0d2697f5b114a494725b01b6d232cf98b977fc73ab02f91d0703566196c98c43",
+        "bytes": 16386
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/stu-francis-personality",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/stu-francis-personality",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/stu-francis-personality",
+        "identity": {
+          "person": "Stu Francis",
+          "role": "TV Personality"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:45.968Z",
+        "url": "https://www.santaradio.co.uk/mugshots/stu-francis-personality",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/stu-francis-personality",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/stu-francis-personality"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Stu Francis — Mug Photo | Santa Radio",
+        "h1": [
+          "Stu Francis"
+        ],
+        "rootTextLength": 1369,
+        "sha256": "3f953847082989f4699a6b197a1d09086a13db6275950fc85346a04d84852255",
+        "bytes": 16096
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/frank-skinner-comedian",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/frank-skinner-comedian",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/frank-skinner-comedian",
+        "identity": {
+          "person": "Frank Skinner",
+          "role": "Comedian & Writer"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:46.016Z",
+        "url": "https://www.santaradio.co.uk/mugshots/frank-skinner-comedian",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/frank-skinner-comedian",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/frank-skinner-comedian"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Frank Skinner — Mug Photo | Santa Radio",
+        "h1": [
+          "Frank Skinner"
+        ],
+        "rootTextLength": 1410,
+        "sha256": "87c6c6410a5d1d849ff4b6b21c20b854125894759027320efff49dc112426929",
+        "bytes": 16511
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/cliff-richard-singer",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/cliff-richard-singer",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/cliff-richard-singer",
+        "identity": {
+          "person": "Cliff Richard",
+          "role": "Singer"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:46.059Z",
+        "url": "https://www.santaradio.co.uk/mugshots/cliff-richard-singer",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/cliff-richard-singer",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/cliff-richard-singer"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Cliff Richard — Mug Photo | Santa Radio",
+        "h1": [
+          "Cliff Richard"
+        ],
+        "rootTextLength": 1237,
+        "sha256": "d28b22fb4c642ae036b54540e78a8b56963928315ee178247c1dba377e06fcaf",
+        "bytes": 16263
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/gabby-roslin-tv-personality",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/gabby-roslin-tv-personality",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/gabby-roslin-tv-personality",
+        "identity": {
+          "person": "Gabby Roslin",
+          "role": "TV Personality"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:46.096Z",
+        "url": "https://www.santaradio.co.uk/mugshots/gabby-roslin-tv-personality",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/gabby-roslin-tv-personality",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/gabby-roslin-tv-personality"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Gabby Roslin — Mug Photo | Santa Radio",
+        "h1": [
+          "Gabby Roslin"
+        ],
+        "rootTextLength": 1235,
+        "sha256": "38a1e35db1928daf030db2c2dddf0d3cef113d69841f86dec91367dadfd4b699",
+        "bytes": 16204
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/jessica-forrester-tv-personality",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/jessica-forrester-tv-personality",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/jessica-forrester-tv-personality",
+        "identity": {
+          "person": "Jessica Forrester",
+          "role": "TV personality"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:46.155Z",
+        "url": "https://www.santaradio.co.uk/mugshots/jessica-forrester-tv-personality",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/jessica-forrester-tv-personality",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/jessica-forrester-tv-personality"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Jessica Forrester — Mug Photo | Santa Radio",
+        "h1": [
+          "Jessica Forrester"
+        ],
+        "rootTextLength": 1323,
+        "sha256": "b9c267eecfb40a3626348578d5c1649d7c9cc435e71c4ce8881a16ca2fd5dbd4",
+        "bytes": 16302
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/molly-mae-love-island",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/molly-mae-love-island",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/molly-mae-love-island",
+        "identity": {
+          "person": "Molly Mae Love",
+          "role": "TV personality"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:46.176Z",
+        "url": "https://www.santaradio.co.uk/mugshots/molly-mae-love-island",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/molly-mae-love-island",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/molly-mae-love-island"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Molly Mae Love — Mug Photo | Santa Radio",
+        "h1": [
+          "Molly Mae Love"
+        ],
+        "rootTextLength": 1345,
+        "sha256": "65eb55bd54d306b5a4429403993c1fa3ff020716d90d6474189ea5cbf4a5a097",
+        "bytes": 16085
+      }
+    },
+    {
+      "url": "https://www.santaradio.co.uk/mugshots/gracie-malloy-singer",
+      "crawled": null,
+      "overlaps": [],
+      "local": {
+        "initial": {
+          "status": 200
+        },
+        "destination": "/mugshots/gracie-malloy-singer",
+        "finalStatus": 200,
+        "canonical": "https://www.santaradio.co.uk/mugshots/gracie-malloy-singer",
+        "identity": {
+          "person": "Gracie Malloy",
+          "role": "Singer"
+        }
+      },
+      "live": {
+        "checkedAt": "2026-10-29T11:04:46.185Z",
+        "url": "https://www.santaradio.co.uk/mugshots/gracie-malloy-singer",
+        "exitCode": 0,
+        "error": null,
+        "tlsFailure": false,
+        "finalUrl": "https://www.santaradio.co.uk/mugshots/gracie-malloy-singer",
+        "status": 200,
+        "hops": [
+          {
+            "status": 200,
+            "location": null,
+            "contentType": "text/html; charset=utf-8",
+            "xRobotsTag": null
+          }
+        ],
+        "canonicals": [
+          "https://www.santaradio.co.uk/mugshots/gracie-malloy-singer"
+        ],
+        "robots": [
+          "index, follow"
+        ],
+        "title": "Gracie Malloy — Mug Photo | Santa Radio",
+        "h1": [
+          "Gracie Malloy"
+        ],
+        "rootTextLength": 1049,
+        "sha256": "e9b9b2fefc880bde1570fab42a97658695e10058ea6ee8be998981fe1d56d5d7",
+        "bytes": 15929
+      }
+    }
+  ],
+  "canonicalDestinations": [
+    {
+      "checkedAt": "2026-10-29T11:04:43.077Z",
+      "url": "https://www.santaradio.co.uk/mugshots/lee-latchford-evans-steps-singer",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/lee-latchford-evans-steps-singer",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/lee-latchford-evans-steps-singer"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Lee Latchford Evans — Mug Photo | Santa Radio",
+      "h1": [
+        "Lee Latchford Evans"
+      ],
+      "rootTextLength": 1390,
+      "sha256": "4994002accecd3ea0cf069994cd886e042131c40c031618d17715b0988c194d2",
+      "bytes": 16734
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:43.082Z",
+      "url": "https://www.santaradio.co.uk/mugshots/rob-ostlere-actor",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/rob-ostlere-actor",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/rob-ostlere-actor"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Rob Ostlere — Mug Photo | Santa Radio",
+      "h1": [
+        "Rob Ostlere"
+      ],
+      "rootTextLength": 1192,
+      "sha256": "c14b1d5ca3135af69697676a1987218413d03fb729d3ede0ba7b7401d0e20643",
+      "bytes": 16102
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:43.085Z",
+      "url": "https://www.santaradio.co.uk/mugshots/patricia-hodge-actress",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/patricia-hodge-actress",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/patricia-hodge-actress"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Patricia Hodge — Mug Photo | Santa Radio",
+      "h1": [
+        "Patricia Hodge"
+      ],
+      "rootTextLength": 1203,
+      "sha256": "c100b19d7ad5eeaa78510331c4c809042ce6ebbe76ca46fff3e6d308b49aa9b0",
+      "bytes": 16145
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:43.398Z",
+      "url": "https://www.santaradio.co.uk/mugshots/ben-fogle-tv-personality",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/ben-fogle-tv-personality",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/ben-fogle-tv-personality"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Ben Fogle — Mug Photo | Santa Radio",
+      "h1": [
+        "Ben Fogle"
+      ],
+      "rootTextLength": 1481,
+      "sha256": "1e994ca4212985827be1cf7181d6a165e0d1501341554a3be309e246e2b10ef1",
+      "bytes": 16287
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:43.406Z",
+      "url": "https://www.santaradio.co.uk/mugshots/the-sherlocks-band",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/the-sherlocks-band",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/the-sherlocks-band"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "The Sherlocks — Mug Photo | Santa Radio",
+      "h1": [
+        "The Sherlocks"
+      ],
+      "rootTextLength": 1453,
+      "sha256": "ef0ae3a63c88ec4b5db2dac86876fcd2895d4833c41b7ba6a1040e410ea468f9",
+      "bytes": 16436
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:43.410Z",
+      "url": "https://www.santaradio.co.uk/mugshots/lee-mack-comedian",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/lee-mack-comedian",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/lee-mack-comedian"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Lee Mack — Mug Photo | Santa Radio",
+      "h1": [
+        "Lee Mack"
+      ],
+      "rootTextLength": 1352,
+      "sha256": "54a9ed2ff1c12dee8a018dfe3bb39d73780c51f1814a179ffb2dc92dedbb15b5",
+      "bytes": 16243
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:43.496Z",
+      "url": "https://www.santaradio.co.uk/mugshots/richard-curts-writer",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/richard-curts-writer",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/richard-curts-writer"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Richard Curtis — Mug Photo | Santa Radio",
+      "h1": [
+        "Richard Curtis"
+      ],
+      "rootTextLength": 1342,
+      "sha256": "5edb1bb654668a4286fcd70c19929d061ac80ad0a8c44d6d0cc4c36ebd9e1667",
+      "bytes": 16043
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:43.502Z",
+      "url": "https://www.santaradio.co.uk/mugshots/jonathan-dimbleby-tv-host",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/jonathan-dimbleby-tv-host",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/jonathan-dimbleby-tv-host"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Jonathan Dimbleby — Mug Photo | Santa Radio",
+      "h1": [
+        "Jonathan Dimbleby"
+      ],
+      "rootTextLength": 1423,
+      "sha256": "2799bc19a4399b1bb6cdedf5bae5a2bc3636ffcb409a6b987b15bcb6978129c8",
+      "bytes": 16625
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:43.531Z",
+      "url": "https://www.santaradio.co.uk/mugshots/chris-chittell-emmerdale-actor",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/chris-chittell-emmerdale-actor",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/chris-chittell-emmerdale-actor"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Chris Chittell — Mug Photo | Santa Radio",
+      "h1": [
+        "Chris Chittell"
+      ],
+      "rootTextLength": 1220,
+      "sha256": "b604461da3d5e163672ddb77246516d54515cc5163ce969c17aa555d31d7dc91",
+      "bytes": 16432
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:43.603Z",
+      "url": "https://www.santaradio.co.uk/mugshots/viper-gladiator",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/viper-gladiator",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/viper-gladiator"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Viper — Mug Photo | Santa Radio",
+      "h1": [
+        "Viper"
+      ],
+      "rootTextLength": 1330,
+      "sha256": "9d99114662d53a0a18d23c2cad9f9b31c9c63f11066dadc3388776c839696a54",
+      "bytes": 15997
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:43.621Z",
+      "url": "https://www.santaradio.co.uk/mugshots/robert-carlyle-actor",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/robert-carlyle-actor",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/robert-carlyle-actor"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Robert Carlyle — Mug Photo | Santa Radio",
+      "h1": [
+        "Robert Carlyle"
+      ],
+      "rootTextLength": 1406,
+      "sha256": "a6718680415230b3ca2dafbd414a73138b60678f9dfe5e405d13ebbeab63147e",
+      "bytes": 16421
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:43.650Z",
+      "url": "https://www.santaradio.co.uk/mugshots/fern-britton-presenter",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/fern-britton-presenter",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/fern-britton-presenter"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Fern Britton — Mug Photo | Santa Radio",
+      "h1": [
+        "Fern Britton"
+      ],
+      "rootTextLength": 1354,
+      "sha256": "0feaec52305f89e0d5f22de7a7668a9d84b615696c2faefdbb48e38a546c4971",
+      "bytes": 16426
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:43.684Z",
+      "url": "https://www.santaradio.co.uk/mugshots/kevin-kennedy-actor",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/kevin-kennedy-actor",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/kevin-kennedy-actor"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Kevin Kennedy — Mug Photo | Santa Radio",
+      "h1": [
+        "Kevin Kennedy"
+      ],
+      "rootTextLength": 1334,
+      "sha256": "f1aabf416d7e91eb45cf044b16da2870dd7a80c8e8b519b124caab13a13c2eb2",
+      "bytes": 16209
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:43.735Z",
+      "url": "https://www.santaradio.co.uk/mugshots/steve-mcfadden-actor-phil-mitchell",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/steve-mcfadden-actor-phil-mitchell",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/steve-mcfadden-actor-phil-mitchell"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Steve McFadden — Mug Photo | Santa Radio",
+      "h1": [
+        "Steve McFadden"
+      ],
+      "rootTextLength": 1369,
+      "sha256": "0c0220939e7bc3100896dfca4800df491a4d0dc2a0350015eaad0b442f6a6999",
+      "bytes": 16657
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:43.798Z",
+      "url": "https://www.santaradio.co.uk/mugshots/james-cahill-snooker-player",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/james-cahill-snooker-player",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/james-cahill-snooker-player"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "James Cahill — Mug Photo | Santa Radio",
+      "h1": [
+        "James Cahill"
+      ],
+      "rootTextLength": 1310,
+      "sha256": "103ce1f2283d098d73733beca17496eb8aa7cf73c8fe2e2dcaeb6bc9615efcd4",
+      "bytes": 16256
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:43.819Z",
+      "url": "https://www.santaradio.co.uk/mugshots/chas-and-dave-musicians",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/chas-and-dave-musicians",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/chas-and-dave-musicians"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Chas &amp; Dave — Mug Photo | Santa Radio",
+      "h1": [
+        "Chas &amp; Dave"
+      ],
+      "rootTextLength": 1299,
+      "sha256": "2d6039312a2be2e9cdef5e024f22053048ad1b69dc2fe72e5487d25275c9158c",
+      "bytes": 16368
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:43.888Z",
+      "url": "https://www.santaradio.co.uk/mugshots/chris-mason-radio-presenter",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/chris-mason-radio-presenter",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/chris-mason-radio-presenter"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Chris Mason — Mug Photo | Santa Radio",
+      "h1": [
+        "Chris Mason"
+      ],
+      "rootTextLength": 1267,
+      "sha256": "9f7f4aaf0254eb9b45868f86ec576b3a56ef895e3a56579dc17074da33b050f6",
+      "bytes": 16409
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:43.920Z",
+      "url": "https://www.santaradio.co.uk/mugshots/leigh-frances-tv-personality",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/leigh-frances-tv-personality",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/leigh-frances-tv-personality"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Leigh Frances — Mug Photo | Santa Radio",
+      "h1": [
+        "Leigh Frances"
+      ],
+      "rootTextLength": 1399,
+      "sha256": "85ea7e93bac66e3b71c8560682bd4b8fd041d1b6d06f67b6fb201606532df8b3",
+      "bytes": 16364
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:43.949Z",
+      "url": "https://www.santaradio.co.uk/mugshots/amelia-lily-singer",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/amelia-lily-singer",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/amelia-lily-singer"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Amelia Lily — Mug Photo | Santa Radio",
+      "h1": [
+        "Amelia Lily"
+      ],
+      "rootTextLength": 1247,
+      "sha256": "0c9fd2298cd5cd8f799a066ce61746874a335966c187ce8f063543fe5a944f22",
+      "bytes": 16242
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:44.013Z",
+      "url": "https://www.santaradio.co.uk/mugshots/stephanie-hirst-radio-presenter",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/stephanie-hirst-radio-presenter",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/stephanie-hirst-radio-presenter"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Stephanie Hirst — Mug Photo | Santa Radio",
+      "h1": [
+        "Stephanie Hirst"
+      ],
+      "rootTextLength": 1373,
+      "sha256": "e88e49aee872e9b218f91dd17dff9174c571ec5aa843eb5e8e85e1362ad0e126",
+      "bytes": 16643
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:44.021Z",
+      "url": "https://www.santaradio.co.uk/mugshots/siobhan-fahey-actress",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/siobhan-fahey-actress",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/siobhan-fahey-actress"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Siobhan Fahey — Mug Photo | Santa Radio",
+      "h1": [
+        "Siobhan Fahey"
+      ],
+      "rootTextLength": 1249,
+      "sha256": "10201dd34881039e03d484dba1dacc458e8f5686dae50d57ad8509f131371ab5",
+      "bytes": 16258
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:44.082Z",
+      "url": "https://www.santaradio.co.uk/mugshots/david-dimbleby-bbc-television",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/david-dimbleby-bbc-television",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/david-dimbleby-bbc-television"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "David Dimbleby — Mug Photo | Santa Radio",
+      "h1": [
+        "David Dimbleby"
+      ],
+      "rootTextLength": 1514,
+      "sha256": "40948328d98df60b069a8eb2da9f18f1cd6e396b66a71133d0997217bf8fc26d",
+      "bytes": 16755
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:44.107Z",
+      "url": "https://www.santaradio.co.uk/mugshots/tom-allen-comedian",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/tom-allen-comedian",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/tom-allen-comedian"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Tom Allen — Mug Photo | Santa Radio",
+      "h1": [
+        "Tom Allen"
+      ],
+      "rootTextLength": 1434,
+      "sha256": "e2d3e57fae348434805006a90ba276ab1cce427d0ff280007993349882deed76",
+      "bytes": 16334
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:44.143Z",
+      "url": "https://www.santaradio.co.uk/mugshots/paul-barber-actor",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/paul-barber-actor",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/paul-barber-actor"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Paul Barber — Mug Photo | Santa Radio",
+      "h1": [
+        "Paul Barber"
+      ],
+      "rootTextLength": 1328,
+      "sha256": "ac67421deec4cf4cc63cd0742466ed859485339ad6c510d2f00c7e21c7970557",
+      "bytes": 16265
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:44.169Z",
+      "url": "https://www.santaradio.co.uk/mugshots/sara-cox-radio-dj",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/sara-cox-radio-dj",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/sara-cox-radio-dj"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Sara Cox — Mug Photo | Santa Radio",
+      "h1": [
+        "Sara Cox"
+      ],
+      "rootTextLength": 1279,
+      "sha256": "4c772f4f9a224584821c9faf9b331c74fec2c5969dfb2a04d97bc1055a82c9b9",
+      "bytes": 16162
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:44.228Z",
+      "url": "https://www.santaradio.co.uk/mugshots/showaddywaddy-band",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/showaddywaddy-band",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/showaddywaddy-band"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Showaddywaddy Band — Mug Photo | Santa Radio",
+      "h1": [
+        "Showaddywaddy Band"
+      ],
+      "rootTextLength": 1295,
+      "sha256": "e7aee2f5659ab59bf09992083efff7a0b432ec59f776b3e7b1e0c0c7e92cc42a",
+      "bytes": 16350
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:44.233Z",
+      "url": "https://www.santaradio.co.uk/mugshots/self-esteem-singer",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/self-esteem-singer",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/self-esteem-singer"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Self Esteem — Mug Photo | Santa Radio",
+      "h1": [
+        "Self Esteem"
+      ],
+      "rootTextLength": 1375,
+      "sha256": "77fc7d97e0fae4848eef52ecbc4e887a12c00e058746c896f8f5786b4b3869c5",
+      "bytes": 16310
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:44.282Z",
+      "url": "https://www.santaradio.co.uk/mugshots/damian-williams-actor",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/damian-williams-actor",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/damian-williams-actor"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Damian Williams — Mug Photo | Santa Radio",
+      "h1": [
+        "Damian Williams"
+      ],
+      "rootTextLength": 1376,
+      "sha256": "99eb6078533fcb00a3fb54d50333e52f85d9ef4c2c354a7828e727406d0d2d9d",
+      "bytes": 16416
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:44.312Z",
+      "url": "https://www.santaradio.co.uk/mugshots/billy-bragg-singer",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/billy-bragg-singer",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/billy-bragg-singer"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Billy Bragg — Mug Photo | Santa Radio",
+      "h1": [
+        "Billy Bragg"
+      ],
+      "rootTextLength": 1306,
+      "sha256": "9eb9a90952a5d9596783d7f14a66060d7edd3925499a2af6cd05730319e6716c",
+      "bytes": 16233
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:44.361Z",
+      "url": "https://www.santaradio.co.uk/mugshots/michael-sheen-actor",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/michael-sheen-actor",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/michael-sheen-actor"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Michael Sheen — Mug Photo | Santa Radio",
+      "h1": [
+        "Michael Sheen"
+      ],
+      "rootTextLength": 1387,
+      "sha256": "70d782f713e10f83c2ed174a484322e0f90277d8e5d6b45425ab0f18522889bf",
+      "bytes": 16372
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:44.368Z",
+      "url": "https://www.santaradio.co.uk/mugshots/tommy-cannon-comedian",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/tommy-cannon-comedian",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/tommy-cannon-comedian"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Tommy Cannon — Mug Photo | Santa Radio",
+      "h1": [
+        "Tommy Cannon"
+      ],
+      "rootTextLength": 1316,
+      "sha256": "730d8c6a5e20127f80e4382e66a4ab19f694fc3de2c1a5228c0a530d6cee7402",
+      "bytes": 16384
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:44.439Z",
+      "url": "https://www.santaradio.co.uk/mugshots/vincent-simone-dancer",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/vincent-simone-dancer",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/vincent-simone-dancer"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Vincent Simone — Mug Photo | Santa Radio",
+      "h1": [
+        "Vincent Simone"
+      ],
+      "rootTextLength": 1269,
+      "sha256": "14834591e1fce93a1e06fc3e48960cddf2a9665ec1a6a7660a1da1ee63170e73",
+      "bytes": 16281
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:44.446Z",
+      "url": "https://www.santaradio.co.uk/mugshots/dermot-o-leary-radio-presenter",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/dermot-o-leary-radio-presenter",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/dermot-o-leary-radio-presenter"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Dermot O Leary — Mug Photo | Santa Radio",
+      "h1": [
+        "Dermot O Leary"
+      ],
+      "rootTextLength": 1392,
+      "sha256": "bf880ebfb08c5f637e21d54022a19135d79cb9374e180dd1118c4a9609464d10",
+      "bytes": 16648
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:44.500Z",
+      "url": "https://www.santaradio.co.uk/mugshots/right-said-fred-singers",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/right-said-fred-singers",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/right-said-fred-singers"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Right Said Fred — Mug Photo | Santa Radio",
+      "h1": [
+        "Right Said Fred"
+      ],
+      "rootTextLength": 1291,
+      "sha256": "c04c8ddfc03e11788f978965533d43411a72778a91f11a49346f658db9105d61",
+      "bytes": 16386
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:44.519Z",
+      "url": "https://www.santaradio.co.uk/mugshots/hugh-dennis-comedian-actor",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/hugh-dennis-comedian-actor",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/hugh-dennis-comedian-actor"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Hugh Dennis — Mug Photo | Santa Radio",
+      "h1": [
+        "Hugh Dennis"
+      ],
+      "rootTextLength": 1308,
+      "sha256": "617c161e2b9a214289c43276a6c5d8d9e2cf7f6facf1c7d0ec2425c7e380c05c",
+      "bytes": 16448
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:44.563Z",
+      "url": "https://www.santaradio.co.uk/mugshots/reginald-d-hunter-comedian",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/reginald-d-hunter-comedian",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/reginald-d-hunter-comedian"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Reginald D Hunter — Mug Photo | Santa Radio",
+      "h1": [
+        "Reginald D Hunter"
+      ],
+      "rootTextLength": 1406,
+      "sha256": "b9368bf645d817650ff93b0d5e437a3628f1b98c0207dd3a9e65e1d9ff72eb4b",
+      "bytes": 16614
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:44.590Z",
+      "url": "https://www.santaradio.co.uk/mugshots/nev-wilshire-tv-personality",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/nev-wilshire-tv-personality",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/nev-wilshire-tv-personality"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Nev Wilshire — Mug Photo | Santa Radio",
+      "h1": [
+        "Nev Wilshire"
+      ],
+      "rootTextLength": 1406,
+      "sha256": "6deb995f6af6e46b09badb8a1c46f755a8561493d6dde91ee0b498c7e0ada70a",
+      "bytes": 16331
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:44.644Z",
+      "url": "https://www.santaradio.co.uk/mugshots/helen-skelton-presenter",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/helen-skelton-presenter",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/helen-skelton-presenter"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Helen Skelton — Mug Photo | Santa Radio",
+      "h1": [
+        "Helen Skelton"
+      ],
+      "rootTextLength": 1454,
+      "sha256": "eccd1ea98461803b3c7044acf32fed603b32bcc48228af4d91308a54a4920b53",
+      "bytes": 16588
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:44.659Z",
+      "url": "https://www.santaradio.co.uk/mugshots/matthew-wolfenden-emerdale-actor",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/matthew-wolfenden-emerdale-actor",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/matthew-wolfenden-emerdale-actor"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Matthew Wolfenden — Mug Photo | Santa Radio",
+      "h1": [
+        "Matthew Wolfenden"
+      ],
+      "rootTextLength": 1341,
+      "sha256": "162a6979fd51a95c0c6dcbe5fa71407565e7ff20198b3712cf5f3def21b739e0",
+      "bytes": 16653
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:44.716Z",
+      "url": "https://www.santaradio.co.uk/mugshots/captain-sensible-singer",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/captain-sensible-singer",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/captain-sensible-singer"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Captain Sensible — Mug Photo | Santa Radio",
+      "h1": [
+        "Captain Sensible"
+      ],
+      "rootTextLength": 1360,
+      "sha256": "f1e3e6bb73ab1cf14fd077963e3633c1a9c88635e3e22bafe64a48b165abf3ed",
+      "bytes": 16488
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:44.726Z",
+      "url": "https://www.santaradio.co.uk/mugshots/wim-snape-actor",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/wim-snape-actor",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/wim-snape-actor"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Wim Snape — Mug Photo | Santa Radio",
+      "h1": [
+        "Wim Snape"
+      ],
+      "rootTextLength": 1327,
+      "sha256": "56699d9ccb120bcc36105983a840dd532f3b225dde0a544df89563c7d5848333",
+      "bytes": 16164
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:44.806Z",
+      "url": "https://www.santaradio.co.uk/mugshots/mike-read-radio-presenter",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/mike-read-radio-presenter",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/mike-read-radio-presenter"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Mike Read — Mug Photo | Santa Radio",
+      "h1": [
+        "Mike Read"
+      ],
+      "rootTextLength": 1480,
+      "sha256": "5a60127f60eac40af26c38bbd34a453b31f421e9669bc5696bf2116d1d763835",
+      "bytes": 16529
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:44.820Z",
+      "url": "https://www.santaradio.co.uk/mugshots/christine-lampard-tv-personality",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/christine-lampard-tv-personality",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/christine-lampard-tv-personality"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Christine Lampard — Mug Photo | Santa Radio",
+      "h1": [
+        "Christine Lampard"
+      ],
+      "rootTextLength": 1395,
+      "sha256": "13c15db1f8307e4b78918746b5047789b2e25537a5bf0fcc5017e8ece185f5d2",
+      "bytes": 16395
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:44.846Z",
+      "url": "https://www.santaradio.co.uk/mugshots/pixie-lott-singer",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/pixie-lott-singer",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/pixie-lott-singer"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Pixie Lott — Mug Photo | Santa Radio",
+      "h1": [
+        "Pixie Lott"
+      ],
+      "rootTextLength": 1419,
+      "sha256": "e30c1e840453e1ebf3e511234472f49a2370192876819260b75789b8b8daccd2",
+      "bytes": 16384
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:44.886Z",
+      "url": "https://www.santaradio.co.uk/mugshots/ben-haenow-singer",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/ben-haenow-singer",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/ben-haenow-singer"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Ben Haenow — Mug Photo | Santa Radio",
+      "h1": [
+        "Ben Haenow"
+      ],
+      "rootTextLength": 1334,
+      "sha256": "502a826dcec8687ef4ccc1b41073cb5e25d502748243735fb4504a1d74919062",
+      "bytes": 16277
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:44.934Z",
+      "url": "https://www.santaradio.co.uk/mugshots/charley-webb-actress",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/charley-webb-actress",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/charley-webb-actress"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Charley Webb — Mug Photo | Santa Radio",
+      "h1": [
+        "Charley Webb"
+      ],
+      "rootTextLength": 1381,
+      "sha256": "ed136ead65ce1146f150554fac7a9a46dae39cfa5def0c64e3c4eea05fb8da7e",
+      "bytes": 16312
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:44.947Z",
+      "url": "https://www.santaradio.co.uk/mugshots/ryan-prescott-actor",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/ryan-prescott-actor",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/ryan-prescott-actor"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Ryan Prescott — Mug Photo | Santa Radio",
+      "h1": [
+        "Ryan Prescott"
+      ],
+      "rootTextLength": 1210,
+      "sha256": "eeadb0cd700fd61b7e884ca7c9805e2799a15dd9def85e6fd8602a692be1580c",
+      "bytes": 16200
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:45.005Z",
+      "url": "https://www.santaradio.co.uk/mugshots/russell-howard-comedian",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/russell-howard-comedian",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/russell-howard-comedian"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Russell Howard — Mug Photo | Santa Radio",
+      "h1": [
+        "Russell Howard"
+      ],
+      "rootTextLength": 1423,
+      "sha256": "b8671cb3ac2bc20610e0529af20b54386150d3b74d26e5d585b4454921c36389",
+      "bytes": 16576
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:45.020Z",
+      "url": "https://www.santaradio.co.uk/mugshots/james-robinson-broadcaster",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/james-robinson-broadcaster",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/james-robinson-broadcaster"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "James Robinson — Mug Photo | Santa Radio",
+      "h1": [
+        "James Robinson"
+      ],
+      "rootTextLength": 1400,
+      "sha256": "288c528642495a0f7230ae76a3e5f655376e908b4b37e5422fe82245aaa2772d",
+      "bytes": 16555
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:45.081Z",
+      "url": "https://www.santaradio.co.uk/mugshots/jennie-mcalpine-actress",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/jennie-mcalpine-actress",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/jennie-mcalpine-actress"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Jennie McAlpine — Mug Photo | Santa Radio",
+      "h1": [
+        "Jennie McAlpine"
+      ],
+      "rootTextLength": 1303,
+      "sha256": "7b23757f76e99c9830a40643b7f623888e52d30ee17d81a79062a6b8989cf11d",
+      "bytes": 16495
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:45.088Z",
+      "url": "https://www.santaradio.co.uk/mugshots/danny-rate-my-takeaway-youtuber",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/danny-rate-my-takeaway-youtuber",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/danny-rate-my-takeaway-youtuber"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Danny Malin — Mug Photo | Santa Radio",
+      "h1": [
+        "Danny Malin"
+      ],
+      "rootTextLength": 1371,
+      "sha256": "87add702244002fb39b6eed8a3292a7edfb1592bae450d4efad26b4fe51a392c",
+      "bytes": 16346
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:45.145Z",
+      "url": "https://www.santaradio.co.uk/mugshots/jeff-mostyn-bournemouth-fc-chairman",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/jeff-mostyn-bournemouth-fc-chairman",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/jeff-mostyn-bournemouth-fc-chairman"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Jeff Mostyn — Mug Photo | Santa Radio",
+      "h1": [
+        "Jeff Mostyn"
+      ],
+      "rootTextLength": 1378,
+      "sha256": "274015c5746bc492730324a983ed8c3f176959f154f6a9c6e6a916e12ea2037a",
+      "bytes": 16402
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:45.168Z",
+      "url": "https://www.santaradio.co.uk/mugshots/luke-friend-x-factor-singer",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/luke-friend-x-factor-singer",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/luke-friend-x-factor-singer"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Luke Friend — Mug Photo | Santa Radio",
+      "h1": [
+        "Luke Friend"
+      ],
+      "rootTextLength": 1238,
+      "sha256": "02d1de825d1ae38ffa390a30591aa7fcd78eaf079812cc6b7f51bbdc55ce5472",
+      "bytes": 16327
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:45.214Z",
+      "url": "https://www.santaradio.co.uk/mugshots/stephen-mulhern-presenter",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/stephen-mulhern-presenter",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/stephen-mulhern-presenter"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Stephen Mulhern — Mug Photo | Santa Radio",
+      "h1": [
+        "Stephen Mulhern"
+      ],
+      "rootTextLength": 1323,
+      "sha256": "71997d49ac5f7b4774ab19774e7576d4b4c2e1a20de25ea0aa9b24cea6416216",
+      "bytes": 16519
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:45.231Z",
+      "url": "https://www.santaradio.co.uk/mugshots/natasha-hamilton-singer",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/natasha-hamilton-singer",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/natasha-hamilton-singer"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Natasha Hamilton — Mug Photo | Santa Radio",
+      "h1": [
+        "Natasha Hamilton"
+      ],
+      "rootTextLength": 1484,
+      "sha256": "a008e6450a943972f57120692c4069ce43b444f034bc5ab1957c035e0b94f9a8",
+      "bytes": 16607
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:45.290Z",
+      "url": "https://www.santaradio.co.uk/mugshots/dave-goreman-comedian",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/dave-goreman-comedian",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/dave-goreman-comedian"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Dave Gorman — Mug Photo | Santa Radio",
+      "h1": [
+        "Dave Gorman"
+      ],
+      "rootTextLength": 1487,
+      "sha256": "133adc2d7e39b0d7b58497bfcb97feff6ab5565a2afbe090517fbaab1e47e801",
+      "bytes": 16460
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:45.296Z",
+      "url": "https://www.santaradio.co.uk/mugshots/harry-rednapp-football-manager",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/harry-rednapp-football-manager",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/harry-rednapp-football-manager"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Harry Redknapp — Mug Photo | Santa Radio",
+      "h1": [
+        "Harry Redknapp"
+      ],
+      "rootTextLength": 1301,
+      "sha256": "66ba8a3d7db0d71e1d5cfe6b60e37a3f401856b993f87db3e1bad626d4a86771",
+      "bytes": 16536
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:45.362Z",
+      "url": "https://www.santaradio.co.uk/mugshots/michaela-tabb-snooker-ref",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/michaela-tabb-snooker-ref",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/michaela-tabb-snooker-ref"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Michaela Tabb — Mug Photo | Santa Radio",
+      "h1": [
+        "Michaela Tabb"
+      ],
+      "rootTextLength": 1498,
+      "sha256": "4cdddcd4c622bac5db326c08832a934590e8d21b58cc57516e9ffef95fe29c37",
+      "bytes": 16473
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:45.377Z",
+      "url": "https://www.santaradio.co.uk/mugshots/chris-walker-actor",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/chris-walker-actor",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/chris-walker-actor"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Chris Walker — Mug Photo | Santa Radio",
+      "h1": [
+        "Chris Walker"
+      ],
+      "rootTextLength": 1350,
+      "sha256": "ee551715aedb2ba065f94c28310ac7911d35876c5ba9818caa6e64419de45786",
+      "bytes": 16315
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:45.468Z",
+      "url": "https://www.santaradio.co.uk/mugshots/matt-goss-singer",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/matt-goss-singer",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/matt-goss-singer"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Matt Goss — Mug Photo | Santa Radio",
+      "h1": [
+        "Matt Goss"
+      ],
+      "rootTextLength": 1296,
+      "sha256": "518f8935897e467f65278a483964527659b1899a29c5b803d51800a29479ae6c",
+      "bytes": 16149
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:45.500Z",
+      "url": "https://www.santaradio.co.uk/mugshots/faye-brookes-actress",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/faye-brookes-actress",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/faye-brookes-actress"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Faye Brookes — Mug Photo | Santa Radio",
+      "h1": [
+        "Faye Brookes"
+      ],
+      "rootTextLength": 1471,
+      "sha256": "e734f7dd57c04c5ee03c5c310145776bc34eb95ecf39a32c95798abe1e446920",
+      "bytes": 16455
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:45.557Z",
+      "url": "https://www.santaradio.co.uk/mugshots/ian-mercer-actor",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/ian-mercer-actor",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/ian-mercer-actor"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Ian Mercer — Mug Photo | Santa Radio",
+      "h1": [
+        "Ian Mercer"
+      ],
+      "rootTextLength": 1212,
+      "sha256": "30fd7af4ecc62d6244ab57951e9e755722c1d02e54569c38124064dfd29b420b",
+      "bytes": 15977
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:45.560Z",
+      "url": "https://www.santaradio.co.uk/mugshots/ashley-james-tv-personality",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/ashley-james-tv-personality",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/ashley-james-tv-personality"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Ashley James — Mug Photo | Santa Radio",
+      "h1": [
+        "Ashley James"
+      ],
+      "rootTextLength": 1428,
+      "sha256": "a9de29fed1a0fc7e3b517b4827b11407cd06a035ab040addc7a24e1d79574cba",
+      "bytes": 16214
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:45.647Z",
+      "url": "https://www.santaradio.co.uk/mugshots/alfie-boe-singer-performer",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/alfie-boe-singer-performer",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/alfie-boe-singer-performer"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Alfie Boe — Mug Photo | Santa Radio",
+      "h1": [
+        "Alfie Boe"
+      ],
+      "rootTextLength": 1426,
+      "sha256": "506a6c349ff490f754344db4561a46c20fbc272c798136788965962ba40527f9",
+      "bytes": 16484
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:45.671Z",
+      "url": "https://www.santaradio.co.uk/mugshots/tom-ball-entertainer",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/tom-ball-entertainer",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/tom-ball-entertainer"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Tom Ball — Mug Photo | Santa Radio",
+      "h1": [
+        "Tom Ball"
+      ],
+      "rootTextLength": 1344,
+      "sha256": "f1eea5968c0cc322b5ee4cf723df129708506a0300407ed545f7b2a37f2ce85e",
+      "bytes": 16164
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:45.683Z",
+      "url": "https://www.santaradio.co.uk/mugshots/matt-willis-singer-busted",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/matt-willis-singer-busted",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/matt-willis-singer-busted"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Matt Willis — Mug Photo | Santa Radio",
+      "h1": [
+        "Matt Willis"
+      ],
+      "rootTextLength": 1359,
+      "sha256": "c65a6e6f2df619786bbd01e52636eb7b4474c0579d5f7dd711e9a02d4d71afda",
+      "bytes": 16417
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:45.741Z",
+      "url": "https://www.santaradio.co.uk/mugshots/toby-foster-bbc-dj",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/toby-foster-bbc-dj",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/toby-foster-bbc-dj"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Toby Foster — Mug Photo | Santa Radio",
+      "h1": [
+        "Toby Foster"
+      ],
+      "rootTextLength": 1295,
+      "sha256": "d380b41e1f53fe97cca04e01b82dad3f246a16ea7626d25dc4d4087c7f369d1d",
+      "bytes": 16259
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:45.766Z",
+      "url": "https://www.santaradio.co.uk/mugshots/ellie-goldstien-tv-personality",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/ellie-goldstien-tv-personality",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/ellie-goldstien-tv-personality"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Ellie Goldstein — Mug Photo | Santa Radio",
+      "h1": [
+        "Ellie Goldstein"
+      ],
+      "rootTextLength": 1483,
+      "sha256": "cbb2abc00f0c82fa130388db28d8d54f15c8e766e24fa3abd3c1ca0357d4c89c",
+      "bytes": 16392
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:45.795Z",
+      "url": "https://www.santaradio.co.uk/mugshots/mark-riley-radio-presenter",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/mark-riley-radio-presenter",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/mark-riley-radio-presenter"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Mark Riley — Mug Photo | Santa Radio",
+      "h1": [
+        "Mark Riley"
+      ],
+      "rootTextLength": 1444,
+      "sha256": "3c99dc410a599d28887573842334693e29f6095d1877fdc906ae2bd0318592e3",
+      "bytes": 16522
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:45.857Z",
+      "url": "https://www.santaradio.co.uk/mugshots/lulu-singer",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/lulu-singer",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/lulu-singer"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Lulu — Mug Photo | Santa Radio",
+      "h1": [
+        "Lulu"
+      ],
+      "rootTextLength": 1400,
+      "sha256": "f1b2107640822b106bfba919338b5f416400040b4dea49311ddc315a40ca1e30",
+      "bytes": 16076
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:45.866Z",
+      "url": "https://www.santaradio.co.uk/mugshots/brendan-cole-dancer",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/brendan-cole-dancer",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/brendan-cole-dancer"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Brendan Cole — Mug Photo | Santa Radio",
+      "h1": [
+        "Brendan Cole"
+      ],
+      "rootTextLength": 1429,
+      "sha256": "a935c2bc35c2f1bf0b58d2b667f7cf223f6357a7daff68c4560fea8e00720da8",
+      "bytes": 16470
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:45.944Z",
+      "url": "https://www.santaradio.co.uk/mugshots/aaron-ramsdale-footballer",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/aaron-ramsdale-footballer",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/aaron-ramsdale-footballer"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Aaron Ramsdale — Mug Photo | Santa Radio",
+      "h1": [
+        "Aaron Ramsdale"
+      ],
+      "rootTextLength": 1283,
+      "sha256": "0d2697f5b114a494725b01b6d232cf98b977fc73ab02f91d0703566196c98c43",
+      "bytes": 16386
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:45.968Z",
+      "url": "https://www.santaradio.co.uk/mugshots/stu-francis-personality",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/stu-francis-personality",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/stu-francis-personality"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Stu Francis — Mug Photo | Santa Radio",
+      "h1": [
+        "Stu Francis"
+      ],
+      "rootTextLength": 1369,
+      "sha256": "3f953847082989f4699a6b197a1d09086a13db6275950fc85346a04d84852255",
+      "bytes": 16096
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:46.016Z",
+      "url": "https://www.santaradio.co.uk/mugshots/frank-skinner-comedian",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/frank-skinner-comedian",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/frank-skinner-comedian"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Frank Skinner — Mug Photo | Santa Radio",
+      "h1": [
+        "Frank Skinner"
+      ],
+      "rootTextLength": 1410,
+      "sha256": "87c6c6410a5d1d849ff4b6b21c20b854125894759027320efff49dc112426929",
+      "bytes": 16511
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:46.059Z",
+      "url": "https://www.santaradio.co.uk/mugshots/cliff-richard-singer",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/cliff-richard-singer",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/cliff-richard-singer"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Cliff Richard — Mug Photo | Santa Radio",
+      "h1": [
+        "Cliff Richard"
+      ],
+      "rootTextLength": 1237,
+      "sha256": "d28b22fb4c642ae036b54540e78a8b56963928315ee178247c1dba377e06fcaf",
+      "bytes": 16263
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:46.096Z",
+      "url": "https://www.santaradio.co.uk/mugshots/gabby-roslin-tv-personality",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/gabby-roslin-tv-personality",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/gabby-roslin-tv-personality"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Gabby Roslin — Mug Photo | Santa Radio",
+      "h1": [
+        "Gabby Roslin"
+      ],
+      "rootTextLength": 1235,
+      "sha256": "38a1e35db1928daf030db2c2dddf0d3cef113d69841f86dec91367dadfd4b699",
+      "bytes": 16204
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:46.155Z",
+      "url": "https://www.santaradio.co.uk/mugshots/jessica-forrester-tv-personality",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/jessica-forrester-tv-personality",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/jessica-forrester-tv-personality"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Jessica Forrester — Mug Photo | Santa Radio",
+      "h1": [
+        "Jessica Forrester"
+      ],
+      "rootTextLength": 1323,
+      "sha256": "b9c267eecfb40a3626348578d5c1649d7c9cc435e71c4ce8881a16ca2fd5dbd4",
+      "bytes": 16302
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:46.176Z",
+      "url": "https://www.santaradio.co.uk/mugshots/molly-mae-love-island",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/molly-mae-love-island",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/molly-mae-love-island"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Molly Mae Love — Mug Photo | Santa Radio",
+      "h1": [
+        "Molly Mae Love"
+      ],
+      "rootTextLength": 1345,
+      "sha256": "65eb55bd54d306b5a4429403993c1fa3ff020716d90d6474189ea5cbf4a5a097",
+      "bytes": 16085
+    },
+    {
+      "checkedAt": "2026-10-29T11:04:46.185Z",
+      "url": "https://www.santaradio.co.uk/mugshots/gracie-malloy-singer",
+      "exitCode": 0,
+      "error": null,
+      "tlsFailure": false,
+      "finalUrl": "https://www.santaradio.co.uk/mugshots/gracie-malloy-singer",
+      "status": 200,
+      "hops": [
+        {
+          "status": 200,
+          "location": null,
+          "contentType": "text/html; charset=utf-8",
+          "xRobotsTag": null
+        }
+      ],
+      "canonicals": [
+        "https://www.santaradio.co.uk/mugshots/gracie-malloy-singer"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "title": "Gracie Malloy — Mug Photo | Santa Radio",
+      "h1": [
+        "Gracie Malloy"
+      ],
+      "rootTextLength": 1049,
+      "sha256": "e9b9b2fefc880bde1570fab42a97658695e10058ea6ee8be998981fe1d56d5d7",
+      "bytes": 15929
+    }
+  ]
+}

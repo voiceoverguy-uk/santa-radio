@@ -700,3 +700,17 @@ mtime_ms = 1793111994898
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/1df67f7a-ec9e-440c-a06f-ad7733706a5c/da18c06f-90f6-476d-90fe-99136f1e93ec"
 storage_version_token = "1793112050430461"
 content_type = "text/plain"
+
+[[outputs]]
+id = "GhmMz78sSdRxbH3JNW6LJ"
+uri = "file://docs/search-console-alternate-links.csv"
+type = "table"
+title = "All 507 alternate canonical URLs"
+description = "Exact crawl dates, live responses and TLS failures, canonicals, repair ownership, evidence and remaining actions."
+logical_id = "012d5c75-cb4a-42da-aa19-81f0e7057534"
+content_hash = "sha256:b59fed298e1e783ec8e5a7ce4e9d56268e31b5c8a156e58cdd72016a8c7a8d4d"
+size = 279675
+mtime_ms = 1793271961826
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/012d5c75-cb4a-42da-aa19-81f0e7057534/d6b59a8a-e1f7-486d-99cd-ea9c52c16163"
+storage_version_token = "1793272016741155"
+content_type = "text/csv"
