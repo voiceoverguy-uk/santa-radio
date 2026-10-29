@@ -352,7 +352,7 @@ for (const width of [1440, 390, 320]) {
       return ['fontSize', 'fontFamily', 'fontWeight', 'fontStyle', 'color'].every(key => own[key] === standard[key]);
     })).toBe(true);
     await expect(links.getByRole('link')).toHaveText([
-      'News', 'Playlist', 'Voice of Santa', 'Submit your song',
+      'News', 'Playlist', 'Voice of Santa', 'Submit your song', 'Christmas Contenders · Preview',
       'Personalised Santa Video Message', 'Download the app', 'Links',
       'Privacy Policy', 'Photo usage and licensing',
     ]);
@@ -371,8 +371,15 @@ for (const width of [1440, 390, 320]) {
     await snow.focus();
     await page.keyboard.press('Space');
     await expect(snow).toHaveAttribute('aria-checked', before === 'true' ? 'false' : 'true');
-    for (const social of ['Instagram', 'Facebook']) {
-      await expect(footer.getByRole('link', { name: social, exact: true })).toBeVisible();
+    for (const social of [
+      { name: 'Instagram', href: 'https://www.instagram.com/santaradiouk/' },
+      { name: 'Facebook', href: 'https://www.facebook.com/santaradiouk' },
+    ]) {
+      const link = footer.getByRole('link', { name: social.name, exact: true });
+      await expect(link).toBeVisible();
+      await expect(link).toHaveAttribute('href', social.href);
+      await expect(link).toHaveAttribute('target', '_blank');
+      await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
     }
     await expect(footer.locator('.footer-copy')).toHaveText('© 2026 Santa Radio. All Rights Reserved.');
     await footer.getByRole('button', { name: 'Cookie settings', exact: true }).focus();
