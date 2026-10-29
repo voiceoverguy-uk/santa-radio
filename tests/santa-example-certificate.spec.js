@@ -1,125 +1,132 @@
 import { test, expect } from '@playwright/test';
+import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { openMessageDesk } from './helpers/message-access.js';
+import { MESSAGE_ALLOWANCE_KEY } from '../src/lib/santaMessageAllowance.js';
 
-const examples = [
-  ['boy', 'Harry'], ['girl', 'Arabella'], ['ayla', 'Ayla'],
-  ['mohani', 'Mohani'], ['charlotte', 'Charlotte'],
-];
-const start = page => page.getByRole('button', { name: 'Hear an example audio message', exact: true });
-const stop = page => page.getByRole('button', { name: 'Stop example message', exact: true });
-const audio = page => page.locator('.santa-message-example__audio');
-const image = page => page.locator('.santa-certificate-examples__image');
+const audio = readFileSync('server/santa-audio/sleighbells.mp3');
+async function noFreeCertificates(page) {
+  await expect(page.locator('.santa-certificate-examples, .santa-certificate-dialog, .message-certificate')).toHaveCount(0);
+  await expect(page.locator('.message-intro, .message-result').filter({ hasText: /certificate/i })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /certificate/i })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: /certificate/i })).toHaveCount(0);
+}
 
-async function visit(page, path) {
-  await page.clock.install();
+test.beforeEach(async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.addInitScript(() => {
-    sessionStorage.setItem('santa-radio-example-last', 'charlotte');
+    window.testNow = 1801915200000;
+    Date.now = () => window.testNow;
     sessionStorage.setItem('santa-message-offer-shown', 'shown');
-    // Exercise audio lifecycle deterministically; the existing sample suite
-    // separately verifies real decoding and playback for all five recordings.
-    const load = HTMLMediaElement.prototype.load;
-    const play = HTMLMediaElement.prototype.play;
-    HTMLMediaElement.prototype.load = function () {
-      if (!this.classList.contains('santa-message-example__audio')) return load.call(this);
-    };
-    HTMLMediaElement.prototype.play = function () {
-      if (!this.classList.contains('santa-message-example__audio')) return play.call(this);
-      this.dispatchEvent(new Event('play'));
-      this.dispatchEvent(new Event('playing'));
-      return Promise.resolve();
-    };
+    Object.defineProperty(navigator, 'canShare', { value: () => true });
+    Object.defineProperty(navigator, 'share', { value: async data => {
+      window.sharedTypes = data.files.map(file => file.type);
+    } });
   });
   await page.route('**/api/radio-metadata*', route => route.fulfill({
     json: { available: false, current: null, upcoming: [] },
   }));
-  await page.goto(path);
-  const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
-  if (await decline.isVisible()) await decline.click();
-  await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
-  await page.mouse.move(0, 0);
-}
+});
 
 for (const path of ['/', '/free-santa-message']) {
-  for (const { width, motion } of [
-    { width: 1280, motion: 'no-preference' },
-    { width: 390, motion: 'no-preference' },
-    { width: 320, motion: 'reduce' },
-  ]) {
-    test(`sample pins its matching certificate and releases on stop or end on ${path} at ${width}px`, async ({ page }) => {
+  for (const width of [390, 1440]) {
+    test(`free audio remains usable without certificates before creation, on SPA restoration and cooldown at ${width}px on ${path}`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
-      await page.emulateMedia({ reducedMotion: motion });
-      await visit(page, path);
-      for (const [index, [key, name]] of examples.entries()) {
-        await start(page).click();
-        await expect(audio(page)).toHaveAttribute('src', `/audio/examples/santa-message-${key}.mp3`);
-        const src = `/certificates/examples/${name.toLowerCase()}.webp`;
-        await expect(image(page)).toHaveAttribute('src', src);
-        await expect(image(page)).toHaveAttribute('alt', `Example Official Nice List Certificate for ${name}`);
-        await expect(image(page)).toHaveJSProperty('naturalWidth', 1800);
-        await page.mouse.move(0, 0);
-        await page.clock.runFor(16_000);
-        await expect(image(page)).toHaveAttribute('src', src);
-        if (index === 0) {
-          await page.getByRole('button', { name: `Open ${name}'s certificate example`, exact: true }).click();
-          const dialog = page.getByRole('dialog', { name: `${name}'s certificate example`, exact: true });
-          await expect(dialog.locator('img')).toHaveAttribute('src', src);
-          await page.clock.runFor(6000);
-          await expect(dialog.locator('img')).toHaveAttribute('src', src);
-          await page.keyboard.press('Escape');
-          await expect(dialog).not.toBeVisible();
-        }
-        if (index === 3) {
-          const card = page.locator('.santa-certificate-examples');
-          await card.evaluate(node => node.scrollIntoView({ block: 'center', behavior: 'instant' }));
-          await card.screenshot({
-            path: `generated-artifacts/sample-certificates/${path === '/' ? 'home' : 'maker'}-${width}-mohani.png`,
-            animations: 'disabled',
-          });
-        }
-        if (index % 2) await audio(page).dispatchEvent('ended');
-        else await stop(page).click();
-        await expect(start(page)).toBeVisible();
-        await start(page).focus();
-        await page.mouse.move(0, 0);
-        const releasedSrc = await image(page).getAttribute('src');
-        await page.clock.runFor(5100);
-        if (motion === 'reduce') await expect(image(page)).toHaveAttribute('src', releasedSrc);
-        else await expect(image(page)).not.toHaveAttribute('src', releasedSrc);
+      let generations = 0;
+      const certificateRequests = [];
+      page.on('request', request => {
+        if (request.url().includes('/certificates/')) certificateRequests.push(request.url());
+      });
+      await page.route('**/api/santa-message', route => {
+        generations++;
+        return route.fulfill({ contentType: 'audio/mpeg', body: audio });
+      });
+      await openMessageDesk(page, { path });
+      await noFreeCertificates(page);
+      const start = page.getByRole('button', { name: 'Hear an example audio message', exact: true });
+      await expect(start).toBeEnabled();
+      await page.getByLabel('First Name').fill('Olivia');
+      await page.getByRole('option', { name: 'Olivia', exact: true }).click();
+      await page.getByRole('button', { name: 'Create message', exact: true }).click();
+      const result = page.getByLabel('Santa’s greeting for Olivia', { exact: true });
+      await expect(result).toBeVisible();
+      await noFreeCertificates(page);
+      let before = await page.evaluate(key => localStorage.getItem(key), MESSAGE_ALLOWANCE_KEY);
+      await result.locator('audio').evaluate(element => element.play());
+      await expect.poll(() => result.locator('audio').evaluate(element => element.currentTime)).toBeGreaterThan(0);
+      await result.locator('audio').evaluate(element => element.pause());
+      for (let repetition = 0; repetition < 2; repetition++) {
+        const pending = page.waitForEvent('download');
+        await result.getByRole('link', { name: 'Download your audio' }).click();
+        const download = await pending;
+        expect(download.suggestedFilename()).toBe('santa-recorded-message-for-Olivia.mp3');
+        expect(readFileSync(await download.path())).toEqual(audio);
       }
+      await result.getByRole('button', { name: 'Share this greeting', exact: true }).click();
+      expect(await page.evaluate(() => window.sharedTypes)).toEqual(['audio/mpeg']);
+      expect(await page.evaluate(key => localStorage.getItem(key), MESSAGE_ALLOWANCE_KEY)).toBe(before);
+      // Keep both tab-local results when another allowance becomes available.
+      await page.evaluate(key => {
+        window.testNow = JSON.parse(localStorage.getItem(key)).availableAt;
+        dispatchEvent(new Event('focus'));
+      }, MESSAGE_ALLOWANCE_KEY);
+      await page.getByLabel('First Name').fill('Erin');
+      await page.getByRole('option', { name: 'Erin', exact: true }).click();
+      await page.getByRole('button', { name: 'Create message', exact: true }).click();
+      await expect(page.getByRole('heading', { name: 'To Erin from Santa' })).toBeVisible();
+      await expect(page.locator('.message-result')).toHaveCount(2);
+      before = await page.evaluate(key => localStorage.getItem(key), MESSAGE_ALLOWANCE_KEY);
+      // SPA navigation preserves the in-memory greeting on the other entry point.
+      if (path === '/') {
+        if (width < 768) await page.getByRole('button', { name: 'Open menu', exact: true }).click();
+        await page.getByRole('navigation', { name: 'Main navigation' })
+          .getByRole('link', { name: 'FREE Santa Message', exact: true }).click();
+      } else await page.getByRole('link', { name: 'Santa Radio home', exact: true }).click();
+      await expect(result).toBeVisible();
+      await expect(page.locator('.message-result')).toHaveCount(2);
+      await expect(page.getByLabel('Santa’s greeting for Erin', { exact: true })
+        .getByRole('link', { name: 'Download your audio' })).toBeEnabled();
+      await expect(result.getByRole('link', { name: 'Download your audio' })).toBeEnabled();
+      await noFreeCertificates(page);
+      await expect(page.getByRole('button', { name: 'Create message', exact: true })).toHaveCount(0);
+      expect(await page.evaluate(key => localStorage.getItem(key), MESSAGE_ALLOWANCE_KEY)).toBe(before);
+      expect(generations).toBe(2);
+      expect(certificateRequests).toEqual([]);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+      // A fresh document retains the allowance, not the tab-local audio.
+      await page.reload();
+      await expect(page.locator('.message-cooldown-status')).toBeVisible();
+      await expect(page.locator('.message-result')).toHaveCount(0);
+      await noFreeCertificates(page);
+      expect(generations).toBe(2);
     });
   }
-}
 
-test('errors, cancelled loading and another audio source release the certificate', async ({ page }) => {
-  await visit(page, '/free-santa-message');
-  const expectReleased = async () => {
-    await expect(start(page)).toBeVisible();
-    await start(page).focus();
-    await page.mouse.move(0, 0);
-    const previous = await image(page).getAttribute('src');
-    await page.clock.runFor(5100);
-    await expect(image(page)).not.toHaveAttribute('src', previous);
-  };
-  await start(page).click();
-  await audio(page).dispatchEvent('error');
-  await expect(page.getByRole('alert')).toContainText('could not be played');
-  await expectReleased();
-  await start(page).click();
-  await page.evaluate(() => document.dispatchEvent(new CustomEvent('santa-radio:soundboard-start')));
-  await expectReleased();
-  await start(page).click();
-  await page.evaluate(() => {
-    const other = document.createElement('audio');
-    document.body.append(other);
-    other.dispatchEvent(new Event('play'));
-    other.remove();
+  test(`saved greeting cache remains audio-only on ${path}`, async ({ page }) => {
+    await page.route('**/api/santa-names?*', route => route.fulfill({ json: {
+      records: [{ id: 'arabella', name: 'Arabella', downloadName: 'santa-recorded-message-for-Arabella.mp3' }],
+      hostedCount: 1, warning: null,
+    } }));
+    const url = 'https://stagcommunications.com/santaradio/greetings-cache/free-offer-test.mp3';
+    await page.route('**/api/santa-greeting?*', route => route.fulfill({ json: {
+      available: true, greeting: {
+        url, sha256: createHash('sha256').update(audio).digest('hex'), bytes: audio.length, recipeVersion: 'test',
+      },
+    } }));
+    await page.route(`${url}?*`, route => route.fulfill({
+      contentType: 'audio/mpeg', body: audio, headers: { 'Access-Control-Allow-Origin': '*' },
+    }));
+    let generations = 0;
+    await page.route('**/api/santa-message', route => {
+      generations++;
+      return route.fulfill({ status: 500 });
+    });
+    await openMessageDesk(page, { path, mockNames: false });
+    await page.getByLabel('First Name').fill('Arabella');
+    await page.getByRole('option', { name: 'Arabella', exact: true }).click();
+    await page.getByRole('button', { name: 'Create message', exact: true }).click();
+    await expect(page.getByRole('heading', { name: 'To Arabella from Santa' })).toBeVisible();
+    await noFreeCertificates(page);
+    expect(generations).toBe(0);
   });
-  await expectReleased();
-  await audio(page).evaluate(element => {
-    element.play = () => new Promise(() => {});
-  });
-  await start(page).click();
-  await expect(stop(page)).toHaveAttribute('aria-busy', 'true');
-  await expect(image(page)).toHaveAttribute('src', '/certificates/examples/mohani.webp');
-  await stop(page).click();
-  await expectReleased();
-});
+}

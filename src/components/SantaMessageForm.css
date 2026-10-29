@@ -7,7 +7,6 @@
 .santa-voice-info { display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; min-width: 44px; min-height: 44px; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; text-decoration: none; cursor: help; }
 .santa-voice-tooltip { position: absolute; z-index: 20; top: 100%; left: 0; width: max-content; max-width: min(100%, 300px); padding: 5px 8px; border: 0; border-radius: 2px; background: #214a39; color: #f6ecd8; font-family: 'Inter', sans-serif; font-size: .75rem; line-height: 1.4; overflow-wrap: anywhere; box-shadow: none; }
 .message-intro > p:not(.eyebrow) { font-size: .95rem; color: #d0dacd; max-width: 420px; line-height: 1.8; }
-.message-intro .santa-certificate-examples { margin-top: 24px; }
 .santa-message-box { background: #0c2a20; border: 1px solid #d4af3760; border-radius: 20px; padding: 36px; text-align: left; box-shadow: 0 18px 50px #061c1740; position: relative; }
 .message-card-top { display: flex; align-items: center; gap: 14px; padding-bottom: 22px; border-bottom: 1px solid #d4af3730; margin-bottom: 24px; }
 .message-seal { border: 1px solid var(--gold, #d4af37); color: var(--gold-light, #ead39a); font-family: 'Cinzel',serif; display: grid; place-items: center; border-radius: 50%; width: 48px; height: 48px; flex-shrink: 0; font-size: 1.4rem; }

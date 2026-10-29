@@ -2,6 +2,12 @@
 name: Nice List certificate artwork scope
 description: Owner-approved design and privacy boundaries for personalised certificates.
 ---
+Certificates are a gift reserved for the paid Studio offer, not part of the basic free greeting. Keep certificate examples and personalised downloads out of both free-message entry points, including saved results and cooldown states.
+
+**Why:** The owner explicitly superseded the earlier free-certificate requirements while retaining the approved artwork and reusable generator for the paid product.
+
+**How to apply:** Preserve the certificate assets and generation utilities; do not build paid delivery or change access entitlements merely to remove the free offer. The preview styling and sample-pairing notes below describe the retained component only, not permission to restore it to the free flow.
+
 Preserve the supplied certificate's foreground artwork except for the explicitly authorised removal of the decorative top Santa Radio logo and modest enlargement/repositioning of “Official Nice List Certificate”. Keep all other Santa Radio references. Its background is authorised to use the actual homepage snowy North Pole image across the full A4 landscape page, not the original blank emerald left extension. Personalise with the completed recording's canonical display name and the approved humorous Nice status line; no year or other extra wording.
 
 **Why:** The owner explicitly approved the larger decorative Santa Claus signature, gold wax-style seal, gold line and absence of a name-field rectangle, then authorised replacing the background while retaining those elements. Their later heading feedback explicitly superseded preservation of the top wordmark only.

@@ -64,9 +64,7 @@ for (const [path, width] of [['/', 1280], ['/free-santa-message', 390]]) {
       await expect(stop(page)).toBeVisible();
       await expect(sample(page)).toHaveAttribute('src', `/audio/examples/santa-message-${variant}.mp3`);
       await expect.poll(() => sample(page).evaluate(audio => audio.currentTime)).toBeGreaterThan(0);
-      const certificate = page.locator('.santa-certificate-examples__image');
-      await expect(certificate).toHaveAttribute('src', `/certificates/examples/${name.toLowerCase()}.webp`);
-      await expect(certificate).toHaveJSProperty('naturalWidth', 1800);
+      await expect(page.locator('.santa-certificate-examples')).toHaveCount(0);
       await expect(sample(page)).not.toHaveAttribute('controls', /.*/);
       await expect(sample(page)).toHaveAttribute('controlslist', /nodownload/);
       await expect(sample(page)).toHaveJSProperty('disableRemotePlayback', true);
@@ -94,7 +92,7 @@ test('rotation persists between pages and navigation stops the old recording', a
   await page.getByRole('navigation', { name: 'Main navigation' })
     .getByRole('link', { name: 'FREE Santa Message', exact: true }).click();
   await expect(page).toHaveURL(/\/free-santa-message$/);
-  expect(await oldAudio.evaluate(audio => audio.paused)).toBe(true);
+  await expect.poll(() => oldAudio.evaluate(audio => audio.paused)).toBe(true);
   await start(page).click();
   await expect(sample(page)).toHaveAttribute('src', '/audio/examples/santa-message-girl.mp3');
   await expect.poll(() => sample(page).evaluate(audio => audio.currentTime)).toBeGreaterThan(0);

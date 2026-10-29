@@ -8,8 +8,6 @@ import useSantaMessageAllowance from './useSantaMessageAllowance.js';
 import useSantaMessageHistory from './useSantaMessageHistory.js';
 import useSantaNames from './useSantaNames.js';
 import useSantaNameCounter from './useSantaNameCounter.js';
-import NiceListCertificateDownload from './NiceListCertificateDownload.jsx';
-import SantaCertificateExamples from './SantaCertificateExamples.jsx';
 import SantaCooldownNotice from './SantaCooldownNotice.jsx';
 import SantaVoiceTagline from './SantaVoiceTagline.jsx';
 import SantaStudioPromotion from './SantaStudioPromotion.jsx';
@@ -29,7 +27,6 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const [name, setName] = useState(initialName);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [exampleName, setExampleName] = useState('Olivia');
-  const [activeExampleName, setActiveExampleName] = useState(null);
   const { messages, remember } = useSantaMessageHistory();
   const [validation, setValidation] = useState('');
   const [audioErrors, setAudioErrors] = useState({});
@@ -43,6 +40,9 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const [nameRequest, setNameRequest] = useState({ key: '', status: 'idle', message: '' });
   const nameSearch = useSantaNames(name, hasAccess);
   const displayedNameCount = useSantaNameCounter(nameSearch.hostedCount);
+  const availableNamesText = displayedNameCount !== null
+    ? `${displayedNameCount.toLocaleString('en-GB')} ${displayedNameCount === 1 ? 'name' : 'names'} available`
+    : nameSearch.loading ? 'Checking how many names are available…' : 'Name total temporarily unavailable.';
   const suggestions = nameSearch.records;
   const verifiedSelectedRecord = selectedRecord && selectedRecord.name === name.trim()
     ? selectedRecord : null;
@@ -247,7 +247,6 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
     <div className="message-download-actions">
       <div className="message-download-links">
         <a className="message-download" href={message.url} download={message.downloadName}>Download your audio <span aria-hidden="true">↓</span></a>
-        <NiceListCertificateDownload message={message} />
       </div>
     </div>
   </div>);
@@ -258,9 +257,8 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         <p className="eyebrow">A little North Pole experiment</p>
         <h2 className="santa-message-heading">FREE Personalised message from Santa</h2>
         <SantaVoiceTagline />
-        <SantaMessageExample onExampleNameChange={setActiveExampleName} />
-        <p>A real human recorded message from Santa, aka Father Christmas with childs name. Not an AI voice! Open the recording studio, add your contact details, choose name from thousands, listen and instantly download your short FREE personalised message from Santa and Nice List Certificate.</p>
-        <SantaCertificateExamples activeExampleName={activeExampleName} />
+        <SantaMessageExample />
+        <p>No AI here. A real HUMAN recorded message from Santa, aka Father Christmas with your chosen name. Click to enter Studio B, add your contact details, choose the name from <span className="message-intro-name-count">{availableNamesText}</span> currently, create and instantly download your short FREE personalised message from Santa.</p>
       </div>
       <div className="santa-message-aside">
       <div className={`santa-message-box${hasAccess ? '' : ' message-access-box'}`}>
@@ -270,9 +268,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
             <p className="message-postmark">The North Pole Recording Studio</p>
         <div className="message-name-status">
           <p className="message-name-hint message-name-count" role="status" aria-live="off">
-            {displayedNameCount !== null
-              ? `${displayedNameCount.toLocaleString('en-GB')} ${displayedNameCount === 1 ? 'name' : 'names'} available`
-              : nameSearch.loading ? 'Checking how many names are available…' : 'Name total temporarily unavailable.'}
+            {availableNamesText}
           </p>
           {nameSearch.hostedCount > 0 && <span className="message-recording-indicator" title="North Pole recording studio">
             <span className="message-recording-dot" aria-hidden="true" />

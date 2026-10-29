@@ -155,7 +155,7 @@ test('hosted total appears before typing, stays independent of matches and refre
     return route.fulfill({ json: { records: q ? [demrie] : [], hostedCount: total, warning: null } });
   });
   await openMessageDesk(page, { mockNames: false });
-  await expect(page.getByText('224 names available', { exact: true })).toBeVisible();
+  await expect(page.locator('.message-name-count')).toHaveText('224 names available');
   await expect(page.getByLabel('First Name')).toHaveValue('');
   const input = page.getByLabel('First Name');
   await expect(input).toHaveAttribute('placeholder', /^Start typing, eg\. [A-Za-z]+$/);
@@ -163,11 +163,11 @@ test('hosted total appears before typing, stays independent of matches and refre
   expect(popularSantaExamples).toContain(example);
   total = 275;
   await page.clock.runFor(75_000);
-  await expect(page.getByText('239 names available', { exact: true })).toBeVisible();
+  await expect(page.locator('.message-name-count')).toHaveText('239 names available');
   await expect(input).toHaveAttribute('placeholder', `Start typing, eg. ${example}`);
   await page.getByLabel('First Name').fill('Dem');
   await expect(page.getByRole('option', { name: 'Demrie', exact: true })).toBeVisible();
-  await expect(page.getByText('239 names available', { exact: true })).toBeVisible();
+  await expect(page.locator('.message-name-count')).toHaveText('239 names available');
   expect(renders).toBe(0);
   await expect(input).toHaveAttribute('placeholder', `Start typing, eg. ${example}`);
 });
@@ -179,13 +179,13 @@ test('unavailable inventory does not invent a zero total and a retry restores th
     warning: failed ? 'The hosted name list is unavailable. Only existing recordings are shown.' : null,
   } }));
   await openMessageDesk(page, { mockNames: false });
-  await expect(page.getByText('Name total temporarily unavailable.', { exact: true })).toBeVisible();
+  await expect(page.locator('.message-name-count')).toHaveText('Name total temporarily unavailable.');
   await expect(page.locator('.message-recording-indicator')).toHaveCount(0);
   await expect(page.getByText('0 names available', { exact: true })).toHaveCount(0);
   await expect(page.getByLabel('First Name')).toHaveAttribute('placeholder', /^Start typing, eg\. [A-Za-z]+$/);
   failed = false;
   await page.getByRole('button', { name: 'Refresh name list' }).click();
-  await expect(page.getByText('0 names available', { exact: true })).toBeVisible();
+  await expect(page.locator('.message-name-count')).toHaveText('0 names available');
 });
 
 test('large totals fit on mobile and genuine empty inventory displays zero', async ({ page }) => {
@@ -195,7 +195,7 @@ test('large totals fit on mobile and genuine empty inventory displays zero', asy
     records: [], hostedCount: total, warning: null,
   } }));
   await openMessageDesk(page, { mockNames: false });
-  await expect(page.getByText('12,295 names available', { exact: true })).toBeVisible();
+  await expect(page.locator('.message-name-count')).toHaveText('12,295 names available');
   await expect(page.locator('.message-recording-indicator')).toBeVisible();
   await page.addStyleTag({ content: 'html { font-size: 200%; }' });
   expect(await page.locator('.message-name-status').evaluate(element =>
@@ -214,7 +214,7 @@ test('large totals fit on mobile and genuine empty inventory displays zero', asy
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   total = 0;
   await page.getByLabel('First Name').fill('Unknown');
-  await expect(page.getByText('0 names available', { exact: true })).toBeVisible();
+  await expect(page.locator('.message-name-count')).toHaveText('0 names available');
   await expect(page.locator('.message-recording-indicator')).toHaveCount(0);
 });
 

@@ -58,7 +58,7 @@ for (const path of ['/', '/free-santa-message']) {
       await expect(result.locator('audio')).toBeVisible();
       await expect(playerRow).toBeVisible();
       await expect(result.getByRole('link', { name: 'Download your audio' })).toBeVisible();
-      await expect(result.getByRole('button', { name: 'Download your Nice List certificate' })).toBeVisible();
+      await expect(page.locator('.santa-certificate-examples, .message-certificate')).toHaveCount(0);
       await expect(result.getByRole('button', { name: 'Share this greeting', exact: true })).toBeVisible();
       await expect(result.getByText(/A4 landscape PDF|Share → Save to Files/)).toHaveCount(0);
       await expect(result.locator('.message-certificate .message-name-hint')).toHaveCount(0);
@@ -70,8 +70,8 @@ for (const path of ['/', '/free-santa-message']) {
       await expect(promo).toHaveCount(1);
       await expect(promo).toContainText('When the Studio launches');
       await expect(promo).toContainText('age, activities, achievements, country and festive treats');
-      await expect(promo).toContainText('Each Studio message will include a free personalised Nice List certificate');
-      await expect(promo).toContainText('The basic free greeting includes one too');
+      await expect(promo).toContainText('The paid Studio offer will include a personalised Nice List certificate as a gift.');
+      await expect(promo).not.toContainText('The basic free greeting includes one too');
       await expect(promo.getByText('Coming soon', { exact: true })).toBeVisible();
       await expect(promo).not.toContainText(/price|checkout/i);
       await expect(page.getByRole('button', { name: 'more magic?', exact: true })).toHaveCount(0);
@@ -82,14 +82,12 @@ for (const path of ['/', '/free-santa-message']) {
 
       const actions = result.locator('.message-download-actions');
       const downloadLink = await result.getByRole('link', { name: 'Download your audio' }).boundingBox();
-      const certificate = await result.getByRole('button', { name: 'Download your Nice List certificate' }).boundingBox();
       const share = await result.getByRole('button', { name: 'Share this greeting', exact: true }).boundingBox();
       const playerBox = await player.boundingBox();
       const actionsBox = await actions.boundingBox();
       expect(share.width).toBe(48);
       expect(share.x + share.width).toBeLessThanOrEqual(actionsBox.x + actionsBox.width + 1);
       expect(share.x).toBeGreaterThan(downloadLink.x);
-      expect(share.x).toBeGreaterThan(certificate.x);
       expect(Math.abs(playerBox.y + playerBox.height / 2 - (share.y + share.height / 2))).toBeLessThanOrEqual(1);
       expect(share.x).toBeGreaterThanOrEqual(playerBox.x + playerBox.width);
       expect(playerBox.width).toBeLessThan((await playerRow.boundingBox()).width);

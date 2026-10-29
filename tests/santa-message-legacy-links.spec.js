@@ -40,7 +40,7 @@ test('old catalogue goes to the generic maker and preserves the adult gate', asy
   expect(requests.renders).toEqual([]);
   await openAccess(page);
   await expect(page.getByLabel('First Name')).toHaveValue('');
-  await expect(page.getByText('1 name available', { exact: true })).toBeVisible();
+  await expect(page.locator('.message-name-count')).toHaveText('1 name available');
 });
 
 test('old name link carries a verified recording without submitting access or creating audio automatically', async ({ page }) => {
@@ -58,7 +58,7 @@ test('old name link carries a verified recording without submitting access or cr
   await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
   await page.getByRole('button', { name: 'Create message', exact: true }).click();
   await expect(page.getByText('Test render unavailable.', { exact: true })).toBeVisible();
-  expect(requests.renders).toEqual([{ name: 'cooper' }]);
+  expect(requests.renders).toEqual([expect.objectContaining({ name: 'cooper' })]);
 });
 
 test('an unavailable legacy name stays explicit and cannot generate a different recording', async ({ page }) => {
@@ -84,7 +84,7 @@ test('a legacy filename with different display spelling requires the verified su
   await expect(page.getByText('Mary Anne is selected.', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Create message', exact: true }).click();
   await expect(page.getByText('Test render unavailable.', { exact: true })).toBeVisible();
-  expect(requests.renders).toEqual([{ name: 'mary-anne' }]);
+  expect(requests.renders).toEqual([expect.objectContaining({ name: 'mary-anne' })]);
 });
 
 test('invalid direct name parameters are ignored instead of displayed or submitted', async ({ page }) => {
@@ -92,7 +92,7 @@ test('invalid direct name parameters are ignored instead of displayed or submitt
   await page.goto('/free-santa-message?name=%3Cscript%3E');
   await openAccess(page);
   await expect(page.getByLabel('First Name')).toHaveValue('');
-  await expect(page.getByText('1 name available', { exact: true })).toBeVisible();
+  await expect(page.locator('.message-name-count')).toHaveText('1 name available');
   expect(requests.searches).toEqual(['']);
   expect(requests.renders).toEqual([]);
 });
