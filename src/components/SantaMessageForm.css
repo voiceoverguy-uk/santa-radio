@@ -30,7 +30,7 @@
 .message-name-count { color: #ead6a6; font-size: .75rem; font-weight: 600; }
 .message-name-status { display: flex; align-items: center; justify-content: flex-start; flex-wrap: wrap; gap: 8px 12px; margin: 5px 0 0; }
 .message-name-status > .message-name-count { margin: 0; }
-.message-recording-indicator { display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0; color: #f6ecd8; font-size: .75rem; line-height: 1.6; white-space: nowrap; }
+.message-recording-indicator { display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0; max-width: 100%; color: #f6ecd8; font-size: .75rem; line-height: 1.6; }
 .message-recording-dot { width: 8px; height: 8px; flex-shrink: 0; border-radius: 50%; background: #f45a60; box-shadow: 0 0 7px #f45a6055; animation: message-recording-pulse 1.6s ease-in-out infinite; }
 @keyframes message-recording-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
 @media (prefers-reduced-motion: reduce) {

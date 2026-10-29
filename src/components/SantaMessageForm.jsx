@@ -272,7 +272,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
           </p>
           {nameSearch.hostedCount > 0 && <span className="message-recording-indicator" title="North Pole recording studio">
             <span className="message-recording-dot" aria-hidden="true" />
-            Recording
+            Recording (Studio - B)
           </span>}
         </div>
           </div>

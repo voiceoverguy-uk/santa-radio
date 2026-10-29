@@ -70,6 +70,44 @@ test('unavailable sandbox purchase stays below the voucher submit and cannot ope
 });
 
 for (const path of ['/', '/free-santa-message']) {
+  for (const width of [320, 390, 1280]) {
+    test(`inline Studio entry copy fits before mocked signup at ${width}px on ${path}`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.addInitScript(() => sessionStorage.setItem('santa-message-offer-shown', 'shown'));
+      await page.route('**/api/santa-names?*', route => route.fulfill({
+        json: { records: [], hostedCount: 9775, warning: null },
+      }));
+      await mockBrevo(page);
+      await visit(page, path);
+      await page.evaluate(() => document.fonts.ready);
+      const card = page.locator('.santa-message-access');
+      await expect(card.getByRole('heading', {
+        name: "ENTER SANTA'S RECORDING STUDIO", exact: true,
+      })).toBeVisible();
+      await expect(card.locator('.santa-message-access__intro')).toHaveText(
+        'Add your details and access a free personalised downloadable message from Santa.');
+      await expect(page.locator('.message-recording-indicator')).toHaveText('Recording (Studio - B)');
+      await expect(card.locator('.santa-message-access__privacy')).toHaveText(
+        'Your details are stored for news or updates. Read our privacy policy.');
+      for (const selector of ['h3', '.santa-message-access__intro']) {
+        const fits = await card.locator(selector).evaluate(node => {
+          const range = document.createRange();
+          range.selectNodeContents(node);
+          const bounds = node.getBoundingClientRect();
+          return [...range.getClientRects()].every(rect =>
+            rect.left >= bounds.left - 1 && rect.right <= bounds.right + 1);
+        });
+        expect(fits).toBe(true);
+      }
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      await fillAccessForm(page);
+      await card.getByRole('button', { name: 'Get my free Santa message' }).click();
+      await expect(page).toHaveURL(/\/free-santa-message(?:[?#]|$)/);
+      await expect(page.getByRole('combobox')).toBeVisible();
+      await expect(page.locator('.santa-message-access')).toHaveCount(0);
+    });
+  }
+
   test(`both counters handle loading, failure, retry, singular and count-up consistently on ${path}`, async ({ page }) => {
     await page.clock.install();
     let mode = 'hold', release;

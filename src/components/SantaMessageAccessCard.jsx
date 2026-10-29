@@ -29,10 +29,10 @@ export default function SantaMessageAccessCard({
   return (
     <section className={`santa-message-access${offer ? ' santa-message-access--offer' : ''}`} aria-labelledby={offer ? undefined : `${id}-title`}>
       <p className="santa-message-access__step">A note for the grown-up</p>
-      {!offer && <h3 id={`${id}-title`}>First, open Santa’s recording studio</h3>}
+      {!offer && <h3 id={`${id}-title`}>ENTER SANTA'S RECORDING STUDIO</h3>}
       <p className="santa-message-access__intro">
         {offer ? 'These are your details. You’ll choose your child’s recorded name next.'
-          : 'Add your details for immediate access to a free, downloadable Santa greeting. Next, you’ll choose a recorded name for your child.'}
+          : 'Add your details and access a free personalised downloadable message from Santa.'}
       </p>
 
       <form className="santa-message-access__form" ref={formRef} onSubmit={onSubmit} noValidate>

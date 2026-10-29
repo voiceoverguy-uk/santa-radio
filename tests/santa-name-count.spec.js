@@ -6,6 +6,7 @@ const demrie = { id: 'demrie', name: 'Demrie', downloadName: 'Santa-message-for-
 
 async function expectGroupedStatus(page) {
   await expect(page.locator('.message-name-status')).toBeVisible();
+  await expect(page.locator('.message-recording-indicator')).toHaveText('Recording (Studio - B)');
   const geometry = await page.locator('.message-name-status').evaluate(row => {
     const counter = row.querySelector('.message-name-count');
     const indicator = row.querySelector('.message-recording-indicator');
@@ -111,7 +112,7 @@ for (const path of ['/', '/free-santa-message']) {
     await expect(counter).toHaveText('9,725 names available');
     await expect(counter).toHaveAttribute('aria-live', 'off');
     const indicator = page.locator('.message-recording-indicator');
-    await expect(indicator).toHaveText('Recording');
+    await expect(indicator).toHaveText('Recording (Studio - B)');
     await expect(indicator).toBeVisible();
     const dot = indicator.locator('.message-recording-dot');
     await expect(dot).toHaveAttribute('aria-hidden', 'true');
