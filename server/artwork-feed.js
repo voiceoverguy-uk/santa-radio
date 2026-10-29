@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import songs from '../src/data/songs.json' with { type: 'json' };
 import { songPortraits } from '../src/data/songArtwork.js';
+import { publicRequestUrl } from '../src/seo/requestUrl.js';
 
 export const artworkFeedPath = '/artist-artwork/catalogue.json';
 const digest = bytes => createHash('sha256').update(bytes).digest('hex');
@@ -62,7 +63,7 @@ export async function buildArtworkFeed(mapping, {
 
 // These are public, non-personal resources; no cookies or credentials are required.
 export function artworkHeaders(req, res, next) {
-  const pathname = new URL(req.url, 'http://server').pathname;
+  const pathname = publicRequestUrl(req.url, 'http://server').pathname;
   if (!pathname.startsWith('/artist-artwork/')) { next(); return; }
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');

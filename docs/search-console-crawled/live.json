@@ -1,0 +1,3684 @@
+[
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Maliah",
+    "lastCrawled": "2026-10-21",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:16.889Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Maliah",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Maliah",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Maliah",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://apis.santaradio.co.uk/mugshots/alesha-dixon-singer-presenter",
+    "lastCrawled": "2026-10-19",
+    "host": "apis.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:16.869Z",
+    "status": null,
+    "finalUrl": null,
+    "attemptedUrl": "https://apis.santaradio.co.uk/mugshots/alesha-dixon-singer-presenter",
+    "failure": {
+      "code": 60,
+      "message": "curl: (60) SSL: no alternative certificate subject name matches target hostname 'apis.santaradio.co.uk'"
+    },
+    "responses": []
+  },
+  {
+    "url": "https://www.santaradio.co.uk/christmas-karaoke-lyrics/505-x-mas-donkey-the-glittering-balls-decorate-the-christmas-tree",
+    "lastCrawled": "2026-10-14",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:16.795Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/christmas-karaoke-lyrics/505-x-mas-donkey-the-glittering-balls-decorate-the-christmas-tree",
+    "attemptedUrl": "https://www.santaradio.co.uk/christmas-karaoke-lyrics/505-x-mas-donkey-the-glittering-balls-decorate-the-christmas-tree",
+    "failure": null,
+    "responses": [
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Decorate the Christmas Tree — X-mas Donkey &amp; The Glittering Balls | Sing-Along Lyrics — Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/christmas-karaoke-lyrics/505-x-mas-donkey-the-glittering-balls-decorate-the-christmas-tree"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Decorate the Christmas Tree — X-mas Donkey &amp; The Glittering Balls: Sing-Along Lyrics"
+      ],
+      "bytes": 16775,
+      "mainTextCharacters": 1114
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/mugshots/kate-lawler-dj",
+    "lastCrawled": "2026-10-13",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:16.798Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/mugshots/kate-lawler-dj",
+    "attemptedUrl": "https://www.santaradio.co.uk/mugshots/kate-lawler-dj",
+    "failure": null,
+    "responses": [
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Kate Lawler — Mug Photo | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/mugshots/kate-lawler-dj"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Kate Lawler"
+      ],
+      "bytes": 16317,
+      "mainTextCharacters": 571
+    }
+  },
+  {
+    "url": "https://apis.santaradio.co.uk/mugshots/dan-hatfield-tv-personality",
+    "lastCrawled": "2026-10-13",
+    "host": "apis.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:16.866Z",
+    "status": null,
+    "finalUrl": null,
+    "attemptedUrl": "https://apis.santaradio.co.uk/mugshots/dan-hatfield-tv-personality",
+    "failure": {
+      "code": 60,
+      "message": "curl: (60) SSL: no alternative certificate subject name matches target hostname 'apis.santaradio.co.uk'"
+    },
+    "responses": []
+  },
+  {
+    "url": "https://www.santaradio.co.uk/mugshots/michael-ball-singer",
+    "lastCrawled": "2026-10-13",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:16.844Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/mugshots/michael-ball-singer",
+    "attemptedUrl": "https://www.santaradio.co.uk/mugshots/michael-ball-singer",
+    "failure": null,
+    "responses": [
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Michael Ball — Mug Photo | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/mugshots/michael-ball-singer"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Michael Ball"
+      ],
+      "bytes": 16408,
+      "mainTextCharacters": 591
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/christmas-karaoke-lyrics/492-carly-rae-jepsen-its-not-christmas-till-somebody-cries",
+    "lastCrawled": "2026-10-12",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:16.935Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/christmas-karaoke-lyrics/492-carly-rae-jepsen-its-not-christmas-till-somebody-cries",
+    "attemptedUrl": "https://www.santaradio.co.uk/christmas-karaoke-lyrics/492-carly-rae-jepsen-its-not-christmas-till-somebody-cries",
+    "failure": null,
+    "responses": [
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "It&#x27;s Not Christmas Till Somebody Cries — Carly Rae Jepsen | Sing-Along Lyrics — Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/christmas-karaoke-lyrics/492-carly-rae-jepsen-its-not-christmas-till-somebody-cries"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "It&#x27;s Not Christmas Till Somebody Cries — Carly Rae Jepsen: Sing-Along Lyrics"
+      ],
+      "bytes": 17589,
+      "mainTextCharacters": 2079
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Albe",
+    "lastCrawled": "2026-10-12",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:16.930Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Albe",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Albe",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Albe",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://listen.santaradio.co.uk/mugshots/tracy-brabin-mp-actress",
+    "lastCrawled": "2026-10-12",
+    "host": "listen.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.156Z",
+    "status": null,
+    "finalUrl": null,
+    "attemptedUrl": "https://listen.santaradio.co.uk/mugshots/tracy-brabin-mp-actress",
+    "failure": {
+      "code": 60,
+      "message": "curl: (60) SSL: no alternative certificate subject name matches target hostname 'listen.santaradio.co.uk'"
+    },
+    "responses": []
+  },
+  {
+    "url": "https://www.santaradio.co.uk/christmas-artist/422",
+    "lastCrawled": "2026-10-08",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:16.995Z",
+    "status": 404,
+    "finalUrl": "https://www.santaradio.co.uk/christmas-artist/422",
+    "attemptedUrl": "https://www.santaradio.co.uk/christmas-artist/422",
+    "failure": null,
+    "responses": [
+      {
+        "status": 404,
+        "location": null,
+        "robots": "noindex, follow"
+      }
+    ]
+  },
+  {
+    "url": "https://www.santaradio.co.uk//",
+    "lastCrawled": "2026-10-07",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.030Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/",
+    "attemptedUrl": "https://www.santaradio.co.uk/",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Santa Radio | Christmas Radio &amp; Online Christmas Music"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Live from The North Pole,Santa Radio"
+      ],
+      "bytes": 41595,
+      "mainTextCharacters": 11093
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Tinkerbell",
+    "lastCrawled": "2026-10-07",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.048Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Tinkerbell",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Tinkerbell",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Tinkerbell",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Cassidy",
+    "lastCrawled": "2026-09-30",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.071Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Cassidy",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Cassidy",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Cassidy",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Micah",
+    "lastCrawled": "2026-09-30",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.128Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Micah",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Micah",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Micah",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Sulley",
+    "lastCrawled": "2026-09-30",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.159Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Sulley",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Sulley",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Sulley",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Emmie",
+    "lastCrawled": "2026-09-29",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.241Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Emmie",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Emmie",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Emmie",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Marcus",
+    "lastCrawled": "2026-09-29",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.198Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Marcus",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Marcus",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Marcus",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/christmas-artist/303-bing-crosby-winter-wonderland",
+    "lastCrawled": "2026-09-29",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.191Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/christmas-artist/303-bing-crosby-winter-wonderland",
+    "attemptedUrl": "https://www.santaradio.co.uk/christmas-artist/303-bing-crosby-winter-wonderland",
+    "failure": null,
+    "responses": [
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Winter Wonderland — Bing Crosby | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/christmas-artist/303-bing-crosby-winter-wonderland"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Winter Wonderland — Bing Crosby"
+      ],
+      "bytes": 22848,
+      "mainTextCharacters": 2758
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Saoirse",
+    "lastCrawled": "2026-09-25",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.258Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Saoirse",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Saoirse",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Saoirse",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Paola",
+    "lastCrawled": "2026-09-23",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.361Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Paola",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Paola",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Paola",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Kelsey",
+    "lastCrawled": "2026-09-23",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.326Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Kelsey",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Kelsey",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Kelsey",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Flynn",
+    "lastCrawled": "2026-09-23",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.365Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Flynn",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Flynn",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Flynn",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Zain",
+    "lastCrawled": "2026-09-12",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.334Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Zain",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Zain",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Zain",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Zayden",
+    "lastCrawled": "2026-09-02",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.427Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Zayden",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Zayden",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Zayden",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Aubrey",
+    "lastCrawled": "2026-08-29",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.385Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Aubrey",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Aubrey",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Aubrey",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://scm.santaradio.co.uk/mugshots/sara-davies-dragon",
+    "lastCrawled": "2026-08-23",
+    "host": "scm.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.871Z",
+    "status": null,
+    "finalUrl": null,
+    "attemptedUrl": "https://scm.santaradio.co.uk/mugshots/sara-davies-dragon",
+    "failure": {
+      "code": 60,
+      "message": "curl: (60) SSL: no alternative certificate subject name matches target hostname 'scm.santaradio.co.uk'"
+    },
+    "responses": []
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Emelia",
+    "lastCrawled": "2026-08-10",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.529Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Emelia",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Emelia",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Emelia",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Ryleigh",
+    "lastCrawled": "2026-08-10",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.510Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Ryleigh",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Ryleigh",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Ryleigh",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Bryce",
+    "lastCrawled": "2026-08-10",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.565Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Bryce",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Bryce",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Bryce",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Eadie",
+    "lastCrawled": "2026-08-10",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.527Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Eadie",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Eadie",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Eadie",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Frank",
+    "lastCrawled": "2026-08-10",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.619Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Frank",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Frank",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Frank",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Keely",
+    "lastCrawled": "2026-08-10",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.648Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Keely",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Keely",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Keely",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Sharona",
+    "lastCrawled": "2026-08-09",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.717Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Sharona",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Sharona",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Sharona",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Ashton",
+    "lastCrawled": "2026-08-09",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.654Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Ashton",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Ashton",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Ashton",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://santaradio.co.uk/assets/img/artists/charles-brown.jpg",
+    "lastCrawled": "2026-08-08",
+    "host": "santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.967Z",
+    "status": 404,
+    "finalUrl": "https://www.santaradio.co.uk/assets/img/artists/charles-brown.jpg",
+    "attemptedUrl": "https://www.santaradio.co.uk/assets/img/artists/charles-brown.jpg",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "https://www.santaradio.co.uk/assets/img/artists/charles-brown.jpg",
+        "robots": null
+      },
+      {
+        "status": 404,
+        "location": null,
+        "robots": "noindex, follow"
+      }
+    ]
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Leia",
+    "lastCrawled": "2026-08-04",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.818Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Leia",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Leia",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Leia",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Gerard",
+    "lastCrawled": "2026-07-25",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.820Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Gerard",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Gerard",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Gerard",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised",
+    "lastCrawled": "2026-07-16",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.767Z",
+    "status": 404,
+    "finalUrl": "https://www.santaradio.co.uk/personalised",
+    "attemptedUrl": "https://www.santaradio.co.uk/personalised",
+    "failure": null,
+    "responses": [
+      {
+        "status": 404,
+        "location": null,
+        "robots": "noindex, follow"
+      }
+    ]
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Isis",
+    "lastCrawled": "2026-07-13",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.840Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Isis",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Isis",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Isis",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Hansolo",
+    "lastCrawled": "2026-07-10",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.993Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Hansolo",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Hansolo",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Hansolo",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Beth",
+    "lastCrawled": "2026-07-09",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.947Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Beth",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Beth",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Beth",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Junior",
+    "lastCrawled": "2026-07-08",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.007Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Junior",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Junior",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Junior",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Angela",
+    "lastCrawled": "2026-07-07",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:17.995Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Angela",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Angela",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Angela",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Vestina",
+    "lastCrawled": "2026-07-04",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.096Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Vestina",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Vestina",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Vestina",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Lily-Mae",
+    "lastCrawled": "2026-07-04",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.123Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Lily-Mae",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Lily-Mae",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Lily-Mae",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Dara",
+    "lastCrawled": "2026-07-03",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.132Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Dara",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Dara",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Dara",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/karaoke4.php?=random21512853739505",
+    "lastCrawled": "2026-07-03",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.130Z",
+    "status": 404,
+    "finalUrl": "https://www.santaradio.co.uk/karaoke4.php?=random21512853739505",
+    "attemptedUrl": "https://www.santaradio.co.uk/karaoke4.php?=random21512853739505",
+    "failure": null,
+    "responses": [
+      {
+        "status": 404,
+        "location": null,
+        "robots": "noindex, follow"
+      }
+    ]
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Shelby",
+    "lastCrawled": "2026-06-25",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.326Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Shelby",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Shelby",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Shelby",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Lacie",
+    "lastCrawled": "2026-06-20",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.197Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Lacie",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Lacie",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Lacie",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Ruben",
+    "lastCrawled": "2026-06-18",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.248Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Ruben",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Ruben",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Ruben",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Sidney",
+    "lastCrawled": "2026-06-16",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.299Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Sidney",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Sidney",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Sidney",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Lana",
+    "lastCrawled": "2026-06-11",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.291Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Lana",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Lana",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Lana",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/christmas-artist/123-jose-feliciano-feliz-navidad",
+    "lastCrawled": "2026-06-11",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.267Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/christmas-artist/123-jose-feliciano-feliz-navidad",
+    "attemptedUrl": "https://www.santaradio.co.uk/christmas-artist/123-jose-feliciano-feliz-navidad",
+    "failure": null,
+    "responses": [
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Feliz Navidad — Jose Feliciano | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/christmas-artist/123-jose-feliciano-feliz-navidad"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Feliz Navidad — Jose Feliciano"
+      ],
+      "bytes": 19308,
+      "mainTextCharacters": 2284
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/christmas-artist/549-bon-jovi-christmas-isn-t-christmas",
+    "lastCrawled": "2026-06-11",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.284Z",
+    "status": 404,
+    "finalUrl": "https://www.santaradio.co.uk/christmas-artist/549-bon-jovi-christmas-isn-t-christmas",
+    "attemptedUrl": "https://www.santaradio.co.uk/christmas-artist/549-bon-jovi-christmas-isn-t-christmas",
+    "failure": null,
+    "responses": [
+      {
+        "status": 404,
+        "location": null,
+        "robots": "noindex, follow"
+      }
+    ]
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Yahya",
+    "lastCrawled": "2026-06-11",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.414Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Yahya",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Yahya",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Yahya",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/christmas-artist/441-kurtis-blow-christmas-rappin",
+    "lastCrawled": "2026-06-11",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.378Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/christmas-artist/441-kurtis-blow-christmas-rappin",
+    "attemptedUrl": "https://www.santaradio.co.uk/christmas-artist/441-kurtis-blow-christmas-rappin",
+    "failure": null,
+    "responses": [
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Christmas Rappin — Kurtis Blow | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/christmas-artist/441-kurtis-blow-christmas-rappin"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Christmas Rappin — Kurtis Blow"
+      ],
+      "bytes": 21171,
+      "mainTextCharacters": 4089
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Ebony",
+    "lastCrawled": "2026-06-11",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.450Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Ebony",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Ebony",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Ebony",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Raphaella",
+    "lastCrawled": "2026-06-11",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.417Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Raphaella",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Raphaella",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Raphaella",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Dante",
+    "lastCrawled": "2026-06-10",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.473Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Dante",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Dante",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Dante",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Maleficent",
+    "lastCrawled": "2026-06-10",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.478Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Maleficent",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Maleficent",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Maleficent",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Aryan",
+    "lastCrawled": "2026-06-04",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.560Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Aryan",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Aryan",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Aryan",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Miriam",
+    "lastCrawled": "2026-06-04",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.568Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Miriam",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Miriam",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Miriam",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Trevena",
+    "lastCrawled": "2026-06-01",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.604Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Trevena",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Trevena",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Trevena",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/christmas-artist/316-michael-buble-the-more-you-give",
+    "lastCrawled": "2026-05-30",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.531Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/christmas-artist/316-michael-buble-the-more-you-give",
+    "attemptedUrl": "https://www.santaradio.co.uk/christmas-artist/316-michael-buble-the-more-you-give",
+    "failure": null,
+    "responses": [
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "The More You Give — Michael Buble | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/christmas-artist/316-michael-buble-the-more-you-give"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "The More You Give — Michael Buble"
+      ],
+      "bytes": 23436,
+      "mainTextCharacters": 3527
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Thea",
+    "lastCrawled": "2026-05-30",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.650Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Thea",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Thea",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Thea",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Rapunzel",
+    "lastCrawled": "2026-05-27",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.632Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Rapunzel",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Rapunzel",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Rapunzel",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/McKenzie",
+    "lastCrawled": "2026-05-27",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.723Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=McKenzie",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=McKenzie",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=McKenzie",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Cheyenne",
+    "lastCrawled": "2026-05-27",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.698Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Cheyenne",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Cheyenne",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Cheyenne",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Tia",
+    "lastCrawled": "2026-05-26",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.785Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Tia",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Tia",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Tia",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Casandra",
+    "lastCrawled": "2026-05-26",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.745Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Casandra",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Casandra",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Casandra",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Jennifer",
+    "lastCrawled": "2026-05-26",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.816Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Jennifer",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Jennifer",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Jennifer",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Freddy",
+    "lastCrawled": "2026-05-26",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.827Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Freddy",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Freddy",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Freddy",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Jason",
+    "lastCrawled": "2026-05-26",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.872Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Jason",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Jason",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Jason",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Ibrahim",
+    "lastCrawled": "2026-05-26",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.920Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Ibrahim",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Ibrahim",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Ibrahim",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Eoin",
+    "lastCrawled": "2026-05-25",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.983Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Eoin",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Eoin",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Eoin",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/christmas-artist/233-the-carpenters-merry-christmas-darling",
+    "lastCrawled": "2026-05-23",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.949Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/christmas-artist/99-the-carpenters-merry-christmas-darling",
+    "attemptedUrl": "https://www.santaradio.co.uk/christmas-artist/99-the-carpenters-merry-christmas-darling",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/christmas-artist/99-the-carpenters-merry-christmas-darling",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Merry Christmas Darling — The Carpenters | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/christmas-artist/99-the-carpenters-merry-christmas-darling"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Merry Christmas Darling — The Carpenters"
+      ],
+      "bytes": 20390,
+      "mainTextCharacters": 1889
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Fabian",
+    "lastCrawled": "2026-05-23",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:18.981Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Fabian",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Fabian",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Fabian",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://santaradio.co.uk/mugshots/chris-evans-radio-personality",
+    "lastCrawled": "2026-05-20",
+    "host": "santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.004Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/mugshots/chris-evans-radio-personality",
+    "attemptedUrl": "https://www.santaradio.co.uk/mugshots/chris-evans-radio-personality",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "https://www.santaradio.co.uk/mugshots/chris-evans-radio-personality",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Chris Evans — Mug Photo | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/mugshots/chris-evans-radio-personality"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Chris Evans"
+      ],
+      "bytes": 16245,
+      "mainTextCharacters": 456
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/christmas-artist/29-kylie-minogue-santa-baby",
+    "lastCrawled": "2026-05-18",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.012Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/christmas-artist/29-kylie-minogue-santa-baby",
+    "attemptedUrl": "https://www.santaradio.co.uk/christmas-artist/29-kylie-minogue-santa-baby",
+    "failure": null,
+    "responses": [
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Santa Baby — Kylie Minogue | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/christmas-artist/29-kylie-minogue-santa-baby"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Santa Baby — Kylie Minogue"
+      ],
+      "bytes": 21555,
+      "mainTextCharacters": 2481
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/christmas-artist/513-abba-little-things",
+    "lastCrawled": "2026-05-15",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.059Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/christmas-artist/513-abba-little-things",
+    "attemptedUrl": "https://www.santaradio.co.uk/christmas-artist/513-abba-little-things",
+    "failure": null,
+    "responses": [
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Little Things — ABBA | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/christmas-artist/513-abba-little-things"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Little Things — ABBA"
+      ],
+      "bytes": 18822,
+      "mainTextCharacters": 2010
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/christmas-artist/445-carly-rae-jepsen-last-christmas",
+    "lastCrawled": "2026-05-15",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.089Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/christmas-artist/445-carly-rae-jepsen-last-christmas",
+    "attemptedUrl": "https://www.santaradio.co.uk/christmas-artist/445-carly-rae-jepsen-last-christmas",
+    "failure": null,
+    "responses": [
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Last Christmas — Carly Rae Jepsen | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/christmas-artist/445-carly-rae-jepsen-last-christmas"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Last Christmas — Carly Rae Jepsen"
+      ],
+      "bytes": 19951,
+      "mainTextCharacters": 2494
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/christmas-artist/256-chuck-berry-run-rudolph-run",
+    "lastCrawled": "2026-05-15",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.064Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/christmas-artist/256-chuck-berry-run-rudolph-run",
+    "attemptedUrl": "https://www.santaradio.co.uk/christmas-artist/256-chuck-berry-run-rudolph-run",
+    "failure": null,
+    "responses": [
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Run Rudolph Run — Chuck Berry | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/christmas-artist/256-chuck-berry-run-rudolph-run"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Run Rudolph Run — Chuck Berry"
+      ],
+      "bytes": 19039,
+      "mainTextCharacters": 1862
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/christmas-artist/33-kylie-minogue-it-s-the-most-wonderful-time-of-the-year",
+    "lastCrawled": "2026-05-15",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.160Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/christmas-artist/33-kylie-minogue-its-the-most-wonderful-time-of-the-year",
+    "attemptedUrl": "https://www.santaradio.co.uk/christmas-artist/33-kylie-minogue-its-the-most-wonderful-time-of-the-year",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/christmas-artist/33-kylie-minogue-its-the-most-wonderful-time-of-the-year",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "It&#x27;s The Most Wonderful Time Of The Year — Kylie Minogue | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/christmas-artist/33-kylie-minogue-its-the-most-wonderful-time-of-the-year"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "It&#x27;s The Most Wonderful Time Of The Year — Kylie Minogue"
+      ],
+      "bytes": 22412,
+      "mainTextCharacters": 2510
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/christmas-artist/182-mitch-miller-and-the-gang-frosty-the-snowman",
+    "lastCrawled": "2026-05-13",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.090Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/christmas-artist/182-mitch-miller-and-the-gang-frosty-the-snowman",
+    "attemptedUrl": "https://www.santaradio.co.uk/christmas-artist/182-mitch-miller-and-the-gang-frosty-the-snowman",
+    "failure": null,
+    "responses": [
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Frosty The Snowman — Mitch Miller and The Gang | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/christmas-artist/182-mitch-miller-and-the-gang-frosty-the-snowman"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Frosty The Snowman — Mitch Miller and The Gang"
+      ],
+      "bytes": 20110,
+      "mainTextCharacters": 2273
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/personalised-santa-message/Kaiya",
+    "lastCrawled": "2026-05-01",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.181Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/free-santa-message?name=Kaiya",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-santa-message?name=Kaiya",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-santa-message?name=Kaiya",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Free Personalised Santa Message (MP3 Audio) | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/free-santa-message"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Free Personalised Santa Message"
+      ],
+      "bytes": 30472,
+      "mainTextCharacters": 9454
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/christmas-artist/519-wizzard-i-wish-it-could-be-christmas-everyday",
+    "lastCrawled": "2026-04-29",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.141Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/christmas-artist/519-wizzard-i-wish-it-could-be-christmas-everyday",
+    "attemptedUrl": "https://www.santaradio.co.uk/christmas-artist/519-wizzard-i-wish-it-could-be-christmas-everyday",
+    "failure": null,
+    "responses": [
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "I wish it could be Christmas Everyday — Wizzard | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/christmas-artist/519-wizzard-i-wish-it-could-be-christmas-everyday"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "I wish it could be Christmas Everyday — Wizzard"
+      ],
+      "bytes": 19594,
+      "mainTextCharacters": 2169
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/christmas-artist/289-the-fireside-singers-we-wish-you-a-merry-christmas",
+    "lastCrawled": "2026-04-23",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.227Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/christmas-artist/289-the-fireside-singers-we-wish-you-a-merry-christmas",
+    "attemptedUrl": "https://www.santaradio.co.uk/christmas-artist/289-the-fireside-singers-we-wish-you-a-merry-christmas",
+    "failure": null,
+    "responses": [
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "We Wish You A Merry Christmas — The Fireside Singers | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/christmas-artist/289-the-fireside-singers-we-wish-you-a-merry-christmas"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "We Wish You A Merry Christmas — The Fireside Singers"
+      ],
+      "bytes": 20150,
+      "mainTextCharacters": 2185
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/christmas-artist/536-maisie-peters-together-this-christmas",
+    "lastCrawled": "2026-04-22",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.184Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/christmas-artist/536-maisie-peters-together-this-christmas",
+    "attemptedUrl": "https://www.santaradio.co.uk/christmas-artist/536-maisie-peters-together-this-christmas",
+    "failure": null,
+    "responses": [
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Together This Christmas — Maisie Peters | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/christmas-artist/536-maisie-peters-together-this-christmas"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Together This Christmas — Maisie Peters"
+      ],
+      "bytes": 19668,
+      "mainTextCharacters": 2460
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/christmas-artist/28-leona-lewis-one-more-sleep",
+    "lastCrawled": "2026-04-14",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.234Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/christmas-artist/28-leona-lewis-one-more-sleep",
+    "attemptedUrl": "https://www.santaradio.co.uk/christmas-artist/28-leona-lewis-one-more-sleep",
+    "failure": null,
+    "responses": [
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "One More Sleep — Leona Lewis | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/christmas-artist/28-leona-lewis-one-more-sleep"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "One More Sleep — Leona Lewis"
+      ],
+      "bytes": 20092,
+      "mainTextCharacters": 2945
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/christmas-artist/258-michael-buble-santa-baby",
+    "lastCrawled": "2026-04-11",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.224Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/christmas-artist/258-michael-buble-santa-baby",
+    "attemptedUrl": "https://www.santaradio.co.uk/christmas-artist/258-michael-buble-santa-baby",
+    "failure": null,
+    "responses": [
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Santa Baby — Michael Buble | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/christmas-artist/258-michael-buble-santa-baby"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Santa Baby — Michael Buble"
+      ],
+      "bytes": 22381,
+      "mainTextCharacters": 2631
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/christmas-artist/528-katy-perry-cozy-little-christmas",
+    "lastCrawled": "2026-04-04",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.374Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/christmas-artist/528-katy-perry-cozy-little-christmas",
+    "attemptedUrl": "https://www.santaradio.co.uk/christmas-artist/528-katy-perry-cozy-little-christmas",
+    "failure": null,
+    "responses": [
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Cozy Little Christmas — Katy Perry | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/christmas-artist/528-katy-perry-cozy-little-christmas"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Cozy Little Christmas — Katy Perry"
+      ],
+      "bytes": 20192,
+      "mainTextCharacters": 2900
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk//free-christmas-apps/",
+    "lastCrawled": "2026-04-03",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.306Z",
+    "status": 404,
+    "finalUrl": "https://www.santaradio.co.uk/free-christmas-apps/",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-christmas-apps/",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-christmas-apps/",
+        "robots": null
+      },
+      {
+        "status": 404,
+        "location": null,
+        "robots": "noindex, follow"
+      }
+    ]
+  },
+  {
+    "url": "https://www.santaradio.co.uk//free-christmas-apps",
+    "lastCrawled": "2026-03-14",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.330Z",
+    "status": 404,
+    "finalUrl": "https://www.santaradio.co.uk/free-christmas-apps",
+    "attemptedUrl": "https://www.santaradio.co.uk/free-christmas-apps",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/free-christmas-apps",
+        "robots": null
+      },
+      {
+        "status": 404,
+        "location": null,
+        "robots": "noindex, follow"
+      }
+    ]
+  },
+  {
+    "url": "https://www.santaradio.co.uk//questions",
+    "lastCrawled": "2026-03-05",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.316Z",
+    "status": 404,
+    "finalUrl": "https://www.santaradio.co.uk/questions",
+    "attemptedUrl": "https://www.santaradio.co.uk/questions",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/questions",
+        "robots": null
+      },
+      {
+        "status": 404,
+        "location": null,
+        "robots": "noindex, follow"
+      }
+    ]
+  },
+  {
+    "url": "https://www.santaradio.co.uk//questions/",
+    "lastCrawled": "2026-03-05",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.386Z",
+    "status": 404,
+    "finalUrl": "https://www.santaradio.co.uk/questions/",
+    "attemptedUrl": "https://www.santaradio.co.uk/questions/",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/questions/",
+        "robots": null
+      },
+      {
+        "status": 404,
+        "location": null,
+        "robots": "noindex, follow"
+      }
+    ]
+  },
+  {
+    "url": "https://www.santaradio.co.uk//christmas-music",
+    "lastCrawled": "2026-02-22",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.365Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/christmas-music",
+    "attemptedUrl": "https://www.santaradio.co.uk/christmas-music",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/christmas-music",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Christmas Song Lyrics &amp; Artists — Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/christmas-music"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Christmas Song Lyrics &amp; Artists"
+      ],
+      "bytes": 258950,
+      "mainTextCharacters": 15720
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk//christmas-music/",
+    "lastCrawled": "2026-02-22",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.679Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/christmas-music",
+    "attemptedUrl": "https://www.santaradio.co.uk/christmas-music",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/christmas-music/",
+        "robots": null
+      },
+      {
+        "status": 308,
+        "location": "/christmas-music",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Christmas Song Lyrics &amp; Artists — Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/christmas-music"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Christmas Song Lyrics &amp; Artists"
+      ],
+      "bytes": 258950,
+      "mainTextCharacters": 15720
+    }
+  },
+  {
+    "url": "https://santaradio.co.uk/christmas-artist/178-bing-crosby-faith-of-our-fathers",
+    "lastCrawled": "2025-12-11",
+    "host": "santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.729Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/christmas-artist/178-bing-crosby-faith-of-our-fathers",
+    "attemptedUrl": "https://www.santaradio.co.uk/christmas-artist/178-bing-crosby-faith-of-our-fathers",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "https://www.santaradio.co.uk/christmas-artist/178-bing-crosby-faith-of-our-fathers",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Faith Of Our Fathers — Bing Crosby | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/christmas-artist/178-bing-crosby-faith-of-our-fathers"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Faith Of Our Fathers — Bing Crosby"
+      ],
+      "bytes": 22174,
+      "mainTextCharacters": 2006
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/mugshots/rob-walker-bbc-sport/rob-rinder-judge",
+    "lastCrawled": "2025-11-16",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.430Z",
+    "status": 404,
+    "finalUrl": "https://www.santaradio.co.uk/mugshots/rob-walker-bbc-sport/rob-rinder-judge",
+    "attemptedUrl": "https://www.santaradio.co.uk/mugshots/rob-walker-bbc-sport/rob-rinder-judge",
+    "failure": null,
+    "responses": [
+      {
+        "status": 404,
+        "location": null,
+        "robots": "noindex, follow"
+      }
+    ]
+  },
+  {
+    "url": "https://listen.santaradio.co.uk/mugshots/anne-hegerty-tv-personality",
+    "lastCrawled": "2025-11-13",
+    "host": "listen.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.565Z",
+    "status": null,
+    "finalUrl": null,
+    "attemptedUrl": "https://listen.santaradio.co.uk/mugshots/anne-hegerty-tv-personality",
+    "failure": {
+      "code": 60,
+      "message": "curl: (60) SSL: no alternative certificate subject name matches target hostname 'listen.santaradio.co.uk'"
+    },
+    "responses": []
+  },
+  {
+    "url": "https://listen.santaradio.co.uk/mugshots/sarah-beeny-presenter",
+    "lastCrawled": "2025-11-13",
+    "host": "listen.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.572Z",
+    "status": null,
+    "finalUrl": null,
+    "attemptedUrl": "https://listen.santaradio.co.uk/mugshots/sarah-beeny-presenter",
+    "failure": {
+      "code": 60,
+      "message": "curl: (60) SSL: no alternative certificate subject name matches target hostname 'listen.santaradio.co.uk'"
+    },
+    "responses": []
+  },
+  {
+    "url": "https://listen.santaradio.co.uk/mugshots/faye-tozer-singer",
+    "lastCrawled": "2025-11-13",
+    "host": "listen.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.587Z",
+    "status": null,
+    "finalUrl": null,
+    "attemptedUrl": "https://listen.santaradio.co.uk/mugshots/faye-tozer-singer",
+    "failure": {
+      "code": 60,
+      "message": "curl: (60) SSL: no alternative certificate subject name matches target hostname 'listen.santaradio.co.uk'"
+    },
+    "responses": []
+  },
+  {
+    "url": "https://www.santaradio.co.uk/mugshots/rob-walker-bbc-sport/kell-brook-boxer",
+    "lastCrawled": "2025-11-10",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.541Z",
+    "status": 404,
+    "finalUrl": "https://www.santaradio.co.uk/mugshots/rob-walker-bbc-sport/kell-brook-boxer",
+    "attemptedUrl": "https://www.santaradio.co.uk/mugshots/rob-walker-bbc-sport/kell-brook-boxer",
+    "failure": null,
+    "responses": [
+      {
+        "status": 404,
+        "location": null,
+        "robots": "noindex, follow"
+      }
+    ]
+  },
+  {
+    "url": "https://www.santaradio.co.uk/artist?s=494-sabrina-claudio-christmas-blues",
+    "lastCrawled": "2025-11-10",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.633Z",
+    "status": 404,
+    "finalUrl": "https://www.santaradio.co.uk/artist?s=494-sabrina-claudio-christmas-blues",
+    "attemptedUrl": "https://www.santaradio.co.uk/artist?s=494-sabrina-claudio-christmas-blues",
+    "failure": null,
+    "responses": [
+      {
+        "status": 404,
+        "location": null,
+        "robots": "noindex, follow"
+      }
+    ]
+  },
+  {
+    "url": "https://www.santaradio.co.uk/artist?s=108-extreme-christmas-time-again",
+    "lastCrawled": "2025-11-07",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.835Z",
+    "status": 404,
+    "finalUrl": "https://www.santaradio.co.uk/artist?s=108-extreme-christmas-time-again",
+    "attemptedUrl": "https://www.santaradio.co.uk/artist?s=108-extreme-christmas-time-again",
+    "failure": null,
+    "responses": [
+      {
+        "status": 404,
+        "location": null,
+        "robots": "noindex, follow"
+      }
+    ]
+  },
+  {
+    "url": "http://www.santaradio.co.uk/artist?s=153-x-mas-donkey-&-the-glittering-balls-at-the-christmas-ball",
+    "lastCrawled": "2025-10-30",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.742Z",
+    "status": 404,
+    "finalUrl": "https://www.santaradio.co.uk/artist?s=153-x-mas-donkey-&-the-glittering-balls-at-the-christmas-ball",
+    "attemptedUrl": "https://www.santaradio.co.uk/artist?s=153-x-mas-donkey-&-the-glittering-balls-at-the-christmas-ball",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "https://www.santaradio.co.uk/artist?s=153-x-mas-donkey-&-the-glittering-balls-at-the-christmas-ball",
+        "robots": null
+      },
+      {
+        "status": 404,
+        "location": null,
+        "robots": "noindex, follow"
+      }
+    ]
+  },
+  {
+    "url": "https://santaradio.co.uk/artist?s=277-bing-crosby-silver-bells",
+    "lastCrawled": "2025-10-11",
+    "host": "santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.778Z",
+    "status": 404,
+    "finalUrl": "https://www.santaradio.co.uk/artist?s=277-bing-crosby-silver-bells",
+    "attemptedUrl": "https://www.santaradio.co.uk/artist?s=277-bing-crosby-silver-bells",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "https://www.santaradio.co.uk/artist?s=277-bing-crosby-silver-bells",
+        "robots": null
+      },
+      {
+        "status": 404,
+        "location": null,
+        "robots": "noindex, follow"
+      }
+    ]
+  },
+  {
+    "url": "https://www.santaradio.co.uk/christmas-artist/20",
+    "lastCrawled": "2025-10-08",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.831Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/christmas-artist/20-michael-buble-christmas-baby-please-come-home",
+    "attemptedUrl": "https://www.santaradio.co.uk/christmas-artist/20-michael-buble-christmas-baby-please-come-home",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "/christmas-artist/20-michael-buble-christmas-baby-please-come-home",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "Christmas (Baby Please Come Home) — Michael Buble | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/christmas-artist/20-michael-buble-christmas-baby-please-come-home"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "Christmas (Baby Please Come Home) — Michael Buble"
+      ],
+      "bytes": 23011,
+      "mainTextCharacters": 2713
+    }
+  },
+  {
+    "url": "https://santaradio.co.uk/christmas-artist/385-frank-sinatra-i-ll-be-home-for-christmas",
+    "lastCrawled": "2025-03-29",
+    "host": "santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.893Z",
+    "status": 200,
+    "finalUrl": "https://www.santaradio.co.uk/christmas-artist/385-frank-sinatra-ill-be-home-for-christmas",
+    "attemptedUrl": "https://www.santaradio.co.uk/christmas-artist/385-frank-sinatra-ill-be-home-for-christmas",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "https://www.santaradio.co.uk/christmas-artist/385-frank-sinatra-i-ll-be-home-for-christmas",
+        "robots": null
+      },
+      {
+        "status": 308,
+        "location": "/christmas-artist/385-frank-sinatra-ill-be-home-for-christmas",
+        "robots": null
+      },
+      {
+        "status": 200,
+        "location": null,
+        "robots": null
+      }
+    ],
+    "html": {
+      "title": [
+        "I&#x27;ll Be Home For Christmas — Frank Sinatra | Santa Radio"
+      ],
+      "canonical": [
+        "https://www.santaradio.co.uk/christmas-artist/385-frank-sinatra-ill-be-home-for-christmas"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "h1": [
+        "I&#x27;ll Be Home For Christmas — Frank Sinatra"
+      ],
+      "bytes": 21552,
+      "mainTextCharacters": 2030
+    }
+  },
+  {
+    "url": "https://www.santaradio.co.uk/shop/product/mugshots/mugshots/matthew-cottle-actor",
+    "lastCrawled": "2024-01-21",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.859Z",
+    "status": 404,
+    "finalUrl": "https://www.santaradio.co.uk/shop/product/mugshots/mugshots/matthew-cottle-actor",
+    "attemptedUrl": "https://www.santaradio.co.uk/shop/product/mugshots/mugshots/matthew-cottle-actor",
+    "failure": null,
+    "responses": [
+      {
+        "status": 404,
+        "location": null,
+        "robots": "noindex, follow"
+      }
+    ]
+  },
+  {
+    "url": "https://santaradio.co.uk/christmas-song-lyrics?s=319-michael-buble-all-i-want-for-christmas-is-you",
+    "lastCrawled": "2023-06-09",
+    "host": "santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.943Z",
+    "status": 404,
+    "finalUrl": "https://www.santaradio.co.uk/christmas-song-lyrics?s=319-michael-buble-all-i-want-for-christmas-is-you",
+    "attemptedUrl": "https://www.santaradio.co.uk/christmas-song-lyrics?s=319-michael-buble-all-i-want-for-christmas-is-you",
+    "failure": null,
+    "responses": [
+      {
+        "status": 308,
+        "location": "https://www.santaradio.co.uk/christmas-song-lyrics?s=319-michael-buble-all-i-want-for-christmas-is-you",
+        "robots": null
+      },
+      {
+        "status": 404,
+        "location": null,
+        "robots": "noindex, follow"
+      }
+    ]
+  },
+  {
+    "url": "https://www.santaradio.co.uk/santa-messages/mugshots/christmas-artist/christmas-karaoke-lyrics/58-cliff-richard-saviours-day",
+    "lastCrawled": "2023-01-03",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.994Z",
+    "status": 404,
+    "finalUrl": "https://www.santaradio.co.uk/santa-messages/mugshots/christmas-artist/christmas-karaoke-lyrics/58-cliff-richard-saviours-day",
+    "attemptedUrl": "https://www.santaradio.co.uk/santa-messages/mugshots/christmas-artist/christmas-karaoke-lyrics/58-cliff-richard-saviours-day",
+    "failure": null,
+    "responses": [
+      {
+        "status": 404,
+        "location": null,
+        "robots": "noindex, follow"
+      }
+    ]
+  },
+  {
+    "url": "https://www.santaradio.co.uk/artist?s=287-mitch-miller-and-the-gang-the-twelve-days-of-christmas",
+    "lastCrawled": "2021-12-31",
+    "host": "www.santaradio.co.uk",
+    "checkedAt": "2026-10-29T10:59:19.930Z",
+    "status": 404,
+    "finalUrl": "https://www.santaradio.co.uk/artist?s=287-mitch-miller-and-the-gang-the-twelve-days-of-christmas",
+    "attemptedUrl": "https://www.santaradio.co.uk/artist?s=287-mitch-miller-and-the-gang-the-twelve-days-of-christmas",
+    "failure": null,
+    "responses": [
+      {
+        "status": 404,
+        "location": null,
+        "robots": "noindex, follow"
+      }
+    ]
+  }
+]

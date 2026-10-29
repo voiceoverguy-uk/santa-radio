@@ -53,3 +53,4 @@
 - [Santa Studio paid bundle](santa-studio-purchase-scope.md) — £6.50 guest family bundle; preserve the live product, keep free access separate, and do not invent expiry or regeneration caps.
 - [Stripe connector diagnosis](stripe-connector-compatibility.md) — Inspect response field names before treating template errors as failed provisioning; preserve the working sandbox connection.
 - [Preview cookie attributes](preview-cookie-attributes.md) — The preview proxy can rewrite SameSite; test server attributes separately and keep explicit request-origin checks.
+- [Raw request targets](raw-request-targets.md) — Exact doubled-separator exports must survive pre-routing middleware; resolver-only checks miss failures and app-shell fallbacks.

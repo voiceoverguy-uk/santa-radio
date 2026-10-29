@@ -1,13 +1,20 @@
 import { readFile, stat } from 'node:fs/promises';
 import { publicPageHtml, sitemap, robots } from './public-html.js';
 import { resolvePublicRequest } from '../src/seo/routes.js';
+import { publicRequestUrl } from '../src/seo/requestUrl.js';
 import { thumbnailFile } from './mug-thumbnails.js';
 export default function publicPagesPlugin() {
   return {
     name: 'public-pages-ssr',
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
-        const path = new URL(req.url, 'http://server').pathname;
+        const path = publicRequestUrl(req.url, 'http://server').pathname;
+        // These exported legacy resources have no verified replacement. Vite's
+        // SPA fallback otherwise turns their missing .jpg/.php GETs into 200 HTML.
+        if (['/assets/img/artists/charles-brown.jpg', '/karaoke4.php'].includes(path)) {
+          res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8', 'X-Robots-Tag': 'noindex, follow' });
+          return res.end(req.method === 'HEAD' ? undefined : 'Not found');
+        }
         if (path.startsWith('/mugshot-thumbnails/')) {
           try {
             const file = await thumbnailFile(path);

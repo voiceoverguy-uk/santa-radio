@@ -15,6 +15,7 @@ import { CLERK_PROXY_PATH, clerkProxyMiddleware } from './server/middlewares/cle
 import { trackerPageHtml, isTrackerPreview } from './server/tracker-html.js';
 import artworkFeedPlugin from './scripts/artwork-feed-plugin.mjs';
 import publicPagesPlugin from './server/public-pages-plugin.js';
+import { publicRequestUrl } from './src/seo/requestUrl.js';
 import { santaAudioRecipeVersion } from './scripts/santa-audio-recipe.mjs';
 import stripeWebhook from './server/stripe-webhook.js';
 import studioPaidAccess from './server/santa-studio-purchase.js';
@@ -23,12 +24,12 @@ import studioCheckout from './server/santa-studio-checkout.js';
 const trackerMetadataPlugin = {
   name: 'tracker-page-metadata',
   transformIndexHtml(html, context) {
-    const pathname = new URL(context.originalUrl || context.path, 'http://server').pathname;
+    const pathname = publicRequestUrl(context.originalUrl || context.path, 'http://server').pathname;
     return trackerPageHtml(html, pathname);
   },
   configureServer(server) {
     server.middlewares.use((req, res, next) => {
-      if (isTrackerPreview(new URL(req.url, 'http://server').pathname)) res.setHeader('X-Robots-Tag', 'noindex, follow');
+      if (isTrackerPreview(publicRequestUrl(req.url, 'http://server').pathname)) res.setHeader('X-Robots-Tag', 'noindex, follow');
       next();
     });
   },
@@ -61,7 +62,7 @@ const metadataPlugin = {
     // Vite's SPA preview fallback otherwise serves the pre-rendered homepage.
     // Serve the standalone noindex Studio preview instead of the homepage.
     server.middlewares.use(async (req, res, next) => {
-      if (!/^\/santa-message-workshop\/?$/.test(new URL(req.url, 'http://server').pathname)) return next();
+      if (!/^\/santa-message-workshop\/?$/.test(publicRequestUrl(req.url, 'http://server').pathname)) return next();
       if (!['GET', 'HEAD'].includes(req.method)) {
         res.writeHead(405, { Allow: 'GET, HEAD' }); return res.end();
       }

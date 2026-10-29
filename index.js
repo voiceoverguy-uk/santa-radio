@@ -15,6 +15,7 @@ import { CLERK_PROXY_PATH, clerkProxyMiddleware } from './server/middlewares/cle
 import { trackerPageHtml, isTrackerPreview } from './server/tracker-html.js';
 import { artworkHeaders } from './server/artwork-feed.js';
 import { resolvePublicRequest } from './src/seo/routes.js';
+import { publicRequestUrl } from './src/seo/requestUrl.js';
 import { publicPageHtml } from './server/public-html.js';
 import stripeWebhook from './server/stripe-webhook.js';
 import studioPaidAccess from './server/santa-studio-purchase.js';
@@ -37,7 +38,7 @@ const clerkProxy = clerkProxyMiddleware();
 const server = createServer(async (req, res) => {
   try {
     let pathname;
-    try { pathname = decodeURIComponent(new URL(req.url, 'http://server').pathname); }
+    try { pathname = decodeURIComponent(publicRequestUrl(req.url, 'http://server').pathname); }
     catch { res.writeHead(400).end('Invalid path'); return; }
     artworkHeaders(req, res, () => {});
     if (res.writableEnded) return;

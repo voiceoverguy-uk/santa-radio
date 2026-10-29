@@ -2,10 +2,15 @@ import { songs, mugs, songPath, mugPath, songRedirects, mugAliases, mugPhotoTerm
 import legacySongs from '../data/legacy-songs.js';
 import { santaMessageRequestedName } from './santaMessageLinks.js';
 import { alternateProfileRedirects } from './alternateRedirects.js';
+import { publicRequestUrl } from './requestUrl.js';
 export const staticPages = ['/', '/apps', '/privacy-policy', mugPhotoTermsPath, '/christmas-music', '/mugshots/all', '/free-santa-message', '/submit-a-song', '/links', '/santa-stories', '/santa-tracker'];
 export const canonicalPaths = [...staticPages, ...songs.map(songPath), ...mugs.map(mugPath), ...songs.map(s => `/christmas-karaoke-lyrics/${s.id}-${s.link}`)];
 const paths = new Set(canonicalPaths);
 export const aliases = new Map([['/music', '/christmas-music'], ['/mugshots', '/mugshots/all'], ...songRedirects]);
+// Exact doubled-separator examples already consolidated by the public edge.
+// Mirror those results locally; this is not arbitrary slash normalization.
+aliases.set('//', '/');
+aliases.set('//christmas-music', '/christmas-music');
 for (const song of songs) {
   aliases.set(`/christmas-artist/${song.id}`, songPath(song));
   aliases.set(`/christmas-artist/${song.link}`, songPath(song));
@@ -30,14 +35,33 @@ export const legacyMatches = legacySongs.map(legacy => {
 const verifiedArtistQueries = new Map([
   ['84-barbra-streisand-the-christmas-song', ['Barbra Streisand', 'The Christmas Song']],
   ['450-donny-hathaway-this-christmas', ['Donny Hathaway', 'This Christmas']],
+  ['494-sabrina-claudio-christmas-blues', ['Sabrina Claudio', 'Christmas Blues']],
+  ['108-extreme-christmas-time-again', ['Extreme', 'Christmas Time Again']],
+  ['153-x-mas-donkey-&-the-glittering-balls-at-the-christmas-ball', ['X-mas Donkey & The Glittering Balls', 'At The Christmas Ball']],
+  ['277-bing-crosby-silver-bells', ['Bing Crosby', 'Silver Bells']],
+  ['287-mitch-miller-and-the-gang-the-twelve-days-of-christmas', ['Mitch Miller and The Gang', 'The Twelve Days Of Christmas']],
 ].map(([query, [artist, title]]) => {
-  const matches = songs.filter(song => song.artist === artist && song.song === title && `${song.id}-${song.link}` === query);
+  const matches = songs.filter(song => song.artist === artist && song.song === title);
   return [query, matches.length === 1 ? songPath(matches[0]) : null];
 }));
 // Exact malformed addresses from the export; no general slash/hyphen rewriting.
 for (const [old, target] of [
   ['/christmas-karaoke-lyrics/christmas-karaoke-lyrics/369-dean-martin-let-it-snow-let-it-snow-let-it-snow', '/christmas-karaoke-lyrics/369-dean-martin-let-it-snow-let-it-snow-let-it-snow'],
   ['/christmas-karaoke-lyrics/564-laufey-santa-claus-is-comin--to-town', '/christmas-karaoke-lyrics/564-laufey-santa-claus-is-comin-to-town'],
+]) {
+  if (paths.has(target)) aliases.set(old, target);
+}
+// Additional exact crawled-report identities, verified against the retained
+// sitemap, original music rows and current profiles. Do not strip prefixes or
+// rename Bon Jovi's established canonical. Evidence: docs/search-console-crawled-links.md.
+for (const [old, target] of [
+  ['/christmas-artist/549-bon-jovi-christmas-isn-t-christmas', '/christmas-artist/549-bon-jovi-christmas-isna-tmt-christmas'],
+  ['/mugshots/rob-walker-bbc-sport/rob-rinder-judge', '/mugshots/rob-rinder-judge'],
+  ['/mugshots/rob-walker-bbc-sport/kell-brook-boxer', '/mugshots/kell-brook-boxer'],
+  ['/shop/product/mugshots/mugshots/matthew-cottle-actor', '/mugshots/matthew-cottle-actor'],
+  ['/santa-messages/mugshots/christmas-artist/christmas-karaoke-lyrics/58-cliff-richard-saviours-day', '/christmas-karaoke-lyrics/58-cliff-richard-saviours-day'],
+  // Original personalised.php enumerated audio-messages/ and linked name pages.
+  ['/personalised', '/free-santa-message'],
 ]) {
   if (paths.has(target)) aliases.set(old, target);
 }
@@ -79,11 +103,11 @@ for (const [old, target] of alternateProfileRedirects) {
   aliases.set(old, target);
 }
 export function resolvePublicRequest(raw) {
-  const url = new URL(raw, 'https://www.santaradio.co.uk');
+  const url = publicRequestUrl(raw);
   let path;
   try { path = decodeURIComponent(url.pathname); } catch { return { status: 400 }; }
   // Never redirect hosts: preview, audio feeds, integrations and API calls stay same-origin.
-  const normalized = path.length > 1 ? path.replace(/\/+$/, '') : path;
+  const normalized = path === '//' ? path : path.length > 1 ? path.replace(/\/+$/, '') : path;
   if (/^\/(?:request-names|sign-in|sign-up)(?:\/|$)/.test(normalized)) return { status: 200, noindex: true };
   const messageLink = normalized.match(/^\/personalised-santa-message(?:\/([^/]+))?$/i);
   if (messageLink) {
@@ -104,7 +128,18 @@ export function resolvePublicRequest(raw) {
   if (normalized === '/santa-tracker/preview') return { status: 200, noindex: true };
   if (normalized === '/artist') {
     if (url.searchParams.getAll('s').length !== 1) return { status: 404, noindex: true };
-    const id = url.searchParams.get('s');
+    let id = url.searchParams.get('s');
+    // The exported Donkey URL has an unescaped ampersand inside its full slug.
+    // URLSearchParams (and the Vercel handler) represent the second half as an
+    // empty-valued key. Accept only this exact pair, not arbitrary joined keys,
+    // conflicting values, or repeated continuations. Encoded full slugs also work.
+    const continuation = '-the-glittering-balls-at-the-christmas-ball';
+    if (url.searchParams.has(continuation)) {
+      if (id !== '153-x-mas-donkey-' || url.searchParams.getAll(continuation).length !== 1 ||
+          url.searchParams.get(continuation) !== '') return { status: 404, noindex: true };
+      id += '&' + continuation;
+      url.searchParams.delete(continuation);
+    }
     const verifiedTarget = verifiedArtistQueries.get(id);
     const match = /^\d+$/.test(id || '') && legacyMatches.find(row => row.legacy.id === Number(id));
     if (!match && !verifiedTarget) return { status: 404, noindex: true };

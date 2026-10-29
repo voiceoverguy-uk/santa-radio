@@ -2,11 +2,16 @@ import { test, expect } from '@playwright/test';
 import { mockBrevo, fillAccessForm } from './helpers/message-access.js';
 import { readFileSync } from 'node:fs';
 
-const reportNames = readFileSync('attached_assets/Table_1793271000630.csv', 'utf8')
+const reportNames = [...new Set([
+  ...readFileSync('attached_assets/Table_1793271000630.csv', 'utf8')
   .trim().split(/\r?\n/).slice(1)
   .map(line => new URL(line.split(',')[0]).pathname)
   .filter(path => path.startsWith('/personalised-santa-message/'))
-  .map(path => path.split('/').at(-1));
+  .map(path => path.split('/').at(-1)),
+  ...JSON.parse(readFileSync('docs/search-console-crawled/dispositions.json', 'utf8'))
+    .filter(row => row.kind === 'working-name')
+    .map(row => new URL(row.url).pathname.split('/').at(-1)),
+])];
 
 async function setup(page, records = [{ id: 'cooper', name: 'Cooper', downloadName: 'Santa-message-for-Cooper.mp3' }]) {
   const requests = { searches: [], renders: [] };
@@ -39,7 +44,7 @@ async function openAccess(page) {
 }
 
 for (const name of reportNames) {
-  test(`duplicate report name ${name} stays gated and only prefills after adult access`, async ({ page }) => {
+  test(`legacy report name ${name} stays gated and only prefills after adult access`, async ({ page }) => {
     const requests = await setup(page, [{ id: name.toLowerCase(), name, downloadName: `Santa-message-for-${name}.mp3` }]);
     await page.goto(`/personalised-santa-message/${name}`);
     await expect(page).toHaveURL(new RegExp(`/free-santa-message\\?name=${name}$`));
@@ -64,6 +69,18 @@ test('old catalogue goes to the generic maker and preserves the adult gate', asy
   await openAccess(page);
   await expect(page.getByLabel('First Name')).toHaveValue('');
   await expect(page.locator('.message-name-count')).toHaveText('1 name available');
+});
+
+test('original personalised audio index reaches the gated maker without choosing or generating a name', async ({ page }) => {
+  const requests = await setup(page);
+  await page.goto('/personalised');
+  await expect(page).toHaveURL(/\/free-santa-message$/);
+  await expect(page.locator('.message-name-label')).toHaveCount(0);
+  expect(requests.renders).toEqual([]);
+  await openAccess(page);
+  await expect(page.getByLabel('First Name')).toHaveValue('');
+  expect(requests.renders).toEqual([]);
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://www.santaradio.co.uk/free-santa-message');
 });
 
 test('old name link carries a verified recording without submitting access or creating audio automatically', async ({ page }) => {

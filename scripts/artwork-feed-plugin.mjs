@@ -1,5 +1,6 @@
 import * as mapping from '../src/data/artistArtwork.js';
 import { buildArtworkFeed, artworkFeedPath, artworkHeaders } from '../server/artwork-feed.js';
+import { publicRequestUrl } from '../src/seo/requestUrl.js';
 
 export default function artworkFeedPlugin() {
   return {
@@ -7,7 +8,7 @@ export default function artworkFeedPlugin() {
     configureServer(server) {
       server.middlewares.use(artworkHeaders);
       server.middlewares.use(async (req, res, next) => {
-        if (new URL(req.url, 'http://server').pathname !== artworkFeedPath) { next(); return; }
+        if (publicRequestUrl(req.url, 'http://server').pathname !== artworkFeedPath) { next(); return; }
         if (!['GET', 'HEAD'].includes(req.method)) {
           res.writeHead(405, { Allow: 'GET, HEAD, OPTIONS' }).end(); return;
         }
