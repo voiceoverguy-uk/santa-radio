@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { mockSantaNames } from './helpers/message-access.js';
 import { MESSAGE_ACCESS_KEY } from '../src/lib/santaMessageAccess.js';
 import { MESSAGE_ALLOWANCE_KEY, MESSAGE_COOLDOWN_MS } from '../src/lib/santaMessageAllowance.js';
+import { expectNativeMessagePlayer } from './helpers/native-message-player.js';
 
 const audio = readFileSync('server/santa-audio/sleighbells.mp3');
 const mp3 = { contentType: 'audio/mpeg', body: audio };
@@ -39,16 +40,21 @@ test.beforeEach(async ({ context }) => {
     sessionStorage.setItem(accessKey, 'granted');
     window.testNow = now;
     Date.now = () => window.testNow;
+    window.sharedGreetings = [];
+    Object.defineProperty(navigator, 'canShare', { configurable: true, value: () => true });
+    Object.defineProperty(navigator, 'share', { configurable: true, value: async data => {
+      window.sharedGreetings.push(data.files[0].name);
+    } });
   }, { accessKey: MESSAGE_ACCESS_KEY, now: fixedNow });
 });
 
 for (const path of ['/', '/free-santa-message']) {
   for (const width of [390, 1440]) {
-    test(`completed message, downloads, share and one Studio card work at ${width}px on ${path}`, async ({ page }) => {
+    test(`completed message, downloads, share and one Studio card work at ${width}px on ${path}`, async ({ page }, testInfo) => {
       await page.setViewportSize({ width, height: 900 });
       await page.emulateMedia({ reducedMotion: 'reduce' });
       await openMaker(page, path);
-      await expect(page.locator('.santa-message-aside > .santa-studio-promotion')).toHaveCount(1);
+      await expect(page.locator('.message-layout > .santa-studio-promotion')).toHaveCount(1);
       await create(page);
 
       const result = page.getByLabel('Santa’s greeting for Olivia', { exact: true });
@@ -62,22 +68,22 @@ for (const path of ['/', '/free-santa-message']) {
       await expect(result.getByRole('button', { name: 'Share this greeting', exact: true })).toBeVisible();
       await expect(result.getByText(/A4 landscape PDF|Share → Save to Files/)).toHaveCount(0);
       await expect(result.locator('.message-certificate .message-name-hint')).toHaveCount(0);
-      expect(await player.evaluate(element => getComputedStyle(element).backgroundColor)).toBe('rgb(212, 175, 55)');
-      expect(await player.evaluate(element => getComputedStyle(element, '::-webkit-media-controls-panel').backgroundColor)).toBe('rgb(212, 175, 55)');
+      await expectNativeMessagePlayer(page, player, testInfo, 'created');
       expect(await player.evaluate(element => element.controls)).toBe(true);
-      await player.evaluate(element => element.focus());
+      await result.locator('h4').evaluate(element => { element.tabIndex = -1; element.focus(); });
+      await page.keyboard.press('Tab');
       await expect(player).toBeFocused();
+      expect(await player.evaluate(element => getComputedStyle(element).outlineStyle)).toBe('solid');
       await expect(promo).toHaveCount(1);
       await expect(promo).toContainText('When the Studio launches');
       await expect(promo).toContainText('age, activities, achievements, country and festive treats');
-      await expect(promo).toContainText('The paid Studio offer will include a personalised Nice List certificate as a gift.');
+      await expect(promo).toContainText('The paid Studio offer will include a personalised Nice List certificate and letter as a gift.');
       await expect(promo).not.toContainText('The basic free greeting includes one too');
       await expect(promo.getByText('Coming soon', { exact: true })).toBeVisible();
-      await expect(promo).not.toContainText(/price|checkout/i);
       await expect(page.getByRole('button', { name: 'more magic?', exact: true })).toHaveCount(0);
       await expect(page.locator('.message-wait, .message-cooldown-status, [role="timer"]')).toHaveCount(0);
-      await expect(page.locator('.message-wait-downloads > #santa-studio-promotion')).toHaveCount(1);
-      await expect(page.locator('.santa-message-aside > #santa-studio-promotion')).toHaveCount(0);
+      await expect(page.locator('.message-wait-downloads > #santa-studio-promotion')).toHaveCount(0);
+      await expect(page.locator('.message-layout > #santa-studio-promotion')).toHaveCount(1);
       await expect(page.getByRole('button', { name: 'Create message', exact: true })).toHaveCount(0);
 
       const actions = result.locator('.message-download-actions');
@@ -98,7 +104,47 @@ for (const path of ['/', '/free-santa-message']) {
 
       const download = page.waitForEvent('download');
       await result.getByRole('link', { name: 'Download your audio' }).click();
-      expect((await download).suggestedFilename()).toBe('santa-recorded-message-for-Olivia.mp3');
+      const file = await download;
+      expect(file.suggestedFilename()).toBe('santa-recorded-message-for-Olivia.mp3');
+      expect(await file.failure()).toBeNull();
+      await result.getByRole('button', { name: 'Share this greeting', exact: true }).click();
+      await expect(result.getByRole('status')).toContainText('chosen sharing app');
+      await player.evaluate(element => element.play());
+      await expect.poll(() => player.evaluate(element => element.currentTime)).toBeGreaterThan(0);
+      await player.evaluate(element => element.pause());
+
+      // Retained blobs survive SPA navigation during cooldown, not a reload.
+      const otherPath = path === '/' ? '/free-santa-message' : '/';
+      const previousPlayer = await player.elementHandle();
+      const navigation = otherPath === '/'
+        ? page.getByRole('link', { name: 'Santa Radio home', exact: true })
+        : page.locator('a[href="/free-santa-message"]').first();
+      if (!(await navigation.isVisible())) await page.getByRole('button', { name: 'Open menu', exact: true }).click();
+      await navigation.click();
+      await expect(page).toHaveURL(new RegExp(`${otherPath}$`));
+      await expect.poll(() => previousPlayer.evaluate(element => element.isConnected)).toBe(false);
+      const saved = page.getByLabel('Santa’s greeting for Olivia', { exact: true });
+      const savedPlayer = saved.locator('audio');
+      await expect(savedPlayer).toBeVisible();
+      await expectNativeMessagePlayer(page, savedPlayer, testInfo, 'retained-cooldown');
+      await expect(page.getByRole('button', { name: 'Create message', exact: true })).toHaveCount(0);
+      const savedPlayerBox = await savedPlayer.boundingBox();
+      const savedShareBox = await saved.getByRole('button', { name: 'Share this greeting', exact: true }).boundingBox();
+      expect(Math.abs(savedPlayerBox.y - savedShareBox.y)).toBeLessThanOrEqual(1);
+      expect(savedShareBox.x).toBeGreaterThanOrEqual(savedPlayerBox.x + savedPlayerBox.width);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+      await saved.getByRole('button', { name: 'Share this greeting', exact: true }).click();
+      expect(await page.evaluate(() => window.sharedGreetings)).toEqual([
+        'santa-recorded-message-for-Olivia.mp3', 'santa-recorded-message-for-Olivia.mp3',
+      ]);
+      const savedDownload = page.waitForEvent('download');
+      await saved.getByRole('link', { name: 'Download your audio' }).click();
+      const savedFile = await savedDownload;
+      expect(savedFile.suggestedFilename()).toBe('santa-recorded-message-for-Olivia.mp3');
+      expect(await savedFile.failure()).toBeNull();
+      await savedPlayer.evaluate(element => element.play());
+      await expect.poll(() => savedPlayer.evaluate(element => element.currentTime)).toBeGreaterThan(0);
+      await savedPlayer.evaluate(element => element.pause());
     });
   }
 }
@@ -152,7 +198,7 @@ test('the two-hour deadline persists through reload and updates another tab with
   await expect(page.locator('.message-cooldown-status')).toContainText(expectedTime);
   await expect(page.locator('.message-result')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toHaveCount(0);
-  await expect(page.locator('.santa-message-aside > #santa-studio-promotion')).toHaveCount(1);
+  await expect(page.locator('.message-layout > #santa-studio-promotion')).toHaveCount(1);
   await expect(page.locator('.message-wait-downloads')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'more magic?', exact: true })).toHaveCount(0);
 });

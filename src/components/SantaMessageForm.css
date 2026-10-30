@@ -54,9 +54,7 @@
 .message-result h4 { font-family: 'Cinzel', serif; color: #f6ecd8; font-size: 1.05rem; margin: 8px 0 12px; }
 .message-result p:not(.message-postmark) { color: #d0dacd; font-size: .82rem; line-height: 1.6; }
 .message-player-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; min-width: 0; margin: 16px 0; }
-.message-result .message-player-row audio { display: block; flex: 1 1 0; width: 0; min-width: 0; height: 48px; margin: 0; border-radius: 999px; background: var(--gold, #d4af37); color-scheme: light; accent-color: #19392d; }
-.message-result .message-player-row audio::-webkit-media-controls-enclosure,
-.message-result .message-player-row audio::-webkit-media-controls-panel { background: var(--gold, #d4af37); }
+.message-result .message-player-row audio { display: block; flex: 1 1 0; width: 0; min-width: 0; height: 48px; margin: 0; border-radius: 999px; }
 .message-result .message-player-row audio:focus-visible { outline: 3px solid var(--gold-light, #e6ce86); outline-offset: 4px; }
 .message-download { display: inline-flex; align-items: center; gap: 12px; color: #ead39a; font-size: .85rem; text-decoration: underline; text-underline-offset: 5px; padding: 8px 0; }
 .message-download:not(:disabled) { border-radius: 5px; box-shadow: 0 0 9px #d4af3726; animation: message-download-glow 3.5s ease-in-out infinite; }

@@ -3,8 +3,14 @@ name: Native audio control styling
 description: Browser-native audio players may paint their own panel over the element background.
 ---
 
-Style the `<audio>` element background and, in Chromium/WebKit, `::-webkit-media-controls-panel` and `::-webkit-media-controls-enclosure` when the native controls need a visible themed surface. Keep native controls and verify the actual rendered player, not only the element's computed background.
+Finished free Santa greetings must keep the standard browser-native player appearance, not a gold-themed surface. This does not apply to the radio or other players.
 
-**Why:** Chromium's audio controls rendered as a white panel despite a gold background on the `<audio>` element.
+**Why:** The owner rejected the gold free-message player, while retaining the compact player/share layout and surrounding gold styling.
 
-**How to apply:** When changing the greeting player's visual theme, inspect its rendered controls in supported browsers and preserve native playback and keyboard behavior.
+**How to apply:** Avoid colour overrides on the audio element and browser-specific media-control panels. Inspect painted controls, not only computed backgrounds: Chromium can paint an internal panel over the element background. Preserve native playback and keyboard focus.
+
+Compare native-control screenshots with a small rasterisation tolerance rather than exact PNG equality.
+
+**Why:** Identical native controls can differ at fractional coordinates in their edge and text antialiasing. Exact equality falsely rejects the unchanged native surface.
+
+**How to apply:** Compare against an unthemed control rendered by the same browser and exclude corner backdrop differences; retain a strict enough pixel threshold to reject a recoloured panel.
