@@ -40,6 +40,24 @@ test('Mistletoe And Holly preserves the upload, Sinatra controls and the Moonglo
     artistMapping.artistArtwork('The Moonglows'));
 });
 
+test('Bing illustration preserves the upload and excludes the duet and other versions', async () => {
+  const original = await readFile('attached_assets/Bing_Crosby_-_Here_Comes_Santa_Claus_1793327224384.png');
+  assert.equal(createHash('sha256').update(original).digest('hex'),
+    '37a57f01d9d13af637d2bfc90ce8fa44286ac6e7f65fa49ff8aec3647e1c8e22');
+  for (const id of [448, 194, 67]) {
+    const song = songs.find(song => song.id === id);
+    assert.equal(songArtwork(song), artistMapping.artistArtwork(song.artist));
+    assert.equal(songArtwork(matchLiveSong({ artist: song.artist, title: song.song }).song),
+      artistMapping.artistArtwork(song.artist));
+  }
+  for (const [path, hash] of [
+    ['/artist-artwork/bing-crosby.webp',
+      'd31a7799ba22cd4599bc7cf5a3e69554bf52ec8af5997c0ba821a2968b84f4fb'],
+    ['/artist-artwork/bing-crosby-and-rosemary-clooney.webp',
+      'c2a5fb2397d4780d4d9e305adbc6384541d3d23a6299b44793d9e8a3cefa0a7a'],
+  ]) assert.equal(createHash('sha256').update(await readFile(`public${path}`)).digest('hex'), hash);
+});
+
 test("Can't stop Christmas preserves its original and both existing Robbie images", async () => {
   for (const [path, hash] of [
     ["attached_assets/Robbie_Williams_-_Can't_Stop_Christmas_1793324101511.png",

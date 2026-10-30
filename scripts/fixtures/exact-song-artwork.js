@@ -1,5 +1,6 @@
 // Independent expectations for supplied recording illustrations.
 export const exactSongArtwork = [
+  [343, 'Bing Crosby', 'Here Comes Santa Claus', 'bing-crosby-here-comes-santa-claus'],
   [288, 'Robbie Williams', 'Walk this Sleigh', 'robbie-williams-walk-this-sleigh'],
   [487, 'Robbie Williams', "Can't stop Christmas", 'robbie-williams-cant-stop-christmas'],
   [559, 'Robbie Williams', 'Bad Sharon', 'robbie-williams-bad-sharon'],

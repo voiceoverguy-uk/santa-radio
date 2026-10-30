@@ -4,6 +4,11 @@ import { normalizeTrackText } from './matchLiveSong.js';
 // Exact-recording assignments shared by the website and public artwork feed.
 // Verify the catalogue ID, artist and title before assigning a supplied image.
 export const songPortraits = Object.freeze({
+  343: Object.freeze({
+    artist: 'Bing Crosby',
+    title: 'Here Comes Santa Claus',
+    path: '/artist-artwork/bing-crosby-here-comes-santa-claus.webp',
+  }),
   288: Object.freeze({
     artist: 'Robbie Williams',
     title: 'Walk this Sleigh',

@@ -50,6 +50,23 @@ test('Mistletoe And Holly adds only its exact recording without changing artist-
   assert.notEqual(current.version, previous.version);
 });
 
+test('Here Comes Santa Claus adds only recording 343 and leaves all artist entries unchanged', async () => {
+  const current = await buildArtworkFeed(mapping);
+  const { 343: added, ...previousMapping } = songPortraits;
+  const previous = await buildArtworkFeed(mapping, { recordingMapping: previousMapping });
+  for (const key of ['schemaVersion', 'refreshAfterSeconds', 'fallback', 'artists']) {
+    assert.deepEqual(current[key], previous[key]);
+  }
+  const { 343: entry, ...remaining } = current.recordings;
+  assert.deepEqual(remaining, previous.recordings);
+  assert.equal(entry.artist, 'Bing Crosby');
+  assert.equal(entry.title, 'Here Comes Santa Claus');
+  assert.equal(entry.image.path, added.path);
+  assert.notEqual(current.version, previous.version);
+  assert.equal(Object.hasOwn(current.recordings, '448'), false);
+  assert.equal(Object.hasOwn(current.recordings, '194'), false);
+});
+
 test("Can't stop Christmas adds only its exact entry and versions replacement bytes independently", async () => {
   const current = await buildArtworkFeed(mapping);
   const { 487: added, ...previousMapping } = songPortraits;

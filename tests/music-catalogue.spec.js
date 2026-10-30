@@ -98,6 +98,43 @@ test('Elvis Presley Blue Christmas page uses the requested YouTube video', async
     .toHaveAttribute('src', 'https://www.youtube.com/embed/3KK6sMo8NBY');
 });
 
+for (const width of [1440, 390]) {
+  test(`Bing Crosby exact illustration stays square and enlarges at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.route('**/*youtube.com/**', route => route.abort());
+    await page.goto('/christmas-artist/343-bing-crosby-here-comes-santa-claus');
+    const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+    if (await decline.isVisible()) await decline.click();
+    const trigger = page.getByRole('button', {
+      name: 'Enlarge artwork for Here Comes Santa Claus by Bing Crosby', exact: true,
+    });
+    const thumbnail = trigger.locator('img');
+    const path = '/artist-artwork/bing-crosby-here-comes-santa-claus.webp';
+    await expect(thumbnail).toHaveAttribute('src', path);
+    await expect.poll(() => thumbnail.evaluate(img => [img.naturalWidth, img.naturalHeight]))
+      .toEqual([512, 512]);
+    const bounds = await thumbnail.boundingBox();
+    expect(Math.abs(bounds.width - bounds.height)).toBeLessThanOrEqual(1);
+    await trigger.click();
+    const dialog = page.getByRole('dialog', {
+      name: 'Artwork for Here Comes Santa Claus by Bing Crosby', exact: true,
+    });
+    await expect(dialog).toBeVisible();
+    const enlarged = dialog.locator('img');
+    await expect(enlarged).toHaveAttribute('src', new RegExp(`${path}$`));
+    await expect(enlarged).toHaveCSS('object-fit', 'contain');
+    const box = await enlarged.boundingBox();
+    expect(Math.abs(box.width - box.height)).toBeLessThanOrEqual(1);
+    expect(box.x).toBeGreaterThanOrEqual(0);
+    expect(box.x + box.width).toBeLessThanOrEqual(width + 1);
+    expect(box.y).toBeGreaterThanOrEqual(0);
+    expect(box.y + box.height).toBeLessThanOrEqual(901);
+    await page.keyboard.press('Escape');
+    await expect(dialog).not.toBeVisible();
+    await expect(trigger).toBeFocused();
+  });
+}
+
 test.describe('song artwork enlargement', () => {
   const slug = '82-andy-williams-do-you-hear-what-i-hear';
   const song = findSong(slug);
