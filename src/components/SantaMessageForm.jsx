@@ -29,6 +29,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [exampleName, setExampleName] = useState('Olivia');
   const [activeExampleName, setActiveExampleName] = useState(null);
+  const [giftPreviewName, setGiftPreviewName] = useState(null);
   const { messages, remember } = useSantaMessageHistory();
   const [validation, setValidation] = useState('');
   const [audioErrors, setAudioErrors] = useState({});
@@ -125,6 +126,10 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   // Retain only the text through signup; never choose a recording or submit.
   const appliedPendingName = useRef(null);
   useEffect(() => {
+    // A checked name can personalise gifts even while audio creation is cooling down.
+    if (pendingName?.name) setGiftPreviewName(pendingName.name);
+  }, [pendingName]);
+  useEffect(() => {
     if (!pendingName || pendingName === appliedPendingName.current || coolingDown) return;
     appliedPendingName.current = pendingName;
     updateName(pendingName.name);
@@ -177,6 +182,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const selectName = record => {
     updateName(record.name);
     setSelectedRecord(record);
+    setGiftPreviewName(record.name);
     setSuggesting(false);
   };
   const submit = async event => {
@@ -195,6 +201,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
       return;
     }
     setValidation('');
+    setGiftPreviewName(recording.name);
     const controller = new AbortController();
     requestRef.current = controller;
     setBusy(true);
@@ -409,7 +416,8 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
       </div>
       {hasAccess && <SantaMessageExample onExampleNameChange={setActiveExampleName} />}
       </div>
-      <SantaStudioPromotion activeExampleName={activeExampleName} availableNamesText={availableNamesText} />
+      <SantaStudioPromotion activeExampleName={activeExampleName} availableNamesText={availableNamesText}
+        previewName={giftPreviewName} />
     </div>
   </section>;
 }

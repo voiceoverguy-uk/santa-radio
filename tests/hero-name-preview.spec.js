@@ -42,6 +42,71 @@ async function choose(page, name) {
   await expect(checker(page).getByRole('status')).toHaveText(`Yes! Santa can record for ${name}.`);
 }
 
+for (const width of [390, 1440]) {
+  test(`checked names personalise all gifts with watermarked enlargements at ${width}px`, async ({ page }) => {
+    test.setTimeout(60000);
+    await page.setViewportSize({ width, height: 1000 });
+    await page.clock.install();
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await setup(page);
+    let creations = 0;
+    await page.route('**/api/santa-message', route => { creations++; return route.abort(); });
+    await open(page);
+    const gifts = page.locator('.studio-gifts');
+    await choose(page, 'Erica'); // Not one of the rotating/sample names.
+    await cta(page).click();
+    await gifts.scrollIntoViewIfNeeded();
+    await expect(gifts).toHaveAttribute('data-demo-name', 'Erica');
+    await expect(gifts.getByRole('heading')).toHaveText('From Santa’s desk — a gift preview for Erica');
+    await expect(gifts.locator('.studio-certificate__name')).toHaveText('Erica');
+    await expect(gifts.locator('.studio-gifts__preview-stack .studio-santa-picture__name')).toHaveText('Erica');
+    await expect(gifts.locator('.studio-gifts__gallery .studio-gifts__sr')).toContainText('Dear Erica,');
+    await page.mouse.move(0, 0);
+    await page.evaluate(() => document.activeElement?.blur());
+    await page.clock.runFor(10500);
+    await expect(gifts.locator('.studio-gifts__preview-stack .studio-santa-picture > img')).toHaveAttribute('src', '/images/santa-nice-list-2.jpg');
+    await page.clock.runFor(19500);
+    await expect(gifts).toHaveAttribute('data-demo-name', 'Erica');
+    await expect(gifts.locator('.studio-gifts__preview-stack .studio-gifts__watermark')).toHaveCount(0);
+    for (const label of ['Enlarge certificate', 'Enlarge letter to read', 'Enlarge Santa’s Nice List picture']) {
+      await gifts.getByRole('button', { name: label, exact: true }).click();
+      const dialog = page.getByRole('dialog');
+      const watermark = dialog.locator('.studio-gifts__watermark');
+      await expect(watermark).toBeVisible();
+      await expect(watermark).toHaveText('NORTH POLE PROPERTY');
+      await expect(watermark).toHaveAttribute('aria-hidden', 'true');
+      const geometry = await watermark.locator('span').evaluate(el => ({
+        ink: el.getBoundingClientRect().toJSON(),
+        sheet: el.closest('.studio-letter-dialog__document').getBoundingClientRect().toJSON(),
+        color: getComputedStyle(el).color,
+        size: parseFloat(getComputedStyle(el).fontSize),
+      }));
+      expect(geometry.size / geometry.sheet.width).toBeGreaterThan(.06);
+      expect(geometry.color).toContain('0.45');
+      expect(geometry.ink.left).toBeGreaterThanOrEqual(geometry.sheet.left);
+      expect(geometry.ink.right).toBeLessThanOrEqual(geometry.sheet.right);
+      expect(geometry.ink.top).toBeGreaterThanOrEqual(geometry.sheet.top);
+      expect(geometry.ink.bottom).toBeLessThanOrEqual(geometry.sheet.bottom);
+      if (width === 1440) await dialog.screenshot({ path: `test-results/personalised-${label.split(' ')[1]}-watermark.png` });
+      await page.keyboard.press('Escape');
+      await expect(dialog).not.toBeVisible();
+    }
+    await choose(page, 'Arabella');
+    await cta(page).click();
+    await expect(gifts).toHaveAttribute('data-demo-name', 'Arabella');
+    await fillAccessForm(page);
+    await page.getByRole('button', { name: 'Get my free Santa message', exact: true }).click();
+    const maker = page.locator('.santa-message-box');
+    await expect(maker.getByRole('combobox')).toBeVisible();
+    await expect(gifts).toHaveAttribute('data-demo-name', 'Arabella');
+    await maker.getByRole('combobox').fill('Erin');
+    await maker.getByRole('option', { name: 'Erin', exact: true }).click();
+    await expect(gifts).toHaveAttribute('data-demo-name', 'Erin');
+    expect(creations).toBe(0);
+    expect(await page.evaluate(() => JSON.stringify({ ...localStorage, ...sessionStorage }))).not.toMatch(/Erica|Arabella|Erin/);
+  });
+}
+
 test('real hosted inventory drives lookup, with no child query URLs, storage or auto audio', async ({ page }) => {
   await setup(page, { realInventory: true });
   const api = await page.request.get('/api/santa-names?inventory=hosted');

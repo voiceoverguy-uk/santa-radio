@@ -62,6 +62,12 @@ Embed the supplied font in full rather than subsetting it.
 
 **How to apply:** Verify the actual rasterised output, not only ToUnicode extraction. Keep full embedding unless a replacement implementation is visually checked with normal, long and accented/punctuated names.
 
+Checked names should personalise the certificate, letter and Santa picture previews. Keep the visitor's chosen name instead of rotating through sample names, while still alternating the Santa pictures. A deliberately played audio example may temporarily show its matching name, then return to the checked name.
+
+**Why:** The owner wants visitors who check a name and continue to see their own personalised gifts below.
+
+**How to apply:** Use the verified display name, keep it only in page memory, and preserve signup and audio allowances. Every enlarged gift preview must have a large translucent “NORTH POLE PROPERTY” watermark; this is preview presentation, not an extra marking on purchased gifts or the certificate master.
+
 Font changes must preserve both the visible name and its extracted PDF text.
 
 **Why:** The supplied script font could render contextual ligatures correctly while PDF extraction substituted unrelated Unicode letters. A visual-only check would miss incorrect spelling for copying and assistive readers.

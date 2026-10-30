@@ -4,7 +4,7 @@ import './SantaStudioPromotion.css';
 import StudioPurchaseButton from './StudioPurchaseButton.jsx';
 import SantaStudioGifts from './SantaStudioGifts.jsx';
 
-export default function SantaStudioPromotion({ activeExampleName = null, availableNamesText }) {
+export default function SantaStudioPromotion({ activeExampleName = null, availableNamesText, previewName = null }) {
   const navigate = useNavigate();
 
   return (
@@ -47,7 +47,7 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
         />
         <StudioPurchaseButton />
       </div>
-      <SantaStudioGifts activeExampleName={activeExampleName} />
+        <SantaStudioGifts activeExampleName={activeExampleName} previewName={previewName} />
     </section>
   );
 }

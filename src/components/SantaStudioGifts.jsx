@@ -113,7 +113,7 @@ function GiftExample({ name, picture, activeAudio, reducedMotion, onNext }) {
     // One shared name drives both documents. Writing completes within this cycle.
     const timer = setTimeout(onNext, GIFT_EXAMPLE_INTERVAL_MS);
     return () => clearTimeout(timer);
-  }, [activeAudio, reducedMotion, visible, hovered, focused, reading, view, onNext]);
+  }, [activeAudio, reducedMotion, visible, hovered, focused, reading, view, onNext, picture]);
   useEffect(() => {
     if (!view) return undefined;
     const dialog = dialogRef.current;
@@ -168,15 +168,18 @@ function GiftExample({ name, picture, activeAudio, reducedMotion, onNext }) {
       </div>
       <div className="studio-letter-dialog__content" role="region" aria-label="Enlarged gift preview"
         tabIndex={0} onScroll={() => setReading(true)}>
-        {view === 'certificate' ? <Certificate name={name} elapsed={duration} />
-          : view === 'letter' ? <Letter letter={letter} elapsed={duration} />
-            : <SantaPicture name={name} picture={picture} elapsed={duration} />}
+        <div className={`studio-letter-dialog__document studio-letter-dialog__document--${view || 'picture'}`}>
+          {view === 'certificate' ? <Certificate name={name} elapsed={duration} />
+            : view === 'letter' ? <Letter letter={letter} elapsed={duration} />
+              : <SantaPicture name={name} picture={picture} elapsed={duration} />}
+          <div className="studio-gifts__watermark" aria-hidden="true"><span>NORTH POLE PROPERTY</span></div>
+        </div>
       </div>
     </dialog>
   </section>;
 }
 
-export default function SantaStudioGifts({ activeExampleName = null }) {
+export default function SantaStudioGifts({ activeExampleName = null, previewName = null }) {
   const [index, setIndex] = useState(0);
   const [pictureIndex, setPictureIndex] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
@@ -193,11 +196,11 @@ export default function SantaStudioGifts({ activeExampleName = null }) {
     return () => preference.removeEventListener('change', update);
   }, []);
   const activeName = allCertificateExamples.find(item => item.name === activeExampleName)?.name;
-  const name = activeName || certificateExampleNames[index];
+  const name = activeName || previewName || certificateExampleNames[index];
   const nextExample = useCallback(() => {
-    setIndex(value => (value + 1) % certificateExampleNames.length);
+    if (!previewName) setIndex(value => (value + 1) % certificateExampleNames.length);
     setPictureIndex(value => (value + 1) % santaPictures.length);
-  }, []);
+  }, [previewName]);
   // Keep the audio name on stop when it belongs to the idle rotation.
   useEffect(() => {
     const next = certificateExampleNames.indexOf(activeName);
