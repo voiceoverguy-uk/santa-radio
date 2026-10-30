@@ -53,8 +53,8 @@ test('source, pre-rendered pages and runtime shell preserve the same crawlable f
   assert.doesNotMatch((await readFile('dist/index.html', 'utf8')).split('</head>')[0], /noindex|noimageindex/i);
 });
 
-test('generic links advertise one opaque, full-size green share card in initial HTML', async () => {
-  assert.equal(shareImage, '/images/santa-radio-share-green-v2.jpg', 'use a new URL rather than cached old artwork');
+test('generic links advertise one opaque, full-size hero share card in initial HTML', async () => {
+  assert.equal(shareImage, '/images/santa-radio-share-hero-v3.jpg', 'use a new URL rather than cached old artwork');
   const bytes = await readFile(`public${shareImage}`);
   assert.equal(bytes.readUInt16BE(0), 0xffd8, 'the share image is a JPEG');
   assert.ok(bytes.length < 250000, 'link-preview image remains lightweight');

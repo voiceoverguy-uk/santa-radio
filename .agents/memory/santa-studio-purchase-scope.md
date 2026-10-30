@@ -31,6 +31,12 @@ Sandbox Purchase controls and development-only explanations must never appear on
 
 The owner calls the free short-message route “Studio B” and the bespoke bundle “Studio - A”, with the promotional footnote “** Coming early November”.
 
+The owner set the Studio A launch date to 6 November 2026 and requested an opening countdown beneath the red bespoke-message button.
+
+**Why:** The owner said, “We'll make this live Nov 6th.”
+
+**How to apply:** Treat this as a fixed launch date, not an annual countdown. The countdown is promotional presentation, not permission to activate live payments or remove access controls automatically.
+
 **Why:** The owner supplied this distinction and timing in the public introduction copy.
 
 **How to apply:** Keep the Nice List certificate, letter and Santa picture associated with Studio A, not the free Studio B greeting. Promotional wording is not authorization to activate paid purchasing.

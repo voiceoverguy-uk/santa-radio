@@ -157,6 +157,15 @@
   overflow-wrap: anywhere;
 }
 
+.santa-studio-promotion__launch-countdown {
+  margin: 12px 0 0;
+  color: #334c3d;
+  font-size: .9rem;
+  line-height: 1.6;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
 .santa-studio-promotion .workshop-password-form--promotion {
   gap: 9px;
   margin-top: 0;

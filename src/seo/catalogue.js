@@ -9,8 +9,8 @@ export const absolute = path => new URL(path, ORIGIN).href;
 export const mugPhotoTermsPath = '/photo-usage-and-licensing';
 export const mugPhotoLicense = absolute(mugPhotoTermsPath);
 export const brandImage = '/images/santa-radio-logo.png';
-export const shareImage = '/images/santa-radio-share-green-v2.jpg';
-export const shareImageAlt = 'Santa Radio — Christmas Music 24 hours a day. Listen Live. Santa wearing headphones on the right.';
+export const shareImage = '/images/santa-radio-share-hero-v3.jpg';
+export const shareImageAlt = 'Santa Radio — Christmas Music 24 hours a day. Listen Live. Santa wearing headphones against the snowy North Pole hero scene beneath the northern lights.';
 export const songPath = song => `/christmas-artist/${song.id}-${song.link}`;
 export const mugPath = mug => `/mugshots/${mug.song}`;
 // Confirmed identical artist, title, lyrics and video. Keep every historical URL.

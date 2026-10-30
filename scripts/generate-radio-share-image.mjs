@@ -8,24 +8,27 @@ const execFileAsync = promisify(execFile);
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const logoPath = resolve(root, "attached_assets/santa-radio-gold-logo_1791446660391.png");
 const santaPath = resolve(root, "attached_assets/santa_1791805807949.png");
-const outputPath = resolve(root, "public/images/santa-radio-share-green-v2.jpg");
+const heroPath = resolve(root, "public/images/north-pole-hero.webp");
+const outputPath = resolve(root, "public/images/santa-radio-share-hero-v3.jpg");
 const previewPath = resolve(root, "generated-artifacts/santa-radio-share-preview.html");
 const svgPath = resolve(root, "generated-artifacts/santa-radio-share-source.svg");
 
-const [logo, santa] = await Promise.all([
+const [logo, santa, hero] = await Promise.all([
   readFile(logoPath).then((data) => data.toString("base64")),
   readFile(santaPath).then((data) => data.toString("base64")),
+  readFile(heroPath).then((data) => data.toString("base64")),
 ]);
 
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <defs>
     <linearGradient id="field" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#081e17"/>
-      <stop offset=".57" stop-color="#123326"/>
-      <stop offset="1" stop-color="#1B4332"/>
+      <stop offset="0" stop-color="#081e17" stop-opacity=".55"/>
+      <stop offset=".57" stop-color="#123326" stop-opacity=".25"/>
+      <stop offset="1" stop-color="#1B4332" stop-opacity=".1"/>
     </linearGradient>
     <clipPath id="santaCircle"><circle cx="934" cy="315" r="218"/></clipPath>
   </defs>
+  <image width="1200" height="630" preserveAspectRatio="xMidYMid slice" href="data:image/webp;base64,${hero}"/>
   <rect width="1200" height="630" fill="url(#field)"/>
   <image x="716" y="97" width="436" height="436" preserveAspectRatio="xMidYMid slice" clip-path="url(#santaCircle)" href="data:image/png;base64,${santa}"/>
   <image x="60" y="52" width="610" height="205" preserveAspectRatio="xMidYMid meet" href="data:image/png;base64,${logo}"/>

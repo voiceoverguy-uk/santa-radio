@@ -40,6 +40,39 @@ test.beforeEach(async ({ page }) => {
   }));
 });
 
+test('Studio launch countdown sits below the red button and ends on 6 November UK time', async ({ page }) => {
+  await page.clock.install({ time: new Date('2026-10-29T23:59:59Z') });
+  await page.clock.pauseAt(new Date('2026-10-30T00:00:00Z'));
+  await page.route('**/api/santa-names?*', route => route.fulfill({
+    json: { records: [], hostedCount: 9775, warning: null },
+  }));
+  await visit(page, '/free-santa-message');
+  const promotion = page.locator('.santa-studio-promotion');
+  const countdown = promotion.getByRole('timer');
+  await expect(countdown).toHaveText('Santa’s Message Maker Studio opens in 7 days, 0 hours, 0 minutes, 0 seconds');
+  await expect(promotion.locator('.workshop-password-form--promotion + .santa-studio-promotion__launch-countdown')).toHaveCount(1);
+  await expect(countdown).toHaveAttribute('aria-live', 'off');
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    const button = await promotion.getByRole('button', { name: 'Create your bespoke message', exact: true }).boundingBox();
+    const text = await countdown.boundingBox();
+    expect(text.y).toBeGreaterThan(button.y + button.height);
+    expect(text.x).toBeGreaterThanOrEqual(0);
+    expect(text.x + text.width).toBeLessThanOrEqual(width);
+    expect(await countdown.evaluate(el => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
+  }
+  await page.clock.runFor(1000);
+  await expect(countdown).toContainText('6 days, 23 hours, 59 minutes, 59 seconds');
+  await page.clock.setSystemTime(new Date('2026-11-05T23:59:58Z'));
+  await page.clock.runFor(1000);
+  await expect(countdown).toContainText('0 days, 0 hours, 0 minutes, 1 second');
+  await page.clock.runFor(1000);
+  await expect(countdown).toHaveText('Santa’s Message Maker Studio — opening day has arrived!');
+  await page.clock.setSystemTime(new Date('2027-01-01T00:00:00Z'));
+  await page.clock.runFor(1000);
+  await expect(countdown).toHaveText('Santa’s Message Maker Studio — opening day has arrived!');
+});
+
 test('mobile Studio promotion title fits and certificates belong only to the upcoming paid offer', async ({ page }) => {
   await page.route('**/api/santa-names?*', route => route.fulfill({
     json: { records: [], hostedCount: 9775, warning: null },

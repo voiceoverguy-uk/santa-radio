@@ -770,3 +770,17 @@ mtime_ms = 1793325191350
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/53a76905-21c6-46b7-a476-e228862c7573/060ba180-d9fc-43a7-b766-f7b57f59e906"
 storage_version_token = "1793325227486943"
 content_type = "image/png"
+
+[[outputs]]
+id = "m6y22YOO7-Nj77poCAdMY"
+uri = "file://public/images/santa-radio-share-hero-v3.jpg"
+type = "image"
+title = "Updated website link preview"
+description = "The homepage hero image behind the existing Santa Radio branding and text."
+logical_id = "d63d41cf-f31a-4381-ba4a-364262f569a3"
+content_hash = "sha256:4760792f6229d61e1dc39697665069fb8750a4464c2d1de0184581ec1ff57f79"
+size = 184237
+mtime_ms = 1793352819309
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/d63d41cf-f31a-4381-ba4a-364262f569a3/fd369003-3259-47d4-8c92-6278ef354a32"
+storage_version_token = "1793352948128307"
+content_type = "image/jpeg"

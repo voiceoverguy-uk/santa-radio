@@ -3,6 +3,7 @@ import { WorkshopPasswordForm } from './WorkshopPasswordForm.jsx';
 import './SantaStudioPromotion.css';
 import StudioPurchaseButton from './StudioPurchaseButton.jsx';
 import SantaStudioGifts from './SantaStudioGifts.jsx';
+import SantaStudioLaunchCountdown from './SantaStudioLaunchCountdown.jsx';
 
 export default function SantaStudioPromotion({ activeExampleName = null, availableNamesText, previewName = null }) {
   const navigate = useNavigate();
@@ -45,6 +46,7 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
           variant="promotion"
           onAuthorized={() => navigate('/santa-message-workshop')}
         />
+        <SantaStudioLaunchCountdown />
         <StudioPurchaseButton />
       </div>
         <SantaStudioGifts activeExampleName={activeExampleName} previewName={previewName} />
