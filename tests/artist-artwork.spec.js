@@ -4,13 +4,16 @@ import { existsSync, readdirSync, statSync } from 'node:fs';
 import songs from '../src/data/songs.json' with { type: 'json' };
 
 for (const width of [390, 1440]) {
-  test(`Bad Sharon loads its own artwork without changing other Robbie recordings at ${width}px`, async ({ page }) => {
+  test(`Robbie exact recordings and shared portrait stay distinct at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     const recordings = songs.filter(song => song.artist === 'Robbie Williams');
     expect(recordings.map(song => song.id).sort((a, b) => a - b)).toEqual([288, 487, 559]);
-    const expectedPath = song => song.id === 559
-      ? '/artist-artwork/robbie-williams-bad-sharon.webp'
-      : '/artist-artwork/robbie-williams.webp';
+    const paths = {
+      288: '/artist-artwork/robbie-williams-walk-this-sleigh.webp',
+      487: '/artist-artwork/robbie-williams-cant-stop-christmas.webp',
+      559: '/artist-artwork/robbie-williams-bad-sharon.webp',
+    };
+    const expectedPath = song => paths[song.id];
     await page.goto('/christmas-music');
     await page.getByRole('textbox', { name: 'Search for a song or artist' }).fill('Robbie Williams');
     await expect(page.locator('.song-card')).toHaveCount(recordings.length);
@@ -25,6 +28,10 @@ for (const width of [390, 1440]) {
       const image = page.locator('.song-artwork-img');
       await expect(image).toHaveAttribute('src', expectedPath(song));
       await expect.poll(() => image.evaluate(el => el.complete && el.naturalWidth > 0)).toBe(true);
+      for (const selector of ['meta[property="og:image"]', 'meta[name="twitter:image"]']) {
+        await expect(page.locator(selector)).toHaveAttribute('content',
+          `https://www.santaradio.co.uk${expectedPath(song)}`);
+      }
     }
   });
 }

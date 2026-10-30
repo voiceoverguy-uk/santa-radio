@@ -1,5 +1,7 @@
 // Independent expectations for supplied recording illustrations.
 export const exactSongArtwork = [
+  [288, 'Robbie Williams', 'Walk this Sleigh', 'robbie-williams-walk-this-sleigh'],
+  [487, 'Robbie Williams', "Can't stop Christmas", 'robbie-williams-cant-stop-christmas'],
   [559, 'Robbie Williams', 'Bad Sharon', 'robbie-williams-bad-sharon'],
   [557, 'Freya Skye', 'Snow Angels', 'freya-skye-snow-angels'],
   [46, 'Frank Sinatra', 'Let It Snow! Let It Snow! Let It Snow!', 'frank-sinatra-let-it-snow'],

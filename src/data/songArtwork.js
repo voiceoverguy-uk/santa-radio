@@ -4,6 +4,11 @@ import { normalizeTrackText } from './matchLiveSong.js';
 // Exact-recording assignments shared by the website and public artwork feed.
 // Verify the catalogue ID, artist and title before assigning a supplied image.
 export const songPortraits = Object.freeze({
+  288: Object.freeze({
+    artist: 'Robbie Williams',
+    title: 'Walk this Sleigh',
+    path: '/artist-artwork/robbie-williams-walk-this-sleigh.webp',
+  }),
   24: Object.freeze({
     artist: 'Mariah Carey',
     title: 'All I Want For Christmas Is You',
@@ -43,6 +48,11 @@ export const songPortraits = Object.freeze({
     artist: 'Sia',
     title: 'My Old Santa Claus',
     path: '/artist-artwork/sia-my-old-santa-claus.webp',
+  }),
+  487: Object.freeze({
+    artist: 'Robbie Williams',
+    title: "Can't stop Christmas",
+    path: '/artist-artwork/robbie-williams-cant-stop-christmas.webp',
   }),
   527: Object.freeze({
     artist: 'Ariana Grande',

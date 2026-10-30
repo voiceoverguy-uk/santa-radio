@@ -32,7 +32,7 @@ after(async () => {
   }
 });
 
-test('eight exact images and observed joint credits survive production pages and direct SSR', async () => {
+test('exact images and observed joint credits survive production pages and direct SSR', async () => {
   const { render } = await import('../dist/server/entry-server.js');
   const unrelated = songs.filter(song =>
     exactSongArtwork.some(expected => expected.artist === song.artist) &&
@@ -58,6 +58,11 @@ test('eight exact images and observed joint credits survive production pages and
     assert.equal(response.status, 200);
     assert.equal(response.headers.get('content-type'), 'image/webp');
     assert.deepEqual(Buffer.from(await response.arrayBuffer()), await readFile(`public${path}`));
+  }
+  const catalogue = await (await fetch(new URL('/christmas-music', base))).text();
+  const renderedCatalogue = render('/christmas-music').markup;
+  for (const html of [catalogue, renderedCatalogue]) {
+    for (const { path } of exactSongArtwork) assert.ok(html.includes(`src="${path}"`), path);
   }
 });
 

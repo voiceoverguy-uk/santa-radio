@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import songs from '../src/data/songs.json' with { type: 'json' };
 import * as artistMapping from '../src/data/artistArtwork.js';
-import { songArtwork, songArtworkCandidates } from '../src/data/songArtwork.js';
+import { songArtwork, songArtworkCandidates, songPortraits } from '../src/data/songArtwork.js';
 import { matchLiveSong } from '../src/data/matchLiveSong.js';
 import { songMetadata, artworkAlt } from '../src/seo/catalogue.js';
 import { randomSongOrder } from '../src/data/randomSongOrder.js';
@@ -19,6 +19,38 @@ const usual = '/artist-artwork/ariana-grande.webp';
 const elvisBlue = songs.find(song => song.id === 399);
 const elvisSpecial = '/artist-artwork/elvis-presley-blue-christmas.webp';
 const elvisUsual = '/artist-artwork/elvis-presley.webp';
+
+test("Can't stop Christmas preserves its original and both existing Robbie images", async () => {
+  for (const [path, hash] of [
+    ["attached_assets/Robbie_Williams_-_Can't_Stop_Christmas_1793324101511.png",
+      '31c70ee3c30481f5fb752cae315c63a1ce5bb33cfa59a67a43bfe7f770ccea2e'],
+    ['public/artist-artwork/robbie-williams-bad-sharon.webp',
+      'da49799b75954e4226249e831166c543c596c79cf2a34005996a5350390d4b1f'],
+  ]) assert.equal(createHash('sha256').update(await readFile(path)).digest('hex'), hash);
+  assert.equal(songArtwork(songs.find(song => song.id === 288)), '/artist-artwork/robbie-williams-walk-this-sleigh.webp');
+  assert.equal(artworkAlt(songs.find(song => song.id === 487)),
+    "Illustrated artwork for Can't stop Christmas by Robbie Williams");
+});
+
+test('Walk this Sleigh preserves the upload and existing song artwork, leaving the artist portrait as fallback', async () => {
+  const original = await readFile('attached_assets/Robbie_Williams_-_Walk_this_sleigh_1793324730298.png');
+  assert.equal(createHash('sha256').update(original).digest('hex'),
+    '2daa85b8504f0e0854303661aaa809408472b7cbfc5135c2ecd6b4eeb4267af4');
+  const existing = await readFile('public/artist-artwork/robbie-williams-cant-stop-christmas.webp');
+  assert.equal(createHash('sha256').update(existing).digest('hex'),
+    '0b85c895f50d1ec730f33910d213209444173894641b8b921441778cf81c9b67');
+  assert.equal(songArtwork({ id: 99999, artist: 'Robbie Williams', song: 'Another recording' }),
+    '/artist-artwork/robbie-williams.webp');
+  const feed = await buildArtworkFeed(artistMapping);
+  const { 288: added, ...previousMapping } = songPortraits;
+  const previous = await buildArtworkFeed(artistMapping, { recordingMapping: previousMapping });
+  assert.notEqual(feed.version, previous.version);
+  assert.deepEqual(feed.artists, previous.artists);
+  const { 288: recording, ...remaining } = feed.recordings;
+  assert.deepEqual(remaining, previous.recordings);
+  const version = createHash('sha256').update(await readFile(`public${added.path}`)).digest('hex');
+  assert.deepEqual(recording.image, { path: added.path, version, url: `${added.path}?v=${version}` });
+});
 
 test('Bad Sharon preserves the supplied PNG and shared Robbie portrait alongside its recording entry', async () => {
   const original = await readFile('attached_assets/robbie-williams-bad-sharon_1793232959684.png');

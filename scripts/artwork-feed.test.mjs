@@ -33,6 +33,33 @@ test('every website recording assignment is shared with canonical identity and c
   }), feed, 'mapping insertion order must not affect output');
 });
 
+test("Can't stop Christmas adds only its exact entry and versions replacement bytes independently", async () => {
+  const current = await buildArtworkFeed(mapping);
+  const { 487: added, ...previousMapping } = songPortraits;
+  const previous = await buildArtworkFeed(mapping, { recordingMapping: previousMapping });
+  for (const key of ['schemaVersion', 'refreshAfterSeconds', 'fallback', 'artists']) {
+    assert.deepEqual(current[key], previous[key]);
+  }
+  const { 487: entry, ...remaining } = current.recordings;
+  assert.deepEqual(remaining, previous.recordings);
+  assert.equal(entry.artist, 'Robbie Williams');
+  assert.equal(entry.title, "Can't stop Christmas");
+  assert.equal(entry.image.path, '/artist-artwork/robbie-williams-cant-stop-christmas.webp');
+  assert.notEqual(current.version, previous.version);
+  const replaced = await buildArtworkFeed(mapping, {
+    readImage: async path => {
+      const bytes = await readFile(`public${path}`);
+      return path === added.path ? Buffer.concat([bytes, Buffer.from('replacement')]) : bytes;
+    },
+  });
+  assert.notEqual(replaced.version, current.version);
+  assert.notEqual(replaced.recordings['487'].image.url, entry.image.url);
+  assert.deepEqual(replaced.artists, current.artists);
+  for (const [id, recording] of Object.entries(remaining)) {
+    assert.deepEqual(replaced.recordings[id], recording);
+  }
+});
+
 test('recording replacements, reassignment, addition and removal invalidate the overall version only as needed', async () => {
   const before = await buildArtworkFeed(mapping);
   const after = await buildArtworkFeed(mapping, {

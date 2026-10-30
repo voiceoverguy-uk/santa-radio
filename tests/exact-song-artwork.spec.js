@@ -24,6 +24,7 @@ for (const width of [1280, 390]) {
     await page.setViewportSize({ width, height: 900 });
     await prepare(page);
     await page.goto('/christmas-music', { waitUntil: 'domcontentloaded' });
+    await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
     for (const expected of exactSongArtwork) {
       const song = songs.find(song => song.id === expected.id);
       await page.getByRole('textbox', { name: 'Search for a song or artist' }).fill(expected.title);
