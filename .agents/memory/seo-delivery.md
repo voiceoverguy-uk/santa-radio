@@ -1,3 +1,11 @@
+## Approved link-preview appearance
+
+The owner approved the website hero background behind the existing Santa Radio logo, Santa portrait, Christmas Music wording and Listen Live graphic in the social sharing card.
+
+**Why:** After requesting the hero image as the background, the owner confirmed, “Yes thats perfect, thank you.”
+
+**How to apply:** Preserve this approved composition when updating share artwork; do not revert to a plain green background.
+
 ---
 name: SEO delivery rules
 description: Owner-approved public identity, release scope and SSR validation constraints.
