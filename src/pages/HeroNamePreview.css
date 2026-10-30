@@ -321,6 +321,7 @@
 }
 
 .hero-name-preview__listening {
+  --hero-listening-width: 356px;
   grid-area: listening;
   align-self: start;
   min-width: 0;
@@ -329,6 +330,7 @@
 
 .hero-name-preview__player-row {
   display: flex;
+  width: min(100%, var(--hero-listening-width));
   align-items: center;
   min-height: 56px;
 }
@@ -336,10 +338,11 @@
 .hero-name-preview__actions {
   align-items: center;
   gap: 10px;
-  flex: 0 0 auto;
+  flex: 1;
 }
 
 .hero-name-preview .hero-actions .btn-red {
+  width: 100%;
   min-height: 48px;
   padding: 13px 21px;
   font-size: .8rem;
@@ -354,7 +357,7 @@
 }
 
 .hero-name-preview .hero-countdown {
-  width: min(100%, 356px);
+  width: min(100%, var(--hero-listening-width));
   max-width: 356px;
   margin-top: 15px;
 }
@@ -553,6 +556,7 @@
   }
 
   .hero-name-preview__listening {
+    --hero-listening-width: 340px;
     align-self: end;
   }
 
@@ -658,7 +662,6 @@
   }
 
   .hero-name-preview .hero-countdown {
-    width: min(100%, 340px);
     margin-top: 13px;
   }
 
