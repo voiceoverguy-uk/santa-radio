@@ -111,6 +111,28 @@ test.describe('song artwork enlargement', () => {
     if (await decline.isVisible()) await decline.click();
   });
 
+  for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844 }]) {
+    test(`Robbie Williams artwork has a 30% backdrop without dimming its content at ${viewport.width}px`, async ({ page }) => {
+      await page.setViewportSize(viewport);
+      const robbie = songs.find(song => song.artist === 'Robbie Williams' && song.song === "Can't stop Christmas");
+      await page.goto(`/christmas-artist/${robbie.id}-${robbie.link}`);
+      const trigger = page.getByRole('button', { name: `Enlarge artwork for ${robbie.song} by ${robbie.artist}` });
+      await trigger.click();
+      const dialog = page.getByRole('dialog', { name: `Artwork for ${robbie.song} by ${robbie.artist}` });
+      await expect(dialog).toBeVisible();
+      expect(await dialog.evaluate(el => getComputedStyle(el, '::backdrop').backgroundColor))
+        .toBe('rgba(0, 0, 0, 0.3)');
+      for (const element of [dialog, dialog.locator('.song-artwork-view'), dialog.locator('img'),
+        dialog.getByRole('button', { name: 'Close enlarged artwork' })]) {
+        await expect(element).toHaveCSS('opacity', '1');
+      }
+      expect(await page.evaluate(() => document.body.style.overflow)).toBe('hidden');
+      await dialog.getByRole('button', { name: 'Close enlarged artwork' }).click();
+      await expect(dialog).not.toBeVisible();
+      await expect(trigger).toBeFocused();
+    });
+  }
+
   test('pointer opens the same image and all dismissal methods restore the song page', async ({ page }) => {
     const trigger = page.getByRole('button', { name: triggerName });
     const dialog = page.getByRole('dialog', { name: dialogName });
@@ -130,7 +152,7 @@ test.describe('song artwork enlargement', () => {
       if (dismissal === 'backdrop') await page.mouse.click(4, 4);
       await expect(dialog).not.toBeVisible();
       await expect(trigger).toBeFocused();
-      expect(await page.evaluate(() => document.body.style.overflow)).toBe(overflow);
+      await expect.poll(() => page.evaluate(() => document.body.style.overflow)).toBe(overflow);
       await expect(page).toHaveURL(new RegExp(`/christmas-artist/${slug}$`));
     }
     await page.locator('.song-lyrics-section summary').click();
