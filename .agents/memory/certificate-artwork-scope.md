@@ -66,7 +66,7 @@ Checked names should personalise the certificate, letter and Santa picture previ
 
 **Why:** The owner wants visitors who check a name and continue to see their own personalised gifts below.
 
-**How to apply:** Use the verified display name, keep it only in page memory, and preserve signup and audio allowances. Every enlarged gift preview must have a large translucent “NORTH POLE PROPERTY” watermark; this is preview presentation, not an extra marking on purchased gifts or the certificate master.
+**How to apply:** Use the verified display name, keep it only in page memory, and preserve signup and audio allowances. Every enlarged gift preview must have three large translucent red “NORTH POLE PROPERTY” watermarks; this is preview presentation, not an extra marking on purchased gifts or the certificate master.
 
 Font changes must preserve both the visible name and its extracted PDF text.
 

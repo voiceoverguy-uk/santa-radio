@@ -172,7 +172,9 @@ function GiftExample({ name, picture, activeAudio, reducedMotion, onNext }) {
           {view === 'certificate' ? <Certificate name={name} elapsed={duration} />
             : view === 'letter' ? <Letter letter={letter} elapsed={duration} />
               : <SantaPicture name={name} picture={picture} elapsed={duration} />}
-          <div className="studio-gifts__watermark" aria-hidden="true"><span>NORTH POLE PROPERTY</span></div>
+          <div className="studio-gifts__watermark" aria-hidden="true">
+            {[0, 1, 2].map(row => <span key={row}>NORTH POLE PROPERTY</span>)}
+          </div>
         </div>
       </div>
     </dialog>

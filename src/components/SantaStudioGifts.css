@@ -366,21 +366,23 @@
   inset: 0;
   z-index: 2;
   display: grid;
+  grid-template-rows: repeat(3, 1fr);
   place-items: center;
+  padding-block: 3%;
   pointer-events: none;
   user-select: none;
 }
 
 .studio-gifts__watermark span {
-  color: rgb(255 255 255 / 45%);
+  color: rgb(185 20 35 / 45%);
   font-family: Arial, sans-serif;
-  font-size: 6.8cqw;
+  font-size: 8cqw;
   font-weight: 800;
-  letter-spacing: .08em;
+  letter-spacing: 0;
   line-height: 1;
   white-space: nowrap;
-  text-shadow: 0 1px 2px #19392d99;
-  transform: rotate(-23deg);
+  text-shadow: 0 1px 1px rgb(255 255 255 / 25%);
+  transform: rotate(-10deg);
 }
 
 .studio-gifts__sr {

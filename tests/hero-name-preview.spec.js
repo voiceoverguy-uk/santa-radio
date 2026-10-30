@@ -73,25 +73,36 @@ for (const width of [390, 1440]) {
       const dialog = page.getByRole('dialog');
       const watermark = dialog.locator('.studio-gifts__watermark');
       await expect(watermark).toBeVisible();
-      await expect(watermark).toHaveText('NORTH POLE PROPERTY');
+      await expect(watermark.locator('span')).toHaveText(Array(3).fill('NORTH POLE PROPERTY'));
       await expect(watermark).toHaveAttribute('aria-hidden', 'true');
-      const geometry = await watermark.locator('span').evaluate(el => ({
+      const geometries = await watermark.locator('span').evaluateAll(elements => elements.map(el => ({
         ink: el.getBoundingClientRect().toJSON(),
         sheet: el.closest('.studio-letter-dialog__document').getBoundingClientRect().toJSON(),
         color: getComputedStyle(el).color,
         size: parseFloat(getComputedStyle(el).fontSize),
-      }));
-      expect(geometry.size / geometry.sheet.width).toBeGreaterThan(.06);
-      expect(geometry.color).toContain('0.45');
-      expect(geometry.ink.left).toBeGreaterThanOrEqual(geometry.sheet.left);
-      expect(geometry.ink.right).toBeLessThanOrEqual(geometry.sheet.right);
-      expect(geometry.ink.top).toBeGreaterThanOrEqual(geometry.sheet.top);
-      expect(geometry.ink.bottom).toBeLessThanOrEqual(geometry.sheet.bottom);
+      })));
+      for (const geometry of geometries) {
+        expect(geometry.size / geometry.sheet.width).toBeGreaterThan(.079);
+        expect(geometry.color).toBe('rgba(185, 20, 35, 0.45)');
+        expect(geometry.ink.left).toBeGreaterThanOrEqual(geometry.sheet.left);
+        expect(geometry.ink.right).toBeLessThanOrEqual(geometry.sheet.right);
+        expect(geometry.ink.top).toBeGreaterThanOrEqual(geometry.sheet.top);
+        expect(geometry.ink.bottom).toBeLessThanOrEqual(geometry.sheet.bottom);
+      }
+      for (let index = 1; index < geometries.length; index++) {
+        const previous = geometries[index - 1], current = geometries[index];
+        const separation = (current.ink.top + current.ink.height / 2) - (previous.ink.top + previous.ink.height / 2);
+        expect(separation / current.sheet.height).toBeGreaterThan(.28);
+      }
       if (width === 1440) await dialog.screenshot({ path: `test-results/personalised-${label.split(' ')[1]}-watermark.png` });
       await page.keyboard.press('Escape');
       await expect(dialog).not.toBeVisible();
     }
-    await choose(page, 'Arabella');
+    await input(page).fill('Arabella');
+    await expect(checker(page).getByRole('status')).toHaveText('1 matching name. Choose a name from the list.');
+    await input(page).press('ArrowDown');
+    await expect(checker(page).getByRole('option', { name: 'Arabella', exact: true })).toBeVisible();
+    await input(page).press('Enter');
     await cta(page).click();
     await expect(gifts).toHaveAttribute('data-demo-name', 'Arabella');
     await fillAccessForm(page);
