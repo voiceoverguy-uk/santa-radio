@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
-import { studioLetterChoices, createStudioLetter } from '../src/lib/santaStudioLetter.js';
+import { studioLetterChoices, createStudioLetter, CERTIFICATE_WRITE_MS,
+  SIGNATURE_WRITE_MS, letterBodyDuration } from '../src/lib/santaStudioLetter.js';
+import { certificateExampleNames } from '../src/lib/santaCertificateExamples.js';
 
 const gifts = page => page.locator('.studio-gifts');
 const body = page => gifts(page).locator('.studio-gifts__gallery .studio-letter__text');
@@ -32,6 +34,177 @@ async function visit(page, { reduced = false, clock = false } = {}) {
   await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Edward');
 }
 
+// Compare real browser pixels with an unclipped rendering at the SAME position.
+// A DOM rectangle cannot tell us whether Great Vibes' swashes were cut off.
+async function scriptInk(page, span, { partial = false } = {}) {
+  await page.evaluate(() => document.fonts.load('60px "Great Vibes"'));
+  await span.evaluate(el => el.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' }));
+  const geometry = await span.evaluate(el => {
+    const rect = el.getBoundingClientRect();
+    const font = parseFloat(getComputedStyle(el).fontSize);
+    const certificate = el.closest('.studio-certificate')?.getBoundingClientRect();
+    const paper = el.closest('.studio-letter__paper')?.getBoundingClientRect();
+    const parent = certificate || paper;
+    return { x: Math.max(0, Math.floor(rect.left - font)),
+      y: Math.max(0, Math.floor(rect.top - font)),
+      right: Math.min(innerWidth, Math.ceil(rect.right + font)),
+      bottom: Math.min(innerHeight, Math.ceil(rect.bottom + font)),
+      parent: { x: parent.x, y: parent.y, width: parent.width, height: parent.height } };
+  });
+  const clip = { x: geometry.x, y: geometry.y,
+    width: geometry.right - geometry.x, height: geometry.bottom - geometry.y };
+  const capture = async () => (await page.screenshot({ clip, animations: 'disabled' })).toString('base64');
+  const actual = await capture();
+  const original = await span.getAttribute('style');
+  await span.evaluate((el, partial) => {
+    // During writing retain the exact horizontal reveal edge; release ONLY
+    // the other edges to detect lost upper/lower/leading glyph ink.
+    const edge = getComputedStyle(el).clipPath;
+    el.style.clipPath = partial
+      ? edge.replace(/^inset\(\S+ (.+) \S+ \S+\)$/, 'inset(-3em $1 -3em -3em)')
+      : 'none';
+  }, partial);
+  const reference = await capture();
+  await span.evaluate(el => { el.style.visibility = 'hidden'; });
+  const blank = await capture();
+  await span.evaluate((el, style) => {
+    if (style === null) el.removeAttribute('style');
+    else el.setAttribute('style', style);
+  }, original);
+  const pixels = await page.evaluate(async ({ actual, reference, blank }) => {
+    const decode = async base64 => {
+      const image = new Image();
+      image.src = `data:image/png;base64,${base64}`;
+      await image.decode();
+      const canvas = document.createElement('canvas');
+      canvas.width = image.width; canvas.height = image.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(image, 0, 0);
+      return ctx.getImageData(0, 0, image.width, image.height);
+    };
+    const [a, r, b] = await Promise.all([actual, reference, blank].map(decode));
+    let changed = 0, ink = 0, left = r.width, top = r.height, right = -1, bottom = -1;
+    for (let y = 0; y < r.height; y++) for (let x = 0; x < r.width; x++) {
+      const i = (y * r.width + x) * 4;
+      if ([0, 1, 2].some(c => Math.abs(r.data[i + c] - b.data[i + c]) > 12)) {
+        ink++; left = Math.min(left, x); top = Math.min(top, y);
+        right = Math.max(right, x); bottom = Math.max(bottom, y);
+      }
+      if ([0, 1, 2].some(c => Math.abs(a.data[i + c] - r.data[i + c]) > 12)) changed++;
+    }
+    return { changed, ink, left, top, right, bottom };
+  }, { actual, reference, blank });
+  if (pixels.changed) {
+    await test.info().attach('script-actual', { body: Buffer.from(actual, 'base64'), contentType: 'image/png' });
+    await test.info().attach('script-unclipped', { body: Buffer.from(reference, 'base64'), contentType: 'image/png' });
+  }
+  return { ...pixels, bounds: {
+    left: (clip.x + pixels.left - geometry.parent.x) / geometry.parent.width,
+    right: (clip.x + pixels.right - geometry.parent.x) / geometry.parent.width,
+    top: (clip.y + pixels.top - geometry.parent.y) / geometry.parent.height,
+    bottom: (clip.y + pixels.bottom - geometry.parent.y) / geometry.parent.height,
+  } };
+}
+
+for (const width of [1440, 390, 320]) {
+  test(`script ink is complete and clear of certificate artwork at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await visit(page, { reduced: true });
+    for (const name of certificateExampleNames) {
+      await expect(gifts(page)).toHaveAttribute('data-demo-name', name);
+      const compact = gifts(page).locator('.studio-certificate__name > span');
+      const ink = await scriptInk(page, compact);
+      expect(ink.ink, `${name} has rendered ink`).toBeGreaterThan(15);
+      expect(ink.changed, `${name} compact script cropped`).toBe(0);
+      expect(ink.bounds.top, `${name} clears introductory text`).toBeGreaterThan(.33);
+      expect(ink.bounds.bottom, `${name} clears gold line`).toBeLessThan(.493);
+      expect(Math.abs((ink.bounds.left + ink.bounds.right) / 2 - .5)).toBeLessThan(.02);
+      await gifts(page).getByRole('button', { name: 'Enlarge certificate', exact: true }).click();
+      const enlarged = await scriptInk(page, page.locator('dialog .studio-certificate__name > span'));
+      expect(enlarged.changed, `${name} enlarged script cropped`).toBe(0);
+      expect(enlarged.bounds.top).toBeGreaterThan(.33);
+      expect(enlarged.bounds.bottom).toBeLessThan(.493);
+      expect(Math.abs((enlarged.bounds.left + enlarged.bounds.right) / 2 - .5)).toBeLessThan(.015);
+      await page.getByRole('button', { name: 'Close preview', exact: true }).click();
+      await gifts(page).getByRole('button', { name: 'Next example', exact: true }).click();
+    }
+    const signature = gifts(page).locator('.studio-gifts__gallery .studio-letter__signature > span');
+    expect((await scriptInk(page, signature)).changed).toBe(0);
+    await gifts(page).getByRole('button', { name: 'Enlarge letter to read' }).click();
+    const enlargedSignature = await scriptInk(page, page.locator('dialog .studio-letter__signature > span'));
+    expect(enlargedSignature.changed).toBe(0);
+    expect(enlargedSignature.ink).toBeGreaterThan(300);
+    await expectSignatureSpacing(page, enlargedSignature.bounds);
+    await page.screenshot({ path: `test-results/studio-signature-ink-${width}.png` });
+  });
+}
+
+async function expectSignatureSpacing(page, ink) {
+  const neighbours = await page.locator('dialog .studio-letter__signature').evaluate(el => {
+    const paper = el.closest('.studio-letter__paper').getBoundingClientRect();
+    const range = document.createRange();
+    const textBounds = node => {
+      range.selectNodeContents(node);
+      const rect = range.getBoundingClientRect();
+      return { top: (rect.top - paper.top) / paper.height,
+        bottom: (rect.bottom - paper.top) / paper.height };
+    };
+    return { signoff: textBounds(el.previousElementSibling),
+      closing: textBounds(el.nextElementSibling.querySelector('p')),
+      ps: textBounds(el.nextElementSibling.lastElementChild) };
+  });
+  expect(ink.top).toBeGreaterThan(neighbours.signoff.bottom);
+  expect(ink.bottom).toBeLessThan(neighbours.closing.top);
+  expect(neighbours.closing.bottom).toBeLessThan(neighbours.ps.top);
+  expect(neighbours.ps.bottom).toBeLessThan(.88);
+}
+
+for (const width of [1440, 390]) {
+  test(`writing and immediate reveal preserve script ink at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await visit(page, { clock: true });
+    await page.clock.pauseAt(await page.evaluate(() => Date.now() + 100));
+    await gifts(page).getByRole('button', { name: 'Next example', exact: true }).click();
+    await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Ayla');
+    await page.clock.runFor(800);
+    const name = gifts(page).locator('.studio-certificate__name > span');
+    for (const enlarged of [false, true]) {
+      if (enlarged) await gifts(page).getByRole('button', { name: 'Enlarge certificate', exact: true }).click();
+      const span = enlarged ? page.locator('dialog .studio-certificate__name > span') : name;
+      const ink = await scriptInk(page, span, { partial: true });
+      expect(ink.ink).toBeGreaterThan(10);
+      expect(ink.changed).toBe(0);
+      if (enlarged) await page.getByRole('button', { name: 'Close preview', exact: true }).click();
+    }
+    const paragraphs = await body(page).locator(':scope > p').allTextContents();
+    await page.clock.runFor(CERTIFICATE_WRITE_MS + letterBodyDuration({ paragraphs }) + SIGNATURE_WRITE_MS / 2 - 800);
+    const signature = gifts(page).locator('.studio-gifts__gallery .studio-letter__signature > span');
+    const compactInk = await scriptInk(page, signature, { partial: true });
+    expect(compactInk.ink).toBeGreaterThan(5);
+    expect(compactInk.changed).toBe(0);
+    await gifts(page).getByRole('button', { name: 'Enlarge letter to read' }).click();
+    const fullSignature = page.locator('dialog .studio-letter__signature > span');
+    const partialInk = await scriptInk(page, fullSignature, { partial: true });
+    expect(partialInk.ink).toBeGreaterThan(100);
+    expect(partialInk.changed).toBe(0);
+    await page.getByRole('dialog').getByRole('button', { name: 'Show full letter now', exact: true }).click();
+    expect((await scriptInk(page, fullSignature)).changed).toBe(0);
+    await fullSignature.evaluate(el => { el.style.clipPath = 'inset(0 0% 0 0)'; });
+    expect((await scriptInk(page, fullSignature)).changed).toBeGreaterThan(10);
+    await fullSignature.evaluate(el => { el.style.clipPath = 'none'; });
+    await page.getByRole('button', { name: 'Close preview', exact: true }).click();
+    expect((await scriptInk(page, name)).changed).toBe(0);
+    expect((await scriptInk(page, signature)).changed).toBe(0);
+    await gifts(page).getByRole('button', { name: 'Enlarge certificate', exact: true }).click();
+    const fullName = page.locator('dialog .studio-certificate__name > span');
+    expect((await scriptInk(page, fullName)).changed).toBe(0);
+    await page.locator('dialog .studio-certificate').screenshot({ path: `test-results/studio-ayla-ink-${width}.png` });
+    // Prove this pixel test detects the original tight-box regression.
+    await fullName.evaluate(el => { el.style.clipPath = 'inset(0 0% 0 0)'; });
+    expect((await scriptInk(page, fullName)).changed).toBeGreaterThan(10);
+  });
+}
+
 test('letter substitutions use the verified public subset and inclusive whole-number ages', () => {
   expect(createStudioLetter('Edward', () => 0).age).toBe(3);
   expect(createStudioLetter('Edward', () => .999999).age).toBe(11);
@@ -61,7 +234,9 @@ test('compact desktop card groups gifts right of voucher controls without a full
   await page.screenshot({ path: 'test-results/studio-compact-desktop.png' });
 });
 
-test('longest example name and longest choices keep every visible paragraph inside the A4 writing area', async ({ page }) => {
+for (const width of [1440, 390]) {
+test(`longest name and choices keep the complete letter inside A4 at ${width}px`, async ({ page }) => {
+  await page.setViewportSize({ width, height: 1000 });
   await visit(page, { reduced: true });
   // Only the letter factory consumes this deterministic sequence: longest
   // activity/achievement/treat, Scotland, and the oldest supported age.
@@ -87,6 +262,9 @@ test('longest example name and longest choices keep every visible paragraph insi
   })());
   await expect(text.locator(':scope > p')).toHaveText(expected.paragraphs);
   await expect(text).toContainText(expected.closing[1]);
+  const signatureInk = await scriptInk(page, page.locator('dialog .studio-letter__signature > span'));
+  expect(signatureInk.changed).toBe(0);
+  await expectSignatureSpacing(page, signatureInk.bounds);
   expect(await text.evaluate(el => {
     const paper = el.closest('.studio-letter__paper').getBoundingClientRect();
     const paragraphs = [...el.querySelectorAll('p, .studio-letter__signature')];
@@ -101,6 +279,7 @@ test('longest example name and longest choices keep every visible paragraph insi
     });
   })).toBe(true);
 });
+}
 
 test('certificate precedes body, signature follows body, and idle rotation waits for reading', async ({ page }) => {
   await visit(page, { clock: true });
@@ -110,12 +289,14 @@ test('certificate precedes body, signature follows body, and idle rotation waits
   await page.clock.runFor(4000);
   await expect(body(page)).toContainText('Dear Edward');
   const signature = gifts(page).locator('.studio-gifts__gallery .studio-letter__signature span');
-  expect(await signature.evaluate(el => getComputedStyle(el).clipPath)).toContain('100%');
+  expect(await signature.evaluate(el => getComputedStyle(el).visibility)).toBe('hidden');
   await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Edward');
   await gifts(page).hover();
   await page.clock.runFor(40000);
   await expect(gifts(page)).toHaveAttribute('data-complete', 'true');
-  expect(await signature.evaluate(el => getComputedStyle(el).clipPath)).toContain('0%');
+  expect(await signature.evaluate(el => getComputedStyle(el).clipPath)).toBe('none');
+  expect((await scriptInk(page, signature)).changed).toBe(0);
+  expect((await scriptInk(page, gifts(page).locator('.studio-certificate__name > span'))).changed).toBe(0);
   await page.mouse.move(0, 0);
   await page.clock.runFor(59000);
   await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Edward');

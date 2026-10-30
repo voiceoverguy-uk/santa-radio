@@ -171,7 +171,8 @@
 
 .studio-certificate__name {
   position: absolute;
-  top: 36%;
+  /* Centre the full script ink in the blank band, above the gold rule. */
+  top: 33%;
   left: 15%;
   display: grid;
   width: 70%;
@@ -185,6 +186,11 @@
   text-align: center;
   text-shadow: 0 1px 3px #001b23;
   overflow-wrap: anywhere;
+}
+
+.studio-script-reveal {
+  display: inline-block;
+  white-space: nowrap;
 }
 
 .studio-letter__paper {
@@ -223,7 +229,10 @@
 }
 
 .studio-letter__signature {
-  margin-top: 0.05em;
+  /* Reserve real swash clearance between the sign-off and North Pole closing,
+     without changing the script size or the A4 document typography. */
+  margin-top: 0.15em;
+  margin-bottom: 0.2em;
   color: #806023;
   font-family: "Great Vibes", cursive;
   font-size: 4.8cqw;

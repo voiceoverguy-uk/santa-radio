@@ -9,12 +9,22 @@ function WrittenText({ text, count }) {
   return <>{text.slice(0, end)}<span className="studio-writing-hidden">{text.slice(end)}</span></>;
 }
 
+function ScriptReveal({ children, progress }) {
+  return <span className="studio-script-reveal" style={{
+    // Great Vibes paints beyond its advance/line box. Reveal horizontally,
+    // leaving room for upper/lower strokes and both side bearings.
+    clipPath: progress >= 1 ? 'none'
+      : `inset(-1em calc(${100 - progress * 100}% - ${progress * 0.5}em) -1em -0.5em)`,
+    visibility: progress <= 0 ? 'hidden' : undefined,
+  }}>{children}</span>;
+}
+
 function Certificate({ name, elapsed }) {
   const progress = Math.min(1, elapsed / CERTIFICATE_WRITE_MS);
   return <div className="studio-certificate" role="img" aria-label={`Official Nice List certificate example for ${name}`}>
     <img src="/certificates/examples/blank-master.webp" alt="" width="1684" height="1191" />
     <span aria-hidden="true" className="studio-certificate__name">
-      <span style={{ clipPath: `inset(0 ${100 - progress * 100}% 0 0)` }}>{name}</span>
+      <ScriptReveal progress={progress}>{name}</ScriptReveal>
     </span>
   </div>;
 }
@@ -36,7 +46,7 @@ function Letter({ letter, elapsed }) {
         return <p key={index}><WrittenText text={text} count={count} /></p>;
       })}
       <div className="studio-letter__signature">
-        <span style={{ display: 'inline-block', clipPath: `inset(0 ${100 - signatureProgress * 100}% 0 0)` }}>Santa Claus</span>
+        <ScriptReveal progress={signatureProgress}>Santa Claus</ScriptReveal>
       </div>
       <div className={signatureProgress < 1 ? 'studio-writing-hidden' : ''}>
         {letter.closing.map(text => <p key={text}>{text}</p>)}
