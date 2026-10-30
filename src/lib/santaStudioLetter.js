@@ -29,7 +29,8 @@ export function createStudioLetter(name, random = Math.random) {
 }
 
 export const CERTIFICATE_WRITE_MS = 1800;
-export const LETTER_CHARACTER_MS = 9;
+export const LETTER_CHARACTER_MS = 2;
 export const SIGNATURE_WRITE_MS = 1400;
+export const GIFT_EXAMPLE_INTERVAL_MS = 10000;
 export const letterBodyDuration = letter => letter.paragraphs.join('').length * LETTER_CHARACTER_MS;
 export const letterDuration = letter => CERTIFICATE_WRITE_MS + letterBodyDuration(letter) + SIGNATURE_WRITE_MS;

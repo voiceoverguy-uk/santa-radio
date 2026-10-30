@@ -4,6 +4,12 @@ description: Owner-approved design and privacy boundaries for personalised certi
 ---
 Certificates and personalised letters are gifts reserved for the paid Studio offer, not part of the basic free greeting. Public visual examples may appear inside the clearly labelled paid Studio promotion on free-message pages; never put certificate/letter delivery controls or promises into the free greeting results or cooldown.
 
+The promotional certificate and letter should change to the same example name every 10 seconds, with a writing effect on both. Remove “Next example” and “Show full letter now”; retain enlargement, showing the complete document for reading.
+
+**Why:** The owner explicitly requested a ten-second name cycle shared by the certificate and letter.
+
+**How to apply:** Keep both documents synchronised, finish the writing within each cycle, and preserve reading/enlargement pauses, reduced-motion support and matching to deliberately played example audio. This remains a visual preview, not generated delivery.
+
 **Why:** The owner explicitly superseded the earlier free-certificate requirements while retaining the approved artwork and reusable generator for the paid product, then requested a matched animated certificate and letter preview within its promotion.
 
 **How to apply:** Preserve the certificate assets and generation utilities. The owner authorised a visual trial of the certificate and letter, not paid delivery, letter PDFs, checkout changes or new entitlements. Keep coming-soon and incomplete-bundle wording truthful.

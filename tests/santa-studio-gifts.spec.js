@@ -1,13 +1,13 @@
 import { test, expect } from '@playwright/test';
 import { studioLetterChoices, createStudioLetter, CERTIFICATE_WRITE_MS,
-  SIGNATURE_WRITE_MS, letterBodyDuration } from '../src/lib/santaStudioLetter.js';
+  SIGNATURE_WRITE_MS, GIFT_EXAMPLE_INTERVAL_MS, letterBodyDuration, letterDuration } from '../src/lib/santaStudioLetter.js';
 import { certificateExampleNames } from '../src/lib/santaCertificateExamples.js';
 
 const gifts = page => page.locator('.studio-gifts');
 const body = page => gifts(page).locator('.studio-gifts__gallery .studio-letter__text');
 const readable = page => gifts(page).locator('.studio-gifts__gallery .studio-gifts__sr');
 
-async function visit(page, { reduced = false, clock = false } = {}) {
+async function visit(page, { reduced = false, clock = true } = {}) {
   await page.emulateMedia({ reducedMotion: reduced ? 'reduce' : 'no-preference' });
   if (clock) await page.clock.install();
   await page.addInitScript(() => {
@@ -32,6 +32,16 @@ async function visit(page, { reduced = false, clock = false } = {}) {
   if (await decline.isVisible()) await decline.click();
   await gifts(page).scrollIntoViewIfNeeded();
   await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Edward');
+}
+
+// Exercise the automatic cycle rather than relying on removed manual controls.
+async function advanceExample(page) {
+  const reduced = await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.mouse.move(0, 0);
+  await page.evaluate(() => document.activeElement?.blur());
+  await page.clock.runFor(GIFT_EXAMPLE_INTERVAL_MS + 50);
+  if (reduced) await page.emulateMedia({ reducedMotion: 'reduce' });
 }
 
 // Compare real browser pixels with an unclipped rendering at the SAME position.
@@ -126,7 +136,7 @@ for (const width of [1440, 390, 320]) {
       expect(enlarged.bounds.bottom).toBeLessThan(.493);
       expect(Math.abs((enlarged.bounds.left + enlarged.bounds.right) / 2 - .5)).toBeLessThan(.015);
       await page.getByRole('button', { name: 'Close preview', exact: true }).click();
-      await gifts(page).getByRole('button', { name: 'Next example', exact: true }).click();
+      await advanceExample(page);
     }
     const signature = gifts(page).locator('.studio-gifts__gallery .studio-letter__signature > span');
     expect((await scriptInk(page, signature)).changed).toBe(0);
@@ -164,7 +174,7 @@ for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: 1000 });
     await visit(page, { clock: true });
     await page.clock.pauseAt(await page.evaluate(() => Date.now() + 100));
-    await gifts(page).getByRole('button', { name: 'Next example', exact: true }).click();
+    await advanceExample(page);
     await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Ayla');
     await page.clock.runFor(800);
     const name = gifts(page).locator('.studio-certificate__name > span');
@@ -187,12 +197,15 @@ for (const width of [1440, 390]) {
     const partialInk = await scriptInk(page, fullSignature, { partial: true });
     expect(partialInk.ink).toBeGreaterThan(100);
     expect(partialInk.changed).toBe(0);
-    await page.getByRole('dialog').getByRole('button', { name: 'Show full letter now', exact: true }).click();
+    // Enlarging always displays the complete document without a reveal control.
     expect((await scriptInk(page, fullSignature)).changed).toBe(0);
     await fullSignature.evaluate(el => { el.style.clipPath = 'inset(0 0% 0 0)'; });
     expect((await scriptInk(page, fullSignature)).changed).toBeGreaterThan(10);
     await fullSignature.evaluate(el => { el.style.clipPath = 'none'; });
     await page.getByRole('button', { name: 'Close preview', exact: true }).click();
+    // Enlargement is fully readable immediately; the thumbnail keeps its own writing timeline.
+    await page.clock.runFor(SIGNATURE_WRITE_MS);
+    await expect(gifts(page)).toHaveAttribute('data-complete', 'true');
     expect((await scriptInk(page, name)).changed).toBe(0);
     expect((await scriptInk(page, signature)).changed).toBe(0);
     await gifts(page).getByRole('button', { name: 'Enlarge certificate', exact: true }).click();
@@ -210,6 +223,7 @@ test('letter substitutions use the verified public subset and inclusive whole-nu
   expect(createStudioLetter('Edward', () => .999999).age).toBe(11);
   for (let index = 0; index < 200; index++) {
     const letter = createStudioLetter('Ayla');
+    expect(letterDuration(letter)).toBeLessThan(GIFT_EXAMPLE_INTERVAL_MS);
     expect(Number.isInteger(letter.age) && letter.age >= 3 && letter.age <= 11).toBe(true);
     for (const key of Object.keys(studioLetterChoices)) expect(studioLetterChoices[key]).toContain(letter[key]);
     expect(letter.paragraphs.join('\n')).not.toMatch(/\[|\]|\{|\}|\.wav|\.mp3|ACTIVITY|ACHIEVEMENT|DESTINATION|TREATS/);
@@ -247,7 +261,7 @@ test(`longest name and choices keep the complete letter inside A4 at ${width}px`
       ? [.999, .999, .3, .999, .999][index++ % 5] : original();
   });
   for (let index = 0; index < 3; index++) {
-    await gifts(page).getByRole('button', { name: 'Next example' }).click();
+    await advanceExample(page);
   }
   await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Charlotte');
   await expect(body(page)).toContainText('11 already!');
@@ -281,7 +295,40 @@ test(`longest name and choices keep the complete letter inside A4 at ${width}px`
 });
 }
 
-test('certificate precedes body, signature follows body, and idle rotation waits for reading', async ({ page }) => {
+for (const width of [1440, 390]) {
+  test(`both gifts write and change recipient together every ten seconds at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await visit(page, { clock: true });
+    await page.clock.pauseAt(await page.evaluate(() => Date.now() + 100));
+    await advanceExample(page);
+    await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Ayla');
+    await page.mouse.move(0, 0);
+    await page.evaluate(() => document.activeElement?.blur());
+    const certificate = gifts(page).locator('.studio-certificate__name > span');
+    await page.clock.runFor(800);
+    expect(await certificate.evaluate(el => getComputedStyle(el).clipPath)).not.toBe('none');
+    await expect(gifts(page)).toHaveAttribute('data-complete', 'false');
+    await page.clock.runFor(1200);
+    await expect(body(page)).toContainText('Dear Ayla');
+    expect(await certificate.evaluate(el => getComputedStyle(el).clipPath)).toBe('none');
+    await page.clock.runFor(5000);
+    await expect(gifts(page)).toHaveAttribute('data-complete', 'true');
+    await page.clock.runFor(2900);
+    await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Ayla');
+    await page.clock.runFor(200);
+    await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Erin');
+    await expect(gifts(page)).toHaveAttribute('data-complete', 'false');
+    await expect(certificate).toHaveText('Erin');
+    await expect(readable(page)).toContainText('Dear Erin,');
+    await expect(readable(page)).not.toContainText('Dear Ayla');
+    await page.clock.runFor(10000);
+    await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Charlotte');
+    await expect(certificate).toHaveText('Charlotte');
+    await expect(readable(page)).toContainText('Dear Charlotte,');
+  });
+}
+
+test('certificate precedes body, signature follows body, and hovering pauses the ten-second rotation', async ({ page }) => {
   await visit(page, { clock: true });
   await page.clock.runFor(800);
   expect(await gifts(page).locator('.studio-certificate__name > span').evaluate(el => getComputedStyle(el).clipPath)).not.toBe('inset(0px 0% 0px 0px)');
@@ -298,22 +345,23 @@ test('certificate precedes body, signature follows body, and idle rotation waits
   expect((await scriptInk(page, signature)).changed).toBe(0);
   expect((await scriptInk(page, gifts(page).locator('.studio-certificate__name > span'))).changed).toBe(0);
   await page.mouse.move(0, 0);
-  await page.clock.runFor(59000);
+  await page.clock.runFor(9000);
   await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Edward');
   await page.clock.runFor(2000);
   await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Ayla');
   await expect(gifts(page)).toHaveAttribute('data-complete', 'false');
 });
 
-test('full reveal, stable enlarged letter, Escape, button close and restored focus', async ({ page }) => {
+test('enlargement reveals the full document without manual controls, with Escape and restored focus', async ({ page }) => {
   await visit(page);
-  await gifts(page).getByRole('button', { name: 'Show full letter now', exact: true }).click();
+  await expect(gifts(page).getByRole('button', { name: /Next example|Show full letter now/i })).toHaveCount(0);
   const text = await readable(page).innerText();
-  await expect(gifts(page)).toHaveAttribute('data-complete', 'true');
   const open = gifts(page).getByRole('button', { name: 'Enlarge letter to read' });
   await open.click();
   const dialog = page.getByRole('dialog');
   await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole('button', { name: 'Show full letter now', exact: true })).toHaveCount(0);
+  expect(await dialog.locator('.studio-letter__signature > span').evaluate(el => getComputedStyle(el).clipPath)).toBe('none');
   expect(await dialog.locator('.studio-gifts__sr').innerText()).toBe(text);
   await expect(dialog.getByRole('button', { name: 'Close preview' })).toBeFocused();
   await page.keyboard.press('Escape');
@@ -336,12 +384,12 @@ test('audio name wins, cancels the old animation, and stopping/ending keeps a co
   await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Harry');
   await expect(readable(page)).toContainText('Dear Harry,');
   await expect(readable(page)).not.toContainText('Edward');
-  await expect(gifts(page).getByRole('button', { name: 'Next example' })).toBeDisabled();
+  await expect(gifts(page).getByRole('button', { name: 'Next example' })).toHaveCount(0);
   await page.clock.runFor(800);
   await expect(gifts(page)).toHaveAttribute('data-complete', 'false');
   await page.getByRole('button', { name: 'Stop example message', exact: true }).click();
   await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Harry');
-  await expect(gifts(page).getByRole('button', { name: 'Next example' })).toBeEnabled();
+  await expect(gifts(page).getByRole('button', { name: 'Next example' })).toHaveCount(0);
   await audioStart.click();
   await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Arabella');
   await page.locator('.santa-message-example audio').dispatchEvent('ended');
@@ -360,15 +408,13 @@ test('reduced motion is complete and static; enlargement pauses normal rotation'
   await page.clock.runFor(180000);
   await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Edward');
   await expect(body(page)).toContainText('The North Pole');
-  await gifts(page).getByRole('button', { name: 'Next example' }).click();
-  await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Ayla');
-  await expect(gifts(page)).toHaveAttribute('data-complete', 'true');
+  await expect(gifts(page).getByRole('button', { name: 'Next example' })).toHaveCount(0);
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await gifts(page).getByRole('button', { name: 'Enlarge letter to read' }).click();
   await page.evaluate(() => document.activeElement.blur());
   await page.mouse.move(0, 0);
   await page.clock.runFor(180000);
-  await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Ayla');
+  await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Edward');
 });
 
 for (const [width, scale] of [[1440, 1], [320, 1], [390, 2]]) {

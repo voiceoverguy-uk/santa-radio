@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { certificateExampleNames, allCertificateExamples } from '../lib/santaCertificateExamples.js';
 import { createStudioLetter, CERTIFICATE_WRITE_MS, LETTER_CHARACTER_MS,
-  SIGNATURE_WRITE_MS, letterBodyDuration, letterDuration } from '../lib/santaStudioLetter.js';
+  SIGNATURE_WRITE_MS, GIFT_EXAMPLE_INTERVAL_MS, letterBodyDuration, letterDuration } from '../lib/santaStudioLetter.js';
 import './SantaStudioGifts.css';
 
 function WrittenText({ text, count }) {
@@ -61,7 +61,6 @@ function GiftExample({ name, activeAudio, reducedMotion, onNext }) {
   // Deterministic SSR; randomise only once after mounting in the browser.
   const [letter, setLetter] = useState(() => createStudioLetter(name, () => 0.5));
   const [elapsed, setElapsed] = useState(0);
-  const [revealed, setRevealed] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
   const [reading, setReading] = useState(false);
@@ -72,7 +71,7 @@ function GiftExample({ name, activeAudio, reducedMotion, onNext }) {
   const openerRef = useRef(null);
   const closeRef = useRef(null);
   const duration = letterDuration(letter);
-  const displayElapsed = revealed || reducedMotion ? duration : elapsed;
+  const displayElapsed = reducedMotion ? duration : elapsed;
   const finished = displayElapsed >= duration;
 
   useEffect(() => { setLetter(createStudioLetter(name)); }, [name]);
@@ -93,11 +92,11 @@ function GiftExample({ name, activeAudio, reducedMotion, onNext }) {
     return () => clearInterval(timer);
   }, [finished, visible, duration]);
   useEffect(() => {
-    if (!finished || activeAudio || reducedMotion || !visible || hovered || focused || reading || view) return undefined;
-    // Full typing time PLUS a minute to read; never the old five-second loop.
-    const timer = setTimeout(onNext, 60000);
+    if (activeAudio || reducedMotion || !visible || hovered || focused || reading || view) return undefined;
+    // One shared name drives both documents. Writing completes within this cycle.
+    const timer = setTimeout(onNext, GIFT_EXAMPLE_INTERVAL_MS);
     return () => clearTimeout(timer);
-  }, [finished, activeAudio, reducedMotion, visible, hovered, focused, reading, view, onNext]);
+  }, [activeAudio, reducedMotion, visible, hovered, focused, reading, view, onNext]);
   useEffect(() => {
     if (!view) return undefined;
     const dialog = dialogRef.current;
@@ -139,22 +138,17 @@ function GiftExample({ name, activeAudio, reducedMotion, onNext }) {
         <span className="studio-gifts__thumbnail-label">Enlarge letter</span>
       </button>
     </div>
-    <div className="studio-gifts__actions">
-      <button type="button" onClick={() => setRevealed(true)} disabled={finished}>Show full letter now</button>
-      <button type="button" onClick={onNext} disabled={activeAudio}>Next example</button>
-    </div>
     <p className="studio-gifts__reading-note">Examples pause while you read or enlarge them.</p>
     <dialog ref={dialogRef} className="studio-letter-dialog"
       aria-label={`${name}’s ${view || 'gift'} example`}
       onCancel={() => dialogRef.current.close()}>
       <div className="studio-letter-dialog__toolbar">
-        <button type="button" onClick={() => setRevealed(true)} disabled={finished}>Show full letter now</button>
         <button ref={closeRef} type="button" onClick={() => dialogRef.current.close()}>Close preview</button>
       </div>
       <div className="studio-letter-dialog__content" role="region" aria-label="Enlarged gift preview"
         tabIndex={0} onScroll={() => setReading(true)}>
-        {view === 'certificate' ? <Certificate name={name} elapsed={displayElapsed} />
-          : <Letter letter={letter} elapsed={displayElapsed} />}
+        {view === 'certificate' ? <Certificate name={name} elapsed={duration} />
+          : <Letter letter={letter} elapsed={duration} />}
       </div>
     </dialog>
   </section>;

@@ -103,16 +103,6 @@
   max-width: 100%;
 }
 
-.studio-gifts__actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: stretch;
-  gap: 6px;
-  min-width: 0;
-  margin-top: 9px;
-}
-
-.studio-gifts__actions button,
 .studio-letter-dialog__toolbar button {
   min-width: 0;
   min-height: 44px;
@@ -131,19 +121,16 @@
   transition: background-color 160ms ease, transform 160ms ease;
 }
 
-.studio-gifts__actions button:hover,
 .studio-letter-dialog__toolbar button:hover {
   background: #e9ddc2;
   transform: translateY(-1px);
 }
 
-.studio-gifts__actions button:focus-visible,
 .studio-letter-dialog__toolbar button:focus-visible {
   outline: 3px solid #765a20;
   outline-offset: 3px;
 }
 
-.studio-gifts__actions button:disabled,
 .studio-letter-dialog__toolbar button:disabled {
   cursor: not-allowed;
   opacity: 0.65;
@@ -318,10 +305,6 @@
 }
 
 @media (max-width: 480px) {
-  .studio-gifts__actions button {
-    flex: 1 1 calc(50% - 6px);
-  }
-
   .studio-letter-dialog__toolbar {
     justify-content: stretch;
   }
@@ -350,12 +333,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .studio-gifts__actions button,
   .studio-letter-dialog__toolbar button {
     transition: none;
   }
 
-  .studio-gifts__actions button:hover,
   .studio-letter-dialog__toolbar button:hover {
     transform: none;
   }
