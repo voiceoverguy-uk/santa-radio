@@ -33,6 +33,23 @@ test('every website recording assignment is shared with canonical identity and c
   }), feed, 'mapping insertion order must not affect output');
 });
 
+test('Mistletoe And Holly adds only its exact recording without changing artist-wide artwork', async () => {
+  const current = await buildArtworkFeed(mapping);
+  const { 236: added, ...previousMapping } = songPortraits;
+  const previous = await buildArtworkFeed(mapping, { recordingMapping: previousMapping });
+  for (const key of ['schemaVersion', 'refreshAfterSeconds', 'fallback', 'artists']) {
+    assert.deepEqual(current[key], previous[key]);
+  }
+  const { 236: entry, ...remaining } = current.recordings;
+  assert.deepEqual(remaining, previous.recordings);
+  assert.equal(entry.artist, 'Frank Sinatra');
+  assert.equal(entry.title, 'Mistletoe And Holly');
+  assert.equal(entry.image.path, '/artist-artwork/frank-sinatra-mistletoe-and-holly.webp');
+  assert.equal(entry.image.path, added.path);
+  assert.equal(Object.hasOwn(current.recordings, '237'), false);
+  assert.notEqual(current.version, previous.version);
+});
+
 test("Can't stop Christmas adds only its exact entry and versions replacement bytes independently", async () => {
   const current = await buildArtworkFeed(mapping);
   const { 487: added, ...previousMapping } = songPortraits;

@@ -20,6 +20,26 @@ const elvisBlue = songs.find(song => song.id === 399);
 const elvisSpecial = '/artist-artwork/elvis-presley-blue-christmas.webp';
 const elvisUsual = '/artist-artwork/elvis-presley.webp';
 
+test('Mistletoe And Holly preserves the upload, Sinatra controls and the Moonglows recording', async () => {
+  for (const [path, hash] of [
+    ['attached_assets/Frank_Sinatra_-_Mistletoe_And_Holly_1793326726468.png',
+      'fcf7610f84054dc84a3e781caa6aa5f255b04cd58e234a50d7f903bfc408eac4'],
+    ['public/artist-artwork/frank-sinatra.webp',
+      '42a130e4a2875f56071dfc6c8a273ee0777f4bb2c64b3a3cd8e5b7027afd1da6'],
+    ['public/artist-artwork/frank-sinatra-let-it-snow.webp',
+      'f76c2c873286e621897365a46243782cda74de3443031fcfd0ed2c9f5e396483'],
+  ]) assert.equal(createHash('sha256').update(await readFile(path)).digest('hex'), hash);
+  const song = songs.find(song => song.id === 236);
+  assert.equal(song.link, 'frank-sinatra-mistletoe-and-holly');
+  assert.equal(artworkAlt(song), 'Illustrated artwork for Mistletoe And Holly by Frank Sinatra');
+  assert.equal(songArtwork(songs.find(song => song.id === 46)), '/artist-artwork/frank-sinatra-let-it-snow.webp');
+  const moonglows = songs.find(song => song.id === 237);
+  assert.equal(moonglows.artist, 'The Moonglows');
+  assert.equal(songArtwork(moonglows), artistMapping.artistArtwork('The Moonglows'));
+  assert.equal(songArtwork(matchLiveSong({ artist: moonglows.artist, title: moonglows.song }).song),
+    artistMapping.artistArtwork('The Moonglows'));
+});
+
 test("Can't stop Christmas preserves its original and both existing Robbie images", async () => {
   for (const [path, hash] of [
     ["attached_assets/Robbie_Williams_-_Can't_Stop_Christmas_1793324101511.png",

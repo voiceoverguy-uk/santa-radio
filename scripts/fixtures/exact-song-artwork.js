@@ -5,6 +5,7 @@ export const exactSongArtwork = [
   [559, 'Robbie Williams', 'Bad Sharon', 'robbie-williams-bad-sharon'],
   [557, 'Freya Skye', 'Snow Angels', 'freya-skye-snow-angels'],
   [46, 'Frank Sinatra', 'Let It Snow! Let It Snow! Let It Snow!', 'frank-sinatra-let-it-snow'],
+  [236, 'Frank Sinatra', 'Mistletoe And Holly', 'frank-sinatra-mistletoe-and-holly'],
   [40, 'The Jackson 5', 'Santa Claus Is Coming To Town', 'jackson-5-santa-claus-is-coming-to-town'],
   [43, 'Gabriella Cilmi', 'Warm this Winter', 'gabriella-cilmi-warm-this-winter'],
   [537, 'Sia', 'Candy Cane Lane', 'sia-candy-cane-lane'],

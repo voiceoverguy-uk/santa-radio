@@ -116,6 +116,8 @@ test('built pages and SSR share verified song images without altering other reco
     ['/christmas-artist/399-elvis-presley-blue-christmas', '/artist-artwork/elvis-presley-blue-christmas.webp'],
     ['/christmas-artist/260-elvis-presley-santa-bring-my-baby-back-to-me', '/artist-artwork/elvis-presley.webp'],
     ['/christmas-artist/116-glen-campbell-blue-christmas', '/artist-artwork/glen-campbell.webp'],
+    ['/christmas-artist/236-frank-sinatra-mistletoe-and-holly', '/artist-artwork/frank-sinatra-mistletoe-and-holly.webp'],
+    ['/christmas-artist/237-the-moonglows-mistletoe-and-holly', mapping.artistArtwork('The Moonglows')],
   ]) {
     const response = await fetch(new URL(path, base));
     assert.equal(response.status, 200);

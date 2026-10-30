@@ -39,6 +39,11 @@ export const songPortraits = Object.freeze({
     title: 'Let It Snow! Let It Snow! Let It Snow!',
     path: '/artist-artwork/frank-sinatra-let-it-snow.webp',
   }),
+  236: Object.freeze({
+    artist: 'Frank Sinatra',
+    title: 'Mistletoe And Holly',
+    path: '/artist-artwork/frank-sinatra-mistletoe-and-holly.webp',
+  }),
   457: Object.freeze({
     artist: 'Sia',
     title: "Santa's Coming For Us",
