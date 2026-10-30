@@ -32,6 +32,8 @@ async function visit(page, { reduced = false, clock = true } = {}) {
   if (await decline.isVisible()) await decline.click();
   await gifts(page).scrollIntoViewIfNeeded();
   await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Edward');
+  await expect(gifts(page).getByRole('heading', { level: 4 })).toHaveText('From Santa’s desk — a gift preview for Edward');
+  await expect(gifts(page)).not.toContainText('Example for');
 }
 
 // Exercise the automatic cycle rather than relying on removed manual controls.
@@ -54,7 +56,7 @@ async function scriptInk(page, span, { partial = false } = {}) {
     const font = parseFloat(getComputedStyle(el).fontSize);
     const certificate = el.closest('.studio-certificate')?.getBoundingClientRect();
     const paper = el.closest('.studio-letter__paper')?.getBoundingClientRect();
-    const parent = certificate || paper;
+    const parent = certificate || paper || el.closest('.studio-santa-picture')?.getBoundingClientRect();
     return { x: Math.max(0, Math.floor(rect.left - font)),
       y: Math.max(0, Math.floor(rect.top - font)),
       right: Math.min(innerWidth, Math.ceil(rect.right + font)),
@@ -241,12 +243,59 @@ test('compact desktop card groups gifts right of voucher controls without a full
   const card = await promotion.boundingBox();
   expect(form.x + form.width).toBeLessThanOrEqual(preview.x);
   expect(Math.abs(form.y - preview.y)).toBeLessThan(card.height);
-  expect(card.height).toBeLessThan(650);
+  // The third compact gift now occupies the previously empty area below the pair.
+  expect(card.height).toBeLessThan(750);
   const paper = await gifts(page).locator('.studio-gifts__gallery .studio-letter__paper').boundingBox();
   expect(paper.width / paper.height).toBeCloseTo(210 / 297, 2);
   expect(paper.height).toBeLessThan(350);
   await page.screenshot({ path: 'test-results/studio-compact-desktop.png' });
 });
+
+for (const width of [320, 390, 1440]) {
+  test(`equal-height documents and personalised Santa picture fit at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await visit(page, { reduced: true });
+    const certificate = await gifts(page).locator('.studio-gifts__gallery .studio-certificate').boundingBox();
+    const letter = await gifts(page).locator('.studio-gifts__gallery .studio-letter__paper').boundingBox();
+    const certificateCard = await gifts(page).locator('.studio-gifts__thumbnail--certificate').boundingBox();
+    const letterCard = await gifts(page).locator('.studio-gifts__thumbnail--letter').boundingBox();
+    expect(Math.abs(certificate.height - letter.height)).toBeLessThan(1);
+    expect(Math.abs(certificate.y - letter.y)).toBeLessThan(1);
+    expect(Math.abs(certificateCard.height - letterCard.height)).toBeLessThan(1);
+    const picture = gifts(page).locator('.studio-gifts__preview-stack .studio-santa-picture');
+    await expect(picture.locator('img')).toHaveJSProperty('naturalWidth', 1536);
+    const box = await picture.boundingBox();
+    expect(box.y).toBeGreaterThan(certificateCard.y + certificateCard.height);
+    expect(box.width).toBeLessThanOrEqual(360);
+    expect(box.width / box.height).toBeCloseTo(1.5, 2);
+    expect(box.x).toBeGreaterThanOrEqual(0);
+    expect(box.x + box.width).toBeLessThanOrEqual(width);
+    const name = picture.locator('.studio-santa-picture__name > span');
+    await expect(name).toHaveText('Edward');
+    const font = await name.evaluate(el => ({
+      family: getComputedStyle(el).fontFamily,
+      size: parseFloat(getComputedStyle(el).fontSize),
+    }));
+    expect(font.family).toContain('Great Vibes');
+    expect(font.size / box.width).toBeCloseTo(.1, 2);
+    const ink = await scriptInk(page, name);
+    expect(ink.changed).toBe(0);
+    expect(ink.ink).toBeGreaterThan(30);
+    expect(ink.bounds.left).toBeGreaterThan(.49);
+    expect(ink.bounds.right).toBeLessThan(.91);
+    expect(ink.bounds.top).toBeGreaterThan(.48);
+    expect(ink.bounds.bottom).toBeLessThan(.8);
+    const opener = gifts(page).getByRole('button', { name: 'Enlarge Santa’s Nice List picture' });
+    await opener.click();
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toBeVisible();
+    await expect(dialog.locator('.studio-santa-picture__name')).toHaveText('Edward');
+    expect(await dialog.locator('.studio-santa-picture__name > span').evaluate(el => getComputedStyle(el).clipPath)).toBe('none');
+    await page.keyboard.press('Escape');
+    await expect(dialog).not.toBeVisible();
+    await expect(opener).toBeFocused();
+  });
+}
 
 for (const width of [1440, 390]) {
 test(`longest name and choices keep the complete letter inside A4 at ${width}px`, async ({ page }) => {
@@ -299,14 +348,20 @@ for (const width of [1440, 390]) {
   test(`both gifts write and change recipient together every ten seconds at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await visit(page, { clock: true });
+    const picture = gifts(page).locator('.studio-gifts__preview-stack .studio-santa-picture > img');
+    await expect(picture).toHaveAttribute('src', '/images/santa-nice-list.jpg');
     await page.clock.pauseAt(await page.evaluate(() => Date.now() + 100));
     await advanceExample(page);
     await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Ayla');
+    await expect(picture).toHaveAttribute('src', '/images/santa-nice-list-2.jpg');
+    await expect(picture).toHaveJSProperty('naturalWidth', 1536);
     await page.mouse.move(0, 0);
     await page.evaluate(() => document.activeElement?.blur());
     const certificate = gifts(page).locator('.studio-certificate__name > span');
+    const pictureName = gifts(page).locator('.studio-gifts__preview-stack .studio-santa-picture__name > span');
     await page.clock.runFor(800);
     expect(await certificate.evaluate(el => getComputedStyle(el).clipPath)).not.toBe('none');
+    expect(await pictureName.evaluate(el => el.style.clipPath)).toBe(await certificate.evaluate(el => el.style.clipPath));
     await expect(gifts(page)).toHaveAttribute('data-complete', 'false');
     await page.clock.runFor(1200);
     await expect(body(page)).toContainText('Dear Ayla');
@@ -317,16 +372,41 @@ for (const width of [1440, 390]) {
     await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Ayla');
     await page.clock.runFor(200);
     await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Erin');
+    await expect(gifts(page).getByRole('heading', { level: 4 })).toHaveText('From Santa’s desk — a gift preview for Erin');
+    await expect(picture).toHaveAttribute('src', '/images/santa-nice-list-3.jpg');
+    await expect(picture).toHaveJSProperty('naturalWidth', 1536);
     await expect(gifts(page)).toHaveAttribute('data-complete', 'false');
     await expect(certificate).toHaveText('Erin');
+    await expect(pictureName).toHaveText('Erin');
     await expect(readable(page)).toContainText('Dear Erin,');
     await expect(readable(page)).not.toContainText('Dear Ayla');
     await page.clock.runFor(10000);
     await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Charlotte');
+    await expect(picture).toHaveAttribute('src', '/images/santa-nice-list.jpg');
     await expect(certificate).toHaveText('Charlotte');
+    await expect(pictureName).toHaveText('Charlotte');
     await expect(readable(page)).toContainText('Dear Charlotte,');
   });
 }
+
+test('alternate Santa picture enlargement preserves its image and name while reading', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 1000 });
+  await visit(page, { reduced: true });
+  await advanceExample(page);
+  await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Ayla');
+  await gifts(page).getByRole('button', { name: 'Enlarge Santa’s Nice List picture' }).click();
+  const dialog = page.getByRole('dialog');
+  await expect(dialog.locator('.studio-santa-picture > img')).toHaveAttribute('src', '/images/santa-nice-list-2.jpg');
+  await expect(dialog.locator('.studio-santa-picture__name')).toHaveText('Ayla');
+  await expect(dialog.locator('.studio-santa-picture > img')).toHaveJSProperty('naturalWidth', 1536);
+  expect((await scriptInk(page, dialog.locator('.studio-santa-picture__name > span'))).changed).toBe(0);
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.mouse.move(0, 0);
+  await page.evaluate(() => document.activeElement?.blur());
+  await page.clock.runFor(20000);
+  await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Ayla');
+  await expect(dialog.locator('.studio-santa-picture > img')).toHaveAttribute('src', '/images/santa-nice-list-2.jpg');
+});
 
 test('certificate precedes body, signature follows body, and hovering pauses the ten-second rotation', async ({ page }) => {
   await visit(page, { clock: true });

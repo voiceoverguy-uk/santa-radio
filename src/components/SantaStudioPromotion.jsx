@@ -17,7 +17,9 @@ export default function SantaStudioPromotion({ activeExampleName = null }) {
           </div>
           <h3 id="santa-studio-title" tabIndex={-1}>Santa’s <span className="santa-studio-promotion__title-line">Message Maker Studio</span></h3>
           <p className="santa-studio-promotion__copy">
-            When Studio - A launches, you’ll be able to add age, activities, achievements, country and festive treats. The paid offer will include a digital personalised Nice List certificate, a short personal letter from Santa and a picture confirming your place on the Nice List. *
+            When Studio - A launches, you’ll be able to add age, activities, achievements, country and festive treats.{' '}
+            <br />
+            The paid offer will include a digital personalised Nice List certificate, a short personal letter from Santa and a picture confirming your place on the Nice List. *
             <br /><br />
             <small>* have you been good this year?</small>
           </p>

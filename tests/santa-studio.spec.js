@@ -37,6 +37,14 @@ test('mobile Studio promotion title fits and certificates belong only to the upc
     expect(lines.height).toBeLessThanOrEqual(lines.lineHeight * 3 + 3);
     expect(lines.width).toBeLessThanOrEqual(lines.available + 1);
     const promotion = page.locator('.santa-studio-promotion');
+    const typography = await promotion.locator('.santa-studio-promotion__copy').evaluate(el => ({
+      size: parseFloat(getComputedStyle(el).fontSize),
+      lineHeight: parseFloat(getComputedStyle(el).lineHeight),
+    }));
+    expect(typography.size).toBeGreaterThanOrEqual(16);
+    expect(typography.lineHeight / typography.size).toBeGreaterThanOrEqual(1.6);
+    await expect(promotion).not.toContainText('Three coming-soon paid Studio gifts');
+    await expect(promotion).not.toContainText('This visual preview does not create downloads');
     await expect(promotion).toContainText('When Studio - A launches');
     await expect(promotion).toContainText('The paid offer will include a digital personalised Nice List certificate, a short personal letter from Santa and a picture confirming your place on the Nice List. *');
     await expect(promotion.locator('.santa-studio-promotion__copy small')).toHaveText('* have you been good this year?');

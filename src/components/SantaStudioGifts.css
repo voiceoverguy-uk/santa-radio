@@ -34,10 +34,14 @@
 
 .studio-gifts__gallery {
   display: flex;
-  align-items: flex-end;
+  align-items: stretch;
   gap: 8px;
   min-width: 0;
   margin-top: 10px;
+}
+
+.studio-gifts__preview-stack {
+  min-width: 0;
 }
 
 .studio-gifts__thumbnail {
@@ -66,13 +70,20 @@
 }
 
 .studio-gifts__thumbnail--letter {
+  display: flex;
+  flex-direction: column;
   width: 32%;
   flex: 0 0 32%;
   padding: 3px;
 }
 
 .studio-gifts__thumbnail--certificate {
-  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  /* Twice the letter's content width gives equal document heights.
+     Subtract the duplicated border/padding before applying that ratio. */
+  flex: 0 0 calc(64% - 8px);
+  padding: 3px;
 }
 
 .studio-gifts__thumbnail-label {
@@ -89,9 +100,50 @@
   box-shadow: none;
 }
 
-.studio-gifts__reading-note {
-  margin-top: 7px !important;
-  font-size: 0.7rem !important;
+.studio-gifts__gallery .studio-certificate,
+.studio-gifts__gallery .studio-letter__paper {
+  flex: 0 0 auto;
+}
+
+.studio-gifts__thumbnail--picture {
+  display: block;
+  width: min(100%, 360px);
+  margin-top: 9px;
+  margin-right: auto;
+  margin-left: auto;
+  text-align: left;
+}
+
+.studio-santa-picture {
+  position: relative;
+  container-type: inline-size;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--gifts-paper);
+}
+
+.studio-santa-picture > img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.studio-santa-picture__name {
+  position: absolute;
+  top: 57%;
+  left: 49%;
+  display: grid;
+  width: 42%;
+  height: 16%;
+  place-items: center;
+  color: #19392d;
+  font-family: "Great Vibes", cursive;
+  font-size: 10cqw;
+  font-weight: 400;
+  line-height: 1;
+  text-align: center;
+  overflow-wrap: anywhere;
 }
 
 .studio-gifts *,
@@ -286,6 +338,15 @@
 
 .studio-letter-dialog .studio-certificate {
   max-width: 100%;
+}
+
+.studio-letter-dialog .studio-santa-picture {
+  width: min(100%, 1024px);
+  flex: 0 0 auto;
+}
+
+.studio-letter-dialog .studio-santa-picture__name {
+  font-size: 10cqw;
 }
 
 .studio-gifts__sr {

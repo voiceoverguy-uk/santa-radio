@@ -6,6 +6,12 @@ Certificates and personalised letters are gifts reserved for the paid Studio off
 
 The promotional certificate and letter should change to the same example name every 10 seconds, with a writing effect on both. Remove “Next example” and “Show full letter now”; retain enlargement, showing the complete document for reading.
 
+The owner supplied three Santa-and-elves Nice List pictures to alternate in the preview beneath the certificate/letter pair. Keep the certificate and letter the same height, and place a fairly large name on each picture's blank parchment in the certificate's script font.
+
+**Why:** The owner requested a smaller certificate, the supplied picture below it, and the same personalised name in matching lettering.
+
+**How to apply:** Synchronise the picture name and writing with the other gifts, preserve the supplied picture without cropping, and keep the name clear of its printed heading and decorative edges.
+
 **Why:** The owner explicitly requested a ten-second name cycle shared by the certificate and letter.
 
 **How to apply:** Keep both documents synchronised, finish the writing within each cycle, and preserve reading/enlargement pauses, reduced-motion support and matching to deliberately played example audio. This remains a visual preview, not generated delivery.
