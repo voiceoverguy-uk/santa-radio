@@ -64,10 +64,8 @@ test('mobile Studio promotion title fits and certificates belong only to the upc
     const promotion = page.locator('.santa-studio-promotion');
     const audioExample = page.getByRole('button', { name: 'Hear an example audio message', exact: true });
     await expect(audioExample).toHaveCount(1);
-    const boxBounds = await page.locator('.santa-message-box').boundingBox();
-    const audioBounds = await audioExample.boundingBox();
-    expect(audioBounds.y).toBeGreaterThanOrEqual(boxBounds.y + boxBounds.height + 19);
-    expect(Math.abs((audioBounds.x + audioBounds.width / 2) - (boxBounds.x + boxBounds.width / 2))).toBeLessThan(1);
+    await expect(page.locator('.message-intro .santa-message-example')).toBeVisible();
+    await expect(page.locator('.santa-message-aside .santa-message-example')).toHaveCount(0);
     const typography = await promotion.locator('.santa-studio-promotion__copy').evaluate(el => ({
       size: parseFloat(getComputedStyle(el).fontSize),
       lineHeight: parseFloat(getComputedStyle(el).lineHeight),
@@ -127,7 +125,7 @@ for (const path of ['/', '/free-santa-message']) {
       })).toBeVisible();
       await expect(card.locator('.santa-message-access__intro')).toHaveText(
         'Add your details and access a free personalised downloadable message from Santa.');
-      await expect(page.locator('.message-recording-indicator')).toHaveText('Recording (Studio - B)');
+      await expect(page.locator('.santa-message-box .message-recording-indicator')).toHaveText('Recording (Studio - B)');
       await expect(card.locator('.santa-message-access__privacy')).toHaveText(
         'Your details are stored for news or updates. Read our privacy policy.');
       for (const selector of ['h3', '.santa-message-access__intro']) {
@@ -143,9 +141,17 @@ for (const path of ['/', '/free-santa-message']) {
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       await fillAccessForm(page);
       await card.getByRole('button', { name: 'Get my free Santa message' }).click();
-      await expect(page).toHaveURL(/\/free-santa-message(?:[?#]|$)/);
-      await expect(page.getByRole('combobox')).toBeVisible();
+      await expect(page).toHaveURL(path === '/' ? /\/(?:[?#]|$)/ : /\/free-santa-message(?:[?#]|$)/);
+      await expect(page.locator('.santa-message-box').getByRole('combobox')).toBeVisible();
       await expect(page.locator('.santa-message-access')).toHaveCount(0);
+      await expect(page.locator('.message-intro .santa-message-example')).toHaveCount(0);
+      const audioExample = page.locator('.santa-message-aside').getByRole('button', { name: 'Hear an example audio message', exact: true });
+      await expect(audioExample).toBeVisible();
+      await expect(page.locator('.santa-message-example')).toHaveCount(1);
+      const boxBounds = await page.locator('.santa-message-box').boundingBox();
+      const audioBounds = await audioExample.boundingBox();
+      expect(audioBounds.y).toBeGreaterThanOrEqual(boxBounds.y + boxBounds.height + 19);
+      expect(Math.abs((audioBounds.x + audioBounds.width / 2) - (boxBounds.x + boxBounds.width / 2))).toBeLessThan(1);
     });
   }
 
@@ -154,7 +160,7 @@ for (const path of ['/', '/free-santa-message']) {
     let mode = 'hold', release;
     const gate = new Promise(resolve => { release = resolve; });
     await page.route('**/api/santa-names?*', async route => {
-      expect(new URL(route.request().url()).searchParams.get('q')).toBe('');
+      expect(new URL(route.request().url()).searchParams.get('q') || '').toBe('');
       if (mode === 'hold') await gate;
       if (mode === 'error') return route.fulfill({ status: 503, json: { error: 'Unavailable' } });
       return route.fulfill({ json: { records: [], hostedCount: mode === 'one' ? 1 : 12345, warning: null } });
@@ -162,25 +168,26 @@ for (const path of ['/', '/free-santa-message']) {
     await visit(page, path);
     const counter = page.locator('.message-name-count');
     const inline = page.locator('.message-intro-name-count');
-    for (const locator of [counter, inline]) await expect(locator).toHaveText('Checking how many names are available…');
-    await expect(page.getByRole('combobox')).toHaveCount(0);
+    const studio = page.locator('.santa-studio-promotion__name-count');
+    for (const locator of [counter, inline, studio]) await expect(locator).toHaveText('Checking how many names are available…');
+    await expect(page.locator('.santa-message-box').getByRole('combobox')).toHaveCount(0);
     mode = 'error';
     release();
-    for (const locator of [counter, inline]) await expect(locator).toHaveText('Name total temporarily unavailable.');
+    for (const locator of [counter, inline, studio]) await expect(locator).toHaveText('Name total temporarily unavailable.');
     await expect(page.getByRole('button', { name: 'Get my free Santa message' })).toBeEnabled();
     mode = 'one';
     await page.getByRole('button', { name: 'Retry name total' }).click();
     for (const locator of [counter, inline]) await expect(locator).toHaveText('0 names available');
     await page.clock.runFor(5000);
-    for (const locator of [counter, inline]) await expect(locator).toHaveText('1 name available');
+    for (const locator of [counter, inline, studio]) await expect(locator).toHaveText('1 name available');
     await page.clock.runFor(5000);
-    for (const locator of [counter, inline]) await expect(locator).toHaveText('1 name available');
+    for (const locator of [counter, inline, studio]) await expect(locator).toHaveText('1 name available');
     mode = 'many';
     await page.reload();
-    for (const locator of [counter, inline]) await expect(locator).toHaveText('12,295 names available');
+    for (const locator of [counter, inline, studio]) await expect(locator).toHaveText('12,295 names available');
     await page.clock.runFor(5000);
-    for (const locator of [counter, inline]) await expect(locator).toHaveText('12,296 names available');
-    await expect(page.getByRole('combobox')).toHaveCount(0);
+    for (const locator of [counter, inline, studio]) await expect(locator).toHaveText('12,296 names available');
+    await expect(page.locator('.santa-message-box').getByRole('combobox')).toHaveCount(0);
   });
 }
 

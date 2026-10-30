@@ -4,7 +4,7 @@ import './SantaStudioPromotion.css';
 import StudioPurchaseButton from './StudioPurchaseButton.jsx';
 import SantaStudioGifts from './SantaStudioGifts.jsx';
 
-export default function SantaStudioPromotion({ activeExampleName = null }) {
+export default function SantaStudioPromotion({ activeExampleName = null, availableNamesText }) {
   const navigate = useNavigate();
 
   return (
@@ -15,10 +15,13 @@ export default function SantaStudioPromotion({ activeExampleName = null }) {
             <span className="santa-studio-promotion__seal" aria-hidden="true">S</span>
             <div className="santa-studio-promotion__heading">
               <p className="santa-studio-promotion__eyebrow">A little more magic</p>
-              <span className="message-recording-indicator" title="North Pole recording studio">
-                <span className="message-recording-dot" aria-hidden="true" />
-                Recording (Studio - A)
-              </span>
+              <div className="message-name-status">
+                <p className="santa-studio-promotion__name-count" role="status" aria-live="off">{availableNamesText}</p>
+                <span className="message-recording-indicator" title="North Pole recording studio">
+                  <span className="message-recording-dot" aria-hidden="true" />
+                  Recording (Studio - A)
+                </span>
+              </div>
             </div>
           </div>
           <h3 id="santa-studio-title" tabIndex={-1}>Santa’s <span className="santa-studio-promotion__title-line">Message Maker Studio</span></h3>

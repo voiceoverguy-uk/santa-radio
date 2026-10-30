@@ -44,10 +44,10 @@ for (const width of [320, 390, 768, 1440]) {
     expect(hierarchy.subSize).toBeLessThan(hierarchy.mainSize * .75);
     expect(hierarchy.subTop).toBeGreaterThan(hierarchy.mainBottom);
     expect(hierarchy.lines).toBe('Their name. Santa’s REAL VOICE.');
-    const example = page.locator('.santa-message-aside').getByRole('button', { name: 'Hear an example audio message', exact: true });
+    const example = intro.getByRole('button', { name: 'Hear an example audio message', exact: true });
     await expect(example).toBeVisible();
     await expect(example).toBeEnabled();
-    await expect(intro.locator('.santa-voice-tagline + p')).toHaveText(introduction);
+    await expect(intro.locator('.santa-voice-tagline + .santa-message-example + p')).toHaveText(introduction);
     for (const element of [heading, subheading, paragraph, example, ...(path === '/' ? [] : [heroDescription])]) {
       const bounds = await element.evaluate(node => {
         const rect = node.getBoundingClientRect();

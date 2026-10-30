@@ -11,6 +11,8 @@ Start each message-maker counter 50 below the actual inventory total and increas
 
 Show a blinking red dot and “Recording” immediately beside the names-available count with a compact gap, not at the card’s far-right edge. Allow wrapping while keeping the dot with its label.
 
+The owner explicitly wants the names-available counter alongside both Studio A and Studio B recording indicators, with the same displayed count.
+
 **Why:** The owner reminded us this studio indicator was intended beside the counter, supplying the names-count screenshot.
 
 **How to apply:** Treat it as North Pole studio presentation, separate from an individual message's creation/busy state. Keep the text steady and respect reduced-motion preferences with a static dot; do not change actual recording or inventory behaviour.
