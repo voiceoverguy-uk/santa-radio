@@ -47,7 +47,7 @@ test('direct documents, navigation and reload stay locked, and the catalogue req
   });
   await visit(page, '/santa-message-workshop');
   await expect(page.getByLabel(codeLabel, { exact: true })).toBeVisible();
-  await expect(page.getByLabel(codeLabel, { exact: true })).toHaveAttribute('placeholder', 'Enter your Voucher code to continue.');
+  await expect(page.getByLabel(codeLabel, { exact: true })).toHaveAttribute('placeholder', 'Enter a voucher code for early access');
   await expect(page.getByRole('button', { name: 'Create your bespoke message', exact: true })).toBeVisible();
   await expect(page.getByText('Enter your tester code to join the private friends test.', { exact: true })).toHaveCount(0);
   await expect(page.locator('.smw-builder')).toHaveCount(0);
@@ -222,7 +222,7 @@ for (const path of ['/', '/free-santa-message']) {
       const submitBox = await voucherSubmit.boundingBox();
       const purchaseBox = await purchase.boundingBox();
       expect(purchaseBox.y).toBeGreaterThanOrEqual(submitBox.y + submitBox.height);
-      await expect(promo.getByLabel(codeLabel, { exact: true })).toHaveAttribute('placeholder', 'Enter your Voucher code to continue.');
+      await expect(promo.getByLabel(codeLabel, { exact: true })).toHaveAttribute('placeholder', 'Enter a voucher code for early access');
       await expect(promo.getByLabel(codeLabel, { exact: true })).toHaveAttribute('required', '');
       await expect(promo.locator('a[href="/santa-message-workshop"]')).toHaveCount(0);
       await expect(page.getByRole('button', { name: 'Get my free Santa message', exact: true })).toBeEnabled();

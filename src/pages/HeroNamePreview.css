@@ -75,6 +75,7 @@
   padding-top: 6px;
 }
 
+.hero-name-preview__broadcast,
 .hero-name-preview__left-stack {
   display: contents;
 }
@@ -387,10 +388,11 @@
   position: relative;
   grid-area: artwork;
   display: grid;
+  row-gap: 9px;
   width: min(100%, 270px);
-  height: 334px;
+  height: auto;
   justify-self: start;
-  align-self: start;
+  align-self: end;
   margin-top: clamp(-98px, calc(-4vw - 42px), -82px);
   place-items: start center;
   box-sizing: border-box;
@@ -405,6 +407,19 @@
 
 .hero-name-preview__artwork-slot:not(:has(.now-playing-artwork)) {
   visibility: hidden;
+}
+
+/* Reserve the same square cover and two caption lines while paused, without
+   giving the visible card a fixed height or leaving blank space below it. */
+.hero-name-preview__artwork-slot:not(:has(.now-playing-artwork))::before {
+  content: "";
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.hero-name-preview__artwork-slot:not(:has(.now-playing-artwork))::after {
+  content: "";
+  height: calc(.67rem * 1.4 + .77rem * 1.3 + 4px);
 }
 
 .hero-name-preview .hero-layout .hero-name-preview__artwork-slot .now-playing-artwork {
@@ -493,9 +508,23 @@
 }
 
 @media (min-width: 1091px) {
+  .hero-name-preview__broadcast {
+    display: grid;
+    grid-column: 1 / 3;
+    grid-row: 2 / 4;
+    grid-template-columns: subgrid;
+    align-self: start;
+  }
+
+  .hero-name-preview__broadcast > .hero-name-preview__artwork-slot {
+    grid-area: auto;
+    grid-column: 2;
+    grid-row: 1;
+  }
+
   .hero-name-preview__left-stack {
     grid-column: 1;
-    grid-row: 2 / 4;
+    grid-row: 1;
     display: flex;
     height: auto;
     min-width: 0;
@@ -563,7 +592,6 @@
 
   .hero-name-preview__artwork-slot {
     width: min(100%, 244px);
-    height: 294px;
     align-self: center;
     justify-self: start;
     margin-left: 3px;
@@ -695,7 +723,6 @@
 
   .hero-name-preview__artwork-slot {
     width: min(100%, 220px);
-    height: 276px;
     align-self: center;
     justify-self: center;
     margin-top: 0;
@@ -719,7 +746,6 @@
 
   .hero-name-preview__artwork-slot {
     width: min(100%, 194px);
-    height: 250px;
   }
 }
 

@@ -55,8 +55,8 @@ for (const width of [390, 1440]) {
     const gifts = page.locator('.studio-gifts');
     await choose(page, 'Erica'); // Not one of the rotating/sample names.
     await cta(page).click();
-    await gifts.scrollIntoViewIfNeeded();
     await expect(gifts).toHaveAttribute('data-demo-name', 'Erica');
+    await gifts.scrollIntoViewIfNeeded();
     await expect(gifts.getByRole('heading')).toHaveText('From Santa’s desk — a gift preview for Erica');
     await expect(gifts.locator('.studio-certificate__name')).toHaveText('Erica');
     await expect(gifts.locator('.studio-gifts__preview-stack .studio-santa-picture__name')).toHaveText('Erica');
@@ -323,14 +323,11 @@ for (const width of [1280, 768, 390, 320]) test(`layout and playback stay stable
     expect(description.width).toBeLessThanOrEqual(380);
     expect(Math.abs(countdownAfter.y + countdownAfter.height - artworkSlot.y - artworkSlot.height)).toBeLessThan(1);
     expect(description.y).toBeGreaterThanOrEqual(title.y + title.height);
-    // Match the owner's mockup: the cover tucks beside the second title
-    // line, above the paragraph, rather than following the entire heading.
+    // The compact card sits beside the introduction, with its bottom aligned
+    // to the countdown rather than stretched to a fixed height.
     expect(picture.x).toBeLessThan(width * .48);
     expect(picture.y).toBeLessThan(description.y);
-    expect(picture.y).toBeLessThan(title.y + title.height);
-    expect(Math.abs(artworkSlot.y - before.y)).toBeLessThanOrEqual(48);
     const secondTitleLine = await page.locator('.hero-title span').boundingBox();
-    expect(Math.abs(artworkSlot.y - secondTitleLine.y)).toBeLessThan(20);
     expect(Math.abs(before.y - secondTitleLine.y)).toBeLessThan(20);
   }
   if (width >= 768) expect(picture.x + picture.width).toBeLessThan(before.x);
@@ -346,6 +343,53 @@ for (const width of [1280, 768, 390, 320]) test(`layout and playback stay stable
   expect(Math.abs((await card.boundingBox()).y - before.y)).toBeLessThan(1);
   expect(Math.abs((await countdown.boundingBox()).y - countdownBefore.y)).toBeLessThan(1);
 });
+
+for (const width of [1091, 1280, 1440, 1920, 768, 390, 320]) {
+  test(`playing artwork has no empty footer and aligns with the desktop countdown at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await setup(page);
+    for (const [index, song] of [
+      { artist: 'Mariah Carey', title: 'Oh Santa' },
+      { artist: 'A Christmas Artist With A Longer Name', title: 'A Longer Christmas Song Title For The Festive Season' },
+    ].entries()) {
+      await page.route('**/api/radio-metadata*', route => route.fulfill({ json: {
+        current: song, currentStatus: 'ready', upcoming: [], upcomingStatus: 'ready',
+      } }));
+      await page.goto('/');
+      const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+      if (await decline.isVisible()) await decline.click();
+      await page.evaluate(() => document.fonts.ready);
+      await page.locator('.hero-actions').getByRole('button', { name: 'Listen Live', exact: true }).click();
+      const slot = page.locator('.hero-name-preview__artwork-slot');
+      const caption = slot.locator('.now-playing-artwork__caption');
+      await expect(caption).toContainText(song.title);
+      const measure = () => slot.evaluate(el => {
+        const rect = node => node.getBoundingClientRect().toJSON();
+        return { card: rect(el), image: rect(el.querySelector('.now-playing-artwork__image')),
+          caption: rect(el.querySelector('.now-playing-artwork__caption')),
+          countdown: rect(document.querySelector('.hero-countdown')),
+          viewport: innerWidth };
+      });
+      const bounds = await measure();
+      expect(bounds.card.bottom - bounds.caption.bottom).toBeGreaterThanOrEqual(9);
+      expect(bounds.card.bottom - bounds.caption.bottom).toBeLessThanOrEqual(11);
+      expect(bounds.image.width).toBeCloseTo(bounds.image.height, 1);
+      expect(bounds.card.right).toBeLessThanOrEqual(bounds.viewport);
+      if (width >= 1091) expect(Math.abs(bounds.card.bottom - bounds.countdown.bottom)).toBeLessThan(1);
+      if (index === 0) await page.locator('.hero').screenshot({
+        path: `test-results/compact-playing-artwork-${width}.png`, animations: 'disabled',
+      });
+      // The live card must stay aligned when the available space changes.
+      if (width >= 1091) {
+        await page.setViewportSize({ width: width + 80, height: 850 });
+        const resized = await measure();
+        expect(Math.abs(resized.card.bottom - resized.countdown.bottom)).toBeLessThan(1);
+        await page.setViewportSize({ width, height: 1000 });
+      }
+    }
+  });
+}
 
 test('unavailable metadata never claims the previous song is live, and playback failure shows no artwork', async ({ page }) => {
   await setup(page, { mediaFailure: true });

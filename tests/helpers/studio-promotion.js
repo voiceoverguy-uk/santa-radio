@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test';
 
 const launchLines = [
-  'When we launch, you’ll be able to personalise with the age, impressive activities and achievements, your country, county or State** and download festive gifts.',
+  'When we launch, you’ll be able to personalise with the age, impressive activities and achievements, your country, county** or State** and download festive gifts.',
   'The paid offer will include a digital personalised Nice List certificate, a short personal letter from Santa and a picture confirming your place on the Nice List. *',
   '* subject to you being good this year',
   '** UK and USA only',

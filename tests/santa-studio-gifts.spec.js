@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { studioLetterChoices, createStudioLetter, CERTIFICATE_WRITE_MS,
   SIGNATURE_WRITE_MS, GIFT_EXAMPLE_INTERVAL_MS, letterBodyDuration, letterDuration } from '../src/lib/santaStudioLetter.js';
-import { certificateExampleNames } from '../src/lib/santaCertificateExamples.js';
+import { certificateExampleNames, studioGiftExampleNames } from '../src/lib/santaCertificateExamples.js';
 
 const gifts = page => page.locator('.studio-gifts');
 const body = page => gifts(page).locator('.studio-gifts__gallery .studio-letter__text');
@@ -46,6 +46,38 @@ async function advanceExample(page) {
   if (reduced) await page.emulateMedia({ reducedMotion: 'reduce' });
 }
 
+test('the additional requested names rotate through all gifts without extra certificate files', async ({ page }) => {
+  test.setTimeout(60000);
+  const additionalNames = ['Lydia', 'Layla', 'Jack', 'Ellis', 'Matilda', 'Jasmine', 'Claudia', 'Bob', 'Alfie'];
+  expect(studioGiftExampleNames).toEqual([...certificateExampleNames, ...additionalNames]);
+  expect(new Set(studioGiftExampleNames).size).toBe(studioGiftExampleNames.length);
+  const certificateRequests = [];
+  page.on('request', request => {
+    if (request.url().includes('/certificates/examples/')) certificateRequests.push(request.url());
+  });
+  await visit(page, { reduced: true });
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 100));
+  for (const name of studioGiftExampleNames) {
+    await expect(gifts(page)).toHaveAttribute('data-demo-name', name);
+    if (additionalNames.includes(name)) {
+      await expect(gifts(page).locator('.studio-certificate__name')).toHaveText(name);
+      await expect(readable(page)).toContainText(`Dear ${name},`);
+      const pictureName = gifts(page).locator('.studio-gifts__preview-stack .studio-santa-picture__name');
+      await expect(pictureName).toHaveText(name);
+      await expect(pictureName).toHaveAttribute('data-fitted', 'true');
+      await gifts(page).getByRole('button', { name: 'Enlarge certificate', exact: true }).click();
+      await expect(page.locator('dialog .studio-certificate__name')).toHaveText(name);
+      await expect(page.locator('dialog .studio-certificate > img')).toHaveAttribute('src', '/certificates/examples/blank-master.webp');
+      await page.keyboard.press('Escape');
+    }
+    await advanceExample(page);
+  }
+  await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Edward');
+  for (const name of additionalNames) {
+    expect(certificateRequests.some(url => url.endsWith(`/${name.toLowerCase()}.webp`))).toBe(false);
+  }
+});
+
 // Compare real browser pixels with an unclipped rendering at the SAME position.
 // A DOM rectangle cannot tell us whether Great Vibes' swashes were cut off.
 async function scriptInk(page, span, { partial = false } = {}) {
@@ -57,7 +89,8 @@ async function scriptInk(page, span, { partial = false } = {}) {
     const certificate = el.closest('.studio-certificate')?.getBoundingClientRect();
     const paper = el.closest('.studio-letter__paper')?.getBoundingClientRect();
     const parent = certificate || paper || el.closest('.studio-santa-picture')?.getBoundingClientRect();
-    return { x: Math.max(0, Math.floor(rect.left - font)),
+    const frame = el.closest('.studio-santa-picture__name')?.getBoundingClientRect();
+    return { frame: frame?.toJSON(), x: Math.max(0, Math.floor(rect.left - font)),
       y: Math.max(0, Math.floor(rect.top - font)),
       right: Math.min(innerWidth, Math.ceil(rect.right + font)),
       bottom: Math.min(innerHeight, Math.ceil(rect.bottom + font)),
@@ -110,13 +143,202 @@ async function scriptInk(page, span, { partial = false } = {}) {
     await test.info().attach('script-actual', { body: Buffer.from(actual, 'base64'), contentType: 'image/png' });
     await test.info().attach('script-unclipped', { body: Buffer.from(reference, 'base64'), contentType: 'image/png' });
   }
-  return { ...pixels, bounds: {
+  return { ...pixels, frame: geometry.frame, absoluteInk: {
+    left: clip.x + pixels.left, right: clip.x + pixels.right + 1,
+    top: clip.y + pixels.top, bottom: clip.y + pixels.bottom + 1,
+  }, bounds: {
     left: (clip.x + pixels.left - geometry.parent.x) / geometry.parent.width,
     right: (clip.x + pixels.right - geometry.parent.x) / geometry.parent.width,
     top: (clip.y + pixels.top - geometry.parent.y) / geometry.parent.height,
     bottom: (clip.y + pixels.bottom - geometry.parent.y) / geometry.parent.height,
   } };
 }
+
+async function expectPictureInk(page, span) {
+  await expect(span.locator('..')).toHaveAttribute('data-fitted', 'true');
+  const ink = await scriptInk(page, span);
+  expect(ink.ink).toBeGreaterThan(10);
+  expect(ink.changed, 'no script ink is clipped').toBe(0);
+  // Pixel bounds, not element/advance boxes. Half-pixel rounding tolerance.
+  expect(ink.absoluteInk.left).toBeGreaterThanOrEqual(ink.frame.left - .5);
+  expect(ink.absoluteInk.right).toBeLessThanOrEqual(ink.frame.right + .5);
+  expect(ink.absoluteInk.top).toBeGreaterThanOrEqual(ink.frame.top - .5);
+  expect(ink.absoluteInk.bottom).toBeLessThanOrEqual(ink.frame.bottom + .5);
+  expect(Math.abs((ink.absoluteInk.left + ink.absoluteInk.right) / 2 -
+    (ink.frame.left + ink.frame.right) / 2)).toBeLessThan(1.5);
+  return span.evaluate(el => parseFloat(getComputedStyle(el).fontSize) /
+    el.closest('.studio-santa-picture').getBoundingClientRect().width);
+}
+
+// Render the real component with arbitrary fixture names without changing the
+// public name catalogue, access flow or introducing a visitor-facing test route.
+async function renderGiftFixture(page, name) {
+  await page.evaluate(async name => {
+    if (!window.renderGift) {
+      const [{ default: React }, { default: ReactDOM }, { default: Gifts }] = await Promise.all([
+        import('/node_modules/.vite/deps/react.js'),
+        import('/node_modules/.vite/deps/react-dom_client.js'),
+        import('/src/components/SantaStudioGifts.jsx'),
+      ]);
+      const host = document.createElement('div');
+      host.style.cssText = 'width:min(360px, calc(100vw - 24px));margin:20px auto';
+      document.body.replaceChildren(host);
+      const root = ReactDOM.createRoot(host);
+      window.renderGift = name => root.render(React.createElement(Gifts, { previewName: name }));
+    }
+    window.renderGift(name);
+  }, name);
+  await expect(gifts(page)).toHaveAttribute('data-demo-name', name);
+}
+
+for (const width of [390, 1440]) {
+  test(`rotating Santa pictures dissolve over loaded artwork at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    let release;
+    const waiting = new Promise(resolve => { release = resolve; });
+    await page.route('**/images/santa-nice-list-2.jpg', async route => {
+      await waiting;
+      await route.continue();
+    });
+    await visit(page);
+    await page.clock.pauseAt(await page.evaluate(() => Date.now() + 100));
+    // Cover both a recipient-keyed remount and a checked name held across rotation.
+    if (width === 1440) await renderGiftFixture(page, 'Han Solo');
+    const picture = gifts(page).locator('.studio-gifts__preview-stack .studio-santa-picture');
+    await advanceExample(page);
+    await expect(gifts(page)).toHaveAttribute('data-demo-name', width === 1440 ? 'Han Solo' : 'Ayla');
+    await expect(picture.locator('> img')).toHaveAttribute('src', '/images/santa-nice-list-2.jpg');
+    const outgoing = picture.locator('.studio-santa-picture__outgoing');
+    await expect(outgoing.locator('img')).toHaveAttribute('src', '/images/santa-nice-list.jpg');
+    await expect(outgoing).toHaveAttribute('aria-hidden', 'true');
+    expect(await outgoing.evaluate(el => getComputedStyle(el).animationName)).toBe('none');
+    expect(await outgoing.evaluate(el => getComputedStyle(el).opacity)).toBe('1');
+    release();
+    await expect.poll(() => outgoing.evaluate(el => getComputedStyle(el).animationName))
+      .toBe('studio-picture-dissolve');
+    const halfway = await outgoing.evaluate(el => {
+      const animation = el.getAnimations()[0];
+      animation.pause();
+      animation.currentTime = 350;
+      return { opacity: Number(getComputedStyle(el).opacity),
+        duration: animation.effect.getTiming().duration };
+    });
+    expect(halfway.duration).toBe(700);
+    expect(halfway.opacity).toBeGreaterThan(.4);
+    expect(halfway.opacity).toBeLessThan(.6);
+    await expect(picture.locator('.studio-santa-picture__name')).toHaveAttribute('data-fitted', 'true');
+    await picture.screenshot({ path: `test-results/picture-dissolve-${width}.png`, animations: 'allow' });
+    await outgoing.evaluate(el => el.getAnimations()[0].finish());
+    await expect(outgoing).toHaveCount(0);
+    await advanceExample(page);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await expect(outgoing).toHaveCount(0);
+    await page.mouse.move(0, 0);
+    await page.evaluate(() => document.activeElement?.blur());
+    await page.clock.runFor(30000);
+    await expect(picture.locator('> img')).toHaveAttribute('src', '/images/santa-nice-list-3.jpg');
+  });
+}
+
+for (const width of [1440, 390, 320]) {
+  test(`all picture safe frames contain complete names in both sizes at ${width}px`, async ({ page }) => {
+    test.setTimeout(180000);
+    await page.setViewportSize({ width, height: 1000 });
+    await visit(page, { reduced: true });
+    const names = ['Ayla', 'Han Solo', 'Lilliana Mai',
+      'Alexandria Rose Montgomery', 'Élodie-Joséphine O’Neill', 'gj Áý'];
+    const sizes = [];
+    for (let picture = 0; picture < 3; picture++) {
+      // Independently approved artwork clearances: below the heading/holly,
+      // inside both hands and above the lower rolled parchment.
+      const safe = [
+        { left: .535, right: .866, top: .49, bottom: .791 },
+        { left: .539, right: .891, top: .429, bottom: .781 },
+        { left: .535, right: .855, top: .459, bottom: .781 },
+      ][picture];
+      for (const name of names) {
+        await renderGiftFixture(page, name);
+        const compact = gifts(page).locator('.studio-gifts__preview-stack .studio-santa-picture__name > span');
+        const size = await expectPictureInk(page, compact);
+        const geometry = await compact.evaluate(el => {
+          const frame = el.parentElement.getBoundingClientRect();
+          const image = el.closest('.studio-santa-picture').getBoundingClientRect();
+          return { left: (frame.left - image.left) / image.width,
+            right: (frame.right - image.left) / image.width,
+            top: (frame.top - image.top) / image.height,
+            bottom: (frame.bottom - image.top) / image.height };
+        });
+        expect(geometry.left).toBeGreaterThanOrEqual(safe.left);
+        expect(geometry.right).toBeLessThanOrEqual(safe.right);
+        expect(geometry.top).toBeGreaterThanOrEqual(safe.top);
+        expect(geometry.bottom).toBeLessThanOrEqual(safe.bottom);
+        if (name === 'Ayla') sizes[picture] = size;
+        if (name === 'Lilliana Mai' || name === 'Alexandria Rose Montgomery') {
+          expect(size).toBeLessThan(sizes[picture]);
+        }
+        await gifts(page).getByRole('button', { name: 'Enlarge Santa’s Nice List picture' }).click();
+        const enlarged = page.locator('dialog .studio-santa-picture__name > span');
+        expect(await expectPictureInk(page, enlarged)).toBeCloseTo(size, 4);
+        await expect(page.locator('dialog .studio-gifts__watermark span')).toHaveCount(3);
+        if (name === 'Lilliana Mai') {
+          await page.locator('dialog .studio-santa-picture').screenshot({
+            path: `test-results/picture-frame-${picture + 1}-${width}.png`,
+          });
+          if (width === 1440) {
+            const frame = enlarged.locator('..');
+            await frame.evaluate(el => { el.style.outline = '1px solid magenta'; });
+            await page.locator('dialog .studio-santa-picture').screenshot({
+              path: `test-results/picture-frame-guide-${picture + 1}.png`,
+            });
+            await frame.evaluate(el => el.style.removeProperty('outline'));
+          }
+          // Exercise an open popup through portrait/landscape-like resizing.
+          await page.setViewportSize({ width: width === 1440 ? 390 : 844, height: 700 });
+          expect(await expectPictureInk(page, enlarged)).toBeCloseTo(size, 4);
+          await page.setViewportSize({ width, height: 1000 });
+        }
+        await page.keyboard.press('Escape');
+      }
+      await advanceExample(page);
+      await expect(gifts(page).locator('.studio-gifts__preview-stack .studio-santa-picture > img'))
+        .toHaveAttribute('src', `/images/santa-nice-list${picture === 2 ? '' : `-${picture + 2}`}.jpg`);
+    }
+  });
+}
+
+test('picture names wait for the real script font, then fit without changing during writing', async ({ page }) => {
+  test.setTimeout(60000);
+  let release;
+  const waiting = new Promise(resolve => { release = resolve; });
+  await page.route('**/GreatVibes-Regular.ttf', async route => {
+    await waiting;
+    await route.continue();
+  });
+  await visit(page);
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 100));
+  await renderGiftFixture(page, 'Lilliana Mai');
+  const frame = gifts(page).locator('.studio-gifts__preview-stack .studio-santa-picture__name');
+  await expect(frame).toHaveAttribute('data-fitted', 'false');
+  expect(await frame.evaluate(el => getComputedStyle(el).visibility)).toBe('hidden');
+  // Change the name while the previous load/measurement is still pending.
+  await renderGiftFixture(page, 'Élodie-Joséphine O’Neill');
+  await gifts(page).getByRole('button', { name: 'Enlarge Santa’s Nice List picture' }).click();
+  const enlargedFrame = page.locator('dialog .studio-santa-picture__name');
+  await expect(enlargedFrame).toHaveAttribute('data-fitted', 'false');
+  expect(await enlargedFrame.evaluate(el => getComputedStyle(el).visibility)).toBe('hidden');
+  release();
+  await expectPictureInk(page, enlargedFrame.locator('> span'));
+  await page.keyboard.press('Escape');
+  await expect(frame).toHaveAttribute('data-fitted', 'true');
+  const style = await frame.getAttribute('style');
+  await page.clock.runFor(800);
+  expect(await frame.getAttribute('style')).toBe(style);
+  const writing = frame.locator('> span');
+  expect((await scriptInk(page, writing, { partial: true })).changed).toBe(0);
+  await page.clock.runFor(CERTIFICATE_WRITE_MS);
+  expect(await frame.getAttribute('style')).toBe(style);
+  await expectPictureInk(page, writing);
+});
 
 for (const width of [1440, 390, 320]) {
   test(`script ink is complete and clear of certificate artwork at ${width}px`, async ({ page }) => {
@@ -556,7 +778,7 @@ for (const [width, scale] of [[1440, 1], [320, 1], [390, 2]]) {
     expect(metrics.font / metrics.paperWidth * 794).toBeGreaterThanOrEqual(14.5);
     expect(metrics.ratio).toBeCloseTo(210 / 297, 2);
     expect(metrics.overflow).toBeLessThanOrEqual(1);
-    expect(metrics.headerGap).toBeGreaterThan(metrics.paperWidth * .31);
+    expect(metrics.headerGap / metrics.paperWidth).toBeCloseTo(.24 * 297 / 210, 2);
     expect(metrics.textBottom).toBeLessThan(.88);
     expect(metrics.allTextFits).toBe(true);
     expect(metrics.background).toContain('santa-radio-letterhead.webp');
@@ -580,5 +802,50 @@ for (const [width, scale] of [[1440, 1], [320, 1], [390, 2]]) {
     await page.locator('.santa-studio-promotion').screenshot({
       path: `test-results/studio-panel-${width}-${scale}.png`, animations: 'disabled',
     });
+  });
+}
+
+for (const [width, height] of [[1440, 850], [621, 768], [390, 844], [320, 568], [844, 390]]) {
+  test(`enlarged letter shows the whole page without panning at ${width}x${height}`, async ({ page }) => {
+    await page.setViewportSize({ width, height });
+    await visit(page, { reduced: true });
+    const opener = gifts(page).getByRole('button', { name: 'Enlarge letter to read' });
+    await opener.click();
+    const dialog = page.getByRole('dialog');
+    const checkFullPage = async () => {
+      const geometry = await dialog.evaluate(el => {
+        const rect = node => node.getBoundingClientRect().toJSON();
+        const content = el.querySelector('.studio-letter-dialog__content');
+        return { paper: rect(el.querySelector('.studio-letter__paper')), content: rect(content),
+          toolbar: rect(el.querySelector('.studio-letter-dialog__toolbar')), dialog: rect(el),
+          overflowX: content.scrollWidth - content.clientWidth,
+          overflowY: content.scrollHeight - content.clientHeight,
+          dialogOverflow: el.scrollHeight - el.clientHeight,
+          viewportWidth: innerWidth, viewportHeight: innerHeight };
+      });
+      expect(geometry.paper.width / geometry.paper.height).toBeCloseTo(210 / 297, 3);
+      expect(geometry.paper.top).toBeGreaterThanOrEqual(geometry.toolbar.bottom);
+      expect(geometry.paper.bottom).toBeLessThanOrEqual(geometry.content.bottom + .5);
+      expect(geometry.paper.left).toBeGreaterThanOrEqual(geometry.content.left - .5);
+      expect(geometry.paper.right).toBeLessThanOrEqual(geometry.content.right + .5);
+      expect(geometry.dialog.top).toBeGreaterThanOrEqual(0);
+      expect(geometry.dialog.bottom).toBeLessThanOrEqual(geometry.viewportHeight);
+      expect(geometry.dialog.right).toBeLessThanOrEqual(geometry.viewportWidth);
+      expect(geometry.overflowX).toBeLessThanOrEqual(1);
+      expect(geometry.overflowY).toBeLessThanOrEqual(1);
+      expect(geometry.dialogOverflow).toBeLessThanOrEqual(1);
+      await expect(dialog.locator('.studio-gifts__watermark span')).toHaveCount(3);
+      await expect(dialog.getByRole('button', { name: 'Close preview' })).toBeInViewport();
+    };
+    await checkFullPage();
+    await dialog.screenshot({ path: `test-results/whole-letter-${width}x${height}.png` });
+    // An open preview must refit when the phone rotates or its browser resizes.
+    await page.setViewportSize({ width: height, height: width });
+    await checkFullPage();
+    await page.addStyleTag({ content: 'html { font-size: 200% !important; }' });
+    await checkFullPage();
+    await page.keyboard.press('Escape');
+    await expect(dialog).not.toBeVisible();
+    await expect(opener).toBeFocused();
   });
 }

@@ -104,7 +104,7 @@ export function WorkshopPasswordForm({ onAuthorized, compact = false, active = t
       id={inputId}
       type="password"
       value={code}
-      placeholder="Enter your Voucher code to continue."
+      placeholder="Enter a voucher code for early access"
       onChange={event => { setCode(event.target.value.slice(0, 80)); setError(''); }}
       autoComplete="off"
       autoCapitalize="off"

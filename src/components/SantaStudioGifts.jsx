@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { certificateExampleNames, allCertificateExamples } from '../lib/santaCertificateExamples.js';
+import { studioGiftExampleNames, allCertificateExamples } from '../lib/santaCertificateExamples.js';
 import { createStudioLetter, CERTIFICATE_WRITE_MS, LETTER_CHARACTER_MS,
   SIGNATURE_WRITE_MS, GIFT_EXAMPLE_INTERVAL_MS, letterBodyDuration, letterDuration } from '../lib/santaStudioLetter.js';
 import './SantaStudioGifts.css';
+import SantaPictureName from './SantaPictureName.jsx';
 
 const santaPictures = [
   '/images/santa-nice-list.jpg',
@@ -61,20 +62,27 @@ function Letter({ letter, elapsed }) {
   </article>;
 }
 
-function SantaPicture({ name, elapsed, picture }) {
+function SantaPicture({ name, elapsed, picture, previousPicture = null, onDissolved }) {
+  const [loadedPicture, setLoadedPicture] = useState(null);
   const progress = Math.min(1, elapsed / CERTIFICATE_WRITE_MS);
   return <div className="studio-santa-picture" role="img"
     aria-label={`Santa’s Nice List picture example for ${name}`}>
-    <img src={picture} alt="" width="1536" height="1024" draggable={false} />
-    <span aria-hidden="true" className="studio-santa-picture__name">
-      <ScriptReveal progress={progress}>{name}</ScriptReveal>
-    </span>
+    <img src={picture} alt="" width="1536" height="1024" draggable={false}
+      onLoad={() => setLoadedPicture(picture)} />
+    {previousPicture && <span key={previousPicture}
+      className={`studio-santa-picture__outgoing${loadedPicture === picture ? ' studio-santa-picture__outgoing--dissolving' : ''}`}
+      aria-hidden="true" onAnimationEnd={onDissolved}>
+      <img src={previousPicture} alt="" width="1536" height="1024" draggable={false} />
+    </span>}
+    <SantaPictureName name={name} picture={picture}>
+      {text => <ScriptReveal progress={progress}>{text}</ScriptReveal>}
+    </SantaPictureName>
   </div>;
 }
 
 // Keyed by recipient: a deliberate demo change cancels every old animation,
 // reading timer and random selection together, before rendering the new name.
-function GiftExample({ name, picture, activeAudio, reducedMotion, onNext }) {
+function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio, reducedMotion, onNext }) {
   // Deterministic SSR; randomise only once after mounting in the browser.
   const [letter, setLetter] = useState(() => createStudioLetter(name, () => 0.5));
   const [elapsed, setElapsed] = useState(0);
@@ -157,11 +165,12 @@ function GiftExample({ name, picture, activeAudio, reducedMotion, onNext }) {
       </div>
       <button className="studio-gifts__thumbnail studio-gifts__thumbnail--picture" type="button"
         aria-label="Enlarge Santa’s Nice List picture" onClick={event => open(event, 'picture')}>
-        <SantaPicture name={name} picture={picture} elapsed={displayElapsed} />
+        <SantaPicture name={name} picture={picture} elapsed={displayElapsed}
+          previousPicture={previousPicture} onDissolved={onDissolved} />
         <span className="studio-gifts__thumbnail-label">Enlarge Santa picture</span>
       </button>
     </div>
-    <dialog ref={dialogRef} className="studio-letter-dialog"
+    <dialog ref={dialogRef} className={`studio-letter-dialog${view === 'letter' ? ' studio-letter-dialog--letter' : ''}`}
       aria-label={`${name}’s ${view || 'gift'} example`}
       onCancel={() => dialogRef.current.close()}>
       <div className="studio-letter-dialog__toolbar">
@@ -186,6 +195,9 @@ function GiftExample({ name, picture, activeAudio, reducedMotion, onNext }) {
 export default function SantaStudioGifts({ activeExampleName = null, previewName = null }) {
   const [index, setIndex] = useState(0);
   const [pictureIndex, setPictureIndex] = useState(0);
+  // Keep the outgoing artwork above the new picture across recipient remounts.
+  // Fade it only after the replacement image has loaded, never through blank paper.
+  const [previousPicture, setPreviousPicture] = useState(null);
   const [reducedMotion, setReducedMotion] = useState(false);
   useEffect(() => {
     // Prepare the next static picture before the shared ten-second change.
@@ -194,23 +206,29 @@ export default function SantaStudioGifts({ activeExampleName = null, previewName
   }, [pictureIndex]);
   useEffect(() => {
     const preference = matchMedia('(prefers-reduced-motion: reduce)');
-    const update = () => setReducedMotion(preference.matches);
+    const update = () => {
+      setReducedMotion(preference.matches);
+      if (preference.matches) setPreviousPicture(null);
+    };
     update();
     preference.addEventListener('change', update);
     return () => preference.removeEventListener('change', update);
   }, []);
   const activeName = allCertificateExamples.find(item => item.name === activeExampleName)?.name;
-  const name = activeName || previewName || certificateExampleNames[index];
+  const name = activeName || previewName || studioGiftExampleNames[index];
   const nextExample = useCallback(() => {
-    if (!previewName) setIndex(value => (value + 1) % certificateExampleNames.length);
+    setPreviousPicture(reducedMotion ? null : santaPictures[pictureIndex]);
+    if (!previewName) setIndex(value => (value + 1) % studioGiftExampleNames.length);
     setPictureIndex(value => (value + 1) % santaPictures.length);
-  }, [previewName]);
+  }, [previewName, pictureIndex, reducedMotion]);
+  const finishDissolve = useCallback(() => setPreviousPicture(null), []);
   // Keep the audio name on stop when it belongs to the idle rotation.
   useEffect(() => {
-    const next = certificateExampleNames.indexOf(activeName);
+    const next = studioGiftExampleNames.indexOf(activeName);
     if (next >= 0) setIndex(next);
   }, [activeName]);
   return <GiftExample key={name} name={name} picture={santaPictures[pictureIndex]}
+    previousPicture={previousPicture} onDissolved={finishDissolve}
     activeAudio={Boolean(activeName)} reducedMotion={reducedMotion}
     onNext={nextExample} />;
 }

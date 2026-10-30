@@ -27,7 +27,7 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
           </div>
           <h3 id="santa-studio-title" tabIndex={-1}>Santa’s <span className="santa-studio-promotion__title-line">Message Maker Studio</span></h3>
           <p className="santa-studio-promotion__copy">
-            When we launch, you’ll be able to personalise with the age, impressive activities and achievements, your country, county or State** and download festive gifts.
+            When we launch, you’ll be able to personalise with the age, impressive activities and achievements, your country, county** or State** and download festive gifts.
             <br />
             The paid offer will include a digital personalised Nice List certificate, a short personal letter from Santa and a picture confirming your place on the Nice List. *
             <br /><br />

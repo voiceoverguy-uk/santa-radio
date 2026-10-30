@@ -129,21 +129,45 @@
   height: auto;
 }
 
+.studio-santa-picture__outgoing {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.studio-santa-picture__outgoing img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.studio-santa-picture__outgoing--dissolving {
+  animation: studio-picture-dissolve 700ms ease-in-out forwards;
+}
+
+@keyframes studio-picture-dissolve {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
 .studio-santa-picture__name {
   position: absolute;
-  top: 57%;
-  left: 49%;
-  display: grid;
-  width: 42%;
-  height: 16%;
-  place-items: center;
   color: #19392d;
   font-family: "Great Vibes", cursive;
-  font-size: 10cqw;
   font-weight: 400;
   line-height: 1;
-  text-align: center;
-  overflow-wrap: anywhere;
+}
+
+.studio-santa-picture__name > .studio-script-reveal,
+.studio-santa-picture__name svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.studio-santa-picture__name text {
+  fill: currentColor;
 }
 
 .studio-gifts *,
@@ -352,10 +376,6 @@
   flex: 0 0 auto;
 }
 
-.studio-letter-dialog .studio-santa-picture__name {
-  font-size: 10cqw;
-}
-
 .studio-letter-dialog__document {
   position: relative;
   isolation: isolate;
@@ -366,6 +386,34 @@
 
 .studio-letter-dialog__document--letter {
   max-width: 794px;
+}
+
+/* Fit the entire A4 sheet below the actual toolbar height. Keeping one shared
+   document coordinate system preserves the wording, letterhead and watermarks. */
+.studio-letter-dialog--letter[open] {
+  display: flex;
+  flex-direction: column;
+  height: 82dvh;
+}
+
+.studio-letter-dialog--letter .studio-letter-dialog__toolbar {
+  flex: 0 0 auto;
+}
+
+.studio-letter-dialog--letter .studio-letter-dialog__content {
+  container-type: size;
+  flex: 1 1 0;
+  min-height: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.studio-letter-dialog--letter .studio-letter-dialog__document--letter {
+  width: min(100%, calc(100cqh * 210 / 297));
+}
+
+.studio-letter-dialog--letter .studio-letter__paper {
+  width: 100%;
 }
 
 .studio-gifts__watermark {
@@ -418,29 +466,19 @@
   }
 }
 
-@media (max-width: 600px) {
-  .studio-letter-dialog__content {
-    justify-content: flex-start;
-  }
-
-  .studio-letter-dialog .studio-letter__paper {
-    width: 794px;
-  }
-
-  .studio-letter-dialog__document--letter {
-    width: 794px;
-  }
-}
-
 @media (max-width: 340px) {
   .studio-letter-dialog__content {
-    justify-content: flex-start;
     padding: 8px;
   }
 
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .studio-santa-picture__outgoing {
+    display: none;
+    animation: none;
+  }
+
   .studio-letter-dialog__toolbar button {
     transition: none;
   }

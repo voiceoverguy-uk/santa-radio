@@ -53,22 +53,24 @@ export default function HomeHero({ preview = false, onContinue }) {
             Live from The North Pole,<span>Santa Radio</span>
           </h1>
         </div>
-        <div className="hero-name-preview__left-stack">
-          <p className="hero-description hero-name-preview__description">
-            Enjoy online Christmas music 24/7 on Santa Radio, your Christmas radio station all year round. Listen live to festive classics and family favourites.
-          </p>
-          <div className="hero-name-preview__listening">
-            <div className="hero-name-preview__player-row">
-              <div className="hero-actions hero-name-preview__actions">
-                <RadioButton className="btn-red" />
+        <div className="hero-name-preview__broadcast">
+          <div className="hero-name-preview__left-stack">
+            <p className="hero-description hero-name-preview__description">
+              Enjoy online Christmas music 24/7 on Santa Radio, your Christmas radio station all year round. Listen live to festive classics and family favourites.
+            </p>
+            <div className="hero-name-preview__listening">
+              <div className="hero-name-preview__player-row">
+                <div className="hero-actions hero-name-preview__actions">
+                  <RadioButton className="btn-red" />
+                </div>
               </div>
+              <p className="hero-note">The World’s Best Christmas Radio Station · All year round</p>
+              <div id="christmas-countdown" className="hero-countdown"><Countdown /></div>
             </div>
-            <p className="hero-note">The World’s Best Christmas Radio Station · All year round</p>
-            <div id="christmas-countdown" className="hero-countdown"><Countdown /></div>
           </div>
-        </div>
-        <div className="hero-name-preview__artwork-slot" aria-label="Now playing artwork">
-          <NowPlayingArtwork />
+          <div className="hero-name-preview__artwork-slot" aria-label="Now playing artwork">
+            <NowPlayingArtwork />
+          </div>
         </div>
         <aside className="hero-name-preview__checker" aria-label={preview ? 'Santa name checker preview' : 'Santa name checker'}>
           <div className="hero-name-preview__checker-top">

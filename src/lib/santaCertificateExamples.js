@@ -4,6 +4,13 @@ export const certificateExampleNames = [
   'Arabella', 'Jessica', 'Charlie', 'Olivia', 'Oliver',
 ];
 
+// Studio previews write names onto the blank artwork at runtime, so these do
+// not need (and must not imply) additional pre-rendered certificate files.
+export const studioGiftExampleNames = [
+  ...certificateExampleNames,
+  'Lydia', 'Layla', 'Jack', 'Ellis', 'Matilda', 'Jasmine', 'Claudia', 'Bob', 'Alfie',
+];
+
 const certificateForName = name => ({
   name,
   src: `/certificates/examples/${name.toLowerCase()}.webp`,
