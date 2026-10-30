@@ -44,24 +44,35 @@ test('parser rejects incomplete data and reconciliation refuses ID-only guesses'
   expect(result.report.matches[0].conflictingId).toBe(99);
 });
 
-test('Andy Williams lyrics toggle and karaoke share readable source text', async ({ page }) => {
+for (const slug of [
+  '82-andy-williams-do-you-hear-what-i-hear',
+  '288-robbie-williams-walk-this-sleigh',
+]) {
+test(`${slug} retains inline lyrics and direct karaoke without the redundant link`, async ({ page }) => {
   await page.route('**/youtube.com/**', route => route.abort());
-  const slug = '82-andy-williams-do-you-hear-what-i-hear';
   const song = findSong(slug);
   await page.goto(`/christmas-artist/${slug}`);
-  await expect(page.locator('.song-detail-artist')).toHaveText('Andy Williams');
-  await expect(page.locator('.song-detail-info')).toHaveText(song.info);
-  const toggle = page.getByRole('button', { name: 'Show Lyrics', exact: true });
+  await expect(page.locator('.song-detail-artist')).toHaveText(song.artist);
+  await expect(page.locator('.song-detail-info p')).toHaveText(song.info);
+  await expect(page.getByRole('link', { name: 'Open the full sing-along lyrics page', exact: true })).toHaveCount(0);
+  await expect(page.locator('.song-detail-main a[href^="/christmas-karaoke-lyrics/"]')).toHaveCount(0);
+  const toggle = page.locator('.song-lyrics-section summary');
+  const lyrics = page.locator('.song-lyrics-content pre');
+  await expect(toggle).toHaveText(`Show Lyrics — ${song.song}`);
+  await expect(lyrics).not.toBeVisible();
   await toggle.click();
-  await expect(page.locator('.song-lyrics-content pre')).toHaveText(song.lyrics);
-  await expect(page.locator('.song-lyrics-content pre')).toHaveCSS('white-space', 'pre-wrap');
-  await page.getByRole('button', { name: 'Hide Lyrics' }).click();
-  await expect(page.locator('.song-lyrics-content')).toHaveCount(0);
-  await page.getByRole('link', { name: 'View Karaoke Lyrics' }).click();
+  await expect(lyrics).toBeVisible();
+  await expect(lyrics).toHaveText(song.lyrics);
+  await expect(lyrics).toHaveCSS('white-space', 'pre-wrap');
+  await toggle.click();
+  await expect(lyrics).not.toBeVisible();
+  await page.goto(`/christmas-karaoke-lyrics/${slug}`);
+  await expect(page.locator('.karaoke-lyrics-text')).toBeVisible();
   await expect(page.locator('.karaoke-lyrics-text')).toHaveText(song.lyrics);
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
+}
 
 test('corrected, conflicting and unavailable routes render honestly', async ({ page }) => {
   await page.route('**/youtube.com/**', route => route.abort());
@@ -69,12 +80,12 @@ test('corrected, conflicting and unavailable routes render honestly', async ({ p
     await page.goto(`/christmas-artist/${slug}`);
     const song = findSong(slug);
     await expect(page.locator('.song-detail-artist')).toHaveText(song.artist);
-    await page.getByRole('button', { name: 'Show Lyrics', exact: true }).click();
+    await page.locator('.song-lyrics-section summary').click();
     await expect(page.locator('.song-lyrics-content pre')).toHaveText(song.lyrics);
   }
   await page.goto('/christmas-artist/422-r-kelly-world-christmas');
   await expect(page.locator('.song-detail-info')).toContainText('not yet available');
-  await expect(page.getByRole('button', { name: 'Show Lyrics' })).toHaveCount(0);
+  await expect(page.locator('.song-lyrics-section summary')).toHaveCount(0);
   await page.goto('/christmas-karaoke-lyrics/422-r-kelly-world-christmas');
   await expect(page.locator('.karaoke-no-lyrics')).toContainText('not yet available');
 });
@@ -158,8 +169,9 @@ test.describe('song artwork enlargement', () => {
     await page.keyboard.press('Enter');
     await expect(dialog).not.toBeVisible();
     await expect(trigger).toBeFocused();
-    await page.getByRole('link', { name: 'Open the full sing-along lyrics page' }).click();
-    await expect(page.locator('.karaoke-lyrics-text')).toHaveText(song.lyrics);
+    await page.locator('.song-lyrics-section summary').click();
+    await expect(page.locator('.song-lyrics-content pre')).toBeVisible();
+    await expect(page.locator('.song-lyrics-content pre')).toHaveText(song.lyrics);
   });
 
   for (const [width, height] of [[1200, 600], [600, 1200]]) {

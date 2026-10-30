@@ -77,7 +77,6 @@ export default function SongDetail() {
               <p className="song-detail-artist">{song.artist}</p>
               <h1 className="song-detail-title">{song.song} — {song.artist}</h1>
               <p>{performanceKind(song)}: {song.artist}</p>
-              <Link to={`/christmas-karaoke-lyrics/${songSlug}`}>Open the full sing-along lyrics page</Link>
 
               <div className="song-detail-info">
                 <h2>Artist background</h2>
