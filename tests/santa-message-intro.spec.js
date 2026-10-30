@@ -26,7 +26,7 @@ for (const width of [320, 390, 768, 1440]) {
     await expect(paragraph).toHaveText(introduction);
     await expect(intro.locator('.santa-certificate-examples')).toHaveCount(0);
     await expect(paragraph).not.toContainText(/certificate|\(names available\)|thousands/i);
-    await expect(intro.locator('.message-studio-intro')).toHaveText("Or, why not enter Studio - A and have a bespoke message from Santa?** You'll also receive a FREE Nice List Certificate, a short personal letter from Santa and a picture of Santa confirming you are on his nice list.");
+    await expect(intro.locator('.message-studio-intro')).toHaveText("Or, why not enter Studio - A and have a bespoke message from Santa?** You'll also receive some festive goodies. See below.");
     await expect(intro.locator('.message-studio-availability')).toHaveText('** Coming early November');
     await expect(paragraph).toBeVisible();
     await page.evaluate(() => document.fonts.ready);
@@ -44,10 +44,10 @@ for (const width of [320, 390, 768, 1440]) {
     expect(hierarchy.subSize).toBeLessThan(hierarchy.mainSize * .75);
     expect(hierarchy.subTop).toBeGreaterThan(hierarchy.mainBottom);
     expect(hierarchy.lines).toBe('Their name. Santa’s REAL VOICE.');
-    const example = intro.getByRole('button', { name: 'Hear an example audio message', exact: true });
+    const example = page.locator('.santa-message-aside').getByRole('button', { name: 'Hear an example audio message', exact: true });
     await expect(example).toBeVisible();
     await expect(example).toBeEnabled();
-    await expect(intro.locator('.santa-voice-tagline + .santa-message-example + p')).toHaveText(introduction);
+    await expect(intro.locator('.santa-voice-tagline + p')).toHaveText(introduction);
     for (const element of [heading, subheading, paragraph, example, ...(path === '/' ? [] : [heroDescription])]) {
       const bounds = await element.evaluate(node => {
         const rect = node.getBoundingClientRect();

@@ -37,6 +37,12 @@ test('mobile Studio promotion title fits and certificates belong only to the upc
     expect(lines.height).toBeLessThanOrEqual(lines.lineHeight * 3 + 3);
     expect(lines.width).toBeLessThanOrEqual(lines.available + 1);
     const promotion = page.locator('.santa-studio-promotion');
+    const audioExample = page.getByRole('button', { name: 'Hear an example audio message', exact: true });
+    await expect(audioExample).toHaveCount(1);
+    const boxBounds = await page.locator('.santa-message-box').boundingBox();
+    const audioBounds = await audioExample.boundingBox();
+    expect(audioBounds.y).toBeGreaterThanOrEqual(boxBounds.y + boxBounds.height + 19);
+    expect(Math.abs((audioBounds.x + audioBounds.width / 2) - (boxBounds.x + boxBounds.width / 2))).toBeLessThan(1);
     const typography = await promotion.locator('.santa-studio-promotion__copy').evaluate(el => ({
       size: parseFloat(getComputedStyle(el).fontSize),
       lineHeight: parseFloat(getComputedStyle(el).lineHeight),

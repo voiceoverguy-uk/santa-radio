@@ -274,9 +274,8 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         <p className="eyebrow">A little North Pole experiment</p>
         <h2 className="santa-message-heading">FREE Personalised message from Santa</h2>
         <SantaVoiceTagline />
-        <SantaMessageExample onExampleNameChange={setActiveExampleName} />
         <p className="message-free-intro">No Artificial Intelligence here. A real Human recorded message from Santa, aka Father Christmas to your little Human. Click to enter Studio B, add your contact details, choose the name from <span className="message-intro-name-count">{availableNamesText}</span> currently, create and instantly download your short FREE personalised message from Santa.</p>
-        <p className="message-studio-intro">Or, why not enter Studio - A and have a bespoke message from Santa?<sup>**</sup> You&apos;ll also receive a FREE Nice List Certificate, a short personal letter from Santa and a picture of Santa confirming you are on his nice list.</p>
+        <p className="message-studio-intro">Or, why not enter Studio - A and have a bespoke message from Santa?<sup>**</sup> You&apos;ll also receive some festive goodies. See below.</p>
         <p className="message-studio-availability"><small>** Coming early November</small></p>
       </div>
       <div className="santa-message-aside">
@@ -407,6 +406,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         {!sessionRemembered && <p className="message-name-hint" role="status">Your browser can’t remember access. The studio stays open while you browse, but refreshing this tab may ask for your details again.</p>}
         </>}
       </div>
+      <SantaMessageExample onExampleNameChange={setActiveExampleName} />
       </div>
       <SantaStudioPromotion activeExampleName={activeExampleName} />
     </div>

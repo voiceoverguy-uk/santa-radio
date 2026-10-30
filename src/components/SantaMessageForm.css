@@ -1,5 +1,6 @@
 .santa-message-section { padding: 88px 0; background: #14382a; border-block: 1px solid #d4af3730; }
 .message-layout { display: grid; grid-template-columns: 1fr 1fr; align-items: start; gap: 64px; }
+.santa-message-aside > .santa-message-example { margin: 20px 0 0; text-align: center; }
 .santa-message-heading { color: var(--cream, #f6ecd8); font-size: clamp(2rem,3.4vw,3rem); text-align: left; margin-bottom: 16px; line-height: 1.25; overflow-wrap: anywhere; }
 .santa-message-subheading { color: var(--cream, #f6ecd8); font-size: clamp(1rem,1.7vw,1.4rem); text-align: left; margin-bottom: 22px; line-height: 1.4; white-space: nowrap; }
 .santa-voice-tagline { position: relative; margin-bottom: 22px; }
