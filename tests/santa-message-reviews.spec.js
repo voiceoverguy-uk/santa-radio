@@ -23,6 +23,7 @@ for (const width of [390, 1440]) {
     await page.evaluate(() => document.fonts.ready);
     const active = region.locator('blockquote:visible');
     await expect(active).toHaveCount(1);
+    await expect(region).not.toContainText('Kind words from families');
     await expect(active).toContainText(reviews[0][0]);
     await expect(region.getByLabel('5 out of 5 stars')).toBeVisible();
     expect(await region.locator('svg').count()).toBeGreaterThanOrEqual(5);
@@ -42,6 +43,10 @@ for (const width of [390, 1440]) {
       await expect(active).toHaveCount(1);
       await expect(active).toContainText(reviews[index % 5][0]);
       await expect(region.locator('.santa-message-reviews__current')).toContainText(reviews[index % 5][1]);
+      if (width === 1440) {
+        const lineHeight = await active.evaluate(el => parseFloat(getComputedStyle(el).lineHeight));
+        expect((await active.boundingBox()).height).toBeLessThanOrEqual(lineHeight + 1);
+      }
       const bounds = await region.boundingBox();
       expect(Math.abs(bounds.height - initial.height)).toBeLessThan(1);
       expect(bounds.x).toBeGreaterThanOrEqual(0);

@@ -4,36 +4,14 @@
   --reviews-gold: #e6ce86;
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-areas:
-    "heading toggle"
-    "stage stage";
-  align-items: start;
-  gap: 13px 18px;
+  position: relative;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
   min-width: 0;
   margin-top: -40px;
-  padding: 20px clamp(16px, 2.4vw, 26px);
-  border-top: 1px solid #a27c3245;
+  padding: 12px 32px;
+  text-align: center;
   color: var(--reviews-ink);
-}
-
-.santa-message-reviews__heading {
-  grid-area: heading;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px 12px;
-  min-width: 0;
-}
-
-.santa-message-reviews__eyebrow {
-  margin: 0;
-  color: var(--reviews-gold);
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.13em;
-  line-height: 1.5;
-  text-transform: uppercase;
 }
 
 .santa-message-reviews__rating {
@@ -41,6 +19,7 @@
   align-items: center;
   gap: 2px;
   color: var(--reviews-gold);
+  vertical-align: -2px;
 }
 
 .santa-message-reviews__rating svg {
@@ -53,7 +32,6 @@
 
 .santa-message-reviews__stage {
   position: relative;
-  grid-area: stage;
   min-width: 0;
 }
 
@@ -76,30 +54,31 @@
 }
 
 .santa-message-reviews__quote {
-  max-width: 68ch;
   margin: 0;
   color: var(--reviews-ink);
-  font-family: "Cinzel", Georgia, serif;
-  font-size: clamp(0.98rem, 1.4vw, 1.12rem);
-  font-weight: 500;
-  line-height: 1.55;
+  font-family: inherit;
+  font-size: .875rem;
+  font-weight: 400;
+  line-height: 1.7;
   overflow-wrap: anywhere;
 }
 
 .santa-message-reviews__attribution {
-  margin: 6px 0 0;
   color: var(--reviews-muted);
-  font-size: 0.78rem;
-  line-height: 1.5;
   overflow-wrap: anywhere;
 }
 
 .santa-message-reviews__toggle {
-  grid-area: toggle;
-  align-self: start;
-  min-height: 36px;
-  padding: 6px 10px;
-  border: 1px solid #a27c3260;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 28px;
+  min-height: 28px;
+  padding: 6px;
+  border: 0;
   border-radius: 999px;
   background: transparent;
   color: var(--reviews-muted);
@@ -133,21 +112,7 @@
 
 @media (max-width: 480px) {
   .santa-message-reviews {
-    gap: 12px 8px;
-    padding-inline: 2px;
-  }
-
-  .santa-message-reviews__heading {
-    gap: 5px 8px;
-  }
-
-  .santa-message-reviews__toggle {
-    padding-inline: 8px;
-    font-size: 0.68rem;
-  }
-
-  .santa-message-reviews__quote {
-    font-size: 0.96rem;
+    padding-inline: 30px;
   }
 }
 

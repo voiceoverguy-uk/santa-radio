@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Star } from "lucide-react";
+import { Pause, Play, Star } from "lucide-react";
 import "./SantaMessageReviews.css";
 
 const reviews = [
@@ -25,39 +25,38 @@ function SantaMessageReviews() {
   }, [isPaused]);
 
   const review = reviews[activeReview];
+  const renderReview = (item, accessible = false) => <>
+    <span className="santa-message-reviews__rating" role={accessible ? "img" : undefined}
+      aria-label={accessible ? "5 out of 5 stars" : undefined}>
+      {Array.from({ length: 5 }, (_, index) => <Star key={index} aria-hidden="true" />)}
+    </span>
+    {' - '}{item.quote}{' - '}
+    <span className="santa-message-reviews__attribution">{item.attribution}</span>
+  </>;
 
   return (
     <section className="santa-message-reviews" aria-label="Customer reviews">
-      <div className="santa-message-reviews__heading">
-        <p className="santa-message-reviews__eyebrow">Kind words from families</p>
-        <div className="santa-message-reviews__rating" role="img" aria-label="5 out of 5 stars">
-          {Array.from({ length: 5 }, (_, index) => (
-            <Star key={index} aria-hidden="true" />
-          ))}
-        </div>
-      </div>
-
       <div className="santa-message-reviews__stage">
         <div className="santa-message-reviews__reserve" aria-hidden="true">
           {reviews.map((item) => (
             <div className="santa-message-reviews__item" key={item.attribution}>
-              <p className="santa-message-reviews__quote">{item.quote}</p>
-              <p className="santa-message-reviews__attribution">{item.attribution}</p>
+              <p className="santa-message-reviews__quote">{renderReview(item)}</p>
             </div>
           ))}
         </div>
         <div className="santa-message-reviews__current" key={activeReview}>
-          <blockquote className="santa-message-reviews__quote">{review.quote}</blockquote>
-          <p className="santa-message-reviews__attribution">{review.attribution}</p>
+          <blockquote className="santa-message-reviews__quote">{renderReview(review, true)}</blockquote>
         </div>
       </div>
 
       <button
         className="santa-message-reviews__toggle"
         type="button"
+        aria-label={isPaused ? "Resume reviews" : "Pause reviews"}
+        title={isPaused ? "Resume reviews" : "Pause reviews"}
         onClick={() => setIsPaused((paused) => !paused)}
       >
-        {isPaused ? "Resume reviews" : "Pause reviews"}
+        {isPaused ? <Play size={12} aria-hidden="true" /> : <Pause size={12} aria-hidden="true" />}
       </button>
     </section>
   );
