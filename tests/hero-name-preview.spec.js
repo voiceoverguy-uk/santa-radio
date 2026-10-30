@@ -43,6 +43,42 @@ async function choose(page, name) {
 }
 
 for (const width of [390, 1440]) {
+  test(`homepage empty-name submit highlights and focuses the search at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await setup(page);
+    await page.goto('/');
+    const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+    if (await decline.isVisible()) await decline.click();
+    await expect(input(page)).toHaveAttribute('aria-invalid', 'false');
+    await expect(cta(page)).toBeEnabled();
+    await cta(page).click();
+    await expect(input(page)).toBeFocused();
+    await expect(input(page)).toHaveAttribute('aria-invalid', 'true');
+    await expect(input(page)).toHaveCSS('border-color', 'rgb(238, 164, 154)');
+    expect(await input(page).evaluate(node => getComputedStyle(node).boxShadow)).toContain('155, 17, 30');
+    await expect(checker(page).getByRole('status')).toHaveText('Please enter a child’s name, then choose a suggestion.');
+    await expect(checker(page).getByRole('status')).toHaveCSS('color', 'rgb(255, 197, 184)');
+    if (width === 390) await checker(page).screenshot({ path: 'test-results/hero-name-required-mobile.png' });
+    await expect(page.locator('.santa-message-access input[name="FIRSTNAME"]')).not.toBeFocused();
+
+    await input(page).fill('Ara');
+    await expect(input(page)).toHaveAttribute('aria-invalid', 'false');
+    await expect(checker(page).getByRole('option', { name: 'Arabella', exact: true })).toBeVisible();
+    await input(page).press('Enter');
+    await expect(input(page)).toHaveAttribute('aria-invalid', 'true');
+    await expect(input(page)).toBeFocused();
+    await expect(checker(page).getByRole('status')).toHaveText('Please choose one of Santa’s recorded names from the list.');
+    await input(page).press('ArrowDown');
+    await input(page).press('Enter');
+    await expect(input(page)).toHaveAttribute('aria-invalid', 'false');
+    await expect(checker(page).getByRole('status')).toHaveText('Yes! Santa can record for Arabella.');
+    await cta(page).click();
+    await expect(page.locator('.santa-message-access input[name="FIRSTNAME"]')).toBeFocused();
+    await expect(page).toHaveURL(/\/$/);
+  });
+}
+
+for (const width of [390, 1440]) {
   test(`checked names personalise all gifts with watermarked enlargements at ${width}px`, async ({ page }) => {
     test.setTimeout(60000);
     await page.setViewportSize({ width, height: 1000 });
@@ -136,7 +172,9 @@ test('real hosted inventory drives lookup, with no child query URLs, storage or 
   expect(await page.evaluate(() => window.__playCalls)).toBe(0);
   expect(await page.evaluate(() => JSON.stringify({ ...localStorage, ...sessionStorage }))).not.toContain(record.name);
   expect(new URL(page.url()).pathname).toBe(path);
-  await expect(cta(page)).toBeDisabled();
+  await cta(page).click();
+  await expect(input(page)).toHaveAttribute('aria-invalid', 'true');
+  expect(new URL(page.url()).pathname).toBe(path);
 });
 
 test('keyboard selection confirms only a deliberate choice and editing clears it', async ({ page }) => {
@@ -151,7 +189,7 @@ test('keyboard selection confirms only a deliberate choice and editing clears it
   await expect(input(page)).toHaveValue('Erica');
   await expect(cta(page)).toBeEnabled();
   await input(page).fill('Erin');
-  await expect(cta(page)).toBeDisabled();
+  await expect(cta(page)).toBeEnabled();
   await expect(checker(page).getByRole('status')).not.toContainText('Yes!');
   await input(page).press('Escape');
   await expect(input(page)).toHaveAttribute('aria-expanded', 'false');
@@ -181,7 +219,8 @@ test('loading, genuine empty results, failures and retry are distinct', async ({
   mode = 'success';
   await checker(page).getByRole('button', { name: 'Retry name search' }).click();
   await expect(checker(page).getByRole('status')).toHaveText('We haven’t found that spelling. Try a shorter name or another spelling.');
-  await expect(cta(page)).toBeDisabled();
+  await cta(page).click();
+  await expect(input(page)).toHaveAttribute('aria-invalid', 'true');
   await choose(page, 'Arabella');
 });
 
@@ -233,7 +272,8 @@ test('phone touch selection handles taps but not scrolling or cancelled touches'
   await option.dispatchEvent('pointermove', { ...touch, clientY: 290 });
   await option.dispatchEvent('pointerup', { ...touch, clientY: 290 });
   await option.dispatchEvent('click', { detail: 1 });
-  await expect(cta(page)).toBeDisabled();
+  await expect(checker(page).getByRole('status')).not.toContainText('Yes!');
+  await expect(input(page)).toHaveValue('Er');
   await option.dispatchEvent('pointerdown', touch);
   await input(page).evaluate(node => node.blur());
   await option.dispatchEvent('pointerup', touch);

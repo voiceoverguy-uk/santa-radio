@@ -7,12 +7,15 @@ export default function HeroNameChecker({ onContinue }) {
   const [selected, setSelected] = useState(null);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
+  const [validation, setValidation] = useState('');
+  const inputRef = useRef(null);
   const touch = useRef(null);
   const suppressClick = useRef(false);
   const search = useHostedSantaNameSearch(name);
   const options = search.records;
   const expanded = open && options.length > 0 && !search.loading && !search.error;
   const choose = record => {
+    setValidation('');
     setName(record.name);
     setSelected(record);
     setOpen(false);
@@ -29,16 +32,31 @@ export default function HeroNameChecker({ onContinue }) {
   return <section className="hero-name-checker" aria-labelledby={`${id}-title`}>
     <p className="hero-name-checker__eyebrow">A free message from Santa</p>
     <h2 id={`${id}-title`}>Does Santa have your child’s name?</h2>
-    <form onSubmit={event => { event.preventDefault(); if (selected) onContinue(selected.name); }}>
+    <form noValidate onSubmit={event => {
+      event.preventDefault();
+      if (!selected) {
+        setValidation(name.trim()
+          ? search.error || (search.loading
+            ? 'Please wait while Santa checks the name list.'
+            : 'Please choose one of Santa’s recorded names from the list.')
+          : 'Please enter a child’s name, then choose a suggestion.');
+        inputRef.current?.focus({ preventScroll: true });
+        setOpen(true);
+        return;
+      }
+      setValidation('');
+      onContinue(selected.name);
+    }}>
       <label htmlFor={id}>Child’s first name</label>
       <div className="hero-name-checker__picker">
-        <input id={id} type="text" role="combobox" value={name}
+        <input ref={inputRef} id={id} type="text" role="combobox" value={name}
           placeholder="Start typing a name…" autoComplete="off" autoCapitalize="words"
           spellCheck={false} maxLength={80} aria-autocomplete="list" aria-expanded={expanded}
           aria-controls={expanded ? `${id}-options` : undefined}
           aria-activedescendant={expanded && active >= 0 && options[active] ? `${id}-option-${active}` : undefined}
           aria-describedby={`${id}-status`}
-          onChange={event => { setName(event.target.value); setSelected(null); setActive(-1); setOpen(true); }}
+          aria-invalid={!!validation}
+          onChange={event => { setName(event.target.value); setSelected(null); setValidation(''); setActive(-1); setOpen(true); }}
           onFocus={() => { if (!selected) setOpen(true); }}
           onBlur={() => { if (!touch.current) setOpen(false); }}
           onKeyDown={event => {
@@ -76,9 +94,9 @@ export default function HeroNameChecker({ onContinue }) {
           </li>)}
         </ul>}
       </div>
-      <p className="hero-name-checker__status" id={`${id}-status`} role="status" aria-live="polite" aria-atomic="true">{status}</p>
+      <p className={`hero-name-checker__status${validation ? ' hero-name-checker__status--error' : ''}`} id={`${id}-status`} role="status" aria-live="polite" aria-atomic="true">{validation || status}</p>
       {search.error && <button type="button" className="hero-name-checker__retry" onClick={search.refresh}>Retry name search</button>}
-      <button className="btn-red hero-name-checker__submit" type="submit" disabled={!selected}>Create my free Santa message →</button>
+      <button className="btn-red hero-name-checker__submit" type="submit">Create my free Santa message →</button>
     </form>
   </section>;
 }

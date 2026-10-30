@@ -29,6 +29,70 @@ async function visit(page, path) {
   await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
 }
 
+test('mobile voucher entry and arrival lock document panning without locking vertical scroll or zoom', async ({ page }) => {
+  let authorized = false;
+  await page.route('**/api/santa-workshop-access', route => {
+    if (route.request().method() === 'POST') authorized = true;
+    return route.fulfill({
+      status: authorized ? 200 : 401,
+      json: { authorized, ...(authorized ? { expiresAt: Date.now() + 120000 } : {}) },
+    });
+  });
+  await page.route('**/api/santa-studio-access', route => route.fulfill({ json: { authorized: false } }));
+  await visit(page, '/santa-message-workshop');
+  const voucher = page.getByLabel(codeLabel, { exact: true });
+  await expect(voucher).toBeVisible();
+
+  const expectStableDocument = async () => {
+    for (const width of [320, 390, 430, 844]) {
+      await page.setViewportSize({ width, height: width === 844 ? 390 : 844 });
+      const geometry = await page.evaluate(() => ({
+        width: document.documentElement.scrollWidth,
+        canScrollVertically: document.documentElement.scrollHeight > innerHeight,
+        roots: [document.documentElement, document.body].map(node => {
+          const style = getComputedStyle(node);
+          return { overflowX: style.overflowX, overflowY: style.overflowY,
+            overscrollX: style.overscrollBehaviorX, touch: style.touchAction,
+            position: style.position };
+        }),
+        panels: [...document.querySelectorAll('.workshop-gate-card, .workshop-password-form, .workshop-password-form input, .smw-builder')]
+          .map(node => ({ left: node.getBoundingClientRect().left, right: node.getBoundingClientRect().right })),
+      }));
+      expect(geometry.width).toBeLessThanOrEqual(width + 1);
+      for (const root of geometry.roots) {
+        expect(root.overflowX).toBe('clip');
+        expect(root.overflowY).not.toMatch(/hidden|clip/);
+        expect(root.overscrollX).toBe('none');
+        expect(root.touch).toContain('pan-y');
+        expect(root.touch).toContain('pinch-zoom');
+        expect(root.position).not.toBe('fixed');
+      }
+      for (const panel of geometry.panels) {
+        expect(panel.left).toBeGreaterThanOrEqual(-1);
+        expect(panel.right).toBeLessThanOrEqual(width + 1);
+      }
+      await page.evaluate(() => window.scrollTo({ left: 150, top: 100, behavior: 'instant' }));
+      expect(await page.evaluate(() => scrollX)).toBe(0);
+      if (geometry.canScrollVertically) expect(await page.evaluate(() => scrollY)).toBeGreaterThan(0);
+    }
+  };
+
+  await expectStableDocument();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await voucher.fill('MOBILE-LAYOUT-TEST');
+  await page.getByRole('button', { name: 'Create your bespoke message', exact: true }).click();
+  await expect(page.locator('.smw-builder')).toBeVisible();
+  await expectStableDocument();
+  const names = page.getByRole('combobox', { name: 'Search recorded names', exact: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await names.fill('Dem');
+  await expect(page.getByRole('option', { name: 'Demrie', exact: true })).toBeVisible();
+  expect(await names.evaluate(node => parseFloat(getComputedStyle(node).fontSize))).toBeGreaterThanOrEqual(16);
+  expect(await page.evaluate(() => scrollX)).toBe(0);
+  await page.goto('/');
+  expect(await page.evaluate(() => getComputedStyle(document.documentElement).touchAction)).toBe('auto');
+});
+
 test('direct documents, navigation and reload stay locked, and the catalogue requires a server session', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 900 });
   const document = await page.request.get('/santa-message-workshop');
