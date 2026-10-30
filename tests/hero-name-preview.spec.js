@@ -338,6 +338,33 @@ for (const width of [1440, 390]) test(`approved homepage handoff and matching ra
   expect(renders).toBe(0);
 });
 
+test('mobile name entry avoids automatic-zoom sizing and keeps the form stable as the keyboard opens', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await setup(page);
+  await page.goto('/');
+  const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+  if (await decline.isVisible()) await decline.click();
+  await page.evaluate(() => document.fonts.ready);
+  await input(page).scrollIntoViewIfNeeded();
+  await input(page).focus();
+  expect(await input(page).evaluate(element => parseFloat(getComputedStyle(element).fontSize))).toBeGreaterThanOrEqual(16);
+  expect(await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior)).toBe('auto');
+  const geometry = () => input(page).evaluate(element => {
+    const box = element.getBoundingClientRect();
+    return { x: box.x, y: box.y + window.scrollY, width: box.width };
+  });
+  const before = await geometry();
+  await input(page).fill('Ara');
+  await expect(checker(page).getByRole('option', { name: 'Arabella', exact: true })).toBeVisible();
+  await page.setViewportSize({ width: 390, height: 440 });
+  const after = await geometry();
+  expect(Math.abs(after.x - before.x)).toBeLessThan(1);
+  expect(Math.abs(after.y - before.y)).toBeLessThan(1);
+  expect(Math.abs(after.width - before.width)).toBeLessThan(1);
+  expect(await page.evaluate(() => window.scrollX)).toBe(0);
+  await expect(page.locator('meta[name="viewport"]')).toHaveAttribute('content', 'width=device-width, initial-scale=1.0');
+});
+
 test('approval screenshots show the real name inventory on desktop and phone', async ({ page }) => {
   await setup(page, { realInventory: true });
   await page.unroute('**/api/radio-metadata*');

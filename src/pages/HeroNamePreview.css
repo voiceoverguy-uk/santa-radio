@@ -576,6 +576,16 @@
 }
 
 @media (max-width: 767px) {
+  /* Let Safari position the focused field without competing smooth scrolling. */
+  html:has(.hero-name-checker:focus-within) {
+    scroll-behavior: auto;
+  }
+
+  .hero-name-preview .hero-name-checker__picker input {
+    /* Smaller controls trigger iPhone's automatic focus zoom. Keep pinch zoom. */
+    font-size: max(16px, 1rem);
+  }
+
   .hero-name-preview__hero {
     min-height: 0;
     padding: 110px 22px 72px;
