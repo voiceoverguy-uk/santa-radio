@@ -6,7 +6,7 @@ import { ACCESS_REQUEST_TIMEOUT_MS, MessageAccessError, submitMessageAccess, val
 
 const emptyFields = { FIRSTNAME: '', LASTNAME: '', EMAIL: '', email_address_check: '' };
 
-export default function SantaMessageAccessForm({ variant = 'inline', onAccepted, onPrivacyNavigate }) {
+export default function SantaMessageAccessForm({ variant = 'inline', onAccepted, onPrivacyNavigate, keepInPlace = false }) {
   const [fields, setFields] = useState(emptyFields);
   const [errors, setErrors] = useState({});
   const [error, setError] = useState('');
@@ -62,7 +62,7 @@ export default function SantaMessageAccessForm({ variant = 'inline', onAccepted,
       // Never follow Brevo's optional legacy external redirect.
       // Already on the maker: retain the requested name and tracking query.
       // Homepage submissions still open the standalone maker as before.
-      if (location.pathname !== '/free-santa-message') navigate('/free-santa-message');
+      if (!keepInPlace && location.pathname !== '/free-santa-message') navigate('/free-santa-message');
     } catch (failure) {
       if (requestRef.current !== controller) return;
       if (failure instanceof MessageAccessError) {

@@ -714,3 +714,59 @@ mtime_ms = 1793271961826
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/012d5c75-cb4a-42da-aa19-81f0e7057534/d6b59a8a-e1f7-486d-99cd-ea9c52c16163"
 storage_version_token = "1793272016741155"
 content_type = "text/csv"
+
+[[outputs]]
+id = "aSd7yaAo9SuLasYkGIois"
+uri = "file://generated-artifacts/hero-name-checker-desktop.png"
+type = "image"
+title = "Hero name checker — desktop preview"
+description = "Desktop approval screenshot with a real hosted name selected; the normal homepage remains unchanged."
+logical_id = "74512609-10af-4069-a9b6-713cabae4ffc"
+content_hash = "sha256:50e04e3d0683a661e6f8b875b2255200ecff25111e2e1b1246afd9faeaf7e7a3"
+size = 1036931
+mtime_ms = 1793324027058
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/74512609-10af-4069-a9b6-713cabae4ffc/e41edf95-2df3-4278-8438-aec1daf904c7"
+storage_version_token = "1793324068226111"
+content_type = "image/png"
+
+[[outputs]]
+id = "cQ1keP41I8hsvPi_PSQXs"
+uri = "file://generated-artifacts/hero-name-checker-mobile.png"
+type = "image"
+title = "Hero name checker — phone preview"
+description = "Phone approval screenshot showing the checker directly after the introduction, followed by listening controls and the compact countdown."
+logical_id = "1962e7a1-ed7c-49fd-b858-7f9a1d73f94d"
+content_hash = "sha256:b9067786e1903331803f3d80603e70de62568fdb4c2fa505fa2a0d9c6e069d03"
+size = 319514
+mtime_ms = 1793324028854
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/1962e7a1-ed7c-49fd-b858-7f9a1d73f94d/8a1ce06b-05b2-49bf-b249-dee588adbf40"
+storage_version_token = "1793324069385866"
+content_type = "image/png"
+
+[[outputs]]
+id = "DhYzRZI77a30uFiC0BEvM"
+uri = "file://generated-artifacts/hero-name-checker-desktop-playing.png"
+type = "image"
+title = "Raised artwork and name checker"
+description = "Both panels now align near the Santa Radio title line. The artwork panel is completely hidden when nothing is playing."
+logical_id = "171718a1-d351-4ef4-afae-3920f1b6f88e"
+content_hash = "sha256:9836ef52193c351e89cac388e3a5dfd5f247747e13df5891696ec5e0fe427197"
+size = 1165577
+mtime_ms = 1793326070140
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/171718a1-d351-4ef4-afae-3920f1b6f88e/2cc68b81-c110-4c88-ba84-9550145c7fd9"
+storage_version_token = "1793326105924535"
+content_type = "image/png"
+
+[[outputs]]
+id = "WerqURpZVS2u5FV18xHhl"
+uri = "file://generated-artifacts/hero-name-checker-mobile-playing.png"
+type = "image"
+title = "Updated hero — phone layout"
+description = "Phone layout with the name checker followed by listening controls, countdown and readable playing artwork."
+logical_id = "53a76905-21c6-46b7-a476-e228862c7573"
+content_hash = "sha256:bbe5c00a695a2aeb9cec8c501fd54b456cb8b020bb0e42e9715b7829625f5e67"
+size = 434236
+mtime_ms = 1793325191350
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/53a76905-21c6-46b7-a476-e228862c7573/060ba180-d9fc-43a7-b766-f7b57f59e906"
+storage_version_token = "1793325227486943"
+content_type = "image/png"

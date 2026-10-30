@@ -34,10 +34,15 @@ test('Listen Live stays compact, details expand it, and ten idle seconds minimis
 
 test('auto minimises after ten idle seconds, resets on interaction and protects lyrics', async ({ page }) => {
   test.setTimeout(60000);
+  await page.addInitScript(() => sessionStorage.setItem('santa-message-offer-shown', 'shown'));
   await page.clock.install({ time: new Date('2026-10-07T00:00:00Z') });
   await page.clock.pauseAt(new Date('2026-10-07T00:00:01Z'));
   await page.goto('/');
+  await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
   const dock = page.getByRole('complementary', { name: 'Santa Radio player' });
+  // Open without leaving the real pointer over the resizing dock: a generated
+  // pointermove during virtual time would legitimately restart its idle timer.
+  await dock.getByRole('button', { name: 'Expand radio player' }).dispatchEvent('click');
   await page.evaluate(() => window.savedAudio = document.querySelector('audio'));
   await page.clock.runFor(9000);
   await expect(dock).not.toHaveClass(/is-minimized/);
@@ -73,6 +78,7 @@ test('player minimises, stays small while browsing, and restores without audio i
   } }));
   await page.goto('/apps');
   const dock = page.getByRole('complementary', { name: 'Santa Radio player' });
+  await dock.getByRole('button', { name: 'Expand radio player' }).click();
   await expect(dock).toContainText('Step Into Christmas');
   const originalHeight = (await dock.boundingBox()).height;
   await page.evaluate(() => {

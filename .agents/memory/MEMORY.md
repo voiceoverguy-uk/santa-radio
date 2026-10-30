@@ -1,4 +1,4 @@
-- [Design direction](design-direction.md) — Base44-inspired North Pole appearance; mobile radio should start minimised.
+- [Design direction](design-direction.md) — Base44-inspired North Pole appearance; radio should always start minimised on page load.
 - [Santa offer appearance](santa-offer-visual-direction.md) — Full length, 30% backdrop; FREE itself shimmers, no flanking stars or top ornament; recognisable holly.
 - [Partnership banner direction](partnership-visual-direction.md) — Muted gold wrapping-paper pattern, not more village scenery; matching thin gold top and bottom lines.
 - [Radio feed hosting](radio-feed-hosting.md) — Use the confirmed independent HTTPS feeds; no retiring-host fallback. Metadata may lead buffered audio.
@@ -57,3 +57,4 @@
 - [Preview cookie attributes](preview-cookie-attributes.md) — The preview proxy can rewrite SameSite; test server attributes separately and keep explicit request-origin checks.
 - [Raw request targets](raw-request-targets.md) — Exact doubled-separator exports must survive pre-routing middleware; resolver-only checks miss failures and app-shell fallbacks.
 - [Christmas Contenders scope](christmas-contenders-scope.md) — One-choice first build; votes inform editorial consideration; owner must choose any earlier submission cutoff.
+- [Hero name-checker scope](hero-name-checker-scope.md) — Approval preview only; keep store links on the homepage and entered child names out of URLs, analytics and storage.

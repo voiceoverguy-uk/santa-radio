@@ -6,7 +6,7 @@ import { mugs } from '../src/seo/catalogue.js';
 import { mugThumbnail } from '../src/seo/mugImages.js';
 import { thumbnailFile } from '../server/mug-thumbnails.js';
 const template = await readFile('dist/index.html', 'utf8');
-for (const path of [...canonicalPaths, '/santa-tracker/preview', '/santa-message-workshop', '/404']) {
+for (const path of [...canonicalPaths, '/preview/hero-name-checker', '/santa-tracker/preview', '/santa-message-workshop', '/404']) {
   const result = render(path);
   if (result.status !== 200 && path !== '/404') throw new Error(`Cannot pre-render ${path}: ${result.status}`);
   const directory = path === '/' ? 'dist' : `dist${path}`;

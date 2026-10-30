@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar.jsx';
 import Footer from './components/Footer.jsx';
 import Home from './pages/Home.jsx';
+import HeroNamePreview from './pages/HeroNamePreview.jsx';
 import Apps from './pages/Apps.jsx';
 import Music from './pages/Music.jsx';
 import MugShots from './pages/MugShots.jsx';
@@ -43,6 +44,7 @@ function App({ Router = BrowserRouter, routerProps = {} }) {
       <Snowfall />
       <div id="page-content" tabIndex={-1}><Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/preview/hero-name-checker" element={<HeroNamePreview />} />
         <Route path="/apps" element={<Apps />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path={mugPhotoTermsPath} element={<PhotoLicensing />} />

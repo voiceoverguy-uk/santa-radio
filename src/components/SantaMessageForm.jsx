@@ -7,6 +7,7 @@ import { useSantaMessageAccess } from './SantaMessageAccessProvider.jsx';
 import useSantaMessageAllowance from './useSantaMessageAllowance.js';
 import useSantaMessageHistory from './useSantaMessageHistory.js';
 import useSantaNames from './useSantaNames.js';
+import useHostedSantaNameSearch from './useHostedSantaNameSearch.js';
 import useSantaNameCounter from './useSantaNameCounter.js';
 import SantaCooldownNotice from './SantaCooldownNotice.jsx';
 import SantaVoiceTagline from './SantaVoiceTagline.jsx';
@@ -20,7 +21,7 @@ import { settleSantaMessageDeskAfterEntry } from '../lib/scrollToSantaMessageDes
 import './SantaNameRequest.css';
 import './SantaMessageForm.css';
 
-export default function SantaMessageForm({ showDetailLink = true, initialName = '' }) {
+export default function SantaMessageForm({ showDetailLink = true, initialName = '', pendingName, keepSignupInPlace = false }) {
   const { hasAccess, greetingName, sessionRemembered } = useSantaMessageAccess();
   const makerHeadingRef = useRef(null);
   const previousAccess = useRef(hasAccess);
@@ -39,7 +40,9 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const requestRef = useRef(null);
   const nameRequestRef = useRef(null);
   const [nameRequest, setNameRequest] = useState({ key: '', status: 'idle', message: '' });
-  const nameSearch = useSantaNames(name, hasAccess);
+  const normalNameSearch = useSantaNames(keepSignupInPlace ? '' : name, hasAccess && !keepSignupInPlace);
+  const privateNameSearch = useHostedSantaNameSearch(name, keepSignupInPlace);
+  const nameSearch = keepSignupInPlace ? privateNameSearch : normalNameSearch;
   const displayedNameCount = useSantaNameCounter(nameSearch.hostedCount);
   const availableNamesText = displayedNameCount !== null
     ? `${displayedNameCount.toLocaleString('en-GB')} ${displayedNameCount === 1 ? 'name' : 'names'} available`
@@ -118,6 +121,15 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
     setValidation('');
     setActiveOption(-1);
   };
+  // Preview handoffs can happen more than once on the same mounted maker.
+  // Retain only the text through signup; never choose a recording or submit.
+  const appliedPendingName = useRef(null);
+  useEffect(() => {
+    if (!pendingName || pendingName === appliedPendingName.current || coolingDown) return;
+    appliedPendingName.current = pendingName;
+    updateName(pendingName.name);
+    setSuggesting(false);
+  }, [pendingName, coolingDown]);
   const submitNameRequest = async () => {
     const requested = normaliseRequestedName(name);
     if (!requested || nameSearch.loading || nameSearch.error || nameSearch.warning || suggestions.length) return;
@@ -188,7 +200,11 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
     setBusy(true);
     try {
       const blob = await allowance.create(async outro => {
-        const saved = await trySavedSantaGreeting(recording, controller.signal, { outro });
+        // The preview promises name-free request URLs through creation too.
+        // Its POST still uses the same allowance and server-side saved cache,
+        // without the browser's name-bearing greeting lookup/hosted MP3 URL.
+        const saved = keepSignupInPlace ? null
+          : await trySavedSantaGreeting(recording, controller.signal, { outro });
         if (saved) return saved;
         const response = await fetch('/api/santa-message', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -280,7 +296,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         </div>
         {nameSearch.hostedCount === null && !nameSearch.loading && !hasAccess &&
           <button className="message-retry" type="button" onClick={nameSearch.refresh}>Retry name total</button>}
-        {!hasAccess ? <SantaMessageAccessForm /> : <>
+        {!hasAccess ? <SantaMessageAccessForm keepInPlace={keepSignupInPlace} /> : <>
         <h3 ref={makerHeadingRef} tabIndex={-1}>{messages.length ? 'Download your free message' : 'Download your free Santa greeting'}</h3>
         {!!messages.length && <div className="message-wait-downloads">
           {renderResults()}
@@ -360,7 +376,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
           </p>}
           {(() => {
             const requested = normaliseRequestedName(name);
-            const canRequest = !!requested && !nameSearch.loading && !nameSearch.error &&
+             const canRequest = !keepSignupInPlace && !!requested && !nameSearch.loading && !nameSearch.error &&
               !nameSearch.warning && suggestions.length === 0;
             const visibleRequest = canRequest && (nameRequest.key === requested.key ? nameRequest : null);
             return canRequest ? <div className="name-request">

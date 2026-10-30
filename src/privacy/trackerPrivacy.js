@@ -9,7 +9,8 @@ export function isTrackerPath(pathname) {
 }
 
 export function trackerTrackingDisabled() {
-  return typeof window !== 'undefined' && isTrackerPath(window.location.pathname);
+  return typeof window !== 'undefined' && (isTrackerPath(window.location.pathname)
+    || /^\/preview\/hero-name-checker(?:\/|$)/i.test(window.location.pathname));
 }
 
 const trackingDomains = [

@@ -127,9 +127,10 @@ export function resolvePublicRequest(raw) {
   }
   const target = aliases.get(normalized);
   if (target) return { status: 308, location: target + url.search };
-  if (normalized !== path && (paths.has(normalized) || normalized === '/santa-tracker/preview' || normalized === '/santa-message-workshop'))
+  if (normalized !== path && (paths.has(normalized) || normalized === '/preview/hero-name-checker' || normalized === '/santa-tracker/preview' || normalized === '/santa-message-workshop'))
     return { status: 308, location: normalized + url.search };
   if (normalized === '/santa-message-workshop') return { status: 200, noindex: true };
+  if (normalized === '/preview/hero-name-checker') return { status: 200, noindex: true };
   if (normalized === '/santa-tracker/preview') return { status: 200, noindex: true };
   if (normalized === '/christmas-song-lyrics') {
     if (url.searchParams.getAll('s').length !== 1) return { status: 404, noindex: true };

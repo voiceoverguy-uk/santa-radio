@@ -23,11 +23,9 @@ export default function AudioPlayer() {
   const [upcomingOpen, setUpcomingOpen] = useState(false);
   const dockRef = useRef(null);
   const keyboardInteraction = useRef(false);
-  const [minimized, setMinimized] = useState(() => {
-    if (typeof window === 'undefined' || window.matchMedia('(max-width: 600px)').matches) return true;
-    try { return sessionStorage.getItem('radio-minimized') === 'true'; }
-    catch { return false; }
-  });
+  // Every full load starts compact, regardless of device or an older saved
+  // preference. This shared component still keeps its state across SPA routes.
+  const [minimized, setMinimized] = useState(true);
   const toggleSize = () => {
     setMinimized(value => {
       try { sessionStorage.setItem('radio-minimized', String(!value)); } catch { /* Optional preference storage. */ }

@@ -9,7 +9,7 @@ import './SantaMessageOffer.css';
 
 export const OFFER_SESSION_KEY = 'santa-message-offer-shown';
 const DELAY_MS = 16000;
-const excluded = pathname => /^\/(?:request-names|sign-in|sign-up|privacy-policy|free-santa-message|santa-message-workshop)(?:\/|$)/i.test(pathname);
+const excluded = pathname => /^\/(?:preview\/hero-name-checker|request-names|sign-in|sign-up|privacy-policy|free-santa-message|santa-message-workshop)(?:\/|$)/i.test(pathname);
 
 function visible(element) {
   return element.getClientRects().length > 0 && getComputedStyle(element).visibility !== 'hidden';

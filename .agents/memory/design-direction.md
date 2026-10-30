@@ -1,6 +1,6 @@
 ---
 name: Santa Radio visual direction
-description: User's North Pole visual expectations, Santa note voice and mobile player starting state.
+description: User's North Pole visual expectations, Santa note voice and player starting state.
 ---
 The current navigation page should have an animated underline in the website's gold colour.
 
@@ -62,11 +62,11 @@ Keep Santa's notes as plain text in the Contact Santa Radio section, not in the 
 
 **Why for motion and sizing:** The user asked for a fade instead of typing, then explicitly asked to restore the animated three dots and move the message further down from Send Email.
 
-On mobile, the radio player should start minimised on a fresh page load, even if the tab previously remembered an expanded player. Keep manual expansion available and do not collapse it on every internal navigation.
+On every device, the radio player should always start minimised on a fresh page load, even if the tab previously remembered an expanded player. Keep manual expansion available and do not collapse it on every internal navigation.
 
-**Why:** The user asked for a minimised mobile starting state. Applying this at initial load avoids a saved expanded setting obscuring the phone page, without interrupting browsing.
+**Why:** The user extended the minimised starting-state requirement to all page loads, showing the expanded desktop player they want closed initially.
 
-**How to apply:** Preserve the mobile initial-load rule separately from the desktop remembered preference when changing player controls or persistence.
+**How to apply:** Apply the same compact initial state on desktop and phone, without restoring an expanded preference on reload.
 
 The compact player's information area and empty space should expand its details. Play/Pause should control audio only, without expanding the player.
 
