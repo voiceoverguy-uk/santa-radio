@@ -9,9 +9,12 @@ import { bobEntry, defaultSettings, secureMediaLink, sourceContenderCatalogue } 
 import waveformCatalogue from '../src/lib/contender-waveforms.json' with { type: 'json' };
 import { normalizeVotingEmail } from './contender-consent.js';
 import { preparePreviewVoteNotification } from './contender-song-notification.js';
+import { contenderFailureDiagnostic } from './contender-diagnostics.js';
 
 export function privateDigest(value) {
-  if (!process.env.SESSION_SECRET || process.env.SESSION_SECRET.length < 32) throw new Error('Signing unavailable');
+  if (!process.env.SESSION_SECRET || process.env.SESSION_SECRET.length < 32) {
+    throw Object.assign(new Error('Signing unavailable'), { code: 'CONTENDERS_SIGNING_UNAVAILABLE' });
+  }
   return createHmac('sha256', process.env.SESSION_SECRET).update(`contenders:${value}`).digest('hex');
 }
 export function validateManagement(body) {
@@ -46,10 +49,12 @@ export function validateManagement(body) {
 }
 export function createContendersHandler({ read = competitionState, vote = demoBallot, limit = requestLimit,
   digest = privateDigest, checkAdmin = authorize, manage = manageCompetition,
-  staffRead = staffCompetition, remember = rememberedDemo } = {}) {
+  staffRead = staffCompetition, remember = rememberedDemo,
+  logDiagnostic = event => console.error(JSON.stringify(event)) } = {}) {
   return async (req, res) => {
     res.set('Cache-Control', 'no-store').set('X-Robots-Tag', 'noindex');
     const staff = req.method === 'PATCH' || req.query?.staff === '1';
+    let stage = 'request_setup';
     try {
       if (!['GET','POST','PATCH'].includes(req.method)) return res.status(405).json({error:'Method not allowed.'});
       if (req.method !== 'GET') {
@@ -64,14 +69,20 @@ export function createContendersHandler({ read = competitionState, vote = demoBa
         if (allowed !== 200) return res.status(allowed).json({error:'Approved staff access is required.'});
       }
       const source = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket?.remoteAddress || 'unknown';
-      await limit(digest(`limit:${req.method}:${source}:${Math.floor(Date.now()/3600000)}`), req.method === 'GET' ? 300 : 30);
+      stage = 'request_signing';
+      const bucket = digest(`limit:${req.method}:${source}:${Math.floor(Date.now()/3600000)}`);
+      stage = 'rate_limit_storage';
+      await limit(bucket, req.method === 'GET' ? 300 : 30);
       if (req.method === 'GET') {
+        stage = 'competition_state';
         const data = await (staff ? staffRead() : read());
         if (!staff) {
+          stage = 'ballot_cookie';
           const cookie = (req.headers.cookie || '').split(';').map(c => c.trim()).find(c => c.startsWith('contenders-demo='))?.slice(16);
           const [key,signature] = (cookie || '').split('.');
           if (/^[a-f0-9]{64}$/.test(key || '') && /^[a-f0-9]{64}$/.test(signature || '') &&
               timingSafeEqual(Buffer.from(signature),Buffer.from(digest(`demo-cookie:${key}`)))) {
+            stage = 'ballot_restore';
             data.viewerBallot = await remember(key);
           }
         }
@@ -79,7 +90,9 @@ export function createContendersHandler({ read = competitionState, vote = demoBa
       }
       if (req.method === 'PATCH') {
         if (!validateManagement(req.body)) return res.status(400).json({error:'Check the competition settings or entry details.'});
+        stage = 'competition_management';
         await manage(req.body);
+        stage = 'competition_state';
         return res.json(await staffRead());
       }
       const b = req.body;
@@ -96,23 +109,28 @@ export function createContendersHandler({ read = competitionState, vote = demoBa
           !/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(b.attemptId))) {
         return res.status(400).json({error:'Please start a new demo test ballot.'});
       }
+      stage = 'competition_state';
       if (repeatAttempt && (await read()).settings?.repeatDemo !== true) {
         return res.status(409).json({error:'Repeat demo testing is switched off. Reload to use the one-ballot demo.'});
       }
+      stage = 'vote_signing';
       const voterKey = digest(repeatAttempt ? `demo-repeat:${identity}:${b.attemptId}` : `demo-voter:${identity}`);
       const voteArgs = {entryId:b.entryId,voterKey,repeatAttempt,marketingOptIn:b.marketingOptIn === true,
         prepareNotification: preparePreviewVoteNotification};
       // One visitor action, while retaining the existing atomic reservation,
       // duplicate guards and uncertain-result protections inside the store.
+      stage = 'demo_submission';
       let result = await vote({...voteArgs,action:b.action === 'submit' ? 'prepare' : b.action});
       if (b.action === 'submit' && result.state === 'confirmation') {
         result = await vote({...voteArgs,action:'confirm'});
       }
+      stage = 'ballot_cookie';
       res.append('Set-Cookie', `contenders-demo=${voterKey}.${digest(`demo-cookie:${voterKey}`)}; Path=/api/christmas-contenders; HttpOnly; SameSite=Lax; Max-Age=2592000${req.secure || req.headers['x-forwarded-proto'] === 'https' ? '; Secure' : ''}`);
       return res.json(result);
     } catch (error) {
       if ([400,409,429].includes(error.status)) return res.status(error.status).json({error:error.message});
       // Never log addresses, identities, bodies, secrets or raw database errors.
+      try { logDiagnostic(contenderFailureDiagnostic(error, stage)); } catch { /* Logging must not change the response. */ }
       if (req.method === 'GET' && !staff) return res.status(503).json({
         settings:defaultSettings,entries:sourceContenderCatalogue.map(entry => ({
           ...entry, total:null, waveform:waveformCatalogue[entry.audio] || null,

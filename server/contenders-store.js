@@ -7,7 +7,7 @@ import { MARKETING_CONSENT_TEXT, MARKETING_CONSENT_SOURCE } from './contender-co
 const problem = (message, status = 400) => Object.assign(new Error(message), { status });
 export async function competitionState(client = databasePool(), staff = false) {
   const settings = (await client.query('SELECT settings FROM christmas_contenders_settings WHERE competition=$1', [COMPETITION])).rows[0]?.settings;
-  if (!settings) throw problem('Competition storage is not ready.', 503);
+  if (!settings) throw Object.assign(problem('Competition storage is not ready.', 503), { code: 'CONTENDERS_SETTINGS_MISSING' });
   await client.query('SELECT ballot_id FROM christmas_contenders_notifications LIMIT 0');
   const entries = (await client.query(`SELECT e.id,e.id AS anchor,e.mode,e.artist,e.title,e.artwork,e.audio,e.approved${staff ? ',e.description' : ''},
     (SELECT count(*)::integer FROM christmas_contenders_ballots b WHERE b.competition=e.competition

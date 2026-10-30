@@ -48,3 +48,53 @@ access—not another service or purchase—is the next dependency.
 - **Email-only Brevo routing:** the existing SONG form requires names. The public
   email-only ballot does not call it or invent names. Compatible routing remains
   unresolved independently of storage. No verification emails are added.
+
+## Minimal existing-API diagnostic logging
+
+The API now emits only this fixed-shape runtime event on an unexpected failure:
+
+```json
+{"event":"christmas_contenders_unavailable","stage":"rate_limit_storage","category":"missing_schema"}
+```
+
+This is an **example**, not a Production finding. The category is one of
+`signing_configuration`, `db_connectivity`, `missing_schema`, `permissions`,
+`competition_settings` or `unclassified`. The stage identifies the fixed
+operation, such as `request_signing`, `rate_limit_storage`, `competition_state`
+or `ballot_restore`. `competition_settings` identifies a missing settings row;
+schema/permission failures are distinguished by PostgreSQL's error code.
+Unknown errors stay `unclassified` rather than guessing a cause.
+
+There are no raw exceptions, messages, stacks, SQL/error details, connection
+strings, secrets, addresses, cookies or voter data in these events. No extra
+database queries, mutations or public endpoint were added; the existing API
+response, rate limiter, fallback catalogue and disabled voting are unchanged.
+
+After the normal GitHub → Vercel deployment is Ready:
+
+1. Select that **new Production deployment** in the signed-in Vercel dashboard.
+2. Open its runtime Logs and filter for `/api/christmas-contenders` and the
+   current time window.
+3. Load the public contender page once, then inspect its GET request's function
+   output for `christmas_contenders_unavailable`. Read `stage` and `category`,
+   not the separate pg SSL-mode deprecation warning.
+
+Older deployment logs cannot gain these events retroactively. No Production
+request was made as part of the source-only checks for this improvement.
+
+## Simplest email-only Brevo path from existing source
+
+No compatible email-only voting destination is configured in the existing
+source. `songSubmission.js` requires `FIRSTNAME`, `LASTNAME`, `EMAIL` and
+`SONG_REQUEST`; its General/Sponsorship routes are not voting substitutes.
+`santaMessageAccess.js` also requires first name, surname and email and belongs
+to Santa-message access, not votes.
+
+The smallest compatible route is a separate email-only copy of the existing
+SONG hosted form in the current Brevo account: require `EMAIL` and
+`SONG_REQUEST`, with neither name required. It can reuse the existing supported
+multipart/honeypot/locale approach and the bounded vote-reference/artist/title/
+updates-YES-or-NO message. Confirm the station's notification and optional-consent
+handling; a NO vote must not enrol the visitor in marketing. Keep the original
+SONG, General and Santa-access forms unchanged. This is a required form contract,
+not a discovered or configured new URL. No provider POST or message was sent.
