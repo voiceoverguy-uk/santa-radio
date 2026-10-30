@@ -1,0 +1,162 @@
+.santa-message-reviews {
+  --reviews-ink: #f6ecd8;
+  --reviews-muted: #d0dacd;
+  --reviews-gold: #e6ce86;
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "heading toggle"
+    "stage stage";
+  align-items: start;
+  gap: 13px 18px;
+  min-width: 0;
+  margin-top: -40px;
+  padding: 20px clamp(16px, 2.4vw, 26px);
+  border-top: 1px solid #a27c3245;
+  color: var(--reviews-ink);
+}
+
+.santa-message-reviews__heading {
+  grid-area: heading;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  min-width: 0;
+}
+
+.santa-message-reviews__eyebrow {
+  margin: 0;
+  color: var(--reviews-gold);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.santa-message-reviews__rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--reviews-gold);
+}
+
+.santa-message-reviews__rating svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+
+.santa-message-reviews__stage {
+  position: relative;
+  grid-area: stage;
+  min-width: 0;
+}
+
+.santa-message-reviews__reserve {
+  display: grid;
+  min-width: 0;
+  visibility: hidden;
+}
+
+.santa-message-reviews__item {
+  grid-area: 1 / 1;
+  min-width: 0;
+}
+
+.santa-message-reviews__current {
+  position: absolute;
+  inset: 0;
+  min-width: 0;
+  animation: santa-review-arrive 220ms ease-out both;
+}
+
+.santa-message-reviews__quote {
+  max-width: 68ch;
+  margin: 0;
+  color: var(--reviews-ink);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: clamp(0.98rem, 1.4vw, 1.12rem);
+  font-weight: 500;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.santa-message-reviews__attribution {
+  margin: 6px 0 0;
+  color: var(--reviews-muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.santa-message-reviews__toggle {
+  grid-area: toggle;
+  align-self: start;
+  min-height: 36px;
+  padding: 6px 10px;
+  border: 1px solid #a27c3260;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--reviews-muted);
+  font: inherit;
+  font-size: 0.72rem;
+  line-height: 1.3;
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.santa-message-reviews__toggle:hover {
+  border-color: var(--reviews-gold);
+  background: #a27c3210;
+}
+
+.santa-message-reviews__toggle:focus-visible {
+  outline: 3px solid var(--reviews-gold);
+  outline-offset: 3px;
+}
+
+@keyframes santa-review-arrive {
+  from { opacity: 0.35; }
+  to { opacity: 1; }
+}
+
+@media (max-width: 767px) {
+  .santa-message-reviews {
+    margin-top: -12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .santa-message-reviews {
+    gap: 12px 8px;
+    padding-inline: 2px;
+  }
+
+  .santa-message-reviews__heading {
+    gap: 5px 8px;
+  }
+
+  .santa-message-reviews__toggle {
+    padding-inline: 8px;
+    font-size: 0.68rem;
+  }
+
+  .santa-message-reviews__quote {
+    font-size: 0.96rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .santa-message-reviews__current {
+    animation: none;
+  }
+
+  .santa-message-reviews__toggle {
+    transition: none;
+  }
+}

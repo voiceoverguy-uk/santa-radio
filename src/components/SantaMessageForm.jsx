@@ -12,6 +12,7 @@ import useSantaNameCounter from './useSantaNameCounter.js';
 import SantaCooldownNotice from './SantaCooldownNotice.jsx';
 import SantaVoiceTagline from './SantaVoiceTagline.jsx';
 import SantaStudioPromotion from './SantaStudioPromotion.jsx';
+import SantaMessageReviews from './SantaMessageReviews.jsx';
 import { santaNameKey } from '../lib/santaNameSearch.js';
 import { randomSantaExample, santaNamePlaceholder } from '../lib/santaNamePlaceholder.js';
 import { normaliseRequestedName } from '../lib/santaNameRequests.js';
@@ -419,6 +420,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
       </div>
       <SantaStudioPromotion activeExampleName={activeExampleName} availableNamesText={availableNamesText}
         previewName={giftPreviewName} />
+      <SantaMessageReviews />
     </div>
   </section>;
 }
