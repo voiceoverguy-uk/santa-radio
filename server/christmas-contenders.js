@@ -5,7 +5,8 @@ import { publishableKeyFromHost } from '@clerk/shared/keys';
 import { authorize } from './name-requests.js';
 import { getClerkProxyHost } from './middlewares/clerkProxyMiddleware.js';
 import { competitionState, demoBallot, requestLimit, manageCompetition, staffCompetition, rememberedDemo } from './contenders-store.js';
-import { bobEntry, defaultSettings, secureMediaLink } from '../src/lib/contenders.js';
+import { bobEntry, defaultSettings, secureMediaLink, sourceApprovedContenders } from '../src/lib/contenders.js';
+import waveformCatalogue from '../src/lib/contender-waveforms.json' with { type: 'json' };
 import { normalizeVotingEmail } from './contender-consent.js';
 import { buildSongVotePayload, simulateSongVoteNotification, validVoteContact } from './contender-song-notification.js';
 
@@ -44,7 +45,8 @@ export function validateManagement(body) {
     !(e.mode === 'live' && (e.audio === bobEntry.audio || e.artwork === bobEntry.artwork));
 }
 export function createContendersHandler({ read = competitionState, vote = demoBallot, limit = requestLimit,
-  checkAdmin = authorize, manage = manageCompetition, staffRead = staffCompetition, remember = rememberedDemo } = {}) {
+  digest = privateDigest, checkAdmin = authorize, manage = manageCompetition,
+  staffRead = staffCompetition, remember = rememberedDemo } = {}) {
   return async (req, res) => {
     res.set('Cache-Control', 'no-store').set('X-Robots-Tag', 'noindex');
     const staff = req.method === 'PATCH' || req.query?.staff === '1';
@@ -62,14 +64,14 @@ export function createContendersHandler({ read = competitionState, vote = demoBa
         if (allowed !== 200) return res.status(allowed).json({error:'Approved staff access is required.'});
       }
       const source = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket?.remoteAddress || 'unknown';
-      await limit(privateDigest(`limit:${req.method}:${source}:${Math.floor(Date.now()/3600000)}`), req.method === 'GET' ? 300 : 30);
+      await limit(digest(`limit:${req.method}:${source}:${Math.floor(Date.now()/3600000)}`), req.method === 'GET' ? 300 : 30);
       if (req.method === 'GET') {
         const data = await (staff ? staffRead() : read());
         if (!staff) {
           const cookie = (req.headers.cookie || '').split(';').map(c => c.trim()).find(c => c.startsWith('contenders-demo='))?.slice(16);
           const [key,signature] = (cookie || '').split('.');
           if (/^[a-f0-9]{64}$/.test(key || '') && /^[a-f0-9]{64}$/.test(signature || '') &&
-              timingSafeEqual(Buffer.from(signature),Buffer.from(privateDigest(`demo-cookie:${key}`)))) {
+              timingSafeEqual(Buffer.from(signature),Buffer.from(digest(`demo-cookie:${key}`)))) {
             data.viewerBallot = await remember(key);
           }
         }
@@ -97,21 +99,23 @@ export function createContendersHandler({ read = competitionState, vote = demoBa
       if (repeatAttempt && (await read()).settings?.repeatDemo !== true) {
         return res.status(409).json({error:'Repeat demo testing is switched off. Reload to use the one-ballot demo.'});
       }
-      const voterKey = privateDigest(repeatAttempt ? `demo-repeat:${identity}:${b.attemptId}` : `demo-voter:${identity}`);
+      const voterKey = digest(repeatAttempt ? `demo-repeat:${identity}:${b.attemptId}` : `demo-voter:${identity}`);
       const result = await vote({action:b.action,entryId:b.entryId,voterKey,repeatAttempt,marketingOptIn:b.marketingOptIn === true,
         prepareNotification: details => {
           const payload = buildSongVotePayload({...details,firstName:b.firstName,lastName:b.lastName,email:identity,marketingOptIn:b.marketingOptIn === true});
           return () => simulateSongVoteNotification(payload,b.testDelivery || 'accepted');
         }});
-      res.append('Set-Cookie', `contenders-demo=${voterKey}.${privateDigest(`demo-cookie:${voterKey}`)}; Path=/api/christmas-contenders; HttpOnly; SameSite=Lax; Max-Age=2592000${req.secure || req.headers['x-forwarded-proto'] === 'https' ? '; Secure' : ''}`);
+      res.append('Set-Cookie', `contenders-demo=${voterKey}.${digest(`demo-cookie:${voterKey}`)}; Path=/api/christmas-contenders; HttpOnly; SameSite=Lax; Max-Age=2592000${req.secure || req.headers['x-forwarded-proto'] === 'https' ? '; Secure' : ''}`);
       return res.json(result);
     } catch (error) {
       if ([400,409,429].includes(error.status)) return res.status(error.status).json({error:error.message});
       // Never log addresses, identities, bodies, secrets or raw database errors.
       if (req.method === 'GET' && !staff) return res.status(503).json({
-        settings:defaultSettings,entries:[{...bobEntry,description:undefined,total:null}],ready:false,status:'unavailable',
+        settings:defaultSettings,entries:sourceApprovedContenders.map(entry => ({
+          ...entry, total:null, waveform:waveformCatalogue[entry.audio] || null,
+        })),ready:false,status:'unavailable',
         demoStatus:'unavailable',serverNow:new Date().toISOString(),realVotingEnabled:false,
-        launchDependency:'Shared voting storage, schema or signing is unavailable. No ballots can be recorded.',
+        launchDependency:'Shared storage, schema or signing is unavailable. The approved source catalogue is shown, but totals are unknown and no ballots can be recorded.',
       });
       return res.status(503).json({error:'Shared voting storage, schema or signing is unavailable. Please try later.'});
     }

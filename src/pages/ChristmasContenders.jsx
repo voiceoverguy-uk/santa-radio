@@ -561,7 +561,9 @@ export default function ChristmasContenders() {
             <p>{loadError}</p>
             <button type="button" onClick={() => load(true)}>Try again</button>
           </div> : entries.length ? <fieldset className="contenders-grid">
-            <legend className="sr-only">Choose one approved demo song for your ballot</legend>
+            <legend className="sr-only">{data?.ready && entries.some(entry => entry.mode === 'demo')
+              ? 'Choose one approved demo song for your ballot'
+              : 'Approved Christmas contender recordings. Voting is unavailable.'}</legend>
             {entries.map(entry => {
               const demo = entry.mode === 'demo';
               const selectable = demo && !alreadyUsed && !pending && !unresolved;
@@ -589,7 +591,7 @@ export default function ChristmasContenders() {
                 </div> : <p className="contender-card__unavailable">Recording unavailable.</p>}
                 <div className="contender-card__actions">
                   <div className="contender-card__count">
-                    <span>{demo ? 'Demo ballots' : 'Votes'}</span>
+                    <span>{demo ? 'Demo ballots' : Number.isFinite(entry.total) ? 'Votes' : 'Votes unavailable'}</span>
                     <strong>{Number.isFinite(entry.total) ? entry.total.toLocaleString('en-GB') : '—'}</strong>
                   </div>
                   <button className="contender-share" type="button" onClick={() => shareEntry(entry)}>Share</button>

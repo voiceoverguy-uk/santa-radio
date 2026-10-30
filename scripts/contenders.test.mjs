@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { randomBytes } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import pg from 'pg';
-import { defaultSettings, votingStatus, COMPETITION } from '../src/lib/contenders.js';
+import { defaultSettings, votingStatus, COMPETITION, sourceApprovedContenders } from '../src/lib/contenders.js';
 import { buildSongMessage, validateSongFields, submitSong, emptySongFields, SONG_FORM_URL, GENERAL_FORM_URL } from '../src/lib/songSubmission.js';
 import { createContendersHandler, validateManagement, privateDigest } from '../server/christmas-contenders.js';
 import { demoBallot, competitionState, manageCompetition } from '../server/contenders-store.js';
@@ -18,6 +18,17 @@ test('UK November voting boundaries and explicit availability', () => {
   assert.equal(votingStatus({...defaultSettings,availability:'closed'}, 0), 'closed');
   assert.equal(votingStatus({...defaultSettings,availability:'unavailable'}), 'unavailable');
   assert.equal(defaultSettings.submissionCutoff,null);
+});
+
+test('source fallback matches only the approved live SQL catalogue', async () => {
+  const sql = await readFile(new URL('../database/christmas-contenders.sql', import.meta.url), 'utf8');
+  const seededIds = Array.from(sql.matchAll(new RegExp(
+    "'christmas-contenders-2026','([^']+)','live','", 'g',
+  )), match => match[1]).sort();
+  assert.deepEqual(sourceApprovedContenders.map(entry => entry.id).sort(), seededIds);
+  assert.equal(sourceApprovedContenders.length, 8);
+  assert.ok(sourceApprovedContenders.every(entry => entry.mode === 'live' && entry.approved === true));
+  assert.ok(sourceApprovedContenders.every(entry => entry.audio && entry.artwork && !('description' in entry)));
 });
 
 const fields = { ...emptySongFields,FIRSTNAME:'Demo',LASTNAME:'Sender',EMAIL:'demo@example.test',
@@ -69,6 +80,39 @@ test('management cannot turn Bob or supplied demo media live', () => {
 function response() {
   return {statusCode:200,body:null,set(){return this;},append(){return this;},status(s){this.statusCode=s;return this;},json(b){this.body=b;return this;}};
 }
+
+test('signing and storage failures show source-approved songs without inventing totals', async () => {
+  const assertUnavailableCatalogue = async options => {
+    const handler = createContendersHandler(options);
+    const res = response();
+    await handler({method:'GET',headers:{},query:{}}, res);
+    assert.equal(res.statusCode, 503);
+    assert.equal(res.body.ready, false);
+    assert.equal(res.body.status, 'unavailable');
+    assert.equal(res.body.demoStatus, 'unavailable');
+    assert.equal(res.body.realVotingEnabled, false);
+    assert.equal(res.body.entries.length, 8);
+    assert.ok(res.body.entries.every(entry => entry.mode === 'live' && entry.approved && entry.total === null));
+    assert.ok(!res.body.entries.some(entry => entry.id === 'bob-the-elf'));
+    assert.match(res.body.launchDependency, /totals are unknown/);
+    assert.ok(res.body.entries.every(entry => entry.waveform?.url));
+    return res;
+  };
+
+  let databaseReads = 0;
+  await assertUnavailableCatalogue({
+    digest: () => { throw new Error('Signing unavailable'); },
+    read: async () => { databaseReads += 1; throw new Error('Must not read without signing'); },
+  });
+  assert.equal(databaseReads, 0);
+
+  await assertUnavailableCatalogue({
+    digest: () => 'test-request-bucket',
+    limit: async () => {},
+    read: async () => { throw new Error('Shared storage unavailable'); },
+  });
+});
+
 test('syntax-only contact validation and transient SONG notification contract (no email sent)', async () => {
   assert.equal(normalizeVotingEmail('  Test@Example.TEST  '),'test@example.test');
   for (const invalid of ['', 'no-at-sign', '.bad@example.test', 'a@-bad.test', 'a..b@example.test', 'a@example.test\r\nBcc:x']) {
