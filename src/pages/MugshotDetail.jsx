@@ -6,7 +6,6 @@ import mugshotsData, { mugshotAliases } from '../data/mugshots.ts';
 import './MugshotDetail.css';
 import './MugshotPhoto.css';
 import PageSeo from '../seo/PageSeo.jsx';
-import Breadcrumbs from '../seo/Breadcrumbs.jsx';
 import { mugImageAlt, mugMetadata, mugPhotoTermsPath } from '../seo/catalogue.js';
 
 export default function MugshotDetail() {
@@ -54,7 +53,6 @@ export default function MugshotDetail() {
   return (
     <main>
       <PageSeo metadata={mugMetadata(celeb)} />
-      <Breadcrumbs items={[['Home', '/'], ['Mug Shots', '/mugshots/all'], [celeb.artist, `/mugshots/${celeb.song}`]]} />
       <div className="mugshot-detail-page starry-bg">
         <div className="container mugshot-detail-content">
           <div className="mugshot-detail-card">

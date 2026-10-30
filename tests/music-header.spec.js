@@ -57,7 +57,7 @@ test('other page branding, breadcrumbs and song submission stay available', asyn
   await page.goto('/mugshots/all', { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('navigation', { name: 'Breadcrumb', exact: true })).toHaveCount(0);
   await page.goto('/mugshots/jeremy-kyle-tv-personality', { waitUntil: 'domcontentloaded' });
-  await expect(page.getByRole('navigation', { name: 'Breadcrumb', exact: true })).toBeVisible();
+  await expect(page.getByRole('navigation', { name: 'Breadcrumb', exact: true })).toHaveCount(0);
   await page.goto('/free-santa-message', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('.brand-logo-hero')).toBeVisible();
   await expect(page.locator('.navbar-logo-image')).toBeVisible();

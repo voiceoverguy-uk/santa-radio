@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
 import { parseRows, reconcile, repair, plainText, socialUrl } from '../scripts/import-mugshots.js';
 import { buildCatalogue, normalizeName } from '../src/data/mugshot-catalogue.js';
-import { collectionMetadata } from '../src/seo/catalogue.js';
+import { collectionMetadata, mugMetadata } from '../src/seo/catalogue.js';
 
 const catalogue = JSON.parse(fs.readFileSync('src/data/mugshots.json', 'utf8'));
 const report = JSON.parse(fs.readFileSync('reports/mugshot-import.json', 'utf8'));
@@ -225,6 +225,80 @@ test('gallery header hides its visible breadcrumb, preserves SEO metadata, and a
     await expect(controls).toBeVisible();
   }
 });
+
+const breadcrumbFreeProfiles = ['romesh-ranganathan-comedian', 'jeremy-kyle-tv-personality']
+  .map(slug => publicData.catalogue.find(profile => profile.song === publicData.aliases[slug]));
+
+test('profile server markup omits the breadcrumb row but retains content and SEO', async ({ request }) => {
+  for (const profile of breadcrumbFreeProfiles) {
+    const metadata = mugMetadata(profile);
+    const response = await request.get(metadata.path);
+    expect(response.ok()).toBe(true);
+    const html = await response.text();
+    expect(html).not.toMatch(/class="[^"]*(?:seo-breadcrumbs|mugshot-breadcrumb)/);
+    expect(html).not.toContain('aria-label="Breadcrumb"');
+    expect(html).toMatch(/<main>\s*<div class="mugshot-detail-page starry-bg">/);
+    expect(html).toContain(`<title data-rh="true">${metadata.title}</title>`);
+    expect(html).toContain(`href="${metadata.url}"`);
+    expect(html).toContain('class="mugshot-detail-desc"');
+    expect(html).toContain(`src="${profile.image}"`);
+    expect(html).toContain('aria-label="Browse Mugshots"');
+    expect(html).toContain('Back to all Mug Shots');
+    const graph = [...html.matchAll(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)]
+      .flatMap(([, json]) => JSON.parse(json)['@graph'] || []);
+    expect(graph.find(node => node['@type'] === 'BreadcrumbList')).toEqual(
+      metadata.graph.find(node => node['@type'] === 'BreadcrumbList'));
+  }
+});
+
+for (const width of [1280, 390]) {
+  test(`profiles have no breadcrumb strip and retain navigation at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    for (const profile of breadcrumbFreeProfiles) {
+      const metadata = mugMetadata(profile);
+      await page.goto(metadata.path, { waitUntil: 'domcontentloaded' });
+      const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+      if (await decline.isVisible()) await decline.click();
+      await expect(page.getByRole('navigation', { name: 'Breadcrumb', exact: true })).toHaveCount(0);
+      await expect(page.locator('.seo-breadcrumbs, .mugshot-breadcrumb')).toHaveCount(0);
+      // The profile is the first main child; only its original 40px top padding remains.
+      expect(await page.locator('main').evaluate(main =>
+        main.firstElementChild.matches('.mugshot-detail-page') &&
+        main.children.length === 1)).toBe(true);
+      expect(await page.locator('.mugshot-detail-card').evaluate(card =>
+        card.getBoundingClientRect().top -
+        card.closest('.mugshot-detail-page').getBoundingClientRect().top)).toBeCloseTo(40, 0);
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText(profile.artist);
+      await expect(page.locator('.mugshot-detail-desc')).toHaveText(profile.info);
+      const photo = page.locator('.mugshot-detail-photo');
+      await expect(photo).toHaveAttribute('src', profile.image);
+      await expect.poll(() => photo.evaluate(image => image.naturalWidth)).toBeGreaterThan(0);
+      await expect(page).toHaveTitle(metadata.title);
+      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', metadata.url);
+      const graph = await page.locator('script[type="application/ld+json"]').evaluateAll(scripts =>
+        scripts.flatMap(script => JSON.parse(script.textContent)['@graph'] || []));
+      expect(graph.find(node => node['@type'] === 'BreadcrumbList')).toEqual(
+        metadata.graph.find(node => node['@type'] === 'BreadcrumbList'));
+      const index = publicData.catalogue.indexOf(profile);
+      for (const [direction, neighbour] of [
+        ['Previous', publicData.catalogue[index - 1]],
+        ['Next', publicData.catalogue[index + 1]],
+      ]) {
+        const link = page.getByRole('link', { name: `${direction} Mugshot: ${neighbour.artist}` });
+        await expect(link).toHaveAttribute('href', `/mugshots/${neighbour.song}`);
+        await link.click();
+        await expect(page.getByRole('heading', { level: 1 })).toHaveText(neighbour.artist);
+        await expect(page.getByRole('navigation', { name: 'Breadcrumb', exact: true })).toHaveCount(0);
+        await page.goBack();
+        await expect(page.getByRole('heading', { level: 1 })).toHaveText(profile.artist);
+      }
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      await page.getByRole('link', { name: '← Back to all Mug Shots', exact: true }).click();
+      await expect(page).toHaveURL(/\/mugshots\/all$/);
+      await expect(page.locator('.mugshots-page-hero')).toBeVisible();
+    }
+  });
+}
 
 test('missing photos keep a usable fallback', async ({ page }) => {
   await page.route('**/mugshot-images/**', route => route.abort());
