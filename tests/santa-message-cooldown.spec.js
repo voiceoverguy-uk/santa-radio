@@ -75,9 +75,9 @@ for (const path of ['/', '/free-santa-message']) {
       await expect(player).toBeFocused();
       expect(await player.evaluate(element => getComputedStyle(element).outlineStyle)).toBe('solid');
       await expect(promo).toHaveCount(1);
-      await expect(promo).toContainText('When the Studio launches');
+      await expect(promo).toContainText('When Studio - A launches');
       await expect(promo).toContainText('age, activities, achievements, country and festive treats');
-      await expect(promo).toContainText('The paid Studio offer will include a personalised Nice List certificate and letter as a gift.');
+      await expect(promo).toContainText('The paid offer will include a digital personalised Nice List certificate, a short personal letter from Santa and a picture confirming your place on the Nice List. *');
       await expect(promo).not.toContainText('The basic free greeting includes one too');
       await expect(promo.getByText('Coming soon', { exact: true })).toBeVisible();
       await expect(page.getByRole('button', { name: 'more magic?', exact: true })).toHaveCount(0);

@@ -37,10 +37,11 @@ test('mobile Studio promotion title fits and certificates belong only to the upc
     expect(lines.height).toBeLessThanOrEqual(lines.lineHeight * 3 + 3);
     expect(lines.width).toBeLessThanOrEqual(lines.available + 1);
     const promotion = page.locator('.santa-studio-promotion');
-    await expect(promotion).toContainText('When the Studio launches');
-    await expect(promotion).toContainText('The paid Studio offer will include a personalised Nice List certificate and letter as a gift.');
+    await expect(promotion).toContainText('When Studio - A launches');
+    await expect(promotion).toContainText('The paid offer will include a digital personalised Nice List certificate, a short personal letter from Santa and a picture confirming your place on the Nice List. *');
+    await expect(promotion.locator('.santa-studio-promotion__copy small')).toHaveText('* have you been good this year?');
     await expect(promotion).not.toContainText(/basic free greeting|includes one too/i);
-    await expect(promotion.getByText('Coming soon', { exact: true })).toBeVisible();
+    await expect(promotion.getByText('Coming Early November', { exact: true })).toBeVisible();
   }
 });
 

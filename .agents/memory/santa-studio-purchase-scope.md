@@ -29,6 +29,12 @@ No regeneration limits or paid-access expiry have been agreed.
 
 Sandbox Purchase controls and development-only explanations must never appear on public/published sites. Keep clearly labelled test checkout in development, and retain the public Coming soon promotion and voucher access.
 
+The owner calls the free short-message route “Studio B” and the bespoke bundle “Studio - A”, with the promotional footnote “** Coming early November”.
+
+**Why:** The owner supplied this distinction and timing in the public introduction copy.
+
+**How to apply:** Keep the Nice List certificate, letter and Santa picture associated with Studio A, not the free Studio B greeting. Promotional wording is not authorization to activate paid purchasing.
+
 **Why:** The owner reported the published homepage displaying a disabled test Purchase button and explicitly required the entire sandbox control to be hidden.
 
 **How to apply:** Check both production server/browser rendering and development rendering. Preserve endpoint sandbox protections. The owner is separately claiming the existing Santa Radio Sandbox; do not create or replace it.

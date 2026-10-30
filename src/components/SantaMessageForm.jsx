@@ -275,7 +275,9 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         <h2 className="santa-message-heading">FREE Personalised message from Santa</h2>
         <SantaVoiceTagline />
         <SantaMessageExample onExampleNameChange={setActiveExampleName} />
-        <p>No AI here. A real HUMAN recorded message from Santa, aka Father Christmas with your chosen name. Click to enter Studio B, add your contact details, choose the name from <span className="message-intro-name-count">{availableNamesText}</span> currently, create and instantly download your short FREE personalised message from Santa.</p>
+        <p className="message-free-intro">No Artificial Intelligence here. A real Human recorded message from Santa, aka Father Christmas to your little Human. Click to enter Studio B, add your contact details, choose the name from <span className="message-intro-name-count">{availableNamesText}</span> currently, create and instantly download your short FREE personalised message from Santa.</p>
+        <p className="message-studio-intro">Or, why not enter Studio - A and have a bespoke message from Santa?<sup>**</sup> You&apos;ll also receive a FREE Nice List Certificate, a short personal letter from Santa and a picture of Santa confirming you are on his nice list.</p>
+        <p className="message-studio-availability"><small>** Coming early November</small></p>
       </div>
       <div className="santa-message-aside">
       <div className={`santa-message-box${hasAccess ? '' : ' message-access-box'}`}>
