@@ -5,7 +5,7 @@ import { publishableKeyFromHost } from '@clerk/shared/keys';
 import { authorize } from './name-requests.js';
 import { getClerkProxyHost } from './middlewares/clerkProxyMiddleware.js';
 import { competitionState, demoBallot, requestLimit, manageCompetition, staffCompetition, rememberedDemo } from './contenders-store.js';
-import { bobEntry, defaultSettings, secureMediaLink, sourceApprovedContenders } from '../src/lib/contenders.js';
+import { bobEntry, defaultSettings, secureMediaLink, sourceContenderCatalogue } from '../src/lib/contenders.js';
 import waveformCatalogue from '../src/lib/contender-waveforms.json' with { type: 'json' };
 import { normalizeVotingEmail } from './contender-consent.js';
 import { buildSongVotePayload, simulateSongVoteNotification, validVoteContact } from './contender-song-notification.js';
@@ -111,7 +111,7 @@ export function createContendersHandler({ read = competitionState, vote = demoBa
       if ([400,409,429].includes(error.status)) return res.status(error.status).json({error:error.message});
       // Never log addresses, identities, bodies, secrets or raw database errors.
       if (req.method === 'GET' && !staff) return res.status(503).json({
-        settings:defaultSettings,entries:sourceApprovedContenders.map(entry => ({
+        settings:defaultSettings,entries:sourceContenderCatalogue.map(entry => ({
           ...entry, total:null, waveform:waveformCatalogue[entry.audio] || null,
         })),ready:false,status:'unavailable',
         demoStatus:'unavailable',serverNow:new Date().toISOString(),realVotingEnabled:false,

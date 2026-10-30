@@ -72,6 +72,22 @@ export const sourceApprovedContenders = [
   },
 ].map(entry => ({ ...entry, anchor: entry.id, mode: 'live', approved: true }));
 
+// The fallback catalogue includes Bob as a demo-only option, without exposing
+// his staff description or inventing a separate live contender.
+export const sourceContenderCatalogue = [
+  {
+    id: bobEntry.id,
+    anchor: bobEntry.anchor,
+    artist: bobEntry.artist,
+    title: bobEntry.title,
+    artwork: bobEntry.artwork,
+    audio: bobEntry.audio,
+    mode: 'demo',
+    approved: true,
+  },
+  ...sourceApprovedContenders,
+];
+
 export function votingStatus(settings, now = Date.now()) {
   if (settings.availability === 'unavailable') return 'unavailable';
   if (settings.availability === 'closed') return 'closed';

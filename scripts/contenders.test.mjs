@@ -3,12 +3,13 @@ import assert from 'node:assert/strict';
 import { randomBytes } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import pg from 'pg';
-import { defaultSettings, votingStatus, COMPETITION, sourceApprovedContenders } from '../src/lib/contenders.js';
+import { defaultSettings, votingStatus, COMPETITION, bobEntry, sourceApprovedContenders, sourceContenderCatalogue } from '../src/lib/contenders.js';
 import { buildSongMessage, validateSongFields, submitSong, emptySongFields, SONG_FORM_URL, GENERAL_FORM_URL } from '../src/lib/songSubmission.js';
 import { createContendersHandler, validateManagement, privateDigest } from '../server/christmas-contenders.js';
 import { demoBallot, competitionState, manageCompetition } from '../server/contenders-store.js';
 import { normalizeVotingEmail, MARKETING_CONSENT_TEXT } from '../server/contender-consent.js';
 import { buildSongVotePayload, sendSongVoteNotification } from '../server/contender-song-notification.js';
+import waveformCatalogue from '../src/lib/contender-waveforms.json' with { type: 'json' };
 
 test('UK November voting boundaries and explicit availability', () => {
   assert.equal(votingStatus(defaultSettings, Date.parse('2026-10-31T23:59:59Z')), 'upcoming');
@@ -29,6 +30,15 @@ test('source fallback matches only the approved live SQL catalogue', async () =>
   assert.equal(sourceApprovedContenders.length, 8);
   assert.ok(sourceApprovedContenders.every(entry => entry.mode === 'live' && entry.approved === true));
   assert.ok(sourceApprovedContenders.every(entry => entry.audio && entry.artwork && !('description' in entry)));
+  const bob = sourceContenderCatalogue.find(entry => entry.id === 'bob-the-elf');
+  assert.deepEqual(bob, {
+    id: bobEntry.id, anchor: bobEntry.anchor, artist: bobEntry.artist, title: bobEntry.title,
+    artwork: bobEntry.artwork, audio: bobEntry.audio, mode: 'demo', approved: true,
+  });
+  assert.equal(sourceContenderCatalogue.length, 9);
+  assert.equal(sourceContenderCatalogue.filter(entry => entry.mode === 'live').length, 8);
+  assert.equal(sourceContenderCatalogue.filter(entry => entry.mode === 'demo').length, 1);
+  assert.ok(waveformCatalogue[bob.audio]?.url);
 });
 
 const fields = { ...emptySongFields,FIRSTNAME:'Demo',LASTNAME:'Sender',EMAIL:'demo@example.test',
@@ -81,7 +91,7 @@ function response() {
   return {statusCode:200,body:null,set(){return this;},append(){return this;},status(s){this.statusCode=s;return this;},json(b){this.body=b;return this;}};
 }
 
-test('signing and storage failures show source-approved songs without inventing totals', async () => {
+test('signing and storage failures show Bob demo plus all genuine songs without inventing totals', async () => {
   const assertUnavailableCatalogue = async options => {
     const handler = createContendersHandler(options);
     const res = response();
@@ -91,11 +101,15 @@ test('signing and storage failures show source-approved songs without inventing 
     assert.equal(res.body.status, 'unavailable');
     assert.equal(res.body.demoStatus, 'unavailable');
     assert.equal(res.body.realVotingEnabled, false);
-    assert.equal(res.body.entries.length, 8);
-    assert.ok(res.body.entries.every(entry => entry.mode === 'live' && entry.approved && entry.total === null));
-    assert.ok(!res.body.entries.some(entry => entry.id === 'bob-the-elf'));
+    assert.equal(res.body.entries.length, 9);
+    assert.ok(res.body.entries.every(entry => entry.approved && entry.total === null));
+    assert.equal(res.body.entries.filter(entry => entry.mode === 'live').length, 8);
+    assert.equal(res.body.entries.filter(entry => entry.mode === 'demo').length, 1);
+    assert.equal(res.body.entries.find(entry => entry.id === 'bob-the-elf')?.mode, 'demo');
+    assert.ok(res.body.entries.every(entry => !('description' in entry)));
     assert.match(res.body.launchDependency, /totals are unknown/);
     assert.ok(res.body.entries.every(entry => entry.waveform?.url));
+    assert.equal(res.body.entries.find(entry => entry.id === 'bob-the-elf')?.waveform?.url, waveformCatalogue[bobEntry.audio].url);
     return res;
   };
 
