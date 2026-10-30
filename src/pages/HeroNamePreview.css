@@ -493,27 +493,18 @@
 }
 
 @media (min-width: 1091px) {
-  .hero-name-preview__listening {
-    position: relative;
-  }
-
-  .hero-name-preview__store-badge {
-    position: absolute;
-    top: 100%;
-    left: 0;
-  }
-
   .hero-name-preview__left-stack {
     grid-column: 1;
     grid-row: 2 / 4;
     display: flex;
-    height: 334px;
+    height: auto;
     min-width: 0;
     flex-direction: column;
-    justify-content: flex-end;
+    justify-content: flex-start;
     gap: 20px;
     align-self: start;
-    margin-top: clamp(-98px, calc(-4vw - 42px), -82px);
+    margin-top: 0;
+    padding-top: 24px;
   }
 
   .hero-name-preview__left-stack .hero-name-preview__description,

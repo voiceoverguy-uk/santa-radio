@@ -286,7 +286,7 @@ test('unavailable metadata never claims the previous song is live, and playback 
   await expect(page.locator('.hero .now-playing-artwork')).not.toContainText('John Legend');
 });
 
-test('preview stays non-indexable while the approved homepage hero retains its store badge and SEO', async ({ page }) => {
+test('preview stays non-indexable while the approved homepage hero omits the store badge and retains SEO', async ({ page }) => {
   await setup(page);
   const response = await page.request.get(path);
   expect(response.status()).toBe(200);
@@ -297,7 +297,8 @@ test('preview stays non-indexable while the approved homepage hero retains its s
   await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
   expect(await (await page.request.get('/sitemap.xml')).text()).not.toContain(path);
   await page.goto('/');
-  await expect(page.locator('.hero .app-store-badge')).toHaveCount(1);
+  await expect(page.locator('.hero .app-store-badge')).toHaveCount(0);
+  await expect(page.locator('.hero a[href*="apps.apple.com"]')).toHaveCount(0);
   await expect(page.locator('.hero .hero-name-checker')).toHaveCount(1);
   await expect(page.locator('.hero-name-preview__flag')).toHaveCount(0);
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://www.santaradio.co.uk/');
@@ -317,13 +318,14 @@ for (const width of [1440, 390]) test(`approved homepage handoff and matching ra
   const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await decline.isVisible()) await decline.click();
   await expect(page.locator('.hero-actions button')).toBeVisible();
+  await page.evaluate(() => document.fonts.ready);
   const button = await page.locator('.hero-actions button').boundingBox();
   const countdown = await page.locator('.hero-countdown .countdown').boundingBox();
   expect(Math.abs(button.width - countdown.width)).toBeLessThan(1);
   expect(Math.abs(button.x - countdown.x)).toBeLessThan(1);
   const heading = await page.locator('.hero-title').boundingBox();
   const description = await page.locator('.hero-description').boundingBox();
-  expect(description.y).toBeGreaterThanOrEqual(heading.y + heading.height);
+  expect(description.y - heading.y - heading.height).toBeGreaterThanOrEqual(width >= 1091 ? 40 : 0);
   await choose(page, 'Arabella');
   await cta(page).click();
   await expect(page.locator('.santa-message-access input[name="FIRSTNAME"]')).toBeFocused();

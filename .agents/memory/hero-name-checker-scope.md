@@ -2,9 +2,9 @@
 name: Hero name checker approval scope
 description: Owner's preview-only boundary and child-name privacy requirements for the hero concept.
 ---
-The owner has explicitly approved replacing the main homepage hero with the name-checker design. Retain the separate approval-preview route as a reference. The omitted App Store badge was a preview-only choice, not permission to remove homepage or Apps page store links.
+The owner has explicitly approved replacing the main homepage hero with the name-checker design. Retain the separate approval-preview route as a reference. Remove the App Store logo from the hero on both the homepage and preview; keep app links elsewhere unchanged. Place the white description clearly below the Santa Radio heading.
 
-**Why:** After the interactive preview, the owner answered “yes please” when asked to make the new design the main homepage. This approves the hero replacement, not a full-site redesign.
+**Why:** The owner approved the homepage replacement, then corrected the promotion: “We said remove App store logo. You also need to move the white text down!” This approves the hero replacement, not a full-site redesign.
 
 **How to apply:** Preserve the snowy North Pole backdrop, shared radio and existing adult-signup/message limits. Name checking is not permission to bypass signup or automatically create audio.
 
