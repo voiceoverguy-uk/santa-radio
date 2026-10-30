@@ -415,6 +415,68 @@ test('withdrawal clears queued events when it happens before provider scripts fi
   expect(await page.evaluate(() => window['ga-disable-G-FGL2HBXZ92'])).toBe(true);
 });
 
+test('silently discarded storage writes use the verified preference cookie', async ({ page }) => {
+  await isolateProviders(page);
+  await page.addInitScript(() => { Storage.prototype.setItem = () => {}; });
+  await page.goto('/privacy-policy', { waitUntil: 'domcontentloaded' });
+  await decline(page).click();
+  await expect(region(page)).toHaveCount(0);
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await expect(footerSettings(page)).toBeVisible();
+  await expect(region(page)).toHaveCount(0);
+  await expect(page.locator('#santaradio-google-analytics, #santaradio-meta-pixel, iframe')).toHaveCount(0);
+});
+
+test('a newer cookie refusal overrides an older acceptance left in read-only storage', async ({ page }) => {
+  await isolateProviders(page);
+  await page.addInitScript(key => {
+    localStorage.setItem(key, JSON.stringify({
+      version: 2, analytics: true, marketing: true, media: true, savedAt: Date.now() - 60000,
+    }));
+    Storage.prototype.setItem = () => { throw new DOMException('Read-only storage', 'QuotaExceededError'); };
+  }, key);
+  await page.goto('/privacy-policy', { waitUntil: 'domcontentloaded' });
+  await footerSettings(page).click();
+  await decline(page).click();
+  await expect(region(page)).toHaveCount(0);
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await expect(footerSettings(page)).toBeVisible();
+  await expect(region(page)).toHaveCount(0);
+  await expect(page.locator('#santaradio-google-analytics, #santaradio-meta-pixel, iframe')).toHaveCount(0);
+});
+
+for (const failure of ['write', 'all']) {
+  for (const accept of [true, false]) {
+    test(`preference cookie remembers ${accept ? 'acceptance' : 'refusal'} when ${failure} local storage is unavailable`, async ({ page, context }) => {
+      await isolateProviders(page);
+      await page.addInitScript(failure => {
+        const blocked = () => { throw new DOMException('Storage blocked for test', 'SecurityError'); };
+        if (failure === 'all') Object.defineProperty(window, 'localStorage', { get: blocked });
+        else Storage.prototype.setItem = blocked;
+      }, failure);
+      await page.goto('/privacy-policy', { waitUntil: 'domcontentloaded' });
+      await region(page).getByRole('button', { name: accept ? 'Accept all' : 'Decline optional cookies', exact: true }).click();
+      await expect(region(page)).toHaveCount(0);
+      const cookie = (await context.cookies()).find(cookie => cookie.name === key);
+      expect(cookie).toBeTruthy();
+      expect(cookie.sameSite).toBe('Lax');
+      expect(JSON.parse(decodeURIComponent(cookie.value))).toMatchObject({
+        version: 2, analytics: accept, marketing: accept, media: accept,
+      });
+      await page.reload({ waitUntil: 'domcontentloaded' });
+      await expect(footerSettings(page)).toBeVisible();
+      await expect(region(page)).toHaveCount(0);
+      await expect(page.locator('#santaradio-google-analytics, #santaradio-meta-pixel')).toHaveCount(accept ? 2 : 0);
+      await footerSettings(page).click();
+      await decline(page).click();
+      await page.reload({ waitUntil: 'domcontentloaded' });
+      await expect(footerSettings(page)).toBeVisible();
+      await expect(region(page)).toHaveCount(0);
+      await expect(page.locator('#santaradio-google-analytics, #santaradio-meta-pixel, iframe')).toHaveCount(0);
+    });
+  }
+}
+
 for (const failure of ['write', 'all']) {
   test(`unavailable ${failure === 'write' ? 'writable' : 'readable and writable'} storage keeps visit choices and explains persistence failure`, async ({ page }) => {
     await isolateProviders(page);
@@ -425,6 +487,8 @@ for (const failure of ['write', 'all']) {
       } else {
         Storage.prototype.setItem = blocked;
       }
+      // A persistence warning is needed only if both saving methods fail.
+      Object.defineProperty(document, 'cookie', { get: () => '', set: () => {} });
     }, failure);
     await page.goto('/privacy-policy', { waitUntil: 'domcontentloaded' });
     await region(page).getByRole('button', { name: 'Accept all', exact: true }).click();

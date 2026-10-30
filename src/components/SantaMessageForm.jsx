@@ -69,10 +69,11 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   useEffect(() => {
     let frame;
     let stopSettling;
-    if (hasAccess && !showDetailLink) {
-      // Announce the unlocked studio without letting native focus scroll past
-      // the section introduction. Page entry handles new/returning visits;
-      // successful signup on this page explicitly returns to the section.
+    const mobileInlineStudio = keepSignupInPlace && window.matchMedia('(max-width: 767px)').matches;
+    if (hasAccess && (!showDetailLink || mobileInlineStudio)) {
+      // Dismiss the signup keyboard and announce the unlocked studio without
+      // focusing its name input. Mobile homepage signup stays on this page
+      // too, so it needs the same recording-card landing as the dedicated page.
       makerHeadingRef.current?.focus({ preventScroll: true });
       // Let removal of the focused signup fields finish (including the
       // browser's scroll anchoring) before measuring the section destination.
@@ -85,7 +86,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
       cancelAnimationFrame(frame);
       stopSettling?.();
     };
-  }, [hasAccess, showDetailLink]);
+  }, [hasAccess, showDetailLink, keepSignupInPlace]);
   // Keep server/client hydration deterministic; choose once on the client,
   // rather than changing the example whenever the user types or counts refresh.
   useEffect(() => { setExampleName(randomSantaExample()); }, []);

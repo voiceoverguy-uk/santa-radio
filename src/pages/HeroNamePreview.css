@@ -624,9 +624,11 @@
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
       "intro"
-      "description"
+      "player"
+      "note"
       "checker"
-      "listening"
+      "description"
+      "countdown"
       "artwork";
     align-items: stretch;
     gap: 21px;
@@ -686,12 +688,24 @@
   }
 
   .hero-name-preview__listening {
+    display: contents;
     align-self: auto;
     padding-top: 0;
   }
 
   .hero-name-preview__player-row {
+    grid-area: player;
     min-height: 48px;
+  }
+
+  .hero-name-preview__listening > .hero-note {
+    grid-area: note;
+    margin: -10px 0 0;
+  }
+
+  .hero-name-preview__listening > .hero-countdown {
+    grid-area: countdown;
+    margin-top: 0;
   }
 
   .hero-name-preview .hero-note {

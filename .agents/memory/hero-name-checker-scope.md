@@ -8,6 +8,12 @@ The owner has explicitly approved replacing the main homepage hero with the name
 
 **How to apply:** Preserve the snowy North Pole backdrop, shared radio and existing adult-signup/message limits. Name checking is not permission to bypass signup or automatically create audio.
 
+On mobile, put the red Listen Live button immediately below the hero heading, and the “Enjoy online Christmas music 24/7…” description below the name-checker box. Keep desktop ordering unchanged.
+
+**Why:** The owner explicitly requested these mobile-only moves.
+
+**How to apply:** Preserve a single shared player and name checker; keep the countdown below the description rather than moving it above the checker with the listening button.
+
 Entered child names in this preview must not enter analytics, request URLs or durable storage, including when prefilling the existing maker. Public inventory may be fetched without recipient queries.
 
 **Why:** The owner made child-name privacy an explicit approval criterion.

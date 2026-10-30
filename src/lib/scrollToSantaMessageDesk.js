@@ -9,8 +9,9 @@ export function scrollToSantaMessageDesk(targetElement) {
     ? document.querySelector('#santa-messages .santa-message-box:not(.message-access-box)')
     : null;
   const target = targetElement || recordingCard || layout;
+  const gap = target === recordingCard ? 12 : 24;
   window.scrollTo({
-    top: Math.max(0, window.scrollY + target.getBoundingClientRect().top - navigation.getBoundingClientRect().bottom - 24),
+    top: Math.max(0, window.scrollY + target.getBoundingClientRect().top - navigation.getBoundingClientRect().bottom - gap),
     behavior: 'instant',
   });
 }

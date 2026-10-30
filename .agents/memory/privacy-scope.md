@@ -66,6 +66,12 @@ The owner confirmed Google Analytics Enhanced Measurement is switched off for th
 
 ## Cookie experience and embedded providers
 
+Cookie-only preference persistence does not emit browser `storage` events. Normal cross-tab consent tests therefore do not establish withdrawal behaviour when local storage is blocked.
+
+**Why:** A repeated mobile cookie-banner report prompted a preference-cookie fallback; the existing happy-path refresh and cross-tab checks used working local storage.
+
+**How to apply:** Include restricted-storage, cookie-only browser contexts when verifying consent changes across tabs. Keep choices fail-closed when saved records are damaged or expired, and do not claim the reporting iPhone's exact storage restriction was confirmed without testing that device.
+
 Keep the first cookie choice compact, with optional details rather than compulsory settings.
 
 **Why:** The owner says: “We are a fun radio station and don't want to put people off.”

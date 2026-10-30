@@ -320,6 +320,36 @@ test('creating the enabled Arabella pilot uses only a private POST, preserving t
   expect(new URL(page.url()).pathname).toBe(path);
 });
 
+test('mobile homepage puts Listen Live below the title and the description below the name checker', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await setup(page);
+  await page.goto('/');
+  const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+  if (await decline.isVisible()) await decline.click();
+  await page.evaluate(() => document.fonts.ready);
+  for (const width of [320, 390, 430]) {
+    await page.setViewportSize({ width, height: 1000 });
+    const bounds = await page.evaluate(() => {
+      const box = selector => {
+        const rect = document.querySelector(selector).getBoundingClientRect();
+        return { top: rect.top, bottom: rect.bottom };
+      };
+      return {
+        title: box('.hero-title'), listen: box('.hero-name-preview__player-row'),
+        checker: box('.hero-name-preview__checker'), description: box('.hero-name-preview__description'),
+        countdown: box('.hero-countdown'), width: document.documentElement.scrollWidth,
+      };
+    });
+    expect(bounds.listen.top).toBeGreaterThanOrEqual(bounds.title.bottom);
+    expect(bounds.checker.top).toBeGreaterThanOrEqual(bounds.listen.bottom);
+    expect(bounds.description.top).toBeGreaterThanOrEqual(bounds.checker.bottom);
+    expect(bounds.countdown.top).toBeGreaterThanOrEqual(bounds.description.bottom);
+    expect(bounds.width).toBeLessThanOrEqual(width + 1);
+    await expect(page.locator('.hero-actions button')).toHaveCount(1);
+    await expect(input(page)).toHaveCount(1);
+  }
+});
+
 for (const width of [1280, 768, 390, 320]) test(`layout and playback stay stable at ${width}px`, async ({ page }) => {
   await page.setViewportSize({ width, height: 1000 });
   await page.emulateMedia({ reducedMotion: 'reduce' });

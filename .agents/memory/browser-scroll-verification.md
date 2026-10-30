@@ -31,3 +31,9 @@ Focus-triggered scrolling can cancel a pointer activation if it moves a button b
 **Why:** Contact-form checks intermittently left a valid form unchanged without starting a request when the focus handler repositioned the clicked Send button.
 
 **How to apply:** Restrict keyboard visibility scrolling to keyboard/validation focus rather than pointer-focused buttons. Preserve real clicks in tests; forcing them would hide this interaction problem.
+
+The owner chose the complete Studio B card as the mobile destination after adult signup, with its recording-studio header immediately below the navigation—not the section introduction or name input.
+
+**Why:** The owner supplied an iPhone screenshot showing this exact landing position after entering their name and email.
+
+**How to apply:** Keep this destination consistent for homepage and dedicated free-message signup. Dismiss the signup keyboard without automatically opening the name-entry keyboard, and stop settling when the visitor interacts.

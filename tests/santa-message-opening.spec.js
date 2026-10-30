@@ -77,6 +77,42 @@ async function expectStayedAt(page, top) {
   expect(positions, `Scroll should stay at ${top}`).toEqual(positions.map(() => top));
 }
 
+for (const route of ['/', '/free-santa-message']) {
+  test(`mobile signup lands at the recording-card header on ${route}`, async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await mockBrevo(page);
+    await mockSantaNames(page);
+    await page.route('**/api/radio-metadata*', route => route.fulfill({ json: { available: false, current: null, upcoming: [] } }));
+    await page.goto(route);
+    const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+    if (await decline.isVisible()) await decline.click();
+    await fillAccessForm(page);
+    await page.getByRole('button', { name: 'Get my free Santa message', exact: true }).click();
+    const heading = page.locator('.santa-message-box h3');
+    await expect(heading).toHaveText('Download your free Santa greeting');
+    await expect(heading).toBeFocused();
+    const gap = () => page.evaluate(() => {
+      const card = document.querySelector('#santa-messages .santa-message-box');
+      return Math.round(card.getBoundingClientRect().top - document.querySelector('.navbar').getBoundingClientRect().bottom);
+    });
+    await expect.poll(gap).toBe(12);
+    // Safari can finish resizing after the email keyboard closes. Keep the
+    // whole card header aligned, rather than jumping to its name input.
+    await page.setViewportSize({ width: 390, height: 900 });
+    await expect.poll(gap).toBe(12);
+    await expect(page.locator('.message-card-top')).toBeInViewport();
+    await expect(page.locator('.message-name-input')).not.toBeFocused();
+    if (route === '/') await page.screenshot({ path: 'generated-artifacts/mobile-signup-recording-card.png' });
+    await page.evaluate(() => {
+      window.dispatchEvent(new Event('touchstart'));
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      window.visualViewport?.dispatchEvent(new Event('resize'));
+    });
+    await expectStayedAt(page, 0);
+    expect(new URL(page.url()).pathname).toBe(route);
+  });
+}
+
 for (const width of [1440, 390]) {
   test.describe(`${width}px message opening`, () => {
     test.use({ viewport: { width, height: 900 } });
