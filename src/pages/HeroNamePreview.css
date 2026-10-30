@@ -493,6 +493,16 @@
 }
 
 @media (min-width: 1091px) {
+  .hero-name-preview__listening {
+    position: relative;
+  }
+
+  .hero-name-preview__store-badge {
+    position: absolute;
+    top: 100%;
+    left: 0;
+  }
+
   .hero-name-preview__left-stack {
     grid-column: 1;
     grid-row: 2 / 4;

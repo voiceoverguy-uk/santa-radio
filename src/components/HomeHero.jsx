@@ -65,7 +65,7 @@ export default function HomeHero({ preview = false, onContinue }) {
             </div>
             <p className="hero-note">The World’s Best Christmas Radio Station · All year round</p>
             <div id="christmas-countdown" className="hero-countdown"><Countdown /></div>
-            {!preview && <a className="app-store-badge"
+            {!preview && <a className="app-store-badge hero-name-preview__store-badge"
               href="https://apps.apple.com/gb/app/santa-radio/id1021183593"
               target="_blank" rel="noopener noreferrer"
               aria-label="Download Santa Radio on the App Store (opens in a new tab)">

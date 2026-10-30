@@ -321,6 +321,9 @@ for (const width of [1440, 390]) test(`approved homepage handoff and matching ra
   const countdown = await page.locator('.hero-countdown .countdown').boundingBox();
   expect(Math.abs(button.width - countdown.width)).toBeLessThan(1);
   expect(Math.abs(button.x - countdown.x)).toBeLessThan(1);
+  const heading = await page.locator('.hero-title').boundingBox();
+  const description = await page.locator('.hero-description').boundingBox();
+  expect(description.y).toBeGreaterThanOrEqual(heading.y + heading.height);
   await choose(page, 'Arabella');
   await cta(page).click();
   await expect(page.locator('.santa-message-access input[name="FIRSTNAME"]')).toBeFocused();
