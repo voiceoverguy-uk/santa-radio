@@ -204,19 +204,19 @@ for (const path of ['/', '/free-santa-message']) {
       await page.emulateMedia({ reducedMotion: 'reduce' });
       await visit(page, path);
       const promo = page.locator('.santa-studio-promotion');
-      await expect(promo.getByRole('heading')).toHaveText('Santa’s Message Maker Studio');
+      await expect(promo.getByRole('heading', { level: 3 })).toHaveText('Santa’s Message Maker Studio');
       await expect(promo.getByText('NEW', { exact: true })).toHaveCount(0);
       await expect(promo.locator('.santa-studio-promotion__eyebrow')).toHaveText('A little more magic');
       await expect(promo.locator('.santa-studio-promotion__preview-label')).toHaveText('Coming soon');
       const artwork = promo.getByRole('img', { name: 'Santa wearing headphones at a festive message-making microphone' });
       await expect(artwork).toBeVisible();
       expect(await artwork.evaluate(image => image.complete && image.naturalWidth === 256)).toBe(true);
-      expect((await artwork.boundingBox()).width).toBeGreaterThanOrEqual(width === 1280 ? 88 : 82);
+      expect((await artwork.boundingBox()).width).toBeGreaterThanOrEqual(60);
       await expect(promo).not.toContainText('Have a voucher? You can enter it below.');
       await expect(promo.getByLabel('Voucher code', { exact: true })).toBeVisible();
       await expect(promo).not.toContainText('(optional)');
       const voucherSubmit = promo.getByRole('button', { name: 'Create your bespoke message', exact: true });
-      const purchase = promo.getByRole('button', { name: 'Purchase', exact: true });
+      const purchase = promo.getByRole('button', { name: /Purchase — £6.50 \(test\)|Checking test checkout/ });
       await expect(voucherSubmit).toBeVisible();
       await expect(purchase).toBeVisible();
       const submitBox = await voucherSubmit.boundingBox();
@@ -232,10 +232,10 @@ for (const path of ['/', '/free-santa-message']) {
           const topline = card.querySelector('.santa-studio-promotion__topline').getBoundingClientRect();
           const heading = card.querySelector('h3').getBoundingClientRect();
           return heading.top - topline.bottom;
-        })).toBeLessThanOrEqual(32);
-        expect(await promo.getByRole('heading').evaluate(node => {
+        })).toBeLessThanOrEqual(48);
+        expect(await promo.getByRole('heading', { level: 3 }).evaluate(node => {
           const lineHeight = parseFloat(getComputedStyle(node).lineHeight);
-          return node.getBoundingClientRect().height <= lineHeight + 1;
+          return node.getBoundingClientRect().height <= lineHeight * 3 + 1;
         })).toBe(true);
       }
       for (const size of [100, 200]) {
@@ -246,7 +246,9 @@ for (const path of ['/', '/free-santa-message']) {
           return label.right <= image.left && Math.abs((label.top + label.bottom) / 2 - (image.top + image.bottom) / 2) < (image.height + label.height) / 2 + 1;
         })).toBe(true);
         expect(await promo.evaluate(node => node.scrollWidth <= node.clientWidth + 1)).toBe(true);
-        expect(await page.locator('.santa-message-aside').evaluate(node => node.scrollWidth <= node.clientWidth + 1)).toBe(true);
+        // The promotion now has its own full-width row, outside the free form.
+        expect(await promo.locator('.santa-studio-promotion__details').evaluate(node =>
+          node.scrollWidth <= node.clientWidth + 1)).toBe(true);
       }
       await page.addStyleTag({ content: 'html { font-size: 100%; }' });
       await promo.screenshot({

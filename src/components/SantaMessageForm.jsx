@@ -284,7 +284,6 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         <h3 ref={makerHeadingRef} tabIndex={-1}>{messages.length ? 'Download your free message' : 'Download your free Santa greeting'}</h3>
         {!!messages.length && <div className="message-wait-downloads">
           {renderResults()}
-          <SantaStudioPromotion activeExampleName={activeExampleName} />
         </div>}
         {coolingDown && !messages.length && <SantaCooldownNotice availableAt={allowance.availableAt} />}
         {coolingDown && !allowance.remembered && <p className="message-name-hint" role="status">Your browser can’t remember the message allowance. The limit works while this page is open, but leaving or refreshing may reset it.</p>}
@@ -390,8 +389,8 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         {!sessionRemembered && <p className="message-name-hint" role="status">Your browser can’t remember access. The studio stays open while you browse, but refreshing this tab may ask for your details again.</p>}
         </>}
       </div>
-      {!messages.length && <SantaStudioPromotion activeExampleName={activeExampleName} />}
       </div>
+      <SantaStudioPromotion activeExampleName={activeExampleName} />
     </div>
   </section>;
 }

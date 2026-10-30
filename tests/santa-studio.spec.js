@@ -33,11 +33,12 @@ test('mobile Studio promotion title fits and certificates belong only to the upc
         lineHeight: parseFloat(getComputedStyle(second).lineHeight), width: node.scrollWidth, available: node.clientWidth };
     });
     expect(lines.display).toBe(width < 768 ? 'block' : 'inline');
-    expect(lines.height).toBeLessThanOrEqual(lines.lineHeight + 3);
+    // The compact card can wrap the title within its information column.
+    expect(lines.height).toBeLessThanOrEqual(lines.lineHeight * 3 + 3);
     expect(lines.width).toBeLessThanOrEqual(lines.available + 1);
     const promotion = page.locator('.santa-studio-promotion');
     await expect(promotion).toContainText('When the Studio launches');
-    await expect(promotion).toContainText('The paid Studio offer will include a personalised Nice List certificate as a gift.');
+    await expect(promotion).toContainText('The paid Studio offer will include a personalised Nice List certificate and letter as a gift.');
     await expect(promotion).not.toContainText(/basic free greeting|includes one too/i);
     await expect(promotion.getByText('Coming soon', { exact: true })).toBeVisible();
   }

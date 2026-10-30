@@ -117,18 +117,23 @@ function GiftExample({ name, activeAudio, reducedMotion, onNext }) {
     <h4>From Santa’s desk — a gift preview</h4>
     <p>A coming-soon certificate and letter for the paid Studio, not the free greeting. This visual trial does not create downloads.</p>
     <p>Example for <strong>{name}</strong>{activeAudio ? ' — matching the audio demo.' : '.'}</p>
-    <Certificate name={name} elapsed={displayElapsed} />
+    <div className="studio-gifts__gallery" role="group" aria-label="Certificate and letter previews">
+      <button className="studio-gifts__thumbnail studio-gifts__thumbnail--certificate" type="button"
+        aria-label="Enlarge certificate" onClick={event => open(event, 'certificate')}>
+        <Certificate name={name} elapsed={displayElapsed} />
+        <span className="studio-gifts__thumbnail-label">Enlarge certificate</span>
+      </button>
+      <button className="studio-gifts__thumbnail studio-gifts__thumbnail--letter" type="button"
+        aria-label="Enlarge letter to read" onClick={event => open(event, 'letter')}>
+        <Letter letter={letter} elapsed={displayElapsed} />
+        <span className="studio-gifts__thumbnail-label">Enlarge letter</span>
+      </button>
+    </div>
     <div className="studio-gifts__actions">
-      <button type="button" onClick={event => open(event, 'certificate')}>Enlarge certificate</button>
-      <button type="button" onClick={event => open(event, 'letter')}>Enlarge letter to read</button>
       <button type="button" onClick={() => setRevealed(true)} disabled={finished}>Show full letter now</button>
       <button type="button" onClick={onNext} disabled={activeAudio}>Next example</button>
     </div>
-    <p>The letter follows below. Scroll to read; examples pause while you read or enlarge them.</p>
-    <div className="studio-letter" role="region" aria-label="Scrollable letter preview" tabIndex={0}
-      onScroll={() => setReading(true)}>
-      <Letter letter={letter} elapsed={displayElapsed} />
-    </div>
+    <p className="studio-gifts__reading-note">Examples pause while you read or enlarge them.</p>
     <dialog ref={dialogRef} className="studio-letter-dialog"
       aria-label={`${name}’s ${view || 'gift'} example`}
       onCancel={() => dialogRef.current.close()}>
@@ -136,7 +141,8 @@ function GiftExample({ name, activeAudio, reducedMotion, onNext }) {
         <button type="button" onClick={() => setRevealed(true)} disabled={finished}>Show full letter now</button>
         <button ref={closeRef} type="button" onClick={() => dialogRef.current.close()}>Close preview</button>
       </div>
-      <div className="studio-letter-dialog__content">
+      <div className="studio-letter-dialog__content" role="region" aria-label="Enlarged gift preview"
+        tabIndex={0} onScroll={() => setReading(true)}>
         {view === 'certificate' ? <Certificate name={name} elapsed={displayElapsed} />
           : <Letter letter={letter} elapsed={displayElapsed} />}
       </div>
