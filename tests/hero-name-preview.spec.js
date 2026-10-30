@@ -286,7 +286,7 @@ test('unavailable metadata never claims the previous song is live, and playback 
   await expect(page.locator('.hero .now-playing-artwork')).not.toContainText('John Legend');
 });
 
-test('preview is non-indexable, excluded from sitemap, and homepage badge and layout remain', async ({ page }) => {
+test('preview stays non-indexable while the approved homepage hero retains its store badge and SEO', async ({ page }) => {
   await setup(page);
   const response = await page.request.get(path);
   expect(response.status()).toBe(200);
@@ -298,8 +298,39 @@ test('preview is non-indexable, excluded from sitemap, and homepage badge and la
   expect(await (await page.request.get('/sitemap.xml')).text()).not.toContain(path);
   await page.goto('/');
   await expect(page.locator('.hero .app-store-badge')).toHaveCount(1);
-  await expect(page.locator('.hero .hero-name-checker')).toHaveCount(0);
-  await expect(page.locator('.hero-actions .btn-gold')).toBeVisible();
+  await expect(page.locator('.hero .hero-name-checker')).toHaveCount(1);
+  await expect(page.locator('.hero-name-preview__flag')).toHaveCount(0);
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://www.santaradio.co.uk/');
+  await expect(page.locator('meta[name="robots"]')).not.toHaveAttribute('content', /noindex/);
+  await expect(page.locator('.partnership-strip')).toHaveCount(1);
+  await expect(page.locator('.santa-dash-promo')).toHaveCount(1);
+});
+
+for (const width of [1440, 390]) test(`approved homepage handoff and matching radio/countdown widths at ${width}px`, async ({ page }) => {
+  await page.setViewportSize({ width, height: 1000 });
+  await setup(page);
+  let renders = 0;
+  await page.route('**/api/santa-message', route => { renders++; return route.abort(); });
+  const requested = [];
+  page.on('request', request => requested.push(request.url()));
+  await page.goto('/');
+  const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+  if (await decline.isVisible()) await decline.click();
+  await expect(page.locator('.hero-actions button')).toBeVisible();
+  const button = await page.locator('.hero-actions button').boundingBox();
+  const countdown = await page.locator('.hero-countdown .countdown').boundingBox();
+  expect(Math.abs(button.width - countdown.width)).toBeLessThan(1);
+  expect(Math.abs(button.x - countdown.x)).toBeLessThan(1);
+  await choose(page, 'Arabella');
+  await cta(page).click();
+  await expect(page.locator('.santa-message-access input[name="FIRSTNAME"]')).toBeFocused();
+  await expect(page.getByLabel('First Name', { exact: true })).toHaveCount(0);
+  await fillAccessForm(page);
+  await page.getByRole('button', { name: 'Get my free Santa message', exact: true }).click();
+  await expect(page.getByLabel('First Name', { exact: true })).toHaveValue('Arabella');
+  expect(new URL(page.url()).pathname).toBe('/');
+  expect(requested.some(url => url.includes('Arabella'))).toBe(false);
+  expect(renders).toBe(0);
 });
 
 test('approval screenshots show the real name inventory on desktop and phone', async ({ page }) => {

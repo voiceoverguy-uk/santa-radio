@@ -2,9 +2,9 @@
 name: Hero name checker approval scope
 description: Owner's preview-only boundary and child-name privacy requirements for the hero concept.
 ---
-Keep the homepage hero name-checker concept isolated until the owner explicitly approves replacing the homepage. The omitted App Store badge is a preview-only choice, not permission to remove homepage or Apps page store links.
+The owner has explicitly approved replacing the main homepage hero with the name-checker design. Retain the separate approval-preview route as a reference. The omitted App Store badge was a preview-only choice, not permission to remove homepage or Apps page store links.
 
-**Why:** The owner requested an interactive approval preview, not the earlier full-site redesign or a live homepage replacement.
+**Why:** After the interactive preview, the owner answered “yes please” when asked to make the new design the main homepage. This approves the hero replacement, not a full-site redesign.
 
 **How to apply:** Preserve the snowy North Pole backdrop, shared radio and existing adult-signup/message limits. Name checking is not permission to bypass signup or automatically create audio.
 
@@ -18,4 +18,4 @@ The owner wants the preview heading across the top and a large square playing co
 
 **Why:** The owner said they could not see the playing image, then supplied a more precise mockup and repeated that the description should be less wide so the cover can move left and higher.
 
-**How to apply:** Align the desktop artwork and checker tops near the start of the Santa Radio title line, and align the left countdown’s bottom with the artwork panel’s bottom. Keep the cover and live caption readable; reserve invisible layout space during pauses, but show no empty panel or placeholder text. Preserve phone stacking and the normal homepage until approval.
+**How to apply:** Align the desktop artwork and checker tops near the start of the Santa Radio title line, and align the left countdown’s bottom with the artwork panel’s bottom. Keep the cover and live caption readable; reserve invisible layout space during pauses, but show no empty panel or placeholder text. Preserve phone stacking and the existing homepage sections below the approved hero.

@@ -1,11 +1,8 @@
 import PageSeo from '../seo/PageSeo.jsx';
 import { homeMetadata } from '../seo/catalogue.js';
-import { scrollToSantaMessageDesk } from '../lib/scrollToSantaMessageDesk.js';
 import { useTrackEvent } from '../privacy/useTrackEvent.js';
-import { RadioButton } from '../components/AudioPlayer.jsx';
-import NowPlayingArtwork from '../components/NowPlayingArtwork.jsx';
+import HomeHero, { useHeroNameSelection } from '../components/HomeHero.jsx';
 import SantaTrackerBanner from '../tracker/components/SantaTrackerBanner.tsx';
-import Countdown from '../components/Countdown.jsx';
 import Soundboard from '../components/Soundboard.jsx';
 import santaDashArtwork from '../assets/home/santa-dash-back-to-the-grotto.webp';
 import santaDashWobblyBobArtwork from '../assets/home/santa-dash-wobbly-bob.webp';
@@ -13,10 +10,10 @@ import SantaMessageForm from '../components/SantaMessageForm.jsx';
 import YouTubeSection from '../components/YouTubeSection.jsx';
 import MugshotsPreview from '../components/MugshotsPreview.jsx';
 import ContactSection from '../components/ContactSection.jsx';
-import SantaFlyby from '../components/SantaFlyby.jsx';
 import './Home.css';
 
 export default function Home() {
+  const { pendingName, continueWithName } = useHeroNameSelection();
   const trackEvent = useTrackEvent();
   const trackPartnership = event => {
     if (event.defaultPrevented ||
@@ -25,39 +22,9 @@ export default function Home() {
   };
 
   return (
-    <main id="main-content" className="home-page">
+    <main id="main-content" className="home-page hero-name-preview">
       <PageSeo metadata={homeMetadata()} />
-      <section className="hero">
-        <picture className="hero-picture">
-          <source media="(max-width: 600px)" srcSet="/images/north-pole-hero-mobile.webp" />
-          <img src="/images/north-pole-hero.webp" alt="A snowy North Pole village with warmly lit windows beneath the northern lights" fetchpriority="high" />
-        </picture>
-        <div className="hero-aurora" aria-hidden="true" />
-        <SantaFlyby />
-        <div className="hero-layout">
-          <div className="hero-content">
-            <p className="eyebrow">A little magic from the North Pole</p>
-            <h1 className="hero-title">Live from The North Pole,<span>Santa Radio</span></h1>
-            <p className="hero-description">Enjoy online Christmas music 24/7 on Santa Radio, your Christmas radio station all year round. Listen live to festive classics and family favourites.</p>
-            <div className="hero-actions">
-              <a href="#santa-messages" className="btn-gold" onClick={event => {
-                if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-                event.preventDefault();
-                scrollToSantaMessageDesk();
-              }}>FREE Santa Message <span aria-hidden="true">↓</span></a>
-              <RadioButton className="btn-red" />
-            </div>
-            <a className="app-store-badge" href="https://apps.apple.com/gb/app/santa-radio/id1021183593" target="_blank" rel="noopener noreferrer" aria-label="Download Santa Radio on the App Store (opens in a new tab)">
-              <img src="/images/download-on-the-app-store.svg" width="149.58" height="50" alt="" />
-            </a>
-            <p className="hero-note">The World’s Best Christmas Radio Station · All year round</p>
-            <div id="christmas-countdown" className="hero-countdown">
-              <Countdown />
-            </div>
-          </div>
-          <NowPlayingArtwork />
-        </div>
-      </section>
+      <HomeHero onContinue={continueWithName} />
       <section className="partnership-strip" aria-labelledby="partnership-heading">
         <div className="partnership-strip__inner">
           <div className="partnership-strip__copy">
@@ -72,7 +39,7 @@ export default function Home() {
           </a>
         </div>
       </section>
-      <SantaMessageForm />
+      <SantaMessageForm keepSignupInPlace pendingName={pendingName} />
       <SantaTrackerBanner />
       {/* Personalised video promotion temporarily removed; SantaVideoSection and its styles are retained for restoration. */}
       <section className="santa-dash-promo" aria-labelledby="santa-dash-promo-title">

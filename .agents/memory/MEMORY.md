@@ -57,4 +57,4 @@
 - [Preview cookie attributes](preview-cookie-attributes.md) — The preview proxy can rewrite SameSite; test server attributes separately and keep explicit request-origin checks.
 - [Raw request targets](raw-request-targets.md) — Exact doubled-separator exports must survive pre-routing middleware; resolver-only checks miss failures and app-shell fallbacks.
 - [Christmas Contenders scope](christmas-contenders-scope.md) — One-choice first build; votes inform editorial consideration; owner must choose any earlier submission cutoff.
-- [Hero name-checker scope](hero-name-checker-scope.md) — Approval preview only; keep store links on the homepage and entered child names out of URLs, analytics and storage.
+- [Hero name-checker scope](hero-name-checker-scope.md) — Homepage replacement approved; retain store links and lower sections; keep child names out of URLs, analytics and storage.
