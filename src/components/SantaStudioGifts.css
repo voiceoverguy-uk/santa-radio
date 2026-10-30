@@ -153,6 +153,13 @@
 
 .studio-gifts img {
   max-width: 100%;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.studio-gifts__preview-stack,
+.studio-letter-dialog__document {
+  -webkit-touch-callout: none;
 }
 
 .studio-letter-dialog__toolbar button {
@@ -282,9 +289,9 @@
 .studio-letter-dialog {
   --gifts-ink: #19392d;
   margin: auto;
-  width: min(94vw, 850px);
+  width: min(90vw, 680px);
   max-width: calc(100vw - 16px);
-  max-height: 90dvh;
+  max-height: 82dvh;
   min-width: 0;
   padding: 0;
   overflow: auto;

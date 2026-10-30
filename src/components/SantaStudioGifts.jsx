@@ -28,7 +28,7 @@ function ScriptReveal({ children, progress }) {
 function Certificate({ name, elapsed }) {
   const progress = Math.min(1, elapsed / CERTIFICATE_WRITE_MS);
   return <div className="studio-certificate" role="img" aria-label={`Official Nice List certificate example for ${name}`}>
-    <img src="/certificates/examples/blank-master.webp" alt="" width="1684" height="1191" />
+    <img src="/certificates/examples/blank-master.webp" alt="" width="1684" height="1191" draggable={false} />
     <span aria-hidden="true" className="studio-certificate__name">
       <ScriptReveal progress={progress}>{name}</ScriptReveal>
     </span>
@@ -65,7 +65,7 @@ function SantaPicture({ name, elapsed, picture }) {
   const progress = Math.min(1, elapsed / CERTIFICATE_WRITE_MS);
   return <div className="studio-santa-picture" role="img"
     aria-label={`Santa’s Nice List picture example for ${name}`}>
-    <img src={picture} alt="" width="1536" height="1024" />
+    <img src={picture} alt="" width="1536" height="1024" draggable={false} />
     <span aria-hidden="true" className="studio-santa-picture__name">
       <ScriptReveal progress={progress}>{name}</ScriptReveal>
     </span>
@@ -141,7 +141,8 @@ function GiftExample({ name, picture, activeAudio, reducedMotion, onNext }) {
     onFocusCapture={() => setFocused(true)}
     onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false); }}>
     <h4>From Santa’s desk — a gift preview for {name}</h4>
-    <div className="studio-gifts__preview-stack" role="group" aria-label="Three gift previews">
+    <div className="studio-gifts__preview-stack" role="group" aria-label="Three gift previews"
+      onContextMenu={event => event.preventDefault()} onDragStart={event => event.preventDefault()}>
       <div className="studio-gifts__gallery">
         <button className="studio-gifts__thumbnail studio-gifts__thumbnail--certificate" type="button"
           aria-label="Enlarge certificate" onClick={event => open(event, 'certificate')}>
@@ -168,7 +169,8 @@ function GiftExample({ name, picture, activeAudio, reducedMotion, onNext }) {
       </div>
       <div className="studio-letter-dialog__content" role="region" aria-label="Enlarged gift preview"
         tabIndex={0} onScroll={() => setReading(true)}>
-        <div className={`studio-letter-dialog__document studio-letter-dialog__document--${view || 'picture'}`}>
+        <div className={`studio-letter-dialog__document studio-letter-dialog__document--${view || 'picture'}`}
+          onContextMenu={event => event.preventDefault()} onDragStart={event => event.preventDefault()}>
           {view === 'certificate' ? <Certificate name={name} elapsed={duration} />
             : view === 'letter' ? <Letter letter={letter} elapsed={duration} />
               : <SantaPicture name={name} picture={picture} elapsed={duration} />}

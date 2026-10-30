@@ -68,6 +68,12 @@ Checked names should personalise the certificate, letter and Santa picture previ
 
 **How to apply:** Use the verified display name, keep it only in page memory, and preserve signup and audio allowances. Every enlarged gift preview must have three large translucent red “NORTH POLE PROPERTY” watermarks; this is preview presentation, not an extra marking on purchased gifts or the certificate master.
 
+Keep casual-save deterrents scoped to the gift previews, not the entire website. Do not promise that blocking right-click or dragging prevents screenshots or determined extraction.
+
+**Why:** The owner asked for smaller popups and a way to stop right-click saving; browser-side presentation cannot guarantee copy protection.
+
+**How to apply:** Preserve watermarking, accessibility, enlargement and closing controls. Leave ordinary context menus elsewhere and actual purchased downloads unaffected.
+
 Font changes must preserve both the visible name and its extracted PDF text.
 
 **Why:** The supplied script font could render contextual ligatures correctly while PDF extraction substituted unrelated Unicode letters. A visual-only check would miss incorrect spelling for copying and assistive readers.

@@ -389,6 +389,35 @@ for (const width of [1440, 390]) {
   });
 }
 
+for (const width of [390, 1440]) {
+  test(`compact gift popups deter casual saving without blocking controls at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await visit(page, { reduced: true });
+    const cancelled = async target => target.evaluate(el => ({
+      context: !el.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true, button: 2 })),
+      drag: !el.dispatchEvent(new Event('dragstart', { bubbles: true, cancelable: true })),
+    }));
+    for (const label of ['Enlarge certificate', 'Enlarge letter to read', 'Enlarge Santa’s Nice List picture']) {
+      const thumbnail = gifts(page).getByRole('button', { name: label, exact: true });
+      expect(await cancelled(thumbnail)).toEqual({ context: true, drag: true });
+      for (const image of await thumbnail.locator('img').all()) await expect(image).toHaveAttribute('draggable', 'false');
+      await thumbnail.click();
+      const dialog = page.getByRole('dialog');
+      const bounds = await dialog.boundingBox();
+      expect(bounds.width).toBeLessThanOrEqual(Math.min(width * .9, 680) + 1);
+      expect(bounds.height).toBeLessThanOrEqual(821);
+      const document = dialog.locator('.studio-letter-dialog__document');
+      expect(await cancelled(document)).toEqual({ context: true, drag: true });
+      await expect(document.locator('.studio-gifts__watermark span')).toHaveCount(3);
+      const close = dialog.getByRole('button', { name: 'Close preview', exact: true });
+      expect(await close.evaluate(el => el.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true })))).toBe(true);
+      await close.click();
+      await expect(dialog).not.toBeVisible();
+      await expect(thumbnail).toBeFocused();
+    }
+  });
+}
+
 test('alternate Santa picture enlargement preserves its image and name while reading', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 1000 });
   await visit(page, { reduced: true });
