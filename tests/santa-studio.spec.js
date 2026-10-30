@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { mockBrevo, fillAccessForm } from './helpers/message-access.js';
+import { expectStudioLaunchCopy } from './helpers/studio-promotion.js';
 
 test('Studio A matches the recording pulse and seal, fits phones, and respects reduced motion', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
@@ -107,9 +108,7 @@ test('mobile Studio promotion title fits and certificates belong only to the upc
     expect(typography.lineHeight / typography.size).toBeGreaterThanOrEqual(1.6);
     await expect(promotion).not.toContainText('Three coming-soon paid Studio gifts');
     await expect(promotion).not.toContainText('This visual preview does not create downloads');
-    await expect(promotion).toContainText('When Studio - A launches');
-    await expect(promotion).toContainText('The paid offer will include a digital personalised Nice List certificate, a short personal letter from Santa and a picture confirming your place on the Nice List. *');
-    await expect(promotion.locator('.santa-studio-promotion__copy small')).toHaveText('* have you been good this year?');
+    await expectStudioLaunchCopy(promotion);
     await expect(promotion).not.toContainText(/basic free greeting|includes one too/i);
     await expect(promotion.getByText('Coming Early November', { exact: true })).toBeVisible();
   }
@@ -152,6 +151,7 @@ for (const path of ['/', '/free-santa-message']) {
       await mockBrevo(page);
       await visit(page, path);
       await page.evaluate(() => document.fonts.ready);
+      await expectStudioLaunchCopy(page.locator('.santa-studio-promotion'));
       const card = page.locator('.santa-message-access');
       await expect(card.getByRole('heading', {
         name: "ENTER SANTA'S RECORDING STUDIO", exact: true,

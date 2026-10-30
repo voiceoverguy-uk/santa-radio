@@ -27,11 +27,13 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
           </div>
           <h3 id="santa-studio-title" tabIndex={-1}>Santa’s <span className="santa-studio-promotion__title-line">Message Maker Studio</span></h3>
           <p className="santa-studio-promotion__copy">
-            When Studio - A launches, you’ll be able to add age, activities, achievements, country and festive treats.{' '}
+            When we launch, you’ll be able to personalise with the age, impressive activities and achievements, your country, county or State** and download festive gifts.
             <br />
             The paid offer will include a digital personalised Nice List certificate, a short personal letter from Santa and a picture confirming your place on the Nice List. *
             <br /><br />
-            <small>* have you been good this year?</small>
+            <small>* subject to you being good this year</small>
+            <br />
+            <small>** UK and USA only</small>
           </p>
           <div className="santa-studio-promotion__preview">
             <span className="santa-studio-promotion__preview-label">Coming Early November</span>

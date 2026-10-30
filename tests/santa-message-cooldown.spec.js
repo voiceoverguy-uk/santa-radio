@@ -4,6 +4,7 @@ import { mockSantaNames } from './helpers/message-access.js';
 import { MESSAGE_ACCESS_KEY } from '../src/lib/santaMessageAccess.js';
 import { MESSAGE_ALLOWANCE_KEY, MESSAGE_COOLDOWN_MS } from '../src/lib/santaMessageAllowance.js';
 import { expectNativeMessagePlayer } from './helpers/native-message-player.js';
+import { expectStudioLaunchCopy } from './helpers/studio-promotion.js';
 
 const audio = readFileSync('server/santa-audio/sleighbells.mp3');
 const mp3 = { contentType: 'audio/mpeg', body: audio };
@@ -13,13 +14,13 @@ async function openMaker(page, path) {
   await page.goto(path);
   const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await decline.isVisible()) await decline.click();
-  await expect(page.getByLabel('First Name')).toBeVisible();
+  await expect(page.getByLabel('First Name', { exact: true })).toBeVisible();
 }
 
 async function create(page, name = 'Olivia') {
-  await page.getByLabel('First Name').fill(name);
+  await page.getByLabel('First Name', { exact: true }).fill(name);
   await expect(page.getByRole('option', { name, exact: true })).toBeVisible();
-  await page.getByLabel('First Name').press('Escape');
+  await page.getByLabel('First Name', { exact: true }).press('Escape');
   await page.getByRole('button', { name: 'Create message', exact: true }).click();
   await expect(page.getByRole('heading', { name: `To ${name} from Santa` })).toBeVisible();
 }
@@ -75,13 +76,11 @@ for (const path of ['/', '/free-santa-message']) {
       await expect(player).toBeFocused();
       expect(await player.evaluate(element => getComputedStyle(element).outlineStyle)).toBe('solid');
       await expect(promo).toHaveCount(1);
-      await expect(promo).toContainText('When Studio - A launches');
-      await expect(promo).toContainText('age, activities, achievements, country and festive treats');
-      await expect(promo).toContainText('The paid offer will include a digital personalised Nice List certificate, a short personal letter from Santa and a picture confirming your place on the Nice List. *');
+      await expectStudioLaunchCopy(promo);
       await expect(promo).not.toContainText('The basic free greeting includes one too');
-      await expect(promo.getByText('Coming soon', { exact: true })).toBeVisible();
+      await expect(promo.getByText('Coming Early November', { exact: true })).toBeVisible();
       await expect(page.getByRole('button', { name: 'more magic?', exact: true })).toHaveCount(0);
-      await expect(page.locator('.message-wait, .message-cooldown-status, [role="timer"]')).toHaveCount(0);
+      await expect(page.locator('.message-wait, .message-cooldown-status, .santa-message-box [role="timer"]')).toHaveCount(0);
       await expect(page.locator('.message-wait-downloads > #santa-studio-promotion')).toHaveCount(0);
       await expect(page.locator('.message-layout > #santa-studio-promotion')).toHaveCount(1);
       await expect(page.getByRole('button', { name: 'Create message', exact: true })).toHaveCount(0);
@@ -126,6 +125,7 @@ for (const path of ['/', '/free-santa-message']) {
       const saved = page.getByLabel('Santa’s greeting for Olivia', { exact: true });
       const savedPlayer = saved.locator('audio');
       await expect(savedPlayer).toBeVisible();
+      await expectStudioLaunchCopy(page.locator('#santa-studio-promotion'));
       await expectNativeMessagePlayer(page, savedPlayer, testInfo, 'retained-cooldown');
       await expect(page.getByRole('button', { name: 'Create message', exact: true })).toHaveCount(0);
       const savedPlayerBox = await savedPlayer.boundingBox();
@@ -156,7 +156,7 @@ test('an early attempt caused by stale page state explains when the next free me
     return route.fulfill(mp3);
   });
   await openMaker(page, '/free-santa-message');
-  await page.getByLabel('First Name').fill('Olivia');
+  await page.getByLabel('First Name', { exact: true }).fill('Olivia');
   await page.getByRole('option', { name: 'Olivia', exact: true }).click();
   const deadline = fixedNow + MESSAGE_COOLDOWN_MS;
   await page.evaluate(({ key, availableAt, duration }) => {
@@ -192,13 +192,14 @@ test('the two-hour deadline persists through reload and updates another tab with
   await expect(otherTab.locator('.message-cooldown-status')).toContainText(expectedTime);
   await expect(otherTab.locator('.message-result')).toHaveCount(0);
   await expect(otherTab.locator('.message-cooldown-status')).toContainText('isn’t saved by this site');
-  await expect(otherTab.locator('[role="timer"], .message-wait')).toHaveCount(0);
+  await expect(otherTab.locator('.santa-message-box [role="timer"], .message-wait')).toHaveCount(0);
 
   await page.reload();
   await expect(page.locator('.message-cooldown-status')).toContainText(expectedTime);
   await expect(page.locator('.message-result')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toHaveCount(0);
   await expect(page.locator('.message-layout > #santa-studio-promotion')).toHaveCount(1);
+  await expectStudioLaunchCopy(page.locator('#santa-studio-promotion'));
   await expect(page.locator('.message-wait-downloads')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'more magic?', exact: true })).toHaveCount(0);
 });
