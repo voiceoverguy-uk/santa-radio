@@ -18,7 +18,7 @@ export default function HeroNameChecker({ onContinue }) {
     setOpen(false);
     setActive(-1);
   };
-  const status = selected ? `Yes! Santa has a recording for ${selected.name}.`
+  const status = selected ? `Yes! Santa can record for ${selected.name}.`
     : search.loading ? 'Checking Santa’s recorded names…'
       : search.error ? search.error
         : name.trim() && !options.length

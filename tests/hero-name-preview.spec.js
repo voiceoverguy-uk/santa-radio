@@ -39,7 +39,7 @@ async function choose(page, name) {
   await input(page).fill('');
   await input(page).fill(name);
   await checker(page).getByRole('option', { name, exact: true }).click();
-  await expect(checker(page).getByRole('status')).toHaveText(`Yes! Santa has a recording for ${name}.`);
+  await expect(checker(page).getByRole('status')).toHaveText(`Yes! Santa can record for ${name}.`);
 }
 
 test('real hosted inventory drives lookup, with no child query URLs, storage or auto audio', async ({ page }) => {

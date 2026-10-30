@@ -89,7 +89,7 @@ test('actual Node production delivery hydrates and supports phone lookup without
   await input.fill('Arab');
   await page.getByRole('option', { name: 'Arabella', exact: true }).click();
   assert.equal(await input.inputValue(), 'Arabella');
-  assert.match(await page.locator('.hero-name-checker [role="status"]').textContent(), /Yes! Santa has a recording for Arabella/);
+  assert.match(await page.locator('.hero-name-checker [role="status"]').textContent(), /Yes! Santa can record for Arabella/);
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
   assert.deepEqual(errors, []);
 });
