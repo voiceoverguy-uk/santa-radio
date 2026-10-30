@@ -18,7 +18,13 @@ Voter contact details must travel through the EXISTING SONG SUBMISSION Brevo des
 
 **Why:** The owner explicitly replaced local encrypted marketing-email retention with station-side forwarding, and prohibited deleting existing retained test records.
 
-**How to apply:** Respect the existing required name fields and 500-character message limit without fabricating names. Preview forwarding stays simulated. Acceptance is not inbox delivery; uncertain responses must not be blindly resent because the hosted route provides no idempotency key. Keep a stable reference and protected reconciliation, and never reset totals or activate real forwarding without approval.
+**How to apply:** The public ballot must stay email-only despite the existing SONG form's required names. Do not fabricate names or send an invalid payload. Compatible email-only Brevo routing is unresolved until separately confirmed; isolate the named sender rather than coupling vote success to it. No new service provisioning or real sends now. Preview forwarding stays simulated. Keep duplicate/uncertain-result protections; never reset totals or activate real forwarding without approval.
+
+The owner wants minimum reading and steps: one compact ballot with choice, email, optional unchecked “Send me occasional Santa Radio updates” and “Submit vote”. No public names, simulation controls, review step or implementation/provider/fingerprint prose. While storage is down, show one brief “Preview — voting unavailable” notice; never fake success.
+
+**Why:** The owner explicitly approved this bounded UX simplification and said technical detail stays out of the visitor journey.
+
+**How to apply:** Allow unticking/switching before submission, preserve all nine compact song rows and waveforms, and retain duplicate guards and disabled real voting. Confirmed demo wording is “Test vote recorded.”; eventual real success is “Thanks—your vote is in!”.
 
 The owner requested repeat voting while testing, with test votes reset and the one-voter limit restored when they are happy and choose to go live.
 
@@ -55,6 +61,12 @@ The owner wants long gold interactive waveforms from real recording peaks, not n
 **Why:** The owner expects the listening list to remain compact and practical with around 20 tracks.
 
 **How to apply:** Preserve wide, roughly 40px-high waveform seeking, keyboard access and radio coordination when changing the listening rows.
+
+Shuffle all displayed songs, including Bob, freshly once on every full load/reload, without stored ordering or a fixed session seed. Keep the order steady for playback, selection, forms and total polling, whether database-backed or source fallback.
+
+**Why:** The owner explicitly requires a fresh unbiased shuffle; chance repeats are acceptable.
+
+**How to apply:** Keep order only in page memory. Stable artist anchors and share-target highlighting/scrolling must not pin the target first.
 
 Studio A = full Message Maker Studio; Studio B = free Santa message; Studio C = song contenders.
 

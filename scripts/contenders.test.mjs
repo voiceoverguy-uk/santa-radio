@@ -8,7 +8,7 @@ import { buildSongMessage, validateSongFields, submitSong, emptySongFields, SONG
 import { createContendersHandler, validateManagement, privateDigest } from '../server/christmas-contenders.js';
 import { demoBallot, competitionState, manageCompetition } from '../server/contenders-store.js';
 import { normalizeVotingEmail, MARKETING_CONSENT_TEXT } from '../server/contender-consent.js';
-import { buildSongVotePayload, sendSongVoteNotification } from '../server/contender-song-notification.js';
+import { buildSongVotePayload, sendSongVoteNotification, EMAIL_ONLY_BREVO_ROUTING_READY } from '../server/contender-song-notification.js';
 import waveformCatalogue from '../src/lib/contender-waveforms.json' with { type: 'json' };
 
 test('UK November voting boundaries and explicit availability', () => {
@@ -90,6 +90,56 @@ test('management cannot turn Bob or supplied demo media live', () => {
 function response() {
   return {statusCode:200,body:null,set(){return this;},append(){return this;},status(s){this.statusCode=s;return this;},json(b){this.body=b;return this;}};
 }
+
+test('email-only submit records a demo in one visitor action without the incompatible named sender', async () => {
+  const calls = [];
+  const handler = createContendersHandler({
+    digest: () => 'a'.repeat(64),
+    limit: async () => {},
+    vote: async args => {
+      calls.push(args);
+      assert.equal(args.firstName, undefined);
+      assert.equal(args.lastName, undefined);
+      assert.equal(args.email, undefined);
+      assert.deepEqual(await args.prepareNotification()(), { delivery: 'simulated' });
+      return { state: args.action === 'prepare' ? 'confirmation' : 'success', reference: 'test-reference' };
+    },
+  });
+  const req = {method:'POST',protocol:'https',headers:{host:'example.test',origin:'https://example.test'},query:{},
+    body:{action:'submit',mode:'demo',entryId:'bob-the-elf',email:' Test@Example.TEST ',marketingOptIn:false,website:''}};
+  const res = response();
+  await handler(req, res);
+  assert.equal(res.statusCode, 200);
+  assert.equal(res.body.state, 'success');
+  assert.deepEqual(calls.map(call => call.action), ['prepare', 'confirm']);
+  assert.equal(calls[0].voterKey, calls[1].voterKey);
+  assert.equal(calls[1].marketingOptIn, false);
+  assert.equal(EMAIL_ONLY_BREVO_ROUTING_READY, false);
+  const invalid = response();
+  await handler({...req,body:{...req.body,testDelivery:'accepted'}}, invalid);
+  assert.equal(invalid.statusCode, 400);
+  assert.equal(calls.length, 2);
+});
+
+test('single submit preserves duplicate and uncertain states and never confirms unavailable storage', async () => {
+  const req = {method:'POST',protocol:'https',headers:{host:'example.test',origin:'https://example.test'},query:{},
+    body:{action:'submit',mode:'demo',entryId:'bob-the-elf',email:'test@example.test'}};
+  for (const state of ['already-voted', 'pending']) {
+    let attempts = 0;
+    const handler = createContendersHandler({digest:()=> 'a'.repeat(64),limit:async()=>{},
+      vote:async()=>{ attempts++; return {state,delivery:'unknown'}; }});
+    const res = response();
+    await handler(req,res);
+    assert.equal(res.body.state,state);
+    assert.equal(attempts,1);
+  }
+  const unavailable = createContendersHandler({digest:()=> 'a'.repeat(64),limit:async()=>{},
+    vote:async()=>{throw new Error('storage unavailable');}});
+  const res = response();
+  await unavailable(req,res);
+  assert.equal(res.statusCode,503);
+  assert.notEqual(res.body.state,'success');
+});
 
 test('signing and storage failures show Bob demo plus all genuine songs without inventing totals', async () => {
   const assertUnavailableCatalogue = async options => {

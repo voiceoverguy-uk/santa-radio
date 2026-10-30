@@ -8,7 +8,7 @@ import { competitionState, demoBallot, requestLimit, manageCompetition, staffCom
 import { bobEntry, defaultSettings, secureMediaLink, sourceContenderCatalogue } from '../src/lib/contenders.js';
 import waveformCatalogue from '../src/lib/contender-waveforms.json' with { type: 'json' };
 import { normalizeVotingEmail } from './contender-consent.js';
-import { buildSongVotePayload, simulateSongVoteNotification, validVoteContact } from './contender-song-notification.js';
+import { preparePreviewVoteNotification } from './contender-song-notification.js';
 
 export function privateDigest(value) {
   if (!process.env.SESSION_SECRET || process.env.SESSION_SECRET.length < 32) throw new Error('Signing unavailable');
@@ -85,11 +85,11 @@ export function createContendersHandler({ read = competitionState, vote = demoBa
       const b = req.body;
       if (!b || b.mode !== 'demo') return res.status(503).json({error:'Real voting is not enabled in this preview. No ballot was created.'});
       const identity = normalizeVotingEmail(b.email);
-      if (!['prepare','confirm'].includes(b.action) || typeof b.entryId !== 'string' ||
-        !/^[a-z0-9][a-z0-9-]{0,79}$/.test(b.entryId) || !identity || !validVoteContact(b) || b.website ||
-        !(b.testDelivery === undefined || ['accepted','rejected','unknown'].includes(b.testDelivery)) ||
+      if (!['submit','prepare','confirm'].includes(b.action) || typeof b.entryId !== 'string' ||
+        !/^[a-z0-9][a-z0-9-]{0,79}$/.test(b.entryId) || !identity || b.website ||
+        b.testDelivery !== undefined ||
         !(b.marketingOptIn === undefined || typeof b.marketingOptIn === 'boolean')) {
-        return res.status(400).json({error:'Check your actual first name, surname, email and chosen recording. The existing song form requires both names.'});
+        return res.status(400).json({error:'Check your email address and chosen song.'});
       }
       const repeatAttempt = b.attemptId !== undefined;
       if (repeatAttempt && (typeof b.attemptId !== 'string' ||
@@ -100,11 +100,14 @@ export function createContendersHandler({ read = competitionState, vote = demoBa
         return res.status(409).json({error:'Repeat demo testing is switched off. Reload to use the one-ballot demo.'});
       }
       const voterKey = digest(repeatAttempt ? `demo-repeat:${identity}:${b.attemptId}` : `demo-voter:${identity}`);
-      const result = await vote({action:b.action,entryId:b.entryId,voterKey,repeatAttempt,marketingOptIn:b.marketingOptIn === true,
-        prepareNotification: details => {
-          const payload = buildSongVotePayload({...details,firstName:b.firstName,lastName:b.lastName,email:identity,marketingOptIn:b.marketingOptIn === true});
-          return () => simulateSongVoteNotification(payload,b.testDelivery || 'accepted');
-        }});
+      const voteArgs = {entryId:b.entryId,voterKey,repeatAttempt,marketingOptIn:b.marketingOptIn === true,
+        prepareNotification: preparePreviewVoteNotification};
+      // One visitor action, while retaining the existing atomic reservation,
+      // duplicate guards and uncertain-result protections inside the store.
+      let result = await vote({...voteArgs,action:b.action === 'submit' ? 'prepare' : b.action});
+      if (b.action === 'submit' && result.state === 'confirmation') {
+        result = await vote({...voteArgs,action:'confirm'});
+      }
       res.append('Set-Cookie', `contenders-demo=${voterKey}.${digest(`demo-cookie:${voterKey}`)}; Path=/api/christmas-contenders; HttpOnly; SameSite=Lax; Max-Age=2592000${req.secure || req.headers['x-forwarded-proto'] === 'https' ? '; Secure' : ''}`);
       return res.json(result);
     } catch (error) {

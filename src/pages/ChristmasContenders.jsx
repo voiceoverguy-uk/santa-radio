@@ -3,38 +3,13 @@ import { Link } from 'react-router-dom';
 import { useRadio } from '../components/RadioProvider.jsx';
 import ContenderWaveformPlayer from '../components/ContenderWaveformPlayer.jsx';
 import { votingStatus } from '../lib/contenders.js';
+import { createContenderOrdering } from '../lib/contender-order.js';
 import './ChristmasContenders.css';
 
 const API = '/api/christmas-contenders';
-const ORDER_KEY = 'santa-radio-contender-order-v1';
 const ATTEMPT_KEY = 'santa-radio-contender-attempt-v1';
 const REQUEST_TIMEOUT = 10_000;
 const POLL_INTERVAL = 30_000;
-
-function shuffled(items) {
-  const copy = [...items];
-  for (let index = copy.length - 1; index > 0; index -= 1) {
-    const swap = Math.floor(Math.random() * (index + 1));
-    [copy[index], copy[swap]] = [copy[swap], copy[index]];
-  }
-  return copy;
-}
-
-function orderEntries(entries) {
-  if (typeof window === 'undefined') return entries;
-  try {
-    const saved = JSON.parse(window.sessionStorage.getItem(ORDER_KEY) || 'null');
-    const ids = Array.isArray(saved) ? saved : [];
-    const byId = new Map(entries.map(entry => [entry.id, entry]));
-    const ordered = ids.map(id => byId.get(id)).filter(Boolean);
-    const remaining = entries.filter(entry => !ids.includes(entry.id));
-    const next = [...ordered, ...shuffled(remaining)];
-    window.sessionStorage.setItem(ORDER_KEY, JSON.stringify(next.map(entry => entry.id)));
-    return next;
-  } catch {
-    return entries;
-  }
-}
 
 function dateLabel(value) {
   if (!value) return 'Date to be confirmed';
@@ -113,19 +88,15 @@ export default function ChristmasContenders() {
   const [loadError, setLoadError] = useState('');
   const [serverOffset, setServerOffset] = useState(0);
   const [now, setNow] = useState(Date.now());
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [marketingOptIn, setMarketingOptIn] = useState(false);
-  const [testDelivery, setTestDelivery] = useState('accepted');
   const [selectedEntryId, setSelectedEntryId] = useState('');
   const [pending, setPending] = useState(false);
-  const [confirmation, setConfirmation] = useState(null);
   const [message, setMessage] = useState(null);
   const [ballotUsed, setBallotUsed] = useState(false);
   const [ballotStatus, setBallotStatus] = useState(null);
-  const [ballotReference, setBallotReference] = useState('');
   const demoAttempt = useRef(null);
+  const entryOrdering = useRef(null);
   const [shareFeedback, setShareFeedback] = useState('');
   const [manualShare, setManualShare] = useState('');
   const audioRefs = useRef(new Map());
@@ -137,10 +108,8 @@ export default function ChristmasContenders() {
   const alive = useRef(true);
   const hashTimer = useRef(null);
   const ballotStatusRef = useRef(ballotStatus);
-  const confirmationRef = useRef(confirmation);
   const repeatTestStartedRef = useRef(false);
   ballotStatusRef.current = ballotStatus;
-  confirmationRef.current = confirmation;
   radioRef.current = radio;
 
   const audioRefFor = id => {
@@ -165,7 +134,8 @@ export default function ChristmasContenders() {
       const next = await fetchJson(API, { signal: controller.signal });
       if (!alive.current) return;
       setData(next);
-      setEntries(orderEntries(Array.isArray(next.entries) ? next.entries : []));
+      if (!entryOrdering.current) entryOrdering.current = createContenderOrdering();
+      setEntries(entryOrdering.current(Array.isArray(next.entries) ? next.entries : []));
       setServerOffset(new Date(next.serverNow).getTime() - Date.now());
       setLoadError('');
       const viewerBallot = next.viewerBallot;
@@ -178,49 +148,31 @@ export default function ChristmasContenders() {
         if (!staleRepeatConfirmation) {
           ballotStatusRef.current = viewerBallot;
           setBallotStatus(viewerBallot);
-          if (viewerBallot.reference) setBallotReference(viewerBallot.reference);
           if (viewerBallot.state === 'confirmed' || viewerBallot.state === 'invalidated') {
-            setBallotUsed(next.settings?.repeatDemo !== true);
+            setBallotUsed(viewerBallot.state === 'invalidated' || next.settings?.repeatDemo !== true);
             if (viewerBallot.state === 'confirmed' && viewerBallot.reference === previous?.reference) repeatTestStartedRef.current = false;
-            setConfirmation(null);
             setMessage(current => current?.type === 'success' ? current : {
               type: viewerBallot.state === 'confirmed' ? 'success' : 'duplicate',
               text: viewerBallot.state === 'confirmed'
-                ? 'Demo ballot recorded. Forwarding was simulated only; no email was sent.'
-                : 'This ballot has been invalidated and cannot be used again.',
-              reference: viewerBallot.reference,
+                ? 'Test vote recorded.'
+                : 'This vote can’t be used again.',
             });
           } else if (viewerBallot.state === 'pending' && ['sending', 'unknown'].includes(viewerBallot.delivery)) {
             repeatTestStartedRef.current = false;
             setBallotUsed(false);
-            setConfirmation(null);
-            setMessage({ type: 'pending', text: 'Not counted yet. Provider acceptance is uncertain; staff must check this reference before any resend.', reference: viewerBallot.reference });
-          } else if (viewerBallot.state === 'pending' && viewerBallot.delivery === 'failed') {
-            repeatTestStartedRef.current = false;
-            setBallotUsed(false);
-            const sameKnownFailure = previous?.state === 'pending'
-              && previous.delivery === 'failed'
-              && previous.reference === viewerBallot.reference;
-            if (!sameKnownFailure) setConfirmation(null);
-            setMessage({ type: 'error', text: 'The simulated submission failed. It was not counted. You can review your details and retry.', reference: viewerBallot.reference });
+            setMessage({ type: 'pending', text: 'Your vote is still being checked. Please wait before trying again.' });
           } else if (viewerBallot.state === 'pending') {
             repeatTestStartedRef.current = false;
             setBallotUsed(false);
-            if (!confirmationRef.current || previous?.delivery === 'sending' || previous?.delivery === 'unknown') {
-              setMessage(null);
-            }
+            setMessage(viewerBallot.delivery === 'failed'
+              ? { type: 'error', text: 'That vote didn’t go through. Please try again.' }
+              : null);
           }
         }
-      } else if (ballotStatusRef.current?.networkOnly && !ballotStatusRef.current.reference) {
-        ballotStatusRef.current = null;
-        setBallotStatus(null);
-        setBallotReference('');
-        setConfirmation(null);
-        setMessage({ type: 'error', text: 'No ballot status was found. You can safely prepare again; forwarding only happens after confirmation.' });
       }
     } catch (error) {
       if (!alive.current || error.name === 'AbortError') return;
-      setLoadError(error.message || 'The contenders could not be loaded.');
+      setLoadError('Please try again in a moment.');
     } finally {
       if (pollRequest.current === controller) pollRequest.current = null;
       if (alive.current && initial) setLoading(false);
@@ -229,6 +181,8 @@ export default function ChristmasContenders() {
 
   useEffect(() => {
     alive.current = true;
+    // Discard the legacy saved ordering; never read or reuse it.
+    try { window.sessionStorage.removeItem('santa-radio-contender-order-v1'); } catch { /* storage is optional */ }
     load(true);
     let timer;
     const poll = () => {
@@ -330,13 +284,12 @@ export default function ChristmasContenders() {
   const chooseEntry = entryId => {
     if (pending || alreadyUsed || unresolved) return;
     setSelectedEntryId(current => current === entryId ? '' : entryId);
-    setConfirmation(null);
-    setMessage(null);
+    setMessage(current => current?.type === 'error' ? null : current);
   };
 
   const startBallot = async event => {
     event.preventDefault();
-    if (pending || alreadyUsed || unresolved || !demoAvailable || !email.trim() || !firstName.trim() || !lastName.trim() || !selectedEntry) return;
+    if (pending || alreadyUsed || unresolved || !demoAvailable || !email.trim() || selectedEntry?.mode !== 'demo') return;
     const form = event.currentTarget;
     const website = form.elements.namedItem('website')?.value || '';
     if (repeatDemo && !demoAttempt.current) {
@@ -352,11 +305,9 @@ export default function ChristmasContenders() {
     }
     const snapshot = {
       selectedEntryId: String(selectedEntry.id),
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
+      mode: selectedEntry.mode,
       email: email.trim(),
       marketingOptIn,
-      testDelivery,
       website,
       ...(repeatDemo ? { attemptId: demoAttempt.current } : {}),
     };
@@ -368,120 +319,49 @@ export default function ChristmasContenders() {
       const result = await fetchJson(API, {
         method: 'POST', signal: controller.signal,
         body: JSON.stringify({
-          action: 'prepare', mode: 'demo', entryId: snapshot.selectedEntryId,
-          email: snapshot.email, firstName: snapshot.firstName, lastName: snapshot.lastName,
+          action: 'submit', mode: 'demo', entryId: snapshot.selectedEntryId,
+          email: snapshot.email,
           website: snapshot.website,
           ...(snapshot.attemptId ? { attemptId: snapshot.attemptId } : {}),
-          marketingOptIn: snapshot.marketingOptIn, testDelivery: snapshot.testDelivery,
+          marketingOptIn: snapshot.marketingOptIn,
         }),
       });
       if (!alive.current) return;
-      if (result.reference) setBallotReference(result.reference);
       if (result.state === 'already-voted') {
         setBallotUsed(true);
-        setConfirmation(null);
-        setBallotReference(result.reference || '');
-        setMessage({ type: 'duplicate', text: 'This ballot has already been used.', reference: result.reference });
-      } else if (result.state === 'pending' && ['sending', 'unknown'].includes(result.delivery)) {
-        const status = { state: 'pending', delivery: result.delivery, reference: result.reference || '' };
+        setMessage({ type: 'duplicate', text: 'You’ve already voted.' });
+      } else if (result.state === 'pending' && result.delivery !== 'failed') {
+        const status = { state: 'pending', delivery: result.delivery || 'unknown', reference: result.reference || '' };
         ballotStatusRef.current = status;
         setBallotStatus(status);
-        setBallotReference(status.reference);
-        setConfirmation(null);
-        setMessage({ type: 'pending', text: 'Not counted yet. Provider acceptance is uncertain; staff must check this reference before any resend.', reference: status.reference });
+        setMessage({ type: 'pending', text: 'Your vote is still being checked. Please wait before trying again.' });
       } else if (result.state === 'pending' && result.delivery === 'failed') {
         const status = { state: 'pending', delivery: 'failed', reference: result.reference || '' };
         ballotStatusRef.current = status;
         setBallotStatus(status);
-        setBallotReference(status.reference);
-        setConfirmation(null);
-        setMessage({ type: 'error', text: 'The simulated submission failed. It was not counted. You can review your details and retry.', reference: status.reference });
-      } else if (result.state === 'pending') {
-        const status = { state: 'pending', delivery: null, reference: result.reference || '' };
+        setMessage({ type: 'error', text: 'That vote didn’t go through. Please try again.' });
+      } else if (result.state === 'success') {
+        const status = { state: 'confirmed', delivery: result.delivery, reference: result.reference || '' };
         ballotStatusRef.current = status;
         setBallotStatus(status);
-        setBallotReference(status.reference);
-        setConfirmation(null);
-        setMessage(null);
-      } else if (result.state === 'confirmation') {
-        const prepared = { ...snapshot, reference: result.reference || '' };
-        setBallotReference(prepared.reference);
-        setConfirmation(prepared);
-        setMessage({ type: 'confirm', text: 'Review your choice, then confirm this simulated ballot.', reference: prepared.reference });
+        setBallotUsed(!repeatDemo);
+        setMessage({ type: 'success', text: snapshot.mode === 'live' ? 'Thanks—your vote is in!' : 'Test vote recorded.' });
+        repeatTestStartedRef.current = false;
       } else {
-        setMessage({ type: 'error', text: result.error || 'The ballot could not be prepared. No forwarding occurs until confirmation.', reference: result.reference });
+        setMessage({ type: 'error', text: 'We couldn’t record your vote. Please try again.' });
       }
       await load(false);
     } catch (error) {
       if (error.name !== 'AbortError') {
-        setMessage({ type: 'error', text: 'Preparation could not be confirmed. No forwarding occurs until you confirm. Reload status or try again.', reference: ballotReference });
-        await load(false);
-      }
-    } finally {
-      requestRef.current = null;
-      if (alive.current) setPending(false);
-    }
-  };
-
-  const confirmBallot = async () => {
-    if (pending || unresolved || !confirmation || alreadyUsed || !demoAvailable || confirmation.selectedEntryId !== String(selectedEntry?.id)) return;
-    const snapshot = confirmation;
-    setPending(true);
-    setMessage(null);
-    const controller = new AbortController();
-    requestRef.current = controller;
-    try {
-      const result = await fetchJson(API, {
-        method: 'POST', signal: controller.signal,
-        body: JSON.stringify({
-          action: 'confirm', mode: 'demo', entryId: snapshot.selectedEntryId,
-          email: snapshot.email, firstName: snapshot.firstName, lastName: snapshot.lastName,
-          website: snapshot.website || '',
-          ...(snapshot.attemptId ? { attemptId: snapshot.attemptId } : {}),
-          marketingOptIn: snapshot.marketingOptIn,
-          testDelivery: snapshot.testDelivery,
-        }),
-      });
-      if (!alive.current) return;
-      if (result.state === 'already-voted') {
-        setBallotUsed(!repeatDemo);
-        setBallotReference(result.reference || snapshot.reference || '');
-        setMessage({ type: 'duplicate', text: 'This ballot has already been used.', reference: result.reference || snapshot.reference });
-      } else if (result.state === 'error' || result.delivery === 'failed') {
-        ballotStatusRef.current = { state: 'pending', delivery: 'failed', reference: result.reference || snapshot.reference };
-        setBallotStatus(ballotStatusRef.current);
-        setBallotReference(result.reference || snapshot.reference || '');
-        setConfirmation(null);
-        setMessage({ type: 'error', text: 'The simulated submission failed. It was not counted. Your details are still here; you can retry.', reference: result.reference || snapshot.reference });
-      } else if (result.state === 'pending' && ['unknown', 'sending'].includes(result.delivery)) {
-        ballotStatusRef.current = { state: 'pending', delivery: result.delivery || 'unknown', reference: result.reference || snapshot.reference };
-        setBallotStatus(ballotStatusRef.current);
-        setBallotReference(result.reference || snapshot.reference || '');
-        setConfirmation(null);
-        setMessage({ type: 'pending', text: 'Not counted yet. Provider acceptance is uncertain; staff must check this reference before any resend.', reference: result.reference || snapshot.reference });
-      } else if (result.state === 'pending') {
-        ballotStatusRef.current = { state: 'pending', delivery: null, reference: result.reference || snapshot.reference };
-        setBallotStatus(ballotStatusRef.current);
-        setBallotReference(result.reference || snapshot.reference || '');
-        setConfirmation(null);
-        setMessage(null);
-      } else {
-        setBallotUsed(!repeatDemo);
-        ballotStatusRef.current = { state: 'confirmed', delivery: result.delivery || 'simulated', reference: result.reference || snapshot.reference };
-        setBallotStatus(ballotStatusRef.current);
-        setBallotReference(result.reference || snapshot.reference || '');
-        setMessage({ type: 'success', text: 'Demo ballot recorded. Forwarding was simulated only; no email was sent.', reference: result.reference || snapshot.reference });
-      }
-      setConfirmation(null);
-      await load(false);
-    } catch (error) {
-      if (error.name !== 'AbortError') {
-        ballotStatusRef.current = { state: 'pending', delivery: 'unknown', reference: snapshot.reference || '', networkOnly: !snapshot.reference };
-        setBallotStatus(ballotStatusRef.current);
-        setMessage({ type: 'pending', text: error.uncertain || !error.status
-          ? 'Status uncertain. Reload status before trying again; your entered details are kept here. Do not resend until the reference is checked.'
-          : ballotError(error), reference: snapshot.reference });
-        await load(false);
+        if (error.uncertain || !error.status || error.status >= 500) {
+          const status = { state: 'pending', delivery: 'unknown', reference: ballotStatusRef.current?.reference || '' };
+          ballotStatusRef.current = status;
+          setBallotStatus(status);
+          setMessage({ type: 'pending', text: 'Your vote may still be processing. Check its status before trying again.' });
+          await load(false);
+        } else {
+          setMessage({ type: 'error', text: 'We couldn’t record your vote. Please try again.' });
+        }
       }
     } finally {
       requestRef.current = null;
@@ -507,13 +387,16 @@ export default function ChristmasContenders() {
     upcoming: Number.isFinite(remaining) && remaining > 0 ? `Voting opens in ${countdownLabel(remaining)}` : 'Voting opens soon',
     open: Number.isFinite(remaining) && remaining > 0 ? `Voting closes in ${countdownLabel(remaining)}` : 'Voting closes soon',
     closed: 'Voting closed',
-    unavailable: 'Real voting is unavailable',
+    unavailable: '',
     checking: 'Checking voting status',
   }[votingState];
   const alreadyUsed = ballotUsed || (!repeatDemo && ['confirmed', 'invalidated'].includes(data?.viewerBallot?.state));
   const unresolved = ballotStatus?.state === 'pending' && ['sending', 'unknown'].includes(ballotStatus?.delivery);
-  const demoAvailable = data?.demoStatus === 'open' && data?.ready && !alreadyUsed;
-  const selectedEntry = entries.find(entry => entry.id === selectedEntryId && entry.mode === 'demo') || null;
+  const storageUnavailable = data?.status === 'unavailable' || data?.ready === false
+    || data?.demoStatus === 'unavailable';
+  const demoAvailable = data?.demoStatus === 'open' && data?.ready
+    && !storageUnavailable && !alreadyUsed;
+  const selectedEntry = entries.find(entry => entry.id === selectedEntryId) || null;
   const keepFocusClear = event => {
     const control = event.target;
     if (!control.matches(':focus-visible')) return;
@@ -537,9 +420,9 @@ export default function ChristmasContenders() {
           <p className="contenders-intro">
             Listen and choose your favourite by giving it a vote!
           </p>
-          <div className={`contenders-countdown contenders-countdown--${votingState}`} role="timer" aria-live="off">
+          {votingState !== 'unavailable' && <div className={`contenders-countdown contenders-countdown--${votingState}`} role="timer" aria-live="off">
             {statusCopy}
-          </div>
+          </div>}
           <p className="contenders-close-note">Voting closes {votingCloseLabel(settings.closesAt)}</p>
         </div>
       </section>
@@ -561,12 +444,10 @@ export default function ChristmasContenders() {
             <p>{loadError}</p>
             <button type="button" onClick={() => load(true)}>Try again</button>
           </div> : entries.length ? <fieldset className="contenders-grid">
-            <legend className="sr-only">{data?.ready && entries.some(entry => entry.mode === 'demo')
-              ? 'Choose one approved demo song for your ballot'
-              : 'Approved Christmas contender recordings. Voting is unavailable.'}</legend>
+            <legend className="sr-only">Choose one song for your vote</legend>
             {entries.map(entry => {
               const demo = entry.mode === 'demo';
-              const selectable = demo && !alreadyUsed && !pending && !unresolved;
+              const selectable = !alreadyUsed && !pending && !unresolved;
               return <article className={`contender-card${demo ? '' : ' contender-card--live'}`} id={entry.anchor || entry.id} key={entry.id}>
                 <div className="contender-card__art-wrap">
                   {entry.artwork ? <img className="contender-card__art" src={entry.artwork} alt={`${entry.artist} artwork`} /> : <div className="contender-card__art contender-card__art--missing" aria-label="Artwork unavailable" />}
@@ -598,14 +479,14 @@ export default function ChristmasContenders() {
                   <label className={`contender-select${!selectable ? ' contender-select--disabled' : ''}`}>
                     <input
                       type="checkbox" name="contender-selection"
-                      aria-label={demo ? `Select ${entry.title} by ${entry.artist}` : `Voting unavailable for ${entry.title} by ${entry.artist}`}
+                      aria-label={`Select ${entry.title} by ${entry.artist}`}
                       value={entry.id}
-                      checked={selectedEntryId === entry.id && demo}
+                      checked={selectedEntryId === entry.id}
                       disabled={!selectable}
                       onChange={() => chooseEntry(entry.id)}
                     />
                     <span className="contender-select__tick" aria-hidden="true" />
-                    <span>{demo ? 'Select song' : 'Voting unavailable'}</span>
+                    <span>Select song</span>
                   </label>
                 </div>
               </article>;
@@ -620,71 +501,39 @@ export default function ChristmasContenders() {
         </section>
 
         <section className="shared-ballot" id="shared-ballot" aria-labelledby="shared-ballot-title" tabIndex="-1">
-          <div className="shared-ballot__intro">
-            <p className="contenders-kicker">One shared ballot</p>
-            <h2 id="shared-ballot-title">Your song choice</h2>
-            <p>Preview only: forwarding is simulated, no email is sent, and a provider acceptance is not inbox delivery or proof of email ownership.</p>
-            {repeatDemo && <p>Repeat testing is on for the demo ballot. Use “Test another demo ballot” after each result. Genuine contenders remain unavailable for real voting.</p>}
-          </div>
+          <h2 id="shared-ballot-title" className="sr-only">Your vote</h2>
           <div className="shared-ballot__form-area">
-            {alreadyUsed || ballotStatus?.state === 'confirmed' ? <div className="ballot-terminal" role="status">
-              <p>{message?.text || 'This demo ballot has already been used. No additional ballot was recorded.'}</p>
-              {ballotReference && <p className="ballot-reference">Vote reference: <strong>{ballotReference}</strong></p>}
+            {storageUnavailable && <p className="ballot-unavailable">Preview — voting unavailable</p>}
+            {!storageUnavailable && (alreadyUsed || ballotStatus?.state === 'confirmed') ? <div className="ballot-terminal" role="status">
+              <p>{message?.text || 'You’ve already voted.'}</p>
               {repeatDemo && <button className="contender-vote-button" type="button"
-                disabled={pending || data?.demoStatus !== 'open' || !data?.ready}
+                disabled={pending || storageUnavailable || data?.demoStatus !== 'open' || !data?.ready}
                 onClick={() => {
                   demoAttempt.current = null;
                   try { window.sessionStorage.removeItem(ATTEMPT_KEY); } catch { /* optional */ }
                   repeatTestStartedRef.current = true;
                   ballotStatusRef.current = null;
-                  setBallotUsed(false); setBallotStatus(null); setBallotReference('');
-                  setConfirmation(null); setMessage(null); setMarketingOptIn(false); setTestDelivery('accepted');
-                  setFirstName(''); setLastName(''); setEmail(''); setSelectedEntryId('');
+                  setBallotUsed(false); setBallotStatus(null);
+                  setMessage(null); setMarketingOptIn(false);
+                  setEmail(''); setSelectedEntryId('');
                 }}>
-                Test another demo ballot
+                Test another vote
               </button>}
-            </div> : unresolved ? <div className="ballot-terminal ballot-terminal--pending" role="status">
-              <strong>Ballot status pending</strong>
-              <p>{message?.text || 'Not counted yet. Provider acceptance is uncertain; staff must check this reference before any resend.'}</p>
-              {ballotReference && <p className="ballot-reference">Vote reference: <strong>{ballotReference}</strong></p>}
+            </div> : !storageUnavailable && unresolved ? <div className="ballot-terminal ballot-terminal--pending" role="status">
+              <strong>Vote status</strong>
+              <p>{message?.text || 'Your vote is still being checked. Please wait before trying again.'}</p>
               <button className="contender-cancel-button" type="button" onClick={() => load(false)} disabled={pending}>Check status</button>
-            </div> : confirmation ? <div className="demo-confirmation">
-              <p className="demo-confirmation__choice">Confirm <strong>{entries.find(entry => String(entry.id) === confirmation.selectedEntryId)?.artist} — {entries.find(entry => String(entry.id) === confirmation.selectedEntryId)?.title}</strong></p>
-              <p className="demo-confirmation__name">{confirmation.firstName} {confirmation.lastName}</p>
-              <p className="demo-confirmation__email">Demo email: {confirmation.email}</p>
-              <p className="demo-confirmation__consent">Santa Radio news and updates: {confirmation.marketingOptIn ? 'Yes, opted in' : 'No'}</p>
-              <p className="demo-confirmation__consent">Simulation result: {confirmation.testDelivery}</p>
-              {confirmation.reference && <p className="ballot-reference">Vote reference: <strong>{confirmation.reference}</strong></p>}
-              <div className="demo-confirmation__actions">
-                <button className="contender-vote-button" type="button" onClick={confirmBallot} disabled={pending || !demoAvailable || confirmation.selectedEntryId !== String(selectedEntry?.id)}>
-                  {pending ? 'Confirming…' : 'Confirm simulated forwarding'}
-                </button>
-                <button className="contender-cancel-button" type="button" onClick={() => { setConfirmation(null); setMessage(null); }} disabled={pending}>Cancel</button>
-              </div>
             </div> : <form className="shared-ballot__form" onSubmit={startBallot}>
-              <p className="shared-ballot__choice">{selectedEntry ? <>Selected: <strong>{selectedEntry.artist} — {selectedEntry.title}</strong></> : 'Select one song above to continue.'}</p>
-              <p className="shared-ballot__required-copy">The existing SONG submission needs your first name, last name and email. These details stay in this page’s temporary state.</p>
-              <label htmlFor="demo-first-name">First name</label>
-              <input id="demo-first-name" type="text" autoComplete="given-name" maxLength={200}
-                value={firstName} onChange={event => setFirstName(event.target.value)}
-                required disabled={!demoAvailable || pending} />
-              <label htmlFor="demo-last-name">Last name</label>
-              <input id="demo-last-name" type="text" autoComplete="family-name" maxLength={200}
-                value={lastName} onChange={event => setLastName(event.target.value)}
-                required disabled={!demoAvailable || pending} />
-              <label htmlFor="demo-email">Email</label>
+              <p className="shared-ballot__choice">
+                <span>Your choice:</span>{' '}
+                <strong>{selectedEntry ? `${selectedEntry.artist} — ${selectedEntry.title}` : 'Choose a song above'}</strong>
+              </p>
+              <label htmlFor="demo-email">Email address</label>
               <input
                 id="demo-email" type="email" autoComplete="email" maxLength={254}
                 value={email} onChange={event => setEmail(event.target.value)}
                 required disabled={!demoAvailable || pending}
               />
-              <label htmlFor="demo-delivery">Preview simulation result</label>
-              <select id="demo-delivery" value={testDelivery} onChange={event => setTestDelivery(event.target.value)} disabled={!demoAvailable || pending}>
-                <option value="accepted">Accepted</option>
-                <option value="rejected">Rejected</option>
-                <option value="unknown">Unknown</option>
-              </select>
-              <p className="shared-ballot__preview-note">Preview only: simulates forwarding; no email is sent.</p>
               <label className="shared-ballot__opt-in">
                 <input
                   type="checkbox"
@@ -692,28 +541,25 @@ export default function ChristmasContenders() {
                   onChange={event => setMarketingOptIn(event.target.checked)}
                   disabled={!demoAvailable || pending}
                 />
-                <span>Send me occasional Santa Radio news and updates.</span>
+                <span>Send me occasional Santa Radio updates</span>
               </label>
               <p className="shared-ballot__privacy">
-                At launch, the existing SONG submission forwards your name, email, chosen artist and title, vote reference, and marketing yes/no through the Brevo form. The site keeps a fingerprint, count and minimal consent metadata only; it does not keep a new readable or recoverable address or create a marketing list. Read our <Link to="/privacy-policy">Privacy Policy</Link>.
+                One vote per person. We never sell your email. <Link to="/privacy-policy">Privacy policy</Link>
               </p>
-              <p className="shared-ballot__preview-note">This preview sends no email. Provider acceptance is not confirmed inbox delivery or proof of email ownership.</p>
               <div className="contender-honeypot" aria-hidden="true">
                 <label htmlFor="demo-website">Leave this field empty</label>
                 <input id="demo-website" name="website" tabIndex={-1} autoComplete="off" />
               </div>
-              <button className="contender-vote-button" type="submit" disabled={!demoAvailable || pending || !selectedEntry}>
-                {pending ? 'Preparing…' : 'Review simulated forwarding'}
+              <button className="contender-vote-button" type="submit" disabled={!demoAvailable || pending || unresolved || selectedEntry?.mode !== 'demo'}>
+                {pending ? 'Submitting…' : 'Submit vote'}
               </button>
             </form>}
-            {message && !alreadyUsed && !unresolved && <div className={`ballot-message ballot-message--${message.type}`} role={message.type === 'error' ? 'alert' : 'status'}>
-              {message.text}{message.reference && <span className="ballot-message__reference">Vote reference: <strong>{message.reference}</strong></span>}
+            {message && !storageUnavailable && !alreadyUsed && !unresolved && ballotStatus?.state !== 'confirmed' && <div className={`ballot-message ballot-message--${message.type}`} role={message.type === 'error' ? 'alert' : 'status'}>
+              {message.text}
             </div>}
-            {!alreadyUsed && !unresolved && !demoAvailable && !confirmation && <p className="ballot-unavailable">
-              {data?.demoStatus === 'closed' ? 'The demo ballot is closed.' : data?.demoStatus === 'unavailable' || !data?.ready
-                ? 'Demo ballots are temporarily unavailable.' : 'Demo ballot is not available.'}
-            </p>}
-            <p className="live-ballot-note"><strong>Preview only.</strong> No real vote or email is sent.</p>
+            {!storageUnavailable && !alreadyUsed && !unresolved && data?.demoStatus === 'closed'
+                ? <p className="ballot-unavailable">Voting is closed.</p>
+                : null}
           </div>
         </section>
 
@@ -737,10 +583,4 @@ export default function ChristmasContenders() {
       </div>
     </main>
   );
-}
-
-function ballotError(error) {
-  if (error.status === 409) return 'This ballot is closed or has already been used. No ballot was recorded.';
-  if (error.status === 503) return 'Ballots are temporarily unavailable. Please try again later.';
-  return error.message || 'We could not record that demo ballot. Please try again.';
 }

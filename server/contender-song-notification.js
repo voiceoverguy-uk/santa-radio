@@ -7,6 +7,11 @@ export const validVoteContact = value => validName(value?.firstName) && validNam
   Boolean(normalizeVotingEmail(value?.email));
 const invalid = () => Object.assign(new Error('The existing song form requires your actual first name, surname and a valid email. Nothing was forwarded.'), {status:400});
 
+// The existing hosted SONG form requires names and cannot accept the public
+// email-only ballot contract. Keep it isolated until a compatible route exists.
+export const EMAIL_ONLY_BREVO_ROUTING_READY = false;
+export const preparePreviewVoteNotification = () => async () => ({ delivery: 'simulated' });
+
 // Same hosted SONG destination and actual supported fields as songSubmission.js.
 // No invented visitor names, extra Brevo attributes or lyrics/media attachments.
 export function buildSongVotePayload({firstName,lastName,email,artist,title,voteReference,marketingOptIn=false}) {

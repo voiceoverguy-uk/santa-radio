@@ -350,23 +350,9 @@
   width: 100%;
 }
 
-.shared-ballot__form input[type="text"],
-.shared-ballot__form select {
-  background: #f4eddc;
-  border: 2px solid #d4af3740;
-  border-radius: 7px;
-  color: var(--cc-ink);
-  font: inherit;
-  font-size: 16px;
-  min-height: 42px;
-  padding: 8px 11px;
-  width: 100%;
-}
-
 .share-manual input:focus-visible,
 .shared-ballot__form input[type="email"]:focus-visible,
-.shared-ballot__form input[type="text"]:focus-visible,
-.shared-ballot__form select:focus-visible {
+.shared-ballot__opt-in input:focus-visible {
   border-color: #b89228;
   outline: 3px solid var(--cc-bright);
   outline-offset: 2px;
@@ -379,10 +365,11 @@
   border: 1px solid #d4af3760;
   border-radius: 15px;
   display: grid;
-  gap: clamp(18px, 4vw, 38px);
-  grid-template-columns: minmax(180px, .78fr) minmax(0, 1.22fr);
-  margin-top: 24px;
-  padding: clamp(18px, 3vw, 27px);
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 720px;
+  margin: 24px auto 0;
+  padding: 18px;
 }
 
 .shared-ballot:focus {
@@ -390,35 +377,18 @@
   outline-offset: 4px;
 }
 
-.shared-ballot__intro > p:last-child {
-  color: #d4dfd1;
-  font-size: .84rem;
-  line-height: 1.55;
-  margin: 10px 0 0;
-  max-width: 39ch;
-}
-
 .shared-ballot__form-area { min-width: 0; }
 .shared-ballot__form {
-  align-items: end;
+  align-items: start;
   display: grid;
-  gap: 7px 10px;
-  grid-template-columns: minmax(0, 1fr) minmax(150px, auto);
+  gap: 9px;
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .shared-ballot__form label { grid-column: 1 / -1; margin: 0; }
-.shared-ballot__choice { grid-column: 1 / -1; color: var(--cc-muted); font-size: .8rem; line-height: 1.5; margin: 0 0 5px; overflow-wrap: anywhere; }
+.shared-ballot__choice { grid-column: 1 / -1; color: var(--cc-muted); font-size: .8rem; line-height: 1.5; margin: 0 0 2px; overflow-wrap: anywhere; }
 .shared-ballot__choice strong { color: var(--cc-gold); }
-.shared-ballot__required-copy {
-  color: #d4dfd1;
-  font-size: .74rem;
-  grid-column: 1 / -1;
-  line-height: 1.45;
-  margin: 0;
-}
-.shared-ballot__form input[type="email"],
-.shared-ballot__form input[type="text"],
-.shared-ballot__form select { grid-column: 1 / -1; }
+.shared-ballot__form input[type="email"] { grid-column: 1 / -1; }
 
 .shared-ballot__form .shared-ballot__opt-in {
   align-items: flex-start;
@@ -448,8 +418,7 @@
 
 .shared-ballot__opt-in:has(input:disabled) { cursor: not-allowed; opacity: .6; }
 
-.shared-ballot__privacy,
-.shared-ballot__preview-note {
+.shared-ballot__privacy {
   color: var(--cc-muted);
   font-size: .68rem;
   grid-column: 1 / -1;
@@ -467,9 +436,6 @@
   outline: 2px solid var(--cc-bright);
   outline-offset: 2px;
 }
-
-.shared-ballot__preview-note { color: #aebdb1; font-size: .65rem; }
-.shared-ballot__form .shared-ballot__preview-note { grid-column: 1 / -1; }
 
 .contender-vote-button,
 .contenders-alert button {
@@ -513,42 +479,14 @@
 
 .ballot-message--error { background: #8d253022; border-left-color: #e58779; color: #ffd3ca; }
 .ballot-message--success { background: #d4af3710; color: var(--cc-gold); }
-.ballot-message--duplicate,
-.ballot-message--confirm { background: #d4af3710; }
+.ballot-message--duplicate { background: #d4af3710; }
 .ballot-message--pending { background: #d4af3710; border-left-color: #e4c16d; }
-.ballot-message__reference {
-  display: block;
-  margin-top: 5px;
-  overflow-wrap: anywhere;
-}
-.ballot-reference {
-  color: var(--cc-muted) !important;
-  font-size: .73rem !important;
-  overflow-wrap: anywhere;
-}
-.ballot-reference strong { color: var(--cc-gold); font-family: ui-monospace, 'SFMono-Regular', Consolas, monospace; }
-
-.ballot-unavailable,
-.live-ballot-note {
+.ballot-unavailable {
   color: var(--cc-muted);
   font-size: .75rem;
   line-height: 1.5;
-  margin: 9px 0 0;
+  margin: 0 0 10px;
 }
-
-.live-ballot-note strong { color: var(--cc-gold); }
-
-.demo-confirmation { display: grid; gap: 6px; }
-.demo-confirmation > p {
-  color: #d4dfd1;
-  font-size: .8rem;
-  line-height: 1.45;
-  margin: 0;
-}
-.demo-confirmation__choice strong { color: var(--cc-gold); }
-.demo-confirmation__consent { color: var(--cc-muted) !important; font-size: .73rem !important; }
-.demo-confirmation__actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 5px; }
-.demo-confirmation__actions .contender-vote-button { min-width: 190px; }
 
 .contender-cancel-button {
   background: transparent;
@@ -567,10 +505,11 @@
   background: #d4af3710;
   border-left: 3px solid var(--cc-gold);
   border-radius: 0 7px 7px 0;
+  color: var(--cc-cream);
   padding: 10px 13px;
 }
 .ballot-terminal strong { color: var(--cc-gold); font: 600 .88rem 'Cinzel', serif; }
-.ballot-terminal p { color: var(--cc-muted); font-size: .78rem; margin: 4px 0 0; }
+.ballot-terminal p { color: var(--cc-muted); font-size: .78rem; line-height: 1.5; margin: 4px 0 0; }
 .ballot-terminal--pending { border-left-color: #e4c16d; }
 .ballot-terminal .contender-cancel-button { margin-top: 10px; }
 
@@ -682,7 +621,6 @@
   .shared-ballot,
   .contenders-how { grid-template-columns: minmax(0, 1fr); }
   .shared-ballot { gap: 13px; }
-  .shared-ballot__intro > p:last-child { margin-top: 7px; max-width: 58ch; }
 }
 
 @media (max-width: 560px) {
@@ -702,11 +640,7 @@
   .contender-share { min-height: 34px; }
   .contender-select { flex: 0 1 auto; }
   .shared-ballot { padding: 17px 14px; }
-  .shared-ballot__form { grid-template-columns: minmax(0, 1fr); }
-  .shared-ballot__form label,
-  .shared-ballot__form input[type="email"] { grid-column: 1; }
   .shared-ballot__form .contender-vote-button { width: 100%; }
-  .demo-confirmation__actions .contender-vote-button { flex: 1 1 100%; }
   .contenders-how { padding: 18px 15px; }
 }
 

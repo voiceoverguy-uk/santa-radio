@@ -1,4 +1,4 @@
-export const MARKETING_CONSENT_TEXT = 'Send me occasional Santa Radio news and updates.';
+export const MARKETING_CONSENT_TEXT = 'Send me occasional Santa Radio updates';
 export const MARKETING_CONSENT_SOURCE = 'christmas-contenders-2026:preview-ballot';
 
 export function normalizeVotingEmail(value) {
