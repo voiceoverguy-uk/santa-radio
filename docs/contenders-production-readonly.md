@@ -31,6 +31,8 @@ not establish the provider, schema, permissions, valid signing or durable counti
    contacts or frozen marketing-consent records, send mail, invoke application
    handlers, migrate or write data. Do not use the public API as a strictly
    read-only database probe: its existing rate limiter writes rows.
+   A missing table means it is not resolvable on the application's search path;
+   check schema visibility/permissions before assuming it needs creating.
 
 Do not run this against the workspace binding and call its results Production.
 The prepared probe has not been run against Production. If no trusted runner or
