@@ -1,6 +1,31 @@
 import { test, expect } from '@playwright/test';
 import { mockBrevo, fillAccessForm } from './helpers/message-access.js';
 
+test('Studio A matches the recording pulse and seal, fits phones, and respects reduced motion', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await visit(page, '/free-santa-message');
+    const promotion = page.locator('.santa-studio-promotion');
+    const recording = promotion.locator('.message-recording-indicator');
+    await expect(recording).toHaveText('Recording (Studio - A)');
+    const seals = await page.evaluate(() => ['.message-seal', '.santa-studio-promotion__seal'].map(selector => {
+      const el = document.querySelector(selector), style = getComputedStyle(el);
+      return { width: el.getBoundingClientRect().width, height: el.getBoundingClientRect().height, font: style.fontSize };
+    }));
+    expect(seals[1]).toEqual(seals[0]);
+    const dot = recording.locator('.message-recording-dot');
+    expect(await dot.evaluate(el => getComputedStyle(el).animationName)).toBe('message-recording-pulse');
+    expect(await dot.evaluate(el => getComputedStyle(el).animationDuration)).toBe('1.6s');
+    const bounds = await recording.boundingBox();
+    expect(bounds.x).toBeGreaterThanOrEqual(0);
+    expect(bounds.x + bounds.width).toBeLessThanOrEqual(width);
+    expect(await promotion.evaluate(el => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
+  }
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  expect(await page.locator('.santa-studio-promotion .message-recording-dot').evaluate(el => getComputedStyle(el).animationName)).toBe('none');
+});
+
 async function visit(page, path) {
   await page.goto(path);
   const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });

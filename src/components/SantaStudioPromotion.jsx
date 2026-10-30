@@ -13,7 +13,13 @@ export default function SantaStudioPromotion({ activeExampleName = null }) {
         <div className="santa-studio-promotion__intro">
           <div className="santa-studio-promotion__topline">
             <span className="santa-studio-promotion__seal" aria-hidden="true">S</span>
-            <p className="santa-studio-promotion__eyebrow">A little more magic</p>
+            <div className="santa-studio-promotion__heading">
+              <p className="santa-studio-promotion__eyebrow">A little more magic</p>
+              <span className="message-recording-indicator" title="North Pole recording studio">
+                <span className="message-recording-dot" aria-hidden="true" />
+                Recording (Studio - A)
+              </span>
+            </div>
           </div>
           <h3 id="santa-studio-title" tabIndex={-1}>Santa’s <span className="santa-studio-promotion__title-line">Message Maker Studio</span></h3>
           <p className="santa-studio-promotion__copy">

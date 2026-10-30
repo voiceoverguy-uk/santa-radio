@@ -40,15 +40,24 @@
 
 .santa-studio-promotion__seal {
   display: grid;
-  width: 32px;
-  height: 32px;
-  flex: 0 0 32px;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
   place-items: center;
   border: 1px solid var(--studio-gold);
   border-radius: 50%;
   color: #806023;
   font-family: "Cinzel", Georgia, serif;
-  font-size: 1rem;
+  font-size: 1.4rem;
+}
+
+.santa-studio-promotion__heading {
+  min-width: 0;
+}
+
+.santa-studio-promotion .message-recording-indicator {
+  margin-top: 4px;
+  color: #334c3d;
 }
 
 .santa-studio-promotion__eyebrow {
