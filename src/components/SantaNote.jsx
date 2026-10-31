@@ -8,6 +8,7 @@ export default function SantaNote() {
   const [readyMessage, setReadyMessage] = useState(null);
   const [days, setDays] = useState(daysUntilChristmasEve);
   const message = `Santa here... ${formatSantaNote(santaNotes[index], days)}`;
+  const sizingMessages = santaNotes.map(note => `Santa here... ${formatSantaNote(note, days)}`);
   useEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
     const update = () => setReducedMotion(media.matches);
@@ -32,11 +33,16 @@ export default function SantaNote() {
   const waiting = !reducedMotion && readyMessage !== message;
   return (
     <div className="santa-note" aria-label="A note from Santa">
-      <p key={`${message}-${waiting ? 'waiting' : 'ready'}`} className={`santa-note-text${waiting ? ' is-waiting' : ''}`} aria-label={message}>
-        <span aria-hidden="true">
-          {waiting ? <span className="santa-note-dots"><i /><i /><i /></span> : message}
+      <div className="santa-note-stage">
+        <span className="santa-note-sizing" aria-hidden="true">
+          {sizingMessages.map((sizingMessage, sizingIndex) => <span key={sizingIndex}>{sizingMessage}</span>)}
         </span>
-      </p>
+        <p key={`${message}-${waiting ? 'waiting' : 'ready'}`} className={`santa-note-text${waiting ? ' is-waiting' : ''}`} aria-label={message}>
+          <span aria-hidden="true">
+            {waiting ? <span className="santa-note-dots"><i /><i /><i /></span> : message}
+          </span>
+        </p>
+      </div>
     </div>
   );
 }

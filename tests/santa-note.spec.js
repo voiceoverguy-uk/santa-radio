@@ -1,12 +1,13 @@
 import { test, expect } from '@playwright/test';
 import { santaNotes, daysUntilChristmasEve, formatSantaNote } from '../src/data/santaNotes.js';
 
-test('plain Santa text in Contact fits every message without oversized reserved space', async ({ page }) => {
+test('handwritten Santa note fits every live message without shifting the paper', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   const text = page.locator('.santa-note-text');
   await expect(page.locator('.contact-section .santa-note-text')).toBeVisible();
+  await page.evaluate(() => document.fonts.ready);
   await expect(text).toContainText('Santa here...');
   for (const width of [1280, 320, 390, 430]) {
     await page.setViewportSize({ width, height: 844 });
@@ -27,9 +28,9 @@ test('plain Santa text in Contact fits every message without oversized reserved 
         };
       });
     }, santaNotes.map(note => formatSantaNote(note, 78)));
-    expect(sizes[0].height).toBeLessThanOrEqual(110);
     expect(sizes.every(size => size.fits)).toBe(true);
-    expect(sizes.every(size => size.slotHeight <= size.height + 1)).toBe(true);
+    expect(Math.max(...sizes.map(size => size.height)) - Math.min(...sizes.map(size => size.height))).toBeLessThan(1);
+    expect(Math.max(...sizes.map(size => size.slotHeight)) - Math.min(...sizes.map(size => size.slotHeight))).toBeLessThan(1);
     const note = await text.boundingBox();
     const email = await page.getByRole('link', { name: 'Get in touch', exact: true }).boundingBox();
     expect(note.y - (email.y + email.height)).toBeGreaterThanOrEqual(39);
