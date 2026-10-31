@@ -314,6 +314,10 @@
 }
 
 @media (max-width: 767px) {
+  .santa-studio-promotion__launch-countdown strong {
+    display: block;
+  }
+
   .santa-studio-promotion__topline {
     gap: 8px;
   }

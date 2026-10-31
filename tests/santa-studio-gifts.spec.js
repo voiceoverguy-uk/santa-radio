@@ -32,7 +32,7 @@ async function visit(page, { reduced = false, clock = true } = {}) {
   if (await decline.isVisible()) await decline.click();
   await gifts(page).scrollIntoViewIfNeeded();
   await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Edward');
-  await expect(gifts(page).getByRole('heading', { level: 4 })).toHaveText('From Santa’s desk — a gift preview for Edward');
+  await expect(gifts(page).getByRole('heading', { level: 4 })).toHaveText('A gift preview for Edward');
   await expect(gifts(page)).not.toContainText('Example for');
 }
 
@@ -594,7 +594,7 @@ for (const width of [1440, 390]) {
     await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Ayla');
     await page.clock.runFor(200);
     await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Erin');
-    await expect(gifts(page).getByRole('heading', { level: 4 })).toHaveText('From Santa’s desk — a gift preview for Erin');
+    await expect(gifts(page).getByRole('heading', { level: 4 })).toHaveText('A gift preview for Erin');
     await expect(picture).toHaveAttribute('src', '/images/santa-nice-list-3.jpg');
     await expect(picture).toHaveJSProperty('naturalWidth', 1536);
     await expect(gifts(page)).toHaveAttribute('data-complete', 'false');

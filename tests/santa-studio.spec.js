@@ -42,6 +42,8 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('Studio launch countdown sits below the red button and ends on 6 November UK time', async ({ page }) => {
+  const initialHtml = await (await page.request.get('/free-santa-message')).text();
+  expect(initialHtml).toContain('Santa’s Message Maker Studio opens 6 November.');
   await page.clock.install({ time: new Date('2026-10-29T23:59:59Z') });
   await page.clock.pauseAt(new Date('2026-10-30T00:00:00Z'));
   await page.route('**/api/santa-names?*', route => route.fulfill({
@@ -53,8 +55,40 @@ test('Studio launch countdown sits below the red button and ends on 6 November U
   await expect(countdown).toHaveText('Santa’s Message Maker Studio opens in 7 days, 0 hours, 0 minutes, 0 seconds');
   await expect(promotion.locator('.workshop-password-form--promotion + .santa-studio-promotion__launch-countdown')).toHaveCount(1);
   await expect(countdown).toHaveAttribute('aria-live', 'off');
+  await expect(countdown).toHaveAttribute('title', 'Opens 6 November 2026 at midnight UK time');
   for (const width of [320, 390, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
+    for (const size of ['100%', '200%']) {
+      await page.evaluate(size => { document.documentElement.style.fontSize = size; }, size);
+      const geometry = await countdown.evaluate(element => {
+        const time = element.querySelector('strong');
+        const intro = document.createRange(), numbers = document.createRange();
+        intro.selectNodeContents(element.firstChild);
+        numbers.selectNodeContents(time);
+        const introLines = [...intro.getClientRects()];
+        const numberLines = [...numbers.getClientRects()];
+        const bounds = element.getBoundingClientRect();
+        return {
+          display: getComputedStyle(time).display,
+          weight: Number(getComputedStyle(time).fontWeight),
+          align: getComputedStyle(element).textAlign,
+          lastIntro: introLines.at(-1).toJSON(),
+          firstNumber: numberLines[0].toJSON(),
+          fits: [...introLines, ...numberLines].every(line =>
+            line.left >= bounds.left - 1 && line.right <= bounds.right + 1 &&
+            line.top >= bounds.top - 1 && line.bottom <= bounds.bottom + 1),
+          noOverflow: element.scrollWidth <= element.clientWidth + 1,
+        };
+      });
+      expect(geometry.display).toBe(width < 768 ? 'block' : 'inline');
+      expect(geometry.weight).toBeGreaterThanOrEqual(700);
+      expect(geometry.align).toBe('center');
+      expect(geometry.fits).toBe(true);
+      expect(geometry.noOverflow).toBe(true);
+      if (width < 768) expect(geometry.firstNumber.top).toBeGreaterThanOrEqual(geometry.lastIntro.bottom);
+      else if (size === '100%') expect(Math.abs(geometry.firstNumber.top - geometry.lastIntro.top)).toBeLessThan(1);
+    }
+    await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
     const button = await promotion.getByRole('button', { name: 'Create your bespoke message', exact: true }).boundingBox();
     const text = await countdown.boundingBox();
     expect(text.y).toBeGreaterThan(button.y + button.height);
