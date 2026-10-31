@@ -1,5 +1,12 @@
 import { test, expect } from '@playwright/test';
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    sessionStorage.setItem('santa-message-offer-shown', 'shown');
+    localStorage.setItem('santa-message-offer-last-shown', String(Date.now()));
+  });
+});
+
 test('all soundboard buttons share the gold glow without changing size', async ({ page }) => {
   await page.goto('/');
   const rejectCookies = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
@@ -43,7 +50,10 @@ test('touch soundboard buttons do not acquire a sticky gold hover glow', async (
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   try {
     const page = await context.newPage();
+    await page.addInitScript(() => sessionStorage.setItem('santa-message-offer-shown', 'shown'));
     await page.goto(`${test.info().project.use.baseURL}/`);
+    const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+    if (await decline.isVisible()) await decline.click();
     await page.evaluate(() => { HTMLMediaElement.prototype.play = () => Promise.resolve(); });
     const button = page.locator('.soundboard-btn').first();
     await button.tap();
@@ -58,8 +68,10 @@ test('touch soundboard buttons do not acquire a sticky gold hover glow', async (
 
 test('all 20 sounds are available and new clips decode and toggle', async ({ page }) => {
   await page.goto('/');
+  const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+  if (await decline.isVisible()) await decline.click();
   await expect(page.locator('.soundboard-btn')).toHaveCount(20);
-  const files = ['christmas-dinner-ready', 'merry-kiss-mas', 'no', 'yes', 'ready-for-christmas', 'proper-chrimbo', 'goodbye', 'ho-ho-ho'];
+  const files = ['asleep', 'been-naughty', 'cookies', 'its-christmas', 'jingle-bells', 'making-a-list', 'tis-the-season', 'very-quiet', 'happy-holidays', 'merry-christmas', 'naughty-or-nice', 'what-would-you-like', 'christmas-dinner-ready', 'merry-kiss-mas', 'no', 'yes', 'ready-for-christmas', 'proper-chrimbo', 'goodbye', 'ho-ho-ho'];
   for (const file of files) {
     const duration = await page.evaluate(async file => {
       const context = new AudioContext();

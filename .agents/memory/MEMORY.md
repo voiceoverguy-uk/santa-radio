@@ -59,3 +59,4 @@
 - [Christmas Contenders scope](christmas-contenders-scope.md) — One-choice first build; votes inform editorial consideration; owner must choose any earlier submission cutoff.
 - [Hero name-checker scope](hero-name-checker-scope.md) — Approved homepage hero: no App Store logo; description below heading; preserve lower sections and child-name privacy.
 - [Christmas Pairs scope](christmas-pairs-scope.md) — Free homepage game below the soundboard; owner-supplied artwork, optional sound off initially and sensible preview timings.
+- [Soundboard direction](soundboard-design-scope.md) — Approved warm workshop design; preserve all 20 phrases and playback, and keep Apps-page work separate.
