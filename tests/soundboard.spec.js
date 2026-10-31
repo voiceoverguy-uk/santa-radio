@@ -7,6 +7,53 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
+for (const width of [390, 1440]) {
+  test(`soundboard keeps concise copy and same-tab app navigation at ${width}px`, async ({ page, context }) => {
+    await page.setViewportSize({ width, height: 1100 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/');
+    const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+    if (await decline.isVisible()) await decline.click();
+    await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
+    const board = page.getByRole('region', { name: 'Santa’s Soundboard', exact: true });
+    await expect(board.getByRole('heading', { name: 'Santa’s Soundboard', exact: true })).toBeVisible();
+    await expect(board.locator('.soundboard-subtitle')).toHaveText('A little Christmas magic. In Santa’s own voice.');
+    await expect(board.getByText('Choose a phrase and let Santa do the talking.', { exact: true })).toHaveCount(0);
+    await expect(board.getByText('Tap a phrase to play. Tap again to stop.', { exact: true })).toHaveCount(0);
+    await expect(board.locator('.soundboard-btn-label')).toHaveText([
+      'Are you asleep', 'Been Naughty', 'Cookies', "It's Christmas", 'Jingle Bells',
+      'Making a List', 'Tis the Season', 'Very Quiet', 'Happy Holidays', 'Merry Christmas',
+      'Naughty or Nice', 'What Would You Like?', 'Is Christmas Dinner Ready Yet?', 'Merry Kiss-Mas',
+      'No', 'Yes', 'Are You Ready for Christmas?', 'Proper Chrimbo', 'Goodbye', 'Ho Ho Ho',
+    ]);
+    const spacing = await board.evaluate(el => {
+      const subtitle = el.querySelector('.soundboard-subtitle').getBoundingClientRect();
+      const panel = el.querySelector('.soundboard-panel').getBoundingClientRect();
+      const prompt = el.querySelector('.soundboard-app-prompt').getBoundingClientRect();
+      return {
+        above: panel.top - subtitle.bottom,
+        below: prompt.top - panel.bottom,
+        emptyParagraphs: [...el.querySelectorAll('p')].filter(p => !p.textContent.trim()).length,
+      };
+    });
+    expect(spacing.emptyParagraphs).toBe(0);
+    expect(spacing.above).toBeGreaterThan(0);
+    expect(spacing.above).toBeLessThanOrEqual(33);
+    expect(spacing.below).toBeGreaterThan(0);
+    expect(spacing.below).toBeLessThanOrEqual(28);
+    const link = board.getByRole('link', { name: 'More Christmas magic in the Santa Radio app', exact: true });
+    await expect(link).toHaveAttribute('href', '/apps');
+    await expect(link).not.toHaveAttribute('target', '_blank');
+    await expect(link.locator('[aria-hidden="true"]')).toHaveText('→');
+    const pagesBefore = context.pages().length;
+    await link.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
+    await link.click();
+    await expect(page).toHaveURL(/\/apps$/);
+    await expect(page.getByRole('heading', { name: 'Christmas Apps', exact: true })).toBeVisible();
+    expect(context.pages()).toHaveLength(pagesBefore);
+  });
+}
+
 test('all soundboard buttons share the gold glow without changing size', async ({ page }) => {
   await page.goto('/');
   const rejectCookies = page.getByRole('button', { name: 'Decline optional cookies', exact: true });

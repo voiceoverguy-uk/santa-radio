@@ -68,7 +68,7 @@ for (const width of [320, 390, 768, 1440]) {
     const after = await buttons.nth(9).boundingBox();
     expect(after.width).toBeCloseTo(before.width, 1);
     expect(after.height).toBeCloseTo(before.height, 1);
-    await expect(board.locator('.soundboard-link')).toHaveAttribute('href', 'https://apps.apple.com/gb/app/santa-radio/id1021183593');
+    await expect(board.locator('.soundboard-link')).toHaveAttribute('href', '/apps');
     await expect(buttons.nth(9)).toHaveCSS('transition-duration', '0s');
     mkdirSync('generated-artifacts', { recursive: true });
     await board.screenshot({ path: `generated-artifacts/soundboard-redesign-${width}.jpg`, animations: 'disabled' });
@@ -117,5 +117,6 @@ test('soundboard cancels stale loads, handles media events and supports keyboard
   await buttons.first().click();
   await page.evaluate(() => window.__clips.at(-1).resolve());
   await page.locator('.navbar a[href="/apps"]').click();
-  expect(await page.evaluate(() => window.__clips.every(clip => !clip.audio.getAttribute('src')))).toBe(true);
+  await expect(page).toHaveURL(/\/apps$/);
+  await expect.poll(() => page.evaluate(() => window.__clips.every(clip => !clip.audio.getAttribute('src')))).toBe(true);
 });

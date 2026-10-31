@@ -35,7 +35,6 @@ section.soundboard::before {
 
 .soundboard-intro {
   max-width: 760px;
-  min-height: 200px;
   margin: 0 0 2rem 4.2%;
   text-align: center;
 }
@@ -64,13 +63,6 @@ section.soundboard::before {
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(1.03rem, 2vw, 1.35rem);
   line-height: 1.4;
-}
-
-.soundboard-instruction {
-  margin: .65rem 0 0;
-  color: rgba(255, 244, 217, .84);
-  font-size: .92rem;
-  letter-spacing: .015em;
 }
 
 .soundboard-panel {
@@ -299,14 +291,6 @@ section.soundboard::before {
   height: 12px;
   border-radius: 1px;
   background: currentColor;
-}
-
-.soundboard .soundboard-hint {
-  margin: 1rem 0 0;
-  color: rgba(255, 244, 217, .78);
-  font-size: .82rem;
-  text-align: center;
-  max-width: none;
 }
 
 .soundboard-error {

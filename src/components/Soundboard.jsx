@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { PHRASES } from '../lib/soundboardPhrases.js';
 import useSoundboard from './useSoundboard.js';
 import './Soundboard.css';
@@ -34,7 +35,6 @@ export default function Soundboard() {
         <p className="soundboard-eyebrow">FROM SANTA’S WORKSHOP</p>
         <h2 className="soundboard-title" id="soundboard-title">Santa’s Soundboard</h2>
         <p className="soundboard-subtitle">A little Christmas magic. In Santa’s own voice.</p>
-        <p className="soundboard-instruction">Choose a phrase and let Santa do the talking.</p>
       </header>
 
       <div className="soundboard-panel">
@@ -80,12 +80,11 @@ export default function Soundboard() {
         </div>
       </div>
 
-      <p className="soundboard-hint">Tap a phrase to play. Tap again to stop.</p>
       {error && <p className="soundboard-error" role="status">{error}</p>}
       <p className="soundboard-app-prompt">
-        <a className="soundboard-link" href="https://apps.apple.com/gb/app/santa-radio/id1021183593" target="_blank" rel="noopener noreferrer">
+        <Link className="soundboard-link" to="/apps">
           More Christmas magic in the Santa Radio app <span aria-hidden="true">→</span>
-        </a>
+        </Link>
       </p>
     </div>
   </section>;
