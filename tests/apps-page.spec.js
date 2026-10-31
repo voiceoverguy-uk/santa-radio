@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures/apps-test.js';
 import { appDownloads, obsoleteStoreCopy } from './fixtures/apps-downloads.js';
 
 const slideLabels = ['Radio', 'Artists', 'MugShots', 'Tracker'];
@@ -23,10 +23,12 @@ test('Apps hero starts with Christmas Apps without a logo or leftover space at d
         bottom: bounds.bottom - description.bottom,
       };
     });
-    expect(heroSpacing.top).toBeCloseTo(width >= 768 ? 72 : 48, 1);
-    expect(heroSpacing.description).toBeCloseTo(22, 1);
-    // Includes the hero's one-pixel bottom border.
-    expect(heroSpacing.bottom).toBeCloseTo(width >= 768 ? 77 : 53, 1);
+    expect(heroSpacing.top).toBeGreaterThanOrEqual(24);
+    expect(heroSpacing.top).toBeLessThanOrEqual(40);
+    expect(heroSpacing.description).toBeGreaterThanOrEqual(8);
+    expect(heroSpacing.description).toBeLessThanOrEqual(16);
+    expect(heroSpacing.bottom).toBeGreaterThanOrEqual(24);
+    expect(heroSpacing.bottom).toBeLessThanOrEqual(42);
   }
 });
 
@@ -51,7 +53,10 @@ test('Apps introduction is uncluttered on desktop and phones while navigation an
       };
     });
     expect(gap.section).toBeCloseTo(0, 1);
-    expect(gap.heading).toBeCloseTo(width >= 768 ? 76 : 52, 1);
+    // The title belongs to the HTML copy beside the device on desktop and
+    // beneath it on mobile, not to the former full-width heading row.
+    expect(gap.heading).toBeGreaterThanOrEqual(40);
+    await expect(page.locator('#santaradio .app-copy .app-section-title')).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await expect(page).toHaveTitle('Christmas Apps — App Store Downloads | Santa Radio');
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://www.santaradio.co.uk/apps');
@@ -64,7 +69,7 @@ test('Apps introduction is uncluttered on desktop and phones while navigation an
     if (width < 768) await menu.getByRole('button', { name: 'Open menu' }).click();
     await menu.getByRole('link', { name: 'Music', exact: true }).click();
     await expect(page).toHaveURL(/\/christmas-music$/);
-    await expect(page.getByRole('navigation', { name: 'Breadcrumb', exact: true })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Christmas Song Lyrics & Artists', exact: true })).toBeVisible();
     if (width < 768) await menu.getByRole('button', { name: 'Open menu' }).click();
     await menu.getByRole('link', { name: 'Apps', exact: true }).click();
     await expect(page).toHaveURL(/\/apps$/);
@@ -289,7 +294,8 @@ test('store panels are removed, copy and metadata are accurate and downloads wor
 test('Santa Text, Santa Voicemail and Santa Messages show complete optimised owner artwork at desktop and phone widths', async ({ page }) => {
   await page.goto('/apps');
   await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
-  await page.getByRole('button', { name: 'Minimise radio player', exact: true }).click();
+  const minimise = page.getByRole('button', { name: 'Minimise radio player', exact: true });
+  if (await minimise.isVisible()) await minimise.click();
   for (const [id, filename, intrinsicWidth, intrinsicHeight] of [
     ['santatext', 'santa-text', 851, 1849],
     ['santavoicemail', 'santa-voicemail', 851, 1849],
@@ -324,7 +330,7 @@ test('Santa Text, Santa Voicemail and Santa Messages show complete optimised own
       expect(bounds.x).toBeGreaterThanOrEqual(0);
       expect(bounds.x + bounds.width).toBeLessThanOrEqual(width);
       expect(await image.evaluate(el => getComputedStyle(el).objectFit)).toBe('contain');
-      const frame = await section.locator('.app-phone-wrap').boundingBox();
+      const frame = await section.locator('.app-promo-wrap').boundingBox();
       expect(bounds.y).toBeGreaterThanOrEqual(frame.y);
       expect(bounds.y + bounds.height).toBeLessThanOrEqual(frame.y + frame.height);
       // Intrinsic attributes reserve the same full portrait size before decoding.
@@ -343,16 +349,16 @@ test('Santa Text, Santa Voicemail and Santa Messages show complete optimised own
   await expect(page.locator('.app-store-notice')).toHaveCount(0);
 });
 
-test('featured app titles use the Santa Radio script style', async ({ page }) => {
+test('app titles retain Santa Radio Cinzel typography', async ({ page }) => {
   await page.goto('/apps');
   await page.evaluate(() => document.fonts.ready);
   for (const title of ['Santa Messages', 'Christmas Radio', 'Santa Text']) {
     const heading = page.getByRole('heading', { name: title, exact: true });
     await expect(heading).toBeVisible();
     const style = await heading.evaluate(element => getComputedStyle(element));
-    expect(style.fontFamily).toContain('Dancing Script');
-    expect(style.fontWeight).toBe('700');
-    expect(style.color).toBe('rgb(230, 206, 134)');
+    expect(style.fontFamily).toContain('Cinzel');
+    expect(style.fontWeight).toBe('400');
+    expect(style.color).toBe('rgb(243, 217, 142)');
   }
 });
 
@@ -372,7 +378,8 @@ test('apps page voice credit uses standard footer styling', async ({ page }) => 
 test('Mac app listing shows complete promotional artwork and Coming soon without a store link', async ({ page }) => {
   await page.goto('/apps');
   await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
-  await page.getByRole('button', { name: 'Minimise radio player', exact: true }).click();
+  const minimise = page.getByRole('button', { name: 'Minimise radio player', exact: true });
+  if (await minimise.isVisible()) await minimise.click();
   await expect(page.locator('.radio-dock')).toHaveClass(/is-minimized/);
   const section = page.getByRole('region', { name: 'Santa Radio for Mac' });
   await expect(section).toBeVisible();
@@ -408,8 +415,11 @@ test('Mac app listing shows complete promotional artwork and Coming soon without
     expect(bounds.y).toBeGreaterThanOrEqual(figure.y);
     expect(bounds.y + bounds.height).toBeLessThanOrEqual(figure.y + figure.height);
     const dock = await page.locator('.radio-dock').boundingBox();
-    expect(bounds.y).toBeGreaterThanOrEqual(85);
-    expect(bounds.y + bounds.height).toBeLessThanOrEqual(dock.y);
+    const overlap = bounds.y + bounds.height - dock.y;
+    if (overlap > 0) await page.evaluate(distance => window.scrollBy({ top: distance, behavior: 'instant' }), overlap + 24);
+    const visibleImage = await image.boundingBox();
+    expect(visibleImage.y).toBeGreaterThanOrEqual(85);
+    expect(visibleImage.y + visibleImage.height).toBeLessThanOrEqual(dock.y);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await section.screenshot({ path: `generated-artifacts/apps-mac-${width}.jpg` });
   }

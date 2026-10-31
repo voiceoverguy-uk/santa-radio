@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures/apps-test.js';
 
 const regionName = 'Santa Radio Apple Watch promotional images';
 

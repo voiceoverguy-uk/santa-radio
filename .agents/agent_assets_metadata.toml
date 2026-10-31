@@ -784,3 +784,31 @@ mtime_ms = 1793352819309
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/d63d41cf-f31a-4381-ba4a-364262f569a3/fd369003-3259-47d4-8c92-6278ef354a32"
 storage_version_token = "1793352948128307"
 content_type = "image/jpeg"
+
+[[outputs]]
+id = "Oh1x0ohU7WyJ9XvSQCHaf"
+uri = "file://generated-artifacts/apps-review-radio-1440.jpg"
+type = "image"
+title = "Revised Apps page — desktop"
+description = "Actual revised page: reference-derived Christmas scenery and real rotating app screenshots inside a dimensional iPhone mockup."
+logical_id = "3f629aef-1c8d-45f3-b85a-77ecd394ea5f"
+content_hash = "sha256:5b21b6e393ca44fa5f678f88e95fcba96290ccabc0a053ad346a3c0057cb89ae"
+size = 163759
+mtime_ms = 1793372832983
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/3f629aef-1c8d-45f3-b85a-77ecd394ea5f/d66ca922-94c6-44f8-b536-bead1e89ab4d"
+storage_version_token = "1793372915320058"
+content_type = "image/jpeg"
+
+[[outputs]]
+id = "g_zEA4D0tmKY04cwLAwzN"
+uri = "file://generated-artifacts/apps-review-radio-390.jpg"
+type = "image"
+title = "Revised Apps page — mobile"
+description = "Actual 390px mobile layout, with the iPhone above readable HTML feature cards and download links. Fixed site overlays are omitted from this isolated section capture."
+logical_id = "2ef40f8d-0adf-4b8e-ac2f-47e1e8650616"
+content_hash = "sha256:3e2850d40fc52fd834a66918fa44135eaec21094c600c90383a1723f90e74d69"
+size = 109298
+mtime_ms = 1793372833943
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/2ef40f8d-0adf-4b8e-ac2f-47e1e8650616/cdbaaba0-3fe6-47b7-8a89-50b4bb0ccaa1"
+storage_version_token = "1793372916080667"
+content_type = "image/jpeg"

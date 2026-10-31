@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures/apps-test.js';
 
 async function open(page) {
   await page.clock.install();
@@ -130,7 +130,7 @@ test('Santa Dash hover and hidden tabs suspend automatic rotation', async ({ pag
   await expectSlide(carousel, 2);
 });
 
-test('Santa Dash reduced motion is static with stable uncropped landscape artwork above feature cards', async ({ page }) => {
+test('Santa Dash reduced motion keeps uncropped landscape artwork beside or above feature cards', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   const carousel = await open(page);
   await expect(carousel.getByRole('button')).toHaveCount(0);
@@ -139,7 +139,8 @@ test('Santa Dash reduced motion is static with stable uncropped landscape artwor
   for (const width of [1440, 1024, 768, 390, 320]) {
     await page.setViewportSize({ width, height: 1000 });
     const before = await carousel.boundingBox();
-    expect(before.width).toBeCloseTo(Math.min(760, width - (width >= 768 ? 48 : 36)), 1);
+    expect(before.width).toBeGreaterThan(width >= 768 ? 300 : 250);
+    expect(before.width).toBeLessThanOrEqual(width);
     const after = await carousel.boundingBox();
     expect(after.width).toBeCloseTo(before.width, 1);
     expect(after.height).toBeCloseTo(before.height, 1);
@@ -154,7 +155,8 @@ test('Santa Dash reduced motion is static with stable uncropped landscape artwor
     expect(image.x).toBeGreaterThanOrEqual(0);
     expect(image.right).toBeLessThanOrEqual(width);
     const cards = await page.locator('#santadash .app-features-grid').boundingBox();
-    expect(cards.y).toBeGreaterThanOrEqual(after.y + after.height + 27);
+    if (width >= 768) expect(cards.x).toBeGreaterThanOrEqual(after.x + after.width + 20);
+    else expect(cards.y).toBeGreaterThanOrEqual(after.y + after.height + 20);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await carousel.screenshot({ path: `generated-artifacts/apps-santa-dash-${width}.jpg` });
   }

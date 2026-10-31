@@ -10,28 +10,31 @@ function AppSection({ app }) {
   return (
     <section id={app.id} className="app-section" aria-labelledby={`${app.id}-title`}>
       <div className="apps-container">
-        <div className="app-section-heading">
-          <h2 id={`${app.id}-title`} className="app-section-title">{app.title}</h2>
-          {app.subtitle && <p className="app-section-sub">{app.subtitle}</p>}
-        </div>
         <div className={`app-layout${app.landscape ? ' app-layout-landscape' : ''}${app.screenshots ? ' app-layout-with-slideshow' : ''}`}>
-          {app.screenshots ? <AppScreenshots slides={app.screenshots} {...app.slideshow} /> : <div className="app-phone-wrap">
+          {app.screenshots ? <AppScreenshots slides={app.screenshots} {...app.slideshow} /> : <figure className="app-promo-wrap">
                 <img
                   src={app.image}
                   alt={app.alt}
-                  className="app-phone-img"
+                  className="app-promo-img"
                   width={app.width}
                   height={app.height}
                   loading="lazy"
                   decoding="async"
                 />
-          </div>}
+          </figure>}
           <div className="app-copy">
+            <div className="app-section-heading">
+              <h2 id={`${app.id}-title`} className="app-section-title">{app.title}</h2>
+              {app.subtitle && <p className="app-section-sub">{app.subtitle}</p>}
+            </div>
             <div className="app-features-grid">
-              {app.features.map(({ label, desc }) => (
+              {app.features.map(({ label, desc, icon }) => (
                 <div key={label} className="feature-item">
-                  <h3 className="feature-label">{label}</h3>
-                  <p className="feature-desc">{desc}</p>
+                  <span className="feature-icon"><AppIcon name={icon} /></span>
+                  <div className="feature-copy">
+                    <h3 className="feature-label">{label}</h3>
+                    <p className="feature-desc">{desc}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -105,6 +108,7 @@ function AppleWatchShowcase() {
           slides={appleWatchScreenshots}
           heading="Santa Radio on Apple Watch"
           regionLabel="Santa Radio Apple Watch promotional images"
+          presentation="artwork"
           maxWidth={420}
         />
       </div>

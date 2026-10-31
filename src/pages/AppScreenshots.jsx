@@ -6,6 +6,7 @@ export default function AppScreenshots({
   heading = 'Current iOS app',
   regionLabel = 'Santa Radio current iOS app screenshots',
   imageType = 'screenshot',
+  presentation,
   maxWidth = 285,
 }) {
   const [active, setActive] = useState(0);
@@ -15,6 +16,7 @@ export default function AppScreenshots({
   const [reducedMotion, setReducedMotion] = useState(true);
   const [hovered, setHovered] = useState(false);
   const [hidden, setHidden] = useState(false);
+  const artworkPresentation = presentation === 'artwork' || imageType !== 'screenshot';
 
   useEffect(() => {
     const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -50,7 +52,7 @@ export default function AppScreenshots({
 
   return (
     <figure
-      className="app-screenshots"
+      className={`app-screenshots ${artworkPresentation ? 'app-screenshots-artwork' : 'app-screenshots-device'}${slides[0].width > slides[0].height ? ' app-screenshots-landscape' : ''}`}
       role="region"
       aria-roledescription="carousel"
       aria-label={regionLabel}
@@ -76,6 +78,14 @@ export default function AppScreenshots({
             />
           ))}
         </div>
+        {!artworkPresentation && (
+          <span className="app-phone-hardware" aria-hidden="true">
+            <span className="app-phone-action" />
+            <span className="app-phone-volume app-phone-volume-up" />
+            <span className="app-phone-volume app-phone-volume-down" />
+            <span className="app-phone-power" />
+          </span>
+        )}
       </div>
       {Object.keys(failed).length > 0 && <p role="status" className="app-screenshots-note">Some {imageType}s could not load. Please reload to try again.</p>}
     </figure>

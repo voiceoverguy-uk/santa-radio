@@ -22,6 +22,25 @@ test('built Apps HTML starts on first promotional images and serves all local We
   assert.equal(response.status, 200);
   const html = await response.text();
   const visibleHtml = html.replace(/<!--[\s\S]*?-->/g, '');
+  // Decorative scenes must be deployed alongside the real screenshots; HTML
+  // alone cannot catch a missing CSS background image in the production build.
+  const stylesheetUrls = [...html.matchAll(/<link\b[^>]*rel="stylesheet"[^>]*href="([^"]+)"/g)].map(match => match[1]);
+  assert.ok(stylesheetUrls.length > 0);
+  const css = (await Promise.all(stylesheetUrls.map(async url => {
+    const response = await get(url);
+    assert.equal(response.status, 200);
+    return response.text();
+  }))).join('\n');
+  for (const variant of ['wide', 'mobile']) {
+    const scene = css.match(new RegExp(`/assets/christmas-room-${variant}-[^)"\\s]+\\.webp`))?.[0];
+    assert.ok(scene, `${variant} Christmas scene is referenced by built CSS`);
+    const response = await get(scene);
+    assert.equal(response.status, 200);
+    assert.match(response.headers.get('content-type'), /image\/webp/);
+    const bytes = Buffer.from(await response.arrayBuffer());
+    assert.equal(bytes.toString('ascii', 8, 12), 'WEBP');
+    assert.ok(bytes.length < (variant === 'wide' ? 200000 : 90000));
+  }
   assert.doesNotMatch(visibleHtml, /app-store-card|app-store-details/);
   assert.doesNotMatch(visibleHtml, obsoleteStoreCopy);
   assert.match(visibleHtml, /Check the linked stores for current pricing/);
@@ -80,7 +99,7 @@ test('built Apps HTML starts on first promotional images and serves all local We
     assert.equal(bytes.toString('ascii', 8, 12), 'WEBP');
     assert.ok(bytes.length < 400000);
   }
-  assert.match(section.replace(/<!--.*?-->/g, ''), /From the makers of Santa Radio · 1 of 4/);
+  assert.match(section, /<figcaption[^>]*>Christmas Radio promotional images<\/figcaption>/);
   assert.doesNotMatch(section, /Owner-supplied Christmas Radio promotional images|not interactive website controls/);
   assert.match(html, /Santa Radio current iOS app screenshots/);
   assert.match(html, /Santa Radio Apple Watch promotional images/);
@@ -109,7 +128,7 @@ test('built Apps HTML starts on first promotional images and serves all local We
     assert.equal(bytes.toString('ascii', 8, 12), 'WEBP');
     assert.ok(bytes.length < 400000);
   }
-  assert.match(dash.replace(/<!--.*?-->/g, ''), /A festive rooftop adventure · 1 of 3/);
+  assert.match(dash, /<figcaption[^>]*>Santa Dash promotional artwork<\/figcaption>/);
   const mac = html.match(/<section id="santa-radio-mac"[\s\S]*?<\/section>/)?.[0];
   assert.ok(mac, 'Mac promotional artwork must be in the initial HTML');
   assert.match(mac, /Play Santa Radio and see the current song and artist\./);

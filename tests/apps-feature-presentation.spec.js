@@ -1,29 +1,35 @@
 import { test, expect } from '@playwright/test';
 
-for (const width of [1280, 390]) {
-  test(`app features stay clear and unboxed at ${width}px`, async ({ page }) => {
+for (const width of [1440, 1024, 768, 390, 320]) {
+  test(`gold-outlined app features remain readable at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
-    await page.goto('/apps', { waitUntil: 'domcontentloaded' });
-
-    const section = page.locator('#santaradio');
-    const features = section.locator('.feature-item');
-    await expect(features).toHaveCount(6);
-    await expect(section.locator('.feature-icon')).toHaveCount(0);
-    await expect(section.locator('.feature-label')).toHaveCount(6);
-    await expect(section.locator('.feature-desc')).toHaveCount(6);
-
-    for (const feature of await features.all()) {
-      await expect(feature).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
-      await expect(feature).toHaveCSS('border-top-style', 'none');
-      await expect(feature).toHaveCSS('border-radius', '0px');
-      await expect(feature).toHaveCSS('padding', '0px');
-      await expect(feature).toHaveCSS('box-shadow', 'none');
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/apps');
+    for (const section of await page.locator('.app-section').all()) {
+      const features = section.locator('.feature-item');
+      await expect(features).toHaveCount(6);
+      await expect(section.locator('.feature-icon svg[aria-hidden="true"]')).toHaveCount(6);
+      await expect(section.locator('.feature-label')).toHaveCount(6);
+      await expect(section.locator('.feature-desc')).toHaveCount(6);
+      for (const feature of await features.all()) {
+        const style = await feature.evaluate(el => {
+          const css = getComputedStyle(el);
+          return { border: css.borderTopStyle, width: css.borderTopWidth,
+            background: css.backgroundImage, padding: parseFloat(css.paddingTop) };
+        });
+        expect(style.border).toBe('solid');
+        expect(style.width).toBe('1px');
+        expect(style.background).toContain('linear-gradient');
+        expect(style.padding).toBeGreaterThanOrEqual(12);
+      }
+      const boxes = await features.evaluateAll(items => items.map(el => {
+        const r = el.getBoundingClientRect();
+        return { x: r.x, y: r.y, right: r.right };
+      }));
+      if (width >= 1200) expect(boxes[0].y).toBeCloseTo(boxes[1].y, 1);
+      if (width <= 390) expect(boxes[1].y).toBeGreaterThan(boxes[0].y);
+      expect(boxes.every(box => box.x >= 0 && box.right <= width)).toBe(true);
     }
-
-    if (width >= 768) {
-      const image = await section.locator('.app-screenshots-frame').boundingBox();
-      const firstFeature = await features.first().boundingBox();
-      expect(Math.abs(image.y - firstFeature.y)).toBeLessThan(1);
-    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   });
 }
