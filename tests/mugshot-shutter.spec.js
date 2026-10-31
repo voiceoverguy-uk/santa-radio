@@ -1,5 +1,4 @@
 import { test, expect } from '@playwright/test';
-import fs from 'node:fs';
 
 const source = '/audio/mugshots/camera.mp3';
 const grids = [
@@ -7,170 +6,123 @@ const grids = [
   { path: '/mugshots/all', selector: '.mugshot-card' },
 ];
 
-async function instrument(page, mode = 'success') {
-  await page.addInitScript(({ source, mode }) => {
-    window.shutter = { calls: 0, instances: [], mode };
+async function instrument(context) {
+  const requests = [];
+  context.on('request', request => {
+    if (new URL(request.url()).pathname === source) requests.push(request.url());
+  });
+  await context.addInitScript(source => {
+    sessionStorage.setItem('santa-message-offer-shown', 'shown');
+    window.shutterAttempts = 0;
     const original = HTMLMediaElement.prototype.play;
     HTMLMediaElement.prototype.play = function () {
-      if (!this.src.endsWith(source)) return original.call(this);
-      window.shutter.calls++;
-      if (!window.shutter.instances.includes(this)) window.shutter.instances.push(this);
-      if (window.shutter.mode === 'throw') throw new Error('Unavailable');
-      if (window.shutter.mode === 'blocked') return Promise.reject(new DOMException('Blocked', 'NotAllowedError'));
+      if (new URL(this.currentSrc || this.src, location.href).pathname !== source) {
+        return original.call(this);
+      }
+      window.shutterAttempts++;
+      // Resolve rather than relying on autoplay rejection to keep cards silent.
       return Promise.resolve();
     };
-  }, { source, mode });
+  }, source);
+  return requests;
 }
 
-async function finishClip(page) {
-  await page.evaluate(() => window.shutter.instances[0].dispatchEvent(new Event('ended')));
-  await page.waitForTimeout(550);
+async function prepare(page, path) {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.route('https://www.youtube.com/embed/**', route =>
+    route.fulfill({ contentType: 'text/html', body: '' }));
+  await page.goto(path);
+  const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+  if (await decline.isVisible()) await decline.click();
+  await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
+}
+
+async function expectSilent(page, requests) {
+  // Allow any asynchronously scheduled interaction sound to attempt playback.
+  await page.waitForTimeout(200);
+  expect(await page.evaluate(() => window.shutterAttempts)).toBe(0);
+  expect(requests).toEqual([]);
 }
 
 for (const { path, selector } of grids) {
-  test(`${path} hover, selection and rapid card visits share one shutter`, async ({ page }) => {
-    await instrument(page);
-    await page.goto(path);
+  test(`${path} hover and pointer activation stay silent and open the correct profile`, async ({ page, context }) => {
+    const requests = await instrument(context);
+    await prepare(page, path);
     const cards = page.locator(selector);
-    await cards.first().hover();
-    await expect.poll(() => page.evaluate(() => window.shutter.calls)).toBe(1);
-    await cards.nth(1).hover();
-    await cards.nth(2).hover();
-    expect(await page.evaluate(() => window.shutter.calls)).toBe(1);
-    await finishClip(page);
-    await cards.first().hover();
-    expect(await page.evaluate(() => window.shutter.calls)).toBe(2);
-    await finishClip(page);
-    const href = await cards.first().getAttribute('href');
-    await cards.first().click();
-    await expect(page).toHaveURL(new RegExp(`${href}$`));
-    expect(await page.evaluate(() => window.shutter.calls)).toBe(2);
-    expect(await page.evaluate(() => window.shutter.instances.length)).toBe(1);
-    await page.locator('.mugshot-detail-photo').hover();
-    await page.locator('.mugshot-detail-photo').click();
-    expect(await page.evaluate(() => window.shutter.calls)).toBe(2);
-  });
-
-  test(`${path} blocked hover retries on click without blocking navigation`, async ({ page }) => {
-    const errors = [];
-    page.on('pageerror', error => errors.push(error.message));
-    await instrument(page, 'blocked');
-    await page.goto(path);
-    const card = page.locator(selector).first();
-    await card.hover();
-    await expect.poll(() => page.evaluate(() => window.shutter.calls)).toBe(1);
-    await page.evaluate(() => { window.shutter.mode = 'success'; });
+    for (const index of [0, 1, 2, 0]) await cards.nth(index).hover();
+    await expectSilent(page, requests);
+    const card = cards.first();
     const href = await card.getAttribute('href');
+    const name = await card.locator('strong').textContent();
     await card.click();
     await expect(page).toHaveURL(new RegExp(`${href}$`));
-    expect(await page.evaluate(() => window.shutter.calls)).toBe(2);
-    expect(errors).toEqual([]);
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(name);
+    await expectSilent(page, requests);
   });
 
-  test(`${path} keyboard focus stays silent and Enter plays once with reduced motion`, async ({ page }) => {
-    await instrument(page);
-    await page.emulateMedia({ reducedMotion: 'reduce' });
-    await page.goto(path);
+  test(`${path} keyboard focus and Enter activation stay silent`, async ({ page, context }) => {
+    const requests = await instrument(context);
+    await prepare(page, path);
     const card = page.locator(selector).first();
     await card.focus();
     await page.keyboard.press('Tab');
     await page.keyboard.press('Shift+Tab');
     await expect(card).toBeFocused();
-    expect(await page.evaluate(() => window.shutter.calls)).toBe(0);
+    await expectSilent(page, requests);
     const href = await card.getAttribute('href');
     await page.keyboard.press('Enter');
     await expect(page).toHaveURL(new RegExp(`${href}$`));
-    expect(await page.evaluate(() => window.shutter.calls)).toBe(1);
+    await expectSilent(page, requests);
   });
 
-  test(`${path} touch tap plays once and preserves mobile navigation`, async ({ browser }) => {
+  test(`${path} modified click stays silent and preserves new-tab navigation`, async ({ page, context }) => {
+    const requests = await instrument(context);
+    await prepare(page, path);
+    const card = page.locator(selector).first();
+    const href = await card.getAttribute('href');
+    const [profile] = await Promise.all([
+      context.waitForEvent('page'),
+      card.click({ modifiers: ['Control'] }),
+    ]);
+    try {
+      await expect(profile).toHaveURL(new RegExp(`${href}$`));
+      await expect(page).toHaveURL(new RegExp(`${path === '/' ? '/' : path}$`));
+      await expectSilent(page, requests);
+      await expectSilent(profile, requests);
+    } finally {
+      await profile.close();
+    }
+  });
+
+  test(`${path} touch activation stays silent and preserves mobile navigation`, async ({ browser }) => {
     const context = await browser.newContext({
       hasTouch: true, isMobile: true, viewport: { width: 390, height: 844 },
     });
-    const page = await context.newPage();
     try {
-      await instrument(page);
-      await page.goto(path);
+      const requests = await instrument(context);
+      const page = await context.newPage();
+      await prepare(page, path);
       const card = page.locator(selector).first();
       await card.scrollIntoViewIfNeeded();
-      expect(await page.evaluate(() => window.shutter.calls)).toBe(0);
+      await expectSilent(page, requests);
       const href = await card.getAttribute('href');
       await card.tap();
       await expect(page).toHaveURL(new RegExp(`${href}$`));
-      expect(await page.evaluate(() => window.shutter.calls)).toBe(1);
-      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      await expectSilent(page, requests);
     } finally {
       await context.close();
     }
   });
 }
 
-test('the exact supplied MP3 is served and actually decodes and plays', async ({ page, request }) => {
-  const response = await request.get(source);
-  expect(response.ok()).toBe(true);
-  expect(response.headers()['content-type']).toContain('audio/mpeg');
-  expect(await response.body()).toEqual(fs.readFileSync('attached_assets/camera_1792629377664.mp3'));
-  await page.goto('/mugshots/all');
-  await page.getByRole('textbox', { name: 'Find a famous face' }).fill('Jeremy Kyle');
-  await page.evaluate(() => {
-    const original = HTMLMediaElement.prototype.play;
-    window.realShutter = { ended: false, failed: false };
-    HTMLMediaElement.prototype.play = function () {
-      if (this.src.endsWith('/audio/mugshots/camera.mp3')) {
-        this.addEventListener('ended', () => { window.realShutter.ended = true; });
-        this.addEventListener('error', () => { window.realShutter.failed = true; });
-      }
-      return original.call(this);
-    };
-  });
-  await page.locator('.mugshot-card').focus();
-  await page.keyboard.press('Enter');
-  await expect(page).toHaveURL(/mugshots\/jeremy-kyle-tv-personality$/);
-  await expect.poll(() => page.evaluate(() => window.realShutter.ended)).toBe(true);
-  expect(await page.evaluate(() => window.realShutter.failed)).toBe(false);
-});
-
-test('synchronous playback failure is harmless to card navigation', async ({ page }) => {
-  const errors = [];
-  page.on('pageerror', error => errors.push(error.message));
-  await instrument(page, 'throw');
-  await page.goto('/mugshots/all');
-  const card = page.locator('.mugshot-card').first();
-  const href = await card.getAttribute('href');
-  await card.click();
-  await expect(page).toHaveURL(new RegExp(`${href}$`));
-  expect(errors).toEqual([]);
-});
-
-test('finished clips are rate-limited and media errors allow a later selection', async ({ page }) => {
-  await instrument(page);
-  await page.goto('/mugshots/all');
-  const cards = page.locator('.mugshot-card');
-  await cards.first().dispatchEvent('pointerover', { pointerType: 'mouse', buttons: 0 });
-  expect(await page.evaluate(() => window.shutter.calls)).toBe(1);
-  await page.evaluate(() => window.shutter.instances[0].dispatchEvent(new Event('ended')));
-  await cards.nth(1).dispatchEvent('pointerover', { pointerType: 'mouse', buttons: 0 });
-  expect(await page.evaluate(() => window.shutter.calls)).toBe(1);
-  await page.waitForTimeout(550);
-  await cards.nth(2).dispatchEvent('pointerover', { pointerType: 'mouse', buttons: 0 });
-  expect(await page.evaluate(() => window.shutter.calls)).toBe(2);
-  await page.evaluate(() => window.shutter.instances[0].dispatchEvent(new Event('error')));
-  const href = await cards.nth(2).getAttribute('href');
-  await cards.nth(2).dispatchEvent('click', { detail: 1 });
-  await expect(page).toHaveURL(new RegExp(`${href}$`));
-  expect(await page.evaluate(() => window.shutter.calls)).toBe(3);
-});
-
-test('gallery controls and non-card links do not play the shutter', async ({ page }) => {
-  await instrument(page);
-  await page.goto('/');
-  // Keep the pointer parked: scrolling a link into view can legitimately
-  // carry a photo card underneath it and trigger that card's hover.
-  await page.locator('.mugshots-preview .mugshots-gallery-button').dispatchEvent('click');
+test('gallery controls and non-card links remain silent', async ({ page, context }) => {
+  const requests = await instrument(context);
+  await prepare(page, '/');
+  await page.locator('.mugshots-gallery-button').click();
   await expect(page).toHaveURL(/mugshots\/all$/);
-  await page.getByRole('button', { name: 'A–Z', exact: true }).dispatchEvent('click');
+  await page.getByRole('button', { name: 'A–Z', exact: true }).click();
   await page.getByRole('textbox', { name: 'Find a famous face' }).fill('Jeremy Kyle');
-  await page.locator('.seo-directory a[href="/mugshots/jeremy-kyle-tv-personality"]').dispatchEvent('click');
+  await page.locator('.seo-directory a[href="/mugshots/jeremy-kyle-tv-personality"]').click();
   await expect(page).toHaveURL(/mugshots\/jeremy-kyle-tv-personality$/);
-  expect(await page.evaluate(() => window.shutter.calls)).toBe(0);
+  await expectSilent(page, requests);
 });

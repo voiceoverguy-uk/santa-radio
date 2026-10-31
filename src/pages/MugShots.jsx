@@ -6,7 +6,6 @@ import mugshotsData from '../data/mugshots.ts';
 import PageSeo from '../seo/PageSeo.jsx';
 import { collectionMetadata, mugImageAlt } from '../seo/catalogue.js';
 import { mugSrcSet } from '../seo/mugImages.js';
-import { mugshotShutterEvents } from '../audio/mugshotShutter.js';
 
 const ITEMS_PER_PAGE = 100;
 
@@ -107,7 +106,7 @@ export default function MugShots() {
         <h2 className="mugshots-browse-heading">Browse the collection</h2>
         <div className="container mugshots-grid">
           {visible.map((celeb, i) => (
-            <Link key={celeb.song || celeb.artist} to={`/mugshots/${celeb.song}`} className="mugshot-card" {...mugshotShutterEvents}>
+            <Link key={celeb.song || celeb.artist} to={`/mugshots/${celeb.song}`} className="mugshot-card">
               <div className="mugshot-photo-frame">
               <img
                 src={celeb.image}

@@ -3,7 +3,6 @@ import Portrait from './Portrait.jsx';
 import './MugshotsPreview.css';
 import mugshotsData from '../data/mugshots.ts';
 import useMugshotRotation from './useMugshotRotation.js';
-import { mugshotShutterEvents } from '../audio/mugshotShutter.js';
 
 function PineCorner({ className }) {
   return (
@@ -63,7 +62,6 @@ export default function MugshotsPreview() {
               key={index}
               to={`/mugshots/${celeb.song}`}
               className="mug-card"
-              {...mugshotShutterEvents}
             >
               <span key={celeb.song} className="mugshots-card-content">
                 <span className="mugshots-photo-frame">

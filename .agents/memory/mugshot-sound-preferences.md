@@ -1,9 +1,9 @@
 ---
 name: Mugshot sound preferences
-description: Keep the shutter's scope distinct from visual effects and other site audio.
+description: Mugshot cards must be silent without muting other site audio.
 ---
-The existing Snow/effects control and reduced-motion preference are not sound preferences. Do not silently repurpose them as a site-wide audio mute.
+The owner wants homepage Mugshot cards and the main Mugshots gallery silent on hover and activation, including touch and keyboard activation. The existing Snow/effects control and reduced-motion preference are not sound preferences. Do not repurpose them as a site-wide audio mute.
 
-**Why:** The shutter request explicitly excludes introducing a site-wide sound preference or changing radio/soundboard audio. Reduced motion governs visual movement, not whether deliberate card selection can play a short sound.
+**Why:** The owner explicitly requested removal of the camera sound, not a mute preference or changes to radio, soundboard or game audio.
 
-**How to apply:** Keep the mugshot sound independent of visual effects and other audio controls unless the owner explicitly requests a shared sound preference. Mere keyboard focus should stay silent; activation may play the shutter.
+**How to apply:** Keep Mugshot interactions silent regardless of visual preferences, while preserving navigation and all unrelated audio.
