@@ -1,183 +1,378 @@
-.mugshots-controls { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; max-width: 560px; margin: 0 auto; }
-.mugshots-controls .mugshots-search { box-sizing: border-box; flex: 1 1 440px; width: auto; min-width: 0; }
-.mugshots-sort { display: flex; justify-content: center; align-items: center; flex: 0 0 auto; gap: 12px; margin: 0; color: var(--muted); font-size: .85rem; }
-.mugshots-sort button { display: grid; place-items: center; width: 48px; height: 48px; color: var(--muted); background: #153628; border: 1px solid #d4af3755; border-radius: 50%; cursor: pointer; }
-.mugshots-sort button[aria-pressed="true"] { color: var(--gold-light); background: #294a34; border-color: var(--gold-light); box-shadow: inset 0 0 0 1px var(--gold-light); }
-.mugshots-sort button:hover { color: var(--gold-light); border-color: var(--gold-light); }
-.mugshots-sort button:focus-visible { outline: 2px solid var(--gold-light); outline-offset: 3px; }
-.mugshots-page-hero {
-  text-align: center;
-  padding: 50px 20px 60px;
+/* Photograph-led North Pole gallery. Every rule is scoped to this collection. */
+.mugshots-collection-page {
+  --collection-forest: #082a1d;
+  --collection-forest-deep: #062319;
+  --collection-card: #103625;
+  --collection-cream: #f7edcf;
+  --collection-gold: #dfc477;
+  --collection-muted: #d2d8c8;
   position: relative;
+  isolation: isolate;
+  min-height: 65dvh;
+  color: var(--collection-cream);
+  background:
+    radial-gradient(ellipse at 50% 5%, rgba(28, 73, 47, .78), transparent 55%),
+    repeating-linear-gradient(118deg, rgba(255,255,255,.012) 0 1px, transparent 1px 4px),
+    var(--collection-forest-deep);
 }
 
-.mugshots-hero-content {
+.mugshots-collection-page::before,
+.mugshots-collection-page::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 85px;
+  width: min(31vw, 390px);
+  aspect-ratio: 1;
+  background-position: top center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: .33;
+  pointer-events: none;
+}
+.mugshots-collection-page::before {
+  left: 0;
+  background-image: url("/images/mugshots-collection-pine-left.webp");
+  mask-image: radial-gradient(ellipse at top left, #000 25%, transparent 80%);
+}
+.mugshots-collection-page::after {
+  right: 0;
+  background-image: url("/images/mugshots-collection-pine-right.webp");
+  mask-image: radial-gradient(ellipse at top right, #000 25%, transparent 80%);
+}
+
+.mugshots-collection-page .mugshots-page-hero {
+  position: relative;
+  padding: 38px 24px 22px !important;
+  text-align: center;
+  border: 0;
+  background: transparent;
+}
+.mugshots-collection-page .mugshots-hero-content {
   position: relative;
   z-index: 1;
-  max-width: 700px;
+  max-width: 930px;
   margin: 0 auto;
 }
-
-.mugshots-page-logo-wrap {
-  margin-bottom: 16px;
+.mugshots-collection-page .mugshots-eyebrow {
+  margin: 0 0 11px;
+  color: var(--collection-gold);
+  font: 600 .66rem/1.4 'Cinzel', Georgia, serif;
+  letter-spacing: .34em;
 }
-
-.mugshots-page-logo {
-  max-width: 200px;
-  margin: 0 auto;
+.mugshots-collection-page .mugshots-page-title {
+  margin: 0 0 1px;
+  color: #f0d98f;
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: clamp(2.55rem, 5.3vw, 4.15rem);
+  font-weight: 500;
+  letter-spacing: -.045em;
+  line-height: 1.11;
+  text-wrap: balance;
+}
+.mugshots-collection-page .mugshots-page-title::after {
+  content: "✦";
   display: block;
-  filter: drop-shadow(0 4px 16px rgba(0,0,0,0.5));
+  width: 100%;
+  margin: 7px auto 1px;
+  color: var(--collection-gold);
+  font: 400 .8rem/1 Georgia, serif;
 }
-
-.mugshots-page-title {
-  font-family: 'Cinzel', serif;
-  font-size: clamp(1.2rem, 3vw, 1.7rem);
-  color: white;
-  margin-bottom: 12px;
-  line-height: 1.3;
+.mugshots-collection-page .mugshots-page-sub {
+  margin: 0 0 9px;
+  color: #f1e7cd;
+  font: 400 clamp(1.25rem, 2.1vw, 1.75rem)/1.35 'Cinzel', Georgia, serif;
 }
-
-.mugshots-page-sub {
-  color: rgba(255,255,255,0.9);
-  font-size: 0.9rem;
-  margin-bottom: 12px;
-}
-
-.mugshots-page-desc {
-  color: rgba(255,255,255,0.75);
-  font-size: 0.9rem;
+.mugshots-collection-page .mugshots-page-desc {
+  max-width: 660px;
+  margin: 0 auto 11px;
+  color: #e1e4d7;
+  font-size: .91rem;
   line-height: 1.6;
-  margin-bottom: 16px;
 }
-
-.mugshots-count {
-  font-size: 1.1rem;
-  color: white;
-  margin-bottom: 20px;
+.mugshots-collection-page .mugshots-count {
+  margin: 0 0 17px;
+  color: #f0eadb;
+  font-size: .95rem;
+  letter-spacing: .015em;
 }
-
-.count-num {
-  color: #f0d060;
+.mugshots-collection-page .count-num {
+  color: #f1d47e;
+  font-size: 1.18rem;
   font-weight: 700;
-  font-size: 1.2rem;
 }
 
-.mugshots-search {
-  width: 100%;
-  max-width: 440px;
-  padding: 12px 16px;
-  border: 2px solid rgba(255,255,255,0.3);
-  border-radius: 4px;
-  background: rgba(255,255,255,0.95);
-  font-size: 0.9rem;
-  color: #333;
-  font-family: 'Open Sans', sans-serif;
-}
-
-.mugshots-search:focus {
-  outline: 2px solid #f0d060;
-  border-color: transparent;
-}
-
-.mugshots-grid-section {
-  padding: 40px 20px 80px;
-}
-
-.mugshots-grid {
+.mugshots-collection-page .mugshots-controls {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 28px;
+  grid-template-columns: minmax(190px, 1fr) auto;
+  align-items: end;
+  gap: 8px 24px;
+  width: min(100%, 1050px);
+  max-width: none;
+  margin: 0 auto;
+  padding: 12px 20px 14px;
+  border: 1px solid rgba(223,196,119,.85);
+  border-radius: 12px;
+  background: rgba(5, 35, 24, .75);
+  box-shadow: 0 8px 28px rgba(0,0,0,.12), inset 0 0 0 1px rgba(223,196,119,.08);
+  text-align: left;
 }
-
-.mugshot-card {
+.mugshots-collection-page .mugshots-search-label {
+  grid-column: 1;
+  color: #ecd58e;
+  font: 500 .79rem/1.25 'Cinzel', Georgia, serif;
+  letter-spacing: .025em;
+}
+.mugshots-collection-page .mugshots-search-wrap {
+  position: relative;
+  grid-column: 1;
+  grid-row: 2;
+  min-width: 0;
+}
+.mugshots-collection-page .mugshots-search-icon {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  color: #e9e0c9;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+.mugshots-collection-page .mugshots-controls .mugshots-search {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  padding: 10px 14px 10px 43px;
+  border: 1px solid rgba(220,220,194,.6);
+  border-radius: 10px;
+  background: rgba(244,239,219,.07);
+  color: #fff6df;
+  box-shadow: none;
+  font: 400 .9rem/1.3 'Georgia', serif;
+}
+.mugshots-collection-page .mugshots-controls .mugshots-search::placeholder {
+  color: #c9d1c4;
+  opacity: .95;
+}
+.mugshots-collection-page .mugshots-controls .mugshots-search:focus-visible {
+  outline: 2px solid #f0d98f;
+  outline-offset: 3px;
+  border-color: #f0d98f;
+}
+.mugshots-collection-page .mugshots-sort {
+  grid-column: 2;
+  grid-row: 1 / span 2;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  cursor: pointer;
-  transition: transform 0.2s;
-  text-decoration: none;
-  color: inherit;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  color: var(--collection-gold);
 }
-
-.mugshot-photo {
-  width: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
-  border-radius: 4px;
-  margin-bottom: 12px;
-  border: 3px solid rgba(255,255,255,0.15);
+.mugshots-collection-page .mugshots-sort-caption {
+  align-self: flex-start;
+  margin: 0 2px 0 0;
+  color: #d6cfb6;
+  font: 500 .7rem/1.4 'Cinzel', Georgia, serif;
+  letter-spacing: .08em;
+  text-transform: uppercase;
 }
-
-.mugshot-fallback {
-  width: 100%;
-  aspect-ratio: 1;
-  border-radius: 4px;
-  margin-bottom: 12px;
+.mugshots-collection-page .mugshots-sort button {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: white;
-  border: 3px solid rgba(255,255,255,0.15);
+  gap: 8px;
+  width: auto;
+  min-width: 116px;
+  min-height: 46px;
+  padding: 8px 14px;
+  border: 1px solid rgba(223,196,119,.7);
+  border-radius: 9px;
+  background: rgba(17,57,38,.82);
+  color: #f0e6cb;
+  cursor: pointer;
+  font: 500 .8rem/1 'Cinzel', Georgia, serif;
+  transition: background-color .18s ease, border-color .18s ease, color .18s ease;
+}
+.mugshots-collection-page .mugshots-sort button[aria-pressed="true"] {
+  border-color: #f0d98f;
+  background: #8d2227;
+  color: #fff0d0;
+}
+.mugshots-collection-page .mugshots-sort button:hover {
+  border-color: #f0d98f;
+  color: #f6dfa0;
+}
+.mugshots-collection-page .mugshots-sort button:focus-visible {
+  outline: 2px solid #f0d98f;
+  outline-offset: 3px;
+}
+.mugshots-collection-page .mugshots-sort-button-label {
+  white-space: nowrap;
+}
+.mugshots-collection-page .mugshots-results-count {
+  margin: 10px 0 0;
+  color: var(--collection-muted);
+  font-size: .83rem;
 }
 
-.mugshot-info {
+.mugshots-collection-page .mugshots-grid-section {
+  position: relative;
+  z-index: 1;
+  padding: 0 26px 66px;
+  background: transparent;
+}
+.mugshots-collection-page .mugshots-browse-heading {
+  max-width: 1440px;
+  margin: 0 auto 10px;
+  color: #f0e8d5;
+  font: 500 .93rem/1.35 'Cinzel', Georgia, serif;
+  letter-spacing: .025em;
+}
+.mugshots-collection-page .mugshots-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 22px;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+.mugshots-collection-page .mugshots-grid .mugshot-card {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  text-decoration: none;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  border-color: rgba(223,196,119,.48);
+  background: var(--collection-card);
 }
-
-.mugshot-info strong {
-  color: #f0d060;
-  font-size: 1rem;
+.mugshots-collection-page .mugshot-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 4px;
+  padding: 12px 13px 14px;
 }
-
-.mugshot-info span {
-  color: rgba(255,255,255,0.7);
-  font-size: 0.85rem;
+.mugshots-collection-page .mugshot-info strong {
+  color: #f0d98f;
+  font-size: .92rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
-
-.no-results {
-  color: rgba(255,255,255,0.7);
-  grid-column: 1 / -1;
-  text-align: center;
-  font-size: 1rem;
-  padding: 40px 0;
+.mugshots-collection-page .mugshot-info span {
+  color: #d0d9ca;
+  font-size: .76rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
 }
-
-.mugshots-results-count {
-  color: rgba(255,255,255,0.7);
-  font-size: 0.85rem;
-  margin-top: 12px;
+.mugshots-collection-page .mugshots-load-more {
+  padding: 30px 0 0;
 }
-
-.mugshots-load-more {
-  text-align: center;
-  padding: 40px 0 20px;
+.mugshots-collection-page .load-more-btn {
+  min-height: 46px;
+  padding: 12px 28px;
+  background: #84242a;
+  color: #fff1d1;
+  font-family: 'Cinzel', Georgia, serif;
 }
-
-.load-more-btn {
-  background: linear-gradient(135deg, #b71c1c 0%, #d32f2f 100%);
-  color: white;
-  border: none;
-  padding: 14px 40px;
-  font-size: 1rem;
-  font-family: 'Open Sans', sans-serif;
-  font-weight: 600;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.2s;
-}
-
-.load-more-btn:hover {
-  background: linear-gradient(135deg, #d32f2f 0%, #e53935 100%);
+.mugshots-collection-page .load-more-btn:hover {
+  background: #9a3034;
   transform: translateY(-2px);
 }
+.mugshots-collection-page .no-results {
+  color: var(--collection-muted);
+}
+.mugshots-collection-page ~ .seo-directory {
+  position: relative;
+}
 
-@media (max-width: 600px) {
-  .mugshots-controls { flex-direction: column; }
-  .mugshots-controls .mugshots-search { flex: 0 1 auto; width: 100%; }
-  .mugshots-grid {
-    grid-template-columns: repeat(2, 1fr);
+@media (max-width: 767px) {
+  .mugshots-collection-page::before,
+  .mugshots-collection-page::after {
+    width: min(44vw, 230px);
+    opacity: .22;
   }
+  .mugshots-collection-page .mugshots-page-hero {
+    padding: 35px 18px 20px !important;
+  }
+  .mugshots-collection-page .mugshots-eyebrow {
+    font-size: .59rem;
+    letter-spacing: .24em;
+  }
+  .mugshots-collection-page .mugshots-page-title {
+    font-size: clamp(2.2rem, 9vw, 3.25rem);
+  }
+  .mugshots-collection-page .mugshots-page-sub {
+    font-size: 1.22rem;
+  }
+  .mugshots-collection-page .mugshots-page-desc {
+    max-width: 480px;
+    font-size: .86rem;
+    line-height: 1.55;
+  }
+  .mugshots-collection-page .mugshots-count {
+    margin-bottom: 14px;
+    font-size: .88rem;
+  }
+  .mugshots-collection-page .mugshots-controls {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    padding: 12px;
+  }
+  .mugshots-collection-page .mugshots-search-label,
+  .mugshots-collection-page .mugshots-search-wrap {
+    grid-column: 1;
+  }
+  .mugshots-collection-page .mugshots-search-label { grid-row: 1; }
+  .mugshots-collection-page .mugshots-search-wrap { grid-row: 2; }
+  .mugshots-collection-page .mugshots-sort {
+    grid-column: 1;
+    grid-row: 3;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-top: 3px;
+  }
+  .mugshots-collection-page .mugshots-sort-caption {
+    margin-right: auto;
+  }
+  .mugshots-collection-page .mugshots-sort button {
+    min-height: 44px;
+    min-width: 104px;
+    padding-inline: 11px;
+  }
+  .mugshots-collection-page .mugshots-grid-section {
+    padding: 0 18px 48px;
+  }
+  .mugshots-collection-page .mugshots-browse-heading {
+    margin-bottom: 9px;
+    font-size: .86rem;
+  }
+  .mugshots-collection-page .mugshots-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 13px;
+  }
+  .mugshots-collection-page .mugshot-info {
+    padding: 10px 9px 12px;
+  }
+  .mugshots-collection-page .mugshot-info strong { font-size: .9rem; }
+  .mugshots-collection-page .mugshot-info span { font-size: .8rem; }
+}
+
+@media (max-width: 370px) {
+  .mugshots-collection-page .mugshots-page-hero { padding-inline: 13px !important; }
+  .mugshots-collection-page .mugshots-grid-section { padding-inline: 12px; }
+  .mugshots-collection-page .mugshots-sort button {
+    min-width: 90px;
+    gap: 5px;
+    padding-inline: 8px;
+  }
+  .mugshots-collection-page .mugshots-sort button svg { width: 20px; height: 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mugshots-collection-page .mugshots-sort button,
+  .mugshots-collection-page .load-more-btn {
+    transition: none;
+  }
+  .mugshots-collection-page .load-more-btn:hover { transform: none; }
 }

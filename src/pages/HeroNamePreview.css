@@ -610,7 +610,7 @@
 
   .hero-name-preview__hero {
     min-height: 0;
-    padding: 110px 22px 72px;
+    padding: 110px 22px 36px;
   }
 
   .hero-name-preview .hero-layout {
@@ -729,6 +729,22 @@
     justify-self: center;
     margin-top: 0;
     border-radius: 12px;
+  }
+
+  /* Desktop reserves a cover-sized slot to keep the player columns stable.
+     On phones it is the final row, so an invisible cover creates a long gap. */
+  .hero-name-preview__artwork-slot:not(:has(.now-playing-artwork)) {
+    display: none;
+  }
+
+  .hero-name-preview .hero-layout:not(:has(.now-playing-artwork)) {
+    grid-template-areas:
+      "intro"
+      "player"
+      "note"
+      "checker"
+      "description"
+      "countdown";
   }
 }
 

@@ -53,7 +53,7 @@ test('A-list profiles precede other Mugshots in the app catalogue and gallery', 
   expect(randomPaths.slice(featuredCount).every(path => byPath.get(path)?.homepage !== true)).toBe(true);
   for (const slug of featuredSlugs) expect(randomPaths.slice(0, featuredCount)).toContain(`/mugshots/${slug}`);
 
-  await page.getByRole('button', { name: 'Alphabetical order' }).click();
+  await page.getByRole('button', { name: 'A–Z' }).click();
   await page.getByRole('button', { name: /Load More/ }).click();
   const alphabeticalPaths = await cards.evaluateAll(elements => elements.map(element => element.getAttribute('href')));
   expect(alphabeticalPaths).toEqual(catalogue.slice(0, 200).map(profile => `/mugshots/${profile.song}`));
@@ -65,7 +65,7 @@ test('all supplied Mugshots are searchable once and their canonical pages share 
     const profile = rawProfiles.find(record => record.song === slug);
     expect(profile, slug).toBeTruthy();
     await page.goto('/mugshots/all');
-    const search = page.getByRole('textbox', { name: 'Search celebrity names or roles' });
+    const search = page.getByRole('textbox', { name: 'Find a famous face' });
     await search.fill(profile.artist);
     const card = page.locator(`.mugshot-card[href="/mugshots/${slug}"]`);
     await expect(card, slug).toHaveCount(1);

@@ -48,7 +48,15 @@ test('every retained profile and alias has a valid position in the gallery seque
     expect(catalogue.findIndex(m => m.song === canonical), slug).toBeGreaterThanOrEqual(0);
   }
   for (let i = 1; i < catalogue.length; i++) {
-    expect(catalogue[i - 1].artist.localeCompare(catalogue[i].artist, 'en')).toBeLessThanOrEqual(0);
+    const previous = catalogue[i - 1];
+    const current = catalogue[i];
+    if ((previous.homepage === true) !== (current.homepage === true)) {
+      // The owner's approved group comes first; each group remains A–Z.
+      expect(previous.homepage).toBe(true);
+      expect(current.homepage).not.toBe(true);
+    } else {
+      expect(previous.artist.localeCompare(current.artist, 'en', { sensitivity: 'base', numeric: true })).toBeLessThanOrEqual(0);
+    }
   }
 });
 

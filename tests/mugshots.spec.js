@@ -78,7 +78,7 @@ test('canonical catalogue excludes empty profiles and preserves retained details
 test('reported duplicate searches show one photo card and old links show full details', async ({ page }) => {
   for (const [name, alias] of [['Batman', 'batman-super-hero'], ['Bernie Clifton', 'bernie-clifton'], ['Bobby Ball', 'bobby-ball']]) {
     await page.goto('/mugshots/all');
-    await page.getByRole('textbox', { name: 'Search celebrity names or roles' }).fill(name);
+    await page.getByRole('textbox', { name: 'Find a famous face' }).fill(name);
     await expect(page.locator('.mugshot-card')).toHaveCount(1);
     const img = page.locator('.mugshot-photo');
     await img.scrollIntoViewIfNeeded();
@@ -137,7 +137,7 @@ test('full biographies, photo credits, safe social links and mobile layout', asy
 test('Davina has one complete profile and zero-word URLs are unavailable', async ({ page }) => {
   test.setTimeout(120000);
   await page.goto('/mugshots/all');
-  await page.getByRole('textbox', { name: 'Search celebrity names or roles' }).fill('Davina');
+  await page.getByRole('textbox', { name: 'Find a famous face' }).fill('Davina');
   await expect(page.locator('.mugshot-card')).toHaveCount(1);
   await expect(page.locator('.mugshot-card')).toContainText('Davina McCall');
   await page.locator('.mugshot-card').click();
@@ -156,7 +156,7 @@ test('gallery pagination, search, hover, focus and motion preferences', async ({
   await expect(cards).toHaveCount(100);
   await page.getByRole('button', { name: /Load More/ }).click();
   await expect(cards).toHaveCount(200);
-  await page.getByRole('textbox', { name: 'Search celebrity names or roles' }).fill('Jeremy Kyle');
+  await page.getByRole('textbox', { name: 'Find a famous face' }).fill('Jeremy Kyle');
   await expect(cards).toHaveCount(1);
   const card = cards.first(), frame = card.locator('.mugshot-photo-frame');
   const animation = () => frame.evaluate(el => getComputedStyle(el, '::after').animationName);
@@ -173,11 +173,11 @@ test('gallery pagination, search, hover, focus and motion preferences', async ({
   expect(await animation()).toBe('none');
   await expect(card).toHaveCSS('transform', 'none');
   await page.mouse.move(0, 0);
-  await page.getByRole('textbox', { name: 'Search celebrity names or roles' }).focus();
+  await page.getByRole('textbox', { name: 'Find a famous face' }).focus();
   await page.keyboard.press('Tab');
-  await expect(page.getByRole('button', { name: 'Random order', exact: true })).toBeFocused();
+  await expect(page.getByRole('button', { name: 'Shuffle', exact: true })).toBeFocused();
   await page.keyboard.press('Tab');
-  await expect(page.getByRole('button', { name: 'Alphabetical order', exact: true })).toBeFocused();
+  await expect(page.getByRole('button', { name: 'A–Z', exact: true })).toBeFocused();
   await page.keyboard.press('Tab');
   await expect(card).toHaveCSS('outline-style', 'solid');
   await card.click();
@@ -192,7 +192,7 @@ test('gallery header hides its visible breadcrumb, preserves SEO metadata, and a
     const main = page.locator('main');
     const hero = page.locator('.mugshots-page-hero');
     const controls = page.locator('.mugshots-controls');
-    const search = page.getByRole('textbox', { name: 'Search celebrity names or roles' });
+    const search = page.getByRole('textbox', { name: 'Find a famous face' });
     const order = page.getByRole('group', { name: 'Mugshot order' });
     await expect(page.getByRole('navigation', { name: 'Breadcrumb', exact: true })).toHaveCount(0);
     expect(await main.evaluate(el => el.firstElementChild.classList.contains('mugshots-page-hero'))).toBe(true);
@@ -219,8 +219,8 @@ test('gallery header hides its visible breadcrumb, preserves SEO metadata, and a
 
     await search.fill('Jeremy Kyle');
     await expect(page.locator('.mugshot-card')).toHaveCount(1);
-    await page.getByRole('button', { name: 'Alphabetical order', exact: true }).click();
-    await expect(page.getByRole('button', { name: 'Alphabetical order', exact: true })).toHaveAttribute('aria-pressed', 'true');
+    await page.getByRole('button', { name: 'A–Z', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'A–Z', exact: true })).toHaveAttribute('aria-pressed', 'true');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await expect(hero).toBeVisible();
     await expect(controls).toBeVisible();

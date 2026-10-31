@@ -55,43 +55,43 @@ export default function MugShots() {
   };
 
   return (
-    <main>
+    <main className="mugshots-collection-page">
       <PageSeo metadata={collectionMetadata('mugs')} />
       <div className="mugshots-page-hero starry-bg">
         <div className="mugshots-hero-content">
-          <div className="mugshots-page-logo-wrap">
-            <img
-              src="/mugshot-images/santa-mugshots-logo-1.png"
-              alt="Mug Shots"
-              className="mugshots-page-logo"
-            />
-          </div>
-          <h1 className="mugshots-page-title">Santa Radio Celebrity Mug Shots Hall of Fame!</h1>
-          <p className="mugshots-page-sub">
-            <strong>Ecurb the Elf has been out and about door stopping celebrities with our Santa Radio Mug!</strong>
-          </p>
+          <p className="mugshots-eyebrow">THE SANTA RADIO HALL OF FAME</p>
+          <h1 className="mugshots-page-title">Celebrity Mugshots</h1>
+          <p className="mugshots-page-sub">Famous faces. One festive mug.</p>
           <p className="mugshots-page-desc">
-            Santa Radio{'\u2019'}s celebrity mug shots feature hundreds of famous faces from TV, radio, music, comedy and
-            sport, all proudly posing with the iconic Santa Radio mug.
+            Ecurb the Elf has been out meeting famous faces with our Santa Radio mug. Explore the collection from TV,
+            radio, music, comedy and sport.
           </p>
           <p className="mugshots-count">
-            <span className="count-num">{mugshotsData.length}</span> Celebrity Mugshots and Counting...
+            <span className="count-num">{mugshotsData.length}</span> mugshots and counting
           </p>
           <div className="mugshots-controls">
+            <label className="mugshots-search-label" htmlFor="mugshots-search">Find a famous face</label>
+            <div className="mugshots-search-wrap">
+              <svg className="mugshots-search-icon" aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="11" cy="11" r="7" /><path d="m16 16 4 4" /></svg>
             <input
+              id="mugshots-search"
               type="text"
-              aria-label="Search celebrity names or roles"
+              aria-label="Find a famous face"
               className="mugshots-search"
-              placeholder="Search for a Celebrity or Talent"
+              placeholder="Search by name or talent…"
               value={search}
               onChange={handleSearch}
             />
+            </div>
             <div className="mugshots-sort" role="group" aria-label="Mugshot order">
-              <button type="button" aria-label="Random order" title="Random order" aria-pressed={order === 'random'} onClick={() => { setOrder('random'); setPage(1); }}>
+              <span className="mugshots-sort-caption">Sort</span>
+              <button type="button" aria-label="Shuffle" title="Shuffle" aria-pressed={order === 'random'} onClick={() => { setOrder('random'); setPage(1); }}>
                 <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h3c5 0 7 12 12 12h3m-4-4 4 4-4 4M3 18h3c2 0 3.5-2 5-5m2-3c1.5-2.5 3-4 5-4h3m-4-4 4 4-4 4" /></svg>
+                <span className="mugshots-sort-button-label">Shuffle</span>
               </button>
-              <button type="button" aria-label="Alphabetical order" title="Alphabetical (A–Z)" aria-pressed={order === 'alphabetical'} onClick={() => { setOrder('alphabetical'); setPage(1); }}>
+              <button type="button" aria-label="A–Z" title="A–Z" aria-pressed={order === 'alphabetical'} onClick={() => { setOrder('alphabetical'); setPage(1); }}>
                 <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m3 10 3-7 3 7M4 8h4m-5 6h6l-6 7h6M17 3v18m-4-4 4 4 4-4" /></svg>
+                <span className="mugshots-sort-button-label">A–Z</span>
               </button>
             </div>
           </div>
@@ -104,6 +104,7 @@ export default function MugShots() {
       </div>
 
       <div className="mugshots-grid-section starry-bg">
+        <h2 className="mugshots-browse-heading">Browse the collection</h2>
         <div className="container mugshots-grid">
           {visible.map((celeb, i) => (
             <Link key={celeb.song || celeb.artist} to={`/mugshots/${celeb.song}`} className="mugshot-card" {...mugshotShutterEvents}>

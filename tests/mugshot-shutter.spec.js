@@ -111,7 +111,7 @@ test('the exact supplied MP3 is served and actually decodes and plays', async ({
   expect(response.headers()['content-type']).toContain('audio/mpeg');
   expect(await response.body()).toEqual(fs.readFileSync('attached_assets/camera_1792629377664.mp3'));
   await page.goto('/mugshots/all');
-  await page.getByRole('textbox', { name: 'Search celebrity names or roles' }).fill('Jeremy Kyle');
+  await page.getByRole('textbox', { name: 'Find a famous face' }).fill('Jeremy Kyle');
   await page.evaluate(() => {
     const original = HTMLMediaElement.prototype.play;
     window.realShutter = { ended: false, failed: false };
@@ -168,8 +168,8 @@ test('gallery controls and non-card links do not play the shutter', async ({ pag
   // carry a photo card underneath it and trigger that card's hover.
   await page.locator('.mugshots-preview .mugshots-gallery-button').dispatchEvent('click');
   await expect(page).toHaveURL(/mugshots\/all$/);
-  await page.getByRole('button', { name: 'Alphabetical order', exact: true }).dispatchEvent('click');
-  await page.getByRole('textbox', { name: 'Search celebrity names or roles' }).fill('Jeremy Kyle');
+  await page.getByRole('button', { name: 'A–Z', exact: true }).dispatchEvent('click');
+  await page.getByRole('textbox', { name: 'Find a famous face' }).fill('Jeremy Kyle');
   await page.locator('.seo-directory a[href="/mugshots/jeremy-kyle-tv-personality"]').dispatchEvent('click');
   await expect(page).toHaveURL(/mugshots\/jeremy-kyle-tv-personality$/);
   expect(await page.evaluate(() => window.shutter.calls)).toBe(0);
