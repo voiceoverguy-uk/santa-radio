@@ -868,3 +868,31 @@ mtime_ms = 1793433341663
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/91cee80e-72ad-4b68-b975-fdfa2f70686a/a7f40b72-0901-4baf-84a1-3009939f6b99"
 storage_version_token = "1793433352290205"
 content_type = "image/jpeg"
+
+[[outputs]]
+id = "WwdzqOWDsWD-7Xo7y7Ra6"
+uri = "file://generated-artifacts/mugshots-preview/desktop.png"
+type = "image"
+title = "Mugshots preview — desktop"
+description = "Live homepage section captured at 1440px, with four randomly selected approved celebrity photographs."
+logical_id = "9e91a246-e2c2-4687-b114-e8754956f364"
+content_hash = "sha256:8551bb6eaa28897e9468f171867952f0fdab8949e1353ce78ada4e560efc577e"
+size = 872447
+mtime_ms = 1793434730504
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/9e91a246-e2c2-4687-b114-e8754956f364/2b1b38c9-aa1d-4361-8339-4dc0ac639701"
+storage_version_token = "1793434869376121"
+content_type = "image/png"
+
+[[outputs]]
+id = "EbBSY3EBJcVYzIGur18G9"
+uri = "file://generated-artifacts/mugshots-preview/mobile.png"
+type = "image"
+title = "Mugshots preview — mobile"
+description = "Complete live section at 390px, showing two-column photograph cards and the gallery button."
+logical_id = "fe1b82f0-354f-4ffa-abfc-d6eb5cad2502"
+content_hash = "sha256:a49e35863d83cdfae5b3df3535310a981b8df4fe8cfee26afcf0d5df98ed65db"
+size = 330455
+mtime_ms = 1793434732126
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/fe1b82f0-354f-4ffa-abfc-d6eb5cad2502/cb7239e2-6c69-455a-b4f7-0b22bdd63a15"
+storage_version_token = "1793434870238687"
+content_type = "image/png"

@@ -166,7 +166,7 @@ test('gallery controls and non-card links do not play the shutter', async ({ pag
   await page.goto('/');
   // Keep the pointer parked: scrolling a link into view can legitimately
   // carry a photo card underneath it and trigger that card's hover.
-  await page.locator('.mugshots-preview .mug-link').dispatchEvent('click');
+  await page.locator('.mugshots-preview .mugshots-gallery-button').dispatchEvent('click');
   await expect(page).toHaveURL(/mugshots\/all$/);
   await page.getByRole('button', { name: 'Alphabetical order', exact: true }).dispatchEvent('click');
   await page.getByRole('textbox', { name: 'Search celebrity names or roles' }).fill('Jeremy Kyle');

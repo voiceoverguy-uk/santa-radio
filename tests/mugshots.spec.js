@@ -9,14 +9,15 @@ const report = JSON.parse(fs.readFileSync('reports/mugshot-import.json', 'utf8')
 const publicData = buildCatalogue(catalogue);
 const overrides = JSON.parse(fs.readFileSync('src/data/mugshot-biographies.json', 'utf8'));
 
-test('homepage and gallery decode the same-origin Mug Shots logo without the retired remote request', async ({ page }) => {
+test('homepage omits the retired icon and gallery keeps its same-origin Mug Shots logo', async ({ page }) => {
   const remoteRequests = [];
   page.on('request', request => {
     if (request.url().includes('/santa-radio-celebrity-mugshots.png')) remoteRequests.push(request.url());
   });
   await page.route('https://www.youtube.com/embed/**', route => route.fulfill({ contentType: 'text/html', body: '' }));
+  await page.goto('/');
+  await expect(page.locator('.mugshots-preview .mugshots-header-img, .mugshots-preview .mugshots-logo')).toHaveCount(0);
   for (const [path, selector, alt] of [
-    ['/', '.mugshots-header-img', 'Celebrity Mugshots'],
     ['/mugshots/all', '.mugshots-page-logo', 'Mug Shots'],
   ]) {
     const responsePromise = page.waitForResponse(response =>
@@ -90,7 +91,7 @@ test('reported duplicate searches show one photo card and old links show full de
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.goto('/');
-  await expect(page.locator('.mugshots-preview')).toContainText('664');
+  await expect(page.locator('.mugshots-preview')).toContainText('Hundreds of famous faces. Who will you spot?');
 });
 
 test('import preserves routes and images and safely handles source text', () => {

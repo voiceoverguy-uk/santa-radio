@@ -62,3 +62,4 @@
 - [Christmas Pairs scope](christmas-pairs-scope.md) — Free homepage game below the soundboard; owner-supplied artwork, optional sound off initially and sensible preview timings.
 - [Soundboard direction](soundboard-design-scope.md) — Approved warm workshop design; preserve all 20 phrases and playback, and keep Apps-page work separate.
 - [Post Room live note](post-room-live-note.md) — Approved contact mockup; preserve the changing joke and timing as live handwritten text, plus all existing footer controls.
+- [Mugshots preview direction](mugshots-preview-direction.md) — Approved photograph-led hall of fame; do not restore the cartoon icon.
