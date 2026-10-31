@@ -20,3 +20,13 @@ Pause calendar-boundary test clocks before navigating; installing a clock alone 
 **Why:** Navigation and consent handling can consume the remaining time before midnight, making an initial “previous day” assertion race against the date transition.
 
 **How to apply:** Pause at the intended starting date before loading the route, then advance time explicitly for midnight assertions. Keep ordinary visual captures on the real clock.
+
+Synchronise the start of a rotation interval before asserting its exact boundary.
+
+**Why:** Navigation, image loading and the first automatic recipient change can
+consume part of the next interval. A shorter heading exposed this assumption in
+phone checks even though the production rotation duration had not changed.
+
+**How to apply:** After the first change settles, use the existing hover pause
+and resume interaction to start a fresh reading interval before advancing the
+virtual clock. Do not change production timing to satisfy an unanchored test.

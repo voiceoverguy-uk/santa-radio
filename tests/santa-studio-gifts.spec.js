@@ -577,6 +577,9 @@ for (const width of [1440, 390]) {
     await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Ayla');
     await expect(picture).toHaveAttribute('src', '/images/santa-nice-list-2.jpg');
     await expect(picture).toHaveJSProperty('naturalWidth', 1536);
+    // Start a fresh reading interval after the first automatic change, rather
+    // than inheriting time consumed during navigation and image loading.
+    await gifts(page).hover({ force: true });
     await page.mouse.move(0, 0);
     await page.evaluate(() => document.activeElement?.blur());
     const certificate = gifts(page).locator('.studio-certificate__name > span');
