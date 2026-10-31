@@ -9,7 +9,7 @@ import './Apps.css';
 function AppSection({ app }) {
   const deviceSlides = app.screenshots || (
     app.presentation === 'device' || app.slideshow?.presentation === 'device'
-      ? [{ image: app.image, width: app.width, height: app.height, alt: app.alt, label: app.title }]
+      ? [{ image: app.image, fallback: app.fallback, width: app.width, height: app.height, alt: app.alt, label: app.title }]
       : null
   );
 

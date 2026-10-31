@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import AppScreenshotImage from './AppScreenshotImage.jsx';
 import './AppScreenshots.css';
 
 export default function AppScreenshots({
@@ -42,14 +43,12 @@ export default function AppScreenshots({
     return () => window.clearTimeout(timer);
   }, [active, ready, rotating, slides.length]);
 
-  async function markReady(image, index) {
-    try {
-      await image.decode();
-      setReady(previous => ({ ...previous, [index]: true }));
-    } catch {
-      setFailed(previous => ({ ...previous, [index]: true }));
-    }
-  }
+  const markReady = useCallback(index => {
+    setReady(previous => previous[index] ? previous : { ...previous, [index]: true });
+  }, []);
+  const markFailed = useCallback(index => {
+    setFailed(previous => previous[index] ? previous : { ...previous, [index]: true });
+  }, []);
 
   return (
     <figure
@@ -65,17 +64,14 @@ export default function AppScreenshots({
       <div className="app-screenshots-frame">
         <div className="app-screenshots-stack" style={{ aspectRatio: `${slides[0].width} / ${slides[0].height}` }}>
           {slides.map((slide, index) => (
-            <img
+            <AppScreenshotImage
               key={slide.label}
               className={`app-screenshot-slide${active === index ? ' is-active' : ''}`}
-              src={slide.image}
-              width={slide.width}
-              height={slide.height}
-              alt={slide.alt}
+              slide={slide}
+              index={index}
               aria-hidden={active !== index}
-              decoding="async"
-              onLoad={event => markReady(event.currentTarget, index)}
-              onError={() => setFailed(previous => ({ ...previous, [index]: true }))}
+              onReady={markReady}
+              onFailure={markFailed}
             />
           ))}
         </div>

@@ -980,3 +980,17 @@ mtime_ms = 1793482081523
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/c0c0c506-214b-4bde-ae8a-50a904600436/97519fc9-5143-4284-aee7-089a65cb07a5"
 storage_version_token = "1793482128231397"
 content_type = "image/jpeg"
+
+[[outputs]]
+id = "C5kJY6cm9JoAmd4tQly7w"
+uri = "file://generated-artifacts/apps-restored-three-displays.jpg"
+type = "image"
+title = "Santa Text, Christmas Radio and Santa Dash"
+description = "Current shared-preview captures of the three approved displays, with their existing artwork and device proportions preserved."
+logical_id = "52f16622-4075-4761-b7be-542bd86469ad"
+content_hash = "sha256:50c275be33e6158afb23aa3e5c0a30d04da555399ac4f3859131869c26275be1"
+size = 248143
+mtime_ms = 1793484612162
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/52f16622-4075-4761-b7be-542bd86469ad/3316be71-038f-4421-b10c-58cadfd97b28"
+storage_version_token = "1793484622791146"
+content_type = "image/jpeg"

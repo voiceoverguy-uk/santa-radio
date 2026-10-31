@@ -14,3 +14,9 @@ The owner approved “Use existing screen-only images” for Santa Voicemail, Sa
 **Why:** Their promotional compositions did not provide clean, recoverable full displays; Dash's approved compositions were illustrations rather than gameplay.
 
 **How to apply:** These four existing screen-only originals are authorised for phone presentation. This is not permission to replace Santa Radio's current four screens or Christmas Radio's newer approved interface with older screenshots.
+
+A Safari broken-image screenshot does not establish that artwork is missing or corrupt. Keep recovery measures separate from claims about the original cause.
+
+**Why:** Reported broken displays have coexisted with intact originals, successful preview delivery and successful Chromium decoding. A compatible fallback can reduce failures without proving which Safari request or decoder failed.
+
+**How to apply:** Preserve approved originals and verify both response bytes and browser decoding. Describe fallback recovery as recovery, not as proof of a Safari fix, until the affected Safari session can be checked.

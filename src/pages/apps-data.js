@@ -12,6 +12,12 @@ import christmasRadioPromo3 from '../assets/apps/christmas-radio-screen-3.webp';
 import christmasRadioPromo4 from '../assets/apps/christmas-radio-screen-4.webp';
 import santaText from '../assets/apps/santa-text-screen.webp';
 import santaDash from '../assets/apps/santa-dash-screen.webp';
+import christmasRadioFallback from '../assets/apps/christmas-radio-screen-1.png';
+import christmasRadioFallback2 from '../assets/apps/christmas-radio-screen-2.png';
+import christmasRadioFallback3 from '../assets/apps/christmas-radio-screen-3.png';
+import christmasRadioFallback4 from '../assets/apps/christmas-radio-screen-4.png';
+import santaTextFallback from '../assets/apps/santa-text-screen.png';
+import santaDashFallback from '../assets/apps/santa-dash-screen.png';
 import santaRadioMac from '../assets/apps/santa-radio-mac.webp';
 
 // Source copy and destination URLs: https://www.santaradio.co.uk/free-christmas-apps/
@@ -115,10 +121,10 @@ export const christmasApps = [
     height: 1130,
     // Display planes extracted from approved originals, not the older blue UI.
     screenshots: [
-      { label: 'From the makers of Santa Radio', image: christmasRadio, width: 520, height: 1130, alt: 'Christmas Radio app screen showing Naughty & Nice by Sia, playback and the coming-up queue.' },
-      { label: 'Over 100k downloads', image: christmasRadioPromo2, width: 520, height: 1130, alt: 'Christmas Radio app screen showing Christmas Tree Farm by Taylor Swift, playback and the coming-up queue.' },
-      { label: 'Christmas music 365 days a year', image: christmasRadioPromo3, width: 520, height: 1130, alt: 'Christmas Radio app screen with Christmas Tree Farm by Taylor Swift and Santa Baby and Naughty List in the coming-up queue.' },
-      { label: 'Make it feel like Christmas', image: christmasRadioPromo4, width: 520, height: 1130, alt: 'Christmas Radio app settings screen with AirPlay, Snowfall, Blizzard and Festive lights options.' },
+      { label: 'From the makers of Santa Radio', image: christmasRadio, fallback: christmasRadioFallback, width: 520, height: 1130, alt: 'Christmas Radio app screen showing Naughty & Nice by Sia, playback and the coming-up queue.' },
+      { label: 'Over 100k downloads', image: christmasRadioPromo2, fallback: christmasRadioFallback2, width: 520, height: 1130, alt: 'Christmas Radio app screen showing Christmas Tree Farm by Taylor Swift, playback and the coming-up queue.' },
+      { label: 'Christmas music 365 days a year', image: christmasRadioPromo3, fallback: christmasRadioFallback3, width: 520, height: 1130, alt: 'Christmas Radio app screen with Christmas Tree Farm by Taylor Swift and Santa Baby and Naughty List in the coming-up queue.' },
+      { label: 'Make it feel like Christmas', image: christmasRadioPromo4, fallback: christmasRadioFallback4, width: 520, height: 1130, alt: 'Christmas Radio app settings screen with AirPlay, Snowfall, Blizzard and Festive lights options.' },
     ],
     slideshow: {
       heading: 'Christmas Radio promotional images',
@@ -143,6 +149,7 @@ export const christmasApps = [
     title: 'Santa Text',
     subtitle: 'Text Santa and the Father Christmas auto-bot will reply.',
     image: santaText,
+    fallback: santaTextFallback,
     alt: 'Santa Text app screen with Message Santa, Santa Postcards and Just Ask Santa controls.',
     width: 750,
     height: 1334,
@@ -163,6 +170,7 @@ export const christmasApps = [
     title: 'Santa Dash',
     subtitle: 'How far can you go while collecting mince pies?',
     image: santaDash,
+    fallback: santaDashFallback,
     alt: 'Santa Dash gameplay screen with Santa jumping over snowy rooftops, collectible mince pies and the score.',
     width: 1334,
     height: 750,

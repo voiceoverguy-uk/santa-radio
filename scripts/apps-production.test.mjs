@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
+import { readdir } from 'node:fs/promises';
+import { chromium } from '@playwright/test';
+import { existsSync } from 'node:fs';
 import { appDownloads, obsoleteStoreCopy } from '../tests/fixtures/apps-downloads.js';
 
 // Run after npm run build; exercise the actual Node production server, not Vite.
@@ -18,6 +21,43 @@ test('built Apps HTML starts on first promotional images and serves all local We
     child.stderr.on('data', data => console.error(data.toString()));
   });
   const get = path => fetch(`http://127.0.0.1:${port}${path}`);
+  const browser = await chromium.launch({
+    executablePath: process.env.CHROMIUM_PATH || (existsSync('/repl/tools/bin/chromium') ? '/repl/tools/bin/chromium' : undefined),
+    args: ['--no-sandbox'],
+  });
+  t.after(() => browser.close());
+  const page = await browser.newPage();
+  await page.goto(`http://127.0.0.1:${port}/apps`);
+  // Exercise the actual built URLs and decode response bytes in a browser,
+  // including PNG recovery assets which are not visible in the SSR markup.
+  const assets = (await readdir('dist/assets')).filter(name =>
+    /^(?:christmas-radio-screen-[1-4]|santa-(?:text|dash)-screen)-.*\.(?:webp|png)$/.test(name));
+  assert.equal(assets.length, 12);
+  const decodedPixels = new Map();
+  for (const name of assets) {
+    const asset = await get(`/assets/${name}`);
+    assert.equal(asset.status, 200);
+    assert.match(asset.headers.get('content-type'), /image\/(webp|png)/);
+    const bytes = Buffer.from(await asset.arrayBuffer()).toString('base64');
+    const decoded = await page.evaluate(async ({ bytes, type }) => {
+      const image = new Image();
+      image.src = `data:${type};base64,${bytes}`;
+      await image.decode();
+      const canvas = document.createElement('canvas');
+      canvas.width = image.naturalWidth; canvas.height = image.naturalHeight;
+      const context = canvas.getContext('2d');
+      context.drawImage(image, 0, 0);
+      const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+      const hash = await crypto.subtle.digest('SHA-256', pixels);
+      return { dimensions: [image.naturalWidth, image.naturalHeight], hash: Array.from(new Uint8Array(hash)).join(',') };
+    }, { bytes, type: asset.headers.get('content-type') });
+    const expected = name.startsWith('christmas') ? [520, 1130] :
+      name.startsWith('santa-text') ? [750, 1334] : [1334, 750];
+    assert.deepEqual(decoded.dimensions, expected, name);
+    const key = name.replace(/-[^-]+\.(?:webp|png)$/, '');
+    if (decodedPixels.has(key)) assert.equal(decoded.hash, decodedPixels.get(key), `${key} fallback must preserve every decoded pixel`);
+    else decodedPixels.set(key, decoded.hash);
+  }
   const response = await get('/apps');
   assert.equal(response.status, 200);
   const html = await response.text();
