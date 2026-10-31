@@ -14,3 +14,9 @@ Prefer a separate real-clock visual capture when the virtual timer is testing so
 **Why:** Timer-driven checks have passed while their screenshots still showed a timed offer covering the underlying controls. Functional state assertions alone are not sufficient visual evidence.
 
 **How to apply:** Keep timeout/error assertions under the virtual clock, and capture the normal finished interface in its real-clock journey instead.
+
+Pause calendar-boundary test clocks before navigating; installing a clock alone still lets wall time advance during page setup.
+
+**Why:** Navigation and consent handling can consume the remaining time before midnight, making an initial “previous day” assertion race against the date transition.
+
+**How to apply:** Pause at the intended starting date before loading the route, then advance time explicitly for midnight assertions. Keep ordinary visual captures on the real clock.

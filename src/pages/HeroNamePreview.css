@@ -759,3 +759,31 @@
     transition: none;
   }
 }
+
+@font-face {
+  font-family: "Santa Radio Creepster";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/creepster-latin-400-normal.woff2") format("woff2");
+}
+
+.hero-name-preview .hero-halloween-greeting {
+  max-width: 650px;
+  margin: -5px 0 0;
+  color: #ffb45f;
+  font-family: "Santa Radio Creepster", Georgia, serif;
+  font-size: clamp(1.18rem, 2.3vw, 1.5rem);
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: 0.015em;
+  text-shadow: 0 1px 2px #170e08a6, 0 0 9px #ed792d30;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 1091px) {
+  .hero-name-preview .hero-halloween-greeting {
+    max-width: min(650px, calc(100% - clamp(300px, 24.3vw, 350px) - 42px));
+  }
+}

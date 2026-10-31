@@ -5,6 +5,7 @@ import NowPlayingArtwork from './NowPlayingArtwork.jsx';
 import Countdown from './Countdown.jsx';
 import SantaFlyby from './SantaFlyby.jsx';
 import HeroNameChecker from './HeroNameChecker.jsx';
+import HalloweenGreeting from './HalloweenGreeting.jsx';
 import '../pages/Home.css';
 import '../pages/HeroNamePreview.css';
 
@@ -52,6 +53,7 @@ export default function HomeHero({ preview = false, onContinue }) {
             Santa Radio{' '}
             <span className="hero-name-preview__strapline">A little magic from the North Pole.</span>
           </h1>
+          <HalloweenGreeting />
         </div>
         <div className="hero-name-preview__broadcast">
           <div className="hero-name-preview__left-stack">

@@ -1,0 +1,10 @@
+Creepster regular, Latin subset, WOFF2
+
+Source: @fontsource/creepster 5.3.0, served via jsDelivr
+Downloaded from:
+https://cdn.jsdelivr.net/fontsource/fonts/creepster@5.3.0/latin-400-normal.woff2
+
+Upstream font project: https://github.com/google/fonts/tree/main/ofl/creepster
+Font copyright: Copyright (c) 2011, Font Diner, Inc.
+License: SIL Open Font License 1.1; see Creepster-OFL.txt in this directory.
+The font is self-hosted here to avoid runtime requests to a third-party font CDN.
