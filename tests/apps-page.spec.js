@@ -375,7 +375,7 @@ test('apps page voice credit uses standard footer styling', async ({ page }) => 
   })).toBe(true);
 });
 
-test('Mac app listing shows complete promotional artwork and Coming soon without a store link', async ({ page }) => {
+test('Mac app listing keeps complete promotional artwork without an availability badge or store link', async ({ page }) => {
   await page.goto('/apps');
   await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
   const minimise = page.getByRole('button', { name: 'Minimise radio player', exact: true });
@@ -384,7 +384,8 @@ test('Mac app listing shows complete promotional artwork and Coming soon without
   const section = page.getByRole('region', { name: 'Santa Radio for Mac' });
   await expect(section).toBeVisible();
   await expect(section.getByRole('heading', { name: 'Santa Radio for Mac', exact: true })).toBeVisible();
-  await expect(section.getByRole('status')).toHaveText('Coming soon');
+  await expect(section.locator('.mac-app-status, [role="status"]')).toHaveCount(0);
+  await expect(section).not.toContainText(/Coming soon/i);
   await expect(section).toContainText('Play Santa Radio and see the current song and artist.');
   await expect(section.getByRole('link')).toHaveCount(0);
   await expect(section.getByRole('button')).toHaveCount(0);
@@ -404,6 +405,11 @@ test('Mac app listing shows complete promotional artwork and Coming soon without
 
   for (const width of [1280, 390, 320]) {
     await page.setViewportSize({ width, height: 1000 });
+    await expect(section.locator('.mac-app-status, [role="status"]')).toHaveCount(0);
+    await expect(section.locator('.mac-app-copy > :last-child')).toHaveClass('mac-app-description');
+    const copySpacing = await section.locator('.mac-app-copy').evaluate(copy =>
+      copy.getBoundingClientRect().bottom - copy.lastElementChild.getBoundingClientRect().bottom);
+    expect(copySpacing).toBeCloseTo(0, 1);
     await image.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
     await expect.poll(() => image.evaluate(el => [el.naturalWidth, el.naturalHeight])).toEqual([941, 1672]);
     const bounds = await image.boundingBox();

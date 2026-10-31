@@ -344,21 +344,6 @@
 .apps-page .mac-app-figure figcaption { padding: 12px 4px 1px; color: var(--muted); font-size: .72rem; letter-spacing: .04em; text-align: right; }
 .apps-page .mac-app-copy .app-section-title { margin-bottom: 18px; }
 
-.apps-page .mac-app-status {
-  display: inline-flex;
-  min-height: 40px;
-  align-items: center;
-  margin: 24px 0 0;
-  padding: 8px 16px;
-  border: 1px solid #d4af3780;
-  border-radius: 999px;
-  background: #153628;
-  color: var(--gold-light);
-  font-size: .85rem;
-  font-weight: 600;
-  letter-spacing: .03em;
-}
-
 .apps-page .mac-app-figure {
   width: 100%;
   max-width: 420px;

@@ -39,7 +39,10 @@ test('Watch follows iOS, precedes TV/Mac and explains paired-iPhone playback wit
   expect(await page.locator('#santaradio').evaluate(el => el.nextElementSibling.className)).toBe('apple-watch-showcase');
   expect(await section.evaluate(el => el.nextElementSibling.className)).toBe('apple-tv-showcase');
   await expect(page.locator('.app-section')).toHaveCount(6);
-  await expect(page.getByRole('region', { name: 'Santa Radio for Mac', exact: true })).toContainText('Coming soon');
+  const mac = page.getByRole('region', { name: 'Santa Radio for Mac', exact: true });
+  await expect(mac).toBeVisible();
+  await expect(mac).not.toContainText(/Coming soon/i);
+  await expect(mac.locator('.mac-app-status, [role="status"]')).toHaveCount(0);
   await expect(page.locator('.radio-dock')).toBeVisible();
 
   const images = carousel.locator('img');

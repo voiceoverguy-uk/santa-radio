@@ -132,7 +132,8 @@ test('built Apps HTML starts on first promotional images and serves all local We
   const mac = html.match(/<section id="santa-radio-mac"[\s\S]*?<\/section>/)?.[0];
   assert.ok(mac, 'Mac promotional artwork must be in the initial HTML');
   assert.match(mac, /Play Santa Radio and see the current song and artist\./);
-  assert.match(mac, /role="status">Coming soon/);
+  assert.match(mac, /<h2[^>]*>Santa Radio for Mac<\/h2>/);
+  assert.doesNotMatch(mac, /Coming soon|mac-app-status|role="status"/i);
   assert.doesNotMatch(mac, /<a\b|<button\b/);
   assert.match(mac, /<figcaption>Santa Radio for Mac promotional artwork<\/figcaption>/);
   const macImage = mac.match(/<img\b[^>]*>/)?.[0];

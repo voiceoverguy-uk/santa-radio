@@ -72,7 +72,13 @@ test('Apps is usable on first server render without JavaScript', async ({ browse
       await expect.poll(() => image.evaluate(el => el.complete && el.naturalWidth > 0)).toBe(true);
     }
     await expect(page.locator('#santaradio .is-active')).toHaveAttribute('aria-hidden', 'false');
-    await expect(page.locator('#santa-radio-mac [role="status"]')).toHaveText('Coming soon');
+    const mac = page.getByRole('region', { name: 'Santa Radio for Mac', exact: true });
+    await expect(mac.getByRole('heading', { name: 'Santa Radio for Mac', exact: true })).toBeVisible();
+    await expect(mac.locator('.mac-app-description')).toHaveText('Play Santa Radio and see the current song and artist.');
+    await expect(mac.locator('.mac-app-status, [role="status"]')).toHaveCount(0);
+    await expect(mac).not.toContainText(/Coming soon/i);
+    await expect(mac.getByRole('link')).toHaveCount(0);
+    await expect(mac.getByRole('img')).toHaveCount(1);
     await expect(page.locator('.apple-tv-instruction')).toHaveText('Find Santa Radio in the App Store on your Apple TV.');
   } finally {
     await context.close();

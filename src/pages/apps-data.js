@@ -185,7 +185,6 @@ export const macAppListing = {
   alt: 'Santa Radio for Mac promotional artwork: Festive music for your desktop, with a laptop in a Christmas scene and icons for live Christmas music, snow effect, Xmas lights and playback controls.',
   width: 941,
   height: 1672,
-  status: 'Coming soon',
 };
 
 export const appleWatchScreenshots = [

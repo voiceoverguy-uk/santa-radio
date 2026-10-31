@@ -124,7 +124,6 @@ function MacAppShowcase({ app }) {
           <p className="apps-page-eyebrow">Mac app</p>
           <h2 id={`${app.id}-title`} className="app-section-title">{app.title}</h2>
           <p className="mac-app-description">{app.subtitle}</p>
-          <p className="mac-app-status" role="status">{app.status}</p>
         </div>
         <figure className="mac-app-figure">
           <img
