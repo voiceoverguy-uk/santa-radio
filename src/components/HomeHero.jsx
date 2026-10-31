@@ -56,7 +56,7 @@ export default function HomeHero({ preview = false, onContinue }) {
         <div className="hero-name-preview__broadcast">
           <div className="hero-name-preview__left-stack">
             <p className="hero-description hero-name-preview__description">
-              Enjoy online Christmas music 24/7 on Santa Radio, your Christmas radio station all year round. Listen live to festive classics and family favourites.
+              Your Christmas radio station all year round 24/7 along with festive treats and personalised messages from Santa.
             </p>
             <div className="hero-name-preview__listening">
               <div className="hero-name-preview__player-row">

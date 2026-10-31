@@ -62,9 +62,24 @@ for (const route of ['/', path]) {
       await expect(hero).not.toContainText('Live from The North Pole');
       await expect(hero.locator('.hero-name-preview__eyebrow')).toHaveCount(0);
       await expect(hero.locator('.hero-name-preview__flag')).toHaveCount(route === path ? 1 : 0);
+      const description = hero.locator('.hero-name-preview__description');
+      await expect(description).toHaveText('Your Christmas radio station all year round 24/7 along with festive treats and personalised messages from Santa.');
       if (route === path) await expect(hero.getByLabel('Preview only')).toBeVisible();
       for (const fontSize of ['100%', '200%']) {
         await page.evaluate(size => { document.documentElement.style.fontSize = size; }, fontSize);
+        const descriptionGeometry = await description.evaluate(element => {
+          const box = element.getBoundingClientRect();
+          const range = document.createRange();
+          range.selectNodeContents(element);
+          return { box: box.toJSON(), lines: [...range.getClientRects()].map(rect => rect.toJSON()) };
+        });
+        expect(descriptionGeometry.lines.length).toBeGreaterThan(0);
+        for (const line of descriptionGeometry.lines) {
+          expect(line.left).toBeGreaterThanOrEqual(descriptionGeometry.box.left - .5);
+          expect(line.right).toBeLessThanOrEqual(descriptionGeometry.box.right + .5);
+          expect(line.top).toBeGreaterThanOrEqual(descriptionGeometry.box.top - .5);
+          expect(line.bottom).toBeLessThanOrEqual(descriptionGeometry.box.bottom + .5);
+        }
         const geometry = await heading.evaluate(el => {
           const rect = el.getBoundingClientRect();
           const range = document.createRange();
