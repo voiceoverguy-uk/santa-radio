@@ -896,3 +896,45 @@ mtime_ms = 1793434732126
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/fe1b82f0-354f-4ffa-abfc-d6eb5cad2502/cb7239e2-6c69-455a-b4f7-0b22bdd63a15"
 storage_version_token = "1793434870238687"
 content_type = "image/png"
+
+[[outputs]]
+id = "hj6lGjeOPWswNTog_IXq-"
+uri = "file://generated-artifacts/christmas-pairs-idle-1440.jpg"
+type = "image"
+title = "Christmas Pairs — desktop preview"
+description = "Working homepage idle screen with original workshop and card artwork."
+logical_id = "413ac02e-e400-4fc7-8df6-76dc2c223321"
+content_hash = "sha256:84f2b64503b6523f2f5446f72303f5ef60e4acce0e119a50b72e3eaf5e212e67"
+size = 149635
+mtime_ms = 1793435609625
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/413ac02e-e400-4fc7-8df6-76dc2c223321/07fd8e6a-2254-40c7-b9a1-70708628e1b5"
+storage_version_token = "1793435733432597"
+content_type = "image/jpeg"
+
+[[outputs]]
+id = "c5F1_bJyrcIOZ5W8OQmF1"
+uri = "file://generated-artifacts/christmas-pairs-idle-390.jpg"
+type = "image"
+title = "Christmas Pairs — phone preview"
+description = "390px phone layout with accessible Start and Sound controls."
+logical_id = "6b099ffb-f8f5-40dc-a300-c04fc9db41a1"
+content_hash = "sha256:bef6c7e635f564147808f1ea9d808de6e4817171e5b82f67f3c8135430253f4c"
+size = 48967
+mtime_ms = 1793435603014
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/6b099ffb-f8f5-40dc-a300-c04fc9db41a1/f5a0a863-cbbb-4a24-ac33-b8cb31643a07"
+storage_version_token = "1793435734055722"
+content_type = "image/jpeg"
+
+[[outputs]]
+id = "qQvhzPp-Rr66YdjahckY4"
+uri = "file://generated-artifacts/christmas-pairs-24-cards-320.jpg"
+type = "image"
+title = "Christmas Pairs — 24-card phone game"
+description = "Level six at 320px, using real game state and the complete matching board."
+logical_id = "419d69c1-715e-442c-a4b7-72dbbfe1628c"
+content_hash = "sha256:003553bc7076b0931f0c5cbb5cf84476a373c8109f67943b018b1919d7a04711"
+size = 67178
+mtime_ms = 1793435597598
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/419d69c1-715e-442c-a4b7-72dbbfe1628c/c5fc28c5-ee2b-411c-b2b3-2048bc88e2d5"
+storage_version_token = "1793435734735317"
+content_type = "image/jpeg"

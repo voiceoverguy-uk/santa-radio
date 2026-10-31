@@ -49,10 +49,14 @@ export default function ChristmasPairs() {
 
   return (
     <section className="christmas-pairs" id="christmas-pairs" aria-labelledby="christmas-pairs-title">
+      <div className="christmas-pairs__decor" aria-hidden="true" />
       <div className="christmas-pairs__inner">
         <div className="christmas-pairs__heading">
           <p className="christmas-pairs__eyebrow">A little game from the workshop</p>
-          <h2 id="christmas-pairs-title">Christmas Pairs</h2>
+          <div className="christmas-pairs__title-wrap">
+            <span className="christmas-pairs__title-star" aria-hidden="true"><Star size={17} fill="currentColor" /></span>
+            <h2 id="christmas-pairs-title">Christmas Pairs</h2>
+          </div>
           <p className="christmas-pairs__intro">
             Remember the pictures, then find each matching pair.
           </p>
@@ -87,9 +91,24 @@ export default function ChristmasPairs() {
               <p className="christmas-pairs__idle-copy">
                 Start with three pairs. Later levels add more cards and shorten your first look.
               </p>
-              <button className="christmas-pairs__button christmas-pairs__button--gold" type="button" onClick={start}>
-                <Play size={17} aria-hidden="true" /> Start game
-              </button>
+              <div className="christmas-pairs__idle-actions">
+                <button className="christmas-pairs__button christmas-pairs__button--ruby" type="button" onClick={start}>
+                  <Play size={17} aria-hidden="true" /> Start game
+                </button>
+                <div className="christmas-pairs__sound-control">
+                  <button
+                    className="christmas-pairs__button christmas-pairs__button--sound"
+                    type="button"
+                    onClick={toggleSound}
+                    aria-pressed={soundEnabled}
+                    aria-label={soundEnabled ? 'Turn sound off' : 'Turn sound on'}
+                  >
+                    {soundEnabled ? <Volume2 size={16} aria-hidden="true" /> : <VolumeX size={16} aria-hidden="true" />}
+                    Sound {soundEnabled ? 'on' : 'off'}
+                  </button>
+                  {audioUnavailable && <span className="christmas-pairs__audio-note">Sound is unavailable on this device.</span>}
+                </div>
+              </div>
             </div>
           )}
 
@@ -206,7 +225,7 @@ export default function ChristmasPairs() {
                 )}
               </>
             )}
-            <div className="christmas-pairs__sound-control">
+            {state.phase !== 'idle' && <div className="christmas-pairs__sound-control">
               <button
                 className="christmas-pairs__button christmas-pairs__button--sound"
                 type="button"
@@ -218,7 +237,7 @@ export default function ChristmasPairs() {
                 Sound {soundEnabled ? 'on' : 'off'}
               </button>
               {audioUnavailable && <span className="christmas-pairs__audio-note">Sound is unavailable on this device.</span>}
-            </div>
+            </div>}
           </div>
         </div>
         <p className="christmas-pairs__live" aria-live="polite" aria-atomic="true">{statusMessage}</p>

@@ -14,6 +14,12 @@ The owner authorised generating a temporary workshop background for the game whi
 
 **How to apply:** The supplied-artwork restriction applies to matching-card faces, not to the temporary decorative background.
 
+The approved workshop redesign retains the original workshop backdrop and card pictures. New surrounding decorations must stay separate from the playable interface and contain no cards or interface text.
+
+**Why:** The owner explicitly approved extending the workshop atmosphere while keeping the original artwork, not flattening the mockup into an interface background.
+
+**How to apply:** Restyle the actual HTML scores and controls; decorative edge artwork may be generated independently, but must not replace any game content.
+
 Sound effects are optional and off initially; keep them separate from radio, soundboard and visual-effects preferences.
 
 **Why:** The owner explicitly chose “Optional sound, off initially.”
