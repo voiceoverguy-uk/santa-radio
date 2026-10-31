@@ -4,6 +4,7 @@ import { useTrackEvent } from '../privacy/useTrackEvent.js';
 import HomeHero, { useHeroNameSelection } from '../components/HomeHero.jsx';
 import SantaTrackerBanner from '../tracker/components/SantaTrackerBanner.tsx';
 import Soundboard from '../components/Soundboard.jsx';
+import ChristmasPairs from '../components/ChristmasPairs.jsx';
 import santaDashArtwork from '../assets/home/santa-dash-back-to-the-grotto.webp';
 import santaDashWobblyBobArtwork from '../assets/home/santa-dash-wobbly-bob.webp';
 import SantaMessageForm from '../components/SantaMessageForm.jsx';
@@ -85,6 +86,7 @@ export default function Home() {
         </div>
       </section>
       <Soundboard />
+      <ChristmasPairs />
       <YouTubeSection />
       <MugshotsPreview />
       <ContactSection />
