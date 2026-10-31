@@ -224,7 +224,7 @@ html[data-effects="off"] .hero-snow,html[data-effects="off"] .hero-aurora { disp
 .countdown-unit span { display: block; font-size: .54rem; text-transform: uppercase; letter-spacing: .15em; color: var(--muted); margin-top: 7px; }
 @media (min-width: 768px) {
   .home-page { display: grid; grid-template-columns: minmax(0, 1fr); }
-  .home-page > .mugshots-preview { grid-row: 7; }
+  .home-page > .mugshots-preview { grid-row: 6; }
 }
 @media (max-width: 767px) {
   .partnership-strip { padding: 29px max(20px, 6vw) 30px; }

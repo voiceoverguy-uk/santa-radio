@@ -15,6 +15,8 @@ test('partnership banner preserves the approved copy and fits desktop and narrow
   const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await decline.isVisible()) await decline.click();
   const banner = page.locator('.partnership-strip');
+  await expect(banner).toHaveCount(1);
+  await expect(page.locator('.home-page > .partnership-strip + .contact-section')).toHaveCount(1);
   const heading = banner.getByRole('heading', { name: 'Your brand. Part of their Christmas.', exact: true });
   const button = banner.getByRole('link', { name: 'Explore Christmas sponsorship →', exact: true });
   await expect(button).toHaveAttribute('href', '/submit-a-song?mode=sponsorship');
@@ -30,7 +32,12 @@ test('partnership banner preserves the approved copy and fits desktop and narrow
     const geometry = await banner.evaluate(element => {
       const box = element.getBoundingClientRect();
       const style = getComputedStyle(element);
-      const previous = element.previousElementSibling.getBoundingClientRect();
+      // Desktop deliberately places Mugshots earlier than its document position.
+      const previous = [...element.parentElement.children]
+        .filter(node => node.tagName === 'SECTION' && node !== element)
+        .map(node => node.getBoundingClientRect())
+        .filter(rect => rect.bottom <= box.top + .5)
+        .sort((a, b) => b.bottom - a.bottom)[0];
       const next = element.nextElementSibling.getBoundingClientRect();
       const texts = [...element.querySelectorAll('h2, p, a')].map(node => {
         const range = document.createRange();

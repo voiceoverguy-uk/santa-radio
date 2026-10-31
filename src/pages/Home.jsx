@@ -26,20 +26,6 @@ export default function Home() {
     <main id="main-content" className="home-page hero-name-preview">
       <PageSeo metadata={homeMetadata()} />
       <HomeHero onContinue={continueWithName} />
-      <section className="partnership-strip" aria-labelledby="partnership-heading">
-        <div className="partnership-strip__inner">
-          <div className="partnership-strip__copy">
-            <p className="partnership-strip__eyebrow">CHRISTMAS PARTNERSHIP 2026</p>
-            <h2 id="partnership-heading" className="partnership-strip__heading">Your brand. Part of their Christmas.</h2>
-            <p className="partnership-strip__body">Put your Christmas brand alongside Santa Radio, with two recorded sponsor mentions every hour, 24/7; a banner on every website page and your branding when our apps open—through 31 December.</p>
-            <p className="partnership-strip__supporting">65,000 website active users in 2025 · Approx. 247,000 cumulative Apple app units across our streaming apps</p>
-          </div>
-          <a className="partnership-strip__button" href="/submit-a-song?mode=sponsorship"
-            onClick={trackPartnership} onAuxClick={trackPartnership}>
-            <span>Explore Christmas sponsorship →</span>
-          </a>
-        </div>
-      </section>
       <SantaMessageForm keepSignupInPlace pendingName={pendingName} />
       <SantaTrackerBanner />
       {/* Personalised video promotion temporarily removed; SantaVideoSection and its styles are retained for restoration. */}
@@ -89,6 +75,20 @@ export default function Home() {
       <ChristmasPairs />
       <YouTubeSection />
       <MugshotsPreview />
+      <section className="partnership-strip" aria-labelledby="partnership-heading">
+        <div className="partnership-strip__inner">
+          <div className="partnership-strip__copy">
+            <p className="partnership-strip__eyebrow">CHRISTMAS PARTNERSHIP 2026</p>
+            <h2 id="partnership-heading" className="partnership-strip__heading">Your brand. Part of their Christmas.</h2>
+            <p className="partnership-strip__body">Put your Christmas brand alongside Santa Radio, with two recorded sponsor mentions every hour, 24/7; a banner on every website page and your branding when our apps open—through 31 December.</p>
+            <p className="partnership-strip__supporting">65,000 website active users in 2025 · Approx. 247,000 cumulative Apple app units across our streaming apps</p>
+          </div>
+          <a className="partnership-strip__button" href="/submit-a-song?mode=sponsorship"
+            onClick={trackPartnership} onAuxClick={trackPartnership}>
+            <span>Explore Christmas sponsorship →</span>
+          </a>
+        </div>
+      </section>
       <ContactSection />
     </main>
   );

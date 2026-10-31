@@ -45,14 +45,16 @@ test('homepage tracker enlarges the full-world map on desktop and stacks within 
 
 test('homepage keeps its desktop and mobile section order without the paused video promotion', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
-  const desktop = ['hero', 'partnership-strip', 'santa-message-section', 'tracker-banner', 'santa-dash-promo', 'soundboard', 'mugshots-preview', 'youtube-section', 'contact-section'];
-  const mobile = ['hero', 'partnership-strip', 'santa-message-section', 'tracker-banner', 'santa-dash-promo', 'soundboard', 'youtube-section', 'mugshots-preview', 'contact-section'];
+  const desktop = ['hero', 'santa-message-section', 'tracker-banner', 'santa-dash-promo', 'soundboard', 'mugshots-preview', 'christmas-pairs', 'youtube-section', 'partnership-strip', 'contact-section'];
+  const mobile = ['hero', 'santa-message-section', 'tracker-banner', 'santa-dash-promo', 'soundboard', 'christmas-pairs', 'youtube-section', 'mugshots-preview', 'partnership-strip', 'contact-section'];
   for (const width of [1280, 768, 767, 390]) {
     await page.setViewportSize({ width, height: 900 });
     const order = await page.locator('.home-page > section').evaluateAll(sections =>
       sections.map(section => ({ name: section.classList[0], top: section.getBoundingClientRect().top }))
         .sort((a, b) => a.top - b.top).map(section => section.name));
     expect(order).toEqual(width >= 768 ? desktop : mobile);
+    await expect(page.locator('.home-page > .partnership-strip')).toHaveCount(1);
+    await expect(page.locator('.home-page > .partnership-strip + .contact-section')).toHaveCount(1);
     await expect(page.locator('.home-page > .santa-dash-promo')).toHaveCount(1);
     await expect(page.locator('.home-page > .soundboard')).toHaveCount(1);
     await expect(page.locator('.tracker-banner + .santa-dash-promo + .soundboard')).toHaveCount(1);
@@ -64,7 +66,7 @@ test('homepage keeps its desktop and mobile section order without the paused vid
     expect(bounds[1].top).toBeCloseTo(bounds[0].bottom, 0);
     expect(bounds[2].top).toBeCloseTo(bounds[1].bottom, 0);
     expect(await page.locator('.home-page > section').evaluateAll(sections =>
-      sections.slice(0, 4).map(section => section.classList[0]))).toEqual(['hero', 'partnership-strip', 'santa-message-section', 'tracker-banner']);
+      sections.slice(0, 4).map(section => section.classList[0]))).toEqual(['hero', 'santa-message-section', 'tracker-banner', 'santa-dash-promo']);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
 });
@@ -130,7 +132,7 @@ test('homepage keeps the countdown in the hero and plain Santa text in Contact S
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   const hero = page.locator('.hero');
   await expect(page.locator('.welcome-section')).toHaveCount(0);
-  await expect(page.locator('.hero + .partnership-strip + .santa-message-section + .tracker-banner')).toHaveCount(1);
+  await expect(page.locator('.hero + .santa-message-section + .tracker-banner')).toHaveCount(1);
   await expect(page.locator('.radio-listening-section, .santa-note-section, .hero-scroll')).toHaveCount(0);
   await expect(page.locator('.soundboard')).toHaveCount(1);
   await expect(hero.getByRole('heading', { name: 'Christmas is on its way' })).toHaveCount(0);
