@@ -89,7 +89,7 @@ for (const route of ['/', '/free-santa-message']) {
     await fillAccessForm(page);
     await page.getByRole('button', { name: 'Get my free Santa message', exact: true }).click();
     const heading = page.locator('.santa-message-box h3');
-    await expect(heading).toHaveText('Download your free Santa greeting');
+    await expect(heading).toHaveText('Your free Santa greeting');
     await expect(heading).toBeFocused();
     const gap = () => page.evaluate(() => {
       const card = document.querySelector('#santa-messages .santa-message-box');
@@ -217,8 +217,8 @@ for (const width of [1440, 390]) {
       await page.getByRole('button', { name: 'Get my free Santa message' }).click();
       const input = page.getByLabel('First Name');
       await expect(input).toHaveValue('Olivia');
-      await expect(page.getByRole('heading', { name: 'Download your free Santa greeting' })).toBeFocused();
-      await expect(page.getByText('A recording for Olivia is available.', { exact: true })).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Your free Santa greeting' })).toBeFocused();
+      await expect(page.getByText('Santa is ready to record for Olivia.', { exact: true })).toBeVisible();
       await expectLanding(page, width);
       await finishFocusScroll(page);
       await settled(page);
@@ -261,7 +261,7 @@ for (const width of [1440, 390]) {
       await mockBrevo(page);
       await page.getByRole('button', { name: 'Get my free Santa message' }).click();
       await expectLanding(page, width);
-      await expect(page.getByRole('heading', { name: 'Download your free Santa greeting' })).toBeFocused();
+      await expect(page.getByRole('heading', { name: 'Your free Santa greeting' })).toBeFocused();
       await page.screenshot({ path: `generated-artifacts/santa-signup-scroll-${width}.png`, animations: 'disabled' });
     });
 

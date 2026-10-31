@@ -52,7 +52,7 @@ for (const name of reportNames) {
     expect(requests.renders).toEqual([]);
     await openAccess(page);
     await expect(page.getByLabel('First Name')).toHaveValue(name);
-    await expect(page.getByText(`A recording for ${name} is available.`, { exact: true })).toBeVisible();
+    await expect(page.getByText(`Santa is ready to record for ${name}.`, { exact: true })).toBeVisible();
     expect(requests.renders).toEqual([]);
     await expect(page.locator('link[rel="canonical"]')).toHaveCount(1);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://www.santaradio.co.uk/free-santa-message');
@@ -92,7 +92,7 @@ test('old name link carries a verified recording without submitting access or cr
   expect(requests.renders).toEqual([]);
   await openAccess(page);
   await expect(page.getByLabel('First Name')).toHaveValue('Cooper');
-  await expect(page.getByText('A recording for Cooper is available.', { exact: true })).toBeVisible();
+  await expect(page.getByText('Santa is ready to record for Cooper.', { exact: true })).toBeVisible();
   expect(requests.renders).toEqual([]);
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://www.santaradio.co.uk/free-santa-message');
   await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
@@ -111,7 +111,7 @@ test('an unavailable legacy name stays explicit and cannot generate a different 
   await expect(page.getByText('We don’t have a recording for that name yet. Choose one of the suggested names.', { exact: true })).toBeVisible();
   expect(requests.renders).toEqual([]);
   await page.getByLabel('First Name').fill('Cooper');
-  await expect(page.getByText('A recording for Cooper is available.', { exact: true })).toBeVisible();
+  await expect(page.getByText('Santa is ready to record for Cooper.', { exact: true })).toBeVisible();
 });
 
 test('a legacy filename with different display spelling requires the verified suggestion', async ({ page }) => {

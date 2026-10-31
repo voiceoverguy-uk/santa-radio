@@ -360,7 +360,7 @@ test('accepted signup unlocks studio directly with empty child name and no dupli
   release();
   await expect(page).toHaveURL(/free-santa-message$/);
   await expect(offer(page)).toHaveCount(0);
-  await expect(page.getByRole('heading', { name: 'Download your free Santa greeting' })).toBeFocused();
+  await expect(page.getByRole('heading', { name: 'Your free Santa greeting' })).toBeFocused();
   await advance(page, 500);
   await expect.poll(() => page.evaluate(() => Math.round(
     document.querySelector('#santa-messages .message-layout').getBoundingClientRect().top -

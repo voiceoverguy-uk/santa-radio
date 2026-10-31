@@ -137,7 +137,7 @@ test('confirmed acceptance sends exact fields, ignores external redirect and onl
   await fillAccessForm(page);
   await page.getByRole('button', { name: 'Get my free Santa message' }).click();
   await expect(page).toHaveURL(/\/free-santa-message$/);
-  await expect(page.getByRole('heading', { name: 'Download your free Santa greeting' })).toBeFocused();
+  await expect(page.getByRole('heading', { name: 'Your free Santa greeting' })).toBeFocused();
   await expect(page.locator('.form-desc')).toHaveText(`Hey ${adult.FIRSTNAME}, Search for the name and press Create message.`);
   await expect(page.getByLabel('First Name')).toBeVisible();
   await expect(page.getByText('Start typing to find a recorded name.', { exact: true })).toHaveCount(0);

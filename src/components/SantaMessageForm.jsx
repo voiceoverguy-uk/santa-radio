@@ -27,6 +27,8 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const makerHeadingRef = useRef(null);
   const previousAccess = useRef(hasAccess);
   const [name, setName] = useState(initialName);
+  const hasPrefilledName = Boolean(pendingName?.name &&
+    santaNameKey(pendingName.name) === santaNameKey(name));
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [exampleName, setExampleName] = useState('Olivia');
   const [activeExampleName, setActiveExampleName] = useState(null);
@@ -308,14 +310,16 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         {nameSearch.hostedCount === null && !nameSearch.loading && !hasAccess &&
           <button className="message-retry" type="button" onClick={nameSearch.refresh}>Retry name total</button>}
         {!hasAccess ? <SantaMessageAccessForm keepInPlace={keepSignupInPlace} /> : <>
-        <h3 ref={makerHeadingRef} tabIndex={-1}>{messages.length ? 'Download your free message' : 'Download your free Santa greeting'}</h3>
+        <h3 ref={makerHeadingRef} tabIndex={-1}>Your free Santa greeting</h3>
         {!!messages.length && <div className="message-wait-downloads">
           {renderResults()}
         </div>}
         {coolingDown && !messages.length && <SantaCooldownNotice availableAt={allowance.availableAt} />}
         {coolingDown && !allowance.remembered && <p className="message-name-hint" role="status">Your browser can’t remember the message allowance. The limit works while this page is open, but leaving or refreshing may reset it.</p>}
         {!coolingDown && <>
-        <p className="form-desc">Hey {greetingName || 'there'}, Search for the name and press Create message.</p>
+        <p className="form-desc">Hey {greetingName || 'there'}, {hasPrefilledName
+          ? 'check the name and create message.'
+          : 'Search for the name and press Create message.'}</p>
         <form onSubmit={submit} noValidate>
           <label className="message-name-label" htmlFor={inputId}>First Name</label>
           <div className="message-name-picker">
@@ -367,7 +371,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
           </div>
           <span className="message-name-hint" id={`${inputId}-hint`} aria-live="polite">
             {verifiedSelectedRecord ? `${verifiedSelectedRecord.name} is selected.`
-              : exactMatch ? `A recording for ${exactMatch.name} is available.`
+              : exactMatch ? `Santa is ready to record for ${exactMatch.name}.`
               : ''}
           </span>
           {nameSearch.loading && name.trim() && <p className="message-search-status" role="status">Checking Santa’s hosted name list…</p>}
@@ -412,7 +416,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
           {!busy && allowance.pending && <p role="status" className="message-name-hint">Another message is being created. Please wait for it to finish.</p>}
         </form>
         </>}
-        <p className="service-notice">Free to create and download. Messages are not sent by email.</p>
+        <p className="service-notice">Free to create and download. (not sent by email)</p>
         {!sessionRemembered && <p className="message-name-hint" role="status">Your browser can’t remember access. The studio stays open while you browse, but refreshing this tab may ask for your details again.</p>}
         </>}
       </div>
