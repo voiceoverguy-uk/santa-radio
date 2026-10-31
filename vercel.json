@@ -1,5 +1,6 @@
 {
   "buildCommand": "npm run build",
+  "installCommand": "node scripts/check-dependency-portability.mjs && npm ci",
   "outputDirectory": "dist",
   "framework": "vite",
   "functions": {
