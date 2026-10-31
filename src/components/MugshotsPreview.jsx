@@ -51,7 +51,7 @@ export default function MugshotsPreview() {
         <header className="mugshots-intro">
           <p className="mugshots-eyebrow">THE SANTA RADIO HALL OF FAME</p>
           <h2 id="homepage-mugshots-title" className="section-title mug-title">Celebrity Mugshots</h2>
-          <p className="mugshots-subtitle">Famous faces. One festive mug.</p>
+          <p className="mugshots-subtitle">Famous faces. One festive mug. No A.I.</p>
           <p className="mugshots-description">
             Our autograph-hunting elf has been busy. Discover hundreds of familiar faces with the Santa Radio mug.
           </p>

@@ -18,7 +18,7 @@ test('approved copy is live text with no retired icon or wrapper', async ({ page
   const section = page.locator(sectionSelector);
   for (const copy of [
     'THE SANTA RADIO HALL OF FAME',
-    'Famous faces. One festive mug.',
+    'Famous faces. One festive mug. No A.I.',
     'Our autograph-hunting elf has been busy. Discover hundreds of familiar faces with the Santa Radio mug.',
     'Hundreds of famous faces. Who will you spot?',
   ]) await expect(section.getByText(copy, { exact: true })).toBeVisible();
@@ -101,6 +101,18 @@ for (const width of [1440, 768, 390, 320]) {
     await prepare(page);
     const section = page.locator(sectionSelector);
     const cards = page.locator(cardsSelector);
+    const subtitle = section.locator('.mugshots-subtitle');
+    await expect(subtitle).toHaveText('Famous faces. One festive mug. No A.I.');
+    expect(await subtitle.evaluate(node => {
+      const box = node.getBoundingClientRect();
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      const style = getComputedStyle(node);
+      return style.userSelect !== 'none' && style.whiteSpace === 'normal' &&
+        [...range.getClientRects()].every(line =>
+          line.left >= box.left - 0.5 && line.right <= box.right + 0.5) &&
+        node.scrollHeight <= node.clientHeight + 1;
+    })).toBe(true);
     await expect(cards).toHaveCount(4);
     await cards.first().scrollIntoViewIfNeeded();
     await expect.poll(() => cards.locator('img').evaluateAll(images => images.every(image => image.complete && image.naturalWidth > 0))).toBe(true);
