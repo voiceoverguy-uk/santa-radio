@@ -803,14 +803,14 @@ content_type = "image/jpeg"
 id = "g_zEA4D0tmKY04cwLAwzN"
 uri = "file://generated-artifacts/apps-review-radio-390.jpg"
 type = "image"
-title = "Phone presentation — mobile"
-description = "390px review capture of the refined Santa Radio phone and existing page content."
+title = "Apps — phone screenshot"
+description = "Complete Santa Radio section at 390px, showing the preserved phone, features and download buttons on plain green."
 logical_id = "2ef40f8d-0adf-4b8e-ac2f-47e1e8650616"
-content_hash = "sha256:94c60fa1934f0c185eb8022008bbec72b735477d0f3b7083e440be5075e56ede"
-size = 110641
-mtime_ms = 1793432565935
-storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/2ef40f8d-0adf-4b8e-ac2f-47e1e8650616/dd2d816b-a7d5-4ba2-baf4-de8a4cbdbec2"
-storage_version_token = "1793432604268174"
+content_hash = "sha256:c10bb36584f6aedf7d72681bdfff1fed2f76f3253227d76c05e29b08e99c06d1"
+size = 102919
+mtime_ms = 1793458318161
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/2ef40f8d-0adf-4b8e-ac2f-47e1e8650616/82f1d6d2-f776-40e4-b094-7e40cd229b9a"
+storage_version_token = "1793458428764231"
 content_type = "image/jpeg"
 
 [[outputs]]
@@ -937,4 +937,18 @@ size = 67178
 mtime_ms = 1793435597598
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/419d69c1-715e-442c-a4b7-72dbbfe1628c/c5fc28c5-ee2b-411c-b2b3-2048bc88e2d5"
 storage_version_token = "1793435734735317"
+content_type = "image/jpeg"
+
+[[outputs]]
+id = "zexQRyFAQ8dL6efeSD-dY"
+uri = "file://generated-artifacts/apps-review-page-1440.jpg"
+type = "image"
+title = "Apps — desktop screenshot"
+description = "Forest-green Apps introduction, original phone presentation and gold-outlined features."
+logical_id = "14da843b-e65b-44a1-8242-90f52c8e671b"
+content_hash = "sha256:75798795e3f88f9ecbdf32734020038226f3633c3a06b7b4b83e778bf9b5c28f"
+size = 141019
+mtime_ms = 1793458315565
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/14da843b-e65b-44a1-8242-90f52c8e671b/28110c34-a490-48dd-a689-4e99d71da060"
+storage_version_token = "1793458427732933"
 content_type = "image/jpeg"

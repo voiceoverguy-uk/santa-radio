@@ -22,8 +22,7 @@ test('built Apps HTML starts on first promotional images and serves all local We
   assert.equal(response.status, 200);
   const html = await response.text();
   const visibleHtml = html.replace(/<!--[\s\S]*?-->/g, '');
-  // Decorative scenes must be deployed alongside the real screenshots; HTML
-  // alone cannot catch a missing CSS background image in the production build.
+  // Production CSS must retain the plain green treatment, including on phones.
   const stylesheetUrls = [...html.matchAll(/<link\b[^>]*rel="stylesheet"[^>]*href="([^"]+)"/g)].map(match => match[1]);
   assert.ok(stylesheetUrls.length > 0);
   const css = (await Promise.all(stylesheetUrls.map(async url => {
@@ -31,15 +30,10 @@ test('built Apps HTML starts on first promotional images and serves all local We
     assert.equal(response.status, 200);
     return response.text();
   }))).join('\n');
-  for (const variant of ['wide', 'mobile']) {
-    const scene = css.match(new RegExp(`/assets/christmas-room-${variant}-[^)"\\s]+\\.webp`))?.[0];
-    assert.ok(scene, `${variant} Christmas scene is referenced by built CSS`);
-    const response = await get(scene);
-    assert.equal(response.status, 200);
-    assert.match(response.headers.get('content-type'), /image\/webp/);
-    const bytes = Buffer.from(await response.arrayBuffer());
-    assert.equal(bytes.toString('ascii', 8, 12), 'WEBP');
-    assert.ok(bytes.length < (variant === 'wide' ? 200000 : 90000));
+  assert.doesNotMatch(css, /christmas-room-(wide|mobile)/);
+  assert.match(css, /--apps-forest:\s*#092419/);
+  for (const selector of ['app-section', 'apple-watch-showcase', 'apple-tv-showcase', 'mac-app-showcase']) {
+    assert.match(css, new RegExp(`\\.apps-page \\.${selector}[^{}]*\\{[^{}]*background:\\s*var\\(--apps-forest\\)`));
   }
   assert.doesNotMatch(visibleHtml, /app-store-card|app-store-details/);
   assert.doesNotMatch(visibleHtml, obsoleteStoreCopy);

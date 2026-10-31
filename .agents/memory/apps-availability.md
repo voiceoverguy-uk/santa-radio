@@ -12,13 +12,13 @@ Use the homepage's visual style for the Apps page, rather than copying the legac
 
 **Why:** The owner wants the Apps page to match the site's identity. The later approved Christmas-device reference explicitly supersedes the earlier “No boxes” direction.
 
-**How to apply:** Preserve app content and screenshots and the current site's theme. Use fine gold-outlined feature cards with subtle dark-green fills and restrained relevant icons, alongside devices in warm Christmas scenes.
+**How to apply:** Preserve app content and screenshots and the current site's theme. Use fine gold-outlined feature cards with subtle dark-green fills and restrained relevant icons, alongside physical devices.
 
-Match the owner's supplied Christmas-device demo closely, with real app screenshots inside a convincing physical iPhone and luminous golden lights, fir greenery, baubles and presents.
+Keep real app screenshots inside a convincing physical iPhone as in the owner's supplied Christmas-device demo. Use plain forest-green section backgrounds, not decorative room scenery.
 
-**Why:** The owner rejected the dim Christmas-room interpretation and flat gold phone frame: “If you have to, COPY the demo” and “Put the APP screen shots into a real phone.”
+**Why:** The owner rejected the flat gold phone frame: “Put the APP screen shots into a real phone.” The later green-background request explicitly supersedes the earlier approval of decorative section scenery, not the device and feature-card presentation.
 
-**How to apply:** Use the supplied demo as the visual target, not merely inspiration. Avoid a flat room photograph or generic rounded gold rectangle in place of dimensional phone hardware. Keep the real UI separate from scenery and preserve full existing promotional compositions that already contain devices.
+**How to apply:** Keep all app listings and Watch, TV and Mac showcases green on desktop and mobile. Preserve dimensional phone hardware and genuine screens. Scenery embedded in approved promotional artwork remains authorised; do not remove it or delete source scenery assets.
 
 Santa Radio is available free on Apple TV, as confirmed by the owner. Present its supplied big-screen image as a separate Apple TV experience, not as an iOS app screenshot.
 

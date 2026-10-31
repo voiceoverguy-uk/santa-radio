@@ -64,16 +64,33 @@ test('all six app screens use physical phones while Watch, TV and Mac stay separ
       else expect(copy.y).toBeGreaterThanOrEqual(bounds.y + bounds.height + 20);
     }
   }
-  for (const width of [1440, 1024, 390, 320]) {
+});
+
+test('all nine Apps sections keep plain forest-green backgrounds at every breakpoint', async ({ page }) => {
+  const sceneryRequests = [];
+  page.on('request', request => {
+    if (/christmas-room-(wide|mobile)/.test(request.url())) sceneryRequests.push(request.url());
+  });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/apps');
+  const sections = page.locator('.app-section, .apple-watch-showcase, .apple-tv-showcase, .mac-app-showcase');
+  await expect(sections).toHaveCount(9);
+  for (const width of [1440, 1024, 768, 767, 390, 320]) {
     await page.setViewportSize({ width, height: 1000 });
-    const background = await page.locator('#santaradio').evaluate(el => getComputedStyle(el).backgroundImage);
-    const url = background.match(/url\("([^"]+)"\)/)[1];
-    expect(url).toContain(width > 767 ? 'christmas-room-wide' : 'christmas-room-mobile');
-    const response = await page.request.get(url);
-    expect(response.ok()).toBe(true);
-    expect(response.headers()['content-type']).toMatch(/image\/webp/);
-    expect((await response.body()).length).toBeLessThan(width > 767 ? 200000 : 90000);
+    for (const section of await sections.all()) {
+      await section.scrollIntoViewIfNeeded();
+      await expect(section).toHaveCSS('background-color', 'rgb(9, 36, 25)');
+      await expect(section).toHaveCSS('background-image', 'none');
+      for (const pseudo of ['::before', '::after']) {
+        expect(await section.evaluate((el, pseudo) => {
+          const style = getComputedStyle(el, pseudo);
+          return { content: style.content, image: style.backgroundImage };
+        }, pseudo)).toEqual({ content: 'none', image: 'none' });
+      }
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
+  expect(sceneryRequests).toEqual([]);
 });
 
 test('Apps is usable on first server render without JavaScript', async ({ browser, baseURL }) => {
