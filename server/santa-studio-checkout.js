@@ -105,7 +105,7 @@ export function createStudioCheckoutHandler({
     if (req.method === 'POST' && !req.is('application/json')) return res.status(415).json({ error: 'Expected JSON.' });
     next();
   });
-  app.use(express.json({ limit: '1kb' }));
+  app.use(express.json({ limit: '1kb', inflate: false }));
   app.use(async (req, res) => {
     const { secret, origin } = req.checkoutConfig;
     let claim = readCheckoutClaim(req, secret);

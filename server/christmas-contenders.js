@@ -1,7 +1,7 @@
 import express from 'express';
+import { consumeNameAccess, trustedAddress, privateResponse } from './santa-name-security.js';
 import { createHmac, timingSafeEqual } from 'node:crypto';
-import { clerkMiddleware } from '@clerk/express';
-import { publishableKeyFromHost } from '@clerk/shared/keys';
+import { staffAuth } from './staff-auth.js';
 import { authorize } from './name-requests.js';
 import { getClerkProxyHost } from './middlewares/clerkProxyMiddleware.js';
 import { competitionState, demoBallot, requestLimit, manageCompetition, staffCompetition, rememberedDemo } from './contenders-store.js';
@@ -50,7 +50,7 @@ export function validateManagement(body) {
 export function createContendersHandler({ read = competitionState, vote = demoBallot, limit = requestLimit,
   digest = privateDigest, checkAdmin = authorize, manage = manageCompetition,
   staffRead = staffCompetition, remember = rememberedDemo,
-  logDiagnostic = event => console.error(JSON.stringify(event)) } = {}) {
+  logDiagnostic = event => console.error(JSON.stringify(event)), abuseLimit = consumeNameAccess } = {}) {
   return async (req, res) => {
     res.set('Cache-Control', 'no-store').set('X-Robots-Tag', 'noindex');
     const staff = req.method === 'PATCH' || req.query?.staff === '1';
@@ -68,7 +68,8 @@ export function createContendersHandler({ read = competitionState, vote = demoBa
         const allowed = await checkAdmin(req);
         if (allowed !== 200) return res.status(allowed).json({error:'Approved staff access is required.'});
       }
-      const source = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket?.remoteAddress || 'unknown';
+      await abuseLimit(req, req.method === 'GET' ? 'contenderRead' : 'contenderWrite');
+      const source = trustedAddress(req);
       stage = 'request_signing';
       const bucket = digest(`limit:${req.method}:${source}:${Math.floor(Date.now()/3600000)}`);
       stage = 'rate_limit_storage';
@@ -128,6 +129,7 @@ export function createContendersHandler({ read = competitionState, vote = demoBa
       res.append('Set-Cookie', `contenders-demo=${voterKey}.${digest(`demo-cookie:${voterKey}`)}; Path=/api/christmas-contenders; HttpOnly; SameSite=Lax; Max-Age=2592000${req.secure || req.headers['x-forwarded-proto'] === 'https' ? '; Secure' : ''}`);
       return res.json(result);
     } catch (error) {
+      if (error.status === 429) res.set('Retry-After', String(error.retryAfter || 3600));
       if ([400,409,429].includes(error.status)) return res.status(error.status).json({error:error.message});
       // Never log addresses, identities, bodies, secrets or raw database errors.
       try { logDiagnostic(contenderFailureDiagnostic(error, stage)); } catch { /* Logging must not change the response. */ }
@@ -144,11 +146,10 @@ export function createContendersHandler({ read = competitionState, vote = demoBa
 }
 const app = express();
 app.disable('x-powered-by');
-const auth = clerkMiddleware(req => ({
-  publishableKey: publishableKeyFromHost(getClerkProxyHost(req) ?? '', process.env.CLERK_PUBLISHABLE_KEY),
-}));
+app.use((_req, res, next) => { privateResponse(res); next(); });
+const auth = staffAuth;
 app.use((req,res,next) => req.method === 'PATCH' || req.query.staff === '1' ? auth(req,res,next) : next());
-app.use(express.json({limit:'8kb'}));
+app.use(express.json({limit:'8kb', inflate:false}));
 app.use(createContendersHandler());
 app.use((error,_req,res,_next) => res.status(error.status === 413 ? 413 : 400).json({error:'Please send a valid, bounded request.'}));
 export default app;

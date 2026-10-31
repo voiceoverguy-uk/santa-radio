@@ -5,8 +5,13 @@ export const SEARCH_MIN_LENGTH = 2;
 export const SEARCH_LIMIT = 10;
 const WINDOW_MS = 60_000;
 const TOKEN_MS = 5 * 60_000;
-const MAXIMUM = { search: 40, preview: 12, message: 6 };
-const GLOBAL_MAXIMUM = { search: 1200, preview: 300, message: 120 };
+const MAXIMUM = { search: 40, preview: 12, message: 6, request: 20, signup: 10, contenderRead: 300, contenderWrite: 30 };
+const GLOBAL_MAXIMUM = { search: 1200, preview: 300, message: 120, request: 300, signup: 300, contenderRead: 6000, contenderWrite: 600 };
+export function trustedAddress(req) {
+  return process.env.VERCEL === '1'
+    ? req.headers['x-vercel-forwarded-for'] || req.socket?.remoteAddress || 'unknown'
+    : req.socket?.remoteAddress || 'unknown';
+}
 
 export function privateResponse(res) {
   res.setHeader('Cache-Control', 'private, no-store, max-age=0');
@@ -42,11 +47,10 @@ export function verifyNameToken(token, scope, now = Date.now(), key = secret()) 
 // Shared, atomic, expiring buckets reuse the existing request-limits table.
 // Never trust caller-supplied X-Forwarded-For or keep raw IPs/searches in storage.
 export async function consumeNameAccess(req, scope, { now = Date.now(), pool = databasePool(), key = secret() } = {}) {
-  const window = Math.floor(now / WINDOW_MS);
-  const expires = new Date((window + 1) * WINDOW_MS);
-  const address = process.env.VERCEL === '1'
-    ? req.headers['x-vercel-forwarded-for'] || req.socket?.remoteAddress || 'unknown'
-    : req.socket?.remoteAddress || 'unknown';
+  const duration = ['request', 'signup', 'contenderRead', 'contenderWrite'].includes(scope) ? 3600000 : WINDOW_MS;
+  const window = Math.floor(now / duration);
+  const expires = new Date((window + 1) * duration);
+  const address = trustedAddress(req);
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
@@ -58,7 +62,7 @@ export async function consumeNameAccess(req, scope, { now = Date.now(), pool = d
         SET attempts=santa_name_request_limits.attempts+1
         WHERE santa_name_request_limits.attempts < $3 RETURNING attempts`, [bucket, expires, maximum]);
       if (!result.rowCount) {
-        const error = new Error('Too many requests. Please wait a minute before trying again.');
+        const error = new Error('Too many requests. Please wait before trying again.');
         error.status = 429;
         error.retryAfter = Math.max(1, Math.ceil((expires.getTime() - now) / 1000));
         throw error;

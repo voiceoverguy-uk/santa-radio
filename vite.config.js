@@ -22,6 +22,8 @@ import { santaAudioRecipeVersion } from './scripts/santa-audio-recipe.mjs';
 import stripeWebhook from './server/stripe-webhook.js';
 import studioPaidAccess from './server/santa-studio-purchase.js';
 import studioCheckout from './server/santa-studio-checkout.js';
+import messageAccess from './server/santa-message-access.js';
+import { browserSecurity } from './server/browser-security.js';
 
 const trackerMetadataPlugin = {
   name: 'tracker-page-metadata',
@@ -40,7 +42,9 @@ const trackerMetadataPlugin = {
 const metadataPlugin = {
   name: 'radio-metadata',
   configureServer(server) {
+    server.middlewares.use(browserSecurity);
     server.middlewares.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
+    server.middlewares.use('/api/santa-message-access', messageAccess);
     server.middlewares.use('/api/stripe/webhook', stripeWebhook);
     server.middlewares.use('/api/santa-studio-access', studioPaidAccess);
     server.middlewares.use('/api/santa-studio-checkout', studioCheckout);
@@ -57,7 +61,9 @@ const metadataPlugin = {
     server.middlewares.use('/api/santa-greeting', santaGreeting);
   },
   configurePreviewServer(server) {
+    server.middlewares.use(browserSecurity);
     server.middlewares.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
+    server.middlewares.use('/api/santa-message-access', messageAccess);
     server.middlewares.use('/api/stripe/webhook', stripeWebhook);
     server.middlewares.use('/api/santa-studio-access', studioPaidAccess);
     server.middlewares.use('/api/santa-studio-checkout', studioCheckout);
@@ -105,5 +111,6 @@ export default defineConfig(({ isSsrBuild }) => ({
     host: '0.0.0.0',
     port: 5000,
     allowedHosts: true,
+    fs: { deny: ['.env', '.env.*', '**/*.{crt,pem,key}', '**/.git/**', '**/.agents/**', '**/.local/**', '**/attached_assets/**', '**/server/**', '**/scripts/**'] },
   },
 }));

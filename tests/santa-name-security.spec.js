@@ -6,7 +6,7 @@ for (const width of [390, 1440]) {
     test.setTimeout(120000);
     await page.setViewportSize({ width, height: 1000 });
     await page.emulateMedia({ reducedMotion: 'reduce' });
-    await mockBrevo(page);
+    const signup = await mockBrevo(page);
     await page.route(/youtube\.com|googlevideo\.com|global\.citrus3\.com/, route => route.abort());
     const requests = [];
     page.on('request', request => requests.push({ url: request.url(), method: request.method() }));
@@ -56,5 +56,25 @@ for (const width of [390, 1440]) {
     const storage = await page.evaluate(() => JSON.stringify({ ...localStorage, ...sessionStorage }));
     expect(storage).not.toContain(record.name);
     expect(JSON.parse(await page.evaluate(() => localStorage.getItem('santa-message-allowance'))).used).toBe(1);
+    // No further MP3s are rendered: exercise the real server denial paths after
+    // removing browser storage/cookies and issuing a fresh signup for this adult.
+    const grantCookie = (await page.context().cookies()).find(cookie => cookie.name === 'santa-free-message');
+    await page.evaluate(() => localStorage.removeItem('santa-message-allowance'));
+    await page.context().clearCookies();
+    const origin = new URL(page.url()).origin;
+    const creation = { name: record.id, outro: 1, selectionToken: record.selectionToken };
+    const missingSignup = await page.request.post('/api/santa-message', {
+      headers: { origin }, data: creation,
+    });
+    expect(missingSignup.status()).toBe(401);
+    await page.context().addCookies([{ ...grantCookie, value: signup.renewGrant() }]);
+    const renewed = await page.request.post('/api/santa-message', { headers: { origin }, data: creation });
+    expect(renewed.status()).toBe(429);
+    const blocked = await renewed.json();
+    expect(blocked.availableAt).toBeGreaterThan(Date.now() + 110 * 60_000);
+    expect(Number(renewed.headers()['retry-after'])).toBeGreaterThan(0);
+    const restored = await (await page.request.get('/api/santa-message-access')).json();
+    expect(restored.authorized).toBe(true);
+    expect(restored.availableAt).toBe(blocked.availableAt);
   });
 }

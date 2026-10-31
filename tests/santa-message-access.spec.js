@@ -306,7 +306,7 @@ test('opaque responses cannot unlock access', async ({ page }) => {
   await expect(page.locator('.message-name-label')).toHaveCount(0);
 });
 
-test('blocked session storage uses in-memory accepted access without storing adult details', async ({ page }) => {
+test('blocked session storage preserves the server grant without storing adult details', async ({ page }) => {
   await page.addInitScript(() => {
     Object.defineProperty(window, 'sessionStorage', { get() { throw new DOMException('Storage blocked', 'SecurityError'); } });
   });
@@ -317,9 +317,10 @@ test('blocked session storage uses in-memory accepted access without storing adu
   await expect(page.getByLabel('First Name')).toBeVisible();
   await expect(page.getByText(/Your browser can’t remember access/)).toBeVisible();
   await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Home', exact: true }).click();
-  await expect(page.getByLabel('First Name')).toBeVisible();
+  await expect(page.locator('.santa-message-box').getByRole('combobox', { name: 'First Name', exact: true })).toBeVisible();
   await page.reload();
-  await expect(page.getByRole('button', { name: 'Get my free Santa message' })).toBeVisible();
+  await expect(page.locator('.santa-message-box').getByRole('combobox', { name: 'First Name', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Get my free Santa message' })).toHaveCount(0);
 });
 
 test('adult access form fits desktop and phone screens without hiding labels or focus', async ({ page }) => {

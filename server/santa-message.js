@@ -9,6 +9,7 @@ import { santaNameLibrary } from './santa-name-library.js';
 import { renderArgs } from '../scripts/santa-audio-filters.mjs';
 import { eligibleArabella } from './santa-saved-cache.js';
 import { consumeNameAccess, privateResponse, verifyNameToken } from './santa-name-security.js';
+import { authorizeFreeMessage, reserveFreeMessage, finishFreeMessage } from './santa-message-access.js';
 
 const execute = promisify(execFile);
 const sources = fileURLToPath(new URL('./santa-audio/', import.meta.url));
@@ -18,6 +19,7 @@ let active = 0;
 // publisher disconnected until the origin offers private cache storage.
 export function createSantaMessageHandler(library = santaNameLibrary, cache = null, {
   limit = consumeNameAccess, verify = verifyNameToken,
+  authorize = authorizeFreeMessage, reserve = reserveFreeMessage, finish = finishFreeMessage,
 } = {}) {
 return async function santaMessage(req, res) {
   privateResponse(res);
@@ -33,10 +35,13 @@ return async function santaMessage(req, res) {
   if (active >= 2) return fail(429, 'Santa is preparing other messages. Please try again in a moment.');
   active++;
   let directory;
+  let lease;
+  let allowanceFinished = false;
   const started = performance.now();
   let renderMs;
   try {
     await limit(req, 'message');
+    const session = await authorize(req);
     // Vercel parses JSON before calling the function; the local Node server
     // supplies a readable stream instead. Support both without rereading it.
     let body = req.body;
@@ -59,6 +64,7 @@ return async function santaMessage(req, res) {
     }
     const recording = await library.resolve(data?.name);
     if (!recording) return fail(400, 'That name is not available yet. Choose a suggested name.');
+    lease = await reserve(session);
     let prepared;
     if (cache && eligibleArabella(recording)) {
       try { prepared = await cache.prepare(recording, library, data.outro); }
@@ -87,6 +93,8 @@ return async function santaMessage(req, res) {
     const audio = cache && eligibleArabella(recording)
       ? await cache.singleFlight(prepared?.identity.key || `${recording.id}-${data.outro}`, generate) : await generate();
     const asciiFilename = recording.downloadName.normalize('NFKD').replace(/\p{M}/gu, '').replace(/[^\x20-\x7e]/g, '_');
+    await finish(lease, true);
+    allowanceFinished = true;
     res.writeHead(200, {
       'Content-Type': 'audio/mpeg',
       'Content-Length': audio.length,
@@ -100,8 +108,10 @@ return async function santaMessage(req, res) {
   } catch (error) {
     if (error.status === 429) {
       res.setHeader('Retry-After', String(error.retryAfter || 60));
-      return fail(429, error.message);
+      res.writeHead(429, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ error: error.message, availableAt: error.availableAt || 0 }));
     }
+    if (error.status === 401 || error.status === 403) return fail(error.status, error.message);
     // Log operational codes only, never submitted names or contact details.
     console.error('[santa-message] rendering failed', {
       code: typeof error.code === 'number' ? error.code : ['ENOENT', 'EACCES', 'ERR_CHILD_PROCESS_STDIO_MAXBUFFER'].includes(error.code) ? error.code : 'RENDER_FAILED',
@@ -113,6 +123,7 @@ return async function santaMessage(req, res) {
       'The recording could not be loaded or mixed. Please try again.');
   } finally {
     active--;
+    if (lease && !allowanceFinished) await finish(lease, false).catch(() => {});
     if (directory) await rm(directory, { recursive: true, force: true }).catch(() => {});
   }
 };

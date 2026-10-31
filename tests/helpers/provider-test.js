@@ -11,6 +11,13 @@ export const test = base.extend({
       }
       await route.abort('blockedbyclient');
     });
+    // Signup now contacts Brevo on the server. A browser-only provider guard
+    // must block unexpected internal submissions too, before they reach it.
+    await context.route('**/api/santa-message-access', async route => {
+      if (route.request().method() !== 'POST') return route.fallback();
+      unexpected.push('/api/santa-message-access');
+      await route.abort('blockedbyclient');
+    });
     await use();
     expect(unexpected, 'Unexpected Brevo POSTs were blocked, never sent live').toEqual([]);
   }, { auto: true }],

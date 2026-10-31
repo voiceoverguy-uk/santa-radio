@@ -33,13 +33,13 @@ export class MessageAccessError extends Error {
 }
 
 export async function submitMessageAccess(fields, signal) {
-  const body = new FormData();
-  for (const name of ['FIRSTNAME', 'LASTNAME', 'EMAIL']) body.append(name, fields[name].trim());
-  body.append('email_address_check', fields.email_address_check || '');
-  body.append('locale', 'en');
-  // Multipart FormData is a simple CORS request: no custom headers or preflight.
-  const response = await fetch(`${BREVO_FORM_URL}?isAjax=1`, {
-    method: 'POST', body, signal, mode: 'cors', credentials: 'omit',
+  const body = Object.fromEntries(['FIRSTNAME', 'LASTNAME', 'EMAIL'].map(name => [name, fields[name].trim()]));
+  body.email_address_check = fields.email_address_check || '';
+  // The server forwards accepted adult details to the same supplied form and
+  // issues an HttpOnly grant only after the provider reports success.
+  const response = await fetch('/api/santa-message-access', {
+    method: 'POST', body: JSON.stringify(body), signal, credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json' },
     redirect: 'error', cache: 'no-store',
   });
   if (response.type === 'opaque' || response.type === 'opaqueredirect') {

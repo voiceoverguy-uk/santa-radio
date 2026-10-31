@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { contenderFailureDiagnostic } from '../server/contender-diagnostics.js';
-import { createContendersHandler } from '../server/christmas-contenders.js';
+import { createContendersHandler as createHandler } from '../server/christmas-contenders.js';
+const createContendersHandler = options => createHandler({ abuseLimit: async () => {}, ...options });
 import { competitionState } from '../server/contenders-store.js';
 
 const failure = code => Object.assign(new Error('DO_NOT_LOG_RAW_MESSAGE_OR_DATA'), {

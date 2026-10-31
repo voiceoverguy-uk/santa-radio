@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createNameRequestHandler } from '../server/name-requests.js';
+import { createNameRequestHandler as createHandler } from '../server/name-requests.js';
+const createNameRequestHandler = options => createHandler({ limit: async () => {}, ...options });
 import { databasePool, listNameRequests } from '../server/name-request-store.js';
 import { randomUUID } from 'node:crypto';
 
@@ -17,7 +18,7 @@ test('every private operation refuses anonymous and unapproved access without re
       list: async () => { touched = true; }, record: async () => { touched = true; } });
     const res = response(); await handler({ ...req, headers: {} }, res);
     assert.equal(res.code, allowed); assert.equal(touched, false);
-    assert.equal(res.headers['Cache-Control'], 'no-store');
+    assert.equal(res.headers['Cache-Control'], 'private, no-store');
     assert.equal(res.headers['X-Robots-Tag'], 'noindex, nofollow');
   }
 });

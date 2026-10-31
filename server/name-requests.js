@@ -1,12 +1,13 @@
 import express from 'express';
 import { randomUUID, createHmac, timingSafeEqual } from 'node:crypto';
-import { clerkMiddleware, getAuth } from '@clerk/express';
+import { getAuth } from '@clerk/express';
 import { createClerkClient } from '@clerk/backend';
-import { publishableKeyFromHost } from '@clerk/shared/keys';
+import { staffAuth } from './staff-auth.js';
 import { getClerkProxyHost } from './middlewares/clerkProxyMiddleware.js';
 import { normaliseRequestedName, nameRequestConfirmation } from '../src/lib/santaNameRequests.js';
 import { saveNameRequest, listNameRequests, recordNameRequest } from './name-request-store.js';
 import { santaNameLibrary } from './santa-name-library.js';
+import { consumeNameAccess, privateResponse } from './santa-name-security.js';
 
 const COOKIE = 'santa-name-request-visitor';
 const digest = value => createHmac('sha256', process.env.SESSION_SECRET).update(value).digest('hex');
@@ -35,7 +36,7 @@ function visitor(req, res) {
   return { visitorKey: digest(`visitor:${id}`), bucketKey: digest(`limit:${id}:${Math.floor(Date.now() / 3600000)}`) };
 }
 export function createNameRequestHandler({ checkAdmin = authorize, save = saveNameRequest, list = listNameRequests,
-  record = recordNameRequest, identify = visitor, library = santaNameLibrary } = {}) {
+  record = recordNameRequest, identify = visitor, library = santaNameLibrary, limit = consumeNameAccess } = {}) {
   return async (req, res) => {
     let stage = 'validation';
     res.set('Cache-Control', 'private, no-store');
@@ -48,6 +49,7 @@ export function createNameRequestHandler({ checkAdmin = authorize, save = saveNa
         if (origin && new URL(origin).host !== getClerkProxyHost(req)) return res.status(403).json({ error: 'Please use this website to manage name requests.' });
       }
       if (req.method === 'POST') {
+        await limit(req, 'request');
         const name = normaliseRequestedName(req.body?.name);
         if (!name) return res.status(400).json({ error: 'Enter a first name using letters, spaces, apostrophes or hyphens (up to 80 characters).' });
         if (req.body?.requestId !== undefined && (typeof req.body.requestId !== 'string' ||
@@ -123,11 +125,10 @@ export function createNameRequestHandler({ checkAdmin = authorize, save = saveNa
 }
 const app = express();
 app.disable('x-powered-by');
-const auth = clerkMiddleware(req => ({
-  publishableKey: publishableKeyFromHost(getClerkProxyHost(req) ?? '', process.env.CLERK_PUBLISHABLE_KEY),
-}));
+app.use((_req, res, next) => { privateResponse(res); next(); });
+const auth = staffAuth;
 app.use((req, res, next) => ['GET', 'PATCH'].includes(req.method) ? auth(req, res, next) : next());
-app.use(express.json({ limit: '2kb' }));
+app.use(express.json({ limit: '2kb', inflate: false }));
 app.use(createNameRequestHandler());
 app.use((error, _req, res, _next) => res.status(error.status === 413 ? 413 : 400).json({ error: 'Please send a valid, short name request.' }));
 export default app;

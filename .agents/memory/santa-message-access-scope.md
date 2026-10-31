@@ -14,13 +14,19 @@ After successful free-maker signup on mobile, scroll to the top of the unlocked 
 
 **How to apply:** Apply this to the free name/email signup, including signup started on the homepage, not Studio tester-code entry. Keep the unlock announcement accessible, accommodate the mobile keyboard closing, and stop correcting when the visitor interacts. Failed signup must retain the entered details without this success scroll.
 
-This is a signup-first, tab-session convenience flow, not authentication, email ownership verification or proof of double opt-in. The owner now requests the adult-access disclosure: “Your details are stored for Santa Radio news or updates. Read our privacy policy.”
+This is a signup-first flow, not email ownership verification or proof of double opt-in. The owner now requests the adult-access disclosure: “Your details are stored for Santa Radio news or updates. Read our privacy policy.”
 
 **Why:** On 21 October 2026 the owner explicitly replaced the previous no-news-signup wording. This was a wording request, not verification or configuration of Brevo marketing enrolment or email automation.
 
 **How to apply:** Preserve the owner-requested disclosure. Do not infer verified mailing-list behaviour or double opt-in from that text alone. Do not add API credentials or connected-service changes to replace the supplied public form without a new request. Confirm owner approval before submitting real test contacts or changing Brevo autoresponders, list settings or double-opt-in configuration.
 
 Staff-only sign-in for the private missing-name request ledger is separate from this visitor-access flow.
+
+Free audio creation requires server-confirmed acceptance of the adult signup and an atomic, shared one-message/two-hour allowance. Browser flags and timers are presentation only. Renewing a signup for the same adult must not reset the allowance.
+
+**Why:** The owner explicitly requested server enforcement during security remediation, superseding the earlier convenience-only gate. Adult email ownership is still not verified.
+
+**How to apply:** Keep signup success dependent on the supplied provider's explicit acceptance. Bind the allowance to a secret-keyed adult identity rather than a resettable cookie; use separate trusted-address/global abuse limits without imposing a household-wide two-hour lockout. Do not add email verification, DOB, or marketing-provider configuration changes.
 
 **Why:** The owner approved protected staff access to requested names, without asking visitors to create accounts or attaching adult contact details to their name requests.
 

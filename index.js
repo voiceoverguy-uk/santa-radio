@@ -22,6 +22,8 @@ import { publicPageHtml } from './server/public-html.js';
 import stripeWebhook from './server/stripe-webhook.js';
 import studioPaidAccess from './server/santa-studio-purchase.js';
 import studioCheckout from './server/santa-studio-checkout.js';
+import messageAccess from './server/santa-message-access.js';
+import { browserSecurity } from './server/browser-security.js';
 
 const root = await realpath(fileURLToPath(new URL('./dist', import.meta.url)));
 const index = resolve(root, 'index.html');
@@ -39,6 +41,7 @@ const types = {
 const clerkProxy = clerkProxyMiddleware();
 const server = createServer(async (req, res) => {
   try {
+    browserSecurity(req, res);
     let pathname;
     try { pathname = decodeURIComponent(publicRequestUrl(req.url, 'http://server').pathname); }
     catch { res.writeHead(400).end('Invalid path'); return; }
@@ -54,6 +57,7 @@ const server = createServer(async (req, res) => {
     if (pathname === '/api/radio-metadata') return await radioMetadata(req, res);
     if (pathname === '/api/radio-top-ten') return await radioTopTen(req, res);
     if (pathname === '/api/santa-message') return await santaMessage(req, res);
+    if (pathname === '/api/santa-message-access') return messageAccess(req, res);
     if (pathname === '/api/santa-names') return await santaNames(req, res);
     if (pathname === '/api/santa-name-preview') return await santaNamePreview(req, res);
     if (pathname === '/api/santa-workshop-catalogue') return await workshopCatalogue(req, res);

@@ -18,6 +18,7 @@
     "test:santa-audio": "node scripts/prepare-santa-audio.mjs && node --test --test-concurrency=1 scripts/santa-render.test.mjs scripts/hosted-santa-render.test.mjs scripts/santa-message-api.test.mjs scripts/saved-santa-greeting.test.mjs scripts/santa-ftps.test.mjs scripts/santa-message-allowance.test.mjs",
     "test:e2e": "playwright test",
     "test:name-security": "node --test scripts/santa-name-security.test.mjs scripts/santa-workshop-names.test.mjs scripts/workshop-name-preview.test.mjs scripts/santa-name-library.test.mjs",
+    "test:security-hardening": "node --test scripts/security-hardening.test.mjs scripts/santa-name-security.test.mjs",
     "test:name-security:e2e": "playwright test tests/santa-name-security.spec.js --project=chromium",
     "test:workshop-access": "node --test scripts/santa-workshop-access.test.mjs",
     "workshop:preflight": "node scripts/workshop-access-preflight.mjs",
@@ -40,6 +41,7 @@
     "@replit/connectors-sdk": "^0.5.0",
     "@tailwindcss/vite": "^4.2.1",
     "basic-ftp": "^6.2.3",
+    "body-parser": "^2.4.0",
     "express": "^5.3.0",
     "ffmpeg-static": "^5.3.0",
     "html-to-image": "^1.11.13",
@@ -47,6 +49,7 @@
     "lucide-react": "^0.577.0",
     "pdf-lib": "^1.17.1",
     "pg": "^8.23.1",
+    "qs": "^6.17.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-helmet-async": "^3.0.0",
@@ -61,6 +64,6 @@
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.7.0",
-    "vite": "^6.4.4"
+    "vite": "^6.4.5"
   }
 }

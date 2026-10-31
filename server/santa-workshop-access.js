@@ -104,7 +104,7 @@ export function createWorkshopAccessHandler({ getSettings = settings, consumeAtt
     }
     next();
   });
-  app.use(express.json({ limit: '2kb', strict: true }));
+  app.use(express.json({ limit: '2kb', strict: true, inflate: false }));
   app.use(async (req, res) => {
     const config = getSettings();
     if (!configured(config)) return res.status(503).json({ error: 'Tester access is not configured yet. Please try again later.' });

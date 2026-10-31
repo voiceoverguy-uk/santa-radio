@@ -37,7 +37,8 @@ const local = createNameLibrary({ fetcher: async () => new Response(JSON.stringi
 const message = createSantaMessageHandler(local, {
   prepare: async () => null, publish: async () => assert.fail('Tests never publish audio'),
   singleFlight: (_, work) => work(),
-}, { limit: noLimit, verify });
+}, { limit: noLimit, verify, authorize: () => ({ subject: 'fixture' }),
+  reserve: async () => ({}), finish: async () => {} });
 const greeting = createSantaGreetingHandler();
 const limited = createSantaNamesHandler({}, {
   limit: async () => { throw Object.assign(new Error('Too many requests.'), { status: 429, retryAfter: 30 }); },

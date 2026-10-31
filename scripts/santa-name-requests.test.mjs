@@ -1,7 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { normaliseRequestedName, nameRequestConfirmation } from '../src/lib/santaNameRequests.js';
-import { approvedAdmin, createNameRequestHandler } from '../server/name-requests.js';
+import { approvedAdmin, createNameRequestHandler as createHandler } from '../server/name-requests.js';
+const createNameRequestHandler = options => createHandler({ limit: async () => {}, ...options });
 
 test('name validation preserves legitimate names and refuses markup and personal-data fields', () => {
   assert.deepEqual(normaliseRequestedName('  Mary   Jane '), { name: 'Mary Jane', key: 'mary jane' });
@@ -39,7 +40,7 @@ test('unauthenticated and unapproved users never reach the database listing', as
     const res = response();
     await handler({ method: 'GET', headers: {} }, res);
     assert.equal(res.code, status); assert.equal(reads, 0);
-    assert.equal(res.headers['Cache-Control'], 'no-store');
+    assert.equal(res.headers['Cache-Control'], 'private, no-store');
   }
 });
 test('only approved admins can paginate and search real request records', async () => {

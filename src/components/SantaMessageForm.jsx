@@ -22,7 +22,7 @@ import './SantaNameRequest.css';
 import './SantaMessageForm.css';
 
 export default function SantaMessageForm({ showDetailLink = true, initialName = '', pendingName, keepSignupInPlace = false }) {
-  const { hasAccess, greetingName, sessionRemembered } = useSantaMessageAccess();
+  const { hasAccess, greetingName, sessionRemembered, revokeAccess } = useSantaMessageAccess();
   const makerHeadingRef = useRef(null);
   const previousAccess = useRef(hasAccess);
   const [name, setName] = useState(initialName);
@@ -221,6 +221,15 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         });
         if (!response.ok) {
           const data = await response.json().catch(() => ({}));
+          if (response.status === 401) revokeAccess();
+          if (response.status === 429 && data.availableAt > Date.now()) {
+            try {
+              localStorage.setItem('santa-message-allowance', JSON.stringify({
+                used: 1, availableAt: data.availableAt, cooldownMs: 2 * 3600000,
+              }));
+              window.dispatchEvent(new StorageEvent('storage', { key: 'santa-message-allowance' }));
+            } catch { /* The server enforces the allowance even without storage. */ }
+          }
           throw new Error(data.error || 'Unable to create the message. Please try again.');
         }
         if (!response.headers.get('content-type')?.startsWith('audio/mpeg')) {

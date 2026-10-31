@@ -15,7 +15,7 @@ export function createStripeWebhookHandler({ getSync = getStripeSync } = {}) {
     }
     next();
   });
-  app.use(express.raw({ type: 'application/json', limit: '1mb' }));
+  app.use(express.raw({ type: 'application/json', limit: '1mb', inflate: false }));
   app.use(async (req, res) => {
     if (!Buffer.isBuffer(req.body)) return res.status(400).json({ error: 'Raw JSON body required.' });
     // This is rejection-only. Authentication and processing remain entirely in

@@ -3,6 +3,10 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "functions": {
+    "api/santa-message-access.js": { "maxDuration": 20 },
+    "api/stripe/webhook.js": { "maxDuration": 30 },
+    "api/santa-studio-access.js": { "maxDuration": 30 },
+    "api/santa-studio-checkout.js": { "maxDuration": 30 },
     "api/public-page.js": {
       "includeFiles": "{dist/server/**,src/data/legacy-songs.js}"
     },
@@ -28,6 +32,11 @@
     }
   },
   "routes": [
+    { "src": "/(.*)", "headers": {
+      "X-Content-Type-Options": "nosniff",
+      "Referrer-Policy": "strict-origin-when-cross-origin",
+      "Content-Security-Policy": "base-uri 'self'; object-src 'none'; frame-ancestors 'self' https://replit.com https://*.replit.com https://*.replit.dev"
+    }, "continue": true },
     { "src": "/api/__clerk/(.*)", "dest": "/api/__clerk/[...path]" },
     { "src": "/artist-artwork/(.*)", "headers": {
       "Access-Control-Allow-Origin": "*",
