@@ -22,10 +22,10 @@
   position: relative;
   overflow: visible;
   padding: 7px;
-  border: 1px solid #d4af3750;
-  border-radius: 16px;
-  background: #18382a;
-  box-shadow: 0 12px 28px #06150f24;
+  border: 1px solid rgba(219, 194, 135, .62);
+  border-radius: 17px;
+  background: linear-gradient(145deg, #263c2e, #08130e 72%);
+  box-shadow: 0 12px 28px rgba(2, 13, 8, .3);
 }
 
 .apps-page .app-screenshots-stack {
@@ -53,18 +53,34 @@
 /* Black ceramic glass, slim reflective champagne-steel rim and softened
    specular edge highlights make the original app capture read as a device. */
 .apps-page .app-screenshots-device .app-screenshots-frame {
+  position: relative;
   padding: 8px;
   border: 2px solid transparent;
-  border-radius: 43px;
+  border-radius: 42px;
   background:
-    linear-gradient(145deg, #252c2b 0%, #080c0d 28%, #181d1d 61%, #050809 100%) padding-box,
-    linear-gradient(110deg, #f1e6c8 0%, #8f9690 8%, #e8e4d9 18%, #68716e 45%, #f4e6be 70%, #69716e 89%, #e8e0c9 100%) border-box;
+    url("../assets/apps/phone-portrait.png") center / 100% 100% no-repeat padding-box,
+    linear-gradient(145deg, #202725 0%, #080b0b 30%, #151a19 64%, #050707 100%) padding-box,
+    linear-gradient(112deg, #cfc5aa 0%, #6f7772 7%, #e5dfcd 16%, #555e59 34%, #b8b8aa 52%, #525b57 74%, #e3d7b8 91%, #66706b 100%) border-box;
   box-shadow:
-    0 33px 52px rgba(0, 0, 0, .56),
-    0 11px 20px rgba(4, 10, 7, .47),
-    inset 0 0 0 1px rgba(255, 255, 255, .16),
-    inset 2px 0 2px rgba(255, 255, 255, .16),
-    inset -2px 0 2px rgba(0, 0, 0, .78);
+    0 34px 44px rgba(0, 0, 0, .55),
+    0 12px 20px rgba(4, 10, 7, .42),
+    0 2px 4px rgba(0, 0, 0, .56),
+    inset 0 0 0 1px rgba(255, 255, 255, .26),
+    inset 2px 0 2px rgba(255, 255, 255, .15),
+    inset -2px 0 2px rgba(0, 0, 0, .84);
+}
+
+/* Only the photographed rim is exposed. The display covers its old earpiece
+   and camera, so captures with their own camera cut-out never gain another. */
+.apps-page .app-screenshots-device .app-screenshots-frame::after {
+  position: absolute;
+  z-index: 4;
+  inset: 9px;
+  border-radius: 32px;
+  pointer-events: none;
+  background: linear-gradient(112deg, #ffffff0a, transparent 22%, transparent 78%, #ffffff05);
+  box-shadow: inset 1px 0 1px #ffffff38, inset -1px 0 2px #0008;
+  content: "";
 }
 
 /* The original screenshots already contain the Dynamic Island. Do not paint
@@ -80,9 +96,11 @@
 }
 
 .apps-page .app-screenshots-device .app-screenshots-stack {
-  border-radius: 34px;
+  border-radius: 32px;
   background: #06090a;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .14);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, .2),
+    0 0 0 1px rgba(0, 0, 0, .95);
 }
 
 .apps-page .app-phone-hardware {
@@ -95,27 +113,27 @@
 .apps-page .app-phone-hardware > span {
   position: absolute;
   display: block;
-  width: 3px;
-  border: 1px solid #59615d;
+  width: 4px;
+  border: 1px solid #56605a;
   border-right: 0;
   border-radius: 4px 0 0 4px;
-  background: linear-gradient(90deg, #626966, #c3c4bb 55%, #4d5552);
-  box-shadow: -1px 1px 2px rgba(0, 0, 0, .62);
+  background: linear-gradient(90deg, #343c37 0%, #c1c0b4 44%, #5f6862 75%, #333a36);
+  box-shadow: -2px 1px 3px rgba(0, 0, 0, .68), inset 1px 0 rgba(255, 255, 255, .4);
 }
 
-.apps-page .app-phone-action { top: 18%; left: -4px; height: 34px; }
-.apps-page .app-phone-volume-up { top: 26%; left: -4px; height: 47px; }
-.apps-page .app-phone-volume-down { top: 34%; left: -4px; height: 47px; }
+.apps-page .app-phone-action { top: 17%; left: -4px; height: 31px; }
+.apps-page .app-phone-volume-up { top: 26%; left: -4px; height: 42px; }
+.apps-page .app-phone-volume-down { top: 34%; left: -4px; height: 42px; }
 
 .apps-page .app-phone-power {
   top: 27%;
   right: -4px;
-  height: 77px;
-  border: 1px solid #555e5a !important;
+  height: 70px;
+  border: 1px solid #56605a !important;
   border-left: 0 !important;
   border-radius: 0 4px 4px 0 !important;
-  background: linear-gradient(90deg, #4d5552, #c4c4b9 48%, #616965) !important;
-  box-shadow: 1px 1px 2px rgba(0, 0, 0, .62) !important;
+  background: linear-gradient(90deg, #363e39, #c6c2b3 48%, #59625c) !important;
+  box-shadow: 2px 1px 3px rgba(0, 0, 0, .65), inset -1px 0 rgba(255, 255, 255, .3) !important;
 }
 
 /* Owner-provided promotional compositions remain whole, without device chrome. */
@@ -133,18 +151,95 @@
 .apps-page .app-screenshots-artwork .app-screenshot-slide { object-fit: contain; }
 .apps-page .app-screenshots-landscape { max-width: min(900px, 100%); }
 
-.apps-page .app-screenshots-landscape .app-screenshots-frame {
-  padding: 10px;
-  border: 1px solid #c9aa5b;
-  border-radius: 23px;
-  background: linear-gradient(145deg, #27342b, #080e0b);
+.apps-page .app-screenshots-device.app-screenshots-landscape {
+  max-width: min(800px, 100%);
 }
 
-.apps-page .app-screenshots-landscape .app-screenshots-stack { border-radius: 9px; }
+.apps-page .app-screenshots-device.app-screenshots-landscape .app-screenshots-frame {
+  padding: 8px;
+  border-radius: 31px;
+  background:
+    linear-gradient(145deg, #202725 0%, #080b0b 34%, #151a19 68%, #050707 100%) padding-box,
+    linear-gradient(112deg, #cfc5aa 0%, #6f7772 7%, #e5dfcd 16%, #555e59 34%, #b8b8aa 52%, #525b57 74%, #e3d7b8 91%, #66706b 100%) border-box;
+}
+
+.apps-page .app-screenshots-device.app-screenshots-landscape .app-screenshots-frame::after {
+  border-radius: 22px;
+}
+
+.apps-page .app-screenshots-device.app-screenshots-landscape .app-screenshots-stack {
+  border-radius: 22px;
+}
+
+.apps-page .app-screenshots-device.app-screenshots-landscape .app-phone-action,
+.apps-page .app-screenshots-device.app-screenshots-landscape .app-phone-volume-up,
+.apps-page .app-screenshots-device.app-screenshots-landscape .app-phone-volume-down {
+  top: -4px;
+  left: 22%;
+  width: 42px;
+  height: 4px;
+  border: 1px solid #56605a;
+  border-bottom: 0;
+  border-radius: 4px 4px 0 0;
+  background: linear-gradient(180deg, #343c37 0%, #c1c0b4 44%, #5f6862 75%, #333a36);
+}
+
+.apps-page .app-screenshots-device.app-screenshots-landscape .app-phone-volume-up { left: 31%; }
+.apps-page .app-screenshots-device.app-screenshots-landscape .app-phone-volume-down { left: 39%; }
+
+.apps-page .app-screenshots-device.app-screenshots-landscape .app-phone-power {
+  top: auto;
+  right: 20%;
+  bottom: -4px;
+  width: 56px;
+  height: 4px;
+  border: 1px solid #56605a !important;
+  border-top: 0 !important;
+  border-radius: 0 0 4px 4px !important;
+  background: linear-gradient(180deg, #363e39, #c6c2b3 48%, #59625c) !important;
+}
+
+/* Older screen-only originals have no camera cut-out. Keep the photographed
+   earpiece above, rather than over, the complete rectangular app display. */
+.apps-page .app-screenshots-device.app-screenshots-classic:not(.app-screenshots-landscape) .app-screenshots-frame {
+  padding: 32px 10px 24px;
+}
+
+.apps-page .app-screenshots-device.app-screenshots-classic:not(.app-screenshots-landscape) .app-screenshots-stack {
+  border-radius: 12px;
+}
+
+.apps-page .app-screenshots-device.app-screenshots-classic:not(.app-screenshots-landscape) .app-screenshots-frame::after {
+  inset: 34px 12px 26px;
+  border-radius: 12px;
+}
+
+/* The supplied landscape phone has a real speaker, camera and Home button.
+   Its display opening is 77% of the body width; do not stretch gameplay to
+   the full handset, or crop its score to make a modern wide-screen ratio. */
+.apps-page .app-screenshots-device.app-screenshots-classic.app-screenshots-landscape .app-screenshots-frame {
+  padding: 2.94% 11.55%;
+  border: 0;
+  border-radius: 12% / 24%;
+  background: url("../assets/apps/phone-landscape.png") center / 100% 100% no-repeat;
+}
+
+.apps-page .app-screenshots-device.app-screenshots-classic.app-screenshots-landscape .app-screenshots-stack {
+  border-radius: 3px;
+}
+
+.apps-page .app-screenshots-device.app-screenshots-classic.app-screenshots-landscape .app-screenshots-frame::after {
+  inset: 5.9% 11.55%;
+  border-radius: 3px;
+}
+
+.apps-page .app-screenshots-classic .app-phone-hardware { display: none; }
 
 @media (max-width: 767px) {
   .apps-page .app-screenshots-device .app-screenshots-frame { border-radius: 38px; }
-  .apps-page .app-screenshots-device .app-screenshots-stack { border-radius: 29px; }
+  .apps-page .app-screenshots-device:not(.app-screenshots-landscape):not(.app-screenshots-classic) .app-screenshots-stack { border-radius: 29px; }
+  .apps-page .app-screenshots-device.app-screenshots-landscape .app-screenshots-frame { border-radius: 25px; }
+  .apps-page .app-screenshots-device.app-screenshots-landscape .app-screenshots-stack { border-radius: 17px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

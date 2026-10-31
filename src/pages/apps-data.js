@@ -4,16 +4,14 @@ import santaRadioMugshots from '../assets/apps/santa-radio-ios-mugshots.webp';
 import santaRadioTracker from '../assets/apps/santa-radio-ios-tracker.webp';
 import santaRadioWatchControls from '../assets/apps/santa-radio-watch-controls.webp';
 import santaRadioWatchArtwork from '../assets/apps/santa-radio-watch-artwork.webp';
-import santaVoicemail from '../assets/apps/santa-voicemail-promo.webp';
-import santaMessages from '../assets/apps/santa-messages-promo.webp';
-import christmasRadio from '../assets/apps/christmas-radio-promo-1.webp';
-import christmasRadioPromo2 from '../assets/apps/christmas-radio-promo-2.webp';
-import christmasRadioPromo3 from '../assets/apps/christmas-radio-promo-3.webp';
-import christmasRadioPromo4 from '../assets/apps/christmas-radio-promo-4.webp';
-import santaText from '../assets/apps/santa-text-promo.webp';
-import santaDash from '../assets/apps/santa-dash-promo-1.webp';
-import santaDashPromo2 from '../assets/apps/santa-dash-promo-2.webp';
-import santaDashPromo3 from '../assets/apps/santa-dash-promo-3.webp';
+import santaVoicemail from '../assets/apps/santa-voicemail-screen.webp';
+import santaMessages from '../assets/apps/santa-messages-screen.webp';
+import christmasRadio from '../assets/apps/christmas-radio-screen-1.webp';
+import christmasRadioPromo2 from '../assets/apps/christmas-radio-screen-2.webp';
+import christmasRadioPromo3 from '../assets/apps/christmas-radio-screen-3.webp';
+import christmasRadioPromo4 from '../assets/apps/christmas-radio-screen-4.webp';
+import santaText from '../assets/apps/santa-text-screen.webp';
+import santaDash from '../assets/apps/santa-dash-screen.webp';
 import santaRadioMac from '../assets/apps/santa-radio-mac.webp';
 
 // Source copy and destination URLs: https://www.santaradio.co.uk/free-christmas-apps/
@@ -31,6 +29,15 @@ const voicemailFeatures = [
   feature('Download price', 'Check the linked stores\nfor current pricing.', 'gift'),
   feature('Santa Radio', 'You can also listen and enjoy\nSanta Radio direct from the app.', 'radio'),
 ];
+
+// The owner approved these existing screen-only originals after the newer
+// promotional compositions proved occluded (or, for Dash, not app captures).
+const standaloneDisplay = title => ({
+  presentation: 'device',
+  heading: `${title} app screen`,
+  regionLabel: `${title} app screen`,
+  deviceStyle: 'classic',
+});
 
 export const christmasApps = [
   {
@@ -64,9 +71,11 @@ export const christmasApps = [
     title: 'Santa Voicemail',
     subtitle: 'Leave Santa a voicemail message.',
     image: santaVoicemail,
-    alt: 'Santa Voicemail promotional artwork with Santa, a phone showing Call Santa, Call the Workshop, Naughty List Hotline and Santa Soundboard, and a Download Now banner.',
-    width: 851,
-    height: 1849,
+    alt: 'Santa Voicemail app screen with Call Santa, Call the Workshop, Naughty List Hotline and Santa Soundboard controls.',
+    width: 750,
+    height: 1334,
+    presentation: 'device',
+    slideshow: standaloneDisplay('Santa Voicemail'),
     downloads: downloads(
       'https://itunes.apple.com/us/app/santa-voicemail/id586387813',
       'http://www.amazon.com/App-Style-Ltd-Santa-Voicemail/dp/B00QFP4B18',
@@ -78,9 +87,11 @@ export const christmasApps = [
     title: 'Santa Messages',
     subtitle: 'Santa has a personal message just for your child.',
     image: santaMessages,
-    alt: 'SantaGuy Santa Messages promotional artwork with Santa beside a phone showing Arabella and signs reading Pick a name, Hear Santa and Schedule a message.',
-    width: 941,
-    height: 1672,
+    alt: 'Santa Messages app screen showing Arabella, playback and sharing controls, a name picker and Schedule a message.',
+    width: 750,
+    height: 1334,
+    presentation: 'device',
+    slideshow: standaloneDisplay('Santa Messages'),
     downloads: downloads(
       'https://itunes.apple.com/gb/app/santa-messages/id1062532143',
       'http://www.amazon.co.uk/Santa-Messages-Free-Festive-Fun/dp/B019MRFDDK',
@@ -99,20 +110,20 @@ export const christmasApps = [
     title: 'Christmas Radio',
     subtitle: 'A simpler version of our app, Christmas music 24/7 365 days a year',
     image: christmasRadio,
-    alt: 'Christmas Radio promotional image: From the makers of Santa Radio, with Santa beside a phone showing Naughty & Nice by Sia and a 24/7 Festive Favourites banner.',
-    width: 851,
-    height: 1849,
-    // Numbered owner originals are all 851 × 1849; derivatives preserve the full artwork.
+    alt: 'Christmas Radio app screen showing Naughty & Nice by Sia, playback and the coming-up queue.',
+    width: 520,
+    height: 1130,
+    // Display planes extracted from approved originals, not the older blue UI.
     screenshots: [
-      { label: 'From the makers of Santa Radio', image: christmasRadio, width: 851, height: 1849, alt: 'Christmas Radio promotional image: From the makers of Santa Radio, with Santa beside a phone showing Naughty & Nice by Sia and a 24/7 Festive Favourites banner.' },
-      { label: 'Over 100k downloads', image: christmasRadioPromo2, width: 851, height: 1849, alt: 'Christmas Radio promotional image: Over 100k Downloads, The UK’s festive soundtrack, with a phone showing Christmas Tree Farm by Taylor Swift among festive lights and presents.' },
-      { label: 'Christmas music 365 days a year', image: christmasRadioPromo3, width: 851, height: 1849, alt: 'Christmas Radio promotional image: Christmas Music 365 Days a Year, Live radio, fun jingles and festive magic, with a phone showing Christmas Tree Farm by Taylor Swift.' },
-      { label: 'Make it feel like Christmas', image: christmasRadioPromo4, width: 851, height: 1849, alt: 'Christmas Radio promotional image: Make It Feel Like Christmas, with a phone settings screen showing AirPlay, Snowfall, Blizzard and Festive lights options surrounded by Christmas lights.' },
+      { label: 'From the makers of Santa Radio', image: christmasRadio, width: 520, height: 1130, alt: 'Christmas Radio app screen showing Naughty & Nice by Sia, playback and the coming-up queue.' },
+      { label: 'Over 100k downloads', image: christmasRadioPromo2, width: 520, height: 1130, alt: 'Christmas Radio app screen showing Christmas Tree Farm by Taylor Swift, playback and the coming-up queue.' },
+      { label: 'Christmas music 365 days a year', image: christmasRadioPromo3, width: 520, height: 1130, alt: 'Christmas Radio app screen with Christmas Tree Farm by Taylor Swift and Santa Baby and Naughty List in the coming-up queue.' },
+      { label: 'Make it feel like Christmas', image: christmasRadioPromo4, width: 520, height: 1130, alt: 'Christmas Radio app settings screen with AirPlay, Snowfall, Blizzard and Festive lights options.' },
     ],
     slideshow: {
       heading: 'Christmas Radio promotional images',
       regionLabel: 'Christmas Radio promotional images',
-      imageType: 'promotional image',
+      imageType: 'screenshot',
     },
     downloads: downloads(
       'https://itunes.apple.com/gb/app/christmas-radio-uk/id1157967613',
@@ -132,9 +143,11 @@ export const christmasApps = [
     title: 'Santa Text',
     subtitle: 'Text Santa and the Father Christmas auto-bot will reply.',
     image: santaText,
-    alt: 'Santa Text promotional artwork with Santa and a reindeer beside a phone showing Message Santa, Santa Postcards and Just Ask Santa, surrounded by festive lights and presents.',
-    width: 851,
-    height: 1849,
+    alt: 'Santa Text app screen with Message Santa, Santa Postcards and Just Ask Santa controls.',
+    width: 750,
+    height: 1334,
+    presentation: 'device',
+    slideshow: standaloneDisplay('Santa Text'),
     downloads: downloads('https://itunes.apple.com/gb/app/santa-text/id1024535991'),
     features: [
       feature('Text Santa', 'You can have a full text chat\nwith Santa. Watch him reply.', 'message'),
@@ -150,19 +163,13 @@ export const christmasApps = [
     title: 'Santa Dash',
     subtitle: 'How far can you go while collecting mince pies?',
     image: santaDash,
-    alt: 'Santa Dash promotional artwork: A festive rooftop adventure for all the family, with Santa jumping towards mince pies above a snowy village under the northern lights.',
-    width: 1672,
-    height: 941,
+    alt: 'Santa Dash gameplay screen with Santa jumping over snowy rooftops, collectible mince pies and the score.',
+    width: 1334,
+    height: 750,
     landscape: true,
-    screenshots: [
-      { label: 'A festive rooftop adventure', image: santaDash, width: 1672, height: 941, alt: 'Santa Dash promotional artwork: A festive rooftop adventure for all the family, with Santa jumping towards mince pies above a snowy village under the northern lights.' },
-      { label: 'Leap across rooftops', image: santaDashPromo2, width: 1672, height: 941, alt: 'Santa Dash promotional artwork: Leap across rooftops, grab the pies and dodge the hazards, with Santa, mince pies, a glowing chimney, slippery ice and a snowman.' },
-      { label: 'Join Santa and collect mince pies', image: santaDashPromo3, width: 1672, height: 941, alt: 'Santa Dash promotional artwork: Join Santa and help him collect mince pies as he jumps across rooftops on a snowy evening, with icy roofs, a launch chimney and a snowman.' },
-    ],
+    presentation: 'device',
     slideshow: {
-      heading: 'Santa Dash promotional artwork',
-      regionLabel: 'Santa Dash promotional artwork',
-      imageType: 'promotional artwork',
+      ...standaloneDisplay('Santa Dash'),
       maxWidth: 760,
     },
     downloads: downloads('https://itunes.apple.com/gb/app/santa-dash-from-santa-guy/id1057048397'),

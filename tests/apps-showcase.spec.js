@@ -25,7 +25,7 @@ test('all Apps copy remains unclipped with enlarged text at tablet and narrow wi
   }
 });
 
-test('phone frames distinguish real UI from complete promotional compositions and scenery loads responsively', async ({ page }) => {
+test('all six app screens use physical phones while Watch, TV and Mac stay separate', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/apps');
   await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
@@ -35,16 +35,36 @@ test('phone frames distinguish real UI from complete promotional compositions an
   await expect(phone.locator('.app-phone-power')).toBeVisible();
   expect(await phone.locator('.app-screenshots-frame').evaluate(el =>
     getComputedStyle(el, '::before').content)).toBe('none');
-  for (const selector of ['#christmasradio', '.apple-watch-showcase']) {
+  await expect(page.locator('#christmasradio .app-screenshots-device')).toHaveCount(1);
+  for (const selector of ['.apple-watch-showcase']) {
     await expect(page.locator(`${selector} .app-screenshots-artwork`)).toHaveCount(1);
     await expect(page.locator(`${selector} .app-screenshots-device`)).toHaveCount(0);
   }
   for (const id of ['santavoicemail', 'santamessages', 'santatext']) {
-    await expect(page.locator(`#${id} .app-promo-wrap img`)).toHaveCSS('object-fit', 'contain');
-    await expect(page.locator(`#${id} .app-screenshots-device`)).toHaveCount(0);
+    await expect(page.locator(`#${id} .app-screenshots-device img`)).toHaveCSS('object-fit', 'contain');
+    await expect(page.locator(`#${id} .app-screenshots-classic`)).toHaveCount(1);
   }
+  await expect(page.locator('.app-section .app-screenshots-device')).toHaveCount(6);
+  await expect(page.locator('.app-section .app-promo-wrap, .app-section .app-screenshots-artwork')).toHaveCount(0);
+  await expect(page.locator('.apple-tv-showcase .app-screenshots-device, .apple-watch-showcase .app-screenshots-device, .mac-app-showcase .app-screenshots-device')).toHaveCount(0);
   await expect(page.locator('#santadash .app-screenshots-landscape')).toHaveCount(1);
-  for (const width of [1440, 390]) {
+  for (const id of ['santaradio', 'santavoicemail', 'santamessages', 'christmasradio', 'santatext', 'santadash']) {
+    const phone = page.locator(`#${id} .app-screenshots-device`);
+    const background = await phone.locator('.app-screenshots-frame').evaluate(el => getComputedStyle(el).backgroundImage);
+    expect(background).toContain(id === 'santadash' ? 'phone-landscape' : 'phone-portrait');
+    const hardwareUrl = background.match(/url\("([^"]+)"\)/)[1];
+    expect((await page.request.get(hardwareUrl)).ok()).toBe(true);
+    for (const width of [1440, 1024, 768, 390, 320]) {
+      await page.setViewportSize({ width, height: 1000 });
+      const bounds = await phone.boundingBox();
+      const copy = await page.locator(`#${id} .app-copy`).boundingBox();
+      expect(bounds.x).toBeGreaterThanOrEqual(0);
+      expect(bounds.x + bounds.width).toBeLessThanOrEqual(width);
+      if (width >= 768) expect(copy.x).toBeGreaterThanOrEqual(bounds.x + bounds.width + 20);
+      else expect(copy.y).toBeGreaterThanOrEqual(bounds.y + bounds.height + 20);
+    }
+  }
+  for (const width of [1440, 1024, 390, 320]) {
     await page.setViewportSize({ width, height: 1000 });
     const background = await page.locator('#santaradio').evaluate(el => getComputedStyle(el).backgroundImage);
     const url = background.match(/url\("([^"]+)"\)/)[1];
@@ -90,14 +110,15 @@ test('save representative desktop and mobile showcase review captures', async ({
   await page.goto('/apps');
   await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
   await page.evaluate(() => document.fonts.ready);
-  for (const width of [1440, 390]) {
+  for (const width of [1440, 1024, 390, 320]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
     await page.screenshot({ path: `generated-artifacts/apps-review-page-${width}.jpg`, animations: 'disabled' });
     for (const [name, selector] of [
       ['radio', '#santaradio'], ['watch', '.apple-watch-showcase'],
       ['tv', '.apple-tv-showcase'], ['mac', '#santa-radio-mac'],
-      ['messages', '#santamessages'], ['dash', '#santadash'],
+      ['voicemail', '#santavoicemail'], ['messages', '#santamessages'],
+      ['christmas-radio', '#christmasradio'], ['text', '#santatext'], ['dash', '#santadash'],
     ]) {
       const section = page.locator(selector);
       for (const image of await section.locator('img').all()) {
@@ -109,7 +130,7 @@ test('save representative desktop and mobile showcase review captures', async ({
       await section.screenshot({
         path: `generated-artifacts/apps-review-${name}-${width}.jpg`,
         animations: 'disabled',
-        style: '.radio-dock, .navbar { visibility: hidden !important; }',
+        style: '.radio-dock, .navbar, .skip-link { visibility: hidden !important; }',
       });
     }
   }

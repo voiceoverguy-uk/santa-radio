@@ -789,26 +789,82 @@ content_type = "image/jpeg"
 id = "Oh1x0ohU7WyJ9XvSQCHaf"
 uri = "file://generated-artifacts/apps-review-radio-1440.jpg"
 type = "image"
-title = "Revised Apps page — desktop"
-description = "Actual revised page: reference-derived Christmas scenery and real rotating app screenshots inside a dimensional iPhone mockup."
+title = "Phone presentation — desktop"
+description = "Partial implementation: refined Santa Radio phone with unchanged scenery and feature cards."
 logical_id = "3f629aef-1c8d-45f3-b85a-77ecd394ea5f"
-content_hash = "sha256:5b21b6e393ca44fa5f678f88e95fcba96290ccabc0a053ad346a3c0057cb89ae"
-size = 163759
-mtime_ms = 1793372832983
-storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/3f629aef-1c8d-45f3-b85a-77ecd394ea5f/d66ca922-94c6-44f8-b536-bead1e89ab4d"
-storage_version_token = "1793372915320058"
+content_hash = "sha256:591d514803e0cdf8c34d667152013aa24dcfda2dbb7781c7a6007d93b904819f"
+size = 164874
+mtime_ms = 1793432564983
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/3f629aef-1c8d-45f3-b85a-77ecd394ea5f/9acbb480-943a-452a-a795-f03e5c168bf5"
+storage_version_token = "1793432603498394"
 content_type = "image/jpeg"
 
 [[outputs]]
 id = "g_zEA4D0tmKY04cwLAwzN"
 uri = "file://generated-artifacts/apps-review-radio-390.jpg"
 type = "image"
-title = "Revised Apps page — mobile"
-description = "Actual 390px mobile layout, with the iPhone above readable HTML feature cards and download links. Fixed site overlays are omitted from this isolated section capture."
+title = "Phone presentation — mobile"
+description = "390px review capture of the refined Santa Radio phone and existing page content."
 logical_id = "2ef40f8d-0adf-4b8e-ac2f-47e1e8650616"
-content_hash = "sha256:3e2850d40fc52fd834a66918fa44135eaec21094c600c90383a1723f90e74d69"
-size = 109298
-mtime_ms = 1793372833943
-storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/2ef40f8d-0adf-4b8e-ac2f-47e1e8650616/cdbaaba0-3fe6-47b7-8a89-50b4bb0ccaa1"
-storage_version_token = "1793372916080667"
+content_hash = "sha256:94c60fa1934f0c185eb8022008bbec72b735477d0f3b7083e440be5075e56ede"
+size = 110641
+mtime_ms = 1793432565935
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/2ef40f8d-0adf-4b8e-ac2f-47e1e8650616/dd2d816b-a7d5-4ba2-baf4-de8a4cbdbec2"
+storage_version_token = "1793432604268174"
+content_type = "image/jpeg"
+
+[[outputs]]
+id = "b-Tg-Uv8wakyP1hPX6W32"
+uri = "file://generated-artifacts/apps-all-phones-desktop.jpg"
+type = "image"
+title = "All six app phones — desktop review"
+description = "The six listings with physical phone frames, genuine screen content and the existing festive layout."
+logical_id = "304d18d3-236d-4fd3-b8ac-c6210d6c7eff"
+content_hash = "sha256:9164671b0a11c55fa76a94f3cfbedec9cb190f285c1c31032cf9db97fc8d4bba"
+size = 388967
+mtime_ms = 1793433244108
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/304d18d3-236d-4fd3-b8ac-c6210d6c7eff/800050b3-70a6-4238-861b-2c1936e16edd"
+storage_version_token = "1793433265812188"
+content_type = "image/jpeg"
+
+[[outputs]]
+id = "-HpCiSe4gsr0HW4Ila1le"
+uri = "file://generated-artifacts/apps-review-messages-390.jpg"
+type = "image"
+title = "Santa Messages — mobile review"
+description = "390px layout using the owner-approved existing screen-only original."
+logical_id = "aa4b4ba9-2d35-4260-a608-173284e09cc0"
+content_hash = "sha256:c2081c9df7b509309b3d8ded8006ae577a21b5980e391e570404b15ecfac1748"
+size = 113592
+mtime_ms = 1793433230307
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/aa4b4ba9-2d35-4260-a608-173284e09cc0/7fd6282b-5aac-414e-99f0-a298331f48ca"
+storage_version_token = "1793433266543353"
+content_type = "image/jpeg"
+
+[[outputs]]
+id = "QVR-ONiaApW74qvQ_mmQ6"
+uri = "file://generated-artifacts/apps-review-dash-320.jpg"
+type = "image"
+title = "Santa Dash — narrow mobile review"
+description = "320px layout showing the complete gameplay capture inside the supplied landscape phone."
+logical_id = "d78a87f9-cf7f-4547-834b-c0954e8b8250"
+content_hash = "sha256:fed6a44030bf694d8c4fff0d79af9ccd1771af90a7fa7fbd25c39c64a3f7f8cc"
+size = 70203
+mtime_ms = 1793433232051
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/d78a87f9-cf7f-4547-834b-c0954e8b8250/0b54c6a7-6f85-4012-b03d-6aab067dd190"
+storage_version_token = "1793433267251322"
+content_type = "image/jpeg"
+
+[[outputs]]
+id = "D9xTBxxZNfXDYPRqBuZVb"
+uri = "file://generated-artifacts/voicemail-current-preview.jpg"
+type = "image"
+title = "Santa Voicemail inside its phone"
+description = "Fresh capture from the current /apps preview: the app screen fills the phone on the left, with the existing content on the right."
+logical_id = "91cee80e-72ad-4b68-b975-fdfa2f70686a"
+content_hash = "sha256:c7d93c70942970f3902c519f8136d7bd6333fb23149e3f35a896dbf68a4c8686"
+size = 172609
+mtime_ms = 1793433341663
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/91cee80e-72ad-4b68-b975-fdfa2f70686a/a7f40b72-0901-4baf-84a1-3009939f6b99"
+storage_version_token = "1793433352290205"
 content_type = "image/jpeg"

@@ -7,6 +7,7 @@ export default function AppScreenshots({
   regionLabel = 'Santa Radio current iOS app screenshots',
   imageType = 'screenshot',
   presentation,
+  deviceStyle,
   maxWidth = 285,
 }) {
   const [active, setActive] = useState(0);
@@ -32,7 +33,7 @@ export default function AppScreenshots({
     };
   }, []);
 
-  const rotating = !reducedMotion && !hovered && !hidden;
+  const rotating = slides.length > 1 && !reducedMotion && !hovered && !hidden;
   useEffect(() => {
     const next = (active + 1) % slides.length;
     // Keep the current image until its successor has fully decoded.
@@ -52,9 +53,9 @@ export default function AppScreenshots({
 
   return (
     <figure
-      className={`app-screenshots ${artworkPresentation ? 'app-screenshots-artwork' : 'app-screenshots-device'}${slides[0].width > slides[0].height ? ' app-screenshots-landscape' : ''}`}
+      className={`app-screenshots ${artworkPresentation ? 'app-screenshots-artwork' : 'app-screenshots-device'}${slides[0].width > slides[0].height ? ' app-screenshots-landscape' : ''}${!artworkPresentation && deviceStyle === 'classic' ? ' app-screenshots-classic' : ''}`}
       role="region"
-      aria-roledescription="carousel"
+      aria-roledescription={slides.length > 1 ? 'carousel' : undefined}
       aria-label={regionLabel}
       style={{ '--app-screenshots-max-width': `${maxWidth}px` }}
       onMouseEnter={() => setHovered(true)}

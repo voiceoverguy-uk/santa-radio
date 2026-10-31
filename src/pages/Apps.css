@@ -134,6 +134,11 @@
   margin-inline: auto;
 }
 
+.apps-page .app-layout-landscape.app-layout-with-slideshow > .app-screenshots-device {
+  width: min(100%, 800px);
+  max-width: 800px;
+}
+
 .apps-page #santaradio .app-layout-with-slideshow > .app-copy {
   align-self: start;
   padding-top: 8px;
@@ -385,6 +390,7 @@
   .apps-page .app-section-sub { margin-inline: auto; }
   .apps-page .app-promo-wrap { width: min(100%, 335px); }
   .apps-page .app-layout-with-slideshow > .app-screenshots-device { width: min(100%, 350px); }
+  .apps-page .app-layout-landscape.app-layout-with-slideshow > .app-screenshots-device { width: 100%; }
   .apps-page .app-features-grid { grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr)); gap: 12px; }
   .apps-page .feature-item { grid-template-columns: 40px minmax(0, 1fr); gap: 12px; min-height: 0; padding: 16px; }
   .apps-page .feature-icon { width: 40px; height: 40px; }

@@ -291,25 +291,25 @@ test('store panels are removed, copy and metadata are accurate and downloads wor
   }
 });
 
-test('Santa Text, Santa Voicemail and Santa Messages show complete optimised owner artwork at desktop and phone widths', async ({ page }) => {
+test('approved Text, Voicemail and Messages screen originals fill phones without cropping at all widths', async ({ page }) => {
   await page.goto('/apps');
   await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
   const minimise = page.getByRole('button', { name: 'Minimise radio player', exact: true });
   if (await minimise.isVisible()) await minimise.click();
   for (const [id, filename, intrinsicWidth, intrinsicHeight] of [
-    ['santatext', 'santa-text', 851, 1849],
-    ['santavoicemail', 'santa-voicemail', 851, 1849],
-    ['santamessages', 'santa-messages', 941, 1672],
+    ['santatext', 'santa-text', 750, 1334],
+    ['santavoicemail', 'santa-voicemail', 750, 1334],
+    ['santamessages', 'santa-messages', 750, 1334],
   ]) {
     const section = page.locator(`#${id}`);
     const image = section.locator('img');
     const src = await image.getAttribute('src');
-    expect(src).toMatch(new RegExp(`^/.*${filename}-promo.*\\.webp`));
+    expect(src).toMatch(new RegExp(`^/.*${filename}-screen.*\\.webp`));
     await expect(image).toHaveAttribute('width', String(intrinsicWidth));
     await expect(image).toHaveAttribute('height', String(intrinsicHeight));
-    await expect(image).toHaveAttribute('alt', /promotional artwork/);
+    await expect(image).toHaveAttribute('alt', /app screen/);
     if (id === 'santamessages') {
-      await expect(image).toHaveAttribute('alt', /Santa beside a phone showing Arabella.*Pick a name, Hear Santa and Schedule a message/);
+      await expect(image).toHaveAttribute('alt', /Arabella.*playback and sharing controls.*name picker.*Schedule a message/);
       await expect(section.locator('.app-section-sub')).toHaveText('Santa has a personal message just for your child.');
       await expect(section.locator('.feature-label')).toHaveText([
         "Find your child's name", 'Share your message', 'Over 600 names',
@@ -321,7 +321,7 @@ test('Santa Text, Santa Voicemail and Santa Messages show complete optimised own
     expect(response.ok()).toBe(true);
     expect(response.headers()['content-type']).toMatch(/image\/webp/);
     expect((await response.body()).length).toBeLessThan(500000);
-    for (const width of [1280, 390, 320]) {
+    for (const width of [1280, 1024, 768, 390, 320]) {
       await page.setViewportSize({ width, height: 1000 });
       await image.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
       await expect.poll(() => image.evaluate(el => [el.naturalWidth, el.naturalHeight])).toEqual([intrinsicWidth, intrinsicHeight]);
@@ -330,7 +330,7 @@ test('Santa Text, Santa Voicemail and Santa Messages show complete optimised own
       expect(bounds.x).toBeGreaterThanOrEqual(0);
       expect(bounds.x + bounds.width).toBeLessThanOrEqual(width);
       expect(await image.evaluate(el => getComputedStyle(el).objectFit)).toBe('contain');
-      const frame = await section.locator('.app-promo-wrap').boundingBox();
+      const frame = await section.locator('.app-screenshots-frame').boundingBox();
       expect(bounds.y).toBeGreaterThanOrEqual(frame.y);
       expect(bounds.y + bounds.height).toBeLessThanOrEqual(frame.y + frame.height);
       // Intrinsic attributes reserve the same full portrait size before decoding.

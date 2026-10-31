@@ -87,9 +87,9 @@ test('built Apps HTML starts on first promotional images and serves all local We
   assert.equal(images.length, 4);
   for (const [index, image] of images.entries()) {
     const src = image.match(/src="([^"]+)"/)?.[1];
-    assert.match(src, new RegExp(`^/assets/christmas-radio-promo-${index + 1}-.*\\.webp$`));
-    assert.match(image, /width="851" height="1849"/);
-    assert.match(image, /alt="Christmas Radio promotional image:/);
+    assert.match(src, new RegExp(`^/assets/christmas-radio-screen-${index + 1}-.*\\.webp$`));
+    assert.match(image, /width="520" height="1130"/);
+    assert.match(image, /alt="Christmas Radio app/);
     assert.equal(image.includes(' is-active'), index === 0);
     assert.match(image, new RegExp(`aria-hidden="${index !== 0}"`));
     const asset = await get(src);
@@ -107,18 +107,18 @@ test('built Apps HTML starts on first promotional images and serves all local We
   assert.match(html, /Santa Radio for Mac/);
   const dash = html.match(/<section id="santadash"[\s\S]*?<\/section>/)?.[0];
   assert.ok(dash, 'Santa Dash must be in the initial HTML');
-  assert.match(dash, /aria-label="Santa Dash promotional artwork"/);
+  assert.match(dash, /aria-label="Santa Dash app screen"/);
   assert.match(dash, /--app-screenshots-max-width:760px/);
   assert.doesNotMatch(dash, /Owner-supplied Santa Dash promotional artwork|not live gameplay or interactive website controls/);
   assert.doesNotMatch(visibleHtml, /Santa Dash’s three owner-supplied promotional artworks are not live gameplay/);
   assert.doesNotMatch(visibleHtml, /iOS screenshots only; the Amazon app’s appearance may differ|app-screenshots-note/);
   const dashImages = [...dash.matchAll(/<img\b[^>]*>/g)].map(match => match[0]);
-  assert.equal(dashImages.length, 3);
+  assert.equal(dashImages.length, 1);
   for (const [index, image] of dashImages.entries()) {
     const src = image.match(/src="([^"]+)"/)?.[1];
-    assert.match(src, new RegExp(`^/assets/santa-dash-promo-${index + 1}-.*\\.webp$`));
-    assert.match(image, /width="1672" height="941"/);
-    assert.match(image, /alt="Santa Dash promotional artwork:/);
+    assert.match(src, /^\/assets\/santa-dash-screen-.*\.webp$/);
+    assert.match(image, /width="1334" height="750"/);
+    assert.match(image, /alt="Santa Dash gameplay screen/);
     assert.equal(image.includes(' is-active'), index === 0);
     assert.match(image, new RegExp(`aria-hidden="${index !== 0}"`));
     const asset = await get(src);
@@ -128,7 +128,7 @@ test('built Apps HTML starts on first promotional images and serves all local We
     assert.equal(bytes.toString('ascii', 8, 12), 'WEBP');
     assert.ok(bytes.length < 400000);
   }
-  assert.match(dash, /<figcaption[^>]*>Santa Dash promotional artwork<\/figcaption>/);
+  assert.match(dash, /<figcaption[^>]*>Santa Dash app screen<\/figcaption>/);
   const mac = html.match(/<section id="santa-radio-mac"[\s\S]*?<\/section>/)?.[0];
   assert.ok(mac, 'Mac promotional artwork must be in the initial HTML');
   assert.match(mac, /Play Santa Radio and see the current song and artist\./);
@@ -152,23 +152,24 @@ test('built Apps HTML starts on first promotional images and serves all local We
   assert.doesNotMatch(visibleHtml, /Santa Text, Santa Voicemail and Santa Messages also use owner-supplied promotional artwork/);
   assert.doesNotMatch(visibleHtml, /not interactive website controls|iOS screenshots only; the Amazon app’s appearance may differ/);
   for (const [id, filename, width, height] of [
-    ['santatext', 'santa-text', 851, 1849],
-    ['santavoicemail', 'santa-voicemail', 851, 1849],
-    ['santamessages', 'santa-messages', 941, 1672],
+    ['santatext', 'santa-text', 750, 1334],
+    ['santavoicemail', 'santa-voicemail', 750, 1334],
+    ['santamessages', 'santa-messages', 750, 1334],
   ]) {
     const app = html.match(new RegExp(`<section id="${id}"[\\s\\S]*?<\\/section>`))?.[0];
     assert.ok(app, `${id} must be in the initial HTML`);
     const image = app.match(/<img\b[^>]*>/)?.[0];
     assert.ok(image);
     assert.match(image, new RegExp(`width="${width}" height="${height}"`));
-    assert.match(image, /promotional artwork/);
+    assert.match(image, /app screen/);
+    assert.match(app, /app-screenshots-device/);
     if (id === 'santamessages') {
-      assert.match(image, /Santa beside a phone showing Arabella.*Pick a name, Hear Santa and Schedule a message/);
+      assert.match(image, /Arabella.*playback and sharing controls.*name picker.*Schedule a message/);
       assert.match(app, /Santa has a personal message just for your child\./);
-      assert.doesNotMatch(app, /<button\b|app-screenshots/);
+      assert.doesNotMatch(app, /<button\b/);
     }
     const src = image.match(/src="([^"]+)"/)?.[1];
-    assert.match(src, new RegExp(`^/assets/${filename}-promo-.*\\.webp$`));
+    assert.match(src, new RegExp(`^/assets/${filename}-screen-.*\\.webp$`));
     const asset = await get(src);
     assert.equal(asset.status, 200);
     assert.match(asset.headers.get('content-type'), /image\/webp/);

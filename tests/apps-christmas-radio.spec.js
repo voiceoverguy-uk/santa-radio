@@ -26,7 +26,7 @@ async function expectSlide(carousel, index) {
   await expect(carousel.getByRole('button')).toHaveCount(0);
 }
 
-test('Christmas Radio delivers four ordered full-size local promotions with app-specific labels and unchanged listing', async ({ page }) => {
+test('Christmas Radio delivers four ordered approved display extractions with unchanged listing', async ({ page }) => {
   const carousel = await open(page);
   await ready(carousel);
   await expect(carousel.locator('figcaption')).toHaveText(regionName);
@@ -36,11 +36,11 @@ test('Christmas Radio delivers four ordered full-size local promotions with app-
   for (let index = 0; index < 4; index++) {
     const image = carousel.locator('img').nth(index);
     const src = await image.getAttribute('src');
-    expect(src).toMatch(new RegExp(`^/.*christmas-radio-promo-${index + 1}.*\\.webp`));
-    expect(await image.evaluate(el => [el.naturalWidth, el.naturalHeight])).toEqual([851, 1849]);
-    await expect(image).toHaveAttribute('width', '851');
-    await expect(image).toHaveAttribute('height', '1849');
-    await expect(image).toHaveAttribute('alt', /^Christmas Radio promotional image:/);
+    expect(src).toMatch(new RegExp(`^/.*christmas-radio-screen-${index + 1}.*\\.webp`));
+    expect(await image.evaluate(el => [el.naturalWidth, el.naturalHeight])).toEqual([520, 1130]);
+    await expect(image).toHaveAttribute('width', '520');
+    await expect(image).toHaveAttribute('height', '1130');
+    await expect(image).toHaveAttribute('alt', /^Christmas Radio app/);
     const response = await page.request.get(src);
     expect(response.ok()).toBe(true);
     expect(response.headers()['content-type']).toMatch(/image\/webp/);
@@ -123,7 +123,7 @@ test('Christmas Radio reduced motion is static with a stable, uncropped frame on
       const style = getComputedStyle(el);
       return { ratio: rect.width / rect.height, fit: style.objectFit, transition: style.transitionDuration, x: rect.x, right: rect.right };
     });
-    expect(image.ratio).toBeCloseTo(851 / 1849, 3);
+    expect(image.ratio).toBeCloseTo(520 / 1130, 3);
     expect(image.fit).toBe('contain');
     expect(image.transition).toBe('0s');
     expect(image.x).toBeGreaterThanOrEqual(0);
@@ -136,7 +136,7 @@ test('Christmas Radio reduced motion is static with a stable, uncropped frame on
 test('Christmas Radio waits for decoded artwork before automatic rotation', async ({ page }) => {
   let release;
   const held = new Promise(resolve => { release = resolve; });
-  await page.route('**/christmas-radio-promo-2*', async route => {
+  await page.route('**/christmas-radio-screen-2*', async route => {
     if (route.request().resourceType() !== 'image') return route.continue();
     await held;
     await route.continue();
@@ -150,12 +150,12 @@ test('Christmas Radio waits for decoded artwork before automatic rotation', asyn
   await expectSlide(carousel, 1);
 });
 
-test('Christmas Radio image failures keep the ready artwork and report a promotional-image error', async ({ page }) => {
-  await page.route('**/christmas-radio-promo-2*', route => (
+test('Christmas Radio image failures keep the ready display and report a screenshot error', async ({ page }) => {
+  await page.route('**/christmas-radio-screen-2*', route => (
     route.request().resourceType() === 'image' ? route.abort() : route.continue()
   ));
   const carousel = await open(page);
-  await expect(carousel.getByRole('status')).toHaveText('Some promotional images could not load. Please reload to try again.');
+  await expect(carousel.getByRole('status')).toHaveText('Some screenshots could not load. Please reload to try again.');
   const before = await carousel.locator('.app-screenshots-frame').boundingBox();
   await page.clock.fastForward(20000);
   await expectSlide(carousel, 0);

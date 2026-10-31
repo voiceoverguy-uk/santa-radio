@@ -7,11 +7,17 @@ import AppScreenshots from './AppScreenshots.jsx';
 import './Apps.css';
 
 function AppSection({ app }) {
+  const deviceSlides = app.screenshots || (
+    app.presentation === 'device' || app.slideshow?.presentation === 'device'
+      ? [{ image: app.image, width: app.width, height: app.height, alt: app.alt, label: app.title }]
+      : null
+  );
+
   return (
     <section id={app.id} className="app-section" aria-labelledby={`${app.id}-title`}>
       <div className="apps-container">
-        <div className={`app-layout${app.landscape ? ' app-layout-landscape' : ''}${app.screenshots ? ' app-layout-with-slideshow' : ''}`}>
-          {app.screenshots ? <AppScreenshots slides={app.screenshots} {...app.slideshow} /> : <figure className="app-promo-wrap">
+        <div className={`app-layout${app.landscape ? ' app-layout-landscape' : ''}${deviceSlides ? ' app-layout-with-slideshow' : ''}`}>
+          {deviceSlides ? <AppScreenshots slides={deviceSlides} {...app.slideshow} presentation={app.presentation || app.slideshow?.presentation} /> : <figure className="app-promo-wrap">
                 <img
                   src={app.image}
                   alt={app.alt}
