@@ -60,11 +60,11 @@ export default function HeroNameChecker({ onContinue }) {
         : name.trim() && !options.length
           ? 'We haven’t found that spelling. Try a shorter name or another spelling.'
           : name.trim() ? `${options.length} matching ${options.length === 1 ? 'name' : 'names'}. Choose a name from the list.`
-            : 'Search Santa’s recorded names, then choose a match.';
+            : 'Check your child’s name, then let Santa create a little magic.';
 
   return <section className="hero-name-checker" aria-labelledby={`${id}-title`}>
     <p className="hero-name-checker__eyebrow">A free message from Santa</p>
-    <h2 id={`${id}-title`}>Does Santa have your child’s name?</h2>
+    <h2 id={`${id}-title`}>Can Santa say your child’s name?</h2>
     <form noValidate onSubmit={event => {
       event.preventDefault();
       interacted.current = true;

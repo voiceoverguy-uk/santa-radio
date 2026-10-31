@@ -16,7 +16,7 @@ test('built preview renders a complete noindex page without affecting the home h
   assert.equal(preview.noindex, true);
   assert.match(preview.head, /name="robots" content="noindex, follow"/);
   assert.doesNotMatch(preview.head, /rel="canonical"/);
-  assert.match(preview.markup, /Does Santa have your child/);
+  assert.match(preview.markup, /Can Santa say your child/);
   assert.match(preview.markup, /Start typing a name/);
   assert.match(preview.markup, /id="santa-messages"/);
   assert.match(preview.markup, /name="FIRSTNAME"/);
@@ -47,7 +47,7 @@ test('Vercel document handler delivers the prerendered preview, not its 404 or h
   assert.equal(status, 200);
   assert.equal(headers['X-Santa-Page-Mode'], 'prerendered');
   assert.equal(headers['X-Robots-Tag'], 'noindex, follow');
-  assert.match(body, /Does Santa have your child/);
+  assert.match(body, /Can Santa say your child/);
 });
 
 test('actual Node production delivery hydrates and supports phone lookup without render errors', async t => {
@@ -69,7 +69,7 @@ test('actual Node production delivery hydrates and supports phone lookup without
   const response = await fetch(`${base}${path}`);
   assert.equal(response.status, 200);
   assert.match(response.headers.get('x-robots-tag'), /noindex/);
-  assert.match(await response.text(), /Does Santa have your child/);
+  assert.match(await response.text(), /Can Santa say your child/);
   const browser = await chromium.launch({
     executablePath: process.env.CHROMIUM_PATH || (existsSync('/repl/tools/bin/chromium') ? '/repl/tools/bin/chromium' : undefined),
     args: ['--no-sandbox'],

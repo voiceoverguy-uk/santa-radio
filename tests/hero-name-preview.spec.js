@@ -48,6 +48,112 @@ async function choose(page, name) {
   await expect(checker(page).getByRole('status')).toHaveText(`Yes! Santa can record for ${name}.`);
 }
 
+// Baseline at 1440px: 349.90625px card, 16px eyebrow, 48px field, 49px CTA.
+// Measure real layout rather than transforms: larger text must have room to wrap.
+for (const route of ['/', path]) {
+  for (const width of [320, 390, 768, 1024, 1091, 1280, 1440, 1920]) {
+    test(`enlarged name card fits ${route} at ${width}px with artwork and enlarged text`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 1000 });
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      await setup(page);
+      await page.goto(route);
+      const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+      if (await decline.isVisible()) await decline.click();
+      await page.evaluate(() => document.fonts.ready);
+      const card = page.locator('.hero-name-preview__checker');
+      await expect(checker(page).getByRole('heading', { level: 2 })).toHaveText('Can Santa say your child’s name?');
+      await expect(checker(page).getByRole('status')).toHaveText('Check your child’s name, then let Santa create a little magic.');
+      const initial = await card.boundingBox();
+      if (width >= 1091) {
+        const baselineWidth = Math.max(300, Math.min(width * .243, 350));
+        expect(initial.width / baselineWidth).toBeGreaterThanOrEqual(1.18);
+        expect(initial.width / baselineWidth).toBeLessThanOrEqual(1.22);
+        expect(await input(page).evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(57);
+        expect(await cta(page).evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(58);
+      }
+      if (width >= 768) expect(await checker(page).locator('.hero-name-checker__eyebrow').evaluate(el =>
+        parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(19);
+      for (const size of ['100%', '200%']) {
+        await page.evaluate(size => { document.documentElement.style.fontSize = size; }, size);
+        for (const playing of [false, true]) {
+          if (playing) await page.locator('.hero-actions').getByRole('button', { name: 'Listen Live', exact: true }).click();
+          const geometry = await card.evaluate(el => {
+            const rect = node => node.getBoundingClientRect().toJSON();
+            const textRects = node => {
+              const range = document.createRange();
+              range.selectNodeContents(node);
+              return [...range.getClientRects()].map(r => r.toJSON());
+            };
+            return {
+              card: rect(el), hero: rect(el.closest('.hero')), viewport: innerWidth,
+              pageWidth: document.documentElement.scrollWidth,
+              heroContent: [...el.closest('.hero-layout').querySelectorAll('*')]
+                .map(rect).filter(rect => rect.width > 0),
+              controls: [...el.querySelectorAll('input, button')].map(node => ({
+                box: rect(node), fits: node.scrollWidth <= node.clientWidth + 1,
+                font: parseFloat(getComputedStyle(node).fontSize),
+              })),
+              text: [...el.querySelectorAll('p, h2, label, .hero-name-preview__checker-kicker')].map(node => ({
+                box: rect(node), lines: textRects(node),
+              })),
+              neighbours: [
+                ...document.querySelectorAll('.hero-title, .hero-halloween-greeting, .hero-name-preview__description'),
+              ].flatMap(textRects).concat([
+                ...document.querySelectorAll('.hero-countdown, .hero-name-preview__player-row, .hero .now-playing-artwork'),
+              ].map(rect)),
+            };
+          });
+          const { card: box } = geometry;
+          // A pre-existing lower Mugshots pine decoration extends 8px beyond
+          // the 320px homepage at 200% text. Keep this sizing check hero-scoped
+          // there rather than changing an unrelated section to pass the test.
+          if (route === '/' && width === 320 && size === '200%') {
+            for (const content of geometry.heroContent) {
+              expect(content.left).toBeGreaterThanOrEqual(-.5);
+              expect(content.right).toBeLessThanOrEqual(width + .5);
+            }
+          } else expect(geometry.pageWidth).toBeLessThanOrEqual(width + 1);
+          expect(box.left).toBeGreaterThanOrEqual(0);
+          expect(box.right).toBeLessThanOrEqual(width + .5);
+          expect(box.bottom).toBeLessThanOrEqual(geometry.hero.bottom + .5);
+          for (const control of geometry.controls) {
+            expect(control.box.left).toBeGreaterThanOrEqual(box.left);
+            expect(control.box.right).toBeLessThanOrEqual(box.right);
+            expect(control.box.bottom).toBeLessThanOrEqual(box.bottom);
+            expect(control.fits).toBe(true);
+            expect(control.font).toBeGreaterThanOrEqual(width >= 768 ? 14 : 12);
+          }
+          expect(geometry.controls[0].font).toBeGreaterThanOrEqual(16);
+          for (const text of geometry.text) for (const line of text.lines) {
+            expect(line.left).toBeGreaterThanOrEqual(text.box.left - .5);
+            expect(line.right).toBeLessThanOrEqual(text.box.right + .5);
+            // Cinzel ink can overhang its line box; the card does not clip it.
+            expect(line.top).toBeGreaterThanOrEqual(box.top - .5);
+            expect(line.bottom).toBeLessThanOrEqual(box.bottom + .5);
+          }
+          for (const neighbour of geometry.neighbours) {
+            expect(neighbour.right <= box.left + .5 || neighbour.left >= box.right - .5 ||
+              neighbour.bottom <= box.top + .5 || neighbour.top >= box.bottom - .5).toBe(true);
+          }
+          if (playing) await page.locator('.hero-actions').getByRole('button', { name: /Pause/ }).click();
+        }
+      }
+      await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
+      // Exercise the enlarged dropdown at every breakpoint, including its bounds.
+      await input(page).fill('Er');
+      await expect(checker(page).getByRole('option')).toHaveCount(2);
+      const list = await checker(page).getByRole('listbox').boundingBox();
+      expect(list.x).toBeGreaterThanOrEqual(initial.x);
+      expect(list.x + list.width).toBeLessThanOrEqual(initial.x + initial.width + .5);
+      await input(page).press('ArrowDown');
+      await input(page).press('Enter');
+      await expect(input(page)).toHaveValue('Erin');
+      await cta(page).click();
+      await expect(page.locator('.santa-message-access input[name="FIRSTNAME"]')).toBeFocused();
+    });
+  }
+}
+
 for (const route of ['/', path]) {
   for (const width of [320, 390, 1440]) {
     test(`brand-first strapline and controls on ${route} at ${width}px, including enlarged text`, async ({ page }) => {
@@ -563,7 +669,7 @@ test('preview stays non-indexable while the approved homepage hero omits the sto
   const response = await page.request.get(path);
   expect(response.status()).toBe(200);
   expect(response.headers()['x-robots-tag']).toContain('noindex');
-  expect(await response.text()).toContain('Does Santa have your child');
+  expect(await response.text()).toContain('Can Santa say your child');
   await open(page);
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, follow');
   await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);

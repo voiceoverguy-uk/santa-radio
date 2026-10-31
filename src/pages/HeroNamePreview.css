@@ -79,7 +79,7 @@
   z-index: 3;
   align-self: start;
   box-sizing: border-box;
-  width: clamp(300px, 24.3vw, 350px);
+  width: clamp(360px, 29.2vw, 420px);
   min-width: 0;
   justify-self: end;
   margin-top: clamp(-98px, calc(-4vw - 42px), -82px);
@@ -502,7 +502,7 @@
 
 @media (min-width: 1091px) {
   .hero-name-preview .hero-title .hero-name-preview__strapline {
-    max-width: calc(100% - clamp(300px, 24.3vw, 350px) - 42px);
+    max-width: calc(100% - clamp(360px, 29.2vw, 420px) - 42px);
   }
 
   .hero-name-preview__broadcast {
@@ -528,7 +528,9 @@
     flex-direction: column;
     justify-content: flex-start;
     gap: 20px;
-    align-self: start;
+    /* Keep the countdown level with artwork even when a long caption
+       makes the cover column slightly taller than the listening stack. */
+    align-self: end;
     margin-top: 0;
     padding-top: 24px;
   }
@@ -540,6 +542,67 @@
     padding-top: 0;
   }
 
+}
+
+@media (min-width: 768px) {
+  .hero-name-preview__checker {
+    padding: 28px 29px 30px;
+  }
+
+  .hero-name-preview__checker-top {
+    gap: 12px;
+    margin-bottom: 19px;
+    font-size: .72rem;
+  }
+
+  .hero-name-preview__seal {
+    width: 30px;
+    height: 30px;
+    font-size: .84rem;
+  }
+
+  .hero-name-preview .hero-name-checker__eyebrow {
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+  }
+
+  .hero-name-preview .hero-name-checker h2 {
+    margin-bottom: 25px;
+    font-size: clamp(1.56rem, 2.52vw, 1.9rem);
+  }
+
+  .hero-name-preview .hero-name-checker label {
+    margin-bottom: 9px;
+    font-size: .94rem;
+  }
+
+  .hero-name-preview .hero-name-checker__picker input {
+    min-height: 58px;
+    padding: 13px 16px;
+    font-size: 1.1rem;
+  }
+
+  .hero-name-preview .hero-name-checker__picker li {
+    padding: 11px 12px;
+    font-size: .98rem;
+  }
+
+  .hero-name-preview .hero-name-checker__status {
+    min-height: 2.95em;
+    margin: 13px 0 14px;
+    font-size: .94rem;
+  }
+
+  .hero-name-preview .hero-name-checker__submit {
+    min-height: 59px;
+    padding: 14px 18px;
+    font-size: .91rem;
+  }
+
+  .hero-name-preview .hero-name-checker__retry {
+    margin-bottom: 14px;
+    font-size: .94rem;
+  }
 }
 
 .hero-name-preview__flag-mark {
@@ -562,7 +625,7 @@
   }
 
   .hero-name-preview .hero-layout {
-    grid-template-columns: minmax(0, 1fr) minmax(300px, 350px);
+    grid-template-columns: minmax(0, 1fr) minmax(min(360px, 48vw), min(420px, 48vw));
     grid-template-areas:
       "intro intro"
       "description checker"
@@ -800,6 +863,6 @@
 
 @media (min-width: 1091px) {
   .hero-name-preview .hero-halloween-greeting {
-    max-width: min(650px, calc(100% - clamp(300px, 24.3vw, 350px) - 42px));
+    max-width: min(650px, calc(100% - clamp(360px, 29.2vw, 420px) - 42px));
   }
 }

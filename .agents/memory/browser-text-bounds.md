@@ -25,3 +25,9 @@ Find the element responsible for a page-wide enlarged-text overflow before attri
 **Why:** A new promotion fit its own bounds, while an unrelated existing page heading caused the full document to overflow at 200% text. Nested grid minimum sizing also needed a separate local check.
 
 **How to apply:** Check the changed content and its layout parent, not only each child's scrollWidth. Keep ordinary page-width checks; label any deliberately scoped enlarged-text check rather than claiming the entire page passes.
+
+Do not treat a clipped container's internal scrollWidth as proof of visible page overflow.
+
+**Why:** Hero decorations and display-contents grid descendants produced an internal scrollWidth much wider than the viewport while the rendered content and document remained within their actual bounds.
+
+**How to apply:** Keep document-width checks for real horizontal scrolling. When isolating a component from unrelated page overflow, measure its rendered content rectangles and clipping ancestors rather than substituting its scrollWidth for document width.
