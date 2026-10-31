@@ -952,3 +952,31 @@ mtime_ms = 1793458315565
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/14da843b-e65b-44a1-8242-90f52c8e671b/28110c34-a490-48dd-a689-4e99d71da060"
 storage_version_token = "1793458427732933"
 content_type = "image/jpeg"
+
+[[outputs]]
+id = "QaRM4DhLxCknSKWl52pDb"
+uri = "file://generated-artifacts/hero-card/before-1440.jpg"
+type = "image"
+title = "Hero card — before"
+description = "Original card position at 1440 × 900."
+logical_id = "a3837bb0-229f-4356-8944-a30d040fd6fd"
+content_hash = "sha256:e0166441e18193bf6be7894d3122fdf1ef6b926c0a5f4506117e7f86b6e2a7d7"
+size = 121784
+mtime_ms = 1793481314422
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/a3837bb0-229f-4356-8944-a30d040fd6fd/4c4dd792-6599-4a13-96b4-7a12196f1bbd"
+storage_version_token = "1793482126241448"
+content_type = "image/jpeg"
+
+[[outputs]]
+id = "_knZAk4Vflhq8-Fbi2bi8"
+uri = "file://generated-artifacts/hero-card/after-1440.jpg"
+type = "image"
+title = "Hero card — raised"
+description = "The same viewport with the whole card aligned to the Santa Radio title."
+logical_id = "c0c0c506-214b-4bde-ae8a-50a904600436"
+content_hash = "sha256:0644a6742d2f2f05ab51f8cc481c28f81bc24305a78ed9a9c242327df4d38eea"
+size = 127611
+mtime_ms = 1793482081523
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/c0c0c506-214b-4bde-ae8a-50a904600436/97519fc9-5143-4284-aee7-089a65cb07a5"
+storage_version_token = "1793482128231397"
+content_type = "image/jpeg"

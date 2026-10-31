@@ -31,3 +31,9 @@ The owner wants the preview heading across the top and a large square playing co
 **Why:** The owner said they could not see the playing image, then supplied a more precise mockup and repeated that the description should be less wide so the cover can move left and higher.
 
 **How to apply:** Keep the checker near the Santa Radio title line. The owner subsequently asked to remove the artwork card’s wasted bottom space and align its bottom with the desktop countdown; let the compact artwork’s top follow its natural content height rather than forcing both top and bottom positions. Keep the cover and live caption readable; reserve invisible layout space during pauses, but show no empty panel or placeholder text. Preserve phone stacking and the existing homepage sections below the approved hero.
+
+The desktop name-checker card should align with the Santa Radio title's top, without moving the title, artwork, countdown or lower sections. Preserve the enlarged card and the tablet/phone layout.
+
+**Why:** The owner supplied an annotated higher position for the whole card, explicitly excluding resizing or a wider hero redesign.
+
+**How to apply:** Preserve the card's existing layout space when repositioning it, rather than allowing the vertically centred hero to recenter its other elements. Align to the title, not the preview label or seasonal greeting.

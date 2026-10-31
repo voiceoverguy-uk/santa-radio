@@ -48,6 +48,108 @@ async function choose(page, name) {
   await expect(checker(page).getByRole('status')).toHaveText(`Yes! Santa can record for ${name}.`);
 }
 
+for (const route of ['/', path]) {
+  for (const width of [1091, 1280, 1440, 1920]) {
+    test(`raised card tracks the title without moving its neighbours on ${route} at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      await page.clock.setFixedTime(new Date('2026-10-31T12:00:00Z'));
+      await setup(page);
+      await page.addInitScript(() => sessionStorage.setItem('santa-message-offer-shown', 'shown'));
+      await page.goto(route);
+      const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+      if (await decline.isVisible()) await decline.click();
+      await page.evaluate(() => document.fonts.ready);
+      const card = page.locator('.hero-name-preview__checker');
+      const title = page.locator('.hero-title');
+      const geometry = () => card.evaluate(el => {
+        const rect = node => node.getBoundingClientRect().toJSON();
+        const box = rect(el);
+        return {
+          box,
+          contents: [...el.querySelectorAll('*')].map(node => {
+            const r = rect(node);
+            return { x: r.x - box.x, y: r.y - box.y, width: r.width, height: r.height };
+          }),
+          neighbours: [...document.querySelectorAll(
+            '.navbar, .hero-title, .hero-halloween-greeting, .hero-name-preview__flag, ' +
+            '.hero-name-preview__description, .hero-countdown, .hero-name-preview__artwork-slot, #santa-messages',
+          )].map(rect),
+        };
+      });
+      for (const halloween of [true, false]) {
+        if (!halloween) {
+          await page.clock.setFixedTime(new Date('2026-11-01T12:00:00Z'));
+          await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+        }
+        await expect(page.locator('.hero-halloween-greeting')).toHaveCount(halloween ? 1 : 0);
+        for (const playing of [false, true]) {
+          if (playing) {
+            await page.locator('.hero-actions').getByRole('button', { name: 'Listen Live', exact: true }).click();
+            await expect(page.locator('.hero .now-playing-artwork')).toBeVisible();
+          }
+          await page.mouse.move(0, 0);
+          await expect.poll(async () => Math.abs((await card.boundingBox()).y - (await title.boundingBox()).y))
+            .toBeLessThan(.5);
+          const raised = await geometry();
+          const nav = await page.locator('.navbar').boundingBox();
+          expect(raised.box.top).toBeGreaterThanOrEqual(nav.y + nav.height);
+          // Restore just the old visual position. Its grid footprint, size,
+          // child spacing and every other hero element must be identical.
+          await card.evaluate(el => { el.style.top = '0px'; });
+          const original = await geometry();
+          expect(original.box.top).toBeGreaterThan(raised.box.top + 20);
+          expect(original.box.width).toBe(raised.box.width);
+          expect(original.box.height).toBe(raised.box.height);
+          expect(original.contents).toEqual(raised.contents);
+          expect(original.neighbours).toEqual(raised.neighbours);
+          await card.evaluate(el => { el.style.removeProperty('top'); });
+          const collisions = await card.evaluate(el => {
+            const box = el.getBoundingClientRect();
+            const neighbours = [...document.querySelectorAll(
+              '.hero-title, .hero-halloween-greeting, .hero-name-preview__description, .hero-name-preview__flag',
+            )].flatMap(node => {
+              const range = document.createRange();
+              range.selectNodeContents(node);
+              return [...range.getClientRects()];
+            }).concat([...document.querySelectorAll('.hero .now-playing-artwork')].map(node => node.getBoundingClientRect()));
+            return neighbours.some(r => r.right > box.left + .5 && r.left < box.right - .5 &&
+              r.bottom > box.top + .5 && r.top < box.bottom - .5);
+          });
+          expect(collisions).toBe(false);
+          if (playing) await page.locator('.hero-actions').getByRole('button', { name: /Pause/ }).click();
+        }
+      }
+    });
+  }
+
+  test(`desktop raise is cleared on tablets and phones on ${route}`, async ({ page }) => {
+    await setup(page);
+    await page.addInitScript(() => sessionStorage.setItem('santa-message-offer-shown', 'shown'));
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto(route);
+    const card = page.locator('.hero-name-preview__checker');
+    for (const width of [1440, 1024, 768, 390, 320, 1091]) {
+      await page.setViewportSize({ width, height: 1000 });
+      if (width >= 1091) {
+        await expect.poll(async () => Math.abs((await card.boundingBox()).y -
+          (await page.locator('.hero-title').boundingBox()).y)).toBeLessThan(.5);
+      } else {
+        await expect(card).toHaveCSS('top', '0px');
+        await expect.poll(() => page.locator('.hero-layout').evaluate(el =>
+          el.style.getPropertyValue('--hero-checker-offset'))).toBe('');
+        const box = await card.boundingBox();
+        const intro = await page.locator('.hero-name-preview__intro').boundingBox();
+        expect(box.y).toBeGreaterThanOrEqual(intro.y + intro.height);
+        if (width < 768) {
+          const note = await page.locator('.hero-note').boundingBox();
+          expect(box.y - note.y - note.height).toBeCloseTo(21, 0);
+        }
+      }
+    }
+  });
+}
+
 // Baseline at 1440px: 349.90625px card, 16px eyebrow, 48px field, 49px CTA.
 // Measure real layout rather than transforms: larger text must have room to wrap.
 for (const route of ['/', path]) {

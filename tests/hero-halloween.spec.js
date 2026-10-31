@@ -17,8 +17,11 @@ async function setup(page, date) {
     current: { artist: 'John Legend', title: 'Bring Me Love' }, currentStatus: 'ready',
     upcoming: [], upcomingStatus: 'ready',
   } }));
-  await page.route('**/api/santa-names?*', route => route.fulfill({ json: {
-    hostedCount: 1, warning: null, records: [{ id: 'arabella', name: 'Arabella' }],
+  await page.route('**/api/santa-names', route => route.fulfill({ json: {
+    hostedCount: 1, warning: null, records: [{
+      id: 'arabella', name: 'Arabella', selectionToken: 'controlled-fixture-token',
+      previewUrl: '/api/santa-name-preview?token=controlled-fixture-token',
+    }],
   } }));
 }
 
@@ -130,6 +133,9 @@ for (const route of routes) {
       await hero.getByRole('button', { name: /Pause/ }).click();
       await expect(hero.locator('.now-playing-artwork')).toHaveCount(0);
       await hero.getByRole('combobox').fill('Ara');
+      // Name lookup now uses a debounced private POST. Advance the paused
+      // calendar clock enough to issue that request before choosing a result.
+      await page.clock.runFor(350);
       await hero.getByRole('option', { name: 'Arabella', exact: true }).click();
       await expect(hero.getByRole('status')).toHaveText('Yes! Santa can record for Arabella.');
       await expect(hero.getByLabel('Countdown to Christmas Day')).toBeVisible();

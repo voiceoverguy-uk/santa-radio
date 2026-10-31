@@ -31,6 +31,40 @@ export function useHeroNameSelection() {
 }
 
 export default function HomeHero({ preview = false, onContinue }) {
+  const layoutRef = useRef(null);
+  const titleRef = useRef(null);
+  const checkerRef = useRef(null);
+
+  useEffect(() => {
+    const layout = layoutRef.current;
+    const title = titleRef.current;
+    const checker = checkerRef.current;
+    const desktop = window.matchMedia('(min-width: 1091px)');
+    const alignChecker = () => {
+      if (!desktop.matches) {
+        layout.style.removeProperty('--hero-checker-offset');
+        return;
+      }
+      // Keep the enlarged card's original grid footprint: changing its row
+      // would recenter the hero and move the title, artwork and countdown.
+      // The title itself also accounts for the preview-only label above it.
+      const previous = parseFloat(layout.style.getPropertyValue('--hero-checker-offset')) || 0;
+      const offset = title.getBoundingClientRect().top - checker.getBoundingClientRect().top + previous;
+      layout.style.setProperty('--hero-checker-offset', `${offset}px`);
+    };
+    const observer = new ResizeObserver(alignChecker);
+    observer.observe(layout);
+    observer.observe(title.parentElement);
+    observer.observe(checker);
+    desktop.addEventListener('change', alignChecker);
+    alignChecker();
+    return () => {
+      observer.disconnect();
+      desktop.removeEventListener('change', alignChecker);
+      layout.style.removeProperty('--hero-checker-offset');
+    };
+  }, []);
+
   return (
     <section className="hero hero-name-preview__hero" aria-labelledby="hero-name-preview-title">
       <picture className="hero-picture">
@@ -41,7 +75,7 @@ export default function HomeHero({ preview = false, onContinue }) {
       </picture>
       <div className="hero-aurora" aria-hidden="true" />
       <SantaFlyby />
-      <div className="hero-layout hero-name-preview__layout">
+      <div ref={layoutRef} className="hero-layout hero-name-preview__layout">
         <div className="hero-content hero-name-preview__intro">
           {preview && <div className="hero-name-preview__flag" aria-label="Preview only">
             <span className="hero-name-preview__flag-mark" aria-hidden="true" />
@@ -49,7 +83,7 @@ export default function HomeHero({ preview = false, onContinue }) {
             <span className="hero-name-preview__flag-divider" aria-hidden="true" />
             Not the live homepage
           </div>}
-          <h1 id="hero-name-preview-title" className="hero-title">
+          <h1 ref={titleRef} id="hero-name-preview-title" className="hero-title">
             Santa Radio{' '}
             <span className="hero-name-preview__strapline">A little magic from the North Pole.</span>
           </h1>
@@ -74,7 +108,7 @@ export default function HomeHero({ preview = false, onContinue }) {
             <NowPlayingArtwork />
           </div>
         </div>
-        <aside className="hero-name-preview__checker" aria-label={preview ? 'Santa name checker preview' : 'Santa name checker'}>
+        <aside ref={checkerRef} className="hero-name-preview__checker" aria-label={preview ? 'Santa name checker preview' : 'Santa name checker'}>
           <div className="hero-name-preview__checker-top">
             <span className="hero-name-preview__seal" aria-hidden="true">S</span>
             <span className="hero-name-preview__checker-kicker">The North Pole</span>

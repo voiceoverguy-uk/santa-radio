@@ -501,6 +501,10 @@
 }
 
 @media (min-width: 1091px) {
+  .hero-name-preview__checker {
+    top: var(--hero-checker-offset, 0px);
+  }
+
   .hero-name-preview .hero-title .hero-name-preview__strapline {
     max-width: calc(100% - clamp(360px, 29.2vw, 420px) - 42px);
   }
