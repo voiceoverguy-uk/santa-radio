@@ -48,9 +48,9 @@ export default function HomeHero({ preview = false, onContinue }) {
             <span className="hero-name-preview__flag-divider" aria-hidden="true" />
             Not the live homepage
           </div>}
-          <p className="hero-name-preview__eyebrow">A little magic from the North Pole</p>
           <h1 id="hero-name-preview-title" className="hero-title">
-            Live from The North Pole,<span>Santa Radio</span>
+            Santa Radio{' '}
+            <span className="hero-name-preview__strapline">A little magic from the North Pole.</span>
           </h1>
         </div>
         <div className="hero-name-preview__broadcast">

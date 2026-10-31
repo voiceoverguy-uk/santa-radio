@@ -42,6 +42,64 @@ async function choose(page, name) {
   await expect(checker(page).getByRole('status')).toHaveText(`Yes! Santa can record for ${name}.`);
 }
 
+for (const route of ['/', path]) {
+  for (const width of [320, 390, 1440]) {
+    test(`brand-first strapline and controls on ${route} at ${width}px, including enlarged text`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 1000 });
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      await setup(page);
+      let submissions = 0;
+      await page.route('**/api/santa-message', route => { submissions++; return route.abort(); });
+      await page.goto(route);
+      const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+      if (await decline.isVisible()) await decline.click();
+      await page.evaluate(() => document.fonts.ready);
+      const hero = page.locator('.hero');
+      const heading = hero.getByRole('heading', { level: 1 });
+      await expect(heading).toHaveText('Santa Radio A little magic from the North Pole.');
+      await expect(heading).toHaveAccessibleName('Santa Radio A little magic from the North Pole.');
+      await expect(hero.getByText('A little magic from the North Pole.', { exact: true })).toHaveCount(1);
+      await expect(hero).not.toContainText('Live from The North Pole');
+      await expect(hero.locator('.hero-name-preview__eyebrow')).toHaveCount(0);
+      await expect(hero.locator('.hero-name-preview__flag')).toHaveCount(route === path ? 1 : 0);
+      if (route === path) await expect(hero.getByLabel('Preview only')).toBeVisible();
+      for (const fontSize of ['100%', '200%']) {
+        await page.evaluate(size => { document.documentElement.style.fontSize = size; }, fontSize);
+        const geometry = await heading.evaluate(el => {
+          const rect = el.getBoundingClientRect();
+          const range = document.createRange();
+          range.selectNodeContents(el);
+          return {
+            heading: rect.toJSON(),
+            ink: [...range.getClientRects()].map(r => r.toJSON()),
+            hero: el.closest('.hero').getBoundingClientRect().toJSON(),
+            checker: document.querySelector('.hero-name-preview__checker').getBoundingClientRect().toJSON(),
+            viewport: innerWidth,
+          };
+        });
+        for (const ink of geometry.ink) {
+          expect(ink.left).toBeGreaterThanOrEqual(-.5);
+          expect(ink.right).toBeLessThanOrEqual(geometry.viewport + .5);
+          expect(ink.top).toBeGreaterThanOrEqual(geometry.hero.top);
+          expect(ink.bottom).toBeLessThanOrEqual(geometry.hero.bottom + .5);
+          expect(ink.right <= geometry.checker.left + .5 || ink.bottom <= geometry.checker.top + .5).toBe(true);
+        }
+        expect(await heading.evaluate(el => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
+      }
+      await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
+      const listen = hero.getByRole('button', { name: 'Listen Live', exact: true });
+      await listen.click();
+      await expect(hero.locator('.now-playing-artwork')).toBeVisible();
+      await hero.getByRole('button', { name: /Pause/ }).click();
+      await expect(hero.locator('.now-playing-artwork')).toHaveCount(0);
+      await choose(page, 'Arabella');
+      await cta(page).click();
+      await expect(page.locator('.santa-message-access input[name="FIRSTNAME"]')).toBeFocused();
+      expect(submissions).toBe(0);
+    });
+  }
+}
+
 for (const width of [390, 1440]) {
   test(`homepage empty-name submit highlights and focuses the search at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
@@ -397,8 +455,8 @@ for (const width of [1280, 768, 390, 320]) test(`layout and playback stay stable
     // to the countdown rather than stretched to a fixed height.
     expect(picture.x).toBeLessThan(width * .48);
     expect(picture.y).toBeLessThan(description.y);
-    const secondTitleLine = await page.locator('.hero-title span').boundingBox();
-    expect(Math.abs(before.y - secondTitleLine.y)).toBeLessThan(20);
+    const strapline = await page.locator('.hero-name-preview__strapline').boundingBox();
+    expect(strapline.x + strapline.width).toBeLessThanOrEqual(before.x);
   }
   if (width >= 768) expect(picture.x + picture.width).toBeLessThan(before.x);
   else {
