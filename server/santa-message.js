@@ -7,15 +7,20 @@ import { fileURLToPath } from 'node:url';
 import ffmpegPath from 'ffmpeg-static';
 import { santaNameLibrary } from './santa-name-library.js';
 import { renderArgs } from '../scripts/santa-audio-filters.mjs';
-import { santaSavedCache, eligibleArabella } from './santa-saved-cache.js';
+import { eligibleArabella } from './santa-saved-cache.js';
+import { consumeNameAccess, privateResponse, verifyNameToken } from './santa-name-security.js';
 
 const execute = promisify(execFile);
 const sources = fileURLToPath(new URL('./santa-audio/', import.meta.url));
 let active = 0;
 
-export function createSantaMessageHandler(library = santaNameLibrary, cache = santaSavedCache) {
+// The previous default cache publishes permanent public MP3 URLs. Keep that
+// publisher disconnected until the origin offers private cache storage.
+export function createSantaMessageHandler(library = santaNameLibrary, cache = null, {
+  limit = consumeNameAccess, verify = verifyNameToken,
+} = {}) {
 return async function santaMessage(req, res) {
-  res.setHeader('Cache-Control', 'no-store');
+  privateResponse(res);
   const fail = (status, error) => {
     res.writeHead(status, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error }));
@@ -31,6 +36,7 @@ return async function santaMessage(req, res) {
   const started = performance.now();
   let renderMs;
   try {
+    await limit(req, 'message');
     // Vercel parses JSON before calling the function; the local Node server
     // supplies a readable stream instead. Support both without rereading it.
     let body = req.body;
@@ -48,10 +54,13 @@ return async function santaMessage(req, res) {
     let data;
     try { data = JSON.parse(body); } catch { return fail(400, 'Invalid request.'); }
     if (data?.outro !== 1 && data?.outro !== 2) return fail(400, 'Invalid outro selection.');
+    if (!data?.name || verify(data.selectionToken, 'message') !== data.name) {
+      return fail(403, 'Please search and choose the recorded name again before creating a message.');
+    }
     const recording = await library.resolve(data?.name);
     if (!recording) return fail(400, 'That name is not available yet. Choose a suggested name.');
     let prepared;
-    if (eligibleArabella(recording)) {
+    if (cache && eligibleArabella(recording)) {
       try { prepared = await cache.prepare(recording, library, data.outro); }
       catch { console.info('[santa-cache]', { event: 'prepare', code: 'REVISION_UNAVAILABLE' }); }
     }
@@ -75,7 +84,7 @@ return async function santaMessage(req, res) {
       if (prepared && performance.now() - started < 95000) await cache.publish(prepared, audio);
       return audio;
     };
-    const audio = eligibleArabella(recording)
+    const audio = cache && eligibleArabella(recording)
       ? await cache.singleFlight(prepared?.identity.key || `${recording.id}-${data.outro}`, generate) : await generate();
     const asciiFilename = recording.downloadName.normalize('NFKD').replace(/\p{M}/gu, '').replace(/[^\x20-\x7e]/g, '_');
     res.writeHead(200, {
@@ -89,6 +98,10 @@ return async function santaMessage(req, res) {
       renderMs, totalMs: Math.round(performance.now() - started), bytes: audio.length,
     });
   } catch (error) {
+    if (error.status === 429) {
+      res.setHeader('Retry-After', String(error.retryAfter || 60));
+      return fail(429, error.message);
+    }
     // Log operational codes only, never submitted names or contact details.
     console.error('[santa-message] rendering failed', {
       code: typeof error.code === 'number' ? error.code : ['ENOENT', 'EACCES', 'ERR_CHILD_PROCESS_STDIO_MAXBUFFER'].includes(error.code) ? error.code : 'RENDER_FAILED',

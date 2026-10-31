@@ -59,6 +59,7 @@
 - [Raw request targets](raw-request-targets.md) — Exact doubled-separator exports must survive pre-routing middleware; resolver-only checks miss failures and app-shell fallbacks.
 - [Christmas Contenders scope](christmas-contenders-scope.md) — One-choice first build; votes inform editorial consideration; owner must choose any earlier submission cutoff.
 - [Hero name-checker scope](hero-name-checker-scope.md) — Approved homepage hero: no App Store logo; description below heading; preserve lower sections and child-name privacy.
+- [Name inventory confidentiality](name-inventory-confidentiality.md) — No browser catalogue downloads or public origin links; private POST lookup overrides older inventory/count directions.
 - [Christmas Pairs scope](christmas-pairs-scope.md) — Free homepage game below the soundboard; owner-supplied artwork, optional sound off initially and sensible preview timings.
 - [Soundboard direction](soundboard-design-scope.md) — Approved warm workshop design; preserve all 20 phrases and playback, and keep Apps-page work separate.
 - [Main Mugshots collection](mugshots-collection-direction.md) — Separate gallery approval: no cartoon badge; live total, original photos and current gallery behaviour retained.

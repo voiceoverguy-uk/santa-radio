@@ -7,6 +7,7 @@ import radioMetadata from './server/radio-metadata.js';
 import radioTopTen from './server/radio-top-ten.js';
 import santaMessage from './server/santa-message.js';
 import santaNames from './server/santa-names.js';
+import santaNamePreview from './server/santa-name-preview.js';
 import workshopCatalogue from './server/santa-workshop-catalogue.js';
 import workshopAccess, { workshopDocumentHeaders } from './server/santa-workshop-access.js';
 import santaGreeting from './server/santa-greeting.js';
@@ -51,6 +52,7 @@ const metadataPlugin = {
     server.middlewares.use('/api/radio-top-ten', radioTopTen);
     server.middlewares.use('/api/santa-message', santaMessage);
     server.middlewares.use('/api/santa-names', santaNames);
+    server.middlewares.use('/api/santa-name-preview', santaNamePreview);
     server.middlewares.use('/api/santa-workshop-catalogue', workshopCatalogue);
     server.middlewares.use('/api/santa-greeting', santaGreeting);
   },
@@ -80,6 +82,7 @@ const metadataPlugin = {
     server.middlewares.use('/api/radio-top-ten', radioTopTen);
     server.middlewares.use('/api/santa-message', santaMessage);
     server.middlewares.use('/api/santa-names', santaNames);
+    server.middlewares.use('/api/santa-name-preview', santaNamePreview);
     server.middlewares.use('/api/santa-workshop-catalogue', workshopCatalogue);
     server.middlewares.use('/api/santa-greeting', santaGreeting);
   },

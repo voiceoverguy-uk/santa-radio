@@ -8,6 +8,17 @@ import { findSantaMessage, santaNames, santaMessageDownloadName } from '../src/d
 
 export const NAMES_ROOT = 'https://stagcommunications.com/santaradio/names/';
 export const NAMES_INDEX = `${NAMES_ROOT}names-index.php`;
+function privateOrigin(action, file) {
+  if (!process.env.SANTA_LIBRARY_GATEWAY_URL) return null;
+  const url = new URL(process.env.SANTA_LIBRARY_GATEWAY_URL);
+  if (url.protocol !== 'https:' || url.username || url.password ||
+      !process.env.SANTA_LIBRARY_READ_TOKEN || process.env.SANTA_LIBRARY_READ_TOKEN.length < 32) {
+    throw new NameLibraryError('PRIVATE_ORIGIN_NOT_CONFIGURED');
+  }
+  url.searchParams.set('action', action);
+  if (file) url.searchParams.set('file', file);
+  return url.href;
+}
 const CACHE_MS = 60_000;
 const FAIL_CACHE_MS = 10_000;
 const MAX_INDEX_BYTES = 2 * 1024 * 1024;
@@ -27,11 +38,14 @@ export class NameLibraryError extends Error {
 }
 
 // Do not follow redirects: even an approved URL must not redirect to another host.
-export async function fetchLimited(url, limit, fetcher = fetch) {
+export async function fetchLimited(url, limit, fetcher = fetch, privateAccess = false) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 10_000);
   try {
-    const response = await fetcher(url, { redirect: 'error', cache: 'no-store', signal: controller.signal });
+    const response = await fetcher(url, {
+      redirect: 'error', cache: 'no-store', signal: controller.signal,
+      ...(privateAccess ? { headers: { Authorization: `Bearer ${process.env.SANTA_LIBRARY_READ_TOKEN}` } } : {}),
+    });
     if (!response.ok || response.redirected) throw new NameLibraryError('UPSTREAM_STATUS');
     if (Number(response.headers.get('content-length')) > limit) throw new NameLibraryError('UPSTREAM_SIZE');
     const reader = response.body?.getReader();
@@ -90,7 +104,8 @@ export function createNameLibrary({ fetcher = fetch, now = Date.now } = {}) {
     if (now() < failedUntil) throw new NameLibraryError('INDEX_UNAVAILABLE');
     if (!pending) pending = (async () => {
       try {
-        cached = parseNameIndex(await fetchLimited(NAMES_INDEX, MAX_INDEX_BYTES, fetcher));
+        const origin = privateOrigin('index');
+        cached = parseNameIndex(await fetchLimited(origin || NAMES_INDEX, MAX_INDEX_BYTES, fetcher, Boolean(origin)));
         expires = now() + CACHE_MS;
         return cached;
       } catch (error) {
@@ -136,8 +151,9 @@ export function createNameLibrary({ fetcher = fetch, now = Date.now } = {}) {
     },
     async sourceBytes(record) {
       if (record.source !== 'hosted' || !FILE.test(record.file)) throw new NameLibraryError('INVALID_RECORDING');
+      const origin = privateOrigin('audio', record.file);
       const url = new URL(encodeURIComponent(record.file), NAMES_ROOT);
-      return fetchLimited(url.href, MAX_AUDIO_BYTES, fetcher);
+      return fetchLimited(origin || url.href, MAX_AUDIO_BYTES, fetcher, Boolean(origin));
     },
     async download(record, destination, sourceBytes) {
       const bytes = sourceBytes || await this.sourceBytes(record);

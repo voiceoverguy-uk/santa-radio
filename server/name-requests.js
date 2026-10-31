@@ -38,7 +38,9 @@ export function createNameRequestHandler({ checkAdmin = authorize, save = saveNa
   record = recordNameRequest, identify = visitor, library = santaNameLibrary } = {}) {
   return async (req, res) => {
     let stage = 'validation';
-    res.set('Cache-Control', 'no-store');
+    res.set('Cache-Control', 'private, no-store');
+    res.set('CDN-Cache-Control', 'no-store');
+    res.set('Vercel-CDN-Cache-Control', 'no-store');
     res.set('X-Robots-Tag', 'noindex, nofollow');
     try {
       if (req.method === 'POST' || req.method === 'PATCH') {

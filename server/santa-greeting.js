@@ -1,24 +1,12 @@
-import { santaNameLibrary } from './santa-name-library.js';
-import { santaSavedCache } from './santa-saved-cache.js';
+import { privateResponse } from './santa-name-security.js';
 
-export function createSantaGreetingHandler(library = santaNameLibrary, cache = santaSavedCache) {
+// Completed-cache URLs must remain server-side. The message handler can still
+// use its internal cache; the public descriptor shortcut is intentionally gone.
+export function createSantaGreetingHandler() {
   return async (req, res) => {
-    res.setHeader('Cache-Control', 'no-store');
-    res.setHeader('Content-Type', 'application/json');
-    if (req.method !== 'GET') {
-      res.setHeader('Allow', 'GET');
-      res.writeHead(405).end(JSON.stringify({ available: false }));
-      return;
-    }
-    try {
-      const name = new URL(req.url, 'http://server').searchParams.get('name');
-      const outro = Number(new URL(req.url, 'http://server').searchParams.get('outro'));
-      if (outro !== 1 && outro !== 2) throw new RangeError('Invalid Santa outro.');
-      const record = await library.resolve(name);
-      const descriptor = await cache.lookup(record, library, outro);
-      res.end(JSON.stringify(descriptor ? { available: true, greeting: descriptor } : { available: false }));
-    } catch { res.end(JSON.stringify({ available: false })); }
+    privateResponse(res);
+    res.writeHead(410, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ available: false }));
   };
 }
-
 export default createSantaGreetingHandler();

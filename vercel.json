@@ -17,6 +17,9 @@
     "api/santa-names.js": {
       "maxDuration": 15
     },
+    "api/santa-name-preview.js": {
+      "maxDuration": 20
+    },
     "api/santa-workshop-catalogue.js": {
       "maxDuration": 15
     },

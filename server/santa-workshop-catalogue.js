@@ -149,6 +149,8 @@ export async function hasStudioAccess(req) {
 export function createWorkshopCatalogueHandler(load = workshopCatalogue, authorize = hasStudioAccess) {
   return async (req, res) => {
     res.setHeader('Cache-Control', 'no-store');
+    res.setHeader('CDN-Cache-Control', 'no-store');
+    res.setHeader('Vercel-CDN-Cache-Control', 'no-store');
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-Robots-Tag', 'noindex, nofollow');
     const send = (status, data) => {

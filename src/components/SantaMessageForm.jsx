@@ -17,7 +17,6 @@ import { santaNameKey } from '../lib/santaNameSearch.js';
 import { randomSantaExample, santaNamePlaceholder } from '../lib/santaNamePlaceholder.js';
 import { normaliseRequestedName } from '../lib/santaNameRequests.js';
 import { nameRequestToken } from '../lib/santaNameRequestTokens.js';
-import { trySavedSantaGreeting } from '../lib/savedSantaGreeting.js';
 import { settleSantaMessageDeskAfterEntry } from '../lib/scrollToSantaMessageDesk.js';
 import './SantaNameRequest.css';
 import './SantaMessageForm.css';
@@ -50,7 +49,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const displayedNameCount = useSantaNameCounter(nameSearch.hostedCount);
   const availableNamesText = displayedNameCount !== null
     ? `${displayedNameCount.toLocaleString('en-GB')} ${displayedNameCount === 1 ? 'name' : 'names'} available`
-    : nameSearch.loading ? 'Checking how many names are available…' : 'Name total temporarily unavailable.';
+    : 'Recorded names available to search';
   const suggestions = nameSearch.records;
   const verifiedSelectedRecord = selectedRecord && selectedRecord.name === name.trim()
     ? selectedRecord : null;
@@ -211,15 +210,14 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
     setBusy(true);
     try {
       const blob = await allowance.create(async outro => {
-        // The preview promises name-free request URLs through creation too.
-        // Its POST still uses the same allowance and server-side saved cache,
-        // without the browser's name-bearing greeting lookup/hosted MP3 URL.
-        const saved = keepSignupInPlace ? null
-          : await trySavedSantaGreeting(recording, controller.signal, { outro });
-        if (saved) return saved;
+        // Search and creation use private POST bodies. Cache lookup and
+        // underlying audio URLs remain entirely on the server.
         const response = await fetch('/api/santa-message', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: recording.id, outro }), signal: controller.signal,
+          body: JSON.stringify({
+            name: recording.id, outro,
+            selectionToken: suggestions.find(record => record.id === recording.id)?.selectionToken || recording.selectionToken,
+          }), signal: controller.signal,
         });
         if (!response.ok) {
           const data = await response.json().catch(() => ({}));
@@ -286,7 +284,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         <h2 className="santa-message-heading">FREE Personalised message from Santa</h2>
         <SantaVoiceTagline />
         {!hasAccess && <SantaMessageExample onExampleNameChange={setActiveExampleName} />}
-        <p className="message-free-intro">No Artificial Intelligence here. A real Human recorded message from Santa, aka Father Christmas to your little Human.{' '}<br />Click to enter Studio B, add your contact details, choose the name from <span className="message-intro-name-count">{availableNamesText}</span> currently, create and instantly download your short FREE personalised message from Santa.</p>
+         <p className="message-free-intro">No Artificial Intelligence here. A real Human recorded message from Santa, aka Father Christmas to your little Human.{' '}<br />Click to enter Studio B, add your contact details, search for a recorded name, create and instantly download your short FREE personalised message from Santa.</p>
         <p className="message-studio-intro">Or, why not enter Studio - A and have a bespoke message from Santa?<sup>**</sup> You&apos;ll also receive some festive goodies. See below.</p>
         <p className="message-studio-availability"><small>** Coming early November</small></p>
       </div>
@@ -307,8 +305,6 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         </div>
           </div>
         </div>
-        {nameSearch.hostedCount === null && !nameSearch.loading && !hasAccess &&
-          <button className="message-retry" type="button" onClick={nameSearch.refresh}>Retry name total</button>}
         {!hasAccess ? <SantaMessageAccessForm keepInPlace={keepSignupInPlace} /> : <>
         <h3 ref={makerHeadingRef} tabIndex={-1}>Your free Santa greeting</h3>
         {!!messages.length && <div className="message-wait-downloads">

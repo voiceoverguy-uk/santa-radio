@@ -19,10 +19,13 @@ export async function mockBrevo(page, json = { success: true }, status = 200) {
 }
 
 export async function mockSantaNames(target) {
-  await target.route('**/api/santa-names?*', route => {
-    const query = (new URL(route.request().url()).searchParams.get('q') || '').trim().toLowerCase();
+  await target.route('**/api/santa-names', route => {
+    const query = (route.request().postDataJSON()?.query || '').trim().toLowerCase();
     return route.fulfill({ json: {
-      records: santaNames.filter(name => name.toLowerCase().startsWith(query)).map(findSantaMessage),
+      records: santaNames.filter(name => name.toLowerCase().startsWith(query)).slice(0, 10).map(name => ({
+        ...findSantaMessage(name), selectionToken: 'controlled-fixture-token',
+        previewUrl: '/api/santa-name-preview?token=controlled-fixture-token',
+      })),
       hostedCount: 0, warning: null,
     } });
   });

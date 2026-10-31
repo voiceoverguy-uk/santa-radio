@@ -14,11 +14,17 @@ On mobile, put the red Listen Live button immediately below the hero heading, an
 
 **How to apply:** Preserve a single shared player and name checker; keep the countdown below the description rather than moving it above the checker with the listening button.
 
-Entered child names in this preview must not enter analytics, request URLs or durable storage, including when prefilling the existing maker. Public inventory may be fetched without recipient queries.
+Entered child names must not enter analytics, request URLs or durable storage, including when prefilling the existing maker. Only bounded server-side searches in POST bodies are permitted; never restore browser downloads of the full inventory.
 
 **Why:** The owner made child-name privacy an explicit approval criterion.
 
-**How to apply:** Keep pending selections in page memory, and do not add name-request persistence or name-bearing navigation parameters to this preview.
+**How to apply:** Keep pending selections in page memory, and do not add name-request persistence or name-bearing navigation parameters. The owner's subsequent inventory-exposure request supersedes the earlier browser-side public inventory approach.
+
+The hero child-name entry and confirmation must start empty after a homepage refresh, without erasing adult access, allowances, cookie settings or unrelated data. Deliberate same-page handoffs remain valid until refresh; Back/Forward policy is unchanged.
+
+**Why:** The owner requested clearing the previously selected child after refreshing, based on their iPhone screenshot.
+
+**How to apply:** Keep refresh reset narrowly scoped to initial hero entry. Do not turn this into child-name persistence, a visibility/scroll reset, or a change to the greeting-history retention policy.
 
 The owner wants the preview heading across the top and a large square playing cover beside the introduction/listening area, not a tiny inline thumbnail. Keep the description narrow so the cover tucks further left and higher, beside the Santa Radio title line rather than below the whole heading. Retain the name checker on the right and omit the App Store badge in this preview.
 

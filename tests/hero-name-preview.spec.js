@@ -5,7 +5,10 @@ import { fillAccessForm, mockBrevo } from './helpers/message-access.js';
 const path = '/preview/hero-name-checker';
 const inventory = {
   hostedCount: 3, warning: null,
-  records: ['Arabella', 'Erin', 'Erica'].map(name => ({ id: name.toLowerCase(), name })),
+  records: ['Arabella', 'Erin', 'Erica'].map(name => ({
+    id: name.toLowerCase(), name, selectionToken: 'controlled-fixture-token',
+    previewUrl: '/api/santa-name-preview?token=controlled-fixture-token',
+  })),
 };
 const checker = page => page.locator('.hero-name-checker');
 const input = page => checker(page).getByRole('combobox');
@@ -26,7 +29,10 @@ async function setup(page, { realInventory = false, mediaFailure = false } = {})
     current: { artist: 'John Legend', title: 'Bring Me Love' }, currentStatus: 'ready',
     upcoming: [], upcomingStatus: 'ready',
   } }));
-  if (!realInventory) await page.route('**/api/santa-names?*', route => route.fulfill({ json: inventory }));
+  if (!realInventory) await page.route('**/api/santa-names', route => route.fulfill({ json: {
+    ...inventory, records: inventory.records.filter(record =>
+      record.name.toLowerCase().startsWith(route.request().postDataJSON().query.toLowerCase())),
+  } }));
   // Every provider submission is intercepted; never send real test contacts.
   await mockBrevo(page);
 }
@@ -229,7 +235,7 @@ for (const width of [390, 1440]) {
 
 test('real hosted inventory drives lookup, with no child query URLs, storage or auto audio', async ({ page }) => {
   await setup(page, { realInventory: true });
-  const api = await page.request.get('/api/santa-names?inventory=hosted');
+  const api = await page.request.post('/api/santa-names', { data: { query: 'Arabella' } });
   expect(api.ok()).toBe(true);
   const live = await api.json();
   expect(live.records.length).toBeGreaterThan(0);
@@ -278,9 +284,12 @@ test('loading, genuine empty results, failures and retry are distinct', async ({
   let release;
   let mode = 'loading';
   const waiting = new Promise(resolve => { release = resolve; });
-  await page.route('**/api/santa-names?inventory=hosted', async route => {
+  await page.route('**/api/santa-names', async route => {
     if (mode === 'loading') await waiting;
-    await route.fulfill(mode === 'error' ? { status: 503, json: { error: 'Unavailable' } } : { json: inventory });
+    await route.fulfill(mode === 'error' ? { status: 503, json: { error: 'Name search is temporarily unavailable.' } } : {
+      json: { ...inventory, records: inventory.records.filter(record =>
+        record.name.toLowerCase().startsWith(route.request().postDataJSON().query.toLowerCase())) },
+    });
   });
   await open(page);
   await input(page).fill('NotRecordedFixture');

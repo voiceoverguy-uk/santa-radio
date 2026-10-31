@@ -407,6 +407,7 @@ export default function SantaMessageWorkshop() {
                 <div className="smw-activity-preview-layout smw-name-preview-layout">
                   <WorkshopNamePicker
                     selected={selectedName}
+                    onRefreshSelection={setSelectedName}
                     invalid={!!error}
                     onSelect={record => {
                       if (record && record.id !== selectedName?.id) setNameSpelling('');

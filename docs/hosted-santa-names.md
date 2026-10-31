@@ -1,3 +1,11 @@
+# Security supersession
+
+The public-index installation and browser-inventory guidance below is historical
+and must not be used. See [the inventory exposure response](security/name-inventory-exposure.md).
+Public bulk inventory, permanent origin preview URLs and the public PHP installers
+have been removed from the workspace implementation. The old upstream URLs must
+also be disabled by the origin host, and both production hosts require publishing.
+
 # Hosted Santa names
 
 The maker searches `/api/santa-names?q=...`. The backend reads the fixed HTTPS

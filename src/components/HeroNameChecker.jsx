@@ -1,4 +1,4 @@
-import { useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import useHostedSantaNameSearch from './useHostedSantaNameSearch.js';
 
 export default function HeroNameChecker({ onContinue }) {
@@ -11,10 +11,42 @@ export default function HeroNameChecker({ onContinue }) {
   const inputRef = useRef(null);
   const touch = useRef(null);
   const suppressClick = useRef(false);
+  const interacted = useRef(false);
+  useEffect(() => {
+    // Browsers can restore form DOM independently of controlled React state.
+    // Reconcile on mount and after initial pageshow, never on bfcache return
+    // or after deliberate entry (pageshow can wait for slow page resources).
+    let frame;
+    const reset = () => {
+      if (interacted.current) return;
+      if (inputRef.current) inputRef.current.value = '';
+      setName('');
+      setSelected(null);
+      setOpen(false);
+      setActive(-1);
+      setValidation('');
+      touch.current = null;
+      suppressClick.current = false;
+    };
+    const shown = event => {
+      if (event.persisted) return;
+      reset();
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(reset);
+    };
+    reset();
+    frame = requestAnimationFrame(reset);
+    window.addEventListener('pageshow', shown);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener('pageshow', shown);
+    };
+  }, []);
   const search = useHostedSantaNameSearch(name);
   const options = search.records;
   const expanded = open && options.length > 0 && !search.loading && !search.error;
   const choose = record => {
+    interacted.current = true;
     setValidation('');
     setName(record.name);
     setSelected(record);
@@ -24,6 +56,7 @@ export default function HeroNameChecker({ onContinue }) {
   const status = selected ? `Yes! Santa can record for ${selected.name}.`
     : search.loading ? 'Checking Santa’s recorded names…'
       : search.error ? search.error
+        : name.trim().length === 1 ? 'Enter at least two letters to search Santa’s recorded names.'
         : name.trim() && !options.length
           ? 'We haven’t found that spelling. Try a shorter name or another spelling.'
           : name.trim() ? `${options.length} matching ${options.length === 1 ? 'name' : 'names'}. Choose a name from the list.`
@@ -34,6 +67,7 @@ export default function HeroNameChecker({ onContinue }) {
     <h2 id={`${id}-title`}>Does Santa have your child’s name?</h2>
     <form noValidate onSubmit={event => {
       event.preventDefault();
+      interacted.current = true;
       if (!selected) {
         setValidation(name.trim()
           ? search.error || (search.loading
@@ -56,10 +90,11 @@ export default function HeroNameChecker({ onContinue }) {
           aria-activedescendant={expanded && active >= 0 && options[active] ? `${id}-option-${active}` : undefined}
           aria-describedby={`${id}-status`}
           aria-invalid={!!validation}
-          onChange={event => { setName(event.target.value); setSelected(null); setValidation(''); setActive(-1); setOpen(true); }}
+          onChange={event => { interacted.current = true; setName(event.target.value); setSelected(null); setValidation(''); setActive(-1); setOpen(true); }}
           onFocus={() => { if (!selected) setOpen(true); }}
           onBlur={() => { if (!touch.current) setOpen(false); }}
           onKeyDown={event => {
+            interacted.current = true;
             if (event.key === 'Escape') { setOpen(false); setActive(-1); }
             if ((event.key === 'ArrowDown' || event.key === 'ArrowUp') && options.length) {
               event.preventDefault(); setOpen(true);

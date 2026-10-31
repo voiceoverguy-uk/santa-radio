@@ -1,43 +1,42 @@
-import { santaNameLibrary, NAMES_ROOT } from './santa-name-library.js';
+import { santaNameLibrary } from './santa-name-library.js';
+import { consumeNameAccess, issueNameToken, privateResponse, readNameJson, SEARCH_LIMIT, SEARCH_MIN_LENGTH } from './santa-name-security.js';
 
-export function createSantaNamesHandler(library = santaNameLibrary) {
+export function createSantaNamesHandler(library = santaNameLibrary, {
+  limit = consumeNameAccess, token = issueNameToken,
+} = {}) {
   return async (req, res) => {
-    res.setHeader('Cache-Control', 'no-store');
-    res.setHeader('X-Content-Type-Options', 'nosniff');
+    privateResponse(res);
     const send = (status, data) => {
       res.writeHead(status, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(data));
     };
-    if (req.method !== 'GET') {
-      res.setHeader('Allow', 'GET');
-      return send(405, { error: 'Use the name search to find a recording.' });
-    }
     const url = new URL(req.url, 'http://server');
-    try { decodeURIComponent(url.search.replace(/\+/g, ' ')); }
-    catch { return send(400, { error: 'The name search contains malformed UTF-8 or URL encoding.' }); }
-    // The workshop filters this public inventory in the browser. Recipient
-    // searches never need to appear in request URLs or server logs.
-    if (url.searchParams.get('inventory') === 'hosted') {
-      try {
-        const hosted = await library.catalogue();
-        const counts = new Map();
-        for (const record of hosted) counts.set(record.name, (counts.get(record.name) || 0) + 1);
-        return send(200, {
-          records: hosted.map(({ id, name, file }) => ({
-            id, name, previewUrl: `${NAMES_ROOT}${encodeURIComponent(file)}`,
-            ...(counts.get(name) > 1 ? { variant: file } : {}),
-          })).sort((a, b) => a.name.localeCompare(b.name, 'en-GB')),
-          hostedCount: hosted.length, warning: null,
-        });
-      } catch {
-        return send(503, { error: 'The hosted name list is unavailable. Please try again shortly.' });
-      }
+    // No public bulk mode, including alternate values/empty flags/extra params.
+    if ([...url.searchParams.keys()].length) return send(403, { error: 'Bulk inventory and URL-based name searches are not public.' });
+    if (req.method !== 'POST') {
+      res.setHeader('Allow', 'POST');
+      return send(405, { error: 'Enter at least two letters to search for a recording.' });
     }
-    const query = url.searchParams.get('q') || '';
-    if ([...query].length > 80 || /[\u0000-\u001f\u007f]/.test(query)) return send(400, { error: 'Please enter a first name.' });
-    try { send(200, await library.search(query)); }
-    catch { send(503, { error: 'The name list could not be loaded. Please try again.' }); }
+    try {
+      await limit(req, 'search');
+      const data = await readNameJson(req);
+      const query = typeof data.query === 'string' ? data.query.normalize('NFKC').trim() : '';
+      if (Object.keys(data).some(key => key !== 'query') || [...query].length < SEARCH_MIN_LENGTH ||
+          [...query].length > 80 || !/^[\p{L}\p{M}][\p{L}\p{M} '’\-]*$/u.test(query)) {
+        return send(400, { error: 'Enter at least two letters of a first name, without wildcards.' });
+      }
+      const result = await library.search(query);
+      // Explicit projection: never return audio locations, filenames, aliases or counts.
+      const records = result.records.slice(0, SEARCH_LIMIT).map(({ id, name, downloadName, variant }, index) => ({
+        id, name, downloadName, ...(variant ? { variant: `Recording ${index + 1}` } : {}),
+        selectionToken: token(id, 'message'),
+        previewUrl: `/api/santa-name-preview?token=${encodeURIComponent(token(id, 'preview'))}`,
+      }));
+      return send(200, { records, warning: result.warning || null });
+    } catch (error) {
+      if (error.retryAfter) res.setHeader('Retry-After', String(error.retryAfter));
+      return send(error.status || 503, { error: error.status ? error.message : 'The name search is temporarily unavailable. Please try again.' });
+    }
   };
 }
-
 export default createSantaNamesHandler();

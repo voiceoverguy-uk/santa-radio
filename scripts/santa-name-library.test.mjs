@@ -239,8 +239,14 @@ test('a stalled upstream request is aborted rather than returning an empty inven
   await rejected;
 });
 
-test('PHP and renameable TXT downloads are identical standalone source', async () => {
-  const source = await readFile('public/downloads/names-index.php', 'utf8');
-  assert.equal(await readFile('public/downloads/names-index.php.txt', 'utf8'), source);
+test('public index installers are removed and the replacement gateway fails closed', async () => {
+  for (const path of ['public/downloads/names-index.php', 'public/downloads/names-index.php.txt',
+    'public/downloads/hosted-names-verification.txt']) {
+    await assert.rejects(readFile(path), { code: 'ENOENT' });
+  }
+  const source = await readFile('server/deployment-assets/private-names.php', 'utf8');
   assert.doesNotMatch(source, /(?:require|include)\s*[\('"]/);
+  assert.match(source, /hash_equals/);
+  assert.match(source, /deny_name_access\(403\)/);
+  assert.match(source, /SANTA_LIBRARY_PRIVATE_DIRECTORY/);
 });

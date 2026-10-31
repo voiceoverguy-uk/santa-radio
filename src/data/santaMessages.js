@@ -1,5 +1,6 @@
 // This catalogue describes source recordings, never completed messages.
-export const santaMessageDownloadName = name => `santa-recorded-message-for-${name}.mp3`;
+import { santaMessageDownloadName } from '../lib/santaMessageDownloadName.js';
+export { santaMessageDownloadName };
 export const santaNames = ['Arabella', 'Callie', 'Charlotte', 'Darren', 'Ed', 'Erin', 'Freya', 'Harry', 'Jack', 'Jess', 'Jessica', 'Layla', 'Olivia'];
 const messages = new Map(santaNames.map(name => [name.toLowerCase(), {
   id: name.toLowerCase(), name, downloadName: santaMessageDownloadName(name),
