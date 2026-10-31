@@ -5,6 +5,8 @@ import { CONSENT_KEY, SETTINGS_EVENT } from '../src/privacy/cookieConsent.js';
 import { MESSAGE_ACCESS_KEY } from '../src/lib/santaMessageAccess.js';
 
 const OFFER_KEY = 'santa-message-offer-shown';
+const LAST_SHOWN_KEY = 'santa-message-offer-last-shown';
+const COOLDOWN_MS = 48 * 60 * 60 * 1000;
 const offer = page => page.getByRole('dialog', { name: 'A FREE personal message from Santa' });
 
 async function consent(page) {
@@ -46,10 +48,107 @@ test('sixteen seconds survives internal navigation; dismissal survives refresh a
   await fillAccessForm(page);
   await offer(page).getByRole('button', { name: 'Maybe later' }).click();
   expect(await page.evaluate(key => sessionStorage.getItem(key), OFFER_KEY)).toBe('shown');
+  expect(Number(await page.evaluate(key => localStorage.getItem(key), LAST_SHOWN_KEY))).toBeGreaterThan(0);
   await page.reload();
   await advance(page, 20000);
   await expect(offer(page)).toHaveCount(0);
   expect(await page.evaluate(() => JSON.stringify(sessionStorage))).not.toContain(adult.EMAIL);
+});
+
+test('closing with × or Escape keeps the same 48-hour cooldown', async ({ page }) => {
+  await openOffer(page);
+  const firstShown = await page.evaluate(key => localStorage.getItem(key), LAST_SHOWN_KEY);
+  await offer(page).getByRole('button', { name: 'Close Santa message offer' }).click();
+  expect(await page.evaluate(key => localStorage.getItem(key), LAST_SHOWN_KEY)).toBe(firstShown);
+  await page.reload();
+  await advance(page, 20000);
+  await expect(offer(page)).toHaveCount(0);
+
+  // A separate tab in this browser context starts with the same origin storage.
+  const second = await page.context().newPage();
+  await second.route('**/api/radio-metadata*', route => route.fulfill({ json: { available: false, current: null, upcoming: [] } }));
+  await second.clock.install();
+  await second.goto('/apps');
+  await expect(second.locator('.navbar')).toBeVisible();
+  await advance(second);
+  await expect(offer(second)).toHaveCount(0);
+  await second.goto('/free-santa-message');
+  await expect(second.getByRole('heading', { name: 'Free Personalised Santa Message' })).toBeVisible();
+  await expect(second.locator('.santa-message-access')).toBeVisible();
+  await expect(offer(second)).toHaveCount(0);
+  await second.close();
+});
+
+test('Escape dismissal does not shorten the cooldown', async ({ page }) => {
+  await openOffer(page);
+  const firstShown = await page.evaluate(key => localStorage.getItem(key), LAST_SHOWN_KEY);
+  await page.keyboard.press('Escape');
+  await expect(offer(page)).toHaveCount(0);
+  expect(await page.evaluate(key => localStorage.getItem(key), LAST_SHOWN_KEY)).toBe(firstShown);
+  await page.reload();
+  await advance(page, 20000);
+  await expect(offer(page)).toHaveCount(0);
+});
+
+test('an offer shown in another already-open tab suppresses the current visit', async ({ page }) => {
+  await start(page);
+  const otherTab = await page.context().newPage();
+  await otherTab.route('**/api/radio-metadata*', route => route.fulfill({ json: { available: false, current: null, upcoming: [] } }));
+  await otherTab.clock.install();
+  await otherTab.goto('/apps');
+  await expect(otherTab.locator('.navbar')).toBeVisible();
+
+  await advance(page);
+  await advance(page, 400);
+  await expect.poll(async () => (await offer(page).count()) + (await offer(otherTab).count())).toBe(1);
+  await advance(otherTab, 20000);
+  await expect.poll(async () => (await offer(page).count()) + (await offer(otherTab).count())).toBe(1);
+  await otherTab.close();
+});
+
+test('the offer stays suppressed just before expiry and can appear once eligible at expiry', async ({ page }) => {
+  await page.addInitScript(key => {
+    localStorage.setItem(key, String(Date.now() - (48 * 60 * 60 * 1000) + 30000));
+  }, LAST_SHOWN_KEY);
+  await start(page);
+  await advance(page, 16200);
+  await expect(offer(page)).toHaveCount(0);
+  await advance(page, 15000);
+  await expect(offer(page)).toBeVisible();
+});
+
+test('an expired legacy session marker cannot suppress the offer indefinitely', async ({ page }) => {
+  await page.addInitScript(key => sessionStorage.setItem(key, 'shown'), OFFER_KEY);
+  await start(page);
+  await advance(page, 20000);
+  await expect(offer(page)).toHaveCount(0);
+  const migratedTime = Number(await page.evaluate(key => localStorage.getItem(key), LAST_SHOWN_KEY));
+  expect(migratedTime).toBeGreaterThan(0);
+
+  await page.evaluate(key => localStorage.setItem(key, String(Date.now() - 48 * 60 * 60 * 1000 - 1)), LAST_SHOWN_KEY);
+  await page.reload();
+  await advance(page);
+  await expect(offer(page)).toBeVisible();
+});
+
+test('malformed cooldown data is ignored and replaced after the offer appears', async ({ page }) => {
+  await page.addInitScript(key => localStorage.setItem(key, 'not-a-timestamp'), LAST_SHOWN_KEY);
+  await openOffer(page);
+  expect(Number(await page.evaluate(key => localStorage.getItem(key), LAST_SHOWN_KEY))).toBeGreaterThan(0);
+});
+
+test('a storage snapshot preserves the cooldown in a fresh browser context', async ({ page, browser }) => {
+  await openOffer(page);
+  const state = await page.context().storageState();
+  const restartedContext = await browser.newContext({ storageState: state });
+  const restarted = await restartedContext.newPage();
+  await restarted.route('**/api/radio-metadata*', route => route.fulfill({ json: { available: false, current: null, upcoming: [] } }));
+  await restarted.clock.install();
+  await restarted.goto('/apps');
+  await expect(restarted.locator('.navbar')).toBeVisible();
+  await advance(restarted, 20000);
+  await expect(offer(restarted)).toHaveCount(0);
+  await restartedContext.close();
 });
 
 test('hidden time is not browsing time', async ({ page }) => {
@@ -153,8 +252,8 @@ test('storage failure keeps dismissal suppressed for mounted navigation', async 
   await page.addInitScript(() => {
     const get = Storage.prototype.getItem;
     const set = Storage.prototype.setItem;
-    Storage.prototype.getItem = function(key) { if (key === 'santa-message-offer-shown') throw new Error('blocked'); return get.call(this, key); };
-    Storage.prototype.setItem = function(key, value) { if (key === 'santa-message-offer-shown') throw new Error('blocked'); return set.call(this, key, value); };
+    Storage.prototype.getItem = function(key) { if (key.startsWith('santa-message-offer-')) throw new Error('blocked'); return get.call(this, key); };
+    Storage.prototype.setItem = function(key, value) { if (key.startsWith('santa-message-offer-')) throw new Error('blocked'); return set.call(this, key, value); };
   });
   await openOffer(page);
   await page.keyboard.press('Escape');
@@ -162,6 +261,34 @@ test('storage failure keeps dismissal suppressed for mounted navigation', async 
   await advance(page, 20000);
   await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
   await expect(offer(page)).toHaveCount(0);
+});
+
+test('storage failure still shares the shown offer with another open tab', async ({ page }) => {
+  await page.context().addInitScript(() => {
+    const get = Storage.prototype.getItem;
+    const set = Storage.prototype.setItem;
+    Storage.prototype.getItem = function(key) {
+      if (key.startsWith('santa-message-offer-')) throw new Error('blocked');
+      return get.call(this, key);
+    };
+    Storage.prototype.setItem = function(key, value) {
+      if (key.startsWith('santa-message-offer-')) throw new Error('blocked');
+      return set.call(this, key, value);
+    };
+  });
+  await start(page);
+  const otherTab = await page.context().newPage();
+  await otherTab.route('**/api/radio-metadata*', route => route.fulfill({ json: { available: false, current: null, upcoming: [] } }));
+  await otherTab.clock.install();
+  await otherTab.goto('/apps');
+  await expect(otherTab.locator('.navbar')).toBeVisible();
+
+  await advance(page);
+  await advance(page, 400);
+  await expect.poll(async () => (await offer(page).count()) + (await offer(otherTab).count())).toBe(1);
+  await advance(otherTab, 20000);
+  await expect.poll(async () => (await offer(page).count()) + (await offer(otherTab).count())).toBe(1);
+  await otherTab.close();
 });
 
 test('keyboard is contained, background inert, Escape restores focus and privacy navigation is free', async ({ page }) => {
@@ -178,7 +305,10 @@ test('keyboard is contained, background inert, Escape restores focus and privacy
   expect(await page.locator('.santa-offer').evaluate(el => el.matches(':modal'))).toBe(true);
   await page.keyboard.press('Escape');
   await expect(opener).toBeFocused();
-  await page.evaluate(key => sessionStorage.removeItem(key), OFFER_KEY);
+  await page.evaluate(keys => {
+    sessionStorage.removeItem(keys.session);
+    localStorage.removeItem(keys.lastShown);
+  }, { session: OFFER_KEY, lastShown: LAST_SHOWN_KEY });
   await page.reload();
   await advance(page);
   await offer(page).getByRole('link', { name: 'privacy policy' }).click();

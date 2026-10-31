@@ -8,8 +8,25 @@ import SantaOfferHolly from './SantaOfferHolly.jsx';
 import './SantaMessageOffer.css';
 
 export const OFFER_SESSION_KEY = 'santa-message-offer-shown';
+export const OFFER_LAST_SHOWN_KEY = 'santa-message-offer-last-shown';
+const OFFER_CHANNEL_NAME = 'santa-message-offer';
 const DELAY_MS = 16000;
+const COOLDOWN_MS = 48 * 60 * 60 * 1000;
 const excluded = pathname => /^\/(?:preview\/hero-name-checker|request-names|sign-in|sign-up|privacy-policy|free-santa-message|santa-message-workshop)(?:\/|$)/i.test(pathname);
+
+function readLastShown() {
+  try {
+    const value = localStorage.getItem(OFFER_LAST_SHOWN_KEY);
+    if (value === null) return null;
+    const timestamp = Number(value);
+    return Number.isFinite(timestamp) && timestamp >= 0 && timestamp <= Date.now() ? timestamp : null;
+  } catch { return null; }
+}
+
+function isCoolingDown(now = Date.now()) {
+  const lastShown = readLastShown();
+  return lastShown !== null && now - lastShown < COOLDOWN_MS;
+}
 
 function visible(element) {
   return element.getClientRects().length > 0 && getComputedStyle(element).visibility !== 'hidden';
@@ -111,12 +128,65 @@ export default function SantaMessageOffer() {
   const { ready, choice, settingsOpen, storageWarning } = useCookieConsent();
   const elapsed = useRef(0);
   const shown = useRef(false);
+  const attempting = useRef(false);
+  const offerChannel = useRef(null);
   const usedForms = useRef(new WeakSet());
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    try { shown.current ||= sessionStorage.getItem(OFFER_SESSION_KEY) === 'shown'; }
-    catch { /* The ref still suppresses repeat offers for this mounted visit. */ }
+    let legacyShown = false;
+    try { legacyShown = sessionStorage.getItem(OFFER_SESSION_KEY) === 'shown'; }
+    catch { /* The current mounted visit remains protected by the in-memory ref. */ }
+    if (!legacyShown) return;
+
+    if (readLastShown() !== null) {
+      // A persisted timestamp takes precedence over the old tab-only marker.
+      // Clear it whether active or expired so the legacy value cannot reset it.
+      try { sessionStorage.removeItem(OFFER_SESSION_KEY); } catch { /* Ignore unavailable session storage. */ }
+      return;
+    }
+
+    // Migrate a marker from a previously loaded version into a finite cooldown.
+    // The old marker proves the offer was shown, but contains no display time.
+    const timestamp = String(Date.now());
+    try {
+      localStorage.setItem(OFFER_LAST_SHOWN_KEY, timestamp);
+      if (localStorage.getItem(OFFER_LAST_SHOWN_KEY) === timestamp) {
+        shown.current = true;
+        return;
+      }
+    } catch { /* Fall back to suppressing this mounted visit only. */ }
+    shown.current = true;
+  }, []);
+
+  useEffect(() => {
+    const syncShownInAnotherTab = event => {
+      if (event.key !== OFFER_LAST_SHOWN_KEY || !isCoolingDown()) return;
+      // Another tab displayed the offer. Do not duplicate it in this visit.
+      shown.current = true;
+      attempting.current = false;
+      setOpen(false);
+    };
+    window.addEventListener('storage', syncShownInAnotherTab);
+    return () => window.removeEventListener('storage', syncShownInAnotherTab);
+  }, []);
+
+  useEffect(() => {
+    let channel;
+    try {
+      channel = new BroadcastChannel(OFFER_CHANNEL_NAME);
+      offerChannel.current = channel;
+      channel.onmessage = event => {
+        if (event.data?.type !== 'shown') return;
+        shown.current = true;
+        attempting.current = false;
+        setOpen(false);
+      };
+    } catch { /* Storage events remain the persistent cross-tab fallback. */ }
+    return () => {
+      offerChannel.current = null;
+      channel?.close();
+    };
   }, []);
 
   useEffect(() => {
@@ -135,25 +205,57 @@ export default function SantaMessageOffer() {
 
   useEffect(() => {
     if (hasAccess || excluded(pathname) || settingsOpen || !choice || storageWarning) setOpen(false);
-    if (shown.current || hasAccess || excluded(pathname)) return;
     let last = Date.now();
     let wasVisible = document.visibilityState === 'visible';
+    let stopped = false;
+    const eligible = () => !stopped && !shown.current && !hasAccess && !excluded(pathname) &&
+      ready && typeof choice?.analytics === 'boolean' && !settingsOpen && !storageWarning &&
+      document.visibilityState === 'visible' && elapsed.current >= DELAY_MS && !pageBusy(usedForms.current);
+    const displayOffer = () => {
+      if (!eligible() || isCoolingDown()) return;
+      const timestamp = String(Date.now());
+      try {
+        localStorage.setItem(OFFER_LAST_SHOWN_KEY, timestamp);
+        // A read-back catches silently discarded writes. Storage events notify
+        // other tabs before the dialog is made visible.
+        if (localStorage.getItem(OFFER_LAST_SHOWN_KEY) !== timestamp && isCoolingDown()) return;
+      } catch { /* In-memory suppression still prevents repeats in this visit. */ }
+      try { sessionStorage.setItem(OFFER_SESSION_KEY, 'shown'); } catch { /* Keep the durable cooldown when possible. */ }
+      shown.current = true;
+      setOpen(true);
+      try { offerChannel.current?.postMessage({ type: 'shown' }); } catch { /* Keep the local suppression. */ }
+      clearInterval(timer);
+    };
     const tick = () => {
-      if (shown.current) return;
+      if (stopped || shown.current) return;
       const now = Date.now();
       if (wasVisible) elapsed.current += now - last;
       last = now;
       wasVisible = document.visibilityState === 'visible';
-      if (!wasVisible || elapsed.current < DELAY_MS || !ready ||
-          typeof choice?.analytics !== 'boolean' || settingsOpen || storageWarning || pageBusy(usedForms.current)) return;
-      shown.current = true;
-      try { sessionStorage.setItem(OFFER_SESSION_KEY, 'shown'); } catch { /* In-memory suppression remains. */ }
-      setOpen(true);
-      clearInterval(timer);
+      if (!eligible() || attempting.current || isCoolingDown()) return;
+      attempting.current = true;
+
+      // Web Locks serialize the read/check/write/display sequence across tabs
+      // where available. The synchronous storage recheck remains the fallback.
+      const show = () => {
+        try {
+          if (!eligible() || isCoolingDown()) return;
+          displayOffer();
+        } finally {
+          attempting.current = false;
+        }
+      };
+      if (navigator.locks?.request) {
+        navigator.locks.request('santa-message-offer', { mode: 'exclusive', ifAvailable: true }, lock => {
+          if (lock) show();
+          else attempting.current = false;
+        }).catch(() => show());
+      } else show();
     };
     const timer = setInterval(tick, 200);
     document.addEventListener('visibilitychange', tick);
     return () => {
+      stopped = true;
       clearInterval(timer);
       document.removeEventListener('visibilitychange', tick);
       if (wasVisible) elapsed.current += Date.now() - last;
