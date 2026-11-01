@@ -32,6 +32,21 @@ test('nested dependencies cannot hide a nonportable source', () => {
     resolved: 'http://package-firewall.replit.internal/npm/qs/-/qs-6.17.1.tgz' };
   assert.ok(inspectLock(nested).errors.some(error => error.includes('express/node_modules/qs')));
 });
+test('v2 compatibility graph cannot hide the reported failure behind clean packages entries', () => {
+  for (const name of ['vite', 'express', 'body-parser', 'qs']) {
+    const legacy = lock();
+    legacy.lockfileVersion = 2;
+    legacy.dependencies = { [name]: { ...entry,
+      resolved: `http://package-firewall.replit.internal/npm/${name}/-/${name}-${entry.version}.tgz` } };
+    assert.ok(inspectLock(legacy).errors.some(error => error.includes(`dependencies.${name}`)));
+    legacy.dependencies = { parent: { ...entry, dependencies: legacy.dependencies } };
+    assert.ok(inspectLock(legacy).errors.some(error => error.includes(`dependencies.parent.dependencies.${name}`)));
+  }
+  const portable = lock();
+  portable.dependencies = { vite: { ...entry } };
+  assert.deepEqual(inspectLock(portable).errors, []);
+  assert.deepEqual(inspectLock(lock()).errors, []); // v3 has no compatibility graph.
+});
 test('project registries, overrides, scripts and secondary Python lockfiles are inspected', async () => {
   assert.ok(inspectManifest({ overrides: { qs: 'http://package-firewall.replit.internal/npm/qs.tgz' } }).length);
   assert.ok(inspectManifest({ dependencies: { vite: 'file:vendor/vite' } }).length);
@@ -47,6 +62,14 @@ test('project registries, overrides, scripts and secondary Python lockfiles are 
       assert.ok(result.errors.some(error => error.startsWith(file)));
     }
   } finally { await rm(root, { recursive: true, force: true }); }
+});
+test('configuration rejects private hosts, literal IPs and insecure registry URLs', () => {
+  for (const host of ['package-firewall.replit.internal', 'localhost', 'registry.local',
+    '10.0.0.1', '172.16.1.1', '192.168.1.1', '169.254.169.254',
+    '[::1]', '[fd12:3456::1]', '[::ffff:192.168.1.1]']) {
+    assert.ok(inspectManifest({ scripts: { install: `fetch https://${host}/package.tgz` } }).length, host);
+  }
+  assert.ok(inspectManifest({ dependencies: { vite: 'http://registry.npmjs.org/vite/-/vite-6.4.5.tgz' } }).length);
 });
 test('real project passes, and Vercel checks sources before exact npm ci installation', async () => {
   assert.deepEqual((await inspectProject()).errors, []);

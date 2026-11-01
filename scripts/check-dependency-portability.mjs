@@ -1,6 +1,7 @@
 import { readFile, readdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { isIP } from 'node:net';
 
 // This project installs public npm packages, not workspace/file dependencies.
 // Do not rewrite sources automatically: review the exact public package and
@@ -8,7 +9,7 @@ import { pathToFileURL } from 'node:url';
 const urls = text => text.match(/https?:\/\/[^\s"'<>\\)]+/g) || [];
 function privateHost(host) {
   host = host.toLowerCase().replace(/^\[|\]$/g, '');
-  return host === 'localhost' || !host.includes('.') || host.endsWith('.localhost') ||
+  return isIP(host) !== 0 || host === 'localhost' || !host.includes('.') || host.endsWith('.localhost') ||
     host.endsWith('.internal') || host.endsWith('.local') || host.endsWith('.replit.dev') ||
     host === '::1' || /^(?:fc|fd|fe80):/i.test(host) ||
     /^(?:0|10|127)\./.test(host) || /^169\.254\./.test(host) ||
@@ -32,9 +33,7 @@ export function inspectLock(lock, label = 'package-lock.json') {
     return { count: 0, errors: [`${label}: expected npm packages lock structure`] };
   }
   let count = 0;
-  for (const [path, entry] of Object.entries(lock.packages)) {
-    if (!path) continue;
-    count++;
+  function checkEntry(path, entry) {
     try {
       const url = new URL(entry.resolved);
       if (url.protocol !== 'https:' || url.hostname !== 'registry.npmjs.org' ||
@@ -49,6 +48,21 @@ export function inspectLock(lock, label = 'package-lock.json') {
       errors.push(`${label}: ${path} is missing valid npm integrity verification`);
     }
   }
+  for (const [path, entry] of Object.entries(lock.packages)) {
+    if (!path) continue;
+    count++;
+    checkEntry(path, entry);
+  }
+  // npm lockfile v2 also carries a v1 compatibility graph. npm can consult
+  // these URLs too; checking only packages misses stale internal sources.
+  function checkLegacy(dependencies, prefix = 'dependencies') {
+    for (const [name, entry] of Object.entries(dependencies || {})) {
+      const path = `${prefix}.${name}`;
+      checkEntry(path, entry);
+      checkLegacy(entry.dependencies, `${path}.dependencies`);
+    }
+  }
+  checkLegacy(lock.dependencies);
   return { count, errors };
 }
 export function inspectManifest(manifest) {
@@ -95,7 +109,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
   try {
     const result = await inspectProject();
     if (result.errors.length) {
-      console.error('Dependency portability check failed:\n' + result.errors.map(error => `- ${error}`).join('\n'));
+      console.error('Dependency portability check failed:\n' + result.errors.map(error => `- ${error}`).join('\n') +
+        '\nVerify the exact public tarball against the locked integrity before repairing URLs; do not change versions or bypass package security.');
       process.exitCode = 1;
     } else {
       console.log(`Dependency portability passed: ${result.count} locked npm packages; project package settings checked.`);

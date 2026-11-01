@@ -21,3 +21,13 @@ and production builds. Verify both public registry metadata and downloaded
 tarball SRI against the existing lock, not merely HTTP availability. A fresh
 installation needs an empty cache and no existing node_modules; an isolated
 public-registry test must not rewrite the workspace's managed security settings.
+
+Check every lockfile representation, not just the modern packages graph.
+
+**Why:** npm lockfile v2 can retain internal tarball sources in its legacy
+compatibility graph even when the main graph is fully public; an earlier
+portability check falsely passed by inspecting only the main graph.
+
+**How to apply:** Validate legacy nested dependencies whenever that graph is
+present, and include a regression where the main graph is clean but the
+compatibility graph contains the internal source.
