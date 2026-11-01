@@ -58,7 +58,7 @@
   max-width: 100%;
   margin: 0;
   color: var(--hero-preview-muted);
-  font-size: clamp(.8rem, .9vw, .88rem);
+  font-size: .94rem;
   line-height: 1.52;
 }
 
@@ -345,14 +345,14 @@
 .hero-name-preview .hero-note {
   margin: 12px 0 0;
   color: #d0d7c9;
-  font-size: .63rem;
+  font-size: clamp(.7rem, .85vw, .8rem);
   letter-spacing: .04em;
   line-height: 1.55;
 }
 
 .hero-name-preview .hero-countdown {
-  width: min(100%, var(--hero-listening-width));
-  max-width: 356px;
+  width: 100%;
+  max-width: none;
   margin-top: 15px;
 }
 
@@ -361,20 +361,20 @@
 }
 
 .hero-name-preview .hero-countdown .countdown-unit {
-  min-height: 55px;
-  padding: 7px 4px;
+  min-height: 64px;
+  padding: 9px 4px;
   border-color: #d4af3740;
   border-radius: 7px;
   background: #17392dcc;
 }
 
 .hero-name-preview .hero-countdown .countdown-unit strong {
-  font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+  font-size: clamp(1.2rem, 1.8vw, 1.5rem);
 }
 
 .hero-name-preview .hero-countdown .countdown-unit span {
   margin-top: 3px;
-  font-size: .45rem;
+  font-size: .54rem;
 }
 
 .hero-name-preview__artwork-slot {
@@ -565,6 +565,10 @@
     padding-top: 0;
   }
 
+  .hero-name-preview__left-stack .hero-name-preview__listening {
+    width: 100%;
+  }
+
 }
 
 @media (min-width: 768px) {
@@ -734,7 +738,7 @@
 
   .hero-name-preview .hero-description {
     max-width: 38ch;
-    font-size: .91rem;
+    font-size: .76rem;
     line-height: 1.62;
   }
 
@@ -783,9 +787,10 @@
   }
 
   .hero-name-preview .hero-note {
-    max-width: 38ch;
+    max-width: 100%;
     margin-top: 8px;
-    font-size: .58rem;
+    font-size: .7rem;
+    white-space: normal;
   }
 
   .hero-name-preview .hero-countdown {

@@ -42,4 +42,10 @@ The desktop left block should align with the owner's annotated guide, approximat
 
 **Why:** The owner requested moving the heading, strapline, description, listening controls, station note and countdown together, while preserving the right-hand card and smaller-screen ordering.
 
-**How to apply:** Preserve widths and vertical geometry. Keep artwork readable with only the clearance adjustment needed to avoid the inset block; do not shift the entire grid.
+**How to apply:** Preserve the inset and checker alignment; do not shift the entire grid. Subsequent approval permits the longer description and enlarged countdown/station note described below.
+
+The red rectangle in the owner's enlarged left-hero screenshot is an alignment guide for the left content column, not the right-hand name checker and not a visible border. Countdown tiles should fill that column, while the station note approximately fills its width on desktop and can wrap on narrow screens. Keep the listening button's existing size.
+
+**Why:** The owner requested larger tiles and station text to reach the guide, not larger gaps, a checker resize or a hero redesign.
+
+**How to apply:** Keep the shared left alignment and artwork clearance; match description sizing to the existing checker instruction at each breakpoint without changing checker typography or mobile ordering.

@@ -14,6 +14,84 @@ const checker = page => page.locator('.hero-name-checker');
 const input = page => checker(page).getByRole('combobox');
 const cta = page => checker(page).getByRole('button', { name: 'Create my free Santa message →' });
 
+for (const route of ['/', path]) {
+  test(`shared hero copy, responsive font match and expanded countdown on ${route}`, async ({ page }) => {
+    await setup(page);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.clock.setFixedTime(new Date('2026-11-01T12:00:00Z'));
+    await page.addInitScript(() => sessionStorage.setItem('santa-message-offer-shown', 'shown'));
+    await page.goto(route);
+    const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+    if (await decline.isVisible()) await decline.click();
+    await page.evaluate(() => document.fonts.ready);
+    await expect(page.locator('.hero-description')).toHaveText(
+      'Your Christmas radio station all year round 24/7 along with festive treats, amazing free apps, games and FREE personalised messages from Santa.');
+    await expect(checker(page).getByRole('status')).toHaveText('Check the child’s name, then let Santa create magic.');
+    await expect(page.locator('.hero-note')).toHaveText('The World’s Best Christmas Radio Station · All year round');
+    for (const width of [320, 390, 767, 768, 1024, 1090, 1091, 1440, 1740, 1920]) {
+      await page.setViewportSize({ width, height: 1000 });
+      for (const playing of [false, true]) {
+        if (playing) await page.locator('.hero-actions').getByRole('button', { name: 'Listen Live', exact: true }).click();
+        const layout = await page.locator('.hero').evaluate(hero => {
+          const rect = node => node.getBoundingClientRect().toJSON();
+          const get = selector => hero.querySelector(selector);
+          const text = selector => {
+            const node = get(selector), range = document.createRange();
+            range.selectNodeContents(node);
+            return { box: rect(node), font: getComputedStyle(node).fontSize,
+              lines: [...range.getClientRects()].map(r => r.toJSON()) };
+          };
+          return {
+            hero: rect(hero), description: text('.hero-description'), note: text('.hero-note'),
+            statusFont: getComputedStyle(get('.hero-name-checker__status')).fontSize,
+            stack: rect(get('.hero-name-preview__left-stack')),
+            countdown: rect(get('.hero-countdown')), tiles: [...hero.querySelectorAll('.countdown-unit')].map(rect),
+            neighbours: ['.hero-actions', '.hero-countdown', '.hero-name-preview__checker', '.hero .now-playing-artwork']
+              .map(get).filter(Boolean).map(rect),
+            pageWidth: document.documentElement.scrollWidth,
+          };
+        });
+        expect(layout.description.font).toBe(layout.statusFont);
+        // The checker itself has not been resized to achieve the match.
+        expect(layout.statusFont).toBe(width < 768 ? '12.16px' : '15.04px');
+        expect(layout.pageWidth).toBeLessThanOrEqual(width);
+        for (const text of [layout.description, layout.note]) {
+          expect(text.lines.length).toBeGreaterThan(0);
+          for (const line of text.lines) {
+            expect(line.left).toBeGreaterThanOrEqual(text.box.left - .5);
+            expect(line.right).toBeLessThanOrEqual(text.box.right + .5);
+            expect(line.top).toBeGreaterThanOrEqual(text.box.top - .5);
+            expect(line.bottom).toBeLessThanOrEqual(text.box.bottom + .5);
+          }
+          expect(text.box.bottom).toBeLessThanOrEqual(layout.hero.bottom);
+          for (const box of layout.neighbours) {
+            expect(text.box.right <= box.left + .5 || text.box.left >= box.right - .5 ||
+              text.box.bottom <= box.top + .5 || text.box.top >= box.bottom - .5).toBe(true);
+          }
+        }
+        expect(layout.tiles).toHaveLength(4);
+        if (width >= 1091) {
+          expect(layout.countdown.left).toBeCloseTo(layout.stack.left, 1);
+          expect(layout.countdown.right).toBeCloseTo(layout.stack.right, 1);
+          expect(layout.tiles[0].left).toBeCloseTo(layout.stack.left, 1);
+          expect(layout.tiles[3].right).toBeCloseTo(layout.stack.right, 1);
+          for (const tile of layout.tiles) expect(tile.height).toBeGreaterThanOrEqual(64);
+        }
+        if (width >= 1440) {
+          expect(layout.note.lines).toHaveLength(1);
+          expect(layout.note.lines[0].width / layout.stack.width).toBeGreaterThan(.9);
+          for (const tile of layout.tiles) expect(tile.width).toBeGreaterThan(85);
+        }
+        if (width === 320) expect(layout.note.lines.length).toBeGreaterThan(1);
+        if (playing) await page.locator('.hero-actions').getByRole('button', { name: /Pause/ }).click();
+      }
+    }
+    await page.clock.setFixedTime(new Date('2026-12-25T12:00:00Z'));
+    await expect(page.locator('.hero-countdown .christmas-greeting')).toHaveText('Merry Christmas from Santa Radio!');
+    await expect(page.locator('.hero-countdown .countdown')).toHaveCount(0);
+  });
+}
+
 async function setup(page, { realInventory = false, mediaFailure = false } = {}) {
   await page.addInitScript(({ mediaFailure }) => {
     window.__playCalls = 0;
@@ -58,18 +136,22 @@ for (const route of ['/', path]) {
     const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
     if (await decline.isVisible()) await decline.click();
     await page.evaluate(() => document.fonts.ready);
-    const measure = () => page.evaluate(() => {
-      const rect = selector => document.querySelector(selector).getBoundingClientRect().toJSON();
-      return {
-        moved: ['.hero-title', '.hero-name-preview__strapline', '.hero-description',
-          '.hero-actions', '.hero-note', '.hero-countdown'].map(rect),
-        fixed: ['.hero-layout', '.hero-name-preview__checker', '.navbar', '.hero-picture',
-          '#santa-messages'].map(rect),
-        artwork: rect('.hero-name-preview__artwork-slot'),
-        stack: rect('.hero-name-preview__left-stack'),
-        pageWidth: document.documentElement.scrollWidth,
-      };
-    });
+    const measure = async () => {
+      // Settle the checker ResizeObserver after viewport changes before reading.
+      await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+      return page.evaluate(() => {
+        const rect = selector => document.querySelector(selector).getBoundingClientRect().toJSON();
+        return {
+          moved: ['.hero-title', '.hero-name-preview__strapline', '.hero-description',
+            '.hero-actions', '.hero-note', '.hero-countdown'].map(rect),
+          fixed: ['.hero-layout', '.hero-name-preview__checker', '.navbar', '.hero-picture',
+            '#santa-messages'].map(rect),
+          artwork: rect('.hero-name-preview__artwork-slot'),
+          stack: rect('.hero-name-preview__left-stack'),
+          pageWidth: document.documentElement.scrollWidth,
+        };
+      });
+    };
     for (const width of [320, 390, 768, 1024, 1090, 1091, 1120, 1280, 1440, 1740, 1920]) {
       await page.setViewportSize({ width, height: 900 });
       for (const playing of [false, true]) {
@@ -228,7 +310,7 @@ for (const route of ['/', path]) {
       await page.evaluate(() => document.fonts.ready);
       const card = page.locator('.hero-name-preview__checker');
       await expect(checker(page).getByRole('heading', { level: 2 })).toHaveText('Can Santa say your child’s name?');
-      await expect(checker(page).getByRole('status')).toHaveText('Check your child’s name, then let Santa create a little magic.');
+      await expect(checker(page).getByRole('status')).toHaveText('Check the child’s name, then let Santa create magic.');
       const initial = await card.boundingBox();
       if (width >= 1091) {
         const baselineWidth = Math.max(300, Math.min(width * .243, 350));
@@ -341,7 +423,7 @@ for (const route of ['/', path]) {
       await expect(hero.locator('.hero-name-preview__eyebrow')).toHaveCount(0);
       await expect(hero.locator('.hero-name-preview__flag')).toHaveCount(route === path ? 1 : 0);
       const description = hero.locator('.hero-name-preview__description');
-      await expect(description).toHaveText('Your Christmas radio station all year round 24/7 along with festive treats and personalised messages from Santa.');
+      await expect(description).toHaveText('Your Christmas radio station all year round 24/7 along with festive treats, amazing free apps, games and FREE personalised messages from Santa.');
       if (route === path) await expect(hero.getByLabel('Preview only')).toBeVisible();
       for (const fontSize of ['100%', '200%']) {
         await page.evaluate(size => { document.documentElement.style.fontSize = size; }, fontSize);
@@ -754,7 +836,8 @@ for (const width of [1280, 768, 390, 320]) test(`layout and playback stay stable
     // The compact card sits beside the introduction, with its bottom aligned
     // to the countdown rather than stretched to a fixed height.
     expect(picture.x).toBeLessThan(width * .48);
-    expect(picture.y).toBeLessThan(description.y);
+    // The longer copy may start just above the compact, bottom-aligned cover.
+    expect(picture.y).toBeLessThan(description.y + description.height);
     const strapline = await page.locator('.hero-name-preview__strapline').boundingBox();
     expect(strapline.x + strapline.width).toBeLessThanOrEqual(before.x);
   }
@@ -855,7 +938,7 @@ test('preview stays non-indexable while the approved homepage hero omits the sto
   await expect(page.locator('.santa-dash-promo')).toHaveCount(1);
 });
 
-for (const width of [1440, 390]) test(`approved homepage handoff and matching radio/countdown widths at ${width}px`, async ({ page }) => {
+for (const width of [1440, 390]) test(`approved homepage handoff and left-aligned radio/countdown at ${width}px`, async ({ page }) => {
   await page.setViewportSize({ width, height: 1000 });
   await setup(page);
   let renders = 0;
@@ -869,7 +952,11 @@ for (const width of [1440, 390]) test(`approved homepage handoff and matching ra
   await page.evaluate(() => document.fonts.ready);
   const button = await page.locator('.hero-actions button').boundingBox();
   const countdown = await page.locator('.hero-countdown .countdown').boundingBox();
-  expect(Math.abs(button.width - countdown.width)).toBeLessThan(1);
+  expect(countdown.width).toBeGreaterThanOrEqual(button.width);
+  if (width >= 1091) {
+    const stack = await page.locator('.hero-name-preview__left-stack').boundingBox();
+    expect(countdown.width).toBeCloseTo(stack.width, 1);
+  }
   expect(Math.abs(button.x - countdown.x)).toBeLessThan(1);
   const heading = await page.locator('.hero-title').boundingBox();
   const description = await page.locator('.hero-description').boundingBox();

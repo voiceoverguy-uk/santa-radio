@@ -92,7 +92,7 @@ export default function HomeHero({ preview = false, onContinue }) {
         <div className="hero-name-preview__broadcast">
           <div className="hero-name-preview__left-stack">
             <p className="hero-description hero-name-preview__description">
-              Your Christmas radio station all year round 24/7 along with festive treats and personalised messages from Santa.
+              Your Christmas radio station all year round 24/7 along with festive treats, amazing free apps, games and FREE personalised messages from Santa.
             </p>
             <div className="hero-name-preview__listening">
               <div className="hero-name-preview__player-row">

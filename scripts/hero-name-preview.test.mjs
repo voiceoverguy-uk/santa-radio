@@ -10,7 +10,7 @@ import publicPage from '../api/public-page.js';
 
 const path = '/preview/hero-name-checker';
 
-test('built preview renders a complete noindex page without affecting the home hero', async () => {
+test('built preview remains noindex while sharing the approved homepage hero copy', async () => {
   const preview = render(path);
   assert.equal(preview.status, 200);
   assert.equal(preview.noindex, true);
@@ -30,9 +30,12 @@ test('built preview renders a complete noindex page without affecting the home h
   assert.equal(html, functionHtml);
   const home = render('/');
   assert.equal(home.status, 200);
-  assert.match(home.markup, /app-store-badge/);
-  assert.doesNotMatch(home.markup, /hero-name-checker/);
-  assert.match(home.markup, /FREE Santa Message/);
+  assert.match(home.markup, /hero-name-checker/);
+  for (const markup of [home.markup, preview.markup, html]) {
+    assert.match(markup, /Your Christmas radio station all year round 24\/7 along with festive treats, amazing free apps, games and FREE personalised messages from Santa\./);
+    assert.match(markup, /Check the child’s name, then let Santa create magic\./);
+  }
+  assert.doesNotMatch(home.markup, /Hero preview/);
 });
 
 test('Vercel document handler delivers the prerendered preview, not its 404 or homepage', async () => {
@@ -79,8 +82,11 @@ test('actual Node production delivery hydrates and supports phone lookup without
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   page.on('console', message => { if (message.type() === 'error' && /hydrat|React error/i.test(message.text())) errors.push(message.text()); });
-  await page.route('**/api/santa-names?*', route => route.fulfill({ json: {
-    records: [{ id: 'arabella', name: 'Arabella' }], hostedCount: 1, warning: null,
+  await page.route('**/api/santa-names', route => route.fulfill({ json: {
+    records: [{
+      id: 'arabella', name: 'Arabella', selectionToken: 'controlled-fixture-token',
+      previewUrl: '/api/santa-name-preview?token=controlled-fixture-token',
+    }], hostedCount: 1, warning: null,
   } }));
   await page.route(/sibforms\.com|youtube\.com|googlevideo\.com|global\.citrus3\.com/, route => route.abort());
   await page.goto(`${base}${path}`);
