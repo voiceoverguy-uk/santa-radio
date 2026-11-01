@@ -1,13 +1,21 @@
 import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
 import { buildCatalogue } from '../src/data/mugshot-catalogue.js';
+import { matchesMugshot, mugshotSuggestions } from '../src/data/mugshot-search.js';
 
 const { catalogue } = buildCatalogue(JSON.parse(fs.readFileSync('src/data/mugshots.json', 'utf8')));
 const approvedPaths = new Set(catalogue.filter(celeb => celeb.homepage === true).map(celeb => `/mugshots/${celeb.song}`));
 const allPaths = catalogue.map(celeb => `/mugshots/${celeb.song}`).sort();
 
-test('random gallery loads stable batches and supports alphabetical sorting and search', async ({ page }) => {
+test.beforeEach(async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.addInitScript(() => sessionStorage.setItem('santa-message-offer-shown', 'shown'));
   await page.goto('/mugshots/all');
+  const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+  if (await decline.isVisible()) await decline.click();
+});
+
+test('random gallery loads stable batches and supports alphabetical sorting and search', async ({ page }) => {
   const cards = page.locator('.mugshot-card');
   const random = page.getByRole('button', { name: 'Shuffle', exact: true });
   const alphabetical = page.getByRole('button', { name: 'A–Z', exact: true });
@@ -60,3 +68,66 @@ test('random gallery loads stable batches and supports alphabetical sorting and 
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
+
+for (const width of [390, 1440]) {
+  test(`filtered galleries keep selected names first across sorts and batches at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    const search = page.getByRole('combobox', { name: 'Find a famous face', exact: true });
+    const cards = page.locator('.mugshots-grid .mugshot-card');
+    const paths = () => cards.evaluateAll(nodes => nodes.map(node => node.getAttribute('href')));
+    const loadMore = page.getByRole('button', { name: /Load More/ });
+    const cataloguePaths = profiles => profiles.map(profile => `/mugshots/${profile.song}`);
+    const alphabetically = profiles => [...profiles].sort((a, b) =>
+      Number(b.homepage === true) - Number(a.homepage === true) ||
+      a.artist.localeCompare(b.artist, 'en', { sensitivity: 'base', numeric: true }));
+    const assertPriority = (visible, matches) => {
+      const selectedCount = matches.filter(profile => profile.homepage === true).length;
+      expect(visible.slice(0, selectedCount).every(path => approvedPaths.has(path))).toBe(true);
+      expect(visible.slice(selectedCount).every(path => !approvedPaths.has(path))).toBe(true);
+    };
+    const shuffledResults = new Map();
+    // Repeat Shuffle after A–Z to check that sorting preserves the original shuffle.
+    for (const order of ['Shuffle', 'A–Z', 'Shuffle']) {
+      await page.getByRole('button', { name: order, exact: true }).click();
+      for (const query of ['ry', 'actor']) {
+        await search.fill(query);
+        const talent = query === 'actor' ?
+          mugshotSuggestions(catalogue, query).find(option => option.type === 'talent' && option.label === 'Actor') : null;
+        if (talent) await page.getByRole('option', { name: `Talent ${talent.label}`, exact: true }).click();
+        const matches = catalogue.filter(profile => matchesMugshot(profile, query, talent));
+        await expect(cards).toHaveCount(Math.min(100, matches.length));
+        assertPriority(await paths(), matches);
+        while (await loadMore.count()) {
+          const previous = await paths();
+          await loadMore.click();
+          await expect(cards).toHaveCount(Math.min(previous.length + 100, matches.length));
+          expect((await paths()).slice(0, previous.length)).toEqual(previous);
+          assertPriority(await paths(), matches);
+        }
+        const complete = await paths();
+        expect([...complete].sort()).toEqual(cataloguePaths(matches).sort());
+        if (order === 'A–Z') {
+          expect(complete).toEqual(cataloguePaths(alphabetically(matches)));
+        } else if (shuffledResults.has(query)) {
+          expect(complete).toEqual(shuffledResults.get(query));
+        } else {
+          shuffledResults.set(query, complete);
+        }
+      }
+      await page.getByRole('button', { name: 'Clear search', exact: true }).click();
+      await expect(search).toHaveValue('');
+      await expect(search).toBeFocused();
+      await expect(cards).toHaveCount(Math.min(100, catalogue.length));
+      assertPriority(await paths(), catalogue);
+      if (order === 'A–Z') {
+        expect(await paths()).toEqual(cataloguePaths(alphabetically(catalogue)).slice(0, 100));
+      }
+    }
+    await search.fill('ry');
+    await search.press('ArrowDown');
+    await search.press('Enter');
+    await expect(cards).toHaveCount(1);
+    await expect(cards.first()).toHaveAttribute('href', `/mugshots/${mugshotSuggestions(catalogue, 'ry')[0].slug}`);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  });
+}

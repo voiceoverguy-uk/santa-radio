@@ -36,9 +36,10 @@ export function mugshotSuggestions(catalogue, query) {
     const matches = namesOf(profile).map(normalizeSearch).filter(name => name.includes(q));
     return matches.length ? [{
       id: `name-${profile.song}`, type: 'name', slug: profile.song, label: profile.artist,
+      homepage: profile.homepage === true,
       rank: Math.min(...matches.map(name => rank(name, q))),
     }] : [];
-  }).sort(compare);
+  }).sort((a, b) => Number(b.homepage) - Number(a.homepage) || compare(a, b));
   const familyMatches = families.filter(family =>
     (normalizeSearch(family.label).includes(q) || family.queries.includes(q)) &&
     catalogue.some(profile => family.pattern.test(profile.link)));

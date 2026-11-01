@@ -5,6 +5,73 @@ import { matchesMugshot, mugshotSuggestions } from '../src/data/mugshot-search.j
 
 const { catalogue } = buildCatalogue(JSON.parse(fs.readFileSync('src/data/mugshots.json', 'utf8')));
 
+test('selected names outrank other matches while each group keeps relevance and alphabetical ties', () => {
+  const fixture = [
+    { song: 'other-substring', artist: 'Barry Other', homepage: false },
+    { song: 'selected-substring-z', artist: 'Terry Selected', homepage: true },
+    { song: 'other-prefix', artist: 'Ryan Other' },
+    { song: 'selected-prefix-z', artist: 'Rylan Selected', homepage: true },
+    { song: 'selected-substring-a', artist: 'Harry Selected', homepage: true },
+    { song: 'other-exact', artist: 'Ry', homepage: false },
+    { song: 'selected-alias', artist: 'Alias Selected', searchNames: ['Ry Alias', 'Ry Alias'], homepage: true },
+    { song: 'selected-exact', artist: 'Selected Exact', searchNames: ['Ry'], homepage: true },
+  ].map(profile => ({ link: 'Presenter', ...profile }));
+  const options = mugshotSuggestions(fixture, ' RY ');
+  expect(options.map(item => item.slug)).toEqual([
+    'selected-exact', 'selected-alias', 'selected-prefix-z', 'selected-substring-a',
+    'selected-substring-z', 'other-exact', 'other-prefix', 'other-substring',
+  ]);
+  expect(new Set(options.map(item => item.id)).size).toBe(options.length);
+  expect(fixture.filter(profile => matchesMugshot(profile, options[1].label, options[1]))
+    .map(profile => profile.song)).toEqual(['selected-alias']);
+});
+
+test('selected matches are ranked before truncation without taking reserved talent slots', () => {
+  const ordinary = Array.from({ length: 12 }, (_, index) => ({
+    song: `ordinary-${index}`, artist: `Dan ${String(index).padStart(2, '0')}`,
+    link: index % 2 ? 'Dancer' : 'Dance Teacher',
+    ...(index % 2 ? { homepage: false } : {}),
+  }));
+  const selected = Array.from({ length: 9 }, (_, index) => ({
+    song: `selected-${index}`, artist: `Zed ${index}`, searchNames: ['Aidan Alias'],
+    link: 'Dancer', homepage: true,
+  }));
+  for (const count of [1, selected.length]) {
+    const options = mugshotSuggestions([...ordinary, ...selected.slice(0, count)], 'dan');
+    const names = options.filter(item => item.type === 'name');
+    const talents = options.filter(item => item.type === 'talent');
+    expect(options).toHaveLength(8);
+    expect(talents.map(item => item.family)).toEqual(['dance']);
+    expect(names.slice(0, Math.min(count, names.length)).map(item => item.slug))
+      .toEqual(selected.slice(0, Math.min(count, names.length)).map(item => item.song));
+    expect(names.slice(count).every(item => item.slug.startsWith('ordinary-'))).toBe(true);
+  }
+  const twoTalents = mugshotSuggestions(ordinary.map(profile => ({
+    ...profile, artist: profile.artist.replace('Dan', 'Actor'), link: 'Actor / Presenter',
+  })).concat({ song: 'selected', artist: 'Zed', searchNames: ['An Actor'], link: 'Actor', homepage: true }), 'actor');
+  expect(twoTalents).toHaveLength(8);
+  expect(twoTalents.filter(item => item.type === 'name')).toHaveLength(6);
+  expect(twoTalents[0].slug).toBe('selected');
+  expect(twoTalents.filter(item => item.type === 'talent').map(item => item.label))
+    .toEqual(['Actor', 'Actor / Presenter']);
+});
+
+test('the real ry query puts matching selected names ahead of unselected prefixes', () => {
+  const nameMatches = catalogue.filter(profile =>
+    [profile.artist, ...profile.searchNames].some(name => name.toLowerCase().includes('ry')));
+  const selected = nameMatches.filter(profile => profile.homepage === true);
+  const ordinary = nameMatches.filter(profile => profile.homepage !== true);
+  expect(selected.some(profile => !profile.artist.toLowerCase().startsWith('ry'))).toBe(true);
+  expect(ordinary.some(profile => profile.artist.toLowerCase().startsWith('ry'))).toBe(true);
+  const options = mugshotSuggestions(catalogue, 'ry');
+  const names = options.filter(item => item.type === 'name');
+  expect(names.slice(0, Math.min(names.length, selected.length)).every(item =>
+    selected.some(profile => profile.song === item.slug))).toBe(true);
+  expect(names).toHaveLength(Math.min(nameMatches.length, 8 - options.filter(item => item.type === 'talent').length));
+  expect(names[0].slug).toBe(selected.find(profile => profile.artist === 'Rylan').song);
+  expect(options.some(item => item.type === 'talent')).toBe(true);
+});
+
 test('catalogue matching includes canonical names, retained aliases and role variants without changing facts', () => {
   for (const query of ['dan', 'sing', 'actor', ' DANCE ', 'singers']) {
     const options = mugshotSuggestions(catalogue, query);
@@ -70,7 +137,7 @@ test('live queries, mouse selection, role selection, aliases, no matches and cle
   await expect(search).toHaveAttribute('aria-expanded', 'false');
   await search.fill('dan');
   await expect(search).toHaveAttribute('aria-expanded', 'true');
-  await expect(page.getByRole('option').first()).toContainText(/NameDan/i);
+  await expect(page.getByRole('option').first()).toHaveText(`Name${mugshotSuggestions(catalogue, 'dan')[0].label}`);
   await expect(page.getByRole('option', { name: 'Talent Dance / Dancer' })).toBeVisible();
   const danMatches = catalogue.filter(profile => matchesMugshot(profile, 'dan'));
   await expect(cards).toHaveCount(danMatches.length);
@@ -115,9 +182,9 @@ test('live queries, mouse selection, role selection, aliases, no matches and cle
   await expect(page.getByText('All celebrity mug photographs — A–Z', { exact: true })).toHaveCount(0);
 });
 
-test('keyboard selection announces the active option, dismisses and leaves normal Tab navigation', async ({ page }) => {
+test('keyboard selection announces the prioritised active option, dismisses and leaves normal Tab navigation', async ({ page }) => {
   const search = searchOn(page);
-  await search.fill('dan');
+  await search.fill('ry');
   await search.press('ArrowDown');
   const firstOption = page.getByRole('option').first();
   await expect(firstOption).toHaveAttribute('aria-selected', 'true');
@@ -130,6 +197,7 @@ test('keyboard selection announces the active option, dismisses and leaves norma
   await search.press('ArrowDown');
   await search.press('Enter');
   await expect(cardsOn(page)).toHaveCount(1);
+  await expect(cardsOn(page).first()).toHaveAttribute('href', `/mugshots/${mugshotSuggestions(catalogue, 'ry')[0].slug}`);
   await search.fill('sing');
   await search.press('ArrowUp');
   await search.press('Enter');
@@ -158,6 +226,13 @@ for (const width of [320, 1440]) {
     const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
     if (await decline.isVisible()) await decline.click();
     const search = searchOn(page);
+    await search.fill('ry');
+    const ryOptions = mugshotSuggestions(catalogue, 'ry');
+    await expect(page.getByRole('option')).toHaveText(ryOptions.map(item =>
+      `${item.type === 'name' ? 'Name' : 'Talent'}${item.label}`));
+    await page.getByRole('option').first().tap();
+    await expect(cardsOn(page)).toHaveCount(1);
+    await expect(cardsOn(page).first()).toHaveAttribute('href', `/mugshots/${ryOptions[0].slug}`);
     for (const scale of [100, 200]) {
       await page.addStyleTag({ content: `html { font-size: ${scale}% !important; scroll-behavior: auto !important; }` });
       await search.fill('dan');
