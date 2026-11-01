@@ -291,13 +291,12 @@ test('store panels are removed, copy and metadata are accurate and downloads wor
   }
 });
 
-test('approved Text, Voicemail and Messages screen originals fill phones without cropping at all widths', async ({ page }) => {
+test('approved Voicemail and Messages screen originals fill phones without cropping at all widths', async ({ page }) => {
   await page.goto('/apps');
   await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
   const minimise = page.getByRole('button', { name: 'Minimise radio player', exact: true });
   if (await minimise.isVisible()) await minimise.click();
   for (const [id, filename, intrinsicWidth, intrinsicHeight] of [
-    ['santatext', 'santa-text', 750, 1334],
     ['santavoicemail', 'santa-voicemail', 750, 1334],
     ['santamessages', 'santa-messages', 750, 1334],
   ]) {

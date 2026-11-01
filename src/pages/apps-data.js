@@ -10,13 +10,19 @@ import christmasRadio from '../assets/apps/christmas-radio-screen-1.webp';
 import christmasRadioPromo2 from '../assets/apps/christmas-radio-screen-2.webp';
 import christmasRadioPromo3 from '../assets/apps/christmas-radio-screen-3.webp';
 import christmasRadioPromo4 from '../assets/apps/christmas-radio-screen-4.webp';
-import santaText from '../assets/apps/santa-text-screen.webp';
+import santaText from '../assets/apps/santa-text-screen-welcome.webp';
+import santaTextMenu from '../assets/apps/santa-text-screen-menu.webp';
+import santaTextPromotion from '../assets/apps/santa-text-screen-promotion.webp';
+import santaTextChat from '../assets/apps/santa-text-screen-chat.webp';
 import santaDash from '../assets/apps/santa-dash-screen.webp';
 import christmasRadioFallback from '../assets/apps/christmas-radio-screen-1.png';
 import christmasRadioFallback2 from '../assets/apps/christmas-radio-screen-2.png';
 import christmasRadioFallback3 from '../assets/apps/christmas-radio-screen-3.png';
 import christmasRadioFallback4 from '../assets/apps/christmas-radio-screen-4.png';
-import santaTextFallback from '../assets/apps/santa-text-screen.png';
+import santaTextFallback from '../assets/apps/santa-text-screen-welcome.png';
+import santaTextMenuFallback from '../assets/apps/santa-text-screen-menu.png';
+import santaTextPromotionFallback from '../assets/apps/santa-text-screen-promotion.png';
+import santaTextChatFallback from '../assets/apps/santa-text-screen-chat.png';
 import santaDashFallback from '../assets/apps/santa-dash-screen.png';
 import santaRadioMac from '../assets/apps/santa-radio-mac.webp';
 
@@ -150,11 +156,20 @@ export const christmasApps = [
     subtitle: 'Text Santa and the Father Christmas auto-bot will reply.',
     image: santaText,
     fallback: santaTextFallback,
-    alt: 'Santa Text app screen with Message Santa, Santa Postcards and Just Ask Santa controls.',
-    width: 750,
-    height: 1334,
+    alt: 'Santa Text app welcome screen with Santa holding a phone beneath the northern lights, a snowy village and a Santa Dash banner.',
+    width: 603,
+    height: 1311,
+    screenshots: [
+      { label: 'Welcome', image: santaText, fallback: santaTextFallback, width: 603, height: 1311, alt: 'Santa Text app welcome screen with Santa holding a phone beneath the northern lights, a snowy village and a Santa Dash banner.' },
+      { label: 'Signpost menu', image: santaTextMenu, fallback: santaTextMenuFallback, width: 603, height: 1311, alt: 'Santa Text app signpost menu screen with Text Santa, Santa Radio.co.uk, Santa Dash and Santa Radio signs in a snowy North Pole village.' },
+      { label: 'Santa Dash promotion', image: santaTextPromotion, fallback: santaTextPromotionFallback, width: 603, height: 1311, alt: 'Santa Text app Santa Dash promotion screen with Santa jumping over snowy rooftops, mince pies and a View on the App Store button.' },
+      { label: 'Santa chat', image: santaTextChat, fallback: santaTextChatFallback, width: 603, height: 1311, alt: 'Santa Text app chat screen with Santa Claus at the North Pole, green Santa replies, red visitor messages and a Message Santa text field over a snowy village.' },
+    ],
     presentation: 'device',
-    slideshow: standaloneDisplay('Santa Text'),
+    slideshow: {
+      heading: 'Santa Text app screenshots',
+      regionLabel: 'Santa Text app screenshots',
+    },
     downloads: downloads('https://itunes.apple.com/gb/app/santa-text/id1024535991'),
     features: [
       feature('Text Santa', 'You can have a full text chat\nwith Santa. Watch him reply.', 'message'),

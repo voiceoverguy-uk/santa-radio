@@ -37,10 +37,27 @@ for (const [source, output, previewWidth, width, height, corners] of displays) {
 
 // Owner-approved existing screen-only originals. Keep their full dimensions,
 // interface and controls intact; retain both PNG and promotional sources.
-for (const name of ['santa-voicemail', 'santa-messages', 'santa-text']) {
+for (const name of ['santa-voicemail', 'santa-messages']) {
   run([`src/assets/apps/${name}.png`, '-strip', '-quality', '90',
     `src/assets/apps/${name}-screen.webp`]);
   console.log(`${name}-screen.webp: full original display`);
+}
+
+// Current native Santa Text captures, in slideshow order. Resize the complete
+// 1206 × 2622 originals by exactly half: no extraction, crop or camera overlay.
+// Keep legacy Santa Text sources intact, but never regenerate their old display.
+const santaTextScreens = [
+  ['Screenshot_iPhone_17_Pro_01-11-2026_at_16.39.35_1793551278789.png', 'welcome'],
+  ['Screenshot_iPhone_17_Pro_01-11-2026_at_16.39.55_1793551278789.png', 'menu'],
+  ['Screenshot_iPhone_17_Pro_01-11-2026_at_16.39.59_1793551278788.png', 'promotion'],
+  ['Screenshot_iPhone_17_Pro_01-11-2026_at_16.40.44_1793551278788.png', 'chat'],
+];
+for (const [source, label] of santaTextScreens) {
+  const output = `src/assets/apps/santa-text-screen-${label}`;
+  run([`attached_assets/${source}`, '-resize', '50%', '-strip', '-quality', '90', `${output}.webp`]);
+  // Exact decoded-pixel recovery, matching the other app displays.
+  run([`${output}.webp`, '-strip', `${output}.png`]);
+  console.log(`santa-text-screen-${label}: complete native screenshot, 603 × 1311`);
 }
 
 // Explicit owner approval for this section only: the supplied rooftop artwork

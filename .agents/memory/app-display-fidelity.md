@@ -15,6 +15,17 @@ The owner approved “Use existing screen-only images” for Santa Voicemail, Sa
 
 **How to apply:** These four existing screen-only originals are authorised for phone presentation. This is not permission to replace Santa Radio's current four screens or Christmas Radio's newer approved interface with older screenshots.
 
+Santa Text's older screen-only approval has been superseded by the owner's four
+native captures: welcome, signpost menu, Santa Dash promotion and Santa chat.
+The website-reference capture identifies the section and is not app artwork.
+
+**Why:** The owner requested the current native app appearance while keeping the
+existing dark portrait handset, section copy and download destination.
+
+**How to apply:** Preserve each full composition and its native proportions.
+Do not restore the retired display when preparing assets, generate replacement
+UI, or add a second camera cut-out over the chat capture's own.
+
 The owner subsequently approved the supplied “Santa Dash — Back to the Grotto”
 rooftop promotional artwork inside a dark landscape phone on `/apps`, replacing
 the earlier gameplay approval for this section only.

@@ -4,7 +4,7 @@ const sections = ['christmasradio', 'santatext', 'santadash'];
 const images = '#christmasradio img, #santatext img, #santadash img';
 
 async function verify(page, extension) {
-  await expect(page.locator(images)).toHaveCount(6);
+  await expect(page.locator(images)).toHaveCount(9);
   for (const image of await page.locator(images).all()) {
     await expect.poll(() => image.evaluate(el => el.complete && el.naturalWidth > 0)).toBe(true);
     if (extension) await expect(image).toHaveAttribute('src', new RegExp(`\\.${extension}$`));
@@ -39,6 +39,7 @@ async function verify(page, extension) {
       expect(bodySize).toEqual([1488, 676]);
       await expect(image).toHaveAttribute('alt', /Back to the Grotto promotional artwork.*caption: Leap rooftops/);
     }
+    if (src.includes('santa-text-screen')) expect(bodySize).toEqual([603, 1311]);
     expect(painted.colours).toBeGreaterThan(100);
   }
   for (const id of sections) {
@@ -59,7 +60,7 @@ async function verify(page, extension) {
 }
 
 for (const width of [1280, 320]) {
-  test(`all six displays decode on fresh load and client navigation at ${width}px`, async ({ page }) => {
+  test(`all nine displays decode on fresh load and client navigation at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/apps');
@@ -78,7 +79,7 @@ for (const width of [1280, 320]) {
 }
 
 for (const failure of ['delivery', 'decode']) {
-  test(`all six displays recover from WebP ${failure} failure without changing their pixels`, async ({ page }) => {
+  test(`all nine displays recover from WebP ${failure} failure without changing their pixels`, async ({ page }) => {
     if (failure === 'delivery') {
       await page.route(/(?:christmas-radio-screen-[1-4]|santa-(?:text|dash)-screen).*\.webp$/, route => route.abort());
     } else {
@@ -96,12 +97,12 @@ for (const failure of ['delivery', 'decode']) {
     await page.goto('/apps');
     await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
     await verify(page, 'png');
-    const carousel = page.locator('#christmasradio');
-    await carousel.hover();
+    const carousels = ['christmasradio', 'santatext'].map(id => page.locator(`#${id}`));
+    for (const carousel of carousels) await carousel.hover();
     await page.mouse.move(0, 0);
     for (const index of [1, 2, 3, 0]) {
       await page.clock.fastForward(5000);
-      await expect(carousel.locator('img').nth(index)).toHaveClass(/is-active/);
+      for (const carousel of carousels) await expect(carousel.locator('img').nth(index)).toHaveClass(/is-active/);
     }
     // Check the reduced-motion startup separately, as in the existing carousel
     // suite; do not race a native media-change event against a paused JS clock.
@@ -109,7 +110,7 @@ for (const failure of ['delivery', 'decode']) {
     await page.reload();
     await verify(page, 'png');
     await page.clock.fastForward(20000);
-    await expect(carousel.locator('img').first()).toHaveClass(/is-active/);
+    for (const carousel of carousels) await expect(carousel.locator('img').first()).toHaveClass(/is-active/);
   });
 }
 

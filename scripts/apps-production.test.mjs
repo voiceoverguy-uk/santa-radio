@@ -31,8 +31,8 @@ test('built Apps HTML starts on first promotional images and serves all local We
   // Exercise the actual built URLs and decode response bytes in a browser,
   // including PNG recovery assets which are not visible in the SSR markup.
   const assets = (await readdir('dist/assets')).filter(name =>
-    /^(?:christmas-radio-screen-[1-4]|santa-(?:text|dash)-screen)-.*\.(?:webp|png)$/.test(name));
-  assert.equal(assets.length, 12);
+    /^(?:christmas-radio-screen-[1-4]|santa-text-screen-(?:welcome|menu|promotion|chat)|santa-dash-screen)-.*\.(?:webp|png)$/.test(name));
+  assert.equal(assets.length, 18);
   const decodedPixels = new Map();
   for (const name of assets) {
     const asset = await get(`/assets/${name}`);
@@ -52,7 +52,7 @@ test('built Apps HTML starts on first promotional images and serves all local We
       return { dimensions: [image.naturalWidth, image.naturalHeight], hash: Array.from(new Uint8Array(hash)).join(',') };
     }, { bytes, type: asset.headers.get('content-type') });
     const expected = name.startsWith('christmas') ? [520, 1130] :
-      name.startsWith('santa-text') ? [750, 1334] : [1488, 676];
+      name.startsWith('santa-text') ? [603, 1311] : [1488, 676];
     assert.deepEqual(decoded.dimensions, expected, name);
     const key = name.replace(/-[^-]+\.(?:webp|png)$/, '');
     if (decodedPixels.has(key)) assert.equal(decoded.hash, decodedPixels.get(key), `${key} fallback must preserve every decoded pixel`);
@@ -227,8 +227,42 @@ test('built Apps HTML starts on first promotional images and serves all local We
    }
   assert.doesNotMatch(visibleHtml, /Santa Text, Santa Voicemail and Santa Messages also use owner-supplied promotional artwork/);
   assert.doesNotMatch(visibleHtml, /not interactive website controls|iOS screenshots only; the Amazon app’s appearance may differ/);
+  const text = html.match(/<section id="santatext"[\s\S]*?<\/section>/)?.[0];
+  assert.ok(text, 'Santa Text must be in the initial HTML');
+  assert.match(text, /aria-label="Santa Text app screenshots"/);
+  assert.doesNotMatch(text, /app-screenshots-classic/);
+  const textImages = [...text.matchAll(/<img\b[^>]*>/g)].map(match => match[0]);
+  assert.equal(textImages.length, 4);
+  for (const [index, label] of ['welcome', 'menu', 'promotion', 'chat'].entries()) {
+    assert.match(textImages[index], new RegExp(`src="/assets/santa-text-screen-${label}-.*\\.webp"`));
+    assert.match(textImages[index], /width="603" height="1311"/);
+    assert.match(textImages[index], /alt="Santa Text app/);
+    assert.equal(textImages[index].includes(' is-active'), index === 0);
+    assert.match(textImages[index], new RegExp(`aria-hidden="${index !== 0}"`));
+  }
+  const textPhone = page.locator('#santatext .app-screenshots');
+  for (const width of [1440, 390, 320]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await textPhone.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
+    for (const image of await textPhone.locator('img').all()) {
+      await image.evaluate(image => image.decode());
+      const geometry = await image.evaluate(el => {
+        const bounds = el.getBoundingClientRect();
+        const stack = el.closest('.app-screenshots-stack').getBoundingClientRect();
+        return {
+          ratio: bounds.width / bounds.height,
+          full: Math.abs(bounds.width - stack.width) < .5 && Math.abs(bounds.height - stack.height) < .5,
+          fit: getComputedStyle(el).objectFit,
+          overflow: document.documentElement.scrollWidth > innerWidth,
+        };
+      });
+      assert.ok(Math.abs(geometry.ratio - 603 / 1311) < .001);
+      assert.ok(geometry.full);
+      assert.equal(geometry.fit, 'contain');
+      assert.equal(geometry.overflow, false);
+    }
+  }
   for (const [id, filename, width, height] of [
-    ['santatext', 'santa-text', 750, 1334],
     ['santavoicemail', 'santa-voicemail', 750, 1334],
     ['santamessages', 'santa-messages', 750, 1334],
   ]) {

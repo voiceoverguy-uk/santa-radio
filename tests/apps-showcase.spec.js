@@ -40,10 +40,14 @@ test('all six app screens use physical phones while Watch, TV and Mac stay separ
     await expect(page.locator(`${selector} .app-screenshots-artwork`)).toHaveCount(1);
     await expect(page.locator(`${selector} .app-screenshots-device`)).toHaveCount(0);
   }
-  for (const id of ['santavoicemail', 'santamessages', 'santatext']) {
+  for (const id of ['santavoicemail', 'santamessages']) {
     await expect(page.locator(`#${id} .app-screenshots-device img`)).toHaveCSS('object-fit', 'contain');
     await expect(page.locator(`#${id} .app-screenshots-classic`)).toHaveCount(1);
   }
+  const textPhone = page.locator('#santatext .app-screenshots-device');
+  await expect(textPhone.locator('img')).toHaveCount(4);
+  await expect(textPhone.locator('img').first()).toHaveCSS('object-fit', 'contain');
+  await expect(page.locator('#santatext .app-screenshots-classic')).toHaveCount(0);
   await expect(page.locator('.app-section .app-screenshots-device')).toHaveCount(6);
   await expect(page.locator('.app-section .app-promo-wrap, .app-section .app-screenshots-artwork')).toHaveCount(0);
   await expect(page.locator('.apple-tv-showcase .app-screenshots-device, .apple-watch-showcase .app-screenshots-device, .mac-app-showcase .app-screenshots-device')).toHaveCount(0);
