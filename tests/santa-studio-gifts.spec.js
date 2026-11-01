@@ -32,7 +32,7 @@ async function visit(page, { reduced = false, clock = true } = {}) {
   if (await decline.isVisible()) await decline.click();
   await gifts(page).scrollIntoViewIfNeeded();
   await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Edward');
-  await expect(gifts(page).getByRole('heading', { level: 4 })).toHaveText('A gift preview for Edward');
+  await expect(gifts(page).getByRole('heading', { level: 4 })).toHaveText('All 3 digital gifts included for Edward');
   await expect(gifts(page)).not.toContainText('Example for');
 }
 
@@ -45,6 +45,35 @@ async function advanceExample(page) {
   await page.clock.runFor(GIFT_EXAMPLE_INTERVAL_MS + 50);
   if (reduced) await page.emulateMedia({ reducedMotion: 'reduce' });
 }
+
+test('personalised gift heading wraps safely with long names on narrow screens', async ({ page }) => {
+  await visit(page, { reduced: true });
+  await page.evaluate(() => document.fonts.ready);
+  const heading = gifts(page).getByRole('heading', { level: 4 });
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    for (const name of ['Abbey', 'Alexanderthegreatwithaverylongunbrokenname']) {
+      const copy = `All 3 digital gifts included for ${name}`;
+      // Exercise wrapping independently of the private name catalogue.
+      await heading.evaluate((node, value) => { node.textContent = value; }, copy);
+      await expect(heading).toHaveText(copy);
+      const geometry = await heading.evaluate(node => {
+        const bounds = node.getBoundingClientRect();
+        const range = document.createRange();
+        range.selectNodeContents(node);
+        const next = node.nextElementSibling.getBoundingClientRect();
+        return { bounds: bounds.toJSON(), next: next.toJSON(),
+          lines: [...range.getClientRects()].map(rect => rect.toJSON()) };
+      });
+      for (const line of geometry.lines) {
+        expect(line.left).toBeGreaterThanOrEqual(geometry.bounds.left - .5);
+        expect(line.right).toBeLessThanOrEqual(geometry.bounds.right + .5);
+      }
+      expect(geometry.next.top).toBeGreaterThanOrEqual(geometry.bounds.bottom);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    }
+  }
+});
 
 test('the additional requested names rotate through all gifts without extra certificate files', async ({ page }) => {
   test.setTimeout(60000);
@@ -597,7 +626,7 @@ for (const width of [1440, 390]) {
     await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Ayla');
     await page.clock.runFor(200);
     await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Erin');
-    await expect(gifts(page).getByRole('heading', { level: 4 })).toHaveText('A gift preview for Erin');
+    await expect(gifts(page).getByRole('heading', { level: 4 })).toHaveText('All 3 digital gifts included for Erin');
     await expect(picture).toHaveAttribute('src', '/images/santa-nice-list-3.jpg');
     await expect(picture).toHaveJSProperty('naturalWidth', 1536);
     await expect(gifts(page)).toHaveAttribute('data-complete', 'false');
