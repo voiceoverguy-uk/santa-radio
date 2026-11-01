@@ -121,8 +121,8 @@ test('gallery controls and non-card links remain silent', async ({ page, context
   await page.locator('.mugshots-gallery-button').click();
   await expect(page).toHaveURL(/mugshots\/all$/);
   await page.getByRole('button', { name: 'A–Z', exact: true }).click();
-  await page.getByRole('textbox', { name: 'Find a famous face' }).fill('Jeremy Kyle');
-  await page.locator('.seo-directory a[href="/mugshots/jeremy-kyle-tv-personality"]').click();
+  await page.getByRole('combobox', { name: 'Find a famous face' }).fill('Jeremy Kyle');
+  await page.locator('.mugshot-card[href="/mugshots/jeremy-kyle-tv-personality"]').click();
   await expect(page).toHaveURL(/mugshots\/jeremy-kyle-tv-personality$/);
   await expectSilent(page, requests);
 });

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import './MugShots.css';
 import './MugshotPhoto.css';
@@ -6,6 +6,7 @@ import mugshotsData from '../data/mugshots.ts';
 import PageSeo from '../seo/PageSeo.jsx';
 import { collectionMetadata, mugImageAlt } from '../seo/catalogue.js';
 import { mugSrcSet } from '../seo/mugImages.js';
+import { matchesMugshot, mugshotSuggestions } from '../data/mugshot-search.js';
 
 const ITEMS_PER_PAGE = 100;
 
@@ -17,6 +18,19 @@ const colors = ['#1B4332','#254c3a','#365642','#7c242b'];
 
 export default function MugShots() {
   const [search, setSearch] = useState('');
+  const [selection, setSelection] = useState(null);
+  const [suggestionsOpen, setSuggestionsOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
+  const inputRef = useRef(null);
+  const listRef = useRef(null);
+  const suggestions = useMemo(() => mugshotSuggestions(mugshotsData, search), [search]);
+  const menuOpen = suggestionsOpen && Boolean(search.trim());
+  const activeOption = menuOpen ? suggestions[activeIndex] : null;
+  useEffect(() => {
+    if (activeOption) {
+      listRef.current?.querySelector('[aria-selected="true"]')?.scrollIntoView({ block: 'nearest' });
+    }
+  }, [activeOption]);
   const [page, setPage] = useState(1);
   const [order, setOrder] = useState('random');
   const [randomOrder] = useState(() => {
@@ -37,20 +51,46 @@ export default function MugShots() {
 
   const filtered = useMemo(() => {
     const ordered = order === 'random' ? randomOrder : alphabetical;
-    if (!search.trim()) return ordered;
-    const q = search.trim().toLowerCase();
-    return ordered.filter(c =>
-      c.searchNames.some(name => name.toLowerCase().includes(q)) ||
-      c.link.toLowerCase().includes(q)
-    );
-  }, [search, order, randomOrder, alphabetical]);
+    return ordered.filter(c => matchesMugshot(c, search, selection));
+  }, [search, selection, order, randomOrder, alphabetical]);
 
   const visible = filtered.slice(0, page * ITEMS_PER_PAGE);
   const hasMore = page * ITEMS_PER_PAGE < filtered.length;
 
   const handleSearch = (e) => {
     setSearch(e.target.value);
+    setSelection(null);
+    setSuggestionsOpen(true);
+    setActiveIndex(-1);
     setPage(1);
+  };
+  const selectSuggestion = suggestion => {
+    setSearch(suggestion.label);
+    setSelection(suggestion);
+    setSuggestionsOpen(false);
+    setActiveIndex(-1);
+    setPage(1);
+    inputRef.current?.focus();
+  };
+  const handleSearchKey = event => {
+    if (event.nativeEvent.isComposing) return;
+    if (event.key === 'Escape') {
+      setSuggestionsOpen(false);
+      setActiveIndex(-1);
+    } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      if (!search.trim() || !suggestions.length) return;
+      event.preventDefault();
+      setSuggestionsOpen(true);
+      setActiveIndex(index => !menuOpen || index < 0 ?
+        (event.key === 'ArrowDown' ? 0 : suggestions.length - 1) :
+        (index + (event.key === 'ArrowDown' ? 1 : -1) + suggestions.length) % suggestions.length);
+    } else if (event.key === 'Enter' && activeOption) {
+      event.preventDefault();
+      selectSuggestion(activeOption);
+    } else if (event.key === 'Tab') {
+      setSuggestionsOpen(false);
+      setActiveIndex(-1);
+    }
   };
 
   return (
@@ -70,17 +110,51 @@ export default function MugShots() {
           </p>
           <div className="mugshots-controls">
             <label className="mugshots-search-label" htmlFor="mugshots-search">Find a famous face</label>
-            <div className="mugshots-search-wrap">
+            <div className="mugshots-search-wrap" onBlur={event => {
+              if (!event.currentTarget.contains(event.relatedTarget)) {
+                setSuggestionsOpen(false);
+                setActiveIndex(-1);
+              }
+            }}>
               <svg className="mugshots-search-icon" aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="11" cy="11" r="7" /><path d="m16 16 4 4" /></svg>
             <input
               id="mugshots-search"
+              ref={inputRef}
               type="text"
+              role="combobox"
+              autoComplete="off"
+              aria-autocomplete="list"
+              aria-expanded={menuOpen}
+              aria-controls={menuOpen ? 'mugshots-suggestions' : undefined}
+              aria-activedescendant={activeOption ? `mugshots-${activeOption.id}` : undefined}
+              aria-describedby="mugshots-search-help mugshots-result-status"
               aria-label="Find a famous face"
               className="mugshots-search"
               placeholder="Search by name or talent…"
               value={search}
               onChange={handleSearch}
+              onFocus={() => { if (!selection) setSuggestionsOpen(true); }}
+              onKeyDown={handleSearchKey}
             />
+              {search && <button type="button" className="mugshots-search-clear" aria-label="Clear search"
+                onClick={() => {
+                  setSearch(''); setSelection(null); setActiveIndex(-1); setSuggestionsOpen(false); setPage(1);
+                  inputRef.current?.focus();
+                }}>×</button>}
+              <span id="mugshots-search-help" className="mugshots-search-sr">Results filter as you type. Use up and down arrows to explore suggestions, Enter to select and Escape to dismiss.</span>
+              {menuOpen && <div className="mugshots-suggestions-panel">
+                <ul id="mugshots-suggestions" role="listbox" aria-label="Name and talent suggestions" ref={listRef}>
+                  {suggestions.map((suggestion, index) => <li key={suggestion.id}
+                    id={`mugshots-${suggestion.id}`} role="option" aria-selected={index === activeIndex}
+                    onPointerDown={event => event.preventDefault()}
+                    onClick={() => selectSuggestion(suggestion)}
+                  >
+                    <span className="mugshots-suggestion-kind">{suggestion.type === 'name' ? 'Name' : 'Talent'}</span>
+                    <span>{suggestion.label}</span>
+                  </li>)}
+                </ul>
+                {!suggestions.length && <p className="mugshots-suggestions-empty">No matching names or talents.</p>}
+              </div>}
             </div>
             <div className="mugshots-sort" role="group" aria-label="Mugshot order">
               <span className="mugshots-sort-caption">Sort</span>
@@ -94,11 +168,11 @@ export default function MugShots() {
               </button>
             </div>
           </div>
-          {search && (
-            <p className="mugshots-results-count">
-              Showing {filtered.length} result{filtered.length !== 1 ? 's' : ''}
-            </p>
-          )}
+          <p id="mugshots-result-status" role="status" aria-live="polite" aria-atomic="true"
+            className={search.trim() ? 'mugshots-results-count' : 'mugshots-search-sr'}>
+            {filtered.length} result{filtered.length !== 1 ? 's' : ''}.
+            {menuOpen && ` ${suggestions.length} suggestion${suggestions.length !== 1 ? 's' : ''} available.`}
+          </p>
         </div>
       </div>
 
@@ -149,11 +223,6 @@ export default function MugShots() {
           </div>
         )}
       </div>
-      <section className="seo-directory" aria-labelledby="mug-directory-heading">
-        <h2 id="mug-directory-heading">All celebrity mug photographs — A–Z</h2>
-        <p>Friendly photographs with Santa Radio mugs, not criminal mugshots. Every retained profile is linked below; no Load More click is needed.</p>
-        <ul>{alphabetical.map(celeb => <li key={celeb.song}><Link to={`/mugshots/${celeb.song}`}>{celeb.artist}</Link></li>)}</ul>
-      </section>
     </main>
   );
 }

@@ -43,6 +43,7 @@
 
 .mugshots-collection-page .mugshots-page-hero {
   position: relative;
+  z-index: 2;
   padding: 38px 24px 22px !important;
   text-align: center;
   border: 0;
@@ -69,6 +70,7 @@
   letter-spacing: -.045em;
   line-height: 1.11;
   text-wrap: balance;
+  overflow-wrap: anywhere;
 }
 .mugshots-collection-page .mugshots-page-title::after {
   content: "✦";
@@ -142,7 +144,7 @@
   width: 100%;
   min-width: 0;
   min-height: 46px;
-  padding: 10px 14px 10px 43px;
+  padding: 10px 44px 10px 43px;
   border: 1px solid rgba(220,220,194,.6);
   border-radius: 10px;
   background: rgba(244,239,219,.07);
@@ -163,6 +165,7 @@
   grid-column: 2;
   grid-row: 1 / span 2;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 10px;
   margin: 0;
@@ -178,6 +181,7 @@
 }
 .mugshots-collection-page .mugshots-sort button {
   display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
   gap: 8px;
@@ -282,8 +286,83 @@
 .mugshots-collection-page .no-results {
   color: var(--collection-muted);
 }
-.mugshots-collection-page ~ .seo-directory {
-  position: relative;
+.mugshots-collection-page .mugshots-search-clear {
+  position: absolute;
+  inset: 1px 1px auto auto;
+  width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--collection-cream);
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+.mugshots-collection-page .mugshots-search-clear:focus-visible {
+  outline: 2px solid var(--collection-gold);
+}
+.mugshots-collection-page .mugshots-suggestions-panel {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 7px);
+  left: 0;
+  right: 0;
+  border: 1px solid var(--collection-gold);
+  border-radius: 10px;
+  background: var(--collection-forest-deep);
+  box-shadow: 0 8px 24px #0008;
+  overflow: hidden;
+}
+.mugshots-collection-page .mugshots-suggestions-panel ul {
+  list-style: none;
+  margin: 0;
+  padding: 5px;
+  max-height: min(22rem, 45dvh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.mugshots-collection-page .mugshots-suggestions-panel li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  min-height: 44px;
+  box-sizing: border-box;
+  padding: 10px;
+  border-radius: 5px;
+  color: var(--collection-cream);
+  font-size: .95rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.mugshots-collection-page .mugshots-suggestions-panel li[aria-selected="true"],
+.mugshots-collection-page .mugshots-suggestions-panel li:hover {
+  background: #254c3a;
+  outline: 1px solid var(--collection-gold);
+  outline-offset: -1px;
+}
+.mugshots-collection-page .mugshots-suggestion-kind {
+  color: var(--collection-gold);
+  font-size: .78rem;
+  min-width: 3.5em;
+}
+.mugshots-collection-page .mugshots-suggestions-empty {
+  padding: 10px 14px;
+  margin: 0;
+  color: var(--collection-muted);
+  overflow-wrap: anywhere;
+}
+.mugshots-collection-page .mugshots-search-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 @media (max-width: 767px) {

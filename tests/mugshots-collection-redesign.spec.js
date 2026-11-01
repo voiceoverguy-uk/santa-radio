@@ -54,7 +54,7 @@ for (const width of [320, 390, 768, 1440]) {
     await expect(main.locator('.mugshots-count')).toContainText('mugshots and counting');
     await expect(page.locator('.mugshots-page-logo, .mugshots-page-logo-wrap')).toHaveCount(0);
     await expect(page.locator('.navbar .navbar-logo-image')).toBeVisible();
-    const search = main.getByRole('textbox', { name: 'Find a famous face', exact: true });
+    const search = main.getByRole('combobox', { name: 'Find a famous face', exact: true });
     await expect(search).toHaveAttribute('placeholder', 'Search by name or talent…');
     const shuffle = main.getByRole('button', { name: 'Shuffle', exact: true });
     const az = main.getByRole('button', { name: 'A–Z', exact: true });

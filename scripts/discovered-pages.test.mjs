@@ -10,7 +10,6 @@ import { readExport, classify, plain, inspectHtml, documentProblems, fetchEviden
 
 const fixture = JSON.parse(await readFile('docs/search-console-discovered/inventory.json', 'utf8'));
 const rows = fixture.rows.map(classify);
-const paths = [...new Set(rows.flatMap(row => row.discoveryPath))];
 const songFor = row => songs.find(song => `${song.id}-${song.link}` === row.path.split('/').at(-1));
 function checkDocument(html, row, headers = '') {
   const doc = inspectHtml(html, row.url);
@@ -22,22 +21,36 @@ function checkDocument(html, row, headers = '') {
     assert.equal(doc.lyrics, plain(song.lyrics), `${row.url}: full source lyrics in initial HTML`);
   }
 }
-async function checkInventory(get) {
+async function checkInventory(get, inventoryRows = rows) {
   const documents = new Map();
-  for (const path of paths) {
+  const inventoryPaths = [...new Set(inventoryRows.flatMap(row => row.discoveryPath))];
+  for (const path of inventoryPaths) {
     const result = await get(path);
     assert.equal(result.status, 200, path);
     documents.set(path, result);
   }
-  for (const row of rows) {
+  for (const row of inventoryRows) {
     const result = documents.get(row.path);
     checkDocument(result.html, row, result.xRobotsTag);
     for (let i = 0; i < row.discoveryPath.length - 1; i++) {
       const from = row.discoveryPath[i], to = row.discoveryPath[i + 1];
+      if (row.family === 'mugshot' && from === '/mugshots/all' && to === row.path) {
+        // The full-name directory was intentionally removed. Profiles beyond
+        // the initial gallery batch remain discoverable in the XML sitemap.
+        assert.equal(sitemap().split(`<loc>${ORIGIN}${to}</loc>`).length - 1, 1, `${to}: sitemap discovery`);
+        continue;
+      }
       assert.ok(inspectHtml(documents.get(from).html, ORIGIN + from).links.includes(to), `${from} must server-render a link to ${to}`);
     }
   }
 }
+
+test('exported Mugshots retain built profile content and sitemap discovery without a full-name directory', async () => {
+  await checkInventory(async path => ({
+    status: 200,
+    html: await readFile(`dist${path === '/' ? '' : path}/index.html`, 'utf8'),
+  }), rows.filter(row => row.family === 'mugshot'));
+});
 
 test('exact export fixture retains all source rows, chart and metadata without treating epoch dates as crawls', () => {
   assert.deepEqual(readExport(), fixture);

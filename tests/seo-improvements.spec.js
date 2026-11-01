@@ -19,7 +19,8 @@ test('pages and native lyrics work without JavaScript', async ({ browser }) => {
   await page.locator('details summary').click();
   await expect(page.locator('#song-lyrics pre')).toBeVisible();
   await page.goto('/mugshots/all');
-  await expect(page.locator('.seo-directory a')).toHaveCount(664);
+  await expect(page.locator('.seo-directory, #mug-directory-heading')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'A–Z', exact: true })).toBeVisible();
   await page.goto('/santa-tracker');
   await expect(page.getByRole('heading', { name: 'Your Santa Tracker questions' })).toBeVisible();
   await expect(page.getByText('Is this real GPS tracking?')).toBeVisible();
@@ -41,7 +42,8 @@ test('rendered mobile pages retain navigation, gallery controls and compact play
   await expect(page.locator('.mugshot-card')).toHaveCount(100);
   await page.getByRole('button', { name: /Load More/ }).click();
   await expect(page.locator('.mugshot-card')).toHaveCount(200);
-  await expect(page.locator('.seo-directory a')).toHaveCount(664);
+  await expect(page.locator('.seo-directory, #mug-directory-heading')).toHaveCount(0);
+  await expect(page.locator('.mugshot-card a, a.mugshot-card').first()).toHaveAttribute('href', /^\/mugshots\/.+/);
   const width = await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth);
   expect(width).toBe(true); expect(errors).toEqual([]);
 });

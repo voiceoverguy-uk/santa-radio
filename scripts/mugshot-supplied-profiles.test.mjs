@@ -51,6 +51,14 @@ test('supplied Mugshot copy, citations, original images, and featured choices ar
   const current = buildCatalogue(rawProfiles).catalogue;
   assert.equal(current.length, 664);
   const builtGallery = await readFile('dist/mugshots/all/index.html', 'utf8');
+  assert.doesNotMatch(builtGallery, /seo-directory|mug-directory-heading|All celebrity mug photographs/);
+  const galleryCards = [...builtGallery.matchAll(/<a\b[^>]*class="mugshot-card"[^>]*>/g)];
+  assert.equal(galleryCards.length, 100, 'built gallery retains its first navigable batch, not a full-name directory');
+  const paths = new Set(current.map(profile => mugPath(profile)));
+  for (const [anchor] of galleryCards) {
+    const href = anchor.match(/href="([^"]+)"/)?.[1];
+    assert.ok(paths.has(href), `built gallery has a retained profile link: ${href}`);
+  }
   const sourceInfoEligible = new Set(
     rawProfiles.filter(profile => typeof profile.info === 'string' && profile.info.trim()).map(profile => profile.song),
   );
@@ -118,7 +126,6 @@ test('supplied Mugshot copy, citations, original images, and featured choices ar
     assert.doesNotMatch(JSON.stringify(metadata.graph), /mugshot-editorial|futermanrose|itv\\.com|hachette\\.co\\.uk/);
 
     const builtDetail = await readFile(`dist${mugPath(profile)}/index.html`, 'utf8');
-    assert.ok(builtGallery.includes(`href="${mugPath(profile)}"`), `${slug}: built gallery link`);
     assert.ok(builtDetail.includes(`rel="canonical" href="${metadata.url}"`), `${slug}: built canonical`);
     assert.ok(builtDetail.includes(`property="og:image" content="${metadata.image}"`), `${slug}: built Open Graph image`);
     assert.ok(builtDetail.includes(`name="twitter:image" content="${metadata.image}"`), `${slug}: built Twitter image`);

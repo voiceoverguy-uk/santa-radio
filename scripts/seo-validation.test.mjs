@@ -86,7 +86,26 @@ test('all canonical build pages contain initial content, metadata and valid JSON
   const music = await readFile('dist/christmas-music/index.html', 'utf8');
   for (const song of songs) assert.ok(music.includes(`href="${songPath(song)}"`));
   const gallery = await readFile('dist/mugshots/all/index.html', 'utf8');
-  for (const mug of mugs) assert.ok(gallery.includes(`href="${mugPath(mug)}"`), mug.artist);
+  assert.doesNotMatch(gallery, /seo-directory|mug-directory-heading|All celebrity mug photographs/);
+  const cards = [...gallery.matchAll(/<a\b[^>]*class="mugshot-card"[^>]*>/g)];
+  assert.equal(cards.length, 100, 'the initial gallery provides its first navigable batch');
+  const profilesByPath = new Map(mugs.map(mug => [mugPath(mug), mug]));
+  const cardPaths = cards.map(([anchor]) => anchor.match(/href="([^"]+)"/)?.[1]);
+  assert.equal(new Set(cardPaths).size, 100, 'no duplicate first-batch profiles');
+  for (const path of cardPaths) {
+    assert.ok(profilesByPath.has(path), `gallery links to a retained profile: ${path}`);
+    assert.equal(profilesByPath.get(path).homepage, true, `${path}: approved profiles remain first`);
+  }
+  // The directory is deliberately absent. Discover every retained profile in
+  // the sitemap and its own initial HTML, not a hidden duplicate link list.
+  const xml = sitemap();
+  for (const mug of mugs) {
+    const path = mugPath(mug);
+    assert.ok(canonicalPaths.includes(path), `${mug.artist}: canonical profile is generated`);
+    assert.equal(xml.split(`<loc>${ORIGIN}${path}</loc>`).length - 1, 1, `${mug.artist}: listed once in sitemap`);
+    const detail = await readFile(`dist${path}/index.html`, 'utf8');
+    assert.ok(detail.includes(`rel="canonical" href="${ORIGIN}${path}"`), `${mug.artist}: canonical profile page`);
+  }
 });
 test('sitemap, aliases, variants, legacy identity mappings and error routes', () => {
   assert.equal(new Set(canonicalPaths).size, canonicalPaths.length);

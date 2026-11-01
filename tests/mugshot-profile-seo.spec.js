@@ -65,7 +65,7 @@ test('all supplied Mugshots are searchable once and their canonical pages share 
     const profile = rawProfiles.find(record => record.song === slug);
     expect(profile, slug).toBeTruthy();
     await page.goto('/mugshots/all');
-    const search = page.getByRole('textbox', { name: 'Find a famous face' });
+    const search = page.getByRole('combobox', { name: 'Find a famous face' });
     await search.fill(profile.artist);
     const card = page.locator(`.mugshot-card[href="/mugshots/${slug}"]`);
     await expect(card, slug).toHaveCount(1);

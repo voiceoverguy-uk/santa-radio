@@ -31,7 +31,7 @@ test('random gallery loads stable batches and supports alphabetical sorting and 
   const sorted = await names();
   expect(sorted).toEqual([...sorted].sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base', numeric: true })));
   expect(sorted).not.toEqual(first);
-  const search = page.getByRole('textbox', { name: 'Find a famous face' });
+  const search = page.getByRole('combobox', { name: 'Find a famous face' });
   await search.fill('Jeremy Kyle');
   await expect(cards).toHaveCount(1);
   await expect(page.getByRole('button', { name: /Load More/ })).toHaveCount(0);
@@ -50,7 +50,7 @@ test('random gallery loads stable batches and supports alphabetical sorting and 
   expect([...complete].sort()).toEqual(allPaths);
   expect(complete.slice(0, approvedPaths.size).every(path => approvedPaths.has(path))).toBe(true);
   expect(complete.slice(approvedPaths.size).every(path => !approvedPaths.has(path))).toBe(true);
-  await page.getByRole('textbox', { name: 'Find a famous face' }).fill('Actor');
+  await page.getByRole('combobox', { name: 'Find a famous face' }).fill('Actor');
   const actorPaths = await paths();
   expect(actorPaths.length).toBeGreaterThan(0);
   const firstUnapproved = actorPaths.findIndex(path => !approvedPaths.has(path));
