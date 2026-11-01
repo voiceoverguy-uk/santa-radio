@@ -66,3 +66,4 @@
 - [Main Mugshots collection](mugshots-collection-direction.md) — Separate gallery approval: no cartoon badge; live total, original photos and current gallery behaviour retained.
 - [Post Room live note](post-room-live-note.md) — Approved contact mockup; preserve the changing joke and timing as live handwritten text, plus all existing footer controls.
 - [Mugshots preview direction](mugshots-preview-direction.md) — Approved photograph-led hall of fame; do not restore the cartoon icon.
+- [Santa recipient previews](santa-recipient-preview-scope.md) — Chosen/generated child takes priority; random gifts/audio only before personalisation.

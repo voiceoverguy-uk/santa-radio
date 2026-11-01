@@ -1,5 +1,14 @@
 # Name inventory exposure response
 
+## Approved aggregate-counter exception
+
+The owner subsequently approved restoring the recorded-name counter through
+`/api/santa-name-count`. This separate route exposes only a validated integer
+total, not names, filenames, aliases or audio locations. Existing private-search
+restrictions remain unchanged. See [counter contract](../recorded-name-counter.md).
+This workspace change does not establish that either live serving host has
+received a release or that the incident response below is complete.
+
 ## Status
 
 Workspace protection is implemented and tested. **The live incident is not

@@ -6,13 +6,20 @@ export default function useSantaNameCounter(total) {
   const available = Number.isSafeInteger(total) && total >= 0;
 
   useEffect(() => {
-    if (!available) return;
+    if (!available) {
+      setDisplayed(null);
+      return;
+    }
     setDisplayed(value => value === null ? Math.max(0, total - 50) : Math.min(value, total));
-    const timer = setInterval(() => {
+  }, [total, available]);
+
+  useEffect(() => {
+    if (!available || displayed === null || displayed >= total) return;
+    const timer = setTimeout(() => {
       setDisplayed(value => Math.min(total, (value ?? Math.max(0, total - 50)) + 1));
     }, 5000);
-    return () => clearInterval(timer);
-  }, [total, available]);
+    return () => clearTimeout(timer);
+  }, [total, available, displayed]);
 
   return available ? Math.min(total, displayed ?? Math.max(0, total - 50)) : null;
 }

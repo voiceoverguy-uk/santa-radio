@@ -117,6 +117,10 @@ export function createNameLibrary({ fetcher = fetch, now = Date.now } = {}) {
   };
   return {
     catalogue,
+    async count() {
+      // Aggregate only; the catalogue remains inside the existing private cache.
+      return (await catalogue()).length;
+    },
     async search(input) {
       let hosted = [];
       let warning = null;

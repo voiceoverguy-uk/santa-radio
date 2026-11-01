@@ -8,6 +8,16 @@ A whole-test timeout can leave a matcher reporting an empty received string even
 
 **How to apply:** When a final assertion's reported value conflicts with the captured UI, check whether the whole test expired before the assertion could run. Avoid treating that as proof of an application regression.
 
+Long homepage clock tests should jump over refresh intervals when intermediate
+ticks are irrelevant, rather than executing every unrelated page timer.
+
+**Why:** Stepping through several five-minute intervals executed enough countdown,
+note and animation work to exhaust a browser test before its final assertion.
+
+**How to apply:** Step through individual ticks when testing exact count-up
+boundaries; use a clock jump for long refresh/visibility waits. Check the full
+deadline before interpreting an empty matcher result as a failed refresh.
+
 Browser checks can also time out during clock setup or screenshot capture, before the changed interaction is exercised. A longer deadline does not always resolve this.
 
 **Why:** Browser and capture checks have stalled before any relevant UI assertion, even after simplifying their setup and increasing deadlines.

@@ -5,8 +5,8 @@ export const SEARCH_MIN_LENGTH = 2;
 export const SEARCH_LIMIT = 10;
 const WINDOW_MS = 60_000;
 const TOKEN_MS = 5 * 60_000;
-const MAXIMUM = { search: 40, preview: 12, message: 6, request: 20, signup: 10, contenderRead: 300, contenderWrite: 30 };
-const GLOBAL_MAXIMUM = { search: 1200, preview: 300, message: 120, request: 300, signup: 300, contenderRead: 6000, contenderWrite: 600 };
+const MAXIMUM = { count: 30, search: 40, preview: 12, message: 6, request: 20, signup: 10, contenderRead: 300, contenderWrite: 30 };
+const GLOBAL_MAXIMUM = { count: 6000, search: 1200, preview: 300, message: 120, request: 300, signup: 300, contenderRead: 6000, contenderWrite: 600 };
 export function trustedAddress(req) {
   return process.env.VERCEL === '1'
     ? req.headers['x-vercel-forwarded-for'] || req.socket?.remoteAddress || 'unknown'

@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { useRadio } from './RadioProvider.jsx';
 import SantaMessageExample from './SantaMessageExample.jsx';
 import SantaMessageAccessForm from './SantaMessageAccessForm.jsx';
+import useSantaNameTotal from './useSantaNameTotal.js';
 import { SantaGreetingShare } from './SantaMessageShare.jsx';
 import { useSantaMessageAccess } from './SantaMessageAccessProvider.jsx';
 import useSantaMessageAllowance from './useSantaMessageAllowance.js';
@@ -46,7 +47,8 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const normalNameSearch = useSantaNames(keepSignupInPlace ? '' : name, hasAccess && !keepSignupInPlace);
   const privateNameSearch = useHostedSantaNameSearch(name, keepSignupInPlace);
   const nameSearch = keepSignupInPlace ? privateNameSearch : normalNameSearch;
-  const displayedNameCount = useSantaNameCounter(nameSearch.hostedCount);
+  const hostedNameTotal = useSantaNameTotal();
+  const displayedNameCount = useSantaNameCounter(hostedNameTotal);
   const availableNamesText = displayedNameCount !== null
     ? `${displayedNameCount.toLocaleString('en-GB')} ${displayedNameCount === 1 ? 'name' : 'names'} available`
     : 'Recorded names available to search';
@@ -307,7 +309,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
           <p className="message-name-hint message-name-count" role="status" aria-live="off">
             {availableNamesText}
           </p>
-          {nameSearch.hostedCount > 0 && <span className="message-recording-indicator" title="North Pole recording studio">
+          {hostedNameTotal > 0 && <span className="message-recording-indicator" title="North Pole recording studio">
             <span className="message-recording-dot" aria-hidden="true" />
             Recording (Studio - B)
           </span>}
