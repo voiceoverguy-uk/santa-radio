@@ -37,3 +37,9 @@ The desktop name-checker card should align with the Santa Radio title's top, wit
 **Why:** The owner supplied an annotated higher position for the whole card, explicitly excluding resizing or a wider hero redesign.
 
 **How to apply:** Preserve the card's existing layout space when repositioning it, rather than allowing the vertically centred hero to recenter its other elements. Align to the title, not the preview label or seasonal greeting.
+
+The desktop left block should align with the owner's annotated guide, approximately 14.4% across the reference image. This is a horizontal correction only, not permission to redesign the hero.
+
+**Why:** The owner requested moving the heading, strapline, description, listening controls, station note and countdown together, while preserving the right-hand card and smaller-screen ordering.
+
+**How to apply:** Preserve widths and vertical geometry. Keep artwork readable with only the clearance adjustment needed to avoid the inset block; do not shift the entire grid.

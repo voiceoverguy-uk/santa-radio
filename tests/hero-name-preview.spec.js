@@ -49,6 +49,70 @@ async function choose(page, name) {
 }
 
 for (const route of ['/', path]) {
+  test(`desktop left inset preserves the shared hero geometry on ${route}`, async ({ page }, testInfo) => {
+    await setup(page);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.clock.setFixedTime(new Date('2026-11-01T12:00:00Z'));
+    await page.addInitScript(() => sessionStorage.setItem('santa-message-offer-shown', 'shown'));
+    await page.goto(route);
+    const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+    if (await decline.isVisible()) await decline.click();
+    await page.evaluate(() => document.fonts.ready);
+    const measure = () => page.evaluate(() => {
+      const rect = selector => document.querySelector(selector).getBoundingClientRect().toJSON();
+      return {
+        moved: ['.hero-title', '.hero-name-preview__strapline', '.hero-description',
+          '.hero-actions', '.hero-note', '.hero-countdown'].map(rect),
+        fixed: ['.hero-layout', '.hero-name-preview__checker', '.navbar', '.hero-picture',
+          '#santa-messages'].map(rect),
+        artwork: rect('.hero-name-preview__artwork-slot'),
+        stack: rect('.hero-name-preview__left-stack'),
+        pageWidth: document.documentElement.scrollWidth,
+      };
+    });
+    for (const width of [320, 390, 768, 1024, 1090, 1091, 1120, 1280, 1440, 1740, 1920]) {
+      await page.setViewportSize({ width, height: 900 });
+      for (const playing of [false, true]) {
+        if (playing) {
+          await page.locator('.hero-actions').getByRole('button', { name: 'Listen Live', exact: true }).click();
+          await expect(page.locator('.hero .now-playing-artwork')).toBeVisible();
+        }
+        const inset = await measure();
+        // A zero inset is the previous layout, without changing any grid sizes.
+        await page.locator('.hero-layout').evaluate(el => el.style.setProperty('--hero-left-inset', '0px'));
+        const original = await measure();
+        await page.locator('.hero-layout').evaluate(el => el.style.removeProperty('--hero-left-inset'));
+        expect(inset.fixed).toEqual(original.fixed);
+        expect(inset.pageWidth).toBeLessThanOrEqual(width);
+        const shift = inset.moved[0].x - original.moved[0].x;
+        if (width >= 1091 && width < 1920) expect(shift).toBeGreaterThan(0);
+        else expect(shift).toBe(0);
+        for (let i = 0; i < inset.moved.length; i++) {
+          const before = original.moved[i], after = inset.moved[i];
+          expect(after.x - before.x).toBeCloseTo(shift, 1);
+          expect(after.y).toBe(before.y);
+          expect(after.width).toBe(before.width);
+          expect(after.height).toBe(before.height);
+          if (width >= 1091) expect(after.x).toBeCloseTo(inset.moved[0].x, 1);
+        }
+        if (width >= 1091) {
+          expect(inset.artwork.width).toBe(original.artwork.width);
+          expect(inset.artwork.y).toBe(original.artwork.y);
+          expect(inset.artwork.left - inset.stack.right).toBeGreaterThanOrEqual(15.5);
+          expect(inset.artwork.right).toBeLessThan(inset.fixed[1].left);
+          expect(inset.fixed[1].top).toBeCloseTo(inset.moved[0].top, 1);
+        }
+        if (width === 1740) {
+          expect(inset.moved[0].left / width).toBeCloseTo(.144, 3);
+          await page.locator('.hero').screenshot({
+            path: testInfo.outputPath(`inset-hero-${playing ? 'playing' : 'idle'}.png`), animations: 'disabled',
+          });
+        }
+        if (playing) await page.locator('.hero-actions').getByRole('button', { name: /Pause/ }).click();
+      }
+    }
+  });
+
   for (const width of [1091, 1280, 1440, 1920]) {
     test(`raised card tracks the title without moving its neighbours on ${route} at ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });

@@ -501,6 +501,25 @@
 }
 
 @media (min-width: 1091px) {
+  .hero-name-preview__layout {
+    /* Aim at the annotation's 14.4vw guide, relative to the centred 1260px
+       grid (whose asymmetric hero padding puts its edge at 47.45vw - 630px).
+       Ease in near tablet widths; never push a narrower desktop by >5.1vw. */
+    --hero-left-inset: clamp(0px, calc(630px - 33.05vw), min(5.1vw, calc(25vw - 252.75px)));
+  }
+
+  .hero-name-preview__intro,
+  .hero-name-preview__left-stack {
+    position: relative;
+    left: var(--hero-left-inset);
+  }
+
+  .hero-name-preview__broadcast > .hero-name-preview__artwork-slot {
+    /* Preserve its dimensions and countdown alignment; move only enough to
+       keep a 16px clearance from the inset listening stack. */
+    left: max(0px, calc(var(--hero-left-inset) - clamp(28px, 3vw, 42px) + 16px));
+  }
+
   .hero-name-preview__checker {
     top: var(--hero-checker-offset, 0px);
   }
