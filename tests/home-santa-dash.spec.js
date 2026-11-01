@@ -57,7 +57,7 @@ test('homepage advert remains complete, readable and keyboard accessible on desk
   const artworkLink = promo.getByRole('link', { name: 'View Santa Dash — Back to the Grotto on the App Store (opens in a new tab)', exact: true });
   const download = promo.getByRole('link', { name: 'Download Santa Dash for iPhone and iPad (opens in a new tab)', exact: true });
 
-  for (const width of [1440, 768, 767, 390, 320]) {
+  for (const width of [1440, 768, 767, 541, 540, 390, 320]) {
     await page.setViewportSize({ width, height: 1000 });
     await promo.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
     await expect(promo).toBeVisible();
@@ -74,6 +74,34 @@ test('homepage advert remains complete, readable and keyboard accessible on desk
     expect(geometry.width / geometry.height).toBeCloseTo(1600 / 554, 2);
     expect(geometry.left).toBeGreaterThanOrEqual(0);
     expect(geometry.right).toBeLessThanOrEqual(width);
+    const inset = await promo.evaluate(el => {
+      const artwork = el.querySelector('.santa-dash-promo__artwork-link').getBoundingClientRect();
+      const visual = el.querySelector('.santa-dash-promo__visual').getBoundingClientRect();
+      const phone = el.querySelector('.santa-dash-promo__handset').getBoundingClientRect();
+      return { artwork: artwork.toJSON(), visual: visual.toJSON(), phone: phone.toJSON() };
+    });
+    // Two thirds of the original complete desktop handset, with a mobile
+    // width cap to leave the baked-in right-side title and badge unobscured.
+    const baseWidth = width <= 540
+      ? Math.min(inset.visual.width * .72, 560)
+      : Math.min(inset.visual.width * .5, 620);
+    expect(inset.phone.width).toBeCloseTo(baseWidth * 2 / 3, 1);
+    expect(inset.phone.width / inset.phone.height).toBeCloseTo(2.23, 2);
+    expect(inset.visual.height).toBeCloseTo(inset.artwork.height, 1);
+    const leftGap = inset.phone.left - inset.artwork.left;
+    const bottomGap = inset.artwork.bottom - inset.phone.bottom;
+    expect(leftGap).toBeGreaterThanOrEqual(7);
+    expect(leftGap).toBeLessThanOrEqual(19);
+    expect(bottomGap).toBeGreaterThanOrEqual(7);
+    expect(bottomGap).toBeLessThanOrEqual(19);
+    expect(inset.phone.top).toBeGreaterThan(inset.artwork.top);
+    expect(inset.phone.right).toBeLessThan(inset.artwork.left + inset.artwork.width * .53);
+    expect(await promo.locator('.santa-dash-promo__handset').evaluate(el => getComputedStyle(el).opacity)).toBe('0.9');
+    for (const element of [promo, promo.locator('.santa-dash-promo__visual'),
+      promo.locator('.santa-dash-promo__title'), artwork, artworkLink, download,
+      promo.locator('.santa-dash-promo__playback')]) {
+      expect(await element.evaluate(el => getComputedStyle(el).opacity)).toBe('1');
+    }
     const secondArtwork = promo.locator('.santa-dash-promo__artwork').nth(1);
     await expect(secondArtwork).toHaveAttribute('aria-hidden', 'true');
     expect(await secondArtwork.evaluate(el => [el.width, el.height])).toEqual([1600, 555]);

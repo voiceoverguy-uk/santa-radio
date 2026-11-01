@@ -5,8 +5,13 @@
 The homepage Santa Dash banner now includes a dark landscape handset.
 The Apps page is unchanged. Both approved rooftop illustrations, the heading,
 the artwork's store destination and the separate download link are retained.
-On desktop, the handset leaves the baked-in right-side title/store badge clear;
-on narrow mobile it sits just below the artwork instead of obscuring it.
+The complete handset is scaled to two thirds of the original large desktop
+version, including the bezel, and sits inside the artwork's bottom-left corner
+with the same small inset. On narrow mobile its displayed width is capped at
+48% of the artwork to keep the baked-in title and store badge unobscured.
+The artwork keeps its original dimensions.
+The whole handset (including frame, video and still) is 90% opaque; surrounding
+artwork, heading, store links and pause/play controls remain fully opaque.
 Nothing has been published.
 
 ## Media

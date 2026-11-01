@@ -14,14 +14,16 @@
 .santa-dash-promo__handset {
   position: absolute;
   z-index: 2;
-  top: 50%;
-  left: 26%;
+  top: auto;
+  bottom: clamp(8px, 1.5vw, 18px);
+  left: clamp(8px, 1.5vw, 18px);
   width: min(50%, 620px);
   aspect-ratio: 2.23 / 1;
   box-sizing: border-box;
   padding: clamp(4px, 1.15vw, 10px) clamp(9px, 2.6vw, 27px);
   border: 2px solid transparent;
   border-radius: 5.3% / 12%;
+  opacity: .9;
   background:
     linear-gradient(145deg, #252b2a 0%, #080b0c 26%, #171d1e 66%, #050707 100%) padding-box,
     linear-gradient(112deg, #c8c3b3 0%, #69716e 8%, #e4dfd1 17%, #545e5c 36%, #b9b9ad 53%, #505a57 75%, #e1d5bb 91%, #66706c 100%) border-box;
@@ -33,7 +35,8 @@
     inset 2px 0 2px rgba(255, 255, 255, .15),
     inset -2px 0 2px rgba(0, 0, 0, .84);
   pointer-events: none;
-  transform: translate(-50%, -50%);
+  transform: scale(.666666);
+  transform-origin: bottom left;
 }
 
 .santa-dash-promo__handset-screen {
@@ -166,17 +169,9 @@
 }
 
 @media (max-width: 540px) {
-  .santa-dash-promo__visual {
-    padding-bottom: clamp(126px, 38vw, 185px);
-  }
-
   .santa-dash-promo__handset {
-    top: auto;
-    bottom: 0;
-    left: 50%;
-    width: min(95%, 560px);
+    width: min(72%, 560px);
     border-radius: 5.5% / 12%;
-    transform: translateX(-50%);
   }
 
   .santa-dash-promo__handset-screen {
