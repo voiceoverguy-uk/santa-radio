@@ -1,7 +1,15 @@
 import santaRadio from '../assets/apps/santa-radio-ios-radio.webp';
+import santaRadioFallback from '../assets/apps/santa-radio-ios-radio.png';
 import santaRadioArtists from '../assets/apps/santa-radio-ios-artists.webp';
+import santaRadioArtistsFallback from '../assets/apps/santa-radio-ios-artists.png';
 import santaRadioMugshots from '../assets/apps/santa-radio-ios-mugshots.webp';
+import santaRadioMugshotsFallback from '../assets/apps/santa-radio-ios-mugshots.png';
 import santaRadioTracker from '../assets/apps/santa-radio-ios-tracker.webp';
+import santaRadioTrackerFallback from '../assets/apps/santa-radio-ios-tracker.png';
+import santaRadioGames from '../assets/apps/santa-radio-ios-games.webp';
+import santaRadioGamesFallback from '../assets/apps/santa-radio-ios-games.png';
+import santaRadioWelcome from '../assets/apps/santa-radio-ios-welcome.webp';
+import santaRadioWelcomeFallback from '../assets/apps/santa-radio-ios-welcome.png';
 import santaRadioWatchControls from '../assets/apps/santa-radio-watch-controls.webp';
 import santaRadioWatchArtwork from '../assets/apps/santa-radio-watch-artwork.webp';
 import santaVoicemail from '../assets/apps/santa-voicemail-screen.webp';
@@ -56,15 +64,23 @@ export const christmasApps = [
     id: 'santaradio',
     title: 'Santa Radio App',
     image: santaRadio,
-    alt: 'Current Santa Radio iOS Radio screen with Michael Bublé song artwork, play button and Christmas countdown.',
-    width: 660,
-    height: 1434,
+    alt: 'Santa Radio iPhone app preview: Radio screen.',
+    width: 603,
+    height: 1311,
     screenshots: [
-      { label: 'Radio', image: santaRadio, width: 660, height: 1434, alt: 'Current Santa Radio iOS Radio screen with Michael Bublé song artwork, play button and Christmas countdown.' },
-      { label: 'Artists', image: santaRadioArtists, width: 660, height: 1434, alt: 'Current Santa Radio iOS Artists screen with festive portraits of Wizzard, Toni Braxton, John Lennon, Madonna, Kylie Minogue and Ed Sheeran.' },
-      { label: 'MugShots', image: santaRadioMugshots, width: 660, height: 1434, alt: 'Current Santa Radio iOS MugShots screen with celebrities including Lee Mack, Greg James and Idris Elba holding Santa Radio mugs.' },
-      { label: 'Tracker', image: santaRadioTracker, width: 660, height: 1434, alt: 'Current Santa Radio iOS Tracker screen with a world map and Santa’s holiday location in St Lucia.' },
+      { label: 'Radio', image: santaRadio, fallback: santaRadioFallback, width: 603, height: 1311, alt: 'Santa Radio iPhone app preview: Radio screen.' },
+      { label: 'Tracker', image: santaRadioTracker, fallback: santaRadioTrackerFallback, width: 603, height: 1311, alt: 'Santa Radio iPhone app preview: Tracker screen.' },
+      { label: 'MugShots', image: santaRadioMugshots, fallback: santaRadioMugshotsFallback, width: 603, height: 1311, alt: 'Santa Radio iPhone app preview: MugShots screen.' },
+      { label: 'Artists', image: santaRadioArtists, fallback: santaRadioArtistsFallback, width: 603, height: 1311, alt: 'Santa Radio iPhone app preview: Artists screen.' },
+      { label: 'Games', image: santaRadioGames, fallback: santaRadioGamesFallback, width: 603, height: 1311, alt: 'Santa Radio iPhone app preview: Games screen.' },
+      { label: 'Welcome', image: santaRadioWelcome, fallback: santaRadioWelcomeFallback, width: 603, height: 1311, alt: 'Santa Radio iPhone app preview: Welcome screen.' },
     ],
+    slideshow: {
+      heading: 'Santa Radio iPhone app preview',
+      regionLabel: 'Santa Radio current iOS app screenshots',
+      presentation: 'device',
+      interactiveMode: 'santa-radio',
+    },
     downloads: downloads(
       'https://apps.apple.com/us/app/santa-radio/id1021183593',
       'https://www.amazon.com/App-Style-Ltd-Santa-Radio/dp/B0158MYRBM',

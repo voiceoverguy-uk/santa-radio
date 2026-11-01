@@ -31,8 +31,8 @@ test('built Apps HTML starts on first promotional images and serves all local We
   // Exercise the actual built URLs and decode response bytes in a browser,
   // including PNG recovery assets which are not visible in the SSR markup.
   const assets = (await readdir('dist/assets')).filter(name =>
-    /^(?:christmas-radio-screen-[1-4]|santa-text-screen-(?:welcome|menu|promotion|chat)|santa-dash-screen)-.*\.(?:webp|png)$/.test(name));
-  assert.equal(assets.length, 18);
+    /^(?:christmas-radio-screen-[1-4]|santa-text-screen-(?:welcome|menu|promotion|chat)|santa-radio-ios-(?:radio|tracker|mugshots|artists|games|welcome)|santa-dash-screen)-.*\.(?:webp|png)$/.test(name));
+  assert.equal(assets.length, 30);
   const decodedPixels = new Map();
   for (const name of assets) {
     const asset = await get(`/assets/${name}`);
@@ -52,7 +52,7 @@ test('built Apps HTML starts on first promotional images and serves all local We
       return { dimensions: [image.naturalWidth, image.naturalHeight], hash: Array.from(new Uint8Array(hash)).join(',') };
     }, { bytes, type: asset.headers.get('content-type') });
     const expected = name.startsWith('christmas') ? [520, 1130] :
-      name.startsWith('santa-text') ? [603, 1311] : [1488, 676];
+      /^(?:santa-text|santa-radio-ios)/.test(name) ? [603, 1311] : [1488, 676];
     assert.deepEqual(decoded.dimensions, expected, name);
     const key = name.replace(/-[^-]+\.(?:webp|png)$/, '');
     if (decodedPixels.has(key)) assert.equal(decoded.hash, decodedPixels.get(key), `${key} fallback must preserve every decoded pixel`);

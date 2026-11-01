@@ -13,7 +13,19 @@ The owner approved “Use existing screen-only images” for Santa Voicemail, Sa
 
 **Why:** Their promotional compositions did not provide clean, recoverable full displays; Dash's approved compositions were illustrations rather than gameplay.
 
-**How to apply:** These four existing screen-only originals are authorised for phone presentation. This is not permission to replace Santa Radio's current four screens or Christmas Radio's newer approved interface with older screenshots.
+**How to apply:** These four existing screen-only originals are authorised for phone presentation. This is not permission to replace Santa Radio's approved screens or Christmas Radio's newer approved interface with older screenshots.
+
+The owner has supplied new native Santa Radio captures for Radio, Tracker,
+Mugshots, Artists, Games and the splash/welcome screen. These supersede the older
+four-screen Santa Radio display approval only.
+
+**Why:** The owner requested replacing the Santa Radio App screenshots on `/apps`,
+dissolving every five seconds, and making the pictured bottom tabs select the
+corresponding screen.
+
+**How to apply:** Use the complete genuine captures, including their captured
+interface state. The accompanying website view and navigation close-up are
+placement references, not extra slides. Keep other app showcases separate.
 
 Santa Text's older screen-only approval has been superseded by the owner's four
 native captures: welcome, signpost menu, Santa Dash promotion and Santa chat.

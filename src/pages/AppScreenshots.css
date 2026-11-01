@@ -305,11 +305,159 @@
 
 .apps-page .app-screenshots-classic .app-phone-hardware { display: none; }
 
+.apps-page .app-screenshots-santa-radio .santa-radio-screen-hotspots,
+.apps-page .app-screenshots-santa-radio .santa-radio-welcome-hotspot {
+  position: absolute;
+  z-index: 3;
+}
+
+/* These clear hit areas follow the photographed app controls precisely. They
+   are inside the display stack, never positioned against the outer handset. */
+.apps-page .app-screenshots-santa-radio .santa-radio-screen-hotspots {
+  inset: 89.7% 0 3.8%;
+  min-height: 44px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.apps-page .app-screenshots-santa-radio .santa-radio-hotspot,
+.apps-page .app-screenshots-santa-radio .santa-radio-welcome-hotspot {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.apps-page .app-screenshots-santa-radio .santa-radio-hotspot:focus-visible,
+.apps-page .app-screenshots-santa-radio .santa-radio-welcome-hotspot:focus-visible {
+  outline: 2px solid #f4d991;
+  outline-offset: -3px;
+  background: rgba(255, 248, 220, .18);
+}
+
+.apps-page .app-screenshots-santa-radio .santa-radio-welcome-hotspot {
+  top: 87.5%;
+  left: 12%;
+  width: 76%;
+  height: 6.5%;
+  min-height: 44px;
+}
+
+.apps-page .app-screenshots-santa-radio .santa-radio-preview-controls {
+  display: grid;
+  gap: 12px;
+  margin: 14px auto 0;
+  padding: 12px 13px;
+  border: 1px solid rgba(219, 194, 135, .32);
+  border-radius: 12px;
+  background: rgba(7, 24, 16, .78);
+  color: #f2e8ce;
+  box-shadow: 0 12px 28px rgba(2, 13, 8, .2);
+}
+
+.apps-page .santa-radio-preview-status {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  gap: 2px 9px;
+}
+
+.apps-page .santa-radio-preview-eyebrow {
+  color: #d7bd78;
+  font-family: 'Cinzel', serif;
+  font-size: .58rem;
+  letter-spacing: .13em;
+}
+
+.apps-page .santa-radio-current-screen {
+  color: #fff5df;
+  font-family: 'Cinzel', serif;
+  font-size: .91rem;
+}
+
+.apps-page .santa-radio-preview-disclaimer {
+  grid-column: 1 / -1;
+  color: #c5cbbd;
+  font-size: .65rem;
+  line-height: 1.4;
+}
+
+.apps-page .santa-radio-preview-feedback {
+  grid-column: 1 / -1;
+  color: #f4dfaa;
+  font-size: .68rem;
+  line-height: 1.4;
+}
+
+.apps-page .santa-radio-preview-actions {
+  display: grid;
+  gap: 9px;
+}
+
+.apps-page .santa-radio-autoplay {
+  justify-self: start;
+  min-height: 31px;
+  padding: 5px 10px;
+  border: 1px solid rgba(215, 189, 120, .6);
+  border-radius: 7px;
+  background: rgba(215, 189, 120, .1);
+  color: #f4dfaa;
+  font: inherit;
+  font-size: .7rem;
+  cursor: pointer;
+}
+
+.apps-page .santa-radio-screen-selectors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.apps-page .santa-radio-screen-selector {
+  min-height: 29px;
+  padding: 4px 7px;
+  border: 1px solid rgba(219, 194, 135, .25);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, .045);
+  color: #e6e4d8;
+  font: inherit;
+  font-size: .64rem;
+  cursor: pointer;
+}
+
+.apps-page .santa-radio-screen-selector.is-selected {
+  border-color: #d7bd78;
+  background: rgba(215, 189, 120, .17);
+  color: #fff1c9;
+  box-shadow: inset 0 -2px #d7bd78;
+}
+
+.apps-page .santa-radio-autoplay:hover,
+.apps-page .santa-radio-screen-selector:hover {
+  border-color: #e7d39c;
+  color: #fff5df;
+}
+
+.apps-page .santa-radio-autoplay:disabled {
+  border-color: rgba(197, 203, 189, .3);
+  background: rgba(197, 203, 189, .06);
+  color: #c5cbbd;
+  cursor: not-allowed;
+}
+
+.apps-page .santa-radio-autoplay:focus-visible,
+.apps-page .santa-radio-screen-selector:focus-visible {
+  outline: 2px solid #f4d991;
+  outline-offset: 2px;
+}
+
 @media (max-width: 767px) {
   .apps-page .app-screenshots-device .app-screenshots-frame { border-radius: 38px; }
   .apps-page .app-screenshots-device:not(.app-screenshots-landscape):not(.app-screenshots-classic) .app-screenshots-stack { border-radius: 29px; }
   .apps-page .app-screenshots-device.app-screenshots-landscape .app-screenshots-frame { border-radius: 25px; }
   .apps-page .app-screenshots-device.app-screenshots-landscape .app-screenshots-stack { border-radius: 17px; }
+  .apps-page .app-screenshots-santa-radio .santa-radio-preview-controls { margin-top: 12px; padding: 10px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

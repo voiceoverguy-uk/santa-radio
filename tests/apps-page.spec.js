@@ -1,7 +1,7 @@
 import { test, expect } from './fixtures/apps-test.js';
 import { appDownloads, obsoleteStoreCopy } from './fixtures/apps-downloads.js';
 
-const slideLabels = ['Radio', 'Artists', 'MugShots', 'Tracker'];
+const slideLabels = ['Radio', 'Tracker', 'MugShots', 'Artists', 'Games', 'Welcome'];
 
 test('Apps hero starts with Christmas Apps without a logo or leftover space at desktop and phone widths', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -95,8 +95,7 @@ async function expectSlide(carousel, label) {
   await expect(carousel.locator('.is-active')).toHaveCount(1);
   await expect(carousel.locator('.is-active')).toHaveAttribute('aria-hidden', 'false');
   await expect(carousel.locator('img[aria-hidden="false"]')).toHaveCount(1);
-  await expect(carousel.locator('.app-screenshots-caption, .app-screenshots-controls, .app-screenshots-dots, .app-screenshots-toggle')).toHaveCount(0);
-  await expect(carousel.getByRole('button')).toHaveCount(0);
+  await expect(carousel.locator('.santa-radio-screen-selector')).toHaveCount(6);
   const index = slideLabels.indexOf(label);
   await expect(carousel.locator('img').nth(index)).toHaveClass(/is-active/);
 }
@@ -104,11 +103,11 @@ async function expectSlide(carousel, label) {
 test('current iOS screenshots are local, optimised, ordered and loop every five seconds', async ({ page }) => {
   const carousel = await openSlideshow(page);
   const images = carousel.locator('img');
-  await expect(images).toHaveCount(4);
-  for (let i = 0; i < 4; i++) {
+  await expect(images).toHaveCount(6);
+  for (let i = 0; i < 6; i++) {
     const image = images.nth(i);
     expect(await image.getAttribute('src')).toMatch(/^\/.*\.webp/);
-    expect(await image.evaluate(el => [el.naturalWidth, el.naturalHeight])).toEqual([660, 1434]);
+    expect(await image.evaluate(el => [el.naturalWidth, el.naturalHeight])).toEqual([603, 1311]);
     const response = await page.request.get(await image.getAttribute('src'));
     expect(response.ok()).toBe(true);
     expect((await response.body()).length).toBeLessThan(250000);
@@ -117,8 +116,8 @@ test('current iOS screenshots are local, optimised, ordered and loop every five 
   await page.clock.fastForward(4999);
   await expectSlide(carousel, 'Radio');
   await page.clock.fastForward(1);
-  await expectSlide(carousel, 'Artists');
-  for (const label of ['MugShots', 'Tracker', 'Radio']) {
+  await expectSlide(carousel, 'Tracker');
+  for (const label of ['MugShots', 'Artists', 'Games', 'Welcome', 'Radio']) {
     await page.clock.fastForward(5000);
     await expectSlide(carousel, label);
   }
@@ -135,7 +134,7 @@ test('hover and hidden tabs suspend automatic rotation', async ({ page }) => {
   await expectSlide(carousel, 'Radio');
   await page.mouse.move(0, 0);
   await page.clock.fastForward(5000);
-  await expectSlide(carousel, 'Artists');
+  await expectSlide(carousel, 'Tracker');
   await carousel.hover();
   await page.evaluate(() => {
     Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
@@ -143,7 +142,7 @@ test('hover and hidden tabs suspend automatic rotation', async ({ page }) => {
   });
   await page.mouse.move(0, 0);
   await page.clock.fastForward(10000);
-  await expectSlide(carousel, 'Artists');
+  await expectSlide(carousel, 'Tracker');
   await page.evaluate(() => {
     delete document.hidden;
     document.dispatchEvent(new Event('visibilitychange'));
@@ -155,7 +154,7 @@ test('hover and hidden tabs suspend automatic rotation', async ({ page }) => {
 test('reduced motion is static and all slides share an uncropped stable responsive frame', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   const carousel = await openSlideshow(page);
-  await expect(carousel.getByRole('button')).toHaveCount(0);
+  await expect(carousel.getByRole('button', { name: 'Automatic screen previews off for reduced motion' })).toBeDisabled();
   await page.clock.fastForward(20000);
   await expectSlide(carousel, 'Radio');
   for (const width of [1280, 390, 320]) {
@@ -169,7 +168,7 @@ test('reduced motion is static and all slides share an uncropped stable responsi
       const style = getComputedStyle(el);
       return { ratio: rect.width / rect.height, fit: style.objectFit, transition: style.transitionDuration };
     });
-    expect(image.ratio).toBeCloseTo(660 / 1434, 3);
+    expect(image.ratio).toBeCloseTo(603 / 1311, 3);
     expect(image.fit).toBe('contain');
     expect(image.transition).toBe('0s');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -179,7 +178,7 @@ test('reduced motion is static and all slides share an uncropped stable responsi
 test('an unloaded next screenshot never replaces the ready image', async ({ page }) => {
   let release;
   const held = new Promise(resolve => { release = resolve; });
-  await page.route('**/santa-radio-ios-artists*', async route => {
+  await page.route('**/santa-radio-ios-tracker*', async route => {
     if (route.request().resourceType() !== 'image') return route.continue();
     await held;
     await route.continue();
@@ -196,7 +195,7 @@ test('an unloaded next screenshot never replaces the ready image', async ({ page
   await expect.poll(() => carousel.locator('img').nth(1).evaluate(image => image.complete && image.naturalWidth > 0)).toBe(true);
   await carousel.locator('img').nth(1).evaluate(image => image.decode());
   await page.clock.fastForward(5000);
-  await expectSlide(carousel, 'Artists');
+  await expectSlide(carousel, 'Tracker');
 });
 
 test('Apps has six complete sections, real local images and app-specific downloads', async ({ page }) => {
