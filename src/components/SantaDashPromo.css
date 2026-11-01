@@ -1,0 +1,198 @@
+.santa-dash-promo__visual {
+  position: relative;
+  isolation: isolate;
+}
+
+.santa-dash-promo .santa-dash-promo__artwork {
+  animation-play-state: paused;
+}
+
+.santa-dash-promo.santa-dash-promo--artwork-playing .santa-dash-promo__artwork {
+  animation-play-state: running;
+}
+
+.santa-dash-promo__handset {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 26%;
+  width: min(50%, 620px);
+  aspect-ratio: 2.23 / 1;
+  box-sizing: border-box;
+  padding: clamp(4px, 1.15vw, 10px) clamp(9px, 2.6vw, 27px);
+  border: 2px solid transparent;
+  border-radius: 5.3% / 12%;
+  background:
+    linear-gradient(145deg, #252b2a 0%, #080b0c 26%, #171d1e 66%, #050707 100%) padding-box,
+    linear-gradient(112deg, #c8c3b3 0%, #69716e 8%, #e4dfd1 17%, #545e5c 36%, #b9b9ad 53%, #505a57 75%, #e1d5bb 91%, #66706c 100%) border-box;
+  box-shadow:
+    0 30px 42px rgba(0, 0, 0, .54),
+    0 10px 18px rgba(4, 10, 7, .42),
+    0 2px 4px rgba(0, 0, 0, .62),
+    inset 0 0 0 1px rgba(255, 255, 255, .26),
+    inset 2px 0 2px rgba(255, 255, 255, .15),
+    inset -2px 0 2px rgba(0, 0, 0, .84);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
+.santa-dash-promo__handset-screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #07090a;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .2), 0 0 0 1px rgba(0, 0, 0, .95);
+}
+
+.santa-dash-promo__video,
+.santa-dash-promo__poster {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.santa-dash-promo__video {
+  background: #07090a;
+}
+
+.santa-dash-promo__poster {
+  z-index: 1;
+  background: #07090a;
+}
+
+.santa-dash-promo__poster.is-hidden {
+  display: none;
+}
+
+.santa-dash-promo__hardware {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.santa-dash-promo__hardware::before,
+.santa-dash-promo__hardware::after {
+  position: absolute;
+  top: 50%;
+  display: block;
+  content: "";
+  transform: translateY(-50%);
+}
+
+.santa-dash-promo__hardware::before {
+  left: 3px;
+  width: 3px;
+  height: 31px;
+  box-sizing: border-box;
+  border: 1px solid #3d4545;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #050708, #8a918d 48%, #161b1c);
+  box-shadow: 0 0 2px #000, inset 0 0 1px rgba(255, 255, 255, .45);
+}
+
+.santa-dash-promo__hardware::after {
+  left: 8px;
+  width: 3px;
+  height: 3px;
+  box-sizing: border-box;
+  border: 1px solid #87908e;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #647a82 0 12%, #151b1d 38%, #030506 72%);
+  box-shadow: 0 0 2px #000;
+}
+
+.santa-dash-promo__speaker,
+.santa-dash-promo__camera {
+  display: none;
+}
+
+.santa-dash-promo__controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  min-height: 48px;
+  margin-top: 12px;
+}
+
+.santa-dash-promo__playback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-width: 144px;
+  min-height: 46px;
+  padding: 10px 16px;
+  border: 1px solid #b99d5b;
+  border-radius: 999px;
+  background: #10271d;
+  color: var(--cream);
+  font-family: 'Cinzel', serif;
+  font-size: .68rem;
+  letter-spacing: .035em;
+  cursor: pointer;
+  transition: background-color 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
+
+.santa-dash-promo__playback:hover {
+  transform: translateY(-1px);
+  border-color: var(--gold-light);
+  background: #1b3b2b;
+}
+
+.santa-dash-promo__playback:focus-visible {
+  outline: 2px solid var(--gold-light);
+  outline-offset: 4px;
+}
+
+.santa-dash-promo__playback-icon {
+  width: 15px;
+  font-family: sans-serif;
+  font-size: .85rem;
+  text-align: center;
+}
+
+.santa-dash-promo__status {
+  margin: 0;
+  color: #d0d8ca;
+  font-size: .68rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 540px) {
+  .santa-dash-promo__visual {
+    padding-bottom: clamp(126px, 38vw, 185px);
+  }
+
+  .santa-dash-promo__handset {
+    top: auto;
+    bottom: 0;
+    left: 50%;
+    width: min(95%, 560px);
+    border-radius: 5.5% / 12%;
+    transform: translateX(-50%);
+  }
+
+  .santa-dash-promo__handset-screen {
+    border-radius: 8px;
+  }
+
+  .santa-dash-promo__controls {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .santa-dash-promo .santa-dash-promo__artwork,
+  .santa-dash-promo__playback {
+    animation: none;
+    transition: none;
+  }
+}

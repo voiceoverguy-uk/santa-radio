@@ -90,6 +90,8 @@ test('homepage advert remains complete, readable and keyboard accessible on desk
     }
     await artworkLink.focus();
     await page.keyboard.press('Tab');
+    await expect(promo.locator('.santa-dash-promo__playback')).toBeFocused();
+    await page.keyboard.press('Tab');
     await expect(download).toBeFocused();
     expect(await download.evaluate(el => getComputedStyle(el).outlineStyle)).toBe('solid');
     if (width === 1440 || width === 390) {

@@ -35,6 +35,7 @@
 - [Tracker verification baselines](tracker-test-baselines.md) — Check tracker route output against current metadata before attributing unrelated full-suite failures to a layout change.
 - [Panoramic image exports](panoramic-image-exports.md) — Check generated canvas dimensions; wide prompts can still return square images.
 - [Santa Dash scenery](santa-dash-scenery.md) — Rooftop-running backdrops need a side view with the Christmas town set back behind playable platforms.
+- [Santa Dash homepage gameplay](santa-dash-homepage-gameplay.md) — Approved dark landscape phone in the homepage banner; retain full gameplay/artwork/store links and keep Apps separate.
 - [Artwork browser rendering](artwork-browser-rendering.md) — Prefer system Chromium for static artwork if the downloaded browser lacks shared libraries.
 - [App Preview compatibility](app-preview-compatibility.md) — Dimensions alone are insufficient; check Apple's H.264 level, bitrate and audio requirements before exporting.
 - [Browser engine environment](browser-engine-environment.md) — Linux WebKit may need multimedia plugins even for idle audio; empty-page launch is not route verification.

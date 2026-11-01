@@ -24,6 +24,7 @@ import studioPaidAccess from './server/santa-studio-purchase.js';
 import studioCheckout from './server/santa-studio-checkout.js';
 import messageAccess from './server/santa-message-access.js';
 import { browserSecurity } from './server/browser-security.js';
+import { serveStaticVideo } from './server/static-video.js';
 
 const root = await realpath(fileURLToPath(new URL('./dist', import.meta.url)));
 const index = resolve(root, 'index.html');
@@ -97,6 +98,7 @@ const server = createServer(async (req, res) => {
       file = index;
       info = await stat(index);
     }
+    if (extname(file) === '.mp4') return serveStaticVideo(req, res, file, info);
     if (isTrackerPreview(pathname)) res.setHeader('X-Robots-Tag', 'noindex, follow');
     if (file === index && /^\/santa-tracker(?:\/preview)?\/?$/.test(pathname)) {
       const html = trackerPageHtml(await readFile(index, 'utf8'), pathname);

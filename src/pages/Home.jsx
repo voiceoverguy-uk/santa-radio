@@ -5,8 +5,7 @@ import HomeHero, { useHeroNameSelection } from '../components/HomeHero.jsx';
 import SantaTrackerBanner from '../tracker/components/SantaTrackerBanner.tsx';
 import Soundboard from '../components/Soundboard.jsx';
 import ChristmasPairs from '../components/ChristmasPairs.jsx';
-import santaDashArtwork from '../assets/home/santa-dash-back-to-the-grotto.webp';
-import santaDashWobblyBobArtwork from '../assets/home/santa-dash-wobbly-bob.webp';
+import SantaDashPromo from '../components/SantaDashPromo.jsx';
 import SantaMessageForm from '../components/SantaMessageForm.jsx';
 import YouTubeSection from '../components/YouTubeSection.jsx';
 import MugshotsPreview from '../components/MugshotsPreview.jsx';
@@ -29,48 +28,7 @@ export default function Home() {
       <SantaMessageForm keepSignupInPlace pendingName={pendingName} />
       <SantaTrackerBanner />
       {/* Personalised video promotion temporarily removed; SantaVideoSection and its styles are retained for restoration. */}
-      <section className="santa-dash-promo" aria-labelledby="santa-dash-promo-title">
-        <div className="santa-dash-promo__inner">
-          <p className="santa-dash-promo__eyebrow">A festive rooftop adventure</p>
-          <h2 id="santa-dash-promo-title" className="santa-dash-promo__title">Santa Dash — Back to the Grotto</h2>
-          <a
-            className="santa-dash-promo__artwork-link"
-            href="https://itunes.apple.com/gb/app/santa-dash-from-santa-guy/id1057048397"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="View Santa Dash — Back to the Grotto on the App Store (opens in a new tab)"
-          >
-            <span className="santa-dash-promo__artwork-stage">
-              <img
-                className="santa-dash-promo__artwork santa-dash-promo__artwork--first"
-                src={santaDashArtwork}
-                width="1600"
-                height="554"
-                alt="Santa Dash — Back to the Grotto: Santa leaps across snowy rooftops to collect mince pies. Play on iPhone and iPad."
-                loading="lazy"
-              />
-              <img
-                className="santa-dash-promo__artwork santa-dash-promo__artwork--second"
-                src={santaDashWobblyBobArtwork}
-                width="1600"
-                height="555"
-                alt=""
-                aria-hidden="true"
-                loading="lazy"
-              />
-            </span>
-          </a>
-          <a
-            className="santa-dash-promo__download"
-            href="https://itunes.apple.com/gb/app/santa-dash-from-santa-guy/id1057048397"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Download Santa Dash for iPhone and iPad (opens in a new tab)"
-          >
-            Download Santa Dash for iPhone and iPad <span aria-hidden="true">→</span>
-          </a>
-        </div>
-      </section>
+      <SantaDashPromo />
       <Soundboard />
       <ChristmasPairs />
       <YouTubeSection />
