@@ -18,7 +18,8 @@ export default function AppScreenshots({
   const [reducedMotion, setReducedMotion] = useState(true);
   const [hovered, setHovered] = useState(false);
   const [hidden, setHidden] = useState(false);
-  const artworkPresentation = presentation === 'artwork' || imageType !== 'screenshot';
+  const darkLandscapeDevice = deviceStyle === 'dark-landscape';
+  const artworkPresentation = !darkLandscapeDevice && (presentation === 'artwork' || imageType !== 'screenshot');
 
   useEffect(() => {
     const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -52,7 +53,7 @@ export default function AppScreenshots({
 
   return (
     <figure
-      className={`app-screenshots ${artworkPresentation ? 'app-screenshots-artwork' : 'app-screenshots-device'}${slides[0].width > slides[0].height ? ' app-screenshots-landscape' : ''}${!artworkPresentation && deviceStyle === 'classic' ? ' app-screenshots-classic' : ''}`}
+      className={`app-screenshots ${artworkPresentation ? 'app-screenshots-artwork' : 'app-screenshots-device'}${slides[0].width > slides[0].height ? ' app-screenshots-landscape' : ''}${!artworkPresentation && deviceStyle === 'classic' ? ' app-screenshots-classic' : ''}${darkLandscapeDevice ? ' app-screenshots-dark-landscape' : ''}`}
       role="region"
       aria-roledescription={slides.length > 1 ? 'carousel' : undefined}
       aria-label={regionLabel}

@@ -5,26 +5,27 @@ async function open(page) {
   await page.clock.pauseAt(new Date());
   await page.goto('/apps');
   await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
-  const phone = page.getByRole('region', { name: 'Santa Dash app screen', exact: true });
+  const phone = page.getByRole('region', { name: 'Santa Dash promotional artwork', exact: true });
   await expect.poll(() => phone.locator('img').evaluate(el => el.complete && el.naturalWidth > 0)).toBe(true);
   await phone.locator('img').evaluate(el => el.decode());
   await page.mouse.move(0, 0);
   return phone;
 }
 
-test('Santa Dash uses the approved full gameplay original inside a landscape phone and preserves its listing', async ({ page }) => {
+test('Santa Dash uses the approved complete rooftop artwork inside a dark landscape phone and preserves its listing', async ({ page }) => {
   const phone = await open(page);
-  await expect(phone).toHaveClass(/app-screenshots-device.*app-screenshots-landscape.*app-screenshots-classic/);
+  await expect(phone).toHaveClass(/app-screenshots-device.*app-screenshots-landscape.*app-screenshots-dark-landscape/);
   await expect(phone.locator('img')).toHaveCount(1);
   await expect(phone).not.toHaveAttribute('aria-roledescription', 'carousel');
-  await expect(phone.locator('figcaption')).toHaveText('Santa Dash app screen');
+  await expect(phone.locator('figcaption')).toHaveText('Santa Dash promotional artwork');
   await expect(phone.locator('.app-screenshots-note')).toHaveCount(0);
   const image = phone.locator('img');
   expect(await image.getAttribute('src')).toMatch(/^\/.*santa-dash-screen.*\.webp/);
-  expect(await image.evaluate(el => [el.naturalWidth, el.naturalHeight])).toEqual([1334, 750]);
-  await expect(image).toHaveAttribute('width', '1334');
-  await expect(image).toHaveAttribute('height', '750');
-  await expect(image).toHaveAttribute('alt', /^Santa Dash gameplay screen/);
+  expect(await image.evaluate(el => [el.naturalWidth, el.naturalHeight])).toEqual([1488, 676]);
+  await expect(image).toHaveAttribute('width', '1488');
+  await expect(image).toHaveAttribute('height', '676');
+  await expect(image).toHaveAttribute('alt', /Back to the Grotto promotional artwork.*caption: Leap rooftops/);
+  await expect(image).not.toHaveAttribute('alt', /gameplay/);
   const response = await page.request.get(await image.getAttribute('src'));
   expect(response.ok()).toBe(true);
   expect(response.headers()['content-type']).toMatch(/image\/webp/);
@@ -45,7 +46,7 @@ test('Santa Dash uses the approved full gameplay original inside a landscape pho
   ]);
 });
 
-test('a single approved gameplay capture stays static without affecting the real slideshows', async ({ page }) => {
+test('a single approved artwork stays static without affecting the real slideshows', async ({ page }) => {
   const phone = await open(page);
   const radios = [
     page.getByRole('region', { name: 'Santa Radio current iOS app screenshots', exact: true }),
@@ -66,11 +67,11 @@ test('a single approved gameplay capture stays static without affecting the real
   await expect(phone.getByRole('button')).toHaveCount(0);
 });
 
-test('gameplay failures are reported without silently loading a poster or older substitute', async ({ page }) => {
+test('artwork failures are reported without silently loading an older substitute', async ({ page }) => {
   await page.route('**/santa-dash-screen*', route => route.request().resourceType() === 'image' ? route.abort() : route.continue());
   await page.goto('/apps');
-  const phone = page.getByRole('region', { name: 'Santa Dash app screen', exact: true });
-  await expect(phone.getByRole('status')).toHaveText('Some screenshots could not load. Please reload to try again.');
+  const phone = page.getByRole('region', { name: 'Santa Dash promotional artwork', exact: true });
+  await expect(phone.getByRole('status')).toHaveText('Some images could not load. Please reload to try again.');
   await expect(phone.locator('img')).toHaveCount(1);
 });
 
@@ -87,12 +88,13 @@ test('reduced motion preserves the complete landscape display beside or above th
       const style = getComputedStyle(el);
       return { ratio: rect.width / rect.height, fit: style.objectFit, transition: style.transitionDuration, x: rect.x, right: rect.right, width: rect.width };
     });
-    expect(image.ratio).toBeCloseTo(1334 / 750, 3);
+    expect(image.ratio).toBeCloseTo(1488 / 676, 3);
     expect(image.fit).toBe('contain');
     expect(image.transition).toBe('0s');
     expect(image.x).toBeGreaterThan(frame.x);
     expect(image.right).toBeLessThan(frame.x + frame.width);
-    expect(image.width / frame.width).toBeCloseTo(.769, 2); // Physical speaker/Home-button bezels.
+    expect(image.width / frame.width).toBeGreaterThan(.85);
+    expect(image.width / frame.width).toBeLessThan(.99);
     const copy = await page.locator('#santadash .app-copy').boundingBox();
     if (width >= 768) expect(copy.x).toBeGreaterThanOrEqual(frame.x + frame.width + 20);
     else expect(copy.y).toBeGreaterThanOrEqual(frame.y + frame.height + 20);

@@ -51,9 +51,16 @@ test('all six app screens use physical phones while Watch, TV and Mac stay separ
   for (const id of ['santaradio', 'santavoicemail', 'santamessages', 'christmasradio', 'santatext', 'santadash']) {
     const phone = page.locator(`#${id} .app-screenshots-device`);
     const background = await phone.locator('.app-screenshots-frame').evaluate(el => getComputedStyle(el).backgroundImage);
-    expect(background).toContain(id === 'santadash' ? 'phone-landscape' : 'phone-portrait');
-    const hardwareUrl = background.match(/url\("([^"]+)"\)/)[1];
-    expect((await page.request.get(hardwareUrl)).ok()).toBe(true);
+    if (id === 'santadash') {
+      await expect(phone).toHaveClass(/app-screenshots-dark-landscape/);
+      expect(background).toContain('linear-gradient');
+      expect(background).not.toContain('phone-landscape');
+      expect(background).not.toContain('phone-portrait');
+    } else {
+      expect(background).toContain('phone-portrait');
+      const hardwareUrl = background.match(/url\("([^"]+)"\)/)[1];
+      expect((await page.request.get(hardwareUrl)).ok()).toBe(true);
+    }
     for (const width of [1440, 1024, 768, 390, 320]) {
       await page.setViewportSize({ width, height: 1000 });
       const bounds = await phone.boundingBox();

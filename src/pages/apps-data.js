@@ -36,8 +36,8 @@ const voicemailFeatures = [
   feature('Santa Radio', 'You can also listen and enjoy\nSanta Radio direct from the app.', 'radio'),
 ];
 
-// The owner approved these existing screen-only originals after the newer
-// promotional compositions proved occluded (or, for Dash, not app captures).
+// The owner approved these existing screen-only portrait originals after the
+// newer promotional compositions proved occluded. Dash has separate approval.
 const standaloneDisplay = title => ({
   presentation: 'device',
   heading: `${title} app screen`,
@@ -171,13 +171,16 @@ export const christmasApps = [
     subtitle: 'How far can you go while collecting mince pies?',
     image: santaDash,
     fallback: santaDashFallback,
-    alt: 'Santa Dash gameplay screen with Santa jumping over snowy rooftops, collectible mince pies and the score.',
-    width: 1334,
-    height: 750,
+    alt: 'Santa Dash — Back to the Grotto promotional artwork with Santa leaping snowy rooftops, mince pies, a gingerbread figure and an inflatable Santa; caption: Leap rooftops, grab mince pies and dodge the hazards!',
+    width: 1488,
+    height: 676,
     landscape: true,
     presentation: 'device',
     slideshow: {
-      ...standaloneDisplay('Santa Dash'),
+      heading: 'Santa Dash promotional artwork',
+      regionLabel: 'Santa Dash promotional artwork',
+      deviceStyle: 'dark-landscape',
+      imageType: 'image',
       maxWidth: 760,
     },
     downloads: downloads('https://itunes.apple.com/gb/app/santa-dash-from-santa-guy/id1057048397'),

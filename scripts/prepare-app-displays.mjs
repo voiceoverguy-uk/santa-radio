@@ -37,8 +37,21 @@ for (const [source, output, previewWidth, width, height, corners] of displays) {
 
 // Owner-approved existing screen-only originals. Keep their full dimensions,
 // interface and controls intact; retain both PNG and promotional sources.
-for (const name of ['santa-voicemail', 'santa-messages', 'santa-text', 'santa-dash']) {
+for (const name of ['santa-voicemail', 'santa-messages', 'santa-text']) {
   run([`src/assets/apps/${name}.png`, '-strip', '-quality', '90',
     `src/assets/apps/${name}-screen.webp`]);
   console.log(`${name}-screen.webp: full original display`);
 }
+
+// Explicit owner approval for this section only: the supplied rooftop artwork
+// belongs inside the dark landscape handset. Preserve its entire composition;
+// the opening follows its native ratio, so no title/caption crop is necessary.
+// Never rebuild this display from the legacy santa-dash.png gameplay capture.
+run(['attached_assets/Inflatable_Santa_joins_the_rooftop_dash_1793488526959.png',
+  '-resize', '1488x676', '-strip', '-quality', '85',
+  'src/assets/apps/santa-dash-screen.webp']);
+// Decode the delivered WebP to make recovery pixel-equivalent, not a second
+// lossy rendition of the original.
+run(['src/assets/apps/santa-dash-screen.webp', '-strip',
+  'src/assets/apps/santa-dash-screen.png']);
+console.log('santa-dash-screen: complete approved rooftop artwork, 1488 × 676');

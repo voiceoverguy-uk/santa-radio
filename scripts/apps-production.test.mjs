@@ -52,7 +52,7 @@ test('built Apps HTML starts on first promotional images and serves all local We
       return { dimensions: [image.naturalWidth, image.naturalHeight], hash: Array.from(new Uint8Array(hash)).join(',') };
     }, { bytes, type: asset.headers.get('content-type') });
     const expected = name.startsWith('christmas') ? [520, 1130] :
-      name.startsWith('santa-text') ? [750, 1334] : [1334, 750];
+      name.startsWith('santa-text') ? [750, 1334] : [1488, 676];
     assert.deepEqual(decoded.dimensions, expected, name);
     const key = name.replace(/-[^-]+\.(?:webp|png)$/, '');
     if (decodedPixels.has(key)) assert.equal(decoded.hash, decodedPixels.get(key), `${key} fallback must preserve every decoded pixel`);
@@ -141,7 +141,9 @@ test('built Apps HTML starts on first promotional images and serves all local We
   assert.match(html, /Santa Radio for Mac/);
   const dash = html.match(/<section id="santadash"[\s\S]*?<\/section>/)?.[0];
   assert.ok(dash, 'Santa Dash must be in the initial HTML');
-  assert.match(dash, /aria-label="Santa Dash app screen"/);
+  assert.match(dash, /aria-label="Santa Dash promotional artwork"/);
+  assert.match(dash, /app-screenshots-dark-landscape/);
+  assert.doesNotMatch(dash, /app-screenshots-classic/);
   assert.match(dash, /--app-screenshots-max-width:760px/);
   assert.doesNotMatch(dash, /Owner-supplied Santa Dash promotional artwork|not live gameplay or interactive website controls/);
   assert.doesNotMatch(visibleHtml, /Santa Dash’s three owner-supplied promotional artworks are not live gameplay/);
@@ -151,8 +153,8 @@ test('built Apps HTML starts on first promotional images and serves all local We
   for (const [index, image] of dashImages.entries()) {
     const src = image.match(/src="([^"]+)"/)?.[1];
     assert.match(src, /^\/assets\/santa-dash-screen-.*\.webp$/);
-    assert.match(image, /width="1334" height="750"/);
-    assert.match(image, /alt="Santa Dash gameplay screen/);
+    assert.match(image, /width="1488" height="676"/);
+    assert.match(image, /alt="Santa Dash — Back to the Grotto promotional artwork/);
     assert.equal(image.includes(' is-active'), index === 0);
     assert.match(image, new RegExp(`aria-hidden="${index !== 0}"`));
     const asset = await get(src);
@@ -162,7 +164,7 @@ test('built Apps HTML starts on first promotional images and serves all local We
     assert.equal(bytes.toString('ascii', 8, 12), 'WEBP');
     assert.ok(bytes.length < 400000);
   }
-  assert.match(dash, /<figcaption[^>]*>Santa Dash app screen<\/figcaption>/);
+  assert.match(dash, /<figcaption[^>]*>Santa Dash promotional artwork<\/figcaption>/);
   const mac = html.match(/<section id="santa-radio-mac"[\s\S]*?<\/section>/)?.[0];
   assert.ok(mac, 'Mac promotional artwork must be in the initial HTML');
   assert.match(mac, /Play Santa Radio and see the current song and artist\./);

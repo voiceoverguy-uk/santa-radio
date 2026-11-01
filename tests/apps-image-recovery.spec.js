@@ -35,6 +35,10 @@ async function verify(page, extension) {
       };
     });
     expect(bodySize).toEqual(painted.dimensions);
+    if (src.includes('santa-dash-screen')) {
+      expect(bodySize).toEqual([1488, 676]);
+      await expect(image).toHaveAttribute('alt', /Back to the Grotto promotional artwork.*caption: Leap rooftops/);
+    }
     expect(painted.colours).toBeGreaterThan(100);
   }
   for (const id of sections) {
