@@ -84,8 +84,7 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .mugshots-grid .mugshot-card:hover,
-  .mugshot-detail-figure .mugshot-photo-frame:hover {
+  .mugshots-grid .mugshot-card:hover {
     transform: translateY(-3px);
   }
   .mugshots-grid .mugshot-card:hover .mugshot-photo-frame::after,

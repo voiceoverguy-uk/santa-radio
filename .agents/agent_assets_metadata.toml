@@ -994,3 +994,45 @@ mtime_ms = 1793484612162
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/52f16622-4075-4761-b7be-542bd86469ad/3316be71-038f-4421-b10c-58cadfd97b28"
 storage_version_token = "1793484622791146"
 content_type = "image/jpeg"
+
+[[outputs]]
+id = "nZyOWf5d_IAu7QJVlpYtx"
+uri = "file://generated-artifacts/mugshot-1280-christine-lampard-tv-personality-expanded.png"
+type = "image"
+title = "Expanded profile photograph — desktop"
+description = "Full original photograph above the unchanged profile page, without a popup panel or backdrop."
+logical_id = "0e4fd294-f57a-4ea4-9cfa-99fac046efd9"
+content_hash = "sha256:57019a30d40aa76a081f5371b55054f60bfcf5d8b8fbd716857296245d9e246a"
+size = 788111
+mtime_ms = 1793493838133
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/0e4fd294-f57a-4ea4-9cfa-99fac046efd9/bfaeae07-916f-4617-b1dc-ca2871efb3cc"
+storage_version_token = "1793493893453519"
+content_type = "image/png"
+
+[[outputs]]
+id = "3h4tQ6LfRi5ZJVPVgc25S"
+uri = "file://generated-artifacts/mugshot-1280-christine-lampard-tv-personality-collapsed.png"
+type = "image"
+title = "Collapsed profile photograph — desktop"
+description = "Photograph returned to its original frame, with credits and layout preserved."
+logical_id = "b64e5a20-fd92-4b68-a079-38d7dd477ffb"
+content_hash = "sha256:cc4f2473fa8c30d22f8961e48f6ee151aba2b2233f7e1600c2a3ea10faecfb23"
+size = 288959
+mtime_ms = 1793493838572
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/b64e5a20-fd92-4b68-a079-38d7dd477ffb/653d7e87-7093-4c1b-b4d2-fd744f6c717e"
+storage_version_token = "1793493894243637"
+content_type = "image/png"
+
+[[outputs]]
+id = "pdNzILvElIU_onLMD-Rmj"
+uri = "file://generated-artifacts/mugshot-320-chuckle-brothers-tv-presenters-expanded.png"
+type = "image"
+title = "Expanded profile photograph — narrow phone"
+description = "Complete photograph fitted within a 320px-wide viewport."
+logical_id = "1dc467d4-b38b-4bac-99fd-fb5433ee0d39"
+content_hash = "sha256:71102ccf1cd224652b6b8491d7d35a5c68b91a5ec7819f896c5a8af8157fd83a"
+size = 219563
+mtime_ms = 1793493840396
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/1dc467d4-b38b-4bac-99fd-fb5433ee0d39/d7b6e253-1544-4673-828c-37a4c7b25458"
+storage_version_token = "1793493895032992"
+content_type = "image/png"

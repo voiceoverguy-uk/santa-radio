@@ -14,6 +14,12 @@ Profile-photo standardisation must preserve each complete photograph without cro
 
 **How to apply:** Keep original photograph files and credits unchanged when adjusting profile presentation. This does not authorise gallery or homepage redesigns.
 
+Individual profile photographs should expand as an image above the existing page, not inside a framed lightbox, dialog panel or darkened full-screen backdrop. Gallery and homepage photographs remain links to profiles.
+
+**Why:** The owner explicitly requested image-only expansion and excluded gallery/homepage zoom and conventional lightbox UI.
+
+**How to apply:** Preserve this distinction when changing photo interactions; do not add toolbars, carousel controls or image editing as part of profile expansion.
+
 Correct known photographer-credit misspellings without reassigning photos credited to other people or filling in missing attributions.
 
 **Why:** The user explicitly chose to fix existing Bruce credits only and preserve other attributions.

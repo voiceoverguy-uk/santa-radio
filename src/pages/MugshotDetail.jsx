@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useEffect, useRef } from 'react';
-import Portrait from '../components/Portrait.jsx';
+import ExpandablePortrait from '../components/ExpandablePortrait.jsx';
 import mugshotsData, { mugshotAliases } from '../data/mugshots.ts';
 import './MugshotDetail.css';
 import './MugshotPhoto.css';
@@ -75,14 +75,11 @@ export default function MugshotDetail() {
             })}
           </nav>
             <figure className="mugshot-detail-figure">
-              <div className="mugshot-photo-frame">
-                <Portrait
-                  key={celeb.image}
-                  src={celeb.image}
-                  alt={mugImageAlt(celeb)}
-                  className="mugshot-detail-photo"
-                />
-              </div>
+              <ExpandablePortrait
+                key={slug}
+                src={celeb.image}
+                alt={mugImageAlt(celeb)}
+              />
               {credit && <figcaption className="mugshot-photo-credit">Photo credit: {credit}</figcaption>}
             </figure>
             <div className="mugshot-detail-info">

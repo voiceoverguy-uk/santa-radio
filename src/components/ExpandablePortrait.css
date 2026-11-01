@@ -1,0 +1,52 @@
+.mugshot-photo-toggle {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  cursor: zoom-in;
+}
+
+.mugshot-photo-toggle:disabled { cursor: default; }
+.mugshot-photo-toggle:focus-visible,
+.mugshot-photo-floating:focus-visible {
+  outline: 2px solid var(--gold-light, #f0d060);
+  outline-offset: 4px;
+}
+
+/* No backdrop or panel, and no stacking/clipping ancestors from the profile.
+   This sits above the fixed navigation, radio dock and cookie controls. */
+.mugshot-photo-floating {
+  position: fixed;
+  z-index: 1300;
+  visibility: hidden;
+  display: block;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  box-shadow: 0 12px 32px #0005;
+  transform-origin: top left;
+  cursor: zoom-out;
+}
+
+.mugshot-photo-floating img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: contain;
+}
+
+.mugshot-detail-figure .mugshot-photo-expanded .mugshot-detail-photo,
+.mugshot-detail-figure .mugshot-photo-expanded::before,
+.mugshot-detail-figure .mugshot-photo-expanded::after { visibility: hidden; }
+
+/* The profile photograph no longer moves away from its click target on hover. */
+.mugshot-detail-figure .mugshot-photo-frame:hover { transform: none; }
