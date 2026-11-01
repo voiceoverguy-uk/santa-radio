@@ -19,8 +19,37 @@ for (const width of [320, 390, 768, 1440]) {
     const main = page.locator('main');
     await expect(main.getByRole('heading', { level: 1 })).toHaveText('Celebrity Mugshots');
     await expect(main).toContainText('THE SANTA RADIO HALL OF FAME');
-    await expect(main).toContainText('Famous faces. One festive mug.');
-    await expect(main).toContainText('Ecurb the Elf has been out meeting famous faces with our Santa Radio mug. Explore the collection from TV, radio, music, comedy and sport.');
+    const subtitle = main.locator('.mugshots-page-sub');
+    const introduction = main.locator('.mugshots-page-desc');
+    await expect(subtitle).toHaveText('Famous faces. One festive mug.');
+    await expect(introduction).toHaveText('Ecurb the Elf has been out meeting famous faces with our Santa Radio mug. Explore the collection from TV, radio, music, comedy and sport. No A.I. here!');
+    for (const copy of [subtitle, introduction]) {
+      await expect(copy).toBeVisible();
+      const layout = await copy.evaluate(el => {
+        const box = el.getBoundingClientRect();
+        const range = document.createRange();
+        range.selectNodeContents(el);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        const selectableText = selection.toString();
+        selection.removeAllRanges();
+        return {
+          selectableText,
+          userSelect: getComputedStyle(el).userSelect,
+          fits: Array.from(range.getClientRects()).every(rect =>
+            rect.left >= box.left - 1 && rect.right <= box.right + 1 &&
+            rect.top >= box.top - 1 && rect.bottom <= box.bottom + 1),
+          left: box.left,
+          right: box.right,
+        };
+      });
+      expect(layout.selectableText).toBe(await copy.innerText());
+      expect(layout.userSelect).not.toBe('none');
+      expect(layout.fits).toBe(true);
+      expect(layout.left).toBeGreaterThanOrEqual(0);
+      expect(layout.right).toBeLessThanOrEqual(width + 1);
+    }
     await expect(main.locator('.mugshots-count .count-num')).toHaveText(String(catalogue.length));
     await expect(main.locator('.mugshots-count')).toContainText('mugshots and counting');
     await expect(page.locator('.mugshots-page-logo, .mugshots-page-logo-wrap')).toHaveCount(0);

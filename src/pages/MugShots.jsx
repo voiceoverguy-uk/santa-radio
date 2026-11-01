@@ -63,7 +63,7 @@ export default function MugShots() {
           <p className="mugshots-page-sub">Famous faces. One festive mug.</p>
           <p className="mugshots-page-desc">
             Ecurb the Elf has been out meeting famous faces with our Santa Radio mug. Explore the collection from TV,
-            radio, music, comedy and sport.
+            radio, music, comedy and sport. No A.I. here!
           </p>
           <p className="mugshots-count">
             <span className="count-num">{mugshotsData.length}</span> mugshots and counting
