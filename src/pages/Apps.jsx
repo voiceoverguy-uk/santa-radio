@@ -130,6 +130,15 @@ function MacAppShowcase({ app }) {
           <p className="apps-page-eyebrow">Mac app</p>
           <h2 id={`${app.id}-title`} className="app-section-title">{app.title}</h2>
           <p className="mac-app-description">{app.subtitle}</p>
+          <a
+            className="mac-app-store-link"
+            href={app.downloadUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Download Santa Radio for Mac on the App Store (opens in a new tab)"
+          >
+            <img src="/images/download-on-the-app-store.svg" alt="Download on the App Store" width="150" height="50" />
+          </a>
         </div>
         <figure className="mac-app-figure">
           <img

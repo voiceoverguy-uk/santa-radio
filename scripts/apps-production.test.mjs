@@ -170,11 +170,13 @@ test('built Apps HTML starts on first promotional images and serves all local We
   assert.match(mac, /Play Santa Radio and see the current song and artist\./);
   assert.match(mac, /<h2[^>]*>Santa Radio for Mac<\/h2>/);
   assert.doesNotMatch(mac, /Coming soon|mac-app-status|role="status"/i);
-  assert.doesNotMatch(mac, /<a\b|<button\b/);
+  assert.doesNotMatch(mac, /<button\b/);
+  assert.match(mac, /href="https:\/\/apps\.apple\.com\/gb\/app\/santa-radio\/id1025312198\?mt=12"/);
+  assert.match(mac, /src="\/images\/download-on-the-app-store\.svg"/);
   assert.match(mac, /<figcaption>Santa Radio for Mac promotional artwork<\/figcaption>/);
-  const macImage = mac.match(/<img\b[^>]*>/)?.[0];
+  const macImage = mac.match(/<figure\b[^>]*>\s*(<img\b[^>]*>)/)?.[1];
   assert.ok(macImage);
-  assert.match(macImage, /width="941" height="1672"/);
+   assert.match(macImage, /width="1672" height="941"/);
   assert.match(macImage, /alt="Santa Radio for Mac promotional artwork: Festive music for your desktop,/);
   assert.match(macImage, /icons for live Christmas music, snow effect, Xmas lights and playback controls\./);
   const macSrc = macImage.match(/src="([^"]+)"/)?.[1];
@@ -185,6 +187,44 @@ test('built Apps HTML starts on first promotional images and serves all local We
   const macBytes = Buffer.from(await macAsset.arrayBuffer());
   assert.equal(macBytes.toString('ascii', 8, 12), 'WEBP');
   assert.ok(macBytes.length < 250000, 'Mac artwork must stay within its existing 250 kB budget');
+   await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
+   const macSection = page.locator('#santa-radio-mac');
+   const builtMacImage = macSection.locator('figure img');
+   const storeBadge = macSection.locator('a img');
+   await storeBadge.evaluate(image => image.decode());
+   assert.ok(await storeBadge.evaluate(image => image.naturalWidth > 0));
+   for (const width of [1440, 1024, 768, 767, 390, 320]) {
+     await page.setViewportSize({ width, height: 1000 });
+     await builtMacImage.evaluate(image => image.scrollIntoView({ block: 'center', behavior: 'instant' }));
+     await builtMacImage.evaluate(image => image.decode());
+     const geometry = await macSection.evaluate(section => {
+       const image = section.querySelector('figure img');
+       const bounds = image.getBoundingClientRect();
+       const figure = section.querySelector('figure').getBoundingClientRect();
+       const copy = section.querySelector('.mac-app-copy').getBoundingClientRect();
+       const container = section.querySelector('.mac-app-inner').getBoundingClientRect();
+       const dock = document.querySelector('.radio-dock').getBoundingClientRect();
+       return {
+         intrinsic: [image.naturalWidth, image.naturalHeight],
+         ratio: bounds.width / bounds.height,
+         fit: getComputedStyle(image).objectFit,
+         imageInFigure: bounds.top >= figure.top && bounds.bottom <= figure.bottom,
+         inViewport: bounds.left >= 0 && bounds.right <= innerWidth && bounds.top >= 85 && bounds.bottom <= dock.top,
+         figureWidth: figure.width, copyWidth: copy.width, containerWidth: container.width,
+         overflow: document.documentElement.scrollWidth > innerWidth,
+       };
+     });
+     assert.deepEqual(geometry.intrinsic, [1672, 941]);
+     assert.ok(Math.abs(geometry.ratio - 1672 / 941) < .001);
+     assert.equal(geometry.fit, 'contain');
+     assert.ok(geometry.imageInFigure && geometry.inViewport);
+     assert.equal(geometry.overflow, false);
+     if (width >= 768) assert.ok(geometry.figureWidth > geometry.copyWidth * 1.5);
+     else assert.ok(Math.abs(geometry.figureWidth - geometry.containerWidth) < 1);
+     assert.equal(await macSection.locator('button, .mac-app-status, [role="status"]').count(), 0);
+     assert.equal(await macSection.locator('a').count(), 1);
+     assert.equal(await macSection.locator('a').getAttribute('href'), 'https://apps.apple.com/gb/app/santa-radio/id1025312198?mt=12');
+   }
   assert.doesNotMatch(visibleHtml, /Santa Text, Santa Voicemail and Santa Messages also use owner-supplied promotional artwork/);
   assert.doesNotMatch(visibleHtml, /not interactive website controls|iOS screenshots only; the Amazon app’s appearance may differ/);
   for (const [id, filename, width, height] of [

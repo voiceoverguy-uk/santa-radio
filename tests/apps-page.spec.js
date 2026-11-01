@@ -375,7 +375,7 @@ test('apps page voice credit uses standard footer styling', async ({ page }) => 
   })).toBe(true);
 });
 
-test('Mac app listing keeps complete promotional artwork without an availability badge or store link', async ({ page }) => {
+test('Mac app listing keeps complete promotional artwork with the approved App Store badge', async ({ page }) => {
   await page.goto('/apps');
   await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
   const minimise = page.getByRole('button', { name: 'Minimise radio player', exact: true });
@@ -387,14 +387,23 @@ test('Mac app listing keeps complete promotional artwork without an availability
   await expect(section.locator('.mac-app-status, [role="status"]')).toHaveCount(0);
   await expect(section).not.toContainText(/Coming soon/i);
   await expect(section).toContainText('Play Santa Radio and see the current song and artist.');
-  await expect(section.getByRole('link')).toHaveCount(0);
+  const download = section.getByRole('link', { name: 'Download Santa Radio for Mac on the App Store (opens in a new tab)', exact: true });
+  const storeUrl = 'https://apps.apple.com/gb/app/santa-radio/id1025312198?mt=12';
+  await expect(section.getByRole('link')).toHaveCount(1);
+  await expect(download).toHaveAttribute('href', storeUrl);
+  await expect(download).toHaveAttribute('target', '_blank');
+  await expect(download).toHaveAttribute('rel', 'noopener noreferrer');
+  const badge = download.getByRole('img', { name: 'Download on the App Store', exact: true });
+  await badge.evaluate(image => image.decode());
+  expect(await badge.evaluate(image => image.naturalWidth)).toBeGreaterThan(0);
+  await page.context().route(storeUrl, route => route.fulfill({ contentType: 'text/html', body: '<title>Santa Radio on the Mac App Store</title>' }));
   await expect(section.getByRole('button')).toHaveCount(0);
 
   const image = section.getByRole('img', {
     name: 'Santa Radio for Mac promotional artwork: Festive music for your desktop, with a laptop in a Christmas scene and icons for live Christmas music, snow effect, Xmas lights and playback controls.',
   });
-  await expect(image).toHaveAttribute('width', '941');
-  await expect(image).toHaveAttribute('height', '1672');
+  await expect(image).toHaveAttribute('width', '1672');
+  await expect(image).toHaveAttribute('height', '941');
   await expect(section.locator('figcaption')).toHaveText('Santa Radio for Mac promotional artwork');
   const imageUrl = await image.getAttribute('src');
   expect(imageUrl).toMatch(/^\/.*santa-radio-mac.*\.webp/);
@@ -403,21 +412,47 @@ test('Mac app listing keeps complete promotional artwork without an availability
   expect(response.headers()['content-type']).toMatch(/image\/webp/);
   expect((await response.body()).length).toBeLessThan(250000);
 
-  for (const width of [1280, 390, 320]) {
+  for (const width of [1440, 1280, 1024, 768, 767, 390, 320]) {
     await page.setViewportSize({ width, height: 1000 });
     await expect(section.locator('.mac-app-status, [role="status"]')).toHaveCount(0);
-    await expect(section.locator('.mac-app-copy > :last-child')).toHaveClass('mac-app-description');
+    await expect(section.locator('.mac-app-copy > :last-child')).toHaveClass('mac-app-store-link');
     const copySpacing = await section.locator('.mac-app-copy').evaluate(copy =>
       copy.getBoundingClientRect().bottom - copy.lastElementChild.getBoundingClientRect().bottom);
-    expect(copySpacing).toBeCloseTo(0, 1);
+    // An inline badge retains the text line's small baseline descent.
+    expect(copySpacing).toBeGreaterThanOrEqual(0);
+    expect(copySpacing).toBeLessThanOrEqual(10);
+    await download.focus();
+    await page.keyboard.press('Shift+Tab');
+    await page.keyboard.press('Tab');
+    await expect(download).toBeFocused();
+    await expect(download).toHaveCSS('outline-style', 'solid');
+    for (const activate of [() => page.keyboard.press('Enter'), () => download.click()]) {
+      const opened = page.waitForEvent('popup');
+      await activate();
+      const popup = await opened;
+      await popup.waitForLoadState();
+      expect(popup.url()).toBe(storeUrl);
+      await popup.close();
+    }
     await image.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
-    await expect.poll(() => image.evaluate(el => [el.naturalWidth, el.naturalHeight])).toEqual([941, 1672]);
+    await image.evaluate(el => el.decode());
+    expect(await image.evaluate(el => [el.naturalWidth, el.naturalHeight])).toEqual([1672, 941]);
+    await expect(image).toHaveCSS('object-fit', 'contain');
     const bounds = await image.boundingBox();
     expect(bounds.width).toBeGreaterThan(200);
-    expect(bounds.width / bounds.height).toBeCloseTo(941 / 1672, 3);
+    expect(bounds.width / bounds.height).toBeCloseTo(1672 / 941, 3);
     expect(bounds.x).toBeGreaterThanOrEqual(0);
     expect(bounds.x + bounds.width).toBeLessThanOrEqual(width);
     const figure = await section.locator('figure').boundingBox();
+    const copy = await section.locator('.mac-app-copy').boundingBox();
+    const container = await section.locator('.mac-app-inner').boundingBox();
+    if (width >= 768) {
+      expect(figure.width).toBeGreaterThan(copy.width * 1.5);
+      expect(copy.x).toBeGreaterThanOrEqual(figure.x + figure.width + 29);
+    } else {
+      expect(figure.width).toBeCloseTo(container.width, 1);
+      expect(copy.y).toBeGreaterThanOrEqual(figure.y + figure.height + 28);
+    }
     expect(bounds.y).toBeGreaterThanOrEqual(figure.y);
     expect(bounds.y + bounds.height).toBeLessThanOrEqual(figure.y + figure.height);
     const dock = await page.locator('.radio-dock').boundingBox();

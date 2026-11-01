@@ -121,8 +121,15 @@ test('Apps is usable on first server render without JavaScript', async ({ browse
     await expect(mac.locator('.mac-app-description')).toHaveText('Play Santa Radio and see the current song and artist.');
     await expect(mac.locator('.mac-app-status, [role="status"]')).toHaveCount(0);
     await expect(mac).not.toContainText(/Coming soon/i);
-    await expect(mac.getByRole('link')).toHaveCount(0);
-    await expect(mac.getByRole('img')).toHaveCount(1);
+    await expect(mac.getByRole('link')).toHaveCount(1);
+    await expect(mac.getByRole('link')).toHaveAttribute('href', 'https://apps.apple.com/gb/app/santa-radio/id1025312198?mt=12');
+    await expect(mac.getByRole('link').getByRole('img')).toHaveAttribute('src', '/images/download-on-the-app-store.svg');
+    const macImage = mac.locator('figure img');
+    await expect(macImage).toHaveAttribute('width', '1672');
+    await expect(macImage).toHaveAttribute('height', '941');
+    await macImage.scrollIntoViewIfNeeded();
+    await macImage.evaluate(image => image.decode());
+    expect(await macImage.evaluate(image => [image.naturalWidth, image.naturalHeight])).toEqual([1672, 941]);
     await expect(page.locator('.apple-tv-instruction')).toHaveText('Find Santa Radio in the App Store on your Apple TV.');
   } finally {
     await context.close();

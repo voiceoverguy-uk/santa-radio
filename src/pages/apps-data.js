@@ -198,11 +198,12 @@ export const christmasApps = [
 export const macAppListing = {
   id: 'santa-radio-mac',
   title: 'Santa Radio for Mac',
+  downloadUrl: 'https://apps.apple.com/gb/app/santa-radio/id1025312198?mt=12',
   subtitle: 'Play Santa Radio and see the current song and artist.',
   image: santaRadioMac,
   alt: 'Santa Radio for Mac promotional artwork: Festive music for your desktop, with a laptop in a Christmas scene and icons for live Christmas music, snow effect, Xmas lights and playback controls.',
-  width: 941,
-  height: 1672,
+  width: 1672,
+  height: 941,
 };
 
 export const appleWatchScreenshots = [

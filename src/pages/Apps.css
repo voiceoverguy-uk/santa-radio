@@ -326,9 +326,13 @@
 .apps-page .mac-app-figure figcaption { padding: 12px 4px 1px; color: var(--muted); font-size: .72rem; letter-spacing: .04em; text-align: right; }
 .apps-page .mac-app-copy .app-section-title { margin-bottom: 18px; }
 
+.apps-page .mac-app-inner {
+  grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
+  gap: clamp(30px, 4vw, 56px);
+}
+
 .apps-page .mac-app-figure {
   width: 100%;
-  max-width: 420px;
   min-width: 0;
   margin: 0 auto;
   overflow: hidden;
@@ -338,8 +342,16 @@
   box-shadow: 0 24px 65px #030b08a6;
 }
 
-.apps-page .mac-app-figure img { display: block; width: 100%; height: auto; }
+.apps-page .mac-app-figure img { display: block; width: 100%; height: auto; object-fit: contain; }
 .apps-page .mac-app-figure figcaption { padding: 11px 13px; }
+
+.apps-page .mac-app-store-link {
+  display: inline-flex;
+  margin-top: 24px;
+  border-radius: 8px;
+}
+.apps-page .mac-app-store-link img { display: block; width: 150px; height: auto; }
+.apps-page .mac-app-store-link:focus-visible { outline: 2px solid var(--gold-light); outline-offset: 5px; }
 
 @media (min-width: 768px) and (max-width: 1100px) {
   .apps-page .app-features-grid { grid-template-columns: minmax(0, 1fr); }
@@ -378,7 +390,7 @@
   .apps-page .apple-watch-inner .app-screenshots { width: min(100%, 370px); }
   .apps-page .apple-tv-figure { padding: 11px 11px 17px; }
   .apps-page .apple-tv-figure figcaption { font-size: .68rem; }
-  .apps-page .mac-app-figure { width: min(100%, 380px); }
+  .apps-page .mac-app-figure { width: 100%; }
 }
 
 @media (max-width: 390px) {
