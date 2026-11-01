@@ -115,26 +115,6 @@
   overflow-wrap: anywhere;
 }
 
-.mugshot-photo-credit a {
-  display: inline-block;
-  padding-block: 6px;
-  color: var(--gold-light, #f0d060);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.mugshot-social {
-  margin-bottom: 24px;
-}
-
-.mugshot-social a {
-  color: var(--gold-light, #f0d060);
-  font-size: 0.9rem;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-  overflow-wrap: anywhere;
-}
-
 .mugshot-detail-content a:focus-visible {
   outline: 2px solid var(--gold-light, #f0d060);
   outline-offset: 4px;

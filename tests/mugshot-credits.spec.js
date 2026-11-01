@@ -31,7 +31,7 @@ test('complete public catalogue has uniform Bruce credits and preserves other cr
   expect(others.length).toBeGreaterThan(0);
   for (const profile of others) {
     const original = raw.find(row => row.song === profile.song);
-    expect(profile.credit).toBe(original.credit);
+    expect(profile.credit).toBe(original.credit || '');
   }
   expect(JSON.stringify(raw)).toBe(before);
 });

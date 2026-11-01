@@ -6,7 +6,7 @@ import mugshotsData, { mugshotAliases } from '../data/mugshots.ts';
 import './MugshotDetail.css';
 import './MugshotPhoto.css';
 import PageSeo from '../seo/PageSeo.jsx';
-import { mugImageAlt, mugMetadata, mugPhotoTermsPath } from '../seo/catalogue.js';
+import { mugImageAlt, mugMetadata } from '../seo/catalogue.js';
 
 export default function MugshotDetail() {
   const { slug } = useParams();
@@ -45,10 +45,6 @@ export default function MugshotDetail() {
 
   const biography = typeof celeb.info === 'string' ? celeb.info.trim() : '';
   const credit = typeof celeb.credit === 'string' ? celeb.credit.trim() : '';
-  const socialUrl = typeof celeb.socialUrl === 'string' &&
-    !['Maxwell Thorpe', 'Patricia Hodge', 'Jacqui Abbot'].includes(celeb.artist) &&
-    /^https:\/\/x\.com\/[A-Za-z0-9_]{1,15}$/.test(celeb.socialUrl)
-    ? celeb.socialUrl : '';
 
   return (
     <main>
@@ -87,10 +83,7 @@ export default function MugshotDetail() {
                   className="mugshot-detail-photo"
                 />
               </div>
-              <figcaption className="mugshot-photo-credit">
-                {credit && <span>Photo credit: {credit}<br /></span>}
-                <Link to={mugPhotoTermsPath}>Photo usage and licensing</Link>
-              </figcaption>
+              {credit && <figcaption className="mugshot-photo-credit">Photo credit: {credit}</figcaption>}
             </figure>
             <div className="mugshot-detail-info">
               <h1 ref={heading} tabIndex={-1} className="mugshot-detail-name">{celeb.artist}</h1>
@@ -98,13 +91,6 @@ export default function MugshotDetail() {
               <p className="mugshot-detail-desc">
                 {biography || `${celeb.artist} posing with the iconic Santa Radio mug as part of our Celebrity Mug Shots Hall of Fame!`}
               </p>
-              {socialUrl && (
-                <p className="mugshot-social">
-                  <a href={socialUrl} target="_blank" rel="noopener noreferrer">
-                    Legacy social link (identity unverified)
-                  </a>
-                </p>
-              )}
               <Link to="/mugshots/all" className="back-link">← Back to all Mug Shots</Link>
             </div>
           </div>

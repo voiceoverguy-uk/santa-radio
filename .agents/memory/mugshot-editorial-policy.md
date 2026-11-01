@@ -59,3 +59,9 @@ User-supplied researched biographies take precedence over legacy database import
 **Why:** The user supplied expanded biographies and approved importing the unflagged entries while leaving Gracie Malloy, Laurel and Hardy, and UEFA Trophy unchanged pending confirmation.
 
 **How to apply:** Preserve approved prose verbatim across future imports; retain held drafts and sources for confirmation without restoring removed profiles or silently changing names, photos or URLs.
+
+Keep celebrity social links and photo-policy links out of individual Mugshot profiles; retain photographer attribution and photograph licensing metadata.
+
+**Why:** The owner wants cleaner profiles and considers the existing site-wide policy coverage sufficient.
+
+**How to apply:** Do not reintroduce profile-level links when updating the shared template; leave site-wide social and policy access in place.

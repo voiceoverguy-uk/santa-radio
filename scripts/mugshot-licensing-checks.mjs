@@ -25,6 +25,17 @@ export function assertMugPhotoGraph(graph, mug) {
 
 export function assertMugPhotoHtml(html, mug) {
   assertMugPhotoGraph(readGraph(html), mug);
-  assert.ok(html.includes(`href="${mugPhotoTermsPath}"`), `${mug.song}: visible terms link`);
-  assert.match(html, /<figcaption[^>]*>[\s\S]*?Photo usage and licensing[\s\S]*?<\/figcaption>/);
+  const footer = html.match(/<footer\b[^>]*>[\s\S]*?<\/footer>/)?.[0];
+  assert.ok(footer?.includes(`href="${mugPhotoTermsPath}"`), `${mug.song}: footer terms link`);
+  const card = html.match(/<div class="mugshot-detail-card">[\s\S]*?<\/main>/)?.[0];
+  assert.ok(card, `${mug.song}: profile card`);
+  assert.doesNotMatch(card, /Photo usage and licensing|Legacy social link|mugshot-social|<a\b[^>]*href="https?:/);
+  assert.ok(!card.includes(`href="${mugPhotoTermsPath}"`), `${mug.song}: no profile terms link`);
+  const caption = card.match(/<figcaption\b[^>]*>([\s\S]*?)<\/figcaption>/)?.[1];
+  const escapeHtml = text => text.replace(/[&<>"']/g, character => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#x27;',
+  })[character]);
+  assert.equal(caption?.replace(/<!--[\s\S]*?-->/g, ''),
+    mug.credit?.trim() ? `Photo credit: ${escapeHtml(mug.credit.trim())}` : undefined,
+    `${mug.song}: attribution only, no empty caption`);
 }
