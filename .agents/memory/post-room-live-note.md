@@ -7,3 +7,10 @@ The owner approved the North Pole Post Room mockup: a warm lamplit envelope stil
 **Why:** The owner explicitly said the joke changes frequently and asked to retain that function while matching the handwritten appearance.
 
 **How to apply:** Keep the existing joke source, selection order, refresh timing and reveal behaviour unchanged. Never substitute the mockup's example joke or bake jokes into artwork. Allow all current jokes to wrap, reserve enough space to prevent jumps during rotation, and retain readable phone typography. The illustrative mockup footer is not a complete link inventory: preserve all existing footer links, social links, cookie settings and snow controls.
+
+Keep Santa's paper note compact rather than tall, with less empty vertical space.
+
+**Why:** The owner explicitly requested a shorter note box.
+
+**How to apply:** Tighten spacing while retaining readable handwriting, the separate
+signature and enough room for every rotating message without clipping or jumps.

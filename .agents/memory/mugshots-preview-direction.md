@@ -13,3 +13,13 @@ The owner wants the pictures refreshed with the next lot of A-list Mugshots ever
 **Why:** The owner explicitly requested ongoing refreshes after reviewing the initial static-per-load preview.
 
 **How to apply:** Keep automatic batches drawn from the existing approved homepage pool, with each photo's name, role and destination changing together. This replaces the earlier once-per-load-only behaviour.
+
+Remove the footer line “Hundreds of famous faces. Who will you spot?” and the
+Pause/Resume photo refresh button from the homepage preview. Keep the gallery
+link and automatic photo refresh.
+
+**Why:** The owner explicitly requested removal of both items shown beneath the
+homepage Mugshots gallery button.
+
+**How to apply:** Do not restore these footer controls when refining the preview;
+this does not change the main Mugshots gallery.

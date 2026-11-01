@@ -4,6 +4,14 @@ description: Owner-approved homepage game placement, supplied artwork and sound 
 ---
 Christmas Pairs is a free website game below the homepage soundboard, inspired by the owner's existing app. It must not require signup. Use the owner's supplied card artwork rather than inventing replacements.
 
+Use the owner's supplied square Santa Radio mascot logo, small and centred, on
+the card backs instead of the star and “SR”.
+
+**Why:** The owner explicitly requested the logo replacement and supplied its image.
+
+**How to apply:** Keep the logo's proportions, green card backs and gold framing;
+do not change the matching pictures or game behaviour.
+
 **Why:** The owner requested the app-style pairs game on the website and supplied the picture collection.
 
 **How to apply:** Preserve the remember-then-match flow, increasing card counts, restart and pause controls. The owner authorised choosing sensible preview timings; screenshots are visual references, not evidence of exact app timing or unseen level rules.

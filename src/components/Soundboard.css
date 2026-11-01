@@ -11,19 +11,6 @@ section.soundboard {
   padding: clamp(3.2rem, 6vw, 5.5rem) 1.1rem 2.5rem;
   color: var(--sb-cream);
   background-color: var(--sb-deep);
-  background-image: linear-gradient(90deg, rgba(3, 25, 20, .3), rgba(3, 25, 20, .1) 48%, rgba(3, 25, 20, .08)), url('/images/soundboard-workshop-surround.webp');
-  background-size: 100% 100%;
-  background-position: center;
-}
-
-section.soundboard::before {
-  display: block;
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  content: "";
-  background:
-    linear-gradient(180deg, transparent 0%, rgba(4, 31, 25, .08) 32%, rgba(4, 31, 25, .18) 100%);
 }
 
 .soundboard-container {
@@ -333,20 +320,11 @@ section.soundboard::before {
 @media (max-width: 760px) {
   section.soundboard {
     padding: 3.3rem .85rem 2rem;
-    background-size: 100% auto;
-    background-position: center top;
-    background-repeat: no-repeat;
-  }
-
-  section.soundboard::before {
-    background:
-      linear-gradient(180deg, transparent 0, rgba(3, 25, 20, .14) 170px, #061f1a 400px);
   }
 
   .soundboard-intro {
     max-width: 100%;
     min-height: 0;
-    padding-top: clamp(120px, 30vw, 190px);
     margin: 0 auto 1.65rem;
   }
 

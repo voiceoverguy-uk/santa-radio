@@ -40,7 +40,7 @@ function PineCorner({ className }) {
 }
 
 export default function MugshotsPreview() {
-  const { celebs, userPaused, togglePaused, gridEvents } = useMugshotRotation(mugshotsData);
+  const { celebs, gridEvents } = useMugshotRotation(mugshotsData);
 
   return (
     <section id="homepage-mugshots" className="mugshots-preview starry-bg" aria-labelledby="homepage-mugshots-title">
@@ -50,9 +50,9 @@ export default function MugshotsPreview() {
         <header className="mugshots-intro">
           <p className="mugshots-eyebrow">THE SANTA RADIO HALL OF FAME</p>
           <h2 id="homepage-mugshots-title" className="section-title mug-title">Celebrity Mugshots</h2>
-          <p className="mugshots-subtitle">Famous faces. One festive mug. No A.I.</p>
+          <p className="mugshots-subtitle">Famous faces. One festive mug.</p>
           <p className="mugshots-description">
-            Our autograph-hunting elf has been busy. Discover hundreds of familiar faces with the Santa Radio mug.
+            Our autograph-hunting elf has been busy with our Santa Radio mug. No A.I.
           </p>
         </header>
 
@@ -87,10 +87,6 @@ export default function MugshotsPreview() {
             Explore the Celebrity Mugshots
             <span aria-hidden="true">›</span>
           </Link>
-          <p>Hundreds of famous faces. Who will you spot?</p>
-          <button type="button" className="mugshots-refresh-control" onClick={togglePaused} aria-pressed={userPaused}>
-            {userPaused ? 'Resume photo refresh' : 'Pause photo refresh'}
-          </button>
         </div>
       </div>
     </section>

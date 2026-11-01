@@ -6,7 +6,7 @@ import { ACCESS_REQUEST_TIMEOUT_MS, MessageAccessError, submitMessageAccess, val
 
 const emptyFields = { FIRSTNAME: '', LASTNAME: '', EMAIL: '', email_address_check: '' };
 
-export default function SantaMessageAccessForm({ variant = 'inline', onAccepted, onPrivacyNavigate, keepInPlace = false }) {
+export default function SantaMessageAccessForm({ variant = 'inline', onAccepted, onPrivacyNavigate, keepInPlace = false, selectedChildName = '' }) {
   const [fields, setFields] = useState(emptyFields);
   const [errors, setErrors] = useState({});
   const [error, setError] = useState('');
@@ -82,5 +82,5 @@ export default function SantaMessageAccessForm({ variant = 'inline', onAccepted,
       }
     }
   };
-  return <SantaMessageAccessCard {...{ fields, errors, error, pending, onChange, onSubmit, formRef, variant, onPrivacyNavigate }} />;
+  return <SantaMessageAccessCard {...{ fields, errors, error, pending, onChange, onSubmit, formRef, variant, onPrivacyNavigate, selectedChildName }} />;
 }

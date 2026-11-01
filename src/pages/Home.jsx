@@ -13,7 +13,7 @@ import ContactSection from '../components/ContactSection.jsx';
 import './Home.css';
 
 export default function Home() {
-  const { pendingName, continueWithName } = useHeroNameSelection();
+  const { pendingName, continueWithName, selectedName, setSelectedName } = useHeroNameSelection();
   const trackEvent = useTrackEvent();
   const trackPartnership = event => {
     if (event.defaultPrevented ||
@@ -24,8 +24,8 @@ export default function Home() {
   return (
     <main id="main-content" className="home-page hero-name-preview">
       <PageSeo metadata={homeMetadata()} />
-      <HomeHero onContinue={continueWithName} />
-      <SantaMessageForm keepSignupInPlace pendingName={pendingName} />
+      <HomeHero onContinue={continueWithName} onSelectedNameChange={setSelectedName} />
+      <SantaMessageForm keepSignupInPlace pendingName={pendingName} selectedChildName={selectedName} />
       <SantaTrackerBanner />
       {/* Personalised video promotion temporarily removed; SantaVideoSection and its styles are retained for restoration. */}
       <SantaDashPromo />

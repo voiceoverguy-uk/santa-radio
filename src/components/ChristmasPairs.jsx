@@ -161,8 +161,7 @@ export default function ChristmasPairs() {
                         onClick={() => flip(card.id)}
                       >
                         <span className="christmas-pairs__card-back" aria-hidden="true">
-                          <span className="christmas-pairs__back-star"><Star size={18} aria-hidden="true" /></span>
-                          <span className="christmas-pairs__back-mark">SR</span>
+                          <img className="christmas-pairs__back-logo" src="/images/christmas-pairs/card-back-logo.png" alt="" width="112" height="112" draggable="false" />
                         </span>
                         <span className="christmas-pairs__card-front" aria-hidden={!shown}>
                           <img src={card.picture.src} alt="" />

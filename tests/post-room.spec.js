@@ -18,6 +18,8 @@ for (const width of [320, 390, 768, 1440]) {
   test(`Post Room links, live handwriting and footer work at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1100 });
     const section = await open(page);
+    await expect(section.locator('.contact-santa-note')).toHaveCSS('padding-top', '12px');
+    await expect(section.locator('.contact-santa-note')).toHaveCSS('padding-bottom', '10px');
     await section.scrollIntoViewIfNeeded();
     await expect(section.getByRole('heading', { name: 'We’d love to hear from you' })).toBeVisible();
     await expect(section).toContainText('THE NORTH POLE POST ROOM');

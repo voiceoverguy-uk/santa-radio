@@ -1,10 +1,13 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import useHostedSantaNameSearch from './useHostedSantaNameSearch.js';
 
-export default function HeroNameChecker({ onContinue }) {
+export default function HeroNameChecker({ onContinue, onSelectedNameChange }) {
   const id = useId();
   const [name, setName] = useState('');
   const [selected, setSelected] = useState(null);
+  useEffect(() => {
+    onSelectedNameChange?.(selected?.name || '');
+  }, [selected, onSelectedNameChange]);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
   const [validation, setValidation] = useState('');

@@ -91,7 +91,7 @@ test('reported duplicate searches show one photo card and old links show full de
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.goto('/');
-  await expect(page.locator('.mugshots-preview')).toContainText('Hundreds of famous faces. Who will you spot?');
+  await expect(page.locator('.mugshots-preview')).not.toContainText('Hundreds of famous faces. Who will you spot?');
 });
 
 test('import preserves routes and images and safely handles source text', () => {

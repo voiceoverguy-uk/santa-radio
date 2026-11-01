@@ -18,10 +18,11 @@ test('approved copy is live text with no retired icon or wrapper', async ({ page
   const section = page.locator(sectionSelector);
   for (const copy of [
     'THE SANTA RADIO HALL OF FAME',
-    'Famous faces. One festive mug. No A.I.',
-    'Our autograph-hunting elf has been busy. Discover hundreds of familiar faces with the Santa Radio mug.',
-    'Hundreds of famous faces. Who will you spot?',
+    'Famous faces. One festive mug.',
+    'Our autograph-hunting elf has been busy with our Santa Radio mug. No A.I.',
   ]) await expect(section.getByText(copy, { exact: true })).toBeVisible();
+  await expect(section.getByText('Hundreds of famous faces. Who will you spot?', { exact: true })).toHaveCount(0);
+  await expect(section.getByRole('button', { name: /photo refresh/i })).toHaveCount(0);
   await expect(section.getByRole('heading', { name: 'Celebrity Mugshots', exact: true })).toBeVisible();
   await expect(section.getByRole('link', { name: 'Explore the Celebrity Mugshots', exact: true }))
     .toHaveAttribute('href', '/mugshots/all');
@@ -102,7 +103,7 @@ for (const width of [1440, 768, 390, 320]) {
     const section = page.locator(sectionSelector);
     const cards = page.locator(cardsSelector);
     const subtitle = section.locator('.mugshots-subtitle');
-    await expect(subtitle).toHaveText('Famous faces. One festive mug. No A.I.');
+    await expect(subtitle).toHaveText('Famous faces. One festive mug.');
     expect(await subtitle.evaluate(node => {
       const box = node.getBoundingClientRect();
       const range = document.createRange();

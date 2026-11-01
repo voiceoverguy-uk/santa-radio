@@ -293,8 +293,13 @@
   pointer-events: none;
 }
 .christmas-pairs__card-back::after { inset: 10px; border-color: #d4b55c40; }
-.christmas-pairs__back-star { display: grid; place-items: center; }
-.christmas-pairs__back-mark { font-family: 'Cinzel', Georgia, serif; font-size: clamp(.47rem, 1.2vw, .68rem); letter-spacing: .12em; }
+.christmas-pairs__back-logo {
+  display: block;
+  width: 36%;
+  max-width: 56px;
+  height: auto;
+  object-fit: contain;
+}
 .christmas-pairs__card-front { visibility: hidden; padding: 7%; background: #f6ecd5; }
 .christmas-pairs__card-front[aria-hidden="false"] { visibility: visible; }
 .christmas-pairs__card-front img { display: block; width: 100%; height: 100%; object-fit: contain; }
@@ -433,7 +438,6 @@
   .christmas-pairs { padding-inline: 12px; }
   .christmas-pairs__game { padding-inline: 9px; }
   .christmas-pairs__grid { gap: 5px; }
-  .christmas-pairs__card-back .christmas-pairs__back-star svg { width: 14px; height: 14px; }
   .christmas-pairs__button { padding-inline: 12px; }
   .christmas-pairs__idle-actions { flex-direction: column; }
   .christmas-pairs__idle-actions .christmas-pairs__button { min-width: 150px; }

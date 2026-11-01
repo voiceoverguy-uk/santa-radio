@@ -126,6 +126,46 @@ async function choose(page, name) {
   await expect(checker(page).getByRole('status')).toHaveText(`Yes! Santa can record for ${name}.`);
 }
 
+for (const width of [390, 1440]) {
+  test(`homepage signup introduction follows only the selected child at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await setup(page);
+    await page.addInitScript(() => sessionStorage.setItem('santa-message-offer-shown', 'shown'));
+    await page.goto('/');
+    const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+    if (await decline.isVisible()) await decline.click();
+    const introduction = page.locator('#santa-messages .santa-message-access__intro');
+    const generic = 'Add your details and access a free personalised downloadable message from Santa.';
+    await expect(introduction).toHaveText(generic);
+    await input(page).fill('Arabella');
+    await expect(checker(page).getByRole('option', { name: 'Arabella', exact: true })).toBeVisible();
+    await expect(introduction).toHaveText(generic);
+    await choose(page, 'Arabella');
+    await expect(introduction).toHaveText('Add your details and access a free personalised downloadable message for Arabella from Santa.');
+    await choose(page, 'Erin');
+    await expect(introduction).toHaveText('Add your details and access a free personalised downloadable message for Erin from Santa.');
+    await input(page).fill('UnknownName');
+    await expect(introduction).toHaveText(generic);
+    await choose(page, 'Arabella');
+    await cta(page).click();
+    const adultFirstName = page.locator('#santa-messages input[name="FIRSTNAME"]');
+    await expect(adultFirstName).toBeFocused();
+    await expect(adultFirstName).toHaveValue('');
+    await adultFirstName.fill('Testparent');
+    await expect(introduction).toHaveText('Add your details and access a free personalised downloadable message for Arabella from Santa.');
+    expect(page.url()).not.toMatch(/Arabella|Erin/);
+    expect(await page.evaluate(() => JSON.stringify({ ...localStorage, ...sessionStorage }))).not.toMatch(/Arabella|Erin/);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    mkdirSync('generated-artifacts', { recursive: true });
+    await page.locator('#santa-messages .santa-message-access').screenshot({
+      path: `generated-artifacts/homepage-selected-name-${width}.jpg`, animations: 'disabled',
+    });
+    await page.reload();
+    await expect(introduction).toHaveText(generic);
+  });
+}
+
 for (const route of ['/', path]) {
   test(`desktop left inset preserves the shared hero geometry on ${route}`, async ({ page }, testInfo) => {
     await setup(page);

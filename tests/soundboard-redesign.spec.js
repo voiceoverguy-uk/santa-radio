@@ -33,6 +33,8 @@ for (const width of [320, 390, 768, 1440]) {
   test(`soundboard preserves phrase order, readable controls and honest states at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1100 });
     const board = await open(page);
+    await expect(board).toHaveCSS('background-image', 'none');
+    await expect(board.locator('.soundboard-intro')).toHaveCSS('padding-top', '0px');
     const buttons = board.locator('.soundboard-btn');
     await expect(buttons.locator('.soundboard-btn-label')).toHaveText(labels);
     await expect(board.locator('.soundboard-now-title')).toHaveText('Choose a phrase');

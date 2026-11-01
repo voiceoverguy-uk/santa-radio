@@ -45,7 +45,7 @@ async function layout(page, game, width) {
   }
 }
 async function cardGroups(game) {
-  const sources = await cards(game).evaluateAll(nodes => nodes.map(node => node.querySelector('img').getAttribute('src')));
+  const sources = await cards(game).evaluateAll(nodes => nodes.map(node => node.querySelector('.christmas-pairs__card-front img').getAttribute('src')));
   return [...new Set(sources)].map(src => sources.flatMap((source, index) => source === src ? [index] : []));
 }
 async function solve(game) {
@@ -82,6 +82,26 @@ for (const width of [320, 390, 1440]) {
     await page.clock.runFor(4050);
     await expect(shown(game)).toHaveCount(0);
     await expect(cards(game).first()).toHaveAccessibleName('Card 1, face down');
+    const backs = game.locator('.christmas-pairs__card-back');
+    await expect(backs.locator('.christmas-pairs__back-logo')).toHaveCount(6);
+    await expect(backs.locator('.christmas-pairs__back-mark, .christmas-pairs__back-star')).toHaveCount(0);
+    const logos = await backs.locator('img').evaluateAll(images => images.map(image => {
+      const logo = image.getBoundingClientRect();
+      const card = image.parentElement.getBoundingClientRect();
+      return { loaded: image.complete && image.naturalWidth === 112,
+        width: logo.width, height: logo.height, cardWidth: card.width,
+        offsetX: Math.abs(logo.left + logo.width / 2 - card.left - card.width / 2),
+        offsetY: Math.abs(logo.top + logo.height / 2 - card.top - card.height / 2) };
+    }));
+    for (const logo of logos) {
+      expect(logo.loaded).toBe(true);
+      expect(logo.width).toBeLessThanOrEqual(56);
+      expect(logo.width).toBeLessThan(logo.cardWidth * .4);
+      expect(logo.height).toBeCloseTo(logo.width, 1);
+      expect(logo.offsetX).toBeLessThan(1);
+      expect(logo.offsetY).toBeLessThan(1);
+    }
+    await game.screenshot({ path: `generated-artifacts/christmas-pairs-backs-${width}.jpg`, style: evidenceStyle });
     await cards(game).nth(groups[0][0]).focus();
     await page.keyboard.press('Enter');
     await expect(shown(game)).toHaveCount(1);

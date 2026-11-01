@@ -196,24 +196,6 @@
   to { opacity: 1; transform: translateX(0); }
 }
 
-.mugshots-preview .mugshots-refresh-control {
-  min-height: 44px;
-  margin-top: 12px;
-  padding: 6px 16px;
-  border: 1px solid #af8b3e;
-  border-radius: 999px;
-  background: #09271c;
-  color: #e7c86c;
-  font: inherit;
-  font-size: .75rem;
-  cursor: pointer;
-}
-
-.mugshots-preview .mugshots-refresh-control:focus-visible {
-  outline: 3px solid #fff1b5;
-  outline-offset: 4px;
-}
-
 .mugshots-preview .mug-photo {
   position: absolute;
   inset: 0;
@@ -306,13 +288,6 @@
 
 .mugshots-gallery-button > span {
   font: 400 1.5rem/1 Georgia, serif;
-}
-
-.mugshots-gallery-cta > p {
-  margin: 11px 0 0;
-  color: rgba(246, 237, 207, .88);
-  font-size: .79rem;
-  letter-spacing: .015em;
 }
 
 @media (max-width: 760px) {

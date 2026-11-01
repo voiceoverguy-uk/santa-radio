@@ -11,6 +11,7 @@ import '../pages/HeroNamePreview.css';
 
 export function useHeroNameSelection() {
   const [pendingName, setPendingName] = useState(null);
+  const [selectedName, setSelectedName] = useState('');
   const scrollFrame = useRef(0);
   useEffect(() => () => cancelAnimationFrame(scrollFrame.current), []);
 
@@ -27,10 +28,10 @@ export function useHeroNameSelection() {
       focusTarget?.focus({ preventScroll: true });
     });
   };
-  return { pendingName, continueWithName };
+  return { pendingName, continueWithName, selectedName, setSelectedName };
 }
 
-export default function HomeHero({ preview = false, onContinue }) {
+export default function HomeHero({ preview = false, onContinue, onSelectedNameChange }) {
   const layoutRef = useRef(null);
   const titleRef = useRef(null);
   const checkerRef = useRef(null);
@@ -113,7 +114,7 @@ export default function HomeHero({ preview = false, onContinue }) {
             <span className="hero-name-preview__seal" aria-hidden="true">S</span>
             <span className="hero-name-preview__checker-kicker">The North Pole</span>
           </div>
-          <HeroNameChecker onContinue={onContinue} />
+          <HeroNameChecker onContinue={onContinue} onSelectedNameChange={onSelectedNameChange} />
         </aside>
       </div>
     </section>

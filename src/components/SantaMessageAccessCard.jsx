@@ -12,6 +12,7 @@ export default function SantaMessageAccessCard({
   formRef,
   variant = 'inline',
   onPrivacyNavigate,
+  selectedChildName = '',
 }) {
   const id = useId();
   const offer = variant === 'offer';
@@ -32,7 +33,9 @@ export default function SantaMessageAccessCard({
       {!offer && <h3 id={`${id}-title`}>ENTER SANTA'S RECORDING STUDIO</h3>}
       <p className="santa-message-access__intro">
         {offer ? 'These are your details. You’ll choose your child’s recorded name next.'
-          : 'Add your details and access a free personalised downloadable message from Santa.'}
+          : selectedChildName
+            ? <>Add your details and access a free personalised downloadable message for {selectedChildName} from Santa.</>
+            : 'Add your details and access a free personalised downloadable message from Santa.'}
       </p>
 
       <form className="santa-message-access__form" ref={formRef} onSubmit={onSubmit} noValidate>

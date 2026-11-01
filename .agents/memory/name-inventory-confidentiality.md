@@ -21,6 +21,16 @@ through protected server paths. Revoking old URLs requires real origin-host
 authorization and cache invalidation; signing new URLs alone is insufficient.
 Keep access-log evidence, and make no scraping claim without evidence.
 
+The owner subsequently approved restoring the recorded-name counter using a
+total-only response, retaining the previous slow count-up.
+
+**Why:** The owner chose “Restore the counter” after being told the total could be
+returned separately without exposing the name list or audio locations.
+
+**How to apply:** This authorises the aggregate for the counter only, not catalogue
+exports, per-name inventory metadata or original audio locations. All other name
+privacy and bounded-search requirements above remain in force.
+
 The www domain is served separately from the Replit deployment.
 
 **Why:** A successful workspace or Replit release does not establish that the

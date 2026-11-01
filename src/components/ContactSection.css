@@ -147,7 +147,7 @@
   position: relative;
   width: min(100%, 760px);
   margin: 22px auto 0;
-  padding: 20px clamp(22px, 5vw, 54px) 17px;
+  padding: 12px clamp(22px, 5vw, 54px) 10px;
   border: 1px solid rgba(133, 103, 56, .28);
   border-radius: 3px 4px 8px 5px;
   color: #1d392b;
@@ -167,7 +167,7 @@
   transform: rotate(-2deg);
 }
 .home-page .contact-section .santa-note-label {
-  margin-bottom: 8px;
+  margin-bottom: 5px;
   color: #97743a;
   font: 600 .62rem/1.2 'DM Sans', sans-serif;
   letter-spacing: .24em;
@@ -193,7 +193,7 @@
   font-family: 'North Pole Hand', 'Brush Script MT', cursive;
   font-size: clamp(1.65rem, 2.7vw, 2rem);
   font-weight: 400;
-  line-height: 1.42;
+  line-height: 1.32;
   text-align: left;
   overflow-wrap: anywhere;
   text-shadow: none;
@@ -216,7 +216,7 @@
   width: max-content;
   margin: -2px 3% 0 auto;
   color: #214231;
-  font: 400 2rem/1.1 'North Pole Hand', 'Brush Script MT', cursive;
+  font: 400 1.65rem/1.1 'North Pole Hand', 'Brush Script MT', cursive;
   transform: rotate(-5deg);
 }
 
@@ -266,10 +266,10 @@ body:has(.home-page) .footer button:focus-visible {
   .home-page .contact-section .contact-title { font-size: clamp(2rem, 8vw, 2.6rem); }
   .home-page .contact-section .contact-intro { font-size: .96rem; }
   .home-page .contact-section .contact-sub { margin-bottom: 19px; font-size: .86rem; }
-  .home-page .contact-section .contact-santa-note { margin-top: 19px; padding: 18px 20px 14px; }
+  .home-page .contact-section .contact-santa-note { margin-top: 19px; padding: 12px 20px 10px; }
   .home-page .contact-section .santa-note-sizing,
   .home-page .contact-section .contact-santa-note .santa-note-text { font-size: clamp(1.5rem, 6vw, 1.7rem); }
-  .home-page .contact-section .santa-note-signature { font-size: 1.8rem; }
+  .home-page .contact-section .santa-note-signature { font-size: 1.6rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

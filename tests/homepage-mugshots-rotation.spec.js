@@ -85,18 +85,14 @@ test('hover and keyboard focus pause replacement, then resume on a fresh ten-sec
   expect((await urls(page)).every(url => !initial.includes(url))).toBe(true);
 });
 
-test('pause control cancels a partly replaced row and allows deliberate resuming', async ({ page }) => {
+test('removed footer controls stay absent while photos keep refreshing with reduced motion', async ({ page }) => {
   await prepare(page, 'reduce');
-  await page.clock.runFor(10000);
-  const partial = await urls(page);
-  await page.getByRole('button', { name: 'Pause photo refresh' }).click();
-  await expect(page.getByRole('button', { name: 'Resume photo refresh' })).toHaveAttribute('aria-pressed', 'true');
-  await page.clock.runFor(30000);
-  expect(await urls(page)).toEqual(partial);
-  await page.getByRole('button', { name: 'Resume photo refresh' }).click();
+  const initial = await urls(page);
+  await expect(page.getByRole('button', { name: /photo refresh/i })).toHaveCount(0);
+  await expect(page.locator('.mugshots-gallery-cta')).not.toContainText('Hundreds of famous faces. Who will you spot?');
   await page.mouse.move(0, 0);
   await page.clock.runFor(11050);
-  expect((await urls(page)).every(url => !partial.includes(url))).toBe(true);
+  expect((await urls(page)).every(url => !initial.includes(url))).toBe(true);
   expect(await page.locator('.mugshots-card-content').first().evaluate(node => getComputedStyle(node).animationName)).toBe('none');
   await checkBindings(page);
 });

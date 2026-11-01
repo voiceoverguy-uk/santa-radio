@@ -21,7 +21,7 @@ import { settleSantaMessageDeskAfterEntry } from '../lib/scrollToSantaMessageDes
 import './SantaNameRequest.css';
 import './SantaMessageForm.css';
 
-export default function SantaMessageForm({ showDetailLink = true, initialName = '', pendingName, keepSignupInPlace = false }) {
+export default function SantaMessageForm({ showDetailLink = true, initialName = '', pendingName, keepSignupInPlace = false, selectedChildName = '' }) {
   const { hasAccess, greetingName, sessionRemembered, revokeAccess } = useSantaMessageAccess();
   const makerHeadingRef = useRef(null);
   const previousAccess = useRef(hasAccess);
@@ -314,7 +314,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         </div>
           </div>
         </div>
-        {!hasAccess ? <SantaMessageAccessForm keepInPlace={keepSignupInPlace} /> : <>
+        {!hasAccess ? <SantaMessageAccessForm keepInPlace={keepSignupInPlace} selectedChildName={selectedChildName} /> : <>
         <h3 ref={makerHeadingRef} tabIndex={-1}>Your free Santa greeting</h3>
         {!!messages.length && <div className="message-wait-downloads">
           {renderResults()}
