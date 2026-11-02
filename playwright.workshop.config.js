@@ -11,7 +11,7 @@ for (let slot = 2; slot <= 5; slot++) {
 }
 export default defineConfig({
   ...base,
-  testMatch: /santa-workshop(?:-access|-search|-name-preview|-sounds|-motion|-live-catalogue|-message)?\.spec\.js/,
+  testMatch: /santa-workshop(?:-access|-search|-name-preview|-sounds|-motion|-live-catalogue|-message|-talent)?\.spec\.js/,
   use: { ...base.use, baseURL: 'http://127.0.0.1:5001', ignoreHTTPSErrors: false, trace: 'off', video: 'off', screenshot: 'off' },
   projects: base.projects.filter(project => project.name === 'chromium'),
   webServer: {

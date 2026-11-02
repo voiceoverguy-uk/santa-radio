@@ -22,8 +22,9 @@ test('all five parent mappings replace rather than append the destination record
     version: 1, categories: {
       age: [record('AGES/8-years-old.wav')], activity: [record('Trying Hard at/art.wav')],
       achievement: [record('Achievment/being-brave.wav')], treat: [record('treats/map.wav')],
+      sports: [record('sports/tennis.wav')],
       place: Object.values(workshopRegionalFolders).map(record),
-    }, excludedAudioCounts: Object.fromEntries(keys.map(key => [key, 0])),
+    }, excludedAudioCounts: Object.fromEntries([...keys, 'sports'].map(key => [key, 0])),
   };
   for (const folder of Object.keys(workshopRegionalFolders)) {
     raw.categories[folder] = [record(`${folder}/georgia.wav`)];
@@ -33,7 +34,7 @@ test('all five parent mappings replace rather than append the destination record
   for (const [folder, parentFile] of Object.entries(workshopRegionalFolders)) {
     const group = parsed.regionalGroups[folder], region = group.records[0];
     const data = { name: body.name, ...Object.fromEntries(keys.map(key =>
-      [key, key === 'place' ? group.parentId : parsed.categories[key][0].id])), region: region.id };
+      [key, key === 'place' ? group.parentId : parsed.categories[key][0].id])), region: region.id, talent: { skip: true } };
     const { handler, state } = fixture({ catalogue: async () => parsed });
     assert.equal((await call(handler, { data })).status, 200);
     assert.equal(state.downloads.length, 5);
@@ -41,6 +42,13 @@ test('all five parent mappings replace rather than append the destination record
     assert.ok(!state.downloads.includes(`${WORKSHOP_ROOT}${parentFile}`));
     const order = studioOrder('name', state.renders[0].choices);
     assert.equal(order.filter(path => path === state.renders[0].choices.place).length, 1);
+    const withTalent = fixture({ catalogue: async () => parsed });
+    assert.equal((await call(withTalent.handler, { data: { ...data,
+      talent: { category: 'sports', id: parsed.categories.sports[0].id } } })).status, 200);
+    assert.equal(withTalent.state.downloads.length, 6);
+    assert.ok(withTalent.state.downloads.includes(`${WORKSHOP_ROOT}${region.file}`));
+    assert.ok(withTalent.state.downloads.includes(`${WORKSHOP_ROOT}sports/tennis.wav`));
+    assert.equal(studioOrder('name', withTalent.state.renders[0].choices).length, 16);
     const parent = parsed.categories.place.find(record => record.id === group.parentId);
     const letter = createStudioLetter('Example', () => 0, { age: '8 years old', activity: 'Art',
       achievement: 'Being brave', treats: 'Map', destination: `${region.label}, ${parent.label}`,
@@ -63,9 +71,12 @@ const execute = promisify(execFile);
 const keys = ['age', 'activity', 'achievement', 'treat', 'place'];
 const id = n => `c-${n.toString(16).repeat(64)}`;
 const choices = Object.fromEntries(keys.map((key, index) => [key, id(index + 1)]));
-const body = { name: `f-${'a'.repeat(64)}`, ...choices };
-const inventory = { categories: Object.fromEntries(keys.map((key, index) =>
-  [key, [{ id: choices[key], file: `trusted/${key}.wav` }, { id: id(index + 6), file: `trusted/other-${key}.mp3` }]])) };
+const body = { name: `f-${'a'.repeat(64)}`, ...choices, talent: { skip: true } };
+const inventory = { categories: { ...Object.fromEntries(keys.map((key, index) =>
+  [key, [{ id: choices[key], file: `trusted/${key}.wav` }, { id: id(index + 6), file: `trusted/other-${key}.mp3` }]])),
+  sports: [{ id: id(11), file: 'sports/tennis.wav' }],
+  funny: [{ id: id(12), file: 'funny/stealing the remote control.wav' }],
+} };
 
 function fixture(overrides = {}) {
   const state = { resolved: [], downloads: [], renders: [], scopes: [] };
@@ -132,7 +143,7 @@ test('indexed regional uploads reach letter composition and exact existing audio
     }, excludedAudioCounts: Object.fromEntries(keys.map(key => [key, 0])) });
     const place = parsed.categories.place[0];
     const { handler, state } = fixture({ catalogue: async () => parsed });
-    const data = { name: body.name, ...Object.fromEntries(keys.map(key => [key, parsed.categories[key][0].id])) };
+    const data = { name: body.name, talent: { skip: true }, ...Object.fromEntries(keys.map(key => [key, parsed.categories[key][0].id])) };
     const result = await call(handler, { data });
     assert.equal(result.status, 200);
     assert.ok(state.downloads.includes(`${WORKSHOP_ROOT}${regional.file}`));
@@ -145,6 +156,34 @@ test('indexed regional uploads reach letter composition and exact existing audio
     assert.ok(letter.editorialReview.includes('destination'));
     assert.equal(place.id, regional.id);
   }
+});
+test('one authorised talent from either group or explicit skip, rejecting contradictions and cross-group IDs', async () => {
+  for (const category of ['sports', 'funny']) {
+    const { handler, state } = fixture();
+    const record = inventory.categories[category][0];
+    assert.equal((await call(handler, { data: { ...body, talent: { category, id: record.id } } })).status, 200);
+    assert.equal(state.downloads.length, 6);
+    assert.ok(state.downloads.includes(`${WORKSHOP_ROOT}${record.file.split('/').map(encodeURIComponent).join('/')}`));
+    assert.ok(state.renders[0].choices.talent);
+    assert.deepEqual(state.resolved, [body.name]);
+  }
+  const { handler, state } = fixture();
+  for (const talent of [
+    undefined, null, {}, false, [], { skip: false }, { skip: true, id: id(11) },
+    { skip: true, category: 'sports', id: id(11) },
+    { category: 'funny', id: id(11) }, { category: 'sports', id: id(12) },
+    { category: 'activity', id: choices.activity }, { category: 'sports', id: id(13) },
+    { category: 'sports', id: 'https://attacker.test/a.wav' },
+    { category: 'sports', id: id(11), extra: true },
+  ]) {
+    assert.equal((await call(handler, { data: { ...body, talent } })).status, 400);
+  }
+  assert.equal(state.renders.length, 0);
+  assert.equal(state.downloads.length, 0);
+  assert.equal((await call(handler)).status, 200);
+  assert.equal(state.renders[0].choices.talent, undefined);
+  const missing = fixture({ catalogue: async () => ({ categories: { ...inventory.categories, sports: [] } }) });
+  assert.equal((await call(missing.handler, { data: { ...body, talent: { category: 'sports', id: id(11) } } })).status, 400);
 });
 
 test('no access, wrong origin, tampering, URLs, malformed/oversize JSON and methods never render', async () => {
@@ -233,6 +272,10 @@ test('recipe uses all 14 positions, exact repeated variant, unchanged bells sett
     'intro.flac', 'variant-2.wav', '1st.flac', 'age.wav', '2nd.flac', 'activity.wav',
     'achievement.wav', '3rd.flac', 'treat.wav', '4th.flac', 'place.wav', '5th.flac', 'variant-2.wav', '6th.flac',
   ]);
+  assert.deepEqual(studioOrder('variant-2.wav', { ...paths, talent: 'funny.wav' }, '/fixed').map(path => basename(path)), [
+    'intro.flac', 'variant-2.wav', '1st.flac', 'age.wav', '1-5.flac', 'funny.wav', '2nd.flac', 'activity.wav',
+    'achievement.wav', '3rd.flac', 'treat.wav', '4th.flac', 'place.wav', '5th.flac', 'variant-2.wav', '6th.flac',
+  ]);
   const graph = studioMixArgs('speech', 'bells', 'output').join(' ');
   assert.match(graph, /I=-34:TP=-9:LRA=7/);
   assert.match(graph, /latency=true/);
@@ -249,7 +292,7 @@ test('serverless entry shares the protected handler and packages all fixed sourc
   assert.ok(config.includeFiles.includes('server/santa-audio/studio/**'));
   assert.ok(config.includeFiles.includes('server/santa-audio/names/**'));
   assert.ok(config.includeFiles.includes('node_modules/ffmpeg-static/**'));
-  for (const file of ['intro', '1st', '2nd', '3rd', '4th', '5th', '6th']) {
+  for (const file of ['intro', '1st', '1-5', '2nd', '3rd', '4th', '5th', '6th']) {
     assert.ok((await stat(`server/santa-audio/studio/${file}.flac`)).size > 1000);
   }
   assert.ok((await stat(ffmpeg)).mode & 0o111);

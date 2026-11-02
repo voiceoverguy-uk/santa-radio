@@ -13,14 +13,26 @@ on 2 November 2026. All match except `2nd.wav`; the hosted revision is used.
 | --- | --- |
 | free-intro.mp3 | 38ed43ef4e99842f48df801c073d50a41826db1b5b59b34829268275bba139dc |
 | 1st.wav | f5d090568d8f18fd3270e5f2ac51c1daaf761e2326ce34d55c680b4aa95d9a19 |
+| 1-5.wav | fb6a1a7af4a1bf9556af3520e701c2fb1cb7eb04e7c820a2d617d518aef468d8 |
 | 2nd.wav | 30b65a7dbf1dec1675f3875df20f53bb881b38692fc2797f7c7c4b2ba9360130 |
 | 3rd.wav | d9d2061b96c34dd10406bff9f94f72cb37e53f4c151b23dcda4314bb3724ef15 |
 | 4th.wav | e15607ef5aaf868af644a59aaf2f83bd6ed22f3e006e6a7127bc2e71c146ac69 |
 | 5th.wav | 99817de60295db376a656bc2eb4f6df4555b9cab8bdb201f6233b55497c8c670 |
 | 6th.wav | f62557033ebef300539a1b8b6d038918d9a5d2b0b6af9162ca1004ed5e2a7125 |
 
-Sequence: intro, name, 1st, age, 2nd, activity, achievement, 3rd, treat,
+Sequence: intro, name, 1st, age, **[1-5, one sports/funny recording]**, 2nd, activity, achievement, 3rd, treat,
 4th, destination, 5th, **same name**, 6th.
+The bracketed pair is omitted only for explicit Talent skip. Hosted connector
+names never follow visible step numbering. Talent adds no letter prose.
+
+The additional `1-5.flac` was fetched from the personalised-message root and
+converted without trimming, resampling or speech editing. Decoded 32-bit PCM
+matches the hosted WAV sample-for-sample. Automated local transcription confirms
+talent wording but differs from the approved on-screen sentence (“Head Elf” /
+“quite the talent”, rather than “my Head Elf” / “quite a talent”). This has **not
+been listened to**; owner confirmation/replacement remains outstanding. See
+`docs/workshop-https-inventory.md` for the exact helper, upload instructions and
+live-index status. Never claim display copy changes recorded speech.
 
 Each recording is decoded to 48 kHz stereo float PCM, measured, then receives
 constant gain towards −18 LUFS capped at −3 dBTP. Whole PCM clips concatenate

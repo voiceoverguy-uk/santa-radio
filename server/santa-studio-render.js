@@ -13,6 +13,7 @@ export const MAX_STUDIO_SECONDS = 175;
 
 export function studioOrder(name, choices, fixed = studioSources) {
   return [join(fixed, 'intro.flac'), name, join(fixed, '1st.flac'), choices.age,
+    ...(choices.talent ? [join(fixed, '1-5.flac'), choices.talent] : []),
     join(fixed, '2nd.flac'), choices.activity, choices.achievement,
     join(fixed, '3rd.flac'), choices.treat, join(fixed, '4th.flac'), choices.place,
     join(fixed, '5th.flac'), name, join(fixed, '6th.flac')];

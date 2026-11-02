@@ -46,6 +46,7 @@ async function review(page, variant = false, name = 'Demrie') {
   else await page.getByRole('option', { name, exact: true }).click();
   await page.locator('.smw-button-next').click();
   for (let index = 0; index < 5; index++) {
+    if (index === 1) await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
     await page.getByRole('listbox').press('Home');
     await page.locator('.smw-button-next').click();
   }

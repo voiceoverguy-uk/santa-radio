@@ -67,6 +67,35 @@ const inventory = () => ({
   },
   excludedAudioCounts: { age: 0, activity: 0, achievement: 0, treat: 0, place: 0 },
 });
+test('optional sports and exact funny sibling discovery preserve spaces and strict identities', () => {
+  const legacy = parseWorkshopCatalogue(inventory());
+  for (const key of ['sports', 'funny']) {
+    assert.deepEqual(legacy.categories[key], []);
+    assert.equal(legacy.counts[key], 0);
+  }
+  const input = inventory();
+  input.categories.sports = [record('sports/tennis.wav'), record('sports/cricket.wav')];
+  input.categories.funny = [record('funny/stealing the remote control.wav'), record('funny/smiling.wav')];
+  Object.assign(input.excludedAudioCounts, { sports: 0, funny: 0 });
+  const parsed = parseWorkshopCatalogue(input);
+  assert.equal(parsed.counts.sports, 2);
+  const remote = parsed.categories.funny.find(item => item.label === 'Stealing the remote control');
+  assert.equal(remote.file, 'funny/stealing the remote control.wav');
+  assert.equal(remote.id, record(remote.file).id);
+  assert.equal(remote.letterContext, undefined, 'Talent does not add letter prose');
+  for (const mutate of [
+    data => { data.categories.funny = [record('sports/tennis.wav')]; },
+    data => { data.categories.sports = [record('sports/../tennis.wav')]; },
+    data => { data.categories.funny[0].id = 'forged'; },
+    data => { data.categories.funny.push(data.categories.funny[0]); },
+    data => { data.excludedAudioCounts.funny = -1; },
+    data => { data.categories.funny = null; },
+  ]) { const data = structuredClone(input); mutate(data); assert.throws(() => parseWorkshopCatalogue(data)); }
+  input.categories.sports = [];
+  input.categories.funny[0].bytes = 0;
+  assert.equal(parseWorkshopCatalogue(input).counts.sports, 0);
+  assert.equal(parseWorkshopCatalogue(input).needsReviewCounts.funny, 1);
+});
 test('achievement label edits preserve their recording identities', () => {
   const data = inventory();
   const school = record('Achievment/amazing-at-school.wav');

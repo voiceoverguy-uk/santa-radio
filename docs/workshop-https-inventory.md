@@ -10,15 +10,19 @@ No FTP login is required by this inventory approach.
 
 Download `/downloads/workshop-index.php` and upload **one file** as
 `workshop-index.php` inside the existing `personalised-message` directory,
-alongside the `AGES`, `Achievment`, `Trying Hard at`, `countries` and `treats`
-folders. Preserve their existing case and spelling. Do not replace
+alongside the `AGES`, `Achievment`, `Trying Hard at`, `countries`, `treats`,
+`sports` and **`funny`** folders. The funny folder is the exact sibling
+`personalised-message/funny`, not `Funny` or a child of `sports`.
+Preserve their existing case and spelling. Replace the previous
+`workshop-index.php` with this refreshed download. Do not replace
 `names-index.php`, move any recordings, or upload this script to WordPress.
 
 The expected public URL is:
 
 `https://stagcommunications.com/santaradio/names/personalised-message/workshop-index.php`
 
-It should return JSON with five required categories, any available optional
+It should return JSON with five required categories (`age`, `activity`,
+`achievement`, `place`, `treat`), optional talent groups (`sports`, `funny`), any available optional
 regional groups and exact relative filenames. The
 script reads metadata only, accepts no visitor-supplied filesystem paths,
 ignores non-audio files, rejects symlinks, limits scan/output size and time,
@@ -27,7 +31,11 @@ recordings. It does not expose FTP credentials or private absolute paths.
 
 ## Website integration
 
-The uploaded index is now readable over HTTPS. The website's read-only
+**Live discovery status, 2 November 2026:** the hosted index still returns only
+the original five categories. Sports/funny discovery is **awaiting the owner's
+upload** of the refreshed script. HTTP availability of individual recordings is
+not discovery, successful decoding, listening evidence or wording approval.
+The website's read-only
 `/api/santa-workshop-catalogue` endpoint fetches that fixed URL, validates exact
 relative paths and SHA-256 identities, and caches the complete inventory for
 five minutes. It does not send a recipient's searches or choices to the host.
@@ -39,6 +47,11 @@ and year recordings from the actual index. Countries and other real places
 are not labelled as fantasy locations; known fictional destinations have
 explicit fantasy labels, and the Moon/Mars are marked as space destinations.
 Missing/unavailable inventory shows an error and Retry, never offline samples.
+The original five groups remain required. A missing/empty optional sports or
+funny group returns no choices; visitors must deliberately skip Talent or choose
+from an available group. No demonstration options are inserted into the live
+builder. Invalid optional paths/IDs are rejected just as strictly as required
+groups. Changing category clears its line and search, even on switching back.
 
 ### Optional state and county recordings
 
@@ -76,6 +89,48 @@ step. A selected region replaces the country recording in the existing audio
 slot. Empty or absent regional groups leave the country-only path available.
 Town/city hierarchies, aliases and additional recordings are not part of this work.
 
+### Talent recordings and shared introduction
+
+Keep the owner's original filenames, including spaces: for example,
+`funny/stealing the remote control.wav`. Do **not** rename that file with `%20`;
+encoding happens only when constructing the HTTPS download URL.
+The shared introduction stays at `personalised-message/1-5.wav`, not inside
+either talent folder. Visible step numbers do not rename any connector.
+
+The downloaded `1-5.wav` decoded successfully on 2 November 2026. Its source
+SHA-256 is
+`fb6a1a7af4a1bf9556af3520e701c2fb1cb7eb04e7c820a2d617d518aef468d8`.
+Lossless FLAC packaging was verified by comparing every decoded PCM sample.
+Local automated transcription (not listening) returned:
+“Now, Head Elf tells me you have quite the talent … apparently there's something
+you're especially good at.” This confirms talent rather than sports wording,
+but does **not** confirm the exact approved wording:
+
+> Now, my Head Elf tells me you have quite a talent! Apparently, there’s something you’re especially good at…
+
+**Owner action:** listen to that connector and confirm/replace it if exact
+wording is required. Merely changing the helper text does not change speech.
+If replacing the hosted recording, retain `1-5.wav` and tell the maintainer:
+the packaged private `1-5.flac` must also be refreshed losslessly. This task
+does not modify external hosting or generate/edit speech.
+
+After uploading the index, open its URL and check that `sports` and `funny`
+contain the expected filenames and non-zero sizes. Wait up to five minutes
+for the server catalogue cache, then reload Studio. Confirm each category's
+real lines appear. Generate sports, funny and skipped messages and listen:
+selected talent follows age and the shared introduction; skip omits both.
+The exact chosen name recording is used twice. Keep the other connector
+filenames, letter, certificate and free greeting maker unchanged.
+
+Read-only real-asset verification is reproducible with
+`node scripts/studio-talent-hosted-check.mjs`. It generates three ignored local
+MP3s using real hosted base choices, direct known Tennis / Stealing the remote
+control sources, the packaged connector and the existing Arabella name sample.
+On 2 November 2026 all three decoded successfully: sports 94.94s (16 positions),
+funny 96.21s (16), skip 84.85s (14). These are **not listening checks** and do not
+exercise discovery of missing live talent groups. The application still rejects
+talent choices absent from its authorised catalogue.
+
 ### Source files held for review
 
 Two destination files have technical rather than destination filenames:
@@ -87,9 +142,12 @@ They remain on the host and in the source index, but are not selectable.
 The page reports held-file counts. Empty recordings or age files that cannot
 be labelled safely are also held for review. Unsupported/unreadable files
 reported by the PHP index are disclosed separately. An invalid identity/path
-or missing category fails the whole response rather than silently using a
+or missing required category fails the whole response rather than silently using a
 partial list.
 
-Filename inventory is not remote audio decoding/playback verification.
+Filename inventory is not remote audio decoding/playback verification or
+catalogue wording approval.
 Studio now has its separately authorised message-generation path; regional
 playback cannot be verified until the updated index and real recordings are available.
+Authorised Studio message rendering is connected independently of the free maker
+and does not activate live paid checkout.

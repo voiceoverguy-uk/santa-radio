@@ -91,11 +91,18 @@ export function createStudioMessageHandler({
       const data = await withinDeadline(() => readNameJson(req), controller.signal);
       // A stable opaque recording ID is re-resolved privately under Studio
       // authorization. No expired browser capability, spelling or URL is used.
-      if (![6, 7].includes(Object.keys(data).length) || Object.keys(data).some(key => !['name', ...categories, 'region'].includes(key))
+      const talent = data.talent;
+      const talentObject = talent && typeof talent === 'object' && !Array.isArray(talent);
+      const skipTalent = talentObject && Object.keys(talent).length === 1 && talent.skip === true;
+      const selectedTalent = talentObject && Object.keys(talent).length === 2
+        && ['sports', 'funny'].includes(talent.category)
+        && typeof talent.id === 'string' && /^c-[a-f0-9]{64}$/.test(talent.id);
+      if (![7, 8].includes(Object.keys(data).length) || Object.keys(data).some(key => !['name', 'talent', ...categories, 'region'].includes(key))
         || ('region' in data && (typeof data.region !== 'string' || !/^c-[a-f0-9]{64}$/.test(data.region)))
         || typeof data.name !== 'string' || !/^(?:f-[a-f0-9]{64}|[a-z0-9][a-z0-9'-]{0,79})$/.test(data.name)
-        || categories.some(key => typeof data[key] !== 'string' || !/^c-[a-f0-9]{64}$/.test(data[key]))) {
-        throw problem(400, 'Please check all six Studio choices and try again.');
+        || categories.some(key => typeof data[key] !== 'string' || !/^c-[a-f0-9]{64}$/.test(data[key]))
+        || (!skipTalent && !selectedTalent)) {
+        throw problem(400, 'Please check all seven Studio choices, including choosing or skipping Talent, and try again.');
       }
       const inventory = await withinDeadline(catalogue, controller.signal);
       const selected = Object.fromEntries(categories.map(category => {
@@ -108,6 +115,11 @@ export function createStudioMessageHandler({
         if (!region) throw problem(400, 'That county or state is no longer available for this country. Please choose it again.');
         selected.place = region;
       }
+      if (selectedTalent) {
+        const record = inventory.categories[talent.category]?.find(item => item.id === talent.id);
+        if (!record) throw problem(400, 'That talent recording is no longer available. Please choose it again or skip this section.');
+        selected.talent = record;
+      }
       const recording = await withinDeadline(() => library.resolve(data.name), controller.signal);
       if (!recording || recording.id !== data.name) throw problem(400, 'That exact recorded name is no longer available. Please choose it again.');
       controller.signal.throwIfAborted();
@@ -119,7 +131,7 @@ export function createStudioMessageHandler({
       }
       const paths = {};
       // Sequential downloads bound memory and total in-flight upstream work.
-      for (const category of categories) {
+      for (const category of [...categories, ...(selectedTalent ? ['talent'] : [])]) {
         controller.signal.throwIfAborted();
         const record = selected[category];
         const url = `${WORKSHOP_ROOT}${record.file.split('/').map(encodeURIComponent).join('/')}`;

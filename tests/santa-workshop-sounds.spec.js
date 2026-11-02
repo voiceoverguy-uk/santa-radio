@@ -8,8 +8,8 @@ import { workshopCatalogueFixture } from './fixtures/workshop-catalogue.js';
 test.beforeEach(async ({ page }) => {
   await page.route('**/api/radio-metadata*', route => route.fulfill({ json: { available: false, current: null, upcoming: [] } }));
   await page.route('**/api/santa-workshop-catalogue', route => route.fulfill({ json: workshopCatalogueFixture }));
-  await page.route('**/api/santa-names?inventory=hosted', route => route.fulfill({ json: {
-    records: [{ id: 'demrie', name: 'Demrie' }], hostedCount: 1, warning: null,
+  await page.route('**/api/santa-names', route => route.fulfill({ json: {
+    records: [{ id: 'demrie', name: 'Demrie', selectionToken: 'fixture-token', previewUrl: '/api/santa-name-preview?token=fixture' }], warning: null,
   } }));
 });
 async function open(page) {
@@ -73,7 +73,7 @@ test('Continue and wheel feedback remain enabled without a sound toggle', async 
   await age.press('ArrowDown');
   await page.locator('.smw-button-next').click();
   expect(await attempts(page)).toHaveLength(count + 3);
-  await expect(page.locator('.smw-step-count')).toHaveText('Step 3 of 6');
+  await expect(page.locator('.smw-step-count')).toHaveText('Step 3 of 8');
   expect(await storage()).toEqual(before);
   await page.reload();
   expect(await attempts(page)).toEqual([]);
@@ -91,7 +91,7 @@ test('browser-blocked sound reports the issue but never blocks Continue', async 
   await open(page);
   await name(page);
   await page.locator('.smw-button-next').click();
-  await expect(page.locator('.smw-step-count')).toHaveText('Step 2 of 6');
+  await expect(page.locator('.smw-step-count')).toHaveText('Step 2 of 8');
   await expect(page.locator('.smw-page')).toContainText('Your browser blocked workshop sounds');
   await expect(page.locator('.smw-sound-toggle')).toHaveCount(0);
   await page.getByRole('button', { name: 'Back', exact: true }).click();
@@ -99,7 +99,7 @@ test('browser-blocked sound reports the issue but never blocks Continue', async 
   await page.locator('.smw-button-next').click();
   await page.getByRole('listbox', { name: 'Their age', exact: true }).press('End');
   await page.locator('.smw-button-next').click();
-  await expect(page.locator('.smw-step-count')).toHaveText('Step 3 of 6');
+  await expect(page.locator('.smw-step-count')).toHaveText('Step 3 of 8');
 });
 
 test('native wheel and touch scrolling tick on centre crossings, not on settlement or restoration', async ({ page }) => {
@@ -126,7 +126,8 @@ test('native wheel and touch scrolling tick on centre crossings, not on settleme
   expect(ageTicks).toBeGreaterThanOrEqual(1);
   expect(ageTicks).toBeLessThanOrEqual(2);
   await page.locator('.smw-button-next').click();
-  const activity = page.getByRole('listbox', { name: 'Something they do', exact: true });
+  await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+  const activity = page.getByRole('listbox', { name: 'Working hard at', exact: true });
   await activity.dispatchEvent('touchstart');
   await activity.evaluate(node => {
     const options = node.querySelectorAll('[role=option]');
@@ -136,6 +137,7 @@ test('native wheel and touch scrolling tick on centre crossings, not on settleme
   await expect(activity.getByRole('option', { name: 'Playing a musical instrument', exact: true })).toHaveAttribute('aria-selected', 'true');
   const count = (await attempts(page)).length;
   expect((await attempts(page)).filter(file => file === 'click-scroller.mp3')).toHaveLength(ageTicks + 1);
+  await page.getByRole('button', { name: 'Back', exact: true }).click();
   await page.getByRole('button', { name: 'Back', exact: true }).click();
   await expect(age.getByRole('option', { name: '2 months old', exact: true })).toHaveAttribute('aria-selected', 'true');
   expect(await attempts(page)).toHaveLength(count);

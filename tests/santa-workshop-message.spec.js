@@ -53,6 +53,9 @@ async function openReview(page, { live = false } = {}) {
   await nameOption.click();
   await page.locator('.smw-button-next').click();
   for (const answer of answers) {
+    if (await page.getByRole('button', { name: 'Skip this section', exact: true }).isVisible()) {
+      await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+    }
     const search = page.getByRole('searchbox');
     if (await search.count()) await checkPlaceholder(search);
     const option = page.getByRole('option', { name: answer, exact: true });
@@ -229,7 +232,7 @@ test('review create placement on desktop and phones, real MP3 playback/download,
   const result = page.getByRole('region', { name: 'Your finished Santa message' });
   await expect(result).toBeVisible();
   expect(submissions).toHaveLength(1);
-  expect(submissions[0]).toEqual({ name: 'dixie-variant', age: 'year-9', activity: 'teamwork', achievement: 'jigsaw', treat: 'buche', place: 'forest' });
+  expect(submissions[0]).toEqual({ name: 'dixie-variant', age: 'year-9', talent: { skip: true }, activity: 'teamwork', achievement: 'jigsaw', treat: 'buche', place: 'forest' });
   const player = result.locator('audio');
   await expect.poll(() => player.evaluate(node => node.readyState)).toBeGreaterThanOrEqual(1);
   const duration = await player.evaluate(node => node.duration);
@@ -282,7 +285,7 @@ test('retryable preparation errors, cancel and late responses cannot resurrect o
   await page.getByRole('button', { name: 'Create message', exact: true }).click();
   await expect(page.getByRole('alert')).toContainText('A recording could not be loaded');
   await page.getByRole('button', { name: 'Retry message', exact: true }).click();
-  await expect(page.getByRole('progressbar')).toBeVisible();
+  await expect(page.getByRole('progressbar', { name: 'Preparing your message', exact: true })).toBeVisible();
   await expect.poll(() => attempt).toBe(2);
   await page.getByRole('button', { name: 'Cancel preparation', exact: true }).click();
   release();
@@ -307,7 +310,8 @@ test('real protected API stitches chosen hosted clips without depending on short
   const response = await responsePromise;
   expect(response.status(), response.status() === 200 ? 'Generated MP3' : await response.text()).toBe(200);
   const payload = requests[0].postDataJSON();
-  expect(Object.keys(payload).sort()).toEqual(['achievement', 'activity', 'age', 'name', 'place', 'treat']);
+  expect(Object.keys(payload).sort()).toEqual(['achievement', 'activity', 'age', 'name', 'place', 'talent', 'treat']);
+  expect(payload.talent).toEqual({ skip: true });
   expect(payload.name).toMatch(/^(?:f-[a-f0-9]{64}|arabella)$/);
   expect(response.headers()['cache-control']).toContain('no-store');
   const player = page.locator('.smw-message-result audio');

@@ -7,7 +7,8 @@ import { workshopRegionalFolders } from '../src/lib/workshopDestinations.js';
 
 export const WORKSHOP_ROOT = 'https://stagcommunications.com/santaradio/names/personalised-message/';
 export const WORKSHOP_INDEX = `${WORKSHOP_ROOT}workshop-index.php`;
-const folders = { age: 'AGES', activity: 'Trying Hard at', achievement: 'Achievment', treat: 'treats', place: 'countries' };
+const folders = { age: 'AGES', sports: 'sports', funny: 'funny', activity: 'Trying Hard at', achievement: 'Achievment', treat: 'treats', place: 'countries' };
+const optionalCategories = new Set(['sports', 'funny']);
 const fantasyPlaces = new Set(['atlantis', 'camelot', 'cloud-cuckoo-land', 'discworld', 'emerald-city',
   'hundred-acre-wood', 'jurassic-island', 'middle-earth', 'narnia', 'neverland', 'oz', 'pandora',
   'radiator-springs', 'sodor', 'the-enchanted-forest', 'whoville', 'wonderland']);
@@ -49,9 +50,13 @@ export function parseWorkshopCatalogue(input) {
   const seen = new Set();
   for (const [key, folder] of Object.entries({ ...folders,
     ...Object.fromEntries(Object.keys(workshopRegionalFolders).map(key => [key, key])) })) {
-    const optional = key in workshopRegionalFolders;
-    const source = optional && input.categories[key] === undefined ? [] : input.categories[key];
-    const excluded = optional && input.categories[key] === undefined ? 0 : input.excludedAudioCounts?.[key];
+    const regional = key in workshopRegionalFolders;
+    const optional = regional || optionalCategories.has(key);
+    // Original owner-hosted indices have neither talent group. Absence is not
+    // permission to invent options; the optional step can still be skipped.
+    const absent = optional && !Object.hasOwn(input.categories, key);
+    const source = absent ? [] : input.categories[key];
+    const excluded = absent ? 0 : input.excludedAudioCounts?.[key];
     if (!Array.isArray(source) || (!optional && !source.length) || source.length > 10000 ||
         !Number.isSafeInteger(excluded) || excluded < 0 || excluded > 10000) {
       throw new Error('Incomplete workshop inventory.');
@@ -81,12 +86,12 @@ export function parseWorkshopCatalogue(input) {
         record.unit = age[2].toLowerCase();
         record.label = `${record.number} ${record.unit}${record.number === 1 ? '' : 's'} old`;
       }
-      if (key === 'place' || optional) {
+      if (key === 'place' || regional) {
         record.label = title(stem).replace(/\b[\p{L}\p{M}]+/gu, (word, offset) =>
           offset && ['and', 'of', 'the'].includes(word.toLowerCase()) ? word.toLowerCase()
             : word[0].toLocaleUpperCase('en-GB') + word.slice(1));
-        record.kind = optional ? 'place' : fantasyPlaces.has(stem) ? 'fantasy' : ['mars', 'the-moon'].includes(stem) ? 'space' : 'place';
-        record.isCountry = !optional && record.kind === 'place' && !isKnownRegion(record.label) &&
+        record.kind = regional ? 'place' : fantasyPlaces.has(stem) ? 'fantasy' : ['mars', 'the-moon'].includes(stem) ? 'space' : 'place';
+        record.isCountry = !regional && record.kind === 'place' && !isKnownRegion(record.label) &&
           !otherRealPlaces.has(stem.toLowerCase().replace(/[_ ]+/g, '-'));
         if (record.kind === 'fantasy') record.label += ' — Fantasy place';
         if (record.kind === 'space') record.label += ' — Space destination';
@@ -95,8 +100,8 @@ export function parseWorkshopCatalogue(input) {
       // Regions must never inherit a same-named country's prose (e.g. Georgia).
       // Neutral named-place writing is deliberate until context is curated for
       // this exact parent/region pair.
-      record.letterContext = optional ? { group: 'neutral', needsReview: true }
-        : studioEditorialContext(key, record);
+      if (regional) record.letterContext = { group: 'neutral', needsReview: true };
+      else if (!optional) record.letterContext = studioEditorialContext(key, record);
       // Newly indexed names are places, not automatically countries.
       if (key === 'place' && record.letterContext.needsReview) record.isCountry = false;
       records.push(record);

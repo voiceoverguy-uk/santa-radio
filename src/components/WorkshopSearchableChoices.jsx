@@ -10,6 +10,8 @@ const searchLabels = {
   achievement: ['Search achievements', 'Try school or helping'],
   treat: ['Search treats', 'Try chocolate or biscuits'],
   place: ['Search locations', 'tell Santa which country?'],
+  sports: ['Search sports and activities', 'Try Padel, Tennis or Golf'],
+  funny: ['Search funny talents', 'Search hosted choices'],
 };
 
 export default function WorkshopSearchableChoices({ category, label, options, value, onChange, invalid, onTick, onSoundInteraction, wording, searchLabel: searchLabelOverride, placeholder: placeholderOverride, selectedText: selectedTextOverride, wheelFooter }) {

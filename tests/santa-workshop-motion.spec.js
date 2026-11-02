@@ -20,8 +20,8 @@ test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.route('**/api/radio-metadata*', route => route.fulfill({ json: { available: false, current: null, upcoming: [] } }));
   await page.route('**/api/santa-workshop-catalogue', route => route.fulfill({ json: fixture }));
-  await page.route('**/api/santa-names?inventory=hosted', route => route.fulfill({ json: {
-    records: [{ id: 'demrie', name: 'Demrie' }], hostedCount: 1, warning: null,
+  await page.route('**/api/santa-names', route => route.fulfill({ json: {
+    records: [{ id: 'demrie', name: 'Demrie', selectionToken: 'fixture-token', previewUrl: '/api/santa-name-preview?token=fixture' }], warning: null,
   } }));
   await page.addInitScript(() => {
     window.__wheelTrace = { active: false, scrollWrites: 0, rowRectReads: 0 };
@@ -66,6 +66,7 @@ for (const category of ['age', 'activity']) {
     if (category === 'activity') {
       await page.getByRole('listbox').press('End');
       await page.locator('.smw-button-next').click();
+      await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
       await page.addStyleTag({ content: 'html { font-size: 200%; }' });
     }
     const wheel = page.getByRole('listbox');
@@ -104,6 +105,7 @@ for (const category of ['age', 'activity']) {
 test('all mobile choice wheels use compact heights and closer, tappable options', async ({ page }) => {
   await openAge(page);
   for (let step = 0; step < 5; step++) {
+    if (step === 1) await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
     const wheel = page.getByRole('listbox');
     const dimensions = await wheel.evaluate(node => ({
       height: node.clientHeight,
@@ -146,6 +148,10 @@ test('mobile step changes reposition once and keep short steps clear of the bott
   await page.locator('.smw-button-next').click();
   await check();
   for (let step = 0; step < 5; step++) {
+    if (step === 1) {
+      await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+      await check();
+    }
     await page.getByRole('listbox').press('End');
     await page.locator('.smw-button-next').click();
     await check();
@@ -182,6 +188,7 @@ test('all mobile category searches avoid iPhone focus zoom without disabling pin
   await openAge(page);
   await page.getByRole('listbox').press('End');
   await page.locator('.smw-button-next').click();
+  await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
   for (const label of ['Search activities', 'Search achievements', 'Search treats', 'Search locations']) {
     const input = page.getByRole('searchbox', { name: label, exact: true });
     await expect(input).toBeVisible();

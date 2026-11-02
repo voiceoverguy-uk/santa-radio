@@ -5,7 +5,8 @@ description: Owner approval boundary between the extended-message design trial a
 
 The owner now explicitly authorises full extended Studio stitching and quiet
 sleigh-bell mixing, using the exact selected recording variant twice and all five
-selected categories. This supersedes the earlier design-only and name-preview-only
+selected categories, plus the optional sports/funny Talent section described in
+`studio-optional-talent.md`. This supersedes the earlier design-only and name-preview-only
 restrictions. It does not authorise activating live checkout or declaring the
 multi-child paid family bundle delivered.
 

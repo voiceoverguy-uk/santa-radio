@@ -107,7 +107,7 @@ export default function WorkshopMessageAudio({ record, choices, spelling, comple
         headers: { 'Content-Type': 'application/json', Accept: 'audio/mpeg' },
         body: JSON.stringify({ name: record.id, ...Object.fromEntries(
           ['age', 'activity', 'achievement', 'treat', 'place'].map(key => [key, choices[key]]),
-        ), ...(choices.region ? { region: choices.region } : {}) }),
+        ), talent: choices.talent, ...(choices.region ? { region: choices.region } : {}) }),
       });
       if (!response.ok) {
         const data = await response.json().catch(() => ({}));

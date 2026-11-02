@@ -18,6 +18,7 @@ async function openRegionalStage(page, inventory = workshopRegionalCatalogueFixt
   await page.getByRole('option', { name: 'Arabella', exact: true }).click();
   await page.locator('.smw-button-next').click();
   for (const label of ['8 years old', 'Art', 'Being brave', 'Map']) {
+    if (label === 'Art') await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
     await page.getByRole('option', { name: label, exact: true }).click();
     await page.locator('.smw-button-next').click();
   }
@@ -176,6 +177,7 @@ for (const viewport of [{ width: 1365, height: 900 }, { width: 320, height: 568 
     await expect(page.getByRole('search')).toHaveCount(0);
     await page.getByRole('listbox', { name: 'Their age', exact: true }).press('Home');
     await page.locator('.smw-button-next').click();
+    await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
     const storage = () => page.evaluate(() => ({ local: { ...localStorage }, session: { ...sessionStorage } }));
     const before = await storage();
     page.on('request', request => { if (request.method() === 'POST') posts.push(request.url()); });
@@ -186,7 +188,7 @@ for (const viewport of [{ width: 1365, height: 900 }, { width: 320, height: 568 
       [5, 'Search treats', 'chocolate', 'Hot chocolate', 2],
       [6, 'Search locations', 'space', 'The Moon — Space destination', 3],
     ]) {
-      await expect(page.locator('.smw-step-count')).toHaveText(`Step ${index} of 6`);
+      await expect(page.locator('.smw-step-count')).toHaveText(`Step ${index + 1} of 8`);
       const input = page.getByRole('searchbox', { name: searchLabel, exact: true });
       if (index === 3) {
         await expect(page.locator('.smw-choice-search label')).toHaveCount(0);

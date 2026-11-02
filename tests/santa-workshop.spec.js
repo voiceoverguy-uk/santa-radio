@@ -72,7 +72,7 @@ test('Studio hides progress captions only on mobile, retaining the bars and curr
   await open(page);
   for (const width of [320, 390, 430, 760, 768, 1440]) {
     await page.setViewportSize({ width, height: 844 });
-    await expect(page.locator('.smw-progress-segment')).toHaveCount(6);
+    await expect(page.locator('.smw-progress-segment')).toHaveCount(8);
     await expect(page.locator('.smw-progress')).toBeVisible();
     await expect(page.locator('.smw-step-count')).toBeVisible();
     if (width <= 760) await expect(page.locator('.smw-step-labels')).toBeHidden();
@@ -118,7 +118,7 @@ async function openAgeStage(page) {
   await page.getByRole('combobox', { name: 'Search recorded names', exact: true }).fill('Dem');
   await page.getByRole('option', { name: 'Demrie', exact: true }).click();
   await page.locator('.smw-button-next').click();
-  await expect(page.locator('.smw-step-count')).toHaveText('Step 2 of 6');
+  await expect(page.locator('.smw-step-count')).toHaveText('Step 2 of 8');
 }
 
 for (const width of [390, 1440]) {
@@ -327,6 +327,7 @@ for (const width of [390, 1440]) {
     await expect(suffix).toHaveText('8 years old');
     await page.locator('.smw-builder').screenshot({ path: `generated-artifacts/studio-selected-age-${width}.jpg` });
     await page.locator('.smw-button-next').click();
+    await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
     for (let step = 3; step <= 5; step++) {
       await expect(suffix).toHaveCount(0);
       await page.getByRole('listbox').press('Home');
@@ -340,7 +341,9 @@ for (const width of [390, 1440]) {
         await expect(suffix).toHaveText('Playing a musical instrument');
         await page.getByRole('button', { name: 'Clear', exact: true }).click();
         await page.locator('.smw-button-back').click();
+        await page.locator('.smw-button-back').click();
         await page.locator('.smw-button-next').click();
+        await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
         await expect(suffix).toHaveText('Playing a musical instrument');
         await page.locator('.smw-builder').screenshot({ path: `generated-artifacts/studio-selected-activity-${width}.jpg` });
       } else if (step === 5) {
@@ -374,7 +377,7 @@ for (const width of [390, 1440]) {
       await page.locator('.smw-button-next').click();
     }
     await expect(suffix).toHaveCount(0);
-    const wheel = page.getByRole('listbox', { name: 'A magical place', exact: true });
+    const wheel = page.getByRole('listbox', { name: 'Place', exact: true });
     await wheel.press('Home');
     await expect(quote).toContainText('Ah yes… Wales');
     await expect(suffix).toHaveText('Wales');
@@ -396,7 +399,8 @@ for (const width of [390, 1440]) {
 
 async function complete(page, keyboard = false) {
   for (let index = 0; index < answers.length; index++) {
-    await expect(page.locator('.smw-step-count')).toHaveText(`Step ${index + 1} of 6`);
+    if (index === 2) await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+    await expect(page.locator('.smw-step-count')).toHaveText(`Step ${index + 1 + (index >= 2 ? 1 : 0)} of 8`);
     if (index === 5) {
       const locationNote = page.getByText('County available for UK addresses; state for US addresses.', { exact: true });
       await expect(locationNote).toBeVisible();
@@ -432,6 +436,7 @@ async function complete(page, keyboard = false) {
       await expect(introCard).not.toContainText('Preview wording only.');
       await search.fill(answers[0]);
       if (keyboard) {
+        await expect(page.getByRole('option', { name: answers[0], exact: true })).toBeVisible();
         await search.press('ArrowDown');
         await search.press('Enter');
       } else await page.getByRole('option', { name: answers[0], exact: true }).click();
@@ -480,17 +485,18 @@ async function complete(page, keyboard = false) {
     }
     await expect(page.locator('.smw-stage-heading h3')).toBeFocused();
   }
-  await expect(page.locator('.smw-summary-row')).toHaveCount(6);
+  await expect(page.locator('.smw-summary-row')).toHaveCount(7);
 }
 
 test('UK county and US state guidance sits beside the location selector', async ({ page }) => {
   await openAgeStage(page);
   for (let step = 2; step < 6; step++) {
-    await expect(page.locator('.smw-step-count')).toHaveText(`Step ${step} of 6`);
+    if (step === 3) await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+    await expect(page.locator('.smw-step-count')).toHaveText(`Step ${step + (step >= 3 ? 1 : 0)} of 8`);
     await page.getByRole('option').first().click();
     await page.locator('.smw-button-next').click();
   }
-  await expect(page.locator('.smw-step-count')).toHaveText('Step 6 of 6');
+  await expect(page.locator('.smw-step-count')).toHaveText('Step 7 of 8');
   await expect(page.locator('.smw-stage')).toContainText('County available for UK addresses; state for US addresses.');
   await expect(page.getByText('County available for UK addresses; state for US addresses.', { exact: true })).toBeVisible();
 });
@@ -523,7 +529,8 @@ for (const viewport of [
     if (!viewport.enlarged) await page.screenshot({ path: `test-results/workshop-age-wording-${viewport.width}.png` });
     await page.getByRole('listbox', { name: 'Their age', exact: true }).press('Home');
     await page.locator('.smw-button-next').click();
-    await expect(page.locator('.smw-step-count')).toHaveText('Step 3 of 6');
+    await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+    await expect(page.locator('.smw-step-count')).toHaveText('Step 4 of 8');
     const card = page.getByRole('complementary', { name: 'Santa will say:', exact: true });
     await expect(card).toContainText('I’ve heard you’ve been super good, in fact, positively amazing this year… trying especially hard at…');
     const wordLayout = await card.locator('.smw-activity-wording-quote').evaluate(node => {
@@ -544,7 +551,7 @@ for (const viewport of [
     await expect(card).not.toContainText('Preview wording only.');
     await expect(page.locator('.smw-sound-toggle')).toHaveCount(0);
     await expect(page.locator('.smw-choice-wheel-count')).toHaveCount(0);
-    const wheel = page.getByRole('listbox', { name: 'Something they do', exact: true });
+    const wheel = page.getByRole('listbox', { name: 'Working hard at', exact: true });
     await expect(wheel.locator('[aria-selected=true]')).toHaveCount(0);
     const panelBox = await card.boundingBox();
     const wheelBox = await page.locator('.smw-choice-wheel-frame').boundingBox();
@@ -568,7 +575,7 @@ for (const viewport of [
     await expect(wheel.locator('[aria-selected=true]')).toContainText('Teamwork');
     await expect(card).toBeVisible();
     await page.locator('.smw-button-next').click();
-    await expect(page.locator('.smw-step-count')).toHaveText('Step 4 of 6');
+    await expect(page.locator('.smw-step-count')).toHaveText('Step 5 of 8');
     await expect(card).toHaveCount(0);
     await expect(page.locator('.smw-sound-toggle')).toHaveCount(0);
     await expect(page.locator('.smw-choice-wheel-count')).toHaveCount(0);
@@ -577,8 +584,8 @@ for (const viewport of [
     await expect(page.locator('.smw-stage-heading h3')).toHaveText('What deserves an extra celebration?');
     await expect(celebration).toContainText('I was also delighted to hear how amazing you’ve been at…');
     await expect(celebration).not.toContainText('Preview wording only.');
-    const achievement = page.getByRole('listbox', { name: 'An achievement', exact: true });
-    await expect(achievement).toHaveAccessibleName('An achievement');
+    const achievement = page.getByRole('listbox', { name: 'Achievement', exact: true });
+    await expect(achievement).toHaveAccessibleName('Achievement');
     await expect(achievement.locator('[aria-selected=true]')).toHaveCount(0);
     const achievementBox = await page.locator('.smw-choice-wheel-frame').boundingBox();
     const celebrationBox = await celebration.boundingBox();
@@ -602,7 +609,7 @@ for (const viewport of [
     await page.locator('.smw-button-next').click();
     await expect(achievement.locator('[aria-selected=true]')).toContainText(chosen.trim());
     await page.locator('.smw-button-next').click();
-    await expect(page.locator('.smw-step-count')).toHaveText('Step 5 of 6');
+    await expect(page.locator('.smw-step-count')).toHaveText('Step 6 of 8');
     await expect(celebration).toHaveCount(0);
     const treatCard = page.getByRole('complementary', { name: 'Santa will say…', exact: true }).filter({ hasText: 'We do like a little treat' });
     await expect(treatCard).toContainText('We do like a little treat when we arrive on Christmas Eve… and… I know you like to leave me…');
@@ -610,8 +617,8 @@ for (const viewport of [
     await expect(page.locator('.smw-choice-wheel-count')).toHaveCount(0);
     await expect(page.locator('.smw-sound-toggle')).toHaveCount(0);
     await expect(page.getByText('Quiet workshop feedback only; independent of Santa Radio playback.', { exact: true })).toHaveCount(0);
-    await expect(page.getByRole('listbox', { name: 'A festive treat', exact: true })).toHaveAccessibleName('A festive treat');
-    const treatWheel = page.getByRole('listbox', { name: 'A festive treat', exact: true });
+    await expect(page.getByRole('listbox', { name: 'Treat', exact: true })).toHaveAccessibleName('Treat');
+    const treatWheel = page.getByRole('listbox', { name: 'Treat', exact: true });
     await expect(treatWheel.locator('[aria-selected=true]')).toHaveCount(0);
     const treatBox = await page.locator('.smw-choice-wheel-frame').boundingBox();
     const treatCardBox = await treatCard.boundingBox();
@@ -632,15 +639,15 @@ for (const viewport of [
     await treatWheel.press('Home');
     const chosenTreat = await treatWheel.locator('[aria-selected=true]').textContent();
     await page.locator('.smw-button-next').click();
-    await expect(page.locator('.smw-step-count')).toHaveText('Step 6 of 6');
+    await expect(page.locator('.smw-step-count')).toHaveText('Step 7 of 8');
     await expect(treatCard).toHaveCount(0);
     await expect(page.locator('.smw-sound-toggle')).toHaveCount(0);
     await expect(page.getByText('Quiet workshop feedback only; independent of Santa Radio playback.', { exact: true })).toHaveCount(0);
-    await expect(page.getByRole('listbox', { name: 'A magical place', exact: true })).toHaveAccessibleName('A magical place');
+    await expect(page.getByRole('listbox', { name: 'Place', exact: true })).toHaveAccessibleName('Place');
     await expect(page.locator('.smw-stage-heading h3')).toHaveText('Santa would like to know where he’s going?');
     await expect(page.locator('.smw-stage-heading p')).toHaveCount(0);
     await expect(page.getByText('Choose from real places, space destinations and storybook places.', { exact: true })).toHaveCount(0);
-    await expect(page.locator('.smw-stage-note')).toHaveText('The list includes countries and real places. Fantasy places and space destinations are labelled separately.');
+    await expect(page.locator('.smw-stage-note').first()).toHaveText('The list includes countries and real places. Fantasy places and space destinations are labelled separately.');
     expect(await page.locator('.smw-choice-wheel-heading, .smw-choice-wheel-hint').evaluateAll(nodes => nodes.length === 2 && nodes.every(node => {
       const rect = node.getBoundingClientRect();
       return getComputedStyle(node).clipPath === 'inset(50%)' && rect.width <= 1 && rect.height <= 1;
@@ -649,7 +656,7 @@ for (const viewport of [
     const destinationCard = page.getByRole('complementary', { name: 'Santa will say…', exact: true }).filter({ hasText: 'Head Elf' });
     await expect(destinationCard).toContainText('Anyway, as I sit here reading this, Head Elf has just reminded me where we’re coming to… Ah yes…');
     await expect(destinationCard).not.toContainText('Preview wording only.');
-    const destinationWheel = page.getByRole('listbox', { name: 'A magical place', exact: true });
+    const destinationWheel = page.getByRole('listbox', { name: 'Place', exact: true });
     await expect(destinationWheel.locator('[aria-selected=true]')).toHaveCount(0);
     const destinationBox = await page.locator('.smw-choice-wheel-frame').boundingBox();
     const destinationCardBox = await destinationCard.boundingBox();
@@ -791,18 +798,19 @@ for (const viewport of [
     await expect(page.locator('.smw-button-next')).toBeVisible();
     await page.locator('.smw-button-next').click();
     await expect(page.locator('.smw-validation')).toContainText('Please choose');
-    await expect(page.locator('.smw-step-count')).toHaveText('Step 1 of 6');
+    await expect(page.locator('.smw-step-count')).toHaveText('Step 1 of 8');
     await page.getByRole('combobox', { name: 'Search recorded names', exact: true }).fill('Dem');
     await page.getByRole('option', { name: 'Demrie', exact: true }).click();
     for (let stage = 1; stage <= 6; stage++) {
       await page.locator('.smw-button-next').click();
+      if (stage === 2) await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
       if (stage <= 5) {
-        await expect(page.locator('.smw-step-count')).toHaveText(`Step ${stage + 1} of 6`);
+        await expect(page.locator('.smw-step-count')).toHaveText(`Step ${stage + 1 + (stage >= 2 ? 1 : 0)} of 8`);
         await checkAnchor();
         await page.getByRole('listbox').press('Home');
       } else {
         await expect(page.locator('.smw-summary')).toBeVisible();
-        await expect(page.locator('.smw-summary .smw-change')).toHaveCount(6);
+        await expect(page.locator('.smw-summary .smw-change')).toHaveCount(7);
         for (const edit of await page.locator('.smw-summary .smw-change').all()) {
           await expect(edit).toHaveText('');
           await expect(edit.locator('svg')).toBeVisible();
@@ -816,7 +824,7 @@ for (const viewport of [
       }
     }
     await page.getByRole('button', { name: 'Change Their name', exact: true }).click();
-    await expect(page.locator('.smw-step-count')).toHaveText('Step 1 of 6');
+    await expect(page.locator('.smw-step-count')).toHaveText('Step 1 of 8');
     await checkAnchor();
     // In summary editing, Back really returns to the review, not the website.
     await expect(page.getByRole('button', { name: 'Back', exact: true })).toBeEnabled();
@@ -824,10 +832,10 @@ for (const viewport of [
     await expect(page.locator('.smw-summary')).toContainText('Demrie');
     await checkAnchor();
     await page.getByRole('button', { name: 'Back', exact: true }).click();
-    await expect(page.locator('.smw-step-count')).toHaveText('Step 6 of 6');
+    await expect(page.locator('.smw-step-count')).toHaveText('Step 7 of 8');
     await checkAnchor();
     await page.getByRole('button', { name: 'Back', exact: true }).click();
-    await expect(page.locator('.smw-step-count')).toHaveText('Step 5 of 6');
+    await expect(page.locator('.smw-step-count')).toHaveText('Step 6 of 8');
     await checkAnchor();
     await expect(page.getByRole('listbox').locator('[aria-selected=true]')).toHaveCount(1);
     await expect(page).toHaveURL(/\/santa-message-workshop$/);
@@ -839,7 +847,8 @@ test('full journey, missing choices, back and category editing retain answers wi
   page.on('request', request => {
     if (/\/api\/(?:santa-|name-requests)|sibforms|google-analytics|facebook\.com\/tr/.test(request.url()) &&
         !(request.method() === 'GET' && request.url().endsWith('/api/santa-workshop-access')) &&
-        !request.url().endsWith('/api/santa-names?inventory=hosted') &&
+        !(request.method() === 'GET' && request.url().endsWith('/api/santa-message-access')) &&
+        !request.url().endsWith('/api/santa-names') &&
         !request.url().endsWith('/api/santa-workshop-catalogue')) forbidden.push(request.url());
   });
   await open(page);
@@ -850,7 +859,7 @@ test('full journey, missing choices, back and category editing retain answers wi
   await expect(page.getByRole('combobox', { name: 'Search recorded names', exact: true })).toHaveAttribute('aria-invalid', 'true');
   await complete(page);
   await expect(page.locator('.smw-summary dt')).toHaveText([
-    'Their name', 'Age', 'Working hard at', 'Extra celebration',
+    'Their name', 'Age', 'Talent', 'Working hard at', 'Extra celebration',
     'A festive treat for Santa', 'Santa will be flying in to',
   ]);
   for (const label of ['Working hard at', 'Extra celebration', 'A festive treat for Santa', 'Santa will be flying in to']) {
@@ -939,7 +948,7 @@ test('failed and malformed catalogues show explicit retry, never offline example
   await expect(page.locator('.smw-page [role=option][aria-selected=true]')).toHaveCount(0);
   await browseToAge(page, '1 month old');
   await page.locator('.smw-button-next').click();
-  await expect(page.locator('.smw-step-count')).toHaveText('Step 3 of 6');
+  await expect(page.locator('.smw-step-count')).toHaveText('Step 3 of 8');
   // React development StrictMode can start and abort an initial mount request.
   expect(attempts).toBeGreaterThanOrEqual(3);
 });
@@ -1188,6 +1197,7 @@ test('long-text categories use wider wheels with validation, scrolling and retai
   const ageWidth = await page.locator('.smw-age-wheel').evaluate(node => node.getBoundingClientRect().width);
   await browseToAge(page, '9 years old');
   await page.locator('.smw-button-next').click();
+  await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
   const selections = ['Playing a musical instrument', 'Planting and caring for a garden', 'Turrón', 'Camelot — Fantasy place'];
   for (const [index, selection] of selections.entries()) {
     const wheel = page.getByRole('listbox');
@@ -1329,11 +1339,13 @@ test('cream name autocomplete supports keyboard selection, escape and clearing',
   const search = page.getByRole('combobox', { name: 'Search recorded names', exact: true });
   await search.fill('dix');
   await expect(search).toHaveCSS('background-color', 'rgb(244, 237, 220)');
+  await expect(page.getByRole('option')).toHaveCount(2);
   await search.press('ArrowUp'); // Last matching recording, not an accidental default.
   await search.press('Enter');
   await expect(page.locator('.smw-name-status')).toContainText('Dixie — dixie3.wav');
   await search.fill('di');
   await expect(page.locator('.smw-name-status')).toHaveCount(0);
+  await expect(page.getByRole('option')).toHaveCount(2);
   await search.press('Escape');
   await expect(search).toHaveAttribute('aria-expanded', 'false');
   await search.press('ArrowDown');
@@ -1343,7 +1355,7 @@ test('cream name autocomplete supports keyboard selection, escape and clearing',
   await expect(page.locator('.smw-name-status')).toContainText('Dixie — dixie.wav');
 });
 
-test('hosted names search locally, distinguish variants and retain the chosen recording when editing', async ({ page }) => {
+test('private name lookup distinguishes variants and retains the chosen recording when editing', async ({ page }) => {
   const inventoryRequests = [];
   page.on('request', request => {
     if (request.url().includes('/api/santa-names')) inventoryRequests.push(request.url());
@@ -1351,7 +1363,7 @@ test('hosted names search locally, distinguish variants and retain the chosen re
   await open(page);
   await expect(page.getByText('Type the beginning of a recorded name to see available matches.', { exact: true })).toHaveCount(0);
   const search = page.getByRole('combobox', { name: 'Search recorded names', exact: true });
-  await expect(page.locator('.smw-name-count')).toHaveText('4 hosted recordings available');
+  await expect(page.locator('.smw-name-count')).toHaveText('Enter at least two letters to search recorded names.');
   await expect(page.getByRole('option')).toHaveCount(0);
   await search.fill('dix');
   await expect(page.getByRole('option')).toHaveCount(2);
@@ -1372,24 +1384,27 @@ test('hosted names search locally, distinguish variants and retain the chosen re
   await page.getByRole('option', { name: 'Zara', exact: true }).click();
   await expect(page.locator('.smw-name-status')).toContainText('Zara');
   expect(inventoryRequests.length).toBeGreaterThan(0);
-  expect(inventoryRequests.every(url => url.endsWith('/api/santa-names?inventory=hosted'))).toBe(true);
+  expect(inventoryRequests.every(url => url.endsWith('/api/santa-names'))).toBe(true);
 });
 
 test('unavailable hosted list shows an explicit retry without offering a fixed example', async ({ page }) => {
   let unavailable = true;
-  await page.route('**/api/santa-names?inventory=hosted', route => {
+  await page.route('**/api/santa-names', route => {
     return route.fulfill(unavailable ? { status: 503, json: { error: 'Unavailable' } } : {
-      json: { records: hostedRecords, hostedCount: hostedRecords.length, warning: null },
+      json: { records: hostedRecords.map(record => ({ ...record, selectionToken: 'fixture-token',
+        previewUrl: '/api/santa-name-preview?token=fixture' })), warning: null },
     });
   });
   await open(page);
-  await expect(page.locator('.smw-name-picker [role=alert]')).toContainText('could not be loaded');
+  await page.getByRole('combobox', { name: 'Search recorded names', exact: true }).fill('Dem');
+  await expect(page.locator('.smw-name-picker [role=alert]')).toContainText('Unavailable');
   await expect(page.getByRole('option')).toHaveCount(0);
-  await expect(page.locator('.smw-name-count')).toHaveText('Hosted name total unavailable.');
+  await expect(page.locator('.smw-name-count')).toHaveText('Enter at least two letters to search recorded names.');
   unavailable = false;
   await page.getByRole('button', { name: 'Retry hosted list', exact: true }).click();
-  await expect(page.locator('.smw-name-count')).toHaveText('4 hosted recordings available');
-  await page.getByRole('combobox', { name: 'Search recorded names', exact: true }).fill('Dem');
+  await expect(page.locator('.smw-name-picker [role=alert]')).toHaveCount(0);
+  await page.getByRole('combobox', { name: 'Search recorded names', exact: true }).focus();
+  await expect(page.getByRole('option', { name: 'Demrie', exact: true })).toBeVisible();
   await page.getByRole('option', { name: 'Demrie', exact: true }).click();
   await expect(page.locator('.smw-name-status')).toContainText('Demrie');
 });
@@ -1411,9 +1426,9 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 320, height: 568 }
     })).toBe(true);
     await expect(page.locator('.smw-summary')).toContainText('Playing a musical instrument');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
-    const controls = await page.locator('.smw-page button').evaluateAll(nodes => nodes.map(node => {
+    const controls = await page.locator('.smw-page button').evaluateAll(nodes => nodes.filter(node => node.getClientRects().length).map(node => {
       const rect = node.getBoundingClientRect();
-      return { height: rect.height, minimum: node.matches('.smw-name-preview-button') ? 44 : 56, fits: node.scrollWidth <= node.clientWidth + 1 };
+      return { height: rect.height, minimum: node.matches('.smw-button, .smw-change') ? 56 : 44, fits: node.scrollWidth <= node.clientWidth + 1 };
     }));
     expect(controls.every(control => control.height >= control.minimum && control.fits)).toBe(true);
     // With the mobile player hidden, keyboard focus must keep the action in view.
@@ -1429,7 +1444,7 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 320, height: 568 }
 test('desktop and phone review screenshots, explainer arrangement and unchanged navigation', async ({ page }) => {
   const checkAnswerColours = async () => {
     const selections = page.locator('.smw-summary-answer');
-    await expect(selections).toHaveText(answers);
+    await expect(selections).toHaveText([...answers.slice(0, 2), 'Skipped', ...answers.slice(2)]);
     for (const selection of await selections.all()) {
       await expect(selection).toHaveCSS('color', 'rgb(155, 17, 30)');
       await expect(selection).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');

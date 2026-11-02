@@ -13,7 +13,7 @@ test('workshop HTTPS index lists only fixed child folders, preserving exact file
 }, async () => {
   const root = await mkdtemp(join(tmpdir(), 'workshop-index-'));
   const script = join(root, 'workshop-index.php');
-  const categories = { age: 'AGES', activity: 'Trying Hard at', achievement: 'Achievment', place: 'countries', treat: 'treats' };
+  const categories = { age: 'AGES', activity: 'Trying Hard at', achievement: 'Achievment', place: 'countries', treat: 'treats', sports: 'sports', funny: 'funny' };
   const run = (method = 'GET') => {
     const result = spawnSync(php, ['-n', '-r',
       '$_SERVER["REQUEST_METHOD"]=$argv[1]; $_GET["path"]="/etc"; register_shutdown_function(function(){fwrite(STDERR,(string)http_response_code());}); require $argv[2];',
@@ -31,6 +31,7 @@ test('workshop HTTPS index lists only fixed child folders, preserving exact file
     await writeFile(join(root, 'AGES', '1-months.wav'), 'fixture');
     await writeFile(join(root, 'AGES', '48-years-old.wav'), 'fixture');
     await writeFile(join(root, 'treats', 'pfeffernu╠êsse.wav'), 'fixture');
+    await writeFile(join(root, 'funny', 'stealing the remote control.wav'), 'fixture');
     await writeFile(join(root, 'countries', '.hidden.wav'), 'not exposed');
     await writeFile(join(root, 'countries', 'unsafe\\path.wav'), 'not exposed');
     await writeFile(join(root, 'countries', 'unsafe\nname.wav'), 'not exposed');
@@ -49,6 +50,7 @@ test('workshop HTTPS index lists only fixed child folders, preserving exact file
     }
     assert.equal(first.data.excludedAudioCounts.place, 4);
     assert.ok(first.data.categories.treat.some(item => item.file === 'treats/pfeffernu╠êsse.wav'));
+    assert.ok(first.data.categories.funny.some(item => item.file === 'funny/stealing the remote control.wav'));
     assert.ok(!JSON.stringify(first.data).includes('not-audio'));
     assert.ok(!JSON.stringify(first.data).includes(root));
     for (const folder of ['usa-states', 'england-counties', 'scotland-counties', 'wales-counties', 'northern-ireland-counties']) {
@@ -72,6 +74,14 @@ test('workshop HTTPS index lists only fixed child folders, preserving exact file
     assert.equal(run('POST').status, 405);
     await writeFile(join(root, 'Achievment', 'new-recording.wav'), 'fixture');
     assert.equal(run().data.categories.achievement.length, 2);
+    await rm(join(root, 'funny'), { recursive: true });
+    assert.deepEqual(run().data.categories.funny, [], 'Missing optional group is honestly empty.');
+    await mkdir(join(root, 'funny'));
+    assert.deepEqual(run().data.categories.funny, [], 'Empty optional group is allowed.');
+    await rm(join(root, 'funny'), { recursive: true });
+    await symlink(join(root, 'countries'), join(root, 'funny'));
+    assert.equal(run().status, 503, 'Optional folders cannot bypass symlink safety.');
+    await rm(join(root, 'funny'));
     await rm(join(root, 'AGES'), { recursive: true });
     assert.equal(run().status, 503, 'Never return a partial catalogue for a missing folder.');
     await symlink(join(root, 'countries'), join(root, 'AGES'));

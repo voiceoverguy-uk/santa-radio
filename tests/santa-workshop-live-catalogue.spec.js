@@ -22,6 +22,9 @@ test(`live HTTPS categories ${initialWidth}: mobile flow and full-list desktop a
     expect(catalogue.counts[category]).toBeGreaterThan(0);
     expect(catalogue.counts[category]).toBe(catalogue.categories[category].length);
   }
+  for (const category of ['sports', 'funny']) {
+    expect(catalogue.counts[category]).toBe(catalogue.categories[category].length);
+  }
   expect(catalogue.needsReviewCounts.place).toBe(2);
   expect(catalogue.categories.place.slice(0, 5).map(item => item.label)).toEqual([
     'England', 'Scotland', 'Northern Ireland', 'Wales', 'United States',
@@ -61,6 +64,7 @@ test(`live HTTPS categories ${initialWidth}: mobile flow and full-list desktop a
   const selected = ['7 months old', 'Reading', 'Helping your mummy', 'Pfeffernüsse', 'United Arab Emirates'];
   const keys = ['age', 'activity', 'achievement', 'treat', 'place'];
   for (const [index, label] of selected.entries()) {
+    if (index === 1) await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
     const wheel = page.getByRole('listbox');
     await expect(wheel.getByRole('option')).toHaveCount(catalogue.counts[keys[index]]);
     await expect(wheel.locator('[aria-selected=true]')).toHaveCount(0);

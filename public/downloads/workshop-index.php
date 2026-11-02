@@ -20,8 +20,9 @@ if ($root === false) workshop_fail('Workshop folder could not be read.', 503);
 // Exact existing folder names, including the original Achievment spelling.
 // No query string can select a filesystem path or add another folder.
 $folders = array('age' => 'AGES', 'activity' => 'Trying Hard at',
-    'achievement' => 'Achievment', 'place' => 'countries', 'treat' => 'treats');
-$optional = array('usa-states', 'england-counties', 'scotland-counties',
+    'achievement' => 'Achievment', 'place' => 'countries', 'treat' => 'treats',
+    'sports' => 'sports', 'funny' => 'funny');
+$optional = array('sports', 'funny', 'usa-states', 'england-counties', 'scotland-counties',
     'wales-counties', 'northern-ireland-counties');
 foreach ($optional as $folder) $folders[$folder] = $folder;
 $categories = array();
@@ -29,13 +30,22 @@ $excluded = array();
 foreach ($folders as $category => $folder) {
     $directory = $root . DIRECTORY_SEPARATOR . $folder;
     $isOptional = in_array($category, $optional, true);
+    // Missing optional groups are honestly empty, not a broken required list.
+    // A symlink or non-directory must still fail the safety check below.
+    if ($isOptional && !file_exists($directory) && !is_link($directory)) {
+        // Regional folders remain absent when unavailable, as before.
+        if ($category !== 'sports' && $category !== 'funny') continue;
+        $categories[$category] = array();
+        $excluded[$category] = 0;
+        continue;
+    }
     if (is_link($directory) || realpath($directory) !== $directory || !is_dir($directory)) {
-        if ($isOptional) continue;
+        if ($isOptional && $category !== 'sports' && $category !== 'funny') continue;
         workshop_fail('A required workshop folder is missing or is not a regular directory.', 503);
     }
     $files = @scandir($directory);
     if ($files === false || count($files) > 10002) {
-        if ($isOptional) continue;
+        if ($isOptional && $category !== 'sports' && $category !== 'funny') continue;
         workshop_fail('A workshop folder could not be listed safely.', 503);
     }
     $records = array();
