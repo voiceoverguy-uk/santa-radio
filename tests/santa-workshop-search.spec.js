@@ -227,6 +227,148 @@ for (const missing of [true, false]) {
 
 const catalogue = structuredClone(workshopCatalogueFixture);
 const choice = (id, label) => ({ id, label, file: `fixture/${id}.wav` });
+
+for (const width of [1365, 320]) {
+  for (const scale of [100, 200]) {
+    test(`option wheel geometry stays stable across stages, wording and filters at ${width}px / ${scale}% text`, async ({ page }) => {
+      test.setTimeout(90000);
+      await page.setViewportSize({ width, height: 900 });
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      const inventory = structuredClone(workshopRegionalCatalogueFixture);
+      const longLabel = 'Remembering every Christmas song and singing all the words for the family at breakfast and dinner';
+      for (const category of ['sports', 'funny', 'activity', 'achievement', 'treat']) {
+        inventory.categories[category] = [
+          choice(`c-${'a'.repeat(64)}`, 'Art'),
+          choice(`c-${'b'.repeat(64)}`, longLabel),
+        ];
+        inventory.counts[category] = 2;
+        inventory.excludedAudioCounts[category] = 0;
+        inventory.needsReviewCounts[category] = 0;
+      }
+      for (const group of Object.values(inventory.regionalGroups)) {
+        group.records[1].label = longLabel;
+      }
+      await page.route('**/api/santa-workshop-catalogue', route => route.fulfill({ json: inventory }));
+      await page.route('**/api/radio-metadata*', route => route.fulfill({ json: { available: false, current: null, upcoming: [] } }));
+      await page.route('**/api/santa-names', route => route.fulfill({
+        json: { records: [{ id: 'demrie', name: 'Demrie', selectionToken: 'fixture', previewUrl: '/api/santa-name-audio/fixture' }] },
+      }));
+      await page.goto('/santa-message-workshop');
+      const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+      if (await decline.isVisible()) await decline.click();
+      await page.addStyleTag({ content: `html { font-size: ${scale}%; }` });
+      await page.evaluate(() => document.fonts.ready);
+      await page.getByRole('combobox', { name: 'Search recorded names', exact: true }).fill('Dem');
+      await page.getByRole('option', { name: 'Demrie', exact: true }).click();
+      await page.locator('.smw-button-next').click();
+      const age = page.locator('.smw-age-wheel');
+      const ageBefore = await age.boundingBox();
+      await page.getByRole('listbox').press('Home');
+      await page.getByRole('listbox').press('End');
+      const ageAfter = await age.boundingBox();
+      expect(Math.abs(ageAfter.width - ageBefore.width)).toBeLessThanOrEqual(.5);
+      expect(Math.abs(ageAfter.height - ageBefore.height)).toBeLessThanOrEqual(.5);
+      await page.locator('.smw-button-next').click();
+
+      let baseline;
+      const layout = page.locator('.smw-searchable-layout:visible');
+      const frame = layout.locator('.smw-choice-wheel-frame');
+      const checkGeometry = async () => {
+        const rect = await frame.boundingBox();
+        baseline ||= rect;
+        expect(Math.abs(rect.width - baseline.width)).toBeLessThanOrEqual(.5);
+        expect(Math.abs(rect.height - baseline.height)).toBeLessThanOrEqual(.5);
+        const geometry = await layout.evaluate(node => {
+          const frame = node.querySelector('.smw-choice-wheel-frame').getBoundingClientRect();
+          const wording = node.querySelector('.smw-activity-wording').getBoundingClientRect();
+          const search = node.querySelector('.smw-choice-search').getBoundingClientRect();
+          const status = node.querySelector('.smw-choice-wheel-status').getBoundingClientRect();
+          return { frame, wording, search, status };
+        });
+        if (width > 900) {
+          expect(Math.abs(geometry.frame.top - geometry.wording.top)).toBeLessThanOrEqual(.5);
+          expect(geometry.search.top).toBeGreaterThanOrEqual(geometry.wording.bottom);
+        } else {
+          expect(geometry.search.bottom).toBeLessThanOrEqual(geometry.frame.top + .5);
+          expect(geometry.wording.top).toBeGreaterThanOrEqual(geometry.status.bottom - .5);
+        }
+        expect(geometry.status.top).toBeGreaterThanOrEqual(geometry.frame.bottom);
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+        expect(await layout.locator('.smw-activity-wording').evaluate(node =>
+          node.scrollHeight <= node.clientHeight + 1 && node.scrollWidth <= node.clientWidth + 1)).toBe(true);
+      };
+      const checkSelection = async key => {
+        const wheel = page.getByRole('listbox');
+        await wheel.press(key);
+        const selected = wheel.getByRole('option', { selected: true });
+        await expect(selected).toHaveCount(1);
+        await expect.poll(() => selected.evaluate(node => {
+          const option = node.getBoundingClientRect();
+          const viewport = node.parentElement.getBoundingClientRect();
+          return Math.abs(option.top + option.height / 2 - viewport.top - viewport.height / 2);
+        })).toBeLessThanOrEqual(1);
+        expect(await selected.evaluate(node =>
+          node.scrollWidth <= node.clientWidth + 1 && node.scrollHeight <= node.clientHeight + 1)).toBe(true);
+        await expect(frame).toHaveCSS('outline-style', 'solid');
+        await checkGeometry();
+      };
+      const checkStates = async () => {
+        await checkGeometry();
+        await checkSelection('Home');
+        const shortHeight = (await layout.locator('.smw-activity-wording').boundingBox()).height;
+        await checkSelection('End');
+        const longHeight = (await layout.locator('.smw-activity-wording').boundingBox()).height;
+        expect(longHeight).toBeGreaterThan(shortHeight);
+        const selectedLabel = await page.getByRole('option', { selected: true }).textContent();
+        const search = page.getByRole('searchbox');
+        await search.fill('Remembering');
+        await expect(page.getByRole('option')).toHaveCount(1);
+        await checkGeometry();
+        await search.fill('zzzz-no-matching-choice');
+        await expect(layout.locator('.smw-search-empty')).toContainText(`Selected: ${selectedLabel}`);
+        await checkGeometry();
+        await page.getByRole('button', { name: 'Clear', exact: true }).click();
+        await expect(search).toBeFocused();
+        await expect(page.getByRole('option', { selected: true })).toHaveText(selectedLabel);
+        await checkGeometry();
+        await checkSelection('Home');
+        await page.getByRole('listbox').press('ArrowDown');
+        await expect(page.getByRole('option', { selected: true })).toHaveText(selectedLabel);
+      };
+      await checkStates(); // Sports Talent
+      await page.getByRole('button', { name: 'Something funny', exact: true }).click();
+      await checkStates();
+      await page.locator('.smw-button-next').click();
+      for (const category of ['activity', 'achievement', 'treat']) {
+        await expect(layout).toHaveClass(new RegExp(`smw-searchable-${category}`));
+        await checkStates();
+        await page.locator('.smw-button-next').click();
+      }
+      // Country, county and state wheels share the same frame; the retained
+      // wording preview and country-only action reflect the selected region.
+      await checkGeometry();
+      for (const [country, kind] of [['England', 'county'], ['United States', 'state']]) {
+        await page.getByRole('searchbox').fill(country);
+        await expect(page.getByRole('option')).toHaveCount(1);
+        await page.getByRole('listbox').press('Home');
+        await checkGeometry();
+        await page.getByRole('button', { name: 'Clear', exact: true }).click();
+        await page.getByRole('button', { name: `Choose a ${kind}`, exact: true }).click();
+        await checkStates();
+        await expect(layout.locator('.smw-wording-selection')).toHaveText(longLabel);
+        await expect(page.getByRole('button', { name: `Use ${country} only`, exact: true })).toBeVisible();
+        await page.getByRole('button', { name: 'Back to countries', exact: true }).click();
+        await checkGeometry();
+      }
+      await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
+      await expect(layout.locator('.smw-search-empty')).toBeVisible();
+      await checkGeometry();
+      await page.getByRole('button', { name: 'Countries & real places', exact: true }).click();
+      await layout.screenshot({ path: `generated-artifacts/workshop/stable-wheels-${width}-${scale}.png` });
+    });
+  }
+}
+
 Object.assign(catalogue.categories, {
   activity: [choice('tidy', 'Tidying away toys'), choice('share', 'Sharing toys with others'), choice('football', 'Playing football')],
   achievement: [choice('help', 'Helping with toys'), choice('brave', 'Being brave')],
@@ -283,24 +425,22 @@ for (const viewport of [{ width: 1365, height: 900 }, { width: 320, height: 568 
         await expect(page.locator('.smw-choice-search label')).toHaveCount(0);
         await expect(input).toHaveAttribute('placeholder', 'Try school or helping');
       }
-      const checkAchievementAlignment = async () => {
-        if (index !== 4) return;
+      const checkChoiceAlignment = async () => {
         const geometry = await page.locator('.smw-searchable-layout').evaluate(layout => {
           const input = layout.querySelector('input').getBoundingClientRect();
-          const wheel = layout.querySelector('.smw-choice-wheel-frame, .smw-search-empty').getBoundingClientRect();
+          const wheel = layout.querySelector('.smw-choice-wheel-frame').getBoundingClientRect();
           const wording = layout.querySelector('.smw-activity-wording').getBoundingClientRect();
           return { inputBottom: input.bottom, inputTop: input.top, wheelBottom: wheel.bottom,
             wheelTop: wheel.top, wordingTop: wording.top, wordingBottom: wording.bottom };
         });
         if (viewport.width > 900) {
-          expect(Math.abs(geometry.inputBottom - geometry.wheelBottom)).toBeLessThanOrEqual(1);
           expect(Math.abs(geometry.wordingTop - geometry.wheelTop)).toBeLessThanOrEqual(1);
           expect(geometry.inputTop - geometry.wordingBottom).toBeGreaterThanOrEqual(17);
         } else {
           expect(geometry.inputBottom).toBeLessThanOrEqual(geometry.wheelTop);
         }
       };
-      await checkAchievementAlignment();
+      await checkChoiceAlignment();
       if (index === 5) {
         await expect(page.locator('.smw-choice-search label')).toHaveCount(0);
         await expect(input).toHaveAttribute('placeholder', 'Try chocolate or biscuits');
@@ -317,11 +457,11 @@ for (const viewport of [{ width: 1365, height: 900 }, { width: 320, height: 568 
       await expect(page.locator('.smw-validation')).not.toBeEmpty();
       await page.getByRole('option', { name: selected, exact: true }).click();
       await expect(page.locator('.smw-choice-wheel-status')).toHaveText(`Selected: ${selected}`);
-      await checkAchievementAlignment();
+      await checkChoiceAlignment();
       await input.fill('no such choice');
       await expect(page.getByText('No matching choices. Try another word or clear the search.', { exact: true })).toBeVisible();
       await expect(page.locator('.smw-search-empty')).toContainText(`Selected: ${selected}`);
-      await checkAchievementAlignment();
+      await checkChoiceAlignment();
       await page.getByRole('button', { name: 'Clear', exact: true }).click();
       await expect(input).toBeFocused();
       await expect(page.getByRole('option')).toHaveCount(allCount);
@@ -341,11 +481,11 @@ for (const viewport of [{ width: 1365, height: 900 }, { width: 320, height: 568 
       }
       if (index === 3) await page.locator('.smw-searchable-layout').screenshot({ path: `generated-artifacts/workshop/search-${viewport.width}.png` });
       if (index === 4) {
-        await checkAchievementAlignment();
-        await page.locator('.smw-searchable-layout').screenshot({ path: `generated-artifacts/workshop/achievement-search-aligned-${viewport.width}.png` });
+        await checkChoiceAlignment();
+        await page.locator('.smw-searchable-layout').screenshot({ path: `generated-artifacts/workshop/achievement-search-stable-${viewport.width}.png` });
         if (viewport.width > 900) {
           await page.addStyleTag({ content: 'html { font-size: 200%; }' });
-          await checkAchievementAlignment();
+          await checkChoiceAlignment();
           expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
           await page.addStyleTag({ content: 'html { font-size: 100%; }' });
         }

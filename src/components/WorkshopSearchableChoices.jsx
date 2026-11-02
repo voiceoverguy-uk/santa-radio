@@ -44,9 +44,13 @@ export default function WorkshopSearchableChoices({ category, label, options, va
           showCount={false} label={label} options={matches} value={value}
           currentSelectionLabel={currentSelectionLabel}
           onChange={onChange} invalid={invalid} onTick={onTick} onSoundInteraction={onSoundInteraction}
-        /> : <div className="smw-search-empty" role="status">
-          <p>No matching choices. Try another word or clear the search.</p>
-          {currentSelectionLabel && <p>Selected: {currentSelectionLabel}</p>}
+        /> : <div className="smw-choice-wheel-field smw-search-empty" role="status">
+          <div className="smw-choice-wheel-frame smw-search-empty-message">
+            <p>No matching choices. Try another word or clear the search.</p>
+          </div>
+          <p className="smw-choice-wheel-status">
+            {currentSelectionLabel ? `Selected: ${currentSelectionLabel}` : 'No option selected yet.'}
+          </p>
         </div>}
         {wheelFooter}
       </div>

@@ -36,7 +36,9 @@
 }
 
 .smw-choice-wheel-frame {
-  --choice-wheel-height: 220px;
+  /* All option and empty-result frames share geometry, independent of wording. */
+  --choice-wheel-height: max(220px, 13.75rem);
+  box-sizing: border-box;
   position: relative;
   width: min(100%, 640px);
   height: var(--choice-wheel-height);
@@ -165,7 +167,7 @@
   }
 
   .smw-choice-wheel-frame {
-    --choice-wheel-height: 200px;
+    --choice-wheel-height: max(200px, 12.5rem);
   }
 
   .smw-choice-wheel-option {
