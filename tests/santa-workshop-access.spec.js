@@ -2,6 +2,7 @@ import { expect } from '@playwright/test';
 import { test } from './helpers/provider-test.js';
 import { fillAccessForm, mockBrevo } from './helpers/message-access.js';
 import { workshopCatalogueFixture } from './fixtures/workshop-catalogue.js';
+import { expectStudioHeader } from './helpers/studio-header.js';
 
 const accessURL = '/api/santa-workshop-access';
 const codeLabel = /^(Voucher code|Tester code \(required\))$/;
@@ -11,6 +12,13 @@ test.beforeEach(async ({ page }) => {
   await mockBrevo(page);
   await page.route('**/api/radio-metadata*', route => route.fulfill({ json: { available: false, current: null, upcoming: [] } }));
   await page.route('**/api/santa-workshop-catalogue', route => route.fulfill({ json: workshopCatalogueFixture }));
+  await page.route('**/api/santa-names', route => route.fulfill({
+    json: {
+      records: [{ id: 'demrie', name: 'Demrie', selectionToken: 'controlled-workshop-token',
+        previewUrl: '/api/santa-name-preview?token=controlled-workshop-token' }],
+      warning: null,
+    },
+  }));
   await page.route('**/api/santa-names?*', route => route.fulfill({
     json: {
       records: [{ id: 'demrie', name: 'Demrie', downloadName: 'santa-recorded-message-for-Demrie.mp3' }],
@@ -82,6 +90,7 @@ test('mobile voucher entry and arrival lock document panning without locking ver
   await voucher.fill('MOBILE-LAYOUT-TEST');
   await page.getByRole('button', { name: 'Create your bespoke message', exact: true }).click();
   await expect(page.locator('.smw-builder')).toBeVisible();
+  await expectStudioHeader(page);
   await expectStableDocument();
   const names = page.getByRole('combobox', { name: 'Search recorded names', exact: true });
   await page.setViewportSize({ width: 390, height: 844 });
@@ -134,6 +143,7 @@ for (const path of ['/', '/free-santa-message']) {
     await form.getByRole('button', { name: 'Create your bespoke message', exact: true }).click();
     await expect(page).toHaveURL(/\/santa-message-workshop$/);
     await expect(page.getByRole('heading', { name: 'What name should Santa say?' })).toBeVisible();
+    await expectStudioHeader(page);
     const cookie = (await page.context().cookies()).find(item => item.name === 'santa-workshop-preview');
     expect(cookie.httpOnly).toBe(true);
     expect(cookie.sameSite).toBe('Strict');
@@ -141,6 +151,7 @@ for (const path of ['/', '/free-santa-message']) {
     expect(await page.evaluate(value => JSON.stringify({ localStorage, sessionStorage, history: history.state, url: location.href }).includes(value), code)).toBe(false);
     await page.reload();
     await expect(page.locator('.smw-builder')).toBeVisible();
+    await expectStudioHeader(page);
     await page.goto(path);
     await expect(page.locator('.santa-studio-promotion').getByLabel(codeLabel, { exact: true })).toHaveValue('');
   });

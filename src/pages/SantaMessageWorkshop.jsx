@@ -430,7 +430,6 @@ export default function SantaMessageWorkshop() {
           <div className="smw-title-wrap">
             <p className="smw-eyebrow"><span aria-hidden="true" /> A little North Pole Magic</p>
             <h1>Santa’s Message<br className="smw-title-break" /> Maker Studio</h1>
-            <p className="smw-intro-copy">It's all about the little details ...</p>
           </div>
           {accessKind === 'paid-sandbox' && <aside className="smw-preview-note" aria-label="Sandbox test notice">
             <span className="smw-preview-mark" aria-hidden="true">

@@ -64,12 +64,6 @@
   letter-spacing: -.025em;
 }
 .smw-title-break { display: none; }
-.smw-intro-copy {
-  max-width: 520px;
-  margin: 11px 0 0;
-  color: #d5dece;
-  font-size: .98rem;
-}
 
 .smw-preview-note {
   display: flex;
@@ -452,7 +446,6 @@
   .smw-title-wrap { padding-top: 3px; }
   .smw-title-break { display: initial; }
   .smw-intro h1 { font-size: clamp(2rem, 8vw, 2.8rem); }
-  .smw-intro-copy { max-width: 560px; font-size: .9rem; }
   .smw-preview-note { padding: 14px 17px; }
   /* Shorter steps must still leave enough document below the panel's top.
      svh stays stable while Safari's address bar opens/closes; dvh does not. */

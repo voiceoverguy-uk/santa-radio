@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { test } from './helpers/provider-test.js';
 import { workshopCatalogueFixture } from './fixtures/workshop-catalogue.js';
 import { unlockWorkshop } from './helpers/workshop-access.js';
+import { expectStudioHeader } from './helpers/studio-header.js';
 import { studioEditorialContext } from '../server/studio-letter-editorial.js';
 import { parseWorkshopCatalogue } from '../server/santa-workshop-catalogue.js';
 import { createHash } from 'node:crypto';
@@ -449,9 +450,13 @@ for (const width of [390, 1440]) {
   });
 }
 
-async function complete(page, keyboard = false) {
+async function complete(page, keyboard = false, checkHeader = async () => {}) {
   for (let index = 0; index < answers.length; index++) {
-    if (index === 2) await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+    if (index === 2) {
+      await checkHeader();
+      await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+    }
+    await checkHeader();
     await expect(page.locator('.smw-step-count')).toHaveText(`Step ${index + 1 + (index >= 2 ? 1 : 0)} of 8`);
     if (index === 5) {
       await expect(page.getByRole('button', { name: 'Countries & real places', exact: true })).toHaveAttribute('aria-pressed', 'true');
@@ -543,6 +548,49 @@ async function complete(page, keyboard = false) {
     await expect(page.locator('.smw-stage-heading h3')).toBeFocused();
   }
   await expect(page.locator('.smw-summary-row')).toHaveCount(7);
+  await checkHeader();
+}
+
+for (const width of [390, 1440]) {
+  for (const sandbox of [false, true]) {
+    test(`clean Studio header through every step, review and edit at ${width}px (${sandbox ? 'sandbox' : 'ordinary'})`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 1000 });
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      if (sandbox) {
+        await page.route('**/api/santa-workshop-access', route => route.fulfill({
+          status: 401, json: { authorized: false },
+        }));
+        await page.route('**/api/santa-studio-access', route => route.fulfill({
+          json: { authorized: true, expiresAt: Date.now() + 120000 },
+        }));
+      }
+      await open(page);
+      const checkHeader = () => expectStudioHeader(page, sandbox);
+      await checkHeader();
+      const layout = await page.locator('.smw-intro').evaluate(header => {
+        const title = header.querySelector('h1').getBoundingClientRect();
+        const wrap = header.querySelector('.smw-title-wrap').getBoundingClientRect();
+        const intro = header.getBoundingClientRect();
+        const builder = document.querySelector('.smw-builder').getBoundingClientRect();
+        return { titleGap: wrap.bottom - title.bottom, gap: builder.top - intro.bottom,
+          left: intro.left, right: intro.right, width: innerWidth };
+      });
+      expect(layout.titleGap).toBeLessThanOrEqual(6);
+      expect(layout.gap).toBe(width <= 760 ? 18 : 27);
+      expect(layout.left).toBeGreaterThanOrEqual(0);
+      expect(layout.right).toBeLessThanOrEqual(layout.width + 1);
+      await photograph(page, `generated-artifacts/workshop/header-${width}-${sandbox ? 'sandbox' : 'ordinary'}.png`);
+      await complete(page, false, checkHeader);
+      for (let index = 0; index < 7; index++) {
+        await page.locator('.smw-summary .smw-change').nth(index).click();
+        await expect(page.locator('.smw-step-count')).toHaveText(`Step ${index + 1} of 8`);
+        await checkHeader();
+        await page.getByRole('button', { name: 'Return to review', exact: true }).click();
+        await expect(page.locator('.smw-summary-row')).toHaveCount(7);
+        await checkHeader();
+      }
+    });
+  }
 }
 
 test('destination guidance follows the active country or fantasy category', async ({ page }) => {
@@ -829,11 +877,11 @@ for (const viewport of [
     await open(page);
     if (viewport.enlarged) await page.addStyleTag({ content: 'html { font-size: 200%; }' });
     const builder = page.locator('.smw-builder');
-    await expect(page.locator('.smw-intro-copy')).toHaveText("It's all about the little details ...");
+    await expectStudioHeader(page);
     await expect(page.locator('.smw-catalogue-review-note')).toHaveCount(0);
     let baseline;
     const checkAnchor = async () => {
-      await expect(page.locator('.smw-intro-copy')).toHaveText("It's all about the little details ...");
+      await expectStudioHeader(page);
       await expect(page.locator('.smw-catalogue-review-note')).toHaveCount(0);
       await expect.poll(async () => {
         return page.evaluate(() => Math.abs(
@@ -1520,7 +1568,7 @@ test('desktop and phone review screenshots, explainer arrangement and unchanged 
   await expect(page.locator('.smw-preview-note')).toHaveCount(0);
   await expect(page.getByText("It's the little details that matter...", { exact: true })).toHaveCount(0);
   await expect(page.getByText('You’re in the friends-only Message Maker Studio test.', { exact: false })).toHaveCount(0);
-  await expect(page.locator('.smw-intro-copy')).toHaveText("It's all about the little details ...");
+  await expectStudioHeader(page);
   await expect(page.locator('.smw-footer-note')).toBeVisible();
   await photograph(page, 'generated-artifacts/workshop/desktop-clean.png');
   const cards = await page.locator('.smw-explainer-card').evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect().top));
@@ -1534,7 +1582,7 @@ test('desktop and phone review screenshots, explainer arrangement and unchanged 
   await photograph(page, 'generated-artifacts/workshop/mobile-review.png');
   await page.reload();
   await expect(page.locator('.smw-preview-note')).toHaveCount(0);
-  await expect(page.locator('.smw-intro-copy')).toHaveText("It's all about the little details ...");
+  await expectStudioHeader(page);
   await photograph(page, 'generated-artifacts/workshop/mobile-clean.png');
   await expect(page.locator('.smw-explainer')).toBeHidden();
   await expect(page.locator('.smw-footer-note')).toBeHidden();
