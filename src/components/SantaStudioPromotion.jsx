@@ -2,14 +2,17 @@ import { useNavigate } from 'react-router-dom';
 import { WorkshopPasswordForm } from './WorkshopPasswordForm.jsx';
 import './SantaStudioPromotion.css';
 import StudioPurchaseButton from './StudioPurchaseButton.jsx';
-import SantaStudioGifts from './SantaStudioGifts.jsx';
+import { StudioGiftPreview, useStudioGiftExample } from './SantaStudioGifts.jsx';
 import SantaStudioLaunchCountdown from './SantaStudioLaunchCountdown.jsx';
 
-export default function SantaStudioPromotion({ activeExampleName = null, availableNamesText, previewName = null }) {
+export default function SantaStudioPromotion({ activeExampleName = null, availableNamesText, previewName = null, allowExamples = true }) {
   const navigate = useNavigate();
+  // Copy and every gift share the very same resolved recipient/rotation.
+  const example = useStudioGiftExample({ activeExampleName, previewName, allowExamples });
 
   return (
-    <section id="santa-studio-promotion" className="santa-studio-promotion" aria-labelledby="santa-studio-title">
+    <section id="santa-studio-promotion" className="santa-studio-promotion" aria-labelledby="santa-studio-title"
+      data-recipient={previewName || undefined}>
       <div className="santa-studio-promotion__details">
         <div className="santa-studio-promotion__intro">
           <div className="santa-studio-promotion__topline">
@@ -26,17 +29,24 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
             </div>
           </div>
           <h3 id="santa-studio-title" tabIndex={-1}>Santa’s <span className="santa-studio-promotion__title-line">Message Maker Studio</span></h3>
-          <p className="santa-studio-promotion__copy">
-            When we launch, you’ll be able to personalise with the age, impressive activities and achievements, your country, county** or State** and download festive gifts.
-            <br />
-            The paid offer will include a digital personalised Nice List certificate, a short personal letter from Santa and a picture confirming your place on the Nice List. *
-            <br /><br />
-            <small>* subject to you being good this year</small>
-            <br />
-            <small>** UK and USA only</small>
+          <p className="santa-studio-promotion__subheading">
+            A little more Christmas magic for {previewName || 'your child'}
           </p>
+          <p className="santa-studio-promotion__copy">
+            When we launch, you’ll be able to create a personalised message from Santa, with {previewName ? `${previewName}’s` : 'your child’s'} age, achievements and the things that make them special. Add where they live for an extra personal touch.
+          </p>
+          <div className="santa-studio-promotion__benefits">
+            <p className="santa-studio-promotion__benefits-lead">
+              <strong>Your paid package includes a personalised message from Santa, plus three personalised digital gifts to download:</strong>
+            </p>
+            <ul className="santa-studio-promotion__benefit-list">
+              <li>An official Nice List certificate</li>
+              <li>A short personal letter from Santa</li>
+              <li>A picture of Santa celebrating {previewName ? `${previewName}’s` : 'your child’s'} place on the Nice List*</li>
+            </ul>
+            <p className="santa-studio-promotion__footnote">*Subject to staying on the Nice List, of course.</p>
+          </div>
           <div className="santa-studio-promotion__preview">
-            <span className="santa-studio-promotion__preview-label">Coming Early November</span>
             <img
               className="santa-studio-promotion__artwork"
               src="/images/santa-studio-headphones.webp"
@@ -51,7 +61,7 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
         <SantaStudioLaunchCountdown />
         <StudioPurchaseButton />
       </div>
-        <SantaStudioGifts activeExampleName={activeExampleName} previewName={previewName} />
+        <StudioGiftPreview example={example} />
     </section>
   );
 }

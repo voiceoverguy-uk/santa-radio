@@ -483,6 +483,9 @@ export default function SantaMessageWorkshop() {
                 onSoundInteraction={prepare}
               />}
               {stage.note && <p className="smw-stage-note">{stage.note}</p>}
+              {stage.key === 'place' && <p className="smw-stage-note">
+                County available for UK addresses; state for US addresses.
+              </p>}
               <p className="smw-validation" id="smw-validation" role="alert">{error}</p>
               <div className="smw-actions">
                 {(stageIndex > 0 || editing) && <button className="smw-button smw-button-back" type="button" onClick={goBack}>

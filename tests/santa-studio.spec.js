@@ -144,7 +144,7 @@ test('mobile Studio promotion title fits and certificates belong only to the upc
     await expect(promotion).not.toContainText('This visual preview does not create downloads');
     await expectStudioLaunchCopy(promotion);
     await expect(promotion).not.toContainText(/basic free greeting|includes one too/i);
-    await expect(promotion.getByText('Coming Early November', { exact: true })).toBeVisible();
+    await expect(promotion.getByText('Coming Early November', { exact: true })).toHaveCount(0);
   }
 });
 

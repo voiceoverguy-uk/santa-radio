@@ -31,9 +31,15 @@ test.beforeEach(async ({ page }) => {
   await unlockWorkshop(page);
   await page.route('**/api/santa-workshop-catalogue', route => route.fulfill({ json: workshopCatalogueFixture }));
   await page.route('**/api/radio-metadata*', route => route.fulfill({ json: { available: false, current: null, upcoming: [] } }));
-  await page.route('**/api/santa-names?inventory=hosted', route => route.fulfill({
-    json: { records: hostedRecords, hostedCount: hostedRecords.length, warning: null },
-  }));
+  await page.route('**/api/santa-names', route => {
+    const query = route.request().postDataJSON().query.toLowerCase();
+    return route.fulfill({ json: {
+      records: hostedRecords.filter(record => record.name.toLowerCase().startsWith(query)).map(record => ({
+        ...record, selectionToken: 'controlled-workshop-token',
+        previewUrl: '/api/santa-name-preview?token=controlled-workshop-token',
+      })), warning: null,
+    } });
+  });
 });
 
 async function open(page) {
@@ -104,6 +110,11 @@ async function openAgeStage(page) {
 async function complete(page, keyboard = false) {
   for (let index = 0; index < answers.length; index++) {
     await expect(page.locator('.smw-step-count')).toHaveText(`Step ${index + 1} of 6`);
+    if (index === 5) {
+      const locationNote = page.getByText('County available for UK addresses; state for US addresses.', { exact: true });
+      await expect(locationNote).toBeVisible();
+      await expect(page.locator('.smw-stage')).toContainText('County available for UK addresses; state for US addresses.');
+    }
     if (page.viewportSize().width <= 760) {
       await expect(page.locator('.radio-dock')).toBeHidden();
       const bounds = await page.locator('.smw-builder').evaluate(node => {
@@ -184,6 +195,18 @@ async function complete(page, keyboard = false) {
   }
   await expect(page.locator('.smw-summary-row')).toHaveCount(6);
 }
+
+test('UK county and US state guidance sits beside the location selector', async ({ page }) => {
+  await openAgeStage(page);
+  for (let step = 2; step < 6; step++) {
+    await expect(page.locator('.smw-step-count')).toHaveText(`Step ${step} of 6`);
+    await page.getByRole('option').first().click();
+    await page.locator('.smw-button-next').click();
+  }
+  await expect(page.locator('.smw-step-count')).toHaveText('Step 6 of 6');
+  await expect(page.locator('.smw-stage')).toContainText('County available for UK addresses; state for US addresses.');
+  await expect(page.getByText('County available for UK addresses; state for US addresses.', { exact: true })).toBeVisible();
+});
 
 for (const viewport of [
   { width: 1365, height: 900 },

@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import useHostedSantaNameSearch from './useHostedSantaNameSearch.js';
+import { selectSantaRecipient } from './useSantaRecipient.js';
 
 export default function HeroNameChecker({ onContinue, onSelectedNameChange }) {
   const id = useId();
@@ -49,6 +50,7 @@ export default function HeroNameChecker({ onContinue, onSelectedNameChange }) {
   const options = search.records;
   const expanded = open && options.length > 0 && !search.loading && !search.error;
   const choose = record => {
+    selectSantaRecipient(record.name);
     interacted.current = true;
     setValidation('');
     setName(record.name);

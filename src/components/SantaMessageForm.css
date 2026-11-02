@@ -1,3 +1,7 @@
+.santa-message-access__intro {
+  overflow-wrap: anywhere;
+}
+
 .santa-message-section { padding: 88px 0; background: #14382a; border-block: 1px solid #d4af3730; }
 .message-layout { display: grid; grid-template-columns: 1fr 1fr; align-items: start; gap: 64px; }
 .santa-message-aside > .santa-message-example { margin: 20px 0 0; text-align: center; }

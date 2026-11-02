@@ -262,6 +262,7 @@
 }
 
 .hero-name-preview .hero-name-checker__status {
+  overflow-wrap: anywhere;
   min-height: 2.95em;
   margin: 11px 0 12px;
   color: #e5eadf;

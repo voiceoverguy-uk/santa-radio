@@ -1,3 +1,7 @@
+.santa-studio-promotion__copy {
+  overflow-wrap: anywhere;
+}
+
 .santa-studio-promotion {
   --studio-ink: #19392d;
   --studio-paper: #f2ead8;
@@ -81,34 +85,22 @@
 
 .santa-studio-promotion__intro {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto 72px;
+  grid-template-columns: minmax(0, 1fr) 72px;
   grid-template-areas:
-    "topline badge artwork"
-    "title title artwork"
-    "copy copy copy";
+    "topline artwork"
+    "title title"
+    "subheading subheading"
+    "copy copy"
+    "benefits benefits";
   align-items: start;
   column-gap: 8px;
-  row-gap: 5px;
+  row-gap: 7px;
   min-width: 0;
   margin-bottom: 10px;
 }
 
 .santa-studio-promotion__preview {
   display: contents;
-}
-
-.santa-studio-promotion__preview-label {
-  grid-area: badge;
-  align-self: center;
-  justify-self: start;
-  flex: 0 1 auto;
-  padding: 5px 8px;
-  border: 1px solid #a27c3240;
-  border-radius: 999px;
-  color: #615332;
-  font-size: 0.68rem;
-  line-height: 1.25;
-  overflow-wrap: anywhere;
 }
 
 .santa-studio-promotion__artwork {
@@ -138,15 +130,64 @@
   overflow-wrap: anywhere;
 }
 
+.santa-studio-promotion__subheading {
+  grid-area: subheading;
+  margin: 2px 0 0;
+  color: #806023;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: clamp(1rem, 1.35vw, 1.16rem);
+  font-weight: 600;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
 .santa-studio-promotion__copy {
   grid-area: copy;
-  max-width: 46ch;
+  max-width: 54ch;
   min-width: 0;
-  margin: 0;
+  margin: 2px 0 0;
   color: #334c3d;
-  font-size: 1.05rem;
-  line-height: 1.65;
+  font-size: 1rem;
+  line-height: 1.62;
   overflow-wrap: anywhere;
+}
+
+.santa-studio-promotion__benefits {
+  grid-area: benefits;
+  max-width: 54ch;
+  margin-top: 3px;
+  padding: 13px 15px 11px;
+  border-left: 2px solid #a27c32;
+  border-radius: 0 8px 8px 0;
+  background: #e9ddc277;
+  color: #334c3d;
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.santa-studio-promotion__benefits-lead {
+  margin: 0 0 7px;
+}
+
+.santa-studio-promotion__benefit-list {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.santa-studio-promotion__benefit-list li {
+  padding-left: 2px;
+}
+
+.santa-studio-promotion__benefit-list li::marker {
+  color: #9b392d;
+}
+
+.santa-studio-promotion__footnote {
+  margin: 7px 0 0;
+  color: #56675a;
+  font-size: .84rem;
 }
 
 .santa-studio-promotion__voucher {
@@ -286,11 +327,6 @@
 @container (min-width: 360px) {
   .santa-studio-promotion__intro {
     grid-template-columns: minmax(0, 1fr) 60px;
-    grid-template-areas:
-      "topline artwork"
-      "badge artwork"
-      "title title"
-      "copy copy";
   }
 
   .santa-studio-promotion__artwork {
@@ -301,11 +337,14 @@
 }
 
 @media (min-width: 768px) {
-  .message-layout > .santa-studio-promotion {
-    grid-column: 1 / -1;
+  .santa-studio-promotion {
     grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
     grid-template-areas: "details gifts";
     gap: clamp(24px, 4vw, 48px);
+  }
+
+  .message-layout > .santa-studio-promotion {
+    grid-column: 1 / -1;
   }
 
   .message-layout > .santa-message-aside {
@@ -324,13 +363,6 @@
 
   .santa-studio-promotion__intro {
     grid-template-columns: minmax(0, 1fr) 68px;
-    grid-template-areas:
-      "topline artwork"
-      "badge artwork"
-      "title title"
-      "copy copy";
-    column-gap: 8px;
-    row-gap: 7px;
   }
 
   .santa-studio-promotion__artwork {
@@ -356,10 +388,11 @@
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
       "topline"
-      "badge"
       "artwork"
       "title"
-      "copy";
+      "subheading"
+      "copy"
+      "benefits";
   }
 }
 

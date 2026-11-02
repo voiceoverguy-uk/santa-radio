@@ -32,7 +32,7 @@ async function visit(page, { reduced = false, clock = true } = {}) {
   if (await decline.isVisible()) await decline.click();
   await gifts(page).scrollIntoViewIfNeeded();
   await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Edward');
-  await expect(gifts(page).getByRole('heading', { level: 4 })).toHaveText('All 3 digital gifts included for Edward');
+  await expect(gifts(page).getByRole('heading', { level: 4 })).toHaveText('All 3 gifts included with the paid version');
   await expect(gifts(page)).not.toContainText('Example for');
 }
 
@@ -46,16 +46,13 @@ async function advanceExample(page) {
   if (reduced) await page.emulateMedia({ reducedMotion: 'reduce' });
 }
 
-test('personalised gift heading wraps safely with long names on narrow screens', async ({ page }) => {
+test('paid gift heading wraps safely on narrow screens', async ({ page }) => {
   await visit(page, { reduced: true });
   await page.evaluate(() => document.fonts.ready);
   const heading = gifts(page).getByRole('heading', { level: 4 });
   for (const width of [320, 390, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
-    for (const name of ['Abbey', 'Alexanderthegreatwithaverylongunbrokenname']) {
-      const copy = `All 3 digital gifts included for ${name}`;
-      // Exercise wrapping independently of the private name catalogue.
-      await heading.evaluate((node, value) => { node.textContent = value; }, copy);
+    for (const copy of ['All 3 gifts included with the paid version']) {
       await expect(heading).toHaveText(copy);
       const geometry = await heading.evaluate(node => {
         const bounds = node.getBoundingClientRect();
@@ -626,7 +623,7 @@ for (const width of [1440, 390]) {
     await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Ayla');
     await page.clock.runFor(200);
     await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Erin');
-    await expect(gifts(page).getByRole('heading', { level: 4 })).toHaveText('All 3 digital gifts included for Erin');
+    await expect(gifts(page).getByRole('heading', { level: 4 })).toHaveText('All 3 gifts included with the paid version');
     await expect(picture).toHaveAttribute('src', '/images/santa-nice-list-3.jpg');
     await expect(picture).toHaveJSProperty('naturalWidth', 1536);
     await expect(gifts(page)).toHaveAttribute('data-complete', 'false');

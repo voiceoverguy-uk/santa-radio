@@ -7,6 +7,7 @@ import { SantaGreetingShare } from './SantaMessageShare.jsx';
 import { useSantaMessageAccess } from './SantaMessageAccessProvider.jsx';
 import useSantaMessageAllowance from './useSantaMessageAllowance.js';
 import useSantaMessageHistory from './useSantaMessageHistory.js';
+import useSantaRecipient, { selectSantaRecipient } from './useSantaRecipient.js';
 import useSantaNames from './useSantaNames.js';
 import useHostedSantaNameSearch from './useHostedSantaNameSearch.js';
 import useSantaNameCounter from './useSantaNameCounter.js';
@@ -32,8 +33,9 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [exampleName, setExampleName] = useState('Olivia');
   const [activeExampleName, setActiveExampleName] = useState(null);
-  const [giftPreviewName, setGiftPreviewName] = useState(null);
+  const selectedRecipient = useSantaRecipient();
   const { messages, remember } = useSantaMessageHistory();
+  const giftPreviewName = selectedRecipient || messages.at(-1)?.name || null;
   const [validation, setValidation] = useState('');
   const [audioErrors, setAudioErrors] = useState({});
   const [busy, setBusy] = useState(false);
@@ -69,6 +71,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const radio = useRadio();
   const allowance = useSantaMessageAllowance();
   const coolingDown = allowance.secondsLeft > 0;
+  const allowExamples = !giftPreviewName && !messages.length && !coolingDown && !allowance.pending;
 
   useEffect(() => {
     let frame;
@@ -132,7 +135,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const appliedPendingName = useRef(null);
   useEffect(() => {
     // A checked name can personalise gifts even while audio creation is cooling down.
-    if (pendingName?.name) setGiftPreviewName(pendingName.name);
+    if (pendingName?.name) selectSantaRecipient(pendingName.name);
   }, [pendingName]);
   useEffect(() => {
     if (!pendingName || pendingName === appliedPendingName.current || coolingDown) return;
@@ -187,7 +190,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const selectName = record => {
     updateName(record.name);
     setSelectedRecord(record);
-    setGiftPreviewName(record.name);
+    selectSantaRecipient(record.name);
     setSuggesting(false);
   };
   const submit = async event => {
@@ -206,7 +209,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
       return;
     }
     setValidation('');
-    setGiftPreviewName(recording.name);
+    selectSantaRecipient(recording.name);
     const controller = new AbortController();
     requestRef.current = controller;
     setBusy(true);
@@ -294,7 +297,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         <p className="eyebrow">A little North Pole experiment</p>
         <h2 className="santa-message-heading">FREE Personalised message from Santa</h2>
         <SantaVoiceTagline />
-        {!hasAccess && <SantaMessageExample onExampleNameChange={setActiveExampleName} />}
+        {!hasAccess && allowExamples && <SantaMessageExample onExampleNameChange={setActiveExampleName} />}
          <p className="message-free-intro">No Artificial Intelligence here. A real Human recorded message from Santa, aka Father Christmas to your little Human.{' '}<br />Click to enter Studio B, add your contact details, search for a recorded name, create and instantly download your short FREE personalised message from Santa.</p>
         <p className="message-studio-intro">Or, why not enter Studio - A and have a bespoke message from Santa?<sup>**</sup> You&apos;ll also receive some festive goodies. See below.</p>
         <p className="message-studio-availability"><small>** Coming early November</small></p>
@@ -427,10 +430,10 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         {!sessionRemembered && <p className="message-name-hint" role="status">Your browser can’t remember access. The studio stays open while you browse, but refreshing this tab may ask for your details again.</p>}
         </>}
       </div>
-      {hasAccess && <SantaMessageExample onExampleNameChange={setActiveExampleName} />}
+       {hasAccess && allowExamples && <SantaMessageExample onExampleNameChange={setActiveExampleName} />}
       </div>
       <SantaStudioPromotion activeExampleName={activeExampleName} availableNamesText={availableNamesText}
-        previewName={giftPreviewName} />
+        previewName={giftPreviewName} allowExamples={allowExamples} />
       <SantaMessageReviews />
     </div>
   </section>;

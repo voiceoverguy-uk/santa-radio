@@ -148,7 +148,7 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
     onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
     onFocusCapture={() => setFocused(true)}
     onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false); }}>
-    <h4>All 3 digital gifts included for {name}</h4>
+    <h4>All 3 gifts included with the paid version</h4>
     <div className="studio-gifts__preview-stack" role="group" aria-label="Three gift previews"
       onContextMenu={event => event.preventDefault()} onDragStart={event => event.preventDefault()}>
       <div className="studio-gifts__gallery">
@@ -192,7 +192,7 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
   </section>;
 }
 
-export default function SantaStudioGifts({ activeExampleName = null, previewName = null }) {
+export function useStudioGiftExample({ activeExampleName = null, previewName = null, allowExamples = true } = {}) {
   const [index, setIndex] = useState(0);
   const [pictureIndex, setPictureIndex] = useState(0);
   // Keep the outgoing artwork above the new picture across recipient remounts.
@@ -215,20 +215,32 @@ export default function SantaStudioGifts({ activeExampleName = null, previewName
     return () => preference.removeEventListener('change', update);
   }, []);
   const activeName = allCertificateExamples.find(item => item.name === activeExampleName)?.name;
-  const name = activeName || previewName || studioGiftExampleNames[index];
+  const name = previewName || (allowExamples ? activeName || studioGiftExampleNames[index] : null);
   const nextExample = useCallback(() => {
     setPreviousPicture(reducedMotion ? null : santaPictures[pictureIndex]);
-    if (!previewName) setIndex(value => (value + 1) % studioGiftExampleNames.length);
+    if (!previewName && allowExamples) setIndex(value => (value + 1) % studioGiftExampleNames.length);
     setPictureIndex(value => (value + 1) % santaPictures.length);
-  }, [previewName, pictureIndex, reducedMotion]);
+  }, [previewName, allowExamples, pictureIndex, reducedMotion]);
   const finishDissolve = useCallback(() => setPreviousPicture(null), []);
   // Keep the audio name on stop when it belongs to the idle rotation.
   useEffect(() => {
     const next = studioGiftExampleNames.indexOf(activeName);
-    if (next >= 0) setIndex(next);
-  }, [activeName]);
-  return <GiftExample key={name} name={name} picture={santaPictures[pictureIndex]}
-    previousPicture={previousPicture} onDissolved={finishDissolve}
-    activeAudio={Boolean(activeName)} reducedMotion={reducedMotion}
-    onNext={nextExample} />;
+    if (next >= 0 && !previewName && allowExamples) setIndex(next);
+  }, [activeName, previewName, allowExamples]);
+  return { name, picture: santaPictures[pictureIndex], previousPicture,
+    onDissolved: finishDissolve, activeAudio: Boolean(activeName && !previewName && allowExamples),
+    reducedMotion, onNext: nextExample };
+}
+
+export function StudioGiftPreview({ example }) {
+  if (!example.name) return <section className="studio-gifts" aria-label="Paid Studio gift preview">
+    <h4>All 3 gifts included with the paid version</h4>
+    <p>Personalised gift previews will appear when a child’s name is available.</p>
+  </section>;
+  return <GiftExample key={example.name} {...example} />;
+}
+
+export default function SantaStudioGifts(props) {
+  const example = useStudioGiftExample(props);
+  return <StudioGiftPreview example={example} />;
 }
