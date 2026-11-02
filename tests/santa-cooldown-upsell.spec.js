@@ -54,6 +54,40 @@ async function generate(page, name = 'Erica') {
   await expect(offer(page)).toBeVisible();
 }
 
+async function checkCooldownNotice(page) {
+  const notice = card(page).locator('.message-cooldown-status');
+  const availability = await page.evaluate(() => {
+    const { availableAt } = JSON.parse(localStorage.getItem('santa-message-allowance'));
+    return new Intl.DateTimeFormat('en-GB', {
+      weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
+    }).format(new Date(availableAt));
+  });
+  await expect(notice).toBeVisible();
+  await expect(notice).toHaveAttribute('role', 'status');
+  await expect(notice).toHaveText(`Your next free message will be available at ${availability}.`);
+  await expect(page.getByText('Your recording isn’t saved by this site', { exact: false })).toHaveCount(0);
+  return notice.innerText();
+}
+
+for (const path of ['/', '/free-santa-message']) {
+  test(`cooldown notice keeps only the availability time before and after reload on ${path}`, async ({ page, context }) => {
+    await setup(page, { path });
+    await generate(page);
+    const deadline = await checkCooldownNotice(page);
+    await expect(card(page).getByRole('link', { name: /Download your audio/ })).toBeVisible();
+    await page.clock.setFixedTime(new Date('2026-11-02T12:10:00Z'));
+    await page.reload();
+    expect(await checkCooldownNotice(page)).toBe(deadline);
+    await expect(card(page).getByRole('button', { name: 'Create message', exact: true })).toHaveCount(0);
+    await expect(offer(page)).toBeVisible();
+    const otherTab = await context.newPage();
+    await otherTab.clock.setFixedTime(new Date('2026-11-02T12:10:00Z'));
+    await otherTab.goto(path);
+    expect(await checkCooldownNotice(otherTab)).toBe(deadline);
+    await expect(card(otherTab).getByRole('button', { name: 'Create message', exact: true })).toHaveCount(0);
+  });
+}
+
 async function checkNavigation(page, name) {
   await expect(offer(page).getByRole('link')).toHaveAttribute('href', '#santa-studio-promotion');
   await offer(page).getByRole('link').click();
@@ -115,6 +149,7 @@ for (const prelaunch of [true, false]) {
     await expect(offer(page)).not.toContainText(/your child/i);
     await expect(offer(page)).not.toContainText('child’s’s');
     await expect(offer(page)).not.toContainText(/Erica|Erin|Arabella|Abbey|Edward/);
+    await checkCooldownNotice(page);
     await expect(card(page).locator('.message-cooldown-status')).toContainText('Your next free message will be available at');
     await expect(card(page).locator('.service-notice')).toHaveText('Free to create and download. (not sent by email)');
     await checkNavigation(page);
