@@ -140,7 +140,7 @@ test('desktop/mobile map, typography and menu fit without horizontal overflow', 
   }
 });
 
-test('gold divider stays centred between the introduction and tracker updates', async ({ page }) => {
+test('gold dividers separate holiday activity, introduction and countdown without moving live updates', async ({ page }) => {
   const states = [
     { date: '2026-11-15T12:00:00Z', status: /On Holiday in/ },
     { date: '2026-12-24T14:00:00Z', status: /Delivering Now/ },
@@ -152,14 +152,28 @@ test('gold divider stays centred between the introduction and tracker updates', 
       await page.setViewportSize(viewport);
       await page.goto('/santa-tracker');
       await expect(page.locator('.tracker-status')).toContainText(state.status);
-      const divider = page.locator('.tracker-copy-divider');
+      const holiday = state.status.source.includes('Holiday');
+      const dividers = page.locator('.tracker-copy-divider');
+      await expect(dividers).toHaveCount(holiday ? 2 : 1);
+      const divider = dividers.last();
       await expect(divider).toBeVisible();
       await expect(divider).toHaveAttribute('aria-hidden', 'true');
       const dividerBox = await divider.boundingBox();
-      const introBox = await page.locator('.tracker-hero .tracker-copy').nth(1).boundingBox();
+      const introBox = await page.locator('.tracker-hero .tracker-copy').filter({ hasText: 'The countdown is on until departure.' }).boundingBox();
       const statusMessageBox = await page.locator('.tracker-status-message').boundingBox();
       expect(dividerBox.y).toBeGreaterThan(introBox.y + introBox.height - 1);
-      expect(statusMessageBox.y).toBeGreaterThan(dividerBox.y + dividerBox.height);
+      if (holiday) {
+        const upperDividerBox = await dividers.first().boundingBox();
+        const badgeBox = await page.locator('.tracker-status').boundingBox();
+        const firstIntroBox = await page.locator('.tracker-copy').filter({ hasText: 'Santa Radio’s Santa Tracker follows' }).boundingBox();
+        expect(statusMessageBox.y).toBeGreaterThanOrEqual(badgeBox.y + badgeBox.height);
+        expect(upperDividerBox.y).toBeGreaterThanOrEqual(statusMessageBox.y + statusMessageBox.height);
+        expect(firstIntroBox.y).toBeGreaterThanOrEqual(upperDividerBox.y + upperDividerBox.height);
+        const countdownBox = await page.locator('.tracker-countdown-label').first().boundingBox();
+        expect(countdownBox.y).toBeGreaterThanOrEqual(dividerBox.y + dividerBox.height);
+      } else {
+        expect(statusMessageBox.y).toBeGreaterThan(dividerBox.y + dividerBox.height);
+      }
       expect(Math.abs(dividerBox.x + dividerBox.width / 2 - viewport.width / 2)).toBeLessThanOrEqual(1);
       expect(dividerBox.width).toBeGreaterThan(200);
       expect(dividerBox.width).toBeLessThanOrEqual(416);
@@ -174,9 +188,11 @@ test('tracker copy and divider remain readable at 200% text zoom', async ({ page
     await page.goto('/santa-tracker');
     await page.addStyleTag({ content: 'html { font-size: 200% !important; }' });
 
-    const intro = page.locator('.tracker-hero .tracker-copy').nth(1);
+    const intro = page.locator('.tracker-hero .tracker-copy').filter({ hasText: 'The countdown is on until departure.' });
     const seasonalMessage = page.locator('.tracker-status-message');
-    const divider = page.locator('.tracker-copy-divider');
+    const dividers = page.locator('.tracker-copy-divider');
+    await expect(dividers).toHaveCount(2);
+    const divider = dividers.first();
     await expect(intro).toContainText('The countdown is on until departure.');
     await expect(seasonalMessage).toContainText("Santa's taking a well-earned break");
     await expect(divider).toBeVisible();
@@ -201,8 +217,8 @@ test('tracker copy and divider remain readable at 200% text zoom', async ({ page
         rootFontSize: parseFloat(getComputedStyle(document.documentElement).fontSize),
         documentWidth: document.documentElement.scrollWidth,
         viewportWidth: innerWidth,
-        introText: textBounds(document.querySelectorAll('.tracker-hero .tracker-copy')[1]),
-        introParagraph: paragraphBounds(document.querySelectorAll('.tracker-hero .tracker-copy')[1]),
+        introText: textBounds(document.querySelectorAll('.tracker-hero .tracker-copy')[2]),
+        introParagraph: paragraphBounds(document.querySelectorAll('.tracker-hero .tracker-copy')[2]),
         seasonalText: textBounds(document.querySelector('.tracker-status-message')),
         seasonalParagraph: paragraphBounds(document.querySelector('.tracker-status-message')),
       };
@@ -220,8 +236,10 @@ test('tracker copy and divider remain readable at 200% text zoom', async ({ page
       expect(text.top).toBeGreaterThanOrEqual(paragraph.top - 0.5);
       expect(text.bottom).toBeLessThanOrEqual(paragraph.bottom + 0.5);
     }
-    expect(dividerBox.y).toBeGreaterThanOrEqual(zoomedLayout.introText.bottom - 0.5);
-    expect(zoomedLayout.seasonalText.top).toBeGreaterThanOrEqual(dividerBox.y + dividerBox.height - 0.5);
+    expect(dividerBox.y).toBeGreaterThanOrEqual(zoomedLayout.seasonalText.bottom - 0.5);
+    expect(zoomedLayout.introText.top).toBeGreaterThanOrEqual(dividerBox.y + dividerBox.height - 0.5);
+    const lowerDividerBox = await dividers.last().boundingBox();
+    expect(lowerDividerBox.y).toBeGreaterThanOrEqual(zoomedLayout.introText.bottom - 0.5);
     expect(Math.abs(dividerBox.x + dividerBox.width / 2 - viewport.width / 2)).toBeLessThanOrEqual(1);
   }
 });
@@ -455,6 +473,26 @@ for (const [date, holiday] of [
     expect(seconds(before) - seconds(after)).toBe(1);
     await expect(marker).toHaveAttribute('x', String(x));
     await expect(marker).toHaveAttribute('y', String(y));
+    const stops = map.locator('[data-route-stops] circle');
+    await expect(stops).toHaveCount(60);
+    const positions = await stops.evaluateAll(nodes => nodes.map(node => ({
+      id: node.getAttribute('data-stop-id'),
+      x: node.getAttribute('cx'),
+      y: node.getAttribute('cy'),
+    })));
+    for (const width of [320, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      expect(await map.evaluate(node => node.scrollWidth <= node.clientWidth + 1)).toBe(true);
+      await expect(stops.first()).toHaveAttribute('stroke', '#bcc9bd');
+    }
+    await page.goto('/santa-tracker');
+    const mainStops = page.locator('.tracker-map g[data-stop-id]');
+    await expect(mainStops).toHaveCount(60);
+    expect(await mainStops.evaluateAll(nodes => nodes.map(node => ({
+      id: node.getAttribute('data-stop-id'),
+      x: node.querySelector('circle').getAttribute('cx'),
+      y: node.querySelector('circle').getAttribute('cy'),
+    })))).toEqual(positions);
   });
 }
 

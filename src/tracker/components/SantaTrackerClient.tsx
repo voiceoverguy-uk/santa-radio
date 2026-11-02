@@ -140,6 +140,16 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
       ? `🏖️ On Holiday in ${holiday.name}`
       : "At the North Pole";
 
+  const statusMessage = showStatusMessage && <p className="tracker-copy tracker-status-message mt-4 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
+    {isLive || isComplete
+      ? data.statusSubtext
+      : onHoliday && inJuly && holiday
+      ? `It's Christmas in July! Santa's celebrating mid-year festivities while ${holiday.activity.charAt(0).toLowerCase()}${holiday.activity.slice(1)}. Festive fun doesn't stop just because it's summer!`
+      : onHoliday && holiday
+      ? `Santa's taking a well-earned break! He's currently ${holiday.activity.charAt(0).toLowerCase()}${holiday.activity.slice(1)}. He'll be back at the North Pole on 1 December.`
+      : "Follow Santa as Christmas Eve midnight sweeps across the globe. From the Pacific Islands to American Samoa, watch his estimated journey unfold in real time."}
+  </p>;
+
   return (
     <div className="tracker-shell min-h-screen text-white">
       {showPreview && previewState.enabled && (
@@ -168,6 +178,14 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
             </span>
           </div>
 
+          {onHoliday && statusMessage}
+
+          {onHoliday && introCopy && showStatusMessage && (
+            <div className="tracker-copy-divider" aria-hidden="true">
+              <span className="tracker-copy-divider-flourish" />
+            </div>
+          )}
+
           {introCopy}
 
           {introCopy && showStatusMessage && (
@@ -176,15 +194,7 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
             </div>
           )}
 
-          {showStatusMessage && <p className="tracker-copy tracker-status-message mt-4 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
-            {isLive || isComplete
-              ? data.statusSubtext
-              : onHoliday && inJuly && holiday
-              ? `It's Christmas in July! Santa's celebrating mid-year festivities while ${holiday.activity.charAt(0).toLowerCase()}${holiday.activity.slice(1)}. Festive fun doesn't stop just because it's summer!`
-              : onHoliday && holiday
-               ? `Santa's taking a well-earned break! He's currently ${holiday.activity.charAt(0).toLowerCase()}${holiday.activity.slice(1)}. He'll be back at the North Pole on 1 December.`
-              : "Follow Santa as Christmas Eve midnight sweeps across the globe. From the Pacific Islands to American Samoa, watch his estimated journey unfold in real time."}
-          </p>}
+          {!onHoliday && statusMessage}
 
           {!isLive && !isComplete && (
             <div className="mt-8">

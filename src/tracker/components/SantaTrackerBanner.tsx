@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getDashboardData, isHolidaySeason, isChristmasInJuly, getRandomHoliday, type HolidayDestination } from "@/lib/santaRoute";
 import { worldMapPaths } from "@/data/worldMapPaths";
+import { santaStops } from "@/data/santaRouteStops";
 
 export default function SantaTrackerBanner() {
   const [now, setNow] = useState<Date | null>(null);
@@ -191,6 +192,21 @@ function MiniMap({ holiday }: { holiday: HolidayDestination | null }) {
         <g fill="#1B4332" stroke="#52765a" strokeWidth="0.7" opacity="0.82">
           {worldMapPaths.map((d, i) => (
             <path key={i} d={d} />
+          ))}
+        </g>
+        <g data-route-stops="">
+          {santaStops.map((stop) => (
+            <circle
+              key={stop.id}
+              data-stop-id={stop.id}
+              cx={((stop.lng + 180) / 360) * 1000}
+              cy={((90 - stop.lat) / 180) * 500}
+              r="2.5"
+              fill="none"
+              stroke="#bcc9bd"
+              strokeWidth="1.2"
+              opacity="0.8"
+            />
           ))}
         </g>
         <circle cx={santaX} cy={santaY} r="18" fill="#D4AF37" opacity="0.3">
