@@ -47,7 +47,7 @@ export default function WorkshopSearchableChoices({ category, label, options, va
       <WorkshopWordingPreview
         wording={wording}
         heading={category === 'activity' ? 'Santa will say:' : 'Santa will say…'}
-        selectedText={category === 'place' ? currentSelectionLabel : ''}
+        selectedText={category === 'place' || category === 'activity' ? currentSelectionLabel : ''}
       />
     </div>
   );

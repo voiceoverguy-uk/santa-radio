@@ -207,7 +207,7 @@ test('recorded name preview can cancel a refresh and recover from a failed refre
 });
 
 for (const width of [390, 1440]) {
-  test(`selected age and country complete Santa wording in red at ${width}px`, async ({ page }) => {
+  test(`selected age, activity and country complete Santa wording in red at ${width}px`, async ({ page }) => {
     test.setTimeout(60000);
     await page.setViewportSize({ width, height: 1000 });
     await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -233,6 +233,22 @@ for (const width of [390, 1440]) {
     for (let step = 3; step <= 5; step++) {
       await expect(suffix).toHaveCount(0);
       await page.getByRole('listbox').press('Home');
+      if (step === 3) {
+        await expect(quote).toContainText('trying especially hard at… Teamwork');
+        await expect(suffix).toHaveCSS('color', 'rgb(155, 17, 30)');
+        await page.getByRole('listbox').press('ArrowDown');
+        await expect(suffix).toHaveText('Playing a musical instrument');
+        await page.getByRole('searchbox', { name: 'Search activities', exact: true }).fill('no matching activity');
+        await expect(page.locator('.smw-search-empty')).toBeVisible();
+        await expect(suffix).toHaveText('Playing a musical instrument');
+        await page.getByRole('button', { name: 'Clear', exact: true }).click();
+        await page.locator('.smw-button-back').click();
+        await page.locator('.smw-button-next').click();
+        await expect(suffix).toHaveText('Playing a musical instrument');
+        await page.locator('.smw-builder').screenshot({ path: `generated-artifacts/studio-selected-activity-${width}.jpg` });
+      } else {
+        await expect(suffix).toHaveCount(0);
+      }
       await page.locator('.smw-button-next').click();
     }
     await expect(suffix).toHaveCount(0);
