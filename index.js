@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import radioMetadata from './server/radio-metadata.js';
 import radioTopTen from './server/radio-top-ten.js';
 import santaMessage from './server/santa-message.js';
+import studioMessage from './server/santa-studio-message.js';
 import santaNames from './server/santa-names.js';
 import santaNameCount from './server/santa-name-count.js';
 import santaNamePreview from './server/santa-name-preview.js';
@@ -58,6 +59,7 @@ const server = createServer(async (req, res) => {
     if (pathname === '/api/santa-workshop-access') return workshopAccess(req, res);
     if (pathname === '/api/radio-metadata') return await radioMetadata(req, res);
     if (pathname === '/api/radio-top-ten') return await radioTopTen(req, res);
+    if (pathname === '/api/santa-studio-message') return await studioMessage(req, res);
     if (pathname === '/api/santa-message') return await santaMessage(req, res);
     if (pathname === '/api/santa-message-access') return messageAccess(req, res);
     if (pathname === '/api/santa-names') return await santaNames(req, res);

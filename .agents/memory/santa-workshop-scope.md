@@ -3,23 +3,45 @@ name: Santa workshop preview scope
 description: Owner approval boundary between the extended-message design trial and future audio work
 ---
 
-The owner has also approved on-demand playback of the selected existing recorded name in the final review, so visitors can check its pronunciation. This does not approve creating or playing a full extended message.
+The owner now explicitly authorises full extended Studio stitching and quiet
+sleigh-bell mixing, using the exact selected recording variant twice and all five
+selected categories. This supersedes the earlier design-only and name-preview-only
+restrictions. It does not authorise activating live checkout or declaring the
+multi-child paid family bundle delivered.
+
+**Why:** The owner explicitly authorised connecting the reviewed Studio to real
+extended-message creation, while preserving the existing free maker and launch
+availability.
+
+**How to apply:** Keep full Studio generation separate from free signup/cooldown.
+Written spelling is display/download naming only, never pronunciation identity.
+Use the established extended recipe, not the free maker's intro/outros, generated
+speech or invented connecting sentences. Preserve source pauses and the free
+maker's quiet bells level.
+
+The owner has also approved on-demand playback of the selected existing recorded name in the final review, so visitors can check its pronunciation.
 
 **Why:** They requested a small red play button beside the review name: “That way they can make sure it’s correct.”
 
 **How to apply:** Play the exact chosen hosted recording, including its variant, only after a click. Do not derive its audio filename from a typed or certificate spelling. Stop when editing or leaving the review and coordinate with the radio without overriding manual radio choices. Name-only playback must not consume a message allowance or submit typed child details.
 
-The owner chose to try an isolated design-first extended-message workshop before connecting MP3 creation. The offline extended-message proof establishes selection categories, not an approved catalogue or audio service.
+The owner initially chose an isolated design-first extended-message workshop.
+The offline proof established the recipe, not a connected service; subsequent
+explicit authorisation above allows that service to be connected.
 
 **Why:** The owner wants to review the page experience first without replacing or changing the existing free maker.
 
-**How to apply:** Keep the trial separate from the existing free maker. The owner now wants it introduced publicly on the homepage with a voucher-code option while payment options are undecided. Do not interpret promotion or design approval as approval to connect full-message recordings or change the free maker’s signup and message permissions.
+**How to apply:** Keep Studio separate from the existing free maker. Public
+promotion and voucher access alone do not authorise changing the free maker's
+signup, message permissions or live payments.
 
 The first workshop stage must use the actual FTP-hosted name list, not a fixed Arabella example.
 
 **Why:** The owner explicitly corrected the sample-only name picker: “This first box should be pulling from the list on the FTP.” Arabella came from an offline proof and is not the workshop's fixed name.
 
-**How to apply:** Load hosted inventories while keeping extended-message audio disconnected. Filter typed names locally so child details do not enter request URLs or server logs. The owner subsequently requested actual hosted choices for ages, activities, achievements, treats and destinations too; offline examples must not substitute for those lists. This is permission to display the inventory, not approval of every recording’s wording, playback or future mixing.
+**How to apply:** Use actual hosted choices, not the offline demonstration's
+sample catalogue. Keep private name lookup bounded through POST and keep source
+locations on the server, as required by the later confidentiality direction.
 
 The owner has recorded ages 1–50. The age stage must offer that full range in a compact vertical scroll wheel, not paged cards, number blocks, or the two offline sample ages.
 

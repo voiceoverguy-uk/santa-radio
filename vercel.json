@@ -4,6 +4,10 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "functions": {
+    "api/santa-studio-message.js": {
+      "maxDuration": 120,
+      "includeFiles": "{server/santa-audio/studio/**,server/santa-audio/names/**,server/santa-audio/sleighbells.mp3,node_modules/ffmpeg-static/**}"
+    },
     "api/santa-message-access.js": { "maxDuration": 20 },
     "api/stripe/webhook.js": { "maxDuration": 30 },
     "api/santa-studio-access.js": { "maxDuration": 30 },

@@ -21,7 +21,7 @@
   font: inherit;
   font-size: .9rem;
 }
-.smw-choice-search input::placeholder { color: #4b6155; opacity: 1; }
+.smw-choice-search input::placeholder { color: #8a8a8a; opacity: 1; }
 .smw-choice-search input:focus-visible { outline: 2px solid var(--smw-gold-light); outline-offset: 2px; }
 .smw-choice-search button {
   flex-shrink: 0;

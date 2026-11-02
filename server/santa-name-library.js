@@ -38,12 +38,12 @@ export class NameLibraryError extends Error {
 }
 
 // Do not follow redirects: even an approved URL must not redirect to another host.
-export async function fetchLimited(url, limit, fetcher = fetch, privateAccess = false) {
+export async function fetchLimited(url, limit, fetcher = fetch, privateAccess = false, signal) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 10_000);
   try {
     const response = await fetcher(url, {
-      redirect: 'error', cache: 'no-store', signal: controller.signal,
+      redirect: 'error', cache: 'no-store', signal: signal ? AbortSignal.any([controller.signal, signal]) : controller.signal,
       ...(privateAccess ? { headers: { Authorization: `Bearer ${process.env.SANTA_LIBRARY_READ_TOKEN}` } } : {}),
     });
     if (!response.ok || response.redirected) throw new NameLibraryError('UPSTREAM_STATUS');
@@ -153,19 +153,20 @@ export function createNameLibrary({ fetcher = fetch, now = Date.now } = {}) {
         throw error;
       }
     },
-    async sourceBytes(record) {
+    async sourceBytes(record, { signal } = {}) {
       if (record.source !== 'hosted' || !FILE.test(record.file)) throw new NameLibraryError('INVALID_RECORDING');
       const origin = privateOrigin('audio', record.file);
       const url = new URL(encodeURIComponent(record.file), NAMES_ROOT);
-      return fetchLimited(origin || url.href, MAX_AUDIO_BYTES, fetcher, Boolean(origin));
+      return fetchLimited(origin || url.href, MAX_AUDIO_BYTES, fetcher, Boolean(origin), signal);
     },
-    async download(record, destination, sourceBytes) {
-      const bytes = sourceBytes || await this.sourceBytes(record);
+    async download(record, destination, sourceBytes, { signal } = {}) {
+      const bytes = sourceBytes || await this.sourceBytes(record, { signal });
+      signal?.throwIfAborted();
       if (/\.wav$/i.test(record.file)) {
         validateNameWav(bytes);
         await writeFile(destination, bytes, { flag: 'wx', mode: 0o600 });
       } else {
-        await decodeNameMp3(bytes, destination);
+        await decodeNameMp3(bytes, destination, signal);
       }
     },
   };
@@ -175,7 +176,7 @@ export function createNameLibrary({ fetcher = fetch, now = Date.now } = {}) {
 // demuxer/decoder, so a disguised playlist cannot load another URL or local file.
 // Decode at most 31 seconds: anything exceeding the 30-second limit is rejected,
 // not silently shortened. Mono 48k PCM bounds the intermediate to under 3 MiB.
-async function decodeNameMp3(bytes, destination) {
+async function decodeNameMp3(bytes, destination, signal) {
   const input = `${destination}.mp3`;
   await writeFile(input, bytes, { flag: 'wx', mode: 0o600 });
   try {
@@ -185,7 +186,7 @@ async function decodeNameMp3(bytes, destination) {
       '-threads', '1', '-i', input, '-map', '0:a:0', '-vn', '-sn', '-dn',
       '-t', '31', '-ac', '1', '-ar', '48000', '-c:a', 'pcm_s16le',
       '-threads', '1', '-f', 'wav', '-n', destination,
-    ], { timeout: 10_000, killSignal: 'SIGKILL', maxBuffer: 64 * 1024 });
+    ], { signal, timeout: 10_000, killSignal: 'SIGKILL', maxBuffer: 64 * 1024 });
     validateNameWav(await readFile(destination));
   } catch {
     await rm(destination, { force: true }).catch(() => {});

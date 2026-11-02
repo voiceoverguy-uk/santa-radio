@@ -25,12 +25,18 @@ export default function WorkshopNamePreview({ record, cache }) {
   }, [cache]);
 
   useEffect(() => {
+    const stop = () => finish();
+    const leave = () => finish({ resume: false });
     const onOtherPlayback = event => {
       if (sessionRef.current && event.target !== sessionRef.current.audio) finish({ resume: false });
     };
     document.addEventListener('play', onOtherPlayback, true);
+    document.addEventListener('studio-stop-audio', stop);
+    window.addEventListener('pagehide', leave);
     return () => {
       document.removeEventListener('play', onOtherPlayback, true);
+      document.removeEventListener('studio-stop-audio', stop);
+      window.removeEventListener('pagehide', leave);
       finish({ notify: false });
     };
   }, [finish]);

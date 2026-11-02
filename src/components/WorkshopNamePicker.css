@@ -34,7 +34,8 @@
 }
 
 .smw-name-search::placeholder {
-  color: #66766b;
+  color: #8a8a8a;
+  opacity: 1;
 }
 
 .smw-name-search:hover {

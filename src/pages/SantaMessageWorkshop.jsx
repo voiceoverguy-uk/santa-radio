@@ -10,6 +10,7 @@ import WorkshopChoiceWheel from '../components/WorkshopChoiceWheel.jsx';
 import WorkshopNameSpelling from '../components/WorkshopNameSpelling.jsx';
 import WorkshopWordingPreview from '../components/WorkshopWordingPreview.jsx';
 import WorkshopNamePreview from '../components/WorkshopNamePreview.jsx';
+import WorkshopMessageAudio from '../components/WorkshopMessageAudio.jsx';
 import { createWorkshopNamePreviewCache } from '../lib/workshopNamePreviewCache.js';
 import { workshopTreatWording } from '../lib/workshopTreatWording.js';
 import { createStudioLetterVariation } from '../lib/santaStudioLetter.js';
@@ -193,7 +194,11 @@ export default function SantaMessageWorkshop() {
   const [namePreviewCache] = useState(createWorkshopNamePreviewCache);
   // Keep a clip across other detail edits, but clear it when its recipient
   // changes or the visitor leaves Studio.
-  useEffect(() => () => namePreviewCache.clear(), [namePreviewCache, selectedName?.id]);
+   useEffect(() => {
+     const clear = () => namePreviewCache.clear();
+     window.addEventListener('pagehide', clear);
+     return () => { window.removeEventListener('pagehide', clear); clear(); };
+   }, [namePreviewCache, selectedName?.id]);
   const [nameSpelling, setNameSpelling] = useState('');
   // Survives review unmounts while a detail is edited; never stored or name-seeded.
   const [letterVariation] = useState(createStudioLetterVariation);
@@ -360,7 +365,7 @@ export default function SantaMessageWorkshop() {
       <PageSeo metadata={pageMetadata({
         path: '/santa-message-workshop',
          title: 'Santa’s Message Maker Studio Preview | Santa Radio',
-        description: 'Try a little design preview of a longer personalised Santa greeting. No audio is created or saved.',
+         description: 'Create a longer personalised recorded Santa greeting in the private Message Maker Studio.',
         noindex: true,
       })} />
 
@@ -378,7 +383,7 @@ export default function SantaMessageWorkshop() {
             <div>
               <strong>It's the little details that matter...</strong>
               <p>{accessKind === 'paid-sandbox'
-                ? 'Sandbox test payment confirmed — no real money moved. This preview opens the Studio choices only. Bundle downloads and email return links are not connected yet.'
+                ? 'Sandbox test payment confirmed — no real money moved. You can test the Studio choices and an individual message. Family-bundle downloads and email return links are not connected yet.'
                 : 'You’re in the friends-only Message Maker Studio test. Please try all of the sections and give us some feedback.'}</p>
             </div>
           </aside>
@@ -570,7 +575,12 @@ export default function SantaMessageWorkshop() {
                 <button className="smw-button smw-button-back" type="button" onClick={goBack}>
                   <span aria-hidden="true">←</span> Back
                 </button>
-                <span className="smw-review-finish">Your choices are ready to review.</span>
+                <WorkshopMessageAudio
+                  key={JSON.stringify([selectedName?.id, ...catalogueCategories.map(key => choices[key])])}
+                  record={selectedName} choices={choices} spelling={nameSpelling}
+                  complete={!!selectedName && catalogueCategories.every(key =>
+                    catalogueState.catalogue?.categories?.[key]?.some(record => record.id === choices[key]))}
+                />
               </div>
             </div>
           )}
@@ -603,7 +613,7 @@ export default function SantaMessageWorkshop() {
           </div>
         </section>
         <p className="smw-footer-note">
-          Names come from Santa’s hosted recording library. Age, activity, achievement, treat and place choices come from Santa’s hosted file inventory. Destinations include countries and real places as well as fantasy and space choices; the supplied labels identify fantasy and space destinations. Files flagged for review are not selectable. This preview does not create or play audio.
+          Names come from Santa’s hosted recording library. Age, activity, achievement, treat and place choices come from Santa’s hosted file inventory. Destinations include countries and real places as well as fantasy and space choices; the supplied labels identify fantasy and space destinations. Files flagged for review are not selectable.
         </p>
       </div>
     </main>
