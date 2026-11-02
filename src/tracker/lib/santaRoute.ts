@@ -58,6 +58,8 @@ export interface DashboardData {
   countdownToChristmasEve: CountdownValues;
   countdownToUK: CountdownValues;
   currentFunFact: string;
+  currentActivity: string;
+  activityPlace: string;
   holiday: HolidayDestination | null;
 }
 
@@ -84,11 +86,11 @@ export function getRandomHoliday(): HolidayDestination {
 function getChristmasEveYear(now: Date): number {
   const year = now.getUTCFullYear();
   const journeyStart = new Date(Date.UTC(year, 11, 24, TRACKER_CONSTANTS.journeyStartUtcHour, 0, 0));
-  const journeyEnd = new Date(Date.UTC(year, 11, 24, TRACKER_CONSTANTS.journeyEndUtcHour, 0, 0));
+  const journeyEnd = getJourneyEndTime(year);
 
   if (now >= journeyStart && now <= journeyEnd) return year;
 
-  const prevYearEnd = new Date(Date.UTC(year - 1, 11, 24, TRACKER_CONSTANTS.journeyEndUtcHour, 0, 0));
+  const prevYearEnd = getJourneyEndTime(year - 1);
   if (now <= prevYearEnd) return year - 1;
 
   return year;
@@ -99,7 +101,7 @@ function getJourneyStartTime(year: number): Date {
 }
 
 function getJourneyEndTime(year: number): Date {
-  return new Date(Date.UTC(year, 11, 24, TRACKER_CONSTANTS.journeyEndUtcHour, 0, 0));
+  return new Date(Date.UTC(year, 11, 24) + TRACKER_CONSTANTS.journeyEndUtcHour * 3600000);
 }
 
 function getStopArrivals(year: number): { stop: SantaStop; arrival: Date }[] {
@@ -116,9 +118,9 @@ export function getSeasonalTrackerMode(now: Date): SeasonalMode {
 
   const dec24Start = new Date(Date.UTC(year, 11, 24, 0, 0, 0));
 
-  if (now >= journeyStart && now <= journeyEnd) return "LIVE";
+  if (now >= journeyStart && now < journeyEnd) return "LIVE";
   if (now >= dec24Start && now < journeyStart) return "PREPARING";
-  if (now > journeyEnd) {
+  if (now >= journeyEnd) {
     const dec26 = new Date(Date.UTC(year, 11, 26, 0, 0, 0));
     if (now < dec26) return "COMPLETE";
   }
@@ -144,16 +146,10 @@ export function getSantaTrackerState(now: Date): TrackerState {
     }
   }
 
-  for (let i = 0; i < arrivals.length; i++) {
-    const { stop, arrival } = arrivals[i];
-    const arrivalMs = arrival.getTime();
-    const dwellMs = stop.dwellMinutes * 60 * 1000;
-    const nowMs = now.getTime();
-
-    if (nowMs >= arrivalMs && nowMs < arrivalMs + dwellMs) {
-      return "LIVE_AT_STOP";
-    }
-  }
+  // State must describe the same selected destination as the clock, map and
+  // activity, including shared arrivals and closely spaced quarter-hours.
+  const current = getCurrentStop(now);
+  if (current && now.getTime() < getStopArrivalDate(current, year).getTime() + current.dwellMinutes * 60000) return "LIVE_AT_STOP";
 
   return "IN_TRANSIT";
 }
@@ -382,7 +378,7 @@ function getStatusTexts(state: TrackerState, current: SantaStop | null, next: Sa
     case "COMPLETE":
       return {
         headline: "Journey Complete!",
-        subtext: "Santa has delivered gifts to every corner of the globe. Merry Christmas!",
+        subtext: "Santa has finished his estimated route in American Samoa, after Hawaii. Merry Christmas!",
       };
   }
 }
@@ -390,7 +386,7 @@ function getStatusTexts(state: TrackerState, current: SantaStop | null, next: Sa
 export function getDashboardData(now: Date): DashboardData {
   const mode = getSeasonalTrackerMode(now);
   const state = getSantaTrackerState(now);
-  const current = getCurrentStop(now);
+  const current = mode === "COMPLETE" ? santaStops[santaStops.length - 1] : getCurrentStop(now);
   const next = getNextStop(now);
   const progress = getJourneyProgress(now);
   const mapPosition = getInterpolatedMapPosition(now);
@@ -455,6 +451,8 @@ export function getDashboardData(now: Date): DashboardData {
     countdownToChristmasEve: countdownToStart,
     countdownToUK: countdownToUK,
     currentFunFact: current?.funFact || "Santa is busy preparing at the North Pole!",
+    currentActivity: current?.activity || "",
+    activityPlace: current?.name || "",
     holiday: null,
   };
 }

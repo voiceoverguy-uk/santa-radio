@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useEffect } from "react";
-import { santaStops, getStopUtcOffset, getStopArrivalDate } from "@/data/santaRouteStops";
+import { santaStops, formatStopOffset, formatStopArrival, getStopArrivalDate } from "@/data/santaRouteStops";
 import { getVisitedStops, getCurrentStopId } from "@/lib/santaRoute";
 
 interface SantaTimelineProps {
@@ -60,15 +60,17 @@ export default function SantaTimeline({ effectiveTime }: SantaTimelineProps) {
               <div className="flex-1 min-w-0 flex items-center justify-between gap-2">
                 <div className="min-w-0">
                   <p
-                    className={`text-sm font-medium truncate ${
+                    className={`text-sm font-medium ${
                       isCurrent ? "tracker-stop-current" : isVisited ? "tracker-stop-visited" : "tracker-stop-upcoming"
                     }`}
                   >
                     {stop.displayLabel}
                   </p>
+                  <p className="tracker-copy text-xs leading-relaxed mt-1" data-santa-activity={stop.id}>{stop.activity}</p>
                   <p className="tracker-meta text-[10px] uppercase tracking-wider">
-                    Representative clock: UTC{getStopUtcOffset(stop, effectiveTime.getUTCFullYear()) >= 0 ? "+" : ""}{getStopUtcOffset(stop, effectiveTime.getUTCFullYear())}
+                    Representative clock: {formatStopOffset(stop, effectiveTime.getUTCFullYear())}
                   </p>
+                  <p className="tracker-meta text-xs mt-1">{formatStopArrival(stop, effectiveTime.getUTCFullYear())}</p>
                 </div>
                 <span className={`flex-shrink-0 text-[10px] rounded-full px-2 py-0.5 uppercase tracking-wider font-medium ${
                   isCurrent
@@ -103,7 +105,7 @@ export default function SantaTimeline({ effectiveTime }: SantaTimelineProps) {
                   key={stop.id}
                   ref={isCurrent ? currentRef : undefined}
                   className="flex flex-col items-center flex-shrink-0"
-                  style={{ width: "120px" }}
+                  style={{ width: "180px", paddingInline: "8px" }}
                 >
                   <div
                     className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center text-base border-2 transition-all ${
@@ -125,9 +127,11 @@ export default function SantaTimeline({ effectiveTime }: SantaTimelineProps) {
                     >
                       {stop.displayLabel}
                     </p>
+                    <p className="tracker-copy text-xs leading-relaxed mt-2" data-santa-activity={stop.id}>{stop.activity}</p>
                     <p className="tracker-meta text-[9px] mt-0.5">
-                       UTC{getStopUtcOffset(stop, effectiveTime.getUTCFullYear()) >= 0 ? "+" : ""}{getStopUtcOffset(stop, effectiveTime.getUTCFullYear())}
+                       {formatStopOffset(stop, effectiveTime.getUTCFullYear())}
                     </p>
+                    <p className="tracker-meta text-xs mt-1">{formatStopArrival(stop, effectiveTime.getUTCFullYear())}</p>
                     <span className={`inline-block mt-1 text-[9px] rounded-full px-1.5 py-0.5 uppercase tracking-wider font-medium ${
                       isCurrent
                         ? "tracker-pill"

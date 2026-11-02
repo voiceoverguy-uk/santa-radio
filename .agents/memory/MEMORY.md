@@ -24,6 +24,7 @@
 - [Santa message access](santa-message-access-scope.md) — Adult signup and one-message/two-hour allowance are server-enforced; no email ownership verification.
 - [Tracker transfer scope](tracker-transfer-scope.md) — Preserve the supplied tracker; Santa Radio hosts it without replacing or redirecting SantaGuy’s existing version.
 - [Tracker holiday dates](tracker-holiday-dates.md) — Santa stays on holiday through 30 November; returns to the North Pole on 1 December.
+- [Tracker content boundaries](tracker-content-policy.md) — Delivery stops are not holiday-place additions; distinguish fictional antics from sourced, qualified traditions.
 - [Preview test timeouts](preview-test-timeouts.md) — Whole-test timeouts can report misleading matcher values even when the captured UI state is correct.
 - [Browser text bounds](browser-text-bounds.md) — Allow subpixel rounding in inline-text containment checks to avoid false cropping failures.
 - [Browser scroll checks](browser-scroll-verification.md) — Settle scrolling and account for the fixed radio dock before measuring or capturing interaction states.

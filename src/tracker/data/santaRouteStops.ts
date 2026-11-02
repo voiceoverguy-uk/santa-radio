@@ -1,3 +1,6 @@
+import { additionalStops } from "./santaRouteExtras";
+import { santaActivities } from "./santaActivities";
+
 export interface SantaStop {
   id: string;
   name: string;
@@ -9,6 +12,7 @@ export interface SantaStop {
   lng: number;
   dwellMinutes: number;
   funFact: string;
+  activity: string;
   milestoneType: "start" | "major" | "uk" | "end";
   displayLabel: string;
 }
@@ -20,10 +24,10 @@ export const TRACKER_CONSTANTS = {
   defaultDwellMinutes: 45,
   defaultDwellFraction: 0.6,
   journeyStartUtcHour: 10,
-  journeyEndUtcHour: 34,
+  journeyEndUtcHour: 35 + 20 / 60,
 } as const;
 
-export const santaStops: SantaStop[] = [
+const originalStops: Omit<SantaStop, "activity">[] = [
   {
     id: "pacific",
     name: "Pacific Islands",
@@ -639,10 +643,16 @@ export const santaStops: SantaStop[] = [
     dwellMinutes: 20,
     funFact:
       "Hawaiians say 'Mele Kalikimaka' — Merry Christmas! Santa arrives by outrigger canoe in some island traditions, greeted with leis and hula dancing.",
-    milestoneType: "end",
+    milestoneType: "major",
     displayLabel: "Hawaii",
   },
 ];
+
+export const santaStops: SantaStop[] = [...originalStops, ...additionalStops].map(stop => {
+  const activity = santaActivities[stop.id];
+  if (!activity) throw new Error(`Missing Santa activity for ${stop.id}`);
+  return { ...stop, activity };
+});
 
 // Representative places for broad route regions; Christmas-time offsets come
 // from IANA rules rather than longitude or year-round standard time.
@@ -665,20 +675,30 @@ const routeTimeZones: Record<string, string> = {
   "mountain-usa": "America/Denver", "west-coast": "America/Los_Angeles",
   alaska: "America/Anchorage", hawaii: "Pacific/Honolulu",
 };
+const christmasOffsetCache = new Map<string, number>();
 export function getStopUtcOffset(stop: SantaStop, year = new Date().getUTCFullYear()): number {
   const zone = stop.timeZone || routeTimeZones[stop.id];
   if (!zone) return stop.utcOffset; // Synthetic test stops explicitly supply their offset.
+  const key = `${zone}:${year}`;
+  const cached = christmasOffsetCache.get(key);
+  if (cached !== undefined) return cached;
   const value = new Intl.DateTimeFormat('en-GB', { timeZone: zone, timeZoneName: 'shortOffset' })
     .formatToParts(new Date(Date.UTC(year, 11, 25))).find(part => part.type === 'timeZoneName')!.value;
-  if (value === 'GMT') return 0;
+  if (value === 'GMT') {
+    christmasOffsetCache.set(key, 0);
+    return 0;
+  }
   const match = value.match(/^GMT([+-])(\d+)(?::(\d+))?$/);
   if (!match) throw new Error(`Cannot interpret Christmas offset for ${zone}: ${value}`);
-  return (Number(match[2]) + Number(match[3] || 0) / 60) * (match[1] === '-' ? -1 : 1);
+  const offset = (Number(match[2]) + Number(match[3] || 0) / 60) * (match[1] === '-' ? -1 : 1);
+  christmasOffsetCache.set(key, offset);
+  return offset;
 }
 for (const stop of santaStops) {
-  stop.timeZone = routeTimeZones[stop.id];
+  stop.timeZone = stop.timeZone || routeTimeZones[stop.id];
   stop.utcOffset = getStopUtcOffset(stop);
 }
+santaStops.sort((a, b) => b.utcOffset - a.utcOffset);
 
 export function getStopArrivalUtcHour(stop: SantaStop, year = new Date().getUTCFullYear()): number {
   return 24 - getStopUtcOffset(stop, year);
@@ -688,4 +708,15 @@ export function getStopArrivalDate(stop: SantaStop, year: number): Date {
   const hour = getStopArrivalUtcHour(stop, year);
   // Milliseconds preserve half-hour offsets; Date.setUTCHours truncates fractions.
   return new Date(Date.UTC(year, 11, 24) + hour * 60 * 60 * 1000);
+}
+
+export function formatStopOffset(stop: SantaStop, year: number): string {
+  const offset = getStopUtcOffset(stop, year);
+  const minutes = Math.round(Math.abs(offset) * 60);
+  return `UTC${offset >= 0 ? "+" : "−"}${Math.floor(minutes / 60)}:${String(minutes % 60).padStart(2, "0")}`;
+}
+
+export function formatStopArrival(stop: SantaStop, year: number): string {
+  const date = getStopArrivalDate(stop, year);
+  return `${date.getUTCDate()} Dec · ${String(date.getUTCHours()).padStart(2, "0")}:${String(date.getUTCMinutes()).padStart(2, "0")} UTC`;
 }

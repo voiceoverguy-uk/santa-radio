@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, Suspense, type ReactNode } from "react";
 import { getDashboardData, isHolidaySeason, isChristmasInJuly, getRandomHoliday, type HolidayDestination } from "@/lib/santaRoute";
 import { santaStops } from "@/data/santaRouteStops";
+import { additionalChristmasFacts } from "@/data/christmasFacts";
 import {
   type PreviewState,
   getEffectiveTime,
@@ -18,15 +19,16 @@ import { SANTA_VOICE_URL } from "@/lib/trackerBrand";
 
 const funFacts = [
   "In Iceland, 13 Yule Lads visit children on the 13 nights before Christmas, each leaving a gift in shoes left on windowsills.",
-  "Ukrainians decorate Christmas trees with spider web ornaments. Finding a spider web on Christmas morning is considered good luck!",
-  "In Norway, brooms are hidden on Christmas Eve to prevent witches from stealing them for a ride.",
-  "Venezuelans roller-skate to Christmas morning mass. Roads in Caracas are closed to traffic to make way for skaters.",
-  "In Catalonia, families keep a 'Caga Tió', a small hollow log that 'poops' out presents when beaten with sticks on Christmas Eve.",
-  "Japanese families traditionally eat KFC for Christmas dinner. Orders must be placed weeks in advance!",
+  "A Ukrainian Christmas folktale inspires spider-web tree ornaments, which some families use as symbols of good luck.",
+  "A Norwegian Christmas Eve folk belief tells of hiding brooms so witches cannot take them for a ride.",
+  "Roller-skating to early Christmas services is a festive tradition associated with Caracas in Venezuela.",
+  "In Catalonia, some families keep a Tió de Nadal, a decorated log that is playfully encouraged to produce small gifts.",
+  "In Japan, a Christmas fried-chicken meal has become a popular seasonal custom, with some orders placed well in advance.",
   "In the Czech Republic, single women throw a shoe over their shoulder on Christmas Eve. If it lands pointing toward the door, they'll marry within the year.",
   "Australians often celebrate Christmas with a BBQ on the beach, and Santa sometimes arrives by surfboard!",
   "In Finland, families visit saunas on Christmas Eve before the celebrations begin, a tradition dating back centuries.",
-  "Greenland's Christmas delicacy is mattak, raw whale skin with blubber, along with kiviak, a fermented bird dish.",
+  "Traditional Greenlandic festive foods can include mattak, whale skin with blubber, and kiviak, a fermented bird dish; customs vary between communities.",
+  ...additionalChristmasFacts,
 ];
 
 interface SantaTrackerProps {
@@ -181,7 +183,7 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
               ? `It's Christmas in July! Santa's celebrating mid-year festivities while ${holiday.activity.charAt(0).toLowerCase()}${holiday.activity.slice(1)}. Festive fun doesn't stop just because it's summer!`
               : onHoliday && holiday
                ? `Santa's taking a well-earned break! He's currently ${holiday.activity.charAt(0).toLowerCase()}${holiday.activity.slice(1)}. He'll be back at the North Pole on 1 December.`
-              : "Follow Santa as Christmas Eve midnight sweeps across the globe. From the Pacific Islands to Hawaii, watch his estimated journey unfold in real time."}
+              : "Follow Santa as Christmas Eve midnight sweeps across the globe. From the Pacific Islands to American Samoa, watch his estimated journey unfold in real time."}
           </p>}
 
           {!isLive && !isComplete && (
@@ -258,7 +260,7 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
             Santa&apos;s Estimated Journey Timeline
           </h2>
           <p className="tracker-copy text-center text-xs mb-6">
-            Estimated from Santa&apos;s worldwide Christmas Eve route
+            60 estimated stops across 37 Christmas UTC offsets, from the Pacific Islands to American Samoa. Times use local midnight at a representative place, not every year-round time zone. Santa&apos;s activities are make-believe.
           </p>
           <SantaTimeline effectiveTime={effectiveTime} />
         </div>

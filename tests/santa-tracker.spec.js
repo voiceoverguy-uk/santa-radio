@@ -94,7 +94,7 @@ for (const [date, text] of [
   ['2026-12-12T12:00:00Z', /Workshop Dispatch/],
   ['2026-12-24T09:00:00Z', /Preparing/],
   ['2026-12-24T14:00:00Z', /Live Update/],
-  ['2026-12-25T11:00:00Z', /Journey Summary/],
+  ['2026-12-25T11:21:00Z', /Journey Summary/],
   ['2027-01-01T12:00:00Z', /North Pole/],
    ['2027-02-28T23:59:59Z', /North Pole/],
 ]) {
@@ -144,7 +144,7 @@ test('gold divider stays centred between the introduction and tracker updates', 
   const states = [
     { date: '2026-11-15T12:00:00Z', status: /On Holiday in/ },
     { date: '2026-12-24T14:00:00Z', status: /Delivering Now/ },
-    { date: '2026-12-25T11:00:00Z', status: /Journey Complete/ },
+    { date: '2026-12-25T11:21:00Z', status: /Journey Complete/ },
   ];
   for (const state of states) {
     await page.clock.setFixedTime(new Date(state.date));
@@ -460,7 +460,7 @@ for (const [date, holiday] of [
 
 for (const [date, complete] of [
   ['2026-12-24T14:00:00Z', false],
-  ['2026-12-25T11:00:00Z', true],
+  ['2026-12-25T11:21:00Z', true],
 ]) {
   test(`homepage retains ${complete ? 'completed' : 'live'} statistics instead of the map`, async ({ page }) => {
     await page.clock.setFixedTime(new Date(date));
@@ -475,8 +475,8 @@ for (const [date, complete] of [
       for (const label of ['Journey Progress', 'Regions Visited', 'Gifts Delivered', 'Current Location']) {
         await expect(cards.filter({ hasText: label })).toBeVisible();
       }
-      await expect(cards.first().locator('div').first()).toHaveText(complete ? '100.0%' : '16.7%');
-      await expect(cards.nth(2).locator('div').first()).toHaveText(complete ? '2.5B' : '417M');
+      await expect(cards.first().locator('div').first()).toHaveText(complete ? '100.0%' : '15.8%');
+      await expect(cards.nth(2).locator('div').first()).toHaveText(complete ? '2.5B' : '395M');
       await expect(banner.locator('.tracker-action')).toContainText(complete ? 'Open the Tracker' : 'Track Santa Now');
       await expect(banner.locator('.tracker-action')).toHaveAttribute('href', '/santa-tracker');
       const statsBox = await banner.locator('.tracker-banner-visual > div').boundingBox();

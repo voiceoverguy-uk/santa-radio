@@ -30,6 +30,14 @@ function getDateContext(now: Date) {
 type PostcardEntry = string | ((ctx: ReturnType<typeof getDateContext>) => string);
 
 const holidayPostcardEntries: PostcardEntry[] = [
+  "I packed a travel iron. Mrs Claus says the beard is supposed to look like that.",
+  "My suitcase has four wheels. The elves have fitted it with sleigh bells anyway.",
+  "I bought a luggage tag saying 'Not presents'. Everyone keeps checking.",
+  "I asked for a quiet room. They put me next to a man learning the recorder.",
+  "My sun hat has a pompom. Apparently I have a very narrow personal style.",
+  "The hotel towel became a cape. I was only testing the sea breeze.",
+  "I brought a travel board game. Rudolph ate the instructions and declared himself winner.",
+  "I tried to travel incognito. The suitcase labelled SANTA was a mistake.",
   "I'm officially on holiday. The elves have been told not to call me unless it's an emergency.",
   "My out-of-office is on. Auto-reply: Ho Ho Ho, I'm on holiday!",
   "The elves have started a group chat without me. It's mostly memes about my driving.",
@@ -103,6 +111,14 @@ const holidayPostcardEntries: PostcardEntry[] = [
 ];
 
 const christmasInJulyPostcards = [
+  "July rehearsal: I wrapped my sunglasses. Now I need Mrs Claus to help find them.",
+  "I hung a bauble on the parasol. The parasol has requested a dressing-room mirror.",
+  "My July snow globe contains sand. It settles very quickly. Excellent visibility.",
+  "I put a paper crown on my sun hat. Mrs Claus says one hat was already plenty.",
+  "Christmas in July tea break: iced cocoa and a biscuit wearing factor 50.",
+  "I wrapped the picnic basket for July Christmas. Lunch now requires scissors.",
+  "Our mid-year cracker contained a tiny compass. It points directly at the buffet.",
+  "I asked for festive ice cubes. The waiter said ordinary ones also melt in July.",
   "It's Christmas in July and I've put the full suit on. Mrs Claus says I'm mad. She's right.",
   "Happy Christmas in July! I've convinced the hotel to play carols by the pool. Mixed reviews.",
   "Christmas in July means I can eat mince pies guilt-free. I brought a suitcase full.",
@@ -156,6 +172,14 @@ const christmasInJulyPostcards = [
 ];
 
 const workshopDispatches = [
+  "The sticky-tape dispenser has vanished. We found it attached to the search party.",
+  "An elf labelled the label drawer. We are now looking for the label-drawer label.",
+  "The toy dinosaurs passed inspection. They refused to use their indoor roars.",
+  "I tested a jack-in-the-box. I knew exactly what would happen. Still dropped my biscuit.",
+  "The ribbon cupboard sprang open. We are calling it an unexpected festive expansion.",
+  "The sleigh horn now plays a carol. Reversing out of the garage takes three verses.",
+  "We have counted every wheel on every toy car. The elves would like a different game.",
+  "Mrs Claus fitted a biscuit alarm to my desk. It goes off whenever I say 'just one'.",
   "The workshop is in full swing. I can hear wrapping paper from three rooms away. It never stops.",
   "Rudolph's been doing nose warm-ups since 5am. The other reindeer are pretending not to be impressed.",
   "The naughty list is longer than expected this year. I've had to order more ink.",
@@ -220,6 +244,9 @@ function HolidayPostcard({ message, holiday, isJuly }: { message: string; holida
     try {
       const { toPng } = await import("html-to-image");
       const el = postcardRef.current;
+      // Export the same locally hosted handwriting the visitor sees.
+      await document.fonts.load('400 22px "Caveat"');
+      await document.fonts.ready;
 
       const images = el.querySelectorAll("img");
       const origSrcs: { img: HTMLImageElement; src: string }[] = [];
@@ -303,9 +330,9 @@ function HolidayPostcard({ message, holiday, isJuly }: { message: string; holida
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div ref={postcardRef} className="tracker-postcard relative rounded-lg overflow-hidden shadow-xl border border-amber-200/30 max-w-xl mx-auto" style={{ aspectRatio: "3 / 2" }}>
+       <div ref={postcardRef} className="tracker-postcard relative rounded-lg overflow-hidden shadow-xl border border-amber-200/30 max-w-xl mx-auto">
         <div
-          className="absolute inset-0"
+          className="relative"
           style={{
             background: "linear-gradient(135deg, #fdf6e3 0%, #f5e6c8 30%, #faf0d7 60%, #f0dbb8 100%)",
           }}
@@ -317,7 +344,7 @@ function HolidayPostcard({ message, holiday, isJuly }: { message: string; holida
             }}
           />
 
-          <div className="relative flex flex-col sm:flex-row h-full">
+          <div className="relative flex flex-col sm:flex-row h-full pb-6">
             <div className="flex-1 p-5 sm:p-6 flex flex-col justify-center">
               <p
                 className="postcard-ink mb-1"
@@ -485,18 +512,19 @@ export default function SantaStory({ effectiveTime, holiday }: SantaStoryProps) 
 
     case "LIVE_AT_STOP":
     case "IN_TRANSIT":
-      story = `Santa is currently making his way across ${data.currentStopRegion}, spreading festive magic and joy as he goes. ${data.currentFunFact} With ${data.remainingCount} regions still to visit and an estimated ${(data.estimatedGifts / 1_000_000).toFixed(0)} million gifts already delivered, this is shaping up to be another record-breaking Christmas Eve journey. ${data.approachingUK ? "Excitement is building in the UK — Santa is getting closer!" : `Next stop: ${data.nextStopName}.`}`;
+      story = `${data.statusSubtext}. With ${data.remainingCount} stops still to visit and an estimated ${(data.estimatedGifts / 1_000_000).toFixed(0)} million gifts delivered, Santa's estimated journey continues. ${data.approachingUK ? "Excitement is building in the UK — Santa is getting closer!" : data.nextStopName !== "—" ? `Next stop: ${data.nextStopName}.` : "Finishing the final delivery window in American Samoa."}`;
       label = "Live Update";
       break;
 
     case "UK_SPECIAL_WINDOW":
-      story =
-        "This is it, Santa is here! Flying across the United Kingdom right now, from the highlands of Scotland to the rolling hills of Wales, from the streets of London to the countryside of Northern Ireland. Stockings are being filled, presents are being placed under trees, and the magic of Christmas is alive. If you listen very carefully, you might just hear the jingle of sleigh bells overhead. Don't forget to leave out the mince pies and sherry!";
+      story = data.approachingUK
+        ? `${data.statusSubtext}. Santa is getting closer to the UK — its estimated delivery window starts at midnight UTC.`
+        : "This is it, Santa is here! Flying across the United Kingdom right now, from the highlands of Scotland to the rolling hills of Wales, from the streets of London to the countryside of Northern Ireland. Stockings are being filled and presents placed under trees. Don't forget to leave out the mince pies and a carrot for the reindeer!";
       label = "Live Update";
       break;
 
     case "COMPLETE":
-      story = `What an incredible journey! Santa has completed his worldwide Christmas Eve trip, delivering an estimated ${(data.estimatedGifts / 1_000_000_000).toFixed(1)} billion gifts across ${data.visitedCount} regions. From the Pacific Islands to Hawaii, he travelled an estimated ${Math.round(data.estimatedDistanceKm * 0.621371 / 1_000_000)} million miles in just 24 hours. The reindeer have earned a well-deserved rest, and Santa is back at the North Pole, warming up by the fire. Merry Christmas to all, and to all a good night!`;
+      story = `What an incredible journey! Santa has completed his estimated Christmas Eve trip, delivering an estimated ${(data.estimatedGifts / 1_000_000_000).toFixed(1)} billion gifts across ${data.visitedCount} stops. From the Pacific Islands to American Samoa, after Hawaii, he travelled an estimated ${Math.round(data.estimatedDistanceKm * 0.621371 / 1_000_000)} million miles over 25 hours and 20 minutes. The final deliveries finished at 11:20 UTC on Christmas Day. The reindeer have earned a well-deserved rest. Merry Christmas to all, and to all a good night!`;
       label = "Journey Summary";
       break;
   }
@@ -510,6 +538,14 @@ export default function SantaStory({ effectiveTime, holiday }: SantaStoryProps) 
           </span>
         </div>
         <p className="tracker-copy leading-relaxed text-sm sm:text-base mt-2">{story}</p>
+        {data.mode === "LIVE" && <>
+          <p className="tracker-copy leading-relaxed text-sm sm:text-base mt-4" data-live-activity>
+            <strong>Santa&apos;s make-believe antics · {data.activityPlace}:</strong> {data.currentActivity}
+          </p>
+          <p className="tracker-copy leading-relaxed text-sm mt-3" data-live-fact>
+            <strong>Destination fact · {data.activityPlace}:</strong> {data.currentFunFact}
+          </p>
+        </>}
       </div>
     </div>
   );

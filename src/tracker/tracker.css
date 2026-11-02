@@ -14,6 +14,14 @@
   --font-sans: "Inter", system-ui, sans-serif;
 }
 
+@font-face {
+  font-family: "Caveat";
+  src: url("/fonts/Caveat-variable.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+}
+
 .star-field {
   background-image:
     radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.6), transparent),

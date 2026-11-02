@@ -1,3 +1,5 @@
+import { TRACKER_CONSTANTS } from "@/data/santaRouteStops";
+
 export type JumpTarget =
   | "route-start"
   | "australia"
@@ -5,6 +7,10 @@ export type JumpTarget =
   | "middle-east"
   | "uk-arrival"
   | "usa"
+  | "chatham-islands"
+  | "kathmandu"
+  | "hawaii"
+  | "american-samoa"
   | "complete";
 
 export interface PreviewState {
@@ -24,7 +30,11 @@ const JUMP_TARGETS: Record<JumpTarget, { month: number; day: number; hour: numbe
   "middle-east": { month: 11, day: 24, hour: 19, minute: 45 },
   "uk-arrival": { month: 11, day: 24, hour: 23, minute: 30 },
   usa: { month: 11, day: 25, hour: 5, minute: 0 },
-  complete: { month: 11, day: 25, hour: 10, minute: 5 },
+  "chatham-islands": { month: 11, day: 24, hour: 10, minute: 15 },
+  kathmandu: { month: 11, day: 24, hour: 18, minute: 15 },
+  hawaii: { month: 11, day: 25, hour: 10, minute: 0 },
+  "american-samoa": { month: 11, day: 25, hour: 11, minute: 0 },
+  complete: { month: 11, day: 25, hour: 11, minute: 20 },
 };
 
 export function getJumpTime(target: JumpTarget): Date {
@@ -115,17 +125,22 @@ export function deactivatePreview(): PreviewState {
 }
 
 export function getRunFullJourneySpeed(durationMinutes: number): number {
-  const totalJourneyMs = 24 * 60 * 60 * 1000;
+  // Full preview starts five minutes before departure.
+  const totalJourneyMs = (TRACKER_CONSTANTS.journeyEndUtcHour - TRACKER_CONSTANTS.journeyStartUtcHour + 5 / 60) * 3600000;
   const targetMs = durationMinutes * 60 * 1000;
   return totalJourneyMs / targetMs;
 }
 
 export const JUMP_LABELS: { target: JumpTarget; label: string }[] = [
   { target: "route-start", label: "Route Start" },
+  { target: "chatham-islands", label: "Chatham Islands" },
   { target: "australia", label: "Australia" },
   { target: "asia", label: "Asia" },
+  { target: "kathmandu", label: "Kathmandu" },
   { target: "middle-east", label: "Middle East" },
   { target: "uk-arrival", label: "UK Arrival" },
   { target: "usa", label: "USA" },
+  { target: "hawaii", label: "Hawaii" },
+  { target: "american-samoa", label: "American Samoa" },
   { target: "complete", label: "Complete" },
 ];

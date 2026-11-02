@@ -46,7 +46,7 @@ export default function SantaTrackerBanner() {
 
   const statusLabel = isLive
     ? data.state === "UK_SPECIAL_WINDOW"
-      ? "🇬🇧 Delivering in the UK Now!"
+      ? data.approachingUK ? "🇬🇧 Approaching the UK!" : "🇬🇧 Delivering in the UK Now!"
       : `Delivering in ${data.currentStopRegion}`
     : isComplete
     ? "Journey Complete"
@@ -92,9 +92,9 @@ export default function SantaTrackerBanner() {
 
             <p className="mt-3 text-gray-300 text-sm sm:text-base leading-relaxed max-w-lg mx-auto lg:mx-0">
               {isLive
-                ? `Santa is live! Follow his Christmas Eve journey in real time. From the Pacific Islands to Hawaii, watch as he delivers gifts to ${(data.estimatedGifts / 1_000_000).toFixed(0)}M+ children.`
+                ? `Follow Santa's estimated 60-stop Christmas Eve journey, from the Pacific Islands to American Samoa after Hawaii. Final deliveries finish at 11:20 UTC on Christmas Day.`
                 : isComplete
-                ? "Santa's journey is complete! Relive the route and explore fun facts from every region he visited."
+                ? "Santa's estimated 60-stop journey is complete! Final deliveries in American Samoa finished at 11:20 UTC on Christmas Day. Explore the route and festive facts."
                 : onHoliday && inJuly && holiday
                 ? `It's Christmas in July! Santa's celebrating mid-year festivities while ${holiday.activity.charAt(0).toLowerCase()}${holiday.activity.slice(1)}. Only ${Math.ceil((new Date(now.getFullYear(), 11, 25).getTime() - now.getTime()) / (1000 * 60 * 60 * 24))} days until the real thing!`
                 : onHoliday && holiday
@@ -150,7 +150,7 @@ function LiveStats({ data }: { data: ReturnType<typeof getDashboardData> }) {
           key={s.label}
           className="tracker-card p-3 text-center"
         >
-          <div className="text-santa-cream font-medium text-sm sm:text-base tabular-nums truncate">
+          <div className="text-santa-cream font-medium text-sm sm:text-base tabular-nums break-words">
             {s.value}
           </div>
           <div className="text-santa-gold/75 text-[10px] uppercase tracking-wider mt-0.5">

@@ -86,7 +86,8 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday }: Sant
             const isCurrent = stop.id === currentId;
 
             return (
-              <g key={stop.id}>
+              <g key={stop.id} data-stop-id={stop.id}>
+                <title>{stop.name}</title>
                 {isCurrent && (
                   <>
                     <circle cx={sx} cy={sy} r="12" fill="url(#glow)">

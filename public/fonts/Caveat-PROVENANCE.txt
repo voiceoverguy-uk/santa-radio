@@ -1,0 +1,7 @@
+Caveat variable font, weights 400–700
+Source: https://github.com/google/fonts/tree/main/ofl/caveat
+Downloaded 2026-11-02:
+https://raw.githubusercontent.com/google/fonts/main/ofl/caveat/Caveat%5Bwght%5D.ttf
+License: SIL Open Font License 1.1; see Caveat-OFL.txt.
+Self-hosted to preserve the tracker postcard handwriting on the public page,
+development preview and exported PNG without a third-party font dependency.

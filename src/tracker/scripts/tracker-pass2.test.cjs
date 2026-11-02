@@ -344,28 +344,30 @@ test("timeline centers with immediate scrolling for reduced motion and smooth ot
   }
 });
 
-test("the supplied 44-stop route preserves departure, completion and year rollover", () => {
+test("the expanded 60-stop route preserves departure, completion and year rollover", () => {
   const h = harness();
   const route = h.load("lib/santaRoute.ts");
   const stops = h.load("data/santaRouteStops.ts").santaStops;
-  assert.equal(stops.length, 44);
-  assert.equal(new Set(stops.map(stop => stop.id)).size, 44);
+  assert.equal(stops.length, 60);
+  assert.equal(new Set(stops.map(stop => stop.id)).size, 60);
   for (const [iso, mode] of [
     ["2026-12-24T09:59:59Z", "PREPARING"],
     ["2026-12-24T10:00:00Z", "LIVE"],
     ["2026-12-24T23:00:00Z", "LIVE"],
     ["2026-12-25T09:59:59Z", "LIVE"],
-    ["2026-12-25T10:00:00.001Z", "COMPLETE"],
+    ["2026-12-25T10:00:00.001Z", "LIVE"],
+    ["2026-12-25T11:19:59Z", "LIVE"],
+    ["2026-12-25T11:20:00Z", "COMPLETE"],
     ["2026-12-26T00:00:00Z", "OFF_SEASON"],
     ["2027-01-01T00:00:00Z", "OFF_SEASON"],
   ]) {
     const data = route.getDashboardData(new Date(iso));
     assert.equal(data.mode, mode, iso);
     assert.equal(data.speedLabel, mode === "LIVE" ? "6,650,000 mph" : "—", iso);
-    assert.equal(data.totalStops, 44);
+    assert.equal(data.totalStops, 60);
     assert.ok(Number.isFinite(data.mapPosition.x) && Number.isFinite(data.mapPosition.y), iso);
     if (mode === "COMPLETE") {
-      assert.equal(data.visitedCount, 44);
+      assert.equal(data.visitedCount, 60);
       assert.equal(data.progressPercent, 100);
     }
   }
