@@ -1,5 +1,6 @@
 import { responseLibraries, resolveLetterGroup, createStudioLetterVariation,
-  letterOpenings, letterFarewells, letterSignoffs } from './studioLetterResponses.js';
+  letterSignoffs } from './studioLetterResponses.js';
+import { letterNarratives, detailIntroductions, letterReminders, letterPostscripts } from './studioLetterNarratives.js';
 export { createStudioLetterVariation } from './studioLetterResponses.js';
 
 // Public-safe display labels verified against the hosted Studio inventory.
@@ -32,28 +33,29 @@ export function createStudioLetter(name, random = Math.random, overrides = null,
     Math.max(0, Math.floor((Number.isFinite(slots[slot]) ? slots[slot] : 0) * values.length)))];
   const groups = Object.fromEntries(Object.keys(responseLibraries).map(category =>
     [category, resolveLetterGroup(category, category === 'age' ? age : details[category], overrides?.context)]));
-  const response = category => choose(responseLibraries[category][groups[category].group], category);
+  const response = category => choose(category === 'destination' && groups.destination.passages
+    ? groups.destination.passages : responseLibraries[category][groups[category].group], category);
   const adult = ['adult', 'eighteen'].includes(groups.age.group);
-  const reminder = groups.age.group === 'months'
-    ? `Now, ${name}, remember this: this Christmas welcome asks nothing of you. You are welcome here simply as you are.`
-    : adult
-      ? `Now, ${name}, remember this: you do not have to earn a little joy by getting everything done. Leave some kindness for yourself too.`
-      : `Now, ${name}, remember this: you do not have to get everything right to matter. Keep room for kindness, curiosity and the things you enjoy.`;
+  const narrative = role => choose(letterNarratives[role][adult ? 'adult' : 'family'], role);
+  const introduction = category => choose(detailIntroductions[category], `${category}Intro`)(details[category]);
+  const reminderBand = groups.age.group === 'months' ? 'months' : adult ? 'adult' : 'family';
+  const reminder = `Now, ${name}, ${choose(letterReminders[reminderBand], 'reminder')}`;
   const paragraphs = [
     `Dear ${name},`,
-    choose(letterOpenings, 'opening'),
+    narrative('workshop'),
     `${groups.age.needsReview ? `My age entry reads “${age}”.` : `You are ${typeof age === 'number' ? `${age} years old` : age}.`} ${response('age')}`,
-    `I have heard about your efforts with “${details.activity}”. ${response('activity')}`,
-    `An extra celebration for “${details.achievement}”! ${response('achievement')}`,
-    `The destination in my travel book is ${details.destination}. ${response('destination')}`,
-    `Your possible offering is listed as “${details.treats}”. ${response('treats')}`,
+    `${introduction('activity')} ${response('activity')}`,
+    narrative('departure'),
+    `${introduction('achievement')} ${response('achievement')}`,
+    `${introduction('destination')} ${response('destination')}`,
+    `${introduction('treats')} ${response('treats')}`,
+    narrative('atmosphere'),
     reminder,
-    choose(letterFarewells, 'farewell'),
     choose(letterSignoffs, 'signoff'),
   ];
   return { name, age, ...details, paragraphs,
     editorialReview: Object.entries(groups).filter(([, context]) => context.needsReview).map(([category]) => category),
-    closing: ['The North Pole', 'P.S. Your Nice List certificate has my seal of approval. The elves do love making things official!'] };
+    closing: ['The North Pole', choose(letterPostscripts, 'postscript')] };
 }
 
 export const CERTIFICATE_WRITE_MS = 1800;

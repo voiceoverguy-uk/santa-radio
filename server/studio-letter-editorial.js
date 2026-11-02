@@ -1,3 +1,4 @@
+import { destinationPassages } from './studio-destination-passages.js';
 // Server-only editorial index. Never import this full choice mapping into the
 // browser: the hosted catalogue remains behind the existing Studio access gate.
 const key = value => value.normalize('NFC').trim().toLocaleLowerCase('en-GB').replace(/'/g, '’');
@@ -103,6 +104,11 @@ export function studioEditorialContext(category, record) {
       : spacePlaces.has(label) ? 'space' : undefined;
   } else {
     group = ({ activity: activities, achievement: achievements, treat: treats })[category]?.[label];
+  }
+  if (category === 'place' && group === 'real') {
+    const passages = destinationPassages[label];
+    return passages ? { group, needsReview: false, passages }
+      : { group: 'neutral', needsReview: true };
   }
   return { group: group || 'neutral', needsReview: !group };
 }

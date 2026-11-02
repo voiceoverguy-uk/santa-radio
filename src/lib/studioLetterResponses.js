@@ -1,3 +1,4 @@
+import { publicDestinationPassages } from './studioPublicDestinations.js';
 // Curated British-English prose, not a runtime AI prompt or service.
 // Groups contain no protected inventory, recording identities or recipient data.
 export const ageResponses = {
@@ -168,11 +169,15 @@ export function resolveLetterGroup(category, value, context) {
     }
   }
   const group = sampleGroups[category]?.[normalised];
+  if (category === 'destination' && publicDestinationPassages[normalised]) {
+    return { group: 'real', needsReview: false, passages: publicDestinationPassages[normalised] };
+  }
   return { group: group || 'neutral', needsReview: !group };
 }
 
 // Page-local variation slots, independent of the recipient's name and choices.
 export function createStudioLetterVariation(random = Math.random) {
-  return Object.fromEntries(['opening', 'age', 'activity', 'achievement', 'destination', 'treats', 'farewell', 'signoff']
+  return Object.fromEntries(['opening', 'age', 'activity', 'achievement', 'destination', 'treats', 'farewell', 'signoff',
+    'workshop', 'departure', 'atmosphere', 'activityIntro', 'achievementIntro', 'destinationIntro', 'treatsIntro', 'reminder', 'postscript']
     .map(slot => [slot, random()]));
 }

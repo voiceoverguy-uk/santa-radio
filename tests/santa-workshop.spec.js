@@ -4,6 +4,8 @@ import { test } from './helpers/provider-test.js';
 import { workshopCatalogueFixture } from './fixtures/workshop-catalogue.js';
 import { unlockWorkshop } from './helpers/workshop-access.js';
 import { studioEditorialContext } from '../server/studio-letter-editorial.js';
+import { parseWorkshopCatalogue } from '../server/santa-workshop-catalogue.js';
+import { createHash } from 'node:crypto';
 
 const path = '/santa-message-workshop';
 const answers = ['Demrie', '9 years old', 'Teamwork', 'Completing a jigsaw puzzle', 'Bûche de Noël', 'The Enchanted Forest — Fantasy place'];
@@ -145,6 +147,45 @@ for (const width of [390, 1440]) {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   });
 }
+
+test('newly indexed state and county keep selected labels, letter stories and audio IDs through review', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const record = file => ({ file, bytes: 50000, id: `c-${createHash('sha256').update(file).digest('hex')}` });
+  const parsed = parseWorkshopCatalogue({ version: 1, categories: {
+    age: [record('AGES/50-years-old.wav')], activity: [record('Trying Hard at/art.wav')],
+    achievement: [record('Achievment/being-brave.wav')], treat: [record('treats/map.wav')],
+    place: [record('countries/california.wav'), record('countries/east-riding-of-yorkshire.mp3')],
+  }, excludedAudioCounts: { age: 0, activity: 0, achievement: 0, treat: 0, place: 0 } });
+  const fixture = { ...workshopCatalogueFixture,
+    counts: { ...workshopCatalogueFixture.counts, place: workshopCatalogueFixture.counts.place + parsed.categories.place.length },
+    categories: Object.fromEntries(
+    Object.entries(workshopCatalogueFixture.categories).map(([category, records]) => [category,
+      [...records.map(record => ({ ...record, letterContext: studioEditorialContext(category, record) })),
+        ...(category === 'place' ? parsed.categories.place : [])]])) };
+  await page.route('**/api/santa-workshop-catalogue', route => route.fulfill({ json: fixture }));
+  const requests = [];
+  await page.route('**/api/santa-studio-message', route => {
+    requests.push(route.request().postDataJSON());
+    return route.fulfill({ status: 503, json: { error: 'Test stopped before downloading or generating any audio.' } });
+  });
+  await open(page);
+  await complete(page);
+  const paragraphs = page.locator('.studio-gifts__gallery .studio-letter__text > p');
+  const original = await paragraphs.allTextContents();
+  for (const place of parsed.categories.place) {
+    await page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true }).click();
+    await page.getByRole('option', { name: place.label, exact: true }).click();
+    await page.getByRole('button', { name: 'Return to review', exact: true }).click();
+    await expect(paragraphs.nth(6)).toContainText(place.label);
+    await expect(paragraphs.nth(6)).toContainText('No guessing');
+    const after = await paragraphs.allTextContents();
+    for (const i of [0, 1, 2, 3, 4, 5, 7, 8, 9, 10]) expect(after[i]).toBe(original[i]);
+    await page.getByRole('button', { name: 'Create message', exact: true }).click();
+    await expect.poll(() => requests.at(-1)?.place).toBe(place.id);
+    expect(requests.at(-1).name).toBe('demrie');
+    await expect(page.getByText('Test stopped before downloading or generating any audio.', { exact: true })).toBeVisible();
+  }
+});
 
 test('recorded name preview refreshes once, caches replays and clears on name change or leaving Studio', async ({ page }) => {
   test.setTimeout(90000);
@@ -979,7 +1020,7 @@ for (const width of [390, 1440]) {
     const afterEdit = await previews.locator('.studio-gifts__gallery .studio-letter__text > p').allTextContents();
     // All non-achievement paragraphs retain their exact variation across the
     // edit-stage unmount. Compare DOM paragraphs, not layout line breaks.
-    for (const index of [0, 1, 2, 3, 5, 6, 7, 8, 9]) {
+    for (const index of [0, 1, 2, 3, 4, 6, 7, 8, 9, 10]) {
       expect(afterEdit[index]).toBe(originalParagraphs[index].replaceAll('Demrie', 'Demree'));
     }
     await expect(previews).toHaveAttribute('data-demo-name', 'Demree');

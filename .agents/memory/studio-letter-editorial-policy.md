@@ -19,3 +19,16 @@ server-side; unknown meanings need neutral prose and an editorial flag rather
 than guessed expansions. Wording variation must survive spelling edits,
 presentation changes and a trip back through the choice editor without using
 or storing the recipient's name as its random seed.
+
+Keep general festive story passages between selected details, not a letter in
+which every line tries to be personalised. Finite curated variety must never
+be described as guaranteed unique gifts.
+
+**Why:** The owner wants the fuller, story-led feel restored without losing
+contextual reactions; the short consecutive form-answer style was not enough.
+
+**How to apply:** Preserve the one-page typography and contextual meaning.
+UK writing must use the actual England, Scotland, Wales and Northern Ireland
+selections, with Ireland separate. New regional recordings in the existing
+destination catalogue may be discovered before they have bespoke prose; use a
+neutral named-place line and flag them privately rather than inventing facts.

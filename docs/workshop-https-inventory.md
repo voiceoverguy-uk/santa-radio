@@ -39,6 +39,37 @@ are not labelled as fantasy locations; known fictional destinations have
 explicit fantasy labels, and the Moon/Mars are marked as space destinations.
 Missing/unavailable inventory shows an error and Retry, never offline samples.
 
+### Future state and county recordings
+
+The existing destination catalogue discovers additional `.wav` or `.mp3`
+recordings (case-insensitive extension) in the currently indexed `countries`
+folder. Use descriptive filenames such as `california.wav` or
+`east-riding-of-yorkshire.mp3`, and ensure the hosted index includes them.
+Hyphens/underscores become spaces in the display label; the source filename,
+extension and SHA-256 recording identity stay unchanged. The existing non-empty,
+supported-format, path and size checks still apply.
+
+The server refreshes the index after its five-minute cache TTL; an already-open
+builder keeps its loaded catalogue until reloading/retrying. Discovery is not
+audio generation or proof that a recording plays. Do not rename existing files
+just to change their labels.
+
+The folder name does **not** make every entry a country. Known states and
+counties remain real-place choices, not countries; unknown new labels are not
+automatically declared countries either. Their exact selected labels reach the
+letter, and their original IDs reach the existing audio selection. Until bespoke
+writing is curated, new entries get a neutral named-place sentence and private
+editorial-review flag, never invented geography, weather, customs or residence.
+
+Synthetic checks exercise parser discovery, selected-detail review, stable
+stories and message request IDs, plus the existing server-side audio resolution,
+without uploading or changing real recordings.
+
+Separate state/county folders, dependent questions, aliases, automatic
+geographical disambiguation and additional recordings are **not** integrated.
+They need separately scoped work; the existing single destination choice is
+the supported route.
+
 ### Source files held for review
 
 Two destination files have technical rather than destination filenames:

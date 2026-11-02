@@ -2,6 +2,7 @@ import { hasWorkshopAccess } from './santa-workshop-access.js';
 import { hasPaidStudioAccess } from './santa-studio-purchase.js';
 import { createHash } from 'node:crypto';
 import { studioEditorialContext } from './studio-letter-editorial.js';
+import { isKnownRegion } from './studio-destination-passages.js';
 
 export const WORKSHOP_ROOT = 'https://stagcommunications.com/santaradio/names/personalised-message/';
 export const WORKSHOP_INDEX = `${WORKSHOP_ROOT}workshop-index.php`;
@@ -82,12 +83,15 @@ export function parseWorkshopCatalogue(input) {
           offset && ['and', 'of', 'the'].includes(word.toLowerCase()) ? word.toLowerCase()
             : word[0].toLocaleUpperCase('en-GB') + word.slice(1));
         record.kind = fantasyPlaces.has(stem) ? 'fantasy' : ['mars', 'the-moon'].includes(stem) ? 'space' : 'place';
-        record.isCountry = record.kind === 'place' && !otherRealPlaces.has(stem.toLowerCase().replace(/[_ ]+/g, '-'));
+        record.isCountry = record.kind === 'place' && !isKnownRegion(record.label) &&
+          !otherRealPlaces.has(stem.toLowerCase().replace(/[_ ]+/g, '-'));
         if (record.kind === 'fantasy') record.label += ' — Fantasy place';
         if (record.kind === 'space') record.label += ' — Space destination';
       }
       if (!record.label || record.label.length > 260) throw new Error('Invalid workshop label.');
       record.letterContext = studioEditorialContext(key, record);
+      // Newly indexed names are places, not automatically countries.
+      if (key === 'place' && record.letterContext.needsReview) record.isCountry = false;
       records.push(record);
     }
     // Different source files never become one choice, even if their labels match.

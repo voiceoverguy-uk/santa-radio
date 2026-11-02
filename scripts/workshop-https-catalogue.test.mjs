@@ -98,6 +98,23 @@ test('invalid paths, identities, duplicate IDs, missing categories and invalid c
   assert.equal(parsed.excludedAudioCounts.treat, 1);
 });
 
+test('future state and county WAV/MP3 uploads keep exact identities and neutral named-place metadata', () => {
+  const input = inventory();
+  const uploads = ['california.wav', 'east-riding-of-yorkshire.mp3', 'rhondda-cynon-taf.MP3', 'new-hampshire.wav', 'antrim.wav'];
+  input.categories.place.push(...uploads.map(file => record(`countries/${file}`)));
+  const output = parseWorkshopCatalogue(input);
+  for (const file of uploads) {
+    const source = record(`countries/${file}`);
+    const selected = output.categories.place.find(item => item.id === source.id);
+    assert.equal(selected.id, source.id);
+    assert.equal(selected.file, source.file);
+    assert.equal(selected.kind, 'place');
+    assert.equal(selected.isCountry, false);
+    assert.deepEqual(selected.letterContext, { group: 'neutral', needsReview: true });
+  }
+  assert.equal(output.categories.place.find(item => item.file.endsWith('east-riding-of-yorkshire.mp3')).label, 'East Riding of Yorkshire');
+});
+
 test('duplicate display labels stay separate choices with exact filenames', () => {
   const data = inventory();
   data.categories.age.push(record('AGES/1-years-old.wav'));
@@ -150,7 +167,9 @@ test('cities, regions and territories stay with real countries before fantasy an
   const falklands = places.find(item => item.file === 'countries/alkland-islands.wav');
   assert.equal(falklands.label, 'Falkland Islands');
   assert.equal(falklands.id, record('countries/alkland-islands.wav').id);
-  assert.deepEqual(falklands.letterContext, { group: 'real', needsReview: false });
+  assert.equal(falklands.letterContext.group, 'real');
+  assert.equal(falklands.letterContext.needsReview, false);
+  assert.ok(falklands.letterContext.passages[0].includes('Falkland Islands'));
   assert.equal(places.find(item => item.file === 'countries/atlantis.wav').kind, 'fantasy');
   assert.equal(places.find(item => item.file === 'countries/mars.wav').kind, 'space');
   assert.equal(places.length, data.categories.place.length - 2);

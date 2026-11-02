@@ -12,6 +12,9 @@ import { studioOrder, studioMixArgs, prepareStudioClip, renderStudioMessage } fr
 import { getWorkshopDownloadName } from '../src/lib/workshopNameSpelling.js';
 import serverlessHandler from '../api/santa-studio-message.js';
 import defaultHandler from '../server/santa-studio-message.js';
+import { createHash } from 'node:crypto';
+import { parseWorkshopCatalogue, WORKSHOP_ROOT } from '../server/santa-workshop-catalogue.js';
+import { createStudioLetter } from '../src/lib/santaStudioLetter.js';
 
 const execute = promisify(execFile);
 const keys = ['age', 'activity', 'achievement', 'treat', 'place'];
@@ -73,6 +76,31 @@ test('every category changes its own trusted recording and never changes the sel
     assert.equal(result.status, 200);
     assert.ok(state.downloads.some(url => url.endsWith(`/trusted/other-${keys[index]}.mp3`)));
     assert.deepEqual(state.resolved, [body.name]);
+  }
+});
+
+test('indexed regional uploads reach letter composition and exact existing audio selection unchanged', async () => {
+  const record = file => ({ file, bytes: 50000, id: `c-${createHash('sha256').update(file).digest('hex')}` });
+  for (const filename of ['california.wav', 'east-riding-of-yorkshire.mp3']) {
+    const regional = record(`countries/${filename}`);
+    const parsed = parseWorkshopCatalogue({ version: 1, categories: {
+      age: [record('AGES/50-years-old.wav')], activity: [record('Trying Hard at/art.wav')],
+      achievement: [record('Achievment/being-brave.wav')], treat: [record('treats/map.wav')], place: [regional],
+    }, excludedAudioCounts: Object.fromEntries(keys.map(key => [key, 0])) });
+    const place = parsed.categories.place[0];
+    const { handler, state } = fixture({ catalogue: async () => parsed });
+    const data = { name: body.name, ...Object.fromEntries(keys.map(key => [key, parsed.categories[key][0].id])) };
+    const result = await call(handler, { data });
+    assert.equal(result.status, 200);
+    assert.ok(state.downloads.includes(`${WORKSHOP_ROOT}${regional.file}`));
+    const letter = createStudioLetter('Invented Example', () => 0, {
+      age: '50 years old', activity: 'Art', achievement: 'Being brave', treats: 'a map',
+      destination: place.label, context: { destination: place.letterContext },
+    });
+    assert.equal(letter.destination, place.label);
+    assert.ok(letter.paragraphs[6].includes(place.label));
+    assert.ok(letter.editorialReview.includes('destination'));
+    assert.equal(place.id, regional.id);
   }
 });
 

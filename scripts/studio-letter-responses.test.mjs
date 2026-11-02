@@ -124,8 +124,8 @@ test('stable page-local variation preserves all unaffected paragraphs when name/
   const renamed = createStudioLetter('Robyn', () => 0, selected(), variation);
   assert.equal(text(renamed), text(initial).replaceAll('Robin', 'Robyn'));
   for (const [field, value, changed] of [
-    ['activity', 'Coding', 3], ['achievement', 'Starting school', 4],
-    ['treats', 'smelly socks', 6], ['destination', 'Mars', 5],
+    ['activity', 'Coding', 3], ['achievement', 'Starting school', 5],
+    ['treats', 'smelly socks', 7], ['destination', 'Mars', 6],
   ]) {
     const next = createStudioLetter('Robin', () => 0, selected({ [field]: value }), variation);
     next.paragraphs.forEach((paragraph, index) => {

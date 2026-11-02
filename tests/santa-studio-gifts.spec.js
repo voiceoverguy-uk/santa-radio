@@ -478,7 +478,7 @@ test('letter substitutions use the verified public subset and inclusive whole-nu
     for (const key of Object.keys(studioLetterChoices)) expect(studioLetterChoices[key]).toContain(letter[key]);
     expect(letter.paragraphs.join('\n')).not.toMatch(/\[|\]|\{|\}|\.wav|\.mp3|ACTIVITY|ACHIEVEMENT|DESTINATION|TREATS/);
     expect(letter.paragraphs[0]).toBe('Dear Ayla,');
-    expect(letter.paragraphs[7]).toContain('Now, Ayla, remember this:');
+    expect(letter.paragraphs[9]).toContain('Now, Ayla,');
   }
 });
 
@@ -554,7 +554,8 @@ test(`longest name and choices keep the complete letter inside A4 at ${width}px`
   await page.evaluate(() => {
     const original = Math.random;
     let index = 0;
-    const slots = [.999, .999, .3, .999, .999, 0, 0, 0, 0, 0, 0, 0, 0];
+    // Five selections, then the seventeen page-local prose slots.
+    const slots = [.999, .999, .3, .999, .999, ...Array(17).fill(0)];
     Math.random = () => new Error().stack.includes('santaStudioLetter')
       ? slots[index++ % slots.length] : original();
   });
@@ -571,7 +572,7 @@ test(`longest name and choices keep the complete letter inside A4 at ${width}px`
   const text = page.getByRole('dialog').locator('.studio-letter__text');
   const expected = createStudioLetter('Charlotte', (() => {
     let index = 0;
-    const slots = [.999, .999, .3, .999, .999, 0, 0, 0, 0, 0, 0, 0, 0];
+    const slots = [.999, .999, .3, .999, .999, ...Array(17).fill(0)];
     return () => slots[index++ % slots.length];
   })());
   await expect(text.locator(':scope > p')).toHaveText(expected.paragraphs);
@@ -818,7 +819,7 @@ for (const [width, scale] of [[1440, 1], [320, 1], [390, 2]]) {
     expect(metrics.topLayer).toBe(true);
     expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
     await dialog.evaluate(el => { el.scrollTop = el.scrollHeight; });
-    await expect(dialog.locator('.studio-letter__text')).toContainText('The elves do love making things official!');
+    await expect(dialog.locator('.studio-letter__text')).toContainText(await body(page).locator('p').last().textContent());
     for (const button of await dialog.getByRole('button').all()) {
       expect((await button.boundingBox()).height).toBeGreaterThanOrEqual(44);
     }
