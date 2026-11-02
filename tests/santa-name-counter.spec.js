@@ -4,7 +4,7 @@ import { fillAccessForm, mockBrevo } from './helpers/message-access.js';
 
 const counts = page => page.locator('.message-name-count, .santa-studio-promotion__name-count');
 
-async function open(page, { total = 9730, status = 200, path = '/' } = {}) {
+async function open(page, { total = 9730, status = 200, headers = {}, path = '/' } = {}) {
   let requests = 0, searches = 0;
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.clock.install();
@@ -13,7 +13,7 @@ async function open(page, { total = 9730, status = 200, path = '/' } = {}) {
   await page.route(/youtube\.com|googlevideo\.com|citrus3\.com/, route => route.abort());
   await page.route('**/api/santa-name-count', route => {
     requests++;
-    return route.fulfill({ status, json: status === 200 ? { total } : { error: 'Unavailable' } });
+    return route.fulfill({ status, headers, json: status === 200 ? { total } : { error: 'Unavailable' } });
   });
   await page.route('**/api/santa-names', route => {
     searches++;
@@ -74,6 +74,35 @@ test('initial failures and malformed totals retain the honest fallback', async (
   await page.reload();
   await expect(counts(page)).toHaveText(Array(2).fill('Recorded names available to search'));
   await expect(page.getByText('Recording (Studio - B)', { exact: true })).toHaveCount(0);
+});
+
+for (const path of ['/', '/free-santa-message']) {
+  test(`a failed count recovers automatically within seconds without a page reload on ${path}`, async ({ page }) => {
+    const network = await open(page, { status: 503, path });
+    await page.clock.runFor(50);
+    await expect(counts(page)).toHaveText(Array(2).fill('Recorded names available to search'));
+    const failedCalls = network.requests();
+    await page.route('**/api/santa-name-count', route => route.fulfill({ json: { total: 9774 } }));
+    await page.clock.runFor(4000);
+    expect(network.requests()).toBe(failedCalls);
+    await page.clock.runFor(1000);
+    await expect(counts(page)).toHaveText(Array(2).fill('9,724 names available'));
+    await page.clock.runFor(5000);
+    await expect(counts(page)).toHaveText(Array(2).fill('9,725 names available'));
+    expect(network.searches()).toBe(0);
+  });
+}
+
+test('counter retry respects server rate-limit timing before recovering', async ({ page }) => {
+  const network = await open(page, { status: 429, headers: { 'Retry-After': '120' } });
+  await page.clock.runFor(50);
+  const failedCalls = network.requests();
+  await page.route('**/api/santa-name-count', route => route.fulfill({ json: { total: 100 } }));
+  await page.clock.runFor(119000);
+  await expect(counts(page)).toHaveText(Array(2).fill('Recorded names available to search'));
+  expect(network.requests()).toBe(failedCalls);
+  await page.clock.runFor(1000);
+  await expect(counts(page)).toHaveText(Array(2).fill('50 names available'));
 });
 
 test('refresh clamps a lower total, fails without a fake count, and resumes when visible', async ({ page }) => {
