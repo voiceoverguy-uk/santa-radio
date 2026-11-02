@@ -23,6 +23,10 @@ const destinationPriority = new Map([
   ['countries/united-states.wav', 4],
 ]);
 const labels = {
+  'amazing-at-school': 'School',
+  'started-nursery': 'Starting nursery',
+  'started-school': 'Starting school',
+  'well-done-in-your-exams': 'Doing well in your exams',
   'buche-de-noel': 'Bûche de Noël', turron: 'Turrón', 'personal-hygene': 'Personal hygiene',
   'carrotts-for-reindeer': 'Carrots for reindeer', 'some-carrotts': 'Some carrots',
   'playing-on-ipad': 'Playing on iPad', 't-b-l': 'T-B-L', 'santa\'s-sake': 'Santa’s sake',

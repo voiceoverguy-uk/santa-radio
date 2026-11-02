@@ -207,7 +207,7 @@ test('recorded name preview can cancel a refresh and recover from a failed refre
 });
 
 for (const width of [390, 1440]) {
-  test(`selected age, activity and country complete Santa wording in red at ${width}px`, async ({ page }) => {
+  test(`selected age, activity, grammatical treat and country complete Santa wording in red at ${width}px`, async ({ page }) => {
     test.setTimeout(60000);
     await page.setViewportSize({ width, height: 1000 });
     await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -217,6 +217,12 @@ for (const width of [390, 1440]) {
       { id: 'scotland', label: 'Scotland', file: 'fixture/scotland.wav' },
     ];
     catalogue.counts.place = 2;
+    catalogue.categories.treat = [
+      { id: 'cracker', label: 'Christmas cracker', file: 'fixture/cracker.wav' },
+      { id: 'cupcakes', label: 'Cupcakes', file: 'fixture/cupcakes.wav' },
+      { id: 'energy', label: 'Energy drink', file: 'fixture/energy.wav' },
+    ];
+    catalogue.counts.treat = 3;
     await page.route('**/api/santa-workshop-catalogue', route => route.fulfill({ json: catalogue }));
     const suffix = page.locator('.smw-wording-selection');
     const quote = page.locator('.smw-activity-wording-quote');
@@ -246,6 +252,19 @@ for (const width of [390, 1440]) {
         await page.locator('.smw-button-next').click();
         await expect(suffix).toHaveText('Playing a musical instrument');
         await page.locator('.smw-builder').screenshot({ path: `generated-artifacts/studio-selected-activity-${width}.jpg` });
+      } else if (step === 5) {
+        await expect(quote).toContainText('I know you like to leave me… a Christmas cracker');
+        await expect(suffix).toHaveCSS('color', 'rgb(155, 17, 30)');
+        await expect(page.getByRole('option', { name: 'Christmas cracker', exact: true })).toHaveAttribute('aria-selected', 'true');
+        await page.getByRole('listbox').press('ArrowDown');
+        await expect(suffix).toHaveText('cupcakes');
+        await page.getByRole('listbox').press('ArrowDown');
+        await expect(suffix).toHaveText('an energy drink');
+        await page.getByRole('searchbox', { name: 'Search treats', exact: true }).fill('not a treat');
+        await expect(page.locator('.smw-search-empty')).toBeVisible();
+        await expect(suffix).toHaveText('an energy drink');
+        await page.getByRole('button', { name: 'Clear', exact: true }).click();
+        await page.locator('.smw-builder').screenshot({ path: `generated-artifacts/studio-treat-grammar-${width}.jpg` });
       } else {
         await expect(suffix).toHaveCount(0);
       }
@@ -266,7 +285,7 @@ for (const width of [390, 1440]) {
     await page.locator('.smw-builder').screenshot({ path: `generated-artifacts/studio-selected-country-${width}.jpg` });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
     await page.locator('.smw-button-back').click();
-    await expect(suffix).toHaveCount(0);
+    await expect(suffix).toHaveText('an energy drink');
     await page.locator('.smw-button-next').click();
     await expect(suffix).toHaveText('Scotland');
   });

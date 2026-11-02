@@ -2,6 +2,7 @@ import { useId, useRef, useState } from 'react';
 import WorkshopChoiceWheel from './WorkshopChoiceWheel.jsx';
 import WorkshopWordingPreview from './WorkshopWordingPreview.jsx';
 import { filterWorkshopChoices, workshopSearchTerms } from '../lib/workshopChoiceSearch.js';
+import { workshopTreatWording } from '../lib/workshopTreatWording.js';
 import './WorkshopSearchableChoices.css';
 
 const searchLabels = {
@@ -47,7 +48,8 @@ export default function WorkshopSearchableChoices({ category, label, options, va
       <WorkshopWordingPreview
         wording={wording}
         heading={category === 'activity' ? 'Santa will say:' : 'Santa will say…'}
-        selectedText={category === 'place' || category === 'activity' ? currentSelectionLabel : ''}
+        selectedText={category === 'treat' ? workshopTreatWording(currentSelectionLabel)
+          : category === 'place' || category === 'activity' ? currentSelectionLabel : ''}
       />
     </div>
   );

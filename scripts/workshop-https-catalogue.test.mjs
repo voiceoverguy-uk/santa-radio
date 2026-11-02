@@ -15,6 +15,35 @@ const inventory = () => ({
   },
   excludedAudioCounts: { age: 0, activity: 0, achievement: 0, treat: 0, place: 0 },
 });
+test('achievement label edits preserve their recording identities', () => {
+  const data = inventory();
+  const school = record('Achievment/amazing-at-school.wav');
+  const nursery = record('Achievment/started-nursery.wav');
+  const startingSchool = record('Achievment/started-school.wav');
+  const exams = record('Achievment/well-done-in-your-exams.wav');
+  data.categories.achievement.push(school, nursery, startingSchool, exams);
+  const output = parseWorkshopCatalogue(data);
+  const choice = output.categories.achievement.find(item => item.id === school.id);
+  assert.equal(choice.label, 'School');
+  assert.equal(choice.file, school.file);
+  assert.equal(choice.id, school.id);
+  assert.ok(!output.categories.achievement.some(item => item.label === 'Amazing at school'));
+  const nurseryChoice = output.categories.achievement.find(item => item.id === nursery.id);
+  assert.equal(nurseryChoice.label, 'Starting nursery');
+  assert.equal(nurseryChoice.file, nursery.file);
+  assert.equal(nurseryChoice.id, nursery.id);
+  assert.ok(!output.categories.achievement.some(item => item.label === 'Started nursery'));
+  const startingSchoolChoice = output.categories.achievement.find(item => item.id === startingSchool.id);
+  assert.equal(startingSchoolChoice.label, 'Starting school');
+  assert.equal(startingSchoolChoice.file, startingSchool.file);
+  assert.equal(startingSchoolChoice.id, startingSchool.id);
+  assert.ok(!output.categories.achievement.some(item => item.label === 'Started school'));
+  const examsChoice = output.categories.achievement.find(item => item.id === exams.id);
+  assert.equal(examsChoice.label, 'Doing well in your exams');
+  assert.equal(examsChoice.file, exams.file);
+  assert.equal(examsChoice.id, exams.id);
+  assert.ok(!output.categories.achievement.some(item => item.label === 'Well done in your exams'));
+});
 test('HTTPS catalogue preserves exact identities, correctly labels/sorts months and years, marks fantasy places and discloses raw files held for review', () => {
   const input = inventory(), output = parseWorkshopCatalogue(input);
   assert.equal(output.source, 'hosted');
