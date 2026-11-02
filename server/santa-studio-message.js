@@ -6,7 +6,8 @@ import { hasStudioAccess, workshopCatalogue, WORKSHOP_ROOT } from './santa-works
 import { santaNameLibrary } from './santa-name-library.js';
 import { consumeNameAccess, privateResponse, readNameJson } from './santa-name-security.js';
 import { renderStudioMessage } from './santa-studio-render.js';
-import { selectedWorkshopRegion } from '../src/lib/workshopDestinations.js';
+import { selectedWorkshopRegion, workshopDestinationCategory } from '../src/lib/workshopDestinations.js';
+import { studioGenerationStore, studioGenerationKey, studioIdentity } from './santa-studio-generation.js';
 
 const categories = ['age', 'activity', 'achievement', 'treat', 'place'];
 const localNames = fileURLToPath(new URL('./santa-audio/names/', import.meta.url));
@@ -66,6 +67,7 @@ export function createStudioMessageHandler({
   authorize = hasStudioAccess, limit = consumeNameAccess, catalogue = workshopCatalogue,
   library = santaNameLibrary, download = downloadStudioClip, render = renderStudioMessage,
   executionMs = 110000,
+  generations = studioGenerationStore, accessKey = studioGenerationKey,
 } = {}) {
   let active = 0;
   return async (req, res) => {
@@ -75,8 +77,8 @@ export function createStudioMessageHandler({
       res.writeHead(status, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error }));
     };
-    if (req.method !== 'POST') { res.setHeader('Allow', 'POST'); return send(405, 'Use Create message in Studio.'); }
-    if (!sameStudioOrigin(req)) return send(403, 'Please open Studio on this website and try again.');
+    if (!['GET', 'POST'].includes(req.method)) { res.setHeader('Allow', 'GET, POST'); return send(405, 'Use Create message in Studio.'); }
+    if ((req.method === 'POST' && !sameStudioOrigin(req)) || req.headers['sec-fetch-site'] === 'cross-site') return send(403, 'Please open Studio on this website and try again.');
     if (active >= 2) { res.setHeader('Retry-After', '10'); return send(429, 'Santa is preparing other messages. Please retry in a moment.'); }
     active++;
     const controller = new AbortController();
@@ -85,9 +87,36 @@ export function createStudioMessageHandler({
     req.once?.('aborted', abort);
     res.once?.('close', abort);
     let directory;
+    let key, reservation;
+    const audioResponse = (audio, sequence) => {
+      if (sequence) res.setHeader('X-Studio-Generation', String(sequence));
+      res.writeHead(200, {
+        'Content-Type': 'audio/mpeg', 'Content-Length': audio.length,
+        'Content-Disposition': 'attachment; filename="santa-studio-message.mp3"',
+      });
+      res.end(audio);
+    };
     try {
       if (!await withinDeadline(() => authorize(req), controller.signal)) throw problem(403, 'Your Studio access needs checking. Please reopen Studio and try again.');
+      key = await accessKey(req);
+      if (req.method === 'GET') {
+        await withinDeadline(() => limit(req, 'studioRead'), controller.signal);
+        if (new URL(req.url || '/', 'http://studio').searchParams.get('audio') === '1') {
+          const audio = await withinDeadline(() => generations.audio(key), controller.signal);
+          if (!audio) throw problem(404, 'No completed recording is available yet.');
+          return audioResponse(audio);
+        }
+        const status = await withinDeadline(() => generations.status(key), controller.signal);
+        const recording = status.locked && await withinDeadline(() => library.resolve(status.locked.name), controller.signal);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ ...status, record: recording
+          ? { id: recording.id, name: recording.name, variant: recording.variant || '' } : null }));
+      }
       await withinDeadline(() => limit(req, 'studioMessage'), controller.signal);
+      const operation = req.headers['idempotency-key'];
+      if (typeof operation !== 'string' || !/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(operation)) {
+        throw problem(400, 'Please confirm your choices using Create message in Studio.');
+      }
       const data = await withinDeadline(() => readNameJson(req), controller.signal);
       // A stable opaque recording ID is re-resolved privately under Studio
       // authorization. No expired browser capability, spelling or URL is used.
@@ -110,6 +139,7 @@ export function createStudioMessageHandler({
         if (!record) throw problem(400, 'A recorded choice is no longer available. Please choose it again.');
         return [category, record];
       }));
+      const identity = studioIdentity(data, workshopDestinationCategory(selected.place));
       if (data.region) {
         const region = selectedWorkshopRegion(inventory, data.place, data.region);
         if (!region) throw problem(400, 'That county or state is no longer available for this country. Please choose it again.');
@@ -122,6 +152,10 @@ export function createStudioMessageHandler({
       }
       const recording = await withinDeadline(() => library.resolve(data.name), controller.signal);
       if (!recording || recording.id !== data.name) throw problem(400, 'That exact recorded name is no longer available. Please choose it again.');
+      controller.signal.throwIfAborted();
+      const reserved = await withinDeadline(() => generations.reserve(key, operation, data, identity), controller.signal);
+      if (reserved.audio) return audioResponse(reserved.audio, reserved.sequence);
+      reservation = reserved.reservation;
       controller.signal.throwIfAborted();
       directory = await mkdtemp(join(tmpdir(), 'santa-studio-'));
       let name = join(localNames, `${recording.id}.wav`);
@@ -140,11 +174,10 @@ export function createStudioMessageHandler({
       }
       const { audio } = await render({ name, choices: paths, directory, signal: controller.signal });
       controller.signal.throwIfAborted();
-      res.writeHead(200, {
-        'Content-Type': 'audio/mpeg', 'Content-Length': audio.length,
-        'Content-Disposition': 'attachment; filename="santa-studio-message.mp3"',
-      });
-      res.end(audio);
+      // Commit the retrievable MP3 and allowance together. A lost response can
+      // be recovered by GET without spending the visitor's correction.
+      const sequence = await generations.succeed(key, reservation, data, identity, audio);
+      audioResponse(audio, sequence);
     } catch (error) {
       if (error.status === 429) res.setHeader('Retry-After', String(error.retryAfter || 60));
       // Never send/log FFmpeg stderr, source paths, identities or upstream URLs.
@@ -156,6 +189,7 @@ export function createStudioMessageHandler({
       req.removeListener?.('aborted', abort);
       res.removeListener?.('close', abort);
       controller.abort();
+      if (reservation) await generations.release(key, reservation).catch(() => {});
       if (directory) await rm(directory, { recursive: true, force: true }).catch(() => {});
       active--;
     }

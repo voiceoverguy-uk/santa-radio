@@ -1,8 +1,8 @@
 import { expect } from '@playwright/test';
-import { readFileSync } from 'node:fs';
 import { test } from './helpers/provider-test.js';
 import { unlockWorkshop } from './helpers/workshop-access.js';
 import { workshopCatalogueFixture, workshopTalentPreviewCatalogueFixture } from './fixtures/workshop-catalogue.js';
+import { confirmMessage, mockStudioGeneration } from './helpers/studio-generation.js';
 
 const helper = 'Now, my Head Elf tells me you have quite a talent! Apparently, there’s something you’re especially good at… In particular...';
 const quote = page => page.locator('.smw-activity-wording-quote');
@@ -27,6 +27,7 @@ async function expectPreviewFits(page) {
 
 const next = page => page.locator('.smw-button-next');
 async function openTalent(page, catalogue = workshopCatalogueFixture) {
+  await mockStudioGeneration(page);
   await unlockWorkshop(page);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.route('**/api/santa-workshop-catalogue', route => route.fulfill({ json: catalogue }));
@@ -65,9 +66,8 @@ for (const width of [320, 1440]) {
     test.setTimeout(90000);
     await page.setViewportSize({ width, height: width === 320 ? 750 : 1000 });
     const requests = [];
-    await page.route('**/api/santa-studio-message', route => {
-      requests.push(route.request().postDataJSON());
-      return route.fulfill({ contentType: 'audio/mpeg', body: readFileSync('generated-artifacts/studio-test-message.mp3') });
+    page.on('request', request => {
+      if (request.url().includes('/api/santa-studio-message') && request.method() === 'POST') requests.push(request.postDataJSON());
     });
     await openTalent(page, workshopTalentPreviewCatalogueFixture);
     const sports = page.getByRole('button', { name: 'Sports & activities', exact: true });
@@ -129,10 +129,11 @@ for (const width of [320, 1440]) {
     await expect(summary).toContainText('Something funny — Stealing the remote control');
     const detailsBefore = await page.locator('.smw-summary-row').allTextContents();
     const letterBefore = await page.locator('.studio-gifts__gallery .studio-letter__text > p').allTextContents();
-    await page.getByRole('button', { name: 'Create message', exact: true }).click();
+    await confirmMessage(page);
     await expect(page.locator('.smw-message-result audio')).toHaveCount(1);
     expect(requests[0].talent).toEqual({ category: 'funny', id: `c-${'c'.repeat(64)}` });
     expect(requests[0].name).toBe('dixie-variant');
+    await page.getByRole('button', { name: 'Edit and regenerate once', exact: true }).click();
     await page.getByRole('button', { name: 'Change Talent', exact: true }).click();
     await expect(page.locator('.smw-message-result audio')).toHaveCount(0);
     await expect(funny).toHaveAttribute('aria-pressed', 'true');
@@ -148,21 +149,14 @@ for (const width of [320, 1440]) {
     const detailsAfter = await page.locator('.smw-summary-row').allTextContents();
     for (const i of [0, 1, 3, 4, 5, 6]) expect(detailsAfter[i]).toBe(detailsBefore[i]);
     expect(await page.locator('.studio-gifts__gallery .studio-letter__text > p').allTextContents()).toEqual(letterBefore);
-    await page.getByRole('button', { name: 'Create message', exact: true }).click();
+    const oldUrl = await page.locator('.smw-message-result audio').getAttribute('src');
+    await confirmMessage(page);
     await expect(page.locator('.smw-message-result audio')).toHaveCount(1);
+    await expect.poll(() => requests.length).toBe(2);
     expect(requests[1].talent).toEqual({ category: 'sports', id: `c-${'d'.repeat(64)}` });
-    await page.getByRole('button', { name: 'Change Talent', exact: true }).click();
-    await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
-    await expect(summary).toContainText('Skipped');
-    await expect(page.locator('.smw-message-result audio')).toHaveCount(0);
-    await page.getByRole('button', { name: 'Change Talent', exact: true }).click();
-    await expectTalentPreview(page);
-    await expect(page.locator('[role=option][aria-selected=true]')).toHaveCount(0);
-    await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
-    await page.getByRole('button', { name: 'Create message', exact: true }).click();
-    await expect(page.locator('.smw-message-result audio')).toHaveCount(1);
-    expect(requests[2].talent).toEqual({ skip: true });
-    expect(requests[2].name).toBe('dixie-variant');
+    await expect(page.locator('.smw-message-result audio')).not.toHaveAttribute('src', oldUrl);
+    await expect(page.getByRole('button', { name: 'Change Talent', exact: true })).toBeDisabled();
+    await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
   });
 }
 

@@ -26,7 +26,7 @@
     "test:workshop-access": "node --test scripts/santa-workshop-access.test.mjs",
     "workshop:preflight": "node scripts/workshop-access-preflight.mjs",
     "test:workshop": "playwright test --config playwright.workshop.config.js",
-    "test:studio-audio": "node --test scripts/santa-studio-message.test.mjs",
+    "test:studio-audio": "node --test scripts/santa-studio-message.test.mjs scripts/santa-studio-generation.test.mjs",
     "test:cookies": "playwright test tests/cookie-experience.spec.js",
     "test:apps-production": "node --test scripts/apps-production.test.mjs",
     "test:footer-production": "node --test scripts/footer-production.test.mjs",

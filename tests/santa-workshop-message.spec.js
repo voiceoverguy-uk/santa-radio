@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { test } from './helpers/provider-test.js';
 import { unlockWorkshop } from './helpers/workshop-access.js';
 import { workshopCatalogueFixture } from './fixtures/workshop-catalogue.js';
+import { confirmMessage, mockStudioGeneration } from './helpers/studio-generation.js';
 
 const path = '/santa-message-workshop';
 const answers = ['9 years old', 'Teamwork', 'Completing a jigsaw puzzle', 'Bûche de Noël', 'The Enchanted Forest — Fantasy place'];
@@ -20,6 +21,9 @@ const preparationMessages = [
 ];
 
 async function openReview(page, { live = false } = {}) {
+  const generation = live ? null : await mockStudioGeneration(page);
+  if (!live) await page.route('**/api/santa-studio-message', route => route.request().method() === 'GET'
+    ? route.fulfill({ json: generation.state }) : route.fallback());
   await unlockWorkshop(page);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.route('**/api/radio-metadata*', route => route.fulfill({ json: { available: false, current: null, upcoming: [] } }));
@@ -65,6 +69,7 @@ async function openReview(page, { live = false } = {}) {
     await page.locator('.smw-button-next').click();
   }
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeVisible();
+  return generation;
 }
 
 test('approved recording notices are random per attempt, stable through rerenders, and wrap on phones', async ({ page }) => {
@@ -76,7 +81,7 @@ test('approved recording notices are random per attempt, stable through rerender
     const fetch = window.fetch.bind(window);
     window.recordingAttempts = [];
     window.fetch = (input, options) => {
-      if (input !== '/api/santa-studio-message') return fetch(input, options);
+      if (input !== '/api/santa-studio-message' || options?.method !== 'POST') return fetch(input, options);
       return new Promise((resolve, reject) => {
         const attempt = { resolve };
         window.recordingAttempts.push(attempt);
@@ -103,7 +108,7 @@ test('approved recording notices are random per attempt, stable through rerender
     // Exercise both ends of the random range as well as every middle bucket.
     await page.evaluate(value => { window.nextNoticeRandom = value; },
       index === 0 ? 0 : index === 9 ? 0.999999 : (index + 0.5) / 10);
-    await page.getByRole('button', { name: retry ? 'Retry message' : 'Create message', exact: true }).click();
+    await confirmMessage(page, retry ? 'Retry message' : 'Create message');
     await expect(paragraph).toHaveText(preparationMessages[index]);
     await expect(notice).toHaveAttribute('aria-live', 'polite');
     await expect(page.getByRole('button', { name: 'Preparing message…', exact: true })).toBeDisabled();
@@ -205,12 +210,9 @@ test('review create placement on desktop and phones, real MP3 playback/download,
     const revoke = URL.revokeObjectURL.bind(URL);
     URL.revokeObjectURL = url => { window.revokedAudioUrls.push(url); revoke(url); };
   });
-  const submissions = [];
-  await page.route('**/api/santa-studio-message', async route => {
-    submissions.push(route.request().postDataJSON());
-    await route.fulfill({ contentType: 'audio/mpeg', body: readFileSync('generated-artifacts/studio-test-message.mp3') });
-  });
-  await openReview(page);
+  const fixture = await openReview(page);
+  fixture.audio = readFileSync('generated-artifacts/studio-test-message.mp3');
+  const submissions = fixture.posts;
   for (const width of [1365, 390, 320]) {
     await page.setViewportSize({ width, height: 844 });
     const create = page.getByRole('button', { name: 'Create message', exact: true });
@@ -228,7 +230,7 @@ test('review create placement on desktop and phones, real MP3 playback/download,
   }
   await page.getByRole('button', { name: 'Play recorded name for Dixie', exact: true }).click();
   await expect(page.locator('.smw-name-preview-status')).toHaveText('Playing name…');
-  await page.getByRole('button', { name: 'Create message', exact: true }).click();
+  await confirmMessage(page);
   await expect(page.locator('.smw-name-preview-status')).toHaveText('');
   const result = page.getByRole('region', { name: 'Your finished Santa message' });
   await expect(result).toBeVisible();
@@ -255,13 +257,15 @@ test('review create placement on desktop and phones, real MP3 playback/download,
   const file = await downloaded;
   expect(file.suggestedFilename()).toBe('santa-message-for-D’Arcy.mp3');
   expect(submissions).toHaveLength(1);
+  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
+  await page.getByRole('button', { name: 'Edit and regenerate once', exact: true }).click();
   await page.getByRole('button', { name: 'Change Working hard at', exact: true }).click();
-  await expect(result).toHaveCount(0);
-  expect(await page.evaluate(url => window.revokedAudioUrls.includes(url), url)).toBe(true);
+  await expect(result).toBeHidden();
+  expect(await page.evaluate(url => window.revokedAudioUrls.includes(url), url)).toBe(false);
   await page.getByRole('option', { name: 'Playing a musical instrument', exact: true }).click();
   await page.getByRole('button', { name: 'Return to review', exact: true }).click();
-  await expect(page.locator('.smw-message-result audio')).toHaveCount(0);
-  await page.getByRole('button', { name: 'Create message', exact: true }).click();
+  await expect(page.locator('.smw-message-result audio')).toHaveAttribute('src', url);
+  await confirmMessage(page);
   await expect(page.locator('.smw-message-result audio')).toHaveCount(1);
   expect(submissions[1].activity).toBe('instrument');
   const nextUrl = await page.locator('.smw-message-result audio').getAttribute('src');
@@ -273,7 +277,7 @@ test('review create placement on desktop and phones, real MP3 playback/download,
   await expect.poll(() => page.evaluate(url => window.revokedAudioUrls.includes(url), nextUrl)).toBe(true);
 });
 
-test('retryable preparation errors, cancel and late responses cannot resurrect old audio after editing', async ({ page }) => {
+test('retryable preparation errors and cancellation spend no successful allowance', async ({ page }) => {
   test.setTimeout(60000);
   let attempt = 0, release;
   await page.route('**/api/santa-studio-message', async route => {
@@ -283,21 +287,21 @@ test('retryable preparation errors, cancel and late responses cannot resurrect o
     await route.fulfill({ contentType: 'audio/mpeg', body: readFileSync('generated-artifacts/studio-test-message.mp3') }).catch(() => {});
   });
   await openReview(page);
-  await page.getByRole('button', { name: 'Create message', exact: true }).click();
+  await confirmMessage(page);
   await expect(page.getByRole('alert')).toContainText('A recording could not be loaded');
-  await page.getByRole('button', { name: 'Retry message', exact: true }).click();
+  await confirmMessage(page, 'Retry message');
   await expect(page.getByRole('progressbar', { name: 'Preparing your message', exact: true })).toBeVisible();
   await expect.poll(() => attempt).toBe(2);
   await page.getByRole('button', { name: 'Cancel preparation', exact: true }).click();
   release();
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
   await expect(page.locator('.smw-message-result audio')).toHaveCount(0);
-  await page.getByRole('button', { name: 'Create message', exact: true }).click();
+  await confirmMessage(page);
   await expect.poll(() => attempt).toBe(3);
-  await page.getByRole('button', { name: 'Change A festive treat for Santa', exact: true }).click();
+  await page.getByRole('button', { name: 'Cancel preparation', exact: true }).click();
   release();
-  await page.getByRole('button', { name: 'Return to review', exact: true }).click();
   await expect(page.locator('.smw-message-result audio')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
 });
 
 test('real protected API stitches chosen hosted clips without depending on short-lived name tokens', async ({ page }) => {
@@ -305,9 +309,9 @@ test('real protected API stitches chosen hosted clips without depending on short
   // No mocks for names, catalogue, access, generation, or MP3 decoding.
   await openReview(page, { live: true });
   const requests = [];
-  page.on('request', req => { if (req.url().includes('/api/santa-studio-message')) requests.push(req); });
-  const responsePromise = page.waitForResponse(res => res.url().endsWith('/api/santa-studio-message'), { timeout: 120000 });
-  await page.getByRole('button', { name: 'Create message', exact: true }).click();
+  page.on('request', req => { if (req.method() === 'POST' && req.url().includes('/api/santa-studio-message')) requests.push(req); });
+  const responsePromise = page.waitForResponse(res => res.request().method() === 'POST' && res.url().endsWith('/api/santa-studio-message'), { timeout: 120000 });
+  await confirmMessage(page);
   const response = await responsePromise;
   expect(response.status(), response.status() === 200 ? 'Generated MP3' : await response.text()).toBe(200);
   const payload = requests[0].postDataJSON();
@@ -329,16 +333,14 @@ test('real protected API stitches chosen hosted clips without depending on short
   await download.saveAs('generated-artifacts/studio-live-hosted-message.mp3');
 });
 
-test('full-message playback coordinates with radio and pagehide clears temporary audio', async ({ page }) => {
+test('full-message playback coordinates with radio and pagehide stops playback without losing the result', async ({ page }) => {
   test.setTimeout(60000);
-  await page.route('**/api/santa-studio-message', route => route.fulfill({
-    contentType: 'audio/mpeg', body: readFileSync('generated-artifacts/studio-test-message.mp3'),
-  }));
   await page.route('https://global.citrus3.com:8164/**', route => route.fulfill({
     contentType: 'audio/mpeg', body: readFileSync('server/santa-audio/sleighbells.mp3'),
   }));
-  await openReview(page);
-  await page.getByRole('button', { name: 'Create message', exact: true }).click();
+  const fixture = await openReview(page);
+  fixture.audio = readFileSync('generated-artifacts/studio-test-message.mp3');
+  await confirmMessage(page);
   const player = page.locator('.smw-message-result audio');
   await expect(player).toBeVisible();
   // The approved Studio hides its dock. Exercise its still-mounted real control
@@ -359,9 +361,116 @@ test('full-message playback coordinates with radio and pagehide clears temporary
   await expect(radio).toContainText('Pause');
   const url = await player.getAttribute('src');
   await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true })));
-  await expect(player).toHaveCount(0);
+  await expect(player).toHaveAttribute('src', url);
+  await expect.poll(() => player.evaluate(node => node.paused)).toBe(true);
   expect(await page.evaluate(async url => {
     try { return (await fetch(url)).ok; } catch { return false; }
-  }, url)).toBe(false);
-  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
+  }, url)).toBe(true);
+  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
+});
+
+test('confirmation cancellation, Escape, focus trap and mobile layout never spend an allowance', async ({ page }) => {
+  const fixture = await openReview(page);
+  await page.setViewportSize({ width: 320, height: 740 });
+  const create = page.getByRole('button', { name: 'Create message', exact: true });
+  await create.click();
+  const dialog = page.getByRole('dialog', { name: 'Are you happy with your selection?' });
+  const back = dialog.getByRole('button', { name: 'Go back', exact: true });
+  await expect(back).toBeFocused();
+  await expect(dialog).toContainText('county or state');
+  await expect(dialog).toContainText('one remaining correction');
+  await page.keyboard.press('Shift+Tab');
+  await expect(dialog.getByRole('button', { name: 'Create message', exact: true })).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(back).toBeFocused();
+  const bounds = await dialog.boundingBox();
+  expect(bounds.x).toBeGreaterThanOrEqual(0);
+  expect(bounds.x + bounds.width).toBeLessThanOrEqual(320);
+  await page.screenshot({ path: 'generated-artifacts/studio-generation-confirmation-320.png' });
+  await page.keyboard.press('Escape');
+  await expect(dialog).toHaveCount(0);
+  await expect(create).toBeFocused();
+  expect(fixture.posts).toHaveLength(0);
+  await create.click();
+  await back.click();
+  expect(fixture.posts).toHaveLength(0);
+  expect(fixture.state.remaining).toBe(2);
+});
+
+test('two successful messages preserve downloads through correction failures, refresh, tabs and browser Back', async ({ page, context }) => {
+  test.setTimeout(90000);
+  const fixture = await openReview(page);
+  await confirmMessage(page);
+  const result = page.getByRole('region', { name: 'Your finished Santa message' });
+  const download = result.getByRole('link', { name: /Download MP3/ });
+  await expect(download).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Change Their name', exact: true })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true })).toBeDisabled();
+  const create = page.getByRole('button', { name: 'Create message', exact: true });
+  await expect(create).toBeDisabled();
+  expect(await create.evaluate(node => getComputedStyle(node).backgroundColor)).toBe('rgb(64, 84, 74)');
+  for (const width of [1365, 390, 320]) {
+    await page.setViewportSize({ width, height: 844 });
+    const geometry = await download.evaluate(node => {
+      const button = node.getBoundingClientRect(), parent = node.parentElement.getBoundingClientRect();
+      return { right: button.right, edge: parent.right, left: button.left, height: button.height,
+        colour: getComputedStyle(node).backgroundColor, overflow: document.documentElement.scrollWidth > innerWidth + 1 };
+    });
+    expect(Math.abs(geometry.right - geometry.edge)).toBeLessThan(1);
+    expect(geometry.left).toBeGreaterThanOrEqual(0);
+    expect(geometry.height).toBeGreaterThanOrEqual(44);
+    expect(geometry.colour).toBe('rgb(155, 17, 30)');
+    expect(geometry.overflow).toBe(false);
+  }
+  for (let n = 0; n < 2; n++) {
+    const saving = page.waitForEvent('download');
+    await download.click();
+    expect((await saving).suggestedFilename()).toBe('santa-message-for-Dixie.mp3');
+  }
+  expect(fixture.posts).toHaveLength(1);
+  const original = await download.getAttribute('href');
+  await page.getByRole('button', { name: 'Edit and regenerate once', exact: true }).click();
+  await page.getByRole('button', { name: 'Change Working hard at', exact: true }).click();
+  await page.getByRole('option', { name: 'Playing a musical instrument', exact: true }).click();
+  await page.getByRole('button', { name: 'Return to review', exact: true }).click();
+  await expect(download).toHaveAttribute('href', original);
+  fixture.fail = true;
+  await confirmMessage(page);
+  await expect(page.getByRole('alert')).toContainText('Fixture recording unavailable');
+  expect(fixture.state.remaining).toBe(1);
+  await expect(download).toHaveAttribute('href', original);
+  fixture.fail = false;
+  let release;
+  fixture.hold = new Promise(resolve => { release = resolve; });
+  await confirmMessage(page);
+  await expect(page.getByRole('progressbar', { name: 'Preparing your message' })).toBeVisible();
+  await expect(download).toHaveAttribute('href', original);
+  release();
+  await expect(page.getByText('Both messages have been created.', { exact: false })).toBeVisible();
+  await expect(create).toBeDisabled();
+  expect(fixture.state.successes).toBe(2);
+  expect(fixture.posts.at(-1).name).toBe('dixie-variant');
+  expect(fixture.posts.at(-1).place).toBe('forest');
+  expect(fixture.posts.at(-1).activity).toBe('instrument');
+  await page.getByRole('button', { name: 'Edit certificate name', exact: true }).click();
+  await page.getByRole('textbox', { name: 'Name spelling', exact: true }).fill('D’Arcy');
+  await page.getByRole('button', { name: 'Use this spelling', exact: true }).click();
+  await expect(download).toHaveAttribute('download', 'santa-message-for-D’Arcy.mp3');
+  const postCount = fixture.posts.length;
+  await page.reload();
+  await expect(download).toBeVisible();
+  await expect(create).toBeDisabled();
+  await expect(page.locator('.smw-summary-row').first()).toContainText('Dixie — Recording 2');
+  const tab = await context.newPage();
+  await tab.route('**/api/santa-workshop-catalogue', route => route.fulfill({ json: workshopCatalogueFixture }));
+  await tab.goto(path);
+  await expect(tab.getByRole('link', { name: /Download MP3/ })).toBeVisible();
+  await expect(tab.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
+  await tab.close();
+  await page.getByRole('link', { name: 'Santa Radio home', exact: true }).click();
+  await expect(page.locator('.smw-page')).toHaveCount(0);
+  await page.goBack();
+  await expect(download).toBeVisible();
+  await expect(create).toBeDisabled();
+  expect(fixture.posts).toHaveLength(postCount);
 });

@@ -82,6 +82,8 @@ function fixture(overrides = {}) {
   const state = { resolved: [], downloads: [], renders: [], scopes: [] };
   const handler = createStudioMessageHandler({
     authorize: async () => true,
+    accessKey: () => 'fixture',
+    generations: { reserve: async () => ({ reservation: 'fixture' }), succeed: async () => {}, release: async () => {} },
     limit: async (_req, scope) => state.scopes.push(scope),
     catalogue: async () => inventory,
     library: {
@@ -102,7 +104,8 @@ async function call(handler, { data = body, method = 'POST', origin = 'https://s
     end: bytes => { result.bytes = bytes; },
   });
   const req = Object.assign(new EventEmitter(), { method, body: data,
-    socket: { encrypted: true }, headers: { host: 'studio.test', origin, 'content-type': 'application/json', ...headers } });
+    socket: { encrypted: true }, headers: { host: 'studio.test', origin, 'content-type': 'application/json',
+      'idempotency-key': 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', ...headers } });
   await handler(req, res);
   if (result.headers['content-type']?.includes('json')) result.json = JSON.parse(result.bytes);
   return result;
@@ -121,6 +124,14 @@ test('protected Studio resolves exact ID afresh, all category IDs, private MP3 a
   assert.equal(result.headers['vercel-cdn-cache-control'], 'no-store');
   assert.ok(!result.headers['content-disposition'].includes(body.name));
   await assert.rejects(stat(state.renders[0].directory), { code: 'ENOENT' });
+});
+
+test('confirmation operation IDs are required and cannot be caller paths or arbitrary strings', async () => {
+  const { handler, state } = fixture();
+  for (const key of [undefined, '', 'first', '../recording', 'aaaaaaaa-aaaa-1aaa-8aaa-aaaaaaaaaaaa']) {
+    assert.equal((await call(handler, { headers: { 'idempotency-key': key } })).status, 400);
+  }
+  assert.equal(state.renders.length, 0);
 });
 
 test('every category changes its own trusted recording and never changes the selected name variant', async () => {
@@ -296,7 +307,7 @@ test('serverless entry shares the protected handler and packages all fixed sourc
     assert.ok((await stat(`server/santa-audio/studio/${file}.flac`)).size > 1000);
   }
   assert.ok((await stat(ffmpeg)).mode & 0o111);
-  assert.equal((await call(serverlessHandler, { method: 'GET' })).status, 405);
+  assert.equal((await call(serverlessHandler, { method: 'DELETE' })).status, 405);
   assert.equal((await call(serverlessHandler, { origin: 'https://untrusted.test' })).status, 403);
 });
 

@@ -33,7 +33,7 @@ export function workshopSession(req, config = settings(), now = Date.now()) {
   const expiry = Number(expires);
   if (!entry || Number(issued) > now || expiry <= now || expiry > Number(issued) + WORKSHOP_SESSION_MS
     || expiry > config.expiresAt || !equal(signature, sessionMac(`${version}.${id}.${issued}.${expires}.${nonce}`, entry, config))) return null;
-  return { expiresAt: expiry };
+  return { expiresAt: expiry, generationKey: hash(`tester:${raw}`).toString('hex') };
 }
 
 export function hasWorkshopAccess(req, config = settings(), now = Date.now()) {
@@ -112,7 +112,7 @@ export function createWorkshopAccessHandler({ getSettings = settings, consumeAtt
     if (time >= config.expiresAt) return res.status(410).json({ authorized: false, error: 'This friends-only test has closed. The Studio is coming soon.' });
     if (req.method === 'GET') {
       const session = workshopSession(req, config, time);
-      return res.json(session ? { authorized: true, ...session } : { authorized: false });
+      return res.json(session ? { authorized: true, expiresAt: session.expiresAt } : { authorized: false });
     }
     if (!req.body || Object.keys(req.body).length !== 1 || typeof req.body.code !== 'string'
       || !req.body.code.trim().length || req.body.code.trim().length > 80) {

@@ -1,10 +1,14 @@
 import { expect } from '@playwright/test';
-import { readFileSync } from 'node:fs';
 import { test } from './helpers/provider-test.js';
 import { workshopCatalogueFixture, workshopRegionalCatalogueFixture, workshopMixedDestinationFixture } from './fixtures/workshop-catalogue.js';
 import { unlockWorkshop } from './helpers/workshop-access.js';
+import { confirmMessage, emptyGeneration, mockStudioGeneration } from './helpers/studio-generation.js';
 
-test.beforeEach(async ({ page }) => { await unlockWorkshop(page); });
+test.beforeEach(async ({ page }) => {
+  await unlockWorkshop(page);
+  await page.route('**/api/santa-studio-message', route => route.request().method() === 'GET'
+    ? route.fulfill({ json: emptyGeneration() }) : route.fallback());
+});
 
 async function openRegionalStage(page, inventory = workshopRegionalCatalogueFixture) {
   await page.route('**/api/radio-metadata*', route => route.fulfill({ json: { available: false, current: null, upcoming: [] } }));
@@ -184,10 +188,11 @@ test('regional request carries both trusted IDs and changing country clears the 
   expect(letterText).not.toContain('Tbilisi');
   let submitted;
   await page.route('**/api/santa-studio-message', route => {
+    if (route.request().method() === 'GET') return route.fallback();
     submitted = route.request().postDataJSON();
     return route.fulfill({ status: 503, json: { error: 'Fixture: no real recording requested.' } });
   });
-  await page.getByRole('button', { name: 'Create message' }).click();
+  await confirmMessage(page);
   await expect.poll(() => submitted?.region).toBe(workshopRegionalCatalogueFixture.regionalGroups['usa-states'].records[0].id);
   expect(submitted.place).toBe(workshopRegionalCatalogueFixture.regionalGroups['usa-states'].parentId);
   await page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true }).click();
@@ -204,7 +209,7 @@ test('regional request carries both trusted IDs and changing country clears the 
   await page.getByRole('option', { name: 'England', exact: true }).click();
   await expect(page.locator('.smw-destination-picker__selection')).toHaveCount(0);
   await page.locator('.smw-button-next').click();
-  await page.getByRole('button', { name: 'Create message' }).click();
+  await confirmMessage(page, 'Retry message');
   await expect.poll(() => submitted?.place).toBe(workshopRegionalCatalogueFixture.regionalGroups['england-counties'].parentId);
   expect(submitted).not.toHaveProperty('region');
 });
@@ -565,6 +570,7 @@ for (const width of [1365, 320]) {
 
     let submitted;
     await page.route('**/api/santa-studio-message', route => {
+      if (route.request().method() === 'GET') return route.fallback();
       submitted = route.request().postDataJSON();
       return route.fulfill({ status: 503, json: { error: 'Fixture: no real recording requested.' } });
     });
@@ -581,7 +587,7 @@ for (const width of [1365, 320]) {
       const placeName = record.label.split(' — ')[0];
       await expect(page.locator('.studio-letter__paper').first()).toContainText(placeName);
       submitted = null;
-      await page.getByRole('button', { name: 'Create message', exact: true }).click();
+      await confirmMessage(page, await page.getByRole('button', { name: 'Retry message', exact: true }).isVisible() ? 'Retry message' : 'Create message');
       await expect.poll(() => submitted?.place).toBe(record.id);
       expect(submitted).not.toHaveProperty('region');
       await page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true }).click();
@@ -668,11 +674,10 @@ for (const [country, kind] of [['United States', 'state'], ['England', 'county']
   }
 }
 
-test('changing destination category discards generated audio rather than restoring it', async ({ page }) => {
+test('completed destination stays locked and back navigation preserves the recording', async ({ page }) => {
+  const fixture = await mockStudioGeneration(page, { record: { id: `f-${'a'.repeat(64)}`, name: 'Arabella', variant: '' } });
+  await page.unroute('**/api/santa-studio-message');
   await openRegionalStage(page, workshopMixedDestinationFixture);
-  await page.route('**/api/santa-studio-message', route => route.fulfill({
-    contentType: 'audio/mpeg', body: readFileSync('server/santa-audio/sleighbells.mp3'),
-  }));
   await page.evaluate(() => {
     window.revokedWorkshopUrls = [];
     const revoke = URL.revokeObjectURL.bind(URL);
@@ -680,16 +685,17 @@ test('changing destination category discards generated audio rather than restori
   });
   await page.getByRole('option', { name: 'England', exact: true }).click();
   await page.locator('.smw-button-next').click();
-  await page.getByRole('button', { name: 'Create message', exact: true }).click();
+  await confirmMessage(page);
   const download = page.getByRole('link', { name: 'Download MP3', exact: true });
   await expect(download).toBeVisible();
   const oldUrl = await download.getAttribute('href');
-  await page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true }).click();
-  await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
-  await expect(page.getByRole('option', { selected: true })).toHaveCount(0);
-  await page.getByRole('option', { name: 'The Moon — Space destination', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true })).toBeDisabled();
+  await page.getByRole('button', { name: 'Back', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Fantasy & space', exact: true })).toHaveCount(0);
+  await expect(page.getByText('England — locked', { exact: true })).toBeVisible();
   await page.locator('.smw-button-next').click();
-  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
-  await expect(download).toHaveCount(0);
-  expect(await page.evaluate(() => window.revokedWorkshopUrls)).toContain(oldUrl);
+  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
+  await expect(download).toHaveAttribute('href', oldUrl);
+  expect(await page.evaluate(() => window.revokedWorkshopUrls)).not.toContain(oldUrl);
+  expect(fixture.posts).toHaveLength(1);
 });

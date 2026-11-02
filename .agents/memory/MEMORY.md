@@ -71,3 +71,4 @@
 - [Mugshots preview direction](mugshots-preview-direction.md) — Approved photograph-led hall of fame; do not restore the cartoon icon.
 - [Santa recipient previews](santa-recipient-preview-scope.md) — Chosen/generated child takes priority; random gifts/audio only before personalisation.
 - [Studio letter editorial policy](studio-letter-editorial-policy.md) — Curated contextual prose, not live AI; full choice audit stays private and spelling edits must not reshuffle wording.
+- [Studio single-message allowance](studio-single-message-allowance.md) — One success plus one correction; lock exact spoken name/full destination, not written spelling or future family policy.

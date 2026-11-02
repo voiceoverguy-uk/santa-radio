@@ -18,6 +18,7 @@ import WorkshopSearchableChoices from '../components/WorkshopSearchableChoices.j
 import WorkshopDestinationPicker from '../components/WorkshopDestinationPicker.jsx';
 import { selectedWorkshopRegion, workshopRegionalFolders, workshopDestinationCategory } from '../lib/workshopDestinations.js';
 import './SantaMessageWorkshop.css';
+import useStudioGeneration from '../hooks/useStudioGeneration.js';
 
 const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
@@ -233,6 +234,20 @@ export default function SantaMessageWorkshop() {
   const [letterVariation] = useState(createStudioLetterVariation);
   const [error, setError] = useState('');
   const [editing, setEditing] = useState(false);
+  const [correction, setCorrection] = useState(false);
+  const generation = useStudioGeneration(data => {
+    if (data.record && data.choices) {
+      setSelectedName(data.record);
+      setChoices({ ...data.choices, name: `${data.record.name}${data.record.variant ? ` — ${data.record.variant}` : ''}` });
+      setTalentCategory(data.choices.talent?.category || 'sports');
+      setDestinationCategory(data.locked.category);
+      setStageIndex(stages.length);
+      setEditing(false);
+      setCorrection(false);
+    }
+  });
+  const locked = !!generation.state?.locked;
+  const audioEditingAllowed = !locked || (correction && generation.state?.remaining > 0);
   const [catalogueRetry, setCatalogueRetry] = useState(0);
   const [catalogueState, setCatalogueState] = useState({
     status: 'loading',
@@ -347,6 +362,7 @@ export default function SantaMessageWorkshop() {
   }, [stageIndex]);
 
   const choose = (key, value) => {
+    if (!audioEditingAllowed || (locked && ['name', 'place', 'region'].includes(key))) return;
     setChoices(current => ({ ...current, [key]: value,
       ...(key === 'place' && current.place !== value ? { region: '' } : {}) }));
     setError('');
@@ -384,6 +400,7 @@ export default function SantaMessageWorkshop() {
   };
 
   const editStage = index => {
+    if (!audioEditingAllowed || (locked && ['name', 'place'].includes(stages[index]?.key))) return;
     setError('');
     if (stages[index]?.key === 'place') {
       setDestinationCategory(workshopDestinationCategory(selectedCountry));
@@ -476,7 +493,15 @@ export default function SantaMessageWorkshop() {
                   {stage.description && <p>{stage.description}</p>}
                 </div>
               </div>
-              {stage.key === 'name' ? (
+              {locked && <p role="status" className="smw-stage-note">
+                {['name', 'place'].includes(stage.key)
+                  ? 'The recorded name and full destination are locked to your first message.'
+                  : !audioEditingAllowed ? 'Use “Edit and regenerate once” on the review to make your one correction.' : 'You are editing your one correction.'}
+              </p>}
+              <fieldset className="smw-stage-fields" disabled={!audioEditingAllowed || (locked && ['name', 'place'].includes(stage.key))}>
+              {locked && ['name', 'place'].includes(stage.key) ? (
+                <p className="smw-audio-disclaimer">{stage.key === 'name' ? choices.name : destinationSummary} — locked</p>
+              ) : stage.key === 'name' ? (
                 <div className="smw-activity-preview-layout smw-name-preview-layout">
                   <WorkshopNamePicker
                     initialName={initialRecipient}
@@ -626,12 +651,13 @@ export default function SantaMessageWorkshop() {
                   ? 'Fictional places are labelled Fantasy place; real space destinations are labelled Space destination.'
                   : 'Choose from the recorded countries and real places.'
                 : stage.note}</p>}
+              </fieldset>
               <p className="smw-validation" id="smw-validation" role="alert">{error}</p>
               <div className="smw-actions">
                 {(stageIndex > 0 || editing) && <button className="smw-button smw-button-back" type="button" onClick={goBack}>
                   <span aria-hidden="true">←</span> Back
                 </button>}
-                {stage.key === 'talent' && <button className="smw-button smw-button-skip" type="button" onClick={skipTalent}>
+                {stage.key === 'talent' && <button className="smw-button smw-button-skip" type="button" onClick={skipTalent} disabled={!audioEditingAllowed}>
                   Skip this section
                 </button>}
                 <button className="smw-button smw-button-next" type="button" onClick={continueToNext}
@@ -671,7 +697,9 @@ export default function SantaMessageWorkshop() {
                             ?.find(record => record.id === choices[item.key])?.label
                             || 'This choice is no longer available.'}</span>}</dd>
                     </div>
-                    <button type="button" className="smw-change" onClick={() => editStage(index)} aria-label={`Change ${item.reviewLabel || item.label}`} title={`Edit ${item.reviewLabel || item.label}`}>
+                    <button type="button" className="smw-change" onClick={() => editStage(index)}
+                      disabled={!audioEditingAllowed || (locked && ['name', 'place'].includes(item.key))}
+                      aria-label={`Change ${item.reviewLabel || item.label}`} title={locked && ['name', 'place'].includes(item.key) ? 'Locked after your first message' : `Edit ${item.reviewLabel || item.label}`}>
                       <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
                         <path d="m16 4 4 4M4 20l4-1 12-12a2.83 2.83 0 0 0-4-4L4 15z" />
                       </svg>
@@ -705,8 +733,12 @@ export default function SantaMessageWorkshop() {
                 <button className="smw-button smw-button-back" type="button" onClick={goBack}>
                   <span aria-hidden="true">←</span> Back
                 </button>
-                <WorkshopMessageAudio
-                  key={JSON.stringify([selectedName?.id, choices.region, ...catalogueCategories.map(key => choices[key]), choices.talent])}
+              </div>
+            </div>
+          )}
+              <div className="smw-actions" hidden={!isReview}>
+                <WorkshopMessageAudio generation={generation} correction={correction}
+                  onCorrection={() => setCorrection(true)} visible={isReview}
                   record={selectedName} choices={choices} spelling={nameSpelling}
                   complete={!!selectedName && destinationValid && catalogueCategories.every(key =>
                     catalogueState.catalogue?.categories?.[key]?.some(record => record.id === choices[key]))
@@ -715,8 +747,6 @@ export default function SantaMessageWorkshop() {
                         ?.some(record => record.id === choices.talent.id)))}
                 />
               </div>
-            </div>
-          )}
           {workshopSoundNotice && (
             <p className="smw-sound-notice" role="status" aria-live="polite">
               {workshopSoundNotice}

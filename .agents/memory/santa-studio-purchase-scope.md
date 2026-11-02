@@ -21,11 +21,11 @@ The owner reports an existing live Stripe product named â€œSanta Message Makerâ€
 
 **How to apply:** Verify test/sandbox mode before creating or using payment resources. Do not infer permission for live charges, live changes or publishing from approval to test.
 
-No regeneration limits or paid-access expiry have been agreed.
+No family-bundle regeneration limits or paid-access expiry have been agreed.
 
 **Why:** The owner explicitly stated these decisions remain unagreed.
 
-**How to apply:** Do not introduce a regeneration cap or access expiry, and do not carry the private tester session's timing rules into paid access.
+**How to apply:** Do not introduce a family-bundle regeneration cap or access expiry, and do not carry the private tester session's timing rules into paid access. The owner separately approved one initial generation plus one correction for the current single-message Studio flow, including tester and sandbox access. That scoped choice does not set future multi-child or purchase-wide family policy.
 
 Sandbox Purchase controls and development-only explanations must never appear on public/published sites. Keep clearly labelled test checkout in development, and retain the public Coming soon promotion and voucher access.
 
