@@ -33,7 +33,7 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
             A little more Christmas magic for {example.name}
           </p>
           <p className="santa-studio-promotion__copy">
-            When we launch, you’ll be able to create a personalised message from Santa, with {example.name}’s age, achievements and the things that make them special. Add where they live for an extra personal touch.
+            Create a personalised message from Santa, with {example.name}’s age, achievements and the things that make them special for an extra personal touch.
           </p>
           <div className="santa-studio-promotion__benefits">
             <p className="santa-studio-promotion__benefits-lead">

@@ -7,7 +7,7 @@ export async function expectStudioLaunchCopy(promotion) {
   const copy = promotion.locator('.santa-studio-promotion__copy');
   await expect(promotion.locator('.santa-studio-promotion__subheading')).toHaveText(
     `A little more Christmas magic for ${name}`);
-  await expect(copy).toHaveText(`When we launch, you’ll be able to create a personalised message from Santa, with ${possessive} age, achievements and the things that make them special. Add where they live for an extra personal touch.`);
+  await expect(copy).toHaveText(`Create a personalised message from Santa, with ${possessive} age, achievements and the things that make them special for an extra personal touch.`);
   await expect(promotion.locator('.santa-studio-promotion__benefits-lead strong')).toHaveText(
     'Your paid package includes a personalised message from Santa, plus three personalised digital gifts to download:');
   await expect(promotion.locator('.santa-studio-promotion__benefit-list li')).toHaveText([

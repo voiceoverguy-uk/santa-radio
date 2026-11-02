@@ -152,7 +152,7 @@ async function matches(page, name) {
   await expect(gifts(page).locator('.studio-gifts__preview-stack .studio-santa-picture__name')).toHaveText(name);
   await expect(gifts(page).locator('.studio-gifts__gallery .studio-gifts__sr')).toContainText(`Dear ${name},`);
   await expect(promotion(page).locator('.santa-studio-promotion__copy')).toContainText(
-    `When we launch, you’ll be able to create a personalised message from Santa, with ${name}’s age, achievements and the things that make them special. Add where they live for an extra personal touch.`);
+    `Create a personalised message from Santa, with ${name}’s age, achievements and the things that make them special for an extra personal touch.`);
   await expect(promotion(page).locator('.santa-studio-promotion__subheading')).toHaveText(`A little more Christmas magic for ${name}`);
   await expect(promotion(page).locator('.santa-studio-promotion__benefit-list li')).toHaveText([
     'An official Nice List certificate', 'A short personal letter from Santa',
