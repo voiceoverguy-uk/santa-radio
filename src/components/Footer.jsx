@@ -20,8 +20,6 @@ export default function Footer() {
         <span>&middot;</span>
         <Link to="/christmas-contenders">Christmas Contenders · Preview</Link>
         <span>&middot;</span>
-        <a href="https://festivestudio.co.uk/" target="_blank" rel="noopener noreferrer">Personalised Santa Video Message</a>
-        <span>&middot;</span>
         <Link to="/apps">Download the app</Link>
         <span>&middot;</span>
         <Link to="/links">Links</Link>
@@ -32,38 +30,40 @@ export default function Footer() {
         <span>&middot;</span>
         <button type="button" className="cookie-settings-link" onClick={openCookieSettings}>Cookie settings</button>
       </div>
-      <div className="footer-effects">
-        <button
-          type="button"
-          className="effects-toggle"
-          role="switch"
-          aria-checked={effects}
-          aria-label="Snow"
-          title={effects ? 'Turn snow off' : 'Turn snow on'}
-          onClick={() => setEffects(current => !current)}
-        >
-          <span className="effects-toggle-label">Snow</span>
-          <span className="effects-toggle-track" aria-hidden="true">
-            <span className="effects-toggle-thumb" />
-          </span>
-          <span className="effects-toggle-state" aria-hidden="true">
-            {effects ? 'On' : 'Off'}
-          </span>
-        </button>
-      </div>
-      <div className="footer-social">
-        <a href="https://www.instagram.com/santaradiouk/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-          <svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2">
-            <rect x="3" y="3" width="18" height="18" rx="5" />
-            <circle cx="12" cy="12" r="4" />
-            <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
-          </svg>
-        </a>
-        <a href="https://www.facebook.com/santaradiouk" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
-          <svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-          </svg>
-        </a>
+      <div className="footer-controls">
+        <div className="footer-effects">
+          <button
+            type="button"
+            className="effects-toggle"
+            role="switch"
+            aria-checked={effects}
+            aria-label="Snow"
+            title={effects ? 'Turn snow off' : 'Turn snow on'}
+            onClick={() => setEffects(current => !current)}
+          >
+            <span className="effects-toggle-label">Snow</span>
+            <span className="effects-toggle-track" aria-hidden="true">
+              <span className="effects-toggle-thumb" />
+            </span>
+            <span className="effects-toggle-state" aria-hidden="true">
+              {effects ? 'On' : 'Off'}
+            </span>
+          </button>
+        </div>
+        <div className="footer-social">
+          <a href="https://www.instagram.com/santaradiouk/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="3" y="3" width="18" height="18" rx="5" />
+              <circle cx="12" cy="12" r="4" />
+              <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+            </svg>
+          </a>
+          <a href="https://www.facebook.com/santaradiouk" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+            <svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            </svg>
+          </a>
+        </div>
       </div>
       <p className="footer-copy">&copy; 2026 Santa Radio. All Rights Reserved.</p>
     </footer>

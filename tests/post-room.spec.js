@@ -50,7 +50,7 @@ for (const width of [320, 390, 768, 1440]) {
       style: '.radio-dock, .navbar { visibility: hidden !important; }',
     });
     const footer = page.locator('footer');
-    for (const name of ['News', 'Playlist', 'Voice of Santa', 'Submit your song', 'Christmas Contenders · Preview', 'Personalised Santa Video Message', 'Download the app', 'Links', 'Privacy Policy', 'Photo usage and licensing', 'Instagram', 'Facebook']) {
+    for (const name of ['News', 'Playlist', 'Voice of Santa', 'Submit your song', 'Christmas Contenders · Preview', 'Download the app', 'Links', 'Privacy Policy', 'Photo usage and licensing', 'Instagram', 'Facebook']) {
       await expect(footer.getByRole('link', { name, exact: true })).toHaveCount(1);
     }
     const snow = footer.getByRole('switch', { name: 'Snow', exact: true });

@@ -10,5 +10,12 @@ test('holiday postcards have a clearer location and no printed URL', async ({ pa
     await expect(location.locator('..')).toHaveCSS('opacity', '0.7');
     await expect(page.getByText('santa-radio.replit.app/santa-tracker', { exact: true })).toHaveCount(0);
     await expect(page.getByRole('button', { name: /share/i }).first()).toBeVisible();
+    const footer = page.locator('footer');
+    await expect(footer.locator('a[href*="festivestudio.co.uk"]')).toHaveCount(0);
+    const snow = await footer.getByRole('switch', { name: 'Snow', exact: true }).boundingBox();
+    const social = await footer.locator('.footer-social').boundingBox();
+    expect(snow.y + snow.height / 2).toBeCloseTo(social.y + social.height / 2, 0);
+    const copy = await footer.locator('.footer-copy').boundingBox();
+    expect(copy.y).toBeGreaterThan(social.y + social.height);
   }
 });

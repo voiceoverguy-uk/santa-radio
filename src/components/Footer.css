@@ -32,11 +32,20 @@
   color: #555;
 }
 
+.footer-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 16px;
+  max-width: 100%;
+  margin: 14px auto 10px;
+}
+
 .footer-effects {
   display: flex;
   justify-content: center;
   max-width: 100%;
-  margin: 0 auto 16px;
 }
 
 .footer .effects-toggle {
@@ -122,19 +131,31 @@
 
 .footer-social {
   display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 16px;
-  margin-bottom: 14px;
+  gap: 4px;
+  margin: 0;
   color: #aaa;
 }
 
 .footer-social a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 4px;
   color: #aaa;
   transition: color 0.2s;
 }
 
 .footer-social a:hover {
   color: #fff;
+}
+
+.footer-social a:focus-visible {
+  outline: 2px solid #f0d98c;
+  outline-offset: 3px;
 }
 
 .footer-copy {
@@ -145,7 +166,7 @@
 /* Leave room to scroll footer controls clear of the floating player on phones
    and narrow tablets, including when its details are expanded. */
 @media (max-width: 900px) {
-  .footer {
+  .footer.footer {
     padding-bottom: 96px;
   }
 

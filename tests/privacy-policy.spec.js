@@ -353,7 +353,7 @@ for (const width of [1440, 390, 320]) {
     })).toBe(true);
     await expect(links.getByRole('link')).toHaveText([
       'News', 'Playlist', 'Voice of Santa', 'Submit your song', 'Christmas Contenders · Preview',
-      'Personalised Santa Video Message', 'Download the app', 'Links',
+      'Download the app', 'Links',
       'Privacy Policy', 'Photo usage and licensing',
     ]);
     await links.getByRole('link', { name: 'Playlist', exact: true }).focus();

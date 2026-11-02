@@ -10,7 +10,6 @@ const footerLinks = [
   ['https://www.santaguy.co.uk', 'Voice of Santa'],
   ['/submit-a-song?mode=song', 'Submit your song'],
   ['/christmas-contenders', 'Christmas Contenders · Preview'],
-  ['https://festivestudio.co.uk/', 'Personalised Santa Video Message'],
   ['/apps', 'Download the app'],
   ['/links', 'Links'],
   ['/privacy-policy', 'Privacy Policy'],
@@ -20,6 +19,8 @@ const footerLinks = [
 function assertStandardFooter(html, source) {
   const footer = html.match(/<footer\b[\s\S]*?<\/footer>/)?.[0];
   assert.ok(footer, `${source}: shared footer is present`);
+  assert.doesNotMatch(footer, /festivestudio\.co\.uk|Personalised Santa Video Message/, `${source}: video promotion is absent`);
+  assert.match(footer, /class="footer-controls">[\s\S]*class="footer-effects">[\s\S]*role="switch"[\s\S]*class="footer-social">[\s\S]*<\/div>\s*<\/div>\s*<p class="footer-copy">/, `${source}: snow and socials share a row before copyright`);
 
   const linksBlock = footer.match(/<div class="footer-links">([\s\S]*?)<\/div>/)?.[1];
   assert.ok(linksBlock, `${source}: standard footer links are present`);
@@ -29,6 +30,7 @@ function assertStandardFooter(html, source) {
     return { href, label, attributes };
   });
   assert.deepEqual(links.map(({ href, label }) => [href, label]), footerLinks, `${source}: standard links and order`);
+  assert.equal([...linksBlock.matchAll(/<span>·<\/span>/g)].length, footerLinks.length, `${source}: one separator per gap including cookie settings`);
 
   const voiceLinks = links.filter(link => link.href === 'https://www.santaguy.co.uk');
   assert.equal(voiceLinks.length, 1, `${source}: exactly one Voice of Santa destination`);
