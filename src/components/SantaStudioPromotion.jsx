@@ -18,7 +18,7 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
           <div className="santa-studio-promotion__topline">
             <span className="santa-studio-promotion__seal" aria-hidden="true">S</span>
             <div className="santa-studio-promotion__heading">
-              <p className="santa-studio-promotion__eyebrow">A little more magic</p>
+              <p className="santa-studio-promotion__eyebrow">THE NORTH POLE RECORDING STUDIO</p>
               <div className="message-name-status">
                 <p className="santa-studio-promotion__name-count" role="status" aria-live="off">{availableNamesText}</p>
                 <span className="message-recording-indicator" title="North Pole recording studio">

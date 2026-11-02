@@ -270,7 +270,7 @@ for (const path of ['/', '/free-santa-message']) {
       const promo = page.locator('.santa-studio-promotion');
       await expect(promo.getByRole('heading', { level: 3 })).toHaveText('Santa’s Message Maker Studio');
       await expect(promo.getByText('NEW', { exact: true })).toHaveCount(0);
-      await expect(promo.locator('.santa-studio-promotion__eyebrow')).toHaveText('A little more magic');
+      await expect(promo.locator('.santa-studio-promotion__eyebrow')).toHaveText('THE NORTH POLE RECORDING STUDIO');
       await expect(promo.locator('.santa-studio-promotion__preview-label')).toHaveText('Coming soon');
       const artwork = promo.getByRole('img', { name: 'Santa wearing headphones at a festive message-making microphone' });
       await expect(artwork).toBeVisible();

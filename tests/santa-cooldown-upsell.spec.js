@@ -8,8 +8,8 @@ const mp3 = readFileSync('server/santa-audio/sleighbells.mp3');
 const card = page => page.locator('.santa-message-box');
 const offer = page => card(page).getByRole('region', { name: 'Bespoke Santa message invitation' });
 const studio = page => page.locator('#santa-studio-promotion');
-const prelaunchCopy = (possessive = 'a little one’s') =>
-  `With Santa’s Message Maker Studio, you can create a bespoke message personalised with ${possessive} age, achievements and the things that make them special. The paid package also includes three personalised digital gifts at no extra cost. See below.`;
+const prelaunchCopy = () =>
+  'Make it even more magical with Santa’s Message Maker Studio for a bespoke message and bonus digital gifts.';
 
 async function setup(page, { date = '2026-11-02T12:00:00Z', cooldown = false, width = 1440, path = '/' } = {}) {
   await page.setViewportSize({ width, height: 1100 });
@@ -111,7 +111,7 @@ for (const width of [390, 1440]) {
   test(`prelaunch invitation keeps the free recipient, deadline and downloads at ${width}px`, async ({ page }) => {
     await setup(page, { width });
     await generate(page);
-    await expect(offer(page).getByRole('heading')).toHaveText('Coming soon: a little more magic for Erica');
+    await expect(offer(page).getByRole('heading')).toHaveText('A little more magic for Erica?');
     await expect(offer(page).getByRole('link')).toHaveText('Preview Erica’s bespoke message package');
     await expect(offer(page).locator('p')).toHaveText(prelaunchCopy('Erica’s'));
     await expect(card(page).locator('.message-cooldown-status')).toContainText('Your next free message will be available at');
@@ -130,7 +130,7 @@ for (const width of [390, 1440]) {
     await input.press('ArrowDown');
     await input.press('Enter');
     await expect(studio(page).locator('.studio-gifts')).toHaveAttribute('data-demo-name', 'Erin');
-    await expect(offer(page).getByRole('heading')).toHaveText('Coming soon: a little more magic for Erica');
+    await expect(offer(page).getByRole('heading')).toHaveText('A little more magic for Erica?');
     await checkNavigation(page, 'Erica');
     expect(await page.evaluate(() => JSON.stringify({ ...localStorage, ...sessionStorage }))).not.toMatch(/Erica|Erin/);
   });
@@ -139,8 +139,7 @@ for (const width of [390, 1440]) {
 for (const prelaunch of [true, false]) {
   test(`unknown child uses natural generic ${prelaunch ? 'prelaunch' : 'live'} wording`, async ({ page }) => {
     await setup(page, { cooldown: true, date: prelaunch ? '2026-11-02T12:00:00Z' : '2026-11-07T12:00:00Z' });
-    await expect(offer(page).getByRole('heading')).toHaveText(prelaunch
-      ? 'Coming soon: a little more Christmas magic' : 'A little more Christmas magic?');
+    await expect(offer(page).getByRole('heading')).toHaveText('A little more Christmas magic?');
     await expect(offer(page).getByRole('link')).toHaveText(prelaunch
       ? 'Preview the bespoke message package' : 'Explore bespoke Santa messages');
     await expect(offer(page).locator('p')).toHaveText(prelaunch
@@ -162,8 +161,8 @@ for (const path of ['/', '/free-santa-message']) {
       await setup(page, { path, width: 320, cooldown: !named });
       if (named) await generate(page);
       await expect(offer(page).getByRole('heading')).toHaveText(named
-        ? 'Coming soon: a little more magic for Erica'
-        : 'Coming soon: a little more Christmas magic');
+        ? 'A little more magic for Erica?'
+        : 'A little more Christmas magic?');
       await expect(offer(page).locator('p')).toHaveText(prelaunchCopy(named ? 'Erica’s' : undefined));
       await expect(offer(page).getByRole('link')).toHaveText(named
         ? 'Preview Erica’s bespoke message package'

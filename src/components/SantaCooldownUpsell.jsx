@@ -9,16 +9,12 @@ function SantaCooldownUpsell({
   const named = Boolean(name);
   const possessive = named ? `${name}’s` : 'a little one’s';
 
-  const heading = prelaunch
-    ? named
-      ? `Coming soon: a little more magic for ${name}`
-      : 'Coming soon: a little more Christmas magic'
-    : named
-      ? `A little more magic for ${name}?`
-      : 'A little more Christmas magic?';
+  const heading = named
+    ? `A little more magic for ${name}?`
+    : 'A little more Christmas magic?';
 
   const copy = prelaunch
-    ? `With Santa’s Message Maker Studio, you can create a bespoke message personalised with ${possessive} age, achievements and the things that make them special. The paid package also includes three personalised digital gifts at no extra cost. See below.`
+    ? 'Make it even more magical with Santa’s Message Maker Studio for a bespoke message and bonus digital gifts.'
     : `Make it extra special with a bespoke message from Santa, personalised with ${possessive} age, achievements and the things that make them special. Your paid package also includes three personalised digital gifts at no extra cost: a Nice List certificate, a short letter from Santa and Santa’s Nice List picture.`;
 
   const buttonLabel = prelaunch
