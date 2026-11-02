@@ -140,9 +140,21 @@ for (const width of [390, 1440]) {
   });
 }
 
-test('recorded name preview refreshes an expired link and plays real audio on demand', async ({ page }) => {
-  test.setTimeout(60000);
+test('recorded name preview refreshes once, caches replays and clears on name change or leaving Studio', async ({ page }) => {
+  test.setTimeout(90000);
   await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.addInitScript(() => {
+    window.previewBlobUrls = [];
+    window.revokedPreviewBlobUrls = [];
+    const create = URL.createObjectURL.bind(URL);
+    const revoke = URL.revokeObjectURL.bind(URL);
+    URL.createObjectURL = blob => {
+      const url = create(blob);
+      if (blob.type === 'audio/mpeg') window.previewBlobUrls.push(url);
+      return url;
+    };
+    URL.revokeObjectURL = url => { window.revokedPreviewBlobUrls.push(url); revoke(url); };
+  });
   const requests = [];
   await page.route('**/api/santa-name-preview?*', route => {
     requests.push(route.request().url());
@@ -156,9 +168,10 @@ test('recorded name preview refreshes an expired link and plays real audio on de
   let refreshes = 0;
   await page.route('**/api/santa-names', route => {
     refreshes++;
-    expect(route.request().postDataJSON()).toEqual({ query: 'Demrie' });
+    const query = route.request().postDataJSON().query;
+    const name = query === 'Zara' ? 'Zara' : 'Demrie';
     return route.fulfill({ json: { records: [{
-      id: 'demrie', name: 'Demrie', selectionToken: 'fresh-selection',
+      id: name.toLowerCase(), name, selectionToken: 'fresh-selection',
       previewUrl: '/api/santa-name-preview?token=fresh-preview',
     }] } });
   });
@@ -170,6 +183,37 @@ test('recorded name preview refreshes an expired link and plays real audio on de
   await expect(page.locator('.smw-name-preview-error')).toHaveCount(0);
   await page.getByRole('button', { name: 'Stop recorded name for Demrie', exact: true }).click();
   await expect(page.locator('.smw-name-preview-status')).toHaveText('');
+  const firstBlob = await page.evaluate(() => window.previewBlobUrls[0]);
+  expect(firstBlob).toMatch(/^blob:/);
+  // Stop and replay must not fetch a new capability or the audio again.
+  await page.getByRole('button', { name: 'Play recorded name for Demrie', exact: true }).click();
+  await expect(page.locator('.smw-name-preview-status')).toHaveText('Playing name…');
+  await page.getByRole('button', { name: 'Stop recorded name for Demrie', exact: true }).click();
+  expect(refreshes).toBe(1);
+  expect(requests).toHaveLength(1);
+  // Editing an unrelated detail keeps the in-memory clip.
+  await page.getByRole('button', { name: 'Change Age', exact: true }).click();
+  await page.getByRole('button', { name: 'Return to review', exact: true }).click();
+  await page.getByRole('button', { name: 'Play recorded name for Demrie', exact: true }).click();
+  await expect(page.locator('.smw-name-preview-status')).toHaveText('Playing name…');
+  await page.getByRole('button', { name: 'Stop recorded name for Demrie', exact: true }).click();
+  expect(refreshes).toBe(1);
+  expect(requests).toHaveLength(1);
+  await page.getByRole('button', { name: 'Change Their name', exact: true }).click();
+  await page.getByRole('combobox', { name: 'Search recorded names', exact: true }).fill('Zara');
+  await expect.poll(() => page.evaluate(() => window.revokedPreviewBlobUrls)).toContain(firstBlob);
+  await page.getByRole('option', { name: 'Zara', exact: true }).click();
+  await page.getByRole('button', { name: 'Return to review', exact: true }).click();
+  const beforeZaraPlay = refreshes;
+  await page.getByRole('button', { name: 'Play recorded name for Zara', exact: true }).click();
+  await expect(page.locator('.smw-name-preview-status')).toHaveText('Playing name…');
+  expect(refreshes).toBe(beforeZaraPlay + 1);
+  expect(requests).toHaveLength(2);
+  const secondBlob = await page.evaluate(() => window.previewBlobUrls.at(-1));
+  await page.getByRole('link', { name: 'Apps', exact: true }).first().click();
+  await expect.poll(() => page.evaluate(() => window.revokedPreviewBlobUrls)).toContain(secondBlob);
+  await page.goBack();
+  await expect(page.getByRole('combobox', { name: 'Search recorded names', exact: true })).toHaveValue('');
   expect(await page.evaluate(() => JSON.stringify({ ...localStorage, ...sessionStorage }))).not.toContain('Demrie');
 });
 

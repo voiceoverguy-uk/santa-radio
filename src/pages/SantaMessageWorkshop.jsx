@@ -10,6 +10,7 @@ import WorkshopChoiceWheel from '../components/WorkshopChoiceWheel.jsx';
 import WorkshopNameSpelling from '../components/WorkshopNameSpelling.jsx';
 import WorkshopWordingPreview from '../components/WorkshopWordingPreview.jsx';
 import WorkshopNamePreview from '../components/WorkshopNamePreview.jsx';
+import { createWorkshopNamePreviewCache } from '../lib/workshopNamePreviewCache.js';
 import WorkshopSearchableChoices from '../components/WorkshopSearchableChoices.jsx';
 import './SantaMessageWorkshop.css';
 
@@ -187,6 +188,10 @@ export default function SantaMessageWorkshop() {
   const [stageIndex, setStageIndex] = useState(0);
   const [choices, setChoices] = useState(emptyChoices);
   const [selectedName, setSelectedName] = useState(null);
+  const [namePreviewCache] = useState(createWorkshopNamePreviewCache);
+  // Keep a clip across other detail edits, but clear it when its recipient
+  // changes or the visitor leaves Studio.
+  useEffect(() => () => namePreviewCache.clear(), [namePreviewCache, selectedName?.id]);
   const [nameSpelling, setNameSpelling] = useState('');
   const [error, setError] = useState('');
   const [editing, setEditing] = useState(false);
@@ -522,7 +527,7 @@ export default function SantaMessageWorkshop() {
                       <dd>{item.key === 'name'
                         ? <span className="smw-name-review-value">
                             <span>{choices.name || 'Not chosen'}</span>
-                            <WorkshopNamePreview key={selectedName?.id} record={selectedName} />
+                            <WorkshopNamePreview key={selectedName?.id} record={selectedName} cache={namePreviewCache} />
                           </span>
                         : catalogueState.catalogue?.categories?.[item.key]
                           ?.find(record => record.id === choices[item.key])?.label

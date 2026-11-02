@@ -36,6 +36,9 @@ The www domain is served separately from the Replit deployment.
 **Why:** A successful workspace or Replit release does not establish that the
 Vercel-hosted www endpoint changed.
 
+**How to apply:** Independently check each live serving host and the original
+audio host before calling an inventory-exposure incident resolved.
+
 Studio recording previews must tolerate visitors spending longer on the form
 than a short-lived preview link remains valid.
 
@@ -43,9 +46,19 @@ than a short-lived preview link remains valid.
 recording itself was available. Extending link lifetime would weaken the owner's
 chosen protection rather than address the form's timing.
 
-**How to apply:** Refresh access privately when playback is requested, preserving
+**How to apply:** Refresh access privately for the first uncached playback, preserving
 the exact recording identity among spelling variants. Keep expiry, rate limits
 and source-location confidentiality intact; cancel pending work when stopped.
 
-**How to apply:** Independently check each live serving host and the original
-audio host before calling an inventory-exposure incident resolved.
+Keep one downloaded name preview temporarily in the open Studio so replays do
+not repeat server requests. Clear it when the name changes, Studio is left, or
+the page refreshes; unrelated detail edits should not discard it.
+
+**Why:** The user explicitly approved this temporary caching approach after asking
+whether every play contacted the server. They did not approve permanent browser
+storage or weaker protection for the initial download.
+
+**How to apply:** Cache only the selected recording, distinguish recording
+variants by identity, release discarded audio resources and never retain failed
+or cancelled downloads. Keep the cache page-local, not a cross-page or durable
+name/audio store.
