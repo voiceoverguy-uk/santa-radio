@@ -2,6 +2,14 @@
 name: Santa Radio visual direction
 description: User's North Pole visual expectations, Santa note voice and player starting state.
 ---
+Studio review selections should be red text only, without cream/white boxes.
+
+**Why:** The user rejected the cream-backed highlights and explicitly asked to
+“just keep the text in red only”.
+
+**How to apply:** Keep field labels and controls unchanged; do not reintroduce
+background highlights around selected values.
+
 The current navigation page should have an animated underline in the website's gold colour.
 
 **Why:** The owner requested an animated line beneath the active navigation heading on arrival.

@@ -1374,7 +1374,8 @@ test('desktop and phone review screenshots, explainer arrangement and unchanged 
     await expect(selections).toHaveText(answers);
     for (const selection of await selections.all()) {
       await expect(selection).toHaveCSS('color', 'rgb(155, 17, 30)');
-      await expect(selection).toHaveCSS('background-color', 'rgb(255, 248, 231)');
+      await expect(selection).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+      await expect(selection).toHaveCSS('padding', '0px');
     }
     for (const label of await page.locator('.smw-summary-row dt').all()) {
       await expect(label).toHaveCSS('color', 'rgb(185, 201, 185)');
