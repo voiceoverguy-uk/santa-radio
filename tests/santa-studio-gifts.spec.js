@@ -554,14 +554,16 @@ test(`longest name and choices keep the complete letter inside A4 at ${width}px`
   await page.evaluate(() => {
     const original = Math.random;
     let index = 0;
+    const slots = [.999, .999, .3, .999, .999, 0, 0, 0, 0, 0, 0, 0, 0];
     Math.random = () => new Error().stack.includes('santaStudioLetter')
-      ? [.999, .999, .3, .999, .999][index++ % 5] : original();
+      ? slots[index++ % slots.length] : original();
   });
   for (let index = 0; index < 3; index++) {
     await advanceExample(page);
   }
   await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Charlotte');
-  await expect(body(page)).toContainText('11 already!');
+  await expect(body(page)).toContainText('11 years old');
+  await expect(body(page)).not.toContainText('already!');
   for (const choice of ['building Lego', 'finishing your homework on time', 'Scotland', 'carrots for the reindeer']) {
     await expect(body(page)).toContainText(choice);
   }
@@ -569,7 +571,8 @@ test(`longest name and choices keep the complete letter inside A4 at ${width}px`
   const text = page.getByRole('dialog').locator('.studio-letter__text');
   const expected = createStudioLetter('Charlotte', (() => {
     let index = 0;
-    return () => [.999, .999, .3, .999, .999][index++ % 5];
+    const slots = [.999, .999, .3, .999, .999, 0, 0, 0, 0, 0, 0, 0, 0];
+    return () => slots[index++ % slots.length];
   })());
   await expect(text.locator(':scope > p')).toHaveText(expected.paragraphs);
   await expect(text).toContainText(expected.closing[1]);

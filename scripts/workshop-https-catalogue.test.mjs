@@ -147,7 +147,10 @@ test('cities, regions and territories stay with real countries before fantasy an
     assert.equal(actual.isCountry, false);
     assert.ok(places.indexOf(actual) < firstImaginary);
   }
-  assert.equal(places.find(item => item.file === 'countries/alkland-islands.wav').label, 'Alkland Islands');
+  const falklands = places.find(item => item.file === 'countries/alkland-islands.wav');
+  assert.equal(falklands.label, 'Falkland Islands');
+  assert.equal(falklands.id, record('countries/alkland-islands.wav').id);
+  assert.deepEqual(falklands.letterContext, { group: 'real', needsReview: false });
   assert.equal(places.find(item => item.file === 'countries/atlantis.wav').kind, 'fantasy');
   assert.equal(places.find(item => item.file === 'countries/mars.wav').kind, 'space');
   assert.equal(places.length, data.categories.place.length - 2);

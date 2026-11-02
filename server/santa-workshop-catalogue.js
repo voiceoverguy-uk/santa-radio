@@ -1,6 +1,7 @@
 import { hasWorkshopAccess } from './santa-workshop-access.js';
 import { hasPaidStudioAccess } from './santa-studio-purchase.js';
 import { createHash } from 'node:crypto';
+import { studioEditorialContext } from './studio-letter-editorial.js';
 
 export const WORKSHOP_ROOT = 'https://stagcommunications.com/santaradio/names/personalised-message/';
 export const WORKSHOP_INDEX = `${WORKSHOP_ROOT}workshop-index.php`;
@@ -9,7 +10,8 @@ const fantasyPlaces = new Set(['atlantis', 'camelot', 'cloud-cuckoo-land', 'disc
   'hundred-acre-wood', 'jurassic-island', 'middle-earth', 'narnia', 'neverland', 'oz', 'pandora',
   'radiator-springs', 'sodor', 'the-enchanted-forest', 'whoville', 'wonderland']);
 // Real destinations in the hosted inventory which are not countries. Preserve
-// their recorded filenames/labels, including the supplied "alkland" spelling.
+// their recorded filenames, including the supplied "alkland" filename.
+// Display spelling corrections must not change recording identities.
 const otherRealPlaces = new Set(['alkland-islands', 'falkland-islands', 'antarctica',
   'bermuda', 'cayman-islands', 'dubai', 'faroe-islands', 'gibraltar', 'greenland',
   'guernsey', 'hong-kong', 'isle-of-man', 'jersey', 'montserrat', 'puffin-island',
@@ -23,6 +25,7 @@ const destinationPriority = new Map([
   ['countries/united-states.wav', 4],
 ]);
 const labels = {
+  'alkland-islands': 'Falkland Islands',
   'amazing-at-school': 'School',
   'started-nursery': 'Starting nursery',
   'started-school': 'Starting school',
@@ -84,6 +87,7 @@ export function parseWorkshopCatalogue(input) {
         if (record.kind === 'space') record.label += ' — Space destination';
       }
       if (!record.label || record.label.length > 260) throw new Error('Invalid workshop label.');
+      record.letterContext = studioEditorialContext(key, record);
       records.push(record);
     }
     // Different source files never become one choice, even if their labels match.

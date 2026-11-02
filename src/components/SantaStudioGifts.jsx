@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { studioGiftExampleNames, allCertificateExamples } from '../lib/santaCertificateExamples.js';
 import { createStudioLetter, CERTIFICATE_WRITE_MS, LETTER_CHARACTER_MS,
-  SIGNATURE_WRITE_MS, GIFT_EXAMPLE_INTERVAL_MS, letterBodyDuration, letterDuration } from '../lib/santaStudioLetter.js';
+  SIGNATURE_WRITE_MS, GIFT_EXAMPLE_INTERVAL_MS, letterBodyDuration, letterDuration,
+  createStudioLetterVariation } from '../lib/santaStudioLetter.js';
 import './SantaStudioGifts.css';
 import SantaPictureName from './SantaPictureName.jsx';
 
@@ -241,10 +242,10 @@ export function StudioGiftPreview({ example }) {
   return <GiftExample key={name} {...example} name={name} />;
 }
 
-export function StudioKeepsakePreview({ name, details = {} }) {
-  const letter = createStudioLetter(name, () => 0.5, details);
+export function StudioKeepsakePreview({ name, details = {}, variation }) {
+  const [localVariation] = useState(createStudioLetterVariation);
+  const letter = createStudioLetter(name, () => 0.5, details, variation || localVariation);
   return <GiftExample
-    key={`studio-review-${name}`}
     name={name}
     picture={santaPictures[0]}
     previousPicture={null}

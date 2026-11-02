@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { test } from './helpers/provider-test.js';
 import { workshopCatalogueFixture } from './fixtures/workshop-catalogue.js';
 import { unlockWorkshop } from './helpers/workshop-access.js';
+import { studioEditorialContext } from '../server/studio-letter-editorial.js';
 
 const path = '/santa-message-workshop';
 const answers = ['Demrie', '9 years old', 'Teamwork', 'Completing a jigsaw puzzle', 'Bûche de Noël', 'The Enchanted Forest — Fantasy place'];
@@ -30,7 +31,12 @@ test('mobile first load keeps Studio panels inside the viewport without horizont
 
 test.beforeEach(async ({ page }) => {
   await unlockWorkshop(page);
-  await page.route('**/api/santa-workshop-catalogue', route => route.fulfill({ json: workshopCatalogueFixture }));
+  // Keep the fixture's narrow scope explicit, but use the real server editorial
+  // adapter so the selected-detail UI path exercises its production metadata.
+  const contextualFixture = { ...workshopCatalogueFixture, categories: Object.fromEntries(
+    Object.entries(workshopCatalogueFixture.categories).map(([category, records]) => [category,
+      records.map(record => ({ ...record, letterContext: studioEditorialContext(category, record) }))])) };
+  await page.route('**/api/santa-workshop-catalogue', route => route.fulfill({ json: contextualFixture }));
   await page.route('**/api/radio-metadata*', route => route.fulfill({ json: { available: false, current: null, upcoming: [] } }));
   await page.route('**/api/santa-names', route => {
     const query = route.request().postDataJSON().query.toLowerCase();
@@ -909,6 +915,9 @@ for (const width of [390, 1440]) {
     const previews = section.locator('.studio-gifts');
     await expect(previews).toHaveAttribute('data-demo-name', 'Demrie');
     await expect(previews).toHaveAttribute('data-complete', 'true');
+    const originalProse = await previews.locator('.studio-gifts__gallery .studio-letter__text').innerText();
+    const originalParagraphs = await previews.locator('.studio-gifts__gallery .studio-letter__text > p').allTextContents();
+    await expect(previews.locator('.studio-letter__text')).toContainText(/Following clues|Staying with a puzzle/);
     await expect(previews.locator('.studio-certificate img')).toHaveAttribute('src', '/certificates/examples/blank-master.webp');
     await expect(previews.locator('.studio-gifts__preview-stack .studio-santa-picture img')).toHaveAttribute('src', '/images/santa-nice-list.jpg');
     for (const [buttonName, kind] of [
@@ -959,12 +968,20 @@ for (const width of [390, 1440]) {
     await expect(previews).toHaveAttribute('data-demo-name', 'Demree');
     await expect(previews.locator('.studio-certificate__name')).toHaveText('Demree');
     await expect(previews.locator('.studio-letter__text')).toContainText('Dear Demree,');
+    expect(await previews.locator('.studio-gifts__gallery .studio-letter__text').innerText())
+      .toBe(originalProse.replaceAll('Demrie', 'Demree'));
     await expect(page.locator('.smw-summary-row').first()).toContainText('Demrie');
     await page.getByRole('button', { name: 'Change Extra celebration', exact: true }).click();
     await page.getByRole('option', { name: 'Planting and caring for a garden', exact: true }).click();
     await page.getByRole('button', { name: 'Return to review', exact: true }).click();
     await expect(previews.locator('.studio-letter__text')).toContainText('Planting and caring for a garden');
     await expect(previews.locator('.studio-letter__text')).not.toContainText('Completing a jigsaw puzzle');
+    const afterEdit = await previews.locator('.studio-gifts__gallery .studio-letter__text > p').allTextContents();
+    // All non-achievement paragraphs retain their exact variation across the
+    // edit-stage unmount. Compare DOM paragraphs, not layout line breaks.
+    for (const index of [0, 1, 2, 3, 5, 6, 7, 8, 9]) {
+      expect(afterEdit[index]).toBe(originalParagraphs[index].replaceAll('Demrie', 'Demree'));
+    }
     await expect(previews).toHaveAttribute('data-demo-name', 'Demree');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
     await page.locator('.smw-written-name').screenshot({ path: `generated-artifacts/studio-keepsakes-review-${width}.jpg` });

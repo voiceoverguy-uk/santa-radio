@@ -1036,3 +1036,17 @@ mtime_ms = 1793493840396
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/1dc467d4-b38b-4bac-99fd-fb5433ee0d39/d7b6e253-1544-4673-828c-37a4c7b25458"
 storage_version_token = "1793493895032992"
 content_type = "image/png"
+
+[[outputs]]
+id = "lftNazAy30HJyw6e40Thj"
+uri = "file://generated-artifacts/studio-editorial/editorial-samples.html"
+type = "html"
+title = "Contextual Santa letters: five complete examples"
+description = "Complete sample letters with invented recipients, coverage totals, the three flagged meanings and measured bundle impact. This is an editorial report, not paid PDF fulfilment."
+logical_id = "cf8a4a2a-18ba-4ed4-81b9-707afa7d214a"
+content_hash = "sha256:e9a7cdf007d961189a9b418bb3cc277cc8ff099fb51c135ea0dcc8161b8de7c8"
+size = 9370
+mtime_ms = 1793589997833
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/cf8a4a2a-18ba-4ed4-81b9-707afa7d214a/488511b1-4e24-4327-ac42-e16a1864b0aa"
+storage_version_token = "1793590063680483"
+content_type = "text/html"

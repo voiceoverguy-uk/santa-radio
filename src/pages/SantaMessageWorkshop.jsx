@@ -12,6 +12,7 @@ import WorkshopWordingPreview from '../components/WorkshopWordingPreview.jsx';
 import WorkshopNamePreview from '../components/WorkshopNamePreview.jsx';
 import { createWorkshopNamePreviewCache } from '../lib/workshopNamePreviewCache.js';
 import { workshopTreatWording } from '../lib/workshopTreatWording.js';
+import { createStudioLetterVariation } from '../lib/santaStudioLetter.js';
 import WorkshopSearchableChoices from '../components/WorkshopSearchableChoices.jsx';
 import './SantaMessageWorkshop.css';
 
@@ -194,6 +195,8 @@ export default function SantaMessageWorkshop() {
   // changes or the visitor leaves Studio.
   useEffect(() => () => namePreviewCache.clear(), [namePreviewCache, selectedName?.id]);
   const [nameSpelling, setNameSpelling] = useState('');
+  // Survives review unmounts while a detail is edited; never stored or name-seeded.
+  const [letterVariation] = useState(createStudioLetterVariation);
   const [error, setError] = useState('');
   const [editing, setEditing] = useState(false);
   const [catalogueRetry, setCatalogueRetry] = useState(0);
@@ -547,7 +550,8 @@ export default function SantaMessageWorkshop() {
                 recordedName={selectedName?.name || ''}
                 recordingId={selectedName?.id ?? ''}
                 spelling={nameSpelling}
-                giftDetails={Object.fromEntries([
+                letterVariation={letterVariation}
+                giftDetails={{ ...Object.fromEntries([
                   ['age', 'age'], ['activity', 'activity'], ['achievement', 'achievement'],
                   ['destination', 'place'], ['treats', 'treat'],
                 ].map(([key, category]) => {
@@ -555,7 +559,11 @@ export default function SantaMessageWorkshop() {
                     ?.find(record => record.id === choices[category])?.label || '';
                   return [key, category === 'treat' ? workshopTreatWording(label)
                     : category === 'place' ? label.replace(/ — (?:Fantasy place|Space destination)$/, '') : label];
-                }))}
+                })), context: Object.fromEntries([
+                  ['age', 'age'], ['activity', 'activity'], ['achievement', 'achievement'],
+                  ['destination', 'place'], ['treats', 'treat'],
+                ].map(([key, category]) => [key, catalogueState.catalogue?.categories?.[category]
+                  ?.find(record => record.id === choices[category])?.letterContext])) }}
                 onChange={setNameSpelling}
               />
               <div className="smw-actions">
