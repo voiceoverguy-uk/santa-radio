@@ -66,6 +66,7 @@ async function checkCooldownNotice(page) {
   await expect(notice).toHaveAttribute('role', 'status');
   await expect(notice).toHaveText(`Your next free message available at ${availability}.`);
   await expect(notice).toHaveText(/^Your next free message available at \d{2}:\d{2}\.$/);
+  await expect(card(page).locator('.service-notice')).toHaveCount(0);
   await expect(page.getByText('Your recording isn’t saved by this site', { exact: false })).toHaveCount(0);
   return notice.innerText();
 }
@@ -151,7 +152,7 @@ for (const prelaunch of [true, false]) {
     await expect(offer(page)).not.toContainText(/Erica|Erin|Arabella|Abbey|Edward/);
     await checkCooldownNotice(page);
     await expect(card(page).locator('.message-cooldown-status')).toContainText('Your next free message available at');
-    await expect(card(page).locator('.service-notice')).toHaveText('Free to create and download. (not sent by email)');
+    await expect(card(page).locator('.service-notice')).toHaveCount(0);
     await checkNavigation(page);
   });
 }

@@ -31,6 +31,57 @@ test('mobile first load keeps Studio panels inside the viewport without horizont
   }
 });
 
+test('mobile Studio document stays fixed horizontally on load, focus and typing', async ({ page }) => {
+  for (const width of [320, 390, 430]) {
+    await page.setViewportSize({ width, height: 844 });
+    await open(page);
+    const input = page.getByRole('combobox', { name: 'Search recorded names', exact: true });
+    const bounds = async () => page.evaluate(() => {
+      const panel = document.querySelector('.smw-builder').getBoundingClientRect();
+      const field = document.querySelector('.smw-name-search').getBoundingClientRect();
+      return {
+        scrollX, width: document.documentElement.scrollWidth,
+        panelLeft: panel.left, panelWidth: panel.width,
+        fieldLeft: field.left, fieldRight: field.right,
+        viewportLeft: window.visualViewport?.offsetLeft || 0,
+        scale: window.visualViewport?.scale || 1,
+      };
+    });
+    for (const root of [page.locator('html'), page.locator('body')]) {
+      await expect(root).toHaveCSS('overflow-x', 'clip');
+      await expect(root).toHaveCSS('overscroll-behavior-x', 'none');
+      await expect(root).toHaveCSS('touch-action', 'pan-y pinch-zoom');
+    }
+    const initial = await bounds();
+    await input.click();
+    await input.fill('Dem');
+    await expect(page.getByRole('option', { name: 'Demrie', exact: true })).toBeVisible();
+    // A smaller visual area represents the keyboard opening; horizontal
+    // measurements must stay unchanged while vertical scrolling still works.
+    await page.setViewportSize({ width, height: 480 });
+    await input.fill('AnExtremelyLongNameThatMustStayInsideTheInputWithoutWideningThePage');
+    await expect(input).toBeFocused();
+    expect(await input.evaluate(node => parseFloat(getComputedStyle(node).fontSize))).toBeGreaterThanOrEqual(16);
+    await page.evaluate(() => window.scrollTo({ left: 160, top: scrollY + 100, behavior: 'instant' }));
+    const focused = await bounds();
+    expect(focused.scrollX).toBe(0);
+    expect(focused.width).toBeLessThanOrEqual(width);
+    expect(focused.viewportLeft).toBe(0);
+    expect(focused.scale).toBe(initial.scale);
+    expect(focused.panelLeft).toBe(initial.panelLeft);
+    expect(focused.panelWidth).toBe(initial.panelWidth);
+    expect(focused.fieldLeft).toBeGreaterThanOrEqual(0);
+    expect(focused.fieldRight).toBeLessThanOrEqual(width);
+    expect(await page.evaluate(() => scrollY)).toBeGreaterThan(0);
+    await page.screenshot({ path: `generated-artifacts/workshop/mobile-fixed-typing-${width}.png` });
+    await input.blur();
+    await page.setViewportSize({ width, height: 844 });
+    expect((await bounds()).panelWidth).toBe(initial.panelWidth);
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+    await page.screenshot({ path: `generated-artifacts/workshop/mobile-fixed-load-${width}.png` });
+  }
+});
+
 test.beforeEach(async ({ page }) => {
   await unlockWorkshop(page);
   // Keep the fixture's narrow scope explicit, but use the real server editorial
@@ -1466,8 +1517,10 @@ test('desktop and phone review screenshots, explainer arrangement and unchanged 
   await page.setViewportSize({ width: 1440, height: 1100 });
   await open(page);
   await expect(page.locator('.smw-explainer')).toBeVisible();
-  await expect(page.getByRole('complementary', { name: 'Studio test notice' }).locator('strong')).toHaveText("It's the little details that matter...");
-  await expect(page.getByRole('complementary', { name: 'Studio test notice' }).locator('p')).toHaveText('You’re in the friends-only Message Maker Studio test. Please try all of the sections and give us some feedback.');
+  await expect(page.locator('.smw-preview-note')).toHaveCount(0);
+  await expect(page.getByText("It's the little details that matter...", { exact: true })).toHaveCount(0);
+  await expect(page.getByText('You’re in the friends-only Message Maker Studio test.', { exact: false })).toHaveCount(0);
+  await expect(page.locator('.smw-intro-copy')).toHaveText("It's all about the little details ...");
   await expect(page.locator('.smw-footer-note')).toBeVisible();
   await photograph(page, 'generated-artifacts/workshop/desktop-clean.png');
   const cards = await page.locator('.smw-explainer-card').evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect().top));
@@ -1480,6 +1533,8 @@ test('desktop and phone review screenshots, explainer arrangement and unchanged 
   await checkAnswerColours();
   await photograph(page, 'generated-artifacts/workshop/mobile-review.png');
   await page.reload();
+  await expect(page.locator('.smw-preview-note')).toHaveCount(0);
+  await expect(page.locator('.smw-intro-copy')).toHaveText("It's all about the little details ...");
   await photograph(page, 'generated-artifacts/workshop/mobile-clean.png');
   await expect(page.locator('.smw-explainer')).toBeHidden();
   await expect(page.locator('.smw-footer-note')).toBeHidden();

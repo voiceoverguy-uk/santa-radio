@@ -93,18 +93,6 @@ export default function WorkshopDestinationPicker({
             }}>{label}</button>
         ))}
       </div>
-      <div className="smw-destination-picker__summary" aria-live="polite">
-        {selectedRegion && country && (
-          <div className="smw-destination-picker__selection">
-            <p><span>Selected destination</span><strong>{selectedRegion.label}, {country.label}</strong></p>
-            <div className="smw-destination-picker__selection-actions">
-              <button type="button" onClick={openRegions}>Change {groupKey === 'usa-states' ? 'state' : 'county'}</button>
-              <button type="button" onClick={useCountryOnly}>Use {country.label} only</button>
-            </div>
-          </div>
-        )}
-      </div>
-
       <div className="smw-destination-picker__country" hidden={showRegions}>
         <h3 ref={countryHeadingRef} tabIndex={-1} className="smw-destination-picker__heading">
           {fantasy ? 'Choose a fantasy or space destination' : 'Choose a country or real place'}
@@ -166,6 +154,17 @@ export default function WorkshopDestinationPicker({
         </div>
       )}
 
+      <div className="smw-destination-picker__summary" aria-live="polite">
+        {selectedRegion && country && (
+          <div className="smw-destination-picker__selection">
+            <p><span>Selected destination</span><strong>{selectedRegion.label}, {country.label}</strong></p>
+            <div className="smw-destination-picker__selection-actions">
+              <button type="button" onClick={openRegions}>Change {groupKey === 'usa-states' ? 'state' : 'county'}</button>
+              <button type="button" onClick={useCountryOnly}>Use {country.label} only</button>
+            </div>
+          </div>
+        )}
+      </div>
     </section>
   );
 }

@@ -443,7 +443,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
           {!busy && allowance.pending && <p role="status" className="message-name-hint">Another message is being created. Please wait for it to finish.</p>}
         </form>
         </>}
-        {!messages.length && <p className="service-notice">Free to create and download. (not sent by email)</p>}
+        {!messages.length && !coolingDown && <p className="service-notice">Free to create and download. (not sent by email)</p>}
         {!sessionRemembered && <p className="message-name-hint" role="status">Your browser can’t remember access. The studio stays open while you browse, but refreshing this tab may ask for your details again.</p>}
         {coolingDown && <SantaCooldownUpsell name={freeRecipient}
           prelaunch={studioPrelaunch} onExplore={exploreBespoke} />}

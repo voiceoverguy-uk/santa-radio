@@ -7,10 +7,14 @@ import { MESSAGE_ALLOWANCE_KEY } from '../src/lib/santaMessageAllowance.js';
 test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await mockBrevo(page);
-  await page.route('**/api/santa-names?*', route => route.fulfill({ json: {
+  await page.route('**/api/santa-names', route => route.fulfill({ json: {
     hostedCount: 3, warning: null,
-    records: ['Wendy', 'Erin', 'Arabella'].map(name => ({
+    records: ['Wendy', 'Erin', 'Arabella']
+      .filter(name => name.toLowerCase().startsWith(route.request().postDataJSON().query.toLowerCase()))
+      .map(name => ({
       id: name.toLowerCase(), name, downloadName: `santa-recorded-message-for-${name}.mp3`,
+      selectionToken: 'controlled-fixture-token',
+      previewUrl: '/api/santa-name-preview?token=controlled-fixture-token',
     })),
   } }));
   await page.route('**/api/radio-metadata*', route => route.fulfill({
@@ -161,6 +165,9 @@ for (const path of ['/', '/free-santa-message']) {
 }
 
 test('remembered access without an adult name uses there in either path', async ({ page }) => {
+  await page.route('**/api/santa-message-access', route => route.fulfill({
+    json: { authorized: true, availableAt: 0 },
+  }));
   await page.addInitScript(key => sessionStorage.setItem(key, 'granted'), MESSAGE_ACCESS_KEY);
   await open(page);
   const card = page.locator('.santa-message-box');

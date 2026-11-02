@@ -1,4 +1,6 @@
 .smw-destination-picker {
+  display: flex;
+  flex-direction: column;
   min-width: 0;
   margin-top: 22px;
 }
@@ -8,8 +10,13 @@
 }
 
 .smw-destination-picker > .smw-talent-categories {
+  order: 1;
   margin-bottom: 16px;
 }
+
+.smw-destination-picker__summary { order: 2; }
+.smw-destination-picker__country,
+.smw-destination-picker__regional { order: 3; }
 
 .smw-destination-picker__heading {
   margin: 0 0 13px;
@@ -145,15 +152,39 @@
 }
 
 @media (max-width: 520px) {
-  .smw-destination-picker__region-prompt,
   .smw-destination-picker__selection {
-    align-items: stretch;
+    align-items: flex-start;
   }
 
-  .smw-destination-picker__region-action,
-  .smw-destination-picker__selection-actions,
+  .smw-destination-picker__summary { order: 3; }
+  .smw-destination-picker__country,
+  .smw-destination-picker__regional { order: 2; }
+
+  .smw-destination-picker__selection {
+    gap: 10px 14px;
+    margin: 12px 0 0;
+    padding: 11px 12px;
+  }
+
+  .smw-destination-picker__selection p {
+    max-width: 100%;
+  }
+
+  .smw-destination-picker__selection strong {
+    font-size: .91rem;
+    line-height: 1.4;
+  }
+
+  .smw-destination-picker__selection-actions {
+    width: auto;
+    gap: 7px;
+  }
+
   .smw-destination-picker__selection-actions button {
-    width: 100%;
+    width: auto;
+    min-height: 44px;
+    padding: 8px 10px;
+    font-size: .78rem;
   }
 
   .smw-destination-picker__regional-head {

@@ -426,23 +426,20 @@ export default function SantaMessageWorkshop() {
       })} />
 
       <div className="smw-shell">
-        <header className="smw-intro">
+        <header className={`smw-intro${accessKind === 'paid-sandbox' ? ' smw-intro-with-notice' : ''}`}>
           <div className="smw-title-wrap">
             <p className="smw-eyebrow"><span aria-hidden="true" /> A little North Pole Magic</p>
             <h1>Santa’s Message<br className="smw-title-break" /> Maker Studio</h1>
             <p className="smw-intro-copy">It's all about the little details ...</p>
           </div>
-          <aside className="smw-preview-note" aria-label="Studio test notice">
+          {accessKind === 'paid-sandbox' && <aside className="smw-preview-note" aria-label="Sandbox test notice">
             <span className="smw-preview-mark" aria-hidden="true">
               <svg viewBox="0 0 20 20" focusable="false"><path d="m10 1.5 2.2 6.3 6.3 2.2-6.3 2.2L10 18.5l-2.2-6.3-6.3-2.2 6.3-2.2L10 1.5Z" /></svg>
             </span>
             <div>
-              <strong>It's the little details that matter...</strong>
-              <p>{accessKind === 'paid-sandbox'
-                ? 'Sandbox test payment confirmed — no real money moved. You can test the Studio choices and an individual message. Family-bundle downloads and email return links are not connected yet.'
-                : 'You’re in the friends-only Message Maker Studio test. Please try all of the sections and give us some feedback.'}</p>
+              <p>Sandbox test payment confirmed — no real money moved. You can test the Studio choices and an individual message. Family-bundle downloads and email return links are not connected yet.</p>
             </div>
-          </aside>
+          </aside>}
         </header>
 
         <section className="smw-builder" ref={builderRef} aria-labelledby="smw-builder-title">

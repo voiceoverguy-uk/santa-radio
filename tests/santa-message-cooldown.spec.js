@@ -36,6 +36,9 @@ test.beforeEach(async ({ context }) => {
     json: { available: false, current: null, upcoming: [] },
   }));
   await mockSantaNames(context);
+  await context.route('**/api/santa-message-access', route => route.fulfill({
+    json: { authorized: true, availableAt: 0 },
+  }));
   await context.route('**/api/santa-message', route => route.fulfill(mp3));
   await context.addInitScript(({ accessKey, now }) => {
     sessionStorage.setItem(accessKey, 'granted');
@@ -78,10 +81,11 @@ for (const path of ['/', '/free-santa-message']) {
       await expect(promo).toHaveCount(1);
       await expectStudioLaunchCopy(promo);
       await expect(promo).not.toContainText('The basic free greeting includes one too');
-      await expect(promo.getByText('Coming Early November', { exact: true })).toBeVisible();
+      await expect(promo.getByRole('heading', { name: 'Santa’s Message Maker Studio' })).toBeVisible();
       await expect(page.getByRole('button', { name: 'more magic?', exact: true })).toHaveCount(0);
       await expect(page.locator('.message-wait, .santa-message-box [role="timer"]')).toHaveCount(0);
       await expect(page.locator('.message-cooldown-status')).toHaveText(/^Your next free message available at \d{2}:\d{2}\.$/);
+      await expect(page.locator('.santa-message-box .service-notice')).toHaveCount(0);
       await expect(page.locator('.message-wait-downloads > #santa-studio-promotion')).toHaveCount(0);
       await expect(page.locator('.message-layout > #santa-studio-promotion')).toHaveCount(1);
       await expect(page.getByRole('button', { name: 'Create message', exact: true })).toHaveCount(0);
@@ -192,15 +196,62 @@ test('the two-hour deadline persists through reload and updates another tab with
 
   await expect(otherTab.locator('.message-cooldown-status')).toHaveText(`Your next free message available at ${expectedTime}.`);
   await expect(otherTab.locator('.message-result')).toHaveCount(0);
+  await expect(otherTab.locator('.santa-message-box .service-notice')).toHaveCount(0);
   await expect(otherTab.getByText('isn’t saved by this site', { exact: false })).toHaveCount(0);
   await expect(otherTab.locator('.santa-message-box [role="timer"], .message-wait')).toHaveCount(0);
 
   await page.reload();
   await expect(page.locator('.message-cooldown-status')).toHaveText(`Your next free message available at ${expectedTime}.`);
   await expect(page.locator('.message-result')).toHaveCount(0);
+  await expect(page.locator('.santa-message-box .service-notice')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toHaveCount(0);
   await expect(page.locator('.message-layout > #santa-studio-promotion')).toHaveCount(1);
   await expectStudioLaunchCopy(page.locator('#santa-studio-promotion'));
   await expect(page.locator('.message-wait-downloads')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'more magic?', exact: true })).toHaveCount(0);
 });
+
+for (const path of ['/', '/free-santa-message']) {
+  for (const width of [390, 1440]) {
+    test(`cooldown without a recording hides the notice through reload, then restores it on expiry at ${width}px on ${path}`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 1000 });
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      await page.addInitScript(({ key, availableAt, duration }) => {
+        // Seed once only: reloading must preserve, not restart, the deadline.
+        if (!localStorage.getItem(key)) localStorage.setItem(key, JSON.stringify({
+          used: 1, availableAt, cooldownMs: duration,
+        }));
+      }, { key: MESSAGE_ALLOWANCE_KEY, availableAt: fixedNow + MESSAGE_COOLDOWN_MS, duration: MESSAGE_COOLDOWN_MS });
+      await page.goto(path);
+      const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+      if (await decline.isVisible()) await decline.click();
+      const card = page.locator('.santa-message-box');
+      const status = card.locator('.message-cooldown-status');
+      const offer = card.getByRole('region', { name: 'Bespoke Santa message invitation' });
+      await expect(status).toBeVisible();
+      const deadline = await status.innerText();
+      await page.reload();
+      await expect(status).toHaveText(deadline);
+      await expect(status).toBeVisible();
+      await expect(card.locator('.message-result')).toHaveCount(0);
+      await expect(card.locator('.service-notice')).toHaveCount(0);
+      await expect(offer).toBeVisible();
+      await expect(page.locator('#santa-studio-promotion')).toBeVisible();
+      // No empty notice element remains between the deadline and Studio invitation.
+      expect(await status.evaluate(node => node.nextElementSibling?.classList.contains('message-cooldown-upsell'))).toBe(true);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      await card.screenshot({
+        path: `generated-artifacts/cooldown-no-recording-${path === '/' ? 'home' : 'dedicated'}-${width}.png`,
+        animations: 'disabled',
+      });
+      await page.evaluate(now => {
+        window.testNow = now;
+        window.dispatchEvent(new Event('focus'));
+      }, fixedNow + MESSAGE_COOLDOWN_MS + 1);
+      await expect(status).toHaveCount(0);
+      await expect(offer).toHaveCount(0);
+      await expect(card.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
+      await expect(card.locator('.service-notice')).toHaveText('Free to create and download. (not sent by email)');
+    });
+  }
+}
