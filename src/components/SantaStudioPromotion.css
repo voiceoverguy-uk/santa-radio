@@ -88,6 +88,7 @@
   grid-template-columns: minmax(0, 1fr) 72px;
   grid-template-areas:
     "topline artwork"
+    "divider divider"
     "title title"
     "subheading subheading"
     "copy copy"
@@ -101,6 +102,13 @@
 
 .santa-studio-promotion__preview {
   display: contents;
+}
+
+.santa-studio-promotion__header-divider {
+  grid-area: divider;
+  align-self: stretch;
+  margin-block: 7px;
+  border-bottom: 1px solid #d4af3730;
 }
 
 .santa-studio-promotion__artwork {
@@ -389,6 +397,7 @@
     grid-template-areas:
       "topline"
       "artwork"
+      "divider"
       "title"
       "subheading"
       "copy"

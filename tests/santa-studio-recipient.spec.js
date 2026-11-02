@@ -222,6 +222,66 @@ async function signup(page) {
   await expect(page.getByLabel('First Name', { exact: true })).toBeVisible();
 }
 
+for (const width of [320, 390, 1440]) {
+  test(`Studio A divider spans the header beneath status and portrait at ${width}px`, async ({ page }, testInfo) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await setup(page);
+    const promo = promotion(page);
+    const divider = promo.locator('.santa-studio-promotion__header-divider');
+    await expect(divider).toHaveCount(1);
+    await expect(divider).toHaveAttribute('aria-hidden', 'true');
+    await page.evaluate(() => document.fonts.ready);
+    for (const fontSize of [100, 200]) {
+      await page.addStyleTag({ content: `html { font-size: ${fontSize}%; }` });
+      const geometry = await promo.evaluate(card => {
+        const box = selector => {
+          const { left, right, top, bottom } = card.querySelector(selector).getBoundingClientRect();
+          return { left, right, top, bottom };
+        };
+        const line = card.querySelector('.santa-studio-promotion__header-divider');
+        const border = node => {
+          const style = getComputedStyle(node);
+          return [style.borderBottomWidth, style.borderBottomStyle, style.borderBottomColor];
+        };
+        const status = box('.message-name-status');
+        const count = box('.santa-studio-promotion__name-count');
+        const recording = box('.message-recording-indicator');
+        return {
+          line: box('.santa-studio-promotion__header-divider'),
+          intro: box('.santa-studio-promotion__intro'),
+          header: box('.santa-studio-promotion__topline'),
+          portrait: box('.studio-portrait-trigger'),
+          title: box('h3'),
+          border: border(line),
+          referenceBorder: border(document.querySelector('.message-card-top')),
+          wrappedStatus: recording.top >= count.bottom,
+          status, count, recording,
+          cardOverflow: card.scrollWidth > card.clientWidth + 1,
+          cardLeft: card.getBoundingClientRect().left,
+          cardRight: card.getBoundingClientRect().right,
+        };
+      });
+      expect(geometry.border.slice(0, 2)).toEqual(['1px', 'solid']);
+      expect(geometry.border).toEqual(geometry.referenceBorder);
+      expect(geometry.line.left).toBeCloseTo(geometry.intro.left, 1);
+      expect(geometry.line.right).toBeCloseTo(geometry.intro.right, 1);
+      expect(geometry.line.top - Math.max(geometry.header.bottom, geometry.portrait.bottom)).toBeGreaterThanOrEqual(13);
+      expect(geometry.title.top - geometry.line.bottom).toBeGreaterThanOrEqual(13);
+      for (const item of [geometry.count, geometry.recording]) {
+        expect(item.left).toBeGreaterThanOrEqual(geometry.status.left - 1);
+        expect(item.right).toBeLessThanOrEqual(geometry.status.right + 1);
+        expect(item.bottom).toBeLessThan(geometry.line.top);
+      }
+      if (width === 320) expect(geometry.wrappedStatus).toBe(true);
+      expect(geometry.cardOverflow).toBe(false);
+      expect(geometry.cardLeft).toBeGreaterThanOrEqual(0);
+      expect(geometry.cardRight).toBeLessThanOrEqual(width);
+    }
+    await page.addStyleTag({ content: 'html { font-size: 100%; }' });
+    await promo.screenshot({ path: testInfo.outputPath('studio-header-divider.png'), animations: 'disabled' });
+  });
+}
+
 for (const width of [390, 1440]) {
   test(`confirmed hero child stops pending random audio and updates every gift before Continue at ${width}px`, async ({ page }) => {
     test.setTimeout(60000);

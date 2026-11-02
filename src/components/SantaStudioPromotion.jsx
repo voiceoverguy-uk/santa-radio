@@ -29,6 +29,7 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
               </div>
             </div>
           </div>
+          <div className="santa-studio-promotion__header-divider" aria-hidden="true" />
           <h3 id="santa-studio-title" tabIndex={-1}>Santa’s <span className="santa-studio-promotion__title-line">Message Maker Studio</span></h3>
           <p className="santa-studio-promotion__subheading">
             A little more Christmas magic for {example.name}
