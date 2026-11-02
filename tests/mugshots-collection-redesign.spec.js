@@ -18,6 +18,16 @@ for (const width of [320, 390, 768, 1440]) {
     await page.setViewportSize({ width, height: 1100 });
     const main = page.locator('main');
     await expect(main.getByRole('heading', { level: 1 })).toHaveText('Celebrity Mugshots');
+    await expect(main.getByText('Browse the collection', { exact: true })).toHaveCount(0);
+    const gallerySpacing = await main.evaluate(el => {
+      const controls = el.querySelector('.mugshots-controls').getBoundingClientRect();
+      const grid = el.querySelector('.mugshots-grid').getBoundingClientRect();
+      const section = el.querySelector('.mugshots-grid-section').getBoundingClientRect();
+      return { gap: grid.top - controls.bottom, sectionGap: grid.top - section.top };
+    });
+    expect(gallerySpacing.gap).toBeGreaterThanOrEqual(16);
+    expect(gallerySpacing.gap).toBeLessThanOrEqual(24);
+    expect(gallerySpacing.sectionGap).toBe(0);
     await expect(main).toContainText('THE SANTA RADIO HALL OF FAME');
     const subtitle = main.locator('.mugshots-page-sub');
     const introduction = main.locator('.mugshots-page-desc');

@@ -225,13 +225,6 @@
   padding: 0 26px 66px;
   background: transparent;
 }
-.mugshots-collection-page .mugshots-browse-heading {
-  max-width: 1440px;
-  margin: 0 auto 10px;
-  color: #f0e8d5;
-  font: 500 .93rem/1.35 'Cinzel', Georgia, serif;
-  letter-spacing: .025em;
-}
 .mugshots-collection-page .mugshots-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -421,10 +414,6 @@
   }
   .mugshots-collection-page .mugshots-grid-section {
     padding: 0 18px 48px;
-  }
-  .mugshots-collection-page .mugshots-browse-heading {
-    margin-bottom: 9px;
-    font-size: .86rem;
   }
   .mugshots-collection-page .mugshots-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));

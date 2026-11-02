@@ -177,7 +177,6 @@ export default function MugShots() {
       </div>
 
       <div className="mugshots-grid-section starry-bg">
-        <h2 className="mugshots-browse-heading">Browse the collection</h2>
         <div className="container mugshots-grid">
           {visible.map((celeb, i) => (
             <Link key={celeb.song || celeb.artist} to={`/mugshots/${celeb.song}`} className="mugshot-card">
