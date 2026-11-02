@@ -39,3 +39,14 @@ the free message, never a random example, and preserve that child at its destina
 use natural generic wording when unavailable. Keep recording/download information
 and the next-free availability time above it. Prelaunch wording only previews the
 package; the announced opening date does not authorize changing payment access.
+
+When entering the paid Studio after a confirmed name search or free greeting,
+prefill that recipient in the first-step name field, while allowing it to be changed.
+
+**Why:** The user explicitly requested carrying the previous searched/free name
+into the Studio rather than making visitors type it again.
+
+**How to apply:** Reuse only the real same-tab recipient, not a rotating example.
+Resolve a fresh recording selection through private lookup; ambiguous recordings
+still need a choice. Never let the prefill overwrite an edit or persist the name
+across a full refresh.

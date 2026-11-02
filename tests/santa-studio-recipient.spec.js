@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { readFileSync, mkdirSync } from 'node:fs';
 import { fillAccessForm, mockBrevo } from './helpers/message-access.js';
 import { expectStudioLaunchCopy } from './helpers/studio-promotion.js';
+import { workshopCatalogueFixture } from './fixtures/workshop-catalogue.js';
 
 const longName = 'Alexandriarosethegreatwithaverylongunbrokenname';
 const names = ['Arabella', 'Erica', 'Erin', longName];
@@ -9,6 +10,88 @@ const promotion = page => page.locator('#santa-studio-promotion');
 const gifts = page => promotion(page).locator('.studio-gifts');
 const checker = page => page.locator('.hero-name-checker');
 const mp3 = readFileSync('server/santa-audio/sleighbells.mp3');
+
+async function enterWorkshop(page) {
+  await page.route('**/api/santa-workshop-access', route => route.fulfill({
+    json: { authorized: true, expiresAt: Date.now() + 3600000 },
+  }));
+  await page.route('**/api/santa-workshop-catalogue', route => route.fulfill({
+    json: workshopCatalogueFixture,
+  }));
+  await promotion(page).getByLabel('Voucher code', { exact: true }).fill('controlled-test-only');
+  const lookup = page.waitForResponse(response => response.url().endsWith('/api/santa-names')
+    && response.request().method() === 'POST');
+  await promotion(page).getByRole('button', { name: 'Create your bespoke message', exact: true }).click();
+  await expect(page).toHaveURL(/\/santa-message-workshop$/);
+  await expect(page.getByRole('combobox', { name: 'Search recorded names', exact: true })).toBeVisible();
+  await lookup;
+}
+
+for (const width of [390, 1440]) {
+  for (const source of ['checked', 'free']) {
+    test(`Workshop prefills ${source} recipient and allows changing it at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 1000 });
+      await setup(page);
+      await chooseHero(page, 'Arabella');
+      if (source === 'free') {
+        await checker(page).getByRole('button', { name: 'Create my free Santa message →' }).click();
+        await signup(page);
+        await page.getByRole('button', { name: 'Create message', exact: true }).click();
+        await expect(page.getByRole('heading', { name: 'To Arabella from Santa' })).toBeVisible();
+      }
+      await enterWorkshop(page);
+      const input = page.getByRole('combobox', { name: 'Search recorded names', exact: true });
+      await expect(input).toHaveValue('Arabella');
+      await expect(input).toHaveAttribute('aria-expanded', 'false');
+      await page.locator('.smw-button-next').click();
+      await expect(page.locator('.smw-step-count')).toHaveText('Step 2 of 6');
+      await page.locator('.smw-button-back').click();
+      await input.fill('Er');
+      await page.locator('.smw-button-next').click();
+      await expect(page.locator('#smw-validation')).toHaveText('Please choose their name before continuing.');
+      await input.focus();
+      await page.getByRole('option', { name: 'Erin', exact: true }).click();
+      await expect(input).toHaveValue('Erin');
+      await expect(page.locator('.smw-button-next')).toBeEnabled();
+      await page.locator('.smw-button-next').click();
+      await page.locator('.smw-button-back').click();
+      await expect(input).toHaveValue('Erin');
+      expect(await page.evaluate(() => JSON.stringify({ ...localStorage, ...sessionStorage }))).not.toMatch(/Arabella|Erin/);
+      await page.reload();
+      await expect(input).toHaveValue('');
+      await page.locator('.smw-button-next').click();
+      await expect(page.locator('#smw-validation')).toHaveText('Please choose their name before continuing.');
+    });
+  }
+}
+
+test('Workshop prefill requires a choice for ambiguous recordings and never overwrites an edit', async ({ page }) => {
+  await setup(page);
+  await chooseHero(page, 'Arabella');
+  await page.route('**/api/santa-names', route => {
+    const query = route.request().postDataJSON().query;
+    const records = query === 'Arabella'
+      ? ['1', '2'].map(id => ({
+        id, name: 'Arabella', variant: `Recording ${id}`, selectionToken: `fixture-${id}`,
+        previewUrl: `/api/santa-name-preview?token=fixture-${id}`,
+      }))
+      : [{ id: 'erin', name: 'Erin', selectionToken: 'fixture-erin', previewUrl: '/api/santa-name-preview?token=fixture-erin' }];
+    return route.fulfill({ json: { records } });
+  });
+  await enterWorkshop(page);
+  const input = page.getByRole('combobox', { name: 'Search recorded names', exact: true });
+  await expect(input).toHaveValue('Arabella');
+  await expect(page.getByRole('option')).toHaveCount(2);
+  await page.locator('.smw-button-next').click();
+  await expect(page.locator('#smw-validation')).toHaveText('Please choose their name before continuing.');
+  await input.focus();
+  await page.getByRole('option', { name: 'Arabella Recording 2', exact: true }).click();
+  await expect(page.locator('.smw-button-next')).toBeEnabled();
+  await input.fill('Erin');
+  await page.getByRole('option', { name: 'Erin', exact: true }).click();
+  await expect(input).toHaveValue('Erin');
+  await expect(page.locator('.smw-button-next')).toBeEnabled();
+});
 
 async function setup(page, { path = '/', cooldown = false } = {}) {
   await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -64,7 +147,7 @@ async function chooseHero(page, name) {
 }
 async function matches(page, name) {
   await expect(gifts(page)).toHaveAttribute('data-demo-name', name);
-  await expect(gifts(page).getByRole('heading')).toHaveText('All 3 gifts included with the paid version');
+  await expect(gifts(page).getByRole('heading')).toHaveText(`All 3 gifts included for ${name} with the paid version`);
   await expect(gifts(page).locator('.studio-certificate__name')).toHaveText(name);
   await expect(gifts(page).locator('.studio-gifts__preview-stack .studio-santa-picture__name')).toHaveText(name);
   await expect(gifts(page).locator('.studio-gifts__gallery .studio-gifts__sr')).toContainText(`Dear ${name},`);
@@ -154,7 +237,7 @@ test('free-maker selection and generation retain recipient across navigation and
   await expect(page.locator('.studio-gifts [data-demo-name]')).toHaveCount(0);
   await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Edward');
   await expect(gifts(page).getByRole('button', { name: /Enlarge/ })).toHaveCount(3);
-  await expect(gifts(page).getByRole('heading')).toHaveText('All 3 gifts included with the paid version');
+  await expect(gifts(page).getByRole('heading')).toHaveText('All 3 gifts included for Edward with the paid version');
   await expect(page.locator('.santa-message-example')).toHaveCount(0);
   await expectStudioLaunchCopy(promotion(page));
 });
@@ -185,7 +268,7 @@ for (const width of [390, 1440]) {
 test(`unknown-recipient cooldown keeps all three original example gifts at ${width}px`, async ({ page }) => {
   await page.setViewportSize({ width, height: 1100 });
   await setup(page, { cooldown: true });
-  await expect(gifts(page).getByRole('heading')).toHaveText('All 3 gifts included with the paid version');
+  await expect(gifts(page).getByRole('heading')).toHaveText('All 3 gifts included for Edward with the paid version');
   await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Edward');
   await expect(gifts(page).locator('.studio-certificate__name')).toHaveText('Edward');
   await expect(gifts(page).locator('.studio-gifts__preview-stack .studio-santa-picture__name')).toHaveText('Edward');

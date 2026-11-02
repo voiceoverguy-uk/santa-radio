@@ -1,19 +1,21 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import useHostedSantaNameSearch from './useHostedSantaNameSearch.js';
+import { santaNameKey } from '../lib/santaNameSearch.js';
 import './WorkshopNamePicker.css';
 
-export default function WorkshopNamePicker({ selected, onSelect, onRefreshSelection, invalid }) {
+export default function WorkshopNamePicker({ selected, initialName = '', onSelect, onRefreshSelection, invalid }) {
   const generatedId = useId();
   const inputId = `smw-name-search-${generatedId}`;
   const listboxId = `${inputId}-results`;
-  const [query, setQuery] = useState(() => selected?.name || '');
+  const [query, setQuery] = useState(() => selected?.name || initialName);
+  const pendingPrefill = useRef(!selected && Boolean(initialName));
   const search = useHostedSantaNameSearch(query);
   const matchingRecords = search.records;
   const requestState = {
     status: search.loading ? 'loading' : search.error ? 'error' : 'ready',
     message: search.error,
   };
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(!selected && Boolean(initialName));
   const [activeIndex, setActiveIndex] = useState(-1);
   const blurTimer = useRef(null);
   const optionRefs = useRef([]);
@@ -24,6 +26,16 @@ export default function WorkshopNamePicker({ selected, onSelect, onRefreshSelect
     if (selected?.name) setQuery(selected.name);
   }, [selected?.id, selected?.name]);
   useEffect(() => {
+    if (!pendingPrefill.current || search.loading || search.error) return;
+    const exact = matchingRecords.filter(record => santaNameKey(record.name) === santaNameKey(initialName));
+    // Resolve a fresh, scoped recording token. Multiple recordings with the
+    // same spelling still require an explicit choice.
+    if (exact.length !== 1) return;
+    pendingPrefill.current = false;
+    setIsOpen(false);
+    onSelect(exact[0]);
+  }, [matchingRecords, search.loading, search.error, initialName, onSelect]);
+  useEffect(() => {
     const fresh = search.records.find(record => record.id === selected?.id);
     if (fresh && fresh.selectionToken !== selected.selectionToken) onRefreshSelection?.(fresh);
   }, [search.records, selected, onRefreshSelection]);
@@ -33,6 +45,7 @@ export default function WorkshopNamePicker({ selected, onSelect, onRefreshSelect
   const showListbox = isOpen && matchingRecords.length > 0 && requestState.status === 'ready';
 
   function handleSearchChange(event) {
+    pendingPrefill.current = false;
     setQuery(event.target.value);
     setActiveIndex(-1);
     setIsOpen(true);
@@ -40,6 +53,7 @@ export default function WorkshopNamePicker({ selected, onSelect, onRefreshSelect
   }
 
   function chooseRecord(record) {
+    pendingPrefill.current = false;
     window.clearTimeout(blurTimer.current);
     setQuery(record.name);
     setActiveIndex(-1);

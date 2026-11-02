@@ -4,6 +4,7 @@ import useWorkshopSounds from '../hooks/useWorkshopSounds.js';
 import PageSeo from '../seo/PageSeo.jsx';
 import { pageMetadata } from '../seo/catalogue.js';
 import WorkshopNamePicker from '../components/WorkshopNamePicker.jsx';
+import useSantaRecipient from '../components/useSantaRecipient.js';
 import WorkshopAgeCarousel from '../components/WorkshopAgeCarousel.jsx';
 import WorkshopChoiceWheel from '../components/WorkshopChoiceWheel.jsx';
 import WorkshopNameSpelling from '../components/WorkshopNameSpelling.jsx';
@@ -179,6 +180,10 @@ function getSoundStatusMessage(status) {
 
 export default function SantaMessageWorkshop() {
   const accessKind = useContext(StudioAccessContext);
+  const recipient = useSantaRecipient();
+  // Carry only an intentional selection through same-tab navigation, never a
+  // rotating example or a name saved in browser storage.
+  const [initialRecipient] = useState(() => recipient || '');
   const [stageIndex, setStageIndex] = useState(0);
   const [choices, setChoices] = useState(emptyChoices);
   const [selectedName, setSelectedName] = useState(null);
@@ -406,6 +411,7 @@ export default function SantaMessageWorkshop() {
               {stage.key === 'name' ? (
                 <div className="smw-activity-preview-layout smw-name-preview-layout">
                   <WorkshopNamePicker
+                    initialName={initialRecipient}
                     selected={selectedName}
                     onRefreshSelection={setSelectedName}
                     invalid={!!error}

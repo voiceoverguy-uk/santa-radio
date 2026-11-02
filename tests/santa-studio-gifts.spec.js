@@ -32,7 +32,7 @@ async function visit(page, { reduced = false, clock = true } = {}) {
   if (await decline.isVisible()) await decline.click();
   await gifts(page).scrollIntoViewIfNeeded();
   await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Edward');
-  await expect(gifts(page).getByRole('heading', { level: 4 })).toHaveText('All 3 gifts included with the paid version');
+  await expect(gifts(page).getByRole('heading', { level: 4 })).toHaveText('All 3 gifts included for Edward with the paid version');
   await expect(gifts(page)).not.toContainText('Example for');
 }
 
@@ -52,7 +52,7 @@ test('paid gift heading wraps safely on narrow screens', async ({ page }) => {
   const heading = gifts(page).getByRole('heading', { level: 4 });
   for (const width of [320, 390, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
-    for (const copy of ['All 3 gifts included with the paid version']) {
+    for (const copy of ['All 3 gifts included for Edward with the paid version']) {
       await expect(heading).toHaveText(copy);
       const geometry = await heading.evaluate(node => {
         const bounds = node.getBoundingClientRect();
@@ -623,7 +623,7 @@ for (const width of [1440, 390]) {
     await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Ayla');
     await page.clock.runFor(200);
     await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Erin');
-    await expect(gifts(page).getByRole('heading', { level: 4 })).toHaveText('All 3 gifts included with the paid version');
+    await expect(gifts(page).getByRole('heading', { level: 4 })).toHaveText('All 3 gifts included for Erin with the paid version');
     await expect(picture).toHaveAttribute('src', '/images/santa-nice-list-3.jpg');
     await expect(picture).toHaveJSProperty('naturalWidth', 1536);
     await expect(gifts(page)).toHaveAttribute('data-complete', 'false');

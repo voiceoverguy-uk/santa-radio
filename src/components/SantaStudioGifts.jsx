@@ -148,7 +148,7 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
     onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
     onFocusCapture={() => setFocused(true)}
     onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false); }}>
-    <h4>All 3 gifts included with the paid version</h4>
+    <h4>All 3 gifts included for {name} with the paid version</h4>
     <div className="studio-gifts__preview-stack" role="group" aria-label="Three gift previews"
       onContextMenu={event => event.preventDefault()} onDragStart={event => event.preventDefault()}>
       <div className="studio-gifts__gallery">
