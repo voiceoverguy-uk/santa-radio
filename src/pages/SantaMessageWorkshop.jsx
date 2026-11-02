@@ -421,7 +421,7 @@ export default function SantaMessageWorkshop() {
                       choose('name', record ? `${record.name}${record.variant ? ` — ${record.variant}` : ''}` : '');
                     }}
                   />
-                  <WorkshopWordingPreview wording={stage.wording} />
+                  <WorkshopWordingPreview wording={stage.wording} selectedText={selectedName?.name || ''} />
                 </div>
               ) : catalogueState.status === 'loading' ? (
                 <div className="smw-catalogue-loading" role="status" aria-live="polite">

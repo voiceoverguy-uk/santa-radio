@@ -113,6 +113,33 @@ async function openAgeStage(page) {
   await expect(page.locator('.smw-step-count')).toHaveText('Step 2 of 6');
 }
 
+for (const width of [390, 1440]) {
+  test(`name wording follows the confirmed selection and clears while editing at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await open(page);
+    const input = page.getByRole('combobox', { name: 'Search recorded names', exact: true });
+    const suffix = page.locator('.smw-wording-selection');
+    const quote = page.locator('.smw-activity-wording-quote');
+    await expect(suffix).toHaveCount(0);
+    await input.fill('Dem');
+    await expect(suffix).toHaveCount(0);
+    await page.getByRole('option', { name: 'Demrie', exact: true }).click();
+    await expect(quote).toHaveText('Ho ho ho, hello, Santa here… I’ve a very special message for… ah yes… Demrie');
+    await expect(suffix).toHaveCSS('color', 'rgb(155, 17, 30)');
+    await input.fill('Zar');
+    await expect(suffix).toHaveCount(0);
+    await page.getByRole('option', { name: 'Zara', exact: true }).click();
+    await expect(quote).toHaveText('Ho ho ho, hello, Santa here… I’ve a very special message for… ah yes… Zara');
+    await page.locator('.smw-button-next').click();
+    await expect(quote).toContainText('ah yes… Zara.');
+    await page.locator('.smw-button-back').click();
+    await expect(suffix).toHaveText('Zara');
+    await page.locator('.smw-builder').screenshot({ path: `generated-artifacts/studio-selected-name-${width}.jpg` });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+  });
+}
+
 test('recorded name preview refreshes an expired link and plays real audio on demand', async ({ page }) => {
   test.setTimeout(60000);
   await page.emulateMedia({ reducedMotion: 'reduce' });

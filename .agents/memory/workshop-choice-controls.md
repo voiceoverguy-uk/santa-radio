@@ -81,14 +81,16 @@ Keep enough height for a short mobile Studio step to fill the usable stable view
 
 **How to apply:** Do not reintroduce large footer clearance, but preserve the one-screen height floor and stable viewport sizing. Check long-to-short transitions, Back and review editing, and count page-position adjustments rather than only checking the final coordinate. Headless mobile checks do not verify a physical iPhone's keyboard animation.
 
-For age and country, complete the “Santa will say…” example with the selected
+For name, age and country, complete the “Santa will say…” example with the selected
 answer in red.
 
 **Why:** The user asked to show how the choice might sound, for example
-“I believe you are… 7 years old” and “Ah yes… Wales”.
+“I believe you are… 7 years old” and “Ah yes… Wales”. They subsequently requested
+the selected name after “I’ve a very special message for… ah yes…”, changing when
+another name is chosen.
 
 **How to apply:** Update the example when the choice changes. This request is
-limited to age and country, not permission to extend every other step.
+limited to name, age and country, not permission to extend every other step.
 
 Hide the mini radio player throughout Message Maker Studio at every screen size.
 
