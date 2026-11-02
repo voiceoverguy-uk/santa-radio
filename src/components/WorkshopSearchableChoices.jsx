@@ -54,7 +54,7 @@ export default function WorkshopSearchableChoices({ category, label, options, va
         wording={wording}
           heading={category === 'activity' ? 'Santa will say:' : 'Santa will say…'}
           selectedText={selectedTextOverride !== undefined ? selectedTextOverride : category === 'treat' ? workshopTreatWording(currentSelectionLabel)
-          : category === 'place' || category === 'activity' || category === 'achievement' ? currentSelectionLabel : ''}
+          : ['place', 'activity', 'achievement', 'sports', 'funny'].includes(category) ? currentSelectionLabel : ''}
       />
     </div>
   );

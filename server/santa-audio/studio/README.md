@@ -30,7 +30,10 @@ converted without trimming, resampling or speech editing. Decoded 32-bit PCM
 matches the hosted WAV sample-for-sample. Automated local transcription confirms
 talent wording but differs from the approved on-screen sentence (“Head Elf” /
 “quite the talent”, rather than “my Head Elf” / “quite a talent”). This has **not
-been listened to**; owner confirmation/replacement remains outstanding. See
+been listened to**; owner confirmation/replacement remains outstanding.
+The on-screen Talent preview also includes “In particular...” followed by the
+current recording's display label. That display-only wording does not change
+this packaged connector, the hosted recording or the stitching sequence. See
 `docs/workshop-https-inventory.md` for the exact helper, upload instructions and
 live-index status. Never claim display copy changes recorded speech.
 

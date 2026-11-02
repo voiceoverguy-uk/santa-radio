@@ -32,6 +32,16 @@ export const workshopCatalogueFixture = {
   needsReviewCounts: { age: 0, activity: 0, achievement: 0, treat: 0, place: 0, sports: 0, funny: 0 },
 };
 
+// Extra display-only cases, isolated from the shared workflow fixture.
+export const workshopTalentPreviewCatalogueFixture = structuredClone(workshopCatalogueFixture);
+workshopTalentPreviewCatalogueFixture.categories.funny.push(
+  record(`c-${'f'.repeat(64)}`, 'Watching tv all day', { file: 'funny/watching tv all day.wav' }),
+  record(`c-${'a'.repeat(64)}`, 'Remembering every single word of every Christmas song and singing them all the way through breakfast, lunch and dinner', {
+    file: 'funny/long-preview-fixture.wav',
+  }),
+);
+workshopTalentPreviewCatalogueFixture.counts.funny = workshopTalentPreviewCatalogueFixture.categories.funny.length;
+
 // Synthetic inventory only. These are not claims about live hosted availability.
 const indexed = file => ({ file, bytes: 50000, id: `c-${createHash('sha256').update(file).digest('hex')}` });
 export const workshopRegionalCatalogueFixture = parseWorkshopCatalogue({

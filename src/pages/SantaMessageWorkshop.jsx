@@ -47,7 +47,7 @@ const stages = [
     key: 'talent',
     label: 'Talent',
     heading: 'What are they especially good at?',
-    wording: 'Now, my Head Elf tells me you have quite a talent! Apparently, there’s something you’re especially good at…',
+    wording: 'Now, my Head Elf tells me you have quite a talent! Apparently, there’s something you’re especially good at… In particular...',
   },
   {
     key: 'activity',

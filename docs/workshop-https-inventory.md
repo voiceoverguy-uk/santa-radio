@@ -106,7 +106,14 @@ Local automated transcription (not listening) returned:
 you're especially good at.” This confirms talent rather than sports wording,
 but does **not** confirm the exact approved wording:
 
-> Now, my Head Elf tells me you have quite a talent! Apparently, there’s something you’re especially good at…
+> Now, my Head Elf tells me you have quite a talent! Apparently, there’s something you’re especially good at… In particular...
+
+The Talent step appends the currently selected sports/activity or funny
+recording's exact display label to this introduction. “FUNNY or SPORT” is not
+literal preview text. Unchosen, unavailable and skipped talent states append
+no label; switching category clears the old label. This is display wording
+only: neither the hosted connector nor its packaged FLAC nor the audio sequence
+has been changed to match it.
 
 **Owner action:** listen to that connector and confirm/replace it if exact
 wording is required. Merely changing the helper text does not change speech.
