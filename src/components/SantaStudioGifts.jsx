@@ -215,7 +215,8 @@ export function useStudioGiftExample({ activeExampleName = null, previewName = n
     return () => preference.removeEventListener('change', update);
   }, []);
   const activeName = allCertificateExamples.find(item => item.name === activeExampleName)?.name;
-  const name = previewName || (allowExamples ? activeName || studioGiftExampleNames[index] : null);
+  // A cooldown must not hide the gifts or invent a remembered recipient.
+  const name = previewName || (allowExamples ? activeName || studioGiftExampleNames[index] : 'Your child');
   const nextExample = useCallback(() => {
     setPreviousPicture(reducedMotion ? null : santaPictures[pictureIndex]);
     if (!previewName && allowExamples) setIndex(value => (value + 1) % studioGiftExampleNames.length);
@@ -233,11 +234,8 @@ export function useStudioGiftExample({ activeExampleName = null, previewName = n
 }
 
 export function StudioGiftPreview({ example }) {
-  if (!example.name) return <section className="studio-gifts" aria-label="Paid Studio gift preview">
-    <h4>All 3 gifts included with the paid version</h4>
-    <p>Personalised gift previews will appear when a child’s name is available.</p>
-  </section>;
-  return <GiftExample key={example.name} {...example} />;
+  const name = example.name || 'Your child';
+  return <GiftExample key={name} {...example} name={name} />;
 }
 
 export default function SantaStudioGifts(props) {

@@ -152,7 +152,8 @@ test('free-maker selection and generation retain recipient across navigation and
   expect(await page.evaluate(() => JSON.stringify({ ...localStorage, ...sessionStorage }))).not.toContain('Arabella');
   await page.reload();
   await expect(page.locator('.studio-gifts [data-demo-name]')).toHaveCount(0);
-  await expect(gifts(page)).not.toHaveAttribute('data-demo-name');
+  await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Your child');
+  await expect(gifts(page).getByRole('button', { name: /Enlarge/ })).toHaveCount(3);
   await expect(gifts(page).getByRole('heading')).toHaveText('All 3 gifts included with the paid version');
   await expect(page.locator('.santa-message-example')).toHaveCount(0);
   await expectStudioLaunchCopy(promotion(page));
@@ -180,14 +181,29 @@ test('late generation cannot replace a newer confirmed hero child', async ({ pag
   await matches(page, 'Erin');
 });
 
-test('unknown-recipient cooldown remains neutral until another verified child is chosen', async ({ page }) => {
+for (const width of [390, 1440]) {
+test(`unknown-recipient cooldown keeps all three neutral gift previews at ${width}px`, async ({ page }) => {
+  await page.setViewportSize({ width, height: 1100 });
   await setup(page, { cooldown: true });
   await expect(gifts(page).getByRole('heading')).toHaveText('All 3 gifts included with the paid version');
+  await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Your child');
+  await expect(gifts(page).locator('.studio-certificate__name')).toHaveText('Your child');
+  await expect(gifts(page).locator('.studio-gifts__preview-stack .studio-santa-picture__name')).toHaveText('Your child');
+  await expect(gifts(page).locator('.studio-gifts__gallery .studio-gifts__sr')).toContainText('Dear Your child,');
+  for (const label of ['Enlarge certificate', 'Enlarge letter to read', 'Enlarge Santa’s Nice List picture']) {
+    const button = gifts(page).getByRole('button', { name: label, exact: true });
+    await expect(button).toBeVisible();
+    await button.click();
+    await expect(page.getByRole('dialog')).toBeVisible();
+    await page.keyboard.press('Escape');
+  }
   await expect(page.locator('.santa-message-example')).toHaveCount(0);
   await expectStudioLaunchCopy(promotion(page));
+  await promotion(page).screenshot({ path: `generated-artifacts/studio-cooldown-gifts-${width}.jpg`, animations: 'disabled' });
   await chooseHero(page, 'Erin');
   await matches(page, 'Erin');
 });
+}
 
 test('anonymous copy follows rotating examples but a chosen child stays fixed through later cycles', async ({ page }) => {
   await page.clock.install();

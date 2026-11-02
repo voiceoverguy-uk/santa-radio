@@ -24,3 +24,13 @@ promotion and explicitly requested generic wording when no child has been select
 
 **How to apply:** Keep named promotional text aligned with the chosen gift recipient,
 but leave anonymous promotional text generic even while demonstration gifts rotate.
+
+All three enlargeable gift previews must remain present during a cooldown, even
+when the chosen child was cleared by a refresh. Use neutral “Your child” artwork
+in that case, without restarting random sample audio or inventing a recipient.
+
+**Why:** Hiding the artwork in this state left the paid promotion’s entire right
+column empty; the user explicitly objected to the missing previews.
+
+**How to apply:** Keep gift visibility independent of permission to play random
+messages. A newly confirmed child must immediately replace the neutral artwork.
