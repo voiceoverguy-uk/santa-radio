@@ -223,10 +223,6 @@
   max-height: 88dvh;
 }
 
-.smw-studio-preview .studio-letter-dialog--letter .studio-letter-dialog__content {
-  overflow: hidden;
-}
-
 .smw-studio-preview .studio-letter-dialog--letter .studio-letter-dialog__document--letter {
   width: min(100%, calc(100cqh * 210 / 297));
 }

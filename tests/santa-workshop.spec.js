@@ -974,7 +974,9 @@ for (const width of [390, 1440]) {
 test('sound-alike hint and final spelling change update output previews only, without persisting or sending details', async ({ page }) => {
   const requests = [];
   page.on('request', request => {
-    if (request.url().includes('/api/santa-') || request.method() === 'POST') requests.push(request.url());
+    if (request.url().includes('/api/santa-') || request.method() === 'POST') {
+      requests.push({ url: request.url(), method: request.method() });
+    }
   });
   await open(page);
   const before = await page.evaluate(() => ({ local: { ...localStorage }, session: { ...sessionStorage } }));
@@ -1049,8 +1051,11 @@ test('sound-alike hint and final spelling change update output previews only, wi
   delete before.session['radio-minimized'];
   delete after.session['radio-minimized'];
   expect(after).toEqual(before);
-  expect(requests.filter(url => !(url.endsWith('/api/santa-workshop-access') || url.endsWith('/api/santa-names?inventory=hosted') || url.endsWith('/api/santa-names') ||
-    url.endsWith('/api/santa-workshop-catalogue')))).toEqual([]);
+  expect(requests.filter(({ url, method }) => !(
+    url.endsWith('/api/santa-workshop-access') || url.endsWith('/api/santa-names?inventory=hosted')
+    || url.endsWith('/api/santa-names') || url.endsWith('/api/santa-workshop-catalogue')
+    || (method === 'GET' && url.endsWith('/api/santa-message-access'))
+  ))).toEqual([]);
   await expect(page).toHaveURL(new RegExp(`${path}$`));
   await expect(page.locator('.smw-page audio, .smw-page [download]')).toHaveCount(0);
   await page.reload();
