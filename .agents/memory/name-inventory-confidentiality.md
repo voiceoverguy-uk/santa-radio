@@ -36,5 +36,16 @@ The www domain is served separately from the Replit deployment.
 **Why:** A successful workspace or Replit release does not establish that the
 Vercel-hosted www endpoint changed.
 
+Studio recording previews must tolerate visitors spending longer on the form
+than a short-lived preview link remains valid.
+
+**Why:** The review screen could retain an expired link even though the Danny
+recording itself was available. Extending link lifetime would weaken the owner's
+chosen protection rather than address the form's timing.
+
+**How to apply:** Refresh access privately when playback is requested, preserving
+the exact recording identity among spelling variants. Keep expiry, rate limits
+and source-location confidentiality intact; cancel pending work when stopped.
+
 **How to apply:** Independently check each live serving host and the original
 audio host before calling an inventory-exposure incident resolved.

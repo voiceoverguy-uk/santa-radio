@@ -1,4 +1,5 @@
 import { expect } from '@playwright/test';
+import { readFileSync } from 'node:fs';
 import { test } from './helpers/provider-test.js';
 import { workshopCatalogueFixture } from './fixtures/workshop-catalogue.js';
 import { unlockWorkshop } from './helpers/workshop-access.js';
@@ -111,6 +112,72 @@ async function openAgeStage(page) {
   await page.locator('.smw-button-next').click();
   await expect(page.locator('.smw-step-count')).toHaveText('Step 2 of 6');
 }
+
+test('recorded name preview refreshes an expired link and plays real audio on demand', async ({ page }) => {
+  test.setTimeout(60000);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const requests = [];
+  await page.route('**/api/santa-name-preview?*', route => {
+    requests.push(route.request().url());
+    return route.request().url().endsWith('token=fresh-preview')
+      ? route.fulfill({ contentType: 'audio/mpeg', body: readFileSync('server/santa-audio/sleighbells.mp3') })
+      : route.fulfill({ status: 403, json: { error: 'Expired preview' } });
+  });
+  await open(page);
+  await complete(page);
+  expect(requests).toHaveLength(0);
+  let refreshes = 0;
+  await page.route('**/api/santa-names', route => {
+    refreshes++;
+    expect(route.request().postDataJSON()).toEqual({ query: 'Demrie' });
+    return route.fulfill({ json: { records: [{
+      id: 'demrie', name: 'Demrie', selectionToken: 'fresh-selection',
+      previewUrl: '/api/santa-name-preview?token=fresh-preview',
+    }] } });
+  });
+  await page.getByRole('button', { name: 'Play recorded name for Demrie', exact: true }).click();
+  await expect(page.locator('.smw-name-preview-status')).toHaveText('Playing name…');
+  expect(refreshes).toBe(1);
+  expect(requests).toHaveLength(1);
+  expect(requests[0]).toMatch(/token=fresh-preview$/);
+  await expect(page.locator('.smw-name-preview-error')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Stop recorded name for Demrie', exact: true }).click();
+  await expect(page.locator('.smw-name-preview-status')).toHaveText('');
+  expect(await page.evaluate(() => JSON.stringify({ ...localStorage, ...sessionStorage }))).not.toContain('Demrie');
+});
+
+test('recorded name preview can cancel a refresh and recover from a failed refresh', async ({ page }) => {
+  test.setTimeout(60000);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await open(page);
+  await complete(page);
+  let release;
+  const pending = new Promise(resolve => { release = resolve; });
+  let attempts = 0;
+  await page.route('**/api/santa-names', async route => {
+    attempts++;
+    if (attempts === 1) {
+      await pending;
+      return route.fulfill({ json: { records: [{
+        id: 'demrie', name: 'Demrie', previewUrl: '/api/santa-name-preview?token=cancelled',
+      }] } });
+    }
+    return route.fulfill({ status: 503, json: { error: 'Unavailable' } });
+  });
+  const previews = [];
+  await page.route('**/api/santa-name-preview?*', route => { previews.push(route.request().url()); return route.abort(); });
+  const play = page.getByRole('button', { name: 'Play recorded name for Demrie', exact: true });
+  await play.click();
+  await expect.poll(() => attempts).toBe(1);
+  await page.getByRole('button', { name: 'Stop recorded name for Demrie', exact: true }).click();
+  release();
+  await expect(page.locator('.smw-name-preview-status')).toHaveText('');
+  await expect(page.locator('.smw-name-preview-error')).toHaveCount(0);
+  await play.click();
+  await expect(page.locator('.smw-name-preview-error')).toHaveText('Santa’s name preview is temporarily unavailable. Please try again.');
+  await expect(play).toBeEnabled();
+  expect(previews).toHaveLength(0);
+});
 
 for (const width of [390, 1440]) {
   test(`selected age and country complete Santa wording in red at ${width}px`, async ({ page }) => {

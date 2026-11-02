@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { useRadio } from './RadioProvider.jsx';
-import { workshopNamePreviewUrl } from '../lib/workshopNamePreview.js';
+import { refreshWorkshopNamePreview } from '../lib/workshopNamePreview.js';
 
 export default function WorkshopNamePreview({ record }) {
   const radio = useRadio();
@@ -8,10 +8,11 @@ export default function WorkshopNamePreview({ record }) {
   const errorId = useId();
   const [phase, setPhase] = useState('idle');
   const [error, setError] = useState('');
-  const finish = useCallback(({ session = sessionRef.current, failed = false, resume = true, notify = true } = {}) => {
+  const finish = useCallback(({ session = sessionRef.current, failed = false, message = '', resume = true, notify = true } = {}) => {
     if (!session || sessionRef.current !== session) return;
     sessionRef.current = null;
     clearTimeout(session.timeout);
+    session.controller.abort();
     session.audio.onplaying = session.audio.onended = session.audio.onerror = null;
     session.audio.pause();
     session.audio.removeAttribute('src');
@@ -19,7 +20,7 @@ export default function WorkshopNamePreview({ record }) {
     if (resume) session.resumeRadio?.();
     if (notify) {
       setPhase('idle');
-      setError(failed ? 'Santa’s recorded name could not be played. Please try again.' : '');
+      setError(failed ? message || 'Santa’s recorded name could not be played. Please try again.' : '');
     }
   }, []);
 
@@ -37,12 +38,10 @@ export default function WorkshopNamePreview({ record }) {
   const toggle = () => {
     if (sessionRef.current) { finish(); return; }
     setError('');
-    const src = workshopNamePreviewUrl(record);
-    if (!src) { setError('This recorded name preview is unavailable. Please choose the name again or try later.'); return; }
     const audio = new Audio();
     audio.preload = 'none';
     audio.volume = 0.5;
-    const session = { audio, resumeRadio: radio?.pauseForMessage?.() || null };
+    const session = { audio, controller: new AbortController(), resumeRadio: radio?.pauseForMessage?.() || null };
     for (const other of document.querySelectorAll('audio')) other.pause();
     sessionRef.current = session;
     setPhase('loading');
@@ -54,12 +53,18 @@ export default function WorkshopNamePreview({ record }) {
     audio.onended = () => finish({ session });
     audio.onerror = () => finish({ session, failed: true });
     session.timeout = setTimeout(() => finish({ session, failed: true }), 15000);
-    audio.src = src;
-    try {
-      Promise.resolve(audio.play()).catch(() => finish({ session, failed: true }));
-    } catch {
-      finish({ session, failed: true });
-    }
+    refreshWorkshopNamePreview(record, { signal: session.controller.signal })
+      .then(src => {
+        if (sessionRef.current !== session) return;
+        audio.src = src;
+        return audio.play();
+      })
+      .catch(error => {
+        if (sessionRef.current !== session) return;
+        finish({ session, failed: true, message: error.name === 'NotAllowedError'
+          ? 'Your browser blocked playback. Please press Play again.'
+          : error.message });
+      });
   };
 
   const active = phase !== 'idle';
