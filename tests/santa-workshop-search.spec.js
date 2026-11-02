@@ -25,8 +25,13 @@ async function openRegionalStage(page, inventory = workshopRegionalCatalogueFixt
   }
 }
 
-for (const width of [320, 390, 430]) {
-  test(`mobile selected destination stays compact below search and choices at ${width}px`, async ({ page }) => {
+async function expectNoDestinationSummary(page) {
+  await expect(page.locator('.smw-destination-picker__summary, .smw-destination-picker__selection')).toHaveCount(0);
+  await expect(page.getByText('Selected destination', { exact: true })).toHaveCount(0);
+}
+
+for (const width of [1365, 320, 390, 430]) {
+  test(`destination uses existing preview without an extra box at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await openRegionalStage(page);
@@ -35,47 +40,50 @@ for (const width of [320, 390, 430]) {
     const search = page.getByRole('searchbox', { name: 'Search counties in England', exact: true });
     await search.fill('Kent');
     await page.getByRole('option', { name: 'Kent', exact: true }).click();
-    const summary = page.locator('.smw-destination-picker__selection');
-    await expect(summary).toContainText('Kent, England');
-    const geometry = await summary.evaluate(node => {
-      const active = document.querySelector('.smw-destination-picker__regional:not([hidden])');
-      const search = active.querySelector('input').getBoundingClientRect();
-      const wheel = active.querySelector('.smw-choice-wheel-frame').getBoundingClientRect();
-      const summary = node.getBoundingClientRect();
-      return {
-        summaryTop: summary.top, summaryHeight: summary.height,
-        searchBottom: search.bottom, wheelBottom: wheel.bottom,
-        actions: [...node.querySelectorAll('button')].map(button => {
-          const rect = button.getBoundingClientRect();
-          return { height: rect.height, left: rect.left, right: rect.right };
-        }),
-      };
-    });
-    expect(geometry.summaryTop).toBeGreaterThanOrEqual(geometry.searchBottom);
-    expect(geometry.summaryTop).toBeGreaterThanOrEqual(geometry.wheelBottom);
-    expect(geometry.summaryHeight).toBeLessThan(190);
-    for (const action of geometry.actions) {
-      expect(action.height).toBeGreaterThanOrEqual(44);
-      expect(action.left).toBeGreaterThanOrEqual(0);
-      expect(action.right).toBeLessThanOrEqual(width);
+    const preview = page.locator('.smw-destination-picker__regional .smw-wording-selection');
+    await expect(preview).toHaveText('Kent');
+    await expect(page.getByRole('option', { name: 'Kent', exact: true })).toHaveAttribute('aria-selected', 'true');
+    await expectNoDestinationSummary(page);
+    const reset = page.getByRole('button', { name: 'Use England only', exact: true });
+    for (const fontSize of ['100%', '200%']) {
+      await page.addStyleTag({ content: `html { font-size: ${fontSize}; }` });
+      await expectNoDestinationSummary(page);
+      const geometry = await reset.evaluate(node => {
+        const rect = node.getBoundingClientRect();
+        const style = getComputedStyle(node);
+        return { height: rect.height, left: rect.left, right: rect.right,
+          fits: node.scrollWidth <= node.clientWidth + 1 && node.scrollHeight <= node.clientHeight + 1,
+          background: style.backgroundColor, border: style.borderTopColor };
+      });
+      expect(geometry.height).toBeGreaterThanOrEqual(44);
+      expect(geometry.left).toBeGreaterThanOrEqual(0);
+      expect(geometry.right).toBeLessThanOrEqual(width);
+      expect(geometry.fits).toBe(true);
+      expect(geometry.background).toBe('rgba(0, 0, 0, 0)');
+      expect(geometry.border).toBe('rgba(0, 0, 0, 0)');
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
     }
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.addStyleTag({ content: 'html { font-size: 100%; }' });
     await page.locator('.smw-builder').screenshot({
       path: `generated-artifacts/studio-mobile-destination-compact-${width}.png`,
       style: '.navbar, .skip-link { visibility: hidden; }',
       animations: 'disabled',
     });
-    // Searching must not clear the selected destination or move its summary
-    // back ahead of the search when no county matches.
+    // No-match searches preserve the choice in the retained preview.
     await search.fill('no matching county');
-    await expect(summary).toContainText('Kent, England');
+    await expect(preview).toHaveText('Kent');
     await expect(page.locator('.smw-destination-picker__regional .smw-search-empty')).toBeVisible();
     await page.getByRole('button', { name: 'Back to countries', exact: true }).click();
-    await expect(summary).toContainText('Kent, England');
-    await page.getByRole('button', { name: 'Change county', exact: true }).click();
+    await expect(page.locator('.smw-destination-picker__country .smw-wording-selection')).toHaveText('Kent');
+    await expect(reset).toBeVisible();
+    await page.getByRole('button', { name: 'Choose a county', exact: true }).click();
     await expect(page.getByRole('heading', { name: 'Counties in England', exact: true })).toBeFocused();
-    await page.getByRole('button', { name: 'Use England only', exact: true }).click();
-    await expect(summary).toHaveCount(0);
+    await reset.focus();
+    await page.keyboard.press('Enter');
+    await expect(page.getByRole('heading', { name: 'Choose a country or real place', exact: true })).toBeFocused();
+    await expect(reset).toHaveCount(0);
+    await expectNoDestinationSummary(page);
+    await expect(page.locator('.smw-destination-picker__country .smw-wording-selection')).toHaveText('England');
     await expect(page.getByRole('option', { name: 'England', exact: true })).toHaveAttribute('aria-selected', 'true');
   });
 }
@@ -115,7 +123,7 @@ for (const width of [1365, 320]) {
       await expect(page.getByRole('option', { selected: true })).toHaveCount(0);
       await page.getByRole('listbox').focus();
       await page.keyboard.press('ArrowDown');
-      await expect(page.locator('.smw-destination-picker__selection')).toContainText(`${region}, ${country}`);
+      await expectNoDestinationSummary(page);
       await expect(page.locator('.smw-destination-picker__regional .smw-wording-selection')).toHaveText(region);
       if (country === 'England') {
         await page.locator('.smw-builder').screenshot({ path: `generated-artifacts/studio-regional-${width}.png`,
@@ -140,12 +148,21 @@ for (const width of [1365, 320]) {
       await expect(page.locator('.smw-summary-row').last()).toContainText(`${region}, ${country}`);
       await expect(page.locator('.studio-letter__paper .studio-gifts__sr').first()).toContainText(`${region}, ${country}`);
       await page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true }).click();
-      await expect(page.locator('.smw-destination-picker__selection')).toContainText(`${region}, ${country}`);
-      await page.getByRole('button', { name: `Change ${kind}`, exact: true }).click();
+      await expectNoDestinationSummary(page);
+      await expect(page.locator('.smw-destination-picker__country .smw-wording-selection')).toHaveText(region);
+      await page.getByRole('button', { name: `Choose a ${kind}`, exact: true }).click();
       await expect(page.getByRole('option', { name: region, exact: true })).toHaveAttribute('aria-selected', 'true');
+      await page.getByRole('option', { name: 'Z Fixture Place', exact: true }).click();
+      await expect(page.locator('.smw-destination-picker__regional .smw-wording-selection')).toHaveText('Z Fixture Place');
+      await page.getByRole('button', { name: 'Back to countries', exact: true }).click();
       await page.getByRole('button', { name: `Use ${country} only`, exact: true }).click();
-      await expect(page.locator('.smw-destination-picker__selection')).toHaveCount(0);
+      await expectNoDestinationSummary(page);
       await expect(page.locator('.smw-destination-picker__country .smw-wording-selection')).toHaveText(country);
+      await page.locator('.smw-button-next').click();
+      await expect(page.locator('.smw-summary-row').last()).toContainText(country);
+      await expect(page.locator('.smw-summary-row').last()).not.toContainText('Z Fixture Place');
+      await expect(page.locator('.studio-letter__paper').first()).not.toContainText('Z Fixture Place');
+      await page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true }).click();
     }
     // Ireland remains an independent country, with no regional step.
     await page.getByRole('searchbox', { name: 'Search locations', exact: true }).fill('Ireland');
@@ -174,6 +191,16 @@ test('regional request carries both trusted IDs and changing country clears the 
   await expect.poll(() => submitted?.region).toBe(workshopRegionalCatalogueFixture.regionalGroups['usa-states'].records[0].id);
   expect(submitted.place).toBe(workshopRegionalCatalogueFixture.regionalGroups['usa-states'].parentId);
   await page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true }).click();
+  await page.getByRole('button', { name: 'Use United States only', exact: true }).click();
+  await page.locator('.smw-button-next').click();
+  submitted = null;
+  await page.getByRole('button', { name: 'Create message' }).click();
+  await expect.poll(() => submitted?.place).toBe(workshopRegionalCatalogueFixture.regionalGroups['usa-states'].parentId);
+  expect(submitted).not.toHaveProperty('region');
+  await page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true }).click();
+  await page.getByRole('button', { name: 'Choose a state', exact: true }).click();
+  await page.getByRole('option', { name: 'Georgia', exact: true }).click();
+  await page.getByRole('button', { name: 'Back to countries', exact: true }).click();
   await page.getByRole('option', { name: 'England', exact: true }).click();
   await expect(page.locator('.smw-destination-picker__selection')).toHaveCount(0);
   await page.locator('.smw-button-next').click();
@@ -363,7 +390,8 @@ for (const width of [1365, 320]) {
     await page.getByRole('button', { name: 'Choose a county', exact: true }).click();
     await expect(page.getByRole('heading', { name: 'Counties in England', exact: true })).toBeFocused();
     await page.getByRole('listbox').press('Home');
-    await expect(page.locator('.smw-destination-picker__selection')).toContainText('Kent, England');
+    await expectNoDestinationSummary(page);
+    await expect(page.locator('.smw-destination-picker__regional .smw-wording-selection')).toHaveText('Kent');
     // Category controls remain keyboard-operable during regional browsing.
     await fantasy.focus();
     await page.keyboard.press('Enter');

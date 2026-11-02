@@ -10,13 +10,8 @@
 }
 
 .smw-destination-picker > .smw-talent-categories {
-  order: 1;
   margin-bottom: 16px;
 }
-
-.smw-destination-picker__summary { order: 2; }
-.smw-destination-picker__country,
-.smw-destination-picker__regional { order: 3; }
 
 .smw-destination-picker__heading {
   margin: 0 0 13px;
@@ -60,7 +55,7 @@
 
 .smw-destination-picker__region-action,
 .smw-destination-picker__regional-head button,
-.smw-destination-picker__selection-actions button {
+.smw-destination-picker__country-only {
   display: inline-flex;
   min-height: 48px;
   align-items: center;
@@ -78,8 +73,7 @@
 }
 
 .smw-destination-picker__region-action:hover,
-.smw-destination-picker__regional-head button:hover,
-.smw-destination-picker__selection-actions button:hover {
+.smw-destination-picker__regional-head button:hover {
   border-color: var(--smw-gold);
   background: #d4af371b;
 }
@@ -92,52 +86,24 @@
   margin-bottom: 14px;
 }
 
-.smw-destination-picker__region-action {
+.smw-destination-picker__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
   margin-top: 10px;
+}
+
+.smw-destination-picker button.smw-destination-picker__country-only {
   max-width: 100%;
+  border-color: transparent;
+  background: transparent;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .smw-destination-picker__regional-head .smw-destination-picker__heading {
   margin: 0;
-}
-
-.smw-destination-picker__selection {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px 18px;
-  margin-bottom: 16px;
-  padding: 13px 15px;
-  border: 1px solid #d4af3768;
-  border-radius: 12px;
-  background: #d4af370b;
-}
-
-.smw-destination-picker__selection p {
-  display: grid;
-  gap: 3px;
-  margin: 0;
-}
-
-.smw-destination-picker__selection p span {
-  color: #c4d0c3;
-  font-size: .76rem;
-}
-
-.smw-destination-picker__selection strong {
-  color: var(--smw-cream);
-  font-size: .98rem;
-}
-
-.smw-destination-picker__selection-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.smw-destination-picker__preview {
-  margin-top: 18px;
 }
 
 .smw-destination-picker button:focus-visible {
@@ -145,48 +111,7 @@
   outline-offset: 3px;
 }
 
-@media (max-width: 900px) {
-  .smw-destination-picker__preview .smw-activity-wording {
-    margin-top: 0;
-  }
-}
-
 @media (max-width: 520px) {
-  .smw-destination-picker__selection {
-    align-items: flex-start;
-  }
-
-  .smw-destination-picker__summary { order: 3; }
-  .smw-destination-picker__country,
-  .smw-destination-picker__regional { order: 2; }
-
-  .smw-destination-picker__selection {
-    gap: 10px 14px;
-    margin: 12px 0 0;
-    padding: 11px 12px;
-  }
-
-  .smw-destination-picker__selection p {
-    max-width: 100%;
-  }
-
-  .smw-destination-picker__selection strong {
-    font-size: .91rem;
-    line-height: 1.4;
-  }
-
-  .smw-destination-picker__selection-actions {
-    width: auto;
-    gap: 7px;
-  }
-
-  .smw-destination-picker__selection-actions button {
-    width: auto;
-    min-height: 44px;
-    padding: 8px 10px;
-    font-size: .78rem;
-  }
-
   .smw-destination-picker__regional-head {
     align-items: stretch;
   }

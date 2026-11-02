@@ -77,6 +77,11 @@ export default function WorkshopDestinationPicker({
     setShowRegions(false);
     focusHeading(countryHeadingRef);
   };
+  const countryOnlyAction = selectedRegion && country && (
+    <button className="smw-destination-picker__country-only" type="button" onClick={useCountryOnly}>
+      Use {country.label} only
+    </button>
+  );
 
   return (
     <section className="smw-destination-picker" aria-label="Destination">
@@ -114,9 +119,12 @@ export default function WorkshopDestinationPicker({
             selectedText={selectedRegion?.label || country?.label || ''}
             wheelFooter={country && groupKey && (
               <>
-                {canChooseRegion && <button className="smw-destination-picker__region-action" type="button" onClick={openRegions}>
-                  Choose a {groupKey === 'usa-states' ? 'state' : 'county'}
-                </button>}
+                {canChooseRegion && <div className="smw-destination-picker__actions">
+                  <button className="smw-destination-picker__region-action" type="button" onClick={openRegions}>
+                    Choose a {groupKey === 'usa-states' ? 'state' : 'county'}
+                  </button>
+                  {countryOnlyAction}
+                </div>}
                 <div className="smw-destination-picker__region-prompt">
                   <p>{guidance || 'Optional: make the destination more local, or continue with the country alone.'}</p>
                 </div>
@@ -133,6 +141,7 @@ export default function WorkshopDestinationPicker({
             <h3 ref={regionHeadingRef} tabIndex={-1} className="smw-destination-picker__heading">
               {regionalHeadings[groupKey]}
             </h3>
+            {countryOnlyAction}
           </div>
           <div className="smw-destination-picker__searchable">
             <WorkshopSearchableChoices
@@ -154,17 +163,6 @@ export default function WorkshopDestinationPicker({
         </div>
       )}
 
-      <div className="smw-destination-picker__summary" aria-live="polite">
-        {selectedRegion && country && (
-          <div className="smw-destination-picker__selection">
-            <p><span>Selected destination</span><strong>{selectedRegion.label}, {country.label}</strong></p>
-            <div className="smw-destination-picker__selection-actions">
-              <button type="button" onClick={openRegions}>Change {groupKey === 'usa-states' ? 'state' : 'county'}</button>
-              <button type="button" onClick={useCountryOnly}>Use {country.label} only</button>
-            </div>
-          </div>
-        )}
-      </div>
     </section>
   );
 }
