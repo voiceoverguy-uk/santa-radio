@@ -6,6 +6,18 @@ import { workshopCatalogueFixture } from './fixtures/workshop-catalogue.js';
 
 const path = '/santa-message-workshop';
 const answers = ['9 years old', 'Teamwork', 'Completing a jigsaw puzzle', 'Bûche de Noël', 'The Enchanted Forest — Fantasy place'];
+const preparationMessages = [
+  'Santa is recording. Give him a moment — the elves keep distracting him.',
+  'Santa is busy recording, although the smell of cookies isn’t helping. Hang on a moment…',
+  'Santa is recording your message. An elf just sneezed halfway through, so we’re going again.',
+  'Santa is at the microphone. We’re just waiting for Rudolph to stop chewing.',
+  'Your message is coming. Santa said “ho ho ho” so loudly, his headphones fell off.',
+  'Santa is recording. The elves have promised to be quiet. We’ll believe it when we hear it.',
+  'One moment — Santa is finishing your message. Someone opened a biscuit tin and we lost him briefly.',
+  'Santa is recording your message. Mrs Claus has reminded him this is not the time for a nap.',
+  'Hang on a moment — Santa’s checking his lines. Twice, obviously.',
+  'Santa is busy recording. We’ve hidden the mince pies until he’s finished.',
+];
 
 async function openReview(page, { live = false } = {}) {
   await unlockWorkshop(page);
@@ -50,6 +62,137 @@ async function openReview(page, { live = false } = {}) {
   }
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeVisible();
 }
+
+test('approved recording notices are random per attempt, stable through rerenders, and wrap on phones', async ({ page }) => {
+  test.setTimeout(90000);
+  // Fail closed if this test ever accidentally stops intercepting creation.
+  await page.route('**/api/santa-studio-message', route => route.abort());
+  await openReview(page);
+  await page.evaluate(() => {
+    const fetch = window.fetch.bind(window);
+    window.recordingAttempts = [];
+    window.fetch = (input, options) => {
+      if (input !== '/api/santa-studio-message') return fetch(input, options);
+      return new Promise((resolve, reject) => {
+        const attempt = { resolve };
+        window.recordingAttempts.push(attempt);
+        options.signal.addEventListener('abort', () => {
+          attempt.aborted = true;
+          attempt.stream?.error(new DOMException('Cancelled', 'AbortError'));
+          reject(new DOMException('Cancelled', 'AbortError'));
+        }, { once: true });
+      });
+    };
+    const random = Math.random;
+    window.noticeRandomCalls = 0;
+    Math.random = () => {
+      if (window.nextNoticeRandom === undefined) return random();
+      window.noticeRandomCalls++;
+      const value = window.nextNoticeRandom;
+      delete window.nextNoticeRandom;
+      return value;
+    };
+  });
+  const notice = page.locator('.smw-message-result[role="status"]');
+  const paragraph = notice.locator('p');
+  const start = async (index, retry = false) => {
+    // Exercise both ends of the random range as well as every middle bucket.
+    await page.evaluate(value => { window.nextNoticeRandom = value; },
+      index === 0 ? 0 : index === 9 ? 0.999999 : (index + 0.5) / 10);
+    await page.getByRole('button', { name: retry ? 'Retry message' : 'Create message', exact: true }).click();
+    await expect(paragraph).toHaveText(preparationMessages[index]);
+    await expect(notice).toHaveAttribute('aria-live', 'polite');
+    await expect(page.getByRole('button', { name: 'Preparing message…', exact: true })).toBeDisabled();
+    await expect(page.getByRole('progressbar', { name: 'Preparing your message' })).toBeVisible();
+  };
+  const cancel = async () => {
+    await page.getByRole('button', { name: 'Cancel preparation', exact: true }).click();
+    await expect(notice).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
+    await expect(page.locator('.smw-message-result audio')).toHaveCount(0);
+    expect(await page.evaluate(() => window.recordingAttempts.at(-1).aborted)).toBe(true);
+  };
+  for (let index = 0; index < preparationMessages.length; index++) {
+    await start(index);
+    if (index === 6) {
+      // A spelling update changes parent props without changing audio choices.
+      await page.getByRole('button', { name: 'Edit certificate name', exact: true }).click();
+      await page.getByRole('textbox', { name: 'Name spelling', exact: true }).fill('D’Arcy');
+      await page.getByRole('button', { name: 'Use this spelling', exact: true }).click();
+      for (const width of [320, 390]) {
+        await page.setViewportSize({ width, height: 844 });
+        await paragraph.scrollIntoViewIfNeeded();
+        await expect(paragraph).toHaveText(preparationMessages[index]);
+        const geometry = await paragraph.evaluate(node => {
+          const range = document.createRange();
+          range.selectNodeContents(node);
+          const bounds = node.getBoundingClientRect();
+          const lines = [...range.getClientRects()];
+          return {
+            wraps: lines.length > 1,
+            fits: lines.every(line => line.left >= bounds.left - 1 && line.right <= bounds.right + 1 &&
+              line.top >= bounds.top - 1 && line.bottom <= bounds.bottom + 1),
+            noOverflow: document.documentElement.scrollWidth <= innerWidth + 1,
+          };
+        });
+        expect(geometry).toEqual({ wraps: true, fits: true, noOverflow: true });
+      }
+      await page.screenshot({ path: 'generated-artifacts/studio-recording-notice-mobile.png' });
+      // A delayed request must not rotate the copy on a timer either.
+      await page.clock.install();
+      await page.clock.runFor(10000);
+      await expect(paragraph).toHaveText(preparationMessages[index]);
+      await page.clock.resume();
+    }
+    await cancel();
+  }
+  // Repeats are allowed, and errors still offer a fresh choice on retry.
+  await start(9);
+  await page.evaluate(() => window.recordingAttempts.at(-1).resolve(
+    new Response(JSON.stringify({ error: 'Recording temporarily unavailable.' }), {
+      status: 503, headers: { 'Content-Type': 'application/json' },
+    }),
+  ));
+  await expect(page.getByRole('alert')).toHaveText('Recording temporarily unavailable.');
+  await expect(notice).toHaveCount(0);
+  await start(2, true);
+  await expect(page.getByRole('alert')).toHaveCount(0);
+  await page.evaluate(() => {
+    const attempt = window.recordingAttempts.at(-1);
+    attempt.resolve(new Response(new ReadableStream({
+      start(controller) { attempt.stream = controller; },
+    }), { headers: { 'Content-Type': 'audio/mpeg' } }));
+  });
+  await expect(paragraph).toHaveText('Receiving your finished MP3…');
+  await cancel();
+  await start(4);
+  await page.evaluate(() => {
+    const attempt = window.recordingAttempts.at(-1);
+    attempt.resolve(new Response(new ReadableStream({
+      start(controller) { attempt.stream = controller; },
+    }), { headers: { 'Content-Type': 'audio/mpeg' } }));
+  });
+  await expect(paragraph).toHaveText('Receiving your finished MP3…');
+  // Local fixture only: exercise actual decoding/playback and download.
+  await page.evaluate(bytes => {
+    const stream = window.recordingAttempts.at(-1).stream;
+    stream.enqueue(new Uint8Array(bytes));
+    stream.close();
+  }, [...readFileSync('server/santa-audio/sleighbells.mp3')]);
+  const result = page.getByRole('region', { name: 'Your finished Santa message' });
+  await expect(result).toBeVisible();
+  await expect(notice).toHaveCount(0);
+  const player = result.locator('audio');
+  await expect.poll(() => player.evaluate(node => node.readyState)).toBeGreaterThanOrEqual(1);
+  await player.evaluate(node => node.play());
+  await expect.poll(() => player.evaluate(node => node.currentTime)).toBeGreaterThan(0.1);
+  await player.evaluate(node => node.pause());
+  const downloadPromise = page.waitForEvent('download');
+  await result.getByRole('link', { name: /Download MP3/ }).click();
+  expect((await downloadPromise).suggestedFilename()).toBe('santa-message-for-D’Arcy.mp3');
+  expect(await page.evaluate(() => window.noticeRandomCalls)).toBe(13);
+  expect(await page.evaluate(() => window.recordingAttempts.length)).toBe(13);
+});
 
 test('review create placement on desktop and phones, real MP3 playback/download, local spelling and cleanup', async ({ page }) => {
   test.setTimeout(90000);

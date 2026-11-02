@@ -3,6 +3,18 @@ import { useRadio } from './RadioProvider.jsx';
 import { getWorkshopDownloadName, getWorkshopWrittenName } from '../lib/workshopNameSpelling.js';
 
 const MAX_BYTES = 4_400_000;
+const PREPARATION_MESSAGES = [
+  'Santa is recording. Give him a moment — the elves keep distracting him.',
+  'Santa is busy recording, although the smell of cookies isn’t helping. Hang on a moment…',
+  'Santa is recording your message. An elf just sneezed halfway through, so we’re going again.',
+  'Santa is at the microphone. We’re just waiting for Rudolph to stop chewing.',
+  'Your message is coming. Santa said “ho ho ho” so loudly, his headphones fell off.',
+  'Santa is recording. The elves have promised to be quiet. We’ll believe it when we hear it.',
+  'One moment — Santa is finishing your message. Someone opened a biscuit tin and we lost him briefly.',
+  'Santa is recording your message. Mrs Claus has reminded him this is not the time for a nap.',
+  'Hang on a moment — Santa’s checking his lines. Twice, obviously.',
+  'Santa is busy recording. We’ve hidden the mince pies until he’s finished.',
+];
 
 // Mounted only for this review/selection. Editing or leaving destroys the
 // request and page-local URL. Spelling is display-only, never an audio identity.
@@ -13,6 +25,7 @@ export default function WorkshopMessageAudio({ record, choices, spelling, comple
   const audioRef = useRef(null);
   const resumeRef = useRef(null);
   const [phase, setPhase] = useState('idle');
+  const [preparationMessage, setPreparationMessage] = useState('');
   const [url, setUrl] = useState('');
   const [error, setError] = useState('');
   const writtenName = getWorkshopWrittenName(record?.name || '', spelling);
@@ -83,6 +96,7 @@ export default function WorkshopMessageAudio({ record, choices, spelling, comple
     setError('');
     const controller = new AbortController();
     requestRef.current = controller;
+    setPreparationMessage(PREPARATION_MESSAGES[Math.floor(Math.random() * PREPARATION_MESSAGES.length)]);
     setPhase('preparing');
     let timedOut = false;
     const timeout = setTimeout(() => { timedOut = true; controller.abort(); }, 115000);
@@ -144,7 +158,7 @@ export default function WorkshopMessageAudio({ record, choices, spelling, comple
     </button>
     {busy && <div className="smw-message-result" role="status" aria-live="polite">
       <p>{phase === 'receiving' ? 'Receiving your finished MP3…'
-        : 'Preparing Santa’s recordings and mixing your message with quiet sleigh bells. This may take a minute.'}</p>
+        : preparationMessage}</p>
       <progress aria-label="Preparing your message" />
       <button className="smw-change" type="button" onClick={cancel}>Cancel preparation</button>
     </div>}
