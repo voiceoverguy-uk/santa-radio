@@ -80,3 +80,19 @@ Keep enough height for a short mobile Studio step to fill the usable stable view
 **Why:** Removing all spare height from short steps lets the browser clamp scrolling at the document bottom; a final-position check alone can miss transition movement. This is a separate safeguard, not confirmation of the owner's reported focus-triggered wobble.
 
 **How to apply:** Do not reintroduce large footer clearance, but preserve the one-screen height floor and stable viewport sizing. Check long-to-short transitions, Back and review editing, and count page-position adjustments rather than only checking the final coordinate. Headless mobile checks do not verify a physical iPhone's keyboard animation.
+
+For age and country, complete the “Santa will say…” example with the selected
+answer in red.
+
+**Why:** The user asked to show how the choice might sound, for example
+“I believe you are… 7 years old” and “Ah yes… Wales”.
+
+**How to apply:** Update the example when the choice changes. This request is
+limited to age and country, not permission to extend every other step.
+
+Hide the mini radio player throughout Message Maker Studio at every screen size.
+
+**Why:** The user requested its removal in Studio to give more room.
+
+**How to apply:** Keep the radio player available outside Studio; this request
+does not change the footer or request a change to radio playback.

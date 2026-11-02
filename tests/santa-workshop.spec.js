@@ -73,14 +73,19 @@ test('Studio hides progress captions only on mobile, retaining the bars and curr
   await page.locator('.smw-builder').screenshot({ path: 'test-results/workshop-progress-mobile.png' });
 });
 
-test('Studio hides the radio dock and footer only on mobile and restores them elsewhere', async ({ page }) => {
+test('Studio hides the radio dock at every size, keeps desktop footer and restores the dock elsewhere', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await open(page);
   await expect(page.locator('.radio-dock')).toBeHidden();
   await expect(page.locator('.footer')).toBeHidden();
   await page.setViewportSize({ width: 1440, height: 1000 });
-  await expect(page.locator('.radio-dock')).toBeVisible();
+  await expect(page.locator('.radio-dock')).toBeHidden();
   await expect(page.locator('.footer')).toBeVisible();
+  // Neither an expanded player nor a trailing slash should restore the dock.
+  await page.locator('.radio-dock').evaluate(node => node.classList.remove('is-minimized'));
+  await expect(page.locator('.radio-dock')).toBeHidden();
+  await page.goto('/santa-message-workshop/');
+  await expect(page.locator('.radio-dock')).toBeHidden();
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(page.locator('.radio-dock')).toBeHidden();
   await expect(page.locator('.footer')).toBeHidden();
@@ -105,6 +110,56 @@ async function openAgeStage(page) {
   await page.getByRole('option', { name: 'Demrie', exact: true }).click();
   await page.locator('.smw-button-next').click();
   await expect(page.locator('.smw-step-count')).toHaveText('Step 2 of 6');
+}
+
+for (const width of [390, 1440]) {
+  test(`selected age and country complete Santa wording in red at ${width}px`, async ({ page }) => {
+    test.setTimeout(60000);
+    await page.setViewportSize({ width, height: 1000 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    const catalogue = structuredClone(workshopCatalogueFixture);
+    catalogue.categories.place = [
+      { id: 'wales', label: 'Wales', file: 'fixture/wales.wav' },
+      { id: 'scotland', label: 'Scotland', file: 'fixture/scotland.wav' },
+    ];
+    catalogue.counts.place = 2;
+    await page.route('**/api/santa-workshop-catalogue', route => route.fulfill({ json: catalogue }));
+    const suffix = page.locator('.smw-wording-selection');
+    const quote = page.locator('.smw-activity-wording-quote');
+    await openAgeStage(page);
+    await expect(suffix).toHaveCount(0);
+    await browseToAge(page, '7 years old');
+    await expect(quote).toContainText('I believe you are… 7 years old');
+    await expect(suffix).toHaveText('7 years old');
+    await expect(suffix).toHaveCSS('color', 'rgb(155, 17, 30)');
+    await page.getByRole('listbox', { name: 'Their age', exact: true }).press('ArrowDown');
+    await expect(suffix).toHaveText('8 years old');
+    await page.locator('.smw-builder').screenshot({ path: `generated-artifacts/studio-selected-age-${width}.jpg` });
+    await page.locator('.smw-button-next').click();
+    for (let step = 3; step <= 5; step++) {
+      await expect(suffix).toHaveCount(0);
+      await page.getByRole('listbox').press('Home');
+      await page.locator('.smw-button-next').click();
+    }
+    await expect(suffix).toHaveCount(0);
+    const wheel = page.getByRole('listbox', { name: 'A magical place', exact: true });
+    await wheel.press('Home');
+    await expect(quote).toContainText('Ah yes… Wales');
+    await expect(suffix).toHaveText('Wales');
+    await expect(suffix).toHaveCSS('color', 'rgb(155, 17, 30)');
+    await page.getByRole('searchbox', { name: 'Search locations', exact: true }).fill('no matching country');
+    await expect(page.locator('.smw-search-empty')).toBeVisible();
+    await expect(suffix).toHaveText('Wales');
+    await page.getByRole('button', { name: 'Clear', exact: true }).click();
+    await wheel.press('ArrowDown');
+    await expect(suffix).toHaveText('Scotland');
+    await page.locator('.smw-builder').screenshot({ path: `generated-artifacts/studio-selected-country-${width}.jpg` });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+    await page.locator('.smw-button-back').click();
+    await expect(suffix).toHaveCount(0);
+    await page.locator('.smw-button-next').click();
+    await expect(suffix).toHaveText('Scotland');
+  });
 }
 
 async function complete(page, keyboard = false) {

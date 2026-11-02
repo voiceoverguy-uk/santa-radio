@@ -477,6 +477,9 @@ export default function SantaMessageWorkshop() {
                     wording={stage.wording}
                     name={selectedName?.name || ''}
                     heading={stage.key === 'activity' ? 'Santa will say:' : 'Santa will say…'}
+                    selectedText={stage.key === 'age'
+                      ? catalogueOptions.find(option => option.id === choices.age)?.label || ''
+                      : ''}
                   />
                 </div>
               ) : <WorkshopChoiceWheel
