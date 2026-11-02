@@ -7,3 +7,9 @@ A dependency merge can leave a running development server using module paths fro
 **Why:** A security dependency update replaced Vite while the existing process still referenced its previous internal chunks, breaking Preview despite a valid installation.
 
 **How to apply:** After dependency merges, verify Preview against a freshly started workflow before assuming missing internal modules mean package corruption or reinstalling dependencies.
+
+Late discovery of a lazy dependency can also make Vite reload the page during the first interaction, discarding private in-memory Studio state even though the production build is sound.
+
+**Why:** The first browser-local PDF download triggered dependency optimisation and reset the Studio before the download completed.
+
+**How to apply:** Prebundle dependencies used by important lazy interactions and test a cold Preview session as well as the production build.

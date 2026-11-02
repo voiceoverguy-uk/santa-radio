@@ -17,7 +17,7 @@ const PREPARATION_MESSAGES = [
 ];
 
 export default function WorkshopMessageAudio({
-  record, choices, spelling, complete, generation, correction, onCorrection, visible,
+  record, choices, spelling, complete, generation, correction, onCorrection, visible, onPhaseChange, onReady,
 }) {
   const radio = useRadio();
   const requestRef = useRef(null);
@@ -28,6 +28,10 @@ export default function WorkshopMessageAudio({
   const triggerRef = useRef(null);
   const operationRef = useRef(null);
   const loadedSequence = useRef(0);
+  const readyCallbackRef = useRef(onReady);
+  // Spelling can be corrected while bytes are arriving. It is display-only;
+  // commit the latest spelling without restarting the audio request.
+  readyCallbackRef.current = onReady;
   const [phase, setPhase] = useState('idle');
   const [url, setUrl] = useState('');
   const [error, setError] = useState('');
@@ -39,6 +43,9 @@ export default function WorkshopMessageAudio({
   const status = generation.state;
   const disabled = !complete || busy || !status || !!generation.error || status.pending
     || status.remaining === 0 || ((url || status.successes > 0) && !correction);
+  // Share readiness only after the entire MP3 has been received, never merely
+  // on a successful HTTP header or a promotional preview.
+  useEffect(() => { onPhaseChange?.(error ? 'error' : phase); }, [phase, error, onPhaseChange]);
 
   const finishPlayback = () => {
     const resume = resumeRef.current;
@@ -108,15 +115,18 @@ export default function WorkshopMessageAudio({
 
   // Recover completed audio after refresh/remount or another tab's success.
   useEffect(() => {
-    if (!status?.successes || loadedSequence.current >= status.successes || requestRef.current) return;
+    if (!complete || !status?.successes || loadedSequence.current >= status.successes || requestRef.current) return;
     const controller = new AbortController();
     const sequence = status.successes;
     fetch('/api/santa-studio-message?audio=1', {
       credentials: 'same-origin', cache: 'no-store', signal: controller.signal,
-    }).then(response => receive(response, controller.signal)).then(() => { loadedSequence.current = sequence; })
+    }).then(response => receive(response, controller.signal)).then(() => {
+      loadedSequence.current = sequence;
+      readyCallbackRef.current?.({ record: status.record, choices: status.choices });
+    })
       .catch(failure => { if (!controller.signal.aborted) setError(failure.message); });
     return () => controller.abort();
-  }, [status?.successes, phase, recoveryAttempt, url]);
+  }, [complete, status?.successes, phase, recoveryAttempt, url]);
 
   useEffect(() => {
     if (!confirming) return;
@@ -167,6 +177,7 @@ export default function WorkshopMessageAudio({
       // Refresh will restore the authoritative choices and end correction mode.
       loadedSequence.current = sequence || (status?.successes || 0) + 1;
       operationRef.current = null;
+      readyCallbackRef.current?.({ record, choices });
     } catch (failure) {
       if (requestRef.current === controller) {
         setPhase(urlRef.current ? 'ready' : 'error');

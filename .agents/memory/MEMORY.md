@@ -72,3 +72,4 @@
 - [Santa recipient previews](santa-recipient-preview-scope.md) — Chosen/generated child takes priority; random gifts/audio only before personalisation.
 - [Studio letter editorial policy](studio-letter-editorial-policy.md) — Curated contextual prose, not live AI; full choice audit stays private and spelling edits must not reshuffle wording.
 - [Studio single-message allowance](studio-single-message-allowance.md) — One success plus one correction; lock exact spoken name/full destination, not written spelling or future family policy.
+- [Studio gift delivery](studio-gift-delivery-scope.md) — Local individual-message gifts require MP3 success; no free/promotional exports, live checkout or family/email fulfilment.

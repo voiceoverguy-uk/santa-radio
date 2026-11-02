@@ -5,6 +5,7 @@ import { createStudioLetter, CERTIFICATE_WRITE_MS, LETTER_CHARACTER_MS,
   createStudioLetterVariation } from '../lib/santaStudioLetter.js';
 import './SantaStudioGifts.css';
 import SantaPictureName from './SantaPictureName.jsx';
+import StudioGiftDownload from './StudioGiftDownload.jsx';
 
 const santaPictures = [
   '/images/santa-nice-list.jpg',
@@ -25,6 +26,11 @@ function ScriptReveal({ children, progress }) {
       : `inset(-1em calc(${100 - progress * 100}% - ${progress * 0.5}em) -1em -0.5em)`,
     visibility: progress <= 0 ? 'hidden' : undefined,
   }}>{children}</span>;
+}
+
+function GiftCard({ enabled, kind, children }) {
+  return enabled ? <div className={`studio-gifts__card studio-gifts__card--${kind}`}>{children}</div>
+    : <>{children}</>;
 }
 
 function Certificate({ name, elapsed }) {
@@ -84,7 +90,8 @@ function SantaPicture({ name, elapsed, picture, previousPicture = null, onDissol
 // Keyed by recipient: a deliberate demo change cancels every old animation,
 // reading timer and random selection together, before rendering the new name.
 function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio, reducedMotion, onNext,
-  staticPreview = false, suppliedLetter = null, reviewHeading = null }) {
+  staticPreview = false, suppliedLetter = null, reviewHeading = null, downloadReady = false,
+  downloadNotice = null, giftRevision = '' }) {
   // Deterministic SSR; randomise only once after mounting in the browser.
   const [letter, setLetter] = useState(() => suppliedLetter || createStudioLetter(name, () => 0.5));
   const [elapsed, setElapsed] = useState(0);
@@ -152,26 +159,39 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
     onFocusCapture={() => setFocused(true)}
     onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false); }}>
     <h4>{reviewHeading || `All 3 gifts included for ${name} with the paid version`}</h4>
+    {staticPreview && <p>{downloadNotice || 'Create your MP3 to unlock these three personalised gift downloads.'}</p>}
     <div className="studio-gifts__preview-stack" role="group" aria-label="Three gift previews"
       onContextMenu={event => event.preventDefault()} onDragStart={event => event.preventDefault()}>
       <div className="studio-gifts__gallery">
+        <GiftCard enabled={staticPreview} kind="certificate">
         <button className="studio-gifts__thumbnail studio-gifts__thumbnail--certificate" type="button"
           aria-label="Enlarge certificate" onClick={event => open(event, 'certificate')}>
           <Certificate name={name} elapsed={displayElapsed} />
           <span className="studio-gifts__thumbnail-label">Enlarge certificate</span>
         </button>
+        {staticPreview && <StudioGiftDownload key={`${giftRevision}-${name}-${downloadReady}-certificate`}
+          kind="certificate" ready={downloadReady} name={name} />}
+        </GiftCard>
+        <GiftCard enabled={staticPreview} kind="letter">
         <button className="studio-gifts__thumbnail studio-gifts__thumbnail--letter" type="button"
           aria-label="Enlarge letter to read" onClick={event => open(event, 'letter')}>
            <Letter letter={displayLetter} elapsed={displayElapsed} />
           <span className="studio-gifts__thumbnail-label">Enlarge letter</span>
         </button>
+        {staticPreview && <StudioGiftDownload key={`${giftRevision}-${name}-${downloadReady}-letter`}
+          kind="letter" ready={downloadReady} name={name} letter={displayLetter} />}
+        </GiftCard>
       </div>
+      <GiftCard enabled={staticPreview} kind="picture">
       <button className="studio-gifts__thumbnail studio-gifts__thumbnail--picture" type="button"
         aria-label="Enlarge Santa’s Nice List picture" onClick={event => open(event, 'picture')}>
         <SantaPicture name={name} picture={picture} elapsed={displayElapsed}
           previousPicture={previousPicture} onDissolved={onDissolved} />
         <span className="studio-gifts__thumbnail-label">Enlarge Santa picture</span>
       </button>
+      {staticPreview && <StudioGiftDownload key={`${giftRevision}-${name}-${downloadReady}-picture`}
+        kind="picture" ready={downloadReady} name={name} picture={picture} />}
+      </GiftCard>
     </div>
     <dialog ref={dialogRef} className={`studio-letter-dialog${view === 'letter' ? ' studio-letter-dialog--letter' : ''}`}
       aria-label={`${name}’s ${view || 'gift'} example`}
@@ -242,7 +262,8 @@ export function StudioGiftPreview({ example }) {
   return <GiftExample key={name} {...example} name={name} />;
 }
 
-export function StudioKeepsakePreview({ name, details = {}, variation }) {
+export function StudioKeepsakePreview({ name, details = {}, variation, downloadReady = false,
+  downloadNotice, giftRevision }) {
   const [localVariation] = useState(createStudioLetterVariation);
   const letter = createStudioLetter(name, () => 0.5, details, variation || localVariation);
   return <GiftExample
@@ -255,6 +276,9 @@ export function StudioKeepsakePreview({ name, details = {}, variation }) {
     onNext={() => {}}
     staticPreview
     suppliedLetter={letter}
+    downloadReady={downloadReady}
+    downloadNotice={downloadNotice}
+    giftRevision={giftRevision}
     reviewHeading="Your personalised Studio gifts"
   />;
 }

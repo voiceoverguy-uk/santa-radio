@@ -101,6 +101,9 @@ const metadataPlugin = {
 };
 
 export default defineConfig(({ isSsrBuild }) => ({
+  // Gift exporters are intentionally lazy. Prebundle their dependencies so a
+  // first download in Preview cannot trigger a reload and discard the session.
+  optimizeDeps: { include: ['pdf-lib', '@pdf-lib/fontkit'] },
   define: { __SANTA_AUDIO_RECIPE__: JSON.stringify(santaAudioRecipeVersion()) },
   publicDir: isSsrBuild ? false : 'public',
   ssr: {

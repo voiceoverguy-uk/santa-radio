@@ -18,7 +18,7 @@ The owner supplied three Santa-and-elves Nice List pictures to alternate in the 
 
 **Why:** The owner explicitly superseded the earlier free-certificate requirements while retaining the approved artwork and reusable generator for the paid product, then requested a matched animated certificate and letter preview within its promotion.
 
-**How to apply:** Preserve the certificate assets and generation utilities. The owner authorised a visual trial of the certificate and letter, not paid delivery, letter PDFs, checkout changes or new entitlements. Keep coming-soon and incomplete-bundle wording truthful.
+**How to apply:** Preserve the certificate assets and generation utilities. The owner subsequently authorised browser-local certificate/letter/picture downloads for the current authorised individual-message Studio flow, only after its MP3 succeeds. This does not authorise live checkout, family bundles, email return links or gifts on free/public examples. Keep incomplete-bundle wording truthful.
 
 Preserve the supplied certificate's foreground artwork except for the explicitly authorised removal of the decorative top Santa Radio logo and modest enlargement/repositioning of “Official Nice List Certificate”. Keep all other Santa Radio references. Its background is authorised to use the actual homepage snowy North Pole image across the full A4 landscape page, not the original blank emerald left extension. Personalise with the completed recording's canonical display name and the approved humorous Nice status line; no year or other extra wording.
 

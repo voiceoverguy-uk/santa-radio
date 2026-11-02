@@ -9,7 +9,8 @@ import { normaliseRequestedName } from '../lib/santaNameRequests.js';
 import { StudioKeepsakePreview } from './SantaStudioGifts.jsx';
 import './WorkshopNameSpelling.css';
 
-export default function WorkshopNameSpelling({ recordedName, spelling, recordingId, onChange, giftDetails, letterVariation }) {
+export default function WorkshopNameSpelling({ recordedName, spelling, recordingId, onChange, giftDetails, letterVariation,
+  completedGift, downloadReady = false, downloadNotice }) {
   const fieldId = useId();
   const inputRef = useRef(null);
   const changeButtonRef = useRef(null);
@@ -97,7 +98,14 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
       </dl>
 
       <div className="smw-studio-preview" aria-label="Studio keepsake previews">
-        <StudioKeepsakePreview name={writtenName} details={giftDetails || {}} variation={letterVariation} />
+        <StudioKeepsakePreview
+          name={completedGift && completedGift.record.id !== recordingId ? completedGift.writtenName : writtenName}
+          details={completedGift?.details || giftDetails || {}}
+          variation={completedGift?.variation || letterVariation}
+          downloadReady={downloadReady}
+          downloadNotice={downloadNotice}
+          giftRevision={completedGift?.revision}
+        />
       </div>
 
       {isEditing && (

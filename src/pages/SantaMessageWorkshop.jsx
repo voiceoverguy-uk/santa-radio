@@ -14,6 +14,7 @@ import WorkshopMessageAudio from '../components/WorkshopMessageAudio.jsx';
 import { createWorkshopNamePreviewCache } from '../lib/workshopNamePreviewCache.js';
 import { workshopTreatWording } from '../lib/workshopTreatWording.js';
 import { createStudioLetterVariation } from '../lib/santaStudioLetter.js';
+import { getWorkshopWrittenName } from '../lib/workshopNameSpelling.js';
 import WorkshopSearchableChoices from '../components/WorkshopSearchableChoices.jsx';
 import WorkshopDestinationPicker from '../components/WorkshopDestinationPicker.jsx';
 import { selectedWorkshopRegion, workshopRegionalFolders, workshopDestinationCategory } from '../lib/workshopDestinations.js';
@@ -232,6 +233,8 @@ export default function SantaMessageWorkshop() {
   const [nameSpelling, setNameSpelling] = useState('');
   // Survives review unmounts while a detail is edited; never stored or name-seeded.
   const [letterVariation] = useState(createStudioLetterVariation);
+  const [completedGift, setCompletedGift] = useState(null);
+  const [audioPhase, setAudioPhase] = useState('idle');
   const [error, setError] = useState('');
   const [editing, setEditing] = useState(false);
   const [correction, setCorrection] = useState(false);
@@ -286,6 +289,40 @@ export default function SantaMessageWorkshop() {
         && catalogueOptions.some(record => record.id === choices.talent.id))
       : !!stage && hasCatalogueOptions && catalogueOptions.some(record => record.id === choices[stage.key]);
   const canContinue = !isReview && hasCurrentStageChoice && (stage?.key !== 'place' || destinationValid);
+  const selectionKey = JSON.stringify([selectedName?.id, choices.region,
+    ...catalogueCategories.map(key => choices[key]), choices.talent]);
+  const giftDetailsFor = giftChoices => {
+    const region = selectedWorkshopRegion(catalogueState.catalogue, giftChoices.place, giftChoices.region);
+    const country = catalogueState.catalogue?.categories.place.find(record => record.id === giftChoices.place);
+    const destination = region ? `${region.label}, ${country.label}` : country?.label;
+    return { ...Object.fromEntries([
+    ['age', 'age'], ['activity', 'activity'], ['achievement', 'achievement'],
+    ['destination', 'place'], ['treats', 'treat'],
+  ].map(([key, category]) => {
+    const label = category === 'place' ? destination || '' : catalogueState.catalogue?.categories?.[category]
+      ?.find(record => record.id === giftChoices[category])?.label || '';
+    return [key, category === 'treat' ? workshopTreatWording(label)
+      : category === 'place' ? label.replace(/ — (?:Fantasy place|Space destination)$/, '') : label];
+  })), context: Object.fromEntries([
+    ['age', 'age'], ['activity', 'activity'], ['achievement', 'achievement'],
+    ['destination', 'place'], ['treats', 'treat'],
+  ].map(([key, category]) => [key, category === 'place' && region
+    ? region.letterContext : catalogueState.catalogue?.categories?.[category]
+      ?.find(record => record.id === giftChoices[category])?.letterContext])) };
+  };
+  const giftDetails = giftDetailsFor(choices);
+  const giftPreparing = audioPhase === 'preparing' || audioPhase === 'receiving' || generation.state?.pending;
+  const giftNotice = giftPreparing
+    ? 'Preparing your MP3. Gift downloads unlock together only after it is successfully ready.'
+    : audioPhase === 'error'
+      ? 'MP3 preparation or playback failed. Gift downloads are disabled; retry your message.'
+      : completedGift
+        ? completedGift.selectionKey !== selectionKey
+          ? 'Showing the last completed gift set, not your edited audio choices. These gifts switch only when the replacement MP3 succeeds.'
+          : audioPhase === 'ready'
+          ? 'Gifts for your completed message. Keep your downloads; Studio does not store personalised gift files or provide email return links.'
+          : 'Waiting for the completed recording before unlocking its gift downloads.'
+        : undefined;
 
   useEffect(() => {
     const dock = document.querySelector('.radio-dock');
@@ -713,21 +750,16 @@ export default function SantaMessageWorkshop() {
                 recordingId={selectedName?.id ?? ''}
                 spelling={nameSpelling}
                 letterVariation={letterVariation}
-                giftDetails={{ ...Object.fromEntries([
-                  ['age', 'age'], ['activity', 'activity'], ['achievement', 'achievement'],
-                  ['destination', 'place'], ['treats', 'treat'],
-                ].map(([key, category]) => {
-                  const label = category === 'place' ? destinationSummary || '' : catalogueState.catalogue?.categories?.[category]
-                    ?.find(record => record.id === choices[category])?.label || '';
-                  return [key, category === 'treat' ? workshopTreatWording(label)
-                    : category === 'place' ? label.replace(/ — (?:Fantasy place|Space destination)$/, '') : label];
-                })), context: Object.fromEntries([
-                  ['age', 'age'], ['activity', 'activity'], ['achievement', 'achievement'],
-                  ['destination', 'place'], ['treats', 'treat'],
-                ].map(([key, category]) => [key, category === 'place' && selectedRegion
-                  ? selectedRegion.letterContext : catalogueState.catalogue?.categories?.[category]
-                    ?.find(record => record.id === choices[category])?.letterContext])) }}
-                onChange={setNameSpelling}
+                giftDetails={giftDetails}
+                completedGift={completedGift}
+                downloadReady={audioPhase === 'ready' && !giftPreparing && !!completedGift}
+                downloadNotice={giftNotice}
+                onChange={spelling => {
+                  setNameSpelling(spelling);
+                  setCompletedGift(current => current?.record.id === selectedName?.id
+                    ? { ...current, writtenName: getWorkshopWrittenName(selectedName.name, spelling) }
+                    : current);
+                }}
               /> : <p className="smw-stage-note" role="status">Choose a destination to preview your keepsakes.</p>}
               <div className="smw-actions">
                 <button className="smw-button smw-button-back" type="button" onClick={goBack}>
@@ -740,6 +772,19 @@ export default function SantaMessageWorkshop() {
                 <WorkshopMessageAudio generation={generation} correction={correction}
                   onCorrection={() => setCorrection(true)} visible={isReview}
                   record={selectedName} choices={choices} spelling={nameSpelling}
+                  onPhaseChange={setAudioPhase}
+                  onReady={message => {
+                    const record = message?.record || selectedName;
+                    const completedChoices = message?.choices || choices;
+                    setCompletedGift({
+                      selectionKey: JSON.stringify([record.id, completedChoices.region,
+                        ...catalogueCategories.map(key => completedChoices[key]), completedChoices.talent]),
+                      record: { ...record }, details: giftDetailsFor(completedChoices),
+                      variation: letterVariation,
+                      writtenName: getWorkshopWrittenName(record.name, record.id === selectedName?.id ? nameSpelling : ''),
+                      revision: crypto.randomUUID(),
+                    });
+                  }}
                   complete={!!selectedName && destinationValid && catalogueCategories.every(key =>
                     catalogueState.catalogue?.categories?.[key]?.some(record => record.id === choices[key]))
                     && (choices.talent?.skip === true || (choices.talent?.category

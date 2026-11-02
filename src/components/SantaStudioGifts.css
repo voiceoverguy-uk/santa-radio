@@ -45,6 +45,39 @@
   min-width: 0;
 }
 
+/* Promotional examples keep their approved layout and have no download UI. */
+.studio-gifts__card { min-width: 0; }
+.studio-gifts__card--certificate { flex: 0 0 calc(64% - 8px); }
+.studio-gifts__card--letter { flex: 0 0 32%; }
+.studio-gifts__card > .studio-gifts__thumbnail { width: 100%; }
+.studio-gifts__card--picture { width: min(100%, 360px); margin: 9px auto 0; }
+.studio-gifts__card--picture > .studio-gifts__thumbnail { margin-top: 0; }
+.studio-gift-download { margin-top: 8px; }
+.studio-gift-download button {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 8px;
+  border: 1px solid #806023;
+  border-radius: 7px;
+  background: #f7efd9;
+  color: #19392d;
+  font: inherit;
+  font-size: .8rem;
+  font-weight: 700;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.studio-gift-download button:disabled { opacity: .6; cursor: not-allowed; }
+.studio-gift-download button:focus-visible { outline: 3px solid #765a20; outline-offset: 3px; }
+.studio-gift-download p { margin: 6px 0 10px; font-size: .75rem; line-height: 1.4; }
+@media (max-width: 480px) {
+  .studio-gifts__gallery:has(.studio-gifts__card) { flex-direction: column; }
+  .studio-gifts__card--certificate,
+  .studio-gifts__card--letter { flex: 0 0 auto; width: 100%; }
+  .studio-gifts__card--letter > .studio-gifts__thumbnail { width: 60%; margin-inline: auto; }
+}
+
 .studio-gifts__thumbnail {
   display: block;
   min-width: 44px;
