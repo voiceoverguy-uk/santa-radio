@@ -34,8 +34,8 @@ export const workshopTreatPhrases = Object.freeze({
   'dulce de leche': 'dulce de leche',
   'ear plugs': 'ear plugs',
   'energy drink': 'an energy drink',
-  'fav drink': 'a favourite drink',
-  'fav snack': 'a favourite snack',
+  'favourite drink': 'a favourite drink',
+  'favourite snack': 'a favourite snack',
   'festive brownie': 'a festive brownie',
   'festive doughnut': 'a festive doughnut',
   'fruit': 'fruit',
@@ -101,7 +101,8 @@ export const workshopTreatPhrases = Object.freeze({
 
 export function workshopTreatWording(label) {
   if (typeof label !== 'string' || !label.trim()) return '';
-  const key = label.normalize('NFC').trim().toLocaleLowerCase('en-GB').replace(/'/g, '’');
+  const key = label.normalize('NFC').trim().toLocaleLowerCase('en-GB').replace(/'/g, '’')
+    .replace(/^fav (drink|snack)$/, 'favourite $1');
   // Future choices remain visible, but don't guess their grammar from spelling.
   return Object.hasOwn(workshopTreatPhrases, key) ? workshopTreatPhrases[key] : label;
 }

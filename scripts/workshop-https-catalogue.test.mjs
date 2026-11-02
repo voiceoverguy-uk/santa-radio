@@ -44,6 +44,18 @@ test('achievement label edits preserve their recording identities', () => {
   assert.equal(examsChoice.id, exams.id);
   assert.ok(!output.categories.achievement.some(item => item.label === 'Well done in your exams'));
 });
+test('favourite treat labels are expanded without changing their recordings', () => {
+  const data = inventory();
+  for (const kind of ['drink', 'snack']) data.categories.treat.push(record(`treats/fav-${kind}.wav`));
+  const output = parseWorkshopCatalogue(data);
+  for (const kind of ['drink', 'snack']) {
+    const original = record(`treats/fav-${kind}.wav`);
+    const choice = output.categories.treat.find(item => item.id === original.id);
+    assert.equal(choice.label, `Favourite ${kind}`);
+    assert.equal(choice.file, original.file);
+    assert.equal(choice.id, original.id);
+  }
+});
 test('HTTPS catalogue preserves exact identities, correctly labels/sorts months and years, marks fantasy places and discloses raw files held for review', () => {
   const input = inventory(), output = parseWorkshopCatalogue(input);
   assert.equal(output.source, 'hosted');
