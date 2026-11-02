@@ -328,8 +328,8 @@ for (const route of ['/', path]) {
         const intro = await page.locator('.hero-name-preview__intro').boundingBox();
         expect(box.y).toBeGreaterThanOrEqual(intro.y + intro.height);
         if (width < 768) {
-          const note = await page.locator('.hero-note').boundingBox();
-          expect(box.y - note.y - note.height).toBeCloseTo(21, 0);
+          const description = await page.locator('.hero-description').boundingBox();
+          expect(box.y - description.y - description.height).toBeCloseTo(21, 0);
         }
       }
     }
@@ -800,35 +800,92 @@ test('creating the enabled Arabella pilot uses only a private POST, preserving t
   expect(new URL(page.url()).pathname).toBe(path);
 });
 
-test('mobile homepage puts Listen Live below the title and the description below the name checker', async ({ page }) => {
+for (const route of ['/', path]) {
+test(`mobile hero places description before the complete checker and countdown after it on ${route}`, async ({ page }, testInfo) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await setup(page);
-  await page.goto('/');
+  await page.clock.install({ time: new Date('2026-11-01T12:00:00Z') });
+  await page.addInitScript(() => sessionStorage.setItem('santa-message-offer-shown', 'shown'));
+  await page.goto(route);
   const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await decline.isVisible()) await decline.click();
   await page.evaluate(() => document.fonts.ready);
-  for (const width of [320, 390, 430]) {
-    await page.setViewportSize({ width, height: 1000 });
-    const bounds = await page.evaluate(() => {
-      const box = selector => {
-        const rect = document.querySelector(selector).getBoundingClientRect();
-        return { top: rect.top, bottom: rect.bottom };
-      };
-      return {
-        title: box('.hero-title'), listen: box('.hero-name-preview__player-row'),
-        checker: box('.hero-name-preview__checker'), description: box('.hero-name-preview__description'),
-        countdown: box('.hero-countdown'), width: document.documentElement.scrollWidth,
-      };
-    });
+  await expect(page.locator('.hero-description')).toHaveCount(1);
+  await expect(page.locator('.hero-description')).toHaveText(
+    'Your Christmas radio station all year round 24/7 along with festive treats, amazing free apps, games and FREE personalised messages from Santa.');
+  const seconds = page.locator('.hero-countdown .countdown-unit strong').last();
+  await page.clock.pauseAt(new Date('2026-11-01T12:00:10Z'));
+  const before = await seconds.textContent();
+  await page.clock.runFor(1000);
+  await expect(seconds).not.toHaveText(before);
+  await page.clock.resume();
+  const measure = () => page.locator('.hero').evaluate(hero => {
+    const box = selector => hero.querySelector(selector).getBoundingClientRect().toJSON();
+    return {
+      title: box('.hero-title'), listen: box('.hero-name-preview__player-row'),
+      note: box('.hero-note'), checker: box('.hero-name-preview__checker'),
+      description: box('.hero-description'), submit: box('.hero-name-checker__submit'),
+      countdown: box('.hero-countdown'),
+      artwork: hero.querySelector('.now-playing-artwork') ? box('.now-playing-artwork') : null,
+      list: hero.querySelector('[role="listbox"]') ? box('[role="listbox"]') : null,
+      content: [...hero.querySelectorAll('*')].map(node => node.getBoundingClientRect().toJSON())
+        .filter(rect => rect.width > 0),
+    };
+  });
+  const assertOrder = bounds => {
     expect(bounds.listen.top).toBeGreaterThanOrEqual(bounds.title.bottom);
-    expect(bounds.checker.top).toBeGreaterThanOrEqual(bounds.listen.bottom);
-    expect(bounds.description.top).toBeGreaterThanOrEqual(bounds.checker.bottom);
-    expect(bounds.countdown.top).toBeGreaterThanOrEqual(bounds.description.bottom);
-    expect(bounds.width).toBeLessThanOrEqual(width + 1);
+    expect(bounds.note.top).toBeGreaterThanOrEqual(bounds.listen.bottom);
+    expect(bounds.description.top).toBeGreaterThanOrEqual(bounds.note.bottom);
+    expect(bounds.checker.top - bounds.description.bottom).toBeCloseTo(21, 0);
+    expect(bounds.submit.bottom).toBeLessThanOrEqual(bounds.checker.bottom);
+    // Retain the countdown's existing 13px top margin plus the 21px grid gap.
+    expect(bounds.countdown.top - bounds.checker.bottom).toBeCloseTo(34, 0);
+    if (bounds.artwork) expect(bounds.artwork.top).toBeGreaterThanOrEqual(bounds.countdown.bottom);
+  };
+  for (const width of [320, 390, 767]) {
+    await page.setViewportSize({ width, height: 1000 });
+    for (const fontSize of ['100%', '200%']) {
+      await page.evaluate(size => { document.documentElement.style.fontSize = size; }, fontSize);
+      for (const playing of [false, true]) {
+        if (playing) await page.locator('.hero-actions button').click();
+        assertOrder(await measure());
+        await input(page).fill('Er');
+        await page.clock.runFor(500);
+        await expect(checker(page).getByRole('option')).toHaveCount(2);
+        const expanded = await measure();
+        assertOrder(expanded);
+        expect(expanded.list.left).toBeGreaterThanOrEqual(expanded.checker.left);
+        expect(expanded.list.right).toBeLessThanOrEqual(expanded.checker.right);
+        expect(expanded.list.top).toBeGreaterThanOrEqual(expanded.description.bottom);
+        expect(expanded.list.bottom).toBeLessThanOrEqual(expanded.countdown.top);
+        for (const box of expanded.content) {
+          expect(box.left).toBeGreaterThanOrEqual(-.5);
+          expect(box.right).toBeLessThanOrEqual(width + .5);
+        }
+        // The lower homepage has a pre-existing decoration overflow at 320px
+        // with 200% text; verify the entire hero above without changing it.
+        if (!(route === '/' && width === 320 && fontSize === '200%')) {
+          expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width + 1);
+        }
+        await input(page).press('ArrowDown');
+        await input(page).press('Enter');
+        await expect(input(page)).toHaveValue('Erin');
+        await expect(page.locator('.radio-dock')).toBeVisible();
+        if (fontSize === '100%' && !playing) {
+          await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+          await page.screenshot({ path: testInfo.outputPath(`mobile-order-${width}.png`) });
+        }
+        if (playing) await page.locator('.hero-actions button').click();
+      }
+    }
+    await cta(page).click();
+    await expect(page.locator('.santa-message-access input[name="FIRSTNAME"]')).toBeFocused();
     await expect(page.locator('.hero-actions button')).toHaveCount(1);
     await expect(input(page)).toHaveCount(1);
+    await expect(page.locator('.hero input[type="checkbox"]')).toHaveCount(0);
   }
 });
+}
 
 for (const width of [1280, 768, 390, 320]) test(`layout and playback stay stable at ${width}px`, async ({ page }) => {
   await page.setViewportSize({ width, height: 1000 });

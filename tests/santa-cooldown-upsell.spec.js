@@ -59,12 +59,13 @@ async function checkCooldownNotice(page) {
   const availability = await page.evaluate(() => {
     const { availableAt } = JSON.parse(localStorage.getItem('santa-message-allowance'));
     return new Intl.DateTimeFormat('en-GB', {
-      weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
+      hour: '2-digit', minute: '2-digit',
     }).format(new Date(availableAt));
   });
   await expect(notice).toBeVisible();
   await expect(notice).toHaveAttribute('role', 'status');
-  await expect(notice).toHaveText(`Your next free message will be available at ${availability}.`);
+  await expect(notice).toHaveText(`Your next free message available at ${availability}.`);
+  await expect(notice).toHaveText(/^Your next free message available at \d{2}:\d{2}\.$/);
   await expect(page.getByText('Your recording isn’t saved by this site', { exact: false })).toHaveCount(0);
   return notice.innerText();
 }
@@ -114,7 +115,7 @@ for (const width of [390, 1440]) {
     await expect(offer(page).getByRole('heading')).toHaveText('A little more magic for Erica?');
     await expect(offer(page).getByRole('link')).toHaveText('Preview Erica’s bespoke message package');
     await expect(offer(page).locator('p')).toHaveText(prelaunchCopy('Erica’s'));
-    await expect(card(page).locator('.message-cooldown-status')).toContainText('Your next free message will be available at');
+    await expect(card(page).locator('.message-cooldown-status')).toContainText('Your next free message available at');
     await expect(card(page).getByRole('link', { name: /Download your audio/ })).toBeVisible();
     const order = await offer(page).evaluate(node => ({
       top: node.getBoundingClientRect().top,
@@ -149,7 +150,7 @@ for (const prelaunch of [true, false]) {
     await expect(offer(page)).not.toContainText('child’s’s');
     await expect(offer(page)).not.toContainText(/Erica|Erin|Arabella|Abbey|Edward/);
     await checkCooldownNotice(page);
-    await expect(card(page).locator('.message-cooldown-status')).toContainText('Your next free message will be available at');
+    await expect(card(page).locator('.message-cooldown-status')).toContainText('Your next free message available at');
     await expect(card(page).locator('.service-notice')).toHaveText('Free to create and download. (not sent by email)');
     await checkNavigation(page);
   });

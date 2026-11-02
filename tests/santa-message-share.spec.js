@@ -21,7 +21,7 @@ async function open(page) {
   if (await decline.isVisible()) await decline.click();
   await fillAccessForm(page);
   await page.getByRole('button', { name: 'Get my free Santa message', exact: true }).click();
-  await expect(page.locator('.message-cooldown-status')).toContainText('next free message will be available at');
+  await expect(page.locator('.message-cooldown-status')).toContainText('next free message available at');
   await expect(page.getByRole('timer')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Share with friends', exact: true })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Listen to Santa Radio', exact: true })).toHaveCount(0);

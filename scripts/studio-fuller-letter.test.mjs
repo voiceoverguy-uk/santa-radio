@@ -44,7 +44,7 @@ test('every scene is reachable only in its eligible age bands, with no runtime r
       for (const [role, paragraph] of Object.entries(roles)) {
         assert.equal(letter.paragraphs[paragraph], letterNarratives[role][band][index]);
       }
-      assert.equal(letter.paragraphs.length, 11);
+      assert.equal(letter.paragraphs.length, 12);
       assert.equal(letter.closing.length, 2);
       assert.ok(letter.paragraphs[7].includes('smelly socks'));
       assert.ok(letter.paragraphs[7].match(/nose|spectacles/));

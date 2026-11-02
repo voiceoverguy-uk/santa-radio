@@ -42,3 +42,9 @@ matching would attach the wrong place's story to an otherwise valid recording.
 
 **How to apply:** Keep the audio selection's explicit parent relationship when
 forming letter details. Do not infer the intended geography from a label alone.
+
+Include one short, silly Christmas joke per letter, chosen from 25 family-friendly jokes and introduced with “By the way, (NAME), do you like jokes?”
+
+**Why:** The owner requested a line or two of Christmas humour in Santa's letter.
+
+**How to apply:** Choose the joke with the letter's existing page-local variation, not from the child's name; keep it stable during edits and preserve the one-page letter layout.

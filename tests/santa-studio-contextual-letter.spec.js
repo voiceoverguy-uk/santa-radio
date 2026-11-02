@@ -5,6 +5,7 @@ import { workshopTreatWording } from '../src/lib/workshopTreatWording.js';
 import { workshopCatalogue } from '../server/santa-workshop-catalogue.js';
 import { letterNarratives, letterReminders, letterPostscripts, detailIntroductions } from '../src/lib/studioLetterNarratives.js';
 import { responseLibraries, resolveLetterGroup } from '../src/lib/studioLetterResponses.js';
+import { studioChristmasJokes } from '../src/lib/studioChristmasJokes.js';
 import { mkdir, writeFile } from 'node:fs/promises';
 
 const cases = [
@@ -132,6 +133,7 @@ test('authorised catalogue longest rendered combinations across age bands, regio
       }
       const reminderBand = adult ? 'adult' : age.includes('month') ? 'months' : 'family';
       letterReminders[reminderBand].forEach((_, i) => add('reminder', 9, initial, { reminder: (i + .1) / 3 }));
+      studioChristmasJokes.forEach((_, i) => add('joke', 10, initial, { joke: (i + .1) / studioChristmasJokes.length }));
       candidates.postscript = letterPostscripts.map((text, i) => ({ text, variation: { postscript: (i + .1) / 3 } }));
       // Measure every candidate in the same canonical A4 typography. Maximise
       // actual wrapped height, not character count or a hand-picked variant.

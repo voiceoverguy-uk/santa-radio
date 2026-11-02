@@ -9,16 +9,13 @@ const empty = () => ({ used: 0, availableAt: 0 });
 
 export function messageAvailabilityTime(availableAt) {
   return new Intl.DateTimeFormat('en-GB', {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
     hour: '2-digit',
     minute: '2-digit',
   }).format(new Date(availableAt));
 }
 
 export function messageAvailabilityMessage(availableAt) {
-  return `Your next free message will be available at ${messageAvailabilityTime(availableAt)}.`;
+  return `Your next free message available at ${messageAvailabilityTime(availableAt)}.`;
 }
 
 function normalise(value, now) {

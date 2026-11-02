@@ -4,6 +4,7 @@ import './SantaStudioPromotion.css';
 import StudioPurchaseButton from './StudioPurchaseButton.jsx';
 import { StudioGiftPreview, useStudioGiftExample } from './SantaStudioGifts.jsx';
 import SantaStudioLaunchCountdown from './SantaStudioLaunchCountdown.jsx';
+import StudioPortraitViewer from './StudioPortraitViewer.jsx';
 
 export default function SantaStudioPromotion({ activeExampleName = null, availableNamesText, previewName = null, allowExamples = true }) {
   const navigate = useNavigate();
@@ -47,11 +48,7 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
             <p className="santa-studio-promotion__footnote">*Subject to staying on the Nice List, of course.</p>
           </div>
           <div className="santa-studio-promotion__preview">
-            <img
-              className="santa-studio-promotion__artwork"
-              src="/images/santa-studio-headphones.webp"
-              alt="Santa wearing headphones at a festive message-making microphone"
-            />
+            <StudioPortraitViewer />
           </div>
         </div>
         <WorkshopPasswordForm

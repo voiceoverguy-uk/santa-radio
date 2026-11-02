@@ -711,8 +711,8 @@
       "intro"
       "player"
       "note"
-      "checker"
       "description"
+      "checker"
       "countdown"
       "artwork";
     align-items: stretch;
@@ -834,8 +834,8 @@
       "intro"
       "player"
       "note"
-      "checker"
       "description"
+      "checker"
       "countdown";
   }
 }

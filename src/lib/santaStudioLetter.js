@@ -1,6 +1,7 @@
 import { responseLibraries, resolveLetterGroup, createStudioLetterVariation,
   letterSignoffs } from './studioLetterResponses.js';
 import { letterNarratives, detailIntroductions, letterReminders, letterPostscripts } from './studioLetterNarratives.js';
+import { studioChristmasJokes } from './studioChristmasJokes.js';
 export { createStudioLetterVariation } from './studioLetterResponses.js';
 
 // Public-safe display labels verified against the hosted Studio inventory.
@@ -51,6 +52,7 @@ export function createStudioLetter(name, random = Math.random, overrides = null,
     `${introduction('treats')} ${response('treats')}`,
     narrative('atmosphere'),
     reminder,
+    `By the way, ${name}, do you like jokes? ${choose(studioChristmasJokes, 'joke')}`,
     choose(letterSignoffs, 'signoff'),
   ];
   return { name, age, ...details, paragraphs,

@@ -135,6 +135,62 @@ async function setup(page, { path = '/', cooldown = false } = {}) {
   if (await decline.isVisible()) await decline.click();
 }
 
+for (const path of ['/', '/free-santa-message']) {
+  for (const width of [320, 390, 1440]) {
+    test(`Santa studio portrait expands smoothly and closes accessibly on ${path} at ${width}px`, async ({ page }, testInfo) => {
+      await page.setViewportSize({ width, height: 900 });
+      await setup(page, { path });
+      await signup(page);
+      await page.emulateMedia({ reducedMotion: 'no-preference' });
+      const trigger = page.getByRole('button', { name: 'Enlarge Santa’s studio picture', exact: true });
+      const modal = page.getByRole('dialog', { name: 'Santa’s studio picture', exact: true });
+      const close = page.getByRole('button', { name: 'Close Santa’s studio picture', exact: true });
+      await trigger.scrollIntoViewIfNeeded();
+      const originalWidth = await trigger.evaluate(node => node.getBoundingClientRect().width);
+      const originalOverflow = await page.evaluate(() => document.body.style.overflow);
+      await trigger.click();
+      await expect(modal).toBeVisible();
+      await expect(close).toBeFocused();
+      await expect(modal).toHaveCSS('animation-duration', '0.7s');
+      await modal.evaluate(async node => {
+        await Promise.all(node.getAnimations().map(animation => animation.finished));
+      });
+      const box = await modal.boundingBox();
+      expect(box.width).toBeCloseTo(originalWidth * 3, 0);
+      expect(box.x).toBeGreaterThanOrEqual(0);
+      expect(box.x + box.width).toBeLessThanOrEqual(width);
+      expect(box.y).toBeGreaterThanOrEqual(0);
+      expect(box.y + box.height).toBeLessThanOrEqual(900);
+      await expect(modal.locator('img')).toHaveAttribute('src', '/images/santa-studio-headphones.webp');
+      expect(await modal.locator('img').evaluate(image => image.complete && image.naturalWidth > 0)).toBe(true);
+      expect(await page.evaluate(() => document.body.style.overflow)).toBe('hidden');
+      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+      await modal.locator('img').click({ position: { x: 30, y: 100 } });
+      await expect(modal).toBeVisible();
+      await page.screenshot({ path: testInfo.outputPath('expanded-santa-portrait.png') });
+      await close.click();
+      await expect(modal).not.toBeVisible();
+      await expect(trigger).toBeFocused();
+      expect(await page.evaluate(() => document.body.style.overflow)).toBe(originalOverflow);
+      // Keyboard activation and native Escape dismissal remain available.
+      await trigger.press('Enter');
+      await expect(modal).toBeVisible();
+      await page.keyboard.press('Escape');
+      await expect(modal).not.toBeVisible();
+      await expect(trigger).toBeFocused();
+      // Respect reduced motion while preserving the full-size preview.
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      await trigger.click();
+      await expect(modal).toHaveCSS('animation-name', 'none');
+      await page.mouse.click(5, 5);
+      await expect(modal).not.toBeVisible();
+      await expect(trigger).toBeFocused();
+      expect(await trigger.evaluate(node => node.getBoundingClientRect().width)).toBe(originalWidth);
+      expect(await page.evaluate(() => document.body.style.overflow)).toBe(originalOverflow);
+    });
+  }
+}
+
 async function chooseHero(page, name) {
   const input = checker(page).getByRole('combobox');
   await input.fill(name);

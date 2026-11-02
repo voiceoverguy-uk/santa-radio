@@ -178,6 +178,6 @@ export function resolveLetterGroup(category, value, context) {
 // Page-local variation slots, independent of the recipient's name and choices.
 export function createStudioLetterVariation(random = Math.random) {
   return Object.fromEntries(['opening', 'age', 'activity', 'achievement', 'destination', 'treats', 'farewell', 'signoff',
-    'workshop', 'departure', 'atmosphere', 'activityIntro', 'achievementIntro', 'destinationIntro', 'treatsIntro', 'reminder', 'postscript']
+    'workshop', 'departure', 'atmosphere', 'activityIntro', 'achievementIntro', 'destinationIntro', 'treatsIntro', 'reminder', 'postscript', 'joke']
     .map(slot => [slot, random()]));
 }

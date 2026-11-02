@@ -81,7 +81,7 @@ for (const path of ['/', '/free-santa-message']) {
       await expect(promo.getByText('Coming Early November', { exact: true })).toBeVisible();
       await expect(page.getByRole('button', { name: 'more magic?', exact: true })).toHaveCount(0);
       await expect(page.locator('.message-wait, .santa-message-box [role="timer"]')).toHaveCount(0);
-      await expect(page.locator('.message-cooldown-status')).toHaveText(/^Your next free message will be available at .+\.$/);
+      await expect(page.locator('.message-cooldown-status')).toHaveText(/^Your next free message available at \d{2}:\d{2}\.$/);
       await expect(page.locator('.message-wait-downloads > #santa-studio-promotion')).toHaveCount(0);
       await expect(page.locator('.message-layout > #santa-studio-promotion')).toHaveCount(1);
       await expect(page.getByRole('button', { name: 'Create message', exact: true })).toHaveCount(0);
@@ -165,7 +165,7 @@ test('an early attempt caused by stale page state explains when the next free me
   }, { key: MESSAGE_ALLOWANCE_KEY, availableAt: deadline, duration: MESSAGE_COOLDOWN_MS });
   await page.locator('.santa-message-box form').evaluate(form => form.requestSubmit());
   const expectedTime = await page.evaluate(time => new Intl.DateTimeFormat('en-GB', {
-    weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
+    hour: '2-digit', minute: '2-digit',
   }).format(new Date(time)), deadline);
   await expect(page.locator('.message-cooldown-status')).toContainText(expectedTime);
   await expect(page.locator('.message-result')).toHaveCount(0);
@@ -187,16 +187,16 @@ test('the two-hour deadline persists through reload and updates another tab with
     cooldownMs: MESSAGE_COOLDOWN_MS,
   });
   const expectedTime = await page.evaluate(deadline => new Intl.DateTimeFormat('en-GB', {
-    weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
+    hour: '2-digit', minute: '2-digit',
   }).format(new Date(deadline)), saved.availableAt);
 
-  await expect(otherTab.locator('.message-cooldown-status')).toHaveText(`Your next free message will be available at ${expectedTime}.`);
+  await expect(otherTab.locator('.message-cooldown-status')).toHaveText(`Your next free message available at ${expectedTime}.`);
   await expect(otherTab.locator('.message-result')).toHaveCount(0);
   await expect(otherTab.getByText('isn’t saved by this site', { exact: false })).toHaveCount(0);
   await expect(otherTab.locator('.santa-message-box [role="timer"], .message-wait')).toHaveCount(0);
 
   await page.reload();
-  await expect(page.locator('.message-cooldown-status')).toHaveText(`Your next free message will be available at ${expectedTime}.`);
+  await expect(page.locator('.message-cooldown-status')).toHaveText(`Your next free message available at ${expectedTime}.`);
   await expect(page.locator('.message-result')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toHaveCount(0);
   await expect(page.locator('.message-layout > #santa-studio-promotion')).toHaveCount(1);

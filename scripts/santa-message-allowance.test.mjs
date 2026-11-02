@@ -35,7 +35,7 @@ test('one success starts a full two-hour wait and blocks further creation', asyn
   assert.equal(store.getSnapshot().secondsLeft, 7200);
   assert.deepEqual(JSON.parse(browser.localStorage.getItem(MESSAGE_ALLOWANCE_KEY)), { used: 1, availableAt: now + MESSAGE_COOLDOWN_MS, cooldownMs: MESSAGE_COOLDOWN_MS });
   let calls = 0;
-  await assert.rejects(store.create(() => { calls++; return success(); }, signal()), /next free message will be available at/);
+  await assert.rejects(store.create(() => { calls++; return success(); }, signal()), /next free message available at/);
   assert.equal(calls, 0);
 });
 
@@ -100,7 +100,7 @@ test('simultaneous form instances and tabs cannot consume the last allowance twi
   await assert.rejects(two.create(success, signal()), /Another message/);
   release('recording');
   await held;
-  await assert.rejects(two.create(success, signal()), /next free message will be available at/);
+  await assert.rejects(two.create(success, signal()), /next free message available at/);
   two.refresh();
   assert.equal(two.getSnapshot().remaining, 0);
 });
@@ -112,7 +112,7 @@ test('blocked reads and writes explicitly use shared in-page memory', async () =
   assert.equal(store.getSnapshot().remembered, false);
   await store.create(success, signal());
   assert.equal(store.getSnapshot().secondsLeft, 7200);
-  await assert.rejects(store.create(success, signal()), /next free message will be available at/);
+  await assert.rejects(store.create(success, signal()), /next free message available at/);
 });
 
 test('storage becoming unwritable after a success preserves the existing usage', async () => {

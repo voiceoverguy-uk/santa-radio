@@ -8,11 +8,11 @@ The owner has explicitly approved replacing the main homepage hero with the name
 
 **How to apply:** Preserve the snowy North Pole backdrop, shared radio and existing adult-signup/message limits. Name checking is not permission to bypass signup or automatically create audio.
 
-On mobile, put the red Listen Live button immediately below the hero heading, and the “Enjoy online Christmas music 24/7…” description below the name-checker box. Keep desktop ordering unchanged.
+On mobile, keep the order: heading and strapline, Listen Live, station note, complete Christmas description, a modest gap, complete name-checker card, countdown, then playing artwork. Keep tablet and desktop ordering unchanged.
 
-**Why:** The owner explicitly requested these mobile-only moves.
+**Why:** The owner explicitly requested the description above the checker and countdown immediately after the complete card, superseding the earlier description-below-checker direction.
 
-**How to apply:** Preserve a single shared player and name checker; keep the countdown below the description rather than moving it above the checker with the listening button.
+**How to apply:** Preserve a single shared description, player and name checker on both homepage and shared preview; use the existing approximately 21px phone grid gap before the checker.
 
 Entered child names must not enter analytics, request URLs or durable storage, including when prefilling the existing maker. Only bounded server-side searches in POST bodies are permitted; never restore browser downloads of the full inventory.
 
