@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
 import WorkshopSearchableChoices from './WorkshopSearchableChoices.jsx';
-import { workshopRegionalFolders } from '../lib/workshopDestinations.js';
+import { workshopRegionalFolders, workshopDestinationCategory } from '../lib/workshopDestinations.js';
 import './WorkshopDestinationPicker.css';
 
 const regionalFiles = Object.fromEntries(Object.entries(workshopRegionalFolders)
@@ -16,6 +16,8 @@ const regionalHeadings = {
 
 export default function WorkshopDestinationPicker({
   options = [],
+  category = 'countries',
+  onCategoryChange,
   regionalGroups = {},
   value,
   region = '',
@@ -29,8 +31,10 @@ export default function WorkshopDestinationPicker({
   const [showRegions, setShowRegions] = useState(false);
   const countryHeadingRef = useRef(null);
   const regionHeadingRef = useRef(null);
-  const country = options.find(option => String(option.id) === String(value));
-  const groupKey = regionalFiles[country?.file];
+  const fantasy = category === 'fantasy';
+  const visibleOptions = options.filter(option => workshopDestinationCategory(option) === category);
+  const country = visibleOptions.find(option => String(option.id) === String(value));
+  const groupKey = !fantasy && regionalFiles[country?.file];
   const regionalGroup = groupKey ? regionalGroups[groupKey] : undefined;
   const availableRegions = regionalGroup?.parentId != null
     && String(regionalGroup.parentId) === String(value)
@@ -76,6 +80,19 @@ export default function WorkshopDestinationPicker({
 
   return (
     <section className="smw-destination-picker" aria-label="Destination">
+      <div className="smw-talent-categories" role="group" aria-label="Choose a destination category">
+        {[
+          ['countries', 'Countries & real places'],
+          ['fantasy', 'Fantasy & space'],
+        ].map(([key, label]) => (
+          <button key={key} type="button" className={category === key ? 'is-selected' : ''}
+            aria-pressed={category === key} onClick={() => {
+              if (category === key) return;
+              setShowRegions(false);
+              onCategoryChange?.(key);
+            }}>{label}</button>
+        ))}
+      </div>
       <div className="smw-destination-picker__summary" aria-live="polite">
         {selectedRegion && country && (
           <div className="smw-destination-picker__selection">
@@ -90,27 +107,32 @@ export default function WorkshopDestinationPicker({
 
       <div className="smw-destination-picker__country" hidden={showRegions}>
         <h3 ref={countryHeadingRef} tabIndex={-1} className="smw-destination-picker__heading">
-          Choose a country
+          {fantasy ? 'Choose a fantasy or space destination' : 'Choose a country or real place'}
         </h3>
         <div className="smw-destination-picker__searchable">
           <WorkshopSearchableChoices
+            key={category}
             category="place"
-            label="A magical place"
-            options={options}
+            label={fantasy ? 'Fantasy & space' : 'Countries & real places'}
+            options={visibleOptions}
             value={value}
             onChange={onChange}
             invalid={invalid}
             onTick={onTick}
             onSoundInteraction={onSoundInteraction}
             wording={wording}
+            searchLabel={fantasy ? 'Search fantasy and space destinations' : 'Search locations'}
+            placeholder={fantasy ? 'Try a fantasy place or space destination' : 'Search countries and real places'}
             selectedText={selectedRegion?.label || country?.label || ''}
             wheelFooter={country && groupKey && (
-              <div className="smw-destination-picker__region-prompt">
-                <p>{guidance || 'Optional: make the destination more local, or continue with the country alone.'}</p>
-                {canChooseRegion && <button type="button" onClick={openRegions}>
+              <>
+                {canChooseRegion && <button className="smw-destination-picker__region-action" type="button" onClick={openRegions}>
                   Choose a {groupKey === 'usa-states' ? 'state' : 'county'}
                 </button>}
-              </div>
+                <div className="smw-destination-picker__region-prompt">
+                  <p>{guidance || 'Optional: make the destination more local, or continue with the country alone.'}</p>
+                </div>
+              </>
             )}
           />
         </div>

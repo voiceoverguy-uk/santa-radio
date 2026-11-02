@@ -8,6 +8,12 @@ export const workshopRegionalFolders = {
   'northern-ireland-counties': 'countries/northern-ireland.wav',
 };
 
+// Classifications come from the verified catalogue, never display labels or
+// filenames. Older catalogues without kind contain ordinary places.
+export function workshopDestinationCategory(record) {
+  return record?.kind === 'fantasy' || record?.kind === 'space' ? 'fantasy' : 'countries';
+}
+
 export function selectedWorkshopRegion(catalogue, countryId, regionId) {
   if (!regionId) return null;
   const group = Object.values(catalogue?.regionalGroups || {}).find(group => group.parentId === countryId);

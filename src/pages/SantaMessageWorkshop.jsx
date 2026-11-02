@@ -16,7 +16,7 @@ import { workshopTreatWording } from '../lib/workshopTreatWording.js';
 import { createStudioLetterVariation } from '../lib/santaStudioLetter.js';
 import WorkshopSearchableChoices from '../components/WorkshopSearchableChoices.jsx';
 import WorkshopDestinationPicker from '../components/WorkshopDestinationPicker.jsx';
-import { selectedWorkshopRegion, workshopRegionalFolders } from '../lib/workshopDestinations.js';
+import { selectedWorkshopRegion, workshopRegionalFolders, workshopDestinationCategory } from '../lib/workshopDestinations.js';
 import './SantaMessageWorkshop.css';
 
 const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
@@ -218,6 +218,7 @@ export default function SantaMessageWorkshop() {
   const [stageIndex, setStageIndex] = useState(0);
   const [choices, setChoices] = useState(emptyChoices);
   const [talentCategory, setTalentCategory] = useState('sports');
+  const [destinationCategory, setDestinationCategory] = useState('countries');
   const [selectedName, setSelectedName] = useState(null);
   const [namePreviewCache] = useState(createWorkshopNamePreviewCache);
   // Keep a clip across other detail edits, but clear it when its recipient
@@ -247,7 +248,9 @@ export default function SantaMessageWorkshop() {
   const selectedRegion = selectedWorkshopRegion(catalogueState.catalogue, choices.place, choices.region);
   const selectedCountry = catalogueState.catalogue?.categories.place.find(record => record.id === choices.place);
   const destinationSummary = selectedRegion ? `${selectedRegion.label}, ${selectedCountry.label}` : selectedCountry?.label;
-  const destinationValid = !choices.region || !!selectedRegion;
+  const destinationValid = !!selectedCountry
+    && workshopDestinationCategory(selectedCountry) === destinationCategory
+    && (!choices.region || !!selectedRegion);
   const workshopSoundNotice = getSoundStatusMessage(workshopSoundStatus);
   const pageRef = useRef(null);
   const builderRef = useRef(null);
@@ -364,18 +367,27 @@ export default function SantaMessageWorkshop() {
     }
     setError('');
     playNext();
+    if (stage.key === 'treat' && !editing) {
+      setDestinationCategory(workshopDestinationCategory(selectedCountry));
+    }
     setStageIndex(index => editing ? stages.length : index + 1);
     setEditing(false);
   };
 
   const goBack = () => {
     setError('');
+    if (!editing && stageIndex - 1 === stages.findIndex(item => item.key === 'place')) {
+      setDestinationCategory(workshopDestinationCategory(selectedCountry));
+    }
     setStageIndex(index => editing ? stages.length : Math.max(0, index - 1));
     setEditing(false);
   };
 
   const editStage = index => {
     setError('');
+    if (stages[index]?.key === 'place') {
+      setDestinationCategory(workshopDestinationCategory(selectedCountry));
+    }
     setEditing(true);
     setStageIndex(index);
   };
@@ -560,6 +572,11 @@ export default function SantaMessageWorkshop() {
                 </p>
                ) : stage.key === 'place' ? (
                  <WorkshopDestinationPicker options={catalogueOptions}
+                   category={destinationCategory}
+                   onCategoryChange={category => {
+                     setDestinationCategory(category);
+                     choose('place', '');
+                   }}
                    regionalGroups={catalogueState.catalogue.regionalGroups}
                    value={choices.place} region={choices.region || ''}
                    onChange={value => choose('place', value)} onRegionChange={value => choose('region', value)}
@@ -608,7 +625,11 @@ export default function SantaMessageWorkshop() {
                 onTick={playTick}
                 onSoundInteraction={prepare}
               />}
-              {stage.note && <p className="smw-stage-note">{stage.note}</p>}
+              {stage.note && <p className="smw-stage-note">{stage.key === 'place'
+                ? destinationCategory === 'fantasy'
+                  ? 'Fictional places are labelled Fantasy place; real space destinations are labelled Space destination.'
+                  : 'Choose from the recorded countries and real places.'
+                : stage.note}</p>}
               <p className="smw-validation" id="smw-validation" role="alert">{error}</p>
               <div className="smw-actions">
                 {(stageIndex > 0 || editing) && <button className="smw-button smw-button-back" type="button" onClick={goBack}>
@@ -662,7 +683,7 @@ export default function SantaMessageWorkshop() {
                   </div>
                 ))}
               </dl>
-              <WorkshopNameSpelling
+              {destinationValid ? <WorkshopNameSpelling
                 key={selectedName?.id}
                 recordedName={selectedName?.name || ''}
                 recordingId={selectedName?.id ?? ''}
@@ -683,7 +704,7 @@ export default function SantaMessageWorkshop() {
                   ? selectedRegion.letterContext : catalogueState.catalogue?.categories?.[category]
                     ?.find(record => record.id === choices[category])?.letterContext])) }}
                 onChange={setNameSpelling}
-              />
+              /> : <p className="smw-stage-note" role="status">Choose a destination to preview your keepsakes.</p>}
               <div className="smw-actions">
                 <button className="smw-button smw-button-back" type="button" onClick={goBack}>
                   <span aria-hidden="true">←</span> Back

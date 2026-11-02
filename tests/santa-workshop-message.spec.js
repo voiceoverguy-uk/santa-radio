@@ -53,6 +53,7 @@ async function openReview(page, { live = false } = {}) {
   await nameOption.click();
   await page.locator('.smw-button-next').click();
   for (const answer of answers) {
+    if (answer.includes('Fantasy place')) await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
     if (await page.getByRole('button', { name: 'Skip this section', exact: true }).isVisible()) {
       await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
     }

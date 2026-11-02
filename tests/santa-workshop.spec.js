@@ -174,6 +174,7 @@ test('newly indexed state and county keep selected labels, letter stories and au
   const original = await paragraphs.allTextContents();
   for (const place of parsed.categories.place) {
     await page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true }).click();
+    await page.getByRole('button', { name: 'Countries & real places', exact: true }).click();
     await page.getByRole('option', { name: place.label, exact: true }).click();
     await page.getByRole('button', { name: 'Return to review', exact: true }).click();
     await expect(paragraphs.nth(6)).toContainText(place.label);
@@ -377,7 +378,7 @@ for (const width of [390, 1440]) {
       await page.locator('.smw-button-next').click();
     }
     await expect(suffix).toHaveCount(0);
-    const wheel = page.getByRole('listbox', { name: 'Place', exact: true });
+    const wheel = page.getByRole('listbox', { name: 'Countries & real places', exact: true });
     await wheel.press('Home');
     await expect(quote).toContainText('Ah yes… Wales');
     await expect(suffix).toHaveText('Wales');
@@ -402,9 +403,14 @@ async function complete(page, keyboard = false) {
     if (index === 2) await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
     await expect(page.locator('.smw-step-count')).toHaveText(`Step ${index + 1 + (index >= 2 ? 1 : 0)} of 8`);
     if (index === 5) {
-      const locationNote = page.getByText('County available for UK addresses; state for US addresses.', { exact: true });
-      await expect(locationNote).toBeVisible();
-      await expect(page.locator('.smw-stage')).toContainText('County available for UK addresses; state for US addresses.');
+      await expect(page.getByRole('button', { name: 'Countries & real places', exact: true })).toHaveAttribute('aria-pressed', 'true');
+      if (keyboard) {
+        await page.keyboard.press('Tab');
+        await expect(page.getByRole('button', { name: 'Countries & real places', exact: true })).toBeFocused();
+        await page.keyboard.press('Tab');
+        await expect(page.getByRole('button', { name: 'Fantasy & space', exact: true })).toBeFocused();
+        await page.keyboard.press('Enter');
+      } else await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
     }
     if (page.viewportSize().width <= 760) {
       await expect(page.locator('.radio-dock')).toBeHidden();
@@ -488,7 +494,7 @@ async function complete(page, keyboard = false) {
   await expect(page.locator('.smw-summary-row')).toHaveCount(7);
 }
 
-test('UK county and US state guidance sits beside the location selector', async ({ page }) => {
+test('destination guidance follows the active country or fantasy category', async ({ page }) => {
   await openAgeStage(page);
   for (let step = 2; step < 6; step++) {
     if (step === 3) await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
@@ -497,8 +503,9 @@ test('UK county and US state guidance sits beside the location selector', async 
     await page.locator('.smw-button-next').click();
   }
   await expect(page.locator('.smw-step-count')).toHaveText('Step 7 of 8');
-  await expect(page.locator('.smw-stage')).toContainText('County available for UK addresses; state for US addresses.');
-  await expect(page.getByText('County available for UK addresses; state for US addresses.', { exact: true })).toBeVisible();
+  await expect(page.locator('.smw-stage-note')).toHaveText('Choose from the recorded countries and real places.');
+  await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
+  await expect(page.locator('.smw-stage-note')).toHaveText('Fictional places are labelled Fantasy place; real space destinations are labelled Space destination.');
 });
 
 for (const viewport of [
@@ -643,11 +650,11 @@ for (const viewport of [
     await expect(treatCard).toHaveCount(0);
     await expect(page.locator('.smw-sound-toggle')).toHaveCount(0);
     await expect(page.getByText('Quiet workshop feedback only; independent of Santa Radio playback.', { exact: true })).toHaveCount(0);
-    await expect(page.getByRole('listbox', { name: 'Place', exact: true })).toHaveAccessibleName('Place');
+    await expect(page.getByRole('listbox', { name: 'Countries & real places', exact: true })).toHaveAccessibleName('Countries & real places');
     await expect(page.locator('.smw-stage-heading h3')).toHaveText('Santa would like to know where he’s going?');
     await expect(page.locator('.smw-stage-heading p')).toHaveCount(0);
     await expect(page.getByText('Choose from real places, space destinations and storybook places.', { exact: true })).toHaveCount(0);
-    await expect(page.locator('.smw-stage-note').first()).toHaveText('The list includes countries and real places. Fantasy places and space destinations are labelled separately.');
+    await expect(page.locator('.smw-stage-note').first()).toHaveText('Choose from the recorded countries and real places.');
     expect(await page.locator('.smw-choice-wheel-heading, .smw-choice-wheel-hint').evaluateAll(nodes => nodes.length === 2 && nodes.every(node => {
       const rect = node.getBoundingClientRect();
       return getComputedStyle(node).clipPath === 'inset(50%)' && rect.width <= 1 && rect.height <= 1;
@@ -656,7 +663,7 @@ for (const viewport of [
     const destinationCard = page.getByRole('complementary', { name: 'Santa will say…', exact: true }).filter({ hasText: 'Head Elf' });
     await expect(destinationCard).toContainText('Anyway, as I sit here reading this, Head Elf has just reminded me where we’re coming to… Ah yes…');
     await expect(destinationCard).not.toContainText('Preview wording only.');
-    const destinationWheel = page.getByRole('listbox', { name: 'Place', exact: true });
+    const destinationWheel = page.getByRole('listbox', { name: 'Countries & real places', exact: true });
     await expect(destinationWheel.locator('[aria-selected=true]')).toHaveCount(0);
     const destinationBox = await page.locator('.smw-choice-wheel-frame').boundingBox();
     const destinationCardBox = await destinationCard.boundingBox();
@@ -1200,6 +1207,7 @@ test('long-text categories use wider wheels with validation, scrolling and retai
   await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
   const selections = ['Playing a musical instrument', 'Planting and caring for a garden', 'Turrón', 'Camelot — Fantasy place'];
   for (const [index, selection] of selections.entries()) {
+    if (selection.includes('Fantasy place')) await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
     const wheel = page.getByRole('listbox');
     await expect(wheel.locator('[aria-selected=true]')).toHaveCount(0);
     await page.locator('.smw-button-next').click();

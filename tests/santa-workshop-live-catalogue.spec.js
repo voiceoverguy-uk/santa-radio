@@ -66,11 +66,13 @@ test(`live HTTPS categories ${initialWidth}: mobile flow and full-list desktop a
   for (const [index, label] of selected.entries()) {
     if (index === 1) await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
     const wheel = page.getByRole('listbox');
-    await expect(wheel.getByRole('option')).toHaveCount(catalogue.counts[keys[index]]);
+    await expect(wheel.getByRole('option')).toHaveCount(index === 4
+      ? catalogue.categories.place.filter(record => record.kind === 'place').length
+      : catalogue.counts[keys[index]]);
     await expect(wheel.locator('[aria-selected=true]')).toHaveCount(0);
     if (index === 4) {
       await expect(page.locator('.smw-stage-heading h3')).toHaveText('Santa would like to know where he’s going?');
-      expect(await wheel.getByRole('option').allTextContents()).toEqual(catalogue.categories.place.map(item => item.label));
+      expect(await wheel.getByRole('option').allTextContents()).toEqual(catalogue.categories.place.filter(item => item.kind === 'place').map(item => item.label));
     }
     if (index === 2) {
       const checkViewport = async () => {
@@ -131,6 +133,10 @@ test(`live HTTPS categories ${initialWidth}: mobile flow and full-list desktop a
   for (const label of selected) await expect(page.locator('.smw-summary')).toContainText(label);
   await page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true }).click();
   await expect(page.getByRole('option', { name: 'United Arab Emirates', exact: true })).toHaveAttribute('aria-selected', 'true');
+  await expect(page.getByRole('option')).toHaveText(catalogue.categories.place.filter(record => record.kind === 'place').map(record => record.label));
+  await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
+  await expect(page.getByRole('option')).toHaveText(catalogue.categories.place.filter(record => record.kind !== 'place').map(record => record.label));
+  await expect(page.getByRole('option', { selected: true })).toHaveCount(0);
   await page.getByRole('option', { name: 'Camelot — Fantasy place', exact: true }).click();
   await page.getByRole('button', { name: 'Return to review' }).click();
   await expect(page.locator('.smw-summary')).toContainText('Camelot — Fantasy place');

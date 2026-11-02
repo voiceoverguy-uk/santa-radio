@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
+import { readFileSync } from 'node:fs';
 import { test } from './helpers/provider-test.js';
-import { workshopCatalogueFixture, workshopRegionalCatalogueFixture } from './fixtures/workshop-catalogue.js';
+import { workshopCatalogueFixture, workshopRegionalCatalogueFixture, workshopMixedDestinationFixture } from './fixtures/workshop-catalogue.js';
 import { unlockWorkshop } from './helpers/workshop-access.js';
 
 test.beforeEach(async ({ page }) => { await unlockWorkshop(page); });
@@ -148,7 +149,8 @@ Object.assign(catalogue.categories, {
   activity: [choice('tidy', 'Tidying away toys'), choice('share', 'Sharing toys with others'), choice('football', 'Playing football')],
   achievement: [choice('help', 'Helping with toys'), choice('brave', 'Being brave')],
   treat: [choice('chocolate', 'Hot chocolate'), choice('carrots', 'Carrots for reindeer')],
-  place: [choice('england', 'England'), choice('moon', 'The Moon — Space destination'), choice('wonderland', 'Wonderland — Fantasy place')],
+  place: [choice('england', 'England'), { ...choice('moon', 'The Moon — Space destination'), kind: 'space' },
+    { ...choice('wonderland', 'Wonderland — Fantasy place'), kind: 'fantasy' }],
 });
 for (const key of ['activity', 'achievement', 'treat', 'place']) catalogue.counts[key] = catalogue.categories[key].length;
 
@@ -186,9 +188,10 @@ for (const viewport of [{ width: 1365, height: 900 }, { width: 320, height: 568 
       [3, 'Search activities', 'toys', 'Tidying away toys', 3],
       [4, 'Search achievements', 'toys', 'Helping with toys', 2],
       [5, 'Search treats', 'chocolate', 'Hot chocolate', 2],
-      [6, 'Search locations', 'space', 'The Moon — Space destination', 3],
+      [6, 'Search fantasy and space destinations', 'space', 'The Moon — Space destination', 2],
     ]) {
       await expect(page.locator('.smw-step-count')).toHaveText(`Step ${index + 1} of 8`);
+      if (index === 6) await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
       const input = page.getByRole('searchbox', { name: searchLabel, exact: true });
       if (index === 3) {
         await expect(page.locator('.smw-choice-search label')).toHaveCount(0);
@@ -222,7 +225,7 @@ for (const viewport of [{ width: 1365, height: 900 }, { width: 320, height: 568 
       }
       if (index === 6) {
         await expect(page.locator('.smw-choice-search label')).toHaveCount(0);
-        await expect(input).toHaveAttribute('placeholder', 'tell Santa which country?');
+        await expect(input).toHaveAttribute('placeholder', 'Try a fantasy place or space destination');
       }
       const countBeforeTyping = catalogueRequests;
       await input.fill(term.toUpperCase());
@@ -279,3 +282,191 @@ for (const viewport of [{ width: 1365, height: 900 }, { width: 320, height: 568 
     expect(posts).toEqual([]);
   });
 }
+
+for (const width of [1365, 320]) {
+  test(`destination categories ${width}: explicit choices, resets, visible review editing and trusted requests`, async ({ page }) => {
+    test.setTimeout(90000);
+    await page.setViewportSize({ width, height: width === 320 ? 750 : 1000 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    const inventory = workshopMixedDestinationFixture;
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await openRegionalStage(page, inventory);
+    const countries = page.getByRole('button', { name: 'Countries & real places', exact: true });
+    const fantasy = page.getByRole('button', { name: 'Fantasy & space', exact: true });
+    const next = page.locator('.smw-button-next');
+    const preview = page.locator('.smw-destination-picker__country .smw-wording-selection');
+    const countryLabels = inventory.categories.place.filter(record => record.kind === 'place').map(record => record.label);
+    const fantasyRecords = inventory.categories.place.filter(record => record.kind !== 'place');
+    await expect(countries).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.getByRole('option')).toHaveText(countryLabels);
+    expect(countryLabels).toContain('Antarctica');
+    await expect(page.getByRole('option', { selected: true })).toHaveCount(0);
+    await next.click();
+    await expect(page.locator('.smw-validation')).not.toBeEmpty();
+    await page.getByRole('option', { name: 'England', exact: true }).click();
+    await page.getByRole('button', { name: 'Choose a county', exact: true }).click();
+    await expect(page.getByRole('heading', { name: 'Counties in England', exact: true })).toBeFocused();
+    await page.getByRole('listbox').press('Home');
+    await expect(page.locator('.smw-destination-picker__selection')).toContainText('Kent, England');
+    // Category controls remain keyboard-operable during regional browsing.
+    await fantasy.focus();
+    await page.keyboard.press('Enter');
+    await expect(fantasy).toBeFocused();
+    await expect(fantasy).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.getByRole('heading', { name: 'Choose a fantasy or space destination', exact: true })).toBeVisible();
+    await expect(page.getByRole('option')).toHaveText(fantasyRecords.map(record => record.label));
+    await expect(page.getByRole('searchbox')).toHaveValue('');
+    await expect(page.getByRole('searchbox')).not.toHaveAttribute('placeholder', /country/i);
+    await expect(page.getByRole('option', { selected: true })).toHaveCount(0);
+    await expect(preview).toHaveCount(0);
+    await expect(page.locator('.smw-destination-picker__selection')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: /Choose a (state|county)/ })).toHaveCount(0);
+    await next.click();
+    await expect(page.locator('.smw-step-count')).toHaveText('Step 7 of 8');
+    const search = page.getByRole('searchbox');
+    await search.fill('moon');
+    await expect(page.getByRole('option')).toHaveText(['The Moon — Space destination']);
+    await expect(page.getByRole('option', { selected: true })).toHaveCount(0);
+    await countries.click();
+    await expect(page.getByRole('searchbox')).toHaveValue('');
+    await expect(page.getByRole('option')).toHaveText(countryLabels);
+    await expect(page.getByRole('option', { selected: true })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Choose a county', exact: true })).toHaveCount(0);
+    await page.getByRole('searchbox').fill('Antarctica');
+    await fantasy.click();
+    await expect(page.getByRole('searchbox')).toHaveValue('');
+    await expect(page.getByRole('option', { selected: true })).toHaveCount(0);
+    await next.click();
+    await expect(page.locator('.smw-step-count')).toHaveText('Step 7 of 8');
+
+    let submitted;
+    await page.route('**/api/santa-studio-message', route => {
+      submitted = route.request().postDataJSON();
+      return route.fulfill({ status: 503, json: { error: 'Fixture: no real recording requested.' } });
+    });
+    // Exercise every fantasy and real-space record through review, letter and
+    // request submission without changing its catalogue recording identity.
+    for (const record of fantasyRecords) {
+      await page.getByRole('option', { name: record.label, exact: true }).click();
+      await expect(preview).toHaveText(record.label);
+      // Clicking the active category is not a switch and must keep the choice.
+      await fantasy.click();
+      await expect(preview).toHaveText(record.label);
+      await next.click();
+      await expect(page.locator('.smw-summary-row').last()).toContainText(record.label);
+      const placeName = record.label.split(' — ')[0];
+      await expect(page.locator('.studio-letter__paper').first()).toContainText(placeName);
+      submitted = null;
+      await page.getByRole('button', { name: 'Create message', exact: true }).click();
+      await expect.poll(() => submitted?.place).toBe(record.id);
+      expect(submitted).not.toHaveProperty('region');
+      await page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true }).click();
+      await expect(fantasy).toHaveAttribute('aria-pressed', 'true');
+      await expect(page.getByRole('option', { name: record.label, exact: true })).toHaveAttribute('aria-selected', 'true');
+      await expect(preview).toHaveText(record.label);
+    }
+    await page.locator('.smw-button-back').click();
+    // Ordinary Back/Continue navigation also exposes the saved fantasy choice.
+    await page.locator('.smw-button-back').click();
+    await expect(fantasy).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.getByRole('option', { selected: true })).toHaveText(fantasyRecords.at(-1).label);
+    await page.locator('.smw-button-back').click();
+    await next.click();
+    await expect(fantasy).toHaveAttribute('aria-pressed', 'true');
+    await expect(preview).toHaveText(fantasyRecords.at(-1).label);
+    await next.click();
+    await page.getByRole('button', { name: 'Change A festive treat for Santa', exact: true }).click();
+    await expect(page.getByRole('option', { name: 'Map', exact: true })).toHaveAttribute('aria-selected', 'true');
+    await next.click();
+    await page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true }).click();
+    await expect(fantasy).toHaveAttribute('aria-pressed', 'true');
+
+    await page.locator('.smw-builder').screenshot({ path: `generated-artifacts/studio-destination-categories-${width}.png`,
+      style: '.navbar, .skip-link { visibility: hidden; }' });
+    await page.addStyleTag({ content: 'html { font-size: 200%; }' });
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+    for (const button of [countries, fantasy]) {
+      expect(await button.evaluate(node => node.scrollWidth <= node.clientWidth + 1
+        && node.scrollHeight <= node.clientHeight + 1)).toBe(true);
+    }
+    expect(await page.getByRole('option').evaluateAll(nodes => nodes.every(node =>
+      node.scrollWidth <= node.clientWidth + 1 && node.scrollHeight <= node.clientHeight + 1))).toBe(true);
+    expect(await page.locator('.smw-activity-wording').evaluate(node =>
+      node.scrollWidth <= node.clientWidth + 1 && node.scrollHeight <= node.clientHeight + 1)).toBe(true);
+    await page.locator('.smw-builder').screenshot({ path: `generated-artifacts/studio-destination-categories-${width}-enlarged.png`,
+      style: '.navbar, .skip-link { visibility: hidden; }' });
+
+    await countries.click();
+    await expect(preview).toHaveCount(0);
+    await page.locator('.smw-button-back').click();
+    await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
+    await expect(page.getByText('Choose a destination to preview your keepsakes.', { exact: true })).toBeVisible();
+    await page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true }).click();
+    await expect(countries).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.getByRole('option', { selected: true })).toHaveCount(0);
+    expect(errors).toEqual([]);
+  });
+}
+
+for (const [country, kind] of [['United States', 'state'], ['England', 'county']]) {
+  for (const width of [1365, 320]) {
+    test(`regional action placement ${country} ${width}: selected label, action, explanation and keyboard`, async ({ page }) => {
+      test.setTimeout(60000);
+      await page.setViewportSize({ width, height: 1000 });
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      await openRegionalStage(page);
+      if (width === 320) await page.addStyleTag({ content: 'html { font-size: 200%; }' });
+      await page.getByRole('option', { name: country, exact: true }).click();
+      const action = page.getByRole('button', { name: `Choose a ${kind}`, exact: true });
+      await expect(action).toHaveCount(1);
+      const geometry = await page.locator('.smw-destination-picker__country').evaluate(node => {
+        const status = node.querySelector('.smw-choice-wheel-status').getBoundingClientRect();
+        const action = node.querySelector('.smw-destination-picker__region-action').getBoundingClientRect();
+        const explanation = node.querySelector('.smw-destination-picker__region-prompt').getBoundingClientRect();
+        return { statusBottom: status.bottom, actionTop: action.top, actionBottom: action.bottom,
+          explanationTop: explanation.top, actionLeft: action.left, actionRight: action.right };
+      });
+      expect(geometry.actionTop).toBeGreaterThanOrEqual(geometry.statusBottom);
+      expect(geometry.actionBottom).toBeLessThanOrEqual(geometry.explanationTop);
+      expect(geometry.actionLeft).toBeGreaterThanOrEqual(0);
+      expect(geometry.actionRight).toBeLessThanOrEqual(width);
+      await expect(page.locator('.smw-destination-picker__region-prompt button')).toHaveCount(0);
+      await page.getByRole('listbox').focus();
+      await page.keyboard.press('Tab');
+      await expect(action).toBeFocused();
+      await page.keyboard.press('Enter');
+      await expect(page.getByRole('heading', { name: `${kind === 'state' ? 'States' : 'Counties'} in ${country}`, exact: true })).toBeFocused();
+      await page.getByRole('button', { name: 'Back to countries', exact: true }).click();
+      await expect(page.getByRole('heading', { name: 'Choose a country or real place', exact: true })).toBeFocused();
+      await expect(page.getByRole('option', { name: country, exact: true })).toHaveAttribute('aria-selected', 'true');
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+    });
+  }
+}
+
+test('changing destination category discards generated audio rather than restoring it', async ({ page }) => {
+  await openRegionalStage(page, workshopMixedDestinationFixture);
+  await page.route('**/api/santa-studio-message', route => route.fulfill({
+    contentType: 'audio/mpeg', body: readFileSync('server/santa-audio/sleighbells.mp3'),
+  }));
+  await page.evaluate(() => {
+    window.revokedWorkshopUrls = [];
+    const revoke = URL.revokeObjectURL.bind(URL);
+    URL.revokeObjectURL = url => { window.revokedWorkshopUrls.push(url); revoke(url); };
+  });
+  await page.getByRole('option', { name: 'England', exact: true }).click();
+  await page.locator('.smw-button-next').click();
+  await page.getByRole('button', { name: 'Create message', exact: true }).click();
+  const download = page.getByRole('link', { name: 'Download MP3', exact: true });
+  await expect(download).toBeVisible();
+  const oldUrl = await download.getAttribute('href');
+  await page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true }).click();
+  await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
+  await expect(page.getByRole('option', { selected: true })).toHaveCount(0);
+  await page.getByRole('option', { name: 'The Moon — Space destination', exact: true }).click();
+  await page.locator('.smw-button-next').click();
+  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
+  await expect(download).toHaveCount(0);
+  expect(await page.evaluate(() => window.revokedWorkshopUrls)).toContain(oldUrl);
+});

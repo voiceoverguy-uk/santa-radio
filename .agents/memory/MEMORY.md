@@ -47,6 +47,7 @@
 - [Local audio inspection](local-audio-inspection.md) — FFmpeg PCM input avoids local speech-decoder API mismatches; transcription is not listening verification.
 - [Santa download naming](santa-download-naming.md) — Use santa-recorded-message-for-(NAME).mp3 for downloads; leave hosted source and cache URLs alone.
 - [Workshop choice controls](workshop-choice-controls.md) — Searchable names, a vertical age wheel, other category scrollers and later MP3 direction.
+- [Destination categories](destination-category-direction.md) — Countries default on fresh entry; preserve saved-category visibility and optional regions without moving recordings.
 - [Studio optional talent](studio-optional-talent.md) — One sports/funny line or deliberate skip; exact sibling folders and shared connector; no talent letter prose.
 - [Virtual-clock screenshots](browser-test-clocks.md) — Finish or disable entrance animations before capturing delayed interfaces under a virtual browser clock.
 - [Message-maker counters](santa-name-counter-direction.md) — Start 50 below the real total; add one every five seconds, capped at the real total.
