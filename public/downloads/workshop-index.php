@@ -21,15 +21,21 @@ if ($root === false) workshop_fail('Workshop folder could not be read.', 503);
 // No query string can select a filesystem path or add another folder.
 $folders = array('age' => 'AGES', 'activity' => 'Trying Hard at',
     'achievement' => 'Achievment', 'place' => 'countries', 'treat' => 'treats');
+$optional = array('usa-states', 'england-counties', 'scotland-counties',
+    'wales-counties', 'northern-ireland-counties');
+foreach ($optional as $folder) $folders[$folder] = $folder;
 $categories = array();
 $excluded = array();
 foreach ($folders as $category => $folder) {
     $directory = $root . DIRECTORY_SEPARATOR . $folder;
+    $isOptional = in_array($category, $optional, true);
     if (is_link($directory) || realpath($directory) !== $directory || !is_dir($directory)) {
+        if ($isOptional) continue;
         workshop_fail('A required workshop folder is missing or is not a regular directory.', 503);
     }
     $files = @scandir($directory);
     if ($files === false || count($files) > 10002) {
+        if ($isOptional) continue;
         workshop_fail('A workshop folder could not be listed safely.', 503);
     }
     $records = array();
@@ -57,7 +63,7 @@ foreach ($folders as $category => $folder) {
         $records[] = array('id' => 'c-' . hash('sha256', $relative),
             'file' => $relative, 'bytes' => $size);
     }
-    if (count($records) === 0) workshop_fail('A required workshop folder contains no readable audio recordings.', 503);
+    if (!$isOptional && count($records) === 0) workshop_fail('A required workshop folder contains no readable audio recordings.', 503);
     $categories[$category] = $records;
     $excluded[$category] = $skipped;
 }

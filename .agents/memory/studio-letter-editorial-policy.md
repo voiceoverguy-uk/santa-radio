@@ -32,3 +32,13 @@ UK writing must use the actual England, Scotland, Wales and Northern Ireland
 selections, with Ireland separate. New regional recordings in the existing
 destination catalogue may be discovered before they have bespoke prose; use a
 neutral named-place line and flag them privately rather than inventing facts.
+
+Regional selections must not inherit prose for a country with the same name.
+Use neutral named-place wording with the parent country unless a passage is
+curated for that exact regional context.
+
+**Why:** A regional label such as Georgia is ambiguous; country-only editorial
+matching would attach the wrong place's story to an otherwise valid recording.
+
+**How to apply:** Keep the audio selection's explicit parent relationship when
+forming letter details. Do not infer the intended geography from a label alone.

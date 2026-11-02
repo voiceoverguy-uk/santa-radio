@@ -18,7 +18,8 @@ The expected public URL is:
 
 `https://stagcommunications.com/santaradio/names/personalised-message/workshop-index.php`
 
-It should return JSON with five categories and exact relative filenames. The
+It should return JSON with five required categories, any available optional
+regional groups and exact relative filenames. The
 script reads metadata only, accepts no visitor-supplied filesystem paths,
 ignores non-audio files, rejects symlinks, limits scan/output size and time,
 and reports excluded audio counts. It does not rename, upload, delete or play
@@ -39,12 +40,17 @@ are not labelled as fantasy locations; known fictional destinations have
 explicit fantasy labels, and the Moon/Mars are marked as space destinations.
 Missing/unavailable inventory shows an error and Retry, never offline samples.
 
-### Future state and county recordings
+### Optional state and county recordings
 
-The existing destination catalogue discovers additional `.wav` or `.mp3`
-recordings (case-insensitive extension) in the currently indexed `countries`
-folder. Use descriptive filenames such as `california.wav` or
-`east-riding-of-yorkshire.mp3`, and ensure the hosted index includes them.
+The updated index discovers `.wav` or `.mp3` recordings (case-insensitive
+extension) in the five fixed sibling folders `usa-states`, `england-counties`,
+`scotland-counties`, `wales-counties` and `northern-ireland-counties`. Each is
+mapped only to its own country's existing recording. See
+[the regional trial handoff](studio-regional-trial.md) for exact upload
+instructions, the owner checklist and verification limitations.
+
+Existing entries in `countries` remain independent destinations. They are not
+silently moved, relabelled as parents or used to fabricate regional choices.
 Hyphens/underscores become spaces in the display label; the source filename,
 extension and SHA-256 recording identity stay unchanged. The existing non-empty,
 supported-format, path and size checks still apply.
@@ -65,10 +71,10 @@ Synthetic checks exercise parser discovery, selected-detail review, stable
 stories and message request IDs, plus the existing server-side audio resolution,
 without uploading or changing real recordings.
 
-Separate state/county folders, dependent questions, aliases, automatic
-geographical disambiguation and additional recordings are **not** integrated.
-They need separately scoped work; the existing single destination choice is
-the supported route.
+Regional browsing replaces the country wheel, never adds another required
+step. A selected region replaces the country recording in the existing audio
+slot. Empty or absent regional groups leave the country-only path available.
+Town/city hierarchies, aliases and additional recordings are not part of this work.
 
 ### Source files held for review
 
@@ -84,6 +90,6 @@ reported by the PHP index are disclosed separately. An invalid identity/path
 or missing category fails the whole response rather than silently using a
 partial list.
 
-Filename inventory is not remote audio decoding/playback verification,
-catalogue wording approval, or permission to connect message rendering.
-The workshop remains a design preview without audio generation or playback.
+Filename inventory is not remote audio decoding/playback verification.
+Studio now has its separately authorised message-generation path; regional
+playback cannot be verified until the updated index and real recordings are available.

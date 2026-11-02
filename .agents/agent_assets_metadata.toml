@@ -1050,3 +1050,31 @@ mtime_ms = 1793635305251
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/cf8a4a2a-18ba-4ed4-81b9-707afa7d214a/747233f3-6f22-42ee-80a0-e06769dade2f"
 storage_version_token = "1793635370554038"
 content_type = "text/html"
+
+[[outputs]]
+id = "5My048PKdusSFnlxuek5Z"
+uri = "file://generated-artifacts/studio-regional-1365.png"
+type = "image"
+title = "County picker — desktop fixture"
+description = "Test fixture showing Kent, England and the replacement destination wording. This is not live regional availability or playback verification."
+logical_id = "75d67c6a-fab4-4d99-8502-59bdd35c4a6c"
+content_hash = "sha256:c3950c74a88ece7e01d24552dc9826d6e84e0c0820677d34a3094e4dede5c622"
+size = 181011
+mtime_ms = 1793644606810
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/75d67c6a-fab4-4d99-8502-59bdd35c4a6c/88075c6e-ad59-4682-b53d-e8124678c0b8"
+storage_version_token = "1793644790521734"
+content_type = "image/png"
+
+[[outputs]]
+id = "ju-r9zWsQXT1AqE-c8WWg"
+uri = "file://generated-artifacts/studio-regional-320.png"
+type = "image"
+title = "County picker — phone fixture"
+description = "320px Chromium fixture showing the compact regional wheel, search, change and country-only controls."
+logical_id = "497647ee-0329-42a8-be1a-89399ddb642d"
+content_hash = "sha256:3e15626aa66859e23e91595423ca17905e15f360786047af881cb2b7a3194ea8"
+size = 131730
+mtime_ms = 1793644615381
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/497647ee-0329-42a8-be1a-89399ddb642d/e9aa04b7-724c-407e-ae22-a8c99cee87de"
+storage_version_token = "1793644791298944"
+content_type = "image/png"

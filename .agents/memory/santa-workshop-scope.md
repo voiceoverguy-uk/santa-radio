@@ -85,11 +85,11 @@ Workshop wheels should move naturally like normal phone scrolling, not force a s
 
 **How to apply:** Preserve native touch momentum and multi-option swipes. Do not re-centre during a gesture or re-centre a wheel merely because its own settled selection came back from parent state. Keep keyboard selection, quiet restoration and deliberate click sounds intact.
 
-The destination list should put England, Scotland, Ireland, Wales and United States first, in that exact order, then all remaining real places alphabetically. Only fantasy and space destinations belong last, alphabetically.
+The destination list should put England, Scotland, Northern Ireland, Wales and United States first, in that exact order, then all remaining real places alphabetically. Only fantasy and space destinations belong last, alphabetically.
 
-**Why:** The owner corrected the earlier United Kingdom request: “Ooops, default, England, Scotland, Ireland, Wales, United States, then the others”. Their later “not countries” request meant fantasy and space, not a strict sovereign-country distinction. They explicitly corrected Jersey, Guernsey, Dubai and other real destinations being mixed into that final group.
+**Why:** The approved optional regional-picker plan supersedes the earlier Ireland priority with Northern Ireland. The owner's “not countries” request meant fantasy and space, not a strict sovereign-country distinction. They explicitly corrected Jersey, Guernsey, Dubai and other real destinations being mixed into that final group.
 
-**How to apply:** Keep real territories, cities, regions and islands with real countries, even when they are not sovereign countries. This is list ordering, not permission to silently preselect an answer or relabel a different spoken recording. Keep Ireland distinct from Northern Ireland, which stays in the alphabetical remainder. Only offer a destination when its actual hosted recording is available.
+**How to apply:** Keep real territories, cities, regions and islands with real countries, even when they are not sovereign countries. This is list ordering, not permission to silently preselect an answer or relabel a different spoken recording. Ireland stays distinct and searchable in the alphabetical remainder. Only offer a destination when its actual hosted recording is available.
 
 Santa helper wording should not use em dashes or split words across lines.
 

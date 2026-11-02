@@ -1,0 +1,157 @@
+.smw-destination-picker {
+  min-width: 0;
+  margin-top: 22px;
+}
+
+.smw-destination-picker [hidden] {
+  display: none !important;
+}
+
+.smw-destination-picker__heading {
+  margin: 0 0 13px;
+  color: var(--smw-cream);
+  font-size: 1.05rem;
+  line-height: 1.4;
+}
+
+.smw-destination-picker__heading:focus {
+  outline: none;
+}
+
+.smw-destination-picker__searchable .smw-activity-preview-layout {
+  margin-top: 0;
+}
+
+.smw-destination-picker__region-prompt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 18px;
+  margin-top: 13px;
+  padding: 13px 15px;
+  border: 1px solid #d4af3745;
+  border-radius: 12px;
+  background: #d4af3709;
+}
+
+.smw-destination-picker__region-prompt strong {
+  color: var(--smw-gold-light);
+  font-size: .93rem;
+}
+
+.smw-destination-picker__region-prompt p {
+  margin: 4px 0 0;
+  color: #c4d0c3;
+  font-size: .82rem;
+  line-height: 1.5;
+}
+
+.smw-destination-picker__region-prompt button,
+.smw-destination-picker__regional-head button,
+.smw-destination-picker__selection-actions button {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 13px;
+  border: 1px solid #d4af3770;
+  border-radius: 10px;
+  background: #d4af3710;
+  color: var(--smw-gold-light);
+  font: inherit;
+  font-size: .84rem;
+  font-weight: 600;
+  line-height: 1.35;
+  cursor: pointer;
+}
+
+.smw-destination-picker__region-prompt button:hover,
+.smw-destination-picker__regional-head button:hover,
+.smw-destination-picker__selection-actions button:hover {
+  border-color: var(--smw-gold);
+  background: #d4af371b;
+}
+
+.smw-destination-picker__regional-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  margin-bottom: 14px;
+}
+
+.smw-destination-picker__regional-head .smw-destination-picker__heading {
+  margin: 0;
+}
+
+.smw-destination-picker__selection {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 18px;
+  margin-bottom: 16px;
+  padding: 13px 15px;
+  border: 1px solid #d4af3768;
+  border-radius: 12px;
+  background: #d4af370b;
+}
+
+.smw-destination-picker__selection p {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+}
+
+.smw-destination-picker__selection p span {
+  color: #c4d0c3;
+  font-size: .76rem;
+}
+
+.smw-destination-picker__selection strong {
+  color: var(--smw-cream);
+  font-size: .98rem;
+}
+
+.smw-destination-picker__selection-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.smw-destination-picker__preview {
+  margin-top: 18px;
+}
+
+.smw-destination-picker button:focus-visible {
+  outline: 2px solid var(--smw-gold-light);
+  outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+  .smw-destination-picker__preview .smw-activity-wording {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .smw-destination-picker__region-prompt,
+  .smw-destination-picker__selection {
+    align-items: stretch;
+  }
+
+  .smw-destination-picker__region-prompt button,
+  .smw-destination-picker__selection-actions,
+  .smw-destination-picker__selection-actions button {
+    width: 100%;
+  }
+
+  .smw-destination-picker__regional-head {
+    align-items: stretch;
+  }
+
+  .smw-destination-picker__regional-head button {
+    width: fit-content;
+  }
+}

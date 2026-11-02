@@ -6,6 +6,7 @@ import { hasStudioAccess, workshopCatalogue, WORKSHOP_ROOT } from './santa-works
 import { santaNameLibrary } from './santa-name-library.js';
 import { consumeNameAccess, privateResponse, readNameJson } from './santa-name-security.js';
 import { renderStudioMessage } from './santa-studio-render.js';
+import { selectedWorkshopRegion } from '../src/lib/workshopDestinations.js';
 
 const categories = ['age', 'activity', 'achievement', 'treat', 'place'];
 const localNames = fileURLToPath(new URL('./santa-audio/names/', import.meta.url));
@@ -90,7 +91,8 @@ export function createStudioMessageHandler({
       const data = await withinDeadline(() => readNameJson(req), controller.signal);
       // A stable opaque recording ID is re-resolved privately under Studio
       // authorization. No expired browser capability, spelling or URL is used.
-      if (Object.keys(data).length !== 6 || Object.keys(data).some(key => !['name', ...categories].includes(key))
+      if (![6, 7].includes(Object.keys(data).length) || Object.keys(data).some(key => !['name', ...categories, 'region'].includes(key))
+        || ('region' in data && (typeof data.region !== 'string' || !/^c-[a-f0-9]{64}$/.test(data.region)))
         || typeof data.name !== 'string' || !/^(?:f-[a-f0-9]{64}|[a-z0-9][a-z0-9'-]{0,79})$/.test(data.name)
         || categories.some(key => typeof data[key] !== 'string' || !/^c-[a-f0-9]{64}$/.test(data[key]))) {
         throw problem(400, 'Please check all six Studio choices and try again.');
@@ -101,6 +103,11 @@ export function createStudioMessageHandler({
         if (!record) throw problem(400, 'A recorded choice is no longer available. Please choose it again.');
         return [category, record];
       }));
+      if (data.region) {
+        const region = selectedWorkshopRegion(inventory, data.place, data.region);
+        if (!region) throw problem(400, 'That county or state is no longer available for this country. Please choose it again.');
+        selected.place = region;
+      }
       const recording = await withinDeadline(() => library.resolve(data.name), controller.signal);
       if (!recording || recording.id !== data.name) throw problem(400, 'That exact recorded name is no longer available. Please choose it again.');
       controller.signal.throwIfAborted();

@@ -12,13 +12,15 @@ const searchLabels = {
   place: ['Search locations', 'tell Santa which country?'],
 };
 
-export default function WorkshopSearchableChoices({ category, label, options, value, onChange, invalid, onTick, onSoundInteraction, wording }) {
+export default function WorkshopSearchableChoices({ category, label, options, value, onChange, invalid, onTick, onSoundInteraction, wording, searchLabel: searchLabelOverride, placeholder: placeholderOverride, selectedText: selectedTextOverride, wheelFooter }) {
   const [query, setQuery] = useState('');
   const inputId = useId();
   const inputRef = useRef(null);
   const matches = filterWorkshopChoices(options, query);
   const currentSelectionLabel = options.find(option => option.id === value)?.label || '';
-  const [searchLabel, placeholder] = searchLabels[category];
+  const [defaultSearchLabel, defaultPlaceholder] = searchLabels[category];
+  const searchLabel = searchLabelOverride || defaultSearchLabel;
+  const placeholder = placeholderOverride || defaultPlaceholder;
   return (
     <div className={`smw-activity-preview-layout smw-searchable-layout smw-searchable-${category}`}>
       <div className="smw-choice-search" role="search" aria-label={searchLabel}>
@@ -44,11 +46,12 @@ export default function WorkshopSearchableChoices({ category, label, options, va
           <p>No matching choices. Try another word or clear the search.</p>
           {currentSelectionLabel && <p>Selected: {currentSelectionLabel}</p>}
         </div>}
+        {wheelFooter}
       </div>
       <WorkshopWordingPreview
         wording={wording}
-        heading={category === 'activity' ? 'Santa will say:' : 'Santa will say…'}
-        selectedText={category === 'treat' ? workshopTreatWording(currentSelectionLabel)
+          heading={category === 'activity' ? 'Santa will say:' : 'Santa will say…'}
+          selectedText={selectedTextOverride !== undefined ? selectedTextOverride : category === 'treat' ? workshopTreatWording(currentSelectionLabel)
           : category === 'place' || category === 'activity' || category === 'achievement' ? currentSelectionLabel : ''}
       />
     </div>

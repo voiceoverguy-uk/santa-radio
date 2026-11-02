@@ -1,3 +1,7 @@
+import { createHash } from 'node:crypto';
+import { parseWorkshopCatalogue } from '../../server/santa-workshop-catalogue.js';
+import { workshopRegionalFolders } from '../../src/lib/workshopDestinations.js';
+
 const record = (id, label, extra = {}) => ({ id, label, file: `fixture/${id}.wav`, ...extra });
 // Deterministic UI fixtures; live HTTPS integration is verified separately.
 export const workshopCatalogueFixture = {
@@ -19,3 +23,21 @@ export const workshopCatalogueFixture = {
   excludedAudioCounts: { age: 0, activity: 0, achievement: 0, treat: 0, place: 0 },
   needsReviewCounts: { age: 0, activity: 0, achievement: 0, treat: 0, place: 0 },
 };
+
+// Synthetic inventory only. These are not claims about live hosted availability.
+const indexed = file => ({ file, bytes: 50000, id: `c-${createHash('sha256').update(file).digest('hex')}` });
+export const workshopRegionalCatalogueFixture = parseWorkshopCatalogue({
+  version: 1,
+  categories: {
+    age: [indexed('AGES/8-years-old.wav')],
+    activity: [indexed('Trying Hard at/art.wav')],
+    achievement: [indexed('Achievment/being-brave.wav')],
+    treat: [indexed('treats/map.wav')],
+    place: [...Object.values(workshopRegionalFolders).map(indexed), indexed('countries/ireland.wav')],
+    ...Object.fromEntries(Object.keys(workshopRegionalFolders).map((folder, index) => [folder,
+      [indexed(`${folder}/${['georgia', 'kent', 'fife', 'powys', 'antrim'][index]}.wav`),
+        indexed(`${folder}/z-fixture-place.mp3`)]])),
+  },
+  excludedAudioCounts: Object.fromEntries(['age', 'activity', 'achievement', 'treat', 'place',
+    ...Object.keys(workshopRegionalFolders)].map(key => [key, 0])),
+});

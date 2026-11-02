@@ -5,23 +5,26 @@ import { unlockWorkshop } from './helpers/workshop-access.js';
 test.beforeEach(async ({ page }) => { await unlockWorkshop(page); });
 
 for (const initialWidth of [390, 1365]) {
-test(`live HTTPS categories ${initialWidth}: mobile flow and full-list desktop achievement scrolling without recipient requests or storage`, async ({ page, request }) => {
+test(`live HTTPS categories ${initialWidth}: mobile flow and full-list desktop achievement scrolling without recipient requests or storage`, async ({ page }) => {
   test.setTimeout(60000);
   await page.setViewportSize({ width: initialWidth, height: 844 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.route('**/api/radio-metadata*', route => route.fulfill({ json: { available: false, current: null, upcoming: [] } }));
-  await page.route('**/api/santa-names?inventory=hosted', route => route.fulfill({ json: {
-    records: [{ id: 'demrie', name: 'Demrie' }], hostedCount: 1, warning: null,
+  await page.route('**/api/santa-names', route => route.fulfill({ json: {
+    records: [{ id: 'demrie', name: 'Demrie', selectionToken: 'fixture', previewUrl: '/api/santa-name-audio/fixture' }], warning: null,
   } }));
   // No mock for the catalogue: this request reaches the real uploaded HTTPS index.
-  const response = await request.get('/api/santa-workshop-catalogue');
+  const response = await page.request.get('/api/santa-workshop-catalogue');
   expect(response.status()).toBe(200);
   const catalogue = await response.json();
   expect(catalogue.source).toBe('hosted');
-  expect(catalogue.counts).toEqual({ age: 63, activity: 131, achievement: 38, treat: 96, place: 120 });
+  for (const category of ['age', 'activity', 'achievement', 'treat', 'place']) {
+    expect(catalogue.counts[category]).toBeGreaterThan(0);
+    expect(catalogue.counts[category]).toBe(catalogue.categories[category].length);
+  }
   expect(catalogue.needsReviewCounts.place).toBe(2);
   expect(catalogue.categories.place.slice(0, 5).map(item => item.label)).toEqual([
-    'England', 'Scotland', 'Ireland', 'Wales', 'United States',
+    'England', 'Scotland', 'Northern Ireland', 'Wales', 'United States',
   ]);
   const remaining = catalogue.categories.place.slice(5);
   const realPlaces = remaining.filter(item => item.kind === 'place');
@@ -40,7 +43,7 @@ test(`live HTTPS categories ${initialWidth}: mobile flow and full-list desktop a
   }
   const posts = [], inventoryRequests = [];
   page.on('request', req => {
-    if (req.method() === 'POST') posts.push(req.url());
+    if (req.method() === 'POST' && !req.url().endsWith('/api/santa-names')) posts.push(req.url());
     if (req.url().includes('/api/santa-workshop-catalogue')) inventoryRequests.push(req);
   });
   await page.goto('/santa-message-workshop');

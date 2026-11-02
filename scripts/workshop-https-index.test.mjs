@@ -51,6 +51,24 @@ test('workshop HTTPS index lists only fixed child folders, preserving exact file
     assert.ok(first.data.categories.treat.some(item => item.file === 'treats/pfeffernu╠êsse.wav'));
     assert.ok(!JSON.stringify(first.data).includes('not-audio'));
     assert.ok(!JSON.stringify(first.data).includes(root));
+    for (const folder of ['usa-states', 'england-counties', 'scotland-counties', 'wales-counties', 'northern-ireland-counties']) {
+      await mkdir(join(root, folder));
+      await writeFile(join(root, folder, 'Exact-Éxample.WAV'), 'fixture');
+      await symlink(join(root, 'unrelated.wav'), join(root, folder, 'unsafe.wav'));
+      const indexed = run().data;
+      assert.deepEqual(indexed.categories[folder], [{
+        file: `${folder}/Exact-Éxample.WAV`, bytes: 7,
+        id: `c-${createHash('sha256').update(`${folder}/Exact-Éxample.WAV`).digest('hex')}`,
+      }]);
+      assert.equal(indexed.excludedAudioCounts[folder], 1);
+    }
+    await rm(join(root, 'usa-states'), { recursive: true });
+    await mkdir(join(root, 'usa-states'));
+    assert.deepEqual(run().data.categories['usa-states'], [], 'Empty optional folders do not break countries.');
+    await rm(join(root, 'usa-states'), { recursive: true });
+    await symlink(join(root, 'countries'), join(root, 'usa-states'));
+    assert.equal(run().status, 200);
+    assert.equal(run().data.categories['usa-states'], undefined, 'Optional symlink directories are never scanned.');
     assert.equal(run('POST').status, 405);
     await writeFile(join(root, 'Achievment', 'new-recording.wav'), 'fixture');
     assert.equal(run().data.categories.achievement.length, 2);

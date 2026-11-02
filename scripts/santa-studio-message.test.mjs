@@ -15,6 +15,49 @@ import defaultHandler from '../server/santa-studio-message.js';
 import { createHash } from 'node:crypto';
 import { parseWorkshopCatalogue, WORKSHOP_ROOT } from '../server/santa-workshop-catalogue.js';
 import { createStudioLetter } from '../src/lib/santaStudioLetter.js';
+import { workshopRegionalFolders } from '../src/lib/workshopDestinations.js';
+test('all five parent mappings replace rather than append the destination recording', async () => {
+  const record = file => ({ file, bytes: 50000, id: `c-${createHash('sha256').update(file).digest('hex')}` });
+  const raw = {
+    version: 1, categories: {
+      age: [record('AGES/8-years-old.wav')], activity: [record('Trying Hard at/art.wav')],
+      achievement: [record('Achievment/being-brave.wav')], treat: [record('treats/map.wav')],
+      place: Object.values(workshopRegionalFolders).map(record),
+    }, excludedAudioCounts: Object.fromEntries(keys.map(key => [key, 0])),
+  };
+  for (const folder of Object.keys(workshopRegionalFolders)) {
+    raw.categories[folder] = [record(`${folder}/georgia.wav`)];
+    raw.excludedAudioCounts[folder] = 0;
+  }
+  const parsed = parseWorkshopCatalogue(raw);
+  for (const [folder, parentFile] of Object.entries(workshopRegionalFolders)) {
+    const group = parsed.regionalGroups[folder], region = group.records[0];
+    const data = { name: body.name, ...Object.fromEntries(keys.map(key =>
+      [key, key === 'place' ? group.parentId : parsed.categories[key][0].id])), region: region.id };
+    const { handler, state } = fixture({ catalogue: async () => parsed });
+    assert.equal((await call(handler, { data })).status, 200);
+    assert.equal(state.downloads.length, 5);
+    assert.ok(state.downloads.includes(`${WORKSHOP_ROOT}${region.file}`));
+    assert.ok(!state.downloads.includes(`${WORKSHOP_ROOT}${parentFile}`));
+    const order = studioOrder('name', state.renders[0].choices);
+    assert.equal(order.filter(path => path === state.renders[0].choices.place).length, 1);
+    const parent = parsed.categories.place.find(record => record.id === group.parentId);
+    const letter = createStudioLetter('Example', () => 0, { age: '8 years old', activity: 'Art',
+      achievement: 'Being brave', treats: 'Map', destination: `${region.label}, ${parent.label}`,
+      context: { destination: region.letterContext } });
+    assert.ok(letter.paragraphs.some(text => text.includes(`Georgia, ${parent.label}`)));
+    assert.ok(!letter.paragraphs.join(' ').includes('Statue of Liberty'));
+    const other = Object.values(parsed.regionalGroups).find(item => item.parentId !== group.parentId);
+    const bad = fixture({ catalogue: async () => parsed });
+    assert.equal((await call(bad.handler, { data: { ...data, region: other.records[0].id } })).status, 400);
+    assert.equal(bad.state.downloads.length, 0);
+    for (const region of [id(15), '../kent.wav', `${WORKSHOP_ROOT}usa-states/georgia.wav`, '', null, {}]) {
+      assert.equal((await call(handler, { data: { ...data, region } })).status, 400);
+    }
+    const stale = fixture({ catalogue: async () => ({ ...parsed, regionalGroups: {} }) });
+    assert.equal((await call(stale.handler, { data })).status, 400);
+  }
+});
 
 const execute = promisify(execFile);
 const keys = ['age', 'activity', 'achievement', 'treat', 'place'];

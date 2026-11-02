@@ -1,5 +1,57 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { workshopRegionalFolders } from '../src/lib/workshopDestinations.js';
+test('optional regional groups preserve exact identities and fixed parents, including ambiguous names', () => {
+  const data = inventory();
+  const old = parseWorkshopCatalogue(data);
+  assert.ok(Object.values(old.regionalGroups).every(group => group.records.length === 0));
+  for (const [folder, parentFile] of Object.entries(workshopRegionalFolders)) {
+    data.categories.place.push(record(parentFile));
+    data.categories[folder] = [record(`${folder}/georgia.wav`), record(`${folder}/kent.MP3`)];
+    data.excludedAudioCounts[folder] = 0;
+  }
+  const parsed = parseWorkshopCatalogue(data);
+  for (const [folder, parentFile] of Object.entries(workshopRegionalFolders)) {
+    const group = parsed.regionalGroups[folder];
+    assert.equal(group.parentId, record(parentFile).id);
+    assert.equal(group.records.length, 2);
+    assert.ok(!parsed.categories[folder], 'Regions are not extra required categories.');
+    for (const choice of group.records) {
+      assert.ok(choice.file.startsWith(`${folder}/`));
+      assert.equal(choice.id, record(choice.file).id);
+      assert.deepEqual(choice.letterContext, { group: 'neutral', needsReview: true });
+      assert.equal(choice.isCountry, false);
+    }
+  }
+  data.categories['usa-states'] = [];
+  assert.deepEqual(parseWorkshopCatalogue(data).regionalGroups['usa-states'].records, []);
+  delete data.categories.place[data.categories.place.findIndex(item => item.file === 'countries/scotland.wav')];
+  data.categories.place = data.categories.place.filter(Boolean);
+  const missingParent = parseWorkshopCatalogue(data).regionalGroups['scotland-counties'];
+  assert.equal(missingParent.parentId, null);
+  assert.deepEqual(missingParent.records, []);
+});
+
+test('regional groups reject cross-folder, forged, duplicate and unsafe recording identities', () => {
+  for (const file of ['countries/kent.wav', 'england-counties/../secret.wav', 'england-counties/folder/kent.wav',
+    'england-counties/.hidden.wav', 'england-counties/unsafe\\path.wav']) {
+    const data = inventory();
+    data.categories['england-counties'] = [record(file)];
+    data.excludedAudioCounts['england-counties'] = 0;
+    assert.throws(() => parseWorkshopCatalogue(data));
+  }
+  for (const mutate of [
+    records => { records[0].id = `c-${'0'.repeat(64)}`; },
+    records => records.push(records[0]),
+    records => { records[0].bytes = 21 * 1024 * 1024; },
+  ]) {
+    const data = inventory();
+    data.categories['england-counties'] = [record('england-counties/kent.wav')];
+    data.excludedAudioCounts['england-counties'] = 0;
+    mutate(data.categories['england-counties']);
+    assert.throws(() => parseWorkshopCatalogue(data));
+  }
+});
 import { createHash } from 'node:crypto';
 import { createWorkshopCatalogue, createWorkshopCatalogueHandler, parseWorkshopCatalogue, WORKSHOP_INDEX } from '../server/santa-workshop-catalogue.js';
 
@@ -129,9 +181,9 @@ test('destinations put priority countries first, then alphabetical real places, 
   const data = inventory();
   data.categories.place.push(...['united-states', 'wales', 'ireland', 'scotland', 'england', 'andorra', 'northern-ireland'].map(name => record(`countries/${name}.wav`)));
   const places = parseWorkshopCatalogue(data).categories.place;
-  assert.deepEqual(places.slice(0, 5).map(item => item.label), ['England', 'Scotland', 'Ireland', 'Wales', 'United States']);
+  assert.deepEqual(places.slice(0, 5).map(item => item.label), ['England', 'Scotland', 'Northern Ireland', 'Wales', 'United States']);
   assert.deepEqual(places.slice(5).map(item => item.label), [
-    'Andorra', 'New Zealand', 'Northern Ireland', 'The Enchanted Forest — Fantasy place', 'The Moon — Space destination',
+    'Andorra', 'Ireland', 'New Zealand', 'The Enchanted Forest — Fantasy place', 'The Moon — Space destination',
   ]);
   data.categories.place = data.categories.place.filter(item => !item.file.endsWith('/england.wav'));
   const missing = parseWorkshopCatalogue(data).categories.place;

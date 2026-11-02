@@ -3,6 +3,7 @@ import { hasPaidStudioAccess } from './santa-studio-purchase.js';
 import { createHash } from 'node:crypto';
 import { studioEditorialContext } from './studio-letter-editorial.js';
 import { isKnownRegion } from './studio-destination-passages.js';
+import { workshopRegionalFolders } from '../src/lib/workshopDestinations.js';
 
 export const WORKSHOP_ROOT = 'https://stagcommunications.com/santaradio/names/personalised-message/';
 export const WORKSHOP_INDEX = `${WORKSHOP_ROOT}workshop-index.php`;
@@ -21,7 +22,7 @@ const technicalFiles = new Set(['countries/1b.wav', 'countries/Santa Audio messa
 const destinationPriority = new Map([
   ['countries/england.wav', 0],
   ['countries/scotland.wav', 1],
-  ['countries/ireland.wav', 2],
+  ['countries/northern-ireland.wav', 2],
   ['countries/wales.wav', 3],
   ['countries/united-states.wav', 4],
 ]);
@@ -46,10 +47,12 @@ export function parseWorkshopCatalogue(input) {
   }
   const categories = {}, counts = {}, excludedAudioCounts = {}, needsReviewCounts = {};
   const seen = new Set();
-  for (const [key, folder] of Object.entries(folders)) {
-    const source = input.categories[key];
-    const excluded = input.excludedAudioCounts?.[key];
-    if (!Array.isArray(source) || !source.length || source.length > 10000 ||
+  for (const [key, folder] of Object.entries({ ...folders,
+    ...Object.fromEntries(Object.keys(workshopRegionalFolders).map(key => [key, key])) })) {
+    const optional = key in workshopRegionalFolders;
+    const source = optional && input.categories[key] === undefined ? [] : input.categories[key];
+    const excluded = optional && input.categories[key] === undefined ? 0 : input.excludedAudioCounts?.[key];
+    if (!Array.isArray(source) || (!optional && !source.length) || source.length > 10000 ||
         !Number.isSafeInteger(excluded) || excluded < 0 || excluded > 10000) {
       throw new Error('Incomplete workshop inventory.');
     }
@@ -78,18 +81,22 @@ export function parseWorkshopCatalogue(input) {
         record.unit = age[2].toLowerCase();
         record.label = `${record.number} ${record.unit}${record.number === 1 ? '' : 's'} old`;
       }
-      if (key === 'place') {
+      if (key === 'place' || optional) {
         record.label = title(stem).replace(/\b[\p{L}\p{M}]+/gu, (word, offset) =>
           offset && ['and', 'of', 'the'].includes(word.toLowerCase()) ? word.toLowerCase()
             : word[0].toLocaleUpperCase('en-GB') + word.slice(1));
-        record.kind = fantasyPlaces.has(stem) ? 'fantasy' : ['mars', 'the-moon'].includes(stem) ? 'space' : 'place';
-        record.isCountry = record.kind === 'place' && !isKnownRegion(record.label) &&
+        record.kind = optional ? 'place' : fantasyPlaces.has(stem) ? 'fantasy' : ['mars', 'the-moon'].includes(stem) ? 'space' : 'place';
+        record.isCountry = !optional && record.kind === 'place' && !isKnownRegion(record.label) &&
           !otherRealPlaces.has(stem.toLowerCase().replace(/[_ ]+/g, '-'));
         if (record.kind === 'fantasy') record.label += ' — Fantasy place';
         if (record.kind === 'space') record.label += ' — Space destination';
       }
       if (!record.label || record.label.length > 260) throw new Error('Invalid workshop label.');
-      record.letterContext = studioEditorialContext(key, record);
+      // Regions must never inherit a same-named country's prose (e.g. Georgia).
+      // Neutral named-place writing is deliberate until context is curated for
+      // this exact parent/region pair.
+      record.letterContext = optional ? { group: 'neutral', needsReview: true }
+        : studioEditorialContext(key, record);
       // Newly indexed names are places, not automatically countries.
       if (key === 'place' && record.letterContext.needsReview) record.isCountry = false;
       records.push(record);
@@ -106,11 +113,21 @@ export function parseWorkshopCatalogue(input) {
       : (key === 'place' ? (destinationPriority.get(a.file) ?? (a.kind === 'place' ? 5 : 6)) -
           (destinationPriority.get(b.file) ?? (b.kind === 'place' ? 5 : 6)) : 0)
         || a.label.localeCompare(b.label, 'en-GB', { numeric: true, sensitivity: 'base' }) || a.file.localeCompare(b.file));
-    if (!records.length) throw new Error('No usable recordings in workshop category.');
+    if (!optional && !records.length) throw new Error('No usable recordings in workshop category.');
     categories[key] = records;
     counts[key] = records.length;
   }
-  return { source: 'hosted', categories, counts, excludedAudioCounts, needsReviewCounts };
+  const regionalGroups = {};
+  for (const [folder, parentFile] of Object.entries(workshopRegionalFolders)) {
+    const parent = categories.place.find(record => record.file === parentFile);
+    regionalGroups[folder] = { parentId: parent?.id || null, records: parent ? categories[folder] : [],
+      excludedAudioCount: excludedAudioCounts[folder], needsReviewCount: needsReviewCounts[folder] };
+    delete categories[folder];
+    delete counts[folder];
+    delete excludedAudioCounts[folder];
+    delete needsReviewCounts[folder];
+  }
+  return { source: 'hosted', categories, regionalGroups, counts, excludedAudioCounts, needsReviewCounts };
 }
 
 async function readIndex(fetcher) {

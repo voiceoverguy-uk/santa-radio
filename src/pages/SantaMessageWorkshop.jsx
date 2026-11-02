@@ -15,6 +15,8 @@ import { createWorkshopNamePreviewCache } from '../lib/workshopNamePreviewCache.
 import { workshopTreatWording } from '../lib/workshopTreatWording.js';
 import { createStudioLetterVariation } from '../lib/santaStudioLetter.js';
 import WorkshopSearchableChoices from '../components/WorkshopSearchableChoices.jsx';
+import WorkshopDestinationPicker from '../components/WorkshopDestinationPicker.jsx';
+import { selectedWorkshopRegion, workshopRegionalFolders } from '../lib/workshopDestinations.js';
 import './SantaMessageWorkshop.css';
 
 const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
@@ -156,7 +158,19 @@ function validateWorkshopCatalogue(payload) {
     const unitOrder = { month: 0, year: 1 };
     return unitOrder[a.unit] - unitOrder[b.unit] || a.number - b.number;
   });
-  return { ...payload, categories };
+  const regionalGroups = {};
+  for (const [folder, parentFile] of Object.entries(workshopRegionalFolders)) {
+    const group = payload.regionalGroups?.[folder];
+    const parent = categories.place.find(record => record.file === parentFile);
+    if (!group || !parent || group.parentId !== parent.id) continue;
+    if (!Array.isArray(group.records) || group.records.length > 10000
+      || group.records.some(record => !record || typeof record.id !== 'string'
+        || !/^c-[a-f0-9]{64}$/.test(record.id) || typeof record.label !== 'string' || !record.label.trim()
+        || typeof record.file !== 'string' || !record.file.startsWith(`${folder}/`))
+      || new Set(group.records.map(record => record.id)).size !== group.records.length) continue;
+    regionalGroups[folder] = group;
+  }
+  return { ...payload, categories, regionalGroups };
 }
 
 function getSoundStatusMessage(status) {
@@ -216,6 +230,10 @@ export default function SantaMessageWorkshop() {
     playNext,
     status: workshopSoundStatus,
   } = useWorkshopSounds();
+  const selectedRegion = selectedWorkshopRegion(catalogueState.catalogue, choices.place, choices.region);
+  const selectedCountry = catalogueState.catalogue?.categories.place.find(record => record.id === choices.place);
+  const destinationSummary = selectedRegion ? `${selectedRegion.label}, ${selectedCountry.label}` : selectedCountry?.label;
+  const destinationValid = !choices.region || !!selectedRegion;
   const workshopSoundNotice = getSoundStatusMessage(workshopSoundStatus);
   const pageRef = useRef(null);
   const builderRef = useRef(null);
@@ -232,7 +250,7 @@ export default function SantaMessageWorkshop() {
   const hasCurrentStageChoice = stage?.key === 'name'
     ? !!selectedName && !!choices.name
     : !!stage && hasCatalogueOptions && catalogueOptions.some(record => record.id === choices[stage.key]);
-  const canContinue = !isReview && hasCurrentStageChoice;
+  const canContinue = !isReview && hasCurrentStageChoice && (stage?.key !== 'place' || destinationValid);
 
   useEffect(() => {
     const dock = document.querySelector('.radio-dock');
@@ -309,7 +327,8 @@ export default function SantaMessageWorkshop() {
   }, [stageIndex]);
 
   const choose = (key, value) => {
-    setChoices(current => ({ ...current, [key]: value }));
+    setChoices(current => ({ ...current, [key]: value,
+      ...(key === 'place' && current.place !== value ? { region: '' } : {}) }));
     setError('');
   };
 
@@ -461,7 +480,13 @@ export default function SantaMessageWorkshop() {
                 <p className="smw-catalogue-empty" role="status">
                   There are no selectable {stage.label.toLowerCase()} choices in the hosted inventory right now.
                 </p>
-              ) : stage.wording && stage.key !== 'age' ? (
+               ) : stage.key === 'place' ? (
+                 <WorkshopDestinationPicker options={catalogueOptions}
+                   regionalGroups={catalogueState.catalogue.regionalGroups}
+                   value={choices.place} region={choices.region || ''}
+                   onChange={value => choose('place', value)} onRegionChange={value => choose('region', value)}
+                   invalid={!!error} onTick={playTick} onSoundInteraction={prepare} wording={stage.wording} />
+               ) : stage.wording && stage.key !== 'age' ? (
                 <WorkshopSearchableChoices
                   key={stage.key}
                   category={stage.key} label={stage.label} options={catalogueOptions}
@@ -506,9 +531,6 @@ export default function SantaMessageWorkshop() {
                 onSoundInteraction={prepare}
               />}
               {stage.note && <p className="smw-stage-note">{stage.note}</p>}
-              {stage.key === 'place' && <p className="smw-stage-note">
-                County available for UK addresses; state for US addresses.
-              </p>}
               <p className="smw-validation" id="smw-validation" role="alert">{error}</p>
               <div className="smw-actions">
                 {(stageIndex > 0 || editing) && <button className="smw-button smw-button-back" type="button" onClick={goBack}>
@@ -538,7 +560,8 @@ export default function SantaMessageWorkshop() {
                             <span className="smw-summary-answer">{choices.name || 'Not chosen'}</span>
                             <WorkshopNamePreview key={selectedName?.id} record={selectedName} cache={namePreviewCache} />
                           </span>
-                        : <span className="smw-summary-answer">{catalogueState.catalogue?.categories?.[item.key]
+                        : <span className="smw-summary-answer">{item.key === 'place' ? destinationSummary
+                          : catalogueState.catalogue?.categories?.[item.key]
                           ?.find(record => record.id === choices[item.key])?.label
                           || 'This choice is no longer available.'}</span>}</dd>
                     </div>
@@ -560,15 +583,16 @@ export default function SantaMessageWorkshop() {
                   ['age', 'age'], ['activity', 'activity'], ['achievement', 'achievement'],
                   ['destination', 'place'], ['treats', 'treat'],
                 ].map(([key, category]) => {
-                  const label = catalogueState.catalogue?.categories?.[category]
+                  const label = category === 'place' ? destinationSummary || '' : catalogueState.catalogue?.categories?.[category]
                     ?.find(record => record.id === choices[category])?.label || '';
                   return [key, category === 'treat' ? workshopTreatWording(label)
                     : category === 'place' ? label.replace(/ — (?:Fantasy place|Space destination)$/, '') : label];
                 })), context: Object.fromEntries([
                   ['age', 'age'], ['activity', 'activity'], ['achievement', 'achievement'],
                   ['destination', 'place'], ['treats', 'treat'],
-                ].map(([key, category]) => [key, catalogueState.catalogue?.categories?.[category]
-                  ?.find(record => record.id === choices[category])?.letterContext])) }}
+                ].map(([key, category]) => [key, category === 'place' && selectedRegion
+                  ? selectedRegion.letterContext : catalogueState.catalogue?.categories?.[category]
+                    ?.find(record => record.id === choices[category])?.letterContext])) }}
                 onChange={setNameSpelling}
               />
               <div className="smw-actions">
@@ -576,9 +600,9 @@ export default function SantaMessageWorkshop() {
                   <span aria-hidden="true">←</span> Back
                 </button>
                 <WorkshopMessageAudio
-                  key={JSON.stringify([selectedName?.id, ...catalogueCategories.map(key => choices[key])])}
+                  key={JSON.stringify([selectedName?.id, choices.region, ...catalogueCategories.map(key => choices[key])])}
                   record={selectedName} choices={choices} spelling={nameSpelling}
-                  complete={!!selectedName && catalogueCategories.every(key =>
+                  complete={!!selectedName && destinationValid && catalogueCategories.every(key =>
                     catalogueState.catalogue?.categories?.[key]?.some(record => record.id === choices[key]))}
                 />
               </div>
