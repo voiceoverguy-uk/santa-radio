@@ -93,7 +93,8 @@ export default function HomeHero({ preview = false, onContinue, onSelectedNameCh
         <div className="hero-name-preview__broadcast">
           <div className="hero-name-preview__left-stack">
             <p className="hero-description hero-name-preview__description">
-              Your Christmas radio station all year round 24/7 along with festive treats, amazing free apps, games and FREE personalised messages from Santa.
+              <span className="hero-name-preview__copy--wide">Your Christmas radio station all year round 24/7 along with festive treats, amazing free apps, games and FREE personalised messages from Santa.</span>
+              <span className="hero-name-preview__copy--phone">Festive treats, amazing free apps, games and FREE personalised messages from Santa.</span>
             </p>
             <div className="hero-name-preview__listening">
               <div className="hero-name-preview__player-row">
@@ -101,7 +102,10 @@ export default function HomeHero({ preview = false, onContinue, onSelectedNameCh
                   <RadioButton className="btn-red" />
                 </div>
               </div>
-              <p className="hero-note">The World’s Best Christmas Radio Station · All year round</p>
+              <p className="hero-note">
+                <span className="hero-name-preview__copy--wide">The World’s Best Christmas Radio Station · All year round</span>
+                <span className="hero-name-preview__copy--phone">The World’s Best Christmas Radio Station · 24/7 - 365 Days</span>
+              </p>
               <div id="christmas-countdown" className="hero-countdown"><Countdown /></div>
             </div>
           </div>

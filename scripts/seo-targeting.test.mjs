@@ -143,7 +143,7 @@ test('homepage uses consistent search targeting in initial content, metadata and
   for (const name of ['og:title', 'twitter:title']) assert.equal(decode(headValue(html, name)), m.title);
   assert.ok(!html.includes('UK\\u2019s'), 'literal escaped apostrophe must not return');
   assert.ok(m.description.includes('UK’s'));
-  assert.match(html, /<p class="hero-description hero-name-preview__description">Your Christmas radio station all year round 24\/7 along with festive treats, amazing free apps, games and FREE personalised messages from Santa\.<\/p>/);
+  assert.match(html, /<p class="hero-description hero-name-preview__description"><span class="hero-name-preview__copy--wide">Your Christmas radio station all year round 24\/7 along with festive treats, amazing free apps, games and FREE personalised messages from Santa\.<\/span><span class="hero-name-preview__copy--phone">Festive treats, amazing free apps, games and FREE personalised messages from Santa\.<\/span><\/p>/);
   assert.ok(html.includes('Check the child’s name, then let Santa create magic.'));
   assert.equal((html.match(/<h1\b/g) || []).length, 1);
   const graphs = readGraphs(html);

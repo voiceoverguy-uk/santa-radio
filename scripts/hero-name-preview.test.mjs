@@ -32,7 +32,10 @@ test('built preview remains noindex while sharing the approved homepage hero cop
   assert.equal(home.status, 200);
   assert.match(home.markup, /hero-name-checker/);
   for (const markup of [home.markup, preview.markup, html]) {
-    assert.match(markup, /Your Christmas radio station all year round 24\/7 along with festive treats, amazing free apps, games and FREE personalised messages from Santa\./);
+    assert.match(markup, /<span class="hero-name-preview__copy--wide">Your Christmas radio station all year round 24\/7 along with festive treats, amazing free apps, games and FREE personalised messages from Santa\.<\/span>/);
+    assert.match(markup, /<span class="hero-name-preview__copy--phone">Festive treats, amazing free apps, games and FREE personalised messages from Santa\.<\/span>/);
+    assert.match(markup, /<span class="hero-name-preview__copy--wide">The World’s Best Christmas Radio Station · All year round<\/span>/);
+    assert.match(markup, /<span class="hero-name-preview__copy--phone">The World’s Best Christmas Radio Station · 24\/7 - 365 Days<\/span>/);
     assert.match(markup, /Check the child’s name, then let Santa create magic\./);
   }
   assert.doesNotMatch(home.markup, /Hero preview/);
@@ -91,6 +94,9 @@ test('actual Node production delivery hydrates and supports phone lookup without
   await page.route(/sibforms\.com|youtube\.com|googlevideo\.com|global\.citrus3\.com/, route => route.abort());
   await page.goto(`${base}${path}`);
   await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
+  assert.equal(await page.locator('.hero-description').innerText(), 'Festive treats, amazing free apps, games and FREE personalised messages from Santa.');
+  assert.equal(await page.locator('.hero-note').innerText(), 'The World’s Best Christmas Radio Station · 24/7 - 365 Days');
+  assert.doesNotMatch(await page.locator('.hero').ariaSnapshot(), /all year round|All year round/);
   const input = page.getByRole('combobox', { name: 'Child’s first name' });
   await input.fill('Arab');
   await page.getByRole('option', { name: 'Arabella', exact: true }).click();

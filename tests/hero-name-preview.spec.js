@@ -3,6 +3,29 @@ import { mkdirSync, readFileSync } from 'node:fs';
 import { fillAccessForm, mockBrevo } from './helpers/message-access.js';
 
 const path = '/preview/hero-name-checker';
+const heroCopy = {
+  phone: {
+    note: 'The World’s Best Christmas Radio Station · 24/7 - 365 Days',
+    description: 'Festive treats, amazing free apps, games and FREE personalised messages from Santa.',
+  },
+  wide: {
+    note: 'The World’s Best Christmas Radio Station · All year round',
+    description: 'Your Christmas radio station all year round 24/7 along with festive treats, amazing free apps, games and FREE personalised messages from Santa.',
+  },
+};
+
+async function expectHeroCopy(page, width) {
+  const active = width < 768 ? 'phone' : 'wide';
+  const inactive = width < 768 ? 'wide' : 'phone';
+  for (const [selector, key] of [['.hero-note', 'note'], ['.hero-description', 'description']]) {
+    const paragraph = page.locator(selector);
+    await expect(paragraph).toHaveText(heroCopy[active][key], { useInnerText: true });
+    await expect(paragraph.locator(`.hero-name-preview__copy--${inactive}`)).toBeHidden();
+    const accessible = await paragraph.ariaSnapshot();
+    expect(accessible.split(heroCopy[active][key])).toHaveLength(2);
+    expect(accessible).not.toContain(heroCopy[inactive][key]);
+  }
+}
 const inventory = {
   hostedCount: 3, warning: null,
   records: ['Arabella', 'Erin', 'Erica'].map(name => ({
@@ -24,12 +47,10 @@ for (const route of ['/', path]) {
     const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
     if (await decline.isVisible()) await decline.click();
     await page.evaluate(() => document.fonts.ready);
-    await expect(page.locator('.hero-description')).toHaveText(
-      'Your Christmas radio station all year round 24/7 along with festive treats, amazing free apps, games and FREE personalised messages from Santa.');
     await expect(checker(page).getByRole('status')).toHaveText('Check the child’s name, then let Santa create magic.');
-    await expect(page.locator('.hero-note')).toHaveText('The World’s Best Christmas Radio Station · All year round');
     for (const width of [320, 390, 767, 768, 1024, 1090, 1091, 1440, 1740, 1920]) {
       await page.setViewportSize({ width, height: 1000 });
+      await expectHeroCopy(page, width);
       for (const playing of [false, true]) {
         if (playing) await page.locator('.hero-actions').getByRole('button', { name: 'Listen Live', exact: true }).click();
         const layout = await page.locator('.hero').evaluate(hero => {
@@ -37,9 +58,10 @@ for (const route of ['/', path]) {
           const get = selector => hero.querySelector(selector);
           const text = selector => {
             const node = get(selector), range = document.createRange();
-            range.selectNodeContents(node);
+            const activeCopy = [...node.children].find(child => getComputedStyle(child).display !== 'none');
+            range.selectNodeContents(activeCopy || node);
             return { box: rect(node), font: getComputedStyle(node).fontSize,
-              lines: [...range.getClientRects()].map(r => r.toJSON()) };
+              lines: [...range.getClientRects()].filter(r => r.width && r.height).map(r => r.toJSON()) };
           };
           return {
             hero: rect(hero), description: text('.hero-description'), note: text('.hero-note'),
@@ -443,7 +465,7 @@ for (const route of ['/', path]) {
 }
 
 for (const route of ['/', path]) {
-  for (const width of [320, 390, 1440]) {
+  for (const width of [320, 390, 767, 768, 1440]) {
     test(`brand-first strapline and controls on ${route} at ${width}px, including enlarged text`, async ({ page }) => {
       await page.setViewportSize({ width, height: 1000 });
       await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -462,23 +484,26 @@ for (const route of ['/', path]) {
       await expect(hero).not.toContainText('Live from The North Pole');
       await expect(hero.locator('.hero-name-preview__eyebrow')).toHaveCount(0);
       await expect(hero.locator('.hero-name-preview__flag')).toHaveCount(route === path ? 1 : 0);
-      const description = hero.locator('.hero-name-preview__description');
-      await expect(description).toHaveText('Your Christmas radio station all year round 24/7 along with festive treats, amazing free apps, games and FREE personalised messages from Santa.');
+      await expectHeroCopy(page, width);
       if (route === path) await expect(hero.getByLabel('Preview only')).toBeVisible();
       for (const fontSize of ['100%', '200%']) {
         await page.evaluate(size => { document.documentElement.style.fontSize = size; }, fontSize);
-        const descriptionGeometry = await description.evaluate(element => {
+        await expectHeroCopy(page, width);
+        const copyGeometry = await hero.locator('.hero-description, .hero-note').evaluateAll(elements => elements.map(element => {
           const box = element.getBoundingClientRect();
           const range = document.createRange();
           range.selectNodeContents(element);
-          return { box: box.toJSON(), lines: [...range.getClientRects()].map(rect => rect.toJSON()) };
-        });
-        expect(descriptionGeometry.lines.length).toBeGreaterThan(0);
-        for (const line of descriptionGeometry.lines) {
-          expect(line.left).toBeGreaterThanOrEqual(descriptionGeometry.box.left - .5);
-          expect(line.right).toBeLessThanOrEqual(descriptionGeometry.box.right + .5);
-          expect(line.top).toBeGreaterThanOrEqual(descriptionGeometry.box.top - .5);
-          expect(line.bottom).toBeLessThanOrEqual(descriptionGeometry.box.bottom + .5);
+          return { box: box.toJSON(), lines: [...range.getClientRects()]
+            .filter(rect => rect.width && rect.height).map(rect => rect.toJSON()) };
+        }));
+        for (const text of copyGeometry) {
+          expect(text.lines.length).toBeGreaterThan(0);
+          for (const line of text.lines) {
+            expect(line.left).toBeGreaterThanOrEqual(text.box.left - .5);
+            expect(line.right).toBeLessThanOrEqual(text.box.right + .5);
+            expect(line.top).toBeGreaterThanOrEqual(text.box.top - .5);
+            expect(line.bottom).toBeLessThanOrEqual(text.box.bottom + .5);
+          }
         }
         const geometry = await heading.evaluate(el => {
           const rect = el.getBoundingClientRect();
@@ -811,8 +836,6 @@ test(`mobile hero places description before the complete checker and countdown a
   if (await decline.isVisible()) await decline.click();
   await page.evaluate(() => document.fonts.ready);
   await expect(page.locator('.hero-description')).toHaveCount(1);
-  await expect(page.locator('.hero-description')).toHaveText(
-    'Your Christmas radio station all year round 24/7 along with festive treats, amazing free apps, games and FREE personalised messages from Santa.');
   const seconds = page.locator('.hero-countdown .countdown-unit strong').last();
   await page.clock.pauseAt(new Date('2026-11-01T12:00:10Z'));
   const before = await seconds.textContent();
@@ -846,6 +869,7 @@ test(`mobile hero places description before the complete checker and countdown a
     await page.setViewportSize({ width, height: 1000 });
     for (const fontSize of ['100%', '200%']) {
       await page.evaluate(size => { document.documentElement.style.fontSize = size; }, fontSize);
+      await expectHeroCopy(page, width);
       for (const playing of [false, true]) {
         if (playing) await page.locator('.hero-actions button').click();
         assertOrder(await measure());

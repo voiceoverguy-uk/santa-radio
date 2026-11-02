@@ -68,6 +68,11 @@
   padding-top: 6px;
 }
 
+/* display:none also excludes the inactive wording from the accessibility tree. */
+.hero-name-preview__copy--phone {
+  display: none;
+}
+
 .hero-name-preview__broadcast,
 .hero-name-preview__left-stack {
   display: contents;
@@ -689,6 +694,14 @@
 }
 
 @media (max-width: 767px) {
+  .hero-name-preview__copy--wide {
+    display: none;
+  }
+
+  .hero-name-preview__copy--phone {
+    display: inline;
+  }
+
   /* Let Safari position the focused field without competing smooth scrolling. */
   html:has(.hero-name-checker:focus-within) {
     scroll-behavior: auto;
