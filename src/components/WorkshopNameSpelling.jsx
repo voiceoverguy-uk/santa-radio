@@ -6,9 +6,10 @@ import {
 } from '../lib/workshopNameSpelling.js';
 import WorkshopSpellingSuggestion from './WorkshopSpellingSuggestion.jsx';
 import { normaliseRequestedName } from '../lib/santaNameRequests.js';
+import { StudioKeepsakePreview } from './SantaStudioGifts.jsx';
 import './WorkshopNameSpelling.css';
 
-export default function WorkshopNameSpelling({ recordedName, spelling, recordingId, onChange }) {
+export default function WorkshopNameSpelling({ recordedName, spelling, recordingId, onChange, giftDetails }) {
   const fieldId = useId();
   const inputRef = useRef(null);
   const changeButtonRef = useRef(null);
@@ -74,7 +75,7 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
 
       <dl className="smw-written-name-previews">
         <div className="smw-written-name-preview">
-          <dt>Certificate name preview</dt>
+          <dt>Certificate, picture and letter name preview</dt>
           <dd>
             <span className="smw-written-name-value">{writtenName}</span>
             <button
@@ -94,6 +95,10 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
           </dd>
         </div>
       </dl>
+
+      <div className="smw-studio-preview" aria-label="Studio keepsake previews">
+        <StudioKeepsakePreview name={writtenName} details={giftDetails || {}} />
+      </div>
 
       {isEditing && (
         <form id={`${fieldId}-editor`} className="smw-written-name-editor" onSubmit={commitSpelling} noValidate>

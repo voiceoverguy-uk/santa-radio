@@ -251,7 +251,7 @@ test('recorded name preview can cancel a refresh and recover from a failed refre
 });
 
 for (const width of [390, 1440]) {
-  test(`selected age, activity, grammatical treat and country complete Santa wording in red at ${width}px`, async ({ page }) => {
+  test(`selected age, activity, celebration, grammatical treat and country complete Santa wording in red at ${width}px`, async ({ page }) => {
     test.setTimeout(60000);
     await page.setViewportSize({ width, height: 1000 });
     await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -309,8 +309,20 @@ for (const width of [390, 1440]) {
         await expect(suffix).toHaveText('an energy drink');
         await page.getByRole('button', { name: 'Clear', exact: true }).click();
         await page.locator('.smw-builder').screenshot({ path: `generated-artifacts/studio-treat-grammar-${width}.jpg` });
-      } else {
-        await expect(suffix).toHaveCount(0);
+      } else if (step === 4) {
+        await expect(quote).toContainText('how amazing you’ve been at… Completing a jigsaw puzzle');
+        await expect(suffix).toHaveText('Completing a jigsaw puzzle');
+        await expect(suffix).toHaveCSS('color', 'rgb(155, 17, 30)');
+        await page.getByRole('listbox').press('ArrowDown');
+        await expect(suffix).toHaveText('Planting and caring for a garden');
+        await page.getByRole('searchbox', { name: 'Search achievements', exact: true }).fill('no matching celebration');
+        await expect(page.locator('.smw-search-empty')).toBeVisible();
+        await expect(suffix).toHaveText('Planting and caring for a garden');
+        await page.getByRole('button', { name: 'Clear', exact: true }).click();
+        await page.locator('.smw-button-back').click();
+        await page.locator('.smw-button-next').click();
+        await expect(suffix).toHaveText('Planting and caring for a garden');
+        await page.locator('.smw-builder').screenshot({ path: `generated-artifacts/studio-selected-celebration-${width}.jpg` });
       }
       await page.locator('.smw-button-next').click();
     }
@@ -885,6 +897,80 @@ test('failed and malformed catalogues show explicit retry, never offline example
   expect(attempts).toBeGreaterThanOrEqual(3);
 });
 
+for (const width of [390, 1440]) {
+  test(`review keepsakes enlarge with the selected name and letter choices at ${width}px`, async ({ page }) => {
+    test.setTimeout(90000);
+    await page.setViewportSize({ width, height: 900 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await open(page);
+    await complete(page);
+    const section = page.getByRole('region', { name: 'Written name for your keepsakes' });
+    await expect(section).toContainText('Certificate, picture and letter name preview');
+    const previews = section.locator('.studio-gifts');
+    await expect(previews).toHaveAttribute('data-demo-name', 'Demrie');
+    await expect(previews).toHaveAttribute('data-complete', 'true');
+    await expect(previews.locator('.studio-certificate img')).toHaveAttribute('src', '/certificates/examples/blank-master.webp');
+    await expect(previews.locator('.studio-gifts__preview-stack .studio-santa-picture img')).toHaveAttribute('src', '/images/santa-nice-list.jpg');
+    for (const [buttonName, kind] of [
+      ['Enlarge certificate', 'certificate'],
+      ['Enlarge Santa’s Nice List picture', 'picture'],
+      ['Enlarge letter to read', 'letter'],
+    ]) {
+      const opener = previews.getByRole('button', { name: buttonName, exact: true });
+      await opener.click();
+      const dialog = page.getByRole('dialog', { name: `Demrie’s ${kind} example`, exact: true });
+      await expect(dialog).toBeVisible();
+      await expect(dialog.getByRole('button', { name: 'Close preview', exact: true })).toBeFocused();
+      await expect(dialog.locator('.studio-gifts__watermark span')).toHaveText([
+        'NORTH POLE PROPERTY', 'NORTH POLE PROPERTY', 'NORTH POLE PROPERTY',
+      ]);
+      if (kind === 'certificate') await expect(dialog.locator('.studio-certificate__name')).toHaveText('Demrie');
+      if (kind === 'picture') await expect(dialog.getByRole('img', { name: 'Santa’s Nice List picture example for Demrie' })).toBeVisible();
+      if (kind === 'letter') {
+        const text = dialog.locator('.studio-letter__text');
+        for (const choice of ['Dear Demrie,', '9 years old', 'Teamwork', 'Completing a jigsaw puzzle', 'a bûche de Noël', 'The Enchanted Forest']) {
+          await expect(text).toContainText(choice);
+        }
+        await expect(text).not.toContainText('— Fantasy place');
+        const geometry = await dialog.evaluate(node => {
+          const paper = node.querySelector('.studio-letter__paper').getBoundingClientRect();
+          const text = node.querySelector('.studio-letter__text').getBoundingClientRect();
+          const content = node.querySelector('.studio-letter-dialog__content');
+          return { paper: { left: paper.left, top: paper.top, right: paper.right, bottom: paper.bottom, height: paper.height },
+            textBottom: text.bottom, scroll: content.scrollHeight - content.clientHeight,
+            viewport: { width: innerWidth, height: innerHeight } };
+        });
+        expect(geometry.paper.left).toBeGreaterThanOrEqual(-1);
+        expect(geometry.paper.top).toBeGreaterThanOrEqual(-1);
+        expect(geometry.paper.right).toBeLessThanOrEqual(geometry.viewport.width + 1);
+        expect(geometry.paper.bottom).toBeLessThanOrEqual(geometry.viewport.height + 1);
+        expect(geometry.textBottom).toBeLessThanOrEqual(geometry.paper.bottom - geometry.paper.height * 0.06);
+        expect(geometry.scroll).toBeLessThanOrEqual(1);
+        await page.screenshot({ path: `generated-artifacts/studio-selected-letter-${width}.jpg` });
+      }
+      await page.keyboard.press('Escape');
+      await expect(dialog).not.toBeVisible();
+      await expect(opener).toBeFocused();
+    }
+    // Written spelling applies to all keepsakes, never to the selected recording.
+    await section.getByRole('button', { name: 'Edit certificate name', exact: true }).click();
+    await section.getByRole('textbox', { name: 'Name spelling', exact: true }).fill('Demree');
+    await section.getByRole('button', { name: 'Use this spelling', exact: true }).click();
+    await expect(previews).toHaveAttribute('data-demo-name', 'Demree');
+    await expect(previews.locator('.studio-certificate__name')).toHaveText('Demree');
+    await expect(previews.locator('.studio-letter__text')).toContainText('Dear Demree,');
+    await expect(page.locator('.smw-summary-row').first()).toContainText('Demrie');
+    await page.getByRole('button', { name: 'Change Extra celebration', exact: true }).click();
+    await page.getByRole('option', { name: 'Planting and caring for a garden', exact: true }).click();
+    await page.getByRole('button', { name: 'Return to review', exact: true }).click();
+    await expect(previews.locator('.studio-letter__text')).toContainText('Planting and caring for a garden');
+    await expect(previews.locator('.studio-letter__text')).not.toContainText('Completing a jigsaw puzzle');
+    await expect(previews).toHaveAttribute('data-demo-name', 'Demree');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+    await page.locator('.smw-written-name').screenshot({ path: `generated-artifacts/studio-keepsakes-review-${width}.jpg` });
+  });
+}
+
 test('sound-alike hint and final spelling change update output previews only, without persisting or sending details', async ({ page }) => {
   const requests = [];
   page.on('request', request => {
@@ -963,8 +1049,8 @@ test('sound-alike hint and final spelling change update output previews only, wi
   delete before.session['radio-minimized'];
   delete after.session['radio-minimized'];
   expect(after).toEqual(before);
-  expect(requests.every(url => url.endsWith('/api/santa-workshop-access') || url.endsWith('/api/santa-names?inventory=hosted') ||
-    url.endsWith('/api/santa-workshop-catalogue'))).toBe(true);
+  expect(requests.filter(url => !(url.endsWith('/api/santa-workshop-access') || url.endsWith('/api/santa-names?inventory=hosted') || url.endsWith('/api/santa-names') ||
+    url.endsWith('/api/santa-workshop-catalogue')))).toEqual([]);
   await expect(page).toHaveURL(new RegExp(`${path}$`));
   await expect(page.locator('.smw-page audio, .smw-page [download]')).toHaveCount(0);
   await page.reload();
@@ -1278,6 +1364,18 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 320, height: 568 }
 }
 
 test('desktop and phone review screenshots, explainer arrangement and unchanged navigation', async ({ page }) => {
+  const checkAnswerColours = async () => {
+    const selections = page.locator('.smw-summary-answer');
+    await expect(selections).toHaveText(answers);
+    for (const selection of await selections.all()) {
+      await expect(selection).toHaveCSS('color', 'rgb(155, 17, 30)');
+      await expect(selection).toHaveCSS('background-color', 'rgb(255, 248, 231)');
+    }
+    for (const label of await page.locator('.smw-summary-row dt').all()) {
+      await expect(label).toHaveCSS('color', 'rgb(185, 201, 185)');
+    }
+    await expect(page.locator('.smw-name-preview-button')).toHaveCSS('color', 'rgb(255, 248, 231)');
+  };
   await page.setViewportSize({ width: 1440, height: 1100 });
   await open(page);
   await expect(page.locator('.smw-explainer')).toBeVisible();
@@ -1289,8 +1387,10 @@ test('desktop and phone review screenshots, explainer arrangement and unchanged 
   expect(new Set(cards).size).toBe(1);
   await expect(page.locator('nav a[href="/santa-message-workshop"], footer a[href="/santa-message-workshop"]')).toHaveCount(0);
   await complete(page);
+  await checkAnswerColours();
   await page.locator('.smw-builder').screenshot({ path: 'generated-artifacts/workshop/desktop-review.png' });
   await page.setViewportSize({ width: 390, height: 844 });
+  await checkAnswerColours();
   await photograph(page, 'generated-artifacts/workshop/mobile-review.png');
   await page.reload();
   await photograph(page, 'generated-artifacts/workshop/mobile-clean.png');

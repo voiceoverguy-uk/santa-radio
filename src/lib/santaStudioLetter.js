@@ -7,10 +7,20 @@ export const studioLetterChoices = {
   treats: ['a beautiful note', 'a bowl of porridge', 'a box of shortbread', 'carrots for the reindeer'],
 };
 
-export function createStudioLetter(name, random = Math.random) {
+export function createStudioLetter(name, random = Math.random, overrides = null) {
   const pick = values => values[Math.floor(random() * values.length)];
-  const details = Object.fromEntries(Object.entries(studioLetterChoices).map(([key, values]) => [key, pick(values)]));
-  const age = 3 + Math.floor(random() * 9);
+  const details = overrides
+    ? Object.fromEntries(Object.keys(studioLetterChoices).map(key => {
+      if (typeof overrides[key] !== 'string' || !overrides[key].trim()) {
+        throw new TypeError(`Missing selected Studio letter detail: ${key}`);
+      }
+      return [key, overrides[key].trim()];
+    }))
+    : Object.fromEntries(Object.entries(studioLetterChoices).map(([key, values]) => [key, pick(values)]));
+  if (overrides && (typeof overrides.age !== 'string' || !overrides.age.trim())) {
+    throw new TypeError('Missing selected Studio letter detail: age');
+  }
+  const age = overrides ? overrides.age.trim() : 3 + Math.floor(random() * 9);
   const paragraphs = [
     `Dear ${name},`,
     'What a wonderful moment to find your name in my great big Nice List! Before the elves carry it away for our final Christmas checks, I wanted to send you a very special letter of your own.',

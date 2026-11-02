@@ -82,9 +82,10 @@ function SantaPicture({ name, elapsed, picture, previousPicture = null, onDissol
 
 // Keyed by recipient: a deliberate demo change cancels every old animation,
 // reading timer and random selection together, before rendering the new name.
-function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio, reducedMotion, onNext }) {
+function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio, reducedMotion, onNext,
+  staticPreview = false, suppliedLetter = null, reviewHeading = null }) {
   // Deterministic SSR; randomise only once after mounting in the browser.
-  const [letter, setLetter] = useState(() => createStudioLetter(name, () => 0.5));
+  const [letter, setLetter] = useState(() => suppliedLetter || createStudioLetter(name, () => 0.5));
   const [elapsed, setElapsed] = useState(0);
   const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
@@ -95,11 +96,12 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
   const dialogRef = useRef(null);
   const openerRef = useRef(null);
   const closeRef = useRef(null);
-  const duration = letterDuration(letter);
-  const displayElapsed = reducedMotion ? duration : elapsed;
+  const displayLetter = staticPreview && suppliedLetter ? suppliedLetter : letter;
+  const duration = letterDuration(displayLetter);
+  const displayElapsed = staticPreview || reducedMotion ? duration : elapsed;
   const finished = displayElapsed >= duration;
 
-  useEffect(() => { setLetter(createStudioLetter(name)); }, [name]);
+  useEffect(() => { if (!staticPreview) setLetter(createStudioLetter(name)); }, [name, staticPreview]);
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting));
     observer.observe(sectionRef.current);
@@ -117,11 +119,11 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
     return () => clearInterval(timer);
   }, [finished, visible, duration]);
   useEffect(() => {
-    if (activeAudio || reducedMotion || !visible || hovered || focused || reading || view) return undefined;
+    if (staticPreview || activeAudio || reducedMotion || !visible || hovered || focused || reading || view) return undefined;
     // One shared name drives both documents. Writing completes within this cycle.
     const timer = setTimeout(onNext, GIFT_EXAMPLE_INTERVAL_MS);
     return () => clearTimeout(timer);
-  }, [activeAudio, reducedMotion, visible, hovered, focused, reading, view, onNext, picture]);
+  }, [staticPreview, activeAudio, reducedMotion, visible, hovered, focused, reading, view, onNext, picture]);
   useEffect(() => {
     if (!view) return undefined;
     const dialog = dialogRef.current;
@@ -148,7 +150,7 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
     onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
     onFocusCapture={() => setFocused(true)}
     onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false); }}>
-    <h4>All 3 gifts included for {name} with the paid version</h4>
+    <h4>{reviewHeading || `All 3 gifts included for ${name} with the paid version`}</h4>
     <div className="studio-gifts__preview-stack" role="group" aria-label="Three gift previews"
       onContextMenu={event => event.preventDefault()} onDragStart={event => event.preventDefault()}>
       <div className="studio-gifts__gallery">
@@ -159,7 +161,7 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
         </button>
         <button className="studio-gifts__thumbnail studio-gifts__thumbnail--letter" type="button"
           aria-label="Enlarge letter to read" onClick={event => open(event, 'letter')}>
-          <Letter letter={letter} elapsed={displayElapsed} />
+           <Letter letter={displayLetter} elapsed={displayElapsed} />
           <span className="studio-gifts__thumbnail-label">Enlarge letter</span>
         </button>
       </div>
@@ -181,7 +183,7 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
         <div className={`studio-letter-dialog__document studio-letter-dialog__document--${view || 'picture'}`}
           onContextMenu={event => event.preventDefault()} onDragStart={event => event.preventDefault()}>
           {view === 'certificate' ? <Certificate name={name} elapsed={duration} />
-            : view === 'letter' ? <Letter letter={letter} elapsed={duration} />
+             : view === 'letter' ? <Letter letter={displayLetter} elapsed={duration} />
               : <SantaPicture name={name} picture={picture} elapsed={duration} />}
           <div className="studio-gifts__watermark" aria-hidden="true">
             {[0, 1, 2].map(row => <span key={row}>NORTH POLE PROPERTY</span>)}
@@ -237,6 +239,23 @@ export function useStudioGiftExample({ activeExampleName = null, previewName = n
 export function StudioGiftPreview({ example }) {
   const name = example.name || studioGiftExampleNames[0];
   return <GiftExample key={name} {...example} name={name} />;
+}
+
+export function StudioKeepsakePreview({ name, details = {} }) {
+  const letter = createStudioLetter(name, () => 0.5, details);
+  return <GiftExample
+    key={`studio-review-${name}`}
+    name={name}
+    picture={santaPictures[0]}
+    previousPicture={null}
+    onDissolved={() => {}}
+    activeAudio={false}
+    reducedMotion={false}
+    onNext={() => {}}
+    staticPreview
+    suppliedLetter={letter}
+    reviewHeading="Your personalised Studio gifts"
+  />;
 }
 
 export default function SantaStudioGifts(props) {

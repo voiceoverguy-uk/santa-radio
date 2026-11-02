@@ -11,6 +11,7 @@ import WorkshopNameSpelling from '../components/WorkshopNameSpelling.jsx';
 import WorkshopWordingPreview from '../components/WorkshopWordingPreview.jsx';
 import WorkshopNamePreview from '../components/WorkshopNamePreview.jsx';
 import { createWorkshopNamePreviewCache } from '../lib/workshopNamePreviewCache.js';
+import { workshopTreatWording } from '../lib/workshopTreatWording.js';
 import WorkshopSearchableChoices from '../components/WorkshopSearchableChoices.jsx';
 import './SantaMessageWorkshop.css';
 
@@ -526,12 +527,12 @@ export default function SantaMessageWorkshop() {
                       <dt>{item.reviewLabel || item.label}</dt>
                       <dd>{item.key === 'name'
                         ? <span className="smw-name-review-value">
-                            <span>{choices.name || 'Not chosen'}</span>
+                            <span className="smw-summary-answer">{choices.name || 'Not chosen'}</span>
                             <WorkshopNamePreview key={selectedName?.id} record={selectedName} cache={namePreviewCache} />
                           </span>
-                        : catalogueState.catalogue?.categories?.[item.key]
+                        : <span className="smw-summary-answer">{catalogueState.catalogue?.categories?.[item.key]
                           ?.find(record => record.id === choices[item.key])?.label
-                          || 'This choice is no longer available.'}</dd>
+                          || 'This choice is no longer available.'}</span>}</dd>
                     </div>
                     <button type="button" className="smw-change" onClick={() => editStage(index)} aria-label={`Change ${item.reviewLabel || item.label}`} title={`Edit ${item.reviewLabel || item.label}`}>
                       <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
@@ -546,6 +547,15 @@ export default function SantaMessageWorkshop() {
                 recordedName={selectedName?.name || ''}
                 recordingId={selectedName?.id ?? ''}
                 spelling={nameSpelling}
+                giftDetails={Object.fromEntries([
+                  ['age', 'age'], ['activity', 'activity'], ['achievement', 'achievement'],
+                  ['destination', 'place'], ['treats', 'treat'],
+                ].map(([key, category]) => {
+                  const label = catalogueState.catalogue?.categories?.[category]
+                    ?.find(record => record.id === choices[category])?.label || '';
+                  return [key, category === 'treat' ? workshopTreatWording(label)
+                    : category === 'place' ? label.replace(/ — (?:Fantasy place|Space destination)$/, '') : label];
+                }))}
                 onChange={setNameSpelling}
               />
               <div className="smw-actions">

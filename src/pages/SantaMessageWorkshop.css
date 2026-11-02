@@ -328,6 +328,14 @@
 }
 .smw-summary-row dt { color: #b9c9b9; font-size: .74rem; }
 .smw-summary-row dd { margin: 2px 0 0; color: var(--smw-cream); font-size: .94rem; font-weight: 500; }
+.smw-summary-answer {
+  display: inline-block;
+  max-width: 100%;
+  padding: 2px 7px;
+  border-radius: 5px;
+  color: var(--smw-crimson);
+  background: var(--smw-cream);
+}
 .smw-change { border: 0; padding: 9px 11px; border-radius: 9px; background: transparent; color: var(--smw-gold-light); font-size: .79rem; font-weight: 600; cursor: pointer; }
 .smw-change { display: inline-grid; place-items: center; min-width: 48px; min-height: 56px; flex-shrink: 0; }
 .smw-change:hover { background: #d4af3712; }
