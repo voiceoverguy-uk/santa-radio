@@ -18,7 +18,7 @@ function SantaCooldownUpsell({
       : 'A little more Christmas magic?';
 
   const copy = prelaunch
-    ? `When Santa’s Message Maker Studio opens, you’ll be able to create a bespoke message personalised with ${possessive} age, achievements and the things that make them special. The paid package will also include three personalised digital gifts at no extra cost: a Nice List certificate, a short letter from Santa and Santa’s Nice List picture.`
+    ? `With Santa’s Message Maker Studio, you can create a bespoke message personalised with ${possessive} age, achievements and the things that make them special. The paid package also includes three personalised digital gifts at no extra cost. See below.`
     : `Make it extra special with a bespoke message from Santa, personalised with ${possessive} age, achievements and the things that make them special. Your paid package also includes three personalised digital gifts at no extra cost: a Nice List certificate, a short letter from Santa and Santa’s Nice List picture.`;
 
   const buttonLabel = prelaunch

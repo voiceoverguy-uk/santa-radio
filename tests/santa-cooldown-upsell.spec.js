@@ -8,8 +8,10 @@ const mp3 = readFileSync('server/santa-audio/sleighbells.mp3');
 const card = page => page.locator('.santa-message-box');
 const offer = page => card(page).getByRole('region', { name: 'Bespoke Santa message invitation' });
 const studio = page => page.locator('#santa-studio-promotion');
+const prelaunchCopy = (possessive = 'a little one’s') =>
+  `With Santa’s Message Maker Studio, you can create a bespoke message personalised with ${possessive} age, achievements and the things that make them special. The paid package also includes three personalised digital gifts at no extra cost. See below.`;
 
-async function setup(page, { date = '2026-11-02T12:00:00Z', cooldown = false, width = 1440 } = {}) {
+async function setup(page, { date = '2026-11-02T12:00:00Z', cooldown = false, width = 1440, path = '/' } = {}) {
   await page.setViewportSize({ width, height: 1100 });
   await page.clock.setFixedTime(new Date(date));
   await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -35,7 +37,7 @@ async function setup(page, { date = '2026-11-02T12:00:00Z', cooldown = false, wi
   });
   await page.route('**/api/santa-message', route => route.fulfill({ contentType: 'audio/mpeg', body: mp3 }));
   await mockBrevo(page);
-  await page.goto('/');
+  await page.goto(path);
   const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await decline.isVisible()) await decline.click();
   await fillAccessForm(page);
@@ -53,6 +55,7 @@ async function generate(page, name = 'Erica') {
 }
 
 async function checkNavigation(page, name) {
+  await expect(offer(page).getByRole('link')).toHaveAttribute('href', '#santa-studio-promotion');
   await offer(page).getByRole('link').click();
   await expect(page.locator('#santa-studio-title')).toBeFocused();
   const previewName = name || 'Edward';
@@ -76,7 +79,7 @@ for (const width of [390, 1440]) {
     await generate(page);
     await expect(offer(page).getByRole('heading')).toHaveText('Coming soon: a little more magic for Erica');
     await expect(offer(page).getByRole('link')).toHaveText('Preview Erica’s bespoke message package');
-    await expect(offer(page).locator('p')).toHaveText('When Santa’s Message Maker Studio opens, you’ll be able to create a bespoke message personalised with Erica’s age, achievements and the things that make them special. The paid package will also include three personalised digital gifts at no extra cost: a Nice List certificate, a short letter from Santa and Santa’s Nice List picture.');
+    await expect(offer(page).locator('p')).toHaveText(prelaunchCopy('Erica’s'));
     await expect(card(page).locator('.message-cooldown-status')).toContainText('Your next free message will be available at');
     await expect(card(page).getByRole('link', { name: /Download your audio/ })).toBeVisible();
     const order = await offer(page).evaluate(node => ({
@@ -106,14 +109,38 @@ for (const prelaunch of [true, false]) {
       ? 'Coming soon: a little more Christmas magic' : 'A little more Christmas magic?');
     await expect(offer(page).getByRole('link')).toHaveText(prelaunch
       ? 'Preview the bespoke message package' : 'Explore bespoke Santa messages');
-    await expect(offer(page).locator('p')).toContainText('a little one’s age, achievements and the things that make them special.');
+    await expect(offer(page).locator('p')).toHaveText(prelaunch
+      ? prelaunchCopy()
+      : 'Make it extra special with a bespoke message from Santa, personalised with a little one’s age, achievements and the things that make them special. Your paid package also includes three personalised digital gifts at no extra cost: a Nice List certificate, a short letter from Santa and Santa’s Nice List picture.');
     await expect(offer(page)).not.toContainText(/your child/i);
     await expect(offer(page)).not.toContainText('child’s’s');
     await expect(offer(page)).not.toContainText(/Erica|Erin|Arabella|Abbey|Edward/);
-    await expect(card(page).locator('.message-cooldown-status')).toContainText('Your recording isn’t saved by this site');
+    await expect(card(page).locator('.message-cooldown-status')).toContainText('Your next free message will be available at');
     await expect(card(page).locator('.service-notice')).toHaveText('Free to create and download. (not sent by email)');
     await checkNavigation(page);
   });
+}
+
+for (const path of ['/', '/free-santa-message']) {
+  for (const named of [false, true]) {
+    test(`short prelaunch copy and preview work on ${path} at 320px (${named ? 'personalised' : 'generic'})`, async ({ page }) => {
+      await setup(page, { path, width: 320, cooldown: !named });
+      if (named) await generate(page);
+      await expect(offer(page).getByRole('heading')).toHaveText(named
+        ? 'Coming soon: a little more magic for Erica'
+        : 'Coming soon: a little more Christmas magic');
+      await expect(offer(page).locator('p')).toHaveText(prelaunchCopy(named ? 'Erica’s' : undefined));
+      await expect(offer(page).getByRole('link')).toHaveText(named
+        ? 'Preview Erica’s bespoke message package'
+        : 'Preview the bespoke message package');
+      await expect(offer(page)).not.toContainText(/When Santa|Nice List certificate|short letter|Nice List picture/);
+      const fits = await offer(page).evaluate(node => [node, ...node.querySelectorAll('h4, p, a')]
+        .every(element => element.scrollWidth <= element.clientWidth + 1));
+      expect(fits).toBe(true);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      await checkNavigation(page, named ? 'Erica' : undefined);
+    });
+  }
 }
 
 test('invitation changes from prelaunch to live without changing the free deadline, then disappears when eligible', async ({ page }) => {
