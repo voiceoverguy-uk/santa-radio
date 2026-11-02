@@ -35,7 +35,7 @@ export default function SongDetail() {
 
   const songSlug = `${song.id}-${song.link}`;
   const { previous, next } = songNeighbours(song);
-  const twitterShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(`Listening to ${song.song} by ${song.artist} on Santa Radio!`)}&url=${encodeURIComponent(`https://www.santaradio.co.uk/christmas-artist/${songSlug}`)}`;
+  const xShareUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(`Listening to ${song.song} by ${song.artist} on Santa Radio!`)}&url=${encodeURIComponent(`https://www.santaradio.co.uk/christmas-artist/${songSlug}`)}`;
 
   return (
     <main>
@@ -97,8 +97,8 @@ export default function SongDetail() {
               <SongVideo song={song} className="song-youtube-embed" />
 
               <div className="song-detail-actions">
-                <a href={twitterShareUrl} target="_blank" rel="noopener noreferrer" className="twitter-share-link">
-                  Share on Twitter
+                <a href={xShareUrl} target="_blank" rel="noopener noreferrer" className="twitter-share-link">
+                  Share on X
                 </a>
               </div>
             </div>
