@@ -56,7 +56,7 @@
 .service-notice { font-size: .75rem; color: #b8c6b6; padding-top: 18px; margin-bottom: 0; line-height: 1.7; }
 .message-validation, .message-audio-error { color: #ffc5b8; font-size: .85rem; line-height: 1.6; margin: 0 0 16px; }
 .message-result { margin-top: 26px; padding: 22px 0 0; border-top: 1px solid #d4af3740; }
-.message-result h4 { font-family: 'Cinzel', serif; color: #f6ecd8; font-size: 1.05rem; margin: 8px 0 12px; }
+.message-result h4 { font-family: 'Cinzel', serif; color: #f6ecd8; font-size: 1.05rem; margin: 8px 0 12px; overflow-wrap: anywhere; }
 .message-result p:not(.message-postmark) { color: #d0dacd; font-size: .82rem; line-height: 1.6; }
 .message-player-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; min-width: 0; margin: 16px 0; }
 .message-result .message-player-row audio { display: block; flex: 1 1 0; width: 0; min-width: 0; height: 48px; margin: 0; border-radius: 999px; }

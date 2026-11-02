@@ -12,6 +12,8 @@ import useSantaNames from './useSantaNames.js';
 import useHostedSantaNameSearch from './useHostedSantaNameSearch.js';
 import useSantaNameCounter from './useSantaNameCounter.js';
 import SantaCooldownNotice from './SantaCooldownNotice.jsx';
+import SantaCooldownUpsell from './SantaCooldownUpsell.jsx';
+import useSantaStudioLaunch from './useSantaStudioLaunch.js';
 import SantaVoiceTagline from './SantaVoiceTagline.jsx';
 import SantaStudioPromotion from './SantaStudioPromotion.jsx';
 import SantaMessageReviews from './SantaMessageReviews.jsx';
@@ -19,7 +21,7 @@ import { santaNameKey } from '../lib/santaNameSearch.js';
 import { randomSantaExample, santaNamePlaceholder } from '../lib/santaNamePlaceholder.js';
 import { normaliseRequestedName } from '../lib/santaNameRequests.js';
 import { nameRequestToken } from '../lib/santaNameRequestTokens.js';
-import { settleSantaMessageDeskAfterEntry } from '../lib/scrollToSantaMessageDesk.js';
+import { scrollToSantaMessageDesk, settleSantaMessageDeskAfterEntry } from '../lib/scrollToSantaMessageDesk.js';
 import './SantaNameRequest.css';
 import './SantaMessageForm.css';
 
@@ -72,6 +74,21 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const allowance = useSantaMessageAllowance();
   const coolingDown = allowance.secondsLeft > 0;
   const allowExamples = !giftPreviewName && !messages.length && !coolingDown && !allowance.pending;
+  const { prelaunch: studioPrelaunch } = useSantaStudioLaunch();
+  // This invitation belongs to the free greeting, even if a newer hero choice
+  // currently personalises the separate Studio card.
+  const freeRecipient = messages.at(-1)?.name || verifiedSelectedRecord?.name || selectedRecipient || null;
+  const exploreBespoke = event => {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    if (freeRecipient) selectSantaRecipient(freeRecipient);
+    requestAnimationFrame(() => {
+      const studio = document.getElementById('santa-studio-promotion');
+      if (!studio) return;
+      studio.querySelector('#santa-studio-title')?.focus({ preventScroll: true });
+      scrollToSantaMessageDesk(studio);
+    });
+  };
 
   useEffect(() => {
     let frame;
@@ -324,7 +341,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         {!!messages.length && <div className="message-wait-downloads">
           {renderResults()}
         </div>}
-        {coolingDown && !messages.length && <SantaCooldownNotice availableAt={allowance.availableAt} />}
+        {coolingDown && <SantaCooldownNotice availableAt={allowance.availableAt} />}
         {coolingDown && !allowance.remembered && <p className="message-name-hint" role="status">Your browser can’t remember the message allowance. The limit works while this page is open, but leaving or refreshing may reset it.</p>}
         {!coolingDown && <>
         <p className="form-desc">Hey {greetingName || 'there'}, {hasPrefilledName
@@ -428,6 +445,8 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         </>}
         {!messages.length && <p className="service-notice">Free to create and download. (not sent by email)</p>}
         {!sessionRemembered && <p className="message-name-hint" role="status">Your browser can’t remember access. The studio stays open while you browse, but refreshing this tab may ask for your details again.</p>}
+        {coolingDown && <SantaCooldownUpsell name={freeRecipient}
+          prelaunch={studioPrelaunch} onExplore={exploreBespoke} />}
         </>}
       </div>
        {hasAccess && allowExamples && <SantaMessageExample onExampleNameChange={setActiveExampleName} />}

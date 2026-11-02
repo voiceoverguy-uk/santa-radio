@@ -215,11 +215,12 @@ export function useStudioGiftExample({ activeExampleName = null, previewName = n
     return () => preference.removeEventListener('change', update);
   }, []);
   const activeName = allCertificateExamples.find(item => item.name === activeExampleName)?.name;
-  // A cooldown must not hide the gifts or invent a remembered recipient.
-  const name = previewName || (allowExamples ? activeName || studioGiftExampleNames[index] : 'Your child');
+  // Gift demonstrations stay available during cooldown; audio permission is
+  // separate. Only a real selection stops the example-name rotation.
+  const name = previewName || (allowExamples && activeName) || studioGiftExampleNames[index];
   const nextExample = useCallback(() => {
     setPreviousPicture(reducedMotion ? null : santaPictures[pictureIndex]);
-    if (!previewName && allowExamples) setIndex(value => (value + 1) % studioGiftExampleNames.length);
+    if (!previewName) setIndex(value => (value + 1) % studioGiftExampleNames.length);
     setPictureIndex(value => (value + 1) % santaPictures.length);
   }, [previewName, allowExamples, pictureIndex, reducedMotion]);
   const finishDissolve = useCallback(() => setPreviousPicture(null), []);
@@ -234,7 +235,7 @@ export function useStudioGiftExample({ activeExampleName = null, previewName = n
 }
 
 export function StudioGiftPreview({ example }) {
-  const name = example.name || 'Your child';
+  const name = example.name || studioGiftExampleNames[0];
   return <GiftExample key={name} {...example} name={name} />;
 }
 

@@ -30,10 +30,10 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
           </div>
           <h3 id="santa-studio-title" tabIndex={-1}>Santa’s <span className="santa-studio-promotion__title-line">Message Maker Studio</span></h3>
           <p className="santa-studio-promotion__subheading">
-            A little more Christmas magic for {previewName || 'your child'}
+            A little more Christmas magic for {example.name}
           </p>
           <p className="santa-studio-promotion__copy">
-            When we launch, you’ll be able to create a personalised message from Santa, with {previewName ? `${previewName}’s` : 'your child’s'} age, achievements and the things that make them special. Add where they live for an extra personal touch.
+            When we launch, you’ll be able to create a personalised message from Santa, with {example.name}’s age, achievements and the things that make them special. Add where they live for an extra personal touch.
           </p>
           <div className="santa-studio-promotion__benefits">
             <p className="santa-studio-promotion__benefits-lead">
@@ -42,7 +42,7 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
             <ul className="santa-studio-promotion__benefit-list">
               <li>An official Nice List certificate</li>
               <li>A short personal letter from Santa</li>
-              <li>A picture of Santa celebrating {previewName ? `${previewName}’s` : 'your child’s'} place on the Nice List*</li>
+              <li>A picture of Santa celebrating {example.name}’s place on the Nice List*</li>
             </ul>
             <p className="santa-studio-promotion__footnote">*Subject to staying on the Nice List, of course.</p>
           </div>

@@ -15,22 +15,27 @@ previews and a random example-audio button beneath the free-greeting card.
 Santa sample playback, not on unrelated radio music. Keep the existing child-name
 privacy and refresh-reset requirements; do not infer permission to persist names.
 
-The Studio promotion uses natural generic wording until a real child has been
-selected or generated. Rotating gift examples are not selected children and must
-not personalise the promotional introduction or benefits.
+When no real child is known, the Studio promotional text and all three enlargeable
+gifts should use the original rotating example names, including during a cooldown
+after refresh. Do not replace those previews with “Your child” or hide the artwork.
 
-**Why:** The user replaced the earlier wording request with a clearer paid-package
-promotion and explicitly requested generic wording when no child has been selected.
+**Why:** The user disliked “your child” and explicitly asked to restore the original
+name rotation, remembering Arabella, Freya, Charlotte and Harry. This supersedes the
+earlier generic-promotion and neutral-artwork direction.
 
-**How to apply:** Keep named promotional text aligned with the chosen gift recipient,
-but leave anonymous promotional text generic even while demonstration gifts rotate.
+**How to apply:** Keep the promotional text synchronised with the demonstrated gift
+name, but never save an example as the real selected child. A real selected/generated
+recipient takes priority and stays fixed. Gift rotation is independent of random
+audio permission, so cooldown must not restart sample playback.
 
-All three enlargeable gift previews must remain present during a cooldown, even
-when the chosen child was cleared by a refresh. Use neutral “Your child” artwork
-in that case, without restarting random sample audio or inventing a recipient.
+The cooldown invitation belongs to the free greeting’s child, even if someone
+subsequently checks a different child in the hero. Its Studio link should restore
+the free greeting’s recipient across the Studio text and all three gifts.
 
-**Why:** Hiding the artwork in this state left the paid promotion’s entire right
-column empty; the user explicitly objected to the missing previews.
+**Why:** The user explicitly asked for the upsell to use the child selected for
+the free message, never a random example, and preserve that child at its destination.
 
-**How to apply:** Keep gift visibility independent of permission to play random
-messages. A newly confirmed child must immediately replace the neutral artwork.
+**How to apply:** Prefer the actual free greeting recipient for this invitation;
+use natural generic wording when unavailable. Keep recording/download information
+and the next-free availability time above it. Prelaunch wording only previews the
+package; the announced opening date does not authorize changing payment access.

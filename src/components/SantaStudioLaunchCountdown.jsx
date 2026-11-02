@@ -1,7 +1,4 @@
-import { useEffect, useState } from 'react';
-
-// Midnight in London is GMT on the announced November launch date.
-const launchTime = Date.parse('2026-11-06T00:00:00Z');
+import useSantaStudioLaunch from './useSantaStudioLaunch.js';
 
 function formatRemaining(seconds) {
   return [
@@ -13,14 +10,7 @@ function formatRemaining(seconds) {
 }
 
 export default function SantaStudioLaunchCountdown() {
-  // Keep the server render and first browser render identical.
-  const [remaining, setRemaining] = useState(null);
-  useEffect(() => {
-    const update = () => setRemaining(Math.max(0, Math.ceil((launchTime - Date.now()) / 1000)));
-    update();
-    const interval = setInterval(update, 1000);
-    return () => clearInterval(interval);
-  }, []);
+  const { remaining } = useSantaStudioLaunch();
 
   return <p className="santa-studio-promotion__launch-countdown" role="timer" aria-live="off"
     title="Opens 6 November 2026 at midnight UK time">

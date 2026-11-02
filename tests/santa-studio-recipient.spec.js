@@ -152,7 +152,7 @@ test('free-maker selection and generation retain recipient across navigation and
   expect(await page.evaluate(() => JSON.stringify({ ...localStorage, ...sessionStorage }))).not.toContain('Arabella');
   await page.reload();
   await expect(page.locator('.studio-gifts [data-demo-name]')).toHaveCount(0);
-  await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Your child');
+  await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Edward');
   await expect(gifts(page).getByRole('button', { name: /Enlarge/ })).toHaveCount(3);
   await expect(gifts(page).getByRole('heading')).toHaveText('All 3 gifts included with the paid version');
   await expect(page.locator('.santa-message-example')).toHaveCount(0);
@@ -182,14 +182,14 @@ test('late generation cannot replace a newer confirmed hero child', async ({ pag
 });
 
 for (const width of [390, 1440]) {
-test(`unknown-recipient cooldown keeps all three neutral gift previews at ${width}px`, async ({ page }) => {
+test(`unknown-recipient cooldown keeps all three original example gifts at ${width}px`, async ({ page }) => {
   await page.setViewportSize({ width, height: 1100 });
   await setup(page, { cooldown: true });
   await expect(gifts(page).getByRole('heading')).toHaveText('All 3 gifts included with the paid version');
-  await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Your child');
-  await expect(gifts(page).locator('.studio-certificate__name')).toHaveText('Your child');
-  await expect(gifts(page).locator('.studio-gifts__preview-stack .studio-santa-picture__name')).toHaveText('Your child');
-  await expect(gifts(page).locator('.studio-gifts__gallery .studio-gifts__sr')).toContainText('Dear Your child,');
+  await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Edward');
+  await expect(gifts(page).locator('.studio-certificate__name')).toHaveText('Edward');
+  await expect(gifts(page).locator('.studio-gifts__preview-stack .studio-santa-picture__name')).toHaveText('Edward');
+  await expect(gifts(page).locator('.studio-gifts__gallery .studio-gifts__sr')).toContainText('Dear Edward,');
   for (const label of ['Enlarge certificate', 'Enlarge letter to read', 'Enlarge Santa’s Nice List picture']) {
     const button = gifts(page).getByRole('button', { name: label, exact: true });
     await expect(button).toBeVisible();
@@ -205,9 +205,10 @@ test(`unknown-recipient cooldown keeps all three neutral gift previews at ${widt
 });
 }
 
-test('anonymous copy follows rotating examples but a chosen child stays fixed through later cycles', async ({ page }) => {
+for (const cooldown of [false, true]) {
+test(`anonymous copy follows rotating examples${cooldown ? ' during cooldown' : ''} but a chosen child stays fixed through later cycles`, async ({ page }) => {
   await page.clock.install();
-  await setup(page);
+  await setup(page, { cooldown });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await gifts(page).scrollIntoViewIfNeeded();
   await page.mouse.move(0, 0);
@@ -216,6 +217,12 @@ test('anonymous copy follows rotating examples but a chosen child stays fixed th
   await page.clock.runFor(10500);
   await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Ayla');
   await expectStudioLaunchCopy(promotion(page));
+  for (const exampleName of ['Erin', 'Charlotte', 'Freya', 'Harry', 'Arabella']) {
+    await page.clock.runFor(10500);
+    await expect(gifts(page)).toHaveAttribute('data-demo-name', exampleName);
+    await expectStudioLaunchCopy(promotion(page));
+  }
+  if (cooldown) await expect(page.locator('.santa-message-example')).toHaveCount(0);
   await page.clock.resume();
   await chooseHero(page, 'Erica');
   await matches(page, 'Erica');
@@ -227,3 +234,4 @@ test('anonymous copy follows rotating examples but a chosen child stays fixed th
   await matches(page, 'Erica');
   await expectStudioLaunchCopy(promotion(page));
 });
+}

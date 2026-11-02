@@ -1,11 +1,12 @@
 import { expect } from '@playwright/test';
 
 export async function expectStudioLaunchCopy(promotion) {
-  const name = await promotion.getAttribute('data-recipient');
-  const possessive = name ? `${name}’s` : 'your child’s';
+  const name = await promotion.locator('.studio-gifts').getAttribute('data-demo-name');
+  const recipient = await promotion.getAttribute('data-recipient');
+  const possessive = `${name}’s`;
   const copy = promotion.locator('.santa-studio-promotion__copy');
   await expect(promotion.locator('.santa-studio-promotion__subheading')).toHaveText(
-    `A little more Christmas magic for ${name || 'your child'}`);
+    `A little more Christmas magic for ${name}`);
   await expect(copy).toHaveText(`When we launch, you’ll be able to create a personalised message from Santa, with ${possessive} age, achievements and the things that make them special. Add where they live for an extra personal touch.`);
   await expect(promotion.locator('.santa-studio-promotion__benefits-lead strong')).toHaveText(
     'Your paid package includes a personalised message from Santa, plus three personalised digital gifts to download:');
@@ -20,7 +21,8 @@ export async function expectStudioLaunchCopy(promotion) {
   await expect(promotion).not.toContainText('Coming Early November');
   await expect(promotion).not.toContainText('county**');
   await expect(promotion).not.toContainText('UK and USA only');
-  if (name) await expect(promotion.locator('.studio-gifts')).toHaveAttribute('data-demo-name', name);
+  if (recipient) expect(name).toBe(recipient);
+  await expect(promotion).not.toContainText(/your child/i);
   const geometry = await promotion.evaluate(node => {
     const selectors = '.santa-studio-promotion__subheading, .santa-studio-promotion__copy, ' +
       '.santa-studio-promotion__benefits-lead, .santa-studio-promotion__benefit-list li, .santa-studio-promotion__footnote';
