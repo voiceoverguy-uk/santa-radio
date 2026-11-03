@@ -1,6 +1,16 @@
 {
   "checkedAt": "2026-10-07T07:46:51.096638+00:00",
-  "method": "YouTube oEmbed; failed requests retried once. Metadata availability does not prove playback or regional/embed permission. Failures require review, not automatic removal.",
+  "method": "Historical baseline: YouTube oEmbed; failed requests retried once. Latest ownerReplacementChecks supersede matching baseline videos below. Metadata availability does not prove playback or regional/embed permission. Failures require review, not automatic removal.",
+  "ownerReplacementChecks": {
+    "checkedAt": "2026-11-03",
+    "method": "Direct YouTube oEmbed and watch-page initial player metadata; all four returned HTTP 200, playability status OK and playableInEmbed true. Browser regression checks isolate provider frames and verify assignment, consent and unchanged lyrics on both page types; they do not verify actual playback.",
+    "videos": [
+      { "songId": 551, "previousVideo": "pzJltQjuibA", "video": "-Z6AnCRjWX0", "title": "Cher - DJ Play a Christmas Song (Official Lyric Video)", "channel": "Cher", "embeddedPlayback": "not_verified" },
+      { "songId": 252, "previousVideo": "bMletImQ_cs", "video": "lVFWMNrYpQo", "title": "Rudolph The Red Nosed Reindeer", "channel": "Burl Ives - Topic", "embeddedPlayback": "not_verified" },
+      { "songId": 163, "previousVideo": "FqbOCmFQkKQ", "video": "l3HTMknXacU", "title": "Christmas Lullaby", "channel": "Shane MacGowan - Topic", "embeddedPlayback": "not_verified" },
+      { "songId": 462, "previousVideo": "hFF9T4BiCSU", "video": "kbQ0p7gDc5E", "title": "Have Yourself a Merry Little Christmas", "channel": "James Taylor - Topic", "embeddedPlayback": "not_verified", "note": "Owner-supplied replacement; label the linked performance as James Taylor without changing the James M Caddell catalogue identity or treating this video as proof of its recording credit." }
+    ]
+  },
   "songCount": 452,
   "uniqueVideos": 447,
   "results": [

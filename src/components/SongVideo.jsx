@@ -16,6 +16,7 @@ export default function SongVideo({ song, className, title }) {
 
   return (
     <div className={className}>
+      {song.youtubeTitle && <p>Linked performance: {song.youtubeTitle}.</p>}
       <ExternalMediaConsent provider="YouTube" href={`https://www.youtube.com/watch?v=${song.youtube}`}>
       <iframe width="100%" height="315" loading="lazy"
         src={`https://www.youtube.com/embed/${song.youtube}`}
