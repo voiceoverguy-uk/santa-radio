@@ -229,7 +229,8 @@
    functional controls remain owned by the existing Footer component. */
 body:has(.home-page) .footer {
   border-top: 1px solid #c5a261a6;
-  padding: 24px 16px 100px;
+  padding-top: 24px;
+  padding-inline: 16px;
   background: #08261c;
 }
 body:has(.home-page) .footer-links a,

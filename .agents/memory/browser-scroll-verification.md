@@ -4,6 +4,12 @@ description: Scroll completion and fixed-player occlusion affect screenshot and 
 ---
 Before capturing an interaction state or measuring its viewport position, ensure scrolling has settled and account for fixed headers and the radio dock.
 
+When enlarged footer text plus the expanded dock exceeds the viewport, verify each earlier control by scrolling it into the space between header and dock, then return to the actual document bottom for copyright measurements.
+
+**Why:** Scrolling upward to reach the first footer links can move later controls underneath the dock; their hit-test failure at that intermediate scroll position does not establish that they are unreachable.
+
+**How to apply:** Keep bottom-of-page overlap assertions separate from per-control reachability checks, and re-scroll to the latest document bottom after asynchronous player resizing.
+
 **Why:** A mobile artwork screenshot initially hid its caption behind the fixed dock. Centring the card also produced a misleading immediate geometry failure because the site's smooth scroll had not finished.
 
 **How to apply:** Use instant scrolling for capture-only positioning, or wait for the intended position before measuring. An element inside the viewport can still be obscured by fixed controls; verify the relevant caption or button against those controls rather than only the viewport bounds.

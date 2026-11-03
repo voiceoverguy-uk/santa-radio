@@ -163,14 +163,8 @@
   font-size: 0.78rem;
 }
 
-/* Leave room to scroll footer controls clear of the floating player on phones
-   and narrow tablets, including when its details are expanded. */
-@media (max-width: 900px) {
-  .footer.footer {
-    padding-bottom: 96px;
-  }
-
-  .footer:has(~ .radio-dock:not(.is-minimized)) {
-    padding-bottom: 320px;
-  }
+/* A modest default inset, increased only for actual floating-player overlap.
+   Keep this more specific than shared page-theme padding rules. */
+.footer.footer {
+  padding-bottom: var(--footer-bottom-inset, 20px);
 }

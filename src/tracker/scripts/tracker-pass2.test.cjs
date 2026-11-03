@@ -132,7 +132,7 @@ test("main route initial server render has exactly one useful H1 and intro in he
   assert.match(mounted, /data-part="timeline"/);
   assert.match(mounted, /Countdown to Santa&#x27;s Departure/);
   assert.doesNotMatch(mounted, /data-part="signup"/);
-  assert.match(mounted, /Check Availability/);
+  assert.doesNotMatch(mounted, /Check Availability|Want Santa.*Voice for Your Project/);
   assert.doesNotMatch(mounted, /Follow Santa as Christmas Eve midnight sweeps/);
 });
 
@@ -177,7 +177,7 @@ test("main/preview metadata, July variant, and actual rendered WebPage/breadcrum
   assert.match(mountedPreview, /data-part="preview-panel"/);
 });
 
-test("mounted seasonal and preview status/countdown/CTA retain behavior alongside stable intro", () => {
+test("mounted seasonal and preview status/countdown retain behavior without the voice promotion", () => {
   for (const [date, status, count] of [
     ["2026-12-24T05:00:00Z", /Preparing for Takeoff/, true],
     ["2026-12-24T14:00:00Z", /Delivering Now/, false],
@@ -194,7 +194,7 @@ test("mounted seasonal and preview status/countdown/CTA retain behavior alongsid
     assert.ok(html.includes(intro.replaceAll("'", "&#x27;")), date);
     assert.equal(html.includes("Countdown to Santa&#x27;s Departure"), count, date);
     assert.equal(html.includes('data-part="signup"'), false, date);
-    assert.match(html, /Check Availability/, date);
+    assert.doesNotMatch(html, /Check Availability|Want Santa.*Voice for Your Project/, date);
     assert.equal((html.match(/<h1\b/g) || []).length, 1);
   }
 });

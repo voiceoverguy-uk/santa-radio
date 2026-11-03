@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const introduction = 'No Artificial Intelligence here. A real Human recorded message from Santa, aka Father Christmas to your little Human. Click to enter Studio B, add your contact details, choose the name from 12,295 names available currently, create and instantly download your short FREE personalised message from Santa.';
+const introduction = 'No Artificial Intelligence here. A human recorded message from Santa, aka Father Christmas to your little Human. Click to enter Studio B, add your contact details, search for a recorded name, create and instantly download your short FREE personalised message from Santa.';
 
 for (const path of ['/', '/free-santa-message']) {
 for (const width of [320, 390, 768, 1440]) {
@@ -26,8 +26,8 @@ for (const width of [320, 390, 768, 1440]) {
     await expect(paragraph).toHaveText(introduction);
     await expect(intro.locator('.santa-certificate-examples')).toHaveCount(0);
     await expect(paragraph).not.toContainText(/certificate|\(names available\)|thousands/i);
-    await expect(intro.locator('.message-studio-intro')).toHaveText("Or, why not enter Studio - A and have a bespoke message from Santa?** You'll also receive some festive goodies. See below.");
-    await expect(intro.locator('.message-studio-availability')).toHaveText('** Coming early November');
+    await expect(intro.locator('.message-studio-intro')).toHaveText('Or, why not enter Studio - A and have a bespoke message from Santa? Along with festive goodies. See below.');
+    await expect(intro.locator('.message-studio-availability')).toHaveCount(0);
     await expect(paragraph).toBeVisible();
     await page.evaluate(() => document.fonts.ready);
     const hierarchy = await intro.evaluate(node => {

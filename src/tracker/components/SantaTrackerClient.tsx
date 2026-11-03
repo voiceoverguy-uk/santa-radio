@@ -15,7 +15,6 @@ import SantaStats from "./SantaStats";
 import SantaStory from "./SantaStory";
 import SantaTimeline from "./SantaTimeline";
 import SantaPreviewPanel from "./SantaPreviewPanel";
-import { SANTA_VOICE_URL } from "@/lib/trackerBrand";
 
 const funFacts = [
   "In Iceland, 13 Yule Lads visit children on the 13 nights before Christmas, each leaving a gift in shoes left on windowsills.",
@@ -286,27 +285,6 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
             <p className="inline tracker-copy text-sm leading-relaxed">
               {funFacts[currentFactIndex]}
             </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="px-4 sm:px-6 pb-16">
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="tracker-cta p-8 sm:p-12">
-            <h2 className="tracker-section-title text-xl sm:text-2xl mb-3">
-              Want Santa&apos;s Voice for Your Project?
-            </h2>
-            <p className="tracker-copy text-sm mb-6 max-w-lg mx-auto">
-              Guy Harris is the UK&apos;s trusted Voice of Santa, available for
-              radio, TV, podcasts, campaigns, and festive voiceover.
-            </p>
-            <a
-              href={SANTA_VOICE_URL}
-              target="_blank" rel="noopener noreferrer"
-              className="tracker-action inline-block px-6 py-3 text-sm transition-colors"
-            >
-              Check Availability
-            </a>
           </div>
         </div>
       </section>

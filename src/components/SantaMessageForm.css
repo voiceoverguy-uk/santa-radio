@@ -6,11 +6,29 @@
 .message-layout { display: grid; grid-template-columns: 1fr 1fr; align-items: start; gap: 64px; }
 .santa-message-aside > .santa-message-example { margin: 20px 0 0; text-align: center; }
 .santa-message-heading { color: var(--cream, #f6ecd8); font-size: clamp(2rem,3.4vw,3rem); text-align: left; margin-bottom: 16px; line-height: 1.25; overflow-wrap: anywhere; }
+.message-intro-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 210px;
+  max-width: 100%;
+  margin: 0 0 22px;
+  color: var(--gold-light, #ead39a);
+  font: 14px/1 Georgia, serif;
+}
+.message-intro-divider::before,
+.message-intro-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, currentColor);
+}
+.message-intro-divider::after { transform: rotate(180deg); }
 .santa-message-subheading { color: var(--cream, #f6ecd8); font-size: clamp(1rem,1.7vw,1.4rem); text-align: left; margin-bottom: 22px; line-height: 1.4; white-space: nowrap; }
-.santa-voice-tagline { position: relative; margin-bottom: 22px; }
+.santa-voice-tagline { position: relative; width: fit-content; max-width: 100%; margin-bottom: 22px; }
 .santa-voice-tagline .santa-message-subheading { margin-bottom: 0; white-space: normal; }
 .santa-voice-info { display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; min-width: 44px; min-height: 44px; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; text-decoration: none; cursor: help; }
-.santa-voice-tooltip { position: absolute; z-index: 20; top: 100%; left: 0; width: max-content; max-width: min(100%, 300px); padding: 5px 8px; border: 0; border-radius: 2px; background: #214a39; color: #f6ecd8; font-family: 'Inter', sans-serif; font-size: .75rem; line-height: 1.4; overflow-wrap: anywhere; box-shadow: none; }
+.santa-voice-tooltip { position: absolute; z-index: 20; bottom: calc(100% + 6px); right: 0; width: max-content; max-width: min(100%, 300px); padding: 5px 8px; border: 0; border-radius: 2px; background: #214a39; color: #f6ecd8; font-family: 'Inter', sans-serif; font-size: .75rem; line-height: 1.4; overflow-wrap: anywhere; box-shadow: none; }
 .message-intro > p:not(.eyebrow) { font-size: .95rem; color: #d0dacd; max-width: 420px; line-height: 1.8; }
 .santa-message-box { background: #0c2a20; border: 1px solid #d4af3760; border-radius: 20px; padding: 36px; text-align: left; box-shadow: 0 18px 50px #061c1740; position: relative; }
 .message-card-top { display: flex; align-items: center; gap: 14px; padding-bottom: 22px; border-bottom: 1px solid #d4af3730; margin-bottom: 24px; }

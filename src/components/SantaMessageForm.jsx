@@ -312,12 +312,12 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
     <div className="container message-layout">
       <div className="message-intro">
         <p className="eyebrow">A little North Pole experiment</p>
+        <div className="message-intro-divider" aria-hidden="true">★</div>
         <h2 className="santa-message-heading">FREE Personalised message from Santa</h2>
         <SantaVoiceTagline />
         {!hasAccess && allowExamples && <SantaMessageExample onExampleNameChange={setActiveExampleName} />}
-         <p className="message-free-intro">No Artificial Intelligence here. A real Human recorded message from Santa, aka Father Christmas to your little Human.{' '}<br />Click to enter Studio B, add your contact details, search for a recorded name, create and instantly download your short FREE personalised message from Santa.</p>
-        <p className="message-studio-intro">Or, why not enter Studio - A and have a bespoke message from Santa?<sup>**</sup> You&apos;ll also receive some festive goodies. See below.</p>
-        <p className="message-studio-availability"><small>** Coming early November</small></p>
+        <p className="message-free-intro">No Artificial Intelligence here. A human recorded message from Santa, aka Father Christmas to your little Human.{' '}<br />Click to enter Studio B, add your contact details, search for a recorded name, create and instantly download your short FREE personalised message from Santa.</p>
+        <p className="message-studio-intro">Or, why not enter Studio - A and have a bespoke message from Santa? Along with festive goodies. See below.</p>
       </div>
       <div className="santa-message-aside">
       <div className={`santa-message-box${hasAccess ? '' : ' message-access-box'}`}>

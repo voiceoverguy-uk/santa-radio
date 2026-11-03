@@ -9,6 +9,15 @@ test.beforeEach(async ({ page }) => {
   }));
 });
 
+test('tracker ends with Christmas facts rather than the voiceover promotion', async ({ page }) => {
+  await page.goto('/santa-tracker');
+  await expect(page.getByRole('heading', { name: 'Christmas Around the World', exact: true })).toBeVisible();
+  await expect(page.locator('.tracker-cta')).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: /Want Santa.*Voice for Your Project/ })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'Check Availability', exact: true })).toHaveCount(0);
+  await expect(page.locator('.tracker-shell > section').last()).toContainText('Christmas Around the World');
+});
+
 test('homepage feature and navigation keep the one existing radio playing', async ({ page }) => {
   await page.addInitScript(() => {
     window.playCalls = 0;

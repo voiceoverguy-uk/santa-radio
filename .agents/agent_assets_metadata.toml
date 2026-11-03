@@ -1078,3 +1078,31 @@ mtime_ms = 1793644615381
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/497647ee-0329-42a8-be1a-89399ddb642d/e9aa04b7-724c-407e-ae22-a8c99cee87de"
 storage_version_token = "1793644791298944"
 content_type = "image/png"
+
+[[outputs]]
+id = "h4XgXqKIoWKuuLfFolG2L"
+uri = "file://generated-artifacts/homepage-footer-1280-minimised.jpg"
+type = "image"
+title = "Updated homepage footer — desktop"
+description = "Compact copyright inset with all navigation, snow and social controls retained."
+logical_id = "97aa6313-0895-4d73-9da2-56c42cf247f8"
+content_hash = "sha256:da05a12b21a25ab368e062e2eab4cd1fe42fa6d1346cba59fe2867dccea4665b"
+size = 120268
+mtime_ms = 1793665983614
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/97aa6313-0895-4d73-9da2-56c42cf247f8/b74d4200-07bb-430d-b95c-fb67401d11b5"
+storage_version_token = "1793666087069274"
+content_type = "image/jpeg"
+
+[[outputs]]
+id = "qkBH3dfhbPS3vCGbDb0cZ"
+uri = "file://generated-artifacts/homepage-footer-390-expanded.jpg"
+type = "image"
+title = "Updated homepage footer — phone"
+description = "Copyright and footer controls remain clear of the expanded floating radio."
+logical_id = "898bf833-a050-4bad-83aa-f625c411e110"
+content_hash = "sha256:ddfa477f7c340abe77e5c65951ebda46f3f084eecbfade4996e51153b6040b0b"
+size = 42530
+mtime_ms = 1793665993283
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/898bf833-a050-4bad-83aa-f625c411e110/86d1cd2f-8890-435a-b60f-43c8cf1c3df3"
+storage_version_token = "1793666087893770"
+content_type = "image/jpeg"

@@ -26,6 +26,8 @@ for (const path of ['/', '/free-santa-message']) {
       node.parentElement.tagName === 'H3' && node.parentElement.lastElementChild === node)).toBe(true);
     await trigger.hover();
     await expect(tooltip).toHaveText('This is NOT another AI voice');
+    expect(await tooltip.evaluate(node =>
+      node.getBoundingClientRect().bottom <= node.parentElement.getBoundingClientRect().top - 5)).toBe(true);
     expect(await tooltip.evaluate(node => parseFloat(getComputedStyle(node).fontSize))).toBeLessThan(13);
     expect(await tooltip.evaluate(node => parseFloat(getComputedStyle(node).paddingTop))).toBeLessThanOrEqual(6);
     await expect(tooltip).toHaveCSS('box-shadow', 'none');
@@ -51,6 +53,8 @@ for (const path of ['/', '/free-santa-message']) {
     await trigger.click();
     await expect(tooltip).toBeVisible();
     const bounds = await tooltip.boundingBox();
+    const taglineBounds = await tagline.boundingBox();
+    expect(bounds.y + bounds.height).toBeLessThanOrEqual(taglineBounds.y - 5);
     expect(bounds.x).toBeGreaterThanOrEqual(0);
     expect(bounds.x + bounds.width).toBeLessThanOrEqual(321);
     expect(await tagline.evaluate(element => element.scrollWidth <= element.clientWidth + 1)).toBe(true);
