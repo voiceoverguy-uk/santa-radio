@@ -723,7 +723,6 @@
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
       "intro"
-      "player"
       "note"
       "description"
       "checker"
@@ -787,8 +786,7 @@
   }
 
   .hero-name-preview__player-row {
-    grid-area: player;
-    min-height: 48px;
+    display: none;
   }
 
   .hero-name-preview__listening > .hero-note {
@@ -846,7 +844,6 @@
   .hero-name-preview .hero-layout:not(:has(.now-playing-artwork)) {
     grid-template-areas:
       "intro"
-      "player"
       "note"
       "description"
       "checker"

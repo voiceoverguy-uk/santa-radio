@@ -5,16 +5,25 @@ import RadioTracks from './RadioTracks.jsx';
 import LiveLyrics from './LiveLyrics.jsx';
 import './AudioPlayer.css';
 
-export function RadioButton({ className = 'btn-gold', onStart }) {
+export function RadioButton({ className = 'btn-gold', onStart, iconOnly = false }) {
   const { status, togglePlay } = useRadio();
-  return <button className={className} onClick={() => {
+  const label = status === 'playing' ? 'Pause Radio'
+    : status === 'loading' ? 'Cancel loading radio'
+      : status === 'error' ? 'Try Again' : 'Listen Live';
+  return <button type="button" className={className} data-radio-status={status} onClick={() => {
     if (status !== 'playing' && status !== 'loading') onStart?.();
     togglePlay();
-  }} aria-label={status === 'loading' ? 'Cancel loading radio' : undefined}>
+  }} aria-label={iconOnly ? label : status === 'loading' ? 'Cancel loading radio' : undefined} aria-busy={iconOnly && status === 'loading' ? 'true' : undefined}>
     <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
-      {status === 'playing' || status === 'loading' ? <path d="M6 4h4v16H6zm8 0h4v16h-4z" /> : <path d="m7 4 14 8-14 8z" />}
+      {iconOnly && status === 'loading'
+        ? <path className="radio-icon-loading" d="M12 3a9 9 0 1 0 8.5 6h-2.2A6.9 6.9 0 1 1 12 5.1V2l4 4-4 4V7.2A4.8 4.8 0 1 0 16.8 12H19a7 7 0 0 1-7 7 7 7 0 1 1 0-14z" />
+        : iconOnly && status === 'error'
+          ? <path d="M12 5V2L7.5 6.5 12 11V8a5 5 0 1 1-4.7 6.7H5.2A7 7 0 1 0 12 5z" />
+          : status === 'playing' || status === 'loading' ? <path d="M6 4h4v16H6zm8 0h4v16h-4z" /> : <path d="m7 4 14 8-14 8z" />}
     </svg>
-    {status === 'playing' ? 'Pause Radio' : status === 'loading' ? 'Connecting…' : status === 'error' ? 'Try Again' : 'Listen Live'}
+    {iconOnly
+      ? <><span className="radio-icon-only-label">{label}</span>{(status === 'loading' || status === 'error') && <span className="radio-icon-only-status" aria-hidden="true" />}</>
+      : status === 'playing' ? 'Pause Radio' : status === 'loading' ? 'Connecting…' : status === 'error' ? 'Try Again' : 'Listen Live'}
   </button>;
 }
 export default function AudioPlayer() {
