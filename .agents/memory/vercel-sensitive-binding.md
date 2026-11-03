@@ -19,3 +19,13 @@ authorised staff diagnostic. Do not make staff sign-in a prerequisite for a
 recording repair. Build binding evidence is not serving-runtime verification.
 Do not rotate, replace or expose credentials to work around the limitation,
 and obtain approval before deployment or database changes.
+
+Do not infer separate databases merely because a Neon endpoint ID differs from
+the endpoint returned by Replit's read-only production query connection.
+
+**Why:** Production reads may use a replica endpoint. Different compute
+endpoints do not, by themselves, establish different branches or ownership.
+
+**How to apply:** Verify the project/branch relationship through trusted
+provider metadata before choosing external-database DDL versus Replit's
+managed production schema-sync path.
