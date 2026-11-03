@@ -56,6 +56,27 @@ import { createHash } from 'node:crypto';
 import { createWorkshopCatalogue, createWorkshopCatalogueHandler, parseWorkshopCatalogue, WORKSHOP_INDEX } from '../server/santa-workshop-catalogue.js';
 
 const record = file => ({ file, bytes: 50000, id: `c-${createHash('sha256').update(file).digest('hex')}` });
+test('owner-added fantasy destinations accept supplied filenames without changing recording identities', () => {
+  const names = ['Planet Brussels Sprout', 'The Land of Missing Socks', 'Behind the Sofa',
+    'Under the Bed', 'The Temple of Doom', 'The Lost City of Gold', 'Treasure Island',
+    'Shangri-La', 'Laputa', 'Candy Kingdom', 'Green Hill Zone', 'The Mushroom Kingdom',
+    'Tatooine', 'A galaxy far, far away', 'Metropolis', 'Gotham City', 'Hogsmeade',
+    'Hogwarts', 'Bikini Bottom', 'The Biscuit Tin'];
+  for (const variant of [name => name, name => name.toLowerCase().replace(/,/g, '').replace(/ /g, '-')]) {
+    const input = inventory();
+    const additions = names.map(name => record(`countries/${variant(name)}.wav`));
+    input.categories.place.push(...additions);
+    const output = parseWorkshopCatalogue(input);
+    for (const original of additions) {
+      const parsed = output.categories.place.find(item => item.id === original.id);
+      assert.ok(parsed, original.file);
+      assert.equal(parsed.kind, 'fantasy', original.file);
+      assert.equal(parsed.file, original.file);
+      assert.equal(parsed.isCountry, false);
+    }
+    assert.equal(output.categories.place.some(item => /arendelle/i.test(item.label)), false);
+  }
+});
 const inventory = () => ({
   version: 1,
   categories: {

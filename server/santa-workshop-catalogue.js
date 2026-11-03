@@ -11,7 +11,15 @@ const folders = { age: 'AGES', sports: 'sports', funny: 'funny', activity: 'Tryi
 const optionalCategories = new Set(['sports', 'funny']);
 const fantasyPlaces = new Set(['atlantis', 'camelot', 'cloud-cuckoo-land', 'discworld', 'emerald-city',
   'hundred-acre-wood', 'jurassic-island', 'middle-earth', 'narnia', 'neverland', 'oz', 'pandora',
-  'radiator-springs', 'sodor', 'the-enchanted-forest', 'whoville', 'wonderland']);
+  'radiator-springs', 'sodor', 'the-enchanted-forest', 'whoville', 'wonderland',
+  'planet-brussels-sprout', 'the-land-of-missing-socks', 'behind-the-sofa', 'under-the-bed',
+  'the-temple-of-doom', 'the-lost-city-of-gold', 'treasure-island', 'shangri-la', 'laputa',
+  'candy-kingdom', 'green-hill-zone', 'the-mushroom-kingdom', 'tatooine',
+  'a-galaxy-far-far-away', 'metropolis', 'gotham-city', 'hogsmeade', 'hogwarts',
+  'bikini-bottom', 'the-biscuit-tin']);
+// Classify owner-supplied spaced/capitalised filenames without changing their
+// exact file paths or path-derived trusted recording IDs.
+const destinationKey = stem => stem.toLowerCase().replace(/,/g, '').replace(/[\s_-]+/g, '-').trim();
 // Real destinations in the hosted inventory which are not countries. Preserve
 // their recorded filenames, including the supplied "alkland" filename.
 // Display spelling corrections must not change recording identities.
@@ -90,7 +98,7 @@ export function parseWorkshopCatalogue(input) {
         record.label = title(stem).replace(/\b[\p{L}\p{M}]+/gu, (word, offset) =>
           offset && ['and', 'of', 'the'].includes(word.toLowerCase()) ? word.toLowerCase()
             : word[0].toLocaleUpperCase('en-GB') + word.slice(1));
-        record.kind = regional ? 'place' : fantasyPlaces.has(stem) ? 'fantasy' : ['mars', 'the-moon'].includes(stem) ? 'space' : 'place';
+        record.kind = regional ? 'place' : fantasyPlaces.has(destinationKey(stem)) ? 'fantasy' : ['mars', 'the-moon'].includes(stem) ? 'space' : 'place';
         record.isCountry = !regional && record.kind === 'place' && !isKnownRegion(record.label) &&
           !otherRealPlaces.has(stem.toLowerCase().replace(/[_ ]+/g, '-'));
         if (record.kind === 'fantasy') record.label += ' — Fantasy place';

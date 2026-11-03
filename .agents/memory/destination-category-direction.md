@@ -26,3 +26,9 @@ Do not append “— Fantasy place” or “— Space destination” to displaye
 **Why:** The owner said the clickable category option at the top already identifies the section, and explicitly requested removing “— Space destination” from The Moon.
 
 **How to apply:** Keep the category control and recording identities unchanged; remove the redundant suffix only from presentation.
+
+The owner's additional Fantasy destinations include Planet Brussels Sprout, The Land of Missing Socks, Behind the Sofa, Under the Bed, The Temple of Doom, The Lost City of Gold, Treasure Island, Shangri-La, Laputa, Candy Kingdom, Green Hill Zone, The Mushroom Kingdom, Tatooine, A galaxy far, far away, Metropolis, Gotham City, Hogsmeade, Hogwarts, Bikini Bottom and The Biscuit Tin. Arendelle is excluded from this addition.
+
+**Why:** The owner supplied the proposed recordings and list, asking that all of these except Arendelle go into Fantasy.
+
+**How to apply:** Classify recordings when they appear in the hosted inventory; preserve their actual filenames and IDs, including capitalised names with spaces. Do not fabricate selectable recordings before upload.
