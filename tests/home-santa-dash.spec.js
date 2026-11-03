@@ -177,7 +177,7 @@ test('homepage advert remains complete, readable and keyboard accessible on desk
     expect(bottomGap).toBeLessThanOrEqual(19);
     expect(inset.phone.top).toBeGreaterThan(inset.artwork.top);
     expect(inset.phone.right).toBeLessThan(inset.artwork.left + inset.artwork.width * .53);
-    expect(await promo.locator('.santa-dash-promo__handset').evaluate(el => getComputedStyle(el).opacity)).toBe('0.7');
+    expect(await promo.locator('.santa-dash-promo__handset').evaluate(el => getComputedStyle(el).opacity)).toBe('0.9');
     // Only the containing handset is translucent; nested media must not
     // compound it, and the separate control must not inherit it.
     expect(await promo.locator('.santa-dash-promo__handset *').evaluateAll(

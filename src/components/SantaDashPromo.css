@@ -43,7 +43,7 @@
   padding: clamp(4px, 1.15vw, 10px) clamp(9px, 2.6vw, 27px);
   border: 2px solid transparent;
   border-radius: 5.3% / 12%;
-  opacity: .7;
+  opacity: .9;
   background:
     linear-gradient(145deg, #252b2a 0%, #080b0c 26%, #171d1e 66%, #050707 100%) padding-box,
     linear-gradient(112deg, #c8c3b3 0%, #69716e 8%, #e4dfd1 17%, #545e5c 36%, #b9b9ad 53%, #505a57 75%, #e1d5bb 91%, #66706c 100%) border-box;

@@ -38,12 +38,12 @@ the reference is not a flattened replacement for the real video.
 **How to apply:** Keep the live gameplay layered over the original artwork.
 Do not apply this single-image rule to the separate Apps promotion.
 
-The whole handset, including the frame and gameplay, should be 70% opaque
-(30% transparent); surrounding artwork, heading, links and playback controls
+The whole handset, including the frame and gameplay, should be 90% opaque
+(10% transparent); surrounding artwork, heading, links and playback controls
 must remain fully opaque.
 
-**Why:** The owner wants a subtle amount of rooftop artwork to show through the
-phone without changing its latest size, position or playback.
+**Why:** The owner requested a return to the previous 10% transparency after
+reviewing the more transparent version, without changing size, position or playback.
 
 **How to apply:** Apply opacity to the handset group only, never the banner or
 individual nested pieces (which would compound the transparency).
