@@ -386,6 +386,20 @@
   font-size: 0.88rem;
 }
 
+.studio-letter-dialog__navigation {
+  display: flex;
+  gap: 8px;
+  margin-right: auto;
+}
+
+.studio-letter-dialog__navigation button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  padding: 8px;
+}
+
 .studio-letter-dialog__content {
   display: flex;
   justify-content: center;

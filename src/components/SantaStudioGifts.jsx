@@ -6,6 +6,9 @@ import { createStudioLetter, CERTIFICATE_WRITE_MS, LETTER_CHARACTER_MS,
 import './SantaStudioGifts.css';
 import SantaPictureName from './SantaPictureName.jsx';
 import StudioGiftDownload from './StudioGiftDownload.jsx';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
+
+const giftViews = ['certificate', 'letter', 'picture'];
 
 const santaPictures = [
   '/images/santa-nice-list.jpg',
@@ -100,6 +103,7 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
   const [reading, setReading] = useState(false);
   const [visible, setVisible] = useState(false);
   const [view, setView] = useState(null);
+  const previewOpen = view !== null;
   const sectionRef = useRef(null);
   const dialogRef = useRef(null);
   const openerRef = useRef(null);
@@ -133,12 +137,12 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
     return () => clearTimeout(timer);
   }, [staticPreview, activeAudio, reducedMotion, visible, hovered, focused, reading, view, onNext, picture]);
   useEffect(() => {
-    if (!view) return undefined;
+    if (!previewOpen) return undefined;
     const dialog = dialogRef.current;
     dialog.showModal();
     closeRef.current?.focus();
     return () => { if (dialog.open) dialog.close(); };
-  }, [view]);
+  }, [previewOpen]);
   useEffect(() => {
     const dialog = dialogRef.current;
     const close = () => {
@@ -152,6 +156,11 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
   const open = (event, kind) => {
     openerRef.current = event.currentTarget;
     setView(kind);
+  };
+  const changeGift = direction => {
+    setView(current => giftViews[(giftViews.indexOf(current) + direction + giftViews.length) % giftViews.length]);
+    const content = dialogRef.current?.querySelector('.studio-letter-dialog__content');
+    if (content) content.scrollTop = content.scrollLeft = 0;
   };
   return <section ref={sectionRef} className="studio-gifts" aria-label="Paid Studio gift preview"
     data-demo-name={name} data-complete={finished}
@@ -196,8 +205,26 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
     </div>
     <dialog ref={dialogRef} className={`studio-letter-dialog${view === 'letter' ? ' studio-letter-dialog--letter' : ''}`}
       aria-label={`${name}’s ${view || 'gift'} example`}
+      onKeyDown={event => {
+        if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+        if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+          event.preventDefault();
+          changeGift(event.key === 'ArrowLeft' ? -1 : 1);
+        }
+      }}
       onCancel={() => dialogRef.current.close()}>
       <div className="studio-letter-dialog__toolbar">
+        <div className="studio-letter-dialog__navigation" role="group" aria-label="Browse gift previews">
+          <button type="button" aria-label="Previous gift" title="Previous gift" onClick={() => changeGift(-1)}>
+            <ArrowLeft size={22} aria-hidden="true" />
+          </button>
+          <button type="button" aria-label="Next gift" title="Next gift" onClick={() => changeGift(1)}>
+            <ArrowRight size={22} aria-hidden="true" />
+          </button>
+        </div>
+        <span className="studio-gifts__sr" role="status" aria-live="polite">
+          {view ? `${view === 'picture' ? 'Santa picture' : view === 'letter' ? 'Santa letter' : 'Nice List certificate'}, ${giftViews.indexOf(view) + 1} of 3` : ''}
+        </span>
         <button ref={closeRef} type="button" onClick={() => dialogRef.current.close()}>Close preview</button>
       </div>
       <div className="studio-letter-dialog__content" role="region" aria-label="Enlarged gift preview"

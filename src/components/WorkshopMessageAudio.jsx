@@ -215,9 +215,9 @@ export default function WorkshopMessageAudio({
           : status.successes === 1
             ? 'Your recorded name and full destination are locked. One correction remains for the other audio choices.'
             : 'You can create one message, then make one correction. The recorded name and full destination lock after the first successful message.'}
-      {generation.error && <> <button type="button" className="smw-change"
-      onClick={generation.accessExpired ? () => window.location.reload() : generation.refresh}>
-      {generation.accessExpired ? 'Reload Studio' : 'Try again'}</button></>}
+      {generation.error && generation.accessExpired && <> <button type="button" className="smw-change"
+      onClick={() => window.location.reload()}>
+      Reload Studio</button></>}
     </p>
     {busy && <div className="smw-message-result" role="status" aria-live="polite">
       <p>{phase === 'receiving' ? 'Receiving your finished MP3…' : preparationMessage}</p>

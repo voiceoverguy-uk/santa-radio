@@ -37,6 +37,55 @@ async function visit(page, { reduced = false, clock = true } = {}) {
 }
 
 // Exercise the automatic cycle rather than relying on removed manual controls.
+for (const width of [320, 1440]) {
+  test(`gift preview arrows cycle all three gifts without closing the dialog at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await visit(page, { reduced: true, clock: false });
+    const opener = gifts(page).getByRole('button', { name: 'Enlarge certificate', exact: true });
+    await opener.click();
+    const dialog = page.getByRole('dialog');
+    await dialog.evaluate(node => {
+      window.giftDialogCloses = 0;
+      node.addEventListener('close', () => window.giftDialogCloses++);
+    });
+    const name = await gifts(page).getAttribute('data-demo-name');
+    const previous = dialog.getByRole('button', { name: 'Previous gift', exact: true });
+    const next = dialog.getByRole('button', { name: 'Next gift', exact: true });
+    const close = dialog.getByRole('button', { name: 'Close preview', exact: true });
+    await expect(close).toBeFocused();
+    for (const kind of ['letter', 'picture', 'certificate']) {
+      await next.click();
+      await expect(dialog).toHaveAttribute('aria-label', `${name}’s ${kind} example`);
+      await expect(next).toBeFocused();
+      await expect(dialog.locator('.studio-gifts__watermark')).toBeVisible();
+    }
+    await previous.click();
+    await expect(dialog).toHaveAttribute('aria-label', `${name}’s picture example`);
+    await page.keyboard.press('ArrowLeft');
+    await expect(dialog).toHaveAttribute('aria-label', `${name}’s letter example`);
+    const geometry = await dialog.evaluate(node => {
+      const previous = node.querySelector('[aria-label="Previous gift"]').getBoundingClientRect();
+      const next = node.querySelector('[aria-label="Next gift"]').getBoundingClientRect();
+      const close = [...node.querySelectorAll('button')].find(button => button.textContent === 'Close preview').getBoundingClientRect();
+      return { previous: previous.toJSON(), next: next.toJSON(), close: close.toJSON(),
+        fits: node.scrollWidth <= node.clientWidth + 1 };
+    });
+    expect(geometry.previous.left).toBeLessThan(geometry.next.left);
+    expect(geometry.next.right).toBeLessThanOrEqual(geometry.close.left);
+    expect(Math.abs(geometry.previous.top - geometry.close.top)).toBeLessThanOrEqual(1);
+    expect(geometry.fits).toBe(true);
+    expect(await page.evaluate(() => window.giftDialogCloses)).toBe(0);
+    await dialog.screenshot({ path: `generated-artifacts/gift-preview-navigation-${width}.jpg` });
+    await page.keyboard.press('Escape');
+    await expect(dialog).not.toBeVisible();
+    await expect(opener).toBeFocused();
+    await gifts(page).getByRole('button', { name: 'Enlarge letter to read', exact: true }).click();
+    await expect(dialog).toHaveAttribute('aria-label', `${name}’s letter example`);
+    await close.click();
+    await expect(dialog).not.toBeVisible();
+  });
+}
+
 async function advanceExample(page) {
   const reduced = await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
   await page.emulateMedia({ reducedMotion: 'no-preference' });

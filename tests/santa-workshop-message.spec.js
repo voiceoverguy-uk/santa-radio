@@ -79,7 +79,7 @@ async function openReview(page, { live = false, allowance = null } = {}) {
   return generation;
 }
 
-test('failed allowance check stops checking and retry restores Create message', async ({ page }) => {
+test('failed allowance check has no extra retry button and recovers on return to the page', async ({ page }) => {
   let healthy = false;
   const fixture = await openReview(page, { allowance: (route, state) => healthy
     ? route.fulfill({ json: state })
@@ -97,8 +97,9 @@ test('failed allowance check stops checking and retry restores Create message', 
     expect(create.x + create.width).toBeLessThanOrEqual(width);
     expect(await allowance.evaluate(node => node.scrollWidth <= node.clientWidth + 1)).toBe(true);
   }
+  await expect(page.getByRole('button', { name: 'Try again', exact: true })).toHaveCount(0);
   healthy = true;
-  await page.getByRole('button', { name: 'Try again', exact: true }).click();
+  await page.evaluate(() => window.dispatchEvent(new Event('focus')));
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
   await expect(page.getByRole('alert')).toHaveCount(0);
   expect(fixture.posts).toHaveLength(0);
