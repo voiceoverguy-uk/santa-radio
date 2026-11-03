@@ -4,6 +4,7 @@
 - [Radio feed hosting](radio-feed-hosting.md) — Use the confirmed independent HTTPS feeds; no retiring-host fallback. Metadata may lead buffered audio.
 - [Radio chart scope](radio-chart-presentation.md) — Yesterday's Top Ten is no longer wanted in the interface; retain history collection and API.
 - [Portable package locks](portable-package-locks.md) — Check dependency download URLs stay accessible to Vercel after package changes.
+- [Vercel install boundaries](vercel-install-boundaries.md) — Function packaging can independently replace npm dependencies with pnpm; inspect emitted maps, not just source symlinks.
 - [Dependency merges and Preview](dependency-merge-preview.md) — Running dev servers may retain obsolete module paths after dependencies are replaced.
 - [SSR context reloads](ssr-context-reloads.md) — A passing cold render does not rule out mismatched context identities in warm Vite SSR modules.
 - [Music catalogue scope](music-catalogue.md) — Include all supplied database songs; the user will decide removals later.

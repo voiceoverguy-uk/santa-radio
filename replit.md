@@ -59,6 +59,7 @@ The audio player targets the user-supplied `https://global.citrus3.com:8164/` en
 
 ## Deployment (Vercel)
 
+- Function packaging reuses the completed website npm install; keep `installCommand: ""` in every first-matching function config. See `docs/vercel-function-packaging.md` for isolated checks and hosted-release limits.
 - Dependency-source checks run before hosted installation and production builds. See `docs/dependency-portability.md` for clean-install verification and release boundaries; preserve Node 22 and locked package integrity.
 - `vercel.json` is configured with SPA rewrites so React Router works on page refresh
 - Build command: `npm run build` → outputs to `dist/`

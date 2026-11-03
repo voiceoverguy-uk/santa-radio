@@ -5,40 +5,50 @@
   "framework": "vite",
   "functions": {
     "api/santa-mobile.js": {
+      "installCommand": "",
       "maxDuration": 120,
       "includeFiles": "{server/santa-audio/**,scripts/santa-audio-*.mjs,node_modules/ffmpeg-static/**}"
     },
     "api/santa-studio-message.js": {
+      "installCommand": "",
       "maxDuration": 120,
       "includeFiles": "{server/santa-audio/studio/**,server/santa-audio/names/**,server/santa-audio/sleighbells.mp3,node_modules/ffmpeg-static/**}"
     },
-    "api/santa-message-access.js": { "maxDuration": 20 },
-    "api/stripe/webhook.js": { "maxDuration": 30 },
-    "api/santa-studio-access.js": { "maxDuration": 30 },
-    "api/santa-studio-checkout.js": { "maxDuration": 30 },
+    "api/santa-message-access.js": { "installCommand": "", "maxDuration": 20 },
+    "api/stripe/webhook.js": { "installCommand": "", "maxDuration": 30 },
+    "api/santa-studio-access.js": { "installCommand": "", "maxDuration": 30 },
+    "api/santa-studio-checkout.js": { "installCommand": "", "maxDuration": 30 },
     "api/public-page.js": {
+      "installCommand": "",
       "includeFiles": "{dist/server/**,src/data/legacy-songs.js}"
     },
     "api/santa-message.js": {
+      "installCommand": "",
       "maxDuration": 120,
       "includeFiles": "{server/santa-audio/**,server/santa-message.js,server/santa-name-library.js,scripts/santa-audio-*.mjs,scripts/prepare-santa-audio.mjs,node_modules/ffmpeg-static/**}"
     },
     "api/santa-greeting.js": {
+      "installCommand": "",
       "maxDuration": 20,
       "includeFiles": "{server/santa-audio/**,server/santa-message.js,server/santa-name-library.js,scripts/santa-audio-*.mjs,scripts/prepare-santa-audio.mjs,node_modules/ffmpeg-static/package.json}"
     },
     "api/santa-names.js": {
+      "installCommand": "",
       "maxDuration": 15
     },
     "api/santa-name-preview.js": {
+      "installCommand": "",
       "maxDuration": 20
     },
     "api/santa-workshop-catalogue.js": {
+      "installCommand": "",
       "maxDuration": 15
     },
     "api/santa-workshop-access.js": {
+      "installCommand": "",
       "maxDuration": 20
-    }
+    },
+    "api/**/*.js": { "installCommand": "" }
   },
   "routes": [
     { "src": "/(.*)", "headers": {

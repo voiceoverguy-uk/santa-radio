@@ -34,6 +34,10 @@ args = "santa-ios"
 task = "workflow.run"
 args = "santa-website-build"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "vercel-function-layout"
+
 [[workflows.workflow]]
 name = "santa-ios"
 author = "agent"
@@ -52,6 +56,17 @@ author = "agent"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run build"
+
+[workflows.workflow.metadata]
+isValidation = true
+
+[[workflows.workflow]]
+name = "vercel-function-layout"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run test:function-layout && npm run test:dependency-portability"
 
 [workflows.workflow.metadata]
 isValidation = true
