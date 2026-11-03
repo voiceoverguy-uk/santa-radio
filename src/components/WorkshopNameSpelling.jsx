@@ -74,9 +74,9 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
     <section className="smw-written-name" aria-label="Written name for your keepsakes" data-download-name={downloadName}>
       <div className="smw-studio-preview" aria-label="Studio keepsake previews">
         <StudioKeepsakePreview
-          name={completedGift && completedGift.record.id !== recordingId ? completedGift.writtenName : previewName}
-          details={completedGift?.details || giftDetails || {}}
-          variation={completedGift?.variation || letterVariation}
+          name={previewName}
+          details={giftDetails || {}}
+          variation={letterVariation}
           downloadReady={downloadReady && !isEditing}
           downloadUnavailableNotice={languageError || (isEditing ? 'Confirm the spelling above to enable this download.' : undefined)}
           downloadNotice={isEditing

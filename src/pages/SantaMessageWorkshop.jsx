@@ -306,7 +306,7 @@ export default function SantaMessageWorkshop() {
   const giftPreparing = audioPhase === 'preparing' || audioPhase === 'receiving' || generation.state?.pending;
   const giftNotice = completedGift
         ? completedGift.selectionKey !== selectionKey
-          ? 'Showing the last completed gift set, not your edited audio choices. These gifts switch only when the replacement MP3 succeeds.'
+          ? 'Gift previews reflect your updated choices. Create your new MP3 to unlock these downloads.'
           : 'Gifts for your completed message. You can download them even when creating another message is unavailable.'
         : giftPreparing
           ? 'Preparing your MP3. Gift downloads unlock together only after it is successfully ready.'
@@ -745,7 +745,7 @@ export default function SantaMessageWorkshop() {
                 letterVariation={letterVariation}
                 giftDetails={giftDetails}
                 completedGift={completedGift}
-                downloadReady={!!completedGift}
+                downloadReady={!!completedGift && completedGift.selectionKey === selectionKey}
                 downloadNotice={giftNotice}
                 onChange={spelling => {
                   setNameSpelling(spelling);

@@ -108,6 +108,28 @@ async function openReview(page, { live = false, allowance = null, tester = false
   return generation;
 }
 
+test('top Return to review button fits its label on one line', async ({ page }) => {
+  await openReview(page);
+  await page.getByRole('button', { name: 'Change Trying hard at', exact: true }).click();
+  const button = page.getByRole('button', { name: 'Return to review from top', exact: true });
+  for (const width of [320, 390, 1365]) {
+    await page.setViewportSize({ width, height: 900 });
+    await expect(button).toBeVisible();
+    const fits = await button.evaluate(node => {
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      const bounds = node.getBoundingClientRect();
+      return getComputedStyle(node).whiteSpace === 'nowrap'
+        && range.getBoundingClientRect().height < 25
+        && node.scrollWidth <= node.clientWidth
+        && bounds.right <= innerWidth;
+    });
+    expect(fits).toBe(true);
+  }
+  await button.click();
+  await expect(page.locator('.smw-summary')).toBeVisible();
+});
+
 for (const width of [390, 1365]) {
   test(`voucher entitlement remains clear during recording-service failure at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });

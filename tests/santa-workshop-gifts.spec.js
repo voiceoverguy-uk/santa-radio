@@ -50,6 +50,40 @@ async function save(page, label, file) {
   return download;
 }
 
+test('changing the recorded name refreshes every gift on returning to review', async ({ page }) => {
+  test.setTimeout(60000);
+  const fixture = await review(page);
+  await confirmMessage(page);
+  await expect(page.getByRole('img', { name: 'Official Nice List certificate example for Dixie', exact: true })).toBeVisible();
+  for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+  const audioUrl = await page.locator('.smw-message-result audio').getAttribute('src');
+  await page.route('**/api/santa-names', route => route.fulfill({
+    json: { records: [{ id: 'pamela', name: 'Pamela', variant: '',
+      selectionToken: 'test-token', previewUrl: '/api/santa-name-preview?token=test-token' }] },
+  }));
+  await page.getByRole('button', { name: 'Change Their recorded name', exact: true }).click();
+  await page.getByRole('combobox', { name: 'Search recorded names', exact: true }).fill('Pamela');
+  await page.getByRole('option', { name: /Pamela/ }).first().click();
+  await page.getByRole('button', { name: 'Return to review', exact: true }).click();
+  await expect(page.locator('.smw-written-name-value')).toHaveText('Pamela');
+  await expect(page.getByRole('img', { name: 'Official Nice List certificate example for Pamela', exact: true })).toBeVisible();
+  await expect(page.getByRole('article', { name: 'Santa’s letter example for Pamela', exact: true })).toBeVisible();
+  await expect(page.getByRole('img', { name: 'Santa’s Nice List picture example for Pamela', exact: true })).toBeVisible();
+  await expect(letterText(page)).toContainText('Pamela');
+  await expect(letterText(page)).not.toContainText('Dixie');
+  await expect(page.locator('.smw-message-result audio')).toHaveAttribute('src', audioUrl);
+  expect(fixture.posts).toHaveLength(1);
+  for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
+  await confirmMessage(page);
+  for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+  expect(fixture.posts.at(-1).name).toBe('pamela');
+  const download = await save(page, 'Download certificate (PDF)', 'generated-artifacts/studio-gifts/changed-name.pdf');
+  expect(download.suggestedFilename()).toContain('Pamela');
+  const text = execFileSync('pdftotext', ['generated-artifacts/studio-gifts/changed-name.pdf', '-'], { encoding: 'utf8' });
+  expect(text).toContain('Pamela');
+  expect(text).not.toContain('Dixie');
+});
+
 test('completed gifts stay downloadable when allowance checks fail', async ({ page }) => {
   test.setTimeout(90000);
   mkdirSync('generated-artifacts/studio-gifts', { recursive: true });
@@ -280,24 +314,22 @@ test('gifts unlock together, export real local files, retry independently and tr
   await expect(page.locator('.smw-message-result audio')).toHaveAttribute('src', audioUrl);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   await page.screenshot({ path: 'generated-artifacts/studio-gifts/review-mobile.png', fullPage: true });
-  // An edited review retains the last successful gift content, but cannot
-  // download the edited selection before a replacement MP3 succeeds.
+  // Edited previews update immediately; exports wait for matching MP3 success.
   const completedText = await letterText(page).textContent();
-  await page.getByRole('button', { name: 'Edit and regenerate once', exact: true }).click();
   await page.getByRole('button', { name: 'Change Trying hard at', exact: true }).click();
   await page.getByRole('option', { name: 'Playing a musical instrument', exact: true }).click();
   await page.locator('.smw-button-next').click();
-  await expect(page.getByText('Showing the last completed gift set', { exact: false })).toBeVisible();
-  await expect(letterText(page)).toHaveText(completedText);
-  for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+  await expect(page.getByText('Gift previews reflect your updated choices.', { exact: false })).toBeVisible();
+  await expect(letterText(page)).not.toHaveText(completedText);
+  for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
   fixture.fail = true;
   fixture.hold = new Promise(resolve => { resolveAudio = resolve; });
   await confirmMessage(page);
-  for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+  for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
   await expect.poll(() => !!resolveAudio).toBe(true);
   resolveAudio();
   await expect(page.getByText('Fixture recording unavailable. Try again.', { exact: true })).toBeVisible();
-  for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+  for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
   fixture.fail = false;
   fixture.hold = new Promise(resolve => { resolveAudio = resolve; });
   await confirmMessage(page);
@@ -306,13 +338,11 @@ test('gifts unlock together, export real local files, retry independently and tr
   for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
   await expect(letterText(page)).toContainText('Playing a musical instrument');
   await expect(letterText(page)).not.toHaveText(completedText);
-  expect(fixture.state.successes).toBe(2);
+  expect(fixture.posts.at(-1).activity).toBe('instrument');
   const posts = fixture.posts.length;
   await page.reload();
-  for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+  await expect(giftButtons(page)).toHaveCount(0);
   expect(fixture.posts.length).toBe(posts);
-  await expect(letterText(page)).toContainText('Playing a musical instrument');
-  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
 });
 
 test('letter asset failure is retryable; picture fitting shares the review geometry for long names', async ({ page }) => {

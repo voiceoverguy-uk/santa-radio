@@ -6,7 +6,7 @@ The owner authorises browser-local certificate PDF, letter PDF and Santa-picture
 
 **Why:** The owner explicitly separated individual-message gifts from live payment and family/email fulfilment.
 
-**How to apply:** Bind gifts to the completed message, not whatever audio choices are currently being edited. Label retained older gifts clearly and switch to replacement details only on successful generation. Written-name corrections are display-only; they must not reshuffle letter wording or generate more audio. Gift retries and repeat downloads must never consume message allowance.
+**How to apply:** Review previews must immediately follow the currently selected name and choices, including after returning from editing; the owner explicitly requested this instead of retaining the first recipient's artwork. Keep export permission tied to a successful MP3 for the current choices, so changed previews unlock for download after replacement audio succeeds. Written-name corrections are display-only; they must not reshuffle letter wording or generate more audio. Gift retries and repeat downloads must never consume message allowance.
 
 Names and complete letter content must stay in browser memory for export, with only generic public artwork/fonts fetched. Do not add remote export services, analytics payloads, recipient storage, or public personalised URLs.
 
@@ -18,7 +18,7 @@ Once an MP3 has succeeded, its completed gifts remain downloadable even when cre
 
 **Why:** The owner explicitly requested image downloads for users who have previously generated an MP3, regardless of the Create message button's availability.
 
-**How to apply:** Retain the last completed gifts through allowance-check failures, exhausted allowance, failed or pending corrections, and audio playback/retrieval failures. A confirmed prior success may restore gift access without downloading the MP3 again. Do not unlock first-time gifts for unfinished recordings, export unconfirmed spelling edits, or replace completed gift details with an unsuccessful correction.
+**How to apply:** Retain the completed-message reference through access-check failures and failed or pending replacements. Its downloads remain available when current choices still match. Changed review previews must not keep showing that old recipient. Do not restore history after refresh, unlock first-time gifts for unfinished recordings, or export unconfirmed spelling edits.
 
 Keep the review-stage written-name editor inside the gift-download section and update all three keepsake previews live while typing.
 
