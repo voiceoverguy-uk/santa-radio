@@ -6,7 +6,7 @@ export default function SongVideo({ song, className, title }) {
   if (song.youtubeEmbed === false) {
     return (
       <div className={className}>
-        <p>This video’s owner does not allow playback on other websites.</p>
+        <p>{song.youtubeEmbedNotice || 'This video’s owner does not allow playback on other websites.'}</p>
         {song.youtubeTitle && <p>Linked performance: {song.youtubeTitle} — {song.artist}.</p>}
         <a className="btn-red" href={`https://www.youtube.com/watch?v=${song.youtube}`}
           target="_blank" rel="noopener noreferrer">Watch on YouTube</a>

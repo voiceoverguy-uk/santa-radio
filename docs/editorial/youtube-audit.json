@@ -8,7 +8,7 @@
       { "songId": 551, "previousVideo": "pzJltQjuibA", "video": "-Z6AnCRjWX0", "title": "Cher - DJ Play a Christmas Song (Official Lyric Video)", "channel": "Cher", "embeddedPlayback": "not_verified" },
       { "songId": 252, "previousVideo": "bMletImQ_cs", "video": "lVFWMNrYpQo", "title": "Rudolph The Red Nosed Reindeer", "channel": "Burl Ives - Topic", "embeddedPlayback": "not_verified" },
       { "songId": 163, "previousVideo": "FqbOCmFQkKQ", "video": "l3HTMknXacU", "title": "Christmas Lullaby", "channel": "Shane MacGowan - Topic", "embeddedPlayback": "not_verified" },
-      { "songId": 462, "previousVideo": "hFF9T4BiCSU", "video": "kbQ0p7gDc5E", "title": "Have Yourself a Merry Little Christmas", "channel": "James Taylor - Topic", "embeddedPlayback": "not_verified", "note": "Owner-supplied replacement; label the linked performance as James Taylor without changing the James M Caddell catalogue identity or treating this video as proof of its recording credit." }
+      { "songId": 462, "previousVideo": "hFF9T4BiCSU", "video": "kbQ0p7gDc5E", "title": "Have Yourself a Merry Little Christmas", "channel": "James Taylor - Topic", "embeddedPlayback": "not_verified", "note": "Owner-supplied replacement. Earlier metadata observed status OK and playableInEmbed true, but these are not actual playback verification. The results replacementReview below records a separate LOGIN_REQUIRED response and non-playing browser probe. Keep the neutral outbound fallback until embedded playback is verified. Do not change the James M Caddell catalogue identity or treat this video as proof of its recording credit." }
     ]
   },
   "songCount": 452,
@@ -29,26 +29,32 @@
       ]
     },
     {
-      "video": "hFF9T4BiCSU",
-      "status": "needs_review",
-      "http": 401,
-      "metadataMethod": "YouTube watch-page extraction confirms title and channel; direct oEmbed request returned Unauthorized.",
-      "title": "You're a Mean One Mr. Grinch",
-      "channel": "James Caddell",
+      "video": "kbQ0p7gDc5E",
+      "status": "metadata_available",
+      "http": 200,
+      "metadataMethod": "YouTube oEmbed returned the title and channel on 3 November 2026; metadata is not playback verification.",
+      "title": "Have Yourself a Merry Little Christmas",
+      "channel": "James Taylor - Topic",
       "replacementReview": {
-        "checkedAt": "2026-10-10",
-        "previousVideo": "-tJtsKngXJU",
-        "approval": "Owner explicitly approved this different-song video after being informed that it does not match the page title or lyrics.",
-        "songMatch": false,
-        "playback": "embedding_disabled_by_video_owner",
-        "playbackEvidence": "On both existing pages the iframe references the replacement. Clicking the player in the proxied development song page produced: Playback on other websites has been disabled by the video owner. Video currentTime=0, paused=true, readyState=0.",
-        "completion": "Both music and karaoke pages offer the approved replacement via Watch on YouTube instead of a known-blocked embed; browser tests verify the destination and preserved song, artist, lyrics and URLs. Direct YouTube playback check returned LOGIN_REQUIRED (Sign in to confirm you're not a bot); actual playback remains unverified. On-site playback requires the video owner to enable embedding or an approved alternative."
+        "checkedAt": "2026-11-03",
+        "previousVideo": "hFF9T4BiCSU",
+        "approval": "Owner supplied this replacement URL. The earlier Grinch performance and its confirmed embedding restriction apply only to the previous video, not this replacement.",
+        "songMatch": null,
+        "creditEvidence": "The replacement title matches the song textually, but the channel is James Taylor - Topic, not James Caddell. Neither metadata nor the owner-supplied substitution verifies the catalogue recording's attribution; preserve its existing credit.",
+        "playback": "unverified",
+        "playbackEvidence": "Direct YouTube watch-page player response returned LOGIN_REQUIRED (Sign in to confirm you're not a bot). A disposable iframe probe on the proxied development song-page origin displayed the verified title and James Taylor - Topic channel, but video currentTime=0, paused=true, readyState=0. No visible large Play button became available within 20 seconds. No actual playback or video-owner embedding prohibition was confirmed. This probe did not enable an iframe in the application.",
+        "completion": "Both music and karaoke pages use the replacement Watch on YouTube destination with a neutral unverified-playback notice, no iframe and no Grinch-specific title or owner-restriction claim. Two unmocked Chromium regression checks passed through the proxied preview, verifying links, page identities, lyrics and URLs; the music biography also remains intact. The song-page screenshot renders correctly. These checks verify application behaviour, not successful YouTube playback."
       },
       "pages": [
         {
           "artist": "James M Caddell",
           "song": "Have Yourself A Merry Little Christmas",
           "path": "/christmas-artist/462-james-m-caddell-have-yourself-a-merry-little-christmas"
+        },
+        {
+          "artist": "James M Caddell",
+          "song": "Have Yourself A Merry Little Christmas",
+          "path": "/christmas-karaoke-lyrics/462-james-m-caddell-have-yourself-a-merry-little-christmas"
         }
       ]
     },
