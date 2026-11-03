@@ -1,4 +1,5 @@
 import { santaNameLibrary } from './santa-name-library.js';
+import { BLOCKED_NAME_NOTE, isBlockedName } from '../src/lib/nameLanguage.js';
 import { consumeNameAccess, issueNameToken, privateResponse, readNameJson, SEARCH_LIMIT, SEARCH_MIN_LENGTH } from './santa-name-security.js';
 
 export function createSantaNamesHandler(library = santaNameLibrary, {
@@ -22,7 +23,11 @@ export function createSantaNamesHandler(library = santaNameLibrary, {
       const data = await readNameJson(req);
       const query = typeof data.query === 'string' ? data.query.normalize('NFKC').trim() : '';
       if (Object.keys(data).some(key => key !== 'query') || [...query].length < SEARCH_MIN_LENGTH ||
-          [...query].length > 80 || !/^[\p{L}\p{M}][\p{L}\p{M} '’\-]*$/u.test(query)) {
+          [...query].length > 80) {
+        return send(400, { error: 'Enter at least two letters of a first name, without wildcards.' });
+      }
+      if (isBlockedName(query)) return send(400, { error: BLOCKED_NAME_NOTE });
+      if (!/^[\p{L}\p{M}][\p{L}\p{M} '’\-]*$/u.test(query)) {
         return send(400, { error: 'Enter at least two letters of a first name, without wildcards.' });
       }
       const result = await library.search(query);

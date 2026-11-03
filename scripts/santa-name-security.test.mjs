@@ -10,6 +10,7 @@ import { createSantaMessageHandler } from '../server/santa-message.js';
 import { createSantaGreetingHandler } from '../server/santa-greeting.js';
 import { createNameLibrary } from '../server/santa-name-library.js';
 import { consumeNameAccess, issueNameToken, verifyNameToken } from '../server/santa-name-security.js';
+import { BLOCKED_NAME_NOTE } from '../src/lib/nameLanguage.js';
 
 const key = 'controlled-test-only-signing-key-32-characters';
 const token = (id, scope) => issueNameToken(id, scope, Date.now(), key);
@@ -88,6 +89,47 @@ test('search is capped, scoped, count-free and never exposes origin paths', asyn
   const previewToken = new URL(record.previewUrl, 'http://test').searchParams.get('token');
   assert.equal(verify(previewToken, 'preview'), record.id);
   assert.equal(verify(previewToken, 'message'), null);
+});
+
+test('abusive searches consume limits but never access the catalogue or issue capabilities', async () => {
+  let limits = 0;
+  const handler = createSantaNamesHandler({
+    search: () => assert.fail('Blocked input must not search the private catalogue'),
+  }, {
+    limit: async (_req, scope) => { assert.equal(scope, 'search'); limits++; },
+    token: () => assert.fail('Blocked input must not issue capabilities'),
+  });
+  const queries = ['fuck', 'SHIT', 'cunt', 'wanker', 'bitch', 'bollocks', 'ＦＵＣＫ',
+    'fúçk', 'f.u.c.k', 'f u c k', 's-h-i-t', 'sh1t', 'fu\u200bck', 'fυсk', 'fuck you'];
+  for (const query of queries) {
+    const headers = {};
+    let status, body;
+    await handler({ method: 'POST', url: '/names', headers: { 'content-type': 'application/json' }, body: { query } }, {
+      setHeader: (key, value) => { headers[key] = value; },
+      writeHead: code => { status = code; }, end: value => { body = JSON.parse(value); },
+    });
+    assert.equal(status, 400, query);
+    assert.deepEqual(body, { error: BLOCKED_NAME_NOTE });
+    assert.match(headers['Cache-Control'], /private.*no-store/);
+    assert.equal(headers['X-Robots-Tag'], 'noindex, nofollow');
+  }
+  assert.equal(limits, queries.length);
+  assert.equal((await post('/limited', { query: 'fuck' })).status, 429);
+});
+
+test('innocent coincidental sequences and unmatched names still reach normal private search', async () => {
+  for (const query of ['Scunthorpe', 'Fuchsia', 'Dick', 'Fanny', 'Cassian', 'Shital', 'UnknownName', 'Élodie', 'Anne-Marie']) {
+    let searchedQuery, status, body;
+    const handler = createSantaNamesHandler({
+      search: async value => { searchedQuery = value; return { records: [] }; },
+    }, { limit: noLimit, token: () => assert.fail('No capabilities for missing names') });
+    await handler({ method: 'POST', url: '/names', headers: { 'content-type': 'application/json' }, body: { query } }, {
+      setHeader() {}, writeHead: code => { status = code; }, end: value => { body = JSON.parse(value); },
+    });
+    assert.equal(status, 200, query);
+    assert.equal(searchedQuery, query);
+    assert.deepEqual(body.records, []);
+  }
 });
 
 test('signed previews reject tampering, expiry, wrong scopes and arbitrary source URLs', async () => {

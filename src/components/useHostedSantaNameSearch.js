@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { santaMessageDownloadName } from '../lib/santaMessageDownloadName.js';
+import { isBlockedName } from '../lib/nameLanguage.js';
 
 // Recipient input is sent in a private POST body, never in URLs or storage.
 // Only the current, bounded result set lives in component memory.
 export default function useHostedSantaNameSearch(query, enabled = true) {
+  const blocked = isBlockedName(query);
+  enabled = enabled && !blocked;
   const input = enabled ? query.trim() : '';
   const [attempt, setAttempt] = useState(0);
   const fetchedAt = useRef(0);
@@ -65,9 +68,9 @@ export default function useHostedSantaNameSearch(query, enabled = true) {
   }, [input, enabled]);
   const current = state.query === input;
   return {
-    ...state, hostedCount: null,
+    ...state, hostedCount: null, blocked,
     records: current && enabled ? state.records : [],
-    loading: [...input].length >= 2 && (!current || state.loading),
+    loading: enabled && [...input].length >= 2 && (!current || state.loading),
     error: current ? state.error : '', warning: current ? state.warning || '' : '',
     refresh: () => setAttempt(value => value + 1),
   };

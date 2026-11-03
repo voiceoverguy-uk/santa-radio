@@ -36,6 +36,113 @@ const inventory = {
 const checker = page => page.locator('.hero-name-checker');
 const input = page => checker(page).getByRole('combobox');
 const cta = page => checker(page).getByRole('button', { name: 'Create my free Santa message →' });
+const blockedNote = "We won't find that spelling. Let's not use that word! It's Christmas.";
+
+for (const width of [320, 390]) {
+  test(`abusive names cannot search or continue and the status fits at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await setup(page);
+    await page.addInitScript(() => sessionStorage.setItem('santa-message-offer-shown', 'shown'));
+    const queries = [];
+    page.on('request', request => {
+      if (new URL(request.url()).pathname === '/api/santa-names') queries.push(request.postDataJSON().query);
+    });
+    await page.goto('/');
+    const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+    if (await decline.isVisible()) await decline.click();
+    await choose(page, 'Arabella');
+    const status = checker(page).getByRole('status');
+    const searched = queries.length;
+    for (const word of ['fuck', 'SHIT', 'cunt', 'wanker', 'ＦＵＣＫ', 'f.u.c.k', 'fu\u200bck', 'sh1t', 'fυсk']) {
+      await input(page).fill(word);
+      await expect(status).toHaveText(blockedNote);
+      await expect(input(page)).toHaveAttribute('aria-invalid', 'true');
+      await expect(input(page)).toHaveAttribute('aria-expanded', 'false');
+      await expect(checker(page).getByRole('option')).toHaveCount(0);
+      await input(page).press('ArrowDown');
+      await input(page).press('Enter');
+      await expect(status).toHaveText(blockedNote);
+      await cta(page).click();
+      await expect(status).toHaveText(blockedNote);
+      await expect(input(page)).toBeFocused();
+    }
+    // Wait beyond the search debounce: none of the blocked inputs reach the API.
+    await page.waitForTimeout(300);
+    expect(queries).toHaveLength(searched);
+    await expect(page.locator('#santa-messages .santa-message-access__intro')).toHaveText(
+      'Add your details and access a free personalised downloadable message from Santa.');
+    await expect(status).toHaveAttribute('aria-live', 'polite');
+    await expect(status).toHaveAttribute('aria-atomic', 'true');
+    expect(await input(page).getAttribute('aria-describedby')).toBe(await status.getAttribute('id'));
+    for (const size of ['100%', '200%']) {
+      await page.evaluate(size => { document.documentElement.style.fontSize = size; }, size);
+      const geometry = await status.evaluate(node => {
+        const range = document.createRange();
+        range.selectNodeContents(node);
+        const rect = element => element.getBoundingClientRect().toJSON();
+        return {
+          box: rect(node), lines: [...range.getClientRects()].map(r => r.toJSON()),
+          field: rect(node.closest('form').querySelector('input')),
+          button: rect(node.closest('form').querySelector('[type="submit"]')),
+        };
+      });
+      expect(geometry.box.left).toBeGreaterThanOrEqual(0);
+      expect(geometry.box.right).toBeLessThanOrEqual(width);
+      expect(geometry.field.bottom).toBeLessThanOrEqual(geometry.box.top);
+      expect(geometry.box.bottom).toBeLessThanOrEqual(geometry.button.top);
+      for (const line of geometry.lines) {
+        expect(line.left).toBeGreaterThanOrEqual(geometry.box.left - .5);
+        expect(line.right).toBeLessThanOrEqual(geometry.box.right + .5);
+        expect(line.bottom).toBeLessThanOrEqual(geometry.box.bottom + .5);
+      }
+    }
+    await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
+    await checker(page).screenshot({ path: `generated-artifacts/name-language-${width}.jpg` });
+    for (const name of ['Scunthorpe', 'Fuchsia', 'Dick', 'Fanny', 'Shital', 'UnknownName']) {
+      await input(page).fill(name);
+      await expect.poll(() => queries.at(-1)).toBe(name);
+      await expect(status).toHaveText('We haven’t found that spelling. Try a shorter name or another spelling.');
+    }
+    await input(page).fill('Er');
+    await expect(checker(page).getByRole('option')).toHaveCount(2);
+    await input(page).press('ArrowDown');
+    await input(page).press('Enter');
+    await expect(status).toHaveText('Yes! Santa can record for Erin.');
+    await cta(page).click();
+    await expect(page.locator('#santa-messages input[name="FIRSTNAME"]')).toBeFocused();
+  });
+}
+
+test('blocked input suppresses delayed results, network errors and submission validation', async ({ page }) => {
+  await setup(page);
+  let resolveSearch;
+  const pending = new Promise(resolve => { resolveSearch = resolve; });
+  let started;
+  const requestStarted = new Promise(resolve => { started = resolve; });
+  await page.route('**/api/santa-names', async route => {
+    started();
+    await pending;
+    await route.fulfill({ json: inventory });
+  });
+  await open(page);
+  await cta(page).click();
+  await input(page).fill('Ar');
+  await requestStarted;
+  await input(page).fill('fuck');
+  resolveSearch();
+  await page.waitForTimeout(300);
+  await expect(checker(page).getByRole('status')).toHaveText(blockedNote);
+  await expect(checker(page).getByRole('option')).toHaveCount(0);
+  await expect(checker(page).getByRole('button', { name: 'Retry name search' })).toHaveCount(0);
+  await page.route('**/api/santa-names', route => route.fulfill({ status: 503, json: { error: 'Controlled outage' } }));
+  await input(page).fill('Er');
+  await expect(checker(page).getByRole('status')).toHaveText('Controlled outage');
+  await input(page).fill('shit');
+  await input(page).press('Enter');
+  await expect(checker(page).getByRole('status')).toHaveText(blockedNote);
+  await expect(checker(page).getByRole('button', { name: 'Retry name search' })).toHaveCount(0);
+});
 
 for (const route of ['/', path]) {
   test(`shared hero copy, responsive font match and expanded countdown on ${route}`, async ({ page }) => {

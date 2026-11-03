@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import useHostedSantaNameSearch from './useHostedSantaNameSearch.js';
 import { selectSantaRecipient } from './useSantaRecipient.js';
+import { BLOCKED_NAME_NOTE } from '../lib/nameLanguage.js';
 
 export default function HeroNameChecker({ onContinue, onSelectedNameChange }) {
   const id = useId();
@@ -50,6 +51,7 @@ export default function HeroNameChecker({ onContinue, onSelectedNameChange }) {
   const options = search.records;
   const expanded = open && options.length > 0 && !search.loading && !search.error;
   const choose = record => {
+    if (search.blocked || !options.includes(record)) return;
     selectSantaRecipient(record.name);
     interacted.current = true;
     setValidation('');
@@ -58,7 +60,8 @@ export default function HeroNameChecker({ onContinue, onSelectedNameChange }) {
     setOpen(false);
     setActive(-1);
   };
-  const status = selected ? `Yes! Santa can record for ${selected.name}.`
+  const status = search.blocked ? BLOCKED_NAME_NOTE
+    : selected ? `Yes! Santa can record for ${selected.name}.`
     : search.loading ? 'Checking Santa’s recorded names…'
       : search.error ? search.error
         : name.trim().length === 1 ? 'Enter at least two letters to search Santa’s recorded names.'
@@ -73,6 +76,14 @@ export default function HeroNameChecker({ onContinue, onSelectedNameChange }) {
     <form noValidate onSubmit={event => {
       event.preventDefault();
       interacted.current = true;
+      if (search.blocked) {
+        setSelected(null);
+        setValidation('');
+        setOpen(false);
+        setActive(-1);
+        inputRef.current?.focus({ preventScroll: true });
+        return;
+      }
       if (!selected) {
         setValidation(name.trim()
           ? search.error || (search.loading
@@ -94,7 +105,7 @@ export default function HeroNameChecker({ onContinue, onSelectedNameChange }) {
           aria-controls={expanded ? `${id}-options` : undefined}
           aria-activedescendant={expanded && active >= 0 && options[active] ? `${id}-option-${active}` : undefined}
           aria-describedby={`${id}-status`}
-          aria-invalid={!!validation}
+          aria-invalid={search.blocked || !!validation}
           onChange={event => { interacted.current = true; setName(event.target.value); setSelected(null); setValidation(''); setActive(-1); setOpen(true); }}
           onFocus={() => { if (!selected) setOpen(true); }}
           onBlur={() => { if (!touch.current) setOpen(false); }}
@@ -134,7 +145,7 @@ export default function HeroNameChecker({ onContinue, onSelectedNameChange }) {
           </li>)}
         </ul>}
       </div>
-      <p className={`hero-name-checker__status${validation ? ' hero-name-checker__status--error' : ''}`} id={`${id}-status`} role="status" aria-live="polite" aria-atomic="true">{validation || status}</p>
+      <p className={`hero-name-checker__status${search.blocked || validation ? ' hero-name-checker__status--error' : ''}`} id={`${id}-status`} role="status" aria-live="polite" aria-atomic="true">{search.blocked ? BLOCKED_NAME_NOTE : validation || status}</p>
       {search.error && <button type="button" className="hero-name-checker__retry" onClick={search.refresh}>Retry name search</button>}
       <button className="btn-red hero-name-checker__submit" type="submit">Create my free Santa message →</button>
     </form>
