@@ -244,7 +244,7 @@ test('store panels are removed, copy and metadata are accurate and downloads wor
   await expect(page.locator('.apps-page')).not.toContainText(/Amazon/i);
   await expect(page.locator('head')).not.toContainText(/Amazon/i);
   await expect(page.locator('.apps-page a[href*="amazon."]')).toHaveCount(0);
-  await expect(page.locator('.apps-page a img[src="/images/download-on-the-app-store.svg"]')).toHaveCount(7);
+  await expect(page.locator('.apps-page a img[src="/images/download-on-the-app-store.svg"]')).toHaveCount(8);
   await expect(page.locator('.app-store-notice')).toHaveCount(0);
   await expect(page.getByRole('navigation', { name: 'Breadcrumb', exact: true })).toHaveCount(0);
 
@@ -505,13 +505,58 @@ test('Mac app listing keeps complete promotional artwork with the approved App S
   await expect(page.getByRole('region', { name: 'Available FREE on Apple TV' })).toBeVisible();
 });
 
+test('Apple TV badge matches other downloads and opens the UK listing by keyboard and pointer', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/apps');
+  await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
+  const section = page.getByRole('region', { name: 'Available FREE on Apple TV', exact: true });
+  const download = section.getByRole('link', { name: 'Download Santa Radio for Apple TV on the App Store (opens in a new tab)', exact: true });
+  const href = 'https://apps.apple.com/gb/app/santa-radio/id1021183593';
+  await expect(download).toHaveAttribute('href', href);
+  await expect(download).toHaveAttribute('target', '_blank');
+  await expect(download).toHaveAttribute('rel', 'noopener noreferrer');
+  const badge = download.getByRole('img', { name: 'Download on the App Store', exact: true });
+  await expect(badge).toHaveAttribute('src', '/images/download-on-the-app-store.svg');
+  await badge.evaluate(image => image.decode());
+  await page.context().route(href, route => route.fulfill({ contentType: 'text/html', body: '<title>Santa Radio App Store listing</title>' }));
+  for (const width of [1280, 390, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    const bounds = await badge.boundingBox();
+    expect(bounds.width).toBeCloseTo(150, 1);
+    expect(bounds.height).toBeCloseTo(bounds.width * 40 / 119.66407, 1);
+    expect(bounds.x).toBeGreaterThanOrEqual(0);
+    expect(bounds.x + bounds.width).toBeLessThanOrEqual(width);
+    await expect(download).toHaveCSS('padding', '0px');
+    await expect(download).toHaveCSS('border-left-width', '0px');
+    await download.focus();
+    await page.keyboard.press('Shift+Tab');
+    await page.keyboard.press('Tab');
+    await expect(download).toBeFocused();
+    await expect(download).toHaveCSS('outline-style', 'solid');
+    await expect(download).toHaveCSS('outline-width', '2px');
+    await expect(download).toHaveCSS('outline-offset', '5px');
+    for (const activate of [() => page.keyboard.press('Enter'), () => download.click()]) {
+      const opened = page.waitForEvent('popup');
+      await activate();
+      const popup = await opened;
+      await popup.waitForLoadState();
+      expect(popup.url()).toBe(href);
+      await popup.close();
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+});
+
 test('Apple TV has its own free big-screen section and a responsive supplied screenshot', async ({ page }) => {
   await page.goto('/apps');
   await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
   const section = page.getByRole('region', { name: 'Available FREE on Apple TV' });
   await expect(section).toBeVisible();
-  await expect(section).toContainText('Find Santa Radio in the App Store on your Apple TV.');
-  await expect(section.getByRole('link')).toHaveCount(0);
+  await expect(section).not.toContainText('Find Santa Radio in the App Store on your Apple TV.');
+  await expect(section.locator('.apple-tv-instruction')).toHaveCount(0);
+  await expect(section.locator('.apple-tv-description')).toHaveText('Enjoy Santa Radio on your Apple TV. Listen live, see what’s playing and explore the festive scene on the big screen.');
+  await expect(section.locator('figcaption')).toHaveText('Santa Radio on the big screen');
+  await expect(section.getByRole('link')).toHaveCount(1);
   const image = section.getByRole('img', { name: /Santa Radio on Apple TV/i });
   await expect(image).toHaveAttribute('width', '1920');
   await expect(image).toHaveAttribute('height', '1080');

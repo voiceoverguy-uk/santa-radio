@@ -1,8 +1,8 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures/apps-test.js';
 
 for (const width of [320, 390]) {
   for (const fontSize of [16, 32]) {
-    test(`Apple TV instructions stay readable at ${width}px with ${fontSize}px root text`, async ({ page }) => {
+    test(`Apple TV copy and badge fit at ${width}px with ${fontSize}px root text`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
       await page.emulateMedia({ reducedMotion: 'reduce' });
       await page.goto('/apps');
@@ -14,9 +14,16 @@ for (const width of [320, 390]) {
 
       const section = page.getByRole('region', { name: 'Available FREE on Apple TV' });
       await expect(section.locator('h2')).toHaveText('Available FREE on Apple TV');
-      await expect(section.locator('.apple-tv-instruction')).toHaveText(
-        'Find Santa Radio in the App Store on your Apple TV.'
-      );
+      await expect(section.locator('.apple-tv-instruction')).toHaveCount(0);
+      const download = section.getByRole('link', { name: 'Download Santa Radio for Apple TV on the App Store (opens in a new tab)', exact: true });
+      await expect(download).toHaveAttribute('href', 'https://apps.apple.com/gb/app/santa-radio/id1021183593');
+      const badge = download.getByRole('img', { name: 'Download on the App Store', exact: true });
+      await badge.evaluate(image => image.decode());
+      const badgeBounds = await badge.boundingBox();
+      expect(badgeBounds.width).toBeCloseTo(150, 1);
+      expect(badgeBounds.height).toBeCloseTo(150 * 40 / 119.66407, 1);
+      expect(badgeBounds.x).toBeGreaterThanOrEqual(0);
+      expect(badgeBounds.x + badgeBounds.width).toBeLessThanOrEqual(width);
       expect(await page.evaluate(() => getComputedStyle(document.documentElement).fontSize))
         .toBe(`${fontSize}px`);
       const copy = await section.locator('.apple-tv-copy').boundingBox();
@@ -25,7 +32,7 @@ for (const width of [320, 390]) {
 
       // Check the actual line boxes, not just the section: overflow:hidden on
       // the showcase must not disguise text extending beyond the viewport.
-      for (const selector of ['.apple-tv-eyebrow', 'h2', '.apple-tv-description', '.apple-tv-instruction']) {
+      for (const selector of ['.apple-tv-eyebrow', 'h2', '.apple-tv-description']) {
         const text = section.locator(selector);
         await text.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
         await page.evaluate(() => window.scrollTo({ left: 0, behavior: 'instant' }));

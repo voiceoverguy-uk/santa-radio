@@ -82,7 +82,7 @@ test('built Apps HTML starts on first promotional images and serves all local We
   assert.match(visibleHtml, /<title[^>]*>Christmas Apps — App Store Downloads \| Santa Radio<\/title>/);
   assert.match(visibleHtml, /App Store download links and device showcases/);
   assert.doesNotMatch(visibleHtml, /Amazon/i);
-  assert.equal((visibleHtml.match(/src="\/images\/download-on-the-app-store\.svg"/g) || []).length, 7);
+   assert.equal((visibleHtml.match(/src="\/images\/download-on-the-app-store\.svg"/g) || []).length, 8);
   const badgeAsset = await get('/images/download-on-the-app-store.svg');
   assert.equal(badgeAsset.status, 200);
   assert.match(badgeAsset.headers.get('content-type'), /image\/svg\+xml/);
@@ -120,7 +120,14 @@ test('built Apps HTML starts on first promotional images and serves all local We
   assert.equal(appList.numberOfItems, 7);
   assert.equal(appList.itemListElement.length, 7);
   assert.doesNotMatch(JSON.stringify(graph), /aggregateRating|SoftwareApplication|MobileApplication|"offers"/);
-  assert.match(visibleHtml, /Find Santa Radio in the App Store on your Apple TV/);
+   assert.doesNotMatch(visibleHtml, /Find Santa Radio in the App Store on your Apple TV|apple-tv-instruction/);
+   const tv = visibleHtml.match(/<section class="apple-tv-showcase"[\s\S]*?<\/section>/)?.[0];
+   assert.ok(tv, 'Apple TV must remain in initial HTML');
+   assert.equal((tv.match(/<a\b/g) || []).length, 1);
+   assert.match(tv, /href="https:\/\/apps\.apple\.com\/gb\/app\/santa-radio\/id1021183593"/);
+   assert.match(tv, /target="_blank" rel="noopener noreferrer"/);
+   assert.match(tv, /aria-label="Download Santa Radio for Apple TV on the App Store \(opens in a new tab\)"/);
+   assert.match(tv, /src="\/images\/download-on-the-app-store\.svg" alt="Download on the App Store"/);
   const section = html.match(/<section id="christmasradio"[\s\S]*?<\/section>/)?.[0];
   assert.ok(section, 'Christmas Radio must be in the initial HTML');
   assert.equal((section.match(/<a\b/g) || []).length, 1, 'Christmas Radio must have only its Apple download in initial HTML');

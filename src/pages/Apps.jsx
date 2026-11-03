@@ -76,7 +76,17 @@ function AppleTvShowcase() {
           <p className="apple-tv-description">
             Enjoy Santa Radio on your Apple TV. Listen live, see what’s playing and explore the festive scene on the big screen.
           </p>
-          <p className="apple-tv-instruction">Find Santa Radio in the App Store on your Apple TV.</p>
+          <div className="app-download-btns">
+            <a
+              href="https://apps.apple.com/gb/app/santa-radio/id1021183593"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="app-dl-btn"
+              aria-label="Download Santa Radio for Apple TV on the App Store (opens in a new tab)"
+            >
+              <img src="/images/download-on-the-app-store.svg" alt="Download on the App Store" width="150" height="50" />
+            </a>
+          </div>
         </div>
         <figure className="apple-tv-figure">
           <img

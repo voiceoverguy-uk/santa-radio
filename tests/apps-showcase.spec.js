@@ -139,9 +139,16 @@ test('Apps is usable on first server render without JavaScript', async ({ browse
     await macImage.scrollIntoViewIfNeeded();
     await macImage.evaluate(image => image.decode());
     expect(await macImage.evaluate(image => [image.naturalWidth, image.naturalHeight])).toEqual([1672, 941]);
-    await expect(page.locator('.apple-tv-instruction')).toHaveText('Find Santa Radio in the App Store on your Apple TV.');
+    const tv = page.getByRole('region', { name: 'Available FREE on Apple TV', exact: true });
+    await expect(tv.locator('.apple-tv-instruction')).toHaveCount(0);
+    const tvDownload = tv.getByRole('link', { name: 'Download Santa Radio for Apple TV on the App Store (opens in a new tab)', exact: true });
+    await expect(tvDownload).toHaveAttribute('href', 'https://apps.apple.com/gb/app/santa-radio/id1021183593');
+    await expect(tvDownload).toHaveAttribute('target', '_blank');
+    await expect(tvDownload).toHaveAttribute('rel', 'noopener noreferrer');
+    await expect(tvDownload.getByRole('img')).toHaveAttribute('src', '/images/download-on-the-app-store.svg');
+    await expect(tv).not.toContainText('Find Santa Radio in the App Store on your Apple TV.');
     await expect(page.locator('.apps-page a[href*="amazon."]')).toHaveCount(0);
-    await expect(page.locator('.apps-page a img[src="/images/download-on-the-app-store.svg"]')).toHaveCount(7);
+    await expect(page.locator('.apps-page a img[src="/images/download-on-the-app-store.svg"]')).toHaveCount(8);
   } finally {
     await context.close();
   }
