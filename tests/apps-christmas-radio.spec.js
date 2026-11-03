@@ -48,6 +48,7 @@ test('Christmas Radio delivers four ordered approved display extractions with un
   }
   const section = page.locator('#christmasradio');
   await expect(section.getByRole('link', { name: /Download on the App Store/ })).toHaveAttribute('href', 'https://itunes.apple.com/gb/app/christmas-radio-uk/id1157967613');
+  await expect(section.locator('a[href*="amazon."], a[aria-label*="Amazon" i]')).toHaveCount(0);
   await expect(section.getByRole('link')).toHaveCount(1);
   await expect(section.getByRole('link').getByRole('img')).toHaveAttribute('src', '/images/download-on-the-app-store.svg');
   await expect(section.locator('.app-store-card, .app-store-details')).toHaveCount(0);
@@ -115,6 +116,14 @@ test('Christmas Radio reduced motion is static with a stable, uncropped frame on
   await expectSlide(carousel, 0);
   for (const width of [1280, 390, 320]) {
     await page.setViewportSize({ width, height: 900 });
+    const section = page.locator('#christmasradio');
+    const download = section.locator('.app-download-btns a');
+    await expect(download).toHaveCount(1);
+    await expect(download).toHaveAttribute('href', 'https://itunes.apple.com/gb/app/christmas-radio-uk/id1157967613');
+    await expect(section.locator('a[href*="amazon."], a[aria-label*="Amazon" i]')).toHaveCount(0);
+    const badge = await download.boundingBox();
+    expect(badge.x).toBeGreaterThanOrEqual(0);
+    expect(badge.x + badge.width).toBeLessThanOrEqual(width);
     const before = await carousel.boundingBox();
     const after = await carousel.boundingBox();
     expect(after.width).toBeCloseTo(before.width, 1);

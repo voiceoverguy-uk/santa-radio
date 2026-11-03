@@ -1,4 +1,5 @@
-// Independent regression baseline: preserve the catalogue's original destinations.
+// Independent regression baseline: preserve the catalogue's approved destinations.
+// Christmas Radio is Apple-only; do not restore its former Amazon download.
 export const appDownloads = [
   { id: 'santaradio', title: 'Santa Radio App', apple: 'https://apps.apple.com/us/app/santa-radio/id1021183593' },
   { id: 'santavoicemail', title: 'Santa Voicemail', apple: 'https://itunes.apple.com/us/app/santa-voicemail/id586387813' },

@@ -123,6 +123,9 @@ test('built Apps HTML starts on first promotional images and serves all local We
   assert.match(visibleHtml, /Find Santa Radio in the App Store on your Apple TV/);
   const section = html.match(/<section id="christmasradio"[\s\S]*?<\/section>/)?.[0];
   assert.ok(section, 'Christmas Radio must be in the initial HTML');
+  assert.equal((section.match(/<a\b/g) || []).length, 1, 'Christmas Radio must have only its Apple download in initial HTML');
+  assert.match(section, /href="https:\/\/itunes\.apple\.com\/gb\/app\/christmas-radio-uk\/id1157967613"/);
+  assert.doesNotMatch(section, /amazon/i, 'Christmas Radio must not render an Amazon download before hydration');
   assert.match(section, /aria-label="Christmas Radio promotional images"/);
   const images = [...section.matchAll(/<img\b[^>]*>/g)].map(match => match[0]).filter(image => !image.includes('download-on-the-app-store.svg'));
   assert.equal(images.length, 4);
