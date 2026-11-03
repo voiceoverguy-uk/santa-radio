@@ -147,10 +147,11 @@
 }
 
 .hero-name-preview .hero-name-checker__eyebrow {
+  max-width: 100%;
   margin: 0 0 8px;
   color: var(--hero-preview-gold);
   font-family: 'Cinzel', serif;
-  font-size: 1rem;
+  font-size: 1.3rem;
   font-weight: 600;
   letter-spacing: .025em;
   line-height: 1.5;
@@ -596,7 +597,7 @@
 
   .hero-name-preview .hero-name-checker__eyebrow {
     margin-bottom: 10px;
-    font-size: 1.2rem;
+    font-size: 1.56rem;
   }
 
   .hero-name-preview .hero-name-checker h2 {
