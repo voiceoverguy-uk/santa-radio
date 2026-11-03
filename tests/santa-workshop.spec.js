@@ -9,7 +9,7 @@ import { parseWorkshopCatalogue } from '../server/santa-workshop-catalogue.js';
 import { createHash } from 'node:crypto';
 
 const path = '/santa-message-workshop';
-const answers = ['Demrie', '9 years old', 'Teamwork', 'Completing a jigsaw puzzle', 'Bûche de Noël', 'The Enchanted Forest — Fantasy place'];
+const answers = ['Demrie', '9 years old', 'Teamwork', 'Completing a jigsaw puzzle', 'Bûche de Noël', 'The Enchanted Forest'];
 const hostedRecords = [
   { id: 'demrie', name: 'Demrie' }, { id: 'zara', name: 'Zara' },
   { id: 'dixie', name: 'Dixie', variant: 'dixie.wav' },
@@ -604,7 +604,7 @@ test('destination guidance follows the active country or fantasy category', asyn
   await expect(page.locator('.smw-step-count')).toHaveText('Step 7 of 8');
   await expect(page.locator('.smw-stage-note')).toHaveText('Choose from the recorded countries and real places.');
   await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
-  await expect(page.locator('.smw-stage-note')).toHaveText('Fictional places are labelled Fantasy place; real space destinations are labelled Space destination.');
+  await expect(page.locator('.smw-stage-note')).toHaveText('Choose from the recorded fantasy places and space destinations.');
 });
 
 for (const viewport of [
@@ -1250,7 +1250,10 @@ test('sending a spelling suggestion is separate, minimal and retry-safe', async 
   await page.getByRole('button', { name: 'Use this spelling', exact: true }).click();
   expect(sent).toHaveLength(0);
   const suggestion = page.getByRole('region', { name: 'Optional: suggest this spelling' });
-  await expect(suggestion).toContainText('we save this written spelling and selected recording');
+  await expect(suggestion.locator('.smw-spelling-suggestion-disclosure')).toHaveText(
+    'Clicking send? We will save this written spelling and selected recording in Santa’s private request list to record and add to the available names list. No email address or other message choices are included. There is no guarantee a new recording will be made. Privacy details.'
+  );
+  await expect(suggestion.getByRole('link', { name: 'Privacy details' })).toHaveAttribute('href', '/privacy-policy');
   await suggestion.getByRole('button', { name: 'Send this spelling to Santa’s list' }).click();
   await expect(suggestion.getByRole('alert')).toContainText('could not confirm');
   await suggestion.getByRole('button', { name: 'Retry sending this spelling' }).click();
@@ -1304,9 +1307,9 @@ test('long-text categories use wider wheels with validation, scrolling and retai
   await browseToAge(page, '9 years old');
   await page.locator('.smw-button-next').click();
   await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
-  const selections = ['Playing a musical instrument', 'Planting and caring for a garden', 'Turrón', 'Camelot — Fantasy place'];
+  const selections = ['Playing a musical instrument', 'Planting and caring for a garden', 'Turrón', 'Camelot'];
   for (const [index, selection] of selections.entries()) {
-    if (selection.includes('Fantasy place')) await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
+    if (selection === 'Camelot') await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
     const wheel = page.getByRole('listbox');
     await expect(wheel.locator('[aria-selected=true]')).toHaveCount(0);
     await page.locator('.smw-button-next').click();

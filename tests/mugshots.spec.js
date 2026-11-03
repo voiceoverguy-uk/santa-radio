@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import { parseRows, reconcile, repair, plainText, socialUrl } from '../scripts/import-mugshots.js';
 import { buildCatalogue, normalizeName } from '../src/data/mugshot-catalogue.js';
 import { collectionMetadata, mugMetadata } from '../src/seo/catalogue.js';
+import { approachMugshotBoundary } from './helpers/mugshots-batches.js';
 
 const catalogue = JSON.parse(fs.readFileSync('src/data/mugshots.json', 'utf8'));
 const report = JSON.parse(fs.readFileSync('reports/mugshot-import.json', 'utf8'));
@@ -154,7 +155,7 @@ test('gallery pagination, search, hover, focus and motion preferences', async ({
   await page.goto('/mugshots/all');
   const cards = page.locator('.mugshot-card');
   await expect(cards).toHaveCount(100);
-  await page.getByRole('button', { name: /Load More/ }).click();
+  await approachMugshotBoundary(page);
   await expect(cards).toHaveCount(200);
   await page.getByRole('combobox', { name: 'Find a famous face' }).fill('Jeremy Kyle');
   await expect(cards).toHaveCount(1);

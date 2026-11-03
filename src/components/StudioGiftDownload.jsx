@@ -6,7 +6,7 @@ const labels = {
   picture: 'Download Santa picture (PNG)',
 };
 
-export default function StudioGiftDownload({ kind, ready, name, letter, picture }) {
+export default function StudioGiftDownload({ kind, ready, name, letter, picture, unavailableNotice }) {
   const id = useId();
   const [status, setStatus] = useState('idle');
   const busy = useRef(false);
@@ -59,7 +59,7 @@ export default function StudioGiftDownload({ kind, ready, name, letter, picture 
         : status === 'error' ? `Retry ${labels[kind].toLowerCase()}` : labels[kind]}
     </button>
     <p id={id} role={status === 'error' ? 'alert' : 'status'}>
-      {!ready ? 'Available when your MP3 is successfully ready.'
+      {!ready ? unavailableNotice || 'Available when your MP3 is successfully ready.'
         : status === 'preparing' ? 'Preparing locally in your browser…'
           : status === 'error' ? 'Could not prepare this gift. Retry above; your audio and other gifts are unaffected. No message allowance is used.'
             : status === 'requested' ? 'Download requested. Check your browser’s downloads; keep your own copy.'

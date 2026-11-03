@@ -34,6 +34,21 @@ async function expectNoDestinationSummary(page) {
   await expect(page.getByText('Selected destination', { exact: true })).toHaveCount(0);
 }
 
+test('fantasy destination names omit the redundant suffix in choices, preview and review', async ({ page }) => {
+  await openRegionalStage(page, workshopMixedDestinationFixture);
+  await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
+  const option = page.getByRole('option', { name: 'Wonderland', exact: true });
+  await expect(option).toBeVisible();
+  await option.click();
+  const picker = page.locator('.smw-destination-picker');
+  await expect(picker.locator('.smw-wording-selection')).toHaveText('Wonderland');
+  await expect(picker).not.toContainText('— Fantasy place');
+  await expect(option).toHaveAttribute('aria-selected', 'true');
+  await page.locator('.smw-button-next').click();
+  await expect(page.locator('.smw-summary')).toContainText('Wonderland');
+  await expect(page.locator('.smw-summary')).not.toContainText('— Fantasy place');
+});
+
 for (const width of [1365, 320, 390, 430]) {
   test(`destination uses existing preview without an extra box at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });

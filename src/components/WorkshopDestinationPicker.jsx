@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
 import WorkshopSearchableChoices from './WorkshopSearchableChoices.jsx';
-import { workshopRegionalFolders, workshopDestinationCategory } from '../lib/workshopDestinations.js';
+import { workshopRegionalFolders, workshopDestinationCategory, workshopDestinationLabel } from '../lib/workshopDestinations.js';
 import './WorkshopDestinationPicker.css';
 
 const regionalFiles = Object.fromEntries(Object.entries(workshopRegionalFolders)
@@ -32,7 +32,8 @@ export default function WorkshopDestinationPicker({
   const countryHeadingRef = useRef(null);
   const regionHeadingRef = useRef(null);
   const fantasy = category === 'fantasy';
-  const visibleOptions = options.filter(option => workshopDestinationCategory(option) === category);
+  const visibleOptions = options.filter(option => workshopDestinationCategory(option) === category)
+    .map(option => ({ ...option, label: workshopDestinationLabel(option.label) }));
   const country = visibleOptions.find(option => String(option.id) === String(value));
   const groupKey = !fantasy && regionalFiles[country?.file];
   const regionalGroup = groupKey ? regionalGroups[groupKey] : undefined;

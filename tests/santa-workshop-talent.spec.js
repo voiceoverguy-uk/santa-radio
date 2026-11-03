@@ -48,10 +48,10 @@ async function openTalent(page, catalogue = workshopCatalogueFixture) {
   await expect(page.locator('.smw-step-count')).toHaveText('Step 3 of 8');
 }
 async function finish(page) {
-  const expectedSelections = ['Teamwork', 'Completing a jigsaw puzzle', 'a bûche de Noël', 'The Enchanted Forest — Fantasy place'];
+  const expectedSelections = ['Teamwork', 'Completing a jigsaw puzzle', 'a bûche de Noël', 'The Enchanted Forest'];
   let index = 0;
-  for (const label of ['Teamwork', 'Completing a jigsaw puzzle', 'Bûche de Noël', 'The Enchanted Forest — Fantasy place']) {
-    if (label.includes('Fantasy place')) await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
+  for (const label of ['Teamwork', 'Completing a jigsaw puzzle', 'Bûche de Noël', 'The Enchanted Forest']) {
+    if (label === 'The Enchanted Forest') await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
     await page.getByRole('option', { name: label, exact: true }).click();
     await expect(quote(page).locator('.smw-wording-selection')).toHaveText(` ${expectedSelections[index++]}`);
     await next(page).click();

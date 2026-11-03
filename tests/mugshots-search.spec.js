@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
 import { buildCatalogue } from '../src/data/mugshot-catalogue.js';
 import { matchesMugshot, mugshotSuggestions } from '../src/data/mugshot-search.js';
+import { approachMugshotBoundary } from './helpers/mugshots-batches.js';
 
 const { catalogue } = buildCatalogue(JSON.parse(fs.readFileSync('src/data/mugshots.json', 'utf8')));
 
@@ -159,7 +160,7 @@ test('live queries, mouse selection, role selection, aliases, no matches and cle
   const singers = catalogue.filter(profile => /\bsingers?\b/i.test(profile.link));
   await expect(cards).toHaveCount(Math.min(100, singers.length));
   if (singers.length > 100) {
-    await page.getByRole('button', { name: /Load More/ }).click();
+    await approachMugshotBoundary(page);
     await expect(cards).toHaveCount(Math.min(200, singers.length));
   }
   await search.fill('  DAN WALLKER  ');

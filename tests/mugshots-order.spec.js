@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
 import { buildCatalogue } from '../src/data/mugshot-catalogue.js';
 import { matchesMugshot, mugshotSuggestions } from '../src/data/mugshot-search.js';
+import { approachMugshotBoundary } from './helpers/mugshots-batches.js';
 
 const { catalogue } = buildCatalogue(JSON.parse(fs.readFileSync('src/data/mugshots.json', 'utf8')));
 const approvedPaths = new Set(catalogue.filter(celeb => celeb.homepage === true).map(celeb => `/mugshots/${celeb.song}`));
@@ -25,7 +26,7 @@ test('random gallery loads stable batches and supports alphabetical sorting and 
   const first = await names();
   const paths = () => cards.evaluateAll(els => els.map(el => el.getAttribute('href')));
   expect((await paths()).every(path => approvedPaths.has(path))).toBe(true);
-  await page.getByRole('button', { name: /Load More/ }).click();
+  await approachMugshotBoundary(page);
   await expect(cards).toHaveCount(200);
   expect((await names()).slice(0, 100)).toEqual(first);
   expect(new Set(await cards.evaluateAll(els => els.map(el => el.href))).size).toBe(200);
@@ -42,16 +43,16 @@ test('random gallery loads stable batches and supports alphabetical sorting and 
   const search = page.getByRole('combobox', { name: 'Find a famous face' });
   await search.fill('Jeremy Kyle');
   await expect(cards).toHaveCount(1);
-  await expect(page.getByRole('button', { name: /Load More/ })).toHaveCount(0);
+  await expect(page.locator('.mugshots-batch-sentinel, .mugshots-batch-fallback')).toHaveCount(0);
   await random.click();
   await expect(cards).toHaveCount(1);
   await search.fill('');
   await expect(cards).toHaveCount(100);
   expect(await names()).toEqual(first);
-  const loadMore = page.getByRole('button', { name: /Load More/ });
+  const loadMore = page.locator('.mugshots-batch-sentinel');
   while (await loadMore.count()) {
     const count = await cards.count();
-    await loadMore.click();
+    await approachMugshotBoundary(page);
     await expect(cards).toHaveCount(Math.min(count + 100, catalogue.length));
   }
   const complete = await paths();
@@ -75,7 +76,7 @@ for (const width of [390, 1440]) {
     const search = page.getByRole('combobox', { name: 'Find a famous face', exact: true });
     const cards = page.locator('.mugshots-grid .mugshot-card');
     const paths = () => cards.evaluateAll(nodes => nodes.map(node => node.getAttribute('href')));
-    const loadMore = page.getByRole('button', { name: /Load More/ });
+    const loadMore = page.locator('.mugshots-batch-sentinel');
     const cataloguePaths = profiles => profiles.map(profile => `/mugshots/${profile.song}`);
     const alphabetically = profiles => [...profiles].sort((a, b) =>
       Number(b.homepage === true) - Number(a.homepage === true) ||
@@ -99,7 +100,7 @@ for (const width of [390, 1440]) {
         assertPriority(await paths(), matches);
         while (await loadMore.count()) {
           const previous = await paths();
-          await loadMore.click();
+          await approachMugshotBoundary(page);
           await expect(cards).toHaveCount(Math.min(previous.length + 100, matches.length));
           expect((await paths()).slice(0, previous.length)).toEqual(previous);
           assertPriority(await paths(), matches);

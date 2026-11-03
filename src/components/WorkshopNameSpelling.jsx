@@ -18,6 +18,8 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
   const [draft, setDraft] = useState('');
   const [error, setError] = useState('');
   const writtenName = getWorkshopWrittenName(recordedName, spelling);
+  // Preview the local draft without changing the saved spelling or audio.
+  const previewName = isEditing ? draft : writtenName;
   const downloadName = getWorkshopDownloadName(recordedName, spelling);
   const canSuggestSpelling = !!spelling
     && !validateWorkshopSpelling(spelling)
@@ -74,11 +76,23 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
         </div>
       </div>
 
+      <div className="smw-studio-preview" aria-label="Studio keepsake previews">
+        <StudioKeepsakePreview
+          name={completedGift && completedGift.record.id !== recordingId ? completedGift.writtenName : previewName}
+          details={completedGift?.details || giftDetails || {}}
+          variation={completedGift?.variation || letterVariation}
+          downloadReady={downloadReady && !isEditing}
+          downloadUnavailableNotice={isEditing ? 'Confirm the spelling above to enable this download.' : undefined}
+          downloadNotice={isEditing
+            ? 'Previews update as you type. Choose Use this spelling to confirm, or Cancel to keep the saved spelling.'
+            : downloadNotice}
+          giftRevision={completedGift?.revision}
+        >
       <dl className="smw-written-name-previews">
         <div className="smw-written-name-preview">
           <dt>Certificate, picture and letter name preview</dt>
           <dd>
-            <span className="smw-written-name-value">{writtenName}</span>
+            <span className="smw-written-name-value">{previewName}</span>
             <button
               ref={changeButtonRef}
               className="smw-change smw-written-name-edit"
@@ -96,17 +110,6 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
           </dd>
         </div>
       </dl>
-
-      <div className="smw-studio-preview" aria-label="Studio keepsake previews">
-        <StudioKeepsakePreview
-          name={completedGift && completedGift.record.id !== recordingId ? completedGift.writtenName : writtenName}
-          details={completedGift?.details || giftDetails || {}}
-          variation={completedGift?.variation || letterVariation}
-          downloadReady={downloadReady}
-          downloadNotice={downloadNotice}
-          giftRevision={completedGift?.revision}
-        />
-      </div>
 
       {isEditing && (
         <form id={`${fieldId}-editor`} className="smw-written-name-editor" onSubmit={commitSpelling} noValidate>
@@ -140,6 +143,8 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
           </div>
         </form>
       )}
+        </StudioKeepsakePreview>
+      </div>
 
       {canSuggestSpelling && (
         <WorkshopSpellingSuggestion

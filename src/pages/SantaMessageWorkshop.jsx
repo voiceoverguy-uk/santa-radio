@@ -17,7 +17,7 @@ import { createStudioLetterVariation } from '../lib/santaStudioLetter.js';
 import { getWorkshopWrittenName } from '../lib/workshopNameSpelling.js';
 import WorkshopSearchableChoices from '../components/WorkshopSearchableChoices.jsx';
 import WorkshopDestinationPicker from '../components/WorkshopDestinationPicker.jsx';
-import { selectedWorkshopRegion, workshopRegionalFolders, workshopDestinationCategory } from '../lib/workshopDestinations.js';
+import { selectedWorkshopRegion, workshopRegionalFolders, workshopDestinationCategory, workshopDestinationLabel } from '../lib/workshopDestinations.js';
 import './SantaMessageWorkshop.css';
 import useStudioGeneration from '../hooks/useStudioGeneration.js';
 
@@ -265,7 +265,7 @@ export default function SantaMessageWorkshop() {
   } = useWorkshopSounds();
   const selectedRegion = selectedWorkshopRegion(catalogueState.catalogue, choices.place, choices.region);
   const selectedCountry = catalogueState.catalogue?.categories.place.find(record => record.id === choices.place);
-  const destinationSummary = selectedRegion ? `${selectedRegion.label}, ${selectedCountry.label}` : selectedCountry?.label;
+  const destinationSummary = selectedRegion ? `${selectedRegion.label}, ${selectedCountry.label}` : workshopDestinationLabel(selectedCountry?.label);
   const destinationValid = !!selectedCountry
     && workshopDestinationCategory(selectedCountry) === destinationCategory
     && (!choices.region || !!selectedRegion);
@@ -685,7 +685,7 @@ export default function SantaMessageWorkshop() {
               />}
               {stage.note && <p className="smw-stage-note">{stage.key === 'place'
                 ? destinationCategory === 'fantasy'
-                  ? 'Fictional places are labelled Fantasy place; real space destinations are labelled Space destination.'
+                  ? 'Choose from the recorded fantasy places and space destinations.'
                   : 'Choose from the recorded countries and real places.'
                 : stage.note}</p>}
               </fieldset>

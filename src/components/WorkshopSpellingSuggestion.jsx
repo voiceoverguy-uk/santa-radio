@@ -143,10 +143,10 @@ export default function WorkshopSpellingSuggestion({ name, recordingId, recorded
         Optional: suggest this spelling
       </h3>
       <p className="smw-spelling-suggestion-disclosure" id={`${instanceId}-disclosure`}>
-        Only if you send it, we save this written spelling and selected recording in Santa’s private
-        request list, with dates and counts, for the team to review. No email address or other message
-        choices are included. There is no guarantee a new recording will be made.
-        Changing the spelling above never sends anything. <a href="/privacy-policy">Privacy details</a>.
+        Clicking send? We will save this written spelling and selected recording in Santa’s private
+        request list to record and add to the available names list. No email address or other message
+        choices are included. There is no guarantee a new recording will be made.{' '}
+        <a href="/privacy-policy">Privacy details</a>.
       </p>
       <p className="smw-spelling-suggestion-pair">
         <span>Written spelling</span> <strong>{name}</strong>

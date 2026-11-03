@@ -26,10 +26,10 @@ async function review(page) {
   await page.getByRole('combobox', { name: 'Search recorded names', exact: true }).fill('Dixie');
   await page.getByRole('option', { name: /Dixie/ }).first().click();
   await page.locator('.smw-button-next').click();
-  for (const answer of ['9 years old', 'Teamwork', 'Completing a jigsaw puzzle', 'Bûche de Noël', 'The Enchanted Forest — Fantasy place']) {
+  for (const answer of ['9 years old', 'Teamwork', 'Completing a jigsaw puzzle', 'Bûche de Noël', 'The Enchanted Forest']) {
     const skip = page.getByRole('button', { name: 'Skip this section', exact: true });
     if (await skip.isVisible()) await skip.click();
-    if (answer.includes('Fantasy place')) await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
+    if (answer === 'The Enchanted Forest') await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
     await page.getByRole('option', { name: answer, exact: true }).click();
     await page.locator('.smw-button-next').click();
   }
@@ -48,6 +48,57 @@ async function save(page, label, file) {
   const download = await pending;
   await download.saveAs(file);
   return download;
+}
+
+for (const width of [320, 1365]) {
+  test(`review name editor is inside gifts and previews each keystroke at ${width}px`, async ({ page }) => {
+    mkdirSync('generated-artifacts/studio-gifts', { recursive: true });
+    const fixture = await review(page);
+    await page.setViewportSize({ width, height: 900 });
+    const gifts = page.locator('.smw-studio-preview .studio-gifts');
+    const editorButton = gifts.getByRole('button', { name: 'Edit certificate name', exact: true });
+    const original = await letterText(page).locator('p').allTextContents();
+    const requests = [];
+    page.on('request', request => requests.push(request.url() + (request.postData() || '')));
+    const assertName = async name => {
+      await expect(gifts.locator('.studio-certificate__name')).toHaveText(name);
+      await expect(gifts.locator('.studio-gifts__preview-stack .studio-santa-picture__name text')).toHaveText(name);
+      await expect(letterText(page).locator('p')).toHaveText(original.map(text => text.replaceAll('Dixie', name)));
+      await expect(page.locator('.smw-written-name-record strong')).toHaveText('Dixie');
+    };
+    await editorButton.click();
+    const input = gifts.getByRole('textbox', { name: 'Name spelling', exact: true });
+    await input.fill('');
+    await assertName('');
+    for (const name of ['G', 'Gy', 'Gyp', 'Gyps', 'Gypsy']) {
+      await input.pressSequentially(name.slice(-1));
+      await assertName(name);
+      await expect(input).toBeFocused();
+    }
+    await gifts.screenshot({ path: `generated-artifacts/studio-gifts/live-spelling-${width}.png`, animations: 'disabled' });
+    await gifts.getByRole('button', { name: 'Cancel', exact: true }).click();
+    await assertName('Dixie');
+    await expect(editorButton).toBeFocused();
+    await editorButton.click();
+    await input.fill('');
+    await gifts.getByRole('button', { name: 'Use this spelling', exact: true }).click();
+    await expect(input).toHaveAttribute('aria-invalid', 'true');
+    await expect(input).toBeFocused();
+    await input.fill('Élodie O’Neill');
+    await assertName('Élodie O’Neill');
+    await gifts.getByRole('button', { name: 'Use this spelling', exact: true }).click();
+    await assertName('Élodie O’Neill');
+    await editorButton.click();
+    await input.fill('Another name');
+    await input.press('Escape');
+    await assertName('Élodie O’Neill');
+    await editorButton.click();
+    await gifts.getByRole('button', { name: 'Use recorded spelling', exact: true }).click();
+    await assertName('Dixie');
+    expect(fixture.posts).toHaveLength(0);
+    expect(requests.every(request => !request.includes('Gypsy') && !request.includes('Élodie'))).toBe(true);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+  });
 }
 
 test('gifts unlock together, export real local files, retry independently and track completed choices', async ({ page }) => {
@@ -78,6 +129,12 @@ test('gifts unlock together, export real local files, retry independently and tr
   await expect(letterText(page).locator('p')).toHaveText(reviewedParagraphs);
   const audioCount = fixture.posts.length;
   const audioUrl = await page.locator('.smw-message-result audio').getAttribute('src');
+  await page.getByRole('button', { name: 'Edit certificate name', exact: true }).click();
+  await page.getByRole('textbox', { name: 'Name spelling', exact: true }).fill('Unconfirmed');
+  for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
+  await page.getByRole('button', { name: 'Cancel', exact: true }).click();
+  for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+  await expect(letterText(page).locator('p')).toHaveText(reviewedParagraphs);
   const certificate = await save(page, 'Download certificate (PDF)', 'generated-artifacts/studio-gifts/certificate.pdf');
   expect(certificate.suggestedFilename()).toContain(name);
   const letter = await save(page, 'Download letter (PDF)', 'generated-artifacts/studio-gifts/letter.pdf');

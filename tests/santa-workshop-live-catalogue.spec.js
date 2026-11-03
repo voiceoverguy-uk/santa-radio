@@ -137,9 +137,9 @@ test(`live HTTPS categories ${initialWidth}: mobile flow and full-list desktop a
   await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
   await expect(page.getByRole('option')).toHaveText(catalogue.categories.place.filter(record => record.kind !== 'place').map(record => record.label));
   await expect(page.getByRole('option', { selected: true })).toHaveCount(0);
-  await page.getByRole('option', { name: 'Camelot — Fantasy place', exact: true }).click();
+  await page.getByRole('option', { name: 'Camelot', exact: true }).click();
   await page.getByRole('button', { name: 'Return to review' }).click();
-  await expect(page.locator('.smw-summary')).toContainText('Camelot — Fantasy place');
+  await expect(page.locator('.smw-summary')).toContainText('Camelot');
   for (const label of selected.slice(0, -1)) await expect(page.locator('.smw-summary')).toContainText(label);
   await expect(page.locator('.smw-audio-disclaimer')).toHaveCount(0);
   await expect(page.locator('.smw-written-name-preview-note')).toHaveCount(0);

@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
 import { buildCatalogue } from '../src/data/mugshot-catalogue.js';
+import { approachMugshotBoundary } from './helpers/mugshots-batches.js';
 
 const { catalogue } = buildCatalogue(JSON.parse(fs.readFileSync('src/data/mugshots.json', 'utf8')));
 
@@ -97,7 +98,7 @@ for (const width of [320, 390, 768, 1440]) {
     await search.fill('no-such-famous-face-1099');
     await expect(cards).toHaveCount(0);
     await expect(main.locator('.no-results')).toContainText('No celebrities found');
-    await expect(main.getByRole('button', { name: /Load More/ })).toHaveCount(0);
+    await expect(main.locator('.mugshots-batch-sentinel, .mugshots-batch-fallback')).toHaveCount(0);
     await search.fill('');
     await expect(cards).toHaveCount(100);
     await shuffle.click();
@@ -115,7 +116,7 @@ for (const width of [320, 390, 768, 1440]) {
       await page.addStyleTag({ content: 'html { font-size: 100% !important; }' });
     }
     const before = await cards.evaluateAll(nodes => nodes.map(node => node.getAttribute('href')));
-    await main.getByRole('button', { name: /Load More/ }).click();
+    await approachMugshotBoundary(page);
     await expect(cards).toHaveCount(200);
     const after = await cards.evaluateAll(nodes => nodes.map(node => node.getAttribute('href')));
     expect(after.slice(0, 100)).toEqual(before);

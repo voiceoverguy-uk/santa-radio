@@ -41,7 +41,7 @@ export default function WorkshopMessageAudio({
   const writtenName = getWorkshopWrittenName(record?.name || '', spelling);
   const busy = phase === 'preparing' || phase === 'receiving';
   const status = generation.state;
-  const disabled = !complete || busy || !status || !!generation.error || status.pending
+  const disabled = !complete || busy || !status || !!generation.error || generation.checking || status.pending
     || status.remaining === 0 || ((url || status.successes > 0) && !correction);
   // Share readiness only after the entire MP3 has been received, never merely
   // on a successful HTTP header or a promotional preview.
@@ -207,7 +207,9 @@ export default function WorkshopMessageAudio({
         onCorrection();
       }}>Edit and regenerate once</button>}
     <p className="smw-allowance" role="status" aria-live="polite">
-      {!status ? 'Checking your message allowance…' : status.remaining === 0
+      {generation.checking ? 'Checking your message allowance…' : generation.error
+        ? 'Message creation is paused until your allowance can be confirmed.'
+        : !status ? 'Your message allowance has not been confirmed.' : status.remaining === 0
         ? 'Both messages have been created. No further generation is available. Repeat downloads are still available.'
         : status.pending ? 'A message is being prepared for this access. Your allowance will update when it finishes.'
           : status.successes === 1
@@ -215,7 +217,8 @@ export default function WorkshopMessageAudio({
             : 'You can create one message, then make one correction. The recorded name and full destination lock after the first successful message.'}
     </p>
     {generation.error && <p role="alert">{generation.error} <button type="button" className="smw-change"
-      onClick={generation.refresh}>Check allowance again</button></p>}
+      onClick={generation.accessExpired ? () => window.location.reload() : generation.refresh}>
+      {generation.accessExpired ? 'Reload Studio' : 'Check allowance again'}</button></p>}
     {busy && <div className="smw-message-result" role="status" aria-live="polite">
       <p>{phase === 'receiving' ? 'Receiving your finished MP3…' : preparationMessage}</p>
       <progress aria-label="Preparing your message" />

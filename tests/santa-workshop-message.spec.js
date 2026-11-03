@@ -6,7 +6,7 @@ import { workshopCatalogueFixture } from './fixtures/workshop-catalogue.js';
 import { confirmMessage, mockStudioGeneration } from './helpers/studio-generation.js';
 
 const path = '/santa-message-workshop';
-const answers = ['9 years old', 'Teamwork', 'Completing a jigsaw puzzle', 'Bûche de Noël', 'The Enchanted Forest — Fantasy place'];
+const answers = ['9 years old', 'Teamwork', 'Completing a jigsaw puzzle', 'Bûche de Noël', 'The Enchanted Forest'];
 const preparationMessages = [
   'Santa is recording. Give him a moment — the elves keep distracting him.',
   'Santa is busy recording, although the smell of cookies isn’t helping. Hang on a moment…',
@@ -20,10 +20,17 @@ const preparationMessages = [
   'Santa is busy recording. We’ve hidden the mince pies until he’s finished.',
 ];
 
-async function openReview(page, { live = false } = {}) {
+test('authorised Studio can check its actual allowance without generating audio', async ({ page }) => {
+  await unlockWorkshop(page);
+  const response = await page.request.get('/api/santa-studio-message');
+  expect(response.status(), await response.text()).toBe(200);
+  expect(await response.json()).toMatchObject({ successes: 0, remaining: 2, pending: false });
+});
+
+async function openReview(page, { live = false, allowance = null } = {}) {
   const generation = live ? null : await mockStudioGeneration(page);
   if (!live) await page.route('**/api/santa-studio-message', route => route.request().method() === 'GET'
-    ? route.fulfill({ json: generation.state }) : route.fallback());
+    ? allowance ? allowance(route, generation.state) : route.fulfill({ json: generation.state }) : route.fallback());
   await unlockWorkshop(page);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.route('**/api/radio-metadata*', route => route.fulfill({ json: { available: false, current: null, upcoming: [] } }));
@@ -57,7 +64,7 @@ async function openReview(page, { live = false } = {}) {
   await nameOption.click();
   await page.locator('.smw-button-next').click();
   for (const answer of answers) {
-    if (answer.includes('Fantasy place')) await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
+    if (answer === 'The Enchanted Forest') await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
     if (await page.getByRole('button', { name: 'Skip this section', exact: true }).isVisible()) {
       await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
     }
@@ -71,6 +78,55 @@ async function openReview(page, { live = false } = {}) {
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeVisible();
   return generation;
 }
+
+test('failed allowance check stops checking and retry restores Create message', async ({ page }) => {
+  let healthy = false;
+  const fixture = await openReview(page, { allowance: (route, state) => healthy
+    ? route.fulfill({ json: state })
+    : route.fulfill({ status: 503, json: { error: 'Service unavailable.' } }) });
+  const allowance = page.locator('.smw-allowance');
+  await expect(allowance).toHaveText('Message creation is paused until your allowance can be confirmed.');
+  await expect(page.getByRole('alert')).toContainText('temporarily unavailable');
+  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
+  healthy = true;
+  await page.getByRole('button', { name: 'Check allowance again', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
+  await expect(page.getByRole('alert')).toHaveCount(0);
+  expect(fixture.posts).toHaveLength(0);
+});
+
+test('temporary allowance failure recovers automatically without spending a message', async ({ page }) => {
+  let checks = 0;
+  const fixture = await openReview(page, { allowance: (route, state) => ++checks === 1
+    ? route.fulfill({ status: 503, json: { error: 'Server restarting.' } })
+    : route.fulfill({ json: state }) });
+  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled({ timeout: 10000 });
+  expect(checks).toBeGreaterThan(1);
+  expect(fixture.posts).toHaveLength(0);
+});
+
+test('expired access explains how to reopen Studio instead of endlessly checking', async ({ page }) => {
+  await openReview(page, { allowance: route => route.fulfill({ status: 403, json: { error: 'Access expired.' } }) });
+  await expect(page.locator('.smw-allowance')).not.toContainText('Checking');
+  await expect(page.getByRole('alert')).toContainText('enter your access code again');
+  await expect(page.getByRole('button', { name: 'Reload Studio', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Check allowance again', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
+});
+
+test('a stalled allowance request times out rather than leaving Checking indefinitely', async ({ page }) => {
+  await page.addInitScript(() => {
+    const original = window.fetch.bind(window);
+    window.fetch = (url, options) => url === '/api/santa-studio-message' && !options?.method
+      ? new Promise((resolve, reject) => options.signal.addEventListener('abort',
+        () => reject(new DOMException('Aborted', 'AbortError')), { once: true }))
+      : original(url, options);
+  });
+  await openReview(page);
+  await expect(page.getByRole('alert')).toContainText('could not connect', { timeout: 15000 });
+  await expect(page.locator('.smw-allowance')).not.toContainText('Checking');
+  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
+});
 
 test('approved recording notices are random per attempt, stable through rerenders, and wrap on phones', async ({ page }) => {
   test.setTimeout(90000);
@@ -284,7 +340,7 @@ test('retryable preparation errors and cancellation spend no successful allowanc
     attempt++;
     if (attempt === 1) return route.fulfill({ status: 503, json: { error: 'A recording could not be loaded. Please try again.' } });
     await new Promise(resolve => { release = resolve; });
-    await route.fulfill({ contentType: 'audio/mpeg', body: readFileSync('generated-artifacts/studio-test-message.mp3') }).catch(() => {});
+    await route.fulfill({ contentType: 'audio/mpeg', body: readFileSync('server/santa-audio/sleighbells.mp3') }).catch(() => {});
   });
   await openReview(page);
   await confirmMessage(page);

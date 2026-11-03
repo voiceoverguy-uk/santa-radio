@@ -14,6 +14,11 @@ export function workshopDestinationCategory(record) {
   return record?.kind === 'fantasy' || record?.kind === 'space' ? 'fantasy' : 'countries';
 }
 
+// Presentation only: retain catalogue IDs, classifications and recording paths.
+export function workshopDestinationLabel(label = '') {
+  return label.replace(/ — Fantasy place$/i, '');
+}
+
 export function selectedWorkshopRegion(catalogue, countryId, regionId) {
   if (!regionId) return null;
   const group = Object.values(catalogue?.regionalGroups || {}).find(group => group.parentId === countryId);

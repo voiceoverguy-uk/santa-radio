@@ -262,19 +262,36 @@
   line-height: 1.45;
   overflow-wrap: anywhere;
 }
-.mugshots-collection-page .mugshots-load-more {
-  padding: 30px 0 0;
+.mugshots-collection-page .mugshots-batch-sentinel {
+  height: 1px;
 }
-.mugshots-collection-page .load-more-btn {
-  min-height: 46px;
-  padding: 12px 28px;
-  background: #84242a;
-  color: #fff1d1;
-  font-family: 'Cinzel', Georgia, serif;
+.mugshots-collection-page .mugshots-batch-fallback {
+  display: block;
+  margin: 20px auto 0;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 0;
+  background: transparent;
+  color: var(--collection-cream);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+  scroll-margin-block: 160px;
 }
-.mugshots-collection-page .load-more-btn:hover {
-  background: #9a3034;
-  transform: translateY(-2px);
+.mugshots-collection-page .mugshots-batch-fallback-auto:not(:focus) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.mugshots-collection-page .mugshots-batch-fallback:focus-visible {
+  outline: 2px solid var(--collection-gold);
+  outline-offset: 3px;
 }
 .mugshots-collection-page .no-results {
   color: var(--collection-muted);
@@ -438,9 +455,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .mugshots-collection-page .mugshots-sort button,
-  .mugshots-collection-page .load-more-btn {
+  .mugshots-collection-page .mugshots-sort button {
     transition: none;
   }
-  .mugshots-collection-page .load-more-btn:hover { transform: none; }
 }

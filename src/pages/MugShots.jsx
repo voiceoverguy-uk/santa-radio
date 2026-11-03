@@ -32,6 +32,9 @@ export default function MugShots() {
     }
   }, [activeOption]);
   const [page, setPage] = useState(1);
+  const sentinelRef = useRef(null);
+  const [automaticLoading, setAutomaticLoading] = useState(true);
+  const [fallbackFocused, setFallbackFocused] = useState(false);
   const [order, setOrder] = useState('random');
   const [randomOrder] = useState(() => {
     const shuffled = [...mugshotsData];
@@ -56,6 +59,32 @@ export default function MugShots() {
 
   const visible = filtered.slice(0, page * ITEMS_PER_PAGE);
   const hasMore = page * ITEMS_PER_PAGE < filtered.length;
+
+  const revealNextBatch = () => {
+    if (hasMore) setPage(current => current === page ? current + 1 : current);
+  };
+
+  useEffect(() => {
+    if (typeof window.IntersectionObserver !== 'function') {
+      setAutomaticLoading(false);
+      return;
+    }
+    if (!hasMore) return;
+    let active = true;
+    let advanced = false;
+    const observer = new IntersectionObserver(entries => {
+      if (!active || advanced || !entries.some(entry => entry.isIntersecting)) return;
+      advanced = true;
+      observer.disconnect();
+      // A queued notification must not advance the same batch twice.
+      setPage(current => current === page ? current + 1 : current);
+    }, { rootMargin: '0px 0px 500px 0px' });
+    observer.observe(sentinelRef.current);
+    return () => {
+      active = false;
+      observer.disconnect();
+    };
+  }, [filtered, page, hasMore]);
 
   const handleSearch = (e) => {
     setSearch(e.target.value);
@@ -177,9 +206,10 @@ export default function MugShots() {
       </div>
 
       <div className="mugshots-grid-section starry-bg">
-        <div className="container mugshots-grid">
+        <div id="mugshots-grid" className="container mugshots-grid">
           {visible.map((celeb, i) => (
-            <Link key={celeb.song || celeb.artist} to={`/mugshots/${celeb.song}`} className="mugshot-card">
+            <Link key={celeb.song || celeb.artist} to={`/mugshots/${celeb.song}`} className="mugshot-card"
+              onFocus={i === visible.length - 1 ? revealNextBatch : undefined}>
               <div className="mugshot-photo-frame">
               <img
                 src={celeb.image}
@@ -211,15 +241,18 @@ export default function MugShots() {
             <p className="no-results">No celebrities found for &ldquo;{search}&rdquo;</p>
           )}
         </div>
-        {hasMore && (
-          <div className="mugshots-load-more">
-            <button
-              className="load-more-btn"
-              onClick={() => setPage(p => p + 1)}
-            >
-              Load More ({filtered.length - visible.length} remaining)
-            </button>
-          </div>
+        <p className="mugshots-search-sr" aria-live="polite" aria-atomic="true">
+          Showing {visible.length} of {filtered.length} mugshots.{!hasMore && filtered.length > 0 ? ' All matching mugshots are shown.' : ''}
+        </p>
+        {hasMore && <div ref={sentinelRef} className="mugshots-batch-sentinel" aria-hidden="true" />}
+        {(hasMore || fallbackFocused) && (
+          <button type="button"
+            className={`mugshots-batch-fallback${automaticLoading ? ' mugshots-batch-fallback-auto' : ''}`}
+            aria-controls="mugshots-grid" aria-disabled={!hasMore}
+            onFocus={() => setFallbackFocused(true)} onBlur={() => setFallbackFocused(false)}
+            onClick={revealNextBatch}>
+            {hasMore ? `Show next mugshots (${filtered.length - visible.length} remaining)` : 'All matching mugshots are shown'}
+          </button>
         )}
       </div>
     </main>

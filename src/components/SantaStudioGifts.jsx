@@ -91,7 +91,7 @@ function SantaPicture({ name, elapsed, picture, previousPicture = null, onDissol
 // reading timer and random selection together, before rendering the new name.
 function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio, reducedMotion, onNext,
   staticPreview = false, suppliedLetter = null, reviewHeading = null, downloadReady = false,
-  downloadNotice = null, giftRevision = '' }) {
+  downloadNotice = null, giftRevision = '', downloadUnavailableNotice, children }) {
   // Deterministic SSR; randomise only once after mounting in the browser.
   const [letter, setLetter] = useState(() => suppliedLetter || createStudioLetter(name, () => 0.5));
   const [elapsed, setElapsed] = useState(0);
@@ -160,6 +160,7 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
     onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false); }}>
     <h4>{reviewHeading || `All 3 gifts included for ${name} with the paid version`}</h4>
     {staticPreview && <p>{downloadNotice || 'Create your MP3 to unlock these three personalised gift downloads.'}</p>}
+    {children}
     <div className="studio-gifts__preview-stack" role="group" aria-label="Three gift previews"
       onContextMenu={event => event.preventDefault()} onDragStart={event => event.preventDefault()}>
       <div className="studio-gifts__gallery">
@@ -170,7 +171,7 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
           <span className="studio-gifts__thumbnail-label">Enlarge certificate</span>
         </button>
         {staticPreview && <StudioGiftDownload key={`${giftRevision}-${name}-${downloadReady}-certificate`}
-          kind="certificate" ready={downloadReady} name={name} />}
+          kind="certificate" ready={downloadReady} name={name} unavailableNotice={downloadUnavailableNotice} />}
         </GiftCard>
         <GiftCard enabled={staticPreview} kind="letter">
         <button className="studio-gifts__thumbnail studio-gifts__thumbnail--letter" type="button"
@@ -179,7 +180,7 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
           <span className="studio-gifts__thumbnail-label">Enlarge letter</span>
         </button>
         {staticPreview && <StudioGiftDownload key={`${giftRevision}-${name}-${downloadReady}-letter`}
-          kind="letter" ready={downloadReady} name={name} letter={displayLetter} />}
+          kind="letter" ready={downloadReady} name={name} letter={displayLetter} unavailableNotice={downloadUnavailableNotice} />}
         </GiftCard>
       </div>
       <GiftCard enabled={staticPreview} kind="picture">
@@ -190,7 +191,7 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
         <span className="studio-gifts__thumbnail-label">Enlarge Santa picture</span>
       </button>
       {staticPreview && <StudioGiftDownload key={`${giftRevision}-${name}-${downloadReady}-picture`}
-        kind="picture" ready={downloadReady} name={name} picture={picture} />}
+        kind="picture" ready={downloadReady} name={name} picture={picture} unavailableNotice={downloadUnavailableNotice} />}
       </GiftCard>
     </div>
     <dialog ref={dialogRef} className={`studio-letter-dialog${view === 'letter' ? ' studio-letter-dialog--letter' : ''}`}
@@ -263,7 +264,7 @@ export function StudioGiftPreview({ example }) {
 }
 
 export function StudioKeepsakePreview({ name, details = {}, variation, downloadReady = false,
-  downloadNotice, giftRevision }) {
+  downloadNotice, giftRevision, downloadUnavailableNotice, children }) {
   const [localVariation] = useState(createStudioLetterVariation);
   const letter = createStudioLetter(name, () => 0.5, details, variation || localVariation);
   return <GiftExample
@@ -278,8 +279,10 @@ export function StudioKeepsakePreview({ name, details = {}, variation, downloadR
     suppliedLetter={letter}
     downloadReady={downloadReady}
     downloadNotice={downloadNotice}
+    downloadUnavailableNotice={downloadUnavailableNotice}
     giftRevision={giftRevision}
     reviewHeading="Your personalised Studio gifts"
+    children={children}
   />;
 }
 

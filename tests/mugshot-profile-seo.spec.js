@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import rawProfiles from '../src/data/mugshots.json' with { type: 'json' };
 import biographies from '../src/data/mugshot-biographies.json' with { type: 'json' };
 import { buildCatalogue } from '../src/data/mugshot-catalogue.js';
+import { approachMugshotBoundary } from './helpers/mugshots-batches.js';
 
 const slugs = [
   'alex-james-musician',
@@ -45,7 +46,7 @@ test('A-list profiles precede other Mugshots in the app catalogue and gallery', 
   await page.goto('/mugshots/all');
   const cards = page.locator('.mugshot-card');
   await expect(cards).toHaveCount(100);
-  await page.getByRole('button', { name: /Load More/ }).click();
+  await approachMugshotBoundary(page);
   await expect(cards).toHaveCount(200);
   const randomPaths = await cards.evaluateAll(elements => elements.map(element => element.getAttribute('href')));
   const byPath = new Map(catalogue.map(profile => [`/mugshots/${profile.song}`, profile]));
@@ -54,7 +55,8 @@ test('A-list profiles precede other Mugshots in the app catalogue and gallery', 
   for (const slug of featuredSlugs) expect(randomPaths.slice(0, featuredCount)).toContain(`/mugshots/${slug}`);
 
   await page.getByRole('button', { name: 'A–Z' }).click();
-  await page.getByRole('button', { name: /Load More/ }).click();
+  await approachMugshotBoundary(page);
+  await expect(cards).toHaveCount(200);
   const alphabeticalPaths = await cards.evaluateAll(elements => elements.map(element => element.getAttribute('href')));
   expect(alphabeticalPaths).toEqual(catalogue.slice(0, 200).map(profile => `/mugshots/${profile.song}`));
 });
