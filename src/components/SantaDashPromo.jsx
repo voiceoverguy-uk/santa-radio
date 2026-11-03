@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import santaDashArtwork from '../assets/home/santa-dash-back-to-the-grotto.webp';
 import santaDashWobblyBobArtwork from '../assets/home/santa-dash-wobbly-bob.webp';
+import HomepageSectionHeading from './HomepageSectionHeading.jsx';
 import './SantaDashPromo.css';
 
 const GAMEPLAY_URL = '/media/santa-dash-gameplay-v1.mp4';
@@ -210,10 +211,16 @@ export default function SantaDashPromo() {
       aria-labelledby="santa-dash-promo-title"
     >
       <div className="santa-dash-promo__inner">
-        <p className="santa-dash-promo__eyebrow">A festive rooftop adventure</p>
-        <h2 id="santa-dash-promo-title" className="santa-dash-promo__title">
-          Santa Dash — Back to the Grotto
-        </h2>
+        <HomepageSectionHeading
+          eyebrow="A festive rooftop adventure"
+          title="Santa Dash — Back to the Grotto"
+          subtitle="Race across snowy rooftops with Santa."
+          titleId="santa-dash-promo-title"
+          className="santa-dash-promo__heading"
+          eyebrowClassName="santa-dash-promo__eyebrow"
+          titleClassName="santa-dash-promo__title"
+          subtitleClassName="santa-dash-promo__subtitle"
+        />
         <div className="santa-dash-promo__visual">
           <a
             className="santa-dash-promo__artwork-link"

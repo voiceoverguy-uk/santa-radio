@@ -1,0 +1,83 @@
+.home-page .homepage-section-heading {
+  width: 100%;
+  max-width: 820px;
+  margin: 0 auto 27px;
+  text-align: center;
+}
+
+.home-page .mugshots-intro .homepage-section-heading { margin-bottom: 9px; }
+
+.home-page .homepage-section-heading__eyebrow {
+  margin: 0 0 7px;
+  color: #e7cf89;
+  font: 400 .66rem/1.65 'Cinzel', Georgia, serif;
+  letter-spacing: .25em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.home-page .homepage-section-heading__title-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.home-page .homepage-section-heading__divider {
+  position: relative;
+  display: grid;
+  width: 35px;
+  height: 24px;
+  flex: 0 0 24px;
+  place-items: center;
+  color: #f3d783;
+}
+
+.home-page .homepage-section-heading__divider::before,
+.home-page .homepage-section-heading__divider::after {
+  position: absolute;
+  top: 12px;
+  width: clamp(42px, 10vw, 106px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #d6b55b);
+  content: '';
+}
+
+.home-page .homepage-section-heading__divider::before { right: calc(50% + 25px); }
+.home-page .homepage-section-heading__divider::after { left: calc(50% + 25px); transform: scaleX(-1); }
+
+.home-page .homepage-section-heading__title {
+  max-width: 100%;
+  margin: 0;
+  color: #f4d991;
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: clamp(2rem, 5.4vw, 3.45rem);
+  font-weight: 400;
+  letter-spacing: .025em;
+  line-height: 1.2;
+  text-shadow: 0 2px 22px #d4a94622;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+.home-page .homepage-section-heading__subtitle {
+  margin: 7px 0 0;
+  color: #f0ead9;
+  font-family: inherit;
+  font-size: .94rem;
+  font-weight: 400;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 520px) {
+  .home-page .homepage-section-heading {
+    margin-top: 0;
+    margin-bottom: 22px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-page .homepage-section-heading__divider::before,
+  .home-page .homepage-section-heading__divider::after { transition: none; }
+}

@@ -48,12 +48,25 @@ for (const media of [null, false, true]) {
       JSON.stringify({ version: 2, analytics: false, marketing: false, media, savedAt: Date.now() })), media);
     await page.goto(origin, { waitUntil: 'domcontentloaded' });
     await expect(page.locator('.tv-screen')).toHaveAttribute('aria-busy', 'false');
+    await expect(page.locator('.youtube-section').getByRole('heading', {
+      level: 2, name: 'Watch Santa Radio Live', exact: true,
+    })).toBeVisible();
+    await expect(page.locator('.youtube-section .homepage-section-heading__subtitle')).toHaveText('Christmas Music 24/7');
     await expect(page.locator('.youtube-section iframe')).toHaveCount(media === false ? 0 : 1);
     if (media !== false) await expect.poll(() => requests.length).toBe(1);
     else expect(requests).toHaveLength(0);
     await expect(page.locator('#santaradio-google-analytics, #santaradio-meta-pixel')).toHaveCount(0);
     if (media === null) {
       expect(await page.evaluate(() => localStorage.getItem('santaradio-cookie-consent-v2'))).toBeNull();
+    }
+    if (media !== false) {
+      const pause = page.getByRole('button', { name: 'Pause video', exact: true });
+      await pause.click();
+      await expect(page.locator('.youtube-section iframe')).toHaveCount(0);
+      await expect(page.locator('.youtube-section .video-preview')).toHaveText('Live video paused');
+      await page.getByRole('button', { name: 'Resume muted video', exact: true }).click();
+      await expect(page.locator('.youtube-section iframe')).toHaveCount(1);
+      await expect(page.locator('.youtube-section iframe')).toHaveAttribute('src', /[?&]mute=1(?:&|$)/);
     }
     expect(errors).toEqual([]);
   });

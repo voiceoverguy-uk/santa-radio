@@ -3,6 +3,7 @@ import Portrait from './Portrait.jsx';
 import './MugshotsPreview.css';
 import mugshotsData from '../data/mugshots.ts';
 import useMugshotRotation from './useMugshotRotation.js';
+import HomepageSectionHeading from './HomepageSectionHeading.jsx';
 
 function PineCorner({ className }) {
   return (
@@ -48,9 +49,15 @@ export default function MugshotsPreview() {
       <PineCorner className="mugshots-pine-right" />
       <div className="container mugshots-preview-inner">
         <header className="mugshots-intro">
-          <p className="mugshots-eyebrow">THE SANTA RADIO HALL OF FAME</p>
-          <h2 id="homepage-mugshots-title" className="section-title mug-title">Celebrity Mugshots</h2>
-          <p className="mugshots-subtitle">Famous faces. One festive mug.</p>
+          <HomepageSectionHeading
+            eyebrow="THE SANTA RADIO HALL OF FAME"
+            title="Celebrity Mugshots"
+            subtitle="Famous faces. One festive mug."
+            titleId="homepage-mugshots-title"
+            eyebrowClassName="mugshots-eyebrow"
+            titleClassName="section-title mug-title"
+            subtitleClassName="mugshots-subtitle"
+          />
           <p className="mugshots-description">
             Our autograph-hunting elf has been busy with our Santa Radio mug. No A.I.
           </p>

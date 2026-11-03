@@ -15,14 +15,6 @@
   background: linear-gradient(180deg, #071029 0%, #0d1b3e 100%);
 }
 
-.youtube-title {
-  color: white;
-  font-family: 'Cinzel', serif;
-  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
-  max-width: 600px;
-  margin: 0 auto 40px;
-}
-
 .tv-frame {
   max-width: 640px;
   margin: 0 auto;

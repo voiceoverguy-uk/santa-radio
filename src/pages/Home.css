@@ -127,20 +127,6 @@
   margin: 0 auto;
   text-align: center;
 }
-.santa-dash-promo__eyebrow {
-  margin-bottom: 8px;
-  color: var(--gold-light);
-  font-family: 'Cinzel',serif;
-  font-size: .62rem;
-  letter-spacing: .2em;
-  text-transform: uppercase;
-}
-.santa-dash-promo__title {
-  margin: 0 0 22px;
-  color: var(--cream);
-  font-size: clamp(1.35rem, 3vw, 2rem);
-  line-height: 1.3;
-}
 .santa-dash-promo__artwork-link {
   display: block;
   width: 100%;
@@ -235,8 +221,6 @@ html[data-effects="off"] .hero-snow,html[data-effects="off"] .hero-aurora { disp
   .partnership-strip__supporting { font-size: .72rem; line-height: 1.6; overflow-wrap: anywhere; }
   .partnership-strip__button { align-self: stretch; width: 100%; min-width: 0; min-height: 56px; padding-inline: 16px; }
   .santa-dash-promo { padding: 34px 16px 38px; }
-  .santa-dash-promo__title { margin-bottom: 16px; }
-  .santa-dash-promo__eyebrow { font-size: .53rem; }
   .santa-dash-promo__download { max-width: 100%; padding-inline: 16px; font-size: .69rem; }
   .hero { display: block; min-height: 94dvh; padding: 128px 26px 140px; }
   .hero-content { display: block; padding: 0; }

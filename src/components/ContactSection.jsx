@@ -1,6 +1,7 @@
 import './ContactSection.css';
 import SantaNote from './SantaNote.jsx';
 import { Link } from 'react-router-dom';
+import HomepageSectionHeading from './HomepageSectionHeading.jsx';
 
 export default function ContactSection() {
   return (
@@ -9,11 +10,16 @@ export default function ContactSection() {
         <div className="contact-letter" aria-hidden="true" />
         <div className="contact-panel">
           <div className="contact-copy">
-            <p className="contact-eyebrow">THE NORTH POLE POST ROOM</p>
-            <h2 id="contact-title" className="contact-title">We’d love to hear from you</h2>
-            <p className="contact-intro">
-              Got a question, a festive idea or something to share? Get in touch with the Santa Radio team.
-            </p>
+            <HomepageSectionHeading
+              eyebrow="THE NORTH POLE POST ROOM"
+              title="We’d love to hear from you"
+              subtitle="Got a question, a festive idea or something to share? Get in touch with the Santa Radio team."
+              titleId="contact-title"
+              className="contact-heading"
+              eyebrowClassName="contact-eyebrow"
+              titleClassName="contact-title"
+              subtitleClassName="contact-intro"
+            />
             <p className="contact-sub">Press, partnerships, feedback and suggestions welcome.</p>
             <Link to="/submit-a-song" className="contact-btn">
               <span>Get in touch</span><span aria-hidden="true" className="contact-arrow">→</span>

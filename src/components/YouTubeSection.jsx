@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useCookieConsent } from '../privacy/CookieConsentProvider.jsx';
 import ExternalMediaConsent from './ExternalMediaConsent.jsx';
+import HomepageSectionHeading from './HomepageSectionHeading.jsx';
 import './YouTubeSection.css';
 
 export default function YouTubeSection() {
@@ -8,8 +9,13 @@ export default function YouTubeSection() {
   const { ready, homepageTVAllowed } = useCookieConsent();
   return <section className="youtube-section section-dark">
     <div className="container">
-      <p className="eyebrow" style={{ textAlign: 'center' }}>A window to the North Pole</p>
-      <h2 className="section-title youtube-title">Watch Santa Radio Live<br />Christmas Music 24/7</h2>
+      <HomepageSectionHeading
+        eyebrow="A window to the North Pole"
+        title="Watch Santa Radio Live"
+        subtitle="Christmas Music 24/7"
+        titleClassName="section-title youtube-title"
+        className="youtube-section-heading"
+      />
       {ready && homepageTVAllowed && <button className="video-motion-toggle" onClick={() => setPaused(value => !value)}>
         {paused ? 'Resume muted video' : 'Pause video'}
       </button>}
