@@ -83,20 +83,23 @@ test('fantasy destination names omit the redundant suffix in choices, preview an
   await expect(page.locator('.smw-summary')).not.toContainText('— Fantasy place');
 });
 
-test('The Moon omits the space suffix in the wheel, wording and review', async ({ page }) => {
+for (const destination of ['The Moon', 'Mars']) {
+test(`${destination} omits the space suffix in the wheel, wording and review`, async ({ page }) => {
   const inventory = structuredClone(workshopMixedDestinationFixture);
-  const moon = inventory.categories.place.find(record => record.kind === 'space' && /moon/i.test(record.label));
-  moon.label = 'The Moon — Space destination';
+  const spaceRecord = inventory.categories.place.find(record => record.kind === 'space'
+    && record.label.toLowerCase().startsWith(destination.toLowerCase()));
+  spaceRecord.label = `${destination} — Space destination`;
   await openRegionalStage(page, inventory);
   await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
-  await page.getByRole('option', { name: 'The Moon', exact: true }).click();
+  await page.getByRole('option', { name: destination, exact: true }).click();
   const picker = page.locator('.smw-destination-picker');
-  await expect(picker.locator('.smw-wording-selection')).toHaveText('The Moon');
+  await expect(picker.locator('.smw-wording-selection')).toHaveText(destination);
   await expect(picker).not.toContainText('— Space destination');
   await page.locator('.smw-button-next').click();
-  await expect(page.locator('.smw-summary')).toContainText('The Moon');
+  await expect(page.locator('.smw-summary')).toContainText(destination);
   await expect(page.locator('.smw-summary')).not.toContainText('— Space destination');
 });
+}
 
 for (const width of [1365, 320, 390, 430]) {
   test(`destination uses existing preview without an extra box at ${width}px`, async ({ page }) => {
