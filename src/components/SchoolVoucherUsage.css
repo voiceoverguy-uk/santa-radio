@@ -1,0 +1,282 @@
+.school-voucher-usage {
+  color: #f6ecd8;
+}
+
+.school-voucher-usage__heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.school-voucher-usage__kicker {
+  margin: 0 0 8px;
+  color: #ead39a;
+  font-size: .68rem;
+  letter-spacing: .17em;
+  text-transform: uppercase;
+}
+
+.school-voucher-usage h2 {
+  margin: 0 0 8px;
+  color: #f6ecd8;
+  font: 400 clamp(1.2rem, 3vw, 1.55rem)/1.35 'Cinzel', serif;
+}
+
+.school-voucher-usage__voucher {
+  margin: 0;
+  color: #d0dacd;
+  font-size: .86rem;
+}
+
+.school-voucher-usage__code {
+  display: inline-flex;
+  align-items: center;
+  gap: .65rem;
+  margin-left: .8rem;
+  flex-wrap: wrap;
+}
+
+.school-voucher-usage__list-title {
+  margin: 25px 0 12px;
+  color: #ead39a;
+  font: 400 1.08rem/1.4 'Cinzel', serif;
+}
+
+.school-voucher-usage__voucher-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
+  gap: 12px;
+}
+
+.school-voucher-usage__voucher-card {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid #d4af3740;
+  border-radius: 10px;
+  background: #14382a;
+}
+
+.school-voucher-usage__voucher-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px 12px;
+}
+
+.school-voucher-usage__voucher-heading h4 {
+  margin: 0;
+  color: #f6ecd8;
+  font: 500 .95rem/1.4 'Cinzel', serif;
+}
+
+.school-voucher-usage__slot {
+  display: block;
+  margin-top: 3px;
+  color: #b8c6b9;
+  font-size: .74rem;
+}
+
+.school-voucher-usage__code-value {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  border: 1px solid #c9ad62;
+  border-radius: 7px;
+  padding: .25rem .55rem;
+  color: #f4e6b5;
+  background: #0d2b20;
+  font: 600 .82rem/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+  user-select: all;
+}
+
+.school-voucher-usage__voucher-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 15px 0 0;
+}
+
+.school-voucher-usage__voucher-metrics div {
+  min-width: 0;
+  padding: 9px;
+  border-radius: 7px;
+  background: #102f23;
+}
+
+.school-voucher-usage__voucher-metrics dt {
+  color: #c7d2c3;
+  font-size: .72rem;
+  line-height: 1.4;
+}
+
+.school-voucher-usage__voucher-metrics dd {
+  margin: 3px 0 0;
+  color: #ead39a;
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.school-voucher-usage__voucher-first {
+  margin: 12px 0 0;
+  color: #b8c6b9;
+  font-size: .73rem;
+}
+
+.school-voucher-usage__voucher strong {
+  color: #ead39a;
+  font-weight: 600;
+}
+
+.school-voucher-usage__heading .staff-button {
+  flex: 0 0 auto;
+}
+
+.school-voucher-usage__metrics {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.school-voucher-usage__metric {
+  grid-column: span 2;
+  min-height: 128px;
+  padding: 17px;
+  border: 1px solid #d4af3740;
+  border-radius: 10px;
+  background: #14382a;
+}
+
+.school-voucher-usage__metric:nth-child(4),
+.school-voucher-usage__metric:nth-child(5) {
+  grid-column: span 3;
+}
+
+.school-voucher-usage__metric-label {
+  margin: 0;
+  color: #d0dacd;
+  font-size: .76rem;
+  letter-spacing: .04em;
+}
+
+.school-voucher-usage__metric-value {
+  margin: 8px 0 5px;
+  color: #ead39a;
+  font-size: clamp(1.8rem, 4vw, 2.35rem);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.school-voucher-usage__metric-note {
+  margin: 0;
+  color: #c7d2c3;
+  font-size: .75rem;
+  line-height: 1.5;
+}
+
+.school-voucher-usage__first-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 18px 0;
+  padding: 15px 17px;
+  border-left: 2px solid #d4af37;
+  background: #102f23;
+  color: #d0dacd;
+  font-size: .82rem;
+}
+
+.school-voucher-usage__first-entry strong {
+  color: #ead39a;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  text-align: right;
+}
+
+.school-voucher-usage__details {
+  margin-top: 20px;
+}
+
+.school-voucher-usage__details p {
+  margin: 0;
+}
+
+.school-voucher-usage__details p + p {
+  margin-top: 9px;
+}
+
+.school-voucher-usage__error p {
+  margin: 0 0 6px;
+}
+
+.school-voucher-usage__zero {
+  color: #f6ecd8;
+}
+
+.school-voucher-usage__zero h3 {
+  margin: 0 0 7px;
+  color: #ead39a;
+  font: 400 1.05rem/1.4 'Cinzel', serif;
+}
+
+.school-voucher-usage__skeleton {
+  display: block;
+  width: 46%;
+  height: 31px;
+  margin: 10px 0;
+  border-radius: 5px;
+  background: #214431;
+  animation: school-voucher-pulse 1.25s ease-in-out infinite alternate;
+}
+
+.school-voucher-usage__skeleton--label {
+  width: 75%;
+  height: 11px;
+}
+
+.school-voucher-usage :is(button):focus-visible {
+  outline: 3px solid #e7c877;
+  outline-offset: 4px;
+}
+
+@keyframes school-voucher-pulse {
+  to { opacity: .48; }
+}
+
+@media (max-width: 600px) {
+  .school-voucher-usage__heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .school-voucher-usage__heading .staff-button {
+    width: 100%;
+  }
+
+  .school-voucher-usage__metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .school-voucher-usage__metric,
+  .school-voucher-usage__metric:nth-child(4),
+  .school-voucher-usage__metric:nth-child(5) {
+    grid-column: auto;
+    min-height: 0;
+  }
+
+  .school-voucher-usage__first-entry {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .school-voucher-usage__first-entry strong {
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .school-voucher-usage__skeleton { animation: none; }
+}

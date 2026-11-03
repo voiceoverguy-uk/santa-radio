@@ -12,6 +12,17 @@ Preserve the owner's five intended, distinct codes in server-only secret slots:
 `SANTA_STUDIO_TEST_CODE_5`. Each active code must be 1–80 characters after
 trimming; matching is case-sensitive and trims surrounding whitespace.
 
+The additional shared school voucher belongs only in the previously unused
+server secret `SANTA_STUDIO_TEST_CODE_6`. Preserve slots 1–5. Slot 6 is valid
+from 3 November 2026 at 00:00 UK time until **11 November 2026 at 00:00 UK
+time, exclusive** (`2026-11-11T00:00:00Z`). Its dates are fixed in server
+configuration, not calculated from redemption. No voucher value belongs in
+source, documentation, fixtures or logs. Each parent's session has its own
+message allowance; the shared voucher is not consumed by another parent.
+The private usage report monitors every active configured code in slots 1–6.
+Use the existing five configured codes in slots 1–5 rather than creating extra
+slots or overwriting them.
+
 Set the non-secret `SANTA_STUDIO_TEST_EXPIRES_AT` to
 `2026-11-30T23:59:59Z` (end of 30 November 2026, UK time). The handler requires a
 parseable expiry. Do not extend the approved deadline to resolve a closed test.
@@ -104,7 +115,10 @@ intentionally does not reveal which secret is missing or which code slot matches
   up to 80 characters after trimming). The former `password` payload is rejected.
 - Success sets a signed HttpOnly, SameSite=Strict session cookie, Secure on HTTPS.
   It has no persistent expiry attribute. Signatures expire after 12 hours or the
-  test deadline, whichever comes first. Browser restoration may retain the cookie
+   applicable code deadline or global test deadline, whichever comes first.
+   Slot 6's earlier deadline is enforced on every session check, generation and
+   request to start another test message; it does not shorten slots 1–5.
+   Browser restoration may retain the cookie
   but cannot extend this limit.
 - Removing or replacing one numbered code revokes only that slot's existing
   sessions once the new environment is running. Remaining codes stay usable.
@@ -131,7 +145,10 @@ read-only GET on the www status endpoint: expect 200 with `authorized: false`
 in a fresh session while the approved test is open. Separately confirm storage
 readiness. Have the owner enter their real code privately on the homepage,
 confirm the workshop opens, then refresh and confirm session persistence.
-Never enter real codes in automation, recordings, screenshots or logs.
+ Never enter real codes in recordings, screenshots or logs. For a private
+ target-environment entry check, use a trusted server-side process that submits
+ the injected secret directly and emits only success/expiry checks, with no
+ request tracing, cookie output or response-body logging.
 Record when production checks remain blocked by permissions or approval;
 local success alone does not mean live access has been restored.
 
@@ -155,3 +172,79 @@ WORKSHOP_SERVING_MODE=preview npx playwright test --config playwright.workshop.c
 ```
 
 Each uses port 5001.
+
+## School tester entry and readiness
+
+In the configured environment, invited parents can open
+`/santa-message-workshop`, enter their privately supplied voucher, press
+**Create your bespoke message**, choose the seven message details (Talent can
+be skipped), review, confirm **Create message**, and use **Download MP3**.
+No checkout, staff login or adult free-greeting signup is required for this
+voucher path. Save the MP3 before starting another test. Saved files remain
+playable after testing closes.
+
+On 3 November 2026 the **Replit workspace preview** was configured with the
+sixth secret using the secure Secrets form. A private server-side check
+submitted the injected voucher to the actual preview access endpoint, verified
+the signed session, bounded expiry, catalogue access and fresh two-success
+allowance, and confirmed two redemptions issue different sessions. This check
+can be repeated with `node scripts/verify-school-voucher.mjs`; it emits only
+fixed environment/check labels and booleans, never voucher or cookie values.
+
+Separately, the isolated browser suite used an ephemeral school-slot voucher
+through the real form and hosted long-form generation endpoint, decoded and
+played the resulting audio, saved the MP3, and verified a second parent's
+allowance was unspent. Real school browser tests run only within the fixed
+window; deterministic server tests always cover before/at/after the deadline.
+
+**Vercel production was not configured, deployed or verified for this change.**
+After owner approval, add the same privately held voucher as server-only
+`SANTA_STUDIO_TEST_CODE_6` in the correct Vercel project's Production scope,
+preserve the existing five codes, signing secret, database and global deadline,
+and deploy the merged code with separate approval. Then verify actual private
+voucher entry and MP3 generation there before inviting live-site testers.
+
+## Private school voucher usage report
+
+Open **`/request-names`**, sign in with the existing approved staff account,
+and scroll to **Voucher usage** (or bookmark
+`/request-names#school-voucher-usage`). Select **Refresh totals** for current
+figures. The report shows a separate breakdown and configured code for each
+active voucher slot. It uses the same verified-admin permission as the name-request
+ledger. A tester voucher or an unapproved signed-in account cannot read its API.
+
+- **Voucher entries**: successful new voucher logins, not unique parents.
+  Refreshing/checking an existing session is not another entry.
+- **First recordings**: successful initial MP3s for tracked message sessions.
+- **Corrections**: successful second recordings, counted separately.
+- **Total recordings**: first recordings plus corrections.
+- **Another test started**: deliberate new test sessions, not extra voucher entries.
+
+Counts for slots 1–5 begin when multi-code tracking is enabled; pre-existing
+sessions and their earlier usage are not backfilled. Previously tracked school
+voucher sessions and their successful recordings are retained. Failed
+generations, idempotent replays, repeat downloads and playback do not increase
+recording counts. Preview totals can include automated verification traffic;
+they are not live parent counts. The report remains available after a voucher
+closes.
+
+Usage storage contains only an opaque session key, slot number, event kind and
+timestamp. It stores no voucher values, cookies, IPs, emails or children's
+details. The approved-admin-only usage response includes each active configured
+voucher code so the owner can copy it from the private report. The codes remain in
+server-only secret configuration; it is not in frontend source or public APIs.
+Recording totals are aggregated from existing successfully committed results,
+so they cannot be inflated by failed rendering or HTTP retries.
+
+Development setup: `node scripts/setup-workshop-usage.mjs --development`.
+Post-merge setup runs this idempotently. The new table in
+`database/santa-workshop-usage.sql` must also be applied to the existing live
+database through a separately approved production migration before deploying
+this feature to Vercel. It adds recording timestamps used to exclude
+pre-tracking generations when an old session deliberately starts another test.
+Missing usage storage fails voucher entry closed
+with the existing temporary-unavailability message instead of silently losing
+usage records; other voucher slots do not use the new table.
+
+Tests: `npm run test:workshop-usage` (persistent counters test uses only the
+development database and rolls its fixture records back).

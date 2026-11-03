@@ -87,7 +87,7 @@ export function createStudioGenerationStore(pool = databasePool()) {
           throw problem(409, 'This preparation expired. Please check your current recording and try again.');
         }
         await client.query(`INSERT INTO public.santa_studio_generation_results
-          (access_key,operation,request_hash,sequence,audio) VALUES($1,$2,$3,$4,$5)`,
+          (access_key,operation,request_hash,sequence,audio,created_at) VALUES($1,$2,$3,$4,$5,clock_timestamp())`,
         [key, row.operation, row.request_hash, row.successes + 1, audio]);
         await client.query(`UPDATE public.santa_studio_generation_access SET successes=successes+1,
           locked_identity=COALESCE(locked_identity,$3), latest_choices=$4,

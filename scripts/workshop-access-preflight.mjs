@@ -1,14 +1,15 @@
 import { pathToFileURL } from 'node:url';
-import { workshopSettings, workshopConfigurationChecks, workshopConfigured } from '../server/santa-workshop-settings.js';
+import { workshopSettings, workshopConfigurationChecks, workshopConfigured, WORKSHOP_CODE_SLOTS, workshopCodeOpen } from '../server/santa-workshop-settings.js';
 import { databasePool } from '../server/name-request-store.js';
 
 export function configurationReport(env = process.env, now = Date.now()) {
   const config = workshopSettings(env);
   return {
     checks: workshopConfigurationChecks(config),
-    slots: Array.from({ length: 5 }, (_, index) => ({
+    slots: Array.from({ length: WORKSHOP_CODE_SLOTS }, (_, index) => ({
       slot: index + 1,
       active: config.codes.some(entry => entry.id === String(index + 1)),
+      open: workshopCodeOpen(config, config.codes.find(entry => entry.id === String(index + 1)), now),
     })),
     approvedDeadline: config.expiresAt === Date.parse('2026-11-30T23:59:59Z'),
     testOpen: Number.isSafeInteger(config.expiresAt) && config.expiresAt > now,

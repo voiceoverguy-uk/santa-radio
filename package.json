@@ -24,6 +24,7 @@
     "test:security-hardening": "node --test scripts/security-hardening.test.mjs scripts/santa-name-security.test.mjs",
     "test:name-security:e2e": "playwright test tests/santa-name-security.spec.js --project=chromium",
     "test:workshop-access": "node --test scripts/santa-workshop-access.test.mjs",
+    "test:workshop-usage": "node --test scripts/santa-workshop-usage.test.mjs",
     "workshop:preflight": "node scripts/workshop-access-preflight.mjs",
     "test:workshop": "playwright test --config playwright.workshop.config.js",
     "test:studio-audio": "node --test scripts/santa-studio-message.test.mjs scripts/santa-studio-generation.test.mjs",

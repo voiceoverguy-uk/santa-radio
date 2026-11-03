@@ -77,3 +77,4 @@
 - [Studio single-message allowance](studio-single-message-allowance.md) — One success plus one correction; lock exact spoken name/full destination, not written spelling or future family policy.
 - [Studio gift delivery](studio-gift-delivery-scope.md) — Local individual-message gifts require MP3 success; no free/promotional exports, live checkout or family/email fulfilment.
 - [Studio promotion typography](studio-promotion-typography.md) — Regular live promotion text and shared gift heading; keep document artwork and watermarks unchanged.
+- [School tester voucher](school-tester-voucher.md) — Shared independent parent access; fixed 3–10 November 2026 UK window, separate from existing vouchers.

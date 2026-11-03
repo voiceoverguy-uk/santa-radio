@@ -4,7 +4,8 @@ import { createServer } from 'node:http';
 import { randomBytes, createHmac } from 'node:crypto';
 import { createWorkshopAccessHandler, consumeWorkshopAttempt, issueWorkshopToken, hasWorkshopAccess, workshopSession, WORKSHOP_COOKIE, WORKSHOP_SESSION_MS } from '../server/santa-workshop-access.js';
 import { databasePool } from '../server/name-request-store.js';
-import { workshopSettings, workshopConfigured } from '../server/santa-workshop-settings.js';
+import { workshopSettings, workshopConfigured, SCHOOL_TEST_START, SCHOOL_TEST_DEADLINE } from '../server/santa-workshop-settings.js';
+import { createStudioMessageHandler } from '../server/santa-studio-message.js';
 import { configurationReport, storageReport } from './workshop-access-preflight.mjs';
 
 const at = 1800000000000;
@@ -55,6 +56,7 @@ test('the global test deadline caps sessions and closes access regardless of coo
 async function withServer(options, run) {
   const server = createServer(createWorkshopAccessHandler({
     getSettings: () => config, now: () => at,
+    recordUsage: async () => {},
     consumeAttempt: async () => ({ allowed: true }), ...options,
   }));
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
@@ -66,6 +68,124 @@ async function withServer(options, run) {
   try { await run({ url, post }); }
   finally { await new Promise(resolve => { server.close(resolve); server.closeAllConnections(); }); }
 }
+
+const schoolConfig = workshopSettings({
+  ...Object.fromEntries(config.codes.map(entry => [`SANTA_STUDIO_TEST_CODE_${entry.id}`, entry.code])),
+  SANTA_STUDIO_TEST_CODE_6: randomBytes(24).toString('hex'),
+  SESSION_SECRET: config.signingSecret,
+  SANTA_STUDIO_TEST_EXPIRES_AT: '2026-11-30T23:59:59Z',
+});
+
+test('school slot adds capacity without changing existing signed sessions or global deadlines', () => {
+  const now = SCHOOL_TEST_START;
+  const legacy = { ...schoolConfig, codes: schoolConfig.codes.slice(0, 5) };
+  for (const entry of legacy.codes) {
+    const token = issueWorkshopToken(legacy, now, entry.id);
+    assert.equal(hasWorkshopAccess(request(token), schoolConfig, now), true);
+    assert.equal(workshopSession(request(token), schoolConfig, now).expiresAt, now + WORKSHOP_SESSION_MS);
+  }
+  const first = workshopSession(request(issueWorkshopToken(schoolConfig, now, '6')), schoolConfig, now);
+  const second = workshopSession(request(issueWorkshopToken(schoolConfig, now, '6')), schoolConfig, now);
+  assert.notEqual(first.generationKey, second.generationKey);
+  assert.equal(first.expiresAt, now + WORKSHOP_SESSION_MS);
+  const earlier = { ...schoolConfig, expiresAt: now + 1000 };
+  assert.equal(workshopSession(request(issueWorkshopToken(earlier, now, '6')), earlier, now).expiresAt, now + 1000);
+  for (const invalid of [{ expiresAt: NaN }, { startsAt: NaN }, { startsAt: SCHOOL_TEST_DEADLINE }]) {
+    assert.equal(workshopConfigured({ ...schoolConfig, codes: schoolConfig.codes.map(entry =>
+      entry.id === '6' ? { ...entry, ...invalid } : entry) }), false);
+  }
+});
+
+test('school login, sessions and another-message requests enforce exact fixed dates without closing other slots', async () => {
+  for (const time of [SCHOOL_TEST_START - 1, SCHOOL_TEST_START, SCHOOL_TEST_DEADLINE - 1, SCHOOL_TEST_DEADLINE, SCHOOL_TEST_DEADLINE + 1]) {
+    const open = time >= SCHOOL_TEST_START && time < SCHOOL_TEST_DEADLINE;
+    await withServer({ getSettings: () => schoolConfig, now: () => time }, async ({ url, post }) => {
+      const reply = await post(schoolConfig.codes[5].code);
+      assert.equal(reply.status, open ? 200 : 410);
+      assert.equal(!!reply.headers.get('set-cookie'), open);
+      if (open) assert.equal((await reply.json()).expiresAt, Math.min(time + WORKSHOP_SESSION_MS, SCHOOL_TEST_DEADLINE));
+      const token = issueWorkshopToken(schoolConfig, SCHOOL_TEST_DEADLINE - 60000, '6');
+      const cookie = `${WORKSHOP_COOKIE}=${token}`;
+      const active = time >= SCHOOL_TEST_DEADLINE - 60000 && time < SCHOOL_TEST_DEADLINE;
+      assert.equal((await (await fetch(url, { headers: { Cookie: cookie } })).json()).authorized, active);
+      const another = await fetch(url, { method: 'POST',
+        headers: { Origin: url, Cookie: cookie, 'Content-Type': 'application/json' }, body: JSON.stringify({ another: true }) });
+      assert.equal(another.status, active ? 200 : 403);
+      if (active) assert.equal((await another.json()).expiresAt, SCHOOL_TEST_DEADLINE);
+      assert.equal((await post(schoolConfig.codes[0].code)).status, 200);
+    });
+  }
+  assert.throws(() => issueWorkshopToken(schoolConfig, SCHOOL_TEST_START - 1, '6'));
+  assert.throws(() => issueWorkshopToken(schoolConfig, SCHOOL_TEST_DEADLINE, '6'));
+  const token = issueWorkshopToken(schoolConfig, SCHOOL_TEST_DEADLINE - 60000, '6');
+  // Even a correctly signed old session cannot outlive a newly applicable code deadline.
+  const uncapped = issueWorkshopToken({ ...schoolConfig, codes: schoolConfig.codes.map(entry =>
+    entry.id === '6' ? { ...entry, expiresAt: undefined } : entry) }, SCHOOL_TEST_DEADLINE - 60000, '6');
+  assert.equal(hasWorkshopAccess(request(uncapped), schoolConfig, SCHOOL_TEST_DEADLINE - 1), false);
+  assert.equal(hasWorkshopAccess(request(token), schoolConfig, SCHOOL_TEST_DEADLINE), false);
+});
+
+test('school expiry is rechecked after a delayed login attempt', async () => {
+  let time = SCHOOL_TEST_DEADLINE - 1;
+  await withServer({ getSettings: () => schoolConfig, now: () => time,
+    consumeAttempt: async () => { time++; return { allowed: true }; } }, async ({ post }) => {
+    const reply = await post(schoolConfig.codes[5].code);
+    assert.equal(reply.status, 410);
+    assert.equal(reply.headers.get('set-cookie'), null);
+  });
+});
+
+test('school entries and deliberate new messages are recorded once; checks and rejected codes are not entries', async () => {
+  const events = [];
+  await withServer({ getSettings: () => schoolConfig, now: () => SCHOOL_TEST_START,
+    recordUsage: async (session, kind) => { events.push({ session, kind }); } }, async ({ url, post }) => {
+    await fetch(url);
+    assert.equal((await post('invalid-code')).status, 401);
+    assert.equal(events.length, 0);
+    const response = await post(schoolConfig.codes[5].code);
+    assert.equal(response.status, 200);
+    assert.equal(events.length, 1);
+    assert.equal(events[0].kind, 'entry');
+    assert.equal(events[0].session.codeId, '6');
+    const cookie = response.headers.get('set-cookie').split(';')[0];
+    await fetch(url, { headers: { Cookie: cookie } });
+    assert.equal(events.length, 1);
+    assert.equal((await fetch(url, { method: 'POST', headers: {
+      Origin: url, Cookie: cookie, 'Content-Type': 'application/json',
+    }, body: JSON.stringify({ another: true }) })).status, 200);
+    assert.equal(events.length, 2);
+    assert.equal(events[1].kind, 'another');
+    assert.notEqual(events[0].session.generationKey, events[1].session.generationKey);
+  });
+  await withServer({ getSettings: () => schoolConfig, now: () => SCHOOL_TEST_START,
+    recordUsage: async () => { throw new Error('private'); } }, async ({ post }) => {
+    const response = await post(schoolConfig.codes[5].code);
+    assert.equal(response.status, 503);
+    assert.equal(response.headers.get('set-cookie'), null);
+  });
+});
+
+test('direct generation rejects absent and expired school sessions before storage or rendering', async () => {
+  const token = issueWorkshopToken(schoolConfig, SCHOOL_TEST_DEADLINE - 60000, '6');
+  for (const time of [SCHOOL_TEST_DEADLINE, SCHOOL_TEST_DEADLINE + 1]) {
+    const handler = createStudioMessageHandler({
+      authorize: req => hasWorkshopAccess(req, schoolConfig, time),
+      accessKey: () => assert.fail('Unauthorized request must not reach storage'),
+      render: () => assert.fail('Unauthorized request must not render'),
+    });
+    const server = createServer(handler);
+    await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+    const url = `http://127.0.0.1:${server.address().port}`;
+    try {
+      for (const cookie of ['', `${WORKSHOP_COOKIE}=${token}`]) {
+        const response = await fetch(url, { method: 'POST',
+          headers: { Origin: url, Cookie: cookie, 'Content-Type': 'application/json' }, body: '{}' });
+        assert.equal(response.status, 403);
+        assert.match(response.headers.get('content-type'), /json/);
+      }
+    } finally { await new Promise(resolve => { server.close(resolve); server.closeAllConnections(); }); }
+  }
+});
 
 test('voucher testers can start further messages without extending access; paid or missing sessions cannot', async () => {
   await withServer({}, async ({ url }) => {
@@ -185,7 +305,7 @@ test('missing or duplicate codes, bad expiry and unavailable shared limiter fail
     { ...config, expiresAt: NaN }, { ...config, codes: [{ id: '1', code: '' }] },
     { ...config, codes: [{ id: '1', code: 'duplicate' }, { id: '2', code: 'duplicate' }] },
     { ...config, signingSecret: randomBytes(15).toString('hex') },
-    { ...config, codes: [{ id: '6', code: randomBytes(24).toString('hex') }] },
+    { ...config, codes: [{ id: '7', code: randomBytes(24).toString('hex') }] },
     { ...config, codes: [{ id: '1', code: 'x'.repeat(81) }] },
     { ...config, codes: [{ id: '1', code: randomBytes(24).toString('hex') }, { id: '1', code: randomBytes(24).toString('hex') }] },
     { ...config, codes: null }, { ...config, codes: [null] },

@@ -3,6 +3,7 @@ import { test } from './helpers/provider-test.js';
 import { fillAccessForm, mockBrevo } from './helpers/message-access.js';
 import { workshopCatalogueFixture } from './fixtures/workshop-catalogue.js';
 import { expectStudioHeader } from './helpers/studio-header.js';
+import { SCHOOL_TEST_START, SCHOOL_TEST_DEADLINE } from '../server/santa-workshop-settings.js';
 
 const accessURL = '/api/santa-workshop-access';
 const codeLabel = /^(Voucher code|Tester code \(required\))$/;
@@ -219,12 +220,16 @@ test('the completion card retains its voucher route into the authorized Studio',
   await expect(page.getByRole('heading', { name: 'What name should Santa say?' })).toBeVisible();
 });
 
-test('all five isolated codes are accepted by the real endpoint, not the former shared password', async ({ page }) => {
+test('all six isolated codes are accepted by the real endpoint, not the former shared password', async ({ page }) => {
   const origin = new URL((await page.request.get(accessURL)).url()).origin;
-  for (let slot = 1; slot <= 5; slot++) {
+  for (let slot = 1; slot <= 6; slot++) {
     const code = process.env[slot === 1 ? 'WORKSHOP_TEST_PASSWORD' : `WORKSHOP_TEST_CODE_${slot}`];
     expect(code).toBeTruthy();
     const response = await page.request.post(accessURL, { headers: { Origin: origin }, data: { code } });
+    if (slot === 6 && (Date.now() < SCHOOL_TEST_START || Date.now() >= SCHOOL_TEST_DEADLINE)) {
+      expect(response.status()).toBe(410);
+      continue;
+    }
     expect(response.status()).toBe(200);
     expect((await response.json()).authorized).toBe(true);
     expect((await (await page.request.get(accessURL)).json()).authorized).toBe(true);
@@ -380,7 +385,8 @@ test('free-greeting signup still opens its own maker without requiring a tester 
   await visit(page, '/');
   await fillAccessForm(page);
   await page.getByRole('button', { name: 'Get my free Santa message', exact: true }).click();
-  await expect(page).toHaveURL(/\/free-santa-message$/);
+  // The approved homepage keeps the free maker inline after signup.
+  await expect(page).toHaveURL(/\/$/);
   await expect(page.getByLabel('First Name', { exact: true })).toBeVisible();
   await expect(page.locator('.santa-studio-promotion').getByLabel(codeLabel)).toHaveValue('');
 });

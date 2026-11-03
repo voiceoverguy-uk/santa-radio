@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS public.santa_studio_generation_results (
   request_hash char(64) NOT NULL,
   sequence integer NOT NULL CHECK (sequence BETWEEN 1 AND 2),
   audio bytea NOT NULL,
+  created_at timestamptz,
   PRIMARY KEY (access_key, operation),
   UNIQUE (access_key, sequence)
 );

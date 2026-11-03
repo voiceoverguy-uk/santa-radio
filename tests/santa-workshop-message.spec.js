@@ -4,6 +4,7 @@ import { test } from './helpers/provider-test.js';
 import { unlockWorkshop } from './helpers/workshop-access.js';
 import { workshopCatalogueFixture } from './fixtures/workshop-catalogue.js';
 import { confirmMessage, mockStudioGeneration, emptyGeneration } from './helpers/studio-generation.js';
+import { SCHOOL_TEST_START, SCHOOL_TEST_DEADLINE } from '../server/santa-workshop-settings.js';
 
 const path = '/santa-message-workshop';
 const answers = ['9 years old', 'Teamwork', 'Completing a jigsaw puzzle', 'Bûche de Noël', 'The Enchanted Forest'];
@@ -27,11 +28,11 @@ test('authorised Studio can check its actual allowance without generating audio'
   expect(await response.json()).toMatchObject({ successes: 0, remaining: 2, pending: false });
 });
 
-async function openReview(page, { live = false, allowance = null, tester = false } = {}) {
+async function openReview(page, { live = false, allowance = null, tester = false, school = false } = {}) {
   const generation = live ? null : await mockStudioGeneration(page, { tester });
   if (!live) await page.route('**/api/santa-studio-message', route => route.request().method() === 'GET'
     ? allowance ? allowance(route, generation.state) : route.fulfill({ json: generation.state }) : route.fallback());
-  await unlockWorkshop(page);
+  if (!school) await unlockWorkshop(page);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.route('**/api/radio-metadata*', route => route.fulfill({ json: { available: false, current: null, upcoming: [] } }));
   if (!live) {
@@ -47,6 +48,10 @@ async function openReview(page, { live = false, allowance = null, tester = false
   await page.goto(path);
   const decline = page.getByRole('button', { name: 'Decline optional cookies' });
   if (await decline.isVisible()) await decline.click();
+  if (school) {
+    await page.getByLabel('Tester code (required)', { exact: true }).fill(process.env.WORKSHOP_TEST_CODE_6);
+    await page.getByRole('button', { name: 'Create your bespoke message', exact: true }).click();
+  }
   const checkPlaceholder = async input => {
     const colours = await input.evaluate(node => ({
       placeholder: getComputedStyle(node, '::placeholder').color,
@@ -476,10 +481,12 @@ test('retryable preparation errors and cancellation spend no successful allowanc
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
 });
 
-test('real protected API stitches chosen hosted clips without depending on short-lived name tokens', async ({ page }) => {
+test('school voucher form opens real long-form generation and playable MP3 without exhausting another parent', async ({ page, browser }) => {
+  test.skip(Date.now() < SCHOOL_TEST_START || Date.now() >= SCHOOL_TEST_DEADLINE,
+    'Real school access is date-bound; deterministic server tests cover every cutoff outside this window.');
   test.setTimeout(150000);
   // No mocks for names, catalogue, access, generation, or MP3 decoding.
-  await openReview(page, { live: true });
+  await openReview(page, { live: true, school: true });
   const requests = [];
   page.on('request', req => { if (req.method() === 'POST' && req.url().includes('/api/santa-studio-message')) requests.push(req); });
   const responsePromise = page.waitForResponse(res => res.request().method() === 'POST' && res.url().endsWith('/api/santa-studio-message'), { timeout: 120000 });
@@ -503,6 +510,21 @@ test('real protected API stitches chosen hosted clips without depending on short
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toMatch(/^santa-message-for-Arabella\.mp3$/);
   await download.saveAs('generated-artifacts/studio-live-hosted-message.mp3');
+  expect(readFileSync(await download.path()).length).toBeGreaterThan(10000);
+  const origin = new URL(page.url()).origin;
+  const secondParent = await browser.newContext({ baseURL: origin });
+  try {
+    const response = await secondParent.request.post('/api/santa-workshop-access', {
+      headers: { Origin: origin }, data: { code: process.env.WORKSHOP_TEST_CODE_6 },
+    });
+    expect(response.status()).toBe(200);
+    expect(await (await secondParent.request.get('/api/santa-studio-message')).json()).toMatchObject({
+      successes: 0, remaining: 2, pending: false,
+    });
+    expect(await (await page.request.get('/api/santa-studio-message')).json()).toMatchObject({
+      successes: 1, remaining: 1, pending: false,
+    });
+  } finally { await secondParent.close(); }
 });
 
 test('full-message playback coordinates with radio and pagehide stops playback without losing the result', async ({ page }) => {

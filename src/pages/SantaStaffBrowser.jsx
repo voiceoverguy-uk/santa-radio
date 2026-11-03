@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import './SantaStaffBrowser.css';
 import SantaRequestLedger from '../components/SantaRequestLedger.jsx';
 import ContendersStaff from '../components/ContendersStaff.jsx';
+import SchoolVoucherUsage from '../components/SchoolVoucherUsage.jsx';
 
 const clerkPubKey = publishableKeyFromHost(
   window.location.hostname,
@@ -105,7 +106,7 @@ function RequestLedger() {
   return <><SantaRequestLedger
     key={`${user?.id}:${user?.primaryEmailAddress?.emailAddress}:${user?.primaryEmailAddress?.verification?.status}`}
     email={user?.primaryEmailAddress?.emailAddress}
-    onSignOut={() => signOut({ redirectUrl: '/' })} /><div className="staff-page"><ContendersStaff /></div></>;
+    onSignOut={() => signOut({ redirectUrl: '/' })} /><div className="staff-page"><SchoolVoucherUsage /><ContendersStaff /></div></>;
 }
 
 function BrowserStaffPage({ mode }) {
