@@ -29,8 +29,17 @@ trial was too small. The owner requested the intermediate size.
 Constrain mobile width as needed to avoid obscuring promotional text; do not
 move the handset below the artwork without a new request.
 
-The whole handset, including the frame and gameplay, should be 90% opaque
-(10% transparent); surrounding artwork, heading, links and playback controls
+The homepage artwork must stay on the original “Enjoy Santa Radio while you
+play” image, without rotating or dissolving, including during gameplay.
+
+**Why:** The owner approved this single artwork against their layout reference;
+the reference is not a flattened replacement for the real video.
+
+**How to apply:** Keep the live gameplay layered over the original artwork.
+Do not apply this single-image rule to the separate Apps promotion.
+
+The whole handset, including the frame and gameplay, should be 70% opaque
+(30% transparent); surrounding artwork, heading, links and playback controls
 must remain fully opaque.
 
 **Why:** The owner wants a subtle amount of rooftop artwork to show through the

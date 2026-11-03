@@ -155,22 +155,6 @@
   height: 100%;
   object-fit: contain;
 }
-.santa-dash-promo__artwork--first {
-  animation: santa-dash-first 8s ease-in-out infinite;
-}
-.santa-dash-promo__artwork--second {
-  animation: santa-dash-second 8s ease-in-out infinite;
-}
-@keyframes santa-dash-first {
-  0%, 46% { opacity: 1; }
-  54%, 96% { opacity: 0; }
-  100% { opacity: 1; }
-}
-@keyframes santa-dash-second {
-  0%, 46% { opacity: 0; }
-  54%, 96% { opacity: 1; }
-  100% { opacity: 0; }
-}
 .santa-dash-promo__download {
   display: inline-flex;
   align-items: center;
@@ -263,7 +247,5 @@ html[data-effects="off"] .hero-snow,html[data-effects="off"] .hero-aurora { disp
 }
 @media (prefers-reduced-motion: reduce) {
   .hero-countdown .countdown-unit,.partnership-strip__button,.santa-dash-promo__download { transition: none; }
-  .santa-dash-promo__artwork { animation: none; }
-  .santa-dash-promo__artwork--second { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { .hero-snow,.hero-aurora { display: none; } }

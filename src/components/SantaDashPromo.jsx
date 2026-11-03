@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import santaDashArtwork from '../assets/home/santa-dash-back-to-the-grotto.webp';
-import santaDashWobblyBobArtwork from '../assets/home/santa-dash-wobbly-bob.webp';
+import santaDashArtwork from '../assets/home/santa-dash-wobbly-bob.webp';
 import HomepageSectionHeading from './HomepageSectionHeading.jsx';
 import './SantaDashPromo.css';
 
@@ -206,7 +205,7 @@ export default function SantaDashPromo() {
   return (
     <section
       ref={sectionRef}
-      className={`santa-dash-promo${playing ? ' santa-dash-promo--artwork-playing' : ''}`}
+      className="santa-dash-promo"
       data-preview-state={previewState}
       aria-labelledby="santa-dash-promo-title"
     >
@@ -234,20 +233,11 @@ export default function SantaDashPromo() {
           >
             <span className="santa-dash-promo__artwork-stage">
               <img
-                className="santa-dash-promo__artwork santa-dash-promo__artwork--first"
+                className="santa-dash-promo__artwork"
                 src={santaDashArtwork}
                 width="1600"
-                height="554"
-                alt="Santa Dash — Back to the Grotto: Santa leaps across snowy rooftops to collect mince pies. Play on iPhone and iPad."
-                loading="lazy"
-              />
-              <img
-                className="santa-dash-promo__artwork santa-dash-promo__artwork--second"
-                src={santaDashWobblyBobArtwork}
-                width="1600"
                 height="555"
-                alt=""
-                aria-hidden="true"
+                alt="Santa Dash — Back to the Grotto: Santa leaps across snowy rooftops to collect mince pies. Enjoy Santa Radio while you play. Play on iPhone and iPad."
                 loading="lazy"
               />
             </span>

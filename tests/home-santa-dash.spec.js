@@ -76,38 +76,38 @@ test('Santa Dash title keeps its intended two lines without overflow', async ({ 
   }
 });
 
-test('homepage advert dissolves between both artworks every four seconds', async ({ page }) => {
+test('homepage advert keeps the Santa Radio artwork fixed during playback and over time', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   const promo = page.getByRole('region', { name: 'Santa Dash Back to the Grotto', exact: true });
-  const slides = promo.locator('.santa-dash-promo__artwork');
+  const artwork = promo.locator('.santa-dash-promo__artwork');
   await promo.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
-  await expect.poll(() => slides.nth(1).evaluate(el => el.complete && el.naturalWidth > 0)).toBe(true);
-  expect(await slides.nth(0).evaluate(el => getComputedStyle(el).animationDuration)).toBe('8s');
-
-  const opacityAt = async (time) => {
-    await slides.evaluateAll((images, currentTime) => {
-      for (const image of images) {
-        const animation = image.getAnimations()[0];
-        animation.pause();
-        animation.currentTime = currentTime;
-      }
-    }, time);
-    return Promise.all([0, 1].map(index => slides.nth(index).evaluate(el => Number(getComputedStyle(el).opacity))));
+  await expect(promo).toHaveAttribute('data-preview-state', 'playing', { timeout: 15000 });
+  const source = await artwork.getAttribute('src');
+  const expectStableArtwork = async () => {
+    await expect(artwork).toHaveCount(1);
+    await expect(artwork).toHaveAttribute('src', source);
+    await expect(artwork).toHaveAttribute('src', /santa-dash-wobbly-bob/);
+    await expect(artwork).toHaveAttribute('alt', /Enjoy Santa Radio while you play/);
+    expect(await artwork.evaluate(el => ({
+      loaded: el.complete && el.naturalWidth > 0,
+      opacity: getComputedStyle(el).opacity,
+      animation: getComputedStyle(el).animationName,
+      animations: el.getAnimations().length,
+    }))).toEqual({ loaded: true, opacity: '1', animation: 'none', animations: 0 });
   };
-
-  expect(await opacityAt(3500)).toEqual([1, 0]);
-  const duringDissolve = await opacityAt(4000);
-  expect(duringDissolve[0]).toBeGreaterThan(0);
-  expect(duringDissolve[0]).toBeLessThan(1);
-  expect(duringDissolve[1]).toBeGreaterThan(0);
-  expect(duringDissolve[1]).toBeLessThan(1);
-  expect(await opacityAt(4500)).toEqual([0, 1]);
-  expect(await opacityAt(8000)).toEqual([1, 0]);
-
+  await expectStableArtwork();
+  // Span the old four-second change and complete eight-second rotation.
+  for (let interval = 0; interval < 2; interval += 1) {
+    await page.waitForTimeout(4200);
+    await expect(promo).toHaveAttribute('data-preview-state', 'playing');
+    await expectStableArtwork();
+  }
+  await promo.getByRole('button', { name: 'Pause Santa Dash gameplay video' }).click();
+  await expect(promo).toHaveAttribute('data-preview-state', 'manually-paused');
+  await expectStableArtwork();
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  expect(await slides.nth(0).evaluate(el => getComputedStyle(el).animationName)).toBe('none');
-  expect(await slides.nth(1).evaluate(el => getComputedStyle(el).display)).toBe('none');
+  await expectStableArtwork();
 });
 
 test.beforeEach(async ({ context }) => {
@@ -143,7 +143,7 @@ test('homepage advert remains complete, readable and keyboard accessible on desk
         naturalHeight: el.naturalHeight, left: rect.left, right: rect.right };
     });
     expect(geometry.naturalWidth).toBe(1600);
-    expect(geometry.naturalHeight).toBe(554);
+    expect(geometry.naturalHeight).toBe(555);
     expect(geometry.width / geometry.height).toBeCloseTo(1600 / 554, 2);
     expect(geometry.left).toBeGreaterThanOrEqual(0);
     expect(geometry.right).toBeLessThanOrEqual(width);
@@ -177,17 +177,19 @@ test('homepage advert remains complete, readable and keyboard accessible on desk
     expect(bottomGap).toBeLessThanOrEqual(19);
     expect(inset.phone.top).toBeGreaterThan(inset.artwork.top);
     expect(inset.phone.right).toBeLessThan(inset.artwork.left + inset.artwork.width * .53);
-    expect(await promo.locator('.santa-dash-promo__handset').evaluate(el => getComputedStyle(el).opacity)).toBe('0.9');
+    expect(await promo.locator('.santa-dash-promo__handset').evaluate(el => getComputedStyle(el).opacity)).toBe('0.7');
+    // Only the containing handset is translucent; nested media must not
+    // compound it, and the separate control must not inherit it.
+    expect(await promo.locator('.santa-dash-promo__handset *').evaluateAll(
+      elements => elements.every(el => getComputedStyle(el).opacity === '1'),
+    )).toBe(true);
     for (const element of [promo, promo.locator('.santa-dash-promo__visual'),
       promo.locator('.santa-dash-promo__title'), artwork, artworkLink, download,
       promo.locator('.santa-dash-promo__playback')]) {
       expect(await element.evaluate(el => getComputedStyle(el).opacity)).toBe('1');
     }
-    const secondArtwork = promo.locator('.santa-dash-promo__artwork').nth(1);
-    await expect(secondArtwork).toHaveAttribute('aria-hidden', 'true');
-    expect(await secondArtwork.evaluate(el => [el.width, el.height])).toEqual([1600, 555]);
+    await expect(promo.locator('.santa-dash-promo__artwork')).toHaveCount(1);
     expect(await artwork.evaluate(el => getComputedStyle(el).animationName)).toBe('none');
-    expect(await secondArtwork.evaluate(el => getComputedStyle(el).display)).toBe('none');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     const button = await download.boundingBox();
     expect(button.height).toBeGreaterThanOrEqual(44);
