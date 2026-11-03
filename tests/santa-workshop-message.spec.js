@@ -120,7 +120,8 @@ for (const width of [390, 1365]) {
     });
     await openReview(page, { tester: true });
     const notice = page.locator('.smw-voucher-entitlement');
-    await expect(notice).toHaveText('You used Voucher Code: preview-voucher-example, you can generate unlimited messages');
+    await expect(notice).toContainText('You used Voucher Code: preview-voucher-example.');
+    await expect(notice).toContainText('request limits');
     await expect(page.locator('.smw-allowance').filter({
       hasText: 'You can create one message, then make one correction.',
     })).toHaveCount(0);
@@ -142,45 +143,21 @@ for (const width of [390, 1365]) {
     await expect(page.getByRole('alert')).toHaveCount(0);
     await page.reload();
     await openReview(page, { tester: true });
-    await expect(notice).toHaveText('You used Voucher Code: preview-voucher-example, you can generate unlimited messages');
+    await expect(notice).toContainText('You used Voucher Code: preview-voucher-example.');
+    await expect(notice).toContainText('request limits');
   });
 }
 
 test('voucher testing can generate a third message with fresh choices while retaining previous downloads', async ({ page }) => {
   test.setTimeout(60000);
   const fixture = await openReview(page, { tester: true });
-  let resets = 0;
-  await page.route('**/api/santa-workshop-access', async route => {
-    if (route.request().method() !== 'POST' || route.request().postDataJSON()?.another !== true) return route.fallback();
-    const response = await route.fetch();
-    if (response.ok()) {
-      fixture.state = { ...emptyGeneration(), testerCanStartAnother: true };
-      resets++;
-    }
-    return route.fulfill({ response });
-  });
   for (let number = 1; number <= 3; number++) {
-    // After the old session reached sequence 2, lose the first response in the
-    // next session. Recovery must compare sequences within the new entitlement.
-    const recoveriesBefore = fixture.recoveries || 0;
-    if (number === 2) fixture.dropNext = true;
     await confirmMessage(page);
-    if (number === 2) {
-      await expect.poll(() => fixture.recoveries || 0).toBeGreaterThan(recoveriesBefore);
-    }
     await expect(page.getByRole('link', { name: 'Download MP3', exact: true })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Generate another test message', exact: true })).toBeEnabled();
+    await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
     expect(fixture.posts.length).toBe(number);
     if (number === 3) break;
-    if (number === 1) {
-      // Existing voucher testers may already have spent both successes.
-      fixture.state = { ...fixture.state, successes: 2, remaining: 0 };
-      await page.reload({ waitUntil: 'domcontentloaded' });
-      await expect(page.getByRole('button', { name: 'Generate another test message', exact: true })).toBeEnabled();
-    }
     const previousUrl = await page.getByRole('link', { name: 'Download MP3', exact: true }).getAttribute('href');
-    await page.getByRole('button', { name: 'Generate another test message', exact: true }).click();
-    await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
     expect(await page.getByRole('link', { name: 'Download MP3', exact: true }).getAttribute('href')).toBe(previousUrl);
     await page.getByRole('button', { name: 'Change Their recorded name', exact: true }).click();
     await expect(page.getByRole('combobox', { name: 'Search recorded names', exact: true })).toBeEnabled();
@@ -189,9 +166,9 @@ test('voucher testing can generate a third message with fresh choices while reta
     await expect(page.getByRole('button', { name: 'Countries & real places', exact: true })).toBeEnabled();
     await page.getByRole('button', { name: 'Return to review', exact: true }).click();
   }
-  expect(resets).toBe(2);
+  expect(fixture.recoveries || 0).toBe(0);
   await page.reload({ waitUntil: 'domcontentloaded' });
-  await expect(page.getByRole('button', { name: 'Generate another test message', exact: true })).toBeEnabled();
+  await expect(page.locator('.smw-message-result audio')).toHaveCount(0);
 });
 
 for (const width of [390, 1365]) {
@@ -206,7 +183,7 @@ for (const width of [390, 1365]) {
     await page.getByRole('button', { name: 'Start Again', exact: true }).click();
     await expect(page.locator('.smw-step-count')).toHaveText('Step 1 of 7');
     await expect(page.getByRole('heading', { name: 'What name should Santa say?', exact: true })).toBeVisible();
-    await expect(page.locator('.smw-audio-disclaimer')).toContainText('Dixie');
+    await expect(page.getByRole('combobox', { name: 'Search recorded names', exact: true })).toBeEnabled();
     for (let step = 1; step <= 7; step++) {
       await expect(page.locator('.smw-step-count')).toHaveText(`Step ${step} of 7`);
       if (step > 1) await expect(page.locator('.smw-actions:not([hidden])').getByRole('button', { name: 'Back', exact: true })).toBeVisible();
@@ -227,7 +204,7 @@ test('voucher recording check failure retains entitlement and recovers on return
     : route.fulfill({ status: 503, json: { error: 'Service unavailable.' } }) });
   const allowance = page.locator('.smw-allowance');
   await expect(allowance).toContainText('Your voucher is recognised, but Santa’s recording service is temporarily unavailable.');
-  await expect(page.locator('.smw-voucher-entitlement')).toContainText('you can generate unlimited messages');
+  await expect(page.locator('.smw-voucher-entitlement')).toContainText('subject to request limits');
   await expect(page.getByRole('alert')).toHaveCount(1);
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
   for (const width of [1365, 390, 320]) {
@@ -466,8 +443,7 @@ test('review create placement on desktop and phones, real MP3 playback/download,
   const file = await downloaded;
   expect(file.suggestedFilename()).toBe('santa-message-for-D’Arcy.mp3');
   expect(submissions).toHaveLength(1);
-  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
-  await page.getByRole('button', { name: 'Edit and regenerate once', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
   await page.getByRole('button', { name: 'Change Trying hard at', exact: true }).click();
   await expect(result).toBeHidden();
   expect(await page.evaluate(url => window.revokedAudioUrls.includes(url), url)).toBe(false);
@@ -612,10 +588,10 @@ test('full-message playback coordinates with radio and pagehide stops playback w
   expect(await page.evaluate(async url => {
     try { return (await fetch(url)).ok; } catch { return false; }
   }, url)).toBe(true);
-  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
 });
 
-test('confirmation cancellation, Escape, focus trap and mobile layout never spend an allowance', async ({ page }) => {
+test('confirmation cancellation, Escape, focus trap and mobile layout never generate a recording', async ({ page }) => {
   const fixture = await openReview(page);
   await page.setViewportSize({ width: 320, height: 740 });
   const create = page.getByRole('button', { name: 'Create message', exact: true });
@@ -623,8 +599,8 @@ test('confirmation cancellation, Escape, focus trap and mobile layout never spen
   const dialog = page.getByRole('dialog', { name: 'Are you happy with your selection?' });
   const back = dialog.getByRole('button', { name: 'Go back', exact: true });
   await expect(back).toBeFocused();
-  await expect(dialog).toContainText('county or state');
-  await expect(dialog).toContainText('one remaining correction');
+  await expect(dialog).toContainText('temporary MP3');
+  await expect(dialog).toContainText('We do not keep a copy or message history');
   await page.keyboard.press('Shift+Tab');
   await expect(dialog.getByRole('button', { name: 'Create message', exact: true })).toBeFocused();
   await page.keyboard.press('Tab');
@@ -640,21 +616,20 @@ test('confirmation cancellation, Escape, focus trap and mobile layout never spen
   await create.click();
   await back.click();
   expect(fixture.posts).toHaveLength(0);
-  expect(fixture.state.remaining).toBe(2);
+  expect(fixture.state.temporary).toBe(true);
 });
 
-test('two successful messages preserve downloads through correction failures, refresh, tabs and browser Back', async ({ page, context }) => {
+test('temporary downloads survive failed replacement but never recover after refresh, new tabs or navigation', async ({ page, context }) => {
   test.setTimeout(90000);
   const fixture = await openReview(page);
   await confirmMessage(page);
   const result = page.getByRole('region', { name: 'Your finished Santa message' });
   const download = result.getByRole('link', { name: /Download MP3/ });
   await expect(download).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Change Their recorded name', exact: true })).toBeDisabled();
-  await expect(page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Change Their recorded name', exact: true })).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true })).toBeEnabled();
   const create = page.getByRole('button', { name: 'Create message', exact: true });
-  await expect(create).toBeDisabled();
-  expect(await create.evaluate(node => getComputedStyle(node).backgroundColor)).toBe('rgb(64, 84, 74)');
+  await expect(create).toBeEnabled();
   for (const width of [1365, 390, 320]) {
     await page.setViewportSize({ width, height: 844 });
     const geometry = await download.evaluate(node => {
@@ -675,7 +650,6 @@ test('two successful messages preserve downloads through correction failures, re
   }
   expect(fixture.posts).toHaveLength(1);
   const original = await download.getAttribute('href');
-  await page.getByRole('button', { name: 'Edit and regenerate once', exact: true }).click();
   await page.getByRole('button', { name: 'Change Trying hard at', exact: true }).click();
   await page.getByRole('option', { name: 'Playing a musical instrument', exact: true }).click();
   await page.getByRole('button', { name: 'Return to review', exact: true }).click();
@@ -683,7 +657,7 @@ test('two successful messages preserve downloads through correction failures, re
   fixture.fail = true;
   await confirmMessage(page);
   await expect(page.getByRole('alert')).toContainText('Fixture recording unavailable');
-  expect(fixture.state.remaining).toBe(1);
+  expect(fixture.state.temporary).toBe(true);
   await expect(download).toHaveAttribute('href', original);
   fixture.fail = false;
   let release;
@@ -692,9 +666,9 @@ test('two successful messages preserve downloads through correction failures, re
   await expect(page.getByRole('progressbar', { name: 'Preparing your message' })).toBeVisible();
   await expect(download).toHaveAttribute('href', original);
   release();
-  await expect(page.getByText('Both messages have been created.', { exact: false })).toBeVisible();
-  await expect(create).toBeDisabled();
-  expect(fixture.state.successes).toBe(2);
+  await expect(page.getByText('Your message is ready to play and download.', { exact: false })).toBeVisible();
+  await expect(create).toBeEnabled();
+  expect(fixture.state.successes).toBeUndefined();
   expect(fixture.posts.at(-1).name).toBe('dixie-variant');
   expect(fixture.posts.at(-1).place).toBe('forest');
   expect(fixture.posts.at(-1).activity).toBe('instrument');
@@ -704,19 +678,15 @@ test('two successful messages preserve downloads through correction failures, re
   await expect(download).toHaveAttribute('download', 'santa-message-for-D’Arcy.mp3');
   const postCount = fixture.posts.length;
   await page.reload();
-  await expect(download).toBeVisible();
-  await expect(create).toBeDisabled();
-  await expect(page.locator('.smw-summary-row').first()).toContainText('Dixie — Recording 2');
+  await expect(download).toHaveCount(0);
   const tab = await context.newPage();
   await tab.route('**/api/santa-workshop-catalogue', route => route.fulfill({ json: workshopCatalogueFixture }));
   await tab.goto(path);
-  await expect(tab.getByRole('link', { name: /Download MP3/ })).toBeVisible();
-  await expect(tab.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
+  await expect(tab.getByRole('link', { name: /Download MP3/ })).toHaveCount(0);
   await tab.close();
   await page.getByRole('link', { name: 'Santa Radio home', exact: true }).click();
   await expect(page.locator('.smw-page')).toHaveCount(0);
   await page.goBack();
-  await expect(download).toBeVisible();
-  await expect(create).toBeDisabled();
+  await expect(download).toHaveCount(0);
   expect(fixture.posts).toHaveLength(postCount);
 });

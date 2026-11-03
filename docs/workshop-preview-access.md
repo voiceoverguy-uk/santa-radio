@@ -139,19 +139,16 @@ Recording release checks now skip reporting probes entirely, and optional
 reporting readiness never determines overall recording readiness. Staff
 diagnostics may still inspect historical reporting separately.
 
-This does not remove the two generation-state tables: those enforce successful
-generation counts, exact identity locks, idempotency and shared reservations.
-Signed access cookies alone cannot enforce those rules against replay or
-concurrent requests on stateless Vercel. Missing mandatory generation state
-therefore still fails closed; do not deploy this change as a claimed fix for
-that missing state.
+The owner has also removed durable generation counts, identity locks and
+recovery from the requirements. Creation does not use either generation table.
+Voucher/payment validation and existing expiring request-abuse buckets remain
+enforced; they are not a generation-history store.
 
 Local verification uses the isolated `tests/helpers/missing-studio-storage.mjs`
 Node preload to simulate missing reporting alone, and missing reporting plus
 generation storage, without dropping tables or deleting records. Real-source
-creation, playback, download and recovery must succeed in the former case;
-valid-voucher access but blocked generation is the expected protected result in
-the latter.
+creation, playback and download must succeed in both cases. Invalid access must
+remain rejected. Reload recovery is deliberately unavailable.
 
 ### Production approval and rollout boundary
 
@@ -159,11 +156,10 @@ The owner confirmed that the Replit Production Database connection hostname
 matches the Vercel production-build endpoint. Use the Replit-managed schema
 workflow; do not request a new Neon account or copy credentials.
 
-The reviewed pending managed schema diff is broader than the recording repair:
-seven new tables, one added history column and two foreign keys. Only the two
-generation tables are necessary here. Do not describe approving the full diff
-as approving just those two tables, and do not delete existing development
-tables to force a smaller diff.
+No production schema sync is needed for temporary Studio creation. Do not
+apply the previously reviewed broader pending diff or create optional history
+tables merely to enable this flow. Preserve existing development/production
+tables and records.
 
 Coordinate the cutover before enabling generation tables: an older serving
 renderer can write MP3 bytes when those tables become available. Keep Studio
@@ -371,17 +367,19 @@ Focused checks:
 
 ## Recording repair and live release boundary
 
-Metadata-only results still require the two shared generation tables. Do not
-fake a fresh allowance, fall back to per-instance state, or use the unrelated
-security limiter as an ad-hoc message database if these tables are unavailable.
-No schema is created at startup or inside requests.
+Studio is now temporary generation only. No generation records, successful
+message counts, saved choices, identity locks, idempotency records or recovery
+are retained. This explicitly supersedes the earlier two-success model.
+Existing voucher/payment entitlement checks and expiring abuse limits stay
+enforced; no schema is created at startup or inside requests.
 
-An authorised recovery GET (`?audio=1`) reads the committed operation and choices,
-re-resolves the source recordings and re-stitches them under the same shared,
-fenced reservation used by POST. An idempotent replay re-renders but never adds
-a success, changes the locked identity or overwrites the latest correction.
-Both recovery and creation consume render-rate capacity; both are bounded by
-the same execution deadline and temporary-file cleanup.
+An authorised GET returns temporary-service availability, not message counts
+or saved choices. An authorised recovery GET (`?audio=1`) returns 410 without
+reading historical records. POST validates the exact source IDs, resolves
+Mark's source clips, stitches in a request-local temporary directory and returns
+the MP3 with private/no-store headers. Working files are cleaned on every exit.
+The open browser page holds a Blob URL for playback/download; replacement or
+unmount revokes it. Refresh/leave discards the result.
 
 A non-public `studio_service_unavailable` runtime log records a fixed failure
 stage/class and the driver's effective non-secret database host/name/port for
@@ -398,13 +396,14 @@ non-archiving renderer.
 The separate `npm run check:studio-readiness` command retains the strict,
 read-only Studio check. In a genuine Vercel Production environment it checks
 the current binding, prints sanitised identity/schema results, and exits
-unsuccessfully if voucher security or generation storage is unavailable.
+unsuccessfully if the existing voucher security storage is unavailable.
 Optional reporting is not queried. Local and Preview environments explicitly
 skip the production check; do not spoof the environment to claim live readiness.
 The command never creates or alters schema.
 
-Runtime enforcement is unchanged: Studio status and creation fail closed when
-mandatory storage is missing. Successful website compilation is not a claim that
+Studio status and creation still fail closed if genuine access or abuse
+protection is unavailable, but never require generation/reporting history.
+Successful website compilation is not a claim that
 Studio generation works. A successful Studio release still requires verified
 voucher entry, actual generation, playback and download on the serving version.
 
@@ -413,16 +412,10 @@ recording-status endpoint returned 503. This establishes the failing stage, not
 which database or underlying SQL error caused it. Before claiming the live
 repair is complete, release the tested repair to the actual www Vercel project
 with separate approval, inspect its private runtime event, and verify the full
-flow there. The explicit readiness check can identify missing metadata storage
-without blocking unrelated website compilation. If that verified database lacks
-metadata tables, obtain approval
-for that verified target and apply the existing schema using its supported
-migration process. Replit production schema findings alone are not target proof.
+flow there. Do not request creation of the former metadata tables for this
+temporary flow. A passing local test is not a live-production result.
 
-New MP3s contain their committed selection and per-entitlement epoch in private
-response headers, so concurrent correction/recovery does not attach an old set
-of choices to newer audio. Sequence numbers are not compared across rotated
-tester entitlements. Cancellation reconciles any in-flight database reservation
-before releasing its exact fence, including a lease that commits after the
-HTTP deadline. Existing legacy audio remains retrievable even if an upstream
-source has disappeared; newly generated audio is not archived.
+The private response includes only the current recording selection for the
+browser's matching download/gift labels, never a persisted sequence or epoch.
+Cancellation aborts downloads/rendering and removes working files. Historical
+records are left untouched; no new generated audio or history is archived.

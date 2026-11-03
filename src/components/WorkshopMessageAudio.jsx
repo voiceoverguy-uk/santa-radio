@@ -41,6 +41,9 @@ export default function WorkshopMessageAudio({
   const [preparationMessage, setPreparationMessage] = useState('');
   const [finishedName, setFinishedName] = useState(null);
   const writtenName = getWorkshopWrittenName(record?.name || '', spelling);
+  const finishedSpelling = finishedName?.id === record?.id ? spelling : finishedName?.spelling;
+  const finishedWrittenName = finishedName
+    ? getWorkshopWrittenName(finishedName.name, finishedSpelling) : writtenName;
   const busy = phase === 'preparing' || phase === 'receiving';
   const status = generation.state;
   const epoch = status?.accessEpoch || generation.epoch || 0;
@@ -127,7 +130,7 @@ export default function WorkshopMessageAudio({
     setUrl(objectUrl);
     setPhase('ready');
     setError('');
-    setFinishedName({ name: record?.name || '', spelling });
+    setFinishedName({ id: record?.id, name: record?.name || '', spelling });
     return receivedSelection.current;
   };
 
@@ -225,9 +228,9 @@ export default function WorkshopMessageAudio({
     {error && <div className="smw-message-result" role="alert"><p>{error}</p>
     </div>}
     {url && <section className="smw-message-result" aria-label="Your finished Santa message">
-      <h4>Santa’s message for {finishedName ? getWorkshopWrittenName(finishedName.name, finishedName.spelling) : writtenName}</h4>
+      <h4>Santa’s message for {finishedWrittenName}</h4>
       <p role="status">Your message is ready to play and download. It is only available on this open page.</p>
-      <audio ref={audioRef} src={url} controls preload="metadata" aria-label={`Play Santa’s message for ${writtenName}`}
+      <audio ref={audioRef} src={url} controls preload="metadata" aria-label={`Play Santa’s message for ${finishedWrittenName}`}
         onPlay={event => {
           const resume = radio?.pauseForMessage?.();
           if (resume) resumeRef.current = resume;
@@ -236,7 +239,7 @@ export default function WorkshopMessageAudio({
         onError={() => { finishPlayback(); setError('Your browser could not play this MP3. You can still try downloading it.'); }} />
       <div className="smw-download-actions"><a className="smw-button smw-button-download" href={url}
         download={getWorkshopDownloadName(finishedName?.name || record?.name || '',
-          finishedName?.spelling ?? spelling)}>Download MP3 <span aria-hidden="true">↓</span></a></div>
+          finishedSpelling ?? spelling)}>Download MP3 <span aria-hidden="true">↓</span></a></div>
       <p className="smw-catalogue-review-note">Save your MP3 now. Leaving or refreshing this page removes the temporary recording. A download click cannot confirm that your browser saved the file.</p>
     </section>}
     {confirming && <dialog ref={dialogRef} className="smw-confirmation" aria-labelledby="smw-confirm-title"

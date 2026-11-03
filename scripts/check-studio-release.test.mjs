@@ -17,7 +17,7 @@ test('local and Preview builds never claim production readiness or connect to st
     assert.equal(result.checked, false);
   }
 });
-test('explicit production Studio readiness requires shared generation storage, not optional usage reporting', async () => {
+test('explicit production Studio readiness requires access protection, not generation history or usage reporting', async () => {
   for (const recordingReady of [true, false]) {
     const result = await checkStudioRelease({
       env: { VERCEL: '1', VERCEL_ENV: 'production' },

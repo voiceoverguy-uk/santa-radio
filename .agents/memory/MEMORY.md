@@ -76,7 +76,7 @@
 - [Mugshots preview direction](mugshots-preview-direction.md) — Approved photograph-led hall of fame; do not restore the cartoon icon.
 - [Santa recipient previews](santa-recipient-preview-scope.md) — Chosen/generated child takes priority; random gifts/audio only before personalisation.
 - [Studio letter editorial policy](studio-letter-editorial-policy.md) — Curated contextual prose, not live AI; full choice audit stays private and spelling edits must not reshuffle wording.
-- [Studio single-message allowance](studio-single-message-allowance.md) — One success plus one correction; lock exact spoken name/full destination, not written spelling or future family policy.
+- [Studio temporary generation policy](studio-single-message-allowance.md) — No durable counts, identity locks or recovery; preserve valid access and request-abuse protection.
 - [Studio audio retention](studio-audio-retention.md) — Finished MP3s are temporary for the user's session, not an archive; do not introduce permanent MP3 storage.
 - [Studio gift delivery](studio-gift-delivery-scope.md) — Local individual-message gifts require MP3 success; no free/promotional exports, live checkout or family/email fulfilment.
 - [Studio promotion typography](studio-promotion-typography.md) — Regular live promotion text and shared gift heading; keep document artwork and watermarks unchanged.
