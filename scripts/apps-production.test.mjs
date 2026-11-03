@@ -166,7 +166,13 @@ test('built Apps HTML starts on first promotional images and serves all local We
   assert.doesNotMatch(visibleHtml, /Santa Dash’s three owner-supplied promotional artworks are not live gameplay/);
   assert.doesNotMatch(visibleHtml, /iOS screenshots only; the Amazon app’s appearance may differ|app-screenshots-note/);
   const dashImages = [...dash.matchAll(/<img\b[^>]*>/g)].map(match => match[0]).filter(image => !image.includes('download-on-the-app-store.svg'));
-   assert.equal(dashImages.length, 5);
+   assert.equal(dashImages.length, 6);
+   assert.match(dash, /santa-dash-apps-gameplay-poster\.webp/);
+   assert.doesNotMatch(dash, /<video/);
+   const gameplay = await get('/media/santa-dash-apps-gameplay-v1.mp4');
+   assert.equal(gameplay.status, 200);
+   assert.equal(gameplay.headers.get('content-type'), 'video/mp4');
+   await gameplay.body.cancel();
    for (const [index, image] of dashImages.slice(0, 1).entries()) {
     const src = image.match(/src="([^"]+)"/)?.[1];
     assert.match(src, /^\/assets\/santa-dash-screen-.*\.webp$/);

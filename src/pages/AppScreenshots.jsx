@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import AppScreenshotImage from './AppScreenshotImage.jsx';
+import AppScreenshotVideo from './AppScreenshotVideo.jsx';
 import './AppScreenshots.css';
 
 const santaRadioTabs = ['Radio', 'Tracker', 'MugShots', 'Artists', 'Games'];
@@ -26,6 +27,11 @@ export default function AppScreenshots({
   const [focused, setFocused] = useState(false);
   const [autoplayEnabled, setAutoplayEnabled] = useState(true);
   const [hidden, setHidden] = useState(false);
+  const [inViewport, setInViewport] = useState(false);
+  const [completedVideo, setCompletedVideo] = useState(null);
+  const [videoFailed, setVideoFailed] = useState({});
+  const figureRef = useRef(null);
+  const mixedMedia = slides.some(slide => slide.video);
   const santaRadioPreview = interactiveMode === 'santa-radio';
   const voicemailPreview = deviceStyle === 'voicemail';
   const darkLandscapeDevice = deviceStyle === 'dark-landscape';
@@ -45,19 +51,46 @@ export default function AppScreenshots({
     };
   }, []);
 
-  const rotating = slides.length > 1 && autoplayEnabled && !reducedMotion && !hovered && !focused && !hidden;
+  useEffect(() => {
+    if (!mixedMedia || !('IntersectionObserver' in window)) return;
+    const observer = new IntersectionObserver(([entry]) => setInViewport(entry.isIntersecting), { threshold: 0 });
+    observer.observe(figureRef.current);
+    return () => observer.disconnect();
+  }, [mixedMedia]);
+
+  useEffect(() => {
+    if (mixedMedia && reducedMotion) setActive(0);
+  }, [mixedMedia, reducedMotion]);
+
+  const rotating = slides.length > 1 && autoplayEnabled && !reducedMotion && !hovered && !focused && !hidden && (!mixedMedia || inViewport);
+  const advance = useCallback(() => {
+    const candidates = randomOrder
+      ? slides.map((_, index) => index).filter(index => index !== active && ready[index] && !failed[index] && !videoFailed[index])
+      : [(active + 1) % slides.length].filter(index => ready[index]);
+    if (candidates.length) {
+      setCompletedVideo(null);
+      setActive(candidates[randomOrder ? Math.floor(Math.random() * candidates.length) : 0]);
+    }
+  }, [active, ready, failed, videoFailed, randomOrder, slides]);
+  const failVideo = useCallback(() => {
+    setVideoFailed(previous => ({ ...previous, [active]: true }));
+  }, [active]);
   useEffect(() => {
     // Keep the current image until its successor has fully decoded.
     if (!rotating || !ready[active]) return;
+    if (slides[active].video && !videoFailed[active]) {
+      if (completedVideo === active) advance();
+      return;
+    }
     const candidates = randomOrder
-      ? slides.map((_, index) => index).filter(index => index !== active && ready[index] && !failed[index])
+      ? slides.map((_, index) => index).filter(index => index !== active && ready[index] && !failed[index] && !videoFailed[index])
       : [(active + 1) % slides.length].filter(index => ready[index]);
     if (!candidates.length) return;
     const timer = window.setTimeout(() => {
-      setActive(candidates[randomOrder ? Math.floor(Math.random() * candidates.length) : 0]);
+      advance();
     }, 5000);
     return () => window.clearTimeout(timer);
-  }, [active, ready, failed, rotating, slides.length, randomOrder]);
+  }, [active, ready, failed, rotating, slides, randomOrder, advance, videoFailed, completedVideo]);
 
   const markReady = useCallback(index => {
     setReady(previous => previous[index] ? previous : { ...previous, [index]: true });
@@ -96,6 +129,8 @@ export default function AppScreenshots({
 
   return (
     <figure
+      ref={figureRef}
+      data-mixed-media={mixedMedia || undefined}
       className={`app-screenshots ${artworkPresentation ? 'app-screenshots-artwork' : 'app-screenshots-device'}${slides[0].width > slides[0].height ? ' app-screenshots-landscape' : ''}${!artworkPresentation && deviceStyle === 'classic' ? ' app-screenshots-classic' : ''}${darkLandscapeDevice ? ' app-screenshots-dark-landscape' : ''}${santaRadioPreview ? ' app-screenshots-santa-radio' : ''}${voicemailPreview ? ' app-screenshots-voicemail' : ''}`}
       role="region"
       aria-roledescription={slides.length > 1 ? 'carousel' : undefined}
@@ -122,7 +157,18 @@ export default function AppScreenshots({
           </button>
         )}
         <div className="app-screenshots-stack" style={{ aspectRatio: `${slides[0].width} / ${slides[0].height}` }}>
-          {slides.map((slide, index) => (
+          {slides.map((slide, index) => slide.video ? (
+            <div key={`${slide.label}-${index}`}
+              className={`app-screenshot-slide${active === index ? ' is-active' : ''}`}
+              aria-hidden={active !== index}>
+              <AppScreenshotImage slide={slide} index={index} onReady={markReady} onFailure={markFailed}
+                className="app-screenshot-video-poster" aria-hidden={active === index && !reducedMotion && !videoFailed[index]} />
+              {active === index && !reducedMotion && !videoFailed[index] && (
+                <AppScreenshotVideo slide={slide} playing={rotating}
+                  onComplete={() => setCompletedVideo(index)} onFailure={failVideo} />
+              )}
+            </div>
+          ) : (
             <AppScreenshotImage
               key={`${slide.label}-${index}`}
               className={`app-screenshot-slide${active === index ? ' is-active' : ''}`}
@@ -202,6 +248,7 @@ export default function AppScreenshots({
         </div>
       )}
       {Object.keys(failed).length > 0 && <p role="status" className="app-screenshots-note">Some {imageType}s could not load. Please reload to try again.</p>}
+      {Object.keys(videoFailed).length > 0 && <p role="status" className="app-screenshots-note">Gameplay could not play. Still previews remain available.</p>}
     </figure>
   );
 }

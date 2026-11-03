@@ -2,6 +2,7 @@ import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { readFile, stat } from 'node:fs/promises';
+import { execFileSync } from 'node:child_process';
 
 let server, base;
 const path = '/media/santa-dash-gameplay-v1.mp4';
@@ -63,4 +64,31 @@ test('MP4 has faststart metadata before media bytes and the approved exact lands
   }
   assert.ok(moov >= 0 && mdat > moov);
   assert.ok(bytes.length < 1_500_000);
+});
+
+test('Apps recording preserves full landscape footage as silent H264 with faststart and range delivery', async () => {
+  const path = '/media/santa-dash-apps-gameplay-v1.mp4';
+  const bytes = await readFile(`public${path}`);
+  const metadata = JSON.parse(execFileSync('ffprobe', ['-v', 'error', '-show_streams', '-show_format', '-of', 'json', `public${path}`]));
+  assert.equal(metadata.streams.length, 1, 'no audio transfer');
+  const [video] = metadata.streams;
+  assert.equal(video.codec_name, 'h264');
+  assert.equal(video.pix_fmt, 'yuv420p');
+  assert.equal(video.width, 1600);
+  assert.equal(video.height, 736);
+  assert.ok(Math.abs(Number(video.duration) - 9.033333) < .04);
+  assert.ok(!video.side_data_list?.some(item => item.rotation), 'orientation baked into pixels');
+  assert.ok(bytes.indexOf(Buffer.from('moov')) < bytes.indexOf(Buffer.from('mdat')));
+  assert.ok(bytes.length < 3_000_000);
+  const head = await fetch(base + path, { method: 'HEAD' });
+  assert.equal(head.status, 200);
+  assert.equal(head.headers.get('content-type'), 'video/mp4');
+  assert.equal(Number(head.headers.get('content-length')), bytes.length);
+  const range = await fetch(base + path, { headers: { range: 'bytes=0-1' } });
+  assert.equal(range.status, 206);
+  assert.deepEqual(Buffer.from(await range.arrayBuffer()), bytes.subarray(0, 2));
+  const poster = await fetch(base + '/media/santa-dash-apps-gameplay-poster.webp');
+  assert.equal(poster.status, 200);
+  assert.equal(poster.headers.get('content-type'), 'image/webp');
+  await poster.body.cancel();
 });

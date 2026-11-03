@@ -254,6 +254,9 @@ export const christmasApps = [
         alt: 'Santa’s Shop reindeer screen showing Dasher, Dancer and Prancer.' },
       { label: 'Sleighs', image: santaDashSleighs, width: 2622, height: 1206,
         alt: 'Santa’s Shop sleighs screen showing Tea Crate, Rudolph Ride and Lantern Sledge.' },
+      { label: 'Gameplay', image: '/media/santa-dash-apps-gameplay-poster.webp',
+        video: '/media/santa-dash-apps-gameplay-v1.mp4', width: 1600, height: 736,
+        alt: 'Silent Santa Dash gameplay recording: Santa jumps across snowy rooftops collecting mince pies, with the score and game controls visible.' },
     ],
     slideshow: {
       heading: 'Santa Dash promotional artwork',

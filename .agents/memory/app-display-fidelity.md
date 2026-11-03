@@ -54,6 +54,16 @@ Santa Dash on `/apps` also includes the owner's four supplied title/shop capture
 
 **How to apply:** Keep the captures in the existing landscape handset and keep this Apps-page slideshow separate from the homepage's artwork and gameplay inset.
 
+The owner also approved adding their short gameplay recording to this Apps-page
+rotation, without removing the five stills or changing the homepage promotion.
+The accompanying website screenshot is a destination reference, not a slide.
+
+**Why:** The recording is an addition to the approved handset, not a replacement
+for the artwork or permission to reuse the homepage's separate recording.
+
+**How to apply:** Preserve the complete score, controls and action with silent
+inline playback; keep the two promotions' recordings and behaviour independent.
+
 A Safari broken-image screenshot does not establish that artwork is missing or corrupt. Keep recovery measures separate from claims about the original cause.
 
 **Why:** Reported broken displays have coexisted with intact originals, successful preview delivery and successful Chromium decoding. A compatible fallback can reduce failures without proving which Safari request or decoder failed.
