@@ -123,6 +123,7 @@ for (const width of [390, 1365]) {
 }
 
 test('voucher testing can generate a third message with fresh choices while retaining previous downloads', async ({ page }) => {
+  test.setTimeout(60000);
   const fixture = await openReview(page, { tester: true });
   let resets = 0;
   await page.route('**/api/santa-workshop-access', async route => {
@@ -135,7 +136,14 @@ test('voucher testing can generate a third message with fresh choices while reta
     return route.fulfill({ response });
   });
   for (let number = 1; number <= 3; number++) {
+    // After the old session reached sequence 2, lose the first response in the
+    // next session. Recovery must compare sequences within the new entitlement.
+    const recoveriesBefore = fixture.recoveries || 0;
+    if (number === 2) fixture.dropNext = true;
     await confirmMessage(page);
+    if (number === 2) {
+      await expect.poll(() => fixture.recoveries || 0).toBeGreaterThan(recoveriesBefore);
+    }
     await expect(page.getByRole('link', { name: 'Download MP3', exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Generate another test message', exact: true })).toBeEnabled();
     expect(fixture.posts.length).toBe(number);
@@ -143,7 +151,7 @@ test('voucher testing can generate a third message with fresh choices while reta
     if (number === 1) {
       // Existing voucher testers may already have spent both successes.
       fixture.state = { ...fixture.state, successes: 2, remaining: 0 };
-      await page.reload();
+      await page.reload({ waitUntil: 'domcontentloaded' });
       await expect(page.getByRole('button', { name: 'Generate another test message', exact: true })).toBeEnabled();
     }
     const previousUrl = await page.getByRole('link', { name: 'Download MP3', exact: true }).getAttribute('href');
@@ -158,7 +166,7 @@ test('voucher testing can generate a third message with fresh choices while reta
     await page.getByRole('button', { name: 'Return to review', exact: true }).click();
   }
   expect(resets).toBe(2);
-  await page.reload();
+  await page.reload({ waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('button', { name: 'Generate another test message', exact: true })).toBeEnabled();
 });
 
@@ -484,7 +492,7 @@ test('retryable preparation errors and cancellation spend no successful allowanc
 test('school voucher form opens real long-form generation and playable MP3 without exhausting another parent', async ({ page, browser }) => {
   test.skip(Date.now() < SCHOOL_TEST_START || Date.now() >= SCHOOL_TEST_DEADLINE,
     'Real school access is date-bound; deterministic server tests cover every cutoff outside this window.');
-  test.setTimeout(150000);
+  test.setTimeout(240000);
   // No mocks for names, catalogue, access, generation, or MP3 decoding.
   await openReview(page, { live: true, school: true });
   const requests = [];
@@ -511,6 +519,27 @@ test('school voucher form opens real long-form generation and playable MP3 witho
   expect(download.suggestedFilename()).toMatch(/^santa-message-for-Arabella\.mp3$/);
   await download.saveAs('generated-artifacts/studio-live-hosted-message.mp3');
   expect(readFileSync(await download.path()).length).toBeGreaterThan(10000);
+  // Exercise real cross-request recovery: the server has stored no MP3 bytes.
+  // Re-stitch the committed choices and decode the result in the browser.
+  const recovered = await page.evaluate(async () => {
+    const response = await fetch('/api/santa-studio-message?audio=1', {
+      credentials: 'same-origin', cache: 'no-store',
+    });
+    if (!response.ok) return { status: response.status };
+    const bytes = await response.arrayBuffer();
+    const context = new AudioContext();
+    try {
+      const decoded = await context.decodeAudioData(bytes);
+      return { status: response.status, duration: decoded.duration,
+        channels: decoded.numberOfChannels, samples: decoded.length,
+        sequence: Number(response.headers.get('x-studio-generation')) };
+    } finally { await context.close(); }
+  });
+  expect(recovered.status).toBe(200);
+  expect(recovered.sequence).toBe(1);
+  expect(recovered.duration).toBeGreaterThan(10);
+  expect(recovered.samples).toBeGreaterThan(100000);
+  expect(recovered.channels).toBeGreaterThan(0);
   const origin = new URL(page.url()).origin;
   const secondParent = await browser.newContext({ baseURL: origin });
   try {

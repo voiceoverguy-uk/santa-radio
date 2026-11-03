@@ -96,8 +96,9 @@ export default function StudioStorageDiagnostic() {
               </tr>)}</tbody>
             </table>
           </div>}
-          <p><strong>Retention warning:</strong> the current generation implementation stores complete MP3s
-            without automatic expiry. Passing these checks does not approve that retention or enable storage.</p>
+          <p><strong>Audio retention:</strong> new recordings keep metadata only in shared storage;
+            finished MP3s stay in request/browser memory. Existing legacy records are not deleted.
+            Passing schema checks does not prove that audio rendering works.</p>
         </div>
       )}
     </section>

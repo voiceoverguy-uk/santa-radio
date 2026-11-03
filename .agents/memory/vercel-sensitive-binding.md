@@ -13,7 +13,9 @@ database.
 
 **How to apply:** Inspect the deployment actually assigned to the www domain,
 not merely the latest project target, which may still be building. If the secret
-is unreadable and no resource association proves the destination, use an
-authorised, staff-protected read-only diagnostic inside the actual runtime.
+is unreadable and no resource association proves the destination, use a
+read-only production-build binding check, private runtime events or an
+authorised staff diagnostic. Do not make staff sign-in a prerequisite for a
+recording repair. Build binding evidence is not serving-runtime verification.
 Do not rotate, replace or expose credentials to work around the limitation,
 and obtain approval before deployment or database changes.

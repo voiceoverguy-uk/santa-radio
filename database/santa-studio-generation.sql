@@ -15,6 +15,8 @@ CREATE TABLE IF NOT EXISTS public.santa_studio_generation_results (
   operation uuid NOT NULL,
   request_hash char(64) NOT NULL,
   sequence integer NOT NULL CHECK (sequence BETWEEN 1 AND 2),
+  -- Legacy compatibility column. New generation records store zero bytes;
+  -- finished MP3s are request/browser-local and are never archived here.
   audio bytea NOT NULL,
   created_at timestamptz,
   PRIMARY KEY (access_key, operation),

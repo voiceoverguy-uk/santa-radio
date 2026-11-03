@@ -16,6 +16,7 @@ export async function mockStudioGeneration(page, { record = { id: 'dixie-variant
     const request = route.request();
     if (request.method() === 'GET') {
       if (new URL(request.url()).searchParams.get('audio') === '1') {
+        fixture.recoveries = (fixture.recoveries || 0) + 1;
         return route.fulfill({ contentType: 'audio/mpeg', body: fixture.audio });
       }
       return route.fulfill({ json: fixture.state });
@@ -32,6 +33,10 @@ export async function mockStudioGeneration(page, { record = { id: 'dixie-variant
     }
     fixture.state = { successes: state.successes + 1, remaining: state.remaining - 1,
       locked: identity, choices: payload, record, pending: false, testerCanStartAnother: tester };
+    if (fixture.dropNext) {
+      fixture.dropNext = false;
+      return route.abort('failed');
+    }
     return route.fulfill({ contentType: 'audio/mpeg', headers: { 'X-Studio-Generation': String(fixture.state.successes) },
       body: fixture.audio });
   });

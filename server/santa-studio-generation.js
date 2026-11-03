@@ -19,6 +19,9 @@ export function studioGenerationKey(req) {
 export function studioIdentity(choices, category) {
   return { name: choices.name, category, place: choices.place, region: choices.region || '' };
 }
+// Correlation only, not an access capability. Allows clients to distinguish
+// sequence 1 in a new authorised tester session from sequence 1 in the old one.
+export const studioGenerationEpoch = key => hash(`studio-response:${key}`);
 export function studioRequestHash(choices) {
   return hash(JSON.stringify(['name', 'age', 'activity', 'achievement', 'treat', 'place', 'region', 'talent']
     .map(key => key === 'talent'
@@ -48,10 +51,16 @@ export function createStudioGenerationStore(pool = databasePool()) {
         FROM public.santa_studio_generation_access WHERE access_key=$1`, [key]);
       return generationStatus(result.rows[0]);
     },
-    async audio(key) {
-      const result = await pool.query(`SELECT audio FROM public.santa_studio_generation_results
-        WHERE access_key=$1 ORDER BY sequence DESC LIMIT 1`, [key]);
-      return result.rows[0]?.audio;
+    async recovery(key) {
+      const result = await pool.query(`SELECT r.operation, r.sequence, a.latest_choices AS choices,
+        CASE WHEN octet_length(r.audio)>0 THEN r.audio ELSE NULL END AS legacy_audio
+        FROM public.santa_studio_generation_results r
+        JOIN public.santa_studio_generation_access a ON a.access_key=r.access_key
+        WHERE r.access_key=$1 ORDER BY r.sequence DESC LIMIT 1`, [key]);
+      const row = result.rows[0];
+      if (!row) return null;
+      const { legacy_audio, ...metadata } = row;
+      return legacy_audio?.length ? { ...metadata, legacyAudio: legacy_audio } : metadata;
     },
     async reserve(key, operation, choices, identity) {
       return transaction(async client => {
@@ -60,35 +69,45 @@ export function createStudioGenerationStore(pool = databasePool()) {
         const { rows: [row] } = await client.query(`SELECT *, reserved_until > clock_timestamp() AS pending
           FROM public.santa_studio_generation_access WHERE access_key=$1 FOR UPDATE`, [key]);
         const requestHash = studioRequestHash(choices);
-        const previous = await client.query(`SELECT audio, request_hash, sequence FROM public.santa_studio_generation_results
+        const previous = await client.query(`SELECT request_hash, sequence FROM public.santa_studio_generation_results
           WHERE access_key=$1 AND operation=$2`, [key, operation]);
         if (previous.rowCount) {
           if (previous.rows[0].request_hash !== requestHash) throw problem(409, 'This request was already used for different choices.');
-          return { audio: previous.rows[0].audio, sequence: previous.rows[0].sequence };
         }
         if (row.locked_identity && Object.keys(row.locked_identity)
           .some(key => row.locked_identity[key] !== identity[key])) {
           throw problem(409, 'The recorded name and full destination are locked after your first message.');
         }
-        if (row.successes >= 2) throw problem(409, 'Both messages have been created. No further generation is available; you can still download your recording.');
+        if (!previous.rowCount && row.successes >= 2) throw problem(409, 'Both messages have been created. No further generation is available; you can still download your recording.');
         if (row.pending) throw problem(409, 'A message is already being prepared for this access. Please wait and check again.');
         const reservation = randomUUID();
         await client.query(`UPDATE public.santa_studio_generation_access SET reservation=$2,
           operation=$3, request_hash=$4, reserved_until=clock_timestamp()+interval '150 seconds'
           WHERE access_key=$1`, [key, reservation, operation, requestHash]);
-        return { reservation };
+        return { reservation, replay: previous.rowCount > 0, sequence: previous.rows[0]?.sequence };
       });
     },
-    async succeed(key, reservation, choices, identity, audio) {
+    async succeed(key, reservation, choices, identity) {
       return transaction(async client => {
         const { rows: [row] } = await client.query(`SELECT *, reserved_until > clock_timestamp() AS pending
           FROM public.santa_studio_generation_access WHERE access_key=$1 FOR UPDATE`, [key]);
         if (!row || row.reservation !== reservation || !row.pending) {
           throw problem(409, 'This preparation expired. Please check your current recording and try again.');
         }
+        const previous = await client.query(`SELECT sequence FROM public.santa_studio_generation_results
+          WHERE access_key=$1 AND operation=$2`, [key, row.operation]);
+        if (previous.rowCount) {
+          await client.query(`UPDATE public.santa_studio_generation_access SET reservation=NULL,
+            operation=NULL, request_hash=NULL, reserved_until=NULL WHERE access_key=$1 AND reservation=$2`,
+          [key, reservation]);
+          return previous.rows[0].sequence;
+        }
+        // Metadata only. Keep the legacy NOT NULL column compatible with
+        // existing deployments, but never persist a newly rendered MP3.
+        // Existing user data is intentionally not read, rewritten or deleted.
         await client.query(`INSERT INTO public.santa_studio_generation_results
           (access_key,operation,request_hash,sequence,audio,created_at) VALUES($1,$2,$3,$4,$5,clock_timestamp())`,
-        [key, row.operation, row.request_hash, row.successes + 1, audio]);
+        [key, row.operation, row.request_hash, row.successes + 1, Buffer.alloc(0)]);
         await client.query(`UPDATE public.santa_studio_generation_access SET successes=successes+1,
           locked_identity=COALESCE(locked_identity,$3), latest_choices=$4,
           reservation=NULL, operation=NULL, request_hash=NULL, reserved_until=NULL

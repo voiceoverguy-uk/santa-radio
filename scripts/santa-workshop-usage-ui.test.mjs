@@ -107,7 +107,7 @@ test('private report qualifies totals and never shows stale success data after r
     await expect(diagnostic.getByRole('status')).toContainText('not a successful MP3 test');
     await expect(diagnostic.getByText('dummy-database.example', { exact: true })).toBeVisible();
     await expect(diagnostic.getByText('A required table or column is missing.', { exact: false })).toBeVisible();
-    await expect(diagnostic.getByText('without automatic expiry', { exact: false })).toBeVisible();
+    await expect(diagnostic.getByText('finished MP3s stay in request/browser memory', { exact: false })).toBeVisible();
     assert.equal(diagnosticRequests, 1);
     for (const problem of [503, 401, 'malformed']) {
       diagnosticStatus = typeof problem === 'number' ? problem : 200;

@@ -41,8 +41,11 @@ test('durable two-success allowance, exact identity lock, idempotency and isolat
   const restarted = createStudioGenerationStore(pool);
   assert.equal((await restarted.status(key)).remaining, 1);
   assert.deepEqual((await restarted.status(key)).locked, identity);
-  assert.equal((await restarted.audio(key)).toString(), 'first');
-  assert.equal((await restarted.reserve(key, operation, choices, identity)).audio.toString(), 'first');
+  assert.deepEqual(await restarted.recovery(key), { operation, sequence: 1, choices });
+  const replay = await restarted.reserve(key, operation, choices, identity);
+  assert.equal(replay.replay, true);
+  assert.equal(await restarted.succeed(key, replay.reservation, choices, identity), 1);
+  assert.equal((await restarted.status(key)).successes, 1);
   await assert.rejects(restarted.reserve(key, operation, { ...choices, age: id(9) }, identity), { status: 409 });
   for (const changed of [
     { ...identity, name: `f-${'b'.repeat(64)}` }, { ...identity, category: 'fantasy' },
@@ -51,10 +54,12 @@ test('durable two-success allowance, exact identity lock, idempotency and isolat
   const correction = { ...choices, age: id(9), talent: { category: 'sports', id: id(8) } };
   const second = await restarted.reserve(key, randomUUID(), correction, identity);
   // Previous download remains available while correcting.
-  assert.equal((await restarted.audio(key)).toString(), 'first');
+  assert.equal((await restarted.recovery(key)).sequence, 1);
   await restarted.succeed(key, second.reservation, correction, identity, Buffer.from('second'));
   assert.equal((await store.status(key)).remaining, 0);
-  assert.equal((await store.audio(key)).toString(), 'second');
+  assert.equal((await store.recovery(key)).sequence, 2);
+  const stored = await pool.query('SELECT octet_length(audio) AS bytes FROM public.santa_studio_generation_results WHERE access_key=$1', [key]);
+  assert.deepEqual(stored.rows.map(row => row.bytes), [0, 0], 'No generated MP3 bytes may be archived');
   await assert.rejects(store.reserve(key, randomUUID(), choices, identity), { status: 409 });
   assert.equal((await store.status(other)).remaining, 2);
 });
@@ -134,7 +139,7 @@ test('handler integrates failure release, locked regional/variant validation, re
   fail = false;
   assert.equal((await call(handler, choices, operation)).status, 200);
   assert.equal((await call(handler, choices, operation)).status, 200);
-  assert.equal(renders, 2);
+  assert.equal(renders, 3);
   for (const changed of [
     { ...choices, name: 'another-variant' }, { ...choices, place: id(9), region: undefined },
     { ...choices, region: undefined },
@@ -153,7 +158,55 @@ test('handler integrates failure release, locked regional/variant validation, re
   assert.equal((await call(restart, { ...choices, age: id(9) })).status, 200);
   assert.equal((await call(restart, choices)).status, 409);
   assert.equal((await options.generations.status(key)).successes, 2);
-  assert.equal(renders, 3);
+  assert.equal(renders, 5);
+  assert.equal((await call(restart, undefined, undefined, 'GET', '/?audio=1')).status, 200);
+  assert.equal((await options.generations.status(key)).successes, 2, 'Recovery never spends an allowance');
+  const recovered = await call(restart, undefined, undefined, 'GET', '/?audio=1');
+  const selection = JSON.parse(Buffer.from(recovered.headers['X-Studio-Selection'], 'base64').toString('utf8'));
+  assert.equal(selection.successes, 2);
+  assert.equal(selection.choices.age, id(9), 'Audio and recovery choices describe the same committed correction');
+  assert.match(selection.accessEpoch, /^[a-f0-9]{64}$/);
+});
+
+test('existing legacy MP3 data stays retrievable even when the original source has disappeared', async () => {
+  const key = newKey(), operation = randomUUID();
+  const generations = createStudioGenerationStore(pool);
+  const reservation = await generations.reserve(key, operation, choices, identity);
+  await generations.succeed(key, reservation.reservation, choices, identity);
+  // A fixture for data archived by the previous implementation, not a new write path.
+  await pool.query('UPDATE public.santa_studio_generation_results SET audio=$2 WHERE access_key=$1',
+    [key, Buffer.from('legacy-user-audio')]);
+  const handler = createStudioMessageHandler({
+    accessKey: () => key, authorize: async () => true, limit: async () => {}, generations,
+    library: { resolve: async () => { throw new Error('source removed'); } },
+    catalogue: async () => assert.fail('Legacy retrieval must not need the source catalogue'),
+    render: async () => assert.fail('Legacy retrieval must not need stitching'),
+  });
+  const result = await call(handler, undefined, undefined, 'GET', '/?audio=1');
+  assert.equal(result.status, 200);
+  assert.equal(result.body.toString(), 'legacy-user-audio');
+  assert.equal((await generations.status(key)).successes, 1);
+});
+
+test('a late database reservation is reconciled and released when the HTTP deadline has already fired', async () => {
+  let released = null, renders = 0;
+  const noRegion = { ...choices }; delete noRegion.region;
+  const handler = createStudioMessageHandler({
+    accessKey: () => 'late-fixture', authorize: async () => true, limit: async () => {},
+    executionMs: 10, reportFailure() {},
+    catalogue: async () => ({ categories: Object.fromEntries(['age', 'activity', 'achievement', 'treat', 'place']
+      .map(category => [category, [{ id: choices[category], file: `${category}.wav` }]])) }),
+    library: { resolve: async id => ({ id, source: 'hosted' }) },
+    generations: {
+      reserve: async () => { await new Promise(resolve => setTimeout(resolve, 40)); return { reservation: 'exact-late-fence' }; },
+      release: async (key, fence) => { released = [key, fence]; },
+    },
+    render: async () => { renders++; },
+  });
+  const result = await call(handler, noRegion);
+  assert.equal(result.status, 503);
+  assert.deepEqual(released, ['late-fixture', 'exact-late-fence']);
+  assert.equal(renders, 0);
 });
 
 test('aborting preparation releases its real database reservation without locking or spending a success', async () => {

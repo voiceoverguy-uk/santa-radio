@@ -315,9 +315,66 @@ schema check is not proof that rendering works. This preparation does not
 authorise a deployment or production migration.
 
 The owner requires finished Studio MP3s to remain temporary for the user's
-session, not an archive. The existing results schema contains full MP3 bytes
-without automatic expiry. Do not enable that storage unchanged as a repair.
-This diagnostic neither changes retention nor introduces audio storage.
+session, not an archive. New generation records now store metadata only. The
+legacy NOT NULL audio column is populated with zero bytes for compatibility;
+no newly rendered MP3 is persisted. Existing legacy records are preserved, not
+read back or deleted. Temporary rendering files are removed in request cleanup;
+the browser keeps a revocable in-memory Blob for playback and download.
+The diagnostic itself does not enable or change storage.
 
 Focused checks:
 `node --test scripts/studio-storage-diagnostic.test.mjs scripts/santa-workshop-usage-ui.test.mjs`.
+
+## Recording repair and live release boundary
+
+Metadata-only results still require the two shared generation tables. Do not
+fake a fresh allowance, fall back to per-instance state, or use the unrelated
+security limiter as an ad-hoc message database if these tables are unavailable.
+No schema is created at startup or inside requests.
+
+An authorised recovery GET (`?audio=1`) reads the committed operation and choices,
+re-resolves the source recordings and re-stitches them under the same shared,
+fenced reservation used by POST. An idempotent replay re-renders but never adds
+a success, changes the locked identity or overwrites the latest correction.
+Both recovery and creation consume render-rate capacity; both are bounded by
+the same execution deadline and temporary-file cleanup.
+
+A non-public `studio_service_unavailable` runtime log records a fixed failure
+stage/class and the driver's effective non-secret database host/name/port for
+storage-stage failures. It never logs connection URLs, credentials, cookies,
+choices or raw errors. This permits an authorised operator to identify the
+actual Vercel connection and failure without staff sign-in or a diagnostic-only
+deployment. The browser receives only the existing generic error response.
+
+`npm run build` now runs `scripts/check-studio-release.mjs` before compilation.
+Only a genuine Vercel Production build performs this check; local and Preview
+builds explicitly skip it. The check reads the build's existing bound database,
+prints only sanitised identity/schema results, and exits unsuccessfully if
+voucher security or generation metadata storage is unavailable. Optional usage
+reporting does not block a recording repair release. It never creates or alters
+schema, and does not replace the current serving deployment on failure.
+
+This identifies the **production build's binding**, not the old serving
+deployment's runtime. It permits target verification without staff sign-in or a
+separate diagnostic-only release. Review the result against the intended
+database before approving any schema change. A passing build still requires
+post-release verification of actual voucher entry, generation and download.
+
+The live voucher endpoint was checked and accepted valid access, while the live
+recording-status endpoint returned 503. This establishes the failing stage, not
+which database or underlying SQL error caused it. Before claiming the live
+repair is complete, release the tested repair to the actual www Vercel project
+with separate approval, inspect its private runtime event, and verify the full
+flow there. The read-only build check can stop that release before promotion and
+identify missing metadata storage on the actual build binding. If that verified
+database lacks metadata tables, obtain approval
+for that verified target and apply the existing schema using its supported
+migration process. Replit production schema findings alone are not target proof.
+
+New MP3s contain their committed selection and per-entitlement epoch in private
+response headers, so concurrent correction/recovery does not attach an old set
+of choices to newer audio. Sequence numbers are not compared across rotated
+tester entitlements. Cancellation reconciles any in-flight database reservation
+before releasing its exact fence, including a lease that commits after the
+HTTP deadline. Existing legacy audio remains retrievable even if an upstream
+source has disappeared; newly generated audio is not archived.

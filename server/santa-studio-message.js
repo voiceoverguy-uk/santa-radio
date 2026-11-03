@@ -7,7 +7,8 @@ import { santaNameLibrary } from './santa-name-library.js';
 import { consumeNameAccess, privateResponse, readNameJson } from './santa-name-security.js';
 import { renderStudioMessage } from './santa-studio-render.js';
 import { selectedWorkshopRegion, workshopDestinationCategory } from '../src/lib/workshopDestinations.js';
-import { studioGenerationStore, studioGenerationKey, studioIdentity } from './santa-studio-generation.js';
+import { studioGenerationStore, studioGenerationKey, studioIdentity, studioGenerationEpoch } from './santa-studio-generation.js';
+import { studioServiceFailure } from './studio-service-events.js';
 import { workshopSession } from './santa-workshop-access.js';
 
 const categories = ['age', 'activity', 'achievement', 'treat', 'place'];
@@ -69,6 +70,7 @@ export function createStudioMessageHandler({
   library = santaNameLibrary, download = downloadStudioClip, render = renderStudioMessage,
   executionMs = 110000,
   generations = studioGenerationStore, accessKey = studioGenerationKey,
+  reportFailure = studioServiceFailure,
 } = {}) {
   let active = 0;
   return async (req, res) => {
@@ -88,9 +90,13 @@ export function createStudioMessageHandler({
     req.once?.('aborted', abort);
     res.once?.('close', abort);
     let directory;
-    let key, reservation;
-    const audioResponse = (audio, sequence) => {
+    let key, reservation, reservationWork;
+    let stage = 'access';
+    const audioResponse = (audio, sequence, selection) => {
       if (sequence) res.setHeader('X-Studio-Generation', String(sequence));
+      if (selection) res.setHeader('X-Studio-Selection', Buffer.from(JSON.stringify({
+        ...selection, successes: sequence, accessEpoch: studioGenerationEpoch(key),
+      })).toString('base64'));
       res.writeHead(200, {
         'Content-Type': 'audio/mpeg', 'Content-Length': audio.length,
         'Content-Disposition': 'attachment; filename="santa-studio-message.mp3"',
@@ -100,25 +106,53 @@ export function createStudioMessageHandler({
     try {
       if (!await withinDeadline(() => authorize(req), controller.signal)) throw problem(403, 'Your Studio access needs checking. Please reopen Studio and try again.');
       key = await accessKey(req);
+      let data, operation;
       if (req.method === 'GET') {
-        await withinDeadline(() => limit(req, 'studioRead'), controller.signal);
-        if (new URL(req.url || '/', 'http://studio').searchParams.get('audio') === '1') {
-          const audio = await withinDeadline(() => generations.audio(key), controller.signal);
-          if (!audio) throw problem(404, 'No completed recording is available yet.');
-          return audioResponse(audio);
+        const recovering = new URL(req.url || '/', 'http://studio').searchParams.get('audio') === '1';
+        if (recovering && (req.headers['sec-fetch-site'] === 'same-site'
+          || (req.headers.origin && !sameStudioOrigin(req)))) {
+          throw problem(403, 'Please retrieve your recording from Studio on this website.');
         }
-        const status = await withinDeadline(() => generations.status(key), controller.signal);
-        const recording = status.locked && await withinDeadline(() => library.resolve(status.locked.name), controller.signal);
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        return res.end(JSON.stringify({ ...status, testerCanStartAnother: !!workshopSession(req), record: recording
-          ? { id: recording.id, name: recording.name, variant: recording.variant || '' } : null }));
+        await withinDeadline(() => limit(req, 'studioRead'), controller.signal);
+        if (recovering) {
+          // Recovery re-stitches the already committed choices; no MP3 archive.
+          // It spends render-rate capacity, never another successful generation.
+          await withinDeadline(() => limit(req, 'studioMessage'), controller.signal);
+          stage = 'recovery';
+          const recovery = await withinDeadline(() => generations.recovery(key), controller.signal);
+          if (!recovery?.choices) throw problem(404, 'No completed recording is available yet.');
+          // Preserve retrieval of existing user data, without ever creating new
+          // archived bytes. Do not require a still-available upstream for this.
+          if (recovery.legacyAudio?.length) {
+            let recording;
+            try { recording = await withinDeadline(() => library.resolve(recovery.choices.name), controller.signal); }
+            catch { /* The original MP3 remains retrievable if its source disappeared. */ }
+            controller.signal.throwIfAborted();
+            return audioResponse(recovery.legacyAudio, recovery.sequence, {
+              record: { id: recovery.choices.name, name: recording?.name || '', variant: recording?.variant || '' },
+              choices: recovery.choices,
+            });
+          }
+          data = recovery.choices;
+          operation = recovery.operation;
+        } else {
+          stage = 'status';
+          const status = await withinDeadline(() => generations.status(key), controller.signal);
+          if (status.locked) stage = 'source';
+          const recording = status.locked && await withinDeadline(() => library.resolve(status.locked.name), controller.signal);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({ ...status, accessEpoch: studioGenerationEpoch(key),
+            testerCanStartAnother: !!workshopSession(req), record: recording
+            ? { id: recording.id, name: recording.name, variant: recording.variant || '' } : null }));
+        }
+      } else {
+        await withinDeadline(() => limit(req, 'studioMessage'), controller.signal);
+        operation = req.headers['idempotency-key'];
+        if (typeof operation !== 'string' || !/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(operation)) {
+          throw problem(400, 'Please confirm your choices using Create message in Studio.');
+        }
+        data = await withinDeadline(() => readNameJson(req), controller.signal);
       }
-      await withinDeadline(() => limit(req, 'studioMessage'), controller.signal);
-      const operation = req.headers['idempotency-key'];
-      if (typeof operation !== 'string' || !/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(operation)) {
-        throw problem(400, 'Please confirm your choices using Create message in Studio.');
-      }
-      const data = await withinDeadline(() => readNameJson(req), controller.signal);
       // A stable opaque recording ID is re-resolved privately under Studio
       // authorization. No expired browser capability, spelling or URL is used.
       const talent = data.talent;
@@ -134,6 +168,7 @@ export function createStudioMessageHandler({
         || (!skipTalent && !selectedTalent)) {
         throw problem(400, 'Please check all seven Studio choices, including choosing or skipping Talent, and try again.');
       }
+      stage = 'catalogue';
       const inventory = await withinDeadline(catalogue, controller.signal);
       const selected = Object.fromEntries(categories.map(category => {
         const record = inventory.categories[category].find(item => item.id === data[category]);
@@ -154,11 +189,15 @@ export function createStudioMessageHandler({
       const recording = await withinDeadline(() => library.resolve(data.name), controller.signal);
       if (!recording || recording.id !== data.name) throw problem(400, 'That exact recorded name is no longer available. Please choose it again.');
       controller.signal.throwIfAborted();
-      const reserved = await withinDeadline(() => generations.reserve(key, operation, data, identity), controller.signal);
-      if (reserved.audio) return audioResponse(reserved.audio, reserved.sequence);
-      reservation = reserved.reservation;
+      stage = 'reservation';
+      reservationWork = generations.reserve(key, operation, data, identity).then(result => {
+        reservation = result.reservation;
+        return result;
+      });
+      await withinDeadline(() => reservationWork, controller.signal);
       controller.signal.throwIfAborted();
       directory = await mkdtemp(join(tmpdir(), 'santa-studio-'));
+      stage = 'source';
       let name = join(localNames, `${recording.id}.wav`);
       if (recording.source === 'hosted') {
         name = join(directory, 'name.wav');
@@ -173,13 +212,19 @@ export function createStudioMessageHandler({
         paths[category] = join(directory, `${category}.${record.file.split('.').at(-1).toLowerCase()}`);
         await download(url, paths[category], controller.signal);
       }
+      stage = 'render';
       const { audio } = await render({ name, choices: paths, directory, signal: controller.signal });
       controller.signal.throwIfAborted();
-      // Commit the retrievable MP3 and allowance together. A lost response can
-      // be recovered by GET without spending the visitor's correction.
-      const sequence = await generations.succeed(key, reservation, data, identity, audio);
-      audioResponse(audio, sequence);
+      // Commit metadata and allowance only. Lost responses recover by re-stitching.
+      stage = 'commit';
+      const sequence = await generations.succeed(key, reservation, data, identity);
+      audioResponse(audio, sequence, { record: {
+        id: recording.id, name: recording.name || '', variant: recording.variant || '',
+      }, choices: data });
     } catch (error) {
+      if (!error.status || error.status >= 500) {
+        try { reportFailure(error, stage); } catch { /* Diagnostics never affect access. */ }
+      }
       if (error.status === 429) res.setHeader('Retry-After', String(error.retryAfter || 60));
       // Never send/log FFmpeg stderr, source paths, identities or upstream URLs.
       send(error.status || 503, error.status ? error.message
@@ -190,6 +235,10 @@ export function createStudioMessageHandler({
       req.removeListener?.('aborted', abort);
       res.removeListener?.('close', abort);
       controller.abort();
+      // A database reservation cannot be cancelled by Promise.race. Reconcile
+      // its bounded in-flight transaction before finishing cleanup, even when
+      // the HTTP deadline won the race, then release only its exact fence.
+      if (reservationWork) await reservationWork.catch(() => {});
       if (reservation) await generations.release(key, reservation).catch(() => {});
       if (directory) await rm(directory, { recursive: true, force: true }).catch(() => {});
       active--;

@@ -13,3 +13,14 @@ recording failures and asked what the recording tables store.
 approved retention. Before enabling or changing MP3 persistence, ensure it
 actually has a session-bounded lifecycle rather than merely an expiring access
 cookie. Preserve metadata and usage-reporting distinctions.
+
+Keep shared allowance, identity locks and retry metadata durable on stateless
+Vercel, but recover new audio by re-stitching rather than archiving MP3 bytes.
+Preserve access to existing legacy user data without creating new archives.
+
+**Why:** This reconciles the owner's temporary-audio requirement with their
+requirement to preserve limits, recover lost responses and retain existing data.
+
+**How to apply:** Keep the browser's completed MP3 until a replacement succeeds.
+Do not promise reload recovery is independent of upstream availability for new
+recordings. Do not turn temporary audio into per-instance entitlement state.

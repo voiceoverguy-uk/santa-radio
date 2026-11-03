@@ -31,6 +31,7 @@ export default function WorkshopMessageAudio({
   const triggerRef = useRef(null);
   const operationRef = useRef(null);
   const loadedSequence = useRef(0);
+  const receivedSelection = useRef(null);
   const readyCallbackRef = useRef(onReady);
   // Spelling can be corrected while bytes are arriving. It is display-only;
   // commit the latest spelling without restarting the audio request.
@@ -45,6 +46,14 @@ export default function WorkshopMessageAudio({
   const writtenName = getWorkshopWrittenName(record?.name || '', spelling);
   const busy = phase === 'preparing' || phase === 'receiving';
   const status = generation.state;
+  const epoch = status?.accessEpoch || generation.epoch || 0;
+  useEffect(() => {
+    requestRef.current?.abort();
+    requestRef.current = null;
+    loadedSequence.current = 0;
+    operationRef.current = null;
+    receivedSelection.current = null;
+  }, [epoch]);
   const disabled = !complete || busy || !status || !!generation.error || generation.checking || status.pending
     || status.remaining === 0 || ((url || status.successes > 0) && !correction && !(tester && status.successes === 0));
   // Share readiness only after the entire MP3 has been received, never merely
@@ -107,6 +116,19 @@ export default function WorkshopMessageAudio({
     } finally { await reader.cancel().catch(() => {}); reader.releaseLock(); }
     if (!size) throw new Error('The recording was empty. Please try again.');
     signal.throwIfAborted();
+    receivedSelection.current = null;
+    const selectionHeader = response.headers.get('x-studio-selection');
+    if (selectionHeader) {
+      const selection = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(selectionHeader), char => char.charCodeAt(0))));
+      if (!selection || !Number.isInteger(selection.successes)
+        || selection.successes !== Number(response.headers.get('x-studio-generation'))
+        || typeof selection.record?.id !== 'string' || typeof selection.record?.name !== 'string'
+        || selection.choices?.name !== selection.record.id
+        || !/^[a-f0-9]{64}$/.test(selection.accessEpoch || '')) {
+        throw new Error('The recording details could not be verified. Please retrieve it again.');
+      }
+      receivedSelection.current = selection;
+    }
     const objectUrl = URL.createObjectURL(new Blob(chunks, { type: 'audio/mpeg' }));
     audioRef.current?.pause();
     if (urlRef.current) URL.revokeObjectURL(urlRef.current);
@@ -123,15 +145,34 @@ export default function WorkshopMessageAudio({
     if (!complete || !status?.successes || loadedSequence.current >= status.successes || requestRef.current) return;
     const controller = new AbortController();
     const sequence = status.successes;
+    requestRef.current = controller;
+    setPhase('receiving');
+    const timeout = setTimeout(() => controller.abort(), 115000);
     fetch('/api/santa-studio-message?audio=1', {
       credentials: 'same-origin', cache: 'no-store', signal: controller.signal,
     }).then(response => receive(response, controller.signal)).then(() => {
-      loadedSequence.current = sequence;
-      readyCallbackRef.current?.({ record: status.record, choices: status.choices, successes: sequence });
+      loadedSequence.current = receivedSelection.current?.successes || sequence;
+      readyCallbackRef.current?.(receivedSelection.current || {
+        record: status.record, choices: status.choices, successes: loadedSequence.current,
+      });
+      generation.refresh();
     })
-      .catch(failure => { if (!controller.signal.aborted) setError(failure.message); });
-    return () => controller.abort();
-  }, [complete, status?.successes, phase, recoveryAttempt, url]);
+      .catch(failure => {
+        if (requestRef.current === controller) {
+          setError(controller.signal.aborted
+            ? 'Retrieving your recording took too long. Please try again.' : failure.message);
+          setPhase(urlRef.current ? 'ready' : 'error');
+        }
+      }).finally(() => {
+        clearTimeout(timeout);
+        if (requestRef.current === controller) requestRef.current = null;
+      });
+    return () => {
+      clearTimeout(timeout);
+      controller.abort();
+      if (requestRef.current === controller) requestRef.current = null;
+    };
+  }, [complete, status?.successes, recoveryAttempt, epoch]);
 
   useEffect(() => {
     if (!confirming) return;
@@ -182,7 +223,7 @@ export default function WorkshopMessageAudio({
       // Refresh will restore the authoritative choices and end correction mode.
       loadedSequence.current = sequence || (status?.successes || 0) + 1;
       operationRef.current = null;
-      readyCallbackRef.current?.({ record, choices, successes: loadedSequence.current });
+      readyCallbackRef.current?.(receivedSelection.current || { record, choices, successes: loadedSequence.current });
     } catch (failure) {
       if (requestRef.current === controller) {
         setPhase(urlRef.current ? 'ready' : 'error');
@@ -202,6 +243,10 @@ export default function WorkshopMessageAudio({
   // controls or detached playing media in earlier stages.
   if (!visible) return null;
   return <>
+    {status?.successes > 0 && <p className="smw-download-hint">
+      Keep this page open until you have saved your MP3. Recovery after a reload may require
+      Santa’s source recordings to be available.
+    </p>}
     <button ref={triggerRef} className={`smw-button smw-button-next${disabled ? ' smw-create-disabled' : ''}`}
       type="button" onClick={() => setConfirming(true)} disabled={disabled} aria-busy={busy}>
       {busy ? 'Preparing message…' : phase === 'error' && complete ? 'Retry message' : 'Create message'} <span aria-hidden="true">→</span>

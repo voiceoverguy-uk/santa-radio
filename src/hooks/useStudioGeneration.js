@@ -8,6 +8,7 @@ export default function useStudioGeneration(onRestore) {
   const [checking, setChecking] = useState(true);
   const [accessExpired, setAccessExpired] = useState(false);
   const [retryable, setRetryable] = useState(false);
+  const [epoch, setEpoch] = useState(0);
   const attempts = useRef(0);
   const controllerRef = useRef(null);
   const restore = useRef(onRestore);
@@ -116,6 +117,8 @@ export default function useStudioGeneration(onRestore) {
       const data = await response.json();
       if (!response.ok || data.authorized !== true) throw new Error(data.error || 'Another test message could not be started.');
       seen.current = -1;
+      setState(null);
+      setEpoch(value => value + 1);
       const next = await refresh();
       return next?.successes === 0;
     } catch (failure) {
@@ -126,5 +129,5 @@ export default function useStudioGeneration(onRestore) {
       setChecking(false);
     }
   };
-  return { state, error, checking, accessExpired, refresh, startAnother };
+  return { state, epoch, error, checking, accessExpired, refresh, startAnother };
 }
