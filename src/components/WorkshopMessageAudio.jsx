@@ -239,6 +239,9 @@ export default function WorkshopMessageAudio({
       <div className="smw-download-actions"><a className="smw-button smw-button-download" href={url}
         download={getWorkshopDownloadName(finishedName?.name || record?.name || '',
           finishedSpelling ?? spelling)}>Download MP3 <span aria-hidden="true">↓</span></a></div>
+      {voucher?.unlimited && <p className="smw-voucher-completion">
+        Download your message here. Recordings and message history are not saved. Voucher allows you to edit your choices and create another message; request limits apply.
+      </p>}
       <p className="smw-catalogue-review-note">Save your MP3 now. Click download and check you have it before closing the page. Leaving or refreshing this page removes the recording.</p>
     </section>}
     {confirming && <dialog ref={dialogRef} className="smw-confirmation" aria-labelledby="smw-confirm-title"

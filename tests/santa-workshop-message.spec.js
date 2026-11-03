@@ -1,5 +1,6 @@
 import { expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
+import { randomBytes } from 'node:crypto';
 import { test } from './helpers/provider-test.js';
 import { unlockWorkshop } from './helpers/workshop-access.js';
 import { workshopCatalogueFixture } from './fixtures/workshop-catalogue.js';
@@ -8,6 +9,7 @@ import { SCHOOL_TEST_START, SCHOOL_TEST_DEADLINE } from '../server/santa-worksho
 
 const path = '/santa-message-workshop';
 const answers = ['9 years old', 'Teamwork', 'Completing a jigsaw puzzle', 'Bûche de Noël', 'The Enchanted Forest'];
+const voucherCompletion = 'Download your message here. Recordings and message history are not saved. Voucher allows you to edit your choices and create another message; request limits apply.';
 const preparationMessages = [
   'Santa is recording. Give him a moment — the elves keep distracting him.',
   'Santa is busy recording, although the smell of cookies isn’t helping. Hang on a moment…',
@@ -170,6 +172,93 @@ for (const width of [390, 1365]) {
     await expect(notice).toContainText('You used Voucher Code: preview-voucher-example.');
     await expect(notice).toContainText('request limits');
   });
+}
+
+for (const width of [320, 1365]) {
+  for (const hasVoucher of [true, false]) {
+    test(`${hasVoucher ? 'voucher' : 'non-voucher'} completion guidance waits for a complete MP3 at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 1000 });
+      // Synthetic access metadata only; never embed a configured voucher value.
+      const voucher = hasVoucher ? { code: randomBytes(24).toString('hex'), unlimited: true } : null;
+      await page.route('**/api/santa-workshop-access', async route => {
+        if (route.request().method() !== 'GET') return route.fallback();
+        const response = await route.fetch();
+        return route.fulfill({ response, json: { ...await response.json(), voucher } });
+      });
+      const fixture = await openReview(page);
+      const guidance = page.getByText(voucherCompletion, { exact: true });
+      const result = page.getByRole('region', { name: 'Your finished Santa message' });
+      await expect(guidance).toHaveCount(0);
+      await expect(page.locator('.smw-voucher-entitlement')).toHaveCount(hasVoucher ? 1 : 0);
+
+      fixture.fail = true;
+      await confirmMessage(page);
+      await expect(page.getByRole('alert')).toContainText('Fixture recording unavailable.');
+      await expect(guidance).toHaveCount(0);
+      await expect(result).toHaveCount(0);
+      fixture.fail = false;
+      let release;
+      fixture.hold = new Promise(resolve => { release = resolve; });
+      // Hold the successful body open after its first bytes, so HTTP success
+      // alone cannot accidentally show completion guidance.
+      await page.evaluate(() => {
+        const original = window.fetch.bind(window);
+        window.fetch = async (input, options) => {
+          const response = await original(input, options);
+          if (input !== '/api/santa-studio-message' || options?.method !== 'POST' || !response.ok) return response;
+          const bytes = new Uint8Array(await response.arrayBuffer());
+          const middle = Math.ceil(bytes.length / 2);
+          return new Response(new ReadableStream({
+            start(controller) {
+              controller.enqueue(bytes.slice(0, middle));
+              window.finishTestRecording = () => {
+                controller.enqueue(bytes.slice(middle));
+                controller.close();
+              };
+            },
+          }), { headers: response.headers });
+        };
+      });
+      await confirmMessage(page, 'Retry message');
+      await expect(page.getByRole('button', { name: 'Recording message', exact: true })).toBeDisabled();
+      await expect(guidance).toHaveCount(0);
+      release();
+      await expect(page.getByText('Receiving your finished MP3…', { exact: true })).toBeVisible();
+      await expect(guidance).toHaveCount(0);
+      await expect(result).toHaveCount(0);
+      await page.evaluate(() => window.finishTestRecording());
+      await expect(result).toBeVisible();
+      const download = result.getByRole('link', { name: /Download MP3/ });
+      await expect(download).toBeVisible();
+      await expect(result.getByRole('status')).toHaveText('Your message is ready to play and download. It is only available on this open page.');
+      if (hasVoucher) {
+        await expect(result.locator('.smw-voucher-completion')).toHaveText(voucherCompletion);
+        await guidance.scrollIntoViewIfNeeded();
+        expect(await guidance.evaluate(node => {
+          const range = document.createRange();
+          range.selectNodeContents(node);
+          const bounds = node.getBoundingClientRect();
+          return [...range.getClientRects()].every(line =>
+            line.left >= bounds.left - 1 && line.right <= bounds.right + 1
+            && line.top >= bounds.top - 1 && line.bottom <= bounds.bottom + 1)
+            && document.documentElement.scrollWidth <= innerWidth + 1;
+        })).toBe(true);
+        await result.screenshot({ path: `generated-artifacts/studio-voucher-completion-${width}.png`, animations: 'disabled' });
+      } else {
+        await expect(guidance).toHaveCount(0);
+      }
+      const downloaded = page.waitForEvent('download');
+      await download.click();
+      expect(readFileSync(await (await downloaded).path())).toEqual(fixture.audio);
+      await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
+      await page.getByRole('button', { name: 'Change Trying hard at', exact: true }).click();
+      await expect(guidance).toHaveCount(0);
+      await page.getByRole('button', { name: 'Return to review', exact: true }).click();
+      await expect(result).toBeVisible();
+      await expect(guidance).toHaveCount(hasVoucher ? 1 : 0);
+      expect(fixture.posts).toHaveLength(2);
+    });
+  }
 }
 
 test('voucher testing can generate a third message with fresh choices while retaining previous downloads', async ({ page }) => {
