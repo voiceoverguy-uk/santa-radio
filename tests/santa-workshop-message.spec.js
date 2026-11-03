@@ -321,7 +321,10 @@ test('approved recording notices are random per attempt, stable through rerender
     await confirmMessage(page, retry ? 'Retry message' : 'Create message');
     await expect(paragraph).toHaveText(preparationMessages[index]);
     await expect(notice).toHaveAttribute('aria-live', 'polite');
-    await expect(page.getByRole('button', { name: 'Preparing message…', exact: true })).toBeDisabled();
+    const recordingButton = page.getByRole('button', { name: 'Recording message', exact: true });
+    await expect(recordingButton).toBeDisabled();
+    await expect(recordingButton).toHaveAttribute('aria-busy', 'true');
+    await expect(recordingButton.locator('span[aria-hidden="true"]')).toHaveText('→');
     await expect(page.getByRole('progressbar', { name: 'Preparing your message' })).toBeVisible();
   };
   const cancel = async () => {

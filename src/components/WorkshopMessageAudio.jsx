@@ -200,7 +200,7 @@ export default function WorkshopMessageAudio({
     </p>}
     <button ref={triggerRef} className={`smw-button smw-button-next${disabled ? ' smw-create-disabled' : ''}`}
       type="button" onClick={() => setConfirming(true)} disabled={disabled} aria-busy={busy}>
-      {busy ? 'Preparing message…' : phase === 'error' && complete ? 'Retry message' : 'Create message'} <span aria-hidden="true">→</span>
+      {busy ? 'Recording message' : phase === 'error' && complete ? 'Retry message' : 'Create message'} <span aria-hidden="true">→</span>
     </button>
     {showGiftDownloadHint && <p className="smw-catalogue-review-note smw-gift-download-hint">
       Create your MP3 to unlock these three personalised gift downloads.
