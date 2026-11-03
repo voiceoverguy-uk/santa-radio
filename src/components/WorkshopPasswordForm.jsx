@@ -72,6 +72,9 @@ export function WorkshopPasswordForm({ onAuthorized, compact = false, active = t
         || data.expiresAt <= Date.now()) {
         throw new Error('The access service returned an unexpected reply. Please try again.');
       }
+      // Dismiss the voucher keyboard before replacing this form with Studio,
+      // including submissions from the keyboard rather than the button.
+      inputRef.current?.blur();
       setCode('');
       window.dispatchEvent(new CustomEvent('santa-workshop-access-change'));
       onAuthorized?.({ expiresAt: data.expiresAt });

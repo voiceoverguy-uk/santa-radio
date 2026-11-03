@@ -69,6 +69,12 @@ Keep the final-review spelling controls minimal: use a pencil icon on the right 
 
 **How to apply:** Update the filename automatically in the background when certificate spelling changes, without changing the selected recording. Keep the old spelling button and explanation out. Preserve editor validation, cancel/reset and focus behaviour, readable phone/enlarged-text layouts and the separate optional spelling-suggestion consent.
 
+After explicitly selecting a recorded name on mobile/tablet, dismiss the software keyboard while preserving the selected name. Do not dismiss it merely while typing, loading suggestions or resolving a prefilled name; preserve desktop keyboard navigation.
+
+**Why:** The owner requested that the keyboard go away once the selected name is registered in the box.
+
+**How to apply:** Release input focus after the explicit selection, allowing refocus and another search. Do not add application scrolling to compensate for the keyboard animation.
+
 Let the browser position Studio text fields for its mobile keyboard; do not also raise the panel or scroll focused inputs into place from application code.
 
 **Why:** The owner ultimately pinpointed entering a text box as the wobble trigger, superseding the earlier step-transition diagnosis. Even a once-only focus scroll can compete with Safari's keyboard movement.

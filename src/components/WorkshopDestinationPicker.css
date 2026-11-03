@@ -156,14 +156,24 @@
   outline-offset: 3px;
 }
 
-@media (max-width: 520px) {
+@media (max-width: 760px) {
   .smw-destination-picker__country .smw-choice-wheel-footer-row:has(> .smw-destination-picker__actions) > .smw-choice-wheel-status,
   .smw-destination-picker__country .smw-choice-wheel-footer-row > .smw-destination-picker__actions {
     grid-column: 1 / -1;
   }
 
+  .smw-destination-picker__actions {
+    justify-content: flex-end;
+  }
+
   .smw-destination-picker__regional-actions {
     align-items: stretch;
+  }
+
+  .smw-destination-picker__regional .smw-choice-wheel-footer-row > .smw-destination-picker__regional-actions {
+    flex-basis: 100%;
+    width: 100%;
+    justify-content: flex-end;
   }
 
   .smw-destination-picker__regional-actions button {

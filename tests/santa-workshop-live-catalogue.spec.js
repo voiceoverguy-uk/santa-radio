@@ -71,7 +71,7 @@ test(`live HTTPS categories ${initialWidth}: mobile flow and full-list desktop a
       : catalogue.counts[keys[index]]);
     await expect(wheel.locator('[aria-selected=true]')).toHaveCount(0);
     if (index === 4) {
-      await expect(page.locator('.smw-stage-heading h3')).toHaveText('Santa would like to know where he’s going?');
+      await expect(page.locator('#smw-builder-title')).toHaveText('Where is Santa visiting?');
       expect(await wheel.getByRole('option').allTextContents()).toEqual(catalogue.categories.place.filter(item => item.kind === 'place').map(item => item.label));
     }
     if (index === 2) {

@@ -73,7 +73,7 @@ test('Continue and wheel feedback remain enabled without a sound toggle', async 
   await age.press('ArrowDown');
   await page.locator('.smw-button-next').click();
   expect(await attempts(page)).toHaveLength(count + 3);
-  await expect(page.locator('.smw-step-count')).toHaveText('Step 3 of 8');
+  await expect(page.locator('.smw-step-count')).toHaveText('Step 3 of 7');
   expect(await storage()).toEqual(before);
   await page.reload();
   expect(await attempts(page)).toEqual([]);
@@ -91,7 +91,7 @@ test('browser-blocked sound reports the issue but never blocks Continue', async 
   await open(page);
   await name(page);
   await page.locator('.smw-button-next').click();
-  await expect(page.locator('.smw-step-count')).toHaveText('Step 2 of 8');
+  await expect(page.locator('.smw-step-count')).toHaveText('Step 2 of 7');
   await expect(page.locator('.smw-page')).toContainText('Your browser blocked workshop sounds');
   await expect(page.locator('.smw-sound-toggle')).toHaveCount(0);
   await page.getByRole('button', { name: 'Back', exact: true }).click();
@@ -99,7 +99,7 @@ test('browser-blocked sound reports the issue but never blocks Continue', async 
   await page.locator('.smw-button-next').click();
   await page.getByRole('listbox', { name: 'Their age', exact: true }).press('End');
   await page.locator('.smw-button-next').click();
-  await expect(page.locator('.smw-step-count')).toHaveText('Step 3 of 8');
+  await expect(page.locator('.smw-step-count')).toHaveText('Step 3 of 7');
 });
 
 test('native wheel and touch scrolling tick on centre crossings, not on settlement or restoration', async ({ page }) => {

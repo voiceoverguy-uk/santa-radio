@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { test } from './helpers/provider-test.js';
 import { unlockWorkshop } from './helpers/workshop-access.js';
 import { workshopCatalogueFixture } from './fixtures/workshop-catalogue.js';
-import { confirmMessage, mockStudioGeneration } from './helpers/studio-generation.js';
+import { confirmMessage, mockStudioGeneration, emptyGeneration } from './helpers/studio-generation.js';
 
 const path = '/santa-message-workshop';
 const answers = ['9 years old', 'Teamwork', 'Completing a jigsaw puzzle', 'Bûche de Noël', 'The Enchanted Forest'];
@@ -27,8 +27,8 @@ test('authorised Studio can check its actual allowance without generating audio'
   expect(await response.json()).toMatchObject({ successes: 0, remaining: 2, pending: false });
 });
 
-async function openReview(page, { live = false, allowance = null } = {}) {
-  const generation = live ? null : await mockStudioGeneration(page);
+async function openReview(page, { live = false, allowance = null, tester = false } = {}) {
+  const generation = live ? null : await mockStudioGeneration(page, { tester });
   if (!live) await page.route('**/api/santa-studio-message', route => route.request().method() === 'GET'
     ? allowance ? allowance(route, generation.state) : route.fulfill({ json: generation.state }) : route.fallback());
   await unlockWorkshop(page);
@@ -79,6 +79,72 @@ async function openReview(page, { live = false, allowance = null } = {}) {
   return generation;
 }
 
+test('voucher testing can generate a third message with fresh choices while retaining previous downloads', async ({ page }) => {
+  const fixture = await openReview(page, { tester: true });
+  let resets = 0;
+  await page.route('**/api/santa-workshop-access', async route => {
+    if (route.request().method() !== 'POST' || route.request().postDataJSON()?.another !== true) return route.fallback();
+    const response = await route.fetch();
+    if (response.ok()) {
+      fixture.state = { ...emptyGeneration(), testerCanStartAnother: true };
+      resets++;
+    }
+    return route.fulfill({ response });
+  });
+  for (let number = 1; number <= 3; number++) {
+    await confirmMessage(page);
+    await expect(page.getByRole('link', { name: 'Download MP3', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Generate another test message', exact: true })).toBeEnabled();
+    expect(fixture.posts.length).toBe(number);
+    if (number === 3) break;
+    if (number === 1) {
+      // Existing voucher testers may already have spent both successes.
+      fixture.state = { ...fixture.state, successes: 2, remaining: 0 };
+      await page.reload();
+      await expect(page.getByRole('button', { name: 'Generate another test message', exact: true })).toBeEnabled();
+    }
+    const previousUrl = await page.getByRole('link', { name: 'Download MP3', exact: true }).getAttribute('href');
+    await page.getByRole('button', { name: 'Generate another test message', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
+    expect(await page.getByRole('link', { name: 'Download MP3', exact: true }).getAttribute('href')).toBe(previousUrl);
+    await page.getByRole('button', { name: 'Change Their recorded name', exact: true }).click();
+    await expect(page.getByRole('combobox', { name: 'Search recorded names', exact: true })).toBeEnabled();
+    await page.getByRole('button', { name: 'Return to review', exact: true }).click();
+    await page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'Countries & real places', exact: true })).toBeEnabled();
+    await page.getByRole('button', { name: 'Return to review', exact: true }).click();
+  }
+  expect(resets).toBe(2);
+  await page.reload();
+  await expect(page.getByRole('button', { name: 'Generate another test message', exact: true })).toBeEnabled();
+});
+
+for (const width of [390, 1365]) {
+  test(`review Start Again returns to the first step without losing the recording or allowance at ${width}px`, async ({ page }) => {
+    const fixture = await openReview(page);
+    await page.setViewportSize({ width, height: 900 });
+    await confirmMessage(page);
+    const download = page.getByRole('link', { name: 'Download MP3', exact: true });
+    await expect(download).toBeVisible();
+    const previousUrl = await download.getAttribute('href');
+    const allowance = structuredClone(fixture.state);
+    await page.getByRole('button', { name: 'Start Again', exact: true }).click();
+    await expect(page.locator('.smw-step-count')).toHaveText('Step 1 of 7');
+    await expect(page.getByRole('heading', { name: 'What name should Santa say?', exact: true })).toBeVisible();
+    await expect(page.locator('.smw-audio-disclaimer')).toContainText('Dixie');
+    for (let step = 1; step <= 7; step++) {
+      await expect(page.locator('.smw-step-count')).toHaveText(`Step ${step} of 7`);
+      if (step > 1) await expect(page.locator('.smw-actions:not([hidden])').getByRole('button', { name: 'Back', exact: true })).toBeVisible();
+      await page.locator('.smw-button-next:visible').click();
+    }
+    await expect(page.locator('.smw-summary')).toBeVisible();
+    await expect(download).toHaveAttribute('href', previousUrl);
+    expect(fixture.state).toEqual(allowance);
+    expect(fixture.posts).toHaveLength(1);
+    await expect(page.getByRole('button', { name: 'Start Again', exact: true })).toBeVisible();
+  });
+}
+
 test('failed allowance check has no extra retry button and recovers on return to the page', async ({ page }) => {
   let healthy = false;
   const fixture = await openReview(page, { allowance: (route, state) => healthy
@@ -90,7 +156,7 @@ test('failed allowance check has no extra retry button and recovers on return to
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
   for (const width of [1365, 390, 320]) {
     await page.setViewportSize({ width, height: 1100 });
-    const back = await page.locator('.smw-actions:not([hidden])').getByRole('button', { name: 'Back', exact: true }).boundingBox();
+    const back = await page.locator('.smw-actions:not([hidden])').getByRole('button', { name: 'Start Again', exact: true }).boundingBox();
     const create = await page.getByRole('button', { name: 'Create message', exact: true }).boundingBox();
     expect(Math.abs(back.y + back.height / 2 - create.y - create.height / 2)).toBeLessThanOrEqual(1);
     expect(create.x).toBeGreaterThanOrEqual(back.x + back.width);
@@ -470,7 +536,7 @@ test('two successful messages preserve downloads through correction failures, re
   const result = page.getByRole('region', { name: 'Your finished Santa message' });
   const download = result.getByRole('link', { name: /Download MP3/ });
   await expect(download).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Change Their name', exact: true })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Change Their recorded name', exact: true })).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true })).toBeDisabled();
   const create = page.getByRole('button', { name: 'Create message', exact: true });
   await expect(create).toBeDisabled();

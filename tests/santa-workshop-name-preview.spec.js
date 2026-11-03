@@ -109,7 +109,7 @@ test('stopping, late rejection, editing and leaving the review clean up the sele
   await expect(page.getByRole('button', { name: 'Stop recorded name for Demrie', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await page.evaluate(() => window.rejectHeldPreview(new Error('Late failure')));
   await expect(page.getByRole('alert')).toHaveCount(0);
-  await page.getByRole('button', { name: 'Change Their name', exact: true }).click();
+  await page.getByRole('button', { name: 'Change Their recorded name', exact: true }).click();
   expect(await page.evaluate(() => window.previewAudios.filter(audio => audio.hasAttribute('src') && audio.src.includes('/santaradio/names/')).length)).toBe(0);
   await page.getByRole('combobox', { name: 'Search recorded names', exact: true }).fill('Dix');
   await page.getByRole('option').filter({ hasText: 'dixie3.wav' }).click();

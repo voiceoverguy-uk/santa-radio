@@ -18,6 +18,7 @@ export default function WorkshopNamePicker({ selected, initialName = '', onSelec
   const [isOpen, setIsOpen] = useState(!selected && Boolean(initialName));
   const [activeIndex, setActiveIndex] = useState(-1);
   const blurTimer = useRef(null);
+  const inputRef = useRef(null);
   const optionRefs = useRef([]);
 
   useEffect(() => () => window.clearTimeout(blurTimer.current), []);
@@ -59,6 +60,11 @@ export default function WorkshopNamePicker({ selected, initialName = '', onSelec
     setActiveIndex(-1);
     setIsOpen(false);
     onSelect(record);
+    // Release the software keyboard after an explicit choice, not while typing.
+    // Keep desktop keyboard focus in the combobox for accessible navigation.
+    if (window.matchMedia('(max-width: 1024px), (pointer: coarse)').matches) {
+      inputRef.current?.blur();
+    }
   }
 
   function handleKeyDown(event) {
@@ -98,6 +104,7 @@ export default function WorkshopNamePicker({ selected, initialName = '', onSelec
       <label className="smw-name-search-label" htmlFor={inputId}>Search recorded names</label>
       <div className="smw-name-combobox">
         <input
+          ref={inputRef}
           id={inputId}
           className="smw-name-search"
           type="text"

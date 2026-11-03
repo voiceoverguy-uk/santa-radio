@@ -134,6 +134,47 @@ test('direct documents, navigation and reload stay locked, and the catalogue req
 });
 
 for (const path of ['/', '/free-santa-message']) {
+  test(`mobile voucher avoids Safari focus zoom and opens a fitted Studio from ${path}`, async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    let authorized = false;
+    await page.route('**/api/santa-workshop-access', route => {
+      if (route.request().method() === 'POST') authorized = true;
+      return route.fulfill({
+        status: authorized ? 200 : 401,
+        json: { authorized, ...(authorized ? { expiresAt: Date.now() + 120000 } : {}) },
+      });
+    });
+    await page.route('**/api/santa-studio-access', route => route.fulfill({ json: { authorized: false } }));
+    await visit(page, path);
+    const voucher = page.locator('.santa-studio-promotion').getByLabel(codeLabel, { exact: true });
+    // Chromium does not emulate Safari auto-zoom: enforce its 16px focus
+    // threshold on the actual source field, not only the destination page.
+    for (const width of [320, 390, 430, 844]) {
+      await page.setViewportSize({ width, height: 844 });
+      expect(await voucher.evaluate(node => parseFloat(getComputedStyle(node).fontSize))).toBeGreaterThanOrEqual(16);
+    }
+    await page.setViewportSize({ width: 390, height: 844 });
+    await voucher.fill('MOBILE-LAYOUT-TEST');
+    await voucher.evaluate(node => {
+      window.__voucherBlurredBeforeStudio = false;
+      node.addEventListener('blur', () => {
+        window.__voucherBlurredBeforeStudio = !document.querySelector('.smw-page');
+      }, { once: true });
+    });
+    await voucher.press('Enter');
+    await expect(page.locator('.smw-builder')).toBeVisible();
+    expect(await page.evaluate(() => window.__voucherBlurredBeforeStudio)).toBe(true);
+    await expectStudioHeader(page);
+    const geometry = await page.evaluate(() => ({
+      scrollX,
+      width: document.documentElement.scrollWidth,
+      right: document.querySelector('.smw-builder').getBoundingClientRect().right,
+    }));
+    expect(geometry.scrollX).toBe(0);
+    expect(geometry.width).toBeLessThanOrEqual(391);
+    expect(geometry.right).toBeLessThanOrEqual(391);
+  });
+
   test(`a real isolated tester code opens the Studio from ${path} and survives a refresh`, async ({ page }) => {
     const code = process.env.WORKSHOP_TEST_PASSWORD;
     expect(code).toBeTruthy();

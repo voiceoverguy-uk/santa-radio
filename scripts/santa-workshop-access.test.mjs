@@ -67,6 +67,52 @@ async function withServer(options, run) {
   finally { await new Promise(resolve => { server.close(resolve); server.closeAllConnections(); }); }
 }
 
+test('voucher testers can start further messages without extending access; paid or missing sessions cannot', async () => {
+  await withServer({}, async ({ url }) => {
+    const another = cookie => fetch(url, {
+      method: 'POST', headers: { Origin: url, 'Content-Type': 'application/json', ...(cookie ? { Cookie: cookie } : {}) },
+      body: JSON.stringify({ another: true }),
+    });
+    assert.equal((await another()).status, 403);
+    assert.equal((await another(`santa-studio-sandbox=cs_test_fake.${'a'.repeat(43)}`)).status, 403);
+    for (const entry of config.codes) {
+      let token = issueWorkshopToken(config, at - 60000, entry.id);
+      const original = workshopSession(request(token), config, at);
+      for (let repeat = 0; repeat < 3; repeat++) {
+        const response = await another(`${WORKSHOP_COOKIE}=${token}`);
+        assert.equal(response.status, 200);
+        assert.deepEqual(await response.json(), { authorized: true, expiresAt: original.expiresAt });
+        const cookie = response.headers.get('set-cookie');
+        assert.match(cookie, /HttpOnly; SameSite=Strict/);
+        const next = cookie.split(';')[0].slice(WORKSHOP_COOKIE.length + 1);
+        assert.notEqual(next, token);
+        const session = workshopSession(request(next), config, at);
+        assert.equal(session.expiresAt, original.expiresAt);
+        assert.equal(session.codeId, entry.id);
+        assert.notEqual(session.generationKey, original.generationKey);
+        token = next;
+      }
+    }
+    const expired = issueWorkshopToken(config, at - WORKSHOP_SESSION_MS);
+    assert.equal((await another(`${WORKSHOP_COOKIE}=${expired}`)).status, 403);
+  });
+});
+
+test('starting another voucher test fails closed on rate limits and cross-origin requests', async () => {
+  await withServer({ consumeAttempt: async () => ({ allowed: false, retryAfter: 60 }) }, async ({ url }) => {
+    const cookie = `${WORKSHOP_COOKIE}=${issueWorkshopToken(config, at)}`;
+    const headers = { Origin: url, Cookie: cookie, 'Content-Type': 'application/json' };
+    const response = await fetch(url, { method: 'POST', headers, body: JSON.stringify({ another: true }) });
+    assert.equal(response.status, 429);
+    assert.equal(response.headers.get('set-cookie'), null);
+    const foreign = await fetch(url, {
+      method: 'POST', headers: { ...headers, Origin: 'https://other.test' }, body: JSON.stringify({ another: true }),
+    });
+    assert.equal(foreign.status, 403);
+    assert.equal(foreign.headers.get('set-cookie'), null);
+  });
+});
+
 test('five valid codes set non-persistent HttpOnly same-site cookies; responses never reveal codes', async () => {
   await withServer({}, async ({ url, post }) => {
     assert.deepEqual(await (await fetch(url)).json(), { authorized: false });

@@ -8,6 +8,7 @@ import { consumeNameAccess, privateResponse, readNameJson } from './santa-name-s
 import { renderStudioMessage } from './santa-studio-render.js';
 import { selectedWorkshopRegion, workshopDestinationCategory } from '../src/lib/workshopDestinations.js';
 import { studioGenerationStore, studioGenerationKey, studioIdentity } from './santa-studio-generation.js';
+import { workshopSession } from './santa-workshop-access.js';
 
 const categories = ['age', 'activity', 'achievement', 'treat', 'place'];
 const localNames = fileURLToPath(new URL('./santa-audio/names/', import.meta.url));
@@ -109,7 +110,7 @@ export function createStudioMessageHandler({
         const status = await withinDeadline(() => generations.status(key), controller.signal);
         const recording = status.locked && await withinDeadline(() => library.resolve(status.locked.name), controller.signal);
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        return res.end(JSON.stringify({ ...status, record: recording
+        return res.end(JSON.stringify({ ...status, testerCanStartAnother: !!workshopSession(req), record: recording
           ? { id: recording.id, name: recording.name, variant: recording.variant || '' } : null }));
       }
       await withinDeadline(() => limit(req, 'studioMessage'), controller.signal);

@@ -9,11 +9,17 @@ Fresh destination entry starts with “Countries & real places”, not a categor
 
 **How to apply:** Preserve the verified catalogue classifications and existing recording identities during future destination layout changes. State/county selection stays optional and its action belongs directly beneath the selected-country wheel label, not inside explanatory copy.
 
-Centre the “Choose a county/state” action against the full country-wheel box, not the remaining space beside the selected-country text, consistently across all eligible countries.
+On desktop, centre the “Choose a county/state” action against the full country-wheel box, not the remaining space beside the selected-country text. On mobile, place it at the bottom-right of the selector footer.
 
-**Why:** The owner explicitly requested moving these actions left into the middle of the box.
+**Why:** The owner originally requested centred actions, then explicitly changed mobile placement to the bottom-right of the box.
 
-**How to apply:** Keep the selected-country text and optional region behaviour; allow a separate centred action row on narrow screens so the text and link do not overlap.
+**How to apply:** Keep selected-country text and optional region behaviour; use a separate right-aligned action row on mobile so text and links do not overlap. Preserve desktop centring.
+
+On mobile, after a county/state is highlighted, place “Use [country] only” at the bottom-right of the regional selector footer, below the selected-region text.
+
+**Why:** The owner explicitly requested this position once a county is highlighted.
+
+**How to apply:** Preserve the action's existing region-clearing behaviour and selected country, and leave desktop placement unchanged.
 
 Do not show “Back to countries” in any of the five regional selectors. The active “Countries & real places” category button is the way back.
 

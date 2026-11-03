@@ -35,6 +35,72 @@ async function expectNoDestinationSummary(page) {
   await expect(page.getByText('Selected destination', { exact: true })).toHaveCount(0);
 }
 
+for (const width of [320, 390, 1365]) {
+  test(`country-only action sits bottom-right on mobile and still clears regions at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await openRegionalStage(page);
+    for (const [country, kind] of [
+      ['England', 'county'], ['Scotland', 'county'], ['Wales', 'county'],
+      ['Northern Ireland', 'county'], ['United States', 'state'],
+    ]) {
+      await page.getByRole('option', { name: country, exact: true }).click();
+      await page.getByRole('button', { name: `Choose a ${kind}`, exact: true }).click();
+      const regional = page.locator('.smw-destination-picker__regional:visible');
+      await regional.getByRole('option').first().click();
+      const reset = page.getByRole('button', { name: `Use ${country} only`, exact: true });
+      await expect(reset).toBeVisible();
+      for (const fontSize of width === 320 ? ['100%', '200%'] : ['100%']) {
+        await page.addStyleTag({ content: `html { font-size: ${fontSize}; }` });
+        const geometry = await reset.evaluate(node => {
+          const action = node.getBoundingClientRect();
+          const footer = node.closest('.smw-choice-wheel-footer-row');
+          const frame = footer.parentElement.querySelector('.smw-choice-wheel-frame').getBoundingClientRect();
+          const status = footer.querySelector('.smw-choice-wheel-status').getBoundingClientRect();
+          return { rightOffset: Math.abs(action.right - frame.right),
+            top: action.top, statusBottom: status.bottom, left: action.left,
+            right: action.right, height: action.height, width: innerWidth };
+        });
+        if (width <= 760) {
+          expect(geometry.rightOffset).toBeLessThanOrEqual(1);
+          expect(geometry.top).toBeGreaterThanOrEqual(geometry.statusBottom);
+        }
+        expect(geometry.left).toBeGreaterThanOrEqual(0);
+        expect(geometry.right).toBeLessThanOrEqual(geometry.width);
+        expect(geometry.height).toBeGreaterThanOrEqual(44);
+      }
+      if (width === 390 && country === 'England') await page.locator('.smw-builder').screenshot({
+        path: 'generated-artifacts/studio-country-only-bottom-right.png', animations: 'disabled',
+      });
+      await reset.click();
+      await expect(page.locator('.smw-destination-picker__country')).toBeVisible();
+      await expect(page.getByRole('option', { name: country, exact: true })).toHaveAttribute('aria-selected', 'true');
+      await expect(page.getByRole('button', { name: `Use ${country} only`, exact: true })).toHaveCount(0);
+      await page.addStyleTag({ content: 'html { font-size: 100%; }' });
+    }
+  });
+}
+
+test('mobile header Continue reviews the chosen county and disappears for an invalid destination', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openRegionalStage(page);
+  const shortcut = page.locator('.smw-header-continue');
+  await expect(shortcut).toHaveCount(0);
+  await page.getByRole('option', { name: 'England', exact: true }).click();
+  await expect(shortcut).toBeVisible();
+  await page.getByRole('button', { name: 'Choose a county', exact: true }).click();
+  await page.getByRole('option', { name: 'Kent', exact: true }).click();
+  await expect(shortcut).toBeVisible();
+  await page.locator('.smw-builder').screenshot({ path: 'generated-artifacts/studio-header-county-continue.png', animations: 'disabled' });
+  await shortcut.focus();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('.smw-summary')).toContainText('Kent, England');
+  await expect(shortcut).toHaveCount(0);
+  await page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true }).click();
+  await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
+  await expect(shortcut).toHaveCount(0);
+  await expect(page.locator('.smw-step-count')).toBeVisible();
+});
+
 for (const width of [1365, 320]) {
   test(`active countries button returns from counties and states without clearing selections at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
@@ -502,7 +568,7 @@ for (const viewport of [{ width: 1365, height: 900 }, { width: 320, height: 568 
       [5, 'Search treats', 'chocolate', 'Hot chocolate', 2],
       [6, 'Search fantasy and space destinations', 'moon', 'The Moon', 2],
     ]) {
-      await expect(page.locator('.smw-step-count')).toHaveText(`Step ${index + 1} of 8`);
+      await expect(page.locator('.smw-step-count')).toHaveText(`Step ${index + 1} of 7`);
       if (index === 6) await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
       const input = page.getByRole('searchbox', { name: searchLabel, exact: true });
       if (index === 3) {
@@ -651,7 +717,7 @@ for (const width of [1365, 320]) {
     await expect(page.locator('.smw-destination-picker__selection')).toHaveCount(0);
     await expect(page.getByRole('button', { name: /Choose a (state|county)/ })).toHaveCount(0);
     await next.click();
-    await expect(page.locator('.smw-step-count')).toHaveText('Step 7 of 8');
+    await expect(page.locator('.smw-step-count')).toHaveText('Step 7 of 7');
     const search = page.getByRole('searchbox');
     await search.fill('moon');
     await expect(page.getByRole('option')).toHaveText(['The Moon']);
@@ -666,7 +732,7 @@ for (const width of [1365, 320]) {
     await expect(page.getByRole('searchbox')).toHaveValue('');
     await expect(page.getByRole('option', { selected: true })).toHaveCount(0);
     await next.click();
-    await expect(page.locator('.smw-step-count')).toHaveText('Step 7 of 8');
+    await expect(page.locator('.smw-step-count')).toHaveText('Step 7 of 7');
 
     let submitted;
     await page.route('**/api/santa-studio-message', route => {
@@ -746,8 +812,8 @@ for (const [country, kind] of [
   ['Scotland', 'county'],
   ['Northern Ireland', 'county'],
 ]) {
-  for (const width of [1365, 320]) {
-    test(`regional action placement ${country} ${width}: centred unboxed action and keyboard`, async ({ page }) => {
+  for (const width of [1365, 390, 320]) {
+    test(`regional action placement ${country} ${width}: responsive unboxed action and keyboard`, async ({ page }) => {
       test.setTimeout(60000);
       await page.setViewportSize({ width, height: 1000 });
       await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -770,13 +836,14 @@ for (const [country, kind] of [
         const action = node.querySelector('.smw-destination-picker__region-action').getBoundingClientRect();
         const frame = node.querySelector('.smw-choice-wheel-frame').getBoundingClientRect();
         return { statusBottom: status.bottom, actionTop: action.top, actionBottom: action.bottom,
-          frameBottom: frame.bottom,
+          frameBottom: frame.bottom, rightOffset: Math.abs(action.right - frame.right),
           centreOffset: Math.abs(action.x + action.width / 2 - frame.x - frame.width / 2),
           actionLeft: action.left, actionRight: action.right };
       });
       expect(geometry.actionTop).toBeGreaterThanOrEqual(geometry.frameBottom);
       if (width > 520) expect(geometry.actionTop - geometry.frameBottom).toBeLessThanOrEqual(8);
-      expect(geometry.centreOffset).toBeLessThanOrEqual(1);
+      if (width <= 760) expect(geometry.rightOffset).toBeLessThanOrEqual(1);
+      else expect(geometry.centreOffset).toBeLessThanOrEqual(1);
       expect(geometry.actionLeft).toBeGreaterThanOrEqual(0);
       expect(geometry.actionRight).toBeLessThanOrEqual(width);
       await expect(page.locator('.smw-destination-picker__region-prompt')).toHaveCount(0);

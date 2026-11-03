@@ -7,8 +7,8 @@ export function validateWorkshopSpelling(value) {
   if (!name) return 'Enter the spelling you would like, or choose Cancel to keep the recorded spelling.';
   if (containsWorkshopProfanity(name)) return WORKSHOP_LANGUAGE_ERROR;
   if (name.length > 80) return 'Please keep the name to 80 characters or fewer.';
-  if (!/^\p{L}[\p{L}\p{M} '’‘-]*$/u.test(name)) {
-    return 'Use letters, spaces, apostrophes or hyphens for the name, without filename symbols.';
+  if (!/^\p{L}[\p{L}\p{M} &’‘'-]*$/u.test(name)) {
+    return 'Use letters, spaces, ampersands (&), apostrophes or hyphens for the name, without filename symbols.';
   }
   return '';
 }

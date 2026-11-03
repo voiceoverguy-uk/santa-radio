@@ -156,7 +156,8 @@ for (const width of [320, 1365]) {
       await expect(gifts.locator('.studio-certificate__name')).toHaveText(name);
       await expect(gifts.locator('.studio-gifts__preview-stack .studio-santa-picture__name text')).toHaveText(name);
       await expect(letterText(page).locator('p')).toHaveText(original.map(text => text.replaceAll('Dixie', name)));
-      await expect(page.locator('.smw-written-name-record strong')).toHaveText('Dixie');
+      await expect(page.locator('.smw-written-name-record')).toHaveCount(0);
+      await expect(page.locator('.smw-summary-row').filter({ has: page.locator('dt', { hasText: 'Their recorded name' }) })).toContainText('Dixie');
     };
     await editorButton.click();
     const input = gifts.getByRole('textbox', { name: 'Name spelling', exact: true });
@@ -181,9 +182,15 @@ for (const width of [320, 1365]) {
     await gifts.getByRole('button', { name: 'Use this spelling', exact: true }).click();
     await assertName('Élodie O’Neill');
     await editorButton.click();
+    await input.fill('Arabella & Doggy');
+    await assertName('Arabella & Doggy');
+    await gifts.getByRole('button', { name: 'Use this spelling', exact: true }).click();
+    await expect(input).toBeHidden();
+    await assertName('Arabella & Doggy');
+    await editorButton.click();
     await input.fill('Another name');
     await input.press('Escape');
-    await assertName('Élodie O’Neill');
+    await assertName('Arabella & Doggy');
     await editorButton.click();
     await gifts.getByRole('button', { name: 'Use recorded spelling', exact: true }).click();
     await assertName('Dixie');

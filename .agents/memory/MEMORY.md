@@ -59,6 +59,7 @@
 - [Native audio styling](native-audio-styling.md) — Chromium can paint its native media panel over the audio element background; style the WebKit panel as well.
 - [Santa Studio paid bundle](santa-studio-purchase-scope.md) — £6.50 guest family bundle; preserve the live product, keep free access separate, and do not invent expiry or regeneration caps.
 - [Studio letter geometry](studio-letter-preview-geometry.md) — Fit the whole A4 letter inside the popup without panning; keep controls responsive and preserve document proportions.
+- [Studio page position](studio-age-page-position.md) — Every mobile Studio page opens with the creation panel just below navigation, including entry, review and editing.
 - [Stripe connector diagnosis](stripe-connector-compatibility.md) — Inspect response field names before treating template errors as failed provisioning; preserve the working sandbox connection.
 - [Preview cookie attributes](preview-cookie-attributes.md) — The preview proxy can rewrite SameSite; test server attributes separately and keep explicit request-origin checks.
 - [Raw request targets](raw-request-targets.md) — Exact doubled-separator exports must survive pre-routing middleware; resolver-only checks miss failures and app-shell fallbacks.

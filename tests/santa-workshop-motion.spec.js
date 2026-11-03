@@ -138,7 +138,7 @@ test('mobile step changes reposition once and keep short steps clear of the bott
       document.querySelector('.smw-builder').getBoundingClientRect().top
       - document.querySelector('.navbar').getBoundingClientRect().bottom - 16,
     ))).toBeLessThanOrEqual(1);
-    await expect(page.locator('.smw-stage-heading h3')).toBeFocused();
+    await expect(page.locator('#smw-builder-title')).toBeFocused();
     await page.evaluate(() => { window.__transitionScrolls = 0; });
   };
   // Returning to the short name step previously left the panel pinned to the

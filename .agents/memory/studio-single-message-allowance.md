@@ -11,6 +11,19 @@ written spelling never changes the spoken identity. Failures do not spend the
 successful-generation allowance, and ordinary navigation must not discard the
 current downloadable recording.
 
+During voucher-code testing, testers may deliberately start another test
+message, including after exhausting both successes, and choose a different
+recorded name and destination. This is a temporary exception for authenticated
+voucher testers only, not paid/sandbox purchase access or the free maker.
+
+**Why:** The owner said “While we are testing, allow anyone using a voucher code
+to generate another.”
+
+**How to apply:** Keep the ordinary per-message accounting and paid limits
+intact. Starting another voucher test must not extend the voucher's expiry or
+bypass request/concurrency limits. Preserve the previous local downloads until
+replacement succeeds and advise downloading them before starting another test.
+
 **Why:** The owner explicitly chose this deliberate completion flow, superseding
 the earlier unagreed regeneration policy only for this single-message scope.
 

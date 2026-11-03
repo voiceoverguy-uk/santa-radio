@@ -33,7 +33,7 @@ export function workshopSession(req, config = settings(), now = Date.now()) {
   const expiry = Number(expires);
   if (!entry || Number(issued) > now || expiry <= now || expiry > Number(issued) + WORKSHOP_SESSION_MS
     || expiry > config.expiresAt || !equal(signature, sessionMac(`${version}.${id}.${issued}.${expires}.${nonce}`, entry, config))) return null;
-  return { expiresAt: expiry, generationKey: hash(`tester:${raw}`).toString('hex') };
+  return { expiresAt: expiry, generationKey: hash(`tester:${raw}`).toString('hex'), codeId: id };
 }
 
 export function hasWorkshopAccess(req, config = settings(), now = Date.now()) {
@@ -113,6 +113,22 @@ export function createWorkshopAccessHandler({ getSettings = settings, consumeAtt
     if (req.method === 'GET') {
       const session = workshopSession(req, config, time);
       return res.json(session ? { authorized: true, expiresAt: session.expiresAt } : { authorized: false });
+    }
+    // Temporary friends-test exception: only an already authenticated voucher
+    // session can start another message. Never extend its existing expiry.
+    if (req.body?.another === true && Object.keys(req.body).length === 1) {
+      const session = workshopSession(req, config, time);
+      if (!session) return res.status(403).json({ error: 'Enter a valid voucher code to create another test message.' });
+      try {
+        const attempt = await consumeAttempt(req, config, time);
+        if (!attempt.allowed) return res.set('Retry-After', String(attempt.retryAfter)).status(429).json({ error: 'Please wait before starting another test message.' });
+        const secure = req.headers['x-forwarded-proto']?.split(',')[0]?.trim() === 'https' || req.socket?.encrypted;
+        const token = issueWorkshopToken({ ...config, expiresAt: session.expiresAt }, time, session.codeId);
+        res.set('Set-Cookie', `${WORKSHOP_COOKIE}=${token}; Path=/; HttpOnly; SameSite=Strict${secure ? '; Secure' : ''}`);
+        return res.json({ authorized: true, expiresAt: session.expiresAt });
+      } catch {
+        return res.status(503).json({ error: 'Another test message could not be started. Please try again.' });
+      }
     }
     if (!req.body || Object.keys(req.body).length !== 1 || typeof req.body.code !== 'string'
       || !req.body.code.trim().length || req.body.code.trim().length > 80) {

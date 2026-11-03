@@ -45,7 +45,7 @@ async function openTalent(page, catalogue = workshopCatalogueFixture) {
   await page.getByRole('listbox', { name: 'Their age', exact: true }).press('Home');
   await next(page).click();
   await expect(page.getByRole('heading', { name: 'What are they especially good at?', exact: true })).toBeFocused();
-  await expect(page.locator('.smw-step-count')).toHaveText('Step 3 of 8');
+  await expect(page.locator('.smw-step-count')).toHaveText('Step 3 of 7');
 }
 async function finish(page) {
   const expectedSelections = ['Teamwork', 'Completing a jigsaw puzzle', 'a bûche de Noël', 'The Enchanted Forest'];
@@ -56,9 +56,37 @@ async function finish(page) {
     await expect(quote(page).locator('.smw-wording-selection')).toHaveText(` ${expectedSelections[index++]}`);
     await next(page).click();
   }
-  await expect(page.locator('.smw-step-count')).toHaveText('Step 8 of 8 · Review');
+  await expect(page.locator('.smw-step-count')).toHaveText('Step 8 of 8');
   await expect(page.locator('.smw-stage-number')).toHaveText('08');
   await expect(page.locator('.smw-summary-row')).toHaveCount(7);
+}
+
+for (const width of [390, 471, 1440]) {
+  test(`talent Continue comes before Skip this section at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await openTalent(page, workshopTalentPreviewCatalogueFixture);
+    const actions = page.locator('.smw-stage .smw-actions');
+    await expect(actions.getByRole('button')).toHaveText(['← Back', 'Continue →', 'Skip this section']);
+    const proceed = actions.getByRole('button', { name: 'Continue', exact: true });
+    const skip = actions.getByRole('button', { name: 'Skip this section', exact: true });
+    await expect(proceed).toBeDisabled();
+    await expect(skip).toBeEnabled();
+    await page.getByRole('option').first().click();
+    await expect(proceed).toBeEnabled();
+    const primaryBox = await proceed.boundingBox();
+    const skipBox = await skip.boundingBox();
+    expect(skipBox.y).toBeGreaterThanOrEqual(primaryBox.y - 1);
+    if (Math.abs(primaryBox.y - skipBox.y) <= 1) expect(skipBox.x).toBeGreaterThan(primaryBox.x);
+    await proceed.focus();
+    await page.keyboard.press('Tab');
+    await expect(skip).toBeFocused();
+    await actions.screenshot({ path: `generated-artifacts/talent-button-order-${width}.png` });
+    await proceed.click();
+    await expect(page.getByRole('heading', { name: 'What have they been working hard at?', exact: true })).toBeVisible();
+    await page.locator('.smw-stage .smw-button-back').click();
+    await skip.click();
+    await expect(page.getByRole('heading', { name: 'What have they been working hard at?', exact: true })).toBeVisible();
+  });
 }
 
 for (const width of [320, 1440]) {

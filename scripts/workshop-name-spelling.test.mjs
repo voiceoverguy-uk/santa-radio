@@ -27,6 +27,19 @@ test('invalid or excessive spellings cannot become filenames or output names', (
   }
 });
 
+test('ampersands are allowed in written names without changing recorded identity or weakening validation', () => {
+  for (const name of ['Arabella & Doggy', 'Anne-Marie & Élodie', 'Arabella&丫丫']) {
+    assert.equal(validateWorkshopSpelling(name), '');
+    assert.equal(getWorkshopWrittenName('Arabella', name), name);
+    assert.equal(getWorkshopDownloadName('Arabella', name), `santa-message-for-${name}.mp3`);
+  }
+  assert.equal(getWorkshopWrittenName('Arabella', '  Arabella   &   Doggy '), 'Arabella & Doggy');
+  for (const name of ['&', 'Arabella & ../Doggy', 'Arabella & <script>', 'Arabella & Doggy.mp3', 'Arabella & Fuck']) {
+    assert.notEqual(validateWorkshopSpelling(name), '');
+    assert.equal(getWorkshopWrittenName('Arabella', name), 'Arabella');
+  }
+});
+
 test('bad language, included words and disguised spellings never become output names', () => {
   for (const name of [
     'Fuck You', 'Anne FUCK Smith', 'motherfucker', 'Shithead', 'Bitch', 'Bastard',

@@ -72,13 +72,6 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
 
   return (
     <section className="smw-written-name" aria-label="Written name for your keepsakes" data-download-name={downloadName}>
-      <div className="smw-written-name-header">
-        <div className="smw-written-name-record">
-          <span className="smw-written-name-record-label">Recorded name</span>
-          <strong>{recordedName}</strong>
-        </div>
-      </div>
-
       <div className="smw-studio-preview" aria-label="Studio keepsake previews">
         <StudioKeepsakePreview
           name={completedGift && completedGift.record.id !== recordingId ? completedGift.writtenName : previewName}

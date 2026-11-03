@@ -241,7 +241,9 @@
   border-radius: 6px;
   background: #fff9e9;
   color: var(--studio-ink);
-  font-size: 0.9rem;
+  /* Below 16px Safari zooms the voucher field and carries that zoom into
+     the Studio after client-side navigation. Keep user pinch-zoom enabled. */
+  font-size: max(16px, 0.9rem);
   line-height: 1.45;
 }
 

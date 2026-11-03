@@ -9,8 +9,8 @@ export async function confirmMessage(page, label = 'Create message') {
 }
 // Models only the browser contract; real PostgreSQL accounting is exercised by
 // santa-studio-generation.test.mjs, including independent handler instances.
-export async function mockStudioGeneration(page, { record = { id: 'dixie-variant', name: 'Dixie', variant: 'Recording 2' } } = {}) {
-  const fixture = { state: emptyGeneration(), posts: [], fail: false, hold: null,
+export async function mockStudioGeneration(page, { record = { id: 'dixie-variant', name: 'Dixie', variant: 'Recording 2' }, tester = false } = {}) {
+  const fixture = { state: { ...emptyGeneration(), testerCanStartAnother: tester }, posts: [], fail: false, hold: null,
     audio: readFileSync('server/santa-audio/sleighbells.mp3') };
   await page.context().route('**/api/santa-studio-message*', async route => {
     const request = route.request();
@@ -31,7 +31,7 @@ export async function mockStudioGeneration(page, { record = { id: 'dixie-variant
       return route.fulfill({ status: 409, json: { error: 'The recorded name and full destination are locked.' } });
     }
     fixture.state = { successes: state.successes + 1, remaining: state.remaining - 1,
-      locked: identity, choices: payload, record, pending: false };
+      locked: identity, choices: payload, record, pending: false, testerCanStartAnother: tester };
     return route.fulfill({ contentType: 'audio/mpeg', headers: { 'X-Studio-Generation': String(fixture.state.successes) },
       body: fixture.audio });
   });

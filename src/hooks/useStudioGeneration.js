@@ -96,5 +96,31 @@ export default function useStudioGeneration(onRestore) {
     const timer = setInterval(refresh, 3000);
     return () => clearInterval(timer);
   }, [state?.pending, checking, refresh]);
-  return { state, error, checking, accessExpired, refresh };
+  const startAnother = async () => {
+    latestRequest.current++;
+    controllerRef.current?.abort();
+    setChecking(true);
+    setError('');
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+    try {
+      const response = await fetch('/api/santa-workshop-access', {
+        method: 'POST', credentials: 'same-origin', cache: 'no-store',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ another: true }), signal: controller.signal,
+      });
+      const data = await response.json();
+      if (!response.ok || data.authorized !== true) throw new Error(data.error || 'Another test message could not be started.');
+      seen.current = -1;
+      const next = await refresh();
+      return next?.successes === 0;
+    } catch (failure) {
+      setError(failure.name === 'AbortError' ? 'Starting another test message took too long. Please try again.' : failure.message);
+      return false;
+    } finally {
+      clearTimeout(timeout);
+      setChecking(false);
+    }
+  };
+  return { state, error, checking, accessExpired, refresh, startAnother };
 }
