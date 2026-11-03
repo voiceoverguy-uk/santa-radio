@@ -8,6 +8,15 @@ A dependency merge can leave a running development server using module paths fro
 
 **How to apply:** After dependency merges, verify Preview against a freshly started workflow before assuming missing internal modules mean package corruption or reinstalling dependencies.
 
+When sharing this repository with the native pnpm workspace, keep the website's
+direct Router import and react-router-dom on the same installed release.
+
+**Why:** A leftover npm transitive Router combined with pnpm's newer DOM router
+created two router contexts and broke pre-rendering despite matching React.
+
+**How to apply:** Declare the website's directly imported Router explicitly,
+align both lockfiles and verify built Node SSR as well as native exports.
+
 Late discovery of a lazy dependency can also make Vite reload the page during the first interaction, discarding private in-memory Studio state even though the production build is sound.
 
 **Why:** The first browser-local PDF download triggered dependency optimisation and reset the Studio before the download completed.

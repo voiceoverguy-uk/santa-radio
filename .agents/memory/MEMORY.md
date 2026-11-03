@@ -84,3 +84,5 @@
 - [Studio promotion typography](studio-promotion-typography.md) — Regular live promotion text and shared gift heading; keep document artwork and watermarks unchanged.
 - [School tester voucher](school-tester-voucher.md) — Shared independent parent access; fixed 3–10 November 2026 UK window, separate from existing vouchers.
 - [Studio build boundary](studio-build-boundary.md) — Website compilation must not depend on Studio storage; keep strict readiness and fail-closed runtime enforcement separate.
+- [Native purchase boundaries](mobile-purchase-boundaries.md) — Separate Apple products, sandbox-only initially; minimal usage accounting is not a permanent audio archive.
+- [Native API routing](native-api-routing.md) — A reachable Expo host does not prove the shared API is publicly routed; verify the protected connection through the proxy.

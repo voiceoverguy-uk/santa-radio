@@ -28,19 +28,33 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Start application"
+args = "santa-ios"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "santa-website-build"
 
 [[workflows.workflow]]
-name = "Start application"
+name = "santa-ios"
 author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm run dev"
-waitForPort = 5000
+args = "npm run test:mobile && pnpm --filter @workspace/santa-radio-ios run typecheck && pnpm --filter @workspace/santa-radio-ios test && pnpm --filter @workspace/santa-radio-ios run export:ios"
 
 [workflows.workflow.metadata]
-outputType = "webview"
+isValidation = true
+
+[[workflows.workflow]]
+name = "santa-website-build"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run build"
+
+[workflows.workflow.metadata]
+isValidation = true
 
 [[ports]]
 localPort = 5000
@@ -70,12 +84,23 @@ externalPort = 5173
 localPort = 24678
 externalPort = 3001
 
+[[ports]]
+localPort = 24826
+externalPort = 6800
+exposeLocalhost = true
+
 [postMerge]
 path = "scripts/post-merge.sh"
-timeoutMs = 60000
+timeoutMs = 180000
 
 [userenv]
 
 [userenv.shared]
 SANTA_REQUEST_ADMIN_EMAILS = "admin@santaradio.co.uk"
 SANTA_STUDIO_TEST_EXPIRES_AT = "2026-11-30T23:59:59Z"
+REVENUECAT_APPLE_APP_STORE_APP_ID = "appb4b894a6e8"
+REVENUECAT_PROJECT_ID = "projedf58122"
+
+[userenv.development]
+EXPO_PUBLIC_REVENUECAT_IOS_API_KEY = "appl_XtHePQmslaCzsEMooYQWxONQOKt"
+EXPO_PUBLIC_SANTA_IAP_SANDBOX = "false"

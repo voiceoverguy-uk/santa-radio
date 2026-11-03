@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "name": "Santa Radio iPhone",
+    "slug": "santa-radio-ios",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "santa-radio-ios",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "uk.co.santaradio.iphone",
+      "buildNumber": "1",
+      "infoPlist": {
+        "UIBackgroundModes": ["audio"],
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {},
+    "web": {
+      "favicon": "./assets/images/icon.png",
+      "output": "static"
+    },
+    "plugins": ["expo-router", "expo-secure-store", ["expo-audio", {
+      "microphonePermission": false,
+      "recordAudioAndroid": false,
+      "enableBackgroundPlayback": true
+    }]],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}

@@ -1,4 +1,7 @@
 /generated-artifacts/
+/artifacts/*/ios/Pods/
+/artifacts/*/ios/build/
+/artifacts/*/node_modules/
 attached_assets/santa-dash-app-image-*.png
 attached_assets/Santa_Dash__Back_to_the_Grotto_*.png
 attached_assets/Santa_Dash_rooftop_with_Wobbly_Bob_*.png

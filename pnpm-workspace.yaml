@@ -1,0 +1,6 @@
+packages:
+  - "."
+  - "artifacts/*"
+onlyBuiltDependencies:
+  - esbuild
+  - ffmpeg-static

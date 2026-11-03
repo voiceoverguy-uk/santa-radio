@@ -7,6 +7,7 @@ import radioMetadata from './server/radio-metadata.js';
 import radioTopTen from './server/radio-top-ten.js';
 import santaMessage from './server/santa-message.js';
 import studioMessage from './server/santa-studio-message.js';
+import santaMobile from './server/mobile/handler.js';
 import workshopUsage from './server/santa-workshop-usage.js';
 import santaNames from './server/santa-names.js';
 import santaNameCount from './server/santa-name-count.js';
@@ -65,6 +66,7 @@ const server = createServer(async (req, res) => {
     if (pathname === '/api/santa-workshop-access') return workshopAccess(req, res);
     if (pathname === '/api/radio-metadata') return await radioMetadata(req, res);
     if (pathname === '/api/radio-top-ten') return await radioTopTen(req, res);
+    if (pathname === '/api/santa-mobile') return await santaMobile(req, res);
     if (pathname === '/api/santa-studio-message') return await studioMessage(req, res);
     if (pathname === '/api/santa-workshop-usage') return workshopUsage(req, res);
     if (pathname === '/api/santa-message') return await santaMessage(req, res);

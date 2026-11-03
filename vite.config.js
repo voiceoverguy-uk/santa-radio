@@ -7,6 +7,7 @@ import radioMetadata from './server/radio-metadata.js';
 import radioTopTen from './server/radio-top-ten.js';
 import santaMessage from './server/santa-message.js';
 import studioMessage from './server/santa-studio-message.js';
+import santaMobile from './server/mobile/handler.js';
 import workshopUsage from './server/santa-workshop-usage.js';
 import santaNames from './server/santa-names.js';
 import santaNameCount from './server/santa-name-count.js';
@@ -59,6 +60,7 @@ const metadataPlugin = {
     server.middlewares.use('/api/christmas-contenders', christmasContenders);
     server.middlewares.use('/api/radio-metadata', radioMetadata);
     server.middlewares.use('/api/radio-top-ten', radioTopTen);
+    server.middlewares.use('/api/santa-mobile', santaMobile);
     server.middlewares.use('/api/santa-studio-message', studioMessage);
     server.middlewares.use('/api/santa-workshop-usage', workshopUsage);
     server.middlewares.use('/api/santa-message', santaMessage);
@@ -95,6 +97,7 @@ const metadataPlugin = {
     server.middlewares.use('/api/christmas-contenders', christmasContenders);
     server.middlewares.use('/api/radio-metadata', radioMetadata);
     server.middlewares.use('/api/radio-top-ten', radioTopTen);
+    server.middlewares.use('/api/santa-mobile', santaMobile);
     server.middlewares.use('/api/santa-studio-message', studioMessage);
     server.middlewares.use('/api/santa-workshop-usage', workshopUsage);
     server.middlewares.use('/api/santa-message', santaMessage);
