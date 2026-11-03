@@ -18,7 +18,7 @@ test('private failure events identify the storage binding and stage without cred
   assert.doesNotThrow(() => studioServiceFailure(error, 'status', { env, log() { throw new Error(); } }));
 });
 
-test('status storage failures fail closed before any source access or stitching and report the exact failing stage', async () => {
+test('temporary status never touches missing generation records, source audio or stitching', async () => {
   let renders = 0, source = 0;
   const events = [];
   const handler = createStudioMessageHandler({
@@ -34,9 +34,10 @@ test('status storage failures fail closed before any source access or stitching 
     setHeader() {}, writeHead(s) { status = s; }, end(b) { body = b; },
   });
   await handler(req, res);
-  assert.equal(status, 503);
+  assert.equal(status, 200);
+  assert.equal(JSON.parse(body).temporary, true);
   assert.equal(renders, 0); assert.equal(source, 0);
-  assert.deepEqual(events, [['42P01', 'status']]);
+  assert.deepEqual(events, []);
   assert.ok(!body.includes('PRIVATE'));
   assert.ok(!body.includes('db.example'));
 });

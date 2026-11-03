@@ -240,19 +240,9 @@ export default function SantaMessageWorkshop() {
   const [error, setError] = useState('');
   const [editing, setEditing] = useState(false);
   const [correction, setCorrection] = useState(false);
-  const generation = useStudioGeneration(data => {
-    if (data.record && data.choices) {
-      setSelectedName(data.record);
-      setChoices({ ...data.choices, name: `${data.record.name}${data.record.variant ? ` — ${data.record.variant}` : ''}` });
-      setTalentCategory(data.choices.talent?.category || 'sports');
-      setDestinationCategory(data.locked.category);
-      setStageIndex(stages.length);
-      setEditing(false);
-      setCorrection(false);
-    }
-  });
-  const locked = !!generation.state?.locked;
-  const audioEditingAllowed = !locked || (correction && generation.state?.remaining > 0);
+  const generation = useStudioGeneration();
+  const locked = false;
+  const audioEditingAllowed = audioPhase !== 'preparing' && audioPhase !== 'receiving';
   const [catalogueRetry, setCatalogueRetry] = useState(0);
   const [catalogueState, setCatalogueState] = useState({
     status: 'loading',
@@ -313,28 +303,6 @@ export default function SantaMessageWorkshop() {
       ?.find(record => record.id === giftChoices[category])?.letterContext])) };
   };
   const giftDetails = giftDetailsFor(choices);
-  // A confirmed previous success also unlocks its gifts after reopening Studio,
-  // without requiring the MP3 to be fetched or played again.
-  useEffect(() => {
-    const completed = generation.state;
-    if (!completed?.successes || !completed.record || !completed.choices
-      || catalogueState.status !== 'ready'
-      || (completedGift?.successes || 0) >= completed.successes
-      || !catalogueCategories.every(key => catalogueState.catalogue.categories[key]
-        ?.some(option => option.id === completed.choices[key]))) return;
-    const record = completed.record;
-    const completedChoices = completed.choices;
-    setCompletedGift({
-      selectionKey: JSON.stringify([record.id, completedChoices.region,
-        ...catalogueCategories.map(key => completedChoices[key]), completedChoices.talent]),
-      record: { ...record }, details: giftDetailsFor(completedChoices),
-      variation: letterVariation,
-      writtenName: getWorkshopWrittenName(record.name, record.id === selectedName?.id ? nameSpelling : ''),
-      successes: completed.successes,
-      revision: crypto.randomUUID(),
-    });
-  }, [generation.state, catalogueState.status, catalogueState.catalogue, completedGift?.successes,
-    letterVariation, selectedName?.id, nameSpelling]);
   const giftPreparing = audioPhase === 'preparing' || audioPhase === 'receiving' || generation.state?.pending;
   const giftNotice = completedGift
         ? completedGift.selectionKey !== selectionKey
@@ -807,7 +775,6 @@ export default function SantaMessageWorkshop() {
                       record: { ...record }, details: giftDetailsFor(completedChoices),
                       variation: letterVariation,
                       writtenName: getWorkshopWrittenName(record.name, record.id === selectedName?.id ? nameSpelling : ''),
-                      successes: message.successes,
                       revision: crypto.randomUUID(),
                     });
                   }}

@@ -117,7 +117,7 @@ async function call(handler, data, operation = randomUUID(), method = 'POST', ur
   await handler(req, res);
   return result;
 }
-test('handler integrates failure release, locked regional/variant validation, refresh recovery and exactly two successes', async () => {
+test('temporary handler creates independently without durable counts, identity locks or recovery', async () => {
   const key = newKey();
   let fail = true, renders = 0;
   const inventory = { categories: Object.fromEntries(['age', 'activity', 'achievement', 'treat', 'place']
@@ -145,30 +145,24 @@ test('handler integrates failure release, locked regional/variant validation, re
     { ...choices, region: undefined },
   ]) {
     const data = JSON.parse(JSON.stringify(changed));
-    assert.equal((await call(handler, data)).status, 409);
+    assert.equal((await call(handler, data)).status, 200);
   }
   const restart = createStudioMessageHandler(options);
   const status = await call(restart, undefined, undefined, 'GET');
   assert.equal(status.status, 200);
   const json = JSON.parse(status.body);
-  assert.equal(json.successes, 1);
-  assert.equal(json.record.variant, 'Recording 2');
+  assert.equal(json.temporary, true);
+  assert.equal(json.successes, undefined);
   assert.equal(JSON.stringify(json).includes('source'), false);
-  assert.equal((await call(restart, undefined, undefined, 'GET', '/?audio=1')).body.toString(), 'mp3');
+  assert.equal((await call(restart, undefined, undefined, 'GET', '/?audio=1')).status, 410);
   assert.equal((await call(restart, { ...choices, age: id(9) })).status, 200);
-  assert.equal((await call(restart, choices)).status, 409);
-  assert.equal((await options.generations.status(key)).successes, 2);
-  assert.equal(renders, 5);
-  assert.equal((await call(restart, undefined, undefined, 'GET', '/?audio=1')).status, 200);
-  assert.equal((await options.generations.status(key)).successes, 2, 'Recovery never spends an allowance');
-  const recovered = await call(restart, undefined, undefined, 'GET', '/?audio=1');
-  const selection = JSON.parse(Buffer.from(recovered.headers['X-Studio-Selection'], 'base64').toString('utf8'));
-  assert.equal(selection.successes, 2);
-  assert.equal(selection.choices.age, id(9), 'Audio and recovery choices describe the same committed correction');
-  assert.match(selection.accessEpoch, /^[a-f0-9]{64}$/);
+  assert.equal((await call(restart, choices)).status, 200);
+  assert.equal((await options.generations.status(key)).successes, 0);
+  assert.equal(renders, 8);
+  assert.equal((await call(restart, undefined, undefined, 'GET', '/?audio=1')).status, 410);
 });
 
-test('existing legacy MP3 data stays retrievable even when the original source has disappeared', async () => {
+test('retiring public recovery leaves existing archived data untouched', async () => {
   const key = newKey(), operation = randomUUID();
   const generations = createStudioGenerationStore(pool);
   const reservation = await generations.reserve(key, operation, choices, identity);
@@ -183,19 +177,22 @@ test('existing legacy MP3 data stays retrievable even when the original source h
     render: async () => assert.fail('Legacy retrieval must not need stitching'),
   });
   const result = await call(handler, undefined, undefined, 'GET', '/?audio=1');
-  assert.equal(result.status, 200);
-  assert.equal(result.body.toString(), 'legacy-user-audio');
+  assert.equal(result.status, 410);
+  assert.equal((await generations.recovery(key)).legacyAudio.toString(), 'legacy-user-audio');
   assert.equal((await generations.status(key)).successes, 1);
 });
 
-test('a late database reservation is reconciled and released when the HTTP deadline has already fired', async () => {
+test('source preparation deadline does not reserve or release generation records', async () => {
   let released = null, renders = 0;
   const noRegion = { ...choices }; delete noRegion.region;
   const handler = createStudioMessageHandler({
     accessKey: () => 'late-fixture', authorize: async () => true, limit: async () => {},
     executionMs: 10, reportFailure() {},
-    catalogue: async () => ({ categories: Object.fromEntries(['age', 'activity', 'achievement', 'treat', 'place']
-      .map(category => [category, [{ id: choices[category], file: `${category}.wav` }]])) }),
+    catalogue: async () => {
+      await new Promise(resolve => setTimeout(resolve, 40));
+      return { categories: Object.fromEntries(['age', 'activity', 'achievement', 'treat', 'place']
+        .map(category => [category, [{ id: choices[category], file: `${category}.wav` }]])) };
+    },
     library: { resolve: async id => ({ id, source: 'hosted' }) },
     generations: {
       reserve: async () => { await new Promise(resolve => setTimeout(resolve, 40)); return { reservation: 'exact-late-fence' }; },
@@ -205,11 +202,11 @@ test('a late database reservation is reconciled and released when the HTTP deadl
   });
   const result = await call(handler, noRegion);
   assert.equal(result.status, 503);
-  assert.deepEqual(released, ['late-fixture', 'exact-late-fence']);
+  assert.equal(released, null);
   assert.equal(renders, 0);
 });
 
-test('aborting preparation releases its real database reservation without locking or spending a success', async () => {
+test('aborting temporary preparation leaves no generation record or allowance lock', async () => {
   const key = newKey();
   const generations = createStudioGenerationStore(pool);
   let entered;
@@ -234,7 +231,7 @@ test('aborting preparation releases its real database reservation without lockin
   const res = Object.assign(new EventEmitter(), { setHeader() {}, writeHead() {}, end() {} });
   const pending = handler(req, res);
   await rendering;
-  assert.equal((await generations.status(key)).pending, true);
+  assert.equal((await generations.status(key)).pending, false);
   res.destroyed = true;
   res.emit('close');
   await pending;

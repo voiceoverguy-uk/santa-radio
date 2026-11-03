@@ -69,10 +69,11 @@ async function checkComponent(pool, specs) {
   }
 }
 
-export async function checkStudioStorage(pool, { includeReporting = true } = {}) {
+export async function checkStudioStorage(pool, { includeReporting = true, includeGeneration = true } = {}) {
   // Separate read-only transactions keep a missing reporting table from
   // masking whether mandatory recording storage is available, and vice versa.
-  const generation = await checkComponent(pool, tables.generation);
+  const generation = includeGeneration ? await checkComponent(pool, tables.generation)
+    : { checked: false, ready: false, reason: 'temporary_generation_no_history' };
   const reporting = includeReporting ? await checkComponent(pool, tables.reporting)
     : { checked: false, ready: false, reason: 'optional_collection_disabled' };
   return { generation, reporting };

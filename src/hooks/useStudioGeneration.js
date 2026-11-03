@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { StudioVoucherContext } from '../lib/studioAccessContext.js';
 
-export default function useStudioGeneration(onRestore) {
+export default function useStudioGeneration() {
   const voucher = useContext(StudioVoucherContext);
   const [state, setState] = useState(null);
   const [error, setError] = useState('');
@@ -11,9 +11,6 @@ export default function useStudioGeneration(onRestore) {
   const [epoch, setEpoch] = useState(0);
   const attempts = useRef(0);
   const controllerRef = useRef(null);
-  const restore = useRef(onRestore);
-  restore.current = onRestore;
-  const seen = useRef(-1);
   const alive = useRef(true);
   const latestRequest = useRef(0);
   const refresh = useCallback(async () => {
@@ -40,20 +37,15 @@ export default function useStudioGeneration(onRestore) {
         }
         if (response.status === 429) {
           canRetry = false;
-          throw new Error('Santa’s allowance checker is busy. Please wait a minute, then check again.');
+          throw new Error('Santa’s recording service is busy. Please wait a minute, then check again.');
         }
         throw new Error(voucher?.unlimited
           ? 'Your voucher is recognised, but Santa’s recording service is temporarily unavailable. Your unlimited-message access has not changed. Please try again.'
-          : 'We can’t check how many messages you have left right now, so we can’t create your recording. Please try again.');
+          : 'Santa’s recording service is temporarily unavailable. Please try again.');
       }
       const data = await response.json();
-      if (!Number.isInteger(data.successes) || data.successes < 0 || data.successes > 2
-        || data.remaining !== 2 - data.successes) throw new Error('Your message allowance could not be checked.');
-      if (!alive.current || request !== latestRequest.current || data.successes < seen.current) return null;
-      if (data.successes > seen.current) {
-        if (data.successes > 0) restore.current(data);
-        seen.current = data.successes;
-      }
+      if (data.temporary !== true) throw new Error('Your Studio access could not be checked.');
+      if (!alive.current || request !== latestRequest.current) return null;
       setState(data);
       setError('');
       setAccessExpired(false);
@@ -64,7 +56,7 @@ export default function useStudioGeneration(onRestore) {
       if (alive.current && request === latestRequest.current) {
         setRetryable(canRetry);
         setError(failure.name === 'AbortError' || failure instanceof TypeError
-          ? 'The allowance check could not connect. Please check your connection and try again.'
+          ? 'The recording check could not connect. Please check your connection and try again.'
           : failure.message);
       }
       return null;
@@ -116,11 +108,10 @@ export default function useStudioGeneration(onRestore) {
       });
       const data = await response.json();
       if (!response.ok || data.authorized !== true) throw new Error(data.error || 'Another test message could not be started.');
-      seen.current = -1;
       setState(null);
       setEpoch(value => value + 1);
       const next = await refresh();
-      return next?.successes === 0;
+      return next?.temporary === true;
     } catch (failure) {
       setError(failure.name === 'AbortError' ? 'Starting another test message took too long. Please try again.' : failure.message);
       return false;

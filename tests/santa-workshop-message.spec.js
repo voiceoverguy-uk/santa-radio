@@ -21,14 +21,14 @@ const preparationMessages = [
   'Santa is busy recording. We’ve hidden the mince pies until he’s finished.',
 ];
 
-test('authorised Studio can check its actual allowance without generating audio', async ({ page }) => {
+test('authorised Studio can check its actual access without generation records', async ({ page }) => {
   await unlockWorkshop(page);
   const response = await page.request.get('/api/santa-studio-message');
   expect(response.status(), await response.text()).toBe(200);
-  expect(await response.json()).toMatchObject({ successes: 0, remaining: 2, pending: false });
+  expect(await response.json()).toMatchObject({ temporary: true });
 });
 
-test('Vercel missing-generation-table conditions keep valid voucher access but refuse unprotected creation', async ({ page, browser, baseURL }) => {
+test('Vercel missing-generation-table conditions keep voucher validation and permit temporary creation', async ({ page, browser, baseURL }) => {
   test.skip(process.env.STUDIO_TEST_MISSING_TABLES !== 'generation-and-reporting',
     'Runs only with the isolated missing-table preload, without changing real schema.');
   test.setTimeout(90000);
@@ -44,9 +44,10 @@ test('Vercel missing-generation-table conditions keep valid voucher access but r
   } finally { await anonymous.close(); }
   await openReview(page, { live: true, school: true });
   const status = await page.request.get('/api/santa-studio-message');
-  expect(status.status()).toBe(503);
-  await expect(page.locator('.smw-allowance')).toContainText('Your voucher is recognised');
-  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
+  expect(status.status()).toBe(200);
+  expect(await status.json()).toMatchObject({ temporary: true });
+  await expect(page.locator('.smw-allowance')).toContainText('Recordings and message history are not saved');
+  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
   await expect(page.locator('.smw-message-result audio')).toHaveCount(0);
   await expect(page.getByRole('link', { name: 'Download MP3', exact: true })).toHaveCount(0);
 });
@@ -542,12 +543,9 @@ test('school voucher form opens real long-form generation and playable MP3 witho
   expect(download.suggestedFilename()).toMatch(/^santa-message-for-Arabella\.mp3$/);
   await download.saveAs('generated-artifacts/studio-live-hosted-message.mp3');
   expect(readFileSync(await download.path()).length).toBeGreaterThan(10000);
-  // Exercise real cross-request recovery: the server has stored no MP3 bytes.
-  // Re-stitch the committed choices and decode the result in the browser.
-  const recovered = await page.evaluate(async () => {
-    const response = await fetch('/api/santa-studio-message?audio=1', {
-      credentials: 'same-origin', cache: 'no-store',
-    });
+  // Fully decode the actual browser-local MP3, not a recovery or fixture.
+  const recovered = await player.evaluate(async node => {
+    const response = await fetch(node.src);
     if (!response.ok) return { status: response.status };
     const bytes = await response.arrayBuffer();
     const context = new AudioContext();
@@ -555,11 +553,10 @@ test('school voucher form opens real long-form generation and playable MP3 witho
       const decoded = await context.decodeAudioData(bytes);
       return { status: response.status, duration: decoded.duration,
         channels: decoded.numberOfChannels, samples: decoded.length,
-        sequence: Number(response.headers.get('x-studio-generation')) };
+        };
     } finally { await context.close(); }
   });
   expect(recovered.status).toBe(200);
-  expect(recovered.sequence).toBe(1);
   expect(recovered.duration).toBeGreaterThan(10);
   expect(recovered.samples).toBeGreaterThan(100000);
   expect(recovered.channels).toBeGreaterThan(0);
@@ -571,12 +568,15 @@ test('school voucher form opens real long-form generation and playable MP3 witho
     });
     expect(response.status()).toBe(200);
     expect(await (await secondParent.request.get('/api/santa-studio-message')).json()).toMatchObject({
-      successes: 0, remaining: 2, pending: false,
+      temporary: true,
     });
     expect(await (await page.request.get('/api/santa-studio-message')).json()).toMatchObject({
-      successes: 1, remaining: 1, pending: false,
+      temporary: true,
     });
   } finally { await secondParent.close(); }
+  expect((await page.request.get('/api/santa-studio-message?audio=1')).status()).toBe(410);
+  await page.reload();
+  await expect(page.locator('.smw-message-result audio')).toHaveCount(0);
 });
 
 test('full-message playback coordinates with radio and pagehide stops playback without losing the result', async ({ page }) => {

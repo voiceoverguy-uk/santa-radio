@@ -29,8 +29,6 @@ export default function WorkshopMessageAudio({
   const resumeRef = useRef(null);
   const dialogRef = useRef(null);
   const triggerRef = useRef(null);
-  const operationRef = useRef(null);
-  const loadedSequence = useRef(0);
   const receivedSelection = useRef(null);
   const readyCallbackRef = useRef(onReady);
   // Spelling can be corrected while bytes are arriving. It is display-only;
@@ -40,7 +38,6 @@ export default function WorkshopMessageAudio({
   const [url, setUrl] = useState('');
   const [error, setError] = useState('');
   const [confirming, setConfirming] = useState(false);
-  const [recoveryAttempt, setRecoveryAttempt] = useState(0);
   const [preparationMessage, setPreparationMessage] = useState('');
   const [finishedName, setFinishedName] = useState(null);
   const writtenName = getWorkshopWrittenName(record?.name || '', spelling);
@@ -50,12 +47,9 @@ export default function WorkshopMessageAudio({
   useEffect(() => {
     requestRef.current?.abort();
     requestRef.current = null;
-    loadedSequence.current = 0;
-    operationRef.current = null;
     receivedSelection.current = null;
   }, [epoch]);
-  const disabled = !complete || busy || !status || !!generation.error || generation.checking || status.pending
-    || status.remaining === 0 || ((url || status.successes > 0) && !correction && !(tester && status.successes === 0));
+  const disabled = !complete || busy || !status || !!generation.error || generation.checking;
   // Share readiness only after the entire MP3 has been received, never merely
   // on a successful HTTP header or a promotional preview.
   useEffect(() => { onPhaseChange?.(error ? 'error' : phase); }, [phase, error, onPhaseChange]);
@@ -120,12 +114,9 @@ export default function WorkshopMessageAudio({
     const selectionHeader = response.headers.get('x-studio-selection');
     if (selectionHeader) {
       const selection = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(selectionHeader), char => char.charCodeAt(0))));
-      if (!selection || !Number.isInteger(selection.successes)
-        || selection.successes !== Number(response.headers.get('x-studio-generation'))
-        || typeof selection.record?.id !== 'string' || typeof selection.record?.name !== 'string'
-        || selection.choices?.name !== selection.record.id
-        || !/^[a-f0-9]{64}$/.test(selection.accessEpoch || '')) {
-        throw new Error('The recording details could not be verified. Please retrieve it again.');
+      if (!selection || typeof selection.record?.id !== 'string' || typeof selection.record?.name !== 'string'
+        || selection.choices?.name !== selection.record.id) {
+        throw new Error('The recording details could not be verified. Please create it again.');
       }
       receivedSelection.current = selection;
     }
@@ -137,42 +128,8 @@ export default function WorkshopMessageAudio({
     setPhase('ready');
     setError('');
     setFinishedName({ name: record?.name || '', spelling });
-    return Number(response.headers.get('x-studio-generation')) || null;
+    return receivedSelection.current;
   };
-
-  // Recover completed audio after refresh/remount or another tab's success.
-  useEffect(() => {
-    if (!complete || !status?.successes || loadedSequence.current >= status.successes || requestRef.current) return;
-    const controller = new AbortController();
-    const sequence = status.successes;
-    requestRef.current = controller;
-    setPhase('receiving');
-    const timeout = setTimeout(() => controller.abort(), 115000);
-    fetch('/api/santa-studio-message?audio=1', {
-      credentials: 'same-origin', cache: 'no-store', signal: controller.signal,
-    }).then(response => receive(response, controller.signal)).then(() => {
-      loadedSequence.current = receivedSelection.current?.successes || sequence;
-      readyCallbackRef.current?.(receivedSelection.current || {
-        record: status.record, choices: status.choices, successes: loadedSequence.current,
-      });
-      generation.refresh();
-    })
-      .catch(failure => {
-        if (requestRef.current === controller) {
-          setError(controller.signal.aborted
-            ? 'Retrieving your recording took too long. Please try again.' : failure.message);
-          setPhase(urlRef.current ? 'ready' : 'error');
-        }
-      }).finally(() => {
-        clearTimeout(timeout);
-        if (requestRef.current === controller) requestRef.current = null;
-      });
-    return () => {
-      clearTimeout(timeout);
-      controller.abort();
-      if (requestRef.current === controller) requestRef.current = null;
-    };
-  }, [complete, status?.successes, recoveryAttempt, epoch]);
 
   useEffect(() => {
     if (!confirming) return;
@@ -189,7 +146,7 @@ export default function WorkshopMessageAudio({
     requestRef.current?.abort();
     requestRef.current = null;
     setPhase(urlRef.current ? 'ready' : 'idle');
-    setError('Preparation cancelled. If it had already finished, your recording will be available when the allowance is checked.');
+    setError('Preparation cancelled. No recording has been saved. You can create a new message.');
     generation.refresh();
   };
   const create = async () => {
@@ -204,26 +161,18 @@ export default function WorkshopMessageAudio({
     const payload = { name: record.id, ...Object.fromEntries(
       ['age', 'activity', 'achievement', 'treat', 'place'].map(key => [key, choices[key]]),
     ), talent: choices.talent, ...(choices.region ? { region: choices.region } : {}) };
-    const fingerprint = JSON.stringify(payload);
-    if (operationRef.current?.fingerprint !== fingerprint) {
-      operationRef.current = { fingerprint, key: crypto.randomUUID() };
-    }
     let timedOut = false;
     const timeout = setTimeout(() => { timedOut = true; controller.abort(); }, 115000);
     try {
       const response = await fetch('/api/santa-studio-message', {
         method: 'POST', credentials: 'same-origin', cache: 'no-store', signal: controller.signal,
-        headers: { 'Content-Type': 'application/json', Accept: 'audio/mpeg',
-          'Idempotency-Key': operationRef.current.key },
+        headers: { 'Content-Type': 'application/json', Accept: 'audio/mpeg' },
         body: JSON.stringify(payload),
       });
       if (requestRef.current !== controller) return;
       setPhase('receiving');
-      const sequence = await receive(response, controller.signal);
-      // Refresh will restore the authoritative choices and end correction mode.
-      loadedSequence.current = sequence || (status?.successes || 0) + 1;
-      operationRef.current = null;
-      readyCallbackRef.current?.(receivedSelection.current || { record, choices, successes: loadedSequence.current });
+      await receive(response, controller.signal);
+      readyCallbackRef.current?.(receivedSelection.current || { record, choices });
     } catch (failure) {
       if (requestRef.current === controller) {
         setPhase(urlRef.current ? 'ready' : 'error');
@@ -243,9 +192,8 @@ export default function WorkshopMessageAudio({
   // controls or detached playing media in earlier stages.
   if (!visible) return null;
   return <>
-    {status?.successes > 0 && <p className="smw-download-hint">
-      Keep this page open until you have saved your MP3. Recovery after a reload may require
-      Santa’s source recordings to be available.
+    {url && <p className="smw-download-hint">
+      Save your MP3 before leaving or refreshing this page. We do not keep a copy or recording history.
     </p>}
     <button ref={triggerRef} className={`smw-button smw-button-next${disabled ? ' smw-create-disabled' : ''}`}
       type="button" onClick={() => setConfirming(true)} disabled={disabled} aria-busy={busy}>
@@ -254,35 +202,14 @@ export default function WorkshopMessageAudio({
     {showGiftDownloadHint && <p className="smw-catalogue-review-note smw-gift-download-hint">
       Create your MP3 to unlock these three personalised gift downloads.
     </p>}
-    {tester && status?.successes > 0 && <button className="smw-button smw-button-back"
-      type="button" disabled={busy || status.pending || !!generation.error || generation.checking}
-      onClick={async () => {
-        if (await generation.startAnother()) {
-          operationRef.current = null;
-          onCorrection();
-        }
-      }}>Generate another test message</button>}
-    {!tester && status?.successes === 1 && !correction && <button className="smw-button smw-button-back"
-      type="button" disabled={busy || status.pending || !!generation.error} onClick={() => {
-        operationRef.current = null;
-        onCorrection();
-      }}>Edit and regenerate once</button>}
     {voucher?.unlimited && <p className="smw-voucher-entitlement">
-      You used Voucher Code: {voucher.code}, you can generate unlimited messages
+      You used Voucher Code: {voucher.code}. You can create messages while your access remains valid, subject to request limits.
     </p>}
     <p className="smw-allowance" role={generation.error ? 'alert' : 'status'} aria-live={generation.error ? 'assertive' : 'polite'}>
-      {generation.checking ? voucher?.unlimited ? 'Checking your recording status…' : 'Checking your message allowance…' : generation.error
+      {generation.checking ? 'Checking your Studio access…' : generation.error
         ? generation.error
-        : !status ? 'Your message allowance has not been confirmed.' : tester && status.successes > 0 && !status.pending
-        ? 'Voucher testing: you can start another test message, including choosing a different name and destination. Download your current MP3 and gifts before starting another test.'
-        : voucher?.unlimited && !status.pending && status.successes === 0
-        ? 'Create your message, then use Generate another test message to choose a new name and destination. Download your MP3 and gifts before starting another.'
-        : status.remaining === 0
-        ? 'Both messages have been created. No further generation is available. Repeat downloads are still available.'
-        : status.pending ? 'A message is being prepared for this access. Your allowance will update when it finishes.'
-          : status.successes === 1
-            ? 'Your recorded name and full destination are locked. One correction remains for the other audio choices.'
-            : 'You can create one message, then make one correction. The recorded name and full destination lock after the first successful message.'}
+        : !status ? 'Your Studio access has not been confirmed.'
+        : 'Create, play and download your message here. Recordings and message history are not saved. You can edit your choices and create another message; request limits apply.'}
       {generation.error && generation.accessExpired && <> <button type="button" className="smw-change"
       onClick={() => window.location.reload()}>
       Reload Studio</button></>}
@@ -296,13 +223,10 @@ export default function WorkshopMessageAudio({
       <button className="smw-change" type="button" onClick={cancel}>Cancel preparation</button>
     </div>}
     {error && <div className="smw-message-result" role="alert"><p>{error}</p>
-      {status?.successes > 0 && !url && <button className="smw-change" type="button"
-        onClick={() => { setRecoveryAttempt(value => value + 1); generation.refresh(); }}>Retrieve recording again</button>}
     </div>}
     {url && <section className="smw-message-result" aria-label="Your finished Santa message">
-      <h4>Santa’s message for {tester && correction && finishedName ? getWorkshopWrittenName(finishedName.name, finishedName.spelling) : writtenName}</h4>
-      <p role="status">{tester && correction ? 'Your previous recording remains available here until your next test message succeeds.'
-        : correction ? 'Your previous recording remains available until your correction succeeds.' : 'Your extended message is ready to play and download.'}</p>
+      <h4>Santa’s message for {finishedName ? getWorkshopWrittenName(finishedName.name, finishedName.spelling) : writtenName}</h4>
+      <p role="status">Your message is ready to play and download. It is only available on this open page.</p>
       <audio ref={audioRef} src={url} controls preload="metadata" aria-label={`Play Santa’s message for ${writtenName}`}
         onPlay={event => {
           const resume = radio?.pauseForMessage?.();
@@ -311,9 +235,9 @@ export default function WorkshopMessageAudio({
         }} onPause={finishPlayback} onEnded={finishPlayback}
         onError={() => { finishPlayback(); setError('Your browser could not play this MP3. You can still try downloading it.'); }} />
       <div className="smw-download-actions"><a className="smw-button smw-button-download" href={url}
-        download={getWorkshopDownloadName(tester && correction && finishedName ? finishedName.name : record?.name || '',
-          tester && correction && finishedName ? finishedName.spelling : spelling)}>Download MP3 <span aria-hidden="true">↓</span></a></div>
-      <p className="smw-catalogue-review-note">Download and keep your MP3. You can download it repeatedly, including after refresh while this same authorised Studio access remains valid. A download click cannot confirm that your browser saved the file.</p>
+        download={getWorkshopDownloadName(finishedName?.name || record?.name || '',
+          finishedName?.spelling ?? spelling)}>Download MP3 <span aria-hidden="true">↓</span></a></div>
+      <p className="smw-catalogue-review-note">Save your MP3 now. Leaving or refreshing this page removes the temporary recording. A download click cannot confirm that your browser saved the file.</p>
     </section>}
     {confirming && <dialog ref={dialogRef} className="smw-confirmation" aria-labelledby="smw-confirm-title"
       aria-describedby="smw-confirm-description" onCancel={event => { event.preventDefault(); closeConfirmation(); }}
@@ -328,11 +252,7 @@ export default function WorkshopMessageAudio({
         }
       }}>
       <h3 id="smw-confirm-title">Are you happy with your selection?</h3>
-      <p id="smw-confirm-description">{tester
-        ? 'Create this test message with your selected details. Voucher testers can start another message afterwards while testing remains open.'
-        : status?.successes
-        ? 'This is your one remaining correction. Your recorded name and full destination stay locked. After this succeeds, no further message generation is available.'
-        : 'After your first successful message, the exact recorded name and full destination, including any county or state, will be locked. You will have one remaining correction for the other audio choices. Written spelling does not change the spoken recording.'}</p>
+      <p id="smw-confirm-description">Create a temporary MP3 using these details, then play and save it on this page. We do not keep a copy or message history. You can change your choices and create another message, subject to request limits.</p>
       <div className="smw-actions">
         <button type="button" className="smw-button smw-button-back" onClick={closeConfirmation}>Go back</button>
         <button type="button" className="smw-button smw-button-next" disabled={disabled} onClick={create}>Create message</button>

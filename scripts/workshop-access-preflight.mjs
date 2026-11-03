@@ -64,12 +64,14 @@ export async function storageReport(pool) {
 
 export async function releaseStorageReport(pool, { includeReporting = true } = {}) {
   const access = await storageReport(pool);
-  const { generation, reporting } = await checkStudioStorage(pool, { includeReporting });
+  const { generation, reporting } = await checkStudioStorage(pool, {
+    includeReporting, includeGeneration: includeReporting,
+  });
   return {
     checked: true,
-    ready: access.ready && generation.ready,
+    ready: access.ready,
     entryReady: access.ready,
-    recordingReady: access.ready && generation.ready,
+    recordingReady: access.ready,
     reportingReady: generation.ready && reporting.ready,
     access, generation, reporting,
   };

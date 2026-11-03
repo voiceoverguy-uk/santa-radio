@@ -126,12 +126,12 @@ test('protected Studio resolves exact ID afresh, all category IDs, private MP3 a
   await assert.rejects(stat(state.renders[0].directory), { code: 'ENOENT' });
 });
 
-test('confirmation operation IDs are required and cannot be caller paths or arbitrary strings', async () => {
+test('temporary creation needs no operation record and permits more than two requests without keeping a history', async () => {
   const { handler, state } = fixture();
   for (const key of [undefined, '', 'first', '../recording', 'aaaaaaaa-aaaa-1aaa-8aaa-aaaaaaaaaaaa']) {
-    assert.equal((await call(handler, { headers: { 'idempotency-key': key } })).status, 400);
+    assert.equal((await call(handler, { headers: { 'idempotency-key': key } })).status, 200);
   }
-  assert.equal(state.renders.length, 0);
+  assert.equal(state.renders.length, 5);
 });
 
 test('every category changes its own trusted recording and never changes the selected name variant', async () => {
@@ -202,7 +202,7 @@ test('no access, wrong origin, tampering, URLs, malformed/oversize JSON and meth
   assert.equal((await call(fixture({ authorize: async () => false }).handler)).status, 403);
   for (const options of [
     { origin: 'https://attacker.test' }, { headers: { 'sec-fetch-site': 'cross-site' } },
-    { method: 'GET' }, { origin: '' },
+    { method: 'DELETE' }, { origin: '' },
     { data: { ...body, name: 'https://attacker.test/name.wav' } },
     { data: { ...body, age: 'https://attacker.test/age.wav' } },
     { data: { ...body, spelling: 'Different' } },

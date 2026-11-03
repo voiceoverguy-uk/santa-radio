@@ -26,7 +26,7 @@ const reason = error => ['42P01', '42703'].includes(error?.code) ? 'table_or_col
 export async function studioStorageDiagnostic({
   env = process.env, pool, readiness = releaseStorageReport, includeReporting = true,
 } = {}) {
-  const inspectedTables = includeReporting ? tableNames : tableNames.filter(name => name !== 'santa_workshop_usage_sessions');
+  const inspectedTables = includeReporting ? tableNames : ['santa_name_request_limits'];
   const result = {
     kind: 'studio-storage-diagnostic',
     checkedAt: new Date().toISOString(),

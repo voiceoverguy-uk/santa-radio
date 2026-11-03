@@ -52,12 +52,12 @@ test('release check covers entry, recording and reporting storage using only rea
   assert.ok(report.reporting.checks.santa_workshop_usage_sessions);
 });
 
-test('missing recording tables cannot be mistaken for working Studio just because voucher entry is ready', async () => {
+test('missing historical recording tables do not block temporary Studio readiness', async () => {
   for (const table of ['santa_studio_generation_access', 'santa_studio_generation_results']) {
     const report = await releaseStorageReport(fixture({ table, code: '42P01' }));
     assert.equal(report.entryReady, true);
-    assert.equal(report.recordingReady, false);
-    assert.equal(report.ready, false);
+    assert.equal(report.recordingReady, true);
+    assert.equal(report.ready, true);
     assert.equal(report.generation.reason, 'table_or_columns_missing');
     assert.equal(report.reporting.ready, true);
   }
@@ -81,15 +81,16 @@ test('production recording checks never query optional reporting, including when
   const report = await releaseStorageReport(pool, { includeReporting: false });
   assert.equal(report.ready, true);
   assert.equal(report.reporting.checked, false);
-  assert.equal(pool.clients.length, 2);
-  assert.ok(pool.clients.every(client => client.queries.every(sql => !sql.includes('santa_workshop_usage_sessions'))));
+  assert.equal(pool.clients.length, 1);
+  assert.equal(report.generation.checked, false);
+  assert.ok(pool.clients.every(client => client.queries.every(sql => !/santa_workshop_usage_sessions|santa_studio_generation_/.test(sql))));
 });
 
-test('missing permissions, unique keys and row-security assumptions fail readiness', async () => {
+test('historical generation permissions do not determine temporary recording readiness', async () => {
   for (const change of [{ privilege: false }, { key: false }, { rls: true }]) {
     const report = await releaseStorageReport(fixture({ table: 'santa_studio_generation_results', ...change }));
-    assert.equal(report.recordingReady, false);
-    assert.equal(report.ready, false);
+    assert.equal(report.recordingReady, true);
+    assert.equal(report.ready, true);
   }
 });
 
