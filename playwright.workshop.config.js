@@ -1,4 +1,4 @@
-import { defineConfig, webkit } from '@playwright/test';
+import { defineConfig, firefox, webkit } from '@playwright/test';
 import { existsSync } from 'node:fs';
 import { randomBytes } from 'node:crypto';
 import base from './playwright.config.js';
@@ -19,6 +19,10 @@ const webkitInstalled = existsSync(webkit.executablePath());
 if (!webkitInstalled) {
   console.warn('Skipping the Studio WebKit project because its Playwright browser is not installed.');
 }
+const firefoxInstalled = existsSync(firefox.executablePath());
+if (!firefoxInstalled) {
+  console.warn('Skipping the Studio Firefox project because its Playwright browser is not installed.');
+}
 export default defineConfig({
   ...base,
   testMatch: /santa-workshop(?:-access|-search|-name-preview|-sounds|-motion|-live-catalogue|-message|-talent|-gifts)?\.spec\.js/,
@@ -29,6 +33,11 @@ export default defineConfig({
       name: 'webkit',
       grep: /finished Studio message download is valid and matches the playable recording/,
       use: { browserName: 'webkit' },
+    }] : []),
+    ...(firefoxInstalled ? [{
+      name: 'firefox',
+      grep: /finished Studio message download is valid and matches the playable recording/,
+      use: { browserName: 'firefox' },
     }] : []),
   ],
   webServer: {

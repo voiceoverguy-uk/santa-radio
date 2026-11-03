@@ -7,7 +7,7 @@ requiredFiles = [".replit", "replit.nix", "package.json", "package-lock.json"]
 
 [nix]
 channel = "stable-24_11"
-packages = ["ffmpeg", "imagemagick"]
+packages = ["ffmpeg", "imagemagick", "xorg.libXrandr", "xorg.libXcomposite", "xorg.libXcursor", "xorg.libXdamage", "xorg.libXi", "xorg.libXext", "xorg.libXfixes", "gtk3", "pango", "atk", "cairo", "gdk-pixbuf", "glib", "xorg.libXrender", "alsa-lib", "dbus"]
 
 [deployment]
 run = ["npm", "start"]
