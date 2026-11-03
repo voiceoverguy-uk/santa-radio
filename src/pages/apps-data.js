@@ -23,6 +23,10 @@ import santaTextMenu from '../assets/apps/santa-text-screen-menu.webp';
 import santaTextPromotion from '../assets/apps/santa-text-screen-promotion.webp';
 import santaTextChat from '../assets/apps/santa-text-screen-chat.webp';
 import santaDash from '../assets/apps/santa-dash-screen.webp';
+import santaDashTitle from '../assets/apps/santa-dash-title-screen.webp';
+import santaDashOutfits from '../assets/apps/santa-dash-shop-outfits.webp';
+import santaDashReindeer from '../assets/apps/santa-dash-shop-reindeer.webp';
+import santaDashSleighs from '../assets/apps/santa-dash-shop-sleighs.webp';
 import christmasRadioFallback from '../assets/apps/christmas-radio-screen-1.png';
 import christmasRadioFallback2 from '../assets/apps/christmas-radio-screen-2.png';
 import christmasRadioFallback3 from '../assets/apps/christmas-radio-screen-3.png';
@@ -207,12 +211,25 @@ export const christmasApps = [
     height: 676,
     landscape: true,
     presentation: 'device',
+    screenshots: [
+      { label: 'Rooftop artwork', image: santaDash, fallback: santaDashFallback, width: 1488, height: 676,
+        alt: 'Santa Dash — Back to the Grotto promotional artwork with Santa leaping snowy rooftops; caption: Leap rooftops, grab mince pies and dodge the hazards!' },
+      { label: 'Title screen', image: santaDashTitle, width: 2622, height: 1206,
+        alt: 'Santa Dash title screen with Tap to Start, Santa, a snowy village and the northern lights.' },
+      { label: 'Santa outfits', image: santaDashOutfits, width: 2622, height: 1206,
+        alt: 'Santa’s Shop outfits screen showing Classic Santa, Midnight Santa and Elf Boss.' },
+      { label: 'Reindeer', image: santaDashReindeer, width: 2622, height: 1206,
+        alt: 'Santa’s Shop reindeer screen showing Dasher, Dancer and Prancer.' },
+      { label: 'Sleighs', image: santaDashSleighs, width: 2622, height: 1206,
+        alt: 'Santa’s Shop sleighs screen showing Tea Crate, Rudolph Ride and Lantern Sledge.' },
+    ],
     slideshow: {
       heading: 'Santa Dash promotional artwork',
       regionLabel: 'Santa Dash promotional artwork',
       deviceStyle: 'dark-landscape',
       imageType: 'image',
       maxWidth: 760,
+      randomOrder: true,
     },
     downloads: downloads('https://itunes.apple.com/gb/app/santa-dash-from-santa-guy/id1057048397'),
     features: [

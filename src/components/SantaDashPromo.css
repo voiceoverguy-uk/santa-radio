@@ -1,3 +1,17 @@
+.home-page .santa-dash-promo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url('../assets/home/santa-dash-aurora-background.webp') center / cover no-repeat;
+  opacity: .5;
+  pointer-events: none;
+}
+
+.home-page .santa-dash-promo__inner {
+  position: relative;
+  z-index: 1;
+}
+
 .home-page .santa-dash-promo__heading {
   container-type: inline-size;
 }

@@ -3,6 +3,35 @@ import { mkdirSync } from 'node:fs';
 
 const destination = 'https://itunes.apple.com/gb/app/santa-dash-from-santa-guy/id1057048397';
 
+test('homepage Santa Dash scenery is a separate half-opacity background at desktop and mobile widths', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+  if (await decline.isVisible()) await decline.click();
+  const promo = page.locator('.santa-dash-promo');
+  const backgroundUrl = await promo.evaluate(node => {
+    const style = getComputedStyle(node, '::before');
+    if (style.opacity !== '0.5' || style.pointerEvents !== 'none') throw new Error('Incorrect scenery styling');
+    return style.backgroundImage.slice(5, -2);
+  });
+  const response = await page.request.get(backgroundUrl);
+  expect(response.ok()).toBe(true);
+  expect(response.headers()['content-type']).toContain('image/webp');
+  for (const width of [1440, 390, 320]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await promo.scrollIntoViewIfNeeded();
+    const styling = await promo.evaluate(node => ({
+      sectionOpacity: getComputedStyle(node).opacity,
+      contentOpacity: getComputedStyle(node.querySelector('.santa-dash-promo__inner')).opacity,
+      fits: document.documentElement.scrollWidth <= innerWidth,
+    }));
+    expect(styling).toEqual({ sectionOpacity: '1', contentOpacity: '1', fits: true });
+    await expect(promo.getByRole('heading', { level: 2 })).toBeVisible();
+    mkdirSync('generated-artifacts', { recursive: true });
+    await promo.screenshot({ path: `generated-artifacts/santa-dash-scenery-${width}.jpg`, animations: 'disabled' });
+  }
+});
+
 test('Santa Dash title keeps its intended two lines without overflow', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/', { waitUntil: 'domcontentloaded' });

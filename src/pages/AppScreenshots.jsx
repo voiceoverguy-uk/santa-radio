@@ -13,6 +13,7 @@ export default function AppScreenshots({
   deviceStyle,
   maxWidth = 285,
   interactiveMode,
+  randomOrder = false,
 }) {
   const [active, setActive] = useState(0);
   const [ready, setReady] = useState({});
@@ -45,12 +46,17 @@ export default function AppScreenshots({
 
   const rotating = slides.length > 1 && autoplayEnabled && !reducedMotion && !hovered && !focused && !hidden;
   useEffect(() => {
-    const next = (active + 1) % slides.length;
     // Keep the current image until its successor has fully decoded.
-    if (!rotating || !ready[active] || !ready[next]) return;
-    const timer = window.setTimeout(() => setActive(next), 5000);
+    if (!rotating || !ready[active]) return;
+    const candidates = randomOrder
+      ? slides.map((_, index) => index).filter(index => index !== active && ready[index] && !failed[index])
+      : [(active + 1) % slides.length].filter(index => ready[index]);
+    if (!candidates.length) return;
+    const timer = window.setTimeout(() => {
+      setActive(candidates[randomOrder ? Math.floor(Math.random() * candidates.length) : 0]);
+    }, 5000);
     return () => window.clearTimeout(timer);
-  }, [active, ready, rotating, slides.length]);
+  }, [active, ready, failed, rotating, slides.length, randomOrder]);
 
   const markReady = useCallback(index => {
     setReady(previous => previous[index] ? previous : { ...previous, [index]: true });
@@ -103,7 +109,7 @@ export default function AppScreenshots({
     >
       <figcaption className="app-screenshots-heading">{heading}</figcaption>
       <div className="app-screenshots-frame">
-        {santaRadioPreview && !reducedMotion && (
+        {(santaRadioPreview || randomOrder) && !reducedMotion && (
           <button
             type="button"
             className="santa-radio-autoplay"

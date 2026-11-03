@@ -50,6 +50,10 @@ extend this exception to other app displays, the game or the homepage advert.
 
 A Safari broken-image screenshot does not establish that artwork is missing or corrupt. Keep recovery measures separate from claims about the original cause.
 
+Santa Dash on `/apps` also includes the owner's four supplied title/shop captures, alongside the approved rooftop artwork, randomly dissolving every five seconds. Preserve the full captures without inventing or removing interface details.
+
+**Why:** The owner requested adding these native captures to the Apps-page Santa Dash display. This does not change the separate homepage advert.
+
 **Why:** Reported broken displays have coexisted with intact originals, successful preview delivery and successful Chromium decoding. A compatible fallback can reduce failures without proving which Safari request or decoder failed.
 
 **How to apply:** Preserve approved originals and verify both response bytes and browser decoding. Describe fallback recovery as recovery, not as proof of a Safari fix, until the affected Safari session can be checked.
