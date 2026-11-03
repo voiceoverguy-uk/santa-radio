@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { songRedirects } from '../src/seo/catalogue.js';
+import { sectionShareCards, songRedirects } from '../src/seo/catalogue.js';
+import { canonicalPaths } from '../src/seo/routes.js';
 
 test('initial response has recording content and complete route-specific metadata', async ({ request }) => {
   const response = await request.get('/christmas-artist/3-waitresses-christmas-wrapping');
@@ -32,6 +33,8 @@ test('rendered mobile pages retain navigation, gallery controls and compact play
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('/christmas-artist/3-waitresses-christmas-wrapping');
+  const declineOptionalCookies = page.getByRole('button', { name: 'Decline optional cookies' });
+  if (await declineOptionalCookies.count()) await declineOptionalCookies.click();
   await expect(page).toHaveTitle(/Christmas Wrapping.*Waitresses/);
   await expect(page.locator('link[rel=canonical]')).toHaveAttribute('href', 'https://www.santaradio.co.uk/christmas-artist/3-waitresses-christmas-wrapping');
   await page.getByRole('button', { name: 'Open menu' }).click();
@@ -40,7 +43,7 @@ test('rendered mobile pages retain navigation, gallery controls and compact play
   await expect(page.locator('.radio-dock')).toHaveClass(/minimized/);
   await page.goto('/mugshots/all');
   await expect(page.locator('.mugshot-card')).toHaveCount(100);
-  await page.getByRole('button', { name: /Load More/ }).click();
+  await page.getByRole('button', { name: /Show next mugshots/ }).evaluate(button => button.click());
   await expect(page.locator('.mugshot-card')).toHaveCount(200);
   await expect(page.locator('.seo-directory, #mug-directory-heading')).toHaveCount(0);
   await expect(page.locator('.mugshot-card a, a.mugshot-card').first()).toHaveAttribute('href', /^\/mugshots\/.+/);
@@ -62,12 +65,15 @@ test('HTTP redirects, robots, sitemap, real images, errors and preview exclusion
   const sitemap = await request.get('/sitemap.xml');
   expect(sitemap.headers()['content-type']).toContain('application/xml');
   const xml = await sitemap.text();
-  expect((xml.match(/<loc>/g) || []).length).toBe(1575);
+  expect((xml.match(/<loc>/g) || []).length).toBe(canonicalPaths.length);
   expect(xml).not.toContain('/preview');
   expect(await (await request.get('/robots.txt')).text()).toContain('https://www.santaradio.co.uk/sitemap.xml');
   for (const [path, type] of [
     ['/images/santa-radio-logo.png', 'image/png'],
-    ['/images/santa-tracker-share.png', 'image/png'],
+    ...Object.values(sectionShareCards).map(card => [
+      card.image.startsWith('http') ? new URL(card.image).pathname : card.image,
+      'image/jpeg',
+    ]),
     ['/mugshot-thumbnails/a1-singers-320.webp', 'image/webp'],
   ]) {
     const image = await request.get(path);

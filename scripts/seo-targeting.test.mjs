@@ -1,15 +1,31 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { homeMetadata, appsMetadata, appsBreadcrumbs, messageMetadata, messageBreadcrumbs, pageMetadata, shareImage, shareImageAlt, brandImage, trackerMetadata, ORIGIN } from '../src/seo/catalogue.js';
+import { homeMetadata, appsMetadata, appsBreadcrumbs, messageMetadata, messageBreadcrumbs, pageMetadata, shareImage, shareImageAlt, sectionShareCards, collectionMetadata, brandImage, trackerMetadata, ORIGIN } from '../src/seo/catalogue.js';
 import { amazonDeviceSource } from '../src/pages/apps-store-verification.js';
 import { appDownloads, obsoleteStoreCopy } from '../tests/fixtures/apps-downloads.js';
 import { assertFaviconHead, faviconFiles } from './favicon-checks.mjs';
+import { getTrackerMetadata, TRACKER_IMAGE, TRACKER_IMAGE_ALT } from '../src/tracker/lib/trackerBrand.js';
 
 const readGraphs = html => [...html.matchAll(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)]
   .flatMap(match => JSON.parse(match[1])['@graph']);
 const headValue = (html, name) => html.match(new RegExp(`<meta[^>]*(?:name|property)="${name}"[^>]*content="([^"]+)"`))?.[1];
+const headCount = (html, name) => [...html.matchAll(new RegExp(`<meta\\b[^>]*(?:name|property)="${name}"`, 'g'))].length;
 const decode = value => value?.replace(/&amp;/g, '&').replace(/&#x27;/g, "'");
+
+function jpegDimensions(bytes) {
+  assert.deepEqual([...bytes.subarray(0, 2)], [0xff, 0xd8], 'the share image is a JPEG');
+  for (let offset = 2; offset < bytes.length;) {
+    assert.equal(bytes[offset], 0xff, 'JPEG marker prefix');
+    const marker = bytes[offset + 1];
+    offset += 2;
+    if ([0xc0, 0xc1, 0xc2].includes(marker))
+      return [bytes.readUInt16BE(offset + 5), bytes.readUInt16BE(offset + 3)];
+    if ([0xda, 0xd9].includes(marker)) break;
+    offset += bytes.readUInt16BE(offset);
+  }
+  return undefined;
+}
 
 test('local favicons have real square PNG and multi-size ICO data matching their declarations', async () => {
   const png = await readFile('public/favicon.png');
@@ -53,25 +69,12 @@ test('source, pre-rendered pages and runtime shell preserve the same crawlable f
   assert.doesNotMatch((await readFile('dist/index.html', 'utf8')).split('</head>')[0], /noindex|noimageindex/i);
 });
 
-test('generic links advertise one opaque, full-size hero share card in initial HTML', async () => {
+test('generic links and the homepage retain the approved full-size radio share card', async () => {
   assert.equal(shareImage, '/images/santa-radio-share-hero-v3.jpg', 'use a new URL rather than cached old artwork');
   const bytes = await readFile(`public${shareImage}`);
-  assert.equal(bytes.readUInt16BE(0), 0xffd8, 'the share image is a JPEG');
   assert.ok(bytes.length < 250000, 'link-preview image remains lightweight');
-  let dimensions;
-  for (let offset = 2; offset < bytes.length;) {
-    assert.equal(bytes[offset], 0xff);
-    const marker = bytes[offset + 1];
-    offset += 2;
-    if ([0xc0, 0xc1, 0xc2].includes(marker)) {
-      dimensions = [bytes.readUInt16BE(offset + 5), bytes.readUInt16BE(offset + 3)];
-      break;
-    }
-    if ([0xda, 0xd9].includes(marker)) break;
-    offset += bytes.readUInt16BE(offset);
-  }
-  assert.deepEqual(dimensions, [1200, 630]);
-  for (const path of ['', '/apps', '/free-santa-message', '/privacy-policy', '/christmas-music', '/mugshots/all']) {
+  assert.deepEqual(jpegDimensions(bytes), [1200, 630]);
+  for (const path of ['', '/privacy-policy']) {
     const html = await readFile(`dist${path}/index.html`, 'utf8');
     const head = html.split('</head>')[0];
     for (const name of ['og:image', 'twitter:image']) assert.equal(headValue(head, name), ORIGIN + shareImage);
@@ -86,6 +89,57 @@ test('generic links advertise one opaque, full-size hero share card in initial H
     assert.ok(!head.includes('/assets/img/santa-radio-logo.jpg'));
     const primary = readGraphs(html).find(node => node['@type'] === 'ImageObject');
     assert.equal(primary.contentUrl, ORIGIN + shareImage);
+    assert.equal(primary.width, 1200);
+    assert.equal(primary.height, 630);
+  }
+});
+
+test('section pages advertise their dedicated cards once in Open Graph, Twitter and structured data', async () => {
+  const pages = [
+    ['/free-santa-message', messageMetadata(), sectionShareCards.message],
+    ['/mugshots/all', collectionMetadata('mugs'), sectionShareCards.mugs],
+    ['/christmas-music', collectionMetadata('music'), sectionShareCards.music],
+    ['/apps', appsMetadata([]), sectionShareCards.apps],
+    ['/santa-tracker', trackerMetadata(), sectionShareCards.tracker],
+  ];
+  const paths = new Set();
+  for (const [route, metadata, card] of pages) {
+    const pathname = new URL(metadata.image).pathname;
+    assert.notEqual(pathname, shareImage, `${route} has section-specific artwork`);
+    assert.ok(!paths.has(pathname), `${route} uses a unique public filename`);
+    paths.add(pathname);
+    const bytes = await readFile(`public${pathname}`);
+    assert.deepEqual(await readFile(`dist${pathname}`), bytes, `${route} image is included in the public build`);
+    assert.ok(bytes.length < 250000, `${route} image remains lightweight`);
+    assert.deepEqual(jpegDimensions(bytes), [1200, 630], `${route} image has the full share-card dimensions`);
+    assert.equal(metadata.image, card.image.startsWith('http') ? card.image : ORIGIN + card.image);
+    assert.equal(metadata.imageAlt, card.imageAlt);
+    assert.equal(metadata.imageWidth, 1200);
+    assert.equal(metadata.imageHeight, 630);
+    assert.equal(metadata.imageType, 'image/jpeg');
+    assert.equal(metadata.graph.find(node => node['@type'] === 'ImageObject' && node['@id']?.endsWith('#image')).encodingFormat, 'image/jpeg');
+    assert.equal(metadata.graph.find(node => node['@type'] === 'ImageObject' && node['@id']?.endsWith('#image')).description, card.imageAlt);
+
+    const html = await readFile(`dist${route}/index.html`, 'utf8');
+    const head = html.split('</head>')[0];
+    for (const name of ['og:image', 'twitter:image']) {
+      assert.equal(headCount(head, name), 1, `${route}: one ${name}`);
+      assert.equal(headValue(head, name), metadata.image, `${route}: ${name} matches the section card`);
+    }
+    for (const name of ['og:image:alt', 'twitter:image:alt']) {
+      assert.equal(headCount(head, name), 1, `${route}: one ${name}`);
+      assert.equal(decode(headValue(head, name)), card.imageAlt, `${route}: correct image alternative text`);
+    }
+    for (const name of ['og:image:width', 'og:image:height', 'og:image:type'])
+      assert.equal(headCount(head, name), 1, `${route}: one ${name}`);
+    assert.equal(headValue(head, 'og:image:width'), '1200');
+    assert.equal(headValue(head, 'og:image:height'), '630');
+    assert.equal(headValue(head, 'og:image:type'), 'image/jpeg');
+    const primary = readGraphs(html).find(node => node['@type'] === 'ImageObject' && node['@id']?.endsWith('#image'));
+    assert.equal(primary.contentUrl, metadata.image, `${route}: structured data points to the same card`);
+    assert.equal(primary.caption, card.imageAlt);
+    assert.equal(primary.description, card.imageAlt);
+    assert.equal(primary.encodingFormat, 'image/jpeg');
     assert.equal(primary.width, 1200);
     assert.equal(primary.height, 630);
   }
@@ -107,9 +161,36 @@ test('sharing artwork is separate from the organisation logo and page-specific p
   assert.equal(custom.imageAlt, 'Artist portrait');
   assert.equal(custom.imageWidth, undefined);
   assert.equal(custom.imageType, undefined);
-  assert.equal(trackerMetadata().image, ORIGIN + '/images/santa-tracker-share.png');
+  assert.equal(trackerMetadata().image, TRACKER_IMAGE);
   assert.equal(trackerMetadata().imageWidth, 1200);
-  assert.equal(trackerMetadata().imageType, 'image/png');
+  assert.equal(trackerMetadata().imageHeight, 630);
+  assert.equal(trackerMetadata().imageType, 'image/jpeg');
+  assert.equal(TRACKER_IMAGE_ALT, sectionShareCards.tracker.imageAlt);
+  assert.equal(getTrackerMetadata().openGraph.images[0].url, TRACKER_IMAGE);
+  assert.equal(getTrackerMetadata().twitter.images[0], TRACKER_IMAGE);
+  assert.equal(getTrackerMetadata().openGraph.images[0].alt, TRACKER_IMAGE_ALT);
+});
+
+test('tracker HTML metadata uses the coordinated card and keeps seasonal and preview rules', async () => {
+  const html = await readFile('dist/santa-tracker/index.html', 'utf8');
+  const head = html.split('</head>')[0];
+  for (const name of ['og:image', 'twitter:image']) {
+    assert.equal(headCount(head, name), 1);
+    assert.equal(headValue(head, name), TRACKER_IMAGE);
+  }
+  for (const name of ['og:image:alt', 'twitter:image:alt'])
+    assert.equal(decode(headValue(head, name)), TRACKER_IMAGE_ALT);
+  assert.equal(headValue(head, 'og:image:width'), '1200');
+  assert.equal(headValue(head, 'og:image:height'), '630');
+  assert.equal(headValue(head, 'og:image:type'), 'image/jpeg');
+  assert.equal((head.match(/property="og:image:width"/g) || []).length, 1);
+  assert.equal((head.match(/property="og:image:height"/g) || []).length, 1);
+  const preview = await readFile('dist/santa-tracker/preview/index.html', 'utf8');
+  assert.match(preview, /name="robots"[^>]*content="noindex, follow"/);
+  assert.doesNotMatch(preview, /application\/ld\+json/);
+  assert.equal(getTrackerMetadata(new Date('2026-07-15T12:00:00Z')).title.absolute, 'Christmas in July | Santa Tracker — Santa Radio');
+  assert.match(getTrackerMetadata(new Date('2026-07-15T12:00:00Z')).description, /Christmas in July/);
+  assert.equal(getTrackerMetadata(new Date('2026-08-15T12:00:00Z')).title.absolute, "Santa Tracker | Track Santa's Journey — Santa Radio");
 });
 
 test('Santa message initial HTML targets audio searches with consistent metadata and breadcrumbs', async () => {

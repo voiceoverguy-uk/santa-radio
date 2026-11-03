@@ -1,4 +1,4 @@
-import { getTrackerMetadata, TRACKER_URL } from '../src/tracker/lib/trackerBrand.js';
+import { getTrackerMetadata, TRACKER_IMAGE_ALT, TRACKER_URL } from '../src/tracker/lib/trackerBrand.js';
 
 export function isTrackerPreview(pathname) {
   return /^\/santa-tracker\/preview\/?$/.test(pathname);
@@ -23,10 +23,14 @@ export function trackerPageHtml(html, pathname, now = new Date()) {
     'og:title': title, 'og:description': description, 'og:url': TRACKER_URL,
     'og:site_name': 'Santa Radio', 'og:type': 'website', 'og:locale': 'en_GB',
     'og:image': metadata.openGraph.images[0].url,
-    'og:image:width': '827', 'og:image:height': '190',
+    'og:image:alt': TRACKER_IMAGE_ALT,
+    'og:image:width': String(metadata.openGraph.images[0].width),
+    'og:image:height': String(metadata.openGraph.images[0].height),
+    'og:image:type': 'image/jpeg',
     'twitter:card': 'summary_large_image', 'twitter:title': title,
     'twitter:description': description, 'twitter:site': '@wearesantaradio',
     'twitter:creator': '@voiceoverman', 'twitter:image': metadata.twitter.images[0],
+    'twitter:image:alt': TRACKER_IMAGE_ALT,
   };
   for (const [key, content] of Object.entries(values)) {
     const attribute = key.startsWith('og:') ? 'property' : 'name';

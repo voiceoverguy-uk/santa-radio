@@ -3,6 +3,7 @@ import rawMugs from '../data/mugshots.json' with { type: 'json' };
 import { buildCatalogue } from '../data/mugshot-catalogue.js';
 import { artistArtwork, fallbackArtwork } from '../data/artistArtwork.js';
 import { songArtwork } from '../data/songArtwork.js';
+import { TRACKER_IMAGE } from '../tracker/lib/trackerBrand.js';
 
 export const ORIGIN = 'https://www.santaradio.co.uk';
 export const absolute = path => new URL(path, ORIGIN).href;
@@ -11,6 +12,33 @@ export const mugPhotoLicense = absolute(mugPhotoTermsPath);
 export const brandImage = '/images/santa-radio-logo.png';
 export const shareImage = '/images/santa-radio-share-hero-v3.jpg';
 export const shareImageAlt = 'Santa Radio — Christmas Music 24 hours a day. Listen Live. Santa wearing headphones against the snowy North Pole hero scene beneath the northern lights.';
+export const sectionShareCards = {
+  message: {
+    image: '/images/free-santa-message-share-v1.jpg',
+    imageAlt: 'Santa Radio — A free message from Santa? Download now. Santa wearing headphones and speaking into a microphone against the North Pole scene.',
+    imageWidth: 1200, imageHeight: 630, imageType: 'image/jpeg',
+  },
+  mugs: {
+    image: '/images/celebrity-mugshots-share-v1.jpg',
+    imageAlt: 'Santa Radio — Celebrity Mugshots. View Mugshots. Santa Radio Mugshots badge against the North Pole scene.',
+    imageWidth: 1200, imageHeight: 630, imageType: 'image/jpeg',
+  },
+  music: {
+    image: '/images/christmas-music-share-v1.jpg',
+    imageAlt: 'Santa Radio — Music on Santa Radio. Explore the music. Santa with headphones, musical notes and a microphone against the North Pole scene.',
+    imageWidth: 1200, imageHeight: 630, imageType: 'image/jpeg',
+  },
+  apps: {
+    image: '/images/santa-radio-free-apps-share-v1.jpg',
+    imageAlt: 'Santa Radio — Free Apps. Explore the apps. A real Santa Radio app screen against the North Pole scene.',
+    imageWidth: 1200, imageHeight: 630, imageType: 'image/jpeg',
+  },
+  tracker: {
+    image: TRACKER_IMAGE,
+    imageAlt: 'Santa Radio — Santa Tracker. Track Santa. The real Santa Radio Tracker map screen against the North Pole scene.',
+    imageWidth: 1200, imageHeight: 630, imageType: 'image/jpeg',
+  },
+};
 export const songPath = song => `/christmas-artist/${song.id}-${song.link}`;
 export const mugPath = mug => `/mugshots/${mug.song}`;
 // Confirmed identical artist, title, lyrics and video. Keep every historical URL.
@@ -126,7 +154,7 @@ export function pageMetadata({ path, title, description, image = shareImage, ima
   return { path, title, description, image: absolute(image), imageAlt, imageWidth, imageHeight, imageType, url, noindex, graph: [
     ...identityGraph,
     { '@type': collection ? 'CollectionPage' : 'WebPage', '@id': `${url}#webpage`, url, name: title, description, inLanguage: 'en-GB', isPartOf: { '@id': `${ORIGIN}/#website` }, publisher: { '@id': `${ORIGIN}/#organization` }, primaryImageOfPage: { '@id': `${url}#image` }, ...(nodes[0] ? { mainEntity: { '@id': nodes[0]['@id'] } } : {}) },
-    { '@type': 'ImageObject', '@id': `${url}#image`, contentUrl: absolute(image), url: absolute(image), caption: imageAlt, ...dimensions, ...(imageLicense ? { license: imageLicense } : {}) },
+    { '@type': 'ImageObject', '@id': `${url}#image`, contentUrl: absolute(image), url: absolute(image), caption: imageAlt, description: imageAlt, ...(imageType ? { encodingFormat: imageType } : {}), ...dimensions, ...(imageLicense ? { license: imageLicense } : {}) },
     ...(crumbs.length ? [{ '@type': 'BreadcrumbList', '@id': `${url}#breadcrumbs`, itemListElement: crumbs.map(([name, link], i) => ({ '@type': 'ListItem', position: i + 1, name, item: absolute(link) })) }] : []),
     ...nodes,
   ] };
@@ -146,6 +174,7 @@ export function messageMetadata() {
     path: '/free-santa-message',
     title: 'Free Personalised Santa Message (MP3 Audio) | Santa Radio',
     description: 'Create a free personalised message from Santa with your child’s name. Choose a recorded name, listen to the Santa audio greeting and download your MP3.',
+    ...sectionShareCards.message,
     crumbs: messageBreadcrumbs,
   });
 }
@@ -158,6 +187,7 @@ export function appsMetadata(apps) {
     path: '/apps',
     title: 'Christmas Apps — App Store Downloads | Santa Radio',
     description: 'Explore Santa Radio’s Christmas apps, including music, Santa messages and festive games. Find App Store and Amazon Appstore download links and device showcases.',
+    ...sectionShareCards.apps,
     collection: true,
     crumbs: appsBreadcrumbs,
     // Third-party store ratings are not eligible first-party reviews.
@@ -204,6 +234,7 @@ export function collectionMetadata(kind) {
   const path = music ? '/christmas-music' : '/mugshots/all';
   return pageMetadata({ path, title: music ? 'Christmas Song Lyrics & Artists — Santa Radio' : 'Celebrity Mug Photos — Santa Radio',
     description: music ? `Browse ${songs.length} Christmas recordings, with lyrics, artist background and illustrated artwork. Find a song or performer in Santa Radio’s music catalogue.` : `Explore ${mugs.length} friendly celebrity photographs with Santa Radio mugs, including biographies and credited photographs. These are mug photos, not criminal mugshots.`,
+    ...(music ? sectionShareCards.music : sectionShareCards.mugs),
     collection: true, crumbs: [['Home', '/'], [music ? 'Christmas Music' : 'Mug Shots', path]],
     nodes: [{ '@type': 'ItemList', '@id': `${absolute(path)}#list`, numberOfItems: rows.length, itemListElement: rows.map((row, i) => ({ '@type': 'ListItem', position: i + 1, name: music ? `${row.song} — ${row.artist}` : row.artist, url: absolute(music ? songPath(row) : mugPath(row)) })) }] });
 }
@@ -218,7 +249,6 @@ export const trackerQuestions = [
 export function trackerMetadata() {
   return pageMetadata({ path: '/santa-tracker', title: "Santa Tracker | Track Santa's Journey — Santa Radio",
     description: 'Track Santa on Santa Radio’s estimated Christmas Eve journey. Explore the countdown to departure, updating map, holiday postcards and Christmas questions.',
-    image: '/images/santa-tracker-share.png', imageAlt: 'Santa Radio — Santa Tracker: an estimated Christmas Eve journey',
-    imageWidth: 1200, imageHeight: 630, imageType: 'image/png',
+    ...sectionShareCards.tracker,
     crumbs: [['Home', '/'], ['Santa Tracker', '/santa-tracker']] });
 }

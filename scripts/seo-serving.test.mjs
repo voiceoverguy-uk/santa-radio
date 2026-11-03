@@ -5,14 +5,14 @@ import { readFile, mkdtemp, cp, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import publicPage from '../api/public-page.js';
-import { shareImage as radioShareImage, shareImageAlt, ORIGIN, mugs, mugPath, mugPhotoTermsPath, mugPhotoLicense } from '../src/seo/catalogue.js';
+import { shareImage as radioShareImage, shareImageAlt, sectionShareCards, ORIGIN, mugs, mugPath, mugPhotoTermsPath, mugPhotoLicense } from '../src/seo/catalogue.js';
 import { assertMugPhotoHtml } from './mugshot-licensing-checks.mjs';
 import { assertFaviconHead, assertFaviconResponse, faviconFiles } from './favicon-checks.mjs';
 
 test('deployment-style document package needs neither TypeScript nor runtime React package resolution', async t => {
   const directory = await mkdtemp(join(tmpdir(), 'santa-vercel-documents-'));
   t.after(() => rm(directory, { recursive: true, force: true }));
-  for (const path of ['api/public-page.js', 'server/public-html.js', 'src/seo', 'src/data', 'dist/server', 'package.json']) {
+  for (const path of ['api/public-page.js', 'server/public-html.js', 'src/seo', 'src/data', 'src/tracker/lib', 'dist/server', 'package.json']) {
     await cp(path, join(directory, path), {
       recursive: true,
       filter: source => !/\.(?:ts|tsx|jsx)$/.test(source),
@@ -34,6 +34,7 @@ test('deployment-style document package needs neither TypeScript nor runtime Rea
   const output = execFileSync(process.execPath, ['--no-experimental-strip-types', '--experimental-loader', loader, '--input-type=module', '-e', `
     import assert from 'node:assert/strict';
     import handler from './api/public-page.js';
+    import { sectionShareCards, ORIGIN } from './src/seo/catalogue.js';
     for (const [path, status] of [
       ['/', 200], ['/apps', 200], ['/christmas-music', 200], ['/mugshots/all', 200],
       ['/mugshots/debbie-arnold-actress', 200], ['/free-santa-message', 200],
@@ -73,6 +74,27 @@ test('deployment-style document package needs neither TypeScript nor runtime Rea
         assert.equal(response.body, await (await import('node:fs/promises')).readFile('./dist/server/pages' + entry + '/index.html', 'utf8'));
       }
     }
+    for (const [path, card] of [
+      ['/free-santa-message', sectionShareCards.message],
+      ['/mugshots/all', sectionShareCards.mugs],
+      ['/christmas-music', sectionShareCards.music],
+      ['/apps', sectionShareCards.apps],
+      ['/santa-tracker', sectionShareCards.tracker],
+    ]) {
+      const url = new URL(path, 'https://www.santaradio.co.uk');
+      url.searchParams.set('__sr_route', url.pathname);
+      const response = { headers: {}, setHeader(key, value) { this.headers[key] = value; }, status(value) { this.code = value; return this; }, end(body) { this.body = body; } };
+      await handler({ method: 'GET', url: '/api/public-page' + url.search }, response);
+      assert.equal(response.code, 200, path);
+      if (path !== '/santa-tracker')
+        assert.equal(response.headers['X-Santa-Page-Mode'], 'prerendered', path);
+      const head = response.body.split('</head>')[0];
+      const imageUrl = card.image.startsWith('http') ? card.image : ORIGIN + card.image;
+      assert.ok(head.includes('property="og:image" content="' + imageUrl + '"'), 'pre-rendered Open Graph image: ' + path);
+      assert.ok(head.includes('name="twitter:image" content="' + imageUrl + '"'), 'pre-rendered Twitter image: ' + path);
+      assert.ok(head.includes('og:image:width" content="1200"'), 'card width: ' + path);
+      assert.ok(head.includes('og:image:height" content="630"'), 'card height: ' + path);
+    }
     console.log('Deployment-style package passed');
   `], { cwd: directory, encoding: 'utf8', timeout: 30000 });
   assert.match(output, /Deployment-style package passed/);
@@ -106,14 +128,15 @@ test('built Node server returns actual pages, permanent redirects, images, API r
     child.stderr.on('data', data => console.error(data.toString()));
   });
   const get = path => fetch(`http://127.0.0.1:${port}${path}`, { redirect: 'manual' });
-  const mugshotsLogo = '/mugshot-images/santa-mugshots-logo-1.png';
-  for (const path of ['/', '/mugshots/all']) {
+  for (const [path, heading] of [['/', 'Santa Radio'], ['/mugshots/all', 'Celebrity Mugshots']]) {
     const response = await get(path);
     assert.equal(response.status, 200);
     const html = await response.text();
-    assert.ok(html.includes(`src="${mugshotsLogo}"`), path);
+    assert.ok(html.includes(heading), path);
+    assert.ok(html.includes('<h1'), path);
     assert.ok(!html.includes('/santa-radio-celebrity-mugshots.png'), path);
   }
+  const mugshotsLogo = '/mugshot-images/santa-mugshots-logo-1.png';
   const logoBytes = await readFile(`public${mugshotsLogo}`);
   const logo = await get(mugshotsLogo);
   assert.equal(logo.status, 200);
@@ -140,12 +163,40 @@ test('built Node server returns actual pages, permanent redirects, images, API r
     if (path === '/mugshots/a1-singers') assertMugPhotoHtml(html, mugs.find(mug => mug.song === 'a1-singers'));
     assertFaviconHead(html);
     assert.ok(html.includes(word), path); assert.ok(html.includes('<h1'), path);
-    if (['/', '/christmas-music'].includes(path)) {
+    if (path === '/') {
       const head = html.split('</head>')[0];
       for (const name of ['og:image', 'twitter:image'])
         assert.match(head, new RegExp(`(?:property|name)="${name}" content="${ORIGIN + radioShareImage}"`));
       assert.ok(head.includes(shareImageAlt));
       assert.ok(!head.includes('/images/santa-radio-share-green.jpg'));
+    }
+  }
+  for (const [route, card] of [
+    ['/free-santa-message', sectionShareCards.message],
+    ['/mugshots/all', sectionShareCards.mugs],
+    ['/christmas-music', sectionShareCards.music],
+    ['/apps', sectionShareCards.apps],
+    ['/santa-tracker', sectionShareCards.tracker],
+  ]) {
+    const pageResponse = await get(route);
+    assert.equal(pageResponse.status, 200, route);
+    const pageHtml = await pageResponse.text();
+    const imageUrl = card.image.startsWith('http') ? card.image : ORIGIN + card.image;
+    const head = pageHtml.split('</head>')[0];
+    for (const [tag, attr] of [['og:image', 'property'], ['twitter:image', 'name']]) {
+      const found = [...head.matchAll(new RegExp(`<meta[^>]*${attr}="${tag}"[^>]*content="([^"]+)"`, 'g'))];
+      assert.equal(found.length, 1, `${route}: one ${tag}`);
+      assert.equal(found[0][1], imageUrl, `${route}: correct ${tag}`);
+    }
+    assert.ok(head.includes('og:image:width" content="1200"'), `${route}: width`);
+    assert.ok(head.includes('og:image:height" content="630"'), `${route}: height`);
+    assert.ok(head.includes('og:image:type" content="image/jpeg"'), `${route}: MIME type`);
+    const imagePath = card.image.startsWith('http') ? new URL(card.image).pathname : card.image;
+    for (const query of ['', '?share-check=1']) {
+      const imageResponse = await get(`${imagePath}${query}`);
+      assert.equal(imageResponse.status, 200, `${imagePath}${query}: public without authentication`);
+      assert.match(imageResponse.headers.get('content-type'), /^image\/jpeg/);
+      assert.deepEqual(Buffer.from(await imageResponse.arrayBuffer()), await readFile(`public${imagePath}`));
     }
   }
   for (const [path, target] of [['/music', '/christmas-music'], ['/santa-tracker/', '/santa-tracker'], ['/artist?s=3', '/christmas-artist/420-pat-benatar-please-come-home-for-christmas'], ['/artist?s=14', '/christmas-artist/212-gladys-knight-the-pips-its-christmas-everyday'], ['/artist?s=14&utm_source=archive', '/christmas-artist/212-gladys-knight-the-pips-its-christmas-everyday?utm_source=archive']]) {
@@ -234,7 +285,11 @@ test('Vercel document handler preserves statuses, metadata and relative location
   assert.deepEqual(await readFile(`dist${mugshotsLogo}`), await readFile(`public${mugshotsLogo}`));
   for (const path of ['/', '/christmas-music', '/artist', '/santa-tracker/', '/santa-tracker/preview', '/mugshots/a1-singers', mugPhotoTermsPath, '/personalised-santa-message/all', '/personalised-santa-message/Cooper'])
     assert.ok(expression.test(path), path);
-  for (const path of ['/artist-artwork/catalogue.json', '/images/santa-tracker-share.png', '/api/santa-message'])
+  for (const path of [
+    '/artist-artwork/catalogue.json', '/images/santa-tracker-share.png',
+    ...Object.values(sectionShareCards).map(card => card.image.startsWith('http') ? new URL(card.image).pathname : card.image),
+    '/api/santa-message',
+  ])
     assert.ok(!expression.test(path), path);
   for (const [path, status] of [['/christmas-artist/3-waitresses-christmas-wrapping', 200], ['/unknown', 404], ['/music', 308], ['/artist?s=14', 308], ['/artist?s=14&utm_source=archive', 308], ['/artist?s=999', 404], ['/santa-tracker/preview', 200]]) {
     const url = new URL(path, 'https://www.santaradio.co.uk');

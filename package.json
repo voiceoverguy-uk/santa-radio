@@ -13,6 +13,7 @@
     "dev": "node scripts/prepare-santa-audio.mjs && vite --host 0.0.0.0 --port 5000",
     "check:dependency-portability": "node scripts/check-dependency-portability.mjs",
     "test:dependency-portability": "node --test scripts/dependency-portability.test.mjs",
+    "generate:section-share-images": "node scripts/generate-section-share-images.mjs",
     "prebuild": "npm run check:dependency-portability",
     "build": "node scripts/prepare-santa-audio.mjs && vite build && vite build --ssr src/entry-server.jsx --outDir dist/server && node scripts/build-public-pages.mjs",
     "preview": "vite preview",

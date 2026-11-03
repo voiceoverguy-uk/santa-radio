@@ -23,6 +23,7 @@
 - [Santa audio scope](santa-audio-scope.md) — MP3-only personalised greetings; typed name lookup, starting with Arabella before a larger recorded library.
 - [Saved greeting scope](santa-saved-greeting-scope.md) — Arabella-only approval is not a catalogue-cache mandate; remote replacements need coordinated invalidation.
 - [Santa message access](santa-message-access-scope.md) — Adult signup and one-message/two-hour allowance are server-enforced; no email ownership verification.
+- [Section sharing copy](section-sharing-copy.md) — Free-message copy is fixed; the other four section-card buttons remain provisional until owner review.
 - [Tracker transfer scope](tracker-transfer-scope.md) — Preserve the supplied tracker; Santa Radio hosts it without replacing or redirecting SantaGuy’s existing version.
 - [Tracker holiday dates](tracker-holiday-dates.md) — Santa stays on holiday through 30 November; returns to the North Pole on 1 December.
 - [Tracker content boundaries](tracker-content-policy.md) — Delivery stops are not holiday-place additions; distinguish fictional antics from sourced, qualified traditions.

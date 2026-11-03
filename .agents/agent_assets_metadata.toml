@@ -1134,3 +1134,17 @@ mtime_ms = 1793711234226
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/22beb54c-42e1-472b-b2f1-5d4f8f12aa3a/dac6c733-6e29-4c4b-a9cc-e13e22162fa0"
 storage_version_token = "1793711352963004"
 content_type = "text/plain"
+
+[[outputs]]
+id = "d_FOipIZoP_NzjC2mBg_5"
+uri = "file://generated-artifacts/section-share-cards-preview.html"
+type = "html"
+title = "Santa Radio sharing-card comparison"
+description = "All five new sharing cards shown at full size and at 350 px messaging-preview size."
+logical_id = "6cdf8fec-57ce-411d-95ec-fb4e898d41ad"
+content_hash = "sha256:18c1ceba44f6f6a6ed3e72cfeaba314c050557dc85a9bfc64c589fc574cde00b"
+size = 1890060
+mtime_ms = 1793714047944
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/6cdf8fec-57ce-411d-95ec-fb4e898d41ad/76486742-803b-4202-998a-0918f2bda213"
+storage_version_token = "1793714548899908"
+content_type = "text/html"
