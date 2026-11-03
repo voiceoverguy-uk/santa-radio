@@ -1106,3 +1106,31 @@ mtime_ms = 1793665993283
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/898bf833-a050-4bad-83aa-f625c411e110/86d1cd2f-8890-435a-b60f-43c8cf1c3df3"
 storage_version_token = "1793666087893770"
 content_type = "image/jpeg"
+
+[[outputs]]
+id = "GBHY-cKNJKYRhNP8Ldz4A"
+uri = "file://generated-artifacts/iphone-tracker/santa-radio-iphone-tracker-source-2026-11-03.zip"
+type = "unspecified"
+title = "iPhone Santa Tracker — source handover"
+description = "Current tracker source, offline demonstration, local fonts and artwork, locked dependencies, WKWebView/native-port guide and verification results. 2,056,254 bytes."
+logical_id = "3f5b4f24-5258-4ca0-9cee-540fc754c9b5"
+content_hash = "sha256:bd59ccab2a9b79cb90f44a0ca2edaa6c5e2ea4d6f65fdf2dd9dc82b96ac10742"
+size = 2056254
+mtime_ms = 1793711242585
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/3f5b4f24-5258-4ca0-9cee-540fc754c9b5/303e59cc-9087-462c-90e1-b5c21ff359e8"
+storage_version_token = "1793711352169770"
+content_type = "application/octet-stream"
+
+[[outputs]]
+id = "yw-gFykYDiOVh47pThe3_"
+uri = "file://generated-artifacts/iphone-tracker/final-source/RECEIVING-DEVELOPER.txt"
+type = "text"
+title = "Message for your iPhone developer"
+description = "Short receiving-developer instructions to send with the ZIP."
+logical_id = "22beb54c-42e1-472b-b2f1-5d4f8f12aa3a"
+content_hash = "sha256:3bb29b3379b4f057b018c002c444021ad6a98735f9847c06a24b23acfa7770b8"
+size = 1178
+mtime_ms = 1793711234226
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/22beb54c-42e1-472b-b2f1-5d4f8f12aa3a/dac6c733-6e29-4c4b-a9cc-e13e22162fa0"
+storage_version_token = "1793711352963004"
+content_type = "text/plain"

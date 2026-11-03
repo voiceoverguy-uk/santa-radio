@@ -1,0 +1,17 @@
+Please integrate this current Santa Radio Tracker into the iPhone app only.
+Read README.md and VERIFICATION.md first. The simplest appearance-preserving
+option is the bundled static dist/ build inside WKWebView; retain its resource
+folders and relative paths. Source, portable lockfile, fonts/licences and tests
+are included so you can rebuild with Node 22: npm ci && npm test && npm run build.
+
+This is a device-clock-driven estimated 60-stop journey, NOT GPS or a live feed.
+Core tracking needs no Santa Radio server, database, credentials or API key.
+Preserve the current design, seasonal logic and 11:20 UTC Christmas Day finish.
+Use ?preview=1 for development controls only. Choose an integration appropriate
+to your existing app; a SwiftUI port would need to recreate the web UI and logic.
+
+Browser phone-size checks are not WKWebView or real-iPhone testing. Verify local
+asset access, offline use, safe areas, accessibility, resume/clock changes,
+external navigation and optional postcard sharing in the receiving app.
+Do not import the whole website or add radio/accounts/payments/tracking services.
+No Xcode project, native implementation or Apple TV work is supplied.

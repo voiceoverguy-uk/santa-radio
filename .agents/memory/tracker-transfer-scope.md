@@ -26,6 +26,16 @@ up-to-date source snapshot.
 credentials, and document actual live verification separately. Native adaptation
 and device compatibility remain the receiving project's work.
 
+For iPhone-only tracker handovers, isolate the current tracker page and its
+required dependencies rather than exporting the whole website or reusing the
+earlier iOS/Apple TV archive.
+
+**Why:** The owner explicitly requested the current appearance and seasonal
+behaviour without unrelated website services, and limited this handover to iPhone.
+
+**How to apply:** Keep adaptations export-only; distinguish bundled-web guidance
+from a native port and browser/file-origin checks from actual WKWebView testing.
+
 Tracker presentation should match the actual established Santa Radio homepage and Christmas Music styling, not retain the imported blue theme. Use the site's heading/body typography, green surfaces, readable gold/cream accents, red actions and matching cards, borders and spacing; preserve intentional handwritten postcards and festive effects.
 
 **Why:** After the transfer, the owner explicitly requested brand-matching styling while leaving content, calculations, preview behaviour, radio and cross-promotion intact.
