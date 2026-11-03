@@ -48,11 +48,13 @@ Santa Text. This is an exception to the general screen-only fidelity rule.
 **How to apply:** Preserve the full title, Santa scene and bottom caption. Do not
 extend this exception to other app displays, the game or the homepage advert.
 
-A Safari broken-image screenshot does not establish that artwork is missing or corrupt. Keep recovery measures separate from claims about the original cause.
-
 Santa Dash on `/apps` also includes the owner's four supplied title/shop captures, alongside the approved rooftop artwork, randomly dissolving every five seconds. Preserve the full captures without inventing or removing interface details.
 
 **Why:** The owner requested adding these native captures to the Apps-page Santa Dash display. This does not change the separate homepage advert.
+
+**How to apply:** Keep the captures in the existing landscape handset and keep this Apps-page slideshow separate from the homepage's artwork and gameplay inset.
+
+A Safari broken-image screenshot does not establish that artwork is missing or corrupt. Keep recovery measures separate from claims about the original cause.
 
 **Why:** Reported broken displays have coexisted with intact originals, successful preview delivery and successful Chromium decoding. A compatible fallback can reduce failures without proving which Safari request or decoder failed.
 
