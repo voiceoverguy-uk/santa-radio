@@ -2,11 +2,12 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { spawnSync, execFile } from 'node:child_process';
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, writeFile, rm, stat } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import ffmpeg from 'ffmpeg-static';
 import { renderArgs, voiceFilter } from './santa-audio-filters.mjs';
+import { studioMixArgs } from '../server/santa-studio-render.js';
 
 function pcm(args) {
   const result = spawnSync(ffmpeg, ['-v', 'error', '-threads', '1', '-filter_threads', '1',
@@ -21,6 +22,91 @@ test('free-message sleigh bells receive 4 dB gain after their existing level con
   const graph = args[args.indexOf('-filter_complex') + 1];
   const bells = graph.slice(graph.indexOf('[3:a]'), graph.indexOf(';[speech]'));
   assert.match(bells, /loudnorm=I=-34:TP=-9:LRA=7,volume=4dB,aresample=48000,afade=t=in:d=1\[bells\]/);
+});
+
+test('Studio real mixer: exact delayed speech, 2 dB bell-only increase, complete ending and fades', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'studio-mix-timing-'));
+  try {
+    const voice = join(dir, 'voice.f32');
+    // Leading/internal pauses and a non-silent final sample expose trimming.
+    const speech = pcm(['-f', 'lavfi', '-i',
+      'aevalsrc=if(between(t\\,0.17\\,0.9)+gte(t\\,1.4)\\,0.12*sin(2*PI*440*t)\\,0):s=48000:d=3.17']);
+    await writeFile(voice, speech);
+    const args = studioMixArgs(voice, 'server/santa-audio/sleighbells.mp3', 'unused.mp3');
+    const graphIndex = args.indexOf('-filter_complex');
+    const inputs = args.slice(0, graphIndex);
+    const [voiceBranch, bellBranch, mixBranch] = args[graphIndex + 1].split(';');
+    const delayed = pcm([...inputs.slice(0, inputs.indexOf('-stream_loop')),
+      '-af', voiceBranch.replace('[0:a]', '').replace('[speech]', '')]);
+    assert.deepEqual(delayed, Buffer.concat([Buffer.alloc(48000 * 8), speech]),
+      'Exactly one second on both channels, then every original voice sample and pause unchanged');
+    const seconds = delayed.length / 8 / 48000;
+    const bells = [];
+    for (const branch of [bellBranch.replace('volume=2dB,', ''), bellBranch]) {
+      // Exercise the production branch before the shared peak limiter.
+      bells.push(pcm([...inputs.slice(inputs.indexOf('-stream_loop')),
+        '-af', branch.replace('[1:a]', '').replace('[bells]', ''), '-t', String(seconds)]));
+    }
+    assert.equal(bells[0].length, delayed.length);
+    assert.equal(bells[1].length, delayed.length);
+    let oldEnergy = 0, newEnergy = 0, gainError = 0, leadEnergy = 0;
+    const ratio = 10 ** (2 / 20);
+    for (let i = 0; i < bells[0].length; i += 4) {
+      const before = bells[0].readFloatLE(i), after = bells[1].readFloatLE(i);
+      oldEnergy += before ** 2; newEnergy += after ** 2;
+      gainError += (after - before * ratio) ** 2;
+      if (i < 48000 * 8) leadEnergy += after ** 2;
+    }
+    assert.ok(Math.abs(10 * Math.log10(newEnergy / oldEnergy) - 2) < 0.00001);
+    assert.ok(gainError / newEnergy < 1e-12, 'Constant +2 dB across the whole bell track');
+    assert.ok(leadEnergy > 0.001, 'Bells play during the voice-free first second');
+    const prePeak = pcm([...inputs, '-filter_complex',
+      `${voiceBranch};${bellBranch};${mixBranch.split(',areverse')[0]}[out]`, '-map', '[out]']);
+    const mixed = pcm([...inputs, '-filter_complex', args[graphIndex + 1], '-map', '[out]']);
+    assert.equal(prePeak.length, delayed.length);
+    assert.equal(mixed.length, delayed.length, 'The complete speech ending survives the final fade and limiter');
+    let mixError = 0, fadeError = 0, peak = 0;
+    for (let i = 0; i < mixed.length; i += 4) {
+      const sum = delayed.readFloatLE(i) + bells[1].readFloatLE(i);
+      mixError += (prePeak.readFloatLE(i) - sum) ** 2;
+      // The existing reverse one-second fade must move with the full ending.
+      const frame = Math.floor(i / 8), total = mixed.length / 8;
+      const fade = Math.min(1, (total - 1 - frame) / 48000);
+      fadeError += (mixed.readFloatLE(i) - sum * fade) ** 2;
+      peak = Math.max(peak, Math.abs(mixed.readFloatLE(i)));
+    }
+    assert.ok(mixError < 1e-9, 'No voice gain change in the mix before shared peak protection');
+    assert.ok(fadeError < 1e-8, 'Existing fades retained, no truncation, no limiter latency');
+    assert.ok(peak < 0.89);
+    assert.ok(Math.abs(mixed.readFloatLE(mixed.length - 4)) < 1e-6, 'Clean faded endpoint');
+    const hotSpeech = Buffer.from(speech);
+    for (let i = 0; i < hotSpeech.length; i += 4) hotSpeech.writeFloatLE(hotSpeech.readFloatLE(i) * 20, i);
+    await writeFile(voice, hotSpeech);
+    const limited = pcm([...inputs, '-filter_complex', args[graphIndex + 1], '-map', '[out]']);
+    let limitedPeak = 0;
+    for (let i = 0; i < limited.length; i += 4) limitedPeak = Math.max(limitedPeak, Math.abs(limited.readFloatLE(i)));
+    assert.equal(limited.length, delayed.length, 'Peak protection adds no latency or truncation');
+    assert.ok(limitedPeak <= 0.890001, `Shared limiter protects deliberately overloaded mix: ${limitedPeak}`);
+  } finally { await rm(dir, { recursive: true, force: true }); }
+});
+
+test('Studio maximum 175-second speech still fits unchanged MP3 byte limits with its extra second', { timeout: 30000 }, async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'studio-max-duration-'));
+  try {
+    const voice = join(dir, 'voice.f32'), output = join(dir, 'message.mp3');
+    const source = spawnSync(ffmpeg, ['-v', 'error', '-f', 'lavfi', '-i',
+      'sine=frequency=440:duration=175', '-ar', '48000', '-ac', '2',
+      '-c:a', 'pcm_f32le', '-f', 'f32le', voice], { timeout: 10000 });
+    assert.equal(source.status, 0, source.stderr?.toString());
+    const result = spawnSync(ffmpeg, studioMixArgs(voice, 'server/santa-audio/sleighbells.mp3', output),
+      { timeout: 20000 });
+    assert.equal(result.status, 0, result.stderr?.toString());
+    assert.ok((await stat(output)).size < 4_400_000, 'Server and browser byte safeguards need no increase');
+    const decoded = spawnSync(ffmpeg, ['-hide_banner', '-i', output, '-f', 'null', '-'],
+      { timeout: 10000, encoding: 'utf8' });
+    assert.equal(decoded.status, 0);
+    assert.match(decoded.stderr, /time=00:02:56\.00/, 'The full maximum-length speech plus lead-in decodes');
+  } finally { await rm(dir, { recursive: true, force: true }); }
 });
 
 test('the MP3 intro and both MP3 outros match the latest uploads; shared preparation retains source duration', async () => {

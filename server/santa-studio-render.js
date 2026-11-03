@@ -9,6 +9,9 @@ const execute = promisify(execFile);
 export const studioSources = fileURLToPath(new URL('./santa-audio/studio/', import.meta.url));
 export const studioBells = fileURLToPath(new URL('./santa-audio/sleighbells.mp3', import.meta.url));
 const RATE = 48000, FRAME = 8;
+export const STUDIO_LEAD_IN_SECONDS = 1;
+// The source-speech budget is unchanged. At 192 kb/s, even 176 seconds plus
+// MP3 framing fits the existing 4,400,000-byte server and browser limits.
 export const MAX_STUDIO_SECONDS = 175;
 
 export function studioOrder(name, choices, fixed = studioSources) {
@@ -68,9 +71,10 @@ export function studioMixArgs(voice, bells, output) {
     '-f', 'f32le', '-ar', '48000', '-ac', '2', '-i', voice,
     '-stream_loop', '-1', '-protocol_whitelist', 'file,pipe', '-f', 'mp3', '-c:a', 'mp3', '-i', bells,
     '-filter_complex',
+    `[0:a]adelay=${STUDIO_LEAD_IN_SECONDS * RATE}S:all=1[speech];` +
     '[1:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo,' +
-    'loudnorm=I=-34:TP=-9:LRA=7,aresample=48000,afade=t=in:d=1[bells];' +
-    '[0:a][bells]amix=inputs=2:duration=first:normalize=0,' +
+    'loudnorm=I=-34:TP=-9:LRA=7,volume=2dB,aresample=48000,afade=t=in:d=1[bells];' +
+    '[speech][bells]amix=inputs=2:duration=first:normalize=0,' +
     'areverse,afade=t=in:d=1,areverse,alimiter=limit=0.89:level=false:latency=true[out]',
     '-map', '[out]', '-map_metadata', '-1', '-c:a', 'libmp3lame',
     '-threads', '1', '-b:a', '192k', '-ar', '44100', '-n', output];
@@ -102,5 +106,5 @@ export async function renderStudioMessage({ name, choices, directory, signal,
   if (mixed.stderr) throw new Error('Mix decode failed.');
   const audio = await readFile(output);
   if (!audio.length || audio.length > 4_400_000) throw new Error('Invalid output size.');
-  return { audio, frames, prepared, order };
+  return { audio, frames, renderedFrames: frames + STUDIO_LEAD_IN_SECONDS * RATE, prepared, order };
 }

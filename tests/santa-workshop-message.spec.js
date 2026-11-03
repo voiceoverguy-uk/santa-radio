@@ -462,10 +462,13 @@ test('review create placement on desktop and phones, real MP3 playback/download,
   await page.screenshot({ path: 'generated-artifacts/studio-completed-mobile.png' });
   const download = result.getByRole('link', { name: /Download MP3/ });
   await expect(download).toHaveAttribute('download', 'santa-message-for-D’Arcy.mp3');
+  await expect(download).toHaveAttribute('href', url);
   const downloaded = page.waitForEvent('download');
   await download.click();
   const file = await downloaded;
   expect(file.suggestedFilename()).toBe('santa-message-for-D’Arcy.mp3');
+  expect(readFileSync(await file.path())).toEqual(fixture.audio,
+    'Playback and Download MP3 use the same complete newly rendered recording');
   expect(submissions).toHaveLength(1);
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
   await page.getByRole('button', { name: 'Change Trying hard at', exact: true }).click();

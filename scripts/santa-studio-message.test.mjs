@@ -1,14 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { EventEmitter } from 'node:events';
-import { mkdtemp, readFile, writeFile, rm, stat } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, writeFile, rm, stat } from 'node:fs/promises';
 import { join, basename } from 'node:path';
 import { tmpdir } from 'node:os';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import ffmpeg from 'ffmpeg-static';
 import { createStudioMessageHandler, downloadStudioClip } from '../server/santa-studio-message.js';
-import { studioOrder, studioMixArgs, prepareStudioClip, renderStudioMessage } from '../server/santa-studio-render.js';
+import { studioOrder, studioMixArgs, prepareStudioClip, renderStudioMessage, STUDIO_LEAD_IN_SECONDS, MAX_STUDIO_SECONDS } from '../server/santa-studio-render.js';
 import { getWorkshopDownloadName } from '../src/lib/workshopNameSpelling.js';
 import serverlessHandler from '../api/santa-studio-message.js';
 import defaultHandler from '../server/santa-studio-message.js';
@@ -277,7 +277,7 @@ test('category download rejects redirects, missing, empty and oversized bytes; c
   } finally { await rm(directory, { recursive: true, force: true }); }
 });
 
-test('recipe uses all 14 positions, exact repeated variant, unchanged bells settings, safe local filenames', () => {
+test('recipe preserves clip order and voice gain, adds one-second lead-in and 2 dB bells, safe local filenames', () => {
   const paths = Object.fromEntries(keys.map(key => [key, `${key}.wav`]));
   assert.deepEqual(studioOrder('variant-2.wav', paths, '/fixed').map(path => basename(path)), [
     'intro.flac', 'variant-2.wav', '1st.flac', 'age.wav', '2nd.flac', 'activity.wav',
@@ -288,8 +288,13 @@ test('recipe uses all 14 positions, exact repeated variant, unchanged bells sett
     'achievement.wav', '3rd.flac', 'treat.wav', '4th.flac', 'place.wav', '5th.flac', 'variant-2.wav', '6th.flac',
   ]);
   const graph = studioMixArgs('speech', 'bells', 'output').join(' ');
-  assert.match(graph, /I=-34:TP=-9:LRA=7/);
-  assert.doesNotMatch(graph, /volume=(?:2|4)dB/, 'The free-message bell gain must not change Studio audio.');
+  assert.match(graph, /\[0:a\]adelay=48000S:all=1\[speech\]/);
+  assert.match(graph, /loudnorm=I=-34:TP=-9:LRA=7,volume=2dB,aresample=48000,afade=t=in:d=1\[bells\]/);
+  assert.match(graph, /\[speech\]\[bells\]amix=inputs=2:duration=first:normalize=0/);
+  assert.match(graph, /areverse,afade=t=in:d=1,areverse,alimiter=limit=0.89:level=false:latency=true/);
+  assert.equal(STUDIO_LEAD_IN_SECONDS, 1);
+  assert.equal(MAX_STUDIO_SECONDS, 175, 'Do not weaken the source-duration safeguard');
+  assert.ok((MAX_STUDIO_SECONDS + STUDIO_LEAD_IN_SECONDS) * 192000 / 8 + 4096 < 4_400_000);
   assert.match(graph, /latency=true/);
   for (const name of ['D’Arcy', 'Élodie', 'Anna-Mae']) {
     assert.equal(getWorkshopDownloadName('Original', name), `santa-message-for-${name}.mp3`);
@@ -322,7 +327,7 @@ test('real FFmpeg: pause-preserving constant gain, repeated name PCM, audible mi
       await execute(ffmpeg, ['-v', 'error', '-f', 'lavfi', '-i', `sine=frequency=${320 + index * 110}:duration=1`,
         '-af', 'apad=pad_dur=0.5', '-c:a', 'pcm_s16le', '-n', paths[key]]);
     }
-    const { audio, frames, prepared, order } = await renderStudioMessage({
+    const { audio, frames, renderedFrames, prepared, order } = await renderStudioMessage({
       name: paths.name, choices: paths, directory, signal: AbortSignal.timeout(100000),
     });
     assert.ok(audio.length > 100000);
@@ -345,11 +350,12 @@ test('real FFmpeg: pause-preserving constant gain, repeated name PCM, audible mi
     const decoded = (await execute(ffmpeg, ['-v', 'error', '-i', output,
       '-ar', '48000', '-ac', '2', '-f', 'f32le', 'pipe:1'],
     { encoding: 'buffer', maxBuffer: 80 * 1024 * 1024 })).stdout;
-    assert.ok(Math.abs(decoded.length / 8 - frames) <= 3, 'No timeline drift, encoder priming or limiter latency');
+    assert.equal(renderedFrames, frames + 48000);
+    assert.ok(Math.abs(decoded.length / 8 - renderedFrames) <= 3, 'Exactly one extra second, no timeline drift or limiter latency');
     let peak = 0;
     for (let offset = 0; offset < decoded.length; offset += 4) peak = Math.max(peak, Math.abs(decoded.readFloatLE(offset)));
     assert.ok(peak < 0.95, `Decoded peak ${peak}`);
-    const firstNameStart = prepared.get(order[0]).frames;
+    const firstNameStart = 48000 + prepared.get(order[0]).frames;
     const quietStart = (firstNameStart + 48000 * 1.2) * 8;
     let bellsEnergy = 0;
     for (let offset = quietStart; offset < quietStart + 4800 * 8; offset += 4) bellsEnergy += decoded.readFloatLE(offset) ** 2;
@@ -358,11 +364,15 @@ test('real FFmpeg: pause-preserving constant gain, repeated name PCM, audible mi
       '-af', 'loudnorm=I=-18:TP=-3:print_format=json', '-f', 'null', '-']);
     const measurements = JSON.parse(measured.stderr.match(/\{[^{}]*"input_i"[^{}]*\}/s)[0]);
     assert.ok(Number(measurements.input_tp) < -1.5);
-    console.info('Studio MP3 measured (not listened):', { seconds: frames / 48000, peak, truePeak: measurements.input_tp });
+    const metadata = (await execute(ffmpeg, ['-hide_banner', '-i', output, '-f', 'null', '-'])).stderr;
+    assert.match(metadata, /44100 Hz, stereo/);
+    assert.match(metadata, /192 kb\/s/);
+    console.info('Studio MP3 measured (not listened):', { seconds: renderedFrames / 48000, peak, truePeak: measurements.input_tp });
     await assert.rejects(prepareStudioClip(paths.name, join(directory, 'too-long.f32'), { maxSeconds: 1 }));
     await writeFile(join(directory, 'broken.wav'), 'not audio');
     await assert.rejects(prepareStudioClip(join(directory, 'broken.wav'), join(directory, 'broken.f32')));
     // Retain only ignored test output for browser's real-decoding regression.
+    await mkdir('generated-artifacts', { recursive: true });
     await writeFile('generated-artifacts/studio-test-message.mp3', audio);
   } finally { await rm(directory, { recursive: true, force: true }); }
 });

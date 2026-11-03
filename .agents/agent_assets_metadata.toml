@@ -1148,3 +1148,17 @@ mtime_ms = 1793714047944
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/6cdf8fec-57ce-411d-95ec-fb4e898d41ad/76486742-803b-4202-998a-0918f2bda213"
 storage_version_token = "1793714548899908"
 content_type = "text/html"
+
+[[outputs]]
+id = "KHV77r2LV2ezESLq4-Oia"
+uri = "file://generated-artifacts/studio-live-hosted-message.mp3"
+type = "audio"
+title = "Studio sleigh-bell listening sample"
+description = "Temporary review sample with real Santa recordings: one-second bells-only lead-in and +2 dB bells. About 88 seconds; measured true peak −3.57 dBTP. Automated measurements and browser playback passed; not personally listened to. No application recording archive was added."
+logical_id = "c1ba4fde-babc-4631-b328-452df44f4290"
+content_hash = "sha256:f08b6cc4323ea4ad108e6d42c67bc6197c55eb0ea68bff8cda602d5d2cfd886e"
+size = 2114707
+mtime_ms = 1793742373483
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/c1ba4fde-babc-4631-b328-452df44f4290/830436bf-9081-4440-899c-26916085feb4"
+storage_version_token = "1793742422577748"
+content_type = "audio/mpeg"
