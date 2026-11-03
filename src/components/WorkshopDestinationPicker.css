@@ -143,8 +143,7 @@
   grid-column: 2;
 }
 
-.smw-destination-picker button.smw-destination-picker__country-only,
-.smw-destination-picker button.smw-destination-picker__back {
+.smw-destination-picker button.smw-destination-picker__country-only {
   max-width: 100%;
   border-color: transparent;
   background: transparent;

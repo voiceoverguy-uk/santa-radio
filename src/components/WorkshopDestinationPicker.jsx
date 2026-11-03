@@ -160,12 +160,11 @@ export default function WorkshopDestinationPicker({
               selectedText={selectedRegion?.label || country?.label || ''}
               searchLabel={`Search ${groupKey === 'usa-states' ? 'states' : 'counties'} in ${country.label}`}
               placeholder={`Search ${groupKey === 'usa-states' ? 'states' : 'counties'} in ${country.label}`}
-              wheelFooter={
+              wheelFooter={countryOnlyAction && (
                 <div className="smw-destination-picker__regional-actions">
-                  <button className="smw-destination-picker__back" type="button" onClick={backToCountries}>Back to countries</button>
                   {countryOnlyAction}
                 </div>
-              }
+              )}
             />
           </div>
         </div>

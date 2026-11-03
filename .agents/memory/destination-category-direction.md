@@ -15,11 +15,11 @@ Centre the “Choose a county/state” action against the full country-wheel box
 
 **How to apply:** Keep the selected-country text and optional region behaviour; allow a separate centred action row on narrow screens so the text and link do not overlap.
 
-Keep “Back to countries” as an unboxed text action in all five regional selectors.
+Do not show “Back to countries” in any of the five regional selectors. The active “Countries & real places” category button is the way back.
 
-**Why:** The owner explicitly requested removing the box around that control for all five options.
+**Why:** The owner subsequently requested removing the control itself because users can click “Countries & real places”.
 
-**How to apply:** Preserve its navigation, keyboard focus and touch target; do not restore a visible border or filled button on hover.
+**How to apply:** Preserve category-button navigation, focus and selected regions. Keep the distinct “Use [country] only” action available after selecting a region.
 
 Do not append “— Fantasy place” or “— Space destination” to displayed destination names, including the wheel, Santa's wording preview and review. The Moon should display as “The Moon”.
 

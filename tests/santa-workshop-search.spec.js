@@ -160,7 +160,7 @@ for (const width of [1365, 320, 390, 430]) {
     await search.fill('no matching county');
     await expect(preview).toHaveText('Kent');
     await expect(page.locator('.smw-destination-picker__regional .smw-search-empty')).toBeVisible();
-    await page.getByRole('button', { name: 'Back to countries', exact: true }).click();
+    await page.getByRole('button', { name: 'Countries & real places', exact: true }).click();
     await expect(page.locator('.smw-destination-picker__country .smw-wording-selection')).toHaveText('Kent');
     await expect(reset).toBeVisible();
     await page.getByRole('button', { name: 'Choose a county', exact: true }).click();
@@ -200,7 +200,7 @@ for (const width of [1365, 320]) {
       await expect(page.getByRole('listbox')).toHaveCount(1);
       await expect(page.getByRole('option', { selected: true })).toHaveCount(0);
       await expect(page.getByRole('searchbox')).toHaveValue('');
-      await page.getByRole('button', { name: 'Back to countries', exact: true }).click();
+      await page.getByRole('button', { name: 'Countries & real places', exact: true }).click();
       await expect(page.getByRole('option', { name: country, exact: true })).toHaveAttribute('aria-selected', 'true');
       await expect.poll(() => page.getByRole('listbox').evaluate(node => node.scrollTop)).toBeCloseTo(parentScroll, 0);
       await page.getByRole('button', { name: `Choose a ${kind}`, exact: true }).click();
@@ -229,7 +229,7 @@ for (const width of [1365, 320]) {
       await page.getByRole('button', { name: 'Clear', exact: true }).click();
       await expect(page.getByRole('option')).toHaveText([region, 'Z Fixture Place']);
       await expect(page.getByRole('option', { name: region, exact: true })).toHaveAttribute('aria-selected', 'true');
-      await page.getByRole('button', { name: 'Back to countries', exact: true }).click();
+      await page.getByRole('button', { name: 'Countries & real places', exact: true }).click();
       await expect(page.locator('.smw-destination-picker__country .smw-wording-selection')).toHaveText(region);
       await page.locator('.smw-button-next').click();
       await expect(page.locator('.smw-summary-row').last()).toContainText(`${region}, ${country}`);
@@ -241,7 +241,7 @@ for (const width of [1365, 320]) {
       await expect(page.getByRole('option', { name: region, exact: true })).toHaveAttribute('aria-selected', 'true');
       await page.getByRole('option', { name: 'Z Fixture Place', exact: true }).click();
       await expect(page.locator('.smw-destination-picker__regional .smw-wording-selection')).toHaveText('Z Fixture Place');
-      await page.getByRole('button', { name: 'Back to countries', exact: true }).click();
+      await page.getByRole('button', { name: 'Countries & real places', exact: true }).click();
       await page.getByRole('button', { name: `Use ${country} only`, exact: true }).click();
       await expectNoDestinationSummary(page);
       await expect(page.locator('.smw-destination-picker__country .smw-wording-selection')).toHaveText(country);
@@ -288,7 +288,7 @@ test('regional request carries both trusted IDs and changing country clears the 
   await page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true }).click();
   await page.getByRole('button', { name: 'Choose a state', exact: true }).click();
   await page.getByRole('option', { name: 'Georgia', exact: true }).click();
-  await page.getByRole('button', { name: 'Back to countries', exact: true }).click();
+  await page.getByRole('button', { name: 'Countries & real places', exact: true }).click();
   await page.getByRole('option', { name: 'England', exact: true }).click();
   await expect(page.locator('.smw-destination-picker__selection')).toHaveCount(0);
   await page.locator('.smw-button-next').click();
@@ -445,7 +445,7 @@ for (const width of [1365, 320]) {
         await checkStates();
         await expect(layout.locator('.smw-wording-selection')).toHaveText(longLabel);
         await expect(page.getByRole('button', { name: `Use ${country} only`, exact: true })).toBeVisible();
-        await page.getByRole('button', { name: 'Back to countries', exact: true }).click();
+        await page.getByRole('button', { name: 'Countries & real places', exact: true }).click();
         await checkGeometry();
       }
       await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
@@ -790,18 +790,8 @@ for (const [country, kind] of [
       await page.keyboard.press('Enter');
       await expect(page.getByRole('heading', { name: `${kind === 'state' ? 'States' : 'Counties'} in ${country}`, exact: true })).toBeFocused();
       const regional = page.locator('.smw-destination-picker__regional');
-      const backButton = regional.getByRole('button', { name: 'Back to countries', exact: true });
-      for (const hover of [false, true]) {
-        if (hover) await backButton.hover();
-        const appearance = await backButton.evaluate(node => {
-          const style = getComputedStyle(node);
-          return { border: style.borderTopColor, background: style.backgroundColor,
-            underline: style.textDecorationLine };
-        });
-        expect(appearance.border).toBe('rgba(0, 0, 0, 0)');
-        expect(appearance.background).toBe('rgba(0, 0, 0, 0)');
-        expect(appearance.underline).toContain('underline');
-      }
+      await expect(regional.getByRole('button', { name: 'Back to countries', exact: true })).toHaveCount(0);
+      await expect(regional.locator('.smw-destination-picker__regional-actions')).toHaveCount(0);
       const regionalHeading = regional.getByRole('heading', { level: 3 });
       expect(await regionalHeading.evaluate(node => getComputedStyle(node).clipPath)).toBe('inset(50%)');
       await regional.getByRole('option').first().click();
@@ -812,7 +802,9 @@ for (const [country, kind] of [
           .map(button => button.getBoundingClientRect().toJSON());
         return { wheel: wheel.toJSON(), status: status.toJSON(), actions };
       });
-      expect(regionalGeometry.actions).toHaveLength(2);
+      expect(regionalGeometry.actions).toHaveLength(1);
+      await expect(regional.getByRole('button', { name: 'Back to countries', exact: true })).toHaveCount(0);
+      await expect(regional.getByRole('button', { name: `Use ${country} only`, exact: true })).toBeVisible();
       for (const action of regionalGeometry.actions) {
         expect(action.top).toBeGreaterThanOrEqual(regionalGeometry.wheel.bottom);
         if (width > 520) expect(action.top - regionalGeometry.wheel.bottom).toBeLessThanOrEqual(8);
@@ -824,7 +816,7 @@ for (const [country, kind] of [
         path: `generated-artifacts/studio-regional-actions-${country}-${width}.png`,
         animations: 'disabled',
       });
-      await page.getByRole('button', { name: 'Back to countries', exact: true }).click();
+      await page.getByRole('button', { name: 'Countries & real places', exact: true }).click();
       await expect(page.getByRole('heading', { name: 'Choose a country or real place', exact: true })).toBeFocused();
       await expect(page.getByRole('option', { name: country, exact: true })).toHaveAttribute('aria-selected', 'true');
       await page.getByRole('button', { name: `Choose a ${kind}`, exact: true }).click();
