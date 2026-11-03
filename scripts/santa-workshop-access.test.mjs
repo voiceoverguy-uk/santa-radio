@@ -135,7 +135,7 @@ test('school expiry is rechecked after a delayed login attempt', async () => {
   });
 });
 
-test('school entries and deliberate new messages are recorded once; checks and rejected codes are not entries', async () => {
+test('school entries and deliberate new messages never call the legacy usage writer', async () => {
   const events = [];
   await withServer({ getSettings: () => schoolConfig, now: () => SCHOOL_TEST_START,
     recordUsage: async (session, kind) => { events.push({ session, kind }); } }, async ({ url, post }) => {
@@ -144,22 +144,24 @@ test('school entries and deliberate new messages are recorded once; checks and r
     assert.equal(events.length, 0);
     const response = await post(schoolConfig.codes[5].code);
     assert.equal(response.status, 200);
-    assert.equal(events.length, 1);
-    assert.equal(events[0].kind, 'entry');
-    assert.equal(events[0].session.codeId, '6');
+    assert.equal(events.length, 0);
     const cookie = response.headers.get('set-cookie').split(';')[0];
+    const first = workshopSession({ headers: { cookie } }, schoolConfig, SCHOOL_TEST_START);
     await fetch(url, { headers: { Cookie: cookie } });
-    assert.equal(events.length, 1);
-    assert.equal((await fetch(url, { method: 'POST', headers: {
+    assert.equal(events.length, 0);
+    const next = await fetch(url, { method: 'POST', headers: {
       Origin: url, Cookie: cookie, 'Content-Type': 'application/json',
-    }, body: JSON.stringify({ another: true }) })).status, 200);
-    assert.equal(events.length, 2);
-    assert.equal(events[1].kind, 'another');
-    assert.notEqual(events[0].session.generationKey, events[1].session.generationKey);
+    }, body: JSON.stringify({ another: true }) });
+    assert.equal(next.status, 200);
+    assert.equal(events.length, 0);
+    const rotated = workshopSession({ headers: { cookie: next.headers.get('set-cookie').split(';')[0] } },
+      schoolConfig, SCHOOL_TEST_START);
+    assert.notEqual(first.generationKey, rotated.generationKey);
+    assert.equal(first.expiresAt, rotated.expiresAt);
   });
 });
 
-test('reporting storage failures do not block any valid voucher or another test, and log no private details', async () => {
+test('all valid vouchers and new tests succeed without touching a missing reporting table', async () => {
   const logs = [];
   const time = SCHOOL_TEST_START;
   await withServer({ getSettings: () => schoolConfig, now: () => time,
@@ -186,10 +188,7 @@ test('reporting storage failures do not block any valid voucher or another test,
         schoolConfig, time).codeId, entry.id);
     }
   });
-  assert.equal(logs.length, schoolConfig.codes.length * 2);
-  assert.ok(logs.every(event => JSON.stringify(event) === JSON.stringify({
-    event: 'voucher_usage_unavailable', category: 'missing_schema',
-  })));
+  assert.equal(logs.length, 0);
 });
 
 test('direct generation rejects absent and expired school sessions before storage or rendering', async () => {

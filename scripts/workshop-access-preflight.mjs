@@ -62,12 +62,12 @@ export async function storageReport(pool) {
   }
 }
 
-export async function releaseStorageReport(pool) {
+export async function releaseStorageReport(pool, { includeReporting = true } = {}) {
   const access = await storageReport(pool);
-  const { generation, reporting } = await checkStudioStorage(pool);
+  const { generation, reporting } = await checkStudioStorage(pool, { includeReporting });
   return {
     checked: true,
-    ready: access.ready && generation.ready && reporting.ready,
+    ready: access.ready && generation.ready,
     entryReady: access.ready,
     recordingReady: access.ready && generation.ready,
     reportingReady: generation.ready && reporting.ready,
@@ -85,7 +85,7 @@ async function main() {
     else {
       try {
         pool = databasePool();
-        report.storage = await releaseStorageReport(pool);
+        report.storage = await releaseStorageReport(pool, { includeReporting: false });
       } catch {
         report.storage = { checked: true, ready: false, reason: 'database_unavailable' };
       } finally { await pool?.end().catch(() => {}); }

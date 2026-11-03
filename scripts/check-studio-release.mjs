@@ -6,7 +6,7 @@ export async function checkStudioRelease({ env = process.env, diagnose = studioS
   if (env.VERCEL !== '1' || env.VERCEL_ENV !== 'production') {
     return { checked: false, scope: 'not_vercel_production_build' };
   }
-  const result = await diagnose({ env });
+  const result = await diagnose({ env, includeReporting: false });
   // Reporting remains optional for entry and rendering. Mandatory generation
   // state must never be replaced with an in-memory allowance on serverless.
   return { checked: true, scope: 'vercel_production_build_binding_not_serving_runtime',

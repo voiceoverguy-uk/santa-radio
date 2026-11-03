@@ -20,6 +20,17 @@ recording repair. Build binding evidence is not serving-runtime verification.
 Do not rotate, replace or expose credentials to work around the limitation,
 and obtain approval before deployment or database changes.
 
+The owner confirmed in Replit's Production Database Settings that its connection
+hostname contains the endpoint used by Vercel's production build. This database
+is Replit-managed; a separate Neon account connection is not required.
+
+**Why:** The owner privately compared the masked connection setting and
+explicitly confirmed the hostname match on 3 November 2026.
+
+**How to apply:** Use Replit's supported production schema-sync process, not
+custom production DDL. Reverify if the configured connection changes. Review the
+whole pending diff before any approval; do not bundle unrelated migrations.
+
 Do not infer separate databases merely because a Neon endpoint ID differs from
 the endpoint returned by Replit's read-only production query connection.
 

@@ -12,8 +12,11 @@ test('production builds require shared generation storage, not optional usage re
   for (const recordingReady of [true, false]) {
     const result = await checkStudioRelease({
       env: { VERCEL: '1', VERCEL_ENV: 'production' },
-      diagnose: async () => ({ database: { connected: true, host: 'fixture.example', name: 'fixture' },
-        tables: [], storage: { recordingReady, reportingReady: false } }),
+      diagnose: async options => {
+        assert.equal(options.includeReporting, false);
+        return { database: { connected: true, host: 'fixture.example', name: 'fixture' },
+          tables: [], storage: { recordingReady, reportingReady: false } };
+      },
     });
     assert.equal(result.checked, true);
     assert.equal(result.ready, recordingReady);

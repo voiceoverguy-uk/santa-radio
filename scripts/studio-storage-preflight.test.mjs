@@ -70,10 +70,19 @@ test('optional reporting failures are distinct from mandatory entry and recordin
     assert.equal(report.entryReady, true);
     assert.equal(report.recordingReady, true);
     assert.equal(report.reportingReady, false);
-    assert.equal(report.ready, false);
+    assert.equal(report.ready, true);
     assert.equal(report.reporting.reason, reason);
     assert.ok(!JSON.stringify(report).includes('PRIVATE'));
   }
+});
+
+test('production recording checks never query optional reporting, including when that table is unavailable', async () => {
+  const pool = fixture({ table: 'santa_workshop_usage_sessions', code: '42P01' });
+  const report = await releaseStorageReport(pool, { includeReporting: false });
+  assert.equal(report.ready, true);
+  assert.equal(report.reporting.checked, false);
+  assert.equal(pool.clients.length, 2);
+  assert.ok(pool.clients.every(client => client.queries.every(sql => !sql.includes('santa_workshop_usage_sessions'))));
 });
 
 test('missing permissions, unique keys and row-security assumptions fail readiness', async () => {

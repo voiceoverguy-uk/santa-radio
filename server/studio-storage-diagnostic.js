@@ -23,7 +23,10 @@ function runtime(env) {
 const reason = error => ['42P01', '42703'].includes(error?.code) ? 'table_or_columns_missing'
   : error?.code === '42501' ? 'database_permissions' : 'database_unavailable';
 
-export async function studioStorageDiagnostic({ env = process.env, pool, readiness = releaseStorageReport } = {}) {
+export async function studioStorageDiagnostic({
+  env = process.env, pool, readiness = releaseStorageReport, includeReporting = true,
+} = {}) {
+  const inspectedTables = includeReporting ? tableNames : tableNames.filter(name => name !== 'santa_workshop_usage_sessions');
   const result = {
     kind: 'studio-storage-diagnostic',
     checkedAt: new Date().toISOString(),
@@ -58,11 +61,11 @@ export async function studioStorageDiagnostic({ env = process.env, pool, readine
       has_table_privilege(current_user, to_regclass('public.' || table_name), 'INSERT') AS insert,
       has_table_privilege(current_user, to_regclass('public.' || table_name), 'UPDATE') AS update,
       has_table_privilege(current_user, to_regclass('public.' || table_name), 'DELETE') AS delete
-      FROM unnest($1::text[]) AS table_name`, [tableNames]);
+      FROM unnest($1::text[]) AS table_name`, [inspectedTables]);
     result.database.connected = true;
     result.database.name = identifier(identity.rows[0]?.database);
     // Whitelist both tables and fields. Never return driver objects or records.
-    result.tables = tableNames.map(name => {
+    result.tables = inspectedTables.map(name => {
       const row = metadata.rows.find(item => item.table_name === name);
       return { name, present: row?.present === true, permissions: Object.fromEntries(
         ['read', 'insert', 'update', 'delete'].map(key => [key, row?.[key] === true])) };
@@ -76,7 +79,7 @@ export async function studioStorageDiagnostic({ env = process.env, pool, readine
     }
   }
   if (result.database.connected) {
-    try { result.storage = await readiness(pool); }
+    try { result.storage = await readiness(pool, { includeReporting }); }
     catch { result.storage = { checked: true, ready: false, reason: 'database_unavailable' }; }
   }
   return result;
