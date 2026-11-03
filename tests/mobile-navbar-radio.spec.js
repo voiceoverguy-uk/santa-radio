@@ -40,6 +40,10 @@ test('mobile radio replaces the hero control without changing desktop or crowdin
       const menu = await page.locator('.hamburger').boundingBox();
       expect(button.width).toBeGreaterThanOrEqual(44);
       expect(button.height).toBeGreaterThanOrEqual(44);
+      expect(button.width).toBeGreaterThan(button.height);
+      expect(await radio.evaluate(node => parseFloat(getComputedStyle(node).borderRadius))).toBeGreaterThanOrEqual(button.height / 2);
+      await expect(radio).toHaveCSS('background-color',
+        await page.locator('.radio-play').evaluate(node => getComputedStyle(node).backgroundColor));
       expect(button.x).toBeGreaterThanOrEqual(logo.x + logo.width);
       expect(button.x + button.width).toBeLessThanOrEqual(menu.x);
       expect(menu.x + menu.width).toBeLessThanOrEqual(width);

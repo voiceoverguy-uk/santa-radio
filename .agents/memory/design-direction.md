@@ -34,9 +34,9 @@ The homepage hero's “FREE Santa Message” button should scroll to the message
 
 **How to apply:** Keep these two entry points distinct; the top navigation still opens the separate message page.
 
-On phones, put the radio play/pause control between the logo and menu rather than showing a large Listen Live button in the homepage hero. Keep desktop and tablet presentation unchanged.
+On phones, use the familiar red play/pause pill between the logo and menu rather than showing a large Listen Live button in the homepage hero. Keep desktop and tablet presentation unchanged.
 
-**Why:** The owner approved this mobile-only change to bring the free personalised Santa message into focus.
+**Why:** The owner approved this mobile-only change to bring the free personalised Santa message into focus, then requested the familiar red pill rather than the outlined square.
 
 **How to apply:** Use the same player state as the existing dock, with no autoplay and clear loading/retry states. Keep the Studio's no-player presentation intact, and do not restore the duplicate mobile menu radio action.
 

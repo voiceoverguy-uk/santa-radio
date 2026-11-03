@@ -63,22 +63,22 @@
   }
 
   .navbar-logo-image {
-    width: clamp(130px, calc(100vw - 154px), 190px);
+    width: clamp(130px, calc(100vw - 168px), 190px);
   }
 
   .nav-radio-icon {
     display: inline-flex;
     margin-left: auto;
-    width: 44px;
+    width: 60px;
     height: 44px;
-    flex: 0 0 44px;
+    flex: 0 0 60px;
     align-items: center;
     justify-content: center;
     padding: 0;
-    border: 1px solid #d4af37a8;
-    border-radius: 8px;
-    background: #0b251eaa;
-    color: var(--gold-light, #e6ce86);
+    border: 1px solid #D4AF3750;
+    border-radius: 999px;
+    background: var(--red);
+    color: var(--cream);
     cursor: pointer;
   }
 
