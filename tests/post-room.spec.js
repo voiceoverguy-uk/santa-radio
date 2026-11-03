@@ -18,6 +18,22 @@ for (const width of [320, 390, 768, 1440]) {
   test(`Post Room links, live handwriting and footer work at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1100 });
     const section = await open(page);
+    // Keep the external branches/lights removed, not the approved envelope art
+    // or the remaining dark-green desk background (including phone overrides).
+    const backgrounds = await section.evaluate(el => ({
+      section: getComputedStyle(el).backgroundImage,
+      before: getComputedStyle(el, '::before').backgroundImage,
+      after: getComputedStyle(el, '::after').backgroundImage,
+      colour: getComputedStyle(el).backgroundColor,
+      letter: getComputedStyle(el.querySelector('.contact-letter')).backgroundImage,
+    }));
+    for (const layer of [backgrounds.section, backgrounds.before, backgrounds.after]) {
+      expect(layer).not.toContain('post-room-pine-fringe');
+    }
+    expect(backgrounds.section).toContain('linear-gradient');
+    expect(backgrounds.section).toContain('/images/post-room-desk.webp');
+    expect(backgrounds.colour).toBe('rgb(16, 44, 34)');
+    expect(backgrounds.letter).toContain('/images/north-pole-post-room.webp');
     await expect(section.locator('.contact-santa-note')).toHaveCSS('padding-top', '12px');
     await expect(section.locator('.contact-santa-note')).toHaveCSS('padding-bottom', '10px');
     await section.scrollIntoViewIfNeeded();

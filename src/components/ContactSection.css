@@ -15,7 +15,6 @@
   padding: clamp(42px, 6vw, 82px) clamp(16px, 5vw, 64px) 36px;
   color: var(--post-cream);
   background:
-    url('/images/post-room-pine-fringe.webp') center top / 100% auto no-repeat,
     linear-gradient(180deg, #0b261ec9 45%, #091b1466),
     #102c22 url('/images/post-room-desk.webp') center / cover no-repeat;
   text-align: center;
