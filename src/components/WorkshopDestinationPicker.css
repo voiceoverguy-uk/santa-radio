@@ -127,6 +127,10 @@
   min-width: 0;
 }
 
+.smw-destination-picker__regional .smw-choice-wheel-footer-row > .smw-destination-picker__regional-actions {
+  justify-content: flex-end;
+}
+
 .smw-destination-picker button.smw-destination-picker__region-action {
   border-color: transparent;
   background: transparent;

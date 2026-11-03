@@ -112,7 +112,10 @@ export function createWorkshopAccessHandler({ getSettings = settings, consumeAtt
     if (time >= config.expiresAt) return res.status(410).json({ authorized: false, error: 'This friends-only test has closed. The Studio is coming soon.' });
     if (req.method === 'GET') {
       const session = workshopSession(req, config, time);
-      return res.json(session ? { authorized: true, expiresAt: session.expiresAt } : { authorized: false });
+      return res.json(session ? {
+        authorized: true, expiresAt: session.expiresAt,
+        voucher: { code: config.codes.find(entry => entry.id === session.codeId).code, unlimited: true },
+      } : { authorized: false });
     }
     // Temporary friends-test exception: only an already authenticated voucher
     // session can start another message. Never extend its existing expiry.

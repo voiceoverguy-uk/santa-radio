@@ -122,6 +122,7 @@ async function photograph(page, file) {
 
 test('Studio hides progress captions only on mobile, retaining the bars and current step', async ({ page }) => {
   await open(page);
+  await expect(page.locator('.smw-step-labels li').last()).toHaveText('Location');
   for (const width of [320, 390, 430, 760, 768, 1440]) {
     await page.setViewportSize({ width, height: 844 });
     await expect(page.locator('.smw-progress-segment')).toHaveCount(7);
@@ -1742,7 +1743,7 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 320, height: 568 }
     await complete(page);
     await page.getByRole('button', { name: 'Change Trying hard at' }).click();
     await page.getByRole('option', { name: 'Playing a musical instrument', exact: true }).click();
-    await page.getByRole('button', { name: 'Return to review' }).click();
+    await page.getByRole('button', { name: 'Return to review', exact: true }).click();
     await expect(page.locator('.radio-dock')).toBeHidden();
     expect(await page.evaluate(() => {
       window.scrollTo({ left: 100, top: scrollY, behavior: 'instant' });
@@ -1756,7 +1757,7 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 320, height: 568 }
     }));
     expect(controls.every(control => control.height >= control.minimum && control.fits)).toBe(true);
     // With the mobile player hidden, keyboard focus must keep the action in view.
-    await page.getByRole('button', { name: 'Back', exact: true }).focus();
+    await page.getByRole('button', { name: 'Start Again', exact: true }).focus();
     const clearance = await page.evaluate(() => ({
       bottom: document.activeElement.getBoundingClientRect().bottom,
       dockTop: innerHeight,
@@ -1765,18 +1766,33 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 320, height: 568 }
   });
 }
 
-test('desktop and phone review screenshots, explainer arrangement and unchanged navigation', async ({ page }) => {
-  const checkAnswerColours = async () => {
+test('desktop and phone review has larger white answers, unchanged labels and navigation', async ({ page }) => {
+  const checkAnswerAppearance = async () => {
+    await expect(page.locator('.studio-gifts h4')).toHaveText('Santa gifts');
+    const hintText = 'Create your MP3 to unlock these three personalised gift downloads.';
+    await expect(page.locator('.studio-gifts')).not.toContainText(hintText);
+    const hint = page.getByText(hintText, { exact: true });
+    await expect(hint).toBeVisible();
+    const createBox = await page.getByRole('button', { name: 'Create message', exact: true }).boundingBox();
+    const hintBox = await hint.boundingBox();
+    expect(hintBox.y).toBeGreaterThanOrEqual(createBox.y + createBox.height);
     const selections = page.locator('.smw-summary-answer');
     await expect(selections).toHaveText([...answers.slice(0, 2), 'Skipped', ...answers.slice(2)]);
     for (const selection of await selections.all()) {
-      await expect(selection).toHaveCSS('color', 'rgb(155, 17, 30)');
+      await expect(selection).toHaveCSS('color', 'rgb(255, 255, 255)');
+      const size = await selection.evaluate(node => ({
+        actual: parseFloat(getComputedStyle(node).fontSize),
+        expected: parseFloat(getComputedStyle(document.documentElement).fontSize) * .94 + 2 * 96 / 72,
+      }));
+      expect(size.actual).toBeCloseTo(size.expected, 2);
       await expect(selection).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
       await expect(selection).toHaveCSS('padding', '0px');
     }
     for (const label of await page.locator('.smw-summary-row dt').all()) {
       await expect(label).toHaveCSS('color', 'rgb(185, 201, 185)');
+      await expect(label).toHaveCSS('font-size', '11.84px');
     }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
     await expect(page.locator('.smw-name-preview-button')).toHaveCSS('color', 'rgb(255, 248, 231)');
   };
   await page.setViewportSize({ width: 1440, height: 1100 });
@@ -1792,10 +1808,10 @@ test('desktop and phone review screenshots, explainer arrangement and unchanged 
   expect(new Set(cards).size).toBe(1);
   await expect(page.locator('nav a[href="/santa-message-workshop"], footer a[href="/santa-message-workshop"]')).toHaveCount(0);
   await complete(page);
-  await checkAnswerColours();
+  await checkAnswerAppearance();
   await page.locator('.smw-builder').screenshot({ path: 'generated-artifacts/workshop/desktop-review.png' });
   await page.setViewportSize({ width: 390, height: 844 });
-  await checkAnswerColours();
+  await checkAnswerAppearance();
   await photograph(page, 'generated-artifacts/workshop/mobile-review.png');
   await page.reload();
   await expect(page.locator('.smw-preview-note')).toHaveCount(0);

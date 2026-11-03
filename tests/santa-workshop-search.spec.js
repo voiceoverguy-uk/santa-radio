@@ -36,7 +36,7 @@ async function expectNoDestinationSummary(page) {
 }
 
 for (const width of [320, 390, 1365]) {
-  test(`country-only action sits bottom-right on mobile and still clears regions at ${width}px`, async ({ page }) => {
+  test(`country-only action sits bottom-right and still clears regions at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await openRegionalStage(page);
     for (const [country, kind] of [
@@ -60,16 +60,16 @@ for (const width of [320, 390, 1365]) {
             top: action.top, statusBottom: status.bottom, left: action.left,
             right: action.right, height: action.height, width: innerWidth };
         });
+        expect(geometry.rightOffset).toBeLessThanOrEqual(1);
         if (width <= 760) {
-          expect(geometry.rightOffset).toBeLessThanOrEqual(1);
           expect(geometry.top).toBeGreaterThanOrEqual(geometry.statusBottom);
         }
         expect(geometry.left).toBeGreaterThanOrEqual(0);
         expect(geometry.right).toBeLessThanOrEqual(geometry.width);
         expect(geometry.height).toBeGreaterThanOrEqual(44);
       }
-      if (width === 390 && country === 'England') await page.locator('.smw-builder').screenshot({
-        path: 'generated-artifacts/studio-country-only-bottom-right.png', animations: 'disabled',
+      if ([390, 1365].includes(width) && country === 'England') await page.locator('.smw-builder').screenshot({
+        path: `generated-artifacts/studio-country-only-bottom-right-${width}.png`, animations: 'disabled',
       });
       await reset.click();
       await expect(page.locator('.smw-destination-picker__country')).toBeVisible();
@@ -573,7 +573,7 @@ for (const viewport of [{ width: 1365, height: 900 }, { width: 320, height: 568 
       const input = page.getByRole('searchbox', { name: searchLabel, exact: true });
       if (index === 3) {
         await expect(page.locator('.smw-choice-search label')).toHaveCount(0);
-        await expect(input).toHaveAttribute('placeholder', 'Try football or toys');
+        await expect(input).toHaveAttribute('placeholder', 'Mathletics or Listening');
       }
       if (index === 4) {
         await expect(page.locator('.smw-choice-search label')).toHaveCount(0);

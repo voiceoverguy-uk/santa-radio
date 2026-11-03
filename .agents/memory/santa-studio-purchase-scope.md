@@ -35,11 +35,11 @@ The owner requested removal of the “Studio A” and “Studio B” references 
 
 **How to apply:** Retain generic Studio branding, but do not reintroduce lettered Studio labels in public copy.
 
-The owner requested a “Black Friday Deal — Only £4.50” promotion. This is a seasonal promotional price, not permission to change the preserved live Stripe product or enable live purchasing.
+The Studio promotion must show a neutral £6.50 price. There is no Black Friday deal yet; do not advertise £4.50, savings or a scheduled future offer.
 
-**Why:** The owner requested an offer on the existing promotional card; checkout was still sandbox-only.
+**Why:** The owner explicitly corrected the earlier seasonal-offer direction.
 
-**How to apply:** Reconcile the advertised seasonal price with the payment setup before enabling real purchases. Do not infer an expiry, claimed saving or permanent base-price change.
+**How to apply:** Keep both shared promotional placements consistent without changing Stripe products, payment amounts, launch timing or development-only checkout.
 
 The owner set the Studio A launch date to 6 November 2026 and requested an opening countdown beneath the red bespoke-message button.
 

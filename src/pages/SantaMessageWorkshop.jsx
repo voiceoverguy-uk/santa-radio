@@ -76,7 +76,7 @@ const stages = [
   },
   {
     key: 'place',
-    label: 'Place',
+    label: 'Location',
     reviewLabel: 'Santa will be flying in to',
     heading: 'Where is Santa visiting?',
     wording: 'Anyway, as I sit here reading this, Head Elf has just reminded me where we’re coming to… Ah yes…',
@@ -793,6 +793,7 @@ export default function SantaMessageWorkshop() {
                   <span aria-hidden="true">←</span> Start Again
                 </button>
                 <WorkshopMessageAudio generation={generation} correction={correction}
+                  showGiftDownloadHint={!giftNotice}
                   tester={accessKind === 'tester' && generation.state?.testerCanStartAnother === true}
                   onCorrection={() => setCorrection(true)} visible={isReview}
                   record={selectedName} choices={choices} spelling={nameSpelling}

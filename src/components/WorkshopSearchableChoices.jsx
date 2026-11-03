@@ -6,7 +6,7 @@ import { workshopTreatWording } from '../lib/workshopTreatWording.js';
 import './WorkshopSearchableChoices.css';
 
 const searchLabels = {
-  activity: ['Search activities', 'Try football or toys'],
+  activity: ['Search activities', 'Mathletics or Listening'],
   achievement: ['Search achievements', 'Try school or helping'],
   treat: ['Search treats', 'Try chocolate or biscuits'],
   place: ['Search locations', 'tell Santa which country?'],

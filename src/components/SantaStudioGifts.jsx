@@ -168,7 +168,7 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
     onFocusCapture={() => setFocused(true)}
     onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false); }}>
     <h4>{reviewHeading || `All 3 gifts included for ${name} with the paid version`}</h4>
-    {staticPreview && <p>{downloadNotice || 'Create your MP3 to unlock these three personalised gift downloads.'}</p>}
+    {staticPreview && downloadNotice && <p>{downloadNotice}</p>}
     {children}
     <div className="studio-gifts__preview-stack" role="group" aria-label="Three gift previews"
       onContextMenu={event => event.preventDefault()} onDragStart={event => event.preventDefault()}>
@@ -308,7 +308,7 @@ export function StudioKeepsakePreview({ name, details = {}, variation, downloadR
     downloadNotice={downloadNotice}
     downloadUnavailableNotice={downloadUnavailableNotice}
     giftRevision={giftRevision}
-    reviewHeading="Your personalised Studio gifts"
+    reviewHeading="Santa gifts"
     children={children}
   />;
 }

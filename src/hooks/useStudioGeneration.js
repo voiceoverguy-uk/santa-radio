@@ -1,6 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { StudioVoucherContext } from '../lib/studioAccessContext.js';
 
 export default function useStudioGeneration(onRestore) {
+  const voucher = useContext(StudioVoucherContext);
   const [state, setState] = useState(null);
   const [error, setError] = useState('');
   const [checking, setChecking] = useState(true);
@@ -39,7 +41,9 @@ export default function useStudioGeneration(onRestore) {
           canRetry = false;
           throw new Error('Santa’s allowance checker is busy. Please wait a minute, then check again.');
         }
-        throw new Error('We can’t check how many messages you have left right now, so we can’t create your recording. Please try again.');
+        throw new Error(voucher?.unlimited
+          ? 'Your voucher is recognised, but Santa’s recording service is temporarily unavailable. Your unlimited-message access has not changed. Please try again.'
+          : 'We can’t check how many messages you have left right now, so we can’t create your recording. Please try again.');
       }
       const data = await response.json();
       if (!Number.isInteger(data.successes) || data.successes < 0 || data.successes > 2
@@ -67,7 +71,7 @@ export default function useStudioGeneration(onRestore) {
       clearTimeout(timeout);
       if (alive.current && request === latestRequest.current) setChecking(false);
     }
-  }, []);
+  }, [voucher?.unlimited]);
   useEffect(() => {
     alive.current = true;
     refresh();

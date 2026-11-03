@@ -3,7 +3,7 @@ import PageSeo from '../seo/PageSeo.jsx';
 import { pageMetadata } from '../seo/catalogue.js';
 import { WorkshopPasswordForm } from './WorkshopPasswordForm.jsx';
 import { useLocation } from 'react-router-dom';
-import { StudioAccessContext } from '../lib/studioAccessContext.js';
+import { StudioAccessContext, StudioVoucherContext } from '../lib/studioAccessContext.js';
 
 const ACCESS_URL = '/api/santa-workshop-access';
 const REQUEST_TIMEOUT = 15000;
@@ -21,6 +21,7 @@ export default function WorkshopAccessGate({ children }) {
   const location = useLocation();
   const returningFromCheckout = new URLSearchParams(location.search).get('checkout') === 'return';
   const [accessKind, setAccessKind] = useState('tester');
+  const [voucher, setVoucher] = useState(null);
   const [status, setStatus] = useState('checking');
   const [statusMessage, setStatusMessage] = useState('');
   const [expiresAt, setExpiresAt] = useState(null);
@@ -61,6 +62,7 @@ export default function WorkshopAccessGate({ children }) {
           if (disposed || controller.signal.aborted) return;
           if (paidResponse.ok && paid.authorized === true) {
             setAccessKind('paid-sandbox');
+            setVoucher(null);
             setExpiresAt(null);
             setStatusMessage('');
             setStatus('authorized');
@@ -112,6 +114,8 @@ export default function WorkshopAccessGate({ children }) {
 
         setExpiresAt(data.expiresAt);
         setAccessKind('tester');
+        setVoucher(data.voucher?.unlimited === true && typeof data.voucher.code === 'string'
+          ? data.voucher : null);
         setStatusMessage('');
         setStatus('authorized');
       } catch (error) {
@@ -185,7 +189,9 @@ export default function WorkshopAccessGate({ children }) {
   if (status === 'authorized') {
     return <>
       <PageSeo metadata={metadata} />
-      <StudioAccessContext.Provider value={accessKind}>{children}</StudioAccessContext.Provider>
+      <StudioAccessContext.Provider value={accessKind}>
+        <StudioVoucherContext.Provider value={voucher}>{children}</StudioVoucherContext.Provider>
+      </StudioAccessContext.Provider>
     </>;
   }
 

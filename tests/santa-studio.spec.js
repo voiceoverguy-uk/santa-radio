@@ -62,7 +62,7 @@ test('Studio launch countdown sits below the red button and ends on 6 November U
     for (const size of ['100%', '200%']) {
       await page.evaluate(size => { document.documentElement.style.fontSize = size; }, size);
       const geometry = await countdown.evaluate(element => {
-        const time = element.querySelector('strong');
+        const time = element.querySelector('.santa-studio-promotion__launch-countdown-remaining');
         const intro = document.createRange(), numbers = document.createRange();
         intro.selectNodeContents(element.firstChild);
         numbers.selectNodeContents(time);
@@ -82,7 +82,7 @@ test('Studio launch countdown sits below the red button and ends on 6 November U
         };
       });
       expect(geometry.display).toBe(width < 768 ? 'block' : 'inline');
-      expect(geometry.weight).toBeGreaterThanOrEqual(700);
+      expect(geometry.weight).toBe(400);
       expect(geometry.align).toBe('center');
       expect(geometry.fits).toBe(true);
       expect(geometry.noOverflow).toBe(true);

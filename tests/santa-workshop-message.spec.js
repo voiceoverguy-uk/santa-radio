@@ -79,6 +79,44 @@ async function openReview(page, { live = false, allowance = null, tester = false
   return generation;
 }
 
+for (const width of [390, 1365]) {
+  test(`voucher entitlement remains clear during recording-service failure at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.route('**/api/santa-workshop-access', async route => {
+      if (route.request().method() !== 'GET') return route.fallback();
+      const response = await route.fetch();
+      const data = await response.json();
+      return route.fulfill({ response, json: { ...data,
+        voucher: { code: 'preview-voucher-example', unlimited: true } } });
+    });
+    await openReview(page, { tester: true });
+    const notice = page.locator('.smw-voucher-entitlement');
+    await expect(notice).toHaveText('You used Voucher Code: preview-voucher-example, you can generate unlimited messages');
+    await expect(page.locator('.smw-allowance').filter({
+      hasText: 'You can create one message, then make one correction.',
+    })).toHaveCount(0);
+    await page.route('**/api/santa-studio-message', route => route.request().method() === 'GET'
+      ? route.fulfill({ status: 503, json: { error: 'Temporary recording-service failure' } })
+      : route.fallback());
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+    await expect(page.getByRole('alert')).toContainText('Your voucher is recognised');
+    await expect(page.getByRole('alert')).toContainText('Your unlimited-message access has not changed.');
+    await expect(notice).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+    await page.locator('.smw-actions--review').screenshot({
+      path: `generated-artifacts/studio-voucher-notice-${width}.png`, animations: 'disabled',
+    });
+    await page.unroute('**/api/santa-studio-message');
+    await page.getByRole('button', { name: 'Retry recording check', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
+    await expect(page.getByRole('alert')).toHaveCount(0);
+    await page.reload();
+    await openReview(page, { tester: true });
+    await expect(notice).toHaveText('You used Voucher Code: preview-voucher-example, you can generate unlimited messages');
+  });
+}
+
 test('voucher testing can generate a third message with fresh choices while retaining previous downloads', async ({ page }) => {
   const fixture = await openReview(page, { tester: true });
   let resets = 0;
@@ -145,13 +183,14 @@ for (const width of [390, 1365]) {
   });
 }
 
-test('failed allowance check has no extra retry button and recovers on return to the page', async ({ page }) => {
+test('voucher recording check failure retains entitlement and recovers on return to the page', async ({ page }) => {
   let healthy = false;
   const fixture = await openReview(page, { allowance: (route, state) => healthy
     ? route.fulfill({ json: state })
     : route.fulfill({ status: 503, json: { error: 'Service unavailable.' } }) });
   const allowance = page.locator('.smw-allowance');
-  await expect(allowance).toContainText('We can’t check how many messages you have left right now, so we can’t create your recording. Please try again.');
+  await expect(allowance).toContainText('Your voucher is recognised, but Santa’s recording service is temporarily unavailable.');
+  await expect(page.locator('.smw-voucher-entitlement')).toContainText('you can generate unlimited messages');
   await expect(page.getByRole('alert')).toHaveCount(1);
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
   for (const width of [1365, 390, 320]) {
@@ -164,6 +203,7 @@ test('failed allowance check has no extra retry button and recovers on return to
     expect(await allowance.evaluate(node => node.scrollWidth <= node.clientWidth + 1)).toBe(true);
   }
   await expect(page.getByRole('button', { name: 'Try again', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Retry recording check', exact: true })).toBeVisible();
   healthy = true;
   await page.evaluate(() => window.dispatchEvent(new Event('focus')));
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();

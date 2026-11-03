@@ -16,6 +16,18 @@ message, including after exhausting both successes, and choose a different
 recorded name and destination. This is a temporary exception for authenticated
 voucher testers only, not paid/sandbox purchase access or the free maker.
 
+Show the authenticated user's own voucher and explain that voucher testing
+allows unlimited messages. Keep that entitlement distinct from a temporary
+recording-service failure; do not describe such a failure as running out of
+messages or bypass server-side generation checks.
+
+**Why:** The owner requested explicit voucher-aware unlimited-message wording
+after a generic allowance warning obscured the tester entitlement.
+
+**How to apply:** Resolve the voucher through verified access, never a URL or
+browser-entered claim. Reveal only the current user's voucher, not other codes.
+Do not store code values in source, fixtures or project memory.
+
 **Why:** The owner said “While we are testing, allow anyone using a voucher code
 to generate another.”
 

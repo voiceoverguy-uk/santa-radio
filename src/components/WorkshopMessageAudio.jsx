@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { useRadio } from './RadioProvider.jsx';
+import { StudioVoucherContext } from '../lib/studioAccessContext.js';
 import { getWorkshopDownloadName, getWorkshopWrittenName } from '../lib/workshopNameSpelling.js';
 
 const MAX_BYTES = 4_400_000;
@@ -18,8 +19,10 @@ const PREPARATION_MESSAGES = [
 
 export default function WorkshopMessageAudio({
   record, choices, spelling, complete, generation, correction, tester = false, onCorrection, visible, onPhaseChange, onReady,
+  showGiftDownloadHint = false,
 }) {
   const radio = useRadio();
+  const voucher = useContext(StudioVoucherContext);
   const requestRef = useRef(null);
   const urlRef = useRef(null);
   const audioRef = useRef(null);
@@ -203,6 +206,9 @@ export default function WorkshopMessageAudio({
       type="button" onClick={() => setConfirming(true)} disabled={disabled} aria-busy={busy}>
       {busy ? 'Preparing message…' : phase === 'error' && complete ? 'Retry message' : 'Create message'} <span aria-hidden="true">→</span>
     </button>
+    {showGiftDownloadHint && <p className="smw-catalogue-review-note smw-gift-download-hint">
+      Create your MP3 to unlock these three personalised gift downloads.
+    </p>}
     {tester && status?.successes > 0 && <button className="smw-button smw-button-back"
       type="button" disabled={busy || status.pending || !!generation.error || generation.checking}
       onClick={async () => {
@@ -216,11 +222,16 @@ export default function WorkshopMessageAudio({
         operationRef.current = null;
         onCorrection();
       }}>Edit and regenerate once</button>}
+    {voucher?.unlimited && <p className="smw-voucher-entitlement">
+      You used Voucher Code: {voucher.code}, you can generate unlimited messages
+    </p>}
     <p className="smw-allowance" role={generation.error ? 'alert' : 'status'} aria-live={generation.error ? 'assertive' : 'polite'}>
-      {generation.checking ? 'Checking your message allowance…' : generation.error
+      {generation.checking ? voucher?.unlimited ? 'Checking your recording status…' : 'Checking your message allowance…' : generation.error
         ? generation.error
         : !status ? 'Your message allowance has not been confirmed.' : tester && status.successes > 0 && !status.pending
         ? 'Voucher testing: you can start another test message, including choosing a different name and destination. Download your current MP3 and gifts before starting another test.'
+        : voucher?.unlimited && !status.pending && status.successes === 0
+        ? 'Create your message, then use Generate another test message to choose a new name and destination. Download your MP3 and gifts before starting another.'
         : status.remaining === 0
         ? 'Both messages have been created. No further generation is available. Repeat downloads are still available.'
         : status.pending ? 'A message is being prepared for this access. Your allowance will update when it finishes.'
@@ -230,6 +241,9 @@ export default function WorkshopMessageAudio({
       {generation.error && generation.accessExpired && <> <button type="button" className="smw-change"
       onClick={() => window.location.reload()}>
       Reload Studio</button></>}
+      {generation.error && !generation.accessExpired && voucher?.unlimited && <> <button type="button"
+        className="smw-change" disabled={generation.checking} onClick={() => generation.refresh()}>
+        Retry recording check</button></>}
     </p>
     {busy && <div className="smw-message-result" role="status" aria-live="polite">
       <p>{phase === 'receiving' ? 'Receiving your finished MP3…' : preparationMessage}</p>

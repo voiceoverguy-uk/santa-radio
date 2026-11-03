@@ -113,7 +113,7 @@ test('starting another voucher test fails closed on rate limits and cross-origin
   });
 });
 
-test('five valid codes set non-persistent HttpOnly same-site cookies; responses never reveal codes', async () => {
+test('five codes set secure sessions and show only the authenticated user’s own voucher', async () => {
   await withServer({}, async ({ url, post }) => {
     assert.deepEqual(await (await fetch(url)).json(), { authorized: false });
     for (const entry of config.codes) {
@@ -130,7 +130,12 @@ test('five valid codes set non-persistent HttpOnly same-site cookies; responses 
         assert.ok(!body.includes(code));
       }
       const session = await fetch(url, { headers: { Cookie: cookie.split(';')[0] } });
-      assert.deepEqual(await session.json(), { authorized: true, expiresAt: at + WORKSHOP_SESSION_MS });
+      const metadata = await session.json();
+      assert.deepEqual(metadata, { authorized: true, expiresAt: at + WORKSHOP_SESSION_MS,
+        voucher: { code: entry.code, unlimited: true } });
+      for (const other of config.codes.filter(item => item.id !== entry.id)) {
+        assert.ok(!JSON.stringify(metadata).includes(other.code));
+      }
     }
     const https = await post(config.codes[0].code, { headers: { Origin: url.replace('http:', 'https:'), 'X-Forwarded-Proto': 'https' } });
     assert.match(https.headers.get('set-cookie'), /; Secure/);
