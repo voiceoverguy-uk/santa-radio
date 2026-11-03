@@ -289,6 +289,7 @@ test('recipe uses all 14 positions, exact repeated variant, unchanged bells sett
   ]);
   const graph = studioMixArgs('speech', 'bells', 'output').join(' ');
   assert.match(graph, /I=-34:TP=-9:LRA=7/);
+  assert.doesNotMatch(graph, /volume=2dB/, 'The free-message bell gain must not change Studio audio.');
   assert.match(graph, /latency=true/);
   for (const name of ['D’Arcy', 'Élodie', 'Anna-Mae']) {
     assert.equal(getWorkshopDownloadName('Original', name), `santa-message-for-${name}.mp3`);
