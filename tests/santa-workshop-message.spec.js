@@ -472,6 +472,18 @@ test('review create placement on desktop and phones, real MP3 playback/download,
   expect(file.suggestedFilename()).toBe('santa-message-for-D’Arcy.mp3');
   expect(readFileSync(await file.path())).toEqual(fixture.audio,
     'Playback and Download MP3 use the same complete newly rendered recording');
+  await page.getByRole('button', { name: 'Edit certificate name', exact: true }).click();
+  await page.getByRole('textbox', { name: 'Name spelling', exact: true }).fill('Mary-Jane O’D’Arcy & Co');
+  await page.getByRole('button', { name: 'Use this spelling', exact: true }).click();
+  await expect(result.getByRole('heading', { name: 'Santa’s message for Mary-Jane O’D’Arcy & Co' })).toBeVisible();
+  await expect(player).toHaveAttribute('src', url);
+  await expect(download).toHaveAttribute('download', 'santa-message-for-Mary-Jane O’D’Arcy & Co.mp3');
+  const punctuationDownload = page.waitForEvent('download');
+  await download.click();
+  const punctuationFile = await punctuationDownload;
+  expect(punctuationFile.suggestedFilename()).toBe('santa-message-for-Mary-Jane O’D’Arcy & Co.mp3');
+  expect(readFileSync(await punctuationFile.path())).toEqual(fixture.audio,
+    'Correcting punctuation changes only the filename, not the temporary MP3');
   expect(submissions).toHaveLength(1);
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
   await page.getByRole('button', { name: 'Change Trying hard at', exact: true }).click();
