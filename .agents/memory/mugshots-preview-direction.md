@@ -2,6 +2,12 @@
 name: Mugshots preview direction
 description: Owner-approved homepage celebrity preview appearance and limits.
 ---
+The owner requested swapping the homepage Soundboard and Mugshots sections. Use the same sequence on desktop and mobile: Christmas Pairs, Celebrity Mugshots, YouTube, then Soundboard.
+
+**Why:** The owner explicitly requested the swap; avoid a desktop-only visual-order override contradicting the underlying section order.
+
+**How to apply:** Preserve section content and interactions. Future ordering changes should keep visual, reading and keyboard navigation order aligned.
+
 Keep the homepage Celebrity Mugshots preview photograph-led, with dark evergreen festive wallpaper, understated repeating gold stars, snowflakes and ornamental motifs, gold frames and the red gallery button. Do not restore pine/tree corners or their hanging lights and baubles. The cartoon Mugshots icon must not return, including an empty wrapper reserved for it.
 
 **Why:** The owner's wallpaper request supersedes the earlier corner-pine appearance approval for the homepage preview only. The earlier approval also explicitly excludes the old cartoon icon. The reference is a style specification, not permission to flatten the section into an image or fix its sample to the pictured celebrities.

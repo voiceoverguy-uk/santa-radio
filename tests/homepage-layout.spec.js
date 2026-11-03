@@ -45,8 +45,8 @@ test('homepage tracker enlarges the full-world map on desktop and stacks within 
 
 test('homepage keeps its desktop and mobile section order without the paused video promotion', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
-  const desktop = ['hero', 'santa-message-section', 'tracker-banner', 'santa-dash-promo', 'christmas-pairs', 'mugshots-preview', 'soundboard', 'youtube-section', 'partnership-strip', 'contact-section'];
-  const mobile = ['hero', 'santa-message-section', 'tracker-banner', 'santa-dash-promo', 'christmas-pairs', 'soundboard', 'youtube-section', 'mugshots-preview', 'partnership-strip', 'contact-section'];
+  const desktop = ['hero', 'santa-message-section', 'tracker-banner', 'santa-dash-promo', 'christmas-pairs', 'mugshots-preview', 'youtube-section', 'soundboard', 'partnership-strip', 'contact-section'];
+  const mobile = desktop;
   for (const width of [1280, 768, 767, 390]) {
     await page.setViewportSize({ width, height: 900 });
     const order = await page.locator('.home-page > section').evaluateAll(sections =>
@@ -57,8 +57,8 @@ test('homepage keeps its desktop and mobile section order without the paused vid
     await expect(page.locator('.home-page > .partnership-strip + .contact-section')).toHaveCount(1);
     await expect(page.locator('.home-page > .santa-dash-promo')).toHaveCount(1);
     await expect(page.locator('.home-page > .soundboard')).toHaveCount(1);
-    await expect(page.locator('.tracker-banner + .santa-dash-promo + .christmas-pairs + .soundboard')).toHaveCount(1);
-    const bounds = await page.locator('.home-page > .tracker-banner, .home-page > .santa-dash-promo, .home-page > .christmas-pairs, .home-page > .soundboard')
+    await expect(page.locator('.tracker-banner + .santa-dash-promo + .christmas-pairs + .mugshots-preview')).toHaveCount(1);
+    const bounds = await page.locator('.home-page > .tracker-banner, .home-page > .santa-dash-promo, .home-page > .christmas-pairs, .home-page > .mugshots-preview')
       .evaluateAll(sections => sections.map(section => {
         const rect = section.getBoundingClientRect();
         return { top: rect.top, bottom: rect.bottom };

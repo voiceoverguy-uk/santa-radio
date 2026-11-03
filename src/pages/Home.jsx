@@ -30,9 +30,9 @@ export default function Home() {
       {/* Personalised video promotion temporarily removed; SantaVideoSection and its styles are retained for restoration. */}
       <SantaDashPromo />
       <ChristmasPairs />
-      <Soundboard />
-      <YouTubeSection />
       <MugshotsPreview />
+      <YouTubeSection />
+      <Soundboard />
       <section className="partnership-strip" aria-labelledby="partnership-heading">
         <div className="partnership-strip__inner">
           <div className="partnership-strip__copy">
