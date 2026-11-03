@@ -1,0 +1,41 @@
+.studio-storage-diagnostic {
+  border-top: 1px solid rgba(222, 197, 135, .3);
+  margin-top: 28px;
+  padding-top: 20px;
+}
+.studio-storage-diagnostic p, .studio-storage-diagnostic li {
+  line-height: 1.6;
+}
+.studio-storage-diagnostic__result dl {
+  display: grid;
+  gap: 12px;
+}
+.studio-storage-diagnostic__result dt {
+  font-weight: 700;
+}
+.studio-storage-diagnostic__result dd {
+  margin: 3px 0 0;
+  overflow-wrap: anywhere;
+}
+.studio-storage-diagnostic__table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.studio-storage-diagnostic table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .85rem;
+}
+.studio-storage-diagnostic caption {
+  text-align: left;
+  margin-bottom: 10px;
+}
+.studio-storage-diagnostic th, .studio-storage-diagnostic td {
+  padding: 9px;
+  border-bottom: 1px solid rgba(222, 197, 135, .25);
+  text-align: left;
+}
+.studio-storage-diagnostic th[scope="row"] {
+  min-width: 160px;
+  overflow-wrap: anywhere;
+}

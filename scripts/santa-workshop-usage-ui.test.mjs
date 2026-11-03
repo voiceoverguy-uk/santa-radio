@@ -81,6 +81,41 @@ test('private report qualifies totals and never shows stale success data after r
       await expect(page.getByText('Reporting data loaded successfully.', { exact: false })).toHaveCount(0);
       await expect(page.getByRole('note')).toContainText('may be missing during reporting outages');
     }
+    // The diagnostic remains independently usable while the usage reader fails.
+    const diagnostic = page.getByRole('region', { name: 'Recording service diagnostic' });
+    let diagnosticRequests = 0;
+    let diagnosticStatus = 200;
+    const diagnosticReply = {
+      kind: 'studio-storage-diagnostic', checkedAt: '2026-11-03T15:00:00.000Z',
+      runtime: { host: 'vercel', environment: 'preview', deployment: 'dummy-deployment.example' },
+      database: { configured: true, connected: true, host: 'dummy-database.example', name: 'dummy-database' },
+      storage: { checked: true, ready: false, access: { checked: true, ready: true },
+        generation: { checked: true, ready: false, reason: 'table_or_columns_missing' },
+        reporting: { checked: true, ready: false, reason: 'database_permissions' } },
+      tables: [{ name: 'santa_studio_generation_results', present: false,
+        permissions: { read: false, insert: false, update: false, delete: false } }],
+    };
+    let diagnosticBody = diagnosticReply;
+    await page.route(url => url.pathname === '/api/santa-workshop-usage'
+      && url.searchParams.has('diagnostic'), route => {
+      diagnosticRequests++;
+      return route.fulfill({ status: diagnosticStatus, contentType: 'application/json',
+        body: JSON.stringify(diagnosticBody) });
+    });
+    assert.equal(diagnosticRequests, 0, 'Diagnostic must not run automatically');
+    await diagnostic.getByRole('button', { name: 'Check recording storage' }).click();
+    await expect(diagnostic.getByRole('status')).toContainText('not a successful MP3 test');
+    await expect(diagnostic.getByText('dummy-database.example', { exact: true })).toBeVisible();
+    await expect(diagnostic.getByText('A required table or column is missing.', { exact: false })).toBeVisible();
+    await expect(diagnostic.getByText('without automatic expiry', { exact: false })).toBeVisible();
+    assert.equal(diagnosticRequests, 1);
+    for (const problem of [503, 401, 'malformed']) {
+      diagnosticStatus = typeof problem === 'number' ? problem : 200;
+      diagnosticBody = problem === 'malformed' ? {} : diagnosticReply;
+      await diagnostic.getByRole('button', { name: 'Check recording storage' }).click();
+      await expect(diagnostic.getByRole('alert')).toBeVisible();
+      await expect(diagnostic.getByText('dummy-database.example', { exact: true })).toHaveCount(0);
+    }
     failure = null;
     reply = zero;
     await refresh();

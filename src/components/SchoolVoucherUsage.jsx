@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import './SchoolVoucherUsage.css';
+import StudioStorageDiagnostic from './StudioStorageDiagnostic.jsx';
 
 const numberFormat = new Intl.NumberFormat('en-GB');
 
@@ -214,6 +215,7 @@ export default function SchoolVoucherUsage() {
           </div>
         </>
       )}
+      <StudioStorageDiagnostic />
     </section>
   );
 }

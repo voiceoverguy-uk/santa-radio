@@ -290,3 +290,34 @@ reporting outage; do not present them as a complete historical count.
 
 Tests: `npm run test:workshop-usage` (persistent counters test uses only the
 development database and rolls its fixture records back).
+
+## Prepared private recording diagnostic
+
+The private Voucher usage panel includes **Check recording storage**. It runs
+only when selected, independently of usage-report loading. Its request is
+`GET /api/santa-workshop-usage?diagnostic=recording-storage`, protected by the
+same staff authentication and approved-admin check. Anonymous visitors,
+voucher-only sessions and unapproved staff cannot access it.
+
+The diagnostic uses read-only transactions and always rolls them back. It reads
+`current_database()`, fixed table metadata and role permissions, then performs
+the shared column/key/readiness probes. It never reads application rows, MP3
+bytes or source audio, creates usage events, migrates tables, or runs stitching.
+Responses are private/no-store. Only the driver's effective non-secret host and
+port, connected database name, fixed runtime identifiers and schema checks are
+returned; connection strings, usernames, passwords and raw exceptions are not.
+
+A workspace result proves nothing about live Vercel. After a separately approved
+Vercel deployment, run the check while signed in on the www staff page. Confirm
+that its runtime is Vercel Production and compare the returned host/database
+with the intended database before authorising any schema changes. A successful
+schema check is not proof that rendering works. This preparation does not
+authorise a deployment or production migration.
+
+The owner requires finished Studio MP3s to remain temporary for the user's
+session, not an archive. The existing results schema contains full MP3 bytes
+without automatic expiry. Do not enable that storage unchanged as a repair.
+This diagnostic neither changes retention nor introduces audio storage.
+
+Focused checks:
+`node --test scripts/studio-storage-diagnostic.test.mjs scripts/santa-workshop-usage-ui.test.mjs`.

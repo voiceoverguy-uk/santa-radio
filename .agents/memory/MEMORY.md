@@ -34,6 +34,7 @@
 - [Browser image failure checks](browser-image-cache-checks.md) — Decoded artwork can survive network interception; use fresh loads for request-failure tests.
 - [SEO delivery rules](seo-delivery.md) — Owner prefers www; keep preview/integrations on their hosts. Validate built Node SSR as well as Vite rendering.
 - [Workspace environment label](workspace-environment-label.md) — Do not infer a production database target from the environment label alone.
+- [Vercel sensitive bindings](vercel-sensitive-binding.md) — HTTP 200 may contain secret metadata only; deployment env-name lists do not prove the database destination.
 - [Workspace verification](workspace-verification-baselines.md) — Recheck files after task-environment transitions; earlier edits and temporary baselines may be absent.
 - [Tracker verification baselines](tracker-test-baselines.md) — Check tracker route output against current metadata before attributing unrelated full-suite failures to a layout change.
 - [Panoramic image exports](panoramic-image-exports.md) — Check generated canvas dimensions; wide prompts can still return square images.
@@ -76,6 +77,7 @@
 - [Santa recipient previews](santa-recipient-preview-scope.md) — Chosen/generated child takes priority; random gifts/audio only before personalisation.
 - [Studio letter editorial policy](studio-letter-editorial-policy.md) — Curated contextual prose, not live AI; full choice audit stays private and spelling edits must not reshuffle wording.
 - [Studio single-message allowance](studio-single-message-allowance.md) — One success plus one correction; lock exact spoken name/full destination, not written spelling or future family policy.
+- [Studio audio retention](studio-audio-retention.md) — Finished MP3s are temporary for the user's session, not an archive; do not introduce permanent MP3 storage.
 - [Studio gift delivery](studio-gift-delivery-scope.md) — Local individual-message gifts require MP3 success; no free/promotional exports, live checkout or family/email fulfilment.
 - [Studio promotion typography](studio-promotion-typography.md) — Regular live promotion text and shared gift heading; keep document artwork and watermarks unchanged.
 - [School tester voucher](school-tester-voucher.md) — Shared independent parent access; fixed 3–10 November 2026 UK window, separate from existing vouchers.
