@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { Star } from 'lucide-react';
 import { PHRASES } from '../lib/soundboardPhrases.js';
 import useSoundboard from './useSoundboard.js';
 import './Soundboard.css';
@@ -33,7 +34,12 @@ export default function Soundboard() {
     <div className="soundboard-container">
       <header className="soundboard-intro">
         <p className="soundboard-eyebrow">FROM SANTA’S WORKSHOP</p>
-        <h2 className="soundboard-title" id="soundboard-title">Santa’s Soundboard</h2>
+        <div className="soundboard-title-wrap">
+          <span className="soundboard-title-star" aria-hidden="true">
+            <Star size={17} fill="currentColor" focusable="false" />
+          </span>
+          <h2 className="soundboard-title" id="soundboard-title">Santa’s Soundboard</h2>
+        </div>
         <p className="soundboard-subtitle">A little Christmas magic. In Santa’s own voice.</p>
       </header>
 

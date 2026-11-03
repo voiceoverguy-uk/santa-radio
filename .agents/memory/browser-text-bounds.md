@@ -12,7 +12,7 @@ Text range height and scrollHeight can exceed a heading's line box without clipp
 
 **Why:** Cinzel's font metrics produced vertical overflow in enlarged headings even when the text rendered fully. Treating that alone as clipping caused false failures.
 
-**How to apply:** For horizontal reflow checks, measure horizontal line bounds and container widths. For vertical clipping, check clipping ancestors rather than assuming every line-box overhang is hidden.
+**How to apply:** For horizontal reflow checks, measure horizontal line bounds and container widths. For vertical clipping, check clipping ancestors rather than assuming every line-box overhang is hidden. A heading's enclosing introduction can provide the correct visible boundary when its own line box is shorter than the glyph bounds.
 
 Do not count `Range.getClientRects()` as visual lines when a heading contains nested inline text.
 
