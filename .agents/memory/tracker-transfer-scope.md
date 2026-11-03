@@ -8,6 +8,12 @@ Preserve the supplied tracker's content, calculations and functionality rather t
 
 **How to apply:** Keep future adaptations narrow; a framework migration or functional tracker redesign needs a new explicit request.
 
+Use the owner's supplied map image as a blurred decorative background behind the homepage Tracker section.
+
+**Why:** The owner explicitly asked to blur that image into the section background.
+
+**How to apply:** Keep the live foreground map, copy and button sharp and functional; do not extend the backdrop to the full Tracker page.
+
 For an app-project handover, export the current shareable website source rather
 than reusing the original imported tracker archive. Distinguish a reachable
 published reference from proof that production matches the exported source.

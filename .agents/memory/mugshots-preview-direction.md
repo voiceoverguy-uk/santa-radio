@@ -2,9 +2,9 @@
 name: Mugshots preview direction
 description: Owner-approved homepage celebrity preview appearance and limits.
 ---
-The owner requested swapping the homepage Soundboard and Mugshots sections. Use the same sequence on desktop and mobile: Christmas Pairs, Celebrity Mugshots, YouTube, then Soundboard.
+Place Santa’s Soundboard directly above Celebrity Mugshots on the homepage. Use the same sequence on desktop and mobile: Christmas Pairs, Soundboard, Celebrity Mugshots, then YouTube.
 
-**Why:** The owner explicitly requested the swap; avoid a desktop-only visual-order override contradicting the underlying section order.
+**Why:** The owner explicitly requested Soundboard ABOVE Celebrity Mugshots, superseding the previous swap. Avoid a desktop-only visual-order override contradicting the underlying section order.
 
 **How to apply:** Preserve section content and interactions. Future ordering changes should keep visual, reading and keyboard navigation order aligned.
 

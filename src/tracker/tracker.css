@@ -297,6 +297,32 @@
   max-width: 100%;
   text-align: center;
 }
+
+/* Homepage-only decorative map wash; live tracker content remains untouched. */
+.home-page > .tracker-banner {
+  isolation: isolate;
+}
+.home-page > .tracker-banner::before,
+.home-page > .tracker-banner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.home-page > .tracker-banner::before {
+  inset: -12px;
+  background: url("../assets/home/tracker-background.webp") center 48% / cover no-repeat;
+  filter: blur(7px);
+  opacity: 0.8;
+}
+.home-page > .tracker-banner::after {
+  background: linear-gradient(90deg, rgba(8, 30, 23, 0.38), rgba(8, 30, 23, 0.25) 54%, rgba(8, 30, 23, 0.35));
+}
+.home-page > .tracker-banner > * {
+  position: relative;
+  z-index: 1;
+}
 @media (min-width: 1024px) {
   .tracker-banner .tracker-banner-map-layout {
     justify-content: space-between;

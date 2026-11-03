@@ -7,6 +7,18 @@ test('homepage tracker enlarges the full-world map on desktop and stacks within 
   await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
   const banner = page.locator('.home-page > .tracker-banner');
   const map = banner.locator('.tracker-map');
+  const backdrop = await banner.evaluate(node => {
+    const style = getComputedStyle(node, '::before');
+    return { image: style.backgroundImage, filter: style.filter, pointerEvents: style.pointerEvents,
+      foregroundFilter: getComputedStyle(node.querySelector('.tracker-map')).filter };
+  });
+  expect(backdrop.image).toContain('tracker-background');
+  expect(backdrop.filter).toBe('blur(7px)');
+  expect(backdrop.pointerEvents).toBe('none');
+  expect(backdrop.foregroundFilter).toBe('none');
+  const backdropResponse = await page.request.get(backdrop.image.slice(5, -2));
+  expect(backdropResponse.ok()).toBe(true);
+  expect(backdropResponse.headers()['content-type']).toContain('image/webp');
   await expect(map).toBeVisible();
   await expect(banner).not.toContainText('Countdown to Christmas Eve');
   await expect(banner.locator('.tracker-countdown-value')).toHaveCount(0);
@@ -45,7 +57,7 @@ test('homepage tracker enlarges the full-world map on desktop and stacks within 
 
 test('homepage keeps its desktop and mobile section order without the paused video promotion', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
-  const desktop = ['hero', 'santa-message-section', 'tracker-banner', 'santa-dash-promo', 'christmas-pairs', 'mugshots-preview', 'youtube-section', 'soundboard', 'partnership-strip', 'contact-section'];
+  const desktop = ['hero', 'santa-message-section', 'tracker-banner', 'santa-dash-promo', 'christmas-pairs', 'soundboard', 'mugshots-preview', 'youtube-section', 'partnership-strip', 'contact-section'];
   const mobile = desktop;
   for (const width of [1280, 768, 767, 390]) {
     await page.setViewportSize({ width, height: 900 });
@@ -57,8 +69,8 @@ test('homepage keeps its desktop and mobile section order without the paused vid
     await expect(page.locator('.home-page > .partnership-strip + .contact-section')).toHaveCount(1);
     await expect(page.locator('.home-page > .santa-dash-promo')).toHaveCount(1);
     await expect(page.locator('.home-page > .soundboard')).toHaveCount(1);
-    await expect(page.locator('.tracker-banner + .santa-dash-promo + .christmas-pairs + .mugshots-preview')).toHaveCount(1);
-    const bounds = await page.locator('.home-page > .tracker-banner, .home-page > .santa-dash-promo, .home-page > .christmas-pairs, .home-page > .mugshots-preview')
+    await expect(page.locator('.tracker-banner + .santa-dash-promo + .christmas-pairs + .soundboard + .mugshots-preview')).toHaveCount(1);
+    const bounds = await page.locator('.home-page > .tracker-banner, .home-page > .santa-dash-promo, .home-page > .christmas-pairs, .home-page > .soundboard')
       .evaluateAll(sections => sections.map(section => {
         const rect = section.getBoundingClientRect();
         return { top: rect.top, bottom: rect.bottom };
