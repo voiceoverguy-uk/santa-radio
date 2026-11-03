@@ -13,7 +13,7 @@ export default function ContactSection() {
             <HomepageSectionHeading
               eyebrow="THE NORTH POLE POST ROOM"
               title="We’d love to hear from you"
-              subtitle="Got a question, a festive idea or something to share? Get in touch with the Santa Radio team."
+              subtitle={<>Got a question, a festive idea or something to share?{' '}<br />Get in touch with the Santa Radio team.</>}
               titleId="contact-title"
               className="contact-heading"
               eyebrowClassName="contact-eyebrow"

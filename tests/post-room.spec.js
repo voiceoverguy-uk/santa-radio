@@ -39,7 +39,25 @@ for (const width of [320, 390, 768, 1440]) {
     await section.scrollIntoViewIfNeeded();
     await expect(section.getByRole('heading', { name: 'We’d love to hear from you' })).toBeVisible();
     await expect(section).toContainText('THE NORTH POLE POST ROOM');
-    await expect(section).toContainText('Got a question, a festive idea or something to share? Get in touch with the Santa Radio team.');
+    const intro = section.locator('.contact-intro');
+    await expect(intro).toHaveText('Got a question, a festive idea or something to share? Get in touch with the Santa Radio team.');
+    await expect(intro.locator('br')).toHaveCount(1);
+    expect(await intro.evaluate(element => {
+      const br = element.querySelector('br');
+      const before = document.createRange();
+      before.setStart(element, 0);
+      before.setEndBefore(br);
+      const after = document.createRange();
+      after.setStartAfter(br);
+      after.setEnd(element, element.childNodes.length);
+      const firstLines = [...before.getClientRects()].filter(rect => rect.width > 0);
+      const secondLines = [...after.getClientRects()].filter(rect => rect.width > 0);
+      return before.toString() === 'Got a question, a festive idea or something to share? ' &&
+        after.toString() === 'Get in touch with the Santa Radio team.' &&
+        secondLines[0].top > firstLines.at(-1).top &&
+        getComputedStyle(element).textAlign === 'center' &&
+        element.scrollWidth <= element.clientWidth + 1;
+    }), 'Contact sentences retain their wording and start on separate centred lines without overflow').toBe(true);
     await expect(section).toContainText('Press, partnerships, feedback and suggestions welcome.');
     await expect(section).toContainText('A NOTE FROM SANTA');
     const contact = section.getByRole('link', { name: 'Get in touch', exact: true });
