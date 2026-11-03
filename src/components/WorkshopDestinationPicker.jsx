@@ -93,7 +93,10 @@ export default function WorkshopDestinationPicker({
         ].map(([key, label]) => (
           <button key={key} type="button" className={category === key ? 'is-selected' : ''}
             aria-pressed={category === key} onClick={() => {
-              if (category === key) return;
+              if (category === key) {
+                if (key === 'countries' && showRegions) backToCountries();
+                return;
+              }
               setShowRegions(false);
               onCategoryChange?.(key);
             }}>{label}</button>
@@ -101,7 +104,7 @@ export default function WorkshopDestinationPicker({
       </div>
       <div className="smw-destination-picker__country" hidden={showRegions}>
         <h3 ref={countryHeadingRef} tabIndex={-1}
-          className={`smw-destination-picker__heading${fantasy ? '' : ' smw-destination-picker__heading--accessible-only'}`}>
+          className="smw-destination-picker__heading smw-destination-picker__heading--accessible-only">
           {fantasy ? 'Choose a fantasy or space destination' : 'Choose a country or real place'}
         </h3>
         <div className="smw-destination-picker__searchable">

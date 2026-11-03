@@ -34,6 +34,39 @@ async function expectNoDestinationSummary(page) {
   await expect(page.getByText('Selected destination', { exact: true })).toHaveCount(0);
 }
 
+for (const width of [1365, 320]) {
+  test(`active countries button returns from counties and states without clearing selections at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await openRegionalStage(page);
+    const countryView = page.locator('.smw-destination-picker__country');
+    const regionalView = page.locator('.smw-destination-picker__regional');
+    const countries = page.getByRole('button', { name: 'Countries & real places', exact: true });
+    for (const [country, kind] of [['England', 'county'], ['United States', 'state']]) {
+      await page.getByRole('option', { name: country, exact: true }).click();
+      await page.getByRole('button', { name: `Choose a ${kind}`, exact: true }).click();
+      const option = regionalView.getByRole('option').first();
+      const regionName = await option.textContent();
+      await option.click();
+      if (kind === 'state') {
+        await countries.focus();
+        await page.keyboard.press('Enter');
+      } else {
+        await countries.click();
+      }
+      await expect(countryView).toBeVisible();
+      await expect(regionalView).toBeHidden();
+      await expect(countryView.getByRole('option', { name: country, exact: true })).toHaveAttribute('aria-selected', 'true');
+      await expect(countries).toHaveAttribute('aria-pressed', 'true');
+      await expect(countryView.locator('.smw-choice-wheel-status')).toContainText(country);
+      await expect(page.getByRole('button', { name: `Use ${country} only`, exact: true })).toBeVisible();
+      await page.getByRole('button', { name: `Choose a ${kind}`, exact: true }).click();
+      await expect(regionalView.getByRole('option', { name: regionName, exact: true })).toHaveAttribute('aria-selected', 'true');
+      await countries.click();
+    }
+  });
+}
+
 test('fantasy destination names omit the redundant suffix in choices, preview and review', async ({ page }) => {
   await openRegionalStage(page, workshopMixedDestinationFixture);
   await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
@@ -542,6 +575,21 @@ for (const viewport of [{ width: 1365, height: 900 }, { width: 320, height: 568 
 }
 
 for (const width of [1365, 320]) {
+  test(`fantasy heading is screen-reader-only without adding wheel spacing at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await openRegionalStage(page, workshopMixedDestinationFixture);
+    await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
+    const heading = page.getByRole('heading', { name: 'Choose a fantasy or space destination', exact: true });
+    expect(await heading.evaluate(node => getComputedStyle(node).clipPath)).toBe('inset(50%)');
+    const gap = await page.locator('.smw-destination-picker').evaluate(node =>
+      node.querySelector('.smw-destination-picker__searchable').getBoundingClientRect().top
+      - node.querySelector('.smw-talent-categories').getBoundingClientRect().bottom);
+    expect(gap).toBeGreaterThanOrEqual(0);
+    expect(gap).toBeLessThanOrEqual(20);
+    await expect(page.getByRole('listbox')).toBeVisible();
+  });
+
   test(`destination categories ${width}: explicit choices, resets, visible review editing and trusted requests`, async ({ page }) => {
     test.setTimeout(90000);
     await page.setViewportSize({ width, height: width === 320 ? 750 : 1000 });
@@ -573,7 +621,9 @@ for (const width of [1365, 320]) {
     await page.keyboard.press('Enter');
     await expect(fantasy).toBeFocused();
     await expect(fantasy).toHaveAttribute('aria-pressed', 'true');
-    await expect(page.getByRole('heading', { name: 'Choose a fantasy or space destination', exact: true })).toBeVisible();
+    const fantasyHeading = page.getByRole('heading', { name: 'Choose a fantasy or space destination', exact: true });
+    await expect(fantasyHeading).toHaveClass(/smw-destination-picker__heading--accessible-only/);
+    expect(await fantasyHeading.evaluate(node => getComputedStyle(node).clipPath)).toBe('inset(50%)');
     await expect(page.getByRole('option')).toHaveText(fantasyRecords.map(record => record.label));
     await expect(page.getByRole('searchbox')).toHaveValue('');
     await expect(page.getByRole('searchbox')).not.toHaveAttribute('placeholder', /country/i);
@@ -698,12 +748,15 @@ for (const [country, kind] of [
       const geometry = await page.locator('.smw-destination-picker__country').evaluate(node => {
         const status = node.querySelector('.smw-choice-wheel-status').getBoundingClientRect();
         const action = node.querySelector('.smw-destination-picker__region-action').getBoundingClientRect();
-        const wheel = node.querySelector('.smw-choice-wheel-status').getBoundingClientRect();
+        const wheel = node.querySelector('.smw-destination-picker__actions').getBoundingClientRect();
+        const frame = node.querySelector('.smw-choice-wheel-frame').getBoundingClientRect();
         return { statusBottom: status.bottom, actionTop: action.top, actionBottom: action.bottom,
+          frameBottom: frame.bottom,
           centreOffset: Math.abs(action.x + action.width / 2 - wheel.x - wheel.width / 2),
           actionLeft: action.left, actionRight: action.right };
       });
-      expect(geometry.actionTop).toBeGreaterThanOrEqual(geometry.statusBottom);
+      expect(geometry.actionTop).toBeGreaterThanOrEqual(geometry.frameBottom);
+      if (width > 520) expect(geometry.actionTop - geometry.frameBottom).toBeLessThanOrEqual(8);
       expect(geometry.centreOffset).toBeLessThanOrEqual(1);
       expect(geometry.actionLeft).toBeGreaterThanOrEqual(0);
       expect(geometry.actionRight).toBeLessThanOrEqual(width);
@@ -730,7 +783,8 @@ for (const [country, kind] of [
       });
       expect(regionalGeometry.actions).toHaveLength(2);
       for (const action of regionalGeometry.actions) {
-        expect(action.top).toBeGreaterThanOrEqual(regionalGeometry.status.bottom);
+        expect(action.top).toBeGreaterThanOrEqual(regionalGeometry.wheel.bottom);
+        if (width > 520) expect(action.top - regionalGeometry.wheel.bottom).toBeLessThanOrEqual(8);
         expect(action.left).toBeGreaterThanOrEqual(regionalGeometry.wheel.left - 1);
         expect(action.right).toBeLessThanOrEqual(regionalGeometry.wheel.right + 1);
         expect(action.height).toBeGreaterThanOrEqual(44);

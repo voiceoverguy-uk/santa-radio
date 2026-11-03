@@ -17,6 +17,7 @@ export default function WorkshopChoiceWheel({
   onSoundInteraction = noop,
   showCount = true,
   currentSelectionLabel = '',
+  footer,
 }) {
   const choices = options;
   const optionsKey = JSON.stringify(choices.map(option => [option.id, option.label]));
@@ -281,12 +282,15 @@ export default function WorkshopChoiceWheel({
         </div>
         <span className="smw-choice-wheel-fade smw-choice-wheel-fade-bottom" aria-hidden="true" />
       </div>
+      <div className={footer ? 'smw-choice-wheel-footer-row' : undefined}>
       <p className="smw-choice-wheel-status" aria-live="polite" aria-atomic="true">
         {selectedIndex >= 0
           ? `Selected: ${choices[selectedIndex].label}`
           : currentSelectionLabel ? `Selected: ${currentSelectionLabel}`
             : hasInteracted ? 'Choose an option to continue.' : 'No option selected yet.'}
       </p>
+      {footer}
+      </div>
     </section>
   );
 }
