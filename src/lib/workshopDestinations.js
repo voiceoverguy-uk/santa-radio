@@ -16,7 +16,7 @@ export function workshopDestinationCategory(record) {
 
 // Presentation only: retain catalogue IDs, classifications and recording paths.
 export function workshopDestinationLabel(label = '') {
-  return label.replace(/ — Fantasy place$/i, '');
+  return label.replace(/ — (?:Fantasy place|Space destination)$/i, '');
 }
 
 export function selectedWorkshopRegion(catalogue, countryId, regionId) {

@@ -3,6 +3,7 @@ import { test } from './helpers/provider-test.js';
 import { workshopCatalogueFixture, workshopRegionalCatalogueFixture, workshopMixedDestinationFixture } from './fixtures/workshop-catalogue.js';
 import { unlockWorkshop } from './helpers/workshop-access.js';
 import { confirmMessage, emptyGeneration, mockStudioGeneration } from './helpers/studio-generation.js';
+import { workshopDestinationLabel } from '../src/lib/workshopDestinations.js';
 
 test.beforeEach(async ({ page }) => {
   await unlockWorkshop(page);
@@ -80,6 +81,21 @@ test('fantasy destination names omit the redundant suffix in choices, preview an
   await page.locator('.smw-button-next').click();
   await expect(page.locator('.smw-summary')).toContainText('Wonderland');
   await expect(page.locator('.smw-summary')).not.toContainText('— Fantasy place');
+});
+
+test('The Moon omits the space suffix in the wheel, wording and review', async ({ page }) => {
+  const inventory = structuredClone(workshopMixedDestinationFixture);
+  const moon = inventory.categories.place.find(record => record.kind === 'space' && /moon/i.test(record.label));
+  moon.label = 'The Moon — Space destination';
+  await openRegionalStage(page, inventory);
+  await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
+  await page.getByRole('option', { name: 'The Moon', exact: true }).click();
+  const picker = page.locator('.smw-destination-picker');
+  await expect(picker.locator('.smw-wording-selection')).toHaveText('The Moon');
+  await expect(picker).not.toContainText('— Space destination');
+  await page.locator('.smw-button-next').click();
+  await expect(page.locator('.smw-summary')).toContainText('The Moon');
+  await expect(page.locator('.smw-summary')).not.toContainText('— Space destination');
 });
 
 for (const width of [1365, 320, 390, 430]) {
@@ -481,7 +497,7 @@ for (const viewport of [{ width: 1365, height: 900 }, { width: 320, height: 568 
       [3, 'Search activities', 'toys', 'Tidying away toys', 3],
       [4, 'Search achievements', 'toys', 'Helping with toys', 2],
       [5, 'Search treats', 'chocolate', 'Hot chocolate', 2],
-      [6, 'Search fantasy and space destinations', 'space', 'The Moon — Space destination', 2],
+      [6, 'Search fantasy and space destinations', 'moon', 'The Moon', 2],
     ]) {
       await expect(page.locator('.smw-step-count')).toHaveText(`Step ${index + 1} of 8`);
       if (index === 6) await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
@@ -624,7 +640,7 @@ for (const width of [1365, 320]) {
     const fantasyHeading = page.getByRole('heading', { name: 'Choose a fantasy or space destination', exact: true });
     await expect(fantasyHeading).toHaveClass(/smw-destination-picker__heading--accessible-only/);
     expect(await fantasyHeading.evaluate(node => getComputedStyle(node).clipPath)).toBe('inset(50%)');
-    await expect(page.getByRole('option')).toHaveText(fantasyRecords.map(record => record.label));
+    await expect(page.getByRole('option')).toHaveText(fantasyRecords.map(record => workshopDestinationLabel(record.label)));
     await expect(page.getByRole('searchbox')).toHaveValue('');
     await expect(page.getByRole('searchbox')).not.toHaveAttribute('placeholder', /country/i);
     await expect(page.getByRole('option', { selected: true })).toHaveCount(0);
@@ -635,7 +651,7 @@ for (const width of [1365, 320]) {
     await expect(page.locator('.smw-step-count')).toHaveText('Step 7 of 8');
     const search = page.getByRole('searchbox');
     await search.fill('moon');
-    await expect(page.getByRole('option')).toHaveText(['The Moon — Space destination']);
+    await expect(page.getByRole('option')).toHaveText(['The Moon']);
     await expect(page.getByRole('option', { selected: true })).toHaveCount(0);
     await countries.click();
     await expect(page.getByRole('searchbox')).toHaveValue('');
@@ -658,13 +674,14 @@ for (const width of [1365, 320]) {
     // Exercise every fantasy and real-space record through review, letter and
     // request submission without changing its catalogue recording identity.
     for (const record of fantasyRecords) {
-      await page.getByRole('option', { name: record.label, exact: true }).click();
-      await expect(preview).toHaveText(record.label);
+      const label = workshopDestinationLabel(record.label);
+      await page.getByRole('option', { name: label, exact: true }).click();
+      await expect(preview).toHaveText(label);
       // Clicking the active category is not a switch and must keep the choice.
       await fantasy.click();
-      await expect(preview).toHaveText(record.label);
+      await expect(preview).toHaveText(label);
       await next.click();
-      await expect(page.locator('.smw-summary-row').last()).toContainText(record.label);
+      await expect(page.locator('.smw-summary-row').last()).toContainText(label);
       const placeName = record.label.split(' — ')[0];
       await expect(page.locator('.studio-letter__paper').first()).toContainText(placeName);
       submitted = null;
@@ -673,18 +690,18 @@ for (const width of [1365, 320]) {
       expect(submitted).not.toHaveProperty('region');
       await page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true }).click();
       await expect(fantasy).toHaveAttribute('aria-pressed', 'true');
-      await expect(page.getByRole('option', { name: record.label, exact: true })).toHaveAttribute('aria-selected', 'true');
-      await expect(preview).toHaveText(record.label);
+      await expect(page.getByRole('option', { name: label, exact: true })).toHaveAttribute('aria-selected', 'true');
+      await expect(preview).toHaveText(label);
     }
-    await page.locator('.smw-button-back').click();
+    await page.locator('.smw-button-back:visible').click();
     // Ordinary Back/Continue navigation also exposes the saved fantasy choice.
-    await page.locator('.smw-button-back').click();
+    await page.locator('.smw-button-back:visible').click();
     await expect(fantasy).toHaveAttribute('aria-pressed', 'true');
-    await expect(page.getByRole('option', { selected: true })).toHaveText(fantasyRecords.at(-1).label);
-    await page.locator('.smw-button-back').click();
+    await expect(page.getByRole('option', { selected: true })).toHaveText(workshopDestinationLabel(fantasyRecords.at(-1).label));
+    await page.locator('.smw-button-back:visible').click();
     await next.click();
     await expect(fantasy).toHaveAttribute('aria-pressed', 'true');
-    await expect(preview).toHaveText(fantasyRecords.at(-1).label);
+    await expect(preview).toHaveText(workshopDestinationLabel(fantasyRecords.at(-1).label));
     await next.click();
     await page.getByRole('button', { name: 'Change A festive treat for Santa', exact: true }).click();
     await expect(page.getByRole('option', { name: 'Map', exact: true })).toHaveAttribute('aria-selected', 'true');
@@ -748,11 +765,10 @@ for (const [country, kind] of [
       const geometry = await page.locator('.smw-destination-picker__country').evaluate(node => {
         const status = node.querySelector('.smw-choice-wheel-status').getBoundingClientRect();
         const action = node.querySelector('.smw-destination-picker__region-action').getBoundingClientRect();
-        const wheel = node.querySelector('.smw-destination-picker__actions').getBoundingClientRect();
         const frame = node.querySelector('.smw-choice-wheel-frame').getBoundingClientRect();
         return { statusBottom: status.bottom, actionTop: action.top, actionBottom: action.bottom,
           frameBottom: frame.bottom,
-          centreOffset: Math.abs(action.x + action.width / 2 - wheel.x - wheel.width / 2),
+          centreOffset: Math.abs(action.x + action.width / 2 - frame.x - frame.width / 2),
           actionLeft: action.left, actionRight: action.right };
       });
       expect(geometry.actionTop).toBeGreaterThanOrEqual(geometry.frameBottom);
@@ -771,6 +787,18 @@ for (const [country, kind] of [
       await page.keyboard.press('Enter');
       await expect(page.getByRole('heading', { name: `${kind === 'state' ? 'States' : 'Counties'} in ${country}`, exact: true })).toBeFocused();
       const regional = page.locator('.smw-destination-picker__regional');
+      const backButton = regional.getByRole('button', { name: 'Back to countries', exact: true });
+      for (const hover of [false, true]) {
+        if (hover) await backButton.hover();
+        const appearance = await backButton.evaluate(node => {
+          const style = getComputedStyle(node);
+          return { border: style.borderTopColor, background: style.backgroundColor,
+            underline: style.textDecorationLine };
+        });
+        expect(appearance.border).toBe('rgba(0, 0, 0, 0)');
+        expect(appearance.background).toBe('rgba(0, 0, 0, 0)');
+        expect(appearance.underline).toContain('underline');
+      }
       const regionalHeading = regional.getByRole('heading', { level: 3 });
       expect(await regionalHeading.evaluate(node => getComputedStyle(node).clipPath)).toBe('inset(50%)');
       await regional.getByRole('option').first().click();
