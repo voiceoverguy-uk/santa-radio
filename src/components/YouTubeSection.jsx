@@ -11,7 +11,7 @@ export default function YouTubeSection() {
     <div className="container">
       <HomepageSectionHeading
         eyebrow="A window to the North Pole"
-        title="Watch Santa Radio Live"
+        title="Best of the North Pole Webcams"
         subtitle="Christmas Music 24/7"
         titleClassName="section-title youtube-title"
         className="youtube-section-heading"

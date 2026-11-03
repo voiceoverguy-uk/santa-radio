@@ -49,7 +49,7 @@ for (const media of [null, false, true]) {
     await page.goto(origin, { waitUntil: 'domcontentloaded' });
     await expect(page.locator('.tv-screen')).toHaveAttribute('aria-busy', 'false');
     await expect(page.locator('.youtube-section').getByRole('heading', {
-      level: 2, name: 'Watch Santa Radio Live', exact: true,
+      level: 2, name: 'Best of the North Pole Webcams', exact: true,
     })).toBeVisible();
     await expect(page.locator('.youtube-section .homepage-section-heading__subtitle')).toHaveText('Christmas Music 24/7');
     await expect(page.locator('.youtube-section iframe')).toHaveCount(media === false ? 0 : 1);

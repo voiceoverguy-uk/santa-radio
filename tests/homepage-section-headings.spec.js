@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 
 const sections = [
-  ['youtube', '.youtube-section', 'A window to the North Pole', 'Watch Santa Radio Live', 'Christmas Music 24/7', '.youtube-section > .container'],
+  ['youtube', '.youtube-section', 'A window to the North Pole', 'Best of the North Pole Webcams', 'Christmas Music 24/7', '.youtube-section > .container'],
   ['mugshots', '#homepage-mugshots', 'THE SANTA RADIO HALL OF FAME', 'Celebrity Mugshots', 'Famous faces. One festive mug.', '.mugshots-preview-inner'],
   ['contact', '.contact-section', 'THE NORTH POLE POST ROOM', 'We’d love to hear from you', 'Got a question, a festive idea or something to share? Get in touch with the Santa Radio team.', '.contact-copy'],
   ['dash', '.santa-dash-promo', 'A festive rooftop adventure', 'Santa Dash — Back to the Grotto', 'Race across snowy rooftops with Santa.', '.santa-dash-promo__inner'],
