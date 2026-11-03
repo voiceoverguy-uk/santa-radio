@@ -390,28 +390,32 @@ choices or raw errors. This permits an authorised operator to identify the
 actual Vercel connection and failure without staff sign-in or a diagnostic-only
 deployment. The browser receives only the existing generic error response.
 
-`npm run build` now runs `scripts/check-studio-release.mjs` before compilation.
-Only a genuine Vercel Production build performs this check; local and Preview
-builds explicitly skip it. The check reads the build's existing bound database,
-prints only sanitised identity/schema results, and exits unsuccessfully if
-voucher security or generation metadata storage is unavailable. Optional usage
-reporting does not block a recording repair release. It never creates or alters
-schema, and does not replace the current serving deployment on failure.
+`npm run build` compiles the website without requiring Studio database
+availability. Do not attach a Studio storage gate to the website build: missing
+Studio tables must not prevent shipping the rest of the website or the safe
+non-archiving renderer.
 
-This identifies the **production build's binding**, not the old serving
-deployment's runtime. It permits target verification without staff sign-in or a
-separate diagnostic-only release. Review the result against the intended
-database before approving any schema change. A passing build still requires
-post-release verification of actual voucher entry, generation and download.
+The separate `npm run check:studio-readiness` command retains the strict,
+read-only Studio check. In a genuine Vercel Production environment it checks
+the current binding, prints sanitised identity/schema results, and exits
+unsuccessfully if voucher security or generation storage is unavailable.
+Optional reporting is not queried. Local and Preview environments explicitly
+skip the production check; do not spoof the environment to claim live readiness.
+The command never creates or alters schema.
+
+Runtime enforcement is unchanged: Studio status and creation fail closed when
+mandatory storage is missing. Successful website compilation is not a claim that
+Studio generation works. A successful Studio release still requires verified
+voucher entry, actual generation, playback and download on the serving version.
 
 The live voucher endpoint was checked and accepted valid access, while the live
 recording-status endpoint returned 503. This establishes the failing stage, not
 which database or underlying SQL error caused it. Before claiming the live
 repair is complete, release the tested repair to the actual www Vercel project
 with separate approval, inspect its private runtime event, and verify the full
-flow there. The read-only build check can stop that release before promotion and
-identify missing metadata storage on the actual build binding. If that verified
-database lacks metadata tables, obtain approval
+flow there. The explicit readiness check can identify missing metadata storage
+without blocking unrelated website compilation. If that verified database lacks
+metadata tables, obtain approval
 for that verified target and apply the existing schema using its supported
 migration process. Replit production schema findings alone are not target proof.
 

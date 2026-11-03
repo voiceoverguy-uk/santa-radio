@@ -81,3 +81,4 @@
 - [Studio gift delivery](studio-gift-delivery-scope.md) — Local individual-message gifts require MP3 success; no free/promotional exports, live checkout or family/email fulfilment.
 - [Studio promotion typography](studio-promotion-typography.md) — Regular live promotion text and shared gift heading; keep document artwork and watermarks unchanged.
 - [School tester voucher](school-tester-voucher.md) — Shared independent parent access; fixed 3–10 November 2026 UK window, separate from existing vouchers.
+- [Studio build boundary](studio-build-boundary.md) — Website compilation must not depend on Studio storage; keep strict readiness and fail-closed runtime enforcement separate.
