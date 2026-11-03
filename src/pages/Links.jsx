@@ -5,7 +5,12 @@ import { useCookieConsent } from '../privacy/CookieConsentProvider.jsx';
 import ExternalMediaConsent from '../components/ExternalMediaConsent.jsx';
 
 const partners = [
-  { name: 'Xmas Radio', url: 'https://xmasradio.mobi', image: '/images/links/xmas-radio.png' },
+  {
+    name: 'Santa Guy',
+    url: 'https://www.santaguy.co.uk',
+    image: '/images/links/santa-guy.png',
+    description: "The UK's most in demand Voice of Santa - Guy Harris",
+  },
   {
     name: 'VoiceoverGuy',
     url: 'https://www.voiceoverguy.co.uk',
