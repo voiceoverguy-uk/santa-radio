@@ -9,7 +9,7 @@ test('Studio A matches the recording pulse and seal, fits phones, and respects r
     await visit(page, '/free-santa-message');
     const promotion = page.locator('.santa-studio-promotion');
     const recording = promotion.locator('.message-recording-indicator');
-    await expect(recording).toHaveText('Recording (Studio - A)');
+    await expect(recording).toHaveText('Recording');
     const seals = await page.evaluate(() => ['.message-seal', '.santa-studio-promotion__seal'].map(selector => {
       const el = document.querySelector(selector), style = getComputedStyle(el);
       return { width: el.getBoundingClientRect().width, height: el.getBoundingClientRect().height, font: style.fontSize };
@@ -210,7 +210,7 @@ for (const path of ['/', '/free-santa-message']) {
       })).toBeVisible();
       await expect(card.locator('.santa-message-access__intro')).toHaveText(
         'Add your details and access a free personalised downloadable message from Santa.');
-      await expect(page.locator('.santa-message-box .message-recording-indicator')).toHaveText('Recording (Studio - B)');
+      await expect(page.locator('.santa-message-box .message-recording-indicator')).toHaveText('Recording');
       await expect(card.locator('.santa-message-access__privacy')).toHaveText(
         'Your details are stored for news or updates. Read our privacy policy.');
       for (const selector of ['h3', '.santa-message-access__intro']) {

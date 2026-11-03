@@ -8,8 +8,8 @@ const audio = readFileSync('server/santa-audio/sleighbells.mp3');
 async function noFreeCertificates(page) {
   await expect(page.locator('.santa-certificate-examples, .santa-certificate-dialog, .message-certificate')).toHaveCount(0);
   await expect(page.locator('.message-free-intro, .message-result').filter({ hasText: /certificate/i })).toHaveCount(0);
-  // Certificates are advertised only for Studio A, not offered by the free maker.
-  await expect(page.locator('.message-studio-intro')).toContainText('Studio - A');
+  // Gifts are advertised only for the bespoke message, not offered by the free maker.
+  await expect(page.locator('.message-studio-intro')).toContainText('bespoke message from Santa');
   const freeFlow = page.locator('.message-result, .message-intro');
   await expect(freeFlow.getByRole('button', { name: /certificate/i })).toHaveCount(0);
   await expect(freeFlow.getByRole('link', { name: /certificate/i })).toHaveCount(0);

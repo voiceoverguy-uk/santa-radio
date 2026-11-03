@@ -34,6 +34,15 @@
   grid-area: gifts;
 }
 
+.santa-studio-promotion > .studio-gifts .studio-gifts__card--picture {
+  width: min(100%, 248px);
+  margin-inline: auto;
+}
+
+.santa-studio-promotion > .studio-gifts .studio-gifts__thumbnail--picture {
+  width: min(100%, 248px);
+}
+
 .santa-studio-promotion__topline {
   display: flex;
   align-items: center;
@@ -196,6 +205,40 @@
   margin: 7px 0 0;
   color: #56675a;
   font-size: .84rem;
+}
+
+.santa-studio-promotion__offer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+  margin: 14px 0 12px;
+  padding: 12px 15px;
+  border: 1px solid #a27c327a;
+  border-left: 4px solid #9b392d;
+  border-radius: 8px;
+  background:
+    linear-gradient(105deg, #fff9e9 0%, #f7efd9 68%, #efe3c6 100%);
+  box-shadow: 0 3px 10px #19392d12;
+}
+
+.santa-studio-promotion__offer-label {
+  color: #842c23;
+  font-size: .77rem;
+  font-weight: 800;
+  letter-spacing: .105em;
+  line-height: 1.35;
+}
+
+.santa-studio-promotion__offer-price {
+  flex: 0 0 auto;
+  color: var(--studio-ink);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: clamp(1.08rem, 2.3vw, 1.32rem);
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 .santa-studio-promotion__voucher {
@@ -390,6 +433,12 @@
 @media (max-width: 360px) {
   .santa-studio-promotion__topline {
     align-items: flex-start;
+  }
+
+  .santa-studio-promotion__offer {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
   }
 }
 

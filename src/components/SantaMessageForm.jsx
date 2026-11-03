@@ -40,6 +40,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const giftPreviewName = selectedRecipient || messages.at(-1)?.name || null;
   const [validation, setValidation] = useState('');
   const [audioErrors, setAudioErrors] = useState({});
+  const [clickedDownloads, setClickedDownloads] = useState(() => new Set());
   const [busy, setBusy] = useState(false);
   const [suggesting, setSuggesting] = useState(false);
   const [activeOption, setActiveOption] = useState(-1);
@@ -303,7 +304,11 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
     }}>Reload recording</button></div>}
     <div className="message-download-actions">
       <div className="message-download-links">
-        <a className="message-download" href={message.url} download={message.downloadName}>Download your audio <span aria-hidden="true">↓</span></a>
+        <a className={`message-download${clickedDownloads.has(message.key) ? '' : ' message-download--pending'}`}
+          href={message.url} download={message.downloadName}
+          onClick={() => setClickedDownloads(previous => new Set([...previous, message.key]))}>
+          Download your audio <span aria-hidden="true">↓</span>
+        </a>
       </div>
     </div>
   </div>);
@@ -316,8 +321,8 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         <h2 className="santa-message-heading">FREE Personalised message from Santa</h2>
         <SantaVoiceTagline />
         {!hasAccess && allowExamples && <SantaMessageExample onExampleNameChange={setActiveExampleName} />}
-        <p className="message-free-intro">No Artificial Intelligence here. A human recorded message from Santa, aka Father Christmas to your little Human.{' '}<br />Click to enter Studio B, add your contact details, search for a recorded name, create and instantly download your short FREE personalised message from Santa.</p>
-        <p className="message-studio-intro">Or, why not enter Studio - A and have a bespoke message from Santa? Along with festive goodies. See below.</p>
+        <p className="message-free-intro">No Artificial Intelligence here. A human recorded message from Santa, aka Father Christmas to your little Human.{' '}<br />Add your contact details, search for a recorded name, create and instantly download your short FREE personalised message from Santa.</p>
+        <p className="message-studio-intro">Or, choose a bespoke message from Santa with festive goodies. See below.</p>
       </div>
       <div className="santa-message-aside">
       <div className={`santa-message-box${hasAccess ? '' : ' message-access-box'}`}>
@@ -331,7 +336,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
           </p>
           {hostedNameTotal > 0 && <span className="message-recording-indicator" title="North Pole recording studio">
             <span className="message-recording-dot" aria-hidden="true" />
-            Recording (Studio - B)
+            Recording
           </span>}
         </div>
           </div>

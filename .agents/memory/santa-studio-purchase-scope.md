@@ -29,7 +29,17 @@ No family-bundle regeneration limits or paid-access expiry have been agreed.
 
 Sandbox Purchase controls and development-only explanations must never appear on public/published sites. Keep clearly labelled test checkout in development, and retain the public Coming soon promotion and voucher access.
 
-The owner calls the free short-message route “Studio B” and the bespoke bundle “Studio - A”, with the promotional footnote “** Coming early November”.
+The owner requested removal of the “Studio A” and “Studio B” references from public wording; keep the free greeting and bespoke bundle distinct without those labels.
+
+**Why:** The owner wanted fewer words and simpler recording indicators.
+
+**How to apply:** Retain generic Studio branding, but do not reintroduce lettered Studio labels in public copy.
+
+The owner requested a “Black Friday Deal — Only £4.50” promotion. This is a seasonal promotional price, not permission to change the preserved live Stripe product or enable live purchasing.
+
+**Why:** The owner requested an offer on the existing promotional card; checkout was still sandbox-only.
+
+**How to apply:** Reconcile the advertised seasonal price with the payment setup before enabling real purchases. Do not infer an expiry, claimed saving or permanent base-price change.
 
 The owner set the Studio A launch date to 6 November 2026 and requested an opening countdown beneath the red bespoke-message button.
 
@@ -39,7 +49,7 @@ The owner set the Studio A launch date to 6 November 2026 and requested an openi
 
 **Why:** The owner supplied this distinction and timing in the public introduction copy.
 
-**How to apply:** Keep the Nice List certificate, letter and Santa picture associated with Studio A, not the free Studio B greeting. Promotional wording is not authorization to activate paid purchasing.
+**How to apply:** Keep the Nice List certificate, letter and Santa picture associated with the bespoke paid offer, not the free short greeting. Promotional wording is not authorization to activate paid purchasing.
 
 **Why:** The owner reported the published homepage displaying a disabled test Purchase button and explicitly required the entire sandbox control to be hidden.
 

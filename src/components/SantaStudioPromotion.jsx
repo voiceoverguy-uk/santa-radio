@@ -24,7 +24,7 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
                 <p className="santa-studio-promotion__name-count" role="status" aria-live="off">{availableNamesText}</p>
                 <span className="message-recording-indicator" title="North Pole recording studio">
                   <span className="message-recording-dot" aria-hidden="true" />
-                  Recording (Studio - A)
+                  Recording
                 </span>
               </div>
             </div>
@@ -51,6 +51,10 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
           <div className="santa-studio-promotion__preview">
             <StudioPortraitViewer />
           </div>
+        </div>
+        <div className="santa-studio-promotion__offer" aria-label="Black Friday Deal, Only £4.50">
+          <span className="santa-studio-promotion__offer-label">Black Friday Deal</span>
+          <span className="santa-studio-promotion__offer-price">Only £4.50</span>
         </div>
         <WorkshopPasswordForm
           variant="promotion"

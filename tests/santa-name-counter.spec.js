@@ -33,8 +33,8 @@ for (const width of [320, 390, 1440]) {
     await page.setViewportSize({ width, height: 1100 });
     const network = await open(page);
     await expect(counts(page)).toHaveText(['9,680 names available', '9,680 names available']);
-    await expect(page.getByText('Recording (Studio - B)', { exact: true })).toBeVisible();
-    await expect(page.getByText('Recording (Studio - A)', { exact: true })).toBeVisible();
+    await expect(page.locator('.santa-message-box .message-recording-indicator')).toHaveText('Recording');
+    await expect(page.locator('.santa-studio-promotion .message-recording-indicator')).toHaveText('Recording');
     expect(network.searches()).toBe(0);
     await page.clock.runFor(4999);
     await expect(counts(page)).toHaveText(['9,680 names available', '9,680 names available']);
@@ -73,7 +73,7 @@ test('initial failures and malformed totals retain the honest fallback', async (
   await page.route('**/api/santa-name-count', route => route.fulfill({ json: { total: '9730' } }));
   await page.reload();
   await expect(counts(page)).toHaveText(Array(2).fill('Recorded names available to search'));
-  await expect(page.getByText('Recording (Studio - B)', { exact: true })).toHaveCount(0);
+  await expect(page.locator('.santa-message-box .message-recording-indicator')).toHaveCount(0);
 });
 
 for (const path of ['/', '/free-santa-message']) {

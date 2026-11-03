@@ -145,6 +145,38 @@ test('blocked input suppresses delayed results, network errors and submission va
 });
 
 for (const route of ['/', path]) {
+  test(`Santa introductory label uses regular Cinzel without clipping on ${route}`, async ({ page }) => {
+    await setup(page);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.addInitScript(() => sessionStorage.setItem('santa-message-offer-shown', 'shown'));
+    await page.goto(route);
+    const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+    if (await decline.isVisible()) await decline.click();
+    await page.evaluate(() => document.fonts.ready);
+    const eyebrow = checker(page).locator('.hero-name-checker__eyebrow');
+    for (const width of [320, 390, 768, 1440, 1920]) {
+      await page.setViewportSize({ width, height: 1000 });
+      await expect(eyebrow).toHaveText('A free message from Santa');
+      await expect(eyebrow).toHaveCSS('font-weight', '400');
+      await expect(eyebrow).toHaveCSS('font-family', 'Cinzel, serif');
+      const geometry = await eyebrow.evaluate(node => {
+        const range = document.createRange();
+        range.selectNodeContents(node);
+        return {
+          card: node.closest('.hero-name-preview__checker').getBoundingClientRect().toJSON(),
+          lines: [...range.getClientRects()].map(rect => rect.toJSON()),
+        };
+      });
+      expect(geometry.lines.length).toBeGreaterThan(0);
+      for (const line of geometry.lines) {
+        expect(line.left).toBeGreaterThanOrEqual(Math.max(0, geometry.card.left) - .5);
+        expect(line.right).toBeLessThanOrEqual(Math.min(width, geometry.card.right) + .5);
+        expect(line.top).toBeGreaterThanOrEqual(geometry.card.top - .5);
+        expect(line.bottom).toBeLessThanOrEqual(geometry.card.bottom + .5);
+      }
+    }
+  });
+
   test(`shared hero copy, responsive font match and expanded countdown on ${route}`, async ({ page }) => {
     await setup(page);
     await page.emulateMedia({ reducedMotion: 'reduce' });
