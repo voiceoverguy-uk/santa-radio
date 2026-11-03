@@ -25,7 +25,7 @@ export default function Music() {
   );
 
   return (
-    <main>
+    <main className="music-page">
       <PageSeo metadata={collectionMetadata('music')} />
       <div className="music-hero starry-bg">
         <div className="music-hero-content">

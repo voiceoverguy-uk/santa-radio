@@ -16,29 +16,17 @@
     var(--collection-forest-deep);
 }
 
-.mugshots-collection-page::before,
-.mugshots-collection-page::after {
+.mugshots-collection-page::before {
   content: "";
   position: absolute;
-  z-index: -1;
-  top: 85px;
-  width: min(31vw, 390px);
-  aspect-ratio: 1;
-  background-position: top center;
-  background-size: contain;
-  background-repeat: no-repeat;
-  opacity: .33;
+  inset: 0;
+  z-index: 0;
+  background-image: url("./mugshots-wrap-tile.svg");
+  background-position: 0 0;
+  background-size: 176px 176px;
+  background-repeat: repeat;
+  opacity: .46;
   pointer-events: none;
-}
-.mugshots-collection-page::before {
-  left: 0;
-  background-image: url("/images/mugshots-collection-pine-left.webp");
-  mask-image: radial-gradient(ellipse at top left, #000 25%, transparent 80%);
-}
-.mugshots-collection-page::after {
-  right: 0;
-  background-image: url("/images/mugshots-collection-pine-right.webp");
-  mask-image: radial-gradient(ellipse at top right, #000 25%, transparent 80%);
 }
 
 .mugshots-collection-page .mugshots-page-hero {
@@ -376,11 +364,7 @@
 }
 
 @media (max-width: 767px) {
-  .mugshots-collection-page::before,
-  .mugshots-collection-page::after {
-    width: min(44vw, 230px);
-    opacity: .22;
-  }
+  .mugshots-collection-page::before { opacity: .38; }
   .mugshots-collection-page .mugshots-page-hero {
     padding: 35px 18px 20px !important;
   }

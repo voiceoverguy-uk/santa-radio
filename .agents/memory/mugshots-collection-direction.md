@@ -2,7 +2,11 @@
 name: Main Mugshots collection approval
 description: Approved main gallery presentation, separate from the homepage rotation.
 ---
-The owner approved the photograph-led North Pole reference for the main collection page: compact evergreen/gold header, corner pine and warm lights, no obsolete cartoon Mugshots badge or reserved badge space, and clearly labelled search, Shuffle and A–Z controls.
+The owner approved the photograph-led North Pole reference for the main collection page: compact evergreen/gold header, no obsolete cartoon Mugshots badge or reserved badge space, and clearly labelled search, Shuffle and A–Z controls. The fir-tree background is superseded by a luxury wrapping-paper design with little cameras and snow.
+
+**Why:** The owner explicitly requested replacing the fir-tree decoration on the Celebrity Mugshots collection page.
+
+**How to apply:** Keep the decorative wrapping-paper treatment subtle behind the photographs and controls, scoped to the main collection page rather than changing the homepage gallery or individual profiles.
 
 **Why:** The owner separately approved the main gallery after the homepage preview, with explicit limits on scope and behaviour.
 

@@ -18,6 +18,23 @@ for (const width of [320, 390, 768, 1440]) {
   test(`collection header and functional gallery fit ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1100 });
     const main = page.locator('main');
+    const wrapping = await main.evaluate(node => {
+      const before = getComputedStyle(node, '::before');
+      const after = getComputedStyle(node, '::after');
+      return { image: before.backgroundImage, repeat: before.backgroundRepeat,
+        pointerEvents: before.pointerEvents, afterImage: after.backgroundImage };
+    });
+    expect(wrapping.image).toMatch(/^url\(/);
+    expect(wrapping.repeat).toBe('repeat');
+    expect(wrapping.pointerEvents).toBe('none');
+    expect(`${wrapping.image} ${wrapping.afterImage}`).not.toContain('pine');
+    const tile = await page.evaluate(async url => {
+      const response = await fetch(url);
+      return { ok: response.ok, type: response.headers.get('content-type'), text: await response.text() };
+    }, wrapping.image.slice(5, -2));
+    expect(tile.ok).toBe(true);
+    expect(tile.type).toContain('image/svg+xml');
+    expect(tile.text).toContain('<circle');
     await expect(main.getByRole('heading', { level: 1 })).toHaveText('Celebrity Mugshots');
     await expect(main.getByText('Browse the collection', { exact: true })).toHaveCount(0);
     const gallerySpacing = await main.evaluate(el => {
@@ -34,6 +51,7 @@ for (const width of [320, 390, 768, 1440]) {
     const introduction = main.locator('.mugshots-page-desc');
     await expect(subtitle).toHaveText('Famous faces. One festive mug.');
     await expect(introduction).toHaveText('Ecurb the Elf has been out meeting famous faces with our Santa Radio mug. Explore the collection from TV, radio, music, comedy and sport. No A.I. here!');
+    await expect(introduction.locator('br')).toHaveCount(1);
     for (const copy of [subtitle, introduction]) {
       await expect(copy).toBeVisible();
       const layout = await copy.evaluate(el => {

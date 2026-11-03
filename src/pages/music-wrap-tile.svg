@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="184" height="184" viewBox="0 0 184 184" fill="none">
+  <g stroke="#C7AC6F" stroke-linecap="round" stroke-linejoin="round" opacity=".28">
+    <g transform="translate(42 45)" stroke-width="1.2">
+      <path d="M0-10v20M-8.7-5l17.4 10M8.7-5-8.7 5"/>
+      <path d="m0-10-2 2.2M0-10l2 2.2M0 10l-2-2.2M0 10l2-2.2M-8.7-5l3 .2M-8.7-5l1.1 2.8M8.7 5l-3-.2M8.7 5 7.6 2.2M8.7-5l-3 .2M8.7-5 7.6-2.2M-8.7 5l3-.2M-8.7 5l1.1-2.8"/>
+    </g>
+    <g transform="translate(138 51)" stroke-width="1.2">
+      <path d="M-12-6h24v18h-24zM-9-6l2-4h10l2 4M0-6v-3h7v3M-4 12v5m8-5v5m-11 0h14"/>
+      <path d="M0-1v5m-2.5-2.5h5m-4.3-1.8 3.6 3.6m0-3.6-3.6 3.6"/>
+    </g>
+    <g transform="translate(103 137) rotate(-18)" stroke-width="1.25">
+      <path d="M-3-13a3 3 0 0 1 6 0v13a3 3 0 0 1-6 0v-13Z"/>
+      <path d="M-8-5v5a8 8 0 0 0 16 0v-5M0 8v7m-5 0h10"/>
+      <path d="M-2-13h4"/>
+    </g>
+    <g transform="translate(24 146)" stroke-width="1">
+      <path d="M0-7v14M-6-3.5l12 7M6-3.5l-12 7"/>
+      <path d="m0-7-1.6 1.8M0-7l1.6 1.8M0 7l-1.6-1.8M0 7l1.6-1.8M-6-3.5l2.4.2M-6-3.5l.9 2.2M6 3.5l-2.4-.2M6 3.5l-.9-2.2M6-3.5l-2.4.2M6-3.5l-.9 2.2M-6 3.5l2.4-.2M-6 3.5l.9-2.2"/>
+    </g>
+    <path d="M83 20v5m-2.5-2.5h5m-4.3-1.8 3.6 3.6m0-3.6-3.6 3.6M160 148v4m-2-2h4m-3.4-1.4 2.8 2.8m0-2.8-2.8 2.8" stroke-width=".85"/>
+  </g>
+</svg>
