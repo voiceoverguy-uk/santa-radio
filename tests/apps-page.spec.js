@@ -10,8 +10,19 @@ test('Apps hero starts with Christmas Apps without a logo or leftover space at d
   for (const width of [1280, 390, 320]) {
     await page.setViewportSize({ width, height: 900 });
     const hero = page.locator('.apps-hero');
+    const backgrounds = await page.locator('.apps-hero, .app-section, .apple-watch-showcase, .apple-tv-showcase, .mac-app-showcase').evaluateAll(elements =>
+      elements.map(element => {
+        const style = getComputedStyle(element);
+        return { image: style.backgroundImage, repeat: style.backgroundRepeat };
+      }));
+    expect(backgrounds.length).toBeGreaterThanOrEqual(7);
+    for (const background of backgrounds) {
+      expect(background.image).toMatch(/image\/svg\+xml|apps-wrap-tile/);
+      expect(background.repeat).toContain('repeat');
+    }
     await expect(hero.getByRole('heading', { name: 'Christmas Apps', level: 1, exact: true })).toBeVisible();
     await expect(hero.locator('img, .apps-hero-logo')).toHaveCount(0);
+    await expect(hero.locator('.apps-hero-desc br')).toHaveCount(1);
     await expect(hero.locator('.apps-hero-content > :first-child')).toHaveClass('apps-hero-title');
     const heroSpacing = await hero.evaluate(element => {
       const bounds = element.getBoundingClientRect();
@@ -154,9 +165,10 @@ test('hover and hidden tabs suspend automatic rotation', async ({ page }) => {
 test('reduced motion is static and all slides share an uncropped stable responsive frame', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   const carousel = await openSlideshow(page);
-  await expect(carousel.getByRole('button', { name: 'Automatic screen previews off for reduced motion' })).toBeDisabled();
+  await expect(carousel.locator('.santa-radio-autoplay')).toHaveCount(0);
   await page.clock.fastForward(20000);
-  await expectSlide(carousel, 'Radio');
+  await expect(carousel.locator('img').first()).toHaveClass(/is-active/);
+  await expect(carousel.locator('.is-active')).toHaveCount(1);
   for (const width of [1280, 390, 320]) {
     await page.setViewportSize({ width, height: 900 });
     const before = await carousel.boundingBox();

@@ -9,6 +9,17 @@ for (const width of [1280, 390, 320]) {
     await page.goto('/christmas-music', { waitUntil: 'domcontentloaded' });
     const hero = page.locator('.music-hero');
     const description = hero.locator('.music-description');
+    const wrap = await page.locator('main').evaluate(node => {
+      const mainStyle = getComputedStyle(node);
+      const heroStyle = getComputedStyle(node.querySelector('.music-hero'));
+      const gridStyle = getComputedStyle(node.querySelector('.music-grid-section'));
+      return { main: mainStyle.backgroundColor, hero: heroStyle.backgroundImage,
+        grid: gridStyle.backgroundImage, repeat: heroStyle.backgroundRepeat };
+    });
+    expect(wrap.main).toBe('rgb(16, 15, 13)');
+    expect(wrap.hero).toContain('image/svg+xml');
+    expect(wrap.grid).toContain('image/svg+xml');
+    expect(wrap.repeat).toContain('repeat');
     await expect(hero.getByRole('heading', { level: 1 })).toHaveText('Christmas Song Lyrics & Artists');
     await expect(hero.locator('.music-sub-desc')).toHaveText('Browse Hundreds of Christmas Songs');
     await expect(description).toHaveText(introduction);

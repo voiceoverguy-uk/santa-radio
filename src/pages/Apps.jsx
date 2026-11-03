@@ -163,7 +163,7 @@ export default function Apps() {
       <div className="apps-hero">
         <div className="apps-hero-content">
           <h1 className="apps-hero-title">Christmas Apps</h1>
-          <p className="apps-hero-desc">Christmas music, Santa messages and festive games. Check the linked stores for current pricing.</p>
+          <p className="apps-hero-desc">Christmas music, Santa messages and festive games.<br />Check the linked stores for current pricing.</p>
         </div>
       </div>
       {christmasApps.map((app, index) => (

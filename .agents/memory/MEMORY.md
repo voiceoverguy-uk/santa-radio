@@ -7,6 +7,7 @@
 - [Dependency merges and Preview](dependency-merge-preview.md) — Running dev servers may retain obsolete module paths after dependencies are replaced.
 - [SSR context reloads](ssr-context-reloads.md) — A passing cold render does not rule out mismatched context identities in warm Vite SSR modules.
 - [Music catalogue scope](music-catalogue.md) — Include all supplied database songs; the user will decide removals later.
+- [Music listing appearance](music-listing-visual-direction.md) — Black-and-gold wrapping paper with snowflakes, presents and microphones, scoped to the listing.
 - [Music biography editorial](music-biography-editorial.md) — Sourced, concise British-English biographies; keep Christmas Music separate from Mugshots.
 - [YouTube verification](youtube-verification.md) — Metadata availability is not playback proof; local screenshots can disagree with the proxied preview.
 - [Legacy export encoding](legacy-export-encoding.md) — Verify Windows-1252 smart punctuation handling in this Node environment.

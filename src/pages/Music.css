@@ -231,7 +231,7 @@
 .music-page .music-grid-section {
   background-color: var(--music-paper);
   background-image:
-    linear-gradient(180deg, rgba(16, 15, 13, .88), rgba(16, 15, 13, .9)),
+    linear-gradient(180deg, rgba(16, 15, 13, .5), rgba(16, 15, 13, .58)),
     url('./music-wrap-tile.svg');
   background-repeat: repeat;
 }
@@ -244,26 +244,3 @@
   padding-top: 50px;
 }
 
-.music-page .song-card {
-  background: var(--music-card);
-  border-color: rgba(199, 172, 111, .2);
-  box-shadow: 0 10px 26px rgba(0, 0, 0, .2);
-}
-
-.music-page .song-card:hover {
-  border-color: rgba(199, 172, 111, .42);
-}
-
-.music-page .music-order-controls button {
-  background: #211e18;
-}
-
-.music-page .music-order-controls button[aria-pressed="true"] {
-  background: #30291b;
-}
-
-@media (max-width: 767px) {
-  .music-page .song-card {
-    background: rgba(25, 23, 19, .96);
-  }
-}

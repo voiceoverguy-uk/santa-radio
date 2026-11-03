@@ -14,11 +14,13 @@ Use the homepage's visual style for the Apps page, rather than copying the legac
 
 **How to apply:** Preserve app content and screenshots and the current site's theme. Use fine gold-outlined feature cards with subtle dark-green fills and restrained relevant icons, alongside physical devices.
 
-Keep real app screenshots inside a convincing physical iPhone as in the owner's supplied Christmas-device demo. Use plain forest-green section backgrounds, not decorative room scenery.
+Keep real app screenshots inside a convincing physical iPhone as in the owner's supplied Christmas-device demo. Use dark-green luxury wrapping-paper backgrounds with little mobile phones, Christmas trees and snow, not decorative room scenery.
 
 **Why:** The owner rejected the flat gold phone frame: “Put the APP screen shots into a real phone.” The later green-background request explicitly supersedes the earlier approval of decorative section scenery, not the device and feature-card presentation.
 
 **How to apply:** Keep all app listings and Watch, TV and Mac showcases green on desktop and mobile. Preserve dimensional phone hardware and genuine screens. Scenery embedded in approved promotional artwork remains authorised; do not remove it or delete source scenery assets.
+
+**Why for the wrapping paper:** The owner subsequently requested the patterned dark-green background for the Apps page, superseding the plain background, without requesting changes to the app displays.
 
 Santa Radio is available free on Apple TV, as confirmed by the owner. Present its supplied big-screen image as a separate Apple TV experience, not as an iOS app screenshot.
 

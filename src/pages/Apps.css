@@ -4,7 +4,9 @@
   min-height: 100dvh;
   padding-top: 85px;
   overflow: hidden;
-  background: #092419;
+  background-color: #092419;
+  background-image: url('./apps-wrap-tile.svg');
+  background-repeat: repeat;
   color: var(--cream);
   font-family: inherit;
 }
@@ -20,7 +22,10 @@
   padding: 35px 24px 39px;
   border-bottom: 1px solid #d4af3740;
   text-align: center;
-  background: linear-gradient(180deg, #0e2d20, #092419);
+  background-color: #092419;
+  background-image: url('./apps-wrap-tile.svg'), linear-gradient(180deg, #0e2d20, #092419);
+  background-repeat: repeat, no-repeat;
+  background-size: 192px 192px, 100% 100%;
 }
 
 .apps-page .apps-hero::after {
@@ -60,7 +65,9 @@
   overflow: hidden;
   padding: 56px 0;
   scroll-margin-top: 105px;
-  background: var(--apps-forest);
+  background-color: var(--apps-forest);
+  background-image: url('./apps-wrap-tile.svg');
+  background-repeat: repeat;
 }
 
 .apps-page .app-layout {
@@ -234,7 +241,9 @@
   padding: 76px 0 82px;
   border-top: 1px solid #d4af3740;
   border-bottom: 1px solid #d4af3740;
-  background: var(--apps-forest);
+  background-color: var(--apps-forest);
+  background-image: url('./apps-wrap-tile.svg');
+  background-repeat: repeat;
 }
 
 .apps-page .apple-watch-inner,
