@@ -81,3 +81,15 @@ Preserve path punctuation when transporting an original request path inside a re
 **Why:** The legacy export contains literal ampersands in song paths. Interpolating an unescaped capture into a query payload can split the path before shared resolution, even when development SSR handles the same address correctly.
 
 **How to apply:** Test the ordered hosting rewrite as well as the document handler, using literal and percent-encoded punctuation. Encode query payloads before parsing; do not broaden slug normalisation to compensate for transport damage. A simulated rewrite is not proof of the released edge response.
+
+Private document delivery and public search discovery need separate route inventories.
+
+**Why:** Excluding a private page from the sitemap must not omit its production
+HTML. Preview's runtime rendering can conceal an incomplete packaged build, and
+path-based authentication callbacks need an entry document rather than a file for
+every callback URL.
+
+**How to apply:** Verify accepted private routes against an isolated production
+package, including direct refreshes and auth subpaths. Keep private routes out of
+the sitemap and preserve server-side authorization; do not add them to public
+canonical routes merely to make the build emit HTML.

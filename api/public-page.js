@@ -10,12 +10,16 @@ export default async function handler(req, res) {
   const raw = path + (source.searchParams.size ? `?${source.searchParams}` : '');
   const route = resolvePublicRequest(raw);
   if (route.location) { res.setHeader('Location', route.location); return res.status(route.status).end(); }
-  if (route.noindex || route.status !== 200) res.setHeader('X-Robots-Tag', 'noindex, follow');
+  if (route.noindex || route.status !== 200) res.setHeader('X-Robots-Tag', route.documentPath ? 'noindex, nofollow' : 'noindex, follow');
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  res.setHeader('Cache-Control', path === '/santa-message-workshop' ? 'private, no-store' : 'public, max-age=0, must-revalidate');
-  if (path === '/santa-message-workshop') res.setHeader('Vercel-CDN-Cache-Control', 'no-store');
+  const privatePage = Boolean(route.documentPath) || path === '/santa-message-workshop';
+  res.setHeader('Cache-Control', privatePage ? 'private, no-store' : 'public, max-age=0, must-revalidate');
+  if (privatePage) {
+    res.setHeader('CDN-Cache-Control', 'no-store');
+    res.setHeader('Vercel-CDN-Cache-Control', 'no-store');
+  }
   if (req.method === 'HEAD') return res.status(route.status).end();
-  const pathname = route.status === 200 ? decodeURIComponent(path) : '/404';
+  const pathname = route.status === 200 ? route.documentPath || decodeURIComponent(path) : '/404';
   if (pathname === '/santa-tracker' || pathname === '/santa-tracker/preview') {
     // Only the time-sensitive Tracker needs a runtime renderer.
     const { render } = await import('../dist/server/entry-server.js');

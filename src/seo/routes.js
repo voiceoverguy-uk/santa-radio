@@ -6,6 +6,15 @@ import { publicRequestUrl } from './requestUrl.js';
 import { reportedMissingAliases, reportedLyricsQueries } from './reportedMissingLinks.js';
 export const staticPages = ['/', '/apps', '/privacy-policy', mugPhotoTermsPath, '/christmas-music', '/mugshots/all', '/free-santa-message', '/submit-a-song', '/christmas-contenders', '/links', '/santa-stories', '/santa-tracker'];
 export const canonicalPaths = [...staticPages, ...songs.map(songPath), ...mugs.map(mugPath), ...songs.map(s => `/christmas-karaoke-lyrics/${s.id}-${s.link}`)];
+// Private entry documents are packaged, but never added to the public sitemap.
+export const staffEntryPaths = ['/request-names', '/sign-in', '/sign-up'];
+export function staffDocumentPath(path) {
+  const normalized = path.replace(/\/+$/, '');
+  if (normalized === '/request-names') return '/request-names';
+  // Clerk owns path-based verification, factor and OAuth callback screens.
+  // Always serve the entry document, never read a file named by the callback.
+  return ['/sign-in', '/sign-up'].find(entry => normalized === entry || normalized.startsWith(`${entry}/`)) || null;
+}
 const paths = new Set(canonicalPaths);
 export const aliases = new Map([['/music', '/christmas-music'], ['/mugshots', '/mugshots/all'], ...songRedirects]);
 // Exact doubled-separator examples already consolidated by the public edge.
@@ -113,7 +122,8 @@ export function resolvePublicRequest(raw) {
   try { path = decodeURIComponent(url.pathname); } catch { return { status: 400 }; }
   // Never redirect hosts: preview, audio feeds, integrations and API calls stay same-origin.
   const normalized = path === '//' ? path : path.length > 1 ? path.replace(/\/+$/, '') : path;
-  if (/^\/(?:request-names|sign-in|sign-up)(?:\/|$)/.test(normalized)) return { status: 200, noindex: true };
+  const staffDocument = staffDocumentPath(normalized);
+  if (staffDocument) return { status: 200, noindex: true, documentPath: staffDocument };
   const messageLink = normalized.match(/^\/personalised-santa-message(?:\/([^/]+))?$/i);
   if (messageLink) {
     if (!messageLink[1] || messageLink[1].toLowerCase() === 'all') {

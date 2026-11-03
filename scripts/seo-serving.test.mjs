@@ -42,6 +42,12 @@ test('deployment-style document package needs neither TypeScript nor runtime Rea
       ['/santa-tracker', 200], ['/artist?s=3', 308], ['/artist?s=14', 308],
       ['/personalised-santa-message/all', 308], ['/personalised-santa-message/Cooper', 308],
       ['/spanish/mugshots/mugshots/jermaine', 404],
+      ['/request-names', 200], ['/request-names/', 200],
+      ['/sign-in', 200], ['/sign-in/', 200],
+      ['/sign-in/sso-callback', 200], ['/sign-in/factor-one', 200],
+      ['/sign-up', 200], ['/sign-up/verify-email-address', 200],
+      ['/sign-up/sso-callback', 200],
+      ['/request-names/unknown', 404], ['/free-santa-message/request-names', 404],
     ]) {
       const url = new URL(path, 'https://www.santaradio.co.uk');
       url.searchParams.set('__sr_route', url.pathname);
@@ -56,6 +62,16 @@ test('deployment-style document package needs neither TypeScript nor runtime Rea
       if (status === 200) assert.ok(response.body.includes('<h1'), path);
       if (status === 200 && path !== '/santa-tracker')
         assert.equal(response.headers['X-Santa-Page-Mode'], 'prerendered', path);
+      if (status === 200 && /^\\/(?:request-names|sign-in|sign-up)(?:\\/|$)/.test(path)) {
+        assert.equal(response.headers['Cache-Control'], 'private, no-store', path);
+        assert.equal(response.headers['Vercel-CDN-Cache-Control'], 'no-store', path);
+        assert.equal(response.headers['X-Robots-Tag'], 'noindex, nofollow', path);
+        assert.match(response.body, /name="robots" content="noindex, nofollow"/);
+        assert.ok(!response.body.includes('Download TXT'), path);
+        assert.ok(!response.body.includes('Mark as recorded'), path);
+        const entry = '/' + path.split('/')[1];
+        assert.equal(response.body, await (await import('node:fs/promises')).readFile('./dist/server/pages' + entry + '/index.html', 'utf8'));
+      }
     }
     console.log('Deployment-style package passed');
   `], { cwd: directory, encoding: 'utf8', timeout: 30000 });
