@@ -1,5 +1,12 @@
 server/santa-audio/prepared/
 /generated-artifacts/
+/artifacts/*/.expo/
+/artifacts/*/node_modules/
+/artifacts/*/dist/
+/artifacts/*/ios/Pods/
+/artifacts/*/ios/build/
+/artifacts/*/ios/*.xcworkspace/xcuserdata/
+/artifacts/*/ios/*.xcodeproj/xcuserdata/
 /.local/studio-letter-editorial/
 attached_assets/santa-dash-app-image-*.png
 attached_assets/Santa_Dash__Back_to_the_Grotto_*.png
