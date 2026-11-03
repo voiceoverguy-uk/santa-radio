@@ -30,6 +30,7 @@
     "test:cookies": "playwright test tests/cookie-experience.spec.js",
     "test:apps-production": "node --test scripts/apps-production.test.mjs",
     "test:footer-production": "node --test scripts/footer-production.test.mjs",
+    "test:studio-promotion-production": "node --test scripts/studio-promotion-production.test.mjs",
     "audit:discovered": "node scripts/audit-discovered-pages.mjs --live",
     "report:discovered": "node scripts/report-discovered-pages.mjs",
     "test:discovered": "node --test --test-concurrency=1 scripts/discovered-pages.test.mjs",
