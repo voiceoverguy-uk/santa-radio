@@ -46,6 +46,7 @@
 - [Personalised video promotion](personalised-video-promotion.md) — Homepage section is temporarily withdrawn; preserve its code until the owner asks to restore it.
 - [Mugshot sound preferences](mugshot-sound-preferences.md) — Snow/effects and reduced-motion controls are visual preferences, not a site-wide audio mute.
 - [Nice List artwork scope](certificate-artwork-scope.md) — Exact approved master, name only; browser-local certificates stay independent of audio and public sharing.
+- [Gift recipient lettering](gift-recipient-lettering.md) — Approved Lora Italic recipient names for recognisable capitals; Santa's signature stays decorative.
 - [Python TLS trust](python-tls-trust.md) — Package downloads may need an explicit system certificate path; never disable TLS verification.
 - [Local audio inspection](local-audio-inspection.md) — FFmpeg PCM input avoids local speech-decoder API mismatches; transcription is not listening verification.
 - [Santa download naming](santa-download-naming.md) — Use santa-recorded-message-for-(NAME).mp3 for downloads; leave hosted source and cache URLs alone.

@@ -1,0 +1,6 @@
+Lora Italic, static regular weight (400), self-hosted under the SIL OFL 1.1.
+Upstream: https://github.com/cyrealtype/Lora-Cyrillic
+Font: https://raw.githubusercontent.com/cyrealtype/Lora-Cyrillic/main/fonts/ttf/Lora-Italic.ttf
+Git blob: 9be0e844b757fd022cb18a26732767246ba84f61
+Licence: lora-OFL.txt (upstream OFL.txt)
+This is the static TTF, not a variable font; embed the entire font in PDFs.

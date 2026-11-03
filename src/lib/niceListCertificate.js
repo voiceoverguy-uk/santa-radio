@@ -1,14 +1,13 @@
 // Loaded only on a certificate click. No recipient data leaves this module.
-import { PDFDocument, PDFName, PDFDict, PDFArray, PDFNumber, rgb } from 'pdf-lib';
+import { PDFDocument, PDFName, PDFDict, PDFArray, PDFNumber, PDFOperator, PDFHexString, rgb } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
+import { RECIPIENT_FONT, recipientFontFeatures, recipientDisplayName } from './giftFonts.js';
 
 export const CERTIFICATE_MASTER = '/certificates/nice-list/master.pdf';
-export const CERTIFICATE_FONT = '/certificates/nice-list/GreatVibes-Regular.ttf';
+export const CERTIFICATE_FONT = RECIPIENT_FONT;
 const mm = value => value * 72 / 25.4;
-// Great Vibes' contextual ligatures collide with unrelated Unicode entries in
-// pdf-lib's full-font character map. Keep individual script letters so PDF
-// extraction/accessibility preserves the actual name as well as its appearance.
-const fontFeatures = { calt: false, liga: false, clig: false };
+// Keep individual letters (including decomposed accents) in the full-font map.
+const fontFeatures = recipientFontFeatures;
 let assets;
 
 export function niceStatusPercentage(random = Math.random) {
@@ -71,7 +70,7 @@ export function fitCertificateName(name, font) {
   }
   // Match pdf-lib's actual glyph placement: glyph advances, without GPOS
   // kerning/offsets. Measure ink bounds (not just font-wide ascent/descent).
-  const { glyphs } = font.layout(name, { ...fontFeatures });
+  const { glyphs } = font.layout(recipientDisplayName(name), { ...fontFeatures });
   let advance = 0;
   let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
   for (const glyph of glyphs) {
@@ -131,10 +130,15 @@ async function buildCertificate(name, [master, fontBytes]) {
   pdf.registerFontkit(fontkit);
   // Keep the supplied script font whole, including composite accented glyphs.
   const font = await pdf.embedFont(fontBytes, { subset: false, features: { ...fontFeatures } });
-  page.drawText(name, {
+  // pdf-lib does not apply mark-positioning offsets. Draw canonical composed
+  // glyphs, but retain the exact input (even decomposed accents) for copying.
+  page.pushOperators(PDFOperator.of('BDC', [PDFName.of('Span'),
+    pdf.context.obj({ ActualText: PDFHexString.fromText(name) })]));
+  page.drawText(recipientDisplayName(name), {
     x: fitted.x, y: fitted.y, size: fitted.size, font,
     color: rgb(241 / 255, 217 / 255, 149 / 255),
   });
+  page.pushOperators(PDFOperator.of('EMC'));
   addNiceStatus(pdf, page);
   // Keep the master's generic metadata; never set a recipient title/author.
   return new Blob([await pdf.save()], { type: 'application/pdf' });

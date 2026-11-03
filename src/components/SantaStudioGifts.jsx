@@ -5,6 +5,7 @@ import { createStudioLetter, CERTIFICATE_WRITE_MS, LETTER_CHARACTER_MS,
   createStudioLetterVariation } from '../lib/santaStudioLetter.js';
 import './SantaStudioGifts.css';
 import SantaPictureName from './SantaPictureName.jsx';
+import CertificateName from './CertificateName.jsx';
 import StudioGiftDownload from './StudioGiftDownload.jsx';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 
@@ -23,7 +24,7 @@ function WrittenText({ text, count }) {
 
 function ScriptReveal({ children, progress }) {
   return <span className="studio-script-reveal" style={{
-    // Great Vibes paints beyond its advance/line box. Reveal horizontally,
+    // Italic names and Santa's script paint beyond their line boxes. Reveal horizontally,
     // leaving room for upper/lower strokes and both side bearings.
     clipPath: progress >= 1 ? 'none'
       : `inset(-1em calc(${100 - progress * 100}% - ${progress * 0.5}em) -1em -0.5em)`,
@@ -40,9 +41,9 @@ function Certificate({ name, elapsed }) {
   const progress = Math.min(1, elapsed / CERTIFICATE_WRITE_MS);
   return <div className="studio-certificate" role="img" aria-label={`Official Nice List certificate example for ${name}`}>
     <img src="/certificates/examples/blank-master.webp" alt="" width="1684" height="1191" draggable={false} />
-    <span aria-hidden="true" className="studio-certificate__name">
-      <ScriptReveal progress={progress}>{name}</ScriptReveal>
-    </span>
+    <CertificateName name={name}>
+      {text => <ScriptReveal progress={progress}>{text}</ScriptReveal>}
+    </CertificateName>
   </div>;
 }
 

@@ -154,9 +154,17 @@ test('the additional requested names rotate through all gifts without extra cert
 });
 
 // Compare real browser pixels with an unclipped rendering at the SAME position.
-// A DOM rectangle cannot tell us whether Great Vibes' swashes were cut off.
+// A DOM rectangle cannot tell us whether italic names or signature swashes were cut off.
 async function scriptInk(page, span, { partial = false } = {}) {
-  await page.evaluate(() => document.fonts.load('60px "Great Vibes"'));
+  await page.evaluate(async () => {
+    await document.fonts.load('60px "Great Vibes"');
+    const { loadRecipientFont } = await import('/src/lib/giftFonts.js');
+    await loadRecipientFont();
+  });
+  const fitted = span.locator('..');
+  if (await fitted.getAttribute('data-fitted') !== null) {
+    await expect(fitted).toHaveAttribute('data-fitted', 'true');
+  }
   await span.evaluate(el => el.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' }));
   const geometry = await span.evaluate(el => {
     const rect = el.getBoundingClientRect();
@@ -320,7 +328,7 @@ for (const width of [1440, 390, 320]) {
     test.setTimeout(180000);
     await page.setViewportSize({ width, height: 1000 });
     await visit(page, { reduced: true });
-    const names = ['Ayla', 'Han Solo', 'Lilliana Mai',
+    const names = ['Big Dog Alice', 'Alice', 'Arabella', 'Ayla', 'Han Solo', 'Lilliana Mai',
       'Alexandria Rose Montgomery', 'Élodie-Joséphine O’Neill', 'gj Áý'];
     const sizes = [];
     for (let picture = 0; picture < 3; picture++) {
@@ -385,7 +393,7 @@ test('picture names wait for the real script font, then fit without changing dur
   test.setTimeout(60000);
   let release;
   const waiting = new Promise(resolve => { release = resolve; });
-  await page.route('**/GreatVibes-Regular.ttf', async route => {
+  await page.route('**/Lora-Italic.ttf', async route => {
     await waiting;
     await route.continue();
   });
@@ -442,7 +450,11 @@ for (const width of [1440, 390, 320]) {
     await gifts(page).getByRole('button', { name: 'Enlarge letter to read' }).click();
     const enlargedSignature = await scriptInk(page, page.locator('dialog .studio-letter__signature > span'));
     expect(enlargedSignature.changed).toBe(0);
-    expect(enlargedSignature.ink).toBeGreaterThan(300);
+    const signatureSize = await page.locator('dialog .studio-letter__signature')
+      .evaluate(el => parseFloat(getComputedStyle(el).fontSize));
+    // The whole A4 sheet now scales to fit even at 320px. Check ink relative
+    // to that rendered size, rather than an obsolete fixed pixel count.
+    expect(enlargedSignature.ink).toBeGreaterThan(signatureSize ** 2);
     await expectSignatureSpacing(page, enlargedSignature.bounds);
     await page.screenshot({ path: `test-results/studio-signature-ink-${width}.png` });
   });
@@ -511,8 +523,9 @@ for (const width of [1440, 390]) {
     const fullName = page.locator('dialog .studio-certificate__name > span');
     expect((await scriptInk(page, fullName)).changed).toBe(0);
     await page.locator('dialog .studio-certificate').screenshot({ path: `test-results/studio-ayla-ink-${width}.png` });
-    // Prove this pixel test detects the original tight-box regression.
-    await fullName.evaluate(el => { el.style.clipPath = 'inset(0 0% 0 0)'; });
+    // Lora fits inside its name band without Great Vibes' old swash overhang.
+    // Prove the pixel check still detects a deliberately cropped name.
+    await fullName.evaluate(el => { el.style.clipPath = 'inset(45% 0% 0 0)'; });
     expect((await scriptInk(page, fullName)).changed).toBeGreaterThan(10);
   });
 }
@@ -569,12 +582,15 @@ for (const width of [320, 390, 1440]) {
     expect(box.x + box.width).toBeLessThanOrEqual(width);
     const name = picture.locator('.studio-santa-picture__name > span');
     await expect(name).toHaveText('Edward');
+    await expect(name.locator('..')).toHaveAttribute('data-fitted', 'true');
     const font = await name.evaluate(el => ({
       family: getComputedStyle(el).fontFamily,
       size: parseFloat(getComputedStyle(el).fontSize),
     }));
-    expect(font.family).toContain('Great Vibes');
-    expect(font.size / box.width).toBeCloseTo(.1, 2);
+    expect(font.family).toContain('Lora');
+    // Lora's wider letterforms may shrink to the actual parchment safe width.
+    expect(font.size / box.width).toBeLessThanOrEqual(.1001);
+    expect(font.size / box.width).toBeGreaterThan(.03);
     const ink = await scriptInk(page, name);
     expect(ink.changed).toBe(0);
     expect(ink.ink).toBeGreaterThan(30);

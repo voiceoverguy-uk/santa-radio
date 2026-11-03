@@ -1,12 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { execFileSync } from 'node:child_process';
 import { PDFDocument, PDFRawStream, decodePDFRawStream } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 import { certificateDownloadFilename, fitCertificateName, niceStatusPercentage, personaliseNiceListCertificate } from '../src/lib/niceListCertificate.js';
 
 const master = await readFile('public/certificates/nice-list/master.pdf');
-const fontBytes = await readFile('public/certificates/nice-list/GreatVibes-Regular.ttf');
+const fontBytes = await readFile('public/certificates/nice-list/Lora-Italic.ttf');
 const metrics = fontkit.create(fontBytes);
 const mm = n => n * 72 / 25.4;
 
@@ -34,7 +35,7 @@ test('each new certificate rolls its own gold status line using the master serif
   }
 });
 
-for (const name of ['Olivia', 'Alexandria-Catherine Elizabeth Montgomery-Worthington',
+for (const name of ['Big Dog Alice', 'Alice', 'Arabella', 'Ayla', 'Olivia', 'Alexandria-Catherine Elizabeth Montgomery-Worthington',
   "Élodie O’Neill-Sáenz", "Jean-Luc D'Ávila", 'A\u0301ine', 'gjpqy', '  Olivia   Rose  ']) {
   test(`fits actual glyph bounds without distorting ${name}`, () => {
     const fit = fitCertificateName(name, metrics);
@@ -51,6 +52,30 @@ for (const name of ['Olivia', 'Alexandria-Catherine Elizabeth Montgomery-Worthin
 test('long names shrink proportionally; normal names keep nominal size', () => {
   assert.equal(fitCertificateName('Olivia', metrics).size, mm(22.6));
   assert.ok(fitCertificateName('Alexandria-Catherine Elizabeth Montgomery-Worthington', metrics).size < mm(22.6));
+});
+
+test('Lora is a static licensed italic font with separate signature bytes', async () => {
+  assert.equal(metrics.familyName, 'Lora');
+  assert.equal(metrics.subfamilyName, 'Italic');
+  assert.deepEqual(metrics.variationAxes, {});
+  assert.match(await readFile('public/certificates/nice-list/lora-OFL.txt', 'utf8'), /SIL OPEN FONT LICENSE/);
+  const { RECIPIENT_FONT, SIGNATURE_FONT } = await import('../src/lib/giftFonts.js');
+  assert.notEqual(RECIPIENT_FONT, SIGNATURE_FONT);
+  assert.equal(SIGNATURE_FONT, '/certificates/nice-list/GreatVibes-Regular.ttf');
+});
+
+test('full embedded Lora preserves exact extracted names, accents, punctuation and letter pairs', async () => {
+  assert.deepEqual(fitCertificateName('A\u0301ine', metrics), fitCertificateName('Áine', metrics),
+    'decomposed accents must paint exactly the same correctly positioned ink as composed accents');
+  for (const name of ['Big Dog Alice', 'Alice', 'Arabella', 'Ayla',
+    'Alexandria-Catherine Elizabeth Montgomery-Worthington', 'Élodie O’Neill-Sáenz',
+    "Jean-Luc D'Ávila", 'A\u0301ine', 'Saffi Affie Lilliana']) {
+    const blob = await personaliseNiceListCertificate(name, [master, fontBytes]);
+    const text = execFileSync('pdftotext', ['-raw', '-', '-'], {
+      input: Buffer.from(await blob.arrayBuffer()), encoding: 'utf8',
+    });
+    assert.ok(text.split('\n').includes(name), `Exact written spelling missing: ${JSON.stringify(name)} in ${JSON.stringify(text)}`);
+  }
 });
 
 test('download filenames preserve readable names and remove unsafe characters', () => {

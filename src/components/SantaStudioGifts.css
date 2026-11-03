@@ -188,20 +188,27 @@
 .studio-santa-picture__name {
   position: absolute;
   color: #19392d;
-  font-family: "Great Vibes", cursive;
+  font-family: "Lora", serif;
+  font-style: italic;
+  font-kerning: none;
+  font-variant-ligatures: none;
+  font-feature-settings: "calt" 0, "ccmp" 0;
   font-weight: 400;
   line-height: 1;
 }
 
 .studio-santa-picture__name > .studio-script-reveal,
-.studio-santa-picture__name svg {
+.studio-santa-picture__name svg,
+.studio-certificate__name > .studio-script-reveal,
+.studio-certificate__name svg {
   display: block;
   width: 100%;
   height: 100%;
   overflow: visible;
 }
 
-.studio-santa-picture__name text {
+.studio-santa-picture__name text,
+.studio-certificate__name text {
   fill: currentColor;
 }
 
@@ -276,15 +283,17 @@
 
 .studio-certificate__name {
   position: absolute;
-  /* Centre the full script ink in the blank band, above the gold rule. */
-  top: 33%;
-  left: 15%;
-  display: grid;
-  width: 70%;
-  height: 16%;
-  place-items: center;
+  /* SVG retains A4 coordinates, but the reveal box is only the safe name band. */
+  top: 36.6666667%;
+  left: 0;
+  width: 100%;
+  height: 11.4285714%;
   color: #f1d995;
-  font-family: "Great Vibes", cursive;
+  font-family: "Lora", serif;
+  font-style: italic;
+  font-kerning: none;
+  font-variant-ligatures: none;
+  font-feature-settings: "calt" 0, "ccmp" 0;
   font-size: 7.6cqw;
   font-weight: 400;
   line-height: 1;

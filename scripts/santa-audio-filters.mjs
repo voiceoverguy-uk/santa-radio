@@ -10,7 +10,7 @@ export function renderArgs(intro, name, outro, bells, output, prepared = false) 
     `[${i}:a]${prepared && i !== 1 ? 'aformat=sample_fmts=fltp:channel_layouts=stereo' : voiceFilter()}[v${i}]`).join(';') +
     ';[v0][v1][v2]concat=n=3:v=0:a=1[speech];' +
     '[3:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo,' +
-    'loudnorm=I=-34:TP=-9:LRA=7,volume=2dB,aresample=48000,afade=t=in:d=1[bells];' +
+    'loudnorm=I=-34:TP=-9:LRA=7,volume=4dB,aresample=48000,afade=t=in:d=1[bells];' +
     '[speech][bells]amix=inputs=2:duration=first:normalize=0,' +
     'areverse,afade=t=in:d=1,areverse,alimiter=limit=0.89:level=false[out]';
   return ['-hide_banner', '-nostdin', '-loglevel', 'error', '-y',

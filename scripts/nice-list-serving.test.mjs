@@ -16,7 +16,7 @@ test('built Node SSR serves the exact generic master and font without loading ce
     });
   });
   const get = path => fetch(`http://127.0.0.1:${port}${path}`);
-  for (const file of ['master.pdf', 'GreatVibes-Regular.ttf', 'cormorantgaramond-OFL.txt', 'greatvibes-OFL.txt']) {
+  for (const file of ['master.pdf', 'Lora-Italic.ttf', 'lora-OFL.txt', 'GreatVibes-Regular.ttf', 'cormorantgaramond-OFL.txt', 'greatvibes-OFL.txt']) {
     const response = await get(`/certificates/nice-list/${file}`);
     assert.equal(response.status, 200);
     if (file.endsWith('.pdf')) assert.match(response.headers.get('content-type'), /application\/pdf/);

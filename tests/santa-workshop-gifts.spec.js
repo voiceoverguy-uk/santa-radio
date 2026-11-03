@@ -328,11 +328,12 @@ test('letter asset failure is retryable; picture fitting shares the review geome
   for (const name of ['Élodie O’Neill-Sáenz', "Jean-Luc D'Ávila", 'Alexandria-Catherine Elizabeth Montgomery-Worthington', 'É'.repeat(160)]) {
     const result = await page.evaluate(async name => {
       const { fitSantaPictureName, santaPictureFrames } = await import('/src/lib/santaPictureLayout.js');
-      await document.fonts.load('1000px "Great Vibes"', name);
+      const { loadRecipientFont, recipientCanvasFont } = await import('/src/lib/giftFonts.js');
+      await loadRecipientFont();
       const context = document.createElement('canvas').getContext('2d');
       return Object.keys(santaPictureFrames).map(picture => {
         const fit = fitSantaPictureName(context, name, picture);
-        context.font = `${fit.size}px "Great Vibes"`;
+        context.font = recipientCanvasFont(fit.size);
         const ink = context.measureText(name);
         return { left: fit.x - ink.actualBoundingBoxLeft, right: fit.x + ink.actualBoundingBoxRight,
           top: fit.y - ink.actualBoundingBoxAscent, bottom: fit.y + ink.actualBoundingBoxDescent,

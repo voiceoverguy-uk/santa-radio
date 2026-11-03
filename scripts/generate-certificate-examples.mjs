@@ -3,14 +3,14 @@ import { existsSync } from 'node:fs';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import { allCertificateExamples as certificateExamples } from '../src/lib/santaCertificateExamples.js';
-import { personaliseNiceListCertificate } from '../src/lib/niceListCertificate.js';
+import { personaliseNiceListCertificate, CERTIFICATE_FONT } from '../src/lib/niceListCertificate.js';
 
 const workdir = 'generated-artifacts/certificate-examples';
 const replace = process.argv.includes('--replace');
 await mkdir(workdir, { recursive: true });
 const assets = await Promise.all([
   'public/certificates/nice-list/master.pdf',
-  'public/certificates/nice-list/GreatVibes-Regular.ttf',
+  `public${CERTIFICATE_FONT}`,
 ].map(path => readFile(path)));
 
 for (const { name, src } of certificateExamples) {

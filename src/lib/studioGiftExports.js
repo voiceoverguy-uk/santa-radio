@@ -4,23 +4,11 @@ import { PDFDocument, rgb } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 import { certificateDownloadFilename, CERTIFICATE_FONT } from './niceListCertificate.js';
 import { fitSantaPictureName, santaPictureFrames } from './santaPictureLayout.js';
+import { SIGNATURE_FONT, loadRecipientFont, recipientCanvasFont, recipientDisplayName } from './giftFonts.js';
 
 export const LETTER_SERIF = '/certificates/nice-list/CertificateSerif.ttf';
 export const LETTER_HEAD = '/images/santa-radio-letterhead.webp';
 const features = { calt: false, liga: false, clig: false };
-let pictureFont;
-
-async function preparePictureFont(script) {
-  if (!pictureFont) {
-    // Load from the generic bytes, not a possibly failed stylesheet FontFace.
-    // A transient preview-font failure must not make export retries permanent.
-    pictureFont = new FontFace('Great Vibes', script).load().then(face => {
-      document.fonts.add(face);
-      return face;
-    }).catch(error => { pictureFont = undefined; throw error; });
-  }
-  await pictureFont;
-}
 
 export function studioGiftFilename(kind, name) {
   const recipient = certificateDownloadFilename(name)
@@ -68,15 +56,15 @@ export async function exportStudioPicture(name, picture) {
   if (!santaPictureFrames[picture]) throw new Error('Unknown Santa artwork');
   const [canvas, script] = await Promise.all([imageCanvas(picture), bytes(CERTIFICATE_FONT)]);
   checkCharacters(script, name);
-  await preparePictureFont(script);
+  await loadRecipientFont(script);
   const context = canvas.getContext('2d');
   const fit = fitSantaPictureName(context, name, picture);
   const frame = santaPictureFrames[picture];
   context.save();
   context.scale(canvas.width / 1536, canvas.height / 1024);
-  context.font = `${fit.size}px "Great Vibes"`;
+  context.font = recipientCanvasFont(fit.size);
   context.fillStyle = '#19392d';
-  context.fillText(name, frame.x + fit.x, frame.y + fit.y);
+  context.fillText(recipientDisplayName(name), frame.x + fit.x, frame.y + fit.y);
   context.restore();
   return canvasBlob(canvas);
 }
@@ -121,7 +109,7 @@ export function layoutStudioLetter(letter, font) {
 
 export async function exportStudioLetter(letter) {
   const [serifBytes, scriptBytes, canvas] = await Promise.all([
-    bytes(LETTER_SERIF), bytes(CERTIFICATE_FONT), imageCanvas(LETTER_HEAD),
+    bytes(LETTER_SERIF), bytes(SIGNATURE_FONT), imageCanvas(LETTER_HEAD),
   ]);
   checkCharacters(serifBytes, [...letter.paragraphs, ...letter.closing].join(' '));
   const pdf = await PDFDocument.create();

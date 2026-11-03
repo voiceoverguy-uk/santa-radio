@@ -16,11 +16,11 @@ function pcm(args) {
   return result.stdout;
 }
 
-test('free-message sleigh bells receive 2 dB gain after their existing level control', () => {
+test('free-message sleigh bells receive 4 dB gain after their existing level control', () => {
   const args = renderArgs('intro', 'name', 'outro', 'bells', 'output');
   const graph = args[args.indexOf('-filter_complex') + 1];
   const bells = graph.slice(graph.indexOf('[3:a]'), graph.indexOf(';[speech]'));
-  assert.match(bells, /loudnorm=I=-34:TP=-9:LRA=7,volume=2dB,aresample=48000,afade=t=in:d=1\[bells\]/);
+  assert.match(bells, /loudnorm=I=-34:TP=-9:LRA=7,volume=4dB,aresample=48000,afade=t=in:d=1\[bells\]/);
 });
 
 test('the MP3 intro and both MP3 outros match the latest uploads; shared preparation retains source duration', async () => {
