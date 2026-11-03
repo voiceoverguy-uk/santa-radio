@@ -775,13 +775,13 @@ test('enlargement reveals the full document without manual controls, with Escape
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole('button', { name: 'Show full letter now', exact: true })).toHaveCount(0);
   expect(await dialog.locator('.studio-letter__signature > span').evaluate(el => getComputedStyle(el).clipPath)).toBe('none');
-  expect(await dialog.locator('.studio-gifts__sr').innerText()).toBe(text);
+  expect(await dialog.locator('.studio-letter-dialog__document .studio-gifts__sr').innerText()).toBe(text);
   await expect(dialog.getByRole('button', { name: 'Close preview' })).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(dialog).not.toBeVisible();
   await expect(open).toBeFocused();
   await open.click();
-  expect(await dialog.locator('.studio-gifts__sr').innerText()).toBe(text);
+  expect(await dialog.locator('.studio-letter-dialog__document .studio-gifts__sr').innerText()).toBe(text);
   await dialog.getByRole('button', { name: 'Close preview' }).click();
   await expect(open).toBeFocused();
   await gifts(page).getByRole('button', { name: 'Enlarge certificate' }).click();

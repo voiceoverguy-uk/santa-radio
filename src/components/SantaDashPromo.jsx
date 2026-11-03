@@ -217,7 +217,7 @@ export default function SantaDashPromo() {
             <span className="santa-dash-promo__title-line">Santa Dash</span>{' '}
             <span className="santa-dash-promo__title-line">Back to the Grotto</span>
           </>}
-          subtitle="Race across snowy rooftops with Santa."
+          subtitle="Race across snowy rooftops with Santa collecting Golden Mince Pies!"
           titleId="santa-dash-promo-title"
           className="santa-dash-promo__heading"
           eyebrowClassName="santa-dash-promo__eyebrow"

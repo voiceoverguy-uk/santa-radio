@@ -5,7 +5,7 @@ const sections = [
   ['youtube', '.youtube-section', 'A window to the North Pole', 'Best of the North Pole Webcams', 'Highlights of the webcams at the North Pole. Keep checking back!', '.youtube-section > .container'],
   ['mugshots', '#homepage-mugshots', 'THE SANTA RADIO HALL OF FAME', 'Celebrity Mugshots', 'Famous faces. One festive mug.', '.mugshots-preview-inner'],
   ['contact', '.contact-section', 'THE NORTH POLE POST ROOM', 'We’d love to hear from you', 'Got a question, a festive idea or something to share? Get in touch with the Santa Radio team.', '.contact-copy'],
-  ['dash', '.santa-dash-promo', 'A festive rooftop adventure', 'Santa Dash Back to the Grotto', 'Race across snowy rooftops with Santa.', '.santa-dash-promo__inner'],
+  ['dash', '.santa-dash-promo', 'A festive rooftop adventure', 'Santa Dash Back to the Grotto', 'Race across snowy rooftops with Santa collecting Golden Mince Pies!', '.santa-dash-promo__inner'],
 ];
 
 async function typography(locator) {

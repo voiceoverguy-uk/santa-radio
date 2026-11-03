@@ -2,7 +2,9 @@
 name: Christmas Pairs scope
 description: Owner-approved homepage game placement, supplied artwork and sound defaults.
 ---
-Christmas Pairs is a free website game below the homepage soundboard, inspired by the owner's existing app. It must not require signup. Use the owner's supplied card artwork rather than inventing replacements.
+Christmas Pairs is a free website game above the homepage soundboard, inspired by the owner's existing app. It must not require signup. Use the owner's supplied card artwork rather than inventing replacements.
+
+**Why:** The owner requested swapping Pairs and Soundboard on the homepage, superseding the original below-soundboard placement.
 
 Use the owner's supplied square Santa Radio mascot logo, small and centred, on
 the card backs instead of the star and “SR”.

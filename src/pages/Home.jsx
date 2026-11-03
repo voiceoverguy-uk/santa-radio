@@ -29,8 +29,8 @@ export default function Home() {
       <SantaTrackerBanner />
       {/* Personalised video promotion temporarily removed; SantaVideoSection and its styles are retained for restoration. */}
       <SantaDashPromo />
-      <Soundboard />
       <ChristmasPairs />
+      <Soundboard />
       <YouTubeSection />
       <MugshotsPreview />
       <section className="partnership-strip" aria-labelledby="partnership-heading">
