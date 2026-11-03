@@ -79,6 +79,7 @@
 - [Studio letter editorial policy](studio-letter-editorial-policy.md) — Curated contextual prose, not live AI; full choice audit stays private and spelling edits must not reshuffle wording.
 - [Studio temporary generation policy](studio-single-message-allowance.md) — No durable counts, identity locks or recovery; preserve valid access and request-abuse protection.
 - [Studio audio retention](studio-audio-retention.md) — Finished MP3s are temporary for the user's session, not an archive; do not introduce permanent MP3 storage.
+- [Studio reverb approval](studio-reverb-approval.md) — Development audition only; merging a comparison is not approval to apply the effect to real messages.
 - [Studio gift delivery](studio-gift-delivery-scope.md) — Local individual-message gifts require MP3 success; no free/promotional exports, live checkout or family/email fulfilment.
 - [Studio promotion typography](studio-promotion-typography.md) — Regular live promotion text and shared gift heading; keep document artwork and watermarks unchanged.
 - [School tester voucher](school-tester-voucher.md) — Shared independent parent access; fixed 3–10 November 2026 UK window, separate from existing vouchers.

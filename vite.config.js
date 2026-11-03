@@ -27,6 +27,7 @@ import studioPaidAccess from './server/santa-studio-purchase.js';
 import studioCheckout from './server/santa-studio-checkout.js';
 import messageAccess from './server/santa-message-access.js';
 import { browserSecurity } from './server/browser-security.js';
+import { createAuditionMiddleware } from './server/studio-reverb-audition.js';
 
 const trackerMetadataPlugin = {
   name: 'tracker-page-metadata',
@@ -46,6 +47,7 @@ const metadataPlugin = {
   name: 'radio-metadata',
   configureServer(server) {
     server.middlewares.use(browserSecurity);
+    server.middlewares.use(createAuditionMiddleware({ development: true }));
     server.middlewares.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
     server.middlewares.use('/api/santa-message-access', messageAccess);
     server.middlewares.use('/api/stripe/webhook', stripeWebhook);
@@ -68,6 +70,7 @@ const metadataPlugin = {
   },
   configurePreviewServer(server) {
     server.middlewares.use(browserSecurity);
+    server.middlewares.use(createAuditionMiddleware());
     server.middlewares.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
     server.middlewares.use('/api/santa-message-access', messageAccess);
     server.middlewares.use('/api/stripe/webhook', stripeWebhook);

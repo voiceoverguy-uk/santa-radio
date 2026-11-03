@@ -28,6 +28,7 @@ import studioCheckout from './server/santa-studio-checkout.js';
 import messageAccess from './server/santa-message-access.js';
 import { browserSecurity } from './server/browser-security.js';
 import { serveStaticVideo } from './server/static-video.js';
+import { createAuditionMiddleware, auditionPath } from './server/studio-reverb-audition.js';
 
 const root = await realpath(fileURLToPath(new URL('./dist', import.meta.url)));
 const index = resolve(root, 'index.html');
@@ -43,12 +44,16 @@ const types = {
 };
 
 const clerkProxy = clerkProxyMiddleware();
+const unavailableAudition = createAuditionMiddleware();
 const server = createServer(async (req, res) => {
   try {
     browserSecurity(req, res);
     let pathname;
     try { pathname = decodeURIComponent(publicRequestUrl(req.url, 'http://server').pathname); }
     catch { res.writeHead(400).end('Invalid path'); return; }
+    if (pathname === auditionPath || pathname.startsWith(`${auditionPath}/`)) {
+      return unavailableAudition(req, res, () => res.writeHead(404).end('Audition unavailable.'));
+    }
     artworkHeaders(req, res, () => {});
     if (res.writableEnded) return;
     if (pathname.startsWith(`${CLERK_PROXY_PATH}/`)) return clerkProxy(req, res, () => res.writeHead(404).end());
