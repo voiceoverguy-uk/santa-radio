@@ -15,6 +15,6 @@ export default function SantaStudioLaunchCountdown() {
     title="Opens 6 November 2026 at midnight UK time">
     {remaining === null ? 'Santa’s Message Maker Studio opens 6 November.'
       : remaining === 0 ? 'Santa’s Message Maker Studio — opening day has arrived!'
-        : <>Santa’s Message Maker Studio opens in <strong>{formatRemaining(remaining)}.</strong></>}
+        : <>Santa’s Message Maker Studio opens in <span className="santa-studio-promotion__launch-countdown-remaining">{formatRemaining(remaining)}.</span></>}
   </p>;
 }

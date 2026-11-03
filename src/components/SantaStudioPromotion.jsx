@@ -39,7 +39,7 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
           </p>
           <div className="santa-studio-promotion__benefits">
             <p className="santa-studio-promotion__benefits-lead">
-              <strong>Your paid package includes personalised gifts from Santa:</strong>
+              Your paid package includes personalised gifts from Santa:
             </p>
             <ul className="santa-studio-promotion__benefit-list">
               <li>An official Nice List certificate</li>

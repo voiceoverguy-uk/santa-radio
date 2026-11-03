@@ -1,19 +1,57 @@
 import { test, expect } from '@playwright/test';
 
+async function expectRegularPromotion(promotion) {
+  // Check live text only, not document artwork, script overlays or watermarks.
+  const weights = await promotion.evaluate(root => {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const result = [];
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      const element = node.parentElement;
+      if (!node.textContent.trim() || element.closest(
+        '.studio-certificate, .studio-letter__paper, .studio-santa-picture, .studio-gifts__watermark'
+      )) continue;
+      result.push({ text: node.textContent.trim(), weight: getComputedStyle(element).fontWeight });
+    }
+    for (const input of root.querySelectorAll('input')) {
+      result.push({ text: 'Voucher input', weight: getComputedStyle(input).fontWeight });
+      result.push({ text: 'Voucher placeholder', weight: getComputedStyle(input, '::placeholder').fontWeight });
+    }
+    return result;
+  });
+  expect(weights.length).toBeGreaterThan(20);
+  expect(weights.filter(item => item.weight !== '400')).toEqual([]);
+}
+
 for (const path of ['/', '/free-santa-message']) {
   for (const width of [320, 390, 1440]) {
     test(`Black Friday offer and smaller picture fit ${path} at ${width}px`, async ({ page }, testInfo) => {
       await page.setViewportSize({ width, height: 1000 });
+      await page.clock.setFixedTime(new Date('2026-11-03T12:00:00Z'));
       await page.emulateMedia({ reducedMotion: 'reduce' });
       await page.addInitScript(() => sessionStorage.setItem('santa-message-offer-shown', 'shown'));
       await page.route('**/api/radio-metadata*', route => route.fulfill({
         json: { available: false, current: null, upcoming: [] },
+      }));
+      await page.route('**/api/santa-studio-checkout', route => route.fulfill(
+        route.request().method() === 'GET'
+          ? { json: { available: true, sandbox: true } }
+          : { status: 503, json: { error: 'Controlled checkout refusal' } }
+      ));
+      await page.route('**/api/santa-workshop-access', route => route.fulfill({
+        status: 401, json: { authorized: false },
       }));
       await page.goto(path);
       const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
       if (await decline.isVisible()) await decline.click();
       await page.evaluate(() => document.fonts.ready);
       const promotion = page.locator('.santa-studio-promotion');
+      await expect(promotion.locator('.santa-studio-promotion__launch-countdown-remaining')).toHaveText('2 days, 12 hours, 0 minutes.');
+      await expectRegularPromotion(promotion);
+      for (const selector of ['#santa-studio-title', '.santa-studio-promotion__subheading',
+        '.santa-studio-promotion__offer-price', '.studio-gifts h4']) {
+        await expect(promotion.locator(selector)).toHaveCSS('font-weight', '400');
+      }
       await expect(promotion.getByText('Black Friday Deal', { exact: true })).toBeVisible();
       await expect(promotion.getByText('Only £4.50', { exact: true })).toBeVisible();
       await expect(promotion.getByRole('button', { name: 'Enlarge certificate', exact: true })).toBeVisible();
@@ -30,8 +68,16 @@ for (const path of ['/', '/free-santa-message']) {
       await picture.click();
       await expect(page.getByRole('dialog')).toBeVisible();
       await expect(page.getByRole('dialog').locator('.studio-santa-picture')).toBeVisible();
+      await expectRegularPromotion(promotion);
+      await expect(page.getByRole('dialog').locator('.studio-gifts__watermark span').first()).toHaveCSS('font-weight', '800');
       await page.keyboard.press('Escape');
       await expect(page.getByRole('dialog')).toHaveCount(0);
+      await promotion.getByLabel('Voucher code', { exact: true }).fill('invalid-test-only');
+      await promotion.getByRole('button', { name: 'Create your bespoke message', exact: true }).click();
+      await expect(promotion.getByRole('alert')).toContainText('not recognised');
+      await promotion.getByRole('button', { name: 'Purchase — £6.50 (test)', exact: true }).click();
+      await expect(promotion.getByRole('alert').filter({ hasText: 'Controlled checkout refusal' })).toBeVisible();
+      await expectRegularPromotion(promotion);
     });
   }
 }
