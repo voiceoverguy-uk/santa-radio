@@ -8,6 +8,18 @@ const privacySections = [
   ['Choices & rights', 'privacy-choices'],
 ];
 
+test('complaint rights remain plain text without an ICO hyperlink', async ({ page }) => {
+  await page.goto('/privacy-policy#privacy-choices');
+  const article = page.locator('article');
+  const heading = page.getByRole('heading', { name: 'Your choices and rights', exact: true });
+  await expect(heading).toBeInViewport();
+  await expect(heading).toHaveAttribute('id', 'privacy-choices');
+  const rights = heading.locator('xpath=following-sibling::p[1]');
+  await expect(rights).toHaveText('Depending on the circumstances, you can request access, correction, deletion, restriction or portability of your information, and object to processing based on legitimate interests. Withdrawing consent does not affect earlier lawful processing. Email us to exercise your rights. You can also complain to the UK Information Commissioner’s Office.');
+  await expect(rights.getByRole('link')).toHaveCount(0);
+  await expect(article.locator('a[href*="ico.org.uk" i], a[href*="make-a-complaint" i]')).toHaveCount(0);
+});
+
 for (const width of [1440, 390, 320]) {
   test(`section navigation is keyboard accessible and fits at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
