@@ -545,14 +545,22 @@ test('finished Studio message download is valid and matches the playable recordi
   await expect.poll(() => player.evaluate(node => node.currentTime)).toBeGreaterThan(0.1);
   await player.evaluate(node => node.pause());
 
+  const recordingUrl = await player.getAttribute('src');
   const download = result.getByRole('link', { name: /Download MP3/ });
-  await expect(download).toHaveAttribute('href', source);
+  await expect(download).toHaveAttribute('href', recordingUrl);
   await expect(download).toHaveAttribute('download', 'santa-message-for-Dixie.mp3');
+  await page.getByRole('button', { name: 'Edit certificate name', exact: true }).click();
+  await page.getByRole('textbox', { name: 'Name spelling', exact: true }).fill('D’Arcy');
+  await page.getByRole('button', { name: 'Use this spelling', exact: true }).click();
+  await expect(result.getByRole('heading', { name: 'Santa’s message for D’Arcy' })).toBeVisible();
+  await expect(player).toHaveAttribute('src', recordingUrl);
+  await expect(download).toHaveAttribute('href', recordingUrl);
+  await expect(download).toHaveAttribute('download', 'santa-message-for-D’Arcy.mp3');
   // This browser artifact cannot verify native phone save locations or opening.
   const downloadPromise = page.waitForEvent('download');
   await download.click();
   const file = await downloadPromise;
-  expect(file.suggestedFilename()).toBe('santa-message-for-Dixie.mp3');
+  expect(file.suggestedFilename()).toBe('santa-message-for-D’Arcy.mp3');
   expect(readFileSync(await file.path())).toEqual(fixture.audio,
     'The downloaded MP3 is byte-for-byte the recording loaded by the playable audio element');
 });
