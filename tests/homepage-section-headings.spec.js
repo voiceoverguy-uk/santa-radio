@@ -81,7 +81,17 @@ for (const [width, enlarged] of [[1440, false], [768, false], [390, false], [320
       await expect(divider).toHaveCount(1);
       await expect(divider).toHaveAttribute('aria-hidden', 'true');
       expect(await typography(small), `${name} eyebrow`).toEqual(reference.eyebrow);
-      expect(await typography(heading), `${name} headline`).toEqual(reference.title);
+       const headline = await typography(heading);
+       if (name === 'dash') {
+         // This deliberate two-line title scales down to keep its phrase intact.
+         expect(parseFloat(headline.fontSize)).toBeLessThanOrEqual(parseFloat(reference.title.fontSize));
+         expect(parseFloat(headline.lineHeight)).toBeCloseTo(parseFloat(headline.fontSize) * 1.2, 1);
+         expect(parseFloat(headline.letterSpacing) / parseFloat(headline.fontSize)).toBeCloseTo(.025, 3);
+         headline.fontSize = reference.title.fontSize;
+         headline.lineHeight = reference.title.lineHeight;
+         headline.letterSpacing = reference.title.letterSpacing;
+       }
+       expect(headline, `${name} headline`).toEqual(reference.title);
       expect(await typography(intro), `${name} subheading`).toEqual(reference.subtitle);
       expect(await dividerStyle(divider), `${name} divider`).toEqual(reference.divider);
       expect(await small.evaluate(element => ['::before', '::after'].every(pseudo =>

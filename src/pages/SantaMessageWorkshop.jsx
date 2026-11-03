@@ -311,18 +311,38 @@ export default function SantaMessageWorkshop() {
       ?.find(record => record.id === giftChoices[category])?.letterContext])) };
   };
   const giftDetails = giftDetailsFor(choices);
+  // A confirmed previous success also unlocks its gifts after reopening Studio,
+  // without requiring the MP3 to be fetched or played again.
+  useEffect(() => {
+    const completed = generation.state;
+    if (!completed?.successes || !completed.record || !completed.choices
+      || catalogueState.status !== 'ready'
+      || (completedGift?.successes || 0) >= completed.successes
+      || !catalogueCategories.every(key => catalogueState.catalogue.categories[key]
+        ?.some(option => option.id === completed.choices[key]))) return;
+    const record = completed.record;
+    const completedChoices = completed.choices;
+    setCompletedGift({
+      selectionKey: JSON.stringify([record.id, completedChoices.region,
+        ...catalogueCategories.map(key => completedChoices[key]), completedChoices.talent]),
+      record: { ...record }, details: giftDetailsFor(completedChoices),
+      variation: letterVariation,
+      writtenName: getWorkshopWrittenName(record.name, record.id === selectedName?.id ? nameSpelling : ''),
+      successes: completed.successes,
+      revision: crypto.randomUUID(),
+    });
+  }, [generation.state, catalogueState.status, catalogueState.catalogue, completedGift?.successes,
+    letterVariation, selectedName?.id, nameSpelling]);
   const giftPreparing = audioPhase === 'preparing' || audioPhase === 'receiving' || generation.state?.pending;
-  const giftNotice = giftPreparing
-    ? 'Preparing your MP3. Gift downloads unlock together only after it is successfully ready.'
-    : audioPhase === 'error'
-      ? 'MP3 preparation or playback failed. Gift downloads are disabled; retry your message.'
-      : completedGift
+  const giftNotice = completedGift
         ? completedGift.selectionKey !== selectionKey
           ? 'Showing the last completed gift set, not your edited audio choices. These gifts switch only when the replacement MP3 succeeds.'
-          : audioPhase === 'ready'
-          ? 'Gifts for your completed message. Keep your downloads; Studio does not store personalised gift files or provide email return links.'
-          : 'Waiting for the completed recording before unlocking its gift downloads.'
-        : undefined;
+          : 'Gifts for your completed message. You can download them even when creating another message is unavailable.'
+        : giftPreparing
+          ? 'Preparing your MP3. Gift downloads unlock together only after it is successfully ready.'
+          : audioPhase === 'error'
+            ? 'MP3 preparation or playback failed. Gift downloads are disabled; retry your message.'
+            : undefined;
 
   useEffect(() => {
     const dock = document.querySelector('.radio-dock');
@@ -752,7 +772,7 @@ export default function SantaMessageWorkshop() {
                 letterVariation={letterVariation}
                 giftDetails={giftDetails}
                 completedGift={completedGift}
-                downloadReady={audioPhase === 'ready' && !giftPreparing && !!completedGift}
+                downloadReady={!!completedGift}
                 downloadNotice={giftNotice}
                 onChange={spelling => {
                   setNameSpelling(spelling);
@@ -761,14 +781,12 @@ export default function SantaMessageWorkshop() {
                     : current);
                 }}
               /> : <p className="smw-stage-note" role="status">Choose a destination to preview your keepsakes.</p>}
-              <div className="smw-actions">
-                <button className="smw-button smw-button-back" type="button" onClick={goBack}>
-                  <span aria-hidden="true">←</span> Back
-                </button>
-              </div>
             </div>
           )}
               <div className="smw-actions" hidden={!isReview}>
+                <button className="smw-button smw-button-back" type="button" onClick={goBack}>
+                  <span aria-hidden="true">←</span> Back
+                </button>
                 <WorkshopMessageAudio generation={generation} correction={correction}
                   onCorrection={() => setCorrection(true)} visible={isReview}
                   record={selectedName} choices={choices} spelling={nameSpelling}
@@ -782,6 +800,7 @@ export default function SantaMessageWorkshop() {
                       record: { ...record }, details: giftDetailsFor(completedChoices),
                       variation: letterVariation,
                       writtenName: getWorkshopWrittenName(record.name, record.id === selectedName?.id ? nameSpelling : ''),
+                      successes: message.successes,
                       revision: crypto.randomUUID(),
                     });
                   }}

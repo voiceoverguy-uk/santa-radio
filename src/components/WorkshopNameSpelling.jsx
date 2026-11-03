@@ -6,6 +6,7 @@ import {
 } from '../lib/workshopNameSpelling.js';
 import WorkshopSpellingSuggestion from './WorkshopSpellingSuggestion.jsx';
 import { normaliseRequestedName } from '../lib/santaNameRequests.js';
+import { containsWorkshopProfanity, WORKSHOP_LANGUAGE_ERROR } from '../lib/workshopSpellingLanguage.js';
 import { StudioKeepsakePreview } from './SantaStudioGifts.jsx';
 import './WorkshopNameSpelling.css';
 
@@ -18,8 +19,10 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
   const [draft, setDraft] = useState('');
   const [error, setError] = useState('');
   const writtenName = getWorkshopWrittenName(recordedName, spelling);
+  const languageError = isEditing && containsWorkshopProfanity(draft) ? WORKSHOP_LANGUAGE_ERROR : '';
+  const visibleError = languageError || error;
   // Preview the local draft without changing the saved spelling or audio.
-  const previewName = isEditing ? draft : writtenName;
+  const previewName = isEditing && !languageError ? draft : writtenName;
   const downloadName = getWorkshopDownloadName(recordedName, spelling);
   const canSuggestSpelling = !!spelling
     && !validateWorkshopSpelling(spelling)
@@ -82,9 +85,9 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
           details={completedGift?.details || giftDetails || {}}
           variation={completedGift?.variation || letterVariation}
           downloadReady={downloadReady && !isEditing}
-          downloadUnavailableNotice={isEditing ? 'Confirm the spelling above to enable this download.' : undefined}
+          downloadUnavailableNotice={languageError || (isEditing ? 'Confirm the spelling above to enable this download.' : undefined)}
           downloadNotice={isEditing
-            ? 'Previews update as you type. Choose Use this spelling to confirm, or Cancel to keep the saved spelling.'
+            ? languageError || 'Previews update as you type. Choose Use this spelling to confirm, or Cancel to keep the saved spelling.'
             : downloadNotice}
           giftRevision={completedGift?.revision}
         >
@@ -121,12 +124,13 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
             type="text"
             maxLength={160}
             value={draft}
+            placeholder="Name only — no swear words"
             onChange={event => {
               setDraft(event.target.value);
               if (error) setError('');
             }}
-            aria-invalid={!!error}
-            aria-describedby={error ? `${fieldId}-error` : undefined}
+            aria-invalid={!!visibleError}
+            aria-describedby={visibleError ? `${fieldId}-error` : undefined}
             autoComplete="off"
             onKeyDown={event => {
               if (event.key === 'Escape') {
@@ -135,9 +139,9 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
               }
             }}
           />
-          {error && <p className="smw-written-name-error" id={`${fieldId}-error`} role="alert">{error}</p>}
+          {visibleError && <p className="smw-written-name-error" id={`${fieldId}-error`} role="alert">{visibleError}</p>}
           <div className="smw-written-name-controls">
-            <button className="smw-written-name-button" type="submit">Use this spelling</button>
+            <button className="smw-written-name-button" type="submit" disabled={!!languageError}>Use this spelling</button>
             <button className="smw-written-name-reset" type="button" onClick={cancelEditing}>Cancel</button>
             {spelling && <button className="smw-written-name-reset" type="button" onClick={useRecordedSpelling}>Use recorded spelling</button>}
           </div>

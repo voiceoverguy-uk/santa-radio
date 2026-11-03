@@ -71,6 +71,15 @@ export default function SantaTrackerBanner() {
     ? "bg-santa-gold"
     : "bg-green-400";
 
+  const statusBadge = (
+    <div className="tracker-status inline-flex items-center gap-2 rounded-full px-3 py-1.5">
+      <span className={`w-2 h-2 rounded-full flex-shrink-0 ${dotColor}`} />
+      <span className="text-xs font-medium text-gray-200 uppercase tracking-wider">
+        {statusLabel}
+      </span>
+    </div>
+  );
+
   return (
     <section className="tracker-banner relative overflow-hidden" aria-label="Santa Tracker">
       <div className="absolute inset-0 star-field opacity-60" />
@@ -78,12 +87,7 @@ export default function SantaTrackerBanner() {
         <div className={`${!isLive && !isComplete ? "tracker-banner-map-layout " : ""}flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8`}>
 
           <div className="tracker-banner-copy flex-1 text-center lg:text-left lg:max-w-lg">
-            <div className="tracker-status inline-flex items-center gap-2 rounded-full px-3 py-1.5 mb-4">
-              <span className={`w-2 h-2 rounded-full flex-shrink-0 ${dotColor}`} />
-              <span className="text-xs font-medium text-gray-200 uppercase tracking-wider">
-                {statusLabel}
-              </span>
-            </div>
+            {(isLive || isComplete) && <div className="mb-4">{statusBadge}</div>}
 
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight">
               Track Santa&apos;s Journey
@@ -118,8 +122,9 @@ export default function SantaTrackerBanner() {
             {isLive || isComplete ? (
               <LiveStats data={data} />
             ) : (
-              <div className="flex w-full items-center justify-center lg:justify-end">
+              <div className="tracker-banner-map-group">
                 <MiniMap holiday={onHoliday ? holiday : null} />
+                {statusBadge}
               </div>
             )}
           </div>

@@ -85,11 +85,20 @@ test('failed allowance check stops checking and retry restores Create message', 
     ? route.fulfill({ json: state })
     : route.fulfill({ status: 503, json: { error: 'Service unavailable.' } }) });
   const allowance = page.locator('.smw-allowance');
-  await expect(allowance).toHaveText('Message creation is paused until your allowance can be confirmed.');
-  await expect(page.getByRole('alert')).toContainText('temporarily unavailable');
+  await expect(allowance).toContainText('We can’t check how many messages you have left right now, so we can’t create your recording. Please try again.');
+  await expect(page.getByRole('alert')).toHaveCount(1);
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
+  for (const width of [1365, 390, 320]) {
+    await page.setViewportSize({ width, height: 1100 });
+    const back = await page.locator('.smw-actions:not([hidden])').getByRole('button', { name: 'Back', exact: true }).boundingBox();
+    const create = await page.getByRole('button', { name: 'Create message', exact: true }).boundingBox();
+    expect(Math.abs(back.y + back.height / 2 - create.y - create.height / 2)).toBeLessThanOrEqual(1);
+    expect(create.x).toBeGreaterThanOrEqual(back.x + back.width);
+    expect(create.x + create.width).toBeLessThanOrEqual(width);
+    expect(await allowance.evaluate(node => node.scrollWidth <= node.clientWidth + 1)).toBe(true);
+  }
   healthy = true;
-  await page.getByRole('button', { name: 'Check allowance again', exact: true }).click();
+  await page.getByRole('button', { name: 'Try again', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
   await expect(page.getByRole('alert')).toHaveCount(0);
   expect(fixture.posts).toHaveLength(0);
@@ -110,7 +119,7 @@ test('expired access explains how to reopen Studio instead of endlessly checking
   await expect(page.locator('.smw-allowance')).not.toContainText('Checking');
   await expect(page.getByRole('alert')).toContainText('enter your access code again');
   await expect(page.getByRole('button', { name: 'Reload Studio', exact: true })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Check allowance again', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Try again', exact: true })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
 });
 

@@ -213,7 +213,10 @@ export default function SantaDashPromo() {
       <div className="santa-dash-promo__inner">
         <HomepageSectionHeading
           eyebrow="A festive rooftop adventure"
-          title="Santa Dash — Back to the Grotto"
+          title={<>
+            <span className="santa-dash-promo__title-line">Santa Dash —</span>{' '}
+            <span className="santa-dash-promo__title-line">Back to the Grotto</span>
+          </>}
           subtitle="Race across snowy rooftops with Santa."
           titleId="santa-dash-promo-title"
           className="santa-dash-promo__heading"
@@ -283,7 +286,6 @@ export default function SantaDashPromo() {
               <i className="santa-dash-promo__camera" />
             </span>
           </div>
-        </div>
         <div className="santa-dash-promo__controls">
           <button
             className="santa-dash-promo__playback"
@@ -297,9 +299,9 @@ export default function SantaDashPromo() {
             <span className="santa-dash-promo__playback-icon" aria-hidden="true">
               {pauseButtonMeansPause ? 'Ⅱ' : '▶'}
             </span>
-            <span>{failed ? 'Retry preview' : pauseButtonMeansPause ? 'Pause preview' : 'Play preview'}</span>
           </button>
           <p className="santa-dash-promo__status" role="status" aria-live="polite">{status}</p>
+        </div>
         </div>
         <a
           className="santa-dash-promo__download"

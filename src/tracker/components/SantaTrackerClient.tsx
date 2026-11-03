@@ -269,7 +269,9 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
             Santa&apos;s Estimated Journey Timeline
           </h2>
           <p className="tracker-copy text-center text-xs mb-6">
-            60 estimated stops across 37 Christmas UTC offsets, from the Pacific Islands to American Samoa. Times use local midnight at a representative place, not every year-round time zone. Santa&apos;s activities are make-believe.
+            60 estimated stops across 37 Christmas UTC offsets, from the Pacific Islands to American Samoa.
+            <br />
+            Times use local midnight at a representative place, not every year-round time zone. Santa&apos;s activities are make-believe.
           </p>
           <SantaTimeline effectiveTime={effectiveTime} />
         </div>

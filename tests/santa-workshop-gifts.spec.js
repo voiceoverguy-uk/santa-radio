@@ -50,6 +50,98 @@ async function save(page, label, file) {
   return download;
 }
 
+test('completed gifts stay downloadable when allowance checks fail', async ({ page }) => {
+  test.setTimeout(90000);
+  mkdirSync('generated-artifacts/studio-gifts', { recursive: true });
+  const fixture = await review(page);
+  await confirmMessage(page);
+  await expect(giftButtons(page)).toHaveCount(3);
+  for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+  const completedText = await letterText(page).textContent();
+  await page.route('**/api/santa-studio-message', route => route.request().method() === 'GET'
+    ? route.fulfill({ status: 503, json: { error: 'Temporarily unavailable.' } }) : route.fallback());
+  await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+  await expect(page.getByRole('alert')).toContainText('can’t check how many messages');
+  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
+  for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+  await expect(letterText(page)).toHaveText(completedText);
+  await save(page, 'Download Santa picture (PNG)', 'generated-artifacts/studio-gifts/blocked-creation-picture.png');
+  await save(page, 'Download certificate (PDF)', 'generated-artifacts/studio-gifts/blocked-creation-certificate.pdf');
+  await save(page, 'Download letter (PDF)', 'generated-artifacts/studio-gifts/blocked-creation-letter.pdf');
+  expect(fixture.posts).toHaveLength(1);
+});
+
+for (const successes of [1, 2]) {
+  test(`confirmed gifts restore without MP3 playback with ${successes} completed messages`, async ({ page }) => {
+    test.setTimeout(90000);
+    mkdirSync('generated-artifacts/studio-gifts', { recursive: true });
+    const fixture = await review(page);
+    await confirmMessage(page);
+    for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+    fixture.state = { ...fixture.state, successes, remaining: 2 - successes };
+    await page.route('**/api/santa-studio-message?audio=1', route => route.fulfill({
+      status: 503, json: { error: 'Saved MP3 unavailable.' },
+    }));
+    await page.reload();
+    await expect(giftButtons(page)).toHaveCount(3);
+    await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
+    for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+    await expect(page.getByText('Saved MP3 unavailable.', { exact: true })).toBeVisible();
+    await expect(page.locator('.studio-certificate__name')).toHaveText('Dixie');
+    await expect(letterText(page)).toContainText('Completing a jigsaw puzzle');
+    await save(page, 'Download Santa picture (PNG)', `generated-artifacts/studio-gifts/restored-picture-${successes}.png`);
+    expect(fixture.posts).toHaveLength(1);
+  });
+}
+
+for (const width of [320, 1365]) {
+  test(`bad language blocks spelling confirmation, previews and exports at ${width}px`, async ({ page }) => {
+    test.setTimeout(90000);
+    const fixture = await review(page);
+    await page.setViewportSize({ width, height: 900 });
+    await confirmMessage(page);
+    for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+    await page.getByRole('button', { name: 'Edit certificate name', exact: true }).click();
+    const input = page.getByRole('textbox', { name: 'Name spelling', exact: true });
+    const confirm = page.getByRole('button', { name: 'Use this spelling', exact: true });
+    await expect(input).toHaveAttribute('placeholder', 'Name only — no swear words');
+    const warning = 'Bad language is not allowed. Remove it before creating your images.';
+    for (const offensive of ['Fuck You', 'Anne Fuck Smith', 'F-u-c-k You', 'Fúck']) {
+      await input.fill(offensive);
+      await expect(confirm).toBeDisabled();
+      await expect(input).toHaveAttribute('aria-invalid', 'true');
+      await expect(page.getByRole('alert')).toHaveText(warning);
+      await expect(page.locator('.studio-certificate__name')).toHaveText('Dixie');
+      await expect(page.locator('.studio-gifts__preview-stack .studio-santa-picture__name text')).toHaveText('Dixie');
+      await expect(letterText(page)).not.toContainText(offensive);
+      for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
+      await input.press('Enter');
+      await expect(input).toBeVisible();
+      // The validator must also reject a submit dispatched without the button.
+      await input.locator('..').evaluate(form => form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })));
+      await expect(confirm).toBeDisabled();
+      await expect(page.locator('.studio-certificate__name')).toHaveText('Dixie');
+    }
+    mkdirSync('generated-artifacts/studio-gifts', { recursive: true });
+    await page.locator('.smw-written-name').screenshot({
+      path: `generated-artifacts/studio-gifts/bad-language-${width}.png`, animations: 'disabled',
+    });
+    await input.fill('Élodie O’Neill');
+    await expect(confirm).toBeEnabled();
+    await expect(input).toHaveAttribute('aria-invalid', 'false');
+    await expect(page.getByRole('alert')).toHaveCount(0);
+    await expect(page.locator('.studio-certificate__name')).toHaveText('Élodie O’Neill');
+    await confirm.click();
+    for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+    await page.getByRole('button', { name: 'Edit certificate name', exact: true }).click();
+    await input.fill('Fuck You');
+    await page.getByRole('button', { name: 'Cancel', exact: true }).click();
+    await expect(page.locator('.studio-certificate__name')).toHaveText('Élodie O’Neill');
+    for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+    expect(fixture.posts).toHaveLength(1);
+  });
+}
+
 for (const width of [320, 1365]) {
   test(`review name editor is inside gifts and previews each keystroke at ${width}px`, async ({ page }) => {
     mkdirSync('generated-artifacts/studio-gifts', { recursive: true });
@@ -122,7 +214,7 @@ test('gifts unlock together, export real local files, retry independently and tr
   for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
   fixture.state.pending = true;
   await page.evaluate(() => window.dispatchEvent(new Event('focus')));
-  for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
+  for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
   fixture.state.pending = false;
   await page.evaluate(() => window.dispatchEvent(new Event('focus')));
   for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
@@ -194,11 +286,11 @@ test('gifts unlock together, export real local files, retry independently and tr
   fixture.fail = true;
   fixture.hold = new Promise(resolve => { resolveAudio = resolve; });
   await confirmMessage(page);
-  for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
+  for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
   await expect.poll(() => !!resolveAudio).toBe(true);
   resolveAudio();
   await expect(page.getByText('Fixture recording unavailable. Try again.', { exact: true })).toBeVisible();
-  for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
+  for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
   fixture.fail = false;
   fixture.hold = new Promise(resolve => { resolveAudio = resolve; });
   await confirmMessage(page);

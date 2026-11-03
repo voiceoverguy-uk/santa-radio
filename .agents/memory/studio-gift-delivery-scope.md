@@ -14,8 +14,20 @@ Names and complete letter content must stay in browser memory for export, with o
 
 **How to apply:** Use local file downloads, keep export failures independent from audio, and describe a download as requested rather than claiming the browser saved it.
 
+Once an MP3 has succeeded, its completed gifts remain downloadable even when creating another message is blocked.
+
+**Why:** The owner explicitly requested image downloads for users who have previously generated an MP3, regardless of the Create message button's availability.
+
+**How to apply:** Retain the last completed gifts through allowance-check failures, exhausted allowance, failed or pending corrections, and audio playback/retrieval failures. A confirmed prior success may restore gift access without downloading the MP3 again. Do not unlock first-time gifts for unfinished recordings, export unconfirmed spelling edits, or replace completed gift details with an unsuccessful correction.
+
 Keep the review-stage written-name editor inside the gift-download section and update all three keepsake previews live while typing.
 
 **Why:** The owner wants people to see the letter, certificate and picture changing as they edit the name, without changing the selected recording.
 
 **How to apply:** Preview the local draft without saving or making requests. Preserve confirmation, cancellation and letter variation; pause gift downloads during editing so an unconfirmed draft cannot be exported.
+
+Do not allow swear words in written-name spellings or generated keepsake previews.
+
+**Why:** The owner explicitly requested disabling “Use this spelling” for swear words, including profanity within a longer entry, and explaining that bad language prevents image creation.
+
+**How to apply:** Explain the restriction beside the field and in unavailable-download guidance, keep offensive drafts out of artwork, and preserve the last valid spelling. Check word forms and common disguises without treating innocent substrings in real names as profanity.

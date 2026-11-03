@@ -3,6 +3,50 @@ import { mkdirSync } from 'node:fs';
 
 const destination = 'https://itunes.apple.com/gb/app/santa-dash-from-santa-guy/id1057048397';
 
+test('Santa Dash title keeps its intended two lines without overflow', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page.evaluate(() => document.fonts.ready);
+  const promo = page.getByRole('region', { name: 'Santa Dash — Back to the Grotto', exact: true });
+  const title = promo.getByRole('heading', { level: 2, name: 'Santa Dash — Back to the Grotto', exact: true });
+  await expect(promo.getByRole('heading')).toHaveCount(1);
+  await expect(title).toHaveCount(1);
+  const lines = title.locator('.santa-dash-promo__title-line');
+  await expect(lines).toHaveText(['Santa Dash —', 'Back to the Grotto']);
+
+  for (const width of [1440, 830, 768, 540, 390, 375, 320]) {
+    await page.setViewportSize({ width, height: 1000 });
+    const geometry = await title.evaluate(element => {
+      const heading = element.getBoundingClientRect();
+      return {
+        heading: heading.toJSON(),
+        lineHeight: parseFloat(getComputedStyle(element).lineHeight),
+        lines: [...element.querySelectorAll('span')].map(line => {
+          const range = document.createRange();
+          range.selectNodeContents(line);
+          return {
+            box: line.getBoundingClientRect().toJSON(),
+            ink: [...range.getClientRects()].map(rect => rect.toJSON()),
+          };
+        }),
+      };
+    });
+    expect(geometry.heading.height, `${width}px: exactly two lines`).toBeCloseTo(geometry.lineHeight * 2, 0);
+    expect(geometry.lines[1].box.top - geometry.lines[0].box.top).toBeCloseTo(geometry.lineHeight, 0);
+    for (const { box, ink } of geometry.lines) {
+      expect(box.height).toBeCloseTo(geometry.lineHeight, 0);
+      for (const rect of ink) {
+        expect(rect.left).toBeGreaterThanOrEqual(geometry.heading.left - 1);
+        expect(rect.right).toBeLessThanOrEqual(geometry.heading.right + 1);
+        expect(Math.abs((rect.left + rect.right - geometry.heading.left - geometry.heading.right) / 2)).toBeLessThanOrEqual(1);
+      }
+    }
+    expect(geometry.heading.left).toBeGreaterThanOrEqual(0);
+    expect(geometry.heading.right).toBeLessThanOrEqual(width);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+});
+
 test('homepage advert dissolves between both artworks every four seconds', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/', { waitUntil: 'domcontentloaded' });
@@ -88,6 +132,14 @@ test('homepage advert remains complete, readable and keyboard accessible on desk
     expect(inset.phone.width).toBeCloseTo(baseWidth * 2 / 3, 1);
     expect(inset.phone.width / inset.phone.height).toBeCloseTo(2.23, 2);
     expect(inset.visual.height).toBeCloseTo(inset.artwork.height, 1);
+    const playback = await promo.locator('.santa-dash-promo__playback').boundingBox();
+    expect(playback.y).toBeGreaterThanOrEqual(inset.phone.top);
+    expect(playback.y + playback.height).toBeLessThanOrEqual(inset.phone.bottom + 1);
+    expect(playback.x).toBeGreaterThanOrEqual(inset.phone.left);
+    expect(playback.x + playback.width).toBeLessThanOrEqual(inset.phone.right);
+    expect(playback.width).toBeGreaterThanOrEqual(44);
+    expect(playback.height).toBeGreaterThanOrEqual(44);
+    await expect(promo.locator('.santa-dash-promo__playback')).not.toContainText('preview');
     const leftGap = inset.phone.left - inset.artwork.left;
     const bottomGap = inset.artwork.bottom - inset.phone.bottom;
     expect(leftGap).toBeGreaterThanOrEqual(7);

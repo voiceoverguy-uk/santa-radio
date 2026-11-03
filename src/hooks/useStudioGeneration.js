@@ -39,7 +39,7 @@ export default function useStudioGeneration(onRestore) {
           canRetry = false;
           throw new Error('Santa’s allowance checker is busy. Please wait a minute, then check again.');
         }
-        throw new Error('The message allowance service is temporarily unavailable. Please try again.');
+        throw new Error('We can’t check how many messages you have left right now, so we can’t create your recording. Please try again.');
       }
       const data = await response.json();
       if (!Number.isInteger(data.successes) || data.successes < 0 || data.successes > 2

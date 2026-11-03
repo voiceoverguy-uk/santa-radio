@@ -344,16 +344,15 @@
   min-height: 44px;
 }
 
-.apps-page .app-screenshots-santa-radio .santa-radio-preview-controls {
-  display: grid;
-  gap: 12px;
-  margin: 14px auto 0;
-  padding: 12px 13px;
-  border: 1px solid rgba(219, 194, 135, .32);
-  border-radius: 12px;
-  background: rgba(7, 24, 16, .78);
-  color: #f2e8ce;
-  box-shadow: 0 12px 28px rgba(2, 13, 8, .2);
+.apps-page .santa-radio-preview-feedback-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .apps-page .santa-radio-preview-status {
@@ -396,12 +395,17 @@
 }
 
 .apps-page .santa-radio-autoplay {
-  justify-self: start;
-  min-height: 31px;
-  padding: 5px 10px;
+  position: absolute;
+  z-index: 5;
+  top: 14px;
+  right: 14px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  vertical-align: middle;
   border: 1px solid rgba(215, 189, 120, .6);
   border-radius: 7px;
-  background: rgba(215, 189, 120, .1);
+  background: rgba(7, 24, 16, .9);
   color: #f4dfaa;
   font: inherit;
   font-size: .7rem;

@@ -21,22 +21,21 @@ async function open(page, reduced = true) {
 async function screen(preview, label) {
   await expect(preview.locator('.app-screenshot-slide.is-active')).toHaveCount(1);
   await expect(preview.locator('.app-screenshot-slide').nth(labels.indexOf(label))).toHaveClass(/is-active/);
-  await expect(preview.getByRole('button', { name: `Select ${label} screen preview`, exact: true })).toHaveAttribute('aria-pressed', 'true');
+  if (label !== 'Welcome') {
+    await expect(preview.getByRole('button', { name: `Preview ${label} screen`, exact: true })).toHaveAttribute('aria-pressed', 'true');
+  }
 }
 
-test('real screenshot tab hotspots select each screen; Welcome continues back to Radio', async ({ page }) => {
+test('real screenshot tab hotspots select each screen without the controls panel below', async ({ page }) => {
   const preview = await open(page);
   for (const label of ['Tracker', 'MugShots', 'Artists', 'Games', 'Radio']) {
     await preview.getByRole('button', { name: `Preview ${label} screen`, exact: true }).click();
     await screen(preview, label);
   }
-  await preview.getByRole('button', { name: 'Select Welcome screen preview', exact: true }).click();
-  await screen(preview, 'Welcome');
-  await expect(preview.locator('.santa-radio-screen-hotspots')).toHaveCount(0);
-  await preview.getByRole('button', { name: 'Continue to Santa Radio preview', exact: true }).click();
-  await screen(preview, 'Radio');
-  // Extra controls are scoped to this app only.
-  await expect(page.locator('.app-section:not(#santaradio) .santa-radio-preview-controls')).toHaveCount(0);
+  await expect(preview.locator('.santa-radio-preview-controls, .santa-radio-screen-selectors')).toHaveCount(0);
+  await expect(preview).not.toContainText('SCREEN PREVIEW');
+  await expect(preview).not.toContainText('controls are not part of the app');
+  await expect(preview.locator('.santa-radio-autoplay')).toHaveCount(0);
 });
 
 test('keyboard selection holds the chosen screen until explicit resume, with visible focus', async ({ page }) => {
@@ -57,6 +56,9 @@ test('keyboard selection holds the chosen screen until explicit resume, with vis
   await page.evaluate(() => document.activeElement.blur());
   await page.clock.fastForward(5000);
   await screen(preview, 'Welcome');
+  await expect(preview.locator('.santa-radio-screen-hotspots')).toHaveCount(0);
+  await preview.getByRole('button', { name: 'Continue to Santa Radio preview', exact: true }).click();
+  await screen(preview, 'Radio');
 });
 
 test('hotspots stay aligned, contained and usable on desktop and narrow mobile', async ({ page }) => {
@@ -103,8 +105,8 @@ test('manual selection keeps the current image while a target is pending and rec
   if (await decline.isVisible()) await decline.click();
   const preview = page.locator('#santaradio .app-screenshots');
   await expect.poll(() => preview.locator('img').first().evaluate(el => el.complete && el.naturalWidth > 0)).toBe(true);
-  await preview.getByRole('button', { name: 'Select Games screen preview', exact: true }).click();
-  await expect(preview.getByRole('button', { name: 'Select Games screen preview', exact: true })).toHaveAttribute('aria-busy', 'true');
+  await preview.getByRole('button', { name: 'Preview Games screen', exact: true }).click();
+  await expect(preview.getByRole('button', { name: 'Preview Games screen', exact: true })).toHaveAttribute('aria-busy', 'true');
   await expect(preview.locator('.santa-radio-preview-status')).toContainText('Loading Games preview');
   await screen(preview, 'Radio');
   release();

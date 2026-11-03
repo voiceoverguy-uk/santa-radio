@@ -122,7 +122,7 @@ export default function WorkshopMessageAudio({
       credentials: 'same-origin', cache: 'no-store', signal: controller.signal,
     }).then(response => receive(response, controller.signal)).then(() => {
       loadedSequence.current = sequence;
-      readyCallbackRef.current?.({ record: status.record, choices: status.choices });
+      readyCallbackRef.current?.({ record: status.record, choices: status.choices, successes: sequence });
     })
       .catch(failure => { if (!controller.signal.aborted) setError(failure.message); });
     return () => controller.abort();
@@ -177,7 +177,7 @@ export default function WorkshopMessageAudio({
       // Refresh will restore the authoritative choices and end correction mode.
       loadedSequence.current = sequence || (status?.successes || 0) + 1;
       operationRef.current = null;
-      readyCallbackRef.current?.({ record, choices });
+      readyCallbackRef.current?.({ record, choices, successes: loadedSequence.current });
     } catch (failure) {
       if (requestRef.current === controller) {
         setPhase(urlRef.current ? 'ready' : 'error');
@@ -206,19 +206,19 @@ export default function WorkshopMessageAudio({
         operationRef.current = null;
         onCorrection();
       }}>Edit and regenerate once</button>}
-    <p className="smw-allowance" role="status" aria-live="polite">
+    <p className="smw-allowance" role={generation.error ? 'alert' : 'status'} aria-live={generation.error ? 'assertive' : 'polite'}>
       {generation.checking ? 'Checking your message allowance…' : generation.error
-        ? 'Message creation is paused until your allowance can be confirmed.'
+        ? generation.error
         : !status ? 'Your message allowance has not been confirmed.' : status.remaining === 0
         ? 'Both messages have been created. No further generation is available. Repeat downloads are still available.'
         : status.pending ? 'A message is being prepared for this access. Your allowance will update when it finishes.'
           : status.successes === 1
             ? 'Your recorded name and full destination are locked. One correction remains for the other audio choices.'
             : 'You can create one message, then make one correction. The recorded name and full destination lock after the first successful message.'}
-    </p>
-    {generation.error && <p role="alert">{generation.error} <button type="button" className="smw-change"
+      {generation.error && <> <button type="button" className="smw-change"
       onClick={generation.accessExpired ? () => window.location.reload() : generation.refresh}>
-      {generation.accessExpired ? 'Reload Studio' : 'Check allowance again'}</button></p>}
+      {generation.accessExpired ? 'Reload Studio' : 'Try again'}</button></>}
+    </p>
     {busy && <div className="smw-message-result" role="status" aria-live="polite">
       <p>{phase === 'receiving' ? 'Receiving your finished MP3…' : preparationMessage}</p>
       <progress aria-label="Preparing your message" />

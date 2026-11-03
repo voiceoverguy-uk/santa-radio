@@ -100,7 +100,8 @@ export default function WorkshopDestinationPicker({
         ))}
       </div>
       <div className="smw-destination-picker__country" hidden={showRegions}>
-        <h3 ref={countryHeadingRef} tabIndex={-1} className="smw-destination-picker__heading">
+        <h3 ref={countryHeadingRef} tabIndex={-1}
+          className={`smw-destination-picker__heading${fantasy ? '' : ' smw-destination-picker__heading--accessible-only'}`}>
           {fantasy ? 'Choose a fantasy or space destination' : 'Choose a country or real place'}
         </h3>
         <div className="smw-destination-picker__searchable">
@@ -126,9 +127,9 @@ export default function WorkshopDestinationPicker({
                   </button>
                   {countryOnlyAction}
                 </div>}
-                <div className="smw-destination-picker__region-prompt">
-                  <p>{guidance || 'Optional: make the destination more local, or continue with the country alone.'}</p>
-                </div>
+                {guidance && <div className="smw-destination-picker__region-prompt">
+                  <p>{guidance}</p>
+                </div>}
               </>
             )}
           />
@@ -137,13 +138,10 @@ export default function WorkshopDestinationPicker({
 
       {groupKey && canChooseRegion && (
         <div className="smw-destination-picker__regional" hidden={!showRegions}>
-          <div className="smw-destination-picker__regional-head">
-            <button type="button" onClick={backToCountries}>Back to countries</button>
-            <h3 ref={regionHeadingRef} tabIndex={-1} className="smw-destination-picker__heading">
-              {regionalHeadings[groupKey]}
-            </h3>
-            {countryOnlyAction}
-          </div>
+          <h3 ref={regionHeadingRef} tabIndex={-1}
+            className="smw-destination-picker__heading smw-destination-picker__heading--accessible-only">
+            {regionalHeadings[groupKey]}
+          </h3>
           <div className="smw-destination-picker__searchable">
             <WorkshopSearchableChoices
               key={groupKey}
@@ -159,6 +157,12 @@ export default function WorkshopDestinationPicker({
               selectedText={selectedRegion?.label || country?.label || ''}
               searchLabel={`Search ${groupKey === 'usa-states' ? 'states' : 'counties'} in ${country.label}`}
               placeholder={`Search ${groupKey === 'usa-states' ? 'states' : 'counties'} in ${country.label}`}
+              wheelFooter={
+                <div className="smw-destination-picker__regional-actions">
+                  <button type="button" onClick={backToCountries}>Back to countries</button>
+                  {countryOnlyAction}
+                </div>
+              }
             />
           </div>
         </div>

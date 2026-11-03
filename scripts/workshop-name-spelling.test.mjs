@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { getWorkshopWrittenName, getWorkshopDownloadName, validateWorkshopSpelling } from '../src/lib/workshopNameSpelling.js';
+import { containsWorkshopProfanity, WORKSHOP_LANGUAGE_ERROR } from '../src/lib/workshopSpellingLanguage.js';
 
 test('written spelling is separate from recorded identity and follows the download convention', () => {
   assert.equal(getWorkshopWrittenName('Wendi', 'Wendy'), 'Wendy');
@@ -23,5 +24,29 @@ test('invalid or excessive spellings cannot become filenames or output names', (
     assert.notEqual(validateWorkshopSpelling(name), '');
     assert.equal(getWorkshopWrittenName('Wendi', name), 'Wendi');
     assert.equal(getWorkshopDownloadName('Wendi', name), 'santa-message-for-Wendi.mp3');
+  }
+});
+
+test('bad language, included words and disguised spellings never become output names', () => {
+  for (const name of [
+    'Fuck You', 'Anne FUCK Smith', 'motherfucker', 'Shithead', 'Bitch', 'Bastard',
+    'Twat', 'Wanker', 'Bollocks', 'Arsehole', 'Asshole', 'Prick', 'Piss off',
+    'F-u-c-k You', 'f u c k', 'Fúck', 'Ｆｕｃｋ', 'fuuuck', 'f\u200buck', 'f4ck', 'sh1t',
+  ]) {
+    // f4ck is invalid name syntax, even though the substitution is not a match.
+    assert.notEqual(validateWorkshopSpelling(name), '', name);
+    if (name !== 'f4ck') {
+      assert.equal(containsWorkshopProfanity(name), true, name);
+      assert.equal(validateWorkshopSpelling(name), WORKSHOP_LANGUAGE_ERROR, name);
+    }
+    assert.equal(getWorkshopWrittenName('Wendi', name), 'Wendi', name);
+    assert.equal(getWorkshopDownloadName('Wendi', name), 'santa-message-for-Wendi.mp3', name);
+  }
+});
+
+test('legitimate names do not fail on partial word matches', () => {
+  for (const name of ['Ishita', 'Scunthorpe', 'Hancock', 'Cockburn', 'Dick', 'Fanny', 'Cassie', 'Priscilla', 'Élodie O’Neill', 'Anne-Marie', '李明']) {
+    assert.equal(containsWorkshopProfanity(name), false, name);
+    assert.equal(validateWorkshopSpelling(name), '', name);
   }
 });

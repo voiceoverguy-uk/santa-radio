@@ -55,6 +55,22 @@ for (const width of [1365, 320, 390, 430]) {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await openRegionalStage(page);
     await page.getByRole('option', { name: 'England', exact: true }).click();
+    const regionAction = page.getByRole('button', { name: 'Choose a county', exact: true });
+    const actionStyle = await regionAction.evaluate(node => {
+      const style = getComputedStyle(node);
+      const action = node.getBoundingClientRect();
+      const parent = node.parentElement.getBoundingClientRect();
+      return {
+        background: style.backgroundColor, border: style.borderTopColor,
+        centreOffset: Math.abs(action.x + action.width / 2 - parent.x - parent.width / 2),
+        height: action.height,
+      };
+    });
+    expect(actionStyle.background).toBe('rgba(0, 0, 0, 0)');
+    expect(actionStyle.border).toBe('rgba(0, 0, 0, 0)');
+    expect(actionStyle.centreOffset).toBeLessThanOrEqual(1);
+    expect(actionStyle.height).toBeGreaterThanOrEqual(44);
+    await expect(page.getByText('Optional: make the destination more local, or continue with the country alone.', { exact: true })).toHaveCount(0);
     await page.getByRole('button', { name: 'Choose a county', exact: true }).click();
     const search = page.getByRole('searchbox', { name: 'Search counties in England', exact: true });
     await search.fill('Kent');
@@ -653,37 +669,84 @@ for (const width of [1365, 320]) {
   });
 }
 
-for (const [country, kind] of [['United States', 'state'], ['England', 'county']]) {
+for (const [country, kind] of [
+  ['United States', 'state'],
+  ['England', 'county'],
+  ['Wales', 'county'],
+  ['Scotland', 'county'],
+  ['Northern Ireland', 'county'],
+]) {
   for (const width of [1365, 320]) {
-    test(`regional action placement ${country} ${width}: selected label, action, explanation and keyboard`, async ({ page }) => {
+    test(`regional action placement ${country} ${width}: centred unboxed action and keyboard`, async ({ page }) => {
       test.setTimeout(60000);
       await page.setViewportSize({ width, height: 1000 });
       await page.emulateMedia({ reducedMotion: 'reduce' });
       await openRegionalStage(page);
       if (width === 320) await page.addStyleTag({ content: 'html { font-size: 200%; }' });
+      const countryHeading = page.getByRole('heading', { name: 'Choose a country or real place', exact: true });
+      expect(await countryHeading.evaluate(node => getComputedStyle(node).clipPath)).toBe('inset(50%)');
+      const wheelGap = await page.locator('.smw-destination-picker').evaluate(node => {
+        const categories = node.querySelector('.smw-talent-categories').getBoundingClientRect();
+        const content = node.querySelector('.smw-destination-picker__country').getBoundingClientRect();
+        return content.top - categories.bottom;
+      });
+      expect(wheelGap).toBeGreaterThanOrEqual(0);
+      expect(wheelGap).toBeLessThanOrEqual(20);
       await page.getByRole('option', { name: country, exact: true }).click();
       const action = page.getByRole('button', { name: `Choose a ${kind}`, exact: true });
       await expect(action).toHaveCount(1);
       const geometry = await page.locator('.smw-destination-picker__country').evaluate(node => {
         const status = node.querySelector('.smw-choice-wheel-status').getBoundingClientRect();
         const action = node.querySelector('.smw-destination-picker__region-action').getBoundingClientRect();
-        const explanation = node.querySelector('.smw-destination-picker__region-prompt').getBoundingClientRect();
+        const wheel = node.querySelector('.smw-choice-wheel-status').getBoundingClientRect();
         return { statusBottom: status.bottom, actionTop: action.top, actionBottom: action.bottom,
-          explanationTop: explanation.top, actionLeft: action.left, actionRight: action.right };
+          centreOffset: Math.abs(action.x + action.width / 2 - wheel.x - wheel.width / 2),
+          actionLeft: action.left, actionRight: action.right };
       });
       expect(geometry.actionTop).toBeGreaterThanOrEqual(geometry.statusBottom);
-      expect(geometry.actionBottom).toBeLessThanOrEqual(geometry.explanationTop);
+      expect(geometry.centreOffset).toBeLessThanOrEqual(1);
       expect(geometry.actionLeft).toBeGreaterThanOrEqual(0);
       expect(geometry.actionRight).toBeLessThanOrEqual(width);
-      await expect(page.locator('.smw-destination-picker__region-prompt button')).toHaveCount(0);
+      await expect(page.locator('.smw-destination-picker__region-prompt')).toHaveCount(0);
+      await page.locator('.smw-builder').screenshot({
+        path: `generated-artifacts/studio-destination-action-${country}-${width}.png`,
+        animations: 'disabled',
+      });
       await page.getByRole('listbox').focus();
       await page.keyboard.press('Tab');
       await expect(action).toBeFocused();
       await page.keyboard.press('Enter');
       await expect(page.getByRole('heading', { name: `${kind === 'state' ? 'States' : 'Counties'} in ${country}`, exact: true })).toBeFocused();
+      const regional = page.locator('.smw-destination-picker__regional');
+      const regionalHeading = regional.getByRole('heading', { level: 3 });
+      expect(await regionalHeading.evaluate(node => getComputedStyle(node).clipPath)).toBe('inset(50%)');
+      await regional.getByRole('option').first().click();
+      const regionalGeometry = await regional.evaluate(node => {
+        const wheel = node.querySelector('[role="listbox"]').getBoundingClientRect();
+        const status = node.querySelector('.smw-choice-wheel-status').getBoundingClientRect();
+        const actions = [...node.querySelectorAll('.smw-destination-picker__regional-actions button')]
+          .map(button => button.getBoundingClientRect().toJSON());
+        return { wheel: wheel.toJSON(), status: status.toJSON(), actions };
+      });
+      expect(regionalGeometry.actions).toHaveLength(2);
+      for (const action of regionalGeometry.actions) {
+        expect(action.top).toBeGreaterThanOrEqual(regionalGeometry.status.bottom);
+        expect(action.left).toBeGreaterThanOrEqual(regionalGeometry.wheel.left - 1);
+        expect(action.right).toBeLessThanOrEqual(regionalGeometry.wheel.right + 1);
+        expect(action.height).toBeGreaterThanOrEqual(44);
+      }
+      await page.locator('.smw-builder').screenshot({
+        path: `generated-artifacts/studio-regional-actions-${country}-${width}.png`,
+        animations: 'disabled',
+      });
       await page.getByRole('button', { name: 'Back to countries', exact: true }).click();
       await expect(page.getByRole('heading', { name: 'Choose a country or real place', exact: true })).toBeFocused();
       await expect(page.getByRole('option', { name: country, exact: true })).toHaveAttribute('aria-selected', 'true');
+      await page.getByRole('button', { name: `Choose a ${kind}`, exact: true }).click();
+      await regional.getByRole('button', { name: `Use ${country} only`, exact: true }).click();
+      await expect(page.getByRole('heading', { name: 'Choose a country or real place', exact: true })).toBeFocused();
+      await expect(page.locator('.smw-destination-picker__country .smw-wording-selection')).toHaveText(country);
+      await expect(page.getByRole('button', { name: `Use ${country} only`, exact: true })).toHaveCount(0);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
     });
   }

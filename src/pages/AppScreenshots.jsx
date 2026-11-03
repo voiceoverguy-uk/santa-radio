@@ -103,6 +103,17 @@ export default function AppScreenshots({
     >
       <figcaption className="app-screenshots-heading">{heading}</figcaption>
       <div className="app-screenshots-frame">
+        {santaRadioPreview && !reducedMotion && (
+          <button
+            type="button"
+            className="santa-radio-autoplay"
+            aria-label={autoplayEnabled ? 'Pause automatic screen previews' : 'Resume automatic screen previews'}
+            aria-pressed={autoplayEnabled}
+            onClick={() => setAutoplayEnabled(value => !value)}
+          >
+            <span aria-hidden="true">{autoplayEnabled ? 'Ⅱ' : '▶'}</span>
+          </button>
+        )}
         <div className="app-screenshots-stack" style={{ aspectRatio: `${slides[0].width} / ${slides[0].height}` }}>
           {slides.map((slide, index) => (
             <AppScreenshotImage
@@ -124,6 +135,7 @@ export default function AppScreenshots({
                   className={`santa-radio-hotspot${active === index ? ' is-selected' : ''}`}
                   aria-label={`Preview ${label} screen`}
                   aria-pressed={active === index}
+                  aria-busy={pendingSelection === index}
                   onClick={() => selectScreen(index)}
                 />
               ))}
@@ -148,11 +160,9 @@ export default function AppScreenshots({
         )}
       </div>
       {santaRadioPreview && (
-        <div className="santa-radio-preview-controls">
+        <div className="santa-radio-preview-feedback-only">
           <div className="santa-radio-preview-status" aria-live="polite">
-            <span className="santa-radio-preview-eyebrow">SCREEN PREVIEW</span>
             <span className="santa-radio-current-screen">{slides[active]?.label}</span>
-            <span className="santa-radio-preview-disclaimer">Preview only · controls are not part of the app</span>
             {pendingSelection !== null && (
               <span className="santa-radio-preview-feedback" role="status">
                 Loading {slides[pendingSelection]?.label} preview…
@@ -163,37 +173,6 @@ export default function AppScreenshots({
                 Could not load {slides[selectionFailure]?.label} preview. Still showing {slides[active]?.label}.
               </span>
             )}
-          </div>
-          <div className="santa-radio-preview-actions">
-            <button
-              type="button"
-              className="santa-radio-autoplay"
-              aria-label={reducedMotion
-                ? 'Automatic screen previews off for reduced motion'
-                : autoplayEnabled ? 'Pause automatic screen previews' : 'Resume automatic screen previews'}
-              aria-pressed={autoplayEnabled}
-              disabled={reducedMotion}
-              onClick={() => setAutoplayEnabled(value => !value)}
-            >
-              {reducedMotion
-                ? 'Automatic screen previews off for reduced motion'
-                : autoplayEnabled ? 'Pause preview' : 'Resume preview'}
-            </button>
-            <nav className="santa-radio-screen-selectors" aria-label="Choose a Santa Radio app screen preview">
-              {slides.map((slide, index) => (
-                <button
-                  key={slide.label}
-                  type="button"
-                  className={`santa-radio-screen-selector${active === index ? ' is-selected' : ''}`}
-                  aria-label={`Select ${slide.label} screen preview`}
-                  aria-pressed={active === index}
-                  aria-busy={pendingSelection === index}
-                  onClick={() => selectScreen(index)}
-                >
-                  {slide.label}
-                </button>
-              ))}
-            </nav>
           </div>
         </div>
       )}

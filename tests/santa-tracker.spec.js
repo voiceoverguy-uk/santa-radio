@@ -491,6 +491,15 @@ for (const [date, holiday] of [
     })));
     for (const width of [320, 1440]) {
       await page.setViewportSize({ width, height: 900 });
+      const status = banner.locator('.tracker-status');
+      await expect(status).toHaveCount(1);
+      await expect(banner.locator('.tracker-banner-copy .tracker-status')).toHaveCount(0);
+      const badgeBox = await status.boundingBox();
+      const mapBox = await map.boundingBox();
+      expect(badgeBox.y).toBeGreaterThanOrEqual(mapBox.y + mapBox.height + 12);
+      expect(Math.abs(badgeBox.x + badgeBox.width / 2 - mapBox.x - mapBox.width / 2)).toBeLessThanOrEqual(1);
+      expect(badgeBox.x).toBeGreaterThanOrEqual(0);
+      expect(badgeBox.x + badgeBox.width).toBeLessThanOrEqual(width);
       expect(await map.evaluate(node => node.scrollWidth <= node.clientWidth + 1)).toBe(true);
       await expect(stops.first()).toHaveAttribute('stroke', '#bcc9bd');
     }
