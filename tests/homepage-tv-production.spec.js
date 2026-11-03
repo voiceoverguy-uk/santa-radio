@@ -34,6 +34,8 @@ for (const media of [null, false, true]) {
     expect(html).toContain('aria-busy="true"');
     expect(html).not.toContain('<iframe');
     expect(html).not.toContain('YouTube is off');
+    expect(html).toContain('Highlights of the webcams at the North Pole. Keep checking back!');
+    expect(html).not.toMatch(/Pause video|Resume muted video|Live video paused/);
     const requests = [];
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
@@ -51,7 +53,11 @@ for (const media of [null, false, true]) {
     await expect(page.locator('.youtube-section').getByRole('heading', {
       level: 2, name: 'Best of the North Pole Webcams', exact: true,
     })).toBeVisible();
-    await expect(page.locator('.youtube-section .homepage-section-heading__subtitle')).toHaveText('Christmas Music 24/7');
+    await expect(page.locator('.youtube-section .homepage-section-heading__subtitle')).toHaveText('Highlights of the webcams at the North Pole. Keep checking back!');
+    await expect(page.locator('.youtube-section').getByRole('button', {
+      name: /^(Pause video|Resume muted video)$/,
+    })).toHaveCount(0);
+    await expect(page.locator('.youtube-section .video-preview, .youtube-section .video-motion-toggle')).toHaveCount(0);
     await expect(page.locator('.youtube-section iframe')).toHaveCount(media === false ? 0 : 1);
     if (media !== false) await expect.poll(() => requests.length).toBe(1);
     else expect(requests).toHaveLength(0);
@@ -60,12 +66,6 @@ for (const media of [null, false, true]) {
       expect(await page.evaluate(() => localStorage.getItem('santaradio-cookie-consent-v2'))).toBeNull();
     }
     if (media !== false) {
-      const pause = page.getByRole('button', { name: 'Pause video', exact: true });
-      await pause.click();
-      await expect(page.locator('.youtube-section iframe')).toHaveCount(0);
-      await expect(page.locator('.youtube-section .video-preview')).toHaveText('Live video paused');
-      await page.getByRole('button', { name: 'Resume muted video', exact: true }).click();
-      await expect(page.locator('.youtube-section iframe')).toHaveCount(1);
       await expect(page.locator('.youtube-section iframe')).toHaveAttribute('src', /[?&]mute=1(?:&|$)/);
     }
     expect(errors).toEqual([]);

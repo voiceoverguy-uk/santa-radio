@@ -61,17 +61,19 @@ test('unreachable webcam can be enabled and unloaded without a disclosure below 
   await expect(webcam.getByRole('link', { name: 'Open on YouTube instead (new tab)' })).toBeVisible();
 });
 
-test('automatic webcam attempts muted inline autoplay and pause/resume leaves radio untouched', async ({ page }) => {
+test('automatic webcam has no pause control, attempts muted inline autoplay and withdrawal leaves radio untouched', async ({ page }) => {
   await page.route('https://www.youtube.com/embed/**', route => route.fulfill({ contentType: 'text/html', body: 'Mock video provider' }));
   await page.addInitScript(() => {
     window.radioCalls = { play: 0, pause: 0 };
     HTMLMediaElement.prototype.load = function () {};
     HTMLMediaElement.prototype.play = function () {
-      window.radioCalls.play++;
+      if (this === document.querySelector('audio')) window.radioCalls.play++;
       this.dispatchEvent(new Event('playing'));
       return Promise.resolve();
     };
-    HTMLMediaElement.prototype.pause = function () { window.radioCalls.pause++; };
+    HTMLMediaElement.prototype.pause = function () {
+      if (this === document.querySelector('audio')) window.radioCalls.pause++;
+    };
   });
   await page.goto('/');
   await expect(page.locator('.radio-dock')).toBeVisible();
@@ -91,13 +93,10 @@ test('automatic webcam attempts muted inline autoplay and pause/resume leaves ra
   await expect(video).toHaveAttribute('inert', '');
   await expect(video).toHaveAttribute('tabindex', '-1');
   await expect(video).toHaveCSS('pointer-events', 'none');
-  await page.getByRole('button', { name: 'Pause video', exact: true }).click();
-  await expect(video).toHaveCount(0);
-  await expect(page.locator('.tv-screen')).toContainText('Live video paused');
-  await page.getByRole('button', { name: 'Resume muted video' }).click();
-  await expect(video).toHaveAttribute('src', url.href);
-  await expect(video).toHaveAttribute('allow', 'autoplay; encrypted-media');
-  await expect(video).not.toHaveAttribute('allowfullscreen');
+  await expect(page.locator('.youtube-section').getByRole('button', {
+    name: /^(Pause video|Resume muted video)$/,
+  })).toHaveCount(0);
+  await expect(page.locator('.youtube-section .video-preview')).toHaveCount(0);
   await expect(page.locator('.youtube-section .video-disclosure')).toHaveCount(0);
   await page.locator('footer').getByRole('button', { name: 'Cookie settings', exact: true }).click();
   await page.locator('.marketing-consent').getByRole('button', {

@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 
 const sections = [
-  ['youtube', '.youtube-section', 'A window to the North Pole', 'Best of the North Pole Webcams', 'Christmas Music 24/7', '.youtube-section > .container'],
+  ['youtube', '.youtube-section', 'A window to the North Pole', 'Best of the North Pole Webcams', 'Highlights of the webcams at the North Pole. Keep checking back!', '.youtube-section > .container'],
   ['mugshots', '#homepage-mugshots', 'THE SANTA RADIO HALL OF FAME', 'Celebrity Mugshots', 'Famous faces. One festive mug.', '.mugshots-preview-inner'],
   ['contact', '.contact-section', 'THE NORTH POLE POST ROOM', 'We’d love to hear from you', 'Got a question, a festive idea or something to share? Get in touch with the Santa Radio team.', '.contact-copy'],
   ['dash', '.santa-dash-promo', 'A festive rooftop adventure', 'Santa Dash — Back to the Grotto', 'Race across snowy rooftops with Santa.', '.santa-dash-promo__inner'],
@@ -77,6 +77,15 @@ for (const [width, enlarged] of [[1440, false], [768, false], [390, false], [320
       await expect(stack).toHaveCount(1);
       await expect(small).toHaveText(eyebrow);
       await expect(intro).toHaveText(subtitle);
+      if (name === 'youtube') {
+        await expect(section.getByRole('button', { name: /^(Pause video|Resume muted video)$/ })).toHaveCount(0);
+        await expect(section.locator('.video-preview, .video-motion-toggle')).toHaveCount(0);
+        // The video follows the heading directly, with only its approved margin.
+        const stackBox = await stack.boundingBox();
+        const frameBox = await section.locator('.tv-frame').boundingBox();
+        const margin = await stack.evaluate(element => parseFloat(getComputedStyle(element).marginBottom));
+        expect(frameBox.y - stackBox.y - stackBox.height).toBeCloseTo(margin, 0);
+      }
       await expect(heading).toBeVisible();
       await expect(divider).toHaveCount(1);
       await expect(divider).toHaveAttribute('aria-hidden', 'true');

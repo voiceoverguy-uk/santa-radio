@@ -44,6 +44,7 @@ test('fresh homepage TV loads without recording consent or flashing an off notic
   const placeholderLink = webcam.getByRole('link', { name: 'Open on YouTube instead (new tab)', exact: true });
   await expect(webcam.locator('.video-disclosure')).toHaveCount(0);
   await expect(video).toHaveCount(1);
+  await expect(webcam.getByRole('button', { name: /^(Pause video|Resume muted video)$/ })).toHaveCount(0);
   await expect(webcam.locator('.external-media-placeholder')).toHaveCount(0);
   expect(await page.evaluate(() => window.__tvOffFlashed)).toBe(false);
   expect(await stored(page)).toBeNull();
@@ -52,12 +53,13 @@ test('fresh homepage TV loads without recording consent or flashing an off notic
   expect(requests[0]).toContain('youtube.com/embed/mMrHniQJNCM');
   await decline(page).click();
   await expect(video).toHaveCount(0);
-  await expect(webcam.getByRole('button', { name: 'Pause video', exact: true })).toHaveCount(0);
+  await expect(webcam.getByRole('button', { name: /^(Pause video|Resume muted video)$/ })).toHaveCount(0);
   expect(requests).toHaveLength(1);
   await webcam.getByRole('button', { name: 'Enable external media', exact: true }).click();
   await expect(video).toHaveAttribute('src',
     'https://www.youtube.com/embed/mMrHniQJNCM?si=O7nNcINykyWwgyXC&autoplay=1&mute=1&controls=0&disablekb=1&playsinline=1&fs=0');
   expect(await stored(page)).toMatchObject({ analytics: false, marketing: false, media: true });
+  await expect(webcam.getByRole('button', { name: /^(Pause video|Resume muted video)$/ })).toHaveCount(0);
   await expect(placeholderLink).toHaveCount(0);
   await footerSettings(page).click();
   await decline(page).click();
@@ -271,11 +273,13 @@ test('one-click withdrawal cleans optional cookies without resetting functional 
     window.__radioCalls = { play: 0, pause: 0 };
     HTMLMediaElement.prototype.load = function () {};
     HTMLMediaElement.prototype.play = function () {
-      window.__radioCalls.play++;
+      if (this === document.querySelector('audio')) window.__radioCalls.play++;
       this.dispatchEvent(new Event('playing'));
       return Promise.resolve();
     };
-    HTMLMediaElement.prototype.pause = function () { window.__radioCalls.pause++; };
+    HTMLMediaElement.prototype.pause = function () {
+      if (this === document.querySelector('audio')) window.__radioCalls.pause++;
+    };
   });
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   // WebKit can finish DOMContentLoaded before React mounts the radio.
