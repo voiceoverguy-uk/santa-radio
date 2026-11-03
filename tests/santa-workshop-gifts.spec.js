@@ -50,6 +50,103 @@ async function save(page, label, file) {
   return download;
 }
 
+for (const width of [320, 1365]) {
+  test(`both review message actions share confirmation, busy, retry and access states at ${width}px`, async ({ page }) => {
+    test.setTimeout(90000);
+    const fixture = await review(page);
+    await page.setViewportSize({ width, height: 900 });
+    const upper = page.locator('.smw-review-create-action button');
+    const lower = page.locator('.smw-actions--review > .smw-button-next');
+    const dialog = page.getByRole('dialog', { name: 'Are you happy with your selection?' });
+    const checkActions = async (label, disabled, busy = false) => {
+      for (const button of [upper, lower]) {
+        await expect(button).toContainText(label);
+        if (disabled) await expect(button).toBeDisabled();
+        else await expect(button).toBeEnabled();
+        await expect(button).toHaveAttribute('aria-busy', String(busy));
+      }
+    };
+    await checkActions('Create message', false);
+    let confirmationText;
+    for (const button of [upper, lower]) {
+      await button.click();
+      await expect(dialog).toBeVisible();
+      await expect(page.getByRole('dialog')).toHaveCount(1);
+      const text = await dialog.textContent();
+      if (confirmationText) expect(text).toBe(confirmationText);
+      confirmationText = text;
+      await dialog.getByRole('button', { name: 'Go back', exact: true }).click();
+      await expect(button).toBeFocused();
+      await button.focus();
+      await page.keyboard.press('Enter');
+      await expect(dialog).toBeVisible();
+      await page.keyboard.press('Escape');
+      await expect(button).toBeFocused();
+    }
+    expect(fixture.posts).toHaveLength(0);
+
+    await spelling(page, 'Alexandria-Catherine Elizabeth Montgomery-Worthington');
+    await page.getByRole('button', { name: 'Edit certificate name', exact: true }).click();
+    await expect(page.getByRole('textbox', { name: 'Name spelling', exact: true })).toBeVisible();
+    const geometry = await page.locator('.smw-review-create-row').evaluate(row => {
+      const [name, action] = [...row.children].map(node => node.getBoundingClientRect());
+      return { name: { x: name.x, y: name.y, width: name.width, bottom: name.bottom },
+        action: { x: action.x, y: action.y, width: action.width },
+        overflowing: [...row.querySelectorAll('input, button, dd, dt')].some(node =>
+          (node.tagName !== 'INPUT' && node.scrollWidth > node.clientWidth + 1)
+            || node.getBoundingClientRect().right > innerWidth + 1),
+        pageOverflow: document.documentElement.scrollWidth > innerWidth + 1 };
+    });
+    expect(geometry.overflowing).toBe(false);
+    expect(geometry.pageOverflow).toBe(false);
+    if (width > 600) {
+      expect(Math.abs(geometry.name.width - geometry.action.width)).toBeLessThan(1);
+      expect(geometry.action.x).toBeGreaterThan(geometry.name.x + geometry.name.width);
+    } else {
+      expect(geometry.action.y).toBeGreaterThanOrEqual(geometry.name.bottom);
+      expect(Math.abs(geometry.name.width - geometry.action.width)).toBeLessThan(1);
+    }
+    mkdirSync('generated-artifacts/studio-gifts', { recursive: true });
+    await page.locator('.smw-review-create-row').screenshot({
+      path: `generated-artifacts/studio-gifts/review-create-${width}.png`, animations: 'disabled',
+    });
+    await page.getByRole('button', { name: 'Cancel', exact: true }).click();
+
+    let releaseAudio;
+    fixture.hold = new Promise(resolve => { releaseAudio = resolve; });
+    fixture.fail = true;
+    await upper.click();
+    await dialog.getByRole('button', { name: 'Create message', exact: true }).click();
+    await checkActions('Recording message', true, true);
+    await expect.poll(() => fixture.posts.length).toBe(1);
+    releaseAudio();
+    await expect(page.getByText('Fixture recording unavailable. Try again.', { exact: true })).toBeVisible();
+    await checkActions('Retry message', false);
+    fixture.fail = false;
+    fixture.hold = null;
+    await lower.click();
+    await dialog.getByRole('button', { name: 'Create message', exact: true }).click();
+    await expect(page.getByRole('region', { name: 'Your finished Santa message' })).toBeVisible();
+    await checkActions('Create message', false);
+    expect(fixture.posts).toHaveLength(2);
+
+    let releaseCheck;
+    const accessCheck = new Promise(resolve => { releaseCheck = resolve; });
+    await page.route('**/api/santa-studio-message', async route => {
+      if (route.request().method() !== 'GET') return route.fallback();
+      await accessCheck;
+      await route.fulfill({ status: 403, json: { error: 'Access expired.' } });
+    });
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+    await expect(page.getByText('Checking your Studio access…', { exact: true })).toBeVisible();
+    await checkActions('Create message', true);
+    releaseCheck();
+    await expect(page.getByRole('button', { name: 'Reload Studio', exact: true })).toBeVisible();
+    await checkActions('Create message', true);
+    for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+  });
+}
+
 test('changing the recorded name refreshes every gift on returning to review', async ({ page }) => {
   test.setTimeout(60000);
   const fixture = await review(page);
@@ -96,7 +193,7 @@ test('completed gifts stay downloadable when allowance checks fail', async ({ pa
     ? route.fulfill({ status: 503, json: { error: 'Temporarily unavailable.' } }) : route.fallback());
   await page.evaluate(() => window.dispatchEvent(new Event('focus')));
   await expect(page.getByRole('alert')).toContainText('can’t check how many messages');
-  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
+   for (const button of await page.getByRole('button', { name: 'Create message', exact: true }).all()) await expect(button).toBeDisabled();
   for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
   await expect(letterText(page)).toHaveText(completedText);
   await save(page, 'Download Santa picture (PNG)', 'generated-artifacts/studio-gifts/blocked-creation-picture.png');
@@ -118,7 +215,7 @@ for (const successes of [1, 2]) {
     }));
     await page.reload();
     await expect(giftButtons(page)).toHaveCount(3);
-    await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
+    for (const button of await page.getByRole('button', { name: 'Create message', exact: true }).all()) await expect(button).toBeDisabled();
     for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
     await expect(page.getByText('Saved MP3 unavailable.', { exact: true })).toBeVisible();
     await expect(page.locator('.studio-certificate__name')).toHaveText('Dixie');
@@ -401,7 +498,7 @@ test('stream completion, cancellation and certificate failures cannot unlock unf
   await expect(page.getByText('Receiving your finished MP3…', { exact: true })).toBeVisible();
   for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
   await page.evaluate(() => window.giftTestStream.error(new Error('The stream failed.')));
-  await expect(page.getByRole('button', { name: 'Retry message', exact: true })).toBeEnabled();
+  for (const button of await page.getByRole('button', { name: 'Retry message', exact: true }).all()) await expect(button).toBeEnabled();
   for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
   await confirmMessage(page, 'Retry message');
   await expect(page.getByText('Receiving your finished MP3…', { exact: true })).toBeVisible();

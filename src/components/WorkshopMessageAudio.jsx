@@ -1,4 +1,5 @@
 import { useContext, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useRadio } from './RadioProvider.jsx';
 import { StudioVoucherContext } from '../lib/studioAccessContext.js';
 import { getWorkshopDownloadName, getWorkshopWrittenName } from '../lib/workshopNameSpelling.js';
@@ -19,7 +20,7 @@ const PREPARATION_MESSAGES = [
 
 export default function WorkshopMessageAudio({
   record, choices, spelling, complete, generation, correction, tester = false, onCorrection, visible, onPhaseChange, onReady,
-  showGiftDownloadHint = false,
+  showGiftDownloadHint = false, reviewMessageTarget = null,
 }) {
   const radio = useRadio();
   const voucher = useContext(StudioVoucherContext);
@@ -194,14 +195,23 @@ export default function WorkshopMessageAudio({
   // Keep request/recording state mounted, but do not leave hidden interactive
   // controls or detached playing media in earlier stages.
   if (!visible) return null;
+  const messageAction = () => (
+    <button className={`smw-button smw-button-next${disabled ? ' smw-create-disabled' : ''}`}
+      type="button" onClick={event => {
+        triggerRef.current = event.currentTarget;
+        setConfirming(true);
+      }} disabled={disabled} aria-busy={busy}>
+      {busy ? 'Recording message' : phase === 'error' && complete ? 'Retry message' : 'Create message'} <span aria-hidden="true">→</span>
+    </button>
+  );
   return <>
+    {/* Render a second trigger in the gifts row without duplicating recording
+        state, requests or the confirmation dialog owned by this component. */}
+    {reviewMessageTarget && createPortal(messageAction(), reviewMessageTarget)}
     {url && <p className="smw-download-hint">
       Save your MP3 before leaving or refreshing this page. We do not keep a copy or recording history.
     </p>}
-    <button ref={triggerRef} className={`smw-button smw-button-next${disabled ? ' smw-create-disabled' : ''}`}
-      type="button" onClick={() => setConfirming(true)} disabled={disabled} aria-busy={busy}>
-      {busy ? 'Recording message' : phase === 'error' && complete ? 'Retry message' : 'Create message'} <span aria-hidden="true">→</span>
-    </button>
+    {messageAction()}
     {showGiftDownloadHint && <p className="smw-catalogue-review-note smw-gift-download-hint">
       Create your MP3 to unlock these three personalised gift downloads.
     </p>}

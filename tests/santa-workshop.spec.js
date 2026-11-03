@@ -384,7 +384,7 @@ test('newly indexed state and county keep selected labels, letter stories and au
     await expect(paragraphs.nth(6)).toContainText('No guessing');
     const after = await paragraphs.allTextContents();
     for (const i of [0, 1, 2, 3, 4, 5, 7, 8, 9, 10]) expect(after[i]).toBe(original[i]);
-    await page.getByRole('button', { name: 'Create message', exact: true }).click();
+    await page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true }).click();
     await expect.poll(() => requests.at(-1)?.place).toBe(place.id);
     expect(requests.at(-1).name).toBe('demrie');
     await expect(page.getByText('Test stopped before downloading or generating any audio.', { exact: true })).toBeVisible();
@@ -1773,7 +1773,7 @@ test('desktop and phone review has larger white answers, unchanged labels and na
     await expect(page.locator('.studio-gifts')).not.toContainText(hintText);
     const hint = page.getByText(hintText, { exact: true });
     await expect(hint).toBeVisible();
-    const createBox = await page.getByRole('button', { name: 'Create message', exact: true }).boundingBox();
+    const createBox = await page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true }).boundingBox();
     const hintBox = await hint.boundingBox();
     expect(hintBox.y).toBeGreaterThanOrEqual(createBox.y + createBox.height);
     const selections = page.locator('.smw-summary-answer');

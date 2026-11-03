@@ -17,6 +17,41 @@
   margin-top: 11px;
 }
 
+.smw-review-create-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 16px;
+  margin: 10px 0 14px;
+}
+
+.smw-review-name-area,
+.smw-review-create-action {
+  min-width: 0;
+}
+
+.smw-review-create-row .smw-written-name-previews {
+  margin-top: 0;
+}
+
+.smw-review-create-action {
+  display: flex;
+  align-self: center;
+}
+
+.smw-review-create-action .smw-button {
+  width: 100%;
+  min-width: 0;
+  white-space: normal;
+}
+
+@media (max-width: 600px) {
+  .smw-review-create-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+}
+
 .smw-written-name-button,
 .smw-written-name-reset {
   display: inline-flex;

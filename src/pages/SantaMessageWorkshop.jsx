@@ -237,6 +237,7 @@ export default function SantaMessageWorkshop() {
   const [letterVariation] = useState(createStudioLetterVariation);
   const [completedGift, setCompletedGift] = useState(null);
   const [audioPhase, setAudioPhase] = useState('idle');
+  const [reviewMessageTarget, setReviewMessageTarget] = useState(null);
   const [error, setError] = useState('');
   const [editing, setEditing] = useState(false);
   const [correction, setCorrection] = useState(false);
@@ -745,6 +746,7 @@ export default function SantaMessageWorkshop() {
                 letterVariation={letterVariation}
                 giftDetails={giftDetails}
                 completedGift={completedGift}
+                messageActionRef={setReviewMessageTarget}
                 downloadReady={!!completedGift && completedGift.selectionKey === selectionKey}
                 downloadNotice={giftNotice}
                 onChange={spelling => {
@@ -761,6 +763,7 @@ export default function SantaMessageWorkshop() {
                   <span aria-hidden="true">←</span> Start Again
                 </button>
                 <WorkshopMessageAudio generation={generation} correction={correction}
+                  reviewMessageTarget={reviewMessageTarget}
                   showGiftDownloadHint={!giftNotice}
                   tester={accessKind === 'tester' && generation.state?.testerCanStartAnother === true}
                   onCorrection={() => setCorrection(true)} visible={isReview}

@@ -211,7 +211,7 @@ for (const width of [320, 1440]) {
     expect(requests[1].talent).toEqual({ category: 'sports', id: `c-${'d'.repeat(64)}` });
     await expect(page.locator('.smw-message-result audio')).not.toHaveAttribute('src', oldUrl);
     await expect(page.getByRole('button', { name: 'Change Talent', exact: true })).toBeDisabled();
-    await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
+    await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
   });
 }
 
@@ -230,7 +230,7 @@ test('original or empty hosted groups offer deliberate skip, never fixture choic
   await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
   await finish(page);
   await expect(page.locator('.smw-summary-row').nth(2)).toContainText('Skipped');
-  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
+  await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
 });
 
 test('switching from a selected talent to an unavailable category clears its preview', async ({ page }) => {

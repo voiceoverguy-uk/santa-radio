@@ -210,7 +210,7 @@ test('the completion card retains its voucher route into the authorized Studio',
   await visit(page, '/free-santa-message');
   await page.getByLabel('First Name').fill('Demrie');
   await page.getByRole('option', { name: 'Demrie', exact: true }).click();
-  await page.getByRole('button', { name: 'Create message', exact: true }).click();
+  await page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'To Demrie from Santa' })).toBeVisible();
   const promotion = page.locator('#santa-studio-promotion');
   await expect(promotion).toHaveCount(1);

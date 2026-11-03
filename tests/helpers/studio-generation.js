@@ -3,7 +3,7 @@ import { expect } from '@playwright/test';
 
 export const emptyGeneration = () => ({ temporary: true });
 export async function confirmMessage(page, label = 'Create message') {
-  await page.getByRole('button', { name: label, exact: true }).click();
+  await page.locator('.smw-actions--review').getByRole('button', { name: label, exact: true }).click();
   await expect(page.getByRole('dialog', { name: 'Are you happy with your selection?' })).toBeVisible();
   await page.getByRole('dialog').getByRole('button', { name: 'Create message', exact: true }).click();
 }

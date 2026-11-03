@@ -49,7 +49,7 @@ test('Vercel missing-generation-table conditions keep voucher validation and per
   expect(status.status()).toBe(200);
   expect(await status.json()).toMatchObject({ temporary: true });
   await expect(page.locator('.smw-allowance')).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
+  await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
   await expect(page.locator('.smw-message-result audio')).toHaveCount(0);
   await expect(page.getByRole('link', { name: 'Download MP3', exact: true })).toHaveCount(0);
 });
@@ -106,7 +106,7 @@ async function openReview(page, { live = false, allowance = null, tester = false
     await option.click();
     await page.locator('.smw-button-next').click();
   }
-  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeVisible();
+  await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true })).toBeVisible();
   return generation;
 }
 
@@ -157,14 +157,14 @@ for (const width of [390, 1365]) {
     await expect(page.getByRole('alert')).toContainText('Your voucher is recognised');
     await expect(page.getByRole('alert')).toContainText('Your unlimited-message access has not changed.');
     await expect(notice).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
+    await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
     await page.locator('.smw-actions--review').screenshot({
       path: `generated-artifacts/studio-voucher-notice-${width}.png`, animations: 'disabled',
     });
     await page.unroute('**/api/santa-studio-message');
     await page.getByRole('button', { name: 'Retry recording check', exact: true }).click();
-    await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
+    await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
     await expect(page.getByRole('alert')).toHaveCount(0);
     await expect(page.locator('.smw-allowance')).toHaveCount(0);
     await page.reload();
@@ -220,7 +220,7 @@ for (const width of [320, 1365]) {
         };
       });
       await confirmMessage(page, 'Retry message');
-      await expect(page.getByRole('button', { name: 'Recording message', exact: true })).toBeDisabled();
+      await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Recording message', exact: true })).toBeDisabled();
       await expect(guidance).toHaveCount(0);
       release();
       await expect(page.getByText('Receiving your finished MP3…', { exact: true })).toBeVisible();
@@ -250,7 +250,7 @@ for (const width of [320, 1365]) {
       const downloaded = page.waitForEvent('download');
       await download.click();
       expect(readFileSync(await (await downloaded).path())).toEqual(fixture.audio);
-      await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
+      await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
       await page.getByRole('button', { name: 'Change Trying hard at', exact: true }).click();
       await expect(guidance).toHaveCount(0);
       await page.getByRole('button', { name: 'Return to review', exact: true }).click();
@@ -267,7 +267,7 @@ test('voucher testing can generate a third message with fresh choices while reta
   for (let number = 1; number <= 3; number++) {
     await confirmMessage(page);
     await expect(page.getByRole('link', { name: 'Download MP3', exact: true })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
+    await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
     expect(fixture.posts.length).toBe(number);
     if (number === 3) break;
     const previousUrl = await page.getByRole('link', { name: 'Download MP3', exact: true }).getAttribute('href');
@@ -319,11 +319,11 @@ test('voucher recording check failure retains entitlement and recovers on return
   await expect(allowance).toContainText('Your voucher is recognised, but Santa’s recording service is temporarily unavailable.');
   await expect(page.locator('.smw-voucher-entitlement')).toContainText('subject to request limits');
   await expect(page.getByRole('alert')).toHaveCount(1);
-  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
+  await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
   for (const width of [1365, 390, 320]) {
     await page.setViewportSize({ width, height: 1100 });
     const back = await page.locator('.smw-actions:not([hidden])').getByRole('button', { name: 'Start Again', exact: true }).boundingBox();
-    const create = await page.getByRole('button', { name: 'Create message', exact: true }).boundingBox();
+    const create = await page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true }).boundingBox();
     expect(Math.abs(back.y + back.height / 2 - create.y - create.height / 2)).toBeLessThanOrEqual(1);
     expect(create.x).toBeGreaterThanOrEqual(back.x + back.width);
     expect(create.x + create.width).toBeLessThanOrEqual(width);
@@ -333,7 +333,7 @@ test('voucher recording check failure retains entitlement and recovers on return
   await expect(page.getByRole('button', { name: 'Retry recording check', exact: true })).toBeVisible();
   healthy = true;
   await page.evaluate(() => window.dispatchEvent(new Event('focus')));
-  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
+  await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
   await expect(page.getByRole('alert')).toHaveCount(0);
   expect(fixture.posts).toHaveLength(0);
 });
@@ -343,7 +343,7 @@ test('temporary allowance failure recovers automatically without spending a mess
   const fixture = await openReview(page, { allowance: (route, state) => ++checks === 1
     ? route.fulfill({ status: 503, json: { error: 'Server restarting.' } })
     : route.fulfill({ json: state }) });
-  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled({ timeout: 10000 });
+  await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true })).toBeEnabled({ timeout: 10000 });
   expect(checks).toBeGreaterThan(1);
   expect(fixture.posts).toHaveLength(0);
 });
@@ -354,7 +354,7 @@ test('expired access explains how to reopen Studio instead of endlessly checking
   await expect(page.getByRole('alert')).toContainText('enter your access code again');
   await expect(page.getByRole('button', { name: 'Reload Studio', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Try again', exact: true })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
+  await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
 });
 
 test('a stalled allowance request times out rather than leaving Checking indefinitely', async ({ page }) => {
@@ -368,7 +368,7 @@ test('a stalled allowance request times out rather than leaving Checking indefin
   await openReview(page);
   await expect(page.getByRole('alert')).toContainText('could not connect', { timeout: 15000 });
   await expect(page.locator('.smw-allowance')).not.toContainText('Checking');
-  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
+  await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
 });
 
 test('approved recording notices are random per attempt, stable through rerenders, and wrap on phones', async ({ page }) => {
@@ -410,7 +410,7 @@ test('approved recording notices are random per attempt, stable through rerender
     await confirmMessage(page, retry ? 'Retry message' : 'Create message');
     await expect(paragraph).toHaveText(preparationMessages[index]);
     await expect(notice).toHaveAttribute('aria-live', 'polite');
-    const recordingButton = page.getByRole('button', { name: 'Recording message', exact: true });
+    const recordingButton = page.locator('.smw-actions--review').getByRole('button', { name: 'Recording message', exact: true });
     await expect(recordingButton).toBeDisabled();
     await expect(recordingButton).toHaveAttribute('aria-busy', 'true');
     await expect(recordingButton.locator('span[aria-hidden="true"]')).toHaveText('→');
@@ -419,7 +419,7 @@ test('approved recording notices are random per attempt, stable through rerender
   const cancel = async () => {
     await page.getByRole('button', { name: 'Cancel preparation', exact: true }).click();
     await expect(notice).toHaveCount(0);
-    await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
+    await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
     await expect(page.locator('.smw-message-result audio')).toHaveCount(0);
     expect(await page.evaluate(() => window.recordingAttempts.at(-1).aborted)).toBe(true);
   };
@@ -517,7 +517,7 @@ test('review create placement on desktop and phones, real MP3 playback/download,
   const submissions = fixture.posts;
   for (const width of [1365, 390, 320]) {
     await page.setViewportSize({ width, height: 844 });
-    const create = page.getByRole('button', { name: 'Create message', exact: true });
+    const create = page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true });
     await create.scrollIntoViewIfNeeded();
     const bounds = await create.boundingBox();
     expect(bounds.x).toBeGreaterThanOrEqual(0);
@@ -574,7 +574,7 @@ test('review create placement on desktop and phones, real MP3 playback/download,
   expect(readFileSync(await punctuationFile.path())).toEqual(fixture.audio,
     'Correcting punctuation changes only the filename, not the temporary MP3');
   expect(submissions).toHaveLength(1);
-  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
+  await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
   await page.getByRole('button', { name: 'Change Trying hard at', exact: true }).click();
   await expect(result).toBeHidden();
   expect(await page.evaluate(url => window.revokedAudioUrls.includes(url), url)).toBe(false);
@@ -610,14 +610,14 @@ test('retryable preparation errors and cancellation spend no successful allowanc
   await expect.poll(() => attempt).toBe(2);
   await page.getByRole('button', { name: 'Cancel preparation', exact: true }).click();
   release();
-  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
+  await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
   await expect(page.locator('.smw-message-result audio')).toHaveCount(0);
   await confirmMessage(page);
   await expect.poll(() => attempt).toBe(3);
   await page.getByRole('button', { name: 'Cancel preparation', exact: true }).click();
   release();
   await expect(page.locator('.smw-message-result audio')).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
+  await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
 });
 
 test('finished Studio message download is valid and matches the playable recording', async ({ page }) => {
@@ -753,7 +753,7 @@ test('full-message playback coordinates with radio and pagehide stops playback w
   expect(await page.evaluate(async url => {
     try { return (await fetch(url)).ok; } catch { return false; }
   }, url)).toBe(true);
-  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
+  await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
 });
 
 for (const viewport of [
@@ -764,7 +764,7 @@ for (const viewport of [
 test(`confirmation stays centred with safe overflow, cancellation and keyboard operation at ${viewport.width}x${viewport.height}`, async ({ page }) => {
   const fixture = await openReview(page);
   await page.setViewportSize(viewport);
-  const create = page.getByRole('button', { name: 'Create message', exact: true });
+  const create = page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true });
   await create.scrollIntoViewIfNeeded();
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
   await create.click();
@@ -829,7 +829,7 @@ test('temporary downloads survive failed replacement but never recover after ref
   await expect(download).toBeVisible();
   await expect(page.getByRole('button', { name: 'Change Their recorded name', exact: true })).toBeEnabled();
   await expect(page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true })).toBeEnabled();
-  const create = page.getByRole('button', { name: 'Create message', exact: true });
+  const create = page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true });
   await expect(create).toBeEnabled();
   for (const width of [1365, 390, 320]) {
     await page.setViewportSize({ width, height: 844 });

@@ -348,7 +348,7 @@ test('regional request carries both trusted IDs and changing country clears the 
   await page.getByRole('button', { name: 'Use United States only', exact: true }).click();
   await page.locator('.smw-button-next').click();
   submitted = null;
-  await page.getByRole('button', { name: 'Create message' }).click();
+  await page.locator('.smw-actions--review').getByRole('button', { name: 'Create message' }).click();
   await expect.poll(() => submitted?.place).toBe(workshopRegionalCatalogueFixture.regionalGroups['usa-states'].parentId);
   expect(submitted).not.toHaveProperty('region');
   await page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true }).click();
@@ -375,7 +375,7 @@ for (const missing of [true, false]) {
     await expect(page.getByRole('button', { name: 'Choose a county', exact: true })).toHaveCount(0);
     await page.locator('.smw-button-next').click();
     await expect(page.locator('.smw-summary-row').last()).toContainText('England');
-    await expect(page.getByRole('button', { name: 'Create message' })).toBeEnabled();
+    await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message' })).toBeEnabled();
   });
 }
 
@@ -754,7 +754,7 @@ for (const width of [1365, 320]) {
       const placeName = record.label.split(' — ')[0];
       await expect(page.locator('.studio-letter__paper').first()).toContainText(placeName);
       submitted = null;
-      await confirmMessage(page, await page.getByRole('button', { name: 'Retry message', exact: true }).isVisible() ? 'Retry message' : 'Create message');
+      await confirmMessage(page, await page.locator('.smw-actions--review').getByRole('button', { name: 'Retry message', exact: true }).isVisible() ? 'Retry message' : 'Create message');
       await expect.poll(() => submitted?.place).toBe(record.id);
       expect(submitted).not.toHaveProperty('region');
       await page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true }).click();
@@ -796,7 +796,7 @@ for (const width of [1365, 320]) {
     await countries.click();
     await expect(preview).toHaveCount(0);
     await page.locator('.smw-button-back').click();
-    await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
+    await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
     await expect(page.getByText('Choose a destination to preview your keepsakes.', { exact: true })).toBeVisible();
     await page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true }).click();
     await expect(countries).toHaveAttribute('aria-pressed', 'true');
@@ -916,7 +916,7 @@ test('completed destination stays locked and back navigation preserves the recor
   await expect(page.getByRole('button', { name: 'Fantasy & space', exact: true })).toHaveCount(0);
   await expect(page.getByText('England — locked', { exact: true })).toBeVisible();
   await page.locator('.smw-button-next').click();
-  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
+  await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
   await expect(download).toHaveAttribute('href', oldUrl);
   expect(await page.evaluate(() => window.revokedWorkshopUrls)).not.toContain(oldUrl);
   expect(fixture.posts).toHaveLength(1);

@@ -11,7 +11,7 @@ import { StudioKeepsakePreview } from './SantaStudioGifts.jsx';
 import './WorkshopNameSpelling.css';
 
 export default function WorkshopNameSpelling({ recordedName, spelling, recordingId, onChange, giftDetails, letterVariation,
-  completedGift, downloadReady = false, downloadNotice }) {
+  completedGift, downloadReady = false, downloadNotice, messageActionRef }) {
   const fieldId = useId();
   const inputRef = useRef(null);
   const changeButtonRef = useRef(null);
@@ -84,62 +84,67 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
             : downloadNotice}
           giftRevision={completedGift?.revision}
         >
-      <dl className="smw-written-name-previews">
-        <div className="smw-written-name-preview">
-          <dt>Certificate, picture and letter name preview</dt>
-          <dd>
-            <span className="smw-written-name-value">{previewName}</span>
-            <button
-              ref={changeButtonRef}
-              className="smw-change smw-written-name-edit"
-              type="button"
-              onClick={beginEditing}
-              aria-label="Edit certificate name"
-              aria-expanded={isEditing}
-              aria-controls={`${fieldId}-editor`}
-              title="Edit certificate name"
-            >
-              <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-                <path d="m16 4 4 4M4 20l4-1 12-12a2.83 2.83 0 0 0-4-4L4 15z" />
-              </svg>
-            </button>
-          </dd>
-        </div>
-      </dl>
+          <div className="smw-review-create-row">
+            <div className="smw-review-name-area">
+              <dl className="smw-written-name-previews">
+                <div className="smw-written-name-preview">
+                  <dt>Certificate, picture and letter name preview</dt>
+                  <dd>
+                    <span className="smw-written-name-value">{previewName}</span>
+                    <button
+                      ref={changeButtonRef}
+                      className="smw-change smw-written-name-edit"
+                      type="button"
+                      onClick={beginEditing}
+                      aria-label="Edit certificate name"
+                      aria-expanded={isEditing}
+                      aria-controls={`${fieldId}-editor`}
+                      title="Edit certificate name"
+                    >
+                      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="m16 4 4 4M4 20l4-1 12-12a2.83 2.83 0 0 0-4-4L4 15z" />
+                      </svg>
+                    </button>
+                  </dd>
+                </div>
+              </dl>
 
-      {isEditing && (
-        <form id={`${fieldId}-editor`} className="smw-written-name-editor" onSubmit={commitSpelling} noValidate>
-          <label className="smw-written-name-label" htmlFor={fieldId}>Name spelling</label>
-          <input
-            ref={inputRef}
-            id={fieldId}
-            className="smw-written-name-input"
-            type="text"
-            maxLength={160}
-            value={draft}
-            placeholder="Name only — no swear words"
-            onChange={event => {
-              setDraft(event.target.value);
-              if (error) setError('');
-            }}
-            aria-invalid={!!visibleError}
-            aria-describedby={visibleError ? `${fieldId}-error` : undefined}
-            autoComplete="off"
-            onKeyDown={event => {
-              if (event.key === 'Escape') {
-                event.preventDefault();
-                cancelEditing();
-              }
-            }}
-          />
-          {visibleError && <p className="smw-written-name-error" id={`${fieldId}-error`} role="alert">{visibleError}</p>}
-          <div className="smw-written-name-controls">
-            <button className="smw-written-name-button" type="submit" disabled={!!languageError}>Use this spelling</button>
-            <button className="smw-written-name-reset" type="button" onClick={cancelEditing}>Cancel</button>
-            {spelling && <button className="smw-written-name-reset" type="button" onClick={useRecordedSpelling}>Use recorded spelling</button>}
+              {isEditing && (
+                <form id={`${fieldId}-editor`} className="smw-written-name-editor" onSubmit={commitSpelling} noValidate>
+                  <label className="smw-written-name-label" htmlFor={fieldId}>Name spelling</label>
+                  <input
+                    ref={inputRef}
+                    id={fieldId}
+                    className="smw-written-name-input"
+                    type="text"
+                    maxLength={160}
+                    value={draft}
+                    placeholder="Name only — no swear words"
+                    onChange={event => {
+                      setDraft(event.target.value);
+                      if (error) setError('');
+                    }}
+                    aria-invalid={!!visibleError}
+                    aria-describedby={visibleError ? `${fieldId}-error` : undefined}
+                    autoComplete="off"
+                    onKeyDown={event => {
+                      if (event.key === 'Escape') {
+                        event.preventDefault();
+                        cancelEditing();
+                      }
+                    }}
+                  />
+                  {visibleError && <p className="smw-written-name-error" id={`${fieldId}-error`} role="alert">{visibleError}</p>}
+                  <div className="smw-written-name-controls">
+                    <button className="smw-written-name-button" type="submit" disabled={!!languageError}>Use this spelling</button>
+                    <button className="smw-written-name-reset" type="button" onClick={cancelEditing}>Cancel</button>
+                    {spelling && <button className="smw-written-name-reset" type="button" onClick={useRecordedSpelling}>Use recorded spelling</button>}
+                  </div>
+                </form>
+              )}
+            </div>
+            <div className="smw-review-create-action" ref={messageActionRef} />
           </div>
-        </form>
-      )}
         </StudioKeepsakePreview>
       </div>
 
