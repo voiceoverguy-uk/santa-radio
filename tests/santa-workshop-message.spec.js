@@ -46,7 +46,7 @@ test('Vercel missing-generation-table conditions keep voucher validation and per
   const status = await page.request.get('/api/santa-studio-message');
   expect(status.status()).toBe(200);
   expect(await status.json()).toMatchObject({ temporary: true });
-  await expect(page.locator('.smw-allowance')).toContainText('Recordings and message history are not saved');
+  await expect(page.locator('.smw-allowance')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
   await expect(page.locator('.smw-message-result audio')).toHaveCount(0);
   await expect(page.getByRole('link', { name: 'Download MP3', exact: true })).toHaveCount(0);
@@ -122,6 +122,7 @@ for (const width of [390, 1365]) {
     const notice = page.locator('.smw-voucher-entitlement');
     await expect(notice).toContainText('You used Voucher Code: preview-voucher-example.');
     await expect(notice).toContainText('request limits');
+    await expect(page.locator('.smw-allowance')).toHaveCount(0);
     await expect(page.locator('.smw-allowance').filter({
       hasText: 'You can create one message, then make one correction.',
     })).toHaveCount(0);
@@ -141,6 +142,7 @@ for (const width of [390, 1365]) {
     await page.getByRole('button', { name: 'Retry recording check', exact: true }).click();
     await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
     await expect(page.getByRole('alert')).toHaveCount(0);
+    await expect(page.locator('.smw-allowance')).toHaveCount(0);
     await page.reload();
     await openReview(page, { tester: true });
     await expect(notice).toContainText('You used Voucher Code: preview-voucher-example.');

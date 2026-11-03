@@ -208,18 +208,17 @@ export default function WorkshopMessageAudio({
     {voucher?.unlimited && <p className="smw-voucher-entitlement">
       You used Voucher Code: {voucher.code}. You can create messages while your access remains valid, subject to request limits.
     </p>}
-    <p className="smw-allowance" role={generation.error ? 'alert' : 'status'} aria-live={generation.error ? 'assertive' : 'polite'}>
+    {(generation.checking || generation.error || !status) && <p className="smw-allowance" role={generation.error ? 'alert' : 'status'} aria-live={generation.error ? 'assertive' : 'polite'}>
       {generation.checking ? 'Checking your Studio access…' : generation.error
         ? generation.error
-        : !status ? 'Your Studio access has not been confirmed.'
-        : 'Create, play and download your message here. Recordings and message history are not saved. You can edit your choices and create another message; request limits apply.'}
+        : 'Your Studio access has not been confirmed.'}
       {generation.error && generation.accessExpired && <> <button type="button" className="smw-change"
       onClick={() => window.location.reload()}>
       Reload Studio</button></>}
       {generation.error && !generation.accessExpired && voucher?.unlimited && <> <button type="button"
         className="smw-change" disabled={generation.checking} onClick={() => generation.refresh()}>
         Retry recording check</button></>}
-    </p>
+    </p>}
     {busy && <div className="smw-message-result" role="status" aria-live="polite">
       <p>{phase === 'receiving' ? 'Receiving your finished MP3…' : preparationMessage}</p>
       <progress aria-label="Preparing your message" />
