@@ -70,6 +70,12 @@ A Safari broken-image screenshot does not establish that artwork is missing or c
 
 **How to apply:** Preserve approved originals and verify both response bytes and browser decoding. Describe fallback recovery as recovery, not as proof of a Safari fix, until the affected Safari session can be checked.
 
+The Mac showcase is an explicit exception to screen-only device framing: preserve the complete promotional artwork, including its embedded laptop, inside a landscape desktop monitor with a short central stand and low base.
+
+**Why:** The owner requested the supplied monitor silhouette, not extraction or recreation of the laptop display. They want the other app presentations left alone.
+
+**How to apply:** Keep the caption outside the monitor hardware, preserve the full artwork and adjacent copy, and never add the reference manufacturer's branding or white backdrop.
+
 Santa Voicemail's older screen-only approval is superseded by the owner's five native captures: Home, Santa call, Workshop call, Naughty List call and Soundboard.
 
 **Why:** The owner requested these genuine captures in a refreshed physical handset, with Home between every other view, including at the loop boundary.

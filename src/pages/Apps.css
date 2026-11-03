@@ -334,14 +334,60 @@
   width: 100%;
   min-width: 0;
   margin: 0 auto;
-  overflow: hidden;
-  border: 1px solid #c9aa5b;
-  border-radius: 16px;
-  background: #10251b;
-  box-shadow: 0 24px 65px #030b08a6;
 }
 
-.apps-page .mac-app-figure img { display: block; width: 100%; height: auto; object-fit: contain; }
+.apps-page .mac-monitor {
+  width: 100%;
+  max-width: 760px;
+  margin-inline: auto;
+  padding-bottom: 1px;
+}
+
+.apps-page .mac-monitor-screen {
+  position: relative;
+  z-index: 1;
+  padding: clamp(6px, 1vw, 9px);
+  border: 1px solid #46504a;
+  border-radius: 13px;
+  background: linear-gradient(145deg, #252c28, #111713 70%);
+  box-shadow: 0 18px 48px #030b08a6, inset 0 1px 0 #ffffff1c;
+}
+
+.apps-page .mac-monitor-bezel {
+  position: absolute;
+  inset: 0;
+  border: 1px solid #59615a;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.apps-page .mac-monitor-screen img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.apps-page .mac-monitor-neck {
+  position: relative;
+  z-index: 0;
+  width: 12%;
+  height: 20px;
+  margin: -1px auto 0;
+  background: linear-gradient(90deg, #202722, #535b54 48%, #252c27);
+  clip-path: polygon(8% 0, 92% 0, 100% 100%, 0 100%);
+}
+
+.apps-page .mac-monitor-base {
+  width: 31%;
+  height: 10px;
+  margin: -1px auto 0;
+  border: 1px solid #4a524b;
+  border-radius: 2px 2px 8px 8px;
+  background: linear-gradient(180deg, #404840, #1a211c 68%);
+  box-shadow: 0 7px 17px #030b087a;
+}
+
 .apps-page .mac-app-figure figcaption { padding: 11px 13px; }
 
 .apps-page .mac-app-store-link {

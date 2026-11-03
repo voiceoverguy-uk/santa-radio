@@ -150,14 +150,21 @@ function MacAppShowcase({ app }) {
           </a>
         </div>
         <figure className="mac-app-figure">
-          <img
-            src={app.image}
-            alt={app.alt}
-            width={app.width}
-            height={app.height}
-            loading="lazy"
-            decoding="async"
-          />
+          <div className="mac-monitor">
+            <div className="mac-monitor-screen">
+              <img
+                src={app.image}
+                alt={app.alt}
+                width={app.width}
+                height={app.height}
+                loading="lazy"
+                decoding="async"
+              />
+              <span className="mac-monitor-bezel" aria-hidden="true" />
+            </div>
+            <div className="mac-monitor-neck" aria-hidden="true" />
+            <div className="mac-monitor-base" aria-hidden="true" />
+          </div>
           <figcaption>Santa Radio for Mac promotional artwork</figcaption>
         </figure>
       </div>

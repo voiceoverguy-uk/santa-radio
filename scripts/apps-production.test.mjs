@@ -197,7 +197,12 @@ test('built Apps HTML starts on first promotional images and serves all local We
   assert.match(mac, /href="https:\/\/apps\.apple\.com\/gb\/app\/santa-radio\/id1025312198\?mt=12"/);
   assert.match(mac, /src="\/images\/download-on-the-app-store\.svg"/);
   assert.match(mac, /<figcaption>Santa Radio for Mac promotional artwork<\/figcaption>/);
-  const macImage = mac.match(/<figure\b[^>]*>\s*(<img\b[^>]*>)/)?.[1];
+   assert.match(mac, /class="mac-monitor"/);
+   for (const part of ['bezel', 'neck', 'base']) {
+     assert.match(mac, new RegExp(`class="mac-monitor-${part}" aria-hidden="true"`));
+   }
+   assert.match(mac, /<\/div><figcaption>Santa Radio for Mac promotional artwork/);
+   const macImage = mac.match(/<div class="mac-monitor-screen">\s*(<img\b[^>]*>)/)?.[1];
   assert.ok(macImage);
    assert.match(macImage, /width="1672" height="941"/);
   assert.match(macImage, /alt="Santa Radio for Mac promotional artwork: Festive music for your desktop,/);
@@ -224,7 +229,10 @@ test('built Apps HTML starts on first promotional images and serves all local We
        const image = section.querySelector('figure img');
        const bounds = image.getBoundingClientRect();
        const figure = section.querySelector('figure').getBoundingClientRect();
-       const copy = section.querySelector('.mac-app-copy').getBoundingClientRect();
+        const screen = section.querySelector('.mac-monitor-screen').getBoundingClientRect();
+        const base = section.querySelector('.mac-monitor-base').getBoundingClientRect();
+        const caption = section.querySelector('figcaption').getBoundingClientRect();
+        const copy = section.querySelector('.mac-app-copy').getBoundingClientRect();
        const container = section.querySelector('.mac-app-inner').getBoundingClientRect();
        const dock = document.querySelector('.radio-dock').getBoundingClientRect();
        return {
@@ -232,6 +240,10 @@ test('built Apps HTML starts on first promotional images and serves all local We
          ratio: bounds.width / bounds.height,
          fit: getComputedStyle(image).objectFit,
          imageInFigure: bounds.top >= figure.top && bounds.bottom <= figure.bottom,
+          imageInScreen: bounds.left > screen.left && bounds.right < screen.right &&
+            bounds.top > screen.top && bounds.bottom < screen.bottom,
+          baseInFigure: base.left >= figure.left && base.right <= figure.right &&
+            base.top >= screen.bottom && base.bottom <= caption.top && base.bottom <= figure.bottom,
          inViewport: bounds.left >= 0 && bounds.right <= innerWidth && bounds.top >= 85 && bounds.bottom <= dock.top,
          figureWidth: figure.width, copyWidth: copy.width, containerWidth: container.width,
          overflow: document.documentElement.scrollWidth > innerWidth,
@@ -241,6 +253,7 @@ test('built Apps HTML starts on first promotional images and serves all local We
      assert.ok(Math.abs(geometry.ratio - 1672 / 941) < .001);
      assert.equal(geometry.fit, 'contain');
      assert.ok(geometry.imageInFigure && geometry.inViewport);
+      assert.ok(geometry.imageInScreen && geometry.baseInFigure);
      assert.equal(geometry.overflow, false);
      if (width >= 768) assert.ok(geometry.figureWidth > geometry.copyWidth * 1.5);
      else assert.ok(Math.abs(geometry.figureWidth - geometry.containerWidth) < 1);

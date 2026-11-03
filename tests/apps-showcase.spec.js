@@ -77,7 +77,7 @@ test('all six app screens use physical phones while Watch, TV and Mac stay separ
   }
 });
 
-test('all nine Apps sections keep plain forest-green backgrounds at every breakpoint', async ({ page }) => {
+test('all nine Apps sections keep forest-green wrapping backgrounds at every breakpoint', async ({ page }) => {
   const sceneryRequests = [];
   page.on('request', request => {
     if (/christmas-room-(wide|mobile)/.test(request.url())) sceneryRequests.push(request.url());
@@ -91,7 +91,7 @@ test('all nine Apps sections keep plain forest-green backgrounds at every breakp
     for (const section of await sections.all()) {
       await section.scrollIntoViewIfNeeded();
       await expect(section).toHaveCSS('background-color', 'rgb(9, 36, 25)');
-      await expect(section).toHaveCSS('background-image', 'none');
+      await expect(section).toHaveCSS('background-image', /apps-wrap-tile|image\/svg\+xml/);
       for (const pseudo of ['::before', '::after']) {
         expect(await section.evaluate((el, pseudo) => {
           const style = getComputedStyle(el, pseudo);
@@ -102,6 +102,67 @@ test('all nine Apps sections keep plain forest-green backgrounds at every breakp
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
   expect(sceneryRequests).toEqual([]);
+});
+
+test('Mac monitor keeps its full artwork, short stand and external caption unclipped', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/apps');
+  await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
+  const section = page.locator('#santa-radio-mac');
+  const monitor = section.locator('.mac-monitor');
+  const image = monitor.getByRole('img');
+  await expect(image).toHaveCount(1);
+  await expect(section.locator('.mac-monitor-bezel[aria-hidden="true"], .mac-monitor-neck[aria-hidden="true"], .mac-monitor-base[aria-hidden="true"]')).toHaveCount(3);
+  await expect(section.locator('.mac-app-figure > figcaption')).toHaveText('Santa Radio for Mac promotional artwork');
+  await expect(monitor.locator('figcaption, a, button')).toHaveCount(0);
+  await expect(page.locator('.mac-monitor')).toHaveCount(1);
+  for (const width of [1440, 1024, 768, 767, 390, 320]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await monitor.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
+    await image.evaluate(el => el.decode());
+    const geometry = await section.evaluate(section => {
+      const box = selector => section.querySelector(selector).getBoundingClientRect().toJSON();
+      return {
+        image: box('.mac-monitor img'), screen: box('.mac-monitor-screen'),
+        neck: box('.mac-monitor-neck'), base: box('.mac-monitor-base'),
+        monitor: box('.mac-monitor'), caption: box('figcaption'),
+        section: section.getBoundingClientRect().toJSON(),
+        dockTop: document.querySelector('.radio-dock').getBoundingClientRect().top,
+      };
+    });
+    const { image: artwork, screen, neck, base, caption, monitor: hardware } = geometry;
+    expect(artwork.width / artwork.height).toBeCloseTo(1672 / 941, 3);
+    expect(await image.evaluate(el => [el.naturalWidth, el.naturalHeight])).toEqual([1672, 941]);
+    await expect(image).toHaveCSS('object-fit', 'contain');
+    expect(artwork.left).toBeGreaterThan(screen.left);
+    expect(artwork.right).toBeLessThan(screen.right);
+    expect(artwork.top).toBeGreaterThan(screen.top);
+    expect(artwork.bottom).toBeLessThan(screen.bottom);
+    expect(screen.width).toBeGreaterThan(screen.height * 1.5);
+    expect(neck.top).toBeCloseTo(screen.bottom - 1, 1);
+    expect(neck.height).toBeLessThanOrEqual(screen.height * .15);
+    expect(base.top).toBeCloseTo(neck.bottom - 1, 1);
+    expect(base.height).toBeGreaterThan(0);
+    expect(base.width).toBeGreaterThan(neck.width);
+    expect(base.width).toBeLessThan(screen.width * .4);
+    expect(base.left + base.width / 2).toBeCloseTo(screen.left + screen.width / 2, 1);
+    expect(caption.top).toBeGreaterThanOrEqual(base.bottom);
+    for (const bounds of [screen, neck, base]) {
+      expect(bounds.left).toBeGreaterThanOrEqual(geometry.section.left);
+      expect(bounds.right).toBeLessThanOrEqual(Math.min(width, geometry.section.right));
+      expect(bounds.bottom).toBeLessThanOrEqual(hardware.bottom);
+      expect(bounds.top).toBeGreaterThanOrEqual(85);
+      expect(bounds.bottom).toBeLessThanOrEqual(geometry.dockTop);
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    if ([1440, 390, 320].includes(width)) {
+      await section.screenshot({
+        path: `generated-artifacts/apps-mac-monitor-${width}.jpg`,
+        animations: 'disabled',
+        style: '.radio-dock, .navbar, .skip-link { visibility: hidden !important; }',
+      });
+    }
+  }
 });
 
 test('Apps is usable on first server render without JavaScript', async ({ browser, baseURL }) => {
