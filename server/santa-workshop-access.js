@@ -83,7 +83,21 @@ export function workshopDocumentHeaders(req, res, next) {
   next();
 }
 
-export function createWorkshopAccessHandler({ getSettings = settings, consumeAttempt = consumeWorkshopAttempt, recordUsage = recordWorkshopUsage, now = Date.now } = {}) {
+export function createWorkshopAccessHandler({
+  getSettings = settings, consumeAttempt = consumeWorkshopAttempt, recordUsage = recordWorkshopUsage,
+  log = event => console.error('[santa-workshop-access]', event), now = Date.now,
+} = {}) {
+  // Usage reporting is not an authentication prerequisite. Keep the shared
+  // security limiter mandatory, but never reject a valid invitation because
+  // reporting storage is unavailable or its schema has not reached a host yet.
+  const recordGrantedUsage = async (session, kind) => {
+    try { await recordUsage(session, kind); }
+    catch (error) {
+      const category = ['42P01', '42703'].includes(error?.code) ? 'missing_schema'
+        : error?.code === '42501' ? 'permissions' : 'storage_unavailable';
+      log({ event: 'voucher_usage_unavailable', category });
+    }
+  };
   const app = express();
   app.disable('x-powered-by');
   app.use((req, res, next) => {
@@ -130,7 +144,7 @@ export function createWorkshopAccessHandler({ getSettings = settings, consumeAtt
         if (!workshopSession(req, config, grantTime)) return res.status(403).json({ error: 'Enter a valid voucher code to create another test message.' });
         const secure = req.headers['x-forwarded-proto']?.split(',')[0]?.trim() === 'https' || req.socket?.encrypted;
         const token = issueWorkshopToken({ ...config, expiresAt: session.expiresAt }, grantTime, session.codeId);
-        await recordUsage(workshopSession({ headers: { cookie: `${WORKSHOP_COOKIE}=${token}` } }, config, grantTime), 'another');
+        await recordGrantedUsage(workshopSession({ headers: { cookie: `${WORKSHOP_COOKIE}=${token}` } }, config, grantTime), 'another');
         res.set('Set-Cookie', `${WORKSHOP_COOKIE}=${token}; Path=/; HttpOnly; SameSite=Strict${secure ? '; Secure' : ''}`);
         return res.json({ authorized: true, expiresAt: session.expiresAt });
       } catch {
@@ -153,7 +167,7 @@ export function createWorkshopAccessHandler({ getSettings = settings, consumeAtt
       if (!workshopCodeOpen(config, matched, grantTime)) return res.status(410).json({ authorized: false, error: 'This voucher is outside its testing dates.' });
       const secure = req.socket?.encrypted || req.headers['x-forwarded-proto']?.split(',')[0]?.trim() === 'https';
       const token = issueWorkshopToken(config, grantTime, matched.id);
-      await recordUsage(workshopSession({ headers: { cookie: `${WORKSHOP_COOKIE}=${token}` } }, config, grantTime), 'entry');
+      await recordGrantedUsage(workshopSession({ headers: { cookie: `${WORKSHOP_COOKIE}=${token}` } }, config, grantTime), 'entry');
       res.set('Set-Cookie', `${WORKSHOP_COOKIE}=${token}; Path=/; HttpOnly; SameSite=Strict${secure ? '; Secure' : ''}`);
       return res.json({ authorized: true, expiresAt: Math.min(grantTime + WORKSHOP_SESSION_MS, workshopCodeDeadline(config, matched)) });
     } catch {

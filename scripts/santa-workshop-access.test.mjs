@@ -157,12 +157,39 @@ test('school entries and deliberate new messages are recorded once; checks and r
     assert.equal(events[1].kind, 'another');
     assert.notEqual(events[0].session.generationKey, events[1].session.generationKey);
   });
-  await withServer({ getSettings: () => schoolConfig, now: () => SCHOOL_TEST_START,
-    recordUsage: async () => { throw new Error('private'); } }, async ({ post }) => {
-    const response = await post(schoolConfig.codes[5].code);
-    assert.equal(response.status, 503);
-    assert.equal(response.headers.get('set-cookie'), null);
+});
+
+test('reporting storage failures do not block any valid voucher or another test, and log no private details', async () => {
+  const logs = [];
+  const time = SCHOOL_TEST_START;
+  await withServer({ getSettings: () => schoolConfig, now: () => time,
+    log: event => logs.push(event),
+    recordUsage: async () => { throw Object.assign(new Error('private-do-not-log'), { code: '42P01' }); },
+  }, async ({ url, post }) => {
+    assert.equal((await post('invalid-code')).status, 401);
+    assert.equal(logs.length, 0);
+    for (const entry of schoolConfig.codes) {
+      const response = await post(entry.code);
+      assert.equal(response.status, 200);
+      const data = await response.json();
+      assert.equal(data.authorized, true);
+      const cookie = response.headers.get('set-cookie').split(';')[0];
+      const session = workshopSession({ headers: { cookie } }, schoolConfig, time);
+      assert.equal(session.codeId, entry.id);
+      assert.equal(session.expiresAt, data.expiresAt);
+      const another = await fetch(url, { method: 'POST', headers: {
+        Origin: url, Cookie: cookie, 'Content-Type': 'application/json',
+      }, body: JSON.stringify({ another: true }) });
+      assert.equal(another.status, 200);
+      assert.deepEqual(await another.json(), { authorized: true, expiresAt: session.expiresAt });
+      assert.equal(workshopSession({ headers: { cookie: another.headers.get('set-cookie').split(';')[0] } },
+        schoolConfig, time).codeId, entry.id);
+    }
   });
+  assert.equal(logs.length, schoolConfig.codes.length * 2);
+  assert.ok(logs.every(event => JSON.stringify(event) === JSON.stringify({
+    event: 'voucher_usage_unavailable', category: 'missing_schema',
+  })));
 });
 
 test('direct generation rejects absent and expired school sessions before storage or rendering', async () => {

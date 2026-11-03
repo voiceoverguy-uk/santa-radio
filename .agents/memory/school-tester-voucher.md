@@ -27,3 +27,13 @@ messages with corrections separate.
 **How to apply:** Keep counts server-authoritative and reuse the existing
 approved staff access. Do not collect children's details for usage reporting
 or claim historical coverage before tracking was enabled.
+
+Usage reporting must not become a prerequisite for accepting a valid voucher.
+Keep the persistent security limiter mandatory, but report usage-storage failures
+privately instead of locking invited parents out.
+
+**Why:** A new reporting dependency can otherwise turn a missing reporting schema
+on a host into an all-voucher access outage.
+
+**How to apply:** Preserve code, origin, expiry and session checks. Log only fixed
+failure categories, and treat totals during a reporting outage as incomplete.

@@ -242,9 +242,11 @@ Post-merge setup runs this idempotently. The new table in
 database through a separately approved production migration before deploying
 this feature to Vercel. It adds recording timestamps used to exclude
 pre-tracking generations when an old session deliberately starts another test.
-Missing usage storage fails voucher entry closed
-with the existing temporary-unavailability message instead of silently losing
-usage records; other voucher slots do not use the new table.
+Usage reporting is not an authentication prerequisite. A usage-storage failure
+emits a private, sanitised `voucher_usage_unavailable` event and valid voucher
+entry continues. Code validation, expiry, origin checks and the shared persistent
+security limiter still fail closed. Usage totals can be incomplete during a
+reporting outage; do not present them as a complete historical count.
 
 Tests: `npm run test:workshop-usage` (persistent counters test uses only the
 development database and rolls its fixture records back).
