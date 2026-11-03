@@ -618,33 +618,69 @@ test('full-message playback coordinates with radio and pagehide stops playback w
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
 });
 
-test('confirmation cancellation, Escape, focus trap and mobile layout never generate a recording', async ({ page }) => {
+for (const viewport of [
+  { width: 1365, height: 900 },
+  { width: 320, height: 740 },
+  { width: 320, height: 300 },
+]) {
+test(`confirmation stays centred with safe overflow, cancellation and keyboard operation at ${viewport.width}x${viewport.height}`, async ({ page }) => {
   const fixture = await openReview(page);
-  await page.setViewportSize({ width: 320, height: 740 });
+  await page.setViewportSize(viewport);
   const create = page.getByRole('button', { name: 'Create message', exact: true });
+  await create.scrollIntoViewIfNeeded();
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
   await create.click();
   const dialog = page.getByRole('dialog', { name: 'Are you happy with your selection?' });
   const back = dialog.getByRole('button', { name: 'Go back', exact: true });
+  const confirm = dialog.getByRole('button', { name: 'Create message', exact: true });
   await expect(back).toBeFocused();
   await expect(dialog).toContainText('temporary MP3');
   await expect(dialog).toContainText('We do not keep a copy or message history');
+  const bounds = await dialog.boundingBox();
+  expect(Math.abs(bounds.x + bounds.width / 2 - viewport.width / 2)).toBeLessThanOrEqual(1);
+  expect(Math.abs(bounds.y + bounds.height / 2 - viewport.height / 2)).toBeLessThanOrEqual(1);
+  expect(bounds.x).toBeGreaterThanOrEqual(16);
+  expect(bounds.x + bounds.width).toBeLessThanOrEqual(viewport.width - 16);
+  expect(bounds.y).toBeGreaterThanOrEqual(20);
+  expect(bounds.y + bounds.height).toBeLessThanOrEqual(viewport.height - 20);
+  expect(await dialog.evaluate(node => node.scrollWidth <= node.clientWidth + 1)).toBe(true);
+  if (viewport.height === 300) {
+    expect(await dialog.evaluate(node => node.scrollHeight > node.clientHeight)).toBe(true);
+    // The heading can be read at the top; keyboard navigation brings both
+    // actions into view even when the content is taller than the viewport.
+    await dialog.evaluate(node => { node.scrollTop = 0; });
+    await expect(dialog.getByRole('heading')).toBeInViewport();
+  }
   await page.keyboard.press('Shift+Tab');
-  await expect(dialog.getByRole('button', { name: 'Create message', exact: true })).toBeFocused();
+  await expect(confirm).toBeFocused();
+  await expect(confirm).toBeInViewport({ ratio: 1 });
   await page.keyboard.press('Tab');
   await expect(back).toBeFocused();
-  const bounds = await dialog.boundingBox();
-  expect(bounds.x).toBeGreaterThanOrEqual(0);
-  expect(bounds.x + bounds.width).toBeLessThanOrEqual(320);
-  await page.screenshot({ path: 'generated-artifacts/studio-generation-confirmation-320.png' });
+  await expect(back).toBeInViewport({ ratio: 1 });
+  await page.screenshot({ path: `generated-artifacts/studio-generation-confirmation-${viewport.width}x${viewport.height}.png` });
+  expect(fixture.posts).toHaveLength(0);
+  await expect(page.locator('.smw-message-result audio')).toHaveCount(0);
   await page.keyboard.press('Escape');
   await expect(dialog).toHaveCount(0);
   await expect(create).toBeFocused();
   expect(fixture.posts).toHaveLength(0);
   await create.click();
   await back.click();
+  await expect(dialog).toHaveCount(0);
+  await expect(create).toBeFocused();
   expect(fixture.posts).toHaveLength(0);
+  await expect(page.locator('.smw-message-result audio')).toHaveCount(0);
   expect(fixture.state.temporary).toBe(true);
+  await page.keyboard.press('Enter');
+  await expect(back).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(confirm).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(dialog).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Your finished Santa message' })).toBeVisible();
+  expect(fixture.posts).toHaveLength(1);
 });
+}
 
 test('temporary downloads survive failed replacement but never recover after refresh, new tabs or navigation', async ({ page, context }) => {
   test.setTimeout(90000);

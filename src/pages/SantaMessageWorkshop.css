@@ -465,7 +465,8 @@
 .smw-download-actions a { max-width: 100%; text-decoration: none; }
 .smw-allowance, .smw-voucher-entitlement { flex: 1 0 100%; color: #e6ce86; font-size: .85rem; line-height: 1.6; }
 .smw-actions[hidden] { display: none; }
-.smw-confirmation { width: min(560px, calc(100% - 32px)); max-height: calc(100dvh - 40px); overflow: auto;
+.smw-confirmation { position: fixed; inset: 0; margin: auto;
+  width: min(560px, calc(100% - 32px)); max-height: calc(100dvh - 40px); overflow: auto;
   padding: clamp(18px, 4vw, 30px); border: 1px solid #d4af37; border-radius: 18px;
   background: #112f22; color: #fff8e7; }
 .smw-confirmation::backdrop { background: #000b; }
