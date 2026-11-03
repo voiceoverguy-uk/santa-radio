@@ -22,11 +22,11 @@ The owner authorised generating a temporary workshop background for the game whi
 
 **How to apply:** The supplied-artwork restriction applies to matching-card faces, not to the temporary decorative background.
 
-The approved workshop redesign retains the original workshop backdrop and card pictures. New surrounding decorations must stay separate from the playable interface and contain no cards or interface text.
+The outer section should resemble subtle dark-green festive wrapping paper, not an extension of the workshop scenery. Keep photographic branches, baubles and lights out of that surrounding section; retain the workshop backdrop inside the game.
 
-**Why:** The owner explicitly approved extending the workshop atmosphere while keeping the original artwork, not flattening the mockup into an interface background.
+**Why:** The owner requested restrained wrapping paper and clarified that the reference identifies the surrounding section, not the workshop scene inside the playable panel.
 
-**How to apply:** Restyle the actual HTML scores and controls; decorative edge artwork may be generated independently, but must not replace any game content.
+**How to apply:** Keep the outer pattern small, faint, static and separate from game content. Preserve the supplied card pictures, title, scores, controls and gameplay when changing that backdrop.
 
 Sound effects are optional and off initially; keep them separate from radio, soundboard and visual-effects preferences.
 

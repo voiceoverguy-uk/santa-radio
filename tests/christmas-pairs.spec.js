@@ -216,9 +216,48 @@ test('sound requires an explicit choice and game pauses when the tab is hidden',
 });
 
 for (const width of [390, 1440]) {
-  test(`workshop background loads behind the cards at ${width}px`, async ({ page }) => {
+  test(`subtle wrapping paper surrounds the unchanged workshop at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
+    const cornerRequests = [];
+    page.on('request', request => {
+      if (request.url().includes('/christmas-pairs/pine-corner.webp')) cornerRequests.push(request.url());
+    });
     const game = await setup(page);
+    const paper = game.locator('.christmas-pairs__decor');
+    await expect(paper).toHaveAttribute('aria-hidden', 'true');
+    await expect(paper).toHaveCSS('pointer-events', 'none');
+    await expect(paper).toHaveCSS('background-repeat', 'repeat');
+    await expect(paper).toHaveCSS('animation-name', 'none');
+    const decoration = await game.evaluate(el => {
+      const paper = el.querySelector('.christmas-pairs__decor');
+      const css = getComputedStyle(paper);
+      const backgrounds = [el, paper].flatMap(node =>
+        [null, '::before', '::after'].map(pseudo => getComputedStyle(node, pseudo).backgroundImage));
+      return {
+        pattern: css.backgroundImage,
+        opacity: Number(css.opacity),
+        backgrounds,
+        corners: ['::before', '::after'].map(pseudo => getComputedStyle(paper, pseudo).content),
+        headingMargin: getComputedStyle(el.querySelector('.christmas-pairs__heading')).marginTop,
+      };
+    });
+    expect(decoration.pattern).toContain('data:image/svg+xml');
+    expect(decodeURIComponent(decoration.pattern)).toContain('<svg');
+    expect(decoration.opacity).toBeGreaterThan(0);
+    expect(decoration.opacity).toBeLessThanOrEqual(1);
+    // Motifs carry their own low opacity as well as the decorative layer.
+    const motifOpacities = [...decodeURIComponent(decoration.pattern).matchAll(/opacity=['"]([\d.]+)['"]/g)]
+      .map(match => Number(match[1]) * decoration.opacity);
+    expect(motifOpacities.length).toBeGreaterThan(0);
+    for (const opacity of motifOpacities) expect(opacity).toBeLessThanOrEqual(.3);
+    expect(decoration.backgrounds.join(' ')).not.toMatch(/pine-corner|feTurbulence|radial-gradient\(circle/);
+    expect(decoration.corners.every(content => content === 'none' || content === 'normal')).toBe(true);
+    expect(decoration.headingMargin).toBe('0px');
+    expect(await game.evaluate(el => {
+      const heading = el.querySelector('.christmas-pairs__heading').getBoundingClientRect();
+      const section = el.getBoundingClientRect();
+      return Math.abs(heading.top - section.top - parseFloat(getComputedStyle(el).paddingTop) - parseFloat(getComputedStyle(el).borderTopWidth));
+    })).toBeLessThan(1);
     const panel = game.locator('.christmas-pairs__game');
     expect(await panel.evaluate(el => getComputedStyle(el).backgroundImage)).toContain('workshop-background.webp');
     const image = await page.request.get('/images/christmas-pairs/workshop-background.webp');
@@ -233,6 +272,7 @@ for (const width of [390, 1440]) {
     await expect(shown(game)).toHaveCount(0);
     await cards(game).first().click();
     await expect(shown(game)).toHaveCount(1);
+    expect(cornerRequests).toEqual([]);
   });
 }
 
