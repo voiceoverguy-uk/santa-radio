@@ -57,29 +57,56 @@ async function finish(page) {
     await next(page).click();
   }
   await expect(page.locator('.smw-step-count')).toHaveText('Step 8 of 8');
-  await expect(page.locator('.smw-stage-number')).toHaveText('08');
+  await expect(page.getByRole('heading', { name: 'Time to Review', exact: true })).toBeVisible();
   await expect(page.locator('.smw-summary-row')).toHaveCount(7);
 }
 
-for (const width of [390, 471, 1440]) {
-  test(`talent Continue comes before Skip this section at ${width}px`, async ({ page }) => {
+for (const width of [320, 390, 471, 1440]) {
+  test(`talent Continue is last and bottom-right at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await openTalent(page, workshopTalentPreviewCatalogueFixture);
     const actions = page.locator('.smw-stage .smw-actions');
-    await expect(actions.getByRole('button')).toHaveText(['← Back', 'Continue →', 'Skip this section']);
+    await expect(actions.getByRole('button')).toHaveText(['← Back', 'Skip this section', 'Continue →']);
+    const back = actions.getByRole('button', { name: 'Back', exact: true });
     const proceed = actions.getByRole('button', { name: 'Continue', exact: true });
     const skip = actions.getByRole('button', { name: 'Skip this section', exact: true });
+    const expectFooterFits = async () => {
+      const boxes = await actions.getByRole('button').evaluateAll(buttons =>
+        buttons.map(button => {
+          const { x, y, right, bottom } = button.getBoundingClientRect();
+          return { x, y, right, bottom };
+        }));
+      const footer = await actions.boundingBox();
+      for (const box of boxes) {
+        expect(box.x).toBeGreaterThanOrEqual(footer.x - 1);
+        expect(box.right).toBeLessThanOrEqual(footer.x + footer.width + 1);
+      }
+      for (let i = 1; i < boxes.length; i++) {
+        expect(boxes[i].y).toBeGreaterThanOrEqual(boxes[i - 1].y - 1);
+        if (Math.abs(boxes[i].y - boxes[i - 1].y) <= 1) {
+          expect(boxes[i].x).toBeGreaterThan(boxes[i - 1].right);
+        }
+      }
+      expect(boxes[2].right).toBeCloseTo(footer.x + footer.width, 0);
+      expect(boxes[2].bottom).toBeCloseTo(footer.y + footer.height, 0);
+      if (width === 1440) expect(boxes[2].y).toBeCloseTo(boxes[0].y, 0);
+      if (width === 320) expect(boxes[2].y).toBeGreaterThan(boxes[0].y);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+    };
     await expect(proceed).toBeDisabled();
     await expect(skip).toBeEnabled();
-    await page.getByRole('option').first().click();
-    await expect(proceed).toBeEnabled();
-    const primaryBox = await proceed.boundingBox();
-    const skipBox = await skip.boundingBox();
-    expect(skipBox.y).toBeGreaterThanOrEqual(primaryBox.y - 1);
-    if (Math.abs(primaryBox.y - skipBox.y) <= 1) expect(skipBox.x).toBeGreaterThan(primaryBox.x);
-    await proceed.focus();
+    await expectFooterFits();
+    await back.focus();
     await page.keyboard.press('Tab');
     await expect(skip).toBeFocused();
+    await page.getByRole('option').first().click();
+    await expect(proceed).toBeEnabled();
+    await expectFooterFits();
+    await back.focus();
+    await page.keyboard.press('Tab');
+    await expect(skip).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(proceed).toBeFocused();
     await actions.screenshot({ path: `generated-artifacts/talent-button-order-${width}.png` });
     await proceed.click();
     await expect(page.getByRole('heading', { name: 'What have they been trying hard at?', exact: true })).toBeVisible();

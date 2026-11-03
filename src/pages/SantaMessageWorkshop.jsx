@@ -725,13 +725,13 @@ export default function SantaMessageWorkshop() {
                 {(stageIndex > 0 || editing) && <button className="smw-button smw-button-back" type="button" onClick={goBack}>
                   <span aria-hidden="true">←</span> Back
                 </button>}
+                {stage.key === 'talent' && <button className="smw-button smw-button-skip" type="button" onClick={skipTalent} disabled={!audioEditingAllowed}>
+                  Skip this section
+                </button>}
                 <button className="smw-button smw-button-next" type="button" onClick={continueToNext}
                   disabled={stage.key === 'talent' ? !hasCurrentStageChoice : stage.key !== 'name' && !hasCatalogueOptions}>
                   {editing ? 'Return to review' : stageIndex === stages.length - 1 ? 'Review my choices' : 'Continue'} <span aria-hidden="true">→</span>
                 </button>
-                {stage.key === 'talent' && <button className="smw-button smw-button-skip" type="button" onClick={skipTalent} disabled={!audioEditingAllowed}>
-                  Skip this section
-                </button>}
               </div>
             </div>
           ) : (
