@@ -27,13 +27,7 @@ test('approved copy is live text with no retired icon or wrapper', async ({ page
   await expect(section.getByRole('link', { name: 'Explore the Celebrity Mugshots', exact: true }))
     .toHaveAttribute('href', '/mugshots/all');
   await expect(section.locator('.mugshots-logo, .mugshots-header-img, img[src*="santa-mugshots-logo"]')).toHaveCount(0);
-  const decoration = section.locator('.mugshots-pine-corner');
-  await expect(decoration).toHaveCount(2);
-  for (const corner of await decoration.all()) {
-    await expect(corner).toHaveAttribute('aria-hidden', 'true');
-    await expect(corner).toHaveAttribute('focusable', 'false');
-    expect(await corner.evaluate(node => getComputedStyle(node).pointerEvents)).toBe('none');
-  }
+  await expect(section.locator('.mugshots-pine-corner, .mugshots-lights')).toHaveCount(0);
   for (const link of [section.locator('.mug-card').first(), section.locator('.mugshots-gallery-button')]) {
     expect(await link.evaluate(node => getComputedStyle(node).transitionDuration)).toBe('0s');
   }
@@ -102,6 +96,34 @@ for (const width of [1440, 768, 390, 320]) {
     await prepare(page);
     const section = page.locator(sectionSelector);
     const cards = page.locator(cardsSelector);
+    // The wallpaper must render across the section, not inherit the global
+    // starry-bg pseudo-element hiding rule or be masked down to the corners.
+    await expect(section.locator('.mugshots-pine-corner, .mugshots-lights')).toHaveCount(0);
+    const wallpaper = await section.evaluate(node => {
+      const style = getComputedStyle(node, '::before');
+      const content = getComputedStyle(node.querySelector('.mugshots-preview-inner'));
+      return {
+        display: style.display,
+        image: style.backgroundImage,
+        repeat: style.backgroundRepeat,
+        size: style.backgroundSize,
+        mask: style.maskImage,
+        opacity: Number(style.opacity),
+        events: style.pointerEvents,
+        animation: style.animationName,
+        behindContent: Number(style.zIndex) < Number(content.zIndex),
+      };
+    });
+    expect(wallpaper.display).toBe('block');
+    expect(wallpaper.image).toContain('data:image/svg+xml');
+    expect(wallpaper.repeat).toBe('repeat');
+    expect(wallpaper.size).toBe('108px 108px');
+    expect(wallpaper.mask).toBe('none');
+    expect(wallpaper.opacity).toBeGreaterThan(0);
+    expect(wallpaper.opacity).toBeLessThanOrEqual(.5);
+    expect(wallpaper.events).toBe('none');
+    expect(wallpaper.animation).toBe('none');
+    expect(wallpaper.behindContent).toBe(true);
     const subtitle = section.locator('.mugshots-subtitle');
     await expect(subtitle).toHaveText('Famous faces. One festive mug.');
     expect(await subtitle.evaluate(node => {

@@ -18,13 +18,14 @@
 .mugshots-preview.starry-bg::before {
   content: "";
   position: absolute;
-  z-index: -1;
+  z-index: 0;
   inset: 0;
+  display: block;
   pointer-events: none;
-  opacity: .32;
-  background-image: radial-gradient(circle, #f5d779 0 1px, transparent 1.5px);
-  background-size: 79px 71px;
-  mask-image: linear-gradient(90deg, #000, transparent 21%, transparent 79%, #000);
+  opacity: .42;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='108' height='108' viewBox='0 0 108 108'%3E%3Cg fill='none' stroke='%23d6bd70' stroke-opacity='.28' stroke-width='.8'%3E%3Cpath d='M26 17v12m-5-6h10m-8.5-3.5 7 7m0-7-7 7M82 69v12m-5-6h10m-8.5-3.5 7 7m0-7-7 7'/%3E%3Cpath d='M53 45c4-5 8-5 12 0-4 5-8 5-12 0Zm-2 0h16M56 42l6 6m0-6-6 6'/%3E%3C/g%3E%3Cg fill='%23e3c66f' fill-opacity='.42'%3E%3Cpath d='m77 19 1.5 4 4 1.5-4 1.5-1.5 4-1.5-4-4-1.5 4-1.5zM25 83l1.2 3.2 3.3 1.3-3.3 1.2-1.2 3.3-1.3-3.3-3.2-1.2 3.2-1.3zM94 43l1 2.7 2.8 1-2.8 1.1-1 2.7-1.1-2.7-2.7-1.1 2.7-1z'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 108px 108px;
+  background-repeat: repeat;
 }
 
 .mugshots-preview.starry-bg::after {
@@ -32,39 +33,9 @@
   position: absolute;
   inset: auto 0 0;
   height: 100px;
-  z-index: -1;
+  z-index: 0;
   border-bottom: 3px double #b39751;
-  background:
-    radial-gradient(circle at 2% 80%, #f2c16485, transparent 2%),
-    radial-gradient(circle at 6% 96%, #e4b23c65, transparent 4%),
-    radial-gradient(circle at 98% 80%, #f2c16485, transparent 2%),
-    radial-gradient(circle at 94% 96%, #e4b23c65, transparent 4%);
   pointer-events: none;
-}
-
-.mugshots-pine-corner {
-  position: absolute;
-  z-index: -1;
-  top: 0;
-  width: min(29vw, 380px);
-  height: auto;
-  overflow: visible;
-  pointer-events: none;
-  opacity: .92;
-}
-
-.mugshots-pine-left {
-  left: -8px;
-}
-
-.mugshots-pine-right {
-  right: -8px;
-  transform: scaleX(-1);
-}
-
-.mugshots-lights circle {
-  fill: #ffe6a0;
-  filter: drop-shadow(0 0 5px rgba(255, 207, 91, .82));
 }
 
 .mugshots-preview .mugshots-preview-inner {
@@ -256,11 +227,6 @@
 @media (max-width: 760px) {
   .mugshots-preview.starry-bg {
     padding: 72px 18px 62px;
-  }
-
-  .mugshots-pine-corner {
-    width: min(38vw, 240px);
-    opacity: .65;
   }
 
   .mugshots-intro {

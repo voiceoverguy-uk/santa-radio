@@ -5,48 +5,11 @@ import mugshotsData from '../data/mugshots.ts';
 import useMugshotRotation from './useMugshotRotation.js';
 import HomepageSectionHeading from './HomepageSectionHeading.jsx';
 
-function PineCorner({ className }) {
-  return (
-    <svg
-      className={`mugshots-pine-corner ${className}`}
-      viewBox="0 0 420 300"
-      aria-hidden="true"
-      focusable="false"
-    >
-      {[[-15, 6, 0, 1.6], [25, -5, 28, 1.2], [-15, 12, 65, 1.2],
-        [110, -14, 18, 1], [205, -18, 8, .8], [-15, 100, 78, .8]].map(([x, y, angle, scale], sprig) => (
-        <g key={sprig} transform={`translate(${x} ${y}) rotate(${angle}) scale(${scale})`} fill="none" strokeLinecap="round">
-          <path d="M0 0Q80 14 185 0" stroke="#665738" strokeWidth="3" />
-          {Array.from({ length: 26 }, (_, i) => {
-            const start = i * 6.7;
-            const length = 26 - i * .55;
-            return <path key={i} d={`M${start} 5l${length} -${length * .85}M${start} 5l${length} ${length * .8}`}
-              stroke={['#41633a', '#254e31', '#66804a'][i % 3]} strokeWidth="1.7" />;
-          })}
-        </g>
-      ))}
-      <path d="M0 68Q80 0 180 42T420 8M0 70Q60 140 14 290" fill="none" stroke="#aa8a43" strokeWidth="1" />
-      <g className="mugshots-lights">
-        <circle cx="22" cy="54" r="4" /><circle cx="80" cy="32" r="4.5" />
-        <circle cx="140" cy="32" r="4" /><circle cx="205" cy="49" r="4.5" />
-        <circle cx="290" cy="38" r="4" /><circle cx="365" cy="20" r="4.5" />
-        <circle cx="34" cy="140" r="4" /><circle cx="28" cy="230" r="4.5" />
-      </g>
-      <g fill="#a52b22" stroke="#e5c365" strokeWidth="1.5">
-        <circle cx="78" cy="56" r="9" /><circle cx="149" cy="14" r="7" />
-        <circle cx="240" cy="25" r="9" /><circle cx="12" cy="185" r="7" />
-      </g>
-    </svg>
-  );
-}
-
 export default function MugshotsPreview() {
   const { celebs, gridEvents } = useMugshotRotation(mugshotsData);
 
   return (
     <section id="homepage-mugshots" className="mugshots-preview starry-bg" aria-labelledby="homepage-mugshots-title">
-      <PineCorner className="mugshots-pine-left" />
-      <PineCorner className="mugshots-pine-right" />
       <div className="container mugshots-preview-inner">
         <header className="mugshots-intro">
           <HomepageSectionHeading

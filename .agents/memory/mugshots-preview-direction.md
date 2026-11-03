@@ -2,9 +2,9 @@
 name: Mugshots preview direction
 description: Owner-approved homepage celebrity preview appearance and limits.
 ---
-Keep the homepage Celebrity Mugshots preview photograph-led, with the evergreen, corner pine and warm fairy lights, gold frames and red gallery button from the approved reference. The cartoon Mugshots icon must not return, including an empty wrapper reserved for it.
+Keep the homepage Celebrity Mugshots preview photograph-led, with dark evergreen festive wallpaper, understated repeating gold stars, snowflakes and ornamental motifs, gold frames and the red gallery button. Do not restore pine/tree corners or their hanging lights and baubles. The cartoon Mugshots icon must not return, including an empty wrapper reserved for it.
 
-**Why:** The latest owner approval explicitly excludes the old cartoon icon. The reference is a style specification, not permission to flatten the section into an image or fix its sample to the pictured celebrities.
+**Why:** The owner's wallpaper request supersedes the earlier corner-pine appearance approval for the homepage preview only. The earlier approval also explicitly excludes the old cartoon icon. The reference is a style specification, not permission to flatten the section into an image or fix its sample to the pictured celebrities.
 
 **How to apply:** Preserve the real original celebrity photographs and random approved sampling when refining the homepage preview. Do not extend this approval to navigation branding, the main gallery or individual profiles.
 
