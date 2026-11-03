@@ -239,7 +239,7 @@ export default function WorkshopMessageAudio({
       <div className="smw-download-actions"><a className="smw-button smw-button-download" href={url}
         download={getWorkshopDownloadName(finishedName?.name || record?.name || '',
           finishedSpelling ?? spelling)}>Download MP3 <span aria-hidden="true">↓</span></a></div>
-      <p className="smw-catalogue-review-note">Save your MP3 now. Leaving or refreshing this page removes the temporary recording. A download click cannot confirm that your browser saved the file.</p>
+      <p className="smw-catalogue-review-note">Save your MP3 now. Click download and check you have it before closing the page. Leaving or refreshing this page removes the recording.</p>
     </section>}
     {confirming && <dialog ref={dialogRef} className="smw-confirmation" aria-labelledby="smw-confirm-title"
       aria-describedby="smw-confirm-description" onCancel={event => { event.preventDefault(); closeConfirmation(); }}
