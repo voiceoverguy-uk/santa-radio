@@ -28,6 +28,29 @@ test('authorised Studio can check its actual allowance without generating audio'
   expect(await response.json()).toMatchObject({ successes: 0, remaining: 2, pending: false });
 });
 
+test('Vercel missing-generation-table conditions keep valid voucher access but refuse unprotected creation', async ({ page, browser, baseURL }) => {
+  test.skip(process.env.STUDIO_TEST_MISSING_TABLES !== 'generation-and-reporting',
+    'Runs only with the isolated missing-table preload, without changing real schema.');
+  test.setTimeout(90000);
+  const origin = new URL(baseURL).origin;
+  const anonymous = await browser.newContext();
+  try {
+    const invalid = await anonymous.request.post(`${origin}/api/santa-workshop-access`, {
+      headers: { Origin: origin }, data: { code: 'invalid-isolated-test-code' },
+    });
+    expect(invalid.status()).toBe(401);
+    expect(invalid.headers()['set-cookie']).toBeUndefined();
+    expect((await anonymous.request.get(`${origin}/api/santa-studio-message`)).status()).toBe(403);
+  } finally { await anonymous.close(); }
+  await openReview(page, { live: true, school: true });
+  const status = await page.request.get('/api/santa-studio-message');
+  expect(status.status()).toBe(503);
+  await expect(page.locator('.smw-allowance')).toContainText('Your voucher is recognised');
+  await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
+  await expect(page.locator('.smw-message-result audio')).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'Download MP3', exact: true })).toHaveCount(0);
+});
+
 async function openReview(page, { live = false, allowance = null, tester = false, school = false } = {}) {
   const generation = live ? null : await mockStudioGeneration(page, { tester });
   if (!live) await page.route('**/api/santa-studio-message', route => route.request().method() === 'GET'

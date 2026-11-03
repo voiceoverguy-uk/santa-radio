@@ -128,6 +128,50 @@ status read-only and ask the owner to test a real code privately.
 
 ## Safe preflight
 
+### Optional voucher collection is disabled
+
+At the owner's request, voucher entry and authenticated “another message”
+requests no longer import or invoke the usage writer. No reporting query is
+awaited, queued or retried by either visitor route. Existing records, tables and
+the staff-only historical reader are preserved.
+
+Recording release checks now skip reporting probes entirely, and optional
+reporting readiness never determines overall recording readiness. Staff
+diagnostics may still inspect historical reporting separately.
+
+This does not remove the two generation-state tables: those enforce successful
+generation counts, exact identity locks, idempotency and shared reservations.
+Signed access cookies alone cannot enforce those rules against replay or
+concurrent requests on stateless Vercel. Missing mandatory generation state
+therefore still fails closed; do not deploy this change as a claimed fix for
+that missing state.
+
+Local verification uses the isolated `tests/helpers/missing-studio-storage.mjs`
+Node preload to simulate missing reporting alone, and missing reporting plus
+generation storage, without dropping tables or deleting records. Real-source
+creation, playback, download and recovery must succeed in the former case;
+valid-voucher access but blocked generation is the expected protected result in
+the latter.
+
+### Production approval and rollout boundary
+
+The owner confirmed that the Replit Production Database connection hostname
+matches the Vercel production-build endpoint. Use the Replit-managed schema
+workflow; do not request a new Neon account or copy credentials.
+
+The reviewed pending managed schema diff is broader than the recording repair:
+seven new tables, one added history column and two foreign keys. Only the two
+generation tables are necessary here. Do not describe approving the full diff
+as approving just those two tables, and do not delete existing development
+tables to force a smaller diff.
+
+Coordinate the cutover before enabling generation tables: an older serving
+renderer can write MP3 bytes when those tables become available. Keep Studio
+generation closed during any approved schema transition until the metadata-only,
+collection-disabled renderer is confirmed live. Preserve the free maker and
+existing data. No production maintenance rule, schema change or release is
+authorised merely by the owner's hostname confirmation.
+
 Run `npm run workshop:preflight` in a trusted process with the **target server's**
 environment already injected. It prints only fixed check names, slot numbers and
 booleans. It checks active-code bounds, duplicate IDs/codes, expiry parsing,

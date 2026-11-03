@@ -24,3 +24,23 @@ requirement to preserve limits, recover lost responses and retain existing data.
 **How to apply:** Keep the browser's completed MP3 until a replacement succeeds.
 Do not promise reload recovery is independent of upstream availability for new
 recordings. Do not turn temporary audio into per-instance entitlement state.
+
+The owner prioritises working message creation over voucher usage records:
+“If it means we get it working, i'm not fussed about keeping a record.”
+
+**Why:** The owner authorised removing optional voucher collection and reporting
+dependencies, while preserving voucher checks, entitlements and applicable
+message limits.
+
+**How to apply:** Do not require reporting tables for entry or creation. Keep
+existing records and historical reporting separate from mandatory security
+state, and do not remove allowance/identity enforcement as an analytics cleanup.
+
+Coordinate storage enablement with the metadata-only renderer rollout.
+
+**Why:** Creating previously missing tables can activate an older serving
+renderer that archives MP3 bytes, even before the replacement code goes live.
+
+**How to apply:** Keep Studio generation closed during an approved transition
+until the non-archiving renderer is verified live; preserve the separate free
+maker and do not treat hostname confirmation as migration permission.
