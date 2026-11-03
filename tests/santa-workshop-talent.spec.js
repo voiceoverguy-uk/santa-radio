@@ -82,10 +82,10 @@ for (const width of [390, 471, 1440]) {
     await expect(skip).toBeFocused();
     await actions.screenshot({ path: `generated-artifacts/talent-button-order-${width}.png` });
     await proceed.click();
-    await expect(page.getByRole('heading', { name: 'What have they been working hard at?', exact: true })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'What have they been trying hard at?', exact: true })).toBeVisible();
     await page.locator('.smw-stage .smw-button-back').click();
     await skip.click();
-    await expect(page.getByRole('heading', { name: 'What have they been working hard at?', exact: true })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'What have they been trying hard at?', exact: true })).toBeVisible();
   });
 }
 

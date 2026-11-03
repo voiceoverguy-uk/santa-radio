@@ -651,7 +651,7 @@ for (const viewport of [{ width: 1365, height: 900 }, { width: 320, height: 568 
     await expect(page.locator('.smw-summary')).toContainText('Helping with toys');
     await expect(page.locator('.smw-summary')).toContainText('Hot chocolate');
     await expect(page.locator('.smw-summary')).toContainText('The Moon');
-    await page.getByRole('button', { name: 'Change Working hard at', exact: true }).click();
+    await page.getByRole('button', { name: 'Change Trying hard at', exact: true }).click();
     await expect(page.getByRole('searchbox', { name: 'Search activities', exact: true })).toHaveValue('');
     await expect(page.getByRole('option', { name: 'Tidying away toys', exact: true })).toHaveAttribute('aria-selected', 'true');
     expect(await storage()).toEqual(before);

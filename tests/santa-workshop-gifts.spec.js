@@ -284,7 +284,7 @@ test('gifts unlock together, export real local files, retry independently and tr
   // download the edited selection before a replacement MP3 succeeds.
   const completedText = await letterText(page).textContent();
   await page.getByRole('button', { name: 'Edit and regenerate once', exact: true }).click();
-  await page.getByRole('button', { name: 'Change Working hard at', exact: true }).click();
+  await page.getByRole('button', { name: 'Change Trying hard at', exact: true }).click();
   await page.getByRole('option', { name: 'Playing a musical instrument', exact: true }).click();
   await page.locator('.smw-button-next').click();
   await expect(page.getByText('Showing the last completed gift set', { exact: false })).toBeVisible();

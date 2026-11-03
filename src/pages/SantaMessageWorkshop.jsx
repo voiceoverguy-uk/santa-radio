@@ -55,9 +55,9 @@ const stages = [
   },
   {
     key: 'activity',
-    label: 'Working hard at',
-    reviewLabel: 'Working hard at',
-    heading: 'What have they been working hard at?',
+    label: 'Trying hard at',
+    reviewLabel: 'Trying hard at',
+    heading: 'What have they been trying hard at?',
     wording: 'I’ve heard you’ve been super good, in fact, positively amazing this year… trying especially hard at…',
   },
   {

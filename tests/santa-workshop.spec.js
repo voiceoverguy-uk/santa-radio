@@ -181,7 +181,7 @@ for (const width of [320, 390, 768, 1024, 1440]) {
     const badge = page.locator('.smw-step-count');
     const questions = [
       'What name should Santa say?', 'How old are they?', 'What are they especially good at?',
-      'What have they been working hard at?', 'What deserves an extra celebration?',
+      'What have they been trying hard at?', 'What deserves an extra celebration?',
       'What might they leave Santa?', 'Where is Santa visiting?',
     ];
     const expectQuestionHeader = async step => {
@@ -806,7 +806,7 @@ for (const viewport of [
     await expect(card).not.toContainText('Preview wording only.');
     await expect(page.locator('.smw-sound-toggle')).toHaveCount(0);
     await expect(page.locator('.smw-choice-wheel-count')).toHaveCount(0);
-    const wheel = page.getByRole('listbox', { name: 'Working hard at', exact: true });
+    const wheel = page.getByRole('listbox', { name: 'Trying hard at', exact: true });
     await expect(wheel.locator('[aria-selected=true]')).toHaveCount(0);
     const panelBox = await card.boundingBox();
     const wheelBox = await page.locator('.smw-choice-wheel-frame').boundingBox();
@@ -1097,6 +1097,37 @@ for (const viewport of [
   });
 }
 
+for (const width of [390, 1440]) {
+  test(`Trying hard at labels and review editing preserve activity choices at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await open(page);
+    await complete(page);
+    const row = page.locator('.smw-summary-row').filter({
+      has: page.locator('dt', { hasText: /^Trying hard at$/ }),
+    });
+    await expect(row.locator('dd')).toHaveText('Teamwork');
+    const edit = page.getByRole('button', { name: 'Change Trying hard at', exact: true });
+    await expect(edit).toHaveAttribute('title', 'Edit Trying hard at');
+    await edit.click();
+    await expect(page.getByRole('heading', { name: 'What have they been trying hard at?', exact: true })).toBeVisible();
+    await expect(page.locator('.smw-step-labels .is-current')).toHaveText('Trying hard at');
+    const wheel = page.getByRole('listbox', { name: 'Trying hard at', exact: true });
+    await expect(wheel.getByRole('option', { name: 'Teamwork', exact: true })).toHaveAttribute('aria-selected', 'true');
+    const quote = page.locator('.smw-activity-wording-quote');
+    const speech = 'I’ve heard you’ve been super good, in fact, positively amazing this year… trying especially hard at…';
+    await expect(quote).toHaveText(`${speech} Teamwork`);
+    await wheel.getByRole('option', { name: 'Playing a musical instrument', exact: true }).click();
+    await expect(quote).toHaveText(`${speech} Playing a musical instrument`);
+    await page.getByRole('button', { name: 'Return to review', exact: true }).click();
+    await expect(row.locator('dd')).toHaveText('Playing a musical instrument');
+    await edit.click();
+    await expect(wheel.getByRole('option', { name: 'Playing a musical instrument', exact: true })).toHaveAttribute('aria-selected', 'true');
+    await page.getByRole('button', { name: 'Return to review', exact: true }).click();
+    await expect(row.locator('dd')).toHaveText('Playing a musical instrument');
+  });
+}
+
 test('full journey, missing choices, back and category editing retain answers without service or storage writes', async ({ page }) => {
   const forbidden = [];
   page.on('request', request => {
@@ -1114,10 +1145,10 @@ test('full journey, missing choices, back and category editing retain answers wi
   await expect(page.getByRole('combobox', { name: 'Search recorded names', exact: true })).toHaveAttribute('aria-invalid', 'true');
   await complete(page);
   await expect(page.locator('.smw-summary dt')).toHaveText([
-    'Their recorded name', 'Age', 'Talent', 'Working hard at', 'Extra celebration',
+    'Their recorded name', 'Age', 'Talent', 'Trying hard at', 'Extra celebration',
     'A festive treat for Santa', 'Santa will be flying in to',
   ]);
-  for (const label of ['Working hard at', 'Extra celebration', 'A festive treat for Santa', 'Santa will be flying in to']) {
+  for (const label of ['Trying hard at', 'Extra celebration', 'A festive treat for Santa', 'Santa will be flying in to']) {
     await expect(page.getByRole('button', { name: `Change ${label}`, exact: true })).toHaveCount(1);
   }
   for (const answer of answers) await expect(page.locator('.smw-summary')).toContainText(answer);
@@ -1708,7 +1739,7 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 320, height: 568 }
     await open(page);
     await page.addStyleTag({ content: 'html { font-size: 200%; }' });
     await complete(page);
-    await page.getByRole('button', { name: 'Change Working hard at' }).click();
+    await page.getByRole('button', { name: 'Change Trying hard at' }).click();
     await page.getByRole('option', { name: 'Playing a musical instrument', exact: true }).click();
     await page.getByRole('button', { name: 'Return to review' }).click();
     await expect(page.locator('.radio-dock')).toBeHidden();

@@ -391,7 +391,7 @@ test('review create placement on desktop and phones, real MP3 playback/download,
   expect(submissions).toHaveLength(1);
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
   await page.getByRole('button', { name: 'Edit and regenerate once', exact: true }).click();
-  await page.getByRole('button', { name: 'Change Working hard at', exact: true }).click();
+  await page.getByRole('button', { name: 'Change Trying hard at', exact: true }).click();
   await expect(result).toBeHidden();
   expect(await page.evaluate(url => window.revokedAudioUrls.includes(url), url)).toBe(false);
   await page.getByRole('option', { name: 'Playing a musical instrument', exact: true }).click();
@@ -562,7 +562,7 @@ test('two successful messages preserve downloads through correction failures, re
   expect(fixture.posts).toHaveLength(1);
   const original = await download.getAttribute('href');
   await page.getByRole('button', { name: 'Edit and regenerate once', exact: true }).click();
-  await page.getByRole('button', { name: 'Change Working hard at', exact: true }).click();
+  await page.getByRole('button', { name: 'Change Trying hard at', exact: true }).click();
   await page.getByRole('option', { name: 'Playing a musical instrument', exact: true }).click();
   await page.getByRole('button', { name: 'Return to review', exact: true }).click();
   await expect(download).toHaveAttribute('href', original);
