@@ -49,6 +49,46 @@ current project setting proves what a previous deployment received.
 
 ## Persistent attempt-limit storage
 
+### Read-only release readiness
+
+Run `npm run workshop:preflight -- --database` to check the current workspace
+binding. The report explicitly labels this `workspace`; it is **not** evidence
+that the live Vercel website is ready.
+
+The check now covers the persistent attempt limiter, both Studio generation
+tables (including the recording timestamp column), and the voucher-usage table.
+It checks required columns without reading records, application-role permissions,
+unique keys and row-security assumptions. Each subsystem uses a separate
+read-only transaction and rolls it back, including on failure.
+
+`entryReady` describes the mandatory security limiter; `recordingReady` also
+requires recording storage; `reportingReady` requires generation and usage
+storage. A reporting failure does not mean valid vouchers must be denied.
+The overall `ready` flag requires all three subsystems, so the release check
+exits unsuccessfully when any is missing. These are schema/permission checks,
+not proof of a successful voucher redemption or MP3 render.
+
+Before checking the live site, an authorised operator must confirm the actual
+serving Vercel deployment's existing database resource/binding. Replit's published
+copy and its production SQL callback are not proof of the Vercel binding.
+In a trusted runner already securely bound to that verified Vercel Production
+environment, use:
+
+```
+npm run workshop:preflight -- --database --target=vercel-production --expected-host=CONFIRMED_HOST --expected-database=CONFIRMED_DATABASE
+```
+
+Only non-secret host/database identifiers belong in these arguments; never put
+a connection string or password there. The check compares them internally with
+the bound connection and requires Vercel Production runtime markers. A mismatch
+stops the check before querying storage. These markers are not independent
+proof of the binding: never set them in Preview just to make the check pass.
+`liveStorageReadinessVerified` stays false for workspace-only or incomplete checks.
+No database credentials, connection addresses, records or raw exceptions are
+printed. This check never provisions a database, migrates production or publishes.
+For Replit-managed schema changes use the supported Publish schema-sync flow;
+publishing that copy does not deploy the www website's Vercel code.
+
 `DATABASE_URL` must point to the existing application PostgreSQL database.
 `santa_name_request_limits` needs `bucket_key` (unique/primary key), `attempts`
 (integer, default 1), and `expires_at` (timestamptz). The application role needs

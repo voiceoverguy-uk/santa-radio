@@ -1,6 +1,7 @@
 import { pathToFileURL } from 'node:url';
 import { workshopSettings, workshopConfigurationChecks, workshopConfigured, WORKSHOP_CODE_SLOTS, workshopCodeOpen } from '../server/santa-workshop-settings.js';
 import { databasePool } from '../server/name-request-store.js';
+import { bindingReport, checkStudioStorage } from './studio-storage-preflight.mjs';
 
 export function configurationReport(env = process.env, now = Date.now()) {
   const config = workshopSettings(env);
@@ -61,22 +62,40 @@ export async function storageReport(pool) {
   }
 }
 
+export async function releaseStorageReport(pool) {
+  const access = await storageReport(pool);
+  const { generation, reporting } = await checkStudioStorage(pool);
+  return {
+    checked: true,
+    ready: access.ready && generation.ready && reporting.ready,
+    entryReady: access.ready,
+    recordingReady: access.ready && generation.ready,
+    reportingReady: generation.ready && reporting.ready,
+    access, generation, reporting,
+  };
+}
+
 async function main() {
   const report = configurationReport();
+  report.binding = bindingReport(process.env, process.argv.slice(2));
   let pool;
-  if (process.argv.includes('--database')) {
+  if (!report.binding.valid) report.storage = { checked: false, reason: 'target_not_verified' };
+  else if (process.argv.includes('--database')) {
     if (!process.env.DATABASE_URL) report.storage = { checked: true, ready: false, reason: 'database_not_configured' };
     else {
       try {
         pool = databasePool();
-        report.storage = await storageReport(pool);
+        report.storage = await releaseStorageReport(pool);
       } catch {
         report.storage = { checked: true, ready: false, reason: 'database_unavailable' };
       } finally { await pool?.end().catch(() => {}); }
     }
   } else report.storage = { checked: false };
+  report.liveStorageReadinessVerified = report.binding.productionBindingVerified
+    && report.configured && report.approvedDeadline && report.testOpen && report.storage.ready === true;
   console.log(JSON.stringify(report, null, 2));
   if (!report.configured || !report.approvedDeadline || !report.testOpen
+    || !report.binding.valid || (report.binding.productionBindingVerified && !report.storage.checked)
     || (report.storage.checked && !report.storage.ready)) process.exitCode = 1;
 }
 

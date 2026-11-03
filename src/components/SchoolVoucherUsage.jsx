@@ -39,10 +39,10 @@ function isUsageResponse(value) {
 }
 
 const metrics = [
-  { key: 'entries', label: 'Voucher entries', note: 'Successful voucher logins' },
+  { key: 'entries', label: 'Voucher entries', note: 'Successfully tracked voucher logins' },
   { key: 'messages', label: 'First recordings', note: 'Messages from first successful recordings' },
   { key: 'corrections', label: 'Corrections', note: 'Recorded separately from first messages' },
-  { key: 'totalRecordings', label: 'Total recordings', note: 'All successful recordings counted' },
+  { key: 'totalRecordings', label: 'Total recordings', note: 'Successful recordings linked to tracked entries' },
   { key: 'startedAnother', label: 'Another test started', note: 'A deliberate repeat test creates another message' },
 ];
 
@@ -119,6 +119,11 @@ export default function SchoolVoucherUsage() {
         </button>
       </div>
 
+      <p className="staff-info" role="note">
+        Tracked activity only. Entries and recordings may be missing during reporting outages.
+        Missing activity cannot be reconstructed from these totals.
+      </p>
+
       {error && (
         <div className="staff-error school-voucher-usage__error" role="alert">
           <p>{error}</p>
@@ -139,8 +144,9 @@ export default function SchoolVoucherUsage() {
         </div>
       )}
 
-      {usage && (
+      {usage && !pending && !error && (
         <>
+          <p role="status">Reporting data loaded successfully. This does not confirm uninterrupted tracking.</p>
           {hasAnyUsage ? (
             <div className="school-voucher-usage__metrics" aria-label="Voucher usage totals">
               {metrics.map(metric => (
@@ -201,8 +207,9 @@ export default function SchoolVoucherUsage() {
               test creates another message, not another voucher entry.
             </p>
             <p>
-              These totals cover sessions entered after tracking was enabled; earlier history was not
-              backfilled. No child details are included. Downloads are not measured.
+              These totals cover successfully tracked sessions after tracking was enabled. Earlier history
+              and activity missed during reporting outages are not backfilled. A zero means no tracked
+              activity, not proof that nobody used a voucher. No child details are included. Downloads are not measured.
             </p>
           </div>
         </>

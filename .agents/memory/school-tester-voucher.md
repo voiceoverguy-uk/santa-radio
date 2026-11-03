@@ -37,3 +37,13 @@ on a host into an all-voucher access outage.
 
 **How to apply:** Preserve code, origin, expiry and session checks. Log only fixed
 failure categories, and treat totals during a reporting outage as incomplete.
+
+Readiness must distinguish voucher-entry, recording and reporting storage.
+Workspace success is never evidence about the live Vercel database binding.
+The private report must describe tracked-only totals, including possible outage
+gaps; a successful refresh does not prove uninterrupted historical tracking.
+
+**Why:** The owner approved both safeguards after the voucher-entry regression.
+
+**How to apply:** Verify the actual live binding before labelling a check
+production. Keep probes read-only and do not infer missing activity from zeros.
