@@ -59,3 +59,9 @@ A Safari broken-image screenshot does not establish that artwork is missing or c
 **Why:** Reported broken displays have coexisted with intact originals, successful preview delivery and successful Chromium decoding. A compatible fallback can reduce failures without proving which Safari request or decoder failed.
 
 **How to apply:** Preserve approved originals and verify both response bytes and browser decoding. Describe fallback recovery as recovery, not as proof of a Safari fix, until the affected Safari session can be checked.
+
+Santa Voicemail's older screen-only approval is superseded by the owner's five native captures: Home, Santa call, Workshop call, Naughty List call and Soundboard.
+
+**Why:** The owner requested these genuine captures in a refreshed physical handset, with Home between every other view, including at the loop boundary.
+
+**How to apply:** Preserve each complete 1206 × 2622 composition without recreating interface details. Keep other showcases, feature copy and download destinations unchanged.

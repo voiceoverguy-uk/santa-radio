@@ -12,7 +12,16 @@ import santaRadioWelcome from '../assets/apps/santa-radio-ios-welcome.webp';
 import santaRadioWelcomeFallback from '../assets/apps/santa-radio-ios-welcome.png';
 import santaRadioWatchControls from '../assets/apps/santa-radio-watch-controls.webp';
 import santaRadioWatchArtwork from '../assets/apps/santa-radio-watch-artwork.webp';
-import santaVoicemail from '../assets/apps/santa-voicemail-screen.webp';
+import santaVoicemail from '../assets/apps/santa-voicemail-home.webp';
+import santaVoicemailHomeFallback from '../assets/apps/santa-voicemail-home.png';
+import santaVoicemailSanta from '../assets/apps/santa-voicemail-santa-call.webp';
+import santaVoicemailSantaFallback from '../assets/apps/santa-voicemail-santa-call.png';
+import santaVoicemailWorkshop from '../assets/apps/santa-voicemail-workshop-call.webp';
+import santaVoicemailWorkshopFallback from '../assets/apps/santa-voicemail-workshop-call.png';
+import santaVoicemailNaughty from '../assets/apps/santa-voicemail-naughty-list-call.webp';
+import santaVoicemailNaughtyFallback from '../assets/apps/santa-voicemail-naughty-list-call.png';
+import santaVoicemailSoundboard from '../assets/apps/santa-voicemail-soundboard.webp';
+import santaVoicemailSoundboardFallback from '../assets/apps/santa-voicemail-soundboard.png';
 import santaMessages from '../assets/apps/santa-messages-screen.webp';
 import christmasRadio from '../assets/apps/christmas-radio-screen-1.webp';
 import christmasRadioPromo2 from '../assets/apps/christmas-radio-screen-2.webp';
@@ -63,6 +72,16 @@ const standaloneDisplay = title => ({
   deviceStyle: 'classic',
 });
 
+const voicemailHome = {
+  label: 'Home', image: santaVoicemail, fallback: santaVoicemailHomeFallback,
+  width: 1206, height: 2622,
+  alt: 'Santa Voicemail app Home screen with Call Santa, Call the Workshop, Naughty List Hotline and Santa’s Soundboard signs in a snowy North Pole village.',
+};
+const voicemailCall = (label, image, fallback, recipient) => ({
+  label, image, fallback, width: 1206, height: 2622,
+  alt: `Santa Voicemail app ${label} screen showing ${recipient} at the North Pole, Calling, Mute and End Call controls.`,
+});
+
 export const christmasApps = [
   {
     id: 'santaradio',
@@ -103,11 +122,29 @@ export const christmasApps = [
     title: 'Santa Voicemail',
     subtitle: 'Leave Santa a voicemail message.',
     image: santaVoicemail,
-    alt: 'Santa Voicemail app screen with Call Santa, Call the Workshop, Naughty List Hotline and Santa Soundboard controls.',
-    width: 750,
-    height: 1334,
+    alt: voicemailHome.alt,
+    width: 1206,
+    height: 2622,
     presentation: 'device',
-    slideshow: standaloneDisplay('Santa Voicemail'),
+    screenshots: [
+      voicemailHome,
+      voicemailCall('Santa call', santaVoicemailSanta, santaVoicemailSantaFallback, 'Santa'),
+      voicemailHome,
+      voicemailCall('Workshop call', santaVoicemailWorkshop, santaVoicemailWorkshopFallback, 'Santa’s Workshop'),
+      voicemailHome,
+      voicemailCall('Naughty List call', santaVoicemailNaughty, santaVoicemailNaughtyFallback, 'the Naughty List Hotline'),
+      voicemailHome,
+      {
+        label: 'Soundboard', image: santaVoicemailSoundboard, fallback: santaVoicemailSoundboardFallback,
+        width: 1206, height: 2622,
+        alt: 'Santa Voicemail app Soundboard screen with red wooden festive phrase buttons, Parents settings and bottom navigation.',
+      },
+    ],
+    slideshow: {
+      heading: 'Santa Voicemail app screenshots',
+      regionLabel: 'Santa Voicemail Home, calls and Soundboard previews',
+      deviceStyle: 'voicemail',
+    },
     downloads: downloads(
       'https://itunes.apple.com/us/app/santa-voicemail/id586387813',
       'http://www.amazon.com/App-Style-Ltd-Santa-Voicemail/dp/B00QFP4B18',

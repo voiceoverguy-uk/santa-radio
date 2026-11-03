@@ -27,6 +27,7 @@ export default function AppScreenshots({
   const [autoplayEnabled, setAutoplayEnabled] = useState(true);
   const [hidden, setHidden] = useState(false);
   const santaRadioPreview = interactiveMode === 'santa-radio';
+  const voicemailPreview = deviceStyle === 'voicemail';
   const darkLandscapeDevice = deviceStyle === 'dark-landscape';
   const artworkPresentation = !darkLandscapeDevice && (presentation === 'artwork' || imageType !== 'screenshot');
 
@@ -95,7 +96,7 @@ export default function AppScreenshots({
 
   return (
     <figure
-      className={`app-screenshots ${artworkPresentation ? 'app-screenshots-artwork' : 'app-screenshots-device'}${slides[0].width > slides[0].height ? ' app-screenshots-landscape' : ''}${!artworkPresentation && deviceStyle === 'classic' ? ' app-screenshots-classic' : ''}${darkLandscapeDevice ? ' app-screenshots-dark-landscape' : ''}${santaRadioPreview ? ' app-screenshots-santa-radio' : ''}`}
+      className={`app-screenshots ${artworkPresentation ? 'app-screenshots-artwork' : 'app-screenshots-device'}${slides[0].width > slides[0].height ? ' app-screenshots-landscape' : ''}${!artworkPresentation && deviceStyle === 'classic' ? ' app-screenshots-classic' : ''}${darkLandscapeDevice ? ' app-screenshots-dark-landscape' : ''}${santaRadioPreview ? ' app-screenshots-santa-radio' : ''}${voicemailPreview ? ' app-screenshots-voicemail' : ''}`}
       role="region"
       aria-roledescription={slides.length > 1 ? 'carousel' : undefined}
       aria-label={regionLabel}
@@ -123,7 +124,7 @@ export default function AppScreenshots({
         <div className="app-screenshots-stack" style={{ aspectRatio: `${slides[0].width} / ${slides[0].height}` }}>
           {slides.map((slide, index) => (
             <AppScreenshotImage
-              key={slide.label}
+              key={`${slide.label}-${index}`}
               className={`app-screenshot-slide${active === index ? ' is-active' : ''}`}
               slide={slide}
               index={index}
@@ -165,6 +166,24 @@ export default function AppScreenshots({
           </span>
         )}
       </div>
+      {voicemailPreview && (
+        <div className="app-voicemail-controls">
+          <span aria-live={rotating ? 'off' : 'polite'} aria-atomic="true">
+            {slides[active].label} · {active + 1} of {slides.length}
+          </span>
+          {!reducedMotion && (
+            <button
+              type="button"
+              className="app-voicemail-autoplay"
+              aria-label={autoplayEnabled ? 'Pause automatic screen previews' : 'Resume automatic screen previews'}
+              aria-pressed={autoplayEnabled}
+              onClick={() => setAutoplayEnabled(value => !value)}
+            >
+              {autoplayEnabled ? 'Pause previews' : 'Resume previews'}
+            </button>
+          )}
+        </div>
+      )}
       {santaRadioPreview && (
         <div className="santa-radio-preview-feedback-only">
           <div className="santa-radio-preview-status" aria-live="polite">

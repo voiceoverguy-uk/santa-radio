@@ -37,10 +37,27 @@ for (const [source, output, previewWidth, width, height, corners] of displays) {
 
 // Owner-approved existing screen-only originals. Keep their full dimensions,
 // interface and controls intact; retain both PNG and promotional sources.
-for (const name of ['santa-voicemail', 'santa-messages']) {
+for (const name of ['santa-messages']) {
   run([`src/assets/apps/${name}.png`, '-strip', '-quality', '90',
     `src/assets/apps/${name}-screen.webp`]);
   console.log(`${name}-screen.webp: full original display`);
+}
+
+// Native Voicemail captures: keep the complete 1206 × 2622 composition.
+// No perspective extraction, resize, retouching or added camera cut-out.
+const voicemailScreens = [
+  ['home_1793744102237.png', 'home'],
+  ['sv-02_1793744102236.png', 'santa-call'],
+  ['sv-03_1793744102236.png', 'workshop-call'],
+  ['sv-05_1793744102236.png', 'naughty-list-call'],
+  ['sv-04_1793744102237.png', 'soundboard'],
+];
+for (const [source, label] of voicemailScreens) {
+  const output = `src/assets/apps/santa-voicemail-${label}`;
+  run([`attached_assets/${source}`, '-strip', '-quality', '85', `${output}.webp`]);
+  // Pixel-identical decoded recovery, rather than a second lossy rendition.
+  run([`${output}.webp`, '-strip', `${output}.png`]);
+  console.log(`santa-voicemail-${label}: complete native screenshot, 1206 × 2622`);
 }
 
 // Current native Santa Text captures, in slideshow order. Resize the complete

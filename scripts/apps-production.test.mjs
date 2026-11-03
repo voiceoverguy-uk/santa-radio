@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { readdir } from 'node:fs/promises';
-import { chromium } from '@playwright/test';
+import { chromium, expect } from '@playwright/test';
 import { existsSync } from 'node:fs';
 import { appDownloads, obsoleteStoreCopy } from '../tests/fixtures/apps-downloads.js';
 
@@ -27,12 +27,13 @@ test('built Apps HTML starts on first promotional images and serves all local We
   });
   t.after(() => browser.close());
   const page = await browser.newPage();
+  await page.addInitScript(() => sessionStorage.setItem('santa-message-offer-shown', 'shown'));
   await page.goto(`http://127.0.0.1:${port}/apps`);
   // Exercise the actual built URLs and decode response bytes in a browser,
   // including PNG recovery assets which are not visible in the SSR markup.
   const assets = (await readdir('dist/assets')).filter(name =>
-    /^(?:christmas-radio-screen-[1-4]|santa-text-screen-(?:welcome|menu|promotion|chat)|santa-radio-ios-(?:radio|tracker|mugshots|artists|games|welcome)|santa-dash-screen)-.*\.(?:webp|png)$/.test(name));
-  assert.equal(assets.length, 30);
+    /^(?:christmas-radio-screen-[1-4]|santa-voicemail-(?:home|santa-call|workshop-call|naughty-list-call|soundboard)|santa-text-screen-(?:welcome|menu|promotion|chat)|santa-radio-ios-(?:radio|tracker|mugshots|artists|games|welcome)|santa-dash-screen)-.*\.(?:webp|png)$/.test(name));
+  assert.equal(assets.length, 40);
   const decodedPixels = new Map();
   for (const name of assets) {
     const asset = await get(`/assets/${name}`);
@@ -51,7 +52,7 @@ test('built Apps HTML starts on first promotional images and serves all local We
       const hash = await crypto.subtle.digest('SHA-256', pixels);
       return { dimensions: [image.naturalWidth, image.naturalHeight], hash: Array.from(new Uint8Array(hash)).join(',') };
     }, { bytes, type: asset.headers.get('content-type') });
-    const expected = name.startsWith('christmas') ? [520, 1130] :
+    const expected = name.startsWith('santa-voicemail') ? [1206, 2622] : name.startsWith('christmas') ? [520, 1130] :
       /^(?:santa-text|santa-radio-ios)/.test(name) ? [603, 1311] : [1488, 676];
     assert.deepEqual(decoded.dimensions, expected, name);
     const key = name.replace(/-[^-]+\.(?:webp|png)$/, '');
@@ -62,7 +63,7 @@ test('built Apps HTML starts on first promotional images and serves all local We
   assert.equal(response.status, 200);
   const html = await response.text();
   const visibleHtml = html.replace(/<!--[\s\S]*?-->/g, '');
-  // Production CSS must retain the plain green treatment, including on phones.
+  // Production CSS retains the approved green wrapping-paper treatment.
   const stylesheetUrls = [...html.matchAll(/<link\b[^>]*rel="stylesheet"[^>]*href="([^"]+)"/g)].map(match => match[1]);
   assert.ok(stylesheetUrls.length > 0);
   const css = (await Promise.all(stylesheetUrls.map(async url => {
@@ -73,7 +74,7 @@ test('built Apps HTML starts on first promotional images and serves all local We
   assert.doesNotMatch(css, /christmas-room-(wide|mobile)/);
   assert.match(css, /--apps-forest:\s*#092419/);
   for (const selector of ['app-section', 'apple-watch-showcase', 'apple-tv-showcase', 'mac-app-showcase']) {
-    assert.match(css, new RegExp(`\\.apps-page \\.${selector}[^{}]*\\{[^{}]*background:\\s*var\\(--apps-forest\\)`));
+    assert.match(css, new RegExp(`\\.apps-page \\.${selector}[^{}]*\\{[^{}]*background-color:\\s*var\\(--apps-forest\\)`));
   }
   assert.doesNotMatch(visibleHtml, /app-store-card|app-store-details/);
   assert.doesNotMatch(visibleHtml, obsoleteStoreCopy);
@@ -149,8 +150,8 @@ test('built Apps HTML starts on first promotional images and serves all local We
   assert.doesNotMatch(visibleHtml, /Santa Dash’s three owner-supplied promotional artworks are not live gameplay/);
   assert.doesNotMatch(visibleHtml, /iOS screenshots only; the Amazon app’s appearance may differ|app-screenshots-note/);
   const dashImages = [...dash.matchAll(/<img\b[^>]*>/g)].map(match => match[0]);
-  assert.equal(dashImages.length, 1);
-  for (const [index, image] of dashImages.entries()) {
+   assert.equal(dashImages.length, 5);
+   for (const [index, image] of dashImages.slice(0, 1).entries()) {
     const src = image.match(/src="([^"]+)"/)?.[1];
     assert.match(src, /^\/assets\/santa-dash-screen-.*\.webp$/);
     assert.match(image, /width="1488" height="676"/);
@@ -263,7 +264,6 @@ test('built Apps HTML starts on first promotional images and serves all local We
     }
   }
   for (const [id, filename, width, height] of [
-    ['santavoicemail', 'santa-voicemail', 750, 1334],
     ['santamessages', 'santa-messages', 750, 1334],
   ]) {
     const app = html.match(new RegExp(`<section id="${id}"[\\s\\S]*?<\\/section>`))?.[0];
@@ -286,5 +286,53 @@ test('built Apps HTML starts on first promotional images and serves all local We
     const bytes = Buffer.from(await asset.arrayBuffer());
     assert.equal(bytes.toString('ascii', 8, 12), 'WEBP');
     assert.ok(bytes.length < 500000);
+  }
+  const voicemail = html.match(/<section id="santavoicemail"[\s\S]*?<\/section>/)?.[0];
+  assert.ok(voicemail);
+  assert.match(voicemail, /app-screenshots-voicemail/);
+  assert.doesNotMatch(voicemail, /app-screenshots-classic/);
+  const voicemailImages = [...voicemail.matchAll(/<img\b[^>]*>/g)].map(match => match[0]);
+  const order = ['home', 'santa-call', 'home', 'workshop-call', 'home', 'naughty-list-call', 'home', 'soundboard'];
+  assert.equal(voicemailImages.length, order.length);
+  for (const [index, label] of order.entries()) {
+    assert.match(voicemailImages[index], new RegExp(`src="/assets/santa-voicemail-${label}-.*\\.webp"`));
+    assert.match(voicemailImages[index], /width="1206" height="2622"/);
+    assert.equal(voicemailImages[index].includes(' is-active'), index === 0);
+  }
+  await page.clock.install();
+  await page.clock.pauseAt(new Date());
+  await page.goto(`http://127.0.0.1:${port}/apps`);
+  const phone = page.locator('#santavoicemail .app-screenshots');
+  await phone.locator('img').evaluateAll(images => Promise.all(images.map(image => image.decode())));
+  await expect(phone.getByRole('button', { name: 'Pause automatic screen previews' })).toHaveCount(1);
+  await page.mouse.move(0, 0);
+  await expect(phone.locator('img').first()).toHaveAttribute('aria-hidden', 'false');
+  for (const index of [1, 2, 3, 4, 5, 6, 7, 0]) {
+    await page.clock.fastForward(5000);
+    await expect(phone.locator('img').nth(index)).toHaveAttribute('aria-hidden', 'false');
+  }
+  await phone.getByRole('button', { name: 'Pause automatic screen previews' }).click();
+  await page.mouse.move(0, 0);
+  await page.evaluate(() => document.activeElement.blur());
+  await page.clock.fastForward(10000);
+  assert.equal(await phone.locator('img').first().getAttribute('aria-hidden'), 'false');
+  await phone.getByRole('button', { name: 'Resume automatic screen previews' }).click();
+  await page.mouse.move(0, 0);
+  await page.evaluate(() => document.activeElement.blur());
+  await page.clock.fastForward(5000);
+  await expect(phone.locator('img').nth(1)).toHaveAttribute('aria-hidden', 'false');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(phone.getByRole('button')).toHaveCount(0);
+  await page.clock.fastForward(10000);
+  assert.equal(await phone.getByRole('button').count(), 0);
+  for (const width of [1280, 390, 320]) {
+    await page.setViewportSize({ width, height: 1000 });
+    const geometry = await phone.locator('img').first().evaluate(image => {
+      const rect = image.getBoundingClientRect();
+      return { ratio: rect.width / rect.height, fits: rect.left >= 0 && rect.right <= innerWidth, fit: getComputedStyle(image).objectFit };
+    });
+    assert.ok(Math.abs(geometry.ratio - 1206 / 2622) < .001);
+    assert.ok(geometry.fits);
+    assert.equal(geometry.fit, 'contain');
   }
 });
