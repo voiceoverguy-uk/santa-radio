@@ -7,12 +7,12 @@ test('Santa Dash title keeps its intended two lines without overflow', async ({ 
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   await page.evaluate(() => document.fonts.ready);
-  const promo = page.getByRole('region', { name: 'Santa Dash — Back to the Grotto', exact: true });
-  const title = promo.getByRole('heading', { level: 2, name: 'Santa Dash — Back to the Grotto', exact: true });
+  const promo = page.getByRole('region', { name: 'Santa Dash Back to the Grotto', exact: true });
+  const title = promo.getByRole('heading', { level: 2, name: 'Santa Dash Back to the Grotto', exact: true });
   await expect(promo.getByRole('heading')).toHaveCount(1);
   await expect(title).toHaveCount(1);
   const lines = title.locator('.santa-dash-promo__title-line');
-  await expect(lines).toHaveText(['Santa Dash —', 'Back to the Grotto']);
+  await expect(lines).toHaveText(['Santa Dash', 'Back to the Grotto']);
 
   for (const width of [1440, 830, 768, 540, 390, 375, 320]) {
     await page.setViewportSize({ width, height: 1000 });
@@ -50,7 +50,7 @@ test('Santa Dash title keeps its intended two lines without overflow', async ({ 
 test('homepage advert dissolves between both artworks every four seconds', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/', { waitUntil: 'domcontentloaded' });
-  const promo = page.getByRole('region', { name: 'Santa Dash — Back to the Grotto', exact: true });
+  const promo = page.getByRole('region', { name: 'Santa Dash Back to the Grotto', exact: true });
   const slides = promo.locator('.santa-dash-promo__artwork');
   await promo.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
   await expect.poll(() => slides.nth(1).evaluate(el => el.complete && el.naturalWidth > 0)).toBe(true);
@@ -96,7 +96,7 @@ test('homepage advert remains complete, readable and keyboard accessible on desk
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await decline.isVisible()) await decline.click();
-  const promo = page.getByRole('region', { name: 'Santa Dash — Back to the Grotto', exact: true });
+  const promo = page.getByRole('region', { name: 'Santa Dash Back to the Grotto', exact: true });
   const artwork = promo.locator('.santa-dash-promo__artwork').first();
   const artworkLink = promo.getByRole('link', { name: 'View Santa Dash — Back to the Grotto on the App Store (opens in a new tab)', exact: true });
   const download = promo.getByRole('link', { name: 'Download Santa Dash for iPhone and iPad (opens in a new tab)', exact: true });

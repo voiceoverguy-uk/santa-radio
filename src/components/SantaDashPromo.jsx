@@ -214,7 +214,7 @@ export default function SantaDashPromo() {
         <HomepageSectionHeading
           eyebrow="A festive rooftop adventure"
           title={<>
-            <span className="santa-dash-promo__title-line">Santa Dash —</span>{' '}
+            <span className="santa-dash-promo__title-line">Santa Dash</span>{' '}
             <span className="santa-dash-promo__title-line">Back to the Grotto</span>
           </>}
           subtitle="Race across snowy rooftops with Santa."
