@@ -48,7 +48,8 @@ test('Christmas Radio delivers four ordered approved display extractions with un
   }
   const section = page.locator('#christmasradio');
   await expect(section.getByRole('link', { name: /Download on the App Store/ })).toHaveAttribute('href', 'https://itunes.apple.com/gb/app/christmas-radio-uk/id1157967613');
-  await expect(section.getByRole('link', { name: /Download on Amazon Appstore/ })).toHaveAttribute('href', 'https://www.amazon.co.uk/VoiceoverGuy-Ltd-Christmas-Radio/dp/B01M18XUXV');
+  await expect(section.getByRole('link')).toHaveCount(1);
+  await expect(section.getByRole('link').getByRole('img')).toHaveAttribute('src', '/images/download-on-the-app-store.svg');
   await expect(section.locator('.app-store-card, .app-store-details')).toHaveCount(0);
   await expect(section.locator('.feature-label')).toHaveText(['Christmas Music 24/7', 'Record a Message', 'Share', 'Send a message', 'Download price', 'Background player']);
   await expect(page.locator('.app-store-notice')).toHaveCount(0);

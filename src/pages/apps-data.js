@@ -50,9 +50,8 @@ import santaRadioMac from '../assets/apps/santa-radio-mac.webp';
 // Source copy and destination URLs: https://www.santaradio.co.uk/free-christmas-apps/
 // Preserve legacy URLs verbatim; a link does not guarantee current store availability.
 const feature = (label, desc, icon) => ({ label, desc, icon });
-const downloads = (ios, amazon) => [
+const downloads = ios => [
   { platform: 'iOS', href: ios },
-  ...(amazon ? [{ platform: 'Amazon', href: amazon }] : []),
 ];
 const voicemailFeatures = [
   feature('Leave a message', 'Your child can leave a recorded\nvoicemail message for Santa.', 'microphone'),
@@ -106,7 +105,6 @@ export const christmasApps = [
     },
     downloads: downloads(
       'https://apps.apple.com/us/app/santa-radio/id1021183593',
-      'https://www.amazon.com/App-Style-Ltd-Santa-Radio/dp/B0158MYRBM',
     ),
     features: [
       feature('Christmas music', 'Listen to Christmas music\naround the clock.', 'radio'),
@@ -147,7 +145,6 @@ export const christmasApps = [
     },
     downloads: downloads(
       'https://itunes.apple.com/us/app/santa-voicemail/id586387813',
-      'http://www.amazon.com/App-Style-Ltd-Santa-Voicemail/dp/B00QFP4B18',
     ),
     features: voicemailFeatures,
   },
@@ -163,7 +160,6 @@ export const christmasApps = [
     slideshow: standaloneDisplay('Santa Messages'),
     downloads: downloads(
       'https://itunes.apple.com/gb/app/santa-messages/id1062532143',
-      'http://www.amazon.co.uk/Santa-Messages-Free-Festive-Fun/dp/B019MRFDDK',
     ),
     features: [
       feature("Find your child's name", 'Santa will then play a\npersonal message for your child.', 'search'),
@@ -196,7 +192,6 @@ export const christmasApps = [
     },
     downloads: downloads(
       'https://itunes.apple.com/gb/app/christmas-radio-uk/id1157967613',
-      'https://www.amazon.co.uk/VoiceoverGuy-Ltd-Christmas-Radio/dp/B01M18XUXV',
     ),
     features: [
       feature('Christmas Music 24/7', "The best Christmas music.\nThe classics to today's hits!", 'radio'),

@@ -52,10 +52,9 @@ function AppSection({ app }) {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="app-dl-btn"
-                  aria-label={`Download on ${platform === 'iOS' ? 'the App Store' : 'Amazon Appstore'} — ${app.title} (opens in a new tab)`}
+                  aria-label={`Download on the App Store — ${app.title} (opens in a new tab)`}
                 >
-                  <AppIcon name="download" />
-                  Download on {platform === 'iOS' ? 'the App Store' : 'Amazon Appstore'}
+                  <img src="/images/download-on-the-app-store.svg" alt="Download on the App Store" width="150" height="50" />
                 </a>
               ))}
             </div>

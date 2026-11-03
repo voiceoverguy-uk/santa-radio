@@ -186,7 +186,7 @@ export function appsMetadata(apps) {
   return pageMetadata({
     path: '/apps',
     title: 'Christmas Apps — App Store Downloads | Santa Radio',
-    description: 'Explore Santa Radio’s Christmas apps, including music, Santa messages and festive games. Find App Store and Amazon Appstore download links and device showcases.',
+    description: 'Explore Santa Radio’s Christmas apps, including music, Santa messages and festive games. Find App Store download links and device showcases.',
     ...sectionShareCards.apps,
     collection: true,
     crumbs: appsBreadcrumbs,

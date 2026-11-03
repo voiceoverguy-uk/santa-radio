@@ -224,9 +224,9 @@ test('Apps has six complete sections, real local images and app-specific downloa
     expect(await image.getAttribute('src')).toMatch(/^\//);
     await expect(section.locator('.feature-item')).toHaveCount(6);
     await expect(section.getByRole('link', { name: /Download on the App Store/ })).toHaveAttribute('href', app.apple);
-    if (app.amazon) await expect(section.getByRole('link', { name: /Download on Amazon Appstore/ })).toHaveAttribute('href', app.amazon);
-    else await expect(section.getByRole('link', { name: /Download on Amazon Appstore/ })).toHaveCount(0);
+    await expect(section.getByRole('link')).toHaveCount(1);
   }
+  await expect(page.locator('.apps-page a[href*="amazon."]')).toHaveCount(0);
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
@@ -240,27 +240,40 @@ test('store panels are removed, copy and metadata are accurate and downloads wor
   await expect(page.locator('main')).not.toContainText(obsoleteStoreCopy);
   await expect(page.locator('.apps-hero-desc')).toContainText('Check the linked stores for current pricing.');
   await expect(page).toHaveTitle('Christmas Apps — App Store Downloads | Santa Radio');
-  await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /App Store and Amazon Appstore download links and device showcases/);
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /App Store download links and device showcases/);
+  await expect(page.locator('.apps-page')).not.toContainText(/Amazon/i);
+  await expect(page.locator('head')).not.toContainText(/Amazon/i);
+  await expect(page.locator('.apps-page a[href*="amazon."]')).toHaveCount(0);
+  await expect(page.locator('.apps-page a img[src="/images/download-on-the-app-store.svg"]')).toHaveCount(7);
   await expect(page.locator('.app-store-notice')).toHaveCount(0);
   await expect(page.getByRole('navigation', { name: 'Breadcrumb', exact: true })).toHaveCount(0);
 
   // Test real new-tab activation without depending on external stores' uptime.
-  await page.context().route(/https?:\/\/(apps\.apple\.com|itunes\.apple\.com|www\.amazon\.(com|co\.uk))\//, route =>
+  await page.context().route(/https?:\/\/(apps\.apple\.com|itunes\.apple\.com)\//, route =>
     route.fulfill({ contentType: 'text/html', body: '<title>Store listing destination</title>' }));
   for (const width of [1280, 390, 320]) {
     await page.setViewportSize({ width, height: 900 });
     for (const app of appDownloads) {
       const section = page.locator(`#${app.id}`);
       const links = section.locator('.app-dl-btn');
-      await expect(links).toHaveCount(app.amazon ? 2 : 1);
-      const stores = [['the App Store', app.apple], ...(app.amazon ? [['Amazon Appstore', app.amazon]] : [])];
+      await expect(links).toHaveCount(1);
+      const stores = [['the App Store', app.apple]];
       for (const [index, [store, href]] of stores.entries()) {
         const link = links.nth(index);
-        await expect(link).toHaveText(`Download on ${store}`);
+        const badge = link.getByRole('img', { name: 'Download on the App Store', exact: true });
+        await expect(badge).toHaveAttribute('src', '/images/download-on-the-app-store.svg');
+        await badge.evaluate(image => image.decode());
+        expect(await badge.evaluate(image => image.naturalWidth)).toBeGreaterThan(0);
+        const badgeBounds = await badge.boundingBox();
+        expect(badgeBounds.width).toBeCloseTo(150, 1);
+        // SVG intrinsic sizes and layout pixels can round differently by a fraction of a pixel.
+        expect(badgeBounds.height).toBeCloseTo(badgeBounds.width * 40 / 119.66407, 1);
         await expect(link).toHaveAttribute('aria-label', `Download on ${store} — ${app.title} (opens in a new tab)`);
         await expect(link).toHaveAttribute('href', href);
         await expect(link).toHaveAttribute('target', '_blank');
         await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+        await expect(link).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+        await expect(link).toHaveCSS('padding', '0px');
         // Tab from each link to its successor (or back) exercises actual keyboard focus.
         await link.focus();
         await page.keyboard.press('Shift+Tab');
@@ -268,6 +281,8 @@ test('store panels are removed, copy and metadata are accurate and downloads wor
         await expect(link).toBeFocused();
         expect(await link.evaluate(el => getComputedStyle(el).outlineStyle)).toBe('solid');
         const bounds = await link.boundingBox();
+        expect(bounds.width).toBeCloseTo(badgeBounds.width, 1);
+        expect(bounds.height).toBeCloseTo(badgeBounds.height, 1);
         expect(bounds.height).toBeGreaterThanOrEqual(48);
         expect(bounds.x).toBeGreaterThanOrEqual(0);
         expect(bounds.x + bounds.width).toBeLessThanOrEqual(width);
@@ -311,7 +326,7 @@ test('approved Messages screen original fills its phone without cropping at all 
     ['santamessages', 'santa-messages', 750, 1334],
   ]) {
     const section = page.locator(`#${id}`);
-    const image = section.locator('img');
+    const image = section.locator('.app-screenshots img');
     const src = await image.getAttribute('src');
     expect(src).toMatch(new RegExp(`^/.*${filename}-screen.*\\.webp`));
     await expect(image).toHaveAttribute('width', String(intrinsicWidth));
@@ -423,6 +438,9 @@ test('Mac app listing keeps complete promotional artwork with the approved App S
 
   for (const width of [1440, 1280, 1024, 768, 767, 390, 320]) {
     await page.setViewportSize({ width, height: 1000 });
+    const badgeBounds = await badge.boundingBox();
+    expect(badgeBounds.width).toBeCloseTo(150, 1);
+    expect(badgeBounds.height).toBeCloseTo(badgeBounds.width * 40 / 119.66407, 1);
     await expect(section.locator('.mac-app-status, [role="status"]')).toHaveCount(0);
     await expect(section.locator('.mac-app-copy > :last-child')).toHaveClass('mac-app-store-link');
     const copySpacing = await section.locator('.mac-app-copy').evaluate(copy =>

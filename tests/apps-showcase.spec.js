@@ -114,7 +114,12 @@ test('Apps is usable on first server render without JavaScript', async ({ browse
       const section = page.locator(`#${app.id}`);
       await expect(section.locator('h2')).toHaveText(app.title);
       await expect(section.locator('.feature-item')).toHaveCount(6);
-      await expect(section.locator('.app-dl-btn').first()).toHaveAttribute('href', app.apple);
+      const download = section.locator('.app-dl-btn');
+      await expect(download).toHaveCount(1);
+      await expect(download).toHaveAttribute('href', app.apple);
+      const badge = download.getByRole('img', { name: 'Download on the App Store', exact: true });
+      await expect(badge).toHaveAttribute('src', '/images/download-on-the-app-store.svg');
+      await badge.evaluate(image => image.decode());
       const image = section.locator('img').first();
       await image.scrollIntoViewIfNeeded();
       await expect.poll(() => image.evaluate(el => el.complete && el.naturalWidth > 0)).toBe(true);
@@ -135,6 +140,8 @@ test('Apps is usable on first server render without JavaScript', async ({ browse
     await macImage.evaluate(image => image.decode());
     expect(await macImage.evaluate(image => [image.naturalWidth, image.naturalHeight])).toEqual([1672, 941]);
     await expect(page.locator('.apple-tv-instruction')).toHaveText('Find Santa Radio in the App Store on your Apple TV.');
+    await expect(page.locator('.apps-page a[href*="amazon."]')).toHaveCount(0);
+    await expect(page.locator('.apps-page a img[src="/images/download-on-the-app-store.svg"]')).toHaveCount(7);
   } finally {
     await context.close();
   }

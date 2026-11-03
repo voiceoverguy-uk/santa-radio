@@ -80,7 +80,12 @@ test('built Apps HTML starts on first promotional images and serves all local We
   assert.doesNotMatch(visibleHtml, obsoleteStoreCopy);
   assert.match(visibleHtml, /Check the linked stores for current pricing/);
   assert.match(visibleHtml, /<title[^>]*>Christmas Apps — App Store Downloads \| Santa Radio<\/title>/);
-  assert.match(visibleHtml, /App Store and Amazon Appstore download links and device showcases/);
+  assert.match(visibleHtml, /App Store download links and device showcases/);
+  assert.doesNotMatch(visibleHtml, /Amazon/i);
+  assert.equal((visibleHtml.match(/src="\/images\/download-on-the-app-store\.svg"/g) || []).length, 7);
+  const badgeAsset = await get('/images/download-on-the-app-store.svg');
+  assert.equal(badgeAsset.status, 200);
+  assert.match(badgeAsset.headers.get('content-type'), /image\/svg\+xml/);
   assert.doesNotMatch(visibleHtml, /app-store-notice|seo-breadcrumbs|aria-label="Breadcrumb"/);
   assert.doesNotMatch(visibleHtml, /Amazon has ended Appstore support|Santa Radio’s catalogue screenshots show/);
   assert.doesNotMatch(visibleHtml, /Other app screenshots and catalogue feature descriptions are from the legacy catalogue/);
@@ -97,11 +102,12 @@ test('built Apps HTML starts on first promotional images and serves all local We
     assert.equal((appHtml.match(/class="feature-item"/g) || []).length, 6);
     assert.ok(appHtml.indexOf('class="app-download-btns"') > appHtml.indexOf('class="app-layout'), `${app.title} downloads must follow its artwork and features`);
     const links = [...appHtml.matchAll(/<a\b[^>]*>[\s\S]*?<\/a>/g)].map(match => match[0]);
-    assert.equal(links.length, app.amazon ? 2 : 1);
-    for (const [index, [store, href]] of [['the App Store', app.apple], ...(app.amazon ? [['Amazon Appstore', app.amazon]] : [])].entries()) {
+    assert.equal(links.length, 1);
+    for (const [index, [store, href]] of [['the App Store', app.apple]].entries()) {
       assert.ok(links[index].includes(`href="${href}"`));
       assert.match(links[index], /target="_blank" rel="noopener noreferrer"/);
-      assert.ok(links[index].includes(`Download on ${store}</a>`));
+      assert.ok(links[index].includes(`aria-label="Download on ${store} — ${app.title} (opens in a new tab)"`));
+      assert.match(links[index], /<img src="\/images\/download-on-the-app-store\.svg" alt="Download on the App Store"/);
     }
   }
   const graph = JSON.parse(html.match(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/)[1]);
@@ -118,7 +124,7 @@ test('built Apps HTML starts on first promotional images and serves all local We
   const section = html.match(/<section id="christmasradio"[\s\S]*?<\/section>/)?.[0];
   assert.ok(section, 'Christmas Radio must be in the initial HTML');
   assert.match(section, /aria-label="Christmas Radio promotional images"/);
-  const images = [...section.matchAll(/<img\b[^>]*>/g)].map(match => match[0]);
+  const images = [...section.matchAll(/<img\b[^>]*>/g)].map(match => match[0]).filter(image => !image.includes('download-on-the-app-store.svg'));
   assert.equal(images.length, 4);
   for (const [index, image] of images.entries()) {
     const src = image.match(/src="([^"]+)"/)?.[1];
@@ -149,7 +155,7 @@ test('built Apps HTML starts on first promotional images and serves all local We
   assert.doesNotMatch(dash, /Owner-supplied Santa Dash promotional artwork|not live gameplay or interactive website controls/);
   assert.doesNotMatch(visibleHtml, /Santa Dash’s three owner-supplied promotional artworks are not live gameplay/);
   assert.doesNotMatch(visibleHtml, /iOS screenshots only; the Amazon app’s appearance may differ|app-screenshots-note/);
-  const dashImages = [...dash.matchAll(/<img\b[^>]*>/g)].map(match => match[0]);
+  const dashImages = [...dash.matchAll(/<img\b[^>]*>/g)].map(match => match[0]).filter(image => !image.includes('download-on-the-app-store.svg'));
    assert.equal(dashImages.length, 5);
    for (const [index, image] of dashImages.slice(0, 1).entries()) {
     const src = image.match(/src="([^"]+)"/)?.[1];
@@ -232,7 +238,7 @@ test('built Apps HTML starts on first promotional images and serves all local We
   assert.ok(text, 'Santa Text must be in the initial HTML');
   assert.match(text, /aria-label="Santa Text app screenshots"/);
   assert.doesNotMatch(text, /app-screenshots-classic/);
-  const textImages = [...text.matchAll(/<img\b[^>]*>/g)].map(match => match[0]);
+  const textImages = [...text.matchAll(/<img\b[^>]*>/g)].map(match => match[0]).filter(image => !image.includes('download-on-the-app-store.svg'));
   assert.equal(textImages.length, 4);
   for (const [index, label] of ['welcome', 'menu', 'promotion', 'chat'].entries()) {
     assert.match(textImages[index], new RegExp(`src="/assets/santa-text-screen-${label}-.*\\.webp"`));
@@ -291,7 +297,7 @@ test('built Apps HTML starts on first promotional images and serves all local We
   assert.ok(voicemail);
   assert.match(voicemail, /app-screenshots-voicemail/);
   assert.doesNotMatch(voicemail, /app-screenshots-classic/);
-  const voicemailImages = [...voicemail.matchAll(/<img\b[^>]*>/g)].map(match => match[0]);
+  const voicemailImages = [...voicemail.matchAll(/<img\b[^>]*>/g)].map(match => match[0]).filter(image => !image.includes('download-on-the-app-store.svg'));
   const order = ['home', 'santa-call', 'home', 'workshop-call', 'home', 'naughty-list-call', 'home', 'soundboard'];
   assert.equal(voicemailImages.length, order.length);
   for (const [index, label] of order.entries()) {

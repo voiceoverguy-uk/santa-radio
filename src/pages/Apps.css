@@ -205,30 +205,23 @@
   margin-top: 20px;
 }
 
-.apps-page .app-dl-btn {
+.apps-page .app-dl-btn,
+.apps-page .mac-app-store-link {
   display: inline-flex;
-  min-height: 48px;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 11px 19px;
-  border: 1px solid #e06b61;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #c83135, #9e202a);
-  color: var(--cream);
-  box-shadow: 0 8px 22px #26080a4d, inset 0 1px 0 #ffd9b466;
-  font-family: inherit;
-  font-size: .87rem;
-  font-weight: 500;
-  line-height: 1.5;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  box-shadow: none;
   text-decoration: none;
-  overflow-wrap: anywhere;
-  transition: transform .2s ease, border-color .2s ease, background-color .2s ease;
+  transition: none;
 }
 
-.apps-page .app-dl-btn:hover { border-color: #f2d786; color: var(--cream); transform: translateY(-2px); }
-.apps-page .app-dl-btn:focus-visible { outline: 2px solid var(--gold-light); outline-offset: 5px; }
-.apps-page .app-dl-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+.apps-page .app-dl-btn:focus-visible,
+.apps-page .mac-app-store-link:focus-visible { outline: 2px solid var(--gold-light); outline-offset: 5px; }
+.apps-page .app-dl-btn img,
+.apps-page .mac-app-store-link img { display: block; width: 150px; max-width: 100%; height: auto; }
 .apps-page .apps-divider { width: min(1220px, calc(100% - 64px)); height: 1px; margin-inline: auto; background: #d4af3740; }
 .apps-page .app-heading-rule { display: none; }
 
@@ -355,12 +348,8 @@
 .apps-page .mac-app-figure figcaption { padding: 11px 13px; }
 
 .apps-page .mac-app-store-link {
-  display: inline-flex;
   margin-top: 24px;
-  border-radius: 8px;
 }
-.apps-page .mac-app-store-link img { display: block; width: 150px; height: auto; }
-.apps-page .mac-app-store-link:focus-visible { outline: 2px solid var(--gold-light); outline-offset: 5px; }
 
 @media (min-width: 768px) and (max-width: 1100px) {
   .apps-page .app-features-grid { grid-template-columns: minmax(0, 1fr); }
@@ -385,7 +374,6 @@
   .apps-page .feature-label { font-size: .92rem; }
   .apps-page .feature-desc { font-size: .89rem; }
   .apps-page .app-download-btns { justify-content: center; }
-  .apps-page .app-dl-btn { width: min(100%, 320px); }
   .apps-page .app-screenshots-artwork { width: min(100%, 370px); }
   .apps-page .app-screenshots-landscape { width: 100%; }
   .apps-page .apple-watch-inner,
@@ -408,8 +396,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .apps-page .feature-item,
-  .apps-page .app-dl-btn { transition: none; }
-  .apps-page .feature-item:hover,
-  .apps-page .app-dl-btn:hover { transform: none; }
+  .apps-page .feature-item { transition: none; }
+  .apps-page .feature-item:hover { transform: none; }
 }

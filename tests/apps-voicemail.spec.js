@@ -127,7 +127,6 @@ test('Voicemail captures are complete, local, responsive and static with reduced
   }
   expect(await section.locator('.app-dl-btn').evaluateAll(links => links.map(link => link.getAttribute('href')))).toEqual([
     'https://itunes.apple.com/us/app/santa-voicemail/id586387813',
-    'http://www.amazon.com/App-Style-Ltd-Santa-Voicemail/dp/B00QFP4B18',
   ]);
 });
 
