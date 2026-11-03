@@ -1,4 +1,5 @@
-import { defineConfig } from '@playwright/test';
+import { defineConfig, webkit } from '@playwright/test';
+import { existsSync } from 'node:fs';
 import { randomBytes } from 'node:crypto';
 import base from './playwright.config.js';
 
@@ -14,11 +15,22 @@ process.env.WORKSHOP_TEST_EXPIRES_AT ||= new Date(Date.now() + 14 * 86400000).to
 for (let slot = 2; slot <= 6; slot++) {
   process.env[`WORKSHOP_TEST_CODE_${slot}`] ||= randomBytes(32).toString('hex');
 }
+const webkitInstalled = existsSync(webkit.executablePath());
+if (!webkitInstalled) {
+  console.warn('Skipping the Studio WebKit project because its Playwright browser is not installed.');
+}
 export default defineConfig({
   ...base,
   testMatch: /santa-workshop(?:-access|-search|-name-preview|-sounds|-motion|-live-catalogue|-message|-talent|-gifts)?\.spec\.js/,
   use: { ...base.use, baseURL: origin, ignoreHTTPSErrors: false, trace: 'off', video: 'off', screenshot: 'off' },
-  projects: base.projects.filter(project => project.name === 'chromium'),
+  projects: [
+    ...base.projects.filter(project => project.name === 'chromium'),
+    ...(webkitInstalled ? [{
+      name: 'webkit',
+      grep: /finished Studio message download is valid and matches the playable recording/,
+      use: { browserName: 'webkit' },
+    }] : []),
+  ],
   webServer: {
     command: process.env.WORKSHOP_SERVING_MODE === 'node'
       ? `node index.js --port=${port}`

@@ -531,6 +531,32 @@ test('retryable preparation errors and cancellation spend no successful allowanc
   await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
 });
 
+test('finished Studio message download is valid and matches the playable recording', async ({ page }) => {
+  const fixture = await openReview(page);
+  await confirmMessage(page);
+
+  const result = page.getByRole('region', { name: 'Your finished Santa message' });
+  await expect(result).toBeVisible();
+  const player = result.locator('audio');
+  await expect.poll(() => player.evaluate(node => node.readyState)).toBeGreaterThanOrEqual(1);
+  const source = await player.getAttribute('src');
+  expect(source).toMatch(/^blob:/);
+  await player.evaluate(node => node.play());
+  await expect.poll(() => player.evaluate(node => node.currentTime)).toBeGreaterThan(0.1);
+  await player.evaluate(node => node.pause());
+
+  const download = result.getByRole('link', { name: /Download MP3/ });
+  await expect(download).toHaveAttribute('href', source);
+  await expect(download).toHaveAttribute('download', 'santa-message-for-Dixie.mp3');
+  // This browser artifact cannot verify native phone save locations or opening.
+  const downloadPromise = page.waitForEvent('download');
+  await download.click();
+  const file = await downloadPromise;
+  expect(file.suggestedFilename()).toBe('santa-message-for-Dixie.mp3');
+  expect(readFileSync(await file.path())).toEqual(fixture.audio,
+    'The downloaded MP3 is byte-for-byte the recording loaded by the playable audio element');
+});
+
 test('school voucher form opens real long-form generation and playable MP3 without exhausting another parent', async ({ page, browser }) => {
   test.skip(Date.now() < SCHOOL_TEST_START || Date.now() >= SCHOOL_TEST_DEADLINE,
     'Real school access is date-bound; deterministic server tests cover every cutoff outside this window.');
