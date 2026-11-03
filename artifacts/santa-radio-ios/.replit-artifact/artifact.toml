@@ -1,5 +1,5 @@
 kind = "mobile"
-previewPath = "/"
+previewPath = "/santa-radio-ios/"
 title = "Santa Radio iPhone"
 description = "Santa Radio's iPhone companion with free Santa greetings, Apple-purchased Santa Studio messages, live radio, Santa Dash and an estimated seasonal tracker."
 version = "1.0.0"
@@ -9,7 +9,7 @@ router = "expo-domain"
 [[services]]
 name = "expo"
 ensurePreviewReachable = "/status"
-paths = ["/"]
+paths = ["/santa-radio-ios/"]
 localPort = 24826
 
 [services.development]
@@ -22,16 +22,3 @@ run = ["pnpm", "--filter", "@workspace/santa-radio-ios", "run", "serve"]
 [services.env]
 PORT = "24826"
 BASE_PATH = "/"
-
-[[services]]
-name = "website"
-paths = ["/api"]
-localPort = 5000
-ensurePreviewReachable = "/"
-
-[services.development]
-run = "cd ../.. && npm run dev"
-
-[services.production]
-build = ["sh", "-c", "cd ../.. && npm run build"]
-run = ["sh", "-c", "cd ../.. && npm start"]

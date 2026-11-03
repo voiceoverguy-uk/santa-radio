@@ -1,0 +1,24 @@
+kind = "web"
+previewPath = "/"
+title = "Santa Radio Website"
+description = "The original Santa Radio website, using its existing source and backend unchanged alongside the iPhone companion."
+version = "1.0.0"
+id = "artifacts/santa-radio-website"
+router = "path"
+
+[[services]]
+name = "web"
+paths = ["/"]
+localPort = 5000
+ensurePreviewReachable = "/"
+
+[services.development]
+run = "cd ../.. && npm run dev"
+
+[services.production]
+build = ["sh", "-c", "cd ../.. && npm run build"]
+run = ["sh", "-c", "cd ../.. && npm start"]
+
+[services.env]
+PORT = "5000"
+BASE_PATH = "/"
