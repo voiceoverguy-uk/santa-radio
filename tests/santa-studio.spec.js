@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { mockBrevo, fillAccessForm } from './helpers/message-access.js';
+import { mockBrevo, fillAccessForm, mockSantaNames } from './helpers/message-access.js';
 import { expectStudioLaunchCopy } from './helpers/studio-promotion.js';
 
 test('Studio A matches the recording pulse and seal, fits phones, and respects reduced motion', async ({ page }) => {
@@ -46,8 +46,8 @@ test('Studio launch countdown sits below the red button and ends on 6 November U
   expect(initialHtml).toContain('Santa’s Message Maker Studio opens 6 November.');
   await page.clock.install({ time: new Date('2026-10-29T23:59:59Z') });
   await page.clock.pauseAt(new Date('2026-10-30T00:00:00Z'));
-  await page.route('**/api/santa-names?*', route => route.fulfill({
-    json: { records: [], hostedCount: 9775, warning: null },
+  await page.route('**/api/santa-name-count', route => route.fulfill({
+    json: { total: 9775 },
   }));
   await visit(page, '/free-santa-message');
   const promotion = page.locator('.santa-studio-promotion');
@@ -127,8 +127,8 @@ test('Studio launch countdown sits below the red button and ends on 6 November U
 });
 
 test('mobile Studio promotion title fits and certificates belong only to the upcoming paid offer', async ({ page }) => {
-  await page.route('**/api/santa-names?*', route => route.fulfill({
-    json: { records: [], hostedCount: 9775, warning: null },
+  await page.route('**/api/santa-name-count', route => route.fulfill({
+    json: { total: 9775 },
   }));
   for (const width of [320, 390, 430, 1440]) {
     await page.setViewportSize({ width, height: 900 });
@@ -197,8 +197,8 @@ for (const path of ['/', '/free-santa-message']) {
     test(`inline Studio entry copy fits before mocked signup at ${width}px on ${path}`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
       await page.addInitScript(() => sessionStorage.setItem('santa-message-offer-shown', 'shown'));
-      await page.route('**/api/santa-names?*', route => route.fulfill({
-        json: { records: [], hostedCount: 9775, warning: null },
+      await page.route('**/api/santa-name-count', route => route.fulfill({
+        json: { total: 9775 },
       }));
       await mockBrevo(page);
       await visit(page, path);
@@ -240,54 +240,113 @@ for (const path of ['/', '/free-santa-message']) {
     });
   }
 
-  test(`both counters handle loading, failure, retry, singular and count-up consistently on ${path}`, async ({ page }) => {
+  test(`all counters handle loading, failure, automatic retry, singular and count-up consistently on ${path}`, async ({ page }) => {
     await page.clock.install();
+    await page.clock.pauseAt(new Date());
     let mode = 'hold', release;
+    let countRequests = 0, failedResponses = 0;
+    const searches = [];
+    await page.route('**/api/santa-names*', route => {
+      searches.push(route.request().url());
+      return route.abort();
+    });
+    page.on('response', response => {
+      if (new URL(response.url()).pathname === '/api/santa-name-count' && response.status() === 503) failedResponses++;
+    });
     const gate = new Promise(resolve => { release = resolve; });
-    await page.route('**/api/santa-names?*', async route => {
-      expect(new URL(route.request().url()).searchParams.get('q') || '').toBe('');
+    await page.route('**/api/santa-name-count', async route => {
+      countRequests++;
+      expect(route.request().method()).toBe('GET');
+      expect(new URL(route.request().url()).search).toBe('');
+      expect(route.request().postData()).toBeNull();
       if (mode === 'hold') await gate;
       if (mode === 'error') return route.fulfill({ status: 503, json: { error: 'Unavailable' } });
-      return route.fulfill({ json: { records: [], hostedCount: mode === 'one' ? 1 : 12345, warning: null } });
+      return route.fulfill({ json: { total: mode === 'one' ? 1 : 12345 } });
     });
     await visit(page, path);
     const counter = page.locator('.message-name-count');
-    const inline = page.locator('.message-intro-name-count');
     const studio = page.locator('.santa-studio-promotion__name-count');
-    for (const locator of [counter, inline, studio]) await expect(locator).toHaveText('Checking how many names are available…');
+    const counters = [counter, studio];
+    for (const locator of counters) await expect(locator).toHaveText('Recorded names available to search');
+    await expect.poll(() => countRequests).toBeGreaterThanOrEqual(1);
     await expect(page.locator('.santa-message-box').getByRole('combobox')).toHaveCount(0);
     mode = 'error';
     release();
-    for (const locator of [counter, inline, studio]) await expect(locator).toHaveText('Name total temporarily unavailable.');
+    await expect.poll(() => failedResponses).toBeGreaterThanOrEqual(1);
+    // Let the failed response settle before advancing the retry timer.
+    await page.clock.runFor(50);
+    for (const locator of counters) await expect(locator).toHaveText('Recorded names available to search');
     await expect(page.getByRole('button', { name: 'Get my free Santa message' })).toBeEnabled();
+    await expect(page.getByRole('button', { name: 'Retry name total' })).toHaveCount(0);
+    const failedCalls = countRequests;
     mode = 'one';
-    await page.getByRole('button', { name: 'Retry name total' }).click();
-    for (const locator of [counter, inline]) await expect(locator).toHaveText('0 names available');
+    await page.clock.runFor(4000);
+    expect(countRequests).toBe(failedCalls);
+    for (const locator of counters) await expect(locator).toHaveText('Recorded names available to search');
+    await page.clock.runFor(1000);
+    for (const locator of counters) await expect(locator).toHaveText('0 names available');
+    expect(countRequests).toBe(failedCalls + 1);
+    // Retry completion can occur partway through the previous clock advance.
+    // Keep margin here; the fresh-page case below checks the exact boundary.
+    await page.clock.runFor(4000);
+    for (const locator of counters) await expect(locator).toHaveText('0 names available');
+    await page.clock.runFor(1000);
+    for (const locator of counters) await expect(locator).toHaveText('1 name available');
     await page.clock.runFor(5000);
-    for (const locator of [counter, inline, studio]) await expect(locator).toHaveText('1 name available');
-    await page.clock.runFor(5000);
-    for (const locator of [counter, inline, studio]) await expect(locator).toHaveText('1 name available');
+    for (const locator of counters) await expect(locator).toHaveText('1 name available');
     mode = 'many';
     await page.reload();
-    for (const locator of [counter, inline, studio]) await expect(locator).toHaveText('12,295 names available');
-    await page.clock.runFor(5000);
-    for (const locator of [counter, inline, studio]) await expect(locator).toHaveText('12,296 names available');
+    for (const locator of counters) await expect(locator).toHaveText('12,295 names available');
+    await page.clock.runFor(4999);
+    for (const locator of counters) await expect(locator).toHaveText('12,295 names available');
+    await page.clock.runFor(1);
+    for (const locator of counters) await expect(locator).toHaveText('12,296 names available');
     await expect(page.locator('.santa-message-box').getByRole('combobox')).toHaveCount(0);
+    expect(searches).toEqual([]);
   });
 }
 
-test('empty-query inventory is reused when access unlocks in place', async ({ page }) => {
+test('total-only count is retained and private lookup stays idle when access unlocks in place', async ({ page }) => {
+  await page.clock.install();
+  await page.clock.pauseAt(new Date());
   let requests = 0;
-  await page.route('**/api/santa-names?*', route => {
+  const searches = [];
+  page.on('request', request => {
+    if (new URL(request.url()).pathname === '/api/santa-names') searches.push(request);
+  });
+  await mockSantaNames(page);
+  await page.route('**/api/santa-name-count', route => {
     requests++;
-    return route.fulfill({ json: { records: [], hostedCount: 9775, warning: null } });
+    return route.fulfill({ json: { total: 9775 } });
   });
   await mockBrevo(page);
   await visit(page, '/free-santa-message');
   await expect(page.locator('.message-name-count')).toHaveText('9,725 names available');
+  // StrictMode can abort an initial request; compare with the settled baseline.
+  const initialRequests = requests;
+  expect(initialRequests).toBeGreaterThanOrEqual(1);
+  expect(searches).toEqual([]);
   await fillAccessForm(page);
   await page.getByRole('button', { name: 'Get my free Santa message' }).click();
-  await expect(page.getByRole('combobox')).toBeVisible();
-  await expect(page.locator('.message-intro-name-count')).toHaveText('9,725 names available');
-  expect(requests).toBe(1);
+  const input = page.locator('.santa-message-box').getByRole('combobox');
+  await expect(input).toBeVisible();
+  await expect(page).toHaveURL(/\/free-santa-message$/);
+  await expect(page.locator('.santa-message-access')).toHaveCount(0);
+  for (const selector of ['.message-name-count', '.santa-studio-promotion__name-count']) {
+    await expect(page.locator(selector)).toHaveText('9,725 names available');
+  }
+  await page.clock.runFor(1000);
+  expect(requests).toBe(initialRequests);
+  expect(searches).toEqual([]);
+  await input.fill('A');
+  await page.clock.runFor(1000);
+  expect(searches).toEqual([]);
+  await input.fill('Arabella');
+  await page.clock.runFor(1000);
+  await expect(page.getByRole('option', { name: 'Arabella', exact: true })).toBeVisible();
+  expect(searches).toHaveLength(1);
+  expect(searches[0].method()).toBe('POST');
+  expect(new URL(searches[0].url()).search).toBe('');
+  expect(searches[0].postDataJSON()).toEqual({ query: 'Arabella' });
+  expect(requests).toBe(initialRequests);
 });

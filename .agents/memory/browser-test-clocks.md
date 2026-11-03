@@ -30,3 +30,12 @@ phone checks even though the production rotation duration had not changed.
 **How to apply:** After the first change settles, use the existing hover pause
 and resume interaction to start a fresh reading interval before advancing the
 virtual clock. Do not change production timing to satisfy an unanchored test.
+
+Network-triggered timers may begin partway through a virtual-clock advance.
+
+**Why:** A retry succeeded during a clock advance, so a subsequent 4,999 ms
+advance crossed the count-up boundary despite looking just below five seconds.
+
+**How to apply:** Use margin for recovery checks unless the timer's start is
+explicitly synchronised. Test exact interval boundaries separately from network
+recovery, starting from a paused clock after the initial response has settled.
