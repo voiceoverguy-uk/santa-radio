@@ -8,6 +8,12 @@ After a task-environment transition, verify the current files before relying on 
 
 **How to apply:** Reconcile the current filesystem with the authorised plan. Do not assume temporary files persist across environments, or reconstruct a purported pre-change baseline from modified code. For feed compatibility, unchanged checked-in mappings, generator and source image bytes can provide a reliable reference.
 
+If the isolated Studio browser-test port is occupied, use a spare port rather than terminating an unidentified listener or reusing its server.
+
+**Why:** An occupied test port can block verification after merged work; reusing another server may use different ephemeral access codes. Playwright also resolves a temporary configuration's server working directory relative to that configuration.
+
+**How to apply:** Keep the isolated server URL and browser base URL aligned. A temporary configuration outside the workspace root must set the server working directory explicitly to the root; remove it after verification.
+
 Check the aggregate branch diff, not only a clean working-tree status, when completion flags unrelated deletions.
 
 **Why:** A pre-merge checkpoint had already committed unrelated upload deletions before implementation began, so ordinary status showed none of them although the aggregate diff still contained them.

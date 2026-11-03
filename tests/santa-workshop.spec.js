@@ -185,6 +185,7 @@ for (const width of [320, 390, 768, 1024, 1440]) {
       'What might they leave Santa?', 'Where is Santa visiting?',
     ];
     const expectQuestionHeader = async step => {
+      await expect(page.locator('#smw-builder-title')).toHaveCSS('font-weight', '400');
       await expect(page.locator('#smw-builder-title')).toHaveText(questions[step - 1]);
       await expect(page.getByRole('heading', { name: questions[step - 1], exact: true })).toHaveCount(1);
       await expect(page.locator('.smw-stage-number, .smw-builder-head .smw-section-kicker')).toHaveCount(0);
