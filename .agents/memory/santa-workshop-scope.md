@@ -29,11 +29,11 @@ approved review, as cluttered in their annotated screenshots.
 **How to apply:** Scope presentation changes to the completed recording when
 requested, keeping pre-generation gifts, guidance and confirmation behaviour intact.
 
-The owner has also approved on-demand playback of the selected existing recorded name in the final review, so visitors can check its pronunciation.
+The owner has also approved on-demand playback of the selected existing recorded name on step one and in the final review, so visitors can check its pronunciation immediately.
 
 **Why:** They requested a small red play button beside the review name: “That way they can make sure it’s correct.”
 
-**How to apply:** Play the exact chosen hosted recording, including its variant, only after a click. Do not derive its audio filename from a typed or certificate spelling. Stop when editing or leaving the review and coordinate with the radio without overriding manual radio choices. Name-only playback must not consume a message allowance or submit typed child details.
+**How to apply:** Play the exact chosen hosted recording, including its variant, only after a click. Do not derive its audio filename from a typed or certificate spelling. Stop pending or active playback when the recording changes, the stage changes or Studio is left. Preserve the temporary same-recording cache across step one, review and unrelated edits, and coordinate with the radio without overriding manual radio choices. Name-only playback must not consume a message allowance or submit typed child details.
 
 The owner initially chose an isolated design-first extended-message workshop.
 The offline proof established the recipe, not a connected service; subsequent

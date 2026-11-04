@@ -112,6 +112,16 @@
   line-height: 1.55;
 }
 
+.smw-name-status {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  min-width: 0;
+}
+
+.smw-name-status > span { min-width: 0; overflow-wrap: anywhere; }
+
 .smw-name-status strong {
   color: var(--smw-gold-light, #e6ce86);
   font-weight: 600;

@@ -25,6 +25,8 @@ export default function WorkshopNamePreview({ record, cache }) {
   }, [cache]);
 
   useEffect(() => {
+    setPhase('idle');
+    setError('');
     const stop = () => finish();
     const leave = () => finish({ resume: false });
     const onOtherPlayback = event => {
@@ -39,7 +41,7 @@ export default function WorkshopNamePreview({ record, cache }) {
       window.removeEventListener('pagehide', leave);
       finish({ notify: false });
     };
-  }, [finish]);
+  }, [finish, record?.id]);
 
   const toggle = () => {
     if (sessionRef.current) { finish(); return; }

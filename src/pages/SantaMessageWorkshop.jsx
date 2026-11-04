@@ -543,6 +543,7 @@ export default function SantaMessageWorkshop() {
                   <WorkshopNamePicker
                     initialName={initialRecipient}
                     selected={selectedName}
+                    previewCache={namePreviewCache}
                     onRefreshSelection={setSelectedName}
                     invalid={!!error}
                     onSelect={record => {

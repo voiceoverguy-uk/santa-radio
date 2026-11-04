@@ -25,3 +25,17 @@ Add new red-action selectors to the shared lists rather than adding local
 shape or colour rules. Intentionally cream disabled gift controls and grey
 unavailable creation controls retain their disabled appearance. Non-red controls
 and the separate iPhone artifact do not use this treatment.
+
+## Studio name previews
+
+Step one and review reuse the same red recorded-name control and Studio-owned,
+in-memory audio cache. Playback is click-only and preserves the exact recording
+variant. Changing/clearing the recording or leaving Studio releases the cache;
+moving between stages stops playback without discarding successful audio.
+
+Focused private-lookup checks (separate from the legacy preview suite):
+
+```sh
+npx playwright test --config playwright.workshop.config.js tests/santa-workshop-name-preview-step-one.spec.js --project=chromium
+node --test scripts/workshop-name-preview.test.mjs scripts/workshop-name-preview-cache.test.mjs
+```
