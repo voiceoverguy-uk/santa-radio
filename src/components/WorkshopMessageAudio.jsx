@@ -107,7 +107,7 @@ export default function WorkshopMessageAudio({
     return () => { audio?.pause(); finishPlayback(); };
   }, [visible]);
 
-  const receive = async (response, signal) => {
+  const receive = async (response, signal, submittedSelection) => {
     if (!response.ok) {
       const data = await response.json().catch(() => ({}));
       if (response.status === 403) window.dispatchEvent(new Event('santa-workshop-access-change'));
@@ -148,8 +148,9 @@ export default function WorkshopMessageAudio({
     setUrl(objectUrl);
     setPhase('ready');
     setError('');
-    setFinishedName({ id: record?.id, name: record?.name || '', spelling });
-    return receivedSelection.current;
+    const completed = receivedSelection.current || submittedSelection;
+    setFinishedName({ ...completed.record, spelling });
+    return completed;
   };
 
   useEffect(() => {
@@ -185,6 +186,7 @@ export default function WorkshopMessageAudio({
     const payload = { name: record.id, ...Object.fromEntries(
       ['age', 'activity', 'achievement', 'treat', 'place'].map(key => [key, choices[key]]),
     ), talent: choices.talent, ...(choices.region ? { region: choices.region } : {}) };
+    const submittedSelection = { record: { ...record }, choices: structuredClone(payload) };
     let timedOut = false;
     const timeout = setTimeout(() => { timedOut = true; controller.abort(); }, 115000);
     try {
@@ -195,8 +197,8 @@ export default function WorkshopMessageAudio({
       });
       if (requestRef.current !== controller) return;
       setPhase('receiving');
-      await receive(response, controller.signal);
-      readyCallbackRef.current?.(receivedSelection.current || { record, choices });
+      const completed = await receive(response, controller.signal, submittedSelection);
+      readyCallbackRef.current?.(completed);
     } catch (failure) {
       if (requestRef.current === controller) {
         setPhase(urlRef.current ? 'ready' : 'error');

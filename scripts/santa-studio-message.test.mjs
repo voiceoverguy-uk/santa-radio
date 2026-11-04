@@ -120,6 +120,10 @@ test('protected Studio resolves exact ID afresh, all category IDs, private MP3 a
   assert.equal(state.downloads.length, 5);
   for (const key of keys) assert.ok(state.downloads.some(url => url.endsWith(`/trusted/${key}.wav`)));
   assert.equal(result.headers['content-type'], 'audio/mpeg');
+  const selection = JSON.parse(Buffer.from(result.headers['x-studio-selection'], 'base64').toString('utf8'));
+  assert.deepEqual(selection.choices, body);
+  assert.equal(selection.record.id, body.name);
+  assert.equal(Object.hasOwn(selection.choices, 'region'), false);
   assert.match(result.headers['cache-control'], /private, no-store/);
   assert.equal(result.headers['vercel-cdn-cache-control'], 'no-store');
   assert.ok(!result.headers['content-disposition'].includes(body.name));

@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test';
 import { test } from './helpers/provider-test.js';
 import { unlockWorkshop } from './helpers/workshop-access.js';
-import { workshopCatalogueFixture } from './fixtures/workshop-catalogue.js';
+import { workshopCatalogueFixture, workshopRegionalCatalogueFixture } from './fixtures/workshop-catalogue.js';
 import { readFileSync, mkdirSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { PDFDocument } from 'pdf-lib';
@@ -9,13 +9,24 @@ import { confirmMessage, mockStudioGeneration } from './helpers/studio-generatio
 
 const giftButtons = page => page.locator('.studio-gift-download button');
 const letterText = page => page.locator('.smw-studio-preview .studio-gifts__preview-stack .studio-gifts__sr');
-async function review(page) {
+async function review(page, { destination = 'The Enchanted Forest', talent = null, region = null } = {}) {
   await unlockWorkshop(page);
   const fixture = await mockStudioGeneration(page);
   await page.setViewportSize({ width: 320, height: 900 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.route('**/api/radio-metadata*', route => route.fulfill({ json: { available: false } }));
-  await page.route('**/api/santa-workshop-catalogue', route => route.fulfill({ json: workshopCatalogueFixture }));
+  const catalogue = structuredClone(workshopCatalogueFixture);
+  const counties = workshopRegionalCatalogueFixture.regionalGroups['england-counties'];
+  catalogue.categories.place[0].file = 'countries/england.wav';
+  catalogue.regionalGroups = { 'england-counties': { ...counties, parentId: 'england' } };
+  await page.route('**/api/santa-workshop-catalogue*', route => {
+    const query = new URL(route.request().url()).searchParams;
+    if (query.has('regionId')) return route.fulfill({ json: {
+      parentId: query.get('parentId'), regionId: query.get('regionId'),
+      letterContext: counties.records.find(record => record.id === query.get('regionId')).letterContext,
+    } });
+    return route.fulfill({ json: catalogue });
+  });
   await page.route('**/api/santa-names', route => route.fulfill({
     json: { records: [{ id: 'dixie-variant', name: 'Dixie', variant: 'Recording 2',
       selectionToken: 'test-token', previewUrl: '/api/santa-name-preview?token=test-token' }] },
@@ -26,14 +37,121 @@ async function review(page) {
   await page.getByRole('combobox', { name: 'Search recorded names', exact: true }).fill('Dixie');
   await page.getByRole('option', { name: /Dixie/ }).first().click();
   await page.locator('.smw-button-next').click();
-  for (const answer of ['9 years old', 'Teamwork', 'Completing a jigsaw puzzle', 'Bûche de Noël', 'The Enchanted Forest']) {
+  for (const answer of ['9 years old', 'Teamwork', 'Completing a jigsaw puzzle', 'Bûche de Noël', destination]) {
     const skip = page.getByRole('button', { name: 'Skip this section', exact: true });
-    if (await skip.isVisible()) await skip.click();
+    if (await skip.isVisible()) {
+      if (talent) {
+        await page.getByRole('option', { name: talent, exact: true }).click();
+        await page.locator('.smw-button-next').click();
+      } else await skip.click();
+    }
     if (answer === 'The Enchanted Forest') await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
     await page.getByRole('option', { name: answer, exact: true }).click();
+    if (answer === destination && region) {
+      await page.getByRole('button', { name: 'Choose a county', exact: true }).click();
+      await page.getByRole('option', { name: region, exact: true }).click();
+    }
     await page.locator('.smw-button-next').click();
   }
   return fixture;
+}
+
+test('real selection header unlocks country-only gifts after the full MP3 arrives', async ({ page }) => {
+  const fixture = await review(page, { destination: 'England' });
+  await confirmMessage(page);
+  await expect(page.getByRole('region', { name: 'Your finished Santa message' })).toBeVisible();
+  expect(fixture.posts[0]).not.toHaveProperty('region');
+  await expect(giftButtons(page)).toHaveCount(3);
+  for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+});
+
+test('unchanged completed gifts survive pending and failed replacement audio', async ({ page }) => {
+  const fixture = await review(page, { destination: 'England' });
+  await confirmMessage(page);
+  for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+  const previousUrl = await page.locator('.smw-message-result audio').getAttribute('src');
+  const reviewed = await letterText(page).textContent();
+  let release;
+  fixture.hold = new Promise(resolve => { release = resolve; });
+  fixture.fail = true;
+  await confirmMessage(page);
+  await expect(page.getByRole('progressbar', { name: 'Preparing your message', exact: true })).toBeVisible();
+  for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+  release();
+  await expect(page.getByText('Fixture recording unavailable. Try again.', { exact: true })).toBeVisible();
+  for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+  await expect(page.locator('.smw-message-result audio')).toHaveAttribute('src', previousUrl);
+  await expect(letterText(page)).toHaveText(reviewed);
+  expect(fixture.posts).toHaveLength(2);
+});
+
+test('completed gifts use response choices rather than newer review choices', async ({ page }) => {
+  const fixture = await review(page, { destination: 'England' });
+  await confirmMessage(page);
+  for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+  const previous = structuredClone(fixture.posts[0]);
+  await page.getByRole('button', { name: 'Change Trying hard at', exact: true }).click();
+  await page.getByRole('option', { name: 'Playing a musical instrument', exact: true }).click();
+  await page.getByRole('button', { name: 'Return to review', exact: true }).click();
+  // An older completed selection must never be relabelled as the new review.
+  fixture.selection = () => ({ record: fixture.record, choices: previous });
+  const previousUrl = await page.locator('.smw-message-result audio').getAttribute('src');
+  await confirmMessage(page);
+  await expect(page.locator('.smw-message-result audio')).not.toHaveAttribute('src', previousUrl);
+  for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
+  fixture.selection = choices => ({ record: fixture.record, choices });
+  await confirmMessage(page);
+  for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+});
+
+for (const width of [320, 1365]) {
+  for (const region of [null, 'Kent']) {
+    test(`real selection header delivers all personalised files for ${region || 'country only'} at ${width}px`, async ({ page }) => {
+      test.setTimeout(90000);
+      mkdirSync('generated-artifacts/studio-gifts', { recursive: true });
+      const fixture = await review(page, { destination: 'England', region, talent: region ? 'Tennis' : null });
+      await page.setViewportSize({ width, height: 900 });
+      // Reordered talent properties are semantically identical to the selection.
+      fixture.selection = choices => ({ record: fixture.record, choices: { ...choices,
+        talent: region ? { id: choices.talent.id, category: choices.talent.category } : choices.talent } });
+      await spelling(page, 'Élodie O’Neill');
+      const paragraphs = await letterText(page).locator('p').allTextContents();
+      await confirmMessage(page);
+      for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+      if (region) expect(fixture.posts[0].region).toBe(
+        workshopRegionalCatalogueFixture.regionalGroups['england-counties'].records.find(record => record.label === region).id);
+      else expect(fixture.posts[0]).not.toHaveProperty('region');
+      const prefix = `generated-artifacts/studio-gifts/contract-${region || 'country'}-${width}`;
+      for (const [kind, label] of [['certificate', 'Download certificate (PDF)'], ['letter', 'Download letter (PDF)']]) {
+        const filename = `${prefix}-${kind}.pdf`;
+        const download = await save(page, label, filename);
+        expect(download.suggestedFilename()).toContain('Élodie');
+        expect((await PDFDocument.load(readFileSync(filename))).getPageCount()).toBe(1);
+        const text = execFileSync('pdftotext', ['-layout', filename, '-'], { encoding: 'utf8' }).replace(/\s+/gu, ' ');
+        expect(text).toContain('Élodie O’Neill');
+        if (kind === 'letter') for (const paragraph of paragraphs) expect(text).toContain(paragraph.replace(/\s+/gu, ' '));
+      }
+      await save(page, 'Download Santa picture (PNG)', `${prefix}.png`);
+      const png = readFileSync(`${prefix}.png`);
+      expect(png.subarray(0, 8)).toEqual(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]));
+      expect(png.readUInt32BE(16)).toBe(1536);
+      expect(png.readUInt32BE(20)).toBe(1024);
+      await save(page, 'Download certificate (PDF)', `${prefix}-repeat.pdf`);
+      expect(fixture.posts).toHaveLength(1);
+      if (region) {
+        await page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true }).click();
+        await page.getByRole('button', { name: 'Countries & real places', exact: true }).click();
+        await page.getByRole('option', { name: 'England', exact: true }).click();
+        // Explicitly remove the selected county without changing the country.
+        await page.getByRole('button', { name: 'Use England only', exact: true }).click();
+        await page.getByRole('button', { name: 'Return to review', exact: true }).click();
+        for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
+        await confirmMessage(page);
+        for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+        expect(fixture.posts.at(-1)).not.toHaveProperty('region');
+      }
+    });
+  }
 }
 
 async function spelling(page, name) {
@@ -457,6 +575,7 @@ test('changing the recorded name refreshes every gift on returning to review', a
   await expect(page.locator('.smw-message-result audio')).toHaveAttribute('src', audioUrl);
   expect(fixture.posts).toHaveLength(1);
   for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
+  fixture.record = { id: 'pamela', name: 'Pamela', variant: '' };
   await confirmMessage(page);
   for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
   expect(fixture.posts.at(-1).name).toBe('pamela');

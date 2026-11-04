@@ -20,6 +20,12 @@ Once an MP3 has succeeded, its completed gifts remain downloadable even when cre
 
 **How to apply:** Retain the completed-message reference through access-check failures and failed or pending replacements. Its downloads remain available when current choices still match. Changed review previews must not keep showing that old recipient. Do not restore history after refresh, unlock first-time gifts for unfinished recordings, or export unconfirmed spelling edits.
 
+Successful generation fixtures must carry the real service's encoded selection metadata, not just MP3 bytes.
+
+**Why:** Header-free fixtures silently use browser choices and previously hid a real mismatch between an omitted optional region and the picker's empty region.
+
+**How to apply:** Exercise completion using echoed submitted choices, including absent regions and reordered talent properties. Keep completion tied to the successful request rather than later review state.
+
 Keep the review-stage written-name editor inside the gift-download section and update all three keepsake previews live while typing.
 
 **Why:** The owner wants people to see the letter, certificate and picture changing as they edit the name, without changing the selected recording.

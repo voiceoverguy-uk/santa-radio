@@ -183,12 +183,14 @@ for (const width of [320, 1440]) {
     await expect(summary).toContainText('Talent');
     await expect(summary).toContainText('Something funny — Stealing the remote control');
     const detailsBefore = await page.locator('.smw-summary-row').allTextContents();
-    const letterBefore = await page.locator('.studio-gifts__gallery .studio-letter__text > p').allTextContents();
+    const letter = page.locator('.studio-gifts__preview-stack .studio-gifts__sr > p');
+    const letterBefore = await letter.allTextContents();
+    expect(letterBefore.length).toBeGreaterThan(0);
     await confirmMessage(page);
     await expect(page.locator('.smw-message-result audio')).toHaveCount(1);
     expect(requests[0].talent).toEqual({ category: 'funny', id: `c-${'c'.repeat(64)}` });
     expect(requests[0].name).toBe('dixie-variant');
-    await page.getByRole('button', { name: 'Edit and regenerate once', exact: true }).click();
+    const originalUrl = await page.locator('.smw-message-result audio').getAttribute('src');
     await page.getByRole('button', { name: 'Change Talent', exact: true }).click();
     await expect(page.locator('.smw-message-result audio')).toHaveCount(0);
     await expect(funny).toHaveAttribute('aria-pressed', 'true');
@@ -203,15 +205,24 @@ for (const width of [320, 1440]) {
     await expect(summary).toContainText('Sports & activities — Cricket');
     const detailsAfter = await page.locator('.smw-summary-row').allTextContents();
     for (const i of [0, 1, 3, 4, 5, 6]) expect(detailsAfter[i]).toBe(detailsBefore[i]);
-    expect(await page.locator('.studio-gifts__gallery .studio-letter__text > p').allTextContents()).toEqual(letterBefore);
+    expect(await letter.allTextContents()).toEqual(letterBefore);
+    await expect(page.locator('.smw-message-result audio')).toHaveAttribute('src', originalUrl);
+    for (const button of await page.locator('.studio-gift-download button').all()) await expect(button).toBeDisabled();
     const oldUrl = await page.locator('.smw-message-result audio').getAttribute('src');
     await confirmMessage(page);
     await expect(page.locator('.smw-message-result audio')).toHaveCount(1);
     await expect.poll(() => requests.length).toBe(2);
     expect(requests[1].talent).toEqual({ category: 'sports', id: `c-${'d'.repeat(64)}` });
     await expect(page.locator('.smw-message-result audio')).not.toHaveAttribute('src', oldUrl);
-    await expect(page.getByRole('button', { name: 'Change Talent', exact: true })).toBeDisabled();
-    await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
+    for (const button of await page.locator('.studio-gift-download button').all()) await expect(button).toBeEnabled();
+    await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
+    await page.getByRole('button', { name: 'Change Talent', exact: true }).click();
+    await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+    for (const button of await page.locator('.studio-gift-download button').all()) await expect(button).toBeDisabled();
+    await confirmMessage(page);
+    for (const button of await page.locator('.studio-gift-download button').all()) await expect(button).toBeEnabled();
+    expect(requests).toHaveLength(3);
+    expect(requests[2].talent).toEqual({ skip: true });
   });
 }
 

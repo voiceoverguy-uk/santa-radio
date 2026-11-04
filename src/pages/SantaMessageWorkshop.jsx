@@ -21,6 +21,7 @@ import WorkshopDestinationPicker from '../components/WorkshopDestinationPicker.j
 import { selectedWorkshopRegion, workshopRegionalFolders, workshopDestinationCategory, workshopDestinationLabel } from '../lib/workshopDestinations.js';
 import './SantaMessageWorkshop.css';
 import useStudioGeneration from '../hooks/useStudioGeneration.js';
+import { studioSelectionIdentity } from '../lib/studioSelectionIdentity.js';
 
 const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
@@ -284,8 +285,7 @@ export default function SantaMessageWorkshop() {
         && catalogueOptions.some(record => record.id === choices.talent.id))
       : !!stage && hasCatalogueOptions && catalogueOptions.some(record => record.id === choices[stage.key]);
   const canContinue = !isReview && hasCurrentStageChoice && (stage?.key !== 'place' || destinationValid);
-  const selectionKey = JSON.stringify([selectedName?.id, choices.region,
-    ...catalogueCategories.map(key => choices[key]), choices.talent]);
+  const selectionKey = studioSelectionIdentity({ ...choices, name: selectedName?.id });
   const giftDetailsFor = giftChoices => {
     const region = selectedWorkshopRegion(catalogueState.catalogue, giftChoices.place, giftChoices.region);
     const regionalContext = region && regionalEditorial.getContext(giftChoices.place, region.id);
@@ -783,16 +783,15 @@ export default function SantaMessageWorkshop() {
                   record={selectedName} choices={choices} spelling={nameSpelling}
                   onPhaseChange={setAudioPhase}
                   onReady={message => {
-                    const record = message?.record || selectedName;
-                    const completedChoices = message?.choices || choices;
+                    const record = message.record;
+                    const completedChoices = message.choices;
                     const completedDetails = giftDetailsFor(completedChoices);
                     if (!completedDetails) {
                       setError('Santa’s local letter story is not ready. Load the selected story before preparing gifts.');
                       return;
                     }
                     setCompletedGift({
-                      selectionKey: JSON.stringify([record.id, completedChoices.region,
-                        ...catalogueCategories.map(key => completedChoices[key]), completedChoices.talent]),
+                      selectionKey: studioSelectionIdentity(completedChoices),
                       record: { ...record }, details: completedDetails,
                       variation: letterVariation,
                       writtenName: getWorkshopWrittenName(record.name, record.id === selectedName?.id ? nameSpelling : ''),

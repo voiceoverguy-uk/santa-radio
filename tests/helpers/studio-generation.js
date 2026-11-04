@@ -19,6 +19,7 @@ export async function confirmMessage(page, label = 'Create message') {
 // Current browser contract: one request-local MP3, no saved history or counters.
 export async function mockStudioGeneration(page, { record = { id: 'dixie-variant', name: 'Dixie', variant: 'Recording 2' }, tester = false } = {}) {
   const fixture = { state: { ...emptyGeneration(), testerCanStartAnother: tester }, posts: [], fail: false, hold: null,
+    record, selection: choices => ({ record: { ...fixture.record, id: choices.name }, choices }),
     audio: readFileSync('server/santa-audio/sleighbells.mp3') };
   await page.context().route('**/api/santa-studio-message*', async route => {
     const request = route.request();
@@ -38,6 +39,8 @@ export async function mockStudioGeneration(page, { record = { id: 'dixie-variant
       return route.abort('failed');
     }
     return route.fulfill({ contentType: 'audio/mpeg',
+      headers: { 'X-Studio-Selection': Buffer.from(JSON.stringify(fixture.selection(payload))).toString('base64'),
+        'Content-Length': String(fixture.audio.length) },
       body: fixture.audio });
   });
   return fixture;
