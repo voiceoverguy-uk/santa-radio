@@ -10,6 +10,7 @@ import studioMessage from './server/santa-studio-message.js';
 import santaMobile from './server/mobile/handler.js';
 import workshopUsage from './server/santa-workshop-usage.js';
 import santaNames from './server/santa-names.js';
+import { namesDemoMiddleware } from './server/names-demo/handler.js';
 import santaNameCount from './server/santa-name-count.js';
 import santaNamePreview from './server/santa-name-preview.js';
 import workshopCatalogue from './server/santa-workshop-catalogue.js';
@@ -50,6 +51,7 @@ const metadataPlugin = {
   name: 'radio-metadata',
   configureServer(server) {
     server.middlewares.use(browserSecurity);
+    server.middlewares.use(namesDemoMiddleware);
     server.middlewares.use(createAuditionMiddleware({ development: true }));
     server.middlewares.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
     server.middlewares.use('/api/santa-message-access', messageAccess);
@@ -76,6 +78,7 @@ const metadataPlugin = {
   },
   configurePreviewServer(server) {
     server.middlewares.use(browserSecurity);
+    server.middlewares.use(namesDemoMiddleware);
     server.middlewares.use(createAuditionMiddleware());
     server.middlewares.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
     server.middlewares.use('/api/santa-message-access', messageAccess);

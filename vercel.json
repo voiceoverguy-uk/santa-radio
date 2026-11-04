@@ -7,6 +7,11 @@
     { "path": "/api/santa-studio-email-retry", "schedule": "*/5 * * * *" }
   ],
   "functions": {
+    "api/names-demo.js": {
+      "installCommand": "",
+      "maxDuration": 15,
+      "includeFiles": "server/names-demo/{snapshot.json,page.html}"
+    },
     "api/santa-mobile.js": {
       "installCommand": "",
       "maxDuration": 120,
@@ -56,6 +61,8 @@
     "api/**/*.js": { "installCommand": "" }
   },
   "routes": [
+    { "src": "/names", "dest": "/api/names-demo" },
+    { "src": "/server/names-demo(?:/.*)?", "status": 404 },
     { "src": "/(.*)", "headers": {
       "X-Content-Type-Options": "nosniff",
       "Referrer-Policy": "strict-origin-when-cross-origin",

@@ -10,6 +10,7 @@ import studioMessage from './server/santa-studio-message.js';
 import santaMobile from './server/mobile/handler.js';
 import workshopUsage from './server/santa-workshop-usage.js';
 import santaNames from './server/santa-names.js';
+import namesDemo from './server/names-demo/handler.js';
 import santaNameCount from './server/santa-name-count.js';
 import santaNamePreview from './server/santa-name-preview.js';
 import workshopCatalogue from './server/santa-workshop-catalogue.js';
@@ -61,6 +62,7 @@ const server = createServer(async (req, res) => {
     if (res.writableEnded) return;
     if (pathname.startsWith(`${CLERK_PROXY_PATH}/`)) return clerkProxy(req, res, () => res.writeHead(404).end());
     if (pathname === '/api/name-requests') return nameRequests(req, res);
+    if (pathname === '/names' || pathname === '/api/names-demo') return namesDemo(req, res);
     if (pathname === '/api/christmas-contenders') return christmasContenders(req, res);
     if (pathname === '/api/stripe/webhook') return stripeWebhook(req, res);
     if (pathname === '/api/santa-studio-access') return studioPaidAccess(req, res);
