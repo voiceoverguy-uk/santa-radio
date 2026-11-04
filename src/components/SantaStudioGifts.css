@@ -603,3 +603,50 @@
 @container studio-review (min-width: 34em) {
   .studio-gifts__review-layout { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* Promotion variant: picture + letter pair (equal heights, ~2:1) above a
+   full-width certificate. DOM order matches visual and dialog order. */
+.studio-gifts__preview-stack--promotion {
+  container-type: inline-size;
+  container-name: studio-promo;
+  margin-top: 10px;
+}
+.studio-gifts__promo-layout { display: flex; flex-direction: column; gap: 0; min-width: 0; }
+.studio-gifts__promo-pair { display: flex; align-items: stretch; gap: 8px; min-width: 0; }
+.studio-gifts__preview-stack--promotion .studio-gifts__card {
+  display: flex;
+  width: auto;
+  margin: 0;
+  min-width: 0;
+}
+/* Grow factors equal each artwork's width/height ratio so heights match. */
+.studio-gifts__preview-stack--promotion .studio-gifts__card--picture { flex: 1.5 1 0; }
+.studio-gifts__preview-stack--promotion .studio-gifts__card--letter { flex: .70707 1 0; }
+.studio-gifts__preview-stack--promotion .studio-gifts__card--certificate { flex: 0 0 auto; width: 100%; }
+.studio-gifts__preview-stack--promotion .studio-gifts__thumbnail {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  width: 100%;
+  margin: 0;
+  padding: 4px;
+  background: #fff9e9;
+  text-align: left;
+}
+.studio-gifts__preview-stack--promotion .studio-gifts__thumbnail-label {
+  margin-top: auto;
+  overflow-wrap: anywhere;
+}
+.studio-gifts__preview-stack--promotion .studio-gifts__card--letter .studio-gifts__thumbnail-label { text-align: center; }
+.studio-gifts__preview-stack--promotion .studio-gifts__card--certificate .studio-gifts__thumbnail-label {
+  text-align: center;
+  font-size: .86rem;
+}
+.studio-gifts__preview-stack--promotion .studio-certificate,
+.studio-gifts__preview-stack--promotion .studio-letter__paper,
+.studio-gifts__preview-stack--promotion .studio-santa-picture { width: 100%; height: auto; }
+@container studio-promo (max-width: 13.5em) {
+  .studio-gifts__promo-pair { flex-direction: column; }
+  .studio-gifts__preview-stack--promotion .studio-gifts__card--picture,
+  .studio-gifts__preview-stack--promotion .studio-gifts__card--letter { flex: 0 0 auto; width: 100%; }
+}

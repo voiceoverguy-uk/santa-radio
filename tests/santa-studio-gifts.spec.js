@@ -1,13 +1,14 @@
 import { test, expect } from '@playwright/test';
 import { studioLetterChoices, createStudioLetter, CERTIFICATE_WRITE_MS,
-  SIGNATURE_WRITE_MS, GIFT_EXAMPLE_INTERVAL_MS, letterBodyDuration, letterDuration } from '../src/lib/santaStudioLetter.js';
+  SIGNATURE_WRITE_MS, GIFT_EXAMPLE_INTERVAL_MS, letterBodyDuration, letterDuration,
+  createStudioLetterVariation } from '../src/lib/santaStudioLetter.js';
 import { certificateExampleNames, studioGiftExampleNames } from '../src/lib/santaCertificateExamples.js';
 import { expectLeftAlignedLetter } from './helpers/studio-letter-alignment.js';
 import { expectSampleWatermark } from './helpers/studio-sample-watermark.js';
 
 const gifts = page => page.locator('.studio-gifts');
-const body = page => gifts(page).locator('.studio-gifts__gallery .studio-letter__text');
-const readable = page => gifts(page).locator('.studio-gifts__gallery .studio-gifts__sr');
+const body = page => gifts(page).locator('.studio-gifts__preview-stack .studio-letter__text');
+const readable = page => gifts(page).locator('.studio-gifts__preview-stack .studio-gifts__sr');
 
 async function visit(page, { reduced = false, clock = true, route = '/free-santa-message' } = {}) {
   await page.emulateMedia({ reducedMotion: reduced ? 'reduce' : 'no-preference' });
@@ -39,11 +40,12 @@ async function visit(page, { reduced = false, clock = true, route = '/free-santa
 }
 
 // Exercise the automatic cycle rather than relying on removed manual controls.
-for (const width of [320, 1440]) {
-  test(`homepage promotional gifts retain the landscape pair and separate picture at ${width}px`, async ({ page }) => {
+for (const width of [320, 406, 987, 1440]) {
+  test(`homepage promotional gifts place picture and letter above full-width certificate at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await visit(page, { reduced: true, clock: false, route: '/' });
-    await expect(gifts(page).locator('.studio-gifts__card, .studio-gifts__review-layout, .studio-gift-download')).toHaveCount(0);
+    await expect(gifts(page).locator('.studio-gifts__review-layout, .studio-gift-download')).toHaveCount(0);
+    await expect(gifts(page).locator('.studio-gifts__card')).toHaveCount(3);
     const stack = gifts(page).locator('.studio-gifts__preview-stack');
     const box = await stack.evaluate(node => {
       const rect = selector => node.querySelector(selector).getBoundingClientRect().toJSON();
@@ -54,17 +56,28 @@ for (const width of [320, 1440]) {
         children: [...node.children].map(child => child.className),
       };
     });
-    expect(box.children).toEqual(['studio-gifts__gallery', 'studio-gifts__thumbnail studio-gifts__thumbnail--picture']);
-    expect(Math.abs(box.certificate.top - box.letter.top)).toBeLessThan(1);
-    expect(box.letter.left).toBeGreaterThan(box.certificate.right);
-    expect(box.certificate.width / box.letter.width).toBeGreaterThan(1.5);
-    expect(box.picture.top).toBeGreaterThan(box.certificate.bottom);
-    expect(box.picture.width).toBeLessThanOrEqual(360);
+    expect(Math.abs(box.picture.top - box.letter.top)).toBeLessThan(1);
+    expect(box.letter.left).toBeGreaterThan(box.picture.right);
+    expect(box.picture.width / box.letter.width).toBeGreaterThan(1.8);
+    expect(box.picture.width / box.letter.width).toBeLessThan(2.2);
+    expect(box.certificate.top).toBeGreaterThanOrEqual(Math.max(box.picture.bottom, box.letter.bottom) - 1);
+    expect(box.certificate.top - Math.max(box.picture.bottom, box.letter.bottom)).toBeLessThanOrEqual(1);
+    expect(box.certificate.left).toBeCloseTo(box.picture.left, 0);
+    expect(box.certificate.right).toBeCloseTo(box.letter.right, 0);
+    expect(box.certificate.width).toBeGreaterThan(box.picture.width);
+    const buttons = stack.getByRole('button');
+    await expect(buttons).toHaveCount(3);
+    expect(await buttons.evaluateAll(nodes => nodes.map(node => node.getAttribute('aria-label'))))
+      .toEqual(['Enlarge Santa’s Nice List picture', 'Enlarge letter to read', 'Enlarge certificate']);
     await expectLeftAlignedLetter(stack.locator('.studio-letter__paper'));
-    for (const thumbnail of await stack.locator('.studio-gifts__thumbnail').all()) {
+    for (const [index, thumbnail] of (await stack.locator('.studio-gifts__thumbnail').all()).entries()) {
       await expectSampleWatermark(thumbnail);
-      await thumbnail.click();
+      if (index === 0) await thumbnail.focus();
+      else await page.keyboard.press('Tab');
+      await expect(thumbnail).toBeFocused();
+      await page.keyboard.press('Enter');
       const dialog = page.getByRole('dialog');
+      await expect(dialog).toHaveAttribute('aria-label', `Edward’s ${['picture', 'letter', 'certificate'][index]} example`);
       await expectSampleWatermark(dialog);
       if (await dialog.locator('.studio-letter__paper').count()) {
         await expectLeftAlignedLetter(dialog.locator('.studio-letter__paper'));
@@ -72,10 +85,18 @@ for (const width of [320, 1440]) {
       await page.keyboard.press('Escape');
       await expect(dialog).not.toBeVisible();
       await expect(thumbnail).toBeFocused();
+      // Native dialogs finish their queued close/focus restoration after the
+      // close event. Let that settle before opening the next one by keyboard.
+      await page.evaluate(() => new Promise(resolve =>
+        requestAnimationFrame(() => requestAnimationFrame(resolve))));
     }
-    await stack.screenshot({ path: `generated-artifacts/studio-gifts/promotion-preserved-${width}.png`, animations: 'disabled' });
+    await stack.screenshot({ path: `generated-artifacts/studio-gifts/promotion-rearranged-${width}.png`, animations: 'disabled' });
+    await page.locator('.santa-studio-promotion').screenshot({
+      path: `generated-artifacts/studio-gifts/panel-rearranged-${width}.png`, animations: 'disabled',
+    });
   });
-
+}
+for (const width of [320, 1440]) {
   test(`gift preview arrows cycle all three gifts without closing the dialog at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await visit(page, { reduced: true, clock: false });
@@ -91,16 +112,16 @@ for (const width of [320, 1440]) {
     const next = dialog.getByRole('button', { name: 'Next gift', exact: true });
     const close = dialog.getByRole('button', { name: 'Close preview', exact: true });
     await expect(close).toBeFocused();
-    for (const kind of ['letter', 'picture', 'certificate']) {
+    for (const kind of ['picture', 'letter', 'certificate']) {
       await next.click();
       await expect(dialog).toHaveAttribute('aria-label', `${name}’s ${kind} example`);
       await expect(next).toBeFocused();
       await expect(dialog.locator('.studio-gifts__watermark')).toBeVisible();
     }
     await previous.click();
-    await expect(dialog).toHaveAttribute('aria-label', `${name}’s picture example`);
-    await page.keyboard.press('ArrowLeft');
     await expect(dialog).toHaveAttribute('aria-label', `${name}’s letter example`);
+    await page.keyboard.press('ArrowLeft');
+    await expect(dialog).toHaveAttribute('aria-label', `${name}’s picture example`);
     const geometry = await dialog.evaluate(node => {
       const previous = node.querySelector('[aria-label="Previous gift"]').getBoundingClientRect();
       const next = node.querySelector('[aria-label="Next gift"]').getBoundingClientRect();
@@ -141,7 +162,7 @@ test('sample labels, artwork, and letter reading remain usable in forced-colors 
   const opener = gifts(page).getByRole('button', { name: 'Enlarge certificate', exact: true });
   await opener.click();
   const dialog = page.getByRole('dialog');
-  const sampleViews = ['certificate', 'letter', 'picture'];
+  const sampleViews = ['certificate', 'picture', 'letter'];
   for (let index = 0; index < sampleViews.length; index += 1) {
     const view = sampleViews[index];
     await expect(dialog).toBeVisible();
@@ -360,6 +381,22 @@ async function renderGiftFixture(page, name) {
   await expect(gifts(page)).toHaveAttribute('data-demo-name', name);
 }
 
+test('shared non-promotional preview retains its original arrangement and dialog order', async ({ page }) => {
+  await visit(page, { reduced: true, clock: false });
+  await renderGiftFixture(page, 'Arabella');
+  await expect(gifts(page).locator('.studio-gifts__preview-stack--promotion')).toHaveCount(0);
+  const buttons = gifts(page).locator('.studio-gifts__preview-stack button');
+  expect(await buttons.evaluateAll(nodes => nodes.map(node => node.getAttribute('aria-label'))))
+    .toEqual(['Enlarge certificate', 'Enlarge letter to read', 'Enlarge Santa’s Nice List picture']);
+  const pair = gifts(page).locator('.studio-gifts__gallery');
+  await expect(pair.locator('.studio-gifts__thumbnail')).toHaveCount(2);
+  await buttons.first().click();
+  await page.getByRole('button', { name: 'Next gift', exact: true }).click();
+  await expect(page.getByRole('dialog')).toHaveAttribute('aria-label', 'Arabella’s letter example');
+  await page.keyboard.press('Escape');
+  await expect(buttons.first()).toBeFocused();
+});
+
 for (const width of [390, 1440]) {
   test(`rotating Santa pictures dissolve over loaded artwork at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
@@ -531,7 +568,7 @@ for (const width of [1440, 390, 320]) {
       await page.getByRole('button', { name: 'Close preview', exact: true }).click();
       await advanceExample(page);
     }
-    const signature = gifts(page).locator('.studio-gifts__gallery .studio-letter__signature > span');
+    const signature = gifts(page).locator('.studio-gifts__preview-stack .studio-letter__signature > span');
     expect((await scriptInk(page, signature)).changed).toBe(0);
     await gifts(page).getByRole('button', { name: 'Enlarge letter to read' }).click();
     const enlargedSignature = await scriptInk(page, page.locator('dialog .studio-letter__signature > span'));
@@ -585,7 +622,7 @@ for (const width of [1440, 390]) {
     }
     const paragraphs = await body(page).locator(':scope > p').allTextContents();
     await page.clock.runFor(CERTIFICATE_WRITE_MS + letterBodyDuration({ paragraphs }) + SIGNATURE_WRITE_MS / 2 - 800);
-    const signature = gifts(page).locator('.studio-gifts__gallery .studio-letter__signature > span');
+    const signature = gifts(page).locator('.studio-gifts__preview-stack .studio-letter__signature > span');
     const compactInk = await scriptInk(page, signature, { partial: true });
     expect(compactInk.ink).toBeGreaterThan(5);
     expect(compactInk.changed).toBe(0);
@@ -639,30 +676,29 @@ test('compact desktop card groups gifts right of voucher controls without a full
   const card = await promotion.boundingBox();
   expect(form.x + form.width).toBeLessThanOrEqual(preview.x);
   expect(Math.abs(form.y - preview.y)).toBeLessThan(card.height);
-  // The third compact gift now occupies the previously empty area below the pair.
-  expect(card.height).toBeLessThan(750);
-  const paper = await gifts(page).locator('.studio-gifts__gallery .studio-letter__paper').boundingBox();
+  // The large certificate sits directly beneath the picture/letter pair.
+  expect(preview.y + preview.height).toBeLessThanOrEqual(card.y + card.height);
+  const paper = await gifts(page).locator('.studio-gifts__preview-stack .studio-letter__paper').boundingBox();
   expect(paper.width / paper.height).toBeCloseTo(210 / 297, 2);
   expect(paper.height).toBeLessThan(350);
   await page.screenshot({ path: 'test-results/studio-compact-desktop.png' });
 });
 
 for (const width of [320, 390, 1440]) {
-  test(`equal-height documents and personalised Santa picture fit at ${width}px`, async ({ page }) => {
+  test(`complete documents and personalised Santa picture fit at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await visit(page, { reduced: true });
-    const certificate = await gifts(page).locator('.studio-gifts__gallery .studio-certificate').boundingBox();
-    const letter = await gifts(page).locator('.studio-gifts__gallery .studio-letter__paper').boundingBox();
+    const certificate = await gifts(page).locator('.studio-gifts__preview-stack .studio-certificate').boundingBox();
+    const letter = await gifts(page).locator('.studio-gifts__preview-stack .studio-letter__paper').boundingBox();
     const certificateCard = await gifts(page).locator('.studio-gifts__thumbnail--certificate').boundingBox();
     const letterCard = await gifts(page).locator('.studio-gifts__thumbnail--letter').boundingBox();
-    expect(Math.abs(certificate.height - letter.height)).toBeLessThan(1);
-    expect(Math.abs(certificate.y - letter.y)).toBeLessThan(1);
-    expect(Math.abs(certificateCard.height - letterCard.height)).toBeLessThan(1);
+    expect(certificate.width / certificate.height).toBeCloseTo(841.89 / 595.28, 2);
+    expect(letter.width / letter.height).toBeCloseTo(210 / 297, 2);
+    expect(certificateCard.y).toBeGreaterThanOrEqual(letterCard.y + letterCard.height - 1);
     const picture = gifts(page).locator('.studio-gifts__preview-stack .studio-santa-picture');
     await expect(picture.locator('img')).toHaveJSProperty('naturalWidth', 1536);
     const box = await picture.boundingBox();
-    expect(box.y).toBeGreaterThan(certificateCard.y + certificateCard.height);
-    expect(box.width).toBeLessThanOrEqual(360);
+    expect(box.y).toBeLessThan(certificateCard.y);
     expect(box.width / box.height).toBeCloseTo(1.5, 2);
     expect(box.x).toBeGreaterThanOrEqual(0);
     expect(box.x + box.width).toBeLessThanOrEqual(width);
@@ -702,14 +738,15 @@ test(`longest name and choices keep the complete letter inside A4 at ${width}px`
   await visit(page, { reduced: true });
   // Only the letter factory consumes this deterministic sequence: longest
   // activity/achievement/treat, Scotland, and the oldest supported age.
-  await page.evaluate(() => {
+  const proseSlotCount = Object.keys(createStudioLetterVariation(() => 0)).length;
+  await page.evaluate(proseSlotCount => {
     const original = Math.random;
     let index = 0;
-    // Five selections, then the seventeen page-local prose slots.
-    const slots = [.999, .999, .3, .999, .999, ...Array(17).fill(0)];
+    // Five selections, then every current page-local prose slot.
+    const slots = [.999, .999, .3, .999, .999, ...Array(proseSlotCount).fill(0)];
     Math.random = () => new Error().stack.includes('santaStudioLetter')
       ? slots[index++ % slots.length] : original();
-  });
+  }, proseSlotCount);
   for (let index = 0; index < 3; index++) {
     await advanceExample(page);
   }
@@ -723,7 +760,7 @@ test(`longest name and choices keep the complete letter inside A4 at ${width}px`
   const text = page.getByRole('dialog').locator('.studio-letter__text');
   const expected = createStudioLetter('Charlotte', (() => {
     let index = 0;
-    const slots = [.999, .999, .3, .999, .999, ...Array(17).fill(0)];
+    const slots = [.999, .999, .3, .999, .999, ...Array(proseSlotCount).fill(0)];
     return () => slots[index++ % slots.length];
   })());
   await expect(text.locator(':scope > p')).toHaveText(expected.paragraphs);
@@ -738,10 +775,10 @@ test(`longest name and choices keep the complete letter inside A4 at ${width}px`
       const range = document.createRange();
       range.selectNodeContents(node);
       const rects = [...range.getClientRects()];
-      return rects.every(rect => rect.top >= paper.top + paper.height * .22 &&
-        rect.bottom < paper.top + paper.height * .88 &&
-        rect.left >= paper.left + paper.width * .06 &&
-        rect.right <= paper.right - paper.width * .06);
+      return rects.every(rect => rect.top >= paper.top + paper.height * .22 - .5 &&
+        rect.bottom < paper.top + paper.height * .88 + .5 &&
+        rect.left >= paper.left + paper.width * .06 - .5 &&
+        rect.right <= paper.right - paper.width * .06 + .5);
     });
   })).toBe(true);
 });
@@ -850,7 +887,7 @@ test('certificate precedes body, signature follows body, and hovering pauses the
   expect(await body(page).innerText()).not.toContain('Dear Edward');
   await page.clock.runFor(4000);
   await expect(body(page)).toContainText('Dear Edward');
-  const signature = gifts(page).locator('.studio-gifts__gallery .studio-letter__signature span');
+  const signature = gifts(page).locator('.studio-gifts__preview-stack .studio-letter__signature span');
   expect(await signature.evaluate(el => getComputedStyle(el).visibility)).toBe('hidden');
   await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Edward');
   await gifts(page).hover();

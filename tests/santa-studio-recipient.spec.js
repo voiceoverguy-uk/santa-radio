@@ -44,7 +44,7 @@ for (const width of [390, 1440]) {
       await expect(input).toHaveValue('Arabella');
       await expect(input).toHaveAttribute('aria-expanded', 'false');
       await page.locator('.smw-button-next').click();
-      await expect(page.locator('.smw-step-count')).toHaveText('Step 2 of 6');
+      await expect(page.locator('.smw-step-count')).toHaveText('Step 2 of 7');
       await page.locator('.smw-button-back').click();
       await input.fill('Er');
       await page.locator('.smw-button-next').click();
@@ -206,7 +206,7 @@ async function matches(page, name) {
   await expect(gifts(page).getByRole('heading')).toHaveText(`All 3 gifts included for ${name} with the paid version`);
   await expect(gifts(page).locator('.studio-certificate__name')).toHaveText(name);
   await expect(gifts(page).locator('.studio-gifts__preview-stack .studio-santa-picture__name')).toHaveText(name);
-  await expect(gifts(page).locator('.studio-gifts__gallery .studio-gifts__sr')).toContainText(`Dear ${name},`);
+  await expect(gifts(page).locator('.studio-gifts__preview-stack .studio-gifts__sr')).toContainText(`Dear ${name},`);
   await expect(promotion(page).locator('.santa-studio-promotion__copy')).toContainText(
     `Create a personalised message from Santa, with ${name}’s age, achievements and the things that make them special for an extra personal touch.`);
   await expect(promotion(page).locator('.santa-studio-promotion__subheading')).toHaveText(`A little more Christmas magic for ${name}`);
@@ -221,6 +221,49 @@ async function signup(page) {
   await page.getByRole('button', { name: 'Get my free Santa message', exact: true }).click();
   await expect(page.getByLabel('First Name', { exact: true })).toBeVisible();
 }
+
+test('promotional gifts and access controls reflow locally with a long recipient and enlarged text', async ({ page }, testInfo) => {
+  await setup(page);
+  await chooseHero(page, longName);
+  await matches(page, longName);
+  await page.addStyleTag({ content: 'html { font-size: 200%; }' });
+  for (const width of [240, 320, 406, 987]) {
+    await page.setViewportSize({ width, height: 1000 });
+    const promo = promotion(page);
+    const geometry = await promo.evaluate(root => {
+      const rect = root.getBoundingClientRect();
+      const controls = [...root.querySelectorAll('input, button')].filter(node => !node.closest('dialog'));
+      return {
+        left: rect.left, right: rect.right, fits: root.scrollWidth <= root.clientWidth + 1,
+        scroll: root.scrollWidth, client: root.clientWidth,
+        overflow: [...root.querySelectorAll('*')].filter(node => {
+          const box = node.getBoundingClientRect();
+          return !node.closest('dialog, .studio-gifts__sr, .studio-gifts__watermark') &&
+            (box.width && (box.right > rect.right + 1 || box.left < rect.left - 1 ||
+              node.scrollWidth > node.clientWidth + 1));
+        }).map(node => ({ tag: node.tagName, class: node.className, text: node.textContent.slice(0, 100),
+          width: node.getBoundingClientRect().width, scroll: node.scrollWidth, client: node.clientWidth })),
+        controls: controls.map(node => {
+          const bounds = node.getBoundingClientRect();
+          return { fits: node.scrollWidth <= node.clientWidth + 1,
+            inside: bounds.left >= rect.left && bounds.right <= rect.right,
+            height: bounds.height };
+        }),
+      };
+    });
+    expect(geometry.fits, JSON.stringify({ width, geometry })).toBe(true);
+    expect(geometry.left).toBeGreaterThanOrEqual(0);
+    expect(geometry.right).toBeLessThanOrEqual(width + 1);
+    for (const control of geometry.controls) {
+      expect(control.fits).toBe(true);
+      expect(control.inside).toBe(true);
+      expect(control.height).toBeGreaterThanOrEqual(44);
+    }
+    await expect(gifts(page)).toHaveAttribute('data-demo-name', longName);
+    await expect(gifts(page).locator('.studio-gifts__preview-stack .studio-gifts__watermark')).toHaveCount(3);
+    await promo.screenshot({ path: testInfo.outputPath(`large-text-${width}.png`), animations: 'disabled' });
+  }
+});
 
 for (const width of [320, 390, 1440]) {
   test(`Studio A divider spans the header beneath status and portrait at ${width}px`, async ({ page }, testInfo) => {
@@ -372,7 +415,7 @@ test('late generation cannot replace a newer confirmed hero child', async ({ pag
     await route.fulfill({ contentType: 'audio/mpeg', body: mp3 });
   });
   await page.getByRole('button', { name: 'Create message', exact: true }).click();
-  await expect(page.getByText('Santa is recording a personal message for you. Do hold on one moment...')).toBeVisible();
+  await expect(page.getByText('Santa is recording a personal message for Arabella. Hang on!')).toBeVisible();
   await chooseHero(page, 'Erin');
   await matches(page, 'Erin');
   release();
@@ -388,7 +431,7 @@ test(`unknown-recipient cooldown keeps all three original example gifts at ${wid
   await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Edward');
   await expect(gifts(page).locator('.studio-certificate__name')).toHaveText('Edward');
   await expect(gifts(page).locator('.studio-gifts__preview-stack .studio-santa-picture__name')).toHaveText('Edward');
-  await expect(gifts(page).locator('.studio-gifts__gallery .studio-gifts__sr')).toContainText('Dear Edward,');
+   await expect(gifts(page).locator('.studio-gifts__preview-stack .studio-gifts__sr')).toContainText('Dear Edward,');
   for (const label of ['Enlarge certificate', 'Enlarge letter to read', 'Enlarge Santa’s Nice List picture']) {
     const button = gifts(page).getByRole('button', { name: label, exact: true });
     await expect(button).toBeVisible();

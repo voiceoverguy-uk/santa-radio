@@ -35,14 +35,6 @@
   grid-area: gifts;
 }
 
-.santa-studio-promotion > .studio-gifts .studio-gifts__card--picture {
-  width: min(100%, 248px);
-  margin-inline: auto;
-}
-
-.santa-studio-promotion > .studio-gifts .studio-gifts__thumbnail--picture {
-  width: min(100%, 248px);
-}
 
 .santa-studio-promotion__topline {
   display: flex;
@@ -70,6 +62,8 @@
 }
 
 .santa-studio-promotion .message-recording-indicator {
+  flex-wrap: wrap;
+  overflow-wrap: anywhere;
   color: #334c3d;
   font-weight: 400;
 }
@@ -86,6 +80,7 @@
 
 .santa-studio-promotion__eyebrow {
   margin: 0;
+  overflow-wrap: anywhere;
   color: #6d572b;
   font-size: 0.68rem;
   font-weight: 400;
@@ -173,7 +168,9 @@
 
 .santa-studio-promotion__benefits {
   grid-area: benefits;
+  min-width: 0;
   max-width: 54ch;
+  overflow-wrap: anywhere;
   margin-top: 3px;
   padding: 13px 15px 11px;
   border-left: 2px solid #a27c32;
@@ -190,6 +187,7 @@
 
 .santa-studio-promotion__benefit-list {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 4px;
   margin: 0;
   padding-left: 1.2rem;

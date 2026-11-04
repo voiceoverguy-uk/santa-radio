@@ -11,6 +11,7 @@ import StudioGiftDownload from './StudioGiftDownload.jsx';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 const giftViews = ['certificate', 'letter', 'picture'];
+const promotionGiftViews = ['picture', 'letter', 'certificate'];
 
 function SampleWatermark() {
   return <div className="studio-gifts__watermark" aria-hidden="true">
@@ -111,7 +112,9 @@ function SantaPicture({ name, elapsed, picture, previousPicture = null, onDissol
 // reading timer and random selection together, before rendering the new name.
 function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio, reducedMotion, onNext,
   staticPreview = false, suppliedLetter = null, reviewHeading = null, downloadReady = false,
-  downloadNotice = null, giftRevision = '', downloadUnavailableNotice, children }) {
+  downloadNotice = null, giftRevision = '', downloadUnavailableNotice, variant = null, children }) {
+  const promotion = variant === 'promotion' && !staticPreview;
+  const views = promotion ? promotionGiftViews : giftViews;
   // Deterministic SSR; randomise only once after mounting in the browser.
   const [letter, setLetter] = useState(() => suppliedLetter || createStudioLetter(name, () => 0.5));
   const [elapsed, setElapsed] = useState(0);
@@ -175,11 +178,11 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
     setView(kind);
   };
   const changeGift = direction => {
-    setView(current => giftViews[(giftViews.indexOf(current) + direction + giftViews.length) % giftViews.length]);
+    setView(current => views[(views.indexOf(current) + direction + views.length) % views.length]);
     const content = dialogRef.current?.querySelector('.studio-letter-dialog__content');
     if (content) content.scrollTop = content.scrollLeft = 0;
   };
-  const renderGift = kind => <GiftCard enabled={staticPreview} kind={kind}>
+  const renderGift = kind => <GiftCard enabled={staticPreview || promotion} kind={kind}>
     <button className={`studio-gifts__thumbnail studio-gifts__thumbnail--${kind}`} type="button"
       aria-label={kind === 'certificate' ? 'Enlarge certificate'
         : kind === 'letter' ? 'Enlarge letter to read' : 'Enlarge Santa’s Nice List picture'}
@@ -207,7 +210,7 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
     <h4>{reviewHeading || `All 3 gifts included for ${name} with the paid version`}</h4>
     {staticPreview && downloadNotice && <p>{downloadNotice}</p>}
     {children}
-    <div className={`studio-gifts__preview-stack${staticPreview ? ' studio-gifts__preview-stack--review' : ''}`}
+    <div className={`studio-gifts__preview-stack${staticPreview ? ' studio-gifts__preview-stack--review' : ''}${promotion ? ' studio-gifts__preview-stack--promotion' : ''}`}
       role="group" aria-label="Three gift previews"
       onContextMenu={event => event.preventDefault()} onDragStart={event => event.preventDefault()}>
       {staticPreview ? <div className="studio-gifts__review-layout">
@@ -218,6 +221,12 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
         <div className="studio-gifts__review-column studio-gifts__review-column--letter">
           {renderGift('letter')}
         </div>
+      </div> : promotion ? <div className="studio-gifts__promo-layout">
+        <div className="studio-gifts__promo-pair">
+          {renderGift('picture')}
+          {renderGift('letter')}
+        </div>
+        {renderGift('certificate')}
       </div> : <>
         <div className="studio-gifts__gallery">
           {renderGift('certificate')}
@@ -246,7 +255,7 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
           </button>
         </div>
         <span className="studio-gifts__sr" role="status" aria-live="polite">
-          {view ? `${view === 'picture' ? 'Santa picture' : view === 'letter' ? 'Santa letter' : 'Nice List certificate'}, ${giftViews.indexOf(view) + 1} of 3` : ''}
+          {view ? `${view === 'picture' ? 'Santa picture' : view === 'letter' ? 'Santa letter' : 'Nice List certificate'}, ${views.indexOf(view) + 1} of 3` : ''}
         </span>
         <button ref={closeRef} type="button" onClick={() => dialogRef.current.close()}>Close preview</button>
       </div>
@@ -306,9 +315,9 @@ export function useStudioGiftExample({ activeExampleName = null, previewName = n
     reducedMotion, onNext: nextExample };
 }
 
-export function StudioGiftPreview({ example }) {
+export function StudioGiftPreview({ example, variant = null }) {
   const name = example.name || studioGiftExampleNames[0];
-  return <GiftExample key={name} {...example} name={name} />;
+  return <GiftExample key={name} {...example} name={name} variant={variant} />;
 }
 
 export function StudioKeepsakePreview({ name, details = {}, variation, downloadReady = false,

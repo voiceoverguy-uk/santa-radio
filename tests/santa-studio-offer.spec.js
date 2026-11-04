@@ -25,7 +25,7 @@ async function expectRegularPromotion(promotion) {
 
 for (const path of ['/', '/free-santa-message']) {
   for (const width of [320, 390, 1440]) {
-    test(`neutral Studio price and smaller picture fit ${path} at ${width}px`, async ({ page }, testInfo) => {
+    test(`neutral Studio price and rearranged gifts fit ${path} at ${width}px`, async ({ page }, testInfo) => {
       await page.setViewportSize({ width, height: 1000 });
       await page.clock.setFixedTime(new Date('2026-11-03T12:00:00Z'));
       await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -68,7 +68,10 @@ for (const path of ['/', '/free-santa-message']) {
       await expect(promotion.getByRole('button', { name: 'Enlarge letter to read', exact: true })).toBeVisible();
       const picture = promotion.getByRole('button', { name: 'Enlarge Santa’s Nice List picture', exact: true });
       const box = await picture.boundingBox();
-      expect(box.width).toBeLessThanOrEqual(280);
+      const certificate = await promotion.locator('.studio-gifts__thumbnail--certificate').boundingBox();
+      const letter = await promotion.locator('.studio-gifts__thumbnail--letter').boundingBox();
+      expect(box.width / letter.width).toBeGreaterThan(1.8);
+      expect(box.width).toBeLessThan(certificate.width);
       expect(box.width).toBeGreaterThan(100);
       expect(await promotion.evaluate(el => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
       const bounds = await promotion.boundingBox();

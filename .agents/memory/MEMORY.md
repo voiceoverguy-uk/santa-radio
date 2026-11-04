@@ -93,3 +93,4 @@
 - [Native API routing](native-api-routing.md) — A reachable Expo host does not prove the shared API is publicly routed; verify the protected connection through the proxy.
 - [Finished Studio layout](studio-finished-layout.md) — Latest owner screenshot supersedes the full yellow notice after success; keep full entitlement information before completion.
 - [Names demo snapshot](names-demo-snapshot-policy.md) — Isolated /names uses a private bundled snapshot; only explicit owner updates may contact Stag.
+- [Studio promotional gifts](studio-promotion-gift-arrangement.md) — Owner-approved picture/letter pair above certificate; separate from Review and historical screenshot access text.

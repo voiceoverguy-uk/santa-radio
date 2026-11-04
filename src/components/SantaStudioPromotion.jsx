@@ -61,7 +61,7 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
         />
         <StudioPurchaseButton />
       </div>
-        <StudioGiftPreview example={example} />
+      <StudioGiftPreview example={example} variant="promotion" />
     </section>
   );
 }
