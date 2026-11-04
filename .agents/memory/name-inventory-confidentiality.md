@@ -21,6 +21,18 @@ through protected server paths. Revoking old URLs requires real origin-host
 authorization and cache invalidation; signing new URLs alone is insufficient.
 Keep access-log evidence, and make no scraping claim without evidence.
 
+The owner reports approximately 9,700 names, updated in bulk roughly once a week.
+For faster private search, use refresh after recording updates with a daily
+fallback; original audio must not move to Blob for this change.
+
+**Why:** The owner supplied this update cadence and requested private indexing
+rather than frequent source downloads during searches.
+
+**How to apply:** Keep refresh coordinated across server instances; increasing
+only an instance-local cache lifetime does not provide a shared daily refresh.
+Keep catalogue and original audio locations private and preserve anti-enumeration
+protections when optimising checks.
+
 The owner subsequently approved restoring the recorded-name counter using a
 total-only response, retaining the previous slow count-up.
 
