@@ -87,7 +87,7 @@ export default function HeroNameChecker({ onContinue, onSelectedNameChange }) {
       if (!selected) {
         setValidation(name.trim()
           ? search.error || search.warning || (search.loading
-            ? 'Please wait while Santa checks the name list.'
+            ? 'Hang on! Just asking Head Elf.'
             : 'Please choose one of Santa’s recorded names from the list.')
           : 'Please enter a child’s name, then choose a suggestion.');
         inputRef.current?.focus({ preventScroll: true });
