@@ -124,6 +124,54 @@ for (const width of [320, 1440]) {
   });
 }
 
+test('sample labels, artwork, and letter reading remain usable in forced-colors mode', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await visit(page, { reduced: true });
+  await page.emulateMedia({ forcedColors: 'active' });
+  expect(await page.evaluate(() => matchMedia('(forced-colors: active)').matches)).toBe(true);
+
+  const stack = gifts(page).locator('.studio-gifts__preview-stack');
+  const thumbnails = stack.locator('.studio-gifts__thumbnail');
+  await expect(thumbnails).toHaveCount(3);
+  for (const thumbnail of await thumbnails.all()) {
+    await expect(thumbnail).toBeVisible();
+    await expectSampleWatermark(thumbnail, { forcedColors: true });
+  }
+
+  const opener = gifts(page).getByRole('button', { name: 'Enlarge certificate', exact: true });
+  await opener.click();
+  const dialog = page.getByRole('dialog');
+  const sampleViews = ['certificate', 'letter', 'picture'];
+  for (let index = 0; index < sampleViews.length; index += 1) {
+    const view = sampleViews[index];
+    await expect(dialog).toBeVisible();
+    await expect(dialog).toHaveAttribute('aria-label', `Edward’s ${view} example`);
+    await expectSampleWatermark(dialog, { forcedColors: true });
+    await expect(dialog.locator({
+      certificate: '.studio-certificate',
+      letter: '.studio-letter__paper',
+      picture: '.studio-santa-picture',
+    }[view])).toBeVisible();
+
+    for (const label of ['Previous gift', 'Next gift', 'Close preview']) {
+      const control = dialog.getByRole('button', { name: label, exact: true });
+      await expect(control).toBeVisible();
+      await expect(control).toBeEnabled();
+    }
+    if (view === 'letter') {
+      await expect(dialog.locator('.studio-letter-dialog__document .studio-gifts__sr'))
+        .toContainText('Dear Edward,');
+      await expect(dialog.getByRole('region', { name: 'Enlarged gift preview' })).toBeVisible();
+    }
+    if (index < sampleViews.length - 1) {
+      await dialog.getByRole('button', { name: 'Next gift', exact: true }).click();
+    }
+  }
+  await page.keyboard.press('Escape');
+  await expect(dialog).not.toBeVisible();
+  await expect(opener).toBeFocused();
+});
+
 async function advanceExample(page) {
   const reduced = await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
   await page.emulateMedia({ reducedMotion: 'no-preference' });

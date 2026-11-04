@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 
-export async function expectSampleWatermark(frame) {
+export async function expectSampleWatermark(frame, { forcedColors = false } = {}) {
   const watermark = frame.locator('.studio-gifts__watermark');
   await expect(watermark).toBeVisible();
   await expect(watermark).toHaveAttribute('aria-hidden', 'true');
@@ -12,11 +12,18 @@ export async function expectSampleWatermark(frame) {
       rect: mark.getBoundingClientRect().toJSON(),
       size: parseFloat(getComputedStyle(mark).fontSize),
       color: getComputedStyle(mark).color,
+      backgroundColor: getComputedStyle(mark).backgroundColor,
     })) };
   });
-  for (const { rect, size, color } of geometry.marks) {
+  for (const { rect, size, color, backgroundColor } of geometry.marks) {
     expect(size).toBeGreaterThanOrEqual(12);
-    expect(color).toBe('rgba(185, 20, 35, 0.45)');
+    if (forcedColors) {
+      expect(color).not.toBe(backgroundColor);
+      expect(color).not.toBe('rgba(0, 0, 0, 0)');
+      expect(backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
+    } else {
+      expect(color).toBe('rgba(185, 20, 35, 0.45)');
+    }
     expect(rect.left).toBeGreaterThanOrEqual(geometry.sheet.left - .5);
     expect(rect.right).toBeLessThanOrEqual(geometry.sheet.right + .5);
     expect(rect.top).toBeGreaterThanOrEqual(geometry.sheet.top - .5);
