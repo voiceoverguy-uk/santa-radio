@@ -1,15 +1,15 @@
 ---
-name: Santa Studio paid bundle
-description: Owner-defined family bundle, live Stripe product preservation, guest access and unresolved usage policies.
+name: Santa Studio paid purchase
+description: One-child purchase, success-only finalisation, reusable guest return and preserved Stripe/voucher boundaries.
 ---
 
-The paid Santa Message Maker family bundle is a one-off £6.50 GBP purchase: one combined audio message for up to three children, up to three individual certificates, one shared PDF Santa letter and one shared Santa Nice List image displaying their names.
+The current website purchase is £6.50 for one child's message, including the certificate, letter and Santa picture. This supersedes the earlier up-to-three-child family offer.
 
 **Why:** The owner explicitly defined this offer.
 
-**How to apply:** Keep this entitlement separate from the free short greeting, which must remain free, and from existing tester-voucher access. Do not claim bundle delivery until each output is connected and verified.
+**How to apply:** Keep this entitlement separate from the free short greeting and independent tester-voucher access. Preserve the existing Stripe product and price. Do not claim delivery until the exact completed recording and all included keepsakes can be retrieved.
 
-Purchasers should not need a customer account or login. Confirmed successful payment should unlock MMS immediately, with a secure email return link. Failed, cancelled and pending payments must not grant access; repeated payment notifications must not duplicate a purchase or access.
+Purchasers should not need a customer account or login. Verified successful payment opens the paid workshop immediately without requiring an email first. Provide a private emailed return link that can be used repeatedly to resume the same unfinished purchase and, after completion, retrieve the same completed downloads. Failed, cancelled and pending payments must not grant access; repeated payment notifications must not duplicate a purchase.
 
 **Why:** The owner explicitly specified guest purchasing and payment-confirmation behaviour.
 
@@ -21,13 +21,19 @@ The owner reports an existing live Stripe product named “Santa Message Maker�
 
 **How to apply:** Verify test/sandbox mode before creating or using payment resources. Do not infer permission for live charges, live changes or publishing from approval to test.
 
-No family-bundle regeneration limits or paid-access expiry have been agreed.
+Only successful MP3 generation AND durable saving finalises a paid purchase. Afterwards prevent all further new message creation and editing under that purchase; retain download access to that same completed recording and included certificate, letter and Santa picture. Explain this clearly before final generation. Do not consume the purchase on a click or technical failure; permit retry and prevent duplicate messages from repeated clicks or simultaneous tabs.
 
-**Why:** The owner explicitly stated these decisions remain unagreed.
+**Why:** The owner explicitly clarified the paid purchase rule.
 
-**How to apply:** Do not introduce a family-bundle regeneration cap or access expiry, and do not carry the private tester session's timing rules into paid access. The owner separately approved one initial generation plus one correction for the current single-message Studio flow, including tester and sandbox access. That scoped choice does not set future multi-child or purchase-wide family policy.
+**How to apply:** Enforce paid finalisation server-side and preserve completed-output recovery after response loss. Keep voucher testing independent and unchanged. No paid entitlement, return-link or download expiry has been agreed; do not import voucher session timing into paid access.
 
-Sandbox Purchase controls and development-only explanations must never appear on public/published sites. Keep clearly labelled test checkout in development, and retain the public Coming soon promotion and voucher access.
+Brevo is not approved for purchase-access email. Inspect delivery setup and identify the provider/sender/credential decisions still required; do not assume Resend or another provider is approved.
+
+**Why:** The owner explicitly corrected the earlier Brevo suggestion.
+
+**How to apply:** Do not publish or enable live sales until the payment/access flow is validated and outstanding email configuration is resolved. Confirm the verified sender and supply credentials securely only after the provider decision.
+
+Sandbox Purchase controls and development-only explanations must never appear on public/published sites. Keep clearly labelled test checkout in development. The owner has separately approved building public live payments, but retain the closed-sales promotion and independent voucher access until the payment/access flow is validated, email is configured and publication is explicitly approved.
 
 The owner requested removal of the “Studio A” and “Studio B” references from public wording; keep the free greeting and bespoke bundle distinct without those labels.
 
@@ -55,8 +61,3 @@ The owner set the Studio A launch date to 6 November 2026 and requested an openi
 
 **How to apply:** Check both production server/browser rendering and development rendering. Preserve endpoint sandbox protections. The owner is separately claiming the existing Santa Radio Sandbox; do not create or replace it.
 
-The extended audio-stitching demo exists but has not been connected to Studio selections. This does not block sandbox payment setup; it is not evidence that the full paid family bundle is delivered.
-
-**Why:** The owner resolved the generator discrepancy and explicitly authorised sandbox setup to continue independently.
-
-**How to apply:** Preserve the separate demo and free generator. Do not claim complete bundle delivery until Studio selections and all bundle outputs are connected and verified.
