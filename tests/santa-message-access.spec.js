@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test';
 import { test } from './helpers/provider-test.js';
 import { readFileSync } from 'node:fs';
-import { adult, brevoUrl, fillAccessForm, mockBrevo, mockSantaNames } from './helpers/message-access.js';
+import { adult, fillAccessForm, mockBrevo, mockSantaNames } from './helpers/message-access.js';
 import { MESSAGE_ACCESS_KEY, ACCESS_REQUEST_TIMEOUT_MS } from '../src/lib/santaMessageAccess.js';
 
 test.beforeEach(async ({ page }) => {
@@ -93,7 +93,9 @@ test('homepage, direct visits and existing message navigation all require adult 
 
 test('required fields, email validation, autocomplete and keyboard errors are accessible', async ({ page }) => {
   let calls = 0;
-  await page.route(brevoUrl, route => { calls++; return route.fulfill({ json: { success: false } }); });
+  page.on('request', request => {
+    if (new URL(request.url()).pathname === '/api/santa-message-access' && request.method() === 'POST') calls++;
+  });
   await page.goto('/free-santa-message');
   const first = page.getByRole('textbox', { name: 'First name', exact: true });
   const surname = page.getByRole('textbox', { name: 'Surname', exact: true });
@@ -122,29 +124,27 @@ test('required fields, email validation, autocomplete and keyboard errors are ac
   expect(await page.evaluate(key => sessionStorage.getItem(key), MESSAGE_ACCESS_KEY)).toBeNull();
 });
 
-test('confirmed acceptance sends exact fields, ignores external redirect and only remembers an access flag', async ({ page }) => {
+test('confirmed acceptance ignores external redirects and stores no adult details in browser storage', async ({ page }) => {
   // Several full navigations on the proxied preview share one test deadline.
   test.setTimeout(90000);
   let submitted;
   const urls = [];
   page.on('request', request => urls.push(request.url()));
-  await page.route(brevoUrl, async route => {
-    submitted = route.request();
-    await route.fulfill({ json: { success: true, redirect: 'https://example.test/legacy-message' },
-      headers: { 'Access-Control-Allow-Origin': '*' } });
+  page.on('request', request => {
+    if (new URL(request.url()).pathname === '/api/santa-message-access' && request.method() === 'POST') {
+      submitted = request.postDataJSON();
+    }
   });
+  await mockBrevo(page, { success: true, redirect: 'https://example.test/legacy-message' });
   await page.goto('/');
   await fillAccessForm(page);
   await page.getByRole('button', { name: 'Get my free Santa message' }).click();
-  await expect(page).toHaveURL(/\/free-santa-message$/);
-  await expect(page.getByRole('heading', { name: 'Your free Santa greeting' })).toBeFocused();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.getByRole('heading', { name: 'Your free Santa greeting' })).toBeVisible();
   await expect(page.locator('.form-desc')).toHaveText(`Hey ${adult.FIRSTNAME}, Search for the name and press Create message.`);
-  await expect(page.getByLabel('First Name')).toBeVisible();
+  await expect(page.getByLabel('First Name', { exact: true })).toBeVisible();
   await expect(page.getByText('Start typing to find a recorded name.', { exact: true })).toHaveCount(0);
-  expect(submitted.method()).toBe('POST');
-  expect(submitted.headers()['content-type']).toContain('multipart/form-data; boundary=');
-  const fields = Object.fromEntries([...submitted.postData().matchAll(/name="([^"]+)"\r\n\r\n([\s\S]*?)\r\n--/g)].map(match => [match[1], match[2]]));
-  expect(fields).toEqual({ ...adult, email_address_check: '', locale: 'en' });
+  expect(submitted).toEqual({ ...adult, studio_check: '' });
   expect(await page.evaluate(key => sessionStorage.getItem(key), MESSAGE_ACCESS_KEY)).toBe('granted');
   const storage = await page.evaluate(() => JSON.stringify({ local: { ...localStorage }, session: { ...sessionStorage } }));
   for (const value of Object.values(adult)) {
@@ -152,14 +152,14 @@ test('confirmed acceptance sends exact fields, ignores external redirect and onl
     expect(urls.join('\n')).not.toContain(value);
   }
   await page.reload();
-  await expect(page.getByLabel('First Name')).toBeVisible();
+  await expect(page.getByLabel('First Name', { exact: true })).toBeVisible();
   await page.goto('/');
-  await expect(page.getByLabel('First Name')).toBeVisible();
+  await expect(page.getByLabel('First Name', { exact: true })).toBeVisible();
   await expect(page.locator('.santa-message-access')).toHaveCount(0);
   const newTab = await page.context().newPage();
   await newTab.goto('/free-santa-message');
-  await expect(newTab.getByRole('button', { name: 'Get my free Santa message' })).toBeVisible();
-  await expect(newTab.locator('.message-name-label')).toHaveCount(0);
+  await expect(newTab.locator('.message-name-label')).toBeVisible();
+  await expect(newTab.locator('.santa-message-access')).toHaveCount(0);
   await newTab.close();
 });
 
@@ -172,7 +172,13 @@ for (const [name, response] of [
   ['malformed HTML response', { contentType: 'text/html', body: '<html>Not acceptance</html>' }],
 ]) {
   test(`${name} keeps the maker locked and retains details for retry`, async ({ page }) => {
-    await page.route(brevoUrl, route => route.fulfill({ ...response, headers: { 'Access-Control-Allow-Origin': '*' } }));
+    if (response.json) {
+      await mockBrevo(page, response.json, response.status || 200);
+    } else {
+      await page.route('**/api/santa-message-access', route => route.request().method() === 'POST'
+        ? route.fulfill({ status: response.status || 200, contentType: response.contentType, body: response.body })
+        : route.fallback());
+    }
     await page.goto('/free-santa-message');
     await fillAccessForm(page);
     await page.getByRole('button', { name: 'Get my free Santa message' }).click();
@@ -228,10 +234,12 @@ test('pending form prevents duplicate submissions and adult details never reach 
   await mockSantaNames(page);
   let release, calls = 0, generatorFields;
   const held = new Promise(resolve => { release = resolve; });
-  await page.route(brevoUrl, async route => {
+  await mockBrevo(page);
+  await page.route('**/api/santa-message-access', async route => {
+    if (route.request().method() !== 'POST') return route.fallback();
     calls++;
     await held;
-    await route.fulfill({ json: { success: true }, headers: { 'Access-Control-Allow-Origin': '*' } });
+    await route.fallback();
   });
   await page.route('**/api/santa-message', route => {
     generatorFields = route.request().postDataJSON();
@@ -256,14 +264,17 @@ test('pending form prevents duplicate submissions and adult details never reach 
   await expect(page.locator('.message-result')).toBeVisible();
   // The greeting allowance also selects an outro; adult contact details must
   // still be absent from the complete generator payload.
-  expect(generatorFields).toEqual({ name: 'olivia', outro: expect.any(Number) });
+  expect(generatorFields).toEqual({
+    name: 'olivia', outro: expect.any(Number), selectionToken: 'controlled-fixture-token',
+  });
   expect([1, 2]).toContain(generatorFields.outro);
 });
 
 test('timeout remains locked, retains details and allows retry without waiting for the provider', async ({ page }) => {
   await page.clock.install();
   const held = new Promise(() => {});
-  await page.route(brevoUrl, async () => held);
+  await page.route('**/api/santa-message-access', route => route.request().method() === 'POST'
+    ? held : route.fallback());
   await page.goto('/free-santa-message');
   await fillAccessForm(page);
   await page.getByRole('button', { name: 'Get my free Santa message' }).click();
@@ -278,7 +289,8 @@ test('timeout remains locked, retains details and allows retry without waiting f
 });
 
 test('network failure is an explicit locked retry state', async ({ page }) => {
-  await page.route(brevoUrl, route => route.abort('failed'));
+  await page.route('**/api/santa-message-access', route => route.request().method() === 'POST'
+    ? route.abort('failed') : route.fallback());
   await page.goto('/free-santa-message');
   await fillAccessForm(page);
   await page.getByRole('button', { name: 'Get my free Santa message' }).click();
@@ -291,7 +303,7 @@ test('opaque responses cannot unlock access', async ({ page }) => {
   await page.addInitScript(() => {
     const original = window.fetch;
     window.fetch = (url, ...args) => {
-      if (String(url).includes('.sibforms.com/serve/')) {
+      if (String(url).includes('/api/santa-message-access')) {
         const response = new Response('{"success":true}');
         Object.defineProperty(response, 'type', { value: 'opaque' });
         return Promise.resolve(response);

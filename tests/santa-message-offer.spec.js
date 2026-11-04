@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 import { test } from './helpers/provider-test.js';
-import { adult, brevoUrl, fillAccessForm, mockBrevo, mockSantaNames } from './helpers/message-access.js';
+import { adult, fillAccessForm, mockBrevo, mockSantaNames } from './helpers/message-access.js';
 import { CONSENT_KEY, SETTINGS_EVENT } from '../src/privacy/cookieConsent.js';
 import { MESSAGE_ACCESS_KEY } from '../src/lib/santaMessageAccess.js';
 
@@ -347,10 +347,12 @@ test('wheel outside the open offer scrolls the website without dismissing or act
 test('accepted signup unlocks studio directly with empty child name and no duplicate requests', async ({ page }) => {
   let calls = 0, release;
   const held = new Promise(resolve => { release = resolve; });
-  await page.route(brevoUrl, async route => {
+  await mockBrevo(page);
+  await page.route('**/api/santa-message-access', async route => {
+    if (route.request().method() !== 'POST') return route.fallback();
     calls++;
     await held;
-    await route.fulfill({ json: { success: true }, headers: { 'Access-Control-Allow-Origin': '*' } });
+    await route.fallback();
   });
   await openOffer(page);
   await fillAccessForm(page);
@@ -407,10 +409,12 @@ test('validation, honeypot, rejection and timeout retain details and allow retry
 
 test('unlock sits directly below email with no adult radio or extra Brevo fields', async ({ page }) => {
   let submitted;
-  await page.route(brevoUrl, route => {
-    submitted = route.request().postData();
-    return route.fulfill({ json: { success: true }, headers: { 'Access-Control-Allow-Origin': '*' } });
+  page.on('request', request => {
+    if (new URL(request.url()).pathname === '/api/santa-message-access' && request.method() === 'POST') {
+      submitted = request.postDataJSON();
+    }
   });
+  await mockBrevo(page);
   await openOffer(page);
   for (const [name, value] of Object.entries(adult)) await offer(page).locator(`[name="${name}"]`).fill(value);
   await expect(offer(page).getByRole('radio')).toHaveCount(0);
@@ -425,12 +429,12 @@ test('unlock sits directly below email with no adult radio or extra Brevo fields
   await expect(offer(page).locator('.santa-offer-unlock-sparkle')).toHaveCount(2);
   await offer(page).getByRole('button', { name: 'Unlock my free Santa message' }).click();
   await expect(page).toHaveURL(/free-santa-message$/);
-  expect(submitted).not.toContain('adult_confirmation');
-  expect(submitted).toContain('FIRSTNAME');
+  expect(submitted).toEqual({ ...adult, studio_check: '' });
 });
 
 test('dismissal aborts a pending request without unlocking access', async ({ page }) => {
-  await page.route(brevoUrl, () => new Promise(() => {}));
+  await page.route('**/api/santa-message-access', route => route.request().method() === 'POST'
+    ? new Promise(() => {}) : route.fallback());
   await openOffer(page);
   await fillAccessForm(page);
   await offer(page).getByRole('button', { name: 'Unlock my free Santa message' }).click();
