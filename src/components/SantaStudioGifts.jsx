@@ -163,6 +163,23 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
     const content = dialogRef.current?.querySelector('.studio-letter-dialog__content');
     if (content) content.scrollTop = content.scrollLeft = 0;
   };
+  const renderGift = kind => <GiftCard enabled={staticPreview} kind={kind}>
+    <button className={`studio-gifts__thumbnail studio-gifts__thumbnail--${kind}`} type="button"
+      aria-label={kind === 'certificate' ? 'Enlarge certificate'
+        : kind === 'letter' ? 'Enlarge letter to read' : 'Enlarge Santa’s Nice List picture'}
+      onClick={event => open(event, kind)}>
+      {kind === 'certificate' ? <Certificate name={name} elapsed={displayElapsed} />
+        : kind === 'letter' ? <Letter letter={displayLetter} elapsed={displayElapsed} />
+          : <SantaPicture name={name} picture={picture} elapsed={displayElapsed}
+            previousPicture={previousPicture} onDissolved={onDissolved} />}
+      <span className="studio-gifts__thumbnail-label">
+        {kind === 'picture' ? 'Enlarge Santa picture' : `Enlarge ${kind}`}
+      </span>
+    </button>
+    {staticPreview && <StudioGiftDownload key={`${giftRevision}-${name}-${downloadReady}-${kind}`}
+      kind={kind} ready={downloadReady} name={name} letter={displayLetter}
+      picture={picture} unavailableNotice={downloadUnavailableNotice} />}
+  </GiftCard>;
   return <section ref={sectionRef} className="studio-gifts" aria-label="Paid Studio gift preview"
     data-demo-name={name} data-complete={finished}
     onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
@@ -171,38 +188,24 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
     <h4>{reviewHeading || `All 3 gifts included for ${name} with the paid version`}</h4>
     {staticPreview && downloadNotice && <p>{downloadNotice}</p>}
     {children}
-    <div className="studio-gifts__preview-stack" role="group" aria-label="Three gift previews"
+    <div className={`studio-gifts__preview-stack${staticPreview ? ' studio-gifts__preview-stack--review' : ''}`}
+      role="group" aria-label="Three gift previews"
       onContextMenu={event => event.preventDefault()} onDragStart={event => event.preventDefault()}>
-      <div className="studio-gifts__gallery">
-        <GiftCard enabled={staticPreview} kind="certificate">
-        <button className="studio-gifts__thumbnail studio-gifts__thumbnail--certificate" type="button"
-          aria-label="Enlarge certificate" onClick={event => open(event, 'certificate')}>
-          <Certificate name={name} elapsed={displayElapsed} />
-          <span className="studio-gifts__thumbnail-label">Enlarge certificate</span>
-        </button>
-        {staticPreview && <StudioGiftDownload key={`${giftRevision}-${name}-${downloadReady}-certificate`}
-          kind="certificate" ready={downloadReady} name={name} unavailableNotice={downloadUnavailableNotice} />}
-        </GiftCard>
-        <GiftCard enabled={staticPreview} kind="letter">
-        <button className="studio-gifts__thumbnail studio-gifts__thumbnail--letter" type="button"
-          aria-label="Enlarge letter to read" onClick={event => open(event, 'letter')}>
-           <Letter letter={displayLetter} elapsed={displayElapsed} />
-          <span className="studio-gifts__thumbnail-label">Enlarge letter</span>
-        </button>
-        {staticPreview && <StudioGiftDownload key={`${giftRevision}-${name}-${downloadReady}-letter`}
-          kind="letter" ready={downloadReady} name={name} letter={displayLetter} unavailableNotice={downloadUnavailableNotice} />}
-        </GiftCard>
-      </div>
-      <GiftCard enabled={staticPreview} kind="picture">
-      <button className="studio-gifts__thumbnail studio-gifts__thumbnail--picture" type="button"
-        aria-label="Enlarge Santa’s Nice List picture" onClick={event => open(event, 'picture')}>
-        <SantaPicture name={name} picture={picture} elapsed={displayElapsed}
-          previousPicture={previousPicture} onDissolved={onDissolved} />
-        <span className="studio-gifts__thumbnail-label">Enlarge Santa picture</span>
-      </button>
-      {staticPreview && <StudioGiftDownload key={`${giftRevision}-${name}-${downloadReady}-picture`}
-        kind="picture" ready={downloadReady} name={name} picture={picture} unavailableNotice={downloadUnavailableNotice} />}
-      </GiftCard>
+      {staticPreview ? <div className="studio-gifts__review-layout">
+        <div className="studio-gifts__review-column studio-gifts__review-column--side">
+          {renderGift('certificate')}
+          {renderGift('picture')}
+        </div>
+        <div className="studio-gifts__review-column studio-gifts__review-column--letter">
+          {renderGift('letter')}
+        </div>
+      </div> : <>
+        <div className="studio-gifts__gallery">
+          {renderGift('certificate')}
+          {renderGift('letter')}
+        </div>
+        {renderGift('picture')}
+      </>}
     </div>
     <dialog ref={dialogRef} className={`studio-letter-dialog${view === 'letter' ? ' studio-letter-dialog--letter' : ''}`}
       aria-label={`${name}’s ${view || 'gift'} example`}

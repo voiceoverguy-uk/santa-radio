@@ -545,3 +545,38 @@
     transform: none;
   }
 }
+
+/* Review (paid keepsake) layout: certificate above picture on the left,
+   full A4 letter on the right. DOM order: certificate, picture, letter.
+   Container query so enlarged text or narrow panels collapse to one column. */
+.studio-gifts__preview-stack--review {
+  container-type: inline-size;
+  container-name: studio-review;
+}
+.studio-gifts__review-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+.studio-gifts__review-column {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+.studio-gifts__preview-stack--review .studio-gifts__card,
+.studio-gifts__preview-stack--review .studio-gifts__card--picture {
+  flex: 0 0 auto;
+  width: 100%;
+  margin: 0;
+}
+.studio-gifts__preview-stack--review .studio-gifts__thumbnail,
+.studio-gifts__preview-stack--review .studio-gifts__thumbnail--picture {
+  width: 100%;
+  flex: 0 0 auto;
+  margin: 0;
+}
+@container studio-review (min-width: 34em) {
+  .studio-gifts__review-layout { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

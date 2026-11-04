@@ -348,3 +348,13 @@
   .smw-written-name-preview dd { min-height: 58px; }
   .smw-review-create-action { grid-column: 1; grid-row: auto; margin-top: 0; }
 }
+
+/* Review gifts: neutralise promotional narrow-screen basis overrides. */
+.smw-studio-preview .studio-gifts__preview-stack--review .studio-gifts__thumbnail--letter,
+.smw-studio-preview .studio-gifts__preview-stack--review .studio-gifts__thumbnail--certificate {
+  flex-basis: auto;
+  width: 100%;
+}
+.smw-studio-preview .studio-gifts__preview-stack--review .studio-gifts__thumbnail--picture {
+  margin-top: 0;
+}

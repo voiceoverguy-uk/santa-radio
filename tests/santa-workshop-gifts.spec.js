@@ -8,7 +8,7 @@ import { PDFDocument } from 'pdf-lib';
 import { confirmMessage, mockStudioGeneration } from './helpers/studio-generation.js';
 
 const giftButtons = page => page.locator('.studio-gift-download button');
-const letterText = page => page.locator('.smw-studio-preview .studio-gifts__gallery .studio-gifts__sr');
+const letterText = page => page.locator('.smw-studio-preview .studio-gifts__preview-stack .studio-gifts__sr');
 async function review(page) {
   await unlockWorkshop(page);
   const fixture = await mockStudioGeneration(page);
@@ -40,6 +40,120 @@ async function spelling(page, name) {
   await page.getByRole('button', { name: 'Edit certificate name', exact: true }).click();
   await page.getByRole('textbox', { name: 'Name spelling', exact: true }).fill(name);
   await page.getByRole('button', { name: 'Use this spelling', exact: true }).click();
+}
+
+for (const width of [320, 820, 1365]) {
+  test(`review gifts keep grouped reading order and complete proportions at ${width}px`, async ({ page }) => {
+    test.setTimeout(90000);
+    mkdirSync('generated-artifacts/studio-gifts', { recursive: true });
+    const fixture = await review(page);
+    await page.setViewportSize({ width, height: 1000 });
+    const stack = page.locator('.smw-studio-preview .studio-gifts__preview-stack');
+    const cards = stack.locator('.studio-gifts__card');
+    const kinds = ['certificate', 'picture', 'letter'];
+    const labels = ['Enlarge certificate', 'Enlarge Santa’s Nice List picture', 'Enlarge letter to read'];
+    const geometry = () => stack.evaluate(node => {
+      const bounds = selector => node.querySelector(selector).getBoundingClientRect().toJSON();
+      return {
+        certificate: bounds('.studio-gifts__card--certificate'),
+        picture: bounds('.studio-gifts__card--picture'),
+        letter: bounds('.studio-gifts__card--letter'),
+        paper: bounds('.studio-letter__paper'),
+        sheet: bounds('.studio-certificate'),
+        image: bounds('.studio-santa-picture'),
+        overflow: document.documentElement.scrollWidth > innerWidth + 1,
+      };
+    });
+    const assertGeometry = async (columns) => {
+      const box = await geometry();
+      expect(box.overflow).toBe(false);
+      expect(box.paper.width / box.paper.height).toBeCloseTo(210 / 297, 2);
+      expect(box.sheet.width / box.sheet.height).toBeCloseTo(841.89 / 595.28, 2);
+      expect(box.image.width / box.image.height).toBeCloseTo(1.5, 2);
+      expect(box.picture.top).toBeGreaterThanOrEqual(box.certificate.bottom);
+      if (columns) {
+        expect(Math.abs(box.certificate.top - box.letter.top)).toBeLessThan(1);
+        expect(Math.abs(box.certificate.left - box.picture.left)).toBeLessThan(1);
+        expect(box.letter.left).toBeGreaterThan(box.certificate.right);
+        expect(box.letter.width / box.certificate.width).toBeGreaterThan(.85);
+        expect(box.letter.width / box.certificate.width).toBeLessThan(1.2);
+        expect(box.paper.width).toBeGreaterThan(box.letter.width - 12);
+      } else {
+        expect(box.letter.top).toBeGreaterThanOrEqual(box.picture.bottom);
+        for (const kind of kinds) expect(Math.abs(box[kind].left - box.certificate.left)).toBeLessThan(1);
+        expect(box.paper.width).toBeGreaterThan(box.letter.width - 12);
+      }
+      for (const kind of kinds) {
+        const card = stack.locator(`.studio-gifts__card--${kind}`);
+        const thumbnail = await card.locator('.studio-gifts__thumbnail').boundingBox();
+        const download = card.locator('.studio-gift-download');
+        const button = download.getByRole('button');
+        const control = await button.boundingBox();
+        expect(control.y).toBeGreaterThanOrEqual(thumbnail.y + thumbnail.height);
+        expect(control.y - thumbnail.y - thumbnail.height).toBeLessThan(14);
+        expect(control.height).toBeGreaterThanOrEqual(44);
+        await expect(button).toHaveAttribute('aria-describedby', await download.locator('p').getAttribute('id'));
+      }
+    };
+    await expect(cards).toHaveCount(3);
+    for (const [index, kind] of kinds.entries()) await expect(cards.nth(index)).toHaveClass(new RegExp(`--${kind}`));
+    await assertGeometry(width > 600);
+    for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
+    await stack.screenshot({ path: `generated-artifacts/studio-gifts/rebalanced-locked-${width}.png`,
+      animations: 'disabled', style: '.navbar, .radio-dock { visibility: hidden !important; }' });
+
+    // A real Tab follows each complete group, rather than jumping across columns.
+    for (const [index, label] of labels.entries()) {
+      const opener = stack.getByRole('button', { name: label, exact: true });
+      if (index === 0) await opener.focus();
+      else await page.keyboard.press('Tab');
+      await expect(opener).toBeFocused();
+      await page.keyboard.press('Enter');
+      const dialog = page.getByRole('dialog');
+      await expect(dialog).toBeVisible();
+      await expect(dialog.locator('.studio-gifts__watermark span')).toHaveCount(3);
+      const fits = await dialog.evaluate(node => {
+        const document = node.querySelector('.studio-letter-dialog__document').getBoundingClientRect();
+        const content = node.querySelector('.studio-letter-dialog__content').getBoundingClientRect();
+        return document.left >= content.left && document.right <= content.right + 1
+          && (node.classList.contains('studio-letter-dialog--letter')
+            ? document.top >= content.top - 1 && document.bottom <= content.bottom + 1 : true);
+      });
+      expect(fits).toBe(true);
+      await page.keyboard.press('Escape');
+      // Native close restores focus before the asynchronous close event clears
+      // React's view and restores it again. Wait for both before the next Tab.
+      await expect(page.locator('.studio-letter-dialog')).toHaveAttribute('aria-label', 'Dixie’s gift example');
+      await expect(opener).toBeFocused();
+    }
+    const longName = 'Alexandria-Catherine Elizabeth Montgomery-Worthington';
+    await spelling(page, longName);
+    await expect(stack.locator('.studio-certificate__name')).toHaveText(longName);
+    await expect(stack.locator('.studio-santa-picture__name')).toHaveText(longName);
+    await expect(letterText(page)).toContainText(longName);
+    await expect(letterText(page)).toContainText('Completing a jigsaw puzzle');
+    await assertGeometry(width > 600);
+    await confirmMessage(page);
+    await expect(page.getByRole('region', { name: 'Your finished Santa message' })).toBeVisible();
+    await expect(page.locator('.smw-review-create-action button')).toHaveCount(0);
+    for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+    await assertGeometry(width > 600);
+    await stack.screenshot({ path: `generated-artifacts/studio-gifts/rebalanced-ready-${width}.png`,
+      animations: 'disabled', style: '.navbar, .radio-dock { visibility: hidden !important; }' });
+    const controls = stack.locator('button');
+    await controls.first().focus();
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Shift+Tab');
+    for (let index = 0; index < 6; index++) {
+      if (index) await page.keyboard.press('Tab');
+      await expect(controls.nth(index)).toBeFocused();
+      await expect(controls.nth(index)).toHaveCSS('outline-style', 'solid');
+    }
+    await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
+    const enlarged = await geometry();
+    await assertGeometry(Math.abs(enlarged.certificate.top - enlarged.letter.top) < 1);
+    expect(fixture.posts).toHaveLength(1);
+  });
 }
 
 test('Studio spelling keeps the 80-character boundary and wraps only Santa picture names', async ({ page, context }) => {

@@ -38,6 +38,29 @@ async function visit(page, { reduced = false, clock = true } = {}) {
 
 // Exercise the automatic cycle rather than relying on removed manual controls.
 for (const width of [320, 1440]) {
+  test(`promotional gifts retain the landscape pair and separate picture at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await visit(page, { reduced: true, clock: false });
+    await expect(gifts(page).locator('.studio-gifts__card, .studio-gifts__review-layout, .studio-gift-download')).toHaveCount(0);
+    const stack = gifts(page).locator('.studio-gifts__preview-stack');
+    const box = await stack.evaluate(node => {
+      const rect = selector => node.querySelector(selector).getBoundingClientRect().toJSON();
+      return {
+        certificate: rect('.studio-gifts__thumbnail--certificate'),
+        letter: rect('.studio-gifts__thumbnail--letter'),
+        picture: rect('.studio-gifts__thumbnail--picture'),
+        children: [...node.children].map(child => child.className),
+      };
+    });
+    expect(box.children).toEqual(['studio-gifts__gallery', 'studio-gifts__thumbnail studio-gifts__thumbnail--picture']);
+    expect(Math.abs(box.certificate.top - box.letter.top)).toBeLessThan(1);
+    expect(box.letter.left).toBeGreaterThan(box.certificate.right);
+    expect(box.certificate.width / box.letter.width).toBeGreaterThan(1.5);
+    expect(box.picture.top).toBeGreaterThan(box.certificate.bottom);
+    expect(box.picture.width).toBeLessThanOrEqual(360);
+    await stack.screenshot({ path: `generated-artifacts/studio-gifts/promotion-preserved-${width}.png`, animations: 'disabled' });
+  });
+
   test(`gift preview arrows cycle all three gifts without closing the dialog at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await visit(page, { reduced: true, clock: false });
