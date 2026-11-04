@@ -1,3 +1,7 @@
+# Current live-payment release
+
+The owner has since approved a **one-child £6.50 website offer** and public live payments once release gates are satisfied. The sandbox-only restrictions below remain applicable to development sandbox resources, not to the separately configured live production implementation. Follow [the controlled live release checklist](studio-live-release.md) for production configuration. Never infer production readiness from this historical sandbox preparation document.
+
 # Stripe sandbox payment preparation
 
 ## Verified on 28 October 2026

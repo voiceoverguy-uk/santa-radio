@@ -1,5 +1,7 @@
 import express from 'express';
 import { getStripeSync } from './stripeClient.js';
+import { liveProduction } from './studio-live-config.js';
+import { createLiveWebhookHandler } from './studio-live-webhook.js';
 
 export function createStripeWebhookHandler({ getSync = getStripeSync } = {}) {
   const app = express();
@@ -42,4 +44,8 @@ export function createStripeWebhookHandler({ getSync = getStripeSync } = {}) {
   return app;
 }
 
-export default createStripeWebhookHandler();
+const sandboxWebhookHandler = createStripeWebhookHandler();
+const liveWebhookHandler = createLiveWebhookHandler();
+export default function stripeWebhook(req, res, next) {
+  return (liveProduction() ? liveWebhookHandler : sandboxWebhookHandler)(req, res, next);
+}

@@ -63,11 +63,12 @@
 - [Workshop preview permission](workshop-preview-permission.md) — Shared preview gate is separate from signup/staff access; use persistent limits and ephemeral test passwords.
 - [Large asset delivery](asset-delivery-limits.md) — Attachments have a 100 MiB limit; preserve large handovers with verified lossless transport parts.
 - [Native audio styling](native-audio-styling.md) — Chromium can paint its native media panel over the audio element background; style the WebKit panel as well.
-- [Santa Studio paid purchase](santa-studio-purchase-scope.md) — £6.50 for one child; finalise only on saved MP3 success, then download-only; reusable email return and independent vouchers.
+- [Santa Studio paid purchase](santa-studio-purchase-scope.md) — £6.50 one-child creation visit; emailed entry, not recording retrieval; temporary outputs and independent vouchers.
 - [Studio letter geometry](studio-letter-preview-geometry.md) — Fit the whole A4 letter inside the popup without panning; keep controls responsive and preserve document proportions.
 - [Studio page position](studio-age-page-position.md) — Every mobile Studio page opens with the creation panel just below navigation, including entry, review and editing.
 - [Stripe connector diagnosis](stripe-connector-compatibility.md) — Inspect response field names before treating template errors as failed provisioning; preserve the working sandbox connection.
 - [Preview cookie attributes](preview-cookie-attributes.md) — The preview proxy can rewrite SameSite; test server attributes separately and keep explicit request-origin checks.
+- [HTTP host verification](http-host-verification.md) — Node fetch may ignore a supplied Host; exercise canonical-host guards using node:http instead.
 - [Raw request targets](raw-request-targets.md) — Exact doubled-separator exports must survive pre-routing middleware; resolver-only checks miss failures and app-shell fallbacks.
 - [Christmas Contenders scope](christmas-contenders-scope.md) — One-choice first build; votes inform editorial consideration; owner must choose any earlier submission cutoff.
 - [Hero name-checker scope](hero-name-checker-scope.md) — Approved homepage hero: no App Store logo; description below heading; preserve lower sections and child-name privacy.
@@ -82,7 +83,7 @@
 - [Santa recipient previews](santa-recipient-preview-scope.md) — Chosen/generated child takes priority; random gifts/audio only before personalisation.
 - [Studio letter editorial policy](studio-letter-editorial-policy.md) — Curated contextual prose, not live AI; full choice audit stays private and spelling edits must not reshuffle wording.
 - [Studio temporary generation policy](studio-single-message-allowance.md) — No durable counts, identity locks or recovery; preserve valid access and request-abuse protection.
-- [Studio audio retention](studio-audio-retention.md) — Free/voucher MP3s stay temporary; completed paid recordings must remain privately retrievable without new creation or editing.
+- [Studio audio retention](studio-audio-retention.md) — Paid and voucher outputs stay temporary; allow playback/download retries during the visit, then clear on exit or expiry.
 - [Studio reverb approval](studio-reverb-approval.md) — Development audition only; merging a comparison is not approval to apply the effect to real messages.
 - [Studio gift delivery](studio-gift-delivery-scope.md) — Local individual-message gifts require MP3 success; no free/promotional exports, live checkout or family/email fulfilment.
 - [Studio promotion typography](studio-promotion-typography.md) — Regular live promotion text and shared gift heading; keep document artwork and watermarks unchanged.

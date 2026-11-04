@@ -7,6 +7,9 @@ import './seo/seo.css';
 import { installTrackerPrivacyGuard } from './privacy/trackerPrivacy.js';
 import { revokeAnalytics } from './privacy/googleAnalytics.js';
 import { revokeMarketing } from './privacy/marketingConsent.js';
+import { captureStudioReturnFragment } from './lib/studioReturnFragment.js';
+
+captureStudioReturnFragment();
 
 installTrackerPrivacyGuard(() => {
   revokeAnalytics();

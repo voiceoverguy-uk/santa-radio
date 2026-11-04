@@ -4,6 +4,8 @@ import { pageMetadata } from '../seo/catalogue.js';
 import { WorkshopPasswordForm } from './WorkshopPasswordForm.jsx';
 import { useLocation } from 'react-router-dom';
 import { StudioAccessContext, StudioVoucherContext } from '../lib/studioAccessContext.js';
+import StudioReturnAccess from './StudioReturnAccess.jsx';
+import StudioPurchaseButton from './StudioPurchaseButton.jsx';
 
 const ACCESS_URL = '/api/santa-workshop-access';
 const REQUEST_TIMEOUT = 15000;
@@ -60,8 +62,9 @@ export default function WorkshopAccessGate({ children }) {
           });
           const paid = await paidResponse.json().catch(() => ({}));
           if (disposed || controller.signal.aborted) return;
-          if (paidResponse.ok && paid.authorized === true) {
-            setAccessKind('paid-sandbox');
+          if (paidResponse.ok && paid.authorized === true
+            && (import.meta.env.DEV ? paid.mode !== 'live' : paid.mode === 'live')) {
+            setAccessKind(paid.mode === 'live' ? 'paid-live' : 'paid-sandbox');
             setVoucher(null);
             setExpiresAt(null);
             setStatusMessage('');
@@ -71,8 +74,8 @@ export default function WorkshopAccessGate({ children }) {
           if (returningFromCheckout) {
             setExpiresAt(null);
             setStatusMessage(paidResponse.ok
-              ? 'A successful sandbox payment has not been confirmed. Pending, failed or cancelled payments do not open Studio. Retry the check if you have just finished paying.'
-              : 'The sandbox payment check is temporarily unavailable. Your access remains locked; please retry.');
+              ? 'A successful payment has not been confirmed. Pending, failed or cancelled payments do not open Studio. Retry the check if you have just finished paying.'
+              : 'The payment check is temporarily unavailable. Please retry or use your voucher code.');
             setStatus('locked');
             return;
           }
@@ -182,7 +185,7 @@ export default function WorkshopAccessGate({ children }) {
   const metadata = pageMetadata({
     path: '/santa-message-workshop',
     title: 'Santa’s Message Workshop | Santa Radio',
-    description: 'Coming soon: a private friends test of Santa’s Message Maker Studio.',
+    description: 'Open Santa’s Message Maker Studio with confirmed paid access or a valid voucher.',
     noindex: true,
   });
 
@@ -198,10 +201,10 @@ export default function WorkshopAccessGate({ children }) {
   return <main className="workshop-gate">
     <PageSeo metadata={metadata} />
     <section className="workshop-gate-card" aria-labelledby="workshop-gate-title">
-      <p className="workshop-dialog-kicker">Coming soon · Private friends test</p>
+      <p className="workshop-dialog-kicker">Your private North Pole Studio</p>
       <h1 id="workshop-gate-title">Santa’s Message Maker Studio</h1>
-      {status === 'checking' ? <p role="status">Checking friends test access…</p> : <>
-        <p>Santa’s Message Maker Studio is coming soon. Friends are helping test the workshop.</p>
+      {status === 'checking' ? <p role="status">Checking Studio access…</p> : <>
+        <p>Open Studio with a confirmed purchase or a valid voucher code.</p>
         {status === 'locked' && statusMessage && <p role="status">{statusMessage}</p>}
         {status === 'locked' && returningFromCheckout &&
           <button type="button" onClick={() => setAttempt(value => value + 1)}>Retry payment check</button>}
@@ -209,8 +212,10 @@ export default function WorkshopAccessGate({ children }) {
           <p>{statusMessage || 'The workshop could not be reached. Check your connection and try again.'}</p>
           <button type="button" onClick={() => { setStatusMessage(''); setAttempt(value => value + 1); }}>Retry access check</button>
         </div>}
-        <WorkshopPasswordForm onAuthorized={onAuthorized} compact />
       </>}
+      <WorkshopPasswordForm onAuthorized={onAuthorized} compact />
+      <StudioReturnAccess />
+      <StudioPurchaseButton />
     </section>
   </main>;
 }

@@ -47,7 +47,7 @@ try {
   const outsider = await browser.newContext();
   const outsiderPage = await outsider.newPage();
   await outsiderPage.goto(`${base}/santa-message-workshop?checkout=return&paid=true&session_id=${sessionId}`);
-  await outsiderPage.getByText('A successful sandbox payment has not been confirmed.', { exact: false }).waitFor();
+  await outsiderPage.getByText('A successful payment has not been confirmed.', { exact: false }).waitFor();
   assert.equal(await outsiderPage.locator('.smw-builder').count(), 0);
   assert.equal((await outsider.request.get(`${base}/api/santa-workshop-catalogue`)).status(), 403);
   await outsider.close();

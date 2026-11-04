@@ -1,10 +1,11 @@
 ---
 name: Studio audio retention
-description: Temporary free/voucher audio; paid purchases require private saved recordings and finalised download recovery.
+description: Generated audio and keepsakes are temporary for paid and voucher visits; emailed links begin creation, never recover files.
 ---
 
-For free/voucher testing, finished Studio MP3s exist only during preparation and in the open browser page
-until the user downloads or leaves. Delete temporary server working files after
+For paid and free/voucher visits, finished Studio MP3s exist only during preparation and in the open browser page.
+Keep the temporary recording available for playback and download retries during the visit,
+then clear it when the session ends or expires. Delete temporary server working files after
 each request, including failures and cancellation. Do not store generated audio,
 choice history, voucher usage records or successful-generation counts.
 
@@ -18,16 +19,14 @@ Keep real voucher/payment access checks and existing expiring abuse buckets;
 do not repurpose them into a hidden generation-history store. Never make
 creation depend on missing generation/reporting tables.
 
-Paid website purchases are an explicit exception: retain the successfully saved
-finished recording and finalised keepsakes privately so the same purchase can
-return to download them after closing the tab, clearing data or changing devices.
-After successful generation and durable save, paid access is download-only:
-no new creation or editing. Technical failure must allow retry without consuming
-the purchase, and concurrent requests must not create multiple completed messages.
+Paid website purchases are not an exception to temporary audio handling.
+Do not permanently store generated audio or keepsakes or build a recording-retrieval service.
+The emailed link gives a verified paying customer access to BEGIN creating a message,
+not access to saved audio or previous downloads.
 
-**Why:** The owner explicitly replaced temporary-only handling for paid purchases
-with success-only finalisation and retained access to the exact completed output.
+**Why:** The owner explicitly corrected the conflicting project notes and confirmed
+that customers create, play and download their message during that visit.
 
-**How to apply:** Preserve the free/voucher testing path independently. Save
-sufficient final output/choices for exact paid recovery, not a public audio
-archive. Do not invent a paid download or purchase expiry.
+**How to apply:** Preserve voucher access independently. Keep the temporary browser recording
+through playback and download retries; release it at the end of the visit or access expiry.
+Payment authorisation records are not permission to archive generated outputs.

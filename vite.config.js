@@ -26,6 +26,8 @@ import { santaAudioRecipeVersion } from './scripts/santa-audio-recipe.mjs';
 import stripeWebhook from './server/stripe-webhook.js';
 import studioPaidAccess from './server/santa-studio-purchase.js';
 import studioCheckout from './server/santa-studio-checkout.js';
+import studioReturn from './api/santa-studio-return.js';
+import studioEmailRetry from './api/santa-studio-email-retry.js';
 import messageAccess from './server/santa-message-access.js';
 import { browserSecurity } from './server/browser-security.js';
 import { createAuditionMiddleware } from './server/studio-reverb-audition.js';
@@ -54,6 +56,8 @@ const metadataPlugin = {
     server.middlewares.use('/api/stripe/webhook', stripeWebhook);
     server.middlewares.use('/api/santa-studio-access', studioPaidAccess);
     server.middlewares.use('/api/santa-studio-checkout', studioCheckout);
+    server.middlewares.use('/api/santa-studio-return', studioReturn);
+    server.middlewares.use('/api/santa-studio-email-retry', studioEmailRetry);
     server.middlewares.use(workshopDocumentHeaders);
     server.middlewares.use('/api/santa-workshop-access', workshopAccess);
     server.middlewares.use('/api/name-requests', nameRequests);
@@ -78,6 +82,8 @@ const metadataPlugin = {
     server.middlewares.use('/api/stripe/webhook', stripeWebhook);
     server.middlewares.use('/api/santa-studio-access', studioPaidAccess);
     server.middlewares.use('/api/santa-studio-checkout', studioCheckout);
+    server.middlewares.use('/api/santa-studio-return', studioReturn);
+    server.middlewares.use('/api/santa-studio-email-retry', studioEmailRetry);
     server.middlewares.use(workshopDocumentHeaders);
     server.middlewares.use('/api/santa-workshop-access', workshopAccess);
     // Vite's SPA preview fallback otherwise serves the pre-rendered homepage.

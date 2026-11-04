@@ -3,6 +3,9 @@
   "installCommand": "node scripts/check-dependency-portability.mjs && npm ci",
   "outputDirectory": "dist",
   "framework": "vite",
+  "crons": [
+    { "path": "/api/santa-studio-email-retry", "schedule": "*/5 * * * *" }
+  ],
   "functions": {
     "api/santa-mobile.js": {
       "installCommand": "",
@@ -18,6 +21,8 @@
     "api/stripe/webhook.js": { "installCommand": "", "maxDuration": 30 },
     "api/santa-studio-access.js": { "installCommand": "", "maxDuration": 30 },
     "api/santa-studio-checkout.js": { "installCommand": "", "maxDuration": 30 },
+    "api/santa-studio-return.js": { "installCommand": "", "maxDuration": 30 },
+    "api/santa-studio-email-retry.js": { "installCommand": "", "maxDuration": 60 },
     "api/public-page.js": {
       "installCommand": "",
       "includeFiles": "{dist/server/**,src/data/legacy-songs.js}"

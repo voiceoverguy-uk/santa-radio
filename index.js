@@ -26,6 +26,8 @@ import { publicPageHtml } from './server/public-html.js';
 import stripeWebhook from './server/stripe-webhook.js';
 import studioPaidAccess from './server/santa-studio-purchase.js';
 import studioCheckout from './server/santa-studio-checkout.js';
+import studioReturn from './api/santa-studio-return.js';
+import studioEmailRetry from './api/santa-studio-email-retry.js';
 import messageAccess from './server/santa-message-access.js';
 import { browserSecurity } from './server/browser-security.js';
 import { serveStaticVideo } from './server/static-video.js';
@@ -63,6 +65,8 @@ const server = createServer(async (req, res) => {
     if (pathname === '/api/stripe/webhook') return stripeWebhook(req, res);
     if (pathname === '/api/santa-studio-access') return studioPaidAccess(req, res);
     if (pathname === '/api/santa-studio-checkout') return studioCheckout(req, res);
+    if (pathname === '/api/santa-studio-return') return studioReturn(req, res);
+    if (pathname === '/api/santa-studio-email-retry') return studioEmailRetry(req, res);
     if (pathname === '/api/santa-workshop-access') return workshopAccess(req, res);
     if (pathname === '/api/radio-metadata') return await radioMetadata(req, res);
     if (pathname === '/api/radio-top-ten') return await radioTopTen(req, res);

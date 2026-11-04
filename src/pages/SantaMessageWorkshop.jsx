@@ -227,6 +227,14 @@ export default function SantaMessageWorkshop() {
   const [editing, setEditing] = useState(false);
   const [correction, setCorrection] = useState(false);
   const generation = useStudioGeneration();
+  useEffect(() => {
+    const clearGifts = () => setCompletedGift(null);
+    window.addEventListener('pagehide', clearGifts);
+    return () => window.removeEventListener('pagehide', clearGifts);
+  }, []);
+  useEffect(() => {
+    if (generation.accessExpired) setCompletedGift(null);
+  }, [generation.accessExpired]);
   const locked = false;
   const audioEditingAllowed = audioPhase !== 'preparing' && audioPhase !== 'receiving';
   const [catalogueRetry, setCatalogueRetry] = useState(0);
@@ -476,8 +484,8 @@ export default function SantaMessageWorkshop() {
     }}>
       <PageSeo metadata={pageMetadata({
         path: '/santa-message-workshop',
-         title: 'Santa’s Message Maker Studio Preview | Santa Radio',
-         description: 'Create a longer personalised recorded Santa greeting in the private Message Maker Studio.',
+         title: 'Santa’s Message Maker Studio | Santa Radio',
+         description: 'Create your personalised recorded Santa greeting and download your MP3 and gifts.',
         noindex: true,
       })} />
 
@@ -492,7 +500,7 @@ export default function SantaMessageWorkshop() {
               <svg viewBox="0 0 20 20" focusable="false"><path d="m10 1.5 2.2 6.3 6.3 2.2-6.3 2.2L10 18.5l-2.2-6.3-6.3-2.2 6.3-2.2L10 1.5Z" /></svg>
             </span>
             <div>
-              <p>Sandbox test payment confirmed — no real money moved. You can test the Studio choices and an individual message. Family-bundle downloads and email return links are not connected yet.</p>
+              <p>Sandbox test payment confirmed — no real money moved. You can test the individual Studio message and gifts. Secure return emails are live-site only.</p>
             </div>
           </aside>}
         </header>

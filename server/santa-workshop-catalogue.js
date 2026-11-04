@@ -186,8 +186,8 @@ export function createWorkshopCatalogue({ fetcher = fetch, clock = Date.now, ttl
 }
 
 export const workshopCatalogue = createWorkshopCatalogue();
-export async function hasStudioAccess(req) {
-  return hasWorkshopAccess(req) || await hasPaidStudioAccess(req);
+export async function hasStudioAccess(req, { hasVoucher = hasWorkshopAccess, hasPaid = hasPaidStudioAccess } = {}) {
+  return hasVoucher(req) || await hasPaid(req);
 }
 export function createWorkshopCatalogueHandler(load = workshopCatalogue, authorize = hasStudioAccess) {
   return async (req, res) => {
@@ -205,7 +205,7 @@ export function createWorkshopCatalogueHandler(load = workshopCatalogue, authori
       return send(405, { error: 'Use GET to load Santa’s workshop choices.' });
     }
     try {
-      if (!await authorize(req)) return send(403, { error: 'Use a valid tester code or a confirmed sandbox purchase to open Santa’s Studio.', code: 'STUDIO_ACCESS_REQUIRED' });
+      if (!await authorize(req)) return send(403, { error: 'Use a valid voucher code or a confirmed purchase to open Santa’s Studio.', code: 'STUDIO_ACCESS_REQUIRED' });
       const catalogue = await load();
       const query = new URL(req.url || '/', 'https://studio.invalid').searchParams;
       if (query.has('parentId') || query.has('regionId')) {

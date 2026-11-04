@@ -5,6 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { chromium, expect } from '@playwright/test';
 import { render } from '../dist/server/entry-server.js';
+import { workshopCatalogueFixture } from '../tests/fixtures/workshop-catalogue.js';
 
 const routes = [
   { path: '/', html: 'dist/index.html' },
@@ -77,9 +78,13 @@ for (const route of routes) {
     t.after(() => browser.close());
     const page = await browser.newPage();
     let checkoutReadinessRequests = 0;
+    let liveReady = false;
     await page.route('**/api/santa-studio-checkout', route => {
       checkoutReadinessRequests++;
-      return route.fulfill({ json: { available: true, sandbox: true } });
+      if (route.request().method() === 'POST') return route.fulfill({ status: 503, json: { error: 'Controlled checkout refusal' } });
+      return route.fulfill({ json: liveReady
+        ? { available: true, mode: 'live', sandbox: false, amount: 650, currency: 'gbp' }
+        : { available: true, sandbox: true } });
     });
     await page.goto(`${origin}${route.path}`, { waitUntil: 'domcontentloaded' });
 
@@ -103,6 +108,85 @@ for (const route of routes) {
     await expect(promotion.locator('.santa-studio-promotion__purchase, #studio-purchase-note')).toHaveCount(0);
     assert.doesNotMatch(visibleCopy, sandboxPromotionCopy);
     assert.doesNotMatch(accessibleCopy, sandboxPromotionCopy);
-    assert.equal(checkoutReadinessRequests, 0, 'Public pages must not probe sandbox checkout readiness');
+    assert.ok(checkoutReadinessRequests > 0, 'Public pages must check runtime readiness and reject sandbox availability');
+    liveReady = true;
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    const purchase = promotion.getByRole('button', { name: 'Purchase — £6.50', exact: true });
+    await expect(purchase).toBeEnabled();
+    await expect(promotion).toContainText('one child');
+    await expect(promotion.locator('.santa-studio-promotion__launch-countdown-remaining')).toHaveCount(0);
+    await purchase.click();
+    await expect(promotion.getByRole('alert')).toHaveText('Controlled checkout refusal');
+    await expect(promotion.getByLabel('Voucher code', { exact: true })).toBeEnabled();
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(purchase).toBeVisible();
+    const box = await purchase.boundingBox();
+    assert.ok(box.x >= 0 && box.x + box.width <= 391, 'Mobile purchase stays within viewport');
+    assert.doesNotMatch(await promotion.innerText(), sandboxPromotionCopy);
   });
 }
+
+test('production email fragments require an explicit redemption and open live Studio without sandbox notices', async t => {
+  const browser = await chromium.launch({
+    executablePath: process.env.CHROMIUM_PATH || (existsSync('/repl/tools/bin/chromium') ? '/repl/tools/bin/chromium' : undefined),
+    args: ['--no-sandbox'],
+  });
+  t.after(() => browser.close());
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  let authorized = false, redeemed = 0;
+  const token = 'a'.repeat(43);
+  await page.route('**/api/santa-workshop-access', route => route.fulfill({ json: { authorized: false } }));
+  await page.route('**/api/santa-studio-access', route => route.fulfill({ json: { authorized, mode: 'live' } }));
+  await page.route('**/api/santa-studio-checkout', route => route.fulfill({ status: 503, json: { available: false } }));
+  await page.route('**/api/santa-workshop-catalogue', route => route.fulfill({ json: workshopCatalogueFixture }));
+  await page.route('**/api/santa-studio-message', route => route.fulfill({ json: { temporary: true } }));
+  await page.route('**/api/santa-studio-return', route => {
+    assert.equal(route.request().method(), 'POST');
+    assert.deepEqual(route.request().postDataJSON(), { token });
+    authorized = true; redeemed++;
+    return route.fulfill({ json: { authorized: true } });
+  });
+  await page.goto(`${origin}/santa-message-workshop#studio-return=${token}`, { waitUntil: 'domcontentloaded' });
+  await expect(page).toHaveURL(`${origin}/santa-message-workshop`);
+  assert.equal(redeemed, 0, 'Visiting/scanning a link must not consume it');
+  const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+  if (await decline.isVisible()) await decline.click();
+  await expect(page.getByRole('button', { name: 'Open my Studio', exact: true })).toBeEnabled();
+  await expect(page.getByLabel('Tester code (required)', { exact: true })).toBeEnabled();
+  await page.getByRole('button', { name: 'Open my Studio', exact: true }).click();
+  await expect(page.locator('.smw-builder')).toBeVisible();
+  assert.equal(redeemed, 1);
+  await expect(page.getByLabel('Sandbox test notice')).toHaveCount(0);
+});
+
+test('production payment outage never hides voucher controls or blocks a valid voucher', async t => {
+  const browser = await chromium.launch({
+    executablePath: process.env.CHROMIUM_PATH || (existsSync('/repl/tools/bin/chromium') ? '/repl/tools/bin/chromium' : undefined),
+    args: ['--no-sandbox'],
+  });
+  t.after(() => browser.close());
+  const page = await browser.newPage();
+  let voucher = false;
+  await page.route('**/api/santa-workshop-access', route => {
+    if (route.request().method() === 'POST') {
+      if (route.request().postDataJSON().code !== 'fixture-voucher') return route.fulfill({ status: 401, json: { error: 'That tester code is not valid. Please check it and try again.' } });
+      voucher = true;
+    }
+    return route.fulfill({ json: { authorized: voucher, expiresAt: Date.now() + 3600000 } });
+  });
+  await page.route('**/api/santa-studio-access', route => route.fulfill({ status: 503, json: { authorized: false } }));
+  await page.route('**/api/santa-studio-checkout', route => route.fulfill({ status: 503, json: { available: false } }));
+  await page.route('**/api/santa-workshop-catalogue', route => route.fulfill({ json: workshopCatalogueFixture }));
+  await page.route('**/api/santa-studio-message', route => route.fulfill({ json: { temporary: true } }));
+  await page.goto(`${origin}/santa-message-workshop?checkout=return`, { waitUntil: 'domcontentloaded' });
+  const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+  if (await decline.isVisible()) await decline.click();
+  const code = page.getByLabel('Tester code (required)', { exact: true });
+  await expect(code).toBeEnabled();
+  await code.fill('wrong');
+  await page.getByRole('button', { name: 'Create your bespoke message', exact: true }).click();
+  await expect(page.getByText('That tester code was not recognised. Please check it and try again.')).toBeVisible();
+  await code.fill('fixture-voucher');
+  await page.getByRole('button', { name: 'Create your bespoke message', exact: true }).click();
+  await expect(page.locator('.smw-builder')).toBeVisible();
+});

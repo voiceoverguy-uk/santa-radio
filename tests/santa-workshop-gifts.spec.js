@@ -76,6 +76,54 @@ test('real selection header unlocks country-only gifts after the full MP3 arrive
   for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
 });
 
+test('temporary recording allows playback and identical download retries during the visit', async ({ page }) => {
+  const fixture = await review(page, { destination: 'England' });
+  await confirmMessage(page);
+  const audio = page.locator('.smw-message-result audio');
+  await expect(audio).toBeVisible();
+  const originalUrl = await audio.getAttribute('src');
+  await audio.evaluate(async node => {
+    await node.play();
+    node.pause();
+    node.currentTime = 0;
+    await node.play();
+    node.pause();
+  });
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const pendingDownload = page.waitForEvent('download');
+    await page.getByRole('link', { name: /Download MP3/ }).click();
+    const download = await pendingDownload;
+    expect(await download.failure()).toBeNull();
+    expect(readFileSync(await download.path())).toEqual(fixture.audio);
+    await expect(audio).toHaveAttribute('src', originalUrl);
+  }
+  expect(fixture.posts).toHaveLength(1);
+  expect(fixture.recoveries || 0).toBe(0);
+});
+
+for (const ending of ['pagehide', 'access expiry']) {
+  test(`temporary recording and gift access clear on ${ending}`, async ({ page }) => {
+    await review(page, { destination: 'England' });
+    await confirmMessage(page);
+    const audio = page.locator('.smw-message-result audio');
+    await expect(audio).toBeVisible();
+    const originalUrl = await audio.getAttribute('src');
+    if (ending === 'pagehide') {
+      await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true })));
+    } else {
+      await page.route('**/api/santa-studio-message*', route => route.fulfill({
+        status: 403, json: { error: 'Studio access expired.' },
+      }));
+      await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+    }
+    await expect(audio).toHaveCount(0);
+    for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
+    expect(await page.evaluate(async url => {
+      try { await fetch(url); return true; } catch { return false; }
+    }, originalUrl)).toBe(false);
+  });
+}
+
 test('unchanged completed gifts survive pending and failed replacement audio', async ({ page }) => {
   const fixture = await review(page, { destination: 'England' });
   await confirmMessage(page);

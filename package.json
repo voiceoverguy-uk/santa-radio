@@ -24,6 +24,8 @@
     "prebuild": "npm run check:dependency-portability",
     "build": "node scripts/prepare-santa-audio.mjs && vite build && vite build --ssr src/entry-server.jsx --outDir dist/server && node scripts/build-public-pages.mjs",
     "check:studio-readiness": "node scripts/check-studio-release.mjs",
+    "check:studio-live-readiness": "node scripts/check-studio-live-release.mjs",
+    "test:studio-live": "node --test scripts/studio-live.test.mjs scripts/studio-live-setup.test.mjs",
     "preview": "vite preview",
     "test:artwork": "node --test scripts/artwork-feed.test.mjs scripts/artwork-feed-development.test.mjs",
     "test:artwork-production": "node --test scripts/artwork-feed-serving.test.mjs",

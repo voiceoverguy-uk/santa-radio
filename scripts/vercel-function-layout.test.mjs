@@ -9,6 +9,14 @@ const file = { type: 'FileBlob', data: '', mode: 0o100644 };
 const link = target => ({ type: 'FileBlob', data: target, mode: 0o120777 });
 const handler = { 'api/example.js': file };
 
+test('Studio access-email retries target the protected worker every five minutes', async () => {
+  const config = JSON.parse(await readFile('vercel.json', 'utf8'));
+  assert.deepEqual(config.crons.filter(job => job.path === '/api/santa-studio-email-retry'),
+    [{ path: '/api/santa-studio-email-retry', schedule: '*/5 * * * *' }]);
+  assert.equal(config.functions['api/santa-studio-email-retry.js'].maxDuration, 60);
+  assert.ok(await readFile('api/santa-studio-email-retry.js', 'utf8'));
+});
+
 test('rejects the reproduced FFmpeg symlink/file overlap, including actual filesystem links', async t => {
   const root = await mkdtemp(join(tmpdir(), 'santa-function-layout-'));
   t.after(() => rm(root, { recursive: true, force: true }));

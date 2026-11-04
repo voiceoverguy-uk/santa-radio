@@ -4,6 +4,8 @@ import { databasePool } from './name-request-store.js';
 import { getUncachableStripeClient, requireSandboxWorkspace } from './stripeClient.js';
 import { claimHash, confirmSandboxPurchase, STUDIO_PAID_COOKIE, STUDIO_TEST_PRICE, STUDIO_TEST_PRODUCT } from './santa-studio-purchase.js';
 import { STUDIO_OFFER, assertFamilyPrice } from './stripe-sandbox.js';
+import { liveProduction } from './studio-live-config.js';
+import { createLiveCheckoutHandler } from './studio-live-checkout.js';
 
 export const CHECKOUT_COOKIE = 'santa-studio-checkout';
 const sign = (claim, secret) => createHmac('sha256', secret).update(`studio-checkout:${claim}`).digest('base64url');
@@ -129,4 +131,8 @@ export function createStudioCheckoutHandler({
   app.use((error, _req, res, _next) => res.status(error.status === 413 ? 413 : 400).json({ error: 'Invalid checkout request.' }));
   return app;
 }
-export default createStudioCheckoutHandler();
+const sandboxCheckoutHandler = createStudioCheckoutHandler();
+const liveCheckoutHandler = createLiveCheckoutHandler();
+export default function studioCheckout(req, res, next) {
+  return (liveProduction() ? liveCheckoutHandler : sandboxCheckoutHandler)(req, res, next);
+}

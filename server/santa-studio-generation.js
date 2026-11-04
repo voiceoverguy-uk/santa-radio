@@ -2,6 +2,8 @@ import { createHash, randomUUID } from 'node:crypto';
 import { databasePool } from './name-request-store.js';
 import { workshopSession } from './santa-workshop-access.js';
 import { studioClaimFromRequest } from './santa-studio-purchase.js';
+import { liveProduction } from './studio-live-config.js';
+import { singleCookie, LIVE_ACCESS_COOKIE, LIVE_PENDING_COOKIE, LIVE_CHECKOUT_COOKIE } from './studio-live-access.js';
 
 const hash = value => createHash('sha256').update(value).digest('hex');
 const problem = (status, message) => Object.assign(new Error(message), { status });
@@ -11,6 +13,12 @@ const problem = (status, message) => Object.assign(new Error(message), { status 
 export function studioGenerationKey(req) {
   const tester = workshopSession(req);
   if (tester) return tester.generationKey;
+  if (liveProduction()) {
+    const identity = singleCookie(req, LIVE_ACCESS_COOKIE)
+      || `${singleCookie(req, LIVE_PENDING_COOKIE) || ''}:${singleCookie(req, LIVE_CHECKOUT_COOKIE) || ''}`;
+    if (identity === ':') throw problem(403, 'Please reopen Studio to check your access.');
+    return hash(`studio-live:${identity}`);
+  }
   const claim = studioClaimFromRequest(req);
   if (!claim) throw problem(403, 'Please reopen Studio to check your access.');
   return hash(`sandbox:${claim.sessionId}:${claim.claimToken}`);

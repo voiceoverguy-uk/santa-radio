@@ -3,7 +3,6 @@ import { WorkshopPasswordForm } from './WorkshopPasswordForm.jsx';
 import './SantaStudioPromotion.css';
 import StudioPurchaseButton from './StudioPurchaseButton.jsx';
 import { StudioGiftPreview, useStudioGiftExample } from './SantaStudioGifts.jsx';
-import SantaStudioLaunchCountdown from './SantaStudioLaunchCountdown.jsx';
 import StudioPortraitViewer from './StudioPortraitViewer.jsx';
 
 export default function SantaStudioPromotion({ activeExampleName = null, availableNamesText, previewName = null, allowExamples = true }) {
@@ -39,7 +38,7 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
           </p>
           <div className="santa-studio-promotion__benefits">
             <p className="santa-studio-promotion__benefits-lead">
-              Your paid package includes personalised gifts from Santa:
+              Your one-child package includes a personalised MP3 and gifts from Santa:
             </p>
             <ul className="santa-studio-promotion__benefit-list">
               <li>An official Nice List certificate</li>
@@ -60,7 +59,6 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
           variant="promotion"
           onAuthorized={() => navigate('/santa-message-workshop')}
         />
-        <SantaStudioLaunchCountdown />
         <StudioPurchaseButton />
       </div>
         <StudioGiftPreview example={example} />

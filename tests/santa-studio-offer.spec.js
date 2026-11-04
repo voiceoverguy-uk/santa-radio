@@ -46,7 +46,7 @@ for (const path of ['/', '/free-santa-message']) {
       if (await decline.isVisible()) await decline.click();
       await page.evaluate(() => document.fonts.ready);
       const promotion = page.locator('.santa-studio-promotion');
-      await expect(promotion.locator('.santa-studio-promotion__launch-countdown-remaining')).toHaveText('2 days, 12 hours, 0 minutes.');
+      await expect(promotion.locator('.santa-studio-promotion__launch-countdown-remaining')).toHaveCount(0);
       await expectRegularPromotion(promotion);
       for (const selector of ['#santa-studio-title', '.santa-studio-promotion__subheading',
         '.santa-studio-promotion__offer-price', '.studio-gifts h4']) {

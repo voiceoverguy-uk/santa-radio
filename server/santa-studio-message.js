@@ -9,6 +9,7 @@ import { renderStudioMessage } from './santa-studio-render.js';
 import { selectedWorkshopRegion } from '../src/lib/workshopDestinations.js';
 import { studioServiceFailure } from './studio-service-events.js';
 import { workshopSession } from './santa-workshop-access.js';
+import { studioDeliveryProbe } from './studio-delivery-probe.js';
 
 const categories = ['age', 'activity', 'achievement', 'treat', 'place'];
 const localNames = fileURLToPath(new URL('./santa-audio/names/', import.meta.url));
@@ -73,6 +74,7 @@ export function createStudioMessageHandler({
   let active = 0;
   return async (req, res) => {
     privateResponse(res);
+    if (await studioDeliveryProbe(req, res)) return;
     const send = (status, error) => {
       if (res.destroyed || res.headersSent) return;
       res.writeHead(status, { 'Content-Type': 'application/json' });

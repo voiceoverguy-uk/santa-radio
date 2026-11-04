@@ -3,6 +3,8 @@ import express from 'express';
 import { getUncachableStripeClient, requireSandboxWorkspace } from './stripeClient.js';
 import { databasePool } from './name-request-store.js';
 import { STUDIO_OFFER } from './stripe-sandbox.js';
+import { liveProduction } from './studio-live-config.js';
+import { hasLivePaidAccess, createLiveAccessHandler } from './studio-live-access.js';
 
 export const STUDIO_TEST_PRODUCT = 'prod_VWhiGsEihT5KxY';
 export const STUDIO_TEST_PRICE = 'price_1UVeIcEt5PrD6a7CdGtAEuM1';
@@ -58,6 +60,7 @@ export function studioClaimFromRequest(req) {
 }
 
 export async function hasPaidStudioAccess(req) {
+  if (liveProduction()) return hasLivePaidAccess(req);
   const claim = studioClaimFromRequest(req);
   if (!claim) return false;
   return (await confirmSandboxPurchase({ ...claim, stripe: await getUncachableStripeClient() })).authorized;
@@ -107,4 +110,8 @@ export function createStudioPaidAccessHandler({
   return app;
 }
 
-export default createStudioPaidAccessHandler();
+const sandboxAccessHandler = createStudioPaidAccessHandler();
+const liveAccessHandler = createLiveAccessHandler();
+export default function studioPaidAccess(req, res, next) {
+  return (liveProduction() ? liveAccessHandler : sandboxAccessHandler)(req, res, next);
+}

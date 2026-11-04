@@ -1,15 +1,15 @@
 ---
 name: Santa Studio paid purchase
-description: One-child purchase, success-only finalisation, reusable guest return and preserved Stripe/voucher boundaries.
+description: One-child temporary creation visit, Resend entry access and independent Stripe/voucher boundaries.
 ---
 
-The current website purchase is £6.50 for one child's message, including the certificate, letter and Santa picture. This supersedes the earlier up-to-three-child family offer.
+The current website purchase is a one-off £6.50 GBP for one child's personalised MP3, including the Nice List certificate, Santa letter and Santa picture. This supersedes the earlier up-to-three-child family offer.
 
-**Why:** The owner explicitly defined this offer.
+**Why:** The owner explicitly chose “Switch to one-child content” when asked to reconcile the existing individual outputs with the earlier family offer.
 
-**How to apply:** Keep this entitlement separate from the free short greeting and independent tester-voucher access. Preserve the existing Stripe product and price. Do not claim delivery until the exact completed recording and all included keepsakes can be retrieved.
+**How to apply:** Keep this entitlement separate from the free short greeting and independent tester-voucher access. Preserve the existing Stripe product and price. Do not advertise a combined family recording, shared multi-child gifts or a recording-retrieval service.
 
-Purchasers should not need a customer account or login. Verified successful payment opens the paid workshop immediately without requiring an email first. Provide a private emailed return link that can be used repeatedly to resume the same unfinished purchase and, after completion, retrieve the same completed downloads. Failed, cancelled and pending payments must not grant access; repeated payment notifications must not duplicate a purchase.
+Purchasers should not need a customer account or login. Verified successful payment opens the paid workshop immediately without requiring an email first. The emailed link gives a verified paying customer access to the Message Maker Studio to BEGIN creating their message. It is not a link to saved audio or previous downloads. Failed, cancelled and pending payments must not grant access; repeated payment notifications must not duplicate a purchase.
 
 **Why:** The owner explicitly specified guest purchasing and payment-confirmation behaviour.
 
@@ -21,17 +21,35 @@ The owner reports an existing live Stripe product named “Santa Message Maker�
 
 **How to apply:** Verify test/sandbox mode before creating or using payment resources. Do not infer permission for live charges, live changes or publishing from approval to test.
 
-Only successful MP3 generation AND durable saving finalises a paid purchase. Afterwards prevent all further new message creation and editing under that purchase; retain download access to that same completed recording and included certificate, letter and Santa picture. Explain this clearly before final generation. Do not consume the purchase on a click or technical failure; permit retry and prevent duplicate messages from repeated clicks or simultaneous tabs.
+Customers create their message, play it and download it during that visit. Do not permanently store generated audio or keepsakes, and do not build a recording-retrieval service. Keep the temporary recording available long enough for playback and download retries during the visit, then clear it when the session ends or expires.
 
-**Why:** The owner explicitly clarified the paid purchase rule.
+**Why:** The owner explicitly corrected the conflicting saved-recording/finalisation notes and instructed that the emailed link is for beginning creation, not retrieving previous downloads.
 
-**How to apply:** Enforce paid finalisation server-side and preserve completed-output recovery after response loss. Keep voucher testing independent and unchanged. No paid entitlement, return-link or download expiry has been agreed; do not import voucher session timing into paid access.
+**How to apply:** Preserve voucher access independently. Do not restore durable generation finalisation, purchase-wide generation locks, recording archives or permanent keepsake storage. Keep genuine payment authorisation and reasonable request-abuse protection distinct from temporary generated output.
 
-Brevo is not approved for purchase-access email. Inspect delivery setup and identify the provider/sender/credential decisions still required; do not assume Resend or another provider is approved.
+Use Resend for purchase-access email from `santa@santaradio.co.uk`, not `santa@studio.santaradio.co.uk`. Stripe continues sending payment receipts. Brevo is not approved for purchase-access email.
 
-**Why:** The owner explicitly corrected the earlier Brevo suggestion.
+**Why:** The owner chose Resend, confirmed the already verified root-domain sender, and confirmed that the authorised plain-text delivery test arrived in their inbox.
 
-**How to apply:** Do not publish or enable live sales until the payment/access flow is validated and outstanding email configuration is resolved. Confirm the verified sender and supply credentials securely only after the provider decision.
+**How to apply:** Preserve the approved sender rather than reopening subdomain/DNS setup. Supply credentials securely and verify the deployed paid-return flow separately; sender-test delivery is not proof that the paid delivery contract works.
+
+Keep private Studio return emails plain text rather than requiring changes to the domain's global tracking configuration.
+
+**Why:** Resend documents link rewriting for HTML messages, and plain-text-only emails cannot contain its open-tracking pixel. A tracking setup dialog can show checked defaults without establishing active tracking.
+
+**How to apply:** Introducing HTML or provider templates requires revisiting tracking and capability-link privacy before release.
+
+The owner confirmed that Santa Radio's Vercel hosting is on Pro or Enterprise, without identifying which of those two tiers.
+
+**Why:** They confirmed the plan when choosing a five-minute email retry schedule; the existing connection can manage project settings but cannot inspect billing.
+
+**How to apply:** Do not assume Hobby limits or purchase an upgrade on the owner's behalf. Reconfirm schedule support if the hosting account or plan changes.
+
+The owner authorises public live website purchasing for everyone, superseding the previous sandbox-only website restriction. This does not authorise native purchasing changes, replacing the existing live product, deployment, or agent-submitted real-money charges.
+
+**Why:** The owner explicitly requested the website's transition to public live payments, with release blockers resolved before activation.
+
+**How to apply:** Keep sandbox isolated in development. Keep public sales disabled until the exact live offer, delivery contract, durable access, secure email return and production readiness are verified. Preserve voucher entry and access independently of Stripe configuration, errors and the new-sales switch. The one-child offer decision above resolves the earlier family-offer mismatch; do not reintroduce it as an unanswered question.
 
 Sandbox Purchase controls and development-only explanations must never appear on public/published sites. Keep clearly labelled test checkout in development. The owner has separately approved building public live payments, but retain the closed-sales promotion and independent voucher access until the payment/access flow is validated, email is configured and publication is explicitly approved.
 
@@ -45,19 +63,5 @@ The Studio promotion must show a neutral £6.50 price. There is no Black Friday 
 
 **Why:** The owner explicitly corrected the earlier seasonal-offer direction.
 
-**How to apply:** Keep both shared promotional placements consistent without changing Stripe products, payment amounts, launch timing or development-only checkout.
-
-The owner set the Studio A launch date to 6 November 2026 and requested an opening countdown beneath the red bespoke-message button.
-
-**Why:** The owner said, “We'll make this live Nov 6th.”
-
-**How to apply:** Treat this as a fixed launch date, not an annual countdown. The countdown is promotional presentation, not permission to activate live payments or remove access controls automatically.
-
-**Why:** The owner supplied this distinction and timing in the public introduction copy.
-
-**How to apply:** Keep the Nice List certificate, letter and Santa picture associated with the bespoke paid offer, not the free short greeting. Promotional wording is not authorization to activate paid purchasing.
-
-**Why:** The owner reported the published homepage displaying a disabled test Purchase button and explicitly required the entire sandbox control to be hidden.
-
-**How to apply:** Check both production server/browser rendering and development rendering. Preserve endpoint sandbox protections. The owner is separately claiming the existing Santa Radio Sandbox; do not create or replace it.
+**How to apply:** Keep both shared promotional placements consistent without changing the live Stripe product or payment amount. Runtime readiness, not a promotional date or old sandbox-only notice, controls whether purchasing is available.
 

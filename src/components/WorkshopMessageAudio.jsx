@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useRadio } from './RadioProvider.jsx';
 import { StudioVoucherContext } from '../lib/studioAccessContext.js';
@@ -107,11 +107,33 @@ export default function WorkshopMessageAudio({
   // on a successful HTTP header or a promotional preview.
   useEffect(() => { onPhaseChange?.(error ? 'error' : phase); }, [phase, error, onPhaseChange]);
 
-  const finishPlayback = () => {
+  const finishPlayback = useCallback(() => {
     const resume = resumeRef.current;
     resumeRef.current = null;
     resume?.();
-  };
+  }, []);
+  const clearRecording = useCallback((resetUI = true) => {
+    requestRef.current?.abort();
+    requestRef.current = null;
+    receivedSelection.current = null;
+    const audio = audioRef.current;
+    audio?.pause();
+    audio?.removeAttribute('src');
+    audio?.load();
+    finishPlayback();
+    if (urlRef.current) URL.revokeObjectURL(urlRef.current);
+    urlRef.current = null;
+    if (resetUI) {
+      setUrl('');
+      setFinishedName(null);
+      setDownloadActivated(false);
+      setPhase('idle');
+      setError('');
+    }
+  }, [finishPlayback]);
+  useEffect(() => {
+    if (generation.accessExpired) clearRecording();
+  }, [generation.accessExpired, clearRecording]);
   useEffect(() => {
     const otherPlayback = event => {
       if (event.target !== audioRef.current) {
@@ -120,19 +142,19 @@ export default function WorkshopMessageAudio({
       }
     };
     const stop = () => { audioRef.current?.pause(); finishPlayback(); };
+    // pagehide also covers a page kept in the browser's back/forward cache.
+    // Pausing alone would leave its generated Blob available on return.
+    const leave = () => clearRecording();
     document.addEventListener('play', otherPlayback, true);
     document.addEventListener('studio-stop-audio', stop);
-    window.addEventListener('pagehide', stop);
+    window.addEventListener('pagehide', leave);
     return () => {
       document.removeEventListener('play', otherPlayback, true);
       document.removeEventListener('studio-stop-audio', stop);
-      window.removeEventListener('pagehide', stop);
-      requestRef.current?.abort();
-      audioRef.current?.pause();
-      finishPlayback();
-      if (urlRef.current) URL.revokeObjectURL(urlRef.current);
+      window.removeEventListener('pagehide', leave);
+      clearRecording(false);
     };
-  }, []);
+  }, [clearRecording, finishPlayback]);
   useEffect(() => {
     const audio = audioRef.current;
     if (!visible) { audio?.pause(); finishPlayback(); }
