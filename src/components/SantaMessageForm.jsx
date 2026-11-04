@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { useRadio } from './RadioProvider.jsx';
 import SantaMessageExample from './SantaMessageExample.jsx';
+import MessageCreationIndicator from './MessageCreationIndicator.jsx';
 import SantaMessageAccessForm from './SantaMessageAccessForm.jsx';
 import useSantaNameTotal from './useSantaNameTotal.js';
 import { SantaGreetingShare } from './SantaMessageShare.jsx';
@@ -452,7 +453,10 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
           })()}
           {validation && <p className="message-validation" id={`${inputId}-error`} role="alert">{validation}</p>}
           <button className="btn-red message-submit" type="submit" disabled={busy || allowance.pending || coolingDown || searchPending}>{busy ? 'Santa Recording...' : 'Create message'} <span aria-hidden="true">→</span></button>
-          {busy && <p role="status" className="message-name-hint">Santa is recording a personal message for {resolvedRecord?.name || name.trim()}. Hang on!</p>}
+          {busy && <div className="message-creation-status">
+            <p role="status" className="message-name-hint">Santa is recording a personal message for {resolvedRecord?.name || name.trim()}. Hang on!</p>
+            <MessageCreationIndicator />
+          </div>}
           {!busy && allowance.pending && <p role="status" className="message-name-hint">Another message is being created. Please wait for it to finish.</p>}
         </form>
         </>}

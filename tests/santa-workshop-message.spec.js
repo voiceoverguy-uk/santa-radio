@@ -6,6 +6,8 @@ import { unlockWorkshop } from './helpers/workshop-access.js';
 import { workshopCatalogueFixture } from './fixtures/workshop-catalogue.js';
 import { confirmMessage, mockStudioGeneration, emptyGeneration, settleStudioScroll, expectStudioRecordingInView } from './helpers/studio-generation.js';
 import { SCHOOL_TEST_START, SCHOOL_TEST_DEADLINE } from '../server/santa-workshop-settings.js';
+import { checkCreationIndicator, holdRecordingBody } from './helpers/message-creation-indicator.js';
+import { mockSantaNames } from './helpers/message-access.js';
 
 const path = '/santa-message-workshop';
 const answers = ['9 years old', 'Teamwork', 'Completing a jigsaw puzzle', 'Bûche de Noël', 'The Enchanted Forest'];
@@ -22,6 +24,103 @@ const preparationMessages = [
   'Hang on a moment — Santa’s checking his lines. Twice, obviously.',
   'Santa is busy recording. We’ve hidden the mince pies until he’s finished.',
 ];
+
+for (const width of [320, 1365]) {
+  for (const motion of ['no-preference', 'reduce']) {
+    test(`shared paid creation indicator lifecycle at ${width}px with ${motion}`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      const fixture = await openReview(page);
+      await page.emulateMedia({ reducedMotion: motion });
+      const bar = page.getByRole('progressbar', { name: 'Preparing your message', exact: true });
+      await expect(bar).toHaveCount(0);
+      let release;
+      fixture.hold = new Promise(resolve => { release = resolve; });
+      await confirmMessage(page);
+      await checkCreationIndicator(page, motion);
+      expect(preparationMessages).toContain(await page.locator('.smw-message-result[role="status"] p').textContent());
+      await page.locator('.smw-message-result[role="status"]').screenshot({
+        path: `generated-artifacts/creation-paid-${width}-${motion}.png`,
+      });
+      await page.getByRole('button', { name: 'Cancel preparation', exact: true }).click();
+      await expect(bar).toHaveCount(0);
+      await expect(page.getByRole('alert')).toContainText('Preparation cancelled.');
+      release();
+      fixture.hold = null;
+      fixture.fail = true;
+      await confirmMessage(page);
+      await expect(page.getByRole('alert')).toContainText('Fixture recording unavailable.');
+      await expect(bar).toHaveCount(0);
+      fixture.fail = false;
+      await holdRecordingBody(page, '/api/santa-studio-message');
+      await confirmMessage(page, 'Retry message');
+      await expect(page.getByText('Receiving your finished MP3…', { exact: true })).toBeVisible();
+      await checkCreationIndicator(page, motion);
+      await expect(page.locator('.smw-message-finished')).toHaveCount(0);
+      await page.evaluate(() => window.finishIndicatorRecording());
+      await expect(page.locator('.smw-message-finished')).toBeVisible();
+      await expect(bar).toHaveCount(0);
+      await expect(page.getByRole('button', { name: 'Cancel preparation', exact: true })).toHaveCount(0);
+    });
+
+    for (const entry of ['/', '/free-santa-message']) {
+      test(`shared free creation indicator lifecycle on ${entry} at ${width}px with ${motion}`, async ({ page }) => {
+        await page.setViewportSize({ width, height: 900 });
+        await page.emulateMedia({ reducedMotion: motion });
+        await page.route('**/api/santa-message-access', route => route.fulfill({
+          json: { authorized: true, availableAt: 0 },
+        }));
+        await page.route('**/api/radio-metadata*', route => route.fulfill({
+          json: { available: false, current: null, upcoming: [] },
+        }));
+        await mockSantaNames(page);
+        let release, failure = true;
+        let hold = new Promise(resolve => { release = resolve; });
+        await page.route('**/api/santa-message', async route => {
+          await hold;
+          return failure ? route.fulfill({ status: 503, json: { error: 'Fixture creation failed.' } })
+            : route.fulfill({ contentType: 'audio/mpeg', body: readFileSync('server/santa-audio/sleighbells.mp3') });
+        });
+        await page.goto(entry);
+        const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+        if (await decline.isVisible()) await decline.click();
+        const input = page.getByLabel('First Name', { exact: true });
+        const bar = page.getByRole('progressbar', { name: 'Preparing your message', exact: true });
+        await expect(bar).toHaveCount(0);
+        await input.fill('Olivia');
+        await page.getByRole('option', { name: 'Olivia', exact: true }).click();
+        await page.getByRole('button', { name: 'Create message', exact: true }).click();
+        await expect(page.getByRole('button', { name: 'Santa Recording...' })).toBeDisabled();
+        const status = page.locator('.message-creation-status [role="status"]');
+        await expect(status).toHaveText('Santa is recording a personal message for Olivia. Hang on!');
+        await checkCreationIndicator(page, motion);
+        await page.locator('.message-creation-status').screenshot({
+          path: `generated-artifacts/creation-free-${entry === '/' ? 'home' : 'dedicated'}-${width}-${motion}.png`,
+        });
+        // Editing the free name is the existing cancellation path.
+        await input.fill('Jack');
+        await expect(bar).toHaveCount(0);
+        release();
+        hold = null;
+        await page.getByRole('option', { name: 'Jack', exact: true }).click();
+        await page.getByRole('button', { name: 'Create message', exact: true }).click();
+        await expect(page.getByRole('alert')).toContainText('Fixture creation failed.');
+        await expect(bar).toHaveCount(0);
+        await expect(page.getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
+        failure = false;
+        await holdRecordingBody(page, '/api/santa-message');
+        await page.getByRole('button', { name: 'Create message', exact: true }).click();
+        await expect(bar).toBeVisible();
+        await expect(status).toHaveText('Santa is recording a personal message for Jack. Hang on!');
+        await expect(page.locator('.message-result')).toHaveCount(0);
+        await expect.poll(() => page.evaluate(() => typeof window.finishIndicatorRecording)).toBe('function');
+        await page.evaluate(() => window.finishIndicatorRecording());
+        await expect(page.getByRole('heading', { name: 'To Jack from Santa', exact: true })).toBeVisible();
+        await expect(bar).toHaveCount(0);
+        await expect(status).toHaveCount(0);
+      });
+    }
+  }
+}
 
 for (const viewport of [{ width: 1365, height: 900 }, { width: 390, height: 844 }, { width: 320, height: 568 }]) {
   for (const reducedMotion of [false, true]) {

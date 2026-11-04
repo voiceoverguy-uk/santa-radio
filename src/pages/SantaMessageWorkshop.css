@@ -454,7 +454,6 @@
 @media (max-width: 760px) {
   .smw-message-finished { grid-template-columns: minmax(0, 1fr); gap: 12px; }
 }
-.smw-message-result progress { width: min(100%, 240px); accent-color: var(--smw-gold); }
 .smw-stage-fields { min-width: 0; padding: 0; margin: 0; border: 0; }
 .smw-stage-fields:disabled { opacity: .65; }
 .smw-change:disabled { color: #b9c9b9; opacity: .55; cursor: not-allowed; }

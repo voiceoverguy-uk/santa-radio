@@ -1,6 +1,7 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useRadio } from './RadioProvider.jsx';
+import MessageCreationIndicator from './MessageCreationIndicator.jsx';
 import { StudioVoucherContext } from '../lib/studioAccessContext.js';
 import { getWorkshopDownloadName, getWorkshopWrittenName } from '../lib/workshopNameSpelling.js';
 
@@ -314,7 +315,7 @@ export default function WorkshopMessageAudio({
     <div className="smw-delivery" ref={deliveryRef} tabIndex={-1} role="group" aria-label="Message preparation and recording">
     {busy && <div className="smw-message-result" role="status" aria-live="polite">
       <p>{phase === 'receiving' ? 'Receiving your finished MP3…' : preparationMessage}</p>
-      <progress aria-label="Preparing your message" />
+      <MessageCreationIndicator />
       <button className="smw-change" type="button" onClick={cancel}>Cancel preparation</button>
     </div>}
     {error && <div className="smw-message-result" role="alert"><p>{error}</p>
