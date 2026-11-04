@@ -4,6 +4,7 @@ import { createStudioLetter, CERTIFICATE_WRITE_MS, LETTER_CHARACTER_MS,
   SIGNATURE_WRITE_MS, GIFT_EXAMPLE_INTERVAL_MS, letterBodyDuration, letterDuration,
   createStudioLetterVariation } from '../lib/santaStudioLetter.js';
 import './SantaStudioGifts.css';
+import { studioLetterLayout } from '../lib/studioLetterLayout.js';
 import SantaPictureName from './SantaPictureName.jsx';
 import CertificateName from './CertificateName.jsx';
 import StudioGiftDownload from './StudioGiftDownload.jsx';
@@ -52,7 +53,16 @@ function Letter({ letter, elapsed }) {
   const signatureProgress = Math.max(0, Math.min(1,
     (elapsed - CERTIFICATE_WRITE_MS - letterBodyDuration(letter)) / SIGNATURE_WRITE_MS));
   let offset = 0;
-  return <article className="studio-letter__paper" aria-label={`Santa’s letter example for ${letter.name}`}>
+  return <article className="studio-letter__paper" aria-label={`Santa’s letter example for ${letter.name}`}
+    style={{
+      '--letter-body': `${studioLetterLayout.body * 100}cqw`,
+      '--letter-leading': studioLetterLayout.leading,
+      '--letter-gap': `${studioLetterLayout.paragraphGap}em`,
+      '--letter-inset': `${studioLetterLayout.inset * 100}%`,
+      '--letter-top': `${studioLetterLayout.top * 100}%`,
+      '--letter-closing-inset': `${(studioLetterLayout.closingInset - studioLetterLayout.inset)
+        / (1 - studioLetterLayout.inset * 2) * 100}%`,
+    }}>
     <div className="studio-gifts__sr">
       {letter.paragraphs.map((text, index) => <p key={index}>{text}</p>)}
       <p>Santa Claus</p>{letter.closing.map(text => <p key={text}>{text}</p>)}
@@ -66,7 +76,7 @@ function Letter({ letter, elapsed }) {
       <div className="studio-letter__signature">
         <ScriptReveal progress={signatureProgress}>Santa Claus</ScriptReveal>
       </div>
-      <div className={signatureProgress < 1 ? 'studio-writing-hidden' : ''}>
+      <div className={`studio-letter__closing${signatureProgress < 1 ? ' studio-writing-hidden' : ''}`}>
         {letter.closing.map(text => <p key={text}>{text}</p>)}
       </div>
     </div>

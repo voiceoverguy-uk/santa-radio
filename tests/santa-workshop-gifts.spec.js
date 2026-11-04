@@ -666,6 +666,11 @@ test('gifts unlock together, export real local files, retry independently and tr
   expect(letterPdf.getPageCount()).toBe(1);
   expect(letterPdf.getPage(0).getWidth()).toBeCloseTo(595.28, 1);
   expect(letterPdf.getPage(0).getHeight()).toBeCloseTo(841.89, 1);
+  const letterType = await page.locator('.studio-gifts__preview-stack .studio-letter__text').evaluate(node => ({
+    size: parseFloat(getComputedStyle(node).fontSize),
+    width: node.closest('.studio-letter__paper').getBoundingClientRect().width,
+  }));
+  expect(letterType.size / letterType.width).toBeCloseTo(.0225, 4);
   const extracted = execFileSync('pdftotext', ['-layout', 'generated-artifacts/studio-gifts/letter.pdf', '-'], { encoding: 'utf8' })
     .replace(/\s+/gu, ' ');
   for (const paragraph of reviewedParagraphs) expect(extracted).toContain(paragraph.replace(/\s+/gu, ' '));

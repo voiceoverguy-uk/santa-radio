@@ -8,6 +8,7 @@ import { workshopTreatWording } from '../src/lib/workshopTreatWording.js';
 import { createStudioLetter, createStudioLetterVariation } from '../src/lib/santaStudioLetter.js';
 import { responseLibraries } from '../src/lib/studioLetterResponses.js';
 import { letterNarratives } from '../src/lib/studioLetterNarratives.js';
+import { studioLetterLayout } from '../src/lib/studioLetterLayout.js';
 
 const output = '.local/studio-letter-editorial';
 await mkdir(output, { recursive: true });
@@ -156,7 +157,8 @@ Adult scenes begin at 18; family scenes are also safe for infants, teenagers and
 <p>${Object.entries(distinct).map(([age, result]) => `${result.distinct} distinct complete outputs measured from ${result.sampled} deterministic variations with fixed ${escape(age)} selections`).join('; ')}.
 These are measured samples, not a promise of global uniqueness.</p>
 <p>${geometry ? `${geometry.length} longest-combination browser measurements across seven age bands, desktop and 320-pixel phones, production and fallback fonts. The latest measured closing ends no lower than ${(Math.max(...geometry.map(row => row.end)) * 100).toFixed(1)}% of A4 height, before the artwork's 88% clearance boundary.` : 'The full browser geometry measurements have not yet been generated in this workspace.'}
-The canonical body scale remains approximately 11.6 points; no artwork or popup redesign.</p>
+The canonical PDF body scale is ${(595.2756 * studioLetterLayout.body).toFixed(1)} points
+(15.4% larger), with the same nominal scale in the preview; no artwork or popup redesign.</p>
 <h2>Runtime boundaries</h2><p>No runtime AI calls, new dependencies, recording changes, new personal-data storage or fulfilment changes.
 Destination writing travels only with authorised context; the full destination mapping remains server-side.</p>
 <h2>Complete representative letters</h2>${examples.map(example => `<article>${example.split('\n\n').map((paragraph, index) =>

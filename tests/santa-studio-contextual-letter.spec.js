@@ -4,9 +4,15 @@ import { createStudioLetterVariation, createStudioLetter } from '../src/lib/sant
 import { workshopTreatWording } from '../src/lib/workshopTreatWording.js';
 import { workshopCatalogue } from '../server/santa-workshop-catalogue.js';
 import { letterNarratives, letterReminders, letterPostscripts, detailIntroductions } from '../src/lib/studioLetterNarratives.js';
-import { responseLibraries, resolveLetterGroup } from '../src/lib/studioLetterResponses.js';
+import { responseLibraries, resolveLetterGroup, letterSignoffs } from '../src/lib/studioLetterResponses.js';
+import { regionalEditorialContext } from '../server/studio-regional-stories.js';
 import { studioChristmasJokes } from '../src/lib/studioChristmasJokes.js';
 import { mkdir, writeFile } from 'node:fs/promises';
+import { readFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { PDFDocument } from 'pdf-lib';
+import fontkit from '@pdf-lib/fontkit';
+import { layoutStudioLetter, wrapLetterText } from '../src/lib/studioGiftExports.js';
 
 const cases = [
   ['3 months old', 'Learning to talk', 'Being brave', 'Beautiful note', 'England'],
@@ -67,7 +73,7 @@ async function letterGeometry(page) {
   expect(geometry.paper.left).toBeGreaterThanOrEqual(0);
   expect(geometry.paper.right).toBeLessThanOrEqual(geometry.width + .5);
   expect(geometry.scroll).toBeLessThanOrEqual(1);
-  expect(geometry.font / geometry.paper.width).toBeCloseTo(.0195, 4); // unchanged readable A4 type scale
+  expect(geometry.font / geometry.paper.width).toBeCloseTo(.0225, 4);
   expect(geometry.signature.bottom).toBeLessThan(geometry.paragraphs.at(-2).top);
   for (const paragraph of geometry.paragraphs) {
     expect(paragraph.left).toBeGreaterThanOrEqual(geometry.text.left - .5);
@@ -80,7 +86,7 @@ async function letterGeometry(page) {
 }
 
 test('authorised catalogue longest rendered combinations across age bands, regions and fallback fonts', async ({ page }) => {
-  test.setTimeout(180000);
+  test.setTimeout(240000);
   // This reads the private hosted index only in Node. It creates no public route
   // or catalogue export and never downloads the name inventory or any audio.
   const catalogue = await workshopCatalogue();
@@ -100,10 +106,19 @@ test('authorised catalogue longest rendered combinations across age bands, regio
   const base = Object.fromEntries(Object.entries(mapping).map(([category, field]) => [field, value(category, records[category][0])]));
   base.context = Object.fromEntries(Object.entries(mapping).map(([category, field]) => [field, records[category][0].letterContext]));
   const metrics = [];
+  const pdf = await PDFDocument.create();
+  pdf.registerFontkit(fontkit);
+  const embeddedSerif = await pdf.embedFont(readFileSync('public/certificates/nice-list/CertificateSerif.ttf'));
+  const advances = new Map();
+  const serif = { widthOfTextAtSize(text, size) {
+    if (!advances.has(text)) advances.set(text, embeddedSerif.widthOfTextAtSize(text, 1));
+    return advances.get(text) * size;
+  } };
+  const longName = 'Alexandria-Catherine Elizabeth Montgomery-Worthington';
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto('/free-santa-message');
   for (const fallback of [false, true]) {
-    await render(page, { name: 'Alexandria Rose Montgomery', details: base });
+      await render(page, { name: longName, details: base });
     await page.evaluate(() => document.fonts.ready);
     const style = await page.addStyleTag({ content: fallback
       ? '.studio-letter__text { font-family: "Times New Roman", serif !important; } .studio-letter__signature { font-family: cursive !important; }'
@@ -113,7 +128,7 @@ test('authorised catalogue longest rendered combinations across age bands, regio
       const candidates = {};
       const initial = { ...base, age, context: { ...base.context, age: undefined } };
       const add = (slot, paragraph, details, variation) => {
-        const letter = createStudioLetter('Alexandria Rose Montgomery', () => 0, details, variation);
+        const letter = createStudioLetter(longName, () => 0, details, variation);
         (candidates[slot] ||= []).push({ text: letter.paragraphs[paragraph], details, variation });
       };
       for (const [role, paragraph] of [['workshop', 1], ['departure', 4], ['atmosphere', 8]]) {
@@ -140,6 +155,7 @@ test('authorised catalogue longest rendered combinations across age bands, regio
       const reminderBand = adult ? 'adult' : age.includes('month') ? 'months' : 'family';
       letterReminders[reminderBand].forEach((_, i) => add('reminder', 9, initial, { reminder: (i + .1) / 3 }));
       studioChristmasJokes.forEach((_, i) => add('joke', 10, initial, { joke: (i + .1) / studioChristmasJokes.length }));
+      letterSignoffs.forEach((_, i) => add('signoff', 11, initial, { signoff: (i + .1) / letterSignoffs.length }));
       candidates.postscript = letterPostscripts.map((text, i) => ({ text, variation: { postscript: (i + .1) / 3 } }));
       // Measure every candidate in the same canonical A4 typography. Maximise
       // actual wrapped height, not character count or a hand-picked variant.
@@ -153,6 +169,7 @@ test('authorised catalogue longest rendered combinations across age bands, regio
         const p = document.createElement('p'); text.append(p);
         const result = {};
         for (const [slot, options] of Object.entries(candidates)) {
+          p.style.width = slot === 'postscript' ? `${.8 / .88 * 100}%` : '100%';
           let best = -1, index = 0;
           options.forEach((option, i) => {
             p.textContent = option.text;
@@ -167,6 +184,28 @@ test('authorised catalogue longest rendered combinations across age bands, regio
         paper.remove();
         return result;
       }, candidates);
+      // The embedded PDF serif has different glyph advances from browser fonts.
+      // Independently maximise its wrapped lines too, not just the browser fixture.
+      const pdfMaxima = Object.fromEntries(Object.entries(candidates).map(([slot, options]) => {
+        let best = -1, index = 0;
+        options.forEach((option, i) => {
+          const count = wrapLetterText(option.text, serif, 595.2756 * .0225,
+            595.2756 * (slot === 'postscript' ? .8 : .88)).length;
+          if (count > best) { best = count; index = i; }
+        });
+        return [slot, index];
+      }));
+      let pdfDetails = initial;
+      const pdfVariation = createStudioLetterVariation(() => 0);
+      for (const [slot, index] of Object.entries(pdfMaxima)) {
+        const chosen = candidates[slot][index];
+        Object.assign(pdfVariation, chosen.variation);
+        if (Object.values(mapping).includes(slot)) pdfDetails = { ...pdfDetails,
+          [slot]: chosen.details[slot], context: { ...pdfDetails.context, [slot]: chosen.details.context[slot] } };
+      }
+      const pdfWorst = layoutStudioLetter(createStudioLetter(longName, () => 0, pdfDetails, pdfVariation), serif);
+      expect(pdfWorst.size).toBeCloseTo(595.2756 * .0225, 8);
+      expect(pdfWorst.contentHeight / pdfWorst.height + .24).toBeLessThanOrEqual(.88);
       let details = initial;
       const variation = createStudioLetterVariation(() => 0);
       for (const [slot, index] of Object.entries(maxima)) {
@@ -175,18 +214,48 @@ test('authorised catalogue longest rendered combinations across age bands, regio
         if (Object.values(mapping).includes(slot)) details = { ...details,
           [slot]: chosen.details[slot], context: { ...details.context, [slot]: chosen.details.context[slot] } };
       }
-      for (const viewport of [{ width: 1440, height: 1000 }, { width: 320, height: 568 }]) {
+      for (const viewport of [{ width: 1440, height: 1000 }, { width: 320, height: 568 },
+        { width: 844, height: 390 }]) {
         await page.setViewportSize(viewport);
-        await page.evaluate(({ details, variation }) =>
-          window.contextualLetterRoot({ name: 'Alexandria Rose Montgomery', details, variation }), { details, variation });
-        const expected = createStudioLetter('Alexandria Rose Montgomery', () => 0, details, variation);
-        await expect(page.locator('.studio-gifts__gallery .studio-letter__text > p')).toHaveText(expected.paragraphs);
+        await page.evaluate(({ details, variation, longName }) =>
+          window.contextualLetterRoot({ name: longName, details, variation }), { details, variation, longName });
+        const expected = createStudioLetter(longName, () => 0, details, variation);
+        const layout = layoutStudioLetter(expected, serif);
+        expect(layout.size).toBeCloseTo(595.2756 * .0225, 8);
+        expect(layout.contentHeight / layout.height + .24).toBeLessThanOrEqual(.88);
+        await expect(page.locator('.studio-gifts__preview-stack .studio-letter__text > p')).toHaveText(expected.paragraphs);
         await page.getByRole('button', { name: 'Enlarge letter to read', exact: true }).click();
         const geometry = await letterGeometry(page);
         metrics.push({ ageBand: age, fallback, width: viewport.width, ...geometry });
         if (age === '50 years old') await page.locator('dialog[open]').screenshot({
           path: `generated-artifacts/studio-editorial/fullest-${fallback ? 'fallback' : 'loaded'}-${viewport.width}.jpg`,
         });
+        await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
+        await letterGeometry(page);
+        await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
+        if (!fallback && viewport.width === 1440) {
+          const data = await page.evaluate(async letter => {
+            const { exportStudioLetter } = await import('/src/lib/studioGiftExports.js');
+            return Array.from(new Uint8Array(await (await exportStudioLetter(letter)).arrayBuffer()));
+          }, expected);
+          const file = `generated-artifacts/studio-editorial/longest-${age.replaceAll(' ', '-')}.pdf`;
+          await mkdir('generated-artifacts/studio-editorial', { recursive: true });
+          await writeFile(file, new Uint8Array(data));
+          const document = await PDFDocument.load(new Uint8Array(data));
+          expect(document.getPageCount()).toBe(1);
+          expect(document.getPage(0).getSize()).toEqual({ width: 595.2756, height: 841.8898 });
+          const extracted = execFileSync('pdftotext', [file, '-'], { encoding: 'utf8' }).replace(/\s+/gu, ' ');
+          for (const paragraph of [...expected.paragraphs, 'Santa Claus', ...expected.closing]) {
+            expect(extracted).toContain(paragraph.replace(/\s+/gu, ' '));
+          }
+          const bbox = execFileSync('pdftotext', ['-bbox', file, '-'], { encoding: 'utf8' });
+          const words = [...bbox.matchAll(/<word xMin="([\d.]+)" yMin="([\d.]+)" xMax="([\d.]+)" yMax="([\d.]+)"/gu)];
+          expect(words.length).toBeGreaterThan(200);
+          expect(Math.min(...words.map(word => Number(word[2])))).toBeGreaterThan(841.8898 * .24 - .5);
+          expect(Math.max(...words.map(word => Number(word[4])))).toBeLessThan(841.8898 * .88);
+          expect(Math.min(...words.map(word => Number(word[1])))).toBeGreaterThan(595.2756 * .04);
+          expect(Math.max(...words.map(word => Number(word[3])))).toBeLessThan(595.2756 * .96);
+        }
         await page.keyboard.press('Escape');
       }
     }
@@ -194,6 +263,31 @@ test('authorised catalogue longest rendered combinations across age bands, regio
   }
   await mkdir('generated-artifacts/studio-editorial', { recursive: true });
   await writeFile('generated-artifacts/studio-editorial/geometry.json', JSON.stringify(metrics, null, 2));
+});
+
+test('Jess comparison uses larger shared type without changing the supplied choices or wording', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1200 });
+  await page.goto('/free-santa-message');
+  const details = detailFixture(['11 years old', 'Drawing', 'Finishing your homework on time',
+    'Your rubbish', 'West Yorkshire, England']);
+  details.context.destination = regionalEditorialContext('england-counties', 'countries/england.wav', 'West Yorkshire');
+  expect(details.context.destination.regional).toBe(true);
+  await render(page, { name: 'Jess', details, variant: .5 });
+  await page.getByRole('button', { name: 'Enlarge letter to read', exact: true }).click();
+  await page.evaluate(() => document.fonts.ready);
+  const text = page.locator('dialog[open] .studio-letter__text');
+  const wording = await text.textContent();
+  await letterGeometry(page);
+  await page.locator('dialog[open]').screenshot({ path: 'generated-artifacts/studio-editorial/jess-after.jpg' });
+  const previous = await page.addStyleTag({ content: `
+    .studio-letter__text { font-size:1.95cqw;left:10%;right:10%;line-height:1.25 }
+    .studio-letter__text p { margin-bottom:.5em }
+    .studio-letter__closing { margin-inline:0 }
+  ` });
+  await page.locator('dialog[open]').screenshot({ path: 'generated-artifacts/studio-editorial/jess-before.jpg' });
+  await previous.evaluate(node => node.remove());
+  expect(await text.textContent()).toBe(wording);
+  await letterGeometry(page);
 });
 
 for (const width of [390, 1440]) {
@@ -207,7 +301,7 @@ for (const width of [390, 1440]) {
       const details = detailFixture(values);
       for (const variant of [0, .5, .999]) {
         await render(page, { name: 'Alexandria Rose Montgomery', details, variant });
-        const compact = page.locator('.studio-gifts__gallery .studio-letter__text');
+        const compact = page.locator('.studio-gifts__preview-stack .studio-letter__text');
         const before = await compact.innerText();
         for (const value of fields.map(key => details[key])) expect(before).toContain(value);
         await page.getByRole('button', { name: 'Enlarge letter to read', exact: true }).click();
@@ -239,7 +333,7 @@ for (const width of [390, 1440]) {
     const expected = createStudioLetter('Élodie-Joséphine O’Neill', () => 0, details, variation);
     await page.evaluate(({ details, variation }) =>
       window.contextualLetterRoot({ name: 'Élodie-Joséphine O’Neill', details, variation }), { details, variation });
-    await expect(page.locator('.studio-gifts__gallery .studio-letter__text > p').first()).toHaveText(expected.paragraphs[0]);
+    await expect(page.locator('.studio-gifts__preview-stack .studio-letter__text > p').first()).toHaveText(expected.paragraphs[0]);
     await page.getByRole('button', { name: 'Enlarge letter to read', exact: true }).click();
     await letterGeometry(page);
     await page.setViewportSize({ width: width === 390 ? 844 : 320, height: 700 });

@@ -324,22 +324,28 @@
 
 .studio-letter__text {
   position: absolute;
-  top: 24%;
-  right: 10%;
-  left: 10%;
+  top: var(--letter-top, 24%);
+  right: var(--letter-inset, 6%);
+  left: var(--letter-inset, 6%);
   z-index: 1;
   min-width: 0;
   color: #263e32;
   font-family: Georgia, "Times New Roman", serif;
   /* Scale with the A4 sheet, not its potentially narrow scroll viewport.
-     At 794px A4 width this is 15.48px, equivalent to 11.61pt. */
-  font-size: 1.95cqw;
-  line-height: 1.25;
+     15.4% larger body type; the signature retains its approved size.
+     The wider safe band and tighter paragraph gaps retain the complete prose. */
+  font-size: var(--letter-body, 2.25cqw);
+  line-height: var(--letter-leading, 1.15);
   overflow-wrap: anywhere;
 }
 
 .studio-letter__text p {
-  margin: 0 0 0.5em;
+  margin: 0 0 var(--letter-gap, 0.1em);
+}
+
+.studio-letter__closing {
+  /* The lower corner holly reaches further into the page than the side rule. */
+  margin-inline: var(--letter-closing-inset, 4.5454545%);
 }
 
 .studio-letter__signature {

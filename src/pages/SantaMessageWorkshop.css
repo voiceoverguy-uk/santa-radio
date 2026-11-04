@@ -427,7 +427,7 @@
   padding: 10px 5px;
   border-bottom: 1px solid #d4af372a;
 }
-.smw-summary-row dt { color: #b9c9b9; font-size: .74rem; }
+.smw-summary-row dt { color: #b9c9b9; font-size: calc(.74rem + 2pt); }
 .smw-summary-row dd { margin: 2px 0 0; color: var(--smw-cream); font-size: .94rem; font-weight: 500; }
 .smw-summary-answer {
   display: inline-block;

@@ -1766,7 +1766,7 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 320, height: 568 }
   });
 }
 
-test('desktop and phone review has larger white answers, unchanged labels and navigation', async ({ page }) => {
+test('desktop and phone review has larger white answers, labels increased by two points and unchanged navigation', async ({ page }) => {
   const checkAnswerAppearance = async () => {
     await expect(page.locator('.studio-gifts h4')).toHaveText('Santa gifts');
     const hintText = 'Create your MP3 to unlock these three personalised gift downloads.';
@@ -1790,7 +1790,19 @@ test('desktop and phone review has larger white answers, unchanged labels and na
     }
     for (const label of await page.locator('.smw-summary-row dt').all()) {
       await expect(label).toHaveCSS('color', 'rgb(185, 201, 185)');
-      await expect(label).toHaveCSS('font-size', '11.84px');
+      const size = await label.evaluate(node => {
+        const bounds = node.getBoundingClientRect();
+        const range = document.createRange();
+        range.selectNodeContents(node);
+        return {
+          actual: parseFloat(getComputedStyle(node).fontSize),
+          expected: parseFloat(getComputedStyle(document.documentElement).fontSize) * .74 + 2 * 96 / 72,
+          fits: [...range.getClientRects()].every(rect =>
+            rect.left >= bounds.left - .5 && rect.right <= bounds.right + .5),
+        };
+      });
+      expect(size.actual).toBeCloseTo(size.expected, 2);
+      expect(size.fits).toBe(true);
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
     await expect(page.locator('.smw-name-preview-button')).toHaveCSS('color', 'rgb(255, 248, 231)');
@@ -1813,6 +1825,11 @@ test('desktop and phone review has larger white answers, unchanged labels and na
   await page.setViewportSize({ width: 390, height: 844 });
   await checkAnswerAppearance();
   await photograph(page, 'generated-artifacts/workshop/mobile-review.png');
+  await page.setViewportSize({ width: 320, height: 844 });
+  await checkAnswerAppearance();
+  await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
+  await checkAnswerAppearance();
+  await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
   await page.reload();
   await expect(page.locator('.smw-preview-note')).toHaveCount(0);
   await expectStudioHeader(page);

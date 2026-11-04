@@ -8,6 +8,17 @@ The complete sample letter keeps A4 proportions rather than reflowing as an arti
 
 **How to apply:** Scale the document uniformly to both available popup dimensions after reserving room for the close toolbar. Keep interface controls responsive, including enlarged text, and refit on rotation. Check the actual paragraph bounds against the header/footer and the complete sheet against the popup; do not hide overflow to conceal a fit failure.
 
+When enlarging the letter's body type, retain the complete authored prose and
+the existing letterhead, signature style and watermarks. Use the safe writing
+area rather than shortening letters or enlarging only the popup.
+
+**Why:** The owner requested larger print in both the review and downloaded A4
+letter, explicitly excluding rewriting, shortening or removing content.
+
+**How to apply:** Independently check longest wrapped combinations in the
+browser and embedded PDF font; the same words can wrap differently. Include
+parent-qualified regions, jokes and long written names before choosing a scale.
+
 Studio review must reuse the homepage certificate, picture and letter artwork,
 including the watermarked enlargements. All three use the chosen written name;
 the letter uses the actual age, activity, celebration, treat and destination.

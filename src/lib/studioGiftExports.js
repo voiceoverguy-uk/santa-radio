@@ -5,6 +5,7 @@ import fontkit from '@pdf-lib/fontkit';
 import { certificateDownloadFilename, CERTIFICATE_FONT } from './niceListCertificate.js';
 import { fitSantaPictureName, santaPictureFrames } from './santaPictureLayout.js';
 import { SIGNATURE_FONT, loadRecipientFont, recipientCanvasFont, recipientDisplayName } from './giftFonts.js';
+import { studioLetterLayout as letterType } from './studioLetterLayout.js';
 
 export const LETTER_SERIF = '/certificates/nice-list/CertificateSerif.ttf';
 export const LETTER_HEAD = '/images/santa-radio-letterhead.webp';
@@ -92,21 +93,23 @@ export function wrapLetterText(text, font, size, maxWidth) {
 
 export function layoutStudioLetter(letter, font) {
   const width = 595.2756, height = 841.8898;
-  const maxWidth = width * .8;
-  // Same A4 coordinate system, text region and nominal size as the review.
-  for (let size = width * .0195; size >= 8; size -= .1) {
-    const paragraphs = letter.paragraphs.map(text => wrapLetterText(text, font, size, maxWidth));
-    const closing = letter.closing.map(text => wrapLetterText(text, font, size, maxWidth));
-    const signatureSize = width * .048;
-    const bodyHeight = paragraphs.reduce((sum, lines) => sum + lines.length * size * 1.25 + size * .5, 0);
-    const signatureHeight = signatureSize * 1.5;
-    const closingHeight = closing.reduce((sum, lines) => sum + lines.length * size * 1.25 + size * .5, 0);
-    if (bodyHeight + signatureHeight + closingHeight <= height * .66) {
-      return { width, height, size, signatureSize, paragraphs, closing,
-        x: width * .1, top: height * .76 };
-    }
+  const maxWidth = width * (1 - 2 * letterType.inset);
+  const size = width * letterType.body;
+  const paragraphs = letter.paragraphs.map(text => wrapLetterText(text, font, size, maxWidth));
+  const closing = letter.closing.map(text => wrapLetterText(text, font, size,
+    width * (1 - 2 * letterType.closingInset)));
+  const signatureSize = width * letterType.signature;
+  const paragraphHeight = groups => groups.reduce((sum, lines) =>
+    sum + lines.length * size * letterType.leading + size * letterType.paragraphGap, 0);
+  const contentHeight = paragraphHeight(paragraphs) + signatureSize * 1.5 + paragraphHeight(closing);
+  // Never silently undo the larger type or intrude into the footer to fit.
+  if (contentHeight > height * (letterType.bottom - letterType.top)) {
+    throw new Error('The complete letter cannot fit readably on one page');
   }
-  throw new Error('The complete letter cannot fit readably on one page');
+  return { width, height, size, signatureSize, paragraphs, closing, contentHeight,
+    leading: letterType.leading, paragraphGap: letterType.paragraphGap,
+    x: width * letterType.inset, closingX: width * letterType.closingInset,
+    top: height * (1 - letterType.top) };
 }
 
 export async function exportStudioLetter(letter) {
@@ -123,13 +126,13 @@ export async function exportStudioLetter(letter) {
   const background = await pdf.embedPng(await (await canvasBlob(canvas)).arrayBuffer());
   page.drawImage(background, { x: 0, y: 0, width: layout.width, height: layout.height });
   let y = layout.top - layout.size;
-  const drawParagraphs = paragraphs => {
+  const drawParagraphs = (paragraphs, x = layout.x) => {
     for (const lines of paragraphs) {
       for (const text of lines) {
-        page.drawText(text, { x: layout.x, y, size: layout.size, font: serif, color: rgb(38 / 255, 62 / 255, 50 / 255) });
-        y -= layout.size * 1.25;
+        page.drawText(text, { x, y, size: layout.size, font: serif, color: rgb(38 / 255, 62 / 255, 50 / 255) });
+        y -= layout.size * layout.leading;
       }
-      y -= layout.size * .5;
+      y -= layout.size * layout.paragraphGap;
     }
   };
   drawParagraphs(layout.paragraphs);
@@ -137,7 +140,7 @@ export async function exportStudioLetter(letter) {
   page.drawText('Santa Claus', { x: layout.x, y, size: layout.signatureSize, font: script,
     color: rgb(128 / 255, 96 / 255, 35 / 255) });
   y -= layout.signatureSize * .7;
-  drawParagraphs(layout.closing);
+  drawParagraphs(layout.closing, layout.closingX);
   // No recipient metadata, server storage, preview overlays or DOM screenshots.
   return new Blob([await pdf.save()], { type: 'application/pdf' });
 }
