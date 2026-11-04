@@ -69,7 +69,7 @@
 .message-search-notice p:last-of-type { margin-bottom: 0; }
 .message-search-notice .message-retry { margin: 12px 0 0; }
 .message-search-error { border-color: #eea49a80; }
-.message-submit { width: 100%; min-height: 50px; justify-content: center; cursor: pointer; }
+.message-submit { width: 100%; justify-content: center; cursor: pointer; }
 .santa-message-box .btn-red { font-size: .82rem; }
 .service-notice { font-size: .75rem; color: #b8c6b6; padding-top: 18px; margin-bottom: 0; line-height: 1.7; }
 .message-validation, .message-audio-error { color: #ffc5b8; font-size: .85rem; line-height: 1.6; margin: 0 0 16px; }

@@ -56,26 +56,18 @@
 .studio-gift-download { margin-top: 8px; }
 .studio-gift-download button {
   width: 100%;
-  min-height: 44px;
-  padding: 10px 8px;
-  border: 1px solid #806023;
-  border-radius: 7px;
+  padding-inline: 8px;
+  border-color: #806023;
   background: #f7efd9;
   color: #19392d;
   font: inherit;
   font-size: .8rem;
   font-weight: 700;
   line-height: 1.4;
-  overflow-wrap: anywhere;
   cursor: pointer;
   transition: background-color 160ms ease, border-color 160ms ease;
 }
-.studio-gift-download button:not(:disabled) {
-  background: var(--smw-crimson, #9b111e);
-  color: var(--smw-cream, #fff8e7);
-  border-color: var(--red-action-edge);
-}
-.studio-gift-download button:hover:not(:disabled) { background: #ad1c2b; border-color: var(--red-action-edge-hover); }
+/* Enabled red appearance: red-actions.css. Disabled stays cream. */
 .studio-gift-download button:disabled { opacity: .6; cursor: not-allowed; }
 .studio-gift-download button:focus-visible { outline: 3px solid #e6ce86; outline-offset: 3px; }
 .studio-gift-download p { margin: 6px 0 10px; font-size: .75rem; line-height: 1.4; }

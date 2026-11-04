@@ -70,25 +70,14 @@
     display: inline-flex;
     margin-left: auto;
     width: 60px;
-    height: 44px;
     flex: 0 0 60px;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    border: 1px solid var(--red-action-edge);
-    border-radius: 999px;
-    background: var(--red);
-    color: var(--cream);
     cursor: pointer;
   }
 
   .nav-radio-icon:focus-visible {
-    border-color: var(--red-action-edge-hover);
     outline: 2px solid var(--gold-light, #e6ce86);
     outline-offset: 3px;
   }
-
-  .nav-radio-icon:hover { border-color: var(--red-action-edge-hover); }
 
   .nav-radio-icon .radio-icon-only-label {
     position: absolute;

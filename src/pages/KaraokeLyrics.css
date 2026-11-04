@@ -87,18 +87,12 @@
 
 .karaoke-actions .btn-red {
   display: inline-block;
-  background: linear-gradient(135deg, #b71c1c 0%, #d32f2f 100%);
-  color: white;
   text-decoration: none;
-  padding: 10px 24px;
-  border-radius: 4px;
+  padding-inline: 24px;
   font-weight: 600;
   font-size: 0.9rem;
 }
 
-.karaoke-actions .btn-red:hover {
-  background: linear-gradient(135deg, #d32f2f 0%, #e53935 100%);
-}
 
 .back-link {
   color: #f0d060;

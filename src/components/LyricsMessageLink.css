@@ -5,9 +5,7 @@
 }
 
 .lyrics-message-link > .btn-red {
-  max-width: 100%;
-  min-height: 44px;
-  padding: 9px 18px;
+  padding-inline: 18px;
   font-size: .9rem;
   text-align: center;
 }

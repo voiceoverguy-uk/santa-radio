@@ -2,14 +2,16 @@
 name: Santa Radio visual direction
 description: User's North Pole visual expectations, Santa note voice and player starting state.
 ---
-Website red action buttons should share the gift-download controls' fine muted
-gold edge, retaining stronger hover and visible keyboard-focus treatments.
+Website red action buttons should match the approved Studio gift-download
+controls: compact, softly rounded rectangles around 44px minimum height, a
+fine muted-gold edge and restrained bevel, with visible interactive states.
 
-**Why:** The owner requested consistency with the approved gift previews without
-changing button designs or behaviour.
+**Why:** The owner chose the gift-download controls as the website-wide shape
+and sizing reference, replacing the previous mixture of pills and square corners.
 
-**How to apply:** Preserve fills, geometry and non-red controls. This direction
-is website-only; do not carry it into the iPhone app without a separate request.
+**How to apply:** Preserve wording, placement, behaviour and non-red controls.
+Allow taller wrapping labels for readability. This direction is website-only;
+do not carry it into the iPhone app without a separate request.
 
 Studio review selections should be red text only, without cream/white boxes.
 
@@ -43,7 +45,7 @@ The homepage hero's “FREE Santa Message” button should scroll to the message
 
 **How to apply:** Keep these two entry points distinct; the top navigation still opens the separate message page.
 
-On phones, use the familiar red play/pause pill between the logo and menu rather than showing a large Listen Live button in the homepage hero. Keep desktop and tablet presentation unchanged.
+On phones, keep the red play/pause control between the logo and menu rather than showing a large Listen Live button in the homepage hero. Its shape now follows the shared red-button direction above. Keep desktop and tablet presentation unchanged.
 
 **Why:** The owner approved this mobile-only change to bring the free personalised Santa message into focus, then requested the familiar red pill rather than the outlined square.
 

@@ -48,7 +48,7 @@ A faithful React + Vite rebuild of www.santaradio.co.uk — The World's Best Chr
 - Cinematic North Pole village hero with original optimised imagery at `/images/north-pole-hero.webp` and mobile crop `/images/north-pole-hero-mobile.webp`
 - Deep forest green `#1B4332` / night green `#081e17`, crimson `#9B111E`, gold `#D4AF37`, cream `#FFF8E7`
 - Cinzel normal-weight headings, Inter body/buttons, existing Dancing Script wordmark
-- Crimson pill buttons and fine gold-outline controls; no cartoon snow caps or tree decorations
+- Compact crimson rectangular buttons and fine gold-outline controls; no cartoon snow caps or tree decorations
 - Four-panel countdown below the hero, editorial welcome, message availability, video, soundboard, livestream, celebrity and contact sections
 - Restrained transform-only snowfall and aurora, saved effects toggle and reduced-motion support
 - `src/north-pole.css` applies the shared visual system to all existing listing/detail/legacy pages without changing routes or data
