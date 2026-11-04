@@ -14,6 +14,7 @@ import { PDFDocument } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 import { layoutStudioLetter, wrapLetterText } from '../src/lib/studioGiftExports.js';
 import { expectLeftAlignedLetter } from './helpers/studio-letter-alignment.js';
+import { studioLetterLayout } from '../src/lib/studioLetterLayout.js';
 
 const cases = [
   ['3 months old', 'Learning to talk', 'Being brave', 'Beautiful note', 'England'],
@@ -33,7 +34,7 @@ function detailFixture(values) {
   return details;
 }
 
-async function render(page, { name, details, variant = .67 }) {
+async function render(page, { name, details, variant = .67, downloadReady = false }) {
   await page.evaluate(async props => {
     if (!window.contextualLetterRoot) {
       const [{ default: React }, { default: ReactDOM }, { StudioKeepsakePreview }] = await Promise.all([
@@ -48,7 +49,7 @@ async function render(page, { name, details, variant = .67 }) {
       window.contextualLetterRoot = props => root.render(React.createElement(StudioKeepsakePreview, props));
     }
     window.contextualLetterRoot(props);
-  }, { name, details, variation: createStudioLetterVariation(() => variant) });
+  }, { name, details, downloadReady, variation: createStudioLetterVariation(() => variant) });
   await expect(page.locator('.studio-gifts')).toHaveAttribute('data-demo-name', name);
 }
 
@@ -65,6 +66,8 @@ async function letterGeometry(page) {
     return { paper: paper.toJSON(), text: text.toJSON(), paragraphs,
       scroll: content.scrollHeight - content.clientHeight,
       font: parseFloat(getComputedStyle(dialog.querySelector('.studio-letter__text')).fontSize),
+      leading: parseFloat(getComputedStyle(dialog.querySelector('.studio-letter__text')).lineHeight) /
+        parseFloat(getComputedStyle(dialog.querySelector('.studio-letter__text')).fontSize),
       signature: dialog.querySelector('.studio-letter__signature').getBoundingClientRect().toJSON(),
       width: innerWidth, height: innerHeight };
   });
@@ -76,6 +79,7 @@ async function letterGeometry(page) {
   expect(geometry.paper.right).toBeLessThanOrEqual(geometry.width + .5);
   expect(geometry.scroll).toBeLessThanOrEqual(1);
   expect(geometry.font / geometry.paper.width).toBeCloseTo(.0225, 4);
+  expect(geometry.leading).toBeCloseTo(studioLetterLayout.leading, 2);
   expect(geometry.signature.bottom).toBeLessThan(geometry.paragraphs.at(-2).top);
   for (const paragraph of geometry.paragraphs) {
     expect(paragraph.left).toBeGreaterThanOrEqual(geometry.text.left - .5);
@@ -276,29 +280,72 @@ test('authorised catalogue longest rendered combinations across age bands, regio
   await writeFile('generated-artifacts/studio-editorial/geometry.json', JSON.stringify(metrics, null, 2));
 });
 
-test('Jess comparison uses larger shared type without changing the supplied choices or wording', async ({ page }) => {
+test('Jess comparison opens shared spacing without changing type, choices or wording', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1200 });
   await page.goto('/free-santa-message');
   const details = detailFixture(['11 years old', 'Drawing', 'Finishing your homework on time',
     'Your rubbish', 'West Yorkshire, England']);
   details.context.destination = regionalEditorialContext('england-counties', 'countries/england.wav', 'West Yorkshire');
   expect(details.context.destination.regional).toBe(true);
-  await render(page, { name: 'Jess', details, variant: .5 });
+  await render(page, { name: 'Jess', details, variant: .5, downloadReady: true });
+  const compactSpacing = await page.locator('.studio-gifts__preview-stack .studio-letter__text').evaluate(node => {
+    const style = getComputedStyle(node);
+    const size = parseFloat(style.fontSize);
+    return { leading: parseFloat(style.lineHeight) / size,
+      gap: parseFloat(getComputedStyle(node.querySelector('p')).marginBottom) / size };
+  });
+  expect(compactSpacing.leading).toBeCloseTo(studioLetterLayout.leading, 2);
+  expect(compactSpacing.gap).toBeCloseTo(studioLetterLayout.paragraphGap, 2);
   await page.getByRole('button', { name: 'Enlarge letter to read', exact: true }).click();
   await page.evaluate(() => document.fonts.ready);
   const text = page.locator('dialog[open] .studio-letter__text');
   const wording = await text.textContent();
-  await letterGeometry(page);
+  const after = await letterGeometry(page);
   await page.locator('dialog[open]').screenshot({ path: 'generated-artifacts/studio-editorial/jess-after.jpg' });
   const previous = await page.addStyleTag({ content: `
-    .studio-letter__text { font-size:1.95cqw;left:10%;right:10%;line-height:1.25 }
-    .studio-letter__text p { margin-bottom:.5em }
-    .studio-letter__closing { margin-inline:0 }
+    .studio-letter__text { line-height:1.15 }
   ` });
   await page.locator('dialog[open]').screenshot({ path: 'generated-artifacts/studio-editorial/jess-before.jpg' });
+  const before = await text.evaluate(node => {
+    const paper = node.closest('.studio-letter__paper').getBoundingClientRect();
+    return (node.getBoundingClientRect().bottom - paper.top) / paper.height;
+  });
   await previous.evaluate(node => node.remove());
   expect(await text.textContent()).toBe(wording);
+  expect(after.end).toBeGreaterThan(before + .005);
   await letterGeometry(page);
+  const enlargedSpacing = await text.evaluate(node => {
+    const style = getComputedStyle(node);
+    return { leading: parseFloat(style.lineHeight) / parseFloat(style.fontSize),
+      gap: parseFloat(getComputedStyle(node.querySelector('p')).marginBottom) / parseFloat(style.fontSize) };
+  });
+  expect(enlargedSpacing.leading).toBeCloseTo(compactSpacing.leading, 2);
+  expect(enlargedSpacing.gap).toBeCloseTo(compactSpacing.gap, 2);
+  await page.keyboard.press('Escape');
+  const pendingDownload = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Download letter (PDF)', exact: true }).click();
+  const download = await pendingDownload;
+  expect(download.suggestedFilename()).toBe('Santa-Radio-Letter-Jess.pdf');
+  const file = 'generated-artifacts/studio-editorial/jess-spacing.pdf';
+  await download.saveAs(file);
+  const document = await PDFDocument.load(readFileSync(file));
+  expect(document.getPageCount()).toBe(1);
+  expect(document.getPage(0).getSize()).toEqual({ width: 595.2756, height: 841.8898 });
+  const expected = createStudioLetter('Jess', () => 0, details, createStudioLetterVariation(() => .5));
+  const extracted = execFileSync('pdftotext', [file, '-'], { encoding: 'utf8' }).replace(/\s+/gu, ' ');
+  for (const paragraph of [...expected.paragraphs, 'Santa Claus', ...expected.closing]) {
+    expect(extracted).toContain(paragraph.replace(/\s+/gu, ' '));
+  }
+  const boxes = execFileSync('pdftotext', ['-bbox-layout', file, '-'], { encoding: 'utf8' });
+  const lines = [...boxes.matchAll(/<line xMin="[\d.]+" yMin="([\d.]+)" xMax="[\d.]+" yMax="([\d.]+)"/gu)];
+  const size = 595.2756 * studioLetterLayout.body;
+  // Greeting-to-first-paragraph includes the gap; the following pair are
+  // consecutive wrapped lines in the same paragraph, with leading alone.
+  expect(Number(lines[1][1]) - Number(lines[0][1])).toBeCloseTo(
+    size * (studioLetterLayout.leading + studioLetterLayout.paragraphGap), 3);
+  expect(Number(lines[2][1]) - Number(lines[1][1])).toBeCloseTo(size * studioLetterLayout.leading, 3);
+  expect(Math.min(...lines.map(line => Number(line[1])))).toBeGreaterThan(841.8898 * .24 - .5);
+  expect(Math.max(...lines.map(line => Number(line[2])))).toBeLessThan(841.8898 * .88);
 });
 
 for (const width of [390, 1440]) {

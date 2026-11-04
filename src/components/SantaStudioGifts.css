@@ -334,10 +334,9 @@
   color: #263e32;
   font-family: Georgia, "Times New Roman", serif;
   /* Scale with the A4 sheet, not its potentially narrow scroll viewport.
-     15.4% larger body type; the signature retains its approved size.
-     The wider safe band and tighter paragraph gaps retain the complete prose. */
+     Keep the approved body size and the shared preview/PDF leading in sync. */
   font-size: var(--letter-body, 2.25cqw);
-  line-height: var(--letter-leading, 1.15);
+  line-height: var(--letter-leading, 1.17);
   overflow-wrap: anywhere;
 }
 

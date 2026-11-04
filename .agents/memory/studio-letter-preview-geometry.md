@@ -19,6 +19,16 @@ letter, explicitly excluding rewriting, shortening or removing content.
 browser and embedded PDF font; the same words can wrap differently. Include
 parent-qualified regions, jokes and long written names before choosing a scale.
 
+Prefer a smaller line-spacing increase when matching a spacing reference would
+make supported long letters overflow. Keep the existing body size, complete
+wording, artwork and single A4 page rather than shortening text or adding a page.
+
+**Why:** After the larger increase failed the longest-letter fit checks, the
+owner chose “Use a smaller spacing increase” over shorter wording or a second page.
+
+**How to apply:** Check both browser and PDF wrapping independently; do not
+silently compress an individual letter or conceal content outside the safe area.
+
 Use conventional left-aligned letter writing with a ragged right edge, not
 centred lines or full justification. Keep the decorative letterhead unchanged.
 

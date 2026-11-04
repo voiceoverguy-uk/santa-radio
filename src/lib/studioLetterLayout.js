@@ -2,7 +2,7 @@
 // Keep the full letter above the letterhead's lower ornaments (88% of A4).
 export const studioLetterLayout = Object.freeze({
   body: .0225,
-  leading: 1.15,
+  leading: 1.17,
   paragraphGap: .1,
   inset: .06,
   closingInset: .1,

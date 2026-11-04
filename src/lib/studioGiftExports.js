@@ -102,9 +102,10 @@ export function layoutStudioLetter(letter, font) {
   const paragraphHeight = groups => groups.reduce((sum, lines) =>
     sum + lines.length * size * letterType.leading + size * letterType.paragraphGap, 0);
   const contentHeight = paragraphHeight(paragraphs) + signatureSize * 1.5 + paragraphHeight(closing);
-  // Never silently undo the larger type or intrude into the footer to fit.
-  if (contentHeight > height * (letterType.bottom - letterType.top)) {
-    throw new Error('The complete letter cannot fit readably on one page');
+  // Never silently shrink type/spacing, remove prose or intrude into the footer.
+  const availableHeight = height * (letterType.bottom - letterType.top);
+  if (contentHeight > availableHeight) {
+    throw new Error(`The complete letter cannot fit readably on one page (${contentHeight.toFixed(1)}pt required; ${availableHeight.toFixed(1)}pt available)`);
   }
   return { width, height, size, signatureSize, paragraphs, closing, contentHeight,
     leading: letterType.leading, paragraphGap: letterType.paragraphGap,
