@@ -10,7 +10,7 @@
     "api/names-demo.js": {
       "installCommand": "",
       "maxDuration": 15,
-      "includeFiles": "server/names-demo/{snapshot.json,page.html}"
+      "includeFiles": "server/names-demo/{page.html,asset-manifest.json,assets/**}"
     },
     "api/santa-mobile.js": {
       "installCommand": "",
@@ -62,6 +62,7 @@
   },
   "routes": [
     { "src": "/names", "dest": "/api/names-demo" },
+    { "src": "/names-data/(names-[a-f0-9]{64}\\.json)", "dest": "/api/names-demo" },
     { "src": "/server/names-demo(?:/.*)?", "status": 404 },
     { "src": "/(.*)", "headers": {
       "X-Content-Type-Options": "nosniff",

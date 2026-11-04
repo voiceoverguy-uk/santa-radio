@@ -31,6 +31,9 @@
   li { padding: .7rem .8rem; border-radius: .35rem; cursor: pointer; min-height: 1.5rem; }
   li[aria-selected="true"] { background: #14281b; color: #fffdf5; outline: 3px solid #ffd447; outline-offset: -3px; }
   #status { min-height: 1.5rem; margin-top: .6rem; font-size: .95rem; }
+  #retry { font: inherit; font-weight: 600; padding: .5rem 1rem; border: 2px solid #fffdf5; border-radius: .5rem; background: #fffdf5; color: #14281b; cursor: pointer; }
+  #retry:focus-visible { outline: 3px solid #ffd447; outline-offset: 3px; }
+  #retry[hidden] { display: none; }
   #chosen { margin-top: 1rem; font-size: 1.25rem; font-weight: 700; text-align: center; min-height: 1.75rem; }
 </style>
 </head>
@@ -45,23 +48,67 @@
     <ul id="list" role="listbox" aria-labelledby="q-label" hidden></ul>
   </div>
   <div id="status" role="status" aria-live="polite"></div>
+  <button id="retry" type="button" hidden>Retry</button>
   <div id="chosen" aria-live="polite"></div>
 </main>
 <script>
 (function () {
+  var URL_ = '__NAMES_ASSET_URL__';
   var input = document.getElementById('q');
   var list = document.getElementById('list');
   var status = document.getElementById('status');
   var chosen = document.getElementById('chosen');
-  var timer = null, controller = null, seq = 0, items = [], active = -1;
+  var retry = document.getElementById('retry');
+  var items = [], active = -1;
+  var index = null, keys = null, loading = false, pending = false, composing = false;
 
-  function cancel() {
-    clearTimeout(timer); timer = null;
-    if (controller) { controller.abort(); controller = null; }
-    seq++;
+  function norm(s) {
+    return s.normalize('NFC').replace(/[\u2018\u2019\u02BC\u0060\u00B4]/g, "'").toLocaleLowerCase('en-GB');
+  }
+  function lowerBound(k) {
+    var lo = 0, hi = keys.length;
+    while (lo < hi) { var m = (lo + hi) >>> 1; if (keys[m] < k) lo = m + 1; else hi = m; }
+    return lo;
+  }
+  function build(names) {
+    var arr = names.map(function (n) { return { k: norm(n), n: n }; });
+    arr.sort(function (a, b) { return a.k < b.k ? -1 : a.k > b.k ? 1 : 0; });
+    index = arr; keys = arr.map(function (x) { return x.k; });
+  }
+  function lookup(q) {
+    var k = norm(q), out = [], seen = {};
+    for (var i = lowerBound(k); i < keys.length && out.length < 10; i++) {
+      if (keys[i].lastIndexOf(k, 0) !== 0) break;
+      var n = index[i].n;
+      if (!Object.prototype.hasOwnProperty.call(seen, n)) { seen[n] = 1; out.push(n); }
+    }
+    return out;
+  }
+  function load() {
+    if (loading || index) return;
+    loading = true; retry.hidden = true;
+    status.textContent = 'Loading names\u2026';
+    input.setAttribute('aria-busy', 'true');
+    fetch(URL_, { credentials: 'same-origin' }).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).then(function (d) {
+      if (!Array.isArray(d) || !d.length || d.length > 20000) throw new Error('bad');
+      for (var i = 0; i < d.length; i++) if (typeof d[i] !== 'string') throw new Error('bad');
+      build(d);
+      loading = false; input.removeAttribute('aria-busy');
+      status.textContent = '';
+      if (pending && !composing && document.activeElement === input) update();
+      pending = false;
+    }).catch(function () {
+      loading = false; pending = false; input.removeAttribute('aria-busy');
+      close();
+      status.textContent = 'Error: the list of names could not be loaded.';
+      retry.hidden = false;
+    });
   }
   function close() {
-    list.hidden = true; list.innerHTML = ''; items = []; active = -1;
+    list.hidden = true; list.textContent = ''; items = []; active = -1;
     input.setAttribute('aria-expanded', 'false');
     input.removeAttribute('aria-activedescendant');
   }
@@ -76,7 +123,7 @@
     } else input.removeAttribute('aria-activedescendant');
   }
   function render(names) {
-    list.innerHTML = ''; items = names; active = -1;
+    list.textContent = ''; items = names; active = -1;
     names.forEach(function (n, i) {
       var li = document.createElement('li');
       li.id = 'opt-' + i; li.setAttribute('role', 'option'); li.setAttribute('aria-selected', 'false');
@@ -92,47 +139,36 @@
   function select(i) {
     var name = items[i];
     if (name == null) return;
-    cancel(); close();
+    pending = false; close();
     input.value = name;
     chosen.textContent = 'Selected: ' + name;
     status.textContent = '';
     input.focus();
   }
-  function search(q) {
-    var my = ++seq;
-    controller = new AbortController();
-    var ctl = controller;
-    status.textContent = 'Searching\u2026';
-    fetch('/api/names-demo', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query: q }), signal: ctl.signal, cache: 'no-store'
-    }).then(function (r) {
-      return r.json().catch(function () { return { error: 'Unexpected response.' }; })
-        .then(function (d) { if (!r.ok && !d.error) d.error = 'Search failed.'; return d; });
-    }).then(function (d) {
-      if (my !== seq || ctl.signal.aborted) return;
-      controller = null;
-      if (d.error) { close(); status.textContent = 'Error: ' + d.error; return; }
-      var names = Array.isArray(d.names) ? d.names.filter(function (n) { return typeof n === 'string'; }).slice(0, 10) : [];
-      render(names);
-      status.textContent = names.length ? names.length + (names.length === 1 ? ' name found.' : ' names found.') + ' Use arrow keys to choose.' : 'No names found.';
-    }).catch(function (e) {
-      if (my !== seq || (e && e.name === 'AbortError')) return;
-      controller = null; close();
-      status.textContent = 'Error: could not reach the search. Please try again.';
-    });
-  }
-
-  input.addEventListener('input', function () {
-    cancel();
+  function update() {
     close();
-    chosen.textContent = '';
     var q = input.value.trim();
     var letters = (q.match(/\p{L}/gu) || []).length;
-    if (letters < 2) { close(); status.textContent = q ? 'Type at least two letters.' : ''; return; }
-    timer = setTimeout(function () { timer = null; search(q); }, 160);
+    if (letters < 2) { pending = false; status.textContent = q ? 'Type at least two letters.' : ''; return; }
+    if (!index) {
+      pending = true;
+      if (loading) status.textContent = 'Loading names\u2026';
+      return;
+    }
+    var names = lookup(q);
+    render(names);
+    status.textContent = names.length ? names.length + (names.length === 1 ? ' name found.' : ' names found.') + ' Use arrow keys to choose.' : 'No names found.';
+  }
+
+  input.addEventListener('compositionstart', function () { composing = true; pending = false; close(); });
+  input.addEventListener('compositionend', function () { composing = false; chosen.textContent = ''; update(); });
+  input.addEventListener('input', function (e) {
+    chosen.textContent = '';
+    if (composing || e.isComposing) { pending = false; close(); status.textContent = loading ? 'Loading names\u2026' : ''; return; }
+    update();
   });
   input.addEventListener('keydown', function (e) {
+    if (e.isComposing || composing) return;
     var open = !list.hidden && items.length;
     if (e.key === 'ArrowDown') {
       if (open) { e.preventDefault(); setActive(active < items.length - 1 ? active + 1 : 0); }
@@ -143,12 +179,19 @@
       if (open && active >= 0) select(active);
     } else if (e.key === 'Escape') {
       e.preventDefault();
-      cancel(); close(); status.textContent = 'Suggestions closed.';
+      pending = false; close(); status.textContent = loading ? 'Loading names\u2026' : 'Suggestions closed.';
     }
   });
   input.addEventListener('blur', function () {
-    setTimeout(function () { if (document.activeElement !== input) { cancel(); close(); } }, 0);
+    setTimeout(function () {
+      if (document.activeElement !== input) {
+        pending = false; close();
+        if (!loading && retry.hidden) status.textContent = '';
+      }
+    }, 0);
   });
+  retry.addEventListener('click', function () { load(); });
+  load();
 })();
 </script>
 </body>

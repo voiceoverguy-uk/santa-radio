@@ -62,7 +62,7 @@ const server = createServer(async (req, res) => {
     if (res.writableEnded) return;
     if (pathname.startsWith(`${CLERK_PROXY_PATH}/`)) return clerkProxy(req, res, () => res.writeHead(404).end());
     if (pathname === '/api/name-requests') return nameRequests(req, res);
-    if (pathname === '/names' || pathname === '/api/names-demo') return namesDemo(req, res);
+    if (pathname === '/names' || pathname === '/api/names-demo' || pathname.startsWith('/names-data/')) return namesDemo(req, res);
     if (pathname === '/api/christmas-contenders') return christmasContenders(req, res);
     if (pathname === '/api/stripe/webhook') return stripeWebhook(req, res);
     if (pathname === '/api/santa-studio-access') return studioPaidAccess(req, res);

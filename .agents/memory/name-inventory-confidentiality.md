@@ -3,6 +3,11 @@ name: Name inventory confidentiality
 description: Owner's security requirement superseding earlier public browser inventory, count and preview-URL approvals.
 ---
 
+Exception: the owner explicitly approved a complete public **display-name-only**
+list for the isolated `/names` demo. See [the demo policy](names-demo-snapshot-policy.md).
+This does not authorise public IDs, filenames, audio references or catalogue
+exports from homepage/Studio or any other flow.
+
 Keep the complete name catalogue and original audio locations server-side. Public
 name lookup must be bounded and rate-limited, without bulk/empty/wildcard exports,
 unnecessary totals, client credentials, or names in request URLs or durable
