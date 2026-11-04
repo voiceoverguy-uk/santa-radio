@@ -15,7 +15,7 @@
     "check:dependency-portability": "node scripts/check-dependency-portability.mjs",
     "test:dependency-portability": "node --test scripts/dependency-portability.test.mjs",
     "test:function-layout": "node --test scripts/vercel-function-layout.test.mjs",
-    "test:private-name-search": "node --test scripts/santa-name-snapshot.test.mjs scripts/santa-name-library.test.mjs scripts/santa-name-security.test.mjs scripts/santa-name-count.test.mjs scripts/security-hardening.test.mjs scripts/santa-workshop-names.test.mjs",
+    "test:private-name-search": "node --test scripts/santa-name-snapshot.test.mjs scripts/santa-name-recovery.test.mjs scripts/santa-name-library.test.mjs scripts/santa-name-security.test.mjs scripts/santa-name-count.test.mjs scripts/security-hardening.test.mjs scripts/santa-workshop-names.test.mjs",
     "benchmark:private-name-search": "node scripts/benchmark-private-name-search.mjs",
     "names:index:status": "node scripts/private-name-catalogue.mjs status",
     "names:index:refresh": "node scripts/private-name-catalogue.mjs refresh --confirm-refresh",

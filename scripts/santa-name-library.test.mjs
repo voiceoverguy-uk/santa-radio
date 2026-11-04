@@ -66,7 +66,8 @@ test('cache deduplicates requests, refreshes new names after a minute and caches
   now += 60_001;
   fail = true;
   const unavailable = await library.search('flora');
-  assert.match(unavailable.warning, /hosted name list is unavailable/);
+  assert.match(unavailable.warning, /recorded-name list is temporarily unavailable/);
+  assert.match(unavailable.warning, /incomplete/);
   assert.equal(unavailable.hostedCount, null, 'An outage must not look like zero names.');
   assert.deepEqual(unavailable.records, []);
   assert.equal((await library.search('erin')).records[0].id, 'erin');

@@ -30,7 +30,8 @@ export default function useHostedSantaNameSearch(query, enabled = true) {
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'The name search is temporarily unavailable.');
-        if (!Array.isArray(data.records) || data.records.length > 10 ||
+        if ((data.warning != null && typeof data.warning !== 'string') ||
+            !Array.isArray(data.records) || data.records.length > 10 ||
             data.records.some(record => typeof record.id !== 'string' || typeof record.name !== 'string' ||
               typeof record.selectionToken !== 'string' || typeof record.previewUrl !== 'string')) {
           throw new Error('The name search returned an invalid response. Please retry.');

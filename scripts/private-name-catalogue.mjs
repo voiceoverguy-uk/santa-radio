@@ -11,6 +11,16 @@ try {
     throw Object.assign(new Error(), { code: 'USE_STATUS_OR_REFRESH_WITH_CONFIRM_REFRESH' });
   }
   pool = databasePool();
+  // Read-only readiness on the operator's already-verified target. In
+  // particular, a table alone does not mean the atomic limiter was installed.
+  const readiness = await pool.query(`SELECT
+    to_regclass('public.santa_name_catalogue') IS NOT NULL AS snapshot_table,
+    to_regprocedure('public.santa_consume_name_access(text,text,integer,integer,timestamp with time zone,timestamp with time zone,text)')
+      IS NOT NULL AS atomic_limiter`);
+  console.log(JSON.stringify({ readiness: readiness.rows[0] }));
+  if (!readiness.rows[0]?.snapshot_table || !readiness.rows[0]?.atomic_limiter) {
+    throw Object.assign(new Error(), { code: 'INDEX_SCHEMA_NOT_READY' });
+  }
   if (command === 'refresh') {
     const result = await privateNameSnapshot.refresh({ force: true });
     console.log(JSON.stringify(result));

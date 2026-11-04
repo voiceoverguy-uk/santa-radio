@@ -6,6 +6,7 @@ import { createHash } from 'node:crypto';
 import { findSantaMessage, santaNames, santaMessageDownloadName } from '../src/data/santaMessages.js';
 import { createNameSnapshotStore } from './santa-name-snapshot.js';
 import { createNameSearchIndex } from './santa-name-search-index.js';
+import { nameDiagnostic } from './santa-name-diagnostic.js';
 
 export const NAMES_ROOT = 'https://stagcommunications.com/santaradio/names/';
 export const NAMES_INDEX = `${NAMES_ROOT}names-index.php`;
@@ -95,19 +96,30 @@ export function parseNameIndex(bytes) {
   });
 }
 
-export function createNameLibrary({ fetcher = fetch, now = Date.now, snapshotStore = null } = {}) {
+export function createNameLibrary({ fetcher = fetch, now = Date.now, snapshotStore = null,
+  legacySchemaFallback = false } = {}) {
   let cached;
   let expires = 0;
   let failedUntil = 0;
   let pending;
   const catalogue = async hint => {
-    if (snapshotStore) return snapshotStore.load(hint);
+    if (snapshotStore) {
+      try { return await snapshotStore.load(hint); }
+      catch (error) {
+        // A code-only recovery for databases not yet prepared for the index.
+        // Do not hide connectivity, permissions, integrity or refresh failures.
+        if (!legacySchemaFallback || !['42P01', 'INDEX_NOT_INITIALISED'].includes(error.code)) throw error;
+        nameDiagnostic('catalogue', error);
+      }
+    }
     if (cached && now() < expires) return cached;
     if (now() < failedUntil) throw new NameLibraryError('INDEX_UNAVAILABLE');
     if (!pending) pending = (async () => {
       try {
         const origin = privateOrigin('index');
-        cached = parseNameIndex(await fetchLimited(origin || NAMES_INDEX, MAX_INDEX_BYTES, fetcher, Boolean(origin)));
+        const records = parseNameIndex(await fetchLimited(origin || NAMES_INDEX, MAX_INDEX_BYTES, fetcher, Boolean(origin)));
+        if (legacySchemaFallback && !records.length) throw new NameLibraryError('INDEX_EMPTY');
+        cached = records;
         expires = now() + CACHE_MS;
         return cached;
       } catch (error) {
@@ -135,7 +147,10 @@ export function createNameLibrary({ fetcher = fetch, now = Date.now, snapshotSto
       let hosted = [];
       let warning = null;
       try { hosted = await catalogue(hint); }
-      catch { warning = 'The hosted name list is unavailable. Only existing recordings are shown. Please try refreshing the names shortly.'; }
+      catch (error) {
+        nameDiagnostic('catalogue', error);
+        warning = 'The full recorded-name list is temporarily unavailable. Only available local recordings are shown; this search may be incomplete. Please retry shortly.';
+      }
       return { records: prepared(hosted).search(input),
         hostedCount: warning ? null : hosted.length, warning };
     },
@@ -230,4 +245,4 @@ export const privateNameSnapshot = createNameSnapshotStore({
     return fetchLimited(origin || NAMES_INDEX, MAX_INDEX_BYTES, fetch, Boolean(origin));
   },
 });
-export const santaNameLibrary = createNameLibrary({ snapshotStore: privateNameSnapshot });
+export const santaNameLibrary = createNameLibrary({ snapshotStore: privateNameSnapshot, legacySchemaFallback: true });

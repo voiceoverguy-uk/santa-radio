@@ -1,5 +1,6 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { databasePool } from './name-request-store.js';
+import { nameDiagnostic } from './santa-name-diagnostic.js';
 
 export const SEARCH_MIN_LENGTH = 2;
 export const SEARCH_LIMIT = 10;
@@ -27,6 +28,29 @@ function secret() {
   return value;
 }
 const mac = (value, key) => createHmac('sha256', key).update(value).digest('base64url');
+
+// Compatibility with the pre-index database. This is the previous persistent
+// transaction, not an in-memory limiter or a schema installer. Either bucket
+// failing rolls back both; a missing limits table or unavailable DB still fails.
+async function consumeLegacyNameAccess(pool, buckets, expires, now) {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    for (const [bucket, maximum] of buckets) {
+      const result = await client.query(`INSERT INTO santa_name_request_limits(bucket_key, expires_at)
+        VALUES($1,$2) ON CONFLICT(bucket_key) DO UPDATE
+        SET attempts=santa_name_request_limits.attempts+1
+        WHERE santa_name_request_limits.attempts < $3 RETURNING attempts`, [bucket, expires, maximum]);
+      if (!result.rowCount) throw Object.assign(new Error('NAME_ACCESS_LIMIT'), { code: 'P0001' });
+    }
+    await client.query(`DELETE FROM santa_name_request_limits WHERE bucket_key IN
+      (SELECT bucket_key FROM santa_name_request_limits WHERE expires_at <= $1 LIMIT 100)`, [new Date(now)]);
+    await client.query('COMMIT');
+  } catch (error) {
+    await client.query('ROLLBACK').catch(() => {});
+    throw error;
+  } finally { client.release(); }
+}
 export function issueNameToken(id, scope, now = Date.now(), key = secret()) {
   const payload = Buffer.from(JSON.stringify({ id, scope, exp: now + TOKEN_MS })).toString('base64url');
   return `${payload}.${mac(`name-access:${payload}`, key)}`;
@@ -54,9 +78,18 @@ export async function consumeNameAccess(req, scope, { now = Date.now(), pool = d
   if (!MAXIMUM[scope] || !GLOBAL_MAXIMUM[scope]) throw new Error('Unknown name-access scope.');
   try {
     const bucket = identity => `name-access:${scope}:${window}:${mac(identity, key)}`;
-    const result = await pool.query(`SELECT santa_consume_name_access($1,$2,$3,$4,$5,$6,$7) AS catalogue`,
-      [bucket('global'), bucket(`address:${address}`), GLOBAL_MAXIMUM[scope], MAXIMUM[scope], expires, new Date(now), scope]);
-    return result.rows[0]?.catalogue || undefined;
+    const global = bucket('global'), visitor = bucket(`address:${address}`);
+    try {
+      const result = await pool.query(`SELECT santa_consume_name_access($1,$2,$3,$4,$5,$6,$7) AS catalogue`,
+        [global, visitor, GLOBAL_MAXIMUM[scope], MAXIMUM[scope], expires, new Date(now), scope]);
+      return result.rows[0]?.catalogue || undefined;
+    } catch (error) {
+      // PostgreSQL missing function/relation only. Connectivity, permissions,
+      // signing and limit failures must never switch to a weaker path.
+      if (!['42883', '42P01'].includes(error.code)) throw error;
+      nameDiagnostic('limiter', error);
+      await consumeLegacyNameAccess(pool, [[global, GLOBAL_MAXIMUM[scope]], [visitor, MAXIMUM[scope]]], expires, now);
+    }
   } catch (error) {
     if (error.code === 'P0001' && error.message === 'NAME_ACCESS_LIMIT') {
       error = new Error('Too many requests. Please wait before trying again.');

@@ -65,6 +65,7 @@ export default function HeroNameChecker({ onContinue, onSelectedNameChange }) {
     : search.loading ? 'Checking Santa’s recorded names…'
       : search.error ? search.error
         : name.trim().length === 1 ? 'Enter at least two letters to search Santa’s recorded names.'
+        : search.warning ? 'The full recorded-name list could not be checked. Available suggestions may be incomplete; please retry.'
         : name.trim() && !options.length
           ? 'We haven’t found that spelling. Try a shorter name or another spelling.'
           : name.trim() ? `${options.length} matching ${options.length === 1 ? 'name' : 'names'}. Choose a name from the list.`
@@ -85,7 +86,7 @@ export default function HeroNameChecker({ onContinue, onSelectedNameChange }) {
       }
       if (!selected) {
         setValidation(name.trim()
-          ? search.error || (search.loading
+          ? search.error || search.warning || (search.loading
             ? 'Please wait while Santa checks the name list.'
             : 'Please choose one of Santa’s recorded names from the list.')
           : 'Please enter a child’s name, then choose a suggestion.');
@@ -145,7 +146,12 @@ export default function HeroNameChecker({ onContinue, onSelectedNameChange }) {
         </ul>}
       </div>
       <p className={`hero-name-checker__status${search.blocked || validation ? ' hero-name-checker__status--error' : ''}`} id={`${id}-status`} role="status" aria-live="polite" aria-atomic="true">{search.blocked ? BLOCKED_NAME_NOTE : validation || status}</p>
-      {search.error && <button type="button" className="hero-name-checker__retry" onClick={search.refresh}>Retry name search</button>}
+      {selected && search.warning && <p role="status">{search.warning}</p>}
+      {(search.error || search.warning) && <button type="button" className="hero-name-checker__retry" onClick={() => {
+        setOpen(true);
+        inputRef.current?.focus({ preventScroll: true });
+        search.refresh();
+      }}>Retry name search</button>}
       <button className="btn-red hero-name-checker__submit" type="submit">Create my free Santa message →</button>
     </form>
   </section>;

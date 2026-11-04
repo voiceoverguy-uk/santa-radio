@@ -20,6 +20,26 @@ data. Warm searches use that metadata without a separate freshness query. This
 metadata is not included in the browser response. Expired-bucket cleanup is
 indexed, bounded and periodically performed inside the same call.
 
+### Compatibility while production setup is pending
+
+The recovery release does not require new production schema. When PostgreSQL
+reports the optimisation function or relation is missing (`42883`/`42P01`),
+the limiter uses the previous persistent transaction against the existing limits
+table. It uses the same HMAC bucket identities, limits, expiry, cleanup and
+all-or-nothing rejection. Old and optimised instances share the same capacity.
+No limits table is created; missing base storage, denied permissions and database
+connection failures remain unavailable, not unlimited.
+
+Only when the private snapshot relation or singleton row is missing does the
+shared library use the previous server-only source loader: a 60-second private
+instance cache, concurrent-load coalescing and ten-second failure backoff. Empty,
+invalid or failed sources produce an explicit incomplete/local-only warning.
+The complete catalogue and source URLs are never returned to browsers. Existing
+snapshot integrity/refresh failures do not activate this compatibility loader.
+Prepared databases keep the persistent daily snapshot and indexed warm path.
+The compatibility path temporarily gives up coordinated daily origin refreshes;
+it is not the optimised performance guarantee or a claim of hosted recovery.
+
 ## Refresh rules
 
 - Regular successful origin refreshes are separated by 24 hours across all
@@ -71,6 +91,12 @@ success. Neither command prints the catalogue, record filenames or credentials.
 Use the existing secrets tooling to supply configuration; never put credentials
 in command arguments, source files or logs.
 
+Both commands first report read-only readiness booleans for the snapshot table
+and the exact atomic-limiter function signature. `INDEX_SCHEMA_NOT_READY` means
+the target is not ready for this release; the command does not repair it.
+`status` never claims a table alone proves the limiter exists and never refreshes
+the index.
+
 The existing authenticated HTTPS origin gateway is used when configured. The
 legacy compatibility source remains as before; this change does not revoke
 previously disclosed origin URLs or prove that origin-host restrictions are
@@ -82,7 +108,8 @@ The reviewed SQL is in `database/santa-name-catalogue.sql`, alongside the existi
 name-request schema. It adds a private snapshot table, an expiry index and the
 atomic limiter function. There is **no** startup, build, public-request or
 production auto-migration. Runtime never installs schema or bypasses missing
-storage; missing schema fails closed.
+limiter storage. Missing optimisation schema uses the compatibility path above;
+unavailable base storage still fails closed.
 
 The development database was identified by an explicit development-database
 callback and matched against the app connection using a non-secret server-side
@@ -90,7 +117,7 @@ fingerprint before development setup. Only that development target was prepared
 and primed. No production schema, production index, live deployment, origin-host
 configuration or audio storage was changed.
 
-Before production rollout, obtain separate approval, identify the actual Vercel
+Before production rollout of the optimisation, obtain separate approval, identify the actual Vercel
 database/provider, and apply the reviewed schema/function using that target's
 normal process **before** deploying code that expects them. Do not assume Replit
 Publish migrates an external Vercel database. Keep the function while rolling back
@@ -128,6 +155,46 @@ remote production database. Reports are ignored under
 `generated-artifacts/private-name-search/`; no real inventory is written there.
 
 See the recorded results below. Local success is not a production speed claim.
+
+## Recorded-name outage investigation — 4 November 2026
+
+A bounded request to the actual www host returned HTTP 503 and private/no-store
+headers. A separate browser visit to its homepage reproduced a POST with no
+query-string input, HTTP 503, no selectable suggestions and the generic
+temporarily-unavailable status. This confirms the reported hosted failure, not
+its database or upstream cause. The live Studio selection/preview flow has not
+been verified.
+
+The serving Vercel deployment was identified through the www alias. Available
+runtime output did not expose a useful name-service diagnostic. The read-only
+production database check was rejected because this session lacked authenticated
+production database access. No schema, index refresh, source or deployment was
+changed. Missing setup remains a hypothesis, not an established diagnosis.
+
+Workspace changes make incomplete searches explicit in the homepage, free
+picker and Studio, keep useful local choices, suppress definitive absence and
+missing-name requests during failures, and reopen suggestions after retry.
+Server logs contain only an internal stage and an allowlisted error code,
+throttled per instance; they never include the query, error message, SQL, source,
+catalogue payload, token or connection details. These diagnostics are not on the
+hosted site until a separately approved release.
+
+Isolated regressions use real shared handlers and disposable PostgreSQL for
+missing table/function, failed or empty bootstrap, usable local recordings,
+successful matching/no-match, failed refresh with a validated prior snapshot,
+and protected preview/message capability continuity. Browser regressions cover
+all three pickers at desktop and phone widths with the real handler connected to
+that isolated store. These are workspace checks, not hosted recovery evidence.
+
+Next required evidence: obtain authenticated **read-only** access to the approved
+production database and recheck its binding to the serving www deployment. Check
+table/function readiness and safe snapshot status there to confirm or rule out
+missing setup as the cause. At the owner's request, the code-only compatibility
+repair is being handed over for their normal Vercel release and live testing
+instead of blocking on database access. No live recovery is claimed by this
+handover. Any schema sync or operator bootstrap/refresh still needs separate
+approval naming the target and operation. After release, verify only a few
+bounded lookups, selection and protected preview on the actual host.
 
 ### Recorded local result — 4 November 2026
 

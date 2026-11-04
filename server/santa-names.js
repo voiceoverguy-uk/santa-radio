@@ -1,6 +1,7 @@
 import { santaNameLibrary } from './santa-name-library.js';
 import { BLOCKED_NAME_NOTE, isBlockedName } from '../src/lib/nameLanguage.js';
 import { consumeNameAccess, issueNameToken, privateResponse, readNameJson, SEARCH_LIMIT, SEARCH_MIN_LENGTH } from './santa-name-security.js';
+import { nameDiagnostic } from './santa-name-diagnostic.js';
 
 export function createSantaNamesHandler(library = santaNameLibrary, {
   limit = consumeNameAccess, token = issueNameToken,
@@ -39,6 +40,7 @@ export function createSantaNamesHandler(library = santaNameLibrary, {
       }));
       return send(200, { records, warning: result.warning || null });
     } catch (error) {
+      if (!error.status) nameDiagnostic('search', error);
       if (error.retryAfter) res.setHeader('Retry-After', String(error.retryAfter));
       return send(error.status || 503, { error: error.status ? error.message : 'The name search is temporarily unavailable. Please try again.' });
     }

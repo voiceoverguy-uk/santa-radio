@@ -92,6 +92,9 @@ export default function WorkshopNamePicker({ selected, initialName = '', onSelec
   }
 
   function handleRetry() {
+    window.clearTimeout(blurTimer.current);
+    setIsOpen(true);
+    inputRef.current?.focus({ preventScroll: true });
     search.refresh();
   }
 
@@ -129,7 +132,7 @@ export default function WorkshopNamePicker({ selected, initialName = '', onSelec
           aria-expanded={showListbox}
           aria-controls={listboxId}
           aria-activedescendant={showListbox && activeIndex >= 0 ? `${listboxId}-option-${activeIndex}` : undefined}
-          aria-describedby={validationId}
+          aria-describedby={[validationId, `${inputId}-status`].filter(Boolean).join(' ')}
           aria-invalid={!!invalid}
         />
         {showListbox && (
@@ -157,7 +160,7 @@ export default function WorkshopNamePicker({ selected, initialName = '', onSelec
         )}
       </div>
 
-      <p className="smw-name-count" aria-live="polite">
+      <p className="smw-name-count" id={`${inputId}-status`} aria-live="polite">
         Enter at least two letters to search recorded names.
       </p>
 
@@ -174,13 +177,20 @@ export default function WorkshopNamePicker({ selected, initialName = '', onSelec
       {requestState.status === 'error' && (
         <div className="smw-name-error-panel" role="alert">
           <p>{requestState.message}</p>
-          <button className="smw-name-retry" type="button" onClick={handleRetry}>Retry hosted list</button>
+          <button className="smw-name-retry" type="button" onClick={handleRetry}>Retry name search</button>
+        </div>
+      )}
+      {search.warning && (
+        <div className="smw-name-error-panel" role="status">
+          <p>{search.warning}</p>
+          <p>The full recorded-name list could not be checked. Available suggestions may be incomplete.</p>
+          <button className="smw-name-retry" type="button" onClick={handleRetry}>Retry name search</button>
         </div>
       )}
 
       {requestState.status === 'ready' && (
         <>
-          {query.trim().length >= 2 && matchingRecords.length === 0 && (
+          {query.trim().length >= 2 && matchingRecords.length === 0 && !search.warning && (
             <div className="smw-name-empty" role="status">
               <p>Santa has not recorded “{query.trim()}” yet. Try another spelling or refine your search.</p>
               <p className="smw-name-soundalike">

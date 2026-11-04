@@ -54,6 +54,10 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const normalNameSearch = useSantaNames(keepSignupInPlace ? '' : name, hasAccess && !keepSignupInPlace);
   const privateNameSearch = useHostedSantaNameSearch(name, keepSignupInPlace);
   const nameSearch = keepSignupInPlace ? privateNameSearch : normalNameSearch;
+  const retryNameSearch = () => {
+    setSuggesting(true);
+    nameSearch.refresh();
+  };
   const hostedNameTotal = useSantaNameTotal();
   const displayedNameCount = useSantaNameCounter(hostedNameTotal);
   const availableNamesText = displayedNameCount !== null
@@ -413,11 +417,11 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
           {nameSearch.warning && <div className="message-search-notice" role="status">
             <p>{nameSearch.warning}</p>
             <p>Only existing local recordings are known right now; this list may be incomplete.</p>
-            <button className="message-retry" type="button" onClick={nameSearch.refresh}>Refresh name list</button>
+            <button className="message-retry" type="button" onClick={retryNameSearch}>Refresh name list</button>
           </div>}
           {nameSearch.error && <div className="message-search-notice message-search-error" role="alert">
             <p>{nameSearch.error}</p>
-            <button className="message-retry" type="button" onClick={nameSearch.refresh}>Retry name search</button>
+            <button className="message-retry" type="button" onClick={retryNameSearch}>Retry name search</button>
           </div>}
           {!nameSearch.loading && !nameSearch.error && name.trim() && !suggestions.length && <p className="message-search-status" role="status">
             {nameSearch.warning

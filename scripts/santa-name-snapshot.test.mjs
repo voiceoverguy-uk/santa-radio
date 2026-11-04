@@ -128,7 +128,8 @@ test('real PostgreSQL limiter is atomic under concurrency, rolls back both bucke
     const failing = { query: async () => { throw Object.assign(new Error('unavailable'), { code: '08006' }); } };
     await assert.rejects(consumeNameAccess(request('same'), 'search', { ...opts, pool: failing }), { code: '08006' });
     await pool.query('DROP FUNCTION santa_consume_name_access(text,text,integer,integer,timestamptz,timestamptz,text)');
-    await assert.rejects(consumeNameAccess(request('same'), 'search', opts), { code: '42883' });
+    assert.equal(await consumeNameAccess(request('same'), 'search', { ...opts, now: now + 120000 }), undefined,
+      'missing optimisation function uses the previous persistent atomic transaction');
   });
 });
 
