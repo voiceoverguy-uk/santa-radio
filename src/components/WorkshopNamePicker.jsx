@@ -193,11 +193,11 @@ export default function WorkshopNamePicker({ selected, initialName = '', onSelec
 
       {requestState.status === 'loading' && (
         <div className="smw-name-loading" role="status" aria-live="polite">
-          <span className="smw-visually-hidden">Loading hosted recorded names.</span>
-          <div className="smw-name-skeletons" aria-hidden="true">
-            <span className="smw-name-skeleton" />
-            <span className="smw-name-skeleton" />
-          </div>
+          <svg className="smw-name-loading-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"
+            fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9 4.9 19.1M9 3l3 3 3-3M9 21l3-3 3 3M3 9l3 3-3 3M21 9l-3 3 3 3" />
+          </svg>
+          <span>Finding Santa’s recording…</span>
         </div>
       )}
 

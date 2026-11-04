@@ -1727,7 +1727,7 @@ for (const width of [390, 1440]) {
     await expect(search).toHaveAttribute('aria-activedescendant', /-option-0$/);
     await search.press('Enter');
     try {
-      await expect(picker.getByRole('status')).toContainText('Loading hosted recorded names.');
+      await expect(picker.getByRole('status')).toContainText('Finding Santa’s recording…');
       await expectNoHint();
     } finally { release(); }
     await expect(picker.getByRole('alert')).toContainText('Recording temporarily unavailable.');
