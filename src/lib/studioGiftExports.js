@@ -64,7 +64,9 @@ export async function exportStudioPicture(name, picture) {
   context.scale(canvas.width / 1536, canvas.height / 1024);
   context.font = recipientCanvasFont(fit.size);
   context.fillStyle = '#19392d';
-  context.fillText(recipientDisplayName(name), frame.x + fit.x, frame.y + fit.y);
+  for (const line of fit.lines) {
+    context.fillText(line.text, frame.x + line.x, frame.y + line.y);
+  }
   context.restore();
   return canvasBlob(canvas);
 }

@@ -1,5 +1,4 @@
 import useGiftNameFit from './useGiftNameFit.js';
-import { recipientDisplayName } from '../lib/giftFonts.js';
 import { santaPictureFrames as frames, santaPicturePreferredSize as preferredSize,
   fitSantaPictureName } from '../lib/santaPictureLayout.js';
 
@@ -15,9 +14,9 @@ export default function SantaPictureName({ name, picture, children }) {
       visibility: fit ? undefined : 'hidden',
     }}>
     {children(<svg viewBox={`0 0 ${frame.width} ${frame.height}`} aria-hidden="true">
-      {/* A shared artwork coordinate system scales uniformly on every resize;
-          no textLength, clipping, line wrapping or horizontal compression. */}
-      <text x={fit?.x || 0} y={fit?.y || 0} fontSize={fit?.size || preferredSize}>{recipientDisplayName(name)}</text>
+      {/* Preview and PNG use the same measured lines and artwork coordinates. */}
+      <text fontSize={fit?.size || preferredSize}>{fit?.lines.map((line, index) =>
+        <tspan key={index} x={line.x} y={line.y}>{line.text}{index < fit.lines.length - 1 ? ' ' : ''}</tspan>)}</text>
     </svg>)}
   </span>;
 }

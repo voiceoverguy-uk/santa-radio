@@ -42,6 +42,89 @@ async function spelling(page, name) {
   await page.getByRole('button', { name: 'Use this spelling', exact: true }).click();
 }
 
+test('Studio spelling keeps the 80-character boundary and wraps only Santa picture names', async ({ page, context }) => {
+  test.setTimeout(90000);
+  const fixture = await review(page);
+  const edit = page.getByRole('button', { name: 'Edit certificate name', exact: true });
+  await edit.click();
+  const input = page.getByRole('textbox', { name: 'Name spelling', exact: true });
+  const confirm = page.getByRole('button', { name: 'Use this spelling', exact: true });
+  await expect(input).toHaveAttribute('maxlength', '80');
+  await expect(input).toHaveAttribute('placeholder', 'Name only — no naughty words');
+  const maximum = 'A'.repeat(80);
+  await input.fill('');
+  await input.pressSequentially(`${maximum}B`);
+  await expect(input).toHaveValue(maximum);
+  await confirm.click();
+  await expect(input).toBeHidden();
+  await expect(page.locator('.smw-written-name-value')).toHaveText(maximum);
+
+  await edit.click();
+  await input.fill('');
+  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  await page.evaluate(value => navigator.clipboard.writeText(value), `${maximum}B`);
+  await input.press('Control+V');
+  await expect(input).toHaveValue(maximum);
+  await confirm.click();
+  await edit.click();
+  // A restored or programmatically injected over-limit draft must not confirm.
+  await input.evaluate(node => node.removeAttribute('maxlength'));
+  await input.fill(`${maximum}B`);
+  await input.evaluate(node => node.maxLength = 80);
+  await confirm.click();
+  await expect(input).toBeVisible();
+  await expect(input).toHaveAttribute('aria-invalid', 'true');
+  await expect(page.locator('.smw-written-name-error')).toHaveText('Please keep the name to 80 characters or fewer.');
+  await page.getByRole('button', { name: 'Cancel', exact: true }).click();
+  await expect(page.locator('.smw-written-name-value')).toHaveText(maximum);
+  await edit.click();
+  await page.getByRole('button', { name: 'Use recorded spelling', exact: true }).click();
+  await expect(page.locator('.smw-written-name-value')).toHaveText('Dixie');
+
+  const name = 'Alexandria-Catherine Elizabeth Montgomery-Worthington';
+  await spelling(page, name);
+  const pictureText = page.locator('.studio-gifts__preview-stack .studio-santa-picture__name text');
+  await expect(pictureText.locator('tspan')).toHaveText(['Alexandria-Catherine ', 'Elizabeth Montgomery-Worthington']);
+  const coordinates = await pictureText.locator('tspan').evaluateAll(nodes =>
+    nodes.map(node => Number(node.getAttribute('y'))));
+  expect(coordinates[1]).toBeGreaterThan(coordinates[0]);
+  await expect(page.locator('.studio-certificate__name')).toHaveText(name);
+  await expect(letterText(page)).toContainText(name);
+  await expect(page.locator('.smw-summary-row').first()).toContainText('Dixie');
+  // Export uses exactly the same measured lines as the preview (real PNG).
+  const exported = await page.evaluate(async name => {
+    const { exportStudioPicture } = await import('/src/lib/studioGiftExports.js');
+    const original = CanvasRenderingContext2D.prototype.fillText;
+    const calls = [];
+    CanvasRenderingContext2D.prototype.fillText = function (text, x, y, ...rest) {
+      calls.push({ text, x, y });
+      return original.call(this, text, x, y, ...rest);
+    };
+    try {
+      const blob = await exportStudioPicture(name, '/images/santa-nice-list.jpg');
+      return { type: blob.type, bytes: blob.size, calls };
+    } finally { CanvasRenderingContext2D.prototype.fillText = original; }
+  }, name);
+  expect(exported.type).toBe('image/png');
+  expect(exported.bytes).toBeGreaterThan(1000);
+  expect(exported.calls.map(call => call.text)).toEqual(['Alexandria-Catherine', 'Elizabeth Montgomery-Worthington']);
+  for (const [index, call] of exported.calls.entries()) {
+    expect(call.y - 502).toBeCloseTo(coordinates[index], 8);
+  }
+  expect(fixture.posts).toHaveLength(0);
+  await confirmMessage(page);
+  await expect(page.locator('.smw-message-result audio')).toBeVisible();
+  expect(fixture.posts[0].name).toBe('dixie-variant');
+  const audioUrl = await page.locator('.smw-message-result audio').getAttribute('src');
+  await spelling(page, 'Élodie O’Neill & Doggy');
+  await expect(page.locator('.smw-message-result audio')).toHaveAttribute('src', audioUrl);
+  expect(fixture.posts).toHaveLength(1);
+  await page.setViewportSize({ width: 1365, height: 1000 });
+  await page.locator('.studio-gifts__preview-stack .studio-santa-picture').screenshot({
+    path: 'generated-artifacts/studio-gifts/wrapped-picture-name.png', animations: 'disabled',
+  });
+});
+
 async function save(page, label, file) {
   const pending = page.waitForEvent('download');
   await page.getByRole('button', { name: label, exact: true }).click();
@@ -235,7 +318,7 @@ for (const width of [320, 1365]) {
     await page.getByRole('button', { name: 'Edit certificate name', exact: true }).click();
     const input = page.getByRole('textbox', { name: 'Name spelling', exact: true });
     const confirm = page.getByRole('button', { name: 'Use this spelling', exact: true });
-    await expect(input).toHaveAttribute('placeholder', 'Name only — no swear words');
+    await expect(input).toHaveAttribute('placeholder', 'Name only — no naughty words');
     const warning = 'Bad language is not allowed. Remove it before creating your images.';
     for (const offensive of ['Fuck You', 'Anne Fuck Smith', 'F-u-c-k You', 'Fúck']) {
       await input.fill(offensive);
@@ -461,11 +544,13 @@ test('letter asset failure is retryable; picture fitting shares the review geome
       return Object.keys(santaPictureFrames).map(picture => {
         const fit = fitSantaPictureName(context, name, picture);
         context.font = recipientCanvasFont(fit.size);
-        const ink = context.measureText(name);
-        return { left: fit.x - ink.actualBoundingBoxLeft, right: fit.x + ink.actualBoundingBoxRight,
-          top: fit.y - ink.actualBoundingBoxAscent, bottom: fit.y + ink.actualBoundingBoxDescent,
-          frame: santaPictureFrames[picture] };
-      });
+        return fit.lines.map(line => {
+          const ink = context.measureText(line.text);
+          return { left: line.x - ink.actualBoundingBoxLeft, right: line.x + ink.actualBoundingBoxRight,
+            top: line.y - ink.actualBoundingBoxAscent, bottom: line.y + ink.actualBoundingBoxDescent,
+            frame: santaPictureFrames[picture] };
+        });
+      }).flat();
     }, name);
     for (const bounds of result) {
       expect(bounds.left).toBeGreaterThanOrEqual(-1);

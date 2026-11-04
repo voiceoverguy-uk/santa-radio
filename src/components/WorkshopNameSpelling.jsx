@@ -3,6 +3,7 @@ import {
   getWorkshopDownloadName,
   getWorkshopWrittenName,
   validateWorkshopSpelling,
+  WORKSHOP_SPELLING_MAX_LENGTH,
 } from '../lib/workshopNameSpelling.js';
 import WorkshopSpellingSuggestion from './WorkshopSpellingSuggestion.jsx';
 import { normaliseRequestedName } from '../lib/santaNameRequests.js';
@@ -117,9 +118,9 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
                     id={fieldId}
                     className="smw-written-name-input"
                     type="text"
-                    maxLength={160}
+                    maxLength={WORKSHOP_SPELLING_MAX_LENGTH}
                     value={draft}
-                    placeholder="Name only — no swear words"
+                    placeholder="Name only — no naughty words"
                     onChange={event => {
                       setDraft(event.target.value);
                       if (error) setError('');

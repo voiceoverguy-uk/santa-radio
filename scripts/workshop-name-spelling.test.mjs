@@ -2,6 +2,50 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { getWorkshopWrittenName, getWorkshopDownloadName, validateWorkshopSpelling } from '../src/lib/workshopNameSpelling.js';
 import { containsWorkshopProfanity, WORKSHOP_LANGUAGE_ERROR } from '../src/lib/workshopSpellingLanguage.js';
+import { wrapSantaPictureName, fitSantaPictureName, santaPictureFrames } from '../src/lib/santaPictureLayout.js';
+
+test('written spelling accepts 80 characters and rejects 81 without truncating recorded names', () => {
+  const name = 'A'.repeat(80);
+  assert.equal(validateWorkshopSpelling(name), '');
+  assert.equal(getWorkshopWrittenName('Wendi', name), name);
+  assert.equal(validateWorkshopSpelling(`${name}A`), 'Please keep the name to 80 characters or fewer.');
+  const recordedName = 'A'.repeat(90);
+  assert.equal(getWorkshopWrittenName(recordedName, ''), recordedName);
+  assert.equal(getWorkshopWrittenName(recordedName, `${name}A`), recordedName);
+});
+
+test('Santa picture names wrap only at the first space at or after 16 characters', () => {
+  assert.deepEqual(wrapSantaPictureName('Alice'), ['Alice']);
+  assert.deepEqual(wrapSantaPictureName('A'.repeat(80)), ['A'.repeat(80)]);
+  assert.deepEqual(wrapSantaPictureName('Alexandria-Catherine Elizabeth Montgomery-Worthington'),
+    ['Alexandria-Catherine', 'Elizabeth Montgomery-Worthington']);
+  assert.deepEqual(wrapSantaPictureName('Anne Marie Alice Jane Rose'),
+    ['Anne Marie Alice', 'Jane Rose']);
+  assert.deepEqual(wrapSantaPictureName('Élodie O’Neill & Doggy Smith'),
+    ['Élodie O’Neill &', 'Doggy Smith']);
+});
+
+test('Santa picture fitting centres every line and keeps the full block inside every parchment', () => {
+  const context = { measureText: text => ({
+    actualBoundingBoxLeft: 0, actualBoundingBoxRight: text.length * 500,
+    actualBoundingBoxAscent: 750, actualBoundingBoxDescent: 250,
+  }) };
+  for (const picture of Object.keys(santaPictureFrames)) {
+    for (const name of ['Alice', 'A'.repeat(80), 'Alexandria-Catherine Elizabeth Montgomery-Worthington',
+      'Anne Marie Alice Jane Rose Lily Mary Kate Anne Marie Alice Jane Rose Lily Mary']) {
+      const fit = fitSantaPictureName(context, name, picture);
+      const frame = santaPictureFrames[picture];
+      assert.equal(fit.lines.map(line => line.text).join(' '), name);
+      for (const line of fit.lines) {
+        const width = line.text.length * 500 * fit.size / 1000;
+        assert.ok(line.x >= 0 && line.x + width <= frame.width);
+        assert.ok(line.y - 750 * fit.size / 1000 >= 0);
+        assert.ok(line.y + 250 * fit.size / 1000 <= frame.height);
+        assert.ok(Math.abs(line.x + width / 2 - frame.width / 2) < 0.001);
+      }
+    }
+  }
+});
 
 test('written spelling is separate from recorded identity and follows the download convention', () => {
   assert.equal(getWorkshopWrittenName('Wendi', 'Wendy'), 'Wendy');
