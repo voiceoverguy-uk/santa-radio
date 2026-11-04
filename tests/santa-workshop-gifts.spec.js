@@ -10,6 +10,15 @@ import { expectLeftAlignedLetter } from './helpers/studio-letter-alignment.js';
 
 const giftButtons = page => page.locator('.studio-gift-download button');
 const letterText = page => page.locator('.smw-studio-preview .studio-gifts__preview-stack .studio-gifts__sr');
+const pencil = page => page.getByRole('button', { name: 'Edit certificate name', exact: true });
+async function assertReadOnly(page, name) {
+  await expect(pencil(page)).toHaveCount(0);
+  await expect(page.locator('.smw-written-name-editor')).toHaveCount(0);
+  await expect(page.locator('.smw-written-name-value')).toHaveText(name);
+  await expect(page.locator('.studio-gifts__preview-stack .studio-certificate__name')).toHaveText(name);
+  await expect(page.locator('.studio-gifts__preview-stack .studio-santa-picture__name')).toHaveText(name);
+  await expect(letterText(page)).toContainText(name);
+}
 async function review(page, { destination = 'The Enchanted Forest', talent = null, region = null } = {}) {
   await unlockWorkshop(page);
   const fixture = await mockStudioGeneration(page);
@@ -83,6 +92,7 @@ test('unchanged completed gifts survive pending and failed replacement audio', a
   for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
   await expect(page.locator('.smw-message-result audio')).toHaveAttribute('src', previousUrl);
   await expect(letterText(page)).toHaveText(reviewed);
+  await assertReadOnly(page, 'Dixie');
   expect(fixture.posts).toHaveLength(2);
 });
 
@@ -103,6 +113,89 @@ test('completed gifts use response choices rather than newer review choices', as
   fixture.selection = choices => ({ record: fixture.record, choices });
   await confirmMessage(page);
   for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+});
+
+for (const width of [320, 1365]) {
+  test(`completed gifts discard an open draft and keep names read-only at ${width}px`, async ({ page }) => {
+    const fixture = await review(page);
+    await page.setViewportSize({ width, height: 900 });
+    await spelling(page, 'Élodie O’Neill');
+    let release;
+    fixture.hold = new Promise(resolve => { release = resolve; });
+    await confirmMessage(page);
+    await expect(page.getByRole('progressbar', { name: 'Preparing your message', exact: true })).toBeVisible();
+    await pencil(page).click();
+    const input = page.getByRole('textbox', { name: 'Name spelling', exact: true });
+    await input.fill('Unconfirmed draft');
+    await expect(input).toBeFocused();
+    release();
+    await assertReadOnly(page, 'Élodie O’Neill');
+    await expect(page.locator('.smw-written-name-value')).toBeFocused();
+    await expect(page.locator('.smw-studio-preview')).not.toContainText('Unconfirmed draft');
+    for (const button of await giftButtons(page).all()) {
+      await expect(button).toBeEnabled();
+      await expect(button).toHaveCSS('background-color', 'rgb(155, 17, 30)');
+      await expect(button).toHaveCSS('color', 'rgb(255, 248, 231)');
+      await button.hover();
+      await expect(button).toHaveCSS('background-color', 'rgb(173, 28, 43)');
+    }
+    for (const button of await page.locator('.smw-studio-preview .studio-gifts__thumbnail').all()) {
+      await expect(button).toHaveCSS('background-color', 'rgb(242, 234, 216)');
+    }
+    const first = giftButtons(page).first();
+    await page.locator('.studio-gifts__thumbnail').first().focus();
+    await page.keyboard.press('Tab');
+    await expect(first).toBeFocused();
+    await expect(first).toHaveCSS('outline-style', 'solid');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+    expect(fixture.posts).toHaveLength(1);
+
+    // Start Again is the existing fresh-message route, not a download/retry.
+    const previousAudio = await page.locator('.smw-message-result audio').getAttribute('src');
+    await page.getByRole('button', { name: 'Start Again', exact: true }).click();
+    await page.locator('.smw-button-next').click();
+    for (let stage = 0; stage < 6; stage++) await page.locator('.smw-button-next').click();
+    await expect(pencil(page)).toBeVisible();
+    await expect(page.locator('.smw-message-result audio')).toHaveAttribute('src', previousAudio);
+    for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+    await spelling(page, 'Fresh spelling');
+    await expect(page.locator('.smw-written-name-value')).toHaveText('Fresh spelling');
+    for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
+    await expect(page.getByRole('link', { name: /Download MP3/ }))
+      .toHaveAttribute('download', 'santa-message-for-Élodie O’Neill.mp3');
+    await expect(page.locator('.smw-message-result audio')).toHaveAttribute('src', previousAudio);
+    expect(fixture.posts).toHaveLength(1);
+    await spelling(page, 'Élodie O’Neill');
+    for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+    await spelling(page, 'Fresh spelling');
+    fixture.fail = true;
+    await confirmMessage(page);
+    await expect(page.getByText('Fixture recording unavailable. Try again.', { exact: true })).toBeVisible();
+    await expect(pencil(page)).toBeVisible();
+    await expect(page.locator('.smw-message-result audio')).toHaveAttribute('src', previousAudio);
+    for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
+    fixture.fail = false;
+    await confirmMessage(page);
+    await assertReadOnly(page, 'Fresh spelling');
+    for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+    await expect(page.locator('.smw-message-result audio')).not.toHaveAttribute('src', previousAudio);
+  });
+}
+
+test('failed first MP3 leaves spelling editable until a successful retry', async ({ page }) => {
+  const fixture = await review(page);
+  fixture.fail = true;
+  await confirmMessage(page);
+  await expect(page.getByText('Fixture recording unavailable. Try again.', { exact: true })).toBeVisible();
+  await expect(pencil(page)).toBeVisible();
+  await spelling(page, 'D’Arcy');
+  for (const button of await giftButtons(page).all()) {
+    await expect(button).toBeDisabled();
+    await expect(button).toHaveCSS('background-color', 'rgb(247, 239, 217)');
+  }
+  fixture.fail = false;
+  await confirmMessage(page, 'Retry message');
+  await assertReadOnly(page, 'D’Arcy');
 });
 
 for (const width of [320, 1365]) {
@@ -351,7 +444,8 @@ test('Studio spelling keeps the 80-character boundary and wraps only Santa pictu
   await expect(page.locator('.smw-message-result audio')).toBeVisible();
   expect(fixture.posts[0].name).toBe('dixie-variant');
   const audioUrl = await page.locator('.smw-message-result audio').getAttribute('src');
-  await spelling(page, 'Élodie O’Neill & Doggy');
+  await expect(page.getByRole('button', { name: 'Edit certificate name', exact: true })).toHaveCount(0);
+  await expect(page.locator('.smw-written-name-value')).toHaveText(name);
   await expect(page.locator('.smw-message-result audio')).toHaveAttribute('src', audioUrl);
   expect(fixture.posts).toHaveLength(1);
   await page.setViewportSize({ width: 1365, height: 1000 });
@@ -551,6 +645,7 @@ for (const width of [320, 1365]) {
     await expect(page.getByRole('button', { name: 'Reload Studio', exact: true })).toBeVisible();
     await checkActions('Create message', true);
     for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+    await assertReadOnly(page, 'Alexandria-Catherine Elizabeth Montgomery-Worthington');
   });
 }
 
@@ -604,6 +699,7 @@ test('completed gifts stay downloadable when allowance checks fail', async ({ pa
    for (const button of await page.getByRole('button', { name: 'Create message', exact: true }).all()) await expect(button).toBeDisabled();
   for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
   await expect(letterText(page)).toHaveText(completedText);
+  await assertReadOnly(page, 'Dixie');
   await save(page, 'Download Santa picture (PNG)', 'generated-artifacts/studio-gifts/blocked-creation-picture.png');
   await save(page, 'Download certificate (PDF)', 'generated-artifacts/studio-gifts/blocked-creation-certificate.pdf');
   await save(page, 'Download letter (PDF)', 'generated-artifacts/studio-gifts/blocked-creation-letter.pdf');
@@ -645,8 +741,6 @@ for (const width of [320, 1365]) {
     test.setTimeout(90000);
     const fixture = await review(page);
     await page.setViewportSize({ width, height: 900 });
-    await confirmMessage(page);
-    for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
     await page.getByRole('button', { name: 'Edit certificate name', exact: true }).click();
     const input = page.getByRole('textbox', { name: 'Name spelling', exact: true });
     const confirm = page.getByRole('button', { name: 'Use this spelling', exact: true });
@@ -678,12 +772,14 @@ for (const width of [320, 1365]) {
     await expect(page.getByRole('alert')).toHaveCount(0);
     await expect(page.locator('.studio-certificate__name')).toHaveText('Élodie O’Neill');
     await confirm.click();
-    for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+    for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
     await page.getByRole('button', { name: 'Edit certificate name', exact: true }).click();
     await input.fill('Fuck You');
     await page.getByRole('button', { name: 'Cancel', exact: true }).click();
     await expect(page.locator('.studio-certificate__name')).toHaveText('Élodie O’Neill');
+    await confirmMessage(page);
     for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+    await expect(page.getByRole('button', { name: 'Edit certificate name', exact: true })).toHaveCount(0);
     expect(fixture.posts).toHaveLength(1);
   });
 }
@@ -774,10 +870,8 @@ test('gifts unlock together, export real local files, retry independently and tr
   await expect(letterText(page).locator('p')).toHaveText(reviewedParagraphs);
   const audioCount = fixture.posts.length;
   const audioUrl = await page.locator('.smw-message-result audio').getAttribute('src');
-  await page.getByRole('button', { name: 'Edit certificate name', exact: true }).click();
-  await page.getByRole('textbox', { name: 'Name spelling', exact: true }).fill('Unconfirmed');
-  for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
-  await page.getByRole('button', { name: 'Cancel', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Edit certificate name', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('textbox', { name: 'Name spelling', exact: true })).toHaveCount(0);
   for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
   await expect(letterText(page).locator('p')).toHaveText(reviewedParagraphs);
   const certificate = await save(page, 'Download certificate (PDF)', 'generated-artifacts/studio-gifts/certificate.pdf');
@@ -804,9 +898,28 @@ test('gifts unlock together, export real local files, retry independently and tr
   await page.route('**/images/santa-nice-list.jpg', route => route.fulfill({ contentType: 'image/jpeg', body: 'broken' }));
   await page.getByRole('button', { name: 'Download Santa picture (PNG)', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Retry download santa picture (png)', exact: true })).toBeEnabled();
+  await page.mouse.move(0, 0);
+  await expect(page.getByRole('button', { name: 'Retry download santa picture (png)', exact: true }))
+    .toHaveCSS('background-color', 'rgb(155, 17, 30)');
+  await assertReadOnly(page, name);
   await expect(page.getByRole('button', { name: 'Download letter (PDF)', exact: true })).toBeEnabled();
   await page.unroute('**/images/santa-nice-list.jpg');
-  await save(page, 'Retry download santa picture (png)', 'generated-artifacts/studio-gifts/picture.png');
+  let releasePicture;
+  const pictureHold = new Promise(resolve => { releasePicture = resolve; });
+  await page.route('**/images/santa-nice-list.jpg', async route => {
+    await pictureHold;
+    await route.continue();
+  });
+  const pictureDownload = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Retry download santa picture (png)', exact: true }).click();
+  const preparingPicture = page.getByRole('button', { name: 'Preparing picture…', exact: true });
+  await expect(preparingPicture).toBeDisabled();
+  await expect(preparingPicture).toHaveAttribute('aria-busy', 'true');
+  await expect(preparingPicture).toHaveCSS('background-color', 'rgb(247, 239, 217)');
+  await assertReadOnly(page, name);
+  releasePicture();
+  await (await pictureDownload).saveAs('generated-artifacts/studio-gifts/picture.png');
+  await page.unroute('**/images/santa-nice-list.jpg');
   const png = readFileSync('generated-artifacts/studio-gifts/picture.png');
   expect(png.readUInt32BE(16)).toBe(1536);
   expect(png.readUInt32BE(20)).toBe(1024);
@@ -815,18 +928,17 @@ test('gifts unlock together, export real local files, retry independently and tr
   expect(outgoing.every(request => !request.url.includes(encodeURIComponent(name)) && !request.body.includes(name))).toBe(true);
   expect(outgoing.filter(request => !request.url.includes('/api/santa-studio-message'))
     .every(request => !request.body.includes('Dear '))).toBe(true);
-  const longName = 'Alexandria-Catherine Elizabeth Montgomery-Worthington';
-  await spelling(page, longName);
-  await expect(letterText(page).locator('p')).toHaveText(reviewedParagraphs.map(text => text.replaceAll(name, longName)));
+  await assertReadOnly(page, name);
+  await expect(letterText(page).locator('p')).toHaveText(reviewedParagraphs);
   await page.getByRole('button', { name: 'Download letter (PDF)', exact: true }).focus();
   const keyDownload = page.waitForEvent('download');
   await page.keyboard.press('Enter');
-  await (await keyDownload).saveAs('generated-artifacts/studio-gifts/long-letter.pdf');
-  await save(page, 'Download Santa picture (PNG)', 'generated-artifacts/studio-gifts/long-picture.png');
-  await save(page, 'Download certificate (PDF)', 'generated-artifacts/studio-gifts/long-certificate.pdf');
-  const longLetterText = execFileSync('pdftotext', ['-layout', 'generated-artifacts/studio-gifts/long-letter.pdf', '-'], { encoding: 'utf8' })
+  await (await keyDownload).saveAs('generated-artifacts/studio-gifts/keyboard-letter.pdf');
+  await save(page, 'Download Santa picture (PNG)', 'generated-artifacts/studio-gifts/repeat-picture.png');
+  await save(page, 'Download certificate (PDF)', 'generated-artifacts/studio-gifts/repeat-certificate.pdf');
+  const repeatedLetterText = execFileSync('pdftotext', ['-layout', 'generated-artifacts/studio-gifts/keyboard-letter.pdf', '-'], { encoding: 'utf8' })
     .replace(/\s+/gu, ' ');
-  for (const paragraph of reviewedParagraphs) expect(longLetterText).toContain(paragraph.replaceAll(name, longName).replace(/\s+/gu, ' '));
+  for (const paragraph of reviewedParagraphs) expect(repeatedLetterText).toContain(paragraph.replace(/\s+/gu, ' '));
   expect(fixture.posts.length).toBe(audioCount);
   await expect(page.locator('.smw-message-result audio')).toHaveAttribute('src', audioUrl);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);

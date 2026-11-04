@@ -176,6 +176,10 @@
   min-width: 0;
   overflow-wrap: anywhere;
 }
+.smw-written-name-value:focus-visible {
+  outline: 2px solid var(--smw-gold-light, #e6ce86);
+  outline-offset: 3px;
+}
 
 .smw-written-name-edit {
   align-self: center;

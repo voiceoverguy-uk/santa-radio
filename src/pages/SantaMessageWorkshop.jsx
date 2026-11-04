@@ -238,6 +238,8 @@ export default function SantaMessageWorkshop() {
   // Survives review unmounts while a detail is edited; never stored or name-seeded.
   const [letterVariation] = useState(createStudioLetterVariation);
   const [completedGift, setCompletedGift] = useState(null);
+  // Only the explicit fresh-message flow resets successful completion.
+  const [nameReadOnly, setNameReadOnly] = useState(false);
   const [audioPhase, setAudioPhase] = useState('idle');
   const [reviewMessageTarget, setReviewMessageTarget] = useState(null);
   const [error, setError] = useState('');
@@ -312,9 +314,11 @@ export default function SantaMessageWorkshop() {
       ?.find(record => record.id === giftChoices[category])?.letterContext])) };
   };
   const giftDetails = giftDetailsFor(choices);
+  const giftMatches = !!completedGift && completedGift.selectionKey === selectionKey
+    && completedGift.writtenName === getWorkshopWrittenName(selectedName?.name || '', nameSpelling);
   const giftPreparing = audioPhase === 'preparing' || audioPhase === 'receiving' || generation.state?.pending;
   const giftNotice = completedGift
-        ? completedGift.selectionKey !== selectionKey
+        ? !giftMatches
           ? 'Gift previews reflect your updated choices. Create your new MP3 to unlock these downloads.'
           : undefined
         : giftPreparing
@@ -440,6 +444,10 @@ export default function SantaMessageWorkshop() {
   };
 
   const startAgain = () => {
+    if (!audioEditingAllowed) return;
+    // Start a new editable selection without discarding the only local copy
+    // of the previous recording or its still-matching gifts.
+    setNameReadOnly(false);
     setError('');
     setEditing(false);
     nameEntryAligned.current = false;
@@ -757,14 +765,13 @@ export default function SantaMessageWorkshop() {
                 letterVariation={letterVariation}
                 giftDetails={giftDetails}
                 completedGift={completedGift}
+                nameReadOnly={nameReadOnly}
                 messageActionRef={setReviewMessageTarget}
-                downloadReady={!!completedGift && completedGift.selectionKey === selectionKey}
+                downloadReady={giftMatches}
                 downloadNotice={giftNotice}
                 onChange={spelling => {
+                  if (nameReadOnly) return;
                   setNameSpelling(spelling);
-                  setCompletedGift(current => current?.record.id === selectedName?.id
-                    ? { ...current, writtenName: getWorkshopWrittenName(selectedName.name, spelling) }
-                    : current);
                 }}
               /> : destinationValid ? <div className="smw-stage-note" role="status">
                 {regionalEditorial.failed ? <>Santa’s local letter story could not be loaded.{' '}
@@ -783,6 +790,7 @@ export default function SantaMessageWorkshop() {
                   record={selectedName} choices={choices} spelling={nameSpelling}
                   onPhaseChange={setAudioPhase}
                   onReady={message => {
+                    setNameReadOnly(true);
                     const record = message.record;
                     const completedChoices = message.choices;
                     const completedDetails = giftDetailsFor(completedChoices);

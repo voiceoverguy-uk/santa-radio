@@ -12,18 +12,22 @@ import { StudioKeepsakePreview } from './SantaStudioGifts.jsx';
 import './WorkshopNameSpelling.css';
 
 export default function WorkshopNameSpelling({ recordedName, spelling, recordingId, onChange, giftDetails, letterVariation,
-  completedGift, downloadReady = false, downloadNotice, messageActionRef }) {
+  completedGift, nameReadOnly = false, downloadReady = false, downloadNotice, messageActionRef }) {
   const fieldId = useId();
   const inputRef = useRef(null);
   const changeButtonRef = useRef(null);
+  const valueRef = useRef(null);
+  const editorRef = useRef(null);
+  const editingFocusRef = useRef(false);
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState('');
   const [error, setError] = useState('');
   const writtenName = getWorkshopWrittenName(recordedName, spelling);
-  const languageError = isEditing && containsWorkshopProfanity(draft) ? WORKSHOP_LANGUAGE_ERROR : '';
+  const editing = isEditing && !nameReadOnly;
+  const languageError = editing && containsWorkshopProfanity(draft) ? WORKSHOP_LANGUAGE_ERROR : '';
   const visibleError = languageError || error;
   // Preview the local draft without changing the saved spelling or audio.
-  const previewName = isEditing && !languageError ? draft : writtenName;
+  const previewName = editing && !languageError ? draft : writtenName;
   const downloadName = getWorkshopDownloadName(recordedName, spelling);
   const canSuggestSpelling = !!spelling
     && !validateWorkshopSpelling(spelling)
@@ -33,11 +37,23 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
     if (isEditing) inputRef.current?.focus();
   }, [isEditing]);
 
+  useEffect(() => {
+    if (!nameReadOnly) return;
+    setIsEditing(false);
+    setDraft('');
+    setError('');
+    if (editingFocusRef.current) {
+      valueRef.current?.focus({ preventScroll: true });
+      editingFocusRef.current = false;
+    }
+  }, [nameReadOnly]);
+
   const returnFocus = () => {
     window.requestAnimationFrame(() => changeButtonRef.current?.focus());
   };
 
   const beginEditing = () => {
+    if (nameReadOnly) return;
     setDraft(spelling || recordedName);
     setError('');
     setIsEditing(true);
@@ -51,6 +67,7 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
 
   const commitSpelling = event => {
     event.preventDefault();
+    if (nameReadOnly) return;
     const validationError = validateWorkshopSpelling(draft);
     if (validationError) {
       setError(validationError);
@@ -64,6 +81,7 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
   };
 
   const useRecordedSpelling = () => {
+    if (nameReadOnly) return;
     onChange('');
     setDraft('');
     setError('');
@@ -78,21 +96,30 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
           name={previewName}
           details={giftDetails || {}}
           variation={letterVariation}
-          downloadReady={downloadReady && !isEditing}
-          downloadUnavailableNotice={languageError || (isEditing ? 'Confirm the spelling above to enable this download.' : undefined)}
-          downloadNotice={isEditing
+          downloadReady={downloadReady && !editing}
+          downloadUnavailableNotice={languageError || (editing ? 'Confirm the spelling above to enable this download.' : undefined)}
+          downloadNotice={editing
             ? languageError || 'Previews update as you type. Choose Use this spelling to confirm, or Cancel to keep the saved spelling.'
             : downloadNotice}
           giftRevision={completedGift?.revision}
         >
           <div className="smw-review-create-row">
-            <div className="smw-review-name-area">
+            <div className="smw-review-name-area"
+              onFocusCapture={event => {
+                editingFocusRef.current = !!event.target.closest('form, .smw-written-name-edit');
+              }}
+              onBlurCapture={event => {
+                // Removing the active editor does not fire blur. Normal moves
+                // outside it must not steal focus when the MP3 later succeeds.
+                editingFocusRef.current = !!editorRef.current?.contains(event.relatedTarget)
+                  || event.relatedTarget === changeButtonRef.current;
+              }}>
               <dl className="smw-written-name-previews">
                 <div className="smw-written-name-preview">
                   <dt>Certificate, picture and letter name preview</dt>
                   <dd>
-                    <span className="smw-written-name-value">{previewName}</span>
-                    <button
+                    <span ref={valueRef} className="smw-written-name-value" tabIndex={-1}>{previewName}</span>
+                    {!nameReadOnly && <button
                       ref={changeButtonRef}
                       className="smw-change smw-written-name-edit"
                       type="button"
@@ -105,13 +132,13 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
                       <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
                         <path d="m16 4 4 4M4 20l4-1 12-12a2.83 2.83 0 0 0-4-4L4 15z" />
                       </svg>
-                    </button>
+                    </button>}
                   </dd>
                 </div>
               </dl>
 
-              {isEditing && (
-                <form id={`${fieldId}-editor`} className="smw-written-name-editor" onSubmit={commitSpelling} noValidate>
+              {editing && (
+                <form ref={editorRef} id={`${fieldId}-editor`} className="smw-written-name-editor" onSubmit={commitSpelling} noValidate>
                   <label className="smw-written-name-label" htmlFor={fieldId}>Name spelling</label>
                   <input
                     ref={inputRef}
@@ -122,6 +149,7 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
                     value={draft}
                     placeholder="Name only — no naughty words"
                     onChange={event => {
+                      if (nameReadOnly) return;
                       setDraft(event.target.value);
                       if (error) setError('');
                     }}

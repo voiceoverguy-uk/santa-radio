@@ -20,17 +20,23 @@ Once an MP3 has succeeded, its completed gifts remain downloadable even when cre
 
 **How to apply:** Retain the completed-message reference through access-check failures and failed or pending replacements. Its downloads remain available when current choices still match. Changed review previews must not keep showing that old recipient. Do not restore history after refresh, unlock first-time gifts for unfinished recordings, or export unconfirmed spelling edits.
 
+Starting a fresh editable selection must not discard the preceding MP3 or matching completed gifts. If its written spelling changes, those new previews need a new successful MP3 before export; the old MP3 keeps its completed name and filename.
+
+**Why:** The local recording is the visitor's only remaining copy until downloaded; Start Again is not permission to destroy it before a replacement succeeds.
+
+**How to apply:** Separate permission to edit a fresh selection from retention of the previous completion. Match written spelling as well as recorded choices when unlocking gift exports.
+
 Successful generation fixtures must carry the real service's encoded selection metadata, not just MP3 bytes.
 
 **Why:** Header-free fixtures silently use browser choices and previously hid a real mismatch between an omitted optional region and the picker's empty region.
 
 **How to apply:** Exercise completion using echoed submitted choices, including absent regions and reordered talent properties. Keep completion tied to the successful request rather than later review state.
 
-Keep the review-stage written-name editor inside the gift-download section and update all three keepsake previews live while typing.
+Keep the pre-completion written-name editor inside the gift-download section and update all three keepsake previews live while typing. Once the current message's MP3 succeeds, remove the pencil and any open editor, discard unconfirmed drafts and retain the confirmed spelling as read-only.
 
-**Why:** The owner wants people to see the letter, certificate and picture changing as they edit the name, without changing the selected recording.
+**Why:** The owner wants live previews before generation; their latest instruction supersedes earlier permission to correct written spelling after completion.
 
-**How to apply:** Preview the local draft without saving or making requests. Preserve confirmation, cancellation and letter variation; pause gift downloads during editing so an unconfirmed draft cannot be exported.
+**How to apply:** Preview the local draft without saving or making requests. Preserve confirmation, cancellation and letter variation before success. Completion must survive preparation, export activity and access errors; restore editing only for an explicit fresh message, never merely because downloads are disabled.
 
 Do not allow swear words in written-name spellings or generated keepsake previews.
 

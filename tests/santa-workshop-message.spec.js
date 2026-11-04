@@ -406,6 +406,13 @@ for (const width of [390, 1365]) {
     }
     await expect(page.locator('.smw-summary')).toBeVisible();
     await expect(download).toHaveAttribute('href', previousUrl);
+    await page.getByRole('button', { name: 'Edit certificate name', exact: true }).click();
+    await page.getByRole('textbox', { name: 'Name spelling', exact: true }).fill('Fresh written name');
+    await page.getByRole('button', { name: 'Use this spelling', exact: true }).click();
+    await expect(download).toHaveAttribute('href', previousUrl);
+    await expect(download).toHaveAttribute('download', 'santa-message-for-Dixie.mp3');
+    await expect(page.getByRole('heading', { name: 'Santa’s message for Dixie', exact: true })).toBeVisible();
+    for (const button of await page.locator('.studio-gift-download button').all()) await expect(button).toBeDisabled();
     expect(fixture.state).toEqual(allowance);
     expect(fixture.posts).toHaveLength(1);
     await expect(page.getByRole('button', { name: 'Start Again', exact: true })).toBeVisible();
@@ -609,6 +616,7 @@ test('approved recording notices are random per attempt, stable through rerender
 
 test('review create placement on desktop and phones, real MP3 playback/download, local spelling and cleanup', async ({ page }) => {
   test.setTimeout(90000);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.addInitScript(() => {
     window.revokedAudioUrls = [];
     const revoke = URL.revokeObjectURL.bind(URL);
@@ -651,33 +659,33 @@ test('review create placement on desktop and phones, real MP3 playback/download,
   await expect.poll(() => player.evaluate(node => node.currentTime)).toBeGreaterThan(0.1);
   await player.evaluate(node => node.pause());
   const url = await player.getAttribute('src');
-  await page.getByRole('button', { name: 'Edit certificate name', exact: true }).click();
-  await page.getByRole('textbox', { name: 'Name spelling', exact: true }).fill('D’Arcy');
-  await page.getByRole('button', { name: 'Use this spelling', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Edit certificate name', exact: true })).toHaveCount(0);
   await expect(player).toHaveAttribute('src', url);
   await result.scrollIntoViewIfNeeded();
   await page.screenshot({ path: 'generated-artifacts/studio-completed-mobile.png' });
   const download = result.getByRole('link', { name: /Download MP3/ });
-  await expect(download).toHaveAttribute('download', 'santa-message-for-D’Arcy.mp3');
+  await expect(download).toHaveAttribute('download', 'santa-message-for-Dixie.mp3');
   await expect(download).toHaveAttribute('href', url);
+  await download.evaluate(node => node.scrollIntoView({ block: 'center', behavior: 'instant' }));
+  await settleStudioScroll(page);
   const downloaded = page.waitForEvent('download');
-  await download.click();
+  await download.focus();
+  await page.keyboard.press('Enter');
   const file = await downloaded;
-  expect(file.suggestedFilename()).toBe('santa-message-for-D’Arcy.mp3');
+  expect(file.suggestedFilename()).toBe('santa-message-for-Dixie.mp3');
   expect(readFileSync(await file.path())).toEqual(fixture.audio,
     'Playback and Download MP3 use the same complete newly rendered recording');
-  await page.getByRole('button', { name: 'Edit certificate name', exact: true }).click();
-  await page.getByRole('textbox', { name: 'Name spelling', exact: true }).fill('Mary-Jane O’D’Arcy & Co');
-  await page.getByRole('button', { name: 'Use this spelling', exact: true }).click();
-  await expect(result.getByRole('heading', { name: 'Santa’s message for Mary-Jane O’D’Arcy & Co' })).toBeVisible();
+  await expect(page.getByRole('textbox', { name: 'Name spelling', exact: true })).toHaveCount(0);
+  await expect(result.getByRole('heading', { name: 'Santa’s message for Dixie' })).toBeVisible();
   await expect(player).toHaveAttribute('src', url);
-  await expect(download).toHaveAttribute('download', 'santa-message-for-Mary-Jane O’D’Arcy & Co.mp3');
+  await expect(download).toHaveAttribute('download', 'santa-message-for-Dixie.mp3');
   const punctuationDownload = page.waitForEvent('download');
-  await download.click();
+  await download.focus();
+  await page.keyboard.press('Enter');
   const punctuationFile = await punctuationDownload;
-  expect(punctuationFile.suggestedFilename()).toBe('santa-message-for-Mary-Jane O’D’Arcy & Co.mp3');
+  expect(punctuationFile.suggestedFilename()).toBe('santa-message-for-Dixie.mp3');
   expect(readFileSync(await punctuationFile.path())).toEqual(fixture.audio,
-    'Correcting punctuation changes only the filename, not the temporary MP3');
+    'Repeat downloads preserve the completed name and temporary MP3');
   expect(submissions).toHaveLength(1);
   await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
   await page.getByRole('button', { name: 'Change Trying hard at', exact: true }).click();
@@ -727,6 +735,9 @@ test('retryable preparation errors and cancellation spend no successful allowanc
 
 test('finished Studio message download is valid and matches the playable recording', async ({ page }) => {
   const fixture = await openReview(page);
+  await page.getByRole('button', { name: 'Edit certificate name', exact: true }).click();
+  await page.getByRole('textbox', { name: 'Name spelling', exact: true }).fill('D’Arcy');
+  await page.getByRole('button', { name: 'Use this spelling', exact: true }).click();
   await confirmMessage(page);
 
   const result = page.getByRole('region', { name: 'Your finished Santa message' });
@@ -742,10 +753,7 @@ test('finished Studio message download is valid and matches the playable recordi
   const recordingUrl = await player.getAttribute('src');
   const download = result.getByRole('link', { name: /Download MP3/ });
   await expect(download).toHaveAttribute('href', recordingUrl);
-  await expect(download).toHaveAttribute('download', 'santa-message-for-Dixie.mp3');
-  await page.getByRole('button', { name: 'Edit certificate name', exact: true }).click();
-  await page.getByRole('textbox', { name: 'Name spelling', exact: true }).fill('D’Arcy');
-  await page.getByRole('button', { name: 'Use this spelling', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Edit certificate name', exact: true })).toHaveCount(0);
   await expect(result.getByRole('heading', { name: 'Santa’s message for D’Arcy' })).toBeVisible();
   await expect(player).toHaveAttribute('src', recordingUrl);
   await expect(download).toHaveAttribute('href', recordingUrl);
@@ -1077,10 +1085,8 @@ test('temporary downloads survive failed replacement but never recover after ref
   expect(fixture.posts.at(-1).name).toBe('dixie-variant');
   expect(fixture.posts.at(-1).place).toBe('forest');
   expect(fixture.posts.at(-1).activity).toBe('instrument');
-  await page.getByRole('button', { name: 'Edit certificate name', exact: true }).click();
-  await page.getByRole('textbox', { name: 'Name spelling', exact: true }).fill('D’Arcy');
-  await page.getByRole('button', { name: 'Use this spelling', exact: true }).click();
-  await expect(download).toHaveAttribute('download', 'santa-message-for-D’Arcy.mp3');
+  await expect(page.getByRole('button', { name: 'Edit certificate name', exact: true })).toHaveCount(0);
+  await expect(download).toHaveAttribute('download', 'santa-message-for-Dixie.mp3');
   const postCount = fixture.posts.length;
   await page.reload();
   await expect(download).toHaveCount(0);

@@ -34,9 +34,11 @@ export default function WorkshopMessageAudio({
   const deliveryScrollPending = useRef(false);
   const receivedSelection = useRef(null);
   const readyCallbackRef = useRef(onReady);
+  const spellingRef = useRef(spelling);
   // Spelling can be corrected while bytes are arriving. It is display-only;
   // commit the latest spelling without restarting the audio request.
   readyCallbackRef.current = onReady;
+  spellingRef.current = spelling;
   const [phase, setPhase] = useState('idle');
   const [url, setUrl] = useState('');
   const [error, setError] = useState('');
@@ -45,7 +47,7 @@ export default function WorkshopMessageAudio({
   const [finishedName, setFinishedName] = useState(null);
   const [creationAttempt, setCreationAttempt] = useState(0);
   const writtenName = getWorkshopWrittenName(record?.name || '', spelling);
-  const finishedSpelling = finishedName?.id === record?.id ? spelling : finishedName?.spelling;
+  const finishedSpelling = finishedName?.spelling;
   const finishedWrittenName = finishedName
     ? getWorkshopWrittenName(finishedName.name, finishedSpelling) : writtenName;
   const busy = phase === 'preparing' || phase === 'receiving';
@@ -149,7 +151,8 @@ export default function WorkshopMessageAudio({
     setPhase('ready');
     setError('');
     const completed = receivedSelection.current || submittedSelection;
-    setFinishedName({ ...completed.record, spelling });
+    setFinishedName({ ...completed.record,
+      spelling: completed.record.id === record?.id ? spellingRef.current : '' });
     return completed;
   };
 
