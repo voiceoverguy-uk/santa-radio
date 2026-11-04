@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import useHostedSantaNameSearch from './useHostedSantaNameSearch.js';
+import useBrowserSantaNameSearch from './useBrowserSantaNameSearch.js';
 import { selectSantaRecipient } from './useSantaRecipient.js';
 import { BLOCKED_NAME_NOTE } from '../lib/nameLanguage.js';
 
@@ -47,7 +47,7 @@ export default function HeroNameChecker({ onContinue, onSelectedNameChange }) {
       window.removeEventListener('pageshow', shown);
     };
   }, []);
-  const search = useHostedSantaNameSearch(name);
+  const search = useBrowserSantaNameSearch(name);
   const options = search.records;
   const expanded = open && options.length > 0 && !search.loading && !search.error;
   const choose = record => {

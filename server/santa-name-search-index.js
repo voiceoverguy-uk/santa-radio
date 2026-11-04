@@ -19,6 +19,10 @@ export function createNameSearchIndex(hosted, local) {
   const byId = new Map(ordered.map(record => [record.id, record]));
   return {
     resolve: id => byId.get(id),
+    exact: input => ordered.filter(record => key(record.name) === key(input)).slice(0, 10).map(record => {
+      const { id, name, downloadName, file } = record;
+      return { id, name, downloadName, ...(labels.get(key(name)) > 1 ? { variant: file } : {}) };
+    }),
     search(input) {
       const prefix = key(input);
       if (!prefix) return [];

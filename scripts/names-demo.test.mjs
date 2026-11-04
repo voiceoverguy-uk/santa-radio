@@ -33,7 +33,7 @@ test('public file contains every deduplicated display name and NOTHING else', as
   const names = JSON.parse(res.body);
   assert.ok(Array.isArray(names));
   assert.deepEqual(names, source.slice().sort());
-  assert.equal(names.length, 9773);
+  assert.equal(names.length, source.length);
   assert.ok(names.every(name => typeof name === 'string' && !/https?:|[/.\\]|\.mp3|\.wav|f-[0-9a-f]{64}/i.test(name)));
   assert.doesNotMatch(res.body.toString(), /importedAt|version|filename|previewUrl|selectionToken|stagcommunications/);
 });
@@ -105,7 +105,7 @@ test('two detached fresh runtime copies serve page/list with fetch forbidden and
     const page = await invoke('/names');
     if(!page.includes(${JSON.stringify(asset)})) throw new Error('Wrong version');
     const names = JSON.parse(await invoke(${JSON.stringify(asset)}));
-    if(names.length!==9773 || calls!==0) throw new Error('Unexpected data or origin access');
+    if(names.length!==${prepared.names} || calls!==0) throw new Error('Unexpected data or origin access');
     console.log(JSON.stringify({originCalls:calls,names:names.length}));
   `;
   for (let i = 0; i < 2; i++) {
@@ -113,7 +113,7 @@ test('two detached fresh runtime copies serve page/list with fetch forbidden and
       encoding: 'utf8', env: { PATH: process.env.PATH },
     }));
     assert.equal(result.originCalls, 0);
-    assert.equal(result.names, 9773);
+    assert.equal(result.names, prepared.names);
   }
 });
 

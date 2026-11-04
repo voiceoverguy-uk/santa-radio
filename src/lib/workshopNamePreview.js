@@ -18,7 +18,7 @@ export async function refreshWorkshopNamePreview(record, { signal, request = fet
   const response = await request('/api/santa-names', {
     method: 'POST', credentials: 'same-origin', cache: 'no-store', signal,
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ query: record.name }),
+    body: JSON.stringify({ query: record.name, exact: true }),
   });
   const data = await response.json();
   if (!response.ok) {

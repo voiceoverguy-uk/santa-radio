@@ -118,11 +118,16 @@ const metadataPlugin = {
   },
 };
 
-export default defineConfig(({ isSsrBuild }) => ({
+export default defineConfig(async ({ isSsrBuild }) => ({
   // Gift exporters are intentionally lazy. Prebundle their dependencies so a
   // first download in Preview cannot trigger a reload and discard the session.
   optimizeDeps: { include: ['pdf-lib', '@pdf-lib/fontkit'] },
-  define: { __SANTA_AUDIO_RECIPE__: JSON.stringify(santaAudioRecipeVersion()) },
+  define: {
+    __SANTA_AUDIO_RECIPE__: JSON.stringify(santaAudioRecipeVersion()),
+    __SANTA_NAMES_ASSET_URL__: JSON.stringify(`/names-data/${JSON.parse(
+      await readFile(new URL('./server/names-demo/asset-manifest.json', import.meta.url), 'utf8')
+    ).filename}`),
+  },
   publicDir: isSsrBuild ? false : 'public',
   ssr: {
     // Keep the runtime Tracker renderer self-contained. Vercel's package

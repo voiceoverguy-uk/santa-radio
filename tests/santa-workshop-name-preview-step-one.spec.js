@@ -19,6 +19,7 @@ const audioBytes = readFileSync('server/santa-audio/names/arabella.wav');
 test.beforeEach(async ({ page }) => {
   await unlockWorkshop(page);
   await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.route('**/names-data/*.json', route => route.fulfill({ json: ['Demrie', 'Dixie'] }));
   await page.route('**/api/radio-metadata*', route => route.fulfill({ json: { available: false, current: null, upcoming: [] } }));
   await page.route('**/api/santa-workshop-catalogue', route => route.fulfill({ json: workshopCatalogueFixture }));
   await page.route('**/api/santa-names', route => {
@@ -71,6 +72,7 @@ async function openStudio(page) {
 
 async function selectName(page, alternative = false) {
   await page.getByRole('combobox', { name: 'Search recorded names', exact: true }).fill(alternative ? 'Dix' : 'Dem');
+  if (alternative) await page.getByRole('option', { name: 'Dixie', exact: true }).click();
   await page.getByRole('option', { name: alternative ? 'Dixie Alternative recording' : 'Demrie', exact: true }).click();
 }
 

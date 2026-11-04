@@ -143,7 +143,7 @@ export function createNameLibrary({ fetcher = fetch, now = Date.now, snapshotSto
       // Aggregate only; the catalogue remains inside the existing private cache.
       return (await catalogue(hint)).length;
     },
-    async search(input, hint) {
+    async search(input, hint, { exact = false } = {}) {
       let hosted = [];
       let warning = null;
       try { hosted = await catalogue(hint); }
@@ -151,7 +151,7 @@ export function createNameLibrary({ fetcher = fetch, now = Date.now, snapshotSto
         nameDiagnostic('catalogue', error);
         warning = 'The full recorded-name list is temporarily unavailable. Only available local recordings are shown; this search may be incomplete. Please retry shortly.';
       }
-      return { records: prepared(hosted).search(input),
+      return { records: exact ? prepared(hosted).exact(input) : prepared(hosted).search(input),
         hostedCount: warning ? null : hosted.length, warning };
     },
     async resolve(input) {

@@ -31,7 +31,7 @@ test('refresh uses private search and preserves the exact recording among same-n
       assert.equal(options.method, 'POST');
       assert.equal(options.cache, 'no-store');
       assert.equal(options.signal, controller.signal);
-      assert.deepEqual(JSON.parse(options.body), { query: 'Danny' });
+      assert.deepEqual(JSON.parse(options.body), { query: 'Danny', exact: true });
       return Response.json({ records: [
         { id: 'danny-1', name: 'Danny', previewUrl: '/api/santa-name-preview?token=wrong-recording' },
         { id: 'danny-2', name: 'Danny', previewUrl: '/api/santa-name-preview?token=fresh' },

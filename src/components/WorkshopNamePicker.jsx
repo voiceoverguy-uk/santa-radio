@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import useHostedSantaNameSearch from './useHostedSantaNameSearch.js';
+import useBrowserSantaNameSearch from './useBrowserSantaNameSearch.js';
+import { resolveBrowserSantaName } from '../lib/browserSantaNames.js';
 import { santaNameKey } from '../lib/santaNameSearch.js';
 import WorkshopNamePreview from './WorkshopNamePreview.jsx';
 import './WorkshopNamePicker.css';
@@ -10,11 +11,13 @@ export default function WorkshopNamePicker({ selected, initialName = '', onSelec
   const listboxId = `${inputId}-results`;
   const [query, setQuery] = useState(() => selected?.name || initialName);
   const pendingPrefill = useRef(!selected && Boolean(initialName));
-  const search = useHostedSantaNameSearch(query);
-  const matchingRecords = search.records;
+  const search = useBrowserSantaNameSearch(query);
+  const [resolution, setResolution] = useState({ records: null, loading: false, error: '' });
+  const resolving = useRef(null);
+  const matchingRecords = resolution.records || search.records;
   const requestState = {
-    status: search.loading ? 'loading' : search.error ? 'error' : 'ready',
-    message: search.error,
+    status: search.loading || resolution.loading ? 'loading' : search.error || resolution.error ? 'error' : 'ready',
+    message: search.error || resolution.error,
   };
   const [isOpen, setIsOpen] = useState(!selected && Boolean(initialName));
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -22,25 +25,21 @@ export default function WorkshopNamePicker({ selected, initialName = '', onSelec
   const inputRef = useRef(null);
   const optionRefs = useRef([]);
 
-  useEffect(() => () => window.clearTimeout(blurTimer.current), []);
+  useEffect(() => () => {
+    window.clearTimeout(blurTimer.current);
+    resolving.current?.abort();
+  }, []);
 
   useEffect(() => {
     if (selected?.name) setQuery(selected.name);
   }, [selected?.id, selected?.name]);
   useEffect(() => {
-    if (!pendingPrefill.current || search.loading || search.error) return;
+    if (!pendingPrefill.current || search.loading || search.error || resolution.loading) return;
     const exact = matchingRecords.filter(record => santaNameKey(record.name) === santaNameKey(initialName));
-    // Resolve a fresh, scoped recording token. Multiple recordings with the
-    // same spelling still require an explicit choice.
     if (exact.length !== 1) return;
     pendingPrefill.current = false;
-    setIsOpen(false);
-    onSelect(exact[0]);
-  }, [matchingRecords, search.loading, search.error, initialName, onSelect]);
-  useEffect(() => {
-    const fresh = search.records.find(record => record.id === selected?.id);
-    if (fresh && fresh.selectionToken !== selected.selectionToken) onRefreshSelection?.(fresh);
-  }, [search.records, selected, onRefreshSelection]);
+    chooseRecord(exact[0]);
+  }, [matchingRecords, search.loading, search.error, initialName, onSelect, resolution.loading]);
 
   const selectedIdentity = selected?.id == null ? null : String(selected.id);
   const validationId = invalid ? 'smw-validation' : undefined;
@@ -48,18 +47,44 @@ export default function WorkshopNamePicker({ selected, initialName = '', onSelec
 
   function handleSearchChange(event) {
     pendingPrefill.current = false;
+    resolving.current?.abort();
+    setResolution({ records: null, loading: false, error: '' });
     setQuery(event.target.value);
     setActiveIndex(-1);
     setIsOpen(true);
     if (selected) onSelect(null);
   }
 
-  function chooseRecord(record) {
+  async function chooseRecord(record) {
     pendingPrefill.current = false;
     window.clearTimeout(blurTimer.current);
     setQuery(record.name);
     setActiveIndex(-1);
     setIsOpen(false);
+    if (record.displayOnly) {
+      resolving.current?.abort();
+      const controller = new AbortController();
+      resolving.current = controller;
+      const timeout = setTimeout(() => controller.abort('timeout'), 15000);
+      setResolution({ records: null, loading: true, error: '' });
+      try {
+        const records = await resolveBrowserSantaName(record.name, { signal: controller.signal });
+        if (controller.signal.aborted) return;
+        setResolution({ records, loading: false, error: '' });
+        if (records.length > 1) {
+          setIsOpen(true);
+          inputRef.current?.focus({ preventScroll: true });
+          return;
+        }
+        record = records[0];
+      } catch (error) {
+        if (!controller.signal.aborted || controller.signal.reason === 'timeout') {
+          setResolution({ records: null, loading: false,
+            error: controller.signal.aborted ? 'Checking the recording took too long. Please retry.' : error.message });
+        }
+        return;
+      } finally { clearTimeout(timeout); }
+    }
     onSelect(record);
     // Release the software keyboard after an explicit choice, not while typing.
     // Keep desktop keyboard focus in the combobox for accessible navigation.
@@ -96,6 +121,11 @@ export default function WorkshopNamePicker({ selected, initialName = '', onSelec
     window.clearTimeout(blurTimer.current);
     setIsOpen(true);
     inputRef.current?.focus({ preventScroll: true });
+    if (resolution.error) {
+      const exact = search.records.find(record => santaNameKey(record.name) === santaNameKey(query));
+      if (exact) { chooseRecord(exact); return; }
+    }
+    setResolution({ records: null, loading: false, error: '' });
     search.refresh();
   }
 
