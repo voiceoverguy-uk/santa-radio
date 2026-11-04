@@ -31,6 +31,30 @@ recordings. It does not expose FTP credentials or private absolute paths.
 
 ## Website integration
 
+### Step 4 activity subdivisions
+
+Step 4 remains one required `activity` recording. Its two browsing buttons reuse
+the Talent controls: **Trying hard at** (fresh default) and **More Sports**.
+The server assigns explicit membership for the owner's 56 exact approved paths;
+this is not a new hosted category or another audio slot. All other activity
+recordings stay in Trying hard at, including future MP3 additions. No path,
+filename, ID, connector, access rule or cache lifetime changes.
+
+The approved membership is server-only in `server/workshop-more-sports.js`.
+Missing or empty recordings are never fabricated. The selected category is
+restored on Review editing; switching categories discards only the current
+activity and its search. Talent remains independent. Both selections reach the
+existing review and stitch positions once each.
+
+New More Sports recordings use the established neutral letter context and exact
+selected display detail, not guessed sporting praise. Original activities retain
+their curated contexts. Talent still adds no letter prose. Page-local variation
+and document geometry are unchanged.
+
+See [the private recording check](studio-more-sports-inventory.md) for inventory
+differences and audio evidence. This note is repository documentation, not a
+public recording catalogue.
+
 **Live discovery status, 2 November 2026:** the hosted index still returns only
 the original five categories. Sports/funny discovery is **awaiting the owner's
 upload** of the refreshed script. HTTP availability of individual recordings is

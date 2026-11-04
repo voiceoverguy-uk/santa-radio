@@ -57,6 +57,7 @@
 - [Workshop choice controls](workshop-choice-controls.md) — Searchable names, a vertical age wheel, other category scrollers and later MP3 direction.
 - [Destination categories](destination-category-direction.md) — Countries default on fresh entry; preserve saved-category visibility and optional regions without moving recordings.
 - [Studio optional talent](studio-optional-talent.md) — One sports/funny line or deliberate skip; exact sibling folders and shared connector; no talent letter prose.
+- [More Sports scope](studio-more-sports-scope.md) — Exact approved step 4 membership, not inferred sports or aliases; neutral letters until editorial review.
 - [Virtual-clock screenshots](browser-test-clocks.md) — Finish or disable entrance animations before capturing delayed interfaces under a virtual browser clock.
 - [Message-maker counters](santa-name-counter-direction.md) — Start 50 below the real total; add one every five seconds, capped at the real total.
 - [Cooldown price comparison](santa-cooldown-comparison.md) — Keep the gift comparison steady while the page is open; refresh may choose another.

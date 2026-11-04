@@ -150,6 +150,10 @@ function validateWorkshopCatalogue(payload) {
         && !['fantasy', 'space', 'place'].includes(record.kind)) {
         throw new Error('Santa’s hosted destination list contains an invalid place label.');
       }
+      if (category === 'activity' && record.activityGroup !== undefined
+        && !['trying', 'more-sports'].includes(record.activityGroup)) {
+        throw new Error('Santa’s hosted activity list contains an invalid category.');
+      }
       return record;
     });
   }
@@ -205,6 +209,7 @@ export default function SantaMessageWorkshop() {
   const [stageIndex, setStageIndex] = useState(0);
   const [choices, setChoices] = useState(emptyChoices);
   const [talentCategory, setTalentCategory] = useState('sports');
+  const [activityCategory, setActivityCategory] = useState('trying');
   const [destinationCategory, setDestinationCategory] = useState('countries');
   const [selectedName, setSelectedName] = useState(null);
   const [namePreviewCache] = useState(createWorkshopNamePreviewCache);
@@ -276,7 +281,8 @@ export default function SantaMessageWorkshop() {
   const stage = stages[stageIndex];
   const isReview = stageIndex === stages.length;
   const catalogueOptions = stage && stage.key !== 'name'
-    ? catalogueState.catalogue?.categories?.[stage.key === 'talent' ? talentCategory : stage.key] || []
+    ? (catalogueState.catalogue?.categories?.[stage.key === 'talent' ? talentCategory : stage.key] || [])
+      .filter(record => stage.key !== 'activity' || (record.activityGroup || 'trying') === activityCategory)
     : [];
   const hasCatalogueOptions = catalogueState.status === 'ready' && catalogueOptions.length > 0;
   const hasCurrentStageChoice = stage?.key === 'name'
@@ -452,6 +458,7 @@ export default function SantaMessageWorkshop() {
       setRequestedGifts({});
       setPreparingGifts({});
       setChoices(emptyChoices());
+      setActivityCategory('trying');
       setSelectedName(null);
       setNameSpelling('');
     }
@@ -468,6 +475,10 @@ export default function SantaMessageWorkshop() {
     if (!audioEditingAllowed || (nameReadOnly && generation.state?.limit === 2)
       || (locked && ['name', 'place'].includes(stages[index]?.key))) return;
     setError('');
+    if (stages[index]?.key === 'activity') {
+      setActivityCategory(catalogueState.catalogue?.categories.activity
+        .find(record => record.id === choices.activity)?.activityGroup || 'trying');
+    }
     if (stages[index]?.key === 'place') {
       setDestinationCategory(workshopDestinationCategory(selectedCountry));
     }
@@ -575,6 +586,21 @@ export default function SantaMessageWorkshop() {
                   : !audioEditingAllowed ? 'Use “Edit and regenerate once” on the review to make your one correction.' : 'You are editing your one correction.'}
               </p>}
               <fieldset className="smw-stage-fields" disabled={!audioEditingAllowed || (locked && ['name', 'place'].includes(stage.key))}>
+              {stage.key === 'activity' && (
+                <div className="smw-talent-step">
+                  <div className="smw-talent-categories" role="group" aria-label="Choose a trying hard at category">
+                    {[['trying', 'Trying hard at'], ['more-sports', 'More Sports']].map(([category, label]) => (
+                      <button key={category} type="button" className={activityCategory === category ? 'is-selected' : ''}
+                        aria-pressed={activityCategory === category} onClick={() => {
+                          if (activityCategory !== category) {
+                            setActivityCategory(category);
+                            choose('activity', '');
+                          }
+                        }}>{label}</button>
+                    ))}
+                  </div>
+                </div>
+              )}
               {locked && ['name', 'place'].includes(stage.key) ? (
                 <p className="smw-audio-disclaimer">{stage.key === 'name' ? choices.name : destinationSummary} — locked</p>
               ) : stage.key === 'name' ? (
@@ -666,7 +692,9 @@ export default function SantaMessageWorkshop() {
                 </div>
               ) : catalogueOptions.length === 0 ? (
                 <p className="smw-catalogue-empty" role="status">
-                  There are no selectable {stage.label.toLowerCase()} choices in the hosted inventory right now.
+                  {stage.key === 'activity' && activityCategory === 'more-sports'
+                    ? 'More Sports recordings are unavailable in the hosted inventory right now. You can choose Trying hard at instead.'
+                    : `There are no selectable ${stage.label.toLowerCase()} choices in the hosted inventory right now.`}
                 </p>
                ) : stage.key === 'place' ? (
                  <WorkshopDestinationPicker options={catalogueOptions}
@@ -681,8 +709,10 @@ export default function SantaMessageWorkshop() {
                    invalid={!!error} onTick={playTick} onSoundInteraction={prepare} wording={stage.wording} />
                ) : stage.wording && stage.key !== 'age' ? (
                 <WorkshopSearchableChoices
-                  key={stage.key}
-                  category={stage.key} label={stage.label} options={catalogueOptions}
+                  key={stage.key === 'activity' ? `${stage.key}-${activityCategory}` : stage.key}
+                  category={stage.key} label={stage.key === 'activity' && activityCategory === 'more-sports' ? 'More Sports' : stage.label} options={catalogueOptions}
+                  searchLabel={stage.key === 'activity' && activityCategory === 'more-sports' ? 'Search more sports' : undefined}
+                  placeholder={stage.key === 'activity' && activityCategory === 'more-sports' ? 'Try Tennis or Swimming' : undefined}
                   value={choices[stage.key]} onChange={value => choose(stage.key, value)}
                   invalid={!!error} onTick={playTick} onSoundInteraction={prepare} wording={stage.wording}
                 />

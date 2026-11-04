@@ -68,6 +68,43 @@ test('all five parent mappings replace rather than append the destination record
 });
 
 const execute = promisify(execFile);
+test('More Sports remains one activity slot with sports, funny or skipped talent and neutral stable letters', async () => {
+  const indexed = file => ({ file, bytes: 50000, id: `c-${createHash('sha256').update(file).digest('hex')}` });
+  const parsed = parseWorkshopCatalogue({ version: 1, categories: {
+    age: [indexed('AGES/8-years-old.wav')],
+    activity: [indexed('Trying Hard at/Tennis.mp3'), indexed('Trying Hard at/Farting.mp3'), indexed('Trying Hard at/art.wav')],
+    sports: [indexed('sports/cricket.wav')], funny: [indexed('funny/smiling.wav')],
+    achievement: [indexed('Achievment/being-brave.wav')], treat: [indexed('treats/map.wav')],
+    place: [indexed('countries/england.wav')],
+  }, excludedAudioCounts: Object.fromEntries([...keys, 'sports', 'funny'].map(key => [key, 0])) });
+  for (const activity of parsed.categories.activity) for (const talent of [
+    { skip: true }, ...['sports', 'funny'].map(category => ({ category, id: parsed.categories[category][0].id })),
+  ]) {
+    const { handler, state } = fixture({ catalogue: async () => parsed });
+    const data = { name: body.name, ...Object.fromEntries(keys.map(key => [key, parsed.categories[key][0].id])),
+      activity: activity.id, talent };
+    assert.equal((await call(handler, { data })).status, 200);
+    const paths = state.renders[0].choices, order = studioOrder('name', paths);
+    assert.equal(order.filter(path => path === paths.activity).length, 1);
+    assert.equal(order.indexOf(paths.activity), talent.skip ? 5 : 7);
+    assert.equal(state.downloads.length, talent.skip ? 5 : 6);
+    assert.equal(order.filter(path => path === paths.talent).length, talent.skip ? 0 : 1);
+    const details = { age: '8 years old', activity: activity.label, achievement: 'Being brave', treats: 'Map',
+      destination: 'England', context: { activity: activity.letterContext } };
+    const letter = createStudioLetter('Example', () => 0, details);
+    assert.deepEqual(letter, createStudioLetter('Example', () => 0.9, details));
+    assert.ok(letter.paragraphs[3].includes(activity.label));
+    assert.ok(!letter.paragraphs.join(' ').includes('Cricket'));
+    if (activity.activityGroup === 'more-sports') assert.ok(letter.editorialReview.includes('activity'));
+  }
+  const { handler } = fixture({ catalogue: async () => parsed });
+  const data = { name: body.name, talent: { skip: true },
+    ...Object.fromEntries(keys.map(key => [key, parsed.categories[key][0].id])) };
+  for (const activity of [parsed.categories.sports[0].id, id(14), '', [data.activity]]) {
+    assert.equal((await call(handler, { data: { ...data, activity } })).status, 400);
+  }
+  assert.equal((await call(handler, { data: { ...data, activityCategory: 'more-sports' } })).status, 400);
+});
 const keys = ['age', 'activity', 'achievement', 'treat', 'place'];
 const id = n => `c-${n.toString(16).repeat(64)}`;
 const choices = Object.fromEntries(keys.map((key, index) => [key, id(index + 1)]));

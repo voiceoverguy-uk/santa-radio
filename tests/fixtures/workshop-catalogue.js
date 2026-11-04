@@ -34,6 +34,15 @@ export const workshopCatalogueFixture = {
 };
 
 // Extra display-only cases, isolated from the shared workflow fixture.
+export const workshopMoreSportsFixture = structuredClone(workshopCatalogueFixture);
+workshopMoreSportsFixture.categories.activity.push(
+  record(`c-${'6'.repeat(64)}`, 'Swimming', { file: 'Trying Hard at/Swimming.mp3', activityGroup: 'more-sports',
+    letterContext: { group: 'neutral', needsReview: true } }),
+  record(`c-${'7'.repeat(64)}`, 'Farting', { file: 'Trying Hard at/Farting.mp3', activityGroup: 'more-sports',
+    letterContext: { group: 'neutral', needsReview: true } }),
+);
+workshopMoreSportsFixture.counts.activity = workshopMoreSportsFixture.categories.activity.length;
+
 export const workshopTalentPreviewCatalogueFixture = structuredClone(workshopCatalogueFixture);
 workshopTalentPreviewCatalogueFixture.categories.funny.push(
   record(`c-${'f'.repeat(64)}`, 'Watching tv all day', { file: 'funny/watching tv all day.wav' }),

@@ -5,6 +5,7 @@ import { studioEditorialContext } from './studio-letter-editorial.js';
 import { isKnownRegion } from './studio-destination-passages.js';
 import { workshopRegionalFolders } from '../src/lib/workshopDestinations.js';
 import { regionalEditorialContext } from './studio-regional-stories.js';
+import { moreSportsFiles } from './workshop-more-sports.js';
 
 export const WORKSHOP_ROOT = 'https://stagcommunications.com/santaradio/names/personalised-message/';
 export const WORKSHOP_INDEX = `${WORKSHOP_ROOT}workshop-index.php`;
@@ -88,6 +89,7 @@ export function parseWorkshopCatalogue(input) {
       if (technicalFiles.has(item.file) || item.bytes === 0) { needsReviewCounts[key]++; continue; }
       const stem = basename.slice(0, -4);
       const record = { id: item.id, file: item.file, label: title(stem) };
+      if (key === 'activity') record.activityGroup = moreSportsFiles.has(item.file) ? 'more-sports' : 'trying';
       if (key === 'age') {
         const age = stem.match(/^(\d{1,3})-(month|year)s?(?:-old)?$/i);
         if (!age || Number(age[1]) > 120) { needsReviewCounts[key]++; continue; }
@@ -108,7 +110,8 @@ export function parseWorkshopCatalogue(input) {
       if (!record.label || record.label.length > 260) throw new Error('Invalid workshop label.');
       // Resolve only the explicit folder/parent pair, never country-name prose.
       if (regional) record.letterContext = regionalEditorialContext(key, workshopRegionalFolders[key], record.label);
-      else if (!optional) record.letterContext = studioEditorialContext(key, record);
+      else if (!optional) record.letterContext = record.activityGroup === 'more-sports'
+        ? { group: 'neutral', needsReview: true } : studioEditorialContext(key, record);
       // Newly indexed names are places, not automatically countries.
       if (key === 'place' && record.letterContext.needsReview) record.isCountry = false;
       records.push(record);

@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test';
 import { test } from './helpers/provider-test.js';
 import { unlockWorkshop } from './helpers/workshop-access.js';
-import { workshopCatalogueFixture, workshopTalentPreviewCatalogueFixture } from './fixtures/workshop-catalogue.js';
+import { workshopCatalogueFixture, workshopTalentPreviewCatalogueFixture, workshopMoreSportsFixture } from './fixtures/workshop-catalogue.js';
 import { confirmMessage, mockStudioGeneration } from './helpers/studio-generation.js';
 
 const helper = 'Now, my Head Elf tells me you have quite a talent! Apparently, there’s something you’re especially good at… In particular...';
@@ -60,6 +60,88 @@ async function finish(page) {
   await expect(page.getByRole('heading', { name: 'Time to Review', exact: true })).toBeVisible();
   await expect(page.locator('.smw-summary-row')).toHaveCount(7);
 }
+
+for (const width of [320, 1440]) {
+  test(`More Sports ${width}: independent required activity, category clearing and review editing`, async ({ page }) => {
+    test.setTimeout(90000);
+    await page.setViewportSize({ width, height: 1000 });
+    const posts = [];
+    page.on('request', request => {
+      if (request.url().includes('/api/santa-studio-message') && request.method() === 'POST') posts.push(request.postDataJSON());
+    });
+    await openTalent(page, workshopMoreSportsFixture);
+    await page.getByRole('option', { name: 'Tennis', exact: true }).click();
+    await next(page).click();
+    const trying = page.getByRole('button', { name: 'Trying hard at', exact: true });
+    const sports = page.getByRole('button', { name: 'More Sports', exact: true });
+    await expect(trying).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.getByRole('option', { name: 'Swimming', exact: true })).toHaveCount(0);
+    await page.getByRole('option', { name: 'Teamwork', exact: true }).click();
+    await page.getByRole('searchbox').fill('team');
+    await trying.focus();
+    await page.keyboard.press('Tab');
+    await expect(sports).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(sports).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.getByRole('searchbox')).toHaveValue('');
+    await expect(page.locator('[role=option][aria-selected=true]')).toHaveCount(0);
+    await next(page).click();
+    await expect(page.getByRole('alert')).toContainText('Please choose trying hard at');
+    await page.getByRole('searchbox').fill('swim');
+    await page.getByRole('listbox', { name: 'More Sports', exact: true }).press('Home');
+    await expect(quote(page)).toContainText('Swimming');
+    await expectPreviewFits(page);
+    await trying.click();
+    await expect(page.getByRole('searchbox')).toHaveValue('');
+    await expect(page.locator('[role=option][aria-selected=true]')).toHaveCount(0);
+    await sports.click();
+    await expect(page.locator('[role=option][aria-selected=true]')).toHaveCount(0);
+    await expect(quote(page)).not.toContainText('Swimming');
+    await page.getByRole('option', { name: 'Swimming', exact: true }).click();
+    if (width === 320) {
+      await page.addStyleTag({ content: 'html { font-size: 200% !important; }' });
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+      await expectPreviewFits(page);
+      await page.locator('.smw-stage').screenshot({ path: 'generated-artifacts/more-sports-mobile-large-text.png' });
+      await page.addStyleTag({ content: 'html { font-size: 100% !important; }' });
+    }
+    await next(page).click();
+    // Finish the remaining three required steps.
+    for (let index = 0; index < 3; index++) {
+      await page.getByRole('option').first().click();
+      await next(page).click();
+    }
+    const rows = page.locator('.smw-summary-row');
+    await expect(rows.nth(2)).toContainText('Sports & activities — Tennis');
+    await expect(rows.nth(3)).toContainText('Swimming');
+    await rows.nth(3).getByRole('button').click();
+    await expect(sports).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.getByRole('option', { name: 'Swimming', exact: true })).toHaveAttribute('aria-selected', 'true');
+    await page.getByRole('option', { name: 'Farting', exact: true }).click();
+    await next(page).click();
+    await rows.nth(2).getByRole('button').click();
+    await expect(page.getByRole('option', { name: 'Tennis', exact: true })).toHaveAttribute('aria-selected', 'true');
+    await page.getByRole('option', { name: 'Cricket', exact: true }).click();
+    await next(page).click();
+    await expect(rows.nth(3)).toContainText('Farting');
+    await confirmMessage(page);
+    await expect.poll(() => posts.length).toBe(1);
+    expect(posts[0].talent).toEqual({ category: 'sports', id: `c-${'d'.repeat(64)}` });
+    expect(posts[0].activity).toBe(`c-${'7'.repeat(64)}`);
+    expect(Object.keys(posts[0]).sort()).toEqual(['name', 'age', 'talent', 'activity', 'achievement', 'treat', 'place'].sort());
+  });
+}
+
+test('More Sports absent hosted membership is honest and never fabricated', async ({ page }) => {
+  await openTalent(page);
+  await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+  await page.getByRole('button', { name: 'More Sports', exact: true }).click();
+  await expect(page.getByRole('status').filter({ hasText: 'More Sports recordings are unavailable' })).toBeVisible();
+  await expect(page.getByRole('option')).toHaveCount(0);
+  await expect(next(page)).toBeDisabled();
+  await page.getByRole('button', { name: 'Trying hard at', exact: true }).click();
+  await expect(page.getByRole('option')).toHaveCount(2);
+});
 
 for (const width of [320, 390, 471, 1440]) {
   test(`talent Continue is last and bottom-right at ${width}px`, async ({ page }) => {

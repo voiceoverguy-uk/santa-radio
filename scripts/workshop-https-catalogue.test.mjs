@@ -1,6 +1,29 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { workshopRegionalFolders } from '../src/lib/workshopDestinations.js';
+import { moreSportsFiles } from '../server/workshop-more-sports.js';
+test('More Sports is exactly the approved 56 paths, never all MP3s or renamed lookalikes', () => {
+  assert.equal(moreSportsFiles.size, 56);
+  // Pin the complete owner-approved path list, not just its size.
+  assert.equal(createHash('sha256').update([...moreSportsFiles].sort().join('\n')).digest('hex'),
+    'b96d69ee3649546c7e6887eb652e2d440098ab6c5e8c238ab231fe717de7c6e4');
+  const data = inventory();
+  data.categories.activity.push(...[...moreSportsFiles,
+    'Trying Hard at/Future Sport.mp3', 'Trying Hard at/Archery.mp3',
+    'Trying Hard at/Paddle Boarding.mp3', 'Trying Hard at/Football.wav'].map(record));
+  const parsed = parseWorkshopCatalogue(data);
+  const sports = parsed.categories.activity.filter(item => item.activityGroup === 'more-sports');
+  assert.deepEqual(new Set(sports.map(item => item.file)), moreSportsFiles);
+  for (const item of sports) {
+    assert.equal(item.id, record(item.file).id);
+    assert.deepEqual(item.letterContext, { group: 'neutral', needsReview: true });
+  }
+  assert.equal(parsed.categories.activity.filter(item => item.activityGroup === 'trying').length, 5);
+  data.categories.activity = data.categories.activity.filter(item => !moreSportsFiles.has(item.file));
+  assert.equal(parseWorkshopCatalogue(data).categories.activity.filter(item => item.activityGroup === 'more-sports').length, 0);
+  data.categories.activity.push({ ...record('Trying Hard at/Tennis.mp3'), bytes: 0 });
+  assert.equal(parseWorkshopCatalogue(data).categories.activity.filter(item => item.activityGroup === 'more-sports').length, 0);
+});
 import { regionalEditorialContext } from '../server/studio-regional-stories.js';
 test('optional regional groups preserve exact identities and fixed parents, including ambiguous names', () => {
   const data = inventory();
