@@ -33,3 +33,10 @@ Keep the two-letter minimum, suggestion limit, accessibility and keyboard/touch
 controls. Audio/private files/payments/Studio and other functionality must remain
 unchanged. Inspect real audio authorisation, not hidden-route assumptions, and
 report pre-existing exposures separately without making audio public.
+
+The owner confirmed that browser-only searching works and is faster.
+
+**Why:** The owner said, “that now works and works faster”.
+
+**How to apply:** Preserve this approved approach rather than restoring
+per-search server requests for the isolated demo.
