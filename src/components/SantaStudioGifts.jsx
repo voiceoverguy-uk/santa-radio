@@ -12,6 +12,12 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 const giftViews = ['certificate', 'letter', 'picture'];
 
+function SampleWatermark() {
+  return <div className="studio-gifts__watermark" aria-hidden="true">
+    {[0, 1, 2].map(row => <span key={row}>SAMPLE</span>)}
+  </div>;
+}
+
 const santaPictures = [
   '/images/santa-nice-list.jpg',
   '/images/santa-nice-list-2.jpg',
@@ -178,10 +184,13 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
       aria-label={kind === 'certificate' ? 'Enlarge certificate'
         : kind === 'letter' ? 'Enlarge letter to read' : 'Enlarge Santa’s Nice List picture'}
       onClick={event => open(event, kind)}>
-      {kind === 'certificate' ? <Certificate name={name} elapsed={displayElapsed} />
-        : kind === 'letter' ? <Letter letter={displayLetter} elapsed={displayElapsed} />
-          : <SantaPicture name={name} picture={picture} elapsed={displayElapsed}
-            previousPicture={previousPicture} onDissolved={onDissolved} />}
+      <div className="studio-gifts__thumbnail-artwork">
+        {kind === 'certificate' ? <Certificate name={name} elapsed={displayElapsed} />
+          : kind === 'letter' ? <Letter letter={displayLetter} elapsed={displayElapsed} />
+            : <SantaPicture name={name} picture={picture} elapsed={displayElapsed}
+              previousPicture={previousPicture} onDissolved={onDissolved} />}
+        <SampleWatermark />
+      </div>
       <span className="studio-gifts__thumbnail-label">
         {kind === 'picture' ? 'Enlarge Santa picture' : `Enlarge ${kind}`}
       </span>
@@ -248,9 +257,7 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
           {view === 'certificate' ? <Certificate name={name} elapsed={duration} />
              : view === 'letter' ? <Letter letter={displayLetter} elapsed={duration} />
               : <SantaPicture name={name} picture={picture} elapsed={duration} />}
-          <div className="studio-gifts__watermark" aria-hidden="true">
-            {[0, 1, 2].map(row => <span key={row}>NORTH POLE PROPERTY</span>)}
-          </div>
+          <SampleWatermark />
         </div>
       </div>
     </dialog>

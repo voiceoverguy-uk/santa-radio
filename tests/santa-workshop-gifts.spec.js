@@ -7,6 +7,7 @@ import { execFileSync } from 'node:child_process';
 import { PDFDocument } from 'pdf-lib';
 import { confirmMessage, mockStudioGeneration } from './helpers/studio-generation.js';
 import { expectLeftAlignedLetter } from './helpers/studio-letter-alignment.js';
+import { expectSampleWatermark } from './helpers/studio-sample-watermark.js';
 
 const giftButtons = page => page.locator('.studio-gift-download button');
 const letterText = page => page.locator('.smw-studio-preview .studio-gifts__preview-stack .studio-gifts__sr');
@@ -223,6 +224,7 @@ for (const width of [320, 1365]) {
         expect((await PDFDocument.load(readFileSync(filename))).getPageCount()).toBe(1);
         const text = execFileSync('pdftotext', ['-layout', filename, '-'], { encoding: 'utf8' }).replace(/\s+/gu, ' ');
         expect(text).toContain('Élodie O’Neill');
+        expect(text).not.toMatch(/SAMPLE|NORTH POLE PROPERTY/);
         if (kind === 'letter') for (const paragraph of paragraphs) expect(text).toContain(paragraph.replace(/\s+/gu, ' '));
       }
       await save(page, 'Download Santa picture (PNG)', `${prefix}.png`);
@@ -318,13 +320,14 @@ for (const width of [320, 820, 1365]) {
     // A real Tab follows each complete group, rather than jumping across columns.
     for (const [index, label] of labels.entries()) {
       const opener = stack.getByRole('button', { name: label, exact: true });
+      await expectSampleWatermark(opener);
       if (index === 0) await opener.focus();
       else await page.keyboard.press('Tab');
       await expect(opener).toBeFocused();
       await page.keyboard.press('Enter');
       const dialog = page.getByRole('dialog');
       await expect(dialog).toBeVisible();
-      await expect(dialog.locator('.studio-gifts__watermark span')).toHaveCount(3);
+      await expectSampleWatermark(dialog);
       const fits = await dialog.evaluate(node => {
         const document = node.querySelector('.studio-letter-dialog__document').getBoundingClientRect();
         const content = node.querySelector('.studio-letter-dialog__content').getBoundingClientRect();
@@ -893,7 +896,7 @@ test('gifts unlock together, export real local files, retry independently and tr
   const extracted = execFileSync('pdftotext', ['-layout', 'generated-artifacts/studio-gifts/letter.pdf', '-'], { encoding: 'utf8' })
     .replace(/\s+/gu, ' ');
   for (const paragraph of reviewedParagraphs) expect(extracted).toContain(paragraph.replace(/\s+/gu, ' '));
-  expect(extracted).not.toContain('NORTH POLE PROPERTY');
+  expect(extracted).not.toMatch(/SAMPLE|NORTH POLE PROPERTY/);
   const certText = execFileSync('pdftotext', ['generated-artifacts/studio-gifts/certificate.pdf', '-'], { encoding: 'utf8' });
   expect(certText).toContain(name);
   expect(certText).toMatch(/awarded (?:7[5-9]|8\d|9[0-5])% Nice status/);

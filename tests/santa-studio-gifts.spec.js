@@ -3,12 +3,13 @@ import { studioLetterChoices, createStudioLetter, CERTIFICATE_WRITE_MS,
   SIGNATURE_WRITE_MS, GIFT_EXAMPLE_INTERVAL_MS, letterBodyDuration, letterDuration } from '../src/lib/santaStudioLetter.js';
 import { certificateExampleNames, studioGiftExampleNames } from '../src/lib/santaCertificateExamples.js';
 import { expectLeftAlignedLetter } from './helpers/studio-letter-alignment.js';
+import { expectSampleWatermark } from './helpers/studio-sample-watermark.js';
 
 const gifts = page => page.locator('.studio-gifts');
 const body = page => gifts(page).locator('.studio-gifts__gallery .studio-letter__text');
 const readable = page => gifts(page).locator('.studio-gifts__gallery .studio-gifts__sr');
 
-async function visit(page, { reduced = false, clock = true } = {}) {
+async function visit(page, { reduced = false, clock = true, route = '/free-santa-message' } = {}) {
   await page.emulateMedia({ reducedMotion: reduced ? 'reduce' : 'no-preference' });
   if (clock) await page.clock.install();
   await page.addInitScript(() => {
@@ -27,7 +28,7 @@ async function visit(page, { reduced = false, clock = true } = {}) {
   await page.route(/youtube\.com|googlevideo\.com|citrus3\.com|\/audio\/examples\//, route => route.abort());
   await page.route('**/api/santa-names?*', route => route.fulfill({ json: { records: [], hostedCount: 300, warning: null } }));
   await page.route('**/api/radio-metadata*', route => route.fulfill({ json: { available: false, current: null, upcoming: [] } }));
-  await page.goto('/free-santa-message', { waitUntil: 'domcontentloaded' });
+  await page.goto(route, { waitUntil: 'domcontentloaded' });
   await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
   const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await decline.isVisible()) await decline.click();
@@ -39,9 +40,9 @@ async function visit(page, { reduced = false, clock = true } = {}) {
 
 // Exercise the automatic cycle rather than relying on removed manual controls.
 for (const width of [320, 1440]) {
-  test(`promotional gifts retain the landscape pair and separate picture at ${width}px`, async ({ page }) => {
+  test(`homepage promotional gifts retain the landscape pair and separate picture at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
-    await visit(page, { reduced: true, clock: false });
+    await visit(page, { reduced: true, clock: false, route: '/' });
     await expect(gifts(page).locator('.studio-gifts__card, .studio-gifts__review-layout, .studio-gift-download')).toHaveCount(0);
     const stack = gifts(page).locator('.studio-gifts__preview-stack');
     const box = await stack.evaluate(node => {
@@ -60,9 +61,18 @@ for (const width of [320, 1440]) {
     expect(box.picture.top).toBeGreaterThan(box.certificate.bottom);
     expect(box.picture.width).toBeLessThanOrEqual(360);
     await expectLeftAlignedLetter(stack.locator('.studio-letter__paper'));
-    await gifts(page).getByRole('button', { name: 'Enlarge letter to read' }).click();
-    await expectLeftAlignedLetter(page.locator('dialog[open] .studio-letter__paper'));
-    await page.keyboard.press('Escape');
+    for (const thumbnail of await stack.locator('.studio-gifts__thumbnail').all()) {
+      await expectSampleWatermark(thumbnail);
+      await thumbnail.click();
+      const dialog = page.getByRole('dialog');
+      await expectSampleWatermark(dialog);
+      if (await dialog.locator('.studio-letter__paper').count()) {
+        await expectLeftAlignedLetter(dialog.locator('.studio-letter__paper'));
+      }
+      await page.keyboard.press('Escape');
+      await expect(dialog).not.toBeVisible();
+      await expect(thumbnail).toBeFocused();
+    }
     await stack.screenshot({ path: `generated-artifacts/studio-gifts/promotion-preserved-${width}.png`, animations: 'disabled' });
   });
 

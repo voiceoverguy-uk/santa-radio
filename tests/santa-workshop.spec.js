@@ -4,6 +4,7 @@ import { test } from './helpers/provider-test.js';
 import { workshopCatalogueFixture } from './fixtures/workshop-catalogue.js';
 import { unlockWorkshop } from './helpers/workshop-access.js';
 import { expectStudioHeader } from './helpers/studio-header.js';
+import { expectSampleWatermark } from './helpers/studio-sample-watermark.js';
 import { studioEditorialContext } from '../server/studio-letter-editorial.js';
 import { parseWorkshopCatalogue } from '../server/santa-workshop-catalogue.js';
 import { createHash } from 'node:crypto';
@@ -1275,8 +1276,8 @@ for (const width of [390, 1440]) {
     const previews = section.locator('.studio-gifts');
     await expect(previews).toHaveAttribute('data-demo-name', 'Demrie');
     await expect(previews).toHaveAttribute('data-complete', 'true');
-    const originalProse = await previews.locator('.studio-gifts__gallery .studio-letter__text').innerText();
-    const originalParagraphs = await previews.locator('.studio-gifts__gallery .studio-letter__text > p').allTextContents();
+    const originalProse = await previews.locator('.studio-gifts__preview-stack .studio-letter__text').innerText();
+    const originalParagraphs = await previews.locator('.studio-gifts__preview-stack .studio-letter__text > p').allTextContents();
     await expect(previews.locator('.studio-letter__text')).toContainText(/Following clues|Staying with a puzzle/);
     await expect(previews.locator('.studio-certificate img')).toHaveAttribute('src', '/certificates/examples/blank-master.webp');
     await expect(previews.locator('.studio-gifts__preview-stack .studio-santa-picture img')).toHaveAttribute('src', '/images/santa-nice-list.jpg');
@@ -1286,13 +1287,12 @@ for (const width of [390, 1440]) {
       ['Enlarge letter to read', 'letter'],
     ]) {
       const opener = previews.getByRole('button', { name: buttonName, exact: true });
+      await expectSampleWatermark(opener);
       await opener.click();
       const dialog = page.getByRole('dialog', { name: `Demrie’s ${kind} example`, exact: true });
       await expect(dialog).toBeVisible();
       await expect(dialog.getByRole('button', { name: 'Close preview', exact: true })).toBeFocused();
-      await expect(dialog.locator('.studio-gifts__watermark span')).toHaveText([
-        'NORTH POLE PROPERTY', 'NORTH POLE PROPERTY', 'NORTH POLE PROPERTY',
-      ]);
+      await expectSampleWatermark(dialog);
       if (kind === 'certificate') await expect(dialog.locator('.studio-certificate__name')).toHaveText('Demrie');
       if (kind === 'picture') await expect(dialog.getByRole('img', { name: 'Santa’s Nice List picture example for Demrie' })).toBeVisible();
       if (kind === 'letter') {
@@ -1328,7 +1328,7 @@ for (const width of [390, 1440]) {
     await expect(previews).toHaveAttribute('data-demo-name', 'Demree');
     await expect(previews.locator('.studio-certificate__name')).toHaveText('Demree');
     await expect(previews.locator('.studio-letter__text')).toContainText('Dear Demree,');
-    expect(await previews.locator('.studio-gifts__gallery .studio-letter__text').innerText())
+    expect(await previews.locator('.studio-gifts__preview-stack .studio-letter__text').innerText())
       .toBe(originalProse.replaceAll('Demrie', 'Demree'));
     await expect(page.locator('.smw-summary-row').first()).toContainText('Demrie');
     await page.getByRole('button', { name: 'Change Extra celebration', exact: true }).click();
@@ -1336,7 +1336,7 @@ for (const width of [390, 1440]) {
     await page.getByRole('button', { name: 'Return to review', exact: true }).click();
     await expect(previews.locator('.studio-letter__text')).toContainText('Planting and caring for a garden');
     await expect(previews.locator('.studio-letter__text')).not.toContainText('Completing a jigsaw puzzle');
-    const afterEdit = await previews.locator('.studio-gifts__gallery .studio-letter__text > p').allTextContents();
+    const afterEdit = await previews.locator('.studio-gifts__preview-stack .studio-letter__text > p').allTextContents();
     // All non-achievement paragraphs retain their exact variation across the
     // edit-stage unmount. Compare DOM paragraphs, not layout line breaks.
     for (const index of [0, 1, 2, 3, 4, 6, 7, 8, 9, 10]) {

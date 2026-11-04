@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { mkdirSync, readFileSync } from 'node:fs';
 import { fillAccessForm, mockBrevo } from './helpers/message-access.js';
+import { expectSampleWatermark } from './helpers/studio-sample-watermark.js';
 
 const path = '/preview/hero-name-checker';
 const heroCopy = {
@@ -771,14 +772,14 @@ for (const width of [390, 1440]) {
     await expect(gifts.locator('.studio-gifts__preview-stack .studio-santa-picture > img')).toHaveAttribute('src', '/images/santa-nice-list-2.jpg');
     await page.clock.runFor(19500);
     await expect(gifts).toHaveAttribute('data-demo-name', 'Erica');
-    await expect(gifts.locator('.studio-gifts__preview-stack .studio-gifts__watermark')).toHaveCount(0);
+    await expect(gifts.locator('.studio-gifts__preview-stack .studio-gifts__watermark')).toHaveCount(3);
     for (const label of ['Enlarge certificate', 'Enlarge letter to read', 'Enlarge Santa’s Nice List picture']) {
-      await gifts.getByRole('button', { name: label, exact: true }).click();
+      const thumbnail = gifts.getByRole('button', { name: label, exact: true });
+      await expectSampleWatermark(thumbnail);
+      await thumbnail.click();
       const dialog = page.getByRole('dialog');
       const watermark = dialog.locator('.studio-gifts__watermark');
-      await expect(watermark).toBeVisible();
-      await expect(watermark.locator('span')).toHaveText(Array(3).fill('NORTH POLE PROPERTY'));
-      await expect(watermark).toHaveAttribute('aria-hidden', 'true');
+      await expectSampleWatermark(dialog);
       const geometries = await watermark.locator('span').evaluateAll(elements => elements.map(el => ({
         ink: el.getBoundingClientRect().toJSON(),
         sheet: el.closest('.studio-letter-dialog__document').getBoundingClientRect().toJSON(),
@@ -786,7 +787,7 @@ for (const width of [390, 1440]) {
         size: parseFloat(getComputedStyle(el).fontSize),
       })));
       for (const geometry of geometries) {
-        expect(geometry.size / geometry.sheet.width).toBeGreaterThan(.079);
+        expect(geometry.size / geometry.sheet.width).toBeGreaterThan(.159);
         expect(geometry.color).toBe('rgba(185, 20, 35, 0.45)');
         expect(geometry.ink.left).toBeGreaterThanOrEqual(geometry.sheet.left);
         expect(geometry.ink.right).toBeLessThanOrEqual(geometry.sheet.right);
@@ -796,7 +797,7 @@ for (const width of [390, 1440]) {
       for (let index = 1; index < geometries.length; index++) {
         const previous = geometries[index - 1], current = geometries[index];
         const separation = (current.ink.top + current.ink.height / 2) - (previous.ink.top + previous.ink.height / 2);
-        expect(separation / current.sheet.height).toBeGreaterThan(.28);
+        expect(separation / current.sheet.height).toBeGreaterThan(.25);
       }
       if (width === 1440) await dialog.screenshot({ path: `test-results/personalised-${label.split(' ')[1]}-watermark.png` });
       await page.keyboard.press('Escape');
