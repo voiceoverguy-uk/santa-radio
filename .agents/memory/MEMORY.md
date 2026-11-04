@@ -29,6 +29,7 @@
 - [Tracker holiday dates](tracker-holiday-dates.md) — Santa stays on holiday through 30 November; returns to the North Pole on 1 December.
 - [Tracker content boundaries](tracker-content-policy.md) — Delivery stops are not holiday-place additions; distinguish fictional antics from sourced, qualified traditions.
 - [Preview test timeouts](preview-test-timeouts.md) — Whole-test timeouts can report misleading matcher values even when the captured UI state is correct.
+- [Generated HTML and browser checks](browser-generated-reports.md) — Finish HTML report generation before browser tests; Vite can reload the page when private reports change.
 - [Browser text bounds](browser-text-bounds.md) — Allow subpixel rounding in inline-text containment checks to avoid false cropping failures.
 - [Browser scroll checks](browser-scroll-verification.md) — Settle scrolling and account for the fixed radio dock before measuring or capturing interaction states.
 - [Keyboard focus checks](keyboard-focus-checks.md) — Programmatic focus after pointer use may not activate focus-visible; verify with real keyboard navigation.

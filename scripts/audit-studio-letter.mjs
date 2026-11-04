@@ -26,7 +26,8 @@ const baseDetails = Object.fromEntries(Object.entries(mapping).map(([category, f
 const baseContext = Object.fromEntries(Object.entries(mapping).map(([category, field]) =>
   [field, catalogue.categories[category][0].letterContext]));
 let checkedLetters = 0;
-for (const [category, records] of Object.entries(catalogue.categories)) {
+for (const category of Object.keys(mapping)) {
+  const records = catalogue.categories[category];
   for (const record of records) {
     const field = mapping[category], value = selectedValue(category, record);
     const context = record.letterContext;
@@ -68,7 +69,8 @@ const rows = ['# Private Studio letter coverage', '', `Audited ${new Date().toIS
   '- “T-B-L” is not expanded. The owner-approved “Falkland Islands” display correction preserves the original recording filename and identity.',
   '', '## Coverage matrix', '', '| Category | Selected display value | Response group | Status |',
   '| --- | --- | --- | --- |'];
-for (const [category, records] of Object.entries(catalogue.categories)) {
+for (const category of Object.keys(mapping)) {
+  const records = catalogue.categories[category];
   for (const record of records) {
     const { group, needsReview } = record.letterContext;
     const selected = selectedValue(category, record);

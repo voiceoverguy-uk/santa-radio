@@ -1,6 +1,7 @@
 import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { StudioAccessContext } from '../lib/studioAccessContext.js';
 import useWorkshopSounds from '../hooks/useWorkshopSounds.js';
+import useStudioRegionalEditorial from '../hooks/useStudioRegionalEditorial.js';
 import PageSeo from '../seo/PageSeo.jsx';
 import { pageMetadata } from '../seo/catalogue.js';
 import WorkshopNamePicker from '../components/WorkshopNamePicker.jsx';
@@ -257,6 +258,7 @@ export default function SantaMessageWorkshop() {
     status: workshopSoundStatus,
   } = useWorkshopSounds();
   const selectedRegion = selectedWorkshopRegion(catalogueState.catalogue, choices.place, choices.region);
+  const regionalEditorial = useStudioRegionalEditorial(choices.place, selectedRegion?.id);
   const selectedCountry = catalogueState.catalogue?.categories.place.find(record => record.id === choices.place);
   const destinationSummary = selectedRegion ? `${selectedRegion.label}, ${selectedCountry.label}` : workshopDestinationLabel(selectedCountry?.label);
   const destinationValid = !!selectedCountry
@@ -286,6 +288,11 @@ export default function SantaMessageWorkshop() {
     ...catalogueCategories.map(key => choices[key]), choices.talent]);
   const giftDetailsFor = giftChoices => {
     const region = selectedWorkshopRegion(catalogueState.catalogue, giftChoices.place, giftChoices.region);
+    const regionalContext = region && regionalEditorial.getContext(giftChoices.place, region.id);
+    // A selected region must have its own resolved context, including an
+    // explicit neutral response for unreviewed catalogue additions.
+    // Never snapshot a loading/error state as a completed neutral gift.
+    if (giftChoices.region && (!region || !regionalContext)) return null;
     const country = catalogueState.catalogue?.categories.place.find(record => record.id === giftChoices.place);
     const destination = region ? `${region.label}, ${country.label}` : country?.label;
     return { ...Object.fromEntries([
@@ -300,7 +307,8 @@ export default function SantaMessageWorkshop() {
     ['age', 'age'], ['activity', 'activity'], ['achievement', 'achievement'],
     ['destination', 'place'], ['treats', 'treat'],
   ].map(([key, category]) => [key, category === 'place' && region
-    ? region.letterContext : catalogueState.catalogue?.categories?.[category]
+    ? regionalContext
+    : catalogueState.catalogue?.categories?.[category]
       ?.find(record => record.id === giftChoices[category])?.letterContext])) };
   };
   const giftDetails = giftDetailsFor(choices);
@@ -738,7 +746,7 @@ export default function SantaMessageWorkshop() {
                   </div>
                 ))}
               </dl>
-              {destinationValid ? <WorkshopNameSpelling
+              {destinationValid && regionalEditorial.ready ? <WorkshopNameSpelling
                 key={selectedName?.id}
                 recordedName={selectedName?.name || ''}
                 recordingId={selectedName?.id ?? ''}
@@ -755,7 +763,11 @@ export default function SantaMessageWorkshop() {
                     ? { ...current, writtenName: getWorkshopWrittenName(selectedName.name, spelling) }
                     : current);
                 }}
-              /> : <p className="smw-stage-note" role="status">Choose a destination to preview your keepsakes.</p>}
+              /> : destinationValid ? <div className="smw-stage-note" role="status">
+                {regionalEditorial.failed ? <>Santa’s local letter story could not be loaded.{' '}
+                  <button type="button" className="smw-change" onClick={regionalEditorial.retry}>Try again</button>
+                </> : 'Santa is finding the local story for your letter…'}
+              </div> : <p className="smw-stage-note" role="status">Choose a destination to preview your keepsakes.</p>}
             </div>
           )}
               <div className="smw-actions smw-actions--review" hidden={!isReview}>
@@ -772,16 +784,21 @@ export default function SantaMessageWorkshop() {
                   onReady={message => {
                     const record = message?.record || selectedName;
                     const completedChoices = message?.choices || choices;
+                    const completedDetails = giftDetailsFor(completedChoices);
+                    if (!completedDetails) {
+                      setError('Santa’s local letter story is not ready. Load the selected story before preparing gifts.');
+                      return;
+                    }
                     setCompletedGift({
                       selectionKey: JSON.stringify([record.id, completedChoices.region,
                         ...catalogueCategories.map(key => completedChoices[key]), completedChoices.talent]),
-                      record: { ...record }, details: giftDetailsFor(completedChoices),
+                      record: { ...record }, details: completedDetails,
                       variation: letterVariation,
                       writtenName: getWorkshopWrittenName(record.name, record.id === selectedName?.id ? nameSpelling : ''),
                       revision: crypto.randomUUID(),
                     });
                   }}
-                  complete={!!selectedName && destinationValid && catalogueCategories.every(key =>
+                  complete={!!selectedName && destinationValid && regionalEditorial.ready && catalogueCategories.every(key =>
                     catalogueState.catalogue?.categories?.[key]?.some(record => record.id === choices[key]))
                     && (choices.talent?.skip === true || (choices.talent?.category
                       && catalogueState.catalogue?.categories?.[choices.talent.category]

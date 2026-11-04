@@ -43,6 +43,23 @@ matching would attach the wrong place's story to an otherwise valid recording.
 **How to apply:** Keep the audio selection's explicit parent relationship when
 forming letter details. Do not infer the intended geography from a label alone.
 
+The owner approved automatic, short local Santa-and-elf stories for selected
+US states and UK-nation counties, with two or three curated alternatives.
+Replace the neutral destination passage; add no questions, recordings or
+recipient storage. Florida may mention Magic Kingdom and EPCOT; West Yorkshire
+should have recognisable child-friendly local humour. Avoid pub/alcohol jokes
+and assumptions that the recipient lives near or has visited a landmark.
+
+**Why:** The owner wants recognisable local personalisation in the letter only,
+with reviewed wording rather than runtime AI.
+
+**How to apply:** Preserve Ireland/Northern Ireland distinctions and country-only,
+fantasy and space writing. Inspect source and catalogue gaps privately rather
+than claiming every geographical area is recorded. Budget regional prose with
+the complete displayed region-and-parent label, not the passage alone: those
+long labels can overflow a longest-combination A4 letter even when ordinary
+examples fit. Shorten regional copy, not the approved typography or other scenes.
+
 Include one short, silly Christmas joke per letter, chosen from 25 family-friendly jokes and introduced with “By the way, (NAME), do you like jokes?”
 
 **Why:** The owner requested a line or two of Christmas humour in Santa's letter.

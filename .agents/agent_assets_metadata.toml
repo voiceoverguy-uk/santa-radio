@@ -1162,3 +1162,17 @@ mtime_ms = 1793742373483
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/c1ba4fde-babc-4631-b328-452df44f4290/830436bf-9081-4440-899c-26916085feb4"
 storage_version_token = "1793742422577748"
 content_type = "audio/mpeg"
+
+[[outputs]]
+id = "e8A2IRF922aBNav11575O"
+uri = "file://generated-artifacts/studio-editorial/regional-samples.html"
+type = "html"
+title = "Regional Santa letter samples"
+description = "Florida, West Yorkshire and UK-nation samples, coverage totals and the hosted-catalogue limitation. No private recording inventory or recipient data."
+logical_id = "9a07fee2-def5-43e0-b130-adc643d75f30"
+content_hash = "sha256:c02b642c83940e451072cd6c865cb2a4e7ab08e8eda3e832cf63fe57069f2117"
+size = 3546
+mtime_ms = 1793752216925
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/9a07fee2-def5-43e0-b130-adc643d75f30/1c83e2be-9343-49e3-b913-b68cf12a8619"
+storage_version_token = "1793752294608366"
+content_type = "text/html"

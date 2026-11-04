@@ -38,7 +38,9 @@ export function createStudioLetter(name, random = Math.random, overrides = null,
     ? groups.destination.passages : responseLibraries[category][groups[category].group], category);
   const adult = ['adult', 'eighteen'].includes(groups.age.group);
   const narrative = role => choose(letterNarratives[role][adult ? 'adult' : 'family'], role);
-  const introduction = category => choose(detailIntroductions[category], `${category}Intro`)(details[category]);
+  const introduction = category => category === 'destination' && groups.destination.regional
+    ? `My route: ${details.destination}.`
+    : choose(detailIntroductions[category], `${category}Intro`)(details[category]);
   const reminderBand = groups.age.group === 'months' ? 'months' : adult ? 'adult' : 'family';
   const reminder = `Now, ${name}, ${choose(letterReminders[reminderBand], 'reminder')}`;
   const paragraphs = [

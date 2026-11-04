@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { workshopRegionalFolders } from '../src/lib/workshopDestinations.js';
+import { regionalEditorialContext } from '../server/studio-regional-stories.js';
 test('optional regional groups preserve exact identities and fixed parents, including ambiguous names', () => {
   const data = inventory();
   const old = parseWorkshopCatalogue(data);
@@ -19,7 +20,7 @@ test('optional regional groups preserve exact identities and fixed parents, incl
     for (const choice of group.records) {
       assert.ok(choice.file.startsWith(`${folder}/`));
       assert.equal(choice.id, record(choice.file).id);
-      assert.deepEqual(choice.letterContext, { group: 'neutral', needsReview: true });
+      assert.deepEqual(choice.letterContext, regionalEditorialContext(folder, parentFile, choice.label));
       assert.equal(choice.isCountry, false);
     }
   }

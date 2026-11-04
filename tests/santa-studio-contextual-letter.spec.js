@@ -88,7 +88,13 @@ test('authorised catalogue longest rendered combinations across age bands, regio
   const synthetic = ['California', 'East Riding of Yorkshire'].map(label => ({
     label, letterContext: studioEditorialContext('place', { label }),
   }));
-  const records = { ...catalogue.categories, place: [...catalogue.categories.place, ...synthetic] };
+  // Include every current parent-qualified region and every authored variant in
+  // the same longest-wrapped-paragraph measurement as the country selections.
+  const regional = Object.values(catalogue.regionalGroups).flatMap(group => {
+    const parent = catalogue.categories.place.find(record => record.id === group.parentId);
+    return group.records.map(record => ({ ...record, label: `${record.label}, ${parent.label}` }));
+  });
+  const records = { ...catalogue.categories, place: [...catalogue.categories.place, ...synthetic, ...regional] };
   const value = (category, record) => category === 'treat' ? workshopTreatWording(record.label)
     : category === 'place' ? record.label.replace(/ — (?:Fantasy place|Space destination)$/, '') : record.label;
   const base = Object.fromEntries(Object.entries(mapping).map(([category, field]) => [field, value(category, records[category][0])]));

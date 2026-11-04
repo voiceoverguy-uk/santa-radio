@@ -1,0 +1,8 @@
+export default [
+  ['Antrim', 'Giant’s Causeway', 'An elf borrowed a hexagon from our Giant’s Causeway model as a coaster. I reclaimed it before counting the stones.', 'An elf drew the Giant’s Causeway beside my paper sleigh. I asked him to give Santa boots rather than six-sided slippers.'],
+  ['Armagh', 'Armagh Observatory', 'An elf gave our Armagh Observatory model a paper telescope. I peered through it and discovered he had drawn a star inside.', 'Our Armagh Observatory sketch gained a tiny constellation. An elf joined the dots and produced something suspiciously like my biscuit tin.'],
+  ['Down', 'Mourne Mountains', 'Our Mourne Mountains model used folded purple paper. An elf found my sleigh marker hiding behind the tallest crease.', 'An elf drew the Mourne Mountains across two pages. I added a tiny Santa whose hat was larger than his entire paper rucksack.'],
+  ['Fermanagh', 'Marble Arch Caves', 'An elf made our Marble Arch Caves model from cardboard tunnels. My toy sleigh needed a smaller parcel sack to get through.', 'Our Marble Arch Caves picture gained a miniature explorer. An elf fitted his paper torch with a golden star for a beam.'],
+  ['Londonderry', 'Mussenden Temple', 'Our Mussenden Temple model began as a cardboard tube. An elf added columns while I tried to keep the roof perfectly round.', 'An elf drew Mussenden Temple beside a paper coastline. I placed my sleigh marker on the desk and left the picture safely undisturbed.'],
+  ['Tyrone', 'Ulster American Folk Park', 'An elf added a miniature trunk to our Ulster American Folk Park model. I opened it and found three paper mittens.', 'Our Ulster American Folk Park sketch gained a tiny signpost. An elf labelled one arrow “Santa’s desk”, which was fortunately very close.'],
+];

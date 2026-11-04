@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import { studioEditorialContext } from './studio-letter-editorial.js';
 import { isKnownRegion } from './studio-destination-passages.js';
 import { workshopRegionalFolders } from '../src/lib/workshopDestinations.js';
+import { regionalEditorialContext } from './studio-regional-stories.js';
 
 export const WORKSHOP_ROOT = 'https://stagcommunications.com/santaradio/names/personalised-message/';
 export const WORKSHOP_INDEX = `${WORKSHOP_ROOT}workshop-index.php`;
@@ -105,10 +106,8 @@ export function parseWorkshopCatalogue(input) {
         if (record.kind === 'space') record.label += ' — Space destination';
       }
       if (!record.label || record.label.length > 260) throw new Error('Invalid workshop label.');
-      // Regions must never inherit a same-named country's prose (e.g. Georgia).
-      // Neutral named-place writing is deliberate until context is curated for
-      // this exact parent/region pair.
-      if (regional) record.letterContext = { group: 'neutral', needsReview: true };
+      // Resolve only the explicit folder/parent pair, never country-name prose.
+      if (regional) record.letterContext = regionalEditorialContext(key, workshopRegionalFolders[key], record.label);
       else if (!optional) record.letterContext = studioEditorialContext(key, record);
       // Newly indexed names are places, not automatically countries.
       if (key === 'place' && record.letterContext.needsReview) record.isCountry = false;
@@ -207,7 +206,26 @@ export function createWorkshopCatalogueHandler(load = workshopCatalogue, authori
     }
     try {
       if (!await authorize(req)) return send(403, { error: 'Use a valid tester code or a confirmed sandbox purchase to open Santa’s Studio.', code: 'STUDIO_ACCESS_REQUIRED' });
-      return send(200, await load());
+      const catalogue = await load();
+      const query = new URL(req.url || '/', 'https://studio.invalid').searchParams;
+      if (query.has('parentId') || query.has('regionId')) {
+        const parentId = query.get('parentId'), regionId = query.get('regionId');
+        if (![parentId, regionId].every(id => typeof id === 'string' && /^c-[a-f0-9]{64}$/.test(id))) {
+          return send(400, { error: 'Choose a valid destination and region.' });
+        }
+        const group = Object.values(catalogue.regionalGroups).find(group => group.parentId === parentId);
+        const selected = group?.records.find(record => record.id === regionId);
+        if (!selected) return send(400, { error: 'That region does not belong to the selected destination.' });
+        return send(200, { parentId, regionId, letterContext: selected.letterContext });
+      }
+      // The browser may load the protected recording choices, not the full
+      // regional prose library. Only the chosen parent/region gets its passages.
+      const regionalGroups = Object.fromEntries(Object.entries(catalogue.regionalGroups).map(([folder, group]) =>
+        [folder, { ...group, records: group.records.map(record => {
+          const { passages, ...letterContext } = record.letterContext;
+          return { ...record, letterContext };
+        }) }]));
+      return send(200, { ...catalogue, regionalGroups });
     }
     catch { return send(503, { error: 'Santa’s recorded choices could not be loaded. Please try again.' }); }
   };

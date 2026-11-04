@@ -4,6 +4,14 @@ import { workshopCatalogueFixture, workshopRegionalCatalogueFixture, workshopMix
 import { unlockWorkshop } from './helpers/workshop-access.js';
 import { confirmMessage, emptyGeneration, mockStudioGeneration } from './helpers/studio-generation.js';
 import { workshopDestinationLabel } from '../src/lib/workshopDestinations.js';
+import { createWorkshopCatalogueHandler } from '../server/santa-workshop-catalogue.js';
+import { regionalEditorialContext } from '../server/studio-regional-stories.js';
+import { workshopRegionalFolders } from '../src/lib/workshopDestinations.js';
+import { createHash } from 'node:crypto';
+import { studioEditorialContext } from '../server/studio-letter-editorial.js';
+import { readFileSync, mkdirSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { PDFDocument } from 'pdf-lib';
 
 test.beforeEach(async ({ page }) => {
   await unlockWorkshop(page);
@@ -13,7 +21,14 @@ test.beforeEach(async ({ page }) => {
 
 async function openRegionalStage(page, inventory = workshopRegionalCatalogueFixture) {
   await page.route('**/api/radio-metadata*', route => route.fulfill({ json: { available: false, current: null, upcoming: [] } }));
-  await page.route('**/api/santa-workshop-catalogue', route => route.fulfill({ json: inventory }));
+  const handler = createWorkshopCatalogueHandler(async () => inventory, () => true);
+  await page.route('**/api/santa-workshop-catalogue*', async route => {
+    let status, body;
+    await handler({ method: 'GET', url: new URL(route.request().url()).pathname + new URL(route.request().url()).search }, {
+      setHeader() {}, writeHead(value) { status = value; }, end(value) { body = value; },
+    });
+    await route.fulfill({ status, contentType: 'application/json', body });
+  });
   await page.route('**/api/santa-names', route => route.fulfill({
     json: { records: [{ id: `f-${'a'.repeat(64)}`, name: 'Arabella', variant: '', selectionToken: 'fixture', previewUrl: '/api/santa-name-audio/fixture' }] },
   }));
@@ -34,6 +49,183 @@ async function expectNoDestinationSummary(page) {
   await expect(page.locator('.smw-destination-picker__summary, .smw-destination-picker__selection')).toHaveCount(0);
   await expect(page.getByText('Selected destination', { exact: true })).toHaveCount(0);
 }
+
+for (const width of [390, 1440]) {
+  test(`regional local stories retain their parent, spelling, reopening and unrelated edits at ${width}px`, async ({ page }) => {
+    test.setTimeout(90000);
+    await page.setViewportSize({ width, height: 1000 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    const inventory = structuredClone(workshopRegionalCatalogueFixture);
+    const selections = [
+      ['usa-states', 'United States', 'Florida', 'state'],
+      ['england-counties', 'England', 'West Yorkshire', 'county'],
+      ['scotland-counties', 'Scotland', 'City of Edinburgh', 'county'],
+      ['wales-counties', 'Wales', 'Cardiff', 'county'],
+      ['northern-ireland-counties', 'Northern Ireland', 'Antrim', 'county'],
+    ];
+    for (const [folder, , label] of selections) {
+      const file = `${folder}/${label}.wav`;
+      inventory.regionalGroups[folder].records = [{
+        id: `c-${createHash('sha256').update(file).digest('hex')}`, file, label, kind: 'place', isCountry: false,
+        letterContext: regionalEditorialContext(folder, workshopRegionalFolders[folder], label),
+      }];
+    }
+    inventory.categories.activity.push({ ...inventory.categories.activity[0], id: 'reading-fixture', label: 'Reading books',
+      letterContext: studioEditorialContext('activity', { label: 'Reading books' }) });
+    inventory.counts.activity++;
+    const requests = [];
+    page.on('request', request => {
+      if (request.url().includes('/api/santa-workshop-catalogue?')) requests.push(request.url());
+    });
+    await openRegionalStage(page, inventory);
+    const paragraph = page.locator('.smw-studio-preview .studio-letter__text').first().locator('> p').nth(6);
+    for (const [index, [folder, country, label, kind]] of selections.entries()) {
+      if (index) {
+        await page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true }).click();
+        await page.getByRole('button', { name: 'Countries & real places', exact: true }).click();
+      }
+      const search = page.getByRole('searchbox', { name: 'Search locations', exact: true });
+      await search.fill(country);
+      await page.getByRole('option', { name: country, exact: true }).click();
+      await page.getByRole('button', { name: `Choose a ${kind}`, exact: true }).click();
+      await page.getByRole('option', { name: label, exact: true }).click();
+      await page.locator('.smw-button-next').click();
+      await expect(paragraph).toContainText(`${label}, ${country}`);
+      const expected = inventory.regionalGroups[folder].records[0].letterContext.passages;
+      await expect.poll(async () => {
+        const text = await paragraph.textContent();
+        return expected.some(passage => text.includes(passage));
+      }).toBe(true);
+      const before = await paragraph.textContent();
+      expect(before).not.toContain('No guessing');
+      expect(await page.locator('.smw-studio-preview .studio-letter__text').first().locator('> p').count()).toBe(12);
+      await page.getByRole('button', { name: 'Enlarge letter to read', exact: true }).click();
+      await expect(page.locator('dialog[open] .studio-letter__text > p').nth(6)).toHaveText(before);
+      await page.evaluate(() => document.fonts.ready);
+      const bounds = await page.locator('dialog[open]').evaluate(dialog => {
+        const paper = dialog.querySelector('.studio-letter__paper').getBoundingClientRect();
+        const text = dialog.querySelector('.studio-letter__text').getBoundingClientRect();
+        return { ratio: paper.width / paper.height, end: (text.bottom - paper.top) / paper.height,
+          left: paper.left, right: paper.right, bottom: paper.bottom, height: innerHeight, width: innerWidth };
+      });
+      expect(bounds.ratio).toBeCloseTo(210 / 297, 3);
+      expect(bounds.end).toBeLessThan(.88);
+      expect(bounds.left).toBeGreaterThanOrEqual(0);
+      expect(bounds.right).toBeLessThanOrEqual(bounds.width + .5);
+      expect(bounds.bottom).toBeLessThanOrEqual(bounds.height + .5);
+      if (index < 2) await page.locator('dialog[open]').screenshot({
+        path: `generated-artifacts/studio-editorial/regional-${folder}-${width}.jpg`,
+      });
+      await page.keyboard.press('Escape');
+      await page.getByRole('button', { name: 'Enlarge letter to read', exact: true }).click();
+      await expect(page.locator('dialog[open] .studio-letter__text > p').nth(6)).toHaveText(before);
+      await page.keyboard.press('Escape');
+      if (index === 0) {
+        await page.getByRole('button', { name: 'Edit certificate name', exact: true }).click();
+        await page.getByRole('textbox', { name: 'Name spelling', exact: true }).fill('Arabelle');
+        await page.getByRole('button', { name: 'Use this spelling', exact: true }).click();
+        await expect(paragraph).toHaveText(before);
+        await page.getByRole('button', { name: 'Change Trying hard at', exact: true }).click();
+        await page.getByRole('option', { name: 'Reading books', exact: true }).click();
+        await page.getByRole('button', { name: 'Return to review', exact: true }).click();
+        await expect(paragraph).toHaveText(before);
+      }
+    }
+    expect(requests).toHaveLength(5);
+    for (const url of requests) {
+      const query = new URL(url).searchParams;
+      expect([...query.keys()].sort()).toEqual(['parentId', 'regionId']);
+    }
+  });
+}
+
+test('regional writing fails explicitly and retries only the selected context without replacing it with country prose', async ({ page }) => {
+  await openRegionalStage(page);
+  const group = workshopRegionalCatalogueFixture.regionalGroups['usa-states'];
+  const georgia = group.records.find(record => record.label === 'Georgia');
+  let attempts = 0;
+  await page.route('**/api/santa-workshop-catalogue?*', route => {
+    attempts++;
+    return route.fulfill(attempts === 1 ? { status: 503, json: { error: 'Test unavailable' } } : {
+      json: { parentId: group.parentId, regionId: georgia.id, letterContext: georgia.letterContext },
+    });
+  });
+  await page.getByRole('option', { name: 'United States', exact: true }).click();
+  await page.getByRole('button', { name: 'Choose a state', exact: true }).click();
+  await page.getByRole('option', { name: 'Georgia', exact: true }).click();
+  await page.locator('.smw-button-next').click();
+  await expect(page.getByText('Santa’s local letter story could not be loaded.', { exact: false })).toBeVisible();
+  for (const action of await page.getByRole('button', { name: 'Create message', exact: true }).all()) {
+    await expect(action).toBeDisabled();
+  }
+  await expect(page.locator('.smw-studio-preview')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Try again', exact: true }).click();
+  const paragraph = page.locator('.smw-studio-preview .studio-letter__text').first().locator('> p').nth(6);
+  await expect(paragraph).toContainText('Georgia, United States');
+  await expect(paragraph).toContainText('Stone Mountain');
+  await expect(paragraph).not.toContainText('Statue of Liberty');
+  expect(attempts).toBe(2);
+});
+
+test('delayed and failed regional writing blocks both create actions until the local story is in the downloadable letter', async ({ page }) => {
+  test.setTimeout(90000);
+  await openRegionalStage(page);
+  const fixture = await mockStudioGeneration(page, { record: { id: 'arabella', name: 'Arabella' } });
+  const group = workshopRegionalCatalogueFixture.regionalGroups['usa-states'];
+  const georgia = group.records.find(record => record.label === 'Georgia');
+  let release;
+  let attempt = 0;
+  await page.route('**/api/santa-workshop-catalogue?*', async route => {
+    attempt++;
+    if (attempt === 1) {
+      await new Promise(resolve => { release = resolve; });
+      await route.fulfill({ status: 503, json: { error: 'Delayed failure' } });
+    } else await route.fulfill({ json: { parentId: group.parentId, regionId: georgia.id, letterContext: georgia.letterContext } });
+  });
+  await page.getByRole('option', { name: 'United States', exact: true }).click();
+  await page.getByRole('button', { name: 'Choose a state', exact: true }).click();
+  await page.getByRole('option', { name: 'Georgia', exact: true }).click();
+  await page.locator('.smw-button-next').click();
+  const actions = page.getByRole('button', { name: 'Create message', exact: true });
+  // The upper action is inside the not-yet-ready letter preview; the lower
+  // mounted audio action must be disabled, not left as a way around readiness.
+  await expect(actions).toHaveCount(1);
+  await expect(page.locator('.smw-review-create-row')).toHaveCount(0);
+  for (const action of await actions.all()) {
+    await expect(action).toBeDisabled();
+    // Even a dispatched click must not get past the component's complete guard.
+    await action.dispatchEvent('click');
+  }
+  await expect(page.getByRole('dialog', { name: 'Are you happy with your selection?' })).toBeHidden();
+  expect(fixture.posts).toHaveLength(0);
+  await expect.poll(() => typeof release).toBe('function');
+  release();
+  await expect(page.getByText('Santa’s local letter story could not be loaded.', { exact: false })).toBeVisible();
+  for (const action of await actions.all()) await expect(action).toBeDisabled();
+  await expect(page.locator('.smw-review-create-row')).toHaveCount(0);
+  expect(fixture.posts).toHaveLength(0);
+  await page.getByRole('button', { name: 'Try again', exact: true }).click();
+  const destination = page.locator('.studio-gifts__sr > p').nth(6);
+  await expect(destination).toContainText('Stone Mountain');
+  const reviewed = await destination.textContent();
+  await expect(actions).toHaveCount(2);
+  for (const action of await actions.all()) await expect(action).toBeEnabled();
+  await confirmMessage(page);
+  const downloadButton = page.getByRole('button', { name: 'Download letter (PDF)', exact: true });
+  await expect(downloadButton).toBeEnabled();
+  const waiting = page.waitForEvent('download');
+  await downloadButton.click();
+  const download = await waiting;
+  mkdirSync('generated-artifacts/studio-editorial', { recursive: true });
+  const path = 'generated-artifacts/studio-editorial/regional-created-letter.pdf';
+  await download.saveAs(path);
+  expect((await PDFDocument.load(readFileSync(path))).getPageCount()).toBe(1);
+  const text = execFileSync('pdftotext', ['-layout', path, '-'], { encoding: 'utf8' }).replace(/\s+/g, ' ').trim();
+  expect(text).toContain(reviewed.replace(/\s+/g, ' ').trim());
+  expect(text).not.toContain('Statue of Liberty');
+  expect(fixture.posts).toHaveLength(1);
+  expect(attempt).toBe(2);
+});
 
 for (const width of [320, 390, 1365]) {
   test(`country-only action sits bottom-right and still clears regions at ${width}px`, async ({ page }) => {
@@ -348,7 +540,7 @@ test('regional request carries both trusted IDs and changing country clears the 
   await page.getByRole('button', { name: 'Use United States only', exact: true }).click();
   await page.locator('.smw-button-next').click();
   submitted = null;
-  await page.locator('.smw-actions--review').getByRole('button', { name: 'Create message' }).click();
+  await confirmMessage(page, 'Retry message');
   await expect.poll(() => submitted?.place).toBe(workshopRegionalCatalogueFixture.regionalGroups['usa-states'].parentId);
   expect(submitted).not.toHaveProperty('region');
   await page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true }).click();
