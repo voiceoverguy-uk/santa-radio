@@ -20,11 +20,13 @@ const noLimit = async () => {};
 const adult = { FIRSTNAME: 'Test', LASTNAME: 'Fixture', EMAIL: 'adult@example.test' };
 let deliveries = 0;
 let providerSuccess = true;
+let providerFields;
 const access = createMessageAccessHandler({
   limit: noLimit, issue: email => issueFreeAccess(email, Date.now(), key),
   readSession: req => freeSession(req, Date.now(), key), readAllowance: async () => 0,
-  fetcher: async () => {
+  fetcher: async (_url, options) => {
     deliveries++;
+    providerFields = Object.fromEntries(options.body);
     return new Response(JSON.stringify({ success: providerSuccess, errors: { EMAIL: '<strong>Check email</strong>', CHILD_DATE_OF_BIRTH: 'Required' } }));
   },
 });
@@ -77,6 +79,33 @@ test('signup grants require provider success; reject cross-site, invalid fields 
   assert.match(response.headers.get('cache-control'), /private.*no-store/);
   assert.equal((await (await fetch(base + '/access', { headers: { cookie } })).json()).authorized, true);
   assert.equal((await post('/limited', adult)).status, 429);
+});
+test('neutral and legacy signup traps cannot mask one another and only an empty provider trap is forwarded', async () => {
+  const before = deliveries;
+  for (const trap of ['studio_check', 'email_address_check']) {
+    for (const value of ['bot', ' ', false, 0, null, [], {}]) {
+      const response = await post('/access', {
+        ...adult, studio_check: '', email_address_check: '', [trap]: value,
+      });
+      assert.equal(response.status, 400, `${trap}: ${JSON.stringify(value)}`);
+      assert.equal(response.headers.get('set-cookie'), null);
+    }
+  }
+  assert.equal(deliveries, before);
+  for (const traps of [{}, { studio_check: '' }, { email_address_check: '' },
+    { studio_check: '', email_address_check: '' }]) {
+    const response = await post('/access', { ...adult, ...traps });
+    assert.equal(response.status, 200);
+    assert.ok(response.headers.get('set-cookie'));
+    assert.deepEqual(providerFields, { ...adult, email_address_check: '', locale: 'en' });
+  }
+  const blocked = await post('/limited', { ...adult, studio_check: '' });
+  assert.equal(blocked.status, 429);
+  assert.equal(blocked.headers.get('retry-after'), '60');
+  assert.equal(blocked.headers.get('set-cookie'), null);
+  assert.equal((await post('/access', { ...adult, studio_check: '' }, {
+    'sec-fetch-site': 'cross-site',
+  })).status, 403);
 });
 test('browser storage cannot grant access; cookies reject forgery, expiry and cross-site requests', async () => {
   assert.throws(() => authorizeFreeMessage({ headers: { host: 'site.invalid', origin: 'https://site.invalid', 'x-forwarded-proto': 'https' } }),

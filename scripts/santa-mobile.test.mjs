@@ -162,6 +162,11 @@ test('real adult signup handler can run behind the native adapter without bypass
   try {
     const bad = await h.call('signup', { body: { FIRSTNAME: '', LASTNAME: '', EMAIL: 'bad' } });
     assert.equal(bad.status, 400); assert.equal(providerCalls, 0);
+    const trapped = await h.call('signup', { body: {
+      FIRSTNAME: 'Test', LASTNAME: 'Parent', EMAIL: 'parent@example.test',
+      studio_check: 'bot', email_address_check: '',
+    } });
+    assert.equal(trapped.status, 400); assert.equal(providerCalls, 0);
     const ok = await h.call('signup', { body: { FIRSTNAME: 'Test', LASTNAME: 'Parent', EMAIL: 'parent@example.test', email_address_check: '' } });
     assert.equal(ok.status, 200); assert.equal(providerCalls, 1);
     assert.equal((await h.call('names', { body: { query: 'Ar', studio: false } })).status, 200);

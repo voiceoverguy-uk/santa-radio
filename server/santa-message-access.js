@@ -98,9 +98,14 @@ export function createMessageAccessHandler({ fetcher = fetch, limit = consumeNam
       }
       await limit(req, 'signup');
       const fields = req.body;
-      if (!fields || Object.keys(fields).some(key => !['FIRSTNAME', 'LASTNAME', 'EMAIL', 'email_address_check'].includes(key)) ||
+      // Older websites and the native app still use the provider's old name.
+      // Check BOTH independently: an empty alias must never mask a filled trap.
+      const traps = ['studio_check', 'email_address_check'];
+      if (!fields || Array.isArray(fields) ||
+          Object.keys(fields).some(key => !['FIRSTNAME', 'LASTNAME', 'EMAIL', ...traps].includes(key)) ||
           ['FIRSTNAME', 'LASTNAME', 'EMAIL'].some(key => typeof fields[key] !== 'string' || /[\u0000-\u001f\u007f]/.test(fields[key])) ||
-          fields.email_address_check || Object.keys(validateAccessFields(fields)).length) {
+          traps.some(key => Object.hasOwn(fields, key) && fields[key] !== '') ||
+          Object.keys(validateAccessFields(fields)).length) {
         return res.status(400).json({ success: false, message: 'Please check your adult contact details.' });
       }
       const body = new FormData();

@@ -22,6 +22,12 @@ This is a signup-first flow, not email ownership verification or proof of double
 
 Staff-only sign-in for the private missing-name request ledger is separate from this visitor-access flow.
 
+Autofill compatibility must not require visitors to disable autofill, silently clear a populated anti-spam trap, or weaken provider-confirmed access.
+
+**Why:** The owner explicitly set these boundaries for free-signup compatibility work. Autofill was a suspected cause of a visitor's rejection, not a confirmed diagnosis.
+
+**How to apply:** Keep genuine adult contact fields autofill-friendly. Distinguish simulated autofill checks from verification with saved browser profiles or actual password managers; neither mocked acceptance nor exclusion hints prove those real-device behaviours.
+
 Free audio creation requires server-confirmed acceptance of the adult signup and an atomic, shared one-message/two-hour allowance. Browser flags and timers are presentation only. Renewing a signup for the same adult must not reset the allowance.
 
 **Why:** The owner explicitly requested server enforcement during security remediation, superseding the earlier convenience-only gate. Adult email ownership is still not verified.

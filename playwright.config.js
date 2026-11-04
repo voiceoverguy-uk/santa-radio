@@ -23,7 +23,7 @@ export default defineConfig({
     },
     {
       name: 'firefox',
-      testMatch: /cookie-experience\.spec\.js/,
+      testMatch: /(?:cookie-experience|santa-signup-autofill)\.spec\.js/,
       use: {
         browserName: 'firefox',
         launchOptions: { firefoxUserPrefs: { 'network.cookie.cookieBehavior': 1 } },
@@ -31,7 +31,7 @@ export default defineConfig({
     },
     {
       name: 'webkit',
-      testMatch: /cookie-experience\.spec\.js/,
+      testMatch: /(?:cookie-experience|santa-signup-autofill)\.spec\.js/,
       use: { browserName: 'webkit' },
     },
   ],

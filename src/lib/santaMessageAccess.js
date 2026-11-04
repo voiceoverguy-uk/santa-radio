@@ -34,7 +34,7 @@ export class MessageAccessError extends Error {
 
 export async function submitMessageAccess(fields, signal) {
   const body = Object.fromEntries(['FIRSTNAME', 'LASTNAME', 'EMAIL'].map(name => [name, fields[name].trim()]));
-  body.email_address_check = fields.email_address_check || '';
+  body.studio_check = fields.studio_check || '';
   // The server forwards accepted adult details to the same supplied form and
   // issues an HttpOnly grant only after the provider reports success.
   const response = await fetch('/api/santa-message-access', {

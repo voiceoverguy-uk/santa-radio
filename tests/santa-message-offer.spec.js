@@ -375,21 +375,26 @@ test('accepted signup unlocks studio directly with empty child name and no dupli
 
 test('validation, honeypot, rejection and timeout retain details and allow retry', async ({ page }) => {
   let calls = 0;
-  await page.route(brevoUrl, route => { calls++; return route.fulfill({ json: { success: false, message: 'Please retry your signup.' } }); });
+  await page.route('**/api/santa-message-access', route => {
+    if (route.request().method() !== 'POST') return route.fallback();
+    calls++;
+    return route.fulfill({ status: 422, json: { success: false, message: 'Please retry your signup.' } });
+  });
   await openOffer(page);
   await offer(page).getByRole('button', { name: 'Unlock my free Santa message' }).click();
   await expect(offer(page).getByRole('textbox', { name: 'First name', exact: true })).toBeFocused();
   await fillAccessForm(page);
-  await offer(page).locator('[name=email_address_check]').fill('bot', { force: true });
+  await offer(page).locator('[name=studio_check]').fill('bot', { force: true });
   await offer(page).locator('form').evaluate(form => form.requestSubmit());
   expect(calls).toBe(0);
-  await offer(page).locator('[name=email_address_check]').evaluate(el => {
+  await offer(page).locator('[name=studio_check]').evaluate(el => {
     const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
     setter.call(el, ''); el.dispatchEvent(new Event('input', { bubbles: true }));
   });
   await offer(page).locator('form').evaluate(form => form.requestSubmit());
   await expect(offer(page).getByRole('alert')).toContainText('Please retry');
-  await page.route(brevoUrl, () => new Promise(() => {}));
+  await page.route('**/api/santa-message-access', route => route.request().method() === 'POST'
+    ? new Promise(() => {}) : route.fallback());
   await offer(page).locator('form').evaluate(form => form.requestSubmit());
   await advance(page, 15400);
   await expect(offer(page).getByRole('alert')).toContainText('took too long');

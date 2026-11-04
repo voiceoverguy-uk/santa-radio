@@ -4,7 +4,7 @@ import SantaMessageAccessCard from './SantaMessageAccessCard.jsx';
 import { useSantaMessageAccess } from './SantaMessageAccessProvider.jsx';
 import { ACCESS_REQUEST_TIMEOUT_MS, MessageAccessError, submitMessageAccess, validateAccessFields } from '../lib/santaMessageAccess.js';
 
-const emptyFields = { FIRSTNAME: '', LASTNAME: '', EMAIL: '', email_address_check: '' };
+const emptyFields = { FIRSTNAME: '', LASTNAME: '', EMAIL: '', studio_check: '' };
 
 export default function SantaMessageAccessForm({ variant = 'inline', onAccepted, onPrivacyNavigate, keepInPlace = false, selectedChildName = '' }) {
   const [fields, setFields] = useState(emptyFields);
@@ -35,7 +35,13 @@ export default function SantaMessageAccessForm({ variant = 'inline', onAccepted,
   const onSubmit = async event => {
     event.preventDefault();
     if (requestRef.current) return;
-    const validation = validateAccessFields(fields);
+    // Autofill/password managers may update the DOM without React change events.
+    // Keep inputs uncontrolled so editing one field cannot erase another's
+    // autofill, and snapshot every actual value (including the trap) on submit.
+    const data = new FormData(event.currentTarget);
+    const submitted = Object.fromEntries(Object.keys(emptyFields).map(name => [name, data.get(name) ?? '']));
+    setFields(submitted);
+    const validation = validateAccessFields(submitted);
     setErrors(validation);
     setError('');
     if (Object.keys(validation).length) {
@@ -43,7 +49,7 @@ export default function SantaMessageAccessForm({ variant = 'inline', onAccepted,
       focusInvalid(validation);
       return;
     }
-    if (fields.email_address_check) {
+    if (submitted.studio_check) {
       setError('Your details could not be submitted. Please try again.');
       return;
     }
@@ -53,10 +59,10 @@ export default function SantaMessageAccessForm({ variant = 'inline', onAccepted,
     const timeout = setTimeout(() => { timedOut = true; controller.abort(); }, ACCESS_REQUEST_TIMEOUT_MS);
     setPending(true);
     try {
-      await submitMessageAccess(fields, controller.signal);
+      await submitMessageAccess(submitted, controller.signal);
       if (requestRef.current !== controller) return;
       controller.signal.throwIfAborted();
-      grantAccess(fields.FIRSTNAME);
+      grantAccess(submitted.FIRSTNAME);
       onAccepted?.();
       setFields(emptyFields);
       // Never follow Brevo's optional legacy external redirect.

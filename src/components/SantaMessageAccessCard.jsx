@@ -50,7 +50,7 @@ export default function SantaMessageAccessCard({
                 id={fieldId}
                 name={name}
                 type={type}
-                value={fields?.[name] ?? ''}
+                defaultValue={fields?.[name] ?? ''}
                 onChange={event => onChange(name, event.target.value)}
                 autoComplete={autocomplete}
                 maxLength={maxLength}
@@ -66,15 +66,18 @@ export default function SantaMessageAccessCard({
         })}
 
         <div className="santa-message-access__honeypot" aria-hidden="true">
-          <label htmlFor={`${id}-website`}>Leave this field empty</label>
+          <label htmlFor={`${id}-extra`}>Leave this field empty</label>
           <input
-            id={`${id}-website`}
-            name="email_address_check"
+            id={`${id}-extra`}
+            name="studio_check"
             type="text"
             tabIndex={-1}
             autoComplete="off"
-            value={fields?.email_address_check ?? ''}
-            onChange={event => onChange('email_address_check', event.target.value)}
+            data-lpignore="true"
+            data-1p-ignore="true"
+            data-bwignore="true"
+            defaultValue={fields?.studio_check ?? ''}
+            onChange={event => onChange('studio_check', event.target.value)}
           />
         </div>
         <input type="hidden" name="locale" value="en" />
