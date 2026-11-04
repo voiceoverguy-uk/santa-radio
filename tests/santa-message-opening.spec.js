@@ -13,14 +13,17 @@ async function settled(page) {
 async function expectLanding(page, width) {
   await settled(page);
   await expect(page.locator('.santa-message-heading')).toHaveText('FREE Personalised message from Santa');
-  await expect(page.locator('.santa-message-subheading')).toHaveText('Their name. Santa’s voice.');
-  await expect(page.locator('.santa-message-subheading')).toHaveCSS('white-space', 'nowrap');
-  await expect(page.getByRole('button', { name: 'Hear an example audio message', exact: true })).toBeVisible();
+  await expect(page.locator('.santa-message-subheading')).toHaveText('Their name. Santa’s REAL VOICE.');
+  await expect(page.locator('.santa-message-subheading')).toHaveCSS('white-space', 'normal');
+  await expect(page.locator('.santa-message-example')).toHaveCount(
+    await page.locator('.message-result, .message-cooldown-status').count() ? 0 : 1,
+  );
   await expect.poll(() => page.evaluate(() => {
-    const layout = document.querySelector('#santa-messages .message-layout').getBoundingClientRect();
+    const card = innerWidth < 768 && document.querySelector('#santa-messages .santa-message-box:not(.message-access-box)');
+    const layout = (card || document.querySelector('#santa-messages .message-layout')).getBoundingClientRect();
     const nav = document.querySelector('.navbar').getBoundingClientRect();
-    return Math.round(layout.top - nav.bottom);
-  })).toBe(24);
+    return Math.round(layout.top - nav.bottom) - (card ? 12 : 24);
+  })).toBe(0);
   const geometry = await page.evaluate(() => {
     const box = selector => {
       const { top, left, right, bottom } = document.querySelector(selector).getBoundingClientRect();
@@ -34,7 +37,8 @@ async function expectLanding(page, width) {
   });
   expect(geometry.scroll).toBeGreaterThan(100);
   expect(geometry.activeInput).toBe(false);
-  expect(geometry.heading.top).toBeGreaterThan(geometry.nav.bottom);
+  const mobileMaker = width < 768 && await page.locator('.santa-message-box:not(.message-access-box)').count();
+  if (!mobileMaker) expect(geometry.heading.top).toBeGreaterThan(geometry.nav.bottom);
   if (width > 767) {
     expect(geometry.desk.top).toBeGreaterThan(geometry.nav.bottom);
     expect(geometry.heading.top).toBeLessThan(300);
@@ -42,13 +46,18 @@ async function expectLanding(page, width) {
     expect(geometry.desk.top - geometry.intro.top).toBeCloseTo(24, 0);
     expect(geometry.intro.right).toBeLessThan(geometry.desk.left);
   } else {
-    expect(geometry.intro.top - geometry.nav.bottom).toBeCloseTo(24, 0);
+    if (mobileMaker) expect(geometry.desk.top - geometry.nav.bottom).toBeCloseTo(12, 0);
+    else expect(geometry.intro.top - geometry.nav.bottom).toBeCloseTo(24, 0);
     expect(geometry.desk.top).toBeGreaterThanOrEqual(geometry.intro.bottom);
   }
 }
 
 async function scrollTo(page, top) {
-  await page.evaluate(top => window.scrollTo({ top, behavior: 'instant' }), top);
+  await page.evaluate(top => {
+    // Model deliberate visitor scrolling, which ends entry/keyboard settling.
+    window.dispatchEvent(new Event('wheel'));
+    window.scrollTo({ top, behavior: 'instant' });
+  }, top);
   return page.evaluate(() => scrollY);
 }
 
@@ -161,26 +170,21 @@ for (const width of [1440, 390]) {
       await expectLanding(page, width);
     });
 
-    test('the homepage hero message link scrolls to its own desk without leaving the homepage', async ({ page }) => {
+    test('homepage keeps its inline desk and the navigation opens the standalone page', async ({ page }) => {
       await page.goto('/');
       await settled(page);
       const originalUrl = page.url();
       const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
       if (await decline.isVisible()) await decline.click();
-      const link = page.locator('.hero-actions').getByRole('link', { name: 'FREE Santa Message', exact: true });
-      await expect(link).toHaveAttribute('href', '#santa-messages');
-      await link.click();
-      await expectLanding(page, width);
-      await expect(page).toHaveURL(originalUrl);
       await expect(page.locator('main.home-page')).toHaveCount(1);
       await expect(page.locator('.message-name-label')).toHaveCount(0);
       await expect(page.locator('.santa-message-section').getByRole('link', { name: 'Visit Santa’s message desk' })).toHaveCount(0);
-      await scrollTo(page, 0);
-      await expectStayedAt(page, 0);
-      await link.focus();
-      await link.press('Enter');
-      await expectLanding(page, width);
       await expect(page).toHaveURL(originalUrl);
+      const nav = page.getByRole('navigation', { name: 'Main navigation' });
+      if (width < 1200) await nav.getByRole('button', { name: 'Open menu' }).click();
+      await nav.getByRole('link', { name: 'FREE Santa Message', exact: true }).click();
+      await expectLanding(page, width);
+      await expect(page).toHaveURL(/\/free-santa-message$/);
     });
 
     test('the top-nav message link also returns to the desk when already on this page', async ({ page }) => {
@@ -228,7 +232,7 @@ for (const width of [1440, 390]) {
       await expect(input).toBeFocused();
       await input.press('Escape');
       await page.getByRole('button', { name: 'Create message', exact: true }).click();
-      await expect(page.locator('.message-result')).toBeFocused();
+      await expect(page.getByRole('heading', { name: 'Your free Santa greeting' })).toBeFocused();
       await settled(page);
       await finishFocusScroll(page);
       await scrollTo(page, 0);
@@ -236,7 +240,9 @@ for (const width of [1440, 390]) {
       await expect(page).toHaveURL(/\/free-santa-message\?name=Olivia&utm_source=test$/);
       await page.reload();
       await expectLanding(page, width);
-      await expect(input).toHaveValue('Olivia');
+      await expect(page.locator('.message-cooldown-status')).toBeVisible();
+      await expect(input).toHaveCount(0);
+      await expect(page).toHaveURL(/\/free-santa-message\?name=Olivia&utm_source=test$/);
     });
 
     test('failed signup keeps details in place and only accepted retry scrolls to the section', async ({ page }) => {
@@ -267,7 +273,11 @@ for (const width of [1440, 390]) {
 
     test('a query-only name change preserves scroll and does not focus the child input', async ({ page }) => {
       await page.addInitScript(key => sessionStorage.setItem(key, 'granted'), MESSAGE_ACCESS_KEY);
+      await page.route('**/api/santa-message-access', route => route.fulfill({
+        json: { authorized: true, availableAt: 0 },
+      }));
       await page.goto('/free-santa-message?name=Olivia');
+      await expect(page.getByLabel('First Name')).toBeVisible();
       await expectLanding(page, width);
       await scrollTo(page, 0);
       // Trigger React Router's normal query-only navigation, not a full load.

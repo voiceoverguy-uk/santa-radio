@@ -26,3 +26,20 @@
   margin: 0 auto;
   line-height: 1.8;
 }
+
+/* Dedicated /free-santa-message arrangement */
+.message-layout--dedicated { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); row-gap: 28px; }
+.message-layout--dedicated > * { min-width: 0; }
+.message-layout--dedicated .message-intro > .santa-message-example { margin: 22px 0 0; }
+.message-layout--dedicated > .message-guide-cards { grid-column: 1 / -1; margin: 0; }
+.message-layout--dedicated .message-guide-cards > .smw-explainer-card { min-width: 0; overflow-wrap: anywhere; }
+.message-layout--dedicated .message-guide-cards h3 { font-family: 'Cinzel', serif; }
+.message-layout--dedicated > .santa-message-reviews { margin-top: 0; }
+@media (min-width: 768px) {
+  .message-layout--dedicated > .message-intro { padding-top: 24px; }
+}
+@media (max-width: 767px) {
+  .message-layout--dedicated { grid-template-columns: minmax(0, 1fr); row-gap: 24px; }
+  .message-layout--dedicated > .message-guide-cards { grid-template-columns: minmax(0, 1fr); gap: 9px; }
+  .message-layout--dedicated .message-guide-cards > .smw-explainer-card { min-height: auto; padding: 14px 16px; }
+}

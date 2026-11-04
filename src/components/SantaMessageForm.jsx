@@ -16,6 +16,7 @@ import SantaCooldownUpsell from './SantaCooldownUpsell.jsx';
 import useSantaStudioLaunch from './useSantaStudioLaunch.js';
 import SantaVoiceTagline from './SantaVoiceTagline.jsx';
 import SantaStudioPromotion from './SantaStudioPromotion.jsx';
+import WorkshopExplainerCards from './WorkshopExplainerCards.jsx';
 import SantaMessageReviews from './SantaMessageReviews.jsx';
 import { santaNameKey } from '../lib/santaNameSearch.js';
 import { randomSantaExample, santaNamePlaceholder } from '../lib/santaNamePlaceholder.js';
@@ -25,7 +26,8 @@ import { scrollToSantaMessageDesk, settleSantaMessageDeskAfterEntry } from '../l
 import './SantaNameRequest.css';
 import './SantaMessageForm.css';
 
-export default function SantaMessageForm({ showDetailLink = true, initialName = '', pendingName, keepSignupInPlace = false, selectedChildName = '' }) {
+export default function SantaMessageForm({ showDetailLink = true, initialName = '', pendingName, keepSignupInPlace = false, selectedChildName = '', layout = 'default' }) {
+  const dedicatedLayout = layout === 'dedicated';
   const { hasAccess, greetingName, sessionRemembered, revokeAccess } = useSantaMessageAccess();
   const makerHeadingRef = useRef(null);
   const previousAccess = useRef(hasAccess);
@@ -314,15 +316,16 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   </div>);
 
   return <section className="santa-message-section" id="santa-messages">
-    <div className="container message-layout">
+    <div className={`container message-layout${dedicatedLayout ? ' message-layout--dedicated' : ''}`}>
       <div className="message-intro">
         <p className="eyebrow">A little North Pole experiment</p>
         <div className="message-intro-divider" aria-hidden="true">★</div>
         <h2 className="santa-message-heading">FREE Personalised message from Santa</h2>
         <SantaVoiceTagline />
-        {!hasAccess && allowExamples && <SantaMessageExample onExampleNameChange={setActiveExampleName} />}
+        {!dedicatedLayout && !hasAccess && allowExamples && <SantaMessageExample onExampleNameChange={setActiveExampleName} />}
         <p className="message-free-intro">No Artificial Intelligence here. A human recorded message from Santa, aka Father Christmas to your little Human.{' '}<br />Add your contact details, search for a recorded name, create and instantly download your short FREE personalised message from Santa.</p>
         <p className="message-studio-intro">Or, choose a bespoke message from Santa with festive goodies. See below.</p>
+        {dedicatedLayout && allowExamples && <SantaMessageExample onExampleNameChange={setActiveExampleName} />}
       </div>
       <div className="santa-message-aside">
       <div className={`santa-message-box${hasAccess ? '' : ' message-access-box'}`}>
@@ -454,8 +457,9 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
           prelaunch={studioPrelaunch} onExplore={exploreBespoke} />}
         </>}
       </div>
-       {hasAccess && allowExamples && <SantaMessageExample onExampleNameChange={setActiveExampleName} />}
+       {!dedicatedLayout && hasAccess && allowExamples && <SantaMessageExample onExampleNameChange={setActiveExampleName} />}
       </div>
+      {dedicatedLayout && <WorkshopExplainerCards className="message-guide-cards" />}
       <SantaStudioPromotion activeExampleName={activeExampleName} availableNamesText={availableNamesText}
         previewName={giftPreviewName} allowExamples={allowExamples} />
       <SantaMessageReviews />

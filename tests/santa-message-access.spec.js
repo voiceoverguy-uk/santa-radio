@@ -23,11 +23,17 @@ for (const width of [390, 834]) {
       if (await decline.isVisible()) await decline.click();
       await fillAccessForm(page);
       await page.getByRole('button', { name: 'Get my free Santa message', exact: true }).click();
-      await expect(page).toHaveURL(/\/free-santa-message$/);
+      await expect(page).toHaveURL(new RegExp(`${entry === '/' ? '/' : '/free-santa-message'}$`));
       await expect(page.getByLabel('First Name', { exact: true })).toBeVisible();
+      if (entry === '/' && width >= 768) {
+        // Desktop homepage signup intentionally stays inline without the
+        // dedicated page's automatic entry positioning.
+        await expect(page.getByRole('heading', { name: 'Your free Santa greeting' })).toBeVisible();
+        return;
+      }
       const aligned = () => page.evaluate(selector => Math.abs(
         document.querySelector(selector).getBoundingClientRect().top
-        - document.querySelector('.navbar').getBoundingClientRect().bottom - 24,
+        - document.querySelector('.navbar').getBoundingClientRect().bottom - (innerWidth < 768 ? 12 : 24),
       ) < 2, width < 768 ? '#santa-messages .santa-message-box' : '#santa-messages .message-layout');
       await expect.poll(aligned).toBe(true);
       if (width < 768) {
@@ -80,7 +86,6 @@ test('homepage, direct visits and existing message navigation all require adult 
   await expect(section.getByRole('textbox', { name: 'First name', exact: true })).toBeVisible();
   await expect(section.getByRole('link', { name: 'privacy policy' })).toHaveAttribute('href', '/privacy-policy');
   await expect(section).not.toContainText('No signup');
-  await page.locator('.hero-actions').getByRole('link', { name: 'FREE Santa Message', exact: true }).click();
   await expect(page).toHaveURL(/\/$/);
   await expect(page.getByRole('button', { name: 'Get my free Santa message' })).toBeVisible();
   await page.goto('/apps');

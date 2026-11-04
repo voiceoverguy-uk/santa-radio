@@ -25,7 +25,7 @@ if (!firefoxInstalled) {
 }
 export default defineConfig({
   ...base,
-  testMatch: /santa-workshop(?:-access|-search|-name-preview|-sounds|-motion|-live-catalogue|-message|-talent|-gifts)?\.spec\.js/,
+  testMatch: /santa-workshop(?:-access|-search|-name-preview|-sounds|-motion|-live-catalogue|-message|-talent|-gifts|-guide)?\.spec\.js/,
   use: { ...base.use, baseURL: origin, ignoreHTTPSErrors: false, trace: 'off', video: 'off', screenshot: 'off' },
   projects: [
     ...base.projects.filter(project => project.name === 'chromium'),

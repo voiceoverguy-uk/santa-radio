@@ -43,3 +43,9 @@ The owner chose the complete Studio B card as the mobile destination after adult
 **Why:** The owner supplied an iPhone screenshot showing this exact landing position after entering their name and email.
 
 **How to apply:** Keep this destination consistent for homepage and dedicated free-message signup. Dismiss the signup keyboard without automatically opening the name-entry keyboard, and stop settling when the visitor interacts.
+
+When testing that a visitor can leave an entry position, model the visitor's scrolling interaction rather than only calling `window.scrollTo`.
+
+**Why:** Programmatic scrolling does not emit the wheel/touch interaction that cancels brief keyboard and viewport settling. A later correction can therefore look like trapped scrolling even though real visitor scrolling stops it.
+
+**How to apply:** Send the cancellation interaction before a deliberate test scroll. Keep separate resize-only checks to verify that keyboard settling still corrects the destination until the visitor intervenes.

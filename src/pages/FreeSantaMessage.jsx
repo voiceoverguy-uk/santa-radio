@@ -50,7 +50,7 @@ export default function FreeSantaMessage() {
           <p className="fsm-desc">Create a free message from Santa with your child’s name. Choose a name, ask Santa to record it, then enjoy your personalised Santa audio greeting to download and keep.</p>
         </div>
       </div>
-      <SantaMessageForm key={requestedName} showDetailLink={false} initialName={requestedName} />
+      <SantaMessageForm key={requestedName} showDetailLink={false} initialName={requestedName} layout="dedicated" />
     </main>
   );
 }

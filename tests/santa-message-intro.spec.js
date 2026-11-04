@@ -22,7 +22,10 @@ for (const width of [320, 390, 768, 1440]) {
     const subheading = intro.locator('h2 + .santa-voice-tagline h3.santa-message-subheading');
     await expect(subheading).toHaveText('Their name. Santa’s REAL VOICE.');
     await expect(intro.locator('.eyebrow')).toHaveText('A little North Pole experiment');
-    const paragraph = intro.locator(':scope > p').nth(1);
+    await expect(intro.locator('.message-intro-divider')).toHaveText('★');
+    await expect(intro.locator('.eyebrow').evaluate(node => node.nextElementSibling.classList.contains('message-intro-divider'))).resolves.toBe(true);
+    await expect(intro.locator('.message-intro-divider').evaluate(node => node.nextElementSibling.classList.contains('santa-message-heading'))).resolves.toBe(true);
+    const paragraph = intro.locator('.message-free-intro');
     await expect(paragraph).toHaveText(introduction);
     await expect(intro.locator('.santa-certificate-examples')).toHaveCount(0);
     await expect(paragraph).not.toContainText(/certificate|\(names available\)|thousands/i);
@@ -48,7 +51,11 @@ for (const width of [320, 390, 768, 1440]) {
     const example = intro.getByRole('button', { name: 'Hear an example audio message', exact: true });
     await expect(example).toBeVisible();
     await expect(example).toBeEnabled();
-    await expect(intro.locator('.santa-voice-tagline + .santa-message-example + p')).toHaveText(introduction);
+    if (path === '/') {
+      await expect(intro.locator('.santa-voice-tagline + .santa-message-example + p')).toHaveText(introduction);
+    } else {
+      await expect(intro.locator('.message-studio-intro + .santa-message-example')).toHaveCount(1);
+    }
     for (const element of [heading, subheading, paragraph, example, ...(path === '/' ? [] : [heroDescription])]) {
       const bounds = await element.evaluate(node => {
         const rect = node.getBoundingClientRect();

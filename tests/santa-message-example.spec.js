@@ -1,7 +1,8 @@
 import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
+import { fillAccessForm, mockBrevo } from './helpers/message-access.js';
 
-async function visit(page, path = '/') {
+async function visit(page, path = '/', { access = false } = {}) {
   // Keep samples real; only replace the external live-radio stream for deterministic tests.
   await page.addInitScript(() => {
     sessionStorage.setItem('santa-radio-example-last', 'charlotte');
@@ -22,6 +23,9 @@ async function visit(page, path = '/') {
     json: { current: { artist: 'John Legend', title: 'Bring Me Love' },
       currentStatus: 'ready', upcoming: [], upcomingStatus: 'ready' },
   }));
+  await page.route('**/api/santa-message-access', route => route.fulfill({
+    json: { authorized: access, availableAt: 0 },
+  }));
   await page.goto(path, { waitUntil: 'domcontentloaded' });
   const reject = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await reject.isVisible()) await reject.click();
@@ -32,14 +36,14 @@ const stop = page => page.getByRole('button', { name: 'Stop example message', ex
 const sample = page => page.locator('audio[src*="/audio/examples/"]');
 const dock = page => page.getByRole('complementary', { name: 'Santa Radio player' });
 
-for (const [path, width] of [['/', 1280], ['/free-santa-message', 390]]) {
-  test(`real samples rotate with playback-only controls on ${path}`, async ({ page }) => {
+for (const [path, width, access] of [['/', 1280, false], ['/free-santa-message', 390, false], ['/free-santa-message', 1440, true]]) {
+  test(`real samples rotate with playback-only controls on ${path} with access ${access}`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     let sampleRequests = 0;
     let downloads = 0;
     page.on('request', request => { if (request.url().includes('/audio/examples/')) sampleRequests++; });
     page.on('download', () => downloads++);
-    await visit(page, path);
+    await visit(page, path, { access });
     await expect(start(page)).toBeVisible();
     const appearance = await start(page).evaluate(button => {
       const style = getComputedStyle(button);
@@ -82,6 +86,26 @@ for (const [path, width] of [['/', 1280], ['/free-santa-message', 390]]) {
     expect(downloads).toBe(0);
   });
 }
+
+test('dedicated example stays mounted and playing through signup, then stops cleanly', async ({ page }) => {
+  await visit(page, '/free-santa-message');
+  await mockBrevo(page);
+  await start(page).click();
+  await expect.poll(() => sample(page).evaluate(audio => audio.currentTime)).toBeGreaterThan(0);
+  const playingAudio = await sample(page).elementHandle();
+  const playingSource = await sample(page).getAttribute('src');
+  await fillAccessForm(page);
+  await page.getByRole('button', { name: 'Get my free Santa message', exact: true }).click();
+  await expect(page.getByLabel('First Name', { exact: true })).toBeVisible();
+  await expect(page.locator('.santa-message-example')).toHaveCount(1);
+  await expect(stop(page)).toBeVisible();
+  expect(await playingAudio.evaluate(audio => audio.isConnected && !audio.paused)).toBe(true);
+  await expect(sample(page)).toHaveAttribute('src', playingSource);
+  await expect(page.locator('#santa-studio-promotion .santa-studio-promotion__subheading')).toContainText('Harry');
+  await stop(page).click();
+  expect(await playingAudio.evaluate(audio => audio.paused)).toBe(true);
+  await expect(start(page)).toBeVisible();
+});
 
 test('rotation persists between pages and navigation stops the old recording', async ({ page }) => {
   await visit(page);
