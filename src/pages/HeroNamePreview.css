@@ -146,27 +146,16 @@
   color: var(--hero-preview-cream);
 }
 
-.hero-name-preview .hero-name-checker__eyebrow {
+.hero-name-preview .hero-name-checker h2 {
   max-width: 100%;
-  margin: 0 0 8px;
+  margin: 0 0 21px;
   color: var(--hero-preview-gold);
   font-family: 'Cinzel', serif;
   font-size: 1.3rem;
   font-weight: 400;
   letter-spacing: .025em;
   line-height: 1.5;
-}
-
-.hero-name-preview .hero-name-checker h2 {
-  margin: 0 0 21px;
-  color: var(--hero-preview-cream);
-  font-family: 'Cinzel', serif;
-  font-size: clamp(1.3rem, 2.1vw, 1.58rem);
-  font-weight: 400;
-  line-height: 1.33;
-  letter-spacing: -.018em;
   text-transform: none;
-  text-wrap: balance;
 }
 
 .hero-name-preview .hero-name-checker form {
@@ -595,14 +584,9 @@
     font-size: .84rem;
   }
 
-  .hero-name-preview .hero-name-checker__eyebrow {
-    margin-bottom: 10px;
-    font-size: 1.56rem;
-  }
-
   .hero-name-preview .hero-name-checker h2 {
     margin-bottom: 25px;
-    font-size: clamp(1.56rem, 2.52vw, 1.9rem);
+    font-size: 1.56rem;
   }
 
   .hero-name-preview .hero-name-checker label {
@@ -770,7 +754,6 @@
 
   .hero-name-preview .hero-name-checker h2 {
     margin-bottom: 17px;
-    font-size: 1.32rem;
   }
 
   .hero-name-preview .hero-name-checker__status {

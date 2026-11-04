@@ -225,7 +225,7 @@ test('homepage uses consistent search targeting in initial content, metadata and
   assert.ok(!html.includes('UK\\u2019s'), 'literal escaped apostrophe must not return');
   assert.ok(m.description.includes('UK’s'));
   assert.match(html, /<p class="hero-description hero-name-preview__description"><span class="hero-name-preview__copy--wide">Your Christmas radio station all year round 24\/7 along with festive treats, amazing free apps, games and FREE personalised messages from Santa\.<\/span><span class="hero-name-preview__copy--phone">Festive treats, amazing free apps, games and FREE personalised messages from Santa\.<\/span><\/p>/);
-  assert.ok(html.includes('Check the child’s name, then let Santa create magic.'));
+  assert.ok(html.includes('Check the name - let Santa create magic.'));
   assert.equal((html.match(/<h1\b/g) || []).length, 1);
   const graphs = readGraphs(html);
   assert.equal(graphs.filter(node => node['@type'] === 'WebPage').length, 1);

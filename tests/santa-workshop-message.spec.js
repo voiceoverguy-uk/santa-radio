@@ -241,6 +241,8 @@ for (const width of [320, 1365]) {
       const resultBounds = await result.boundingBox();
       const startBounds = await start.boundingBox();
       const createBounds = await create.boundingBox();
+      expect(startBounds.width).toBeCloseTo(createBounds.width, 1);
+      expect(startBounds.height).toBeCloseTo(createBounds.height, 1);
       expect(startBounds.y).toBeGreaterThanOrEqual(resultBounds.y + resultBounds.height);
       expect(createBounds.y).toBeGreaterThanOrEqual(resultBounds.y + resultBounds.height);
       if (width > 760) {
@@ -544,6 +546,9 @@ test('review create placement on desktop and phones, real MP3 playback/download,
     const create = page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true });
     await create.scrollIntoViewIfNeeded();
     const bounds = await create.boundingBox();
+    const startBounds = await page.locator('.smw-actions--review').getByRole('button', { name: 'Start Again', exact: true }).boundingBox();
+    expect(startBounds.width).toBeCloseTo(bounds.width, 1);
+    expect(startBounds.height).toBeCloseTo(bounds.height, 1);
     expect(bounds.x).toBeGreaterThanOrEqual(0);
     expect(bounds.x + bounds.width).toBeLessThanOrEqual(width);
     expect(bounds.y + bounds.height).toBeLessThan(844);

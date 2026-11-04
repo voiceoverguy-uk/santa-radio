@@ -16,7 +16,7 @@ test('built preview remains noindex while sharing the approved homepage hero cop
   assert.equal(preview.noindex, true);
   assert.match(preview.head, /name="robots" content="noindex, follow"/);
   assert.doesNotMatch(preview.head, /rel="canonical"/);
-  assert.match(preview.markup, /Can Santa say your child/);
+  assert.match(preview.markup, /A FREE MESSAGE <br\/>FROM SANTA/);
   assert.match(preview.markup, /Start typing a name/);
   assert.match(preview.markup, /id="santa-messages"/);
   assert.match(preview.markup, /name="FIRSTNAME"/);
@@ -36,7 +36,11 @@ test('built preview remains noindex while sharing the approved homepage hero cop
     assert.match(markup, /<span class="hero-name-preview__copy--phone">Festive treats, amazing free apps, games and FREE personalised messages from Santa\.<\/span>/);
     assert.match(markup, /<span class="hero-name-preview__copy--wide">The World’s Best Christmas Radio Station · All year round<\/span>/);
     assert.match(markup, /<span class="hero-name-preview__copy--phone">The World’s Best Christmas Radio Station · 24\/7 - 365 Days<\/span>/);
-    assert.match(markup, /Check the child’s name, then let Santa create magic\./);
+    assert.match(markup, /<h2 id="([^"]+)">A FREE MESSAGE <br\/>FROM SANTA<\/h2>/);
+    const headingId = markup.match(/<h2 id="([^"]+)">A FREE MESSAGE/)[1];
+    assert.ok(markup.includes(`<section class="hero-name-checker" aria-labelledby="${headingId}">`));
+    assert.doesNotMatch(markup, /Can Santa say your child|hero-name-checker__eyebrow/);
+    assert.match(markup, /Check the name - let Santa create magic\./);
   }
   assert.doesNotMatch(home.markup, /Hero preview/);
 });
@@ -53,7 +57,7 @@ test('Vercel document handler delivers the prerendered preview, not its 404 or h
   assert.equal(status, 200);
   assert.equal(headers['X-Santa-Page-Mode'], 'prerendered');
   assert.equal(headers['X-Robots-Tag'], 'noindex, follow');
-  assert.match(body, /Can Santa say your child/);
+  assert.match(body, /A FREE MESSAGE <br\/>FROM SANTA/);
 });
 
 test('actual Node production delivery hydrates and supports phone lookup without render errors', async t => {
@@ -75,7 +79,7 @@ test('actual Node production delivery hydrates and supports phone lookup without
   const response = await fetch(`${base}${path}`);
   assert.equal(response.status, 200);
   assert.match(response.headers.get('x-robots-tag'), /noindex/);
-  assert.match(await response.text(), /Can Santa say your child/);
+  assert.match(await response.text(), /A FREE MESSAGE <br\/>FROM SANTA/);
   const browser = await chromium.launch({
     executablePath: process.env.CHROMIUM_PATH || (existsSync('/repl/tools/bin/chromium') ? '/repl/tools/bin/chromium' : undefined),
     args: ['--no-sandbox'],

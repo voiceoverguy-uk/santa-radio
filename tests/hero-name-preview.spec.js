@@ -145,7 +145,7 @@ test('blocked input suppresses delayed results, network errors and submission va
 });
 
 for (const route of ['/', path]) {
-  test(`Santa introductory label uses regular Cinzel without clipping on ${route}`, async ({ page }) => {
+  test(`Santa promotional heading has two gold regular Cinzel lines without clipping on ${route}`, async ({ page }) => {
     await setup(page);
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.addInitScript(() => sessionStorage.setItem('santa-message-offer-shown', 'shown'));
@@ -153,21 +153,31 @@ for (const route of ['/', path]) {
     const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
     if (await decline.isVisible()) await decline.click();
     await page.evaluate(() => document.fonts.ready);
-    const eyebrow = checker(page).locator('.hero-name-checker__eyebrow');
-    for (const width of [320, 390, 768, 1440, 1920]) {
+    const heading = checker(page).getByRole('heading', { level: 2, name: 'A FREE MESSAGE FROM SANTA', exact: true });
+    await expect(checker(page).getByRole('heading')).toHaveCount(1);
+    await expect(page.getByRole('region', { name: 'A FREE MESSAGE FROM SANTA', exact: true })).toBeVisible();
+    await expect(checker(page).locator('.hero-name-checker__eyebrow')).toHaveCount(0);
+    await expect(checker(page)).not.toContainText('Can Santa say your child’s name?');
+    for (const width of [320, 390, 767, 768, 1024, 1090, 1091, 1440, 1920]) {
       await page.setViewportSize({ width, height: 1000 });
-      await expect(eyebrow).toHaveText('A free message from Santa');
-      await expect(eyebrow).toHaveCSS('font-weight', '400');
-      await expect(eyebrow).toHaveCSS('font-family', 'Cinzel, serif');
-      const geometry = await eyebrow.evaluate(node => {
+      await expect(heading).toHaveText('A FREE MESSAGE FROM SANTA');
+      await expect(heading.locator('br')).toHaveCount(1);
+      await expect(heading).toHaveText('A FREE MESSAGE\nFROM SANTA', { useInnerText: true });
+      await expect(heading).toHaveCSS('font-weight', '400');
+      await expect(heading).toHaveCSS('font-family', 'Cinzel, serif');
+      await expect(heading).toHaveCSS('color', 'rgb(230, 206, 134)');
+      const geometry = await heading.evaluate(node => {
         const range = document.createRange();
         range.selectNodeContents(node);
         return {
           card: node.closest('.hero-name-preview__checker').getBoundingClientRect().toJSON(),
-          lines: [...range.getClientRects()].map(rect => rect.toJSON()),
+          lines: [...range.getClientRects()].filter(rect => rect.width > 0).map(rect => rect.toJSON()),
+          pageWidth: document.documentElement.scrollWidth,
         };
       });
-      expect(geometry.lines.length).toBeGreaterThan(0);
+      expect(geometry.lines).toHaveLength(2);
+      expect(geometry.lines[1].top).toBeGreaterThan(geometry.lines[0].top);
+      expect(geometry.pageWidth).toBeLessThanOrEqual(width);
       for (const line of geometry.lines) {
         expect(line.left).toBeGreaterThanOrEqual(Math.max(0, geometry.card.left) - .5);
         expect(line.right).toBeLessThanOrEqual(Math.min(width, geometry.card.right) + .5);
@@ -186,12 +196,13 @@ for (const route of ['/', path]) {
     const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
     if (await decline.isVisible()) await decline.click();
     await page.evaluate(() => document.fonts.ready);
-    await expect(checker(page).getByRole('status')).toHaveText('Check the child’s name, then let Santa create magic.');
+    await expect(checker(page).getByRole('status')).toHaveText('Check the name - let Santa create magic.');
     for (const width of [320, 390, 767, 768, 1024, 1090, 1091, 1440, 1740, 1920]) {
       await page.setViewportSize({ width, height: 1000 });
       await expectHeroCopy(page, width);
+      const radio = page.locator(width < 768 ? '.nav-radio-icon' : '.hero-actions button');
       for (const playing of [false, true]) {
-        if (playing) await page.locator('.hero-actions').getByRole('button', { name: 'Listen Live', exact: true }).click();
+        if (playing) await radio.click();
         const layout = await page.locator('.hero').evaluate(hero => {
           const rect = node => node.getBoundingClientRect().toJSON();
           const get = selector => hero.querySelector(selector);
@@ -244,7 +255,7 @@ for (const route of ['/', path]) {
           for (const tile of layout.tiles) expect(tile.width).toBeGreaterThan(85);
         }
         if (width === 320) expect(layout.note.lines.length).toBeGreaterThan(1);
-        if (playing) await page.locator('.hero-actions').getByRole('button', { name: /Pause/ }).click();
+        if (playing) await radio.click();
       }
     }
     await page.clock.setFixedTime(new Date('2026-12-25T12:00:00Z'));
@@ -510,8 +521,8 @@ for (const route of ['/', path]) {
       if (await decline.isVisible()) await decline.click();
       await page.evaluate(() => document.fonts.ready);
       const card = page.locator('.hero-name-preview__checker');
-      await expect(checker(page).getByRole('heading', { level: 2 })).toHaveText('Can Santa say your child’s name?');
-      await expect(checker(page).getByRole('status')).toHaveText('Check the child’s name, then let Santa create magic.');
+      await expect(checker(page).getByRole('heading', { level: 2 })).toHaveText('A FREE MESSAGE FROM SANTA');
+      await expect(checker(page).getByRole('status')).toHaveText('Check the name - let Santa create magic.');
       const initial = await card.boundingBox();
       if (width >= 1091) {
         const baselineWidth = Math.max(300, Math.min(width * .243, 350));
@@ -520,12 +531,13 @@ for (const route of ['/', path]) {
         expect(await input(page).evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(57);
         expect(await cta(page).evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(58);
       }
-      if (width >= 768) expect(await checker(page).locator('.hero-name-checker__eyebrow').evaluate(el =>
+      if (width >= 768) expect(await checker(page).getByRole('heading', { level: 2 }).evaluate(el =>
         parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(19);
+      const radio = page.locator(width < 768 ? '.nav-radio-icon' : '.hero-actions button');
       for (const size of ['100%', '200%']) {
         await page.evaluate(size => { document.documentElement.style.fontSize = size; }, size);
         for (const playing of [false, true]) {
-          if (playing) await page.locator('.hero-actions').getByRole('button', { name: 'Listen Live', exact: true }).click();
+          if (playing) await radio.click();
           const geometry = await card.evaluate(el => {
             const rect = node => node.getBoundingClientRect().toJSON();
             const textRects = node => {
@@ -584,7 +596,7 @@ for (const route of ['/', path]) {
             expect(neighbour.right <= box.left + .5 || neighbour.left >= box.right - .5 ||
               neighbour.bottom <= box.top + .5 || neighbour.top >= box.bottom - .5).toBe(true);
           }
-          if (playing) await page.locator('.hero-actions').getByRole('button', { name: /Pause/ }).click();
+          if (playing) await radio.click();
         }
       }
       await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
@@ -1182,7 +1194,7 @@ test('preview stays non-indexable while the approved homepage hero omits the sto
   const response = await page.request.get(path);
   expect(response.status()).toBe(200);
   expect(response.headers()['x-robots-tag']).toContain('noindex');
-  expect(await response.text()).toContain('Can Santa say your child');
+  expect(await response.text()).toContain('A FREE MESSAGE <br/>FROM SANTA');
   await open(page);
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, follow');
   await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);

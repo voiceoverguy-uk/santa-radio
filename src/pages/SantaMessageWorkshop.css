@@ -401,6 +401,12 @@
 .smw-button-back { border-color: #d4af3755; background: transparent; color: var(--smw-cream); }
 .smw-button-back:hover:not(:disabled) { border-color: var(--smw-gold); background: #d4af370d; }
 .smw-button-back:disabled { opacity: .45; }
+.smw-actions--review > .smw-button {
+  width: 14rem;
+  max-width: calc((100% - 14px) / 2);
+  min-width: 0;
+  align-self: stretch;
+}
 .smw-button-next, .smw-button-download { margin-left: auto; background: var(--smw-crimson); color: var(--smw-cream); box-shadow: 0 6px 18px #650b1438; }
 .smw-button-next:hover, .smw-button-download:hover { background: #ad1c2b; }
 .smw-review { padding-top: 16px; }
