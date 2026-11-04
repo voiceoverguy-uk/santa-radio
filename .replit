@@ -78,7 +78,6 @@ externalPort = 80
 [[ports]]
 localPort = 5001
 externalPort = 3000
-exposeLocalhost = true
 
 [[ports]]
 localPort = 5012
@@ -103,7 +102,6 @@ externalPort = 3001
 [[ports]]
 localPort = 24826
 externalPort = 6800
-exposeLocalhost = true
 
 [[ports]]
 localPort = 24827
