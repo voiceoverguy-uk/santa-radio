@@ -185,7 +185,7 @@ for (const width of [390, 1365]) {
       if (width === 390) await link.click();
       else { await link.focus(); await link.press('Enter'); }
       const download = await downloaded;
-      expect(download.suggestedFilename()).toBe('santa-message-for-Dixie.mp3');
+      expect(download.suggestedFilename()).toBe('Santa-message-for-Dixie.mp3');
       expect(await download.failure()).toBeNull();
       expect(readFileSync(await download.path())).toEqual(fixture.audio);
       await expect(link).not.toHaveClass(/smw-button-download--pending/);
@@ -602,7 +602,7 @@ for (const width of [390, 1365]) {
     await page.getByRole('textbox', { name: 'Name spelling', exact: true }).fill('Fresh written name');
     await page.getByRole('button', { name: 'Use this spelling', exact: true }).click();
     await expect(download).toHaveAttribute('href', previousUrl);
-    await expect(download).toHaveAttribute('download', 'santa-message-for-Dixie.mp3');
+    await expect(download).toHaveAttribute('download', 'Santa-message-for-Dixie.mp3');
     await expect(page.getByRole('heading', { name: 'Santa’s message for Dixie', exact: true })).toBeVisible();
     for (const button of await page.locator('.studio-gift-download button').all()) await expect(button).toBeDisabled();
     expect(fixture.state).toEqual(allowance);
@@ -801,7 +801,7 @@ test('approved recording notices are random per attempt, stable through rerender
   await player.evaluate(node => node.pause());
   const downloadPromise = page.waitForEvent('download');
   await result.getByRole('link', { name: /Download MP3/ }).click();
-  expect((await downloadPromise).suggestedFilename()).toBe('santa-message-for-D’Arcy.mp3');
+  expect((await downloadPromise).suggestedFilename()).toBe('Santa-message-for-D’Arcy.mp3');
   expect(await page.evaluate(() => window.noticeRandomCalls)).toBe(13);
   expect(await page.evaluate(() => window.recordingAttempts.length)).toBe(13);
 });
@@ -856,7 +856,7 @@ test('review create placement on desktop and phones, real MP3 playback/download,
   await result.scrollIntoViewIfNeeded();
   await page.screenshot({ path: 'generated-artifacts/studio-completed-mobile.png' });
   const download = result.getByRole('link', { name: /Download MP3/ });
-  await expect(download).toHaveAttribute('download', 'santa-message-for-Dixie.mp3');
+  await expect(download).toHaveAttribute('download', 'Santa-message-for-Dixie.mp3');
   await expect(download).toHaveAttribute('href', url);
   await download.evaluate(node => node.scrollIntoView({ block: 'center', behavior: 'instant' }));
   await settleStudioScroll(page);
@@ -864,18 +864,18 @@ test('review create placement on desktop and phones, real MP3 playback/download,
   await download.focus();
   await page.keyboard.press('Enter');
   const file = await downloaded;
-  expect(file.suggestedFilename()).toBe('santa-message-for-Dixie.mp3');
+  expect(file.suggestedFilename()).toBe('Santa-message-for-Dixie.mp3');
   expect(readFileSync(await file.path())).toEqual(fixture.audio,
     'Playback and Download MP3 use the same complete newly rendered recording');
   await expect(page.getByRole('textbox', { name: 'Name spelling', exact: true })).toHaveCount(0);
   await expect(result.getByRole('heading', { name: 'Santa’s message for Dixie' })).toBeVisible();
   await expect(player).toHaveAttribute('src', url);
-  await expect(download).toHaveAttribute('download', 'santa-message-for-Dixie.mp3');
+  await expect(download).toHaveAttribute('download', 'Santa-message-for-Dixie.mp3');
   const punctuationDownload = page.waitForEvent('download');
   await download.focus();
   await page.keyboard.press('Enter');
   const punctuationFile = await punctuationDownload;
-  expect(punctuationFile.suggestedFilename()).toBe('santa-message-for-Dixie.mp3');
+  expect(punctuationFile.suggestedFilename()).toBe('Santa-message-for-Dixie.mp3');
   expect(readFileSync(await punctuationFile.path())).toEqual(fixture.audio,
     'Repeat downloads preserve the completed name and temporary MP3');
   expect(submissions).toHaveLength(1);
@@ -927,9 +927,12 @@ test('retryable preparation errors and cancellation spend no successful allowanc
 
 test('finished Studio message download is valid and matches the playable recording', async ({ page }) => {
   const fixture = await openReview(page);
+  const filenamePreview = page.getByRole('region', { name: 'Written name for your keepsakes' });
+  await expect(filenamePreview).toHaveAttribute('data-download-name', 'Santa-message-for-Dixie.mp3');
   await page.getByRole('button', { name: 'Edit certificate name', exact: true }).click();
   await page.getByRole('textbox', { name: 'Name spelling', exact: true }).fill('D’Arcy');
   await page.getByRole('button', { name: 'Use this spelling', exact: true }).click();
+  await expect(filenamePreview).toHaveAttribute('data-download-name', 'Santa-message-for-D’Arcy.mp3');
   await confirmMessage(page);
 
   const result = page.getByRole('region', { name: 'Your finished Santa message' });
@@ -949,12 +952,12 @@ test('finished Studio message download is valid and matches the playable recordi
   await expect(result.getByRole('heading', { name: 'Santa’s message for D’Arcy' })).toBeVisible();
   await expect(player).toHaveAttribute('src', recordingUrl);
   await expect(download).toHaveAttribute('href', recordingUrl);
-  await expect(download).toHaveAttribute('download', 'santa-message-for-D’Arcy.mp3');
+  await expect(download).toHaveAttribute('download', 'Santa-message-for-D’Arcy.mp3');
   // This browser artifact cannot verify native phone save locations or opening.
   const downloadPromise = page.waitForEvent('download');
   await download.click();
   const file = await downloadPromise;
-  expect(file.suggestedFilename()).toBe('santa-message-for-D’Arcy.mp3');
+  expect(file.suggestedFilename()).toBe('Santa-message-for-D’Arcy.mp3');
   expect(readFileSync(await file.path())).toEqual(fixture.audio,
     'The downloaded MP3 is byte-for-byte the recording loaded by the playable audio element');
 });
@@ -986,7 +989,7 @@ test('school voucher form opens real long-form generation and playable MP3 witho
   const downloadPromise = page.waitForEvent('download');
   await page.getByRole('link', { name: /Download MP3/ }).click();
   const download = await downloadPromise;
-  expect(download.suggestedFilename()).toMatch(/^santa-message-for-Arabella\.mp3$/);
+  expect(download.suggestedFilename()).toMatch(/^Santa-message-for-Arabella\.mp3$/);
   await download.saveAs('generated-artifacts/studio-live-hosted-message.mp3');
   expect(readFileSync(await download.path()).length).toBeGreaterThan(10000);
   // Fully decode the actual browser-local MP3, not a recovery or fixture.
@@ -1268,7 +1271,7 @@ test('temporary downloads survive failed replacement but never recover after ref
   for (let n = 0; n < 2; n++) {
     const saving = page.waitForEvent('download');
     await download.click();
-    expect((await saving).suggestedFilename()).toBe('santa-message-for-Dixie.mp3');
+    expect((await saving).suggestedFilename()).toBe('Santa-message-for-Dixie.mp3');
   }
   expect(fixture.posts).toHaveLength(1);
   const original = await download.getAttribute('href');
@@ -1295,7 +1298,7 @@ test('temporary downloads survive failed replacement but never recover after ref
   expect(fixture.posts.at(-1).place).toBe('forest');
   expect(fixture.posts.at(-1).activity).toBe('instrument');
   await expect(page.getByRole('button', { name: 'Edit certificate name', exact: true })).toHaveCount(0);
-  await expect(download).toHaveAttribute('download', 'santa-message-for-Dixie.mp3');
+  await expect(download).toHaveAttribute('download', 'Santa-message-for-Dixie.mp3');
   const postCount = fixture.posts.length;
   await page.reload();
   await expect(download).toHaveCount(0);

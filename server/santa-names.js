@@ -1,4 +1,5 @@
 import { santaNameLibrary } from './santa-name-library.js';
+import { santaMessageDownloadName } from '../src/lib/santaMessageDownloadName.js';
 import { BLOCKED_NAME_NOTE, isBlockedName } from '../src/lib/nameLanguage.js';
 import { consumeNameAccess, issueNameToken, privateResponse, readNameJson, SEARCH_LIMIT, SEARCH_MIN_LENGTH } from './santa-name-security.js';
 import { nameDiagnostic } from './santa-name-diagnostic.js';
@@ -34,8 +35,8 @@ export function createSantaNamesHandler(library = santaNameLibrary, {
       }
       const result = await library.search(query, hint, { exact: data.exact === true });
       // Explicit projection: never return audio locations, filenames, aliases or counts.
-      const records = result.records.slice(0, SEARCH_LIMIT).map(({ id, name, downloadName, variant }, index) => ({
-        id, name, downloadName, ...(variant ? { variant: `Recording ${index + 1}` } : {}),
+      const records = result.records.slice(0, SEARCH_LIMIT).map(({ id, name, variant }, index) => ({
+        id, name, downloadName: santaMessageDownloadName(name), ...(variant ? { variant: `Recording ${index + 1}` } : {}),
         selectionToken: token(id, 'message'),
         previewUrl: `/api/santa-name-preview?token=${encodeURIComponent(token(id, 'preview'))}`,
       }));

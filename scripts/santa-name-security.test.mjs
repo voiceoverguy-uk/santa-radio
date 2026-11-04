@@ -24,7 +24,7 @@ const names = createSantaNamesHandler({
     return { records: Array.from({ length: 20 }, (_, index) => ({
       id: `f-${String(index).padStart(64, '0')}`, name: `Erin ${index}`,
       file: 'secret-origin-file.mp3', previewUrl: 'https://origin.invalid/private.mp3',
-      variant: 'secret-origin-file.mp3', downloadName: 'greeting.mp3',
+      variant: 'secret-origin-file.mp3', downloadName: `santa-recorded-message-for-Erin ${index}.mp3`,
     })), hostedCount: 9774 };
   },
   catalogue: () => assert.fail('Public routes must not call catalogue'),
@@ -35,7 +35,13 @@ const preview = createSantaNamePreviewHandler({
   sourceBytes: async () => previewBytes,
 }, { limit: noLimit, verify });
 const local = createNameLibrary({ fetcher: async () => new Response(JSON.stringify({ version: 1, names: [] })) });
-const message = createSantaMessageHandler(local, {
+const message = createSantaMessageHandler({
+  ...local,
+  resolve: async id => {
+    const record = await local.resolve(id);
+    return record && { ...record, downloadName: `santa-recorded-message-for-${record.name}.mp3` };
+  },
+}, {
   prepare: async () => null, publish: async () => assert.fail('Tests never publish audio'),
   singleFlight: (_, work) => work(),
 }, { limit: noLimit, verify, authorize: () => ({ subject: 'fixture' }),
@@ -85,6 +91,8 @@ test('search is capped, scoped, count-free and never exposes origin paths', asyn
   assert.equal(result.hostedCount, undefined);
   assert.doesNotMatch(JSON.stringify(result), /9774|origin\.invalid|secret-origin-file/);
   const record = result.records[0];
+  assert.equal(record.downloadName, 'Santa-recorded-message-for-Erin 0.mp3',
+    'Old catalogue display filenames must not bypass the current convention');
   assert.equal(verify(record.selectionToken, 'message'), record.id);
   const previewToken = new URL(record.previewUrl, 'http://test').searchParams.get('token');
   assert.equal(verify(previewToken, 'preview'), record.id);
@@ -165,7 +173,7 @@ test('message creation requires a scoped current selection and still returns a p
   }
   const response = await post('/message', { name: 'erin', outro: 1, selectionToken: token('erin', 'message') });
   assert.equal(response.status, 200);
-  assert.match(response.headers.get('content-disposition'), /santa-recorded-message-for-Erin\.mp3/);
+  assert.match(response.headers.get('content-disposition'), /Santa-recorded-message-for-Erin\.mp3/);
   const bytes = Buffer.from(await response.arrayBuffer());
   assert.ok(bytes.length > 100000);
   const decoded = spawnSync(ffmpeg, ['-v', 'error', '-i', 'pipe:0', '-f', 'null', '-'], { input: bytes, timeout: 20000 });

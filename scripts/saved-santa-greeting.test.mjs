@@ -5,6 +5,7 @@ import { trySavedSantaGreeting } from '../src/lib/savedSantaGreeting.js';
 import { savedSantaGreeting } from '../src/data/savedSantaGreeting.js';
 import { recipeFiles, santaAudioRecipeVersion } from './santa-audio-recipe.mjs';
 import { createSavedGreetingCache } from '../server/santa-saved-cache.js';
+import { santaMessageDownloadName } from '../src/lib/santaMessageDownloadName.js';
 
 const bytes = Buffer.from('test-only pinned MP3 bytes');
 const pilot = {
@@ -24,12 +25,15 @@ test('approved saved bytes return unchanged; both exact recording-ID formats wor
     let calls = 0;
     const blob = await trySavedSantaGreeting({ id }, null, { ...options, fetcher: withLookup(async (url, init) => {
       calls++;
+      assert.equal(new URL(url).pathname, new URL(pilot.url).pathname,
+        'The approved saved audio URL must not be rewritten to the download name');
       assert.equal(new URL(url).searchParams.get('recipe'), pilot.recipeVersion);
       assert.equal(init.mode, 'cors');
       assert.equal(init.credentials, 'omit');
       return options.fetcher();
     }) });
     assert.deepEqual(Buffer.from(await blob.arrayBuffer()), bytes);
+    assert.equal(santaMessageDownloadName('Arabella'), 'Santa-recorded-message-for-Arabella.mp3');
     assert.equal(calls, 1);
   }
 });

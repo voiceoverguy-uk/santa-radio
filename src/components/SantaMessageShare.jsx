@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import { ORIGIN } from '../seo/catalogue.js';
+import { santaMessageDownloadName } from '../lib/santaMessageDownloadName.js';
 
 const shareUrl = `${ORIGIN}/free-santa-message`;
 const shareData = {
@@ -23,7 +24,7 @@ export function SantaGreetingShare({ message }) {
     setStatus('');
     setFailed(false);
     try {
-      const file = new File([message.blob], message.downloadName, { type: 'audio/mpeg' });
+      const file = new File([message.blob], santaMessageDownloadName(message.name), { type: 'audio/mpeg' });
       const data = { files: [file] };
       if (typeof navigator.share !== 'function' ||
           typeof navigator.canShare !== 'function' || !navigator.canShare(data)) {

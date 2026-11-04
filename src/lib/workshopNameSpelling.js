@@ -19,5 +19,5 @@ export function getWorkshopWrittenName(recordedName, spelling) {
 }
 
 export function getWorkshopDownloadName(recordedName, spelling) {
-  return `santa-message-for-${getWorkshopWrittenName(recordedName, spelling)}.mp3`;
+  return `Santa-message-for-${getWorkshopWrittenName(recordedName, spelling)}.mp3`;
 }

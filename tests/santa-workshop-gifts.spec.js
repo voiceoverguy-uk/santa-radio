@@ -211,7 +211,7 @@ for (const width of [320, 1365]) {
     await expect(page.locator('.smw-written-name-value')).toHaveText('Fresh spelling');
     for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
     await expect(page.getByRole('link', { name: /Download MP3/ }))
-      .toHaveAttribute('download', 'santa-message-for-Élodie O’Neill.mp3');
+      .toHaveAttribute('download', 'Santa-message-for-Élodie O’Neill.mp3');
     await expect(page.locator('.smw-message-result audio')).toHaveAttribute('src', previousAudio);
     expect(fixture.posts).toHaveLength(1);
     await spelling(page, 'Élodie O’Neill');

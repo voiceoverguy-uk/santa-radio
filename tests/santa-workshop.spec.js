@@ -1363,7 +1363,7 @@ test('sound-alike hint and final spelling change update output previews only, wi
   await expect(page.locator('.smw-name-empty')).toContainText('This won’t change the name Santa says');
   await complete(page);
   const section = page.getByRole('region', { name: 'Written name for your keepsakes' });
-  await expect(section).toHaveAttribute('data-download-name', 'santa-message-for-Demrie.mp3');
+  await expect(section).toHaveAttribute('data-download-name', 'Santa-message-for-Demrie.mp3');
   await expect(section).not.toContainText('.mp3');
   await expect(section).not.toContainText('MP3 filename preview');
   const change = section.getByRole('button', { name: 'Edit certificate name', exact: true });
@@ -1385,13 +1385,13 @@ test('sound-alike hint and final spelling change update output previews only, wi
   await input.press('Enter');
   await expect(input).toHaveAttribute('aria-invalid', 'true');
   await expect(section.getByRole('alert')).toContainText('Use letters');
-  await expect(section).toHaveAttribute('data-download-name', 'santa-message-for-Demrie.mp3');
+  await expect(section).toHaveAttribute('data-download-name', 'Santa-message-for-Demrie.mp3');
   await input.fill('Demree');
   await expect(section.getByRole('alert')).toHaveCount(0);
   await input.press('Enter');
   await expect(change).toBeFocused();
   await expect(section.locator('.smw-written-name-value')).toHaveText('Demree');
-  await expect(section).toHaveAttribute('data-download-name', 'santa-message-for-Demree.mp3');
+  await expect(section).toHaveAttribute('data-download-name', 'Santa-message-for-Demree.mp3');
   await expect(section).not.toContainText('.mp3');
   await expect(page.locator('.smw-summary-row').first()).toContainText('Demrie');
   await expect(section.locator('.smw-written-name-record')).toHaveCount(0);
@@ -1400,19 +1400,19 @@ test('sound-alike hint and final spelling change update output previews only, wi
   await page.getByRole('button', { name: 'Change Extra celebration' }).click();
   await page.getByRole('option', { name: 'Planting and caring for a garden', exact: true }).click();
   await page.getByRole('button', { name: 'Return to review' }).click();
-  await expect(section).toHaveAttribute('data-download-name', 'santa-message-for-Demree.mp3');
+  await expect(section).toHaveAttribute('data-download-name', 'Santa-message-for-Demree.mp3');
   await change.click();
   await input.fill('Cancelled');
   await input.press('Escape');
   await expect(change).toBeFocused();
-  await expect(section).toHaveAttribute('data-download-name', 'santa-message-for-Demree.mp3');
+  await expect(section).toHaveAttribute('data-download-name', 'Santa-message-for-Demree.mp3');
   await section.screenshot({ path: 'generated-artifacts/workshop/name-spelling-desktop.png' });
   await page.setViewportSize({ width: 320, height: 568 });
   await page.addStyleTag({ content: 'html { font-size: 200%; }' });
   expect(await section.evaluate(node => node.scrollWidth <= node.clientWidth + 1)).toBe(true);
   await change.click();
   await section.getByRole('button', { name: 'Use recorded spelling' }).click();
-  await expect(section).toHaveAttribute('data-download-name', 'santa-message-for-Demrie.mp3');
+  await expect(section).toHaveAttribute('data-download-name', 'Santa-message-for-Demrie.mp3');
   await expect(change).toBeFocused();
   await change.click();
   await input.fill('Demree');
@@ -1422,7 +1422,7 @@ test('sound-alike hint and final spelling change update output previews only, wi
   await search.fill('Za');
   await page.getByRole('option', { name: 'Zara', exact: true }).click();
   await page.getByRole('button', { name: 'Return to review' }).click();
-  await expect(section).toHaveAttribute('data-download-name', 'santa-message-for-Zara.mp3');
+  await expect(section).toHaveAttribute('data-download-name', 'Santa-message-for-Zara.mp3');
   await expect(section).not.toContainText('Demree');
   const after = await page.evaluate(() => ({ local: { ...localStorage }, session: { ...sessionStorage } }));
   // The existing radio independently stores its responsive minimised state.

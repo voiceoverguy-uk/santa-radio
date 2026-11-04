@@ -117,10 +117,10 @@ for (const width of [390, 1440]) {
     await page.getByRole('button', { name: 'Create message', exact: true }).click();
     await expect(page.getByRole('heading', { name: 'To Olivia from Santa' })).toBeVisible();
     const download = page.getByRole('link', { name: 'Download your audio' });
-    await expect(download).toHaveAttribute('download', 'santa-recorded-message-for-Olivia.mp3');
+    await expect(download).toHaveAttribute('download', 'Santa-recorded-message-for-Olivia.mp3');
     const downloading = page.waitForEvent('download');
     await download.click();
-    expect((await downloading).suggestedFilename()).toBe('santa-recorded-message-for-Olivia.mp3');
+    expect((await downloading).suggestedFilename()).toBe('Santa-recorded-message-for-Olivia.mp3');
     await expect(page.locator('.message-cooldown-status')).toBeVisible();
     await expect(page.locator('.santa-message-example')).toHaveCount(0);
     await expect(page.locator('.smw-explainer-card')).toHaveCount(3);

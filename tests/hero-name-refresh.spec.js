@@ -6,7 +6,7 @@ const checker = page => page.locator('.hero-name-checker');
 const input = page => checker(page).getByRole('combobox');
 const cta = page => checker(page).getByRole('button', { name: 'Create my free Santa message →' });
 const inventory = { hostedCount: 3, warning: null, records: ['Wendy', 'Erin', 'Erica'].map(name => ({
-  id: name.toLowerCase(), name, downloadName: `santa-recorded-message-for-${name}.mp3`,
+  id: name.toLowerCase(), name, downloadName: `Santa-recorded-message-for-${name}.mp3`,
   selectionToken: 'controlled-fixture-token', previewUrl: '/api/santa-name-preview?token=controlled-fixture-token',
 })) };
 

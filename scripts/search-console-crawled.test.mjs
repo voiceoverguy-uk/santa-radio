@@ -56,7 +56,7 @@ function assertDocument(html, destination) {
   } else if (path === '/free-santa-message') {
     assert.ok(html.includes('Get my free Santa message'));
     assert.ok(!html.includes('class="message-name-label"'), 'Adult gate must remain');
-    assert.ok(!html.includes('santa-recorded-message-for-'), 'No generated recording');
+    assert.ok(!/santa-recorded-message-for-/i.test(html), 'No generated recording');
   } else {
     assert.ok(['/', '/christmas-music'].includes(path), path);
     assert.ok(html.includes('Santa Radio'));

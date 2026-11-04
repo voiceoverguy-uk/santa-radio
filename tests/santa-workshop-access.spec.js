@@ -22,7 +22,7 @@ test.beforeEach(async ({ page }) => {
   }));
   await page.route('**/api/santa-names?*', route => route.fulfill({
     json: {
-      records: [{ id: 'demrie', name: 'Demrie', downloadName: 'santa-recorded-message-for-Demrie.mp3' }],
+      records: [{ id: 'demrie', name: 'Demrie', downloadName: 'Santa-recorded-message-for-Demrie.mp3' }],
       hostedCount: new URL(route.request().url()).searchParams.get('inventory') === 'hosted' ? 1 : 9780,
       warning: null,
     },

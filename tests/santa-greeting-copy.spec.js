@@ -12,7 +12,7 @@ test.beforeEach(async ({ page }) => {
     records: ['Wendy', 'Erin', 'Arabella']
       .filter(name => name.toLowerCase().startsWith(route.request().postDataJSON().query.toLowerCase()))
       .map(name => ({
-      id: name.toLowerCase(), name, downloadName: `santa-recorded-message-for-${name}.mp3`,
+      id: name.toLowerCase(), name, downloadName: `Santa-recorded-message-for-${name}.mp3`,
       selectionToken: 'controlled-fixture-token',
       previewUrl: '/api/santa-name-preview?token=controlled-fixture-token',
     })),
@@ -81,7 +81,7 @@ for (const width of [390, 1440]) {
     const downloadPromise = page.waitForEvent('download');
     await card.getByRole('link', { name: 'Download your audio', exact: true }).click();
     const download = await downloadPromise;
-    expect(download.suggestedFilename()).toBe('santa-recorded-message-for-Wendy.mp3');
+    expect(download.suggestedFilename()).toBe('Santa-recorded-message-for-Wendy.mp3');
     expect(await download.failure()).toBeNull();
     expect(creations).toBe(1);
   });

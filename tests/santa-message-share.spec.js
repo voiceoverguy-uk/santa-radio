@@ -99,6 +99,51 @@ test.describe('completed greeting sharing', () => {
     return page.evaluate(key => localStorage.getItem(key), MESSAGE_ALLOWANCE_KEY);
   }
 
+  test('an existing lowercase greeting keeps its audio URL and Unicode name for repeat downloads and sharing', async ({ page }) => {
+    await openMessageDesk(page);
+    const name = 'Élodie O’Neill';
+    // Seed the tab's retained history with an older display filename, without
+    // generating or retrieving another recording.
+    await page.evaluate(async ({ name, bytes }) => {
+      const { default: React } = await import('/node_modules/.vite/deps/react.js');
+      const { default: { createRoot } } = await import('/node_modules/.vite/deps/react-dom_client.js');
+      const { default: useHistory } = await import('/src/components/useSantaMessageHistory.js');
+      const host = document.createElement('div');
+      document.body.append(host);
+      function RetainedGreeting() {
+        const { remember } = useHistory();
+        React.useEffect(() => {
+          remember({ id: 'existing-recording', name, downloadName: `santa-recorded-message-for-${name}.mp3` },
+            new Blob([new Uint8Array(bytes)], { type: 'audio/mpeg' }));
+        }, []);
+        return null;
+      }
+      createRoot(host).render(React.createElement(RetainedGreeting));
+    }, { name, bytes: [...recordings.Olivia] });
+    const result = page.getByLabel(`Santa’s greeting for ${name}`, { exact: true });
+    await expect(result).toBeVisible();
+    const audioUrl = await result.locator('audio').getAttribute('src');
+    const filename = `Santa-recorded-message-for-${name}.mp3`;
+    for (let repeat = 0; repeat < 2; repeat++) {
+      const link = result.getByRole('link', { name: 'Download your audio' });
+      await expect(link).toHaveAttribute('href', audioUrl);
+      await expect(link).toHaveAttribute('download', filename);
+      const pending = page.waitForEvent('download');
+      await link.click();
+      const download = await pending;
+      expect(download.suggestedFilename()).toBe(filename);
+      expect(readFileSync(await download.path())).toEqual(recordings.Olivia);
+      await result.getByRole('button', { name: 'Share this greeting' }).click();
+      const shared = await page.evaluate(async () => {
+        const file = window.sharedFiles.at(-1).files[0];
+        return { name: file.name, bytes: [...new Uint8Array(await file.arrayBuffer())] };
+      });
+      expect(shared).toEqual({ name: filename, bytes: [...recordings.Olivia] });
+      await expect(result.locator('audio')).toHaveAttribute('src', audioUrl);
+    }
+    expect(renders).toBe(0);
+  });
+
   test('shares each existing Blob with its download filename, including after navigation and during cooldown', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await openMessageDesk(page);
@@ -125,7 +170,7 @@ test.describe('completed greeting sharing', () => {
       });
       expect(payload).toEqual({
         keys: ['files'], count: 1, isFile: true,
-        filename: `santa-recorded-message-for-${name}.mp3`, type: 'audio/mpeg',
+        filename: `Santa-recorded-message-for-${name}.mp3`, type: 'audio/mpeg',
         hash: createHash('sha256').update(recordings[name]).digest('hex'), sameFileChecked: true,
       });
       await expect(result.locator('audio')).toBeVisible();
@@ -178,7 +223,7 @@ test.describe('completed greeting sharing', () => {
       const downloadPromise = page.waitForEvent('download');
       await result.getByRole('link', { name: 'Download your audio' }).click();
       const download = await downloadPromise;
-      expect(download.suggestedFilename()).toBe('santa-recorded-message-for-Olivia.mp3');
+      expect(download.suggestedFilename()).toBe('Santa-recorded-message-for-Olivia.mp3');
       expect(await download.failure()).toBeNull();
       expect(await allowance(page)).toBe(before);
       expect(renders).toBe(1);

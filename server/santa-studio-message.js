@@ -97,7 +97,7 @@ export function createStudioMessageHandler({
       })).toString('base64'));
       res.writeHead(200, {
         'Content-Type': 'audio/mpeg', 'Content-Length': audio.length,
-        'Content-Disposition': 'attachment; filename="santa-studio-message.mp3"',
+        'Content-Disposition': 'attachment; filename="Santa-studio-message.mp3"',
       });
       res.end(audio);
     };

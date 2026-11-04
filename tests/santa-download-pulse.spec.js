@@ -23,7 +23,7 @@ for (const reducedMotion of ['no-preference', 'reduce']) {
     const downloadEvent = page.waitForEvent('download');
     await link.press('Enter');
     const download = await downloadEvent;
-    expect(download.suggestedFilename()).toBe('santa-recorded-message-for-Olivia.mp3');
+    expect(download.suggestedFilename()).toBe('Santa-recorded-message-for-Olivia.mp3');
     expect(await download.failure()).toBeNull();
     await expect(link).not.toHaveClass(/message-download--pending/);
     await expect(link).toHaveCSS('animation-name', 'none');

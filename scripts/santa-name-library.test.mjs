@@ -15,17 +15,17 @@ const manifest = (names = [demrie]) => Buffer.from(JSON.stringify({ version: 1, 
 const response = bytes => new Response(bytes);
 
 test('local and hosted downloads use the uniform filename without changing the display name', () => {
-  assert.equal(findSantaMessage('arabella').downloadName, 'santa-recorded-message-for-Arabella.mp3');
+  assert.equal(findSantaMessage('arabella').downloadName, 'Santa-recorded-message-for-Arabella.mp3');
   const names = ['Élodie', 'Mary Jane', "O'Brien"];
   for (const name of names) {
-    assert.equal(santaMessageDownloadName(name), `santa-recorded-message-for-${name}.mp3`);
+    assert.equal(santaMessageDownloadName(name), `Santa-recorded-message-for-${name}.mp3`);
     const file = `${name}.wav`;
     const [record] = parseNameIndex(Buffer.from(JSON.stringify({
       version: 2, names: [{ id: filenameId(file), name, file }],
     })));
     assert.equal(record.name, name);
     assert.equal(record.file, file, 'Source filenames must not be renamed');
-    assert.equal(record.downloadName, `santa-recorded-message-for-${name}.mp3`);
+    assert.equal(record.downloadName, `Santa-recorded-message-for-${name}.mp3`);
   }
 });
 
@@ -35,7 +35,7 @@ test('hosted inventory, display names, exact filenames and aliases are verified'
     return response(manifest());
   } });
   const found = await library.search(' de ');
-  assert.deepEqual(found.records, [{ id: 'demrie', name: 'Demrie', downloadName: 'santa-recorded-message-for-Demrie.mp3' }]);
+  assert.deepEqual(found.records, [{ id: 'demrie', name: 'Demrie', downloadName: 'Santa-recorded-message-for-Demrie.mp3' }]);
   assert.equal(found.warning, null);
   assert.equal(found.hostedCount, 1, 'Only hosted recordings count, not the 13 bundled names.');
   const initial = await library.search('');

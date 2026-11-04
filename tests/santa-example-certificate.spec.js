@@ -65,7 +65,7 @@ for (const path of ['/', '/free-santa-message']) {
         const pending = page.waitForEvent('download');
         await result.getByRole('link', { name: 'Download your audio' }).click();
         const download = await pending;
-        expect(download.suggestedFilename()).toBe('santa-recorded-message-for-Olivia.mp3');
+        expect(download.suggestedFilename()).toBe('Santa-recorded-message-for-Olivia.mp3');
         expect(readFileSync(await download.path())).toEqual(audio);
       }
       await result.getByRole('button', { name: 'Share this greeting', exact: true }).click();
@@ -110,7 +110,7 @@ for (const path of ['/', '/free-santa-message']) {
 
   test(`saved greeting cache remains audio-only on ${path}`, async ({ page }) => {
     await page.route('**/api/santa-names?*', route => route.fulfill({ json: {
-      records: [{ id: 'arabella', name: 'Arabella', downloadName: 'santa-recorded-message-for-Arabella.mp3' }],
+      records: [{ id: 'arabella', name: 'Arabella', downloadName: 'Santa-recorded-message-for-Arabella.mp3' }],
       hostedCount: 1, warning: null,
     } }));
     const url = 'https://stagcommunications.com/santaradio/greetings-cache/free-offer-test.mp3';

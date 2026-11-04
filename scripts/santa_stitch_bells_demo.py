@@ -26,7 +26,7 @@ def main():
     output = options.output_dir or root
     output.mkdir(parents=True, exist_ok=True)
     bells = ROOT / "attached_assets/sleigh-bells_1793024629484.mp3"
-    target = output / "santa-recorded-message-for-Arabella.mp3"
+    target = output / "Santa-recorded-message-for-Arabella.mp3"
     if target.exists():
         raise FileExistsError("Use a different output directory to retain earlier samples")
     previous = json.loads((root / "measurements.json").read_text())

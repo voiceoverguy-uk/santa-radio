@@ -19,6 +19,7 @@ import SantaStudioPromotion from './SantaStudioPromotion.jsx';
 import WorkshopExplainerCards from './WorkshopExplainerCards.jsx';
 import SantaMessageReviews from './SantaMessageReviews.jsx';
 import { santaNameKey } from '../lib/santaNameSearch.js';
+import { santaMessageDownloadName } from '../lib/santaMessageDownloadName.js';
 import { randomSantaExample, santaNamePlaceholder } from '../lib/santaNamePlaceholder.js';
 import { normaliseRequestedName } from '../lib/santaNameRequests.js';
 import { nameRequestToken } from '../lib/santaNameRequestTokens.js';
@@ -311,7 +312,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
     <div className="message-download-actions">
       <div className="message-download-links">
         <a className={`message-download${clickedDownloads.has(message.key) ? '' : ' message-download--pending'}`}
-          href={message.url} download={message.downloadName}
+          href={message.url} download={santaMessageDownloadName(message.name)}
           onClick={() => setClickedDownloads(previous => new Set([...previous, message.key]))}>
           Download your audio <span aria-hidden="true">↓</span>
         </a>

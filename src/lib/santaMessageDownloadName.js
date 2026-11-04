@@ -1,1 +1,1 @@
-export const santaMessageDownloadName = name => `santa-recorded-message-for-${name}.mp3`;
+export const santaMessageDownloadName = name => `Santa-recorded-message-for-${name}.mp3`;

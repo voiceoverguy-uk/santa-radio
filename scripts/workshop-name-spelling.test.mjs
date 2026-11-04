@@ -49,9 +49,9 @@ test('Santa picture fitting centres every line and keeps the full block inside e
 
 test('written spelling is separate from recorded identity and follows the download convention', () => {
   assert.equal(getWorkshopWrittenName('Wendi', 'Wendy'), 'Wendy');
-  assert.equal(getWorkshopDownloadName('Wendi', 'Wendy'), 'santa-message-for-Wendy.mp3');
+  assert.equal(getWorkshopDownloadName('Wendi', 'Wendy'), 'Santa-message-for-Wendy.mp3');
   assert.equal(getWorkshopWrittenName('Wendi', ''), 'Wendi');
-  assert.equal(getWorkshopDownloadName('Wendi', ''), 'santa-message-for-Wendi.mp3');
+  assert.equal(getWorkshopDownloadName('Wendi', ''), 'Santa-message-for-Wendi.mp3');
 });
 
 test('spelling supports accented names, apostrophes and hyphens, normalising whitespace', () => {
@@ -67,7 +67,7 @@ test('invalid or excessive spellings cannot become filenames or output names', (
   for (const name of ['', '   ', '../Wendy', 'Wendy.mp3', 'Wendy\\file', 'Wendy\n/evil', '<script>', 'A'.repeat(81), '\u202eWendy']) {
     assert.notEqual(validateWorkshopSpelling(name), '');
     assert.equal(getWorkshopWrittenName('Wendi', name), 'Wendi');
-    assert.equal(getWorkshopDownloadName('Wendi', name), 'santa-message-for-Wendi.mp3');
+    assert.equal(getWorkshopDownloadName('Wendi', name), 'Santa-message-for-Wendi.mp3');
   }
 });
 
@@ -75,7 +75,7 @@ test('ampersands are allowed in written names without changing recorded identity
   for (const name of ['Arabella & Doggy', 'Anne-Marie & Élodie', 'Arabella&丫丫']) {
     assert.equal(validateWorkshopSpelling(name), '');
     assert.equal(getWorkshopWrittenName('Arabella', name), name);
-    assert.equal(getWorkshopDownloadName('Arabella', name), `santa-message-for-${name}.mp3`);
+    assert.equal(getWorkshopDownloadName('Arabella', name), `Santa-message-for-${name}.mp3`);
   }
   assert.equal(getWorkshopWrittenName('Arabella', '  Arabella   &   Doggy '), 'Arabella & Doggy');
   for (const name of ['&', 'Arabella & ../Doggy', 'Arabella & <script>', 'Arabella & Doggy.mp3', 'Arabella & Fuck']) {
@@ -97,7 +97,7 @@ test('bad language, included words and disguised spellings never become output n
       assert.equal(validateWorkshopSpelling(name), WORKSHOP_LANGUAGE_ERROR, name);
     }
     assert.equal(getWorkshopWrittenName('Wendi', name), 'Wendi', name);
-    assert.equal(getWorkshopDownloadName('Wendi', name), 'santa-message-for-Wendi.mp3', name);
+    assert.equal(getWorkshopDownloadName('Wendi', name), 'Santa-message-for-Wendi.mp3', name);
   }
 });
 

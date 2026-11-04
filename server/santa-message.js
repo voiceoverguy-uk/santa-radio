@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import ffmpegPath from 'ffmpeg-static';
 import { santaNameLibrary } from './santa-name-library.js';
+import { santaMessageDownloadName } from '../src/lib/santaMessageDownloadName.js';
 import { renderArgs } from '../scripts/santa-audio-filters.mjs';
 import { eligibleArabella } from './santa-saved-cache.js';
 import { consumeNameAccess, privateResponse, verifyNameToken } from './santa-name-security.js';
@@ -92,13 +93,14 @@ return async function santaMessage(req, res) {
     };
     const audio = cache && eligibleArabella(recording)
       ? await cache.singleFlight(prepared?.identity.key || `${recording.id}-${data.outro}`, generate) : await generate();
-    const asciiFilename = recording.downloadName.normalize('NFKD').replace(/\p{M}/gu, '').replace(/[^\x20-\x7e]/g, '_');
+    const downloadName = santaMessageDownloadName(recording.name);
+    const asciiFilename = downloadName.normalize('NFKD').replace(/\p{M}/gu, '').replace(/[^\x20-\x7e]/g, '_');
     await finish(lease, true);
     allowanceFinished = true;
     res.writeHead(200, {
       'Content-Type': 'audio/mpeg',
       'Content-Length': audio.length,
-      'Content-Disposition': `attachment; filename="${asciiFilename}"; filename*=UTF-8''${encodeURIComponent(recording.downloadName).replace(/[!'()*]/g, character => `%${character.charCodeAt(0).toString(16).toUpperCase()}`)}`,
+      'Content-Disposition': `attachment; filename="${asciiFilename}"; filename*=UTF-8''${encodeURIComponent(downloadName).replace(/[!'()*]/g, character => `%${character.charCodeAt(0).toString(16).toUpperCase()}`)}`,
       'X-Content-Type-Options': 'nosniff',
     });
     res.end(audio);

@@ -301,9 +301,9 @@ test('recipe preserves clip order and voice gain, adds one-second lead-in and 2 
   assert.ok((MAX_STUDIO_SECONDS + STUDIO_LEAD_IN_SECONDS) * 192000 / 8 + 4096 < 4_400_000);
   assert.match(graph, /latency=true/);
   for (const name of ['D’Arcy', 'Élodie', 'Anna-Mae']) {
-    assert.equal(getWorkshopDownloadName('Original', name), `santa-message-for-${name}.mp3`);
+    assert.equal(getWorkshopDownloadName('Original', name), `Santa-message-for-${name}.mp3`);
   }
-  assert.equal(getWorkshopDownloadName('Arabella', '../../bad\r\nname'), 'santa-message-for-Arabella.mp3');
+  assert.equal(getWorkshopDownloadName('Arabella', '../../bad\r\nname'), 'Santa-message-for-Arabella.mp3');
 });
 
 test('serverless entry shares the protected handler and packages all fixed sources and executable', async () => {

@@ -109,7 +109,7 @@ for (const path of ['/', '/free-santa-message']) {
       const download = page.waitForEvent('download');
       await result.getByRole('link', { name: 'Download your audio' }).click();
       const file = await download;
-      expect(file.suggestedFilename()).toBe('santa-recorded-message-for-Olivia.mp3');
+      expect(file.suggestedFilename()).toBe('Santa-recorded-message-for-Olivia.mp3');
       expect(await file.failure()).toBeNull();
       await result.getByRole('button', { name: 'Share this greeting', exact: true }).click();
       await expect(result.getByRole('status')).toContainText('chosen sharing app');
@@ -140,12 +140,12 @@ for (const path of ['/', '/free-santa-message']) {
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
       await saved.getByRole('button', { name: 'Share this greeting', exact: true }).click();
       expect(await page.evaluate(() => window.sharedGreetings)).toEqual([
-        'santa-recorded-message-for-Olivia.mp3', 'santa-recorded-message-for-Olivia.mp3',
+        'Santa-recorded-message-for-Olivia.mp3', 'Santa-recorded-message-for-Olivia.mp3',
       ]);
       const savedDownload = page.waitForEvent('download');
       await saved.getByRole('link', { name: 'Download your audio' }).click();
       const savedFile = await savedDownload;
-      expect(savedFile.suggestedFilename()).toBe('santa-recorded-message-for-Olivia.mp3');
+      expect(savedFile.suggestedFilename()).toBe('Santa-recorded-message-for-Olivia.mp3');
       expect(await savedFile.failure()).toBeNull();
       await savedPlayer.evaluate(element => element.play());
       await expect.poll(() => savedPlayer.evaluate(element => element.currentTime)).toBeGreaterThan(0);
