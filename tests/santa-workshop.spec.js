@@ -135,6 +135,28 @@ test('Studio hides progress captions only on mobile, retaining the bars and curr
   await page.locator('.smw-builder').screenshot({ path: 'test-results/workshop-progress-mobile.png' });
 });
 
+test('Studio ends after the three-step explainer without an inventory note on desktop or mobile', async ({ page }) => {
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await open(page);
+    await expect(page.locator('.smw-footer-note')).toHaveCount(0);
+    await expect(page.locator('.smw-page')).not.toContainText('Names come from Santa’s hosted recording library');
+    await expect(page.locator('.smw-page')).not.toContainText('Files flagged for review are not selectable.');
+    await expect(page.locator('.smw-shell > :last-child')).toHaveClass('smw-explainer');
+    await expect(page.locator('.smw-explainer-card')).toHaveCount(3);
+    await expect(page.getByRole('combobox', { name: 'Search recorded names', exact: true })).toBeVisible();
+    if (width === 1440) {
+      await expect(page.getByRole('heading', { name: 'A little Christmas magic, in three steps' })).toBeVisible();
+      await expect(page.locator('.footer')).toBeVisible();
+    } else {
+      // Preserve the existing compact mobile layout.
+      await expect(page.locator('.smw-explainer')).toBeHidden();
+      await expect(page.locator('.footer')).toBeHidden();
+    }
+    await photograph(page, `generated-artifacts/workshop/inventory-note-removed-${width}.png`);
+  }
+});
+
 test('Studio hides the radio dock at every size, keeps desktop footer and restores the dock elsewhere', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await open(page);
@@ -1814,7 +1836,7 @@ test('desktop and phone review has larger white answers, labels increased by two
   await expect(page.getByText("It's the little details that matter...", { exact: true })).toHaveCount(0);
   await expect(page.getByText('You’re in the friends-only Message Maker Studio test.', { exact: false })).toHaveCount(0);
   await expectStudioHeader(page);
-  await expect(page.locator('.smw-footer-note')).toBeVisible();
+  await expect(page.locator('.smw-footer-note')).toHaveCount(0);
   await photograph(page, 'generated-artifacts/workshop/desktop-clean.png');
   const cards = await page.locator('.smw-explainer-card').evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect().top));
   expect(new Set(cards).size).toBe(1);
@@ -1835,7 +1857,7 @@ test('desktop and phone review has larger white answers, labels increased by two
   await expectStudioHeader(page);
   await photograph(page, 'generated-artifacts/workshop/mobile-clean.png');
   await expect(page.locator('.smw-explainer')).toBeHidden();
-  await expect(page.locator('.smw-footer-note')).toBeHidden();
+  await expect(page.locator('.smw-footer-note')).toHaveCount(0);
   await expect(page.locator('.smw-builder')).toBeVisible();
   await expect(page.locator('.footer')).toBeHidden();
   const bottomGap = await page.evaluate(() =>

@@ -842,9 +842,6 @@ export default function SantaMessageWorkshop() {
             ))}
           </div>
         </section>
-        <p className="smw-footer-note">
-          Names come from Santa’s hosted recording library. Age, activity, achievement, treat and place choices come from Santa’s hosted file inventory. Destinations include countries and real places as well as fantasy and space choices; the supplied labels identify fantasy and space destinations. Files flagged for review are not selectable.
-        </p>
       </div>
     </main>
   );
