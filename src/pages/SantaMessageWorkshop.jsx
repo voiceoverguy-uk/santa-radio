@@ -308,7 +308,7 @@ export default function SantaMessageWorkshop() {
   const giftNotice = completedGift
         ? completedGift.selectionKey !== selectionKey
           ? 'Gift previews reflect your updated choices. Create your new MP3 to unlock these downloads.'
-          : 'Gifts for your completed message. You can download them even when creating another message is unavailable.'
+          : undefined
         : giftPreparing
           ? 'Preparing your MP3. Gift downloads unlock together only after it is successfully ready.'
           : audioPhase === 'error'

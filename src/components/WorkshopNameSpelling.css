@@ -269,3 +269,82 @@
     transition: none;
   }
 }
+
+/* Review row: label above a slim bordered name/pencil row. The Create
+   message action aligns with the bordered row (row 2), not the whole
+   label + editor group. Subgrid shares rows without fixed label offsets. */
+.smw-review-create-row {
+  grid-template-rows: auto auto auto;
+  row-gap: 0;
+}
+
+.smw-review-name-area {
+  grid-column: 1;
+  grid-row: 1 / -1;
+}
+
+.smw-review-create-row .smw-written-name-previews {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+
+.smw-written-name-preview dt {
+  margin-bottom: 6px;
+}
+
+.smw-written-name-preview dd {
+  box-sizing: border-box;
+  min-height: 56px;
+  padding: 5px 6px 5px 14px;
+  border: 1px solid #d4af3738;
+  border-radius: 9px;
+  background: #fff8e706;
+}
+
+.smw-written-name-preview .smw-written-name-edit {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 10px;
+}
+
+.smw-review-create-action {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: center;
+}
+
+@supports (grid-template-rows: subgrid) {
+  .smw-review-name-area,
+  .smw-review-create-row .smw-written-name-previews,
+  .smw-written-name-preview {
+    display: grid;
+    grid-template-rows: subgrid;
+    row-gap: 0;
+  }
+
+  .smw-review-name-area { grid-row: 1 / span 3; }
+  .smw-review-create-row .smw-written-name-previews,
+  .smw-written-name-preview { grid-row: 1 / span 2; }
+  .smw-written-name-preview dt { grid-row: 1; align-self: end; }
+  .smw-written-name-preview dd { grid-row: 2; }
+  .smw-review-name-area > .smw-written-name-editor { grid-row: 3; }
+}
+
+@supports not (grid-template-rows: subgrid) {
+  /* Keep the fields stacked rather than guess a wrapped label's height. */
+  .smw-review-create-row { grid-template-columns: minmax(0, 1fr); row-gap: 12px; }
+  .smw-review-name-area,
+  .smw-review-create-action { grid-column: 1; grid-row: auto; }
+}
+
+@media (max-width: 600px) {
+  .smw-review-create-row { grid-template-rows: none; row-gap: 12px; }
+  .smw-review-name-area,
+  .smw-review-create-row .smw-written-name-previews,
+  .smw-written-name-preview { display: block; grid-row: auto; }
+  .smw-written-name-preview dt { margin-bottom: 6px; }
+  .smw-written-name-preview dd { min-height: 58px; }
+  .smw-review-create-action { grid-column: 1; grid-row: auto; margin-top: 0; }
+}

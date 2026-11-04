@@ -134,6 +134,92 @@ async function save(page, label, file) {
 }
 
 for (const width of [320, 1365]) {
+  test(`review name box is compact, keyboard editable and wraps enlarged text at ${width}px`, async ({ page }) => {
+    test.setTimeout(90000);
+    mkdirSync('generated-artifacts/studio-gifts', { recursive: true });
+    const fixture = await review(page);
+    await page.setViewportSize({ width, height: 900 });
+    const row = page.locator('.smw-review-create-row');
+    const pencil = row.getByRole('button', { name: 'Edit certificate name', exact: true });
+    const input = row.getByRole('textbox', { name: 'Name spelling', exact: true });
+    const upper = row.getByRole('button', { name: 'Create message', exact: true });
+    const geometry = () => row.evaluate(node => {
+      const rect = selector => {
+        const { x, y, width, height, right, bottom } = node.querySelector(selector).getBoundingClientRect();
+        return { x, y, width, height, right, bottom };
+      };
+      return {
+        label: rect('dt'), field: rect('dd'), value: rect('.smw-written-name-value'),
+        pencil: rect('.smw-written-name-edit'), action: rect('.smw-review-create-action button'),
+        area: rect('.smw-review-name-area'),
+        overflowing: [...node.querySelectorAll('dt, dd, span, input, button, form')].some(element =>
+          (element.tagName !== 'INPUT' && element.scrollWidth > element.clientWidth + 1)
+          || element.scrollHeight > element.clientHeight + 1
+          || element.getBoundingClientRect().right > innerWidth + 1),
+        pageOverflow: document.documentElement.scrollWidth > innerWidth + 1,
+      };
+    });
+    const assertLayout = async () => {
+      const bounds = await geometry();
+      expect(bounds.label.bottom).toBeLessThanOrEqual(bounds.field.y);
+      expect(bounds.pencil.width).toBeGreaterThanOrEqual(44);
+      expect(bounds.pencil.height).toBeGreaterThanOrEqual(44);
+      expect(bounds.pencil.right).toBeLessThanOrEqual(bounds.field.right);
+      expect(bounds.pencil.bottom).toBeLessThanOrEqual(bounds.field.bottom);
+      expect(bounds.value.bottom).toBeLessThanOrEqual(bounds.field.bottom + 1);
+      expect(bounds.overflowing).toBe(false);
+      expect(bounds.pageOverflow).toBe(false);
+      if (width > 600) {
+        expect(Math.abs(bounds.action.y + bounds.action.height / 2
+          - bounds.field.y - bounds.field.height / 2)).toBeLessThan(1);
+        expect(bounds.action.x).toBeGreaterThan(bounds.field.right);
+      } else {
+        expect(bounds.action.y).toBeGreaterThanOrEqual(bounds.area.bottom);
+      }
+      return bounds;
+    };
+    await expect(page.locator('.smw-written-name-value')).toHaveText('Dixie');
+    const short = await assertLayout();
+    expect(short.action.height).toBeCloseTo(width > 600 ? 56 : 58, 0);
+    expect(Math.abs(short.field.height - short.action.height)).toBeLessThan(1);
+    await row.screenshot({
+      path: `generated-artifacts/studio-gifts/compact-name-${width}.png`, animations: 'disabled',
+    });
+
+    // Use real keyboard navigation so this also exercises :focus-visible.
+    await upper.focus();
+    await page.keyboard.press('Shift+Tab');
+    await expect(pencil).toBeFocused();
+    await expect(pencil).toHaveCSS('outline-style', 'solid');
+    await expect(pencil).toHaveCSS('outline-width', '2px');
+    await page.keyboard.press('Enter');
+    await expect(input).toBeFocused();
+    await expect(pencil).toHaveAttribute('aria-expanded', 'true');
+    await input.fill('Cancelled spelling');
+    await input.press('Escape');
+    await expect(pencil).toBeFocused();
+    await expect(page.locator('.smw-written-name-value')).toHaveText('Dixie');
+    await expect(pencil).toHaveAttribute('aria-expanded', 'false');
+
+    await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
+    await assertLayout();
+    await spelling(page, 'Alexandria-Catherine Elizabeth Montgomery-Worthington');
+    const enlarged = await assertLayout();
+    expect(enlarged.field.height).toBeGreaterThan(short.field.height);
+    await expect(page.locator('.studio-certificate__name')).toHaveText('Alexandria-Catherine Elizabeth Montgomery-Worthington');
+    await pencil.click();
+    await expect(input).toBeFocused();
+    await assertLayout();
+    await row.screenshot({
+      path: `generated-artifacts/studio-gifts/enlarged-name-editor-${width}.png`, animations: 'disabled',
+    });
+    await row.getByRole('button', { name: 'Cancel', exact: true }).click();
+    await expect(pencil).toBeFocused();
+    await spelling(page, 'É'.repeat(160));
+    await assertLayout();
+    expect(fixture.posts).toHaveLength(0);
+  });
+
   test(`both review message actions share confirmation, busy, retry and access states at ${width}px`, async ({ page }) => {
     test.setTimeout(90000);
     const fixture = await review(page);
@@ -210,6 +296,7 @@ for (const width of [320, 1365]) {
     await lower.click();
     await dialog.getByRole('button', { name: 'Create message', exact: true }).click();
     await expect(page.getByRole('region', { name: 'Your finished Santa message' })).toBeVisible();
+    await expect(page.getByText('Gifts for your completed message.', { exact: false })).toHaveCount(0);
     await checkActions('Create message', false);
     expect(fixture.posts).toHaveLength(2);
 
