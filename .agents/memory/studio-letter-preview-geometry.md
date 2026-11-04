@@ -19,6 +19,16 @@ letter, explicitly excluding rewriting, shortening or removing content.
 browser and embedded PDF font; the same words can wrap differently. Include
 parent-qualified regions, jokes and long written names before choosing a scale.
 
+Use conventional left-aligned letter writing with a ragged right edge, not
+centred lines or full justification. Keep the decorative letterhead unchanged.
+
+**Why:** The owner requested the conventional letter structure in their
+screenshot, including the greeting, signature and P.S.
+
+**How to apply:** Keep shared promotional examples, review, enlargement and PDF
+consistent. Retain a lower closing inset only for the decorative border; this
+direction does not apply to certificate names or Santa-picture lettering.
+
 Studio review must reuse the homepage certificate, picture and letter artwork,
 including the watermarked enlargements. All three use the chosen written name;
 the letter uses the actual age, activity, celebration, treat and destination.

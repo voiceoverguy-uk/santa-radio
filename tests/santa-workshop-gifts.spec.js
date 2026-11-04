@@ -6,6 +6,7 @@ import { readFileSync, mkdirSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { PDFDocument } from 'pdf-lib';
 import { confirmMessage, mockStudioGeneration } from './helpers/studio-generation.js';
+import { expectLeftAlignedLetter } from './helpers/studio-letter-alignment.js';
 
 const giftButtons = page => page.locator('.studio-gift-download button');
 const letterText = page => page.locator('.smw-studio-preview .studio-gifts__preview-stack .studio-gifts__sr');
@@ -183,6 +184,7 @@ for (const width of [320, 820, 1365]) {
       };
     });
     const assertGeometry = async (columns) => {
+      await expectLeftAlignedLetter(stack.locator('.studio-letter__paper'));
       const box = await geometry();
       expect(box.overflow).toBe(false);
       expect(box.paper.width / box.paper.height).toBeCloseTo(210 / 297, 2);
@@ -238,6 +240,7 @@ for (const width of [320, 820, 1365]) {
             ? document.top >= content.top - 1 && document.bottom <= content.bottom + 1 : true);
       });
       expect(fits).toBe(true);
+      if (kinds[index] === 'letter') await expectLeftAlignedLetter(dialog.locator('.studio-letter__paper'));
       await page.keyboard.press('Escape');
       // Native close restores focus before the asynchronous close event clears
       // React's view and restores it again. Wait for both before the next Tab.

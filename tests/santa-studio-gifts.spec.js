@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { studioLetterChoices, createStudioLetter, CERTIFICATE_WRITE_MS,
   SIGNATURE_WRITE_MS, GIFT_EXAMPLE_INTERVAL_MS, letterBodyDuration, letterDuration } from '../src/lib/santaStudioLetter.js';
 import { certificateExampleNames, studioGiftExampleNames } from '../src/lib/santaCertificateExamples.js';
+import { expectLeftAlignedLetter } from './helpers/studio-letter-alignment.js';
 
 const gifts = page => page.locator('.studio-gifts');
 const body = page => gifts(page).locator('.studio-gifts__gallery .studio-letter__text');
@@ -58,6 +59,10 @@ for (const width of [320, 1440]) {
     expect(box.certificate.width / box.letter.width).toBeGreaterThan(1.5);
     expect(box.picture.top).toBeGreaterThan(box.certificate.bottom);
     expect(box.picture.width).toBeLessThanOrEqual(360);
+    await expectLeftAlignedLetter(stack.locator('.studio-letter__paper'));
+    await gifts(page).getByRole('button', { name: 'Enlarge letter to read' }).click();
+    await expectLeftAlignedLetter(page.locator('dialog[open] .studio-letter__paper'));
+    await page.keyboard.press('Escape');
     await stack.screenshot({ path: `generated-artifacts/studio-gifts/promotion-preserved-${width}.png`, animations: 'disabled' });
   });
 

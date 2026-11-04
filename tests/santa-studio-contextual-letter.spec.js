@@ -13,6 +13,7 @@ import { execFileSync } from 'node:child_process';
 import { PDFDocument } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 import { layoutStudioLetter, wrapLetterText } from '../src/lib/studioGiftExports.js';
+import { expectLeftAlignedLetter } from './helpers/studio-letter-alignment.js';
 
 const cases = [
   ['3 months old', 'Learning to talk', 'Being brave', 'Beautiful note', 'England'],
@@ -52,6 +53,7 @@ async function render(page, { name, details, variant = .67 }) {
 }
 
 async function letterGeometry(page) {
+  await expectLeftAlignedLetter(page.locator('dialog[open] .studio-letter__paper'));
   const geometry = await page.locator('dialog[open]').evaluate(dialog => {
     const paper = dialog.querySelector('.studio-letter__paper').getBoundingClientRect();
     const text = dialog.querySelector('.studio-letter__text').getBoundingClientRect();
@@ -224,6 +226,7 @@ test('authorised catalogue longest rendered combinations across age bands, regio
         expect(layout.size).toBeCloseTo(595.2756 * .0225, 8);
         expect(layout.contentHeight / layout.height + .24).toBeLessThanOrEqual(.88);
         await expect(page.locator('.studio-gifts__preview-stack .studio-letter__text > p')).toHaveText(expected.paragraphs);
+        await expectLeftAlignedLetter(page.locator('.studio-gifts__preview-stack .studio-letter__paper'));
         await page.getByRole('button', { name: 'Enlarge letter to read', exact: true }).click();
         const geometry = await letterGeometry(page);
         metrics.push({ ageBand: age, fallback, width: viewport.width, ...geometry });
@@ -255,6 +258,14 @@ test('authorised catalogue longest rendered combinations across age bands, regio
           expect(Math.max(...words.map(word => Number(word[4])))).toBeLessThan(841.8898 * .88);
           expect(Math.min(...words.map(word => Number(word[1])))).toBeGreaterThan(595.2756 * .04);
           expect(Math.max(...words.map(word => Number(word[3])))).toBeLessThan(595.2756 * .96);
+          const lines = execFileSync('pdftotext', ['-bbox-layout', file, '-'], { encoding: 'utf8' });
+          const starts = [...lines.matchAll(/<line xMin="([\d.]+)"/gu)].map(line => Number(line[1]));
+          // Body/signature share one left edge; only the lower closing uses the
+          // existing holly-safe inset. No centring or full justification.
+          const bodyLines = layout.paragraphs.flat().length;
+          expect(starts).toHaveLength(bodyLines + 1 + layout.closing.flat().length);
+          starts.forEach((x, index) => expect(x).toBeCloseTo(
+            index <= bodyLines ? layout.x : layout.closingX, 1));
         }
         await page.keyboard.press('Escape');
       }
@@ -302,6 +313,7 @@ for (const width of [390, 1440]) {
       for (const variant of [0, .5, .999]) {
         await render(page, { name: 'Alexandria Rose Montgomery', details, variant });
         const compact = page.locator('.studio-gifts__preview-stack .studio-letter__text');
+        await expectLeftAlignedLetter(page.locator('.studio-gifts__preview-stack .studio-letter__paper'));
         const before = await compact.innerText();
         for (const value of fields.map(key => details[key])) expect(before).toContain(value);
         await page.getByRole('button', { name: 'Enlarge letter to read', exact: true }).click();
@@ -340,3 +352,29 @@ for (const width of [390, 1440]) {
     await letterGeometry(page);
   });
 }
+
+test('maximum-length written names and regional prose stay left-aligned within the full sheet', async ({ page }) => {
+  const name = 'Alexandria-Catherine Elizabeth Montgomery-Worthington Victoria Arabella Rose Joy';
+  expect(name).toHaveLength(80);
+  const details = detailFixture(['18 years old', 'Playing your musical instrument',
+    'Being patient with your siblings', 'Cup of mulled wine', 'East Riding of Yorkshire, England']);
+  details.context.destination = regionalEditorialContext('england-counties', 'countries/england.wav', 'East Riding of Yorkshire');
+  await page.goto('/free-santa-message');
+  for (const viewport of [{ width: 1440, height: 1000 }, { width: 320, height: 568 }]) {
+    await page.setViewportSize(viewport);
+    await render(page, { name, details });
+    await page.evaluate(() => document.fonts.ready);
+    await expectLeftAlignedLetter(page.locator('.studio-gifts__preview-stack .studio-letter__paper'));
+    // The document alignment must not leak into the other two gift designs.
+    const stack = page.locator('.studio-gifts__preview-stack');
+    await expect(stack.locator('.studio-certificate__name')).toHaveCSS('text-align', 'center');
+    await expect(stack.locator('.studio-certificate__name')).toHaveCSS('font-style', 'italic');
+    await expect(stack.locator('.studio-santa-picture__name')).toHaveCSS('font-style', 'italic');
+    await page.getByRole('button', { name: 'Enlarge letter to read', exact: true }).click();
+    await letterGeometry(page);
+    await page.locator('dialog[open]').screenshot({
+      path: `generated-artifacts/studio-editorial/left-aligned-maximum-name-${viewport.width}.jpg`,
+    });
+    await page.keyboard.press('Escape');
+  }
+});
