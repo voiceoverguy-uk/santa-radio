@@ -1,9 +1,12 @@
-import { useCallback, useEffect, useId, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useRadio } from './RadioProvider.jsx';
 import RadioTracks from './RadioTracks.jsx';
 import LiveLyrics from './LiveLyrics.jsx';
 import './AudioPlayer.css';
+import { useRadioDockHidden } from './RadioDockVisibility.jsx';
+
+const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
 export function RadioButton({ className = 'btn-gold', onStart, iconOnly = false }) {
   const { status, togglePlay } = useRadio();
@@ -27,6 +30,7 @@ export function RadioButton({ className = 'btn-gold', onStart, iconOnly = false 
   </button>;
 }
 export default function AudioPlayer() {
+  const hidden = useRadioDockHidden();
   const { pathname } = useLocation();
   const { status, volume, setVolume, error, metadata } = useRadio();
   const [upcomingOpen, setUpcomingOpen] = useState(false);
@@ -48,8 +52,19 @@ export default function AudioPlayer() {
       requestAnimationFrame(() => dockRef.current?.querySelector('.radio-size-toggle')?.focus());
     }
   }, []);
+  useBrowserLayoutEffect(() => {
+    if (!hidden) return;
+    setUpcomingOpen(false);
+    const hadDockFocus = dockRef.current?.contains(document.activeElement);
+    dockRef.current?.querySelectorAll('dialog[open]').forEach(dialog => dialog.close());
+    // Only relocate focus if it belonged to the disappearing dock. Never
+    // restore dock focus later or interrupt someone already typing in the maker.
+    if (hadDockFocus) {
+      document.getElementById('page-content')?.focus({ preventScroll: true });
+    }
+  }, [hidden]);
   useEffect(() => {
-    if (minimized) return;
+    if (minimized || hidden) return;
     const dock = dockRef.current;
     let timer;
     const restart = () => {
@@ -78,10 +93,10 @@ export default function AudioPlayer() {
       clearTimeout(timer);
       events.forEach(event => dock.removeEventListener(event, interact, true));
     };
-  }, [minimized]);
+  }, [minimized, hidden]);
   const upcomingId = useId();
   return (
-    <aside ref={dockRef} onPointerDownCapture={() => { keyboardInteraction.current = false; }} onClick={event => {
+    <aside ref={dockRef} hidden={hidden} inert={hidden ? '' : undefined} aria-hidden={hidden || undefined} onPointerDownCapture={() => { keyboardInteraction.current = false; }} onClick={event => {
       if (minimized && !event.target.closest('button, a, input, select, textarea, [role="button"]')) expandPlayer(event);
     }} className={`radio-dock ${pathname.replace(/\/+$/, '') === '/santa-message-workshop' ? 'is-studio-player' : ''} ${minimized ? 'is-minimized' : ''} ${status === 'loading' ? 'is-loading' : ''}`} aria-label="Santa Radio player">
       <button type="button" className="radio-size-toggle" onClick={toggleSize}
@@ -102,7 +117,7 @@ export default function AudioPlayer() {
         <span className="radio-eyebrow"><span className="live-dot active" aria-hidden="true" /> SANTA RADIO LIVE</span>
         {(error || status === 'loading') && <span className="radio-caption" role="status">{error || 'Connecting to the North Pole…'}</span>}
       </div>
-      <div className="radio-dock-track"><RadioTracks metadata={metadata} showLabel={false} /><LiveLyrics metadata={metadata} /></div>
+       <div className="radio-dock-track"><RadioTracks metadata={metadata} showLabel={false} /><LiveLyrics metadata={metadata} suppressed={hidden} /></div>
       <RadioButton className="radio-play" />
       <label className="radio-volume">Volume
         <input aria-label="Radio volume" type="range" min="0" max="1" step=".01" value={volume} onChange={event => setVolume(Number(event.target.value))} />

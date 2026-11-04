@@ -320,7 +320,8 @@ export default function SantaMessageWorkshop() {
     const dock = document.querySelector('.radio-dock');
     if (!dock) return;
     const updateClearance = () => {
-      pageRef.current?.style.setProperty('--smw-dock-clearance', `${Math.ceil(dock.getBoundingClientRect().height) + 40}px`);
+      const height = dock.getBoundingClientRect().height;
+      pageRef.current?.style.setProperty('--smw-dock-clearance', height ? `${Math.ceil(height) + 40}px` : '24px');
     };
     updateClearance();
     const observer = new ResizeObserver(updateClearance);

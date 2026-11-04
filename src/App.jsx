@@ -34,10 +34,11 @@ import { CookieConsentProvider } from './privacy/CookieConsentProvider.jsx';
 import SantaStaffShell from './components/SantaStaffShell.jsx';
 import SantaMessageOffer from './components/SantaMessageOffer.jsx';
 import WorkshopAccessGate from './components/WorkshopAccessGate.jsx';
+import { RadioDockVisibilityProvider } from './components/RadioDockVisibility.jsx';
 
 function App({ Router = BrowserRouter, routerProps = {} }) {
   return (
-    <RadioProvider><SantaMessageAccessProvider><CookieConsentProvider><Router {...routerProps}>
+    <RadioProvider><SantaMessageAccessProvider><CookieConsentProvider><Router {...routerProps}><RadioDockVisibilityProvider>
       <a href="#page-content" className="skip-link">Skip to content</a>
       <Navbar />
       <StaticPageSeo />
@@ -73,7 +74,7 @@ function App({ Router = BrowserRouter, routerProps = {} }) {
       <AudioPlayer />
       <MarketingConsent />
       <SantaMessageOffer />
-    </Router></CookieConsentProvider></SantaMessageAccessProvider></RadioProvider>
+    </RadioDockVisibilityProvider></Router></CookieConsentProvider></SantaMessageAccessProvider></RadioProvider>
   );
 }
 export default App;

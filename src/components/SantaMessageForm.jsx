@@ -27,8 +27,10 @@ import { nameRequestToken } from '../lib/santaNameRequestTokens.js';
 import { scrollToSantaMessageDesk, settleSantaMessageDeskAfterEntry } from '../lib/scrollToSantaMessageDesk.js';
 import './SantaNameRequest.css';
 import './SantaMessageForm.css';
+import { useInlineMakerRadioVisibility } from './RadioDockVisibility.jsx';
 
 export default function SantaMessageForm({ showDetailLink = true, initialName = '', pendingName, keepSignupInPlace = false, selectedChildName = '', layout = 'default' }) {
+  const makerPanelRef = useInlineMakerRadioVisibility();
   const dedicatedLayout = layout === 'dedicated';
   const { hasAccess, greetingName, sessionRemembered, revokeAccess } = useSantaMessageAccess();
   const makerHeadingRef = useRef(null);
@@ -334,7 +336,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         {dedicatedLayout && allowExamples && <SantaMessageExample onExampleNameChange={setActiveExampleName} />}
       </div>
       <div className="santa-message-aside">
-      <div className={`santa-message-box${hasAccess ? '' : ' message-access-box'}`}>
+       <div ref={makerPanelRef} className={`santa-message-box${hasAccess ? '' : ' message-access-box'}`}>
         <div className="message-card-top">
           <span className="message-seal" aria-hidden="true">S</span>
           <div className="message-card-heading">

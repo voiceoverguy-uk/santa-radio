@@ -10,6 +10,7 @@
 .is-loading .radio-caption { opacity: .65; }
 .radio-dock { max-height: calc(100dvh - 40px); overflow-y: auto; overscroll-behavior: contain; }
 .radio-dock.is-studio-player { display: none; }
+.radio-dock[hidden] { display: none !important; }
 .radio-station { min-width: 0; }
 .radio-station { padding-right: 36px; }
 .radio-size-toggle {

@@ -11,7 +11,7 @@ export const lyricsWaitingMessages = [
   'Nearly there! Santa is brushing the biscuit crumbs off the songbook.',
 ];
 
-export default function LiveLyrics({ metadata }) {
+export default function LiveLyrics({ metadata, suppressed = false }) {
   const [open, setOpen] = useState(false);
   const [waitingIndex, setWaitingIndex] = useState(0);
   const dialog = useRef(null);
@@ -38,14 +38,17 @@ export default function LiveLyrics({ metadata }) {
     return () => clearInterval(timer);
   }, [open, waiting]);
   useEffect(() => {
-    if (open && !dialog.current.open) dialog.current.showModal();
-  }, [open]);
+    if (suppressed) {
+      if (dialog.current.open) dialog.current.close();
+      setOpen(false);
+    } else if (open && !dialog.current.open) dialog.current.showModal();
+  }, [open, suppressed]);
   useEffect(() => {
     if (reader.current) reader.current.scrollTop = 0;
   }, [track?.artist, track?.title, metadata.currentStatus]);
   const close = () => {
     setOpen(false);
-    trigger.current?.focus();
+    if (!suppressed) trigger.current?.focus();
   };
   return <>
     <button ref={trigger} className="radio-lyrics-button" onClick={() => setOpen(true)}
