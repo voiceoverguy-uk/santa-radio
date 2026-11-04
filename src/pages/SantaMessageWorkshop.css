@@ -461,6 +461,20 @@
 .smw-message-result h4 { margin: 0 0 10px; color: var(--smw-cream); }
 .smw-message-result p { color: #d5dece; font-size: .86rem; line-height: 1.6; }
 .smw-message-result audio { display: block; width: 100%; max-width: 100%; margin: 16px 0; }
+.smw-message-finished {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px 20px;
+  border-color: #d4af37a6;
+}
+.smw-message-finished h4 { grid-column: 1 / -1; margin-bottom: 4px; }
+.smw-message-finished audio { min-width: 0; margin: 0; }
+.smw-message-finished .smw-button-download { min-height: 44px; padding: 10px 16px; font-size: .82rem; }
+.smw-message-finished .smw-retention-reminder { grid-column: 1 / -1; }
+@media (max-width: 760px) {
+  .smw-message-finished { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+}
 .smw-message-result progress { width: min(100%, 240px); accent-color: var(--smw-gold); }
 .smw-stage-fields { min-width: 0; padding: 0; margin: 0; border: 0; }
 .smw-stage-fields:disabled { opacity: .65; }
@@ -475,7 +489,8 @@
 .smw-delivery:focus-visible { outline: 2px solid var(--smw-gold-light); outline-offset: 4px; border-radius: 15px; }
 .smw-delivery > .smw-message-result + .smw-message-result { margin-top: 14px; }
 .smw-message-result .smw-retention-reminder { margin: 12px 0 0; font-size: .76rem; text-align: right; }
-.smw-voucher-detail { flex: 1 0 100%; margin: 0; color: #c4d0c3; font-size: .76rem; line-height: 1.5; }
+.smw-message-finished .smw-retention-reminder { margin-top: 0; }
+.smw-voucher-detail { flex: 1 0 100%; min-width: 0; margin: 0; color: #c4d0c3; font-size: .76rem; line-height: 1.5; }
 .smw-allowance, .smw-voucher-entitlement { flex: 1 0 100%; color: #e6ce86; font-size: .85rem; line-height: 1.6; }
 .smw-actions[hidden] { display: none; }
 .smw-confirmation { position: fixed; inset: 0; margin: auto;

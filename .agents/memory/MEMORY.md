@@ -88,3 +88,4 @@
 - [Studio build boundary](studio-build-boundary.md) — Website compilation must not depend on Studio storage; keep strict readiness and fail-closed runtime enforcement separate.
 - [Native purchase boundaries](mobile-purchase-boundaries.md) — Separate Apple products, sandbox-only initially; minimal usage accounting is not a permanent audio archive.
 - [Native API routing](native-api-routing.md) — A reachable Expo host does not prove the shared API is publicly routed; verify the protected connection through the proxy.
+- [Finished Studio layout](studio-finished-layout.md) — Latest owner screenshot supersedes the full yellow notice after success; keep full entitlement information before completion.

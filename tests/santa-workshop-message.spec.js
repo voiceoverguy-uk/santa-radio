@@ -188,14 +188,43 @@ for (const width of [320, 1365]) {
       const fixture = await openReview(page);
       const guidance = page.getByText(retentionReminder, { exact: true });
       const result = page.getByRole('region', { name: 'Your finished Santa message' });
+      const entitlement = page.locator('.smw-voucher-entitlement');
+      const detail = page.locator('.smw-voucher-detail');
+      const checkEntitlement = async (finished = false) => {
+        await expect(entitlement).toHaveCount(hasVoucher && !finished ? 1 : 0);
+        await expect(detail).toHaveCount(hasVoucher && finished ? 1 : 0);
+        if (hasVoucher) {
+          if (finished) {
+            await expect(detail).toHaveText(`Voucher: ${voucher.code}`);
+          } else {
+            await expect(entitlement).toHaveText(`You used Voucher Code: ${voucher.code}. You can create messages while your access remains valid, subject to request limits.`);
+            await expect(entitlement).toHaveCSS('color', 'rgb(230, 206, 134)');
+          }
+        }
+      };
       await expect(guidance).toHaveCount(0);
-      await expect(page.locator('.smw-voucher-entitlement')).toHaveCount(hasVoucher ? 1 : 0);
+      await checkEntitlement();
+
+      let releaseCancelled;
+      fixture.hold = new Promise(resolve => { releaseCancelled = resolve; });
+      await confirmMessage(page);
+      await expect(page.getByRole('progressbar', { name: 'Preparing your message' })).toBeVisible();
+      await checkEntitlement();
+      await expect(result).toHaveCount(0);
+      await page.getByRole('button', { name: 'Cancel preparation', exact: true }).click();
+      await expect(page.getByRole('alert')).toContainText('Preparation cancelled.');
+      await expect(result).toHaveCount(0);
+      await expect(guidance).toHaveCount(0);
+      await checkEntitlement();
+      releaseCancelled();
+      fixture.hold = null;
 
       fixture.fail = true;
       await confirmMessage(page);
       await expect(page.getByRole('alert')).toContainText('Fixture recording unavailable.');
       await expect(guidance).toHaveCount(0);
       await expect(result).toHaveCount(0);
+      await checkEntitlement();
       fixture.fail = false;
       let release;
       fixture.hold = new Promise(resolve => { release = resolve; });
@@ -222,19 +251,21 @@ for (const width of [320, 1365]) {
       await confirmMessage(page, 'Retry message');
       await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Recording message', exact: true })).toBeDisabled();
       await expect(guidance).toHaveCount(0);
+      await checkEntitlement();
       release();
       await expect(page.getByText('Receiving your finished MP3…', { exact: true })).toBeVisible();
       await expect(guidance).toHaveCount(0);
       await expect(result).toHaveCount(0);
+      await checkEntitlement();
       await page.evaluate(() => window.finishTestRecording());
       await expect(result).toBeVisible();
       const download = result.getByRole('link', { name: /Download MP3/ });
       await expect(download).toBeVisible();
       await expect(result.getByRole('status')).toHaveText('Your message is ready.');
       await expect(guidance).toHaveCount(1);
-      await expect(page.locator('.smw-download-hint, .smw-voucher-completion, .smw-gift-download-hint, .smw-voucher-entitlement')).toHaveCount(0);
+      await expect(page.locator('.smw-download-hint, .smw-voucher-completion, .smw-gift-download-hint')).toHaveCount(0);
       await expect(page.locator('.smw-review-create-action button')).toHaveCount(0);
-      await expect(page.locator('.smw-voucher-detail')).toHaveCount(hasVoucher ? 1 : 0);
+      await checkEntitlement(true);
       const controls = page.locator('.smw-actions--review');
       const start = controls.getByRole('button', { name: 'Start Again', exact: true });
       const create = controls.getByRole('button', { name: 'Create message', exact: true });
@@ -250,7 +281,20 @@ for (const width of [320, 1365]) {
         expect(createBounds.x).toBeGreaterThan(startBounds.x + startBounds.width);
       }
       if (hasVoucher) {
-        await expect(page.locator('.smw-voucher-detail')).toHaveText(`Voucher: ${voucher.code}`);
+        const noticeBounds = await detail.boundingBox();
+        expect(noticeBounds.y).toBeGreaterThanOrEqual(Math.max(startBounds.y + startBounds.height, createBounds.y + createBounds.height));
+        expect(await detail.evaluate(node => node.previousElementSibling.matches('.smw-button-next')
+          && !node.closest('.smw-message-result'))).toBe(true);
+        expect(await detail.evaluate(node => {
+          const range = document.createRange();
+          range.selectNodeContents(node);
+          const bounds = node.getBoundingClientRect();
+          return [...range.getClientRects()].every(line =>
+            line.left >= bounds.left - 1 && line.right <= bounds.right + 1
+            && line.top >= bounds.top - 1 && line.bottom <= bounds.bottom + 1)
+            && node.scrollWidth <= node.clientWidth + 1
+            && document.documentElement.scrollWidth <= innerWidth + 1;
+        })).toBe(true);
         await guidance.scrollIntoViewIfNeeded();
         expect(await guidance.evaluate(node => {
           const range = document.createRange();
@@ -271,18 +315,50 @@ for (const width of [320, 1365]) {
       await expect(start).toBeFocused();
       await page.keyboard.press('Tab');
       await expect(create).toBeFocused();
+      // The pointer can remain over Download after the download click; let its
+      // hover lift settle before comparing the underlying row alignment.
+      await page.mouse.move(0, 0);
+      await expect(download).toHaveCSS('transform', 'none');
       const playerBounds = await result.locator('audio').boundingBox();
       const downloadColour = await download.evaluate(node => getComputedStyle(node).backgroundColor);
       expect(['rgb(155, 17, 30)', 'rgb(173, 28, 43)']).toContain(downloadColour);
-      expect(playerBounds.width).toBeGreaterThan(resultBounds.width - 42);
+      const downloadBounds = await download.boundingBox();
+      const guidanceBounds = await guidance.boundingBox();
+      if (width > 760) {
+        expect(Math.abs(playerBounds.y + playerBounds.height / 2 - downloadBounds.y - downloadBounds.height / 2)).toBeLessThan(1);
+        expect(downloadBounds.x).toBeGreaterThanOrEqual(playerBounds.x + playerBounds.width);
+      } else {
+        expect(playerBounds.width).toBeGreaterThan(resultBounds.width - 42);
+        expect(downloadBounds.y).toBeGreaterThanOrEqual(playerBounds.y + playerBounds.height);
+      }
+      expect(guidanceBounds.y).toBeGreaterThanOrEqual(Math.max(playerBounds.y + playerBounds.height, downloadBounds.y + downloadBounds.height));
       await expect(result.locator('p')).toHaveCount(2); // Hidden announcement + one visible reminder.
+      await result.locator('audio').evaluate(node => node.play());
+      await expect.poll(() => result.locator('audio').evaluate(node => node.currentTime)).toBeGreaterThan(0.1);
+      await result.locator('audio').evaluate(node => node.pause());
       await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
       await page.getByRole('button', { name: 'Change Trying hard at', exact: true }).click();
       await expect(guidance).toHaveCount(0);
       await page.getByRole('button', { name: 'Return to review', exact: true }).click();
       await expect(result).toBeVisible();
       await expect(guidance).toHaveCount(1);
-      expect(fixture.posts).toHaveLength(2);
+      await checkEntitlement(true);
+      // Regeneration keeps the existing recording and single notice until the
+      // next complete MP3 replaces it.
+      const previousUrl = await download.getAttribute('href');
+      let releaseNext;
+      fixture.hold = new Promise(resolve => { releaseNext = resolve; });
+      await confirmMessage(page);
+      await expect(page.getByRole('progressbar', { name: 'Preparing your message' })).toBeVisible();
+      await expect(download).toHaveAttribute('href', previousUrl);
+      await checkEntitlement(true);
+      releaseNext();
+      await expect(page.getByText('Receiving your finished MP3…', { exact: true })).toBeVisible();
+      await page.evaluate(() => window.finishTestRecording());
+      await expect(download).not.toHaveAttribute('href', previousUrl);
+      await expect(create).toBeEnabled();
+      await checkEntitlement(true);
+      expect(fixture.posts).toHaveLength(4);
     });
   }
 }

@@ -227,6 +227,9 @@ export default function WorkshopMessageAudio({
   const startAction = () => <button className="smw-button smw-button-back" type="button" onClick={onStartAgain}>
     <span aria-hidden="true">←</span> Start Again
   </button>;
+  const voucherNotice = voucher?.unlimited && <p className="smw-voucher-entitlement">
+    You used Voucher Code: {voucher.code}. You can create messages while your access remains valid, subject to request limits.
+  </p>;
   return <>
     {/* Render a second trigger in the gifts row without duplicating recording
         state, requests or the confirmation dialog owned by this component. */}
@@ -236,9 +239,7 @@ export default function WorkshopMessageAudio({
     {!url && showGiftDownloadHint && <p className="smw-catalogue-review-note smw-gift-download-hint">
       Create your MP3 to unlock these three personalised gift downloads.
     </p>}
-    {!url && voucher?.unlimited && <p className="smw-voucher-entitlement">
-      You used Voucher Code: {voucher.code}. You can create messages while your access remains valid, subject to request limits.
-    </p>}
+    {!url && voucherNotice}
     {(generation.checking || generation.error || !status) && <p className="smw-allowance" role={generation.error ? 'alert' : 'status'} aria-live={generation.error ? 'assertive' : 'polite'}>
       {generation.checking ? 'Checking your Studio access…' : generation.error
         ? generation.error
@@ -258,7 +259,7 @@ export default function WorkshopMessageAudio({
     </div>}
     {error && <div className="smw-message-result" role="alert"><p>{error}</p>
     </div>}
-    {url && <section className="smw-message-result" aria-label="Your finished Santa message">
+    {url && <section className="smw-message-result smw-message-finished" aria-label="Your finished Santa message">
       <h4>Santa’s message for {finishedWrittenName}</h4>
       <p className="smw-wheel-accessible-text" role="status">{phase === 'ready' && !error ? 'Your message is ready.' : ''}</p>
       <audio ref={audioRef} src={url} controls preload="metadata" aria-label={`Play Santa’s message for ${finishedWrittenName}`}
