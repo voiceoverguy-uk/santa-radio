@@ -555,7 +555,7 @@ for (const width of [320, 1365]) {
     await page.setViewportSize({ width, height: 900 });
     const upper = page.locator('.smw-review-create-action button');
     const lower = page.locator('.smw-actions--review > .smw-button-next');
-    const dialog = page.getByRole('dialog', { name: 'Are you happy with your selection?' });
+    const dialog = page.getByRole('dialog', { name: 'Ready to create your message?', exact: true });
     const checkActions = async (label, disabled, busy = false) => {
       const completed = await page.getByRole('region', { name: 'Your finished Santa message' }).count();
       if (completed) {
@@ -578,7 +578,7 @@ for (const width of [320, 1365]) {
       const text = await dialog.textContent();
       if (confirmationText) expect(text).toBe(confirmationText);
       confirmationText = text;
-      await dialog.getByRole('button', { name: 'Go back', exact: true }).click();
+      await dialog.getByRole('button', { name: 'Go back and edit', exact: true }).click();
       await expect(button).toBeFocused();
       await button.focus();
       await page.keyboard.press('Enter');

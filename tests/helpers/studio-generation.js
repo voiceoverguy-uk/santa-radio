@@ -34,7 +34,7 @@ export async function expectStudioRecordingInView(page) {
 }
 export async function confirmMessage(page, label = 'Create message') {
   await page.locator('.smw-actions--review').getByRole('button', { name: label, exact: true }).click();
-  await expect(page.getByRole('dialog', { name: 'Are you happy with your selection?' })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'Ready to create your message?', exact: true })).toBeVisible();
   await page.getByRole('dialog').getByRole('button', { name: 'Create message', exact: true }).click();
 }
 // Current browser contract: one request-local MP3, no saved history or counters.

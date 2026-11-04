@@ -196,7 +196,7 @@ test('delayed and failed regional writing blocks both create actions until the l
     // Even a dispatched click must not get past the component's complete guard.
     await action.dispatchEvent('click');
   }
-  await expect(page.getByRole('dialog', { name: 'Are you happy with your selection?' })).toBeHidden();
+  await expect(page.getByRole('dialog', { name: 'Ready to create your message?', exact: true })).toBeHidden();
   expect(fixture.posts).toHaveLength(0);
   await expect.poll(() => typeof release).toBe('function');
   release();

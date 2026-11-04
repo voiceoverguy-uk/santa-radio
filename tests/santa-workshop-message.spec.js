@@ -986,6 +986,7 @@ test('full-message playback coordinates with radio and pagehide stops playback w
 
 for (const viewport of [
   { width: 1365, height: 900 },
+  { width: 390, height: 844 },
   { width: 320, height: 740 },
   { width: 320, height: 300 },
 ]) {
@@ -997,14 +998,28 @@ test(`confirmation stays centred with safe overflow, cancellation and keyboard o
   await settleStudioScroll(page);
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
   const backgroundScroll = await page.evaluate(() => scrollY);
+  const choices = await page.locator('.smw-summary').textContent();
   await create.click();
-  const dialog = page.getByRole('dialog', { name: 'Are you happy with your selection?' });
-  const back = dialog.getByRole('button', { name: 'Go back', exact: true });
+  const dialog = page.getByRole('dialog', { name: 'Ready to create your message?', exact: true });
+  const back = dialog.getByRole('button', { name: 'Go back and edit', exact: true });
   const confirm = dialog.getByRole('button', { name: 'Create message', exact: true });
   await expect(back).toBeFocused();
   expect(await page.evaluate(() => scrollY)).toBe(backgroundScroll);
-  await expect(dialog).toContainText('temporary MP3');
-  await expect(dialog).toContainText('We do not keep a copy or message history');
+  await expect(dialog.getByRole('heading')).toHaveText('Ready to create your message?');
+  await expect(dialog).toHaveAccessibleDescription('Please check your choices, you can’t edit this message once it’s created. Play and save your MP3 before leaving this page. We don’t keep a copy.');
+  await expect(dialog.locator('p')).toHaveText('Please check your choices, you can’t edit this message once it’s created. Play and save your MP3 before leaving this page. We don’t keep a copy.');
+  await expect(dialog.getByRole('button')).toHaveText(['Go back and edit', 'Create message']);
+  await page.evaluate(() => document.fonts.ready);
+  for (const button of [back, confirm]) {
+    expect(await button.evaluate(node => {
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      const bounds = node.getBoundingClientRect();
+      return node.scrollWidth <= node.clientWidth + 1 && node.scrollHeight <= node.clientHeight + 1
+        && [...range.getClientRects()].every(line => line.left >= bounds.left - 1
+          && line.right <= bounds.right + 1 && line.top >= bounds.top - 1 && line.bottom <= bounds.bottom + 1);
+    }), 'The full button label fits without clipping').toBe(true);
+  }
   const bounds = await dialog.boundingBox();
   expect(Math.abs(bounds.x + bounds.width / 2 - viewport.width / 2)).toBeLessThanOrEqual(1);
   expect(Math.abs(bounds.y + bounds.height / 2 - viewport.height / 2)).toBeLessThanOrEqual(1);
@@ -1033,12 +1048,14 @@ test(`confirmation stays centred with safe overflow, cancellation and keyboard o
   await page.keyboard.press('Escape');
   await expect(dialog).toHaveCount(0);
   await expect(create).toBeFocused();
+  await expect(page.locator('.smw-summary')).toHaveText(choices);
   expect(await page.evaluate(() => scrollY)).toBe(backgroundScroll);
   expect(fixture.posts).toHaveLength(0);
   await create.click();
   await back.click();
   await expect(dialog).toHaveCount(0);
   await expect(create).toBeFocused();
+  await expect(page.locator('.smw-summary')).toHaveText(choices);
   expect(await page.evaluate(() => scrollY)).toBe(backgroundScroll);
   expect(fixture.posts).toHaveLength(0);
   await expect(page.locator('.smw-message-result audio')).toHaveCount(0);
@@ -1076,8 +1093,8 @@ for (const width of [320, 1365]) {
         });
         const initialY = await page.evaluate(() => scrollY);
         await page.keyboard.press('Enter');
-        const dialog = page.getByRole('dialog', { name: 'Are you happy with your selection?' });
-        await expect(dialog.getByRole('button', { name: 'Go back', exact: true })).toBeFocused();
+        const dialog = page.getByRole('dialog', { name: 'Ready to create your message?', exact: true });
+        await expect(dialog.getByRole('button', { name: 'Go back and edit', exact: true })).toBeFocused();
         expect(await page.evaluate(() => scrollY)).toBe(initialY);
         await page.keyboard.press('Enter');
         await expect(action).toBeFocused();

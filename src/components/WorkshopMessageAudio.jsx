@@ -327,10 +327,10 @@ export default function WorkshopMessageAudio({
           target?.focus();
         }
       }}>
-      <h3 id="smw-confirm-title">Are you happy with your selection?</h3>
-      <p id="smw-confirm-description">Create a temporary MP3 using these details, then play and save it on this page. We do not keep a copy or message history. You can change your choices and create another message, subject to request limits.</p>
+      <h3 id="smw-confirm-title">Ready to create your message?</h3>
+      <p id="smw-confirm-description">Please check your choices, you can’t edit this message once it’s created. Play and save your MP3 before leaving this page. We don’t keep a copy.</p>
       <div className="smw-actions">
-        <button type="button" className="smw-button smw-button-back" onClick={() => closeConfirmation()}>Go back</button>
+        <button type="button" className="smw-button smw-button-back" onClick={() => closeConfirmation()}>Go back and edit</button>
         <button type="button" className="smw-button smw-button-next" disabled={disabled} onClick={create}>Create message</button>
       </div>
     </dialog>}
