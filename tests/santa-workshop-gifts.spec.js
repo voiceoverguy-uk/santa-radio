@@ -69,11 +69,19 @@ async function review(page, { destination = 'The Enchanted Forest', talent = nul
 
 test('real selection header unlocks country-only gifts after the full MP3 arrives', async ({ page }) => {
   const fixture = await review(page, { destination: 'England' });
+  for (const kind of ['certificate', 'letter', 'picture']) {
+    const download = page.locator(`.studio-gifts__card--${kind} .studio-gift-download`);
+    await expect(download.getByRole('button')).toBeDisabled();
+    await expect(download.getByRole('status'))
+      .toHaveText('Available when your MP3 audio file has been downloaded.');
+  }
   await confirmMessage(page);
   await expect(page.getByRole('region', { name: 'Your finished Santa message' })).toBeVisible();
   expect(fixture.posts[0]).not.toHaveProperty('region');
   await expect(giftButtons(page)).toHaveCount(3);
   for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+  await expect(page.locator('.studio-gift-download p')).toHaveText(Array(3)
+    .fill('Ready. Repeat downloads do not use your message allowance.'));
 });
 
 test('temporary recording allows playback and identical download retries during the visit', async ({ page }) => {
