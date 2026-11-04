@@ -2,6 +2,15 @@
 name: Santa Radio visual direction
 description: User's North Pole visual expectations, Santa note voice and player starting state.
 ---
+Website red action buttons should share the gift-download controls' fine muted
+gold edge, retaining stronger hover and visible keyboard-focus treatments.
+
+**Why:** The owner requested consistency with the approved gift previews without
+changing button designs or behaviour.
+
+**How to apply:** Preserve fills, geometry and non-red controls. This direction
+is website-only; do not carry it into the iPhone app without a separate request.
+
 Studio review selections should be red text only, without cream/white boxes.
 
 **Why:** The user rejected the cream-backed highlights and explicitly asked to

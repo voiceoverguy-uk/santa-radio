@@ -4,7 +4,8 @@
 .live-dot { width: 6px; height: 6px; border-radius: 50%; background: #83978a; }
 .live-dot.active { background: #c9515a; }
 .radio-caption { font-size: .73rem; color: var(--muted); margin-top: 4px; }
-.radio-play { border: 1px solid #D4AF3750; border-radius: 30px; color: var(--cream); background: var(--red); padding: 8px 16px; display: flex; align-items: center; gap: 8px; font-size: .75rem; min-height: 40px; }
+.radio-play { border: 1px solid var(--red-action-edge); border-radius: 30px; color: var(--cream); background: var(--red); padding: 8px 16px; display: flex; align-items: center; gap: 8px; font-size: .75rem; min-height: 40px; }
+.radio-play:is(:hover,:focus-visible,:disabled) { border-color: var(--red-action-edge-hover); }
 .radio-volume { display: flex; flex-direction: column; justify-content: center; font-size: .6rem; color: var(--muted); width: 95px; }
 .radio-volume input { width: 100%; accent-color: var(--gold); }
 .is-loading .radio-caption { opacity: .65; }

@@ -289,7 +289,7 @@ section.soundboard {
   width: 46px;
   height: 46px;
   place-items: center;
-  border: 2px solid #f0d17b;
+  border: 2px solid var(--red-action-edge);
   border-radius: 50%;
   color: #fff4dc;
   background: #a9232c;
@@ -299,14 +299,18 @@ section.soundboard {
 }
 
 .soundboard-stop:hover:not(:disabled) {
+  border-color: var(--red-action-edge-hover);
   background: #c33238;
   box-shadow: 0 0 12px rgba(231, 201, 121, .3);
 }
 
 .soundboard-stop:disabled {
+  border-color: var(--red-action-edge-hover);
   opacity: .42;
   cursor: not-allowed;
 }
+
+.soundboard-stop:focus-visible { border-color: var(--red-action-edge-hover); }
 
 .soundboard-stop-square {
   width: 12px;
@@ -451,4 +455,6 @@ section.soundboard {
     background-color: inherit;
     box-shadow: none;
   }
+
+  .soundboard-stop:hover:not(:disabled) { border-color: var(--red-action-edge-hover); }
 }

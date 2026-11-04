@@ -366,14 +366,15 @@
   min-height: 54px;
   padding-inline: 26px;
   border-radius: 12px;
-  border-color: #f0cf76;
+  border-color: var(--red-action-edge);
   background: linear-gradient(180deg, #bd2028, #8f111d);
   color: #fff0c6;
   box-shadow: inset 0 1px #ffffff35, 0 4px 12px #1b070a99;
   font-size: .78rem;
   letter-spacing: .035em;
 }
-.christmas-pairs__button--ruby:hover { background: linear-gradient(180deg, #d12b31, #a31923); }
+.christmas-pairs__button--ruby:hover { background: linear-gradient(180deg, #d12b31, #a31923); border-color: var(--red-action-edge-hover); }
+.christmas-pairs__button--ruby:is(:focus-visible,:disabled) { border-color: var(--red-action-edge-hover); }
 .christmas-pairs__button--gold { border-color: #e2c665; background: var(--pairs-gold); color: #17241a; }
 .christmas-pairs__button--gold:hover { background: #e1c664; }
 .christmas-pairs__button--outline { border-color: #cfaf48; background: transparent; color: var(--pairs-gold-pale); }

@@ -411,7 +411,7 @@
 .submit-song-page .song-submit-button {
   align-items: center;
   background: var(--song-crimson);
-  border: 1px solid #d4af3775;
+  border: 1px solid var(--red-action-edge);
   border-radius: 999px;
   box-shadow: 0 8px 18px #06170f4d;
   color: #fff4df;
@@ -428,17 +428,20 @@
 }
 
 .submit-song-page .song-submit-button:hover:not(:disabled) {
+  border-color: var(--red-action-edge-hover);
   background: #8f2330;
   box-shadow: 0 10px 22px #06170f66;
   transform: translateY(-1px);
 }
 
 .submit-song-page .song-submit-button:focus-visible {
+  border-color: var(--red-action-edge-hover);
   outline: 3px solid var(--song-gold-bright);
   outline-offset: 4px;
 }
 
 .submit-song-page .song-submit-button:disabled {
+  border-color: var(--red-action-edge-hover);
   cursor: wait;
   opacity: .65;
 }

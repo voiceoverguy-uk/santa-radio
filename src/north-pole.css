@@ -29,8 +29,9 @@ main .gold-text { background: none; -webkit-text-fill-color: var(--gold-light); 
 .mugshot-info span { color: var(--muted); font-size: .75rem; }
 .mugshot-fallback { background: #254c3a !important; border: none; border-radius: 0; margin: 0; color: var(--gold-light); }
 .no-results { border: 1px dashed #D4AF3750; background: #153628; border-radius: 14px; color: var(--muted); padding: 45px 24px; }
-.lyrics-toggle-btn,.karaoke-link,.load-more-btn,.contact-btn,.suggest-btn,.app-dl-btn,.karaoke-actions .btn-red { display: inline-flex; align-items: center; justify-content: center; font-family: 'Inter',sans-serif; background: var(--red); border: 1px solid transparent; color: var(--cream); border-radius: 999px; font-weight: 500; font-size: .85rem; text-transform: none; letter-spacing: 0; box-shadow: none; transition: transform .2s ease; }
-.lyrics-toggle-btn:hover,.karaoke-link:hover,.load-more-btn:hover,.contact-btn:hover,.karaoke-actions .btn-red:hover { background: var(--red-dark); border-color: var(--gold); }
+.lyrics-toggle-btn,.karaoke-link,.load-more-btn,.contact-btn,.suggest-btn,.app-dl-btn,.karaoke-actions .btn-red { display: inline-flex; align-items: center; justify-content: center; font-family: 'Inter',sans-serif; background: var(--red); border: 1px solid var(--red-action-edge); color: var(--cream); border-radius: 999px; font-weight: 500; font-size: .85rem; text-transform: none; letter-spacing: 0; box-shadow: none; transition: transform .2s ease; }
+.lyrics-toggle-btn:hover,.karaoke-link:hover,.load-more-btn:hover,.contact-btn:hover,.karaoke-actions .btn-red:hover { background: var(--red-dark); border-color: var(--red-action-edge-hover); }
+:is(.lyrics-toggle-btn,.karaoke-link,.load-more-btn,.contact-btn,.suggest-btn,.app-dl-btn):is(:hover,:focus-visible,:disabled) { border-color: var(--red-action-edge-hover); }
 .btn-red::before,.contact-btn::before,.soundboard-btn::before { display: none; }
 .lyrics-text,.song-lyrics-content pre,.karaoke-lyrics-text { font-family: 'Inter',sans-serif; line-height: 1.9; color: #e6ecdf; }
 .song-artwork-placeholder { background: #1B4332; border: 1px solid #D4AF3740; }

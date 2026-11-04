@@ -199,12 +199,12 @@
 .santa-tracker .tracker-action {
   background: var(--tracker-red);
   color: var(--tracker-cream);
-  border: 1px solid transparent;
+  border: 1px solid var(--red-action-edge);
   border-radius: 999px;
   font-weight: 500;
   box-shadow: 0 7px 24px #300b1030;
 }
-.santa-tracker .tracker-action:hover { background: #7c101a; border-color: var(--gold); transform: translateY(-2px); }
+.santa-tracker .tracker-action:hover { background: #7c101a; border-color: var(--red-action-edge-hover); transform: translateY(-2px); }
 .santa-tracker .tracker-link { color: var(--tracker-gold); text-decoration: underline; text-underline-offset: 3px; }
 .santa-tracker .tracker-link:hover { color: var(--tracker-cream); }
 .santa-tracker .tracker-banner {
@@ -257,12 +257,13 @@
 .tracker-banner .tracker-action {
   background: var(--tracker-red);
   color: var(--tracker-cream);
-  border: 1px solid transparent;
+  border: 1px solid var(--red-action-edge);
   border-radius: 999px;
   font-weight: 500;
   box-shadow: 0 7px 24px #300b1030;
 }
-.tracker-banner .tracker-action:hover { background: #7c101a; border-color: #D4AF37; transform: translateY(-2px); }
+.tracker-banner .tracker-action:hover { background: #7c101a; border-color: var(--red-action-edge-hover); transform: translateY(-2px); }
+:is(.santa-tracker,.tracker-banner) .tracker-action:is(:focus-visible,:disabled) { border-color: var(--red-action-edge-hover); }
 .tracker-banner .tracker-card {
   background: #153628;
   border: 1px solid #D4AF372a;

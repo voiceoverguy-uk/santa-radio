@@ -15,6 +15,9 @@
   --yellow-bg: #D4AF37;
   --cream: #FFF8E7;
   --muted: #bcc9bd;
+  /* Match the approved red gift-download controls. */
+  --red-action-edge: #e4c56680;
+  --red-action-edge-hover: #e6ce86;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; scroll-padding-top: 100px; }
@@ -33,9 +36,10 @@ h1,h2,h3 { font-family: 'Cinzel', serif; font-weight: 400; line-height: 1.2; }
 .section-title { font-size: clamp(1.7rem, 3.5vw, 2.7rem); text-align: center; margin-bottom: 20px; }
 .section-subtitle { text-align: center; color: var(--muted); margin: 0 auto 38px; max-width: 720px; }
 .btn-red,.btn-gold { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 27px; border-radius: 999px; border: 1px solid transparent; font-family: 'Inter',sans-serif; font-size: .85rem; font-weight: 500; line-height: 1.5; text-transform: none; letter-spacing: 0; transition: transform .2s ease; }
-.btn-red { background: var(--red); color: var(--cream); box-shadow: 0 7px 24px #300b1030; }
+.btn-red { background: var(--red); color: var(--cream); border-color: var(--red-action-edge); box-shadow: 0 7px 24px #300b1030; }
 .btn-gold { background: #152c2180; color: var(--cream); border-color: #D4AF3766; }
 .btn-red:hover,.btn-gold:hover { transform: translateY(-2px); border-color: var(--gold); }
+.btn-red:hover,.btn-red:focus-visible,.btn-red:disabled { border-color: var(--red-action-edge-hover); }
 .snow-trees { display: none; }
 .skip-link { position: fixed; top: -100px; left: 20px; z-index: 2000; background: var(--cream); color: var(--navy-dark); padding: 10px 20px; border-radius: 12px; }
 .skip-link:focus { top: 15px; }

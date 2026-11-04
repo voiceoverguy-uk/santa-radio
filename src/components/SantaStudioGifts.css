@@ -73,9 +73,9 @@
 .studio-gift-download button:not(:disabled) {
   background: var(--smw-crimson, #9b111e);
   color: var(--smw-cream, #fff8e7);
-  border-color: #e4c56680;
+  border-color: var(--red-action-edge);
 }
-.studio-gift-download button:hover:not(:disabled) { background: #ad1c2b; border-color: #e6ce86; }
+.studio-gift-download button:hover:not(:disabled) { background: #ad1c2b; border-color: var(--red-action-edge-hover); }
 .studio-gift-download button:disabled { opacity: .6; cursor: not-allowed; }
 .studio-gift-download button:focus-visible { outline: 3px solid #e6ce86; outline-offset: 3px; }
 .studio-gift-download p { margin: 6px 0 10px; font-size: .75rem; line-height: 1.4; }

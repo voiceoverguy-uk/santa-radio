@@ -49,6 +49,15 @@
 .staff-auth { display: grid; justify-items: center; }
 .staff-signout { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin: 0 0 20px; color: #c7d2c3; font-size: .82rem; }
 .staff-signout button, .staff-text-action { background: transparent; border: 0; padding: 5px 0; color: #ead39a; font: inherit; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
+/* Public appearance class, not Clerk's internal DOM. An inset edge preserves geometry. */
+.staff-red-action {
+  background: #8d2026;
+  color: #fff8e7;
+  box-shadow: inset 0 0 0 1px var(--red-action-edge) !important;
+}
+.staff-red-action:is(:hover,:focus-visible,:disabled) {
+  box-shadow: inset 0 0 0 1px var(--red-action-edge-hover) !important;
+}
 .staff-auth .staff-panel { max-width: 510px; width: 100%; }
 .staff-auth .staff-lede { margin-bottom: 20px; }
 .staff-brand { margin-bottom: 26px; }

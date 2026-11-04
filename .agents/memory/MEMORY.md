@@ -1,4 +1,5 @@
 - [Design direction](design-direction.md) — Base44-inspired North Pole appearance; radio should always start minimised on page load.
+- [Provider appearance checks](provider-appearance-checks.md) — Verify computed Clerk styles; declared appearance values can lose to provider styling.
 - [Santa offer appearance](santa-offer-visual-direction.md) — Full length, 30% backdrop; FREE itself shimmers, no flanking stars or top ornament; recognisable holly.
 - [Partnership banner direction](partnership-visual-direction.md) — Muted gold wrapping-paper pattern, not more village scenery; matching thin gold top and bottom lines.
 - [Radio feed hosting](radio-feed-hosting.md) — Use the confirmed independent HTTPS feeds; no retiring-host fallback. Metadata may lead buffered audio.

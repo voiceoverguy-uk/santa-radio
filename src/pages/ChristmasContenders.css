@@ -440,7 +440,7 @@
 .contender-vote-button,
 .contenders-alert button {
   background: var(--cc-red);
-  border: 1px solid #d4af3775;
+  border: 1px solid var(--red-action-edge);
   border-radius: 999px;
   color: #fff4df;
   cursor: pointer;
@@ -453,9 +453,12 @@
 
 .contender-vote-button:hover:not(:disabled),
 .contenders-alert button:hover {
+  border-color: var(--red-action-edge-hover);
   background: #8f2330;
   transform: translateY(-1px);
 }
+
+:is(.contender-vote-button,.contenders-alert button):is(:focus-visible,:disabled) { border-color: var(--red-action-edge-hover); }
 
 .contender-vote-button:focus-visible,
 .contender-cancel-button:focus-visible,

@@ -40,7 +40,7 @@ const clerkAppearance = {
     headerSubtitle: { color: '#526457' },
     formFieldLabel: { color: '#173629', fontWeight: 500 },
     formFieldInput: { background: '#fffaf0', color: '#173629', borderColor: '#c5b78e' },
-    formButtonPrimary: { background: '#8d2026', color: '#fff8e7', boxShadow: 'none' },
+    formButtonPrimary: 'staff-red-action',
     footerActionText: { color: '#526457' },
     footerActionLink: { color: '#8d2026' },
     dividerText: { color: '#526457' },
