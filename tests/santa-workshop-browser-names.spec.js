@@ -127,7 +127,7 @@ test('names list and Studio recording failures have working retry controls', asy
   await input.fill('Danny');
   await page.getByRole('button', { name: 'Retry name search' }).click();
   await page.getByRole('option', { name: 'Danny', exact: true }).click();
-  await expect(page.getByRole('alert')).toContainText('Recording unavailable');
+  await expect(page.locator('.smw-name-error-panel')).toContainText('Recording unavailable');
   await page.getByRole('button', { name: 'Retry name search' }).click();
   await expect(page.locator('.smw-name-status')).toContainText('Selected name: Danny');
   expect(loads).toBe(2);

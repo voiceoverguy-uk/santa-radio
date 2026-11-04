@@ -4,11 +4,22 @@ description: Owner's security requirement superseding earlier public browser inv
 ---
 
 Exception: the owner explicitly approved a complete public **display-name-only**
-list for the isolated `/names` demo. See [the demo policy](names-demo-snapshot-policy.md).
-This does not authorise public IDs, filenames, audio references or catalogue
-exports from homepage/Studio or any other flow.
+list first for `/names`, then for the homepage checker and Studio.
+This does not authorise bulk public recording IDs, filenames, audio references
+or private recording-catalogue exports.
 
-Keep the complete name catalogue and original audio locations server-side. Public
+**Why:** After confirming faster browser-only demo searches, the owner requested
+the same behaviour on the homepage and Studio, with a fresh source import to
+reflect deleted names.
+
+**How to apply:** Match display names in browser memory using the owner-updated
+snapshot. No source refresh at runtime or during builds; import only on explicit
+owner instruction. Resolve an explicit Studio selection through protected server
+access, preserving exact recording variants, previews and generation controls.
+The earlier private/bounded-only rules below still apply to recording metadata
+and capabilities, not the approved public display-name list.
+
+Keep the complete recording catalogue and original audio locations server-side. Public
 name lookup must be bounded and rate-limited, without bulk/empty/wildcard exports,
 unnecessary totals, client credentials, or names in request URLs or durable
 browser storage. Previews require controlled server access with short-lived,
@@ -19,7 +30,7 @@ requested immediate closure, including all equivalent exports and the permanent
 audio URLs already disclosed. This supersedes earlier public inventory and
 counter instructions, not adult access or greeting downloads.
 
-**How to apply:** Do not restore client-side catalogue filtering, public index
+**How to apply:** Do not restore client-side recording-catalogue filtering, public index
 installers, public saved-greeting descriptors or permanent origin preview URLs to
 repair an old test. Preserve legitimate lookup, selection and MP3 creation
 through protected server paths. Revoking old URLs requires real origin-host

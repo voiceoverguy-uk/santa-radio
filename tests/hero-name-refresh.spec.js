@@ -12,6 +12,7 @@ const inventory = { hostedCount: 3, warning: null, records: ['Wendy', 'Erin', 'E
 
 async function setup(page) {
   await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.route('**/names-data/*.json', route => route.fulfill({ json: inventory.records.map(record => record.name) }));
   await page.route(/youtube\.com|googlevideo\.com|global\.citrus3\.com/, route => route.abort());
   await page.route('**/api/santa-names', route => route.fulfill({ json: {
     ...inventory, records: inventory.records.filter(record =>
@@ -21,7 +22,7 @@ async function setup(page) {
   await page.goto('/');
   const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await decline.isVisible()) await decline.click();
-  await expect(checker(page).getByRole('status')).toHaveText('Search Santa’s recorded names, then choose a match.');
+  await expect(checker(page).getByRole('status')).toHaveText('Check the name - let Santa create magic.');
 }
 
 async function choose(page, name) {
@@ -37,7 +38,7 @@ async function empty(page) {
   await expect(input(page)).toHaveAttribute('aria-invalid', 'false');
   await expect(input(page)).not.toHaveAttribute('aria-activedescendant');
   await expect(checker(page).getByRole('listbox')).toHaveCount(0);
-  await expect(checker(page).getByRole('status')).toHaveText('Search Santa’s recorded names, then choose a match.');
+  await expect(checker(page).getByRole('status')).toHaveText('Check the name - let Santa create magic.');
 }
 
 for (const width of [390, 1440]) {
@@ -77,7 +78,7 @@ for (const width of [390, 1440]) {
     await input(page).press('ArrowDown');
     await input(page).press('Enter');
     await cta(page).click();
-    await expect(maker).toHaveValue('Erin');
+    await expect(maker).toHaveValue('Erica');
     expect(urls.filter(url => /Wendy|Erin|Erica/i.test(decodeURIComponent(url)))).toEqual([]);
     expect(JSON.stringify(await page.evaluate(() => ({ ...localStorage, ...sessionStorage })))).not.toMatch(/Wendy|Erin|Erica/);
   });

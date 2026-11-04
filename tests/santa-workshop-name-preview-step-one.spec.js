@@ -172,6 +172,7 @@ test('clearing or replacing the name stops playback, discards audio and resets f
   await expect(page.locator('.smw-name-preview-button')).toHaveCount(0);
   await expectStopped(page);
   expect(await page.evaluate(() => window.revokedPreviews)).toHaveLength(1);
+  await page.getByRole('option', { name: 'Dixie', exact: true }).click();
   await page.getByRole('option', { name: 'Dixie First recording', exact: true }).click();
   await page.evaluate(() => { window.previewMode = 'reject'; });
   await playButton(page, 'Dixie').click();

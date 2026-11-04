@@ -72,7 +72,7 @@
 - [Raw request targets](raw-request-targets.md) — Exact doubled-separator exports must survive pre-routing middleware; resolver-only checks miss failures and app-shell fallbacks.
 - [Christmas Contenders scope](christmas-contenders-scope.md) — One-choice first build; votes inform editorial consideration; owner must choose any earlier submission cutoff.
 - [Hero name-checker scope](hero-name-checker-scope.md) — Approved homepage hero: no App Store logo; description below heading; preserve lower sections and child-name privacy.
-- [Name inventory confidentiality](name-inventory-confidentiality.md) — Private lookup and audio boundaries; isolated /names has an explicit public display-name-only exception.
+- [Name inventory confidentiality](name-inventory-confidentiality.md) — Public display names approved for /names, homepage and Studio; recording metadata and audio stay protected.
 - [Name release compatibility](recorded-name-release-compatibility.md) — Code-only recovery supports old setup; owner will release to Vercel, and hosted restoration still needs proof.
 - [Name language boundaries](name-language-policy.md) — Shared whole-word checks preserve genuine names; broader audits and site-wide moderation stay separate.
 - [Christmas Pairs scope](christmas-pairs-scope.md) — Free homepage game below the soundboard; owner-supplied artwork, optional sound off initially and sensible preview timings.
