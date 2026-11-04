@@ -2,13 +2,15 @@
    download. `html body :is(...)` outranks page/component CSS regardless of load
    order. Owns geometry, block padding, edge, colour and bevel; inline padding,
    width, typography, icons and layout stay with each component.
-   App Store image badges (.app-dl-btn) are deliberately not red actions. */
+   App Store image badges (.app-dl-btn) are deliberately not red actions.
+   Studio review's non-red reset shares geometry only, never the colour lists. */
 html body :is(
   .btn-red, .radio-play, .staff-red-action,
   .mugshots-sort button[aria-pressed="true"],
   .lyrics-toggle-btn, .karaoke-link, .load-more-btn, .suggest-btn,
   .contact-btn, .home-page .contact-section .contact-btn,
   .smw-header-continue, .smw-button-next, .smw-button-download,
+  .smw-actions--review > .smw-button-back,
   .studio-gift-download button,
   .contender-vote-button, .contenders-alert button,
   .hero-name-preview .hero-name-checker__submit, .submit-song-page .song-submit-button,

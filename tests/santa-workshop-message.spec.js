@@ -400,6 +400,79 @@ async function openReview(page, { live = false, allowance = null, tester = false
   return generation;
 }
 
+for (const width of [320, 390, 1365]) {
+  test(`review Start Again matches creation geometry without the red palette at ${width}px`, async ({ page }) => {
+    test.setTimeout(90000);
+    await page.setViewportSize({ width, height: 900 });
+    const fixture = await openReview(page);
+    const controls = page.locator('.smw-actions--review');
+    const start = controls.getByRole('button', { name: 'Start Again', exact: true });
+    const create = controls.getByRole('button', { name: 'Create message', exact: true });
+    const checkGeometry = async () => {
+      // Compare rendered boxes as well as CSS: flex stretching can hide different
+      // minimum heights and padding until a label wraps or phone rules apply.
+      const metrics = await controls.locator(':scope > .smw-button').evaluateAll(nodes => nodes.map(node => {
+        const css = getComputedStyle(node);
+        const box = node.getBoundingClientRect();
+        const range = document.createRange();
+        range.selectNodeContents(node);
+        return {
+          shape: [css.borderRadius, css.minHeight, css.paddingTop, css.paddingBottom, css.lineHeight, css.boxSizing],
+          y: box.y, height: box.height,
+          fits: node.scrollWidth <= node.clientWidth + 1
+            && [...range.getClientRects()].every(rect => rect.left >= box.left - 1
+              && rect.right <= box.right + 1 && rect.top >= box.top - 1 && rect.bottom <= box.bottom + 1),
+        };
+      }));
+      expect(metrics).toHaveLength(2);
+      expect(metrics[0].shape).toEqual(metrics[1].shape);
+      expect(metrics[0].shape.slice(0, 4)).toEqual(['7px', '44px', '10px', '10px']);
+      expect(metrics[0].height).toBeCloseTo(metrics[1].height, 1);
+      expect(metrics[0].y).toBeCloseTo(metrics[1].y, 1);
+      expect(metrics.every(metric => metric.fits)).toBe(true);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+    };
+    await page.mouse.move(0, 0);
+    await checkGeometry();
+    await expect(start).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    await expect(start).toHaveCSS('border-top-color', 'rgba(212, 175, 55, 0.333)');
+    await expect(start).toHaveCSS('color', 'rgb(255, 248, 231)');
+    await expect(create).toHaveCSS('background-color', 'rgb(155, 17, 30)');
+    await controls.screenshot({ path: `generated-artifacts/studio-review-shape-${width}.png` });
+    await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
+    await checkGeometry();
+    await controls.screenshot({ path: `generated-artifacts/studio-review-shape-enlarged-${width}.png` });
+    await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
+
+    // Real keyboard navigation activates focus-visible on both controls.
+    await start.focus();
+    await page.keyboard.press('Tab');
+    await expect(create).toBeFocused();
+    await expect(create).toHaveCSS('outline-style', 'solid');
+    await expect(create).toHaveCSS('outline-width', '2px');
+    await page.keyboard.press('Shift+Tab');
+    await expect(start).toBeFocused();
+    await expect(start).toHaveCSS('outline-style', 'solid');
+    await expect(start).toHaveCSS('outline-width', '2px');
+    await start.press('Enter');
+    await expect(page.getByRole('combobox', { name: 'Search recorded names', exact: true })).toBeVisible();
+    expect(fixture.posts).toHaveLength(0);
+    // Reset navigation preserves choices; returning to review still creates normally.
+    for (let step = 0; step < 7; step++) await page.locator('.smw-button-next:visible').click();
+    let release;
+    fixture.hold = new Promise(resolve => { release = resolve; });
+    await confirmMessage(page);
+    await expect(start).toBeDisabled();
+    await expect(controls.locator('.smw-button-next')).toBeDisabled();
+    await expect(start).toHaveCSS('opacity', '0.45');
+    await checkGeometry();
+    await page.getByRole('button', { name: 'Cancel preparation', exact: true }).click();
+    release();
+    await expect(start).toBeEnabled();
+    expect(fixture.posts).toHaveLength(1);
+  });
+}
+
 test('top Return to review button fits its label on one line', async ({ page }) => {
   await openReview(page);
   await page.getByRole('button', { name: 'Change Trying hard at', exact: true }).click();

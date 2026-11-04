@@ -24,7 +24,9 @@ Component styles retain widths, horizontal padding, typography and layout.
 Add new red-action selectors to the shared lists rather than adding local
 shape or colour rules. Intentionally cream disabled gift controls and grey
 unavailable creation controls retain their disabled appearance. Non-red controls
-and the separate iPhone artifact do not use this treatment.
+and the separate iPhone artifact do not use this treatment, except the Studio
+review's Start Again control shares geometry only with its adjacent creation
+action, retaining its transparent fill, gold outline and cream lettering.
 
 ## Studio name previews
 
