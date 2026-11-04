@@ -7,8 +7,10 @@
 .santa-message-aside > .santa-message-example { margin: 20px 0 0; text-align: center; }
 .santa-message-heading { color: var(--cream, #f6ecd8); font-size: clamp(2rem,3.4vw,3rem); text-align: left; margin-bottom: 16px; line-height: 1.25; overflow-wrap: anywhere; }
 .message-intro-divider {
+  position: relative;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 12px;
   width: 210px;
   max-width: 100%;
@@ -19,11 +21,14 @@
 .message-intro-divider::before,
 .message-intro-divider::after {
   content: '';
-  flex: 1;
+  position: absolute;
+  top: 50%;
+  width: calc((100% - 1em) / 2 - 12px);
   height: 1px;
   background: linear-gradient(90deg, transparent, currentColor);
 }
-.message-intro-divider::after { transform: rotate(180deg); }
+.message-intro-divider::before { left: 0; }
+.message-intro-divider::after { right: 0; transform: rotate(180deg); }
 .santa-message-subheading { color: var(--cream, #f6ecd8); font-size: clamp(1rem,1.7vw,1.4rem); text-align: left; margin-bottom: 22px; line-height: 1.4; white-space: nowrap; }
 .santa-voice-tagline { position: relative; width: fit-content; max-width: 100%; margin-bottom: 22px; }
 .santa-voice-tagline .santa-message-subheading { margin-bottom: 0; white-space: normal; }
