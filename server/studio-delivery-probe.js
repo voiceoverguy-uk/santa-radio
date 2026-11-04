@@ -7,6 +7,7 @@ import { liveStudioConfig } from './studio-live-config.js';
 import { studioSources, studioBells } from './santa-studio-render.js';
 import { workshopCatalogue } from './santa-workshop-catalogue.js';
 import { santaNameLibrary } from './santa-name-library.js';
+import { studioAllowanceReady } from './studio-creation-allowance.js';
 
 // Runs inside the deployed rendering function, not the checkout function.
 // The response contains no names, inventory, paths, source URLs or credentials.
@@ -20,6 +21,7 @@ export async function studioDeliveryProbe(req, res) {
     if (req.method !== 'GET' || typeof supplied !== 'string' || supplied.length !== expected.length
       || !timingSafeEqual(Buffer.from(supplied), Buffer.from(expected))) throw new Error('Probe denied');
     await access(ffmpeg, constants.X_OK);
+    await studioAllowanceReady();
     await Promise.all(['intro.flac', '1st.flac', '1-5.flac', '2nd.flac', '3rd.flac', '4th.flac', '5th.flac', '6th.flac']
       .map(file => access(join(studioSources, file), constants.R_OK)));
     await access(studioBells, constants.R_OK);

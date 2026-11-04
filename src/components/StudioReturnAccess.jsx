@@ -66,6 +66,6 @@ export default function StudioReturnAccess() {
       {message && <p role="status">{message}</p>}
       {error && <p role="alert">{error}</p>}
     </form>
-    <p>Return access does not restore recordings. Download your MP3 and gifts before leaving Studio.</p>
+    <p>Your £6.50 purchase includes two successful creations. Returning keeps your remaining allowance; it does not restore recordings. Download your MP3 and gifts before leaving Studio.</p>
   </section>;
 }

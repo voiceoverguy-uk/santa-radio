@@ -37,7 +37,7 @@ export async function startLiveCheckout({ claim, config, stripe, pool = database
         cancel_url: `${config.origin}/?studioCheckout=cancelled#santa-studio-promotion`,
         metadata: { offer: config.offer, access_claim_sha256: hash },
         // No account/signup, discounts, adjustable quantities, tax or subscriptions.
-        custom_text: { submit: { message: '£6.50 once. Personalised content for one child. Download your MP3 and gifts before leaving Studio. Your purchase email receives a private return link, not an archive of recordings.' } },
+        custom_text: { submit: { message: '£6.50 once includes two successful message creations, each with personalised gifts for one child. Download your MP3 and gifts before leaving Studio. Your email link preserves remaining allowance, not recordings.' } },
       }, { idempotencyKey: `studio-live:${hash}:${generation}` });
       if (session.livemode !== true || session.metadata?.access_claim_sha256 !== hash
         || session.metadata?.offer !== config.offer) throw new Error('STUDIO_LIVE_CHECKOUT_MISMATCH');

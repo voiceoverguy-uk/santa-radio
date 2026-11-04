@@ -10,6 +10,7 @@ import { selectedWorkshopRegion } from '../src/lib/workshopDestinations.js';
 import { studioServiceFailure } from './studio-service-events.js';
 import { workshopSession } from './santa-workshop-access.js';
 import { studioDeliveryProbe } from './studio-delivery-probe.js';
+import { studioAllowanceIdentity, studioAllowanceStore } from './studio-creation-allowance.js';
 
 const categories = ['age', 'activity', 'achievement', 'treat', 'place'];
 const localNames = fileURLToPath(new URL('./santa-audio/names/', import.meta.url));
@@ -70,6 +71,7 @@ export function createStudioMessageHandler({
   library = santaNameLibrary, download = downloadStudioClip, render = renderStudioMessage,
   executionMs = 110000,
   reportFailure = studioServiceFailure,
+  allowanceIdentity = studioAllowanceIdentity, allowances = studioAllowanceStore,
 } = {}) {
   let active = 0;
   return async (req, res) => {
@@ -90,6 +92,7 @@ export function createStudioMessageHandler({
     req.once?.('aborted', abort);
     res.once?.('close', abort);
     let directory;
+    let identity, reservation;
     let stage = 'access';
     const audioResponse = (audio, selection) => {
       if (selection) res.setHeader('X-Studio-Selection', Buffer.from(JSON.stringify({
@@ -103,6 +106,7 @@ export function createStudioMessageHandler({
     };
     try {
       if (!await withinDeadline(() => authorize(req), controller.signal)) throw problem(403, 'Your Studio access needs checking. Please reopen Studio and try again.');
+      identity = await withinDeadline(() => allowanceIdentity(req), controller.signal);
       let data;
       if (req.method === 'GET') {
         const recovering = new URL(req.url || '/', 'http://studio').searchParams.get('audio') === '1';
@@ -112,8 +116,10 @@ export function createStudioMessageHandler({
         }
         await withinDeadline(() => limit(req, 'studioRead'), controller.signal);
         if (recovering) throw problem(410, 'Recordings are not saved. Please create a new message and download it before leaving this page.');
+        const allowance = identity ? await withinDeadline(() => allowances.status(identity), controller.signal) : null;
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        return res.end(JSON.stringify({ temporary: true, testerCanStartAnother: !!workshopSession(req) }));
+        return res.end(JSON.stringify({ temporary: true, testerCanStartAnother: !!workshopSession(req),
+          ...(allowance || {}) }));
       } else {
         await withinDeadline(() => limit(req, 'studioMessage'), controller.signal);
         data = await withinDeadline(() => readNameJson(req), controller.signal);
@@ -152,6 +158,15 @@ export function createStudioMessageHandler({
       }
       const recording = await withinDeadline(() => library.resolve(data.name), controller.signal);
       if (!recording || recording.id !== data.name) throw problem(400, 'That exact recorded name is no longer available. Please choose it again.');
+      if (identity) {
+        const operation = req.headers['idempotency-key'];
+        if (typeof operation !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(operation)) {
+          throw problem(400, 'Please start this creation using Studio.');
+        }
+        // Await the reservation itself, even past cancellation, so a late DB
+        // result always has a known fence that finally can release.
+        reservation = await allowances.reserve(identity, operation);
+      }
       controller.signal.throwIfAborted();
       directory = await mkdtemp(join(tmpdir(), 'santa-studio-'));
       stage = 'source';
@@ -172,7 +187,12 @@ export function createStudioMessageHandler({
       stage = 'render';
       const { audio } = await render({ name, choices: paths, directory, signal: controller.signal });
       controller.signal.throwIfAborted();
-      // Request-local bytes only: no generation records, archive or recovery.
+      if (!audio?.length || audio.length > 4_400_000) throw new Error('Invalid rendered MP3.');
+      // Success boundary: full MP3 prepared and response about to be sent.
+      // Disconnects after this commit are inherently uncertain, not proof of
+      // browser receipt. Never roll back a committed slot after a send error.
+      if (reservation) await allowances.succeed(identity, reservation);
+      controller.signal.throwIfAborted();
       audioResponse(audio, { record: {
         id: recording.id, name: recording.name || '', variant: recording.variant || '',
       }, choices: data });
@@ -191,6 +211,7 @@ export function createStudioMessageHandler({
       res.removeListener?.('close', abort);
       controller.abort();
       if (directory) await rm(directory, { recursive: true, force: true }).catch(() => {});
+      if (reservation) await allowances.release(identity, reservation).catch(() => {});
       active--;
     }
   };

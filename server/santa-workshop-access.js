@@ -1,7 +1,7 @@
 import express from 'express';
 import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 import { databasePool } from './name-request-store.js';
-import { workshopSettings as settings, workshopConfigured as configured, workshopCodeDeadline, workshopCodeOpen } from './santa-workshop-settings.js';
+import { workshopSettings as settings, workshopConfigured as configured, workshopCodeDeadline, workshopCodeOpen, limitedWorkshopCode } from './santa-workshop-settings.js';
 import { publicRequestUrl } from '../src/seo/requestUrl.js';
 
 export const WORKSHOP_COOKIE = 'santa-workshop-preview';
@@ -33,7 +33,8 @@ export function workshopSession(req, config = settings(), now = Date.now()) {
   const expiry = Number(expires);
   if (!workshopCodeOpen(config, entry, now) || Number(issued) > now || expiry <= now || expiry > Number(issued) + WORKSHOP_SESSION_MS
     || expiry > workshopCodeDeadline(config, entry) || !equal(signature, sessionMac(`${version}.${id}.${issued}.${expires}.${nonce}`, entry, config))) return null;
-  return { expiresAt: expiry, generationKey: hash(`tester:${raw}`).toString('hex'), codeId: id };
+  return { expiresAt: expiry, generationKey: hash(`tester:${raw}`).toString('hex'), codeId: id,
+    limited: limitedWorkshopCode(entry) };
 }
 
 export function hasWorkshopAccess(req, config = settings(), now = Date.now()) {
@@ -118,7 +119,7 @@ export function createWorkshopAccessHandler({
       const session = workshopSession(req, config, time);
       return res.json(session ? {
         authorized: true, expiresAt: session.expiresAt,
-        voucher: { code: config.codes.find(entry => entry.id === session.codeId).code, unlimited: true },
+        voucher: { code: config.codes.find(entry => entry.id === session.codeId).code, unlimited: !session.limited },
       } : { authorized: false });
     }
     // Temporary friends-test exception: only an already authenticated voucher
@@ -132,8 +133,12 @@ export function createWorkshopAccessHandler({
         const grantTime = now();
         if (!workshopSession(req, config, grantTime)) return res.status(403).json({ error: 'Enter a valid voucher code to create another test message.' });
         const secure = req.headers['x-forwarded-proto']?.split(',')[0]?.trim() === 'https' || req.socket?.encrypted;
-        const token = issueWorkshopToken({ ...config, expiresAt: session.expiresAt }, grantTime, session.codeId);
-        res.set('Set-Cookie', `${WORKSHOP_COOKIE}=${token}; Path=/; HttpOnly; SameSite=Strict${secure ? '; Secure' : ''}`);
+        // The limited visitor's signed session IS the bounded identity. Do not
+        // rotate it (or extend its deadline) when starting creation two.
+        if (!session.limited) {
+          const token = issueWorkshopToken({ ...config, expiresAt: session.expiresAt }, grantTime, session.codeId);
+          res.set('Set-Cookie', `${WORKSHOP_COOKIE}=${token}; Path=/; HttpOnly; SameSite=Strict${secure ? '; Secure' : ''}`);
+        }
         return res.json({ authorized: true, expiresAt: session.expiresAt });
       } catch {
         return res.status(503).json({ error: 'Another test message could not be started. Please try again.' });
@@ -154,9 +159,14 @@ export function createWorkshopAccessHandler({
       const grantTime = now();
       if (!workshopCodeOpen(config, matched, grantTime)) return res.status(410).json({ authorized: false, error: 'This voucher is outside its testing dates.' });
       const secure = req.socket?.encrypted || req.headers['x-forwarded-proto']?.split(',')[0]?.trim() === 'https';
-      const token = issueWorkshopToken(config, grantTime, matched.id);
-      res.set('Set-Cookie', `${WORKSHOP_COOKIE}=${token}; Path=/; HttpOnly; SameSite=Strict${secure ? '; Secure' : ''}`);
-      return res.json({ authorized: true, expiresAt: Math.min(grantTime + WORKSHOP_SESSION_MS, workshopCodeDeadline(config, matched)) });
+      const existing = workshopSession(req, config, grantTime);
+      const preserve = existing?.limited && existing.codeId === matched.id;
+      if (!preserve) {
+        const token = issueWorkshopToken(config, grantTime, matched.id);
+        res.set('Set-Cookie', `${WORKSHOP_COOKIE}=${token}; Path=/; HttpOnly; SameSite=Strict${secure ? '; Secure' : ''}`);
+      }
+      return res.json({ authorized: true, expiresAt: preserve ? existing.expiresAt
+        : Math.min(grantTime + WORKSHOP_SESSION_MS, workshopCodeDeadline(config, matched)) });
     } catch {
       // Never log passwords, cookies, connection strings or raw exceptions.
       return res.status(503).json({ error: 'Workshop access is temporarily unavailable. Please try again.' });

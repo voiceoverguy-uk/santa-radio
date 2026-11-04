@@ -11,6 +11,7 @@ if (process.argv.slice(2).join(' ') !== '--development'
 const pool = databasePool();
 try {
   await pool.query(await readFile(new URL('../database/santa-studio-live.sql', import.meta.url), 'utf8'));
+  await pool.query(await readFile(new URL('../database/santa-studio-creation-allowance.sql', import.meta.url), 'utf8'));
   console.log('Studio live development schema ready; existing purchases and sales settings preserved.');
 } finally {
   await pool.end();

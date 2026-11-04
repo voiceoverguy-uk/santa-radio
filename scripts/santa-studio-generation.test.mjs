@@ -3,12 +3,12 @@ import assert from 'node:assert/strict';
 import { createHash, randomUUID } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
 import { EventEmitter } from 'node:events';
-import { databasePool } from '../server/name-request-store.js';
+import { studioTestDatabase } from './helpers/studio-live-postgres.mjs';
 import { createStudioGenerationStore, studioIdentity, studioGenerationKey } from '../server/santa-studio-generation.js';
 import { createStudioMessageHandler } from '../server/santa-studio-message.js';
 import { issueWorkshopToken, workshopSession, WORKSHOP_COOKIE } from '../server/santa-workshop-access.js';
 
-const pool = databasePool();
+let pool, database;
 const keys = [];
 const newKey = () => {
   const key = createHash('sha256').update(randomUUID()).digest('hex');
@@ -22,12 +22,14 @@ const identity = studioIdentity(choices, 'countries');
 test.before(async () => {
   // This suite is explicitly development-only, never a production migration.
   if (process.env.NODE_ENV === 'production' || process.env.REPLIT_DEPLOYMENT === '1') throw new Error('Development database tests only.');
+  database = await studioTestDatabase({ loadSchema: false });
+  pool = database.pool;
   await pool.query(await readFile(new URL('../database/santa-studio-generation.sql', import.meta.url), 'utf8'));
 });
 test.after(async () => {
   await pool.query('DELETE FROM public.santa_studio_generation_results WHERE access_key=ANY($1::text[])', [keys]);
   await pool.query('DELETE FROM public.santa_studio_generation_access WHERE access_key=ANY($1::text[])', [keys]);
-  await pool.end();
+  await database.close();
 });
 
 test('durable two-success allowance, exact identity lock, idempotency and isolation', async () => {
@@ -125,6 +127,7 @@ test('temporary handler creates independently without durable counts, identity l
       { id: id(9), file: 'other.wav' }]])),
     regionalGroups: { fixture: { parentId: choices.place, records: [{ id: choices.region, file: 'region.wav' }] } } };
   const options = {
+    allowanceIdentity: async () => null,
     accessKey: () => key, authorize: async () => true, limit: async () => {},
     generations: createStudioGenerationStore(pool), catalogue: async () => inventory,
     library: { resolve: async id => ({ id, name: 'Example', variant: 'Recording 2', source: 'hosted' }),
@@ -171,6 +174,7 @@ test('retiring public recovery leaves existing archived data untouched', async (
   await pool.query('UPDATE public.santa_studio_generation_results SET audio=$2 WHERE access_key=$1',
     [key, Buffer.from('legacy-user-audio')]);
   const handler = createStudioMessageHandler({
+    allowanceIdentity: async () => null,
     accessKey: () => key, authorize: async () => true, limit: async () => {}, generations,
     library: { resolve: async () => { throw new Error('source removed'); } },
     catalogue: async () => assert.fail('Legacy retrieval must not need the source catalogue'),
@@ -186,6 +190,7 @@ test('source preparation deadline does not reserve or release generation records
   let released = null, renders = 0;
   const noRegion = { ...choices }; delete noRegion.region;
   const handler = createStudioMessageHandler({
+    allowanceIdentity: async () => null,
     accessKey: () => 'late-fixture', authorize: async () => true, limit: async () => {},
     executionMs: 10, reportFailure() {},
     catalogue: async () => {
@@ -212,6 +217,7 @@ test('aborting temporary preparation leaves no generation record or allowance lo
   let entered;
   const rendering = new Promise(resolve => { entered = resolve; });
   const handler = createStudioMessageHandler({
+    allowanceIdentity: async () => null,
     accessKey: () => key, authorize: async () => true, limit: async () => {}, generations,
     catalogue: async () => ({ categories: Object.fromEntries(['age', 'activity', 'achievement', 'treat', 'place']
       .map(category => [category, [{ id: choices[category], file: `${category}.wav` }]])) }),

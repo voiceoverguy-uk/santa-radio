@@ -7,17 +7,23 @@ For paid and free/voucher visits, finished Studio MP3s exist only during prepara
 Keep the temporary recording available for playback and download retries during the visit,
 then clear it when the session ends or expires. Delete temporary server working files after
 each request, including failures and cancellation. Do not store generated audio,
-choice history, voucher usage records or successful-generation counts.
+choice history or download history. The later two-creation website offer
+permits minimal success counts per verified purchase and expiring counts for
+the owner-selected limited voucher's authorised visitor session only.
 
 **Why:** The owner explicitly simplified Studio to generate, play and save,
 superseding the earlier durable generation/correction and recovery rules.
+
+**Why:** The later owner-approved two-creations flow supersedes the earlier
+ban on minimal allowance accounting, but not output retention.
 
 **How to apply:** Keep source-recording caches separate from generated output:
 Mark's original source library is not a generated-message archive. Preserve
 existing records without reading them as a prerequisite for new creation.
 Keep real voucher/payment access checks and existing expiring abuse buckets;
 do not repurpose them into a hidden generation-history store. Never make
-creation depend on missing generation/reporting tables.
+unlimited-voucher creation depend on generation/reporting tables. Paid and
+limited-voucher allowance storage must fail closed if unavailable.
 
 Paid website purchases are not an exception to temporary audio handling.
 Do not permanently store generated audio or keepsakes or build a recording-retrieval service.

@@ -82,6 +82,7 @@ function fixture(overrides = {}) {
   const state = { resolved: [], downloads: [], renders: [], scopes: [] };
   const handler = createStudioMessageHandler({
     authorize: async () => true,
+    allowanceIdentity: async () => null,
     accessKey: () => 'fixture',
     generations: { reserve: async () => ({ reservation: 'fixture' }), succeed: async () => {}, release: async () => {} },
     limit: async (_req, scope) => state.scopes.push(scope),

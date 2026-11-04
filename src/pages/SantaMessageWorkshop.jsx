@@ -219,6 +219,8 @@ export default function SantaMessageWorkshop() {
   // Survives review unmounts while a detail is edited; never stored or name-seeded.
   const [letterVariation] = useState(createStudioLetterVariation);
   const [completedGift, setCompletedGift] = useState(null);
+  const [requestedGifts, setRequestedGifts] = useState({});
+  const [preparingGifts, setPreparingGifts] = useState({});
   // Only the explicit fresh-message flow resets successful completion.
   const [nameReadOnly, setNameReadOnly] = useState(false);
   const [audioPhase, setAudioPhase] = useState('idle');
@@ -228,12 +230,20 @@ export default function SantaMessageWorkshop() {
   const [correction, setCorrection] = useState(false);
   const generation = useStudioGeneration();
   useEffect(() => {
-    const clearGifts = () => setCompletedGift(null);
+    const clearGifts = () => {
+      setCompletedGift(null);
+      setRequestedGifts({});
+      setPreparingGifts({});
+    };
     window.addEventListener('pagehide', clearGifts);
     return () => window.removeEventListener('pagehide', clearGifts);
   }, []);
   useEffect(() => {
-    if (generation.accessExpired) setCompletedGift(null);
+    if (generation.accessExpired) {
+      setCompletedGift(null);
+      setRequestedGifts({});
+      setPreparingGifts({});
+    }
   }, [generation.accessExpired]);
   const locked = false;
   const audioEditingAllowed = audioPhase !== 'preparing' && audioPhase !== 'receiving';
@@ -306,6 +316,7 @@ export default function SantaMessageWorkshop() {
   const giftMatches = !!completedGift && completedGift.selectionKey === selectionKey
     && completedGift.writtenName === getWorkshopWrittenName(selectedName?.name || '', nameSpelling);
   const giftPreparing = audioPhase === 'preparing' || audioPhase === 'receiving' || generation.state?.pending;
+  const giftExportPending = Object.values(preparingGifts).some(Boolean);
   const giftNotice = completedGift
         ? !giftMatches
           ? 'Gift previews reflect your updated choices. Create your new MP3 to unlock these downloads.'
@@ -435,6 +446,15 @@ export default function SantaMessageWorkshop() {
 
   const startAgain = () => {
     if (!audioEditingAllowed) return;
+    if (generation.state?.limit === 2) {
+      if (!generation.state.remaining || giftExportPending) return;
+      setCompletedGift(null);
+      setRequestedGifts({});
+      setPreparingGifts({});
+      setChoices(emptyChoices());
+      setSelectedName(null);
+      setNameSpelling('');
+    }
     // Start a new editable selection without discarding the only local copy
     // of the previous recording or its still-matching gifts.
     setNameReadOnly(false);
@@ -445,7 +465,8 @@ export default function SantaMessageWorkshop() {
   };
 
   const editStage = index => {
-    if (!audioEditingAllowed || (locked && ['name', 'place'].includes(stages[index]?.key))) return;
+    if (!audioEditingAllowed || (nameReadOnly && generation.state?.limit === 2)
+      || (locked && ['name', 'place'].includes(stages[index]?.key))) return;
     setError('');
     if (stages[index]?.key === 'place') {
       setDestinationCategory(workshopDestinationCategory(selectedCountry));
@@ -507,6 +528,15 @@ export default function SantaMessageWorkshop() {
         </header>
 
         <section className="smw-builder" ref={builderRef} aria-labelledby="smw-builder-title">
+          {generation.state?.limit === 2 && <p className="smw-allowance smw-remaining" role="status">
+            {generation.checking ? 'Checking your remaining creations…' : generation.error
+              ? 'Your remaining allowance could not be checked. Retry the recording check before creating.'
+              : <>{generation.state.remaining} of 2 creations remaining.
+                {generation.state.pending && ' A message is being prepared.'}
+                {generation.state.remaining === 0 && ' Both creations have been used.'}
+                {generation.state.remaining === 0 && completedGift && ' Keep this page open to play and download your current MP3 and gifts.'}
+                {!completedGift && generation.state.successes > 0 && ' Previous recordings are not saved or restored.'}</>}
+          </p>}
           <div className="smw-builder-head">
             <div>
               <h2 id="smw-builder-title" ref={stageHeading} tabIndex="-1">
@@ -739,7 +769,7 @@ export default function SantaMessageWorkshop() {
                             || 'This choice is no longer available.'}</span>}</dd>
                     </div>
                     <button type="button" className="smw-change" onClick={() => editStage(index)}
-                      disabled={!audioEditingAllowed || (locked && ['name', 'place'].includes(item.key))}
+                      disabled={!audioEditingAllowed || (nameReadOnly && generation.state?.limit === 2) || (locked && ['name', 'place'].includes(item.key))}
                       aria-label={`Change ${item.reviewLabel || item.label}`} title={locked && ['name', 'place'].includes(item.key) ? 'Locked after your first message' : `Edit ${item.reviewLabel || item.label}`}>
                       <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
                         <path d="m16 4 4 4M4 20l4-1 12-12a2.83 2.83 0 0 0-4-4L4 15z" />
@@ -756,6 +786,9 @@ export default function SantaMessageWorkshop() {
                 letterVariation={letterVariation}
                 giftDetails={giftDetails}
                 completedGift={completedGift}
+                onDownloadRequested={kind => setRequestedGifts(current => ({ ...current, [kind]: true }))}
+                onGiftPreparing={(kind, pending) => setPreparingGifts(current => current[kind] === pending
+                  ? current : { ...current, [kind]: pending })}
                 nameReadOnly={nameReadOnly}
                 messageActionRef={setReviewMessageTarget}
                 downloadReady={giftMatches}
@@ -774,6 +807,9 @@ export default function SantaMessageWorkshop() {
               <div className="smw-actions smw-actions--review" hidden={!isReview}>
                 <WorkshopMessageAudio generation={generation} correction={correction}
                   onStartAgain={startAgain}
+                  giftExportPending={giftExportPending}
+                  giftsRequested={['certificate', 'letter', 'picture'].every(kind => requestedGifts[kind])}
+                  giftWrittenName={completedGift?.writtenName}
                   showReadyAction={nameReadOnly}
                   reviewMessageTarget={reviewMessageTarget}
                   showGiftDownloadHint={!giftNotice}
@@ -782,6 +818,7 @@ export default function SantaMessageWorkshop() {
                   record={selectedName} choices={choices} spelling={nameSpelling}
                   onPhaseChange={setAudioPhase}
                   onReady={message => {
+                    setRequestedGifts({});
                     setNameReadOnly(true);
                     const record = message.record;
                     const completedChoices = message.choices;

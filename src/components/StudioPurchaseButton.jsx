@@ -54,10 +54,10 @@ function PurchaseButton({ sandbox }) {
     <p id={noteId} role="status">
       {sandbox
         ? available
-          ? 'Sandbox only — no real money moves. Use test card 4242 4242 4242 4242, any future expiry and any three-digit CVC. This opens the individual Studio preview. Secure return emails are live-site only.'
+          ? 'Sandbox only — two successful creations for £6.50; no real money moves. Use test card 4242 4242 4242 4242, any future expiry and any three-digit CVC. Secure return emails are live-site only.'
           : checking ? 'Checking sandbox availability…' : 'Sandbox purchases are available in the development preview only.'
         : available
-          ? '£6.50 once for personalised content for one child. Payment opens Studio immediately; a private email link lets you return without an account. Download your MP3 and gifts before leaving.'
+          ? '£6.50 once includes two successful message creations, each with personalised gifts for one child. Payment opens Studio immediately; a private email link lets you use your remaining allowance without an account, not recover recordings. Download your MP3 and gifts before leaving.'
           : checking ? 'Checking purchase availability…' : 'Purchases are currently unavailable. Valid voucher codes still work.'}
     </p>
     {new URLSearchParams(location.search).get('studioCheckout') === 'cancelled' &&

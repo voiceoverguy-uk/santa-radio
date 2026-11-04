@@ -6,7 +6,7 @@ const labels = {
   picture: 'Download Santa picture (PNG)',
 };
 
-export default function StudioGiftDownload({ kind, ready, name, letter, picture, unavailableNotice }) {
+export default function StudioGiftDownload({ kind, ready, name, letter, picture, unavailableNotice, onDownloadRequested, onPreparing }) {
   const id = useId();
   const [status, setStatus] = useState('idle');
   const busy = useRef(false);
@@ -17,6 +17,7 @@ export default function StudioGiftDownload({ kind, ready, name, letter, picture,
     const pending = urls.current;
     return () => {
       active.current = false;
+      onPreparing?.(kind, false);
       for (const [url, timer] of pending) { clearTimeout(timer); URL.revokeObjectURL(url); }
       pending.clear();
     };
@@ -24,6 +25,7 @@ export default function StudioGiftDownload({ kind, ready, name, letter, picture,
   const download = async () => {
     if (!ready || busy.current) return;
     busy.current = true;
+    onPreparing?.(kind, true);
     setStatus('preparing');
     try {
       let blob, filename;
@@ -48,9 +50,10 @@ export default function StudioGiftDownload({ kind, ready, name, letter, picture,
         URL.revokeObjectURL(url); urls.current.delete(url);
       }, 60000));
       setStatus('requested');
+      onDownloadRequested?.(kind);
     } catch {
       if (active.current) setStatus('error');
-    } finally { busy.current = false; }
+    } finally { busy.current = false; onPreparing?.(kind, false); }
   };
   return <div className="studio-gift-download">
     <button type="button" onClick={download} disabled={!ready || status === 'preparing'}

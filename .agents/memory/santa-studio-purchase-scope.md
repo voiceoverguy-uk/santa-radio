@@ -3,9 +3,15 @@ name: Santa Studio paid purchase
 description: One-child temporary creation visit, Resend entry access and independent Stripe/voucher boundaries.
 ---
 
-The current website purchase is a one-off £6.50 GBP for one child's personalised MP3, including the Nice List certificate, Santa letter and Santa picture. This supersedes the earlier up-to-three-child family offer.
+The current website purchase is a one-off £6.50 GBP for two successful creations,
+each with one child's personalised MP3, Nice List certificate, Santa letter and
+Santa picture. This is not the earlier up-to-three-child family offer.
 
 **Why:** The owner explicitly chose “Switch to one-child content” when asked to reconcile the existing individual outputs with the earlier family offer.
+
+**Why:** The owner subsequently chose two successful creations per website
+purchase. Minimal durable allowance accounting is allowed; names/destinations
+must not be locked and generated files must not be retained.
 
 **How to apply:** Keep this entitlement separate from the free short greeting and independent tester-voucher access. Preserve the existing Stripe product and price. Do not advertise a combined family recording, shared multi-child gifts or a recording-retrieval service.
 
@@ -25,7 +31,10 @@ Customers create their message, play it and download it during that visit. Do no
 
 **Why:** The owner explicitly corrected the conflicting saved-recording/finalisation notes and instructed that the emailed link is for beginning creation, not retrieving previous downloads.
 
-**How to apply:** Preserve voucher access independently. Do not restore durable generation finalisation, purchase-wide generation locks, recording archives or permanent keepsake storage. Keep genuine payment authorisation and reasonable request-abuse protection distinct from temporary generated output.
+**How to apply:** Preserve voucher access independently. Enforce only the
+approved minimal two-creation purchase allowance, not identity locks, archived
+outputs or durable saved-output finalisation. Keep genuine payment authorisation
+and reasonable request-abuse protection distinct from temporary generated output.
 
 Use Resend for purchase-access email from `santa@santaradio.co.uk`, not `santa@studio.santaradio.co.uk`. Stripe continues sending payment receipts. Brevo is not approved for purchase-access email.
 

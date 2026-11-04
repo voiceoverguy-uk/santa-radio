@@ -117,7 +117,7 @@ export default function WorkshopAccessGate({ children }) {
 
         setExpiresAt(data.expiresAt);
         setAccessKind('tester');
-        setVoucher(data.voucher?.unlimited === true && typeof data.voucher.code === 'string'
+        setVoucher(typeof data.voucher?.unlimited === 'boolean' && typeof data.voucher.code === 'string'
           ? data.voucher : null);
         setStatusMessage('');
         setStatus('authorized');

@@ -38,7 +38,7 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
           </p>
           <div className="santa-studio-promotion__benefits">
             <p className="santa-studio-promotion__benefits-lead">
-              Your one-child package includes a personalised MP3 and gifts from Santa:
+              Your £6.50 package includes two successful message creations, each with a personalised MP3 and gifts for one child:
             </p>
             <ul className="santa-studio-promotion__benefit-list">
               <li>An official Nice List certificate</li>

@@ -23,6 +23,7 @@ export async function studioTestDatabase({ loadSchema = true } = {}) {
     started = true;
     pool = new pg.Pool({ host: root, user: userInfo().username, database: 'postgres', max: 8 });
     if (loadSchema) await pool.query(await readFile(new URL('../../database/santa-studio-live.sql', import.meta.url), 'utf8'));
+    if (loadSchema) await pool.query(await readFile(new URL('../../database/santa-studio-creation-allowance.sql', import.meta.url), 'utf8'));
     return { pool, close, socket: root };
   } catch (error) { await close(); throw error; }
 }

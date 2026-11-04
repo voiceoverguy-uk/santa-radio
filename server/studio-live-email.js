@@ -18,7 +18,7 @@ export async function sendStudioReturnEmail({ config, email, token, key, fetcher
     // without revisiting tracking/privacy and the secure-link delivery checks.
     body: JSON.stringify({
       from: `Santa Radio <${config.emailFrom}>`, to: [email], subject: 'Your private Santa Radio Studio access',
-      text: `Thank you for your Santa Radio Studio purchase.\n\nOpen your private Studio:\n${link}\n\nThis link can be used once within 24 hours. Its expiry does not expire your purchase. If needed, request a fresh link on the Studio page using your purchase email.\n\nKeep this link private. You do not need an account or voucher code.\n\nDownload your MP3, certificate, letter and Santa picture before leaving Studio. Recordings are temporary and are not saved for return visits.`,
+      text: `Thank you for your Santa Radio Studio purchase. Your £6.50 purchase includes two successful message creations, each with personalised gifts for one child.\n\nOpen your private Studio:\n${link}\n\nThis link can be used once within 24 hours. Its expiry does not expire your purchase. If needed, request a fresh link on the Studio page using your purchase email. Returning preserves your remaining creation allowance; it does not reset it or recover recordings.\n\nKeep this link private. You do not need an account or voucher code.\n\nDownload your MP3, certificate, letter and Santa picture before leaving Studio. Recordings are temporary and are not saved for return visits.`,
     }),
   });
   if (!response.ok || typeof (await response.json()).id !== 'string') throw new Error('STUDIO_RETURN_EMAIL_NOT_ACCEPTED');

@@ -16,6 +16,8 @@ import { studioLiveReadiness } from '../server/studio-live-readiness.js';
 import { hasStudioAccess } from '../server/santa-workshop-catalogue.js';
 import { createWorkshopAccessHandler, hasWorkshopAccess } from '../server/santa-workshop-access.js';
 import { createStudioMessageHandler } from '../server/santa-studio-message.js';
+import { studioAllowanceIdentity, createStudioAllowanceStore } from '../server/studio-creation-allowance.js';
+import { livePaidPurchaseId } from '../server/studio-live-access.js';
 
 const validEnv = () => ({
   VERCEL: '1', VERCEL_ENV: 'production', DATABASE_URL: 'fixture-only-not-used',
@@ -50,6 +52,7 @@ let database, pool;
 before(async () => { database = await studioTestDatabase(); pool = database.pool; });
 after(async () => { await database?.close(); });
 beforeEach(async () => {
+  await pool.query('TRUNCATE public.santa_studio_creation_allowances');
   await pool.query(`TRUNCATE public.santa_studio_live_attempts,public.santa_studio_live_purchases,
     public.santa_studio_live_sessions,public.santa_studio_live_events,public.santa_studio_live_email,
     public.santa_studio_live_email_health,public.santa_studio_live_webhook_health,public.santa_studio_live_worker_health,
@@ -314,6 +317,34 @@ test('return tokens redeem atomically once, do not expire purchase, and reject f
   assert.equal(await count('santa_studio_live_purchases'), 1);
 });
 
+test('emailed returns replace credentials without resetting either purchase creation', async t => {
+  await purchase();
+  const store = createStudioAllowanceStore(pool);
+  const resolve = cookie => studioAllowanceIdentity(req(cookie), {
+    visitorSession: () => null, production: () => true,
+    livePurchase: request => livePaidPurchaseId(request, { config, pool }),
+  });
+  const original = await resolve(requestCookies);
+  const operation = () => crypto.randomUUID();
+  await store.succeed(original, await store.reserve(original, operation()));
+  const server = await serve(t, createStudioReturnHandler({
+    getConfig: () => config, getEmailConfig: () => config, getPool: () => pool, consume: async () => true,
+  }));
+  for (let turn = 0; turn < 2; turn++) {
+    if (turn) await server.post({ email: 'studio-buyer@example.invalid' });
+    const { rows: [email] } = await pool.query(`SELECT * FROM public.santa_studio_live_email
+      WHERE consumed_at IS NULL ORDER BY token_expires_at DESC LIMIT 1`);
+    await pool.query('UPDATE public.santa_studio_live_email SET sent_at=now() WHERE id=$1', [email.id]);
+    const response = await server.post({ token: returnToken(email.nonce, config) });
+    assert.equal(response.status, 200);
+    const returned = await resolve(response.headers.get('set-cookie').split(';')[0]);
+    assert.deepEqual(returned, original);
+    assert.equal((await store.status(returned)).remaining, turn ? 0 : 1);
+    if (!turn) await store.succeed(returned, await store.reserve(returned, operation()));
+    else await assert.rejects(store.reserve(returned, operation()), { status: 409 });
+  }
+});
+
 test('fresh return requests never enumerate purchasers or depend on a new-sales switch', async t => {
   await purchase();
   const server = await serve(t, createStudioReturnHandler({
@@ -385,6 +416,7 @@ for (const stripeState of ['absent', 'unavailable', 'switched off']) {
     const cookie = valid.headers.get('set-cookie').split(';')[0];
     let paidCalls = 0;
     const studio = await serve(t, createStudioMessageHandler({
+      allowanceIdentity: async () => null, // this fixture uses a non-limited voucher
       authorize: request => hasStudioAccess(request, {
         hasVoucher: r => hasWorkshopAccess(r, voucher),
         hasPaid: async () => { paidCalls++; throw new Error(`Stripe ${stripeState}`); },

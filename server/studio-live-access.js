@@ -26,23 +26,27 @@ export function liveCheckoutClaim(req, config) {
   return timingSafeEqual(Buffer.from(signature), Buffer.from(mac(claim, config))) ? claim : null;
 }
 
-export async function hasLivePaidAccess(req, { config, pool } = {}) {
+export async function livePaidPurchaseId(req, { config, pool } = {}) {
   const token = singleCookie(req, LIVE_ACCESS_COOKIE);
   const pending = singleCookie(req, LIVE_PENDING_COOKIE);
   if (!tokenPattern.test(token || '') && !sessionPattern.test(pending || '')) return false;
   config ||= liveStudioConfig();
   pool ||= databasePool();
   if (tokenPattern.test(token || '')) {
-    const result = await pool.query(`SELECT 1 FROM public.santa_studio_live_sessions s
+    const result = await pool.query(`SELECT p.checkout_session_id FROM public.santa_studio_live_sessions s
       JOIN public.santa_studio_live_purchases p USING(checkout_session_id) WHERE s.token_sha256=$1`, [digest(token)]);
-    if (result.rowCount) return true;
+    if (result.rowCount) return result.rows[0].checkout_session_id;
   }
   const claim = liveCheckoutClaim(req, config);
   const sessionId = pending;
   if (!claim || !sessionPattern.test(sessionId || '')) return false;
-  const result = await pool.query(`SELECT 1 FROM public.santa_studio_live_purchases
+  const result = await pool.query(`SELECT checkout_session_id FROM public.santa_studio_live_purchases
     WHERE checkout_session_id=$1 AND claim_sha256=$2`, [sessionId, digest(claim)]);
-  return result.rowCount > 0;
+  return result.rows[0]?.checkout_session_id || false;
+}
+
+export async function hasLivePaidAccess(req, options) {
+  return !!await livePaidPurchaseId(req, options);
 }
 
 export async function issueLiveAccess(res, sessionId, client) {

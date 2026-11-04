@@ -38,10 +38,13 @@ export async function confirmMessage(page, label = 'Create message') {
   await page.getByRole('dialog').getByRole('button', { name: 'Create message', exact: true }).click();
 }
 // Current browser contract: one request-local MP3, no saved history or counters.
-export async function mockStudioGeneration(page, { record = { id: 'dixie-variant', name: 'Dixie', variant: 'Recording 2' }, tester = false } = {}) {
+export async function mockStudioGeneration(page, { record = { id: 'dixie-variant', name: 'Dixie', variant: 'Recording 2' }, tester = false, limited = false } = {}) {
   const fixture = { state: { ...emptyGeneration(), testerCanStartAnother: tester }, posts: [], fail: false, hold: null,
     record, selection: choices => ({ record: { ...fixture.record, id: choices.name }, choices }),
     audio: readFileSync('server/santa-audio/sleighbells.mp3') };
+  if (limited) Object.assign(fixture.state, { limit: 2, successes: 0, remaining: 2, pending: false });
+  fixture.operationIds = [];
+  const committedOperations = new Set();
   await page.context().route('**/api/santa-studio-message*', async route => {
     const request = route.request();
     if (request.method() === 'GET') {
@@ -53,11 +56,26 @@ export async function mockStudioGeneration(page, { record = { id: 'dixie-variant
     }
     const payload = request.postDataJSON();
     fixture.posts.push(payload);
+    const operation = request.headers()['idempotency-key'];
+    fixture.operationIds.push(operation);
     if (fixture.hold) await fixture.hold;
     if (fixture.fail) return route.fulfill({ status: 503, json: { error: 'Fixture recording unavailable. Try again.' } });
     if (fixture.dropNext) {
       fixture.dropNext = false;
       return route.abort('failed');
+    }
+    if (limited) {
+      if (committedOperations.has(operation)) return route.fulfill({
+        status: 409, json: { error: 'This creation already completed. Recordings are not saved.' },
+      });
+      if (!fixture.state.remaining) return route.fulfill({ status: 409, json: { error: 'Both creations have been used.' } });
+      fixture.state.successes++;
+      fixture.state.remaining--;
+      committedOperations.add(operation);
+      if (fixture.dropAfterCommit) {
+        fixture.dropAfterCommit = false;
+        return route.abort('failed');
+      }
     }
     return route.fulfill({ contentType: 'audio/mpeg',
       headers: { 'X-Studio-Selection': Buffer.from(JSON.stringify(fixture.selection(payload))).toString('base64'),

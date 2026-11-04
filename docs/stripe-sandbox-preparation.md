@@ -84,4 +84,8 @@ All 64 current automated checks (Stripe, checkout, catalogue, vouchers and free 
 - A transactional email sender still needs connecting for secure guest return links.
 - The separate extended audio-stitching demo is not connected to Studio selections; the family bundle outputs are not delivered.
 
-Preserve the £6.50 live product, free greeting and tester-code path. Paid access must not inherit tester expiry rules or invented generation limits. Successful payment must be verified server-side, and cancelled, failed or pending payments must not grant access.
+Preserve the £6.50 product, free greeting and tester-code path. The later
+owner-approved website offer includes two successful creations per verified
+purchase, with minimal allowance accounting only (see `studio-live-release.md`).
+Paid access must not inherit tester expiry rules. Successful payment must be
+verified server-side, and cancelled, failed or pending payments must not grant access.

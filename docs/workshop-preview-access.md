@@ -139,8 +139,11 @@ Recording release checks now skip reporting probes entirely, and optional
 reporting readiness never determines overall recording readiness. Staff
 diagnostics may still inspect historical reporting separately.
 
-The owner has also removed durable generation counts, identity locks and
-recovery from the requirements. Creation does not use either generation table.
+The owner removed the earlier generation history, identity locks and recovery
+model. Creation does not use either retired generation table. The later
+two-creation website offer permits only minimal canonical-purchase allowance
+accounting and expiring session counts for the selected voucher; see
+`studio-live-release.md`. Other vouchers remain unlimited.
 Voucher/payment validation and existing expiring request-abuse buckets remain
 enforced; they are not a generation-history store.
 
@@ -156,10 +159,11 @@ The owner confirmed that the Replit Production Database connection hostname
 matches the Vercel production-build endpoint. Use the Replit-managed schema
 workflow; do not request a new Neon account or copy credentials.
 
-No production schema sync is needed for temporary Studio creation. Do not
-apply the previously reviewed broader pending diff or create optional history
-tables merely to enable this flow. Preserve existing development/production
-tables and records.
+Unlimited-voucher temporary creation does not need generation storage. The
+later paid/selected-voucher allowance does require the separate minimal schema
+in `database/santa-studio-creation-allowance.sql`, via the approved managed
+schema-sync process before release. Do not apply a broader pending diff or
+create optional history tables. Preserve existing tables and records.
 
 Coordinate the cutover before enabling generation tables: an older serving
 renderer can write MP3 bytes when those tables become available. Keep Studio
@@ -367,14 +371,17 @@ Focused checks:
 
 ## Recording repair and live release boundary
 
-Studio is now temporary generation only. No generation records, successful
-message counts, saved choices, identity locks, idempotency records or recovery
-are retained. This explicitly supersedes the earlier two-success model.
+Studio outputs remain temporary. No generated audio, saved choices, recipient
+history, identity locks, downloads or recovery are retained. The later website
+two-creation offer stores only an opaque canonical-purchase key (or expiring
+selected-voucher visitor key), up to two successful-operation IDs and a
+temporary fenced reservation, not the earlier two-success correction model.
 Existing voucher/payment entitlement checks and expiring abuse limits stay
 enforced; no schema is created at startup or inside requests.
 
-An authorised GET returns temporary-service availability, not message counts
-or saved choices. An authorised recovery GET (`?audio=1`) returns 410 without
+An authorised GET returns temporary-service availability and safe allowance
+counts for paid/selected-voucher access, never saved choices or audio.
+An authorised recovery GET (`?audio=1`) returns 410 without
 reading historical records. POST validates the exact source IDs, resolves
 Mark's source clips, stitches in a request-local temporary directory and returns
 the MP3 with private/no-store headers. Working files are cleaned on every exit.

@@ -184,7 +184,9 @@ test('all valid vouchers and new tests succeed without touching a missing report
       }, body: JSON.stringify({ another: true }) });
       assert.equal(another.status, 200);
       assert.deepEqual(await another.json(), { authorized: true, expiresAt: session.expiresAt });
-      assert.equal(workshopSession({ headers: { cookie: another.headers.get('set-cookie').split(';')[0] } },
+      const rotatedCookie = another.headers.get('set-cookie');
+      if (session.limited) assert.equal(rotatedCookie, null, 'Limited visitor identity must not rotate');
+      assert.equal(workshopSession({ headers: { cookie: rotatedCookie?.split(';')[0] || cookie } },
         schoolConfig, time).codeId, entry.id);
     }
   });

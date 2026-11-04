@@ -3,6 +3,7 @@ import { liveStudioConfig } from './studio-live-config.js';
 import { liveStripeClient, verifyLiveOffer } from './studio-live-stripe.js';
 import { liveStoreReady, digest } from './studio-live-store.js';
 import { databasePool } from './name-request-store.js';
+import { studioAllowanceReady } from './studio-creation-allowance.js';
 
 export const probeSignature = config => createHmac('sha256', config.secret).update('studio-live-delivery-probe').digest('base64url');
 export const webhookEvents = ['checkout.session.completed', 'checkout.session.async_payment_succeeded'];
@@ -13,6 +14,7 @@ export async function studioLiveReadiness({
   stripe ||= await liveStripeClient(config);
   await verifyLiveOffer(stripe, config);
   await liveStoreReady(pool);
+  await studioAllowanceReady(pool);
   const sales = await pool.query("SELECT enabled FROM public.santa_studio_live_sales_settings WHERE key='public'");
   if (sales.rows[0]?.enabled !== true) throw new Error('STUDIO_LIVE_SALES_DISABLED');
   const endpoint = await stripe.webhookEndpoints.retrieve(config.webhookId);

@@ -4,9 +4,9 @@
 
 **Public sales are disabled. No production deployment or real charge has been performed by the agent.**
 
-The owner approved changing the £6.50 offer from the previously proposed family bundle to **personalised content for one child**: an MP3, Nice List certificate PDF, Santa letter PDF and Santa picture PNG.
+The £6.50 website purchase now includes **two successful creations**, each with personalised content for one child: an MP3, Nice List certificate PDF, Santa letter PDF and Santa picture PNG. The existing product, price and payment checks remain unchanged.
 
-**Owner clarification:** the emailed link admits a verified paying customer to Studio to **begin creating**, not to retrieve saved audio or previous downloads. The customer creates, plays and downloads during that visit. Generated MP3s and keepsakes must not be permanently stored; no recording-retrieval service or durable saved-output finalisation is authorised. Earlier conflicting project notes have been corrected.
+**Owner clarification:** the emailed link admits a verified paying customer to Studio to **begin creating within the remaining allowance**, not to retrieve saved audio or previous downloads. The customer creates, plays and downloads during that visit. Generated MP3s and keepsakes must not be permanently stored; no recording-retrieval service or durable saved-output finalisation is authorised. Minimal allowance accounting below is the only newly authorised exception to the earlier no-count rule.
 
 Keep the temporary browser recording available for playback and repeated download attempts during the visit, then clear it when the visitor leaves or their access expires. Server working files are deleted after rendering; generated keepsakes are browser-local. Paid entitlement records and email-access tokens are separate from generated output and do not constitute an audio archive. Preserve independent voucher access unchanged. Production commissioning and delivery checks below still block sales; this clarification does not authorise deployment or activation.
 
@@ -52,7 +52,38 @@ Retain all existing voucher settings, free-message settings and Studio recording
 4. Schema synchronisation does not copy development rows into production. An authorised operator must initialise the production sales switch **off** using the following data-only statement through approved production administration: `INSERT INTO public.santa_studio_live_sales_settings(key, enabled) VALUES ('public', false) ON CONFLICT (key) DO NOTHING;`. This does not overwrite an existing switch or copy test purchases. Turning it on is a separate, final release action.
 5. The new schema does not alter vouchers, sandbox receipts, native purchases, free access or audio retention. Run readiness against the serving environment: it checks expected columns, primary/unique/foreign-key constraints, all required privileges and read-write connection mode. Never silently substitute memory for these tables.
 
-There are no startup/build-time migrations, generated-message counters or permanent MP3 storage. The separate legacy storage diagnostic is not proof of live-payment readiness.
+There are no startup/build-time migrations or permanent MP3 storage. The separate legacy storage diagnostic is not proof of live-payment readiness.
+
+### Two-creation allowance release requirement
+
+`database/santa-studio-creation-allowance.sql` is an additional development schema source, included in the existing development-only post-merge setup. Review it in the separately approved **managed schema-sync** process described above before releasing this code. No production schema changes have been applied by this task. Missing storage fails closed for paid and limited-voucher generation; do not enable sales until the runtime readiness check passes. Website compilation does not require this table.
+
+The allowance stores only an opaque verified purchase key (or expiring voucher visitor key), at most two opaque successful-operation UUIDs and one temporary fenced reservation. It does not use the retired generation tables, archive audio, lock names/destinations, save choices or track gift/download history. Existing purchases begin at zero known creations, without invented historical usage. The server returns safe counts only. Verified return links and newly issued access cookies resolve to the same purchase and cannot reset its allowance.
+
+Only the owner-selected shared voucher uses the two-creation flow, per authorised visitor session, never globally. Its current non-secret configuration marker is slot **3** (`SANTA_STUDIO_TEST_CODE_3`); the server-only optional `SANTA_STUDIO_LIMITED_VOUCHER_SLOT` overrides that marker if the owner moves it. Never put the access-code value in source, documentation, test fixtures or logs. Credential rotation within the selected slot retains its limited policy. Starting another or re-entering that code while the signed session is valid preserves its identity and original expiry. A different browser/device, or a new visitor after expiry, is a new session, not a lifetime entitlement. Other vouchers remain unlimited subject to access validity and abuse limits.
+
+The access-code literal used during implementation has been removed before completion. No live credential was rotated. If any working source/documentation containing it was shared outside the authorised project, rotate the selected slot's secret through the secure settings flow before release; this invalidates its existing voucher sessions, so coordinate that change with the owner rather than silently replacing credentials.
+
+A slot commits once the complete MP3 has been prepared, immediately before sending the response. Failed or cancelled preparation releases its reservation; expired reservations are fenced against late commits. After a successful operation, duplicate requests report that completion rather than re-rendering or retrieving audio. A lost connection at/after the database commit can consume a creation even if the browser never receives it: no server can prove browser receipt or a saved file. Do not promise automatic refunds of uncertain deliveries. Completed operation IDs are bounded to two per allowance.
+
+Gift download-request flags are individual and browser-local to the current result. Previews, failed exports and cancelled reset dialogs do not set them. “Download requested” never proves device saving. MP3s and gifts are cleared on deliberate start-over, refresh, exit or access expiry; the email link retains only remaining allowance, never either recording.
+
+After the separately approved production schema sync/release, verify a real canonical paid entitlement across an emailed return and cookie replacement, with two completions total and no third route. Confirm the selected voucher's same-session persistence and separate-browser independence without extending expiry. Production schema sync, deployment, live Stripe changes and real-money charges are outside this task.
+
+#### Local verification of the two-creation change
+
+- `npm run test:studio-audio`: **36 passed**, including the new disposable-PostgreSQL allowance tests. Fixtures cover concurrency, failure/cancellation release, stale fences, completed-operation retries, lost responses, expiry, non-secret slot selection, safe status and no recovery/archive.
+- `node --test scripts/studio-creation-allowance.test.mjs scripts/santa-workshop-access.test.mjs scripts/studio-live.test.mjs scripts/studio-live-setup.test.mjs`: **55 passed**. The return-email fixture redeems fresh links into replacement credentials and verifies that remaining purchase allowance stays consumed.
+- Existing live setup and workshop-access server suites passed using isolated fixtures; no live Stripe/API resources or production database were used.
+- `npx playwright test --config playwright.workshop.config.js tests/santa-workshop-allowance.spec.js --project=chromium`: **12 passed** at desktop/mobile sizes. Includes a committed-but-lost response followed by an idempotent retry and deliberate fresh second creation, paid refresh, voucher flow, no/partial/all gifts, failed/pending export, keyboard focus loop, Escape/cancel/continue, MP3 warning, second-result exhaustion, READY and repeat downloads.
+- `npm run build` and `node --test scripts/studio-promotion-production.test.mjs`: passed (all four production-style promotion/access checks).
+- Broader pre-existing browser checks were also attempted: 25 gift/allowance cases passed before stopping at four older gift assertions (44px controls versus expected 56/58px; expectations that gifts survive expired access). Older READY cases likewise expect audio to remain after access expiry, contrary to the current retention requirement. The access suite additionally has old name-search/document expectations. These are not passing coverage for the new flow and were not used to weaken access expiry or alter unrelated layouts.
+- `scripts/check-studio-release.test.mjs` has an unrelated exact build-command assertion that omits the existing private names-demo preparation step; the real complete website build passes. Function-layout checks passed.
+
+Firefox/WebKit are not installed in this environment. The ordinary unsigned
+Preview screenshot verifies the access gate, not a real purchaser's private
+Studio. The protected flow was verified with isolated Chromium fixtures, not
+a live purchase, real iPhone Safari, VoiceOver or a production schema change.
 
 ## Webhook setup — sales still off
 
