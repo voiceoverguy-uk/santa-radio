@@ -349,7 +349,7 @@ for (const width of [320, 820, 1365]) {
     await assertGeometry(width > 600);
     await confirmMessage(page);
     await expect(page.getByRole('region', { name: 'Your finished Santa message' })).toBeVisible();
-    await expect(page.locator('.smw-review-create-action button')).toHaveCount(0);
+    await expect(page.locator('.smw-review-create-action button')).toHaveText('READY');
     for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
     await assertGeometry(width > 600);
     await stack.screenshot({ path: `generated-artifacts/studio-gifts/rebalanced-ready-${width}.png`,
@@ -558,7 +558,10 @@ for (const width of [320, 1365]) {
     const dialog = page.getByRole('dialog', { name: 'Are you happy with your selection?' });
     const checkActions = async (label, disabled, busy = false) => {
       const completed = await page.getByRole('region', { name: 'Your finished Santa message' }).count();
-      if (completed) await expect(upper).toHaveCount(0);
+      if (completed) {
+        await expect(upper).toHaveText('READY');
+        await expect(upper).toBeEnabled();
+      }
       for (const button of completed ? [lower] : [upper, lower]) {
         await expect(button).toContainText(label);
         if (disabled) await expect(button).toBeDisabled();

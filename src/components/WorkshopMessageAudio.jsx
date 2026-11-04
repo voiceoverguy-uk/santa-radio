@@ -20,7 +20,7 @@ const PREPARATION_MESSAGES = [
 
 export default function WorkshopMessageAudio({
   record, choices, spelling, complete, generation, correction, tester = false, onCorrection, visible, onPhaseChange, onReady,
-  showGiftDownloadHint = false, reviewMessageTarget = null, onStartAgain,
+  showGiftDownloadHint = false, reviewMessageTarget = null, onStartAgain, showReadyAction = true,
 }) {
   const radio = useRadio();
   const voucher = useContext(StudioVoucherContext);
@@ -31,6 +31,7 @@ export default function WorkshopMessageAudio({
   const dialogRef = useRef(null);
   const triggerRef = useRef(null);
   const deliveryRef = useRef(null);
+  const finishedRef = useRef(null);
   const deliveryScrollPending = useRef(false);
   const receivedSelection = useRef(null);
   const readyCallbackRef = useRef(onReady);
@@ -51,6 +52,34 @@ export default function WorkshopMessageAudio({
   const finishedWrittenName = finishedName
     ? getWorkshopWrittenName(finishedName.name, finishedSpelling) : writtenName;
   const busy = phase === 'preparing' || phase === 'receiving';
+  const showRecording = () => {
+    const finished = finishedRef.current;
+    const download = finished?.querySelector('.smw-download-actions');
+    if (!finished || !download) return;
+    // Focus without native scrolling (or the builder's keyboard-control
+    // scrolling), then make one explicit move for the whole playable result.
+    finished.focus({ preventScroll: true });
+    const bounds = finished.getBoundingClientRect();
+    const viewport = window.visualViewport;
+    const viewportTop = viewport?.offsetTop || 0;
+    const header = document.querySelector('.navbar')?.getBoundingClientRect();
+    const topEdge = Math.max(viewportTop, header?.bottom || 0) + 16;
+    const safeBottom = parseFloat(getComputedStyle(finished).getPropertyValue('--smw-safe-bottom')) || 0;
+    let bottomEdge = Math.min(window.innerHeight, viewportTop + (viewport?.height || window.innerHeight))
+      - safeBottom - 16;
+    const dock = document.querySelector('.radio-dock')?.getBoundingClientRect();
+    // Studio normally hides the dock. Only reserve its actual visible bounds
+    // when it overlaps this recording horizontally.
+    if (dock?.height && dock.right > bounds.left && dock.left < bounds.right && dock.bottom > topEdge) {
+      bottomEdge = Math.min(bottomEdge, dock.top - 16);
+    }
+    const requiredHeight = download.getBoundingClientRect().bottom - bounds.top;
+    const destinationTop = Math.max(topEdge, bottomEdge - requiredHeight);
+    window.scrollTo({
+      top: Math.max(0, window.scrollY + bounds.top - destinationTop),
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+    });
+  };
   useEffect(() => {
     if (!deliveryScrollPending.current) return;
     deliveryScrollPending.current = false;
@@ -238,7 +267,9 @@ export default function WorkshopMessageAudio({
   return <>
     {/* Render a second trigger in the gifts row without duplicating recording
         state, requests or the confirmation dialog owned by this component. */}
-    {!url && reviewMessageTarget && createPortal(messageAction(), reviewMessageTarget)}
+    {reviewMessageTarget && createPortal(url && showReadyAction
+      ? <button className="smw-button smw-button-next" type="button" onClick={showRecording}>READY</button>
+      : messageAction(), reviewMessageTarget)}
     {!url && startAction()}
     {!url && messageAction()}
     {!url && showGiftDownloadHint && <p className="smw-catalogue-review-note smw-gift-download-hint">
@@ -264,7 +295,8 @@ export default function WorkshopMessageAudio({
     </div>}
     {error && <div className="smw-message-result" role="alert"><p>{error}</p>
     </div>}
-    {url && <section className="smw-message-result smw-message-finished" aria-label="Your finished Santa message">
+    {url && <section className="smw-message-result smw-message-finished" ref={finishedRef}
+      tabIndex={-1} aria-label="Your finished Santa message">
       <h4>Santa’s message for {finishedWrittenName}</h4>
       <p className="smw-wheel-accessible-text" role="status">{phase === 'ready' && !error ? 'Your message is ready.' : ''}</p>
       <audio ref={audioRef} src={url} controls preload="metadata" aria-label={`Play Santa’s message for ${finishedWrittenName}`}

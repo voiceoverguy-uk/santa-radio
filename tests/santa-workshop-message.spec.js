@@ -4,7 +4,7 @@ import { randomBytes } from 'node:crypto';
 import { test } from './helpers/provider-test.js';
 import { unlockWorkshop } from './helpers/workshop-access.js';
 import { workshopCatalogueFixture } from './fixtures/workshop-catalogue.js';
-import { confirmMessage, mockStudioGeneration, emptyGeneration, settleStudioScroll } from './helpers/studio-generation.js';
+import { confirmMessage, mockStudioGeneration, emptyGeneration, settleStudioScroll, expectStudioRecordingInView } from './helpers/studio-generation.js';
 import { SCHOOL_TEST_START, SCHOOL_TEST_DEADLINE } from '../server/santa-workshop-settings.js';
 
 const path = '/santa-message-workshop';
@@ -22,6 +22,120 @@ const preparationMessages = [
   'Hang on a moment — Santa’s checking his lines. Twice, obviously.',
   'Santa is busy recording. We’ve hidden the mince pies until he’s finished.',
 ];
+
+for (const viewport of [{ width: 1365, height: 900 }, { width: 390, height: 844 }, { width: 320, height: 568 }]) {
+  for (const reducedMotion of [false, true]) {
+    test(`READY navigates without generation or playback at ${viewport.width}x${viewport.height}, reduced motion ${reducedMotion}`, async ({ page }) => {
+      test.setTimeout(90000);
+      await page.setViewportSize(viewport);
+      const fixture = await openReview(page);
+      const upper = page.locator('.smw-review-create-action button');
+      fixture.fail = true;
+      await confirmMessage(page);
+      await expect(page.getByRole('alert')).toContainText('Fixture recording unavailable.');
+      await expect(upper).toHaveText('Retry message →');
+      await expect(page.getByRole('button', { name: 'READY', exact: true })).toHaveCount(0);
+
+      fixture.fail = false;
+      let release;
+      fixture.hold = new Promise(resolve => { release = resolve; });
+      await confirmMessage(page, 'Retry message');
+      await expect(upper).toHaveText('Recording message →');
+      await expect(upper).toBeDisabled();
+      release();
+      const ready = page.getByRole('button', { name: 'READY', exact: true });
+      await expect(ready).toBeEnabled();
+      await ready.screenshot({ path: `generated-artifacts/studio-ready-button-${viewport.width}-${reducedMotion}.png` });
+      const result = page.getByRole('region', { name: 'Your finished Santa message' });
+      const audio = result.locator('audio');
+      const source = await audio.getAttribute('src');
+      await expect.poll(() => audio.evaluate(node => node.readyState)).toBeGreaterThanOrEqual(1);
+      await audio.evaluate(node => { node.currentTime = .4; });
+      await page.emulateMedia({ reducedMotion: reducedMotion ? 'reduce' : 'no-preference' });
+      await page.evaluate(() => {
+        window.readyScrollCalls = [];
+        window.readyMediaEvents = [];
+        window.readyDownloadClicks = 0;
+        const nativeScroll = window.scrollTo.bind(window);
+        window.scrollTo = options => { window.readyScrollCalls.push(options); nativeScroll(options); };
+        const audio = document.querySelector('.smw-message-finished audio');
+        for (const event of ['play', 'pause', 'seeking']) {
+          audio.addEventListener(event, () => window.readyMediaEvents.push(event));
+        }
+        document.querySelector('.smw-button-download').addEventListener('click', () => window.readyDownloadClicks++);
+      });
+
+      // Studio hides the radio today. Also exercise a visible compact dock so
+      // READY remains safe if that shared presentation changes.
+      for (const dockVisible of [false, true]) {
+        await page.locator('.radio-dock').evaluate((node, visible) => {
+          node.style.display = visible ? 'flex' : '';
+        }, dockVisible);
+        // Also reserve a simulated home-indicator inset in the short viewport.
+        await page.locator('.smw-page').evaluate(node => { node.style.setProperty('--smw-safe-bottom', '24px'); });
+        for (const activation of ['pointer', 'Enter', 'Space']) {
+          await ready.scrollIntoViewIfNeeded();
+          await settleStudioScroll(page);
+          const before = await page.evaluate(() => window.readyScrollCalls.length);
+          if (activation === 'pointer') await ready.click();
+          else {
+            await ready.focus();
+            await page.keyboard.press(activation);
+          }
+          await expectStudioRecordingInView(page);
+          expect(await page.evaluate(() => window.readyScrollCalls.slice(-1))).toEqual([
+            expect.objectContaining({ behavior: reducedMotion ? 'instant' : 'smooth' }),
+          ]);
+          expect(await page.evaluate(() => window.readyScrollCalls.length)).toBe(before + 1);
+          await expect(page.getByRole('dialog')).toHaveCount(0);
+          await expect(audio).toHaveAttribute('src', source);
+          expect(await audio.evaluate(node => node.paused && node.currentTime >= .39)).toBe(true);
+          expect(fixture.posts).toHaveLength(2);
+        }
+      }
+      expect(await page.evaluate(() => window.readyMediaEvents)).toEqual([]);
+      expect(await page.evaluate(() => window.readyDownloadClicks)).toBe(0);
+      await page.screenshot({ path: `generated-artifacts/studio-ready-${viewport.width}-${reducedMotion}.png` });
+      await audio.evaluate(node => node.play());
+      const playbackTime = await audio.evaluate(node => node.currentTime);
+      await ready.click();
+      await expectStudioRecordingInView(page);
+      expect(await audio.evaluate(node => node.paused)).toBe(false);
+      expect(await audio.evaluate(node => node.currentTime)).toBeGreaterThan(playbackTime);
+      expect(await page.evaluate(() => window.readyMediaEvents)).toEqual(['play']);
+      await audio.evaluate(node => node.pause());
+      // Access can fail after receipt; local navigation and download must not.
+      await page.route('**/api/santa-studio-message', route => route.request().method() === 'GET'
+        ? route.fulfill({ status: 403, json: { error: 'Access expired.' } }) : route.fallback());
+      await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+      await expect(page.locator('.smw-allowance')).toContainText('enter your access code again');
+      await expect(page.locator('.smw-actions--review > .smw-button-next')).toBeDisabled();
+      await expect(ready).toBeEnabled();
+      await ready.click();
+      await expectStudioRecordingInView(page);
+      await page.screenshot({ path: `generated-artifacts/studio-ready-access-failure-${viewport.width}-${reducedMotion}.png` });
+      const downloaded = page.waitForEvent('download');
+      await result.getByRole('link', { name: 'Download MP3', exact: true }).click();
+      const download = await downloaded;
+      expect(await download.failure()).toBeNull();
+      expect(readFileSync(await download.path())).toEqual(fixture.audio);
+      expect(fixture.posts).toHaveLength(2);
+
+      await page.locator('.radio-dock').evaluate(node => { node.style.display = ''; });
+      await page.getByRole('button', { name: 'Start Again', exact: true }).click();
+      for (let step = 0; step < 7; step++) await page.locator('.smw-button-next:visible').click();
+      await expect(upper).toHaveText('Create message →');
+      await expect(ready).toHaveCount(0);
+      await expect(audio).toHaveAttribute('src', source);
+      await page.unroute('**/api/santa-studio-message');
+      await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+      await expect(upper).toBeEnabled();
+      await page.reload();
+      await expect(ready).toHaveCount(0);
+      await expect(page.locator('.smw-message-finished')).toHaveCount(0);
+    });
+  }
+}
 
 test('authorised Studio can check its actual access without generation records', async ({ page }) => {
   await unlockWorkshop(page);
@@ -254,6 +368,7 @@ for (const width of [320, 1365]) {
       await checkEntitlement();
       release();
       await expect(page.getByText('Receiving your finished MP3…', { exact: true })).toBeVisible();
+      await expect(page.getByRole('button', { name: 'READY', exact: true })).toHaveCount(0);
       await expect(guidance).toHaveCount(0);
       await expect(result).toHaveCount(0);
       await checkEntitlement();
@@ -264,7 +379,7 @@ for (const width of [320, 1365]) {
       await expect(result.getByRole('status')).toHaveText('Your message is ready.');
       await expect(guidance).toHaveCount(1);
       await expect(page.locator('.smw-download-hint, .smw-voucher-completion, .smw-gift-download-hint')).toHaveCount(0);
-      await expect(page.locator('.smw-review-create-action button')).toHaveCount(0);
+      await expect(page.locator('.smw-review-create-action button')).toHaveText('READY');
       await checkEntitlement(true);
       const controls = page.locator('.smw-actions--review');
       const start = controls.getByRole('button', { name: 'Start Again', exact: true });
@@ -1008,7 +1123,7 @@ for (const width of [320, 1365]) {
         expect(await page.evaluate(() => scrollY)).toBe(0);
         expect(await page.evaluate(() => window.deliveryScrollCalls.length)).toBe(1);
         expect(await result.locator('audio').evaluate(node => node.paused)).toBe(true);
-        await expect(page.locator('.smw-review-create-action button')).toHaveCount(0);
+        await expect(page.locator('.smw-review-create-action button')).toHaveText('READY');
 
         // Repeat creation keeps the old audio mounted but uses the same
         // delivery target and no delayed trigger-focus restoration.

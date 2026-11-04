@@ -11,6 +11,27 @@ export async function settleStudioScroll(page) {
     return stable;
   }, { intervals: [50], timeout: 5000 }).toBeGreaterThanOrEqual(3);
 }
+export async function expectStudioRecordingInView(page) {
+  await settleStudioScroll(page);
+  const result = page.getByRole('region', { name: 'Your finished Santa message' });
+  await expect(result).toBeFocused();
+  const visibility = await result.evaluate(node => {
+    const viewport = window.visualViewport;
+    const header = document.querySelector('.navbar').getBoundingClientRect();
+    const dock = document.querySelector('.radio-dock').getBoundingClientRect();
+    const safeBottom = parseFloat(getComputedStyle(node).getPropertyValue('--smw-safe-bottom')) || 0;
+    const top = Math.max(header.bottom, viewport?.offsetTop || 0);
+    const bottom = Math.min(innerHeight, (viewport?.offsetTop || 0) + (viewport?.height || innerHeight)) - safeBottom;
+    return [...node.querySelectorAll('h4, audio, .smw-button-download')].every(control => {
+      const box = control.getBoundingClientRect();
+      const clearOfDock = !dock.height || box.right <= dock.left || box.left >= dock.right || box.bottom <= dock.top;
+      const centre = document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2);
+      return box.top >= top && box.bottom <= bottom && box.left >= 0 && box.right <= innerWidth
+        && clearOfDock && (centre === control || control.contains(centre));
+    });
+  });
+  expect(visibility, 'Heading, player and MP3 download are together above fixed obstructions').toBe(true);
+}
 export async function confirmMessage(page, label = 'Create message') {
   await page.locator('.smw-actions--review').getByRole('button', { name: label, exact: true }).click();
   await expect(page.getByRole('dialog', { name: 'Are you happy with your selection?' })).toBeVisible();

@@ -783,6 +783,7 @@ export default function SantaMessageWorkshop() {
               <div className="smw-actions smw-actions--review" hidden={!isReview}>
                 <WorkshopMessageAudio generation={generation} correction={correction}
                   onStartAgain={startAgain}
+                  showReadyAction={nameReadOnly}
                   reviewMessageTarget={reviewMessageTarget}
                   showGiftDownloadHint={!giftNotice}
                   tester={accessKind === 'tester' && generation.state?.testerCanStartAnother === true}
