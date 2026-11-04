@@ -19,7 +19,7 @@ export function createSantaNamesHandler(library = santaNameLibrary, {
       return send(405, { error: 'Enter at least two letters to search for a recording.' });
     }
     try {
-      await limit(req, 'search');
+      const hint = await limit(req, 'search');
       const data = await readNameJson(req);
       const query = typeof data.query === 'string' ? data.query.normalize('NFKC').trim() : '';
       if (Object.keys(data).some(key => key !== 'query') || [...query].length < SEARCH_MIN_LENGTH ||
@@ -30,7 +30,7 @@ export function createSantaNamesHandler(library = santaNameLibrary, {
       if (!/^[\p{L}\p{M}][\p{L}\p{M} '’\-]*$/u.test(query)) {
         return send(400, { error: 'Enter at least two letters of a first name, without wildcards.' });
       }
-      const result = await library.search(query);
+      const result = await library.search(query, hint);
       // Explicit projection: never return audio locations, filenames, aliases or counts.
       const records = result.records.slice(0, SEARCH_LIMIT).map(({ id, name, downloadName, variant }, index) => ({
         id, name, downloadName, ...(variant ? { variant: `Recording ${index + 1}` } : {}),

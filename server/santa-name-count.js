@@ -18,8 +18,8 @@ export function createSantaNameCountHandler(library = santaNameLibrary, { limit 
       return send(400, { error: 'This endpoint accepts no search parameters.' });
     }
     try {
-      await limit(req, 'count');
-      const total = await library.count();
+      const hint = await limit(req, 'count');
+      const total = await library.count(hint);
       if (!Number.isSafeInteger(total) || total < 0) throw new Error('Invalid aggregate.');
       return send(200, { total });
     } catch (error) {

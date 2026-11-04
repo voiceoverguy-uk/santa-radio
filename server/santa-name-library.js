@@ -3,8 +3,9 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import ffmpegPath from 'ffmpeg-static';
 import { createHash } from 'node:crypto';
-import { santaNameKey as key } from '../src/lib/santaNameSearch.js';
 import { findSantaMessage, santaNames, santaMessageDownloadName } from '../src/data/santaMessages.js';
+import { createNameSnapshotStore } from './santa-name-snapshot.js';
+import { createNameSearchIndex } from './santa-name-search-index.js';
 
 export const NAMES_ROOT = 'https://stagcommunications.com/santaradio/names/';
 export const NAMES_INDEX = `${NAMES_ROOT}names-index.php`;
@@ -94,12 +95,13 @@ export function parseNameIndex(bytes) {
   });
 }
 
-export function createNameLibrary({ fetcher = fetch, now = Date.now } = {}) {
+export function createNameLibrary({ fetcher = fetch, now = Date.now, snapshotStore = null } = {}) {
   let cached;
   let expires = 0;
   let failedUntil = 0;
   let pending;
-  const catalogue = async () => {
+  const catalogue = async hint => {
+    if (snapshotStore) return snapshotStore.load(hint);
     if (cached && now() < expires) return cached;
     if (now() < failedUntil) throw new NameLibraryError('INDEX_UNAVAILABLE');
     if (!pending) pending = (async () => {
@@ -115,30 +117,26 @@ export function createNameLibrary({ fetcher = fetch, now = Date.now } = {}) {
     })();
     return pending;
   };
+  let indexedRecords, index;
+  const prepared = records => {
+    if (indexedRecords !== records) {
+      index = createNameSearchIndex(records, localRecords);
+      indexedRecords = records;
+    }
+    return index;
+  };
   return {
     catalogue,
-    async count() {
+    async count(hint) {
       // Aggregate only; the catalogue remains inside the existing private cache.
-      return (await catalogue()).length;
+      return (await catalogue(hint)).length;
     },
-    async search(input) {
+    async search(input, hint) {
       let hosted = [];
       let warning = null;
-      try { hosted = await catalogue(); }
+      try { hosted = await catalogue(hint); }
       catch { warning = 'The hosted name list is unavailable. Only existing recordings are shown. Please try refreshing the names shortly.'; }
-      const hostedKeys = new Set(hosted.map(record => key(record.name)));
-      const labelCounts = new Map();
-      for (const record of hosted) labelCounts.set(key(record.name), (labelCounts.get(key(record.name)) || 0) + 1);
-      const records = new Map(localRecords.filter(record => !hostedKeys.has(key(record.name))).map(record => [record.id, record]));
-      for (const record of hosted) records.set(record.id, record);
-      const prefix = key(input);
-      const matches = prefix ? [...records.values()].filter(record =>
-        [record.name, record.file?.slice(0, -4) || record.id, ...(record.aliases || [])].some(name => key(name).startsWith(prefix))) : [];
-      return { records: matches.sort((a, b) => a.name.localeCompare(b.name, 'en-GB')).slice(0, 20)
-        .map(({ id, name, downloadName, file }) => ({
-          id, name, downloadName,
-          ...(labelCounts.get(key(name)) > 1 ? { variant: file } : {}),
-        })),
+      return { records: prepared(hosted).search(input),
         hostedCount: warning ? null : hosted.length, warning };
     },
     async resolve(input) {
@@ -146,7 +144,7 @@ export function createNameLibrary({ fetcher = fetch, now = Date.now } = {}) {
       // Prefer hosted recordings where present; local recordings remain usable
       // on inventory failure, with the search warning explicitly shown to visitors.
       try {
-        return (await catalogue()).find(record => record.id === input) || findSantaMessage(input);
+        return prepared(await catalogue()).resolve(input) || findSantaMessage(input);
       } catch (error) {
         const local = findSantaMessage(input);
         if (local) return local;
@@ -225,4 +223,11 @@ export function validateNameWav(bytes) {
     totalAudio / rate > 30 || totalAudio / rate < 0.05) throw new NameLibraryError('INVALID_WAV');
 }
 
-export const santaNameLibrary = createNameLibrary();
+export const privateNameSnapshot = createNameSnapshotStore({
+  parse: parseNameIndex,
+  fetchIndex: async () => {
+    const origin = privateOrigin('index');
+    return fetchLimited(origin || NAMES_INDEX, MAX_INDEX_BYTES, fetch, Boolean(origin));
+  },
+});
+export const santaNameLibrary = createNameLibrary({ snapshotStore: privateNameSnapshot });

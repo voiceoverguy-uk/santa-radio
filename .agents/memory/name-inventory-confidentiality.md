@@ -33,6 +33,16 @@ only an instance-local cache lifetime does not provide a shared daily refresh.
 Keep catalogue and original audio locations private and preserve anti-enumeration
 protections when optimising checks.
 
+Treat refreshing the complete private inventory as an operator operation, not
+a privilege granted by a paid Studio purchase.
+
+**Why:** Visitor access to bounded suggestions must not become a way to trigger
+repeated complete origin downloads or obtain operator-level catalogue access.
+
+**How to apply:** Preserve that boundary when adding convenient refresh
+controls. Keep explicit refresh separate from ordinary lookup and retain
+cross-instance coordination, even for an authenticated caller.
+
 The owner subsequently approved restoring the recorded-name counter using a
 total-only response, retaining the previous slow count-up.
 

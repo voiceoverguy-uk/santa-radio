@@ -174,27 +174,31 @@ test('message creation requires a scoped current selection and still returns a p
 
 test('shared limiter uses atomic storage, disjoint scopes and trusted address identification', async () => {
   const buckets = new Map(), recorded = [];
-  let releases = 0;
-  const client = {
+  let commands = 0;
+  const pool = {
     async query(sql, params) {
-      if (!sql.includes('INSERT INTO')) return { rowCount: 0 };
-      const [bucket, expiry, max] = params;
-      recorded.push({ bucket, expiry });
-      const used = buckets.get(bucket) || 0;
-      if (used >= max) return { rowCount: 0 };
-      buckets.set(bucket, used + 1);
-      return { rowCount: 1 };
+      commands++;
+      assert.match(sql, /SELECT santa_consume_name_access/);
+      const [global, address, globalMax, addressMax, expiry] = params;
+      const pairs = [[global, globalMax], [address, addressMax]];
+      for (const [bucket, maximum] of pairs) {
+        recorded.push({ bucket, expiry });
+        if ((buckets.get(bucket) || 0) >= maximum) {
+          throw Object.assign(new Error('NAME_ACCESS_LIMIT'), { code: 'P0001' });
+        }
+      }
+      for (const [bucket] of pairs) buckets.set(bucket, (buckets.get(bucket) || 0) + 1);
+      return { rows: [{ catalogue: null }] };
     },
-    release() { releases++; },
   };
-  const options = { now: 120000, key, pool: { connect: async () => client } };
+  const options = { now: 120000, key, pool };
   for (let index = 0; index < 40; index++) {
     await consumeNameAccess({ headers: { 'x-forwarded-for': `spoof-${index}` }, socket: { remoteAddress: 'test-address' } }, 'search', options);
   }
   await assert.rejects(() => consumeNameAccess({ headers: {}, socket: { remoteAddress: 'test-address' } }, 'search', options),
     error => error.status === 429 && error.retryAfter === 60);
   await consumeNameAccess({ headers: {}, socket: { remoteAddress: 'test-address' } }, 'preview', options);
-  assert.equal(releases, 42);
+  assert.equal(commands, 42, 'one database command per request');
   assert.ok(recorded.every(record => !/test-address|spoof/.test(record.bucket)));
   assert.ok(recorded.every(record => record.expiry.getTime() === 180000));
 });

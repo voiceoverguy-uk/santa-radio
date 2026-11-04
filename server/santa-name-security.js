@@ -51,30 +51,20 @@ export async function consumeNameAccess(req, scope, { now = Date.now(), pool = d
   const window = Math.floor(now / duration);
   const expires = new Date((window + 1) * duration);
   const address = trustedAddress(req);
-  const client = await pool.connect();
+  if (!MAXIMUM[scope] || !GLOBAL_MAXIMUM[scope]) throw new Error('Unknown name-access scope.');
   try {
-    await client.query('BEGIN');
-    for (const [identity, maximum] of [['global', GLOBAL_MAXIMUM[scope]], [`address:${address}`, MAXIMUM[scope]]]) {
-      if (!maximum) throw new Error('Unknown name-access scope.');
-      const bucket = `name-access:${scope}:${window}:${mac(identity, key)}`;
-      const result = await client.query(`INSERT INTO santa_name_request_limits(bucket_key, expires_at)
-        VALUES($1,$2) ON CONFLICT(bucket_key) DO UPDATE
-        SET attempts=santa_name_request_limits.attempts+1
-        WHERE santa_name_request_limits.attempts < $3 RETURNING attempts`, [bucket, expires, maximum]);
-      if (!result.rowCount) {
-        const error = new Error('Too many requests. Please wait before trying again.');
-        error.status = 429;
-        error.retryAfter = Math.max(1, Math.ceil((expires.getTime() - now) / 1000));
-        throw error;
-      }
-    }
-    await client.query(`DELETE FROM santa_name_request_limits WHERE bucket_key IN
-      (SELECT bucket_key FROM santa_name_request_limits WHERE expires_at <= $1 LIMIT 100)`, [new Date(now)]);
-    await client.query('COMMIT');
+    const bucket = identity => `name-access:${scope}:${window}:${mac(identity, key)}`;
+    const result = await pool.query(`SELECT santa_consume_name_access($1,$2,$3,$4,$5,$6,$7) AS catalogue`,
+      [bucket('global'), bucket(`address:${address}`), GLOBAL_MAXIMUM[scope], MAXIMUM[scope], expires, new Date(now), scope]);
+    return result.rows[0]?.catalogue || undefined;
   } catch (error) {
-    await client.query('ROLLBACK').catch(() => {});
+    if (error.code === 'P0001' && error.message === 'NAME_ACCESS_LIMIT') {
+      error = new Error('Too many requests. Please wait before trying again.');
+      error.status = 429;
+      error.retryAfter = Math.max(1, Math.ceil((expires.getTime() - now) / 1000));
+    }
     throw error;
-  } finally { client.release(); }
+  }
 }
 
 export async function readNameJson(req) {

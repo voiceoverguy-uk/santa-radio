@@ -151,14 +151,17 @@ test('atomic rolling allowance survives fresh signup and cookie clearing, denies
 });
 test('missing-name limits are independent of visitor cookies and caller forwarding headers', async () => {
   const buckets = new Map();
-  const client = { async query(sql, values) {
-    if (!sql.includes('INSERT INTO')) return { rowCount: 0 };
-    const [bucket, , max] = values;
-    const count = buckets.get(bucket) || 0;
-    if (count >= max) return { rowCount: 0 };
-    buckets.set(bucket, count + 1); return { rowCount: 1 };
-  }, release() {} };
-  const opts = { pool: { connect: async () => client }, now: 10000, key };
+  const pool = { async query(sql, values) {
+    assert.match(sql, /santa_consume_name_access/);
+    const [global, address, globalMax, addressMax] = values;
+    const pairs = [[global, globalMax], [address, addressMax]];
+    if (pairs.some(([bucket, maximum]) => (buckets.get(bucket) || 0) >= maximum)) {
+      throw Object.assign(new Error('NAME_ACCESS_LIMIT'), { code: 'P0001' });
+    }
+    for (const [bucket] of pairs) buckets.set(bucket, (buckets.get(bucket) || 0) + 1);
+    return { rows: [{ catalogue: null }] };
+  } };
+  const opts = { pool, now: 10000, key };
   for (let i = 0; i < 20; i++) await consumeNameAccess({
     headers: { cookie: `arbitrary=${i}`, 'x-forwarded-for': `spoof-${i}` }, socket: { remoteAddress: 'fixed' },
   }, 'request', opts);
