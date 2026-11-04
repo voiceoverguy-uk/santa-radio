@@ -461,6 +461,9 @@ export default function SantaMessageWorkshop() {
       onKeyDownCapture={() => { keyboardFocus.current = true; }}
       onPointerDownCapture={() => { keyboardFocus.current = false; }}
       onFocusCapture={event => {
+       // Dialog controls manage their own scrolling. Never move the page
+       // behind a modal to make room for the radio dock.
+       if (event.target.closest('dialog')) return;
       // The mobile browser already pans a text field into the keyboard's
       // visible area. An additional application scroll fights that movement.
       if (window.matchMedia('(max-width: 1024px), (pointer: coarse)').matches
@@ -771,10 +774,8 @@ export default function SantaMessageWorkshop() {
             </div>
           )}
               <div className="smw-actions smw-actions--review" hidden={!isReview}>
-                <button className="smw-button smw-button-back" type="button" onClick={startAgain}>
-                  <span aria-hidden="true">←</span> Start Again
-                </button>
                 <WorkshopMessageAudio generation={generation} correction={correction}
+                  onStartAgain={startAgain}
                   reviewMessageTarget={reviewMessageTarget}
                   showGiftDownloadHint={!giftNotice}
                   tester={accessKind === 'tester' && generation.state?.testerCanStartAnother === true}

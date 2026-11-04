@@ -20,7 +20,7 @@ const PREPARATION_MESSAGES = [
 
 export default function WorkshopMessageAudio({
   record, choices, spelling, complete, generation, correction, tester = false, onCorrection, visible, onPhaseChange, onReady,
-  showGiftDownloadHint = false, reviewMessageTarget = null,
+  showGiftDownloadHint = false, reviewMessageTarget = null, onStartAgain,
 }) {
   const radio = useRadio();
   const voucher = useContext(StudioVoucherContext);
@@ -30,6 +30,8 @@ export default function WorkshopMessageAudio({
   const resumeRef = useRef(null);
   const dialogRef = useRef(null);
   const triggerRef = useRef(null);
+  const deliveryRef = useRef(null);
+  const deliveryScrollPending = useRef(false);
   const receivedSelection = useRef(null);
   const readyCallbackRef = useRef(onReady);
   // Spelling can be corrected while bytes are arriving. It is display-only;
@@ -41,11 +43,26 @@ export default function WorkshopMessageAudio({
   const [confirming, setConfirming] = useState(false);
   const [preparationMessage, setPreparationMessage] = useState('');
   const [finishedName, setFinishedName] = useState(null);
+  const [creationAttempt, setCreationAttempt] = useState(0);
   const writtenName = getWorkshopWrittenName(record?.name || '', spelling);
   const finishedSpelling = finishedName?.id === record?.id ? spelling : finishedName?.spelling;
   const finishedWrittenName = finishedName
     ? getWorkshopWrittenName(finishedName.name, finishedSpelling) : writtenName;
   const busy = phase === 'preparing' || phase === 'receiving';
+  useEffect(() => {
+    if (!deliveryScrollPending.current) return;
+    deliveryScrollPending.current = false;
+    const frame = requestAnimationFrame(() => {
+      const delivery = deliveryRef.current;
+      if (!delivery) return;
+      delivery.focus({ preventScroll: true });
+      const headerBottom = Math.max(0, document.querySelector('.navbar')?.getBoundingClientRect().bottom || 0);
+      const top = delivery.getBoundingClientRect().top + window.scrollY - headerBottom - 16;
+      window.scrollTo({ top: Math.max(0, top),
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [creationAttempt]);
   const status = generation.state;
   const epoch = status?.accessEpoch || generation.epoch || 0;
   useEffect(() => {
@@ -140,11 +157,12 @@ export default function WorkshopMessageAudio({
     const dialog = dialogRef.current;
     dialog.showModal();
     dialog.querySelector('button')?.focus();
-    return () => dialog.close();
+    return () => { if (dialog.open) dialog.close(); };
   }, [confirming]);
-  const closeConfirmation = () => {
+  const closeConfirmation = (restoreFocus = true) => {
+    dialogRef.current?.close();
     setConfirming(false);
-    requestAnimationFrame(() => triggerRef.current?.focus());
+    if (restoreFocus) requestAnimationFrame(() => triggerRef.current?.focus({ preventScroll: true }));
   };
   const cancel = () => {
     requestRef.current?.abort();
@@ -154,8 +172,10 @@ export default function WorkshopMessageAudio({
     generation.refresh();
   };
   const create = async () => {
-    closeConfirmation();
     if (requestRef.current || disabled) return;
+    closeConfirmation(false);
+    deliveryScrollPending.current = true;
+    setCreationAttempt(attempt => attempt + 1);
     document.dispatchEvent(new Event('studio-stop-audio'));
     setError('');
     const controller = new AbortController();
@@ -204,18 +224,19 @@ export default function WorkshopMessageAudio({
       {busy ? 'Recording message' : phase === 'error' && complete ? 'Retry message' : 'Create message'} <span aria-hidden="true">→</span>
     </button>
   );
+  const startAction = () => <button className="smw-button smw-button-back" type="button" onClick={onStartAgain}>
+    <span aria-hidden="true">←</span> Start Again
+  </button>;
   return <>
     {/* Render a second trigger in the gifts row without duplicating recording
         state, requests or the confirmation dialog owned by this component. */}
-    {reviewMessageTarget && createPortal(messageAction(), reviewMessageTarget)}
-    {url && <p className="smw-download-hint">
-      Save your MP3 before leaving or refreshing this page. We do not keep a copy or recording history.
-    </p>}
-    {messageAction()}
-    {showGiftDownloadHint && <p className="smw-catalogue-review-note smw-gift-download-hint">
+    {!url && reviewMessageTarget && createPortal(messageAction(), reviewMessageTarget)}
+    {!url && startAction()}
+    {!url && messageAction()}
+    {!url && showGiftDownloadHint && <p className="smw-catalogue-review-note smw-gift-download-hint">
       Create your MP3 to unlock these three personalised gift downloads.
     </p>}
-    {voucher?.unlimited && <p className="smw-voucher-entitlement">
+    {!url && voucher?.unlimited && <p className="smw-voucher-entitlement">
       You used Voucher Code: {voucher.code}. You can create messages while your access remains valid, subject to request limits.
     </p>}
     {(generation.checking || generation.error || !status) && <p className="smw-allowance" role={generation.error ? 'alert' : 'status'} aria-live={generation.error ? 'assertive' : 'polite'}>
@@ -229,6 +250,7 @@ export default function WorkshopMessageAudio({
         className="smw-change" disabled={generation.checking} onClick={() => generation.refresh()}>
         Retry recording check</button></>}
     </p>}
+    <div className="smw-delivery" ref={deliveryRef} tabIndex={-1} role="group" aria-label="Message preparation and recording">
     {busy && <div className="smw-message-result" role="status" aria-live="polite">
       <p>{phase === 'receiving' ? 'Receiving your finished MP3…' : preparationMessage}</p>
       <progress aria-label="Preparing your message" />
@@ -238,7 +260,7 @@ export default function WorkshopMessageAudio({
     </div>}
     {url && <section className="smw-message-result" aria-label="Your finished Santa message">
       <h4>Santa’s message for {finishedWrittenName}</h4>
-      <p role="status">Your message is ready to play and download. It is only available on this open page.</p>
+      <p className="smw-wheel-accessible-text" role="status">{phase === 'ready' && !error ? 'Your message is ready.' : ''}</p>
       <audio ref={audioRef} src={url} controls preload="metadata" aria-label={`Play Santa’s message for ${finishedWrittenName}`}
         onPlay={event => {
           const resume = radio?.pauseForMessage?.();
@@ -249,11 +271,12 @@ export default function WorkshopMessageAudio({
       <div className="smw-download-actions"><a className="smw-button smw-button-download" href={url}
         download={getWorkshopDownloadName(finishedName?.name || record?.name || '',
           finishedSpelling ?? spelling)}>Download MP3 <span aria-hidden="true">↓</span></a></div>
-      {voucher?.unlimited && <p className="smw-voucher-completion">
-        Download your message here. Recordings and message history are not saved. Voucher allows you to edit your choices and create another message; request limits apply.
-      </p>}
-      <p className="smw-catalogue-review-note">Save your MP3 now. Click download and check you have it before closing the page. Leaving or refreshing this page removes the recording.</p>
+      <p className="smw-retention-reminder">Download before leaving or refreshing — your recording isn’t saved.</p>
     </section>}
+    </div>
+    {url && startAction()}
+    {url && messageAction()}
+    {url && voucher?.unlimited && <p className="smw-voucher-detail">Voucher: {voucher.code}</p>}
     {confirming && <dialog ref={dialogRef} className="smw-confirmation" aria-labelledby="smw-confirm-title"
       aria-describedby="smw-confirm-description" onCancel={event => { event.preventDefault(); closeConfirmation(); }}
       onKeyDown={event => {
@@ -269,7 +292,7 @@ export default function WorkshopMessageAudio({
       <h3 id="smw-confirm-title">Are you happy with your selection?</h3>
       <p id="smw-confirm-description">Create a temporary MP3 using these details, then play and save it on this page. We do not keep a copy or message history. You can change your choices and create another message, subject to request limits.</p>
       <div className="smw-actions">
-        <button type="button" className="smw-button smw-button-back" onClick={closeConfirmation}>Go back</button>
+        <button type="button" className="smw-button smw-button-back" onClick={() => closeConfirmation()}>Go back</button>
         <button type="button" className="smw-button smw-button-next" disabled={disabled} onClick={create}>Create message</button>
       </div>
     </dialog>}

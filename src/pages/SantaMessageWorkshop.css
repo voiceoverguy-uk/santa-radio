@@ -463,6 +463,13 @@
 .smw-page .smw-create-disabled:hover:disabled { background: #40544a; color: #e3e7df; opacity: 1; box-shadow: none; }
 .smw-download-actions { display: flex; justify-content: flex-end; }
 .smw-download-actions a { max-width: 100%; text-decoration: none; }
+.smw-delivery { flex: 1 0 100%; min-width: 0; }
+.smw-delivery:empty { display: none; }
+.smw-delivery:focus { outline: none; }
+.smw-delivery:focus-visible { outline: 2px solid var(--smw-gold-light); outline-offset: 4px; border-radius: 15px; }
+.smw-delivery > .smw-message-result + .smw-message-result { margin-top: 14px; }
+.smw-message-result .smw-retention-reminder { margin: 12px 0 0; font-size: .76rem; text-align: right; }
+.smw-voucher-detail { flex: 1 0 100%; margin: 0; color: #c4d0c3; font-size: .76rem; line-height: 1.5; }
 .smw-allowance, .smw-voucher-entitlement { flex: 1 0 100%; color: #e6ce86; font-size: .85rem; line-height: 1.6; }
 .smw-actions[hidden] { display: none; }
 .smw-confirmation { position: fixed; inset: 0; margin: auto;
@@ -546,7 +553,7 @@
   .smw-options { grid-template-columns: 1fr; gap: 9px; margin-top: 18px; }
   .smw-choice { min-height: 62px; }
   .smw-actions { margin-top: 10px; }
-  .smw-actions--review > .smw-button-back:first-child,
+  .smw-actions--review > .smw-button-back,
   .smw-actions--review > .smw-button-next {
     min-width: 0;
     flex: 1 1 0;

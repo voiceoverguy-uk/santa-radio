@@ -20,6 +20,15 @@ Use the established extended recipe, not the free maker's intro/outros, generate
 speech or invented connecting sentences. Preserve source pauses and the free
 maker's quiet bells level.
 
+The owner approves the pre-generation review and keepsake presentation; tidying
+the finished recording does not authorise redesigning that earlier view.
+
+**Why:** The owner specifically identified the completed layout, not the
+approved review, as cluttered in their annotated screenshots.
+
+**How to apply:** Scope presentation changes to the completed recording when
+requested, keeping pre-generation gifts, guidance and confirmation behaviour intact.
+
 The owner has also approved on-demand playback of the selected existing recorded name in the final review, so visitors can check its pronunciation.
 
 **Why:** They requested a small red play button beside the review name: “That way they can make sure it’s correct.”

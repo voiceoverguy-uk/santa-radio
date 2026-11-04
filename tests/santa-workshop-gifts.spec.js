@@ -228,7 +228,9 @@ for (const width of [320, 1365]) {
     const lower = page.locator('.smw-actions--review > .smw-button-next');
     const dialog = page.getByRole('dialog', { name: 'Are you happy with your selection?' });
     const checkActions = async (label, disabled, busy = false) => {
-      for (const button of [upper, lower]) {
+      const completed = await page.getByRole('region', { name: 'Your finished Santa message' }).count();
+      if (completed) await expect(upper).toHaveCount(0);
+      for (const button of completed ? [lower] : [upper, lower]) {
         await expect(button).toContainText(label);
         if (disabled) await expect(button).toBeDisabled();
         else await expect(button).toBeEnabled();
@@ -362,7 +364,7 @@ test('completed gifts stay downloadable when allowance checks fail', async ({ pa
   await page.route('**/api/santa-studio-message', route => route.request().method() === 'GET'
     ? route.fulfill({ status: 503, json: { error: 'Temporarily unavailable.' } }) : route.fallback());
   await page.evaluate(() => window.dispatchEvent(new Event('focus')));
-  await expect(page.getByRole('alert')).toContainText('can’t check how many messages');
+  await expect(page.getByRole('alert')).toContainText('Your voucher is recognised, but Santa’s recording service is temporarily unavailable.');
    for (const button of await page.getByRole('button', { name: 'Create message', exact: true }).all()) await expect(button).toBeDisabled();
   for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
   await expect(letterText(page)).toHaveText(completedText);
@@ -372,28 +374,35 @@ test('completed gifts stay downloadable when allowance checks fail', async ({ pa
   expect(fixture.posts).toHaveLength(1);
 });
 
-for (const successes of [1, 2]) {
-  test(`confirmed gifts restore without MP3 playback with ${successes} completed messages`, async ({ page }) => {
+  test('refresh requires a new successful MP3 before gifts can be downloaded again', async ({ page }) => {
     test.setTimeout(90000);
     mkdirSync('generated-artifacts/studio-gifts', { recursive: true });
     const fixture = await review(page);
     await confirmMessage(page);
     for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
-    fixture.state = { ...fixture.state, successes, remaining: 2 - successes };
-    await page.route('**/api/santa-studio-message?audio=1', route => route.fulfill({
-      status: 503, json: { error: 'Saved MP3 unavailable.' },
-    }));
     await page.reload();
+    await page.getByRole('combobox', { name: 'Search recorded names', exact: true }).fill('Dixie');
+    await page.getByRole('option', { name: /Dixie/ }).first().click();
+    await page.locator('.smw-button-next').click();
+    for (const answer of ['9 years old', 'Teamwork', 'Completing a jigsaw puzzle', 'Bûche de Noël', 'The Enchanted Forest']) {
+      if (answer === 'The Enchanted Forest') await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
+      if (await page.getByRole('button', { name: 'Skip this section', exact: true }).isVisible()) {
+        await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+      }
+      await page.getByRole('option', { name: answer, exact: true }).click();
+      await page.locator('.smw-button-next').click();
+    }
     await expect(giftButtons(page)).toHaveCount(3);
-    for (const button of await page.getByRole('button', { name: 'Create message', exact: true }).all()) await expect(button).toBeDisabled();
+    for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
+    await expect(page.getByRole('link', { name: /Download MP3/ })).toHaveCount(0);
+    expect(fixture.recoveries || 0).toBe(0);
+    await confirmMessage(page);
     for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
-    await expect(page.getByText('Saved MP3 unavailable.', { exact: true })).toBeVisible();
     await expect(page.locator('.studio-certificate__name')).toHaveText('Dixie');
     await expect(letterText(page)).toContainText('Completing a jigsaw puzzle');
-    await save(page, 'Download Santa picture (PNG)', `generated-artifacts/studio-gifts/restored-picture-${successes}.png`);
-    expect(fixture.posts).toHaveLength(1);
+    await save(page, 'Download Santa picture (PNG)', 'generated-artifacts/studio-gifts/new-session-picture.png');
+    expect(fixture.posts).toHaveLength(2);
   });
-}
 
 for (const width of [320, 1365]) {
   test(`bad language blocks spelling confirmation, previews and exports at ${width}px`, async ({ page }) => {

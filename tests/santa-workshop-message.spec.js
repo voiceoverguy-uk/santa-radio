@@ -4,12 +4,12 @@ import { randomBytes } from 'node:crypto';
 import { test } from './helpers/provider-test.js';
 import { unlockWorkshop } from './helpers/workshop-access.js';
 import { workshopCatalogueFixture } from './fixtures/workshop-catalogue.js';
-import { confirmMessage, mockStudioGeneration, emptyGeneration } from './helpers/studio-generation.js';
+import { confirmMessage, mockStudioGeneration, emptyGeneration, settleStudioScroll } from './helpers/studio-generation.js';
 import { SCHOOL_TEST_START, SCHOOL_TEST_DEADLINE } from '../server/santa-workshop-settings.js';
 
 const path = '/santa-message-workshop';
 const answers = ['9 years old', 'Teamwork', 'Completing a jigsaw puzzle', 'Bûche de Noël', 'The Enchanted Forest'];
-const voucherCompletion = 'Download your message here. Recordings and message history are not saved. Voucher allows you to edit your choices and create another message; request limits apply.';
+const retentionReminder = 'Download before leaving or refreshing — your recording isn’t saved.';
 const preparationMessages = [
   'Santa is recording. Give him a moment — the elves keep distracting him.',
   'Santa is busy recording, although the smell of cookies isn’t helping. Hang on a moment…',
@@ -186,7 +186,7 @@ for (const width of [320, 1365]) {
         return route.fulfill({ response, json: { ...await response.json(), voucher } });
       });
       const fixture = await openReview(page);
-      const guidance = page.getByText(voucherCompletion, { exact: true });
+      const guidance = page.getByText(retentionReminder, { exact: true });
       const result = page.getByRole('region', { name: 'Your finished Santa message' });
       await expect(guidance).toHaveCount(0);
       await expect(page.locator('.smw-voucher-entitlement')).toHaveCount(hasVoucher ? 1 : 0);
@@ -230,9 +230,25 @@ for (const width of [320, 1365]) {
       await expect(result).toBeVisible();
       const download = result.getByRole('link', { name: /Download MP3/ });
       await expect(download).toBeVisible();
-      await expect(result.getByRole('status')).toHaveText('Your message is ready to play and download. It is only available on this open page.');
+      await expect(result.getByRole('status')).toHaveText('Your message is ready.');
+      await expect(guidance).toHaveCount(1);
+      await expect(page.locator('.smw-download-hint, .smw-voucher-completion, .smw-gift-download-hint, .smw-voucher-entitlement')).toHaveCount(0);
+      await expect(page.locator('.smw-review-create-action button')).toHaveCount(0);
+      await expect(page.locator('.smw-voucher-detail')).toHaveCount(hasVoucher ? 1 : 0);
+      const controls = page.locator('.smw-actions--review');
+      const start = controls.getByRole('button', { name: 'Start Again', exact: true });
+      const create = controls.getByRole('button', { name: 'Create message', exact: true });
+      const resultBounds = await result.boundingBox();
+      const startBounds = await start.boundingBox();
+      const createBounds = await create.boundingBox();
+      expect(startBounds.y).toBeGreaterThanOrEqual(resultBounds.y + resultBounds.height);
+      expect(createBounds.y).toBeGreaterThanOrEqual(resultBounds.y + resultBounds.height);
+      if (width > 760) {
+        expect(Math.abs(startBounds.y - createBounds.y)).toBeLessThan(1);
+        expect(createBounds.x).toBeGreaterThan(startBounds.x + startBounds.width);
+      }
       if (hasVoucher) {
-        await expect(result.locator('.smw-voucher-completion')).toHaveText(voucherCompletion);
+        await expect(page.locator('.smw-voucher-detail')).toHaveText(`Voucher: ${voucher.code}`);
         await guidance.scrollIntoViewIfNeeded();
         expect(await guidance.evaluate(node => {
           const range = document.createRange();
@@ -243,19 +259,27 @@ for (const width of [320, 1365]) {
             && line.top >= bounds.top - 1 && line.bottom <= bounds.bottom + 1)
             && document.documentElement.scrollWidth <= innerWidth + 1;
         })).toBe(true);
-        await result.screenshot({ path: `generated-artifacts/studio-voucher-completion-${width}.png`, animations: 'disabled' });
-      } else {
-        await expect(guidance).toHaveCount(0);
       }
+      await controls.screenshot({ path: `generated-artifacts/studio-${hasVoucher ? 'voucher' : 'non-voucher'}-completion-${width}.png`, animations: 'disabled' });
       const downloaded = page.waitForEvent('download');
       await download.click();
       expect(readFileSync(await (await downloaded).path())).toEqual(fixture.audio);
+      await download.focus();
+      await page.keyboard.press('Tab');
+      await expect(start).toBeFocused();
+      await page.keyboard.press('Tab');
+      await expect(create).toBeFocused();
+      const playerBounds = await result.locator('audio').boundingBox();
+      const downloadColour = await download.evaluate(node => getComputedStyle(node).backgroundColor);
+      expect(['rgb(155, 17, 30)', 'rgb(173, 28, 43)']).toContain(downloadColour);
+      expect(playerBounds.width).toBeGreaterThan(resultBounds.width - 42);
+      await expect(result.locator('p')).toHaveCount(2); // Hidden announcement + one visible reminder.
       await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
       await page.getByRole('button', { name: 'Change Trying hard at', exact: true }).click();
       await expect(guidance).toHaveCount(0);
       await page.getByRole('button', { name: 'Return to review', exact: true }).click();
       await expect(result).toBeVisible();
-      await expect(guidance).toHaveCount(hasVoucher ? 1 : 0);
+      await expect(guidance).toHaveCount(1);
       expect(fixture.posts).toHaveLength(2);
     });
   }
@@ -766,12 +790,15 @@ test(`confirmation stays centred with safe overflow, cancellation and keyboard o
   await page.setViewportSize(viewport);
   const create = page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true });
   await create.scrollIntoViewIfNeeded();
+  await settleStudioScroll(page);
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+  const backgroundScroll = await page.evaluate(() => scrollY);
   await create.click();
   const dialog = page.getByRole('dialog', { name: 'Are you happy with your selection?' });
   const back = dialog.getByRole('button', { name: 'Go back', exact: true });
   const confirm = dialog.getByRole('button', { name: 'Create message', exact: true });
   await expect(back).toBeFocused();
+  expect(await page.evaluate(() => scrollY)).toBe(backgroundScroll);
   await expect(dialog).toContainText('temporary MP3');
   await expect(dialog).toContainText('We do not keep a copy or message history');
   const bounds = await dialog.boundingBox();
@@ -795,17 +822,20 @@ test(`confirmation stays centred with safe overflow, cancellation and keyboard o
   await page.keyboard.press('Tab');
   await expect(back).toBeFocused();
   await expect(back).toBeInViewport({ ratio: 1 });
+  expect(await page.evaluate(() => scrollY)).toBe(backgroundScroll);
   await page.screenshot({ path: `generated-artifacts/studio-generation-confirmation-${viewport.width}x${viewport.height}.png` });
   expect(fixture.posts).toHaveLength(0);
   await expect(page.locator('.smw-message-result audio')).toHaveCount(0);
   await page.keyboard.press('Escape');
   await expect(dialog).toHaveCount(0);
   await expect(create).toBeFocused();
+  expect(await page.evaluate(() => scrollY)).toBe(backgroundScroll);
   expect(fixture.posts).toHaveLength(0);
   await create.click();
   await back.click();
   await expect(dialog).toHaveCount(0);
   await expect(create).toBeFocused();
+  expect(await page.evaluate(() => scrollY)).toBe(backgroundScroll);
   expect(fixture.posts).toHaveLength(0);
   await expect(page.locator('.smw-message-result audio')).toHaveCount(0);
   expect(fixture.state.temporary).toBe(true);
@@ -818,6 +848,99 @@ test(`confirmation stays centred with safe overflow, cancellation and keyboard o
   await expect(page.getByRole('region', { name: 'Your finished Santa message' })).toBeVisible();
   expect(fixture.posts).toHaveLength(1);
 });
+}
+
+for (const width of [320, 1365]) {
+  for (const reducedMotion of [false, true]) {
+    for (const trigger of ['upper', 'lower']) {
+      test(`confirmed ${trigger} creation scrolls once before completion at ${width}px, reduced motion ${reducedMotion}`, async ({ page }) => {
+        test.setTimeout(60000);
+        await page.setViewportSize({ width, height: 900 });
+        const fixture = await openReview(page);
+        await page.emulateMedia({ reducedMotion: reducedMotion ? 'reduce' : 'no-preference' });
+        const action = page.locator(trigger === 'upper'
+          ? '.smw-review-create-action button' : '.smw-actions--review > .smw-button-next');
+        await action.scrollIntoViewIfNeeded();
+        await action.focus();
+        await page.evaluate(() => {
+          window.fixtureNativeScroll = window.scrollTo.bind(window);
+          window.deliveryScrollCalls = [];
+          window.scrollTo = options => {
+            window.deliveryScrollCalls.push(options);
+            window.fixtureNativeScroll(options);
+          };
+        });
+        const initialY = await page.evaluate(() => scrollY);
+        await page.keyboard.press('Enter');
+        const dialog = page.getByRole('dialog', { name: 'Are you happy with your selection?' });
+        await expect(dialog.getByRole('button', { name: 'Go back', exact: true })).toBeFocused();
+        expect(await page.evaluate(() => scrollY)).toBe(initialY);
+        await page.keyboard.press('Enter');
+        await expect(action).toBeFocused();
+        expect(await page.evaluate(() => scrollY)).toBe(initialY);
+        expect(await page.evaluate(() => window.deliveryScrollCalls)).toEqual([]);
+        expect(fixture.posts).toHaveLength(0);
+
+        let release;
+        fixture.hold = new Promise(resolve => { release = resolve; });
+        await page.keyboard.press('Enter');
+        await page.keyboard.press('Tab');
+        await page.keyboard.press('Enter');
+        await expect(dialog).toHaveCount(0);
+        const delivery = page.getByRole('group', { name: 'Message preparation and recording' });
+        await expect(delivery).toBeFocused();
+        await expect(page.getByRole('progressbar', { name: 'Preparing your message', exact: true })).toBeVisible();
+        await expect.poll(() => fixture.posts.length).toBe(1);
+        await expect.poll(() => delivery.evaluate(node => {
+          const top = node.getBoundingClientRect().top;
+          const header = Math.max(0, document.querySelector('.navbar')?.getBoundingClientRect().bottom || 0);
+          const progress = node.querySelector('progress').getBoundingClientRect();
+          const dock = document.querySelector('.radio-dock')?.getBoundingClientRect();
+          return {
+            clearOfHeader: top >= header + 15 && progress.top >= header,
+            clearOfDock: progress.bottom <= (dock?.height ? dock.top : innerHeight),
+          };
+        })).toEqual({ clearOfHeader: true, clearOfDock: true });
+        if (trigger === 'upper' && reducedMotion) {
+          await page.screenshot({ path: `generated-artifacts/studio-confirmed-preparation-${width}.png` });
+        }
+        expect(await page.evaluate(() => window.deliveryScrollCalls)).toEqual([
+          expect.objectContaining({ behavior: reducedMotion ? 'instant' : 'smooth' }),
+        ]);
+        await settleStudioScroll(page);
+        // A visitor can read elsewhere while Santa works. Neither receiving
+        // the body nor completion may pull them back or start playback.
+        await page.evaluate(() => window.fixtureNativeScroll({ top: 0, behavior: 'instant' }));
+        await expect.poll(() => page.evaluate(() => scrollY)).toBe(0);
+        release();
+        const result = page.getByRole('region', { name: 'Your finished Santa message' });
+        await expect(result).toBeVisible();
+        await expect(page.locator('.smw-actions--review > .smw-button-next')).toBeEnabled();
+        expect(await page.evaluate(() => scrollY)).toBe(0);
+        expect(await page.evaluate(() => window.deliveryScrollCalls.length)).toBe(1);
+        expect(await result.locator('audio').evaluate(node => node.paused)).toBe(true);
+        await expect(page.locator('.smw-review-create-action button')).toHaveCount(0);
+
+        // Repeat creation keeps the old audio mounted but uses the same
+        // delivery target and no delayed trigger-focus restoration.
+        const oldUrl = await result.locator('audio').getAttribute('src');
+        let releaseReplacement;
+        fixture.hold = new Promise(resolve => { releaseReplacement = resolve; });
+        await confirmMessage(page);
+        await expect(delivery).toBeFocused();
+        await expect.poll(() => page.evaluate(() => window.deliveryScrollCalls.length)).toBe(2);
+        await expect(result.locator('audio')).toHaveAttribute('src', oldUrl);
+        await expect(result.getByRole('status')).toHaveText('');
+        await settleStudioScroll(page);
+        await page.evaluate(() => window.fixtureNativeScroll({ top: 0, behavior: 'instant' }));
+        await expect.poll(() => page.evaluate(() => scrollY)).toBe(0);
+        releaseReplacement();
+        await expect(result.locator('audio')).not.toHaveAttribute('src', oldUrl);
+        expect(await page.evaluate(() => scrollY)).toBe(0);
+        expect(await page.evaluate(() => window.deliveryScrollCalls.length)).toBe(2);
+      });
+    }
+  }
 }
 
 test('temporary downloads survive failed replacement but never recover after refresh, new tabs or navigation', async ({ page, context }) => {
@@ -867,7 +990,7 @@ test('temporary downloads survive failed replacement but never recover after ref
   await expect(page.getByRole('progressbar', { name: 'Preparing your message' })).toBeVisible();
   await expect(download).toHaveAttribute('href', original);
   release();
-  await expect(page.getByText('Your message is ready to play and download.', { exact: false })).toBeVisible();
+  await expect(result.getByRole('status')).toHaveText('Your message is ready.');
   await expect(create).toBeEnabled();
   expect(fixture.state.successes).toBeUndefined();
   expect(fixture.posts.at(-1).name).toBe('dixie-variant');

@@ -2,6 +2,15 @@ import { readFileSync } from 'node:fs';
 import { expect } from '@playwright/test';
 
 export const emptyGeneration = () => ({ temporary: true });
+export async function settleStudioScroll(page) {
+  let previous, stable = 0;
+  await expect.poll(async () => {
+    const current = await page.evaluate(() => scrollY);
+    stable = previous !== undefined && Math.abs(current - previous) < .5 ? stable + 1 : 0;
+    previous = current;
+    return stable;
+  }, { intervals: [50], timeout: 5000 }).toBeGreaterThanOrEqual(3);
+}
 export async function confirmMessage(page, label = 'Create message') {
   await page.locator('.smw-actions--review').getByRole('button', { name: label, exact: true }).click();
   await expect(page.getByRole('dialog', { name: 'Are you happy with your selection?' })).toBeVisible();
