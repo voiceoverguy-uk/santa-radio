@@ -166,17 +166,23 @@ for (const route of ['/', path]) {
       await expect(heading).toHaveCSS('font-weight', '400');
       await expect(heading).toHaveCSS('font-family', 'Cinzel, serif');
       await expect(heading).toHaveCSS('color', 'rgb(230, 206, 134)');
+      const fontSize = await heading.evaluate(node => parseFloat(getComputedStyle(node).fontSize));
+      const previousSize = (width < 768 ? 1.3 : 1.56) * 16;
+      expect(fontSize / previousSize).toBeGreaterThanOrEqual(1.2);
+      expect(fontSize / previousSize).toBeLessThanOrEqual(1.25);
       const geometry = await heading.evaluate(node => {
         const range = document.createRange();
         range.selectNodeContents(node);
         return {
           card: node.closest('.hero-name-preview__checker').getBoundingClientRect().toJSON(),
+          label: node.parentElement.querySelector('label').getBoundingClientRect().toJSON(),
           lines: [...range.getClientRects()].filter(rect => rect.width > 0).map(rect => rect.toJSON()),
           pageWidth: document.documentElement.scrollWidth,
         };
       });
       expect(geometry.lines).toHaveLength(2);
       expect(geometry.lines[1].top).toBeGreaterThan(geometry.lines[0].top);
+      expect(geometry.lines[1].bottom).toBeLessThanOrEqual(geometry.label.top);
       expect(geometry.pageWidth).toBeLessThanOrEqual(width);
       for (const line of geometry.lines) {
         expect(line.left).toBeGreaterThanOrEqual(Math.max(0, geometry.card.left) - .5);
@@ -547,6 +553,11 @@ for (const route of ['/', path]) {
             };
             return {
               card: rect(el), hero: rect(el.closest('.hero')), viewport: innerWidth,
+              formFlow: ['h2', 'label', 'input', '.hero-name-checker__status', '[type="submit"]']
+                .map(selector => {
+                  const node = el.querySelector(selector);
+                  return { box: rect(node), lines: textRects(node).filter(r => r.width > 0) };
+                }),
               pageWidth: document.documentElement.scrollWidth,
               heroContent: [...el.closest('.hero-layout').querySelectorAll('*')]
                 .map(rect).filter(rect => rect.width > 0),
@@ -585,6 +596,12 @@ for (const route of ['/', path]) {
             expect(control.font).toBeGreaterThanOrEqual(width >= 768 ? 14 : 12);
           }
           expect(geometry.controls[0].font).toBeGreaterThanOrEqual(16);
+          for (let i = 0; i < geometry.formFlow.length - 1; i++) {
+            const current = geometry.formFlow[i];
+            const next = geometry.formFlow[i + 1];
+            expect(current.box.bottom).toBeLessThanOrEqual(next.box.top + .5);
+            for (const line of current.lines) expect(line.bottom).toBeLessThanOrEqual(next.box.top + .5);
+          }
           for (const text of geometry.text) for (const line of text.lines) {
             expect(line.left).toBeGreaterThanOrEqual(text.box.left - .5);
             expect(line.right).toBeLessThanOrEqual(text.box.right + .5);

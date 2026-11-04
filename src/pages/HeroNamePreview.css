@@ -151,10 +151,11 @@
   margin: 0 0 21px;
   color: var(--hero-preview-gold);
   font-family: 'Cinzel', serif;
-  font-size: 1.3rem;
+  font-size: 1.6rem;
   font-weight: 400;
   letter-spacing: .025em;
-  line-height: 1.5;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
   text-transform: none;
 }
 
@@ -586,7 +587,7 @@
 
   .hero-name-preview .hero-name-checker h2 {
     margin-bottom: 25px;
-    font-size: 1.56rem;
+    font-size: 1.9rem;
   }
 
   .hero-name-preview .hero-name-checker label {
