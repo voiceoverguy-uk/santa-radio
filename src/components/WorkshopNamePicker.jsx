@@ -163,7 +163,7 @@ export default function WorkshopNamePicker({ selected, initialName = '', onSelec
           aria-expanded={showListbox}
           aria-controls={listboxId}
           aria-activedescendant={showListbox && activeIndex >= 0 ? `${listboxId}-option-${activeIndex}` : undefined}
-          aria-describedby={[validationId, `${inputId}-status`].filter(Boolean).join(' ')}
+          aria-describedby={validationId}
           aria-invalid={!!invalid}
         />
         {showListbox && (
@@ -190,10 +190,6 @@ export default function WorkshopNamePicker({ selected, initialName = '', onSelec
           </ul>
         )}
       </div>
-
-      <p className="smw-name-count" id={`${inputId}-status`} aria-live="polite">
-        Enter at least two letters to search recorded names.
-      </p>
 
       {requestState.status === 'loading' && (
         <div className="smw-name-loading" role="status" aria-live="polite">

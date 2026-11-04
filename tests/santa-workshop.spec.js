@@ -1681,6 +1681,67 @@ for (const width of [390, 768, 1440]) {
   });
 }
 
+for (const width of [390, 1440]) {
+  test(`name picker has no redundant hint and retains feedback at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.route('**/names-data/*.json', route => route.fulfill({ json: ['Demrie', 'Dixie', 'Zara'] }));
+    let release;
+    const pending = new Promise(resolve => { release = resolve; });
+    let attempts = 0;
+    await page.route('**/api/santa-names', async route => {
+      if (++attempts === 1) {
+        await pending;
+        return route.fulfill({ status: 503, json: { error: 'Recording temporarily unavailable.' } });
+      }
+      return route.fallback();
+    });
+    await open(page);
+    const picker = page.locator('.smw-name-picker');
+    const search = page.getByRole('combobox', { name: 'Search recorded names', exact: true });
+    const expectNoHint = async () => {
+      await expect(picker).not.toContainText('Enter at least two letters to search recorded names.');
+      await expect(picker.locator('.smw-name-count, p:empty')).toHaveCount(0);
+      expect((await search.getAttribute('aria-describedby')) || '').not.toContain(`${await search.getAttribute('id')}-status`);
+    };
+    await expect(search).toHaveAttribute('placeholder', 'Start typing a name');
+    await expect(search).not.toHaveAttribute('aria-describedby');
+    await expectNoHint();
+    // No placeholder container or reserved hint space remains beneath the field.
+    expect(await picker.evaluate(node => {
+      const field = node.querySelector('input').getBoundingClientRect();
+      return Math.abs(node.getBoundingClientRect().bottom - field.bottom);
+    })).toBeLessThanOrEqual(1);
+    await picker.screenshot({ path: `generated-artifacts/workshop/name-hint-removed-${width}.png` });
+    await page.locator('.smw-button-next').click();
+    await expect(search).toHaveAttribute('aria-invalid', 'true');
+    await expect(search).toHaveAttribute('aria-describedby', 'smw-validation');
+    await expect(page.locator('#smw-validation')).toContainText('Please choose their name');
+    await search.fill('D');
+    await expect(page.getByRole('option')).toHaveCount(0);
+    await expectNoHint();
+    await search.fill('Dem');
+    await expect(page.getByRole('option', { name: 'Demrie', exact: true })).toBeVisible();
+    await expectNoHint();
+    await search.press('ArrowDown');
+    await expect(search).toHaveAttribute('aria-activedescendant', /-option-0$/);
+    await search.press('Enter');
+    try {
+      await expect(picker.getByRole('status')).toContainText('Loading hosted recorded names.');
+      await expectNoHint();
+    } finally { release(); }
+    await expect(picker.getByRole('alert')).toContainText('Recording temporarily unavailable.');
+    await expectNoHint();
+    await page.getByRole('button', { name: 'Retry name search', exact: true }).click();
+    await expect(picker.getByRole('alert')).toHaveCount(0);
+    await expect(picker.locator('.smw-name-status')).toContainText('Selected name: Demrie');
+    await expect(search).toHaveAttribute('aria-invalid', 'false');
+    await expect(search).not.toHaveAttribute('aria-describedby');
+    await expectNoHint();
+    await picker.screenshot({ path: `generated-artifacts/workshop/name-hint-selected-${width}.png` });
+  });
+}
+
 test('cream name autocomplete supports keyboard selection, escape and clearing', async ({ page }) => {
   await open(page);
   const search = page.getByRole('combobox', { name: 'Search recorded names', exact: true });
@@ -1710,7 +1771,7 @@ test('private name lookup distinguishes variants and retains the chosen recordin
   await open(page);
   await expect(page.getByText('Type the beginning of a recorded name to see available matches.', { exact: true })).toHaveCount(0);
   const search = page.getByRole('combobox', { name: 'Search recorded names', exact: true });
-  await expect(page.locator('.smw-name-count')).toHaveText('Enter at least two letters to search recorded names.');
+  await expect(page.locator('.smw-name-count')).toHaveCount(0);
   await expect(page.getByRole('option')).toHaveCount(0);
   await search.fill('dix');
   await expect(page.getByRole('option')).toHaveCount(2);
@@ -1746,7 +1807,7 @@ test('unavailable hosted list shows an explicit retry without offering a fixed e
   await page.getByRole('combobox', { name: 'Search recorded names', exact: true }).fill('Dem');
   await expect(page.locator('.smw-name-picker [role=alert]')).toContainText('Unavailable');
   await expect(page.getByRole('option')).toHaveCount(0);
-  await expect(page.locator('.smw-name-count')).toHaveText('Enter at least two letters to search recorded names.');
+  await expect(page.locator('.smw-name-count')).toHaveCount(0);
   unavailable = false;
   await page.getByRole('button', { name: 'Retry hosted list', exact: true }).click();
   await expect(page.locator('.smw-name-picker [role=alert]')).toHaveCount(0);
