@@ -462,6 +462,21 @@
 .smw-page .smw-create-disabled:hover:disabled { background: #40544a; color: #e3e7df; opacity: 1; box-shadow: none; }
 .smw-download-actions { display: flex; justify-content: flex-end; }
 .smw-download-actions a { max-width: 100%; text-decoration: none; }
+/* Match the free maker's gold glow and timing without animating the red fill. */
+.smw-page .smw-button-download--pending {
+  animation: smw-download-glow 2s ease-in-out infinite;
+}
+@keyframes smw-download-glow {
+  0%, 100% { box-shadow: 0 0 9px #d4af3726; }
+  50% { box-shadow: 0 0 20px 5px #d4af3770; }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* Outrank the shared red action bevel only while this download is pending. */
+  html body .smw-page .smw-message-finished .smw-download-actions .smw-button.smw-button-download.smw-button-download--pending {
+    animation: none;
+    box-shadow: 0 0 12px #d4af3738;
+  }
+}
 .smw-delivery { flex: 1 0 100%; min-width: 0; }
 .smw-delivery:empty { display: none; }
 .smw-delivery:focus { outline: none; }

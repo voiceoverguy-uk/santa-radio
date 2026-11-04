@@ -42,6 +42,7 @@ export default function WorkshopMessageAudio({
   spellingRef.current = spelling;
   const [phase, setPhase] = useState('idle');
   const [url, setUrl] = useState('');
+  const [downloadActivated, setDownloadActivated] = useState(false);
   const [error, setError] = useState('');
   const [confirming, setConfirming] = useState(false);
   const [preparationMessage, setPreparationMessage] = useState('');
@@ -177,6 +178,7 @@ export default function WorkshopMessageAudio({
     if (urlRef.current) URL.revokeObjectURL(urlRef.current);
     urlRef.current = objectUrl;
     setUrl(objectUrl);
+    setDownloadActivated(false);
     setPhase('ready');
     setError('');
     const completed = receivedSelection.current || submittedSelection;
@@ -306,7 +308,8 @@ export default function WorkshopMessageAudio({
           for (const other of document.querySelectorAll('audio')) if (other !== event.currentTarget) other.pause();
         }} onPause={finishPlayback} onEnded={finishPlayback}
         onError={() => { finishPlayback(); setError('Your browser could not play this MP3. You can still try downloading it.'); }} />
-      <div className="smw-download-actions"><a className="smw-button smw-button-download" href={url}
+      <div className="smw-download-actions"><a className={`smw-button smw-button-download${downloadActivated ? '' : ' smw-button-download--pending'}`} href={url}
+        onClick={() => setDownloadActivated(true)}
         download={getWorkshopDownloadName(finishedName?.name || record?.name || '',
           finishedSpelling ?? spelling)}>Download MP3 <span aria-hidden="true">↓</span></a></div>
       <p className="smw-retention-reminder">Download before leaving or refreshing — your recording isn’t saved.</p>

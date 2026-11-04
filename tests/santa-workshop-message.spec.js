@@ -137,6 +137,83 @@ for (const viewport of [{ width: 1365, height: 900 }, { width: 390, height: 844 
   }
 }
 
+for (const width of [390, 1365]) {
+  for (const reducedMotion of ['no-preference', 'reduce']) {
+    test(`paid MP3 download glows until activated at ${width}px with ${reducedMotion} motion`, async ({ page }) => {
+      test.setTimeout(90000);
+      await page.setViewportSize({ width, height: 900 });
+      const fixture = await openReview(page);
+      await page.emulateMedia({ reducedMotion });
+      const link = page.getByRole('link', { name: 'Download MP3', exact: true });
+      await expect(link).toHaveCount(0);
+      // Hold the body open: receiving the HTTP headers and first bytes is not ready.
+      await page.evaluate(() => {
+        const original = window.fetch.bind(window);
+        window.fetch = async (input, options) => {
+          const response = await original(input, options);
+          if (input !== '/api/santa-studio-message' || options?.method !== 'POST' || !response.ok) return response;
+          const bytes = new Uint8Array(await response.arrayBuffer());
+          return new Response(new ReadableStream({
+            start(controller) {
+              controller.enqueue(bytes.slice(0, 1));
+              window.finishTestRecording = () => {
+                controller.enqueue(bytes.slice(1));
+                controller.close();
+              };
+            },
+          }), { headers: response.headers });
+        };
+      });
+      await confirmMessage(page);
+      await expect(page.getByText('Receiving your finished MP3…', { exact: true })).toBeVisible();
+      await expect(link).toHaveCount(0);
+      await page.evaluate(() => window.finishTestRecording());
+      const expectPending = async () => {
+        await expect(link).toHaveClass(/smw-button-download--pending/);
+        await expect(link).toHaveCSS('animation-name', reducedMotion === 'reduce' ? 'none' : 'smw-download-glow');
+        await expect(link).toHaveCSS('animation-duration', reducedMotion === 'reduce' ? '0s' : '2s');
+        await expect(link).toHaveCSS('background-color', 'rgb(155, 17, 30)');
+        if (reducedMotion === 'reduce') await expect(link).toHaveCSS('box-shadow', 'rgba(212, 175, 55, 0.22) 0px 0px 12px 0px');
+      };
+      await expectPending();
+      await link.scrollIntoViewIfNeeded();
+      await settleStudioScroll(page);
+      await link.screenshot({ path: `generated-artifacts/studio-download-glow-${width}-${reducedMotion}.png` });
+      const source = await link.getAttribute('href');
+      const downloaded = page.waitForEvent('download');
+      // Cover pointer and keyboard activation in both motion modes.
+      if (width === 390) await link.click();
+      else { await link.focus(); await link.press('Enter'); }
+      const download = await downloaded;
+      expect(download.suggestedFilename()).toBe('santa-message-for-Dixie.mp3');
+      expect(await download.failure()).toBeNull();
+      expect(readFileSync(await download.path())).toEqual(fixture.audio);
+      await expect(link).not.toHaveClass(/smw-button-download--pending/);
+      await expect(link).toHaveCSS('animation-name', 'none');
+      await expect(link).toHaveAttribute('href', source);
+      await expect(page.locator('.smw-message-finished audio')).toHaveAttribute('src', source);
+      // Hiding the component to edit choices must not restart this recording's glow.
+      await page.getByRole('button', { name: 'Change Trying hard at', exact: true }).click();
+      await page.getByRole('button', { name: 'Return to review', exact: true }).click();
+      await expect(link).not.toHaveClass(/smw-button-download--pending/);
+      fixture.fail = true;
+      await confirmMessage(page);
+      await expect(page.getByRole('alert')).toContainText('Fixture recording unavailable.');
+      await expect(link).not.toHaveClass(/smw-button-download--pending/);
+      await expect(link).toHaveAttribute('href', source);
+      fixture.fail = false;
+      await confirmMessage(page);
+      await expect(page.getByText('Receiving your finished MP3…', { exact: true })).toBeVisible();
+      await expect(link).not.toHaveClass(/smw-button-download--pending/);
+      await page.evaluate(() => window.finishTestRecording());
+      await expect(link).not.toHaveAttribute('href', source);
+      await page.mouse.move(0, 0);
+      await expectPending();
+      expect(fixture.posts).toHaveLength(3);
+    });
+  }
+}
+
 test('authorised Studio can check its actual access without generation records', async ({ page }) => {
   await unlockWorkshop(page);
   const response = await page.request.get('/api/santa-studio-message');
