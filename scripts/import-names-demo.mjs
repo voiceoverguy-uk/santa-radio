@@ -20,7 +20,9 @@ export async function updateDemoSnapshot({
   validateSnapshot(data);
   const temporary = new URL(`./snapshot-${process.pid}.tmp`, destination);
   try {
-    await writeFile(temporary, JSON.stringify(data) + '\n', { flag: 'wx', mode: 0o600 });
+    // Private by web routing/package boundary, not restrictive POSIX ownership:
+    // serverless runtime users must be able to read the deployment asset.
+    await writeFile(temporary, JSON.stringify(data) + '\n', { flag: 'wx', mode: 0o644 });
     await rename(temporary, destination);
   } finally { await rm(temporary, { force: true }); }
   return { sourceRecords: records.length, savedNames: data.names.length,

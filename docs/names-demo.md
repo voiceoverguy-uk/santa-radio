@@ -66,3 +66,10 @@ and measures first and 1,000 repeated lookups. This establishes fresh-instance
 search independence from Stag rather than relying on an already-warm cache.
 `Server-Timing: snapshot-search` reports snapshot lookup time; end-to-end HTTP
 time also includes the existing database-backed limiter and request overhead.
+
+Measured in Replit: fresh-process first lookups took 30.4–33.0 ms; warm median
+was approximately 0.0016 ms and warm 95th percentile 0.0074–0.0089 ms. Actual
+proxied API requests took 13.4–19.2 ms including the existing limiter. Desktop
+and mobile browser tests showed suggestions after 387 ms and 281 ms respectively,
+including the deliberate 160 ms debounce. These are observations, not guarantees
+for a future deployed environment. Both fresh processes recorded zero fetch calls.
