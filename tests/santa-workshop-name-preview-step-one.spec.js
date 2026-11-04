@@ -194,7 +194,7 @@ for (const action of ['stop', 'clear', 'advance', 'leave']) {
     await playButton(page).click();
     await expect.poll(() => requested).toBe(true);
     await expect(stopButton(page)).toHaveAttribute('aria-busy', 'true');
-    await expect(page.locator('.smw-name-preview-status')).toHaveText('Loading name…');
+    await expect(page.locator('.smw-name-preview-status')).toHaveText('Asking Santa... hold tight.');
     if (action === 'stop') await stopButton(page).click();
     if (action === 'clear') await page.getByRole('combobox').fill('');
     if (action === 'advance') await next(page);
@@ -209,9 +209,40 @@ for (const action of ['stop', 'clear', 'advance', 'leave']) {
     await expect(page.locator('.smw-name-preview-error')).toHaveCount(0);
     if (action === 'advance') await page.getByRole('button', { name: 'Back', exact: true }).click();
     if (action === 'stop' || action === 'advance') {
+      await expect(page.locator('.smw-name-preview-status')).toHaveText('');
       await playButton(page).click();
       await expect(stopButton(page)).toHaveAttribute('aria-busy', 'false');
     }
+  });
+}
+
+for (const stage of ['step one', 'review']) {
+  test(`loading copy remains readable at 320px with enlarged text on ${stage}`, async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 568 });
+    await openStudio(page);
+    await selectName(page);
+    if (stage === 'review') await finishChoices(page);
+    await page.addStyleTag({ content: 'html { font-size: 200%; }' });
+    await page.evaluate(() => { window.previewMode = 'hold'; });
+    await playButton(page).click();
+    const status = page.locator('.smw-name-preview-status');
+    await expect(status).toHaveText('Asking Santa... hold tight.');
+    await expect(status).toHaveAttribute('role', 'status');
+    await expect(stopButton(page)).toHaveAttribute('aria-busy', 'true');
+    await status.scrollIntoViewIfNeeded();
+    const bounds = await status.boundingBox();
+    expect(bounds.x).toBeGreaterThanOrEqual(0);
+    expect(bounds.x + bounds.width).toBeLessThanOrEqual(321);
+    expect(await status.evaluate(element => element.scrollWidth <= element.clientWidth + 1)).toBe(true);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+    await page.screenshot({ path: `generated-artifacts/workshop/name-loading-${stage.replace(' ', '-')}-mobile.jpg` });
+    await page.evaluate(() => window.testAudios.findLast(audio => audio.src.startsWith('blob:')).dispatchEvent(new Event('playing')));
+    await expect(status).toHaveText('Playing name…');
+    await expect(stopButton(page)).toHaveAttribute('aria-busy', 'false');
+    await page.evaluate(() => window.testAudios.findLast(audio => audio.src.startsWith('blob:')).dispatchEvent(new Event('ended')));
+    await expect(status).toHaveText('');
+    await expect(playButton(page)).toHaveAttribute('aria-pressed', 'false');
+    await expectStopped(page);
   });
 }
 

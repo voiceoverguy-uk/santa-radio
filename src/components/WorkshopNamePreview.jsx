@@ -90,7 +90,7 @@ export default function WorkshopNamePreview({ record, cache }) {
         </svg>
       </button>
       <span className="smw-name-preview-status" role="status">
-        {phase === 'loading' ? 'Loading name…' : phase === 'playing' ? 'Playing name…' : ''}
+        {phase === 'loading' ? 'Asking Santa... hold tight.' : phase === 'playing' ? 'Playing name…' : ''}
       </span>
       {error && <span className="smw-name-preview-error" id={errorId} role="alert">{error}</span>}
     </span>
