@@ -21,13 +21,13 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
             <p className="santa-studio-promotion__name-count" role="status" aria-live="off">{availableNamesText}</p>
           </div>
         </div>
-        <div className="santa-studio-promotion__preview">
-          <StudioPortraitViewer />
-        </div>
         <span className="message-recording-indicator santa-studio-promotion__recording" title="North Pole recording studio">
           <span className="message-recording-dot" aria-hidden="true" />
           Recording
         </span>
+        <div className="santa-studio-promotion__preview">
+          <StudioPortraitViewer />
+        </div>
         <div className="santa-studio-promotion__header-divider" aria-hidden="true" />
       </header>
       <div className="santa-studio-promotion__details">

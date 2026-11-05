@@ -336,7 +336,8 @@ for (const width of [320, 360, 390, 406, 987, 1440]) {
       expect(geometry.animation).toBe('none');
       if (width >= 768) {
         expect(geometry.recording.left).toBeGreaterThan(geometry.header.right);
-        expect(geometry.recording.right).toBeCloseTo(geometry.shared.right, 0);
+        expect(geometry.recording.right).toBeLessThanOrEqual(geometry.portrait.left);
+        expect(geometry.portrait.right).toBeCloseTo(geometry.shared.right, 0);
         expect(geometry.gifts.top).toBeCloseTo(geometry.title.top, 0);
       } else {
         expect(geometry.gifts.top).toBeGreaterThan(geometry.title.bottom);
