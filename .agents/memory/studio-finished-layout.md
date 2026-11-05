@@ -3,7 +3,7 @@ name: Finished Studio layout
 description: Owner's replacement screenshot distinguishes completed recording presentation from pre-generation entitlement copy.
 ---
 
-After an MP3 is ready, follow the owner's replacement screenshot: player and download alongside one another on desktop, retention reminder below, then Start Again/Create message and a short voucher-code line underneath. Preserve full entitlement wording before completion.
+After an MP3 is ready, follow the owner's replacement screenshot: player and download alongside one another on desktop, then Start Again/Create message and a short voucher-code line underneath. Combine the temporary-audio guidance into the Download All explanation, not a separate warning row. Preserve full entitlement wording before completion.
 
 **Why:** The owner supplied a later screenshot explicitly saying “after mp3 is ready, present like this”, replacing the earlier instruction to retain the full yellow entitlement notice below the finished recording.
 

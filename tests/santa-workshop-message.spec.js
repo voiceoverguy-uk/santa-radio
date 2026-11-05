@@ -11,7 +11,7 @@ import { mockSantaNames } from './helpers/message-access.js';
 
 const path = '/santa-message-workshop';
 const answers = ['9 years old', 'Teamwork', 'Completing a jigsaw puzzle', 'Bûche de Noël', 'The Enchanted Forest'];
-const retentionReminder = 'Download before leaving or refreshing — your recording isn’t saved.';
+const bundleGuidance = 'Download All includes this MP3, certificate PDF, personalised letter PDF and Santa-picture PNG in one ZIP. Get them quickly, as your audio isn’t saved once you leave.';
 const preparationMessages = [
   'Santa is recording. Give him a moment — the elves keep distracting him.',
   'Santa is busy recording, although the smell of cookies isn’t helping. Hang on a moment…',
@@ -552,7 +552,7 @@ for (const width of [320, 1365]) {
         return route.fulfill({ response, json: { ...await response.json(), voucher } });
       });
       const fixture = await openReview(page);
-      const guidance = page.getByText(retentionReminder, { exact: true });
+      const guidance = page.getByText(bundleGuidance, { exact: true });
       const result = page.getByRole('region', { name: 'Your finished Santa message' });
       const entitlement = page.locator('.smw-voucher-entitlement');
       const detail = page.locator('.smw-voucher-detail');
@@ -628,9 +628,10 @@ for (const width of [320, 1365]) {
       await expect(result).toBeVisible();
       const download = result.getByRole('link', { name: /Download Audio/ });
       await expect(download).toBeVisible();
-      await expect(result.getByRole('status')).toHaveText('Your message is ready.');
+      await expect(result.getByRole('status')).toHaveText(bundleGuidance);
       await expect(guidance).toHaveCount(1);
-      await expect(page.locator('.smw-download-hint, .smw-voucher-completion, .smw-gift-download-hint')).toHaveCount(0);
+      await expect(page.getByText('Download before leaving or refreshing — your recording isn’t saved.', { exact: true })).toHaveCount(0);
+      await expect(page.locator('.smw-download-hint, .smw-voucher-completion, .smw-gift-download-hint, .smw-retention-reminder')).toHaveCount(0);
       await expect(page.locator('.smw-review-create-action button')).toHaveText('READY');
       await checkEntitlement(true);
       const controls = page.locator('.smw-actions--review');
@@ -679,6 +680,8 @@ for (const width of [320, 1365]) {
       expect(readFileSync(await (await downloaded).path())).toEqual(fixture.audio);
       await download.focus();
       await page.keyboard.press('Tab');
+      await expect(result.getByRole('button', { name: 'Download All', exact: true })).toBeFocused();
+      await page.keyboard.press('Tab');
       await expect(start).toBeFocused();
       await page.keyboard.press('Tab');
       await expect(create).toBeFocused();
@@ -692,14 +695,15 @@ for (const width of [320, 1365]) {
       const downloadBounds = await download.boundingBox();
       const guidanceBounds = await guidance.boundingBox();
       if (width > 760) {
-        expect(Math.abs(playerBounds.y + playerBounds.height / 2 - downloadBounds.y - downloadBounds.height / 2)).toBeLessThan(1);
+        const actionsBounds = await result.locator('.smw-download-actions').boundingBox();
+        expect(Math.abs(playerBounds.y + playerBounds.height / 2 - actionsBounds.y - actionsBounds.height / 2)).toBeLessThan(1);
         expect(downloadBounds.x).toBeGreaterThanOrEqual(playerBounds.x + playerBounds.width);
       } else {
         expect(playerBounds.width).toBeGreaterThan(resultBounds.width - 42);
         expect(downloadBounds.y).toBeGreaterThanOrEqual(playerBounds.y + playerBounds.height);
       }
-      expect(guidanceBounds.y).toBeGreaterThanOrEqual(Math.max(playerBounds.y + playerBounds.height, downloadBounds.y + downloadBounds.height));
-      await expect(result.locator('p')).toHaveCount(2); // Hidden announcement + one visible reminder.
+      expect(guidanceBounds.y).toBeGreaterThanOrEqual(downloadBounds.y + downloadBounds.height);
+      await expect(result.locator('p')).toHaveCount(1); // Combined bundle explanation and retention guidance.
       await result.locator('audio').evaluate(node => node.play());
       await expect.poll(() => result.locator('audio').evaluate(node => node.currentTime)).toBeGreaterThan(0.1);
       await result.locator('audio').evaluate(node => node.pause());
@@ -1370,7 +1374,7 @@ for (const width of [320, 1365]) {
         await expect.poll(() => delivery.evaluate(node => {
           const top = node.getBoundingClientRect().top;
           const header = Math.max(0, document.querySelector('.navbar')?.getBoundingClientRect().bottom || 0);
-          const progress = node.querySelector('progress').getBoundingClientRect();
+          const progress = node.querySelector('[role="progressbar"]').getBoundingClientRect();
           const dock = document.querySelector('.radio-dock')?.getBoundingClientRect();
           return {
             clearOfHeader: top >= header + 15 && progress.top >= header,
@@ -1406,7 +1410,7 @@ for (const width of [320, 1365]) {
         await expect(delivery).toBeFocused();
         await expect.poll(() => page.evaluate(() => window.deliveryScrollCalls.length)).toBe(2);
         await expect(result.locator('audio')).toHaveAttribute('src', oldUrl);
-        await expect(result.getByRole('status')).toHaveText('');
+        await expect(result.getByRole('status')).toHaveText(bundleGuidance);
         await settleStudioScroll(page);
         await page.evaluate(() => window.fixtureNativeScroll({ top: 0, behavior: 'instant' }));
         await expect.poll(() => page.evaluate(() => scrollY)).toBe(0);
@@ -1434,10 +1438,13 @@ test('temporary downloads survive failed replacement but never recover after ref
     await page.setViewportSize({ width, height: 844 });
     const geometry = await download.evaluate(node => {
       const button = node.getBoundingClientRect(), parent = node.parentElement.getBoundingClientRect();
-      return { right: button.right, edge: parent.right, left: button.left, height: button.height,
+      return { right: button.right, edge: parent.right,
+        allRight: node.parentElement.querySelector('.smw-bundle-download button').getBoundingClientRect().right,
+        left: button.left, height: button.height,
         colour: getComputedStyle(node).backgroundColor, overflow: document.documentElement.scrollWidth > innerWidth + 1 };
     });
-    expect(Math.abs(geometry.right - geometry.edge)).toBeLessThan(1);
+    expect(Math.abs(geometry.allRight - geometry.edge)).toBeLessThan(1);
+    expect(geometry.right).toBeLessThanOrEqual(geometry.edge + 1);
     expect(geometry.left).toBeGreaterThanOrEqual(0);
     expect(geometry.height).toBeGreaterThanOrEqual(44);
     expect(geometry.colour).toBe('rgb(155, 17, 30)');
@@ -1466,7 +1473,7 @@ test('temporary downloads survive failed replacement but never recover after ref
   await expect(page.getByRole('progressbar', { name: 'Preparing your message' })).toBeVisible();
   await expect(download).toHaveAttribute('href', original);
   release();
-  await expect(result.getByRole('status')).toHaveText('Your message is ready.');
+  await expect(result.getByRole('status')).toHaveText(bundleGuidance);
   await expect(create).toBeEnabled();
   expect(fixture.state.successes).toBeUndefined();
   expect(fixture.posts.at(-1).name).toBe('dixie-variant');

@@ -54,6 +54,5 @@ export default function StudioCompletedRecording({ result, ordinal, visible, sec
         onDownloadRequested={() => { onDownloadRequested(); onBundleRequested?.(); }} />
     </div>
     {error && <p role="alert">{error}</p>}
-    <p className="smw-retention-reminder">Download before leaving or refreshing — your recording isn’t saved.</p>
   </section>;
 }

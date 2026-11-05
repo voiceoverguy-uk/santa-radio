@@ -14,6 +14,27 @@ const records = [
 const players = page => page.locator('.smw-message-finished audio');
 const gifts = page => page.locator('.smw-written-name .studio-gift-download button');
 const letter = page => page.locator('.smw-written-name .studio-gifts__preview-stack .studio-gifts__sr');
+const bundleGuidance = 'Download All includes this MP3, certificate PDF, personalised letter PDF and Santa-picture PNG in one ZIP. Get them quickly, as your audio isn’t saved once you leave.';
+
+async function checkDownloadGuidance(result, feedback = false) {
+  const guidance = result.locator('.smw-bundle-download p').first();
+  await expect(guidance).toHaveText(bundleGuidance);
+  await expect(result.locator('.smw-bundle-download button')).toHaveAccessibleDescription(
+    feedback ? new RegExp(bundleGuidance.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')) : bundleGuidance);
+  await expect(result.locator('.smw-retention-reminder')).toHaveCount(0);
+  await expect(result.getByText('Download before leaving or refreshing — your recording isn’t saved.', { exact: true })).toHaveCount(0);
+  await expect(result.locator('p')).toHaveCount(feedback ? 2 : 1);
+  expect(await guidance.evaluate(node => {
+    const range = document.createRange();
+    range.selectNodeContents(node);
+    const bounds = node.getBoundingClientRect();
+    return [...range.getClientRects()].every(line =>
+      line.left >= bounds.left - 1 && line.right <= bounds.right + 1
+      && line.top >= bounds.top - 1 && line.bottom <= bounds.bottom + 1)
+      && node.scrollWidth <= node.clientWidth + 1
+      && document.documentElement.scrollWidth <= innerWidth + 1;
+  })).toBe(true);
+}
 
 async function setup(page, limited = true) {
   await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -93,6 +114,7 @@ for (const width of [320, 1365]) {
     const firstLetter = await letter(page).locator('p').allTextContents();
     await confirmMessage(page);
     await expect(players(page)).toHaveCount(1);
+    await checkDownloadGuidance(page.locator('.smw-message-finished').first());
     const firstUrl = await players(page).first().getAttribute('src');
     await downloadGift(page, 'certificate');
     await players(page).first().evaluate(async node => { window.firstStudioPlayer = node; await node.play(); });
@@ -365,22 +387,35 @@ for (const width of [320, 1365]) {
     const secondLetter = await letter(page).locator('p').allTextContents();
     // First bundle works while the second recipient's gifts are still locked.
     const firstResult = page.locator('.smw-message-finished').first();
+    await checkDownloadGuidance(firstResult);
+    await firstResult.screenshot({ path: `generated-artifacts/studio-bundles/guidance-first-${width}.png`, animations: 'disabled' });
     let pending = page.waitForEvent('download');
     await firstResult.getByRole('button', { name: 'Download All', exact: true }).click();
     await inspectBundle(await pending, 'Élodie O’Neill', firstLetter, fixture.audio, `draft-${width}`);
+    await checkDownloadGuidance(firstResult, true);
     for (const button of await gifts(page).all()) await expect(button).toBeDisabled();
     await confirmMessage(page);
     await expect(players(page)).toHaveCount(2);
     await expect(page.locator('.smw-remaining')).toContainText('0 of 2');
     const remaining = fixture.state.remaining;
+    // Feedback must never replace the only temporary-audio guidance.
+    await page.route('**/images/santa-radio-letterhead.webp', route => route.fulfill({ status: 503, body: 'Failed fixture' }));
+    for (const result of await page.locator('.smw-message-finished').all()) {
+      await result.getByRole('button', { name: 'Download All', exact: true }).click();
+      await expect(result.getByRole('alert')).toHaveText('Could not prepare the ZIP. Retry Download All; audio and individual gift downloads are unaffected. No creation allowance is used.');
+      await checkDownloadGuidance(result, true);
+    }
+    await page.unroute('**/images/santa-radio-letterhead.webp');
     let release, started;
     const hold = new Promise(resolve => { release = resolve; });
     const exporting = new Promise(resolve => { started = resolve; });
     await page.route('**/images/santa-radio-letterhead.webp', async route => { started(); await hold; await route.fallback(); });
-    const all = firstResult.getByRole('button', { name: 'Download All', exact: true });
+    const all = firstResult.getByRole('button', { name: 'Retry Download All', exact: true });
     await all.focus();
     await page.keyboard.press('Enter');
     await expect(firstResult.getByRole('button', { name: 'Preparing ZIP…' })).toBeDisabled();
+    await expect(firstResult.getByRole('status')).toHaveText('Preparing the MP3 and three gifts locally in your browser…');
+    await checkDownloadGuidance(firstResult, true);
     await exporting;
     // Repeated requests must not start another export or another creation.
     await firstResult.locator('.smw-bundle-download button').evaluate(node => { node.click(); node.click(); });
@@ -396,10 +431,19 @@ for (const width of [320, 1365]) {
     const firstPng = await inspectBundle(await pending, 'Élodie O’Neill', firstLetter, fixture.audio, `first-${width}`);
     await page.unroute('**/images/santa-radio-letterhead.webp');
     const secondResult = page.locator('.smw-message-finished').nth(1);
+    await checkDownloadGuidance(secondResult, true);
+    await secondResult.screenshot({ path: `generated-artifacts/studio-bundles/guidance-second-${width}.png`, animations: 'disabled' });
     pending = page.waitForEvent('download');
-    await secondResult.getByRole('button', { name: 'Download All', exact: true }).focus();
+    const secondHold = new Promise(resolve => { release = resolve; });
+    await page.route('**/images/santa-radio-letterhead.webp', async route => { await secondHold; await route.fallback(); });
+    await secondResult.getByRole('button', { name: 'Retry Download All', exact: true }).focus();
     await page.keyboard.press('Space');
+    await expect(secondResult.getByRole('status')).toHaveText('Preparing the MP3 and three gifts locally in your browser…');
+    await checkDownloadGuidance(secondResult, true);
+    release();
     const secondPng = await inspectBundle(await pending, 'Arabella May', secondLetter, fixture.audio, `second-${width}`);
+    await page.unroute('**/images/santa-radio-letterhead.webp');
+    await checkDownloadGuidance(secondResult, true);
     expect(firstPng.equals(secondPng)).toBe(false);
     await expect(firstResult.locator('.smw-bundle-download [role=status]')).toContainText('does not confirm it was saved');
     await expect(page.locator('.studio-gift-download p')).toHaveText(Array(3)
@@ -410,6 +454,44 @@ for (const width of [320, 1365]) {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
     await secondResult.screenshot({ path: `generated-artifacts/studio-bundles/controls-${width}.png` });
   });
+}
+
+for (const width of [320, 1365]) {
+  for (const ordinal of [1, 2]) {
+    test(`Studio recording ZIP unavailable gifts retain audio guidance for card ${ordinal} at ${width}px`, async ({ page }) => {
+      test.setTimeout(60000);
+      await page.setViewportSize({ width, height: 900 });
+      const fixture = await setup(page);
+      await compose(page);
+      if (ordinal === 2) {
+        await confirmMessage(page);
+        await expect(players(page)).toHaveCount(1);
+        await page.getByRole('button', { name: 'Start Again', exact: true }).click();
+        await compose(page, true);
+      }
+      // Simulate a completed response whose regional gift context is not ready.
+      const selection = fixture.selection;
+      fixture.selection = choices => ({
+        ...selection(choices), choices: { ...choices, region: 'unavailable-fixture-region' },
+      });
+      await confirmMessage(page);
+      const result = page.locator('.smw-message-finished').nth(ordinal - 1);
+      const warning = 'Get them quickly, as your audio isn’t saved once you leave.';
+      const feedback = 'Completed gifts are unavailable. You can still download your audio.';
+      const all = result.getByRole('button', { name: 'Download All', exact: true });
+      await expect(all).toBeDisabled();
+      await expect(all).toHaveAccessibleDescription(`${warning} ${feedback}`);
+      await expect(result.getByRole('status')).toHaveText(feedback);
+      await expect(result.locator('.smw-bundle-download p').first()).toHaveText(warning);
+      await expect(result.locator('.smw-retention-reminder')).toHaveCount(0);
+      expect(await result.evaluate(node => node.scrollWidth <= node.clientWidth + 1
+        && document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+      const pending = page.waitForEvent('download');
+      await result.getByRole('link', { name: 'Download Audio', exact: true }).click();
+      expect(readFileSync(await (await pending).path())).toEqual(fixture.audio);
+      expect(fixture.posts).toHaveLength(ordinal);
+    });
+  }
 }
 
 test('Studio recording ZIP failure retries independently; expiry cancels in-flight work and URLs', async ({ page }) => {
