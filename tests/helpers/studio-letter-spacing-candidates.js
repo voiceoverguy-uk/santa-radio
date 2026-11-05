@@ -7,7 +7,11 @@ import { workshopTreatWording } from '../../src/lib/workshopTreatWording.js';
 
 // Each paragraph's choices are independent. Maximise wrapped lines per slot,
 // rather than character counts or a small sample of whole-letter combinations.
-export function spacingCandidates(catalogue, name, age) {
+export function spacingCandidates(catalogue, name, age, compact = false) {
+  const compose = (...args) => {
+    const letter = createStudioLetter(...args);
+    return compact ? { ...letter, paragraphs: letter.compactParagraphs } : letter;
+  };
   const regional = Object.values(catalogue.regionalGroups).flatMap(group => {
     const parent = catalogue.categories.place.find(record => record.id === group.parentId);
     return group.records.map(record => ({ ...record, label: `${record.label}, ${parent.label}` }));
@@ -24,10 +28,10 @@ export function spacingCandidates(catalogue, name, age) {
   initial.age = age;
   initial.context = Object.fromEntries(Object.entries(mapping).map(([category, field]) =>
     [field, field === 'age' ? undefined : records[category][0].letterContext]));
-  const base = createStudioLetter(name, () => 0, initial);
+  const base = compose(name, () => 0, initial);
   const paragraphs = base.paragraphs.map(text => [text]);
   const add = (paragraph, details, variation) =>
-    paragraphs[paragraph].push(createStudioLetter(name, () => 0, details, variation).paragraphs[paragraph]);
+    paragraphs[paragraph].push(compose(name, () => 0, details, variation).paragraphs[paragraph]);
   const adult = ['18 years old', '50 years old'].includes(age);
   for (const [role, paragraph] of [['workshop', 1], ['departure', 4], ['atmosphere', 8]]) {
     const variants = letterNarratives[role][adult ? 'adult' : 'family'];

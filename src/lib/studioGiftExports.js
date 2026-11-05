@@ -5,7 +5,7 @@ import fontkit from '@pdf-lib/fontkit';
 import { certificateDownloadFilename, CERTIFICATE_FONT } from './niceListCertificate.js';
 import { fitSantaPictureName, santaPictureFrames } from './santaPictureLayout.js';
 import { SIGNATURE_FONT, loadRecipientFont, recipientCanvasFont, recipientDisplayName } from './giftFonts.js';
-import { studioLetterLayout as letterType } from './studioLetterLayout.js';
+import { studioLetterLayout as letterType, fitStudioLetterLines } from './studioLetterLayout.js';
 
 export const LETTER_SERIF = '/certificates/nice-list/CertificateSerif.ttf';
 export const LETTER_HEAD = '/images/santa-radio-letterhead.webp';
@@ -99,21 +99,20 @@ export function layoutStudioLetter(letter, font) {
   const closing = letter.closing.map(text => wrapLetterText(text, font, size,
     width * (1 - 2 * letterType.closingInset)));
   const signatureSize = width * letterType.signature;
-  const paragraphHeight = groups => groups.reduce((sum, lines) =>
-    sum + lines.length * size * letterType.leading + size * letterType.paragraphGap, 0);
-  const contentHeight = paragraphHeight(paragraphs) + signatureSize * 1.5 + paragraphHeight(closing);
-  // Never silently shrink type/spacing, remove prose or intrude into the footer.
-  const availableHeight = height * (letterType.bottom - letterType.top);
-  if (contentHeight > availableHeight) {
-    throw new Error(`The complete letter cannot fit readably on one page (${contentHeight.toFixed(1)}pt required; ${availableHeight.toFixed(1)}pt available)`);
-  }
-  return { width, height, size, signatureSize, paragraphs, closing, contentHeight,
-    leading: letterType.leading, paragraphGap: letterType.paragraphGap,
+  const spacing = fitStudioLetterLines(
+    [...paragraphs, ...closing].reduce((sum, lines) => sum + lines.length, 0),
+    paragraphs.length + closing.length, letterType.bottom, letterType.pdfSignatureClearance);
+  return { width, height, size, signatureSize, paragraphs, closing, ...spacing,
     x: width * letterType.inset, closingX: width * letterType.closingInset,
     top: height * (1 - letterType.top) };
 }
 
 export async function exportStudioLetter(letter) {
+  // Direct callers use the same dual-renderer editorial decision as Review.
+  if (!letter.browserLayout) {
+    const { prepareStudioLetter } = await import('./prepareStudioLetter.js');
+    letter = await prepareStudioLetter(letter);
+  }
   const [serifBytes, scriptBytes, canvas] = await Promise.all([
     bytes(LETTER_SERIF), bytes(SIGNATURE_FONT), imageCanvas(LETTER_HEAD),
   ]);
@@ -140,7 +139,7 @@ export async function exportStudioLetter(letter) {
   y -= layout.signatureSize * .8;
   page.drawText('Santa Claus', { x: layout.x, y, size: layout.signatureSize, font: script,
     color: rgb(128 / 255, 96 / 255, 35 / 255) });
-  y -= layout.signatureSize * .7;
+  y -= layout.signatureSize * .7 + letterType.pdfSignatureClearance;
   drawParagraphs(layout.closing, layout.closingX);
   // No recipient metadata, server storage, preview overlays or DOM screenshots.
   return new Blob([await pdf.save()], { type: 'application/pdf' });

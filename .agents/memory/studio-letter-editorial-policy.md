@@ -58,7 +58,10 @@ fantasy and space writing. Inspect source and catalogue gaps privately rather
 than claiming every geographical area is recorded. Budget regional prose with
 the complete displayed region-and-parent label, not the passage alone: those
 long labels can overflow a longest-combination A4 letter even when ordinary
-examples fit. Shorten regional copy, not the approved typography or other scenes.
+examples fit. Retain the approved typography. Later owner approval permits
+curated compact reactions and matching shorter scenes for exceptional
+full-letter fit failures; ordinary letters and selected geographical meaning
+must remain intact.
 
 Include one short, silly Christmas joke per letter, chosen from 25 family-friendly jokes and introduced with “By the way, (NAME), do you like jokes?”
 

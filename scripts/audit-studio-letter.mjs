@@ -152,11 +152,13 @@ The public promotional choices remain a deliberately small subset, not a represe
 <p>All route anecdotes are explicitly fictional. No cultural traditions, local weather or personal circumstances are asserted.
 Alcohol remains adults-only after flying, reindeer food is checked by their keeper, and joke offerings are not eaten.</p>
 <h2>Fuller composition and measured variety</h2><p>120 distinct narrative passages: 20 family-safe and 20 adult-tone alternatives in each of three roles.
-Each letter interleaves three short scenes with the selected details; no text is removed or shrunk to fit.
+Each letter interleaves three short scenes with the selected details. The frame fitter retains ordinary prose,
+using curated compact counterparts only when either renderer cannot fit the full version at minimum readable spacing.
+Selected details, geographic writing, the joke and closing remain whole; type is never shrunk.
 Adult scenes begin at 18; family scenes are also safe for infants, teenagers and unknown ages.</p>
 <p>${Object.entries(distinct).map(([age, result]) => `${result.distinct} distinct complete outputs measured from ${result.sampled} deterministic variations with fixed ${escape(age)} selections`).join('; ')}.
 These are measured samples, not a promise of global uniqueness.</p>
-<p>${geometry ? `${geometry.length} longest-combination browser measurements across seven age bands, desktop and 320-pixel phones, production and fallback fonts. The latest measured closing ends no lower than ${(Math.max(...geometry.map(row => row.end)) * 100).toFixed(1)}% of A4 height, before the artwork's 88% clearance boundary.` : 'The full browser geometry measurements have not yet been generated in this workspace.'}
+<p>${geometry ? `${geometry.length} longest-combination browser measurements across seven age bands, desktop and 320-pixel phones, production and fallback fonts. The latest measured closing line box ends by ${(Math.max(...geometry.map(row => row.end)) * 100).toFixed(1)}% of A4 height; rendered ink stays above the 85% artwork-clearance edge.` : 'The full browser geometry measurements have not yet been generated in this workspace.'}
 The canonical PDF body scale is ${(595.2756 * studioLetterLayout.body).toFixed(1)} points
 (15.4% larger), with the same nominal scale in the preview; no artwork or popup redesign.</p>
 <h2>Runtime boundaries</h2><p>No runtime AI calls, new dependencies, recording changes, new personal-data storage or fulfilment changes.

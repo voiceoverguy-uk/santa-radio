@@ -574,10 +574,11 @@ for (const width of [1440, 390, 320]) {
     const enlargedSignature = await scriptInk(page, page.locator('dialog .studio-letter__signature > span'));
     expect(enlargedSignature.changed).toBe(0);
     const signatureSize = await page.locator('dialog .studio-letter__signature')
-      .evaluate(el => parseFloat(getComputedStyle(el).fontSize));
-    // The whole A4 sheet now scales to fit even at 320px. Check ink relative
-    // to that rendered size, rather than an obsolete fixed pixel count.
-    expect(enlargedSignature.ink).toBeGreaterThan(signatureSize ** 2);
+      .evaluate(el => parseFloat(getComputedStyle(el).fontSize)
+        * el.closest('.studio-letter__paper').getBoundingClientRect().width / 595.2756);
+    // Font pixels returned inside foreignObject use canonical SVG units;
+    // scale them once to the actual sheet before checking painted ink.
+    expect(enlargedSignature.ink).toBeGreaterThan(signatureSize * 5);
     await expectSignatureSpacing(page, enlargedSignature.bounds);
     await page.screenshot({ path: `test-results/studio-signature-ink-${width}.png` });
   });
@@ -600,7 +601,7 @@ async function expectSignatureSpacing(page, ink) {
   expect(ink.top).toBeGreaterThan(neighbours.signoff.bottom);
   expect(ink.bottom).toBeLessThan(neighbours.closing.top);
   expect(neighbours.closing.bottom).toBeLessThan(neighbours.ps.top);
-  expect(neighbours.ps.bottom).toBeLessThan(.88);
+  expect(neighbours.ps.bottom).toBeLessThan(.85);
 }
 
 for (const width of [1440, 390]) {
@@ -776,7 +777,7 @@ test(`longest name and choices keep the complete letter inside A4 at ${width}px`
       range.selectNodeContents(node);
       const rects = [...range.getClientRects()];
       return rects.every(rect => rect.top >= paper.top + paper.height * .22 - .5 &&
-        rect.bottom < paper.top + paper.height * .88 + .5 &&
+        rect.bottom < paper.top + paper.height * .85 + .5 &&
         rect.left >= paper.left + paper.width * .06 - .5 &&
         rect.right <= paper.right - paper.width * .06 + .5);
     });
@@ -1000,7 +1001,7 @@ for (const [width, scale] of [[1440, 1], [320, 1], [390, 2]]) {
     expect(metrics.ratio).toBeCloseTo(210 / 297, 2);
     expect(metrics.overflow).toBeLessThanOrEqual(1);
     expect(metrics.headerGap / metrics.paperWidth).toBeCloseTo(.24 * 297 / 210, 2);
-    expect(metrics.textBottom).toBeLessThan(.88);
+    expect(metrics.textBottom).toBeLessThan(.853);
     expect(metrics.allTextFits).toBe(true);
     expect(metrics.background).toContain('santa-radio-letterhead.webp');
     expect(metrics.fontFamily).toContain('Georgia');

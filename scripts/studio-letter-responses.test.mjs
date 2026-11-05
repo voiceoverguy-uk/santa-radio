@@ -5,6 +5,9 @@ import { studioEditorialContext, studioEditorialGroups } from '../server/studio-
 import { responseLibraries, resolveLetterGroup, createStudioLetterVariation } from '../src/lib/studioLetterResponses.js';
 import { createStudioLetter, studioLetterChoices, letterDuration, GIFT_EXAMPLE_INTERVAL_MS } from '../src/lib/santaStudioLetter.js';
 import { workshopTreatPhrases, workshopTreatWording } from '../src/lib/workshopTreatWording.js';
+import { compactLetterResponses, compactLetterNarratives } from '../src/lib/studioLetterCompact.js';
+import { letterNarratives } from '../src/lib/studioLetterNarratives.js';
+import { fitStudioLetterLines, studioLetterLayout } from '../src/lib/studioLetterLayout.js';
 
 const base = { age: '10 years old', activity: 'Art', achievement: 'Being brave', treats: 'a beautiful note', destination: 'England' };
 function selected(overrides = {}) {
@@ -19,6 +22,58 @@ function selected(overrides = {}) {
   return { ...details, context };
 }
 const text = letter => letter.paragraphs.join('\n');
+
+test('curated compact reactions cover every group and retain selected details, story roles, joke and closing', () => {
+  for (const [category, groups] of Object.entries(compactLetterResponses)) {
+    assert.deepEqual(Object.keys(groups).sort(), Object.keys(responseLibraries[category]).sort());
+    for (const value of Object.values(groups)) {
+      assert.ok(value.length > 20);
+      assert.doesNotMatch(value, /undefined|\.{3}|…/u);
+    }
+  }
+  for (const role of Object.keys(letterNarratives)) {
+    for (const band of ['family', 'adult']) {
+      assert.equal(compactLetterNarratives[role][band].length, letterNarratives[role][band].length,
+        'Every full scene needs a curated compact counterpart in the same variation slot');
+    }
+  }
+  const details = selected();
+  const variation = createStudioLetterVariation(() => .67);
+  const letter = createStudioLetter('Alexandria', () => 0, details, variation);
+  assert.equal(letter.compactParagraphs.length, letter.paragraphs.length);
+  for (const field of ['age', 'activity', 'achievement', 'destination', 'treats']) {
+    assert.ok(letter.compactParagraphs.join('\n').includes(details[field]), `Lost ${field}`);
+  }
+  for (const index of [0, 6, 11]) {
+    assert.equal(letter.compactParagraphs[index], letter.paragraphs[index], 'Greeting, route, and signoff stay whole');
+  }
+  const shortReminder = letter.paragraphs[9].replace('Now, Alexandria, ', '');
+  assert.equal(letter.compactParagraphs[9],
+    `${shortReminder[0].toUpperCase()}${shortReminder.slice(1)}`);
+  const selectedJoke = letter.paragraphs[10].replace('By the way, Alexandria, do you like jokes? ', '');
+  assert.equal(letter.compactParagraphs[10], `For a Christmas joke: ${selectedJoke}`);
+  assert.doesNotMatch(letter.compactParagraphs[9], /Alexandria/u);
+  assert.doesNotMatch(letter.compactParagraphs[10], /Alexandria/u);
+  assert.equal(letter.compactParagraphs[1], compactLetterNarratives.workshop.family[13]);
+  const spelling = createStudioLetter('Alexandra', () => 0, details, variation);
+  assert.deepEqual(spelling.compactParagraphs,
+    letter.compactParagraphs.map(p => p.replaceAll('Alexandria', 'Alexandra')));
+  assert.deepEqual(spelling.closing, letter.closing);
+});
+
+test('adaptive spacing uses spare height within readable caps and rejects impossible layouts', () => {
+  const short = fitStudioLetterLines(10, 14);
+  const medium = fitStudioLetterLines(25, 14);
+  const long = fitStudioLetterLines(28, 14);
+  assert.equal(short.leading, studioLetterLayout.maxLeading);
+  assert.equal(short.paragraphGap, studioLetterLayout.maxParagraphGap);
+  assert.ok(medium.leading > long.leading);
+  assert.ok(medium.paragraphGap > long.paragraphGap);
+  assert.ok(long.leading >= studioLetterLayout.leading);
+  assert.ok(long.contentHeight < 841.8898 * (.853 - .24));
+  assert.throws(() => fitStudioLetterLines(100, 14), /cannot fit readably/);
+  assert.throws(() => fitStudioLetterLines(NaN, 14), /incomplete/);
+});
 
 test('all explicit server groups resolve to reviewed non-empty libraries, not a public fixture', () => {
   const fields = { activity: 'activity', achievement: 'achievement', treat: 'treats' };

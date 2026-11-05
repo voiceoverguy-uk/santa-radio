@@ -8,16 +8,36 @@ The complete sample letter keeps A4 proportions rather than reflowing as an arti
 
 **How to apply:** Scale the document uniformly to both available popup dimensions after reserving room for the close toolbar. Keep interface controls responsive, including enlarged text, and refit on rotation. Check the actual paragraph bounds against the header/footer and the complete sheet against the popup; do not hide overflow to conceal a fit failure.
 
-When enlarging the letter's body type, retain the complete authored prose and
-the existing letterhead, signature style and watermarks. Use the safe writing
-area rather than shortening letters or enlarging only the popup.
+Keep the body type size, A4 page, letterhead, signature and watermarks unchanged.
+The owner now explicitly approves adaptive line/paragraph spacing within an
+invisible writing frame and curated shorter wording for exceptionally long
+letters. This supersedes the previous unchanged-spacing decision and prohibition
+on per-letter spacing adjustments or shortening.
 
-**Why:** The owner requested larger print in both the review and downloaded A4
-letter, explicitly excluding rewriting, shortening or removing content.
+**Why:** The owner's Edward screenshot showed ordinary letters bunching near
+the top, and the owner authorised a content-aware fitting policy rather than
+preserving that limitation.
 
-**How to apply:** Independently check longest wrapped combinations in the
-browser and embedded PDF font; the same words can wrap differently. Include
-parent-qualified regions, jokes and long written names before choosing a scale.
+**How to apply:** Keep ordinary wording where it fits. Compact wording must
+retain every selected detail, age-appropriate contextual meaning, geographical
+story, festive character, joke and closing. Make one deterministic wording
+decision against both browser and embedded-PDF fonts before revealing the letter.
+Resizing, animation and downloading must not select new wording. Never shrink,
+clip, truncate, hide overflow or add a page to claim success.
+
+The invisible writing frame ends at 85.3% of A4 height; rendered letter ink
+must stay above 85% so the P.S. clears the lower holly and other ornaments.
+
+**Why:** Same-size browser and PDF comparisons showed an 84% line-box limit left
+the P.S. too high, while 86% put its ink slightly below the owner's target. The
+85.3% frame places the Edward P.S. at 84.5% in the preview and keeps PDF ink
+below 85%, matching the supplied screenshot with clearance above the artwork.
+The PDF also needs an explicit 8pt gap after the decorative signature so its ink
+does not overlap the following closing line.
+
+**How to apply:** Keep the 85.3% line-box bound and 85% ink bound consistent in
+browser previews, enlargements and PDF exports; rerun long-copy fit checks when
+either position changes.
 
 A CSS fallback-font override is not proof of testing a second installed font.
 In the Linux workspace, Georgia and Times New Roman can both resolve to DejaVu
@@ -30,27 +50,6 @@ as independent coverage can hide that distinction.
 **How to apply:** Check actual font availability before describing fallback
 coverage; measure the embedded PDF font separately and do not infer the source
 build or installed fonts from a screenshot alone.
-
-Prefer a smaller line-spacing increase when matching a spacing reference would
-make supported long letters overflow. Keep the existing body size, complete
-wording, artwork and single A4 page rather than shortening text or adding a page.
-
-**Why:** After the larger increase failed the longest-letter fit checks, the
-owner chose “Use a smaller spacing increase” over shorter wording or a second page.
-
-**How to apply:** Check both browser and PDF wrapping independently; do not
-silently compress an individual letter or conceal content outside the safe area.
-
-Leave the current letter spacing unchanged unless the owner authorises a new
-compromise. The larger-spacing comparison is not approved for production.
-
-**Why:** After reviewing the measured one-page limits and the same-scale
-comparison, the owner chose “Leave spacing unchanged” rather than shorter
-wording or another page.
-
-**How to apply:** Preserve that decision during later letter work; do not
-describe unchanged spacing as an appearance fix or conceal the documented
-extreme-case browser fit limitation.
 
 Use conventional left-aligned letter writing with a ragged right edge, not
 centred lines or full justification. Keep the decorative letterhead unchanged.

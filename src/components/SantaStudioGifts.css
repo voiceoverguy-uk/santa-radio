@@ -315,6 +315,8 @@
 }
 
 .studio-letter__paper {
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
   container-type: inline-size;
   position: relative;
   isolation: isolate;
@@ -333,6 +335,8 @@
 }
 
 .studio-letter__text {
+  display: flex;
+  flex-direction: column;
   position: absolute;
   top: var(--letter-top, 24%);
   right: var(--letter-inset, 6%);
@@ -353,8 +357,23 @@
 }
 
 .studio-letter__closing {
+  display: flex;
+  flex-direction: column;
   /* The lower corner holly reaches further into the page than the side rule. */
   margin-inline: var(--letter-closing-inset, 4.5454545%);
+}
+
+.studio-letter__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.studio-letter__canvas .studio-letter__text {
+  position: static;
+  width: 100%;
 }
 
 .studio-letter__signature {

@@ -10,17 +10,22 @@ export async function measureLetterSpacing(paper) {
       const lines = [...range.getClientRects()].filter(r => r.width > .01)
         .filter((r, i, rects) => rects.findIndex(other => Math.abs(other.top - r.top) < .1) === i);
       return { lines: lines.map(r => ({ top: r.top / scale, bottom: r.bottom / scale })),
-        gap: parseFloat(getComputedStyle(p).marginBottom) / scale,
-        font: parseFloat(getComputedStyle(p).fontSize) / scale };
+        gap: parseFloat(getComputedStyle(p).marginBottom) / (sheet.querySelector('svg') ? 1 : scale),
+        font: parseFloat(getComputedStyle(p).fontSize) / (sheet.querySelector('svg') ? 1 : scale) };
     });
     const rect = sheet.getBoundingClientRect();
     const signature = text.querySelector('.studio-letter__signature').getBoundingClientRect();
     const end = text.getBoundingClientRect().bottom;
+    const ps = text.querySelector('.studio-letter__closing p:last-child');
+    const psRange = document.createRange();
+    psRange.selectNodeContents(ps);
+    const inkEnd = psRange.getBoundingClientRect().bottom;
     return { paragraphs, pitch: paragraphs.flatMap(p => p.lines.slice(1)
       .map((line, i) => line.top - p.lines[i].top)),
     inkGaps: paragraphs.flatMap(p => p.lines.slice(1)
       .map((line, i) => line.top - p.lines[i].bottom)),
     end: (end - rect.top) / rect.height,
+    inkEnd: (inkEnd - rect.top) / rect.height,
     signatureEnd: (signature.bottom - rect.top) / rect.height,
     sheet: { width: rect.width, height: rect.height } };
   });

@@ -2,6 +2,7 @@ import { responseLibraries, resolveLetterGroup, createStudioLetterVariation,
   letterSignoffs } from './studioLetterResponses.js';
 import { letterNarratives, detailIntroductions, letterReminders, letterPostscripts } from './studioLetterNarratives.js';
 import { studioChristmasJokes } from './studioChristmasJokes.js';
+import { compactLetterResponses, compactLetterNarratives } from './studioLetterCompact.js';
 export { createStudioLetterVariation } from './studioLetterResponses.js';
 
 // Public-safe display labels verified against the hosted Studio inventory.
@@ -57,7 +58,24 @@ export function createStudioLetter(name, random = Math.random, overrides = null,
     `By the way, ${name}, do you like jokes? ${choose(studioChristmasJokes, 'joke')}`,
     choose(letterSignoffs, 'signoff'),
   ];
-  return { name, age, ...details, paragraphs,
+  const compactParagraphs = [...paragraphs];
+  for (const [role, index] of [['workshop', 1], ['departure', 4], ['atmosphere', 8]]) {
+    compactParagraphs[index] = choose(compactLetterNarratives[role][adult ? 'adult' : 'family'], role);
+  }
+  for (const [category, index] of [['age', 2], ['activity', 3], ['achievement', 5], ['treats', 7]]) {
+    const introductionText = category === 'age'
+      ? paragraphs[2].slice(0, paragraphs[2].length - response('age').length).trim()
+      : introduction(category);
+    compactParagraphs[index] = `${introductionText} ${compactLetterResponses[category][groups[category].group]}`;
+  }
+  // The greeting already carries the complete chosen name. For overflow cases,
+  // avoid repeating a long name in both encouragement and joke setup; the full
+  // personalisation and wording remain unchanged in the normal version.
+  const compactReminder = compactParagraphs[9].replace(`Now, ${name}, `, '');
+  compactParagraphs[9] = `${compactReminder[0].toUpperCase()}${compactReminder.slice(1)}`;
+  compactParagraphs[10] = compactParagraphs[10]
+    .replace(`By the way, ${name}, do you like jokes? `, 'For a Christmas joke: ');
+  return { name, age, ...details, paragraphs, compactParagraphs,
     editorialReview: Object.entries(groups).filter(([, context]) => context.needsReview).map(([category]) => category),
     closing: ['The North Pole', choose(letterPostscripts, 'postscript')] };
 }

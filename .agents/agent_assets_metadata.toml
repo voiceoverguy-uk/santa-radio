@@ -1195,14 +1195,14 @@ content_type = "image/png"
 id = "Yp0-Lf4wRV30q4BiRceYC"
 uri = "file://generated-artifacts/studio-spacing/spacing-report.html"
 type = "html"
-title = "Letter spacing report — decision recorded"
-description = "Records your choice to leave spacing unchanged, with the comparison and measured one-page limits."
+title = "Santa letter before-and-after comparison"
+description = "Same-size Edward letter, measured adaptive spacing, and the rendered one-page A4 PDF."
 logical_id = "e5c89eb9-4719-4817-81f6-b3e718ce6510"
-content_hash = "sha256:493af51e8b4754f698c7b76e185972b71ae9e1a7e24c704ff4455847233aca4a"
-size = 754422
-mtime_ms = 1793840081579
-storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/e5c89eb9-4719-4817-81f6-b3e718ce6510/9bcef109-bf86-40ce-a876-18e90c73872c"
-storage_version_token = "1793840111341652"
+content_hash = "sha256:c9c526fe9ba0411c7882ccf7c995ad250515f0072b740800cb54c7141c4660cc"
+size = 2731981
+mtime_ms = 1793845741969
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/e5c89eb9-4719-4817-81f6-b3e718ce6510/9c0792f7-958e-4f67-bbee-ae68bcb8ac32"
+storage_version_token = "1793845867132884"
 content_type = "text/html"
 
 [[outputs]]
@@ -1217,4 +1217,18 @@ size = 1071166
 mtime_ms = 1793839292825
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/ef80bedf-f6c4-48f5-b25a-e6e65983633d/f57c0b30-bb37-468f-a676-5b42ad4e2d3a"
 storage_version_token = "1793839369163983"
+content_type = "application/pdf"
+
+[[outputs]]
+id = "1ZPzBAb-1GlxhddZHjxpU"
+uri = "file://generated-artifacts/studio-spacing/edward.pdf"
+type = "pdf"
+title = "Edward’s fitted Santa letter PDF"
+description = "Final one-page A4 export with the fitted body, signature, closing, and P.S."
+logical_id = "448d0ed7-b3a9-4910-bb24-92f0796b34b3"
+content_hash = "sha256:f51ba32188134cbb94d64a3623566b6f70876dc29c4f1cad99bede88b6976925"
+size = 1070993
+mtime_ms = 1793845368705
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/448d0ed7-b3a9-4910-bb24-92f0796b34b3/d49a74a0-1786-488b-a7e5-19d74033db34"
+storage_version_token = "1793845868238873"
 content_type = "application/pdf"

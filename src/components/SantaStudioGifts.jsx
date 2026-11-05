@@ -5,6 +5,7 @@ import { createStudioLetter, CERTIFICATE_WRITE_MS, LETTER_CHARACTER_MS,
   createStudioLetterVariation } from '../lib/santaStudioLetter.js';
 import './SantaStudioGifts.css';
 import { studioLetterLayout } from '../lib/studioLetterLayout.js';
+import { LETTER_WIDTH, LETTER_HEIGHT } from '../lib/studioLetterLayout.js';
 import SantaPictureName from './SantaPictureName.jsx';
 import CertificateName from './CertificateName.jsx';
 import StudioGiftDownload from './StudioGiftDownload.jsx';
@@ -56,15 +57,17 @@ function Certificate({ name, elapsed }) {
 }
 
 function Letter({ letter, elapsed }) {
+  if (!letter) return <article className="studio-letter__paper" aria-label="Preparing Santa’s letter" />;
   const bodyCount = Math.floor((elapsed - CERTIFICATE_WRITE_MS) / LETTER_CHARACTER_MS);
   const signatureProgress = Math.max(0, Math.min(1,
     (elapsed - CERTIFICATE_WRITE_MS - letterBodyDuration(letter)) / SIGNATURE_WRITE_MS));
   let offset = 0;
   return <article className="studio-letter__paper" aria-label={`Santa’s letter example for ${letter.name}`}
+    data-letter-ready="true" data-letter-compact={letter.compact ? 'true' : 'false'}
     style={{
       '--letter-body': `${studioLetterLayout.body * 100}cqw`,
-      '--letter-leading': studioLetterLayout.leading,
-      '--letter-gap': `${studioLetterLayout.paragraphGap}em`,
+      '--letter-leading': letter.browserLayout.leading,
+      '--letter-gap': `${letter.browserLayout.paragraphGap}em`,
       '--letter-inset': `${studioLetterLayout.inset * 100}%`,
       '--letter-top': `${studioLetterLayout.top * 100}%`,
       '--letter-closing-inset': `${(studioLetterLayout.closingInset - studioLetterLayout.inset)
@@ -74,19 +77,24 @@ function Letter({ letter, elapsed }) {
       {letter.paragraphs.map((text, index) => <p key={index}>{text}</p>)}
       <p>Santa Claus</p>{letter.closing.map(text => <p key={text}>{text}</p>)}
     </div>
-    <div className="studio-letter__text" aria-hidden="true">
+    <svg className="studio-letter__canvas" viewBox={`0 0 ${LETTER_WIDTH} ${LETTER_HEIGHT}`} aria-hidden="true">
+    <foreignObject x={LETTER_WIDTH * studioLetterLayout.inset} y={LETTER_HEIGHT * studioLetterLayout.top}
+      width={LETTER_WIDTH * (1 - 2 * studioLetterLayout.inset)} height={LETTER_HEIGHT}>
+    <div className="studio-letter__text" style={{ fontSize: LETTER_WIDTH * studioLetterLayout.body }}>
       {letter.paragraphs.map((text, index) => {
         const count = bodyCount - offset;
         offset += text.length;
         return <p key={index}><WrittenText text={text} count={count} /></p>;
       })}
-      <div className="studio-letter__signature">
+      <div className="studio-letter__signature" style={{ fontSize: LETTER_WIDTH * studioLetterLayout.signature }}>
         <ScriptReveal progress={signatureProgress}>Santa Claus</ScriptReveal>
       </div>
       <div className={`studio-letter__closing${signatureProgress < 1 ? ' studio-writing-hidden' : ''}`}>
         {letter.closing.map(text => <p key={text}>{text}</p>)}
       </div>
     </div>
+    </foreignObject>
+    </svg>
   </article>;
 }
 
@@ -129,8 +137,21 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
   const dialogRef = useRef(null);
   const openerRef = useRef(null);
   const closeRef = useRef(null);
-  const displayLetter = staticPreview && suppliedLetter ? suppliedLetter : letter;
-  const duration = letterDuration(displayLetter);
+  const rawLetter = staticPreview && suppliedLetter ? suppliedLetter : letter;
+  const letterKey = JSON.stringify(rawLetter);
+  const [prepared, setPrepared] = useState(null);
+  const [letterError, setLetterError] = useState(null);
+  const [fitAttempt, setFitAttempt] = useState(0);
+  const displayLetter = prepared?.key === letterKey ? prepared.letter : null;
+  useEffect(() => {
+    let cancelled = false;
+    setLetterError(null);
+    import('../lib/prepareStudioLetter.js').then(({ prepareStudioLetter }) => prepareStudioLetter(rawLetter))
+      .then(result => { if (!cancelled) setPrepared({ key: letterKey, letter: result }); })
+      .catch(() => { if (!cancelled) setLetterError('This complete letter could not be fitted safely. Please retry the letter preview; your audio and other gifts are unaffected.'); });
+    return () => { cancelled = true; };
+  }, [letterKey, fitAttempt]);
+  const duration = letterDuration(displayLetter || rawLetter);
   const displayElapsed = staticPreview || reducedMotion ? duration : elapsed;
   const finished = displayElapsed >= duration;
 
@@ -141,7 +162,7 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
     return () => observer.disconnect();
   }, []);
   useEffect(() => {
-    if (finished || !visible) return undefined;
+    if (finished || !visible || !displayLetter) return undefined;
     let previous = performance.now();
     const timer = setInterval(() => {
       const now = performance.now();
@@ -150,13 +171,13 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
       setElapsed(value => Math.min(duration, value + delta));
     }, 40);
     return () => clearInterval(timer);
-  }, [finished, visible, duration]);
+  }, [finished, visible, duration, Boolean(displayLetter)]);
   useEffect(() => {
-    if (staticPreview || activeAudio || reducedMotion || !visible || hovered || focused || reading || view) return undefined;
+    if (staticPreview || activeAudio || reducedMotion || !visible || !displayLetter || hovered || focused || reading || view) return undefined;
     // One shared name drives both documents. Writing completes within this cycle.
     const timer = setTimeout(onNext, GIFT_EXAMPLE_INTERVAL_MS);
     return () => clearTimeout(timer);
-  }, [staticPreview, activeAudio, reducedMotion, visible, hovered, focused, reading, view, onNext, picture]);
+  }, [staticPreview, activeAudio, reducedMotion, visible, Boolean(displayLetter), hovered, focused, reading, view, onNext, picture]);
   useEffect(() => {
     if (!previewOpen) return undefined;
     const dialog = dialogRef.current;
@@ -187,6 +208,7 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
     <button className={`studio-gifts__thumbnail studio-gifts__thumbnail--${kind}`} type="button"
       aria-label={kind === 'certificate' ? 'Enlarge certificate'
         : kind === 'letter' ? 'Enlarge letter to read' : 'Enlarge Santa’s Nice List picture'}
+      disabled={kind === 'letter' && !displayLetter}
       onClick={event => open(event, kind)}>
       <div className="studio-gifts__thumbnail-artwork">
         {kind === 'certificate' ? <Certificate name={name} elapsed={displayElapsed} />
@@ -200,7 +222,7 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
       </span>
     </button>
     {staticPreview && <StudioGiftDownload key={`${giftRevision}-${name}-${downloadReady}-${kind}`}
-      kind={kind} ready={downloadReady} name={name} letter={displayLetter}
+      kind={kind} ready={downloadReady && (kind !== 'letter' || Boolean(displayLetter))} name={name} letter={displayLetter}
       requested={requestedGifts?.[kind]}
       onDownloadRequested={onDownloadRequested} onPreparing={onGiftPreparing}
       picture={picture} unavailableNotice={downloadUnavailableNotice} />}
@@ -212,6 +234,9 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
     onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false); }}>
     <h4>{reviewHeading || `All 3 gifts included for ${name} with the paid version`}</h4>
     {staticPreview && downloadNotice && <p>{downloadNotice}</p>}
+    {!displayLetter && !letterError && <p className="studio-gifts__sr" role="status">Preparing the complete letter layout…</p>}
+    {letterError && <p role="alert">{letterError} <button type="button"
+      onClick={() => setFitAttempt(value => value + 1)}>Retry letter preview</button></p>}
     {children}
     <div className={`studio-gifts__preview-stack${staticPreview ? ' studio-gifts__preview-stack--review' : ''}${promotion ? ' studio-gifts__preview-stack--promotion' : ''}`}
       role="group" aria-label="Three gift previews"
