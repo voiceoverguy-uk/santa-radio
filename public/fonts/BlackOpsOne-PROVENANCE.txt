@@ -1,0 +1,5 @@
+Black Ops One Regular
+Source: https://github.com/google/fonts/tree/main/ofl/blackopsone
+Font: https://raw.githubusercontent.com/google/fonts/main/ofl/blackopsone/BlackOpsOne-Regular.ttf
+License: SIL Open Font License 1.1, included as BlackOpsOne-OFL.txt.
+Self-hosted to avoid third-party font requests.

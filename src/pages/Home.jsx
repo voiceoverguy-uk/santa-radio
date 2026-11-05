@@ -4,6 +4,7 @@ import { useTrackEvent } from '../privacy/useTrackEvent.js';
 import HomeHero, { useHeroNameSelection } from '../components/HomeHero.jsx';
 import SantaTrackerBanner from '../tracker/components/SantaTrackerBanner.tsx';
 import Soundboard from '../components/Soundboard.jsx';
+import NaughtyNiceWidget from '../naughty-or-nice/NaughtyNiceWidget.jsx';
 import ChristmasPairs from '../components/ChristmasPairs.jsx';
 import SantaDashPromo from '../components/SantaDashPromo.jsx';
 import SantaMessageForm from '../components/SantaMessageForm.jsx';
@@ -29,6 +30,7 @@ export default function Home() {
       <SantaTrackerBanner />
       {/* Personalised video promotion temporarily removed; SantaVideoSection and its styles are retained for restoration. */}
       <SantaDashPromo />
+      <NaughtyNiceWidget />
       <ChristmasPairs />
       <Soundboard />
       <MugshotsPreview />

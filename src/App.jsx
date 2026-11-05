@@ -13,6 +13,7 @@ import FreeSantaMessage from './pages/FreeSantaMessage.jsx';
 import SantaMessageWorkshop from './pages/SantaMessageWorkshop.jsx';
 import SubmitASong from './pages/SubmitASong.jsx';
 import ChristmasContenders from './pages/ChristmasContenders.jsx';
+import NaughtyNicePage from './naughty-or-nice/NaughtyNicePage.jsx';
 import PrivacyPolicy from './pages/PrivacyPolicy.jsx';
 import PhotoLicensing from './pages/PhotoLicensing.jsx';
 import { mugPhotoTermsPath } from './seo/catalogue.js';
@@ -62,6 +63,7 @@ function App({ Router = BrowserRouter, routerProps = {} }) {
         <Route path="/sign-up/*" element={<SantaStaffShell mode="sign-up" />} />
         <Route path="/submit-a-song" element={<SubmitASong />} />
         <Route path="/christmas-contenders" element={<ChristmasContenders />} />
+        <Route path="/naughty-or-nice-list-checker" element={<NaughtyNicePage />} />
         <Route path="/links" element={<Links />} />
         <Route path="/santa-stories" element={<SantaStories />} />
         <Route path="/santa-tracker" element={<SantaTrackerPage />} />

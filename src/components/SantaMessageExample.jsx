@@ -102,9 +102,11 @@ export default function SantaMessageExample({ onExampleNameChange } = {}) {
     };
     document.addEventListener('play', onOtherAudioPlay, true);
     document.addEventListener('santa-radio:soundboard-start', onSoundboardStart);
+    document.addEventListener('santa-radio:checker-start', onSoundboardStart);
     return () => {
       document.removeEventListener('play', onOtherAudioPlay, true);
       document.removeEventListener('santa-radio:soundboard-start', onSoundboardStart);
+      document.removeEventListener('santa-radio:checker-start', onSoundboardStart);
       stopRef.current?.({ resumeRadio: true });
     };
   }, []);

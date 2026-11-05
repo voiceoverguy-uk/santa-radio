@@ -25,7 +25,11 @@ export default function useSoundboard() {
   useEffect(() => releaseAudio, [releaseAudio]);
   useEffect(() => {
     document.addEventListener('santa-radio:example-start', stop);
-    return () => document.removeEventListener('santa-radio:example-start', stop);
+    document.addEventListener('santa-radio:checker-start', stop);
+    return () => {
+      document.removeEventListener('santa-radio:example-start', stop);
+      document.removeEventListener('santa-radio:checker-start', stop);
+    };
   }, [stop]);
 
   const play = async phrase => {

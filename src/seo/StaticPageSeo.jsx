@@ -2,6 +2,7 @@ import { useLocation } from 'react-router-dom';
 import PageSeo from './PageSeo.jsx';
 import { pageMetadata, mugPhotoTermsPath } from './catalogue.js';
 const pages = {
+  '/naughty-or-nice-list-checker': ['Santa’s Naughty or Nice List Checker | Santa Radio', 'Visit the Head Elf in Santa’s cosy North Pole office for a free, playful Naughty or Nice quiz. Ten yes-or-no questions, local name suggestions and festive fun.'],
   '/christmas-contenders': ['Christmas Contenders 2026 | Santa Radio', 'Help choose the next sound of Christmas. Explore our isolated demo before November voting for December playlist consideration.'],
   [mugPhotoTermsPath]: ['Photo usage and licensing | Santa Radio', 'Read the copyright and permission-required reuse terms for Santa Radio’s Mugshot photographs, with photographer credits and how to request permission.'],
   '/privacy-policy': ['Privacy Policy | Santa Radio', 'Read how Santa Radio handles privacy, website information and optional submissions.'],

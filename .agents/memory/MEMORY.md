@@ -99,3 +99,6 @@
 - [Studio promotional gifts](studio-promotion-gift-arrangement.md) — Owner-approved picture/letter pair above certificate; separate from Review and historical screenshot access text.
 - [Studio runner placement](studio-runner-placement.md) — Short, unboxed lane beside Cancel beneath status; keep the mobile lane below the controls.
 - [Browser property assertions](browser-property-assertions.md) — Use polling and string matchers for partial DOM properties, not asymmetric toHaveJSProperty values.
+- [Checker privacy boundaries](checker-privacy-boundaries.md) — Standalone pretend play; child-name handoffs stay in memory, not serialisable browser history state.
+- [Checker audio direction](checker-audio-direction.md) — Full-page outcome clips reveal certificates 1.2 seconds before ending; homepage keeps its own clip and timing.
+- [Checker workshop artwork](checker-workshop-artwork.md) — Owner-supplied festive backdrop replaces drawn scenery; keep the parchment and controls separate.

@@ -22,3 +22,13 @@ Late discovery of a lazy dependency can also make Vite reload the page during th
 **Why:** The first browser-local PDF download triggered dependency optimisation and reset the Studio before the download completed.
 
 **How to apply:** Prebundle dependencies used by important lazy interactions and test a cold Preview session as well as the production build.
+
+A running Preview can also miss newly merged public assets and return the HTML
+app shell for their URLs, despite those files existing on disk.
+
+**Why:** Checker MP3 requests returned HTTP 200 with `text/html` until the website
+workflow was restarted; afterwards all three returned `audio/mpeg` and played.
+
+**How to apply:** Check asset response types and sizes, not just status codes.
+If public files exist but Preview returns HTML, verify a fresh workflow before
+changing audio formats or blaming browser playback restrictions.

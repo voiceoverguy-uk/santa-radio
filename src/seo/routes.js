@@ -4,7 +4,7 @@ import { santaMessageRequestedName } from './santaMessageLinks.js';
 import { alternateProfileRedirects } from './alternateRedirects.js';
 import { publicRequestUrl } from './requestUrl.js';
 import { reportedMissingAliases, reportedLyricsQueries } from './reportedMissingLinks.js';
-export const staticPages = ['/', '/apps', '/privacy-policy', mugPhotoTermsPath, '/christmas-music', '/mugshots/all', '/free-santa-message', '/submit-a-song', '/christmas-contenders', '/links', '/santa-stories', '/santa-tracker'];
+export const staticPages = ['/', '/apps', '/privacy-policy', mugPhotoTermsPath, '/christmas-music', '/mugshots/all', '/free-santa-message', '/submit-a-song', '/christmas-contenders', '/naughty-or-nice-list-checker', '/links', '/santa-stories', '/santa-tracker'];
 export const canonicalPaths = [...staticPages, ...songs.map(songPath), ...mugs.map(mugPath), ...songs.map(s => `/christmas-karaoke-lyrics/${s.id}-${s.link}`)];
 // Private entry documents are packaged, but never added to the public sitemap.
 export const staffEntryPaths = ['/request-names', '/sign-in', '/sign-up'];

@@ -87,7 +87,7 @@
     { "src": "/christmas-karaoke-lyrics/139-paul-mccartney-(?:&|%26)-wings-mull-of-kintyre", "dest": "/api/public-page?__sr_route=/christmas-karaoke-lyrics/139-paul-mccartney-%26-wings-mull-of-kintyre" },
     { "src": "/christmas-artist/410-hall-(?:&|%26)-oates-jingle-bell-rock", "dest": "/api/public-page?__sr_route=/christmas-artist/410-hall-%26-oates-jingle-bell-rock" },
     { "src": "/christmas-artist/111-frank-sinatra-(?:&|%26)-cyndi-lauper-santa-claus-is-coming-to-town", "dest": "/api/public-page?__sr_route=/christmas-artist/111-frank-sinatra-%26-cyndi-lauper-santa-claus-is-coming-to-town" },
-    { "src": "/((?:apps|privacy-policy|photo-usage-and-licensing|christmas-music|mugshots|christmas-artist|christmas-karaoke-lyrics|free-santa-message|santa-message-workshop|personalised-santa-message|submit-a-song|links|santa-stories|santa-tracker|music|artist)(?:/.*)?|)", "dest": "/api/public-page?__sr_route=/$1" },
+    { "src": "/((?:apps|privacy-policy|photo-usage-and-licensing|christmas-music|mugshots|christmas-artist|christmas-karaoke-lyrics|free-santa-message|santa-message-workshop|personalised-santa-message|submit-a-song|links|santa-stories|santa-tracker|naughty-or-nice-list-checker|music|artist)(?:/.*)?|)", "dest": "/api/public-page?__sr_route=/$1" },
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/api/public-page?__sr_route=/$1" }
   ]
