@@ -2,10 +2,10 @@ import { test, expect } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 
 const labels = [
-  'Are you asleep', 'Been Naughty', 'Cookies', "It's Christmas", 'Jingle Bells',
-  'Making a List', 'Tis the Season', 'Very Quiet', 'Happy Holidays', 'Merry Christmas',
+  'Been Naughty', 'Cookies', "It's Christmas", 'Jingle Bells',
+  'Making a List', 'Tis the Season', 'Happy Holidays', 'Merry Christmas',
   'Naughty or Nice', 'What Would You Like?', 'Is Christmas Dinner Ready Yet?', 'Merry Kiss-Mas',
-  'No', 'Yes', 'Are You Ready for Christmas?', 'Proper Chrimbo', 'Goodbye', 'Ho Ho Ho',
+  'Are You Ready for Christmas?', 'Proper Chrimbo', 'Goodbye', 'Ho Ho Ho',
 ];
 
 async function open(page) {
@@ -36,7 +36,12 @@ for (const width of [320, 390, 768, 1440]) {
     await expect(board).toHaveCSS('background-image', 'none');
     await expect(board.locator('.soundboard-intro')).toHaveCSS('padding-top', '0px');
     const buttons = board.locator('.soundboard-btn');
+    await expect(buttons).toHaveCount(16);
     await expect(buttons.locator('.soundboard-btn-label')).toHaveText(labels);
+    for (const name of ['Yes', 'No', 'Very Quiet', 'Are you asleep']) {
+      await expect(board.getByRole('button', { name, exact: true })).toHaveCount(0);
+    }
+    await expect(board.locator('.soundboard-grid > *')).toHaveCount(16);
     await expect(board.locator('.soundboard-now-title')).toHaveText('Choose a phrase');
     await expect(board.getByRole('button', { name: 'Stop recording' })).toBeDisabled();
     await expect(board.locator('.soundboard-waveform')).toHaveCount(0);
@@ -55,28 +60,35 @@ for (const width of [320, 390, 768, 1440]) {
       expect(r.labelRight).toBeLessThanOrEqual(r.right + 1);
       expect(r.labelScroll).toBeLessThanOrEqual(r.labelWidth + 1);
     }
-    if (width === 1440) expect(new Set(bounds.map(r => Math.round(r.y))).size).toBe(5);
+    const rows = new Map();
+    for (const r of bounds) {
+      const y = Math.round(r.y);
+      rows.set(y, (rows.get(y) || 0) + 1);
+    }
+    expect(rows.size).toBe(16 / columns);
+    expect([...rows.values()].every(count => count === columns)).toBe(true);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
-    const before = await buttons.nth(9).boundingBox();
-    await buttons.nth(9).click();
-    await expect(buttons.nth(9)).toHaveAttribute('aria-pressed', 'true');
-    await expect(buttons.nth(9)).toHaveAttribute('aria-busy', 'true');
+    const merryChristmas = buttons.filter({ has: page.getByText('Merry Christmas', { exact: true }) });
+    const before = await merryChristmas.boundingBox();
+    await merryChristmas.click();
+    await expect(merryChristmas).toHaveAttribute('aria-pressed', 'true');
+    await expect(merryChristmas).toHaveAttribute('aria-busy', 'true');
     await expect(board.locator('.soundboard-now-title')).toHaveText('Loading recording…');
     await expect(board.locator('.soundboard-waveform')).toHaveCount(0);
     await page.evaluate(() => window.__clips.at(-1).resolve());
     await expect(board.locator('.soundboard-now-title')).toHaveText('Merry Christmas');
     await expect(board.locator('.soundboard-waveform')).toHaveCount(1);
-    await expect(buttons.nth(9).locator('.soundboard-wave-icon')).toHaveCount(1);
-    const after = await buttons.nth(9).boundingBox();
+    await expect(merryChristmas.locator('.soundboard-wave-icon')).toHaveCount(1);
+    const after = await merryChristmas.boundingBox();
     expect(after.width).toBeCloseTo(before.width, 1);
     expect(after.height).toBeCloseTo(before.height, 1);
     await expect(board.locator('.soundboard-link')).toHaveAttribute('href', '/apps');
-    await expect(buttons.nth(9)).toHaveCSS('transition-duration', '0s');
+    await expect(merryChristmas).toHaveCSS('transition-duration', '0s');
     mkdirSync('generated-artifacts', { recursive: true });
     await board.screenshot({ path: `generated-artifacts/soundboard-redesign-${width}.jpg`, animations: 'disabled' });
     await board.getByRole('button', { name: 'Stop recording' }).click();
     await expect(board.locator('.soundboard-waveform')).toHaveCount(0);
-    await expect(buttons.nth(9)).toHaveAttribute('aria-pressed', 'false');
+    await expect(merryChristmas).toHaveAttribute('aria-pressed', 'false');
   });
 }
 
@@ -150,7 +162,7 @@ for (const { width, enlarged = false } of [
     mkdirSync('generated-artifacts', { recursive: true });
     const suffix = `${width}${enlarged ? '-enlarged' : ''}`;
     await board.screenshot({ path: `generated-artifacts/soundboard-compact-idle-${suffix}.jpg` });
-    const longest = buttons.nth(12);
+    const longest = buttons.filter({ has: page.getByText('Is Christmas Dinner Ready Yet?', { exact: true }) });
     await longest.click();
     await expect(longest).toHaveAttribute('aria-busy', 'true');
     await expect(longest.locator('.soundboard-loading-label')).toBeVisible();
@@ -277,18 +289,19 @@ test('soundboard cancels stale loads, handles media events and supports keyboard
   expect(await buttons.first().evaluate(el => getComputedStyle(el).outlineStyle)).not.toBe('none');
   await page.keyboard.press('Space');
   await page.evaluate(() => window.__clips.at(-1).resolve());
-  await expect(board.locator('.soundboard-now-title')).toHaveText('Are you asleep');
+  await expect(board.locator('.soundboard-now-title')).toHaveText('Been Naughty');
   await page.evaluate(() => window.__clips.at(-1).audio.dispatchEvent(new Event('waiting')));
   await expect(board.locator('.soundboard-waveform')).toHaveCount(0);
   await page.evaluate(() => window.__clips.at(-1).audio.dispatchEvent(new Event('playing')));
   await expect(board.locator('.soundboard-waveform')).toHaveCount(1);
   await page.evaluate(() => window.__clips.at(-1).audio.dispatchEvent(new Event('ended')));
   await expect(stop).toBeDisabled();
-  await buttons.nth(2).click();
+  const cookies = board.getByRole('button', { name: 'Cookies', exact: true });
+  await cookies.click();
   await page.evaluate(() => window.__clips.at(-1).reject(new Error('Unavailable')));
   await expect(board.locator('.soundboard-error')).toContainText('Could not play “Cookies”');
   await expect(stop).toBeDisabled();
-  await buttons.nth(2).click();
+  await cookies.click();
   await page.evaluate(() => window.__clips.at(-1).resolve());
   await expect(board.locator('.soundboard-error')).toHaveCount(0);
   await page.evaluate(() => document.dispatchEvent(new Event('santa-radio:example-start')));

@@ -6,4 +6,8 @@ The owner approved the workshop concept for the homepage soundboard, including g
 
 **Why:** The owner supplied and approved the visual concept and requested a usable soundboard rather than a flat poster, then explicitly asked to remove the stretched background.
 
-**How to apply:** Preserve all 20 existing phrase labels, their order and audio recordings. Keep the same-phrase stop / different-phrase replacement interaction. Show playing visuals only after playback begins, not merely after selection. Keep artwork secondary to readable controls. Soundboard changes must remain separate from ongoing Apps-page work.
+The owner subsequently requested removal of Yes, No, Very Quiet and Are you asleep from the website soundboard only, superseding the original all-20 preservation requirement. Keep their underlying assets and the iPhone app unchanged.
+
+**Why:** The owner explicitly narrowed the website choices without authorising changes to recordings or other products.
+
+**How to apply:** Preserve the remaining phrase labels, relative order and audio recordings. Keep the same-phrase stop / different-phrase replacement interaction. Show playing visuals only after playback begins, not merely after selection. Keep artwork secondary to readable controls. Soundboard changes must remain separate from ongoing Apps-page work.

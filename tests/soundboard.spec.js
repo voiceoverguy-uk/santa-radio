@@ -21,11 +21,14 @@ for (const width of [390, 1440]) {
     await expect(board.getByText('Choose a phrase and let Santa do the talking.', { exact: true })).toHaveCount(0);
     await expect(board.getByText('Tap a phrase to play. Tap again to stop.', { exact: true })).toHaveCount(0);
     await expect(board.locator('.soundboard-btn-label')).toHaveText([
-      'Are you asleep', 'Been Naughty', 'Cookies', "It's Christmas", 'Jingle Bells',
-      'Making a List', 'Tis the Season', 'Very Quiet', 'Happy Holidays', 'Merry Christmas',
+      'Been Naughty', 'Cookies', "It's Christmas", 'Jingle Bells',
+      'Making a List', 'Tis the Season', 'Happy Holidays', 'Merry Christmas',
       'Naughty or Nice', 'What Would You Like?', 'Is Christmas Dinner Ready Yet?', 'Merry Kiss-Mas',
-      'No', 'Yes', 'Are You Ready for Christmas?', 'Proper Chrimbo', 'Goodbye', 'Ho Ho Ho',
+      'Are You Ready for Christmas?', 'Proper Chrimbo', 'Goodbye', 'Ho Ho Ho',
     ]);
+    for (const name of ['Yes', 'No', 'Very Quiet', 'Are you asleep']) {
+      await expect(board.getByRole('button', { name, exact: true })).toHaveCount(0);
+    }
     const spacing = await board.evaluate(el => {
       const subtitle = el.querySelector('.soundboard-subtitle').getBoundingClientRect();
       const panel = el.querySelector('.soundboard-panel').getBoundingClientRect();
@@ -62,7 +65,7 @@ test('all soundboard buttons share the gold glow without changing size', async (
   // pointer mid-hover; this test checks the glow, not smooth scrolling.
   await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
   const buttons = page.locator('.soundboard-btn');
-  await expect(buttons).toHaveCount(20);
+  await expect(buttons).toHaveCount(16);
   for (const button of await buttons.all()) {
     // Keep the target away from the fixed radio dock while checking hover.
     await button.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
@@ -113,12 +116,12 @@ test('touch soundboard buttons do not acquire a sticky gold hover glow', async (
   }
 });
 
-test('all 20 sounds are available and new clips decode and toggle', async ({ page }) => {
+test('all 16 sounds are available and clips decode and toggle', async ({ page }) => {
   await page.goto('/');
   const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await decline.isVisible()) await decline.click();
-  await expect(page.locator('.soundboard-btn')).toHaveCount(20);
-  const files = ['asleep', 'been-naughty', 'cookies', 'its-christmas', 'jingle-bells', 'making-a-list', 'tis-the-season', 'very-quiet', 'happy-holidays', 'merry-christmas', 'naughty-or-nice', 'what-would-you-like', 'christmas-dinner-ready', 'merry-kiss-mas', 'no', 'yes', 'ready-for-christmas', 'proper-chrimbo', 'goodbye', 'ho-ho-ho'];
+  await expect(page.locator('.soundboard-btn')).toHaveCount(16);
+  const files = ['been-naughty', 'cookies', 'its-christmas', 'jingle-bells', 'making-a-list', 'tis-the-season', 'happy-holidays', 'merry-christmas', 'naughty-or-nice', 'what-would-you-like', 'christmas-dinner-ready', 'merry-kiss-mas', 'ready-for-christmas', 'proper-chrimbo', 'goodbye', 'ho-ho-ho'];
   for (const file of files) {
     const duration = await page.evaluate(async file => {
       const context = new AudioContext();
