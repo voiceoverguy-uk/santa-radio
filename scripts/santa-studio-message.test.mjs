@@ -319,7 +319,7 @@ test('category download rejects redirects, missing, empty and oversized bytes; c
   } finally { await rm(directory, { recursive: true, force: true }); }
 });
 
-test('recipe preserves clip order and voice gain, adds one-second lead-in and 2 dB bells, safe local filenames', () => {
+test('recipe preserves clip order and voice gain, adds one-second lead-in and total 4 dB bells, safe local filenames', () => {
   const paths = Object.fromEntries(keys.map(key => [key, `${key}.wav`]));
   assert.deepEqual(studioOrder('variant-2.wav', paths, '/fixed').map(path => basename(path)), [
     'intro.flac', 'variant-2.wav', '1st.flac', 'age.wav', '2nd.flac', 'activity.wav',
@@ -331,7 +331,7 @@ test('recipe preserves clip order and voice gain, adds one-second lead-in and 2 
   ]);
   const graph = studioMixArgs('speech', 'bells', 'output').join(' ');
   assert.match(graph, /\[0:a\]adelay=48000S:all=1\[speech\]/);
-  assert.match(graph, /loudnorm=I=-34:TP=-9:LRA=7,volume=2dB,aresample=48000,afade=t=in:d=1\[bells\]/);
+  assert.match(graph, /loudnorm=I=-34:TP=-9:LRA=7,volume=4dB,aresample=48000,afade=t=in:d=1\[bells\]/);
   assert.match(graph, /\[speech\]\[bells\]amix=inputs=2:duration=first:normalize=0/);
   assert.match(graph, /areverse,afade=t=in:d=1,areverse,alimiter=limit=0.89:level=false:latency=true/);
   assert.equal(STUDIO_LEAD_IN_SECONDS, 1);

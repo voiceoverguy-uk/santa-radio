@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import ffmpeg from 'ffmpeg-static';
 import { renderArgs, voiceFilter } from './santa-audio-filters.mjs';
-import { studioMixArgs } from '../server/santa-studio-render.js';
+import { studioMixArgs, studioBells } from '../server/santa-studio-render.js';
 
 function pcm(args) {
   const result = spawnSync(ffmpeg, ['-v', 'error', '-threads', '1', '-filter_threads', '1',
@@ -24,7 +24,7 @@ test('free-message sleigh bells receive 4 dB gain after their existing level con
   assert.match(bells, /loudnorm=I=-34:TP=-9:LRA=7,volume=4dB,aresample=48000,afade=t=in:d=1\[bells\]/);
 });
 
-test('Studio real mixer: exact delayed speech, 2 dB bell-only increase, complete ending and fades', async () => {
+test('Studio real mixer: exact delayed speech, bells raised from +2 to +4 dB, complete ending and fades', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'studio-mix-timing-'));
   try {
     const voice = join(dir, 'voice.f32');
@@ -32,20 +32,25 @@ test('Studio real mixer: exact delayed speech, 2 dB bell-only increase, complete
     const speech = pcm(['-f', 'lavfi', '-i',
       'aevalsrc=if(between(t\\,0.17\\,0.9)+gte(t\\,1.4)\\,0.12*sin(2*PI*440*t)\\,0):s=48000:d=3.17']);
     await writeFile(voice, speech);
-    const args = studioMixArgs(voice, 'server/santa-audio/sleighbells.mp3', 'unused.mp3');
+    const args = studioMixArgs(voice, studioBells, 'unused.mp3');
     const graphIndex = args.indexOf('-filter_complex');
     const inputs = args.slice(0, graphIndex);
     const [voiceBranch, bellBranch, mixBranch] = args[graphIndex + 1].split(';');
+    assert.match(bellBranch, /loudnorm=I=-34:TP=-9:LRA=7,volume=4dB,/);
     const delayed = pcm([...inputs.slice(0, inputs.indexOf('-stream_loop')),
       '-af', voiceBranch.replace('[0:a]', '').replace('[speech]', '')]);
     assert.deepEqual(delayed, Buffer.concat([Buffer.alloc(48000 * 8), speech]),
       'Exactly one second on both channels, then every original voice sample and pause unchanged');
     const seconds = delayed.length / 8 / 48000;
     const bells = [];
-    for (const branch of [bellBranch.replace('volume=2dB,', ''), bellBranch]) {
+    for (const branch of [bellBranch.replace('volume=4dB,', 'volume=2dB,'), bellBranch]) {
       // Exercise the production branch before the shared peak limiter.
-      bells.push(pcm([...inputs.slice(inputs.indexOf('-stream_loop')),
-        '-af', branch.replace('[1:a]', '').replace('[bells]', ''), '-t', String(seconds)]));
+      // Decode beyond the speech duration to allow for the MP3's timestamp
+      // offset, then compare exactly the PCM frames consumed by amix.
+      const decoded = pcm([...inputs.slice(inputs.indexOf('-stream_loop')),
+        '-af', branch.replace('[1:a]', '').replace('[bells]', ''), '-t', String(seconds + 1)]);
+      assert.ok(decoded.length >= delayed.length);
+      bells.push(decoded.subarray(0, delayed.length));
     }
     assert.equal(bells[0].length, delayed.length);
     assert.equal(bells[1].length, delayed.length);
@@ -58,7 +63,7 @@ test('Studio real mixer: exact delayed speech, 2 dB bell-only increase, complete
       if (i < 48000 * 8) leadEnergy += after ** 2;
     }
     assert.ok(Math.abs(10 * Math.log10(newEnergy / oldEnergy) - 2) < 0.00001);
-    assert.ok(gainError / newEnergy < 1e-12, 'Constant +2 dB across the whole bell track');
+    assert.ok(gainError / newEnergy < 1e-12, 'A further constant +2 dB over the previous +2 dB bell track');
     assert.ok(leadEnergy > 0.001, 'Bells play during the voice-free first second');
     const prePeak = pcm([...inputs, '-filter_complex',
       `${voiceBranch};${bellBranch};${mixBranch.split(',areverse')[0]}[out]`, '-map', '[out]']);
@@ -98,7 +103,7 @@ test('Studio maximum 175-second speech still fits unchanged MP3 byte limits with
       'sine=frequency=440:duration=175', '-ar', '48000', '-ac', '2',
       '-c:a', 'pcm_f32le', '-f', 'f32le', voice], { timeout: 10000 });
     assert.equal(source.status, 0, source.stderr?.toString());
-    const result = spawnSync(ffmpeg, studioMixArgs(voice, 'server/santa-audio/sleighbells.mp3', output),
+    const result = spawnSync(ffmpeg, studioMixArgs(voice, studioBells, output),
       { timeout: 20000 });
     assert.equal(result.status, 0, result.stderr?.toString());
     assert.ok((await stat(output)).size < 4_400_000, 'Server and browser byte safeguards need no increase');

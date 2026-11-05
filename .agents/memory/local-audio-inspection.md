@@ -16,3 +16,14 @@ and generated audio in ignored generated-artifacts storage. Label all model
 transcripts as automated evidence, not listening verification or authoritative
 pronunciation checks. Do not send the owner's recordings to an external speech
 service just to resolve a local decoder mismatch.
+
+Do not assume an isolated MP3 filter branch rendered with FFmpeg's output
+`-t` yields exactly that many decoded PCM frames.
+
+**Why:** MP3 timestamp/encoder offsets can shorten that isolated output even
+when the complete speech-led mix retains its exact duration. Resetting filter
+timestamps alone did not resolve the discrepancy.
+
+**How to apply:** For branch gain comparisons, decode extra material and compare
+the required PCM frame window. Assert the full production mix's duration
+separately; never pad or trim production speech to satisfy an isolated test.
