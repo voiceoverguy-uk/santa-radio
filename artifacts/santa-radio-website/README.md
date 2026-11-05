@@ -38,6 +38,16 @@ the Loading note on its own row beneath, so labels wrap at enlarged text. The gr
 is 4 columns, 2 at 760px and below, 1 at 360px and below. Legacy soundboard button
 and grid sizing in `src/north-pole.css` was removed; do not reintroduce it.
 
+## Promotional panel hover
+
+`src/north-pole-glow.css` gives the whole cream Studio promotional panel a
+soft red edge and outer halo while retaining its resting depth. It shares the
+free message panel's 180ms transition and halo dimensions; the free panel stays
+gold. Hover requires a fine pointer and hover support; reduced motion removes
+the transition. The section remains passive, and gift/control glows are separate.
+Run `npx playwright test tests/box-glow.spec.js --project=chromium` for hover,
+restoration, stable bounds, clipping, touch-only and reduced-motion checks.
+
 ## Studio name previews
 
 Step one and review reuse the same red recorded-name control and Studio-owned,
