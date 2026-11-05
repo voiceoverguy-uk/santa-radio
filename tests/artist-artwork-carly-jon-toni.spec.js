@@ -38,3 +38,37 @@ test('all four matching song pages show the supplied artwork', async ({ page }) 
     await expect.poll(() => image.evaluate(el => el.complete && el.naturalWidth === 512 && el.naturalHeight === 512)).toBe(true);
   }
 });
+
+for (const width of [1280, 390]) {
+  test(`Toni Braxton full square replacement renders in listing and existing song at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.route(/youtube\.com|googlevideo\.com/, route => route.abort());
+    const path = artistArtwork('Toni Braxton');
+    const song = songs.find(song => song.artist === 'Toni Braxton');
+    expect(song.song).toBe('Holiday Celebrate');
+    const songPage = `/christmas-artist/${song.id}-${song.link}`;
+    async function expectSquare(image) {
+      await expect(image).toHaveAttribute('src', path);
+      await image.scrollIntoViewIfNeeded();
+      await expect.poll(() => image.evaluate(el => el.complete &&
+        el.naturalWidth === 512 && el.naturalHeight === 512)).toBe(true);
+      const dimensions = await image.evaluate(el => {
+        const style = getComputedStyle(el);
+        const box = el.getBoundingClientRect();
+        return {
+          width: box.width - parseFloat(style.borderLeftWidth) - parseFloat(style.borderRightWidth),
+          height: box.height - parseFloat(style.borderTopWidth) - parseFloat(style.borderBottomWidth),
+        };
+      });
+      expect(Math.abs(dimensions.width - dimensions.height)).toBeLessThanOrEqual(1);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    }
+    await page.goto('/christmas-music', { waitUntil: 'domcontentloaded' });
+    const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+    if (await decline.isVisible()) await decline.click();
+    await page.getByPlaceholder('Search for a song or artist').fill('Toni Braxton');
+    await expectSquare(page.locator(`a.song-card[href="${songPage}"] img`));
+    await page.goto(songPage, { waitUntil: 'domcontentloaded' });
+    await expectSquare(page.locator('.song-artwork-img'));
+  });
+}

@@ -1,4 +1,5 @@
 export const artistPortraits = Object.freeze({
+  'the weather girls': 'the-weather-girls',
   'corinne bailey rae': 'corinne-bailey-rae',
   'matt terry': 'matt-terry',
   'jamie cullum': 'jamie-cullum',

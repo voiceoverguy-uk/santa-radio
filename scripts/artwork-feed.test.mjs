@@ -33,6 +33,31 @@ test('every website recording assignment is shared with canonical identity and c
   }), feed, 'mapping insertion order must not affect output');
 });
 
+test('The Weather Girls supplied artwork is artist-wide with no song override', async () => {
+  const path = '/artist-artwork/the-weather-girls.webp';
+  const artistSongs = songs.filter(song => song.artist === 'The Weather Girls');
+  assert.ok(artistSongs.length > 0);
+  for (const song of artistSongs) {
+    assert.equal(songArtwork(song), path);
+    assert.equal(Object.hasOwn(songPortraits, song.id), false);
+  }
+  const bytes = await readFile(`public${path}`);
+  assert.ok(bytes.length < 100000);
+  const version = createHash('sha256').update(bytes).digest('hex');
+  const current = await buildArtworkFeed(mapping);
+  assert.deepEqual(current.artists['the weather girls'], { path, version, url: `${path}?v=${version}` });
+  const previous = await buildArtworkFeed({
+    ...mapping,
+    artistArtwork: artist => mapping.normalizeArtistName(artist) === 'the weather girls'
+      ? mapping.fallbackArtwork : mapping.artistArtwork(artist),
+  });
+  assert.notEqual(current.version, previous.version);
+  for (const [artist, entry] of Object.entries(previous.artists)) {
+    if (artist !== 'the weather girls') assert.deepEqual(current.artists[artist], entry);
+  }
+  assert.deepEqual(current.recordings, previous.recordings);
+});
+
 test('Mistletoe And Holly adds only its exact recording without changing artist-wide artwork', async () => {
   const current = await buildArtworkFeed(mapping);
   const { 236: added, ...previousMapping } = songPortraits;
@@ -141,6 +166,38 @@ test('invalid recording identities, paths and image files fail explicitly', asyn
     readImage: async path => path === songPortraits[75].path
       ? Buffer.from('invalid recording image') : readFile(`public${path}`),
   }), /invalid WebP.*ariana-grande-last-christmas/);
+});
+
+test('Toni Braxton replacement stays artist-wide and changes only her content-derived feed entry', async () => {
+  const path = '/artist-artwork/toni-braxton.webp';
+  const bytes = await readFile(`public${path}`);
+  const version = createHash('sha256').update(bytes).digest('hex');
+  assert.equal(version, 'a4038f78a7cf0893c39614267101793b5a0f8cdcd8ebdb042b6bc6788171249e');
+  assert.notEqual(version, '5d767c4c9c37d0bb2ee29b10d4abdc65c33345d471707a5917d3d1cc7edf709a');
+  assert.ok(bytes.length < 100000);
+  const artistSongs = songs.filter(song => song.artist === 'Toni Braxton');
+  assert.deepEqual(artistSongs.map(song => [song.id, song.song]), [[428, 'Holiday Celebrate']]);
+  assert.equal(mapping.artistArtwork('  TONI  BRAXTON  '), path);
+  for (const song of artistSongs) {
+    assert.equal(Object.hasOwn(songPortraits, song.id), false);
+    assert.equal(songArtwork(song), path);
+  }
+  const current = await buildArtworkFeed(mapping);
+  assert.deepEqual(current.artists['toni braxton'], { path, version, url: `${path}?v=${version}` });
+  const replaced = await buildArtworkFeed(mapping, {
+    readImage: async imagePath => {
+      const original = await readFile(`public${imagePath}`);
+      return imagePath === path ? Buffer.concat([original, Buffer.from('replacement test')]) : original;
+    },
+  });
+  assert.notEqual(replaced.version, current.version);
+  assert.notEqual(replaced.artists['toni braxton'].version, version);
+  assert.notEqual(replaced.artists['toni braxton'].url, current.artists['toni braxton'].url);
+  for (const [artist, entry] of Object.entries(current.artists)) {
+    if (artist !== 'toni braxton') assert.deepEqual(replaced.artists[artist], entry);
+  }
+  assert.deepEqual(replaced.recordings, current.recordings);
+  assert.deepEqual(replaced.fallback, current.fallback);
 });
 
 test('Sam Ryder keeps his shared artwork path with a new content version after cropping', async () => {
