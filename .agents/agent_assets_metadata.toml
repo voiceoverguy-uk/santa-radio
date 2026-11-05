@@ -1176,3 +1176,45 @@ mtime_ms = 1793752216925
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/9a07fee2-def5-43e0-b130-adc643d75f30/1c83e2be-9343-49e3-b913-b68cf12a8619"
 storage_version_token = "1793752294608366"
 content_type = "text/html"
+
+[[outputs]]
+id = "hKB596R1kjTPE2uSgwLyS"
+uri = "file://generated-artifacts/studio-spacing/erin-same-scale-comparison.png"
+type = "image"
+title = "Erin letter: current and trial spacing"
+description = "Identical sheet size and wording. The increased-spacing version is a comparison only and has not been applied."
+logical_id = "8208b0c5-766c-404a-8dd6-590376f7c74c"
+content_hash = "sha256:4ffe8b28ce5893c69cb6baf691d50d658270ab84b64e5e886b04412d4357c93b"
+size = 491137
+mtime_ms = 1793839337585
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/8208b0c5-766c-404a-8dd6-590376f7c74c/0c7805ea-f8ec-4fca-9553-1b0fed67d691"
+storage_version_token = "1793839366878869"
+content_type = "image/png"
+
+[[outputs]]
+id = "Yp0-Lf4wRV30q4BiRceYC"
+uri = "file://generated-artifacts/studio-spacing/spacing-report.html"
+type = "html"
+title = "Letter spacing report — decision recorded"
+description = "Records your choice to leave spacing unchanged, with the comparison and measured one-page limits."
+logical_id = "e5c89eb9-4719-4817-81f6-b3e718ce6510"
+content_hash = "sha256:493af51e8b4754f698c7b76e185972b71ae9e1a7e24c704ff4455847233aca4a"
+size = 754422
+mtime_ms = 1793840081579
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/e5c89eb9-4719-4817-81f6-b3e718ce6510/9bcef109-bf86-40ce-a876-18e90c73872c"
+storage_version_token = "1793840111341652"
+content_type = "text/html"
+
+[[outputs]]
+id = "ZnXKGh0jKcKMzzoyeXx35"
+uri = "file://generated-artifacts/studio-spacing/longest-current.pdf"
+type = "pdf"
+title = "Longest measured PDF at current spacing"
+description = "A complete one-page A4 export inspected for full wording, signature and P.S. placement."
+logical_id = "ef80bedf-f6c4-48f5-b25a-e6e65983633d"
+content_hash = "sha256:bedd5b7caf849ca93270467adb1bbf37c36c8106119461e4e2ba64ffaf3dc4be"
+size = 1071166
+mtime_ms = 1793839292825
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/ef80bedf-f6c4-48f5-b25a-e6e65983633d/f57c0b30-bb37-468f-a676-5b42ad4e2d3a"
+storage_version_token = "1793839369163983"
+content_type = "application/pdf"

@@ -19,6 +19,18 @@ letter, explicitly excluding rewriting, shortening or removing content.
 browser and embedded PDF font; the same words can wrap differently. Include
 parent-qualified regions, jokes and long written names before choosing a scale.
 
+A CSS fallback-font override is not proof of testing a second installed font.
+In the Linux workspace, Georgia and Times New Roman can both resolve to DejaVu
+Serif, unlike the owner's device.
+
+**Why:** The same letter can wrap differently from the supplied screenshot even
+when shared font size and leading are applied correctly. Treating font aliases
+as independent coverage can hide that distinction.
+
+**How to apply:** Check actual font availability before describing fallback
+coverage; measure the embedded PDF font separately and do not infer the source
+build or installed fonts from a screenshot alone.
+
 Prefer a smaller line-spacing increase when matching a spacing reference would
 make supported long letters overflow. Keep the existing body size, complete
 wording, artwork and single A4 page rather than shortening text or adding a page.
@@ -28,6 +40,17 @@ owner chose “Use a smaller spacing increase” over shorter wording or a secon
 
 **How to apply:** Check both browser and PDF wrapping independently; do not
 silently compress an individual letter or conceal content outside the safe area.
+
+Leave the current letter spacing unchanged unless the owner authorises a new
+compromise. The larger-spacing comparison is not approved for production.
+
+**Why:** After reviewing the measured one-page limits and the same-scale
+comparison, the owner chose “Leave spacing unchanged” rather than shorter
+wording or another page.
+
+**How to apply:** Preserve that decision during later letter work; do not
+describe unchanged spacing as an appearance fix or conceal the documented
+extreme-case browser fit limitation.
 
 Use conventional left-aligned letter writing with a ragged right edge, not
 centred lines or full justification. Keep the decorative letterhead unchanged.
