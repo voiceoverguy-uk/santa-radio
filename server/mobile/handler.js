@@ -1,7 +1,7 @@
 import { ServerResponse } from 'node:http';
 import { createMessageAccessHandler, freeSession, availableAt, FREE_ACCESS_COOKIE } from '../santa-message-access.js';
 import { createSantaNamesHandler } from '../santa-names.js';
-import { createSantaMessageHandler } from '../santa-message.js';
+import { createMobileFreeMessageHandler } from './free-message.js';
 import { createStudioMessageHandler } from '../santa-studio-message.js';
 import { workshopCatalogue } from '../santa-workshop-catalogue.js';
 import { privateResponse, consumeNameAccess, readNameJson } from '../santa-name-security.js';
@@ -48,7 +48,7 @@ const catalogueProjection = inventory => ({
 export function createMobileHandler({
   getStore = () => createMobileStore(), verify = createPurchaseVerifier(),
   limit = consumeNameAccess, access = createMessageAccessHandler(),
-  names = createSantaNamesHandler(), free = createSantaMessageHandler(),
+  names = createSantaNamesHandler(), free = createMobileFreeMessageHandler(),
   studio = createStudioMessageHandler({ authorize: async () => true }),
   catalogue = workshopCatalogue,
 } = {}) {

@@ -23,6 +23,7 @@ export function createSantaMessageHandler(library = santaNameLibrary, cache = nu
   limit = consumeNameAccess, verify = verifyNameToken,
   authorize = authorizeFreeMessage, reserve = reserveFreeMessage, finish = finishFreeMessage,
   now = () => new Date(),
+  render = renderArgs, bells = join(sources, 'sleighbells.mp3'),
 } = {}) {
 return async function santaMessage(req, res) {
   privateResponse(res);
@@ -86,9 +87,9 @@ return async function santaMessage(req, res) {
       const renderStarted = performance.now();
       // Execute the audio worker directly. Timing out a Node wrapper leaves its
       // synchronous FFmpeg child alive, competing with subsequent requests.
-      await execute(ffmpegPath, renderArgs(
+      await execute(ffmpegPath, render(
         join(sources, 'prepared', 'intro.wav'), nameClip,
-        join(sources, 'prepared', `outro-${outro}.wav`), join(sources, 'sleighbells.mp3'), output, true,
+        join(sources, 'prepared', `outro-${outro}.wav`), bells, output, true,
       ), { timeout: 90000, killSignal: 'SIGKILL', maxBuffer: 64 * 1024 });
       renderMs = Math.round(performance.now() - renderStarted);
       const audio = await readFile(output);

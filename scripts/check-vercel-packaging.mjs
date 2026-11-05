@@ -145,6 +145,7 @@ function audioSmoke(entrypoint) {
     for (const asset of ${JSON.stringify(entrypoint === 'api/santa-studio-message.js' ?
       ['studio/sleigh-bells.mp3', ...['intro', '1st', '1-5', '2nd', '3rd', '4th', '5th', '6th'].map(name => 'studio/' + name + '.flac')] :
       ['free-intro.mp3', 'free-outro-1.mp3', 'free-outro-2.mp3', 'free-outro-nov.mp3', 'sleighbells.mp3',
+        ...(entrypoint === 'api/santa-mobile.js' ? ['mobile-free-sleighbells.mp3'] : []),
         'prepared/intro.wav', 'prepared/outro-1.wav', 'prepared/outro-2.wav', 'prepared/outro-nov.wav'])}) {
       assert.ok((await stat('./server/santa-audio/' + asset)).size > 0);
     }

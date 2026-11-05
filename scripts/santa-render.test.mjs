@@ -24,6 +24,106 @@ test('free-message sleigh bells receive 4 dB gain after their existing level con
   assert.match(bells, /loudnorm=I=-34:TP=-9:LRA=7,volume=4dB,aresample=48000,afade=t=in:d=1\[bells\]/);
 });
 
+test('free bell source is the exact approved loop; repeated MP3 decoding introduces no padding or join spike', async () => {
+  const file = 'server/santa-audio/sleighbells.mp3';
+  assert.equal(createHash('sha256').update(await readFile(file)).digest('hex'),
+    'f722fcae19445dc47a24cbf12b689a1e44e59c6c69c818428b8bef393c47e347');
+  // Compare at the source rate before resampling/normalisation, including every
+  // sample across eight repeat boundaries. No bell trimming/crossfade is needed.
+  const decode = loops => {
+    const result = spawnSync(ffmpeg, ['-v', 'error', '-stream_loop', String(loops),
+      '-i', file, '-c:a', 'pcm_f32le', '-f', 'f32le', 'pipe:1'], { maxBuffer: 8 * 1024 * 1024 });
+    assert.equal(result.status, 0, result.stderr?.toString());
+    return result.stdout;
+  };
+  const single = decode(0), repeated = decode(8);
+  assert.equal(single.length / 4, 95852);
+  assert.deepEqual(repeated, Buffer.concat(Array(9).fill(single)),
+    'Looping must preserve the exact supplied decoded samples, not insert encoder padding.');
+  let maxStep = 0;
+  for (let i = 4; i < single.length; i += 4) {
+    maxStep = Math.max(maxStep, Math.abs(single.readFloatLE(i) - single.readFloatLE(i - 4)));
+  }
+  const joinStep = Math.abs(single.readFloatLE(single.length - 4) - single.readFloatLE(0));
+  assert.ok(joinStep < maxStep, `Repeat step ${joinStep} is below existing source transients ${maxStep}`);
+});
+
+test('free mixer preserves every voice sample at +1 second, with a continuous bed and bells-only tail fade', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'free-mix-timing-'));
+  try {
+    const paths = [], segments = [];
+    for (let i = 0; i < 3; i++) {
+      const path = join(dir, `${i}.wav`);
+      // Long silent intervals span multiple bell joins. The final clip ends in
+      // sound so a voice fade or loss of the last samples cannot pass unnoticed.
+      const result = spawnSync(ffmpeg, ['-v', 'error', '-f', 'lavfi', '-i',
+        `aevalsrc=if(between(t\\,0.17\\,0.7)+gte(t\\,4.5)\\,0.05*sin(2*PI*${440 + i * 100}*t)\\,0):s=48000:d=5.17`,
+        '-c:a', 'pcm_f32le', path]);
+      assert.equal(result.status, 0, result.stderr?.toString());
+      paths.push(path);
+      segments.push(pcm(['-i', path, '-af', voiceFilter()]));
+    }
+    const args = renderArgs(...paths, 'server/santa-audio/sleighbells.mp3', 'unused');
+    const at = args.indexOf('-filter_complex'), inputs = args.slice(0, at);
+    const graph = args[at + 1];
+    const runGraph = filter => pcm([...inputs, '-filter_complex', filter, '-map', '[out]']);
+    const voiceGraph = graph.split(';[voice]')[0] +
+      ';[voice]adelay=48000S:all=1,apad=pad_len=48000[out]';
+    const speech = pcm([...inputs.slice(0, inputs.indexOf('-stream_loop')), '-filter_complex',
+      voiceGraph, '-map', '[out]']);
+    const pad = Buffer.alloc(48000 * 8);
+    const expectedSpeech = Buffer.concat([pad, ...segments, pad]);
+    assert.equal(speech.length, expectedSpeech.length);
+    let voiceError = 0;
+    for (let i = 0; i < speech.length; i += 4) {
+      voiceError = Math.max(voiceError, Math.abs(speech.readFloatLE(i) - expectedSpeech.readFloatLE(i)));
+    }
+    assert.ok(voiceError < 1e-7,
+      `Complete recordings and pauses have exactly one second on each side; max sample error ${voiceError}`);
+    const bed = runGraph(graph.replace('[speech][bells]amix=', '[speech]volume=0[silent];[silent][bells]amix='));
+    const mixed = runGraph(graph);
+    assert.equal(bed.length, speech.length);
+    assert.equal(mixed.length, speech.length, 'Limiter must compensate latency and retain the full ending.');
+    let error = 0, peak = 0;
+    for (let i = 0; i < mixed.length; i += 4) {
+      error += (mixed.readFloatLE(i) - speech.readFloatLE(i) - bed.readFloatLE(i)) ** 2;
+      peak = Math.max(peak, Math.abs(mixed.readFloatLE(i)));
+    }
+    assert.ok(error < 1e-8, `Voice unchanged throughout, including the final second: ${error}`);
+    assert.ok(peak < 0.89);
+    // Independently render the unchanged level-control branch, then calculate
+    // the requested two bell envelopes sample-for-sample.
+    const rawBellBranch = graph.split(';').find(branch => branch.startsWith('[3:a]'))
+      .replace(',afade=t=in:d=1[bells]', '[out]');
+    const seconds = speech.length / 8 / 48000;
+    const raw = pcm([...inputs.slice(inputs.indexOf('-stream_loop')),
+      '-af', rawBellBranch.replace('[3:a]', '').replace('[out]', ''), '-t', String(seconds + 1)]);
+    let envelopeError = 0;
+    const frames = speech.length / 8;
+    for (let i = 0; i < bed.length; i += 4) {
+      const frame = Math.floor(i / 8);
+      const fade = Math.min(1, frame / 48000) * Math.min(1, (frames - 1 - frame) / 48000);
+      envelopeError += (bed.readFloatLE(i) - raw.readFloatLE(i) * fade) ** 2;
+    }
+    assert.ok(envelopeError < 1e-8, 'Exactly one-second fade at each end on bells, not on speech.');
+    // 10 ms RMS windows catch gaps, including every join, while voice is silent.
+    let minRms = Infinity;
+    for (let start = 48000; start + 480 < frames - 48000; start += 480) {
+      let energy = 0;
+      for (let frame = start; frame < start + 480; frame++) energy += bed.readFloatLE(frame * 8) ** 2;
+      minRms = Math.min(minRms, Math.sqrt(energy / 480));
+    }
+    assert.ok(minRms > 10 ** (-55 / 20), `No silent bell windows through speech pauses or repeats: ${minRms}`);
+    const limited = runGraph(graph.replace('[speech][bells]amix=', '[speech]volume=20[hot];[hot][bells]amix='));
+    let limitedPeak = 0;
+    for (let i = 0; i < limited.length; i += 4) limitedPeak = Math.max(limitedPeak, Math.abs(limited.readFloatLE(i)));
+    assert.equal(limited.length, speech.length);
+    assert.ok(limitedPeak <= 0.890001, 'Existing peak protection still caps an overloaded mix.');
+    console.info('[free-bells automated]', { seconds, voiceOffsetSeconds: 1,
+      min10msRmsDb: 20 * Math.log10(minRms), peak, envelopeError });
+  } finally { await rm(dir, { recursive: true, force: true }); }
+});
+
 test('Studio real mixer: exact delayed speech, bells raised from +2 to +4 dB, complete ending and fades', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'studio-mix-timing-'));
   try {
@@ -152,9 +252,9 @@ test('all three segments retain leading, internal and trailing silence and join 
     }
     const args = renderArgs(...paths, paths[0], 'pipe:1');
     // Exercise the exact production voice/concat graph before the bells/mix.
-    const graph = args[args.indexOf('-filter_complex') + 1].split(';[3:a]')[0];
+    const graph = args[args.indexOf('-filter_complex') + 1].split(';[voice]')[0];
     const joined = pcm(paths.flatMap(path => ['-i', path]).concat([
-      '-filter_complex_threads', '1', '-filter_complex', graph, '-map', '[speech]',
+      '-filter_complex_threads', '1', '-filter_complex', graph, '-map', '[voice]',
     ]));
     assert.deepEqual(joined, Buffer.concat(segments), 'Joins must be plain sample concatenation.');
     for (let i = 0; i < 3; i++) {
@@ -212,15 +312,30 @@ for (const outro of [1, 2, 'nov']) test(`lossless shared clips preserve the full
     assert.equal(pcmOutputs[0].length, pcmOutputs[1].length);
     const sourceLength = ['free-intro.mp3', 'names/arabella.wav', `free-outro-${outro}.mp3`]
       .reduce((sum, path) => sum + pcm(['-i', join(source, path)]).length, 0);
-    assert.equal(pcmOutputs[0].length, sourceLength, 'Mixed duration must equal the three complete source recordings.');
+    assert.equal(pcmOutputs[0].length, sourceLength + 2 * 48000 * 8,
+      'Mixed duration must equal the three complete source recordings plus exactly two seconds.');
+    assert.ok(Math.abs(reference.length / 8 - (sourceLength / 8 + 96000) * 44100 / 48000) <= 2,
+      'Decoded MP3 retains the full padded duration, within resampling rounding.');
+    for (const decoded of outputs) {
+      let decodedPeak = 0;
+      for (let i = 0; i < decoded.length; i += 4) {
+        const sample = decoded.readFloatLE(i);
+        assert.ok(Number.isFinite(sample), 'MP3 decodes to finite audio throughout.');
+        decodedPeak = Math.max(decodedPeak, Math.abs(sample));
+      }
+      assert.ok(decodedPeak < 1, `Lossy MP3 output remains unclipped: ${decodedPeak}`);
+    }
     let errorEnergy = 0, referenceEnergy = 0, peak = 0;
     for (let i = 0; i < pcmOutputs[0].length; i += 4) {
       const a = pcmOutputs[0].readFloatLE(i), b = pcmOutputs[1].readFloatLE(i);
       errorEnergy += (a - b) ** 2; referenceEnergy += a ** 2;
       peak = Math.max(peak, Math.abs(b));
     }
-    assert.ok(10 * Math.log10(errorEnergy / referenceEnergy) < -100, 'The mixer waveform must be unchanged apart from float rounding.');
+    const differenceDb = 10 * Math.log10(errorEnergy / referenceEnergy);
+    assert.ok(differenceDb < -100, `The mixer waveform must be unchanged apart from float rounding: ${differenceDb} dB`);
     assert.ok(peak < 0.89, 'Peak limiter must still protect the mixed message.');
+    console.info('[free-bells automated real ending]', { outro,
+      seconds: pcmOutputs[0].length / 8 / 48000, preparedDifferenceDb: differenceDb, peak });
   } finally { await rm(dir, { recursive: true, force: true }); }
 });
 

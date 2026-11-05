@@ -32,6 +32,7 @@ import studioEmailRetry from './api/santa-studio-email-retry.js';
 import messageAccess from './server/santa-message-access.js';
 import { browserSecurity } from './server/browser-security.js';
 import { createAuditionMiddleware } from './server/studio-reverb-audition.js';
+import { createFreeBellsAudition } from './server/free-bells-audition.js';
 
 const trackerMetadataPlugin = {
   name: 'tracker-page-metadata',
@@ -53,6 +54,7 @@ const metadataPlugin = {
     server.middlewares.use(browserSecurity);
     server.middlewares.use(namesDemoMiddleware);
     server.middlewares.use(createAuditionMiddleware({ development: true }));
+    server.middlewares.use(createFreeBellsAudition({ development: true }));
     server.middlewares.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
     server.middlewares.use('/api/santa-message-access', messageAccess);
     server.middlewares.use('/api/stripe/webhook', stripeWebhook);

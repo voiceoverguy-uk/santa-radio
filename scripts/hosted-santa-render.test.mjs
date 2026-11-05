@@ -92,8 +92,8 @@ for (const file of ['Demrie.wav', 'Demrie.MP3', 'Mary Jane.MP3', 'Seán.mp3', 'S
     }, 0);
     // Streamed MP3 has encoder delay/end padding; it must not lose recorded
     // pauses or add the old 0.1-second-per-segment gaps (13,230 frames).
-    assert.ok(Math.abs(decoded.stdout.length / 8 - expectedFrames) < 2304,
-      'Hosted WAV/MP3 joins must retain the full source durations without extra gaps.');
+    assert.ok(Math.abs(decoded.stdout.length / 8 - (expectedFrames + 2 * 44100)) < 2304,
+      'Hosted WAV/MP3 joins retain full source durations plus the two bells-only seconds.');
     nameBytes = Buffer.from('<html>database error</html>');
     const failed = await fetch(`${base}/api/santa-message`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: id, selectionToken: id, outro: 2 }),

@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { createHash } from 'node:crypto';
-import { readFile, writeFile, mkdir, mkdtemp, rm } from 'node:fs/promises';
+import { readFile, writeFile, mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -99,7 +99,6 @@ test('one open client crosses November and December: parsed/streamed requests re
     body: JSON.stringify({ name: 'arabella', selectionToken: 'arabella', outro,
       date: '2026-01-01', month: 1 }),
   });
-  await mkdir('generated-artifacts/november-ending', { recursive: true });
   const directory = await mkdtemp(join(tmpdir(), 'seasonal-reference-'));
   try {
     for (const [index, [instant, requested, expected]] of [
@@ -134,7 +133,6 @@ test('one open client crosses November and December: parsed/streamed requests re
       const decoded = spawnSync(ffmpeg, ['-v', 'error', '-i', 'pipe:0', '-f', 'null', '-'],
         { input: audio, timeout: 20000 });
       assert.equal(decoded.status, 0, decoded.stderr?.toString());
-      await writeFile(`generated-artifacts/november-ending/arabella-${index}-${expected}.mp3`, audio);
     }
     assert.equal(reservations, 6);
     assert.deepEqual(finished, Array(6).fill(true));

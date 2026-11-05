@@ -7,7 +7,7 @@
   },
   "scripts": {
     "radio:collect": "node scripts/radio-history-collector.mjs",
-    "test:mobile": "node --test scripts/santa-mobile.test.mjs scripts/santa-mobile-store.test.mjs",
+    "test:mobile": "node scripts/prepare-santa-audio.mjs && node --test scripts/santa-mobile.test.mjs scripts/santa-mobile-store.test.mjs scripts/santa-mobile-free-audio.test.mjs",
     "test:radio-history": "node --test scripts/radio-history.test.mjs",
     "test:radio-ssr": "node --test scripts/radio-ssr.test.mjs",
     "start": "node index.js",
@@ -30,7 +30,7 @@
     "preview": "vite preview",
     "test:artwork": "node --test scripts/artwork-feed.test.mjs scripts/artwork-feed-development.test.mjs",
     "test:artwork-production": "node --test scripts/artwork-feed-serving.test.mjs",
-    "test:santa-audio": "node scripts/prepare-santa-audio.mjs && node --test --test-concurrency=1 scripts/santa-render.test.mjs scripts/hosted-santa-render.test.mjs scripts/santa-message-api.test.mjs scripts/santa-free-ending.test.mjs scripts/saved-santa-greeting.test.mjs scripts/santa-ftps.test.mjs scripts/santa-message-allowance.test.mjs",
+    "test:santa-audio": "node scripts/prepare-santa-audio.mjs && node --test --test-concurrency=1 scripts/santa-render.test.mjs scripts/hosted-santa-render.test.mjs scripts/santa-message-api.test.mjs scripts/santa-free-ending.test.mjs scripts/saved-santa-greeting.test.mjs scripts/santa-ftps.test.mjs scripts/santa-message-allowance.test.mjs scripts/free-bells-audition.test.mjs",
     "test:e2e": "playwright test",
     "test:name-security": "node --test scripts/santa-name-security.test.mjs scripts/santa-workshop-names.test.mjs scripts/workshop-name-preview.test.mjs scripts/santa-name-library.test.mjs",
     "test:security-hardening": "node --test scripts/security-hardening.test.mjs scripts/santa-name-security.test.mjs",

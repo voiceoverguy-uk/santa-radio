@@ -2,6 +2,20 @@
 name: Personalised Santa audio scope
 description: Audio-only product direction and incremental name-library rollout.
 ---
+The website free maker's approved seamless bells run continuously through all
+recorded pauses. Add one second before the full voice sequence and one second
+after it, with bells-only fades; never trim, overlap or crossfade voice clips.
+Studio, iPhone audio, fixed promotional samples and already generated greetings
+are outside this change.
+
+**Why:** The owner supplied a replacement loop and requested exactly two extra
+seconds around the unchanged recordings, not new voice editing or a wider
+audio redesign. Shared backend adapters can change native audio even when no
+files inside the iPhone artifact change.
+
+**How to apply:** Recreate greetings to hear a changed mix; do not silently
+rewrite existing MP3s or treat automated continuity checks as listening approval.
+
 The owner's November ending is exclusive to newly generated website free messages
 during November. At midnight on 1 December, Europe/London, the original two-ending
 behaviour returns automatically. Paid Studio, public examples and completed

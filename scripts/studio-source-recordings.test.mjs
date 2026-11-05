@@ -29,7 +29,13 @@ test('verified private Studio assets retain their hashes, native properties and 
     assert.match(decoded.stderr, new RegExp(`${recording.source.sampleRate} Hz, ${recording.source.channels === 1 ? 'mono' : 'stereo'}`));
   }
   assert.match(studioBells, /santa-audio\/studio\/sleigh-bells\.mp3$/);
-  assert.equal(sha256(readFileSync('server/santa-audio/sleighbells.mp3')), provenance.freeMakerBellsSha256);
+  // freeMakerBellsSha256 is the historical free-maker source at the time of
+  // this Studio inventory, not a requirement to freeze the website's audio.
+  // Keep every Studio byte/decoded-sample check above; pin each free path here.
+  assert.equal(sha256(readFileSync('server/santa-audio/sleighbells.mp3')),
+    'f722fcae19445dc47a24cbf12b689a1e44e59c6c69c818428b8bef393c47e347');
+  assert.equal(sha256(readFileSync('server/santa-audio/mobile-free-sleighbells.mp3')),
+    '0896b5c703b2c4b335db5e43ea3894fc34b22c5e1f7f87281edc8017f764e541');
 });
 
 for (const withTalent of [false, true]) {
