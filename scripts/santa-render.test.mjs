@@ -119,13 +119,16 @@ test('the MP3 intro and both MP3 outros match the latest uploads; shared prepara
   // Pin the supplied MP3s without depending on ignored uploads in a clean checkout.
   for (const [segment, hash] of [
     ['intro', '38ed43ef4e99842f48df801c073d50a41826db1b5b59b34829268275bba139dc'],
-    ['outro-1', 'c61708db60ea89f299f9eae242ef6ed29a2cc45d6723719900266ff432888ccf'],
-    ['outro-2', 'fc169a44dadb6c50ef0bc48b78ec063f38b65a99cbe1b32b90b6ce12dd55edf3'],
+    ['outro-1', '8fbda6ab90ffd876002e8e5fc35a3a7181c2f3c712ede56e4be2dfa8a31de0fd'],
+    ['outro-2', '3743e05263780e357e2907f5a70790f57cd700272b84d9f7b4641ea0e80a597e'],
   ]) {
     assert.equal(createHash('sha256').update(await readFile(`${source}/free-${segment}.mp3`)).digest('hex'), hash);
     assert.equal(pcm(['-i', `${source}/prepared/${segment}.wav`]).length,
       pcm(['-i', `${source}/free-${segment}.mp3`]).length,
       `${segment}: preparation must not trim or pad the source`);
+    assert.deepEqual(pcm(['-i', `${source}/prepared/${segment}.wav`]),
+      pcm(['-i', `${source}/free-${segment}.mp3`, '-af', voiceFilter()]),
+      `${segment}: prepared samples must match the current source and unchanged processing`);
   }
 });
 

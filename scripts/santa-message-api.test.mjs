@@ -8,7 +8,12 @@ import { createNameLibrary } from '../server/santa-name-library.js';
 
 const handler = createSantaMessageHandler(createNameLibrary({
   fetcher: async () => new Response(JSON.stringify({ version: 1, names: [] })),
-}));
+}), null, {
+  // Isolate audio/transport fixtures from live account storage. Real access
+  // enforcement is exercised separately in security-hardening.test.mjs.
+  limit: async () => {}, authorize: async () => ({ subject: 'audio-fixture' }),
+  verify: token => token, reserve: async () => ({}), finish: async () => {},
+});
 
 let server;
 let base;
@@ -31,12 +36,12 @@ for (const route of ['/stream', '/parsed']) {
     const started = performance.now();
     const response = await fetch(`${base}${route}`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: 'erin', outro: route === '/stream' ? 1 : 2 }),
+      body: JSON.stringify({ name: 'erin', selectionToken: 'erin', outro: route === '/stream' ? 1 : 2 }),
     });
     assert.equal(response.status, 200);
     assert.equal(response.headers.get('content-type'), 'audio/mpeg');
     assert.match(response.headers.get('content-disposition'), /Santa-recorded-message-for-Erin\.mp3/);
-    assert.equal(response.headers.get('cache-control'), 'no-store');
+    assert.match(response.headers.get('cache-control'), /(?:^|, )no-store(?:,|$)/);
     const audio = Buffer.from(await response.arrayBuffer());
     assert.ok(audio.length > 100000);
     const decoded = spawnSync(ffmpegPath, [
@@ -49,7 +54,8 @@ for (const route of ['/stream', '/parsed']) {
 
 test('unsupported names, malformed JSON and oversized bodies return useful errors', async () => {
   for (const [body, status] of [
-    ['{"name":"not-a-recorded-name"}', 400],
+    [JSON.stringify({ name: 'not-a-recorded-name', selectionToken: 'not-a-recorded-name', outro: 1 }), 400],
+    [JSON.stringify({ name: 'erin', outro: 1 }), 403],
     [JSON.stringify({ name: 'erin', outro: 3 }), 400],
     [JSON.stringify({ name: 'erin' }), 400],
     ['not JSON', 400],
@@ -73,7 +79,7 @@ test('GET is rejected by the API rather than returning website HTML', async () =
 test('two simultaneous messages finish and a third is rejected without queuing', { timeout: 20000 }, async () => {
   const post = () => fetch(`${base}/stream`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: 'erin', outro: 1 }),
+    body: JSON.stringify({ name: 'erin', selectionToken: 'erin', outro: 1 }),
   });
   const responses = await Promise.all([post(), post(), post()]);
   assert.deepEqual(responses.map(response => response.status).sort(), [200, 200, 429]);

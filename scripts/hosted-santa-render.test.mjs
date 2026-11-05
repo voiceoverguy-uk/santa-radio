@@ -49,16 +49,26 @@ for (const file of ['Demrie.wav', 'Demrie.MP3', 'Mary Jane.MP3', 'Seán.mp3', 'S
   const message = createSantaMessageHandler(library, {
     prepare: async () => null, publish: async () => assert.fail('No live publishing in tests'),
     singleFlight: (_, work) => work(),
-  }), names = createSantaNamesHandler(library);
+  }, {
+    // No live accounts, database reservations or publishing in audio fixtures.
+    limit: async () => {}, authorize: async () => ({ subject: 'hosted-fixture' }),
+    verify: token => token, reserve: async () => ({}), finish: async () => {},
+  }), names = createSantaNamesHandler(library, { limit: async () => {}, token: id => id });
   const server = createServer((req, res) => req.url.startsWith('/api/santa-names') ? names(req, res) : message(req, res));
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   const base = `http://127.0.0.1:${server.address().port}`;
   try {
-    const results = await fetch(`${base}/api/santa-names?q=${encodeURIComponent(name)}`);
+    const search = query => fetch(`${base}/api/santa-names`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query }),
+    });
+    // Search with letters, including fixtures whose exact recording labels
+    // contain underscores or numbered variants.
+    const results = await search(name.slice(0, 2));
     assert.equal((await results.json()).records[0].name.toLocaleLowerCase('en-GB'), name.toLocaleLowerCase('en-GB'));
     assert.equal(downloads, 0);
     const response = await fetch(`${base}/api/santa-message`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: id, outro: 2 }),
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: id, selectionToken: id, outro: 2 }),
     });
     assert.equal(response.status, 200);
     assert.equal(response.headers.get('content-type'), 'audio/mpeg');
@@ -83,21 +93,20 @@ for (const file of ['Demrie.wav', 'Demrie.MP3', 'Mary Jane.MP3', 'Seán.mp3', 'S
       'Hosted WAV/MP3 joins must retain the full source durations without extra gaps.');
     nameBytes = Buffer.from('<html>database error</html>');
     const failed = await fetch(`${base}/api/santa-message`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: id, outro: 2 }),
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: id, selectionToken: id, outro: 2 }),
     });
     assert.equal(failed.status, 503);
     assert.match((await failed.json()).error, /recording could not be loaded or mixed/);
     const malformed = await fetch(`${base}/api/santa-message`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: '../escape', outro: 2 }),
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: '../escape', selectionToken: '../escape', outro: 2 }),
     });
     assert.equal(malformed.status, 400);
-    const postNames = await fetch(`${base}/api/santa-names`, { method: 'POST' });
-    assert.equal(postNames.status, 405);
-    assert.equal((await fetch(`${base}/api/santa-names?q=${'x'.repeat(81)}`)).status, 400);
+    assert.equal((await fetch(`${base}/api/santa-names`)).status, 405);
+    assert.equal((await search('x'.repeat(81))).status, 400);
     for (const query of ['%FF', '%C3%28', '%zz']) {
       const invalid = await fetch(`${base}/api/santa-names?q=${query}`);
-      assert.equal(invalid.status, 400);
-      assert.match((await invalid.json()).error, /malformed UTF-8 or URL encoding/);
+      assert.equal(invalid.status, 403);
+      assert.match((await invalid.json()).error, /URL-based name searches are not public/);
     }
   } finally { await new Promise(resolve => server.close(resolve)); }
 });

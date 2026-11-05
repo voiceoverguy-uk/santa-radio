@@ -58,11 +58,11 @@ Preserve all deliberately recorded silence on every supplied voice clip.
 
 **How to apply:** Do not trim silence, append gaps, overlap or crossfade voice segments, whether bundled or hosted WAV/MP3. Keep loudness and peak safeguards without shortening recordings.
 
-For personalised messages, use the owner's MP3 intro and alternate between the two supplied MP3 outros after each successful creation. The first may use either; the next must use the other, including across page refreshes and cooldowns. Failed or cancelled creations must not advance the rotation.
+For free personalised messages, use the owner's MP3 intro and preserve random selection between the two supplied MP3 outros.
 
-**Why:** The owner explicitly requested MP3 sources and alternating endings so consecutive messages do not repeat the same outro.
+**Why:** The latest approved replacement-recording scope explicitly requires retaining random selection, superseding the earlier alternating-ending direction.
 
-**How to apply:** Keep the selected outro consistent through rendering and any saved-greeting lookup or publication. Preserve the timing in the MP3 recordings.
+**How to apply:** Do not change selection behaviour when replacing recordings. Keep the selected outro consistent through rendering and any saved-greeting lookup or publication. Preserve the timing in the MP3 recordings.
 
 Keep two free messages before a 10-minute wait.
 
