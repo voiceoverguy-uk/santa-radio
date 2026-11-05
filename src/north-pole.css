@@ -52,8 +52,6 @@ main .gold-text { background: none; -webkit-text-fill-color: var(--gold-light); 
 .soundboard::before { display: none; }
 .soundboard-title { font-size: clamp(1.8rem,3.5vw,2.6rem); color: var(--cream); }
 .soundboard-subtitle { color: var(--muted); max-width: 660px; font-size: .85rem; margin-inline: auto; }
-.soundboard-grid { max-width: 860px; gap: 12px; }
-.soundboard-btn { background: #102d22; border: 1px solid #D4AF374a; border-radius: 999px; color: var(--gold-light); font: 400 .78rem 'Inter',sans-serif; box-shadow: none; min-height: 47px; }
 .soundboard-btn:disabled { opacity: .75; }
 .soundboard-btn:hover { transform: none; box-shadow: none; }
 .soundboard-hint { font-size: .73rem; color: var(--muted); max-width: 600px; margin: 22px auto 0; }
@@ -94,7 +92,6 @@ html[data-effects="off"] *,html[data-effects="off"] *::before,html[data-effects=
   .mugshot-card,.mug-card { max-width: 440px; width: 100%; margin-inline: auto; }
   .mugshot-detail-card { padding: 20px; }
   .santa-video-section,.soundboard,.youtube-section,.mugshots-preview { padding: 65px 0; }
-  .soundboard-grid { grid-template-columns: repeat(2,1fr); gap: 10px; }
   .footer { padding-bottom: 20px; }
   .footer-links { gap: 8px 16px; }
   .app-layout,.app-features-grid { grid-template-columns: 1fr; }

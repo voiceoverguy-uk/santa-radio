@@ -28,6 +28,16 @@ and the separate iPhone artifact do not use this treatment, except the Studio
 review's Start Again control shares geometry only with its adjacent creation
 action, retaining its transparent fill, gold outline and cream lettering.
 
+## Soundboard phrase controls
+
+`src/components/Soundboard.css` owns the phrase buttons. They share the red
+action geometry (44px minimum height, 7px corners, 1px muted gold edge, restrained
+inset bevel) but keep a forest-green idle fill with cream text; the selected or
+playing phrase turns ruby. Each button is a two-column grid: icon, then label with
+the Loading note on its own row beneath, so labels wrap at enlarged text. The grid
+is 4 columns, 2 at 760px and below, 1 at 360px and below. Legacy soundboard button
+and grid sizing in `src/north-pole.css` was removed; do not reintroduce it.
+
 ## Studio name previews
 
 Step one and review reuse the same red recorded-name control and Studio-owned,

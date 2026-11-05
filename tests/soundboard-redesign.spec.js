@@ -51,7 +51,7 @@ for (const width of [320, 390, 768, 1440]) {
     for (const r of bounds) {
       expect(r.x).toBeGreaterThanOrEqual(0);
       expect(r.right).toBeLessThanOrEqual(width + 1);
-      expect(r.height).toBeGreaterThanOrEqual(48);
+      expect(r.height).toBeGreaterThanOrEqual(44);
       expect(r.labelRight).toBeLessThanOrEqual(r.right + 1);
       expect(r.labelScroll).toBeLessThanOrEqual(r.labelWidth + 1);
     }
@@ -77,6 +77,99 @@ for (const width of [320, 390, 768, 1440]) {
     await board.getByRole('button', { name: 'Stop recording' }).click();
     await expect(board.locator('.soundboard-waveform')).toHaveCount(0);
     await expect(buttons.nth(9)).toHaveAttribute('aria-pressed', 'false');
+  });
+}
+
+for (const { width, enlarged = false } of [
+  { width: 320 }, { width: 375 }, { width: 390 }, { width: 768 }, { width: 1440 },
+  { width: 320, enlarged: true }, { width: 390, enlarged: true }, { width: 1440, enlarged: true },
+]) {
+  test(`soundboard phrase geometry matches shared controls at ${width}px${enlarged ? ' with 200% text' : ''}`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1100 });
+    const board = await open(page);
+    if (enlarged) await page.addStyleTag({ content: 'html { font-size: 200% !important; }' });
+    await page.evaluate(() => document.fonts.ready);
+    await page.mouse.move(0, 0);
+    const buttons = board.locator('.soundboard-btn');
+    const reference = await board.locator('.soundboard-stop').evaluate(node => {
+      const css = getComputedStyle(node);
+      return { radius: css.borderRadius, minHeight: css.minHeight, border: css.borderTopWidth };
+    });
+    expect(reference).toEqual({ radius: '7px', minHeight: '44px', border: '1px' });
+    const checkLayout = async () => {
+      const rows = new Map();
+      const controls = await buttons.evaluateAll(nodes => nodes.map(node => {
+        const css = getComputedStyle(node), rect = node.getBoundingClientRect();
+        const children = [...node.children].map(child => {
+          const r = child.getBoundingClientRect();
+          return { left: r.left, right: r.right, top: r.top, bottom: r.bottom,
+            fits: child.scrollWidth <= child.clientWidth + 1 && child.scrollHeight <= child.clientHeight + 1 };
+        });
+        return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, height: rect.height,
+          radius: css.borderRadius, minHeight: css.minHeight, border: css.borderTopWidth,
+          fontSize: parseFloat(css.fontSize), whiteSpace: css.whiteSpace, shadow: css.boxShadow,
+          children, fits: node.scrollWidth <= node.clientWidth + 1 && node.scrollHeight <= node.clientHeight + 1 };
+      }));
+      for (const control of controls) {
+        expect({ radius: control.radius, minHeight: control.minHeight, border: control.border }).toEqual(reference);
+        expect(control.height).toBeGreaterThanOrEqual(44);
+        expect(control.fontSize).toBeGreaterThanOrEqual(enlarged ? 26 : 13);
+        expect(control.whiteSpace).toBe('normal');
+        expect(control.fits).toBe(true);
+        expect(control.left).toBeGreaterThanOrEqual(0);
+        expect(control.right).toBeLessThanOrEqual(width + 1);
+        for (const child of control.children) {
+          expect(child.fits).toBe(true);
+          expect(child.left).toBeGreaterThanOrEqual(control.left);
+          expect(child.right).toBeLessThanOrEqual(control.right);
+          expect(child.top).toBeGreaterThanOrEqual(control.top);
+          expect(child.bottom).toBeLessThanOrEqual(control.bottom);
+        }
+        // Icon, phrase and loading text must not overlap one another.
+        for (let i = 0; i < control.children.length; i++) {
+          for (const other of control.children.slice(i + 1)) {
+            const child = control.children[i];
+            expect(child.right <= other.left + 1 || other.right <= child.left + 1 ||
+              child.bottom <= other.top + 1 || other.bottom <= child.top + 1).toBe(true);
+          }
+        }
+        const row = Math.round(control.top);
+        if (rows.has(row)) expect(control.height).toBeCloseTo(rows.get(row), 1);
+        rows.set(row, control.height);
+      }
+      return controls;
+    };
+    const idle = await checkLayout();
+    expect(idle.every(control => control.shadow.includes('inset'))).toBe(true);
+    // Standard desktop rows should actually be compact, not retain the old 64px floor.
+    if (width === 1440 && !enlarged) expect(idle[0].height).toBeLessThanOrEqual(46);
+    const first = buttons.first();
+    await expect(first).toHaveCSS('color', 'rgb(255, 244, 217)');
+    const idleFill = await first.evaluate(node => getComputedStyle(node).backgroundImage);
+    expect(idleFill).toContain('10, 54, 42');
+    mkdirSync('generated-artifacts', { recursive: true });
+    const suffix = `${width}${enlarged ? '-enlarged' : ''}`;
+    await board.screenshot({ path: `generated-artifacts/soundboard-compact-idle-${suffix}.jpg` });
+    const longest = buttons.nth(12);
+    await longest.click();
+    await expect(longest).toHaveAttribute('aria-busy', 'true');
+    await expect(longest.locator('.soundboard-loading-label')).toBeVisible();
+    await checkLayout();
+    const activeFill = await longest.evaluate(node => getComputedStyle(node).backgroundImage);
+    expect(activeFill).not.toBe(idleFill);
+    expect(activeFill).toContain('181, 43, 50');
+    await board.screenshot({ path: `generated-artifacts/soundboard-compact-loading-${suffix}.jpg` });
+    await page.evaluate(() => window.__clips.at(-1).resolve());
+    await expect(longest).toHaveClass(/is-playing/);
+    await expect(longest.locator('.soundboard-btn-icon')).toHaveCSS('animation-name', 'none');
+    await checkLayout();
+    await expect(longest).toHaveCSS('background-image', activeFill);
+    const stop = board.getByRole('button', { name: 'Stop recording' });
+    await expect(stop).toHaveCSS('width', '44px');
+    await expect(stop).toHaveCSS('height', '44px');
+    await board.screenshot({ path: `generated-artifacts/soundboard-compact-playing-${suffix}.jpg` });
+    await stop.click();
+    await expect(longest).toHaveAttribute('aria-pressed', 'false');
   });
 }
 
