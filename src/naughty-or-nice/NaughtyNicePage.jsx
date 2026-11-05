@@ -55,11 +55,7 @@ export default function NaughtyNicePage() {
     };
   }, [cancel, audio.stop]);
   return <main id="main-content" className="nn-office" onFocusCapture={keepCheckerFocusVisible}>
-    <header className="nn-heading-wrap">
-      <p className="nn-kicker">SANTA RADIO · NORTH POLE OFFICE</p>
-      <h1 className="nn-heading">Naughty or Nice List Checker</h1>
-    </header>
-    <OfficeScene busy={busy}>
+    <OfficeScene busy={busy} title="Naughty or Nice List Checker">
       <div className="nn-panel">
       <SoundControl audio={audio}>
         {stage === 'questions' && <div className="nn-question-progress" role="progressbar" aria-label="Question progress"

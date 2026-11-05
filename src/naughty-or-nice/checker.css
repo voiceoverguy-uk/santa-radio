@@ -24,6 +24,9 @@
 /* Full office page */
 .nn-office { min-height: 75dvh; background: radial-gradient(ellipse at 50% -10%, #2b5640, #0b2219 70%); padding: 145px 16px calc(150px + env(safe-area-inset-bottom)); }
 .nn-office > .nn-scene { max-width: 1040px; margin-inline: auto; }
+.nn-office .nn-office-scene-heading { position: relative; margin: 0; padding: clamp(80px, 9vw, 110px) clamp(16px, 4vw, 44px) 0; }
+.nn-office-scene-heading .nn-heading { margin: 0; text-shadow: 0 2px 5px #1c0c04, 0 0 12px #1c0c04; }
+.nn-office .nn-office-scene-heading + .nn-scene-content { padding-top: clamp(18px, 3vw, 32px); }
 
 /* Scene shell */
 .nn-scene { position: relative; isolation: isolate; border-radius: 22px; overflow: hidden; border: 1px solid #d4af3755; box-shadow: 0 24px 60px #0610 , 0 24px 50px #04120c66; color: var(--nn-ink); }
