@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { test } from './helpers/provider-test.js';
-import { workshopCatalogueFixture } from './fixtures/workshop-catalogue.js';
+import { workshopCatalogueFixture, workshopMoreSportsFixture } from './fixtures/workshop-catalogue.js';
 import { unlockWorkshop } from './helpers/workshop-access.js';
 import { expectStudioHeader } from './helpers/studio-header.js';
 import { expectSampleWatermark } from './helpers/studio-sample-watermark.js';
@@ -93,6 +93,9 @@ test.beforeEach(async ({ page }) => {
       records.map(record => ({ ...record, letterContext: studioEditorialContext(category, record) }))])) };
   await page.route('**/api/santa-workshop-catalogue', route => route.fulfill({ json: contextualFixture }));
   await page.route('**/api/radio-metadata*', route => route.fulfill({ json: { available: false, current: null, upcoming: [] } }));
+  await page.route('**/names-data/*.json', route => route.fulfill({
+    json: [...new Set(hostedRecords.map(record => record.name))],
+  }));
   await page.route('**/api/santa-names', route => {
     const query = route.request().postDataJSON().query.toLowerCase();
     return route.fulfill({ json: {
@@ -559,7 +562,7 @@ for (const width of [390, 1440]) {
       await expect(suffix).toHaveCount(0);
       await page.getByRole('listbox').press('Home');
       if (step === 3) {
-        await expect(quote).toContainText('trying especially hard at… Teamwork');
+        await expect(quote).toContainText('trying especially hard at... Teamwork');
         await expect(suffix).toHaveCSS('color', 'rgb(155, 17, 30)');
         await page.getByRole('listbox').press('ArrowDown');
         await expect(suffix).toHaveText('Playing a musical instrument');
@@ -812,7 +815,7 @@ for (const viewport of [
     await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
     await expect(page.locator('.smw-step-count')).toHaveText('Step 4 of 7');
     const card = page.getByRole('complementary', { name: 'Santa will say:', exact: true });
-    await expect(card).toContainText('I’ve heard you’ve been super good, in fact, positively amazing this year… trying especially hard at…');
+    await expect(card).toContainText("And i've heard you've been super good, in fact rather amazing this year, trying especially hard at...");
     const wordLayout = await card.locator('.smw-activity-wording-quote').evaluate(node => {
       const style = getComputedStyle(node);
       const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
@@ -1140,7 +1143,7 @@ for (const width of [390, 1440]) {
     const wheel = page.getByRole('listbox', { name: 'Trying hard at', exact: true });
     await expect(wheel.getByRole('option', { name: 'Teamwork', exact: true })).toHaveAttribute('aria-selected', 'true');
     const quote = page.locator('.smw-activity-wording-quote');
-    const speech = 'I’ve heard you’ve been super good, in fact, positively amazing this year… trying especially hard at…';
+    const speech = "And i've heard you've been super good, in fact rather amazing this year, trying especially hard at...";
     await expect(quote).toHaveText(`${speech} Teamwork`);
     await wheel.getByRole('option', { name: 'Playing a musical instrument', exact: true }).click();
     await expect(quote).toHaveText(`${speech} Playing a musical instrument`);
@@ -1150,6 +1153,46 @@ for (const width of [390, 1440]) {
     await expect(wheel.getByRole('option', { name: 'Playing a musical instrument', exact: true })).toHaveAttribute('aria-selected', 'true');
     await page.getByRole('button', { name: 'Return to review', exact: true }).click();
     await expect(row.locator('dd')).toHaveText('Playing a musical instrument');
+  });
+}
+
+for (const width of [320, 390, 1440]) {
+  test(`step four exact introduction and highlighted choices in both categories at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.route('**/api/santa-workshop-catalogue', route => route.fulfill({ json: workshopMoreSportsFixture }));
+    await openAgeStage(page);
+    await browseToAge(page, '9 years old');
+    await page.locator('.smw-button-next:visible').click();
+    await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+    await expect(page.locator('.smw-step-count')).toHaveText('Step 4 of 7');
+    const quote = page.locator('.smw-activity-wording-quote');
+    const selected = quote.locator('.smw-wording-selection');
+    const introduction = "And i've heard you've been super good, in fact rather amazing this year, trying especially hard at...";
+    for (const [category, activity] of [['Trying hard at', 'Teamwork'], ['More Sports', 'Swimming']]) {
+      await page.getByRole('button', { name: category, exact: true }).click();
+      await expect(quote).toHaveText(introduction);
+      await expect(selected).toHaveCount(0);
+      const option = page.getByRole('listbox', { name: category, exact: true })
+        .getByRole('option', { name: activity, exact: true });
+      await option.click();
+      await expect(option).toHaveAttribute('aria-selected', 'true');
+      await expect(quote).toHaveText(`${introduction} ${activity}`);
+      await expect(selected).toHaveText(activity);
+      await expect(selected).toHaveCSS('color', 'rgb(155, 17, 30)');
+      expect(await quote.evaluate(node => {
+        const bounds = node.getBoundingClientRect();
+        const range = document.createRange();
+        range.selectNodeContents(node);
+        return [...range.getClientRects()].every(rect =>
+          rect.left >= bounds.left - 1 && rect.right <= bounds.right + 1
+          && rect.top >= bounds.top - 1 && rect.bottom <= bounds.bottom + 1);
+      })).toBe(true);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+      await page.locator('.smw-builder').screenshot({
+        path: `generated-artifacts/workshop/step-four-${category === 'More Sports' ? 'sports' : 'trying'}-${width}.png`,
+      });
+    }
   });
 }
 

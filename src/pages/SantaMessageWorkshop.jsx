@@ -61,7 +61,7 @@ const stages = [
     label: 'Trying hard at',
     reviewLabel: 'Trying hard at',
     heading: 'What have they been trying hard at?',
-    wording: 'I’ve heard you’ve been super good, in fact, positively amazing this year… trying especially hard at…',
+    wording: "And i've heard you've been super good, in fact rather amazing this year, trying especially hard at...",
   },
   {
     key: 'achievement',
