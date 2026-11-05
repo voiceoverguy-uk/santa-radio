@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { trySavedSantaGreeting } from '../src/lib/savedSantaGreeting.js';
 import { savedSantaGreeting } from '../src/data/savedSantaGreeting.js';
 import { recipeFiles, santaAudioRecipeVersion } from './santa-audio-recipe.mjs';
@@ -106,4 +107,32 @@ test('old remote manifests and the old manual Arabella file are misses with the 
   const library = { sourceBytes: async () => bytes };
   assert.equal(await cache.lookup({ id: 'arabella', source: 'hosted', file: 'arabella.mp3' }, library), null);
   assert.equal(calls, 1);
+});
+
+test('the additional website bell gain invalidates every previous 4 dB saved mix without publishing or approving it', async () => {
+  const approved = JSON.stringify(savedSantaGreeting);
+  const read = path => readFileSync(path);
+  const oldRead = path => path === 'scripts/santa-audio-filters.mjs'
+    ? Buffer.from(read(path).toString().replace('volume=6dB', 'volume=4dB')) : read(path);
+  for (const outro of [1, 2, 'nov']) {
+    const oldRecipe = santaAudioRecipeVersion(oldRead, undefined, outro);
+    assert.notEqual(santaAudioRecipeVersion(undefined, undefined, outro), oldRecipe);
+    let oldIdentity;
+    const options = {
+      publisher: async () => assert.fail('Recipe checks must not overwrite historical audio'),
+      log: () => {},
+    };
+    const record = { id: 'arabella', source: 'hosted', file: 'arabella.mp3' };
+    const library = { sourceBytes: async () => bytes };
+    const oldCache = createSavedGreetingCache({ ...options,
+      recipe: sha => santaAudioRecipeVersion(oldRead, sha, outro) });
+    oldIdentity = (await oldCache.prepare(record, library, outro)).identity;
+    const current = createSavedGreetingCache({ ...options, fetcher: async url => {
+      assert.ok(!String(url).includes(oldIdentity.key), 'Current mix uses a different storage key');
+      return Response.json({ schema: 1, ...oldIdentity,
+        file: `${oldIdentity.key}-historical.mp3`, sha256: 'a'.repeat(64), bytes: 200000 });
+    } });
+    assert.equal(await current.lookup(record, library, outro), null);
+  }
+  assert.equal(JSON.stringify(savedSantaGreeting), approved, 'Historical manual approval is untouched');
 });

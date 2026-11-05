@@ -55,6 +55,7 @@ const metadataPlugin = {
     server.middlewares.use(namesDemoMiddleware);
     server.middlewares.use(createAuditionMiddleware({ development: true }));
     server.middlewares.use(createFreeBellsAudition({ development: true }));
+    server.middlewares.use(createFreeBellsAudition({ development: true, studio: true }));
     server.middlewares.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
     server.middlewares.use('/api/santa-message-access', messageAccess);
     server.middlewares.use('/api/stripe/webhook', stripeWebhook);

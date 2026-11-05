@@ -12,7 +12,7 @@ export function renderArgs(intro, name, outro, bells, output, prepared = false) 
     // Add time outside the complete recordings, never inside or over their pauses.
     '[voice]adelay=48000S:all=1,apad=pad_len=48000[speech];' +
     '[3:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo,' +
-    'loudnorm=I=-34:TP=-9:LRA=7,volume=4dB,aresample=48000,afade=t=in:d=1[bells];' +
+    'loudnorm=I=-34:TP=-9:LRA=7,volume=6dB,aresample=48000,afade=t=in:d=1[bells];' +
     // The final second contains only bells: the entire voice has already ended.
     // Fading this padded tail cannot attenuate any recorded voice or pause.
     // Reset reversed timestamps: raw MP3 processing and prepared WAVs can
