@@ -7,7 +7,7 @@ import ffmpeg from 'ffmpeg-static';
 
 const execute = promisify(execFile);
 export const studioSources = fileURLToPath(new URL('./santa-audio/studio/', import.meta.url));
-export const studioBells = fileURLToPath(new URL('./santa-audio/sleighbells.mp3', import.meta.url));
+export const studioBells = fileURLToPath(new URL('./santa-audio/studio/sleigh-bells.mp3', import.meta.url));
 const RATE = 48000, FRAME = 8;
 export const STUDIO_LEAD_IN_SECONDS = 1;
 // The source-speech budget is unchanged. At 192 kb/s, even 176 seconds plus

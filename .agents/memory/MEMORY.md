@@ -53,6 +53,7 @@
 - [Gift recipient lettering](gift-recipient-lettering.md) — Approved Lora Italic recipient names for recognisable capitals; Santa's signature stays decorative.
 - [Python TLS trust](python-tls-trust.md) — Package downloads may need an explicit system certificate path; never disable TLS verification.
 - [Local audio inspection](local-audio-inspection.md) — FFmpeg PCM input avoids local speech-decoder API mismatches; transcription is not listening verification.
+- [MP3 lossless comparison](mp3-lossless-comparison.md) — Match the renderer's decoder explicitly before judging FLAC sample equivalence.
 - [Santa download naming](santa-download-naming.md) — Use santa-recorded-message-for-(NAME).mp3 for downloads; leave hosted source and cache URLs alone.
 - [Workshop choice controls](workshop-choice-controls.md) — Searchable names, a vertical age wheel, other category scrollers and later MP3 direction.
 - [Destination categories](destination-category-direction.md) — Countries default on fresh entry; preserve saved-category visibility and optional regions without moving recordings.

@@ -55,10 +55,12 @@ See [the private recording check](studio-more-sports-inventory.md) for inventory
 differences and audio evidence. This note is repository documentation, not a
 public recording catalogue.
 
-**Live discovery status, 2 November 2026:** the hosted index still returns only
-the original five categories. Sports/funny discovery is **awaiting the owner's
-upload** of the refreshed script. HTTP availability of individual recordings is
-not discovery, successful decoding, listening evidence or wording approval.
+**Live discovery status, 5 November 2026 (UTC):** a fresh read of the hosted
+index returns all five required categories plus 50 sports and 26 funny choices.
+One actual recording from each of these seven groups downloaded and decoded
+successfully. Safe local renders with hosted categories and a synthetic name
+passed with Talent selected and skipped; all temporary outputs were removed.
+This is not listening evidence or wording approval. No private name import ran.
 The website's read-only
 `/api/santa-workshop-catalogue` endpoint fetches that fixed URL, validates exact
 relative paths and SHA-256 identities, and caches the complete inventory for
@@ -121,7 +123,7 @@ encoding happens only when constructing the HTTPS download URL.
 The shared introduction stays at `personalised-message/1-5.wav`, not inside
 either talent folder. Visible step numbers do not rename any connector.
 
-The downloaded `1-5.wav` decoded successfully on 2 November 2026. Its source
+The previous `1-5.wav` decoded successfully on 2 November 2026. Its source
 SHA-256 is
 `fb6a1a7af4a1bf9556af3520e701c2fb1cb7eb04e7c820a2d617d518aef468d8`.
 Lossless FLAC packaging was verified by comparing every decoded PCM sample.
@@ -136,10 +138,17 @@ The Talent step appends the currently selected sports/activity or funny
 recording's exact display label to this introduction. “FUNNY or SPORT” is not
 literal preview text. Unchosen, unavailable and skipped talent states append
 no label; switching category clears the old label. This is display wording
-only: neither the hosted connector nor its packaged FLAC nor the audio sequence
-has been changed to match it.
+only: changing that display text does not alter the hosted recording, packaged
+FLAC or audio sequence.
 
-**Owner action:** listen to that connector and confirm/replace it if exact
+**Current revision, 5 November 2026:** the hosted connector has changed since
+the transcription above. Its replacement is now packaged losslessly, alongside
+the other seven refreshed fixed speech elements. The historical transcription
+does not describe or approve the new audio. Exact private hashes and native
+properties are in `server/santa-audio/studio/sources.json`; see
+`docs/studio-source-refresh.md` for local verification and release status.
+
+**Owner action:** listen to the current connector and confirm/replace it if exact
 wording is required. Merely changing the helper text does not change speech.
 If replacing the hosted recording, retain `1-5.wav` and tell the maintainer:
 the packaged private `1-5.flac` must also be refreshed losslessly. This task

@@ -1,0 +1,206 @@
+{
+  "comparedAt": "2026-11-05T00:11:00.030Z",
+  "method": "HTTPS GET, cache no-store and Cache-Control no-cache; no redirects. SHA-256 original bytes and native-rate/channel interleaved signed 32-bit little-endian PCM. MP3 uses the existing renderer forced mp3 fixed-point decoder, not mp3float; FLAC preserves every sample of that decode. WAV uses its native PCM decoder. No trim, padding, gain, resample or channel conversion.",
+  "ffmpegVersion": "ffmpeg version 7.0.2-static https://johnvansickle.com/ffmpeg/  Copyright (c) 2000-2024 the FFmpeg developers",
+  "freeMakerBellsSha256": "04afdbfc969792f3db43e57d60f0760eeddd27d76410b4080a3033d4d9bb3cf5",
+  "recordings": [
+    {
+      "source": {
+        "url": "https://stagcommunications.com/santaradio/names/personalised-message/free-intro.mp3",
+        "sha256": "fdb4ec358a35663d303ea7894dedcd71374c4173d6d59813baa465b72f1d5d15",
+        "codec": "mp3",
+        "sampleRate": 44100,
+        "channels": 2,
+        "bitsPerSample": null,
+        "frames": 384939,
+        "decodedSeconds": 8.728775510204082,
+        "pcmS32leSha256": "62ad9d303a3b7ad31f30db3289165129fb4c11cc99c3d2184037d79cdf771047"
+      },
+      "comparison": {
+        "status": "changed",
+        "previousPackagedSha256": "ce1a4068e63435b193e6adf3c3c9637150855372b435dcab3fe88ac32cdacde5",
+        "previousPcmS32leSha256": "5b7362a02160e556b830862ea4531f0fcc9bf289be8d3b988b4924116036fa27"
+      },
+      "packaged": {
+        "path": "studio/intro.flac",
+        "sha256": "4a8aa76816d5ee3a5dd9cab7c09c77e4b067871a4bd90be21da89b29d016f14f"
+      }
+    },
+    {
+      "source": {
+        "url": "https://stagcommunications.com/santaradio/names/personalised-message/1st.wav",
+        "sha256": "379dfaf2da4aa0110236d8a7d1753eccc885fc609fda2a32e4425fca1561e9f1",
+        "codec": "pcm_s16le",
+        "sampleRate": 44100,
+        "channels": 2,
+        "bitsPerSample": 16,
+        "frames": 300242,
+        "decodedSeconds": 6.808208616780045,
+        "pcmS32leSha256": "625324517e72c88fb7f722f5f919efa88c03ec3d9f5334ca8e748f0f7386cd6f"
+      },
+      "comparison": {
+        "status": "changed",
+        "previousPackagedSha256": "fffd3e916418e70ff055969670633466c3809637bfb26d45a6093ff788043c89",
+        "previousPcmS32leSha256": "53d12737ebb0e3b8c4a4858113321bf00170fb7bfc901efbbf9642e24cc99f3e"
+      },
+      "packaged": {
+        "path": "studio/1st.flac",
+        "sha256": "76875c0df4c313be5d9502816dcd3a63b8b818b4fc130e2f79ce6982ae25f16f"
+      }
+    },
+    {
+      "source": {
+        "url": "https://stagcommunications.com/santaradio/names/personalised-message/1-5.wav",
+        "sha256": "ec9db71d8e71888a6310986df462f199f1aa05aa1bae9bbbe8ef0ab31c9df803",
+        "codec": "pcm_s16le",
+        "sampleRate": 44100,
+        "channels": 2,
+        "bitsPerSample": 16,
+        "frames": 336447,
+        "decodedSeconds": 7.629183673469388,
+        "pcmS32leSha256": "2b26b1fcade287e0064f3f421a4706f122a44cbb4a85c9ea40f8b74d8ad0e45d"
+      },
+      "comparison": {
+        "status": "changed",
+        "previousPackagedSha256": "47dcc52206d0f4b45ced4a62965f10f9d7bc4d1af6b357a1faee72c28b424307",
+        "previousPcmS32leSha256": "6c2e64f44d914ab6471db62d0b9d656db1b042cf6c8d405a04dd6a78599c5de9"
+      },
+      "packaged": {
+        "path": "studio/1-5.flac",
+        "sha256": "b36d368324f846bb9355d45c2c6253d8042f8c27807e8ffe89618b9141ddf9b6"
+      }
+    },
+    {
+      "source": {
+        "url": "https://stagcommunications.com/santaradio/names/personalised-message/2nd.wav",
+        "sha256": "8bbf9918920f8c6dd2660461c2cf9fda3ff557fc7d32ce153d35eb087b45ffe3",
+        "codec": "pcm_s16le",
+        "sampleRate": 44100,
+        "channels": 2,
+        "bitsPerSample": 16,
+        "frames": 361008,
+        "decodedSeconds": 8.186122448979592,
+        "pcmS32leSha256": "25d6eb4ea0d8b143bace3d1f99e5b1cf04b2676365054a526628853c4b308696"
+      },
+      "comparison": {
+        "status": "changed",
+        "previousPackagedSha256": "8699b53e87cddc5368da7ee72c7b6783314fac985aa292702c8961c0f75ebf56",
+        "previousPcmS32leSha256": "3f07e01250a62c9c838990e7326b8be39d56d93517cf7c794e903198e40928c7"
+      },
+      "packaged": {
+        "path": "studio/2nd.flac",
+        "sha256": "4415667b0319ae864486b02970d522d0d0bbd4dae7623550f205dd9bf32cfcd9"
+      }
+    },
+    {
+      "source": {
+        "url": "https://stagcommunications.com/santaradio/names/personalised-message/3rd.wav",
+        "sha256": "7bd88bf7c76217d6c777f6bdc43e428b3d825a3005d04a1087bc60bfc4bff492",
+        "codec": "pcm_s16le",
+        "sampleRate": 44100,
+        "channels": 2,
+        "bitsPerSample": 16,
+        "frames": 478886,
+        "decodedSeconds": 10.859092970521543,
+        "pcmS32leSha256": "f0c9f8cc696a9a7e8fb75c37ed7ad0a6567aa17de87fe18b1b80a756563eea57"
+      },
+      "comparison": {
+        "status": "changed",
+        "previousPackagedSha256": "28401943b7fa1af617a4f1305824d602dcc135d13b130297343dbba37f4b210c",
+        "previousPcmS32leSha256": "66829b6072f3103b72775df33dcb612d9e0228db2709a2c86112247551d5e320"
+      },
+      "packaged": {
+        "path": "studio/3rd.flac",
+        "sha256": "87bd1734af2c32c4758ad774f8ddb7a32621cc8e580ef4c12b83d3f5839120a5"
+      }
+    },
+    {
+      "source": {
+        "url": "https://stagcommunications.com/santaradio/names/personalised-message/4th.wav",
+        "sha256": "cab4b0e3ff308e0945b3a1098e83790fbe2048cd4357d5102236f885789d401c",
+        "codec": "pcm_s16le",
+        "sampleRate": 44100,
+        "channels": 2,
+        "bitsPerSample": 16,
+        "frames": 355463,
+        "decodedSeconds": 8.060385487528345,
+        "pcmS32leSha256": "9bc0d0f587406d6e6ab38480e7490a8e70f8db8a0bc8b94e5fac0cda6ceb5085"
+      },
+      "comparison": {
+        "status": "changed",
+        "previousPackagedSha256": "32a787b45a66255bab14626301086de37cf1a0fa05d3b185a7256f2ef64f8532",
+        "previousPcmS32leSha256": "d18bc78d7f066aa97d48ab9c601a6dc441fa06d79d0fbfa690223a2062e4b381"
+      },
+      "packaged": {
+        "path": "studio/4th.flac",
+        "sha256": "af3e980f252a50bb852da2f00660801b4dd863a96a5585b8c9ed3acde1512b92"
+      }
+    },
+    {
+      "source": {
+        "url": "https://stagcommunications.com/santaradio/names/personalised-message/5th.wav",
+        "sha256": "7e096efca3625f28e88219b5b2dadd11d29860ecd0ecb595eb309f4b94ba451e",
+        "codec": "pcm_s16le",
+        "sampleRate": 44100,
+        "channels": 2,
+        "bitsPerSample": 16,
+        "frames": 687716,
+        "decodedSeconds": 15.594467120181406,
+        "pcmS32leSha256": "6642ff2aaa8588c1be9ee25ba461c49965c64a5c042190b20aa733fc35918303"
+      },
+      "comparison": {
+        "status": "changed",
+        "previousPackagedSha256": "f02ec531f19d9b9028509e1401d44e6266d29a06a3da0b916662cced27b2a5c7",
+        "previousPcmS32leSha256": "e9d6460d7c06a5c4cace965a525c55e173dc0608cfc8d4e146f74d6697b98a2f"
+      },
+      "packaged": {
+        "path": "studio/5th.flac",
+        "sha256": "ae96e662bb50fc53c87b00827b13611cb15b09d1ffb8d18a6ab7545309492fd5"
+      }
+    },
+    {
+      "source": {
+        "url": "https://stagcommunications.com/santaradio/names/personalised-message/6th.wav",
+        "sha256": "4570c9f95cc263b7005756302959e16ead43058824d443b667896d1da0c9fbb6",
+        "codec": "pcm_s16le",
+        "sampleRate": 44100,
+        "channels": 2,
+        "bitsPerSample": 16,
+        "frames": 493041,
+        "decodedSeconds": 11.180068027210885,
+        "pcmS32leSha256": "d551dfa0d77db47daa44f024c72dde2d4215dc707918ff5dc71f5eb0e6b45744"
+      },
+      "comparison": {
+        "status": "changed",
+        "previousPackagedSha256": "8998f2c447594aec8a6d7c5b1384663334725bf029752115f52b7183a6f38cd8",
+        "previousPcmS32leSha256": "636a27c416a75bb27312cd9f2a782dcc07f9d6f5616509b52d0847a9cf0c4524"
+      },
+      "packaged": {
+        "path": "studio/6th.flac",
+        "sha256": "1fff814d24b96c25b7ab43afefe492c764b29054f4fc6f12f4f0cd6a28c10598"
+      }
+    },
+    {
+      "source": {
+        "url": "https://stagcommunications.com/santaradio/names/personalised-message/sleigh-bells.mp3",
+        "sha256": "f62190aba96f091c2a532c72b2596a291372522874dbb3eb1c8338916279b126",
+        "codec": "mp3",
+        "sampleRate": 44100,
+        "channels": 1,
+        "bitsPerSample": null,
+        "frames": 97207,
+        "decodedSeconds": 2.2042403628117913,
+        "pcmS32leSha256": "de6fae3f0d19236e5c28a5fc66f4c555acb95ebb3250bca780b1636fb05a6936"
+      },
+      "comparison": {
+        "status": "changed",
+        "previousPackagedSha256": "04afdbfc969792f3db43e57d60f0760eeddd27d76410b4080a3033d4d9bb3cf5",
+        "previousPcmS32leSha256": "e064196f364dc69c7b887e08d4a14e71c478b402b8b2108c1045657f46df71d1"
+      },
+      "packaged": {
+        "path": "studio/sleigh-bells.mp3",
+        "sha256": "f62190aba96f091c2a532c72b2596a291372522874dbb3eb1c8338916279b126"
+      }
+    }
+  ]
+}

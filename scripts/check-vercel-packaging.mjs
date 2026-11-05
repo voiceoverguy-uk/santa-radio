@@ -142,7 +142,8 @@ function audioSmoke(entrypoint) {
     import { readFile, stat } from 'node:fs/promises';
     import handler from './${entrypoint}';
     import ffmpeg from 'ffmpeg-static';
-    for (const asset of ${JSON.stringify(entrypoint === 'api/santa-studio-message.js' ? ['sleighbells.mp3'] :
+    for (const asset of ${JSON.stringify(entrypoint === 'api/santa-studio-message.js' ?
+      ['studio/sleigh-bells.mp3', ...['intro', '1st', '1-5', '2nd', '3rd', '4th', '5th', '6th'].map(name => 'studio/' + name + '.flac')] :
       ['free-intro.mp3', 'free-outro-1.mp3', 'free-outro-2.mp3', 'sleighbells.mp3',
         'prepared/intro.wav', 'prepared/outro-1.wav', 'prepared/outro-2.wav'])}) {
       assert.ok((await stat('./server/santa-audio/' + asset)).size > 0);
