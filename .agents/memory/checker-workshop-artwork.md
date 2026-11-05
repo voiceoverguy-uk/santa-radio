@@ -26,7 +26,7 @@ HTML. Let the frame grow through checking and long result states without
 cropping or distorting its corner ornaments.
 
 The homepage checker has its own integrated heading above the crest and form:
-small “Naughty or Nice?” text, line–star–line divider, “Which List are you?”,
+small “Naughty or Nice?” text, line–star–line divider, “WHICH LIST ARE YOU ON?”,
 then centred descriptive copy. It belongs inside the same checker section on
 one continuous background, never in a separate section or cream card.
 
@@ -34,7 +34,7 @@ one continuous background, never in a separate section or cream card.
 same format as Celebrity Mugshots, then explicitly asked for this text above
 the crest and form, with centred white copy and no standalone “Play” link.
 They clarified that this must be the checker's own heading, not a separate
-box, and supplied the shorter “Which List are you?” headline.
+box, and subsequently supplied the exact headline “WHICH LIST ARE YOU ON?”.
 
 **How to apply:** Keep this distinction between the decorated live form and
 the integrated unboxed heading. Do not restore its standalone “Play the Naughty

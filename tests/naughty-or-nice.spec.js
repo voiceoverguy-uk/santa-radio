@@ -258,12 +258,12 @@ test('homepage supplied logo and parchment frame keep live controls responsive i
   await expect(page.locator('.santa-dash-promo + .nn-widget + .christmas-pairs')).toHaveCount(1);
   await expect(widget(page).locator(':scope > header.nn-quiz-intro')).toHaveCount(1);
   await expect(page.locator('.home-page > .nn-quiz-intro')).toHaveCount(0);
-  await expect(widget(page)).toHaveAccessibleName('Which List are you?');
-  await expect(quizIntro.getByRole('heading', { name: 'Which List are you?', level: 2 })).toBeVisible();
+  await expect(widget(page)).toHaveAccessibleName('WHICH LIST ARE YOU ON?');
+  await expect(quizIntro.getByRole('heading', { name: 'WHICH LIST ARE YOU ON?', level: 2 })).toBeVisible();
   await expect(quizIntro.locator('.homepage-section-heading__eyebrow')).toHaveText('Naughty or Nice?');
   await expect(quizIntro.locator('.homepage-section-heading__subtitle')).toHaveText('Head Elf has ten festive questions about kindness, helping out and trying your best. Answer them to find out which of Santa’s lists you’re on this Christmas.');
   await expect(quizIntro.locator('.homepage-section-heading__divider')).toHaveAttribute('aria-hidden', 'true');
-  await expect(quizIntro.locator('.homepage-section-heading__divider + h2')).toHaveText('Which List are you?');
+  await expect(quizIntro.locator('.homepage-section-heading__divider + h2')).toHaveText('WHICH LIST ARE YOU ON?');
   await expect(quizIntro.locator('.homepage-section-heading__divider svg')).toBeVisible();
   const introStyle = await quizIntro.locator('.nn-quiz-intro-inner').evaluate(element => {
     const style = getComputedStyle(element);

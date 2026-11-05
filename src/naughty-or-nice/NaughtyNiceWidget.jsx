@@ -50,7 +50,7 @@ export default function NaughtyNiceWidget() {
         <p className="nn-intro">Enter your first name for a quick North Pole check. Then visit Head Elf for the full Christmas quiz.</p>
       </div>
       <div className="nn-panel nn-widget-frame">
-        <SoundControl audio={audio} />
+        {(stage === 'entry' || stage === 'starting') && <h3 className="nn-widget-form-heading">Quick Nice List Check</h3>}
         {(stage === 'entry' || stage === 'starting') && <FirstNameForm key={entryKey} disabled={stage === 'starting'} onSubmit={value => {
           if (!run(HOMEPAGE_ANALYSIS_MS, () => { cancelPanel(); setScore(preliminaryScore()); setStage('result'); })) return;
           setName(value); setStage('starting');
@@ -72,6 +72,7 @@ export default function NaughtyNiceWidget() {
           }}>Lets check again with Head Elf!</Link>
           <button className="nn-secondary nn-check-another" onClick={restart}>Check another name</button>
         </div>}
+        <SoundControl audio={audio} />
       </div>
     </div>
   </section>;

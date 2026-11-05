@@ -295,7 +295,9 @@ progress.nn-progress::-moz-progress-bar { background: var(--nn-red); }
 }
 .nn-widget .nn-widget-frame::before { content: none; }
 .nn-widget .nn-widget-frame > * { position: relative; z-index: 1; }
-.nn-widget .nn-widget-frame .nn-toolbar { margin-bottom: 10px; }
+.nn-widget .nn-widget-form-heading { margin: 0 0 12px; color: var(--nn-green-dark); font-family: 'Cinzel', Georgia, serif; font-size: clamp(1.15rem, 2.2vw, 1.6rem); font-weight: 600; line-height: 1.35; text-align: center; overflow-wrap: anywhere; }
+.nn-widget .nn-widget-frame > .nn-toolbar { margin: 16px 0 0; justify-content: flex-end; }
+.nn-widget .nn-widget-frame > .nn-toolbar > .nn-sound { transform: none; }
 .nn-widget .nn-widget-frame .nn-result { background: #fffcf466; }
 @media (max-width: 767px) {
   .nn-widget .nn-widget-inner { grid-template-columns: 1fr; }
