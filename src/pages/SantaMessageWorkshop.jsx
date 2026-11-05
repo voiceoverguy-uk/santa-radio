@@ -14,7 +14,7 @@ import WorkshopNamePreview from '../components/WorkshopNamePreview.jsx';
 import WorkshopMessageAudio from '../components/WorkshopMessageAudio.jsx';
 import { createWorkshopNamePreviewCache } from '../lib/workshopNamePreviewCache.js';
 import { workshopTreatWording } from '../lib/workshopTreatWording.js';
-import { createStudioLetterVariation } from '../lib/santaStudioLetter.js';
+import { createStudioLetter, createStudioLetterVariation } from '../lib/santaStudioLetter.js';
 import { getWorkshopWrittenName } from '../lib/workshopNameSpelling.js';
 import WorkshopSearchableChoices from '../components/WorkshopSearchableChoices.jsx';
 import WorkshopDestinationPicker from '../components/WorkshopDestinationPicker.jsx';
@@ -235,6 +235,7 @@ export default function SantaMessageWorkshop() {
   const [requestedGifts, setRequestedGifts] = useState({});
   const [preparingGifts, setPreparingGifts] = useState({});
   const [preparingRetainedGifts, setPreparingRetainedGifts] = useState({});
+  const [preparingBundles, setPreparingBundles] = useState({});
   // Only the explicit fresh-message flow resets successful completion.
   const [nameReadOnly, setNameReadOnly] = useState(false);
   const [audioPhase, setAudioPhase] = useState('idle');
@@ -250,6 +251,7 @@ export default function SantaMessageWorkshop() {
       setRequestedGifts({});
       setPreparingGifts({});
       setPreparingRetainedGifts({});
+      setPreparingBundles({});
     };
     window.addEventListener('pagehide', clearGifts);
     return () => window.removeEventListener('pagehide', clearGifts);
@@ -261,6 +263,7 @@ export default function SantaMessageWorkshop() {
       setRequestedGifts({});
       setPreparingGifts({});
       setPreparingRetainedGifts({});
+      setPreparingBundles({});
     }
   }, [generation.accessExpired]);
   const locked = false;
@@ -337,7 +340,8 @@ export default function SantaMessageWorkshop() {
     && shownGift.writtenName === getWorkshopWrittenName(selectedName?.name || '', nameSpelling)));
   const giftPreparing = audioPhase === 'preparing' || audioPhase === 'receiving' || generation.state?.pending;
   const retainedGiftExportPending = Object.values(preparingRetainedGifts).some(Boolean);
-  const giftExportPending = Object.values(preparingGifts).some(Boolean) || retainedGiftExportPending;
+  const giftExportPending = Object.values(preparingGifts).some(Boolean) || retainedGiftExportPending
+    || Object.values(preparingBundles).some(Boolean);
   const giftNotice = completedGift
         ? !giftMatches
           ? 'Gift previews reflect your updated choices. Create your new MP3 to unlock these downloads.'
@@ -845,7 +849,7 @@ export default function SantaMessageWorkshop() {
                 {retainedGifts.map((gift, index) => <button type="button" key={gift.revision}
                   aria-pressed={selectedGiftIndex === index}
                   aria-label={`${index === 0 ? '1st' : '2nd'} message gifts for ${gift.writtenName}`}
-                  disabled={giftExportPending}
+                  disabled={Object.values(preparingGifts).some(Boolean) || retainedGiftExportPending}
                   onClick={() => setSelectedGiftIndex(index)}>{index === 0 ? '1st' : '2nd'}</button>)}
                 <p role="status">Gifts for {shownGift.writtenName}</p>
               </div>}
@@ -903,6 +907,17 @@ export default function SantaMessageWorkshop() {
                 <WorkshopMessageAudio generation={generation} correction={correction}
                   onStartAgain={startAgain}
                   giftExportPending={giftExportPending}
+                  onBundlePreparing={(url, pending) => setPreparingBundles(current => {
+                    if (pending) return { ...current, [url]: true };
+                    if (!current[url]) return current;
+                    const next = { ...current };
+                    delete next[url];
+                    return next;
+                  })}
+                  onBundleRequested={gift => {
+                    if (gift) setRequestedGifts(current => ({ ...current,
+                      [gift.revision]: { certificate: true, letter: true, picture: true } }));
+                  }}
                   giftsRequested={retainedGifts.every(gift =>
                     ['certificate', 'letter', 'picture'].every(kind => requestedGifts[gift.revision]?.[kind]))}
                   giftWrittenName={retainedGifts.map(gift => gift.writtenName).join(' and ')}
@@ -930,15 +945,21 @@ export default function SantaMessageWorkshop() {
                       writtenName: getWorkshopWrittenName(record.name, record.id === selectedName?.id ? nameSpelling : ''),
                       revision: crypto.randomUUID(),
                     };
-                    setCompletedGift(gift);
+                    // Own the successful recipient's exact wording/artwork, not
+                    // whichever gift preview or unfinished draft is active later.
+                    gift.picture = '/images/santa-nice-list.jpg';
+                    gift.letter = createStudioLetter(gift.writtenName, () => 0.5, gift.details, gift.variation);
+                    const snapshot = structuredClone(gift);
+                    setCompletedGift(snapshot);
                     // Replace only the current unlimited-voucher slot, never
                     // the first retained completion of a fresh second draft.
-                    const next = completedGift ? [...retainedGifts.slice(0, -1), gift] : [...retainedGifts, gift];
+                    const next = completedGift ? [...retainedGifts.slice(0, -1), snapshot] : [...retainedGifts, snapshot];
                     setRetainedGifts(next);
                     setSelectedGiftIndex(next.length - 1);
                     setRequestedGifts(current => Object.fromEntries(next
                       .filter(saved => current[saved.revision])
                       .map(saved => [saved.revision, current[saved.revision]])));
+                    return snapshot;
                   }}
                   complete={!!selectedName && destinationValid && regionalEditorial.ready && catalogueCategories.every(key =>
                     catalogueState.catalogue?.categories?.[key]?.some(record => record.id === choices[key]))

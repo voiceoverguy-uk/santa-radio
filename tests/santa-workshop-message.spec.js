@@ -214,7 +214,7 @@ for (const viewport of [{ width: 1365, height: 900 }, { width: 390, height: 844 
       await expectStudioRecordingInView(page);
       await page.screenshot({ path: `generated-artifacts/studio-ready-access-failure-${viewport.width}-${reducedMotion}.png` });
       const downloaded = page.waitForEvent('download');
-      await result.getByRole('link', { name: 'Download MP3', exact: true }).click();
+      await result.getByRole('link', { name: 'Download Audio', exact: true }).click();
       const download = await downloaded;
       expect(await download.failure()).toBeNull();
       expect(readFileSync(await download.path())).toEqual(fixture.audio);
@@ -246,7 +246,7 @@ for (const width of [390, 1365]) {
       await page.setViewportSize({ width, height: 900 });
       const fixture = await openReview(page);
       await page.emulateMedia({ reducedMotion });
-      const link = page.getByRole('link', { name: 'Download MP3', exact: true });
+      const link = page.getByRole('link', { name: 'Download Audio', exact: true });
       await expect(link).toHaveCount(0);
       // Hold the body open: receiving the HTTP headers and first bytes is not ready.
       await page.evaluate(() => {
@@ -344,7 +344,7 @@ test('Vercel missing-generation-table conditions keep voucher validation and per
   await expect(page.locator('.smw-allowance')).toHaveCount(0);
   await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
   await expect(page.locator('.smw-message-result audio')).toHaveCount(0);
-  await expect(page.getByRole('link', { name: 'Download MP3', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'Download Audio', exact: true })).toHaveCount(0);
 });
 
 async function openReview(page, { live = false, allowance = null, tester = false, school = false } = {}) {
@@ -626,7 +626,7 @@ for (const width of [320, 1365]) {
       await checkEntitlement();
       await page.evaluate(() => window.finishTestRecording());
       await expect(result).toBeVisible();
-      const download = result.getByRole('link', { name: /Download MP3/ });
+      const download = result.getByRole('link', { name: /Download Audio/ });
       await expect(download).toBeVisible();
       await expect(result.getByRole('status')).toHaveText('Your message is ready.');
       await expect(guidance).toHaveCount(1);
@@ -735,12 +735,12 @@ test('voucher testing can generate a third message with fresh choices while reta
   const fixture = await openReview(page, { tester: true });
   for (let number = 1; number <= 3; number++) {
     await confirmMessage(page);
-    await expect(page.getByRole('link', { name: 'Download MP3', exact: true })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Download Audio', exact: true })).toBeVisible();
     await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
     expect(fixture.posts.length).toBe(number);
     if (number === 3) break;
-    const previousUrl = await page.getByRole('link', { name: 'Download MP3', exact: true }).getAttribute('href');
-    expect(await page.getByRole('link', { name: 'Download MP3', exact: true }).getAttribute('href')).toBe(previousUrl);
+    const previousUrl = await page.getByRole('link', { name: 'Download Audio', exact: true }).getAttribute('href');
+    expect(await page.getByRole('link', { name: 'Download Audio', exact: true }).getAttribute('href')).toBe(previousUrl);
     await page.getByRole('button', { name: 'Change Their recorded name', exact: true }).click();
     await expect(page.getByRole('combobox', { name: 'Search recorded names', exact: true })).toBeEnabled();
     await page.getByRole('button', { name: 'Return to review', exact: true }).click();
@@ -758,7 +758,7 @@ for (const width of [390, 1365]) {
     const fixture = await openReview(page);
     await page.setViewportSize({ width, height: 900 });
     await confirmMessage(page);
-    const download = page.getByRole('link', { name: 'Download MP3', exact: true });
+    const download = page.getByRole('link', { name: 'Download Audio', exact: true });
     await expect(download).toBeVisible();
     const previousUrl = await download.getAttribute('href');
     const allowance = structuredClone(fixture.state);
@@ -975,7 +975,7 @@ test('approved recording notices are random per attempt, stable through rerender
   await expect.poll(() => player.evaluate(node => node.currentTime)).toBeGreaterThan(0.1);
   await player.evaluate(node => node.pause());
   const downloadPromise = page.waitForEvent('download');
-  await result.getByRole('link', { name: /Download MP3/ }).click();
+  await result.getByRole('link', { name: /Download Audio/ }).click();
   expect((await downloadPromise).suggestedFilename()).toBe('Santa-message-for-D’Arcy.mp3');
   expect(await page.evaluate(() => window.noticeRandomCalls)).toBe(13);
   expect(await page.evaluate(() => window.recordingAttempts.length)).toBe(13);
@@ -1030,7 +1030,7 @@ test('review create placement on desktop and phones, real MP3 playback/download,
   await expect(player).toHaveAttribute('src', url);
   await result.scrollIntoViewIfNeeded();
   await page.screenshot({ path: 'generated-artifacts/studio-completed-mobile.png' });
-  const download = result.getByRole('link', { name: /Download MP3/ });
+  const download = result.getByRole('link', { name: /Download Audio/ });
   await expect(download).toHaveAttribute('download', 'Santa-message-for-Dixie.mp3');
   await expect(download).toHaveAttribute('href', url);
   await download.evaluate(node => node.scrollIntoView({ block: 'center', behavior: 'instant' }));
@@ -1041,7 +1041,7 @@ test('review create placement on desktop and phones, real MP3 playback/download,
   const file = await downloaded;
   expect(file.suggestedFilename()).toBe('Santa-message-for-Dixie.mp3');
   expect(readFileSync(await file.path())).toEqual(fixture.audio,
-    'Playback and Download MP3 use the same complete newly rendered recording');
+    'Playback and Download Audio use the same complete newly rendered recording');
   await expect(page.getByRole('textbox', { name: 'Name spelling', exact: true })).toHaveCount(0);
   await expect(result.getByRole('heading', { name: 'First Santa message for Dixie' })).toBeVisible();
   await expect(player).toHaveAttribute('src', url);
@@ -1121,7 +1121,7 @@ test('finished Studio message download is valid and matches the playable recordi
   await player.evaluate(node => node.pause());
 
   const recordingUrl = await player.getAttribute('src');
-  const download = result.getByRole('link', { name: /Download MP3/ });
+  const download = result.getByRole('link', { name: /Download Audio/ });
   await expect(download).toHaveAttribute('href', recordingUrl);
   await expect(page.getByRole('button', { name: 'Edit certificate name', exact: true })).toHaveCount(0);
   await expect(result.getByRole('heading', { name: 'First Santa message for D’Arcy' })).toBeVisible();
@@ -1162,7 +1162,7 @@ test('school voucher form opens real long-form generation and playable MP3 witho
   await expect.poll(() => player.evaluate(node => node.currentTime)).toBeGreaterThan(0.1);
   await player.evaluate(node => node.pause());
   const downloadPromise = page.waitForEvent('download');
-  await page.getByRole('link', { name: /Download MP3/ }).click();
+  await page.getByRole('link', { name: /Download Audio/ }).click();
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toMatch(/^Santa-message-for-Arabella\.mp3$/);
   await download.saveAs('generated-artifacts/studio-live-hosted-message.mp3');
@@ -1424,7 +1424,7 @@ test('temporary downloads survive failed replacement but never recover after ref
   const fixture = await openReview(page);
   await confirmMessage(page);
   const result = page.getByRole('region', { name: 'Your finished Santa message' });
-  const download = result.getByRole('link', { name: /Download MP3/ });
+  const download = result.getByRole('link', { name: /Download Audio/ });
   await expect(download).toBeVisible();
   await expect(page.getByRole('button', { name: 'Change Their recorded name', exact: true })).toBeEnabled();
   await expect(page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true })).toBeEnabled();
@@ -1480,7 +1480,7 @@ test('temporary downloads survive failed replacement but never recover after ref
   const tab = await context.newPage();
   await tab.route('**/api/santa-workshop-catalogue', route => route.fulfill({ json: workshopCatalogueFixture }));
   await tab.goto(path);
-  await expect(tab.getByRole('link', { name: /Download MP3/ })).toHaveCount(0);
+  await expect(tab.getByRole('link', { name: /Download Audio/ })).toHaveCount(0);
   await tab.close();
   await page.getByRole('link', { name: 'Santa Radio home', exact: true }).click();
   await expect(page.locator('.smw-page')).toHaveCount(0);

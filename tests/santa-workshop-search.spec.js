@@ -1100,7 +1100,7 @@ test('completed destination stays locked and back navigation preserves the recor
   await page.getByRole('option', { name: 'England', exact: true }).click();
   await page.locator('.smw-button-next').click();
   await confirmMessage(page);
-  const download = page.getByRole('link', { name: 'Download MP3', exact: true });
+  const download = page.getByRole('link', { name: 'Download Audio', exact: true });
   await expect(download).toBeVisible();
   const oldUrl = await download.getAttribute('href');
   await expect(page.getByRole('button', { name: 'Change Santa will be flying in to', exact: true })).toBeDisabled();

@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRadio } from './RadioProvider.jsx';
 import { getWorkshopDownloadName } from '../lib/workshopNameSpelling.js';
+import StudioBundleDownload from './StudioBundleDownload.jsx';
 
 // A visit-local result owns its playback, independently of the editable draft.
-export default function StudioCompletedRecording({ result, ordinal, visible, sectionRef, onDownloadRequested }) {
+export default function StudioCompletedRecording({ result, ordinal, visible, sectionRef, onDownloadRequested, onBundlePreparing, onBundleRequested }) {
   const radio = useRadio();
   const audioRef = useRef(null);
   const resumeRef = useRef(null);
@@ -48,7 +49,9 @@ export default function StudioCompletedRecording({ result, ordinal, visible, sec
     <div className="smw-download-actions">
       <a className={`smw-button smw-button-download${result.requested ? '' : ' smw-button-download--pending'}`}
         href={result.url} download={getWorkshopDownloadName(result.record.name, result.spelling)}
-        onClick={onDownloadRequested}>Download MP3 <span aria-hidden="true">↓</span></a>
+        onClick={onDownloadRequested}>Download Audio <span aria-hidden="true">↓</span></a>
+      <StudioBundleDownload result={result} onPreparing={onBundlePreparing}
+        onDownloadRequested={() => { onDownloadRequested(); onBundleRequested?.(); }} />
     </div>
     {error && <p role="alert">{error}</p>}
     <p className="smw-retention-reminder">Download before leaving or refreshing — your recording isn’t saved.</p>

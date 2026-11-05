@@ -31,12 +31,12 @@ export default defineConfig({
     ...base.projects.filter(project => project.name === 'chromium'),
     ...(webkitInstalled ? [{
       name: 'webkit',
-      grep: /finished Studio message download is valid and matches the playable recording/,
+      grep: /finished Studio message download is valid and matches the playable recording|Studio recording ZIP/,
       use: { browserName: 'webkit' },
     }] : []),
     ...(firefoxInstalled ? [{
       name: 'firefox',
-      grep: /finished Studio message download is valid and matches the playable recording/,
+      grep: /finished Studio message download is valid and matches the playable recording|Studio recording ZIP/,
       use: { browserName: 'firefox' },
     }] : []),
   ],

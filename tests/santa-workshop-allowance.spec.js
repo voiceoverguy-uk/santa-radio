@@ -59,7 +59,7 @@ for (const width of [1365, 390]) {
     const source = await audio.getAttribute('src');
     await audio.evaluate(async node => { await node.play(); node.pause(); });
     const download = page.waitForEvent('download');
-    await page.getByRole('link', { name: 'Download MP3' }).click();
+    await page.getByRole('link', { name: 'Download Audio' }).click();
     expect(await (await download).failure()).toBeNull();
     await again.click();
     await expect(page.getByRole('dialog')).toHaveCount(0);
@@ -210,7 +210,7 @@ for (const width of [1365, 390]) {
     await expect(page.locator('.smw-remaining')).toContainText('0 of 2 creations remaining');
     await expect(page.getByRole('button', { name: 'Create message', exact: true })).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'READY', exact: true })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Download MP3' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Download Audio' })).toBeVisible();
     expect(fixture.posts).toHaveLength(2);
     expect(fixture.recoveries || 0).toBe(0);
   });
@@ -258,7 +258,7 @@ for (const width of [1365, 390]) {
       await expect(result(page).locator('audio')).toBeVisible();
       for (let n = 0; n < 2; n++) {
         const download = page.waitForEvent('download');
-        await result(page).getByRole('link', { name: 'Download MP3' }).click();
+        await result(page).getByRole('link', { name: 'Download Audio' }).click();
         await download;
         await gift(page, 'Download certificate (PDF)');
         await gift(page, 'Download letter (PDF)');

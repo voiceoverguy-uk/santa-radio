@@ -1,5 +1,7 @@
 import { expect } from '@playwright/test';
-import { readFileSync } from 'node:fs';
+import { readFileSync, mkdirSync, writeFileSync } from 'node:fs';
+import { unzipSync } from 'fflate';
+import { PDFDocument } from 'pdf-lib';
 import { execFileSync } from 'node:child_process';
 import { test } from './helpers/provider-test.js';
 import { workshopCatalogueFixture } from './fixtures/workshop-catalogue.js';
@@ -123,7 +125,7 @@ for (const width of [320, 1365]) {
     await expect(page.getByRole('alert')).toContainText('Fixture recording unavailable');
     await expect(players(page).first()).toHaveAttribute('src', firstUrl);
     const pendingFirst = page.waitForEvent('download');
-    await page.getByRole('link', { name: 'Download MP3', exact: true }).click();
+    await page.getByRole('link', { name: 'Download Audio', exact: true }).click();
     expect((await pendingFirst).suggestedFilename()).toContain('Dixie Rose');
     for (const button of await gifts(page).all()) await expect(button).toBeDisabled();
     await exportFirstWhileDrafting(page, firstLetter);
@@ -313,5 +315,163 @@ test('a first-message gift export survives the second MP3 finishing', async ({ p
   await expect(first).toBeEnabled();
   await first.click();
   await expect(page.locator('.studio-gifts__card--certificate .studio-gift-download p')).toContainText('Download requested');
+  expect(fixture.posts).toHaveLength(2);
+});
+
+async function inspectBundle(download, name, paragraphs, audio, prefix) {
+  expect(await download.failure()).toBeNull();
+  expect(download.suggestedFilename()).toBe(`Santa-Radio-Audio-And-Gifts-${name}.zip`);
+  const files = unzipSync(readFileSync(await download.path()));
+  expect(Object.keys(files).sort()).toEqual([
+    `Santa-message-for-${name}.mp3`,
+    `Santa-Radio-Nice-List-Certificate-${name}.pdf`,
+    `Santa-Radio-Letter-${name}.pdf`,
+    `Santa-Radio-Santa-Picture-${name}.png`,
+  ].sort());
+  expect(Buffer.from(files[`Santa-message-for-${name}.mp3`])).toEqual(audio);
+  mkdirSync('generated-artifacts/studio-bundles', { recursive: true });
+  for (const kind of ['Nice-List-Certificate', 'Letter']) {
+    const bytes = files[`Santa-Radio-${kind}-${name}.pdf`];
+    expect((await PDFDocument.load(bytes)).getPageCount()).toBe(1);
+    const path = `generated-artifacts/studio-bundles/${prefix}-${kind}.pdf`;
+    writeFileSync(path, bytes);
+    const text = execFileSync('pdftotext', ['-layout', path, '-'], { encoding: 'utf8' }).replace(/\s+/gu, ' ');
+    expect(text).toContain(name);
+    expect(text).not.toMatch(/SAMPLE|NORTH POLE PROPERTY/);
+    if (kind === 'Letter') for (const paragraph of paragraphs) expect(text).toContain(paragraph.replace(/\s+/gu, ' '));
+  }
+  const png = Buffer.from(files[`Santa-Radio-Santa-Picture-${name}.png`]);
+  expect(png.subarray(0, 8)).toEqual(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]));
+  expect([png.readUInt32BE(16), png.readUInt32BE(20)]).toEqual([1536, 1024]);
+  writeFileSync(`generated-artifacts/studio-bundles/${prefix}-picture.png`, png);
+  return png;
+}
+
+for (const width of [320, 1365]) {
+  test(`Studio recording ZIP binds all four files to each completion at ${width}px`, async ({ page }) => {
+    test.setTimeout(120000);
+    await page.setViewportSize({ width, height: 900 });
+    const fixture = await setup(page);
+    await compose(page);
+    // Preserve a non-ASCII confirmed spelling, including in ZIP entry names.
+    await page.getByRole('button', { name: 'Edit certificate name', exact: true }).click();
+    await page.getByRole('textbox', { name: 'Name spelling', exact: true }).fill('Élodie O’Neill');
+    await page.getByRole('button', { name: 'Use this spelling', exact: true }).click();
+    const firstLetter = await letter(page).locator('p').allTextContents();
+    await confirmMessage(page);
+    await expect(players(page)).toHaveCount(1);
+    await page.getByRole('button', { name: 'Start Again', exact: true }).click();
+    await compose(page, true);
+    const secondLetter = await letter(page).locator('p').allTextContents();
+    // First bundle works while the second recipient's gifts are still locked.
+    const firstResult = page.locator('.smw-message-finished').first();
+    let pending = page.waitForEvent('download');
+    await firstResult.getByRole('button', { name: 'Download All', exact: true }).click();
+    await inspectBundle(await pending, 'Élodie O’Neill', firstLetter, fixture.audio, `draft-${width}`);
+    for (const button of await gifts(page).all()) await expect(button).toBeDisabled();
+    await confirmMessage(page);
+    await expect(players(page)).toHaveCount(2);
+    await expect(page.locator('.smw-remaining')).toContainText('0 of 2');
+    const remaining = fixture.state.remaining;
+    let release, started;
+    const hold = new Promise(resolve => { release = resolve; });
+    const exporting = new Promise(resolve => { started = resolve; });
+    await page.route('**/images/santa-radio-letterhead.webp', async route => { started(); await hold; await route.fallback(); });
+    const all = firstResult.getByRole('button', { name: 'Download All', exact: true });
+    await all.focus();
+    await page.keyboard.press('Enter');
+    await expect(firstResult.getByRole('button', { name: 'Preparing ZIP…' })).toBeDisabled();
+    await exporting;
+    // Repeated requests must not start another export or another creation.
+    await firstResult.locator('.smw-bundle-download button').evaluate(node => { node.click(); node.click(); });
+    await expect(page.getByRole('button', { name: 'Start Again', exact: true })).toBeDisabled();
+    await page.getByRole('button', { name: '1st message gifts for Élodie O’Neill', exact: true }).click();
+    await page.getByRole('button', { name: '2nd message gifts for Arabella May', exact: true }).click();
+    // Direct MP3 access does not wait for gift rendering.
+    pending = page.waitForEvent('download');
+    await firstResult.getByRole('link', { name: 'Download Audio', exact: true }).click();
+    expect(readFileSync(await (await pending).path())).toEqual(fixture.audio);
+    pending = page.waitForEvent('download');
+    release();
+    const firstPng = await inspectBundle(await pending, 'Élodie O’Neill', firstLetter, fixture.audio, `first-${width}`);
+    await page.unroute('**/images/santa-radio-letterhead.webp');
+    const secondResult = page.locator('.smw-message-finished').nth(1);
+    pending = page.waitForEvent('download');
+    await secondResult.getByRole('button', { name: 'Download All', exact: true }).focus();
+    await page.keyboard.press('Space');
+    const secondPng = await inspectBundle(await pending, 'Arabella May', secondLetter, fixture.audio, `second-${width}`);
+    expect(firstPng.equals(secondPng)).toBe(false);
+    await expect(firstResult.locator('.smw-bundle-download [role=status]')).toContainText('does not confirm it was saved');
+    await expect(page.locator('.studio-gift-download p')).toHaveText(Array(3)
+      .fill('Download requested. Check your browser’s downloads; keep your own copy.'));
+    expect(fixture.posts).toHaveLength(2);
+    expect(fixture.state.remaining).toBe(remaining);
+    expect(fixture.recoveries || 0).toBe(0);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+    await secondResult.screenshot({ path: `generated-artifacts/studio-bundles/controls-${width}.png` });
+  });
+}
+
+test('Studio recording ZIP failure retries independently; expiry cancels in-flight work and URLs', async ({ page }) => {
+  test.setTimeout(90000);
+  const fixture = await setup(page, false);
+  await compose(page); await confirmMessage(page);
+  const result = page.locator('.smw-message-finished');
+  await expect(result).toBeVisible();
+  const paragraphs = await letter(page).locator('p').allTextContents();
+  await page.route('**/images/santa-radio-letterhead.webp', route => route.fulfill({ status: 503, body: 'Failed fixture' }));
+  await result.getByRole('button', { name: 'Download All', exact: true }).click();
+  await expect(result.getByRole('alert')).toContainText('No creation allowance is used');
+  await expect(result.getByRole('link')).toHaveClass(/--pending/);
+  for (const button of await gifts(page).all()) await expect(button).toBeEnabled();
+  await page.unroute('**/images/santa-radio-letterhead.webp');
+  // Track only actual ZIP download URLs; their lifetime ends with the visit.
+  await page.evaluate(() => {
+    window.bundleUrls = [];
+    const create = URL.createObjectURL.bind(URL);
+    URL.createObjectURL = blob => {
+      const url = create(blob);
+      if (blob.type === 'application/zip') window.bundleUrls.push(url);
+      return url;
+    };
+  });
+  const pending = page.waitForEvent('download');
+  await result.getByRole('button', { name: 'Retry Download All', exact: true }).click();
+  await inspectBundle(await pending, 'Dixie Rose', paragraphs, fixture.audio, 'retry');
+  await expect(result.getByRole('link')).not.toHaveClass(/--pending/);
+  for (const ending of ['pagehide', 'expiry']) {
+    if (ending === 'expiry') {
+      await page.reload(); await compose(page); await confirmMessage(page);
+      await expect(result).toBeVisible();
+    }
+    let release, started;
+    const hold = new Promise(resolve => { release = resolve; });
+    const exporting = new Promise(resolve => { started = resolve; });
+    await page.route('**/images/santa-radio-letterhead.webp', async route => { started(); await hold; await route.fallback(); });
+    await result.getByRole('button', { name: 'Download All', exact: true }).click();
+    await expect(result.getByRole('button', { name: 'Preparing ZIP…' })).toBeDisabled();
+    await exporting;
+    const lateDownloads = [];
+    const collect = download => lateDownloads.push(download);
+    page.on('download', collect);
+    if (ending === 'pagehide') await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true })));
+    else {
+      await page.route('**/api/santa-studio-message*', route => route.fulfill({ status: 410, json: {} }));
+      await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+    }
+    await expect(result).toHaveCount(0);
+    const response = page.waitForResponse('**/images/santa-radio-letterhead.webp');
+    release();
+    await response;
+    // Let the cancelled renderer finish; it must not request any file.
+    await page.waitForTimeout(1000);
+    expect(lateDownloads).toHaveLength(0);
+    page.off('download', collect);
+    await page.unroute('**/images/santa-radio-letterhead.webp');
+    expect(await page.evaluate(async () => {
+      for (const url of window.bundleUrls || []) { try { await fetch(url); return false; } catch {} }
+      return true;
+    })).toBe(true);
+  }
   expect(fixture.posts).toHaveLength(2);
 });

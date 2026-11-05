@@ -99,7 +99,7 @@ test('temporary recording allows playback and identical download retries during 
   });
   for (let attempt = 0; attempt < 2; attempt++) {
     const pendingDownload = page.waitForEvent('download');
-    await page.getByRole('link', { name: /Download MP3/ }).click();
+    await page.getByRole('link', { name: /Download Audio/ }).click();
     const download = await pendingDownload;
     expect(await download.failure()).toBeNull();
     expect(readFileSync(await download.path())).toEqual(fixture.audio);
@@ -220,7 +220,7 @@ for (const width of [320, 1365]) {
     await spelling(page, 'Fresh spelling');
     await expect(page.locator('.smw-written-name-value')).toHaveText('Fresh spelling');
     for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
-    await expect(page.getByRole('link', { name: /Download MP3/ })).toHaveCount(1);
+    await expect(page.getByRole('link', { name: /Download Audio/ })).toHaveCount(1);
     await expect(page.locator('.smw-message-result audio')).toHaveCount(1);
     expect(fixture.posts).toHaveLength(1);
     await spelling(page, 'Élodie O’Neill');
@@ -571,8 +571,11 @@ for (const width of [320, 1365]) {
     };
     await expect(page.locator('.smw-written-name-value')).toHaveText('Dixie');
     const short = await assertLayout();
-    expect(short.action.height).toBeCloseTo(width > 600 ? 56 : 58, 0);
-    expect(Math.abs(short.field.height - short.action.height)).toBeLessThan(1);
+    // The approved shared red-action sizing is 44px on both layouts.
+    expect(short.action.height).toBeCloseTo(44, 0);
+    // The name field keeps its larger editing target; the action is centred
+    // beside it on desktop, not stretched to the field's height.
+    expect(short.field.height).toBeGreaterThanOrEqual(short.action.height);
     await row.screenshot({
       path: `generated-artifacts/studio-gifts/compact-name-${width}.png`, animations: 'disabled',
     });
@@ -709,8 +712,9 @@ for (const width of [320, 1365]) {
     releaseCheck();
     await expect(page.getByRole('button', { name: 'Reload Studio', exact: true })).toBeVisible();
     await checkActions('Create message', true);
-    for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
-    await assertReadOnly(page, 'Alexandria-Catherine Elizabeth Montgomery-Worthington');
+    // A confirmed expiry clears temporary output, unlike a transient check failure.
+    for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
+    await expect(page.locator('.smw-message-finished')).toHaveCount(0);
   });
 }
 
@@ -791,7 +795,7 @@ test('completed gifts stay downloadable when allowance checks fail', async ({ pa
     }
     await expect(giftButtons(page)).toHaveCount(3);
     for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
-    await expect(page.getByRole('link', { name: /Download MP3/ })).toHaveCount(0);
+    await expect(page.getByRole('link', { name: /Download Audio/ })).toHaveCount(0);
     expect(fixture.recoveries || 0).toBe(0);
     await confirmMessage(page);
     for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();

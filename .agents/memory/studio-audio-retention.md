@@ -39,6 +39,17 @@ explicitly confirmed destructive reset clears every retained output. Keep the
 first completed gifts retrievable during second-message composition and after
 failure, separately from the unfinished draft’s locked gift previews.
 
+Download All is a per-recording ZIP, not a ZIP combining both creations. It
+contains that completion's original MP3 and three gifts, independent of the
+selected gift preview or unfinished edits. Keep individual downloads available.
+
+**Why:** The owner explicitly chose one ZIP per finished recording to avoid
+browsers blocking four automatic downloads from a single click.
+
+**How to apply:** Preserve the completion's written name and letter wording;
+never reconstruct a bundle from current editable choices. Preparation and
+retries remain local and use no additional creation allowance.
+
 Paid website purchases are not an exception to temporary audio handling.
 Do not permanently store generated audio or keepsakes or build a recording-retrieval service.
 The emailed link gives a verified paying customer access to BEGIN creating a message,

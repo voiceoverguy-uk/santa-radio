@@ -33,7 +33,7 @@ function trapDialogFocus(event) {
 export default function WorkshopMessageAudio({
   record, choices, spelling, complete, generation, correction, tester = false, onCorrection, visible, onPhaseChange, onReady,
   showGiftDownloadHint = false, reviewMessageTarget = null, onStartAgain, showReadyAction = true,
-  giftsRequested = false, giftExportPending = false, giftWrittenName,
+  giftsRequested = false, giftExportPending = false, giftWrittenName, onBundlePreparing, onBundleRequested,
 }) {
   const voucher = useContext(StudioVoucherContext);
   const requestRef = useRef(null);
@@ -186,15 +186,17 @@ export default function WorkshopMessageAudio({
     }
     const completed = receivedSelection.current || submittedSelection;
     const completedSpelling = completed.record.id === record?.id ? spellingRef.current : '';
-    const objectUrl = URL.createObjectURL(new Blob(chunks, { type: 'audio/mpeg' }));
+    const audioBlob = new Blob(chunks, { type: 'audio/mpeg' });
+    const objectUrl = URL.createObjectURL(audioBlob);
     // Ordinary unlimited-voucher regeneration replaces only the current slot.
     // Beginning the second creation has already detached the first from urlRef.
     if (urlRef.current) {
       URL.revokeObjectURL(urlRef.current);
       resultsRef.current = resultsRef.current.filter(result => result.url !== urlRef.current);
     }
-    const result = { url: objectUrl, record: { ...completed.record }, spelling: completedSpelling,
+    const result = { url: objectUrl, audioBlob, record: { ...completed.record }, spelling: completedSpelling,
       writtenName: getWorkshopWrittenName(completed.record.name, completedSpelling) };
+    result.gift = readyCallbackRef.current?.(completed) || null;
     resultsRef.current = [...resultsRef.current, result];
     setResults(resultsRef.current);
     urlRef.current = objectUrl;
@@ -272,8 +274,7 @@ export default function WorkshopMessageAudio({
       });
       if (requestRef.current !== controller) return;
       setPhase('receiving');
-      const completed = await receive(response, controller.signal, submittedSelection);
-      readyCallbackRef.current?.(completed);
+      await receive(response, controller.signal, submittedSelection);
     } catch (failure) {
       if (requestRef.current === controller) {
         setPhase(urlRef.current ? 'ready' : 'error');
@@ -364,6 +365,8 @@ export default function WorkshopMessageAudio({
     </div>}
     {results.map((result, index) => <StudioCompletedRecording key={result.url} result={result}
       ordinal={index + 1} visible={visible}
+      onBundlePreparing={pending => onBundlePreparing?.(result.url, pending)}
+      onBundleRequested={() => onBundleRequested?.(result.gift)}
       onDownloadRequested={() => {
         resultsRef.current = resultsRef.current.map(saved => saved.url === result.url ? { ...saved, requested: true } : saved);
         setResults(resultsRef.current);
