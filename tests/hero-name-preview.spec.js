@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { mkdirSync, readFileSync } from 'node:fs';
 import { fillAccessForm, mockBrevo } from './helpers/message-access.js';
 import { expectSampleWatermark } from './helpers/studio-sample-watermark.js';
+import { expectHaloClearance, captureHalo } from './helpers/panel-halo.js';
 
 const path = '/preview/hero-name-checker';
 const heroCopy = {
@@ -38,6 +39,96 @@ const checker = page => page.locator('.hero-name-checker');
 const input = page => checker(page).getByRole('combobox');
 const cta = page => checker(page).getByRole('button', { name: 'Create my free Santa message →' });
 const blockedNote = "We won't find that spelling. Let's not use that word! It's Christmas.";
+
+const checkerHalo = 'rgba(230, 206, 134, 0.19) 0px 0px 0px 1px, rgba(230, 206, 134, 0.27) 0px 0px 16px 3px, rgba(4, 16, 13, 0.4) 0px 20px 56px 0px, rgba(255, 248, 231, 0.05) 0px 0px 0px 1px inset, rgba(255, 248, 231, 0.063) 0px 1px 0px 0px inset';
+
+for (const width of [320, 390, 768, 1091, 1440]) {
+  test(`whole checker gold halo preserves geometry and suggestions at ${width}px`, async ({ page }, testInfo) => {
+    await page.setViewportSize({ width, height: 1100 });
+    await setup(page);
+    await page.route('**/names-data/*', route => route.fulfill({
+      json: inventory.records.map(record => record.name),
+    }));
+    await page.addInitScript(() => sessionStorage.setItem('santa-message-offer-shown', 'shown'));
+    await page.goto('/');
+    const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+    if (await decline.isVisible()) await decline.click();
+    await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
+    await page.evaluate(() => document.fonts.ready);
+    const card = page.locator('.hero-name-preview__checker');
+    await card.scrollIntoViewIfNeeded();
+    await page.mouse.move(0, 0);
+    const before = await card.boundingBox();
+    const background = await card.evaluate(el => getComputedStyle(el).background);
+    const restingShadow = await card.evaluate(el => getComputedStyle(el).boxShadow);
+    const restingBorder = await card.evaluate(el => getComputedStyle(el).borderTopColor);
+    await expect(card).toHaveCSS('transition-duration', '0.18s, 0.18s');
+    for (const target of [card, input(page), cta(page)]) {
+      await target.hover();
+      await expect(card).toHaveCSS('box-shadow', checkerHalo);
+      await expect(card).toHaveCSS('border-top-color', 'rgb(230, 206, 134)');
+      expect(await card.boundingBox()).toEqual(before);
+    }
+    expect(await card.evaluate(el => getComputedStyle(el).background)).toBe(background);
+    await expectHaloClearance(card);
+    await captureHalo(page, card, `checker-halo-${width}.png`, testInfo);
+    await page.mouse.move(0, 0);
+    await expect(card).toHaveCSS('box-shadow', restingShadow);
+    await expect(card).toHaveCSS('border-top-color', restingBorder);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await card.hover();
+    await expect(card).toHaveCSS('transition-duration', '0s');
+    await expect(card).toHaveCSS('box-shadow', checkerHalo);
+    await input(page).click();
+    await input(page).press('Tab');
+    await page.keyboard.press('Shift+Tab');
+    await expect(input(page)).toBeFocused();
+    await expect(input(page)).toHaveCSS('box-shadow', 'rgba(230, 206, 134, 0.25) 0px 0px 0px 3px');
+    await input(page).fill('Er');
+    const options = checker(page).getByRole('option');
+    await expect(options).toHaveCount(2);
+    await options.first().hover();
+    await expect(card).toHaveCSS('box-shadow', checkerHalo);
+    await expect(options.first()).toBeInViewport();
+    await options.first().click();
+    await expect(checker(page).getByRole('status')).toHaveText('Yes! Santa can record for Erica.');
+    await input(page).fill('Ar');
+    await expect(options).toHaveCount(1);
+    await input(page).press('ArrowDown');
+    await input(page).press('Enter');
+    await expect(checker(page).getByRole('status')).toHaveText('Yes! Santa can record for Arabella.');
+    await page.mouse.move(0, 0);
+    await expect(card).toHaveCSS('box-shadow', restingShadow);
+  });
+}
+
+test('touch-only checker retains its resting shadow after tapping and choosing a name', async ({ browser, baseURL }) => {
+  const context = await browser.newContext({
+    baseURL, viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true,
+    ignoreHTTPSErrors: Boolean(process.env.REPLIT_DEV_DOMAIN),
+  });
+  try {
+    const page = await context.newPage();
+    await setup(page);
+    await page.route('**/names-data/*', route => route.fulfill({
+      json: inventory.records.map(record => record.name),
+    }));
+    await open(page);
+    await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
+    const card = page.locator('.hero-name-preview__checker');
+    const restingShadow = await card.evaluate(el => getComputedStyle(el).boxShadow);
+    expect(await page.evaluate(() => matchMedia('(hover: hover) and (pointer: fine)').matches)).toBe(false);
+    await card.tap({ position: { x: 8, y: 8 } });
+    await expect(card).toHaveCSS('box-shadow', restingShadow);
+    await input(page).tap();
+    await input(page).fill('Ar');
+    await checker(page).getByRole('option', { name: 'Arabella', exact: true }).tap();
+    await expect(checker(page).getByRole('status')).toHaveText('Yes! Santa can record for Arabella.');
+    await expect(card).toHaveCSS('box-shadow', restingShadow);
+  } finally {
+    await context.close();
+  }
+});
 
 for (const width of [320, 390]) {
   test(`abusive names cannot search or continue and the status fits at ${width}px`, async ({ page }) => {

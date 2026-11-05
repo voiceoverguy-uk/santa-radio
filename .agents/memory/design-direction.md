@@ -131,6 +131,16 @@ Snow should be on by default, with the On/Off switch in the footer rather than t
 
 **How to apply:** Keep the switch label aligned with actual snowfall. Treat historical automatically saved On settings as defaults, not proof that a visitor explicitly opted into motion.
 
+The homepage cream Studio promotion should match the free-message panel's
+perceived halo brightness and reach while retaining its red hue; the entire
+hero name-checker card should receive the gold halo.
+
+**Why:** The owner supplied the free-message glow as the brightness reference.
+Matching numeric shadow values alone made the red Studio glow look too weak.
+
+**How to apply:** Judge these two surfaces visually, including at narrow widths.
+Do not increase glows site-wide or change button glows, card geometry or contents.
+
 The site's shared gold box glow includes the Santa soundboard buttons, not just passive cards and panels.
 
 **Why:** The user clarified that the soundboard boxes should glow too after the broader all-boxes change omitted them.

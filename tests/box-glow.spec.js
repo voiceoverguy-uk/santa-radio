@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { expectHaloClearance, captureHalo } from './helpers/panel-halo.js';
 
 const surfaces = [
   ['/', ['.radio-dock', '.santa-message-box', '.tv-frame', '.mug-card']],
@@ -47,7 +48,7 @@ for (const [path, selectors] of surfaces) {
 
 const studioSelector = '#santa-studio-promotion';
 const redEdge = 'rgb(200, 91, 80)';
-const redShadow = 'rgba(200, 91, 80, 0.19) 0px 0px 0px 1px, rgba(200, 91, 80, 0.27) 0px 0px 16px 3px, rgba(6, 28, 23, 0.125) 0px 10px 28px 0px';
+const redShadow = 'rgba(200, 91, 80, 0.25) 0px 0px 0px 1px, rgba(200, 91, 80, 0.47) 0px 0px 16px 3px, rgba(6, 28, 23, 0.125) 0px 10px 28px 0px';
 
 test('whole Studio panel gains a red halo without moving, clipping or changing its contents', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1200 });
@@ -128,6 +129,43 @@ test('Studio red hover is immediate with reduced motion and restores on exit', a
   await page.mouse.move(0, 0);
   await expect(studio).toHaveCSS('box-shadow', restingShadow);
 });
+
+for (const width of [320, 390, 768, 1091, 1440]) {
+  test(`Studio halo and unchanged free-panel reference fit at ${width}px`, async ({ page }, testInfo) => {
+    await page.setViewportSize({ width, height: width < 768 ? 2800 : 1200 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
+    const reference = page.locator('.santa-message-box').first();
+    await reference.hover({ position: { x: 8, y: 8 } });
+    await expect(reference).toHaveCSS('box-shadow',
+      'rgba(230, 206, 134, 0.19) 0px 0px 0px 1px, rgba(230, 206, 134, 0.27) 0px 0px 16px 3px');
+    await captureHalo(page, reference, `free-reference-${width}.png`, testInfo);
+    const studio = page.locator(studioSelector);
+    await studio.scrollIntoViewIfNeeded();
+    await page.mouse.move(0, 0);
+    const before = await studio.boundingBox();
+    const restingShadow = await studio.evaluate(el => getComputedStyle(el).boxShadow);
+    await studio.hover({ position: { x: 8, y: 8 } });
+    await expect(studio).toHaveCSS('box-shadow', redShadow);
+    expect(await studio.boundingBox()).toEqual(before);
+    await expectHaloClearance(studio);
+    await captureHalo(page, studio, `studio-brighter-${width}.png`, testInfo);
+    await page.mouse.move(0, 0);
+    await expect(studio).toHaveCSS('box-shadow', restingShadow);
+    const gift = studio.locator('.studio-gifts__thumbnail').first();
+    await gift.click();
+    const preview = page.getByRole('dialog').filter({ visible: true });
+    await expect(preview).toBeVisible();
+    await preview.getByRole('button', { name: 'Close preview', exact: true }).click();
+    await gift.focus();
+    await page.keyboard.press('Tab');
+    const focused = studio.locator(':focus-visible');
+    await expect(focused).toHaveCount(1);
+    await expect(focused).not.toHaveCSS('outline-style', 'none');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  });
+}
 
 test('touch-only Studio panel never gains a sticky red halo', async ({ browser, baseURL }) => {
   const context = await browser.newContext({
