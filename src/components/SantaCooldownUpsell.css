@@ -52,6 +52,16 @@
   border-color: #f6ecd8;
 }
 
+.message-cooldown-upsell__link--highlight {
+  box-shadow: 0 0 9px #ef343a40;
+  animation: message-bespoke-glow 2s ease-in-out infinite;
+}
+
+@keyframes message-bespoke-glow {
+  0%, 100% { box-shadow: 0 0 9px #ef343a40; }
+  50% { box-shadow: 0 0 20px 5px #ef343a90; }
+}
+
 .message-cooldown-upsell__link:focus-visible {
   outline: 3px solid #f6ecd8;
   outline-offset: 4px;
@@ -68,6 +78,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .message-cooldown-upsell__link--highlight {
+    animation: none;
+    box-shadow: 0 0 12px 3px #ef343a70;
+  }
+
   .message-cooldown-upsell__link {
     transition: none;
   }

@@ -47,6 +47,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const [validation, setValidation] = useState('');
   const [audioErrors, setAudioErrors] = useState({});
   const [clickedDownloads, setClickedDownloads] = useState(() => new Set());
+  const [dismissedInvitations, setDismissedInvitations] = useState(() => new Set());
   const [busy, setBusy] = useState(false);
   const [suggesting, setSuggesting] = useState(false);
   const [activeOption, setActiveOption] = useState(-1);
@@ -89,8 +90,12 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   // This invitation belongs to the free greeting, even if a newer hero choice
   // currently personalises the separate Studio card.
   const freeRecipient = messages.at(-1)?.name || verifiedSelectedRecord?.name || selectedRecipient || null;
+  const freeGreetingKey = messages.at(-1)?.key;
+  const highlightBespoke = Boolean(freeGreetingKey && clickedDownloads.has(freeGreetingKey) &&
+    !dismissedInvitations.has(freeGreetingKey));
   const exploreBespoke = event => {
-    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    if (freeGreetingKey) setDismissedInvitations(previous => new Set([...previous, freeGreetingKey]));
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
     if (freeRecipient) selectSantaRecipient(freeRecipient);
     requestAnimationFrame(() => {
@@ -465,7 +470,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         {!messages.length && !coolingDown && <p className="service-notice">Free to create and download. (not sent by email)</p>}
         {!sessionRemembered && <p className="message-name-hint" role="status">Your browser can’t remember access. The studio stays open while you browse, but refreshing this tab may ask for your details again.</p>}
         {coolingDown && <SantaCooldownUpsell name={freeRecipient}
-          prelaunch={studioPrelaunch} onExplore={exploreBespoke} />}
+          prelaunch={studioPrelaunch} highlight={highlightBespoke} onExplore={exploreBespoke} />}
         </>}
       </div>
        {!dedicatedLayout && hasAccess && allowExamples && <SantaMessageExample onExampleNameChange={setActiveExampleName} />}

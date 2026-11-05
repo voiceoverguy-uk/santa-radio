@@ -26,6 +26,12 @@ For hover-style tests, disable smooth scrolling in the test page before position
 
 **How to apply:** Apply a test-only `scroll-behavior: auto` override when the test concerns hover styling rather than scrolling.
 
+When comparing a control's colours before and after an interaction, move the pointer away and wait for its normal background colour on both sides of the comparison.
+
+**Why:** Inserting results can move an unrelated button under the stationary pointer. A colour sampled during that incidental hover transition is not a stable baseline and can falsely suggest the new highlight changed the button fill.
+
+**How to apply:** Settle the existing hover transition before sampling computed styles; keep hover and highlight assertions separate.
+
 Distinguish application scroll resets from the browser's native scroll anchoring.
 
 **Why:** A cancellation check observed a small viewport adjustment even though an instrumented `scrollTo` confirmed the application had made no additional scroll call. Pixel movement alone did not prove a repeated opening scroll.

@@ -4,6 +4,7 @@ import './SantaCooldownUpsell.css';
 function SantaCooldownUpsell({
   name = null,
   prelaunch = true,
+  highlight = false,
   onExplore,
 }) {
   const named = Boolean(name);
@@ -33,9 +34,10 @@ function SantaCooldownUpsell({
       <h4 className="message-cooldown-upsell__heading">{heading}</h4>
       <p className="message-cooldown-upsell__copy">{copy}</p>
       <a
-        className="message-cooldown-upsell__link"
+        className={`message-cooldown-upsell__link${highlight ? ' message-cooldown-upsell__link--highlight' : ''}`}
         href="#santa-studio-promotion"
         onClick={onExplore}
+        onAuxClick={event => { if (event.button === 1) onExplore?.(event); }}
       >
         {buttonLabel}
       </a>

@@ -82,6 +82,7 @@ for (const path of ['/', '/free-santa-message']) {
     expect(await checkCooldownNotice(page)).toBe(deadline);
     await expect(card(page).getByRole('button', { name: 'Create message', exact: true })).toHaveCount(0);
     await expect(offer(page)).toBeVisible();
+    await expect(offer(page).getByRole('link')).toHaveCSS('box-shadow', 'none');
     const otherTab = await context.newPage();
     await otherTab.clock.setFixedTime(new Date('2026-11-02T12:10:00Z'));
     await otherTab.goto(path);
@@ -98,7 +99,7 @@ async function checkNavigation(page, name) {
   await expect(studio(page).locator('.studio-gifts')).toHaveAttribute('data-demo-name', previewName);
   await expect(studio(page).locator('.studio-certificate__name')).toHaveText(previewName);
   await expect(studio(page).locator('.studio-gifts__preview-stack .studio-santa-picture__name')).toHaveText(previewName);
-  await expect(studio(page).locator('.studio-gifts__gallery .studio-gifts__sr')).toContainText(`Dear ${previewName},`);
+  await expect(studio(page).locator('.studio-gifts__preview-stack .studio-gifts__sr')).toContainText(`Dear ${previewName},`);
   if (name) await expect(studio(page).locator('.santa-studio-promotion__subheading')).toContainText(name);
   const visibleTop = await studio(page).evaluate(node => ({
     top: node.getBoundingClientRect().top,
@@ -128,9 +129,7 @@ for (const width of [390, 1440]) {
     await card(page).screenshot({ path: `generated-artifacts/studio-cooldown-upsell-${width}.jpg`, animations: 'disabled' });
     const input = page.locator('.hero-name-checker').getByRole('combobox');
     await input.fill('Erin');
-    await expect(page.locator('.hero-name-checker').getByRole('status')).toContainText('1 matching name.');
-    await input.press('ArrowDown');
-    await input.press('Enter');
+    await page.locator('.hero-name-checker').getByRole('option', { name: 'Erin', exact: true }).click();
     await expect(studio(page).locator('.studio-gifts')).toHaveAttribute('data-demo-name', 'Erin');
     await expect(offer(page).getByRole('heading')).toHaveText('A little more magic for Erica?');
     await checkNavigation(page, 'Erica');
@@ -142,6 +141,7 @@ for (const prelaunch of [true, false]) {
   test(`unknown child uses natural generic ${prelaunch ? 'prelaunch' : 'live'} wording`, async ({ page }) => {
     await setup(page, { cooldown: true, date: prelaunch ? '2026-11-02T12:00:00Z' : '2026-11-07T12:00:00Z' });
     await expect(offer(page).getByRole('heading')).toHaveText('A little more Christmas magic?');
+    await expect(offer(page).getByRole('link')).toHaveCSS('box-shadow', 'none');
     await expect(offer(page).getByRole('link')).toHaveText(prelaunch
       ? 'Preview the bespoke message package' : 'Explore bespoke Santa messages');
     await expect(offer(page).locator('p')).toHaveText(prelaunch
@@ -204,3 +204,53 @@ test('long chosen names fit the compact invitation at 320px', async ({ page }) =
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await checkNavigation(page, longName);
 });
+
+test('an unrelated new greeting does not inherit the previous download highlight', async ({ page }) => {
+  await setup(page);
+  await generate(page);
+  const downloads = card(page).getByRole('link', { name: /Download your audio/ });
+  const downloadEvent = page.waitForEvent('download');
+  await downloads.click();
+  await downloadEvent;
+  await expect(offer(page).getByRole('link')).toHaveClass(/__link--highlight/);
+  await page.clock.setFixedTime(new Date('2026-11-02T14:00:01Z'));
+  await expect(offer(page)).toHaveCount(0);
+  await generate(page, 'Erin');
+  await expect(offer(page).getByRole('link')).toHaveText('Preview Erin’s bespoke message package');
+  await expect(offer(page).getByRole('link')).not.toHaveClass(/__link--highlight/);
+  const oldDownload = page.waitForEvent('download');
+  await downloads.first().click();
+  await oldDownload;
+  await expect(offer(page).getByRole('link')).not.toHaveClass(/__link--highlight/);
+  const newDownload = page.waitForEvent('download');
+  await downloads.last().click();
+  await newDownload;
+  await expect(offer(page).getByRole('link')).toHaveClass(/__link--highlight/);
+  await page.reload();
+  await expect(offer(page).getByRole('link')).not.toHaveClass(/__link--highlight/);
+  await expect(offer(page).getByRole('link')).toHaveCSS('box-shadow', 'none');
+});
+
+for (const button of [0, 1]) {
+  test(`modified invitation activation dismisses the glow without overriding native navigation (${button})`, async ({ page }) => {
+    await setup(page);
+    await generate(page);
+    const downloadEvent = page.waitForEvent('download');
+    await card(page).getByRole('link', { name: /Download your audio/ }).click();
+    await downloadEvent;
+    const preview = offer(page).getByRole('link');
+    await expect(preview).toHaveClass(/__link--highlight/);
+    // Inspect cancellation directly so this test need not open an extra tab.
+    const prevented = await preview.evaluate((node, button) => !node.dispatchEvent(new MouseEvent(
+      button === 1 ? 'auxclick' : 'click',
+      { bubbles: true, cancelable: true, button, ctrlKey: button === 0 },
+    )), button);
+    expect(prevented).toBe(false);
+    await expect(preview).not.toHaveClass(/__link--highlight/);
+    await expect(page.locator('#santa-studio-title')).not.toBeFocused();
+    const retry = page.waitForEvent('download');
+    await card(page).getByRole('link', { name: /Download your audio/ }).click();
+    await retry;
+    await expect(preview).not.toHaveClass(/__link--highlight/);
+  });
+}
