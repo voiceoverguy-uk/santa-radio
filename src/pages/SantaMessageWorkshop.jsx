@@ -451,24 +451,26 @@ export default function SantaMessageWorkshop() {
   };
 
   const startAgain = () => {
-    if (!audioEditingAllowed) return;
+    if (!audioEditingAllowed || giftExportPending || generation.state?.pending) return false;
+    if (completedGift && (!generation.state || generation.checking || generation.error
+      || (generation.state.limit === 2 && !generation.state.remaining))) return false;
+    if (generation.state?.limit === 2 && generation.state.remaining === 0 && !generation.error && !generation.checking) return false;
+    setCompletedGift(null);
+    setRequestedGifts({});
+    setPreparingGifts({});
     if (generation.state?.limit === 2) {
-      if (!generation.state.remaining || giftExportPending) return;
-      setCompletedGift(null);
-      setRequestedGifts({});
-      setPreparingGifts({});
       setChoices(emptyChoices());
       setActivityCategory('trying');
       setSelectedName(null);
       setNameSpelling('');
     }
-    // Start a new editable selection without discarding the only local copy
-    // of the previous recording or its still-matching gifts.
+    // Completed audio reaches here only after an explicit discard confirmation.
     setNameReadOnly(false);
     setError('');
     setEditing(false);
     nameEntryAligned.current = false;
     setStageIndex(0);
+    return true;
   };
 
   const editStage = index => {

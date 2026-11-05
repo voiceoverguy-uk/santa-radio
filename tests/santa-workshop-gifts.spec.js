@@ -207,32 +207,33 @@ for (const width of [320, 1365]) {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
     expect(fixture.posts).toHaveLength(1);
 
-    // Start Again is the existing fresh-message route, not a download/retry.
+    // A deliberate fresh-message route discards the previous local result.
     const previousAudio = await page.locator('.smw-message-result audio').getAttribute('src');
     await page.getByRole('button', { name: 'Start Again', exact: true }).click();
+    await expect(page.getByRole('dialog', { name: 'Have you downloaded your MP3?' })).toBeVisible();
+    await page.getByRole('button', { name: 'Discard recording and start again', exact: true }).click();
     await page.locator('.smw-button-next').click();
     for (let stage = 0; stage < 6; stage++) await page.locator('.smw-button-next').click();
     await expect(pencil(page)).toBeVisible();
-    await expect(page.locator('.smw-message-result audio')).toHaveAttribute('src', previousAudio);
-    for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+    await expect(page.locator('.smw-message-result audio')).toHaveCount(0);
+    for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
     await spelling(page, 'Fresh spelling');
     await expect(page.locator('.smw-written-name-value')).toHaveText('Fresh spelling');
     for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
-    await expect(page.getByRole('link', { name: /Download MP3/ }))
-      .toHaveAttribute('download', 'Santa-message-for-Élodie O’Neill.mp3');
-    await expect(page.locator('.smw-message-result audio')).toHaveAttribute('src', previousAudio);
+    await expect(page.getByRole('link', { name: /Download MP3/ })).toHaveCount(0);
+    await expect(page.locator('.smw-message-result audio')).toHaveCount(0);
     expect(fixture.posts).toHaveLength(1);
     await spelling(page, 'Élodie O’Neill');
-    for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
+    for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
     await spelling(page, 'Fresh spelling');
     fixture.fail = true;
     await confirmMessage(page);
     await expect(page.getByText('Fixture recording unavailable. Try again.', { exact: true })).toBeVisible();
     await expect(pencil(page)).toBeVisible();
-    await expect(page.locator('.smw-message-result audio')).toHaveAttribute('src', previousAudio);
+    await expect(page.locator('.smw-message-result audio')).toHaveCount(0);
     for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
     fixture.fail = false;
-    await confirmMessage(page);
+    await confirmMessage(page, 'Retry message');
     await assertReadOnly(page, 'Fresh spelling');
     for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
     await expect(page.locator('.smw-message-result audio')).not.toHaveAttribute('src', previousAudio);
@@ -757,7 +758,7 @@ test('completed gifts stay downloadable when allowance checks fail', async ({ pa
   await page.route('**/api/santa-studio-message', route => route.request().method() === 'GET'
     ? route.fulfill({ status: 503, json: { error: 'Temporarily unavailable.' } }) : route.fallback());
   await page.evaluate(() => window.dispatchEvent(new Event('focus')));
-  await expect(page.getByRole('alert')).toContainText('Your voucher is recognised, but Santa’s recording service is temporarily unavailable.');
+  await expect(page.getByRole('alert')).toContainText('Your voucher is recognised, but the recording check failed.');
    for (const button of await page.getByRole('button', { name: 'Create message', exact: true }).all()) await expect(button).toBeDisabled();
   for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
   await expect(letterText(page)).toHaveText(completedText);

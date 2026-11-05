@@ -3,16 +3,16 @@ import { test } from './helpers/provider-test.js';
 import { workshopCatalogueFixture } from './fixtures/workshop-catalogue.js';
 import { confirmMessage, mockStudioGeneration } from './helpers/studio-generation.js';
 
-async function setup(page, paid = false) {
+async function setup(page, paid = false, unlimited = false) {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.route('**/api/santa-workshop-access', route => route.fulfill({ json: paid ? { authorized: false } : {
     authorized: true, expiresAt: Date.now() + 3600000,
-    voucher: { code: 'fixture-two-creations', unlimited: false },
+    voucher: { code: 'fixture-two-creations', unlimited },
   } }));
   if (paid) await page.route('**/api/santa-studio-access', route => route.fulfill({
     json: { authorized: true, mode: 'sandbox' },
   }));
-  const fixture = await mockStudioGeneration(page, { limited: true });
+  const fixture = await mockStudioGeneration(page, { limited: !unlimited });
   await page.route('**/api/santa-workshop-catalogue*', route => route.fulfill({ json: workshopCatalogueFixture }));
   await page.route('**/api/santa-names', route => route.fulfill({ json: { records: [
     { id: 'dixie-variant', name: 'Dixie', variant: 'Recording 2', selectionToken: 'fixture',
@@ -43,6 +43,135 @@ async function gift(page, name) {
   await download;
 }
 for (const width of [1365, 390]) {
+  test(`reset checks MP3 download for unlimited access in one activation at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    const fixture = await setup(page, false, true);
+    await review(page);
+    const again = page.getByRole('button', { name: 'Start Again', exact: true });
+    await again.click();
+    await expect(page.getByRole('combobox', { name: 'Search recorded names', exact: true })).toBeVisible();
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+    // Unlimited navigation retains the draft choices before any MP3 exists.
+    for (let n = 0; n < 7; n++) await page.locator('.smw-actions .smw-button-next').click();
+    await confirmMessage(page);
+    const audio = result(page).locator('audio');
+    await expect(audio).toBeVisible();
+    const source = await audio.getAttribute('src');
+    await audio.evaluate(async node => { await node.play(); node.pause(); });
+    const download = page.waitForEvent('download');
+    await page.getByRole('link', { name: 'Download MP3' }).click();
+    expect(await (await download).failure()).toBeNull();
+    await again.click();
+    await expect(page.getByRole('dialog', { name: 'Have you downloaded your MP3?' })).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(again).toBeFocused();
+    await expect(audio).toHaveAttribute('src', source);
+    await again.click();
+    await page.getByRole('button', { name: 'Discard recording and start again', exact: true }).click();
+    await expect(page.getByRole('combobox', { name: 'Search recorded names', exact: true })).toBeVisible();
+    await expect(result(page)).toHaveCount(0);
+    for (let n = 0; n < 7; n++) await page.locator('.smw-actions .smw-button-next').click();
+    for (const button of await page.locator('.studio-gift-download button').all()) await expect(button).toBeDisabled();
+    expect(fixture.posts).toHaveLength(1);
+  });
+
+  test(`failed and pending checks preserve completed MP3 until retry at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    const fixture = await setup(page);
+    await review(page); await confirmMessage(page);
+    const audio = result(page).locator('audio');
+    await expect(audio).toBeVisible();
+    const source = await audio.getAttribute('src');
+    let release;
+    const hold = new Promise(resolve => { release = resolve; });
+    await page.route('**/api/santa-studio-message', async route => {
+      if (route.request().method() !== 'GET') return route.fallback();
+      await hold;
+      return route.fulfill({ status: 503, json: { error: 'fixture storage unavailable' } });
+    });
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+    await expect(page.locator('.smw-remaining')).toContainText('Checking');
+    await page.getByRole('button', { name: 'Start Again', exact: true }).click();
+    const proceed = page.getByRole('button', { name: 'Discard recording and start again', exact: true });
+    await expect(proceed).toBeDisabled();
+    release();
+    await expect(page.getByRole('alert')).toContainText('recording check failed');
+    await expect(page.locator('.smw-remaining')).not.toContainText('Both creations have been used');
+    await expect(proceed).toBeDisabled();
+    await page.keyboard.press('Escape');
+    await expect(audio).toHaveAttribute('src', source);
+    for (const button of await page.locator('.studio-gift-download button').all()) await expect(button).toBeEnabled();
+    await page.unroute('**/api/santa-studio-message');
+    await page.getByRole('button', { name: 'Retry recording check', exact: true }).click();
+    await expect(page.locator('.smw-remaining')).toContainText('1 of 2 creations remaining');
+    await page.getByRole('button', { name: 'Start Again', exact: true }).click();
+    await expect(proceed).toBeEnabled();
+    await page.keyboard.press('Escape');
+    await expect(audio).toHaveAttribute('src', source);
+    expect(fixture.posts).toHaveLength(1);
+  });
+
+  test(`paid missing allowance fails closed and expiry blocks an open reset at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    const fixture = await setup(page, true);
+    await review(page);
+    await page.route('**/api/santa-studio-message', route => route.fulfill({ json: { temporary: true } }));
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+    await expect(page.getByRole('alert')).toContainText('incomplete information');
+    await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true })).toBeDisabled();
+    await page.unroute('**/api/santa-studio-message');
+    await page.getByRole('button', { name: 'Retry recording check', exact: true }).click();
+    await confirmMessage(page);
+    await expect(result(page)).toBeVisible();
+    await page.getByRole('button', { name: 'Start Again', exact: true }).click();
+    await page.route('**/api/santa-studio-message', route => route.fulfill({ status: 403, json: { error: 'fixture expired' } }));
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+    await expect(page.getByRole('alert')).toContainText('enter your access code again');
+    await expect(page.getByRole('button', { name: 'Discard recording and start again', exact: true })).toBeDisabled();
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('heading', { name: 'Time to Review', exact: true })).toBeVisible();
+    await expect(result(page)).toHaveCount(0);
+    for (const button of await page.locator('.studio-gift-download button').all()) await expect(button).toBeDisabled();
+    expect(fixture.posts).toHaveLength(1);
+  });
+
+  for (const category of ['zero', 'one', 'two', 'unavailable', 'rate limited', 'expired', 'incomplete']) {
+    test(`review status distinguishes ${category} before recording at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      const fixture = await setup(page);
+      if (['zero', 'one', 'two'].includes(category)) {
+        const remaining = { zero: 0, one: 1, two: 2 }[category];
+        Object.assign(fixture.state, { remaining, successes: 2 - remaining });
+      } else {
+        await page.route('**/api/santa-studio-message', route => route.fulfill({
+          status: { unavailable: 503, 'rate limited': 429, expired: 410, incomplete: 200 }[category],
+          json: category === 'incomplete' ? { temporary: true } : { error: 'fixture check failed' },
+        }));
+      }
+      await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+      await review(page);
+      const create = page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true });
+      if (category === 'one' || category === 'two') {
+        await expect(create).toBeEnabled();
+        await expect(page.locator('.smw-remaining')).toContainText(`${fixture.state.remaining} of 2`);
+        await page.getByRole('button', { name: 'Start Again', exact: true }).click();
+        await expect(page.getByRole('combobox', { name: 'Search recorded names', exact: true })).toBeVisible();
+        await expect(page.getByRole('dialog')).toHaveCount(0);
+      } else {
+        await expect(create).toBeDisabled();
+        if (category === 'zero') await expect(page.locator('.smw-remaining')).toContainText('Both creations have been used');
+        else {
+          await expect(page.getByRole('alert')).toContainText({
+            unavailable: 'recording check failed', 'rate limited': 'rate limited', expired: 'enter your access code again',
+            incomplete: 'incomplete information',
+          }[category]);
+          await expect(page.locator('.smw-remaining')).not.toContainText('Both creations have been used');
+        }
+      }
+      expect(fixture.posts).toHaveLength(0);
+    });
+  }
+
   test(`lost paid response can start over using its remaining slot at ${width}px`, async ({ page }) => {
     test.setTimeout(60000);
     await page.setViewportSize({ width, height: 900 });
@@ -61,7 +190,9 @@ for (const width of [1365, 390]) {
     expect(fixture.operationIds).toHaveLength(3);
     expect(fixture.operationIds[0]).toBe(fixture.operationIds[1]);
     expect(fixture.operationIds[2]).not.toBe(fixture.operationIds[0]);
-    await expect(page.getByRole('button', { name: /^(Create message|Start Again|Create 1 more\?)$/ })).toHaveCount(0);
+    await page.getByRole('button', { name: 'Start Again', exact: true }).click();
+    await expect(page.getByRole('dialog')).toContainText('Both creations have been used.');
+    await expect(page.getByRole('button', { name: 'Discard recording and start again', exact: true })).toBeDisabled();
   });
   test(`paid return keeps remaining allowance without recovering audio at ${width}px`, async ({ page }) => {
     test.setTimeout(60000);
@@ -76,7 +207,7 @@ for (const width of [1365, 390]) {
     await review(page); await confirmMessage(page);
     await expect(result(page)).toBeVisible();
     await expect(page.locator('.smw-remaining')).toContainText('0 of 2 creations remaining');
-    await expect(page.getByRole('button', { name: /^(Create message|Start Again|Create 1 more\?)$/ })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Create message', exact: true })).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'READY', exact: true })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Download MP3' })).toBeVisible();
     expect(fixture.posts).toHaveLength(2);
@@ -109,35 +240,36 @@ for (const width of [1365, 390]) {
         await gift(page, 'Download letter (PDF)');
         await gift(page, 'Download Santa picture (PNG)');
       }
-      const again = page.getByRole('button', { name: 'Create 1 more?', exact: true });
+      const again = page.getByRole('button', { name: 'Start Again', exact: true });
       await again.click();
       const dialog = page.getByRole('dialog');
       await expect(dialog).toBeVisible();
-      await expect(dialog.getByRole('heading')).toHaveText(requested === 'all'
-        ? 'Save your MP3 before you start again'
-        : 'Did you want to download your gifts for Dixie Rose before you start again?');
-      await expect(dialog).toContainText('Download and save your MP3');
-      await expect(dialog.getByRole('button', { name: 'Back to gifts', exact: true })).toBeFocused();
+      await expect(dialog.getByRole('heading')).toHaveText('Have you downloaded your MP3?');
+      await expect(dialog).toContainText('cannot be recovered');
+      await expect(dialog).toContainText('A download request does not confirm that a file reached your device.');
+      await expect(dialog.getByText(/You haven’t requested all the gifts/)).toHaveCount(requested === 'all' ? 0 : 1);
+      await expect(dialog.getByRole('button', { name: 'Back to downloads', exact: true })).toBeFocused();
       await page.keyboard.press('Escape');
       await expect(dialog).toHaveCount(0);
+      await expect(again).toBeFocused();
       await expect(result(page).locator('audio')).toHaveAttribute('src', original);
       await again.click();
-      await page.getByRole('button', { name: 'Back to gifts', exact: true }).click();
+      await page.getByRole('button', { name: 'Back to downloads', exact: true }).click();
       await expect(result(page).locator('audio')).toHaveAttribute('src', original);
       await again.click();
       await page.keyboard.press('Tab');
-      await expect(page.getByRole('button', { name: 'Continue anyway', exact: true })).toBeFocused();
+      await expect(page.getByRole('button', { name: 'Discard recording and start again', exact: true })).toBeFocused();
       await page.keyboard.press('Tab');
-      await expect(page.getByRole('button', { name: 'Back to gifts', exact: true })).toBeFocused();
+      await expect(page.getByRole('button', { name: 'Back to downloads', exact: true })).toBeFocused();
       await page.keyboard.press('Shift+Tab');
-      await expect(page.getByRole('button', { name: 'Continue anyway', exact: true })).toBeFocused();
+      await expect(page.getByRole('button', { name: 'Discard recording and start again', exact: true })).toBeFocused();
       await page.keyboard.press('Enter');
       await expect(result(page)).toHaveCount(0);
       await review(page);
       await confirmMessage(page);
       await expect(result(page)).toBeVisible();
       await expect(page.locator('.smw-remaining')).toContainText('0 of 2 creations remaining');
-      for (const label of ['Create 1 more?', 'Start Again', 'Create message', 'Retry message']) {
+      for (const label of ['Create 1 more?', 'Create message', 'Retry message']) {
         await expect(page.getByRole('button', { name: label, exact: true })).toHaveCount(0);
       }
       await page.getByRole('button', { name: 'READY', exact: true }).click();
@@ -155,7 +287,7 @@ for (const width of [1365, 390]) {
       await expect(result(page)).toHaveCount(0);
       await review(page);
       await expect(page.locator('.smw-remaining')).toContainText('0 of 2 creations remaining');
-      await expect(page.getByRole('button', { name: 'Create message', exact: true })).toHaveCount(0);
+      for (const button of await page.getByRole('button', { name: 'Create message', exact: true }).all()) await expect(button).toBeDisabled();
       expect(fixture.recoveries || 0).toBe(0);
       expect(fixture.posts.length).toBe(3);
     });
@@ -172,13 +304,13 @@ for (const width of [1365, 390]) {
       await wait; await route.fulfill({ status: 503, body: 'fixture export failed' });
     });
     await page.getByRole('button', { name: 'Download certificate (PDF)', exact: true }).click();
-    await expect(page.getByRole('button', { name: 'Create 1 more?', exact: true })).toBeDisabled();
+    await expect(page.getByRole('button', { name: 'Start Again', exact: true })).toBeDisabled();
     release();
     await expect(page.getByRole('button', { name: 'Retry download certificate (pdf)', exact: true })).toBeVisible();
-    await page.getByRole('button', { name: 'Create 1 more?', exact: true }).click();
+    await page.getByRole('button', { name: 'Start Again', exact: true }).click();
     await expect(page.getByRole('dialog').getByRole('heading')).toHaveText(
-      'Did you want to download your gifts for Dixie before you start again?');
-    await page.getByRole('button', { name: 'Back to gifts', exact: true }).click();
+      'Have you downloaded your MP3?');
+    await page.getByRole('button', { name: 'Back to downloads', exact: true }).click();
     expect(fixture.state.remaining).toBe(1);
     await expect(result(page)).toBeVisible();
     await page.reload();

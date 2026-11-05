@@ -119,7 +119,8 @@ export default function WorkshopMessageAudio({
     receivedSelection.current = null;
   }, [epoch]);
   const limited = status?.limit === 2;
-  const exhausted = limited && status.remaining === 0;
+  const exhausted = limited && status.remaining === 0 && !generation.error && !generation.checking;
+  const resetBlocked = !status || generation.checking || !!generation.error || exhausted || !!status?.pending;
   const disabled = !complete || busy || !status || !!generation.error || generation.checking || status?.pending || exhausted;
   // Share readiness only after the entire MP3 has been received, never merely
   // on a successful HTTP header or a promotional preview.
@@ -240,20 +241,19 @@ export default function WorkshopMessageAudio({
     resetDialogRef.current?.querySelector('button')?.focus();
     return () => resetDialogRef.current?.close();
   }, [resetConfirmation]);
-  const cancelReset = () => {
+  const cancelReset = (downloads = false) => {
     setResetConfirmation(false);
     requestAnimationFrame(() => {
-      const gift = document.querySelector('.studio-gift-download button');
-      gift?.focus({ preventScroll: true });
-      gift?.scrollIntoView({ block: 'center', behavior: 'instant' });
+      if (downloads) showRecording();
+      else triggerRef.current?.focus({ preventScroll: true });
     });
   };
   const reset = () => {
-    if (giftExportPending || busy || exhausted || generation.checking || generation.error || status?.pending) return;
+    if (giftExportPending || busy || resetBlocked) return;
+    if (onStartAgain?.() === false) return;
     setResetConfirmation(false);
     clearRecording();
     operationRef.current = null;
-    onStartAgain?.();
   };
   const closeConfirmation = (restoreFocus = true) => {
     dialogRef.current?.close();
@@ -316,7 +316,7 @@ export default function WorkshopMessageAudio({
   // Keep request/recording state mounted, but do not leave hidden interactive
   // controls or detached playing media in earlier stages.
   if (!visible) return null;
-  const messageAction = () => exhausted || (limited && url) ? null : (
+  const messageAction = () => (limited && url) ? null : (
     <button className={`smw-button smw-button-next${disabled ? ' smw-create-disabled' : ''}`}
       type="button" onClick={event => {
         triggerRef.current = event.currentTarget;
@@ -325,10 +325,10 @@ export default function WorkshopMessageAudio({
       {busy ? 'Recording message' : phase === 'error' && complete ? 'Retry message' : 'Create message'} <span aria-hidden="true">→</span>
     </button>
   );
-  const startAction = () => exhausted ? null : <button className="smw-button smw-button-back" type="button"
-    disabled={busy || giftExportPending || generation.checking || !!generation.error || !!status?.pending}
+  const startAction = () => <button className="smw-button smw-button-back" type="button"
+    disabled={busy || giftExportPending || !!status?.pending || (!url && exhausted)}
     onClick={event => {
-      if (url && limited) {
+      if (url) {
         triggerRef.current = event.currentTarget;
         setResetConfirmation(true);
       } else {
@@ -342,7 +342,7 @@ export default function WorkshopMessageAudio({
         onStartAgain?.();
       }
     }}>
-    <span aria-hidden="true">←</span> {url && limited ? 'Create 1 more?' : 'Start Again'}
+    <span aria-hidden="true">←</span> Start Again
   </button>;
   const voucherNotice = voucher?.unlimited && <p className="smw-voucher-entitlement">
     You used Voucher Code: {voucher.code}. You can create messages while your access remains valid, subject to request limits.
@@ -359,6 +359,7 @@ export default function WorkshopMessageAudio({
       Create your MP3 to unlock these three personalised gift downloads.
     </p>}
     {!url && voucherNotice}
+    {!url && exhausted && <p className="smw-allowance" role="status">Both creations have been used. Create message is unavailable for this access.</p>}
     {(generation.checking || generation.error || !status) && <p className="smw-allowance" role={generation.error ? 'alert' : 'status'} aria-live={generation.error ? 'assertive' : 'polite'}>
       {generation.checking ? 'Checking your Studio access…' : generation.error
         ? generation.error
@@ -402,15 +403,17 @@ export default function WorkshopMessageAudio({
       aria-labelledby="smw-reset-title" aria-describedby="smw-reset-warning"
       onKeyDown={trapDialogFocus}
       onCancel={event => { event.preventDefault(); cancelReset(); }}>
-      <h3 id="smw-reset-title">{!giftsRequested
-        ? `Did you want to download your gifts for ${giftWrittenName || finishedWrittenName} before you start again?`
-        : 'Save your MP3 before you start again'}</h3>
-      <p id="smw-reset-warning">Download and save your MP3 before continuing. Starting again clears this recording and gifts; they cannot be recovered. A download request does not confirm that a file reached your device.</p>
+      <h3 id="smw-reset-title">Have you downloaded your MP3?</h3>
+      <p id="smw-reset-warning">Check that you have saved your MP3 on your device before continuing. Starting again clears this recording and gifts; they cannot be recovered. A download request does not confirm that a file reached your device.</p>
+      {!giftsRequested && <p>You haven’t requested all the gifts for {giftWrittenName || finishedWrittenName}. You can still request them before starting again.</p>}
+      {resetBlocked && <p role="status">{exhausted
+        ? 'Both creations have been used. You cannot start another creation. Keep this page open to play and download your current MP3 and gifts.'
+        : 'Another creation cannot be started until your Studio access and remaining creations have been confirmed. Your current recording and gifts have not been cleared. Close this dialog to retry the recording check.'}</p>}
       <div className="smw-actions">
-        <button type="button" className="smw-button smw-button-back" onClick={cancelReset}>Back to gifts</button>
+        <button type="button" className="smw-button smw-button-back" onClick={() => cancelReset(true)}>Back to downloads</button>
         <button type="button" className="smw-button smw-button-next"
-          disabled={giftExportPending || busy || exhausted || generation.checking || !!generation.error || !!status?.pending}
-          onClick={reset}>Continue anyway</button>
+          disabled={giftExportPending || busy || resetBlocked}
+          onClick={reset}>Discard recording and start again</button>
       </div>
     </dialog>}
     {url && voucher?.unlimited && <p className="smw-voucher-detail">Voucher: {voucher.code}</p>}

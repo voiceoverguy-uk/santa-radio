@@ -1,8 +1,9 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { StudioVoucherContext } from '../lib/studioAccessContext.js';
+import { StudioAccessContext, StudioVoucherContext } from '../lib/studioAccessContext.js';
 
 export default function useStudioGeneration() {
   const voucher = useContext(StudioVoucherContext);
+  const accessKind = useContext(StudioAccessContext);
   const [state, setState] = useState(null);
   const [error, setError] = useState('');
   const [checking, setChecking] = useState(true);
@@ -30,21 +31,27 @@ export default function useStudioGeneration() {
       });
       if (!alive.current || request !== latestRequest.current) return null;
       if (!response.ok) {
-        if (response.status === 401 || response.status === 403) {
+        if ([401, 403, 410].includes(response.status)) {
           canRetry = false;
           setAccessExpired(true);
           throw new Error('Your Studio access needs checking. Reload Studio and enter your access code again.');
         }
         if (response.status === 429) {
           canRetry = false;
-          throw new Error('Santa’s recording service is busy. Please wait a minute, then check again.');
+          throw new Error('The recording check is temporarily rate limited. Please wait a minute, then check again. This does not mean your creations have been used.');
         }
         throw new Error(voucher?.unlimited
-          ? 'Your voucher is recognised, but Santa’s recording service is temporarily unavailable. Your unlimited-message access has not changed. Please try again.'
-          : 'Santa’s recording service is temporarily unavailable. Please try again.');
+          ? 'Your voucher is recognised, but the recording check failed. Your unlimited-message access has not changed. Please try again.'
+          : 'The recording check failed. Your remaining creations could not be confirmed; this does not mean they have been used. Please try again.');
       }
       const data = await response.json();
-      if (data.temporary !== true) throw new Error('Your Studio access could not be checked.');
+      if (data.temporary !== true
+        || ((voucher?.unlimited === false || accessKind.startsWith('paid-') || data.limit !== undefined)
+          && (data.limit !== 2 || !Number.isInteger(data.remaining) || data.remaining < 0 || data.remaining > 2
+            || !Number.isInteger(data.successes) || data.successes + data.remaining !== 2
+            || typeof data.pending !== 'boolean'))) {
+        throw new Error('The recording check returned incomplete information. Your remaining creations could not be confirmed. Please try again.');
+      }
       if (!alive.current || request !== latestRequest.current) return null;
       setState(data);
       setError('');
@@ -64,7 +71,7 @@ export default function useStudioGeneration() {
       clearTimeout(timeout);
       if (alive.current && request === latestRequest.current) setChecking(false);
     }
-  }, [voucher?.unlimited]);
+  }, [voucher?.unlimited, accessKind]);
   useEffect(() => {
     alive.current = true;
     refresh();

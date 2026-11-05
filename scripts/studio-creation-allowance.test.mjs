@@ -166,6 +166,32 @@ function handlerFixture(who, overrides = {}) {
   });
   return { handler, state };
 }
+test('status failures identify the private failure stage without calling render or reporting exhaustion', async () => {
+  for (const stage of ['allowance_identity', 'status_limit', 'status']) {
+    const events = [];
+    const unavailable = async () => { throw Object.assign(new Error('PRIVATE diagnostic'), { code: '42P01' }); };
+    const overrides = {
+      reportFailure: (error, failureStage) => events.push([error.code, failureStage]),
+      ...(stage === 'allowance_identity' ? { allowanceIdentity: unavailable }
+        : stage === 'status_limit' ? { limit: unavailable } : { allowances: { status: unavailable } }),
+    };
+    const { handler, state } = handlerFixture(identity(), overrides);
+    const response = await call(handler, { method: 'GET' });
+    assert.equal(response.status, 503);
+    assert.deepEqual(JSON.parse(response.bytes), { error: 'The recording check failed. Please try again.' });
+    assert.deepEqual(events, [['42P01', stage]]);
+    assert.equal(state.renders, 0);
+  }
+  for (const status of [403, 410, 429]) {
+    const { handler } = handlerFixture(identity(), {
+      limit: async () => { throw Object.assign(new Error('Access or request restriction.'), { status }); },
+      reportFailure: () => assert.fail('Expected restrictions are not service failures'),
+    });
+    const response = await call(handler, { method: 'GET' });
+    assert.equal(response.status, status);
+    assert.ok(!response.bytes.includes('remaining'));
+  }
+});
 test('handler counts only completed MP3 preparation, refuses replay/third render, exposes safe status and never recovers audio', async () => {
   const who = identity(), { handler, state } = handlerFixture(who), operation = randomUUID();
   state.fail = true;
@@ -178,6 +204,7 @@ test('handler counts only completed MP3 preparation, refuses replay/third render
   assert.equal((await call(handler)).status, 409);
   assert.equal(state.renders, 3);
   const status = await call(handler, { method: 'GET' });
+  assert.equal(status.status, 200);
   assert.deepEqual(JSON.parse(status.bytes), { temporary: true, testerCanStartAnother: false,
     limit: 2, successes: 2, remaining: 0, pending: false });
   assert.equal((await call(handler, { method: 'GET', url: '/?audio=1' })).status, 410);

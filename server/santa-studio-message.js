@@ -106,6 +106,7 @@ export function createStudioMessageHandler({
     };
     try {
       if (!await withinDeadline(() => authorize(req), controller.signal)) throw problem(403, 'Your Studio access needs checking. Please reopen Studio and try again.');
+      stage = 'allowance_identity';
       identity = await withinDeadline(() => allowanceIdentity(req), controller.signal);
       let data;
       if (req.method === 'GET') {
@@ -114,13 +115,16 @@ export function createStudioMessageHandler({
           || (req.headers.origin && !sameStudioOrigin(req)))) {
           throw problem(403, 'Please retrieve your recording from Studio on this website.');
         }
+        stage = 'status_limit';
         await withinDeadline(() => limit(req, 'studioRead'), controller.signal);
         if (recovering) throw problem(410, 'Recordings are not saved. Please create a new message and download it before leaving this page.');
+        stage = 'status';
         const allowance = identity ? await withinDeadline(() => allowances.status(identity), controller.signal) : null;
         res.writeHead(200, { 'Content-Type': 'application/json' });
         return res.end(JSON.stringify({ temporary: true, testerCanStartAnother: !!workshopSession(req),
           ...(allowance || {}) }));
       } else {
+        stage = 'access';
         await withinDeadline(() => limit(req, 'studioMessage'), controller.signal);
         data = await withinDeadline(() => readNameJson(req), controller.signal);
       }
@@ -204,6 +208,7 @@ export function createStudioMessageHandler({
       // Never send/log FFmpeg stderr, source paths, identities or upstream URLs.
       send(error.status || 503, error.status ? error.message
         : controller.signal.aborted ? 'Preparation was cancelled or took too long. Please try again.'
+          : req.method === 'GET' ? 'The recording check failed. Please try again.'
           : 'A recording could not be loaded or mixed. Please try again.');
     } finally {
       clearTimeout(timer);

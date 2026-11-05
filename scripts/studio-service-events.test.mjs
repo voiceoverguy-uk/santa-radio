@@ -22,7 +22,7 @@ test('temporary status never touches missing generation records, source audio or
   let renders = 0, source = 0;
   const events = [];
   const handler = createStudioMessageHandler({
-    authorize: async () => true, limit: async () => {}, accessKey: () => 'fixture',
+    authorize: async () => true, limit: async () => {}, allowanceIdentity: async () => null,
     generations: { status: async () => { throw Object.assign(new Error('PRIVATE'), { code: '42P01' }); } },
     library: { resolve: async () => { source++; } },
     render: async () => { renders++; },
@@ -44,7 +44,7 @@ test('temporary status never touches missing generation records, source audio or
 
 test('recovery does not turn a cross-origin GET into an authenticated render request', async () => {
   const handler = createStudioMessageHandler({
-    authorize: async () => true, accessKey: () => 'fixture',
+    authorize: async () => true, allowanceIdentity: async () => null,
     limit: async () => assert.fail('Rejected recovery must not reach storage'),
   });
   for (const extra of [{ origin: 'https://attacker.example' }, { 'sec-fetch-site': 'same-site' }]) {
