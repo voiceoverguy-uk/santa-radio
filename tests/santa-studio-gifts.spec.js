@@ -29,13 +29,17 @@ async function visit(page, { reduced = false, clock = true, route = '/free-santa
   await page.route(/youtube\.com|googlevideo\.com|citrus3\.com|\/audio\/examples\//, route => route.abort());
   await page.route('**/api/santa-names?*', route => route.fulfill({ json: { records: [], hostedCount: 300, warning: null } }));
   await page.route('**/api/radio-metadata*', route => route.fulfill({ json: { available: false, current: null, upcoming: [] } }));
+  await page.route('**/api/santa-studio-checkout', route => route.fulfill({ json: { available: false } }));
   await page.goto(route, { waitUntil: 'domcontentloaded' });
   await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
   const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await decline.isVisible()) await decline.click();
   await gifts(page).scrollIntoViewIfNeeded();
   await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Edward');
-  await expect(gifts(page).getByRole('heading', { level: 4 })).toHaveText('All 3 gifts included for Edward with the paid version');
+  await expect(gifts(page).getByRole('heading', { level: 4 })).toHaveCount(0);
+  await expect(gifts(page).locator('.studio-gifts__thumbnail-label')).toHaveText([
+    'Santa picture included', 'Letter included', 'Certificate included',
+  ]);
   await expect(gifts(page)).not.toContainText('Example for');
 }
 
@@ -72,9 +76,14 @@ for (const width of [320, 406, 987, 1440]) {
     await expectLeftAlignedLetter(stack.locator('.studio-letter__paper'));
     for (const [index, thumbnail] of (await stack.locator('.studio-gifts__thumbnail').all()).entries()) {
       await expectSampleWatermark(thumbnail);
-      if (index === 0) await thumbnail.focus();
-      else await page.keyboard.press('Tab');
+      if (index === 0) {
+        await thumbnail.focus();
+        // Enter real keyboard navigation before checking :focus-visible.
+        await page.keyboard.press('Shift+Tab');
+      }
+      await page.keyboard.press('Tab');
       await expect(thumbnail).toBeFocused();
+      await expect(thumbnail).toHaveCSS('outline-style', 'solid');
       await page.keyboard.press('Enter');
       const dialog = page.getByRole('dialog');
       await expect(dialog).toHaveAttribute('aria-label', `Edward’s ${['picture', 'letter', 'certificate'][index]} example`);
@@ -90,12 +99,38 @@ for (const width of [320, 406, 987, 1440]) {
       await page.evaluate(() => new Promise(resolve =>
         requestAnimationFrame(() => requestAnimationFrame(resolve))));
     }
+    await page.evaluate(() => document.activeElement?.blur());
+    await page.mouse.move(0, 0);
     await stack.screenshot({ path: `generated-artifacts/studio-gifts/promotion-rearranged-${width}.png`, animations: 'disabled' });
     await page.locator('.santa-studio-promotion').screenshot({
       path: `generated-artifacts/studio-gifts/panel-rearranged-${width}.png`, animations: 'disabled',
     });
   });
 }
+
+test.describe('touch enlargement of included promotional gifts', () => {
+  test.use({ hasTouch: true });
+  for (const path of ['/', '/free-santa-message']) {
+    for (const width of [320, 406]) {
+      test(`included gift labels remain tappable on ${path} at ${width}px`, async ({ page }) => {
+        await page.setViewportSize({ width, height: 900 });
+        await visit(page, { route: path, reduced: true, clock: false });
+        const stack = gifts(page).locator('.studio-gifts__preview-stack');
+        for (const [index, label] of ['Santa picture included', 'Letter included', 'Certificate included'].entries()) {
+          const opener = stack.getByRole('button').filter({ hasText: label });
+          await opener.tap();
+          const dialog = page.getByRole('dialog');
+          await expect(dialog).toHaveAttribute('aria-label', `Edward’s ${['picture', 'letter', 'certificate'][index]} example`);
+          await dialog.getByRole('button', { name: 'Close preview', exact: true }).tap();
+          await expect(dialog).not.toBeVisible();
+          await expect(opener).toBeFocused();
+          await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+        }
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      });
+    }
+  }
+});
 for (const width of [320, 1440]) {
   test(`gift preview arrows cycle all three gifts without closing the dialog at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
@@ -202,27 +237,25 @@ async function advanceExample(page) {
   if (reduced) await page.emulateMedia({ reducedMotion: 'reduce' });
 }
 
-test('paid gift heading wraps safely on narrow screens', async ({ page }) => {
+test('included gift captions wrap safely on narrow screens without a promotional heading', async ({ page }) => {
   await visit(page, { reduced: true });
   await page.evaluate(() => document.fonts.ready);
-  const heading = gifts(page).getByRole('heading', { level: 4 });
+  await expect(gifts(page).getByRole('heading', { level: 4 })).toHaveCount(0);
   for (const width of [320, 390, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
-    for (const copy of ['All 3 gifts included for Edward with the paid version']) {
-      await expect(heading).toHaveText(copy);
-      const geometry = await heading.evaluate(node => {
+    for (const caption of await gifts(page).locator('.studio-gifts__thumbnail-label').all()) {
+      await expect(caption).not.toContainText('Enlarge');
+      const geometry = await caption.evaluate(node => {
         const bounds = node.getBoundingClientRect();
         const range = document.createRange();
         range.selectNodeContents(node);
-        const next = node.nextElementSibling.getBoundingClientRect();
-        return { bounds: bounds.toJSON(), next: next.toJSON(),
+        return { bounds: bounds.toJSON(),
           lines: [...range.getClientRects()].map(rect => rect.toJSON()) };
       });
       for (const line of geometry.lines) {
         expect(line.left).toBeGreaterThanOrEqual(geometry.bounds.left - .5);
         expect(line.right).toBeLessThanOrEqual(geometry.bounds.right + .5);
       }
-      expect(geometry.next.top).toBeGreaterThanOrEqual(geometry.bounds.bottom);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     }
   }
@@ -385,6 +418,10 @@ test('shared non-promotional preview retains its original arrangement and dialog
   await visit(page, { reduced: true, clock: false });
   await renderGiftFixture(page, 'Arabella');
   await expect(gifts(page).locator('.studio-gifts__preview-stack--promotion')).toHaveCount(0);
+  await expect(gifts(page).getByRole('heading')).toHaveText('All 3 gifts included for Arabella with the paid version');
+  await expect(gifts(page).locator('.studio-gifts__thumbnail-label')).toHaveText([
+    'Enlarge certificate', 'Enlarge letter', 'Enlarge Santa picture',
+  ]);
   const buttons = gifts(page).locator('.studio-gifts__preview-stack button');
   expect(await buttons.evaluateAll(nodes => nodes.map(node => node.getAttribute('aria-label'))))
     .toEqual(['Enlarge certificate', 'Enlarge letter to read', 'Enlarge Santa’s Nice List picture']);
@@ -395,6 +432,30 @@ test('shared non-promotional preview retains its original arrangement and dialog
   await expect(page.getByRole('dialog')).toHaveAttribute('aria-label', 'Arabella’s letter example');
   await page.keyboard.press('Escape');
   await expect(buttons.first()).toBeFocused();
+});
+
+test('paid Review retains its heading, gift captions and document arrangement', async ({ page }) => {
+  await visit(page, { reduced: true, clock: false });
+  await page.evaluate(async () => {
+    const [{ default: React }, { default: ReactDOM }, { StudioKeepsakePreview }] = await Promise.all([
+      import('/node_modules/.vite/deps/react.js'),
+      import('/node_modules/.vite/deps/react-dom_client.js'),
+      import('/src/components/SantaStudioGifts.jsx'),
+    ]);
+    const host = document.createElement('div');
+    host.style.cssText = 'width:min(800px, calc(100vw - 24px));margin:20px auto';
+    document.body.replaceChildren(host);
+    const details = { age: '9 years old', activity: 'art', achievement: 'being brave',
+      destination: 'England', treats: 'carrots for the reindeer' };
+    ReactDOM.createRoot(host).render(React.createElement(StudioKeepsakePreview, { name: 'Arabella', details }));
+  });
+  await expect(gifts(page).getByRole('heading')).toHaveText('Santa gifts');
+  await expect(gifts(page).locator('.studio-gifts__thumbnail-label')).toHaveText([
+    'Enlarge certificate', 'Enlarge Santa picture', 'Enlarge letter',
+  ]);
+  await expect(gifts(page).locator('.studio-gifts__review-layout')).toHaveCount(1);
+  await expect(gifts(page).locator('.studio-gifts__preview-stack--promotion')).toHaveCount(0);
+  await expect(gifts(page).locator('.studio-gift-download')).toHaveCount(3);
 });
 
 for (const width of [390, 1440]) {
@@ -816,7 +877,7 @@ for (const width of [1440, 390]) {
     await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Ayla');
     await page.clock.runFor(200);
     await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Erin');
-    await expect(gifts(page).getByRole('heading', { level: 4 })).toHaveText('All 3 gifts included for Erin with the paid version');
+    await expect(gifts(page).getByRole('heading', { level: 4 })).toHaveCount(0);
     await expect(picture).toHaveAttribute('src', '/images/santa-nice-list-3.jpg');
     await expect(picture).toHaveJSProperty('naturalWidth', 1536);
     await expect(gifts(page)).toHaveAttribute('data-complete', 'false');

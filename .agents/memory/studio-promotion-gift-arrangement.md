@@ -5,6 +5,12 @@ description: Owner-approved promotional arrangement and distinction from paid Re
 
 Treat the owner's promotional gift arrangement as separate from paid Studio Review. The approved references show the picture and portrait letter together above the certificate, including on ordinary phones.
 
-**Why:** The owner explicitly requested this arrangement for the existing promotional panel, not a redesign of Review. The reference screenshots contain historical access/countdown text and an incidental checkerboard seam that are not approved changes.
+The promotional identity/name count belongs at the upper left of a shared header,
+with an enlarged red Recording indicator at the upper right. Gifts begin below
+that header. Omit the promotional paid-version gift heading and use only
+“Santa picture included”, “Letter included” and “Certificate included” as visible
+gift captions; enlargement must remain available.
+
+**Why:** The owner explicitly requested this arrangement for the existing promotional panel, not a redesign of Review. Their written caption and heading instructions supersede the older wording visible in the target screenshot. The reference screenshots contain historical access/countdown text and an incidental checkerboard seam that are not approved changes.
 
 **How to apply:** Preserve current payment/voucher availability and the existing Review/download behaviour when maintaining this presentation. Do not restore historical controls or copy incidental screenshot artefacts.

@@ -847,16 +847,15 @@ for (const width of [390, 1440]) {
     await page.route('**/api/santa-message', route => { creations++; return route.abort(); });
     await open(page);
     const gifts = page.locator('.studio-gifts');
-    const fallbackName = await gifts.getAttribute('data-demo-name');
-    await expect(gifts.getByRole('heading')).toHaveText(`All 3 gifts included for ${fallbackName} with the paid version`);
+    await expect(gifts.getByRole('heading')).toHaveCount(0);
     await choose(page, 'Erica'); // Not one of the rotating/sample names.
     await cta(page).click();
     await expect(gifts).toHaveAttribute('data-demo-name', 'Erica');
     await gifts.scrollIntoViewIfNeeded();
-    await expect(gifts.getByRole('heading')).toHaveText('All 3 gifts included for Erica with the paid version');
+    await expect(gifts.getByRole('heading')).toHaveCount(0);
     await expect(gifts.locator('.studio-certificate__name')).toHaveText('Erica');
     await expect(gifts.locator('.studio-gifts__preview-stack .studio-santa-picture__name')).toHaveText('Erica');
-    await expect(gifts.locator('.studio-gifts__gallery .studio-gifts__sr')).toContainText('Dear Erica,');
+    await expect(gifts.locator('.studio-gifts__preview-stack .studio-gifts__sr')).toContainText('Dear Erica,');
     await page.mouse.move(0, 0);
     await page.evaluate(() => document.activeElement?.blur());
     await page.clock.runFor(10500);
@@ -901,7 +900,7 @@ for (const width of [390, 1440]) {
     await input(page).press('Enter');
     await cta(page).click();
     await expect(gifts).toHaveAttribute('data-demo-name', 'Arabella');
-    await expect(gifts.getByRole('heading')).toHaveText('All 3 gifts included for Arabella with the paid version');
+    await expect(gifts.getByRole('heading')).toHaveCount(0);
     await fillAccessForm(page);
     await page.getByRole('button', { name: 'Get my free Santa message', exact: true }).click();
     const maker = page.locator('.santa-message-box');
@@ -910,7 +909,7 @@ for (const width of [390, 1440]) {
     await maker.getByRole('combobox').fill('Erin');
     await maker.getByRole('option', { name: 'Erin', exact: true }).click();
     await expect(gifts).toHaveAttribute('data-demo-name', 'Erin');
-    await expect(gifts.getByRole('heading')).toHaveText('All 3 gifts included for Erin with the paid version');
+    await expect(gifts.getByRole('heading')).toHaveCount(0);
     expect(creations).toBe(0);
     expect(await page.evaluate(() => JSON.stringify({ ...localStorage, ...sessionStorage }))).not.toMatch(/Erica|Arabella|Erin/);
   });

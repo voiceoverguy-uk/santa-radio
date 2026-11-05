@@ -13,22 +13,25 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
   return (
     <section id="santa-studio-promotion" className="santa-studio-promotion" aria-labelledby="santa-studio-title"
       data-recipient={previewName || undefined}>
+      <header className="santa-studio-promotion__header">
+        <div className="santa-studio-promotion__topline">
+          <span className="santa-studio-promotion__seal" aria-hidden="true">S</span>
+          <div className="santa-studio-promotion__heading">
+            <p className="santa-studio-promotion__eyebrow">THE NORTH POLE RECORDING STUDIO</p>
+            <p className="santa-studio-promotion__name-count" role="status" aria-live="off">{availableNamesText}</p>
+          </div>
+        </div>
+        <div className="santa-studio-promotion__preview">
+          <StudioPortraitViewer />
+        </div>
+        <span className="message-recording-indicator santa-studio-promotion__recording" title="North Pole recording studio">
+          <span className="message-recording-dot" aria-hidden="true" />
+          Recording
+        </span>
+        <div className="santa-studio-promotion__header-divider" aria-hidden="true" />
+      </header>
       <div className="santa-studio-promotion__details">
         <div className="santa-studio-promotion__intro">
-          <div className="santa-studio-promotion__topline">
-            <span className="santa-studio-promotion__seal" aria-hidden="true">S</span>
-            <div className="santa-studio-promotion__heading">
-              <p className="santa-studio-promotion__eyebrow">THE NORTH POLE RECORDING STUDIO</p>
-              <div className="message-name-status">
-                <p className="santa-studio-promotion__name-count" role="status" aria-live="off">{availableNamesText}</p>
-                <span className="message-recording-indicator" title="North Pole recording studio">
-                  <span className="message-recording-dot" aria-hidden="true" />
-                  Recording
-                </span>
-              </div>
-            </div>
-          </div>
-          <div className="santa-studio-promotion__header-divider" aria-hidden="true" />
           <h3 id="santa-studio-title" tabIndex={-1}>Santa’s <span className="santa-studio-promotion__title-line">Message Maker Studio</span></h3>
           <p className="santa-studio-promotion__subheading">
             A little more Christmas magic for {example.name}
@@ -46,9 +49,6 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
               <li>A picture of Santa celebrating {example.name}’s place on the Nice List*</li>
             </ul>
             <p className="santa-studio-promotion__footnote">*Subject to staying on the Nice List, of course.</p>
-          </div>
-          <div className="santa-studio-promotion__preview">
-            <StudioPortraitViewer />
           </div>
         </div>
         <div className="santa-studio-promotion__offer">

@@ -9,7 +9,7 @@ export async function expectStudioLaunchCopy(promotion) {
     `A little more Christmas magic for ${name}`);
   await expect(copy).toHaveText(`Create a personalised message from Santa, with ${possessive} age, achievements and the things that make them special for an extra personal touch.`);
   await expect(promotion.locator('.santa-studio-promotion__benefits-lead')).toHaveText(
-    'Your one-child package includes a personalised MP3 and gifts from Santa:');
+    'Your £6.50 package includes two successful message creations, each with a personalised MP3 and gifts for one child:');
   await expect(promotion.locator('.santa-studio-promotion__benefit-list li')).toHaveText([
     'An official Nice List certificate',
     'A short personal letter from Santa',
@@ -17,7 +17,10 @@ export async function expectStudioLaunchCopy(promotion) {
   ]);
   await expect(promotion.locator('.santa-studio-promotion__footnote')).toHaveText(
     '*Subject to staying on the Nice List, of course.');
-  await expect(promotion.locator('.studio-gifts h4')).toHaveText(`All 3 gifts included for ${name} with the paid version`);
+  await expect(promotion.locator('.studio-gifts h4')).toHaveCount(0);
+  await expect(promotion.locator('.studio-gifts__thumbnail-label')).toHaveText([
+    'Santa picture included', 'Letter included', 'Certificate included',
+  ]);
   await expect(promotion).not.toContainText('Coming Early November');
   await expect(promotion).not.toContainText('county**');
   await expect(promotion).not.toContainText('UK and USA only');
@@ -25,7 +28,7 @@ export async function expectStudioLaunchCopy(promotion) {
   await expect(promotion).not.toContainText(/your child/i);
   const geometry = await promotion.evaluate(node => {
     const selectors = '.santa-studio-promotion__subheading, .santa-studio-promotion__copy, ' +
-      '.santa-studio-promotion__benefits-lead, .santa-studio-promotion__benefit-list li, .santa-studio-promotion__footnote, .studio-gifts h4';
+      '.santa-studio-promotion__benefits-lead, .santa-studio-promotion__benefit-list li, .santa-studio-promotion__footnote, .studio-gifts__thumbnail-label';
     return [...node.querySelectorAll(selectors)].map(element => {
       const bounds = element.getBoundingClientRect();
       const range = document.createRange();

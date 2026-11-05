@@ -1274,3 +1274,17 @@ mtime_ms = 1793885969620
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/90d6951a-2101-43ec-846a-592ea412c4b6/8628a52f-59a9-4a38-9b84-277d83e401bb"
 storage_version_token = "1793886019471704"
 content_type = "image/png"
+
+[[outputs]]
+id = "0NLQ4HpKSnAcQk4Ui8haA"
+uri = "file://generated-artifacts/studio-gifts/panel-rearranged-1440.png"
+type = "image"
+title = "Updated Studio promotional panel"
+description = "Desktop capture showing the shared header, larger Recording indicator and simplified included gift labels. Development purchase controls remain disabled in this capture."
+logical_id = "73d8a775-c8a6-40af-9ff1-ca6149e7b6ae"
+content_hash = "sha256:d8f659e0a7efe785603522ac21ba87951b97c7da4eb3aedf719f9e3faeaa3cf8"
+size = 620734
+mtime_ms = 1793916261447
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/73d8a775-c8a6-40af-9ff1-ca6149e7b6ae/91ed05b8-a626-4922-b962-06f2e6185713"
+storage_version_token = "1793916345796319"
+content_type = "image/png"

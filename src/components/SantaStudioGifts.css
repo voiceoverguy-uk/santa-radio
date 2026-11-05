@@ -628,7 +628,7 @@
 .studio-gifts__preview-stack--promotion {
   container-type: inline-size;
   container-name: studio-promo;
-  margin-top: 10px;
+  margin-top: 0;
 }
 .studio-gifts__promo-layout { display: flex; flex-direction: column; gap: 0; min-width: 0; }
 .studio-gifts__promo-pair { display: flex; align-items: stretch; gap: 8px; min-width: 0; }
@@ -668,4 +668,17 @@
   .studio-gifts__promo-pair { flex-direction: column; }
   .studio-gifts__preview-stack--promotion .studio-gifts__card--picture,
   .studio-gifts__preview-stack--promotion .studio-gifts__card--letter { flex: 0 0 auto; width: 100%; }
+}
+
+.studio-gifts__preview-stack--promotion .studio-gifts__thumbnail {
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+.studio-gifts__preview-stack--promotion .studio-gifts__thumbnail:not(:disabled):hover {
+  border-color: #a27c32;
+  box-shadow: 0 6px 16px #19392d26;
+  transform: translateY(-1px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .studio-gifts__preview-stack--promotion .studio-gifts__thumbnail { transition: none; }
+  .studio-gifts__preview-stack--promotion .studio-gifts__thumbnail:not(:disabled):hover { transform: none; }
 }

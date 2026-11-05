@@ -119,6 +119,10 @@ async function setup(page, { path = '/', cooldown = false } = {}) {
     json: { available: false, current: null, upcoming: [] },
   }));
   await page.route('**/api/santa-name-count', route => route.fulfill({ json: { total: 9774 } }));
+  await page.route('**/api/santa-studio-checkout', route => route.fulfill({ json: { available: false } }));
+  // Public choices come from the bundled display-name snapshot; the POST mock
+  // below resolves a chosen name to a private recording separately.
+  await page.route('**/names-data/*', route => route.fulfill({ json: names }));
   await page.route('**/api/santa-names', route => {
     expect(route.request().method()).toBe('POST');
     const query = route.request().postDataJSON().query.toLowerCase();
@@ -203,7 +207,10 @@ async function chooseHero(page, name) {
 }
 async function matches(page, name) {
   await expect(gifts(page)).toHaveAttribute('data-demo-name', name);
-  await expect(gifts(page).getByRole('heading')).toHaveText(`All 3 gifts included for ${name} with the paid version`);
+  await expect(gifts(page).getByRole('heading')).toHaveCount(0);
+  await expect(gifts(page).locator('.studio-gifts__thumbnail-label')).toHaveText([
+    'Santa picture included', 'Letter included', 'Certificate included',
+  ]);
   await expect(gifts(page).locator('.studio-certificate__name')).toHaveText(name);
   await expect(gifts(page).locator('.studio-gifts__preview-stack .studio-santa-picture__name')).toHaveText(name);
   await expect(gifts(page).locator('.studio-gifts__preview-stack .studio-gifts__sr')).toContainText(`Dear ${name},`);
@@ -265,10 +272,11 @@ test('promotional gifts and access controls reflow locally with a long recipient
   }
 });
 
-for (const width of [320, 390, 1440]) {
-  test(`Studio A divider spans the header beneath status and portrait at ${width}px`, async ({ page }, testInfo) => {
+for (const path of ['/', '/free-santa-message']) {
+for (const width of [320, 360, 390, 406, 987, 1440]) {
+  test(`Studio shared header separates identity and enlarged Recording on ${path} at ${width}px`, async ({ page }, testInfo) => {
     await page.setViewportSize({ width, height: 1000 });
-    await setup(page);
+    await setup(page, { path });
     const promo = promotion(page);
     const divider = promo.locator('.santa-studio-promotion__header-divider');
     await expect(divider).toHaveCount(1);
@@ -286,19 +294,22 @@ for (const width of [320, 390, 1440]) {
           const style = getComputedStyle(node);
           return [style.borderBottomWidth, style.borderBottomStyle, style.borderBottomColor];
         };
-        const status = box('.message-name-status');
         const count = box('.santa-studio-promotion__name-count');
         const recording = box('.message-recording-indicator');
+        const dot = card.querySelector('.message-recording-dot');
         return {
           line: box('.santa-studio-promotion__header-divider'),
-          intro: box('.santa-studio-promotion__intro'),
+          shared: box('.santa-studio-promotion__header'),
           header: box('.santa-studio-promotion__topline'),
           portrait: box('.studio-portrait-trigger'),
           title: box('h3'),
+          gifts: box('.studio-gifts__preview-stack'),
+          dot: dot.getBoundingClientRect().toJSON(),
+          animation: getComputedStyle(dot).animationName,
+          recordingFont: parseFloat(getComputedStyle(card.querySelector('.message-recording-indicator')).fontSize),
           border: border(line),
           referenceBorder: border(document.querySelector('.message-card-top')),
-          wrappedStatus: recording.top >= count.bottom,
-          status, count, recording,
+          count, recording,
           cardOverflow: card.scrollWidth > card.clientWidth + 1,
           cardLeft: card.getBoundingClientRect().left,
           cardRight: card.getBoundingClientRect().right,
@@ -306,23 +317,41 @@ for (const width of [320, 390, 1440]) {
       });
       expect(geometry.border.slice(0, 2)).toEqual(['1px', 'solid']);
       expect(geometry.border).toEqual(geometry.referenceBorder);
-      expect(geometry.line.left).toBeCloseTo(geometry.intro.left, 1);
-      expect(geometry.line.right).toBeCloseTo(geometry.intro.right, 1);
-      expect(geometry.line.top - Math.max(geometry.header.bottom, geometry.portrait.bottom)).toBeGreaterThanOrEqual(13);
+      expect(geometry.line.left).toBeCloseTo(geometry.shared.left, 1);
+      expect(geometry.line.right).toBeCloseTo(geometry.shared.right, 1);
+      expect(geometry.line.top).toBeGreaterThanOrEqual(Math.max(
+        geometry.header.bottom, geometry.portrait.bottom, geometry.recording.bottom) + 13);
       expect(geometry.title.top - geometry.line.bottom).toBeGreaterThanOrEqual(13);
-      for (const item of [geometry.count, geometry.recording]) {
-        expect(item.left).toBeGreaterThanOrEqual(geometry.status.left - 1);
-        expect(item.right).toBeLessThanOrEqual(geometry.status.right + 1);
+      for (const item of [geometry.count, geometry.recording, geometry.portrait]) {
+        expect(item.left).toBeGreaterThanOrEqual(geometry.shared.left - 1);
+        expect(item.right).toBeLessThanOrEqual(geometry.shared.right + 1);
         expect(item.bottom).toBeLessThan(geometry.line.top);
       }
-      if (width === 320) expect(geometry.wrappedStatus).toBe(true);
+      const disjoint = (a, b) => a.right <= b.left || b.right <= a.left ||
+        a.bottom <= b.top || b.bottom <= a.top;
+      expect(disjoint(geometry.header, geometry.recording)).toBe(true);
+      expect(disjoint(geometry.portrait, geometry.recording)).toBe(true);
+      expect(geometry.dot.width).toBeGreaterThanOrEqual(12);
+      expect(geometry.recordingFont).toBeGreaterThanOrEqual(16);
+      expect(geometry.animation).toBe('none');
+      if (width >= 768) {
+        expect(geometry.recording.left).toBeGreaterThan(geometry.header.right);
+        expect(geometry.recording.right).toBeCloseTo(geometry.shared.right, 0);
+        expect(geometry.gifts.top).toBeCloseTo(geometry.title.top, 0);
+      } else {
+        expect(geometry.gifts.top).toBeGreaterThan(geometry.title.bottom);
+      }
       expect(geometry.cardOverflow).toBe(false);
       expect(geometry.cardLeft).toBeGreaterThanOrEqual(0);
       expect(geometry.cardRight).toBeLessThanOrEqual(width);
     }
     await page.addStyleTag({ content: 'html { font-size: 100%; }' });
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await expect(promo.locator('.message-recording-dot')).toHaveCSS('animation-name', 'santa-studio-recording-pulse');
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await promo.screenshot({ path: testInfo.outputPath('studio-header-divider.png'), animations: 'disabled' });
   });
+}
 }
 
 for (const width of [390, 1440]) {
@@ -396,7 +425,7 @@ test('free-maker selection and generation retain recipient across navigation and
   await expect(page.locator('.studio-gifts [data-demo-name]')).toHaveCount(0);
   await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Edward');
   await expect(gifts(page).getByRole('button', { name: /Enlarge/ })).toHaveCount(3);
-  await expect(gifts(page).getByRole('heading')).toHaveText('All 3 gifts included for Edward with the paid version');
+  await expect(gifts(page).getByRole('heading')).toHaveCount(0);
   await expect(page.locator('.santa-message-example')).toHaveCount(0);
   await expectStudioLaunchCopy(promotion(page));
 });
@@ -427,7 +456,7 @@ for (const width of [390, 1440]) {
 test(`unknown-recipient cooldown keeps all three original example gifts at ${width}px`, async ({ page }) => {
   await page.setViewportSize({ width, height: 1100 });
   await setup(page, { cooldown: true });
-  await expect(gifts(page).getByRole('heading')).toHaveText('All 3 gifts included for Edward with the paid version');
+  await expect(gifts(page).getByRole('heading')).toHaveCount(0);
   await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Edward');
   await expect(gifts(page).locator('.studio-certificate__name')).toHaveText('Edward');
   await expect(gifts(page).locator('.studio-gifts__preview-stack .studio-santa-picture__name')).toHaveText('Edward');

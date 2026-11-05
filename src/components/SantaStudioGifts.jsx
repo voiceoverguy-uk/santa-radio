@@ -218,7 +218,8 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
         <SampleWatermark />
       </div>
       <span className="studio-gifts__thumbnail-label">
-        {kind === 'picture' ? 'Enlarge Santa picture' : `Enlarge ${kind}`}
+        {promotion ? (kind === 'picture' ? 'Santa picture included' : kind === 'letter' ? 'Letter included' : 'Certificate included')
+          : kind === 'picture' ? 'Enlarge Santa picture' : `Enlarge ${kind}`}
       </span>
     </button>
     {staticPreview && <StudioGiftDownload key={`${giftRevision}-${name}-${downloadReady}-${kind}`}
@@ -232,7 +233,7 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
     onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
     onFocusCapture={() => setFocused(true)}
     onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false); }}>
-    <h4>{reviewHeading || `All 3 gifts included for ${name} with the paid version`}</h4>
+    {!promotion && <h4>{reviewHeading || `All 3 gifts included for ${name} with the paid version`}</h4>}
     {staticPreview && downloadNotice && <p>{downloadNotice}</p>}
     {!displayLetter && !letterError && <p className="studio-gifts__sr" role="status">Preparing the complete letter layout…</p>}
     {letterError && <p role="alert">{letterError} <button type="button"
