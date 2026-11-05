@@ -5,7 +5,7 @@ import { PDFDocument } from 'pdf-lib';
 import { execFileSync } from 'node:child_process';
 import { test } from './helpers/provider-test.js';
 import { workshopCatalogueFixture } from './fixtures/workshop-catalogue.js';
-import { confirmMessage, mockStudioGeneration } from './helpers/studio-generation.js';
+import { confirmMessage, mockStudioGeneration, expectStudioRecordingInView } from './helpers/studio-generation.js';
 
 const records = [
   { id: 'dixie-variant', name: 'Dixie' },
@@ -155,11 +155,25 @@ for (const width of [320, 1365]) {
     await confirmMessage(page, 'Retry message');
     await expect(players(page)).toHaveCount(2);
     await expect(page.locator('.smw-message-finished h4')).toHaveText([
-      'First Santa message for Dixie Rose', 'Second Santa message for Arabella May',
+      'Second Santa message for Arabella May', 'First Santa message for Dixie Rose',
     ]);
     const urls = await players(page).evaluateAll(nodes => nodes.map(node => node.src));
-    expect(urls[0]).toBe(firstUrl);
-    expect(urls[1]).not.toBe(urls[0]);
+    expect(urls[1]).toBe(firstUrl);
+    expect(urls[0]).not.toBe(urls[1]);
+    const newest = page.getByRole('region', { name: 'Your second finished Santa message', exact: true });
+    const oldest = page.getByRole('region', { name: 'Your finished Santa message', exact: true });
+    expect((await newest.boundingBox()).y).toBeLessThan((await oldest.boundingBox()).y);
+    // DOM reading order and keyboard download order both follow the visible order.
+    await newest.getByRole('link', { name: 'Download Audio', exact: true }).focus();
+    await page.keyboard.press('Tab');
+    await expect(newest.getByRole('button', { name: 'Download All', exact: true })).toBeFocused();
+    await page.keyboard.press('Tab');
+    expect(await oldest.evaluate(node => node.contains(document.activeElement))).toBe(true);
+    for (const activation of ['Enter', 'Space']) {
+      await page.getByRole('button', { name: 'READY', exact: true }).focus();
+      await page.keyboard.press(activation);
+      await expectStudioRecordingInView(page, newest);
+    }
     await expect(page.locator('.smw-remaining')).toContainText('0 of 2');
     const first = page.getByRole('button', { name: '1st message gifts for Dixie Rose', exact: true });
     const second = page.getByRole('button', { name: '2nd message gifts for Arabella May', exact: true });
@@ -182,7 +196,7 @@ for (const width of [320, 1365]) {
     await expect(page.getByRole('button', { name: 'Retry download letter (pdf)', exact: true })).toBeVisible();
     await page.unroute('**/images/santa-radio-letterhead.webp');
     // Each MP3 downloads its own original bytes and confirmed written name.
-    for (const [index, name] of ['Dixie Rose', 'Arabella May'].entries()) {
+    for (const [index, name] of ['Arabella May', 'Dixie Rose'].entries()) {
       const pending = page.waitForEvent('download');
       await page.locator('.smw-message-finished').nth(index).getByRole('link').click();
       const download = await pending;
@@ -247,8 +261,15 @@ test('unlimited visitor must confirm discarding both results; exit never restore
   await page.getByRole('button', { name: 'Start Again', exact: true }).click();
   await expect(page.getByRole('dialog')).toContainText('all retained recordings and their gifts');
   await expect(page.getByRole('dialog')).toContainText('Dixie Rose and Arabella May');
+  const expectRetained = async () => {
+    await expect(players(page)).toHaveCount(2);
+    expect(await players(page).evaluateAll(nodes => nodes.map(node => node.src))).toEqual(urls);
+    await expect(page.locator('.smw-gift-selector button')).toHaveCount(2);
+    for (const url of urls) expect(await page.evaluate(async url => (await fetch(url)).ok, url)).toBe(true);
+  };
+  await expectRetained();
   await page.keyboard.press('Escape');
-  await expect(players(page)).toHaveCount(2);
+  await expectRetained();
   await page.getByRole('button', { name: 'Start Again', exact: true }).click();
   const back = page.getByRole('button', { name: 'Back to downloads', exact: true });
   const discard = page.getByRole('button', { name: 'Discard recording and start again', exact: true });
@@ -258,20 +279,31 @@ test('unlimited visitor must confirm discarding both results; exit never restore
   await page.keyboard.press('Tab');
   await expect(back).toBeFocused();
   await back.click();
-  await expect(players(page)).toHaveCount(2);
+  await expectRetained();
+  await expectStudioRecordingInView(page, page.getByRole('region', { name: 'Your second finished Santa message', exact: true }));
   await page.getByRole('button', { name: 'Start Again', exact: true }).click();
   await discard.click();
   await expect(page.getByRole('combobox', { name: 'Search recorded names', exact: true })).toBeVisible();
+  await expect(players(page)).toHaveCount(0);
+  await expect(page.locator('.smw-gift-selector, .smw-retained-gifts')).toHaveCount(0);
   for (const url of urls) expect(await page.evaluate(async url => {
     try { await fetch(url); return true; } catch { return false; }
   }, url)).toBe(false);
   await compose(page); await confirmMessage(page);
   await expect(players(page)).toHaveCount(1);
-  const url = await players(page).getAttribute('src');
+  await expect(page.locator('.smw-message-finished h4')).toHaveText('First Santa message for Dixie Rose');
+  await page.getByRole('button', { name: 'Start Again', exact: true }).click();
+  await compose(page, true); await confirmMessage(page);
+  await expect(players(page)).toHaveCount(2);
+  await expect(page.locator('.smw-message-finished h4')).toHaveText([
+    'Second Santa message for Arabella May', 'First Santa message for Dixie Rose',
+  ]);
+  expect(fixture.posts).toHaveLength(4);
+  const freshUrls = await players(page).evaluateAll(nodes => nodes.map(node => node.src));
   await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true })));
   await expect(players(page)).toHaveCount(0);
   for (const button of await gifts(page).all()) await expect(button).toBeDisabled();
-  expect(await page.evaluate(async url => {
+  for (const url of freshUrls) expect(await page.evaluate(async url => {
     try { await fetch(url); return true; } catch { return false; }
   }, url)).toBe(false);
   await page.reload();
@@ -386,7 +418,8 @@ for (const width of [320, 1365]) {
     await compose(page, true);
     const secondLetter = await letter(page).locator('p').allTextContents();
     // First bundle works while the second recipient's gifts are still locked.
-    const firstResult = page.locator('.smw-message-finished').first();
+    const firstAudio = fixture.audio;
+    const firstResult = page.getByRole('region', { name: 'Your finished Santa message', exact: true });
     await checkDownloadGuidance(firstResult);
     await firstResult.screenshot({ path: `generated-artifacts/studio-bundles/guidance-first-${width}.png`, animations: 'disabled' });
     let pending = page.waitForEvent('download');
@@ -394,6 +427,8 @@ for (const width of [320, 1365]) {
     await inspectBundle(await pending, 'Élodie O’Neill', firstLetter, fixture.audio, `draft-${width}`);
     await checkDownloadGuidance(firstResult, true);
     for (const button of await gifts(page).all()) await expect(button).toBeDisabled();
+    // Distinguishable playable bytes catch accidental cross-recording downloads.
+    fixture.audio = Buffer.concat([firstAudio, firstAudio]);
     await confirmMessage(page);
     await expect(players(page)).toHaveCount(2);
     await expect(page.locator('.smw-remaining')).toContainText('0 of 2');
@@ -425,12 +460,12 @@ for (const width of [320, 1365]) {
     // Direct MP3 access does not wait for gift rendering.
     pending = page.waitForEvent('download');
     await firstResult.getByRole('link', { name: 'Download Audio', exact: true }).click();
-    expect(readFileSync(await (await pending).path())).toEqual(fixture.audio);
+    expect(readFileSync(await (await pending).path())).toEqual(firstAudio);
     pending = page.waitForEvent('download');
     release();
-    const firstPng = await inspectBundle(await pending, 'Élodie O’Neill', firstLetter, fixture.audio, `first-${width}`);
+    const firstPng = await inspectBundle(await pending, 'Élodie O’Neill', firstLetter, firstAudio, `first-${width}`);
     await page.unroute('**/images/santa-radio-letterhead.webp');
-    const secondResult = page.locator('.smw-message-finished').nth(1);
+    const secondResult = page.getByRole('region', { name: 'Your second finished Santa message', exact: true });
     await checkDownloadGuidance(secondResult, true);
     await secondResult.screenshot({ path: `generated-artifacts/studio-bundles/guidance-second-${width}.png`, animations: 'disabled' });
     pending = page.waitForEvent('download');
@@ -475,7 +510,8 @@ for (const width of [320, 1365]) {
         ...selection(choices), choices: { ...choices, region: 'unavailable-fixture-region' },
       });
       await confirmMessage(page);
-      const result = page.locator('.smw-message-finished').nth(ordinal - 1);
+      const result = page.getByRole('region', { name: ordinal === 1
+        ? 'Your finished Santa message' : 'Your second finished Santa message', exact: true });
       const warning = 'Get them quickly, as your audio isn’t saved once you leave.';
       const feedback = 'Completed gifts are unavailable. You can still download your audio.';
       const all = result.getByRole('button', { name: 'Download All', exact: true });

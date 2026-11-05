@@ -39,6 +39,15 @@ explicitly confirmed destructive reset clears every retained output. Keep the
 first completed gifts retrievable during second-message composition and after
 failure, separately from the unfinished draft’s locked gift previews.
 
+Present completed website recordings newest-first, but keep First/Second labels
+and gift selectors tied to chronological creation identity.
+
+**Why:** The owner superseded creation-order presentation only, not recording
+identity, gift associations or the two-creation allowance.
+
+**How to apply:** Reordering cards must not reorder the underlying completions,
+redirect READY away from the latest recording, or replenish limited access.
+
 Download All is a per-recording ZIP, not a ZIP combining both creations. It
 contains that completion's original MP3 and three gifts, independent of the
 selected gift preview or unfinished edits. Keep individual downloads available.

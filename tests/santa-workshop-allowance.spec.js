@@ -43,6 +43,45 @@ async function gift(page, name) {
   await download;
 }
 for (const width of [1365, 390]) {
+  for (const paid of [false, true]) {
+    test(`exhausted ${paid ? 'paid purchase' : 'limited voucher'} cannot discard or regain allowance at ${width}px`, async ({ page }) => {
+      test.setTimeout(60000);
+      await page.setViewportSize({ width, height: 900 });
+      const fixture = await setup(page, paid);
+      await review(page); await confirmMessage(page);
+      await expect(result(page)).toBeVisible();
+      const again = page.getByRole('button', { name: 'Start Again', exact: true });
+      await again.click();
+      await review(page); await confirmMessage(page);
+      const cards = page.locator('.smw-message-finished');
+      await expect(cards).toHaveCount(2);
+      await expect(page.locator('.smw-remaining')).toContainText('0 of 2');
+      const urls = await cards.locator('audio').evaluateAll(nodes => nodes.map(node => node.src));
+      await again.click();
+      const dialog = page.getByRole('dialog');
+      await expect(dialog).toContainText('Both creations have been used. You cannot start another creation.');
+      const discard = dialog.getByRole('button', { name: 'Discard recording and start again', exact: true });
+      await expect(discard).toBeDisabled();
+      // Even a programmatic click on the disabled control cannot reset access.
+      await discard.evaluate(node => node.click());
+      await expect(dialog).toBeVisible();
+      await dialog.getByRole('button', { name: 'Back to downloads', exact: true }).click();
+      await expect(page.getByRole('region', { name: 'Your second finished Santa message', exact: true })).toBeFocused();
+      expect(await cards.locator('audio').evaluateAll(nodes => nodes.map(node => node.src))).toEqual(urls);
+      await again.click();
+      await page.keyboard.press('Escape');
+      await expect(again).toBeFocused();
+      await expect(cards).toHaveCount(2);
+      await expect(page.locator('.smw-gift-selector button')).toHaveCount(2);
+      expect(fixture.state.remaining).toBe(0);
+      expect(fixture.posts).toHaveLength(2);
+      await page.reload();
+      await review(page);
+      await expect(page.locator('.smw-remaining')).toContainText('0 of 2');
+      for (const button of await page.getByRole('button', { name: 'Create message', exact: true }).all()) await expect(button).toBeDisabled();
+      expect(fixture.posts).toHaveLength(2);
+    });
+  }
   test(`unlimited access preserves the first and confirms discarding both at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     const fixture = await setup(page, false, true);

@@ -363,6 +363,7 @@ export default function WorkshopMessageAudio({
     </div>}
     {error && <div className="smw-message-result" role="alert"><p>{error}</p>
     </div>}
+    {/* Reverse presentation only: ordinals and the latest target stay chronological. */}
     {results.map((result, index) => <StudioCompletedRecording key={result.url} result={result}
       ordinal={index + 1} visible={visible}
       onBundlePreparing={pending => onBundlePreparing?.(result.url, pending)}
@@ -371,7 +372,7 @@ export default function WorkshopMessageAudio({
         resultsRef.current = resultsRef.current.map(saved => saved.url === result.url ? { ...saved, requested: true } : saved);
         setResults(resultsRef.current);
       }}
-      sectionRef={index === results.length - 1 ? finishedRef : undefined} />)}
+      sectionRef={index === results.length - 1 ? finishedRef : undefined} />).reverse()}
     </div>
     {url && startAction()}
     {url && messageAction()}

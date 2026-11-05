@@ -11,9 +11,8 @@ export async function settleStudioScroll(page) {
     return stable;
   }, { intervals: [50], timeout: 5000 }).toBeGreaterThanOrEqual(3);
 }
-export async function expectStudioRecordingInView(page) {
+export async function expectStudioRecordingInView(page, result = page.getByRole('region', { name: 'Your finished Santa message' })) {
   await settleStudioScroll(page);
-  const result = page.getByRole('region', { name: 'Your finished Santa message' });
   await expect(result).toBeFocused();
   const visibility = await result.evaluate(node => {
     const viewport = window.visualViewport;
