@@ -24,6 +24,7 @@ import './SantaMessageWorkshop.css';
 import useStudioGeneration from '../hooks/useStudioGeneration.js';
 import { studioSelectionIdentity } from '../lib/studioSelectionIdentity.js';
 import useWorkshopNameResolution from '../hooks/useWorkshopNameResolution.js';
+import { StudioKeepsakePreview } from '../components/SantaStudioGifts.jsx';
 
 const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
@@ -227,10 +228,13 @@ export default function SantaMessageWorkshop() {
    }, [namePreviewCache, selectedName?.id]);
   const [nameSpelling, setNameSpelling] = useState('');
   // Survives review unmounts while a detail is edited; never stored or name-seeded.
-  const [letterVariation] = useState(createStudioLetterVariation);
+  const [letterVariation, setLetterVariation] = useState(createStudioLetterVariation);
   const [completedGift, setCompletedGift] = useState(null);
+  const [retainedGifts, setRetainedGifts] = useState([]);
+  const [selectedGiftIndex, setSelectedGiftIndex] = useState(0);
   const [requestedGifts, setRequestedGifts] = useState({});
   const [preparingGifts, setPreparingGifts] = useState({});
+  const [preparingRetainedGifts, setPreparingRetainedGifts] = useState({});
   // Only the explicit fresh-message flow resets successful completion.
   const [nameReadOnly, setNameReadOnly] = useState(false);
   const [audioPhase, setAudioPhase] = useState('idle');
@@ -242,8 +246,10 @@ export default function SantaMessageWorkshop() {
   useEffect(() => {
     const clearGifts = () => {
       setCompletedGift(null);
+      setRetainedGifts([]);
       setRequestedGifts({});
       setPreparingGifts({});
+      setPreparingRetainedGifts({});
     };
     window.addEventListener('pagehide', clearGifts);
     return () => window.removeEventListener('pagehide', clearGifts);
@@ -251,8 +257,10 @@ export default function SantaMessageWorkshop() {
   useEffect(() => {
     if (generation.accessExpired) {
       setCompletedGift(null);
+      setRetainedGifts([]);
       setRequestedGifts({});
       setPreparingGifts({});
+      setPreparingRetainedGifts({});
     }
   }, [generation.accessExpired]);
   const locked = false;
@@ -324,10 +332,12 @@ export default function SantaMessageWorkshop() {
       ?.find(record => record.id === giftChoices[category])?.letterContext])) };
   };
   const giftDetails = giftDetailsFor(choices);
-  const giftMatches = !!completedGift && completedGift.selectionKey === selectionKey
-    && completedGift.writtenName === getWorkshopWrittenName(selectedName?.name || '', nameSpelling);
+  const shownGift = retainedGifts.length === 2 ? retainedGifts[selectedGiftIndex] : completedGift;
+  const giftMatches = !!shownGift && (retainedGifts.length === 2 || (shownGift.selectionKey === selectionKey
+    && shownGift.writtenName === getWorkshopWrittenName(selectedName?.name || '', nameSpelling)));
   const giftPreparing = audioPhase === 'preparing' || audioPhase === 'receiving' || generation.state?.pending;
-  const giftExportPending = Object.values(preparingGifts).some(Boolean);
+  const retainedGiftExportPending = Object.values(preparingRetainedGifts).some(Boolean);
+  const giftExportPending = Object.values(preparingGifts).some(Boolean) || retainedGiftExportPending;
   const giftNotice = completedGift
         ? !giftMatches
           ? 'Gift previews reflect your updated choices. Create your new MP3 to unlock these downloads.'
@@ -455,21 +465,27 @@ export default function SantaMessageWorkshop() {
     setEditing(false);
   };
 
-  const startAgain = () => {
+  const startAgain = ({ preserve = false } = {}) => {
     if (!audioEditingAllowed || giftExportPending || generation.state?.pending) return false;
     if (completedGift && (!generation.state || generation.checking || generation.error
       || (generation.state.limit === 2 && !generation.state.remaining))) return false;
     if (generation.state?.limit === 2 && generation.state.remaining === 0 && !generation.error && !generation.checking) return false;
     setCompletedGift(null);
-    setRequestedGifts({});
+    if (!preserve) {
+      setRetainedGifts([]);
+      setRequestedGifts({});
+    }
+    setSelectedGiftIndex(0);
     setPreparingGifts({});
+    setPreparingRetainedGifts({});
     if (generation.state?.limit === 2) {
       setChoices(emptyChoices());
       setActivityCategory('trying');
       nameResolution.choose(null);
       setNameSpelling('');
     }
-    // Completed audio reaches here only after an explicit discard confirmation.
+    setLetterVariation(createStudioLetterVariation());
+    // Starting the second creation preserves the first immutable result.
     setNameReadOnly(false);
     setError('');
     setEditing(false);
@@ -479,7 +495,7 @@ export default function SantaMessageWorkshop() {
   };
 
   const editStage = index => {
-    if (!audioEditingAllowed || (nameReadOnly && generation.state?.limit === 2)
+    if (!audioEditingAllowed || giftExportPending || (nameReadOnly && generation.state?.limit === 2)
       || (locked && ['name', 'place'].includes(stages[index]?.key))) return;
     setError('');
     if (stages[index]?.key === 'activity') {
@@ -806,7 +822,7 @@ export default function SantaMessageWorkshop() {
                             || 'This choice is no longer available.'}</span>}</dd>
                     </div>
                     <button type="button" className="smw-change" onClick={() => editStage(index)}
-                      disabled={!audioEditingAllowed || (nameReadOnly && generation.state?.limit === 2) || (locked && ['name', 'place'].includes(item.key))}
+                      disabled={!audioEditingAllowed || giftExportPending || (nameReadOnly && generation.state?.limit === 2) || (locked && ['name', 'place'].includes(item.key))}
                       aria-label={`Change ${item.reviewLabel || item.label}`} title={locked && ['name', 'place'].includes(item.key) ? 'Locked after your first message' : `Edit ${item.reviewLabel || item.label}`}>
                       <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
                         <path d="m16 4 4 4M4 20l4-1 12-12a2.83 2.83 0 0 0-4-4L4 15z" />
@@ -825,15 +841,29 @@ export default function SantaMessageWorkshop() {
                   onClick={nameResolution.retry}>Retry recording lookup</button>}
                 <button type="button" className="smw-change" onClick={() => editStage(0)}>Check name recording</button>
               </div>}
-              {destinationValid && regionalEditorial.ready ? <WorkshopNameSpelling
-                key={chosenName?.name}
-                recordedName={chosenName?.name || ''}
-                recordingId={selectedName?.id ?? ''}
-                spelling={nameSpelling}
-                letterVariation={letterVariation}
-                giftDetails={giftDetails}
-                completedGift={completedGift}
-                onDownloadRequested={kind => setRequestedGifts(current => ({ ...current, [kind]: true }))}
+              {retainedGifts.length === 2 && <div className="smw-gift-selector" role="group" aria-label="Choose completed message gifts">
+                {retainedGifts.map((gift, index) => <button type="button" key={gift.revision}
+                  aria-pressed={selectedGiftIndex === index}
+                  aria-label={`${index === 0 ? '1st' : '2nd'} message gifts for ${gift.writtenName}`}
+                  disabled={giftExportPending}
+                  onClick={() => setSelectedGiftIndex(index)}>{index === 0 ? '1st' : '2nd'}</button>)}
+                <p role="status">Gifts for {shownGift.writtenName}</p>
+              </div>}
+              {shownGift || (destinationValid && regionalEditorial.ready) ? <WorkshopNameSpelling
+                key={retainedGifts.length === 2 ? shownGift.revision : chosenName?.name}
+                recordedName={giftMatches ? shownGift.record.name : chosenName?.name || ''}
+                recordingId={giftMatches ? shownGift.record.id : selectedName?.id ?? ''}
+                spelling={giftMatches ? shownGift.writtenName : nameSpelling}
+                letterVariation={giftMatches ? shownGift.variation : letterVariation}
+                giftDetails={giftMatches ? shownGift.details : giftDetails}
+                completedGift={shownGift}
+                requestedGifts={requestedGifts[shownGift?.revision] || {}}
+                onDownloadRequested={kind => {
+                  if (!shownGift) return;
+                  setRequestedGifts(current => ({ ...current, [shownGift.revision]: {
+                    ...current[shownGift.revision], [kind]: true,
+                  } }));
+                }}
                 onGiftPreparing={(kind, pending) => setPreparingGifts(current => current[kind] === pending
                   ? current : { ...current, [kind]: pending })}
                 nameReadOnly={nameReadOnly}
@@ -849,14 +879,33 @@ export default function SantaMessageWorkshop() {
                   <button type="button" className="smw-change" onClick={regionalEditorial.retry}>Try again</button>
                 </> : 'Santa is finding the local story for your letter…'}
               </div> : <p className="smw-stage-note" role="status">Choose a destination to preview your keepsakes.</p>}
+              {retainedGifts[0] && ((!completedGift && retainedGifts.length === 1) || retainedGiftExportPending)
+                && <details className="smw-retained-gifts">
+                  <summary>First message gifts for {retainedGifts[0].writtenName}</summary>
+                  <StudioKeepsakePreview
+                    name={retainedGifts[0].writtenName} details={retainedGifts[0].details}
+                    variation={retainedGifts[0].variation} giftRevision={retainedGifts[0].revision}
+                    downloadReady
+                    requestedGifts={requestedGifts[retainedGifts[0].revision] || {}}
+                    onDownloadRequested={kind => {
+                      const revision = retainedGifts[0].revision;
+                      setRequestedGifts(current => ({ ...current, [revision]: {
+                        ...current[revision], [kind]: true,
+                      } }));
+                    }}
+                    onGiftPreparing={(kind, pending) => setPreparingRetainedGifts(current =>
+                      current[kind] === pending ? current : { ...current, [kind]: pending })}
+                  />
+                </details>}
             </div>
           )}
               <div className="smw-actions smw-actions--review" hidden={!isReview}>
                 <WorkshopMessageAudio generation={generation} correction={correction}
                   onStartAgain={startAgain}
                   giftExportPending={giftExportPending}
-                  giftsRequested={['certificate', 'letter', 'picture'].every(kind => requestedGifts[kind])}
-                  giftWrittenName={completedGift?.writtenName}
+                  giftsRequested={retainedGifts.every(gift =>
+                    ['certificate', 'letter', 'picture'].every(kind => requestedGifts[gift.revision]?.[kind]))}
+                  giftWrittenName={retainedGifts.map(gift => gift.writtenName).join(' and ')}
                   showReadyAction={nameReadOnly}
                   reviewMessageTarget={reviewMessageTarget}
                   showGiftDownloadHint={!giftNotice}
@@ -865,7 +914,6 @@ export default function SantaMessageWorkshop() {
                   record={selectedName} choices={choices} spelling={nameSpelling}
                   onPhaseChange={setAudioPhase}
                   onReady={message => {
-                    setRequestedGifts({});
                     setNameReadOnly(true);
                     const record = message.record;
                     const completedChoices = message.choices;
@@ -874,13 +922,23 @@ export default function SantaMessageWorkshop() {
                       setError('Santa’s local letter story is not ready. Load the selected story before preparing gifts.');
                       return;
                     }
-                    setCompletedGift({
+                    const gift = {
                       selectionKey: studioSelectionIdentity(completedChoices),
+                      choices: structuredClone(completedChoices),
                       record: { ...record }, details: completedDetails,
                       variation: letterVariation,
                       writtenName: getWorkshopWrittenName(record.name, record.id === selectedName?.id ? nameSpelling : ''),
                       revision: crypto.randomUUID(),
-                    });
+                    };
+                    setCompletedGift(gift);
+                    // Replace only the current unlimited-voucher slot, never
+                    // the first retained completion of a fresh second draft.
+                    const next = completedGift ? [...retainedGifts.slice(0, -1), gift] : [...retainedGifts, gift];
+                    setRetainedGifts(next);
+                    setSelectedGiftIndex(next.length - 1);
+                    setRequestedGifts(current => Object.fromEntries(next
+                      .filter(saved => current[saved.revision])
+                      .map(saved => [saved.revision, current[saved.revision]])));
                   }}
                   complete={!!selectedName && destinationValid && regionalEditorial.ready && catalogueCategories.every(key =>
                     catalogueState.catalogue?.categories?.[key]?.some(record => record.id === choices[key]))

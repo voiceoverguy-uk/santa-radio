@@ -6,7 +6,7 @@ const labels = {
   picture: 'Download Santa picture (PNG)',
 };
 
-export default function StudioGiftDownload({ kind, ready, name, letter, picture, unavailableNotice, onDownloadRequested, onPreparing }) {
+export default function StudioGiftDownload({ kind, ready, name, letter, picture, unavailableNotice, onDownloadRequested, onPreparing, requested = false }) {
   const id = useId();
   const [status, setStatus] = useState('idle');
   const busy = useRef(false);
@@ -65,7 +65,7 @@ export default function StudioGiftDownload({ kind, ready, name, letter, picture,
       {!ready ? unavailableNotice || 'Available when your MP3 audio file has been downloaded.'
         : status === 'preparing' ? 'Preparing locally in your browser…'
           : status === 'error' ? 'Could not prepare this gift. Retry above; your audio and other gifts are unaffected. No message allowance is used.'
-            : status === 'requested' ? 'Download requested. Check your browser’s downloads; keep your own copy.'
+             : status === 'requested' || requested ? 'Download requested. Check your browser’s downloads; keep your own copy.'
               : 'Ready. Repeat downloads do not use your message allowance.'}
     </p>
   </div>;

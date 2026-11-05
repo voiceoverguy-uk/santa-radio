@@ -221,18 +221,16 @@ for (const viewport of [{ width: 1365, height: 900 }, { width: 390, height: 844 
       expect(fixture.posts).toHaveLength(2);
 
       await page.locator('.radio-dock').evaluate(node => { node.style.display = ''; });
-      await page.getByRole('button', { name: 'Start Again', exact: true }).click();
-      await expect(page.getByRole('button', { name: 'Discard recording and start again', exact: true })).toBeDisabled();
-      await page.keyboard.press('Escape');
+      await expect(page.getByRole('button', { name: 'Start Again', exact: true })).toBeDisabled();
       await page.unroute('**/api/santa-studio-message');
       await page.evaluate(() => window.dispatchEvent(new Event('focus')));
       await expect(page.getByRole('alert')).toHaveCount(0);
       await page.getByRole('button', { name: 'Start Again', exact: true }).click();
-      await page.getByRole('button', { name: 'Discard recording and start again', exact: true }).click();
+      await expect(page.getByRole('dialog')).toHaveCount(0);
       for (let step = 0; step < 7; step++) await page.locator('.smw-button-next:visible').click();
       await expect(upper).toHaveText('Create message →');
       await expect(ready).toHaveCount(0);
-      await expect(audio).toHaveCount(0);
+      await expect(audio).toHaveCount(1);
       await expect(upper).toBeEnabled();
       await page.reload();
       await expect(ready).toHaveCount(0);
@@ -756,7 +754,7 @@ test('voucher testing can generate a third message with fresh choices while reta
 });
 
 for (const width of [390, 1365]) {
-  test(`review Start Again confirms discarding the recording without changing allowance at ${width}px`, async ({ page }) => {
+  test(`review Start Again preserves the first without changing allowance at ${width}px`, async ({ page }) => {
     const fixture = await openReview(page);
     await page.setViewportSize({ width, height: 900 });
     await confirmMessage(page);
@@ -765,9 +763,7 @@ for (const width of [390, 1365]) {
     const previousUrl = await download.getAttribute('href');
     const allowance = structuredClone(fixture.state);
     await page.getByRole('button', { name: 'Start Again', exact: true }).click();
-    await expect(page.getByRole('dialog', { name: 'Have you downloaded your MP3?' })).toBeVisible();
-    await expect(download).toHaveAttribute('href', previousUrl);
-    await page.getByRole('button', { name: 'Discard recording and start again', exact: true }).click();
+    await expect(page.getByRole('dialog')).toHaveCount(0);
     await expect(page.locator('.smw-step-count')).toHaveText('Step 1 of 7');
     await expect(page.getByRole('heading', { name: 'What name should Santa say?', exact: true })).toBeVisible();
     await expect(page.getByRole('combobox', { name: 'Search recorded names', exact: true })).toBeEnabled();
@@ -777,13 +773,13 @@ for (const width of [390, 1365]) {
       await page.locator('.smw-button-next:visible').click();
     }
     await expect(page.locator('.smw-summary')).toBeVisible();
-    await expect(download).toHaveCount(0);
+    await expect(download).toHaveAttribute('href', previousUrl);
     await page.getByRole('button', { name: 'Edit certificate name', exact: true }).click();
     await page.getByRole('textbox', { name: 'Name spelling', exact: true }).fill('Fresh written name');
     await page.getByRole('button', { name: 'Use this spelling', exact: true }).click();
-    await expect(download).toHaveCount(0);
-    await expect(page.getByRole('heading', { name: 'Santa’s message for Dixie', exact: true })).toHaveCount(0);
-    for (const button of await page.locator('.studio-gift-download button').all()) await expect(button).toBeDisabled();
+    await expect(download).toHaveAttribute('href', previousUrl);
+    await expect(page.getByRole('heading', { name: 'First Santa message for Dixie', exact: true })).toBeVisible();
+    for (const button of await page.locator('.smw-written-name .studio-gift-download button').all()) await expect(button).toBeDisabled();
     expect(fixture.state).toEqual(allowance);
     expect(fixture.posts).toHaveLength(1);
     await expect(page.getByRole('button', { name: 'Start Again', exact: true })).toBeVisible();
@@ -1047,7 +1043,7 @@ test('review create placement on desktop and phones, real MP3 playback/download,
   expect(readFileSync(await file.path())).toEqual(fixture.audio,
     'Playback and Download MP3 use the same complete newly rendered recording');
   await expect(page.getByRole('textbox', { name: 'Name spelling', exact: true })).toHaveCount(0);
-  await expect(result.getByRole('heading', { name: 'Santa’s message for Dixie' })).toBeVisible();
+  await expect(result.getByRole('heading', { name: 'First Santa message for Dixie' })).toBeVisible();
   await expect(player).toHaveAttribute('src', url);
   await expect(download).toHaveAttribute('download', 'Santa-message-for-Dixie.mp3');
   const punctuationDownload = page.waitForEvent('download');
@@ -1128,7 +1124,7 @@ test('finished Studio message download is valid and matches the playable recordi
   const download = result.getByRole('link', { name: /Download MP3/ });
   await expect(download).toHaveAttribute('href', recordingUrl);
   await expect(page.getByRole('button', { name: 'Edit certificate name', exact: true })).toHaveCount(0);
-  await expect(result.getByRole('heading', { name: 'Santa’s message for D’Arcy' })).toBeVisible();
+  await expect(result.getByRole('heading', { name: 'First Santa message for D’Arcy' })).toBeVisible();
   await expect(player).toHaveAttribute('src', recordingUrl);
   await expect(download).toHaveAttribute('href', recordingUrl);
   await expect(download).toHaveAttribute('download', 'Santa-message-for-D’Arcy.mp3');

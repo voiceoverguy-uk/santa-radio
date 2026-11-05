@@ -113,7 +113,7 @@ function SantaPicture({ name, elapsed, picture, previousPicture = null, onDissol
 function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio, reducedMotion, onNext,
   staticPreview = false, suppliedLetter = null, reviewHeading = null, downloadReady = false,
   downloadNotice = null, giftRevision = '', downloadUnavailableNotice, variant = null, children,
-  onDownloadRequested, onGiftPreparing }) {
+  onDownloadRequested, onGiftPreparing, requestedGifts }) {
   const promotion = variant === 'promotion' && !staticPreview;
   const views = promotion ? promotionGiftViews : giftViews;
   // Deterministic SSR; randomise only once after mounting in the browser.
@@ -201,6 +201,7 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
     </button>
     {staticPreview && <StudioGiftDownload key={`${giftRevision}-${name}-${downloadReady}-${kind}`}
       kind={kind} ready={downloadReady} name={name} letter={displayLetter}
+      requested={requestedGifts?.[kind]}
       onDownloadRequested={onDownloadRequested} onPreparing={onGiftPreparing}
       picture={picture} unavailableNotice={downloadUnavailableNotice} />}
   </GiftCard>;
@@ -323,7 +324,7 @@ export function StudioGiftPreview({ example, variant = null }) {
 }
 
 export function StudioKeepsakePreview({ name, details = {}, variation, downloadReady = false,
-  downloadNotice, giftRevision, downloadUnavailableNotice, children, onDownloadRequested, onGiftPreparing }) {
+  downloadNotice, giftRevision, downloadUnavailableNotice, children, onDownloadRequested, onGiftPreparing, requestedGifts }) {
   const [localVariation] = useState(createStudioLetterVariation);
   const letter = createStudioLetter(name, () => 0.5, details, variation || localVariation);
   return <GiftExample
@@ -340,6 +341,7 @@ export function StudioKeepsakePreview({ name, details = {}, variation, downloadR
     downloadNotice={downloadNotice}
     downloadUnavailableNotice={downloadUnavailableNotice}
     giftRevision={giftRevision}
+    requestedGifts={requestedGifts}
     onDownloadRequested={onDownloadRequested} onGiftPreparing={onGiftPreparing}
     reviewHeading="Santa gifts"
     children={children}

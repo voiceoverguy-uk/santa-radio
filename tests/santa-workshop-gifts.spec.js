@@ -9,7 +9,7 @@ import { confirmMessage, mockStudioGeneration } from './helpers/studio-generatio
 import { expectLeftAlignedLetter } from './helpers/studio-letter-alignment.js';
 import { expectSampleWatermark } from './helpers/studio-sample-watermark.js';
 
-const giftButtons = page => page.locator('.studio-gift-download button');
+const giftButtons = page => page.locator('.smw-written-name .studio-gift-download button');
 const letterText = page => page.locator('.smw-studio-preview .studio-gifts__preview-stack .studio-gifts__sr');
 const pencil = page => page.getByRole('button', { name: 'Edit certificate name', exact: true });
 async function assertReadOnly(page, name) {
@@ -207,21 +207,21 @@ for (const width of [320, 1365]) {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
     expect(fixture.posts).toHaveLength(1);
 
-    // A deliberate fresh-message route discards the previous local result.
+    // A fresh second draft preserves the first local result but cannot use it
+    // to unlock new gifts, even if its spelling matches the first again.
     const previousAudio = await page.locator('.smw-message-result audio').getAttribute('src');
     await page.getByRole('button', { name: 'Start Again', exact: true }).click();
-    await expect(page.getByRole('dialog', { name: 'Have you downloaded your MP3?' })).toBeVisible();
-    await page.getByRole('button', { name: 'Discard recording and start again', exact: true }).click();
+    await expect(page.getByRole('dialog')).toHaveCount(0);
     await page.locator('.smw-button-next').click();
     for (let stage = 0; stage < 6; stage++) await page.locator('.smw-button-next').click();
     await expect(pencil(page)).toBeVisible();
-    await expect(page.locator('.smw-message-result audio')).toHaveCount(0);
+    await expect(page.locator('.smw-message-result audio')).toHaveCount(1);
     for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
     await spelling(page, 'Fresh spelling');
     await expect(page.locator('.smw-written-name-value')).toHaveText('Fresh spelling');
     for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
-    await expect(page.getByRole('link', { name: /Download MP3/ })).toHaveCount(0);
-    await expect(page.locator('.smw-message-result audio')).toHaveCount(0);
+    await expect(page.getByRole('link', { name: /Download MP3/ })).toHaveCount(1);
+    await expect(page.locator('.smw-message-result audio')).toHaveCount(1);
     expect(fixture.posts).toHaveLength(1);
     await spelling(page, 'Élodie O’Neill');
     for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
@@ -230,13 +230,15 @@ for (const width of [320, 1365]) {
     await confirmMessage(page);
     await expect(page.getByText('Fixture recording unavailable. Try again.', { exact: true })).toBeVisible();
     await expect(pencil(page)).toBeVisible();
-    await expect(page.locator('.smw-message-result audio')).toHaveCount(0);
+    await expect(page.locator('.smw-message-result audio')).toHaveCount(1);
     for (const button of await giftButtons(page).all()) await expect(button).toBeDisabled();
     fixture.fail = false;
     await confirmMessage(page, 'Retry message');
     await assertReadOnly(page, 'Fresh spelling');
     for (const button of await giftButtons(page).all()) await expect(button).toBeEnabled();
-    await expect(page.locator('.smw-message-result audio')).not.toHaveAttribute('src', previousAudio);
+    await expect(page.locator('.smw-message-result audio')).toHaveCount(2);
+    await expect(page.locator('.smw-message-result audio').first()).toHaveAttribute('src', previousAudio);
+    await expect(page.locator('.smw-message-result audio').nth(1)).not.toHaveAttribute('src', previousAudio);
   });
 }
 

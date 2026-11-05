@@ -25,6 +25,20 @@ do not repurpose them into a hidden generation-history store. Never make
 unlimited-voucher creation depend on generation/reporting tables. Paid and
 limited-voucher allowance storage must fail closed if unavailable.
 
+The website may retain two completed recordings and their matching immutable
+gift details during the open visit, including while the second is being edited.
+Beginning the second is non-destructive; unlimited vouchers must not turn this
+into an unbounded recording history.
+
+**Why:** The owner authorised keeping both website Studio messages locally,
+superseding the single-result discard assumption, not the no-archive policy.
+
+**How to apply:** Preserve both through exhausted allowance and temporary
+access-check errors. Clear both on refresh, exit or real access expiry. An
+explicitly confirmed destructive reset clears every retained output. Keep the
+first completed gifts retrievable during second-message composition and after
+failure, separately from the unfinished draft’s locked gift previews.
+
 Paid website purchases are not an exception to temporary audio handling.
 Do not permanently store generated audio or keepsakes or build a recording-retrieval service.
 The emailed link gives a verified paying customer access to BEGIN creating a message,

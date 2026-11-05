@@ -389,6 +389,18 @@
 /* Red Next/Download appearance and geometry: red-actions.css. */
 .smw-button-next, .smw-button-download { margin-left: auto; }
 .smw-review { padding-top: 16px; }
+.smw-gift-selector { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 20px; }
+.smw-gift-selector button {
+  min-width: 56px; min-height: 44px; border: 1px solid var(--smw-gold);
+  border-radius: 9px; background: transparent; color: var(--smw-cream); cursor: pointer;
+}
+.smw-gift-selector button[aria-pressed="true"] { background: var(--smw-gold-light); color: var(--smw-evergreen-deep); font-weight: 700; }
+.smw-gift-selector button:focus-visible { outline: 2px solid var(--smw-gold-light); outline-offset: 4px; }
+.smw-gift-selector button:disabled { opacity: .55; cursor: not-allowed; }
+.smw-gift-selector p { margin: 0; min-width: 0; }
+.smw-retained-gifts { margin-top: 22px; padding: 14px; border: 1px solid #d4af375e; border-radius: 14px; }
+.smw-retained-gifts summary { min-height: 44px; align-content: center; color: var(--smw-gold-light); cursor: pointer; }
+.smw-retained-gifts summary:focus-visible { outline: 2px solid var(--smw-gold-light); outline-offset: 4px; }
 .smw-review-heading { margin-bottom: 20px; }
 .smw-review-description {
   margin: 0 0 16px;

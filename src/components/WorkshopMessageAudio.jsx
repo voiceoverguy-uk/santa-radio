@@ -1,9 +1,9 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useRadio } from './RadioProvider.jsx';
 import MessageCreationIndicator from './MessageCreationIndicator.jsx';
+import StudioCompletedRecording from './StudioCompletedRecording.jsx';
 import { StudioVoucherContext } from '../lib/studioAccessContext.js';
-import { getWorkshopDownloadName, getWorkshopWrittenName } from '../lib/workshopNameSpelling.js';
+import { getWorkshopWrittenName } from '../lib/workshopNameSpelling.js';
 
 const MAX_BYTES = 4_400_000;
 const PREPARATION_MESSAGES = [
@@ -35,12 +35,9 @@ export default function WorkshopMessageAudio({
   showGiftDownloadHint = false, reviewMessageTarget = null, onStartAgain, showReadyAction = true,
   giftsRequested = false, giftExportPending = false, giftWrittenName,
 }) {
-  const radio = useRadio();
   const voucher = useContext(StudioVoucherContext);
   const requestRef = useRef(null);
   const urlRef = useRef(null);
-  const audioRef = useRef(null);
-  const resumeRef = useRef(null);
   const dialogRef = useRef(null);
   const triggerRef = useRef(null);
   const deliveryRef = useRef(null);
@@ -55,19 +52,17 @@ export default function WorkshopMessageAudio({
   spellingRef.current = spelling;
   const [phase, setPhase] = useState('idle');
   const [url, setUrl] = useState('');
-  const [downloadActivated, setDownloadActivated] = useState(false);
+  const [results, setResults] = useState([]);
+  const resultsRef = useRef([]);
   const [error, setError] = useState('');
   const [confirming, setConfirming] = useState(false);
   const [resetConfirmation, setResetConfirmation] = useState(false);
   const resetDialogRef = useRef(null);
   const operationRef = useRef(null);
   const [preparationMessage, setPreparationMessage] = useState('');
-  const [finishedName, setFinishedName] = useState(null);
   const [creationAttempt, setCreationAttempt] = useState(0);
   const writtenName = getWorkshopWrittenName(record?.name || '', spelling);
-  const finishedSpelling = finishedName?.spelling;
-  const finishedWrittenName = finishedName
-    ? getWorkshopWrittenName(finishedName.name, finishedSpelling) : writtenName;
+  const finishedWrittenName = results.at(-1)?.writtenName || writtenName;
   const busy = phase === 'preparing' || phase === 'receiving';
   const showRecording = () => {
     const finished = finishedRef.current;
@@ -126,59 +121,34 @@ export default function WorkshopMessageAudio({
   // on a successful HTTP header or a promotional preview.
   useEffect(() => { onPhaseChange?.(error ? 'error' : phase); }, [phase, error, onPhaseChange]);
 
-  const finishPlayback = useCallback(() => {
-    const resume = resumeRef.current;
-    resumeRef.current = null;
-    resume?.();
-  }, []);
   const clearRecording = useCallback((resetUI = true) => {
     requestRef.current?.abort();
     requestRef.current = null;
     receivedSelection.current = null;
-    const audio = audioRef.current;
-    audio?.pause();
-    audio?.removeAttribute('src');
-    audio?.load();
-    finishPlayback();
-    if (urlRef.current) URL.revokeObjectURL(urlRef.current);
+    document.dispatchEvent(new Event('studio-stop-audio'));
+    for (const result of resultsRef.current) URL.revokeObjectURL(result.url);
+    resultsRef.current = [];
     urlRef.current = null;
     if (resetUI) {
+      setResults([]);
       setUrl('');
-      setFinishedName(null);
-      setDownloadActivated(false);
       setPhase('idle');
       setError('');
     }
-  }, [finishPlayback]);
+  }, []);
   useEffect(() => {
     if (generation.accessExpired) clearRecording();
   }, [generation.accessExpired, clearRecording]);
   useEffect(() => {
-    const otherPlayback = event => {
-      if (event.target !== audioRef.current) {
-        resumeRef.current = null;
-        audioRef.current?.pause();
-      }
-    };
-    const stop = () => { audioRef.current?.pause(); finishPlayback(); };
     // pagehide also covers a page kept in the browser's back/forward cache.
     // Pausing alone would leave its generated Blob available on return.
     const leave = () => clearRecording();
-    document.addEventListener('play', otherPlayback, true);
-    document.addEventListener('studio-stop-audio', stop);
     window.addEventListener('pagehide', leave);
     return () => {
-      document.removeEventListener('play', otherPlayback, true);
-      document.removeEventListener('studio-stop-audio', stop);
       window.removeEventListener('pagehide', leave);
       clearRecording(false);
     };
-  }, [clearRecording, finishPlayback]);
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!visible) { audio?.pause(); finishPlayback(); }
-    return () => { audio?.pause(); finishPlayback(); };
-  }, [visible]);
+  }, [clearRecording]);
 
   const receive = async (response, signal, submittedSelection) => {
     if (!response.ok) {
@@ -214,17 +184,23 @@ export default function WorkshopMessageAudio({
       }
       receivedSelection.current = selection;
     }
+    const completed = receivedSelection.current || submittedSelection;
+    const completedSpelling = completed.record.id === record?.id ? spellingRef.current : '';
     const objectUrl = URL.createObjectURL(new Blob(chunks, { type: 'audio/mpeg' }));
-    audioRef.current?.pause();
-    if (urlRef.current) URL.revokeObjectURL(urlRef.current);
+    // Ordinary unlimited-voucher regeneration replaces only the current slot.
+    // Beginning the second creation has already detached the first from urlRef.
+    if (urlRef.current) {
+      URL.revokeObjectURL(urlRef.current);
+      resultsRef.current = resultsRef.current.filter(result => result.url !== urlRef.current);
+    }
+    const result = { url: objectUrl, record: { ...completed.record }, spelling: completedSpelling,
+      writtenName: getWorkshopWrittenName(completed.record.name, completedSpelling) };
+    resultsRef.current = [...resultsRef.current, result];
+    setResults(resultsRef.current);
     urlRef.current = objectUrl;
     setUrl(objectUrl);
-    setDownloadActivated(false);
     setPhase('ready');
     setError('');
-    const completed = receivedSelection.current || submittedSelection;
-    setFinishedName({ ...completed.record,
-      spelling: completed.record.id === record?.id ? spellingRef.current : '' });
     return completed;
   };
 
@@ -250,7 +226,7 @@ export default function WorkshopMessageAudio({
   };
   const reset = () => {
     if (giftExportPending || busy || resetBlocked) return;
-    if (onStartAgain?.() === false) return;
+    if (onStartAgain?.({ preserve: false }) === false) return;
     setResetConfirmation(false);
     clearRecording();
     operationRef.current = null;
@@ -326,20 +302,27 @@ export default function WorkshopMessageAudio({
     </button>
   );
   const startAction = () => <button className="smw-button smw-button-back" type="button"
-    disabled={busy || giftExportPending || !!status?.pending || (!url && exhausted)}
+    disabled={busy || giftExportPending || !!status?.pending || (!url && exhausted)
+      || (results.length === 1 && resetBlocked)}
     onClick={event => {
-      if (url) {
+      if (url && results.length === 1) {
+        if (resetBlocked || onStartAgain?.({ preserve: true }) === false) return;
+        // Keep the result and its URL alive; only the editable operation resets.
+        urlRef.current = null;
+        setUrl('');
+        setPhase('idle');
+        setError('');
+        operationRef.current = null;
+      } else if (url && results.length === 2) {
         triggerRef.current = event.currentTarget;
         setResetConfirmation(true);
       } else {
         // A lost committed response has no local recording to reset. Starting
         // over deliberately begins a new operation using any remaining slot;
         // ordinary Retry must retain the old ID to avoid double consumption.
-        if (!url) {
-          operationRef.current = null;
-          clearRecording();
-        }
-        onStartAgain?.();
+         if (onStartAgain?.({ preserve: true }) === false) return;
+         operationRef.current = null;
+         if (!results.length) clearRecording();
       }
     }}>
     <span aria-hidden="true">←</span> Start Again
@@ -379,23 +362,13 @@ export default function WorkshopMessageAudio({
     </div>}
     {error && <div className="smw-message-result" role="alert"><p>{error}</p>
     </div>}
-    {url && <section className="smw-message-result smw-message-finished" ref={finishedRef}
-      tabIndex={-1} aria-label="Your finished Santa message">
-      <h4>Santa’s message for {finishedWrittenName}</h4>
-      <p className="smw-wheel-accessible-text" role="status">{phase === 'ready' && !error ? 'Your message is ready.' : ''}</p>
-      <audio ref={audioRef} src={url} controls preload="metadata" aria-label={`Play Santa’s message for ${finishedWrittenName}`}
-        onPlay={event => {
-          const resume = radio?.pauseForMessage?.();
-          if (resume) resumeRef.current = resume;
-          for (const other of document.querySelectorAll('audio')) if (other !== event.currentTarget) other.pause();
-        }} onPause={finishPlayback} onEnded={finishPlayback}
-        onError={() => { finishPlayback(); setError('Your browser could not play this MP3. You can still try downloading it.'); }} />
-      <div className="smw-download-actions"><a className={`smw-button smw-button-download${downloadActivated ? '' : ' smw-button-download--pending'}`} href={url}
-        onClick={() => setDownloadActivated(true)}
-        download={getWorkshopDownloadName(finishedName?.name || record?.name || '',
-          finishedSpelling ?? spelling)}>Download MP3 <span aria-hidden="true">↓</span></a></div>
-      <p className="smw-retention-reminder">Download before leaving or refreshing — your recording isn’t saved.</p>
-    </section>}
+    {results.map((result, index) => <StudioCompletedRecording key={result.url} result={result}
+      ordinal={index + 1} visible={visible}
+      onDownloadRequested={() => {
+        resultsRef.current = resultsRef.current.map(saved => saved.url === result.url ? { ...saved, requested: true } : saved);
+        setResults(resultsRef.current);
+      }}
+      sectionRef={index === results.length - 1 ? finishedRef : undefined} />)}
     </div>
     {url && startAction()}
     {url && messageAction()}
@@ -404,7 +377,7 @@ export default function WorkshopMessageAudio({
       onKeyDown={trapDialogFocus}
       onCancel={event => { event.preventDefault(); cancelReset(); }}>
       <h3 id="smw-reset-title">Have you downloaded your MP3?</h3>
-      <p id="smw-reset-warning">Check that you have saved your MP3 on your device before continuing. Starting again clears this recording and gifts; they cannot be recovered. A download request does not confirm that a file reached your device.</p>
+      <p id="smw-reset-warning">Check that you have saved all your MP3s and gifts on your device before continuing. Starting again clears all retained recordings and their gifts; they cannot be recovered. A download request does not confirm that a file reached your device.</p>
       {!giftsRequested && <p>You haven’t requested all the gifts for {giftWrittenName || finishedWrittenName}. You can still request them before starting again.</p>}
       {resetBlocked && <p role="status">{exhausted
         ? 'Both creations have been used. You cannot start another creation. Keep this page open to play and download your current MP3 and gifts.'

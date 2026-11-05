@@ -43,7 +43,7 @@ async function gift(page, name) {
   await download;
 }
 for (const width of [1365, 390]) {
-  test(`reset checks MP3 download for unlimited access in one activation at ${width}px`, async ({ page }) => {
+  test(`unlimited access preserves the first and confirms discarding both at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     const fixture = await setup(page, false, true);
     await review(page);
@@ -62,6 +62,11 @@ for (const width of [1365, 390]) {
     await page.getByRole('link', { name: 'Download MP3' }).click();
     expect(await (await download).failure()).toBeNull();
     await again.click();
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+    for (let n = 0; n < 7; n++) await page.locator('.smw-actions .smw-button-next').click();
+    await confirmMessage(page);
+    await expect(page.locator('.smw-message-finished')).toHaveCount(2);
+    await again.click();
     await expect(page.getByRole('dialog', { name: 'Have you downloaded your MP3?' })).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(again).toBeFocused();
@@ -72,7 +77,7 @@ for (const width of [1365, 390]) {
     await expect(result(page)).toHaveCount(0);
     for (let n = 0; n < 7; n++) await page.locator('.smw-actions .smw-button-next').click();
     for (const button of await page.locator('.studio-gift-download button').all()) await expect(button).toBeDisabled();
-    expect(fixture.posts).toHaveLength(1);
+    expect(fixture.posts).toHaveLength(2);
   });
 
   test(`failed and pending checks preserve completed MP3 until retry at ${width}px`, async ({ page }) => {
@@ -91,27 +96,25 @@ for (const width of [1365, 390]) {
     });
     await page.evaluate(() => window.dispatchEvent(new Event('focus')));
     await expect(page.locator('.smw-remaining')).toContainText('Checking');
-    await page.getByRole('button', { name: 'Start Again', exact: true }).click();
-    const proceed = page.getByRole('button', { name: 'Discard recording and start again', exact: true });
-    await expect(proceed).toBeDisabled();
+    const again = page.getByRole('button', { name: 'Start Again', exact: true });
+    await expect(again).toBeDisabled();
     release();
     await expect(page.getByRole('alert')).toContainText('recording check failed');
     await expect(page.locator('.smw-remaining')).not.toContainText('Both creations have been used');
-    await expect(proceed).toBeDisabled();
-    await page.keyboard.press('Escape');
+    await expect(again).toBeDisabled();
     await expect(audio).toHaveAttribute('src', source);
     for (const button of await page.locator('.studio-gift-download button').all()) await expect(button).toBeEnabled();
     await page.unroute('**/api/santa-studio-message');
     await page.getByRole('button', { name: 'Retry recording check', exact: true }).click();
     await expect(page.locator('.smw-remaining')).toContainText('1 of 2 creations remaining');
     await page.getByRole('button', { name: 'Start Again', exact: true }).click();
-    await expect(proceed).toBeEnabled();
-    await page.keyboard.press('Escape');
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+    await review(page);
     await expect(audio).toHaveAttribute('src', source);
     expect(fixture.posts).toHaveLength(1);
   });
 
-  test(`paid missing allowance fails closed and expiry blocks an open reset at ${width}px`, async ({ page }) => {
+  test(`paid missing allowance fails closed and expiry clears a retained first at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     const fixture = await setup(page, true);
     await review(page);
@@ -124,11 +127,11 @@ for (const width of [1365, 390]) {
     await confirmMessage(page);
     await expect(result(page)).toBeVisible();
     await page.getByRole('button', { name: 'Start Again', exact: true }).click();
+    await review(page);
     await page.route('**/api/santa-studio-message', route => route.fulfill({ status: 403, json: { error: 'fixture expired' } }));
     await page.evaluate(() => window.dispatchEvent(new Event('focus')));
     await expect(page.getByRole('alert')).toContainText('enter your access code again');
-    await expect(page.getByRole('button', { name: 'Discard recording and start again', exact: true })).toBeDisabled();
-    await page.keyboard.press('Escape');
+    await expect(page.getByRole('dialog')).toHaveCount(0);
     await expect(page.getByRole('heading', { name: 'Time to Review', exact: true })).toBeVisible();
     await expect(result(page)).toHaveCount(0);
     for (const button of await page.locator('.studio-gift-download button').all()) await expect(button).toBeDisabled();
@@ -190,9 +193,7 @@ for (const width of [1365, 390]) {
     expect(fixture.operationIds).toHaveLength(3);
     expect(fixture.operationIds[0]).toBe(fixture.operationIds[1]);
     expect(fixture.operationIds[2]).not.toBe(fixture.operationIds[0]);
-    await page.getByRole('button', { name: 'Start Again', exact: true }).click();
-    await expect(page.getByRole('dialog')).toContainText('Both creations have been used.');
-    await expect(page.getByRole('button', { name: 'Discard recording and start again', exact: true })).toBeDisabled();
+    await expect(page.getByRole('button', { name: 'Start Again', exact: true })).toBeDisabled();
   });
   test(`paid return keeps remaining allowance without recovering audio at ${width}px`, async ({ page }) => {
     test.setTimeout(60000);
@@ -243,31 +244,12 @@ for (const width of [1365, 390]) {
       const again = page.getByRole('button', { name: 'Start Again', exact: true });
       await again.click();
       const dialog = page.getByRole('dialog');
-      await expect(dialog).toBeVisible();
-      await expect(dialog.getByRole('heading')).toHaveText('Have you downloaded your MP3?');
-      await expect(dialog).toContainText('cannot be recovered');
-      await expect(dialog).toContainText('A download request does not confirm that a file reached your device.');
-      await expect(dialog.getByText(/You haven’t requested all the gifts/)).toHaveCount(requested === 'all' ? 0 : 1);
-      await expect(dialog.getByRole('button', { name: 'Back to downloads', exact: true })).toBeFocused();
-      await page.keyboard.press('Escape');
       await expect(dialog).toHaveCount(0);
-      await expect(again).toBeFocused();
-      await expect(result(page).locator('audio')).toHaveAttribute('src', original);
-      await again.click();
-      await page.getByRole('button', { name: 'Back to downloads', exact: true }).click();
-      await expect(result(page).locator('audio')).toHaveAttribute('src', original);
-      await again.click();
-      await page.keyboard.press('Tab');
-      await expect(page.getByRole('button', { name: 'Discard recording and start again', exact: true })).toBeFocused();
-      await page.keyboard.press('Tab');
-      await expect(page.getByRole('button', { name: 'Back to downloads', exact: true })).toBeFocused();
-      await page.keyboard.press('Shift+Tab');
-      await expect(page.getByRole('button', { name: 'Discard recording and start again', exact: true })).toBeFocused();
-      await page.keyboard.press('Enter');
-      await expect(result(page)).toHaveCount(0);
       await review(page);
+      await expect(result(page).locator('audio')).toHaveAttribute('src', original);
       await confirmMessage(page);
       await expect(result(page)).toBeVisible();
+      await expect(page.locator('.smw-message-finished')).toHaveCount(2);
       await expect(page.locator('.smw-remaining')).toContainText('0 of 2 creations remaining');
       for (const label of ['Create 1 more?', 'Create message', 'Retry message']) {
         await expect(page.getByRole('button', { name: label, exact: true })).toHaveCount(0);
@@ -276,7 +258,7 @@ for (const width of [1365, 390]) {
       await expect(result(page).locator('audio')).toBeVisible();
       for (let n = 0; n < 2; n++) {
         const download = page.waitForEvent('download');
-        await page.getByRole('link', { name: 'Download MP3' }).click();
+        await result(page).getByRole('link', { name: 'Download MP3' }).click();
         await download;
         await gift(page, 'Download certificate (PDF)');
         await gift(page, 'Download letter (PDF)');
@@ -308,9 +290,8 @@ for (const width of [1365, 390]) {
     release();
     await expect(page.getByRole('button', { name: 'Retry download certificate (pdf)', exact: true })).toBeVisible();
     await page.getByRole('button', { name: 'Start Again', exact: true }).click();
-    await expect(page.getByRole('dialog').getByRole('heading')).toHaveText(
-      'Have you downloaded your MP3?');
-    await page.getByRole('button', { name: 'Back to downloads', exact: true }).click();
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+    await review(page);
     expect(fixture.state.remaining).toBe(1);
     await expect(result(page)).toBeVisible();
     await page.reload();

@@ -13,7 +13,7 @@ import './WorkshopNameSpelling.css';
 
 export default function WorkshopNameSpelling({ recordedName, spelling, recordingId, onChange, giftDetails, letterVariation,
   completedGift, nameReadOnly = false, downloadReady = false, downloadNotice, messageActionRef,
-  onDownloadRequested, onGiftPreparing }) {
+  onDownloadRequested, onGiftPreparing, requestedGifts }) {
   const fieldId = useId();
   const inputRef = useRef(null);
   const changeButtonRef = useRef(null);
@@ -103,6 +103,7 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
             ? languageError || 'Previews update as you type. Choose Use this spelling to confirm, or Cancel to keep the saved spelling.'
             : downloadNotice}
           giftRevision={completedGift?.revision}
+          requestedGifts={requestedGifts}
           onDownloadRequested={onDownloadRequested} onGiftPreparing={onGiftPreparing}
         >
           <div className="smw-review-create-row">
