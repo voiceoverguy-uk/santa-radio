@@ -45,9 +45,19 @@ in-memory audio cache. Playback is click-only and preserves the exact recording
 variant. Changing/clearing the recording or leaving Studio releases the cache;
 moving between stages stops playback without discarding successful audio.
 
+Choosing an approved suggestion commits its display name immediately. A
+Studio-owned lookup resolves the protected recording in the background, surviving
+Continue, Back and review edits without duplicate requests or stage changes.
+Typing alone is not a selection. Both Continue controls accept an explicit
+choice while lookup is pending or failed; generation and Play still require a
+resolved recording. Multiple matches require an explicit variant, with a route
+from Review back to the name step. Lookup errors/timeouts can be retried on that
+step or Review. Replacement, clearing and leaving Studio cancel obsolete work.
+
 Focused private-lookup checks (separate from the legacy preview suite):
 
 ```sh
 npx playwright test --config playwright.workshop.config.js tests/santa-workshop-name-preview-step-one.spec.js --project=chromium
+npx playwright test --config playwright.workshop.config.js tests/santa-workshop-browser-names.spec.js --project=chromium
 node --test scripts/workshop-name-preview.test.mjs scripts/workshop-name-preview-cache.test.mjs
 ```

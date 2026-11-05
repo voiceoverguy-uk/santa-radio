@@ -23,6 +23,7 @@ import WorkshopExplainerCards from '../components/WorkshopExplainerCards.jsx';
 import './SantaMessageWorkshop.css';
 import useStudioGeneration from '../hooks/useStudioGeneration.js';
 import { studioSelectionIdentity } from '../lib/studioSelectionIdentity.js';
+import useWorkshopNameResolution from '../hooks/useWorkshopNameResolution.js';
 
 const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
@@ -207,11 +208,15 @@ export default function SantaMessageWorkshop() {
   // rotating example or a name saved in browser storage.
   const [initialRecipient] = useState(() => recipient || '');
   const [stageIndex, setStageIndex] = useState(0);
-  const [choices, setChoices] = useState(emptyChoices);
+  const [storedChoices, setChoices] = useState(emptyChoices);
   const [talentCategory, setTalentCategory] = useState('sports');
   const [activityCategory, setActivityCategory] = useState('trying');
   const [destinationCategory, setDestinationCategory] = useState('countries');
-  const [selectedName, setSelectedName] = useState(null);
+  const nameResolution = useWorkshopNameResolution();
+  const chosenName = nameResolution.choice;
+  const selectedName = nameResolution.record;
+  const choices = { ...storedChoices,
+    name: chosenName ? `${chosenName.name}${chosenName.variant ? ` — ${chosenName.variant}` : ''}` : '' };
   const [namePreviewCache] = useState(createWorkshopNamePreviewCache);
   // Keep a clip across other detail edits, but clear it when its recipient
   // changes or the visitor leaves Studio.
@@ -286,7 +291,7 @@ export default function SantaMessageWorkshop() {
     : [];
   const hasCatalogueOptions = catalogueState.status === 'ready' && catalogueOptions.length > 0;
   const hasCurrentStageChoice = stage?.key === 'name'
-    ? !!selectedName && !!choices.name
+    ? !!chosenName
     : stage?.key === 'talent'
       ? choices.talent?.skip === true || (choices.talent?.category === talentCategory
         && catalogueOptions.some(record => record.id === choices.talent.id))
@@ -461,7 +466,7 @@ export default function SantaMessageWorkshop() {
     if (generation.state?.limit === 2) {
       setChoices(emptyChoices());
       setActivityCategory('trying');
-      setSelectedName(null);
+      nameResolution.choose(null);
       setNameSpelling('');
     }
     // Completed audio reaches here only after an explicit discard confirmation.
@@ -608,18 +613,18 @@ export default function SantaMessageWorkshop() {
               ) : stage.key === 'name' ? (
                 <div className="smw-activity-preview-layout smw-name-preview-layout">
                   <WorkshopNamePicker
-                    initialName={initialRecipient}
-                    selected={selectedName}
+                    initialName={nameResolution.touched ? '' : initialRecipient}
+                    selected={chosenName}
+                    resolution={nameResolution}
                     previewCache={namePreviewCache}
-                    onRefreshSelection={setSelectedName}
                     invalid={!!error}
                     onSelect={record => {
-                      if (record && record.id !== selectedName?.id) setNameSpelling('');
-                      setSelectedName(record);
+                      if (record?.id !== chosenName?.id) setNameSpelling('');
+                      nameResolution.choose(record);
                       choose('name', record ? `${record.name}${record.variant ? ` — ${record.variant}` : ''}` : '');
                     }}
                   />
-                  <WorkshopWordingPreview wording={stage.wording} selectedText={selectedName?.name || ''} />
+                  <WorkshopWordingPreview wording={stage.wording} selectedText={chosenName?.name || ''} />
                 </div>
               ) : stage.key === 'talent' ? (
                 <div className="smw-talent-step">
@@ -739,7 +744,7 @@ export default function SantaMessageWorkshop() {
                   />}
                   <WorkshopWordingPreview
                     wording={stage.wording}
-                    name={selectedName?.name || ''}
+                    name={chosenName?.name || ''}
                     heading={stage.key === 'activity' ? 'Santa will say:' : 'Santa will say…'}
                     selectedText={stage.key === 'age'
                       ? catalogueOptions.find(option => option.id === choices.age)?.label || ''
@@ -786,7 +791,7 @@ export default function SantaMessageWorkshop() {
                       <dd>{item.key === 'name'
                         ? <span className="smw-name-review-value">
                             <span className="smw-summary-answer">{choices.name || 'Not chosen'}</span>
-                            <WorkshopNamePreview key={selectedName?.id} record={selectedName} cache={namePreviewCache} />
+                            {selectedName && <WorkshopNamePreview key={selectedName.id} record={selectedName} cache={namePreviewCache} />}
                           </span>
                         : item.key === 'talent'
                           ? <span className="smw-summary-answer">{choices.talent?.skip
@@ -810,9 +815,19 @@ export default function SantaMessageWorkshop() {
                   </div>
                 ))}
               </dl>
+              {chosenName && !selectedName && <div className="smw-stage-note" role="status">
+                <p>{nameResolution.status === 'loading'
+                  ? 'Finding Santa’s recording… You can review your other details.'
+                  : nameResolution.status === 'variants'
+                    ? 'Choose the exact name recording before creating your message.'
+                    : nameResolution.error}</p>
+                {nameResolution.status === 'error' && <button type="button" className="smw-change"
+                  onClick={nameResolution.retry}>Retry recording lookup</button>}
+                <button type="button" className="smw-change" onClick={() => editStage(0)}>Check name recording</button>
+              </div>}
               {destinationValid && regionalEditorial.ready ? <WorkshopNameSpelling
-                key={selectedName?.id}
-                recordedName={selectedName?.name || ''}
+                key={chosenName?.name}
+                recordedName={chosenName?.name || ''}
                 recordingId={selectedName?.id ?? ''}
                 spelling={nameSpelling}
                 letterVariation={letterVariation}

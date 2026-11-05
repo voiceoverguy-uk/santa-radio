@@ -168,6 +168,9 @@ test('clearing or replacing the name stops playback, discards audio and resets f
   await selectName(page);
   await playButton(page).click();
   await expect(stopButton(page)).toBeVisible();
+  // Stop is visible during download too; wait for a successful cached clip
+  // before asserting that replacement revokes its object URL.
+  await expect(page.locator('.smw-name-preview-status')).toHaveText('Playing name…');
   await page.getByRole('combobox').fill('Dix');
   await expect(page.locator('.smw-name-preview-button')).toHaveCount(0);
   await expectStopped(page);
@@ -216,6 +219,27 @@ for (const action of ['stop', 'clear', 'advance', 'leave']) {
       await playButton(page).click();
       await expect(stopButton(page)).toHaveAttribute('aria-busy', 'false');
     }
+  });
+}
+
+for (const mode of ['reject', 'hold', 'download-failure']) {
+  test(`Continue does not depend on ${mode} preview audio`, async ({ page }) => {
+    if (mode === 'download-failure') {
+      await page.route('**/api/santa-name-preview?token=*', route => route.fulfill({ status: 503 }));
+    } else await page.addInitScript(mode => { window.previewMode = mode; }, mode);
+    await openStudio(page);
+    await selectName(page);
+    await playButton(page).click();
+    if (mode === 'hold') await expect(stopButton(page)).toHaveAttribute('aria-busy', 'true');
+    else await expect(page.locator('.smw-name-preview-error')).toContainText(
+      mode === 'reject' ? 'browser blocked' : 'temporarily unavailable');
+    // Both entry points remain usable even after playback failure or while held.
+    await page.getByRole('button', { name: 'Continue to next step', exact: true }).click();
+    await expect(page.getByRole('heading', { name: 'How old are they?' })).toBeVisible();
+    await expectStopped(page);
+    await page.getByRole('button', { name: 'Back', exact: true }).click();
+    await next(page);
+    await expect(page.getByRole('heading', { name: 'How old are they?' })).toBeVisible();
   });
 }
 
