@@ -11,6 +11,7 @@ for (const [input, output] of [
   ['free-intro.mp3', 'intro.wav'],
   ['free-outro-1.mp3', 'outro-1.wav'],
   ['free-outro-2.mp3', 'outro-2.wav'],
+  ['free-outro-nov.mp3', 'outro-nov.wav'],
 ]) {
   const result = spawnSync(ffmpeg, ['-hide_banner', '-nostdin', '-loglevel', 'error',
     '-y', '-threads', '1', '-filter_threads', '1',

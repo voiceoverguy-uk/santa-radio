@@ -8,10 +8,12 @@ export const recipeFiles = [
   'server/santa-audio/free-intro.mp3',
   'server/santa-audio/free-outro-1.mp3',
   'server/santa-audio/free-outro-2.mp3',
+  'server/santa-audio/free-outro-nov.mp3',
   'server/santa-audio/sleighbells.mp3',
   'scripts/santa-audio-filters.mjs',
   'scripts/prepare-santa-audio.mjs',
   'server/santa-message.js',
+  'server/santa-free-ending.js',
   'server/santa-name-library.js',
   'node_modules/ffmpeg-static/package.json',
 ];
@@ -21,7 +23,7 @@ export function santaAudioRecipeVersion(
   nameSha256 = savedSantaGreeting.nameSha256,
   outro = 1,
 ) {
-  if (outro !== 1 && outro !== 2) throw new RangeError('Invalid Santa outro.');
+  if (outro !== 1 && outro !== 2 && outro !== 'nov') throw new RangeError('Invalid Santa outro.');
   const hash = createHash('sha256');
   hash.update(JSON.stringify({
     schema: 'arabella-saved-greeting-v1',

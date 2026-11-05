@@ -53,6 +53,9 @@ for (const file of ['Demrie.wav', 'Demrie.MP3', 'Mary Jane.MP3', 'Seán.mp3', 'S
     // No live accounts, database reservations or publishing in audio fixtures.
     limit: async () => {}, authorize: async () => ({ subject: 'hosted-fixture' }),
     verify: token => token, reserve: async () => ({}), finish: async () => {},
+    // This fixture checks the ordinary outro-1 duration. Seasonal boundaries
+    // are exercised separately with the same real renderer and a mutable clock.
+    now: () => new Date('2026-12-01T00:00:00Z'),
   }), names = createSantaNamesHandler(library, { limit: async () => {}, token: id => id });
   const server = createServer((req, res) => req.url.startsWith('/api/santa-names') ? names(req, res) : message(req, res));
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));

@@ -11,6 +11,7 @@ import { renderArgs } from '../scripts/santa-audio-filters.mjs';
 import { eligibleArabella } from './santa-saved-cache.js';
 import { consumeNameAccess, privateResponse, verifyNameToken } from './santa-name-security.js';
 import { authorizeFreeMessage, reserveFreeMessage, finishFreeMessage } from './santa-message-access.js';
+import { resolveFreeEnding } from './santa-free-ending.js';
 
 const execute = promisify(execFile);
 const sources = fileURLToPath(new URL('./santa-audio/', import.meta.url));
@@ -21,6 +22,7 @@ let active = 0;
 export function createSantaMessageHandler(library = santaNameLibrary, cache = null, {
   limit = consumeNameAccess, verify = verifyNameToken,
   authorize = authorizeFreeMessage, reserve = reserveFreeMessage, finish = finishFreeMessage,
+  now = () => new Date(),
 } = {}) {
 return async function santaMessage(req, res) {
   privateResponse(res);
@@ -66,9 +68,11 @@ return async function santaMessage(req, res) {
     const recording = await library.resolve(data?.name);
     if (!recording) return fail(400, 'That name is not available yet. Choose a suggested name.');
     lease = await reserve(session);
+    // Resolve once at generation time, not module load or browser-page load.
+    const outro = resolveFreeEnding(data.outro, now());
     let prepared;
     if (cache && eligibleArabella(recording)) {
-      try { prepared = await cache.prepare(recording, library, data.outro); }
+      try { prepared = await cache.prepare(recording, library, outro); }
       catch { console.info('[santa-cache]', { event: 'prepare', code: 'REVISION_UNAVAILABLE' }); }
     }
     const generate = async () => {
@@ -84,7 +88,7 @@ return async function santaMessage(req, res) {
       // synchronous FFmpeg child alive, competing with subsequent requests.
       await execute(ffmpegPath, renderArgs(
         join(sources, 'prepared', 'intro.wav'), nameClip,
-        join(sources, 'prepared', `outro-${data.outro}.wav`), join(sources, 'sleighbells.mp3'), output, true,
+        join(sources, 'prepared', `outro-${outro}.wav`), join(sources, 'sleighbells.mp3'), output, true,
       ), { timeout: 90000, killSignal: 'SIGKILL', maxBuffer: 64 * 1024 });
       renderMs = Math.round(performance.now() - renderStarted);
       const audio = await readFile(output);
@@ -92,7 +96,7 @@ return async function santaMessage(req, res) {
       return audio;
     };
     const audio = cache && eligibleArabella(recording)
-      ? await cache.singleFlight(prepared?.identity.key || `${recording.id}-${data.outro}`, generate) : await generate();
+      ? await cache.singleFlight(prepared?.identity.key || `${recording.id}-${outro}`, generate) : await generate();
     const downloadName = santaMessageDownloadName(recording.name);
     const asciiFilename = downloadName.normalize('NFKD').replace(/\p{M}/gu, '').replace(/[^\x20-\x7e]/g, '_');
     await finish(lease, true);

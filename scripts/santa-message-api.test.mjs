@@ -13,6 +13,7 @@ const handler = createSantaMessageHandler(createNameLibrary({
   // enforcement is exercised separately in security-hardening.test.mjs.
   limit: async () => {}, authorize: async () => ({ subject: 'audio-fixture' }),
   verify: token => token, reserve: async () => ({}), finish: async () => {},
+  now: () => new Date('2026-12-01T00:00:00Z'),
 });
 
 let server;

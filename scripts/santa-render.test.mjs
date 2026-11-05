@@ -114,13 +114,14 @@ test('Studio maximum 175-second speech still fits unchanged MP3 byte limits with
   } finally { await rm(dir, { recursive: true, force: true }); }
 });
 
-test('the MP3 intro and both MP3 outros match the latest uploads; shared preparation retains source duration', async () => {
+test('the MP3 intro and all MP3 outros match the latest uploads; shared preparation retains source duration', async () => {
   const source = 'server/santa-audio';
   // Pin the supplied MP3s without depending on ignored uploads in a clean checkout.
   for (const [segment, hash] of [
     ['intro', '38ed43ef4e99842f48df801c073d50a41826db1b5b59b34829268275bba139dc'],
     ['outro-1', '8fbda6ab90ffd876002e8e5fc35a3a7181c2f3c712ede56e4be2dfa8a31de0fd'],
     ['outro-2', '3743e05263780e357e2907f5a70790f57cd700272b84d9f7b4641ea0e80a597e'],
+    ['outro-nov', '74af54f53ddb31cf137e3b091002cc0ff86aa465cb27e26f898d0407cf13011b'],
   ]) {
     assert.equal(createHash('sha256').update(await readFile(`${source}/free-${segment}.mp3`)).digest('hex'), hash);
     assert.equal(pcm(['-i', `${source}/prepared/${segment}.wav`]).length,
@@ -170,7 +171,7 @@ test('all three segments retain leading, internal and trailing silence and join 
   } finally { await rm(dir, { recursive: true, force: true }); }
 });
 
-for (const outro of [1, 2]) test(`lossless shared clips preserve the full outro-${outro} render, pauses and 192k stereo MP3`, { timeout: 30000 }, async () => {
+for (const outro of [1, 2, 'nov']) test(`lossless shared clips preserve the full outro-${outro} render, pauses and 192k stereo MP3`, { timeout: 30000 }, async () => {
   const dir = await mkdtemp(join(tmpdir(), 'santa-equivalence-'));
   try {
     const source = 'server/santa-audio';

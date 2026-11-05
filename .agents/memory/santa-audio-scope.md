@@ -2,6 +2,17 @@
 name: Personalised Santa audio scope
 description: Audio-only product direction and incremental name-library rollout.
 ---
+The owner's November ending is exclusive to newly generated website free messages
+during November. At midnight on 1 December, Europe/London, the original two-ending
+behaviour returns automatically. Paid Studio, public examples and completed
+messages are outside this seasonal change.
+
+**Why:** The owner specified an annual free-message seasonal recording, not a
+replacement of the approved endings or a site-wide seasonal audio change.
+
+**How to apply:** Preserve this product boundary in future seasonal work; changing
+the free-message ending does not authorise altering Studio or public examples.
+
 The owner-hosted name folder can fail as a directory page while individual WAV URLs and a standalone PHP listing still work. In October 2026, the directory was routed through an incompatible WordPress/PHP installation, but an owner-uploaded standalone listing ran successfully.
 
 **Why:** Repeated directory requests returned HTTP 500, but a directly addressed supplied WAV downloaded and produced a playable greeting.
