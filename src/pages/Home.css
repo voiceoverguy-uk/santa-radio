@@ -113,9 +113,10 @@
   outline-offset: 4px;
 }
 .santa-dash-promo {
+  --santa-dash-section-space: clamp(32px, 5vw, 58px);
   position: relative;
   overflow: hidden;
-  padding: clamp(32px, 5vw, 58px) max(6vw, 24px);
+  padding: calc(var(--santa-dash-section-space) + var(--santa-dash-section-space) + 12px) max(6vw, 24px) 0;
   border-block: 1px solid #d4af3750;
   background:
     radial-gradient(ellipse at 50% 0%, #2e553b80 0%, transparent 58%),
@@ -206,7 +207,7 @@ html[data-effects="off"] .hero-snow,html[data-effects="off"] .hero-aurora { disp
   .partnership-strip__body { font-size: .88rem; line-height: 1.62; }
   .partnership-strip__supporting { font-size: .72rem; line-height: 1.6; overflow-wrap: anywhere; }
   .partnership-strip__button { align-self: stretch; width: 100%; min-width: 0; min-height: 56px; padding-inline: 16px; }
-  .santa-dash-promo { padding: 34px 16px 38px; }
+  .santa-dash-promo { padding: 84px 16px 0; }
   .santa-dash-promo__download { max-width: 100%; padding-inline: 16px; font-size: .69rem; }
   .hero { display: block; min-height: 94dvh; padding: 128px 26px 140px; }
   .hero-content { display: block; padding: 0; }

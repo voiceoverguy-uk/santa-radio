@@ -1,0 +1,62 @@
+.smw-message-preparing > p { margin: 0 0 8px; }
+.smw-preparation-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.smw-preparation-controls {
+  display: flex;
+  flex: 0 1 auto;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.smw-preparation-controls .message-creation-indicator { flex: 0 1 240px; min-width: 0; }
+.smw-preparation-row > .studio-runner-lane { flex: 1 1 280px; max-width: 280px; min-width: 0; }
+@media (max-width: 760px) {
+  .smw-preparation-row { flex-direction: column; align-items: stretch; }
+  .smw-preparation-controls { flex-wrap: wrap; }
+  .smw-preparation-row > .studio-runner-lane { flex: 0 0 auto; width: 100%; max-width: 100%; }
+}
+
+.studio-runner-lane {
+  position: relative;
+  min-width: 0;
+  height: 64px;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  container-type: inline-size;
+}
+.studio-runner-travel {
+  position: absolute;
+  inset-block-end: 0;
+  left: 0;
+  display: block;
+  width: 60px;
+  animation: studio-runner-cross 7s linear infinite alternate;
+}
+.studio-runner-travel img {
+  display: block;
+  width: 100%;
+  height: 64px;
+  object-fit: contain;
+  object-position: center bottom;
+  animation: studio-runner-face 14s steps(1, end) infinite;
+}
+/* Endpoints: flush left (0) to flush right (lane width - 60px). */
+@keyframes studio-runner-cross {
+  from { transform: translateX(0); }
+  to { transform: translateX(max(0px, calc(100cqw - 60px))); }
+}
+/* Outbound faces right; returning leg (second 7s) faces left. */
+@keyframes studio-runner-face {
+  0% { transform: scaleX(1); }
+  50% { transform: scaleX(-1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .studio-runner-travel,
+  .studio-runner-travel img { animation: none; }
+  .studio-runner-travel { left: 50%; transform: translateX(-50%); }
+}

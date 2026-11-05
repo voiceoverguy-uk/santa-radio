@@ -39,3 +39,14 @@ advance crossed the count-up boundary despite looking just below five seconds.
 **How to apply:** Use margin for recovery checks unless the timer's start is
 explicitly synchronised. Test exact interval boundaries separately from network
 recovery, starting from a paused clock after the initial response has settled.
+
+Use `fastForward` for long waiting intervals on pages with unrelated ambient RAF
+work, and sample the target CSS animation separately at controlled times.
+
+**Why:** Advancing every frame through several seconds of homepage timers made
+otherwise-correct jump checks excessively slow because the page also runs
+unrelated decorative work.
+
+**How to apply:** Do not skip interval ticks when those ticks are the behaviour
+under test. For a one-shot delay, skip the waiting time, verify its boundaries,
+and then inspect the actual animation path and landing independently.

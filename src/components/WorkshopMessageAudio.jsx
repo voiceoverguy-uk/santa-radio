@@ -1,9 +1,11 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import MessageCreationIndicator from './MessageCreationIndicator.jsx';
+import StudioPreparationRunner from './StudioPreparationRunner.jsx';
 import StudioCompletedRecording from './StudioCompletedRecording.jsx';
 import { StudioVoucherContext } from '../lib/studioAccessContext.js';
 import { getWorkshopWrittenName } from '../lib/workshopNameSpelling.js';
+import { selectStudioRunnerCostume } from '../lib/studioPreparationRunner.js';
 
 const MAX_BYTES = 4_400_000;
 const PREPARATION_MESSAGES = [
@@ -61,6 +63,7 @@ export default function WorkshopMessageAudio({
   const operationRef = useRef(null);
   const [preparationMessage, setPreparationMessage] = useState('');
   const [creationAttempt, setCreationAttempt] = useState(0);
+  const [runnerCostume, setRunnerCostume] = useState('classic');
   const writtenName = getWorkshopWrittenName(record?.name || '', spelling);
   const finishedWrittenName = results.at(-1)?.writtenName || writtenName;
   const busy = phase === 'preparing' || phase === 'receiving';
@@ -255,6 +258,7 @@ export default function WorkshopMessageAudio({
     const controller = new AbortController();
     requestRef.current = controller;
     setPreparationMessage(PREPARATION_MESSAGES[Math.floor(Math.random() * PREPARATION_MESSAGES.length)]);
+    setRunnerCostume(selectStudioRunnerCostume());
     setPhase('preparing');
     const payload = { name: record.id, ...Object.fromEntries(
       ['age', 'activity', 'achievement', 'treat', 'place'].map(key => [key, choices[key]]),
@@ -356,10 +360,15 @@ export default function WorkshopMessageAudio({
         Retry recording check</button></>}
     </p>}
     <div className="smw-delivery" ref={deliveryRef} tabIndex={-1} role="group" aria-label="Message preparation and recording">
-    {busy && <div className="smw-message-result" role="status" aria-live="polite">
-      <p>{phase === 'receiving' ? 'Receiving your finished MP3…' : preparationMessage}</p>
-      <MessageCreationIndicator />
-      <button className="smw-change" type="button" onClick={cancel}>Cancel preparation</button>
+    {busy && <div className="smw-message-result smw-message-preparing">
+      <p role="status" aria-live="polite">{phase === 'receiving' ? 'Receiving your finished MP3…' : preparationMessage}</p>
+      <div className="smw-preparation-row">
+        <div className="smw-preparation-controls">
+          <MessageCreationIndicator />
+          <button className="smw-change" type="button" onClick={cancel}>Cancel preparation</button>
+        </div>
+        <StudioPreparationRunner key={creationAttempt} costume={runnerCostume} />
+      </div>
     </div>}
     {error && <div className="smw-message-result" role="alert"><p>{error}</p>
     </div>}

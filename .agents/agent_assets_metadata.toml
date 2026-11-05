@@ -1232,3 +1232,45 @@ mtime_ms = 1793845368705
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/448d0ed7-b3a9-4910-bb24-92f0796b34b3/d49a74a0-1786-488b-a7e5-19d74033db34"
 storage_version_token = "1793845868238873"
 content_type = "application/pdf"
+
+[[outputs]]
+id = "aiPTEj8ZYw_wZrBg5_-8x"
+uri = "file://generated-artifacts/creation-paid-1365-no-preference.png"
+type = "image"
+title = "Studio preparation — desktop"
+description = "Classic Santa runs in the right-hand lane while the existing gold indicator and Cancel preparation control remain available."
+logical_id = "f5e290fe-be6a-48f1-baad-6440422db236"
+content_hash = "sha256:428d829c9b7d9df47b0b65a317a5a67a0a60bb928b797e1bc21ac1825e670f08"
+size = 17117
+mtime_ms = 1793885525980
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/f5e290fe-be6a-48f1-baad-6440422db236/d4a2bf55-f5bd-4e84-9c18-207cbf799fa9"
+storage_version_token = "1793885668005026"
+content_type = "image/png"
+
+[[outputs]]
+id = "6n54kD3VztjNhYU4xVehx"
+uri = "file://generated-artifacts/creation-paid-320-no-preference.png"
+type = "image"
+title = "Studio preparation — mobile"
+description = "At 320px wide, Santa’s clipped lane sits below the preparation controls inside the same panel."
+logical_id = "2dc482e3-3d66-4df1-b7c9-537fd1ddcc72"
+content_hash = "sha256:1456277689ce2275cc43b70177eded032f8dc49bee5e93095f3a265dacdb9b0f"
+size = 14478
+mtime_ms = 1793885513748
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/2dc482e3-3d66-4df1-b7c9-537fd1ddcc72/758fe578-533e-4d45-b6dc-ad763e6a63c5"
+storage_version_token = "1793885668665106"
+content_type = "image/png"
+
+[[outputs]]
+id = "FmiGMmAiB74SStemdtvJy"
+uri = "file://generated-artifacts/santa-dash-runner-1440-no-preference.png"
+type = "image"
+title = "Santa Dash homepage runner"
+description = "Classic Santa in the lane beneath the existing banner and download button; he runs across and then returns."
+logical_id = "90d6951a-2101-43ec-846a-592ea412c4b6"
+content_hash = "sha256:008a2520fe23b6d5212fd95a1ff46add6b70ed7334f26289814bf9423d7a8131"
+size = 1570887
+mtime_ms = 1793885969620
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/90d6951a-2101-43ec-846a-592ea412c4b6/8628a52f-59a9-4a38-9b84-277d83e401bb"
+storage_version_token = "1793886019471704"
+content_type = "image/png"

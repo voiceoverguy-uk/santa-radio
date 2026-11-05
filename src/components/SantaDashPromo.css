@@ -189,6 +189,18 @@
   border: 0;
 }
 
+.santa-dash-promo__runner {
+  width: 100%;
+  margin-top: 0;
+}
+
+/* classic.webp has a transparent bottom margin (~6px when scaled); nudge the
+   homepage runner down so his feet meet the section floor. */
+.santa-dash-promo__runner .studio-runner-travel img {
+  position: relative;
+  top: 5px;
+}
+
 @media (max-width: 540px) {
   .santa-dash-promo__handset {
     width: min(72%, 560px);

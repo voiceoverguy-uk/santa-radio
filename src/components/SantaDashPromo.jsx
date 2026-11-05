@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import santaDashArtwork from '../assets/home/santa-dash-wobbly-bob.webp';
 import HomepageSectionHeading from './HomepageSectionHeading.jsx';
+import HomepageSantaRunner from './HomepageSantaRunner.jsx';
 import './SantaDashPromo.css';
 
 const GAMEPLAY_URL = '/media/santa-dash-gameplay-v1.mp4';
@@ -302,6 +303,9 @@ export default function SantaDashPromo() {
         >
           Download Santa Dash for iPhone and iPad <span aria-hidden="true">→</span>
         </a>
+        <div className="santa-dash-promo__runner">
+          <HomepageSantaRunner />
+        </div>
       </div>
     </section>
   );

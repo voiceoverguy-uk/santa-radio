@@ -8,6 +8,8 @@ import { confirmMessage, mockStudioGeneration, emptyGeneration, settleStudioScro
 import { SCHOOL_TEST_START, SCHOOL_TEST_DEADLINE } from '../server/santa-workshop-settings.js';
 import { checkCreationIndicator, holdRecordingBody } from './helpers/message-creation-indicator.js';
 import { mockSantaNames } from './helpers/message-access.js';
+import { checkStudioRunner, rememberStudioRunner, expectSameStudioRunner } from './helpers/studio-runner.js';
+import { STUDIO_RUNNER_COSTUMES, selectStudioRunnerCostume } from '../src/lib/studioPreparationRunner.js';
 
 const path = '/santa-message-workshop';
 const answers = ['9 years old', 'Teamwork', 'Completing a jigsaw puzzle', 'Bûche de Noël', 'The Enchanted Forest'];
@@ -25,24 +27,146 @@ const preparationMessages = [
   'Santa is busy recording. We’ve hidden the mince pies until he’s finished.',
 ];
 
+test('Studio runner configuration defaults to Classic and allowlists exactly the supplied costumes', () => {
+  expect(selectStudioRunnerCostume()).toBe('classic');
+  expect(selectStudioRunnerCostume('unexpected', () => { throw Error('Must not randomise'); })).toBe('classic');
+  expect(STUDIO_RUNNER_COSTUMES).toEqual([
+    'classic', 'midnight', 'elf-boss', 'golden', 'bedtime', 'holiday',
+    'funny', 'bizniz', 'kilty', 'frank', 'fairy',
+  ]);
+  for (const [index, costume] of STUDIO_RUNNER_COSTUMES.entries()) {
+    expect(selectStudioRunnerCostume('random', () => (index + .5) / 11)).toBe(costume);
+    for (const suffix of ['.webp', '-still.png']) {
+      expect(readFileSync(`public/images/studio-runners/${costume}${suffix}`).length).toBeGreaterThan(0);
+    }
+  }
+  expect(selectStudioRunnerCostume('random', () => 0)).toBe('classic');
+  expect(selectStudioRunnerCostume('random', () => .999999)).toBe('fairy');
+});
+
+for (const motion of ['reduce', 'no-preference']) {
+  test(`Studio runner opt-in random mode chooses once per accepted attempt with ${motion}`, async ({ page }) => {
+    test.setTimeout(90000);
+    // Exercise the documented build-time switch in an isolated browser module,
+    // without changing the shipped default or adding a visitor-facing override.
+    await page.route('**/src/lib/studioPreparationRunner.js*', async route => {
+      const response = await route.fetch();
+      let body = await response.text();
+      expect(body).toMatch(/STUDIO_RUNNER_MODE = ['"]classic['"]/);
+      body = body.replace(/STUDIO_RUNNER_MODE = ['"]classic['"]/, "STUDIO_RUNNER_MODE = 'random'")
+        .replace('random = Math.random', 'random = () => { window.runnerSelections = (window.runnerSelections || 0) + 1; return window.nextRunnerRandom; }');
+      await route.fulfill({ response, body });
+    });
+    const requests = [];
+    page.on('request', request => {
+      if (request.url().includes('/images/studio-runners/')) requests.push(new URL(request.url()).pathname);
+    });
+    const fixture = await openReview(page);
+    await page.emulateMedia({ reducedMotion: motion });
+    expect(requests).toEqual([]);
+    await page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Go back and edit' }).click();
+    expect(await page.evaluate(() => window.runnerSelections || 0)).toBe(0);
+    await expect(page.locator('.studio-runner-lane')).toHaveCount(0);
+    await holdRecordingBody(page, '/api/santa-studio-message');
+    const selected = [];
+    for (const [attempt, index] of [0, 5, 10, 5].entries()) {
+      const costume = STUDIO_RUNNER_COSTUMES[index];
+      selected.push(`/images/studio-runners/${costume}${motion === 'reduce' ? '-still.png' : '.webp'}`);
+      let release;
+      fixture.hold = new Promise(resolve => { release = resolve; });
+      await page.evaluate(value => { window.nextRunnerRandom = value; }, (index + .5) / 11);
+      await confirmMessage(page, attempt === 2 ? 'Retry message' : 'Create message');
+      await checkStudioRunner(page, motion, costume);
+      await rememberStudioRunner(page);
+      expect(await page.evaluate(() => window.runnerSelections)).toBe(attempt + 1);
+      if (attempt === 1) {
+        fixture.fail = true;
+        release();
+        await expect(page.getByRole('alert')).toContainText('Fixture recording unavailable.');
+        fixture.fail = false;
+      } else {
+        release();
+        await expect(page.getByText('Receiving your finished MP3…', { exact: true })).toBeVisible();
+        await expectSameStudioRunner(page);
+        // A parent spelling update must not choose or remount the runner.
+        await page.getByRole('button', { name: 'Edit certificate name', exact: true }).click();
+        await page.getByRole('textbox', { name: 'Name spelling', exact: true }).fill('Dixie Rose');
+        await page.getByRole('button', { name: 'Use this spelling', exact: true }).click();
+        await expectSameStudioRunner(page);
+        await page.getByRole('button', { name: 'Cancel preparation' }).focus();
+        await page.keyboard.press('Enter');
+      }
+      await expect(page.locator('.studio-runner-lane')).toHaveCount(0);
+      expect(await page.evaluate(() => window.runnerSelections)).toBe(attempt + 1);
+    }
+    expect([...new Set(requests)].sort()).toEqual([...new Set(selected)].sort());
+    expect(fixture.posts).toHaveLength(4);
+  });
+}
+
+for (const phase of ['preparing', 'receiving']) {
+  for (const ending of ['cancel', 'timeout', 'access expiry']) {
+    test(`Studio runner is removed on ${ending} while ${phase}`, async ({ page }) => {
+      const fixture = await openReview(page);
+      let release;
+      fixture.hold = new Promise(resolve => { release = resolve; });
+      if (phase === 'receiving') await holdRecordingBody(page, '/api/santa-studio-message');
+      if (ending === 'timeout') await page.clock.install();
+      await confirmMessage(page);
+      const runner = page.locator('.studio-runner-lane');
+      await expect(runner).toBeVisible();
+      if (phase === 'receiving') {
+        release();
+        await expect(page.getByText('Receiving your finished MP3…', { exact: true })).toBeVisible();
+      }
+      if (ending === 'cancel') {
+        await page.getByRole('button', { name: 'Cancel preparation' }).focus();
+        await page.keyboard.press('Space');
+        await expect(page.getByRole('alert')).toContainText('Preparation cancelled.');
+      } else if (ending === 'timeout') {
+        await page.clock.fastForward(115001);
+        await expect(page.getByRole('alert')).toContainText('Preparation took too long.');
+      } else {
+        await page.route('**/api/santa-studio-message', route => route.request().method() === 'GET'
+          ? route.fulfill({ status: 410, json: {} }) : route.fallback());
+        await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+        await expect(page.locator('.smw-allowance')).toContainText('enter your access code again');
+      }
+      await expect(runner).toHaveCount(0);
+      await expect(page.getByRole('progressbar', { name: 'Preparing your message', exact: true })).toHaveCount(0);
+      await expect(page.locator('.smw-message-finished')).toHaveCount(0);
+      release();
+    });
+  }
+}
+
 for (const width of [320, 1365]) {
   for (const motion of ['no-preference', 'reduce']) {
     test(`shared paid creation indicator lifecycle at ${width}px with ${motion}`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
       const fixture = await openReview(page);
       await page.emulateMedia({ reducedMotion: motion });
+      const assets = [];
+      page.on('request', request => {
+        if (request.url().includes('/images/studio-runners/')) assets.push(new URL(request.url()).pathname);
+      });
+      const runner = page.locator('.studio-runner-lane');
+      await expect(runner).toHaveCount(0);
       const bar = page.getByRole('progressbar', { name: 'Preparing your message', exact: true });
       await expect(bar).toHaveCount(0);
       let release;
       fixture.hold = new Promise(resolve => { release = resolve; });
       await confirmMessage(page);
       await checkCreationIndicator(page, motion);
-      expect(preparationMessages).toContain(await page.locator('.smw-message-result[role="status"] p').textContent());
-      await page.locator('.smw-message-result[role="status"]').screenshot({
+      await checkStudioRunner(page, motion);
+      expect(preparationMessages).toContain(await page.locator('.smw-message-preparing [role="status"]').textContent());
+      await page.locator('.smw-message-preparing').screenshot({
         path: `generated-artifacts/creation-paid-${width}-${motion}.png`,
       });
       await page.getByRole('button', { name: 'Cancel preparation', exact: true }).click();
       await expect(bar).toHaveCount(0);
+      await expect(runner).toHaveCount(0);
       await expect(page.getByRole('alert')).toContainText('Preparation cancelled.');
       release();
       fixture.hold = null;
@@ -50,16 +174,26 @@ for (const width of [320, 1365]) {
       await confirmMessage(page);
       await expect(page.getByRole('alert')).toContainText('Fixture recording unavailable.');
       await expect(bar).toHaveCount(0);
+      await expect(runner).toHaveCount(0);
       fixture.fail = false;
       await holdRecordingBody(page, '/api/santa-studio-message');
+      fixture.hold = new Promise(resolve => { release = resolve; });
       await confirmMessage(page, 'Retry message');
+      await checkStudioRunner(page, motion);
+      await rememberStudioRunner(page);
+      release();
       await expect(page.getByText('Receiving your finished MP3…', { exact: true })).toBeVisible();
+      await expectSameStudioRunner(page);
       await checkCreationIndicator(page, motion);
       await expect(page.locator('.smw-message-finished')).toHaveCount(0);
       await page.evaluate(() => window.finishIndicatorRecording());
       await expect(page.locator('.smw-message-finished')).toBeVisible();
       await expect(bar).toHaveCount(0);
+      await expect(runner).toHaveCount(0);
       await expect(page.getByRole('button', { name: 'Cancel preparation', exact: true })).toHaveCount(0);
+      expect([...new Set(assets)]).toEqual([
+        `/images/studio-runners/classic${motion === 'reduce' ? '-still.png' : '.webp'}`,
+      ]);
     });
 
     for (const entry of ['/', '/free-santa-message']) {
@@ -881,8 +1015,8 @@ test('approved recording notices are random per attempt, stable through rerender
       return value;
     };
   });
-  const notice = page.locator('.smw-message-result[role="status"]');
-  const paragraph = notice.locator('p');
+  const notice = page.locator('.smw-message-preparing [role="status"]');
+  const paragraph = notice;
   const start = async (index, retry = false) => {
     // Exercise both ends of the random range as well as every middle bucket.
     await page.evaluate(value => { window.nextNoticeRandom = value; },

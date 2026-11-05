@@ -1,0 +1,85 @@
+/* Lane extended 24px upward for jump headroom; net flow stays 64px. */
+.studio-runner-lane.homepage-santa-runner {
+  height: 88px;
+  margin-top: -24px;
+  overflow: hidden;
+}
+
+.homepage-santa-hop {
+  position: relative;
+  width: 60px;
+  height: 64px;
+  transform: translateY(0);
+}
+
+.homepage-santa-hop.is-jumping {
+  animation: homepage-santa-hop 550ms linear 1 both;
+}
+
+.homepage-santa-facing {
+  position: relative;
+  width: 60px;
+  height: 64px;
+  animation: studio-runner-face 14s steps(1, end) infinite;
+}
+
+.homepage-santa-runner__run {
+  display: block;
+  width: 60px;
+}
+
+/* Facing is handled by the wrapper so both art sources mirror together. */
+.homepage-santa-runner .studio-runner-travel img {
+  animation: none;
+}
+
+.homepage-santa-runner__run.is-hidden {
+  visibility: hidden;
+}
+
+/* Same contain footprint as the run img: centred, bottom-aligned in 60x64,
+   with the homepage 5px floor nudge. */
+.homepage-santa-runner__jump {
+  position: absolute;
+  left: 0;
+  top: 5px;
+  width: 60px;
+  height: 64px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.homepage-santa-sprite {
+  display: block;
+  height: 64px;
+  aspect-ratio: 136 / 163;
+  background-repeat: no-repeat;
+  background-size: 600% 100%;
+  background-position: 0% 0;
+  animation: homepage-santa-jump-frames 550ms steps(1, end) 1 both;
+}
+
+@keyframes homepage-santa-hop {
+  0% { transform: translateY(0); animation-timing-function: cubic-bezier(.33, 0, .55, 1); }
+  50% { transform: translateY(-20px); animation-timing-function: cubic-bezier(.45, 0, .67, 1); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes homepage-santa-jump-frames {
+  0% { background-position: 0% 0; }
+  16.667% { background-position: 20% 0; }
+  33.333% { background-position: 40% 0; }
+  50% { background-position: 60% 0; }
+  66.667% { background-position: 80% 0; }
+  83.333% { background-position: 100% 0; }
+  100% { background-position: 100% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .homepage-santa-facing,
+  .homepage-santa-hop.is-jumping,
+  .homepage-santa-sprite { animation: none; }
+  .homepage-santa-runner__jump { display: none; }
+  .homepage-santa-runner__run.is-hidden { visibility: visible; }
+}

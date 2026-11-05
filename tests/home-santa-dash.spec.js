@@ -3,6 +3,105 @@ import { mkdirSync } from 'node:fs';
 
 const destination = 'https://itunes.apple.com/gb/app/santa-dash-from-santa-guy/id1057048397';
 
+test.beforeEach(async ({ context, baseURL }) => {
+  const origin = new URL(baseURL).origin;
+  await context.route('**/*', route => new URL(route.request().url()).origin === origin
+    ? route.continue() : route.abort());
+});
+
+for (const width of [320, 767, 768, 1440]) {
+  for (const motion of ['no-preference', 'reduce']) {
+    test(`Classic Santa runs below the homepage Dash banner at ${width}px with ${motion}`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 1000 });
+      await page.emulateMedia({ reducedMotion: motion });
+      // Keep baseline measurements in the running pose; dedicated jump tests
+      // exercise the supplied strip and its successful loading separately.
+      await page.route('**/images/santa-dash/classic-jump-strip.png', route => route.abort());
+      const assets = [];
+      page.on('request', request => {
+        if (request.url().includes('/images/studio-runners/')) assets.push(new URL(request.url()).pathname);
+      });
+      await page.route('**/api/radio-metadata*', route => route.fulfill({ json: { available: false } }));
+      await page.goto('/', { waitUntil: 'domcontentloaded' });
+      const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+      if (await decline.isVisible()) await decline.click();
+      const promo = page.locator('.santa-dash-promo');
+      const lane = promo.locator('.studio-runner-lane');
+      await lane.scrollIntoViewIfNeeded();
+      await expect(lane).toBeVisible();
+      await expect(lane).toHaveAttribute('aria-hidden', 'true');
+      await expect(lane).toHaveCSS('pointer-events', 'none');
+      await expect(lane).toHaveCSS('overflow', 'hidden');
+      const travel = lane.locator('.studio-runner-travel'), image = lane.locator('img');
+      const facing = lane.locator('.homepage-santa-facing');
+      await expect(image).toHaveAttribute('alt', '');
+      await expect.poll(() => image.evaluate(node => node.currentSrc)).toContain(
+        `/images/studio-runners/classic${motion === 'reduce' ? '-still.png' : '.webp'}`);
+      await expect.poll(() => image.evaluate(node => node.complete && node.naturalWidth > 0)).toBe(true);
+      await expect(travel).toHaveCSS('animation-name', motion === 'reduce' ? 'none' : 'studio-runner-cross');
+      await expect(facing).toHaveCSS('animation-name', motion === 'reduce' ? 'none' : 'studio-runner-face');
+      const bounds = await lane.evaluate(node => {
+        const box = node.getBoundingClientRect();
+        const section = node.closest('section');
+        const link = section.querySelector('.santa-dash-promo__download').getBoundingClientRect();
+        const resting = node.querySelector('.studio-runner-travel').getBoundingClientRect();
+        const inner = section.querySelector('.santa-dash-promo__inner').getBoundingClientRect();
+        const style = getComputedStyle(section);
+        return { height: box.height, below: resting.top >= link.bottom - .1,
+          bottomGap: section.getBoundingClientRect().bottom - parseFloat(style.borderBottomWidth) - box.bottom,
+          controlGap: resting.top - link.bottom,
+          paddingTop: parseFloat(style.paddingTop),
+          paddingBottom: parseFloat(style.paddingBottom),
+          width: box.width, expectedWidth: inner.width,
+          fits: box.left >= 0 && box.right <= innerWidth && document.documentElement.scrollWidth <= innerWidth };
+      });
+      expect(bounds).toMatchObject({ height: 88, below: true, fits: true });
+      expect(Math.abs(bounds.bottomGap)).toBeLessThan(1);
+      expect(bounds.controlGap).toBeCloseTo(0, 1);
+      expect(bounds.paddingBottom).toBe(0);
+      // Transfer the former bottom space and runner gap above all the content,
+      // preserving section height while bringing the button close to his head.
+      const previousPadding = Math.min(58, Math.max(32, width * .05));
+      expect(bounds.paddingTop).toBeCloseTo(width <= 767 ? 84 : previousPadding * 2 + 12, 1);
+      expect(bounds.width).toBeCloseTo(bounds.expectedWidth, 1);
+      // The supplied artwork has transparent space below the visible boots.
+      // Lower only the homepage image, not the shared lane or Studio runner.
+      expect(await image.evaluate(node =>
+        node.getBoundingClientRect().bottom - node.closest('.studio-runner-lane').getBoundingClientRect().bottom
+      )).toBeCloseTo(5, 1);
+      expect(await lane.locator('button, a, [tabindex]').count()).toBe(0);
+      if (motion === 'no-preference') {
+        const samples = await travel.evaluate(node => {
+          const travel = node.getAnimations()[0], facing = node.querySelector('.homepage-santa-facing');
+          const face = facing.getAnimations()[0];
+          travel.pause(); face.pause();
+          return [0, 3500, 6999, 7000, 10500, 13999, 14000, 17500].map(time => {
+            travel.currentTime = face.currentTime = time;
+            const box = node.getBoundingClientRect(), lane = node.parentElement.getBoundingClientRect();
+            return { x: box.left - lane.left, right: box.right - lane.left, width: lane.width,
+              facing: new DOMMatrix(getComputedStyle(facing).transform).a };
+          });
+        });
+        for (const sample of samples) {
+          expect(sample.x).toBeGreaterThanOrEqual(-.1);
+          expect(sample.right).toBeLessThanOrEqual(sample.width + .1);
+        }
+        expect(samples.map(sample => sample.facing)).toEqual([1, 1, 1, -1, -1, -1, 1, 1]);
+        expect(samples[1].x).toBeGreaterThan(samples[0].x);
+        expect(samples[4].x).toBeLessThan(samples[3].x);
+        expect(samples[6].x).toBeCloseTo(0, 1);
+        expect(samples[7].x).toBeGreaterThan(samples[6].x);
+      }
+      await expect(promo.locator('.santa-dash-promo__download')).toHaveAttribute('href', destination);
+      await expect(promo.locator('.santa-dash-promo__artwork')).toHaveCount(1);
+      expect([...new Set(assets)]).toEqual([
+        `/images/studio-runners/classic${motion === 'reduce' ? '-still.png' : '.webp'}`,
+      ]);
+      await promo.screenshot({ path: `generated-artifacts/santa-dash-runner-${width}-${motion}.png` });
+    });
+  }
+}
+
 test('homepage Santa Dash scenery is a separate half-opacity background at desktop and mobile widths', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/', { waitUntil: 'domcontentloaded' });

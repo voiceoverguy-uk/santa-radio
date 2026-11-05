@@ -47,3 +47,25 @@ reviewing the more transparent version, without changing size, position or playb
 
 **How to apply:** Apply opacity to the handset group only, never the banner or
 individual nested pieces (which would compound the transparency).
+
+The owner also wants Classic running Santa beneath the homepage Santa Dash
+banner, travelling one way and then back again, at the very bottom edge of
+that section rather than above its bottom padding.
+
+**Why:** The owner explicitly requested this addition, then clarified with a
+screenshot that Santa should run on the section's bottom edge.
+
+**How to apply:** Keep the runner beneath, not over the artwork or gameplay.
+Keep his feet at the section floor and the download button just above his head;
+the owner requested moving the heading, banner and button down together to close
+that gap. Preserve the existing banner, handset and download link, and respect
+reduced motion.
+
+Occasional random jumps using the owner-supplied Classic jump artwork are approved
+for the homepage runner only. Keep the approved floor and content placement.
+
+**Why:** After supplying and discussing the jump add-on, the owner explicitly
+asked to add the jumps randomly.
+
+**How to apply:** Keep jumps small and infrequent, respect reduced motion and
+visibility, and leave the Studio preparation runner independent.

@@ -77,7 +77,10 @@ export async function holdRecordingBody(page, endpoint) {
       return new Response(new ReadableStream({
         start(controller) {
           controller.enqueue(bytes.slice(0, 1));
+          const abort = () => controller.error(new DOMException('Cancelled', 'AbortError'));
+          options?.signal?.addEventListener('abort', abort, { once: true });
           window.finishIndicatorRecording = () => {
+            options?.signal?.removeEventListener('abort', abort);
             controller.enqueue(bytes.slice(1));
             controller.close();
           };
