@@ -1045,14 +1045,27 @@ test('gifts unlock together, export real local files, retry independently and tr
 
 test('letter asset failure is retryable; picture fitting shares the review geometry for long names', async ({ page }) => {
   test.setTimeout(90000);
-  await review(page);
+  const fixture = await review(page);
   await confirmMessage(page);
   await expect(giftButtons(page).first()).toBeEnabled();
+  const exportErrors = [];
+  page.on('console', message => {
+    if (message.type() === 'error' && message.text().startsWith('Studio ')) exportErrors.push(message.text());
+  });
   await page.route('**/certificates/nice-list/CertificateSerif.ttf', route => route.fulfill({ status: 503, body: 'unavailable' }));
   await page.getByRole('button', { name: 'Download letter (PDF)', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Retry download letter (pdf)', exact: true })).toBeEnabled();
+  expect(exportErrors).toContain('Studio letter gift export failed: Error: Gift asset unavailable');
+  await expect(page.getByRole('button', { name: 'Download certificate (PDF)', exact: true })).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Download Santa picture (PNG)', exact: true })).toBeEnabled();
+  await expect(page.locator('.studio-gift-download p').filter({ hasText: 'Could not prepare this gift.' })).toContainText(
+    'Retry above; your audio and other gifts are unaffected. No message allowance is used.');
   await page.unroute('**/certificates/nice-list/CertificateSerif.ttf');
   await save(page, 'Retry download letter (pdf)', 'generated-artifacts/studio-gifts/retry-letter.pdf');
+  expect((await PDFDocument.load(readFileSync('generated-artifacts/studio-gifts/retry-letter.pdf'))).getPageCount()).toBe(1);
+  expect(fixture.posts).toHaveLength(1);
+  await expect(page.locator('.studio-gifts__card--letter .studio-gift-download p')).toContainText(
+    'Download requested. Check your browser’s downloads; keep your own copy.');
   for (const name of ['Élodie O’Neill-Sáenz', "Jean-Luc D'Ávila", 'Alexandria-Catherine Elizabeth Montgomery-Worthington', 'É'.repeat(160)]) {
     const result = await page.evaluate(async name => {
       const { fitSantaPictureName, santaPictureFrames } = await import('/src/lib/santaPictureLayout.js');

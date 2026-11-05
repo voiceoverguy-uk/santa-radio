@@ -51,7 +51,9 @@ export default function StudioGiftDownload({ kind, ready, name, letter, picture,
       }, 60000));
       setStatus('requested');
       onDownloadRequested?.(kind);
-    } catch {
+    } catch (error) {
+      const cause = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
+      console.error(`Studio ${kind} gift export failed: ${cause}`);
       if (active.current) setStatus('error');
     } finally { busy.current = false; onPreparing?.(kind, false); }
   };

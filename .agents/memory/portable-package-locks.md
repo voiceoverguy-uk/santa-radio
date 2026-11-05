@@ -31,3 +31,17 @@ portability check falsely passed by inspecting only the main graph.
 **How to apply:** Validate legacy nested dependencies whenever that graph is
 present, and include a regression where the main graph is clean but the
 compatibility graph contains the internal source.
+
+The root website package is consumed through the pnpm workspace even though
+the repository also keeps an npm lockfile. A dependency present in
+`package.json` and `package-lock.json` but missing from the root pnpm importer
+may be absent from `node_modules`, causing Vite builds and tests that import it
+to fail while unrelated browser tests still pass.
+
+**Why:** A workspace install omitted an already-declared dependency because
+the lockfiles had drifted, masking the problem until the production build and
+multi-message browser tests loaded that package.
+
+**How to apply:** After dependency merges, confirm new root dependencies are
+present in both lockfiles and the pnpm-installed module tree before relying on
+source-only browser checks.
