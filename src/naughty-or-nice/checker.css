@@ -361,6 +361,22 @@ progress.nn-progress::-moz-progress-bar { background: var(--nn-red); }
 
 /* North Pole analyser machine (supplied artwork + overlays). */
 .nn-machine { position: relative; width: min(560px, 100%); margin-inline: auto; aspect-ratio: 1609 / 977; line-height: 0; }
+/* Move the complete countdown machine so its live displays and glints remain
+   attached. Transform-only movement does not shake the surrounding parchment. */
+.nn-machine.is-busy:not(.nn-machine--connecting) {
+  transform-origin: 50% 90%;
+  animation: nn-machine-wobble .6s ease-in-out infinite;
+}
+@keyframes nn-machine-wobble {
+  0%, 100% { transform: translate(0, 0) rotate(0); }
+  20% { transform: translate(-1.5px, .5px) rotate(-.45deg); }
+  45% { transform: translate(1.5px, -.5px) rotate(.45deg); }
+  70% { transform: translate(-1px, 0) rotate(-.25deg); }
+  85% { transform: translate(1px, .5px) rotate(.2deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nn-machine.is-busy:not(.nn-machine--connecting) { animation: none !important; transform: none; }
+}
 .nn-widget .nn-machine { max-width: none; }
 .nn-machine-art { display: block; width: 100%; height: auto; filter: drop-shadow(0 10px 16px #3b241655); }
 .nn-machine-screen { position: absolute; left: 40.9%; top: 41.6%; width: 12.4%; height: 21.8%; border-radius: 9%;

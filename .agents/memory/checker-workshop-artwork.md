@@ -101,6 +101,23 @@ hidden from screen readers; disable them for reduced motion. Prepare all Head
 Elf expressions in the background on page entry and retain the existing frame
 while another expression becomes ready.
 
+The sparkles must be visibly noticeable on both the homepage and final-analysis
+machines, not so faint that they disappear into the brass.
+
+**Why:** The owner could not see the initial effect on either machine.
+
+**How to apply:** Start with staggered effects already in progress; short
+countdowns must not spend their first seconds waiting for decoration. Inspect
+both rendered machines at desktop and phone sizes, not just their CSS presence.
+
+Both countdown machines should gently wobble while processing.
+
+**Why:** The owner explicitly requested a little image shake during countdowns.
+
+**How to apply:** Move the complete machine, including live overlays, without
+moving the parchment or changing countdown timing. Keep it still for reduced
+motion; the separate CONNECTING display is not a countdown machine.
+
 **Why:** The owner reported visible image loading when Head Elf changes face
 and explicitly requested seamless expression changes.
 

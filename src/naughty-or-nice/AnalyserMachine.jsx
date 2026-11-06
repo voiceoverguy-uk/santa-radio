@@ -28,7 +28,9 @@ function Glints({ variant }) {
       {list.map(([x, y, dx, dy], i) => (
         <i key={i} className="nn-machine-glint" style={{
           '--x': `${x}%`, '--y': `${y}%`, '--dx': `${dx}px`, '--dy': `${dy}px`,
-          '--delay': `${(i * 1.03 + (i % 3) * 0.37).toFixed(2)}s`, '--cycle': `${list.length * 1.03}s`,
+          // Begin part-way through staggered cycles: even a short countdown
+          // has visible glints as soon as its artwork is ready.
+          '--delay': `${(-0.22 - i * 4 / list.length).toFixed(2)}s`, '--cycle': '4s',
         }} />
       ))}
     </div>

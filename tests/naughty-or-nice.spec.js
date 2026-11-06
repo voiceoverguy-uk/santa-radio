@@ -473,17 +473,37 @@ test('all elf expressions load at entry and retained layers switch without movin
   expect(requests.length).toBe(afterEntry);
 });
 
-test('machine glints stay anchored, click-through and clear of displays, and respect reduced motion', async ({ page }, testInfo) => {
-  await open(page);
+for (const homepage of [true, false]) {
+test(`${homepage ? 'homepage' : 'Head Elf'} machine glints are visible, anchored, click-through and respect reduced motion`, async ({ page }, testInfo) => {
+  await open(page, homepage ? '/' : path);
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await enter(page);
-  await answer(page);
-  await office(page).getByRole('button', { name: 'Let’s just have another little check!' }).click();
-  const glints = office(page).locator('.nn-machine-glints');
-  await expect(glints).toHaveAttribute('data-variant', 'final');
+  const section = homepage ? widget(page) : office(page);
+  if (homepage) {
+    await section.getByRole('combobox').fill('Zorabelle');
+    await section.getByRole('button', { name: 'Check', exact: true }).click();
+    await page.clock.runFor(1100);
+  } else {
+    await enter(page);
+    await answer(page);
+    await section.getByRole('button', { name: 'Let’s just have another little check!' }).click();
+  }
+  const glints = section.locator('.nn-machine-glints');
+  const machine = section.locator('.nn-machine');
+  await expect(machine).toHaveCSS('animation-name', 'nn-machine-wobble');
+  const poses = await machine.evaluate(element => {
+    const animation = element.getAnimations().find(item => item.animationName === 'nn-machine-wobble');
+    animation.pause();
+    animation.currentTime = 120;
+    const left = getComputedStyle(element).transform;
+    animation.currentTime = 270;
+    return [left, getComputedStyle(element).transform];
+  });
+  expect(poses[0]).not.toBe(poses[1]);
+  await expect(glints).toHaveAttribute('data-variant', homepage ? 'checking' : 'final');
   await expect(glints).toHaveAttribute('aria-hidden', 'true');
   await expect(glints).toHaveCSS('pointer-events', 'none');
-  await expect(glints.locator('i')).toHaveCount(8);
+  await expect(glints.locator('i')).toHaveCount(homepage ? 7 : 8);
   for (const width of [1280, 390]) {
     await page.setViewportSize({ width, height: 1000 });
     const bounds = await glints.evaluate(element => {
@@ -494,22 +514,41 @@ test('machine glints stay anchored, click-through and clear of displays, and res
           x: parseFloat(child.style.getPropertyValue('--x')),
           y: parseFloat(child.style.getPropertyValue('--y')),
           animation: getComputedStyle(child).animationName,
+          size: child.getBoundingClientRect().width,
+          delay: parseFloat(getComputedStyle(child).animationDelay),
         })) };
     });
     expect(bounds.difference).toBeLessThan(1);
     for (const anchor of bounds.anchors) {
-      expect(anchor.y).toBeLessThan(30);
+      expect(anchor.y).toBeLessThan(homepage ? 75 : 30);
       expect(anchor.animation).toBe('nn-glint');
+      expect(anchor.delay).toBeLessThan(0);
     }
-    await glints.locator('i').first().evaluate(element => {
-      for (const animation of element.getAnimations()) { animation.pause(); animation.currentTime = 240; }
+    const visible = await glints.evaluate(element => {
+      // Inspect the actual startup frame, not a later hand-selected bright frame.
+      for (const child of element.children) {
+        for (const animation of child.getAnimations()) { animation.pause(); animation.currentTime = 0; }
+      }
+      return [...element.children].filter(child => parseFloat(getComputedStyle(child).opacity) > .5)
+        .map(child => ({ size: parseFloat(getComputedStyle(child).width),
+          fill: getComputedStyle(child, '::before').backgroundImage }));
     });
-    await office(page).locator('.nn-panel').screenshot({ path: testInfo.outputPath(`machine-glints-${width}.png`) });
+    expect(visible.length).toBeGreaterThanOrEqual(1);
+    for (const star of visible) {
+      expect(star.size).toBeGreaterThanOrEqual(16);
+      expect(star.fill).toContain('radial-gradient');
+    }
+    await section.locator('.nn-machine').screenshot({ path: testInfo.outputPath(`machine-glints-${width}.png`) });
   }
   await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(machine).toHaveCSS('animation-name', 'none');
+  await expect(machine).toHaveCSS('transform', 'none');
   await expect(glints).toHaveCSS('display', 'none');
   await expect(glints.locator('i').first()).toHaveCSS('animation-name', 'none');
+  await page.clock.runFor(ANALYSIS_MS + HOMEPAGE_ANALYSIS_MS + 1000);
+  await expect(machine).toHaveCount(0);
 });
+}
 
 test('five or more consecutive Yes answers show double thumbs-up for two seconds, then revert', async ({ page }, testInfo) => {
   await open(page);
