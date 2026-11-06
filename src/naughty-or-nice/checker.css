@@ -27,7 +27,9 @@
 .nn-office { min-height: 75dvh; background: radial-gradient(ellipse at 50% -10%, #2b5640, #0b2219 70%); padding: 145px 16px calc(150px + env(safe-area-inset-bottom)); }
 .nn-office > .nn-scene {
   max-width: 1040px; margin-inline: auto;
-  min-height: min(900px, calc((100vw - 32px) * .8653846));
+  /* Crop the spare lower desk area to the panel's existing bottom clearance.
+     Content can still grow, without changing the artwork's width-only scale. */
+  min-height: 0;
 }
 .nn-office > .nn-scene > .nn-scenery {
   /* Content height changes as suggestions, questions and certificates appear.

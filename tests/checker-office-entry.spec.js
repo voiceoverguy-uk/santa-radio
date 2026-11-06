@@ -29,6 +29,13 @@ async function assertEntryPosition(page) {
     return Math.abs(start - wanted);
   })).toBeLessThan(2);
   await expect(page.locator('.nn-office h1')).toHaveText('Naughty or Nice List Checker');
+  const bottomClearance = await page.evaluate(() => {
+    const scene = document.querySelector('.nn-office .nn-scene').getBoundingClientRect();
+    const panel = document.querySelector('.nn-office .nn-panel').getBoundingClientRect();
+    return scene.bottom - panel.bottom;
+  });
+  expect(bottomClearance).toBeGreaterThanOrEqual(28);
+  expect(bottomClearance).toBeLessThanOrEqual(61);
 }
 
 test('desktop opens centred on the checker with the title beside Head Elf, including reload', async ({ page }, testInfo) => {

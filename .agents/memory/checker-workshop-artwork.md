@@ -22,6 +22,8 @@ mockup. Keep a readable above-panel title on narrow screens.
 **Why:** The owner supplied a centred entry screenshot and explicitly asked to
 move the title beside Head Elf so the page opens in the middle of the checker.
 They then supplied a rough mockup asking for the elf and box higher in the image.
+The owner subsequently supplied an ideal-size image requesting the spare lower
+wooden area be cropped, retaining just a short strip below the parchment.
 
 **How to apply:** Cover direct loads, reloads and the homepage handoff. If the
 content is taller than the viewport, show its beginning rather than clipping it.
@@ -87,6 +89,20 @@ but the same red digital clock.
 inside its frames on desktop and phones, and count down to the existing result
 reveal without changing the approved audio tail timing. Do not announce every
 countdown tick to screen readers.
+
+Keep subtle swirling warm-white/gold glints on the analyser's brass, especially
+the tube tops, bell and lever, with displays and gauges clear.
+
+**Why:** The owner requested animated sparkles over both machines, without
+changing their artwork or behaviour.
+
+**How to apply:** Keep decorative effects image-relative, click-through and
+hidden from screen readers; disable them for reduced motion. Prepare all Head
+Elf expressions in the background on page entry and retain the existing frame
+while another expression becomes ready.
+
+**Why:** The owner reported visible image loading when Head Elf changes face
+and explicitly requested seamless expression changes.
 
 The homepage result should emphasise continuing to Head Elf; checking another
 name is deliberately secondary.
