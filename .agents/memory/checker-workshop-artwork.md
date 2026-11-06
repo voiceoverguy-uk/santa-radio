@@ -95,6 +95,11 @@ then asked for the stamp much bigger across the middle, not in the corner.
 real dynamic text. Make the stamp large across the certificate's middle.
 Do not restore a paper background, enclosing border or rectangular
 shadow behind the stamp.
+Keep this days-to-go and “THERE IS STILL TIME” stamp on screen only, including
+the enlarged preview; omit both from downloaded certificate PDFs.
+
+**Why:** The owner explicitly requested removing these messages when the
+certificate is downloaded.
 
 Both checker certificates may open in an enlarged view and download as
 browser-local PDFs. Both use separate Head Elf “VERY UNOFFICIAL” wording and
@@ -164,22 +169,29 @@ separate actions, not substitutes for resetting.
 Head Elf reacts to each No answer for two seconds, then returns to his baseline
 expression (regular, or pleased once earned). Use shocked for up to five current No answers and extra-shocked
 from the sixth. Another No starts a fresh two-second hold.
+On a completed Naughty List result, keep shocked for fewer than eight No
+answers and extra-shocked for eight or more, overriding any pleased baseline.
 
 **Why:** The owner supplied both expressions and requested this threshold and
 duration as immediate question feedback.
+They subsequently specified a separate final-result threshold: extra shocked
+at eight or more No answers, otherwise shocked when the result is Naughty.
 
 **How to apply:** Count current answers, not lifetime No clicks, so revisiting
 and editing questions cannot inflate the count. Keep the quiz usable during
 the reaction and discard reactions on reset or leaving the experience.
+Keep the final Naughty expression visible for the whole result, not only the
+two-second question-feedback interval. Do not change the Naughty scoring cutoff.
 
-Use the owner's curious Head Elf immediately before either certificate reveal,
-not as a replacement expression on the certificate result itself.
+Use the owner's curious Head Elf starting one second into the final processing
+sound for either outcome, holding until the certificate reveal. It is not the
+expression on the certificate result itself.
 
-**Why:** The owner supplied this expression specifically for just before the
-certificate appears.
+**Why:** The owner supplied the curious expression, then explicitly moved its
+entrance from one second before the end to one second into final processing.
 
-**How to apply:** Follow the analyser's existing countdown rather than an
-independent timer. Do not delay the reveal or change audio timing to fit it.
+**How to apply:** Follow elapsed media position, including stalled playback,
+with equivalent silent/blocked timing. Do not delay the reveal or change audio.
 
 Four consecutive Yes answers earn the supplied pleased expression for the rest
 of that check, including the result. Temporary thumbs-up, shocked and curious expressions
@@ -194,21 +206,33 @@ check; it is not a persisted preference or a change to the scoring rules.
 
 During the question sequence, keep the parchment and workshop background the
 same size as questions and expressions change.
+The workshop scenery must also keep the same scale throughout name entry,
+suggestion opening/selection, connecting, analysis, results and restarting.
 
 **Why:** The owner reported that No answers appeared to enlarge the scenery.
 Adding Previous question and wrapping longer wording changes the panel height,
 which also scales the background because it covers the scene.
+They subsequently supplied screenshots showing name suggestions changing the
+background size and explicitly requested it stay fixed across the whole process.
 
 **How to apply:** Reserve space for the question controls and longest wording
 at the current width/text size. Do not solve this by clipping text or locking
 one pixel height across different screens.
+Keep scenery scale independent of content height; longer content must remain
+readable without zooming the artwork.
 
 Each Yes answer shows the supplied thumbs-up expression for two seconds while
 the visitor can answer the next question, then restores the current baseline.
 The latest answer replaces the previous temporary reaction and renews its hold.
+For five or more consecutive Yes answers, use the supplied double-thumbs-up
+expression instead, also for two seconds before restoring the baseline.
 
 **Why:** The owner requested a two-second thumbs-up after each Yes, without
 waiting before answering the next question.
+They subsequently supplied double-thumbs-up artwork for five or more Yes
+answers in a row, held for two seconds and then reverted.
 
 **How to apply:** Preserve the earned pleased baseline, curious pre-reveal
 expression, reset cancellation and stable panel/background geometry.
+Count distinct consecutive answers ending at the current question, not repeated
+clicks or future saved answers. A No breaks the streak.

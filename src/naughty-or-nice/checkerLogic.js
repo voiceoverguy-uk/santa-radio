@@ -7,7 +7,7 @@ export const CERTIFICATE_REVEAL_LEAD_MS = 1200;
 export const RESULT_CLIP_MS = { nice: 8412, naughty: 7968 };
 export const resultAnalysisMs = result => RESULT_CLIP_MS[result] - CERTIFICATE_REVEAL_LEAD_MS;
 export const ANALYSIS_MS = resultAnalysisMs('nice');
-export const HOMEPAGE_CHECKING_CLIP_MS = 4519;
+export const HOMEPAGE_CHECKING_CLIP_MS = 6060;
 export const HOMEPAGE_ANALYSIS_MS = HOMEPAGE_CHECKING_CLIP_MS - REVEAL_LEAD_MS;
 export const CHECKER_LAUNCH_MS = 500;
 export const QUESTIONS = [

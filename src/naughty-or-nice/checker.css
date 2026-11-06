@@ -25,7 +25,16 @@
 #nice-list { scroll-margin-top: 20px; }
 
 .nn-office { min-height: 75dvh; background: radial-gradient(ellipse at 50% -10%, #2b5640, #0b2219 70%); padding: 145px 16px calc(150px + env(safe-area-inset-bottom)); }
-.nn-office > .nn-scene { max-width: 1040px; margin-inline: auto; }
+.nn-office > .nn-scene {
+  max-width: 1040px; margin-inline: auto;
+  min-height: min(900px, calc((100vw - 32px) * .8653846));
+}
+.nn-office > .nn-scene > .nn-scenery {
+  /* Content height changes as suggestions, questions and certificates appear.
+     Scale the artwork by width only, never zoom it to cover that changing height.
+     The wood-coloured gradient continues below it for long/enlarged content. */
+  background-size: 100% auto, 100% 100%;
+}
 .nn-office .nn-office-scene-heading { position: relative; margin: 0; padding: clamp(80px, 9vw, 110px) clamp(16px, 4vw, 44px) 0; }
 .nn-office-scene-heading .nn-heading { margin: 0; text-shadow: 0 2px 5px #1c0c04, 0 0 12px #1c0c04; }
 .nn-office .nn-office-scene-heading + .nn-scene-content { padding-top: clamp(18px, 3vw, 32px); }
@@ -387,6 +396,7 @@ progress.nn-progress::-moz-progress-bar { background: var(--nn-red); }
 .nn-office .nn-panel[data-elf-reaction="curious"] { --nn-elf-panel: url("/images/head-elf-office-panel-curious.webp"); }
 .nn-office .nn-panel[data-elf-reaction="pleased"] { --nn-elf-panel: url("/images/head-elf-office-panel-pleased.webp"); }
 .nn-office .nn-panel[data-elf-reaction="thumbs-up"] { --nn-elf-panel: url("/images/head-elf-office-panel-thumbs-up.webp"); }
+.nn-office .nn-panel[data-elf-reaction="double-thumbs-up"] { --nn-elf-panel: url("/images/head-elf-office-panel-double-thumbs-up.webp"); }
 .nn-office .nn-scene-content > .nn-panel::before { content: none; }
 .nn-office .nn-scene-content > .nn-panel > * { position: relative; z-index: 1; }
 .nn-office .nn-scene-content > .nn-panel .nn-result { background-color: #fffcf466; }
@@ -425,12 +435,12 @@ progress.nn-progress::-moz-progress-bar { background: var(--nn-red); }
 .nn-machine--connecting .nn-machine-screen { left: 26.5%; top: 39.4%; width: 40.8%; height: 27.5%; border-radius: 4.5%;
   background: radial-gradient(ellipse at 50% 45%, #0d2a1a, #04110a 85%); box-shadow: inset 0 0 14px #000d; padding: 0 4%; box-sizing: border-box; }
 .nn-machine--connecting .nn-machine-connection {
-  position: relative; z-index: 1; display: block; max-width: 100%; overflow: hidden; text-align: center; white-space: nowrap;
-  font: 700 4.6cqi/1 ui-monospace, 'SFMono-Regular', Menlo, Consolas, 'Courier New', monospace;
-  letter-spacing: .14em; margin-right: -.14em; text-transform: uppercase;
+  position: relative; z-index: 1; display: block; max-width: 100%; text-align: center; white-space: nowrap;
+  font: 700 4cqi/1 ui-monospace, 'SFMono-Regular', Menlo, Consolas, 'Courier New', monospace;
+  letter-spacing: .1em; text-transform: uppercase;
   color: #b8ffcf; text-shadow: 0 0 .18em #5dff9a, 0 0 .5em #2fd27299;
 }
-@supports not (font-size: 1cqi) { .nn-machine--connecting .nn-machine-connection { font-size: clamp(10px, 4.2vw, 25px); } }
+@supports not (font-size: 1cqi) { .nn-machine--connecting .nn-machine-connection { font-size: clamp(6px, 2.3vw, 20px); } }
 @media (forced-colors: active) {
   .nn-machine--connecting .nn-machine-screen { background: Canvas; border: 1px solid CanvasText; }
   .nn-machine--connecting .nn-machine-connection { color: CanvasText; text-shadow: none; }

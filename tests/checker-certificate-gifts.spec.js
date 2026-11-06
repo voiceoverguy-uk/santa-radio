@@ -21,7 +21,7 @@ async function result(page, naughty) {
   await page.clock.pauseAt(new Date('2026-11-05T12:00:01Z'));
   await page.getByRole('button', { name: 'Sound: on' }).click();
   await page.getByRole('combobox').fill('Zorabelle');
-  await page.getByRole('button', { name: "Let's check if Naughty or Nice" }).click();
+  await page.getByRole('button', { name: 'Lets check if Zorabelle is Naughty or Nice' }).click();
   await page.clock.runFor(1900);
   for (let question = 0; question < 10; question++) {
     await expect(page.locator('.nn-question-count')).toHaveText(`${question + 1} of 10`);
@@ -111,7 +111,7 @@ test('Naughty PDF is local, personalised, retryable and cancelled on restart', a
   page.on('download', download => downloads.push(download));
   await result(page, true);
   await expect(page.locator('.nn-result > h2')).toHaveText('Oh no! NAUGHTY LIST');
-  await expect(page.locator('.nn-result > p').last()).toHaveText("Zorabelle don't panic! We all have tricky days. With 50 days to go until Christmas there is still time to work on it and come and try again.");
+  await expect(page.locator('.nn-result > p').last()).toHaveText("Zorabelle don't panic! With 50 days to go until Christmas there is still time to work on it and come and try again.");
   const button = page.getByRole('button', { name: 'Download Naughty certificate PDF' });
   let fail = true;
   await page.route('**/certificates/checker/naughty-master.webp', route =>
@@ -142,8 +142,12 @@ test('Naughty PDF is local, personalised, retryable and cancelled on restart', a
   expect(pdf.getPage(0).getWidth()).toBeCloseTo(841.8898, 3);
   expect(pdf.getPage(0).getHeight()).toBeCloseTo(595.2756, 3);
   expect(pdf.getTitle()).toBe('Head Elf’s Very Unofficial Naughty List Certificate');
-  expect(await page.evaluate(() => window.certificatePaint)).toEqual(
-    expect.arrayContaining(['Zorabelle', '50 DAYS TO GO', 'THERE IS STILL TIME']));
+  expect(await page.evaluate(() => window.certificatePaint)).toEqual(['Zorabelle']);
+  // The encouragement stays in both on-screen previews, not the saved PDF.
+  await expect(page.locator('.nn-certificate-stamp')).toContainText('50 DAYS TO GOTHERE IS STILL TIME');
+  await page.getByRole('button', { name: 'Enlarge Naughty List certificate' }).click();
+  await expect(page.getByRole('dialog').locator('.nn-certificate-stamp')).toContainText('THERE IS STILL TIME');
+  await page.getByRole('button', { name: 'Close certificate preview' }).click();
   expect(requests.some(request => request.includes('Zorabelle'))).toBe(false);
   expect(requests.some(request => request.includes('/nice-list/master.pdf'))).toBe(false);
   await expect(button).toBeEnabled();

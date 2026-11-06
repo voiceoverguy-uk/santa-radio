@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 export const ELF_REACTION_ART = {
   'thumbs-up': '/images/head-elf-office-panel-thumbs-up.webp',
+  'double-thumbs-up': '/images/head-elf-office-panel-double-thumbs-up.webp',
   pleased: '/images/head-elf-office-panel-pleased.webp',
   curious: '/images/head-elf-office-panel-curious.webp',
   shocked: '/images/head-elf-office-panel-shocked.webp',
@@ -40,10 +41,12 @@ export default function useElfReaction() {
       clearTimeout(timer.current);
     };
   }, []);
-  const reactToAnswer = (answer, noCount) => {
+  const reactToAnswer = (answer, noCount, consecutiveYes = 0) => {
     const token = ++generation.current;
     clearTimeout(timer.current);
-    const kind = answer === 'yes' ? 'thumbs-up' : noCount > 5 ? 'extra-shocked' : 'shocked';
+    const kind = answer === 'yes'
+      ? consecutiveYes >= 5 ? 'double-thumbs-up' : 'thumbs-up'
+      : noCount > 5 ? 'extra-shocked' : 'shocked';
     images.current[kind]?.then(ready => {
       if (generation.current !== token) return;
       if (!ready) { setReaction('regular'); return; }

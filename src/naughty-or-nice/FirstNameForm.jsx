@@ -81,6 +81,6 @@ export default function FirstNameForm({ initialName = '', onSubmit, buttonText =
     <p id={`${id}-help`} className={error || search.blocked ? 'nn-error' : 'nn-help'} role="status">{error || help}</p>
     {search.error && <button type="button" className="nn-secondary" disabled={disabled}
       onClick={() => { setOpen(true); input.current?.focus({ preventScroll: true }); search.refresh(); }}>Retry suggestions</button>}
-    <button type="submit" className="nn-primary" disabled={disabled}>{buttonText}</button>
+    <button type="submit" className="nn-primary" disabled={disabled}>{typeof buttonText === 'function' ? buttonText(name.trim()) : buttonText}</button>
   </form>;
 }

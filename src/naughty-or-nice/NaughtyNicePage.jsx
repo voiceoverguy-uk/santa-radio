@@ -27,7 +27,7 @@ export default function NaughtyNicePage() {
   const visited = useRef(false);
   const audio = useCheckerAudio();
   const { reaction, curiousReady, noteAnswers, reactToAnswer, clear: clearReaction } = useElfReaction();
-  const { run, cancel, audioCallbacks, secondsRemaining } = useCheckerRun();
+  const { run, cancel, audioCallbacks, secondsRemaining, elapsedMs } = useCheckerRun();
   const completed = answers.filter(Boolean).length;
   const busy = stage === 'connecting' || stage === 'analysis';
   useEffect(() => {
@@ -61,7 +61,9 @@ export default function NaughtyNicePage() {
   }}>
     <OfficeScene busy={busy} title="Naughty or Nice List Checker">
       <div className="nn-panel" data-elf-reaction={
-        stage === 'analysis' && secondsRemaining <= 1 && curiousReady ? 'curious' : reaction
+        stage === 'result' && result === 'naughty'
+          ? answers.filter(answer => answer === 'no').length >= 8 ? 'extra-shocked' : 'shocked'
+          : stage === 'analysis' && elapsedMs >= 1000 && curiousReady ? 'curious' : reaction
       }>
       {stage === 'questions' && <div className="nn-toolbar nn-toolbar--progress">
         <div className="nn-question-progress" role="progressbar" aria-label="Question progress"
@@ -74,7 +76,8 @@ export default function NaughtyNicePage() {
       {stage === 'entry' && <div ref={entry} className="nn-stage">
         <h2>Welcome to Head Elf’s Office</h2>
         <p>First things first — who’s visiting Santa’s office today?</p>
-        <FirstNameForm key={entryKey} initialName={name} label="Confirm first name" inlineSuggestions buttonText="Let's check if Naughty or Nice"
+        <FirstNameForm key={entryKey} initialName={name} label="Confirm first name" inlineSuggestions
+          buttonText={value => value ? `Lets check if ${value} is Naughty or Nice` : 'Lets check if Naughty or Nice'}
           suggestionHelp="Select your name and lets find out which list you are really on."
           onSubmit={value => {
             if (!run(1800, () => { audio.stop(); setStage('questions'); })) return;
@@ -116,7 +119,10 @@ export default function NaughtyNicePage() {
               const nextAnswers = answers.map((answer, index) => index === questionIndex ? value : answer);
               setAnswers(nextAnswers);
               noteAnswers(nextAnswers);
-              reactToAnswer(value, nextAnswers.filter(answer => answer === 'no').length);
+              let consecutiveYes = 0;
+              for (let index = questionIndex; index >= 0 && nextAnswers[index] === 'yes'; index--)
+                consecutiveYes++;
+              reactToAnswer(value, nextAnswers.filter(answer => answer === 'no').length, consecutiveYes);
               setQuestionIndex(index => index + 1); setError('');
             }}>{value === 'yes' ? 'Yes' : 'No'}</button>)}</div>
         </fieldset> : <h3 ref={heading} tabIndex={-1}>All ten answers are in!</h3>}
@@ -139,7 +145,7 @@ export default function NaughtyNicePage() {
         <p className="nn-kicker">HEAD ELF’S VERY UNOFFICIAL VERDICT</p>
         <h2 ref={heading} tabIndex={-1}>{result === 'nice' ? `${name}: NICE LIST!` : 'Oh no! NAUGHTY LIST'}</h2>
         {result === 'nice' ? <p>Well Done {name} Only {christmasDays} {christmasDays === 1 ? 'day' : 'days'} to go. Keep sharing, helping and being kind. Little acts of kindness make Christmas brighter!</p>
-          : <p>{name} don't panic! We all have tricky days. With {christmasDays} {christmasDays === 1 ? 'day' : 'days'} to go until Christmas there is still time to work on it and come and try again.</p>}
+          : <p>{name} don't panic! With {christmasDays} {christmasDays === 1 ? 'day' : 'days'} to go until Christmas there is still time to work on it and come and try again.</p>}
         <CheckerCertificate name={name} result={result} days={christmasDays} />
       </div>}
       <HomepageCornerControls audio={audio} onRestart={reset} showRestart={stage !== 'entry'} />

@@ -16,44 +16,11 @@ async function artwork(result, signal) {
   } finally { URL.revokeObjectURL(url); }
 }
 
-function stampInk(width, height, days) {
-  const canvas = document.createElement('canvas');
-  canvas.width = width; canvas.height = height;
-  const ink = canvas.getContext('2d');
-  if (!ink) throw new Error('Certificate drawing is unavailable');
-  const daySize = width * .08, messageSize = width * .072, gap = width * .00256;
-  ink.save();
-  ink.translate(width / 2, height * .55);
-  ink.rotate(-6 * Math.PI / 180);
-  ink.fillStyle = 'rgb(239,41,51)';
-  ink.textAlign = 'center'; ink.textBaseline = 'middle'; ink.fontKerning = 'none';
-  ink.font = `400 ${daySize}px "Black Ops One"`;
-  ink.letterSpacing = `${daySize * .03}px`;
-  ink.fillText(`${days} ${days === 1 ? 'DAY' : 'DAYS'} TO GO`, 0, -(messageSize + gap) / 2);
-  ink.translate(0, (daySize + gap) / 2);
-  ink.rotate(.6 * Math.PI / 180);
-  ink.font = `400 ${messageSize}px "Black Ops One"`;
-  ink.letterSpacing = `${messageSize * .04}px`;
-  ink.fillText('THERE IS STILL TIME', 0, 0);
-  ink.restore();
-  // Light, deterministic ink wear, not a copied image or a paper rectangle.
-  ink.globalCompositeOperation = 'destination-out';
-  ink.fillStyle = 'rgba(0,0,0,.35)';
-  let seed = 103;
-  const random = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
-  for (let dot = 0; dot < 4000; dot++)
-    ink.fillRect(random() * width, random() * height, 1 + random() * 2, 1 + random() * 2);
-  return canvas;
-}
-
-export async function exportCheckerCertificate(name, result, days, { signal } = {}) {
+export async function exportCheckerCertificate(name, result, { signal } = {}) {
   if (!['nice', 'naughty'].includes(result)) throw new Error('Invalid certificate result');
-  if (!Number.isInteger(days) || days < 0 || days > 366) throw new Error('Invalid Christmas countdown');
-  const [image, , faces] = await Promise.all([
+  const [image] = await Promise.all([
     artwork(result, signal), loadRecipientFont(),
-    result === 'naughty' ? document.fonts.load('400 20px "Black Ops One"') : Promise.resolve(null),
   ]);
-  if (faces && !faces.length) throw new Error('Certificate stamp font could not load');
   if (signal?.aborted) throw new DOMException('Cancelled', 'AbortError');
   const canvas = document.createElement('canvas');
   canvas.width = image.naturalWidth; canvas.height = image.naturalHeight;
@@ -67,7 +34,6 @@ export async function exportCheckerCertificate(name, result, days, { signal } = 
   context.fillStyle = '#f1d995';
   context.fillText(recipientDisplayName(name), fit.x, fit.y);
   context.restore();
-  if (result === 'naughty') context.drawImage(stampInk(canvas.width, canvas.height, days), 0, 0);
   const png = await new Promise((resolve, reject) => canvas.toBlob(
     blob => blob ? blob.arrayBuffer().then(resolve, reject) : reject(new Error('Certificate image could not be created')), 'image/png'));
   if (signal?.aborted) throw new DOMException('Cancelled', 'AbortError');

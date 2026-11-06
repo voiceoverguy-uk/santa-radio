@@ -9,6 +9,7 @@ export default function useCheckerRun() {
   const timer = useRef(null);
   const countdown = useRef(null);
   const [secondsRemaining, setSecondsRemaining] = useState(0);
+  const [elapsedMs, setElapsedMs] = useState(0);
   const generation = useRef(0);
   const running = useRef(false);
   const completion = useRef(null);
@@ -21,6 +22,7 @@ export default function useCheckerRun() {
     running.current = false;
     completion.current = null;
     setSecondsRemaining(0);
+    setElapsedMs(0);
   }, []);
   useEffect(() => cancel, [cancel]);
   const run = (duration, complete) => {
@@ -34,10 +36,13 @@ export default function useCheckerRun() {
     };
     completion.current = { duration, deadline: Date.now() + duration, finish, mediaActive: false };
     setSecondsRemaining(displaySeconds(duration));
+    setElapsedMs(0);
     countdown.current = setInterval(() => {
       const check = completion.current;
-      if (generation.current === token && check && !check.mediaActive)
+      if (generation.current === token && check && !check.mediaActive) {
         setSecondsRemaining(displaySeconds(Math.max(0, check.deadline - Date.now())));
+        setElapsedMs(Math.max(0, check.duration - (check.deadline - Date.now())));
+      }
     }, 100);
     timer.current = setTimeout(finish, duration);
     return true;
@@ -55,6 +60,7 @@ export default function useCheckerRun() {
         check.deadline = Date.now() + remaining;
         check.mediaActive = true;
         setSecondsRemaining(displaySeconds(remaining));
+        setElapsedMs(Math.max(0, (media?.currentTime || 0) * 1000));
         clearTimeout(timer.current);
         // Audio time can advance differently from wall time (buffering,
         // suspended tabs or output-device delays). Reveal from media position.
@@ -65,6 +71,7 @@ export default function useCheckerRun() {
         if (check && Number.isFinite(media.duration)) {
           const remaining = Math.max(0, media.duration - media.currentTime - revealLeadMs / 1000);
           setSecondsRemaining(displaySeconds(remaining * 1000));
+          setElapsedMs(Math.max(0, media.currentTime * 1000));
           if (remaining <= 0) check.finish();
         }
       },
@@ -86,5 +93,5 @@ export default function useCheckerRun() {
       },
     };
   };
-  return { run, cancel, audioCallbacks, secondsRemaining };
+  return { run, cancel, audioCallbacks, secondsRemaining, elapsedMs };
 }

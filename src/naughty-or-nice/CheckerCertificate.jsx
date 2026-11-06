@@ -54,7 +54,7 @@ export default function CheckerCertificate({ name, result, days }) {
     try {
       const { exportCheckerCertificate } = await import('./exportNaughtyCertificate.js');
       if (controller.signal.aborted) return;
-      const blob = await exportCheckerCertificate(name, result, days, { signal: controller.signal });
+      const blob = await exportCheckerCertificate(name, result, { signal: controller.signal });
       if (controller.signal.aborted) return;
       if (downloadUrl.current) {
         clearTimeout(downloadUrl.current.timer);
