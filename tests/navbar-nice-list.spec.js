@@ -20,8 +20,8 @@ async function assertDestination(page) {
     const nav = await page.getByRole('navigation', { name: 'Main navigation' }).boundingBox();
     return box.y - nav.y - nav.height;
   };
-  await expect.poll(offset).toBeGreaterThanOrEqual(0);
-  await expect.poll(offset).toBeLessThan(100);
+  await expect.poll(offset).toBeGreaterThanOrEqual(15);
+  await expect.poll(offset).toBeLessThan(18);
   await expect(checker.getByRole('heading', { name: 'Quick Nice List Check', exact: true })).toBeAttached();
 }
 
@@ -50,6 +50,27 @@ test('Nice List? returns from the Head Elf page to the homepage checker, and dir
   await expect(page.locator('.nn-office')).toHaveCount(0);
   await page.reload({ waitUntil: 'domcontentloaded' });
   await assertDestination(page);
+});
+
+test('cross-page landing stays aligned after late layout changes but lets visitors scroll away', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/apps', { waitUntil: 'domcontentloaded' });
+  await page.getByRole('navigation').getByRole('link', { name: 'Nice List?', exact: true }).click();
+  await assertDestination(page);
+  await page.waitForTimeout(2200);
+  await page.evaluate(() => {
+    const previous = document.querySelector('#nice-list').previousElementSibling;
+    previous.style.minHeight = `${previous.getBoundingClientRect().height + 240}px`;
+  });
+  await assertDestination(page);
+  await page.mouse.wheel(0, 400);
+  await expect.poll(() => page.locator('#nice-list').evaluate(el => el.getBoundingClientRect().top)).toBeLessThan(0);
+  await page.evaluate(() => {
+    const previous = document.querySelector('#nice-list').previousElementSibling;
+    previous.style.minHeight = `${previous.getBoundingClientRect().height + 120}px`;
+  });
+  await page.waitForTimeout(250);
+  expect(await page.locator('#nice-list').evaluate(el => el.getBoundingClientRect().top)).toBeLessThan(0);
 });
 
 test('Nice List? fits desktop navigation and closes the phone menu before scrolling', async ({ page }, testInfo) => {

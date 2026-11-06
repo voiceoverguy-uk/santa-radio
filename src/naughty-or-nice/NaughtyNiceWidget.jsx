@@ -26,15 +26,16 @@ export default function NaughtyNiceWidget() {
     let active = true;
     let frame;
     let settleTimer;
+    let layoutObserver;
     const position = () => {
+      if (!active || !section.current) return;
       const navBottom = document.querySelector('.navbar')?.getBoundingClientRect().bottom || 100;
-      const scrollPadding = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
-      if (section.current) section.current.style.scrollMarginTop = `${Math.max(0, navBottom + 16 - scrollPadding)}px`;
       section.current?.focus({ preventScroll: true });
-      section.current?.scrollIntoView({
-        block: 'start',
-        behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
-      });
+      // Position explicitly: global fragment padding and descendant focus
+      // margins must not add another offset. Avoid competing smooth scrolls
+      // while images, fonts and preceding sections are still settling.
+      const delta = section.current.getBoundingClientRect().top - navBottom - 16;
+      if (Math.abs(delta) > 1) window.scrollTo({ top: window.scrollY + delta, behavior: 'instant' });
     };
     const schedule = () => {
       document.fonts.ready.then(() => {
@@ -48,6 +49,7 @@ export default function NaughtyNiceWidget() {
       active = false;
       cancelAnimationFrame(frame);
       clearTimeout(settleTimer);
+      layoutObserver?.disconnect();
       window.removeEventListener('load', schedule);
       document.fonts.removeEventListener('loadingdone', schedule);
       for (const event of ['wheel', 'touchstart', 'pointerdown', 'keydown'])
@@ -58,9 +60,18 @@ export default function NaughtyNiceWidget() {
     // Briefly settle that position, but never fight a visitor's own scrolling.
     window.addEventListener('load', schedule);
     document.fonts.addEventListener('loadingdone', schedule);
+    // Route navigation does not fire window.load again. Watch the preceding
+    // homepage sections as well, including images loading after that event.
+    layoutObserver = new ResizeObserver(schedule);
+    for (const sibling of section.current?.parentElement?.children || []) {
+      if (sibling === section.current) break;
+      layoutObserver.observe(sibling);
+    }
+    const navbar = document.querySelector('.navbar');
+    if (navbar) layoutObserver.observe(navbar);
     for (const event of ['wheel', 'touchstart', 'pointerdown', 'keydown'])
       window.addEventListener(event, stopSettling, { passive: true });
-    settleTimer = setTimeout(stopSettling, 2000);
+    settleTimer = setTimeout(stopSettling, 5000);
     schedule();
     return stopSettling;
   }, [location.key, location.hash]);
