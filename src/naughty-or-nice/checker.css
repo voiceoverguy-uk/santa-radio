@@ -443,7 +443,7 @@ progress.nn-progress::-moz-progress-bar { background: var(--nn-red); }
 }
 
 /* Glowing Head Elf link and dedicated-page icon sound toggle. */
-.nn-widget .nn-result .nn-primary.nn-head-elf-link { position: relative; box-shadow: 0 4px 0 #4f0d12, 0 0 0 2px #f0d78a99, 0 0 20px #d4af3780; animation: nn-elf-glow 1.6s ease-in-out infinite; }
+.nn-widget .nn-result .nn-primary.nn-head-elf-link { position: relative; width: 100%; box-sizing: border-box; white-space: normal; box-shadow: 0 4px 0 #4f0d12, 0 0 0 2px #f0d78a99, 0 0 20px #d4af3780; animation: nn-elf-glow 1.6s ease-in-out infinite; }
 .nn-widget .nn-result .nn-primary.nn-head-elf-link:hover { box-shadow: 0 4px 0 #4f0d12, 0 0 0 3px #f0d78acc, 0 8px 22px #d4af3799; }
 .nn-widget .nn-result .nn-primary.nn-head-elf-link:focus-visible { animation: none; outline: 3px solid var(--nn-focus); outline-offset: 3px; box-shadow: 0 0 0 6px var(--nn-ink), 0 0 18px #f0d78a99; }
 @keyframes nn-elf-glow {

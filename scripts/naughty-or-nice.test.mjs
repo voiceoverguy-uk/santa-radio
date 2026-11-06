@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { QUESTIONS, ANALYSIS_MS, HOMEPAGE_ANALYSIS_MS, resultAnalysisMs, REVEAL_LEAD_MS, CERTIFICATE_REVEAL_LEAD_MS, CHECKER_PATH, preliminaryScore, classifyAnswers, nameError,
+import { ANALYSIS_MS, HOMEPAGE_ANALYSIS_MS, resultAnalysisMs, REVEAL_LEAD_MS, CERTIFICATE_REVEAL_LEAD_MS, CHECKER_PATH, preliminaryScore, nameError,
   offerCheckerName, readCheckerName, clearCheckerName } from '../src/naughty-or-nice/checkerLogic.js';
 import { resolvePublicRequest, canonicalPaths } from '../src/seo/routes.js';
 import { sitemap } from '../server/public-html.js';
@@ -32,19 +32,6 @@ test('integer preliminary scores include both endpoints and are bounded', () => 
     const value = preliminaryScore(() => i / 100);
     assert.ok(Number.isInteger(value) && value >= 51 && value <= 73);
   }
-});
-
-test('all ten positive questions must be answered; exactly six No changes the result', () => {
-  assert.equal(QUESTIONS.length, 10);
-  assert.ok(QUESTIONS.every(question => /^(Have|Do|Are) /.test(question)));
-  for (const [no, expected] of [[0, 'nice'], [5, 'nice'], [6, 'naughty'], [10, 'naughty']]) {
-    const answers = QUESTIONS.map((_, index) => index < no ? 'no' : 'yes');
-    assert.equal(classifyAnswers(answers), expected);
-  }
-  assert.equal(classifyAnswers([]), null);
-  assert.equal(classifyAnswers(Array(10).fill('')), null);
-  assert.equal(classifyAnswers([...Array(9).fill('yes'), '']), null);
-  assert.equal(classifyAnswers(Array(10).fill('maybe')), null);
 });
 
 test('reasonable unknown names work; markup and abusive whole words do not; memory handoff tolerates repeated initialisation and clears', () => {

@@ -1,4 +1,5 @@
 import { isBlockedName, BLOCKED_NAME_NOTE } from '../lib/nameLanguage.js';
+import { OPENING_GROUPS, FUN_GROUPS } from './checkerQuestions.js';
 
 export const CHECKER_PATH = '/naughty-or-nice-list-checker';
 // Reveal during the final glisten, without trimming the supplied MP3s.
@@ -10,18 +11,25 @@ export const ANALYSIS_MS = resultAnalysisMs('nice');
 export const HOMEPAGE_CHECKING_CLIP_MS = 6060;
 export const HOMEPAGE_ANALYSIS_MS = HOMEPAGE_CHECKING_CLIP_MS - REVEAL_LEAD_MS;
 export const CHECKER_LAUNCH_MS = 500;
-export const QUESTIONS = [
-  'Have you been nice?',
-  'Do you help others?',
-  'Have you tried hard at school or work?',
-  'Are you polite?',
-  'Do you behave in the supermarket?',
-  'Do you try to go to bed when it’s bedtime?',
-  'Do you say please and thank you?',
-  'Do you share and take turns?',
-  'Do you help tidy up?',
-  'Do you say sorry when you make a mistake?',
-];
+export const ROUND_QUESTION_COUNT = 10;
+
+function shuffled(values, random) {
+  const copy = [...values];
+  for (let index = copy.length - 1; index > 0; index--) {
+    const other = Math.floor(random() * (index + 1));
+    [copy[index], copy[other]] = [copy[other], copy[index]];
+  }
+  return copy;
+}
+
+export function selectQuestionRound(random = Math.random) {
+  const opening = OPENING_GROUPS.map(({ questions }) =>
+    questions[Math.floor(random() * questions.length)]);
+  const extraGroups = new Set(shuffled(FUN_GROUPS, random).slice(0, 2));
+  const fun = FUN_GROUPS.flatMap(group =>
+    shuffled(group.questions, random).slice(0, extraGroups.has(group) ? 2 : 1));
+  return [...opening, ...shuffled(fun, random)];
+}
 
 export function nameError(value) {
   if (isBlockedName(value)) return BLOCKED_NAME_NOTE;
@@ -36,7 +44,8 @@ export function preliminaryScore(random = Math.random) {
 }
 
 export function classifyAnswers(answers) {
-  if (answers.length !== QUESTIONS.length || answers.some(answer => answer !== 'yes' && answer !== 'no'))
+  if (!Array.isArray(answers) || answers.length !== ROUND_QUESTION_COUNT ||
+      !Array.from(answers).every(answer => answer === 'yes' || answer === 'no'))
     return null;
   return answers.filter(answer => answer === 'no').length >= 6 ? 'naughty' : 'nice';
 }

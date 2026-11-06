@@ -8,7 +8,7 @@ import useCheckerAudio from './useCheckerAudio.js';
 import useCheckerRun from './useCheckerRun.js';
 import useElfReaction, { ELF_REACTION_ART } from './useElfReaction.js';
 import useOfficeEntryPosition from './useOfficeEntryPosition.js';
-import { CERTIFICATE_REVEAL_LEAD_MS, resultAnalysisMs, QUESTIONS, classifyAnswers, readCheckerName, clearCheckerName } from './checkerLogic.js';
+import { CERTIFICATE_REVEAL_LEAD_MS, resultAnalysisMs, ROUND_QUESTION_COUNT, selectQuestionRound, classifyAnswers, readCheckerName, clearCheckerName } from './checkerLogic.js';
 import './checker.css';
 
 export default function NaughtyNicePage() {
@@ -16,7 +16,8 @@ export default function NaughtyNicePage() {
   const [name, setName] = useState(readCheckerName);
   useEffect(() => { clearCheckerName(); }, []);
   const [stage, setStage] = useState('entry');
-  const [answers, setAnswers] = useState(() => QUESTIONS.map(() => ''));
+  const [round, setRound] = useState([]);
+  const [answers, setAnswers] = useState(() => Array(ROUND_QUESTION_COUNT).fill(''));
   const [questionIndex, setQuestionIndex] = useState(0);
   const [result, setResult] = useState(null);
   const christmasDays = useChristmasDays(stage === 'result');
@@ -42,12 +43,12 @@ export default function NaughtyNicePage() {
   }, [stage, entryKey, questionIndex]);
   const reset = () => {
     cancel(); audio.stop(); clearReaction(); setStage('entry'); setName('');
-    setAnswers(QUESTIONS.map(() => '')); setQuestionIndex(0); setResult(null); setError(''); setEntryKey(value => value + 1);
+    setRound([]); setAnswers(Array(ROUND_QUESTION_COUNT).fill('')); setQuestionIndex(0); setResult(null); setError(''); setEntryKey(value => value + 1);
   };
   useEffect(() => {
     // Discard private play state on leaving the document, including bfcache.
     const hide = () => {
-      cancel(); audio.stop(); clearReaction(); setName(''); setAnswers(QUESTIONS.map(() => ''));
+      cancel(); audio.stop(); clearReaction(); setName(''); setRound([]); setAnswers(Array(ROUND_QUESTION_COUNT).fill(''));
       setResult(null); setQuestionIndex(0); setError(''); setStage('entry'); setEntryKey(value => value + 1);
     };
     const show = event => { if (event.persisted) hide(); };
@@ -74,9 +75,9 @@ export default function NaughtyNicePage() {
       </div>
       {stage === 'questions' && <div className="nn-toolbar nn-toolbar--progress">
         <div className="nn-question-progress" role="progressbar" aria-label="Question progress"
-          aria-valuemin={0} aria-valuemax={QUESTIONS.length} aria-valuenow={completed}
-          aria-valuetext={questionIndex < QUESTIONS.length ? `Question ${questionIndex + 1} of ${QUESTIONS.length}` : 'All ten questions answered'}>
-          {QUESTIONS.map((_, index) => <span key={index} aria-hidden="true"
+          aria-valuemin={0} aria-valuemax={round.length} aria-valuenow={completed}
+          aria-valuetext={questionIndex < round.length ? `Question ${questionIndex + 1} of ${round.length}` : 'All ten questions answered'}>
+          {round.map((_, index) => <span key={index} aria-hidden="true"
             className={index === questionIndex ? 'is-current' : answers[index] ? 'is-complete' : ''} />)}
         </div>
       </div>}
@@ -88,7 +89,8 @@ export default function NaughtyNicePage() {
           suggestionHelp="Select your name and lets find out which list you are really on."
           onSubmit={value => {
             if (!run(1800, () => { audio.stop(); setStage('questions'); })) return;
-            if (value !== name) setAnswers(QUESTIONS.map(() => ''));
+            setRound(selectQuestionRound());
+            setAnswers(Array(ROUND_QUESTION_COUNT).fill(''));
             setName(value); setQuestionIndex(0); setStage('connecting');
             audio.play('connecting'); audio.effect('click');
           }} />
@@ -111,12 +113,12 @@ export default function NaughtyNicePage() {
         setError(''); setStage('analysis'); audio.play(final, audioCallbacks(CERTIFICATE_REVEAL_LEAD_MS)); audio.effect('click');
       }}>
         <h2>A few questions for {name}</h2>
-        <p className="nn-question-count">{Math.min(questionIndex + 1, QUESTIONS.length)} of {QUESTIONS.length}</p>
-        {questionIndex < QUESTIONS.length ? <fieldset className="nn-question-step" key={questionIndex}>
+        <p className="nn-question-count">{Math.min(questionIndex + 1, round.length)} of {round.length}</p>
+        {questionIndex < round.length ? <fieldset className="nn-question-step" key={questionIndex}>
           <legend ref={heading} tabIndex={-1}>
-            <span className="nn-sr-only">Question {questionIndex + 1} of {QUESTIONS.length}. </span>
-            <span className="nn-question-wording">{QUESTIONS[questionIndex]}</span>
-            {QUESTIONS.map((question, index) => <span key={index} className="nn-question-size"
+            <span className="nn-sr-only">Question {questionIndex + 1} of {round.length}. </span>
+            <span className="nn-question-wording">{round[questionIndex]}</span>
+            {round.map((question, index) => <span key={index} className="nn-question-size"
               aria-hidden="true">{question}</span>)}
           </legend>
           <div className="nn-question-buttons">{['yes', 'no'].map(value => <button type="button" key={value}
@@ -135,8 +137,8 @@ export default function NaughtyNicePage() {
         </fieldset> : <h3 ref={heading} tabIndex={-1}>All ten answers are in!</h3>}
         {error && <p role="alert" className="nn-error">{error}</p>}
         <div className="nn-actions nn-actions--questions">
-          {questionIndex === QUESTIONS.length && <button type="submit" className="nn-primary nn-final-check">Let’s just have another little check!</button>}
-          {questionIndex < QUESTIONS.length && <button type="button" className="nn-secondary nn-previous-question"
+          {questionIndex === round.length && <button type="submit" className="nn-primary nn-final-check">Let’s just have another little check!</button>}
+          {questionIndex < round.length && <button type="button" className="nn-secondary nn-previous-question"
             disabled={questionIndex === 0} aria-hidden={questionIndex === 0 ? true : undefined}
             style={questionIndex === 0 ? { visibility: 'hidden' } : undefined}
             onClick={() => setQuestionIndex(index => index - 1)}>Previous question</button>}
@@ -146,7 +148,7 @@ export default function NaughtyNicePage() {
         <h2 ref={heading} tabIndex={-1}>The Head Elf’s analyser is checking…</h2>
         <NnComputer busy finalAnalysis secondsRemaining={secondsRemaining} />
         <p role="status">Counting your ten answers. A little Christmas patience, please!</p>
-        <button className="nn-secondary" onClick={() => { cancel(); audio.stop(); setQuestionIndex(QUESTIONS.length); setStage('questions'); }}>Back to answers</button>
+        <button className="nn-secondary" onClick={() => { cancel(); audio.stop(); setQuestionIndex(round.length); setStage('questions'); }}>Back to answers</button>
       </div>}
       {stage === 'result' && <div className={`nn-result nn-result--${result}`}>
         <p className="nn-kicker">HEAD ELF’S VERY UNOFFICIAL VERDICT</p>
