@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
+import { CHECKER_LAUNCH_MS } from './checkerLogic.js';
 
-const PANEL_DELAY_MS = 500;
-
-// The introductory beat follows playback position, not network loading time.
+// The short click/launch beat precedes the analyser and its recording.
 export default function useCheckingPanelDelay() {
   const timer = useRef(null);
   const generation = useRef(0);
@@ -12,43 +11,12 @@ export default function useCheckingPanelDelay() {
     timer.current = null;
   }, []);
   useEffect(() => cancel, [cancel]);
-  const begin = (callbacks, show, waitForAudio) => {
+  const begin = show => {
     cancel();
     const token = generation.current;
-    let shown = false;
-    let position = 0;
-    const current = () => generation.current === token;
-    const reveal = () => {
-      if (!current() || shown) return;
-      shown = true;
-      clearTimeout(timer.current);
-      show();
-    };
-    const fallback = () => {
-      if (!current() || shown) return;
-      clearTimeout(timer.current);
-      timer.current = setTimeout(reveal, Math.max(0, PANEL_DELAY_MS - position * 1000));
-    };
-    if (!waitForAudio) fallback();
-    return {
-      ...callbacks,
-      onStarted: media => {
-        if (!current()) return;
-        clearTimeout(timer.current);
-        callbacks.onStarted?.(media);
-      },
-      onProgress: media => {
-        if (!current()) return;
-        position = media.currentTime;
-        if (position * 1000 >= PANEL_DELAY_MS) reveal();
-        callbacks.onProgress?.(media);
-      },
-      onStopped: () => {
-        if (!current()) return;
-        callbacks.onStopped?.();
-        fallback();
-      },
-    };
+    timer.current = setTimeout(() => {
+      if (generation.current === token) show();
+    }, CHECKER_LAUNCH_MS);
   };
   return { begin, cancel };
 }

@@ -3,7 +3,7 @@ import useBrowserSantaNameSearch from '../components/useBrowserSantaNameSearch.j
 import { BLOCKED_NAME_NOTE } from '../lib/nameLanguage.js';
 import { nameError } from './checkerLogic.js';
 
-export default function FirstNameForm({ initialName = '', onSubmit, buttonText = 'Check', disabled = false,
+export default function FirstNameForm({ initialName = '', onSubmit, buttonText = 'Check', disabled = false, label = 'First name', inlineSuggestions = false,
   suggestionHelp = 'Choose a suggestion, or play with the name you entered.' }) {
   const id = useId();
   const [name, setName] = useState(initialName);
@@ -32,7 +32,7 @@ export default function FirstNameForm({ initialName = '', onSubmit, buttonText =
     setOpen(false);
     onSubmit(name.trim());
   }}>
-    <label htmlFor={id}>First name</label>
+    <label htmlFor={id}>{label}</label>
     <div className="nn-picker">
       <input id={id} ref={input} value={name} type="text" role="combobox"
         autoComplete="off" autoCapitalize="words" spellCheck={false} maxLength={80}
@@ -41,7 +41,11 @@ export default function FirstNameForm({ initialName = '', onSubmit, buttonText =
         aria-activedescendant={expanded && active >= 0 ? `${id}-option-${active}` : undefined}
         aria-describedby={`${id}-help`} aria-invalid={!!error || search.blocked}
         onChange={event => { setName(event.target.value); setOpen(true); setActive(-1); setError(''); }}
-        onFocus={() => setOpen(true)} onBlur={() => setOpen(false)}
+         onFocus={() => setOpen(true)} onBlur={() => {
+           // Inline suggestions must not collapse and move a button between
+           // pointer-down and click. Selection, Escape and submit still close them.
+           if (!inlineSuggestions) setOpen(false);
+         }}
         onKeyDown={event => {
           if (event.key === 'Escape') { setOpen(false); setActive(-1); }
           if (['ArrowDown', 'ArrowUp'].includes(event.key) && search.records.length) {

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { ANALYSIS_MS, HOMEPAGE_ANALYSIS_MS } from '../src/naughty-or-nice/checkerLogic.js';
+import { ANALYSIS_MS, HOMEPAGE_ANALYSIS_MS, CHECKER_LAUNCH_MS, resultAnalysisMs } from '../src/naughty-or-nice/checkerLogic.js';
 
 const path = '/naughty-or-nice-list-checker';
 const office = page => page.locator('.nn-office');
@@ -9,12 +9,20 @@ async function setup(page) {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.addInitScript(() => {
     sessionStorage.setItem('santa-message-offer-shown', 'shown');
+    // These checker tests are not consent tests. Avoid a late-hydrating
+    // consent prompt intercepting a quiz click after the initial page load.
+    localStorage.setItem('santaradio-cookie-consent-v2', JSON.stringify({
+      version: 2, analytics: false, marketing: false, media: false, savedAt: Date.now(),
+    }));
     window.checkerAudio = [];
+    window.checkerEffects = [];
+    window.checkerConnections = [];
     const originalPlay = HTMLMediaElement.prototype.play;
     window.checkerNativePlay = originalPlay;
     HTMLMediaElement.prototype.play = function () {
       if (this.src.includes('/naughty-or-nice/')) {
-        window.checkerAudio.push(this.src);
+        (this.src.includes('/connecting.mp3') ? window.checkerConnections
+          : this.src.includes('/checking') ? window.checkerAudio : window.checkerEffects).push(this.src);
         return Promise.reject(new DOMException('Controlled blocked playback', 'NotAllowedError'));
       }
       return originalPlay.call(this);
@@ -55,7 +63,7 @@ async function answer(page, no = 0) {
   await expect(office(page).getByRole('button', { name: 'Back to name', exact: true })).toHaveCount(0);
   const submit = await office(page).locator('.nn-final-check').boundingBox();
   await expect(office(page).getByRole('button', { name: 'Previous question' })).toHaveCount(0);
-  const restart = await office(page).getByRole('button', { name: 'Start over', exact: true }).boundingBox();
+  const restart = await office(page).getByRole('button', { name: 'Start a new name check', exact: true }).boundingBox();
   expect(restart.y).toBeGreaterThanOrEqual(submit.y + submit.height);
 }
 
@@ -87,11 +95,11 @@ for (const no of [0, 5, 6, 10]) {
     await expect(office(page).getByRole('button', { name: 'Edit answers' })).toHaveCount(0);
     await expect(office(page).getByRole('button', { name: 'Sound: on' })).toBeVisible();
     if (no < 6) {
-      await expect(office(page).getByRole('img', { name: 'Official Nice List certificate for Zorabelle' })).toBeVisible();
+      await expect(office(page).getByRole('img', { name: 'Head Elf’s very unofficial Nice List certificate for Zorabelle' })).toBeVisible();
       await expect(office(page).locator('.studio-certificate__name')).toHaveAttribute('data-fitted', 'true');
       await expect(office(page).locator('.studio-certificate__name text')).toHaveText('Zorabelle');
     } else {
-      await expect(office(page).getByRole('img', { name: /^Official Naughty List certificate for Zorabelle\. \d+ DAYS? TO GO\. THERE IS STILL TIME$/ })).toBeVisible();
+      await expect(office(page).getByRole('img', { name: /^Head Elf’s very unofficial Naughty List certificate for Zorabelle\. \d+ DAYS? TO GO\. THERE IS STILL TIME$/ })).toBeVisible();
       const stamp = office(page).locator('.nn-certificate-stamp');
       await expect(stamp.locator('.nn-stamp-message')).toHaveText('THERE IS STILL TIME');
       expect(await stamp.evaluate(element => getComputedStyle(element).color)).toBe('rgb(239, 41, 51)');
@@ -111,7 +119,7 @@ test('naughty certificate has bare cargo-stamp ink and UK Christmas days that up
   await answer(page, 6);
   await analyse(page);
   const certificate = office(page).locator('.nn-certificate-preview--naughty .studio-certificate');
-  await expect(certificate).toHaveAccessibleName('Official Naughty List certificate for Asa. 50 DAYS TO GO. THERE IS STILL TIME');
+  await expect(certificate).toHaveAccessibleName('Head Elf’s very unofficial Naughty List certificate for Asa. 50 DAYS TO GO. THERE IS STILL TIME');
   const stamp = certificate.locator('.nn-certificate-stamp');
   await expect(stamp.locator('.nn-stamp-days')).toHaveText('50 DAYS TO GO');
   await expect(stamp.locator('.nn-stamp-message')).toHaveText('THERE IS STILL TIME');
@@ -154,7 +162,7 @@ test('naughty certificate has bare cargo-stamp ink and UK Christmas days that up
   await page.clock.setSystemTime(new Date('2026-12-24T23:59:30Z'));
   await page.clock.runFor(60000);
   await expect(stamp.locator('.nn-stamp-days')).toHaveText('0 DAYS TO GO');
-  await expect(certificate).toHaveAccessibleName('Official Naughty List certificate for Asa. 0 DAYS TO GO. THERE IS STILL TIME');
+  await expect(certificate).toHaveAccessibleName('Head Elf’s very unofficial Naughty List certificate for Asa. 0 DAYS TO GO. THERE IS STILL TIME');
   await expect(office(page).locator('.nn-result > p').last()).toContainText('With 0 days to go until Christmas');
   await page.clock.setSystemTime(new Date('2026-12-26T12:00:00Z'));
   await page.clock.runFor(60000);
@@ -167,7 +175,7 @@ test('one question at a time; keyboard choices advance and previous answers can 
   const input = office(page).getByRole('combobox');
   await input.fill('Er');
   await expect(office(page).getByRole('listbox')).toBeVisible();
-  await expect(office(page).getByText('Select your name and lets find out which list you are on.', { exact: true })).toBeVisible();
+  await expect(office(page).getByText('Select your name and lets find out which list you are really on.', { exact: true })).toBeVisible();
   await input.press('ArrowDown');
   await input.press('Enter');
   await expect(input).toHaveValue('Erica');
@@ -190,6 +198,56 @@ test('one question at a time; keyboard choices advance and previous answers can 
   await expect(office(page).locator('.nn-result h2')).toHaveText('Erica: NICE LIST!');
 });
 
+for (const choices of ['all-no', 'pleased-then-no']) {
+  test(`question panel and workshop background stay the same size through ${choices} expression changes`, async ({ page }, testInfo) => {
+    await open(page);
+    await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+    const panel = office(page).locator('.nn-panel');
+    const geometry = () => office(page).evaluate(root => {
+      const scene = root.querySelector('.nn-scene').getBoundingClientRect();
+      const frame = root.querySelector('.nn-panel').getBoundingClientRect();
+      const question = root.querySelector('.nn-question-step').getBoundingClientRect();
+      const buttons = root.querySelector('.nn-question-buttons').getBoundingClientRect();
+      const corners = root.querySelector('.nn-corner-controls').getBoundingClientRect();
+      return {
+        sceneWidth: scene.width, sceneHeight: scene.height,
+        frameWidth: frame.width, frameHeight: frame.height,
+        frameTop: frame.top - scene.top, questionHeight: question.height,
+        buttonsTop: buttons.top - frame.top, cornersTop: corners.top - frame.top,
+      };
+    });
+    for (const [width, size] of [[1280, ''], [390, ''], [320, ''], [320, '200%']]) {
+      await page.setViewportSize({ width, height: 1000 });
+      await page.evaluate(value => { document.documentElement.style.fontSize = value; }, size);
+      await enter(page, 'Erin');
+      await expect(office(page).getByRole('button', { name: 'Previous question', exact: true })).toHaveCount(0);
+      const baseline = await geometry();
+      for (let index = 0; index < 10; index++) {
+        await expect(office(page).locator('fieldset')).toHaveAccessibleName(
+          new RegExp(`^Question ${index + 1} of 10\\.`));
+        const current = await geometry();
+        for (const key of Object.keys(baseline)) expect(Math.abs(current[key] - baseline[key]), key).toBeLessThan(1);
+        if (index === 1 || index === 6) {
+          await panel.screenshot({ path: testInfo.outputPath(`${choices}-${width}-${size || 'normal'}-question-${index + 1}.png`), animations: 'disabled' });
+        }
+        const value = choices === 'pleased-then-no' && index < 4 ? 'Yes' : 'No';
+        await office(page).getByRole('button', { name: value, exact: true }).click();
+        const noCount = choices === 'all-no' ? index + 1 : index - 3;
+        await expect(panel).toHaveAttribute('data-elf-reaction',
+          value === 'Yes' ? 'thumbs-up' : noCount > 5 ? 'extra-shocked' : 'shocked');
+        if (index < 9) {
+          const during = await geometry();
+          for (const key of Object.keys(baseline)) expect(Math.abs(during[key] - baseline[key]), key).toBeLessThan(1);
+          await page.clock.runFor(2000);
+          const after = await geometry();
+          for (const key of Object.keys(baseline)) expect(Math.abs(after[key] - baseline[key]), key).toBeLessThan(1);
+        }
+      }
+      await panel.getByRole('button', { name: 'Start a new name check', exact: true }).click();
+    }
+  });
+}
+
 test('all ten focused questions and answer buttons stay inside their box at desktop, phone and enlarged text sizes', async ({ page }, testInfo) => {
   await open(page);
   for (const [width, fontSize] of [[1280, ''], [390, ''], [320, ''], [320, '200%']]) {
@@ -198,8 +256,7 @@ test('all ten focused questions and answer buttons stay inside their box at desk
     await enter(page, 'Asa');
     const progress = await office(page).getByRole('progressbar').boundingBox();
     const mute = await office(page).getByRole('button', { name: 'Sound: on' }).boundingBox();
-    expect(Math.abs(progress.y + progress.height / 2 - mute.y - mute.height / 2)).toBeLessThanOrEqual(1.5);
-    expect(progress.x + progress.width + 8).toBeLessThanOrEqual(mute.x);
+    expect(progress.y + progress.height).toBeLessThan(mute.y);
     await expect(office(page)).not.toContainText('Let Head Elf test you with a few questions to see how good you really are!');
     // Establish keyboard modality so containment includes the real focus treatment.
     await page.keyboard.press('Tab');
@@ -234,13 +291,601 @@ test('all ten focused questions and answer buttons stay inside their box at desk
     await expect(office(page).getByRole('progressbar')).toHaveAttribute('aria-valuenow', '10');
     const completeProgress = await office(page).getByRole('progressbar').boundingBox();
     const completeMute = await office(page).getByRole('button', { name: 'Sound: on' }).boundingBox();
-    expect(Math.abs(completeProgress.y + completeProgress.height / 2 - completeMute.y - completeMute.height / 2)).toBeLessThanOrEqual(1.5);
+    expect(completeProgress.y + completeProgress.height).toBeLessThan(completeMute.y);
     await office(page).locator('.nn-panel').screenshot({
       path: testInfo.outputPath(`questions-complete-${width}-${fontSize ? 'large' : 'normal'}.png`), animations: 'disabled',
     });
-    await office(page).getByRole('button', { name: 'Start over', exact: true }).click();
+    await office(page).getByRole('button', { name: 'Start a new name check', exact: true }).click();
   }
 });
+
+for (const outcome of ['nice', 'naughty']) {
+  test(`curious Head Elf appears in the final second before the ${outcome} certificate, then returns to the earned pleased expression`, async ({ page }, testInfo) => {
+    await open(page);
+    await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+    await enter(page);
+    await answer(page, outcome === 'naughty' ? 6 : 0);
+    const panel = office(page).locator('.nn-panel');
+    await office(page).getByRole('button', { name: 'Let’s just have another little check!' }).click();
+    const duration = resultAnalysisMs(outcome);
+    await page.clock.runFor(duration - 1100);
+    await expect(panel).toHaveAttribute('data-elf-reaction', 'pleased');
+    await page.clock.runFor(200);
+    await expect(panel).toHaveAttribute('data-elf-reaction', 'curious');
+    await expect(panel).toHaveCSS('border-image-source', /head-elf-office-panel-curious\.webp/);
+    await expect(office(page).locator('.nn-result')).toHaveCount(0);
+    await page.setViewportSize({ width: 390, height: 1000 });
+    await panel.screenshot({ path: testInfo.outputPath(`curious-before-${outcome}.png`), animations: 'disabled' });
+    await page.clock.runFor(899);
+    await expect(panel).toHaveAttribute('data-elf-reaction', 'curious');
+    await expect(office(page).getByRole('timer')).toHaveText('0 seconds remaining');
+    await page.clock.runFor(1);
+    await expect(office(page).locator(`.nn-result--${outcome}`)).toBeVisible();
+    await expect(panel).toHaveAttribute('data-elf-reaction', 'pleased');
+    await expect(panel).toHaveCSS('border-image-source', /head-elf-office-panel-pleased\.webp/);
+  });
+}
+
+test('curious expression follows stalled media rather than wall time and clears on Back to answers and reset', async ({ page }) => {
+  await open(page);
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+  await enter(page);
+  await answer(page);
+  await page.evaluate(() => {
+    const NativeAudio = window.Audio;
+    window.outcomePosition = 0;
+    window.Audio = function (src) {
+      const clip = new NativeAudio(src);
+      if (src.includes('/checking-nice')) {
+        Object.defineProperty(clip, 'duration', { get: () => 8.412 });
+        Object.defineProperty(clip, 'currentTime', { get: () => window.outcomePosition });
+        clip.play = () => Promise.resolve();
+      }
+      return clip;
+    };
+  });
+  const panel = office(page).locator('.nn-panel');
+  await office(page).getByRole('button', { name: 'Let’s just have another little check!' }).click();
+  await page.clock.runFor(5000);
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'pleased');
+  await page.evaluate(() => { window.outcomePosition = 6.5; });
+  await page.clock.runFor(50);
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'curious');
+  await page.clock.runFor(2000);
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'curious');
+  await expect(office(page).locator('.nn-result')).toHaveCount(0);
+  await office(page).getByRole('button', { name: 'Back to answers' }).click();
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'pleased');
+  await office(page).getByRole('button', { name: 'Start a new name check' }).click();
+  await page.clock.runFor(10000);
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'regular');
+  await expect(office(page).getByRole('combobox')).toHaveValue('');
+});
+
+test('each Yes shows thumbs-up for two seconds while the next question remains usable and the latest answer wins', async ({ page }, testInfo) => {
+  await open(page);
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+  await enter(page);
+  const panel = office(page).locator('.nn-panel');
+  const yes = office(page).getByRole('button', { name: 'Yes', exact: true });
+  await yes.click();
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'thumbs-up');
+  await expect(panel).toHaveCSS('border-image-source', /head-elf-office-panel-thumbs-up\.webp/);
+  await expect(office(page).locator('.nn-question-count')).toHaveText('2 of 10');
+  await page.clock.runFor(1500);
+  await yes.click();
+  await expect(office(page).locator('.nn-question-count')).toHaveText('3 of 10');
+  await page.clock.runFor(500);
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'thumbs-up');
+  await office(page).getByRole('button', { name: 'No', exact: true }).click();
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'shocked');
+  await page.clock.runFor(50);
+  await yes.click();
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'thumbs-up');
+  for (const width of [1280, 390, 320]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await panel.screenshot({ path: testInfo.outputPath(`thumbs-up-${width}.png`), animations: 'disabled' });
+  }
+  await page.clock.runFor(1999);
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'thumbs-up');
+  await page.clock.runFor(1);
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'regular');
+  await yes.click();
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'thumbs-up');
+  await panel.getByRole('button', { name: 'Start a new name check' }).click();
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'regular');
+  await page.clock.runFor(5000);
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'regular');
+  await expect(office(page).getByRole('combobox')).toHaveValue('');
+});
+
+test('unavailable thumbs-up artwork keeps the regular frame and does not block answering', async ({ page }) => {
+  let requested = false;
+  await page.route('**/images/head-elf-office-panel-thumbs-up.webp', route => {
+    requested = true;
+    return route.abort();
+  });
+  await open(page);
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+  await enter(page);
+  await expect.poll(() => requested).toBe(true);
+  await office(page).getByRole('button', { name: 'Yes', exact: true }).click();
+  await page.clock.runFor(3000);
+  const panel = office(page).locator('.nn-panel');
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'regular');
+  await expect(panel).toHaveCSS('border-image-source', /head-elf-office-panel-jolly\.webp/);
+  await expect(office(page).locator('.nn-question-count')).toHaveText('2 of 10');
+});
+
+test('four consecutive Yes answers earn pleased artwork for the rest of the check with temporary No reactions', async ({ page }, testInfo) => {
+  await open(page);
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+  await enter(page);
+  const panel = office(page).locator('.nn-panel');
+  for (let i = 0; i < 3; i++) {
+    await office(page).getByRole('button', { name: 'Yes', exact: true }).click();
+    await expect(panel).toHaveAttribute('data-elf-reaction', 'thumbs-up');
+    await page.clock.runFor(2000);
+    await expect(panel).toHaveAttribute('data-elf-reaction', 'regular');
+  }
+  await office(page).getByRole('button', { name: 'Yes', exact: true }).click();
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'thumbs-up');
+  await page.clock.runFor(2000);
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'pleased');
+  await expect(panel).toHaveCSS('border-image-source', /head-elf-office-panel-pleased\.webp/);
+  for (const width of [1280, 390, 320]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await panel.screenshot({ path: testInfo.outputPath(`pleased-${width}.png`), animations: 'disabled' });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+  await page.clock.runFor(5000);
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'pleased');
+  for (let i = 0; i < 6; i++) {
+    await office(page).getByRole('button', { name: 'No', exact: true }).click();
+    await expect(panel).toHaveAttribute('data-elf-reaction', i < 5 ? 'shocked' : 'extra-shocked');
+    await page.clock.runFor(2000);
+    await expect(panel).toHaveAttribute('data-elf-reaction', 'pleased');
+  }
+  await office(page).getByRole('button', { name: 'Let’s just have another little check!' }).click();
+  await page.clock.runFor(resultAnalysisMs('naughty') - 1100);
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'pleased');
+  await page.clock.runFor(200);
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'curious');
+  await page.clock.runFor(900);
+  await expect(office(page).locator('.nn-result--naughty')).toBeVisible();
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'pleased');
+  await office(page).getByRole('button', { name: 'Start a new name check' }).click();
+  await page.clock.runFor(5000);
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'regular');
+  await expect(office(page).getByRole('combobox')).toHaveValue('');
+});
+
+test('separated Yes answers and re-clicking one question cannot manufacture a four-answer streak', async ({ page }) => {
+  await open(page);
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+  await enter(page);
+  const panel = office(page).locator('.nn-panel');
+  for (let i = 0; i < 5; i++) {
+    await office(page).getByRole('button', { name: 'Yes', exact: true }).click();
+    await office(page).getByRole('button', { name: 'Previous question' }).click();
+    await expect(panel).toHaveAttribute('data-elf-reaction', 'thumbs-up');
+    await page.clock.runFor(2000);
+    await expect(panel).toHaveAttribute('data-elf-reaction', 'regular');
+  }
+  await office(page).getByRole('button', { name: 'Yes', exact: true }).click();
+  for (const value of ['Yes', 'No', 'Yes', 'Yes', 'Yes']) {
+    await office(page).getByRole('button', { name: value, exact: true }).click();
+    await page.clock.runFor(2000);
+    await expect(panel).toHaveAttribute('data-elf-reaction', 'regular');
+  }
+  await office(page).getByRole('button', { name: 'Yes', exact: true }).click();
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'thumbs-up');
+  await page.clock.runFor(2000);
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'pleased');
+  // Editing away the earned streak doesn't revoke the rest-of-check expression.
+  await office(page).getByRole('button', { name: 'Previous question' }).click();
+  await office(page).getByRole('button', { name: 'No', exact: true }).click();
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'shocked');
+  await page.clock.runFor(2000);
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'pleased');
+});
+
+test('No answers show the supplied expressions for two seconds using the current edited answer count', async ({ page }, testInfo) => {
+  await open(page);
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+  await enter(page, 'Erin');
+  const panel = office(page).locator('.nn-panel');
+  await page.evaluate(async () => {
+    await Promise.all(['shocked', 'extra-shocked'].map(async kind => {
+      const image = new Image();
+      image.src = `/images/head-elf-office-panel-${kind}.webp`;
+      await image.decode();
+    }));
+  });
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'regular');
+  for (let count = 1; count <= 5; count++) {
+    await office(page).getByRole('button', { name: 'No', exact: true }).click();
+    await expect(panel).toHaveAttribute('data-elf-reaction', 'shocked');
+    await expect(panel).toHaveCSS('border-image-source', /head-elf-office-panel-shocked\.webp/);
+    await page.clock.runFor(500);
+  }
+  // Re-answering an existing No must not count it twice.
+  await office(page).getByRole('button', { name: 'Previous question' }).click();
+  await office(page).getByRole('button', { name: 'No', exact: true }).click();
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'shocked');
+  await page.clock.runFor(1999);
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'shocked');
+  await page.clock.runFor(1);
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'regular');
+  await office(page).getByRole('button', { name: 'No', exact: true }).click();
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'extra-shocked');
+  await expect(panel).toHaveCSS('border-image-source', /head-elf-office-panel-extra-shocked\.webp/);
+  for (const width of [1280, 390, 320]) {
+    await page.setViewportSize({ width, height: 1000 });
+    const during = await panel.boundingBox();
+    await panel.screenshot({ path: testInfo.outputPath(`elf-extra-shocked-${width}.png`), animations: 'disabled' });
+    expect(during.x).toBeGreaterThanOrEqual(0);
+    expect(during.x + during.width).toBeLessThanOrEqual(width + 1);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+  await page.clock.runFor(1999);
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'extra-shocked');
+  await page.clock.runFor(1);
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'regular');
+  await office(page).getByRole('button', { name: 'Yes', exact: true }).click();
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'thumbs-up');
+  await page.clock.runFor(2000);
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'regular');
+  // Change the sixth No to Yes, then No again: the threshold remains six.
+  await office(page).getByRole('button', { name: 'Previous question' }).click();
+  await office(page).getByRole('button', { name: 'Previous question' }).click();
+  await office(page).getByRole('button', { name: 'Yes', exact: true }).click();
+  await office(page).getByRole('button', { name: 'Previous question' }).click();
+  await office(page).getByRole('button', { name: 'No', exact: true }).click();
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'extra-shocked');
+  await office(page).getByRole('button', { name: 'Start a new name check' }).click();
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'regular');
+  await page.clock.runFor(3000);
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'regular');
+  await expect(office(page).getByRole('combobox')).toHaveValue('');
+});
+
+test('a repeated No restarts its two-second hold and forced colours preserve the plain frame', async ({ page }) => {
+  await open(page);
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+  await enter(page);
+  const panel = office(page).locator('.nn-panel');
+  await office(page).getByRole('button', { name: 'No', exact: true }).click();
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'shocked');
+  await page.clock.runFor(1500);
+  await office(page).getByRole('button', { name: 'No', exact: true }).click();
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'shocked');
+  await page.clock.runFor(500);
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'shocked');
+  await page.emulateMedia({ forcedColors: 'active' });
+  await expect(panel).toHaveCSS('border-image-source', 'none');
+  await page.clock.runFor(1499);
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'shocked');
+  await page.clock.runFor(1);
+  await expect(panel).toHaveAttribute('data-elf-reaction', 'regular');
+});
+
+test('reset cancels a reaction still waiting for artwork decoding', async ({ page }) => {
+  await page.addInitScript(() => {
+    const decode = HTMLImageElement.prototype.decode;
+    HTMLImageElement.prototype.decode = function () {
+      if (!this.src.endsWith('/head-elf-office-panel-shocked.webp')) return decode.call(this);
+      return decode.call(this).then(() => new Promise(resolve => { window.releaseElfReaction = resolve; }));
+    };
+  });
+  await open(page);
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+  await enter(page);
+  await expect.poll(() => page.evaluate(() => typeof window.releaseElfReaction)).toBe('function');
+  await office(page).getByRole('button', { name: 'No', exact: true }).click();
+  await expect(office(page).locator('.nn-panel')).toHaveAttribute('data-elf-reaction', 'regular');
+  await office(page).getByRole('button', { name: 'Start a new name check' }).click();
+  await page.evaluate(() => window.releaseElfReaction());
+  await page.clock.runFor(3000);
+  await expect(office(page).locator('.nn-panel')).toHaveAttribute('data-elf-reaction', 'regular');
+  await expect(office(page).getByRole('combobox')).toBeFocused();
+});
+
+test('connecting recording plays only on its screen, follows mute and stops before the questions', async ({ page }) => {
+  await open(page, path, false);
+  const duration = await page.evaluate(async () => {
+    const context = new AudioContext();
+    const response = await fetch('/audio/naughty-or-nice/connecting.mp3');
+    const decoded = await context.decodeAudioData(await response.arrayBuffer());
+    await context.close();
+    HTMLMediaElement.prototype.play = window.checkerNativePlay;
+    const NativeAudio = window.Audio;
+    window.connectionPlayed = 0;
+    window.Audio = function (src) {
+      const clip = new NativeAudio(src);
+      if (src.endsWith('/connecting.mp3')) {
+        window.connectionClip = clip;
+        clip.addEventListener('playing', () => { window.connectionPlayed++; });
+      }
+      return clip;
+    };
+    return decoded.duration;
+  });
+  expect(duration).toBeGreaterThan(1);
+  expect(duration).toBeLessThan(1.8);
+  await office(page).getByRole('combobox').fill('Erin');
+  await office(page).getByRole('button', { name: "Let's check if Naughty or Nice", exact: true }).click();
+  await expect(office(page).getByRole('heading', { name: 'Connecting to Santa’s office…' })).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.connectionPlayed)).toBe(1);
+  await expect(office(page).locator('.nn-question-count')).toHaveText('1 of 10');
+  expect(await page.evaluate(() => ({
+    paused: window.connectionClip.paused, src: window.connectionClip.getAttribute('src'),
+  }))).toEqual({ paused: true, src: null });
+  await office(page).getByRole('button', { name: 'Start a new name check' }).click();
+  await office(page).getByRole('button', { name: 'Sound: on' }).click();
+  await enter(page, 'Erin', false);
+  expect(await page.evaluate(() => window.connectionPlayed)).toBe(1);
+});
+
+test('one bottom-left arrow resets connecting, questions and analysis without duplicate Start over controls', async ({ page }) => {
+  await open(page);
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+  const panel = office(page).locator('.nn-panel');
+  const arrow = panel.getByRole('button', { name: 'Start a new name check', exact: true });
+  const input = panel.getByRole('combobox', { name: 'Confirm first name' });
+  await expect(arrow).toHaveCount(0);
+  for (const stage of ['connecting', 'questions', 'analysis']) {
+    await input.fill('Erin');
+    await panel.getByRole('button', { name: "Let's check if Naughty or Nice", exact: true }).click();
+    if (stage !== 'connecting') await page.clock.runFor(1900);
+    if (stage === 'analysis') {
+      await answer(page);
+      await panel.getByRole('button', { name: 'Let’s just have another little check!' }).click();
+    }
+    await expect(arrow).toHaveCount(1);
+    await expect(arrow.locator('img')).toHaveAttribute('src', '/images/checker-back.webp');
+    await expect(panel.getByRole('button', { name: 'Start over', exact: true })).toHaveCount(0);
+    for (const width of [1280, 390, 320]) {
+      await page.setViewportSize({ width, height: 1000 });
+      const left = await arrow.boundingBox();
+      const right = await panel.getByRole('button', { name: 'Sound: on' }).boundingBox();
+      const content = await panel.locator('.nn-stage').boundingBox();
+      expect(left.x + left.width).toBeLessThan(right.x);
+      expect(left.y).toBeGreaterThanOrEqual(content.y + content.height);
+      expect(left.height).toBeGreaterThanOrEqual(44);
+    }
+    await arrow.focus();
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Shift+Tab');
+    await expect(arrow).toHaveCSS('outline-style', 'solid');
+    await page.keyboard.press('Enter');
+    await expect(input).toHaveValue('');
+    await expect(input).toBeFocused();
+    await expect(arrow).toHaveCount(0);
+    await page.clock.runFor(30000);
+    await expect(panel.locator('.nn-result')).toHaveCount(0);
+    await expect(input).toHaveValue('');
+  }
+});
+
+test('question answers pop, red checks click, and muting suppresses both without changing quiz behaviour', async ({ page }) => {
+  await open(page);
+  await enter(page, 'Erin');
+  await answer(page);
+  expect(await page.evaluate(() => window.checkerEffects.map(url => url.split('/').at(-1)))).toEqual([
+    'click-1.mp3', ...Array(10).fill('pop-1.mp3'),
+  ]);
+  await analyse(page);
+  expect(await page.evaluate(() => window.checkerEffects.map(url => url.split('/').at(-1)))).toEqual([
+    'click-1.mp3', ...Array(10).fill('pop-1.mp3'), 'click-1.mp3',
+  ]);
+  await office(page).getByRole('button', { name: 'Sound: on' }).click();
+  await office(page).getByRole('button', { name: 'Start a new name check' }).click();
+  const before = await page.evaluate(() => window.checkerEffects.length);
+  await enter(page, 'Erin');
+  await answer(page);
+  await analyse(page);
+  expect(await page.evaluate(() => window.checkerEffects.length)).toBe(before);
+});
+
+for (const homepage of [true, false]) {
+  test(`${homepage ? 'homepage' : 'Head Elf'} silent analyser holds 00 before its result`, async ({ page }) => {
+    await open(page, homepage ? '/' : path);
+    await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+    const scope = homepage ? widget(page) : office(page);
+    await scope.getByRole('button', { name: 'Sound: on' }).click();
+    if (homepage) {
+      await scope.getByRole('combobox').fill('Erin');
+      await scope.getByRole('button', { name: 'Check', exact: true }).click();
+      await page.clock.runFor(CHECKER_LAUNCH_MS);
+    } else {
+      await enter(page, 'Erin');
+      await answer(page);
+      await scope.getByRole('button', { name: 'Let’s just have another little check!' }).click();
+    }
+    const duration = homepage ? HOMEPAGE_ANALYSIS_MS : ANALYSIS_MS;
+    await page.clock.runFor(duration - 250);
+    await expect(scope.getByRole('timer')).toHaveText('0 seconds remaining');
+    await expect(scope.locator('.nn-result')).toHaveCount(0);
+    await page.clock.runFor(250);
+    await expect(scope.locator('.nn-result')).toBeVisible();
+  });
+}
+
+test('supplied pop and click effects decode, play and stop on mute without stopping the long recording', async ({ page }) => {
+  await open(page, path, false);
+  const state = await page.evaluate(async () => {
+    const context = new AudioContext();
+    const durations = [];
+    for (const file of ['pop-1.mp3', 'click-1.mp3']) {
+      const response = await fetch(`/audio/naughty-or-nice/${file}`);
+      const decoded = await context.decodeAudioData(await response.arrayBuffer());
+      durations.push(decoded.duration);
+    }
+    await context.close();
+    HTMLMediaElement.prototype.play = window.checkerNativePlay;
+    const NativeAudio = window.Audio;
+    window.effectsPlayed = [];
+    window.Audio = function (src) {
+      const clip = new NativeAudio(src);
+      clip.addEventListener('playing', () => window.effectsPlayed.push(src.split('/').at(-1)));
+      return clip;
+    };
+    return durations;
+  });
+  expect(state.every(duration => duration > 0 && duration < 3)).toBe(true);
+  await enter(page, 'Erin', false);
+  await expect.poll(() => page.evaluate(() => window.effectsPlayed)).toContain('click-1.mp3');
+  await office(page).getByRole('button', { name: 'Yes', exact: true }).click();
+  await expect.poll(() => page.evaluate(() => window.effectsPlayed)).toContain('pop-1.mp3');
+  await office(page).getByRole('button', { name: 'Sound: on' }).click();
+  const count = await page.evaluate(() => window.effectsPlayed.length);
+  await office(page).getByRole('button', { name: 'Yes', exact: true }).click();
+  expect(await page.evaluate(() => window.effectsPlayed.length)).toBe(count);
+});
+
+test('homepage corner controls fit entry, suggestions, launch, checking and result including enlarged text', async ({ page }, testInfo) => {
+  await open(page, '/');
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+  const frame = widget(page).locator('.nn-widget-frame');
+  const input = widget(page).getByRole('combobox', { name: 'Confirm first name', exact: true });
+  const restart = widget(page).getByRole('button', { name: 'Start a new name check', exact: true });
+  const sound = widget(page).getByRole('button', { name: 'Sound: off', exact: true });
+  await widget(page).getByRole('button', { name: 'Sound: on' }).click();
+  for (const [width, fontSize] of [[1280, ''], [390, ''], [320, ''], [320, '200%']]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.evaluate(size => { document.documentElement.style.fontSize = size; }, fontSize);
+    const checkLayout = async (stage, content) => {
+      const panel = await frame.boundingBox();
+      const left = await restart.count() ? await restart.boundingBox() : null;
+      const right = await sound.boundingBox();
+      const body = await content.boundingBox();
+      const border = await frame.evaluate(element => parseFloat(getComputedStyle(element).borderBottomWidth));
+      const outset = await widget(page).locator('.nn-corner-controls').evaluate(element =>
+        -parseFloat(getComputedStyle(element).marginLeft));
+      for (const box of [left, right].filter(Boolean)) {
+        expect(box.width).toBeGreaterThanOrEqual(44);
+        expect(box.height).toBeGreaterThanOrEqual(44);
+        expect(box.y).toBeGreaterThanOrEqual(body.y + body.height);
+        expect(box.y + box.height).toBeLessThanOrEqual(panel.y + panel.height - border + outset + 1);
+        expect(panel.y + panel.height - box.y - box.height).toBeGreaterThanOrEqual(20);
+      }
+      if (left) expect(left.x).toBeGreaterThanOrEqual(panel.x + border - outset);
+      expect(right.x + right.width).toBeLessThanOrEqual(panel.x + panel.width - border + outset + 1);
+      if (left) expect(left.x - panel.x).toBeGreaterThanOrEqual(20);
+      expect(outset).toBeGreaterThanOrEqual(10);
+      if (left) expect(left.x + left.width).toBeLessThanOrEqual(right.x);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      await frame.screenshot({ path: testInfo.outputPath(`corner-${stage}-${width}-${fontSize || 'normal'}.png`), animations: 'disabled' });
+    };
+    await expect(input).toHaveValue('');
+    await expect(restart).toHaveCount(0);
+    await checkLayout('entry', widget(page).locator('.nn-name-form'));
+    await input.fill('Er');
+    await expect(widget(page).getByRole('listbox')).toBeVisible();
+    await checkLayout('suggestions', widget(page).getByRole('listbox'));
+    await input.press('ArrowDown');
+    await input.press('Enter');
+    await input.press('Enter');
+    await expect(input).toBeDisabled();
+    await expect(restart).toHaveCount(1);
+    await checkLayout('launch', widget(page).locator('.nn-name-form'));
+    await expect(widget(page).getByRole('button', { name: 'Cancel check' })).toHaveCount(0);
+    await page.clock.runFor(500);
+    await checkLayout('checking', widget(page).locator('.nn-stage'));
+    await page.clock.runFor(HOMEPAGE_ANALYSIS_MS);
+    await checkLayout('result', widget(page).locator('.nn-result'));
+    await expect(widget(page).getByRole('link', { name: 'Lets check with Head Elf', exact: true })).toBeVisible();
+    await restart.click();
+    await expect(input).toHaveValue('');
+    await expect(input).toBeFocused();
+    await expect(sound).toHaveAttribute('aria-pressed', 'false');
+  }
+});
+
+test('corner buttons support keyboard reset, image failure and forced colours without touching radio', async ({ page }) => {
+  await page.route('**/images/checker-*.webp', route => route.abort());
+  await open(page, '/');
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+  const input = widget(page).getByRole('combobox', { name: 'Confirm first name', exact: true });
+  const restart = widget(page).getByRole('button', { name: 'Start a new name check' });
+  const radioBefore = await page.locator('.radio-dock').getAttribute('class');
+  await input.fill('Erin');
+  await widget(page).getByRole('button', { name: 'Check', exact: true }).focus();
+  await expect(restart).toHaveCount(0);
+  await page.keyboard.press('Enter');
+  await page.keyboard.press('Tab');
+  await expect(restart).toBeFocused();
+  await expect(restart).toHaveCSS('outline-style', 'solid');
+  await expect(restart.getByText('Start again')).toBeVisible();
+  await page.keyboard.press('Enter');
+  await expect(input).toHaveValue('');
+  await expect(input).toBeFocused();
+  await input.fill('Erin');
+  await widget(page).getByRole('button', { name: 'Check', exact: true }).click();
+  // Reset in the launch state before its delayed checking panel can appear.
+  await restart.focus();
+  await page.keyboard.press('Space');
+  await expect(input).toBeFocused();
+  await page.clock.runFor(HOMEPAGE_ANALYSIS_MS + 20000);
+  await expect(widget(page).locator('.nn-stage, .nn-result')).toHaveCount(0);
+  await expect(input).toHaveValue('');
+  await page.emulateMedia({ forcedColors: 'active' });
+  await widget(page).getByRole('button', { name: 'Check', exact: true }).focus();
+  await page.keyboard.press('Tab');
+  const sound = widget(page).getByRole('button', { name: 'Sound: on' });
+  await expect(sound).toBeFocused();
+  await expect(sound).toHaveCSS('outline-style', 'solid');
+  await page.keyboard.press('Enter');
+  await expect(widget(page).getByRole('button', { name: 'Sound: off' })).toHaveAttribute('aria-pressed', 'false');
+  await expect(widget(page).getByText('Sound off', { exact: true })).toBeVisible();
+  expect(await page.locator('.radio-dock').getAttribute('class')).toBe(radioBefore);
+  await page.goto(path);
+  await expect(office(page).getByRole('combobox', { name: 'Confirm first name', exact: true })).toBeVisible();
+  await expect(office(page).locator('.nn-corner-controls')).toHaveCount(1);
+  await expect(office(page).getByText('Sound on', { exact: true })).toBeVisible();
+  await expect(office(page).locator('.nn-sound')).toHaveCount(0);
+});
+
+for (const position of [0, .6, 11.4]) {
+  test(`corner reset stops real checker media at ${position}s and invalidates queued callbacks`, async ({ page }) => {
+    await open(page, '/');
+    await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+    await page.evaluate(() => {
+      const NativeAudio = window.Audio;
+      window.checkerPosition = 0;
+      window.Audio = function (src) {
+        const audio = new NativeAudio(src);
+        window.activeCheckerAudio = audio;
+        Object.defineProperty(audio, 'duration', { get: () => 11.598367 });
+        Object.defineProperty(audio, 'currentTime', { get: () => window.checkerPosition });
+        audio.play = () => Promise.resolve();
+        return audio;
+      };
+    });
+    await widget(page).getByRole('combobox').fill('Erin');
+    await widget(page).getByRole('button', { name: 'Check', exact: true }).click();
+    await page.clock.runFor(CHECKER_LAUNCH_MS);
+    await page.evaluate(value => {
+      window.checkerPosition = value;
+      window.queuedCheckerEnd = window.activeCheckerAudio.onended;
+    }, position);
+    await page.clock.runFor(50);
+    if (position > 11) await expect(widget(page).locator('.nn-result')).toBeVisible();
+    await widget(page).getByRole('button', { name: 'Start a new name check' }).click();
+    expect(await page.evaluate(() => ({
+      paused: window.activeCheckerAudio.paused,
+      src: window.activeCheckerAudio.getAttribute('src'),
+      ended: window.activeCheckerAudio.onended,
+    }))).toEqual({ paused: true, src: null, ended: null });
+    await page.evaluate(() => window.queuedCheckerEnd?.());
+    await page.clock.runFor(30000);
+    await expect(widget(page).locator('.nn-stage, .nn-result')).toHaveCount(0);
+    await expect(widget(page).getByRole('combobox')).toHaveValue('');
+    await expect(widget(page).getByRole('combobox')).toBeFocused();
+    await expect(widget(page).getByRole('button', { name: 'Sound: on' })).toHaveAttribute('aria-pressed', 'true');
+  });
+}
 
 test('homepage supplied logo and parchment frame keep live controls responsive in all stages', async ({ page }, testInfo) => {
   await open(page, '/');
@@ -316,19 +961,19 @@ test('homepage supplied logo and parchment frame keep live controls responsive i
     await page.setViewportSize({ width, height: 900 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     const b = await frame.boundingBox();
-    const link = await widget(page).getByRole('link', { name: 'Lets check again with Head Elf!' }).boundingBox();
+    const link = await widget(page).getByRole('link', { name: 'Lets check with Head Elf', exact: true }).boundingBox();
     expect(link.x).toBeGreaterThan(b.x);
     expect(link.x + link.width).toBeLessThan(b.x + b.width);
   }
   await page.setViewportSize({ width: 390, height: 1000 });
   await widget(page).screenshot({ path: testInfo.outputPath('homepage-art-phone-result.png'), animations: 'disabled' });
   await quizIntro.screenshot({ path: testInfo.outputPath('homepage-quiz-intro-phone.png'), animations: 'disabled' });
-  await widget(page).getByRole('button', { name: 'Check another name' }).click();
+  await widget(page).getByRole('button', { name: 'Start a new name check' }).click();
   await expect(widget(page).getByRole('combobox')).toHaveValue('');
   await widget(page).getByRole('combobox').fill('Asa');
   await widget(page).getByRole('button', { name: 'Check', exact: true }).click();
-  await page.clock.runFor(HOMEPAGE_ANALYSIS_MS + 100);
-  const headElfLink = widget(page).getByRole('link', { name: 'Lets check again with Head Elf!' });
+  await page.clock.runFor(HOMEPAGE_ANALYSIS_MS + CHECKER_LAUNCH_MS + 100);
+  const headElfLink = widget(page).getByRole('link', { name: 'Lets check with Head Elf', exact: true });
   await headElfLink.focus();
   await page.keyboard.press('Tab');
   await page.keyboard.press('Shift+Tab');
@@ -354,7 +999,7 @@ for (const [random, score] of [[0, 51], [.99999, 73]]) {
     await expect(widget(page).locator('.nn-score')).toHaveCount(0);
     await expect(widget(page).getByRole('heading', { name: 'Checking at the North Pole…' })).toBeVisible();
     await expect(widget(page).locator('.nn-stage').getByRole('status')).toHaveText('The Workshop Naughty & Nice Analyiser');
-    await page.clock.runFor(HOMEPAGE_ANALYSIS_MS - 5000 - 1);
+    await page.clock.runFor(HOMEPAGE_ANALYSIS_MS + CHECKER_LAUNCH_MS - 5000 - 1);
     await expect(widget(page).locator('.nn-score')).toHaveCount(0);
     await page.clock.runFor(1);
     await expect(widget(page).locator('.nn-score')).toHaveText(`${score}% nice!`);
@@ -362,7 +1007,7 @@ for (const [random, score] of [[0, 51], [.99999, 73]]) {
     await page.setViewportSize({ width: 390, height: 844 });
     await expect(widget(page).locator('.nn-score')).toHaveText(`${score}% nice!`);
     await expect(widget(page).getByText("Mmmm.... surely that can't be right?", { exact: true })).toBeVisible();
-    const link = widget(page).getByRole('link', { name: 'Lets check again with Head Elf!' });
+    const link = widget(page).getByRole('link', { name: 'Lets check with Head Elf', exact: true });
     await expect(link).toHaveAttribute('href', path);
     await link.click();
     await expect(office(page).getByRole('combobox')).toHaveValue('Zorabelle');
@@ -395,14 +1040,14 @@ for (const sound of ['off', 'blocked']) {
     await page.clock.runFor(1);
     await expect(widget(page).getByRole('heading', { name: 'Checking at the North Pole…' })).toBeVisible();
     await page.clock.runFor(1000);
-    await expect(widget(page).getByRole('timer')).toHaveText('7 seconds remaining');
-    await page.clock.runFor(HOMEPAGE_ANALYSIS_MS - 1500 + 100);
+    await expect(widget(page).getByRole('timer')).toHaveText('8 seconds remaining');
+    await page.clock.runFor(HOMEPAGE_ANALYSIS_MS + CHECKER_LAUNCH_MS - 1500 + 100);
     await expect(widget(page).locator('.nn-score')).toBeVisible();
-    await widget(page).getByRole('button', { name: 'Check another name' }).click();
+    await widget(page).getByRole('button', { name: 'Start a new name check' }).click();
     await widget(page).getByRole('combobox').fill('Erin');
     await widget(page).getByRole('button', { name: 'Check', exact: true }).click();
     await page.clock.runFor(500);
-    await widget(page).getByRole('button', { name: 'Cancel check' }).click();
+    await widget(page).getByRole('button', { name: 'Start a new name check' }).click();
     await page.clock.runFor(ANALYSIS_MS + 1000);
     await expect(widget(page).locator('.nn-stage, .nn-score')).toHaveCount(0);
     await expect(widget(page).getByRole('combobox')).toHaveValue('');
@@ -414,9 +1059,8 @@ test('homepage result prioritises the glowing Head Elf link and accessible sound
   const sound = widget(page).getByRole('button', { name: 'Sound: on', exact: true });
   await expect(sound).toHaveAttribute('aria-pressed', 'true');
   await expect(sound).toHaveAttribute('title', 'Mute sound');
-  await expect(sound).toHaveText('');
-  await expect(sound.locator('svg')).toHaveAttribute('aria-hidden', 'true');
-  const speakerPath = await sound.locator('path').last().getAttribute('d');
+  await expect(sound.locator('img')).toHaveAttribute('src', '/images/checker-MusicOn.webp');
+  await expect(sound.locator('img')).toHaveAttribute('alt', '');
   const soundBox = await sound.boundingBox();
   expect(soundBox.width).toBeGreaterThanOrEqual(44);
   expect(soundBox.height).toBeGreaterThanOrEqual(44);
@@ -424,22 +1068,17 @@ test('homepage result prioritises the glowing Head Elf link and accessible sound
   const mute = widget(page).getByRole('button', { name: 'Sound: off', exact: true });
   await expect(mute).toHaveAttribute('aria-pressed', 'false');
   await expect(mute).toHaveAttribute('title', 'Turn sound on');
-  expect(await mute.locator('path').last().getAttribute('d')).not.toBe(speakerPath);
+  await expect(mute.locator('img')).toHaveAttribute('src', '/images/checker-MusicOff.webp');
   await widget(page).getByRole('combobox').fill('Zorabelle');
   await widget(page).getByRole('button', { name: 'Check', exact: true }).click();
-  await page.clock.runFor(HOMEPAGE_ANALYSIS_MS + 100);
-  const link = widget(page).getByRole('link', { name: 'Lets check again with Head Elf!' });
-  const restart = widget(page).getByRole('button', { name: 'Check another name' });
+  await page.clock.runFor(HOMEPAGE_ANALYSIS_MS + CHECKER_LAUNCH_MS + 100);
+  const link = widget(page).getByRole('link', { name: 'Lets check with Head Elf', exact: true });
+  const restart = widget(page).getByRole('button', { name: 'Start a new name check' });
   await expect(link).toHaveCSS('animation-name', 'none');
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   expect(await link.evaluate(element => getComputedStyle(element).animationName)).not.toBe('none');
   expect(await link.evaluate(element => getComputedStyle(element).boxShadow)).not.toBe('none');
-  const sizes = await widget(page).evaluate(element => {
-    const primary = getComputedStyle(element.querySelector('.nn-head-elf-link'));
-    const secondary = getComputedStyle(element.querySelector('.nn-check-another'));
-    return [parseFloat(primary.fontSize), parseFloat(secondary.fontSize)];
-  });
-  expect(sizes[1]).toBeLessThan(sizes[0]);
+  await expect(widget(page).locator('.nn-check-another')).toHaveCount(0);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(link).toHaveCSS('animation-name', 'none');
   expect((await restart.boundingBox()).height).toBeGreaterThanOrEqual(44);
@@ -456,7 +1095,7 @@ test('homepage result prioritises the glowing Head Elf link and accessible sound
   await expect(widget(page).getByRole('combobox')).toHaveValue('');
 });
 
-test('homepage panel and countdown follow audio position rather than loading or stalled wall time', async ({ page }) => {
+test('homepage recording starts with the analyser and its countdown follows media, including a visible zero', async ({ page }) => {
   await open(page, '/');
   await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
   await page.evaluate(() => {
@@ -473,15 +1112,12 @@ test('homepage panel and countdown follow audio position rather than loading or 
   await expect(widget(page).getByRole('button', { name: 'Sound: on' })).toBeVisible();
   await widget(page).getByRole('combobox').fill('Erin');
   await widget(page).getByRole('button', { name: 'Check', exact: true }).click();
-  await page.clock.runFor(1500);
+  await page.clock.runFor(499);
   await expect(widget(page).locator('.nn-stage')).toHaveCount(0);
-  await page.evaluate(() => { window.checkerPosition = .499; });
-  await page.clock.runFor(50);
-  await expect(widget(page).locator('.nn-stage')).toHaveCount(0);
-  await page.evaluate(() => { window.checkerPosition = .5; });
-  await page.clock.runFor(50);
+  await expect.poll(() => page.evaluate(() => window.checkerAudio.length)).toBe(0);
+  await page.clock.runFor(1);
   await expect(widget(page).getByRole('heading', { name: 'Checking at the North Pole…' })).toBeVisible();
-  await expect(widget(page).getByRole('timer')).toHaveText('11 seconds remaining');
+  await expect(widget(page).getByRole('timer')).toHaveText('12 seconds remaining');
   await page.evaluate(() => { window.checkerPosition = 3.2; });
   await page.clock.runFor(50);
   await expect(widget(page).getByRole('timer')).toHaveText('9 seconds remaining');
@@ -490,7 +1126,11 @@ test('homepage panel and countdown follow audio position rather than loading or 
   await page.evaluate(() => { window.checkerPosition = 5.2; });
   await page.clock.runFor(50);
   await expect(widget(page).getByRole('timer')).toHaveText('7 seconds remaining');
-  await widget(page).getByRole('button', { name: 'Cancel check' }).click();
+  await page.evaluate(() => { window.checkerPosition = 11.05; });
+  await page.clock.runFor(50);
+  await expect(widget(page).getByRole('timer')).toHaveText('0 seconds remaining');
+  await expect(widget(page).locator('.nn-result')).toHaveCount(0);
+  await widget(page).getByRole('button', { name: 'Start a new name check' }).click();
   await page.evaluate(() => { window.checkerPosition = 11; });
   await page.clock.runFor(ANALYSIS_MS + 1000);
   await expect(widget(page).locator('.nn-stage, .nn-score')).toHaveCount(0);
@@ -535,7 +1175,7 @@ for (const pending of ['load', 'decode']) {
     } else await page.evaluate(() => window.releaseMachineDecode());
     await expect(machine.getByRole('timer')).toHaveText('7 seconds remaining');
     await expect(machine.locator('.nn-machine-slot')).toBeVisible();
-    await page.clock.runFor(HOMEPAGE_ANALYSIS_MS - 2100 + 100);
+    await page.clock.runFor(HOMEPAGE_ANALYSIS_MS + CHECKER_LAUNCH_MS - 2100 + 100);
     await expect(widget(page).locator('.nn-score')).toBeVisible();
   });
 }
@@ -589,7 +1229,7 @@ test('supplied analyser contains a silent digital countdown and sliding slot on 
   await expect(timer).toHaveText('7 seconds remaining');
   await page.clock.runFor(1000);
   await expect(timer).toHaveText('6 seconds remaining');
-  await widget(page).getByRole('button', { name: 'Cancel check' }).click();
+  await widget(page).getByRole('button', { name: 'Start a new name check' }).click();
   await expect(widget(page).getByRole('timer')).toHaveCount(0);
   await page.clock.runFor(HOMEPAGE_ANALYSIS_MS);
   await expect(widget(page).locator('.nn-score')).toHaveCount(0);
@@ -604,6 +1244,7 @@ test('homepage uses the new MP3, defaults sound on and preserves both timed reve
     window.homeCheckerPlayed = [];
     window.Audio = function (src) {
       const audio = new NativeAudio(src);
+      if (!src.includes('/checking')) return audio;
       window.homeCheckerAudio = audio;
       audio.addEventListener('playing', () => window.homeCheckerPlayed.push(src));
       return audio;
@@ -611,7 +1252,7 @@ test('homepage uses the new MP3, defaults sound on and preserves both timed reve
     const observer = new MutationObserver(() => {
       const audio = window.homeCheckerAudio;
       if (!audio) return;
-      if (!window.homePanelTime && document.querySelector('.nn-widget .nn-stage')) window.homePanelTime = audio.currentTime;
+      if (window.homePanelTime === undefined && document.querySelector('.nn-widget .nn-stage')) window.homePanelTime = audio.currentTime;
       if (!window.homeResultTime && document.querySelector('.nn-widget .nn-score'))
         window.homeResultTime = { time: audio.currentTime, duration: audio.duration, paused: audio.paused };
     });
@@ -625,12 +1266,12 @@ test('homepage uses the new MP3, defaults sound on and preserves both timed reve
   const state = await page.evaluate(() => ({ panel: window.homePanelTime, result: window.homeResultTime,
     played: window.homeCheckerPlayed }));
   expect(state.played).toEqual(['/audio/naughty-or-nice/checking_1793902553290.mp3']);
-  expect(state.panel).toBeGreaterThanOrEqual(.5);
-  expect(state.panel).toBeLessThan(.8);
+  expect(state.panel).toBeGreaterThanOrEqual(0);
+  expect(state.panel).toBeLessThan(.2);
   expect(state.result.paused).toBe(false);
   expect(state.result.duration - state.result.time).toBeGreaterThan(.15);
   expect(state.result.duration - state.result.time).toBeLessThan(.35);
-  await widget(page).getByRole('link', { name: 'Lets check again with Head Elf!' }).click();
+  await widget(page).getByRole('link', { name: 'Lets check with Head Elf', exact: true }).click();
   expect(await page.evaluate(() => window.homeCheckerAudio.paused)).toBe(true);
   await expect(office(page).getByRole('combobox')).toHaveValue('Erin');
 });
@@ -722,6 +1363,62 @@ test('final analysis uses Head Elf engine with decoded artwork, red countdown an
   await expect(machine.getByRole('timer')).toHaveText('6 seconds remaining');
   await page.clock.runFor(ANALYSIS_MS - 2000 + 100);
   await expect(office(page).locator('.nn-result h2')).toHaveText('Zorabelle: NICE LIST!');
+});
+
+test('Head Elf sound artwork stays bottom right through every stage and entry starts above the old toolbar', async ({ page }, testInfo) => {
+  await open(page);
+  const panel = office(page).locator('.nn-panel');
+  const sound = office(page).getByRole('button', { name: /^Sound: / });
+  const assertCorner = async content => {
+    const box = await panel.boundingBox();
+    const button = await sound.boundingBox();
+    const body = await content.boundingBox();
+    const borders = await panel.evaluate(element => {
+      const style = getComputedStyle(element);
+      return { right: parseFloat(style.borderRightWidth), bottom: parseFloat(style.borderBottomWidth) };
+    });
+    expect(button.width).toBeGreaterThanOrEqual(44);
+    expect(button.height).toBeGreaterThanOrEqual(44);
+    expect(button.y).toBeGreaterThanOrEqual(body.y + body.height);
+    expect(button.x + button.width).toBeLessThanOrEqual(box.x + box.width - borders.right + 1);
+    expect(button.x + button.width).toBeGreaterThan(box.x + box.width / 2);
+    expect(button.y + button.height).toBeLessThanOrEqual(box.y + box.height - borders.bottom + 1);
+    await expect(sound.locator('img')).toHaveAttribute('src', '/images/checker-MusicOn.webp');
+    await expect(panel.locator('.nn-sound, .nn-toolbar > button')).toHaveCount(0);
+  };
+  for (const [width, fontSize] of [[1280, ''], [390, ''], [320, ''], [320, '200%']]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.evaluate(size => { document.documentElement.style.fontSize = size; }, fontSize);
+    await assertCorner(panel.locator('.nn-stage'));
+    const entryOffset = await panel.evaluate(element => {
+      const style = getComputedStyle(element);
+      return element.querySelector('.nn-stage').getBoundingClientRect().top -
+        element.getBoundingClientRect().top - parseFloat(style.borderTopWidth) - parseFloat(style.paddingTop);
+    });
+    expect(entryOffset).toBeLessThanOrEqual(1);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await panel.screenshot({ path: testInfo.outputPath(`office-corner-${width}-${fontSize || 'normal'}.png`), animations: 'disabled' });
+  }
+  await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
+  await panel.getByRole('combobox').fill('Erin');
+  await panel.getByRole('button', { name: "Let's check if Naughty or Nice", exact: true }).click();
+  await assertCorner(panel.locator('.nn-stage'));
+  await page.clock.runFor(1900);
+  await assertCorner(panel.locator('.nn-stage'));
+  await answer(page);
+  await assertCorner(panel.locator('.nn-stage'));
+  await panel.getByRole('button', { name: 'Let’s just have another little check!' }).click();
+  await assertCorner(panel.locator('.nn-stage'));
+  await page.clock.runFor(ANALYSIS_MS + 100);
+  await assertCorner(panel.locator('.nn-result'));
+  await sound.focus();
+  await page.keyboard.press('Tab');
+  await page.keyboard.press('Shift+Tab');
+  await expect(sound).toBeFocused();
+  await expect(sound).toHaveCSS('outline-style', 'solid');
+  await page.keyboard.press('Space');
+  await expect(sound).toHaveAttribute('aria-pressed', 'false');
+  await expect(sound.locator('img')).toHaveAttribute('src', '/images/checker-MusicOff.webp');
 });
 
 test('Head Elf panel preserves the whole supplied frame and live name controls on desktop and phones', async ({ page }, testInfo) => {
@@ -832,7 +1529,7 @@ test('failed audio cannot block results; only the matching new recording plays a
   await expect(office(page).getByRole('button', { name: 'Replay sound' })).toHaveCount(0);
   let files = await page.evaluate(() => window.checkerAudio.map(url => url.split('/').at(-1)));
   expect(files).toEqual(['checking-naughty_1793904309041.mp3']);
-  await office(page).getByRole('button', { name: 'Try again from the start' }).click();
+  await office(page).getByRole('button', { name: 'Start a new name check' }).click();
   await enter(page);
   await answer(page, 0);
   await analyse(page);
@@ -851,7 +1548,7 @@ test('supplied MP3s decode and play in the browser; leaving stops active audio w
     const NativeAudio = window.Audio;
     window.Audio = function (src) {
       const audio = new NativeAudio(src);
-      if (src?.includes('/naughty-or-nice/')) {
+      if (src?.includes('/naughty-or-nice/checking')) {
         window.checkerActiveAudio = audio;
         audio.addEventListener('playing', () => {
           window.checkerPlayed.push(src.split('/').at(-1));
@@ -894,7 +1591,7 @@ test('supplied MP3s decode and play in the browser; leaving stops active audio w
   const events = await page.evaluate(() => window.checkerEvents);
   expect(events).toEqual(['playing:checking-nice_1793904309041.mp3', 'ended:checking-nice_1793904309041.mp3']);
   await expect(radio).toBeVisible();
-  await office(page).getByRole('button', { name: 'Try again from the start' }).click();
+  await office(page).getByRole('button', { name: 'Start a new name check' }).click();
   await enter(page, 'Zorabelle', false);
   await answer(page, 10);
   await office(page).getByRole('button', { name: 'Let’s just have another little check!' }).click();
@@ -945,7 +1642,7 @@ test('cancellation, restart and navigation suppress stale results and turning so
   await page.clock.runFor(ANALYSIS_MS + 100);
   await expect(office(page).locator('.nn-result--nice')).toBeVisible();
   expect(await page.evaluate(() => window.checkerAudio)).toHaveLength(2);
-  await office(page).getByRole('button', { name: 'Try again from the start' }).click();
+  await office(page).getByRole('button', { name: 'Start a new name check' }).click();
   await expect(office(page).getByRole('combobox')).toHaveValue('');
   await expect(office(page).getByRole('combobox')).toBeFocused();
   await enter(page, 'Erin');
@@ -973,7 +1670,7 @@ test('narrow and enlarged text layouts retain controls; reduced motion is static
   await enter(page);
   await answer(page, 6);
   await analyse(page);
-  const restart = office(page).getByRole('button', { name: 'Try again from the start' });
+  const restart = office(page).getByRole('button', { name: 'Start a new name check' });
   await restart.scrollIntoViewIfNeeded();
   const button = await restart.boundingBox();
   const dock = await page.locator('.radio-dock').boundingBox();

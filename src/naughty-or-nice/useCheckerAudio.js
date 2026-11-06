@@ -1,10 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 export const CHECKER_SOUNDS = {
+  connecting: '/audio/naughty-or-nice/connecting.mp3',
   checking: '/audio/naughty-or-nice/checking_1793902553290.mp3',
   homepageChecking: '/audio/naughty-or-nice/checking_1793902553290.mp3',
   nice: '/audio/naughty-or-nice/checking-nice_1793904309041.mp3',
   naughty: '/audio/naughty-or-nice/checking-naughty_1793904309041.mp3',
+  pop: '/audio/naughty-or-nice/pop-1.mp3',
+  click: '/audio/naughty-or-nice/click-1.mp3',
 };
 
 export default function useCheckerAudio(checkingSound = CHECKER_SOUNDS.checking) {
@@ -12,9 +15,15 @@ export default function useCheckerAudio(checkingSound = CHECKER_SOUNDS.checking)
   const enabledRef = useRef(true);
   const [error, setError] = useState('');
   const audio = useRef(null);
+  const effectAudio = useRef(null);
   const handlers = useRef(null);
   const progressTimer = useRef(null);
   const stop = useCallback(() => {
+    if (effectAudio.current) {
+      effectAudio.current.onended = effectAudio.current.onerror = null;
+      effectAudio.current.pause(); effectAudio.current.removeAttribute('src'); effectAudio.current.load();
+      effectAudio.current = null;
+    }
     const current = audio.current;
     const callbacks = handlers.current;
     audio.current = null;
@@ -68,7 +77,28 @@ export default function useCheckerAudio(checkingSound = CHECKER_SOUNDS.checking)
     };
     try { Promise.resolve(current.play()).then(playing, failed); } catch { failed(); }
   }, [stop, checkingSound]);
-  return { enabled, error, play, stop, toggle: () => {
+  const effect = kind => {
+    if (!enabledRef.current) return;
+    if (effectAudio.current) {
+      effectAudio.current.onended = effectAudio.current.onerror = null;
+      effectAudio.current.pause(); effectAudio.current.removeAttribute('src'); effectAudio.current.load();
+    }
+    const clip = new Audio(CHECKER_SOUNDS[kind]);
+    effectAudio.current = clip;
+    const clear = () => {
+      if (effectAudio.current !== clip) return;
+      effectAudio.current = null;
+      clip.onended = clip.onerror = null;
+      clip.pause(); clip.removeAttribute('src'); clip.load();
+    };
+    const failed = () => {
+      if (effectAudio.current !== clip) return;
+      clear(); setError('Sound could not play. Your check still works.');
+    };
+    clip.onended = clear; clip.onerror = failed;
+    try { Promise.resolve(clip.play()).catch(failed); } catch { failed(); }
+  };
+  return { enabled, error, play, effect, stop, toggle: () => {
     stop(); setError('');
     enabledRef.current = !enabledRef.current;
     setEnabled(enabledRef.current);

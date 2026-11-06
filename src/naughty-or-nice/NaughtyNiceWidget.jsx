@@ -1,16 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import FirstNameForm from './FirstNameForm.jsx';
 import NaughtyNiceQuizIntro from './NaughtyNiceQuizIntro.jsx';
-import { SoundControl, keepCheckerFocusVisible } from './CheckerControls.jsx';
+import { HomepageCornerControls, keepCheckerFocusVisible } from './CheckerControls.jsx';
 import useCheckerAudio, { CHECKER_SOUNDS } from './useCheckerAudio.js';
 import useCheckerRun from './useCheckerRun.js';
 import useCheckingPanelDelay from './useCheckingPanelDelay.js';
 import { NnComputer } from './OfficeScene.jsx';
-import { HOMEPAGE_ANALYSIS_MS, CHECKER_PATH, clearCheckerName, offerCheckerName, preliminaryScore } from './checkerLogic.js';
+import { HOMEPAGE_ANALYSIS_MS, CHECKER_LAUNCH_MS, CHECKER_PATH, clearCheckerName, offerCheckerName, preliminaryScore } from './checkerLogic.js';
 import './checker.css';
 
 export default function NaughtyNiceWidget() {
+  const location = useLocation();
   const [stage, setStage] = useState('entry');
   const [name, setName] = useState('');
   const [score, setScore] = useState(null);
@@ -18,6 +19,51 @@ export default function NaughtyNiceWidget() {
   const focus = useRef(null);
   const section = useRef(null);
   const visited = useRef(false);
+  useEffect(() => {
+    if (location.hash !== '#nice-list') return;
+    // Wait for route rendering and the navigation's ordinary scroll-to-top.
+    // A fresh location key also handles clicking this link again on the home page.
+    let active = true;
+    let frame;
+    let settleTimer;
+    const position = () => {
+      const navBottom = document.querySelector('.navbar')?.getBoundingClientRect().bottom || 100;
+      const scrollPadding = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+      if (section.current) section.current.style.scrollMarginTop = `${Math.max(0, navBottom + 16 - scrollPadding)}px`;
+      section.current?.focus({ preventScroll: true });
+      section.current?.scrollIntoView({
+        block: 'start',
+        behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+      });
+    };
+    const schedule = () => {
+      document.fonts.ready.then(() => {
+        if (active) {
+          cancelAnimationFrame(frame);
+          frame = requestAnimationFrame(position);
+        }
+      });
+    };
+    const stopSettling = () => {
+      active = false;
+      cancelAnimationFrame(frame);
+      clearTimeout(settleTimer);
+      window.removeEventListener('load', schedule);
+      document.fonts.removeEventListener('loadingdone', schedule);
+      for (const event of ['wheel', 'touchstart', 'pointerdown', 'keydown'])
+        window.removeEventListener(event, stopSettling);
+    };
+    // Fresh documents can restore a fragment position after hydration. Fonts
+    // loaded by lower sections can also change earlier section heights.
+    // Briefly settle that position, but never fight a visitor's own scrolling.
+    window.addEventListener('load', schedule);
+    document.fonts.addEventListener('loadingdone', schedule);
+    for (const event of ['wheel', 'touchstart', 'pointerdown', 'keydown'])
+      window.addEventListener(event, stopSettling, { passive: true });
+    settleTimer = setTimeout(stopSettling, 2000);
+    schedule();
+    return stopSettling;
+  }, [location.key, location.hash]);
   const audio = useCheckerAudio(CHECKER_SOUNDS.homepageChecking);
   const { run, cancel, audioCallbacks, secondsRemaining } = useCheckerRun();
   const { begin: delayPanel, cancel: cancelPanel } = useCheckingPanelDelay();
@@ -25,8 +71,8 @@ export default function NaughtyNiceWidget() {
     if (stage !== 'entry') {
       visited.current = true;
       focus.current?.focus({ preventScroll: true });
-    } else if (visited.current) section.current?.querySelector('input')?.focus();
-  }, [stage]);
+    } else if (visited.current || entryKey) section.current?.querySelector('input')?.focus();
+  }, [stage, entryKey]);
   useEffect(() => {
     clearCheckerName();
     const clear = () => { cancelPanel(); cancel(); audio.stop(); clearCheckerName(); setName(''); setScore(null); setStage('entry'); setEntryKey(value => value + 1); };
@@ -38,8 +84,11 @@ export default function NaughtyNiceWidget() {
       window.removeEventListener('pageshow', show);
     };
   }, [cancelPanel, cancel, audio.stop]);
-  const restart = () => { cancelPanel(); cancel(); audio.stop(); setScore(null); setName(''); setStage('entry'); setEntryKey(value => value + 1); };
-  return <section ref={section} className="nn-widget" aria-labelledby="nn-quiz-intro-heading" onFocusCapture={keepCheckerFocusVisible}>
+  const restart = () => { cancelPanel(); cancel(); audio.stop(); clearCheckerName(); setScore(null); setName(''); setStage('entry'); setEntryKey(value => value + 1); };
+  return <section id="nice-list" ref={section} tabIndex={-1} className="nn-widget" aria-labelledby="nn-quiz-intro-heading" onFocusCapture={event => {
+    // Pointer focus must not scroll a corner button away before pointer-up.
+    if (event.target !== section.current && event.target.matches(':focus-visible')) keepCheckerFocusVisible(event);
+  }}>
     <NaughtyNiceQuizIntro />
     <div className="nn-widget-inner">
       <div className="nn-widget-intro">
@@ -51,17 +100,19 @@ export default function NaughtyNiceWidget() {
       </div>
       <div className="nn-panel nn-widget-frame">
         {(stage === 'entry' || stage === 'starting') && <h3 className="nn-widget-form-heading">Quick Nice List Check</h3>}
-        {(stage === 'entry' || stage === 'starting') && <FirstNameForm key={entryKey} disabled={stage === 'starting'} onSubmit={value => {
-          if (!run(HOMEPAGE_ANALYSIS_MS, () => { cancelPanel(); setScore(preliminaryScore()); setStage('result'); })) return;
+        {(stage === 'entry' || stage === 'starting') && <FirstNameForm key={entryKey} label="Confirm first name" inlineSuggestions disabled={stage === 'starting'} onSubmit={value => {
+          if (!run(HOMEPAGE_ANALYSIS_MS + CHECKER_LAUNCH_MS, () => { cancelPanel(); setScore(preliminaryScore()); setStage('result'); })) return;
           setName(value); setStage('starting');
-          audio.play('checking', delayPanel(audioCallbacks(),
-            () => setStage(current => current === 'starting' ? 'checking' : current), audio.enabled));
+          audio.effect('click');
+          delayPanel(() => {
+            setStage('checking');
+            audio.play('checking', audioCallbacks());
+          });
         }} />}
         {stage === 'checking' && <div className="nn-stage">
           <h3 ref={focus} tabIndex={-1}>Checking at the North Pole…</h3>
           <NnComputer busy secondsRemaining={secondsRemaining} />
           <p role="status">The Workshop Naughty &amp; Nice Analyiser</p>
-          <button className="nn-secondary" onClick={restart}>Cancel check</button>
         </div>}
         {stage === 'result' && <div className="nn-result">
           <h3 ref={focus} tabIndex={-1}>{name}, you’re <span className="nn-score">{score}% nice!</span></h3>
@@ -69,10 +120,9 @@ export default function NaughtyNiceWidget() {
           <Link className="nn-primary nn-head-elf-link" to={CHECKER_PATH} onClick={event => {
             if (!event.defaultPrevented && event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey)
               offerCheckerName(name);
-          }}>Lets check again with Head Elf!</Link>
-          <button className="nn-secondary nn-check-another" onClick={restart}>Check another name</button>
+          }}>Lets check with Head Elf</Link>
         </div>}
-        <SoundControl audio={audio} />
+        <HomepageCornerControls audio={audio} onRestart={restart} showRestart={stage !== 'entry'} />
       </div>
     </div>
   </section>;

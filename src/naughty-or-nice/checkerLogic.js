@@ -9,6 +9,7 @@ export const resultAnalysisMs = result => RESULT_CLIP_MS[result] - CERTIFICATE_R
 export const ANALYSIS_MS = resultAnalysisMs('nice');
 export const HOMEPAGE_CHECKING_CLIP_MS = 8516;
 export const HOMEPAGE_ANALYSIS_MS = HOMEPAGE_CHECKING_CLIP_MS - REVEAL_LEAD_MS;
+export const CHECKER_LAUNCH_MS = 500;
 export const QUESTIONS = [
   'Have you been nice?',
   'Do you help others?',

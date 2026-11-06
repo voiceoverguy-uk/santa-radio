@@ -4,6 +4,13 @@ import { PDFDocument } from 'pdf-lib';
 import { ANALYSIS_MS } from '../src/naughty-or-nice/checkerLogic.js';
 
 test.use({ reducedMotion: 'reduce' });
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('santaradio-cookie-consent-v2', JSON.stringify({
+      version: 2, analytics: false, marketing: false, media: false, savedAt: Date.now(),
+    }));
+  });
+});
 const path = '/naughty-or-nice-list-checker';
 
 async function result(page, naughty) {
@@ -26,7 +33,7 @@ async function result(page, naughty) {
 }
 
 for (const naughty of [false, true]) {
-  test(`${naughty ? 'Naughty' : 'Nice'} certificate enlarges, traps focus and closes without exposing Nice downloads`, async ({ page }, testInfo) => {
+  test(`${naughty ? 'Naughty' : 'Nice'} Head Elf certificate enlarges, traps focus and offers its PDF`, async ({ page }, testInfo) => {
     await result(page, naughty);
     const kind = naughty ? 'Naughty' : 'Nice';
     if (!naughty) {
@@ -49,8 +56,7 @@ for (const naughty of [false, true]) {
     await expect(close).toBeFocused();
     await expect(dialog.locator('.studio-certificate__name')).toHaveAttribute('data-fitted', 'true');
     expect((await dialog.locator('.studio-certificate').boundingBox()).width).toBeGreaterThan(inline.width);
-    await expect(dialog.getByRole('button', { name: /Download Naughty certificate PDF/ })).toHaveCount(naughty ? 1 : 0);
-    if (!naughty) await expect(page.getByRole('button', { name: /download|pdf/i })).toHaveCount(0);
+    await expect(dialog.getByRole('button', { name: `Download ${kind} certificate PDF` })).toHaveCount(1);
     for (const [width, height, font] of [[1280, 900, ''], [390, 844, ''], [320, 844, ''], [844, 390, ''], [320, 844, '200%']]) {
       await page.setViewportSize({ width, height });
       await page.evaluate(size => { document.documentElement.style.fontSize = size; }, font);
@@ -71,10 +77,8 @@ for (const naughty of [false, true]) {
     await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
     await close.focus();
     await page.keyboard.press('Tab');
-    if (naughty) {
-      await expect(dialog.getByRole('button', { name: 'Download Naughty certificate PDF' })).toBeFocused();
-      await page.keyboard.press('Tab');
-    }
+    await expect(dialog.getByRole('button', { name: `Download ${kind} certificate PDF` })).toBeFocused();
+    await page.keyboard.press('Tab');
     await expect(close).toBeFocused();
     await page.keyboard.press('Escape');
     await expect(dialog).not.toBeVisible();
@@ -94,7 +98,7 @@ for (const naughty of [false, true]) {
       await page.clock.setSystemTime(new Date('2026-12-24T23:59:30Z'));
       await page.clock.runFor(60000);
       await expect(page.locator('.nn-result > p').last()).toHaveText('Well Done Zorabelle Only 0 days to go. Keep sharing, helping and being kind. Little acts of kindness make Christmas brighter!');
-      await expect(page.getByRole('button', { name: /download|pdf/i })).toHaveCount(0);
+      await expect(page.getByRole('button', { name: 'Download Nice certificate PDF' })).toBeVisible();
     }
   });
 }
@@ -128,7 +132,7 @@ test('Naughty PDF is local, personalised, retryable and cancelled on restart', a
   const downloading = page.waitForEvent('download');
   await button.click();
   const file = await downloading;
-  expect(file.suggestedFilename()).toBe('Santa-Radio-Naughty-List-Certificate.pdf');
+  expect(file.suggestedFilename()).toBe('Head-Elf-Naughty-List-Certificate.pdf');
   const output = testInfo.outputPath('naughty-certificate.pdf');
   await file.saveAs(output);
   const bytes = await readFile(output);
@@ -137,7 +141,7 @@ test('Naughty PDF is local, personalised, retryable and cancelled on restart', a
   expect(pdf.getPageCount()).toBe(1);
   expect(pdf.getPage(0).getWidth()).toBeCloseTo(841.8898, 3);
   expect(pdf.getPage(0).getHeight()).toBeCloseTo(595.2756, 3);
-  expect(pdf.getTitle()).toBe('Santa Radio Naughty List Certificate');
+  expect(pdf.getTitle()).toBe('Head Elf’s Very Unofficial Naughty List Certificate');
   expect(await page.evaluate(() => window.certificatePaint)).toEqual(
     expect.arrayContaining(['Zorabelle', '50 DAYS TO GO', 'THERE IS STILL TIME']));
   expect(requests.some(request => request.includes('Zorabelle'))).toBe(false);
@@ -156,9 +160,47 @@ test('Naughty PDF is local, personalised, retryable and cancelled on restart', a
   });
   await button.click();
   await expect.poll(() => page.evaluate(() => typeof window.releaseCertificateExport)).toBe('function');
-  await page.getByRole('button', { name: 'Try again from the start' }).click();
+  await page.getByRole('button', { name: 'Start a new name check' }).click();
   expect(await page.evaluate(() => window.exportSignal.aborted)).toBe(true);
   await page.evaluate(() => window.releaseCertificateExport());
   await expect(page.locator('.nn-result')).toHaveCount(0);
   expect(downloads).toHaveLength(1);
+});
+
+test('Nice Head Elf PDF downloads locally with the new artwork and name, not the Studio master', async ({ page }, testInfo) => {
+  const requests = [];
+  page.on('request', request => requests.push(`${request.url()} ${request.postData() || ''}`));
+  await result(page, false);
+  await expect(page.locator('.nn-kicker')).toHaveText('HEAD ELF’S VERY UNOFFICIAL VERDICT');
+  await expect(page.locator('.nn-certificate-preview img')).toHaveAttribute('src', '/certificates/checker/nice-master.webp');
+  await expect(page.getByRole('button', { name: 'Try again from the start' })).toHaveCount(0);
+  const arrow = page.getByRole('button', { name: 'Start a new name check' });
+  const sound = page.getByRole('button', { name: 'Sound: off' });
+  const left = await arrow.boundingBox(), right = await sound.boundingBox();
+  expect(left.x + left.width).toBeLessThan(right.x);
+  await page.evaluate(() => {
+    const paint = CanvasRenderingContext2D.prototype.fillText;
+    window.niceCertificatePaint = [];
+    CanvasRenderingContext2D.prototype.fillText = function (text, ...args) {
+      window.niceCertificatePaint.push(text); return paint.call(this, text, ...args);
+    };
+  });
+  const downloading = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Download Nice certificate PDF' }).click();
+  const file = await downloading;
+  expect(file.suggestedFilename()).toBe('Head-Elf-Nice-List-Certificate.pdf');
+  const output = testInfo.outputPath('nice-head-elf-certificate.pdf');
+  await file.saveAs(output);
+  const pdf = await PDFDocument.load(await readFile(output));
+  expect(pdf.getTitle()).toBe('Head Elf’s Very Unofficial Nice List Certificate');
+  expect(pdf.getPageCount()).toBe(1);
+  expect(pdf.getPage(0).getWidth()).toBeCloseTo(841.8898, 3);
+  expect(await page.evaluate(() => window.niceCertificatePaint)).toContain('Zorabelle');
+  expect(await page.evaluate(() => window.niceCertificatePaint)).not.toContain('THERE IS STILL TIME');
+  expect(requests.some(request => request.includes('Zorabelle'))).toBe(false);
+  expect(requests.some(request => /\/certificates\/(?:nice-list\/master.pdf|examples\/blank-master.webp)/.test(request))).toBe(false);
+  await arrow.click();
+  await expect(page.getByRole('combobox', { name: 'Confirm first name' })).toHaveValue('');
+  await expect(page.getByRole('combobox')).toBeFocused();
+  await expect(arrow).toHaveCount(0);
 });

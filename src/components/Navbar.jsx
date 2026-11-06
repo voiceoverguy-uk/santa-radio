@@ -42,10 +42,13 @@ export default function Navbar() {
     { radio: true }, { to: '/christmas-music', label: 'Music' },
     { to: '/mugshots/all', label: 'Celebrity Mugshots' },
     { to: '/santa-tracker', label: 'Santa Tracker' },
+    { to: '/#nice-list', label: 'Nice List?' },
   ];
   const pathname = location.pathname.replace(/\/+$/, '') || '/';
   const isStudio = pathname === '/santa-message-workshop';
   const isActive = to => {
+    if (to === '/#nice-list') return pathname === '/' && location.hash === '#nice-list';
+    if (to === '/') return pathname === '/' && location.hash !== '#nice-list';
     if (to === '/mugshots/all') return /^\/mugshots(?:\/|$)/.test(pathname);
     if (to === '/christmas-music') {
       return /^\/(?:christmas-music|christmas-artist|christmas-karaoke-lyrics)(?:\/|$)/.test(pathname);
@@ -66,7 +69,7 @@ export default function Navbar() {
             ? <RadioButton className="nav-radio" />
             : link.external
             ? <a href={link.to} target="_blank" rel="noopener noreferrer" title={`${link.label} (opens in a new tab)`} onClick={() => setMenuOpen(false)}>{link.label}</a>
-            : <Link to={link.to} aria-current={isActive(link.to) ? 'page' : undefined} className={isActive(link.to) ? 'active' : ''} onClick={() => setMenuOpen(false)}>{link.label}</Link>
+            : <Link to={link.to} aria-current={isActive(link.to) ? (link.to.includes('#') ? 'location' : 'page') : undefined} className={isActive(link.to) ? 'active' : ''} onClick={() => setMenuOpen(false)}>{link.label}</Link>
           }</li>)}
           <li data-nav-key="/free-santa-message" data-highlighted={highlight.target === '/free-santa-message' ? 'true' : undefined}><Link to="/free-santa-message" className="btn-red nav-message" aria-current={isActive('/free-santa-message') ? 'page' : undefined} onClick={openMessageDesk}>FREE Santa Message</Link></li>
         </ul>

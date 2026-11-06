@@ -22,6 +22,8 @@
 :is(.nn-office, .nn-widget) :is(button, input, a, [tabindex]) { scroll-margin-block: 130px 150px; }
 
 /* Full office page */
+#nice-list { scroll-margin-top: 20px; }
+
 .nn-office { min-height: 75dvh; background: radial-gradient(ellipse at 50% -10%, #2b5640, #0b2219 70%); padding: 145px 16px calc(150px + env(safe-area-inset-bottom)); }
 .nn-office > .nn-scene { max-width: 1040px; margin-inline: auto; }
 .nn-office .nn-office-scene-heading { position: relative; margin: 0; padding: clamp(80px, 9vw, 110px) clamp(16px, 4vw, 44px) 0; }
@@ -169,7 +171,11 @@ progress.nn-progress::-moz-progress-bar { background: var(--nn-red); }
 .nn-question-step { width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; margin: 0; padding: clamp(14px, 3vw, 20px); border: 1px solid #b48a4a77; border-radius: 10px; background: #fffcf480; text-align: center; }
 .nn-question-step :is(legend, h3, p:first-child) { font: 700 clamp(1.05rem, 3vw, 1.2rem)/1.45 'Inter', sans-serif; color: var(--nn-ink); margin: 0 auto 14px; padding: 0; max-width: 42ch; overflow-wrap: anywhere; }
 /* A floating legend stays inside the padding instead of cutting through the top border. */
-.nn-question-step > legend { float: left; width: 100%; max-width: 100%; box-sizing: border-box; }
+.nn-question-step > legend { float: left; width: 100%; max-width: 100%; box-sizing: border-box; display: grid; }
+/* All wording shares one grid cell, reserving the longest question's natural
+   wrapping at this width/text size without exposing extra questions to AT. */
+.nn-question-step > legend > :is(.nn-question-wording, .nn-question-size) { grid-area: 1 / 1; min-width: 0; }
+.nn-question-size { visibility: hidden; pointer-events: none; }
 .nn-question-buttons { clear: both; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: min(380px, 100%); margin-inline: auto; }
 .nn-question-buttons button { min-height: 52px; padding: 12px 18px; border-radius: 999px; border: 2px solid var(--nn-green); background: #fffcf4; color: var(--nn-green-dark); font: 700 1.05rem/1.2 'Inter', sans-serif; cursor: pointer; transition: transform .18s ease, background-color .18s ease; }
 .nn-question-buttons .nn-primary:hover:not(:disabled) { background: #e3efe2; transform: none; }
@@ -232,7 +238,7 @@ progress.nn-progress::-moz-progress-bar { background: var(--nn-red); }
 .nn-toolbar > .nn-sound { margin-left: auto; order: -1; }
 .nn-toolbar > .nn-error { flex: 1 1 100%; }
 
-/* Question actions: final submit full width row 1; Previous left, Start over right. */
+/* Question actions: final submit full width row 1; Previous left. Restart is in the corner row. */
 .nn-actions--questions { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; width: 100%; align-items: stretch; }
 .nn-actions--questions > * { min-width: 0; white-space: normal; text-align: center; }
 .nn-actions--questions > .nn-final-check { grid-column: 1 / -1; grid-row: 1; width: 100%; min-height: 52px; font-size: 1.02rem; }
@@ -299,8 +305,25 @@ progress.nn-progress::-moz-progress-bar { background: var(--nn-red); }
 .nn-widget .nn-widget-frame::before { content: none; }
 .nn-widget .nn-widget-frame > * { position: relative; z-index: 1; }
 .nn-widget .nn-widget-form-heading { margin: 0 0 12px; color: var(--nn-green-dark); font-family: 'Cinzel', Georgia, serif; font-size: clamp(1.15rem, 2.2vw, 1.6rem); font-weight: 600; line-height: 1.35; text-align: center; overflow-wrap: anywhere; }
-.nn-widget .nn-widget-frame > .nn-toolbar { margin: 16px 0 0; justify-content: flex-end; }
-.nn-widget .nn-widget-frame > .nn-toolbar > .nn-sound { transform: none; }
+:is(.nn-widget, .nn-office) .nn-corner-controls { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 20px; }
+/* Use the blank inner border area, not the decorated outer holly corners. */
+.nn-widget .nn-widget-frame > .nn-corner-controls {
+  --nn-corner-outset: clamp(10px, 3vw, 22px);
+  margin: 12px calc(-1 * var(--nn-corner-outset)) calc(-1 * var(--nn-corner-outset));
+}
+:is(.nn-widget, .nn-office) .nn-corner-controls--sound-only { justify-content: flex-end; }
+:is(.nn-widget, .nn-office) .nn-corner-button { display: grid; place-items: center; width: 60px; min-width: 44px; min-height: 60px; padding: 2px; border: 0; border-radius: 8px; background: transparent; color: var(--nn-green-dark); cursor: pointer; font: 600 .85rem/1.3 'Inter', sans-serif; }
+:is(.nn-widget, .nn-office) .nn-corner-button img { display: block; width: 100%; height: auto; pointer-events: none; }
+:is(.nn-widget, .nn-office) .nn-corner-fallback { display: none; overflow-wrap: anywhere; }
+:is(.nn-widget, .nn-office) .nn-corner-fallback.is-visible { display: block; }
+/* Suggestions grow the form instead of covering either corner control. */
+:is(.nn-widget, .nn-office) .nn-picker ul { position: static; box-sizing: border-box; }
+@media (forced-colors: active) {
+  .nn-widget .nn-widget-frame > .nn-corner-controls { margin: 12px 0 0; }
+  :is(.nn-widget, .nn-office) .nn-corner-button { width: auto; max-width: 48%; border: 2px solid ButtonText; padding: 6px; }
+  :is(.nn-widget, .nn-office) .nn-corner-button img { display: none; }
+  :is(.nn-widget, .nn-office) .nn-corner-fallback { display: block; }
+}
 .nn-widget .nn-widget-frame .nn-result { background: #fffcf466; }
 @media (max-width: 767px) {
   .nn-widget .nn-widget-inner { grid-template-columns: 1fr; }
@@ -355,10 +378,15 @@ progress.nn-progress::-moz-progress-bar { background: var(--nn-red); }
   background: none; border-radius: 0; box-shadow: none;
   border-style: solid;
   border-width: calc(var(--nn-px) * 430) calc(var(--nn-px) * 90) calc(var(--nn-px) * 130);
-  border-image: url("/images/head-elf-office-panel-jolly.webp") 430 90 130 fill / calc(var(--nn-px) * 430) calc(var(--nn-px) * 90) calc(var(--nn-px) * 130) stretch;
+  border-image: var(--nn-elf-panel, url("/images/head-elf-office-panel-jolly.webp")) 430 90 130 fill / calc(var(--nn-px) * 430) calc(var(--nn-px) * 90) calc(var(--nn-px) * 130) stretch;
   padding: clamp(4px, 1.5vw, 12px) clamp(2px, 1vw, 10px) clamp(6px, 1.5vw, 12px);
   filter: drop-shadow(0 18px 26px #04120c99);
 }
+.nn-office .nn-panel[data-elf-reaction="shocked"] { --nn-elf-panel: url("/images/head-elf-office-panel-shocked.webp"); }
+.nn-office .nn-panel[data-elf-reaction="extra-shocked"] { --nn-elf-panel: url("/images/head-elf-office-panel-extra-shocked.webp"); }
+.nn-office .nn-panel[data-elf-reaction="curious"] { --nn-elf-panel: url("/images/head-elf-office-panel-curious.webp"); }
+.nn-office .nn-panel[data-elf-reaction="pleased"] { --nn-elf-panel: url("/images/head-elf-office-panel-pleased.webp"); }
+.nn-office .nn-panel[data-elf-reaction="thumbs-up"] { --nn-elf-panel: url("/images/head-elf-office-panel-thumbs-up.webp"); }
 .nn-office .nn-scene-content > .nn-panel::before { content: none; }
 .nn-office .nn-scene-content > .nn-panel > * { position: relative; z-index: 1; }
 .nn-office .nn-scene-content > .nn-panel .nn-result { background-color: #fffcf466; }
@@ -369,11 +397,7 @@ progress.nn-progress::-moz-progress-bar { background: var(--nn-red); }
   .nn-office .nn-scene-content > .nn-panel { border-image: none; border: 2px solid CanvasText; padding: 18px; filter: none; }
 }
 
-/* Polish: subordinate restart, glowing Head Elf link, icon sound toggle. */
-.nn-widget .nn-result .nn-secondary.nn-check-another { min-height: 44px; min-width: 44px; padding: 8px 16px; font-size: .82rem; font-weight: 600; border-width: 1.5px; opacity: .92; }
-.nn-widget .nn-result .nn-secondary.nn-check-another:hover:not(:disabled) { opacity: 1; background: #1f5a3c1a; }
-.nn-widget .nn-result .nn-secondary.nn-check-another:focus-visible { opacity: 1; }
-
+/* Glowing Head Elf link and dedicated-page icon sound toggle. */
 .nn-widget .nn-result .nn-primary.nn-head-elf-link { position: relative; box-shadow: 0 4px 0 #4f0d12, 0 0 0 2px #f0d78a66, 0 6px 16px #d4af3755; animation: nn-elf-glow 2.8s ease-in-out infinite; }
 .nn-widget .nn-result .nn-primary.nn-head-elf-link:hover { box-shadow: 0 4px 0 #4f0d12, 0 0 0 3px #f0d78acc, 0 8px 22px #d4af3799; }
 .nn-widget .nn-result .nn-primary.nn-head-elf-link:focus-visible { animation: none; outline: 3px solid var(--nn-focus); outline-offset: 3px; box-shadow: 0 0 0 6px var(--nn-ink), 0 0 18px #f0d78a99; }

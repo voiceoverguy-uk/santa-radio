@@ -4,6 +4,17 @@ description: Scroll completion and fixed-player occlusion affect screenshot and 
 ---
 Before capturing an interaction state or measuring its viewport position, ensure scrolling has settled and account for fixed headers and the radio dock.
 
+For fresh-document fragment links, hydration can precede native scroll
+restoration and later font loads. A single animation frame or an early
+`document.fonts.ready` does not guarantee the final destination stays aligned.
+The document's scroll padding also adds to the target's scroll margin.
+
+**Why:** Reloading the homepage checker fragment could leave its top behind
+navigation even though ordinary same-document clicks landed correctly.
+
+**How to apply:** Account for both offsets, verify reload separately, and allow
+only brief load/font settling that stops immediately on visitor interaction.
+
 When enlarged footer text plus the expanded dock exceeds the viewport, verify each earlier control by scrolling it into the space between header and dock, then return to the actual document bottom for copyright measurements.
 
 **Why:** Scrolling upward to reach the first footer links can move later controls underneath the dock; their hit-test failure at that intermediate scroll position does not establish that they are unreachable.

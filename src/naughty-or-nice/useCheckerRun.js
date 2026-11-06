@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { REVEAL_LEAD_MS } from './checkerLogic.js';
 
+// Let 00 remain visible for the final beat before the media-driven reveal.
+const displaySeconds = milliseconds => milliseconds <= 350 ? 0 : Math.ceil(milliseconds / 1000);
+
 // One active run per experience. Cancelling invalidates even a queued callback.
 export default function useCheckerRun() {
   const timer = useRef(null);
@@ -30,11 +33,11 @@ export default function useCheckerRun() {
       complete();
     };
     completion.current = { duration, deadline: Date.now() + duration, finish, mediaActive: false };
-    setSecondsRemaining(Math.ceil(duration / 1000));
+    setSecondsRemaining(displaySeconds(duration));
     countdown.current = setInterval(() => {
       const check = completion.current;
       if (generation.current === token && check && !check.mediaActive)
-        setSecondsRemaining(Math.max(0, Math.ceil((check.deadline - Date.now()) / 1000)));
+        setSecondsRemaining(displaySeconds(Math.max(0, check.deadline - Date.now())));
     }, 100);
     timer.current = setTimeout(finish, duration);
     return true;
@@ -51,7 +54,7 @@ export default function useCheckerRun() {
           : check.duration;
         check.deadline = Date.now() + remaining;
         check.mediaActive = true;
-        setSecondsRemaining(Math.ceil(remaining / 1000));
+        setSecondsRemaining(displaySeconds(remaining));
         clearTimeout(timer.current);
         // Audio time can advance differently from wall time (buffering,
         // suspended tabs or output-device delays). Reveal from media position.
@@ -61,7 +64,7 @@ export default function useCheckerRun() {
         const check = current();
         if (check && Number.isFinite(media.duration)) {
           const remaining = Math.max(0, media.duration - media.currentTime - revealLeadMs / 1000);
-          setSecondsRemaining(Math.ceil(remaining));
+          setSecondsRemaining(displaySeconds(remaining * 1000));
           if (remaining <= 0) check.finish();
         }
       },

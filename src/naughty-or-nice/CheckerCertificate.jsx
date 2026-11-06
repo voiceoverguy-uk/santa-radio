@@ -5,8 +5,8 @@ import '../components/SantaStudioGifts.css';
 function CertificateArt({ name, naughty, days }) {
   const daysText = `${days} ${days === 1 ? 'DAY' : 'DAYS'} TO GO`;
   return <div className="studio-certificate" role="img"
-    aria-label={`Official ${naughty ? 'Naughty' : 'Nice'} List certificate for ${name}${naughty ? `. ${daysText}. THERE IS STILL TIME` : ''}`}>
-    <img src={naughty ? '/certificates/checker/naughty-master.webp' : '/certificates/examples/blank-master.webp'}
+    aria-label={`Head Elf’s very unofficial ${naughty ? 'Naughty' : 'Nice'} List certificate for ${name}${naughty ? `. ${daysText}. THERE IS STILL TIME` : ''}`}>
+    <img src={`/certificates/checker/${naughty ? 'naughty' : 'nice'}-master.webp`}
       alt="" width="1684" height="1191" draggable={false} />
     <CertificateName name={name}>
       {text => <span className="studio-script-reveal">{text}</span>}
@@ -47,15 +47,14 @@ export default function CheckerCertificate({ name, result, days }) {
     };
   }, [expanded]);
   const savePdf = async () => {
-    // Nice remains display-only here; its downloadable gift belongs to paid messages.
-    if (!naughty || download.current) return;
+    if (download.current) return;
     const controller = new AbortController();
     download.current = controller;
     setDownloading(true); setError('');
     try {
-      const { exportNaughtyCertificate } = await import('./exportNaughtyCertificate.js');
+      const { exportCheckerCertificate } = await import('./exportNaughtyCertificate.js');
       if (controller.signal.aborted) return;
-      const blob = await exportNaughtyCertificate(name, days, { signal: controller.signal });
+      const blob = await exportCheckerCertificate(name, result, days, { signal: controller.signal });
       if (controller.signal.aborted) return;
       if (downloadUrl.current) {
         clearTimeout(downloadUrl.current.timer);
@@ -66,7 +65,7 @@ export default function CheckerCertificate({ name, result, days }) {
         URL.revokeObjectURL(url); downloadUrl.current = null;
       }, 60000) };
       const link = document.createElement('a');
-      link.href = url; link.download = 'Santa-Radio-Naughty-List-Certificate.pdf';
+      link.href = url; link.download = `Head-Elf-${naughty ? 'Naughty' : 'Nice'}-List-Certificate.pdf`;
       document.body.append(link); link.click(); link.remove();
     } catch (failure) {
       if (!controller.signal.aborted)
@@ -78,9 +77,9 @@ export default function CheckerCertificate({ name, result, days }) {
     }
   };
   const previewClass = `nn-certificate-preview${naughty ? ' nn-certificate-preview--naughty' : ''}`;
-  const pdfControl = naughty && <div className="nn-certificate-download">
+  const pdfControl = <div className="nn-certificate-download">
     <button type="button" className="nn-secondary" disabled={downloading} onClick={savePdf}>
-      {downloading ? 'Creating PDF…' : 'Download Naughty certificate PDF'}
+      {downloading ? 'Creating PDF…' : `Download ${naughty ? 'Naughty' : 'Nice'} certificate PDF`}
     </button>
     {downloading && <p role="status">Creating your PDF in this browser…</p>}
     {error && <p role="alert" className="nn-error">{error}</p>}
