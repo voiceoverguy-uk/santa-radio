@@ -363,7 +363,7 @@ progress.nn-progress::-moz-progress-bar { background: var(--nn-red); }
 .nn-machine { position: relative; width: min(560px, 100%); margin-inline: auto; aspect-ratio: 1609 / 977; line-height: 0; }
 /* Move the complete countdown machine so its live displays and glints remain
    attached. Transform-only movement does not shake the surrounding parchment. */
-.nn-machine.is-busy:not(.nn-machine--connecting) {
+.nn-machine.is-wobbling {
   transform-origin: 50% 90%;
   animation: nn-machine-wobble .3s ease-in-out infinite;
 }
@@ -375,7 +375,7 @@ progress.nn-progress::-moz-progress-bar { background: var(--nn-red); }
   85% { transform: translate(1px, .5px) rotate(.2deg); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .nn-machine.is-busy:not(.nn-machine--connecting) { animation: none !important; transform: none; }
+  .nn-machine.is-wobbling { animation: none !important; transform: none; }
 }
 .nn-widget .nn-machine { max-width: none; }
 .nn-machine-art { display: block; width: 100%; height: auto; filter: drop-shadow(0 10px 16px #3b241655); }
@@ -443,12 +443,12 @@ progress.nn-progress::-moz-progress-bar { background: var(--nn-red); }
 }
 
 /* Glowing Head Elf link and dedicated-page icon sound toggle. */
-.nn-widget .nn-result .nn-primary.nn-head-elf-link { position: relative; box-shadow: 0 4px 0 #4f0d12, 0 0 0 2px #f0d78a66, 0 6px 16px #d4af3755; animation: nn-elf-glow 2.8s ease-in-out infinite; }
+.nn-widget .nn-result .nn-primary.nn-head-elf-link { position: relative; box-shadow: 0 4px 0 #4f0d12, 0 0 0 2px #f0d78a99, 0 0 20px #d4af3780; animation: nn-elf-glow 1.6s ease-in-out infinite; }
 .nn-widget .nn-result .nn-primary.nn-head-elf-link:hover { box-shadow: 0 4px 0 #4f0d12, 0 0 0 3px #f0d78acc, 0 8px 22px #d4af3799; }
 .nn-widget .nn-result .nn-primary.nn-head-elf-link:focus-visible { animation: none; outline: 3px solid var(--nn-focus); outline-offset: 3px; box-shadow: 0 0 0 6px var(--nn-ink), 0 0 18px #f0d78a99; }
 @keyframes nn-elf-glow {
-  0%, 100% { box-shadow: 0 4px 0 #4f0d12, 0 0 0 2px #f0d78a55, 0 6px 14px #d4af3740; transform: scale(1); }
-  50% { box-shadow: 0 4px 0 #4f0d12, 0 0 0 3px #f0d78aaa, 0 6px 22px #d4af3799; transform: scale(1.025); }
+  0%, 100% { box-shadow: 0 4px 0 #4f0d12, 0 0 0 2px #f0d78a99, 0 0 16px #d4af3766; transform: scale(1); }
+  50% { box-shadow: 0 4px 0 #4f0d12, 0 0 0 4px #ffe7a3dd, 0 0 22px 4px #f0c860bb, 0 0 38px 8px #d4af3766; transform: scale(1.05); }
 }
 
 .nn-toolbar > .nn-sound { width: 44px; height: 44px; min-width: 44px; min-height: 44px; padding: 0; gap: 0; line-height: 0; flex: none; transform: translate(6px, -6px); }

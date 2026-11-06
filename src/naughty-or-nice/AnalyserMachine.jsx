@@ -86,8 +86,11 @@ function Machine({ busy = false, secondsRemaining = 0, variant }) {
   }, []);
   const n = Math.max(0, Math.min(99, Math.floor(Number(secondsRemaining) || 0)));
   const text = String(n).padStart(2, '0');
+  // The homepage countdown settles for its final two seconds. Keep busy
+  // independent so the slot animation and sparkles continue uninterrupted.
+  const wobbling = busy && !connecting && (variant !== 'checking' || n > 2);
   return (
-    <div className={`nn-machine${busy ? ' is-busy' : ''}${variant !== 'checking' ? ` nn-machine--${variant}` : ''}`}>
+    <div className={`nn-machine${busy ? ' is-busy' : ''}${wobbling ? ' is-wobbling' : ''}${variant !== 'checking' ? ` nn-machine--${variant}` : ''}`}>
       <img ref={image} className="nn-machine-art"
         src={artwork.src} alt="" width={artwork.width} height={artwork.height} decoding="async" />
       {imageReady && <><div className="nn-machine-screen">

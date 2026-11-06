@@ -541,6 +541,14 @@ test(`${homepage ? 'homepage' : 'Head Elf'} machine glints are visible, anchored
     }
     await section.locator('.nn-machine').screenshot({ path: testInfo.outputPath(`machine-glints-${width}.png`) });
   }
+  await page.clock.runFor(homepage
+    ? HOMEPAGE_ANALYSIS_MS + CHECKER_LAUNCH_MS - 1100 - 2000 + 100
+    : resultAnalysisMs('nice') - 2000 + 100);
+  await expect(machine.getByRole('timer')).toHaveText('2 seconds remaining');
+  await expect(machine).toHaveCSS('animation-name', homepage ? 'none' : 'nn-machine-wobble');
+  if (homepage) await expect(machine).toHaveCSS('transform', 'none');
+  await expect(glints).toBeVisible();
+  await expect(glints.locator('i').first()).toHaveCSS('animation-name', 'nn-glint');
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(machine).toHaveCSS('animation-name', 'none');
   await expect(machine).toHaveCSS('transform', 'none');
@@ -1316,11 +1324,27 @@ test('homepage result prioritises the glowing Head Elf link and accessible sound
   const restart = widget(page).getByRole('button', { name: 'Start a new name check' });
   await expect(link).toHaveCSS('animation-name', 'none');
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  expect(await link.evaluate(element => getComputedStyle(element).animationName)).not.toBe('none');
-  expect(await link.evaluate(element => getComputedStyle(element).boxShadow)).not.toBe('none');
+  await expect(link).toHaveCSS('animation-name', 'nn-elf-glow');
+  await expect(link).toHaveCSS('animation-duration', '1.6s');
+  const pulse = await link.evaluate(element => {
+    const animation = element.getAnimations().find(item => item.animationName === 'nn-elf-glow');
+    animation.pause();
+    animation.currentTime = 0;
+    const start = { transform: getComputedStyle(element).transform, glow: getComputedStyle(element).boxShadow };
+    animation.currentTime = 800;
+    return { start, peak: { transform: getComputedStyle(element).transform, glow: getComputedStyle(element).boxShadow } };
+  });
+  expect(pulse.peak.transform).not.toBe(pulse.start.transform);
+  expect(pulse.peak.glow).not.toBe(pulse.start.glow);
+  for (const width of [1280, 390, 320]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await widget(page).locator('.nn-result').screenshot({ path: testInfo.outputPath(`head-elf-pulse-${width}.png`) });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
   await expect(widget(page).locator('.nn-check-another')).toHaveCount(0);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(link).toHaveCSS('animation-name', 'none');
+  await expect(link).toHaveCSS('transform', 'none');
   expect((await restart.boundingBox()).height).toBeGreaterThanOrEqual(44);
   for (const width of [1280, 390, 320]) {
     await page.setViewportSize({ width, height: 1000 });
@@ -1337,6 +1361,7 @@ test('homepage result prioritises the glowing Head Elf link and accessible sound
 
 test('homepage recording starts with the analyser and its countdown follows media, including a visible zero', async ({ page }) => {
   await open(page, '/');
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
   await page.evaluate(() => {
     const NativeAudio = window.Audio;
@@ -1366,6 +1391,17 @@ test('homepage recording starts with the analyser and its countdown follows medi
   await page.evaluate(() => { window.checkerPosition = 5.2; });
   await page.clock.runFor(50);
   await expect(widget(page).getByRole('timer')).toHaveText('7 seconds remaining');
+  const machine = widget(page).locator('.nn-machine');
+  await expect(machine).toHaveCSS('animation-name', 'nn-machine-wobble');
+  await page.evaluate(() => { window.checkerPosition = 9.2; });
+  await page.clock.runFor(50);
+  await expect(widget(page).getByRole('timer')).toHaveText('3 seconds remaining');
+  await expect(machine).toHaveCSS('animation-name', 'nn-machine-wobble');
+  await page.evaluate(() => { window.checkerPosition = 9.4; });
+  await page.clock.runFor(50);
+  await expect(widget(page).getByRole('timer')).toHaveText('2 seconds remaining');
+  await expect(machine).toHaveCSS('animation-name', 'none');
+  await expect(machine.locator('.nn-machine-glint').first()).toHaveCSS('animation-name', 'nn-glint');
   await page.evaluate(() => { window.checkerPosition = 11.05; });
   await page.clock.runFor(50);
   await expect(widget(page).getByRole('timer')).toHaveText('0 seconds remaining');

@@ -120,6 +120,13 @@ match the manic sound effect.
 **How to apply:** Move the complete machine, including live overlays, without
 moving the parchment or changing countdown timing. Keep it still for reduced
 motion; the separate CONNECTING display is not a countdown machine.
+On the homepage only, stop the wobble for the last two seconds of the countdown,
+but keep the sparkles running. Leave Head Elf's final machine wobbling.
+
+**Why:** The owner explicitly requested this homepage-only settling period.
+
+**How to apply:** Follow the existing countdown, including media-driven timing
+and silent playback fallback; do not shorten the audio or remove the glints.
 
 **Why:** The owner reported visible image loading when Head Elf changes face
 and explicitly requested seamless expression changes.
