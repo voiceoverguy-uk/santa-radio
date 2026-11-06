@@ -546,3 +546,22 @@ progress.nn-progress::-moz-progress-bar { background: var(--nn-red); }
   .nn-certificate-dialog { border: 2px solid CanvasText; background: Canvas; }
   .nn-certificate-dialog-toolbar { background: Canvas; border-bottom: 1px solid CanvasText; }
 }
+
+/* Office title: overlaid in the empty wood LEFT of Head Elf, right of the shelf, bottom-anchored
+   just above the parchment's cream area. All % offsets here are padding/left/width, which resolve
+   against scene WIDTH, matching the width-only-scaled artwork. Panel keeps its own flow position. */
+@media (min-width: 768px) {
+  .nn-office .nn-office-scene-heading {
+    position: relative; z-index: 1; width: 25%;
+    box-sizing: border-box; height: auto; aspect-ratio: 25 / 23.5; padding: 12px 0 0; margin: 0 0 0 28%; max-width: none;
+    display: flex; flex-direction: column; justify-content: flex-end; text-align: left;
+    pointer-events: none;
+  }
+  .nn-office .nn-office-scene-heading .nn-heading {
+    pointer-events: auto; font-size: clamp(1.25rem, 2.6vw, 1.9rem); line-height: 1.15;
+    overflow-wrap: normal; word-break: normal; hyphens: manual; text-wrap: balance;
+  }
+  /* Share the elf's transparent upper area with the heading. When text grows,
+     the heading adds real height and the parchment follows rather than colliding. */
+  .nn-office .nn-office-scene-heading + .nn-scene-content { padding-top: 0; margin-top: -18.23%; }
+}

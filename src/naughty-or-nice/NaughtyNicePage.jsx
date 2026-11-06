@@ -7,6 +7,7 @@ import { HomepageCornerControls, keepCheckerFocusVisible } from './CheckerContro
 import useCheckerAudio from './useCheckerAudio.js';
 import useCheckerRun from './useCheckerRun.js';
 import useElfReaction from './useElfReaction.js';
+import useOfficeEntryPosition from './useOfficeEntryPosition.js';
 import { CERTIFICATE_REVEAL_LEAD_MS, resultAnalysisMs, QUESTIONS, classifyAnswers, readCheckerName, clearCheckerName } from './checkerLogic.js';
 import './checker.css';
 
@@ -23,6 +24,7 @@ export default function NaughtyNicePage() {
   const [entryKey, setEntryKey] = useState(0);
   const heading = useRef(null);
   const entry = useRef(null);
+  useOfficeEntryPosition(entry);
   const questions = useRef(null);
   const visited = useRef(false);
   const audio = useCheckerAudio();

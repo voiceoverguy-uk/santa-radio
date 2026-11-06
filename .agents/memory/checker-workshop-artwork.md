@@ -13,6 +13,21 @@ explicitly asked to use it instead.
 changes scoped to the checker. Do not restore the drawn books, window, garland
 or desk over the image, or replace the shared website backgrounds.
 
+On entry to the dedicated checker, centre the working panel and its title in
+the usable space between navigation and the radio dock. Place the desktop
+title in the empty wood to Head Elf's left, above the parchment, and keep the
+elf and parchment high within the background as in the owner's raised-panel
+mockup. Keep a readable above-panel title on narrow screens.
+
+**Why:** The owner supplied a centred entry screenshot and explicitly asked to
+move the title beside Head Elf so the page opens in the middle of the checker.
+They then supplied a rough mockup asking for the elf and box higher in the image.
+
+**How to apply:** Cover direct loads, reloads and the homepage handoff. If the
+content is taller than the viewport, show its beginning rather than clipping it.
+Brief load/font settling must stop on visitor interaction, without automatically
+opening the name-entry keyboard or pulling later quiz stages back to entry.
+
 On the homepage, use the owner's Naughty or Nice logo to the left of the live
 checker, and their separate decorated parchment artwork as its form frame.
 Stack the logo above the form on phones. This homepage frame does not replace
