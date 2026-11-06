@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 export const CHECKER_SOUNDS = {
   connecting: '/audio/naughty-or-nice/connecting.mp3',
   checking: '/audio/naughty-or-nice/checking_1793902553290.mp3',
-  homepageChecking: '/audio/naughty-or-nice/checking_1793902553290.mp3',
+  homepageChecking: '/audio/naughty-or-nice/checking-home-page.mp3',
   nice: '/audio/naughty-or-nice/checking-nice_1793904309041.mp3',
   naughty: '/audio/naughty-or-nice/checking-naughty_1793904309041.mp3',
   pop: '/audio/naughty-or-nice/pop-1.mp3',

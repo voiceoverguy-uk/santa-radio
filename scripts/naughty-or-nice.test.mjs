@@ -67,10 +67,18 @@ test('public MP3s are byte-for-byte the supplied effects and analysis duration i
   assert.equal(resultAnalysisMs('naughty'), 6768);
   assert.equal(CERTIFICATE_REVEAL_LEAD_MS, 1200);
   assert.equal(REVEAL_LEAD_MS, 300);
-  assert.equal(HOMEPAGE_ANALYSIS_MS, 8216);
+  assert.equal(HOMEPAGE_ANALYSIS_MS, 4219);
   assert.equal(CHECKER_SOUNDS.nice, '/audio/naughty-or-nice/checking-nice_1793904309041.mp3');
   assert.equal(CHECKER_SOUNDS.naughty, '/audio/naughty-or-nice/checking-naughty_1793904309041.mp3');
   assert.ok(Object.values(CHECKER_SOUNDS).every(path => !path.includes('naughty-list_') && !path.includes('/LU_')));
+});
+
+test('homepage replacement MP3 is unchanged and its silent countdown matches the shorter clip', async () => {
+  const hash = bytes => createHash('sha256').update(bytes).digest('hex');
+  assert.equal(hash(await readFile('public/audio/naughty-or-nice/checking-home-page.mp3')),
+    hash(await readFile('attached_assets/checking-home-page_1793959751684.mp3')));
+  assert.equal(CHECKER_SOUNDS.homepageChecking, '/audio/naughty-or-nice/checking-home-page.mp3');
+  assert.equal(HOMEPAGE_ANALYSIS_MS, 4219);
 });
 
 test('new route is canonical, sitemap-listed and served as a built document with metadata', async () => {

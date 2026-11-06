@@ -1040,7 +1040,7 @@ for (const sound of ['off', 'blocked']) {
     await page.clock.runFor(1);
     await expect(widget(page).getByRole('heading', { name: 'Checking at the North Pole…' })).toBeVisible();
     await page.clock.runFor(1000);
-    await expect(widget(page).getByRole('timer')).toHaveText('8 seconds remaining');
+    await expect(widget(page).getByRole('timer')).toHaveText('4 seconds remaining');
     await page.clock.runFor(HOMEPAGE_ANALYSIS_MS + CHECKER_LAUNCH_MS - 1500 + 100);
     await expect(widget(page).locator('.nn-score')).toBeVisible();
     await widget(page).getByRole('button', { name: 'Start a new name check' }).click();
@@ -1173,7 +1173,7 @@ for (const pending of ['load', 'decode']) {
       release();
       await machine.locator('img').evaluate(image => image.decode());
     } else await page.evaluate(() => window.releaseMachineDecode());
-    await expect(machine.getByRole('timer')).toHaveText('7 seconds remaining');
+    await expect(machine.getByRole('timer')).toHaveText('3 seconds remaining');
     await expect(machine.locator('.nn-machine-slot')).toBeVisible();
     await page.clock.runFor(HOMEPAGE_ANALYSIS_MS + CHECKER_LAUNCH_MS - 2100 + 100);
     await expect(widget(page).locator('.nn-score')).toBeVisible();
@@ -1202,7 +1202,7 @@ test('supplied analyser contains a silent digital countdown and sliding slot on 
   await page.clock.runFor(1100);
   const machine = widget(page).locator('.nn-machine');
   const timer = machine.getByRole('timer');
-  await expect(timer).toHaveText('8 seconds remaining');
+  await expect(timer).toHaveText('4 seconds remaining');
   await expect(timer).toHaveAttribute('aria-live', 'off');
   await expect(machine.locator('.nn-seg-digit')).toHaveCount(2);
   expect(await machine.locator('.nn-machine-art').evaluate(async image => {
@@ -1226,9 +1226,9 @@ test('supplied analyser contains a silent digital countdown and sliding slot on 
     await widget(page).locator('.nn-panel').screenshot({ path: testInfo.outputPath(`analyser-${width}.png`), animations: 'disabled' });
   }
   await page.clock.runFor(1000);
-  await expect(timer).toHaveText('7 seconds remaining');
+  await expect(timer).toHaveText('3 seconds remaining');
   await page.clock.runFor(1000);
-  await expect(timer).toHaveText('6 seconds remaining');
+  await expect(timer).toHaveText('2 seconds remaining');
   await widget(page).getByRole('button', { name: 'Start a new name check' }).click();
   await expect(widget(page).getByRole('timer')).toHaveCount(0);
   await page.clock.runFor(HOMEPAGE_ANALYSIS_MS);
@@ -1265,7 +1265,8 @@ test('homepage uses the new MP3, defaults sound on and preserves both timed reve
   await expect(widget(page).locator('.nn-score')).toBeVisible({ timeout: 14000 });
   const state = await page.evaluate(() => ({ panel: window.homePanelTime, result: window.homeResultTime,
     played: window.homeCheckerPlayed }));
-  expect(state.played).toEqual(['/audio/naughty-or-nice/checking_1793902553290.mp3']);
+  expect(state.played).toEqual(['/audio/naughty-or-nice/checking-home-page.mp3']);
+  expect(state.result.duration).toBeCloseTo(4.519, 1);
   expect(state.panel).toBeGreaterThanOrEqual(0);
   expect(state.panel).toBeLessThan(.2);
   expect(state.result.paused).toBe(false);
