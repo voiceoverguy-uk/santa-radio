@@ -491,6 +491,7 @@ test(`${homepage ? 'homepage' : 'Head Elf'} machine glints are visible, anchored
   const glints = section.locator('.nn-machine-glints');
   const machine = section.locator('.nn-machine');
   await expect(machine).toHaveCSS('animation-name', 'nn-machine-wobble');
+  await expect(machine).toHaveCSS('animation-duration', '0.3s');
   const poses = await machine.evaluate(element => {
     const animation = element.getAnimations().find(item => item.animationName === 'nn-machine-wobble');
     animation.pause();
@@ -503,7 +504,7 @@ test(`${homepage ? 'homepage' : 'Head Elf'} machine glints are visible, anchored
   await expect(glints).toHaveAttribute('data-variant', homepage ? 'checking' : 'final');
   await expect(glints).toHaveAttribute('aria-hidden', 'true');
   await expect(glints).toHaveCSS('pointer-events', 'none');
-  await expect(glints.locator('i')).toHaveCount(homepage ? 7 : 8);
+  await expect(glints.locator('i')).toHaveCount(homepage ? 14 : 16);
   for (const width of [1280, 390]) {
     await page.setViewportSize({ width, height: 1000 });
     const bounds = await glints.evaluate(element => {
@@ -533,7 +534,7 @@ test(`${homepage ? 'homepage' : 'Head Elf'} machine glints are visible, anchored
         .map(child => ({ size: parseFloat(getComputedStyle(child).width),
           fill: getComputedStyle(child, '::before').backgroundImage }));
     });
-    expect(visible.length).toBeGreaterThanOrEqual(1);
+    expect(visible.length).toBeGreaterThanOrEqual(3);
     for (const star of visible) {
       expect(star.size).toBeGreaterThanOrEqual(16);
       expect(star.fill).toContain('radial-gradient');

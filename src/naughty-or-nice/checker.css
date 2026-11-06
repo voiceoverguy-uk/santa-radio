@@ -365,7 +365,7 @@ progress.nn-progress::-moz-progress-bar { background: var(--nn-red); }
    attached. Transform-only movement does not shake the surrounding parchment. */
 .nn-machine.is-busy:not(.nn-machine--connecting) {
   transform-origin: 50% 90%;
-  animation: nn-machine-wobble .6s ease-in-out infinite;
+  animation: nn-machine-wobble .3s ease-in-out infinite;
 }
 @keyframes nn-machine-wobble {
   0%, 100% { transform: translate(0, 0) rotate(0); }

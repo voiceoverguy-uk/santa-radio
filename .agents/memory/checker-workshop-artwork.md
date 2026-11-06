@@ -110,9 +110,12 @@ machines, not so faint that they disappear into the brass.
 countdowns must not spend their first seconds waiting for decoration. Inspect
 both rendered machines at desktop and phone sizes, not just their CSS presence.
 
-Both countdown machines should gently wobble while processing.
+Both countdown machines should wobble rapidly with small movements while
+processing, with a fuller spread of sparkles.
 
-**Why:** The owner explicitly requested a little image shake during countdowns.
+**Why:** The owner explicitly requested a little image shake during countdowns,
+then approved both effects and asked for more sparkles and a faster wobble to
+match the manic sound effect.
 
 **How to apply:** Move the complete machine, including live overlays, without
 moving the parchment or changing countdown timing. Keep it still for reduced
