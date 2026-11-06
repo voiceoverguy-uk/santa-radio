@@ -391,19 +391,36 @@ progress.nn-progress::-moz-progress-bar { background: var(--nn-red); }
   padding: clamp(4px, 1.5vw, 12px) clamp(2px, 1vw, 10px) clamp(6px, 1.5vw, 12px);
   filter: drop-shadow(0 18px 26px #04120c99);
 }
-.nn-office .nn-panel[data-elf-reaction="shocked"] { --nn-elf-panel: url("/images/head-elf-office-panel-shocked.webp"); }
-.nn-office .nn-panel[data-elf-reaction="extra-shocked"] { --nn-elf-panel: url("/images/head-elf-office-panel-extra-shocked.webp"); }
-.nn-office .nn-panel[data-elf-reaction="curious"] { --nn-elf-panel: url("/images/head-elf-office-panel-curious.webp"); }
-.nn-office .nn-panel[data-elf-reaction="pleased"] { --nn-elf-panel: url("/images/head-elf-office-panel-pleased.webp"); }
-.nn-office .nn-panel[data-elf-reaction="thumbs-up"] { --nn-elf-panel: url("/images/head-elf-office-panel-thumbs-up.webp"); }
-.nn-office .nn-panel[data-elf-reaction="double-thumbs-up"] { --nn-elf-panel: url("/images/head-elf-office-panel-double-thumbs-up.webp"); }
 .nn-office .nn-scene-content > .nn-panel::before { content: none; }
 .nn-office .nn-scene-content > .nn-panel > * { position: relative; z-index: 1; }
+/* Load and retain every expression's actual CSS border image at entry. The
+   regular frame stays underneath, so a failed image never leaves bare space.
+   Layers use identical nine-slice geometry and never affect panel layout. */
+.nn-office .nn-scene-content > .nn-panel > .nn-elf-artwork {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+}
+.nn-elf-artwork-layer {
+  position: absolute;
+  inset: calc(var(--nn-px) * -430) calc(var(--nn-px) * -90) calc(var(--nn-px) * -130);
+  border-style: solid;
+  border-width: calc(var(--nn-px) * 430) calc(var(--nn-px) * 90) calc(var(--nn-px) * 130);
+  border-image-slice: 430 90 130 fill;
+  border-image-width: calc(var(--nn-px) * 430) calc(var(--nn-px) * 90) calc(var(--nn-px) * 130);
+  border-image-repeat: stretch;
+  opacity: 0;
+}
+.nn-panel[data-elf-reaction="shocked"] .nn-elf-artwork-layer--shocked,
+.nn-panel[data-elf-reaction="extra-shocked"] .nn-elf-artwork-layer--extra-shocked,
+.nn-panel[data-elf-reaction="curious"] .nn-elf-artwork-layer--curious,
+.nn-panel[data-elf-reaction="pleased"] .nn-elf-artwork-layer--pleased,
+.nn-panel[data-elf-reaction="thumbs-up"] .nn-elf-artwork-layer--thumbs-up,
+.nn-panel[data-elf-reaction="double-thumbs-up"] .nn-elf-artwork-layer--double-thumbs-up { opacity: 1; }
 .nn-office .nn-scene-content > .nn-panel .nn-result { background-color: #fffcf466; }
 @media (max-width: 380px) {
   .nn-office .nn-scene-content > .nn-panel { padding: 4px 2px 6px; }
 }
 @media (forced-colors: active) {
+  .nn-elf-artwork { display: none; }
   .nn-office .nn-scene-content > .nn-panel { border-image: none; border: 2px solid CanvasText; padding: 18px; filter: none; }
 }
 

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import './analyserGlints.css';
 
 /* North Pole analyser: supplied brass artwork with countdown + candy-cane slot overlays. */
 const SEGMENTS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
@@ -11,6 +12,28 @@ const ARTWORK = {
   connecting: { src: '/images/north-pole-analyser-connecting.webp', width: 1610, height: 977 },
   final: { src: '/images/head-elf-list-engine.webp', width: 1632, height: 964 },
 };
+
+/* Glint anchors as % of each artwork: brass near tube tops, bell, lever. [x, y, dx px, dy px] */
+const TOP_GLINTS = [[33.7, 9.5, 5, -4], [48.5, 3.6, -4, -5], [60, 12, 4, -3], [16.2, 15.5, -5, -3], [88, 18, 4, -4], [81.2, 69.5, 5, -3], [11, 7.5, -3, -5]];
+const GLINTS = {
+  checking: TOP_GLINTS,
+  connecting: TOP_GLINTS,
+  final: [[32.2, 18, -4, -4], [40, 10.8, 4, -5], [49.8, 2.6, -4, -5], [59.6, 10.8, 5, -4], [67.9, 18, 4, -4], [22, 19, -5, -3], [83, 12.4, 4, -5], [78, 28.5, 5, -3]],
+};
+
+function Glints({ variant }) {
+  const list = GLINTS[variant];
+  return (
+    <div className="nn-machine-glints" aria-hidden="true" data-variant={variant}>
+      {list.map(([x, y, dx, dy], i) => (
+        <i key={i} className="nn-machine-glint" style={{
+          '--x': `${x}%`, '--y': `${y}%`, '--dx': `${dx}px`, '--dy': `${dy}px`,
+          '--delay': `${(i * 1.03 + (i % 3) * 0.37).toFixed(2)}s`, '--cycle': `${list.length * 1.03}s`,
+        }} />
+      ))}
+    </div>
+  );
+}
 
 function Digit({ value }) {
   const on = DIGIT_MAP[value] || '';
@@ -64,7 +87,8 @@ function Machine({ busy = false, secondsRemaining = 0, variant }) {
       </div>
       <div className="nn-machine-slot" aria-hidden="true">
         <span className="nn-progress nn-machine-progress" />
-      </div></>}
+      </div>
+      <Glints variant={variant} /></>}
     </div>
   );
 }

@@ -380,7 +380,7 @@ for (const outcome of ['nice', 'naughty']) {
     await expect(panel).not.toHaveAttribute('data-elf-reaction', 'curious');
     await page.clock.runFor(1);
     await expect(panel).toHaveAttribute('data-elf-reaction', 'curious');
-    await expect(panel).toHaveCSS('border-image-source', /head-elf-office-panel-curious\.webp/);
+    await expect(panel.locator('.nn-elf-artwork-layer--curious')).toHaveCSS('opacity', '1');
     await expect(office(page).locator('.nn-result')).toHaveCount(0);
     await page.setViewportSize({ width: 390, height: 1000 });
     await panel.screenshot({ path: testInfo.outputPath(`curious-before-${outcome}.png`), animations: 'disabled' });
@@ -432,6 +432,79 @@ test('curious expression follows stalled media rather than wall time and clears 
   await expect(office(page).getByRole('combobox')).toHaveValue('');
 });
 
+test('all elf expressions load at entry and retained layers switch without moving the frame or fetching again', async ({ page }) => {
+  const loaded = new Set();
+  const requests = [];
+  page.on('requestfinished', request => {
+    if (/head-elf-office-panel-[\w-]+\.webp/.test(request.url())) loaded.add(request.url());
+  });
+  page.on('request', request => {
+    if (/head-elf-office-panel-[\w-]+\.webp/.test(request.url())) requests.push(request.url());
+  });
+  await open(page);
+  await expect.poll(() => loaded.size).toBe(7);
+  const panel = office(page).locator('.nn-panel');
+  await expect(panel.locator('.nn-elf-artwork')).toHaveAttribute('aria-hidden', 'true');
+  await expect(panel.locator('.nn-elf-artwork-layer')).toHaveCount(6);
+  const afterEntry = requests.length;
+  await enter(page);
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 1000 });
+    const geometry = await panel.evaluate(element => {
+      const frame = element.getBoundingClientRect();
+      return [...element.querySelectorAll('.nn-elf-artwork-layer')].map(layer => {
+        const box = layer.getBoundingClientRect();
+        return Math.max(Math.abs(box.x - frame.x), Math.abs(box.y - frame.y),
+          Math.abs(box.width - frame.width), Math.abs(box.height - frame.height));
+      });
+    });
+    expect(Math.max(...geometry)).toBeLessThan(1);
+  }
+  const before = await panel.boundingBox();
+  await office(page).getByRole('button', { name: 'No', exact: true }).click();
+  await expect(panel.locator('.nn-elf-artwork-layer--shocked')).toHaveCSS('opacity', '1');
+  await page.clock.runFor(2000);
+  await expect(panel.locator('.nn-elf-artwork-layer--shocked')).toHaveCSS('opacity', '0');
+  const after = await panel.boundingBox();
+  expect(after.width).toBeCloseTo(before.width);
+  expect(after.height).toBeCloseTo(before.height);
+  expect(requests.length).toBe(afterEntry);
+});
+
+test('machine glints stay anchored, click-through and clear of displays, and respect reduced motion', async ({ page }) => {
+  await open(page);
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await enter(page);
+  await answer(page);
+  await office(page).getByRole('button', { name: 'Let’s just have another little check!' }).click();
+  const glints = office(page).locator('.nn-machine-glints');
+  await expect(glints).toHaveAttribute('data-variant', 'final');
+  await expect(glints).toHaveAttribute('aria-hidden', 'true');
+  await expect(glints).toHaveCSS('pointer-events', 'none');
+  await expect(glints.locator('i')).toHaveCount(8);
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 1000 });
+    const bounds = await glints.evaluate(element => {
+      const box = element.getBoundingClientRect();
+      const image = element.parentElement.querySelector('img').getBoundingClientRect();
+      return { difference: Math.abs(box.width - image.width) + Math.abs(box.height - image.height),
+        anchors: [...element.children].map(child => ({
+          x: parseFloat(child.style.getPropertyValue('--x')),
+          y: parseFloat(child.style.getPropertyValue('--y')),
+          animation: getComputedStyle(child).animationName,
+        })) };
+    });
+    expect(bounds.difference).toBeLessThan(1);
+    for (const anchor of bounds.anchors) {
+      expect(anchor.y).toBeLessThan(30);
+      expect(anchor.animation).toBe('nn-glint');
+    }
+  }
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(glints).toHaveCSS('display', 'none');
+  await expect(glints.locator('i').first()).toHaveCSS('animation-name', 'none');
+});
+
 test('five or more consecutive Yes answers show double thumbs-up for two seconds, then revert', async ({ page }, testInfo) => {
   await open(page);
   await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
@@ -444,7 +517,7 @@ test('five or more consecutive Yes answers show double thumbs-up for two seconds
   }
   await yes.click();
   await expect(panel).toHaveAttribute('data-elf-reaction', 'double-thumbs-up');
-  await expect(panel).toHaveCSS('border-image-source', /head-elf-office-panel-double-thumbs-up\.webp/);
+  await expect(panel.locator('.nn-elf-artwork-layer--double-thumbs-up')).toHaveCSS('opacity', '1');
   await expect(office(page).locator('.nn-question-count')).toHaveText('6 of 10');
   for (const width of [1280, 390]) {
     await page.setViewportSize({ width, height: 1000 });
@@ -491,7 +564,7 @@ test('each Yes shows thumbs-up for two seconds while the next question remains u
   const yes = office(page).getByRole('button', { name: 'Yes', exact: true });
   await yes.click();
   await expect(panel).toHaveAttribute('data-elf-reaction', 'thumbs-up');
-  await expect(panel).toHaveCSS('border-image-source', /head-elf-office-panel-thumbs-up\.webp/);
+  await expect(panel.locator('.nn-elf-artwork-layer--thumbs-up')).toHaveCSS('opacity', '1');
   await expect(office(page).locator('.nn-question-count')).toHaveText('2 of 10');
   await page.clock.runFor(1500);
   await yes.click();
@@ -553,7 +626,7 @@ test('four consecutive Yes answers earn pleased artwork for the rest of the chec
   await expect(panel).toHaveAttribute('data-elf-reaction', 'thumbs-up');
   await page.clock.runFor(2000);
   await expect(panel).toHaveAttribute('data-elf-reaction', 'pleased');
-  await expect(panel).toHaveCSS('border-image-source', /head-elf-office-panel-pleased\.webp/);
+  await expect(panel.locator('.nn-elf-artwork-layer--pleased')).toHaveCSS('opacity', '1');
   for (const width of [1280, 390, 320]) {
     await page.setViewportSize({ width, height: 1000 });
     await panel.screenshot({ path: testInfo.outputPath(`pleased-${width}.png`), animations: 'disabled' });
@@ -627,7 +700,7 @@ test('No answers show the supplied expressions for two seconds using the current
   for (let count = 1; count <= 5; count++) {
     await office(page).getByRole('button', { name: 'No', exact: true }).click();
     await expect(panel).toHaveAttribute('data-elf-reaction', 'shocked');
-    await expect(panel).toHaveCSS('border-image-source', /head-elf-office-panel-shocked\.webp/);
+    await expect(panel.locator('.nn-elf-artwork-layer--shocked')).toHaveCSS('opacity', '1');
     await page.clock.runFor(500);
   }
   // Re-answering an existing No must not count it twice.
@@ -640,7 +713,7 @@ test('No answers show the supplied expressions for two seconds using the current
   await expect(panel).toHaveAttribute('data-elf-reaction', 'regular');
   await office(page).getByRole('button', { name: 'No', exact: true }).click();
   await expect(panel).toHaveAttribute('data-elf-reaction', 'extra-shocked');
-  await expect(panel).toHaveCSS('border-image-source', /head-elf-office-panel-extra-shocked\.webp/);
+  await expect(panel.locator('.nn-elf-artwork-layer--extra-shocked')).toHaveCSS('opacity', '1');
   for (const width of [1280, 390, 320]) {
     await page.setViewportSize({ width, height: 1000 });
     const during = await panel.boundingBox();

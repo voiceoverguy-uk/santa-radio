@@ -16,6 +16,7 @@ export default function useElfReaction() {
   const timer = useRef(null);
   const generation = useRef(0);
   const images = useRef({});
+  const decodedImages = useRef([]);
   const clear = useCallback(() => {
     generation.current++;
     clearTimeout(timer.current);
@@ -29,6 +30,8 @@ export default function useElfReaction() {
     // regular frame with missing or half-loaded artwork.
     for (const [kind, src] of Object.entries(ELF_REACTION_ART)) {
       const image = new Image();
+      // Retain decoded image objects for the whole visit, not only promises.
+      decodedImages.current.push(image);
       image.src = src;
       images.current[kind] = image.decode().then(() => true, () => false);
       images.current[kind].then(ready => {
@@ -37,6 +40,7 @@ export default function useElfReaction() {
     }
     return () => {
       active = false;
+      decodedImages.current = [];
       generation.current++;
       clearTimeout(timer.current);
     };

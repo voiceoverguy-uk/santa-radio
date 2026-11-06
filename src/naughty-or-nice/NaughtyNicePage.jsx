@@ -6,7 +6,7 @@ import useChristmasDays from './useChristmasDays.js';
 import { HomepageCornerControls, keepCheckerFocusVisible } from './CheckerControls.jsx';
 import useCheckerAudio from './useCheckerAudio.js';
 import useCheckerRun from './useCheckerRun.js';
-import useElfReaction from './useElfReaction.js';
+import useElfReaction, { ELF_REACTION_ART } from './useElfReaction.js';
 import useOfficeEntryPosition from './useOfficeEntryPosition.js';
 import { CERTIFICATE_REVEAL_LEAD_MS, resultAnalysisMs, QUESTIONS, classifyAnswers, readCheckerName, clearCheckerName } from './checkerLogic.js';
 import './checker.css';
@@ -67,6 +67,11 @@ export default function NaughtyNicePage() {
           ? answers.filter(answer => answer === 'no').length >= 8 ? 'extra-shocked' : 'shocked'
           : stage === 'analysis' && elapsedMs >= 1000 && curiousReady ? 'curious' : reaction
       }>
+      <div className="nn-elf-artwork" aria-hidden="true">
+        {Object.entries(ELF_REACTION_ART).map(([kind, src]) =>
+          <span key={kind} className={`nn-elf-artwork-layer nn-elf-artwork-layer--${kind}`}
+            style={{ borderImageSource: `url("${src}")` }} />)}
+      </div>
       {stage === 'questions' && <div className="nn-toolbar nn-toolbar--progress">
         <div className="nn-question-progress" role="progressbar" aria-label="Question progress"
           aria-valuemin={0} aria-valuemax={QUESTIONS.length} aria-valuenow={completed}
