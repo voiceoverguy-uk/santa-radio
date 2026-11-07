@@ -12,7 +12,8 @@ export default function PageSeo({ metadata: m }) {
     {m.imageWidth && <meta property="og:image:width" content={m.imageWidth} />}
     {m.imageHeight && <meta property="og:image:height" content={m.imageHeight} />}
     {m.imageType && <meta property="og:image:type" content={m.imageType} />}
-    <meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content={m.title} />
+    <meta name="twitter:card" content="summary_large_image" /><meta name="twitter:site" content="@wearesantaradio" />
+    <meta name="twitter:title" content={m.title} />
     <meta name="twitter:description" content={m.description} /><meta name="twitter:image" content={m.image} />
     <meta name="twitter:image:alt" content={m.imageAlt} />
     {!m.noindex && <script type="application/ld+json">{JSON.stringify({ '@context': 'https://schema.org', '@graph': m.graph }).replace(/</g, '\\u003c')}</script>}

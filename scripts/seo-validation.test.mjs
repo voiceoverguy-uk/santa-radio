@@ -75,6 +75,9 @@ test('all canonical build pages contain initial content, metadata and valid JSON
     assert.ok(html.includes(`<link data-rh="true" rel="canonical" href="${ORIGIN}${path}"`), `${path}: canonical`);
     assert.equal((html.match(/<title\b/g) || []).length, 1, `${path}: duplicate title`);
     assert.ok(html.includes('property="og:image"'), `${path}: sharing image`);
+    assert.ok(html.includes('property="og:site_name" content="Santa Radio"'), `${path}: Open Graph site identity`);
+    assert.ok(html.includes('property="og:locale" content="en_GB"'), `${path}: Open Graph locale`);
+    assert.ok(html.includes('name="twitter:site" content="@wearesantaradio"'), `${path}: Twitter site identity`);
     const graphs = [...html.matchAll(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)];
     assert.ok(graphs.length, `${path}: structured data`);
     for (const [, json] of graphs) JSON.parse(json);

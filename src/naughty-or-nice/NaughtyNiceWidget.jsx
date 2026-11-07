@@ -10,7 +10,7 @@ import { NnComputer } from './OfficeScene.jsx';
 import { HOMEPAGE_ANALYSIS_MS, CHECKER_LAUNCH_MS, CHECKER_PATH, clearCheckerName, offerCheckerName, preliminaryScore } from './checkerLogic.js';
 import './checker.css';
 
-export default function NaughtyNiceWidget({ onOpenHeadElf } = {}) {
+export default function NaughtyNiceWidget({ onOpenHeadElf, standalone = false } = {}) {
   const location = useLocation();
   const [stage, setStage] = useState('entry');
   const [name, setName] = useState('');
@@ -85,6 +85,7 @@ export default function NaughtyNiceWidget({ onOpenHeadElf } = {}) {
   const audio = useCheckerAudio(CHECKER_SOUNDS.homepageChecking);
   const { run, cancel, audioCallbacks, secondsRemaining } = useCheckerRun();
   const { begin: delayPanel, cancel: cancelPanel } = useCheckingPanelDelay();
+  const TitleTag = standalone ? 'h1' : 'h3';
   useEffect(() => {
     if (stage !== 'entry') {
       visited.current = true;
@@ -113,7 +114,7 @@ export default function NaughtyNiceWidget({ onOpenHeadElf } = {}) {
         <div className="nn-widget-logo">
           <img src="/images/naughty-or-nice-logo.webp" width="1659" height="948" alt="" decoding="async" />
         </div>
-        <h3 id="nn-widget-heading" className="nn-widget-title">Head Elf’s Naughty or Nice List Checker</h3>
+        <TitleTag id="nn-widget-heading" className="nn-widget-title">Head Elf’s Naughty or Nice List Checker</TitleTag>
         <p className="nn-intro">Enter your first name for a quick North Pole check. Then visit Head Elf for the full Christmas quiz.</p>
       </div>
       <div ref={frameElement} className="nn-panel nn-widget-frame">

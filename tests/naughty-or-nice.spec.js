@@ -182,6 +182,7 @@ test('mobile certificate download keeps its label on one line and places the arr
 });
 test('a direct checker URL starts with the simple homepage check before opening Head Elf', async ({ page }) => {
   await openDirect(page);
+  await expect(page.getByRole('heading', { level: 1, name: 'Head Elf’s Naughty or Nice List Checker' })).toBeVisible();
   await expect(widget(page).getByRole('heading', { name: 'Quick Nice List Check' })).toBeVisible();
   await expect(office(page)).toHaveCount(0);
   await expect(widget(page).getByRole('button', { name: 'Lets check', exact: true })).toBeVisible();
@@ -1990,6 +1991,9 @@ test('office uses the supplied festive background behind accessible controls wit
 
 test('office heading clears navigation and the shorter faster cane respects reduced motion', async ({ page }) => {
   await open(page);
+  // A visitor interaction ends entry positioning before checking the layout
+  // at the top of the document across viewport sizes.
+  await page.keyboard.press('Shift');
   for (const width of [390, 1280]) {
     await page.setViewportSize({ width, height: 844 });
     await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));

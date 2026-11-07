@@ -16,7 +16,7 @@ export default function NaughtyNicePage() {
   const [initialName, setInitialName] = useState(readCheckerName);
   const [showOffice, setShowOffice] = useState(() => Boolean(initialName));
   useEffect(() => { clearCheckerName(); }, []);
-  if (!showOffice) return <NaughtyNiceWidget onOpenHeadElf={name => {
+  if (!showOffice) return <NaughtyNiceWidget standalone onOpenHeadElf={name => {
     setInitialName(name);
     setShowOffice(true);
   }} />;

@@ -231,6 +231,15 @@ test('homepage uses consistent search targeting in initial content, metadata and
   assert.equal(graphs.filter(node => node['@type'] === 'WebPage').length, 1);
   assert.equal(graphs.find(node => node['@type'] === 'WebPage').description, m.description);
   assert.ok(html.includes(`rel="canonical" href="${ORIGIN}/"`));
+  const sourceHead = (await readFile('index.html', 'utf8')).split('</head>')[0];
+  assert.equal(decode(sourceHead.match(/<title[^>]*>(.*?)<\/title>/s)?.[1]), m.title);
+  for (const name of ['description', 'og:description', 'twitter:description'])
+    assert.equal(decode(headValue(sourceHead, name)), m.description);
+  for (const name of ['og:title', 'twitter:title'])
+    assert.equal(decode(headValue(sourceHead, name)), m.title);
+  assert.equal(headValue(sourceHead, 'og:site_name'), 'Santa Radio');
+  assert.equal(headValue(sourceHead, 'og:locale'), 'en_GB');
+  assert.equal(headValue(sourceHead, 'twitter:site'), '@wearesantaradio');
 });
 
 test('Apps schema matches the visible catalogue and screenshots while retaining structured breadcrumbs only', async () => {
