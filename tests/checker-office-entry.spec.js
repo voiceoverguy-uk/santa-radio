@@ -98,7 +98,7 @@ test('homepage handoff opens in the same place and entry settling stops on visit
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   const widget = page.locator('#nice-list');
   await widget.getByRole('combobox').fill('Erin');
-  await widget.getByRole('button', { name: 'Check', exact: true }).click();
+  await widget.getByRole('button', { name: 'Lets check', exact: true }).click();
   await widget.getByRole('link', { name: 'Lets check with Head Elf' }).click({ timeout: 15000 });
   await assertEntryPosition(page);
   await expect(page.getByRole('combobox')).toHaveValue('Erin');

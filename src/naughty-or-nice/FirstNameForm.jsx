@@ -4,7 +4,7 @@ import { BLOCKED_NAME_NOTE } from '../lib/nameLanguage.js';
 import { nameError } from './checkerLogic.js';
 
 export default function FirstNameForm({ initialName = '', onSubmit, buttonText = 'Check', disabled = false, label = 'First name', inlineSuggestions = false,
-  suggestionHelp = 'Choose a suggestion, or play with the name you entered.' }) {
+  suggestionHelp = 'Choose a suggestion, or play with the name you entered.', enteredHelp = '' }) {
   const id = useId();
   const [name, setName] = useState(initialName);
   const [open, setOpen] = useState(false);
@@ -18,7 +18,8 @@ export default function FirstNameForm({ initialName = '', onSubmit, buttonText =
     setName(record.name); setOpen(false); setActive(-1); setError('');
     input.current?.focus({ preventScroll: true });
   };
-  const help = search.blocked ? BLOCKED_NAME_NOTE : search.loading ? 'Loading local name suggestions…'
+  const help = search.blocked ? BLOCKED_NAME_NOTE : enteredHelp && name.trim().length >= 2 ? enteredHelp
+    : search.loading ? 'Loading local name suggestions…'
     : search.error ? 'Suggestions are unavailable. Retry, or play using the name you entered.'
       : !name.trim() ? ''
         : name.trim().length < 2 ? 'Enter a first name.'

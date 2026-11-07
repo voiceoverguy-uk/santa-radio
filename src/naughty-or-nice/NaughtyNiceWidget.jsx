@@ -18,6 +18,7 @@ export default function NaughtyNiceWidget({ onOpenHeadElf } = {}) {
   const [entryKey, setEntryKey] = useState(0);
   const focus = useRef(null);
   const section = useRef(null);
+  const frameElement = useRef(null);
   const visited = useRef(false);
   useEffect(() => {
     if (location.hash !== '#nice-list') return;
@@ -34,7 +35,10 @@ export default function NaughtyNiceWidget({ onOpenHeadElf } = {}) {
       // Position explicitly: global fragment padding and descendant focus
       // margins must not add another offset. Avoid competing smooth scrolls
       // while images, fonts and preceding sections are still settling.
-      const delta = section.current.getBoundingClientRect().top - navBottom - 16;
+      const mobile = window.matchMedia('(max-width: 767px)').matches;
+      const destination = mobile ? frameElement.current : section.current;
+      if (!destination) return;
+      const delta = destination.getBoundingClientRect().top - navBottom - 16;
       if (Math.abs(delta) > 1) window.scrollTo({ top: window.scrollY + delta, behavior: 'instant' });
     };
     const schedule = () => {
@@ -69,6 +73,9 @@ export default function NaughtyNiceWidget({ onOpenHeadElf } = {}) {
     }
     const navbar = document.querySelector('.navbar');
     if (navbar) layoutObserver.observe(navbar);
+    const player = document.querySelector('.radio-dock:not([hidden])');
+    if (player && player.getBoundingClientRect().height) layoutObserver.observe(player);
+    if (frameElement.current) layoutObserver.observe(frameElement.current);
     for (const event of ['wheel', 'touchstart', 'pointerdown', 'keydown'])
       window.addEventListener(event, stopSettling, { passive: true });
     settleTimer = setTimeout(stopSettling, 5000);
@@ -109,9 +116,10 @@ export default function NaughtyNiceWidget({ onOpenHeadElf } = {}) {
         <h3 id="nn-widget-heading" className="nn-widget-title">Head Elf’s Naughty or Nice List Checker</h3>
         <p className="nn-intro">Enter your first name for a quick North Pole check. Then visit Head Elf for the full Christmas quiz.</p>
       </div>
-      <div className="nn-panel nn-widget-frame">
+      <div ref={frameElement} className="nn-panel nn-widget-frame">
         {(stage === 'entry' || stage === 'starting') && <h3 className="nn-widget-form-heading">Quick Nice List Check</h3>}
-        {(stage === 'entry' || stage === 'starting') && <FirstNameForm key={entryKey} label="Confirm first name" inlineSuggestions disabled={stage === 'starting'} onSubmit={value => {
+        {(stage === 'entry' || stage === 'starting') && <FirstNameForm key={entryKey} label="Confirm first name" inlineSuggestions
+          enteredHelp="Ready to find out?" buttonText="Lets check" disabled={stage === 'starting'} onSubmit={value => {
           if (!run(HOMEPAGE_ANALYSIS_MS + CHECKER_LAUNCH_MS, () => { cancelPanel(); setScore(preliminaryScore()); setStage('result'); })) return;
           setName(value); setStage('starting');
           audio.effect('click');

@@ -25,6 +25,24 @@ async function assertDestination(page) {
   await expect(checker.getByRole('heading', { name: 'Quick Nice List Check', exact: true })).toBeAttached();
 }
 
+async function assertMobileDestination(page) {
+  const topClearance = () => page.evaluate(() => {
+    const frame = document.querySelector('.nn-widget-frame').getBoundingClientRect();
+    const nav = document.querySelector('.navbar').getBoundingClientRect();
+    return frame.top - nav.bottom;
+  });
+  const playerClearance = () => page.evaluate(() => {
+    const frame = document.querySelector('.nn-widget-frame').getBoundingClientRect();
+    const player = document.querySelector('.radio-dock:not([hidden])')?.getBoundingClientRect();
+    return (player?.height ? player.top : innerHeight) - frame.bottom;
+  });
+  await expect.poll(topClearance).toBeGreaterThanOrEqual(15);
+  await expect.poll(topClearance).toBeLessThan(18);
+  await expect.poll(playerClearance).toBeGreaterThanOrEqual(15);
+  await expect(page.locator('.nn-widget-frame').getByRole('heading', { name: 'Quick Nice List Check' })).toBeVisible();
+  await expect(page.locator('.nn-widget-frame').getByRole('combobox')).toBeVisible();
+}
+
 test('Nice List? scrolls to the homepage checker and works again without losing the entered name', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 1000 });
   await page.goto('/', { waitUntil: 'domcontentloaded' });
@@ -40,6 +58,40 @@ test('Nice List? scrolls to the homepage checker and works again without losing 
   await link.click();
   await assertDestination(page);
   await expect(input).toHaveValue('Erin');
+});
+
+test('mobile Nice List navigation and direct fragment loads place the form between fixed controls', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/#nice-list', { waitUntil: 'domcontentloaded' });
+  await assertMobileDestination(page);
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await assertMobileDestination(page);
+
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const nav = page.getByRole('navigation', { name: 'Main navigation' });
+  await nav.getByRole('button', { name: 'Open menu' }).click();
+  await nav.getByRole('link', { name: 'Nice List?', exact: true }).click();
+  await expect(page).toHaveURL(/\/#nice-list$/);
+  await assertMobileDestination(page);
+});
+
+test('mobile fragment settling stops when visitors scroll or interact', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/#nice-list', { waitUntil: 'domcontentloaded' });
+  await assertMobileDestination(page);
+  await page.mouse.wheel(0, 240);
+  await expect.poll(() => page.locator('.nn-widget-frame').evaluate(element => element.getBoundingClientRect().top))
+    .toBeLessThan(0);
+  await page.evaluate(() => {
+    const section = document.querySelector('#nice-list');
+    const previous = section.previousElementSibling;
+    previous.style.minHeight = `${previous.getBoundingClientRect().height + 180}px`;
+    document.fonts.dispatchEvent(new Event('loadingdone'));
+  });
+  await page.waitForTimeout(250);
+  await expect(page.locator('.nn-widget-frame')).toBeAttached();
+  await expect.poll(() => page.locator('.nn-widget-frame').evaluate(element => element.getBoundingClientRect().top))
+    .toBeLessThan(0);
 });
 
 test('Nice List? returns from the Head Elf page to the homepage checker, and direct links work', async ({ page }) => {

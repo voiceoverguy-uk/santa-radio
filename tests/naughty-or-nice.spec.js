@@ -59,7 +59,7 @@ async function openFromHomepage(page, { name = 'Zorabelle', clockInstalled = fal
   if (!clockInstalled && keepClock) await page.clock.install();
   const homeWidget = widget(page);
   await homeWidget.getByRole('combobox').fill(name);
-  await homeWidget.getByRole('button', { name: 'Check', exact: true }).click();
+  await homeWidget.getByRole('button', { name: 'Lets check', exact: true }).click();
   if (useClock) await page.clock.runFor(HOMEPAGE_ANALYSIS_MS + CHECKER_LAUNCH_MS + 100);
   else await page.waitForTimeout(HOMEPAGE_ANALYSIS_MS + CHECKER_LAUNCH_MS + 100);
   const headElfLink = homeWidget.getByRole('link', { name: 'Lets check with Head Elf', exact: true });
@@ -124,12 +124,14 @@ async function analyse(page) {
   await expect(office(page).getByRole('timer')).toHaveCount(0);
 }
 
-test('entry button follows typed and selected names without changing the homepage Check button', async ({ page }) => {
+test('entry button follows typed and selected names with distinct homepage copy', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 1000 });
   await open(page);
+  await expect(office(page).getByText("So, who is visiting Head Elf's office today?", { exact: true })).toBeVisible();
   const input = office(page).getByRole('combobox');
   const button = office(page).locator('button[type="submit"]');
   await input.fill('');
+  await expect(office(page).locator('.nn-help')).toBeEmpty();
   await expect(button).toHaveText('Is this name Naughty or Nice?');
   await input.fill(' Charlotte ');
   await expect(button).toHaveText('Is Charlotte Naughty or Nice?');
@@ -142,24 +144,12 @@ test('entry button follows typed and selected names without changing the homepag
   await input.fill('');
   await expect(button).toHaveText('Is this name Naughty or Nice?');
   await page.goto('/', { waitUntil: 'domcontentloaded' });
-  await expect(widget(page).getByRole('button', { name: 'Check', exact: true })).toBeAttached();
-});
-
-test('a direct checker URL starts with the simple homepage check before opening Head Elf', async ({ page }) => {
-  await openDirect(page);
-  await expect(widget(page).getByRole('heading', { name: 'Quick Nice List Check' })).toBeVisible();
-  await expect(office(page)).toHaveCount(0);
-  await expect(widget(page).getByRole('button', { name: 'Check', exact: true })).toBeVisible();
-  await widget(page).getByRole('combobox').fill('Erin');
-  await widget(page).getByRole('button', { name: 'Check', exact: true }).click();
-  await page.clock.runFor(HOMEPAGE_ANALYSIS_MS + CHECKER_LAUNCH_MS + 100);
-  await expect(widget(page).getByText(/Erin, you’re \d+% nice!/)).toBeVisible();
-  await widget(page).getByRole('button', { name: 'Lets check with Head Elf', exact: true }).click();
-  await expect(office(page).getByRole('heading', { name: 'Welcome to Head Elf’s Office' })).toBeVisible();
-  await expect(office(page).getByRole('combobox')).toHaveValue('Erin');
-  await office(page).getByRole('button', { name: 'Is Erin Naughty or Nice?', exact: true }).click();
-  await page.clock.runFor(1900);
-  await expect(office(page).locator('fieldset')).toHaveCount(1);
+  const homepageInput = widget(page).getByRole('combobox');
+  const homepageButton = widget(page).getByRole('button', { name: 'Lets check', exact: true });
+  await expect(homepageButton).toBeAttached();
+  await homepageInput.fill('Erin');
+  await expect(widget(page).locator('.nn-help')).toHaveText('Ready to find out?');
+  await expect(homepageButton).toHaveText('Lets check');
 });
 
 test('mobile certificate download keeps its label on one line and places the arrow below', async ({ page }, testInfo) => {
@@ -189,6 +179,22 @@ test('mobile certificate download keeps its label on one line and places the arr
     expect(layout.documentWidth).toBeLessThanOrEqual(layout.viewportWidth);
     await button.screenshot({ path: testInfo.outputPath(`certificate-download-${width}.png`) });
   }
+});
+test('a direct checker URL starts with the simple homepage check before opening Head Elf', async ({ page }) => {
+  await openDirect(page);
+  await expect(widget(page).getByRole('heading', { name: 'Quick Nice List Check' })).toBeVisible();
+  await expect(office(page)).toHaveCount(0);
+  await expect(widget(page).getByRole('button', { name: 'Lets check', exact: true })).toBeVisible();
+  await widget(page).getByRole('combobox').fill('Erin');
+  await widget(page).getByRole('button', { name: 'Lets check', exact: true }).click();
+  await page.clock.runFor(HOMEPAGE_ANALYSIS_MS + CHECKER_LAUNCH_MS + 100);
+  await expect(widget(page).getByText(/Erin, you’re \d+% nice!/)).toBeVisible();
+  await widget(page).getByRole('button', { name: 'Lets check with Head Elf', exact: true }).click();
+  await expect(office(page).getByRole('heading', { name: 'Welcome to Head Elf’s Office' })).toBeVisible();
+  await expect(office(page).getByRole('combobox')).toHaveValue('Erin');
+  await office(page).getByRole('button', { name: 'Is Erin Naughty or Nice?', exact: true }).click();
+  await page.clock.runFor(1900);
+  await expect(office(page).locator('fieldset')).toHaveCount(1);
 });
 
 for (const no of [0, 5, 6, 7, 8, 10]) {
@@ -621,7 +627,7 @@ test(`${homepage ? 'homepage' : 'Head Elf'} machine glints are visible, anchored
   const section = homepage ? widget(page) : office(page);
   if (homepage) {
     await section.getByRole('combobox').fill('Zorabelle');
-    await section.getByRole('button', { name: 'Check', exact: true }).click();
+    await section.getByRole('button', { name: 'Lets check', exact: true }).click();
     await page.clock.runFor(1100);
   } else {
     await enter(page);
@@ -1099,7 +1105,7 @@ for (const homepage of [true, false]) {
     await scope.getByRole('button', { name: 'Sound: on' }).click();
     if (homepage) {
       await scope.getByRole('combobox').fill('Erin');
-      await scope.getByRole('button', { name: 'Check', exact: true }).click();
+      await scope.getByRole('button', { name: 'Lets check', exact: true }).click();
       await page.clock.runFor(CHECKER_LAUNCH_MS);
     } else {
       await enter(page, 'Erin');
@@ -1221,7 +1227,7 @@ test('corner buttons support keyboard reset, image failure and forced colours wi
   const restart = widget(page).getByRole('button', { name: 'Start a new name check' });
   const radioBefore = await page.locator('.radio-dock').getAttribute('class');
   await input.fill('Erin');
-  await widget(page).getByRole('button', { name: 'Check', exact: true }).focus();
+  await widget(page).getByRole('button', { name: 'Lets check', exact: true }).focus();
   await expect(restart).toHaveCount(0);
   await page.keyboard.press('Enter');
   await page.keyboard.press('Tab');
@@ -1232,7 +1238,7 @@ test('corner buttons support keyboard reset, image failure and forced colours wi
   await expect(input).toHaveValue('');
   await expect(input).toBeFocused();
   await input.fill('Erin');
-  await widget(page).getByRole('button', { name: 'Check', exact: true }).click();
+  await widget(page).getByRole('button', { name: 'Lets check', exact: true }).click();
   // Reset in the launch state before its delayed checking panel can appear.
   await restart.focus();
   await page.keyboard.press('Space');
@@ -1241,7 +1247,7 @@ test('corner buttons support keyboard reset, image failure and forced colours wi
   await expect(widget(page).locator('.nn-stage, .nn-result')).toHaveCount(0);
   await expect(input).toHaveValue('');
   await page.emulateMedia({ forcedColors: 'active' });
-  await widget(page).getByRole('button', { name: 'Check', exact: true }).focus();
+  await widget(page).getByRole('button', { name: 'Lets check', exact: true }).focus();
   await page.keyboard.press('Tab');
   const sound = widget(page).getByRole('button', { name: 'Sound: on' });
   await expect(sound).toBeFocused();
@@ -1274,7 +1280,7 @@ for (const position of [0, .6, 11.4]) {
       };
     });
     await widget(page).getByRole('combobox').fill('Erin');
-    await widget(page).getByRole('button', { name: 'Check', exact: true }).click();
+    await widget(page).getByRole('button', { name: 'Lets check', exact: true }).click();
     await page.clock.runFor(CHECKER_LAUNCH_MS);
     await page.evaluate(value => {
       window.checkerPosition = value;
@@ -1381,7 +1387,7 @@ test('homepage supplied logo and parchment frame keep live controls responsive i
   await widget(page).getByRole('button', { name: 'Start a new name check' }).click();
   await expect(widget(page).getByRole('combobox')).toHaveValue('');
   await widget(page).getByRole('combobox').fill('Asa');
-  await widget(page).getByRole('button', { name: 'Check', exact: true }).click();
+  await widget(page).getByRole('button', { name: 'Lets check', exact: true }).click();
   await page.clock.runFor(HOMEPAGE_ANALYSIS_MS + CHECKER_LAUNCH_MS + 100);
   const headElfLink = widget(page).getByRole('link', { name: 'Lets check with Head Elf', exact: true });
   await headElfLink.focus();
@@ -1404,7 +1410,7 @@ for (const [random, score] of [[0, 51], [.99999, 73]]) {
     await open(page, '/');
     await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
     await widget(page).getByRole('combobox').fill('Zorabelle');
-    await widget(page).getByRole('button', { name: 'Check', exact: true }).click();
+    await widget(page).getByRole('button', { name: 'Lets check', exact: true }).click();
     await page.clock.runFor(5000);
     await expect(widget(page).locator('.nn-score')).toHaveCount(0);
     await expect(widget(page).getByRole('heading', { name: 'Checking at the North Pole…' })).toBeVisible();
@@ -1443,7 +1449,7 @@ for (const sound of ['off', 'blocked']) {
     await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
     if (sound === 'off') await widget(page).getByRole('button', { name: 'Sound: on' }).click();
     await widget(page).getByRole('combobox').fill('Erin');
-    await widget(page).getByRole('button', { name: 'Check', exact: true }).click();
+    await widget(page).getByRole('button', { name: 'Lets check', exact: true }).click();
     await expect(widget(page).getByRole('combobox')).toBeDisabled();
     await expect(widget(page).getByRole('button', { name: 'Cancel check' })).toHaveCount(0);
     await page.clock.runFor(499);
@@ -1456,7 +1462,7 @@ for (const sound of ['off', 'blocked']) {
     await expect(widget(page).locator('.nn-score')).toBeVisible();
     await widget(page).getByRole('button', { name: 'Start a new name check' }).click();
     await widget(page).getByRole('combobox').fill('Erin');
-    await widget(page).getByRole('button', { name: 'Check', exact: true }).click();
+    await widget(page).getByRole('button', { name: 'Lets check', exact: true }).click();
     await page.clock.runFor(500);
     await widget(page).getByRole('button', { name: 'Start a new name check' }).click();
     await page.clock.runFor(ANALYSIS_MS + 1000);
@@ -1481,7 +1487,7 @@ test('homepage result prioritises the glowing Head Elf link and accessible sound
   await expect(mute).toHaveAttribute('title', 'Turn sound on');
   await expect(mute.locator('img')).toHaveAttribute('src', '/images/checker-MusicOff.webp');
   await widget(page).getByRole('combobox').fill('Zorabelle');
-  await widget(page).getByRole('button', { name: 'Check', exact: true }).click();
+  await widget(page).getByRole('button', { name: 'Lets check', exact: true }).click();
   await page.clock.runFor(HOMEPAGE_ANALYSIS_MS + CHECKER_LAUNCH_MS + 100);
   const link = widget(page).getByRole('link', { name: 'Lets check with Head Elf', exact: true });
   const restart = widget(page).getByRole('button', { name: 'Start a new name check' });
@@ -1546,7 +1552,7 @@ test('homepage recording starts with the analyser and its countdown follows medi
   });
   await expect(widget(page).getByRole('button', { name: 'Sound: on' })).toBeVisible();
   await widget(page).getByRole('combobox').fill('Erin');
-  await widget(page).getByRole('button', { name: 'Check', exact: true }).click();
+  await widget(page).getByRole('button', { name: 'Lets check', exact: true }).click();
   await page.clock.runFor(499);
   await expect(widget(page).locator('.nn-stage')).toHaveCount(0);
   await expect.poll(() => page.evaluate(() => window.checkerAudio.length)).toBe(0);
@@ -1649,7 +1655,7 @@ for (const pending of ['load', 'decode']) {
     await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
     await widget(page).getByRole('button', { name: 'Sound: on' }).click();
     await widget(page).getByRole('combobox').fill('Zorabelle');
-    await widget(page).getByRole('button', { name: 'Check', exact: true }).click();
+    await widget(page).getByRole('button', { name: 'Lets check', exact: true }).click();
     await page.clock.runFor(1100);
     const machine = widget(page).locator('.nn-machine');
     await expect(machine).toBeVisible();
@@ -1674,7 +1680,7 @@ test('failed machine artwork never shows floating overlays or blocks the result'
   await open(page, '/');
   await widget(page).getByRole('button', { name: 'Sound: on' }).click();
   await widget(page).getByRole('combobox').fill('Zorabelle');
-  await widget(page).getByRole('button', { name: 'Check', exact: true }).click();
+  await widget(page).getByRole('button', { name: 'Lets check', exact: true }).click();
   await page.clock.runFor(1100);
   await expect(widget(page).locator('.nn-machine')).toBeVisible();
   await expect(widget(page).locator('.nn-machine-screen, .nn-machine-slot')).toHaveCount(0);
@@ -1687,7 +1693,7 @@ test('supplied analyser contains a silent digital countdown and sliding slot on 
   await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
   await widget(page).getByRole('button', { name: 'Sound: on' }).click();
   await widget(page).getByRole('combobox').fill('Zorabelle');
-  await widget(page).getByRole('button', { name: 'Check', exact: true }).click();
+  await widget(page).getByRole('button', { name: 'Lets check', exact: true }).click();
   await page.clock.runFor(1100);
   const machine = widget(page).locator('.nn-machine');
   const timer = machine.getByRole('timer');
@@ -1750,7 +1756,7 @@ test('homepage uses the new MP3, defaults sound on and preserves both timed reve
   await expect(widget(page).getByRole('button', { name: 'Sound: on' })).toBeVisible();
   expect(await page.evaluate(() => window.homeCheckerPlayed)).toEqual([]);
   await widget(page).getByRole('combobox').fill('Erin');
-  await widget(page).getByRole('button', { name: 'Check', exact: true }).click();
+  await widget(page).getByRole('button', { name: 'Lets check', exact: true }).click();
   await expect(widget(page).locator('.nn-score')).toBeVisible({ timeout: 14000 });
   const state = await page.evaluate(() => ({ panel: window.homePanelTime, result: window.homeResultTime,
     played: window.homeCheckerPlayed }));
