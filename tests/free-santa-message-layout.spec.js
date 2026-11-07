@@ -2,11 +2,11 @@ import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { mockSantaNames } from './helpers/message-access.js';
 
-const titles = ['Start with their name', 'Add the little details', 'Check your Christmas creation'];
+const titles = ['Choose their name', 'Make it personal', 'Listen, download and share'];
 const copies = [
-  'Choose a name for Santa’s special greeting.',
-  'Pick their age, an optional talent, something they’re working hard at and an achievement worth celebrating. Add a festive treat and a magical place, too.',
-  'Review your choices and change anything before Santa’s message comes together.',
+  'Pick the name Santa will say in their message.',
+  'Add their age and something they’re proud of.',
+  'Hear Santa’s message, then save it to play again or share.',
 ];
 
 async function visit(page, { access = false, width = 1440, enlarged = false } = {}) {
