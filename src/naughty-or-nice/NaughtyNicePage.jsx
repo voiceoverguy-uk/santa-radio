@@ -83,7 +83,7 @@ export default function NaughtyNicePage() {
       </div>}
       {stage === 'entry' && <div ref={entry} className="nn-stage">
         <h2>Welcome to Head Elf’s Office</h2>
-        <p>First things first — who’s visiting Santa’s office today?</p>
+        <p>So, who is visiting Head Elf's office today?</p>
         <FirstNameForm key={entryKey} initialName={name} label="Confirm first name" inlineSuggestions
           buttonText={value => value ? `Lets check if ${value} is Naughty or Nice` : 'Lets check if Naughty or Nice'}
           suggestionHelp="Select your name and lets find out which list you are really on."
@@ -135,9 +135,10 @@ export default function NaughtyNicePage() {
               setQuestionIndex(index => index + 1); setError('');
             }}>{value === 'yes' ? 'Yes' : 'No'}</button>)}</div>
         </fieldset> : <h3 ref={heading} tabIndex={-1}>All ten answers are in!</h3>}
+        {questionIndex === round.length && <p>Are you on the nice list?</p>}
         {error && <p role="alert" className="nn-error">{error}</p>}
         <div className="nn-actions nn-actions--questions">
-          {questionIndex === round.length && <button type="submit" className="nn-primary nn-final-check">Let’s just have another little check!</button>}
+          {questionIndex === round.length && <button type="submit" className="nn-primary nn-final-check">Press to find out</button>}
           {questionIndex < round.length && <button type="button" className="nn-secondary nn-previous-question"
             disabled={questionIndex === 0} aria-hidden={questionIndex === 0 ? true : undefined}
             style={questionIndex === 0 ? { visibility: 'hidden' } : undefined}

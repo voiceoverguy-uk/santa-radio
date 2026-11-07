@@ -20,7 +20,8 @@ export default function FirstNameForm({ initialName = '', onSubmit, buttonText =
   };
   const help = search.blocked ? BLOCKED_NAME_NOTE : search.loading ? 'Loading local name suggestions…'
     : search.error ? 'Suggestions are unavailable. Retry, or play using the name you entered.'
-      : name.trim().length < 2 ? 'Enter a first name.'
+      : !name.trim() ? ''
+        : name.trim().length < 2 ? 'Enter a first name.'
         : !search.records.length ? 'No matching suggestion? That’s fine — you can still play. It never means Naughty.'
           : suggestionHelp;
   return <form className="nn-name-form" noValidate autoComplete="off" onSubmit={event => {
