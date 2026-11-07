@@ -36,7 +36,10 @@ export default function NaughtyNiceWidget({ onOpenHeadElf, standalone = false } 
       // margins must not add another offset. Avoid competing smooth scrolls
       // while images, fonts and preceding sections are still settling.
       const mobile = window.matchMedia('(max-width: 767px)').matches;
-      const destination = mobile ? frameElement.current : section.current;
+      // On desktop, align the checker heading rather than the section box.
+      // The section has generous top padding, so aligning the section itself
+      // leaves the previous banner visible and pushes the checker heading down.
+      const destination = mobile ? frameElement.current : section.current?.querySelector('.nn-quiz-intro');
       if (!destination) return;
       const delta = destination.getBoundingClientRect().top - navBottom - 16;
       if (Math.abs(delta) > 1) window.scrollTo({ top: window.scrollY + delta, behavior: 'instant' });

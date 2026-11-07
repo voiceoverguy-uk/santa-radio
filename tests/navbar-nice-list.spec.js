@@ -16,7 +16,7 @@ async function assertDestination(page) {
   const checker = page.locator('#nice-list');
   await expect(checker).toBeFocused();
   const offset = async () => {
-    const box = await checker.boundingBox();
+    const box = await page.locator('.nn-quiz-intro').boundingBox();
     const nav = await page.getByRole('navigation', { name: 'Main navigation' }).boundingBox();
     return box.y - nav.y - nav.height;
   };
@@ -51,6 +51,11 @@ test('Nice List? scrolls to the homepage checker and works again without losing 
   await link.focus();
   await page.keyboard.press('Enter');
   await assertDestination(page);
+  await expect.poll(() => page.locator('.santa-dash-promo').evaluate(element => {
+    const promoBottom = element.getBoundingClientRect().bottom;
+    const nav = document.querySelector('.navbar').getBoundingClientRect();
+    return promoBottom <= nav.bottom;
+  })).toBe(true);
   await expect(link).toHaveAttribute('aria-current', 'location');
   const input = page.locator('#nice-list').getByRole('combobox');
   await input.fill('Erin');
