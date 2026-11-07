@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { Link } from 'react-router-dom';
 import OfficeScene, { NnComputer } from './OfficeScene.jsx';
 import NaughtyNiceWidget from './NaughtyNiceWidget.jsx';
 import FirstNameForm from './FirstNameForm.jsx';
@@ -30,6 +32,8 @@ function NaughtyNiceOffice({ initialName }) {
   const [round, setRound] = useState([]);
   const [answers, setAnswers] = useState(() => Array(ROUND_QUESTION_COUNT).fill(''));
   const [allNoPrompt, setAllNoPrompt] = useState('');
+  const [outcomeAudioFinished, setOutcomeAudioFinished] = useState(false);
+  const [messageOfferOpen, setMessageOfferOpen] = useState(false);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [result, setResult] = useState(null);
   const christmasDays = useChristmasDays(stage === 'result');
@@ -46,6 +50,15 @@ function NaughtyNiceOffice({ initialName }) {
   const completed = answers.filter(Boolean).length;
   const busy = stage === 'connecting' || stage === 'analysis';
   useEffect(() => {
+    if (stage !== 'result') {
+      setMessageOfferOpen(false);
+      return undefined;
+    }
+    if (audio.enabled && !outcomeAudioFinished) return undefined;
+    const timer = window.setTimeout(() => setMessageOfferOpen(true), 1800);
+    return () => window.clearTimeout(timer);
+  }, [stage, audio.enabled, outcomeAudioFinished]);
+  useEffect(() => {
     if (stage === 'entry') {
       if (entryKey || visited.current) entry.current?.querySelector('input')?.focus();
     } else {
@@ -56,14 +69,16 @@ function NaughtyNiceOffice({ initialName }) {
   const reset = () => {
     cancel(); audio.stop(); clearReaction(); setStage('entry'); setName('');
     setRound([]); setAnswers(Array(ROUND_QUESTION_COUNT).fill('')); setAllNoPrompt('');
-    setQuestionIndex(0); setResult(null); setError(''); setEntryKey(value => value + 1);
+    setQuestionIndex(0); setResult(null); setError(''); setOutcomeAudioFinished(false);
+    setMessageOfferOpen(false); setEntryKey(value => value + 1);
   };
   useEffect(() => {
     // Discard private play state on leaving the document, including bfcache.
     const hide = () => {
       cancel(); audio.stop(); clearReaction(); setName(''); setRound([]); setAnswers(Array(ROUND_QUESTION_COUNT).fill(''));
       setAllNoPrompt('');
-      setResult(null); setQuestionIndex(0); setError(''); setStage('entry'); setEntryKey(value => value + 1);
+      setResult(null); setQuestionIndex(0); setError(''); setOutcomeAudioFinished(false);
+      setMessageOfferOpen(false); setStage('entry'); setEntryKey(value => value + 1);
     };
     const show = event => { if (event.persisted) hide(); };
     window.addEventListener('pagehide', hide);
@@ -73,7 +88,8 @@ function NaughtyNiceOffice({ initialName }) {
       window.removeEventListener('pageshow', show);
     };
   }, [cancel, audio.stop, clearReaction]);
-  return <main id="main-content" className="nn-office" onFocusCapture={event => {
+  return <>
+    <main id="main-content" className="nn-office" onFocusCapture={event => {
     if (event.target.matches(':focus-visible')) keepCheckerFocusVisible(event);
   }}>
     <OfficeScene busy={busy} title="Naughty or Nice List Checker">
@@ -105,6 +121,7 @@ function NaughtyNiceOffice({ initialName }) {
             if (!run(1800, () => { audio.stop(); setStage('questions'); })) return;
             setRound(selectQuestionRound());
             setAnswers(Array(ROUND_QUESTION_COUNT).fill('')); setAllNoPrompt('');
+            setOutcomeAudioFinished(false); setMessageOfferOpen(false);
             setName(value); setQuestionIndex(0); setStage('connecting');
             audio.play('connecting'); audio.effect('click');
           }} />
@@ -124,7 +141,21 @@ function NaughtyNiceOffice({ initialName }) {
           return;
         }
         if (!run(resultAnalysisMs(final), () => { setResult(final); setStage('result'); })) return;
-        setError(''); setStage('analysis'); audio.play(final, audioCallbacks(CERTIFICATE_REVEAL_LEAD_MS)); audio.effect('click');
+        setError(''); setOutcomeAudioFinished(false); setMessageOfferOpen(false);
+        setStage('analysis');
+        const callbacks = audioCallbacks(CERTIFICATE_REVEAL_LEAD_MS);
+        audio.play(final, {
+          ...callbacks,
+          onStopped: (...args) => {
+            callbacks.onStopped?.(...args);
+            setOutcomeAudioFinished(true);
+          },
+          onEnded: (...args) => {
+            callbacks.onEnded?.(...args);
+            setOutcomeAudioFinished(true);
+          },
+        });
+        audio.effect('click');
       }}>
         <h2>A few questions for {name}</h2>
         <p className="nn-question-count">{Math.min(questionIndex + 1, round.length)} of {round.length}</p>
@@ -174,10 +205,26 @@ function NaughtyNiceOffice({ initialName }) {
         <h2 ref={heading} tabIndex={-1}>{result === 'nice' ? `${name}: NICE LIST!` : 'Oh no! NAUGHTY LIST'}</h2>
         {result === 'nice' ? <p>Well Done {name} Only {christmasDays} {christmasDays === 1 ? 'day' : 'days'} to go. Keep sharing, helping and being kind. Little acts of kindness make Christmas brighter!</p>
           : <p>{name} don't panic! With {christmasDays} {christmasDays === 1 ? 'day' : 'days'} to go until Christmas there is still time to work on it and come and try again.</p>}
+        <div className="nn-message-cta">
+          <p>Keep the Christmas magic going with a personal message from Santa for {name}.</p>
+          <Link className="nn-primary" to="/free-santa-message">Get a FREE message from Santa</Link>
+        </div>
         <CheckerCertificate name={name} result={result} days={christmasDays} />
       </div>}
       <HomepageCornerControls audio={audio} onRestart={reset} showRestart={stage !== 'entry'} />
       </div>
     </OfficeScene>
-  </main>;
+    </main>
+    {messageOfferOpen && stage === 'result' && createPortal(
+      <aside className="nn-message-popup" aria-labelledby="nn-message-popup-title">
+        <button type="button" className="nn-message-popup__close" aria-label="Dismiss Santa message offer"
+          onClick={() => setMessageOfferOpen(false)}>×</button>
+        <p className="nn-message-popup__kicker">A little more Christmas magic</p>
+        <h2 id="nn-message-popup-title">Want Santa to say {name}’s name?</h2>
+        <p className="nn-message-popup__copy" role="status">Make {name}’s day with a personal message from Santa, featuring their name.</p>
+        <Link className="nn-primary" to="/free-santa-message">Get a FREE message from Santa</Link>
+      </aside>,
+      document.body,
+    )}
+  </>;
 }

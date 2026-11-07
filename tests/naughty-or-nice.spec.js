@@ -238,6 +238,46 @@ for (const no of [0, 5, 6, 7, 8, 10]) {
   });
 }
 
+test('completed result links to a Santa message and offers a dismissible follow-up', async ({ page }) => {
+  await open(page);
+  await enter(page, 'Erin');
+  await answer(page, 0);
+  await analyse(page);
+
+  const result = office(page).locator('.nn-result');
+  const resultHeading = result.getByRole('heading', { name: 'Erin: NICE LIST!' });
+  const inlineOffer = result.locator('.nn-message-cta');
+  await expect(resultHeading).toBeFocused();
+  await expect(inlineOffer.getByRole('link', { name: 'Get a FREE message from Santa', exact: true }))
+    .toHaveAttribute('href', '/free-santa-message');
+  await expect(page.getByRole('complementary', { name: 'Want Santa to say Erin’s name?' })).toHaveCount(0);
+
+  await page.clock.runFor(2000);
+  const popup = page.getByRole('complementary', { name: 'Want Santa to say Erin’s name?' });
+  await expect(popup).toBeVisible();
+  await expect(resultHeading).toBeFocused();
+  await expect(popup.getByRole('link', { name: 'Get a FREE message from Santa', exact: true }))
+    .toHaveAttribute('href', '/free-santa-message');
+
+  const doesNotOverlap = (first, second) => first.x + first.width <= second.x ||
+    second.x + second.width <= first.x || first.y + first.height <= second.y ||
+    second.y + second.height <= first.y;
+  const desktopPopup = await popup.boundingBox();
+  const desktopDock = await page.locator('.radio-dock:not([hidden])').boundingBox();
+  if (desktopDock) expect(doesNotOverlap(desktopPopup, desktopDock)).toBe(true);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  const mobilePopup = await popup.boundingBox();
+  const mobileDock = await page.locator('.radio-dock:not([hidden])').boundingBox();
+  expect(mobilePopup.x).toBeGreaterThanOrEqual(0);
+  expect(mobilePopup.x + mobilePopup.width).toBeLessThanOrEqual(390);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+  if (mobileDock) expect(doesNotOverlap(mobilePopup, mobileDock)).toBe(true);
+
+  await popup.getByRole('button', { name: 'Dismiss Santa message offer' }).click();
+  await expect(popup).toHaveCount(0);
+});
+
 test('naughty certificate has bare cargo-stamp ink and UK Christmas days that update at midnight', async ({ page }, testInfo) => {
   await open(page, path, false);
   await page.clock.install({ time: new Date('2026-11-05T12:00:00Z') });
