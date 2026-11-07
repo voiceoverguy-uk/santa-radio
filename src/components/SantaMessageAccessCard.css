@@ -115,6 +115,26 @@
   opacity: .72;
 }
 
+.santa-message-access .santa-message-access__submit--pulse:not(:disabled):not(:hover):not(:focus-visible) {
+  animation: santa-message-access-pulse 2.6s ease-in-out infinite;
+}
+
+.santa-message-access .santa-message-access__submit--pulse:is(:hover, :focus-visible):not(:disabled) {
+  box-shadow: inset 0 1px 0 #fff3d62b, inset 0 -1px 0 #4a060d4d, 0 2px 6px #2a070b2e,
+    0 0 0 1px #f0d78a70, 0 0 16px 4px #d4af375f;
+}
+
+@keyframes santa-message-access-pulse {
+  0%, 100% {
+    box-shadow: inset 0 1px 0 #fff3d62b, inset 0 -1px 0 #4a060d4d, 0 2px 6px #2a070b2e,
+      0 0 0 1px #d4af3730, 0 0 12px 2px #d4af3748, 0 0 24px 7px #d4af3720;
+  }
+  50% {
+    box-shadow: inset 0 1px 0 #fff3d62b, inset 0 -1px 0 #4a060d4d, 0 2px 6px #2a070b2e,
+      0 0 0 1px #f0d78a95, 0 0 18px 5px #d4af3790, 0 0 38px 14px #d4af3738;
+  }
+}
+
 .santa-message-access__submit:focus-visible,
 .santa-message-access a:focus-visible {
   outline: 3px solid #e7c877;
@@ -155,6 +175,11 @@
 
 @media (prefers-reduced-motion: reduce) {
   .santa-message-access { animation: none; }
+  .santa-message-access .santa-message-access__submit--pulse {
+    animation: none;
+    box-shadow: inset 0 1px 0 #fff3d62b, inset 0 -1px 0 #4a060d4d, 0 2px 6px #2a070b2e,
+      0 0 0 1px #d4af3740, 0 0 15px 4px #d4af3755;
+  }
 }
 
 @media (max-width: 480px) {

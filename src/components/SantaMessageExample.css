@@ -32,6 +32,21 @@
   transform: translateY(-1px);
 }
 
+.santa-message-example__button--pulse:not(:hover):not(:focus-visible) {
+  animation: santa-message-example-pulse 2.6s ease-in-out infinite;
+}
+
+@keyframes santa-message-example-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 1px #d4af3726, 0 0 16px #d4af3740, 0 0 32px #d4af3726;
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 2px #e8ce8280, 0 0 23px 5px #d4af3780, 0 0 44px 12px #d4af3740;
+    transform: scale(1.012);
+  }
+}
+
 .santa-message-example__button:active {
   transform: translateY(0);
 }
@@ -84,5 +99,9 @@
 @media (prefers-reduced-motion: reduce) {
   .santa-message-example__button {
     transition: none;
+  }
+
+  .santa-message-example__button--pulse {
+    animation: none;
   }
 }

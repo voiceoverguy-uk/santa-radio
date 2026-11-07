@@ -16,6 +16,7 @@ for (const width of [320, 390, 768, 1440]) {
     }
     const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
     if (await decline.isVisible()) await decline.click();
+    await page.mouse.move(0, 0);
     const intro = page.locator('.message-intro');
     const heading = intro.locator('h2');
     await expect(heading).toHaveText('FREE Personalised message from Santa');
@@ -51,6 +52,15 @@ for (const width of [320, 390, 768, 1440]) {
     const example = intro.getByRole('button', { name: 'Hear an example audio message', exact: true });
     await expect(example).toBeVisible();
     await expect(example).toBeEnabled();
+    await expect.poll(() => example.evaluate(button => getComputedStyle(button).animationName))
+      .toBe(path === '/free-santa-message' ? 'santa-message-example-pulse' : 'none');
+    const freeMessageCta = page.getByRole('button', { name: 'Get my free Santa message', exact: true });
+    await expect(freeMessageCta).toBeVisible();
+    await expect.poll(() => freeMessageCta.evaluate(button => getComputedStyle(button).animationName))
+      .toBe(path === '/free-santa-message' ? 'santa-message-access-pulse' : 'none');
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await expect.poll(() => example.evaluate(button => getComputedStyle(button).animationName)).toBe('none');
+    await expect.poll(() => freeMessageCta.evaluate(button => getComputedStyle(button).animationName)).toBe('none');
     if (path === '/') {
       await expect(intro.locator('.santa-voice-tagline + .santa-message-example + p')).toHaveText(introduction);
     } else {
@@ -67,7 +77,6 @@ for (const width of [320, 390, 768, 1440]) {
       expect(bounds.scrollWidth).toBeLessThanOrEqual(bounds.clientWidth + 1);
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
-    await expect(page.getByRole('button', { name: 'Get my free Santa message' })).toBeVisible();
     await expect(page.locator('.message-name-label')).toHaveCount(0);
   });
 }

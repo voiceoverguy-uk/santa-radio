@@ -338,7 +338,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         {!dedicatedLayout && !hasAccess && allowExamples && <SantaMessageExample onExampleNameChange={setActiveExampleName} />}
         <p className="message-free-intro">No Artificial Intelligence here. A human recorded message from Santa, aka Father Christmas to your little Human.{' '}<br />Add your contact details, search for a recorded name, create and instantly download your short FREE personalised message from Santa.</p>
         <p className="message-studio-intro">Or, choose a bespoke message from Santa with festive goodies. See below.</p>
-        {dedicatedLayout && allowExamples && <SantaMessageExample onExampleNameChange={setActiveExampleName} />}
+        {dedicatedLayout && allowExamples && <SantaMessageExample pulse onExampleNameChange={setActiveExampleName} />}
       </div>
       <div className="santa-message-aside">
        <div ref={makerPanelRef} className={`santa-message-box${hasAccess ? '' : ' message-access-box'}`}>
@@ -357,7 +357,8 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         </div>
           </div>
         </div>
-        {!hasAccess ? <SantaMessageAccessForm keepInPlace={keepSignupInPlace} selectedChildName={selectedChildName} /> : <>
+        {!hasAccess ? <SantaMessageAccessForm keepInPlace={keepSignupInPlace} selectedChildName={selectedChildName}
+          pulseSubmit={dedicatedLayout} /> : <>
         <h3 ref={makerHeadingRef} tabIndex={-1}>Your free Santa greeting</h3>
         {!!messages.length && <div className="message-wait-downloads">
           {renderResults()}

@@ -1085,13 +1085,13 @@ test('connecting recording plays only on its screen, follows mute and stops befo
   expect(await page.evaluate(() => window.connectionPlayed)).toBe(1);
 });
 
-test('one bottom-left arrow resets connecting, questions and analysis without duplicate Start over controls', async ({ page }) => {
+test('one bottom-left home icon resets connecting, questions and analysis without duplicate Start over controls', async ({ page }) => {
   await open(page);
   await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
   const panel = office(page).locator('.nn-panel');
-  const arrow = panel.getByRole('button', { name: 'Start a new name check', exact: true });
+  const homeIcon = panel.getByRole('button', { name: 'Start a new name check', exact: true });
   const input = panel.getByRole('combobox', { name: 'Confirm first name' });
-  await expect(arrow).toHaveCount(0);
+  await expect(homeIcon).toHaveCount(0);
   for (const stage of ['connecting', 'questions', 'analysis']) {
     await input.fill('Erin');
     await panel.getByRole('button', { name: 'Is Erin Naughty or Nice?', exact: true }).click();
@@ -1100,26 +1100,26 @@ test('one bottom-left arrow resets connecting, questions and analysis without du
       await answer(page);
       await panel.getByRole('button', { name: 'Press to find out' }).click();
     }
-    await expect(arrow).toHaveCount(1);
-    await expect(arrow.locator('img')).toHaveAttribute('src', '/images/checker-back.webp');
+    await expect(homeIcon).toHaveCount(1);
+    await expect(homeIcon.locator('img')).toHaveAttribute('src', '/images/checker-home.webp');
     await expect(panel.getByRole('button', { name: 'Start over', exact: true })).toHaveCount(0);
     for (const width of [1280, 390, 320]) {
       await page.setViewportSize({ width, height: 1000 });
-      const left = await arrow.boundingBox();
+      const left = await homeIcon.boundingBox();
       const right = await panel.getByRole('button', { name: 'Sound: on' }).boundingBox();
       const content = await panel.locator('.nn-stage').boundingBox();
       expect(left.x + left.width).toBeLessThan(right.x);
       expect(left.y).toBeGreaterThanOrEqual(content.y + content.height);
       expect(left.height).toBeGreaterThanOrEqual(44);
     }
-    await arrow.focus();
+    await homeIcon.focus();
     await page.keyboard.press('Tab');
     await page.keyboard.press('Shift+Tab');
-    await expect(arrow).toHaveCSS('outline-style', 'solid');
+    await expect(homeIcon).toHaveCSS('outline-style', 'solid');
     await page.keyboard.press('Enter');
     await expect(input).toHaveValue('');
     await expect(input).toBeFocused();
-    await expect(arrow).toHaveCount(0);
+    await expect(homeIcon).toHaveCount(0);
     await page.clock.runFor(30000);
     await expect(panel.locator('.nn-result')).toHaveCount(0);
     await expect(input).toHaveValue('');

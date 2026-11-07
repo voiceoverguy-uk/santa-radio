@@ -45,6 +45,12 @@ The homepage hero's “FREE Santa Message” button should scroll to the message
 
 **How to apply:** Keep these two entry points distinct; the top navigation still opens the separate message page.
 
+On the dedicated `/free-santa-message` page, the idle “Hear an example audio message” and enabled “Get my free Santa message” buttons should pulse with a warm gold glow. Keep other instances static.
+
+**Why:** On 7 November 2026, the owner requested a pulse and glow for both attention cues on the dedicated message page.
+
+**How to apply:** Stop each pulse while its action is loading or active, and respect reduced-motion preferences.
+
 On phones, keep the red play/pause control between the logo and menu rather than showing a large Listen Live button in the homepage hero. Its shape now follows the shared red-button direction above. Keep desktop and tablet presentation unchanged.
 
 **Why:** The owner approved this mobile-only change to bring the free personalised Santa message into focus, then requested the familiar red pill rather than the outlined square.

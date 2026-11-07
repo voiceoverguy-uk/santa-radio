@@ -32,7 +32,7 @@ function rememberSuccessfulExample(key) {
   }
 }
 
-export default function SantaMessageExample({ onExampleNameChange } = {}) {
+export default function SantaMessageExample({ onExampleNameChange, pulse = false } = {}) {
   const radio = useRadio();
   const audioRef = useRef(null);
   const sessionRef = useRef(null);
@@ -156,7 +156,7 @@ export default function SantaMessageExample({ onExampleNameChange } = {}) {
 
   return <div className="santa-message-example">
     <button
-      className="santa-message-example__button"
+      className={`santa-message-example__button${pulse && state === 'idle' ? ' santa-message-example__button--pulse' : ''}`}
       type="button"
       onClick={startOrStop}
       aria-busy={state === 'loading'}

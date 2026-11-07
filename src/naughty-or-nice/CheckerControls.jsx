@@ -23,7 +23,7 @@ export function HomepageCornerControls({ audio, onRestart, showRestart = true })
     <div className={`nn-corner-controls${showRestart ? '' : ' nn-corner-controls--sound-only'}`}>
       {showRestart && <button type="button" className="nn-corner-button" aria-label="Start a new name check"
         title="Start a new name check" onClick={onRestart}>
-        <CornerArtwork src="/images/checker-back.webp" width="192" height="175" fallback="Start again" />
+        <CornerArtwork src="/images/checker-home.webp" width="192" height="192" fallback="Start again" />
       </button>}
       <SoundArtworkButton audio={audio} />
     </div>

@@ -255,7 +255,10 @@ test('pending form prevents duplicate submissions and adult details never reach 
   if (await decline.isVisible()) await decline.click();
   await fillAccessForm(page);
   await page.locator('.santa-message-access form').evaluate(form => { form.requestSubmit(); form.requestSubmit(); });
-  await expect(page.getByRole('button', { name: 'Opening the recording studio…' })).toBeDisabled();
+  const pendingButton = page.getByRole('button', { name: 'Opening the recording studio…' });
+  await expect(pendingButton).toBeDisabled();
+  await expect(pendingButton).not.toHaveClass(/santa-message-access__submit--pulse/);
+  await expect.poll(() => pendingButton.evaluate(button => getComputedStyle(button).animationName)).toBe('none');
   await expect(page.locator('input[name="FIRSTNAME"]')).toHaveAttribute('readonly', '');
   await expect.poll(() => calls).toBe(1);
   await expect(page.locator('.message-name-label')).toHaveCount(0);

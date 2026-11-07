@@ -13,9 +13,11 @@ export default function SantaMessageAccessCard({
   variant = 'inline',
   onPrivacyNavigate,
   selectedChildName = '',
+  pulseSubmit = false,
 }) {
   const id = useId();
   const offer = variant === 'offer';
+  const submitClassName = `btn-red santa-message-access__submit${pulseSubmit && !pending && !offer ? ' santa-message-access__submit--pulse' : ''}`;
   const fieldIds = {
     FIRSTNAME: `${id}-first-name`,
     LASTNAME: `${id}-surname`,
@@ -85,12 +87,12 @@ export default function SantaMessageAccessCard({
         {error && <p className="santa-message-access__error" role="alert">{error}</p>}
         {offer ? <div className="santa-offer-unlock">
           <span className="santa-offer-unlock-sparkle santa-offer-unlock-sparkle--before" aria-hidden="true" />
-          <button className="btn-red santa-message-access__submit" type="submit" disabled={pending}>
+          <button className={submitClassName} type="submit" disabled={pending}>
             <span className="santa-offer-unlock-sheen" aria-hidden="true" />
             {pending ? 'Opening the recording studio…' : 'Unlock my free Santa message'}
           </button>
           <span className="santa-offer-unlock-sparkle santa-offer-unlock-sparkle--after" aria-hidden="true" />
-        </div> : <button className="btn-red santa-message-access__submit" type="submit" disabled={pending}>
+        </div> : <button className={submitClassName} type="submit" disabled={pending}>
           {pending ? 'Opening the recording studio…' : 'Get my free Santa message'}
           {!pending && <span aria-hidden="true">→</span>}
         </button>}

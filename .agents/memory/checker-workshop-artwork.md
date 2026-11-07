@@ -212,15 +212,27 @@ with clearance for the holly rather than a tall blank area below the controls.
 **Why:** The owner explicitly requested moving both further into the corners
 or making the box less tall.
 
-Use the supplied bottom-left back arrow for every checker restart after Check,
+For the dedicated question stage, place the current question count at the right
+of the segmented progress bar, and put a compact, left-aligned “Back” directly
+below the question card. Tighten the vertical gaps while keeping restart and
+sound artwork in the bottom corners.
+
+**Why:** On 7 November 2026, the owner supplied a compact question-screen mockup
+and asked to reduce the tall parchment by moving these elements.
+
+**How to apply:** Keep the count and progress on one row, preserve an accessible
+ten-part progress bar, and keep the question panel/background stable across
+different question wording and Head Elf expressions. Keep this dedicated-page
+layout separate from the homepage checker.
+
+Use the supplied bottom-left home icon to return to the start for every checker restart after Check,
 including connecting, questions, final analysis and results. Hide it on initial
 name entry. Do not retain separate “Start over” text buttons.
 
-**Why:** The owner repeated that “Start over” must be the new back arrow and
-supplied connecting and question screenshots to clarify that this applies
-beyond the result screen.
+**Why:** The owner clarified on 7 November 2026 that the supplied home icon is
+more appropriate than a back arrow because it returns people to the start.
 
-**How to apply:** Reuse the safe full reset and keep the arrow in the same corner
+**How to apply:** Reuse the safe full reset and keep the home icon in the same corner
 row as sound, clear of the holly. Keep Previous question and Back to answers as
 separate actions, not substitutes for resetting.
 
