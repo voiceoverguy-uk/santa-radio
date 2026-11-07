@@ -510,8 +510,10 @@ test('all ten focused questions and answer buttons stay inside their box at desk
       'Would you thank a reindeer for delivering your presents, even if it had smelly breath?',
     ]);
     const progress = await office(page).getByRole('progressbar').boundingBox();
+    const count = await office(page).locator('.nn-question-count').boundingBox();
     const mute = await office(page).getByRole('button', { name: 'Sound: on' }).boundingBox();
     expect(progress.y + progress.height).toBeLessThan(mute.y);
+    expect(Math.abs((progress.y + progress.height / 2) - (count.y + count.height / 2))).toBeLessThan(2);
     await expect(office(page)).not.toContainText('Let Head Elf test you with a few questions to see how good you really are!');
     // Establish keyboard modality so containment includes the real focus treatment.
     await page.keyboard.press('Tab');
@@ -524,6 +526,12 @@ test('all ten focused questions and answer buttons stay inside their box at desk
       const wording = await legend.boundingBox();
       const buttons = await field.locator('.nn-question-buttons').boundingBox();
       const panel = await office(page).locator('.nn-panel').boundingBox();
+      if (question === 1) {
+        const back = await office(page).getByRole('button', { name: 'Previous question', exact: true }).boundingBox();
+        expect(back.x).toBeCloseTo(box.x, 0);
+        expect(back.y).toBeGreaterThanOrEqual(box.y + box.height);
+        expect(back.width).toBeLessThan(140);
+      }
       expect(box.x).toBeGreaterThanOrEqual(panel.x);
       expect(box.x + box.width).toBeLessThanOrEqual(panel.x + panel.width + 1);
       expect(wording.x).toBeGreaterThanOrEqual(box.x + 8);

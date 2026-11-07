@@ -93,7 +93,7 @@ function NaughtyNiceOffice({ initialName }) {
     if (event.target.matches(':focus-visible')) keepCheckerFocusVisible(event);
   }}>
     <OfficeScene busy={busy} title="Naughty or Nice List Checker">
-      <div className="nn-panel" data-elf-reaction={
+      <div className="nn-panel" data-stage={stage} data-elf-reaction={
         stage === 'result' && result === 'naughty'
           ? answers.filter(answer => answer === 'no').length >= 8 ? 'extra-shocked' : 'shocked'
           : stage === 'analysis' && elapsedMs >= 1000 && curiousReady ? 'curious' : reaction
@@ -110,6 +110,7 @@ function NaughtyNiceOffice({ initialName }) {
           {round.map((_, index) => <span key={index} aria-hidden="true"
             className={index === questionIndex ? 'is-current' : answers[index] ? 'is-complete' : ''} />)}
         </div>
+        <p className="nn-question-count">{Math.min(questionIndex + 1, round.length)} of {round.length}</p>
       </div>}
       {stage === 'entry' && <div ref={entry} className="nn-stage">
         <h2>Welcome to Head Elf’s Office</h2>
@@ -131,7 +132,7 @@ function NaughtyNiceOffice({ initialName }) {
         <NnComputer busy connecting />
         <p role="status">Head Elf is preparing his naughty and nice list checker.</p>
       </div>}
-      {stage === 'questions' && <form ref={questions} className="nn-stage" noValidate onSubmit={event => {
+      {stage === 'questions' && <form ref={questions} className="nn-stage nn-stage--questions" noValidate onSubmit={event => {
         event.preventDefault();
         const final = classifyAnswers(answers);
         if (!final) {
@@ -158,7 +159,6 @@ function NaughtyNiceOffice({ initialName }) {
         audio.effect('click');
       }}>
         <h2>A few questions for {name}</h2>
-        <p className="nn-question-count">{Math.min(questionIndex + 1, round.length)} of {round.length}</p>
         {questionIndex < round.length ? <fieldset className="nn-question-step" key={questionIndex}>
           <legend ref={heading} tabIndex={-1}>
             <span className="nn-sr-only">Question {questionIndex + 1} of {round.length}. </span>
@@ -189,9 +189,9 @@ function NaughtyNiceOffice({ initialName }) {
         <div className="nn-actions nn-actions--questions">
           {questionIndex === round.length && <button type="submit" className="nn-primary nn-final-check">Press to find out</button>}
           {questionIndex < round.length && <button type="button" className="nn-secondary nn-previous-question"
-            disabled={questionIndex === 0} aria-hidden={questionIndex === 0 ? true : undefined}
+            aria-label="Previous question" disabled={questionIndex === 0} aria-hidden={questionIndex === 0 ? true : undefined}
             style={questionIndex === 0 ? { visibility: 'hidden' } : undefined}
-            onClick={() => setQuestionIndex(index => index - 1)}>Previous question</button>}
+            onClick={() => setQuestionIndex(index => index - 1)}>Back</button>}
         </div>
       </form>}
       {stage === 'analysis' && <div className="nn-stage">

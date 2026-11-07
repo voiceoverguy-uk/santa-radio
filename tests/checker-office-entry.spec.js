@@ -28,7 +28,12 @@ async function assertEntryPosition(page) {
     const wanted = top + Math.max(0, (bottom - top - (end - start)) / 2);
     return Math.abs(start - wanted);
   })).toBeLessThan(2);
-  await expect(page.locator('.nn-office h1')).toHaveText('Naughty or Nice List Checker');
+  await expect(page.locator('.nn-office h1')).toHaveAccessibleName('Naughty or Nice List Checker');
+  const logo = page.locator('.nn-office-title-logo');
+  await expect(logo).toHaveAttribute('src', '/images/naughty-or-nice-logo.webp');
+  await expect(logo).toBeVisible();
+  await expect.poll(() => logo.evaluate(image =>
+    image.complete && image.naturalWidth === 1659 && image.getBoundingClientRect().width <= 205)).toBe(true);
   const bottomClearance = await page.evaluate(() => {
     const scene = document.querySelector('.nn-office .nn-scene').getBoundingClientRect();
     const panel = document.querySelector('.nn-office .nn-panel').getBoundingClientRect();
