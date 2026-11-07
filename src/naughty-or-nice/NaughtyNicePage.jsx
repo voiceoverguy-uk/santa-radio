@@ -112,7 +112,7 @@ function NaughtyNiceOffice({ initialName }) {
       {stage === 'connecting' && <div className="nn-stage">
         <h2 ref={heading} tabIndex={-1}>Connecting to Santa’s office…</h2>
         <NnComputer busy connecting />
-        <p role="status">The Head Elf is opening the pretend inspection book. Nearly ready!</p>
+        <p role="status">Head Elf is preparing his naughty and nice list checker.</p>
       </div>}
       {stage === 'questions' && <form ref={questions} className="nn-stage" noValidate onSubmit={event => {
         event.preventDefault();
