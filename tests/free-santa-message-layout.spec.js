@@ -64,7 +64,7 @@ for (const width of [320, 390, 768, 1440]) {
       });
       const { intro: left, aside, cards, promo } = geometry;
       expect(cards[0].top).toBeGreaterThanOrEqual(Math.max(left.bottom, aside.bottom));
-      expect(promo.top).toBeGreaterThan(cards.at(-1).bottom);
+      expect(cards[0].top).toBeGreaterThan(promo.bottom);
       expect(geometry.reviews.top).toBeGreaterThanOrEqual(promo.bottom);
       if (width > 767) {
         expect(geometry.kicker.top).toBeCloseTo(geometry.maker.top, 0);

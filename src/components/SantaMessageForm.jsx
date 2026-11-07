@@ -475,9 +475,9 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
       </div>
        {!dedicatedLayout && hasAccess && allowExamples && <SantaMessageExample onExampleNameChange={setActiveExampleName} />}
       </div>
-      {dedicatedLayout && <WorkshopExplainerCards className="message-guide-cards" variant="free-message" />}
       <SantaStudioPromotion activeExampleName={activeExampleName} availableNamesText={availableNamesText}
         previewName={giftPreviewName} allowExamples={allowExamples} />
+      {dedicatedLayout && <WorkshopExplainerCards className="message-guide-cards" variant="free-message" />}
       <SantaMessageReviews />
     </div>
   </section>;
