@@ -534,6 +534,12 @@ progress.nn-progress::-moz-progress-bar { background: var(--nn-red); }
 .nn-certificate-download > .nn-secondary { color: var(--nn-red-dark); border-color: var(--nn-red); background: #fffcf455; gap: 8px; }
 .nn-certificate-download > .nn-secondary::before { content: ""; width: 10px; height: 12px; flex: none; background: currentColor;
   clip-path: polygon(35% 0, 65% 0, 65% 45%, 100% 45%, 50% 85%, 0 45%, 35% 45%); box-shadow: none; }
+@media (max-width: 480px) {
+  .nn-certificate-download > .nn-secondary {
+    flex-direction: column-reverse; gap: 4px; white-space: nowrap;
+    max-width: 100%; box-sizing: border-box; padding-inline: 10px;
+  }
+}
 .nn-certificate-download > .nn-secondary:hover:not(:disabled) { background: #a8242c14; }
 .nn-certificate-download > .nn-secondary[aria-busy="true"] { cursor: progress; }
 .nn-certificate-download [role="status"] { font: 500 .84rem/1.4 'Inter', sans-serif; color: var(--nn-ink-soft); margin: 0; }

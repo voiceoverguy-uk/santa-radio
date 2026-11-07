@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { PDFDocument } from 'pdf-lib';
-import { ANALYSIS_MS } from '../src/naughty-or-nice/checkerLogic.js';
+import { ANALYSIS_MS, CHECKER_LAUNCH_MS, HOMEPAGE_ANALYSIS_MS } from '../src/naughty-or-nice/checkerLogic.js';
 
 test.use({ reducedMotion: 'reduce' });
 test.beforeEach(async ({ page }) => {
@@ -10,18 +10,24 @@ test.beforeEach(async ({ page }) => {
       version: 2, analytics: false, marketing: false, media: false, savedAt: Date.now(),
     }));
   });
+  await page.route('**/names-data/*.json', route => route.fulfill({ json: ['Zorabelle', 'Erin'] }));
 });
-const path = '/naughty-or-nice-list-checker';
 
 async function result(page, naughty) {
-  await page.goto(path, { waitUntil: 'domcontentloaded' });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
   const decline = page.getByRole('button', { name: 'Decline optional cookies' });
   if (await decline.isVisible()) await decline.click();
   await page.clock.install({ time: new Date('2026-11-05T12:00:00Z') });
+  const widget = page.locator('#nice-list');
+  await widget.getByRole('combobox').fill('Zorabelle');
+  await widget.getByRole('button', { name: 'Check', exact: true }).click();
+  await page.clock.runFor(HOMEPAGE_ANALYSIS_MS + CHECKER_LAUNCH_MS + 100);
+  await widget.getByRole('link', { name: 'Lets check with Head Elf', exact: true }).click();
+  await page.clock.setSystemTime(new Date('2026-11-05T12:00:00Z'));
   await page.clock.pauseAt(new Date('2026-11-05T12:00:01Z'));
   await page.getByRole('button', { name: 'Sound: on' }).click();
   await page.getByRole('combobox').fill('Zorabelle');
-  await page.getByRole('button', { name: 'Lets check if Zorabelle is Naughty or Nice' }).click();
+  await page.getByRole('button', { name: 'Is Zorabelle Naughty or Nice?', exact: true }).click();
   await page.clock.runFor(1900);
   for (let question = 0; question < 10; question++) {
     await expect(page.locator('.nn-question-count')).toHaveText(`${question + 1} of 10`);
@@ -175,6 +181,7 @@ test('Nice Head Elf PDF downloads locally with the new artwork and name, not the
   const requests = [];
   page.on('request', request => requests.push(`${request.url()} ${request.postData() || ''}`));
   await result(page, false);
+  requests.length = 0;
   await expect(page.locator('.nn-kicker')).toHaveText('HEAD ELF’S VERY UNOFFICIAL VERDICT');
   await expect(page.locator('.nn-certificate-preview img')).toHaveAttribute('src', '/certificates/checker/nice-master.webp');
   await expect(page.getByRole('button', { name: 'Try again from the start' })).toHaveCount(0);

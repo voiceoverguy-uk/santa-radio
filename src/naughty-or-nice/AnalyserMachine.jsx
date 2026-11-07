@@ -47,6 +47,16 @@ function Glints({ variant }) {
   );
 }
 
+function Smoke() {
+  return (
+    <div className="nn-machine-smoke" aria-hidden="true">
+      <i className="nn-machine-smoke__wisp nn-machine-smoke__wisp--left" />
+      <i className="nn-machine-smoke__wisp nn-machine-smoke__wisp--middle" />
+      <i className="nn-machine-smoke__wisp nn-machine-smoke__wisp--right" />
+    </div>
+  );
+}
+
 function Digit({ value }) {
   const on = DIGIT_MAP[value] || '';
   return (
@@ -86,6 +96,9 @@ function Machine({ busy = false, secondsRemaining = 0, variant }) {
   }, []);
   const n = Math.max(0, Math.min(99, Math.floor(Number(secondsRemaining) || 0)));
   const text = String(n).padStart(2, '0');
+  // The homepage checking analyser is the only "checking" variant. Start the
+  // decorative wisps with its displayed four-second window, and stop at zero.
+  const smoking = busy && variant === 'checking' && n > 0 && n <= 4;
   // The homepage countdown settles for its final three seconds. Keep busy
   // independent so the slot animation and sparkles continue uninterrupted.
   const wobbling = busy && !connecting && (variant !== 'checking' || n > 3);
@@ -103,7 +116,8 @@ function Machine({ busy = false, secondsRemaining = 0, variant }) {
       <div className="nn-machine-slot" aria-hidden="true">
         <span className="nn-progress nn-machine-progress" />
       </div>
-      <Glints variant={variant} /></>}
+      <Glints variant={variant} />
+      {smoking && <Smoke />}</>}
     </div>
   );
 }

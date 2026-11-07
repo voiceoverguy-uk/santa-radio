@@ -1,9 +1,17 @@
 import { test, expect } from '@playwright/test';
-import { ANALYSIS_MS, HOMEPAGE_ANALYSIS_MS, CHECKER_LAUNCH_MS, resultAnalysisMs } from '../src/naughty-or-nice/checkerLogic.js';
+import { ALL_NO_PROMPTS, ANALYSIS_MS, HOMEPAGE_ANALYSIS_MS, CHECKER_LAUNCH_MS, resultAnalysisMs, selectAllNoPrompt } from '../src/naughty-or-nice/checkerLogic.js';
 
 const path = '/naughty-or-nice-list-checker';
 const office = page => page.locator('.nn-office');
 const widget = page => page.locator('.nn-widget');
+
+test('all-No checker prompts rotate across all ten approved lines', () => {
+  expect(ALL_NO_PROMPTS).toHaveLength(10);
+  expect(new Set(ALL_NO_PROMPTS).size).toBe(10);
+  ALL_NO_PROMPTS.forEach((prompt, index) => {
+    expect(selectAllNoPrompt(() => (index + .5) / ALL_NO_PROMPTS.length)).toBe(prompt);
+  });
+});
 
 async function setup(page) {
   await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -35,7 +43,7 @@ async function setup(page) {
   await page.route('**/names-data/*.json', route => route.fulfill({ json: ['Arabella', 'Erin', 'Erica'] }));
 }
 
-async function open(page, url = path, clock = true) {
+async function openDirect(page, url = path, clock = true) {
   await setup(page);
   await page.goto(url, { waitUntil: 'domcontentloaded' });
   const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
@@ -43,10 +51,40 @@ async function open(page, url = path, clock = true) {
   if (clock) await page.clock.install();
 }
 
+async function openFromHomepage(page, { name = 'Zorabelle', clockInstalled = false, keepClock = true } = {}) {
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+  if (await decline.isVisible()) await decline.click();
+  const useClock = clockInstalled || keepClock;
+  if (!clockInstalled && keepClock) await page.clock.install();
+  const homeWidget = widget(page);
+  await homeWidget.getByRole('combobox').fill(name);
+  await homeWidget.getByRole('button', { name: 'Check', exact: true }).click();
+  if (useClock) await page.clock.runFor(HOMEPAGE_ANALYSIS_MS + CHECKER_LAUNCH_MS + 100);
+  else await page.waitForTimeout(HOMEPAGE_ANALYSIS_MS + CHECKER_LAUNCH_MS + 100);
+  const headElfLink = homeWidget.getByRole('link', { name: 'Lets check with Head Elf', exact: true });
+  await expect(headElfLink).toBeVisible();
+  await headElfLink.click();
+  await expect(office(page).getByRole('heading', { name: 'Welcome to Head Elf’s Office' })).toBeVisible();
+  await expect(office(page).getByRole('combobox')).toHaveValue(name);
+  await page.evaluate(() => {
+    window.checkerAudio = [];
+    window.checkerEffects = [];
+    window.checkerConnections = [];
+  });
+}
+
+async function open(page, url = path, clock = true) {
+  if (url !== path) return openDirect(page, url, clock);
+  await setup(page);
+  await openFromHomepage(page, { keepClock: clock });
+}
+
 async function enter(page, name = 'Zorabelle', clock = true) {
   await office(page).getByRole('combobox').fill(name);
-  await office(page).getByRole('button', { name: `Lets check if ${name.trim()} is Naughty or Nice`, exact: true }).click();
+  await office(page).getByRole('button', { name: `Is ${name.trim()} Naughty or Nice?`, exact: true }).click();
   await expect(office(page).getByRole('heading', { name: 'Connecting to Santa’s office…' })).toBeVisible();
+  await expect(office(page).locator('.nn-machine-smoke')).toHaveCount(0);
   await expect(office(page).getByRole('button', { name: 'Back to name', exact: true })).toHaveCount(0);
   if (clock) await page.clock.runFor(1900);
   await expect(office(page).locator('fieldset')).toHaveCount(1);
@@ -61,6 +99,11 @@ async function answer(page, no = 0) {
   }
   await expect(office(page).getByRole('heading', { name: 'All ten answers are in!' })).toBeVisible();
   await expect(office(page).getByText('Are you on the nice list?', { exact: true })).toBeVisible();
+  const allNoNudge = office(page).locator('.nn-all-no-nudge');
+  if (no === 10) {
+    await expect(allNoNudge).toBeVisible();
+    expect(ALL_NO_PROMPTS).toContain((await allNoNudge.textContent()).trim());
+  } else await expect(allNoNudge).toHaveCount(0);
   await expect(office(page).getByRole('button', { name: 'Press to find out', exact: true })).toBeVisible();
   await expect(office(page).getByRole('button', { name: 'Back to name', exact: true })).toHaveCount(0);
   const submit = await office(page).locator('.nn-final-check').boundingBox();
@@ -74,6 +117,7 @@ async function analyse(page) {
   await page.clock.runFor(5000);
   await expect(office(page).locator('.nn-result')).toHaveCount(0);
   await expect(office(page).getByRole('heading', { name: 'The Head Elf’s analyser is checking…' })).toBeVisible();
+  await expect(office(page).locator('.nn-machine-smoke')).toHaveCount(0);
   await expect(office(page)).not.toContainText('Let Head Elf test you with a few questions to see how good you really are!');
   await expect(office(page).getByRole('timer')).toHaveText(/[23] seconds remaining/);
   await page.clock.runFor(ANALYSIS_MS - 5000 + 100);
@@ -83,23 +127,68 @@ async function analyse(page) {
 test('entry button follows typed and selected names without changing the homepage Check button', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 1000 });
   await open(page);
-  await expect(office(page).getByText("So, who is visiting Head Elf's office today?", { exact: true })).toBeVisible();
-  await expect(office(page).locator('.nn-help')).toBeEmpty();
   const input = office(page).getByRole('combobox');
   const button = office(page).locator('button[type="submit"]');
-  await expect(button).toHaveText('Lets check if Naughty or Nice');
+  await input.fill('');
+  await expect(button).toHaveText('Is this name Naughty or Nice?');
   await input.fill(' Charlotte ');
-  await expect(button).toHaveText('Lets check if Charlotte is Naughty or Nice');
+  await expect(button).toHaveText('Is Charlotte Naughty or Nice?');
   await input.fill('Er');
   await office(page).getByRole('option', { name: 'Erin', exact: true }).click();
-  await expect(button).toHaveText('Lets check if Erin is Naughty or Nice');
+  await expect(button).toHaveText('Is Erin Naughty or Nice?');
   await input.fill('Anne-Marie Rose');
-  await expect(button).toHaveText('Lets check if Anne-Marie Rose is Naughty or Nice');
+  await expect(button).toHaveText('Is Anne-Marie Rose Naughty or Nice?');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await input.fill('');
-  await expect(button).toHaveText('Lets check if Naughty or Nice');
+  await expect(button).toHaveText('Is this name Naughty or Nice?');
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   await expect(widget(page).getByRole('button', { name: 'Check', exact: true })).toBeAttached();
+});
+
+test('a direct checker URL starts with the simple homepage check before opening Head Elf', async ({ page }) => {
+  await openDirect(page);
+  await expect(widget(page).getByRole('heading', { name: 'Quick Nice List Check' })).toBeVisible();
+  await expect(office(page)).toHaveCount(0);
+  await expect(widget(page).getByRole('button', { name: 'Check', exact: true })).toBeVisible();
+  await widget(page).getByRole('combobox').fill('Erin');
+  await widget(page).getByRole('button', { name: 'Check', exact: true }).click();
+  await page.clock.runFor(HOMEPAGE_ANALYSIS_MS + CHECKER_LAUNCH_MS + 100);
+  await expect(widget(page).getByText(/Erin, you’re \d+% nice!/)).toBeVisible();
+  await widget(page).getByRole('button', { name: 'Lets check with Head Elf', exact: true }).click();
+  await expect(office(page).getByRole('heading', { name: 'Welcome to Head Elf’s Office' })).toBeVisible();
+  await expect(office(page).getByRole('combobox')).toHaveValue('Erin');
+  await office(page).getByRole('button', { name: 'Is Erin Naughty or Nice?', exact: true }).click();
+  await page.clock.runFor(1900);
+  await expect(office(page).locator('fieldset')).toHaveCount(1);
+});
+
+test('mobile certificate download keeps its label on one line and places the arrow below', async ({ page }, testInfo) => {
+  await open(page);
+  await enter(page, 'Erin');
+  await answer(page, 0);
+  await analyse(page);
+  const button = office(page).locator('.nn-certificate-download > .nn-secondary').first();
+  await expect(button).toHaveText('Download Nice certificate PDF');
+  await page.setViewportSize({ width: 1280, height: 1000 });
+  await expect(button).toHaveCSS('flex-direction', 'row');
+  for (const width of [390, 320]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await expect(button).toHaveCSS('flex-direction', 'column-reverse');
+    await expect(button).toHaveCSS('white-space', 'nowrap');
+    const layout = await button.evaluate(element => {
+      const range = document.createRange();
+      range.selectNodeContents(element);
+      const bounds = element.getBoundingClientRect();
+      return { lines: range.getClientRects().length, scrollWidth: element.scrollWidth,
+        clientWidth: element.clientWidth, buttonRight: bounds.right,
+        documentWidth: document.documentElement.scrollWidth, viewportWidth: innerWidth };
+    });
+    expect(layout.lines).toBe(1);
+    expect(layout.scrollWidth).toBeLessThanOrEqual(layout.clientWidth);
+    expect(layout.buttonRight).toBeLessThanOrEqual(width);
+    expect(layout.documentWidth).toBeLessThanOrEqual(layout.viewportWidth);
+    await button.screenshot({ path: testInfo.outputPath(`certificate-download-${width}.png`) });
+  }
 });
 
 for (const no of [0, 5, 6, 7, 8, 10]) {
@@ -207,7 +296,7 @@ test('one question at a time; keyboard choices advance and previous answers can 
   const input = office(page).getByRole('combobox');
   await input.fill('Er');
   await expect(office(page).getByRole('listbox')).toBeVisible();
-  await expect(office(page).getByText('Select your name and lets find out which list you are really on.', { exact: true })).toBeVisible();
+  await expect(office(page).getByText("Let's see what Head Elf finds out.", { exact: true })).toBeVisible();
   await input.press('ArrowDown');
   await input.press('Enter');
   await expect(input).toHaveValue('Erica');
@@ -291,7 +380,7 @@ for (const width of [1280, 390]) {
     await office(page).getByRole('option', { name: 'Erin', exact: true }).click();
     await expect(office(page).getByRole('listbox')).toHaveCount(0);
     await stable();
-    await office(page).getByRole('button', { name: 'Lets check if Erin is Naughty or Nice', exact: true }).click();
+    await office(page).getByRole('button', { name: 'Is Erin Naughty or Nice?', exact: true }).click();
     await stable();
     await page.clock.runFor(1800);
     await stable();
@@ -600,11 +689,26 @@ test(`${homepage ? 'homepage' : 'Head Elf'} machine glints are visible, anchored
   if (homepage) await expect(machine).toHaveCSS('transform', 'none');
   await expect(glints).toBeVisible();
   await expect(glints.locator('i').first()).toHaveCSS('animation-name', 'nn-glint');
+  const smoke = section.locator('.nn-machine-smoke');
+  if (homepage) {
+    await expect(smoke).toHaveAttribute('aria-hidden', 'true');
+    await expect(smoke.locator('.nn-machine-smoke__wisp')).toHaveCount(3);
+    await expect(smoke.locator('.nn-machine-smoke__wisp').first()).toHaveCSS('animation-name', 'nn-machine-smoke-rise');
+  } else {
+    await expect(smoke).toHaveCount(0);
+  }
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(machine).toHaveCSS('animation-name', 'none');
   await expect(machine).toHaveCSS('transform', 'none');
   await expect(glints).toHaveCSS('display', 'none');
   await expect(glints.locator('i').first()).toHaveCSS('animation-name', 'none');
+  if (homepage) await expect(smoke).toHaveCSS('display', 'none');
+  if (homepage) {
+    await page.emulateMedia({ reducedMotion: 'no-preference', forcedColors: 'active' });
+    await expect(smoke).toHaveCSS('display', 'none');
+    await page.emulateMedia({ reducedMotion: 'no-preference', forcedColors: 'none' });
+    await expect(smoke).not.toHaveCSS('display', 'none');
+  }
   await page.clock.runFor(ANALYSIS_MS + HOMEPAGE_ANALYSIS_MS + 1000);
   await expect(machine).toHaveCount(0);
 });
@@ -913,7 +1017,7 @@ test('connecting recording plays only on its screen, follows mute and stops befo
   expect(duration).toBeGreaterThan(1);
   expect(duration).toBeLessThan(1.8);
   await office(page).getByRole('combobox').fill('Erin');
-  await office(page).getByRole('button', { name: 'Lets check if Erin is Naughty or Nice', exact: true }).click();
+  await office(page).getByRole('button', { name: 'Is Erin Naughty or Nice?', exact: true }).click();
   await expect(office(page).getByRole('heading', { name: 'Connecting to Santa’s office…' })).toBeVisible();
   await expect.poll(() => page.evaluate(() => window.connectionPlayed)).toBe(1);
   await expect(office(page).locator('.nn-question-count')).toHaveText('1 of 10');
@@ -935,7 +1039,7 @@ test('one bottom-left arrow resets connecting, questions and analysis without du
   await expect(arrow).toHaveCount(0);
   for (const stage of ['connecting', 'questions', 'analysis']) {
     await input.fill('Erin');
-    await panel.getByRole('button', { name: 'Lets check if Erin is Naughty or Nice', exact: true }).click();
+    await panel.getByRole('button', { name: 'Is Erin Naughty or Nice?', exact: true }).click();
     if (stage !== 'connecting') await page.clock.runFor(1900);
     if (stage === 'analysis') {
       await answer(page);
@@ -1146,7 +1250,7 @@ test('corner buttons support keyboard reset, image failure and forced colours wi
   await expect(widget(page).getByRole('button', { name: 'Sound: off' })).toHaveAttribute('aria-pressed', 'false');
   await expect(widget(page).getByText('Sound off', { exact: true })).toBeVisible();
   expect(await page.locator('.radio-dock').getAttribute('class')).toBe(radioBefore);
-  await page.goto(path);
+  await openFromHomepage(page, { clockInstalled: true });
   await expect(office(page).getByRole('combobox', { name: 'Confirm first name', exact: true })).toBeVisible();
   await expect(office(page).locator('.nn-corner-controls')).toHaveCount(1);
   await expect(office(page).getByText('Sound on', { exact: true })).toBeVisible();
@@ -1328,7 +1432,8 @@ for (const [random, score] of [[0, 51], [.99999, 73]]) {
     expect(requests.filter(request => /\/api\/santa-(?:names|name-preview|message)(?:[/?]|$)/.test(request.url))).toEqual([]);
     expect(requests.filter(request => /stagcommunications/.test(request.url))).toEqual([]);
     await page.reload({ waitUntil: 'domcontentloaded' });
-    await expect(office(page).getByRole('combobox')).toHaveValue('');
+    await expect(widget(page).getByRole('combobox')).toHaveValue('');
+    await expect(office(page)).toHaveCount(0);
   });
 }
 
@@ -1424,7 +1529,7 @@ test('homepage result prioritises the glowing Head Elf link and accessible sound
   await expect(widget(page).getByRole('combobox')).toHaveValue('');
 });
 
-test('homepage recording starts with the analyser and its countdown follows media, including a visible zero', async ({ page }) => {
+test('homepage recording starts with the analyser and its countdown follows media, including a visible zero', async ({ page }, testInfo) => {
   await open(page, '/');
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
@@ -1448,6 +1553,7 @@ test('homepage recording starts with the analyser and its countdown follows medi
   await page.clock.runFor(1);
   await expect(widget(page).getByRole('heading', { name: 'Checking at the North Pole…' })).toBeVisible();
   await expect(widget(page).getByRole('timer')).toHaveText('12 seconds remaining');
+  await expect(widget(page).locator('.nn-machine-smoke')).toHaveCount(0);
   await page.evaluate(() => { window.checkerPosition = 3.2; });
   await page.clock.runFor(50);
   await expect(widget(page).getByRole('timer')).toHaveText('9 seconds remaining');
@@ -1462,9 +1568,42 @@ test('homepage recording starts with the analyser and its countdown follows medi
   await page.clock.runFor(50);
   await expect(widget(page).getByRole('timer')).toHaveText('4 seconds remaining');
   await expect(machine).toHaveCSS('animation-name', 'nn-machine-wobble');
+  const smoke = machine.locator('.nn-machine-smoke');
+  await expect(smoke).toBeVisible();
+  await expect(smoke).toHaveAttribute('aria-hidden', 'true');
+  await expect(smoke.locator('.nn-machine-smoke__wisp')).toHaveCount(3);
+  await machine.evaluate(element => {
+    for (const animation of element.getAnimations({ subtree: true })) {
+      animation.pause();
+      animation.currentTime = animation.animationName === 'nn-machine-smoke-rise' ? 420 : 100;
+    }
+  });
+  for (const width of [1280, 390, 320]) {
+    await page.setViewportSize({ width, height: 1000 });
+    const geometry = await smoke.evaluate(element => {
+      const bounds = element.getBoundingClientRect();
+      const machineBounds = element.parentElement.getBoundingClientRect();
+      return { difference: Math.abs(bounds.width - machineBounds.width) + Math.abs(bounds.height - machineBounds.height),
+        opacity: [...element.children].map(child => Number(getComputedStyle(child).opacity)) };
+    });
+    expect(geometry.difference).toBeLessThan(1);
+    expect(Math.max(...geometry.opacity)).toBeGreaterThan(.15);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await machine.scrollIntoViewIfNeeded();
+    const bounds = await machine.boundingBox();
+    await page.screenshot({
+      path: testInfo.outputPath(`homepage-smoke-${width}.png`),
+      clip: { x: bounds.x, y: Math.max(0, bounds.y - 55), width: bounds.width,
+        height: bounds.height + Math.min(55, bounds.y) },
+    });
+  }
+  await machine.evaluate(element => {
+    for (const animation of element.getAnimations({ subtree: true })) animation.play();
+  });
   await page.evaluate(() => { window.checkerPosition = 8.3; });
   await page.clock.runFor(50);
   await expect(widget(page).getByRole('timer')).toHaveText('3 seconds remaining');
+  await expect(smoke).toBeVisible();
   await expect(machine).toHaveCSS('animation-name', 'none');
   await page.evaluate(() => { window.checkerPosition = 9.2; });
   await page.clock.runFor(50);
@@ -1478,6 +1617,7 @@ test('homepage recording starts with the analyser and its countdown follows medi
   await page.evaluate(() => { window.checkerPosition = 11.05; });
   await page.clock.runFor(50);
   await expect(widget(page).getByRole('timer')).toHaveText('0 seconds remaining');
+  await expect(smoke).toHaveCount(0);
   await expect(widget(page).locator('.nn-result')).toHaveCount(0);
   await widget(page).getByRole('button', { name: 'Start a new name check' }).click();
   await page.evaluate(() => { window.checkerPosition = 11; });
@@ -1630,7 +1770,7 @@ test('connecting uses the wide machine and CONNECTING text only until the questi
   await open(page);
   await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
   await office(page).getByRole('combobox').fill('Zorabelle');
-  await office(page).getByRole('button', { name: 'Lets check if Zorabelle is Naughty or Nice', exact: true }).click();
+  await office(page).getByRole('button', { name: 'Is Zorabelle Naughty or Nice?', exact: true }).click();
   const machine = office(page).locator('.nn-machine--connecting');
   await expect(machine.locator('.nn-machine-connection')).toHaveText('CONNECTING');
   await expect(office(page).getByRole('timer')).toHaveCount(0);
@@ -1733,6 +1873,7 @@ test('final analysis uses Head Elf engine with decoded artwork, red countdown an
 
 test('Head Elf sound artwork stays bottom right through every stage and entry starts above the old toolbar', async ({ page }, testInfo) => {
   await open(page);
+  await office(page).getByRole('combobox').fill('');
   const panel = office(page).locator('.nn-panel');
   const sound = office(page).getByRole('button', { name: /^Sound: / });
   const assertCorner = async content => {
@@ -1767,7 +1908,7 @@ test('Head Elf sound artwork stays bottom right through every stage and entry st
   }
   await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
   await panel.getByRole('combobox').fill('Erin');
-  await panel.getByRole('button', { name: 'Lets check if Erin is Naughty or Nice', exact: true }).click();
+  await panel.getByRole('button', { name: 'Is Erin Naughty or Nice?', exact: true }).click();
   await assertCorner(panel.locator('.nn-stage'));
   await page.clock.runFor(1900);
   await assertCorner(panel.locator('.nn-stage'));
@@ -1789,6 +1930,7 @@ test('Head Elf sound artwork stays bottom right through every stage and entry st
 
 test('Head Elf panel preserves the whole supplied frame and live name controls on desktop and phones', async ({ page }, testInfo) => {
   await open(page);
+  await office(page).getByRole('combobox').fill('');
   const panel = office(page).locator('.nn-panel');
   const art = await panel.evaluate(async element => {
     const source = getComputedStyle(element).borderImageSource;
@@ -1835,7 +1977,7 @@ test('office uses the supplied festive background behind accessible controls wit
   expect(image.url).toContain('/images/workshop-background-festive.webp');
   expect(image.width).toBe(2080);
   expect(image.height).toBe(1800);
-  expect(image.size.split(',')[0].trim()).toBe('cover');
+  expect(image.size.split(',')[0].trim()).toBe('100% auto');
   await expect(office(page).locator('.nn-wall, .nn-window, .nn-shelf, .nn-garland, .nn-desk')).toHaveCount(0);
   await expect(office(page).getByRole('combobox')).toBeVisible();
 });
@@ -1844,14 +1986,14 @@ test('office heading clears navigation and the shorter faster cane respects redu
   await open(page);
   for (const width of [390, 1280]) {
     await page.setViewportSize({ width, height: 844 });
-    await page.evaluate(() => scrollTo(0, 0));
+    await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
     const nav = await page.locator('.navbar').boundingBox();
     const title = await office(page).locator('.nn-heading-wrap').boundingBox();
     expect(title.y).toBeGreaterThan(nav.y + nav.height);
   }
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await office(page).getByRole('combobox').fill('Erin');
-  await office(page).getByRole('button', { name: 'Lets check if Erin is Naughty or Nice' }).click();
+  await office(page).getByRole('button', { name: 'Is Erin Naughty or Nice?' }).click();
   const bar = office(page).locator('.nn-progress');
   const machine = await office(page).locator('.nn-machine').boundingBox();
   expect((await bar.boundingBox()).width / machine.width).toBeCloseTo(.38, 2);
@@ -1867,16 +2009,16 @@ test('unknown names, abusive names, load failure and retry are independent of li
   let attempts = 0;
   await page.route('**/names-data/*.json', route => {
     attempts++;
-    return attempts === 1 ? route.fulfill({ status: 503, body: 'unavailable' }) : route.fulfill({ json: ['Erin'] });
+    return attempts <= 2 ? route.fulfill({ status: 503, body: 'unavailable' }) : route.fulfill({ json: ['Erin'] });
   });
-  await page.goto(path, { waitUntil: 'domcontentloaded' });
+  await openFromHomepage(page, { name: 'Zorabelle' });
   const input = office(page).getByRole('combobox');
   await input.fill('Er');
   await expect(office(page)).toContainText('Suggestions are unavailable');
   await office(page).getByRole('button', { name: 'Retry suggestions' }).click();
   await expect(office(page).getByRole('option', { name: 'Erin' })).toBeVisible();
   await input.fill('fuck');
-  await office(page).getByRole('button', { name: /^Lets check if .* is Naughty or Nice$/ }).click();
+  await office(page).getByRole('button', { name: /^Is .* Naughty or Nice\?$/ }).click();
   await expect(input).toHaveAttribute('aria-invalid', 'true');
   await expect(office(page).locator('fieldset')).toHaveCount(0);
   await input.fill('Zorabelle');
@@ -1942,7 +2084,7 @@ test('supplied MP3s decode and play in the browser; leaving stops active audio w
   await expect(radio).toBeVisible();
   await expect(office(page).getByRole('button', { name: 'Sound: on' })).toBeVisible();
   await office(page).getByRole('combobox').fill('Zorabelle');
-  await office(page).getByRole('button', { name: 'Lets check if Zorabelle is Naughty or Nice', exact: true }).click();
+  await office(page).getByRole('button', { name: 'Is Zorabelle Naughty or Nice?', exact: true }).click();
   await expect(office(page).locator('fieldset')).toHaveCount(1);
   await answer(page);
   await office(page).getByRole('button', { name: 'Press to find out' }).click();
@@ -2039,7 +2181,8 @@ test('cancellation, restart and navigation suppress stale results and turning so
   await page.clock.runFor(ANALYSIS_MS + 1000);
   await expect(office(page)).toHaveCount(0);
   await page.goto(path);
-  await expect(office(page).getByRole('combobox')).toHaveValue('');
+  await expect(widget(page).getByRole('combobox')).toHaveValue('');
+  await expect(office(page)).toHaveCount(0);
 });
 
 test('narrow and enlarged text layouts retain controls; reduced motion is static', async ({ page }, testInfo) => {

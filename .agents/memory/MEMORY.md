@@ -100,6 +100,7 @@
 - [Studio runner placement](studio-runner-placement.md) — Short, unboxed lane beside Cancel beneath status; keep the mobile lane below the controls.
 - [Browser property assertions](browser-property-assertions.md) — Use polling and string matchers for partial DOM properties, not asymmetric toHaveJSProperty values.
 - [Checker privacy boundaries](checker-privacy-boundaries.md) — Standalone pretend play; child-name handoffs stay in memory, not serialisable browser history state.
+- [All-No checker nudge](checker-all-no-nudge.md) — Randomly choose one of ten playful lines only when all answers are No.
 - [Checker audio direction](checker-audio-direction.md) — Full-page outcome clips reveal certificates 1.2 seconds before ending; homepage keeps its own clip and timing.
 - [Checker workshop artwork](checker-workshop-artwork.md) — Owner-supplied festive backdrop replaces drawn scenery; keep the parchment and controls separate.
 - [Checker next-step emphasis](checker-quick-check-presentation.md) — Owner-approved pulse and gold glow; keep the Head Elf next-step button wide and obvious.

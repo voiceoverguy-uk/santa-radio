@@ -10,7 +10,7 @@ import { NnComputer } from './OfficeScene.jsx';
 import { HOMEPAGE_ANALYSIS_MS, CHECKER_LAUNCH_MS, CHECKER_PATH, clearCheckerName, offerCheckerName, preliminaryScore } from './checkerLogic.js';
 import './checker.css';
 
-export default function NaughtyNiceWidget() {
+export default function NaughtyNiceWidget({ onOpenHeadElf } = {}) {
   const location = useLocation();
   const [stage, setStage] = useState('entry');
   const [name, setName] = useState('');
@@ -128,10 +128,13 @@ export default function NaughtyNiceWidget() {
         {stage === 'result' && <div className="nn-result">
           <h3 ref={focus} tabIndex={-1}>{name}, you’re <span className="nn-score">{score}% nice!</span></h3>
           <p>Mmmm.... surely that can't be right?</p>
-          <Link className="nn-primary nn-head-elf-link" to={CHECKER_PATH} onClick={event => {
-            if (!event.defaultPrevented && event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey)
-              offerCheckerName(name);
-          }}>Lets check with Head Elf</Link>
+          {onOpenHeadElf
+            ? <button type="button" className="nn-primary nn-head-elf-link"
+              onClick={() => onOpenHeadElf(name)}>Lets check with Head Elf</button>
+            : <Link className="nn-primary nn-head-elf-link" to={CHECKER_PATH} onClick={event => {
+              if (!event.defaultPrevented && event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey)
+                offerCheckerName(name);
+            }}>Lets check with Head Elf</Link>}
         </div>}
         <HomepageCornerControls audio={audio} onRestart={restart} showRestart={stage !== 'entry'} />
       </div>

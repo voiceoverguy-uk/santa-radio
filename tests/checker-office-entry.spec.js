@@ -38,57 +38,59 @@ async function assertEntryPosition(page) {
   expect(bottomClearance).toBeLessThanOrEqual(61);
 }
 
-test('desktop opens centred on the checker with the title beside Head Elf, including reload', async ({ page }, testInfo) => {
+async function assertDirectQuickChecker(page) {
+  const quickCheck = page.locator('#nice-list');
+  await expect(quickCheck).toBeVisible();
+  await expect(quickCheck.getByRole('heading', { name: 'Head Elf’s Naughty or Nice List Checker' })).toBeVisible();
+  await expect(quickCheck.getByRole('heading', { name: 'Quick Nice List Check' })).toBeVisible();
+  await expect(quickCheck.getByRole('combobox', { name: 'Confirm first name' })).toBeVisible();
+  await expect(quickCheck.getByRole('button', { name: 'Check', exact: true })).toBeVisible();
+  await expect(page.locator('.nn-office')).toHaveCount(0);
+}
+
+test('a direct desktop URL opens the simple homepage checker, including after reload', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 1000 });
   await page.goto(path, { waitUntil: 'domcontentloaded' });
-  await assertEntryPosition(page);
+  await assertDirectQuickChecker(page);
   const layout = await page.evaluate(() => {
-    const panel = document.querySelector('.nn-panel');
-    const box = panel.getBoundingClientRect();
-    const title = document.querySelector('.nn-office h1').getBoundingClientRect();
-    const scene = document.querySelector('.nn-scene').getBoundingClientRect();
-    return { titleRight: title.right, elfLeft: box.left + box.width * .56,
-      titleTop: title.top, titleBottom: title.bottom, panelTop: box.top,
-      parchmentTop: box.top + parseFloat(getComputedStyle(panel).borderTopWidth),
-      panelOffset: (box.top - scene.top) / scene.width };
+    const section = document.querySelector('#nice-list').getBoundingClientRect();
+    const button = document.querySelector('#nice-list button[type="submit"]').getBoundingClientRect();
+    return { sectionLeft: section.left, sectionRight: section.right, buttonLeft: button.left,
+      buttonRight: button.right, viewport: innerWidth,
+      overflow: document.documentElement.scrollWidth - innerWidth };
   });
-  expect(layout.panelOffset).toBeGreaterThanOrEqual(.035);
-  expect(layout.panelOffset).toBeLessThanOrEqual(.1);
-  expect(layout.titleRight).toBeLessThanOrEqual(layout.elfLeft);
-  expect(layout.titleTop).toBeGreaterThanOrEqual(layout.panelTop);
-  expect(layout.titleBottom).toBeLessThanOrEqual(layout.parchmentTop);
-  await page.screenshot({ path: testInfo.outputPath('office-centred-desktop.png') });
+  expect(layout.sectionLeft).toBeGreaterThanOrEqual(0);
+  expect(layout.sectionRight).toBeLessThanOrEqual(layout.viewport);
+  expect(layout.buttonLeft).toBeGreaterThanOrEqual(0);
+  expect(layout.buttonRight).toBeLessThanOrEqual(layout.viewport);
+  expect(layout.overflow).toBeLessThanOrEqual(1);
+  await page.screenshot({ path: testInfo.outputPath('direct-quick-check-desktop.png') });
   await page.reload({ waitUntil: 'domcontentloaded' });
-  await assertEntryPosition(page);
+  await assertDirectQuickChecker(page);
 });
 
-test('phone and enlarged-text entry keeps the heading readable without opening the keyboard', async ({ page }, testInfo) => {
+test('direct phone URL keeps the simple checker usable without opening the keyboard', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(path, { waitUntil: 'domcontentloaded' });
-  await assertEntryPosition(page);
-  await expect(page.getByRole('combobox')).not.toBeFocused();
-  await page.screenshot({ path: testInfo.outputPath('office-centred-phone.png') });
+  await assertDirectQuickChecker(page);
+  await expect(page.locator('#nice-list').getByRole('combobox')).not.toBeFocused();
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: testInfo.outputPath('direct-quick-check-phone.png') });
   await page.setViewportSize({ width: 1280, height: 1000 });
   await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
-  await assertEntryPosition(page);
+  await assertDirectQuickChecker(page);
   const geometry = await page.evaluate(() => {
-    const heading = document.querySelector('.nn-office h1');
-    const box = heading.getBoundingClientRect();
-    const scene = document.querySelector('.nn-scene').getBoundingClientRect();
-    const panel = document.querySelector('.nn-panel');
-    const parchmentTop = panel.getBoundingClientRect().top + parseFloat(getComputedStyle(panel).borderTopWidth);
-    return { overflow: document.documentElement.scrollWidth - innerWidth,
-      left: box.left - scene.left, right: scene.right - box.right,
-      top: box.top - scene.top,
-      parchmentClearance: parchmentTop - box.bottom,
-      textOverflow: heading.scrollWidth - heading.clientWidth };
+    const section = document.querySelector('#nice-list').getBoundingClientRect();
+    const button = document.querySelector('#nice-list button[type="submit"]').getBoundingClientRect();
+    return { sectionLeft: section.left, sectionRight: section.right, buttonLeft: button.left,
+      buttonRight: button.right, viewport: innerWidth,
+      overflow: document.documentElement.scrollWidth - innerWidth };
   });
   expect(geometry.overflow).toBeLessThanOrEqual(1);
-  expect(geometry.left).toBeGreaterThanOrEqual(0);
-  expect(geometry.right).toBeGreaterThanOrEqual(0);
-  expect(geometry.top).toBeGreaterThanOrEqual(0);
-  expect(geometry.parchmentClearance).toBeGreaterThanOrEqual(0);
-  expect(geometry.textOverflow).toBeLessThanOrEqual(1);
+  expect(geometry.sectionLeft).toBeGreaterThanOrEqual(0);
+  expect(geometry.sectionRight).toBeLessThanOrEqual(geometry.viewport);
+  expect(geometry.buttonLeft).toBeGreaterThanOrEqual(0);
+  expect(geometry.buttonRight).toBeLessThanOrEqual(geometry.viewport);
 });
 
 test('homepage handoff opens in the same place and entry settling stops on visitor scrolling', async ({ page }) => {

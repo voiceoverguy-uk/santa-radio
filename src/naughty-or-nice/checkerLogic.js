@@ -12,6 +12,22 @@ export const HOMEPAGE_CHECKING_CLIP_MS = 6060;
 export const HOMEPAGE_ANALYSIS_MS = HOMEPAGE_CHECKING_CLIP_MS - REVEAL_LEAD_MS;
 export const CHECKER_LAUNCH_MS = 500;
 export const ROUND_QUESTION_COUNT = 10;
+export const ALL_NO_PROMPTS = [
+  'I think we all know...',
+  'I’m sure we don’t need to ask…',
+  'The Head Elf may already have a hunch…',
+  'Santa might have spotted a pattern…',
+  'That’s quite a run of No answers…',
+  'This result may not come as a surprise…',
+  'Let’s see if the Head Elf is surprised…',
+  'I think Santa already has his answer…',
+  'The Naughty List may be expecting you…',
+  'Perhaps the Nice List isn’t looking likely…',
+];
+
+export function selectAllNoPrompt(random = Math.random) {
+  return ALL_NO_PROMPTS[Math.floor(random() * ALL_NO_PROMPTS.length)];
+}
 
 function shuffled(values, random) {
   const copy = [...values];

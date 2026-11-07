@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import OfficeScene, { NnComputer } from './OfficeScene.jsx';
+import NaughtyNiceWidget from './NaughtyNiceWidget.jsx';
 import FirstNameForm from './FirstNameForm.jsx';
 import CheckerCertificate from './CheckerCertificate.jsx';
 import useChristmasDays from './useChristmasDays.js';
@@ -8,16 +9,27 @@ import useCheckerAudio from './useCheckerAudio.js';
 import useCheckerRun from './useCheckerRun.js';
 import useElfReaction, { ELF_REACTION_ART } from './useElfReaction.js';
 import useOfficeEntryPosition from './useOfficeEntryPosition.js';
-import { CERTIFICATE_REVEAL_LEAD_MS, resultAnalysisMs, ROUND_QUESTION_COUNT, selectQuestionRound, classifyAnswers, readCheckerName, clearCheckerName } from './checkerLogic.js';
+import { CERTIFICATE_REVEAL_LEAD_MS, resultAnalysisMs, ROUND_QUESTION_COUNT, selectAllNoPrompt, selectQuestionRound, classifyAnswers, readCheckerName, clearCheckerName } from './checkerLogic.js';
 import './checker.css';
 
 export default function NaughtyNicePage() {
-  // Initialisers may run twice in StrictMode; consume only after mounting.
-  const [name, setName] = useState(readCheckerName);
+  const [initialName, setInitialName] = useState(readCheckerName);
+  const [showOffice, setShowOffice] = useState(() => Boolean(initialName));
   useEffect(() => { clearCheckerName(); }, []);
+  if (!showOffice) return <NaughtyNiceWidget onOpenHeadElf={name => {
+    setInitialName(name);
+    setShowOffice(true);
+  }} />;
+  return <NaughtyNiceOffice initialName={initialName} />;
+}
+
+function NaughtyNiceOffice({ initialName }) {
+  // Initialisers may run twice in StrictMode; consume only after mounting.
+  const [name, setName] = useState(initialName);
   const [stage, setStage] = useState('entry');
   const [round, setRound] = useState([]);
   const [answers, setAnswers] = useState(() => Array(ROUND_QUESTION_COUNT).fill(''));
+  const [allNoPrompt, setAllNoPrompt] = useState('');
   const [questionIndex, setQuestionIndex] = useState(0);
   const [result, setResult] = useState(null);
   const christmasDays = useChristmasDays(stage === 'result');
@@ -43,12 +55,14 @@ export default function NaughtyNicePage() {
   }, [stage, entryKey, questionIndex]);
   const reset = () => {
     cancel(); audio.stop(); clearReaction(); setStage('entry'); setName('');
-    setRound([]); setAnswers(Array(ROUND_QUESTION_COUNT).fill('')); setQuestionIndex(0); setResult(null); setError(''); setEntryKey(value => value + 1);
+    setRound([]); setAnswers(Array(ROUND_QUESTION_COUNT).fill('')); setAllNoPrompt('');
+    setQuestionIndex(0); setResult(null); setError(''); setEntryKey(value => value + 1);
   };
   useEffect(() => {
     // Discard private play state on leaving the document, including bfcache.
     const hide = () => {
       cancel(); audio.stop(); clearReaction(); setName(''); setRound([]); setAnswers(Array(ROUND_QUESTION_COUNT).fill(''));
+      setAllNoPrompt('');
       setResult(null); setQuestionIndex(0); setError(''); setStage('entry'); setEntryKey(value => value + 1);
     };
     const show = event => { if (event.persisted) hide(); };
@@ -85,12 +99,12 @@ export default function NaughtyNicePage() {
         <h2>Welcome to Head Elf’s Office</h2>
         <p>So, who is visiting Head Elf's office today?</p>
         <FirstNameForm key={entryKey} initialName={name} label="Confirm first name" inlineSuggestions
-          buttonText={value => value ? `Lets check if ${value} is Naughty or Nice` : 'Lets check if Naughty or Nice'}
-          suggestionHelp="Select your name and lets find out which list you are really on."
+          buttonText={value => value ? `Is ${value} Naughty or Nice?` : 'Is this name Naughty or Nice?'}
+          suggestionHelp="Let's see what Head Elf finds out."
           onSubmit={value => {
             if (!run(1800, () => { audio.stop(); setStage('questions'); })) return;
             setRound(selectQuestionRound());
-            setAnswers(Array(ROUND_QUESTION_COUNT).fill(''));
+            setAnswers(Array(ROUND_QUESTION_COUNT).fill('')); setAllNoPrompt('');
             setName(value); setQuestionIndex(0); setStage('connecting');
             audio.play('connecting'); audio.effect('click');
           }} />
@@ -127,15 +141,19 @@ export default function NaughtyNicePage() {
               audio.effect('pop');
               const nextAnswers = answers.map((answer, index) => index === questionIndex ? value : answer);
               setAnswers(nextAnswers);
+              const nextQuestionIndex = questionIndex + 1;
+              setAllNoPrompt(nextQuestionIndex === round.length && nextAnswers.every(answer => answer === 'no')
+                ? selectAllNoPrompt() : '');
               noteAnswers(nextAnswers);
               let consecutiveYes = 0;
               for (let index = questionIndex; index >= 0 && nextAnswers[index] === 'yes'; index--)
                 consecutiveYes++;
               reactToAnswer(value, nextAnswers.filter(answer => answer === 'no').length, consecutiveYes);
-              setQuestionIndex(index => index + 1); setError('');
+              setQuestionIndex(nextQuestionIndex); setError('');
             }}>{value === 'yes' ? 'Yes' : 'No'}</button>)}</div>
         </fieldset> : <h3 ref={heading} tabIndex={-1}>All ten answers are in!</h3>}
         {questionIndex === round.length && <p>Are you on the nice list?</p>}
+        {questionIndex === round.length && allNoPrompt && <p className="nn-all-no-nudge">{allNoPrompt}</p>}
         {error && <p role="alert" className="nn-error">{error}</p>}
         <div className="nn-actions nn-actions--questions">
           {questionIndex === round.length && <button type="submit" className="nn-primary nn-final-check">Press to find out</button>}
