@@ -94,6 +94,17 @@ test('tracker questions use expandable, keyboard-accessible question controls', 
   await expect(answer).toBeHidden();
 });
 
+test('tracker start FAQ gives the estimated departure timing and disclosure', async ({ page }) => {
+  await page.goto('/santa-tracker');
+  const answer = page.locator('.tracker-questions details').filter({
+    has: page.getByText('When does the Santa Tracker start?', { exact: true }),
+  });
+  await answer.locator('summary').click();
+  await expect(answer.locator('p')).toHaveText(
+    'The estimated 290-stop Christmas Eve journey starts in Kiritimati at 10:00 UTC on 24 December and finishes in Honolulu, Hawaii, at 11:20 UTC on 25 December. This is Santa Radio’s itinerary using real coordinates and time zones, not verified live tracking. The countdown is to Santa’s departure, not Christmas midnight or his arrival at your home.',
+  );
+});
+
 for (const [date, text] of [
   ['2026-03-15T12:00:00Z', /Holiday Postcards/],
   ['2026-07-15T12:00:00Z', /Christmas in July Postcards/],
