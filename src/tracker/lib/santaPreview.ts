@@ -36,7 +36,7 @@ const JUMP_TARGETS: Record<JumpTarget, { month: number; day: number; hour: numbe
   "research-start": { month: 10, day: 10, hour: 0, minute: 0 },
   "research-end": { month: 11, day: 22, hour: 23, minute: 59 },
   "preparation-start": { month: 11, day: 23, hour: 0, minute: 0 },
-  "christmas-eve-start": { month: 11, day: 24, hour: 0, minute: 0 },
+  "christmas-eve-start": { month: 11, day: 24, hour: TRACKER_CONSTANTS.journeyStartUtcHour - 1, minute: 0 },
   "christmas-day-end": { month: 11, day: 25, hour: 23, minute: 59 },
   "holiday-resumes": { month: 11, day: 26, hour: 0, minute: 0 },
   "route-start": { month: 11, day: 24, hour: 9, minute: 55 },

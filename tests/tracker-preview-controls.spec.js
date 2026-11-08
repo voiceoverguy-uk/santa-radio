@@ -57,8 +57,8 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
     const saved = () => page.evaluate(() => JSON.parse(localStorage.getItem('santa-tracker-preview')));
     await panel.getByRole('button', { name: '24 December', exact: true }).click();
     expect(await saved()).toMatchObject({ enabled: true, jumpTarget: 'christmas-eve-start', speedMultiplier: 10 });
-    expect(new Date((await saved()).simulatedStartMs).toISOString()).toMatch(/-12-24T00:00:00\.000Z$/);
-    await expect(panel).toContainText('-12-24 00:');
+    expect(new Date((await saved()).simulatedStartMs).toISOString()).toMatch(/-12-24T09:00:00\.000Z$/);
+    await expect(panel).toContainText('-12-24 09:');
     await panel.getByRole('button', { name: 'Route Start', exact: true }).click();
     expect(new Date((await saved()).simulatedStartMs).toISOString()).toMatch(/-12-24T09:55:00\.000Z$/);
     await panel.getByRole('button', { name: '25 December', exact: true }).click();
