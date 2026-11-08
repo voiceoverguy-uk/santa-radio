@@ -27,13 +27,7 @@ export default function SantaTrackerBanner() {
       <section className="tracker-banner relative overflow-hidden" aria-label="Santa Tracker">
         <div className="absolute inset-0 star-field opacity-60" />
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-          <div className="text-center">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight">
-              Track Santa&apos;s Journey
-              <br />
-              <span className="text-santa-gold">Around the World</span>
-            </h2>
-          </div>
+          <TrackerBannerHeading />
         </div>
       </section>
     );
@@ -84,16 +78,11 @@ export default function SantaTrackerBanner() {
     <section className="tracker-banner relative overflow-hidden" aria-label="Santa Tracker">
       <div className="absolute inset-0 star-field opacity-60" />
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-        <div className={`${!isLive && !isComplete ? "tracker-banner-map-layout " : ""}flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8`}>
+        <TrackerBannerHeading />
+        <div className={`${!isLive && !isComplete ? "tracker-banner-map-layout " : ""}tracker-banner-content flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8`}>
 
           <div className="tracker-banner-copy flex-1 text-center lg:text-left lg:max-w-lg">
             {(isLive || isComplete) && <div className="mb-4">{statusBadge}</div>}
-
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight">
-              Track Santa&apos;s Journey
-              <br />
-              <span className="text-santa-gold">Around the World</span>
-            </h2>
 
             <p className="mt-3 text-gray-300 text-sm sm:text-base leading-relaxed max-w-lg mx-auto lg:mx-0">
               {isLive
@@ -132,6 +121,25 @@ export default function SantaTrackerBanner() {
         </div>
       </div>
     </section>
+  );
+}
+
+function TrackerBannerHeading() {
+  return (
+    <header className="tracker-banner-heading">
+      <p className="tracker-banner-eyebrow">THE ENTIRE JOURNEY</p>
+      <div className="tracker-banner-divider" aria-hidden="true">
+        <span className="tracker-banner-divider-line" />
+        <span className="tracker-banner-divider-star">&#10022;</span>
+        <span className="tracker-banner-divider-line" />
+      </div>
+      <h2 className="tracker-banner-title text-2xl sm:text-3xl lg:text-4xl tracking-tight">
+        THE SANTA TRACKER
+      </h2>
+      <p className="tracker-banner-tagline">
+        Follow Santa not just at Christmas, but the whole year!
+      </p>
+    </header>
   );
 }
 

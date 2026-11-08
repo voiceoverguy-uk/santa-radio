@@ -18,22 +18,6 @@ async function typography(locator) {
   });
 }
 
-async function dividerStyle(locator) {
-  return locator.evaluate(element => {
-    const style = getComputedStyle(element);
-    const rule = pseudo => {
-      const computed = getComputedStyle(element, pseudo);
-      return Object.fromEntries(['width', 'height', 'backgroundImage', 'top', 'transform']
-        .map(property => [property, computed[property]]));
-    };
-    return {
-      width: style.width, height: style.height, color: style.color,
-      before: rule('::before'), after: rule('::after'),
-      star: element.querySelector('svg').outerHTML,
-    };
-  });
-}
-
 for (const [width, enlarged] of [[1440, false], [768, false], [390, false], [320, false], [390, true], [320, true]]) {
   test(`Pairs heading consistency at ${width}px${enlarged ? ' with 200% text' : ''}`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1100 });
@@ -55,7 +39,6 @@ for (const [width, enlarged] of [[1440, false], [768, false], [390, false], [320
       eyebrow: await typography(pairs.locator('.christmas-pairs__eyebrow')),
       title: await typography(pairs.locator('h2')),
       subtitle: await typography(pairs.locator('.christmas-pairs__intro')),
-      divider: await dividerStyle(pairs.locator('.christmas-pairs__title-star')),
     };
     mkdirSync('generated-artifacts/homepage-headings', { recursive: true });
     const suffix = `${width}${enlarged ? '-enlarged' : ''}`;
@@ -102,7 +85,25 @@ for (const [width, enlarged] of [[1440, false], [768, false], [390, false], [320
        }
        expect(headline, `${name} headline`).toEqual(reference.title);
       expect(await typography(intro), `${name} subheading`).toEqual(reference.subtitle);
-      expect(await dividerStyle(divider), `${name} divider`).toEqual(reference.divider);
+       expect((await divider.boundingBox()).width).toBeGreaterThanOrEqual(140);
+       const dividerLines = divider.locator('.homepage-section-heading__divider-line');
+       await expect(dividerLines).toHaveCount(2);
+       const lineBounds = await dividerLines.evaluateAll(lines => lines.map(line => {
+         const box = line.getBoundingClientRect();
+         return { x: box.x, right: box.right, width: box.width, height: box.height,
+           backgroundImage: getComputedStyle(line).backgroundImage };
+       }));
+       const starBounds = await divider.locator('svg').evaluate(element => {
+         const box = element.getBoundingClientRect();
+         return { x: box.x, right: box.right };
+       });
+       expect(lineBounds[0].width).toBeGreaterThanOrEqual(40);
+       expect(lineBounds[1].width).toBeGreaterThanOrEqual(40);
+       expect(lineBounds[0].height).toBe(1);
+       expect(lineBounds[1].height).toBe(1);
+       expect(lineBounds[0].right).toBeLessThan(starBounds.x);
+       expect(lineBounds[1].x).toBeGreaterThan(starBounds.right);
+       expect(lineBounds.every(line => line.backgroundImage.includes('linear-gradient'))).toBe(true);
       expect(await small.evaluate(element => ['::before', '::after'].every(pseudo =>
         ['none', 'normal'].includes(getComputedStyle(element, pseudo).content)))).toBe(true);
       const positions = await Promise.all([small, divider, heading, intro].map(item => item.boundingBox()));

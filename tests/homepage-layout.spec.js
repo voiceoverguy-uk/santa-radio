@@ -7,6 +7,32 @@ test('homepage tracker enlarges the full-world map on desktop and stacks within 
   await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
   const banner = page.locator('.home-page > .tracker-banner');
   const map = banner.locator('.tracker-map');
+  const heading = banner.locator('.tracker-banner-heading');
+  const content = banner.locator('.tracker-banner-content');
+  await expect(banner.locator('.relative > .tracker-banner-heading + .tracker-banner-content')).toHaveCount(1);
+  await expect(content.locator('.tracker-banner-heading')).toHaveCount(0);
+  await expect(heading.getByRole('heading', { level: 2, name: 'THE SANTA TRACKER', exact: true })).toBeVisible();
+  await expect(banner.getByRole('heading')).toHaveCount(1);
+  const peerFonts = await page.evaluate(() => ({
+    eyebrow: getComputedStyle(document.querySelector('.santa-dash-promo .homepage-section-heading__eyebrow')).fontFamily,
+    title: getComputedStyle(document.querySelector('.santa-dash-promo .homepage-section-heading__title')).fontFamily,
+    subtitle: getComputedStyle(document.querySelector('.santa-dash-promo .homepage-section-heading__subtitle')).fontFamily,
+  }));
+  expect(await heading.locator('.tracker-banner-eyebrow').evaluate(node => getComputedStyle(node).fontFamily)).toBe(peerFonts.eyebrow);
+  expect(await heading.locator('.tracker-banner-title').evaluate(node => getComputedStyle(node).fontFamily)).toBe(peerFonts.title);
+  expect(await heading.locator('.tracker-banner-tagline').evaluate(node => getComputedStyle(node).fontFamily)).toBe(peerFonts.subtitle);
+  expect(await heading.locator(':scope > *').evaluateAll(nodes => nodes.map(node => ({
+    tag: node.tagName, text: node.textContent.trim(), hidden: node.getAttribute('aria-hidden'),
+  })))).toEqual([
+    { tag: 'P', text: 'THE ENTIRE JOURNEY', hidden: null },
+    { tag: 'DIV', text: '✦', hidden: 'true' },
+    { tag: 'H2', text: 'THE SANTA TRACKER', hidden: null },
+    { tag: 'P', text: 'Follow Santa not just at Christmas, but the whole year!', hidden: null },
+  ]);
+  await expect(banner.getByRole('link', { name: 'Open the Tracker', exact: true })).toHaveAttribute('href', '/santa-tracker');
+  await expect(map).toHaveAttribute('href', '/santa-tracker');
+  await expect(banner.locator('.tracker-status')).toContainText('On Holiday in');
+  await expect(banner).toContainText("He'll be back at the North Pole on 1 December");
   const backdrop = await banner.evaluate(node => {
     const style = getComputedStyle(node, '::before');
     return { image: style.backgroundImage, filter: style.filter, pointerEvents: style.pointerEvents,
@@ -29,6 +55,27 @@ test('homepage tracker enlarges the full-world map on desktop and stacks within 
     const svg = map.locator('svg');
     const svgBox = await svg.boundingBox();
     const copyBox = await banner.locator('.tracker-banner-copy').boundingBox();
+    const headingBox = await heading.boundingBox();
+    const contentBox = await content.boundingBox();
+    expect(headingBox.y + headingBox.height).toBeLessThanOrEqual(contentBox.y + 1);
+    expect(Math.abs(headingBox.x + headingBox.width / 2 - contentBox.x - contentBox.width / 2)).toBeLessThanOrEqual(1);
+    const headerBounds = await heading.locator(':scope > *').evaluateAll(nodes => nodes.map(node => {
+      const box = node.getBoundingClientRect();
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      const text = range.getBoundingClientRect();
+      return { top: box.top, bottom: box.bottom, left: box.left, right: box.right,
+        textLeft: text.left, textRight: text.right };
+    }));
+    for (const [index, bounds] of headerBounds.entries()) {
+      expect(bounds.left).toBeGreaterThanOrEqual(-0.5);
+      expect(bounds.right).toBeLessThanOrEqual(width + 0.5);
+      expect(bounds.textLeft).toBeGreaterThanOrEqual(bounds.left - 0.5);
+      expect(bounds.textRight).toBeLessThanOrEqual(bounds.right + 0.5);
+      if (index) expect(bounds.top).toBeGreaterThanOrEqual(headerBounds[index - 1].bottom - 0.5);
+    }
+    await expect(heading.locator('.tracker-banner-divider-line')).toHaveCount(2);
+    await expect(heading.locator('.tracker-banner-divider-line').first()).toHaveCSS('height', '1px');
     expect(mapBox.width).toBeGreaterThanOrEqual(Math.min(400, width - 32));
     expect(mapBox.width).toBeLessThanOrEqual(560);
     expect(mapBox.x).toBeGreaterThanOrEqual(0);
@@ -53,6 +100,27 @@ test('homepage tracker enlarges the full-world map on desktop and stacks within 
       await banner.screenshot({ path: testInfo.outputPath(`homepage-tracker-${width}.png`), animations: 'disabled' });
     }
   }
+});
+
+test('homepage year-round tracker heading preserves live statistics and tracker navigation', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-12-24T14:00:00Z'));
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const banner = page.locator('.home-page > .tracker-banner');
+  for (const width of [1280, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    await expect(banner.locator('.relative > .tracker-banner-heading + .tracker-banner-content')).toHaveCount(1);
+    await expect(banner.getByRole('heading', { level: 2, name: 'THE SANTA TRACKER', exact: true })).toBeVisible();
+    await expect(banner.locator('.tracker-status')).toContainText('Delivering in');
+    for (const label of ['Journey Progress', 'Regions Visited', 'Gifts Delivered', 'Current Location'])
+      await expect(banner.getByText(label, { exact: true })).toBeVisible();
+    await expect(banner.locator('.tracker-map')).toHaveCount(0);
+    await expect(banner.getByRole('link', { name: 'Track Santa Now' })).toHaveAttribute('href', '/santa-tracker');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+  await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
+  await banner.getByRole('link', { name: 'Track Santa Now' }).click();
+  await expect(page).toHaveURL(/\/santa-tracker$/);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText("Track Santa’s JourneyAround the World");
 });
 
 test('homepage keeps its desktop and mobile section order without the paused video promotion', async ({ page }) => {

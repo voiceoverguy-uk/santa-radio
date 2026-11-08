@@ -25,26 +25,25 @@
 
 .home-page .homepage-section-heading__divider {
   position: relative;
-  display: grid;
-  width: 35px;
+  display: flex;
+  width: clamp(140px, 18vw, 190px);
   height: 24px;
-  flex: 0 0 24px;
-  place-items: center;
+  flex: 0 0 clamp(140px, 18vw, 190px);
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
   color: #f3d783;
 }
 
-.home-page .homepage-section-heading__divider::before,
-.home-page .homepage-section-heading__divider::after {
-  position: absolute;
-  top: 12px;
-  width: clamp(42px, 10vw, 106px);
+.home-page .homepage-section-heading__divider-line {
+  display: block;
+  flex: 1 1 0;
   height: 1px;
   background: linear-gradient(90deg, transparent, #d6b55b);
-  content: '';
 }
-
-.home-page .homepage-section-heading__divider::before { right: calc(50% + 25px); }
-.home-page .homepage-section-heading__divider::after { left: calc(50% + 25px); transform: scaleX(-1); }
+.home-page .homepage-section-heading__divider-line:last-child {
+  background: linear-gradient(90deg, #d6b55b, transparent);
+}
 
 .home-page .homepage-section-heading__title {
   max-width: 100%;
@@ -84,9 +83,4 @@
     margin-top: 0;
     margin-bottom: 22px;
   }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .home-page .homepage-section-heading__divider::before,
-  .home-page .homepage-section-heading__divider::after { transition: none; }
 }

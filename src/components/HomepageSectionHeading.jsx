@@ -17,7 +17,9 @@ export default function HomepageSectionHeading({
       <p className={`homepage-section-heading__eyebrow ${eyebrowClassName}`.trim()}>{eyebrow}</p>
       <div className="homepage-section-heading__title-wrap">
         <span className="homepage-section-heading__divider" aria-hidden="true">
+          <span className="homepage-section-heading__divider-line" />
           <Star size={17} fill="currentColor" />
+          <span className="homepage-section-heading__divider-line" />
         </span>
         <h2 id={titleId} className={`homepage-section-heading__title ${titleClassName}`.trim()}>
           {title}

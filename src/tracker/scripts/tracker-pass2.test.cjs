@@ -219,6 +219,41 @@ function button(nodes, label) {
   return found;
 }
 
+test("homepage banner keeps its year-round heading in server and every seasonal render", () => {
+  for (const [date, status, seasonalCopy, stats, action] of [
+    ["2026-11-15T12:00:00Z", /On Holiday in/, /well-earned break/, false, "Open the Tracker"],
+    ["2026-07-10T12:00:00Z", /Christmas in July/, /mid-year festivities/, false, "Open the Tracker"],
+    ["2026-12-01T12:00:00Z", /At the North Pole/, /Live route updates/, false, "Open the Tracker"],
+    ["2026-12-24T05:00:00Z", /Final Preparations Underway/, /Live route updates/, false, "Open the Tracker"],
+    ["2026-12-24T14:00:00Z", /Delivering in/, /estimated 60-stop Christmas Eve journey/, true, "Track Santa Now"],
+    ["2026-12-25T12:00:00Z", /Journey Complete/, /Final deliveries in American Samoa finished/, true, "Open the Tracker"],
+  ]) {
+    const h = harness(date);
+    const Banner = h.load("components/SantaTrackerBanner.tsx").default;
+    const render = () => h.render(React.createElement(Banner));
+    function checkHeader(html) {
+      assert.equal((html.match(/<h2\b/g) || []).length, 1, date);
+      assert.doesNotMatch(html, /<h[13]\b|Track Santa&#x27;s Journey/);
+      assert.match(html, /THE ENTIRE JOURNEY[\s\S]*aria-hidden="true"[\s\S]*<h2[^>]*>THE SANTA TRACKER<\/h2>[\s\S]*Follow Santa not just at Christmas, but the whole year!/);
+    }
+    checkHeader(render());
+    h.flush();
+    render();
+    h.flush();
+    const mounted = render();
+    checkHeader(mounted);
+    assert.match(mounted, status, date);
+    assert.match(mounted, seasonalCopy, date);
+    assert.match(mounted, new RegExp(`href="/santa-tracker"[^>]*>${action}`), date);
+    assert.equal(mounted.includes("Journey Progress"), stats, date);
+    assert.equal(mounted.includes('viewBox="0 0 1000 500"'), !stats, date);
+    h.resetHooks();
+    const nodes = hosts(Banner());
+    const divider = nodes.find(node => node.props?.["aria-hidden"] === "true" && text(node).includes("✦"));
+    assert.ok(divider, "the line-star-line ornament is hidden from screen readers");
+  }
+});
+
 test("map SVG has a connected name/summary for route and holiday, preserving visual marker and caption", () => {
   const h = harness("2026-12-24T14:00:00Z");
   const map = h.load("components/SantaMap.tsx").default;

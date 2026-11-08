@@ -277,7 +277,61 @@
 .tracker-banner .tracker-card-value { color: var(--tracker-cream); font-weight: 500; }
 .santa-tracker .tracker-preview-panel .tracker-meta { color: #c1cbbb; }
 
-/* Homepage banner sizing: keep the copy spacious beside a larger full-world map. */
+/* Homepage banner sizing: place a centered title above copy and map details. */
+.tracker-banner .tracker-banner-heading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin: 0 auto 1.75rem;
+  text-align: center;
+}
+.tracker-banner .tracker-banner-eyebrow {
+  margin: 0;
+  color: var(--tracker-gold);
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: .72rem;
+  font-weight: 400;
+  letter-spacing: .24em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+.tracker-banner .tracker-banner-divider {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  width: min(100%, 13rem);
+  margin: .6rem 0 .75rem;
+  color: var(--tracker-gold);
+}
+.tracker-banner .tracker-banner-divider-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #e6ce8680);
+}
+.tracker-banner .tracker-banner-divider-line:last-child {
+  background: linear-gradient(90deg, #e6ce8680, transparent);
+}
+.tracker-banner .tracker-banner-divider-star {
+  font-family: Georgia, serif;
+  font-size: .72rem;
+  line-height: 1;
+}
+.tracker-banner .tracker-banner-title {
+  margin: 0;
+  color: var(--tracker-cream);
+  font-family: 'Cinzel', Georgia, serif;
+  font-weight: 400;
+  letter-spacing: .02em;
+}
+.tracker-banner .tracker-banner-tagline {
+  margin: .6rem 0 0;
+  color: var(--tracker-gold);
+  font-family: inherit;
+  font-size: 1rem;
+  font-style: normal;
+  line-height: 1.5;
+}
 .tracker-banner .tracker-banner-copy {
   min-width: 0;
 }
