@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('homepage tracker enlarges the full-world map on desktop and stacks within smaller viewports', async ({ page }, testInfo) => {
-  await page.clock.setFixedTime(new Date('2026-11-15T12:00:00Z'));
+  await page.clock.setFixedTime(new Date('2026-11-05T12:00:00Z'));
   await page.addInitScript(() => sessionStorage.setItem('radio-minimized', 'true'));
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
@@ -22,17 +22,19 @@ test('homepage tracker enlarges the full-world map on desktop and stacks within 
   expect(await heading.locator('.tracker-banner-title').evaluate(node => getComputedStyle(node).fontFamily)).toBe(peerFonts.title);
   expect(await heading.locator('.tracker-banner-tagline').evaluate(node => getComputedStyle(node).fontFamily)).toBe(peerFonts.subtitle);
   expect(await heading.locator(':scope > *').evaluateAll(nodes => nodes.map(node => ({
-    tag: node.tagName, text: node.textContent.trim(), hidden: node.getAttribute('aria-hidden'),
+    tag: node.tagName,
+    classes: node.className,
+    text: node.textContent.trim(),
+    hidden: node.getAttribute('aria-hidden'),
   })))).toEqual([
-    { tag: 'P', text: 'THE ENTIRE JOURNEY', hidden: null },
-    { tag: 'DIV', text: '✦', hidden: 'true' },
-    { tag: 'H2', text: 'THE SANTA TRACKER', hidden: null },
-    { tag: 'P', text: 'Follow Santa not just at Christmas, but the whole year!', hidden: null },
+    { tag: 'P', classes: 'homepage-section-heading__eyebrow tracker-banner-eyebrow', text: 'THE ENTIRE JOURNEY', hidden: null },
+    { tag: 'DIV', classes: 'homepage-section-heading__title-wrap', text: 'THE SANTA TRACKER', hidden: null },
+    { tag: 'P', classes: 'homepage-section-heading__subtitle tracker-banner-tagline', text: 'Follow Santa not just at Christmas, but the whole year!', hidden: null },
   ]);
   await expect(banner.getByRole('link', { name: 'Open the Tracker', exact: true })).toHaveAttribute('href', '/santa-tracker');
   await expect(map).toHaveAttribute('href', '/santa-tracker');
   await expect(banner.locator('.tracker-status')).toContainText('On Holiday in');
-  await expect(banner).toContainText("He'll be back at the North Pole on 1 December");
+  await expect(banner).toContainText('Route-research trips begin on 10 November');
   const backdrop = await banner.evaluate(node => {
     const style = getComputedStyle(node, '::before');
     return { image: style.backgroundImage, filter: style.filter, pointerEvents: style.pointerEvents,
@@ -74,8 +76,9 @@ test('homepage tracker enlarges the full-world map on desktop and stacks within 
       expect(bounds.textRight).toBeLessThanOrEqual(bounds.right + 0.5);
       if (index) expect(bounds.top).toBeGreaterThanOrEqual(headerBounds[index - 1].bottom - 0.5);
     }
-    await expect(heading.locator('.tracker-banner-divider-line')).toHaveCount(2);
-    await expect(heading.locator('.tracker-banner-divider-line').first()).toHaveCSS('height', '1px');
+    await expect(heading.locator('.homepage-section-heading__divider')).toHaveCSS('height', '24px');
+    await expect(heading.locator('.homepage-section-heading__divider-line')).toHaveCount(2);
+    await expect(heading.locator('.homepage-section-heading__divider-line').first()).toHaveCSS('height', '1px');
     expect(mapBox.width).toBeGreaterThanOrEqual(Math.min(400, width - 32));
     expect(mapBox.width).toBeLessThanOrEqual(560);
     expect(mapBox.x).toBeGreaterThanOrEqual(0);

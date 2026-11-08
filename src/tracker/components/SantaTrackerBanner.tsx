@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import HomepageSectionHeading from "../../components/HomepageSectionHeading.jsx";
 import { getDashboardData, isHolidaySeason, isRouteResearchSeason, getRouteResearchCopy, isChristmasInJuly, getRandomHoliday, type HolidayDestination } from "@/lib/santaRoute";
 import { worldMapPaths } from "@/data/worldMapPaths";
 import { santaStops } from "@/data/santaRouteStops";
@@ -132,20 +133,16 @@ export default function SantaTrackerBanner() {
 
 function TrackerBannerHeading() {
   return (
-    <header className="tracker-banner-heading">
-      <p className="tracker-banner-eyebrow">THE ENTIRE JOURNEY</p>
-      <div className="tracker-banner-divider" aria-hidden="true">
-        <span className="tracker-banner-divider-line" />
-        <span className="tracker-banner-divider-star">&#10022;</span>
-        <span className="tracker-banner-divider-line" />
-      </div>
-      <h2 className="tracker-banner-title text-2xl sm:text-3xl lg:text-4xl tracking-tight">
-        THE SANTA TRACKER
-      </h2>
-      <p className="tracker-banner-tagline">
-        Follow Santa not just at Christmas, but the whole year!
-      </p>
-    </header>
+    <HomepageSectionHeading
+      eyebrow="THE ENTIRE JOURNEY"
+      title="THE SANTA TRACKER"
+      subtitle="Follow Santa not just at Christmas, but the whole year!"
+      titleId="tracker-banner-title"
+      className="tracker-banner-heading"
+      eyebrowClassName="tracker-banner-eyebrow"
+      titleClassName="tracker-banner-title"
+      subtitleClassName="tracker-banner-tagline"
+    />
   );
 }
 

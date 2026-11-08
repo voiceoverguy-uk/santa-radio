@@ -213,16 +213,10 @@ export default function SantaDashPromo() {
       <div className="santa-dash-promo__inner">
         <HomepageSectionHeading
           eyebrow="A festive rooftop adventure"
-          title={<>
-            <span className="santa-dash-promo__title-line">Santa Dash</span>{' '}
-            <span className="santa-dash-promo__title-line">Back to the Grotto</span>
-          </>}
+          title="Santa Dash Back to the Grotto"
           subtitle="Race across snowy rooftops with Santa collecting Golden Mince Pies!"
           titleId="santa-dash-promo-title"
           className="santa-dash-promo__heading"
-          eyebrowClassName="santa-dash-promo__eyebrow"
-          titleClassName="santa-dash-promo__title"
-          subtitleClassName="santa-dash-promo__subtitle"
         />
         <div className="santa-dash-promo__visual">
           <a

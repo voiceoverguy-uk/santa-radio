@@ -17,9 +17,6 @@ export default function MugshotsPreview() {
             title="Celebrity Mugshots"
             subtitle="Famous faces. One festive mug."
             titleId="homepage-mugshots-title"
-            eyebrowClassName="mugshots-eyebrow"
-            titleClassName="section-title mug-title"
-            subtitleClassName="mugshots-subtitle"
           />
           <p className="mugshots-description">
             Our autograph-hunting elf has been busy with our Santa Radio mug. No A.I.

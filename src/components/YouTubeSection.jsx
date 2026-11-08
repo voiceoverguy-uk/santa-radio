@@ -11,7 +11,6 @@ export default function YouTubeSection() {
         eyebrow="A window to the North Pole"
         title="Best of the North Pole Webcams"
         subtitle="Highlights of the webcams at the North Pole. Keep checking back!"
-        titleClassName="section-title youtube-title"
         className="youtube-section-heading"
       />
       <div className="tv-frame"><div aria-busy={!ready} className={`tv-screen${ready && !homepageTVAllowed ? ' needs-media-permission' : ''}`}>

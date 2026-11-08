@@ -2,6 +2,9 @@ import { test, expect } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 
 const sections = [
+  ['studio', '.homepage-santa-studio', 'A unique Christmas treat.', 'MESSAGE FROM SANTA', 'Ask Santa for a bespoke message to your little one.', '.homepage-santa-studio__layout'],
+  ['tracker', '.tracker-banner', 'THE ENTIRE JOURNEY', 'THE SANTA TRACKER', 'Follow Santa not just at Christmas, but the whole year!', '.tracker-banner'],
+  ['naughty-nice', '.nn-widget', 'Naughty or Nice?', 'WHICH LIST ARE YOU ON?', 'Head Elf has ten festive questions about kindness, helping out and trying your best. Answer them to find out which of Santa’s lists you’re on this Christmas.', '.nn-quiz-intro-inner'],
   ['youtube', '.youtube-section', 'A window to the North Pole', 'Best of the North Pole Webcams', 'Highlights of the webcams at the North Pole. Keep checking back!', '.youtube-section > .container'],
   ['mugshots', '#homepage-mugshots', 'THE SANTA RADIO HALL OF FAME', 'Celebrity Mugshots', 'Famous faces. One festive mug.', '.mugshots-preview-inner'],
   ['contact', '.contact-section', 'THE NORTH POLE POST ROOM', 'We’d love to hear from you', 'Got a question, a festive idea or something to share? Get in touch with the Santa Radio team.', '.contact-copy'],
@@ -40,6 +43,12 @@ for (const [width, enlarged] of [[1440, false], [768, false], [390, false], [320
       title: await typography(pairs.locator('h2')),
       subtitle: await typography(pairs.locator('.christmas-pairs__intro')),
     };
+    const soundboard = page.locator('.soundboard-intro');
+    expect({
+      eyebrow: await typography(soundboard.locator('.soundboard-eyebrow')),
+      title: await typography(soundboard.locator('.soundboard-title')),
+      subtitle: await typography(soundboard.locator('.soundboard-subtitle')),
+    }).toEqual(reference);
     mkdirSync('generated-artifacts/homepage-headings', { recursive: true });
     const suffix = `${width}${enlarged ? '-enlarged' : ''}`;
     const capture = async (locator, name) => {
@@ -60,6 +69,8 @@ for (const [width, enlarged] of [[1440, false], [768, false], [390, false], [320
       await expect(stack).toHaveCount(1);
       await expect(small).toHaveText(eyebrow);
       await expect(intro).toHaveText(subtitle);
+      if (name === 'studio')
+        await expect(stack.locator('.homepage-section-heading__supporting')).toHaveText('OUR PREMIUM EXPERIENCE');
       if (name === 'youtube') {
         await expect(section.getByRole('button', { name: /^(Pause video|Resume muted video)$/ })).toHaveCount(0);
         await expect(section.locator('.video-preview, .video-motion-toggle')).toHaveCount(0);
@@ -73,42 +84,48 @@ for (const [width, enlarged] of [[1440, false], [768, false], [390, false], [320
       await expect(divider).toHaveCount(1);
       await expect(divider).toHaveAttribute('aria-hidden', 'true');
       expect(await typography(small), `${name} eyebrow`).toEqual(reference.eyebrow);
-       const headline = await typography(heading);
-       if (name === 'dash') {
-         // This deliberate two-line title scales down to keep its phrase intact.
-         expect(parseFloat(headline.fontSize)).toBeLessThanOrEqual(parseFloat(reference.title.fontSize));
-         expect(parseFloat(headline.lineHeight)).toBeCloseTo(parseFloat(headline.fontSize) * 1.2, 1);
-         expect(parseFloat(headline.letterSpacing) / parseFloat(headline.fontSize)).toBeCloseTo(.025, 3);
-         headline.fontSize = reference.title.fontSize;
-         headline.lineHeight = reference.title.lineHeight;
-         headline.letterSpacing = reference.title.letterSpacing;
-       }
-       expect(headline, `${name} headline`).toEqual(reference.title);
+      const headline = await typography(heading);
+      expect(headline, `${name} headline`).toEqual(reference.title);
       expect(await typography(intro), `${name} subheading`).toEqual(reference.subtitle);
-       expect((await divider.boundingBox()).width).toBeGreaterThanOrEqual(140);
-       const dividerLines = divider.locator('.homepage-section-heading__divider-line');
-       await expect(dividerLines).toHaveCount(2);
-       const lineBounds = await dividerLines.evaluateAll(lines => lines.map(line => {
-         const box = line.getBoundingClientRect();
-         return { x: box.x, right: box.right, width: box.width, height: box.height,
-           backgroundImage: getComputedStyle(line).backgroundImage };
-       }));
-       const starBounds = await divider.locator('svg').evaluate(element => {
-         const box = element.getBoundingClientRect();
-         return { x: box.x, right: box.right };
-       });
-       expect(lineBounds[0].width).toBeGreaterThanOrEqual(40);
-       expect(lineBounds[1].width).toBeGreaterThanOrEqual(40);
-       expect(lineBounds[0].height).toBe(1);
-       expect(lineBounds[1].height).toBe(1);
-       expect(lineBounds[0].right).toBeLessThan(starBounds.x);
-       expect(lineBounds[1].x).toBeGreaterThan(starBounds.right);
-       expect(lineBounds.every(line => line.backgroundImage.includes('linear-gradient'))).toBe(true);
+      const dividerBox = await divider.boundingBox();
+      expect(dividerBox.width).toBeGreaterThanOrEqual(140);
+      expect(dividerBox.height).toBe(24);
+      const dividerLines = divider.locator('.homepage-section-heading__divider-line');
+      await expect(dividerLines).toHaveCount(2);
+      const lineBounds = await dividerLines.evaluateAll(lines => lines.map(line => {
+        const box = line.getBoundingClientRect();
+        return { x: box.x, right: box.right, width: box.width, height: box.height,
+          backgroundImage: getComputedStyle(line).backgroundImage };
+      }));
+      const starBounds = await divider.locator('svg').evaluate(element => {
+        const box = element.getBoundingClientRect();
+        return { x: box.x, right: box.right };
+      });
+      expect(lineBounds[0].width).toBeGreaterThanOrEqual(42);
+      expect(lineBounds[1].width).toBeGreaterThanOrEqual(42);
+      expect(lineBounds[0].height).toBe(1);
+      expect(lineBounds[1].height).toBe(1);
+      expect(lineBounds[0].right).toBeLessThan(starBounds.x);
+      expect(lineBounds[1].x).toBeGreaterThan(starBounds.right);
+      expect(lineBounds.every(line => line.backgroundImage.includes('linear-gradient'))).toBe(true);
       expect(await small.evaluate(element => ['::before', '::after'].every(pseudo =>
         ['none', 'normal'].includes(getComputedStyle(element, pseudo).content)))).toBe(true);
       const positions = await Promise.all([small, divider, heading, intro].map(item => item.boundingBox()));
       for (let index = 1; index < positions.length; index++) {
         expect(positions[index].y).toBeGreaterThanOrEqual(positions[index - 1].y + positions[index - 1].height - 1);
+      }
+      const supporting = stack.locator('.homepage-section-heading__supporting');
+      const compactGaps = [
+        [small, divider, 8],
+        [divider, heading, 1],
+        ...(await supporting.count()
+          ? [[heading, supporting, 9], [supporting, intro, 8]]
+          : [[heading, intro, 8]]),
+      ];
+      for (const [before, after, maximum] of compactGaps) {
+        const beforeBox = await before.boundingBox();
+        const afterBox = await after.boundingBox();
+        expect(afterBox.y - beforeBox.y - beforeBox.height, `${name} internal heading gap`).toBeLessThanOrEqual(maximum);
       }
       // Scope the centre to the section's content, especially the Post Room's
       // right panel, rather than incorrectly requiring the page's midpoint.

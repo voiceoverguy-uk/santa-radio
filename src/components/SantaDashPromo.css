@@ -12,20 +12,6 @@
   z-index: 1;
 }
 
-.home-page .santa-dash-promo__heading {
-  container-type: inline-size;
-}
-
-.home-page .santa-dash-promo__title {
-  /* Keep the shared desktop size, but fit the complete second line on phones. */
-  font-size: min(clamp(2rem, 5.4vw, 3.45rem), 8cqi);
-}
-
-.santa-dash-promo__title-line {
-  display: block;
-  white-space: nowrap;
-}
-
 .santa-dash-promo__visual {
   position: relative;
   isolation: isolate;

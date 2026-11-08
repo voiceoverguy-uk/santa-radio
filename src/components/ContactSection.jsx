@@ -16,9 +16,6 @@ export default function ContactSection() {
               subtitle={<>Got a question, a festive idea or something to share?{' '}<br />Get in touch with the Santa Radio team.</>}
               titleId="contact-title"
               className="contact-heading"
-              eyebrowClassName="contact-eyebrow"
-              titleClassName="contact-title"
-              subtitleClassName="contact-intro"
             />
             <p className="contact-sub">Press, partnerships, feedback and suggestions welcome.</p>
             <Link to="/submit-a-song" className="contact-btn">
