@@ -90,9 +90,9 @@ export default function SantaTrackerBanner() {
 
             <p className="mt-3 text-gray-300 text-sm sm:text-base leading-relaxed max-w-lg mx-auto lg:mx-0">
               {isLive
-                ? `Follow Santa's estimated 60-stop Christmas Eve journey, from the Pacific Islands to American Samoa after Hawaii. Final deliveries finish at 11:20 UTC on Christmas Day.`
+                ? `Follow Santa's estimated ${santaStops.length}-stop Christmas Eve journey, from Kiritimati to Honolulu, Hawaii, including Antarctic research stations. The estimated journey finishes at 11:20 UTC on Christmas Day.`
                 : isComplete
-                ? "Santa's estimated 60-stop journey is complete! Final deliveries in American Samoa finished at 11:20 UTC on Christmas Day. Explore the route and festive facts."
+                ? `Santa's estimated ${santaStops.length}-stop journey is complete! The final stop in Honolulu finished at 11:20 UTC on Christmas Day. Explore the route and festive facts.`
                 : researching
                 ? holiday ? getRouteResearchCopy(holiday) : data.statusSubtext
                 : onHoliday && inJuly && holiday

@@ -1,9 +1,11 @@
 "use client";
 
-import { useId } from "react";
-import { santaStops } from "@/data/santaRouteStops";
+import { useId, useMemo, useState, useRef, useEffect } from "react";
+import { santaStops, getStopArrivalDate } from "@/data/santaRouteStops";
 import { getVisitedStops, getCurrentStopId, getRouteResearchCopy, type HolidayDestination, type MapPosition } from "@/lib/santaRoute";
 import { worldMapPaths } from "@/data/worldMapPaths";
+import { MAP_REGIONS, WORLD, followCamera, project, regionCamera, stopRegion, type Camera } from "./trackerCamera";
+import "../tracker-journey.css";
 
 interface SantaMapProps {
   effectiveTime: Date;
@@ -12,21 +14,96 @@ interface SantaMapProps {
   researchDestination?: HolidayDestination | null;
 }
 
+type View = "follow" | "world" | string;
+
 export default function SantaMap({ effectiveTime, mapPosition, onHoliday, researchDestination }: SantaMapProps) {
   const titleId = useId();
   const descriptionId = useId();
+  const mapRef = useRef<HTMLDivElement>(null);
+  const [pixelFactor, setPixelFactor] = useState(1);
+  useEffect(() => {
+    const element = mapRef.current;
+    if (!element || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(([entry]) => setPixelFactor(1000 / Math.min(1000, Math.max(280, entry.contentRect.width))));
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+  const year = effectiveTime.getUTCFullYear();
   const visited = getVisitedStops(effectiveTime);
   const currentId = getCurrentStopId(effectiveTime);
-  const currentStop = santaStops.find((stop) => stop.id === currentId);
+  const live = !!currentId && !onHoliday && !researchDestination;
 
-  const visitedStops = santaStops.filter((s) => visited.has(s.id));
-  const pathPoints = visitedStops.map((s) => ({
-    x: ((s.lng + 180) / 360) * 100,
-    y: ((90 - s.lat) / 180) * 100,
-  }));
+  const ordered = useMemo(
+    () => [...santaStops].sort((a, b) => getStopArrivalDate(a, year).getTime() - getStopArrivalDate(b, year).getTime()),
+    [year],
+  );
+  const currentIdx = ordered.findIndex((s) => s.id === currentId);
+  const currentStop = currentIdx >= 0 ? ordered[currentIdx] : undefined;
+  const nextStop = live ? ordered[currentIdx + 1] : undefined;
+
+  const [view, setView] = useState<View>("follow");
+  const effectiveView: View = view === "follow" && !live ? "world" : view;
+
+  const wrapPacific = effectiveView === "Pacific" || (effectiveView === "follow" && currentStop && stopRegion(currentStop) === "Pacific");
+  const mapProject = (lat: number, lng: number) => {
+    const p = project(lat, lng);
+    return { x: wrapPacific && p.x < 500 ? p.x + 1000 : p.x, y: p.y };
+  };
+  const santaXY = mapProject(mapPosition.lat, mapPosition.lng);
+  const showSanta = live || mapPosition.y < 95;
+
+  let camera: Camera = WORLD;
+  if (effectiveView === "follow" && currentStop) {
+    const pts = [santaXY, mapProject(currentStop.lat, currentStop.lng)];
+    if (nextStop) pts.push(mapProject(nextStop.lat, nextStop.lng));
+    camera = followCamera(stopRegion(currentStop), pts);
+  } else if (effectiveView !== "world" && effectiveView !== "follow") {
+    camera = regionCamera(effectiveView);
+  }
+  if (effectiveView === "follow") {
+    // Leave room for the full Santa icon even at the South Pole's map edge.
+    const margin = 18 * pixelFactor * camera.w / 1000;
+    camera = { ...camera, cy: Math.max(camera.cy, santaXY.y - camera.w / 4 + margin) };
+  }
+  const s = MAP_W_OVER(camera);
+  const tx = 500 - camera.cx * s;
+  const ty = 250 - camera.cy * s;
+  const k = pixelFactor / Math.pow(s, 0.85); // readable pins and labels on phone as well as desktop
+
+  // Route segments, split at the date line instead of crossing the world.
+  const visitedOrdered = ordered.filter((st) => visited.has(st.id));
+  const segments: string[] = [];
+  for (let i = 1; i < visitedOrdered.length; i++) {
+    const a = mapProject(visitedOrdered[i - 1].lat, visitedOrdered[i - 1].lng);
+    const b = mapProject(visitedOrdered[i].lat, visitedOrdered[i].lng);
+    if (Math.abs(b.x - a.x) > 500) {
+      const bx = b.x < a.x ? b.x + 1000 : b.x - 1000;
+      const minX = wrapPacific ? 500 : 0;
+      const edge = bx > a.x ? minX + 1000 : minX;
+      const t = (edge - a.x) / (bx - a.x);
+      const ey = a.y + (b.y - a.y) * t;
+      segments.push(`M${a.x},${a.y}L${edge},${ey}`, `M${2 * minX + 1000 - edge},${ey}L${b.x},${b.y}`);
+    } else segments.push(`M${a.x},${a.y}L${b.x},${b.y}`);
+  }
+  let legPath = "";
+  if (live && showSanta && currentStop) {
+    const c = mapProject(currentStop.lat, currentStop.lng);
+    if (Math.abs(santaXY.x - c.x) < 500) legPath += `M${c.x},${c.y}L${santaXY.x},${santaXY.y}`;
+    if (nextStop) {
+      const n = mapProject(nextStop.lat, nextStop.lng);
+      if (Math.abs(n.x - santaXY.x) < 500) legPath += `M${santaXY.x},${santaXY.y}L${n.x},${n.y}`;
+    }
+  }
+
+  const labels = [
+    currentStop && live ? { stop: currentStop, kind: "Now" } : null,
+    nextStop ? { stop: nextStop, kind: "Next" } : null,
+  ].filter(Boolean) as { stop: typeof ordered[number]; kind: string }[];
+
+  const regionLabel = effectiveView === "follow" ? (currentStop ? `Following Santa · ${stopRegion(currentStop)}` : "Following Santa") : effectiveView === "world" ? `World · ${santaStops.length} stops` : effectiveView;
 
   return (
-    <div className="tracker-map relative w-full overflow-hidden rounded-2xl border bg-[#0c281e]">
+    <div ref={mapRef} className="tracker-map relative w-full overflow-hidden rounded-2xl border bg-[#0c281e]">
       <div className="relative w-full" style={{ aspectRatio: "2 / 1" }}>
         <svg
           viewBox="0 0 1000 500"
@@ -42,7 +119,7 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
               ? `${getRouteResearchCopy(researchDestination)} The Santa marker shows his research location, not a Christmas Eve delivery stop. Faint dots mark the separate estimated Christmas Eve route.`
               : onHoliday
               ? "The Santa marker shows his current holiday location. Faint dots mark stops on the estimated Christmas Eve route."
-              : `The Santa marker shows his estimated position on the world map. Red dots mark visited stops, faint dots mark upcoming stops${currentStop ? `, and a glowing dot marks ${currentStop.displayLabel} as the current stop` : ""}.`}
+              : `The Santa marker shows his estimated position on the world map. Red dots mark visited stops, faint dots mark upcoming stops${currentStop ? `, and a glowing dot marks ${currentStop.displayLabel} as the current stop` : ""}${nextStop ? `. Next stop: ${nextStop.displayLabel}` : ""}.`}
           </desc>
           <defs>
             <radialGradient id="glow" cx="50%" cy="50%" r="50%">
@@ -60,99 +137,122 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
 
           <rect width="1000" height="500" fill="#0c281e" />
 
-          <g opacity="0.2" stroke="#D4AF37" strokeWidth="0.5" fill="none">
-            {[0, 1, 2, 3, 4, 5, 6].map((i) => (
-              <line key={`h${i}`} x1="0" y1={i * 71.4} x2="1000" y2={i * 71.4} />
-            ))}
-            {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((i) => (
-              <line key={`v${i}`} x1={i * 83.3} y1="0" x2={i * 83.3} y2="500" />
-            ))}
-          </g>
-
-          <ContinentPaths />
-
-          {pathPoints.length > 1 && (
-            <polyline
-              points={pathPoints.map((p) => `${p.x * 10},${p.y * 5}`).join(" ")}
-              fill="none"
-              stroke="#e6ce86"
-              strokeWidth="2"
-              strokeDasharray="6,3"
-              opacity="0.65"
-            />
-          )}
-
-          {santaStops.map((stop) => {
-            const sx = ((stop.lng + 180) / 360) * 1000;
-            const sy = ((90 - stop.lat) / 180) * 500;
-            const isVisited = visited.has(stop.id);
-            const isCurrent = stop.id === currentId;
-
-            return (
-              <g key={stop.id} data-stop-id={stop.id}>
-                <title>{stop.name}</title>
-                {isCurrent && (
-                  <>
-                    <circle cx={sx} cy={sy} r="12" fill="url(#glow)">
-                      <animate
-                        attributeName="r"
-                        values="8;16;8"
-                        dur="2s"
-                        repeatCount="indefinite"
-                      />
-                      <animate
-                        attributeName="opacity"
-                        values="0.8;0.3;0.8"
-                        dur="2s"
-                        repeatCount="indefinite"
-                      />
-                    </circle>
-                    <circle cx={sx} cy={sy} r="4" fill="#FFF8E7" filter="url(#pulse-glow)" />
-                  </>
-                )}
-                {isVisited && !isCurrent && (
-                  <circle cx={sx} cy={sy} r="3" fill="#e6ce86" />
-                )}
-                {!isVisited && !isCurrent && (
-                  <circle cx={sx} cy={sy} r="2.5" fill="none" stroke="#bcc9bd" strokeWidth="1.2" opacity="0.8" />
-                )}
-              </g>
-            );
-          })}
-
-          {mapPosition.y < 95 && (
-            <g
-              transform={`translate(${mapPosition.x * 10}, ${mapPosition.y * 5})`}
-              filter="url(#pulse-glow)"
-            >
-              <text
-                x="0"
-                y="0"
-                textAnchor="middle"
-                dominantBaseline="central"
-                fontSize="24"
-                className="select-none"
-              >
-                🎅
-              </text>
+          <g className="tj-camera" data-map-view={effectiveView} style={{ transform: `translate(${tx}px, ${ty}px) scale(${s})` }}>
+            <g opacity="0.2" stroke="#D4AF37" strokeWidth={0.5 * k} fill="none">
+              {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+                <line key={`h${i}`} x1="0" y1={i * 71.4} x2="1000" y2={i * 71.4} />
+              ))}
+              {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((i) => (
+                <line key={`v${i}`} x1={i * 83.3} y1="0" x2={i * 83.3} y2="500" />
+              ))}
             </g>
-          )}
+
+            <g fill="#1B4332" stroke="#52765a" strokeWidth={0.7 * k} opacity="0.82">
+              {worldMapPaths.map((d, i) => (
+                <path key={i} d={d} />
+              ))}
+              {wrapPacific && <g transform="translate(1000 0)">{worldMapPaths.map((d, i) => <path key={i} d={d} />)}</g>}
+            </g>
+
+            {segments.length > 0 && (
+              <path d={segments.join("")} fill="none" stroke="#e6ce86" strokeWidth={1.6 * k} strokeDasharray={`${5 * k},${3 * k}`} opacity="0.65" strokeLinecap="round" />
+            )}
+            {legPath && (
+              <path d={legPath} fill="none" stroke="#FFF8E7" strokeWidth={1.2 * k} strokeDasharray={`${2 * k},${3 * k}`} opacity="0.7" strokeLinecap="round" />
+            )}
+
+            {ordered.map((stop) => {
+              const { x: sx, y: sy } = mapProject(stop.lat, stop.lng);
+              const isVisited = visited.has(stop.id);
+              const isCurrent = stop.id === currentId;
+              const isNext = stop.id === nextStop?.id;
+              return (
+                <g key={stop.id} data-stop-id={stop.id} data-active={isCurrent ? "true" : undefined}>
+                  <title>{stop.name}</title>
+                  {isCurrent && (
+                    <>
+                      <circle cx={sx} cy={sy} r={12 * k} fill="url(#glow)">
+                        <animate attributeName="opacity" values="0.9;0.3;0.9" dur="2s" repeatCount="indefinite" />
+                      </circle>
+                      <circle cx={sx} cy={sy} r={4 * k} fill="#FFF8E7" filter="url(#pulse-glow)" />
+                    </>
+                  )}
+                  {isNext && <circle cx={sx} cy={sy} r={3.4 * k} fill="none" stroke="#e6ce86" strokeWidth={1.4 * k} />}
+                  {isVisited && !isCurrent && <circle className="tj-pin" cx={sx} cy={sy} r={2.2 * k} fill="#b62332" stroke="#e6ce86" strokeWidth={0.5 * k} />}
+                  {!isVisited && !isCurrent && !isNext && (
+                    <circle className="tj-pin" cx={sx} cy={sy} r={1.8 * k} fill="#bcc9bd22" stroke="#bcc9bd" strokeWidth={0.7 * k} opacity="0.75" />
+                  )}
+                </g>
+              );
+            })}
+
+            {labels.map(({ stop, kind }, i) => {
+              const p = mapProject(stop.lat, stop.lng);
+              const above = i === 0 ? -1 : 1;
+              const anchor = p.x > camera.cx + camera.w * 0.3 ? "end" : p.x < camera.cx - camera.w * 0.3 ? "start" : "middle";
+              return (
+                <text key={kind} x={p.x} y={p.y + above * 12 * k} textAnchor={anchor} dominantBaseline={above < 0 ? "auto" : "hanging"} fontSize={11 * k} strokeWidth={3 * k} className={`tj-label ${kind === "Next" ? "tj-label-next" : ""}`}>
+                  {kind} · {stop.displayLabel}
+                </text>
+              );
+            })}
+
+            {showSanta && (
+              <g className="tj-santa" style={{ transform: `translate(${santaXY.x}px, ${santaXY.y}px)` }} filter="url(#pulse-glow)">
+                <text x="0" y="0" textAnchor="middle" dominantBaseline="central" fontSize={24 * k} className="select-none">
+                  🎅
+                </text>
+              </g>
+            )}
+          </g>
         </svg>
+
+        {camera.w < 1000 && (
+          <svg viewBox="0 0 1000 500" className="tj-minimap" aria-hidden="true">
+            <g fill="#1B4332" stroke="#52765a" strokeWidth="2">
+              {worldMapPaths.map((d, i) => <path key={i} d={d} />)}
+            </g>
+            {showSanta && <circle cx={project(mapPosition.lat, mapPosition.lng).x} cy={santaXY.y} r="14" fill="#e6ce86" />}
+            {(wrapPacific ? [-1000, 0] : [0]).map(offset => <rect key={offset} className="tj-view" x={camera.cx - camera.w / 2 + offset} y={camera.cy - camera.w / 4} width={camera.w} height={camera.w / 2} fill="#e6ce8618" stroke="#e6ce86" strokeWidth="8" />)}
+          </svg>
+        )}
+
+        <div className="tracker-map-caption absolute bottom-3 left-3 backdrop-blur-sm rounded-lg px-3 py-1.5 text-xs">
+          {effectiveView !== "world" && effectiveView !== "follow" ? `${effectiveView} · estimated delivery destinations` : researchDestination ? `Route research in ${researchDestination.name}` : onHoliday ? "Santa's current holiday location" : "Estimated route based on local midnight across time zones"}
+        </div>
       </div>
 
-      <div className="tracker-map-caption absolute bottom-3 left-3 backdrop-blur-sm rounded-lg px-3 py-1.5 text-xs">
-        {researchDestination ? `Route research in ${researchDestination.name}` : onHoliday ? "Santa's current holiday location" : "Estimated route based on local midnight across time zones"}
+      <div className="tj-toolbar" role="toolbar" aria-label="Map camera">
+        <button type="button" className="tj-btn" aria-pressed={effectiveView === "world"} onClick={() => setView("world")}>World</button>
+        <button type="button" className="tj-btn" aria-pressed={effectiveView === "follow"} disabled={!live} onClick={() => setView("follow")} title={live ? "Follow Santa between stops" : "Available on Christmas Eve"}>
+          Follow Santa
+        </button>
+        <label className="sr-only" htmlFor={`${titleId}-region`}>Browse a region</label>
+        <select
+          id={`${titleId}-region`}
+          className="tj-select"
+          value={effectiveView !== "world" && effectiveView !== "follow" ? effectiveView : ""}
+          onChange={(e) => setView(e.target.value || "world")}
+        >
+          <option value="">Browse region…</option>
+          {MAP_REGIONS.map((r) => {
+            const n = santaStops.filter((st) => stopRegion(st) === r.name).length;
+            return <option key={r.name} value={r.name}>{r.name} ({n})</option>;
+          })}
+        </select>
+        {live ? <span className="tj-live"><span className="tj-live-dot" />Estimated live</span> : null}
+        <span className="tj-legend" aria-live="polite">
+          <span><i style={{ background: "#b62332" }} />Visited</span>
+          <span><i style={{ background: "#FFF8E7" }} />Now</span>
+          <span><i style={{ border: "1px solid #bcc9bd" }} />Upcoming</span>
+          <span style={{ color: "#e6ce86" }}>{regionLabel}</span>
+        </span>
       </div>
+      <p className="tj-source">Fictional estimated itinerary · Local clocks use IANA time zones · Coordinates: <a href="https://www.geonames.org/" target="_blank" rel="noreferrer">GeoNames (CC BY)</a></p>
     </div>
   );
 }
 
-function ContinentPaths() {
-  return (
-    <g fill="#1B4332" stroke="#52765a" strokeWidth="0.7" opacity="0.82">
-      {worldMapPaths.map((d, i) => (
-        <path key={i} d={d} />
-      ))}
-    </g>
-  );
+function MAP_W_OVER(c: Camera) {
+  return 1000 / c.w;
 }

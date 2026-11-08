@@ -1,150 +1,112 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useMemo, useState, useId } from "react";
 import { santaStops, formatStopOffset, formatStopArrival, getStopArrivalDate } from "@/data/santaRouteStops";
 import { getVisitedStops, getCurrentStopId } from "@/lib/santaRoute";
+import { MAP_REGIONS, stopRegion } from "./trackerCamera";
+import "../tracker-journey.css";
 
 interface SantaTimelineProps {
   effectiveTime: Date;
 }
 
+type Status = "all" | "visited" | "upcoming";
+
 export default function SantaTimeline({ effectiveTime }: SantaTimelineProps) {
-  const routeStops = [...santaStops].sort((a, b) => getStopArrivalDate(a, effectiveTime.getUTCFullYear()).getTime() - getStopArrivalDate(b, effectiveTime.getUTCFullYear()).getTime());
+  const year = effectiveTime.getUTCFullYear();
+  const uid = useId();
+  const routeStops = useMemo(
+    () => [...santaStops].sort((a, b) => getStopArrivalDate(a, year).getTime() - getStopArrivalDate(b, year).getTime()),
+    [year],
+  );
   const visited = getVisitedStops(effectiveTime);
   const currentId = getCurrentStopId(effectiveTime);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const currentRef = useRef<HTMLDivElement>(null);
+  const [query, setQuery] = useState("");
+  const [region, setRegion] = useState("");
+  const [status, setStatus] = useState<Status>("all");
+  const listRef = useRef<HTMLDivElement>(null);
+
+  const q = query.trim().toLowerCase();
+  const filtered = routeStops
+    .map((stop, i) => ({ stop, n: i + 1 }))
+    .filter(({ stop }) => {
+      if (region && stopRegion(stop) !== region) return false;
+      const v = visited.has(stop.id);
+      if (status === "visited" && !v) return false;
+      if (status === "upcoming" && v) return false;
+      if (q && !`${stop.name} ${stop.displayLabel} ${stop.region}`.toLowerCase().includes(q)) return false;
+      return true;
+    });
+
+  const jumpToCurrent = (smooth: boolean) => {
+    const list = listRef.current;
+    const el = list?.querySelector<HTMLElement>("[data-current='true']");
+    if (!list || !el) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    list.scrollTo({ top: el.offsetTop - list.clientHeight / 2 + el.clientHeight / 2, behavior: smooth && !reduced ? "smooth" : "auto" });
+  };
 
   useEffect(() => {
-    if (currentRef.current && scrollRef.current) {
-      const container = scrollRef.current;
-      const el = currentRef.current;
-      const containerRect = container.getBoundingClientRect();
-      const elRect = el.getBoundingClientRect();
-      const scrollLeft =
-        elRect.left - containerRect.left + container.scrollLeft - containerRect.width / 2 + elRect.width / 2;
-      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      container.scrollTo({ left: scrollLeft, behavior: reducedMotion ? "instant" : "smooth" });
-    }
+    jumpToCurrent(true);
   }, [currentId]);
 
+  const pct = (visited.size / routeStops.length) * 100;
+
   return (
-    <div className="max-w-6xl mx-auto">
-      <div className="sm:hidden space-y-2">
-        {routeStops.map((stop, i) => {
+    <div className="max-w-6xl mx-auto tj-tl">
+      <div className="tj-tl-progress" aria-hidden="true"><span style={{ transform: `scaleX(${pct / 100})` }} /></div>
+      <div className="tj-tl-head">
+        <label className="sr-only" htmlFor={`${uid}-q`}>Search destinations</label>
+        <input id={`${uid}-q`} className="tj-input" type="search" placeholder={`Search ${routeStops.length} stops`} value={query} onChange={(e) => setQuery(e.target.value)} style={{ flex: "1 1 10rem" }} />
+        <label className="sr-only" htmlFor={`${uid}-r`}>Filter by region</label>
+        <select id={`${uid}-r`} className="tj-select" value={region} onChange={(e) => setRegion(e.target.value)}>
+          <option value="">All regions</option>
+          {MAP_REGIONS.map((r) => <option key={r.name} value={r.name}>{r.name}</option>)}
+        </select>
+        <div role="group" aria-label="Filter by status" style={{ display: "flex", gap: 4 }}>
+          {(["all", "visited", "upcoming"] as Status[]).map((st) => (
+            <button key={st} type="button" className="tj-btn" aria-pressed={status === st} onClick={() => setStatus(st)}>{st}</button>
+          ))}
+        </div>
+        <button type="button" className="tj-btn" disabled={!currentId} onClick={() => { setQuery(""); setRegion(""); setStatus("all"); requestAnimationFrame(() => jumpToCurrent(true)); }}>
+          Jump to Santa
+        </button>
+        <span className="tracker-meta text-xs" aria-live="polite" style={{ marginLeft: "auto" }}>
+          {filtered.length} of {routeStops.length} · {visited.size} visited
+        </span>
+      </div>
+
+      <div ref={listRef} className="tj-tl-list" tabIndex={0} role="list" aria-label="Santa's estimated journey timeline; scroll to see all stops" style={{ position: "relative" }}>
+        {filtered.length === 0 && (
+          <div className="tj-empty">
+            No stops match that search.{" "}
+            <button type="button" className="tj-btn" onClick={() => { setQuery(""); setRegion(""); setStatus("all"); }}>Clear filters</button>
+          </div>
+        )}
+        {filtered.map(({ stop, n }) => {
           const isVisited = visited.has(stop.id);
           const isCurrent = stop.id === currentId;
-
           return (
-            <div key={stop.id} className="flex items-center gap-3">
-              <div className="flex-shrink-0 relative">
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm border-2 transition-all ${
-                    isCurrent
-                      ? "border-santa-gold bg-santa-gold/20 shadow-[0_0_12px_rgba(212,175,55,0.32)]"
-                      : isVisited
-                      ? "border-santa-red-light/70 bg-santa-red/20"
-                      : "border-white/20 bg-white/5"
-                  }`}
-                >
-                  {stop.flag}
-                </div>
-                {i < santaStops.length - 1 && (
-                  <div
-                    className={`absolute top-8 left-1/2 w-px h-4 -translate-x-1/2 ${
-                      isVisited ? "bg-santa-red-light/60" : "bg-white/20"
-                    }`}
-                  />
-                )}
-              </div>
-              <div className="flex-1 min-w-0 flex items-center justify-between gap-2">
+            <div key={stop.id} role="listitem" data-current={isCurrent ? "true" : undefined} aria-current={isCurrent ? "location" : undefined} className={`tj-row ${isCurrent ? "tj-row-current" : ""}`}>
+              <span className="tj-num">{n}</span>
+              <div className="min-w-0" style={{ display: "flex" }}>
+                <span className={`tj-flag ${isCurrent ? "tj-flag-current" : isVisited ? "tj-flag-visited" : ""}`}>{stop.flag}</span>
                 <div className="min-w-0">
-                  <p
-                    className={`text-sm font-medium ${
-                      isCurrent ? "tracker-stop-current" : isVisited ? "tracker-stop-visited" : "tracker-stop-upcoming"
-                    }`}
-                  >
-                    {stop.displayLabel}
+                  <p className={`text-sm font-medium ${isCurrent ? "tracker-stop-current" : isVisited ? "tracker-stop-visited" : "tracker-stop-upcoming"}`}>
+                    {stop.name} <span className="tracker-meta text-[10px] uppercase tracking-wider">· {stopRegion(stop)}</span>
                   </p>
                   <p className="tracker-copy text-xs leading-relaxed mt-1" data-santa-activity={stop.id}>{stop.activity}</p>
-                  <p className="tracker-meta text-[10px] uppercase tracking-wider">
-                    Representative clock: {formatStopOffset(stop, effectiveTime.getUTCFullYear())}
+                  <p className="tracker-meta text-[10px] uppercase tracking-wider mt-1">
+                    {formatStopArrival(stop, year)} · Representative clock: {formatStopOffset(stop, year)}
                   </p>
-                  <p className="tracker-meta text-xs mt-1">{formatStopArrival(stop, effectiveTime.getUTCFullYear())}</p>
                 </div>
-                <span className={`flex-shrink-0 text-[10px] rounded-full px-2 py-0.5 uppercase tracking-wider font-medium ${
-                  isCurrent
-                    ? "tracker-pill"
-                    : "text-gray-400"
-                }`}>
-                  {isCurrent ? "Now" : isVisited ? "Visited" : "Upcoming"}
-                </span>
               </div>
+              <span className={`flex-shrink-0 text-[10px] rounded-full px-2 py-0.5 uppercase tracking-wider font-medium ${isCurrent ? "tracker-pill" : "tracker-meta"}`}>
+                {isCurrent ? "Now" : isVisited ? "Visited" : "Upcoming"}
+              </span>
             </div>
           );
         })}
-      </div>
-
-      <div
-        ref={scrollRef}
-        tabIndex={0}
-        aria-label="Santa's estimated journey timeline; scroll horizontally to see all stops"
-          className="hidden sm:block overflow-x-auto pb-4 scrollbar-thin"
-        style={{ scrollbarColor: "rgba(212,175,55,0.45) transparent" }}
-      >
-        <div className="relative min-w-max px-8">
-          <div className="tracker-timeline-line absolute top-5 left-8 right-8 h-px" />
-
-          <div className="flex items-start">
-            {routeStops.map((stop) => {
-              const isVisited = visited.has(stop.id);
-              const isCurrent = stop.id === currentId;
-
-              return (
-                <div
-                  key={stop.id}
-                  ref={isCurrent ? currentRef : undefined}
-                  className="flex flex-col items-center flex-shrink-0"
-                  style={{ width: "180px", paddingInline: "8px" }}
-                >
-                  <div
-                    className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center text-base border-2 transition-all ${
-                      isCurrent
-                        ? "border-santa-gold bg-santa-gold/20 shadow-[0_0_16px_rgba(212,175,55,0.38)]"
-                        : isVisited
-                        ? "border-santa-red-light/70 bg-santa-red/20"
-                        : "border-white/20 bg-white/5"
-                    }`}
-                  >
-                    {stop.flag}
-                  </div>
-
-                  <div className="mt-3 text-center">
-                    <p
-                      className={`text-xs font-medium leading-tight ${
-                        isCurrent ? "tracker-stop-current" : isVisited ? "tracker-stop-visited" : "tracker-stop-upcoming"
-                      }`}
-                    >
-                      {stop.displayLabel}
-                    </p>
-                    <p className="tracker-copy text-xs leading-relaxed mt-2" data-santa-activity={stop.id}>{stop.activity}</p>
-                    <p className="tracker-meta text-[9px] mt-0.5">
-                       {formatStopOffset(stop, effectiveTime.getUTCFullYear())}
-                    </p>
-                    <p className="tracker-meta text-xs mt-1">{formatStopArrival(stop, effectiveTime.getUTCFullYear())}</p>
-                    <span className={`inline-block mt-1 text-[9px] rounded-full px-1.5 py-0.5 uppercase tracking-wider font-medium ${
-                      isCurrent
-                        ? "tracker-pill"
-                        : "text-gray-400"
-                    }`}>
-                      {isCurrent ? "Now" : isVisited ? "Visited" : "Upcoming"}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
       </div>
     </div>
   );

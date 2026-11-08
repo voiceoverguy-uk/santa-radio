@@ -73,7 +73,7 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
   useEffect(() => {
     const interval = setInterval(() => {
       setEffectiveTime(showPreview ? getEffectiveTime(previewState) : new Date());
-    }, 1000);
+    }, showPreview && previewState.enabled && previewState.speedMultiplier > 10 ? 50 : 1000);
     return () => clearInterval(interval);
   }, [previewState, showPreview]);
 
@@ -153,7 +153,7 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
       ? `It's Christmas in July! Santa's celebrating mid-year festivities while ${holiday.activity.charAt(0).toLowerCase()}${holiday.activity.slice(1)}. Festive fun doesn't stop just because it's summer!`
       : onHoliday && holiday
       ? `Santa's taking a well-earned break! He's currently ${holiday.activity.charAt(0).toLowerCase()}${holiday.activity.slice(1)}. Route-research trips begin on 10 November, with visits back to the North Pole between trips.`
-      : "Follow Santa as Christmas Eve midnight sweeps across the globe. From the Pacific Islands to American Samoa, watch his estimated journey unfold in real time."}
+      : "Follow Santa as Christmas Eve midnight sweeps across the globe. From Kiritimati to Honolulu, watch his estimated 290-stop journey unfold in real time."}
   </p>;
 
   return (
@@ -248,7 +248,7 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
                   {data.visitedCount}/{santaStops.length}
                 </div>
                 <div className="tracker-countdown-label text-[10px] uppercase tracking-wider">
-                  Regions Visited
+                  Destinations Visited
                 </div>
               </div>
             </div>

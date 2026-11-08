@@ -44,6 +44,7 @@ function harness(iso = "2026-11-15T12:00:00Z") {
     },
     useEffect(effect) { effects.push(effect); },
     useCallback(fn) { return fn; },
+    useMemo(fn) { return fn(); },
     useRef(initial) { return { current: initial }; },
     useId() { return `tracker-test-${++id}`; },
   };
@@ -56,6 +57,7 @@ function harness(iso = "2026-11-15T12:00:00Z") {
     const full = path.resolve(root, file);
     const key = `${full}:${stubChildren}`;
     if (cache.has(key)) return cache.get(key);
+    if (full.endsWith(".json")) return JSON.parse(fs.readFileSync(full, "utf8"));
     const source = ts.transpileModule(fs.readFileSync(full, "utf8"), {
       compilerOptions: {
         module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020,
@@ -225,8 +227,8 @@ test("homepage banner keeps its year-round heading in server and every seasonal 
     ["2026-07-10T12:00:00Z", /Christmas in July/, /mid-year festivities/, false, "Open the Tracker"],
     ["2026-12-01T12:00:00Z", /Prepping the route in/, /North Pole between trips/, false, "Open the Tracker"],
     ["2026-12-24T05:00:00Z", /Final Preparations Underway/, /Live route updates/, false, "Open the Tracker"],
-    ["2026-12-24T14:00:00Z", /Delivering in/, /estimated 60-stop Christmas Eve journey/, true, "Track Santa Now"],
-    ["2026-12-25T12:00:00Z", /Journey Complete/, /Final deliveries in American Samoa finished/, true, "Open the Tracker"],
+    ["2026-12-24T14:00:00Z", /Delivering in/, /estimated 290-stop Christmas Eve journey/, true, "Track Santa Now"],
+    ["2026-12-25T12:00:00Z", /Journey Complete/, /final stop in Honolulu finished/, true, "Open the Tracker"],
   ]) {
     const h = harness(date);
     const Banner = h.load("components/SantaTrackerBanner.tsx").default;
@@ -340,21 +342,21 @@ test("preview native controls expose expansion, switch and selected speed withou
   assert.equal(changes.length, 7);
 });
 
-test("timeline has textual Visited/Now/Upcoming in both layouts and focusable horizontal scrolling", () => {
+test("timeline has textual Visited/Now/Upcoming and a focusable bounded list", () => {
   const h = harness("2026-12-24T14:00:00Z");
   const timeline = h.load("components/SantaTimeline.tsx").default;
   const nodes = hosts(timeline({ effectiveTime: new h.FixedDate() }));
-  const scroller = nodes.find((node) => node.props?.["aria-label"]?.includes("scroll horizontally"));
+  const scroller = nodes.find((node) => node.props?.role === "list");
   assert.equal(scroller.props.tabIndex, 0);
   assert.equal(scroller.type, "div");
   const markup = h.render(React.createElement(timeline, { effectiveTime: new h.FixedDate() }));
   for (const status of ["Visited", "Now", "Upcoming"]) {
-    assert.equal((markup.match(new RegExp(`>${status}<`, "g")) || []).length > 1, true, status);
+    assert.equal((markup.match(new RegExp(`>${status}<`, "g")) || []).length >= 1, true, status);
   }
 });
 
 test("timeline centers with immediate scrolling for reduced motion and smooth otherwise", () => {
-  for (const [reduced, behavior] of [[true, "instant"], [false, "smooth"]]) {
+  for (const [reduced, behavior] of [[true, "auto"], [false, "smooth"]]) {
     const h = harness("2026-12-24T14:00:00Z");
     h.window.matchMedia = (query) => {
       assert.equal(query, "(prefers-reduced-motion: reduce)");
@@ -363,28 +365,24 @@ test("timeline centers with immediate scrolling for reduced motion and smooth ot
     const timeline = h.load("components/SantaTimeline.tsx").default;
     const nodes = hosts(timeline({ effectiveTime: new h.FixedDate() }));
     const scroller = nodes.find((node) => node.props?.tabIndex === 0);
-    // The source project used React 19's ref-as-prop; the host uses React 18.
-    const current = nodes.find((node) => node.ref && node !== scroller);
-    assert.ok(current, "a current stop is available for auto-centering");
     let called;
     scroller.ref.current = {
-      getBoundingClientRect: () => ({ left: 10, width: 400 }),
-      scrollLeft: 20,
-      scrollTo: (options) => { called = options; },
+      querySelector: () => ({ offsetTop: 800, clientHeight: 120 }),
+      clientHeight: 400,
+      scrollTo: options => { called = options; },
     };
-    current.ref.current = { getBoundingClientRect: () => ({ left: 100, width: 120 }) };
     h.flush();
-    assert.equal(called.left, -30);
+    assert.equal(called.top, 660);
     assert.equal(called.behavior, behavior);
   }
 });
 
-test("the expanded 60-stop route preserves departure, completion and year rollover", () => {
+test("the expanded 290-stop route preserves departure, completion and year rollover", () => {
   const h = harness();
   const route = h.load("lib/santaRoute.ts");
   const stops = h.load("data/santaRouteStops.ts").santaStops;
-  assert.equal(stops.length, 60);
-  assert.equal(new Set(stops.map(stop => stop.id)).size, 60);
+  assert.equal(stops.length, 290);
+  assert.equal(new Set(stops.map(stop => stop.id)).size, 290);
   for (const [iso, mode] of [
     ["2026-12-24T09:59:59Z", "PREPARING"],
     ["2026-12-24T10:00:00Z", "LIVE"],
@@ -399,10 +397,10 @@ test("the expanded 60-stop route preserves departure, completion and year rollov
     const data = route.getDashboardData(new Date(iso));
     assert.equal(data.mode, mode, iso);
     assert.equal(data.speedLabel, mode === "LIVE" ? "6,650,000 mph" : "—", iso);
-    assert.equal(data.totalStops, 60);
+    assert.equal(data.totalStops, 290);
     assert.ok(Number.isFinite(data.mapPosition.x) && Number.isFinite(data.mapPosition.y), iso);
     if (mode === "COMPLETE") {
-      assert.equal(data.visitedCount, 60);
+      assert.equal(data.visitedCount, 290);
       assert.equal(data.progressPercent, 100);
     }
   }
@@ -432,10 +430,10 @@ test("annual seasonal transitions and preview jumps preserve the full Christmas 
       assert.equal(data.mode, mode, now.toISOString());
       assert.equal(route.isHolidaySeason(now), mode === "OFF_SEASON");
       assert.equal(route.isRouteResearchSeason(now), mode === "ROUTE_RESEARCH");
-      assert.equal(route.getVisitedStops(now).size, mode === "COMPLETE" ? 60 : 0);
+      assert.equal(route.getVisitedStops(now).size, mode === "COMPLETE" ? 290 : 0);
       if (mode === "COMPLETE") {
         assert.equal(data.progressPercent, 100);
-        assert.equal(data.currentStopName, "American Samoa");
+        assert.equal(data.currentStopName, "Honolulu, USA");
       }
       assert.equal(route.getSeasonalTrackerMode(preview.getJumpTime(target)), mode);
       assert.ok(preview.JUMP_LABELS.some(entry => entry.target === target));
@@ -465,13 +463,15 @@ test("every research destination keeps its activity, map and story aligned witho
       assert.match(copy, /Diocletian’s Palace \(and claiming he built it\)/);
     }
     const mapPosition = { lat: destination.lat, lng: destination.lng, x: ((destination.lng + 180) / 360) * 100, y: ((90 - destination.lat) / 180) * 100 };
-    const Map = h.load("components/SantaMap.tsx").default;
-    const map = h.render(React.createElement(Map, { effectiveTime: new h.FixedDate(), mapPosition, researchDestination: destination }));
+    const mh = harness();
+    const Map = mh.load("components/SantaMap.tsx").default;
+    const map = mh.render(React.createElement(Map, { effectiveTime: new h.FixedDate(), mapPosition, researchDestination: destination }));
     assert.ok(map.includes(`Route research in ${destination.name}`));
     assert.ok(map.includes(escaped));
     assert.match(map, /not a Christmas Eve delivery stop/);
-    const Story = h.load("components/SantaStory.tsx").default;
-    const story = h.render(React.createElement(Story, { effectiveTime: new h.FixedDate(), holiday: destination }));
+    const sh = harness();
+    const Story = sh.load("components/SantaStory.tsx").default;
+    const story = sh.render(React.createElement(Story, { effectiveTime: new h.FixedDate(), holiday: destination }));
     assert.match(story, /Route Research Report/);
     assert.ok(story.includes(escaped));
     assert.doesNotMatch(story, /Holiday Postcards|Share this postcard/);

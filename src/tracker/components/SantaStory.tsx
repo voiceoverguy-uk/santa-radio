@@ -516,7 +516,7 @@ export default function SantaStory({ effectiveTime, holiday }: SantaStoryProps) 
 
     case "LIVE_AT_STOP":
     case "IN_TRANSIT":
-      story = `${data.statusSubtext}. With ${data.remainingCount} stops still to visit and an estimated ${(data.estimatedGifts / 1_000_000).toFixed(0)} million gifts delivered, Santa's estimated journey continues. ${data.approachingUK ? "Excitement is building in the UK — Santa is getting closer!" : data.nextStopName !== "—" ? `Next stop: ${data.nextStopName}.` : "Finishing the final delivery window in American Samoa."}`;
+      story = `${data.statusSubtext}. With ${data.remainingCount} stops still to visit and an estimated ${(data.estimatedGifts / 1_000_000).toFixed(0)} million gifts delivered, Santa's estimated journey continues. ${data.approachingUK ? "Excitement is building in the UK — Santa is getting closer!" : data.nextStopName !== "—" ? `Next stop: ${data.nextStopName}.` : "Finishing the final delivery window in Honolulu, Hawaii."}`;
       label = "Live Update";
       break;
 
@@ -528,7 +528,7 @@ export default function SantaStory({ effectiveTime, holiday }: SantaStoryProps) 
       break;
 
     case "COMPLETE":
-      story = `What an incredible journey! Santa has completed his estimated Christmas Eve trip, delivering an estimated ${(data.estimatedGifts / 1_000_000_000).toFixed(1)} billion gifts across ${data.visitedCount} stops. From the Pacific Islands to American Samoa, after Hawaii, he travelled an estimated ${Math.round(data.estimatedDistanceKm * 0.621371 / 1_000_000)} million miles over 25 hours and 20 minutes. The final deliveries finished at 11:20 UTC on Christmas Day. The reindeer have earned a well-deserved rest. Merry Christmas to all, and to all a good night!`;
+      story = `What an incredible journey! Santa has completed his make-believe Christmas Eve trip, delivering an estimated ${(data.estimatedGifts / 1_000_000_000).toFixed(1)} billion gifts across ${data.visitedCount} destinations. From Kiritimati to Honolulu, with Antarctic research stations along the route, this estimated journey lasted 25 hours and 20 minutes. The final deliveries finished at 11:20 UTC on Christmas Day. The reindeer have earned a well-deserved rest. Merry Christmas to all, and to all a good night!`;
       label = "Journey Summary";
       break;
   }

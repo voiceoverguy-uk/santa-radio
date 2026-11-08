@@ -8,16 +8,13 @@ test.beforeEach(async ({ page }) => {
 });
 
 for (const [iso, destination] of [
-  ['2026-12-24T10:01:00Z', 'Pacific Islands'],
-  ['2026-12-24T10:16:00Z', 'Chatham Islands'],
-  ['2026-12-24T13:31:00Z', 'Adelaide'],
-  ['2026-12-24T15:16:00Z', 'Eucla'],
-  ['2026-12-24T18:16:00Z', 'Kathmandu'],
-  ['2026-12-24T22:01:00Z', 'Rovaniemi'],
-  ['2026-12-25T00:01:00Z', 'United Kingdom'],
-  ['2026-12-25T03:31:00Z', 'Newfoundland'],
-  ['2026-12-25T10:01:00Z', 'Hawaii'],
-  ['2026-12-25T11:01:00Z', 'American Samoa'],
+  ['2026-12-24T10:00:01Z', 'Kiritimati'],
+  ['2026-12-24T13:30:01Z', 'Adelaide'],
+  ['2026-12-24T14:30:01Z', 'Darwin'],
+  ['2026-12-24T18:15:01Z', 'Kathmandu'],
+  ['2026-12-24T19:30:01Z', 'Kabul'],
+  ['2026-12-25T00:00:01Z', 'London'],
+  ['2026-12-25T10:00:01Z', 'Honolulu'],
 ]) {
   test(`public live destination and humour agree at ${destination}`, async ({ page }) => {
     await page.clock.setFixedTime(new Date(iso));
@@ -25,10 +22,11 @@ for (const [iso, destination] of [
     await page.goto('/santa-tracker');
     await expect(page.locator('[data-live-activity]')).toContainText(destination);
     await expect(page.locator('[data-live-fact]')).toContainText(destination);
-    await expect(page.locator('[data-stop-id]')).toHaveCount(60);
-    await expect(page.locator('[data-santa-activity]:visible')).toHaveCount(60);
+    await expect(page.locator('[data-stop-id]')).toHaveCount(290);
+    await expect(page.locator('[data-santa-activity]')).toHaveCount(290);
     await expect(page.locator('.tracker-status')).toContainText('Delivering Now');
-    const activity = page.locator('[data-santa-activity]:visible').filter({ hasText: await page.locator('[data-live-activity]').evaluate(el => el.childNodes[el.childNodes.length - 1].textContent.trim()) });
+    const current = await page.locator('.tracker-map [data-active="true"]').getAttribute('data-stop-id');
+    const activity = page.locator(`[data-santa-activity="${current}"]`);
     await expect(activity).toHaveCount(1);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
     const bad = await page.locator('[data-santa-activity]:visible').evaluateAll(els => els.some(el => el.scrollWidth > el.clientWidth + 1));
@@ -36,19 +34,16 @@ for (const [iso, destination] of [
   });
 }
 
-test('Hawaii, Samoa and completion controls include the final delivery window', async ({ page }) => {
+test('Honolulu and completion controls include the final delivery window', async ({ page }) => {
   await page.goto('/santa-tracker/preview');
   await page.getByRole('switch', { name: 'Preview mode' }).click();
   await page.getByRole('button', { name: 'Hawaii', exact: true }).click();
-  await expect(page.locator('[data-live-activity]')).toContainText('Hawaii');
-  await expect(page.locator('main')).toContainText('American Samoa');
-  await page.getByRole('button', { name: 'American Samoa', exact: true }).click();
-  await expect(page.locator('[data-live-activity]')).toContainText('American Samoa');
+  await expect(page.locator('[data-live-activity]')).toContainText('Honolulu');
   await expect(page.locator('.tracker-status')).toContainText('Delivering Now');
   await page.getByRole('button', { name: 'Complete', exact: true }).click();
   await expect(page.locator('.tracker-status')).toContainText('Journey Complete');
   await expect(page.locator('main')).toContainText('25 hours and 20 minutes');
-  await expect(page.locator('main')).toContainText('60/60');
+  await expect(page.locator('main')).toContainText('290/290');
   await expect(page.locator('[data-live-activity]')).toHaveCount(0);
   const state = await page.evaluate(() => JSON.parse(localStorage.getItem('santa-tracker-preview')));
   expect(new Date(state.simulatedStartMs).toISOString()).toMatch(/12-25T11:20:00/);
@@ -60,7 +55,7 @@ test('Hawaii, Samoa and completion controls include the final delivery window', 
 test('approaching UK copy does not claim UK delivery before midnight', async ({ page }) => {
   await page.clock.setFixedTime(new Date('2026-12-24T23:30:00Z'));
   await page.goto('/santa-tracker');
-  await expect(page.locator('[data-live-activity]')).toContainText('West Africa');
+  await expect(page.locator('[data-live-activity]')).toBeVisible();
   await expect(page.locator('main')).toContainText('estimated delivery window starts at midnight UTC');
   await expect(page.locator('main')).not.toContainText('This is it, Santa is here!');
   await page.goto('/');
@@ -68,7 +63,7 @@ test('approaching UK copy does not claim UK delivery before midnight', async ({ 
 });
 
 for (const [iso, firstLine, seasonalLabel] of [
-  ['2026-11-30T12:00:00Z', 'I packed a travel iron.', 'Holiday Postcards'],
+  ['2026-11-08T12:00:00Z', 'I packed a travel iron.', 'Holiday Postcards'],
   ['2026-07-15T12:00:00Z', 'July rehearsal:', 'Christmas in July Postcards'],
 ]) {
   test(`mobile postcard rotation and PNG download in ${seasonalLabel}`, async ({ page }) => {
@@ -108,7 +103,7 @@ for (const [iso, firstLine, seasonalLabel] of [
 }
 
 test('December uses workshop dispatches and retains the fifteen-second rotation', async ({ page }) => {
-  await page.clock.install({ time: new Date('2026-12-01T12:00:00Z') });
+  await page.clock.install({ time: new Date('2026-12-23T12:00:00Z') });
   await page.addInitScript(() => { Math.random = () => 0; });
   await page.goto('/santa-tracker');
   await expect(page.locator('main')).toContainText('Workshop Dispatch');

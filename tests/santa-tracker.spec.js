@@ -122,7 +122,11 @@ for (const [date, text] of [
 
 test('desktop/mobile map, typography and menu fit without horizontal overflow', async ({ page }) => {
   await page.clock.setFixedTime(new Date('2026-12-24T09:00:00Z'));
-  for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 }]) {
+  for (const viewport of [
+    { width: 1440, height: 1000 },
+    { width: 1280, height: 900 },
+    { width: 390, height: 844 },
+  ]) {
     await page.setViewportSize(viewport);
     await page.goto('/santa-tracker');
     const map = page.locator('main svg[role="img"]');
@@ -134,6 +138,9 @@ test('desktop/mobile map, typography and menu fit without horizontal overflow', 
     const descriptionBox = await page.locator('.tracker-hero .tracker-copy').first().boundingBox();
     const countdownBox = await page.getByText("Countdown to Santa's Departure").boundingBox();
     expect(box.width).toBeGreaterThan(250);
+    if (viewport.width >= 768) {
+      expect(Math.abs(box.width - Math.min(1320, viewport.width - 48))).toBeLessThanOrEqual(1);
+    }
     expect(box.x).toBeGreaterThanOrEqual(0);
     expect(box.x + box.width).toBeLessThanOrEqual(viewport.width + 1);
     expect(box.y).toBeGreaterThanOrEqual(headingBox.y + headingBox.height);

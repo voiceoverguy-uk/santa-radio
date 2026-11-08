@@ -3,6 +3,8 @@ import {
   TRACKER_CONSTANTS,
   getStopArrivalDate,
   getStopUtcOffset,
+  getScheduledStops,
+  getStopDepartureDate,
   type SantaStop,
 } from "@/data/santaRouteStops";
 import { holidayDestinations, type HolidayDestination } from "@/data/santaHolidays";
@@ -120,10 +122,7 @@ function getJourneyEndTime(year: number): Date {
 }
 
 function getStopArrivals(year: number): { stop: SantaStop; arrival: Date }[] {
-  return santaStops.map((stop) => ({
-    stop,
-    arrival: getStopArrivalDate(stop, year),
-  })).sort((a, b) => a.arrival.getTime() - b.arrival.getTime());
+  return getScheduledStops(year);
 }
 
 export function getSeasonalTrackerMode(now: Date): SeasonalMode {
@@ -157,7 +156,7 @@ export function getSantaTrackerState(now: Date): TrackerState {
     const ukArrival = ukStop.arrival.getTime();
     const windowMs = TRACKER_CONSTANTS.ukSpecialWindowHours * 60 * 60 * 1000;
     const nowMs = now.getTime();
-    if (nowMs >= ukArrival - windowMs && nowMs < ukArrival + ukStop.stop.dwellMinutes * 60 * 1000) {
+    if (nowMs >= ukArrival - windowMs && nowMs < getStopDepartureDate(ukStop.stop, year).getTime()) {
       return "UK_SPECIAL_WINDOW";
     }
   }
@@ -165,7 +164,7 @@ export function getSantaTrackerState(now: Date): TrackerState {
   // State must describe the same selected destination as the clock, map and
   // activity, including shared arrivals and closely spaced quarter-hours.
   const current = getCurrentStop(now);
-  if (current && now.getTime() < getStopArrivalDate(current, year).getTime() + current.dwellMinutes * 60000) return "LIVE_AT_STOP";
+  if (current && now < getStopDepartureDate(current, year)) return "LIVE_AT_STOP";
 
   return "IN_TRANSIT";
 }
@@ -177,11 +176,6 @@ export function getCurrentStop(now: Date): SantaStop | null {
   const year = getChristmasEveYear(now);
   const arrivals = getStopArrivals(year);
   const nowMs = now.getTime();
-
-  // Shared-offset regions arrive together. Keep the highlighted UK stop, clock
-  // and map consistent throughout its real estimated delivery window.
-  const uk = arrivals.find(a => a.stop.milestoneType === "uk");
-  if (uk && nowMs >= uk.arrival.getTime() && nowMs < uk.arrival.getTime() + uk.stop.dwellMinutes * 60000) return uk.stop;
 
   for (let i = arrivals.length - 1; i >= 0; i--) {
     if (nowMs >= arrivals[i].arrival.getTime()) {
@@ -254,9 +248,6 @@ export function getInterpolatedMapPosition(now: Date): MapPosition {
     const last = santaStops[santaStops.length - 1];
     return { lat: last.lat, lng: last.lng, ...latLngToXY(last.lat, last.lng) };
   }
-  const currentStop = getCurrentStop(now);
-  if (currentStop?.milestoneType === "uk") return { lat: currentStop.lat, lng: currentStop.lng, ...latLngToXY(currentStop.lat, currentStop.lng) };
-
   const year = getChristmasEveYear(now);
   const arrivals = getStopArrivals(year);
   const nowMs = now.getTime();
@@ -275,7 +266,7 @@ export function getInterpolatedMapPosition(now: Date): MapPosition {
   }
 
   const currentArrival = arrivals[currentIdx];
-  const dwellEndMs = currentArrival.arrival.getTime() + currentArrival.stop.dwellMinutes * 60 * 1000;
+  const dwellEndMs = getStopDepartureDate(currentArrival.stop, year).getTime();
 
   if (nowMs <= dwellEndMs) {
     return {
@@ -399,7 +390,7 @@ function getStatusTexts(state: TrackerState, current: SantaStop | null, next: Sa
     case "COMPLETE":
       return {
         headline: "Journey Complete!",
-        subtext: "Santa has finished his estimated route in American Samoa, after Hawaii. Merry Christmas!",
+        subtext: "Santa has finished his estimated 290-stop route in Honolulu, Hawaii. Merry Christmas!",
       };
   }
 }
@@ -418,7 +409,7 @@ export function getDashboardData(now: Date): DashboardData {
   const year = getChristmasEveYear(now);
   const arrivals = getStopArrivals(year);
   const nowMs = now.getTime();
-  const visitedCount = arrivals.filter((a) => nowMs >= a.arrival.getTime()).length;
+  const visitedCount = mode === "LIVE" || mode === "COMPLETE" ? arrivals.filter((a) => nowMs >= a.arrival.getTime()).length : 0;
   const remainingCount = santaStops.length - visitedCount;
 
   const progressFraction = progress / 100;

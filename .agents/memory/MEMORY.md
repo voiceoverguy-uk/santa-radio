@@ -30,6 +30,7 @@
 - [Tracker transfer scope](tracker-transfer-scope.md) — Preserve the supplied tracker; Santa Radio hosts it without replacing or redirecting SantaGuy’s existing version.
 - [Tracker holiday dates](tracker-holiday-dates.md) — Holiday 26 Dec–9 Nov; research trips 10 Nov–22 Dec; preparation from 23 Dec; preserve Christmas journey.
 - [Tracker content boundaries](tracker-content-policy.md) — Delivery stops are not holiday-place additions; distinguish fictional antics from sourced, qualified traditions.
+- [Expanded tracker itinerary](tracker-expanded-itinerary.md) — Owner wants 290 individual destinations, regional map zoom and a clearly labeled estimate, not claims of verified live tracking.
 - [Preview test timeouts](preview-test-timeouts.md) — Whole-test timeouts can report misleading matcher values even when the captured UI state is correct.
 - [Generated HTML and browser checks](browser-generated-reports.md) — Finish HTML report generation before browser tests; Vite can reload the page when private reports change.
 - [Browser text bounds](browser-text-bounds.md) — Allow subpixel rounding in inline-text containment checks to avoid false cropping failures.

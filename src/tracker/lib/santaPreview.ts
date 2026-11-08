@@ -1,10 +1,12 @@
-import { TRACKER_CONSTANTS } from "@/data/santaRouteStops";
+import { TRACKER_CONSTANTS, santaStops, getStopArrivalDate } from "@/data/santaRouteStops";
 
 export type JumpTarget =
+  | `city:${string}`
   | "holiday-end"
   | "research-start"
   | "research-end"
   | "preparation-start"
+  | "christmas-eve-start"
   | "christmas-day-end"
   | "holiday-resumes"
   | "route-start"
@@ -34,6 +36,7 @@ const JUMP_TARGETS: Record<JumpTarget, { month: number; day: number; hour: numbe
   "research-start": { month: 10, day: 10, hour: 0, minute: 0 },
   "research-end": { month: 11, day: 22, hour: 23, minute: 59 },
   "preparation-start": { month: 11, day: 23, hour: 0, minute: 0 },
+  "christmas-eve-start": { month: 11, day: 24, hour: 0, minute: 0 },
   "christmas-day-end": { month: 11, day: 25, hour: 23, minute: 59 },
   "holiday-resumes": { month: 11, day: 26, hour: 0, minute: 0 },
   "route-start": { month: 11, day: 24, hour: 9, minute: 55 },
@@ -50,8 +53,19 @@ const JUMP_TARGETS: Record<JumpTarget, { month: number; day: number; hour: numbe
 };
 
 export function getJumpTime(target: JumpTarget): Date {
-  const t = JUMP_TARGETS[target];
   const year = new Date().getUTCFullYear();
+  const cities: Partial<Record<JumpTarget, string>> = {
+    australia: "sydney", asia: "tokyo", "middle-east": "dubai",
+    "uk-arrival": "london", usa: "newyork", hawaii: "honolulu", kathmandu: "kathmandu",
+  };
+  const cityId = target.startsWith("city:") ? target.slice(5) : cities[target];
+  if (cityId) {
+    const stop = santaStops.find(stop => stop.id === cityId);
+    if (!stop) throw new Error(`Unknown itinerary destination: ${cityId}`);
+    return getStopArrivalDate(stop, year);
+  }
+  const t = JUMP_TARGETS[target as keyof typeof JUMP_TARGETS];
+  if (!t) throw new Error(`Unknown preview jump: ${target}`);
   return new Date(Date.UTC(year, t.month, t.day, t.hour, t.minute, 0));
 }
 
@@ -148,10 +162,10 @@ export const JUMP_LABELS: { target: JumpTarget; label: string }[] = [
   { target: "research-start", label: "10 November" },
   { target: "research-end", label: "22 December" },
   { target: "preparation-start", label: "23 December" },
+  { target: "christmas-eve-start", label: "24 December" },
   { target: "christmas-day-end", label: "25 December" },
   { target: "holiday-resumes", label: "26 December" },
   { target: "route-start", label: "Route Start" },
-  { target: "chatham-islands", label: "Chatham Islands" },
   { target: "australia", label: "Australia" },
   { target: "asia", label: "Asia" },
   { target: "kathmandu", label: "Kathmandu" },
@@ -159,6 +173,5 @@ export const JUMP_LABELS: { target: JumpTarget; label: string }[] = [
   { target: "uk-arrival", label: "UK Arrival" },
   { target: "usa", label: "USA" },
   { target: "hawaii", label: "Hawaii" },
-  { target: "american-samoa", label: "American Samoa" },
   { target: "complete", label: "Complete" },
 ];

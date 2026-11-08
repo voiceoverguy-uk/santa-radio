@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useId } from "react";
 import { Play, Pause, SkipForward, RotateCcw, Eye, EyeOff } from "lucide-react";
+import { santaStops } from "@/data/santaRouteStops";
 import {
   type PreviewState,
   type JumpTarget,
@@ -97,7 +98,7 @@ export default function SantaPreviewPanel({
             ) : (
               <EyeOff size={14} className="text-santa-cream/60" />
             )}
-            <span className="tracker-preview-toggle text-xs font-medium uppercase tracking-wider">
+            <span className="text-xs font-medium uppercase tracking-wider">
               Preview Controls
             </span>
           </div>
@@ -112,14 +113,11 @@ export default function SantaPreviewPanel({
                 role="switch"
                 aria-label="Preview mode"
                 aria-checked={previewState.enabled}
-                className={`relative w-10 h-5 rounded-full transition-colors ${
-                  previewState.enabled ? "bg-santa-red" : "bg-gray-600"
-                }`}
+                className="tracker-preview-switch relative w-10 h-5 rounded-full transition-colors"
               >
                 <div
-                  className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform ${
-                    previewState.enabled ? "translate-x-5" : "translate-x-0.5"
-                  }`}
+                  aria-hidden="true"
+                  className="tracker-preview-switch-thumb"
                 />
               </button>
             </div>
@@ -171,6 +169,17 @@ export default function SantaPreviewPanel({
                       </button>
                     ))}
                   </div>
+                  <label className="tracker-preview-destination">
+                    Jump to destination
+                    <select
+                      aria-label="Jump to destination"
+                      value={previewState.jumpTarget?.startsWith("city:") ? previewState.jumpTarget : ""}
+                      onChange={event => { if (event.target.value) handleJump(event.target.value as JumpTarget); }}
+                    >
+                      <option value="">Choose one of {santaStops.length} stops</option>
+                      {santaStops.map(stop => <option key={stop.id} value={`city:${stop.id}`}>{stop.name}</option>)}
+                    </select>
+                  </label>
                 </div>
 
                 <div>

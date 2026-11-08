@@ -41,7 +41,7 @@ export function trackerPageHtml(html, pathname, now = new Date()) {
   html = html.replace(/<link\b[^>]*rel=["']canonical["'][^>]*>/gi, '');
   if (!preview) {
     html = html.replace('</head>', `<link data-rh="true" rel="canonical" href="${TRACKER_URL}" />\n</head>`);
-    html = html.replace('</body>', `<noscript><section style="padding:6rem 2rem;color:#fff;background:#0a1628"><h1>Santa Radio — Santa Tracker</h1><p>Follow Santa’s estimated Christmas Eve journey around the world, with a countdown, festive facts and holiday postcards. His 60-stop journey starts at 10:00 UTC on 24 December and ends in American Samoa, after Hawaii, at 11:20 UTC on 25 December.</p><p>Enable JavaScript to see the updating world map and listen to Santa Radio.</p></section></noscript>\n</body>`);
+    html = html.replace('</body>', `<noscript><section style="padding:6rem 2rem;color:#fff;background:#0a1628"><h1>Santa Radio — Santa Tracker</h1><p>Follow Santa’s estimated 290-stop Christmas Eve journey around the world, with a countdown, festive facts and holiday postcards. His make-believe itinerary starts in Kiritimati at 10:00 UTC on 24 December and finishes in Honolulu, Hawaii, at 11:20 UTC on 25 December. This is not verified live tracking.</p><p>Enable JavaScript to see the updating regional maps and listen to Santa Radio.</p></section></noscript>\n</body>`);
   }
   return html;
 }
