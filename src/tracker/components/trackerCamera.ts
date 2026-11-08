@@ -41,6 +41,11 @@ export function stopRegion(stop: SantaStop): string {
 
 export const WORLD: Camera = { cx: 500, cy: 250, w: 1000 };
 
+/** Centre a close camera on Santa's represented position when no live leg exists. */
+export function positionCamera(point: { x: number; y: number }): Camera {
+  return { cx: point.x, cy: point.y, w: 200 };
+}
+
 function boxCamera(x0: number, y0: number, x1: number, y1: number, pad = 0.18): Camera {
   let w = (x1 - x0) * (1 + pad * 2);
   let h = (y1 - y0) * (1 + pad * 2);

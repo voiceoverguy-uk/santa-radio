@@ -4,7 +4,7 @@ import { useId, useMemo, useState, useRef, useEffect } from "react";
 import { santaStops, getStopArrivalDate } from "@/data/santaRouteStops";
 import { getVisitedStops, getCurrentStopId, getRouteResearchCopy, type HolidayDestination, type MapPosition } from "@/lib/santaRoute";
 import { worldMapPaths } from "@/data/worldMapPaths";
-import { MAP_REGIONS, WORLD, followCamera, project, regionCamera, stopRegion, type Camera } from "./trackerCamera";
+import { MAP_REGIONS, WORLD, followCamera, positionCamera, project, regionCamera, stopRegion, type Camera } from "./trackerCamera";
 import "../tracker-journey.css";
 
 interface SantaMapProps {
@@ -42,9 +42,13 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
   const nextStop = live ? ordered[currentIdx + 1] : undefined;
 
   const [view, setView] = useState<View>("follow");
-  const effectiveView: View = view === "follow" && !live ? "world" : view;
+  const effectiveView = view;
 
-  const wrapPacific = effectiveView === "Pacific" || (effectiveView === "follow" && currentStop && stopRegion(currentStop) === "Pacific");
+  const projectedSanta = project(mapPosition.lat, mapPosition.lng);
+  const wrapPacific = effectiveView === "Pacific" || (
+    effectiveView === "follow" &&
+    (currentStop ? stopRegion(currentStop) === "Pacific" : projectedSanta.x < 100 || projectedSanta.x > 900)
+  );
   const mapProject = (lat: number, lng: number) => {
     const p = project(lat, lng);
     return { x: wrapPacific && p.x < 500 ? p.x + 1000 : p.x, y: p.y };
@@ -57,6 +61,8 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
     const pts = [santaXY, mapProject(currentStop.lat, currentStop.lng)];
     if (nextStop) pts.push(mapProject(nextStop.lat, nextStop.lng));
     camera = followCamera(stopRegion(currentStop), pts);
+  } else if (effectiveView === "follow") {
+    camera = positionCamera(santaXY);
   } else if (effectiveView !== "world" && effectiveView !== "follow") {
     camera = regionCamera(effectiveView);
   }
@@ -100,7 +106,9 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
     nextStop ? { stop: nextStop, kind: "Next" } : null,
   ].filter(Boolean) as { stop: typeof ordered[number]; kind: string }[];
 
-  const regionLabel = effectiveView === "follow" ? (currentStop ? `Following Santa · ${stopRegion(currentStop)}` : "Following Santa") : effectiveView === "world" ? `World · ${santaStops.length} stops` : effectiveView;
+  const regionLabel = effectiveView === "follow"
+    ? live && currentStop ? `Following Santa · ${stopRegion(currentStop)}` : "Santa's position"
+    : effectiveView === "world" ? `World · ${santaStops.length} stops` : effectiveView;
 
   return (
     <div ref={mapRef} className="tracker-map relative w-full overflow-hidden rounded-2xl border bg-[#0c281e]">
@@ -137,7 +145,7 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
 
           <rect width="1000" height="500" fill="#0c281e" />
 
-          <g className="tj-camera" data-map-view={effectiveView} style={{ transform: `translate(${tx}px, ${ty}px) scale(${s})` }}>
+          <g className="tj-camera" data-map-view={effectiveView} data-camera-width={camera.w} style={{ transform: `translate(${tx}px, ${ty}px) scale(${s})` }}>
             <g opacity="0.2" stroke="#D4AF37" strokeWidth={0.5 * k} fill="none">
               {[0, 1, 2, 3, 4, 5, 6].map((i) => (
                 <line key={`h${i}`} x1="0" y1={i * 71.4} x2="1000" y2={i * 71.4} />
@@ -218,13 +226,27 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
         )}
 
         <div className="tracker-map-caption absolute bottom-3 left-3 backdrop-blur-sm rounded-lg px-3 py-1.5 text-xs">
-          {effectiveView !== "world" && effectiveView !== "follow" ? `${effectiveView} · estimated delivery destinations` : researchDestination ? `Route research in ${researchDestination.name}` : onHoliday ? "Santa's current holiday location" : "Estimated route based on local midnight across time zones"}
+          {effectiveView !== "world" && effectiveView !== "follow"
+            ? `${effectiveView} · estimated delivery destinations`
+            : researchDestination
+            ? `Route research in ${researchDestination.name}`
+            : onHoliday
+            ? "Santa's current holiday location"
+            : effectiveView === "follow" && !live
+            ? "Santa's represented position · estimated route"
+            : "Estimated route based on local midnight across time zones"}
         </div>
       </div>
 
       <div className="tj-toolbar" role="toolbar" aria-label="Map camera">
         <button type="button" className="tj-btn" aria-pressed={effectiveView === "world"} onClick={() => setView("world")}>World</button>
-        <button type="button" className="tj-btn" aria-pressed={effectiveView === "follow"} disabled={!live} onClick={() => setView("follow")} title={live ? "Follow Santa between stops" : "Available on Christmas Eve"}>
+        <button
+          type="button"
+          className="tj-btn"
+          aria-pressed={effectiveView === "follow"}
+          onClick={() => setView("follow")}
+          title={live ? "Follow Santa between stops" : "Centre the map on Santa's represented position; this is not live delivery tracking"}
+        >
           Follow Santa
         </button>
         <label className="sr-only" htmlFor={`${titleId}-region`}>Browse a region</label>

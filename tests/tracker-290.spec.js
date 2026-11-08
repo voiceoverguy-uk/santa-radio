@@ -13,6 +13,7 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
     await page.goto('/santa-tracker');
     await expect(page.locator('.tracker-map [data-stop-id]')).toHaveCount(290);
     await expect(page.locator('.tracker-hero')).toContainText('estimated 290-stop');
+    await page.locator('.tj-toolbar').getByRole('button', { name: 'World', exact: true }).click();
     await expect(page.locator('.tj-legend')).toContainText('World · 290 stops');
     await page.getByLabel('Browse a region', { exact: true }).selectOption('Australia');
     await expect(page.locator('.tj-camera')).toHaveAttribute('data-map-view', 'Australia');
@@ -45,6 +46,8 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
       await jump.selectOption(`city:${city}`);
       await expect(page.locator(`.tracker-map [data-stop-id="${city}"]`)).toHaveAttribute('data-active', 'true');
       await expect(page.locator('.tj-camera')).toHaveAttribute('data-map-view', 'follow');
+      await expect(page.locator('.tj-camera')).not.toHaveAttribute('data-camera-width', '1000');
+      await expect(page.locator('.tj-toolbar').getByRole('button', { name: 'Follow Santa', exact: true })).toHaveAttribute('aria-pressed', 'true');
       await expect(page.locator('.tj-toolbar')).toContainText('Estimated live');
       await expect(page.locator('.tj-tl-list [data-current="true"]')).toHaveCount(1);
       if (city === 'amundsenscottsouthpolestation') {
@@ -58,12 +61,61 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
     await page.getByRole('button', { name: 'Preview Controls' }).click();
     await page.locator('.tj-toolbar').getByRole('button', { name: 'World', exact: true }).click();
     await expect(page.locator('.tj-camera')).toHaveAttribute('data-map-view', 'world');
+    await expect(page.locator('.tj-toolbar').getByRole('button', { name: 'Follow Santa', exact: true })).toHaveAttribute('aria-pressed', 'false');
     await page.locator('.tj-toolbar').getByRole('button', { name: 'Follow Santa', exact: true }).click();
     await expect(page.locator('.tj-camera')).toHaveAttribute('data-map-view', 'follow');
+    await expect(page.locator('.tj-toolbar').getByRole('button', { name: 'Follow Santa', exact: true })).toHaveAttribute('aria-pressed', 'true');
     await page.goto('/santa-tracker');
     await expect(page.locator('.tracker-preview-panel')).toHaveCount(0);
-    await expect(page.locator('.tj-legend')).toContainText('World · 290 stops');
+    await expect(page.locator('.tj-legend')).toContainText("Santa's position");
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  });
+}
+
+for (const [date, status] of [
+  ['2026-03-15T12:00:00Z', /On Holiday in/],
+  ['2026-07-15T12:00:00Z', /Christmas in July/],
+  ['2026-11-15T12:00:00Z', /Prepping the route/],
+  ['2026-12-23T12:00:00Z', /Preparing for Takeoff/],
+  ['2026-12-25T12:00:00Z', /Journey Complete/],
+]) {
+  test(`Follow Santa selects a close, non-live camera on ${date}`, async ({ page }) => {
+    await page.clock.setFixedTime(new Date(date));
+    await page.goto('/santa-tracker');
+    await expect(page.locator('.tracker-status')).toContainText(status);
+
+    const toolbar = page.locator('.tj-toolbar');
+    const follow = toolbar.getByRole('button', { name: 'Follow Santa', exact: true });
+    await expect(follow).toBeEnabled();
+    await expect(follow).toHaveAttribute('aria-pressed', 'true');
+
+    await toolbar.getByRole('button', { name: 'World', exact: true }).click();
+    await expect(follow).toHaveAttribute('aria-pressed', 'false');
+    const region = page.getByLabel('Browse a region', { exact: true });
+    if (date === '2026-07-15T12:00:00Z' || date === '2026-12-25T12:00:00Z') {
+      await region.selectOption('Australia');
+    }
+    await follow.click();
+
+    await expect(follow).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('.tj-camera')).toHaveAttribute('data-map-view', 'follow');
+    await expect(page.locator('.tj-camera')).toHaveAttribute('data-camera-width', '200');
+    await expect(page.locator('.tj-minimap')).toBeVisible();
+    await expect(toolbar.locator('.tj-live')).toHaveCount(0);
+    await expect(page.locator('.tj-legend')).toContainText("Santa's position");
+    await expect(page.locator('.tracker-map-caption')).toContainText(/represented position|holiday location|Route research/);
+
+    const marker = page.locator('.tj-santa text');
+    const map = page.locator('.tracker-map > div > svg[role="img"]');
+    await expect.poll(async () => {
+      const markerBox = await marker.boundingBox();
+      const mapBox = await map.boundingBox();
+      if (!markerBox || !mapBox) return Infinity;
+      return Math.max(
+        Math.abs(markerBox.x + markerBox.width / 2 - (mapBox.x + mapBox.width / 2)),
+        Math.abs(markerBox.y + markerBox.height / 2 - (mapBox.y + mapBox.height / 2)),
+      );
+    }).toBeLessThan(20);
   });
 }
 
