@@ -238,7 +238,7 @@ for (const no of [0, 5, 6, 7, 8, 10]) {
   });
 }
 
-test('completed result links to a Santa message and offers a dismissible follow-up', async ({ page }) => {
+test('certificate download delays the dismissible Santa message follow-up by ten seconds', async ({ page }) => {
   await open(page);
   await enter(page, 'Erin');
   await answer(page, 0);
@@ -250,12 +250,19 @@ test('completed result links to a Santa message and offers a dismissible follow-
   await expect(resultHeading).toBeFocused();
   await expect(inlineOffer.getByRole('link', { name: 'Get a FREE message from Santa', exact: true }))
     .toHaveAttribute('href', '/free-santa-message');
-  await expect(page.getByRole('complementary', { name: 'Want Santa to say Erin’s name?' })).toHaveCount(0);
-
-  await page.clock.runFor(2000);
   const popup = page.getByRole('complementary', { name: 'Want Santa to say Erin’s name?' });
+  await expect(popup).toHaveCount(0);
+
+  const downloadPromise = page.waitForEvent('download');
+  await result.getByRole('button', { name: 'Download Nice certificate PDF' }).click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toBe('Head-Elf-Nice-List-Certificate.pdf');
+
+  await expect(popup).toHaveCount(0);
+  await page.clock.runFor(9000);
+  await expect(popup).toHaveCount(0);
+  await page.clock.runFor(1000);
   await expect(popup).toBeVisible();
-  await expect(resultHeading).toBeFocused();
   await expect(popup.getByRole('link', { name: 'Get a FREE message from Santa', exact: true }))
     .toHaveAttribute('href', '/free-santa-message');
 

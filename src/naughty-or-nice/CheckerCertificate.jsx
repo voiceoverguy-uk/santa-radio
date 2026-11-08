@@ -18,7 +18,7 @@ function CertificateArt({ name, naughty, days }) {
   </div>;
 }
 
-export default function CheckerCertificate({ name, result, days }) {
+export default function CheckerCertificate({ name, result, days, onDownload }) {
   const naughty = result === 'naughty';
   const [expanded, setExpanded] = useState(false);
   const [downloading, setDownloading] = useState(false);
@@ -67,6 +67,7 @@ export default function CheckerCertificate({ name, result, days }) {
       const link = document.createElement('a');
       link.href = url; link.download = `Head-Elf-${naughty ? 'Naughty' : 'Nice'}-List-Certificate.pdf`;
       document.body.append(link); link.click(); link.remove();
+      onDownload?.();
     } catch (failure) {
       if (!controller.signal.aborted)
         setError('The PDF could not be created. Please try downloading again.');

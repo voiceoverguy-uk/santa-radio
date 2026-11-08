@@ -14,6 +14,8 @@ import useOfficeEntryPosition from './useOfficeEntryPosition.js';
 import { CERTIFICATE_REVEAL_LEAD_MS, resultAnalysisMs, ROUND_QUESTION_COUNT, selectAllNoPrompt, selectQuestionRound, classifyAnswers, readCheckerName, clearCheckerName } from './checkerLogic.js';
 import './checker.css';
 
+const MESSAGE_OFFER_DELAY_MS = 10_000;
+
 export default function NaughtyNicePage() {
   const [initialName, setInitialName] = useState(readCheckerName);
   const [showOffice, setShowOffice] = useState(() => Boolean(initialName));
@@ -33,6 +35,7 @@ function NaughtyNiceOffice({ initialName }) {
   const [answers, setAnswers] = useState(() => Array(ROUND_QUESTION_COUNT).fill(''));
   const [allNoPrompt, setAllNoPrompt] = useState('');
   const [outcomeAudioFinished, setOutcomeAudioFinished] = useState(false);
+  const [certificateDownloaded, setCertificateDownloaded] = useState(false);
   const [messageOfferOpen, setMessageOfferOpen] = useState(false);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [result, setResult] = useState(null);
@@ -54,10 +57,11 @@ function NaughtyNiceOffice({ initialName }) {
       setMessageOfferOpen(false);
       return undefined;
     }
+    if (!certificateDownloaded) return undefined;
     if (audio.enabled && !outcomeAudioFinished) return undefined;
-    const timer = window.setTimeout(() => setMessageOfferOpen(true), 1800);
+    const timer = window.setTimeout(() => setMessageOfferOpen(true), MESSAGE_OFFER_DELAY_MS);
     return () => window.clearTimeout(timer);
-  }, [stage, audio.enabled, outcomeAudioFinished]);
+  }, [stage, audio.enabled, outcomeAudioFinished, certificateDownloaded]);
   useEffect(() => {
     if (stage === 'entry') {
       if (entryKey || visited.current) entry.current?.querySelector('input')?.focus();
@@ -70,6 +74,7 @@ function NaughtyNiceOffice({ initialName }) {
     cancel(); audio.stop(); clearReaction(); setStage('entry'); setName('');
     setRound([]); setAnswers(Array(ROUND_QUESTION_COUNT).fill('')); setAllNoPrompt('');
     setQuestionIndex(0); setResult(null); setError(''); setOutcomeAudioFinished(false);
+    setCertificateDownloaded(false);
     setMessageOfferOpen(false); setEntryKey(value => value + 1);
   };
   useEffect(() => {
@@ -78,6 +83,7 @@ function NaughtyNiceOffice({ initialName }) {
       cancel(); audio.stop(); clearReaction(); setName(''); setRound([]); setAnswers(Array(ROUND_QUESTION_COUNT).fill(''));
       setAllNoPrompt('');
       setResult(null); setQuestionIndex(0); setError(''); setOutcomeAudioFinished(false);
+      setCertificateDownloaded(false);
       setMessageOfferOpen(false); setStage('entry'); setEntryKey(value => value + 1);
     };
     const show = event => { if (event.persisted) hide(); };
@@ -122,7 +128,7 @@ function NaughtyNiceOffice({ initialName }) {
             if (!run(1800, () => { audio.stop(); setStage('questions'); })) return;
             setRound(selectQuestionRound());
             setAnswers(Array(ROUND_QUESTION_COUNT).fill('')); setAllNoPrompt('');
-            setOutcomeAudioFinished(false); setMessageOfferOpen(false);
+            setOutcomeAudioFinished(false); setCertificateDownloaded(false); setMessageOfferOpen(false);
             setName(value); setQuestionIndex(0); setStage('connecting');
             audio.play('connecting'); audio.effect('click');
           }} />
@@ -142,7 +148,7 @@ function NaughtyNiceOffice({ initialName }) {
           return;
         }
         if (!run(resultAnalysisMs(final), () => { setResult(final); setStage('result'); })) return;
-        setError(''); setOutcomeAudioFinished(false); setMessageOfferOpen(false);
+        setError(''); setOutcomeAudioFinished(false); setCertificateDownloaded(false); setMessageOfferOpen(false);
         setStage('analysis');
         const callbacks = audioCallbacks(CERTIFICATE_REVEAL_LEAD_MS);
         audio.play(final, {
@@ -209,7 +215,8 @@ function NaughtyNiceOffice({ initialName }) {
           <p>Keep the Christmas magic going with a personal message from Santa for {name}.</p>
           <Link className="nn-primary" to="/free-santa-message">Get a FREE message from Santa</Link>
         </div>
-        <CheckerCertificate name={name} result={result} days={christmasDays} />
+        <CheckerCertificate name={name} result={result} days={christmasDays}
+          onDownload={() => setCertificateDownloaded(true)} />
       </div>}
       <HomepageCornerControls audio={audio} onRestart={reset} showRestart={stage !== 'entry'} />
       </div>
