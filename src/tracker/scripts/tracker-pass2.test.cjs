@@ -248,7 +248,7 @@ test("homepage banner keeps its year-round heading in server and every seasonal 
     assert.match(mounted, seasonalCopy, date);
     assert.match(mounted, new RegExp(`href="/santa-tracker"[^>]*>${action}`), date);
     assert.equal(mounted.includes("Journey Progress"), stats, date);
-    assert.equal(mounted.includes('viewBox="0 0 1000 500"'), !stats, date);
+    assert.equal(/viewBox="(?:0 0 1000 500|-84 -42 1168 584)"/.test(mounted), !stats, date);
     h.resetHooks();
     const nodes = hosts(Banner());
     const divider = nodes.find(node => node.props?.["aria-hidden"] === "true" && text(node).includes("✦"));
@@ -270,7 +270,7 @@ test("map SVG has a connected name/summary for route and holiday, preserving vis
   assert.equal(svg.props["aria-describedby"], desc.props.id);
   assert.match(text(title), /estimated journey map/);
   assert.match(text(desc), /estimated position.*Red dots.*visited.*upcoming/);
-  assert.ok(nodes.some((node) => node.type === "text" && text(node) === "🎅"));
+  assert.match(h.render(React.createElement(map, props)), /data-santa-artwork=""[^>]*href="\/images\/tracker\/santa-sleigh(?:-left)?\.png"/);
   assert.match(h.render(React.createElement(map, props)), /Estimated route based on local midnight across time zones/);
   const holiday = hosts(map({ ...props, onHoliday: true }));
   assert.match(text(holiday.find((node) => node.type === "title")), /holiday location/);

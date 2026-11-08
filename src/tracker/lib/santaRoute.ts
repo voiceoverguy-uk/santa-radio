@@ -6,6 +6,7 @@ import {
   getScheduledStops,
   getStopDepartureDate,
   type SantaStop,
+  type ScheduledStop,
 } from "@/data/santaRouteStops";
 import { holidayDestinations, type HolidayDestination } from "@/data/santaHolidays";
 
@@ -121,7 +122,7 @@ function getJourneyEndTime(year: number): Date {
   return new Date(Date.UTC(year, 11, 24) + TRACKER_CONSTANTS.journeyEndUtcHour * 3600000);
 }
 
-function getStopArrivals(year: number): { stop: SantaStop; arrival: Date }[] {
+function getStopArrivals(year: number): ScheduledStop[] {
   return getScheduledStops(year);
 }
 
@@ -283,15 +284,34 @@ export function getInterpolatedMapPosition(now: Date): MapPosition {
 
   const lat = currentArrival.stop.lat + (nextArrival.stop.lat - currentArrival.stop.lat) * t;
 
-  let lngDiff = nextArrival.stop.lng - currentArrival.stop.lng;
-  if (Math.abs(lngDiff) > 180) {
-    lngDiff = lngDiff > 0 ? lngDiff - 360 : lngDiff + 360;
-  }
+  const lngDiff = shortestLongitudeDelta(currentArrival.stop.lng, nextArrival.stop.lng);
   let lng = currentArrival.stop.lng + lngDiff * t;
   if (lng > 180) lng -= 360;
   if (lng < -180) lng += 360;
 
   return { lat, lng, ...latLngToXY(lat, lng) };
+}
+
+/** The same date-line convention used by the estimated position interpolation. */
+export function shortestLongitudeDelta(from: number, to: number): number {
+  const delta = to - from;
+  return Math.abs(delta) > 180 ? delta + (delta > 0 ? -360 : 360) : delta;
+}
+
+/**
+ * Hold the incoming leg's direction throughout a stop, then use the outgoing
+ * leg after departure. No frame history: preview jumps give the same result.
+ */
+export function getJourneySleighDirection(now: Date): "left" | "right" {
+  if (getSeasonalTrackerMode(now) !== "LIVE") return "left";
+  const schedule = getStopArrivals(getChristmasEveYear(now));
+  const currentId = getCurrentStopId(now);
+  const index = schedule.findIndex(entry => entry.stop.id === currentId);
+  if (index < 0) return "left";
+  const dwelling = now.getTime() <= schedule[index].departure.getTime();
+  const from = schedule[dwelling ? index - 1 : index]?.stop;
+  const to = schedule[dwelling ? index : index + 1]?.stop;
+  return from && to && shortestLongitudeDelta(from.lng, to.lng) > 0 ? "right" : "left";
 }
 
 function msToCountdown(ms: number): CountdownValues {

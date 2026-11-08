@@ -1,16 +1,7 @@
-.santa-tracker .tj-source {
-  padding: .55rem 1rem;
-  margin: 0;
-  font-size: .7rem;
-  color: var(--tracker-muted);
-  text-align: center;
-}
-.santa-tracker .tj-source a { color: var(--tracker-gold); text-decoration: underline; }
 .tj-camera { transform-origin: 0 0; transition: transform 1100ms cubic-bezier(.65,.02,.25,1); }
 .tj-pin { transition: r 600ms ease, opacity 400ms ease; }
 .tj-label { paint-order: stroke; stroke: #17334A; stroke-linejoin: round; fill: #FFF8E7; font-family: 'Cinzel', Georgia, serif; pointer-events: none; }
 .tj-label-next { fill: #e6ce86; }
-.tj-santa { transition: transform 900ms cubic-bezier(.4,0,.2,1); }
 .tj-toolbar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 10px; border-top: 1px solid #D4AF3730; background: #081e17cc; }
 .tj-btn {
   appearance: none; font: inherit; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase;
@@ -54,6 +45,6 @@
   .tj-num { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .tj-camera, .tj-santa, .tj-pin, .tj-minimap rect.tj-view, .tj-tl-progress > span, .tj-btn { transition: none !important; }
+  .tj-camera, .tj-pin, .tj-minimap rect.tj-view, .tj-tl-progress > span, .tj-btn { transition: none !important; }
   .tj-live-dot { animation: none; }
 }

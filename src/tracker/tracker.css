@@ -300,6 +300,14 @@
 }
 .santa-tracker .tracker-map { background: #2F83B7; border-color: #D4AF374a; }
 .santa-tracker .tracker-map-caption { background: #081e17dd; color: #d0d9c8; }
+.santa-tracker .tracker-map-status {
+  display: flex;
+  justify-content: center;
+  padding: .5rem .75rem;
+  border-top: 1px solid #D4AF3730;
+  background: #081e17cc;
+}
+.santa-tracker .tracker-map-status .tracker-status { margin: 0; }
 @media (min-width: 768px) {
   .santa-tracker .tracker-hero .tracker-map {
     width: min(1320px, calc(100vw - 48px));
@@ -432,4 +440,43 @@
 @media (prefers-reduced-motion: reduce) {
   .santa-tracker .tracker-countdown-unit,
   .tracker-banner .tracker-countdown-unit { transition: none; }
+}
+
+/* Map stage: one SantaStats instance. Stacked below 1200px; flanking map at >=1200px. */
+.santa-tracker .tracker-stage-stats { margin-top: 3rem; }
+.santa-tracker .tracker-stats-grid > * { min-width: 0; }
+@media (min-width: 1200px) {
+  .santa-tracker .tracker-stage {
+    --side: clamp(12rem, 15vw, 15.5rem);
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--side) minmax(0, 1fr) var(--side);
+    column-gap: 1.25rem;
+    width: min(1400px, calc(100vw - 48px));
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .santa-tracker .tracker-stage-map { grid-column: 2; grid-row: 1; position: relative; z-index: 1; }
+  .santa-tracker .tracker-stage .tracker-map { width: 100%; left: auto; transform: none; max-width: none; }
+  .santa-tracker .tracker-stage-body { grid-column: 2; grid-row: 2; }
+  .santa-tracker .tracker-stage-stats { grid-column: 1 / -1; grid-row: 1; margin: 0; pointer-events: none; }
+  .santa-tracker .tracker-stage-stats > h2 {
+    position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+  }
+  .santa-tracker .tracker-stats-grid {
+    display: grid;
+    grid-template-columns: var(--side) minmax(0, 1fr) var(--side);
+    grid-auto-rows: auto;
+    column-gap: 1.25rem;
+    row-gap: .75rem;
+    align-content: center;
+    height: 100%;
+  }
+  .santa-tracker .tracker-stats-grid > * { pointer-events: auto; grid-column: 1; }
+  .santa-tracker .tracker-stats-grid > :nth-child(n+5) { grid-column: 3; }
+  .santa-tracker .tracker-stats-grid > :nth-child(1), .santa-tracker .tracker-stats-grid > :nth-child(5) { grid-row: 1; }
+  .santa-tracker .tracker-stats-grid > :nth-child(2), .santa-tracker .tracker-stats-grid > :nth-child(6) { grid-row: 2; }
+  .santa-tracker .tracker-stats-grid > :nth-child(3), .santa-tracker .tracker-stats-grid > :nth-child(7) { grid-row: 3; }
+  .santa-tracker .tracker-stats-grid > :nth-child(4), .santa-tracker .tracker-stats-grid > :nth-child(8) { grid-row: 4; }
+  .santa-tracker .tracker-stats-grid > :nth-child(9) { grid-column: 1; grid-row: 5; }
 }

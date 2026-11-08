@@ -15,6 +15,47 @@ Do not start a second website process from the mobile artifact. Its API requests
 use this same root website service. This preview registration does not publish
 the website or change the existing GitHub-to-Vercel release process.
 
+## Seasonal tracker markers
+
+The website's six supplied Santa illustrations are served from
+`public/images/tracker/` with descriptive PNG names. These are uncropped,
+transparent 256px-long-edge copies of the supplied originals, retaining their
+aspect ratios. Holiday and scout side views face right west of longitude zero,
+mirror east of zero, and use their matching front view at zero. Local time zones
+and camera views have no effect on orientation.
+
+Journey sleigh direction follows the chronological schedule and the same
+shortest-longitude convention as position interpolation. A stop retains its
+incoming direction until departure; the first stop and purely north/south legs
+default left. Preparation and completion retain the existing non-trip marker.
+Only map edge clearance changes; route timing, overview dots and controls do not.
+
+The marker's location updates in the route's SVG coordinate system without a
+separate position tween. The camera can still pan smoothly because it transforms
+both the marker and route together. Test accelerated playback with normal motion
+enabled: reduced motion alone can hide marker drift.
+
+Focused checks:
+
+```sh
+node --test src/tracker/scripts/marker-artwork.test.cjs src/tracker/scripts/route-expansion.test.cjs src/tracker/scripts/itinerary290.test.cjs
+npx playwright test tests/tracker-artwork.spec.js tests/tracker-290.spec.js tests/tracker-preview-controls.spec.js --project=chromium
+npx playwright test tests/tracker-motion.spec.js --project=chromium
+```
+
+## Tracker dashboard layout
+
+The full tracker dashboard uses a single live `SantaStats` instance. On desktop
+screens from 1200px, its first four cards sit left of the map and the next four
+right of it, with the conditional UK arrival card retained. Narrower screens
+keep the normal card grid after the map, status and supporting copy. Keep the
+map's full-width breakout scoped so it cannot overlap desktop side cards.
+Focused layout checks:
+
+```sh
+npx playwright test tests/tracker-dashboard-layout.spec.js --project=chromium
+```
+
 ## Shared red actions
 
 `src/red-actions.css`, imported by the root `src/index.css`, owns the website's

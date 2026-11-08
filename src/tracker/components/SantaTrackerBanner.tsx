@@ -7,6 +7,8 @@ import { getDashboardData, isHolidaySeason, isRouteResearchSeason, getRouteResea
 import { worldMapPaths } from "@/data/worldMapPaths";
 import { santaStops } from "@/data/santaRouteStops";
 import { MAP_PALETTE, mapLandColor } from "./mapPalette";
+import { getSantaMarkerArtwork } from "../lib/santaMarker";
+import SantaMarker from "./SantaMarker";
 
 export default function SantaTrackerBanner() {
   const [now, setNow] = useState<Date | null>(null);
@@ -181,6 +183,7 @@ function LiveStats({ data }: { data: ReturnType<typeof getDashboardData> }) {
 }
 
 function MiniMap({ holiday, researching = false }: { holiday: HolidayDestination | null; researching?: boolean }) {
+  const artwork = holiday ? getSantaMarkerArtwork(researching ? "ROUTE_RESEARCH" : "OFF_SEASON", holiday.lng) : null;
   const santaX = holiday
     ? ((holiday.lng + 180) / 360) * 1000
     : ((0 + 180) / 360) * 1000;
@@ -201,7 +204,7 @@ function MiniMap({ holiday, researching = false }: { holiday: HolidayDestination
       className="tracker-map tracker-banner-map block w-full rounded-lg border overflow-hidden"
     >
       <svg
-        viewBox="0 0 1000 500"
+        viewBox={artwork ? "-84 -42 1168 584" : "0 0 1000 500"}
         className="w-full"
         style={{ aspectRatio: "2 / 1" }}
         preserveAspectRatio="xMidYMid meet"
@@ -232,7 +235,9 @@ function MiniMap({ holiday, researching = false }: { holiday: HolidayDestination
           <animate attributeName="r" values="12;22;12" dur="2s" repeatCount="indefinite" />
           <animate attributeName="opacity" values="0.3;0.1;0.3" dur="2s" repeatCount="indefinite" />
         </circle>
-        <text
+        {artwork ? <g data-santa-location="" transform={`translate(${santaX} ${santaY})`}>
+          <SantaMarker artwork={artwork} scale={2} />
+        </g> : <text
           x={santaX}
           y={santaY}
           textAnchor="middle"
@@ -241,7 +246,7 @@ function MiniMap({ holiday, researching = false }: { holiday: HolidayDestination
           className="select-none"
         >
           🎅
-        </text>
+        </text>}
       </svg>
       <div className="tracker-map-caption px-2 py-1.5 text-[10px] text-center" aria-hidden="true">
         {caption}

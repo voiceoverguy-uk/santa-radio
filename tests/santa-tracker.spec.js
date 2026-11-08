@@ -507,9 +507,15 @@ for (const [date, holiday] of [
     const map = banner.getByRole('link', { name: `Open the Santa Tracker: ${caption}` });
     await expect(map).toBeVisible();
     await expect(map.locator('.tracker-map-caption')).toHaveText(caption);
-    const marker = map.locator('svg text');
-    const x = Number(await marker.getAttribute('x'));
-    const y = Number(await marker.getAttribute('y'));
+    const marker = map.locator(holiday ? 'svg [data-santa-location]' : 'svg text');
+    const position = async () => marker.evaluate(node => {
+      if (node.tagName.toLowerCase() === 'text') return {
+        x: Number(node.getAttribute('x')), y: Number(node.getAttribute('y')),
+      };
+      const [x, y] = node.getAttribute('transform').match(/-?\d+(?:\.\d+)?/g).map(Number);
+      return { x, y };
+    });
+    const { x, y } = await position();
     if (holiday) {
       expect(x).toBeGreaterThan(0);
       expect(x).toBeLessThan(1000);
@@ -529,8 +535,7 @@ for (const [date, holiday] of [
     const after = await countdown.allTextContents();
     const seconds = values => values.reduce((sum, value, i) => sum + Number(value) * [86400, 3600, 60, 1][i], 0);
     expect(seconds(before) - seconds(after)).toBe(1);
-    await expect(marker).toHaveAttribute('x', String(x));
-    await expect(marker).toHaveAttribute('y', String(y));
+    expect(await position()).toEqual({ x, y });
     const stops = map.locator('[data-route-stops] circle');
     await expect(stops).toHaveCount(60);
     const positions = await stops.evaluateAll(nodes => nodes.map(node => ({

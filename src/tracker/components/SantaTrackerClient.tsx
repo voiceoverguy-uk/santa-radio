@@ -173,16 +173,18 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
             <span className="tracker-heading-accent">Around the World</span>
           </h1>}
 
-          <div className="mt-8 w-full">
-            <SantaMap effectiveTime={effectiveTime} mapPosition={data.mapPosition} onHoliday={onHoliday} researchDestination={researching ? holiday : null} />
+          <div className="tracker-stage mt-8 w-full">
+          <div className="tracker-stage-map w-full">
+            <SantaMap effectiveTime={effectiveTime} mapPosition={data.mapPosition} onHoliday={onHoliday} researchDestination={researching ? holiday : null} liveStatusLabel={isLive ? statusLabel : undefined} />
           </div>
+          <div className="tracker-stage-body">
 
-          <div className="tracker-status inline-flex items-center gap-2 rounded-full px-4 py-1.5 mt-3 mb-6">
+          {!isLive && <div className="tracker-status inline-flex items-center gap-2 rounded-full px-4 py-1.5 mt-3 mb-6">
             <span className={`w-2 h-2 rounded-full ${statusColor} animate-pulse`} />
             <span className="text-xs font-medium uppercase tracking-wider">
               {statusLabel}
             </span>
-          </div>
+          </div>}
 
           {onTrip && statusMessage}
 
@@ -253,16 +255,16 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
               </div>
             </div>
           )}
-      </TrackerHero>
+          </div>
 
-      <section className="px-4 sm:px-6 pb-12">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="tracker-section-title text-lg sm:text-xl mb-4">
+          <section className="tracker-stage-stats text-left" aria-labelledby="tracker-dashboard-title">
+            <h2 id="tracker-dashboard-title" className="tracker-section-title text-lg sm:text-xl mb-4">
               Updating Estimated Dashboard
-          </h2>
-          <SantaStats effectiveTime={effectiveTime} holiday={onTrip ? holiday : undefined} />
-        </div>
-      </section>
+            </h2>
+            <SantaStats effectiveTime={effectiveTime} holiday={onTrip ? holiday : undefined} />
+          </section>
+          </div>
+      </TrackerHero>
 
       <section className="px-4 sm:px-6 pb-12">
         <div className="max-w-6xl mx-auto">

@@ -7,17 +7,21 @@ import { worldMapPaths } from "@/data/worldMapPaths";
 import { MAP_REGIONS, WORLD, followCamera, positionCamera, project, regionCamera, stopRegion, type Camera } from "./trackerCamera";
 import { MAP_PALETTE, mapLandColor } from "./mapPalette";
 import "../tracker-journey.css";
+import { getJourneySleighDirection, getSeasonalTrackerMode } from "../lib/santaRoute";
+import { getSantaMarkerArtwork } from "../lib/santaMarker";
+import SantaMarker from "./SantaMarker";
 
 interface SantaMapProps {
   effectiveTime: Date;
   mapPosition: MapPosition;
   onHoliday?: boolean;
   researchDestination?: HolidayDestination | null;
+  liveStatusLabel?: string;
 }
 
 type View = "follow" | "world" | string;
 
-export default function SantaMap({ effectiveTime, mapPosition, onHoliday, researchDestination }: SantaMapProps) {
+export default function SantaMap({ effectiveTime, mapPosition, onHoliday, researchDestination, liveStatusLabel }: SantaMapProps) {
   const titleId = useId();
   const descriptionId = useId();
   const mapRef = useRef<HTMLDivElement>(null);
@@ -33,6 +37,8 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
   const visited = getVisitedStops(effectiveTime);
   const currentId = getCurrentStopId(effectiveTime);
   const live = !!currentId && !onHoliday && !researchDestination;
+  const mode = getSeasonalTrackerMode(effectiveTime);
+  const artwork = getSantaMarkerArtwork(mode, mapPosition.lng, getJourneySleighDirection(effectiveTime));
 
   const ordered = useMemo(
     () => [...santaStops].sort((a, b) => getStopArrivalDate(a, year).getTime() - getStopArrivalDate(b, year).getTime()),
@@ -67,10 +73,16 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
   } else if (effectiveView !== "world" && effectiveView !== "follow") {
     camera = regionCamera(effectiveView);
   }
-  if (effectiveView === "follow") {
-    // Leave room for the full Santa icon even at the South Pole's map edge.
-    const margin = 18 * pixelFactor * camera.w / 1000;
-    camera = { ...camera, cy: Math.max(camera.cy, santaXY.y - camera.w / 4 + margin) };
+  if (showSanta && (effectiveView === "follow" || effectiveView === "world" ||
+    (Math.abs(santaXY.x - camera.cx) <= camera.w / 2 && Math.abs(santaXY.y - camera.cy) <= camera.w / 4))) {
+    // Only edge clearance changes; the marker stays at its geographic anchor.
+    const mx = ((artwork?.width ?? 24) / 2 + 3) * pixelFactor * camera.w / 1000;
+    const my = ((artwork?.height ?? 24) / 2 + 3) * pixelFactor * camera.w / 1000;
+    camera = {
+      ...camera,
+      cx: Math.max(santaXY.x - camera.w / 2 + mx, Math.min(camera.cx, santaXY.x + camera.w / 2 - mx)),
+      cy: Math.max(santaXY.y - camera.w / 4 + my, Math.min(camera.cy, santaXY.y + camera.w / 4 - my)),
+    };
   }
   const s = MAP_W_OVER(camera);
   const tx = 500 - camera.cx * s;
@@ -213,10 +225,12 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
             })}
 
             {showSanta && (
-              <g className="tj-santa" style={{ transform: `translate(${santaXY.x}px, ${santaXY.y}px)` }} filter="url(#pulse-glow)">
-                <text x="0" y="0" textAnchor="middle" dominantBaseline="central" fontSize={24 * k} className="select-none">
+              // Position updates share the route's SVG coordinates immediately.
+              // A separate CSS tween lags behind the route at accelerated speeds.
+              <g className="tj-santa" transform={`translate(${santaXY.x} ${santaXY.y})`} filter={artwork ? undefined : "url(#pulse-glow)"}>
+                {artwork ? <SantaMarker artwork={artwork} scale={pixelFactor / s} /> : <text x="0" y="0" textAnchor="middle" dominantBaseline="central" fontSize={24 * k} className="select-none">
                   🎅
-                </text>
+                </text>}
               </g>
             )}
           </g>
@@ -278,7 +292,14 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
           <span style={{ color: "#e6ce86" }}>{regionLabel}</span>
         </span>
       </div>
-      <p className="tj-source">Fictional estimated itinerary · Local clocks use IANA time zones · Coordinates: <a href="https://www.geonames.org/" target="_blank" rel="noreferrer">GeoNames (CC BY)</a></p>
+      {liveStatusLabel && (
+        <div className="tracker-map-status">
+          <div className="tracker-status inline-flex items-center gap-2 rounded-full px-4 py-1.5" role="status">
+            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            <span className="text-xs font-medium uppercase tracking-wider">{liveStatusLabel}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
