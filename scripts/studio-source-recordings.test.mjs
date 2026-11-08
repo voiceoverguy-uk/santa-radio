@@ -54,6 +54,12 @@ for (const withTalent of [false, true]) {
         assert.ok(result.audio.length > 100000 && result.audio.length <= 4_400_000);
         assert.equal(result.order.some(path => path.endsWith('/1-5.flac')), withTalent);
         assert.equal(result.order.length, withTalent ? 16 : 14);
+        const ending = result.order.at(-1);
+        assert.ok(ending.endsWith('/studio/6th.flac'));
+        const endingPcm = readFileSync(result.prepared.get(ending).target);
+        const speech = readFileSync(join(directory, 'speech.f32'));
+        assert.deepEqual(speech.subarray(-endingPcm.length), endingPcm,
+          'New messages end with the complete prepared sixth recording');
         const pcm = execFileSync(ffmpeg, ['-v', 'error', '-i', join(directory, 'message.mp3'),
           '-ar', '48000', '-ac', '2', '-f', 'f32le', '-'],
         { maxBuffer: 90 * 1024 * 1024, timeout: 20000 });
