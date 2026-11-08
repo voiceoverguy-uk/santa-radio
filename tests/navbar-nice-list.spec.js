@@ -11,7 +11,7 @@ test.beforeEach(async ({ page }) => {
   await page.route(/youtube\.com|googlevideo\.com|global\.citrus3\.com/, route => route.abort());
 });
 
-async function assertDestination(page) {
+async function assertHomepageDestination(page) {
   await expect(page).toHaveURL(/\/#nice-list$/);
   const checker = page.locator('#nice-list');
   await expect(checker).toBeFocused();
@@ -23,6 +23,20 @@ async function assertDestination(page) {
   await expect.poll(offset).toBeGreaterThanOrEqual(15);
   await expect.poll(offset).toBeLessThan(18);
   await expect(checker.getByRole('heading', { name: 'Quick Nice List Check', exact: true })).toBeAttached();
+}
+
+async function assertDestination(page) {
+  await expect(page).toHaveURL(/\/naughty-or-nice-list-checker\/?$/);
+  const checker = page.locator('#nice-list');
+  await expect(checker.getByRole('heading', { name: 'Head Elf’s Naughty or Nice List Checker', exact: true })).toBeVisible();
+  await expect(checker.getByRole('combobox', { name: 'Confirm first name' })).toBeVisible();
+  const nav = page.getByRole('navigation', { name: 'Main navigation' });
+  const link = nav.getByRole('link', { name: 'Nice List?', exact: true, includeHidden: true });
+  await expect(link).toHaveAttribute('href', '/naughty-or-nice-list-checker');
+  await expect(link).toHaveAttribute('aria-current', 'page');
+  await expect(link).toHaveClass('active');
+  await expect(nav.getByRole('link', { name: 'Home', exact: true, includeHidden: true })).not.toHaveAttribute('aria-current');
+  await expect(page.locator('.nn-office')).toHaveCount(0);
 }
 
 async function assertMobileDestination(page) {
@@ -43,41 +57,47 @@ async function assertMobileDestination(page) {
   await expect(page.locator('.nn-widget-frame').getByRole('combobox')).toBeVisible();
 }
 
-test('Nice List? scrolls to the homepage checker and works again without losing the entered name', async ({ page }) => {
+test('Nice List? opens the standalone checker by keyboard and stays current on repeat visits', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 1000 });
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   const link = page.getByRole('navigation').getByRole('link', { name: 'Nice List?', exact: true });
-  await expect(link).toHaveAttribute('href', '/#nice-list');
+  await expect(link).toHaveAttribute('href', '/naughty-or-nice-list-checker');
+  await expect(link).not.toHaveAttribute('aria-current');
   await link.focus();
   await page.keyboard.press('Enter');
   await assertDestination(page);
-  await expect.poll(() => page.locator('.santa-dash-promo').evaluate(element => {
-    const promoBottom = element.getBoundingClientRect().bottom;
-    const nav = document.querySelector('.navbar').getBoundingClientRect();
-    return promoBottom <= nav.bottom;
-  })).toBe(true);
-  await expect(link).toHaveAttribute('aria-current', 'location');
   const input = page.locator('#nice-list').getByRole('combobox');
   await input.fill('Erin');
-  await page.evaluate(() => window.scrollTo(0, 0));
   await link.click();
   await assertDestination(page);
   await expect(input).toHaveValue('Erin');
 });
 
-test('mobile Nice List navigation and direct fragment loads place the form between fixed controls', async ({ page }) => {
+test('homepage direct fragment loads still place the form between fixed controls', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/#nice-list', { waitUntil: 'domcontentloaded' });
   await assertMobileDestination(page);
   await page.reload({ waitUntil: 'domcontentloaded' });
   await assertMobileDestination(page);
 
-  await page.goto('/', { waitUntil: 'domcontentloaded' });
+});
+
+test('mobile Nice List navigation from another page closes the menu and opens the standalone checker', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/apps', { waitUntil: 'domcontentloaded' });
   const nav = page.getByRole('navigation', { name: 'Main navigation' });
   await nav.getByRole('button', { name: 'Open menu' }).click();
+  await page.keyboard.press('Escape');
+  await expect(nav.locator('.navbar-links')).toBeHidden();
+  await nav.getByRole('button', { name: 'Open menu' }).click();
   await nav.getByRole('link', { name: 'Nice List?', exact: true }).click();
-  await expect(page).toHaveURL(/\/#nice-list$/);
-  await assertMobileDestination(page);
+  await assertDestination(page);
+  await expect(nav.locator('.navbar-links')).toBeHidden();
+  await expect(nav.getByRole('button', { name: 'Open menu' })).toHaveAttribute('aria-expanded', 'false');
+  await nav.getByRole('button', { name: 'Open menu' }).click();
+  await expect(nav.getByRole('link', { name: 'Nice List?', exact: true })).toBeVisible();
+  await nav.getByRole('link', { name: 'Nice List?', exact: true }).click();
+  await expect(nav.locator('.navbar-links')).toBeHidden();
 });
 
 test('mobile fragment settling stops when visitors scroll or interact', async ({ page }) => {
@@ -99,27 +119,44 @@ test('mobile fragment settling stops when visitors scroll or interact', async ({
     .toBeLessThan(0);
 });
 
-test('Nice List? returns from the Head Elf page to the homepage checker, and direct links work', async ({ page }) => {
+test('direct checker links and reloads identify Nice List? as the current page', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 1000 });
-  await page.goto('/naughty-or-nice-list-checker', { waitUntil: 'domcontentloaded' });
-  await page.getByRole('navigation').getByRole('link', { name: 'Nice List?', exact: true }).click();
+  for (const path of ['/naughty-or-nice-list-checker', '/naughty-or-nice-list-checker/']) {
+    await page.goto(path, { waitUntil: 'domcontentloaded' });
+    await assertDestination(page);
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await assertDestination(page);
+  }
+});
+
+test('Nice List? opens the checker from another page and browser history restores the active destination', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 1000 });
+  await page.goto('/apps', { waitUntil: 'domcontentloaded' });
+  const nav = page.getByRole('navigation', { name: 'Main navigation' });
+  const link = nav.getByRole('link', { name: 'Nice List?', exact: true });
+  await link.click();
   await assertDestination(page);
-  await expect(page.locator('.nn-office')).toHaveCount(0);
-  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.goBack();
+  await expect(page).toHaveURL(/\/apps$/);
+  await expect(nav.getByRole('link', { name: 'Apps', exact: true })).toHaveAttribute('aria-current', 'page');
+  await expect(link).not.toHaveAttribute('aria-current');
+  await page.goForward();
   await assertDestination(page);
 });
 
 test('cross-page landing stays aligned after late layout changes but lets visitors scroll away', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto('/apps', { waitUntil: 'domcontentloaded' });
-  await page.getByRole('navigation').getByRole('link', { name: 'Nice List?', exact: true }).click();
-  await assertDestination(page);
+  await page.goto('/#nice-list', { waitUntil: 'domcontentloaded' });
+  await assertHomepageDestination(page);
+  const nav = page.getByRole('navigation', { name: 'Main navigation' });
+  await expect(nav.getByRole('link', { name: 'Home', exact: true })).toHaveAttribute('aria-current', 'page');
+  await expect(nav.getByRole('link', { name: 'Nice List?', exact: true })).not.toHaveAttribute('aria-current');
   await page.waitForTimeout(2200);
   await page.evaluate(() => {
     const previous = document.querySelector('#nice-list').previousElementSibling;
     previous.style.minHeight = `${previous.getBoundingClientRect().height + 240}px`;
   });
-  await assertDestination(page);
+  await assertHomepageDestination(page);
   await page.mouse.wheel(0, 400);
   await expect.poll(() => page.locator('#nice-list').evaluate(el => el.getBoundingClientRect().top)).toBeLessThan(0);
   await page.evaluate(() => {
@@ -130,7 +167,7 @@ test('cross-page landing stays aligned after late layout changes but lets visito
   expect(await page.locator('#nice-list').evaluate(el => el.getBoundingClientRect().top)).toBeLessThan(0);
 });
 
-test('Nice List? fits desktop navigation and closes the phone menu before scrolling', async ({ page }, testInfo) => {
+test('Nice List? fits desktop navigation and closes the phone menu when opening the checker', async ({ page }, testInfo) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   const nav = page.getByRole('navigation', { name: 'Main navigation' });
   for (const [width, size] of [[1440, ''], [1280, ''], [1201, ''], [390, ''], [320, ''], [1280, '200%']]) {
@@ -159,7 +196,7 @@ test('Nice List? fits desktop navigation and closes the phone menu before scroll
     }
     await nav.screenshot({ path: testInfo.outputPath(`nice-list-nav-${width}-${size || 'normal'}.png`), animations: 'disabled' });
     await link.click();
-    await expect(page.locator('#nice-list')).toBeFocused();
+    await assertDestination(page);
     if (collapsed) await expect(links).toBeHidden();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }

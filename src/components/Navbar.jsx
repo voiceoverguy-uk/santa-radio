@@ -42,13 +42,12 @@ export default function Navbar() {
     { radio: true }, { to: '/christmas-music', label: 'Music' },
     { to: '/mugshots/all', label: 'Celebrity Mugshots' },
     { to: '/santa-tracker', label: 'Santa Tracker' },
-    { to: '/#nice-list', label: 'Nice List?' },
+    { to: '/naughty-or-nice-list-checker', label: 'Nice List?' },
   ];
   const pathname = location.pathname.replace(/\/+$/, '') || '/';
   const isStudio = pathname === '/santa-message-workshop';
   const isActive = to => {
-    if (to === '/#nice-list') return pathname === '/' && location.hash === '#nice-list';
-    if (to === '/') return pathname === '/' && location.hash !== '#nice-list';
+    if (to === '/') return pathname === '/';
     if (to === '/mugshots/all') return /^\/mugshots(?:\/|$)/.test(pathname);
     if (to === '/christmas-music') {
       return /^\/(?:christmas-music|christmas-artist|christmas-karaoke-lyrics)(?:\/|$)/.test(pathname);
