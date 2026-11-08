@@ -105,7 +105,7 @@ for (const [date, status] of [
     await expect(page.locator('.tj-legend')).toContainText("Santa's position");
     await expect(page.locator('.tracker-map-caption')).toContainText(/represented position|holiday location|Route research/);
 
-    const marker = page.locator('.tj-santa text');
+    const marker = page.locator('.tj-santa [data-santa-artwork], .tj-santa text');
     const map = page.locator('.tracker-map > div > svg[role="img"]');
     await expect.poll(async () => {
       const markerBox = await marker.boundingBox();

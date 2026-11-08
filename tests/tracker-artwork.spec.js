@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
 });
 
-async function imageLoadedAndContained(image, { min = 20, max = 70 } = {}) {
+async function imageLoadedAndContained(image, { min = 20, max = 90 } = {}) {
   await expect(image).toBeVisible();
   const decoded = await image.evaluate(async node => {
     const img = new Image();
@@ -25,6 +25,65 @@ async function imageLoadedAndContained(image, { min = 20, max = 70 } = {}) {
   const bounds = await image.boundingBox();
   expect(Math.max(bounds.width, bounds.height)).toBeGreaterThanOrEqual(min);
   expect(Math.max(bounds.width, bounds.height)).toBeLessThanOrEqual(max);
+}
+
+async function expectCenteredOnAnchor(image) {
+  await expect.poll(() => image.evaluate(node => {
+    const rect = node.getBoundingClientRect();
+    const anchor = new DOMPoint(0, 0).matrixTransform(node.parentElement.getScreenCTM());
+    return Math.max(
+      Math.abs(rect.x + rect.width / 2 - anchor.x),
+      Math.abs(rect.y + rect.height / 2 - anchor.y),
+    );
+  })).toBeLessThan(1.5);
+}
+
+for (const width of [1440, 390]) {
+  test(`Follow Santa enlarges seasonal artwork only on the full map at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    // Fiji is close to the Pacific map edge, exercising enlarged edge clearance.
+    await page.addInitScript(() => { Math.random = () => (25.1 / 91); });
+
+    for (const [date, outfit] of [
+      ['2026-11-09T12:00:00Z', 'holiday'],
+      ['2026-11-10T12:00:00Z', 'route-scout'],
+    ]) {
+      await page.clock.setFixedTime(new Date(date));
+      await page.goto('/santa-tracker');
+      const toolbar = page.locator('.tj-toolbar');
+      const marker = page.locator('.tj-santa [data-santa-artwork]');
+      await expect(marker).toHaveAttribute('href', `/images/tracker/santa-${outfit}.png`);
+      await expect(toolbar.getByRole('button', { name: 'Follow Santa', exact: true })).toHaveAttribute('aria-pressed', 'true');
+      await imageLoadedAndContained(marker);
+      const followBounds = await marker.boundingBox();
+      const mirrored = await marker.getAttribute('data-mirrored');
+      await expectCenteredOnAnchor(marker);
+
+      await toolbar.getByRole('button', { name: 'World', exact: true }).click();
+      await expect(page.locator('.tj-camera')).toHaveAttribute('data-map-view', 'world');
+      await imageLoadedAndContained(marker);
+      const worldBounds = await marker.boundingBox();
+
+      await page.getByLabel('Browse a region', { exact: true }).selectOption('Pacific');
+      await expect(page.locator('.tj-camera')).toHaveAttribute('data-map-view', 'Pacific');
+      await imageLoadedAndContained(marker);
+      const regionBounds = await marker.boundingBox();
+      expect(regionBounds.width).toBeCloseTo(worldBounds.width, 1);
+      expect(regionBounds.height).toBeCloseTo(worldBounds.height, 1);
+      expect(await marker.getAttribute('data-mirrored')).toBe(mirrored);
+
+      await toolbar.getByRole('button', { name: 'Follow Santa', exact: true }).click();
+      await expect(page.locator('.tj-camera')).toHaveAttribute('data-map-view', 'follow');
+      await imageLoadedAndContained(marker);
+      const restoredBounds = await marker.boundingBox();
+      expect(followBounds).not.toBeNull();
+      expect(restoredBounds.width).toBeGreaterThan(worldBounds.width * 1.4);
+      expect(restoredBounds.height).toBeGreaterThan(worldBounds.height * 1.4);
+      expect(restoredBounds.width).toBeCloseTo(followBounds.width, 1);
+      expect(restoredBounds.height).toBeCloseTo(followBounds.height, 1);
+      expect(await marker.getAttribute('data-mirrored')).toBe(mirrored);
+    }
+  });
 }
 
 for (const width of [1440, 390]) {
@@ -84,12 +143,16 @@ for (const width of [1440, 390]) {
       const expected = `/images/tracker/santa-sleigh${leg.right ? '' : '-left'}.png`;
       await expect(image).toHaveAttribute('href', expected);
       await imageLoadedAndContained(image);
+      await expectCenteredOnAnchor(image);
       await page.getByRole('button', { name: 'Preview Controls', exact: true }).click();
       await page.locator('.tj-toolbar').getByRole('button', { name: 'World', exact: true }).click();
       await expect(image).toHaveAttribute('href', expected);
       await imageLoadedAndContained(image);
+      await expectCenteredOnAnchor(image);
       await page.locator('.tj-toolbar').getByRole('button', { name: 'Follow Santa', exact: true }).click();
       await expect(image).toHaveAttribute('href', expected);
+      await imageLoadedAndContained(image);
+      await expectCenteredOnAnchor(image);
       await page.getByRole('button', { name: 'Preview Controls', exact: true }).click();
     }
     // Non-sequential seasonal preview jumps must not retain the previous outfit.

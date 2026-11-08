@@ -55,6 +55,7 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
 
   const [view, setView] = useState<View>("follow");
   const effectiveView = view;
+  const santaArtworkScale = effectiveView === "follow" ? 1.5 : 1;
 
   const projectedSanta = project(mapPosition.lat, mapPosition.lng);
   const wrapPacific = effectiveView === "Pacific" || (
@@ -81,8 +82,8 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
   if (showSanta && (effectiveView === "follow" || effectiveView === "world" ||
     (Math.abs(santaXY.x - camera.cx) <= camera.w / 2 && Math.abs(santaXY.y - camera.cy) <= camera.w / 4))) {
     // Only edge clearance changes; the marker stays at its geographic anchor.
-    const mx = ((artwork?.width ?? 24) / 2 + 3) * pixelFactor * camera.w / 1000;
-    const my = ((artwork?.height ?? 24) / 2 + 3) * pixelFactor * camera.w / 1000;
+    const mx = (((artwork?.width ?? 24) * santaArtworkScale) / 2 + 3) * pixelFactor * camera.w / 1000;
+    const my = (((artwork?.height ?? 24) * santaArtworkScale) / 2 + 3) * pixelFactor * camera.w / 1000;
     camera = {
       ...camera,
       cx: Math.max(santaXY.x - camera.w / 2 + mx, Math.min(camera.cx, santaXY.x + camera.w / 2 - mx)),
@@ -255,7 +256,7 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
               // Position updates share the route's SVG coordinates immediately.
               // A separate CSS tween lags behind the route at accelerated speeds.
               <g className="tj-santa" transform={`translate(${santaXY.x} ${santaXY.y})`} filter={artwork ? undefined : "url(#pulse-glow)"}>
-                {artwork ? <SantaMarker artwork={artwork} scale={pixelFactor / s} /> : <text x="0" y="0" textAnchor="middle" dominantBaseline="central" fontSize={24 * k} className="select-none">
+                {artwork ? <SantaMarker artwork={artwork} scale={pixelFactor / s * santaArtworkScale} /> : <text x="0" y="0" textAnchor="middle" dominantBaseline="central" fontSize={24 * k} className="select-none">
                   🎅
                 </text>}
               </g>
