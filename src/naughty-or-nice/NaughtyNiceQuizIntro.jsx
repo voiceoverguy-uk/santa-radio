@@ -7,7 +7,7 @@ export default function NaughtyNiceQuizIntro() {
       <HomepageSectionHeading
         eyebrow="Naughty or Nice?"
         title="WHICH LIST ARE YOU ON?"
-        subtitle="Head Elf has ten festive questions about kindness, helping out and trying your best. Answer them to find out which of Santa’s lists you’re on this Christmas."
+        subtitle="Let Head Elf find out which list he thinks you really should be on."
         titleId="nn-quiz-intro-heading"
       />
     </div>

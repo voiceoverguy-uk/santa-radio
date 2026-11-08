@@ -187,6 +187,14 @@
   top: 5px;
 }
 
+@media (min-width: 388px) and (max-width: 520px) {
+  .home-page .santa-dash-promo__heading.homepage-section-heading {
+    width: calc(100% + 16px);
+    max-width: none;
+    margin: 0 -8px 22px;
+  }
+}
+
 @media (max-width: 540px) {
   .santa-dash-promo__handset {
     width: min(72%, 560px);

@@ -26,7 +26,7 @@ export default function HomepageSectionHeading({
         </h2>
       </div>
       {supportingLine && <p className="homepage-section-heading__supporting">{supportingLine}</p>}
-      <p className={`homepage-section-heading__subtitle ${subtitleClassName}`.trim()}>{subtitle}</p>
+      {subtitle && <p className={`homepage-section-heading__subtitle ${subtitleClassName}`.trim()}>{subtitle}</p>}
     </div>
   );
 }

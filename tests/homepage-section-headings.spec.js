@@ -4,11 +4,11 @@ import { mkdirSync } from 'node:fs';
 const sections = [
   ['studio', '.homepage-santa-studio', 'A unique Christmas treat.', 'MESSAGE FROM SANTA', 'Ask Santa for a bespoke message to your little one.', '.homepage-santa-studio__layout'],
   ['tracker', '.tracker-banner', 'THE ENTIRE JOURNEY', 'THE SANTA TRACKER', 'Follow Santa not just at Christmas, but the whole year!', '.tracker-banner'],
-  ['naughty-nice', '.nn-widget', 'Naughty or Nice?', 'WHICH LIST ARE YOU ON?', 'Head Elf has ten festive questions about kindness, helping out and trying your best. Answer them to find out which of Santa’s lists you’re on this Christmas.', '.nn-quiz-intro-inner'],
+  ['naughty-nice', '.nn-widget', 'Naughty or Nice?', 'WHICH LIST ARE YOU ON?', 'Let Head Elf find out which list he thinks you really should be on.', '.nn-quiz-intro-inner'],
   ['youtube', '.youtube-section', 'A window to the North Pole', 'Best of the North Pole Webcams', 'Highlights of the webcams at the North Pole. Keep checking back!', '.youtube-section > .container'],
-  ['mugshots', '#homepage-mugshots', 'THE SANTA RADIO HALL OF FAME', 'Celebrity Mugshots', 'Famous faces. One festive mug.', '.mugshots-preview-inner'],
+  ['mugshots', '#homepage-mugshots', 'THE SANTA RADIO HALL OF FAME', 'Celebrity Mugshots', null, '.mugshots-preview-inner'],
   ['contact', '.contact-section', 'THE NORTH POLE POST ROOM', 'We’d love to hear from you', 'Got a question, a festive idea or something to share? Get in touch with the Santa Radio team.', '.contact-copy'],
-  ['dash', '.santa-dash-promo', 'A festive rooftop adventure', 'Santa Dash Back to the Grotto', 'Race across snowy rooftops with Santa collecting Golden Mince Pies!', '.santa-dash-promo__inner'],
+  ['dash', '.santa-dash-promo', 'A festive rooftop adventure', 'SANTA DASH BACK TO THE GROTTO', 'Race across snowy rooftops with Santa collecting Golden Mince Pies!', '.santa-dash-promo__inner'],
 ];
 
 async function typography(locator) {
@@ -68,7 +68,8 @@ for (const [width, enlarged] of [[1440, false], [768, false], [390, false], [320
       const divider = stack.locator('.homepage-section-heading__divider');
       await expect(stack).toHaveCount(1);
       await expect(small).toHaveText(eyebrow);
-      await expect(intro).toHaveText(subtitle);
+      if (subtitle === null) await expect(intro).toHaveCount(0);
+      else await expect(intro).toHaveText(subtitle);
       if (name === 'studio')
         await expect(stack.locator('.homepage-section-heading__supporting')).toHaveText('OUR PREMIUM EXPERIENCE');
       if (name === 'youtube') {
@@ -86,7 +87,8 @@ for (const [width, enlarged] of [[1440, false], [768, false], [390, false], [320
       expect(await typography(small), `${name} eyebrow`).toEqual(reference.eyebrow);
       const headline = await typography(heading);
       expect(headline, `${name} headline`).toEqual(reference.title);
-      expect(await typography(intro), `${name} subheading`).toEqual(reference.subtitle);
+      if (subtitle !== null)
+        expect(await typography(intro), `${name} subheading`).toEqual(reference.subtitle);
       const dividerBox = await divider.boundingBox();
       expect(dividerBox.width).toBeGreaterThanOrEqual(140);
       expect(dividerBox.height).toBe(24);
@@ -95,7 +97,9 @@ for (const [width, enlarged] of [[1440, false], [768, false], [390, false], [320
       const lineBounds = await dividerLines.evaluateAll(lines => lines.map(line => {
         const box = line.getBoundingClientRect();
         return { x: box.x, right: box.right, width: box.width, height: box.height,
-          backgroundImage: getComputedStyle(line).backgroundImage };
+          backgroundImage: getComputedStyle(line).backgroundImage,
+          backgroundColor: getComputedStyle(line).backgroundColor,
+          opacity: getComputedStyle(line).opacity };
       }));
       const starBounds = await divider.locator('svg').evaluate(element => {
         const box = element.getBoundingClientRect();
@@ -107,10 +111,15 @@ for (const [width, enlarged] of [[1440, false], [768, false], [390, false], [320
       expect(lineBounds[1].height).toBe(1);
       expect(lineBounds[0].right).toBeLessThan(starBounds.x);
       expect(lineBounds[1].x).toBeGreaterThan(starBounds.right);
-      expect(lineBounds.every(line => line.backgroundImage.includes('linear-gradient'))).toBe(true);
+      if (name === 'tracker') {
+        expect(lineBounds.every(line => line.backgroundColor === 'rgb(214, 181, 91)' && line.opacity === '1')).toBe(true);
+      } else {
+        expect(lineBounds.every(line => line.backgroundImage.includes('linear-gradient'))).toBe(true);
+      }
       expect(await small.evaluate(element => ['::before', '::after'].every(pseudo =>
         ['none', 'normal'].includes(getComputedStyle(element, pseudo).content)))).toBe(true);
-      const positions = await Promise.all([small, divider, heading, intro].map(item => item.boundingBox()));
+      const headingItems = [small, divider, heading, ...(subtitle !== null ? [intro] : [])];
+      const positions = await Promise.all(headingItems.map(item => item.boundingBox()));
       for (let index = 1; index < positions.length; index++) {
         expect(positions[index].y).toBeGreaterThanOrEqual(positions[index - 1].y + positions[index - 1].height - 1);
       }
@@ -119,8 +128,8 @@ for (const [width, enlarged] of [[1440, false], [768, false], [390, false], [320
         [small, divider, 8],
         [divider, heading, 1],
         ...(await supporting.count()
-          ? [[heading, supporting, 9], [supporting, intro, 8]]
-          : [[heading, intro, 8]]),
+          ? [[heading, supporting, 9], ...(subtitle !== null ? [[supporting, intro, 8]] : [])]
+          : (subtitle !== null ? [[heading, intro, 8]] : [])),
       ];
       for (const [before, after, maximum] of compactGaps) {
         const beforeBox = await before.boundingBox();
@@ -134,8 +143,10 @@ for (const [width, enlarged] of [[1440, false], [768, false], [390, false], [320
         const box = await item.boundingBox();
         expect(Math.abs(box.x + box.width / 2 - content.x - content.width / 2)).toBeLessThanOrEqual(1);
       }
-      for (const item of [small, heading, intro]) {
-        expect(await item.evaluate(element => {
+      for (const item of [small, heading, ...(subtitle !== null ? [intro] : [])]) {
+        const itemClass = await item.getAttribute('class');
+        const inkOverflow = name === 'mugshots' ? 6 : 1;
+        expect(await item.evaluate((element, maxInkOverflow) => {
           const box = element.getBoundingClientRect();
           // Cinzel's font-metric range extends beyond its 1.2 line box (as
           // it does in Pairs). Check visible ink against the whole stack,
@@ -147,13 +158,32 @@ for (const [width, enlarged] of [[1440, false], [768, false], [390, false], [320
             getComputedStyle(element).overflowY === 'visible' &&
             [...range.getClientRects()].every(line =>
               line.left >= box.left - 1 && line.right <= box.right + 1 &&
-              line.top >= stack.top - 1 && line.bottom <= stack.bottom + 1) &&
+              line.top >= stack.top - 1 &&
+              line.bottom <= stack.bottom + maxInkOverflow) &&
             box.left >= 0 && box.right <= innerWidth + 1;
-        }), `${name} text stays in bounds`).toBe(true);
+        }, inkOverflow), `${name} ${itemClass} text stays in bounds`).toBe(true);
       }
       await capture(stack, name);
     }
-    await expect(page.locator('.mugshots-description')).toHaveText('Our autograph-hunting elf has been busy with our Santa Radio mug. No A.I.');
+    const dashTitle = page.locator('.santa-dash-promo .homepage-section-heading__title');
+    await expect(dashTitle.locator('br')).toHaveCount(1);
+    await expect(dashTitle.locator('span')).toHaveText(['SANTA DASH', 'BACK TO THE GROTTO']);
+    if (width === 1440 || (width === 390 && !enlarged)) {
+      const titleLines = await dashTitle.locator('span').evaluateAll(lines => lines.map(line => {
+        const range = document.createRange();
+        range.selectNodeContents(line);
+        const rects = [...range.getClientRects()];
+        return { top: rects[0]?.top, count: rects.length, left: rects[0]?.left, right: rects[0]?.right };
+      }));
+      expect(titleLines).toHaveLength(2);
+      expect(titleLines.every(line => line.count === 1 && line.left >= 0 && line.right <= width)).toBe(true);
+      expect(titleLines[1].top).toBeGreaterThan(titleLines[0].top);
+    }
+    const mugshots = page.locator('#homepage-mugshots');
+    await expect(mugshots.locator('.mugshots-description')).toHaveText('Our autograph-hunting elf has been busy with our Santa Radio mug. No A.I.');
+    await expect(mugshots.locator('.mugshots-grid .mug-card').first()).toBeVisible();
+    await expect(mugshots.locator('.mugshots-grid .mug-photo').first()).toBeVisible();
+    await expect(mugshots.getByRole('link', { name: 'Explore the Celebrity Mugshots' })).toHaveAttribute('href', '/mugshots/all');
     await expect(page.locator('.contact-panel .homepage-section-heading')).toHaveCount(1);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   });

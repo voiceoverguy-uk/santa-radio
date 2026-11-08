@@ -15,7 +15,6 @@ export default function MugshotsPreview() {
           <HomepageSectionHeading
             eyebrow="THE SANTA RADIO HALL OF FAME"
             title="Celebrity Mugshots"
-            subtitle="Famous faces. One festive mug."
             titleId="homepage-mugshots-title"
           />
           <p className="mugshots-description">
