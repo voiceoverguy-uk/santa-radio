@@ -160,6 +160,7 @@ test('desktop/mobile map, typography and menu fit without horizontal overflow', 
 });
 
 test('homepage, world, and regional maps share the bright map palette', async ({ page }) => {
+  test.setTimeout(60000);
   const landColors = ['#78A967', '#91B777', '#568B59', '#A8B77B', '#B89A68', '#C58C62'];
   const readLandColors = async locator => locator.evaluateAll(paths => [...new Set(paths.map(path => path.getAttribute('fill')))].sort());
 
@@ -167,33 +168,75 @@ test('homepage, world, and regional maps share the bright map palette', async ({
     await page.setViewportSize(viewport);
     for (const date of ['2026-11-09T12:00:00Z', '2026-11-15T12:00:00Z']) {
       await page.clock.setFixedTime(new Date(date));
-      await page.goto('/');
+      await page.goto('/', { waitUntil: 'domcontentloaded' });
       const homepageMap = page.locator('.tracker-banner-map svg');
       await expect(homepageMap.locator('rect').first()).toHaveAttribute('fill', '#2F83B7');
+      await expect(homepageMap.locator('[data-night-overlay]')).toHaveAttribute('data-solar-time', new Date(date).toISOString());
+      await expect(homepageMap.locator('[data-night-overlay]')).toHaveAttribute('fill-opacity', '0.25');
       const homepageLand = await readLandColors(homepageMap.locator('g path'));
       expect(homepageLand).toEqual([...landColors].sort());
 
-      await page.goto('/santa-tracker');
+      await page.goto('/santa-tracker', { waitUntil: 'domcontentloaded' });
       const map = page.locator('main svg[role="img"]');
       await expect(map.locator('rect').first()).toHaveAttribute('fill', '#2F83B7');
+      await expect(map.locator('.tj-camera > [data-night-overlay]')).toHaveAttribute('data-solar-time', new Date(date).toISOString());
+      await expect(map.locator('.tj-camera > [data-night-overlay]')).toHaveAttribute('fill-opacity', '0.25');
       const worldLand = await readLandColors(map.locator('.tj-camera > g:first-child path'));
       expect(worldLand).toEqual(homepageLand);
       const descriptionId = await map.getAttribute('aria-describedby');
+      await expect(page.locator(`[id="${descriptionId}"]`)).toContainText('Subtle shading marks the night side of Earth');
       await expect(page.locator(`[id="${descriptionId}"]`)).toContainText('Faint dots mark');
 
       await page.getByLabel('Browse a region', { exact: true }).selectOption('Australia');
       await expect(page.locator('.tj-minimap rect').first()).toHaveAttribute('fill', '#2F83B7');
+      await expect(page.locator('.tj-minimap [data-night-overlay]')).toHaveAttribute('data-solar-time', new Date(date).toISOString());
       const minimapLand = await readLandColors(page.locator('.tj-minimap g path'));
       expect(minimapLand).toEqual(homepageLand);
+      await page.getByLabel('Browse a region', { exact: true }).selectOption('Pacific');
+      await expect(page.locator('.tj-camera > [data-night-overlay-duplicate]')).toHaveAttribute('data-solar-time', new Date(date).toISOString());
     }
 
     await page.clock.setFixedTime(new Date('2026-12-24T14:00:00Z'));
-    await page.goto('/santa-tracker');
+    await page.goto('/santa-tracker', { waitUntil: 'domcontentloaded' });
     const christmasMap = page.locator('main svg[role="img"]');
     await expect(christmasMap.locator('.tj-camera path[stroke="#17334A"]').first()).toBeAttached();
     await expect(christmasMap.locator('.tj-camera path[stroke="#FFD36F"]').first()).toBeAttached();
     await expect(christmasMap.locator('.tj-label').first()).toHaveCSS('stroke', 'rgb(23, 51, 74)');
   }
+});
+
+test('late UK evening shading leaves the Americas lit and preview maps use simulated time', async ({ page }) => {
+  const publicTime = '2026-11-08T21:00:00Z';
+  const normalizedPublicTime = new Date(publicTime).toISOString();
+  await page.clock.install({ time: new Date(new Date(publicTime).getTime() - 1000) });
+  await page.clock.pauseAt(new Date(publicTime));
+  await page.goto('/santa-tracker');
+  const map = page.locator('main svg[role="img"]');
+  const overlay = map.locator('.tj-camera > [data-night-overlay]');
+  await expect(overlay).toHaveAttribute('data-solar-time', normalizedPublicTime);
+  await expect(overlay).toHaveAttribute('d', /M/);
+
+  await page.clock.runFor(1000);
+  await expect(overlay).toHaveAttribute('data-solar-time', '2026-11-08T21:00:01.000Z');
+
+  await page.clock.setFixedTime(new Date('2026-07-15T12:00:00Z'));
+  await page.evaluate(() => localStorage.setItem('santa-tracker-preview', JSON.stringify({
+    enabled: true,
+    activatedAtRealMs: Date.now(),
+    simulatedStartMs: Date.UTC(2026, 10, 8, 21),
+    speedMultiplier: 1,
+    jumpTarget: null,
+  })));
+  await page.goto('/santa-tracker/preview');
+  await expect(page.locator('main svg[role="img"] [data-night-overlay]')).toHaveAttribute(
+    'data-solar-time',
+    /^2026-11-08T21:00:00/,
+  );
+  await page.getByLabel('Browse a region', { exact: true }).selectOption('Europe');
+  await expect(page.locator('.tj-minimap [data-night-overlay]')).toHaveAttribute(
+    'data-solar-time',
+    /^2026-11-08T21:00:00/,
+  );
 });
 
 test('gold dividers separate holiday activity, introduction and countdown without moving live updates', async ({ page }) => {

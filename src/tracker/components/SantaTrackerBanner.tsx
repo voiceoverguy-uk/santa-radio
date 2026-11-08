@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import HomepageSectionHeading from "../../components/HomepageSectionHeading.jsx";
 import { getDashboardData, isHolidaySeason, isRouteResearchSeason, getRouteResearchCopy, isChristmasInJuly, getRandomHoliday, type HolidayDestination } from "@/lib/santaRoute";
@@ -9,6 +9,7 @@ import { santaStops } from "@/data/santaRouteStops";
 import { MAP_PALETTE, mapLandColor } from "./mapPalette";
 import { getSantaMarkerArtwork } from "../lib/santaMarker";
 import SantaMarker from "./SantaMarker";
+import { getNightOverlayPath, getSolarPosition } from "./solarLighting";
 
 export default function SantaTrackerBanner() {
   const [now, setNow] = useState<Date | null>(null);
@@ -122,7 +123,7 @@ export default function SantaTrackerBanner() {
               <LiveStats data={data} />
             ) : (
               <div className="tracker-banner-map-group">
-                <MiniMap holiday={onHoliday || researching ? holiday : null} researching={researching} />
+                <MiniMap time={now} holiday={onHoliday || researching ? holiday : null} researching={researching} />
                 {statusBadge}
               </div>
             )}
@@ -140,6 +141,7 @@ function TrackerBannerHeading() {
       eyebrow="THE ENTIRE JOURNEY"
       title="THE SANTA TRACKER"
       subtitle="Follow Santa not just at Christmas, but the whole year!"
+      supportingLine=""
       titleId="tracker-banner-title"
       className="tracker-banner-heading"
       eyebrowClassName="tracker-banner-eyebrow"
@@ -182,7 +184,11 @@ function LiveStats({ data }: { data: ReturnType<typeof getDashboardData> }) {
   );
 }
 
-function MiniMap({ holiday, researching = false }: { holiday: HolidayDestination | null; researching?: boolean }) {
+function MiniMap({ time, holiday, researching = false }: { time: Date; holiday: HolidayDestination | null; researching?: boolean }) {
+  const solarMinute = Math.floor(time.getTime() / 60_000);
+  const solarTime = new Date(solarMinute * 60_000);
+  const nightPath = useMemo(() => getNightOverlayPath(solarTime), [solarMinute]);
+  const solarPosition = useMemo(() => getSolarPosition(solarTime), [solarMinute]);
   const artwork = holiday ? getSantaMarkerArtwork(researching ? "ROUTE_RESEARCH" : "OFF_SEASON", holiday.lng) : null;
   const santaX = holiday
     ? ((holiday.lng + 180) / 360) * 1000
@@ -216,6 +222,16 @@ function MiniMap({ holiday, researching = false }: { holiday: HolidayDestination
             <path key={i} d={d} fill={mapLandColor(i)} />
           ))}
         </g>
+        <path
+          data-night-overlay=""
+          data-solar-time={time.toISOString()}
+          data-declination={solarPosition.declinationDeg.toFixed(3)}
+          data-subsolar-longitude={solarPosition.subsolarLongitudeDeg.toFixed(3)}
+          d={nightPath}
+          fill="#081e17"
+          fillOpacity="0.25"
+          pointerEvents="none"
+        />
         <g data-route-stops="">
           {santaStops.map((stop) => (
             <circle

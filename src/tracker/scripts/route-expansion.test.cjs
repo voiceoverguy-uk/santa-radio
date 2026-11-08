@@ -29,6 +29,7 @@ function load(file) {
 const data = load("data/santaRouteStops.ts");
 const route = load("lib/santaRoute.ts");
 const preview = load("lib/santaPreview.ts");
+const solar = load("components/solarLighting.ts");
 const { santaStops: stops } = data;
 
 test("290 destinations all carry concise fictional antics, geographic facts and time-zone metadata", () => {
@@ -38,6 +39,28 @@ test("290 destinations all carry concise fictional antics, geographic facts and 
     assert.ok(stop.funFact && stop.timeZone && stop.flag && stop.displayLabel, stop.id);
   }
   assert.equal(stops.filter(s => s.milestoneType === "end").length, 1);
+});
+
+test("solar lighting follows UTC rotation, seasonal declination and the expected UK-night Americas-day split", () => {
+  const june = solar.getSolarPosition(new Date("2026-06-21T12:00:00Z"));
+  const december = solar.getSolarPosition(new Date("2026-12-21T12:00:00Z"));
+  assert.ok(june.declinationDeg > 23 && june.declinationDeg < 24);
+  assert.ok(december.declinationDeg < -23 && december.declinationDeg > -24);
+  assert.ok(Math.abs(june.subsolarLongitudeDeg) < 2);
+
+  const lateUkEvening = new Date("2026-11-08T21:00:00Z");
+  assert.equal(solar.isNightAt(51.5, 0, lateUkEvening), true);
+  assert.equal(solar.isNightAt(40.7, -74, lateUkEvening), false);
+  assert.equal(solar.isNightAt(34.1, -118.2, lateUkEvening), false);
+  assert.equal(solar.isNightAt(51.5, 0, new Date("2026-11-08T10:00:00Z")), false);
+  assert.equal(solar.isNightAt(0, -180, lateUkEvening), solar.isNightAt(0, 180, lateUkEvening));
+  assert.equal(solar.isNightAt(69.6, 18.9, new Date("2026-06-21T12:00:00Z")), false);
+  assert.equal(solar.isNightAt(69.6, 18.9, new Date("2026-12-21T12:00:00Z")), true);
+
+  const nightPath = solar.getNightOverlayPath(lateUkEvening);
+  assert.ok(nightPath.startsWith("M"));
+  assert.match(nightPath, /Z/);
+  assert.notEqual(nightPath, solar.getNightOverlayPath(new Date("2026-11-08T10:00:00Z")));
 });
 
 test("fractional Christmas clocks remain factual while cities receive distinct estimated arrivals", () => {

@@ -10,6 +10,7 @@ import "../tracker-journey.css";
 import { getJourneySleighDirection, getSeasonalTrackerMode } from "../lib/santaRoute";
 import { getSantaMarkerArtwork } from "../lib/santaMarker";
 import SantaMarker from "./SantaMarker";
+import { getNightOverlayPath, getSolarPosition } from "./solarLighting";
 
 interface SantaMapProps {
   effectiveTime: Date;
@@ -34,6 +35,10 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
     return () => observer.disconnect();
   }, []);
   const year = effectiveTime.getUTCFullYear();
+  const solarMinute = Math.floor(effectiveTime.getTime() / 60_000);
+  const solarTime = new Date(solarMinute * 60_000);
+  const nightPath = useMemo(() => getNightOverlayPath(solarTime), [solarMinute]);
+  const solarPosition = useMemo(() => getSolarPosition(solarTime), [solarMinute]);
   const visited = getVisitedStops(effectiveTime);
   const currentId = getCurrentStopId(effectiveTime);
   const live = !!currentId && !onHoliday && !researchDestination;
@@ -137,10 +142,10 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
           <title id={titleId}>{researchDestination ? `Santa's route research map: ${researchDestination.name}` : onHoliday ? "Santa's holiday location map" : "Santa's estimated journey map"}</title>
           <desc id={descriptionId}>
             {researchDestination
-              ? `${getRouteResearchCopy(researchDestination)} The Santa marker shows his research location, not a Christmas Eve delivery stop. Faint dots mark the separate estimated Christmas Eve route.`
+              ? `${getRouteResearchCopy(researchDestination)} The Santa marker shows his research location, not a Christmas Eve delivery stop. Faint dots mark the separate estimated Christmas Eve route. Subtle shading marks the night side of Earth at ${effectiveTime.toISOString()} UTC.`
               : onHoliday
-              ? "The Santa marker shows his current holiday location. Faint dots mark stops on the estimated Christmas Eve route."
-              : `The Santa marker shows his estimated position on the world map. Red dots mark visited stops, faint dots mark upcoming stops${currentStop ? `, and a glowing dot marks ${currentStop.displayLabel} as the current stop` : ""}${nextStop ? `. Next stop: ${nextStop.displayLabel}` : ""}.`}
+              ? `The Santa marker shows his current holiday location. Faint dots mark stops on the estimated Christmas Eve route. Subtle shading marks the night side of Earth at ${effectiveTime.toISOString()} UTC.`
+              : `The Santa marker shows his estimated position on the world map. Subtle shading marks the night side of Earth at ${effectiveTime.toISOString()} UTC. Red dots mark visited stops, faint dots mark upcoming stops${currentStop ? `, and a glowing dot marks ${currentStop.displayLabel} as the current stop` : ""}${nextStop ? `. Next stop: ${nextStop.displayLabel}` : ""}.`}
           </desc>
           <defs>
             <radialGradient id="glow" cx="50%" cy="50%" r="50%">
@@ -165,6 +170,28 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
               ))}
               {wrapPacific && <g transform="translate(1000 0)">{worldMapPaths.map((d, i) => <path key={i} d={d} fill={mapLandColor(i)} />)}</g>}
             </g>
+
+            <path
+              data-night-overlay=""
+              data-solar-time={effectiveTime.toISOString()}
+              data-declination={solarPosition.declinationDeg.toFixed(3)}
+              data-subsolar-longitude={solarPosition.subsolarLongitudeDeg.toFixed(3)}
+              d={nightPath}
+              fill="#081e17"
+              fillOpacity="0.25"
+              pointerEvents="none"
+            />
+            {wrapPacific && (
+              <path
+                data-night-overlay-duplicate=""
+                data-solar-time={effectiveTime.toISOString()}
+                d={nightPath}
+                transform="translate(1000 0)"
+                fill="#081e17"
+                fillOpacity="0.25"
+                pointerEvents="none"
+              />
+            )}
 
             <g opacity="0.42" stroke={MAP_PALETTE.grid} strokeWidth={0.5 * k} fill="none">
               {[0, 1, 2, 3, 4, 5, 6].map((i) => (
@@ -242,6 +269,16 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
             <g stroke={MAP_PALETTE.coastline} strokeWidth="2" strokeLinejoin="round">
               {worldMapPaths.map((d, i) => <path key={i} d={d} fill={mapLandColor(i)} />)}
             </g>
+            <path
+              data-night-overlay=""
+              data-solar-time={effectiveTime.toISOString()}
+              data-declination={solarPosition.declinationDeg.toFixed(3)}
+              data-subsolar-longitude={solarPosition.subsolarLongitudeDeg.toFixed(3)}
+              d={nightPath}
+              fill="#081e17"
+              fillOpacity="0.25"
+              pointerEvents="none"
+            />
             {showSanta && <circle cx={project(mapPosition.lat, mapPosition.lng).x} cy={santaXY.y} r="14" fill={MAP_PALETTE.view} />}
             {(wrapPacific ? [-1000, 0] : [0]).map(offset => <rect key={offset} className="tj-view" x={camera.cx - camera.w / 2 + offset} y={camera.cy - camera.w / 4} width={camera.w} height={camera.w / 2} fill="#FFD36F25" stroke={MAP_PALETTE.view} strokeWidth="8" />)}
           </svg>
