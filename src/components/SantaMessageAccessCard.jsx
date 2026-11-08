@@ -32,7 +32,7 @@ export default function SantaMessageAccessCard({
   return (
     <section className={`santa-message-access${offer ? ' santa-message-access--offer' : ''}`} aria-labelledby={offer ? undefined : `${id}-title`}>
       <p className="santa-message-access__step">A note for the grown-up</p>
-      {!offer && <h3 id={`${id}-title`}>ENTER SANTA'S RECORDING STUDIO</h3>}
+      {!offer && <h3 id={`${id}-title`} tabIndex={-1}>ENTER SANTA'S RECORDING STUDIO</h3>}
       <p className="santa-message-access__intro">
         {offer ? 'These are your details. You’ll choose your child’s recorded name next.'
           : selectedChildName

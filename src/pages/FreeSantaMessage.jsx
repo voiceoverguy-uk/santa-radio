@@ -1,15 +1,28 @@
-import { useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import PageSeo from '../seo/PageSeo.jsx';
 import { messageMetadata } from '../seo/catalogue.js';
 import { santaMessageRequestedName } from '../seo/santaMessageLinks.js';
 import { settleSantaMessageDeskAfterEntry } from '../lib/scrollToSantaMessageDesk.js';
 import SantaMessageForm from '../components/SantaMessageForm.jsx';
+import { peekFreeSantaMessageName, clearFreeSantaMessageName } from '../lib/freeSantaMessageHandoff.js';
 import './FreeSantaMessage.css';
 
 export default function FreeSantaMessage() {
   const [params] = useSearchParams();
-  const requestedName = santaMessageRequestedName(params.get('name'));
+  const location = useLocation();
+  const [handoff, setHandoff] = useState(() => ({
+    name: peekFreeSantaMessageName(), entryKey: location.key,
+  }));
+  const handoffName = handoff.entryKey === location.key ? handoff.name : '';
+  const requestedName = handoffName || santaMessageRequestedName(params.get('name'));
+  useEffect(() => {
+    // The mounted page owns the choice through signup. Leaving it, including
+    // Back/Forward, must not seed an unrelated later visit.
+    clearFreeSantaMessageName();
+    setHandoff(current => current.entryKey === location.key
+      ? current : { name: '', entryKey: location.key });
+  }, [location.key]);
   useEffect(() => {
     let cancelled = false;
     let frame;
@@ -29,7 +42,10 @@ export default function FreeSantaMessage() {
       frame = requestAnimationFrame(() => {
         stopListening();
         if (cancelled) return;
-        stopSettling = settleSantaMessageDeskAfterEntry();
+        const card = document.querySelector('#santa-messages .santa-message-box');
+        const heading = card?.querySelector('h3');
+        heading?.focus({ preventScroll: true });
+        stopSettling = settleSantaMessageDeskAfterEntry(card);
       });
     });
     return () => {
@@ -39,7 +55,7 @@ export default function FreeSantaMessage() {
       stopListening();
       window.history.scrollRestoration = restoration;
     };
-  }, []);
+  }, [location.key]);
   return (
     <main>
       <PageSeo metadata={messageMetadata()} />
@@ -50,7 +66,8 @@ export default function FreeSantaMessage() {
           <p className="fsm-desc">Create a free message from Santa with your child’s name. Choose a name, ask Santa to record it, then enjoy your personalised Santa audio greeting to download and keep.</p>
         </div>
       </div>
-      <SantaMessageForm key={requestedName} showDetailLink={false} initialName={requestedName} layout="dedicated" />
+      <SantaMessageForm key={requestedName} showDetailLink={false} initialName={requestedName}
+        selectedChildName={requestedName} layout="dedicated" />
     </main>
   );
 }

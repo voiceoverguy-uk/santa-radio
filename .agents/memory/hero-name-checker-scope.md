@@ -8,6 +8,18 @@ The owner has explicitly approved replacing the main homepage hero with the name
 
 **How to apply:** Preserve the snowy North Pole backdrop, shared radio and existing adult-signup/message limits. Name checking is not permission to bypass signup or automatically create audio.
 
+The hero strapline is “MORE MAGIC FROM THE NORTH POLE”. Its description is
+“Your Christmas Radio Station all year round, along with festive treats, amazing
+free apps, games and FREE personalised messages from Santa.”
+Keep that description close beneath the desktop/tablet heading, including while
+radio artwork is displayed.
+
+**Why:** The owner replaced the earlier wording and said the heading-to-description
+gap was too large. This supersedes the earlier request to move that block down.
+
+**How to apply:** Preserve the new copy on phone too, without rearranging the
+approved phone controls or moving the checker to compensate for artwork height.
+
 On mobile, keep the order: heading and strapline, Listen Live, station note, complete Christmas description, a modest gap, complete name-checker card, countdown, then playing artwork. Keep tablet and desktop ordering unchanged.
 
 **Why:** The owner explicitly requested the description above the checker and countdown immediately after the complete card, superseding the earlier description-below-checker direction.
@@ -25,6 +37,20 @@ The hero child-name entry and confirmation must start empty after a homepage ref
 **Why:** The owner requested clearing the previously selected child after refreshing, based on their iPhone screenshot.
 
 **How to apply:** Keep refresh reset narrowly scoped to initial hero entry. Do not turn this into child-name persistence, a visibility/scroll reset, or a change to the greeting-history retention policy.
+
+The homepage's compact checker is the sole free-message entry; the large free
+introduction and adult signup/maker must not return there. Keep the separate paid
+Studio promotion, personalised gift previews and reviews immediately after the
+hero. The approval-preview route may retain its original inline maker.
+
+**Why:** The owner requested a shorter homepage journey while explicitly preserving
+the independently approved paid offer and its controls, rather than removing all
+content previously grouped with the free maker.
+
+**How to apply:** A deliberate Create submission carries the child only in
+ephemeral tab memory to the dedicated page, through adult signup. Consume that
+handoff for one visit; later direct or Back/Forward entries must not inherit it.
+Keep the legacy public query-link compatibility separate.
 
 The owner wants the preview heading across the top and a large square playing cover beside the introduction/listening area, not a tiny inline thumbnail. Keep the description narrow so the cover tucks further left and higher, beside the Santa Radio title line rather than below the whole heading. Retain the name checker on the right and omit the App Store badge in this preview.
 

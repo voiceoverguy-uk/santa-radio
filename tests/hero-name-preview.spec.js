@@ -8,11 +8,11 @@ const path = '/preview/hero-name-checker';
 const heroCopy = {
   phone: {
     note: 'The World’s Best Christmas Radio Station · 24/7 - 365 Days',
-    description: 'Festive treats, amazing free apps, games and FREE personalised messages from Santa.',
+    description: 'Your Christmas Radio Station all year round, along with festive treats, amazing free apps, games and FREE personalised messages from Santa.',
   },
   wide: {
     note: 'The World’s Best Christmas Radio Station · All year round',
-    description: 'Your Christmas radio station all year round 24/7 along with festive treats, amazing free apps, games and FREE personalised messages from Santa.',
+    description: 'Your Christmas Radio Station all year round, along with festive treats, amazing free apps, games and FREE personalised messages from Santa.',
   },
 };
 
@@ -25,7 +25,7 @@ async function expectHeroCopy(page, width) {
     await expect(paragraph.locator(`.hero-name-preview__copy--${inactive}`)).toBeHidden();
     const accessible = await paragraph.ariaSnapshot();
     expect(accessible.split(heroCopy[active][key])).toHaveLength(2);
-    expect(accessible).not.toContain(heroCopy[inactive][key]);
+    if (heroCopy[active][key] !== heroCopy[inactive][key]) expect(accessible).not.toContain(heroCopy[inactive][key]);
   }
 }
 const inventory = {
@@ -162,8 +162,7 @@ for (const width of [320, 390]) {
     // Wait beyond the search debounce: none of the blocked inputs reach the API.
     await page.waitForTimeout(300);
     expect(queries).toHaveLength(searched);
-    await expect(page.locator('#santa-messages .santa-message-access__intro')).toHaveText(
-      'Add your details and access a free personalised downloadable message from Santa.');
+    await expect(page.locator('.santa-message-access')).toHaveCount(0);
     await expect(status).toHaveAttribute('aria-live', 'polite');
     await expect(status).toHaveAttribute('aria-atomic', 'true');
     expect(await input(page).getAttribute('aria-describedby')).toBe(await status.getAttribute('id'));
@@ -193,16 +192,16 @@ for (const width of [320, 390]) {
     await checker(page).screenshot({ path: `generated-artifacts/name-language-${width}.jpg` });
     for (const name of ['Scunthorpe', 'Fuchsia', 'Dick', 'Fanny', 'Shital', 'UnknownName']) {
       await input(page).fill(name);
-      await expect.poll(() => queries.at(-1)).toBe(name);
       await expect(status).toHaveText('We haven’t found that spelling. Try a shorter name or another spelling.');
     }
     await input(page).fill('Er');
     await expect(checker(page).getByRole('option')).toHaveCount(2);
     await input(page).press('ArrowDown');
     await input(page).press('Enter');
-    await expect(status).toHaveText('Yes! Santa can record for Erin.');
+    await expect(status).toHaveText('Yes! Santa can record for Erica.');
     await cta(page).click();
-    await expect(page.locator('#santa-messages input[name="FIRSTNAME"]')).toBeFocused();
+    await expect(page).toHaveURL(/\/free-santa-message$/);
+    await expect(page.locator('.santa-message-access h3')).toBeFocused();
   });
 }
 
@@ -212,10 +211,10 @@ test('blocked input suppresses delayed results, network errors and submission va
   const pending = new Promise(resolve => { resolveSearch = resolve; });
   let started;
   const requestStarted = new Promise(resolve => { started = resolve; });
-  await page.route('**/api/santa-names', async route => {
+  await page.route('**/names-data/*', async route => {
     started();
     await pending;
-    await route.fulfill({ json: inventory });
+    await route.fulfill({ json: inventory.records.map(record => record.name) });
   });
   await open(page);
   await cta(page).click();
@@ -227,9 +226,10 @@ test('blocked input suppresses delayed results, network errors and submission va
   await expect(checker(page).getByRole('status')).toHaveText(blockedNote);
   await expect(checker(page).getByRole('option')).toHaveCount(0);
   await expect(checker(page).getByRole('button', { name: 'Retry name search' })).toHaveCount(0);
-  await page.route('**/api/santa-names', route => route.fulfill({ status: 503, json: { error: 'Controlled outage' } }));
+  // Once the public list has loaded, matching is local and does not expose
+  // child queries to the private recording API.
   await input(page).fill('Er');
-  await expect(checker(page).getByRole('status')).toHaveText('Controlled outage');
+  await expect(checker(page).getByRole('option')).toHaveCount(2);
   await input(page).fill('shit');
   await input(page).press('Enter');
   await expect(checker(page).getByRole('status')).toHaveText(blockedNote);
@@ -265,10 +265,20 @@ for (const route of ['/', path]) {
       const geometry = await heading.evaluate(node => {
         const range = document.createRange();
         range.selectNodeContents(node);
+        // Inline emphasis can split one visual line into several DOM rects.
+        const lines = [];
+        for (const rect of [...range.getClientRects()].filter(rect => rect.width > 0)) {
+          const line = lines.find(line => Math.abs(line.top - rect.top) < .5);
+          if (line) {
+            line.left = Math.min(line.left, rect.left);
+            line.right = Math.max(line.right, rect.right);
+            line.bottom = Math.max(line.bottom, rect.bottom);
+          } else lines.push(rect.toJSON());
+        }
         return {
           card: node.closest('.hero-name-preview__checker').getBoundingClientRect().toJSON(),
           label: node.parentElement.querySelector('label').getBoundingClientRect().toJSON(),
-          lines: [...range.getClientRects()].filter(rect => rect.width > 0).map(rect => rect.toJSON()),
+          lines,
           pageWidth: document.documentElement.scrollWidth,
         };
       });
@@ -377,10 +387,15 @@ async function setup(page, { realInventory = false, mediaFailure = false } = {})
     current: { artist: 'John Legend', title: 'Bring Me Love' }, currentStatus: 'ready',
     upcoming: [], upcomingStatus: 'ready',
   } }));
-  if (!realInventory) await page.route('**/api/santa-names', route => route.fulfill({ json: {
-    ...inventory, records: inventory.records.filter(record =>
-      record.name.toLowerCase().startsWith(route.request().postDataJSON().query.toLowerCase())),
-  } }));
+  if (!realInventory) {
+    await page.route('**/names-data/*', route => route.fulfill({
+      json: inventory.records.map(record => record.name),
+    }));
+    await page.route('**/api/santa-names', route => route.fulfill({ json: {
+      ...inventory, records: inventory.records.filter(record =>
+        record.name.toLowerCase().startsWith(route.request().postDataJSON().query.toLowerCase())),
+    } }));
+  }
   // Every provider submission is intercepted; never send real test contacts.
   await mockBrevo(page);
 }
@@ -397,7 +412,7 @@ async function choose(page, name) {
 }
 
 for (const width of [390, 1440]) {
-  test(`homepage signup introduction follows only the selected child at ${width}px`, async ({ page }) => {
+  test(`homepage selection opens the dedicated signup for that child at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await setup(page);
@@ -407,20 +422,21 @@ for (const width of [390, 1440]) {
     if (await decline.isVisible()) await decline.click();
     const introduction = page.locator('#santa-messages .santa-message-access__intro');
     const generic = 'Add your details and access a free personalised downloadable message from Santa.';
-    await expect(introduction).toHaveText(generic);
+    await expect(introduction).toHaveCount(0);
     await input(page).fill('Arabella');
     await expect(checker(page).getByRole('option', { name: 'Arabella', exact: true })).toBeVisible();
-    await expect(introduction).toHaveText(generic);
+    await expect(introduction).toHaveCount(0);
     await choose(page, 'Arabella');
-    await expect(introduction).toHaveText('Add your details and access a free personalised downloadable message for Arabella from Santa.');
+    await expect(introduction).toHaveCount(0);
     await choose(page, 'Erin');
-    await expect(introduction).toHaveText('Add your details and access a free personalised downloadable message for Erin from Santa.');
+    await expect(introduction).toHaveCount(0);
     await input(page).fill('UnknownName');
-    await expect(introduction).toHaveText(generic);
+    await expect(introduction).toHaveCount(0);
     await choose(page, 'Arabella');
     await cta(page).click();
     const adultFirstName = page.locator('#santa-messages input[name="FIRSTNAME"]');
-    await expect(adultFirstName).toBeFocused();
+    await expect(page).toHaveURL(/\/free-santa-message$/);
+    await expect(page.locator('.santa-message-access h3')).toBeFocused();
     await expect(adultFirstName).toHaveValue('');
     await adultFirstName.fill('Testparent');
     await expect(introduction).toHaveText('Add your details and access a free personalised downloadable message for Arabella from Santa.');
@@ -455,7 +471,7 @@ for (const route of ['/', path]) {
           moved: ['.hero-title', '.hero-name-preview__strapline', '.hero-description',
             '.hero-actions', '.hero-note', '.hero-countdown'].map(rect),
           fixed: ['.hero-layout', '.hero-name-preview__checker', '.navbar', '.hero-picture',
-            '#santa-messages'].map(rect),
+            '.santa-message-section'].map(rect),
           artwork: rect('.hero-name-preview__artwork-slot'),
           stack: rect('.hero-name-preview__left-stack'),
           pageWidth: document.documentElement.scrollWidth,
@@ -529,7 +545,7 @@ for (const route of ['/', path]) {
           }),
           neighbours: [...document.querySelectorAll(
             '.navbar, .hero-title, .hero-halloween-greeting, .hero-name-preview__flag, ' +
-            '.hero-name-preview__description, .hero-countdown, .hero-name-preview__artwork-slot, #santa-messages',
+            '.hero-name-preview__description, .hero-countdown, .hero-name-preview__artwork-slot, .santa-message-section',
           )].map(rect),
         };
       });
@@ -717,9 +733,9 @@ for (const route of ['/', path]) {
       expect(list.x + list.width).toBeLessThanOrEqual(initial.x + initial.width + .5);
       await input(page).press('ArrowDown');
       await input(page).press('Enter');
-      await expect(input(page)).toHaveValue('Erin');
+      await expect(input(page)).toHaveValue('Erica');
       await cta(page).click();
-      await expect(page.locator('.santa-message-access input[name="FIRSTNAME"]')).toBeFocused();
+      await expect(page.locator(route === '/' ? '.santa-message-access h3' : '.santa-message-access input[name="FIRSTNAME"]')).toBeFocused();
     });
   }
 }
@@ -738,9 +754,9 @@ for (const route of ['/', path]) {
       await page.evaluate(() => document.fonts.ready);
       const hero = page.locator('.hero');
       const heading = hero.getByRole('heading', { level: 1 });
-      await expect(heading).toHaveText('Santa Radio A little magic from the North Pole.');
-      await expect(heading).toHaveAccessibleName('Santa Radio A little magic from the North Pole.');
-      await expect(hero.getByText('A little magic from the North Pole.', { exact: true })).toHaveCount(1);
+      await expect(heading).toHaveText('Santa Radio MORE MAGIC FROM THE NORTH POLE');
+      await expect(heading).toHaveAccessibleName('Santa Radio MORE MAGIC FROM THE NORTH POLE');
+      await expect(hero.getByText('MORE MAGIC FROM THE NORTH POLE', { exact: true })).toHaveCount(1);
       await expect(hero).not.toContainText('Live from The North Pole');
       await expect(hero.locator('.hero-name-preview__eyebrow')).toHaveCount(0);
       await expect(hero.locator('.hero-name-preview__flag')).toHaveCount(route === path ? 1 : 0);
@@ -794,7 +810,7 @@ for (const route of ['/', path]) {
       await expect(hero.locator('.now-playing-artwork')).toHaveCount(0);
       await choose(page, 'Arabella');
       await cta(page).click();
-      await expect(page.locator('.santa-message-access input[name="FIRSTNAME"]')).toBeFocused();
+      await expect(page.locator(route === '/' ? '.santa-message-access h3' : '.santa-message-access input[name="FIRSTNAME"]')).toBeFocused();
       expect(submissions).toBe(0);
     });
   }
@@ -817,7 +833,7 @@ for (const width of [390, 1440]) {
     await expect(checker(page).getByRole('status')).toHaveText('Please enter a child’s name, then choose a suggestion.');
     await expect(checker(page).getByRole('status')).toHaveCSS('color', 'rgb(255, 197, 184)');
     if (width === 390) await checker(page).screenshot({ path: 'test-results/hero-name-required-mobile.png' });
-    await expect(page.locator('.santa-message-access input[name="FIRSTNAME"]')).not.toBeFocused();
+    await expect(page.locator('.santa-message-access')).toHaveCount(0);
 
     await input(page).fill('Ara');
     await expect(input(page)).toHaveAttribute('aria-invalid', 'false');
@@ -831,8 +847,8 @@ for (const width of [390, 1440]) {
     await expect(input(page)).toHaveAttribute('aria-invalid', 'false');
     await expect(checker(page).getByRole('status')).toHaveText('Yes! Santa can record for Arabella.');
     await cta(page).click();
-    await expect(page.locator('.santa-message-access input[name="FIRSTNAME"]')).toBeFocused();
-    await expect(page).toHaveURL(/\/$/);
+    await expect(page.locator('.santa-message-access h3')).toBeFocused();
+    await expect(page).toHaveURL(/\/free-santa-message$/);
   });
 }
 
@@ -915,20 +931,15 @@ for (const width of [390, 1440]) {
   });
 }
 
-test('real hosted inventory drives lookup, with no child query URLs, storage or auto audio', async ({ page }) => {
+test('real public display inventory drives lookup without private recording access or auto audio', async ({ page }) => {
   await setup(page, { realInventory: true });
-  const api = await page.request.post('/api/santa-names', { data: { query: 'Arabella' } });
-  expect(api.ok()).toBe(true);
-  const live = await api.json();
-  expect(live.records.length).toBeGreaterThan(0);
-  const record = live.records.find(record => record.name === 'Arabella') || live.records[0];
+  const record = { name: 'Arabella' };
   const requested = [];
   page.on('request', request => requested.push(request.url()));
   await open(page);
   await input(page).fill(record.name);
   await expect(checker(page).getByRole('option', { name: record.name, exact: true })).toBeVisible();
-  expect(requested.filter(url => url.includes('/api/santa-names')).every(url =>
-    !new URL(url).searchParams.get('q'))).toBe(true);
+  expect(requested.filter(url => url.includes('/api/santa-names'))).toEqual([]);
   expect(requested.some(url => url.includes(encodeURIComponent(record.name)))).toBe(false);
   expect(await page.evaluate(() => window.__playCalls)).toBe(0);
   expect(await page.evaluate(() => JSON.stringify({ ...localStorage, ...sessionStorage }))).not.toContain(record.name);
@@ -947,9 +958,9 @@ test('keyboard selection confirms only a deliberate choice and editing clears it
   await expect(input(page)).toHaveAttribute('aria-activedescendant', /option-0$/);
   await input(page).press('ArrowUp');
   await input(page).press('Enter');
-  await expect(input(page)).toHaveValue('Erica');
+  await expect(input(page)).toHaveValue('Erin');
   await expect(cta(page)).toBeEnabled();
-  await input(page).fill('Erin');
+  await input(page).fill('Erica');
   await expect(cta(page)).toBeEnabled();
   await expect(checker(page).getByRole('status')).not.toContainText('Yes!');
   await input(page).press('Escape');
@@ -966,11 +977,10 @@ test('loading, genuine empty results, failures and retry are distinct', async ({
   let release;
   let mode = 'loading';
   const waiting = new Promise(resolve => { release = resolve; });
-  await page.route('**/api/santa-names', async route => {
+  await page.route('**/names-data/*', async route => {
     if (mode === 'loading') await waiting;
     await route.fulfill(mode === 'error' ? { status: 503, json: { error: 'Name search is temporarily unavailable.' } } : {
-      json: { ...inventory, records: inventory.records.filter(record =>
-        record.name.toLowerCase().startsWith(route.request().postDataJSON().query.toLowerCase())) },
+      json: inventory.records.map(record => record.name),
     });
   });
   await open(page);
@@ -978,7 +988,7 @@ test('loading, genuine empty results, failures and retry are distinct', async ({
   await expect(checker(page).getByRole('status')).toHaveText('Checking Santa’s recorded names…');
   mode = 'error';
   release();
-  await expect(checker(page).getByRole('status')).toContainText('temporarily unavailable');
+  await expect(checker(page).getByRole('status')).toContainText('could not be loaded');
   await expect(checker(page).getByRole('status')).not.toContainText('haven’t found');
   mode = 'success';
   await checker(page).getByRole('button', { name: 'Retry name search' }).click();
@@ -1152,7 +1162,7 @@ test(`mobile hero places description before the complete checker and countdown a
         }
         await input(page).press('ArrowDown');
         await input(page).press('Enter');
-        await expect(input(page)).toHaveValue('Erin');
+        await expect(input(page)).toHaveValue('Erica');
         await expect(page.locator('.radio-dock')).toBeVisible();
         if (fontSize === '100%' && !playing) {
           await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
@@ -1162,10 +1172,11 @@ test(`mobile hero places description before the complete checker and countdown a
       }
     }
     await cta(page).click();
-    await expect(page.locator('.santa-message-access input[name="FIRSTNAME"]')).toBeFocused();
-    await expect(page.locator('.hero-actions button')).toHaveCount(1);
-    await expect(input(page)).toHaveCount(1);
+    await expect(page.locator(route === '/' ? '.santa-message-access h3' : '.santa-message-access input[name="FIRSTNAME"]')).toBeFocused();
+    await expect(page.locator('.hero-actions button')).toHaveCount(route === '/' ? 0 : 1);
+    await expect(input(page)).toHaveCount(route === '/' ? 0 : 1);
     await expect(page.locator('.hero input[type="checkbox"]')).toHaveCount(0);
+    if (route === '/') await page.goBack();
   }
 });
 }
@@ -1328,27 +1339,30 @@ for (const width of [1440, 390]) test(`approved homepage handoff and left-aligne
   await page.goto('/');
   const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await decline.isVisible()) await decline.click();
-  await expect(page.locator('.hero-actions button')).toBeVisible();
+  await expect(page.locator(width < 768 ? '.nav-radio-icon' : '.hero-actions button')).toBeVisible();
   await page.evaluate(() => document.fonts.ready);
-  const button = await page.locator('.hero-actions button').boundingBox();
+  const button = await page.locator(width < 768 ? '.nav-radio-icon' : '.hero-actions button').boundingBox();
   const countdown = await page.locator('.hero-countdown .countdown').boundingBox();
   expect(countdown.width).toBeGreaterThanOrEqual(button.width);
   if (width >= 1091) {
     const stack = await page.locator('.hero-name-preview__left-stack').boundingBox();
     expect(countdown.width).toBeCloseTo(stack.width, 1);
   }
-  expect(Math.abs(button.x - countdown.x)).toBeLessThan(1);
+  if (width >= 768) expect(Math.abs(button.x - countdown.x)).toBeLessThan(1);
   const heading = await page.locator('.hero-title').boundingBox();
   const description = await page.locator('.hero-description').boundingBox();
-  expect(description.y - heading.y - heading.height).toBeGreaterThanOrEqual(width >= 1091 ? 40 : 0);
+  if (width >= 768) {
+    expect(description.y - heading.y - heading.height).toBeGreaterThanOrEqual(12);
+    expect(description.y - heading.y - heading.height).toBeLessThanOrEqual(24);
+  }
   await choose(page, 'Arabella');
   await cta(page).click();
-  await expect(page.locator('.santa-message-access input[name="FIRSTNAME"]')).toBeFocused();
+  await expect(page.locator('.santa-message-access h3')).toBeFocused();
   await expect(page.getByLabel('First Name', { exact: true })).toHaveCount(0);
   await fillAccessForm(page);
   await page.getByRole('button', { name: 'Get my free Santa message', exact: true }).click();
   await expect(page.getByLabel('First Name', { exact: true })).toHaveValue('Arabella');
-  expect(new URL(page.url()).pathname).toBe('/');
+  expect(new URL(page.url()).pathname).toBe('/free-santa-message');
   expect(requested.some(url => url.includes('Arabella'))).toBe(false);
   expect(renders).toBe(0);
 });

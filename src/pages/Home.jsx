@@ -1,20 +1,26 @@
 import PageSeo from '../seo/PageSeo.jsx';
 import { homeMetadata } from '../seo/catalogue.js';
 import { useTrackEvent } from '../privacy/useTrackEvent.js';
-import HomeHero, { useHeroNameSelection } from '../components/HomeHero.jsx';
+import { useNavigate } from 'react-router-dom';
+import HomeHero from '../components/HomeHero.jsx';
+import { offerFreeSantaMessageName } from '../lib/freeSantaMessageHandoff.js';
 import SantaTrackerBanner from '../tracker/components/SantaTrackerBanner.tsx';
 import Soundboard from '../components/Soundboard.jsx';
 import NaughtyNiceWidget from '../naughty-or-nice/NaughtyNiceWidget.jsx';
 import ChristmasPairs from '../components/ChristmasPairs.jsx';
 import SantaDashPromo from '../components/SantaDashPromo.jsx';
-import SantaMessageForm from '../components/SantaMessageForm.jsx';
+import HomepageSantaStudio from '../components/HomepageSantaStudio.jsx';
 import YouTubeSection from '../components/YouTubeSection.jsx';
 import MugshotsPreview from '../components/MugshotsPreview.jsx';
 import ContactSection from '../components/ContactSection.jsx';
 import './Home.css';
 
 export default function Home() {
-  const { pendingName, continueWithName, selectedName, setSelectedName } = useHeroNameSelection();
+  const navigate = useNavigate();
+  const continueWithName = name => {
+    offerFreeSantaMessageName(name);
+    navigate('/free-santa-message');
+  };
   const trackEvent = useTrackEvent();
   const trackPartnership = event => {
     if (event.defaultPrevented ||
@@ -25,8 +31,8 @@ export default function Home() {
   return (
     <main id="main-content" className="home-page hero-name-preview">
       <PageSeo metadata={homeMetadata()} />
-      <HomeHero onContinue={continueWithName} onSelectedNameChange={setSelectedName} />
-      <SantaMessageForm keepSignupInPlace pendingName={pendingName} selectedChildName={selectedName} />
+      <HomeHero onContinue={continueWithName} />
+      <HomepageSantaStudio />
       <SantaTrackerBanner />
       {/* Personalised video promotion temporarily removed; SantaVideoSection and its styles are retained for restoration. */}
       <SantaDashPromo />

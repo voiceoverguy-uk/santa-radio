@@ -25,7 +25,7 @@ for (const route of ['/', '/preview/hero-name-checker']) {
     const response = await request.get(origin + route);
     expect(response.ok()).toBe(true);
     const html = await response.text();
-    expect(html).toContain('A little magic from the North Pole.');
+    expect(html).toContain('MORE MAGIC FROM THE NORTH POLE');
     expect(html).not.toContain('hero-halloween-greeting');
     // Direct server rendering is also date-neutral even on Halloween.
     const RealDate = Date;
@@ -52,7 +52,7 @@ for (const route of ['/', '/preview/hero-name-checker']) {
     } }));
     await page.goto(origin + route);
     await expect(page.locator('.hero-halloween-greeting')).toHaveText('Happy Halloween');
-    await expect(page.locator('.hero h1')).toHaveText('Santa Radio A little magic from the North Pole.');
+    await expect(page.locator('.hero h1')).toHaveText('Santa Radio MORE MAGIC FROM THE NORTH POLE');
     await page.evaluate(() => document.fonts.ready);
     expect(await page.evaluate(() => [...document.fonts].some(face =>
       face.family.includes('Creepster') && face.status === 'loaded'))).toBe(true);

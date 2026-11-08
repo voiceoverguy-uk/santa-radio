@@ -29,6 +29,31 @@ function promotionMarkup(html, description) {
   return promotion;
 }
 
+function assertHomepageJourney(html) {
+  assert.doesNotMatch(html, /class="message-intro"|class="santa-message-box|class="santa-message-access /,
+    'the homepage must not mount the free introduction or adult signup/maker');
+  const start = html.indexOf('<div class="homepage-section-heading homepage-santa-studio__heading">');
+  assert.ok(start >= 0, 'homepage premium section heading exists');
+  const heading = html.slice(start, html.indexOf('<section id="santa-studio-promotion"'));
+  const parts = ['A unique Christmas treat.', 'aria-hidden="true"', 'MESSAGE FROM SANTA',
+    'OUR PREMIUM EXPERIENCE', 'Ask Santa for a bespoke message to your little one.'];
+  let previous = -1;
+  for (const part of parts) {
+    const next = heading.indexOf(part);
+    assert.ok(next > previous, `${part} is in the requested reading order`);
+    previous = next;
+  }
+  let previousSection = -1;
+  for (const marker of ['hero-name-preview__hero', 'homepage-santa-studio', 'id="santa-studio-promotion"',
+    'class="santa-message-reviews', 'aria-label="Santa Tracker"', 'santa-dash-promo',
+    'id="nice-list"', 'id="christmas-pairs"', 'class="soundboard"', 'id="homepage-mugshots"',
+    'class="youtube-section', 'class="partnership-strip"', 'class="contact-section"']) {
+    const index = html.indexOf(marker);
+    assert.ok(index > previousSection, `${marker} stays in homepage order`);
+    previousSection = index;
+  }
+}
+
 before(async () => {
   child = spawn(process.execPath, ['index.js', '--port=0'], { stdio: ['ignore', 'pipe', 'pipe'] });
   origin = await new Promise((resolve, reject) => {
@@ -70,6 +95,12 @@ for (const route of routes) {
     assert.equal(response.status, 200);
     const servedHtml = await response.text();
     promotionMarkup(servedHtml, `Production server response for ${route.path}`);
+    if (route.path === '/') {
+      for (const html of [builtHtml, serverRender, servedHtml]) assertHomepageJourney(html);
+    } else {
+      assert.match(servedHtml, /class="message-intro"/, 'the dedicated free page retains its introduction');
+      assert.doesNotMatch(servedHtml, /A unique Christmas treat\./, 'the premium heading is homepage-only');
+    }
 
     const browser = await chromium.launch({
       executablePath: process.env.CHROMIUM_PATH || (existsSync('/repl/tools/bin/chromium') ? '/repl/tools/bin/chromium' : undefined),

@@ -165,6 +165,28 @@
   min-width: 0;
 }
 
+.hero-name-checker__free-glow {
+  animation: hero-free-message-glow 2.8s ease-in-out infinite;
+}
+
+@keyframes hero-free-message-glow {
+  0%, 100% {
+    color: #e6ce86;
+    text-shadow: 0 0 4px #f3d78335;
+  }
+  50% {
+    color: #fff2bd;
+    text-shadow: 0 0 7px #f3d783b3, 0 0 18px #e6bc637a, 0 0 28px #e6bc6338;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-name-checker__free-glow {
+    animation: none;
+    text-shadow: 0 0 7px #f3d78355;
+  }
+}
+
 .hero-name-preview .hero-name-checker label {
   margin-bottom: 7px;
   color: #f5efde;
@@ -550,11 +572,10 @@
     flex-direction: column;
     justify-content: flex-start;
     gap: 20px;
-    /* Keep the countdown level with artwork even when a long caption
-       makes the cover column slightly taller than the listening stack. */
-    align-self: end;
+    /* Keep the description directly beneath the heading, even with artwork. */
+    align-self: start;
     margin-top: 0;
-    padding-top: 24px;
+    padding-top: 0;
   }
 
   .hero-name-preview__left-stack .hero-name-preview__description,
@@ -571,6 +592,10 @@
 }
 
 @media (min-width: 768px) {
+  .hero-name-preview .hero-title { margin-bottom: 0; }
+  .hero-name-preview .hero-layout { row-gap: 16px; }
+  .hero-name-preview__description { padding-top: 0; }
+
   .hero-name-preview__checker {
     padding: 28px 29px 30px;
   }
@@ -653,7 +678,7 @@
       "listening checker"
       "artwork checker";
     column-gap: clamp(22px, 3vw, 34px);
-    row-gap: 23px;
+    row-gap: 16px;
   }
 
   .hero-name-preview__checker {

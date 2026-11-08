@@ -86,15 +86,14 @@ export default function HomeHero({ preview = false, onContinue, onSelectedNameCh
           </div>}
           <h1 ref={titleRef} id="hero-name-preview-title" className="hero-title">
             Santa Radio{' '}
-            <span className="hero-name-preview__strapline">A little magic from the North Pole.</span>
+            <span className="hero-name-preview__strapline">MORE MAGIC FROM THE NORTH POLE</span>
           </h1>
           <HalloweenGreeting />
         </div>
         <div className="hero-name-preview__broadcast">
           <div className="hero-name-preview__left-stack">
             <p className="hero-description hero-name-preview__description">
-              <span className="hero-name-preview__copy--wide">Your Christmas radio station all year round 24/7 along with festive treats, amazing free apps, games and FREE personalised messages from Santa.</span>
-              <span className="hero-name-preview__copy--phone">Festive treats, amazing free apps, games and FREE personalised messages from Santa.</span>
+              Your Christmas Radio Station all year round, along with festive treats, amazing free apps, games and FREE personalised messages from Santa.
             </p>
             <div className="hero-name-preview__listening">
               <div className="hero-name-preview__player-row">

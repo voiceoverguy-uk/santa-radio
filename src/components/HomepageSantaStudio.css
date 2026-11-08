@@ -1,0 +1,10 @@
+.homepage-santa-studio__layout {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+.homepage-santa-studio__layout > * { min-width: 0; margin-block: 0; }
+.home-page .homepage-santa-studio__heading { margin-bottom: 0; }
+@media (max-width: 767px) {
+  .homepage-santa-studio__layout { gap: 24px; }
+}

@@ -36,8 +36,8 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const makerHeadingRef = useRef(null);
   const previousAccess = useRef(hasAccess);
   const [name, setName] = useState(initialName);
-  const hasPrefilledName = Boolean(pendingName?.name &&
-    santaNameKey(pendingName.name) === santaNameKey(name));
+  const hasPrefilledName = Boolean((pendingName?.name || initialName) &&
+    santaNameKey(pendingName?.name || initialName) === santaNameKey(name));
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [exampleName, setExampleName] = useState('Olivia');
   const [activeExampleName, setActiveExampleName] = useState(null);

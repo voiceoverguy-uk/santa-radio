@@ -48,7 +48,7 @@ for (const route of routes) {
       else {
         await expect(page.locator('.hero-name-preview__intro > :last-child')).toHaveClass('hero-title');
       }
-      await expect(page.locator('.hero h1')).toHaveText('Santa Radio A little magic from the North Pole.');
+      await expect(page.locator('.hero h1')).toHaveText('Santa Radio MORE MAGIC FROM THE NORTH POLE');
     });
   }
 

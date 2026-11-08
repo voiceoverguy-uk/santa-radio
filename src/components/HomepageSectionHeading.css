@@ -60,6 +60,15 @@
   text-wrap: balance;
 }
 
+.home-page .homepage-section-heading__supporting {
+  margin: 8px 0 0;
+  color: #e7cf89;
+  font: 400 .8rem/1.6 'Cinzel', Georgia, serif;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
 .home-page .homepage-section-heading__subtitle {
   margin: 7px 0 0;
   color: #f0ead9;

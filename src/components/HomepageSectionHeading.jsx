@@ -5,6 +5,7 @@ export default function HomepageSectionHeading({
   eyebrow,
   title,
   subtitle,
+  supportingLine,
   titleId,
   className = '',
   eyebrowClassName = '',
@@ -22,6 +23,7 @@ export default function HomepageSectionHeading({
           {title}
         </h2>
       </div>
+      {supportingLine && <p className="homepage-section-heading__supporting">{supportingLine}</p>}
       <p className={`homepage-section-heading__subtitle ${subtitleClassName}`.trim()}>{subtitle}</p>
     </div>
   );

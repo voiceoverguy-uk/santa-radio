@@ -135,10 +135,11 @@ for (const width of [390, 1440]) {
   });
 }
 
-test('homepage keeps its existing introduction, example position and no guide', async ({ page }) => {
+test('homepage keeps the paid Studio and reviews without mounting the free maker', async ({ page }) => {
   await visit(page);
   await page.goto('/');
-  await expect(page.locator('.message-intro .eyebrow')).toHaveText('A little North Pole experiment');
-  await expect(page.locator('.message-intro .santa-voice-tagline + .santa-message-example + .message-free-intro')).toHaveCount(1);
-  await expect(page.locator('#santa-messages .smw-explainer-card')).toHaveCount(0);
+  await expect(page.locator('.message-intro, .santa-message-box, .santa-message-example, .smw-explainer-card')).toHaveCount(0);
+  await expect(page.locator('#santa-studio-promotion')).toHaveCount(1);
+  await expect(page.locator('.santa-message-reviews')).toHaveCount(1);
+  await expect(page.locator('#homepage-santa-studio-title')).toHaveText('MESSAGE FROM SANTA');
 });

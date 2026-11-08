@@ -70,9 +70,10 @@ for (const width of [390, 1440]) {
     const cdp = await page.context().newCDPSession(page);
     await cdp.send('Network.setCacheDisabled', { cacheDisabled: true });
     await page.reload();
-    await empty(page);
     await expect(maker).toHaveValue('');
     expect(await page.evaluate(() => ({ local: { ...localStorage }, session: { ...sessionStorage } }))).toEqual(storage);
+    await page.getByRole('link', { name: 'Santa Radio home', exact: true }).click();
+    await empty(page);
     await input(page).fill('Er');
     await expect(checker(page).getByRole('option')).toHaveCount(2);
     await input(page).press('ArrowDown');
@@ -117,11 +118,11 @@ for (const width of [390, 1440]) {
       // A late load event must never wipe a deliberate selection or its handoff.
       window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: false }));
     });
-    await expect(input(page)).toHaveValue('Wendy');
+    await expect(page.locator('.message-result')).toContainText('Wendy');
     await expect(download).toHaveAttribute('href', href);
     expect(await page.evaluate(() => ({ local: { ...localStorage }, session: { ...sessionStorage } }))).toEqual(storage);
     await page.reload();
-    await empty(page);
+    await expect(page).toHaveURL(/\/free-santa-message$/);
     await expect(page.locator('.santa-message-access')).toHaveCount(0);
     await expect(page.locator('.santa-message-box').getByRole('button', { name: 'Create message', exact: true })).toHaveCount(0);
     expect(await page.evaluate(() => JSON.parse(localStorage.getItem('santa-message-allowance')).used)).toBe(1);
