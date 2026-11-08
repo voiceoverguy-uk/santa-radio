@@ -84,6 +84,25 @@ test('desktop side cards keep seasonal details and the conditional UK arrival ca
   }
 });
 
+test('full tracker statistic cards have fine red edges while UK arrival keeps its highlight', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-12-24T23:30:00Z'));
+  await page.goto('/santa-tracker');
+  await expect(cards(page)).toHaveCount(9);
+
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 1000 });
+    const regularCard = cardFor(page, 'Estimated Gifts');
+    const arrivalCard = cardFor(page, 'UK Arrival');
+    await expect(regularCard).toBeVisible();
+    await expect(arrivalCard).toBeVisible();
+    expect(await regularCard.evaluate(node => getComputedStyle(node).borderTopWidth)).toBe('1px');
+    expect(await regularCard.evaluate(node => getComputedStyle(node).borderTopColor)).toBe('rgb(155, 17, 30)');
+    expect(await arrivalCard.evaluate(node => getComputedStyle(node).borderTopWidth)).toBe('1px');
+    expect(await arrivalCard.evaluate(node => getComputedStyle(node).borderTopColor)).toBe('rgba(212, 175, 55, 0.44)');
+    await fits(page);
+  }
+});
+
 test('preview side cards update together and remain readable with enlarged text', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1080 });
   await page.clock.install({ time: new Date('2026-11-08T12:00:00Z') });

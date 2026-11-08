@@ -445,6 +445,9 @@
 /* Map stage: one SantaStats instance. Stacked below 1200px; flanking map at >=1200px. */
 .santa-tracker .tracker-stage-stats { margin-top: 3rem; }
 .santa-tracker .tracker-stats-grid > * { min-width: 0; }
+.santa-tracker .tracker-stage-stats .tracker-stats-grid > .tracker-card:not(.tracker-card-highlight) {
+  border-color: #9B111E;
+}
 @media (min-width: 1200px) {
   .santa-tracker .tracker-stage {
     --side: clamp(12rem, 15vw, 15.5rem);
