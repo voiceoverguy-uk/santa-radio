@@ -63,6 +63,8 @@ export default function SantaStats({ effectiveTime, holiday }: SantaStatsProps) 
   const isLive = data.mode === "LIVE";
 
   const onHoliday = data.mode === "OFF_SEASON" && isHolidaySeason(effectiveTime) && !!holiday;
+  const researching = data.mode === "ROUTE_RESEARCH";
+  const onTrip = onHoliday || (researching && !!holiday);
   const inJuly = data.mode === "OFF_SEASON" && isChristmasInJuly(effectiveTime);
   const [maybeNext, setMaybeNext] = useState<HolidayDestination | null>(null);
   const [speedIndex, setSpeedIndex] = useState(0);
@@ -108,9 +110,9 @@ export default function SantaStats({ effectiveTime, holiday }: SantaStatsProps) 
     setFunDistance(activeDistance[Math.floor(Math.random() * activeDistance.length)]);
   }, []);
 
-  if (onHoliday && holiday) {
+  if (onTrip && holiday) {
     data.currentStopName = holiday.name;
-    data.currentStopFlag = inJuly ? "🎄" : "🏖️";
+    data.currentStopFlag = researching ? "🧭" : inJuly ? "🎄" : "🏖️";
   }
 
   const animatedGifts = useCountUp(data.estimatedGifts);
@@ -138,18 +140,18 @@ export default function SantaStats({ effectiveTime, holiday }: SantaStatsProps) 
     },
     {
       icon: <Clock size={18} />,
-      label: onHoliday ? "Postcard Clock (approx.)" : data.state === "IN_TRANSIT" ? "Last Stop’s Local Time" : "Stop’s Local Time",
-      value: onHoliday ? getHolidayLocalTime() : data.localTimeAtStop === "—" ? "—" : `${data.localTimeAtStop} · ${data.localClockPlace}`,
+      label: researching ? "Research Clock (approx.)" : onHoliday ? "Postcard Clock (approx.)" : data.state === "IN_TRANSIT" ? "Last Stop’s Local Time" : "Stop’s Local Time",
+      value: onTrip ? getHolidayLocalTime() : data.localTimeAtStop === "—" ? "—" : `${data.localTimeAtStop} · ${data.localClockPlace}`,
     },
     {
       icon: <Navigation size={18} />,
       label: "Next Stop",
-      value: onHoliday && maybeNext ? `Maybe ${maybeNext.name}?` : (data.nextStopName !== "—" ? `${data.nextStopFlag} ${data.nextStopName}` : "—"),
+      value: researching ? "North Pole between trips" : onHoliday && maybeNext ? `Maybe ${maybeNext.name}?` : (data.nextStopName !== "—" ? `${data.nextStopFlag} ${data.nextStopName}` : "—"),
     },
     {
       icon: <Target size={18} />,
       label: "ETA",
-      value: onHoliday ? (inJuly ? "Celebrating! 🎄" : "Relaxing...") : data.etaText,
+      value: researching ? "Quick research trip" : onHoliday ? (inJuly ? "Celebrating! 🎄" : "Relaxing...") : data.etaText,
     },
     {
       icon: <Gift size={18} />,
@@ -164,7 +166,7 @@ export default function SantaStats({ effectiveTime, holiday }: SantaStatsProps) 
     {
       icon: <Globe size={18} />,
       label: "Route Stops",
-      value: onHoliday ? (inJuly ? "Celebrating mid-year!" : "Back on 1 December") : `${animatedVisited} / ${data.visitedCount + data.remainingCount}`,
+      value: researching ? "Research, not deliveries" : onHoliday ? (inJuly ? "Celebrating mid-year!" : "Research from 10 November") : `${animatedVisited} / ${data.visitedCount + data.remainingCount}`,
     },
     {
       icon: <Zap size={18} />,

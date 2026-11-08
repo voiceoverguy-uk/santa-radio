@@ -74,7 +74,7 @@ test('direct route metadata, assets and preview noindex are available before Jav
   expect(await page.locator('main form').count()).toBe(0);
   await expect(page.locator('main')).not.toContainText('Santa’s voice by Guy Harris');
   await expect(page.locator('.tracker-hero')).toContainText(
-    'The countdown is on until departure. Until then, it looks like Santa is touring the world on holiday. Keep up with the countdown, holiday postcards and festive facts. Keep checking back!',
+    'The countdown is on until departure. Keep up with Santa’s seasonal travels, route preparations and festive facts. Keep checking back!',
   );
 });
 
@@ -98,14 +98,17 @@ for (const [date, text] of [
   ['2026-03-15T12:00:00Z', /Holiday Postcards/],
   ['2026-07-15T12:00:00Z', /Christmas in July Postcards/],
    ['2026-11-01T00:00:00Z', /Holiday Postcards/],
-   ['2026-11-30T23:59:59Z', /Holiday Postcards/],
-   ['2026-12-01T00:00:00Z', /Workshop Dispatch/],
-  ['2026-12-12T12:00:00Z', /Workshop Dispatch/],
+    ['2026-11-09T23:59:59Z', /Holiday Postcards/],
+    ['2026-11-10T00:00:00Z', /Route Research Report/],
+    ['2026-12-22T23:59:59Z', /Route Research Report/],
+    ['2026-12-23T00:00:00Z', /Workshop Dispatch/],
   ['2026-12-24T09:00:00Z', /Preparing/],
   ['2026-12-24T14:00:00Z', /Live Update/],
   ['2026-12-25T11:21:00Z', /Journey Summary/],
-  ['2027-01-01T12:00:00Z', /North Pole/],
-   ['2027-02-28T23:59:59Z', /North Pole/],
+   ['2026-12-25T23:59:59Z', /Journey Summary/],
+   ['2026-12-26T00:00:00Z', /Holiday Postcards/],
+   ['2027-01-01T12:00:00Z', /Holiday Postcards/],
+    ['2027-02-28T23:59:59Z', /Holiday Postcards/],
 ]) {
   test(`seasonal content at ${date}`, async ({ page }) => {
     await page.clock.setFixedTime(new Date(date));
@@ -151,7 +154,8 @@ test('desktop/mobile map, typography and menu fit without horizontal overflow', 
 
 test('gold dividers separate holiday activity, introduction and countdown without moving live updates', async ({ page }) => {
   const states = [
-    { date: '2026-11-15T12:00:00Z', status: /On Holiday in/ },
+    { date: '2026-11-09T12:00:00Z', status: /On Holiday in/ },
+    { date: '2026-11-15T12:00:00Z', status: /Prepping the route in/ },
     { date: '2026-12-24T14:00:00Z', status: /Delivering Now/ },
     { date: '2026-12-25T11:21:00Z', status: /Journey Complete/ },
   ];
@@ -161,7 +165,7 @@ test('gold dividers separate holiday activity, introduction and countdown withou
       await page.setViewportSize(viewport);
       await page.goto('/santa-tracker');
       await expect(page.locator('.tracker-status')).toContainText(state.status);
-      const holiday = state.status.source.includes('Holiday');
+       const holiday = /Holiday|Prepping/.test(state.status.source);
       const dividers = page.locator('.tracker-copy-divider');
       await expect(dividers).toHaveCount(holiday ? 2 : 1);
       const divider = dividers.last();
@@ -191,7 +195,7 @@ test('gold dividers separate holiday activity, introduction and countdown withou
 });
 
 test('tracker copy and divider remain readable at 200% text zoom', async ({ page }) => {
-  await page.clock.setFixedTime(new Date('2026-11-15T12:00:00Z'));
+  await page.clock.setFixedTime(new Date('2026-11-09T12:00:00Z'));
   for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 }]) {
     await page.setViewportSize(viewport);
     await page.goto('/santa-tracker');
@@ -254,7 +258,7 @@ test('tracker copy and divider remain readable at 200% text zoom', async ({ page
 });
 
 test('tracker omits the gold divider when no status message follows the introduction', async ({ page }) => {
-  await page.clock.setFixedTime(new Date('2026-12-12T12:00:00Z'));
+  await page.clock.setFixedTime(new Date('2026-12-24T09:00:00Z'));
   await page.goto('/santa-tracker');
   await expect(page.locator('.tracker-hero .tracker-copy')).toHaveCount(2);
   await expect(page.locator('.tracker-status-message')).toHaveCount(0);
@@ -383,15 +387,15 @@ async function pauseClock(page, iso) {
   await page.clock.pauseAt(date);
 }
 
-test('November Speed cycles in order every six seconds, wraps, and keeps the destination', async ({ page }) => {
-  await pauseClock(page, '2026-11-15T12:00:00Z');
+test('holiday Speed cycles in order every six seconds, wraps, and keeps the destination', async ({ page }) => {
+  await pauseClock(page, '2026-11-09T12:00:00Z');
   await page.goto('/santa-tracker');
   await expect(page.locator('main')).toContainText('Holiday Postcards');
-  const speed = dashboardCard(page, 'Speed');
+   const speed = dashboardCard(page, 'Estimated Speed');
   const location = await dashboardCard(page, 'Current Location').textContent();
   await expect(speed).toHaveText('Slow');
-  await expect(dashboardCard(page, 'Countries Visited')).toHaveText('Back on 1 December');
-  await expect(page.locator('.tracker-hero')).toContainText('North Pole on 1 December');
+   await expect(dashboardCard(page, 'Route Stops')).toHaveText('Research from 10 November');
+   await expect(page.locator('.tracker-hero')).toContainText('Route-research trips begin on 10 November');
   for (let i = 1; i <= holidaySpeeds.length; i++) {
     await page.clock.runFor(5999);
     await expect(speed).toHaveText(holidaySpeeds[(i - 1) % holidaySpeeds.length]);
@@ -401,40 +405,41 @@ test('November Speed cycles in order every six seconds, wraps, and keeps the des
   }
 });
 
-test('an open tracker exits holidays at midnight UTC on 1 December and stops Speed rotation', async ({ page }) => {
-  await pauseClock(page, '2026-11-30T23:59:53Z');
+test('an open tracker exits holidays on 10 November and retains its research destination', async ({ page }) => {
+  await pauseClock(page, '2026-11-09T23:59:53Z');
   await page.goto('/santa-tracker');
   await expect(page.locator('main')).toContainText('Holiday Postcards');
-  await expect(page.locator('main svg title')).toContainText('holiday location');
+  await expect(page.locator('main svg > title')).toContainText('holiday location');
+  const location = (await dashboardCard(page, 'Current Location').textContent()).replace('🏖️ ', '');
   await page.clock.runFor(6000);
-  await expect(dashboardCard(page, 'Speed')).toHaveText('Horizontal');
+  await expect(dashboardCard(page, 'Estimated Speed')).toHaveText('Horizontal');
   await page.clock.runFor(1000);
-  await expect(page.locator('main')).toContainText('Workshop Dispatch');
+  await expect(page.locator('main')).toContainText('Route Research Report');
   await expect(page.locator('main')).not.toContainText('Holiday Postcards');
-  await expect(page.locator('.tracker-status')).toContainText('At the North Pole');
-  await expect(page.locator('main svg title')).toContainText('estimated journey map');
-  await expect(dashboardCard(page, 'Current Location')).toContainText('North Pole');
-  await expect(dashboardCard(page, 'Speed')).toHaveText('—');
+  await expect(page.locator('.tracker-status')).toContainText(`Prepping the route in ${location}`);
+  await expect(page.locator('main svg > title')).toContainText(`route research map: ${location}`);
+  await expect(dashboardCard(page, 'Current Location')).toContainText(location);
+  await expect(dashboardCard(page, 'Estimated Speed')).toHaveText('—');
   await expect(dashboardCard(page, 'ETA')).not.toContainText('Relaxing');
   await page.clock.runFor(18000);
-  await expect(dashboardCard(page, 'Speed')).toHaveText('—');
+  await expect(dashboardCard(page, 'Estimated Speed')).toHaveText('—');
 });
 
-test('homepage banner leaves holidays at the same December boundary without reloading', async ({ page }) => {
-  await pauseClock(page, '2026-11-30T23:59:59Z');
+test('homepage banner leaves holidays at the same November boundary without reloading', async ({ page }) => {
+  await pauseClock(page, '2026-11-09T23:59:59Z');
   await page.goto('/');
   const banner = page.locator('.tracker-banner');
-  await expect(banner).toContainText('North Pole on 1 December');
+  await expect(banner).toContainText('Route-research trips begin on 10 November');
   await expect(banner).toContainText("Santa's holiday location");
   await page.clock.runFor(1000);
-  await expect(banner).toContainText('At the North Pole');
-  await expect(banner).toContainText("Santa's at the North Pole");
+  await expect(banner).toContainText('Prepping the route in');
+  await expect(banner).toContainText("Santa's route research location:");
   await expect(banner).not.toContainText('well-earned break');
 });
 
 test('homepage mini map links to the tracker with an accessible name and keyboard focus', async ({ page }) => {
   test.setTimeout(90000);
-  await page.clock.setFixedTime(new Date('2026-11-15T12:00:00Z'));
+  await page.clock.setFixedTime(new Date('2026-11-09T12:00:00Z'));
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   const map = page.getByRole('link', { name: "Open the Santa Tracker: Santa's holiday location" });
   await expect(map).toHaveAttribute('href', '/santa-tracker');
@@ -447,8 +452,8 @@ test('homepage mini map links to the tracker with an accessible name and keyboar
 });
 
 for (const [date, holiday] of [
-  ['2026-11-15T12:00:00Z', true],
-  ['2026-12-12T12:00:00Z', false],
+   ['2026-11-09T12:00:00Z', true],
+   ['2026-12-23T12:00:00Z', false],
 ]) {
   test(`homepage enlarged map preserves location and leaves the countdown in the hero at ${date}`, async ({ page }) => {
     await pauseClock(page, date);
@@ -466,11 +471,11 @@ for (const [date, holiday] of [
       expect(x).toBeLessThan(1000);
       expect(y).toBeGreaterThan(0);
       expect(y).toBeLessThan(500);
-      await expect(banner).toContainText('North Pole on 1 December');
+      await expect(banner).toContainText('Route-research trips begin on 10 November');
     } else {
       expect(x).toBe(500);
       expect(y).toBe(0);
-      await expect(banner.locator('.tracker-status')).toContainText('At the North Pole');
+      await expect(banner.locator('.tracker-status')).toContainText('Final Preparations Underway');
     }
     await expect(banner.locator('.tracker-countdown-value')).toHaveCount(0);
     const countdown = page.locator('.hero-countdown .countdown-unit strong');
@@ -545,8 +550,8 @@ for (const [date, complete] of [
 }
 
 for (const [realDate, simulatedDate, holiday] of [
-  ['2026-12-12T12:00:00Z', '2026-11-30T23:59:53Z', true],
-  ['2026-11-15T12:00:00Z', '2026-12-12T12:00:00Z', false],
+  ['2026-12-23T12:00:00Z', '2026-12-22T23:59:53Z', true],
+  ['2026-11-15T12:00:00Z', '2026-12-23T12:00:00Z', false],
 ]) {
   test(`preview uses ${simulatedDate} independently of public date ${realDate}`, async ({ page }) => {
     await pauseClock(page, realDate);
@@ -555,38 +560,38 @@ for (const [realDate, simulatedDate, holiday] of [
       speedMultiplier: 1, jumpTarget: null,
     })), { simulatedDate });
     await page.goto('/santa-tracker/preview');
-    await expect(page.locator('main')).toContainText(holiday ? 'Holiday Postcards' : 'Workshop Dispatch');
-    await expect(dashboardCard(page, 'Speed')).toHaveText(holiday ? 'Slow' : '—');
+    await expect(page.locator('main')).toContainText(holiday ? 'Route Research Report' : 'Workshop Dispatch');
+    await expect(dashboardCard(page, 'Estimated Speed')).toHaveText('—');
     if (holiday) {
       await page.clock.runFor(7000);
       await expect(page.locator('main')).toContainText('Workshop Dispatch');
-      await expect(dashboardCard(page, 'Speed')).toHaveText('—');
+      await expect(dashboardCard(page, 'Estimated Speed')).toHaveText('—');
     }
     await page.getByRole('button', { name: 'Reset to Real Time' }).click();
-    await expect(page.locator('main')).toContainText(holiday ? 'Workshop Dispatch' : 'Holiday Postcards');
-    await expect(dashboardCard(page, 'Speed')).toHaveText(holiday ? '—' : 'Slow');
+    await expect(page.locator('main')).toContainText(holiday ? 'Workshop Dispatch' : 'Route Research Report');
+    await expect(dashboardCard(page, 'Estimated Speed')).toHaveText('—');
     await page.goto('/santa-tracker');
-    await expect(page.locator('main')).toContainText(holiday ? 'Workshop Dispatch' : 'Holiday Postcards');
+    await expect(page.locator('main')).toContainText(holiday ? 'Workshop Dispatch' : 'Route Research Report');
   });
 }
 
-test('November homepage and tracker labels fit desktop and mobile without clipping', async ({ page }) => {
-  await pauseClock(page, '2026-11-15T12:00:00Z');
+test('holiday homepage and tracker labels fit desktop and mobile without clipping', async ({ page }) => {
+  await pauseClock(page, '2026-11-09T12:00:00Z');
   for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 }]) {
     await page.setViewportSize(viewport);
     await page.goto('/');
-    await expect(page.locator('.tracker-banner')).toContainText('North Pole on 1 December');
+    await expect(page.locator('.tracker-banner')).toContainText('Route-research trips begin on 10 November');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
     await page.goto('/santa-tracker');
-    await expect(dashboardCard(page, 'Speed')).toHaveText('Slow');
+    await expect(dashboardCard(page, 'Estimated Speed')).toHaveText('Slow');
     for (const label of holidaySpeeds) {
-      await expect(dashboardCard(page, 'Speed')).toHaveText(label);
-      expect(await dashboardCard(page, 'Speed').evaluate(node =>
+      await expect(dashboardCard(page, 'Estimated Speed')).toHaveText(label);
+      expect(await dashboardCard(page, 'Estimated Speed').evaluate(node =>
         node.scrollWidth <= node.clientWidth && node.scrollHeight <= node.clientHeight
       )).toBeTruthy();
       await page.clock.runFor(6000);
     }
-    expect(await dashboardCard(page, 'Countries Visited').evaluate(node =>
+    expect(await dashboardCard(page, 'Route Stops').evaluate(node =>
       node.scrollWidth <= node.clientWidth && node.scrollHeight <= node.clientHeight
     )).toBeTruthy();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
@@ -596,9 +601,104 @@ test('November homepage and tracker labels fit desktop and mobile without clippi
 test('Christmas Eve uses the real route and estimated Speed, not holiday labels', async ({ page }) => {
   await pauseClock(page, '2026-12-24T14:00:00Z');
   await page.goto('/santa-tracker');
-  await expect(dashboardCard(page, 'Speed')).toHaveText('6,650,000 mph');
+  await expect(dashboardCard(page, 'Estimated Speed')).toHaveText('6,650,000 mph');
   await expect(page.locator('.tracker-status')).toContainText('Delivering Now');
-  await expect(page.locator('main svg title')).toContainText('estimated journey map');
+  await expect(page.locator('main svg > title')).toContainText('estimated journey map');
   await page.clock.runFor(18000);
-  await expect(dashboardCard(page, 'Speed')).toHaveText('6,650,000 mph');
+  await expect(dashboardCard(page, 'Estimated Speed')).toHaveText('6,650,000 mph');
 });
+
+for (const [before, after, status, content] of [
+  ['2026-11-09T23:59:59Z', '2026-11-10T00:00:00Z', 'Prepping the route in', 'Route Research Report'],
+  ['2026-12-22T23:59:59Z', '2026-12-23T00:00:00Z', 'Prepar', 'Workshop Dispatch'],
+  ['2026-12-25T23:59:59Z', '2026-12-26T00:00:00Z', 'On Holiday in', 'Holiday Postcards'],
+]) {
+  test(`both public trackers cross ${after} without reloading`, async ({ page }) => {
+    await pauseClock(page, before);
+    await page.goto('/santa-tracker');
+    await expect(page.locator('main svg[role="img"]')).toBeVisible();
+    if (before.includes('12-25')) {
+      await expect(page.locator('.tracker-status')).toContainText('Journey Complete');
+      await expect(page.locator('.tracker-progress-value')).toHaveText('100.0%');
+    }
+    await page.clock.runFor(1000);
+    await expect(page.locator('.tracker-status')).toContainText(status);
+    await expect(page.locator('main')).toContainText(content);
+    if (content === 'Route Research Report') {
+      await expect(page.locator('main')).not.toContainText('Holiday Postcards');
+      await expect(dashboardCard(page, 'Estimated Speed')).toHaveText('—');
+      await expect(dashboardCard(page, 'Next Stop')).toHaveText('North Pole between trips');
+    }
+    // Reset the browser clock for the independent homepage transition.
+    await page.clock.setSystemTime(new Date(before));
+    await page.goto('/');
+    await expect(page.locator('.tracker-banner .tracker-status')).toBeVisible();
+    await page.clock.runFor(1000);
+    await expect(page.locator('.tracker-banner .tracker-status')).toContainText(status);
+    if (content === 'Route Research Report') {
+      await expect(page.locator('.tracker-banner')).toContainText('North Pole between trips');
+      await expect(page.locator('.tracker-banner')).not.toContainText('well-earned break');
+    }
+  });
+}
+
+test('seasonal preview controls show every boundary independently of the public date', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-06-15T12:00:00Z'));
+  await page.goto('/santa-tracker/preview');
+  await page.getByRole('switch', { name: 'Preview mode' }).click();
+  for (const [label, status, content] of [
+    ['9 November', 'On Holiday in', 'Holiday Postcards'],
+    ['10 November', 'Prepping the route in', 'Route Research Report'],
+    ['22 December', 'Prepping the route in', 'Route Research Report'],
+    ['23 December', 'Preparing for Takeoff', 'Workshop Dispatch'],
+    ['25 December', 'Journey Complete', 'Journey Summary'],
+    ['26 December', 'On Holiday in', 'Holiday Postcards'],
+  ]) {
+    await page.getByRole('button', { name: label, exact: true }).click();
+    await expect(page.locator('.tracker-status')).toContainText(status);
+    await expect(page.locator('main')).toContainText(content);
+  }
+  await page.goto('/santa-tracker');
+  await expect(page.locator('main')).toContainText('Holiday Postcards');
+  await expect(page.getByRole('button', { name: 'Preview Controls' })).toHaveCount(0);
+});
+
+test('research destination, activity and map stay aligned on desktop and mobile', async ({ page }) => {
+  await pauseClock(page, '2026-12-12T12:00:00Z');
+  for (const width of [1280, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/santa-tracker');
+    await expect(page.locator('.tracker-status')).toContainText('Prepping the route in');
+    const location = (await dashboardCard(page, 'Current Location').textContent()).replace('🧭 ', '');
+    await expect(page.locator('.tracker-status')).toContainText(location);
+    await expect(page.locator('main svg > title')).toHaveText(`Santa's route research map: ${location}`);
+    await expect(page.locator('main svg > desc')).toContainText('not a Christmas Eve delivery stop');
+    await expect(page.locator('.tracker-map-caption')).toHaveText(`Route research in ${location}`);
+    const activity = await page.locator('.tracker-status-message').textContent();
+    await expect(page.locator('main svg > desc')).toContainText(activity);
+    await expect(page.locator('.tracker-story-card').first()).toContainText(activity);
+    await expect(page.getByRole('button', { name: 'Share this postcard' })).toHaveCount(0);
+    await expect(dashboardCard(page, 'ETA')).toHaveText('Quick research trip');
+    await expect(dashboardCard(page, 'Route Stops')).toHaveText('Research, not deliveries');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.clock.runFor(18000);
+    await expect(dashboardCard(page, 'Current Location')).toContainText(location);
+    await expect(dashboardCard(page, 'Estimated Speed')).toHaveText('—');
+  }
+});
+
+for (const date of ['2026-11-09T12:00:00Z', '2026-12-26T00:00:00Z', '2027-01-01T12:00:00Z']) {
+  test(`holiday return messages match the annual research transition at ${date}`, async ({ page }) => {
+    await page.clock.setFixedTime(new Date(date));
+    await page.goto('/');
+    const banner = page.locator('.tracker-banner');
+    await expect(banner).toContainText('On Holiday in');
+    await expect(banner).toContainText('Route-research trips begin on 10 November');
+    await expect(banner).not.toContainText('1 December');
+    await page.goto('/santa-tracker');
+    await expect(page.locator('.tracker-status')).toContainText('On Holiday in');
+    await expect(page.locator('.tracker-status-message')).toContainText('Route-research trips begin on 10 November');
+    await expect(dashboardCard(page, 'Route Stops')).toHaveText('Research from 10 November');
+    await expect(page.locator('main')).not.toContainText('1 December');
+  });
+}

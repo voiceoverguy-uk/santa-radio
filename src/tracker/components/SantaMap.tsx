@@ -2,16 +2,17 @@
 
 import { useId } from "react";
 import { santaStops } from "@/data/santaRouteStops";
-import { getVisitedStops, getCurrentStopId, type MapPosition } from "@/lib/santaRoute";
+import { getVisitedStops, getCurrentStopId, getRouteResearchCopy, type HolidayDestination, type MapPosition } from "@/lib/santaRoute";
 import { worldMapPaths } from "@/data/worldMapPaths";
 
 interface SantaMapProps {
   effectiveTime: Date;
   mapPosition: MapPosition;
   onHoliday?: boolean;
+  researchDestination?: HolidayDestination | null;
 }
 
-export default function SantaMap({ effectiveTime, mapPosition, onHoliday }: SantaMapProps) {
+export default function SantaMap({ effectiveTime, mapPosition, onHoliday, researchDestination }: SantaMapProps) {
   const titleId = useId();
   const descriptionId = useId();
   const visited = getVisitedStops(effectiveTime);
@@ -35,9 +36,11 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday }: Sant
           aria-labelledby={titleId}
           aria-describedby={descriptionId}
         >
-          <title id={titleId}>{onHoliday ? "Santa's holiday location map" : "Santa's estimated journey map"}</title>
+          <title id={titleId}>{researchDestination ? `Santa's route research map: ${researchDestination.name}` : onHoliday ? "Santa's holiday location map" : "Santa's estimated journey map"}</title>
           <desc id={descriptionId}>
-            {onHoliday
+            {researchDestination
+              ? `${getRouteResearchCopy(researchDestination)} The Santa marker shows his research location, not a Christmas Eve delivery stop. Faint dots mark the separate estimated Christmas Eve route.`
+              : onHoliday
               ? "The Santa marker shows his current holiday location. Faint dots mark stops on the estimated Christmas Eve route."
               : `The Santa marker shows his estimated position on the world map. Red dots mark visited stops, faint dots mark upcoming stops${currentStop ? `, and a glowing dot marks ${currentStop.displayLabel} as the current stop` : ""}.`}
           </desc>
@@ -138,7 +141,7 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday }: Sant
       </div>
 
       <div className="tracker-map-caption absolute bottom-3 left-3 backdrop-blur-sm rounded-lg px-3 py-1.5 text-xs">
-        {onHoliday ? "Santa's current holiday location" : "Estimated route based on local midnight across time zones"}
+        {researchDestination ? `Route research in ${researchDestination.name}` : onHoliday ? "Santa's current holiday location" : "Estimated route based on local midnight across time zones"}
       </div>
     </div>
   );

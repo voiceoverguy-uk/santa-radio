@@ -12,12 +12,12 @@ const canonical = "https://santa-radio.replit.app/santa-tracker";
 const intro = "Follow Santa's estimated Christmas Eve journey around the world. Count down to his departure, follow his progress on the world map, and explore the estimated schedule for the big night.";
 const description = "Follow Santa's estimated Christmas Eve journey around the world, with a countdown, updating world map, festive facts and family fun from Santa Radio.";
 
-test("holiday season includes November and ends at midnight UTC on 1 December", () => {
+test("holiday season wraps the year and ends at midnight UTC on 10 November", () => {
   const { isHolidaySeason } = harness().load("lib/santaRoute.ts");
-  for (const iso of ["2026-03-01T00:00:00Z", "2026-10-01T00:00:00Z", "2026-11-01T00:00:00Z", "2026-11-30T23:59:59.999Z"]) {
+  for (const iso of ["2026-01-15T12:00:00Z", "2026-02-28T23:59:59.999Z", "2026-03-01T00:00:00Z", "2026-11-09T23:59:59.999Z", "2026-12-26T00:00:00Z"]) {
     assert.equal(isHolidaySeason(new Date(iso)), true, iso);
   }
-  for (const iso of ["2026-01-15T12:00:00Z", "2026-02-28T23:59:59.999Z", "2026-12-01T00:00:00Z", "2026-12-24T12:00:00Z"]) {
+  for (const iso of ["2026-11-10T00:00:00Z", "2026-12-22T23:59:59.999Z", "2026-12-23T00:00:00Z", "2026-12-25T23:59:59.999Z"]) {
     assert.equal(isHolidaySeason(new Date(iso)), false, iso);
   }
 });
@@ -183,7 +183,7 @@ test("mounted seasonal and preview status/countdown retain behavior without the 
     ["2026-12-24T14:00:00Z", /Delivering Now/, false],
     ["2026-12-25T12:00:00Z", /Journey Complete/, false],
     ["2026-07-10T12:00:00Z", /Christmas in July/, true],
-    ["2026-11-30T23:59:59Z", /On Holiday/, true],
+    ["2026-11-30T23:59:59Z", /Prepping the route/, true],
   ]) {
     const { h, page } = pageView(date);
     h.flush();
@@ -221,9 +221,9 @@ function button(nodes, label) {
 
 test("homepage banner keeps its year-round heading in server and every seasonal render", () => {
   for (const [date, status, seasonalCopy, stats, action] of [
-    ["2026-11-15T12:00:00Z", /On Holiday in/, /well-earned break/, false, "Open the Tracker"],
+    ["2026-11-15T12:00:00Z", /Prepping the route in/, /quick research trip/, false, "Open the Tracker"],
     ["2026-07-10T12:00:00Z", /Christmas in July/, /mid-year festivities/, false, "Open the Tracker"],
-    ["2026-12-01T12:00:00Z", /At the North Pole/, /Live route updates/, false, "Open the Tracker"],
+    ["2026-12-01T12:00:00Z", /Prepping the route in/, /North Pole between trips/, false, "Open the Tracker"],
     ["2026-12-24T05:00:00Z", /Final Preparations Underway/, /Live route updates/, false, "Open the Tracker"],
     ["2026-12-24T14:00:00Z", /Delivering in/, /estimated 60-stop Christmas Eve journey/, true, "Track Santa Now"],
     ["2026-12-25T12:00:00Z", /Journey Complete/, /Final deliveries in American Samoa finished/, true, "Open the Tracker"],
@@ -409,6 +409,101 @@ test("the expanded 60-stop route preserves departure, completion and year rollov
   const rollover = route.getDashboardData(new Date("2027-01-01T00:00:00Z"));
   assert.equal(rollover.visitedCount, 0);
   assert.ok(rollover.countdownToChristmasEve.days > 350);
-  assert.equal(route.isDecemberPrep(new Date("2026-12-01T00:00:00Z")), true);
+  assert.equal(route.isDecemberPrep(new Date("2026-12-01T00:00:00Z")), false);
+  assert.equal(route.isDecemberPrep(new Date("2026-12-23T00:00:00Z")), true);
   assert.equal(route.isDecemberPrep(new Date("2026-12-24T00:00:00Z")), false);
+});
+
+test("annual seasonal transitions and preview jumps preserve the full Christmas Day completion window", () => {
+  const h = harness();
+  const route = h.load("lib/santaRoute.ts");
+  const preview = h.load("lib/santaPreview.ts");
+  for (const year of [2026, 2027, 2028]) {
+    for (const [suffix, mode, target] of [
+      ["11-09T23:59:59.999Z", "OFF_SEASON", "holiday-end"],
+      ["11-10T00:00:00Z", "ROUTE_RESEARCH", "research-start"],
+      ["12-22T23:59:59.999Z", "ROUTE_RESEARCH", "research-end"],
+      ["12-23T00:00:00Z", "PREPARING", "preparation-start"],
+      ["12-25T23:59:59.999Z", "COMPLETE", "christmas-day-end"],
+      ["12-26T00:00:00Z", "OFF_SEASON", "holiday-resumes"],
+    ]) {
+      const now = new Date(`${year}-${suffix}`);
+      const data = route.getDashboardData(now);
+      assert.equal(data.mode, mode, now.toISOString());
+      assert.equal(route.isHolidaySeason(now), mode === "OFF_SEASON");
+      assert.equal(route.isRouteResearchSeason(now), mode === "ROUTE_RESEARCH");
+      assert.equal(route.getVisitedStops(now).size, mode === "COMPLETE" ? 60 : 0);
+      if (mode === "COMPLETE") {
+        assert.equal(data.progressPercent, 100);
+        assert.equal(data.currentStopName, "American Samoa");
+      }
+      assert.equal(route.getSeasonalTrackerMode(preview.getJumpTime(target)), mode);
+      assert.ok(preview.JUMP_LABELS.some(entry => entry.target === target));
+    }
+  }
+});
+
+test("every research destination keeps its activity, map and story aligned without holiday presentation", () => {
+  const destinations = harness().load("data/santaHolidays.ts").holidayDestinations;
+  for (const destination of destinations) {
+    const h = harness();
+    const route = h.load("lib/santaRoute.ts");
+    const Client = h.load("components/SantaTrackerClient.tsx", true).default;
+    const render = () => h.render(React.createElement(Client));
+    render(); h.flush(); render(); h.flush();
+    h.state[4] = destination;
+    const html = render();
+    assert.ok(html.includes(`Prepping the route in ${destination.name}`), destination.name);
+    const copy = route.getRouteResearchCopy(destination);
+    const escaped = h.render(React.createElement("p", null, copy)).slice(3, -4);
+    assert.ok(html.includes(escaped), destination.name);
+    assert.doesNotMatch(html, /On Holiday|well-earned break|🏖️|Christmas in July/);
+    if (destination.name !== "Split") {
+      assert.ok(copy.includes(destination.activity.charAt(0).toLowerCase() + destination.activity.slice(1)));
+      assert.ok(!copy.includes("Diocletian"));
+    } else {
+      assert.match(copy, /Diocletian’s Palace \(and claiming he built it\)/);
+    }
+    const mapPosition = { lat: destination.lat, lng: destination.lng, x: ((destination.lng + 180) / 360) * 100, y: ((90 - destination.lat) / 180) * 100 };
+    const Map = h.load("components/SantaMap.tsx").default;
+    const map = h.render(React.createElement(Map, { effectiveTime: new h.FixedDate(), mapPosition, researchDestination: destination }));
+    assert.ok(map.includes(`Route research in ${destination.name}`));
+    assert.ok(map.includes(escaped));
+    assert.match(map, /not a Christmas Eve delivery stop/);
+    const Story = h.load("components/SantaStory.tsx").default;
+    const story = h.render(React.createElement(Story, { effectiveTime: new h.FixedDate(), holiday: destination }));
+    assert.match(story, /Route Research Report/);
+    assert.ok(story.includes(escaped));
+    assert.doesNotMatch(story, /Holiday Postcards|Share this postcard/);
+    const b = harness();
+    const Banner = b.load("components/SantaTrackerBanner.tsx").default;
+    const renderBanner = () => b.render(React.createElement(Banner));
+    renderBanner(); b.flush(); renderBanner(); b.flush();
+    b.state[1] = destination;
+    const banner = renderBanner();
+    assert.ok(banner.includes(`Prepping the route in ${destination.name}`));
+    assert.ok(banner.includes(escaped));
+    assert.ok(banner.includes(`Santa&#x27;s route research location: ${destination.name}`));
+    assert.match(banner, /Research locations are separate from Christmas Eve delivery stops/);
+    assert.doesNotMatch(banner, /On Holiday|well-earned break|🏖️/);
+  }
+});
+
+test("homepage and standalone status agree at every annual boundary", () => {
+  for (const [iso, status] of [
+    ["2026-11-09T23:59:59.999Z", /On Holiday in/],
+    ["2026-11-10T00:00:00Z", /Prepping the route in/],
+    ["2026-12-22T23:59:59.999Z", /Prepping the route in/],
+    ["2026-12-23T00:00:00Z", /Prepar/],
+    ["2026-12-25T23:59:59.999Z", /Journey Complete/],
+    ["2026-12-26T00:00:00Z", /On Holiday in/],
+  ]) {
+    for (const file of ["SantaTrackerClient", "SantaTrackerBanner"]) {
+      const h = harness(iso);
+      const Component = h.load(`components/${file}.tsx`, true).default;
+      const render = () => h.render(React.createElement(Component));
+      render(); h.flush(); render(); h.flush();
+      assert.match(render(), status, `${file} ${iso}`);
+    }
+  }
 });

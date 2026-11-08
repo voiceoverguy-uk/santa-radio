@@ -173,7 +173,8 @@ test("seasonal pools add 24 jokes without changing cadence or adding holiday des
   assert.equal(new Set(facts).size, 12);
   const holidays = load("data/santaHolidays.ts").holidayDestinations;
   assert.equal(holidays.length, 91);
-  assert.ok(route.isHolidaySeason(new Date("2026-11-30T23:59:59Z")));
-  assert.ok(route.isDecemberPrep(new Date("2026-12-01T00:00:00Z")));
+  assert.ok(route.isHolidaySeason(new Date("2026-11-09T23:59:59Z")));
+  assert.ok(route.isRouteResearchSeason(new Date("2026-12-01T00:00:00Z")));
+  assert.ok(route.isDecemberPrep(new Date("2026-12-23T00:00:00Z")));
   assert.ok(route.isChristmasInJuly(new Date("2026-07-15T12:00:00Z")));
 });

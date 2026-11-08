@@ -7,10 +7,11 @@ import {
 } from "@/data/santaRouteStops";
 import { holidayDestinations, type HolidayDestination } from "@/data/santaHolidays";
 
-export type SeasonalMode = "OFF_SEASON" | "PREPARING" | "LIVE" | "COMPLETE";
+export type SeasonalMode = "OFF_SEASON" | "ROUTE_RESEARCH" | "PREPARING" | "LIVE" | "COMPLETE";
 
 export type TrackerState =
   | "OFF_SEASON"
+  | "ROUTE_RESEARCH"
   | "PREPARING"
   | "LIVE_AT_STOP"
   | "IN_TRANSIT"
@@ -65,13 +66,27 @@ export interface DashboardData {
 
 export function isHolidaySeason(now: Date): boolean {
   const month = now.getUTCMonth();
-  return month >= 2 && month <= 10;
+  const day = now.getUTCDate();
+  return month < 10 || (month === 10 && day < 10) || (month === 11 && day >= 26);
+}
+
+export function isRouteResearchSeason(now: Date): boolean {
+  const month = now.getUTCMonth();
+  const day = now.getUTCDate();
+  return (month === 10 && day >= 10) || (month === 11 && day <= 22);
+}
+
+export function getRouteResearchCopy(destination: HolidayDestination): string {
+  const activity = destination.name === "Split"
+    ? "exploring Diocletian’s Palace (and claiming he built it)"
+    : destination.activity.charAt(0).toLowerCase() + destination.activity.slice(1);
+  return `Santa’s making a quick research trip to ${destination.name}. He’s currently ${activity}, then popping back to the North Pole between trips to get the route ready for Christmas Eve.`;
 }
 
 export function isDecemberPrep(now: Date): boolean {
   const month = now.getUTCMonth();
   const day = now.getUTCDate();
-  return month === 11 && day >= 1 && day <= 23;
+  return month === 11 && day === 23;
 }
 
 export function isChristmasInJuly(now: Date): boolean {
@@ -116,20 +131,21 @@ export function getSeasonalTrackerMode(now: Date): SeasonalMode {
   const journeyStart = getJourneyStartTime(year);
   const journeyEnd = getJourneyEndTime(year);
 
-  const dec24Start = new Date(Date.UTC(year, 11, 24, 0, 0, 0));
+  const prepStart = new Date(Date.UTC(year, 11, 23, 0, 0, 0));
 
   if (now >= journeyStart && now < journeyEnd) return "LIVE";
-  if (now >= dec24Start && now < journeyStart) return "PREPARING";
+  if (now >= prepStart && now < journeyStart) return "PREPARING";
   if (now >= journeyEnd) {
     const dec26 = new Date(Date.UTC(year, 11, 26, 0, 0, 0));
     if (now < dec26) return "COMPLETE";
   }
-  return "OFF_SEASON";
+  return isRouteResearchSeason(now) ? "ROUTE_RESEARCH" : "OFF_SEASON";
 }
 
 export function getSantaTrackerState(now: Date): TrackerState {
   const mode = getSeasonalTrackerMode(now);
   if (mode === "OFF_SEASON") return "OFF_SEASON";
+  if (mode === "ROUTE_RESEARCH") return "ROUTE_RESEARCH";
   if (mode === "PREPARING") return "PREPARING";
   if (mode === "COMPLETE") return "COMPLETE";
 
@@ -230,7 +246,7 @@ function latLngToXY(lat: number, lng: number): { x: number; y: number } {
 export function getInterpolatedMapPosition(now: Date): MapPosition {
   const mode = getSeasonalTrackerMode(now);
 
-  if (mode === "OFF_SEASON" || mode === "PREPARING") {
+  if (mode === "OFF_SEASON" || mode === "ROUTE_RESEARCH" || mode === "PREPARING") {
     return { lat: 90, lng: 0, ...latLngToXY(90, 0) };
   }
 
@@ -342,6 +358,11 @@ function formatNumber(n: number): string {
 
 function getStatusTexts(state: TrackerState, current: SantaStop | null, next: SantaStop | null): { headline: string; subtext: string } {
   switch (state) {
+    case "ROUTE_RESEARCH":
+      return {
+        headline: "Prepping the route",
+        subtext: "Santa returns to the North Pole between quick research trips to prepare for Christmas Eve.",
+      };
     case "OFF_SEASON":
       return {
         headline: "Santa is at the North Pole",

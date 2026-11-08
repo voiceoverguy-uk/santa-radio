@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getDashboardData, isHolidaySeason, isChristmasInJuly, getRandomHoliday, type HolidayDestination } from "@/lib/santaRoute";
+import { getDashboardData, isHolidaySeason, isRouteResearchSeason, getRouteResearchCopy, isChristmasInJuly, getRandomHoliday, type HolidayDestination } from "@/lib/santaRoute";
 import { worldMapPaths } from "@/data/worldMapPaths";
 import { santaStops } from "@/data/santaRouteStops";
 
@@ -10,6 +10,7 @@ export default function SantaTrackerBanner() {
   const [now, setNow] = useState<Date | null>(null);
   const [holiday, setHoliday] = useState<HolidayDestination | null>(null);
   const holidaySeason = now !== null && isHolidaySeason(now);
+  const travellingSeason = holidaySeason || (now !== null && isRouteResearchSeason(now));
 
   useEffect(() => {
     setNow(new Date());
@@ -19,8 +20,8 @@ export default function SantaTrackerBanner() {
 
   useEffect(() => {
     if (!now) return;
-    setHoliday(holidaySeason ? getRandomHoliday() : null);
-  }, [holidaySeason]);
+    setHoliday(travellingSeason ? previous => previous ?? getRandomHoliday() : null);
+  }, [travellingSeason]);
 
   if (!now) {
     return (
@@ -37,6 +38,7 @@ export default function SantaTrackerBanner() {
   const isLive = data.mode === "LIVE";
   const isComplete = data.mode === "COMPLETE";
   const onHoliday = data.mode === "OFF_SEASON" && holidaySeason && holiday !== null;
+  const researching = data.mode === "ROUTE_RESEARCH";
   const inJuly = data.mode === "OFF_SEASON" && isChristmasInJuly(now);
 
   const statusLabel = isLive
@@ -47,6 +49,8 @@ export default function SantaTrackerBanner() {
     ? "Journey Complete"
     : data.mode === "PREPARING"
     ? "Final Preparations Underway"
+    : researching
+    ? holiday ? `Prepping the route in ${holiday.name}` : "Prepping the route"
     : onHoliday && inJuly && holiday
     ? `🎄 Christmas in July — ${holiday.name}`
     : onHoliday && holiday
@@ -89,10 +93,12 @@ export default function SantaTrackerBanner() {
                 ? `Follow Santa's estimated 60-stop Christmas Eve journey, from the Pacific Islands to American Samoa after Hawaii. Final deliveries finish at 11:20 UTC on Christmas Day.`
                 : isComplete
                 ? "Santa's estimated 60-stop journey is complete! Final deliveries in American Samoa finished at 11:20 UTC on Christmas Day. Explore the route and festive facts."
+                : researching
+                ? holiday ? getRouteResearchCopy(holiday) : data.statusSubtext
                 : onHoliday && inJuly && holiday
                 ? `It's Christmas in July! Santa's celebrating mid-year festivities while ${holiday.activity.charAt(0).toLowerCase()}${holiday.activity.slice(1)}. Only ${Math.ceil((new Date(now.getFullYear(), 11, 25).getTime() - now.getTime()) / (1000 * 60 * 60 * 24))} days until the real thing!`
                 : onHoliday && holiday
-                ? `Santa's taking a well-earned break! He's currently ${holiday.activity.charAt(0).toLowerCase()}${holiday.activity.slice(1)}. He'll be back at the North Pole on 1 December to start preparing for the big night.`
+                ? `Santa's taking a well-earned break! He's currently ${holiday.activity.charAt(0).toLowerCase()}${holiday.activity.slice(1)}. Route-research trips begin on 10 November, with visits back to the North Pole between trips.`
                 : "Follow Santa's Christmas Eve journey in real time. Live route updates, fun facts, a countdown, and the full itinerary."}
             </p>
 
@@ -112,7 +118,7 @@ export default function SantaTrackerBanner() {
               <LiveStats data={data} />
             ) : (
               <div className="tracker-banner-map-group">
-                <MiniMap holiday={onHoliday ? holiday : null} />
+                <MiniMap holiday={onHoliday || researching ? holiday : null} researching={researching} />
                 {statusBadge}
               </div>
             )}
@@ -176,7 +182,7 @@ function LiveStats({ data }: { data: ReturnType<typeof getDashboardData> }) {
   );
 }
 
-function MiniMap({ holiday }: { holiday: HolidayDestination | null }) {
+function MiniMap({ holiday, researching = false }: { holiday: HolidayDestination | null; researching?: boolean }) {
   const santaX = holiday
     ? ((holiday.lng + 180) / 360) * 1000
     : ((0 + 180) / 360) * 1000;
@@ -184,14 +190,16 @@ function MiniMap({ holiday }: { holiday: HolidayDestination | null }) {
     ? ((90 - holiday.lat) / 180) * 500
     : ((90 - 90) / 180) * 500;
 
-  const caption = holiday
+  const caption = researching && holiday
+    ? `Santa's route research location: ${holiday.name}`
+    : holiday
     ? `Santa's holiday location`
     : "Santa's at the North Pole";
 
   return (
     <Link
       to="/santa-tracker"
-      aria-label={`Open the Santa Tracker: ${caption}`}
+      aria-label={`Open the Santa Tracker: ${caption}${researching && holiday ? `. ${getRouteResearchCopy(holiday)} Research locations are separate from Christmas Eve delivery stops.` : ""}`}
       className="tracker-map tracker-banner-map block w-full rounded-lg border overflow-hidden"
     >
       <svg

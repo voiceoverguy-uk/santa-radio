@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, Suspense, type ReactNode } from "react";
-import { getDashboardData, isHolidaySeason, isChristmasInJuly, getRandomHoliday, type HolidayDestination } from "@/lib/santaRoute";
+import { getDashboardData, isHolidaySeason, isRouteResearchSeason, getRouteResearchCopy, isChristmasInJuly, getRandomHoliday, type HolidayDestination } from "@/lib/santaRoute";
 import { santaStops } from "@/data/santaRouteStops";
 import { additionalChristmasFacts } from "@/data/christmasFacts";
 import {
@@ -56,6 +56,7 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
   const [currentFactIndex, setCurrentFactIndex] = useState(0);
   const [holiday, setHoliday] = useState<HolidayDestination | null>(null);
   const holidaySeason = effectiveTime !== null && isHolidaySeason(effectiveTime);
+  const travellingSeason = holidaySeason || (effectiveTime !== null && isRouteResearchSeason(effectiveTime));
 
   useEffect(() => {
     setMounted(true);
@@ -66,8 +67,8 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
 
   useEffect(() => {
     if (!effectiveTime) return;
-    setHoliday(holidaySeason ? getRandomHoliday() : null);
-  }, [holidaySeason]);
+    setHoliday(travellingSeason ? previous => previous ?? getRandomHoliday() : null);
+  }, [travellingSeason]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -95,18 +96,20 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
   const data = getDashboardData(effectiveTime);
   const isLive = data.mode === "LIVE";
   const isComplete = data.mode === "COMPLETE";
-   const onHoliday = data.mode === "OFF_SEASON" && holidaySeason && holiday !== null;
+  const onHoliday = data.mode === "OFF_SEASON" && holidaySeason && holiday !== null;
+  const researching = data.mode === "ROUTE_RESEARCH";
+  const onTrip = (onHoliday || researching) && holiday !== null;
   const inJuly = data.mode === "OFF_SEASON" && isChristmasInJuly(effectiveTime);
-  const showStatusMessage = !heading || isLive || isComplete || Boolean(onHoliday && holiday);
+  const showStatusMessage = !heading || isLive || isComplete || onTrip;
 
-  if (onHoliday && holiday) {
+  if (onTrip && holiday) {
     data.holiday = holiday;
-    data.statusHeadline = inJuly
+    data.statusHeadline = researching ? `Prepping the route in ${holiday.name}` : inJuly
       ? `🎄 Celebrating Christmas in July in ${holiday.name}`
       : `🏖️ Santa is on holiday in ${holiday.name}`;
-    data.statusSubtext = holiday.activity;
+    data.statusSubtext = researching ? getRouteResearchCopy(holiday) : holiday.activity;
     data.currentStopName = holiday.name;
-    data.currentStopFlag = inJuly ? "🎄" : "🏖️";
+    data.currentStopFlag = researching ? "🧭" : inJuly ? "🎄" : "🏖️";
     data.currentStopRegion = holiday.country;
     const x = ((holiday.lng + 180) / 360) * 100;
     const y = ((90 - holiday.lat) / 180) * 100;
@@ -133,6 +136,8 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
       ? "Journey Complete"
       : data.mode === "PREPARING"
       ? "Preparing for Takeoff"
+      : researching
+      ? holiday ? `Prepping the route in ${holiday.name}` : "Prepping the route"
       : onHoliday && inJuly && holiday
       ? `🎄 Christmas in July — ${holiday.name}`
       : onHoliday && holiday
@@ -142,10 +147,12 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
   const statusMessage = showStatusMessage && <p className="tracker-copy tracker-status-message mt-4 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
     {isLive || isComplete
       ? data.statusSubtext
+      : researching
+      ? holiday ? getRouteResearchCopy(holiday) : data.statusSubtext
       : onHoliday && inJuly && holiday
       ? `It's Christmas in July! Santa's celebrating mid-year festivities while ${holiday.activity.charAt(0).toLowerCase()}${holiday.activity.slice(1)}. Festive fun doesn't stop just because it's summer!`
       : onHoliday && holiday
-      ? `Santa's taking a well-earned break! He's currently ${holiday.activity.charAt(0).toLowerCase()}${holiday.activity.slice(1)}. He'll be back at the North Pole on 1 December.`
+      ? `Santa's taking a well-earned break! He's currently ${holiday.activity.charAt(0).toLowerCase()}${holiday.activity.slice(1)}. Route-research trips begin on 10 November, with visits back to the North Pole between trips.`
       : "Follow Santa as Christmas Eve midnight sweeps across the globe. From the Pacific Islands to American Samoa, watch his estimated journey unfold in real time."}
   </p>;
 
@@ -154,7 +161,7 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
       {showPreview && previewState.enabled && (
         <div className="bg-santa-gold/10 border-b border-santa-gold/20 px-4 py-2 text-center mt-16 sm:mt-20">
           <span className="text-xs text-santa-gold font-medium uppercase tracking-wider">
-            Preview Mode Active: Simulated Christmas Eve
+            Preview Mode Active: Simulated Tracker Date
           </span>
         </div>
       )}
@@ -167,7 +174,7 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
           </h1>}
 
           <div className="mt-8 w-full">
-            <SantaMap effectiveTime={effectiveTime} mapPosition={data.mapPosition} onHoliday={onHoliday} />
+            <SantaMap effectiveTime={effectiveTime} mapPosition={data.mapPosition} onHoliday={onHoliday} researchDestination={researching ? holiday : null} />
           </div>
 
           <div className="tracker-status inline-flex items-center gap-2 rounded-full px-4 py-1.5 mt-3 mb-6">
@@ -177,9 +184,9 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
             </span>
           </div>
 
-          {onHoliday && statusMessage}
+          {onTrip && statusMessage}
 
-          {onHoliday && introCopy && showStatusMessage && (
+          {onTrip && introCopy && showStatusMessage && (
             <div className="tracker-copy-divider" aria-hidden="true">
               <span className="tracker-copy-divider-flourish" />
             </div>
@@ -193,7 +200,7 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
             </div>
           )}
 
-          {!onHoliday && statusMessage}
+          {!onTrip && statusMessage}
 
           {!isLive && !isComplete && (
             <div className="mt-8">
@@ -253,13 +260,13 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
           <h2 className="tracker-section-title text-lg sm:text-xl mb-4">
               Updating Estimated Dashboard
           </h2>
-          <SantaStats effectiveTime={effectiveTime} holiday={onHoliday ? holiday : undefined} />
+          <SantaStats effectiveTime={effectiveTime} holiday={onTrip ? holiday : undefined} />
         </div>
       </section>
 
       <section className="px-4 sm:px-6 pb-12">
         <div className="max-w-6xl mx-auto">
-          <SantaStory effectiveTime={effectiveTime} holiday={onHoliday ? holiday : undefined} />
+          <SantaStory effectiveTime={effectiveTime} holiday={onTrip ? holiday : undefined} />
         </div>
       </section>
 

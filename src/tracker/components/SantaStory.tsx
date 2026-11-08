@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Share2 } from "lucide-react";
 import { TRACKER_URL } from "@/lib/trackerBrand";
-import { getDashboardData, isDecemberPrep, isHolidaySeason, isChristmasInJuly, type HolidayDestination } from "@/lib/santaRoute";
+import { getDashboardData, getRouteResearchCopy, isDecemberPrep, isHolidaySeason, isChristmasInJuly, type HolidayDestination } from "@/lib/santaRoute";
 
 interface SantaStoryProps {
   effectiveTime: Date;
@@ -446,7 +446,7 @@ function WorkshopDispatch({ message }: { message: string }) {
 
 export default function SantaStory({ effectiveTime, holiday }: SantaStoryProps) {
   const data = getDashboardData(effectiveTime);
-  const inDecemberPrep = data.state === "OFF_SEASON" && isDecemberPrep(effectiveTime);
+  const inDecemberPrep = isDecemberPrep(effectiveTime);
   const inJuly = data.state === "OFF_SEASON" && isChristmasInJuly(effectiveTime);
   const onHoliday = data.state === "OFF_SEASON" && isHolidaySeason(effectiveTime) && !!holiday;
 
@@ -498,6 +498,10 @@ export default function SantaStory({ effectiveTime, holiday }: SantaStoryProps) 
   let label = "";
 
   switch (data.state) {
+    case "ROUTE_RESEARCH":
+      story = `${holiday ? getRouteResearchCopy(holiday) : data.statusSubtext} These make-believe research trips are separate from the estimated Christmas Eve delivery route.`;
+      label = "Route Research Report";
+      break;
     case "OFF_SEASON":
       story =
         "Deep in the heart of the North Pole, Santa is resting by the fire after another extraordinary year. The elves are already busy in the workshop, crafting toys and checking the lists twice. The reindeer are grazing peacefully in the snow-covered meadows, building up their strength for the biggest night of the year. Though Christmas Eve may feel far away, the preparations never truly stop. Santa is always getting ready for that magical journey around the world.";
@@ -506,7 +510,7 @@ export default function SantaStory({ effectiveTime, holiday }: SantaStoryProps) 
 
     case "PREPARING":
       story =
-        "The moment has almost arrived. Santa has checked his list for the final time, the sleigh is polished and loaded to the brim, and Rudolph's nose is glowing brighter than ever. The elves are putting the last finishing touches on the presents as excitement fills the air at the North Pole. In just a few hours, Santa will take to the skies and begin his incredible journey, delivering joy to every corner of the globe as Christmas Eve midnight sweeps across the world.";
+        "The moment has almost arrived. Santa has checked his list for the final time, the sleigh is polished and loaded to the brim, and Rudolph's nose is glowing brighter than ever. The elves are putting the last finishing touches on the presents as excitement fills the air at the North Pole. Soon, Santa will take to the skies and begin his incredible journey, delivering joy to every corner of the globe as Christmas Eve midnight sweeps across the world.";
       label = "Live Update";
       break;
 

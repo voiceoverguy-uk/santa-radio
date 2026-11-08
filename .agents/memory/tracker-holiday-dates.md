@@ -1,9 +1,9 @@
 ---
 name: Tracker holiday dates
-description: Owner-approved extension of Santa's holiday period through November.
+description: Annual holiday, route-research and Christmas journey boundaries.
 ---
-Santa's holiday period should continue through 30 November inclusive, with his return to the North Pole on 1 December.
+Santa's annual holiday period runs from 26 December through 9 November. From 10 November through 22 December he makes temporary route-research trips, returning to the North Pole between trips. Preparation starts on 23 December; the existing journey and completion window remain unchanged through 25 December.
 
-**Why:** The user asked to extend the holiday period instead of ending it on 1 November: “Keep the Fun until December”.
+**Why:** The owner replaced the earlier November holiday extension with route research, without changing destinations, their underlying activities or the Christmas Eve route.
 
-**How to apply:** Keep the homepage banner, full tracker, return-date wording and playful holiday speed labels consistent with this period. Retain the existing March start and Christmas Eve journey timing.
+**How to apply:** Keep homepage, full tracker, maps, accessible descriptions and stories consistent. Holiday-only postcards and leisurely speed labels must stop on 10 November and resume on 26 December. Preserve holiday activities and jokes, but use 10 November for research-transition reminders rather than the obsolete 1 December return date.

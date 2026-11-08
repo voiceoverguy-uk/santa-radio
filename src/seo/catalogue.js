@@ -240,7 +240,7 @@ export function collectionMetadata(kind) {
 }
 export const trackerQuestions = [
   ['When does the Santa Tracker start?', 'The estimated 60-stop Christmas Eve journey starts at 10:00 UTC on 24 December and finishes in American Samoa, after Hawaii, at 11:20 UTC on 25 December. The countdown is to Santa’s departure, not Christmas midnight or his arrival at your home.'],
-  ['Where is Santa now?', 'The updating map shows a location on Santa Radio’s festive estimated route. Outside the journey, enjoy the North Pole preparations and holiday postcards. Santa is on holiday from March through 30 November and returns to the North Pole on 1 December.'],
+  ['Where is Santa now?', 'The updating map follows Santa’s seasonal travels separately from the estimated Christmas Eve delivery route. Santa is on holiday from 26 December through 9 November. From 10 November through 22 December he makes quick route-research trips, returning to the North Pole between trips to prepare for Christmas Eve. Final preparations start on 23 December.'],
   ['Is this real GPS tracking?', 'No. This is an independent festive experience created by Santa Radio, not GPS tracking or an official location feed. The route, arrival times, gifts, distance and speed are playful estimates.'],
   ['Whose local time is displayed?', 'The route clock belongs to the displayed stop’s representative location, not the visitor’s time zone. Broad regions can contain several time zones. Holiday postcard clocks are approximate.'],
   ['What happens after Christmas Day?', 'After the estimated journey finishes, the Tracker shows its completion celebration until 26 December UTC, before returning to its seasonal display.'],

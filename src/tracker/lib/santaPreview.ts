@@ -1,6 +1,12 @@
 import { TRACKER_CONSTANTS } from "@/data/santaRouteStops";
 
 export type JumpTarget =
+  | "holiday-end"
+  | "research-start"
+  | "research-end"
+  | "preparation-start"
+  | "christmas-day-end"
+  | "holiday-resumes"
   | "route-start"
   | "australia"
   | "asia"
@@ -24,6 +30,12 @@ export interface PreviewState {
 const STORAGE_KEY = "santa-tracker-preview";
 
 const JUMP_TARGETS: Record<JumpTarget, { month: number; day: number; hour: number; minute: number }> = {
+  "holiday-end": { month: 10, day: 9, hour: 23, minute: 59 },
+  "research-start": { month: 10, day: 10, hour: 0, minute: 0 },
+  "research-end": { month: 11, day: 22, hour: 23, minute: 59 },
+  "preparation-start": { month: 11, day: 23, hour: 0, minute: 0 },
+  "christmas-day-end": { month: 11, day: 25, hour: 23, minute: 59 },
+  "holiday-resumes": { month: 11, day: 26, hour: 0, minute: 0 },
   "route-start": { month: 11, day: 24, hour: 9, minute: 55 },
   australia: { month: 11, day: 24, hour: 13, minute: 0 },
   asia: { month: 11, day: 24, hour: 15, minute: 30 },
@@ -132,6 +144,12 @@ export function getRunFullJourneySpeed(durationMinutes: number): number {
 }
 
 export const JUMP_LABELS: { target: JumpTarget; label: string }[] = [
+  { target: "holiday-end", label: "9 November" },
+  { target: "research-start", label: "10 November" },
+  { target: "research-end", label: "22 December" },
+  { target: "preparation-start", label: "23 December" },
+  { target: "christmas-day-end", label: "25 December" },
+  { target: "holiday-resumes", label: "26 December" },
   { target: "route-start", label: "Route Start" },
   { target: "chatham-islands", label: "Chatham Islands" },
   { target: "australia", label: "Australia" },
