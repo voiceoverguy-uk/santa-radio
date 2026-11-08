@@ -6,6 +6,7 @@ import HomepageSectionHeading from "../../components/HomepageSectionHeading.jsx"
 import { getDashboardData, isHolidaySeason, isRouteResearchSeason, getRouteResearchCopy, isChristmasInJuly, getRandomHoliday, type HolidayDestination } from "@/lib/santaRoute";
 import { worldMapPaths } from "@/data/worldMapPaths";
 import { santaStops } from "@/data/santaRouteStops";
+import { MAP_PALETTE, mapLandColor } from "./mapPalette";
 
 export default function SantaTrackerBanner() {
   const [now, setNow] = useState<Date | null>(null);
@@ -206,10 +207,10 @@ function MiniMap({ holiday, researching = false }: { holiday: HolidayDestination
         preserveAspectRatio="xMidYMid meet"
         aria-hidden="true"
       >
-        <rect width="1000" height="500" fill="transparent" />
-        <g fill="#1B4332" stroke="#52765a" strokeWidth="0.7" opacity="0.82">
+        <rect width="1000" height="500" fill={MAP_PALETTE.ocean} />
+        <g stroke={MAP_PALETTE.coastline} strokeWidth="0.85" strokeLinejoin="round">
           {worldMapPaths.map((d, i) => (
-            <path key={i} d={d} />
+            <path key={i} d={d} fill={mapLandColor(i)} />
           ))}
         </g>
         <g data-route-stops="">

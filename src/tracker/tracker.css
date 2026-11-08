@@ -298,7 +298,7 @@
   border: 1px solid #D4AF3755;
   border-radius: 18px;
 }
-.santa-tracker .tracker-map { background: #0c281e; border-color: #D4AF374a; }
+.santa-tracker .tracker-map { background: #2F83B7; border-color: #D4AF374a; }
 .santa-tracker .tracker-map-caption { background: #081e17dd; color: #d0d9c8; }
 @media (min-width: 768px) {
   .santa-tracker .tracker-hero .tracker-map {
@@ -344,7 +344,7 @@
 }
 .tracker-banner .tracker-countdown-value { color: var(--tracker-gold); font-family: 'Cinzel',serif; font-weight: 400; }
 .tracker-banner .tracker-countdown-label { color: var(--tracker-muted); }
-.tracker-banner .tracker-map { background: #0c281e; border-color: #D4AF374a; }
+.tracker-banner .tracker-map { background: #2F83B7; border-color: #D4AF374a; }
 .tracker-banner .tracker-map-caption { background: #081e17dd; color: #d0d9c8; }
 .tracker-banner .tracker-map:focus-visible { outline: 3px solid #D4AF37; outline-offset: 4px; }
 .tracker-banner .tracker-card-value { color: var(--tracker-cream); font-weight: 500; }

@@ -5,6 +5,7 @@ import { santaStops, getStopArrivalDate } from "@/data/santaRouteStops";
 import { getVisitedStops, getCurrentStopId, getRouteResearchCopy, type HolidayDestination, type MapPosition } from "@/lib/santaRoute";
 import { worldMapPaths } from "@/data/worldMapPaths";
 import { MAP_REGIONS, WORLD, followCamera, positionCamera, project, regionCamera, stopRegion, type Camera } from "./trackerCamera";
+import { MAP_PALETTE, mapLandColor } from "./mapPalette";
 import "../tracker-journey.css";
 
 interface SantaMapProps {
@@ -111,7 +112,7 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
     : effectiveView === "world" ? `World · ${santaStops.length} stops` : effectiveView;
 
   return (
-    <div ref={mapRef} className="tracker-map relative w-full overflow-hidden rounded-2xl border bg-[#0c281e]">
+    <div ref={mapRef} className="tracker-map relative w-full overflow-hidden rounded-2xl border">
       <div className="relative w-full" style={{ aspectRatio: "2 / 1" }}>
         <svg
           viewBox="0 0 1000 500"
@@ -143,10 +144,17 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
             </filter>
           </defs>
 
-          <rect width="1000" height="500" fill="#0c281e" />
+          <rect width="1000" height="500" fill={MAP_PALETTE.ocean} />
 
           <g className="tj-camera" data-map-view={effectiveView} data-camera-width={camera.w} style={{ transform: `translate(${tx}px, ${ty}px) scale(${s})` }}>
-            <g opacity="0.2" stroke="#D4AF37" strokeWidth={0.5 * k} fill="none">
+            <g stroke={MAP_PALETTE.coastline} strokeWidth={0.85 * k} strokeLinejoin="round">
+              {worldMapPaths.map((d, i) => (
+                <path key={i} d={d} fill={mapLandColor(i)} />
+              ))}
+              {wrapPacific && <g transform="translate(1000 0)">{worldMapPaths.map((d, i) => <path key={i} d={d} fill={mapLandColor(i)} />)}</g>}
+            </g>
+
+            <g opacity="0.42" stroke={MAP_PALETTE.grid} strokeWidth={0.5 * k} fill="none">
               {[0, 1, 2, 3, 4, 5, 6].map((i) => (
                 <line key={`h${i}`} x1="0" y1={i * 71.4} x2="1000" y2={i * 71.4} />
               ))}
@@ -155,18 +163,17 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
               ))}
             </g>
 
-            <g fill="#1B4332" stroke="#52765a" strokeWidth={0.7 * k} opacity="0.82">
-              {worldMapPaths.map((d, i) => (
-                <path key={i} d={d} />
-              ))}
-              {wrapPacific && <g transform="translate(1000 0)">{worldMapPaths.map((d, i) => <path key={i} d={d} />)}</g>}
-            </g>
-
             {segments.length > 0 && (
-              <path d={segments.join("")} fill="none" stroke="#e6ce86" strokeWidth={1.6 * k} strokeDasharray={`${5 * k},${3 * k}`} opacity="0.65" strokeLinecap="round" />
+              <>
+                <path d={segments.join("")} fill="none" stroke={MAP_PALETTE.routeOutline} strokeWidth={3.4 * k} strokeDasharray={`${5 * k},${3 * k}`} strokeLinecap="round" />
+                <path d={segments.join("")} fill="none" stroke={MAP_PALETTE.route} strokeWidth={1.7 * k} strokeDasharray={`${5 * k},${3 * k}`} strokeLinecap="round" />
+              </>
             )}
             {legPath && (
-              <path d={legPath} fill="none" stroke="#FFF8E7" strokeWidth={1.2 * k} strokeDasharray={`${2 * k},${3 * k}`} opacity="0.7" strokeLinecap="round" />
+              <>
+                <path d={legPath} fill="none" stroke={MAP_PALETTE.routeOutline} strokeWidth={3 * k} strokeDasharray={`${2 * k},${3 * k}`} strokeLinecap="round" />
+                <path d={legPath} fill="none" stroke={MAP_PALETTE.currentLeg} strokeWidth={1.3 * k} strokeDasharray={`${2 * k},${3 * k}`} strokeLinecap="round" />
+              </>
             )}
 
             {ordered.map((stop) => {
@@ -185,10 +192,10 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
                       <circle cx={sx} cy={sy} r={4 * k} fill="#FFF8E7" filter="url(#pulse-glow)" />
                     </>
                   )}
-                  {isNext && <circle cx={sx} cy={sy} r={3.4 * k} fill="none" stroke="#e6ce86" strokeWidth={1.4 * k} />}
+                  {isNext && <circle cx={sx} cy={sy} r={3.4 * k} fill="none" stroke={MAP_PALETTE.route} strokeWidth={1.8 * k} />}
                   {isVisited && !isCurrent && <circle className="tj-pin" cx={sx} cy={sy} r={2.2 * k} fill="#b62332" stroke="#e6ce86" strokeWidth={0.5 * k} />}
                   {!isVisited && !isCurrent && !isNext && (
-                    <circle className="tj-pin" cx={sx} cy={sy} r={1.8 * k} fill="#bcc9bd22" stroke="#bcc9bd" strokeWidth={0.7 * k} opacity="0.75" />
+                    <circle className="tj-pin" cx={sx} cy={sy} r={1.8 * k} fill="#17334A55" stroke="#FFF8E7" strokeWidth={0.8 * k} opacity="0.9" />
                   )}
                 </g>
               );
@@ -217,11 +224,12 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
 
         {camera.w < 1000 && (
           <svg viewBox="0 0 1000 500" className="tj-minimap" aria-hidden="true">
-            <g fill="#1B4332" stroke="#52765a" strokeWidth="2">
-              {worldMapPaths.map((d, i) => <path key={i} d={d} />)}
+            <rect width="1000" height="500" fill={MAP_PALETTE.ocean} />
+            <g stroke={MAP_PALETTE.coastline} strokeWidth="2" strokeLinejoin="round">
+              {worldMapPaths.map((d, i) => <path key={i} d={d} fill={mapLandColor(i)} />)}
             </g>
-            {showSanta && <circle cx={project(mapPosition.lat, mapPosition.lng).x} cy={santaXY.y} r="14" fill="#e6ce86" />}
-            {(wrapPacific ? [-1000, 0] : [0]).map(offset => <rect key={offset} className="tj-view" x={camera.cx - camera.w / 2 + offset} y={camera.cy - camera.w / 4} width={camera.w} height={camera.w / 2} fill="#e6ce8618" stroke="#e6ce86" strokeWidth="8" />)}
+            {showSanta && <circle cx={project(mapPosition.lat, mapPosition.lng).x} cy={santaXY.y} r="14" fill={MAP_PALETTE.view} />}
+            {(wrapPacific ? [-1000, 0] : [0]).map(offset => <rect key={offset} className="tj-view" x={camera.cx - camera.w / 2 + offset} y={camera.cy - camera.w / 4} width={camera.w} height={camera.w / 2} fill="#FFD36F25" stroke={MAP_PALETTE.view} strokeWidth="8" />)}
           </svg>
         )}
 

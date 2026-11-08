@@ -8,7 +8,7 @@
 .santa-tracker .tj-source a { color: var(--tracker-gold); text-decoration: underline; }
 .tj-camera { transform-origin: 0 0; transition: transform 1100ms cubic-bezier(.65,.02,.25,1); }
 .tj-pin { transition: r 600ms ease, opacity 400ms ease; }
-.tj-label { paint-order: stroke; stroke: #081e17; stroke-linejoin: round; fill: #FFF8E7; font-family: 'Cinzel', Georgia, serif; pointer-events: none; }
+.tj-label { paint-order: stroke; stroke: #17334A; stroke-linejoin: round; fill: #FFF8E7; font-family: 'Cinzel', Georgia, serif; pointer-events: none; }
 .tj-label-next { fill: #e6ce86; }
 .tj-santa { transition: transform 900ms cubic-bezier(.4,0,.2,1); }
 .tj-toolbar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 10px; border-top: 1px solid #D4AF3730; background: #081e17cc; }
@@ -29,7 +29,7 @@
 .tj-live { display: inline-flex; align-items: center; gap: 6px; font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; color: #e6ce86; }
 .tj-live-dot { width: 7px; height: 7px; border-radius: 50%; background: #b62332; animation: tj-blink 1.6s ease-in-out infinite; }
 @keyframes tj-blink { 50% { opacity: .25; } }
-.tj-minimap { position: absolute; top: 10px; right: 10px; width: 22%; min-width: 96px; max-width: 180px; border: 1px solid #D4AF3760; border-radius: 8px; background: #081e17e6; overflow: hidden; transition: opacity 300ms ease; }
+.tj-minimap { position: absolute; top: 10px; right: 10px; width: 22%; min-width: 96px; max-width: 180px; border: 1px solid #D4AF3760; border-radius: 8px; background: #2F83B7; overflow: hidden; transition: opacity 300ms ease; }
 .tj-minimap rect.tj-view { transition: all 900ms ease; }
 .tj-legend { display: flex; gap: 12px; font-size: .68rem; color: #c1cbbb; margin-left: auto; }
 .tj-legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }

@@ -159,6 +159,43 @@ test('desktop/mobile map, typography and menu fit without horizontal overflow', 
   }
 });
 
+test('homepage, world, and regional maps share the bright map palette', async ({ page }) => {
+  const landColors = ['#78A967', '#91B777', '#568B59', '#A8B77B', '#B89A68', '#C58C62'];
+  const readLandColors = async locator => locator.evaluateAll(paths => [...new Set(paths.map(path => path.getAttribute('fill')))].sort());
+
+  for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 }]) {
+    await page.setViewportSize(viewport);
+    for (const date of ['2026-11-09T12:00:00Z', '2026-11-15T12:00:00Z']) {
+      await page.clock.setFixedTime(new Date(date));
+      await page.goto('/');
+      const homepageMap = page.locator('.tracker-banner-map svg');
+      await expect(homepageMap.locator('rect').first()).toHaveAttribute('fill', '#2F83B7');
+      const homepageLand = await readLandColors(homepageMap.locator('g path'));
+      expect(homepageLand).toEqual([...landColors].sort());
+
+      await page.goto('/santa-tracker');
+      const map = page.locator('main svg[role="img"]');
+      await expect(map.locator('rect').first()).toHaveAttribute('fill', '#2F83B7');
+      const worldLand = await readLandColors(map.locator('.tj-camera > g:first-child path'));
+      expect(worldLand).toEqual(homepageLand);
+      const descriptionId = await map.getAttribute('aria-describedby');
+      await expect(page.locator(`[id="${descriptionId}"]`)).toContainText('Faint dots mark');
+
+      await page.getByLabel('Browse a region', { exact: true }).selectOption('Australia');
+      await expect(page.locator('.tj-minimap rect').first()).toHaveAttribute('fill', '#2F83B7');
+      const minimapLand = await readLandColors(page.locator('.tj-minimap g path'));
+      expect(minimapLand).toEqual(homepageLand);
+    }
+
+    await page.clock.setFixedTime(new Date('2026-12-24T14:00:00Z'));
+    await page.goto('/santa-tracker');
+    const christmasMap = page.locator('main svg[role="img"]');
+    await expect(christmasMap.locator('.tj-camera path[stroke="#17334A"]').first()).toBeAttached();
+    await expect(christmasMap.locator('.tj-camera path[stroke="#FFD36F"]').first()).toBeAttached();
+    await expect(christmasMap.locator('.tj-label').first()).toHaveCSS('stroke', 'rgb(23, 51, 74)');
+  }
+});
+
 test('gold dividers separate holiday activity, introduction and countdown without moving live updates', async ({ page }) => {
   const states = [
     { date: '2026-11-09T12:00:00Z', status: /On Holiday in/ },
