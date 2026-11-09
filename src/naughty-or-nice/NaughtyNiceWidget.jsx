@@ -5,6 +5,7 @@ import NaughtyNiceQuizIntro from './NaughtyNiceQuizIntro.jsx';
 import { HomepageCornerControls, keepCheckerFocusVisible } from './CheckerControls.jsx';
 import useCheckerAudio, { CHECKER_SOUNDS } from './useCheckerAudio.js';
 import useCheckerRun from './useCheckerRun.js';
+import useQuickCheckerReaction from './useQuickCheckerReaction.js';
 import useCheckingPanelDelay from './useCheckingPanelDelay.js';
 import { NnComputer } from './OfficeScene.jsx';
 import { HOMEPAGE_ANALYSIS_MS, CHECKER_LAUNCH_MS, CHECKER_PATH, clearCheckerName, offerCheckerName, preliminaryScore } from './checkerLogic.js';
@@ -86,8 +87,14 @@ export default function NaughtyNiceWidget({ onOpenHeadElf, standalone = false } 
     return stopSettling;
   }, [location.key, location.hash]);
   const audio = useCheckerAudio(CHECKER_SOUNDS.homepageChecking);
+  const reaction = useQuickCheckerReaction(audio);
   const { run, cancel, audioCallbacks, secondsRemaining } = useCheckerRun();
   const { begin: delayPanel, cancel: cancelPanel } = useCheckingPanelDelay();
+  // React can reuse this widget when moving between direct and homepage entry.
+  // Route changes must therefore stop audio even when it does not unmount.
+  useEffect(() => () => {
+    cancelPanel(); cancel(); audio.stop();
+  }, [location.key, cancelPanel, cancel, audio.stop]);
   const TitleTag = standalone ? 'h1' : 'h3';
   useEffect(() => {
     if (stage !== 'entry') {
@@ -124,12 +131,12 @@ export default function NaughtyNiceWidget({ onOpenHeadElf, standalone = false } 
         {(stage === 'entry' || stage === 'starting') && <h3 className="nn-widget-form-heading">Quick Nice List Check</h3>}
         {(stage === 'entry' || stage === 'starting') && <FirstNameForm key={entryKey} label="Confirm first name" inlineSuggestions
           enteredHelp="Ready to find out?" buttonText="Lets check" disabled={stage === 'starting'} onSubmit={value => {
-          if (!run(HOMEPAGE_ANALYSIS_MS + CHECKER_LAUNCH_MS, () => { cancelPanel(); setScore(preliminaryScore()); setStage('result'); })) return;
+          if (!run(HOMEPAGE_ANALYSIS_MS + CHECKER_LAUNCH_MS, () => { cancelPanel(); setScore(preliminaryScore()); setStage('result'); reaction.reveal(); })) return;
           setName(value); setStage('starting');
           audio.effect('click');
           delayPanel(() => {
             setStage('checking');
-            audio.play('checking', audioCallbacks());
+            audio.play('checking', reaction.checkingCallbacks(audioCallbacks()));
           });
         }} />}
         {stage === 'checking' && <div className="nn-stage">
@@ -142,8 +149,9 @@ export default function NaughtyNiceWidget({ onOpenHeadElf, standalone = false } 
           <p>Mmmm.... surely that can't be right?</p>
           {onOpenHeadElf
             ? <button type="button" className="nn-primary nn-head-elf-link"
-              onClick={() => onOpenHeadElf(name)}>Lets check with Head Elf</button>
+              onClick={() => { audio.stop(); onOpenHeadElf(name); }}>Lets check with Head Elf</button>
             : <Link className="nn-primary nn-head-elf-link" to={CHECKER_PATH} onClick={event => {
+              audio.stop();
               if (!event.defaultPrevented && event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey)
                 offerCheckerName(name);
             }}>Lets check with Head Elf</Link>}

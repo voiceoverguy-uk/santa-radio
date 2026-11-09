@@ -49,3 +49,15 @@ navigation or leaving that screen.
 
 **How to apply:** Keep the connection beat separate from outcome recordings,
 question pops and the initial button click.
+
+The initial quick result on both entry paths uses one shared pool of the eight
+owner-supplied Santa reactions, independent of the preliminary percentage.
+Preserve the checking recording's final 0.3 seconds before the reaction; Head Elf
+must remain immediately available and must stop the reaction.
+
+**Why:** The owner requested random initial-result reactions, not outcome-specific
+responses or a mandatory listening delay. The ten-question outcome clips and
+certificate reveal remain separate.
+
+**How to apply:** Do not edit the supplied audio, infer percentage-specific pools,
+or replay a completed reaction when sound is switched back on.

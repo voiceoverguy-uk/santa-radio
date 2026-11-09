@@ -18,7 +18,10 @@ export default function useCheckerAudio(checkingSound = CHECKER_SOUNDS.checking)
   const effectAudio = useRef(null);
   const handlers = useRef(null);
   const progressTimer = useRef(null);
+  const playbackTimer = useRef(null);
   const stop = useCallback(() => {
+    clearTimeout(playbackTimer.current);
+    playbackTimer.current = null;
     if (effectAudio.current) {
       effectAudio.current.onended = effectAudio.current.onerror = null;
       effectAudio.current.pause(); effectAudio.current.removeAttribute('src'); effectAudio.current.load();
@@ -48,7 +51,7 @@ export default function useCheckerAudio(checkingSound = CHECKER_SOUNDS.checking)
     if (!enabledRef.current) return;
     // This event coordinates short effects only, never the user's radio state.
     document.dispatchEvent(new CustomEvent('santa-radio:checker-start'));
-    const current = new Audio(kind === 'checking' ? checkingSound : CHECKER_SOUNDS[kind]);
+    const current = new Audio(callbacks.src || (kind === 'checking' ? checkingSound : CHECKER_SOUNDS[kind]));
     audio.current = current;
     handlers.current = callbacks;
     if (callbacks.onProgress) {
@@ -72,9 +75,13 @@ export default function useCheckerAudio(checkingSound = CHECKER_SOUNDS.checking)
     };
     current.onended = () => {
       if (audio.current !== current) return;
+      // Natural completion is not cancellation. Dispose before invoking the
+      // callback so a chained clip cannot overlap or be stopped by old events.
+      handlers.current = null;
       stop();
       callbacks.onEnded?.();
     };
+    if (callbacks.timeoutMs) playbackTimer.current = setTimeout(failed, callbacks.timeoutMs);
     try { Promise.resolve(current.play()).then(playing, failed); } catch { failed(); }
   }, [stop, checkingSound]);
   const effect = kind => {
