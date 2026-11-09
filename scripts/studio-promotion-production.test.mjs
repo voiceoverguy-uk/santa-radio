@@ -1,7 +1,7 @@
 import test, { before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
-import { readFile } from 'node:fs/promises';
+import { readFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { chromium, expect } from '@playwright/test';
 import { render } from '../dist/server/entry-server.js';
@@ -32,9 +32,13 @@ function promotionMarkup(html, description) {
   }
   assert.ok(end > start, `${description} must contain a complete Studio promotion`);
   const promotion = html.slice(start, end);
-  assert.match(promotion, /for <strong>two<\/strong> bespoke messages from Santa/);
-  assert.match(promotion, /class="santa-studio-promotion__offer-price">£6\.50<\/span>/);
+  assert.match(promotion, /class="santa-studio-promotion__offer-title">2 bespoke messages from Santa<\/p>/);
+  assert.match(promotion, /class="santa-studio-promotion__offer-price">£6\.50<\/p>/);
+  assert.match(promotion, /One-off payment · Two message creations/);
+  assert.match(promotion, /Each creation includes a personalised MP3 and three gifts for one child:/);
   assert.doesNotMatch(promotion, /santa-studio-promotion__footer/);
+  assert.ok(promotion.indexOf('santa-studio-promotion__offer"') < promotion.indexOf('<form'),
+    'Offer appears before voucher controls');
   assert.doesNotMatch(promotion, stalePromotionCopy, `${description} must not contain stale visible or accessible promotion copy`);
   assert.match(promotion, /<label\b[^>]*>Voucher code<\/label>/, `${description} must retain voucher access`);
   assert.match(promotion, /Create your bespoke message/, `${description} must retain the voucher submit control`);
@@ -136,13 +140,11 @@ for (const route of routes) {
     const promotion = page.locator('#santa-studio-promotion');
     await expect(promotion).toBeVisible();
     const visibleCopy = await promotion.innerText();
-    assert.match(visibleCopy, /£6\.50/);
-    assert.match(visibleCopy, /for two bespoke messages from Santa/);
+    assert.match(visibleCopy, /2 bespoke messages from Santa\s*£6\.50/);
     assert.doesNotMatch(visibleCopy, stalePromotionCopy);
 
     const accessibleCopy = await promotion.ariaSnapshot();
-    assert.match(accessibleCopy, /£6\.50/);
-    assert.match(accessibleCopy, /for two bespoke messages from Santa/);
+    assert.match(accessibleCopy, /group "2 bespoke messages from Santa £6\.50"/);
     assert.doesNotMatch(accessibleCopy, stalePromotionCopy);
     const accessibleAttributes = await promotion.evaluate(root =>
       [root, ...root.querySelectorAll('[aria-label], [title], [alt]')]
@@ -156,10 +158,32 @@ for (const route of routes) {
     assert.doesNotMatch(visibleCopy, sandboxPromotionCopy);
     assert.doesNotMatch(accessibleCopy, sandboxPromotionCopy);
     assert.ok(checkoutReadinessRequests > 0, 'Public pages must check runtime readiness and reject sandbox availability');
+    const screenshotDir = `generated-artifacts/studio-offer/production-${route.path === '/' ? 'home' : 'free'}`;
+    await mkdir(screenshotDir, { recursive: true });
+    const captureLayouts = async state => {
+      const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+      if (await decline.isVisible()) await decline.click();
+      for (const width of [320, 390, 768, 1440]) {
+        await page.setViewportSize({ width, height: 1000 });
+        for (const textSize of [100, 200]) {
+          await page.evaluate(size => { document.documentElement.style.fontSize = `${size}%`; }, textSize);
+          const offer = promotion.getByRole('group', { name: '2 bespoke messages from Santa £6.50', exact: true });
+          await expect(offer).toBeVisible();
+          await expect(offer).toHaveAccessibleDescription('One-off payment · Two message creations');
+          assert.ok(await promotion.evaluate(root => root.scrollWidth <= root.clientWidth + 1));
+          await promotion.screenshot({ path: `${screenshotDir}/${state}-${width}-${textSize}.jpg`,
+            animations: 'disabled', style: '.navbar, .radio-dock, .skip-link { visibility: hidden !important; }' });
+        }
+      }
+      await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
+    };
+    await expect(promotion).toContainText('Purchases are currently unavailable. Valid voucher codes still work.');
+    await captureLayouts('unavailable');
     liveReady = true;
     await page.reload({ waitUntil: 'domcontentloaded' });
     const purchase = promotion.getByRole('button', { name: 'Purchase — £6.50', exact: true });
     await expect(purchase).toBeEnabled();
+    await captureLayouts('available');
     await expect(promotion).toContainText('one child');
     await expect(promotion.locator('.santa-studio-promotion__launch-countdown-remaining')).toHaveCount(0);
     await purchase.click();
