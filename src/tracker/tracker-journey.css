@@ -50,7 +50,17 @@
 @keyframes tj-blink { 50% { opacity: .25; } }
 .tj-minimap { position: absolute; top: 10px; right: 10px; width: 22%; min-width: 96px; max-width: 180px; border: 1px solid #D4AF3760; border-radius: 8px; background: #2F83B7; overflow: hidden; transition: opacity 300ms ease; }
 .tj-minimap rect.tj-view { transition: all 900ms ease; }
-.tj-legend { display: flex; gap: 12px; font-size: .68rem; color: #c1cbbb; margin-left: auto; }
+.tj-toolbar > :is(button, select) { max-width: 100%; min-width: 0; }
+.tj-map-summary { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: .5rem .75rem; margin-left: auto; min-width: 0; max-width: 100%; }
+.tj-region-context { font-size: .68rem; color: #e6ce86; overflow-wrap: anywhere; }
+.tj-departure { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .75rem; max-width: 100%; min-width: 0; text-align: left; }
+.tj-departure-heading { flex: 1 1 10rem; color: #FFF8E7; font-size: .75rem; line-height: 1.5; overflow-wrap: anywhere; }
+.tj-departure-target { display: block; color: #bcc9bd; font-size: .65rem; }
+.tj-departure-units { display: grid; grid-template-columns: repeat(auto-fit, minmax(3.6rem, 1fr)); gap: .35rem; flex: 1 1 16rem; min-width: 0; max-width: 100%; }
+.tj-departure-unit { display: flex; flex-direction: column; align-items: center; padding: .25rem; border: 1px solid #D4AF3738; border-radius: .5rem; background: #102d22; }
+.tj-departure-value { color: #e6ce86; font-size: 1.1rem; line-height: 1.3; font-variant-numeric: tabular-nums; }
+.tj-departure-label { color: #FFF8E7; font-size: .65rem; line-height: 1.5; }
+.tj-legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: .68rem; color: #c1cbbb; }
 .tj-legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
 
 /* Timeline */
@@ -68,7 +78,6 @@
 .tj-flag-current { border-color: #D4AF37; background: #D4AF3733; }
 .tj-empty { padding: 32px 16px; text-align: center; color: #bcc9bd; font-size: .85rem; }
 @media (max-width: 640px) {
-  .tj-legend { display: none; }
   .tj-row { grid-template-columns: 1fr auto; }
   .tj-num { display: none; }
 }

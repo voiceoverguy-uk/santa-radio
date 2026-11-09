@@ -3,7 +3,7 @@
 import { useId, useMemo, useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { santaStops, getStopArrivalDate } from "@/data/santaRouteStops";
-import { getVisitedStops, getCurrentStopId, getRouteResearchCopy, type HolidayDestination, type MapPosition } from "@/lib/santaRoute";
+import { getVisitedStops, getCurrentStopId, getCountdownToStart, getRouteResearchCopy, type HolidayDestination, type MapPosition } from "@/lib/santaRoute";
 import { worldMapPaths } from "@/data/worldMapPaths";
 import { MAP_REGIONS, WORLD, followCamera, positionCamera, project, regionCamera, stopRegion, type Camera } from "./trackerCamera";
 import { MAP_PALETTE, mapLandColor } from "./mapPalette";
@@ -49,6 +49,8 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
   const currentId = getCurrentStopId(effectiveTime);
   const live = !!currentId && !onHoliday && !researchDestination;
   const mode = getSeasonalTrackerMode(effectiveTime);
+  const showDepartureCountdown = mode !== "LIVE" && mode !== "COMPLETE";
+  const departureCountdown = showDepartureCountdown ? getCountdownToStart(effectiveTime) : null;
   const artwork = getSantaMarkerArtwork(northPoleVisitMessage ? "OFF_SEASON" : mode, mapPosition.lng, getJourneySleighDirection(effectiveTime));
 
   useEffect(() => {
@@ -386,12 +388,36 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
           })}
         </select>
         {live ? <span className="tj-live"><span className="tj-live-dot" />Estimated live</span> : null}
-        <span className="tj-legend" aria-live="polite">
-          <span><i style={{ background: "#b62332" }} />Visited</span>
-          <span><i style={{ background: "#FFF8E7" }} />Now</span>
-          <span><i style={{ border: "1px solid #bcc9bd" }} />Upcoming</span>
-          <span style={{ color: "#e6ce86" }}>{regionLabel}</span>
-        </span>
+        <div className="tj-map-summary">
+          {departureCountdown ? (
+            <div className="tj-departure" role="group" aria-labelledby={`${titleId}-departure`} aria-live="off">
+              <span className="tj-departure-heading" id={`${titleId}-departure`}>
+                Countdown to Santa&apos;s Departure
+                <span className="tj-departure-target">Estimated · 24 December, 10:00 UTC</span>
+              </span>
+              <div className="tj-departure-units">
+                {[
+                  { label: "Days", value: departureCountdown.days },
+                  { label: "Hours", value: departureCountdown.hours },
+                  { label: "Minutes", value: departureCountdown.minutes },
+                  { label: "Seconds", value: departureCountdown.seconds },
+                ].map(unit => (
+                  <span className="tj-departure-unit" key={unit.label}>
+                    <span className="tj-departure-value">{String(unit.value).padStart(2, "0")}</span>
+                    <span className="tj-departure-label">{unit.label}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <span className="tj-legend">
+              <span><i style={{ background: "#b62332" }} />Visited</span>
+              <span><i style={{ background: "#FFF8E7" }} />Now</span>
+              <span><i style={{ border: "1px solid #bcc9bd" }} />Upcoming</span>
+            </span>
+          )}
+          <span className="tj-region-context" aria-live="polite">{regionLabel}</span>
+        </div>
       </div>
       {liveStatusLabel && (
         <div className="tracker-map-status">

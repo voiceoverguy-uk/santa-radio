@@ -235,36 +235,6 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
 
           {!onTrip && statusMessage}
 
-          {!isLive && !isComplete && (
-            <div className="mt-8">
-              <p className="tracker-countdown-label text-xs uppercase tracking-widest mb-3">
-                Countdown to Santa&apos;s Departure
-              </p>
-              <div className="tracker-countdown-grid inline-flex items-center gap-3 sm:gap-4">
-                {[
-                  { label: "Days", value: data.countdownToChristmasEve.days },
-                  { label: "Hours", value: data.countdownToChristmasEve.hours },
-                  { label: "Mins", value: data.countdownToChristmasEve.minutes },
-                  { label: "Secs", value: data.countdownToChristmasEve.seconds },
-                ].map((unit, i, arr) => (
-                  <div key={unit.label} className="tracker-countdown-cell flex items-center gap-3 sm:gap-4">
-                    <div className="tracker-countdown-unit text-center">
-                      <div className="tracker-countdown-value text-2xl sm:text-3xl tabular-nums">
-                        {String(unit.value).padStart(2, "0")}
-                      </div>
-                      <div className="tracker-countdown-label text-[10px] uppercase tracking-wider mt-0.5">
-                        {unit.label}
-                      </div>
-                    </div>
-                    {i < arr.length - 1 && (
-                      <span className="tracker-countdown-separator text-xl text-santa-gold/70 font-light">:</span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
           {(isLive || isComplete) && (
             <div className="tracker-card mt-6 inline-flex items-center gap-4 rounded-xl px-6 py-3">
               <div className="text-center">

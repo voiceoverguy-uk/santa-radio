@@ -232,7 +232,8 @@ test('desktop/mobile map, typography and menu fit without horizontal overflow', 
     expect(statusBox.y).toBeGreaterThanOrEqual(box.y + box.height);
     expect(descriptionBox.y).toBeGreaterThanOrEqual(box.y + box.height);
     expect(statusBox.y + statusBox.height).toBeLessThan(descriptionBox.y);
-    expect(countdownBox.y).toBeGreaterThanOrEqual(box.y + box.height);
+    expect(countdownBox.y).toBeGreaterThanOrEqual(box.y);
+    expect(countdownBox.y + countdownBox.height).toBeLessThanOrEqual(box.y + box.height);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
     expect(await page.locator('main h1').evaluate(node => getComputedStyle(node).fontWeight)).toBe('400');
     await expect(map.locator('text').filter({ hasText: '🎅' })).toHaveCount(1);
@@ -354,8 +355,8 @@ test('gold dividers separate holiday activity, introduction and countdown withou
         expect(statusMessageBox.y).toBeGreaterThanOrEqual(badgeBox.y + badgeBox.height);
         expect(upperDividerBox.y).toBeGreaterThanOrEqual(statusMessageBox.y + statusMessageBox.height);
         expect(firstIntroBox.y).toBeGreaterThanOrEqual(upperDividerBox.y + upperDividerBox.height);
-        const countdownBox = await page.locator('.tracker-countdown-label').first().boundingBox();
-        expect(countdownBox.y).toBeGreaterThanOrEqual(dividerBox.y + dividerBox.height);
+        const countdownBox = await page.locator('.tj-departure').boundingBox();
+        expect(countdownBox.y + countdownBox.height).toBeLessThanOrEqual(badgeBox.y);
       } else {
         expect(statusMessageBox.y).toBeGreaterThan(dividerBox.y + dividerBox.height);
       }
