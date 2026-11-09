@@ -16,7 +16,7 @@ test.beforeEach(async ({ page }) => {
   }));
 });
 
-test('the four paid Studio examples rotate with their own timed cues', async ({ page }) => {
+test('each fresh play randomly selects a paid Studio example with its own timed cues', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.setViewportSize({ width: 390, height: 900 });
   await visit(page);
@@ -28,6 +28,7 @@ test('the four paid Studio examples rotate with their own timed cues', async ({ 
   await expect(demo.locator('.santa-studio-audio-example__description')).toHaveCount(0);
   await expect(demo).not.toContainText(/Hear .+ personalised Message Maker Studio recording\./);
   await expect(demo.locator('.santa-studio-audio-example__seek-label')).toHaveCount(0);
+  await expectHiddenExampleName(demo);
 
   const placement = await promotion.locator('.santa-studio-promotion__details').evaluate(details => {
     const children = [...details.children];
@@ -35,8 +36,6 @@ test('the four paid Studio examples rotate with their own timed cues', async ({ 
       children.indexOf(details.querySelector('.santa-studio-promotion__checkout-note'));
   });
   expect(placement).toBe(true);
-  await expectExample(demo, audio, 'Charlotte');
-  expect(await audio.evaluate(element => element.duration)).toBeGreaterThan(80);
   const freeExample = page.getByRole('button', { name: 'Hear an example audio message', exact: true });
   await expect(freeExample).toHaveCount(1);
 
@@ -48,57 +47,50 @@ test('the four paid Studio examples rotate with their own timed cues', async ({ 
     expect(await demo.evaluate(element => element.scrollWidth <= element.clientWidth + 1)).toBe(true);
   }
 
-  const charlottePlay = playFor(demo, 'Charlotte');
-  await charlottePlay.focus();
-  await page.keyboard.press('Enter');
-  const charlottePause = demo.getByRole('button', { name: 'Pause Charlotte’s paid Studio example' });
-  await expect(charlottePause).toBeFocused();
-  await expect.poll(() => audio.evaluate(element => element.paused)).toBe(false);
-  await expectStudioGifts(promotion, 'Charlotte');
-  await seekTo(audio, 9.4);
-  await expect(cue).toHaveText('Personalised moment');
-  await expect(charlottePause).toHaveClass(/santa-studio-audio-example__play--personalised/);
-  expect(await charlottePause.evaluate(element => getComputedStyle(element).transitionDuration)).toBe('0s');
-
-  await audio.evaluate(element => element.pause());
-  const charlotteResume = demo.getByRole('button', { name: 'Resume Charlotte’s paid Studio example' });
-  await expect(charlotteResume).toBeVisible();
-  await expect(cue).toHaveText('Personalised moment');
-  await expectStudioGifts(promotion, 'Charlotte');
-  await page.waitForTimeout(2200);
-  await expect(cue).toHaveText('Personalised moment');
-  await charlotteResume.click();
-  await expect.poll(() => audio.evaluate(element => element.paused)).toBe(false);
-  await expect(cue).toHaveText('Personalised moment');
-  await audio.evaluate(element => element.pause());
-  await expect(charlotteResume).toBeVisible();
-
-  await checkCues(audio, cue, EXAMPLES[0].cues);
-  await seekTo(audio, 18.5);
-  await expect(cue).toHaveText('Personalised moment');
-  await stopFor(demo, 'Charlotte').click();
-  await expect(cue).toHaveText('');
-
   for (const [index, example] of EXAMPLES.entries()) {
-    if (index === 0) continue;
+    await startSample(demo, audio, example, index);
     await expectExample(demo, audio, example.name);
-    await start(demo, audio, example.name);
     await expect(promotion.locator('.studio-gifts')).toHaveAttribute('data-demo-name', example.name);
-    await audio.evaluate(element => element.pause());
-    await expect(demo.getByRole('button', { name: `Resume ${example.name}’s paid Studio example` })).toBeVisible();
+    if (index === 0) {
+      const pause = demo.getByRole('button', { name: 'Pause Charlotte’s paid Studio example' });
+      await pause.focus();
+      await page.keyboard.press('Enter');
+      const resume = demo.getByRole('button', { name: 'Resume Charlotte’s paid Studio example' });
+      await expect(resume).toBeFocused();
+      await expect.poll(() => audio.evaluate(element => element.paused)).toBe(true);
+      await expectStudioGifts(promotion, 'Charlotte');
+      await seekTo(audio, 9.4);
+      await expect(cue).toHaveText('Personalised moment');
+      await expect(resume).toBeVisible();
+      await page.waitForTimeout(2200);
+      await expect(cue).toHaveText('Personalised moment');
+      await resume.click();
+      await expect.poll(() => audio.evaluate(element => element.paused)).toBe(false);
+      await expect(demo.getByRole('heading', { name: 'Paid Studio message example — Charlotte' })).toBeVisible();
+      await expect(cue).toHaveText('Personalised moment');
+      await audio.evaluate(element => element.pause());
+    } else {
+      await audio.evaluate(element => element.pause());
+      await expect(demo.getByRole('button', { name: `Resume ${example.name}’s paid Studio example` })).toBeVisible();
+    }
     await expectStudioGifts(promotion, example.name);
     await checkCues(audio, cue, example.cues);
 
+    if (index === 0) {
+      await seekTo(audio, 18.5);
+      await expect(cue).toHaveText('Personalised moment');
+    }
     if (index < EXAMPLES.length - 1) {
-      await stopFor(demo, example.name).click();
-      await expectExample(demo, audio, EXAMPLES[index + 1].name);
+      await stopFor(demo).click();
+      await expectHiddenExampleName(demo);
+      await expect(cue).toHaveText('');
     } else {
       await audio.evaluate(element => {
         element.currentTime = element.duration;
         element.dispatchEvent(new Event('ended'));
       });
       await expect(cue).toHaveText('');
-      await expectExample(demo, audio, 'Charlotte');
+      await expectHiddenExampleName(demo);
     }
   }
 
@@ -109,18 +101,40 @@ test('the four paid Studio examples rotate with their own timed cues', async ({ 
   await expect(freeExample).toBeVisible();
 });
 
-function playFor(demo, name) {
-  return demo.getByRole('button', { name: `Play ${name}’s paid Studio example` });
+function playFor(demo) {
+  return demo.getByRole('button', { name: 'Play paid Studio example', exact: true });
 }
 
-function stopFor(demo, name) {
-  return demo.getByRole('button', { name: `Stop and rewind ${name}’s paid Studio example` });
+function stopFor(demo) {
+  return demo.getByRole('button', { name: 'Stop and rewind paid Studio example', exact: true });
 }
 
-async function start(demo, audio, name) {
-  await playFor(demo, name).click();
+async function startSample(demo, audio, example, index) {
+  await demo.evaluate((_, value) => {
+    window.__previousRandom = Math.random;
+    Math.random = () => value;
+  }, (index + 0.1) / EXAMPLES.length);
+  await playFor(demo).click();
+  await demo.evaluate(() => {
+    Math.random = window.__previousRandom;
+    delete window.__previousRandom;
+  });
   await expect.poll(() => audio.evaluate(element => element.paused)).toBe(false);
-  await expect(demo.getByRole('button', { name: `Pause ${name}’s paid Studio example` })).toBeVisible();
+  await expect(demo.getByRole('button', { name: `Pause ${example.name}’s paid Studio example` })).toBeVisible();
+  await expect(demo.getByRole('heading', { name: `Paid Studio message example — ${example.name}` })).toBeVisible();
+}
+
+async function expectHiddenExampleName(demo) {
+  await expect(demo.getByRole('heading', { name: 'Paid Studio message example', exact: true })).toBeVisible();
+  await expect(stopFor(demo)).toBeVisible();
+  await expect(demo.getByRole('slider', { name: 'Paid Studio message position' })).toHaveCount(1);
+  const playerText = await demo.innerText();
+  const accessibleLabels = await demo.locator('[aria-label]').evaluateAll(nodes =>
+    nodes.map(node => node.getAttribute('aria-label')).join(' '));
+  for (const { name } of EXAMPLES) {
+    expect(playerText).not.toContain(name);
+    expect(accessibleLabels).not.toContain(name);
+  }
 }
 
 async function expectExample(demo, audio, name) {
@@ -128,7 +142,7 @@ async function expectExample(demo, audio, name) {
   await expect(audio).toHaveAttribute('src', `/audio/examples/santa-studio-${name.toLowerCase()}.mp3`);
   await expect.poll(() => audio.evaluate(element => element.readyState)).toBeGreaterThanOrEqual(1);
   expect(await audio.evaluate(element => element.duration)).toBeGreaterThan(80);
-  await expect(demo.getByRole('slider', { name: `${name}’s paid Studio message position` })).toBeEnabled();
+  await expect(demo.getByRole('slider', { name: 'Paid Studio message position' })).toBeEnabled();
 }
 
 async function expectStudioGifts(promotion, name) {
@@ -191,21 +205,21 @@ test('homepage paid Studio gifts follow each paused example without overriding a
   const demo = promotion.locator('.santa-studio-audio-example');
   const audio = demo.locator('audio');
   for (const [index, example] of EXAMPLES.entries()) {
+    await startSample(demo, audio, example, index);
     await expectExample(demo, audio, example.name);
-    await start(demo, audio, example.name);
     await expect(promotion.locator('.studio-gifts')).toHaveAttribute('data-demo-name', example.name);
     await audio.evaluate(element => element.pause());
     await expect(demo.getByRole('button', { name: `Resume ${example.name}’s paid Studio example` })).toBeVisible();
     await expectStudioGifts(promotion, example.name);
     if (index < EXAMPLES.length - 1) {
-      await stopFor(demo, example.name).click();
-      await expectExample(demo, audio, EXAMPLES[index + 1].name);
+      await stopFor(demo).click();
+      await expectHiddenExampleName(demo);
     } else {
       await audio.evaluate(element => {
         element.currentTime = element.duration;
         element.dispatchEvent(new Event('ended'));
       });
-      await expectExample(demo, audio, 'Charlotte');
+      await expectHiddenExampleName(demo);
     }
   }
 
@@ -213,10 +227,39 @@ test('homepage paid Studio gifts follow each paused example without overriding a
     const { selectSantaRecipient } = await import('/src/components/useSantaRecipient.js');
     selectSantaRecipient('Oliver');
   });
-  await start(demo, audio, 'Charlotte');
+  await startSample(demo, audio, EXAMPLES[0], 0);
   await expect(promotion.locator('.studio-gifts')).toHaveAttribute('data-demo-name', 'Oliver');
   await audio.evaluate(element => element.pause());
   await expectStudioGifts(promotion, 'Oliver');
+});
+
+test('loading and playback failures keep the selected paid sample name private', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await visit(page);
+  const demo = page.locator('#santa-studio-promotion .santa-studio-audio-example');
+  const audio = demo.locator('audio');
+
+  await audio.evaluate(element => {
+    window.rejectPaidSample = null;
+    element.play = () => new Promise((resolve, reject) => {
+      window.rejectPaidSample = reject;
+    });
+  });
+  await demo.evaluate(() => { Math.random = () => 0.99; });
+  await playFor(demo).click();
+  await expect(demo.getByRole('status').filter({ hasText: 'Loading paid Studio example…' })).toBeVisible();
+  await expectHiddenExampleName(demo);
+
+  await page.evaluate(() => window.rejectPaidSample(new Error('simulated playback failure')));
+  await expect(demo.getByRole('alert')).toHaveText('The paid Studio example could not be played. Please try again.');
+  await expectHiddenExampleName(demo);
+  await expect(audio).toHaveAttribute('src', '/audio/examples/santa-studio-arabella.mp3');
+
+  await playFor(demo).click();
+  await expect(demo.getByRole('status').filter({ hasText: 'Loading paid Studio example…' })).toBeVisible();
+  await audio.evaluate(element => element.dispatchEvent(new Event('error')));
+  await expect(demo.getByRole('alert')).toHaveText('The paid Studio example could not be loaded. Please try again.');
+  await expectHiddenExampleName(demo);
 });
 
 test('promotional gift rotation resumes after the paid example stops', async ({ page }) => {
@@ -232,16 +275,28 @@ test('promotional gift rotation resumes after the paid example stops', async ({ 
   const audio = demo.locator('audio');
   await expect(gifts).toHaveAttribute('data-demo-name', 'Edward');
 
-  await start(demo, audio, 'Charlotte');
+  await startSample(demo, audio, EXAMPLES[0], 0);
   await audio.evaluate(element => element.pause());
   await expect(gifts).toHaveAttribute('data-demo-name', 'Charlotte');
-  await stopFor(demo, 'Charlotte').click();
-  await expectExample(demo, audio, 'Harry');
+  await stopFor(demo).click();
+  await expectHiddenExampleName(demo);
   await page.mouse.move(0, 0);
   await page.evaluate(() => document.activeElement?.blur());
   await expect(gifts).toHaveAttribute('data-demo-name', 'Charlotte');
   await page.waitForTimeout(GIFT_EXAMPLE_INTERVAL_MS + 300);
   await expect(gifts).toHaveAttribute('data-demo-name', 'Freya');
+
+  await startSample(demo, audio, EXAMPLES[1], 1);
+  await expect(gifts).toHaveAttribute('data-demo-name', 'Harry');
+  await audio.evaluate(element => {
+    element.currentTime = element.duration;
+    element.dispatchEvent(new Event('ended'));
+  });
+  await expectHiddenExampleName(demo);
+  await page.mouse.move(0, 0);
+  await page.evaluate(() => document.activeElement?.blur());
+  await page.waitForTimeout(GIFT_EXAMPLE_INTERVAL_MS + 300);
+  await expect(gifts).not.toHaveAttribute('data-demo-name', 'Harry');
 });
 
 async function seekTo(audio, time) {

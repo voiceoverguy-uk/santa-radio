@@ -38,8 +38,10 @@ export default function SantaStudioAudioExample({ onActiveExampleNameChange }) {
   const audioRef = useRef(null);
   const playRequestRef = useRef(0);
   const startedRef = useRef(false);
-  const [selectedExampleIndex, setSelectedExampleIndex] = useState(0);
-  const example = EXAMPLES[selectedExampleIndex];
+  const startingRef = useRef(false);
+  const selectedExampleRef = useRef(null);
+  const [selectedExampleIndex, setSelectedExampleIndex] = useState(null);
+  const example = selectedExampleIndex === null ? null : EXAMPLES[selectedExampleIndex];
   const [playbackState, setPlaybackState] = useState('idle');
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -48,22 +50,15 @@ export default function SantaStudioAudioExample({ onActiveExampleNameChange }) {
 
   useEffect(() => {
     onActiveExampleNameChange?.(
-      playbackState === 'playing' || playbackState === 'paused' ? example.name : null,
+      (playbackState === 'playing' || playbackState === 'paused') ? example?.name ?? null : null,
     );
-  }, [example.name, onActiveExampleNameChange, playbackState]);
+  }, [example?.name, onActiveExampleNameChange, playbackState]);
 
   const syncFromAudio = useCallback(audio => {
     const time = Number.isFinite(audio.currentTime) ? audio.currentTime : 0;
     setCurrentTime(time);
-    setActiveCue(getActiveCue(time, example.cues));
-  }, [example]);
-
-  const advanceExample = () => {
-    setSelectedExampleIndex(index => (index + 1) % EXAMPLES.length);
-    setCurrentTime(0);
-    setDuration(0);
-    setActiveCue(null);
-  };
+    setActiveCue(getActiveCue(time, selectedExampleRef.current?.cues ?? []));
+  }, []);
 
   const playOrPause = async () => {
     const audio = audioRef.current;
@@ -74,21 +69,44 @@ export default function SantaStudioAudioExample({ onActiveExampleNameChange }) {
       return;
     }
 
+    const resume = startedRef.current && playbackState === 'paused';
+    if (!resume) {
+      const index = Math.min(EXAMPLES.length - 1, Math.floor(Math.random() * EXAMPLES.length));
+      const selectedExample = EXAMPLES[index];
+      selectedExampleRef.current = selectedExample;
+      setSelectedExampleIndex(index);
+      startingRef.current = true;
+      audio.src = selectedExample.src;
+      try {
+        audio.currentTime = 0;
+      } catch {
+        // The new recording may not expose a seek position until metadata loads.
+      }
+      setCurrentTime(0);
+      setDuration(0);
+      setActiveCue(null);
+      startedRef.current = false;
+    } else if (audio.ended) {
+      audio.currentTime = 0;
+    }
+
     setError('');
-    if (audio.ended) audio.currentTime = 0;
-    syncFromAudio(audio);
     const request = ++playRequestRef.current;
     setPlaybackState('loading');
     try {
       await audio.play();
       if (request !== playRequestRef.current) return;
+      if (audio.paused || audio.ended) return;
       startedRef.current = true;
+      startingRef.current = false;
       setPlaybackState('playing');
     } catch {
       if (request !== playRequestRef.current) return;
-      setPlaybackState(audio.currentTime > 0 ? 'paused' : 'idle');
+      startingRef.current = false;
+      startedRef.current = false;
+      setPlaybackState('idle');
       setActiveCue(null);
-      setError(`${example.name}’s Studio example could not be played. Please try again.`);
+      setError('The paid Studio example could not be played. Please try again.');
     }
   };
 
@@ -96,7 +114,7 @@ export default function SantaStudioAudioExample({ onActiveExampleNameChange }) {
     const audio = audioRef.current;
     if (!audio) return;
     playRequestRef.current++;
-    const shouldAdvance = startedRef.current;
+    startingRef.current = false;
     startedRef.current = false;
     audio.pause();
     try {
@@ -104,10 +122,10 @@ export default function SantaStudioAudioExample({ onActiveExampleNameChange }) {
     } catch {
       // Some browsers do not allow seeking until the audio metadata is ready.
     }
-    syncFromAudio(audio);
+    setCurrentTime(0);
+    setActiveCue(null);
     setPlaybackState('idle');
     setError('');
-    if (shouldAdvance) advanceExample();
   };
 
   const seek = event => {
@@ -117,17 +135,22 @@ export default function SantaStudioAudioExample({ onActiveExampleNameChange }) {
     syncFromAudio(audio);
   };
 
+  const activeName = playbackState === 'playing' || playbackState === 'paused'
+    ? example?.name
+    : null;
   const playLabel = playbackState === 'playing'
-    ? `Pause ${example.name}’s paid Studio example`
+    ? `Pause ${activeName}’s paid Studio example`
     : playbackState === 'paused'
-      ? `Resume ${example.name}’s paid Studio example`
+      ? `Resume ${activeName}’s paid Studio example`
       : playbackState === 'loading'
-        ? `Loading ${example.name}’s paid Studio example`
-        : `Play ${example.name}’s paid Studio example`;
+        ? 'Loading paid Studio example'
+        : 'Play paid Studio example';
 
   return (
     <section className="santa-studio-audio-example" aria-labelledby="santa-studio-audio-title">
-      <h4 id="santa-studio-audio-title">Paid Studio message example — {example.name}</h4>
+      <h4 id="santa-studio-audio-title">
+        Paid Studio message example{activeName ? ` — ${activeName}` : ''}
+      </h4>
       <div className="santa-studio-audio-example__controls">
         <button
           className={`santa-studio-audio-example__play${activeCue !== null ? ' santa-studio-audio-example__play--personalised' : ''}`}
@@ -143,7 +166,7 @@ export default function SantaStudioAudioExample({ onActiveExampleNameChange }) {
           type="button"
           onClick={stop}
           disabled={playbackState === 'idle' && currentTime === 0 && !startedRef.current}
-          aria-label={`Stop and rewind ${example.name}’s paid Studio example`}
+          aria-label="Stop and rewind paid Studio example"
         >
           Stop
         </button>
@@ -159,7 +182,7 @@ export default function SantaStudioAudioExample({ onActiveExampleNameChange }) {
           value={Math.min(currentTime, duration || 0)}
           onChange={seek}
           disabled={!duration}
-          aria-label={`${example.name}’s paid Studio message position`}
+          aria-label="Paid Studio message position"
           aria-valuetext={`${formatTime(currentTime)} of ${formatTime(duration)}`}
         />
         <span className="santa-studio-audio-example__time" aria-hidden="true">
@@ -170,13 +193,12 @@ export default function SantaStudioAudioExample({ onActiveExampleNameChange }) {
         {activeCue !== null ? 'Personalised moment' : ''}
       </p>
       {playbackState === 'loading' && (
-        <p className="santa-studio-audio-example__status" role="status">Loading {example.name}’s example…</p>
+        <p className="santa-studio-audio-example__status" role="status">Loading paid Studio example…</p>
       )}
       {error && <p className="santa-studio-audio-example__error" role="alert">{error}</p>}
       <audio
         ref={audioRef}
         className="santa-studio-audio-example__audio"
-        src={example.src}
         preload="metadata"
         aria-hidden="true"
         tabIndex={-1}
@@ -195,27 +217,30 @@ export default function SantaStudioAudioExample({ onActiveExampleNameChange }) {
         onSeeked={event => syncFromAudio(event.currentTarget)}
         onPlaying={event => {
           if (!event.currentTarget.paused) {
+            startingRef.current = false;
             startedRef.current = true;
             setPlaybackState('playing');
           }
         }}
         onPause={event => {
           syncFromAudio(event.currentTarget);
-          setPlaybackState(event.currentTarget.currentTime > 0 ? 'paused' : 'idle');
+          if (startedRef.current) setPlaybackState('paused');
+          else if (!startingRef.current) setPlaybackState('idle');
         }}
         onEnded={() => {
-          setPlaybackState('idle');
-          setActiveCue(null);
-          if (startedRef.current) {
-            startedRef.current = false;
-            advanceExample();
-          }
-        }}
-        onError={() => {
+          playRequestRef.current++;
+          startingRef.current = false;
           setPlaybackState('idle');
           setActiveCue(null);
           startedRef.current = false;
-          setError(`${example.name}’s Studio example could not be loaded. Please try again.`);
+        }}
+        onError={() => {
+          playRequestRef.current++;
+          startingRef.current = false;
+          setPlaybackState('idle');
+          setActiveCue(null);
+          startedRef.current = false;
+          setError('The paid Studio example could not be loaded. Please try again.');
         }}
         onContextMenu={event => event.preventDefault()}
       />

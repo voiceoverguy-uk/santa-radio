@@ -112,3 +112,4 @@
 - [Checker workshop artwork](checker-workshop-artwork.md) — Owner-supplied festive backdrop replaces drawn scenery; keep the parchment and controls separate.
 - [Checker next-step emphasis](checker-quick-check-presentation.md) — Owner-approved pulse and gold glow; keep the Head Elf next-step button wide and obvious.
 - [Homepage heading wrapping](homepage-heading-wrapping.md) — Keep editorial breaks at normal size, but allow natural reflow under enlarged text without clipping.
+- [Paid Studio audio races](paid-studio-audio-races.md) — End and error events must invalidate pending play completions to prevent stale recipient disclosure.
