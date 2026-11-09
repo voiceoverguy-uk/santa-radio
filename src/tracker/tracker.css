@@ -299,7 +299,7 @@
   border-radius: 18px;
 }
 .santa-tracker .tracker-map { background: #2F83B7; border-color: #D4AF374a; }
-.santa-tracker .tracker-map-caption { background: #081e17dd; color: #d0d9c8; }
+.santa-tracker .tracker-map-caption { background: #081e17dd; color: #d0d9c8; pointer-events: none; }
 .santa-tracker .tracker-map-status {
   display: flex;
   justify-content: center;

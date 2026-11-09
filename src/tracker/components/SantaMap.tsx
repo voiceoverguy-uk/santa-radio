@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useMemo, useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { santaStops, getStopArrivalDate } from "@/data/santaRouteStops";
 import { getVisitedStops, getCurrentStopId, getRouteResearchCopy, type HolidayDestination, type MapPosition } from "@/lib/santaRoute";
 import { worldMapPaths } from "@/data/worldMapPaths";
@@ -26,6 +27,10 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
   const titleId = useId();
   const descriptionId = useId();
   const mapRef = useRef<HTMLDivElement>(null);
+  const santaArtworkTriggerRef = useRef<SVGGElement>(null);
+  const artworkViewerRef = useRef<HTMLDivElement>(null);
+  const wasArtworkViewerOpen = useRef(false);
+  const [artworkViewerOpen, setArtworkViewerOpen] = useState(false);
   const [pixelFactor, setPixelFactor] = useState(1);
   useEffect(() => {
     const element = mapRef.current;
@@ -44,6 +49,40 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
   const live = !!currentId && !onHoliday && !researchDestination;
   const mode = getSeasonalTrackerMode(effectiveTime);
   const artwork = getSantaMarkerArtwork(mode, mapPosition.lng, getJourneySleighDirection(effectiveTime));
+
+  useEffect(() => {
+    if (!artworkViewerOpen) {
+      if (wasArtworkViewerOpen.current) {
+        wasArtworkViewerOpen.current = false;
+        santaArtworkTriggerRef.current?.focus();
+      }
+      return;
+    }
+
+    wasArtworkViewerOpen.current = true;
+    artworkViewerRef.current?.focus();
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        setArtworkViewerOpen(false);
+      } else if (event.key === "Tab") {
+        event.preventDefault();
+        artworkViewerRef.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [artworkViewerOpen]);
+
+  useEffect(() => {
+    if (artworkViewerOpen && !artwork) setArtworkViewerOpen(false);
+  }, [artwork, artworkViewerOpen]);
 
   const ordered = useMemo(
     () => [...santaStops].sort((a, b) => getStopArrivalDate(a, year).getTime() - getStopArrivalDate(b, year).getTime()),
@@ -255,7 +294,24 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
             {showSanta && (
               // Position updates share the route's SVG coordinates immediately.
               // A separate CSS tween lags behind the route at accelerated speeds.
-              <g className="tj-santa" transform={`translate(${santaXY.x} ${santaXY.y})`} filter={artwork ? undefined : "url(#pulse-glow)"}>
+              <g
+                ref={artwork ? santaArtworkTriggerRef : undefined}
+                className={`tj-santa${artwork ? " tj-santa-trigger" : ""}`}
+                transform={`translate(${santaXY.x} ${santaXY.y})`}
+                filter={artwork ? undefined : "url(#pulse-glow)"}
+                role={artwork ? "button" : undefined}
+                tabIndex={artwork ? 0 : undefined}
+                aria-label={artwork ? "Enlarge Santa's current artwork" : undefined}
+                aria-haspopup={artwork ? "dialog" : undefined}
+                onClick={artwork ? () => setArtworkViewerOpen(true) : undefined}
+                onKeyDown={artwork ? (event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setArtworkViewerOpen(true);
+                  }
+                } : undefined}
+              >
                 {artwork ? <SantaMarker artwork={artwork} scale={pixelFactor / s * santaArtworkScale} /> : <text x="0" y="0" textAnchor="middle" dominantBaseline="central" fontSize={24 * k} className="select-none">
                   🎅
                 </text>}
@@ -337,6 +393,27 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
             <span className="text-xs font-medium uppercase tracking-wider">{liveStatusLabel}</span>
           </div>
         </div>
+      )}
+      {artworkViewerOpen && artwork && createPortal(
+        <div
+          ref={artworkViewerRef}
+          className="tj-artwork-viewer"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Enlarged Santa artwork. Tap or click anywhere, or press Escape, to close."
+          tabIndex={-1}
+          onClick={() => setArtworkViewerOpen(false)}
+        >
+          <img
+            data-santa-artwork-enlarged=""
+            data-mirrored={String(artwork.mirrored)}
+            src={artwork.src}
+            alt="Santa's current seasonal artwork"
+            draggable={false}
+            style={{ width: `min(94vw, ${94 * artwork.width / artwork.height}dvh)` }}
+          />
+        </div>,
+        document.body,
       )}
     </div>
   );

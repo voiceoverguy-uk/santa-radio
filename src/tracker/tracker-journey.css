@@ -2,6 +2,34 @@
 .tj-pin { transition: r 600ms ease, opacity 400ms ease; }
 .tj-label { paint-order: stroke; stroke: #17334A; stroke-linejoin: round; fill: #FFF8E7; font-family: 'Cinzel', Georgia, serif; pointer-events: none; }
 .tj-label-next { fill: #e6ce86; }
+.tj-santa-trigger { cursor: zoom-in; }
+.tj-santa-trigger:focus-visible [data-santa-artwork] {
+  filter: drop-shadow(0 0 3px #FFF8E7) drop-shadow(0 0 7px #D4AF37);
+}
+.tj-artwork-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 3dvh 3vw;
+  box-sizing: border-box;
+  background: transparent;
+  cursor: zoom-out;
+  -webkit-tap-highlight-color: transparent;
+}
+.tj-artwork-viewer img {
+  display: block;
+  max-width: 94vw;
+  max-height: 94dvh;
+  object-fit: contain;
+  background: transparent;
+  user-select: none;
+  pointer-events: none;
+}
+.tj-artwork-viewer img[data-mirrored="true"] { transform: scaleX(-1); }
 .tj-toolbar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 10px; border-top: 1px solid #D4AF3730; background: #081e17cc; }
 .tj-btn {
   appearance: none; font: inherit; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase;

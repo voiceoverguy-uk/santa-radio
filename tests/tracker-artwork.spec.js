@@ -207,6 +207,108 @@ test('every PNG decodes with transparent pixels and no added background', async 
   }
 });
 
+for (const width of [1440, 390]) {
+  test(`full-map Santa artwork opens and dismisses by pointer in every camera at ${width}px`, async ({ page }) => {
+    const height = width === 390 ? 844 : 1000;
+    await page.setViewportSize({ width, height });
+    await page.clock.setFixedTime(new Date('2026-11-09T12:00:00Z'));
+    // Fiji keeps Santa visible while testing the Pacific region and world edge.
+    await page.addInitScript(() => { Math.random = () => (25.1 / 91); });
+    await page.goto('/santa-tracker');
+    const toolbar = page.locator('.tj-toolbar');
+    const trigger = page.getByRole('button', { name: "Enlarge Santa's current artwork" });
+    const mapCamera = page.locator('.tj-camera');
+
+    for (const view of ['follow', 'world', 'Pacific']) {
+      if (view === 'world') await toolbar.getByRole('button', { name: 'World', exact: true }).click();
+      if (view === 'Pacific') await page.getByLabel('Browse a region', { exact: true }).selectOption('Pacific');
+      await expect(mapCamera).toHaveAttribute('data-map-view', view === 'Pacific' ? 'Pacific' : view);
+      const mapTransform = await mapCamera.getAttribute('style');
+      const marker = page.locator('.tj-santa [data-santa-artwork]');
+      const expectedSrc = await marker.getAttribute('href');
+      const expectedMirror = await marker.getAttribute('data-mirrored');
+
+      await trigger.click();
+      const dialog = page.getByRole('dialog', { name: /Tap or click anywhere, or press Escape, to close/ });
+      const enlarged = dialog.locator('[data-santa-artwork-enlarged]');
+      await expect(dialog).toBeVisible();
+      await expect(dialog).toHaveAttribute('aria-modal', 'true');
+      await expect(enlarged).toHaveAttribute('src', expectedSrc);
+      await expect(enlarged).toHaveAttribute('data-mirrored', expectedMirror);
+      await expect(enlarged).toHaveAttribute('alt', "Santa's current seasonal artwork");
+      const alpha = await enlarged.evaluate(async image => {
+        await image.decode();
+        const canvas = document.createElement('canvas');
+        canvas.width = image.naturalWidth;
+        canvas.height = image.naturalHeight;
+        const context = canvas.getContext('2d');
+        context.drawImage(image, 0, 0);
+        const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+        let transparent = 0;
+        let opaque = 0;
+        for (let i = 3; i < pixels.length; i += 4) {
+          if (pixels[i] === 0) transparent++;
+          if (pixels[i] > 128) opaque++;
+        }
+        return { transparent, opaque };
+      });
+      expect(alpha.transparent).toBeGreaterThan(1000);
+      expect(alpha.opaque).toBeGreaterThan(1000);
+
+      const appearance = await dialog.evaluate(node => ({
+        background: getComputedStyle(node).backgroundColor,
+        imageBackground: getComputedStyle(node.querySelector('img')).backgroundColor,
+      }));
+      expect(appearance).toEqual({ background: 'rgba(0, 0, 0, 0)', imageBackground: 'rgba(0, 0, 0, 0)' });
+      const bounds = await enlarged.boundingBox();
+      expect(bounds.x).toBeGreaterThanOrEqual(0);
+      expect(bounds.y).toBeGreaterThanOrEqual(0);
+      expect(bounds.x + bounds.width).toBeLessThanOrEqual(width + 0.5);
+      expect(bounds.y + bounds.height).toBeLessThanOrEqual(height + 0.5);
+      expect(Math.max(bounds.width / width, bounds.height / height)).toBeGreaterThanOrEqual(0.9);
+      expect(await mapCamera.getAttribute('style')).toBe(mapTransform);
+
+      // A click anywhere on the transparent layer, including the artwork itself, dismisses it.
+      await dialog.click({ position: { x: width - 12, y: height - 12 } });
+      await expect(dialog).toHaveCount(0);
+      await expect(trigger).toBeFocused();
+    }
+  });
+
+  test(`full-map artwork supports keyboard opening, Escape, focus return, and tap dismissal at ${width}px`, async ({ page }) => {
+    const height = width === 390 ? 844 : 1000;
+    await page.setViewportSize({ width, height });
+    await page.clock.setFixedTime(new Date('2026-11-10T12:00:00Z'));
+    await page.addInitScript(() => { Math.random = () => (25.1 / 91); });
+    await page.goto('/santa-tracker');
+
+    const trigger = page.getByRole('button', { name: "Enlarge Santa's current artwork" });
+    await expect(trigger).toBeVisible();
+    await trigger.focus();
+    await expect(trigger).toBeFocused();
+    await page.keyboard.press('Enter');
+
+    const dialog = page.getByRole('dialog', { name: /Enlarged Santa artwork/ });
+    const enlarged = dialog.locator('[data-santa-artwork-enlarged]');
+    await expect(dialog).toBeVisible();
+    await expect(enlarged).toHaveAttribute('src', '/images/tracker/santa-route-scout.png');
+    await expect(enlarged).toHaveAttribute('data-mirrored', 'true');
+    await expect(dialog).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(dialog).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(dialog).toHaveCount(0);
+    await expect(trigger).toBeFocused();
+
+    await page.keyboard.press('Space');
+    await expect(dialog).toBeVisible();
+    await expect(enlarged).toHaveAttribute('src', '/images/tracker/santa-route-scout.png');
+    await dialog.click({ position: { x: width - 12, y: height - 12 } });
+    await expect(dialog).toHaveCount(0);
+    await expect(trigger).toBeFocused();
+  });
+}
+
 test('western holiday markers keep the original orientation and radio playback survives map navigation', async ({ page }) => {
   await page.clock.setFixedTime(new Date('2026-11-09T12:00:00Z'));
   await page.addInitScript(() => {
