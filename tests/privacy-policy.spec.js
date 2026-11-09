@@ -4,6 +4,7 @@ const privacySections = [
   ['Website & cookies', 'cookie-overview'],
   ['YouTube', 'youtube-privacy'],
   ['iPhone/iPad app', 'christmas-radio-privacy'],
+  ['Christmas Music for Shops', 'shops-app-privacy'],
   ['Android app', 'android-radio-privacy'],
   ['Choices & rights', 'privacy-choices'],
 ];
@@ -90,9 +91,9 @@ test('shared contact privacy describes both modes without claiming inbox deliver
   await page.goto('/privacy-policy');
   const article = page.locator('article');
   for (const text of [
-    'General enquiry or Song submission',
+    'General enquiry, Song submission or Christmas sponsorship',
     'a message of up to 500 characters',
-    'separate dedicated Brevo forms',
+    'General enquiries and sponsorship enquiries go to our general Brevo form, while song submissions go to a separate Brevo form',
     'General enquiries do not require these song criteria',
     'not sent as a separate Brevo attribute',
     'do not open the message maker or give consent for marketing',
@@ -210,6 +211,66 @@ test('policy describes the Android release, embedded Tracker and unconfirmed pro
   await expect(app.getByRole('link', { name: 'cookie choices and third-party disclosures', exact: true }))
     .toHaveAttribute('href', '#cookie-overview');
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://www.santaradio.co.uk/privacy-policy');
+});
+
+test('Shops coverage follows Christmas Radio UK and preserves existing policy boundaries', async ({ page }) => {
+  await page.goto('/privacy-policy');
+  const article = page.locator('article');
+  const shops = page.getByRole('region', { name: 'Christmas Music for Shops — iPhone and iPad app, version 1.0', exact: true });
+  await expect(shops).toBeVisible();
+  expect(await article.locator(':scope > section').evaluateAll(sections => sections.map(section => section.getAttribute('aria-labelledby'))))
+    .toEqual(['cookie-overview', 'christmas-radio-privacy', 'shops-app-privacy', 'android-radio-privacy', 'youtube-privacy']);
+  await expect(article.locator(':scope > p').filter({ hasText: 'This notice covers' }))
+    .toContainText('Christmas Music for Shops for iPhone and iPad, version 1.0');
+  // Keep the confirmed operator statement unchanged until the Shops operator is confirmed.
+  await expect(article.locator(':scope > p').filter({ hasText: 'are operated by VoiceoverGuy Ltd' }))
+    .not.toContainText('Christmas Music for Shops');
+  for (const text of [
+    'com.christmasmusicforshops.app',
+    'current artist, song title and artwork',
+    'does not require an account',
+    'artwork, track details, the Christmas countdown, snow, lights and keep-awake',
+    'saved locally on your device',
+    'copy of the artwork catalogue and caches images for reuse',
+    'not uploaded to us',
+    'Clearing local app data does not remove server logs',
+    'over HTTPS to Citrus3 at global.citrus3.com',
+    'www.santaradio.co.uk',
+    'Vercel hosts',
+    'your IP address and ordinary technical request information',
+    'request times, requested resources, connection duration',
+    'does not mean that no data is collected',
+    'may retain operational, access or error logs or listener statistics',
+    'does not delete provider records',
+    'logging arrangements, retention periods, processing locations and any international transfers or safeguards have not been confirmed',
+    'do not specify unverified retention periods or deletion guarantees',
+    'Santa Dash on the App Store and music licensing guidance',
+    'that service’s privacy notice applies',
+    'not automatically to native app use',
+    'not evidence about analytics or crash reporting in the native app',
+    'Apple handles the paid download',
+    'does not accept payment details, shop-logo submissions or activation codes',
+    'Shop Logo tab describes a planned feature',
+    'does not currently collect logos or other submissions',
+    'update this policy before that feature starts collecting information',
+    'UK Information Commissioner’s Office',
+  ]) await expect(shops).toContainText(text);
+  await expect(shops.getByRole('link', { name: 'santa@santaradio.co.uk', exact: true }))
+    .toHaveAttribute('href', 'mailto:santa@santaradio.co.uk');
+  await expect(shops.getByRole('link', { name: 'Your choices and rights', exact: true }))
+    .toHaveAttribute('href', '#privacy-choices');
+  await expect(shops.getByRole('link', { name: 'cookie choices and third-party disclosures', exact: true }))
+    .toHaveAttribute('href', '#cookie-overview');
+  await expect(shops).not.toContainText(/no (?:data collection|analytics|crash reporting|tracking)|operated by VoiceoverGuy Ltd/i);
+  await expect(page.locator('link[rel="canonical"]'))
+    .toHaveAttribute('href', 'https://www.santaradio.co.uk/privacy-policy');
+  // No live release has happened: do not assign a new publication date to the draft.
+  await expect(article.locator('time')).toHaveAttribute('datetime', '2026-10-28');
+  for (const heading of [
+    'Other Santa Radio and tvOS apps', 'When you contact us', 'Song submissions',
+    'Free Santa audio messages', 'Optional Santa Radio news', 'Using the website',
+    'Links and external services', 'Editorial content and retention', 'Your choices and rights',
+  ]) await expect(article.getByRole('heading', { name: heading, exact: true })).toHaveCount(1);
 });
 
 test('footer opens a readable privacy policy with separate message access and news consent', async ({ page }) => {

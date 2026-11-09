@@ -1288,3 +1288,17 @@ mtime_ms = 1793916261447
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/73d8a775-c8a6-40af-9ff1-ca6149e7b6ae/91ed05b8-a626-4922-b962-06f2e6185713"
 storage_version_token = "1793916345796319"
 content_type = "image/png"
+
+[[outputs]]
+id = "hWTlSrpTysDuIQFL6TCGP"
+uri = "file://generated-artifacts/shops-privacy-draft.html"
+type = "html"
+title = "Exact Shops privacy section — unpublished draft"
+description = "The proposed section as rendered by the production build, with publication blockers and the public URL check."
+logical_id = "d8a0bf5e-2e04-4b7c-a031-b82c2b0a4cf5"
+content_hash = "sha256:4edbf69bbead99021c3a7999321cc4cbf1323dc12866180531306930886dd6bc"
+size = 5680
+mtime_ms = 1794194156168
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/d8a0bf5e-2e04-4b7c-a031-b82c2b0a4cf5/212a8472-46d6-4a03-b9ca-3ddb9466a42e"
+storage_version_token = "1794194161189761"
+content_type = "text/html"

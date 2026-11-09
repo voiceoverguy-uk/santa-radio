@@ -7,6 +7,7 @@ const privacySectionIds = [
   'cookie-overview',
   'youtube-privacy',
   'christmas-radio-privacy',
+  'shops-app-privacy',
   'android-radio-privacy',
   'privacy-choices',
 ];
@@ -39,7 +40,7 @@ export default function PrivacyPolicy() {
   return <main className="privacy-page">
     <Helmet>
       <title>Privacy Policy — Santa Radio</title>
-      <meta name="description" content="Privacy information for the Santa Radio website, Santa Radio for Android and Christmas Radio UK for iPhone and iPad, including app storage, embedded content and privacy choices." />
+      <meta name="description" content="Privacy information for the Santa Radio website, Santa Radio for Android, Christmas Radio UK and Christmas Music for Shops for iPhone and iPad, including app storage, embedded content and privacy choices." />
       <link rel="canonical" href="https://www.santaradio.co.uk/privacy-policy" />
     </Helmet>
     <article className="privacy-content">
@@ -47,12 +48,13 @@ export default function PrivacyPolicy() {
       <h1>Privacy Policy</h1>
       <p className="privacy-date">Updated <time dateTime="2026-10-28">28 October 2026</time></p>
       <p>The Santa Radio website, Santa Radio for Android and Christmas Radio UK app for iPhone and iPad are operated by VoiceoverGuy Ltd. For privacy questions, email <a href="mailto:santa@santaradio.co.uk">santa@santaradio.co.uk</a>.</p>
-      <p>This notice covers the current Santa Radio website, Christmas Radio UK for iPhone and iPad, version 35.0, and Santa Radio for Android, version 35.0. The app-specific sections below explain how each app handles information. Website features, including forms, Santa audio messages, embedded videos and optional analytics or marketing cookies, are distinct from native app features, but website content can also be displayed inside an app. The website and third-party disclosures therefore also matter for embedded web content. External services may have their own privacy notices.</p>
+      <p>This notice covers the current Santa Radio website, Christmas Radio UK for iPhone and iPad, version 35.0, Christmas Music for Shops for iPhone and iPad, version 1.0, and Santa Radio for Android, version 35.0. The app-specific sections below explain how each app handles information. Website features, including forms, Santa audio messages, embedded videos and optional analytics or marketing cookies, are distinct from native app features, but website content can also be displayed inside an app. The website and third-party disclosures therefore also matter for embedded web content. External services may have their own privacy notices.</p>
       <p>You can browse and listen without an account. We do not sell personal data.</p>
       <nav className="privacy-section-nav" aria-label="Privacy policy sections">
         <a href="#cookie-overview">Website &amp; cookies</a>
         <a href="#youtube-privacy">YouTube</a>
         <a href="#christmas-radio-privacy">iPhone/iPad app</a>
+        <a href="#shops-app-privacy">Christmas Music for Shops</a>
         <a href="#android-radio-privacy">Android app</a>
         <a href="#privacy-choices">Choices &amp; rights</a>
       </nav>
@@ -84,6 +86,31 @@ export default function PrivacyPolicy() {
 
         <h3>Privacy questions and your rights</h3>
         <p>For questions about the app’s handling of information, or to exercise applicable data-protection rights, <a href="mailto:santa@santaradio.co.uk">email us about app privacy</a>. The rights and complaints information elsewhere in this policy also applies to the app.</p>
+      </section>
+
+      {/* Unpublished Shops wording: see the website README for required release checks.
+          Do not extend the operator statement or date until those checks are complete. */}
+      <section aria-labelledby="shops-app-privacy">
+        <h2 id="shops-app-privacy" tabIndex="-1">Christmas Music for Shops — iPhone and iPad app, version 1.0</h2>
+        <p>This section describes the standalone Christmas Music for Shops app, version 1.0, for iPhone and iPad, with bundle ID <code>com.christmasmusicforshops.app</code>.</p>
+
+        <h3>Listening and information stored on your device</h3>
+        <p>The app plays live Christmas radio and displays the current artist, song title and artwork. Listening does not require an account or your name, email address or other contact details.</p>
+        <p>Display choices for artwork, track details, the Christmas countdown, snow, lights and keep-awake are saved locally on your device. The app also stores a copy of the artwork catalogue and caches images for reuse. These preferences and cached files are kept on the device, not uploaded to us. Clearing local app data does not remove server logs or information already received by providers.</p>
+
+        <h3>Connections and provider records</h3>
+        <p>The app connects over HTTPS to Citrus3 at global.citrus3.com for live audio and to Santa Radio at www.santaradio.co.uk for current song information and artwork. Vercel hosts the Santa Radio website and its song-information and artwork services.</p>
+        <p>These connections disclose your IP address and ordinary technical request information to the relevant servers. This may include request times, requested resources, connection duration and device or networking-software information supplied with a request. Requests may indicate when you listen or which song information and images you request. Listening without an account does not mean that no data is collected.</p>
+        <p>Citrus3 and Vercel may retain operational, access or error logs or listener statistics to deliver, maintain and protect their services. These records are separate from local preferences and caches; clearing local data or deleting the app does not delete provider records. The actual service-specific logging arrangements, retention periods, processing locations and any international transfers or safeguards have not been confirmed. We do not specify unverified retention periods or deletion guarantees. See <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer">Vercel’s Privacy Policy</a> for its general practices, and contact us about the arrangements relevant to this app. A provider’s general notice does not necessarily describe the settings on our account.</p>
+
+        <h3>External links and website choices</h3>
+        <p>The app links to the Santa Radio website, Santa Dash on the App Store and music licensing guidance. When you open a destination, that service’s privacy notice applies. The Santa Radio website’s <a href="#cookie-overview">cookie choices and third-party disclosures</a> apply to website visits, not automatically to native app use. Website cookie consent does not give consent for separate app tracking, and the website’s analytics and marketing settings are not evidence about analytics or crash reporting in the native app.</p>
+
+        <h3>Paid download and the planned Shop Logo feature</h3>
+        <p>Apple handles the paid download through the App Store under its own privacy notice. The current app does not accept payment details, shop-logo submissions or activation codes. The Shop Logo tab describes a planned feature and does not currently collect logos or other submissions. We will update this policy before that feature starts collecting information, explaining what is collected, why, who receives it, how long it is kept and the choices available.</p>
+
+        <h3>Privacy questions and your rights</h3>
+        <p>For privacy questions or to exercise applicable data-protection rights, email <a href="mailto:santa@santaradio.co.uk">santa@santaradio.co.uk</a>. See <a href="#privacy-choices">Your choices and rights</a> for the existing rights and complaints information, including how to complain to the UK Information Commissioner’s Office.</p>
       </section>
 
       <section aria-labelledby="android-radio-privacy">

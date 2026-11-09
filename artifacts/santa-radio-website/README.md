@@ -15,6 +15,51 @@ Do not start a second website process from the mobile artifact. Its API requests
 use this same root website service. This preview registration does not publish
 the website or change the existing GitHub-to-Vercel release process.
 
+## Christmas Music for Shops privacy — publication hold
+
+The Shops addition in `src/pages/PrivacyPolicy.jsx` is an unpublished draft for
+version 1.0 (`com.christmasmusicforshops.app`), based on the supplied app facts.
+Do not release this policy change until both checks below are complete:
+
+- Confirm whether VoiceoverGuy Ltd also operates this standalone app. The existing
+  operator sentence deliberately still names only the previously confirmed apps.
+  Update that sentence with the confirmed Shops operator before publication.
+- Review the actual Shops version 1.0 release build and configuration, including
+  dependencies, bundled SDKs, analytics/crash-reporting configuration and relevant
+  network behaviour. This workspace contains a different Santa Radio iPhone app,
+  not the Shops source or release archive. An absence of Shops SDKs here proves
+  nothing about the Shops release. Add any required collection disclosures before
+  publication; the draft makes no claim of no analytics or crash reporting.
+
+Known provider facts are limited to the supplied HTTPS destinations (Citrus3 live
+audio and Santa Radio song information/artwork), the existing policy's Vercel
+hosting identification, and the existing acknowledgement that service-specific
+logging arrangements are unknown. Provider account logging settings, retention,
+processing locations and international-transfer safeguards have not been
+verified. The draft qualifies these unknowns; it does not infer account settings
+from general provider notices, invent retention periods or promise that deleting
+local data erases provider logs.
+
+Keep `/privacy-policy` and its canonical
+`https://www.santaradio.co.uk/privacy-policy` unchanged, including the existing
+App Store Connect destination. Do not edit App Store Connect or native apps as
+part of this website task. Keep the existing revision date until the actual
+live release, then set it to that release date and update the date assertions.
+After the normal authorised GitHub-to-Vercel release, request the canonical URL
+and verify the rendered section order: Christmas Radio UK, Christmas Music for
+Shops, Android. Check the new anchor, contact and rights links, canonical URL and
+release date. A local preview or passing build is not proof of publication.
+
+The public canonical URL returned HTTP 200 when checked on 9 November 2026, but
+did **not** include Christmas Music for Shops. No publication was performed.
+
+Focused checks:
+
+```sh
+npx playwright test tests/privacy-policy.spec.js --project=chromium
+npm run build
+```
+
 ## Seasonal tracker markers
 
 The website's six supplied Santa illustrations are served from
