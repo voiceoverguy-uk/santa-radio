@@ -17,8 +17,21 @@ let child;
 let origin;
 
 function promotionMarkup(html, description) {
-  const promotion = html.match(/<section\b(?=[^>]*\bid="santa-studio-promotion")[\s\S]*?<\/section>/)?.[0];
-  assert.ok(promotion, `${description} must contain the Studio promotion`);
+  const start = html.search(/<section\b(?=[^>]*\bid="santa-studio-promotion")[^>]*>/);
+  assert.ok(start >= 0, `${description} must contain the Studio promotion`);
+  const tags = /<\/?section\b[^>]*>/gi;
+  tags.lastIndex = start;
+  let depth = 0;
+  let end = -1;
+  for (let match; (match = tags.exec(html));) {
+    depth += match[0].startsWith('</') ? -1 : 1;
+    if (depth === 0) {
+      end = tags.lastIndex;
+      break;
+    }
+  }
+  assert.ok(end > start, `${description} must contain a complete Studio promotion`);
+  const promotion = html.slice(start, end);
   assert.match(promotion, /class="santa-studio-promotion__offer-label">Price<\/span>/);
   assert.match(promotion, /class="santa-studio-promotion__offer-price">£6\.50<\/span>/);
   assert.doesNotMatch(promotion, stalePromotionCopy, `${description} must not contain stale visible or accessible promotion copy`);

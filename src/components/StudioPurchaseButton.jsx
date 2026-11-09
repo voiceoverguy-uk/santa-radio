@@ -44,7 +44,7 @@ function PurchaseButton({ sandbox }) {
       setBusy(false);
     }
   };
-  return <div>
+  return <div className="santa-studio-promotion__checkout-note">
     {(sandbox || available) && <button className="santa-studio-promotion__purchase" type="button"
       disabled={checking || !available || busy} onClick={purchase} aria-describedby={noteId}>
       {sandbox

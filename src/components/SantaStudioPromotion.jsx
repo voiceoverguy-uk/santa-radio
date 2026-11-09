@@ -4,6 +4,7 @@ import './SantaStudioPromotion.css';
 import StudioPurchaseButton from './StudioPurchaseButton.jsx';
 import { StudioGiftPreview, useStudioGiftExample } from './SantaStudioGifts.jsx';
 import StudioPortraitViewer from './StudioPortraitViewer.jsx';
+import SantaStudioAudioExample from './SantaStudioAudioExample.jsx';
 
 export default function SantaStudioPromotion({ activeExampleName = null, availableNamesText, previewName = null, allowExamples = true }) {
   const navigate = useNavigate();
@@ -59,6 +60,7 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
           onAuthorized={() => navigate('/santa-message-workshop')}
         />
         <StudioPurchaseButton />
+        <SantaStudioAudioExample />
       </div>
       <StudioGiftPreview example={example} variant="promotion" />
     </section>

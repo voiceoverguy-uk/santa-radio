@@ -96,6 +96,7 @@
 - [Studio reverb approval](studio-reverb-approval.md) — Development audition only; merging a comparison is not approval to apply the effect to real messages.
 - [Studio gift delivery](studio-gift-delivery-scope.md) — Local individual-message gifts require MP3 success; no free/promotional exports, live checkout or family/email fulfilment.
 - [Studio promotion typography](studio-promotion-typography.md) — Regular live promotion text and shared gift heading; keep document artwork and watermarks unchanged.
+- [Studio audio control focus](studio-audio-controls.md) — Keep the play control focusable during media startup; use aria-busy and ignore repeated activation.
 - [School tester voucher](school-tester-voucher.md) — Shared independent parent access; fixed 3–10 November 2026 UK window, separate from existing vouchers.
 - [Studio build boundary](studio-build-boundary.md) — Website compilation must not depend on Studio storage; keep strict readiness and fail-closed runtime enforcement separate.
 - [Native purchase boundaries](mobile-purchase-boundaries.md) — Separate Apple products, sandbox-only initially; minimal usage accounting is not a permanent audio archive.

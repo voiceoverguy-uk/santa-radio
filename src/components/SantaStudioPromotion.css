@@ -390,7 +390,7 @@
 }
 
 /* Purchase notices use generated accessible IDs, not a fixed note ID. */
-.santa-studio-promotion__details > div:last-child > p {
+.santa-studio-promotion__checkout-note > p {
   margin: 8px 0 0;
   color: var(--studio-muted);
   font-size: .76rem;
