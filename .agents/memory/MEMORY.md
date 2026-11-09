@@ -31,6 +31,7 @@
 - [Tracker holiday dates](tracker-holiday-dates.md) — Holiday 26 Dec–9 Nov; research trips 10 Nov–22 Dec; preparation from 23 Dec; preserve Christmas journey.
 - [Tracker marker direction](tracker-marker-direction.md) — GMT means longitude zero, not local time; holiday/scout face inward geographically and sleigh direction follows actual legs.
 - [Tracker marker motion](tracker-marker-motion.md) — No independent position tween; test accelerated travel with normal motion so marker drift is not hidden.
+- [Tracker artwork sizing tests](tracker-artwork-sizing-tests.md) — Assert the rendered CSS bounds; raster dimensions may differ from the artwork's logical display ratio.
 - [Tracker dashboard layout](tracker-dashboard-layout.md) — Desktop statistics flank the map so visitors can watch the journey without scrolling to a separate dashboard.
 - [Tracker initial camera](tracker-initial-camera.md) — The standalone tracker opens in World view on every load; Follow and regional views remain visitor-selected.
 - [Tracker content boundaries](tracker-content-policy.md) — Delivery stops are not holiday-place additions; distinguish fictional antics from sourced, qualified traditions.

@@ -267,7 +267,20 @@ for (const width of [1440, 390]) {
       expect(bounds.y).toBeGreaterThanOrEqual(0);
       expect(bounds.x + bounds.width).toBeLessThanOrEqual(width + 0.5);
       expect(bounds.y + bounds.height).toBeLessThanOrEqual(height + 0.5);
-      expect(Math.max(bounds.width / width, bounds.height / height)).toBeGreaterThanOrEqual(0.9);
+      expect(bounds.width).toBeLessThanOrEqual(width * 0.47 + 0.5);
+      expect(bounds.height).toBeLessThanOrEqual(height * 0.47 + 0.5);
+      const sizing = await enlarged.evaluate(image => ({
+        maxWidth: Number.parseFloat(getComputedStyle(image).maxWidth),
+        maxHeight: Number.parseFloat(getComputedStyle(image).maxHeight),
+        width: Number.parseFloat(getComputedStyle(image).width),
+        height: Number.parseFloat(getComputedStyle(image).height),
+      }));
+      expect(sizing.maxWidth).toBeLessThanOrEqual(width * 0.47 + 0.5);
+      expect(sizing.maxHeight).toBeLessThanOrEqual(height * 0.47 + 0.5);
+      expect(bounds.width).toBeCloseTo(sizing.width, 0);
+      expect(bounds.height).toBeCloseTo(sizing.height, 0);
+      expect(Math.abs(bounds.x + bounds.width / 2 - width / 2)).toBeLessThan(1);
+      expect(Math.abs(bounds.y + bounds.height / 2 - height / 2)).toBeLessThan(1);
       expect(await mapCamera.getAttribute('style')).toBe(mapTransform);
 
       // A click anywhere on the transparent layer, including the artwork itself, dismisses it.

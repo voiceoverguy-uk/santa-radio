@@ -417,7 +417,7 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
             src={artwork.src}
             alt="Santa's current seasonal artwork"
             draggable={false}
-            style={{ width: `min(94vw, ${94 * artwork.width / artwork.height}dvh)` }}
+            style={{ width: `min(47vw, ${47 * artwork.width / artwork.height}dvh)` }}
           />
         </div>,
         document.body,

@@ -22,8 +22,8 @@
 }
 .tj-artwork-viewer img {
   display: block;
-  max-width: 94vw;
-  max-height: 94dvh;
+  max-width: 47vw;
+  max-height: 47dvh;
   object-fit: contain;
   background: transparent;
   user-select: none;
