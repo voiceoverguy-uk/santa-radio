@@ -18,7 +18,9 @@ export async function verifyLiveOffer(stripe, config) {
   const product = price.product;
   if (price.id !== config.priceId || price.livemode !== true || price.active !== true
     || price.type !== 'one_time' || price.recurring || price.currency !== 'gbp'
-    || price.unit_amount !== 650 || price.unit_amount_decimal !== undefined && price.unit_amount_decimal !== '650'
+    // Recent Stripe SDKs decode decimal fields as Decimal objects. Compare
+    // their exact string representation, never rounded floating-point values.
+    || price.unit_amount !== 650 || price.unit_amount_decimal !== undefined && String(price.unit_amount_decimal) !== '650'
     || id(product) !== config.productId || product?.livemode !== true || product?.active !== true) {
     throw new Error('STUDIO_LIVE_PRICE_NOT_VERIFIED');
   }

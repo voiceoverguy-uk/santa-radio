@@ -147,6 +147,15 @@ test('active exact £6.50 one-time price and active expanded product are require
   const price = { ...paidSession().line_items.data[0].price, active: true, unit_amount_decimal: '650' };
   const stripe = { prices: { retrieve: async () => price } };
   assert.equal(await verifyLiveOffer(stripe, config), price);
+  for (const decimal of ['650', Stripe.Decimal.from('650'), Stripe.Decimal.from('650.000')]) {
+    const candidate = { ...price, unit_amount_decimal: decimal };
+    assert.equal(await verifyLiveOffer({ prices: { retrieve: async () => candidate } }, config), candidate);
+  }
+  for (const decimal of ['649', '650.01', null, Stripe.Decimal.from('650.000000000001')]) {
+    await assert.rejects(verifyLiveOffer({
+      prices: { retrieve: async () => ({ ...price, unit_amount_decimal: decimal }) },
+    }, config), /STUDIO_LIVE_PRICE_NOT_VERIFIED/);
+  }
   for (const key of ['active', 'livemode']) {
     await assert.rejects(verifyLiveOffer({ prices: { retrieve: async () => ({ ...price, [key]: false }) } }, config));
   }
