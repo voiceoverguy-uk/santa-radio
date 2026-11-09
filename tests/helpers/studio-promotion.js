@@ -13,10 +13,9 @@ export async function expectStudioLaunchCopy(promotion) {
   await expect(promotion.locator('.santa-studio-promotion__benefit-list li')).toHaveText([
     'An official Nice List certificate',
     'A short personal letter from Santa',
-    `A picture of Santa celebrating ${possessive} place on the Nice List*`,
+    `Santa celebrating ${possessive} place on the Nice List`,
   ]);
-  await expect(promotion.locator('.santa-studio-promotion__footnote')).toHaveText(
-    '*Subject to staying on the Nice List, of course.');
+  await expect(promotion.locator('.santa-studio-promotion__footnote')).toHaveCount(0);
   await expect(promotion.locator('.studio-gifts h4')).toHaveCount(0);
   await expect(promotion.locator('.studio-gifts__thumbnail-label')).toHaveText([
     'Santa picture included', 'Letter included', 'Certificate included',
@@ -28,7 +27,7 @@ export async function expectStudioLaunchCopy(promotion) {
   await expect(promotion).not.toContainText(/your child/i);
   const geometry = await promotion.evaluate(node => {
     const selectors = '.santa-studio-promotion__subheading, .santa-studio-promotion__copy, ' +
-      '.santa-studio-promotion__benefits-lead, .santa-studio-promotion__benefit-list li, .santa-studio-promotion__footnote, .studio-gifts__thumbnail-label';
+      '.santa-studio-promotion__benefits-lead, .santa-studio-promotion__benefit-list li, .studio-gifts__thumbnail-label';
     return [...node.querySelectorAll(selectors)].map(element => {
       const bounds = element.getBoundingClientRect();
       const range = document.createRange();

@@ -46,9 +46,8 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
             <ul className="santa-studio-promotion__benefit-list">
               <li>An official Nice List certificate</li>
               <li>A short personal letter from Santa</li>
-              <li>A picture of Santa celebrating {example.name}’s place on the Nice List*</li>
+              <li>Santa celebrating {example.name}’s place on the Nice List</li>
             </ul>
-            <p className="santa-studio-promotion__footnote">*Subject to staying on the Nice List, of course.</p>
           </div>
         </div>
         <div className="santa-studio-promotion__offer">

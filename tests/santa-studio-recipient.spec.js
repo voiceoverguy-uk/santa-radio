@@ -219,7 +219,7 @@ async function matches(page, name) {
   await expect(promotion(page).locator('.santa-studio-promotion__subheading')).toHaveText(`A little more Christmas magic for ${name}`);
   await expect(promotion(page).locator('.santa-studio-promotion__benefit-list li')).toHaveText([
     'An official Nice List certificate', 'A short personal letter from Santa',
-    `A picture of Santa celebrating ${name}’s place on the Nice List*`,
+    `Santa celebrating ${name}’s place on the Nice List`,
   ]);
   await expect(page.locator('.santa-message-example')).toHaveCount(0);
 }
