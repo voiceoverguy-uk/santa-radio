@@ -29,19 +29,40 @@ test('all ten positive questions must be answered; exactly six No changes the re
   assert.equal(classifyAnswers(sparse), null);
 });
 
-test('all 60 questions and their eight categories exactly match the supplied wording', async () => {
-  const source = await readFile('attached_assets/Pasted-10-questions-for-Q1-Q3-Draw-one-from-each-group-so-the-_1793986075511.txt', 'utf8');
-  const lines = source.split(/\r?\n/);
+async function suppliedGroups(path, names) {
+  const lines = (await readFile(path, 'utf8')).split(/\r?\n/);
+  return names.map(name => {
+    const start = lines.indexOf(name);
+    assert.ok(start >= 0, `Missing supplied category: ${name}`);
+    const questions = [];
+    for (const line of lines.slice(start + 1)) {
+      if (!/^\d+\. /.test(line)) break;
+      questions.push(line.replace(/^\d+\. /, ''));
+    }
+    const expectedCount = { 'Being kind': 4, 'Helping others': 3, 'Trying hard': 3 }[name] ?? 10;
+    assert.equal(questions.length, expectedCount, name);
+    return { name, questions };
+  });
+}
+
+test('the bank is the duplicate-free union of both supplied batches with openings unchanged', async () => {
+  const original = await suppliedGroups(
+    'attached_assets/Pasted-10-questions-for-Q1-Q3-Draw-one-from-each-group-so-the-_1793986075511.txt',
+    groups.map(group => group.name));
+  const additions = await suppliedGroups(
+    'attached_assets/Pasted-Add-these-to-the-existing-50-fun-questions-skipping-any_1794236373718.txt',
+    FUN_GROUPS.map(group => group.name));
+  assert.deepEqual(OPENING_GROUPS, original.slice(0, 3));
   assert.deepEqual(OPENING_GROUPS.map(group => group.questions.length), [4, 3, 3]);
-  assert.deepEqual(FUN_GROUPS.map(group => group.questions.length), [10, 10, 10, 10, 10]);
-  assert.equal(bank.length, 60);
-  assert.equal(new Set(bank).size, 60);
-  for (const group of groups) {
-    const start = lines.indexOf(group.name);
-    assert.ok(start >= 0);
-    assert.deepEqual(lines.slice(start + 1, start + 1 + group.questions.length)
-      .map(line => line.replace(/^\d+\. /, '')), group.questions);
-  }
+  assert.deepEqual(FUN_GROUPS.map(group => group.questions.length), [20, 20, 20, 20, 20]);
+  assert.equal(bank.length, 110);
+  assert.equal(new Set(bank).size, bank.length, 'No duplicate questions across any categories');
+  FUN_GROUPS.forEach((group, index) => {
+    const expected = new Set([...original[index + 3].questions, ...additions[index].questions]);
+    assert.deepEqual(new Set(group.questions), expected, group.name);
+    for (const question of additions[index].questions)
+      assert.equal(group.questions.filter(value => value === question).length, 1, question);
+  });
 });
 
 test('seeded selection covers every group without repeats and never mutates the bank', () => {
@@ -64,10 +85,21 @@ test('seeded selection covers every group without repeats and never mutates the 
     round.forEach(question => seen.add(question));
     draws.add(JSON.stringify(round));
   }
-  assert.equal(seen.size, 60);
+  assert.deepEqual(seen, new Set(bank));
   assert.equal(extraPairs.size, 10);
   assert.equal(funFirstGroups.size, 5);
   assert.ok(draws.size > 950);
   assert.deepEqual(groups, before);
   assert.notDeepEqual(selectQuestionRound(() => 0), selectQuestionRound(() => .999999));
+});
+
+test('edge random draws still give seven distinct fun questions covering all five categories', () => {
+  for (const value of [0, .5, .999999]) {
+    const round = selectQuestionRound(() => value);
+    assert.equal(round.length, 10);
+    assert.equal(new Set(round).size, 10);
+    OPENING_GROUPS.forEach((group, index) => assert.ok(group.questions.includes(round[index])));
+    const counts = FUN_GROUPS.map(group => round.slice(3).filter(question => group.questions.includes(question)).length);
+    assert.deepEqual(counts.sort(), [1, 1, 1, 2, 2]);
+  }
 });
