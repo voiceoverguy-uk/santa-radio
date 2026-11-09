@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { resolvePublicRequest } from '../src/seo/routes.js';
 import { publicPageHtml } from '../server/public-html.js';
+import { isStudioPath } from '../src/lib/studioRoute.js';
 // Vercel runs this only for document routes. Existing API/artwork endpoints stay intact.
 export default async function handler(req, res) {
   if (!['GET', 'HEAD'].includes(req.method)) { res.setHeader('Allow', 'GET, HEAD'); return res.status(405).end(); }
@@ -9,10 +10,17 @@ export default async function handler(req, res) {
   source.searchParams.delete('__sr_route');
   const raw = path + (source.searchParams.size ? `?${source.searchParams}` : '');
   const route = resolvePublicRequest(raw);
+  const studio = isStudioPath(path);
+  if (studio) {
+    res.setHeader('Cache-Control', 'private, no-store');
+    res.setHeader('CDN-Cache-Control', 'no-store');
+    res.setHeader('Vercel-CDN-Cache-Control', 'no-store');
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  }
   if (route.location) { res.setHeader('Location', route.location); return res.status(route.status).end(); }
-  if (route.noindex || route.status !== 200) res.setHeader('X-Robots-Tag', route.documentPath ? 'noindex, nofollow' : 'noindex, follow');
+  if (!studio && (route.noindex || route.status !== 200)) res.setHeader('X-Robots-Tag', route.documentPath ? 'noindex, nofollow' : 'noindex, follow');
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  const privatePage = Boolean(route.documentPath) || path === '/santa-message-workshop';
+  const privatePage = Boolean(route.documentPath) || studio;
   res.setHeader('Cache-Control', privatePage ? 'private, no-store' : 'public, max-age=0, must-revalidate');
   if (privatePage) {
     res.setHeader('CDN-Cache-Control', 'no-store');

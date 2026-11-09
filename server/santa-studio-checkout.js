@@ -1,4 +1,5 @@
 import express from 'express';
+import { STUDIO_PATH } from '../src/lib/studioRoute.js';
 import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 import { databasePool } from './name-request-store.js';
 import { getUncachableStripeClient, requireSandboxWorkspace } from './stripeClient.js';
@@ -71,7 +72,7 @@ export async function startSandboxCheckout({ claim, origin, stripe, pool = datab
       session = await stripe.checkout.sessions.create({
         mode: 'payment', payment_method_types: ['card'],
         line_items: [{ price: STUDIO_TEST_PRICE, quantity: 1 }],
-        success_url: `${origin}/santa-message-workshop?checkout=return`,
+        success_url: `${origin}${STUDIO_PATH}?checkout=return`,
         cancel_url: `${origin}/?studioCheckout=cancelled#santa-studio-promotion`,
         metadata: { offer: STUDIO_OFFER, access_claim_sha256: hash },
       }, { idempotencyKey: `studio-sandbox:${hash}:${generation}` });

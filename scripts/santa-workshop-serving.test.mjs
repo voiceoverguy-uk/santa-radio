@@ -5,8 +5,9 @@ import { readFile } from 'node:fs/promises';
 import { canonicalPaths, resolvePublicRequest } from '../src/seo/routes.js';
 import { sitemap } from '../server/public-html.js';
 import publicPage from '../api/public-page.js';
+import { STUDIO_ALIASES } from '../src/lib/studioRoute.js';
 
-const path = '/santa-message-workshop';
+const path = '/bespoke-personalised-message-from-santa';
 
 test('workshop is directly accessible but never canonical or in the sitemap', () => {
   assert.deepEqual(resolvePublicRequest(path), { status: 200, noindex: true });
@@ -35,7 +36,7 @@ test('built preview HTML and serverless document have honest noindex content', a
   };
   await publicPage({ method: 'GET', url: `/api/public-page?__sr_route=${path}` }, response);
   assert.equal(response.code, 200);
-  assert.equal(response.headers['X-Robots-Tag'], 'noindex, follow');
+  assert.equal(response.headers['X-Robots-Tag'], 'noindex, nofollow');
   assert.equal(response.headers['X-Santa-Page-Mode'], 'prerendered');
   assertPreview(response.body);
 });
@@ -53,8 +54,16 @@ test('compiled Node SSR serves the preview, headers and unchanged free maker', a
   });
   const response = await fetch(`http://127.0.0.1:${port}${path}`);
   assert.equal(response.status, 200);
-  assert.equal(response.headers.get('x-robots-tag'), 'noindex, follow');
+  assert.equal(response.headers.get('x-robots-tag'), 'noindex, nofollow');
   assertPreview(await response.text());
+  for (const address of [path, ...STUDIO_ALIASES].flatMap(value => [value, `${value}/`])) {
+    const reply = await fetch(`http://127.0.0.1:${port}${address}?checkout=return&synthetic=a%2Bb`, { redirect: 'manual' });
+    assert.equal(reply.headers.get('cache-control'), 'private, no-store');
+    assert.equal(reply.headers.get('cdn-cache-control'), 'no-store');
+    assert.equal(reply.headers.get('x-robots-tag'), 'noindex, nofollow');
+    assert.equal(reply.status, address === path ? 200 : 308);
+    if (address !== path) assert.equal(reply.headers.get('location'), `${path}?checkout=return&synthetic=a%2Bb`);
+  }
   const maker = await fetch(`http://127.0.0.1:${port}/free-santa-message`);
   assert.equal(maker.status, 200);
   const makerHtml = await maker.text();

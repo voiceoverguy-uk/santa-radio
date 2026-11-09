@@ -4,6 +4,7 @@ import { RadioButton } from './AudioPlayer.jsx';
 import { scrollToSantaMessageDesk } from '../lib/scrollToSantaMessageDesk.js';
 import useNavigationHighlight from './useNavigationHighlight.js';
 import './Navbar.css';
+import { isStudioPath } from '../lib/studioRoute.js';
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -28,8 +29,9 @@ export default function Navbar() {
   }, []);
   useEffect(() => {
     setMenuOpen(false);
-    // The standalone message page owns its initial section position.
-    if (!/^\/free-santa-message\/?$/.test(location.pathname)) window.scrollTo(0, 0);
+    // Message pages own their initial panel position; a later navbar scroll
+    // would undo Studio's before-paint mobile alignment.
+    if (!/^\/free-santa-message\/?$/.test(location.pathname) && !isStudioPath(location.pathname)) window.scrollTo(0, 0);
   }, [location.pathname]);
   useEffect(() => {
     if (!menuOpen) return;
@@ -45,7 +47,7 @@ export default function Navbar() {
     { to: '/naughty-or-nice-list-checker', label: 'Nice List?' },
   ];
   const pathname = location.pathname.replace(/\/+$/, '') || '/';
-  const isStudio = pathname === '/santa-message-workshop';
+  const isStudio = isStudioPath(pathname);
   const isActive = to => {
     if (to === '/') return pathname === '/';
     if (to === '/mugshots/all') return /^\/mugshots(?:\/|$)/.test(pathname);

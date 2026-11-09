@@ -39,6 +39,12 @@ import WorkshopAccessGate from './components/WorkshopAccessGate.jsx';
 import { RadioDockVisibilityProvider } from './components/RadioDockVisibility.jsx';
 import SantaTrackerStreamPage from './tracker/app/styt/page.tsx';
 import { isTrackerCapturePath } from './privacy/trackerPrivacy.js';
+import { STUDIO_PATH, STUDIO_ALIASES } from './lib/studioRoute.js';
+
+function StudioRedirect() {
+  const { search, hash, state } = useLocation();
+  return <Navigate to={{ pathname: STUDIO_PATH, search, hash }} state={state} replace />;
+}
 
 function WebsiteLayout() {
   const capture = isTrackerCapturePath(useLocation().pathname);
@@ -61,7 +67,8 @@ function WebsiteLayout() {
         <Route path="/christmas-karaoke-lyrics/:slug" element={<KaraokeLyrics />} />
         <Route path="/artist" element={<ArtistDetail />} />
         <Route path="/free-santa-message" element={<FreeSantaMessage />} />
-        <Route path="/santa-message-workshop" element={<WorkshopAccessGate><SantaMessageWorkshop /></WorkshopAccessGate>} />
+        <Route path={STUDIO_PATH} element={<WorkshopAccessGate><SantaMessageWorkshop /></WorkshopAccessGate>} />
+        {STUDIO_ALIASES.map(path => <Route key={path} path={path} element={<StudioRedirect />} />)}
         <Route path="/request-names" element={<SantaStaffShell mode="admin" />} />
         <Route path="/sign-in/*" element={<SantaStaffShell mode="sign-in" />} />
         <Route path="/sign-up/*" element={<SantaStaffShell mode="sign-up" />} />

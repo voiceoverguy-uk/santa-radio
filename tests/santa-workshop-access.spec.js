@@ -183,7 +183,7 @@ for (const path of ['/', '/free-santa-message']) {
     const form = page.locator('.santa-studio-promotion .workshop-password-form');
     await form.getByLabel(codeLabel, { exact: true }).fill(code);
     await form.getByRole('button', { name: 'Create your bespoke message', exact: true }).click();
-    await expect(page).toHaveURL(/\/santa-message-workshop$/);
+    await expect(page).toHaveURL(/\/bespoke-personalised-message-from-santa$/);
     await expect(page.getByRole('heading', { name: 'What name should Santa say?' })).toBeVisible();
     await expectStudioHeader(page);
     const cookie = (await page.context().cookies()).find(item => item.name === 'santa-workshop-preview');
@@ -216,7 +216,7 @@ test('the completion card retains its voucher route into the authorized Studio',
   await expect(promotion).toHaveCount(1);
   await promotion.getByLabel(codeLabel, { exact: true }).fill('COMPLETION-CARD-TEST-CODE');
   await promotion.getByRole('button', { name: 'Create your bespoke message', exact: true }).click();
-  await expect(page).toHaveURL(/\/santa-message-workshop$/);
+  await expect(page).toHaveURL(/\/bespoke-personalised-message-from-santa$/);
   await expect(page.getByRole('heading', { name: 'What name should Santa say?' })).toBeVisible();
 });
 
@@ -262,7 +262,7 @@ test('empty, wrong, blocked, expired and unavailable code submissions stay close
     await input.press('Enter');
     await expect(form.getByRole('alert')).toContainText(message);
     await expect(form.getByRole('button')).toBeEnabled();
-    await expect(page).not.toHaveURL(/\/santa-message-workshop$/);
+    await expect(page).not.toHaveURL(/\/bespoke-personalised-message-from-santa$/);
   }
   expect(calls).toBe(messages.length);
 });

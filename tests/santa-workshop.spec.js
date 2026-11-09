@@ -1121,7 +1121,7 @@ for (const viewport of [
     await expect(page.locator('.smw-step-count')).toHaveText('Step 6 of 7');
     await checkAnchor();
     await expect(page.getByRole('listbox').locator('[aria-selected=true]')).toHaveCount(1);
-    await expect(page).toHaveURL(/\/santa-message-workshop$/);
+    await expect(page).toHaveURL(/\/bespoke-personalised-message-from-santa$/);
   });
 }
 

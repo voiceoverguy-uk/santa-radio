@@ -33,6 +33,7 @@ import messageAccess from './server/santa-message-access.js';
 import { browserSecurity } from './server/browser-security.js';
 import { serveStaticVideo } from './server/static-video.js';
 import { createAuditionMiddleware, auditionPath } from './server/studio-reverb-audition.js';
+import { isStudioPath } from './src/lib/studioRoute.js';
 
 const root = await realpath(fileURLToPath(new URL('./dist', import.meta.url)));
 const index = resolve(root, 'index.html');
@@ -89,15 +90,22 @@ const server = createServer(async (req, res) => {
       res.writeHead(405, { Allow: 'GET, HEAD' }).end(); return;
     }
     const route = resolvePublicRequest(req.url);
+    const studio = isStudioPath(pathname);
+    if (studio) {
+      res.setHeader('Cache-Control', 'private, no-store');
+      res.setHeader('CDN-Cache-Control', 'no-store');
+      res.setHeader('Vercel-CDN-Cache-Control', 'no-store');
+      res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    }
     // A dot in a reviewed historical slug (for example Sammy Davis Jr.) is
     // punctuation, not an asset extension. Resolve exact redirects first.
     if (!extname(pathname) || route.location) {
       if (route.location) { res.writeHead(route.status, { Location: route.location }); res.end(); return; }
-      if (route.noindex || route.status !== 200) res.setHeader('X-Robots-Tag', 'noindex, follow');
+      if (!studio && (route.noindex || route.status !== 200)) res.setHeader('X-Robots-Tag', 'noindex, follow');
       if (route.status !== 200 || route.noindex || pathname === '/artist' || pathname === '/santa-tracker') {
         const { render } = await import('./dist/server/entry-server.js');
         const body = publicPageHtml(await readFile(resolve(root, 'server/shell.html'), 'utf8'), render(req.url));
-        res.writeHead(route.status, { 'Content-Type': types['.html'], 'Cache-Control': pathname === '/santa-message-workshop' ? 'private, no-store' : 'no-cache', 'Content-Length': Buffer.byteLength(body) });
+        res.writeHead(route.status, { 'Content-Type': types['.html'], 'Cache-Control': studio ? 'private, no-store' : 'no-cache', 'Content-Length': Buffer.byteLength(body) });
         res.end(req.method === 'HEAD' ? undefined : body); return;
       }
     }

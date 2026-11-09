@@ -15,6 +15,8 @@ import santaNameCount from './server/santa-name-count.js';
 import santaNamePreview from './server/santa-name-preview.js';
 import workshopCatalogue from './server/santa-workshop-catalogue.js';
 import workshopAccess, { workshopDocumentHeaders } from './server/santa-workshop-access.js';
+import { STUDIO_PATH, isStudioPath } from './src/lib/studioRoute.js';
+import { resolvePublicRequest } from './src/seo/routes.js';
 import santaGreeting from './server/santa-greeting.js';
 import nameRequests from './server/name-requests.js';
 import christmasContenders from './server/christmas-contenders.js';
@@ -95,12 +97,14 @@ const metadataPlugin = {
     // Vite's SPA preview fallback otherwise serves the pre-rendered homepage.
     // Serve the standalone noindex Studio preview instead of the homepage.
     server.middlewares.use(async (req, res, next) => {
-      if (!/^\/santa-message-workshop\/?$/.test(publicRequestUrl(req.url, 'http://server').pathname)) return next();
+      if (!isStudioPath(publicRequestUrl(req.url, 'http://server').pathname)) return next();
       if (!['GET', 'HEAD'].includes(req.method)) {
         res.writeHead(405, { Allow: 'GET, HEAD' }); return res.end();
       }
       try {
-        const html = await readFile(new URL('./dist/santa-message-workshop/index.html', import.meta.url), 'utf8');
+        const route = resolvePublicRequest(req.url);
+        if (route.location) { res.writeHead(route.status, { Location: route.location }); return res.end(); }
+        const html = await readFile(new URL(`./dist${STUDIO_PATH}/index.html`, import.meta.url), 'utf8');
         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'private, no-store' });
         res.end(req.method === 'HEAD' ? undefined : html);
       } catch { res.writeHead(503); res.end('Build the workshop preview before starting preview mode.'); }

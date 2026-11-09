@@ -161,7 +161,9 @@ for (const width of [390, 1440]) {
   test(`dedicated routes and Studio access hide both sizes including trailing slashes ${width}`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
     await fixtures(page);
-    for (const path of ['/free-santa-message', '/free-santa-message/', '/santa-message-workshop', '/santa-message-workshop/']) {
+    for (const path of ['/free-santa-message', '/free-santa-message/', '/santa-message-workshop', '/santa-message-workshop/',
+      '/bespoke-personalised-message-from-santa', '/bespoke-personalised-message-from-santa/',
+      '/bespoke-pesonalised-message-from-santa', '/bespoke-pesonalised-message-from-santa/']) {
       await open(page, path);
       await hiddenDock(page);
       // Existing state remains mounted; changing it cannot defeat suppression.

@@ -17,7 +17,7 @@ test('Vercel Studio document is locked, noindex and never public cached', async 
     status(value) { status = value; return this; },
     end(value) { body = value; },
   };
-  await publicPage({ method: 'GET', url: '/api/public-page?__sr_route=/santa-message-workshop' }, res);
+  await publicPage({ method: 'GET', url: '/api/public-page?__sr_route=/bespoke-personalised-message-from-santa' }, res);
   assert.equal(status, 200);
   assert.match(headers['cache-control'], /private, no-store/);
   assert.equal(headers['vercel-cdn-cache-control'], 'no-store');
@@ -26,5 +26,5 @@ test('Vercel Studio document is locked, noindex and never public cached', async 
   assert.match(body, /noindex/);
   assert.doesNotMatch(body, /smw-builder|What name should Santa say/);
   assert.doesNotMatch(body, /Enter the workshop password/);
-  assert.doesNotMatch(await readFile('dist/sitemap.xml', 'utf8'), /santa-message-workshop/);
+  assert.doesNotMatch(await readFile('dist/sitemap.xml', 'utf8'), /santa-message-workshop|bespoke-p[e]?r?sonalised-message-from-santa/);
 });

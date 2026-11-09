@@ -22,7 +22,7 @@ async function enterWorkshop(page) {
   const lookup = page.waitForResponse(response => response.url().endsWith('/api/santa-names')
     && response.request().method() === 'POST');
   await promotion(page).getByRole('button', { name: 'Create your bespoke message', exact: true }).click();
-  await expect(page).toHaveURL(/\/santa-message-workshop$/);
+  await expect(page).toHaveURL(/\/bespoke-personalised-message-from-santa$/);
   await expect(page.getByRole('combobox', { name: 'Search recorded names', exact: true })).toBeVisible();
   await lookup;
 }

@@ -6,6 +6,7 @@ import { useLocation } from 'react-router-dom';
 import { StudioAccessContext, StudioVoucherContext } from '../lib/studioAccessContext.js';
 import StudioReturnAccess from './StudioReturnAccess.jsx';
 import StudioPurchaseButton from './StudioPurchaseButton.jsx';
+import { STUDIO_PATH } from '../lib/studioRoute.js';
 
 const ACCESS_URL = '/api/santa-workshop-access';
 const REQUEST_TIMEOUT = 15000;
@@ -183,7 +184,7 @@ export default function WorkshopAccessGate({ children }) {
   }, []);
 
   const metadata = pageMetadata({
-    path: '/santa-message-workshop',
+    path: STUDIO_PATH,
     title: 'Santa’s Message Workshop | Santa Radio',
     description: 'Open Santa’s Message Maker Studio with confirmed paid access or a valid voucher.',
     noindex: true,

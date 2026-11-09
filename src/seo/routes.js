@@ -4,6 +4,7 @@ import { santaMessageRequestedName } from './santaMessageLinks.js';
 import { alternateProfileRedirects } from './alternateRedirects.js';
 import { publicRequestUrl } from './requestUrl.js';
 import { reportedMissingAliases, reportedLyricsQueries } from './reportedMissingLinks.js';
+import { STUDIO_PATH, STUDIO_ALIASES, isStudioPath } from '../lib/studioRoute.js';
 export const staticPages = ['/', '/apps', '/privacy-policy', '/santa-tracker/privacy', mugPhotoTermsPath, '/christmas-music', '/mugshots/all', '/free-santa-message', '/submit-a-song', '/christmas-contenders', '/naughty-or-nice-list-checker', '/links', '/santa-stories', '/santa-tracker'];
 export const canonicalPaths = [...staticPages, ...songs.map(songPath), ...mugs.map(mugPath), ...songs.map(s => `/christmas-karaoke-lyrics/${s.id}-${s.link}`)];
 // Private entry documents are packaged, but never added to the public sitemap.
@@ -122,6 +123,13 @@ export function resolvePublicRequest(raw) {
   try { path = decodeURIComponent(url.pathname); } catch { return { status: 400 }; }
   // Never redirect hosts: preview, audio feeds, integrations and API calls stay same-origin.
   const normalized = path === '//' ? path : path.length > 1 ? path.replace(/\/+$/, '') : path;
+  if (isStudioPath(normalized)) {
+    // No fragment in Location: browsers inherit their original fragment.
+    if (STUDIO_ALIASES.includes(normalized) || path !== STUDIO_PATH) {
+      return { status: 308, location: STUDIO_PATH + url.search };
+    }
+    return { status: 200, noindex: true };
+  }
   const staffDocument = staffDocumentPath(normalized);
   if (staffDocument) return { status: 200, noindex: true, documentPath: staffDocument };
   const messageLink = normalized.match(/^\/personalised-santa-message(?:\/([^/]+))?$/i);
@@ -137,13 +145,12 @@ export function resolvePublicRequest(raw) {
   }
   const target = aliases.get(normalized);
   if (target) return { status: 308, location: target + url.search };
-  if (normalized !== path && (paths.has(normalized) || normalized === '/preview/hero-name-checker' || normalized === '/santa-tracker/preview' || normalized === '/santa-message-workshop'))
+  if (normalized !== path && (paths.has(normalized) || normalized === '/preview/hero-name-checker' || normalized === '/santa-tracker/preview'))
     return { status: 308, location: normalized + url.search };
   if (normalized === '/styt') {
     if (path !== normalized) return { status: 308, location: normalized + url.search };
     return { status: 200, noindex: true };
   }
-  if (normalized === '/santa-message-workshop') return { status: 200, noindex: true };
   if (normalized === '/preview/hero-name-checker') return { status: 200, noindex: true };
   if (normalized === '/santa-tracker/preview') return { status: 200, noindex: true };
   if (normalized === '/christmas-song-lyrics') {

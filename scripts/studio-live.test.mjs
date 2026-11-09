@@ -178,7 +178,7 @@ test('concurrent checkout uses one session and server-owned exact price, origin 
   const results = await Promise.all([1, 2, 3].map(() => startLiveCheckout({ claim, config, stripe, pool })));
   assert.equal(creates, 1); assert.equal(new Set(results.map(r => r.url)).size, 1);
   assert.deepEqual(parameters.line_items, [{ price: config.priceId, quantity: 1 }]);
-  assert.equal(parameters.mode, 'payment'); assert.equal(parameters.success_url, `${config.origin}/santa-message-workshop?checkout=return`);
+  assert.equal(parameters.mode, 'payment'); assert.equal(parameters.success_url, `${config.origin}/bespoke-personalised-message-from-santa?checkout=return`);
   assert.match(key, /^studio-live:[a-f0-9]{64}:0$/); assert.equal(parameters.customer_creation, undefined);
   assert.equal(parameters.allow_promotion_codes, undefined);
   checkout.status = 'complete';
@@ -369,7 +369,8 @@ test('return-email content uses a canonical fragment link without child details 
   assert.equal(payload.from, 'Santa Radio <santa@santaradio.co.uk>');
   assert.deepEqual(Object.keys(payload).sort(), ['from', 'subject', 'text', 'to'],
     'Security emails must remain plain text: no HTML, provider templates or tracking wrappers');
-  assert.match(payload.text, /#studio-return=/); assert.doesNotMatch(payload.text, /\?token=/);
+  assert.match(payload.text, /\/bespoke-personalised-message-from-santa#studio-return=/);
+  assert.doesNotMatch(payload.text, /\?token=/);
   assert.match(payload.text, /does not expire your purchase/); assert.match(payload.text, /not saved/);
   assert.equal(headers['Idempotency-Key'], 'fixture-key');
 });

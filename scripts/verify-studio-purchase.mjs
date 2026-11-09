@@ -64,7 +64,7 @@ try {
   if (await page.locator('#billingCountry').count()) await page.locator('#billingCountry').selectOption('GB');
   if (await page.locator('#billingPostalCode').isVisible()) await page.locator('#billingPostalCode').fill('SW1A 1AA');
   await page.locator('button[type="submit"]').click();
-  await page.waitForURL(`${base}/santa-message-workshop?checkout=return`, { timeout: 60000 });
+  await page.waitForURL(`${base}/bespoke-personalised-message-from-santa?checkout=return`, { timeout: 60000 });
   await page.getByText('Sandbox test payment confirmed', { exact: false }).waitFor({ timeout: 30000 });
   await page.locator('.smw-builder').waitFor();
   const catalogue = await context.request.get(`${base}/api/santa-workshop-catalogue`);

@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { isStudioPath } from '../lib/studioRoute.js';
 
 const RadioDockVisibilityContext = createContext(null);
 
@@ -7,7 +8,7 @@ export function RadioDockVisibilityProvider({ children }) {
   const { pathname } = useLocation();
   const [inline, setInline] = useState(null);
   const path = pathname.replace(/\/+$/, '') || '/';
-  const hidden = path === '/free-santa-message' || path === '/santa-message-workshop'
+  const hidden = path === '/free-santa-message' || isStudioPath(path)
     || (path === '/' && inline?.pathname === pathname && inline.active);
   return <RadioDockVisibilityContext.Provider value={{ hidden: Boolean(hidden), setInline, pathname }}>
     {children}

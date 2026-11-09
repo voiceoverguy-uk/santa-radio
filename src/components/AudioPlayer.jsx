@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { isStudioPath } from '../lib/studioRoute.js';
 import { useRadio } from './RadioProvider.jsx';
 import RadioTracks from './RadioTracks.jsx';
 import LiveLyrics from './LiveLyrics.jsx';
@@ -98,7 +99,7 @@ export default function AudioPlayer() {
   return (
     <aside ref={dockRef} hidden={hidden} inert={hidden ? '' : undefined} aria-hidden={hidden || undefined} onPointerDownCapture={() => { keyboardInteraction.current = false; }} onClick={event => {
       if (minimized && !event.target.closest('button, a, input, select, textarea, [role="button"]')) expandPlayer(event);
-    }} className={`radio-dock ${pathname.replace(/\/+$/, '') === '/santa-message-workshop' ? 'is-studio-player' : ''} ${minimized ? 'is-minimized' : ''} ${status === 'loading' ? 'is-loading' : ''}`} aria-label="Santa Radio player">
+    }} className={`radio-dock ${isStudioPath(pathname) ? 'is-studio-player' : ''} ${minimized ? 'is-minimized' : ''} ${status === 'loading' ? 'is-loading' : ''}`} aria-label="Santa Radio player">
       <button type="button" className="radio-size-toggle" onClick={toggleSize}
         aria-label={minimized ? 'Expand radio player' : 'Minimise radio player'} aria-expanded={!minimized}
         title={minimized ? 'Expand player' : 'Minimise player'}>

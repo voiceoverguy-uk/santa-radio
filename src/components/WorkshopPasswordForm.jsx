@@ -1,9 +1,9 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './WorkshopPasswordForm.css';
+import { STUDIO_PATH as WORKSHOP_PATH } from '../lib/studioRoute.js';
 
 const ACCESS_URL = '/api/santa-workshop-access';
-const WORKSHOP_PATH = '/santa-message-workshop';
 const REQUEST_TIMEOUT = 15000;
 
 export function WorkshopPasswordForm({ onAuthorized, compact = false, active = true, requestControlRef, variant = 'gate' }) {

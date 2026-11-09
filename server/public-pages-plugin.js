@@ -3,6 +3,7 @@ import { publicPageHtml, sitemap, robots } from './public-html.js';
 import { resolvePublicRequest } from '../src/seo/routes.js';
 import { publicRequestUrl } from '../src/seo/requestUrl.js';
 import { thumbnailFile } from './mug-thumbnails.js';
+import { isStudioPath } from '../src/lib/studioRoute.js';
 export default function publicPagesPlugin() {
   return {
     name: 'public-pages-ssr',
@@ -36,12 +37,19 @@ export default function publicPagesPlugin() {
             return res.end(req.method === 'HEAD' ? undefined : body);
           }
           const route = resolvePublicRequest(req.url);
+          const studio = isStudioPath(path);
+          if (studio) {
+            res.setHeader('Cache-Control', 'private, no-store');
+            res.setHeader('CDN-Cache-Control', 'no-store');
+            res.setHeader('Vercel-CDN-Cache-Control', 'no-store');
+            res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+          }
           if (route.location) { res.writeHead(route.status, { Location: route.location }); return res.end(); }
           const { render } = await server.ssrLoadModule('/src/entry-server.jsx');
           const result = render(req.url);
           const template = await server.transformIndexHtml(req.url, await readFile('index.html', 'utf8'));
-          if (result.noindex || result.status !== 200) res.setHeader('X-Robots-Tag', 'noindex, follow');
-          res.writeHead(result.status, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': path === '/santa-message-workshop' ? 'private, no-store' : 'no-cache' });
+          if (!studio && (result.noindex || result.status !== 200)) res.setHeader('X-Robots-Tag', 'noindex, follow');
+          res.writeHead(result.status, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': studio ? 'private, no-store' : 'no-cache' });
           res.end(req.method === 'HEAD' ? undefined : publicPageHtml(template, result));
         } catch (error) { server.ssrFixStacktrace(error); next(error); }
       });

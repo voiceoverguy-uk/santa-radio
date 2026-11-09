@@ -12,7 +12,7 @@ import { assertFaviconHead, assertFaviconResponse, faviconFiles } from './favico
 test('deployment-style document package needs neither TypeScript nor runtime React package resolution', async t => {
   const directory = await mkdtemp(join(tmpdir(), 'santa-vercel-documents-'));
   t.after(() => rm(directory, { recursive: true, force: true }));
-  for (const path of ['api/public-page.js', 'server/public-html.js', 'src/seo', 'src/data', 'src/tracker/lib', 'dist/server', 'package.json']) {
+  for (const path of ['api/public-page.js', 'server/public-html.js', 'src/lib/studioRoute.js', 'src/seo', 'src/data', 'src/tracker/lib', 'dist/server', 'package.json']) {
     await cp(path, join(directory, path), {
       recursive: true,
       filter: source => !/\.(?:ts|tsx|jsx)$/.test(source),

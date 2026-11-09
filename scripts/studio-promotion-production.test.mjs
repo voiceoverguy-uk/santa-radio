@@ -191,7 +191,7 @@ test('production email fragments require an explicit redemption and open live St
     return route.fulfill({ json: { authorized: true } });
   });
   await page.goto(`${origin}/santa-message-workshop#studio-return=${token}`, { waitUntil: 'domcontentloaded' });
-  await expect(page).toHaveURL(`${origin}/santa-message-workshop`);
+  await expect(page).toHaveURL(`${origin}/bespoke-personalised-message-from-santa`);
   assert.equal(redeemed, 0, 'Visiting/scanning a link must not consume it');
   const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await decline.isVisible()) await decline.click();

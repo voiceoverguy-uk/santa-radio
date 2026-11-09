@@ -1,5 +1,6 @@
 import { useEffect, useId, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { STUDIO_PATH } from '../lib/studioRoute.js';
 
 export default function StudioPurchaseButton() {
   return <PurchaseButton sandbox={import.meta.env.DEV} />;
@@ -35,7 +36,7 @@ function PurchaseButton({ sandbox }) {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Checkout could not be started.');
-      if (data.openStudio || data.pending) { navigate('/santa-message-workshop?checkout=return'); return; }
+      if (data.openStudio || data.pending) { navigate(`${STUDIO_PATH}?checkout=return`); return; }
       const url = new URL(data.url);
       if (url.protocol !== 'https:' || url.hostname !== 'checkout.stripe.com') throw new Error('Unexpected checkout address.');
       window.location.assign(url.href);

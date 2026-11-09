@@ -1,5 +1,6 @@
 import { randomBytes, timingSafeEqual } from 'node:crypto';
 import express from 'express';
+import { STUDIO_PATH } from '../src/lib/studioRoute.js';
 import { databasePool } from './name-request-store.js';
 import { liveStudioConfig, liveHeaders, sameLiveOrigin } from './studio-live-config.js';
 import { liveStripeClient } from './studio-live-stripe.js';
@@ -8,7 +9,7 @@ import { cookieOptions, LIVE_ACCESS_COOKIE, tokenPattern } from './studio-live-a
 
 export async function sendStudioReturnEmail({ config, email, token, key, fetcher = fetch }) {
   // Fragment tokens never reach CDN/server access logs or Referer headers.
-  const link = `${config.origin}/santa-message-workshop#studio-return=${token}`;
+  const link = `${config.origin}${STUDIO_PATH}#studio-return=${token}`;
   const response = await fetcher('https://api.resend.com/emails', {
     method: 'POST', redirect: 'error', signal: AbortSignal.timeout(10000),
     headers: { Authorization: `Bearer ${config.emailKey}`, 'Content-Type': 'application/json',

@@ -5,8 +5,9 @@ import { canonicalPaths, legacyMatches, staffEntryPaths } from '../src/seo/route
 import { mugs } from '../src/seo/catalogue.js';
 import { mugThumbnail } from '../src/seo/mugImages.js';
 import { thumbnailFile } from '../server/mug-thumbnails.js';
+import { STUDIO_PATH } from '../src/lib/studioRoute.js';
 const template = await readFile('dist/index.html', 'utf8');
-for (const path of [...canonicalPaths, ...staffEntryPaths, '/preview/hero-name-checker', '/santa-tracker/preview', '/styt', '/santa-message-workshop', '/404']) {
+for (const path of [...canonicalPaths, ...staffEntryPaths, '/preview/hero-name-checker', '/santa-tracker/preview', '/styt', STUDIO_PATH, '/404']) {
   const result = render(path);
   if (result.status !== 200 && path !== '/404') throw new Error(`Cannot pre-render ${path}: ${result.status}`);
   const directory = path === '/' ? 'dist' : `dist${path}`;

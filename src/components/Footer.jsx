@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
+import { isStudioPath } from '../lib/studioRoute.js';
 import { useRadio } from './RadioProvider.jsx';
 import './Footer.css';
 import { openCookieSettings } from '../privacy/cookieConsent.js';
@@ -10,7 +11,7 @@ export default function Footer() {
   const { effects, setEffects } = useRadio();
   const footerRef = useFooterClearance(pathname);
   return (
-    <footer ref={footerRef} className={`footer${pathname.replace(/\/+$/, '') === '/santa-message-workshop' ? ' is-studio-footer' : ''}`}>
+    <footer ref={footerRef} className={`footer${isStudioPath(pathname) ? ' is-studio-footer' : ''}`}>
       <div className="footer-links">
         <Link to="/">News</Link>
         <span>&middot;</span>

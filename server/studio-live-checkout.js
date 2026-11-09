@@ -1,4 +1,5 @@
 import express from 'express';
+import { STUDIO_PATH } from '../src/lib/studioRoute.js';
 import { randomBytes } from 'node:crypto';
 import { databasePool } from './name-request-store.js';
 import { liveStudioConfig, sameLiveOrigin, liveHeaders } from './studio-live-config.js';
@@ -33,7 +34,7 @@ export async function startLiveCheckout({ claim, config, stripe, pool = database
       session = await stripe.checkout.sessions.create({
         mode: 'payment', payment_method_types: ['card'],
         line_items: [{ price: config.priceId, quantity: 1 }],
-        success_url: `${config.origin}/santa-message-workshop?checkout=return`,
+        success_url: `${config.origin}${STUDIO_PATH}?checkout=return`,
         cancel_url: `${config.origin}/?studioCheckout=cancelled#santa-studio-promotion`,
         metadata: { offer: config.offer, access_claim_sha256: hash },
         // No account/signup, discounts, adjustable quantities, tax or subscriptions.

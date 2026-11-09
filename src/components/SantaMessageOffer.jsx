@@ -7,13 +7,14 @@ import SantaMessageAccessForm from './SantaMessageAccessForm.jsx';
 import SantaOfferHolly from './SantaOfferHolly.jsx';
 import './SantaMessageOffer.css';
 import { isTrackerCapturePath } from '../privacy/trackerPrivacy.js';
+import { isStudioPath } from '../lib/studioRoute.js';
 
 export const OFFER_SESSION_KEY = 'santa-message-offer-shown';
 export const OFFER_LAST_SHOWN_KEY = 'santa-message-offer-last-shown';
 const OFFER_CHANNEL_NAME = 'santa-message-offer';
 const DELAY_MS = 16000;
 const COOLDOWN_MS = 48 * 60 * 60 * 1000;
-const excluded = pathname => isTrackerCapturePath(pathname) || /^\/(?:preview\/hero-name-checker|request-names|sign-in|sign-up|privacy-policy|free-santa-message|santa-message-workshop)(?:\/|$)/i.test(pathname);
+const excluded = pathname => isStudioPath(pathname) || isTrackerCapturePath(pathname) || /^\/(?:preview\/hero-name-checker|request-names|sign-in|sign-up|privacy-policy|free-santa-message)(?:\/|$)/i.test(pathname);
 
 function readLastShown() {
   try {

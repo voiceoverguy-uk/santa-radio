@@ -1,5 +1,6 @@
 import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { StudioAccessContext } from '../lib/studioAccessContext.js';
+import { STUDIO_PATH } from '../lib/studioRoute.js';
 import useWorkshopSounds from '../hooks/useWorkshopSounds.js';
 import useStudioRegionalEditorial from '../hooks/useStudioRegionalEditorial.js';
 import PageSeo from '../seo/PageSeo.jsx';
@@ -543,7 +544,7 @@ export default function SantaMessageWorkshop() {
       }
     }}>
       <PageSeo metadata={pageMetadata({
-        path: '/santa-message-workshop',
+        path: STUDIO_PATH,
          title: 'Santa’s Message Maker Studio | Santa Radio',
          description: 'Create your personalised recorded Santa greeting and download your MP3 and gifts.',
         noindex: true,

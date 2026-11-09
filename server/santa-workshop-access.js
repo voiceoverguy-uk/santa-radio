@@ -3,6 +3,7 @@ import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypt
 import { databasePool } from './name-request-store.js';
 import { workshopSettings as settings, workshopConfigured as configured, workshopCodeDeadline, workshopCodeOpen, limitedWorkshopCode } from './santa-workshop-settings.js';
 import { publicRequestUrl } from '../src/seo/requestUrl.js';
+import { isStudioPath } from '../src/lib/studioRoute.js';
 
 export const WORKSHOP_COOKIE = 'santa-workshop-preview';
 export const WORKSHOP_SESSION_MS = 12 * 3600000;
@@ -76,8 +77,10 @@ export async function consumeWorkshopAttempt(req, config, now = Date.now()) {
 
 export function workshopDocumentHeaders(req, res, next) {
   const pathname = publicRequestUrl(req.url, 'http://server').pathname;
-  if (/^\/santa-message-workshop(?:\/|$)/.test(pathname)) {
+  if (isStudioPath(pathname)) {
     res.setHeader('Cache-Control', 'private, no-store');
+    res.setHeader('CDN-Cache-Control', 'no-store');
+    res.setHeader('Vercel-CDN-Cache-Control', 'no-store');
     res.setHeader('X-Robots-Tag', 'noindex, nofollow');
   }
   next();

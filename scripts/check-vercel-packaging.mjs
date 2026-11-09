@@ -123,14 +123,31 @@ const documentSmoke = `
   import assert from 'node:assert/strict';
   import handler from './api/public-page.js';
   for (const [url, status] of [['/', 200], ['/apps', 200], ['/santa-tracker', 200],
-    ['/sign-in', 200], ['/free-santa-message', 200], ['/missing-page', 404]]) {
+    ['/sign-in', 200], ['/bespoke-personalised-message-from-santa', 200],
+    ['/free-santa-message', 200], ['/missing-page', 404]]) {
     const res = { headers: {}, setHeader(k, v) { this.headers[k] = v; },
       status(code) { this.code = code; return this; }, end(body) { this.body = body; } };
     await handler({ method: 'GET', url }, res);
     assert.equal(res.code, status, url);
     assert.match(res.body, /<h1/);
     if (url === '/sign-in') assert.equal(res.headers['Cache-Control'], 'private, no-store');
+    if (url === '/bespoke-personalised-message-from-santa') {
+      assert.equal(res.headers['Cache-Control'], 'private, no-store');
+      assert.equal(res.headers['Vercel-CDN-Cache-Control'], 'no-store');
+      assert.equal(res.headers['X-Robots-Tag'], 'noindex, nofollow');
+      assert.match(res.body, /workshop-gate/);
+      assert.doesNotMatch(res.body, /smw-builder/);
+    }
     if (url === '/santa-tracker') assert.equal(res.headers['X-Santa-Page-Mode'], 'dynamic-tracker');
+  }
+  for (const path of ['/santa-message-workshop', '/bespoke-pesonalised-message-from-santa',
+    '/bespoke-personalised-message-from-santa/']) {
+    const res = { headers: {}, setHeader(k, v) { this.headers[k] = v; },
+      status(code) { this.code = code; return this; }, end() {} };
+    await handler({ method: 'GET', url: '/api/public-page?__sr_route=' + path + '&checkout=return&synthetic=a%2Bb' }, res);
+    assert.equal(res.code, 308);
+    assert.equal(res.headers.Location, '/bespoke-personalised-message-from-santa?checkout=return&synthetic=a%2Bb');
+    assert.equal(res.headers['Cache-Control'], 'private, no-store');
   }
 `;
 

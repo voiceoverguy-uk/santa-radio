@@ -12,4 +12,7 @@ execution context, even though the tested component has not changed.
 
 **How to apply:** Finish report generation before browser checks, or run the
 checks against an isolated server with generated-output watching excluded.
+This also applies to clean-install Vercel packaging checks: their copied-site
+builds write thousands of HTML documents beneath the workspace and can reload
+the normal Preview while it is being tested.
 Distinguish a navigation interruption from a failed layout assertion.

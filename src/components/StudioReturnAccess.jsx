@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { takeStudioReturnFragment } from '../lib/studioReturnFragment.js';
+import { STUDIO_PATH } from '../lib/studioRoute.js';
 
 // Tokens stay in memory. Email-link scanners cannot redeem on a GET: the
 // visitor explicitly chooses Open my Studio before the protected POST.
@@ -40,7 +41,7 @@ export default function StudioReturnAccess() {
       if (data.authorized === true) {
         setToken('');
         window.dispatchEvent(new CustomEvent('santa-workshop-access-change'));
-        navigate('/santa-message-workshop', { replace: true });
+        navigate(STUDIO_PATH, { replace: true });
       } else if (data.requested === true) {
         setMessage(data.message);
         setEmail('');
