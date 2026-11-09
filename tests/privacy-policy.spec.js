@@ -213,13 +213,15 @@ test('policy describes the Android release, embedded Tracker and unconfirmed pro
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://www.santaradio.co.uk/privacy-policy');
 });
 
-test('Shops coverage follows Christmas Radio UK and preserves existing policy boundaries', async ({ page }) => {
+test('Shops coverage includes Android and preserves existing policy boundaries', async ({ page }) => {
   await page.goto('/privacy-policy');
   const article = page.locator('article');
-  const shops = page.getByRole('region', { name: 'Christmas Music for Shops — iPhone and iPad app, version 1.0', exact: true });
+  const shops = page.getByRole('region', { name: 'Christmas Music for Shops — Android, iPhone and iPad apps', exact: true });
   await expect(shops).toBeVisible();
   expect(await article.locator(':scope > section').evaluateAll(sections => sections.map(section => section.getAttribute('aria-labelledby'))))
     .toEqual(['cookie-overview', 'christmas-radio-privacy', 'shops-app-privacy', 'android-radio-privacy', 'youtube-privacy']);
+  await expect(article.locator(':scope > p').filter({ hasText: 'This notice covers' }))
+    .toContainText('Christmas Music for Shops for Android (package ID com.christmasmusicforshops.app)');
   await expect(article.locator(':scope > p').filter({ hasText: 'This notice covers' }))
     .toContainText('Christmas Music for Shops for iPhone and iPad, version 1.0');
   // Keep the confirmed operator statement unchanged until the Shops operator is confirmed.
@@ -227,6 +229,19 @@ test('Shops coverage follows Christmas Radio UK and preserves existing policy bo
     .not.toContainText('Christmas Music for Shops');
   for (const text of [
     'com.christmasmusicforshops.app',
+    'available free on Google Play',
+    'intended for shop owners',
+    'live Christmas radio without requiring an account',
+    'Display preferences are saved locally',
+    'caches the artwork catalogue and images for reuse',
+    'backup or device-transfer features may retain eligible local app data',
+    'connects over HTTPS to Citrus3 at global.citrus3.com',
+    'Santa Radio at www.santaradio.co.uk for current song information and artwork',
+    'requests may disclose your IP address and ordinary request details',
+    'service-specific logging arrangements and retention periods have not been confirmed',
+    'do not state an unverified retention period or promise deletion',
+    'Links in the app open separate services',
+    'has no shop-logo submission, payment or activation flow',
     'current artist, song title and artwork',
     'does not require an account',
     'artwork, track details, the Christmas countdown, snow, lights and keep-awake',
