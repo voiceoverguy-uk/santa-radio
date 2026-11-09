@@ -8,6 +8,7 @@ const privacySectionIds = [
   'youtube-privacy',
   'christmas-radio-privacy',
   'shops-app-privacy',
+  'naughty-or-nice-checker-privacy',
   'android-radio-privacy',
   'privacy-choices',
 ];
@@ -48,13 +49,14 @@ export default function PrivacyPolicy() {
       <h1>Privacy Policy</h1>
       <p className="privacy-date">Updated <time dateTime="2026-10-28">28 October 2026</time></p>
       <p>The Santa Radio website, Santa Radio for Android and Christmas Radio UK app for iPhone and iPad are operated by VoiceoverGuy Ltd. For privacy questions, email <a href="mailto:santa@santaradio.co.uk">santa@santaradio.co.uk</a>.</p>
-      <p>This notice covers the current Santa Radio website, Christmas Radio UK for iPhone and iPad, version 35.0; Christmas Music for Shops for Android (package ID com.christmasmusicforshops.app) and Christmas Music for Shops for iPhone and iPad, version 1.0; and Santa Radio for Android, version 35.0. The app-specific sections below explain how each app handles information. Website features, including forms, Santa audio messages, embedded videos and optional analytics or marketing cookies, are distinct from native app features, but website content can also be displayed inside an app. The website and third-party disclosures therefore also matter for embedded web content. External services may have their own privacy notices.</p>
+      <p>This notice covers the current Santa Radio website, Christmas Radio UK for iPhone and iPad, version 35.0; Christmas Music for Shops for Android (package ID com.christmasmusicforshops.app) and Christmas Music for Shops for iPhone and iPad, version 1.0; Santa Radio for Android, version 35.0; and the upcoming Naughty or Nice List Checker for iOS (planned bundle identifier com.santaradio.nicelistchecker), which has not yet been built. The current app-specific sections below explain how each app handles information. The Checker section is interim and will be updated before release. Website features, including forms, Santa audio messages, embedded videos and optional analytics or marketing cookies, are distinct from native app features, but website content can also be displayed inside an app. The website and third-party disclosures therefore also matter for embedded web content. External services may have their own privacy notices.</p>
       <p>You can browse and listen without an account. We do not sell personal data.</p>
       <nav className="privacy-section-nav" aria-label="Privacy policy sections">
         <a href="#cookie-overview">Website &amp; cookies</a>
         <a href="#youtube-privacy">YouTube</a>
         <a href="#christmas-radio-privacy">iPhone/iPad app</a>
         <a href="#shops-app-privacy">Christmas Music for Shops</a>
+        <a href="#naughty-or-nice-checker-privacy">Naughty or Nice List Checker</a>
         <a href="#android-radio-privacy">Android app</a>
         <a href="#privacy-choices">Choices &amp; rights</a>
       </nav>
@@ -117,6 +119,11 @@ export default function PrivacyPolicy() {
 
         <h3>Privacy questions and your rights</h3>
         <p>For privacy questions or to exercise applicable data-protection rights, email <a href="mailto:santa@santaradio.co.uk">santa@santaradio.co.uk</a>. See <a href="#privacy-choices">Your choices and rights</a> for the existing rights and complaints information, including how to complain to the UK Information Commissioner’s Office.</p>
+      </section>
+
+      <section aria-labelledby="naughty-or-nice-checker-privacy">
+        <h2 id="naughty-or-nice-checker-privacy" tabIndex="-1">Naughty or Nice List Checker</h2>
+        <p>Naughty or Nice List Checker is an upcoming iOS app and has not yet been built. Its planned bundle identifier is <code>com.santaradio.nicelistchecker</code>. We’ll update this section before release to explain how the app handles information. For privacy questions about this app, email <a href="mailto:santa@santaradio.co.uk">santa@santaradio.co.uk</a>.</p>
       </section>
 
       <section aria-labelledby="android-radio-privacy">

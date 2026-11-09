@@ -5,6 +5,7 @@ const privacySections = [
   ['YouTube', 'youtube-privacy'],
   ['iPhone/iPad app', 'christmas-radio-privacy'],
   ['Christmas Music for Shops', 'shops-app-privacy'],
+  ['Naughty or Nice List Checker', 'naughty-or-nice-checker-privacy'],
   ['Android app', 'android-radio-privacy'],
   ['Choices & rights', 'privacy-choices'],
 ];
@@ -219,7 +220,7 @@ test('Shops coverage includes Android and preserves existing policy boundaries',
   const shops = page.getByRole('region', { name: 'Christmas Music for Shops — Android, iPhone and iPad apps', exact: true });
   await expect(shops).toBeVisible();
   expect(await article.locator(':scope > section').evaluateAll(sections => sections.map(section => section.getAttribute('aria-labelledby'))))
-    .toEqual(['cookie-overview', 'christmas-radio-privacy', 'shops-app-privacy', 'android-radio-privacy', 'youtube-privacy']);
+    .toEqual(['cookie-overview', 'christmas-radio-privacy', 'shops-app-privacy', 'naughty-or-nice-checker-privacy', 'android-radio-privacy', 'youtube-privacy']);
   await expect(article.locator(':scope > p').filter({ hasText: 'This notice covers' }))
     .toContainText('Christmas Music for Shops for Android (package ID com.christmasmusicforshops.app)');
   await expect(article.locator(':scope > p').filter({ hasText: 'This notice covers' }))
@@ -286,6 +287,23 @@ test('Shops coverage includes Android and preserves existing policy boundaries',
     'Free Santa audio messages', 'Optional Santa Radio news', 'Using the website',
     'Links and external services', 'Editorial content and retention', 'Your choices and rights',
   ]) await expect(article.getByRole('heading', { name: heading, exact: true })).toHaveCount(1);
+});
+
+test('upcoming Naughty or Nice checker has only interim iOS wording', async ({ page }) => {
+  await page.goto('/privacy-policy');
+  const article = page.locator('article');
+  const checker = page.getByRole('region', { name: 'Naughty or Nice List Checker', exact: true });
+  await expect(checker).toBeVisible();
+  await expect(checker.locator('p')).toHaveCount(1);
+  await expect(checker.locator('p')).toHaveText(
+    'Naughty or Nice List Checker is an upcoming iOS app and has not yet been built. Its planned bundle identifier is com.santaradio.nicelistchecker. We’ll update this section before release to explain how the app handles information. For privacy questions about this app, email santa@santaradio.co.uk.'
+  );
+  await expect(article.locator(':scope > p').filter({ hasText: 'This notice covers' }))
+    .toContainText('upcoming Naughty or Nice List Checker for iOS (planned bundle identifier com.santaradio.nicelistchecker), which has not yet been built');
+  await expect(checker.getByRole('link', { name: 'santa@santaradio.co.uk', exact: true }))
+    .toHaveAttribute('href', 'mailto:santa@santaradio.co.uk');
+  expect(await article.locator(':scope > section').evaluateAll(sections => sections.map(section => section.getAttribute('aria-labelledby'))))
+    .toEqual(['cookie-overview', 'christmas-radio-privacy', 'shops-app-privacy', 'naughty-or-nice-checker-privacy', 'android-radio-privacy', 'youtube-privacy']);
 });
 
 test('footer opens a readable privacy policy with separate message access and news consent', async ({ page }) => {
