@@ -3,10 +3,79 @@ import { readFile, stat } from 'node:fs/promises';
 
 const canonical = 'https://www.santaradio.co.uk/santa-tracker';
 
+async function expectHomepageTrackerLogo(banner) {
+  const logo = banner.getByRole('img', { name: 'Santa Tracker — Santa Radio', exact: true });
+  await logo.scrollIntoViewIfNeeded();
+  await expect(logo).toBeVisible();
+  await expect.poll(() => logo.evaluate(node => node.complete && node.naturalWidth > 0)).toBe(true);
+  const artwork = await logo.evaluate(node => ({
+    width: node.naturalWidth, height: node.naturalHeight,
+    background: getComputedStyle(node).backgroundColor,
+    fit: getComputedStyle(node).objectFit,
+  }));
+  expect(artwork).toEqual({ width: 980, height: 560, background: 'rgba(0, 0, 0, 0)', fit: 'contain' });
+  await expect(logo).toHaveAttribute('width', '980');
+  await expect(logo).toHaveAttribute('height', '560');
+  const box = await logo.boundingBox();
+  const copyBox = await banner.locator('.tracker-banner-copy > p').boundingBox();
+  expect(Math.abs(box.width / box.height - 980 / 560)).toBeLessThan(0.01);
+  expect(box.y + box.height).toBeLessThanOrEqual(copyBox.y);
+  return box;
+}
+
 test.beforeEach(async ({ page }) => {
   await page.route('**/api/radio-metadata*', route => route.fulfill({
     json: { available: false, current: null, upcoming: [] },
   }));
+});
+
+test('homepage tracker logo fits beside the map on desktop and above it on smaller screens', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-11-09T12:00:00Z'));
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  for (const width of [1440, 1024, 768, 390, 320]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto('/');
+    const banner = page.locator('.tracker-banner');
+    const logoBox = await expectHomepageTrackerLogo(banner);
+    await expect(banner.locator('.tracker-banner-eyebrow')).toHaveText('THE ENTIRE JOURNEY');
+    await expect(banner.getByRole('heading', { name: 'THE SANTA TRACKER', exact: true })).toBeVisible();
+    await expect(banner.locator('.tracker-banner-tagline')).toHaveText('Follow Santa not just at Christmas, but the whole year!');
+    const mapBox = await banner.locator('.tracker-banner-map').boundingBox();
+    if (width >= 1024) {
+      expect(logoBox.x + logoBox.width).toBeLessThan(mapBox.x);
+      expect(logoBox.width).toBeGreaterThan(300);
+    } else {
+      const copyBox = await banner.locator('.tracker-banner-copy').boundingBox();
+      expect(mapBox.y).toBeGreaterThanOrEqual(copyBox.y + copyBox.height);
+    }
+    expect(logoBox.x).toBeGreaterThanOrEqual(0);
+    expect(logoBox.x + logoBox.width).toBeLessThanOrEqual(width);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+    if (width === 1440 || width === 390) {
+      const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+      if (await decline.isVisible()) await decline.click();
+      await banner.screenshot({
+        path: `generated-artifacts/tracker-logo/homepage-tracker-logo-${width}.png`,
+        style: '.radio-dock { visibility: hidden; }',
+      });
+    }
+  }
+});
+
+test('homepage tracker logo is absent from the standalone tracker and map capture', async ({ page }) => {
+  const logoRequests = [];
+  page.on('request', request => {
+    if (request.resourceType() === 'image' && request.url().includes('santa-tracker-logo')) {
+      logoRequests.push(request.url());
+    }
+  });
+  for (const route of ['/santa-tracker', '/styt']) {
+    await page.goto(route);
+    await expect(page.locator('.tj-camera')).toBeVisible();
+    await expect(page.getByRole('img', { name: 'Santa Tracker — Santa Radio', exact: true })).toHaveCount(0);
+    await expect(page.locator('.tracker-banner-logo')).toHaveCount(0);
+    expect(logoRequests).toEqual([]);
+  }
 });
 
 test('tracker ends with Christmas facts rather than the voiceover promotion', async ({ page }) => {
@@ -606,8 +675,29 @@ test('homepage banner leaves holidays at the same November boundary without relo
   await expect(banner).toContainText("Santa's holiday location");
   await page.clock.runFor(1000);
   await expect(banner).toContainText('Prepping the route in');
+  await expect(banner.locator('.tracker-banner-copy > p')).toContainText('scouting the Christmas Eve route');
   await expect(banner).toContainText("Santa's route research location:");
+  await expect(banner).not.toContainText("Santa's on holiday!");
   await expect(banner).not.toContainText('well-earned break');
+});
+
+test('homepage copy returns to North Pole preparations on Christmas Eve then switches to the journey', async ({ page }) => {
+  await pauseClock(page, '2026-12-23T23:59:59Z');
+  await page.addInitScript(() => { Math.random = () => 0.5; });
+  await page.goto('/');
+  const banner = page.locator('.tracker-banner');
+  const copy = banner.locator('.tracker-banner-copy > p');
+  await expect(copy).toContainText('scouting the Christmas Eve route');
+  await page.clock.runFor(1000);
+  await expect(copy).toHaveText("Santa's back at the North Pole, checking the sleigh and gifts before his Christmas Eve departure.");
+  await expect(banner.locator('.tracker-status')).toContainText('Final Preparations Underway');
+  await expect(banner.locator('[data-santa-location]')).toHaveAttribute('data-santa-lat', '90');
+  await expect(banner.locator('[data-santa-location]')).toHaveAttribute('data-santa-lng', '0');
+  await expect(banner.locator('.tracker-banner-logo')).toBeVisible();
+  await page.clock.fastForward(10 * 60 * 60 * 1000);
+  await expect(copy).toContainText("Follow Santa's estimated 290-stop Christmas Eve journey");
+  await expect(banner.locator('.tracker-action')).toContainText('Track Santa Now');
+  await expect(banner.locator('.tracker-banner-visual .tracker-card')).toHaveCount(4);
 });
 
 test('homepage mini map links to the tracker with an accessible name and keyboard focus', async ({ page }) => {
@@ -711,6 +801,7 @@ for (const [date, complete] of [
       await page.goto('/');
       const banner = page.locator('.tracker-banner');
       await expect(banner.locator('.tracker-status')).toContainText(complete ? 'Journey Complete' : 'Delivering in');
+      await expectHomepageTrackerLogo(banner);
       await expect(banner.locator('.tracker-map, .tracker-countdown-value')).toHaveCount(0);
       const cards = banner.locator('.tracker-banner-visual .tracker-card');
       await expect(cards).toHaveCount(4);

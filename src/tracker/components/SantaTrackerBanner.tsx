@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import HomepageSectionHeading from "../../components/HomepageSectionHeading.jsx";
+import trackerLogo from "../../assets/home/santa-tracker-logo.webp";
 import { getDashboardData, isHolidaySeason, isRouteResearchSeason, isDecemberVisitSeason, getRandomDecemberTrackerVisit, getRouteResearchCopy, isChristmasInJuly, getRandomHoliday, type DecemberTrackerVisit, type HolidayDestination } from "@/lib/santaRoute";
 import { worldMapPaths } from "@/data/worldMapPaths";
 import { santaStops } from "@/data/santaRouteStops";
@@ -130,6 +131,15 @@ export default function SantaTrackerBanner() {
         <div className={`${!isLive && !isComplete ? "tracker-banner-map-layout " : ""}tracker-banner-content flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8`}>
 
           <div className="tracker-banner-copy flex-1 text-center lg:text-left lg:max-w-lg">
+            <img
+              className="tracker-banner-logo"
+              src={trackerLogo}
+              alt="Santa Tracker — Santa Radio"
+              width={980}
+              height={560}
+              loading="lazy"
+              decoding="async"
+            />
             {(isLive || isComplete) && <div className="mb-4">{statusBadge}</div>}
 
             <p className="mt-3 text-gray-300 text-sm sm:text-base leading-relaxed max-w-lg mx-auto lg:mx-0">
@@ -140,11 +150,13 @@ export default function SantaTrackerBanner() {
                 : northPoleVisit
                 ? data.statusSubtext
                 : researching
-                ? holiday ? getRouteResearchCopy(holiday) : data.statusSubtext
+                ? holiday ? `Santa’s on a quick research trip to ${holiday.name}, scouting the Christmas Eve route before returning to the North Pole.` : data.statusSubtext
+                : data.mode === "PREPARING"
+                ? "Santa's back at the North Pole, checking the sleigh and gifts before his Christmas Eve departure."
                 : onHoliday && inJuly && holiday
                 ? `It's Christmas in July! Santa's celebrating mid-year festivities while ${holiday.activity.charAt(0).toLowerCase()}${holiday.activity.slice(1)}. Only ${Math.ceil((new Date(now.getFullYear(), 11, 25).getTime() - now.getTime()) / (1000 * 60 * 60 * 24))} days until the real thing!`
                 : onHoliday && holiday
-                ? `Santa's taking a well-earned break! He's currently ${holiday.activity.charAt(0).toLowerCase()}${holiday.activity.slice(1)}. Route-research trips begin on 10 November, with visits back to the North Pole between trips.`
+                ? `Santa's on holiday! He's currently ${holiday.activity.charAt(0).toLowerCase()}${holiday.activity.slice(1)}. Route-research trips begin on 10 November.`
                 : "Follow Santa's Christmas Eve journey in real time. Live route updates, fun facts, a countdown, and the full itinerary."}
             </p>
 

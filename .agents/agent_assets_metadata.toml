@@ -1330,3 +1330,31 @@ mtime_ms = 1794238050998
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/0e681847-8b65-4208-8096-2595541f09c0/c49cdad1-68df-468d-a243-f203dac1a59c"
 storage_version_token = "1794238088649986"
 content_type = "application/octet-stream"
+
+[[outputs]]
+id = "zpJ1JKO0kBZPG2mV2V6TW"
+uri = "file://generated-artifacts/tracker-logo/homepage-tracker-logo-1440.png"
+type = "image"
+title = "Homepage tracker — desktop"
+description = "Supplied logo above the seasonal copy, beside the existing mini-map."
+logical_id = "c129f0eb-e5d9-4b24-82a2-d9584f09de5d"
+content_hash = "sha256:a738301764ec6a71da512a1856523124bfb2e5d345fed961abb47fedda196797"
+size = 611727
+mtime_ms = 1794244716472
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/c129f0eb-e5d9-4b24-82a2-d9584f09de5d/5b44269d-e722-4625-85fe-a80d74cee2df"
+storage_version_token = "1794244750835258"
+content_type = "image/png"
+
+[[outputs]]
+id = "S9ZSClhpmSdjhqofqfZz3"
+uri = "file://generated-artifacts/tracker-logo/homepage-tracker-logo-390.png"
+type = "image"
+title = "Homepage tracker — phone"
+description = "Full logo above the copy, button and map in the stacked phone layout."
+logical_id = "f9cc2e67-d9d3-4ab9-a418-0c8b4195a888"
+content_hash = "sha256:fe1797cf1213db120deb457d565ebffa5b8fad164f3489052d974924b5c52559"
+size = 310853
+mtime_ms = 1794244726099
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/f9cc2e67-d9d3-4ab9-a418-0c8b4195a888/867cdfa3-fd07-4981-9068-0b6ce1762b1b"
+storage_version_token = "1794244751717680"
+content_type = "image/png"
