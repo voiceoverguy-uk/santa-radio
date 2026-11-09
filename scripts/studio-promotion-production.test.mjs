@@ -37,8 +37,10 @@ function promotionMarkup(html, description) {
   assert.match(promotion, /One-off payment · Two message creations/);
   assert.match(promotion, /Each creation includes a personalised MP3 and three gifts for one child:/);
   assert.doesNotMatch(promotion, /santa-studio-promotion__footer/);
-  assert.ok(promotion.indexOf('santa-studio-promotion__offer"') < promotion.indexOf('<form'),
-    'Offer appears before voucher controls');
+  assert.ok(promotion.indexOf('santa-studio-audio-example"') < promotion.indexOf('<form'),
+    'Paid example appears before voucher controls');
+  assert.ok(promotion.indexOf('santa-studio-promotion__offer"') > promotion.indexOf('santa-studio-promotion__gifts"'),
+    'Offer follows the gifts');
   assert.doesNotMatch(promotion, stalePromotionCopy, `${description} must not contain stale visible or accessible promotion copy`);
   assert.match(promotion, /<label\b[^>]*>Voucher code<\/label>/, `${description} must retain voucher access`);
   assert.match(promotion, /Create your bespoke message/, `${description} must retain the voucher submit control`);

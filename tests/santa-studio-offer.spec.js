@@ -34,15 +34,19 @@ async function expectIntegratedOffer(promotion) {
     const offer = root.querySelector('.santa-studio-promotion__offer');
     const intro = root.querySelector('.santa-studio-promotion__intro');
     const controls = root.querySelector('.workshop-password-form');
-    const details = root.querySelector('.santa-studio-promotion__details');
+    const audio = root.querySelector('.santa-studio-audio-example');
+    const gifts = root.querySelector('.santa-studio-promotion__gifts');
     const amount = root.querySelector('.santa-studio-promotion__offer-price');
     const label = root.querySelector('.santa-studio-promotion__offer-title');
     return {
-      inDetails: details.contains(offer),
-      beforeControls: Boolean(offer.compareDocumentPosition(controls) & Node.DOCUMENT_POSITION_FOLLOWING),
+      inCard: offer.parentElement === root,
+      audioBeforeControls: Boolean(audio.compareDocumentPosition(controls) & Node.DOCUMENT_POSITION_FOLLOWING),
+      audio: audio.getBoundingClientRect().toJSON(),
       intro: intro.getBoundingClientRect().toJSON(),
       offer: offer.getBoundingClientRect().toJSON(),
       controls: controls.getBoundingClientRect().toJSON(),
+      gifts: gifts.getBoundingClientRect().toJSON(),
+      desktop: matchMedia('(min-width: 768px)').matches,
       amountSize: parseFloat(getComputedStyle(amount).fontSize),
       labelSize: parseFloat(getComputedStyle(label).fontSize),
       textFits: [...offer.querySelectorAll('p, span')].every(span => {
@@ -54,10 +58,17 @@ async function expectIntegratedOffer(promotion) {
       }),
     };
   });
-  expect(layout.inDetails).toBe(true);
-  expect(layout.beforeControls).toBe(true);
-  expect(layout.offer.top).toBeGreaterThanOrEqual(layout.intro.bottom - 1);
-  expect(layout.offer.bottom).toBeLessThanOrEqual(layout.controls.top + 1);
+  expect(layout.inCard).toBe(true);
+  expect(layout.audioBeforeControls).toBe(true);
+  expect(layout.audio.top).toBeGreaterThanOrEqual(layout.intro.bottom - 1);
+  expect(layout.audio.bottom).toBeLessThanOrEqual(layout.controls.top + 1);
+  expect(layout.offer.top).toBeGreaterThanOrEqual(layout.gifts.bottom - 1);
+  if (layout.desktop) {
+    expect(layout.offer.left).toBeGreaterThanOrEqual(layout.controls.right);
+    expect(Math.abs(layout.offer.right - layout.gifts.right)).toBeLessThanOrEqual(1);
+  } else {
+    expect(layout.offer.top).toBeGreaterThanOrEqual(layout.controls.bottom);
+  }
   expect(layout.amountSize).toBeGreaterThan(layout.labelSize * 1.3);
   expect(layout.textFits).toBe(true);
 }

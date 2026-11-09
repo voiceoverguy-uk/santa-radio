@@ -16,12 +16,14 @@ from size, spacing and colour rather than bold weight.
 Do not extend it to certificate/letter artwork, document typography, preview
 watermarks, generated gift files or unrelated sections.
 
-The owner rejected an isolated bottom-right price sticker. The offer must explain
-the two-message quantity together with the total price, integrated above access
-controls, rather than returning to a decorative price badge or footer placement.
+Keep the two-message quantity together with the total price. The offer belongs
+at the bottom right beneath the gifts on desktop, and the paid-message audio
+example belongs above the voucher form.
 
-**Why:** The owner's later screenshots explicitly rejected the earlier footer
-placement, even though its old layout tests passed.
+**Why:** The owner's latest annotated screenshot explicitly requests swapping
+the paid example and voucher positions and moving “2 bespoke messages” to the
+bottom right, superseding the earlier above-controls placement.
 
 **How to apply:** Judge future offer edits in the whole card alongside its gifts
 and actions, not only against a close-up price screenshot or old geometry tests.
+Preserve the mobile gift-toggle/price row and existing payment and voucher behaviour.

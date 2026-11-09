@@ -62,18 +62,12 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
             </ul>
           </div>
         </div>
-        <div className="santa-studio-promotion__offer" role="group"
-          aria-labelledby={`${offerTitleId} ${offerAmountId}`} aria-describedby={offerTermsId}>
-          <p id={offerTitleId} className="santa-studio-promotion__offer-title">2 bespoke messages from Santa</p>
-          <p id={offerAmountId} className="santa-studio-promotion__offer-price">£6.50</p>
-          <p id={offerTermsId} className="santa-studio-promotion__offer-terms">One-off payment · Two message creations</p>
-        </div>
+        <SantaStudioAudioExample onActiveExampleNameChange={setPaidExampleName} />
         <WorkshopPasswordForm
           variant="promotion"
           onAuthorized={onAuthorized || (() => navigate(STUDIO_PATH))}
         />
         <StudioPurchaseButton />
-        <SantaStudioAudioExample onActiveExampleNameChange={setPaidExampleName} />
       </div>
       <div className="santa-studio-promotion__gifts" data-expanded={giftsExpanded}>
         <div className="santa-studio-promotion__gift-controls">
@@ -92,6 +86,12 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
           <StudioGiftPreview example={example} variant="promotion"
             onPreviewOpen={() => setGiftsExpanded(true)} />
         </div>
+      </div>
+      <div className="santa-studio-promotion__offer" role="group"
+        aria-labelledby={`${offerTitleId} ${offerAmountId}`} aria-describedby={offerTermsId}>
+        <p id={offerTitleId} className="santa-studio-promotion__offer-title">2 bespoke messages from Santa</p>
+        <p id={offerAmountId} className="santa-studio-promotion__offer-price">£6.50</p>
+        <p id={offerTermsId} className="santa-studio-promotion__offer-terms">One-off payment · Two message creations</p>
       </div>
     </section>
   );

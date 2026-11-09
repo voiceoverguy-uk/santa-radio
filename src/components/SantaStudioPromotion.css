@@ -12,7 +12,7 @@
   container-type: inline-size;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-areas: "header" "details" "gifts";
+  grid-template-areas: "header" "details" "gifts" "offer";
   gap: 14px;
   overflow: hidden;
   padding: clamp(19px, 2.4vw, 26px);
@@ -255,14 +255,15 @@
 }
 
 .santa-studio-promotion__offer {
+  grid-area: offer;
+  align-self: end;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   grid-template-areas: "title price" "terms price";
   align-items: center;
   gap: 2px 18px;
   min-width: 0;
-  max-width: 54ch;
-  margin: 4px 0 16px;
+  margin: 0;
   padding: 14px 0 15px;
   border-block: 1px solid #a27c3266;
 }
@@ -323,7 +324,7 @@
 
 .santa-studio-promotion .workshop-password-form--promotion {
   gap: 9px;
-  margin-top: 0;
+  margin-top: 16px;
 }
 
 .santa-studio-promotion__details .workshop-password-form--promotion,
@@ -459,7 +460,7 @@
 @media (min-width: 768px) {
   .santa-studio-promotion {
     grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
-    grid-template-areas: "header header" "details gifts";
+    grid-template-areas: "header header" "details gifts" "details offer";
     column-gap: clamp(24px, 4vw, 48px);
     row-gap: 14px;
   }
