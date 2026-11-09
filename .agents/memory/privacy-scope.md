@@ -83,3 +83,19 @@ Media permission is not a promise that embedded providers are tracking-free when
 **Why:** A real browser check showed YouTube contacting DoubleClick and setting its own cookies after media-only permission, with this site's Google Analytics and Meta still disabled. Third-party cookies remained after unloading the iframe because the site cannot delete another domain's cookies.
 
 **How to apply:** Clearly disclose embedded providers' own analytics and advertising in the media choice. Do not infer media permission from older tracker choices or promise that withdrawal erases third-party storage or already-sent data.
+
+The Santa Tracker by Santa Radio native iOS app has its own privacy scope:
+bundled tracker, on-device countdown/position/route estimates, no account or GPS
+needed, no analytics/ads/tracking SDK in the reviewed native tracker, no tracker
+activity sent to Santa Radio, and optional preview settings stored locally.
+User-activated website links open in the device browser under separate website
+practices.
+
+**Why:** The owner supplied these facts from a review of current native iOS
+source when requesting a dedicated policy. They are not an audit of the signed
+release or evidence about website processing.
+
+**How to apply:** Keep this native notice separate from the website policy and
+other apps. Distinguish local storage from collection; require owner confirmation
+before asserting final-build services, backup/deletion rules, legal identity or
+App Store compliance.

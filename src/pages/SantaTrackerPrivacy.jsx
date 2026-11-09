@@ -1,0 +1,32 @@
+import { Link } from 'react-router-dom';
+import './PrivacyPolicy.css';
+
+export default function SantaTrackerPrivacy() {
+  return <main className="privacy-page">
+    <article className="privacy-content" aria-labelledby="tracker-privacy-heading">
+      <p className="eyebrow">Santa Radio · Native iOS app</p>
+      <h1 id="tracker-privacy-heading">The Santa Tracker privacy policy</h1>
+      <p>This policy covers <strong>The Santa Tracker by Santa Radio</strong> for iOS. It describes the native app’s tracker, not the Santa Radio website, the web-based tracker or other Santa Radio apps.</p>
+
+      <h2>Tracking Santa, not you</h2>
+      <p>The tracker is bundled inside the app. It calculates the countdown, sleigh position and route estimates on your device. These are make-believe journey estimates, not GPS tracking.</p>
+      <p>You do not need an account or GPS to use the tracker. The native tracker does not send your tracker activity to Santa Radio.</p>
+
+      <h2>Analytics, advertising and tracking</h2>
+      <p>The current native tracker code has no analytics, advertising or tracking SDK. The tracker does not send Santa Radio reports about how you use it.</p>
+
+      <h2>Settings stored on your device</h2>
+      <p>The app can save preview settings locally on your device. This is device storage, not collection of those settings by Santa Radio. The native tracker does not transmit these settings to Santa Radio.</p>
+      <p>There is no Santa Radio account or server-side tracker activity profile to delete. If you need help with local settings, please use the contact link below.</p>
+
+      <h2>Links to the Santa Radio website</h2>
+      <p>If you choose a Santa Radio website link in the app, it opens in your device’s browser. Visiting the website is separate from using the bundled native tracker.</p>
+      <p>The website has its own practices and privacy choices, explained in the <Link to="/privacy-policy">Santa Radio website privacy policy</Link>. The native app statements above do not describe information handled when you visit the website or choose to contact us there. This policy page is itself hosted on that website.</p>
+
+      <h2>Privacy questions and support</h2>
+      <p>Use the <Link to="/submit-a-song?mode=general">Santa Radio general enquiry contact form</Link> for privacy questions or app support. Please mention “The Santa Tracker for iOS” so we can identify the app. You do not need to send tracker settings or location information to ask a question.</p>
+
+      <p><Link to="/santa-tracker">Back to the Santa Tracker web page</Link></p>
+    </article>
+  </main>;
+}

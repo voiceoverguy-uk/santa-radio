@@ -15,6 +15,7 @@ import SubmitASong from './pages/SubmitASong.jsx';
 import ChristmasContenders from './pages/ChristmasContenders.jsx';
 import NaughtyNicePage from './naughty-or-nice/NaughtyNicePage.jsx';
 import PrivacyPolicy from './pages/PrivacyPolicy.jsx';
+import SantaTrackerPrivacy from './pages/SantaTrackerPrivacy.jsx';
 import PhotoLicensing from './pages/PhotoLicensing.jsx';
 import { mugPhotoTermsPath } from './seo/catalogue.js';
 import Links from './pages/Links.jsx';
@@ -51,6 +52,7 @@ function WebsiteLayout() {
         <Route path="/preview/hero-name-checker" element={<HeroNamePreview />} />
         <Route path="/apps" element={<Apps />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/santa-tracker/privacy" element={<SantaTrackerPrivacy />} />
         <Route path={mugPhotoTermsPath} element={<PhotoLicensing />} />
         <Route path="/christmas-music" element={<Music />} />
         <Route path="/mugshots/all" element={<MugShots />} />
