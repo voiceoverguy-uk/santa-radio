@@ -221,6 +221,7 @@ async function matches(page, name) {
     'An official Nice List certificate', 'A short personal letter from Santa',
     `Santa celebrating ${name}’s place on the Nice List`,
   ]);
+  await expect(promotion(page).locator('.santa-studio-promotion__footnote')).toHaveCount(0);
   await expect(page.locator('.santa-message-example')).toHaveCount(0);
 }
 async function signup(page) {
