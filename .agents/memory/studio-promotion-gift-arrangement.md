@@ -14,6 +14,15 @@ gift captions; enlargement must remain available.
 Below the desktop breakpoint, the promotional gifts start collapsed behind
 “Free gifts include”. Preserve the approved three-gift arrangement when opened;
 desktop gifts must always be visible regardless of the mobile toggle state.
+The mobile price summary belongs on the same row as the “Free gifts include”
+dropdown, not lower down in a separate corner.
+
+**Why:** The owner explicitly asked to lift the mobile price level with that
+dropdown.
+
+**How to apply:** Keep the controls aligned when gifts open or close and preserve
+the desktop presentation.
+
 Hide only the small header portrait and the paid example timeline on phones,
 not the actual Santa picture gift or the separate free example player.
 

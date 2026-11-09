@@ -40,6 +40,10 @@
   display: none;
 }
 
+.santa-studio-promotion__gift-controls {
+  display: none;
+}
+
 .santa-studio-promotion__gift-content {
   min-width: 0;
 }
@@ -477,9 +481,41 @@
     display: none;
   }
 
+  .santa-studio-promotion__gift-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .santa-studio-promotion__mobile-price {
+    display: grid;
+    flex: 0 1 auto;
+    min-width: 0;
+    margin: 0;
+    text-align: right;
+    color: var(--studio-ink);
+    line-height: 1.3;
+  }
+
+  .santa-studio-promotion__mobile-price-amount {
+    font-family: "Cinzel", Georgia, serif;
+    font-size: 1.3rem;
+    white-space: nowrap;
+  }
+
+  .santa-studio-promotion__mobile-price-caption {
+    color: var(--studio-muted);
+    font-size: .7rem;
+    overflow-wrap: anywhere;
+  }
+
   .santa-studio-promotion__gift-toggle {
     display: inline-flex;
     align-items: center;
+    flex: 1 1 0;
+    min-width: 0;
     gap: 8px;
     min-height: 44px;
     max-width: 100%;
@@ -499,6 +535,7 @@
   }
 
   .santa-studio-promotion__gift-arrow {
+    flex-shrink: 0;
     font-size: 1.2em;
   }
 

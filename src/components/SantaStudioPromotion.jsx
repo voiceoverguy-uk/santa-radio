@@ -78,12 +78,18 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
         <SantaStudioAudioExample onActiveExampleNameChange={setPaidExampleName} />
       </div>
       <div className="santa-studio-promotion__gifts" data-expanded={giftsExpanded}>
-        <button className="santa-studio-promotion__gift-toggle" type="button"
-          aria-expanded={giftsExpanded} aria-controls={giftsId}
-          onClick={() => setGiftsExpanded(value => !value)}>
-          Free gifts include
-          <span className="santa-studio-promotion__gift-arrow" aria-hidden="true">▾</span>
-        </button>
+        <div className="santa-studio-promotion__gift-controls">
+          <button className="santa-studio-promotion__gift-toggle" type="button"
+            aria-expanded={giftsExpanded} aria-controls={giftsId}
+            onClick={() => setGiftsExpanded(value => !value)}>
+            Free gifts include
+            <span className="santa-studio-promotion__gift-arrow" aria-hidden="true">▾</span>
+          </button>
+          <p className="santa-studio-promotion__mobile-price">
+            <span className="santa-studio-promotion__mobile-price-amount">£6.50</span>{' '}
+            <span className="santa-studio-promotion__mobile-price-caption">for 2 messages</span>
+          </p>
+        </div>
         <div id={giftsId} className="santa-studio-promotion__gift-content">
           <StudioGiftPreview example={example} variant="promotion"
             onPreviewOpen={() => setGiftsExpanded(true)} />
