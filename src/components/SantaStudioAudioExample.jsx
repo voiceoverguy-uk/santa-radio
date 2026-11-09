@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import './SantaStudioAudioExample.css';
 
 const EXAMPLES = [
@@ -34,7 +34,7 @@ function formatTime(seconds) {
   return `${Math.floor(wholeSeconds / 60)}:${String(wholeSeconds % 60).padStart(2, '0')}`;
 }
 
-export default function SantaStudioAudioExample() {
+export default function SantaStudioAudioExample({ onActiveExampleNameChange }) {
   const audioRef = useRef(null);
   const playRequestRef = useRef(0);
   const startedRef = useRef(false);
@@ -45,6 +45,12 @@ export default function SantaStudioAudioExample() {
   const [duration, setDuration] = useState(0);
   const [activeCue, setActiveCue] = useState(null);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    onActiveExampleNameChange?.(
+      playbackState === 'playing' || playbackState === 'paused' ? example.name : null,
+    );
+  }, [example.name, onActiveExampleNameChange, playbackState]);
 
   const syncFromAudio = useCallback(audio => {
     const time = Number.isFinite(audio.currentTime) ? audio.currentTime : 0;
@@ -122,9 +128,6 @@ export default function SantaStudioAudioExample() {
   return (
     <section className="santa-studio-audio-example" aria-labelledby="santa-studio-audio-title">
       <h4 id="santa-studio-audio-title">Paid Studio message example — {example.name}</h4>
-      <p className="santa-studio-audio-example__description">
-        Hear {example.name}’s personalised Message Maker Studio recording.
-      </p>
       <div className="santa-studio-audio-example__controls">
         <button
           className={`santa-studio-audio-example__play${activeCue !== null ? ' santa-studio-audio-example__play--personalised' : ''}`}
@@ -146,9 +149,6 @@ export default function SantaStudioAudioExample() {
         </button>
       </div>
       <div className="santa-studio-audio-example__timeline">
-        <label className="santa-studio-audio-example__seek-label" htmlFor="santa-studio-audio-seek">
-          {example.name}’s message position
-        </label>
         <input
           id="santa-studio-audio-seek"
           className="santa-studio-audio-example__seek"
@@ -159,6 +159,7 @@ export default function SantaStudioAudioExample() {
           value={Math.min(currentTime, duration || 0)}
           onChange={seek}
           disabled={!duration}
+          aria-label={`${example.name}’s paid Studio message position`}
           aria-valuetext={`${formatTime(currentTime)} of ${formatTime(duration)}`}
         />
         <span className="santa-studio-audio-example__time" aria-hidden="true">

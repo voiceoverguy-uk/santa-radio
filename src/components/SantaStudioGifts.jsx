@@ -302,7 +302,9 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
   </section>;
 }
 
-export function useStudioGiftExample({ activeExampleName = null, previewName = null, allowExamples = true } = {}) {
+export function useStudioGiftExample({
+  activeExampleName = null, paidExampleName = null, previewName = null, allowExamples = true,
+} = {}) {
   const [index, setIndex] = useState(0);
   const [pictureIndex, setPictureIndex] = useState(0);
   // Keep the outgoing artwork above the new picture across recipient remounts.
@@ -324,7 +326,8 @@ export function useStudioGiftExample({ activeExampleName = null, previewName = n
     preference.addEventListener('change', update);
     return () => preference.removeEventListener('change', update);
   }, []);
-  const activeName = allCertificateExamples.find(item => item.name === activeExampleName)?.name;
+  const activeName = allCertificateExamples.find(item =>
+    item.name === (paidExampleName || activeExampleName))?.name;
   // Gift demonstrations stay available during cooldown; audio permission is
   // separate. Only a real selection stops the example-name rotation.
   const name = previewName || (allowExamples && activeName) || studioGiftExampleNames[index];

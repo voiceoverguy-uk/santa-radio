@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { WorkshopPasswordForm } from './WorkshopPasswordForm.jsx';
 import './SantaStudioPromotion.css';
@@ -8,8 +9,11 @@ import SantaStudioAudioExample from './SantaStudioAudioExample.jsx';
 
 export default function SantaStudioPromotion({ activeExampleName = null, availableNamesText, previewName = null, allowExamples = true }) {
   const navigate = useNavigate();
+  const [paidExampleName, setPaidExampleName] = useState(null);
   // Copy and every gift share the very same resolved recipient/rotation.
-  const example = useStudioGiftExample({ activeExampleName, previewName, allowExamples });
+  const example = useStudioGiftExample({
+    activeExampleName, paidExampleName, previewName, allowExamples,
+  });
 
   return (
     <section id="santa-studio-promotion" className="santa-studio-promotion" aria-labelledby="santa-studio-title"
@@ -60,7 +64,7 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
           onAuthorized={() => navigate('/santa-message-workshop')}
         />
         <StudioPurchaseButton />
-        <SantaStudioAudioExample />
+        <SantaStudioAudioExample onActiveExampleNameChange={setPaidExampleName} />
       </div>
       <StudioGiftPreview example={example} variant="promotion" />
     </section>
