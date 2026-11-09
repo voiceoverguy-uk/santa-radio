@@ -57,10 +57,6 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
             </ul>
           </div>
         </div>
-        <div className="santa-studio-promotion__offer">
-          <span className="santa-studio-promotion__offer-label">Price</span>
-          <span className="santa-studio-promotion__offer-price">£6.50</span>
-        </div>
         <WorkshopPasswordForm
           variant="promotion"
           onAuthorized={() => navigate('/santa-message-workshop')}
@@ -78,6 +74,12 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
         <div id={giftsId} className="santa-studio-promotion__gift-content">
           <StudioGiftPreview example={example} variant="promotion"
             onPreviewOpen={() => setGiftsExpanded(true)} />
+        </div>
+      </div>
+      <div className="santa-studio-promotion__footer">
+        <div className="santa-studio-promotion__offer">
+          <span className="santa-studio-promotion__offer-label">Price</span>
+          <span className="santa-studio-promotion__offer-price">£6.50</span>
         </div>
       </div>
     </section>

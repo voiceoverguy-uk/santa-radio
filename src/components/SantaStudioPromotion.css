@@ -12,7 +12,7 @@
   container-type: inline-size;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-areas: "header" "details" "gifts";
+  grid-template-areas: "header" "details" "gifts" "footer";
   gap: 14px;
   overflow: hidden;
   padding: clamp(19px, 2.4vw, 26px);
@@ -250,20 +250,27 @@
   color: #9b392d;
 }
 
+.santa-studio-promotion__footer {
+  grid-area: footer;
+  display: flex;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
 .santa-studio-promotion__offer {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 4px 10px;
   min-width: 0;
-  margin: 14px 0 12px;
-  padding: 12px 15px;
+  max-width: 100%;
+  margin: 0;
+  padding: 7px 12px;
   border: 1px solid #a27c327a;
-  border-left: 4px solid #9b392d;
+  border-right: 3px solid #9b392d;
   border-radius: 8px;
-  background:
-    linear-gradient(105deg, #fff9e9 0%, #f7efd9 68%, #efe3c6 100%);
-  box-shadow: 0 3px 10px #19392d12;
+  background: linear-gradient(105deg, #fff9e9 0%, #f7efd9 100%);
 }
 
 .santa-studio-promotion__offer-label {
@@ -275,10 +282,9 @@
 }
 
 .santa-studio-promotion__offer-price {
-  flex: 0 0 auto;
   color: var(--studio-ink);
   font-family: "Cinzel", Georgia, serif;
-  font-size: clamp(1.08rem, 2.3vw, 1.32rem);
+  font-size: clamp(1rem, 2vw, 1.15rem);
   font-weight: 400;
   line-height: 1.2;
   white-space: nowrap;
@@ -439,7 +445,7 @@
 @media (min-width: 768px) {
   .santa-studio-promotion {
     grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
-    grid-template-areas: "header header" "details gifts";
+    grid-template-areas: "header header" "details gifts" "footer footer";
     column-gap: clamp(24px, 4vw, 48px);
     row-gap: 14px;
   }
@@ -513,12 +519,6 @@
 @media (max-width: 360px) {
   .santa-studio-promotion__topline {
     align-items: flex-start;
-  }
-
-  .santa-studio-promotion__offer {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 4px;
   }
 }
 
