@@ -1302,3 +1302,17 @@ mtime_ms = 1794194156168
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/d8a0bf5e-2e04-4b7c-a031-b82c2b0a4cf5/212a8472-46d6-4a03-b9ca-3ddb9466a42e"
 storage_version_token = "1794194161189761"
 content_type = "text/html"
+
+[[outputs]]
+id = "mJNpo6QOepA9NT_56PDMR"
+uri = "file://generated-artifacts/naughty-or-nice-mobile-source.zip"
+type = "unspecified"
+title = "Naughty-or-Nice mobile source ZIP"
+description = "Focused Codex source pack with checker logic, original art/audio, licensed fonts, certificate masters, manifest, and porting notes. No secrets, name inventory, personal recordings, or installed dependencies."
+logical_id = "0f7c917f-cdc6-4057-b7a4-05d037cacfe9"
+content_hash = "sha256:8cb4ad1036fef6d362d0a4e4ebaf164860a6244a0beeecd74f3536d362fae94a"
+size = 6710390
+mtime_ms = 1794231978412
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/0f7c917f-cdc6-4057-b7a4-05d037cacfe9/08693a00-25ca-4259-ad02-d138d3a2f276"
+storage_version_token = "1794232012580868"
+content_type = "application/octet-stream"
