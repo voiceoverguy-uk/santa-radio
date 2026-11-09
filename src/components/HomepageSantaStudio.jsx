@@ -8,7 +8,7 @@ import useSantaNameCounter from './useSantaNameCounter.js';
 import './SantaMessageForm.css';
 import './HomepageSantaStudio.css';
 
-export default function HomepageSantaStudio() {
+export default function HomepageSantaStudio({ directEntry = false, onAuthorized, accessFeedback, children }) {
   const selectedRecipient = useSantaRecipient();
   const { messages } = useSantaMessageHistory();
   const previewName = selectedRecipient || messages.at(-1)?.name || null;
@@ -27,11 +27,15 @@ export default function HomepageSantaStudio() {
           supportingLine="OUR PREMIUM EXPERIENCE"
           subtitle="Ask Santa for a bespoke message to your little one."
           titleId="homepage-santa-studio-title"
+          titleTag={directEntry ? 'h1' : 'h2'}
           className="homepage-santa-studio__heading"
         />
+        {accessFeedback}
         <SantaStudioPromotion availableNamesText={availableNamesText}
-          previewName={previewName} allowExamples={!previewName && !messages.length} />
-        <SantaMessageReviews />
+          previewName={previewName} allowExamples={!previewName && !messages.length}
+          onAuthorized={onAuthorized} />
+        {children}
+        {!directEntry && <SantaMessageReviews />}
       </div>
     </section>
   );

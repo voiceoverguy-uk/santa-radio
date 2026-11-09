@@ -480,6 +480,7 @@
 
   .santa-studio-promotion__gift-controls {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
@@ -523,6 +524,7 @@
     font: inherit;
     font-size: .9rem;
     text-align: left;
+    overflow-wrap: anywhere;
     cursor: pointer;
   }
 

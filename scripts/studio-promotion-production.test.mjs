@@ -223,7 +223,7 @@ test('production email fragments require an explicit redemption and open live St
   const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await decline.isVisible()) await decline.click();
   await expect(page.getByRole('button', { name: 'Open my Studio', exact: true })).toBeEnabled();
-  await expect(page.getByLabel('Tester code (required)', { exact: true })).toBeEnabled();
+  await expect(page.getByLabel('Voucher code', { exact: true })).toBeEnabled();
   await page.getByRole('button', { name: 'Open my Studio', exact: true }).click();
   await expect(page.locator('.smw-builder')).toBeVisible();
   assert.equal(redeemed, 1);
@@ -252,7 +252,7 @@ test('production payment outage never hides voucher controls or blocks a valid v
   await page.goto(`${origin}/santa-message-workshop?checkout=return`, { waitUntil: 'domcontentloaded' });
   const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await decline.isVisible()) await decline.click();
-  const code = page.getByLabel('Tester code (required)', { exact: true });
+  const code = page.getByLabel('Voucher code', { exact: true });
   await expect(code).toBeEnabled();
   await code.fill('wrong');
   await page.getByRole('button', { name: 'Create your bespoke message', exact: true }).click();

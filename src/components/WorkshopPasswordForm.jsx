@@ -77,7 +77,7 @@ export function WorkshopPasswordForm({ onAuthorized, compact = false, active = t
       inputRef.current?.blur();
       setCode('');
       window.dispatchEvent(new CustomEvent('santa-workshop-access-change'));
-      onAuthorized?.({ expiresAt: data.expiresAt });
+      onAuthorized?.({ expiresAt: data.expiresAt, voucher: data.voucher });
     } catch (requestError) {
       if (requestRef.current !== controller || requestError.name === 'AbortError') {
         if (timedOut && requestRef.current === controller) {

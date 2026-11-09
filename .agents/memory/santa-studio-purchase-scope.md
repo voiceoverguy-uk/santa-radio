@@ -80,3 +80,9 @@ clearly explains “£6.50 to generate 2 bespoke messages from Santa”.
 
 **How to apply:** Keep both shared promotional placements consistent without changing the live Stripe product or payment amount. Runtime readiness, not a promotional date or old sandbox-only notice, controls whether purchasing is available.
 
+The preferred direct Studio address should show the same complete promotional heading and panel as the homepage to visitors without access, rather than only a private-code card. The private email return remains a secondary control; the creation journey remains inaccessible until server-confirmed voucher or paid access.
+
+**Why:** The owner identified the bare gate as the wrong first impression for a direct visitor and explicitly wanted the complete current offer without undoing its approved presentation.
+
+**How to apply:** Keep both entrances on the shared promotion, including changing examples and name counts. Do not turn promotional visibility into maker access, index the private route, or make purchase-return links redeem without an explicit action.
+

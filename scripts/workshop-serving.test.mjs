@@ -23,6 +23,12 @@ test('Vercel Studio document is locked, noindex and never public cached', async 
   assert.equal(headers['vercel-cdn-cache-control'], 'no-store');
   assert.match(headers['x-robots-tag'], /noindex/);
   assert.match(body, /workshop-gate/);
+  assert.match(body, /MESSAGE FROM SANTA/);
+  assert.match(body, /id="santa-studio-promotion"/);
+  assert.match(body, /2 bespoke messages from Santa/);
+  assert.match(body, /One-off payment · Two message creations/);
+  assert.match(body, /Already purchased\?/);
+  assert.equal((body.match(/>Voucher code<\/label>/g) || []).length, 1);
   assert.match(body, /noindex/);
   assert.doesNotMatch(body, /smw-builder|What name should Santa say/);
   assert.doesNotMatch(body, /Enter the workshop password/);

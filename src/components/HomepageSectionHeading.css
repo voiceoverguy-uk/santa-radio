@@ -1,4 +1,4 @@
-.home-page .homepage-section-heading {
+:is(.home-page, .workshop-gate--promotion) .homepage-section-heading {
   width: 100%;
   max-width: 820px;
   margin: 0 auto 27px;
@@ -7,7 +7,7 @@
 
 .home-page .mugshots-intro .homepage-section-heading { margin-bottom: 9px; }
 
-.home-page .homepage-section-heading__eyebrow {
+:is(.home-page, .workshop-gate--promotion) .homepage-section-heading__eyebrow {
   margin: 0 0 7px;
   color: #e7cf89;
   font: 400 .66rem/1.65 'Cinzel', Georgia, serif;
@@ -16,14 +16,14 @@
   overflow-wrap: anywhere;
 }
 
-.home-page .homepage-section-heading__title-wrap {
+:is(.home-page, .workshop-gate--promotion) .homepage-section-heading__title-wrap {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.home-page .homepage-section-heading__divider {
+:is(.home-page, .workshop-gate--promotion) .homepage-section-heading__divider {
   position: relative;
   display: flex;
   width: clamp(140px, 18vw, 190px);
@@ -35,18 +35,18 @@
   color: #f3d783;
 }
 
-.home-page .homepage-section-heading__divider-line {
+:is(.home-page, .workshop-gate--promotion) .homepage-section-heading__divider-line {
   display: block;
   flex: 1 0 42px;
   min-width: 42px;
   height: 1px;
   background: linear-gradient(90deg, transparent, #d6b55b);
 }
-.home-page .homepage-section-heading__divider-line:last-child {
+:is(.home-page, .workshop-gate--promotion) .homepage-section-heading__divider-line:last-child {
   background: linear-gradient(90deg, #d6b55b, transparent);
 }
 
-.home-page .homepage-section-heading__title {
+:is(.home-page, .workshop-gate--promotion) .homepage-section-heading__title {
   max-width: 100%;
   margin: 0;
   color: #f4d991;
@@ -60,7 +60,7 @@
   text-wrap: balance;
 }
 
-.home-page .homepage-section-heading__supporting {
+:is(.home-page, .workshop-gate--promotion) .homepage-section-heading__supporting {
   margin: 8px 0 0;
   color: #e7cf89;
   font: 400 .8rem/1.6 'Cinzel', Georgia, serif;
@@ -69,7 +69,7 @@
   overflow-wrap: anywhere;
 }
 
-.home-page .homepage-section-heading__subtitle {
+:is(.home-page, .workshop-gate--promotion) .homepage-section-heading__subtitle {
   margin: 7px 0 0;
   color: #f0ead9;
   font-family: inherit;
@@ -80,7 +80,7 @@
 }
 
 @media (max-width: 520px) {
-  .home-page .homepage-section-heading {
+  :is(.home-page, .workshop-gate--promotion) .homepage-section-heading {
     margin-top: 0;
     margin-bottom: 22px;
   }

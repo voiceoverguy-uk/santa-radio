@@ -36,7 +36,12 @@ function PurchaseButton({ sandbox }) {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Checkout could not be started.');
-      if (data.openStudio || data.pending) { navigate(`${STUDIO_PATH}?checkout=return`); return; }
+      if (data.openStudio || data.pending) {
+        window.dispatchEvent(new CustomEvent('santa-workshop-access-change'));
+        navigate(`${STUDIO_PATH}?checkout=return`);
+        setBusy(false);
+        return;
+      }
       const url = new URL(data.url);
       if (url.protocol !== 'https:' || url.hostname !== 'checkout.stripe.com') throw new Error('Unexpected checkout address.');
       window.location.assign(url.href);

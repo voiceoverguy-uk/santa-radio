@@ -8,7 +8,7 @@ import StudioPortraitViewer from './StudioPortraitViewer.jsx';
 import SantaStudioAudioExample from './SantaStudioAudioExample.jsx';
 import { STUDIO_PATH } from '../lib/studioRoute.js';
 
-export default function SantaStudioPromotion({ activeExampleName = null, availableNamesText, previewName = null, allowExamples = true }) {
+export default function SantaStudioPromotion({ activeExampleName = null, availableNamesText, previewName = null, allowExamples = true, onAuthorized }) {
   const navigate = useNavigate();
   const [paidExampleName, setPaidExampleName] = useState(null);
   const [giftsExpanded, setGiftsExpanded] = useState(false);
@@ -70,7 +70,7 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
         </div>
         <WorkshopPasswordForm
           variant="promotion"
-          onAuthorized={() => navigate(STUDIO_PATH)}
+          onAuthorized={onAuthorized || (() => navigate(STUDIO_PATH))}
         />
         <StudioPurchaseButton />
         <SantaStudioAudioExample onActiveExampleNameChange={setPaidExampleName} />

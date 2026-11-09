@@ -7,6 +7,7 @@ export default function HomepageSectionHeading({
   subtitle,
   supportingLine,
   titleId,
+  titleTag: Title = 'h2',
   className = '',
   eyebrowClassName = '',
   titleClassName = '',
@@ -21,9 +22,9 @@ export default function HomepageSectionHeading({
           <Star size={17} fill="currentColor" />
           <span className="homepage-section-heading__divider-line" />
         </span>
-        <h2 id={titleId} className={`homepage-section-heading__title ${titleClassName}`.trim()}>
+        <Title id={titleId} className={`homepage-section-heading__title ${titleClassName}`.trim()}>
           {title}
-        </h2>
+        </Title>
       </div>
       {supportingLine && <p className="homepage-section-heading__supporting">{supportingLine}</p>}
       {subtitle && <p className={`homepage-section-heading__subtitle ${subtitleClassName}`.trim()}>{subtitle}</p>}

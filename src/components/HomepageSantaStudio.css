@@ -5,6 +5,21 @@
 }
 .homepage-santa-studio__layout > * { min-width: 0; margin-block: 0; }
 .home-page .homepage-santa-studio__heading { margin-bottom: 0; }
+.workshop-gate--promotion { display: block; padding: 0; }
+.workshop-gate--promotion > .homepage-santa-studio { width: 100%; }
+.studio-entry-access:empty { display: none; }
+.studio-entry-access { color: #f6ecd8; overflow-wrap: anywhere; }
+.studio-entry-access button {
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid #d4af3780;
+  border-radius: 7px;
+  background: #14382a;
+  color: #f6ecd8;
+  font: inherit;
+  cursor: pointer;
+}
+.workshop-gate--promotion .studio-entry-return { width: 100%; overflow-wrap: anywhere; }
 @media (max-width: 767px) {
   .homepage-santa-studio__layout { gap: 24px; }
 }

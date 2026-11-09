@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import PageSeo from '../seo/PageSeo.jsx';
 import { pageMetadata } from '../seo/catalogue.js';
-import { WorkshopPasswordForm } from './WorkshopPasswordForm.jsx';
 import { useLocation } from 'react-router-dom';
 import { StudioAccessContext, StudioVoucherContext } from '../lib/studioAccessContext.js';
 import StudioReturnAccess from './StudioReturnAccess.jsx';
-import StudioPurchaseButton from './StudioPurchaseButton.jsx';
+import HomepageSantaStudio from './HomepageSantaStudio.jsx';
 import { STUDIO_PATH } from '../lib/studioRoute.js';
 
 const ACCESS_URL = '/api/santa-workshop-access';
@@ -62,7 +61,11 @@ export default function WorkshopAccessGate({ children }) {
             credentials: 'same-origin', cache: 'no-store', signal: controller.signal,
           });
           const paid = await paidResponse.json().catch(() => ({}));
-          if (disposed || controller.signal.aborted) return;
+          if (disposed) return;
+          if (controller.signal.aborted) {
+            if (timedOut) throw new Error('Access check timed out.');
+            return;
+          }
           if (paidResponse.ok && paid.authorized === true
             && (import.meta.env.DEV ? paid.mode !== 'live' : paid.mode === 'live')) {
             setAccessKind(paid.mode === 'live' ? 'paid-live' : 'paid-sandbox');
@@ -80,6 +83,7 @@ export default function WorkshopAccessGate({ children }) {
             setStatus('locked');
             return;
           }
+          if (!paidResponse.ok) throw new Error('Payment access could not be checked.');
         }
         if (disposed) return;
         if (controller.signal.aborted) {
@@ -139,7 +143,8 @@ export default function WorkshopAccessGate({ children }) {
     const onVisibilityChange = () => {
       if (document.visibilityState === 'visible') checkAccess();
     };
-    const onSessionChange = () => checkAccess();
+    // Restart rather than dropping a session change while a stale GET is in flight.
+    const onSessionChange = () => setAttempt(value => value + 1);
 
     setStatus(current => current === 'authorized' ? current : 'checking');
     checkAccess();
@@ -169,7 +174,7 @@ export default function WorkshopAccessGate({ children }) {
     return () => window.clearTimeout(timeout);
   }, [status, expiresAt]);
 
-  const onAuthorized = useCallback(({ expiresAt: authorizationExpiry } = {}) => {
+  const onAuthorized = useCallback(({ expiresAt: authorizationExpiry, voucher: authorizedVoucher } = {}) => {
     if (!Number.isFinite(authorizationExpiry) || authorizationExpiry <= Date.now()) {
       setExpiresAt(null);
       setStatusMessage('The access service returned an unexpected reply. Please try again.');
@@ -178,6 +183,8 @@ export default function WorkshopAccessGate({ children }) {
     }
     setExpiresAt(authorizationExpiry);
     setAccessKind('tester');
+    setVoucher(typeof authorizedVoucher?.unlimited === 'boolean' && typeof authorizedVoucher.code === 'string'
+      ? authorizedVoucher : null);
     setStatusMessage('');
     setStatus('authorized');
     setAttempt(value => value + 1);
@@ -199,24 +206,21 @@ export default function WorkshopAccessGate({ children }) {
     </>;
   }
 
-  return <main className="workshop-gate">
+  const accessFeedback = <div className="studio-entry-access" aria-label="Studio access">
+    {status === 'checking' && <p role="status">Checking Studio access…</p>}
+    {status === 'locked' && statusMessage && <p role="status">{statusMessage}</p>}
+    {status === 'locked' && returningFromCheckout &&
+      <button type="button" onClick={() => setAttempt(value => value + 1)}>Retry payment check</button>}
+    {status === 'error' && <div className="workshop-gate-error" role="alert">
+      <p>{statusMessage || 'The workshop could not be reached. Check your connection and try again.'}</p>
+      <button type="button" onClick={() => { setStatusMessage(''); setAttempt(value => value + 1); }}>Retry access check</button>
+    </div>}
+  </div>;
+
+  return <main className="workshop-gate workshop-gate--promotion">
     <PageSeo metadata={metadata} />
-    <section className="workshop-gate-card" aria-labelledby="workshop-gate-title">
-      <p className="workshop-dialog-kicker">Your private North Pole Studio</p>
-      <h1 id="workshop-gate-title">Santa’s Message Maker Studio</h1>
-      {status === 'checking' ? <p role="status">Checking Studio access…</p> : <>
-        <p>Open Studio with a confirmed purchase or a valid voucher code.</p>
-        {status === 'locked' && statusMessage && <p role="status">{statusMessage}</p>}
-        {status === 'locked' && returningFromCheckout &&
-          <button type="button" onClick={() => setAttempt(value => value + 1)}>Retry payment check</button>}
-        {status === 'error' && <div className="workshop-gate-error" role="alert">
-          <p>{statusMessage || 'The workshop could not be reached. Check your connection and try again.'}</p>
-          <button type="button" onClick={() => { setStatusMessage(''); setAttempt(value => value + 1); }}>Retry access check</button>
-        </div>}
-      </>}
-      <WorkshopPasswordForm onAuthorized={onAuthorized} compact />
-      <StudioReturnAccess />
-      <StudioPurchaseButton />
-    </section>
+    <HomepageSantaStudio directEntry onAuthorized={onAuthorized} accessFeedback={accessFeedback}>
+      <div className="workshop-gate-card studio-entry-return"><StudioReturnAccess /></div>
+    </HomepageSantaStudio>
   </main>;
 }
