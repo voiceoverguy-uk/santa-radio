@@ -32,8 +32,9 @@ function promotionMarkup(html, description) {
   }
   assert.ok(end > start, `${description} must contain a complete Studio promotion`);
   const promotion = html.slice(start, end);
-  assert.match(promotion, /class="santa-studio-promotion__offer-label">Price<\/span>/);
+  assert.match(promotion, /for <strong>two<\/strong> bespoke messages from Santa/);
   assert.match(promotion, /class="santa-studio-promotion__offer-price">£6\.50<\/span>/);
+  assert.doesNotMatch(promotion, /santa-studio-promotion__footer/);
   assert.doesNotMatch(promotion, stalePromotionCopy, `${description} must not contain stale visible or accessible promotion copy`);
   assert.match(promotion, /<label\b[^>]*>Voucher code<\/label>/, `${description} must retain voucher access`);
   assert.match(promotion, /Create your bespoke message/, `${description} must retain the voucher submit control`);
@@ -135,11 +136,13 @@ for (const route of routes) {
     const promotion = page.locator('#santa-studio-promotion');
     await expect(promotion).toBeVisible();
     const visibleCopy = await promotion.innerText();
-    assert.match(visibleCopy, /Price\s*£6\.50/);
+    assert.match(visibleCopy, /£6\.50/);
+    assert.match(visibleCopy, /for two bespoke messages from Santa/);
     assert.doesNotMatch(visibleCopy, stalePromotionCopy);
 
     const accessibleCopy = await promotion.ariaSnapshot();
-    assert.match(accessibleCopy, /Price £6\.50/);
+    assert.match(accessibleCopy, /£6\.50/);
+    assert.match(accessibleCopy, /for two bespoke messages from Santa/);
     assert.doesNotMatch(accessibleCopy, stalePromotionCopy);
     const accessibleAttributes = await promotion.evaluate(root =>
       [root, ...root.querySelectorAll('[aria-label], [title], [alt]')]

@@ -68,9 +68,15 @@ The owner requested removal of the “Studio A” and “Studio B” references 
 
 **How to apply:** Retain generic Studio branding, but do not reintroduce lettered Studio labels in public copy.
 
-The Studio promotion must show a neutral £6.50 price. There is no Black Friday deal yet; do not advertise £4.50, savings or a scheduled future offer.
+The Studio promotion must show £6.50 for two bespoke messages from Santa as a
+clear, integrated offer near the creation/purchase controls, not a tiny isolated
+“Price £6.50” badge at the bottom. This is the price for both messages, not each.
+There is no Black Friday deal yet; do not advertise £4.50, savings or a scheduled
+future offer.
 
-**Why:** The owner explicitly corrected the earlier seasonal-offer direction.
+**Why:** The owner corrected the earlier seasonal-offer direction, then rejected
+the small price badge and asked for professional marketing presentation that
+clearly explains “£6.50 to generate 2 bespoke messages from Santa”.
 
 **How to apply:** Keep both shared promotional placements consistent without changing the live Stripe product or payment amount. Runtime readiness, not a promotional date or old sandbox-only notice, controls whether purchasing is available.
 

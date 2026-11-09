@@ -12,7 +12,7 @@
   container-type: inline-size;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-areas: "header" "details" "gifts" "footer";
+  grid-template-areas: "header" "details" "gifts";
   gap: 14px;
   overflow: hidden;
   padding: clamp(19px, 2.4vw, 26px);
@@ -104,8 +104,7 @@
   grid-template-areas:
     "title"
     "subheading"
-    "copy"
-    "benefits";
+    "copy";
   align-items: start;
   column-gap: 8px;
   row-gap: 7px;
@@ -215,23 +214,77 @@
   overflow-wrap: anywhere;
 }
 
-.santa-studio-promotion__benefits {
-  grid-area: benefits;
+.santa-studio-promotion__offer {
+  position: relative;
+  display: grid;
+  gap: 14px;
   min-width: 0;
-  max-width: 54ch;
+  max-width: 60ch;
+  margin: 4px 0 16px;
+  padding: clamp(16px, 3cqi, 22px);
+  border: 1px solid #a27c3280;
+  border-radius: 12px;
+  background:
+    linear-gradient(#fff9e9, #fff9e9) padding-box,
+    #fff9e9;
+  box-shadow: inset 0 0 0 4px #fff9e9, inset 0 0 0 5px #a27c3240, 0 6px 18px #19392d14;
   overflow-wrap: anywhere;
-  margin-top: 3px;
-  padding: 13px 15px 11px;
-  border-left: 2px solid #a27c32;
-  border-radius: 0 8px 8px 0;
+  transition: box-shadow 200ms ease, transform 200ms ease;
+}
+.santa-studio-promotion__offer::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  border-radius: 12px 0 0 12px;
+  background: repeating-linear-gradient(135deg, #9b392d 0 8px, #fff9e9 8px 13px, #19392d 13px 21px, #fff9e9 21px 26px);
+}
+.santa-studio-promotion__offer:hover {
+  box-shadow: inset 0 0 0 4px #fff9e9, inset 0 0 0 5px #a27c3270, 0 10px 24px #19392d1f;
+  transform: translateY(-1px);
+}
+.santa-studio-promotion__offer-price-block { display: grid; gap: 4px; min-width: 0; }
+.santa-studio-promotion__offer-kicker {
+  margin: 0; color: #842c23; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; line-height: 1.4;
+}
+.santa-studio-promotion__offer-headline {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; margin: 0; min-width: 0;
+}
+.santa-studio-promotion__offer-price {
+  color: #9b392d; font-family: "Cinzel", Georgia, serif;
+  font-size: clamp(2.2rem, 9cqi, 3rem); line-height: 1; white-space: nowrap;
+}
+.santa-studio-promotion__offer-for {
+  flex: 1 1 12ch; min-width: 0; color: var(--studio-ink);
+  font-family: "Cinzel", Georgia, serif; font-size: clamp(1rem, 3.6cqi, 1.2rem); line-height: 1.35;
+}
+.santa-studio-promotion__offer-for strong { color: #806023; font-weight: 400; text-decoration: underline; text-decoration-color: #a27c3290; text-underline-offset: .18em; }
+.santa-studio-promotion__offer-note { margin: 2px 0 0; color: var(--studio-muted); font-size: .88rem; line-height: 1.5; }
+.santa-studio-promotion__offer-pair {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15ch), 1fr));
+  gap: 10px; margin: 0; padding: 12px 0 0; list-style: none; border-top: 1px dashed #a27c3260;
+}
+.santa-studio-promotion__offer-pair li {
+  display: flex; align-items: flex-start; gap: 10px; min-width: 0;
+  color: #334c3d; font-size: .95rem; line-height: 1.45;
+}
+.santa-studio-promotion__offer-num {
+  display: grid; place-items: center; flex: 0 0 auto; min-width: 2em; min-height: 2em;
+  border: 1px solid var(--studio-gold); border-radius: 50%;
+  color: #806023; font-family: "Cinzel", Georgia, serif; font-size: .9rem; line-height: 1;
+}
+.santa-studio-promotion__benefits {
+  min-width: 0;
+  padding: 12px 14px 10px;
+  border-radius: 8px;
   background: #e9ddc277;
   color: #334c3d;
-  font-size: 1rem;
+  font-size: .95rem;
   line-height: 1.55;
 }
 
 .santa-studio-promotion__benefits-lead {
-  margin: 0 0 7px;
+  margin: 0 0 6px;
 }
 
 .santa-studio-promotion__benefit-list {
@@ -248,46 +301,6 @@
 
 .santa-studio-promotion__benefit-list li::marker {
   color: #9b392d;
-}
-
-.santa-studio-promotion__footer {
-  grid-area: footer;
-  display: flex;
-  justify-content: flex-end;
-  min-width: 0;
-}
-
-.santa-studio-promotion__offer {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: flex-end;
-  gap: 4px 10px;
-  min-width: 0;
-  max-width: 100%;
-  margin: 0;
-  padding: 7px 12px;
-  border: 1px solid #a27c327a;
-  border-right: 3px solid #9b392d;
-  border-radius: 8px;
-  background: linear-gradient(105deg, #fff9e9 0%, #f7efd9 100%);
-}
-
-.santa-studio-promotion__offer-label {
-  color: #842c23;
-  font-size: .77rem;
-  font-weight: 400;
-  letter-spacing: .105em;
-  line-height: 1.35;
-}
-
-.santa-studio-promotion__offer-price {
-  color: var(--studio-ink);
-  font-family: "Cinzel", Georgia, serif;
-  font-size: clamp(1rem, 2vw, 1.15rem);
-  font-weight: 400;
-  line-height: 1.2;
-  white-space: nowrap;
 }
 
 .santa-studio-promotion__voucher {
@@ -445,7 +458,7 @@
 @media (min-width: 768px) {
   .santa-studio-promotion {
     grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
-    grid-template-areas: "header header" "details gifts" "footer footer";
+    grid-template-areas: "header header" "details gifts";
     column-gap: clamp(24px, 4vw, 48px);
     row-gap: 14px;
   }
@@ -542,4 +555,7 @@
   .santa-studio-promotion__purchase:hover {
     transform: none;
   }
+
+  .santa-studio-promotion__offer { transition: none; }
+  .santa-studio-promotion__offer:hover { transform: none; }
 }

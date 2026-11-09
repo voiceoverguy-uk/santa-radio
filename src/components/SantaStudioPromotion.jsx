@@ -47,17 +47,29 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
           <p className="santa-studio-promotion__copy">
             Create a personalised message from Santa, with {example.name}’s age, achievements and the things that make them special for an extra personal touch.
           </p>
-          <div className="santa-studio-promotion__benefits">
-            <p className="santa-studio-promotion__benefits-lead">
-              Your £6.50 package includes two successful message creations, each with a personalised MP3 and gifts for one child:
+        </div>
+        <article className="santa-studio-promotion__offer" aria-labelledby="santa-studio-offer-title">
+          <div className="santa-studio-promotion__offer-price-block">
+            <p className="santa-studio-promotion__offer-kicker">One Christmas package</p>
+            <p id="santa-studio-offer-title" className="santa-studio-promotion__offer-headline">
+              <span className="santa-studio-promotion__offer-price">£6.50</span>
+              <span className="santa-studio-promotion__offer-for">for <strong>two</strong> bespoke messages from Santa</span>
             </p>
+            <p className="santa-studio-promotion__offer-note">One payment for the pair, not per message.</p>
+          </div>
+          <ol className="santa-studio-promotion__offer-pair" aria-label="What the package includes">
+            <li><span className="santa-studio-promotion__offer-num" aria-hidden="true">1</span><span>A bespoke recorded message, as a personalised MP3</span></li>
+            <li><span className="santa-studio-promotion__offer-num" aria-hidden="true">2</span><span>A second bespoke message, ready to keep or share</span></li>
+          </ol>
+          <div className="santa-studio-promotion__benefits">
+            <p className="santa-studio-promotion__benefits-lead">Each message comes with free gifts for one child:</p>
             <ul className="santa-studio-promotion__benefit-list">
               <li>An official Nice List certificate</li>
               <li>A short personal letter from Santa</li>
               <li>Santa celebrating {example.name}’s place on the Nice List</li>
             </ul>
           </div>
-        </div>
+        </article>
         <WorkshopPasswordForm
           variant="promotion"
           onAuthorized={() => navigate(STUDIO_PATH)}
@@ -75,12 +87,6 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
         <div id={giftsId} className="santa-studio-promotion__gift-content">
           <StudioGiftPreview example={example} variant="promotion"
             onPreviewOpen={() => setGiftsExpanded(true)} />
-        </div>
-      </div>
-      <div className="santa-studio-promotion__footer">
-        <div className="santa-studio-promotion__offer">
-          <span className="santa-studio-promotion__offer-label">Price</span>
-          <span className="santa-studio-promotion__offer-price">£6.50</span>
         </div>
       </div>
     </section>

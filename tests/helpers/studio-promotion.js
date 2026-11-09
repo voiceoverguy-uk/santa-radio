@@ -17,7 +17,7 @@ export async function expectStudioLaunchCopy(promotion) {
     `A little more Christmas magic for ${name}`);
   await expect(copy).toHaveText(`Create a personalised message from Santa, with ${possessive} age, achievements and the things that make them special for an extra personal touch.`);
   await expect(promotion.locator('.santa-studio-promotion__benefits-lead')).toHaveText(
-    'Your £6.50 package includes two successful message creations, each with a personalised MP3 and gifts for one child:');
+    'Each message comes with free gifts for one child:');
   await expect(promotion.locator('.santa-studio-promotion__benefit-list li')).toHaveText([
     'An official Nice List certificate',
     'A short personal letter from Santa',

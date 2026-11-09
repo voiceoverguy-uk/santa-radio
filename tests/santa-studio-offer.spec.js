@@ -24,46 +24,35 @@ async function expectRegularPromotion(promotion) {
   expect(weights.filter(item => item.weight !== '400')).toEqual([]);
 }
 
-async function expectPriceFooter(promotion) {
+async function expectIntegratedOffer(promotion) {
+  await expect(promotion.locator('.santa-studio-promotion__footer')).toHaveCount(0);
   const layout = await promotion.evaluate(root => {
-    const footer = root.querySelector('.santa-studio-promotion__footer');
     const offer = root.querySelector('.santa-studio-promotion__offer');
     const card = root.getBoundingClientRect();
-    const style = getComputedStyle(root);
+    const details = root.querySelector('.santa-studio-promotion__details');
+    const form = root.querySelector('.workshop-password-form');
+    const price = offer.getBoundingClientRect();
     return {
-      last: root.lastElementChild === footer,
-      containsPrice: footer.contains(offer),
-      footer: footer.getBoundingClientRect().toJSON(),
-      price: offer.getBoundingClientRect().toJSON(),
-      content: ['details', 'gifts'].map(name =>
-        root.querySelector(`.santa-studio-promotion__${name}`).getBoundingClientRect().toJSON()),
-      right: card.right - parseFloat(style.borderRightWidth) - parseFloat(style.paddingRight),
-      bottom: card.bottom - parseFloat(style.borderBottomWidth) - parseFloat(style.paddingBottom),
-      textFits: [...offer.querySelectorAll('span')].every(span => {
+      inDetails: details.contains(offer),
+      beforeForm: price.bottom <= form.getBoundingClientRect().top + 1,
+      inCard: price.left >= card.left && price.right <= card.right,
+      textFits: [...offer.querySelectorAll('span, p, li')].every(span => {
         const range = document.createRange();
         range.selectNodeContents(span);
         return [...range.getClientRects()].every(rect =>
-          rect.left >= offer.getBoundingClientRect().left &&
-          rect.right <= offer.getBoundingClientRect().right + 1);
+          rect.left >= price.left - 1 && rect.right <= price.right + 1);
       }),
     };
   });
-  expect(layout.last).toBe(true);
-  expect(layout.containsPrice).toBe(true);
-  for (const column of layout.content) {
-    expect(layout.footer.top).toBeGreaterThanOrEqual(column.bottom - 1);
-    expect(layout.footer.left).toBeLessThanOrEqual(column.left + 1);
-    expect(layout.footer.right).toBeGreaterThanOrEqual(column.right - 1);
-  }
-  expect(Math.abs(layout.price.right - layout.right)).toBeLessThanOrEqual(1);
-  expect(Math.abs(layout.price.bottom - layout.bottom)).toBeLessThanOrEqual(1);
-  expect(layout.price.left).toBeGreaterThanOrEqual(layout.footer.left - 1);
+  expect(layout.inDetails).toBe(true);
+  expect(layout.beforeForm).toBe(true);
+  expect(layout.inCard).toBe(true);
   expect(layout.textFits).toBe(true);
 }
 
 for (const path of ['/', '/free-santa-message']) {
   for (const [width, textSize] of [[320, 100], [390, 100], [768, 100], [1440, 100], [320, 200], [1440, 200]]) {
-    test(`neutral Studio price footer and gifts fit ${path} at ${width}px with ${textSize}% text`, async ({ page }, testInfo) => {
+    test(`two-message Studio offer and gifts fit ${path} at ${width}px with ${textSize}% text`, async ({ page }, testInfo) => {
       await page.setViewportSize({ width, height: 1000 });
       await page.clock.setFixedTime(new Date('2026-11-03T12:00:00Z'));
       await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -85,9 +74,9 @@ for (const path of ['/', '/free-santa-message']) {
       await page.evaluate(() => document.fonts.ready);
       await page.addStyleTag({ content: `html { font-size: ${textSize}%; }` });
       const promotion = page.locator('.santa-studio-promotion');
-      await expectPriceFooter(promotion);
+      await expectIntegratedOffer(promotion);
       await expandStudioGifts(promotion);
-      await expectPriceFooter(promotion);
+      await expectIntegratedOffer(promotion);
       await expect(promotion.locator('.santa-studio-promotion__launch-countdown-remaining')).toHaveCount(0);
       await expectRegularPromotion(promotion);
       for (const selector of ['#santa-studio-title', '.santa-studio-promotion__subheading',
@@ -96,9 +85,9 @@ for (const path of ['/', '/free-santa-message']) {
       }
       await expect(promotion.locator('.studio-gifts h4')).toHaveCount(0);
       const price = promotion.locator('.santa-studio-promotion__offer');
-      await expect(price).toHaveText('Price£6.50');
+      await expect(price.locator('.santa-studio-promotion__offer-for')).toHaveText('for two bespoke messages from Santa');
       await expect(price.getByText('£6.50', { exact: true })).toBeVisible();
-      await expect(price).toMatchAriaSnapshot('- text: Price £6.50');
+      await expect(price).toContainText('One payment for the pair, not per message.');
       const staleOffer = /Black Friday|£4\.50/i;
       await expect(promotion).not.toContainText(staleOffer);
       expect(await promotion.ariaSnapshot()).not.toMatch(staleOffer);
@@ -146,7 +135,7 @@ for (const path of ['/', '/free-santa-message']) {
       await promotion.getByRole('button', { name: 'Purchase — £6.50 (test)', exact: true }).click();
       await expect(promotion.getByRole('alert').filter({ hasText: 'Controlled checkout refusal' })).toBeVisible();
       await expectRegularPromotion(promotion);
-      await expectPriceFooter(promotion);
+      await expectIntegratedOffer(promotion);
     });
   }
 }
