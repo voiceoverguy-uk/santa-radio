@@ -95,7 +95,10 @@ practices.
 source when requesting a dedicated policy. They are not an audit of the signed
 release or evidence about website processing.
 
-**How to apply:** Keep this native notice separate from the website policy and
-other apps. Distinguish local storage from collection; require owner confirmation
+**How to apply:** The owner corrected the placement: “the policy should have been
+added inside the main privacy policy in its own section.” Keep the native-app
+claims scoped separately from website processing and other apps, but include
+the full notice within the main policy, not only on a standalone page.
+Distinguish local storage from collection; require owner confirmation
 before asserting final-build services, backup/deletion rules, legal identity or
 App Store compliance.

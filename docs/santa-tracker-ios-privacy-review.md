@@ -1,29 +1,34 @@
 # Native iOS tracker privacy — owner review
 
-Review destination: `/santa-tracker/privacy`. This change does not publish the site.
-The existing `/privacy-policy` content is unchanged.
+Review destination: `/privacy-policy#santa-tracker-ios-privacy`.
+The owner corrected the placement: the full policy belongs in its own section
+inside the main policy, with a visible section-navigation link.
+`/santa-tracker/privacy` remains available and shares the same native-policy
+content. Other app sections and website disclosures are preserved. This change
+does not publish the site.
 
 ## Verification
 
 - Full website production build passed, including server rendering and the
   generated public policy document.
-- Two preview browser tests passed: direct anonymous access, tracker-page
-  navigation, existing policy/contact links, and 320/390px overflow checks.
+- Preview browser checks cover direct anonymous access, tracker-page and
+  main-policy navigation, section reload/focus, existing policy/contact links,
+  and 320/390px overflow checks.
 - Phone-width screenshot checked with the standard website shell and privacy
-  styling. Existing website policy files are unchanged.
+  styling. Existing unrelated policy wording is preserved.
 
 ## Basis and boundaries
 
 The app facts are supplied with this request from a review of the current native
 iOS tracker code; this website change is not an independent audit of a signed
-iOS release. The page scopes its statements to The Santa Tracker by Santa Radio
+iOS release. The section scopes its statements to The Santa Tracker by Santa Radio
 for iOS, distinguishes local settings from collection, and separates optional
 external browser visits from bundled tracker use. No new legal entity, email
 address, effective date or website processing claim is introduced.
 
 The contact destination `/submit-a-song?mode=general` is the existing general
 enquiry route, already used by other public site notices. The website policy is
-linked for website practices, not rewritten.
+linked for website practices, not rewritten beyond adding the native app section.
 
 ## Owner checks before release
 

@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import './PrivacyPolicy.css';
 import CookiePolicySection from './CookiePolicySection.jsx';
+import SantaTrackerPrivacyContent from './SantaTrackerPrivacyContent.jsx';
 
 const privacySectionIds = [
   'cookie-overview',
@@ -9,6 +10,7 @@ const privacySectionIds = [
   'christmas-radio-privacy',
   'shops-app-privacy',
   'naughty-or-nice-checker-privacy',
+  'santa-tracker-ios-privacy',
   'android-radio-privacy',
   'privacy-choices',
 ];
@@ -41,7 +43,7 @@ export default function PrivacyPolicy() {
   return <main className="privacy-page">
     <Helmet>
       <title>Privacy Policy — Santa Radio</title>
-      <meta name="description" content="Privacy information for the Santa Radio website, Santa Radio for Android, Christmas Radio UK and Christmas Music for Shops for Android, iPhone and iPad, including app storage, embedded content and privacy choices." />
+      <meta name="description" content="Privacy information for the Santa Radio website, The Santa Tracker for iOS, Santa Radio for Android, Christmas Radio UK and Christmas Music for Shops, including app storage, embedded content and privacy choices." />
       <link rel="canonical" href="https://www.santaradio.co.uk/privacy-policy" />
     </Helmet>
     <article className="privacy-content">
@@ -51,12 +53,14 @@ export default function PrivacyPolicy() {
       <p>The Santa Radio website, Santa Radio for Android and Christmas Radio UK app for iPhone and iPad are operated by VoiceoverGuy Ltd. For privacy questions, email <a href="mailto:santa@santaradio.co.uk">santa@santaradio.co.uk</a>.</p>
       <p>This notice covers the current Santa Radio website, Christmas Radio UK for iPhone and iPad, version 35.0; Christmas Music for Shops for Android (package ID com.christmasmusicforshops.app) and Christmas Music for Shops for iPhone and iPad, version 1.0; Santa Radio for Android, version 35.0; and the upcoming Naughty or Nice List Checker for iOS (planned bundle identifier com.santaradio.nicelistchecker), which has not yet been built. The current app-specific sections below explain how each app handles information. The Checker section is interim and will be updated before release. Website features, including forms, Santa audio messages, embedded videos and optional analytics or marketing cookies, are distinct from native app features, but website content can also be displayed inside an app. The website and third-party disclosures therefore also matter for embedded web content. External services may have their own privacy notices.</p>
       <p>You can browse and listen without an account. We do not sell personal data.</p>
+      <p>This policy also covers <strong>The Santa Tracker by Santa Radio for iOS</strong> in its own native-app section below, separately from the website tracker and the other apps.</p>
       <nav className="privacy-section-nav" aria-label="Privacy policy sections">
         <a href="#cookie-overview">Website &amp; cookies</a>
         <a href="#youtube-privacy">YouTube</a>
         <a href="#christmas-radio-privacy">iPhone/iPad app</a>
         <a href="#shops-app-privacy">Christmas Music for Shops</a>
         <a href="#naughty-or-nice-checker-privacy">Naughty or Nice List Checker</a>
+        <a href="#santa-tracker-ios-privacy">The Santa Tracker iOS app</a>
         <a href="#android-radio-privacy">Android app</a>
         <a href="#privacy-choices">Choices &amp; rights</a>
       </nav>
@@ -124,6 +128,11 @@ export default function PrivacyPolicy() {
       <section aria-labelledby="naughty-or-nice-checker-privacy">
         <h2 id="naughty-or-nice-checker-privacy" tabIndex="-1">Naughty or Nice List Checker</h2>
         <p>Naughty or Nice List Checker is an upcoming iOS app and has not yet been built. Its planned bundle identifier is <code>com.santaradio.nicelistchecker</code>. We’ll update this section before release to explain how the app handles information. For privacy questions about this app, email <a href="mailto:santa@santaradio.co.uk">santa@santaradio.co.uk</a>.</p>
+      </section>
+
+      <section aria-labelledby="santa-tracker-ios-privacy">
+        <h2 id="santa-tracker-ios-privacy" tabIndex="-1">The Santa Tracker — native iOS app</h2>
+        <SantaTrackerPrivacyContent embedded />
       </section>
 
       <section aria-labelledby="android-radio-privacy">

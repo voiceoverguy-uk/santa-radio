@@ -17,7 +17,7 @@ export default function SantaTrackerPage() {
     </>} />
     <section className="tracker-questions" aria-labelledby="tracker-questions-heading">
       <h2 id="tracker-questions-heading">Your Santa Tracker questions</h2>
-      <p>Using The Santa Tracker by Santa Radio on iOS? Read the <a href="/santa-tracker/privacy">native iOS app privacy policy</a>. It is separate from the website policy.</p>
+      <p>Using The Santa Tracker by Santa Radio on iOS? Read the <a href="/privacy-policy#santa-tracker-ios-privacy">native iOS app privacy policy</a> within our main privacy policy.</p>
       {trackerQuestions.map(([question, answer]) => <details key={question}>
         <summary>{question}</summary>
         <p>{answer}</p>
