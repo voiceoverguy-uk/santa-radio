@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 const root = new URL('./', import.meta.url);
 const assetPath = /^\/names-data\/(names-[a-f0-9]{64}\.json)$/;
 const filenamePattern = /^names-[a-f0-9]{64}\.json$/;
-const pagePolicy = "default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'self' https://replit.com https://*.replit.com https://*.replit.dev";
+const pagePolicy = "default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'self' https://replit.com https://*.replit.com https://*.replit.dev https://studio.upstream.so";
 
 function encodingFor(header = '') {
   const choices = new Map(header.toLowerCase().split(',').filter(Boolean).map(value => {

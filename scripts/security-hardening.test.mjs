@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import express from 'express';
 import { createServer } from 'node:http';
 import { gzipSync } from 'node:zlib';
+import { readFile } from 'node:fs/promises';
 import { createMessageAccessHandler, issueFreeAccess, freeSession, FREE_ACCESS_COOKIE,
   reserveFreeMessage, finishFreeMessage, authorizeFreeMessage, FREE_COOLDOWN_MS } from '../server/santa-message-access.js';
 import { consumeNameAccess, trustedAddress } from '../server/santa-name-security.js';
@@ -199,6 +200,18 @@ test('compressed bodies are refused without decompression; browser policy does n
   const csp = response.headers.get('content-security-policy');
   assert.match(csp, /frame-ancestors.*replit/);
   assert.doesNotMatch(csp, /default-src|script-src|connect-src|media-src|frame-src/);
+});
+test('served and deployment policies allow only self, existing Replit frames and exact Upstream Studio', async () => {
+  const response = await fetch(base + '/compressed');
+  const deployment = JSON.parse(await readFile(new URL('../vercel.json', import.meta.url), 'utf8'));
+  const deployedHeaders = deployment.routes.find(route => route.src === '/(.*)' && route.headers)?.headers;
+  assert.equal(response.headers.get('content-security-policy'), deployedHeaders['Content-Security-Policy']);
+  assert.equal(response.headers.get('x-frame-options'), null);
+  const directives = response.headers.get('content-security-policy').split(';').map(value => value.trim());
+  assert.deepEqual(directives, [
+    "base-uri 'self'", "object-src 'none'",
+    "frame-ancestors 'self' https://replit.com https://*.replit.com https://*.replit.dev https://studio.upstream.so",
+  ]);
 });
 test('message API rejects a browser-only signup flag before resolving or rendering audio', async () => {
   const handler = createSantaMessageHandler({ resolve: () => assert.fail('No audio access without signup') }, null,
