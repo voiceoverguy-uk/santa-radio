@@ -13,3 +13,8 @@ separate owner token must be scoped only to diagnostics/canary operations.
 Keep all public payment checks and the two-creation policy. Never manufacture
 webhook health, replay old customer events or pay automatically. Changes reach
 production through Replit Sync Changes, with the owner making payment.
+
+Readiness failures must stay diagnosable without exposing provider messages:
+return only stage, Stripe type/code, HTTP status or fixed STUDIO_* codes.
+**Why:** blanket false results hid a production-only Stripe failure while the
+workspace live key passed identical calls.

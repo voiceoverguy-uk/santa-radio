@@ -45,7 +45,8 @@ export default function StudioOwnerReadiness() {
     <button type="button" disabled={busy} onClick={() => run()}>Check production readiness</button>{' '}
     <button type="button" disabled={busy} onClick={() => run('simulator')}>Test simulator email and retry worker</button>
     <p>The simulator refuses a non-empty outbox and never sends customer emails. Approve scheduled retries in Vercel only after this passes.</p>
-    {report && <ul>{Object.entries(labels).map(([key, label]) => <li key={key}>{label}: {report.checks[key] ? 'Passed' : 'Not verified / not ready'}</li>)}</ul>}
+    {report && <ul>{Object.entries(labels).map(([key, label]) => <li key={key}>{label}: {report.checks[key] ? 'Passed' : 'Not verified / not ready'}
+      {!report.checks[key] && report.failures?.[key] && <> ({Object.entries(report.failures[key]).map(([k, v]) => `${k}: ${v}`).join(', ')})</>}</li>)}</ul>}
     <button type="button" disabled={busy || !report?.canaryReady} onClick={() => {
       if (window.confirm('Open a real £6.50 checkout for the owner? No payment is made until you complete Stripe checkout. Public sales stay off.')) run('canary');
     }}>Open owner-only £6.50 checkout</button>

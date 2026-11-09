@@ -5,16 +5,27 @@ export async function liveStripeClient(config = liveStudioConfig(), env = proces
   createClient = (key, options) => new Stripe(key, options)) {
   if (!/^(sk|rk)_live_[A-Za-z0-9]+$/.test(env.STRIPE_LIVE_SECRET_KEY || '')) throw new Error('STUDIO_LIVE_STRIPE_CREDENTIAL_REQUIRED');
   const stripe = createClient(env.STRIPE_LIVE_SECRET_KEY, { apiVersion: '2020-08-27', timeout: 12000, maxNetworkRetries: 1 });
-  const [balance, account] = await Promise.all([stripe.balance.retrieve(), stripe.accounts.retrieve()]);
-  if (balance.livemode !== true || account.id !== config.accountId || account.charges_enabled !== true) {
-    throw new Error('STUDIO_LIVE_ACCOUNT_NOT_VERIFIED');
-  }
+  const [balance, account] = await Promise.all([
+    stripeStage('balance', () => stripe.balance.retrieve()),
+    stripeStage('account', () => stripe.accounts.retrieve()),
+  ]);
+  if (balance.livemode !== true) throw new Error('STUDIO_LIVE_KEY_NOT_LIVE');
+  if (account.id !== config.accountId) throw new Error('STUDIO_LIVE_ACCOUNT_MISMATCH');
+  if (account.charges_enabled !== true) throw new Error('STUDIO_LIVE_CHARGES_DISABLED');
   return stripe;
+}
+
+// Labels which Stripe call failed without changing the original error.
+export async function stripeStage(stage, work) {
+  try { return await work(); } catch (error) {
+    if (error && typeof error === 'object') error.studioStage ??= stage;
+    throw error;
+  }
 }
 
 const id = value => typeof value === 'string' ? value : value?.id;
 export async function verifyLiveOffer(stripe, config) {
-  const price = await stripe.prices.retrieve(config.priceId, { expand: ['product'] });
+  const price = await stripeStage('price', () => stripe.prices.retrieve(config.priceId, { expand: ['product'] }));
   const product = price.product;
   if (price.id !== config.priceId || price.livemode !== true || price.active !== true
     || price.type !== 'one_time' || price.recurring || price.currency !== 'gbp'

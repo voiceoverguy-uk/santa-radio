@@ -140,7 +140,7 @@ test('credential mode prefixes alone cannot prove the configured live account', 
     [{ livemode: true }, { id: config.accountId, charges_enabled: false }],
   ]) await assert.rejects(liveStripeClient(config, validEnv(), () => ({
     balance: { retrieve: async () => balance }, accounts: { retrieve: async () => account },
-  })), /ACCOUNT_NOT_VERIFIED/);
+  })), /STUDIO_LIVE_(KEY_NOT_LIVE|ACCOUNT_MISMATCH|CHARGES_DISABLED)/);
 });
 
 test('active exact £6.50 one-time price and active expanded product are required before checkout', async () => {

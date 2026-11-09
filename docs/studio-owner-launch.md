@@ -72,6 +72,10 @@ async function checkStudioOwner(action) {
 }
 ```
 
+Failed readiness checks include `failures` with only allowlisted fields: the
+failing call stage, Stripe error type/code, HTTP status or a fixed `STUDIO_*`
+code. Provider messages are never returned.
+
 1. `await checkStudioOwner()` runs read-only schema/permission, Stripe,
    webhook-registration and renderer-prerequisite checks inside production.
    It also reports actual stored delivery/worker health and retry approval.

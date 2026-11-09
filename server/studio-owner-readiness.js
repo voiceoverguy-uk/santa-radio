@@ -1,6 +1,6 @@
 import { createHmac } from 'node:crypto';
 import { liveStudioConfig } from './studio-live-config.js';
-import { liveStripeClient, verifyLiveOffer } from './studio-live-stripe.js';
+import { liveStripeClient, verifyLiveOffer, stripeStage } from './studio-live-stripe.js';
 import { liveStoreReady, digest, transaction } from './studio-live-store.js';
 import { studioAllowanceReady } from './studio-creation-allowance.js';
 import { probeSignature, webhookEvents } from './studio-live-readiness.js';
@@ -14,20 +14,37 @@ export function ownerConfig(env = process.env) {
   return liveStudioConfig({ ...env, STUDIO_EMAIL_RETRY_APPROVED: 'true' }, { email: true });
 }
 
+const SAFE_TOKEN = /^[a-z0-9_.-]{1,80}$/i;
+// Fixed diagnostic fields only. Stripe messages can contain partial key text,
+// request details or account data, so they are never returned.
+export function safeCheckFailure(error) {
+  const failure = {};
+  if (SAFE_TOKEN.test(error?.studioStage || '')) failure.stage = error.studioStage;
+  if (/^STUDIO_[A-Z0-9_]{1,70}$/.test(error?.message || '')) failure.code = error.message;
+  for (const key of ['type', 'code', 'decline_code']) {
+    const value = error?.[key] ?? error?.raw?.[key];
+    if (typeof value === 'string' && SAFE_TOKEN.test(value)) failure[key === 'code' ? 'stripeCode' : key] = value;
+  }
+  if (Number.isInteger(error?.statusCode) && error.statusCode >= 100 && error.statusCode <= 599) failure.status = error.statusCode;
+  return Object.keys(failure).length ? failure : { code: 'UNCLASSIFIED' };
+}
+
 export async function ownerReadiness({
   config = ownerConfig(), pool = databasePool(), stripe, fetcher = fetch, env = process.env,
 } = {}) {
-  const checks = {};
+  const checks = {}, failures = {};
   const check = async (name, work) => {
-    try { await work(); checks[name] = true; } catch { checks[name] = false; }
+    try { await work(); checks[name] = true; } catch (error) { checks[name] = false; failures[name] = safeCheckFailure(error); }
   };
   await check('database', async () => { await liveStoreReady(pool); await studioAllowanceReady(pool); });
   await check('stripe', async () => { stripe ||= await liveStripeClient(config); await verifyLiveOffer(stripe, config); });
   await check('webhookEndpoint', async () => {
-    if (!stripe) throw new Error('Unavailable');
-    const e = await stripe.webhookEndpoints.retrieve(config.webhookId);
-    if (e.livemode !== true || e.status !== 'enabled' || e.url !== `${config.origin}/api/stripe/webhook`
-      || !webhookEvents.every(t => e.enabled_events.includes(t) || e.enabled_events.includes('*'))) throw new Error('Unavailable');
+    if (!stripe) throw new Error('STUDIO_STRIPE_CLIENT_UNAVAILABLE');
+    const e = await stripeStage('webhook', () => stripe.webhookEndpoints.retrieve(config.webhookId));
+    if (e.livemode !== true) throw new Error('STUDIO_WEBHOOK_NOT_LIVE');
+    if (e.status !== 'enabled') throw new Error('STUDIO_WEBHOOK_DISABLED');
+    if (e.url !== `${config.origin}/api/stripe/webhook`) throw new Error('STUDIO_WEBHOOK_URL_MISMATCH');
+    if (!webhookEvents.every(t => e.enabled_events.includes(t) || e.enabled_events.includes('*'))) throw new Error('STUDIO_WEBHOOK_EVENTS_MISSING');
   });
   await check('renderer', async () => {
     const r = await fetcher(`${config.origin}/api/santa-studio-message`, {
@@ -40,7 +57,7 @@ export async function ownerReadiness({
   await check('webhookDelivery', async () => {
     const r = await pool.query('SELECT 1 FROM public.santa_studio_live_webhook_health WHERE endpoint_id=$1 AND secret_sha256=$2',
       [config.webhookId, digest(config.webhookSecret)]);
-    if (!r.rowCount) throw new Error('Unavailable');
+    if (!r.rowCount) throw new Error('STUDIO_WEBHOOK_DELIVERY_NOT_RECORDED');
   });
   await check('sender', async () => {
     const r = await pool.query("SELECT 1 FROM public.santa_studio_live_email_health WHERE sender=$1 AND verified_at>clock_timestamp()-interval '48 hours'", [config.emailFrom]);
@@ -52,7 +69,7 @@ export async function ownerReadiness({
   });
   checks.retryApproved = env.STUDIO_EMAIL_RETRY_APPROVED === 'true';
   const canaryReady = ['database', 'stripe', 'webhookEndpoint', 'renderer', 'sender', 'worker', 'retryApproved'].every(k => checks[k]);
-  return { checks, canaryReady, deliveryReady: canaryReady && checks.webhookDelivery };
+  return { checks, failures, canaryReady, deliveryReady: canaryReady && checks.webhookDelivery };
 }
 
 export async function probeOwnerWorker({ config = ownerConfig(), fetcher = fetch } = {}) {

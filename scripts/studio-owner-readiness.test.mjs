@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { createOwnerHandler, validOwnerToken } from '../server/studio-owner-handler.js';
-import { simulateOwnerEmail, ownerCanary, probeOwnerWorker, ownerReadiness } from '../server/studio-owner-readiness.js';
+import { simulateOwnerEmail, ownerCanary, probeOwnerWorker, ownerReadiness, safeCheckFailure } from '../server/studio-owner-readiness.js';
 import { createStudioEmailRetryHandler } from '../server/studio-live-email.js';
 import { studioTestDatabase } from './helpers/studio-live-postgres.mjs';
 import { startOwnerCanary, startLiveCheckout } from '../server/studio-live-checkout.js';
@@ -137,4 +137,24 @@ test('readiness can bootstrap without sales or webhook health, but never without
     assert.equal((await db.pool.query('SELECT enabled FROM public.santa_studio_live_sales_settings')).rows[0].enabled, false);
     assert.equal((await db.pool.query('SELECT count(*)::int n FROM public.santa_studio_live_webhook_health')).rows[0].n, 0);
   } finally { await db.close(); }
+});
+
+test('readiness reports safe Stripe failure stages and codes without messages or credentials', async () => {
+  const leaked = 'sk_live_' + 'S'.repeat(24), webhookSecret = 'whsec_' + 'W'.repeat(24);
+  const stripeError = (stage, status, type, code) => Object.assign(new Error(`Invalid API Key provided: ${leaked}`),
+    { statusCode: status, type, code, raw: { message: leaked }, studioStage: stage });
+  assert.deepEqual(safeCheckFailure(stripeError('account', 403, 'StripePermissionError', 'secret_key_required')),
+    { stage: 'account', type: 'StripePermissionError', stripeCode: 'secret_key_required', status: 403 });
+  assert.deepEqual(safeCheckFailure(new Error(`network ${leaked}`)), { code: 'UNCLASSIFIED' });
+  assert.deepEqual(safeCheckFailure(Object.assign(new Error(leaked), { code: `bad ${leaked}` })), { code: 'UNCLASSIFIED' });
+  const report = await ownerReadiness({ config: { ...config, webhookId: 'we_fixture', webhookSecret, priceId: 'price_fixture' },
+    pool: { query: async () => { throw new Error(`database ${leaked}`); } },
+    stripe: { prices: { retrieve: async () => { throw stripeError(undefined, 401, 'StripeAuthenticationError', undefined); } },
+      webhookEndpoints: { retrieve: async () => { throw stripeError(undefined, 404, 'StripeInvalidRequestError', 'resource_missing'); } } },
+    fetcher: async () => { throw new Error(leaked); }, env: {} });
+  assert.deepEqual(report.failures.stripe, { stage: 'price', type: 'StripeAuthenticationError', status: 401 });
+  assert.deepEqual(report.failures.webhookEndpoint, { stage: 'webhook', type: 'StripeInvalidRequestError', stripeCode: 'resource_missing', status: 404 });
+  const text = JSON.stringify(report);
+  for (const secret of [leaked, webhookSecret, config.secret, config.cronSecret, config.emailKey]) assert(!text.includes(secret));
+  assert.equal(report.canaryReady, false);
 });
