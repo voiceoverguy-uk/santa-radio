@@ -42,14 +42,15 @@ async function observe(page) {
   return requests;
 }
 
-for (const path of ['/santa-tracker', '/santa-tracker/preview', '/santa-tracker/nested/test']) {
+for (const path of ['/styt', '/santa-tracker', '/santa-tracker/preview', '/santa-tracker/nested/test']) {
   for (const saved of [false, true]) {
     test(`${path}: tracking stays off with ${saved ? 'saved acceptance and reload' : 'fresh consent then accept all'}`, async ({ page }) => {
       if (saved) await page.addInitScript(({ key, value }) => localStorage.setItem(key, JSON.stringify(value)),
         { key: consentKey, value: accepted });
       const requests = await observe(page);
       await page.goto(path);
-      if (!saved) await page.getByRole('button', { name: 'Accept all', exact: true }).click();
+      if (!saved && path !== '/styt') await page.getByRole('button', { name: 'Accept all', exact: true }).click();
+      if (path === '/styt') await expect(page.locator('.marketing-consent')).toHaveCount(0);
       await settle(page);
       await expect(page.locator('#santaradio-google-analytics, #santaradio-meta-pixel')).toHaveCount(0);
       expect(await page.evaluate(() => window['ga-disable-G-FGL2HBXZ92'])).toBe(true);

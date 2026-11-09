@@ -4,7 +4,7 @@ import { EMPTY_CHOICES, SETTINGS_EVENT } from '../privacy/cookieConsent.js';
 import { useCookieConsent } from '../privacy/CookieConsentProvider.jsx';
 import { trackPageView, revokeMarketing } from '../privacy/marketingConsent.js';
 import { trackAnalyticsPageView, revokeAnalytics } from '../privacy/googleAnalytics.js';
-import { isTrackerPath } from '../privacy/trackerPrivacy.js';
+import { isTrackerPath, isTrackerCapturePath } from '../privacy/trackerPrivacy.js';
 import './MarketingConsent.css';
 
 const allChoices = { analytics: true, marketing: true, media: true };
@@ -21,6 +21,10 @@ export default function MarketingConsent() {
   const heading = useRef(null);
   const opener = useRef(null);
   const settingsTrigger = useRef(null);
+
+  useEffect(() => {
+    if (isTrackerCapturePath(pathname)) setSettingsOpen(false);
+  }, [pathname, setSettingsOpen]);
 
   useEffect(() => {
     const player = document.querySelector('.radio-dock');
@@ -41,6 +45,7 @@ export default function MarketingConsent() {
 
   useEffect(() => {
     const open = () => {
+      if (isTrackerCapturePath(window.location.pathname)) return;
       opener.current = document.activeElement;
       setSettingsOpen(true);
     };
@@ -80,7 +85,7 @@ export default function MarketingConsent() {
     closeSettings();
   };
   const complete = choice !== null && typeof choice.analytics === 'boolean';
-  if (!ready || (complete && !settingsOpen && !storageWarning)) return null;
+  if (isTrackerCapturePath(pathname) || !ready || (complete && !settingsOpen && !storageWarning)) return null;
   if (complete && !settingsOpen && storageWarning) {
     return <section className="marketing-consent" style={{ '--audio-player-height': `${playerClearance}px` }}
       aria-label="Cookie preference status" aria-live="polite">

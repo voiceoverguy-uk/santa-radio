@@ -37,7 +37,7 @@ for (const [date, countdown] of [
       const seconds = (Date.UTC(year, 11, 24, 10) - now) / 1000;
       await expect(values(page)).toHaveText([
         Math.floor(seconds / 86400), Math.floor(seconds / 3600) % 24,
-        Math.floor(seconds / 60) % 60, seconds % 60,
+        Math.floor(seconds / 60) % 60,
       ].map(value => String(value).padStart(2, '0')));
       await expect(page.locator('.tj-departure')).toContainText('Estimated · 24 December, 10:00 UTC');
       await expect(page.getByRole('group', { name: "Countdown to Santa's Departure", exact: false })).toHaveAttribute('aria-live', 'off');
@@ -53,16 +53,16 @@ test('clock ticks switch departure and holiday rollover without a reload', async
   await page.clock.install({ time: new Date('2026-12-24T09:59:57Z') });
   await page.clock.pauseAt(new Date('2026-12-24T09:59:58Z'));
   await page.goto('/santa-tracker');
-  await expect(values(page)).toHaveText(['00', '00', '00', '02']);
+  await expect(values(page)).toHaveText(['00', '00', '00']);
   await page.clock.runFor(1000);
-  await expect(values(page)).toHaveText(['00', '00', '00', '01']);
+  await expect(values(page)).toHaveText(['00', '00', '00']);
   await page.clock.runFor(1000);
   await expect(legend(page)).toBeVisible();
   await expect(page.locator('.tj-departure')).toHaveCount(0);
   await page.clock.setSystemTime(new Date('2026-12-25T23:59:59Z'));
   await page.clock.runFor(0);
   await page.clock.runFor(1000);
-  await expect(values(page)).toHaveText(['363', '10', '00', '00']);
+  await expect(values(page)).toHaveText(['363', '10', '00']);
   await expect(legend(page)).toHaveCount(0);
 });
 
@@ -74,10 +74,10 @@ test('preview countdown shares simulated time and preserves camera across forwar
     speedMultiplier: 60, jumpTarget: 'route-start',
   })));
   await page.goto('/santa-tracker/preview');
-  await expect(values(page)).toHaveText(['00', '00', '05', '00']);
+  await expect(values(page)).toHaveText(['00', '00', '05']);
   await page.getByLabel('Browse a region', { exact: true }).selectOption('Europe');
   await page.clock.runFor(1000);
-  await expect(values(page)).toHaveText(['00', '00', '04', '00']);
+  await expect(values(page)).toHaveText(['00', '00', '04']);
   await expect(page.locator('.tj-camera > [data-night-overlay]')).toHaveAttribute('data-solar-time', '2026-12-24T09:56:00.000Z');
   await page.clock.runFor(4000);
   await expect(legend(page)).toBeVisible();
@@ -103,7 +103,7 @@ for (const width of [320, 390, 1280, 1440]) {
     await page.goto('/santa-tracker');
     for (const zoom of [100, 200]) {
       await page.addStyleTag({ content: `html { font-size: ${zoom}% !important; }` });
-      await expect(values(page)).toHaveText(['363', '10', '00', '00']);
+      await expect(values(page)).toHaveText(['363', '10', '00']);
       const bounds = await page.locator('.tj-toolbar').evaluate(toolbar => ({
         fits: toolbar.scrollWidth <= toolbar.clientWidth + 1,
         childrenFit: [...toolbar.querySelectorAll('button, select, .tj-departure, .tj-departure-unit, .tj-region-context')].every(node => {

@@ -3,10 +3,10 @@ import assert from 'node:assert/strict';
 import { isTrackerPath, isTrackingRequest } from '../src/privacy/trackerPrivacy.js';
 
 test('tracker policy includes every subroute, encoded paths and case variants, not other public pages', () => {
-  for (const path of ['/santa-tracker', '/santa-tracker/', '/santa-tracker/preview', '/santa-tracker/a/b', '/SANTA-TRACKER', '/%73anta-tracker']) {
+  for (const path of ['/styt', '/styt/', '/STYT', '/%73tyt', '/santa-tracker', '/santa-tracker/', '/santa-tracker/preview', '/santa-tracker/a/b', '/SANTA-TRACKER', '/%73anta-tracker']) {
     assert.equal(isTrackerPath(path), true, path);
   }
-  for (const path of ['/', '/apps', '/privacy-policy', '/santa-tracker-news']) assert.equal(isTrackerPath(path), false, path);
+  for (const path of ['/', '/apps', '/privacy-policy', '/santa-tracker-news', '/styt-news', '/styt/not-a-route']) assert.equal(isTrackerPath(path), false, path);
 });
 
 test('network policy covers tracking transports but not radio, fonts or site resources', () => {

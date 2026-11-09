@@ -173,7 +173,7 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
 
   return (
     <div ref={mapRef} className="tracker-map relative w-full overflow-hidden rounded-2xl border">
-      <div className="relative w-full" style={{ aspectRatio: "2 / 1" }}>
+      <div className="tj-map-viewport relative w-full" style={{ aspectRatio: "2 / 1" }}>
         <svg
           viewBox="0 0 1000 500"
           className="absolute inset-0 w-full h-full"
@@ -390,20 +390,17 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
         {live ? <span className="tj-live"><span className="tj-live-dot" />Estimated live</span> : null}
         <div className="tj-map-summary">
           {departureCountdown ? (
-            <div className="tj-departure" role="group" aria-labelledby={`${titleId}-departure`} aria-live="off">
-              <span className="tj-departure-heading" id={`${titleId}-departure`}>
-                Countdown to Santa&apos;s Departure
-                <span className="tj-departure-target">Estimated · 24 December, 10:00 UTC</span>
-              </span>
+            <div className="tj-departure" role="group" aria-label="Countdown to Santa's Departure" aria-describedby={`${titleId}-departure-target`} aria-live="off" title="Estimated departure · 24 December, 10:00 UTC">
+              <span className="tj-departure-heading">Departure in:</span>
+              <span className="tj-departure-target sr-only" id={`${titleId}-departure-target`}>Estimated · 24 December, 10:00 UTC</span>
               <div className="tj-departure-units">
                 {[
                   { label: "Days", value: departureCountdown.days },
                   { label: "Hours", value: departureCountdown.hours },
                   { label: "Minutes", value: departureCountdown.minutes },
-                  { label: "Seconds", value: departureCountdown.seconds },
                 ].map(unit => (
                   <span className="tj-departure-unit" key={unit.label}>
-                    <span className="tj-departure-value">{String(unit.value).padStart(2, "0")}</span>
+                    <span className="tj-departure-value">{String(unit.value).padStart(2, "0")}</span>{' '}
                     <span className="tj-departure-label">{unit.label}</span>
                   </span>
                 ))}

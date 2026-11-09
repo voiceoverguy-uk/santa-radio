@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar.jsx';
 import Footer from './components/Footer.jsx';
 import Home from './pages/Home.jsx';
@@ -36,14 +36,16 @@ import SantaStaffShell from './components/SantaStaffShell.jsx';
 import SantaMessageOffer from './components/SantaMessageOffer.jsx';
 import WorkshopAccessGate from './components/WorkshopAccessGate.jsx';
 import { RadioDockVisibilityProvider } from './components/RadioDockVisibility.jsx';
+import SantaTrackerStreamPage from './tracker/app/styt/page.tsx';
+import { isTrackerCapturePath } from './privacy/trackerPrivacy.js';
 
-function App({ Router = BrowserRouter, routerProps = {} }) {
+function WebsiteLayout() {
+  const capture = isTrackerCapturePath(useLocation().pathname);
   return (
-    <RadioProvider><SantaMessageAccessProvider><CookieConsentProvider><Router {...routerProps}><RadioDockVisibilityProvider>
-      <a href="#page-content" className="skip-link">Skip to content</a>
-      <Navbar />
+    <>
+      {!capture && <><a href="#page-content" className="skip-link">Skip to content</a><Navbar /></>}
       <StaticPageSeo />
-      <Snowfall />
+      {!capture && <Snowfall />}
       <div id="page-content" tabIndex={-1}><Routes>
         <Route path="/" element={<Home />} />
         <Route path="/preview/hero-name-checker" element={<HeroNamePreview />} />
@@ -67,15 +69,23 @@ function App({ Router = BrowserRouter, routerProps = {} }) {
         <Route path="/links" element={<Links />} />
         <Route path="/santa-stories" element={<SantaStories />} />
         <Route path="/santa-tracker" element={<SantaTrackerPage />} />
+        <Route path="/styt" element={<SantaTrackerStreamPage />} />
         <Route path="/santa-tracker/preview" element={<SantaTrackerPreviewPage />} />
         <Route path="/music" element={<Navigate to="/christmas-music" replace />} />
         <Route path="/mugshots" element={<Navigate to="/mugshots/all" replace />} />
         <Route path="*" element={<NotFound />} />
       </Routes></div>
-      <Footer />
-      <AudioPlayer />
+      {!capture && <><Footer /><AudioPlayer /></>}
       <MarketingConsent />
       <SantaMessageOffer />
+    </>
+  );
+}
+
+function App({ Router = BrowserRouter, routerProps = {} }) {
+  return (
+    <RadioProvider><SantaMessageAccessProvider><CookieConsentProvider><Router {...routerProps}><RadioDockVisibilityProvider>
+      <WebsiteLayout />
     </RadioDockVisibilityProvider></Router></CookieConsentProvider></SantaMessageAccessProvider></RadioProvider>
   );
 }

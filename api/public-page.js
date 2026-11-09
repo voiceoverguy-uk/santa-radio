@@ -20,7 +20,7 @@ export default async function handler(req, res) {
   }
   if (req.method === 'HEAD') return res.status(route.status).end();
   const pathname = route.status === 200 ? route.documentPath || decodeURIComponent(path) : '/404';
-  if (pathname === '/santa-tracker' || pathname === '/santa-tracker/preview') {
+  if (pathname === '/santa-tracker' || pathname === '/santa-tracker/preview' || pathname === '/styt') {
     // Only the time-sensitive Tracker needs a runtime renderer.
     const { render } = await import('../dist/server/entry-server.js');
     const template = await readFile(new URL('../dist/server/shell.html', import.meta.url), 'utf8');

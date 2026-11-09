@@ -1,6 +1,12 @@
 // This policy covers every visitor, including the released Android app's
 // unmarked URL. It deliberately does not rely on storage, consent or user agent.
+export function isTrackerCapturePath(pathname) {
+  try { return /^\/styt\/?$/i.test(decodeURIComponent(pathname)); }
+  catch { return /^\/styt\/?$/i.test(pathname); }
+}
+
 export function isTrackerPath(pathname) {
+  if (isTrackerCapturePath(pathname)) return true;
   try {
     return /^\/santa-tracker(?:\/|$)/i.test(decodeURIComponent(pathname));
   } catch {

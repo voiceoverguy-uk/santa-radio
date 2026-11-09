@@ -34,6 +34,7 @@
 - [Tracker artwork sizing tests](tracker-artwork-sizing-tests.md) — Assert the rendered CSS bounds; raster dimensions may differ from the artwork's logical display ratio.
 - [Tracker dashboard layout](tracker-dashboard-layout.md) — Desktop statistics flank the map so visitors can watch the journey without scrolling to a separate dashboard.
 - [Tracker initial camera](tracker-initial-camera.md) — The standalone tracker opens in World view on every load; Follow and regional views remain visitor-selected.
+- [Tracker streaming boundary](tracker-streaming-boundary.md) — /styt is the live map and toolbar only; suppress interfaces without recording consent or changing the full site's shell.
 - [Tracker content boundaries](tracker-content-policy.md) — Delivery stops are not holiday-place additions; distinguish fictional antics from sourced, qualified traditions.
 - [Expanded tracker itinerary](tracker-expanded-itinerary.md) — Owner wants 290 individual destinations, regional map zoom and a clearly labeled estimate, not claims of verified live tracking.
 - [Preview test timeouts](preview-test-timeouts.md) — Whole-test timeouts can report misleading matcher values even when the captured UI state is correct.

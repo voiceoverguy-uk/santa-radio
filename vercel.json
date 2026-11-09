@@ -71,6 +71,7 @@
     }, "continue": true },
     { "src": "/api/__clerk/(.*)", "dest": "/api/__clerk/[...path]" },
     { "src": "/(request-names|sign-in|sign-up)(/.*)?", "dest": "/api/public-page?__sr_route=/$1$2" },
+    { "src": "/(styt)(/)?", "dest": "/api/public-page?__sr_route=/$1$2" },
     { "src": "/artist-artwork/(.*)", "headers": {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",

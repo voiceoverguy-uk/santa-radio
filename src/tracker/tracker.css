@@ -308,6 +308,25 @@
   background: #081e17cc;
 }
 .santa-tracker .tracker-map-status .tracker-status { margin: 0; }
+.santa-tracker.tracker-capture {
+  height: 100dvh;
+  min-height: 18rem;
+  padding: 4px;
+  display: flex;
+}
+.tracker-capture .tracker-map {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border-radius: 4px;
+}
+.tracker-capture .tj-map-viewport {
+  flex: 1 1 auto;
+  min-height: 10rem;
+  aspect-ratio: auto !important;
+}
+.tracker-capture .tj-toolbar { flex: 0 0 auto; }
+.tracker-capture-loading { margin: auto; color: var(--tracker-muted); }
 @media (min-width: 768px) {
   .santa-tracker .tracker-hero .tracker-map {
     width: min(1320px, calc(100vw - 48px));

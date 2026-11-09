@@ -31,6 +31,7 @@ const funFacts = [
 ];
 
 interface SantaTrackerProps {
+  mapOnly?: boolean;
   showPreview?: boolean;
   heading?: ReactNode;
   introCopy?: ReactNode;
@@ -48,7 +49,7 @@ function TrackerHero({ children }: { children: ReactNode }) {
   );
 }
 
-function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTrackerProps) {
+function SantaTrackerInner({ showPreview = false, heading, introCopy, mapOnly = false }: SantaTrackerProps) {
 
   const [previewState, setPreviewState] = useState<PreviewState>(getDefaultPreviewState);
   const [effectiveTime, setEffectiveTime] = useState<Date | null>(null);
@@ -95,11 +96,12 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
   }, [previewState, showPreview]);
 
   useEffect(() => {
+    if (mapOnly) return;
     const interval = setInterval(() => {
       setCurrentFactIndex((prev) => (prev + 1) % funFacts.length);
     }, 6000);
     return () => clearInterval(interval);
-  }, []);
+  }, [mapOnly]);
 
   const handlePreviewChange = useCallback((state: PreviewState) => {
     setPreviewState(state);
@@ -107,7 +109,7 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
   }, []);
 
   if (!mounted || !effectiveTime) {
-    return <TrackerSkeleton heading={heading} introCopy={introCopy} />;
+    return <TrackerSkeleton heading={heading} introCopy={introCopy} mapOnly={mapOnly} />;
   }
 
   const data = getDashboardData(effectiveTime);
@@ -187,6 +189,9 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
       : "Follow Santa as Christmas Eve midnight sweeps across the globe. From Kiritimati to Honolulu, watch his estimated 290-stop journey unfold in real time."}
   </p>;
 
+  const map = <SantaMap effectiveTime={effectiveTime} mapPosition={data.mapPosition} onHoliday={onHoliday} researchDestination={researching ? holiday : null} northPoleVisitMessage={northPoleVisit ? data.statusSubtext : undefined} liveStatusLabel={!mapOnly && isLive ? statusLabel : undefined} />;
+  if (mapOnly) return map;
+
   return (
     <div className="tracker-shell min-h-screen text-white">
       {showPreview && previewState.enabled && (
@@ -206,7 +211,7 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
 
           <div className="tracker-stage mt-8 w-full">
           <div className="tracker-stage-map w-full">
-            <SantaMap effectiveTime={effectiveTime} mapPosition={data.mapPosition} onHoliday={onHoliday} researchDestination={researching ? holiday : null} northPoleVisitMessage={northPoleVisit ? data.statusSubtext : undefined} liveStatusLabel={isLive ? statusLabel : undefined} />
+            {map}
           </div>
           <div className="tracker-stage-body">
 
@@ -312,7 +317,8 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
   );
 }
 
-function TrackerSkeleton({ heading, introCopy }: Pick<SantaTrackerProps, "heading" | "introCopy">) {
+function TrackerSkeleton({ heading, introCopy, mapOnly }: Pick<SantaTrackerProps, "heading" | "introCopy" | "mapOnly">) {
+  if (mapOnly) return <div className="tracker-capture-loading" role="status">Loading Santa Tracker...</div>;
   if (heading) {
     return (
       <div className="tracker-shell min-h-screen text-white">
@@ -338,10 +344,10 @@ function TrackerSkeleton({ heading, introCopy }: Pick<SantaTrackerProps, "headin
   );
 }
 
-export default function SantaTrackerClient({ showPreview = false, heading, introCopy }: SantaTrackerProps) {
+export default function SantaTrackerClient({ showPreview = false, heading, introCopy, mapOnly = false }: SantaTrackerProps) {
   return (
-    <Suspense fallback={<TrackerSkeleton heading={heading} introCopy={introCopy} />}>
-      <SantaTrackerInner showPreview={showPreview} heading={heading} introCopy={introCopy} />
+    <Suspense fallback={<TrackerSkeleton heading={heading} introCopy={introCopy} mapOnly={mapOnly} />}>
+      <SantaTrackerInner showPreview={showPreview} heading={heading} introCopy={introCopy} mapOnly={mapOnly} />
     </Suspense>
   );
 }
