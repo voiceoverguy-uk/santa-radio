@@ -158,3 +158,22 @@ test('readiness reports safe Stripe failure stages and codes without messages or
   for (const secret of [leaked, webhookSecret, config.secret, config.cronSecret, config.emailKey]) assert(!text.includes(secret));
   assert.equal(report.canaryReady, false);
 });
+
+import { stripeCredentialShape } from '../server/studio-live-stripe.js';
+test('Stripe credential diagnostics are booleans and accept both live key families', async () => {
+  const body = 'A1b2'.repeat(10);
+  for (const prefix of ['sk_live_', 'rk_live_']) assert.equal(stripeCredentialShape(prefix + body).accepted, true);
+  const cases = [[undefined, 'present', false], [` sk_live_${body}\n`, 'surroundingWhitespace', true],
+    [`"sk_live_${body}"`, 'quotes', true], [`sk_test_${body}`, 'testMode', true],
+    [`pk_live_${body}`, 'publishableKey', true], [`sk_live_${body}_x`, 'unsupportedCharacters', true]];
+  for (const [value, field, expected] of cases) {
+    const shape = stripeCredentialShape(value);
+    assert.equal(shape[field], expected); assert.equal(shape.accepted, false);
+    assert(Object.values(shape).every(v => typeof v === 'boolean'));
+    assert(!JSON.stringify(shape).includes(body));
+  }
+  const report = await ownerReadiness({ config, pool: { query: async () => ({ rowCount: 0 }) }, stripe: { prices: {}, webhookEndpoints: {} },
+    fetcher: async () => { throw new Error('x'); }, env: { STRIPE_LIVE_SECRET_KEY: `sk_live_${body}` } });
+  assert.equal(report.stripeCredential.accepted, true);
+  assert(!JSON.stringify(report).includes(body));
+});

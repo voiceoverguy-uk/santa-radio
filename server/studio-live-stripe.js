@@ -1,6 +1,24 @@
 import Stripe from 'stripe';
 import { liveStudioConfig } from './studio-live-config.js';
 
+// Boolean-only shape diagnostics. Never returns characters, lengths or prefixes
+// beyond the two supported key families.
+export function stripeCredentialShape(value) {
+  const key = typeof value === 'string' ? value : '';
+  const body = key.replace(/^(sk|rk)_live_/, '');
+  return {
+    present: key.length > 0,
+    supportedFamily: /^(sk|rk)_live_/.test(key),
+    testMode: /^(sk|rk|pk)_test_/.test(key),
+    publishableKey: /^pk_/.test(key),
+    surroundingWhitespace: key !== key.trim(),
+    internalWhitespace: /\s/.test(key.trim()),
+    quotes: /["'`]/.test(key),
+    unsupportedCharacters: /[^A-Za-z0-9]/.test(body),
+    accepted: /^(sk|rk)_live_[A-Za-z0-9]+$/.test(key),
+  };
+}
+
 export async function liveStripeClient(config = liveStudioConfig(), env = process.env,
   createClient = (key, options) => new Stripe(key, options)) {
   if (!/^(sk|rk)_live_[A-Za-z0-9]+$/.test(env.STRIPE_LIVE_SECRET_KEY || '')) throw new Error('STUDIO_LIVE_STRIPE_CREDENTIAL_REQUIRED');

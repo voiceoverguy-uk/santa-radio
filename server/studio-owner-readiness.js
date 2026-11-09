@@ -1,6 +1,6 @@
 import { createHmac } from 'node:crypto';
 import { liveStudioConfig } from './studio-live-config.js';
-import { liveStripeClient, verifyLiveOffer, stripeStage } from './studio-live-stripe.js';
+import { liveStripeClient, verifyLiveOffer, stripeStage, stripeCredentialShape } from './studio-live-stripe.js';
 import { liveStoreReady, digest, transaction } from './studio-live-store.js';
 import { studioAllowanceReady } from './studio-creation-allowance.js';
 import { probeSignature, webhookEvents } from './studio-live-readiness.js';
@@ -69,7 +69,7 @@ export async function ownerReadiness({
   });
   checks.retryApproved = env.STUDIO_EMAIL_RETRY_APPROVED === 'true';
   const canaryReady = ['database', 'stripe', 'webhookEndpoint', 'renderer', 'sender', 'worker', 'retryApproved'].every(k => checks[k]);
-  return { checks, failures, canaryReady, deliveryReady: canaryReady && checks.webhookDelivery };
+  return { checks, failures, stripeCredential: stripeCredentialShape(env.STRIPE_LIVE_SECRET_KEY), canaryReady, deliveryReady: canaryReady && checks.webhookDelivery };
 }
 
 export async function probeOwnerWorker({ config = ownerConfig(), fetcher = fetch } = {}) {
