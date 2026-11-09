@@ -53,10 +53,10 @@ test('each fresh play randomly selects a paid Studio example with its own timed 
     await expectExample(demo, audio, example.name);
     await expect(promotion.locator('.studio-gifts')).toHaveAttribute('data-demo-name', example.name);
     if (index === 0) {
-      const pause = demo.getByRole('button', { name: 'Pause Charlotte’s paid Studio example' });
+      const pause = demo.getByRole('button', { name: 'Pause Bespoke message example — Charlotte' });
       await pause.focus();
       await page.keyboard.press('Enter');
-      const resume = demo.getByRole('button', { name: 'Resume Charlotte’s paid Studio example' });
+      const resume = demo.getByRole('button', { name: 'Resume Bespoke message example — Charlotte' });
       await expect(resume).toBeFocused();
       await expect.poll(() => audio.evaluate(element => element.paused)).toBe(true);
       await expectStudioGifts(promotion, 'Charlotte');
@@ -72,7 +72,7 @@ test('each fresh play randomly selects a paid Studio example with its own timed 
       await audio.evaluate(element => element.pause());
     } else {
       await audio.evaluate(element => element.pause());
-      await expect(demo.getByRole('button', { name: `Resume ${example.name}’s paid Studio example` })).toBeVisible();
+      await expect(demo.getByRole('button', { name: `Resume Bespoke message example — ${example.name}` })).toBeVisible();
     }
     await expectStudioGifts(promotion, example.name);
     await checkCues(audio, cue, example.cues);
@@ -103,7 +103,7 @@ test('each fresh play randomly selects a paid Studio example with its own timed 
 });
 
 function playFor(demo) {
-  return demo.getByRole('button', { name: 'Play paid Studio example', exact: true });
+  return demo.getByRole('button', { name: 'Play Bespoke message example', exact: true });
 }
 
 function stopFor(demo) {
@@ -121,11 +121,13 @@ async function startSample(demo, audio, example, index) {
     delete window.__previousRandom;
   });
   await expect.poll(() => audio.evaluate(element => element.paused)).toBe(false);
-  await expect(demo.getByRole('button', { name: `Pause ${example.name}’s paid Studio example` })).toBeVisible();
+  await expect(demo.getByRole('button', { name: `Pause Bespoke message example — ${example.name}` })).toBeVisible();
+  await expect(demo.locator('.santa-studio-audio-example__label')).toHaveText('Bespoke message example');
   await expect(demo.getByRole('heading', { name: `Paid Studio message example — ${example.name}` })).toBeVisible();
 }
 
 async function expectHiddenExampleName(demo) {
+  await expect(demo.locator('.santa-studio-audio-example__label')).toHaveText('Bespoke message example');
   await expect(demo.getByRole('heading', { name: 'Paid Studio message example', exact: true })).toBeVisible();
   await expect(stopFor(demo)).toBeVisible();
   await expect(demo.locator('.santa-studio-audio-example__seek')).toHaveCount(1);
@@ -211,7 +213,7 @@ test('homepage paid Studio gifts follow each paused example without overriding a
     await expectExample(demo, audio, example.name);
     await expect(promotion.locator('.studio-gifts')).toHaveAttribute('data-demo-name', example.name);
     await audio.evaluate(element => element.pause());
-    await expect(demo.getByRole('button', { name: `Resume ${example.name}’s paid Studio example` })).toBeVisible();
+    await expect(demo.getByRole('button', { name: `Resume Bespoke message example — ${example.name}` })).toBeVisible();
     await expectStudioGifts(promotion, example.name);
     if (index < EXAMPLES.length - 1) {
       await stopFor(demo).click();
@@ -325,7 +327,7 @@ for (const path of ['/', '/free-santa-message']) {
     await startSample(demo, audio, EXAMPLES[0], 0);
     await expect(content).toBeHidden();
     await expect(promotion.locator('.studio-gifts')).toHaveAttribute('data-demo-name', 'Charlotte');
-    await demo.getByRole('button', { name: 'Pause Charlotte’s paid Studio example' }).click();
+    await demo.getByRole('button', { name: 'Pause Bespoke message example — Charlotte' }).click();
     await seekTo(audio, 18.5);
     await expect(demo.locator('.santa-studio-audio-example__cue')).toHaveText('Personalised moment');
     await expect(demo.getByRole('slider')).toHaveCount(0);
@@ -334,10 +336,10 @@ for (const path of ['/', '/free-santa-message']) {
     await expect(content).toBeVisible();
     await expect(demo.getByRole('slider')).toBeVisible();
     await expect(demo.locator('.santa-studio-audio-example__time')).toHaveText(/0:18 \/ 1:/);
-    await expect(demo.getByRole('button', { name: 'Resume Charlotte’s paid Studio example' })).toBeVisible();
+    await expect(demo.getByRole('button', { name: 'Resume Bespoke message example — Charlotte' })).toBeVisible();
     await page.setViewportSize({ width: 320, height: 900 });
     await expect(content).toBeHidden();
-    await demo.getByRole('button', { name: 'Resume Charlotte’s paid Studio example' }).click();
+    await demo.getByRole('button', { name: 'Resume Bespoke message example — Charlotte' }).click();
     await expect.poll(() => audio.evaluate(element => element.paused)).toBe(false);
     await toggle.click();
     await expectStudioGifts(promotion, 'Charlotte');
@@ -386,7 +388,7 @@ test('promotional gift rotation resumes after the paid example stops', async ({ 
   // A synthetic ended event alone leaves the native element playing and can
   // race its queued playing event. Settle it before simulating the end position.
   await audio.evaluate(element => element.pause());
-  await expect(demo.getByRole('button', { name: 'Resume Harry’s paid Studio example' })).toBeVisible();
+  await expect(demo.getByRole('button', { name: 'Resume Bespoke message example — Harry' })).toBeVisible();
   await audio.evaluate(element => {
     element.currentTime = element.duration;
     element.dispatchEvent(new Event('ended'));
@@ -409,3 +411,188 @@ async function seekTo(audio, time) {
   await expect.poll(() => audio.evaluate((element, target) =>
     Math.abs(element.currentTime - target), time)).toBeLessThan(0.15);
 }
+
+// A controllable media clock exercises exact boundaries without wall-clock
+// delays or native seeking rounding. The existing tests above use real MP3s.
+async function controlMediaClock(audio) {
+  await audio.evaluate(element => {
+    let paused = true;
+    let time = 0;
+    let src = '';
+    Object.defineProperties(element, {
+      paused: { get: () => paused },
+      ended: { get: () => false },
+      duration: { get: () => 90 },
+      currentTime: { get: () => time, set: value => { time = value; } },
+      src: { get: () => src, set: value => { src = value; } },
+    });
+    element.play = () => {
+      paused = false;
+      element.dispatchEvent(new Event('loadedmetadata'));
+      element.dispatchEvent(new Event('playing'));
+      return Promise.resolve();
+    };
+    element.pause = () => {
+      paused = true;
+      element.dispatchEvent(new Event('pause'));
+    };
+    element.__setPaused = value => { paused = value; };
+  });
+}
+
+async function expectMagic(demo, active) {
+  const play = demo.locator('.santa-studio-audio-example__play');
+  await expect(play).toHaveClass(active ? /--personalised/ : /__play$/);
+  await expect(play.locator('.santa-studio-audio-example__label')).toHaveText('Bespoke message example');
+  await expect(play.locator('.santa-studio-audio-example__sparkles'))
+    .toHaveAttribute('aria-hidden', 'true');
+  if (!active) {
+    await expect(play.locator('.santa-studio-audio-example__sparkles')).toBeHidden();
+    expect(await play.evaluate(node => node.getAnimations({ subtree: true }).length)).toBe(0);
+  }
+}
+
+for (const [index, example] of EXAMPLES.entries()) {
+  test(`${example.name} magic follows only the playing portion of every two-second cue`, async ({ page }) => {
+    await visit(page);
+    const demo = page.locator('#santa-studio-promotion .santa-studio-audio-example');
+    const audio = demo.locator('audio');
+    await controlMediaClock(audio);
+    await demo.evaluate((_, value) => { Math.random = () => value; }, (index + .1) / 4);
+    await playFor(demo).click();
+    await expectMagic(demo, false);
+    const idleBounds = await demo.locator('.santa-studio-audio-example__play').boundingBox();
+    // No timeupdate event: animation-frame sampling must follow the media clock.
+    for (const start of example.cues) {
+      for (const [time, active] of [[start - .01, false], [start, true], [start + 1.99, true], [start + 2, false]]) {
+        await audio.evaluate((element, value) => { element.currentTime = value; }, time);
+        await expectMagic(demo, active);
+      }
+    }
+    await audio.evaluate(element => { element.currentTime = 9.5; });
+    await expectMagic(demo, true);
+    expect(await demo.locator('.santa-studio-audio-example__play').boundingBox()).toEqual(idleBounds);
+    const pause = demo.getByRole('button', { name: `Pause Bespoke message example — ${example.name}` });
+    await pause.click();
+    await expectMagic(demo, false);
+    await demo.getByRole('button', { name: `Resume Bespoke message example — ${example.name}` }).click();
+    await expectMagic(demo, true);
+    await audio.evaluate(element => { element.currentTime = 11; });
+    await expectMagic(demo, false);
+    await audio.evaluate(element => { element.currentTime = 18.2; element.dispatchEvent(new Event('seeking')); });
+    await expectMagic(demo, true);
+    await audio.evaluate(element => { element.currentTime = 20; element.dispatchEvent(new Event('seeked')); });
+    await expectMagic(demo, false);
+    await audio.evaluate(element => { element.currentTime = 29; });
+    await expectMagic(demo, true);
+    await stopFor(demo).click();
+    await expectMagic(demo, false);
+    await expectHiddenExampleName(demo);
+    for (const event of ['ended', 'error']) {
+      await playFor(demo).click();
+      await audio.evaluate(element => { element.currentTime = 38; });
+      await expectMagic(demo, true);
+      await audio.evaluate((element, name) => element.dispatchEvent(new Event(name)), event);
+      await expectMagic(demo, false);
+      await expectHiddenExampleName(demo);
+      await audio.evaluate(element => element.pause());
+    }
+  });
+}
+
+test('loading retains keyboard focus and rejects stale completions after stop, end or error', async ({ page }) => {
+  await visit(page);
+  const demo = page.locator('#santa-studio-promotion .santa-studio-audio-example');
+  const audio = demo.locator('audio');
+  await controlMediaClock(audio);
+  await audio.evaluate(element => {
+    window.paidPlayCalls = 0;
+    element.play = () => {
+      window.paidPlayCalls++;
+      return new Promise(resolve => { window.finishPaidPlay = resolve; });
+    };
+  });
+  for (const action of ['stop', 'ended', 'error']) {
+    const play = playFor(demo);
+    await play.focus();
+    await page.keyboard.press('Enter');
+    const loading = demo.getByRole('button', { name: 'Loading Bespoke message example', exact: true });
+    await expect(loading).toBeFocused();
+    await expect(loading).toHaveAttribute('aria-busy', 'true');
+    await expect(loading).toBeEnabled();
+    const calls = await page.evaluate(() => window.paidPlayCalls);
+    await page.keyboard.press('Enter');
+    expect(await page.evaluate(() => window.paidPlayCalls)).toBe(calls);
+    await expectHiddenExampleName(demo);
+    if (action === 'stop') await stopFor(demo).click();
+    else await audio.evaluate((element, name) => element.dispatchEvent(new Event(name)), action);
+    // Even a late native completion reporting unpaused media cannot reactivate
+    // the old request or reveal its recipient.
+    await audio.evaluate(element => element.__setPaused(false));
+    await page.evaluate(() => window.finishPaidPlay());
+    await expect(playFor(demo)).toBeVisible();
+    await expectMagic(demo, false);
+    await expectHiddenExampleName(demo);
+    await audio.evaluate(element => element.__setPaused(true));
+  }
+});
+
+test('button magic is contained, readable and static with reduced motion at phone text sizes', async ({ page }) => {
+  await visit(page);
+  const demo = page.locator('#santa-studio-promotion .santa-studio-audio-example');
+  const audio = demo.locator('audio');
+  const play = demo.locator('.santa-studio-audio-example__play');
+  await controlMediaClock(audio);
+  await playFor(demo).click();
+  await audio.evaluate(element => { element.currentTime = 9.5; });
+  await expectMagic(demo, true);
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  expect(await play.evaluate(node => node.getAnimations({ subtree: true }).length)).toBeGreaterThan(0);
+  await page.mouse.move(0, 0);
+  for (const reduced of [false, true]) {
+    await page.emulateMedia({ reducedMotion: reduced ? 'reduce' : 'no-preference' });
+    if (reduced) {
+      expect(await play.evaluate(node => node.getAnimations({ subtree: true }).length)).toBe(0);
+      await expect(play).toHaveCSS('background-color', 'rgb(195, 33, 45)');
+    }
+    for (const width of [320, 390, 1440]) {
+      await page.setViewportSize({ width, height: 1000 });
+      for (const size of [100, 200]) {
+        await page.addStyleTag({ content: `html { font-size: ${size}% !important; }` });
+        await play.scrollIntoViewIfNeeded();
+        const geometry = await play.evaluate(node => {
+          const rect = node.getBoundingClientRect();
+          const stop = node.nextElementSibling.getBoundingClientRect();
+          const label = node.querySelector('.santa-studio-audio-example__label');
+          const range = document.createRange();
+          range.selectNodeContents(label);
+          return {
+            // Unrelated full-page decorations can overflow at enlarged root
+            // sizes; measure the shared control and its own card here.
+            fits: rect.left >= 0 && rect.right <= innerWidth + .5 &&
+              node.closest('.santa-studio-audio-example').scrollWidth <=
+              node.closest('.santa-studio-audio-example').clientWidth + 1,
+            separate: rect.right <= stop.left || rect.bottom <= stop.top,
+            textFits: [...range.getClientRects()].every(line =>
+              line.left >= rect.left && line.right <= rect.right + .5 &&
+              line.top >= rect.top && line.bottom <= rect.bottom + .5),
+          };
+        });
+        expect(geometry, `${width}px, ${size}% text, reduced=${reduced}`)
+          .toEqual({ fits: true, separate: true, textFits: true });
+        await play.focus();
+        await page.keyboard.press('Shift+Tab');
+        await page.keyboard.press('Tab');
+        await expect(play).toBeFocused();
+        await expect(play).toHaveCSS('outline-style', 'solid');
+      }
+    }
+  }
+  await page.evaluate(() => { document.documentElement.style.fontSize = '100%'; });
+  await page.addStyleTag({ content: 'html { font-size: 100% !important; }' });
+  await page.setViewportSize({ width: 390, height: 1000 });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await demo.screenshot({ path: 'generated-artifacts/studio-button-magic-mobile.png' });
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await demo.screenshot({ path: 'generated-artifacts/studio-button-magic-desktop.png' });
+});

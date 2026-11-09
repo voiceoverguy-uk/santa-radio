@@ -288,6 +288,11 @@
   line-height: 1.5;
 }
 
+.hero-name-preview .hero-name-checker__status:empty {
+  min-height: 0;
+  margin-block: 12px;
+}
+
 .hero-name-preview .hero-name-checker__submit {
   width: 100%;
   min-height: 49px;
@@ -800,9 +805,9 @@
     display: none;
   }
 
-  .hero-name-preview__listening > .hero-note {
+  .hero-name-preview .hero-name-preview__listening > .hero-note {
     grid-area: note;
-    margin: -10px 0 0;
+    margin: -14px 0 0;
   }
 
   .hero-name-preview__listening > .hero-countdown {

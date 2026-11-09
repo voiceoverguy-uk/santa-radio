@@ -69,7 +69,8 @@ export default function HeroNameChecker({ onContinue, onSelectedNameChange }) {
         : name.trim() && !options.length
           ? 'We haven’t found that spelling. Try a shorter name or another spelling.'
           : name.trim() ? `${options.length} matching ${options.length === 1 ? 'name' : 'names'}. Choose a name from the list.`
-            : 'Check the name - let Santa create magic.';
+            : '';
+  const describedBy = status || validation || search.blocked ? `${id}-status` : undefined;
 
   return <section className="hero-name-checker" aria-labelledby={`${id}-title`}>
     <h2 id={`${id}-title`}>A <span className="hero-name-checker__free-glow">FREE MESSAGE</span> <br />FROM SANTA</h2>
@@ -104,7 +105,7 @@ export default function HeroNameChecker({ onContinue, onSelectedNameChange }) {
           spellCheck={false} maxLength={80} aria-autocomplete="list" aria-expanded={expanded}
           aria-controls={expanded ? `${id}-options` : undefined}
           aria-activedescendant={expanded && active >= 0 && options[active] ? `${id}-option-${active}` : undefined}
-          aria-describedby={`${id}-status`}
+           aria-describedby={describedBy}
           aria-invalid={search.blocked || !!validation}
           onChange={event => { interacted.current = true; setName(event.target.value); setSelected(null); setValidation(''); setActive(-1); setOpen(true); }}
           onFocus={() => { if (!selected) setOpen(true); }}

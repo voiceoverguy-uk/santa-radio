@@ -44,7 +44,10 @@
 
 .footer-effects {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
+  gap: 4px;
+  min-width: 0;
   max-width: 100%;
 }
 
@@ -161,6 +164,12 @@
 .footer-copy {
   color: #666;
   font-size: 0.78rem;
+}
+
+@media (max-width: 600px) {
+  .footer { padding-top: 12px; }
+  .footer-links { margin-bottom: 2px; }
+  .footer-controls { gap: 2px 12px; margin: 6px auto 2px; }
 }
 
 /* A modest default inset, increased only for actual floating-player overlap.

@@ -46,9 +46,14 @@
 }
 
 .santa-studio-audio-example__play {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   flex: 1 1 16em;
   background: #9b392d;
   color: #fff5df;
+  /* Cue exit must remove the highlight immediately, not fade beyond the audio. */
+  transition: none;
 }
 
 .santa-studio-audio-example__play:hover:not(:disabled) {
@@ -58,7 +63,61 @@
 .santa-studio-audio-example__play--personalised {
   background: #c3212d;
   color: #fff;
-  box-shadow: 0 0 0 3px #c3212d38, 0 0 18px #c3212d70;
+  box-shadow: inset 0 0 0 2px #f2c75c8c;
+  animation: santa-studio-pulse 1.6s ease-in-out infinite;
+}
+
+.santa-studio-audio-example__label,
+.santa-studio-audio-example__play > span:first-child {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+}
+
+.santa-studio-audio-example__sparkles {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.santa-studio-audio-example__sparkles i {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: radial-gradient(circle, #fff8e6 0 30%, #f2c75c 55%, transparent 72%);
+  opacity: 0;
+}
+
+.santa-studio-audio-example__sparkles i:nth-child(1) { left: 8%; top: 22%; }
+.santa-studio-audio-example__sparkles i:nth-child(2) { left: 24%; top: 70%; width: 4px; height: 4px; animation-delay: .25s; }
+.santa-studio-audio-example__sparkles i:nth-child(3) { left: 46%; top: 18%; animation-delay: .5s; }
+.santa-studio-audio-example__sparkles i:nth-child(4) { left: 63%; top: 74%; width: 5px; height: 5px; animation-delay: .75s; }
+.santa-studio-audio-example__sparkles i:nth-child(5) { left: 81%; top: 26%; width: 4px; height: 4px; animation-delay: 1s; }
+.santa-studio-audio-example__sparkles i:nth-child(6) { left: 93%; top: 64%; animation-delay: .4s; }
+
+.santa-studio-audio-example__play--personalised .santa-studio-audio-example__sparkles {
+  visibility: visible;
+}
+
+.santa-studio-audio-example__play--personalised .santa-studio-audio-example__sparkles i {
+  animation-name: santa-studio-twinkle;
+  animation-duration: 1.4s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+@keyframes santa-studio-pulse {
+  0%, 100% { box-shadow: inset 0 0 0 2px #f2c75c8c, inset 0 0 0 0 #f2c75c00; }
+  50% { box-shadow: inset 0 0 0 2px #f2c75cd9, inset 0 0 14px 2px #f2c75c59; }
+}
+
+@keyframes santa-studio-twinkle {
+  0%, 100% { opacity: 0; transform: scale(.4); }
+  50% { opacity: .9; transform: scale(1); }
 }
 
 .santa-studio-audio-example__play--personalised:hover:not(:disabled) {
@@ -181,6 +240,19 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .santa-studio-audio-example__play--personalised,
+  .santa-studio-audio-example__play--personalised .santa-studio-audio-example__sparkles i {
+    animation: none;
+  }
+
+  .santa-studio-audio-example__play--personalised {
+    box-shadow: inset 0 0 0 2px #f2c75cd9;
+  }
+
+  .santa-studio-audio-example__play--personalised .santa-studio-audio-example__sparkles {
+    visibility: hidden;
+  }
+
   .santa-studio-audio-example__play,
   .santa-studio-audio-example__stop {
     transition: none;

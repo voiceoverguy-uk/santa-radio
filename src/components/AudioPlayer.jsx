@@ -5,7 +5,7 @@ import { useRadio } from './RadioProvider.jsx';
 import RadioTracks from './RadioTracks.jsx';
 import LiveLyrics from './LiveLyrics.jsx';
 import './AudioPlayer.css';
-import { useRadioDockHidden } from './RadioDockVisibility.jsx';
+import { useMiniPlayerPreference, useRadioDockHidden } from './RadioDockVisibility.jsx';
 
 const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
@@ -31,11 +31,16 @@ export function RadioButton({ className = 'btn-gold', onStart, iconOnly = false 
   </button>;
 }
 export default function AudioPlayer() {
-  const hidden = useRadioDockHidden();
+  const routeHidden = useRadioDockHidden();
+  const { enabled: miniPlayerEnabled } = useMiniPlayerPreference();
+  const hidden = routeHidden || !miniPlayerEnabled;
   const { pathname } = useLocation();
   const { status, volume, setVolume, error, metadata } = useRadio();
   const [upcomingOpen, setUpcomingOpen] = useState(false);
+  const [hasScrolled, setHasScrolled] = useState(false);
+  const [scrolling, setScrolling] = useState(false);
   const dockRef = useRef(null);
+  const hasScrolledRef = useRef(false);
   const keyboardInteraction = useRef(false);
   // Every full load starts compact, regardless of device or an older saved
   // preference. This shared component still keeps its state across SPA routes.
@@ -53,6 +58,42 @@ export default function AudioPlayer() {
       requestAnimationFrame(() => dockRef.current?.querySelector('.radio-size-toggle')?.focus());
     }
   }, []);
+  useEffect(() => {
+    hasScrolledRef.current = false;
+    setHasScrolled(false);
+    setScrolling(false);
+    if (!miniPlayerEnabled) return;
+    let timer;
+    const scheduleHide = () => {
+      if (!hasScrolledRef.current) return;
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        if (dockRef.current?.contains(document.activeElement)) {
+          scheduleHide();
+          return;
+        }
+        setScrolling(false);
+      }, 1400);
+    };
+    const onScroll = () => {
+      hasScrolledRef.current = true;
+      setHasScrolled(true);
+      setScrolling(true);
+      scheduleHide();
+    };
+    const onFocusOut = event => {
+      if (dockRef.current?.contains(event.target) &&
+          !dockRef.current.contains(event.relatedTarget)) scheduleHide();
+    };
+    window.addEventListener('scroll', onScroll, { passive: true, capture: true });
+    document.addEventListener('focusout', onFocusOut);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('scroll', onScroll, { capture: true });
+      document.removeEventListener('focusout', onFocusOut);
+    };
+  }, [miniPlayerEnabled, pathname]);
+  const scrollIdleHidden = miniPlayerEnabled && !hidden && hasScrolled && !scrolling;
   useBrowserLayoutEffect(() => {
     if (!hidden) return;
     setUpcomingOpen(false);
@@ -97,9 +138,12 @@ export default function AudioPlayer() {
   }, [minimized, hidden]);
   const upcomingId = useId();
   return (
-    <aside ref={dockRef} hidden={hidden} inert={hidden ? '' : undefined} aria-hidden={hidden || undefined} onPointerDownCapture={() => { keyboardInteraction.current = false; }} onClick={event => {
+    <aside ref={dockRef} onPointerDownCapture={() => { keyboardInteraction.current = false; }} onClick={event => {
       if (minimized && !event.target.closest('button, a, input, select, textarea, [role="button"]')) expandPlayer(event);
-    }} className={`radio-dock ${isStudioPath(pathname) ? 'is-studio-player' : ''} ${minimized ? 'is-minimized' : ''} ${status === 'loading' ? 'is-loading' : ''}`} aria-label="Santa Radio player">
+    }} className={`radio-dock ${isStudioPath(pathname) ? 'is-studio-player' : ''} ${minimized ? 'is-minimized' : ''} ${status === 'loading' ? 'is-loading' : ''} ${scrollIdleHidden ? 'is-scroll-idle' : ''}`} aria-label="Santa Radio player"
+       inert={hidden || scrollIdleHidden ? '' : undefined}
+       aria-hidden={hidden || scrollIdleHidden || undefined}
+       hidden={hidden}>
       <button type="button" className="radio-size-toggle" onClick={toggleSize}
         aria-label={minimized ? 'Expand radio player' : 'Minimise radio player'} aria-expanded={!minimized}
         title={minimized ? 'Expand player' : 'Minimise player'}>

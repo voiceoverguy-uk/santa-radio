@@ -5,10 +5,12 @@ import './Footer.css';
 import { openCookieSettings } from '../privacy/cookieConsent.js';
 import { mugPhotoTermsPath } from '../seo/catalogue.js';
 import useFooterClearance from './useFooterClearance.js';
+import { useMiniPlayerPreference } from './RadioDockVisibility.jsx';
 
 export default function Footer() {
   const { pathname } = useLocation();
   const { effects, setEffects } = useRadio();
+  const { enabled: miniPlayerEnabled, setEnabled: setMiniPlayerEnabled } = useMiniPlayerPreference();
   const footerRef = useFooterClearance(pathname);
   return (
     <footer ref={footerRef} className={`footer${isStudioPath(pathname) ? ' is-studio-footer' : ''}`}>
@@ -50,6 +52,23 @@ export default function Footer() {
             </span>
             <span className="effects-toggle-state" aria-hidden="true">
               {effects ? 'On' : 'Off'}
+            </span>
+          </button>
+          <button
+            type="button"
+            className="effects-toggle mini-player-toggle"
+            role="switch"
+            aria-checked={miniPlayerEnabled}
+            aria-label="Mini player"
+            title={miniPlayerEnabled ? 'Turn mini player off' : 'Turn mini player on'}
+            onClick={() => setMiniPlayerEnabled(current => !current)}
+          >
+            <span className="effects-toggle-label">Mini player</span>
+            <span className="effects-toggle-track" aria-hidden="true">
+              <span className="effects-toggle-thumb" />
+            </span>
+            <span className="effects-toggle-state" aria-hidden="true">
+              {miniPlayerEnabled ? 'On' : 'Off'}
             </span>
           </button>
         </div>

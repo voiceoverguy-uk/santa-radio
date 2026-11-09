@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useRadio } from './RadioProvider.jsx';
 import { matchLiveSong } from '../data/matchLiveSong.js';
 import { songPath } from '../seo/catalogue.js';
-import SongArtwork from './SongArtwork.jsx';
+import SongArtworkViewer from './SongArtworkViewer.jsx';
 import './NowPlayingArtwork.css';
 
 export default function NowPlayingArtwork() {
@@ -32,12 +32,7 @@ export default function NowPlayingArtwork() {
       }
     >
       <div className="now-playing-artwork__image">
-        <SongArtwork
-          song={artworkSong}
-          width="512"
-          height="512"
-          decoding="async"
-        />
+        <SongArtworkViewer song={artworkSong} compact />
         {matchedSong && (
           <Link
             className="now-playing-artwork__info"

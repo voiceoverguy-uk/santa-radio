@@ -22,13 +22,15 @@ async function setup(page) {
   await page.goto('/');
   const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await decline.isVisible()) await decline.click();
-  await expect(checker(page).getByRole('status')).toHaveText('Check the name - let Santa create magic.');
+  await expect(checker(page).getByRole('status')).toHaveText('');
+  await expect(input(page)).not.toHaveAttribute('aria-describedby');
 }
 
 async function choose(page, name) {
   await input(page).fill(name);
   await checker(page).getByRole('option', { name, exact: true }).click();
   await expect(checker(page).getByRole('status')).toHaveText(`Yes! Santa can record for ${name}.`);
+  await expect(input(page)).toHaveAttribute('aria-describedby', await checker(page).getByRole('status').getAttribute('id'));
 }
 
 async function empty(page) {
@@ -38,7 +40,8 @@ async function empty(page) {
   await expect(input(page)).toHaveAttribute('aria-invalid', 'false');
   await expect(input(page)).not.toHaveAttribute('aria-activedescendant');
   await expect(checker(page).getByRole('listbox')).toHaveCount(0);
-  await expect(checker(page).getByRole('status')).toHaveText('Check the name - let Santa create magic.');
+  await expect(checker(page).getByRole('status')).toHaveText('');
+  await expect(input(page)).not.toHaveAttribute('aria-describedby');
 }
 
 for (const width of [390, 1440]) {

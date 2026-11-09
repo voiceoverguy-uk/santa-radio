@@ -14,8 +14,20 @@ for (const width of [1440, 390]) {
     await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
     const nav = page.getByRole('navigation', { name: 'Main navigation' });
     const openMenu = async () => {
+      if (!(await nav.locator('.hamburger').isVisible())) return;
+      const close = nav.getByRole('button', { name: 'Close menu', exact: true });
+      if (await close.isVisible()) await page.keyboard.press('Escape');
       const button = nav.getByRole('button', { name: 'Open menu', exact: true });
-      if (await button.isVisible()) await button.click();
+      await expect(button).toBeVisible();
+      const inViewport = await button.evaluate(el => {
+        const rect = el.getBoundingClientRect();
+        return rect.bottom > 0 && rect.top < innerHeight;
+      });
+      if (!inViewport) {
+        await page.mouse.wheel(0, -160);
+        await expect(button).toBeInViewport();
+      }
+      await button.click();
     };
     for (const [label, path] of [
       ['Home', '/'], ['Apps', '/apps'], ['Music', '/christmas-music'],

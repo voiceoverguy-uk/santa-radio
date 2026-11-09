@@ -1,11 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import SongArtwork from './SongArtwork.jsx';
 
-export default function SongArtworkViewer({ song }) {
+export default function SongArtworkViewer({ song, compact = false }) {
   const trigger = useRef(null);
   const dialog = useRef(null);
   const backdropPress = useRef(false);
   const [artwork, setArtwork] = useState(null);
+  const description = song?.song
+    ? `${song.song} by ${song.artist}`
+    : song?.artist || 'Santa Radio live';
 
   useEffect(() => {
     if (!artwork) return;
@@ -23,8 +26,8 @@ export default function SongArtworkViewer({ song }) {
     <button
       ref={trigger}
       type="button"
-      className="song-artwork-enlarge"
-      aria-label={`Enlarge artwork for ${song.song} by ${song.artist}`}
+      className={`song-artwork-enlarge${compact ? ' song-artwork-enlarge--compact' : ''}`}
+      aria-label={`Enlarge artwork for ${description}`}
       aria-haspopup="dialog"
       onClick={() => {
         // Use the displayed image, including any fallback selected after a load error.
@@ -33,12 +36,12 @@ export default function SongArtworkViewer({ song }) {
       }}
     >
       <SongArtwork song={song} width="512" height="512" className="song-artwork-img" />
-      <span className="song-artwork-hint" aria-hidden="true">Enlarge artwork</span>
+      {!compact && <span className="song-artwork-hint" aria-hidden="true">Enlarge artwork</span>}
     </button>
     <dialog
       ref={dialog}
       className="song-artwork-dialog"
-      aria-label={`Artwork for ${song.song} by ${song.artist}`}
+      aria-label={`Artwork for ${description}`}
       onClose={() => {
         setArtwork(null);
         trigger.current?.focus({ preventScroll: true });

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { RadioButton } from './AudioPlayer.jsx';
 import { scrollToSantaMessageDesk } from '../lib/scrollToSantaMessageDesk.js';
@@ -9,6 +9,8 @@ import { isStudioPath } from '../lib/studioRoute.js';
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [hiddenOnScroll, setHiddenOnScroll] = useState(false);
+  const navRef = useRef(null);
   const location = useLocation();
   const highlight = useNavigationHighlight(location.key);
   const openMessageDesk = event => {
@@ -22,13 +24,48 @@ export default function Navbar() {
     }
   };
   useEffect(() => {
-    const update = () => setScrolled(window.scrollY > 40);
+    let lastY = window.scrollY;
+    let direction = 0;
+    let distance = 0;
+    const update = () => {
+      const y = Math.max(0, window.scrollY);
+      setScrolled(y > 40);
+      if (!window.matchMedia('(max-width: 767px), (max-width: 1024px) and (max-height: 500px) and (orientation: landscape)').matches || menuOpen || y <= 40 ||
+          navRef.current?.contains(document.activeElement)) {
+        direction = 0;
+        distance = 0;
+        lastY = y;
+        setHiddenOnScroll(false);
+        return;
+      }
+      const delta = y - lastY;
+      lastY = y;
+      if (!delta) return;
+      const nextDirection = Math.sign(delta);
+      if (nextDirection !== direction) {
+        direction = nextDirection;
+        distance = 0;
+      }
+      distance += Math.abs(delta);
+      if (direction > 0 && distance >= 12) setHiddenOnScroll(true);
+      if (direction < 0 && distance >= 8) setHiddenOnScroll(false);
+    };
+    const revealOnFocus = event => {
+      if (navRef.current?.contains(event.target)) setHiddenOnScroll(false);
+    };
     update();
     window.addEventListener('scroll', update, { passive: true });
-    return () => window.removeEventListener('scroll', update);
-  }, []);
+    window.addEventListener('resize', update);
+    document.addEventListener('focusin', revealOnFocus);
+    return () => {
+      window.removeEventListener('scroll', update);
+      window.removeEventListener('resize', update);
+      document.removeEventListener('focusin', revealOnFocus);
+    };
+  }, [menuOpen]);
   useEffect(() => {
     setMenuOpen(false);
+    setHiddenOnScroll(false);
     // Message pages own their initial panel position; a later navbar scroll
     // would undo Studio's before-paint mobile alignment.
     if (!/^\/free-santa-message\/?$/.test(location.pathname) && !isStudioPath(location.pathname)) window.scrollTo(0, 0);
@@ -57,7 +94,7 @@ export default function Navbar() {
     return pathname === to || (to !== '/' && pathname.startsWith(`${to}/`));
   };
   return (
-    <nav className={`navbar ${scrolled || location.pathname !== '/' ? 'solid' : ''}`} aria-label="Main navigation">
+    <nav ref={navRef} className={`navbar ${scrolled || location.pathname !== '/' ? 'solid' : ''} ${hiddenOnScroll && !menuOpen ? 'is-scroll-hidden' : ''}`} aria-label="Main navigation">
       <div className="navbar-inner">
         <Link to="/" className="navbar-logo" aria-label="Santa Radio home"><img className="navbar-logo-image" src="/images/santa-radio-gold-nav.webp" alt="Santa Radio" width="630" height="188" /></Link>
         {!isStudio && <RadioButton className="nav-radio-icon" iconOnly />}

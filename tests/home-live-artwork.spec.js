@@ -25,6 +25,35 @@ async function setup(page, { failPlayback = false } = {}) {
   return state;
 }
 
+test('mobile live artwork opens the full image and returns focus to its trigger', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const state = await setup(page);
+  state.artist = 'The Ronettes';
+  state.title = 'Sleigh Ride';
+  await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+  await page.getByRole('navigation', { name: 'Main navigation' })
+    .getByRole('button', { name: 'Listen Live', exact: true }).click();
+
+  const card = page.locator('.now-playing-artwork');
+  const trigger = card.getByRole('button', {
+    name: 'Enlarge artwork for Sleigh Ride by The Ronettes',
+  });
+  await expect(trigger).toBeVisible();
+  await expect(trigger.locator('img')).toHaveAttribute('src', '/artist-artwork/the-ronettes.webp');
+  await trigger.click();
+
+  const dialog = page.getByRole('dialog', { name: 'Artwork for Sleigh Ride by The Ronettes' });
+  await expect(dialog).toBeVisible();
+  await expect.poll(() => dialog.locator('.song-artwork-enlarged').evaluate(image =>
+    new URL(image.src).pathname)).toBe('/artist-artwork/the-ronettes.webp');
+  await expect(dialog.getByRole('button', { name: 'Close enlarged artwork' })).toBeFocused();
+  await expect.poll(() => page.locator('body').evaluate(node => node.style.overflow)).toBe('hidden');
+  await page.keyboard.press('Escape');
+  await expect(dialog).not.toBeVisible();
+  await expect(trigger).toBeFocused();
+  await expect.poll(() => page.locator('body').evaluate(node => node.style.overflow)).toBe('');
+});
+
 for (const width of [1280, 390]) test(`artwork song info matches both fields, updates and navigates at ${width}px`, async ({ page }) => {
   await page.setViewportSize({ width, height: 900 });
   const state = await setup(page);

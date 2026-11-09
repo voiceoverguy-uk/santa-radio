@@ -7,16 +7,34 @@ const RadioDockVisibilityContext = createContext(null);
 export function RadioDockVisibilityProvider({ children }) {
   const { pathname } = useLocation();
   const [inline, setInline] = useState(null);
+  const [miniPlayerEnabled, setMiniPlayerEnabled] = useState(() => {
+    try { return window.localStorage.getItem('santa-radio-mini-player-enabled') !== 'false'; }
+    catch { return true; }
+  });
+  useEffect(() => {
+    try { window.localStorage.setItem('santa-radio-mini-player-enabled', String(miniPlayerEnabled)); }
+    catch { /* The mini-player preference remains usable when storage is unavailable. */ }
+  }, [miniPlayerEnabled]);
   const path = pathname.replace(/\/+$/, '') || '/';
   const hidden = path === '/free-santa-message' || isStudioPath(path)
     || (path === '/' && inline?.pathname === pathname && inline.active);
-  return <RadioDockVisibilityContext.Provider value={{ hidden: Boolean(hidden), setInline, pathname }}>
+  return <RadioDockVisibilityContext.Provider value={{
+    hidden: Boolean(hidden), setInline, pathname, miniPlayerEnabled, setMiniPlayerEnabled,
+  }}>
     {children}
   </RadioDockVisibilityContext.Provider>;
 }
 
 export function useRadioDockHidden() {
   return useContext(RadioDockVisibilityContext)?.hidden || false;
+}
+
+export function useMiniPlayerPreference() {
+  const context = useContext(RadioDockVisibilityContext);
+  return {
+    enabled: context?.miniPlayerEnabled ?? true,
+    setEnabled: context?.setMiniPlayerEnabled ?? (() => {}),
+  };
 }
 
 // Measure the actual card, not its much taller promotional section. Pixel

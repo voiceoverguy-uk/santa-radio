@@ -60,6 +60,20 @@ export default function SantaStudioAudioExample({ onActiveExampleNameChange }) {
     setActiveCue(getActiveCue(time, selectedExampleRef.current?.cues ?? []));
   }, []);
 
+  // Read the media clock rather than scheduling cue-length timers. This also
+  // catches cue boundaries between the browser's less frequent timeupdate events.
+  useEffect(() => {
+    if (playbackState !== 'playing') return undefined;
+    let frame;
+    const sync = () => {
+      const audio = audioRef.current;
+      if (audio && !audio.paused && !audio.ended) syncFromAudio(audio);
+      frame = requestAnimationFrame(sync);
+    };
+    frame = requestAnimationFrame(sync);
+    return () => cancelAnimationFrame(frame);
+  }, [playbackState, syncFromAudio]);
+
   const playOrPause = async () => {
     const audio = audioRef.current;
     if (!audio || playbackState === 'loading') return;
@@ -139,12 +153,13 @@ export default function SantaStudioAudioExample({ onActiveExampleNameChange }) {
     ? example?.name
     : null;
   const playLabel = playbackState === 'playing'
-    ? `Pause ${activeName}’s paid Studio example`
+    ? `Pause Bespoke message example — ${activeName}`
     : playbackState === 'paused'
-      ? `Resume ${activeName}’s paid Studio example`
+      ? `Resume Bespoke message example — ${activeName}`
       : playbackState === 'loading'
-        ? 'Loading paid Studio example'
-        : 'Play paid Studio example';
+        ? 'Loading Bespoke message example'
+        : 'Play Bespoke message example';
+  const personalisedPlaying = playbackState === 'playing' && activeCue !== null;
 
   return (
     <section className="santa-studio-audio-example" aria-labelledby="santa-studio-audio-title">
@@ -153,13 +168,17 @@ export default function SantaStudioAudioExample({ onActiveExampleNameChange }) {
       </h4>
       <div className="santa-studio-audio-example__controls">
         <button
-          className={`santa-studio-audio-example__play${activeCue !== null ? ' santa-studio-audio-example__play--personalised' : ''}`}
+          className={`santa-studio-audio-example__play${personalisedPlaying ? ' santa-studio-audio-example__play--personalised' : ''}`}
           type="button"
           onClick={playOrPause}
           aria-busy={playbackState === 'loading'}
+          aria-label={playLabel}
         >
           <span aria-hidden="true">{playbackState === 'playing' ? 'Ⅱ' : '▶'}</span>
-          {playLabel}
+          <span className="santa-studio-audio-example__label">Bespoke message example</span>
+          <span className="santa-studio-audio-example__sparkles" aria-hidden="true">
+            <i /><i /><i /><i /><i /><i />
+          </span>
         </button>
         <button
           className="santa-studio-audio-example__stop"
@@ -217,6 +236,7 @@ export default function SantaStudioAudioExample({ onActiveExampleNameChange }) {
         onSeeked={event => syncFromAudio(event.currentTarget)}
         onPlaying={event => {
           if (!event.currentTarget.paused) {
+            syncFromAudio(event.currentTarget);
             startingRef.current = false;
             startedRef.current = true;
             setPlaybackState('playing');

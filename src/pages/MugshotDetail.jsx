@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { useEffect, useRef } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 import ExpandablePortrait from '../components/ExpandablePortrait.jsx';
 import mugshotsData, { mugshotAliases } from '../data/mugshots.ts';
 import './MugshotDetail.css';
@@ -17,12 +17,16 @@ export default function MugshotDetail() {
   const heading = useRef(null);
   const lastSlug = useRef(slug);
 
-  useEffect(() => {
-    if (lastSlug.current !== slug) {
-      window.scrollTo({ top: 0, behavior: 'instant' });
+  useLayoutEffect(() => {
+    const changedProfile = lastSlug.current !== slug;
+    // CSS enables smooth scrolling site-wide. A profile is a new destination,
+    // so restore its top position immediately rather than animating from the
+    // gallery's scroll offset through the biography/footer.
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    if (changedProfile) {
       heading.current?.focus({ preventScroll: true });
-      lastSlug.current = slug;
     }
+    lastSlug.current = slug;
   }, [slug]);
 
   if (!celeb) {

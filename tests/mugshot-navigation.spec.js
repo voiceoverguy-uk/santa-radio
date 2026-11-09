@@ -42,6 +42,30 @@ for (const width of [1440, 1201, 1200, 390, 320]) {
   });
 }
 
+test('opening a mugshot from a scrolled mobile gallery shows the portrait at the top immediately', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/mugshots/all');
+  const consent = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
+  if (await consent.isVisible()) await consent.click();
+  const profile = page.locator('.mugshot-card').nth(70);
+  await profile.scrollIntoViewIfNeeded();
+  const href = await profile.getAttribute('href');
+  expect(href).toMatch(/^\/mugshots\//);
+  expect(await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior)).toBe('smooth');
+  await profile.click();
+  await expect(page).toHaveURL(new RegExp(`${href}$`));
+  await expect(page.locator('.mugshot-detail-name')).toBeVisible();
+  const position = await page.evaluate(() => ({
+    scrollY: window.scrollY,
+    imageTop: document.querySelector('.mugshot-detail-figure').getBoundingClientRect().top,
+  }));
+  expect(position.scrollY).toBe(0);
+  expect(position.imageTop).toBeGreaterThanOrEqual(0);
+  expect(position.imageTop).toBeLessThan(250);
+  await expect(page.locator('.mugshot-detail-photo')).toBeVisible();
+});
+
 test('every retained profile and alias has a valid position in the gallery sequence', () => {
   expect(new Set(catalogue.map(m => m.song)).size).toBe(catalogue.length);
   for (const [slug, canonical] of Object.entries(aliases)) {

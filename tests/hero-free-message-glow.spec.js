@@ -20,7 +20,7 @@ test('updated hero copy sits closely below its heading with and without radio ar
     await page.setViewportSize({ width, height: 1100 });
     await expect(page.locator('.hero-title')).toHaveAccessibleName('Santa Radio MORE MAGIC FROM THE NORTH POLE');
     await expect(page.locator('.hero-description')).toHaveText(
-      'Your Christmas Radio Station all year round, along with festive treats, amazing free apps, games and FREE personalised messages from Santa.');
+      'Festive treats, free apps, games, a Naughty and Nice List checker, Santa Tracker and FREE personalised messages from Santa.');
     const radio = page.locator(width < 768 ? '.nav-radio-icon' : '.hero-actions button');
     for (const playing of [false, true]) {
       if (playing) {

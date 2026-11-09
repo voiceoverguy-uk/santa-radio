@@ -46,24 +46,35 @@ for (const width of [1280, 390, 320]) {
     await expect(footer.getByRole('link', { name: 'Personalised Santa Video Message', exact: true })).toHaveCount(0);
     await expect(footer.locator('a[href*="festivestudio.co.uk"]')).toHaveCount(0);
     const snow = footer.getByRole('switch', { name: 'Snow', exact: true });
+    const miniPlayer = footer.getByRole('switch', { name: 'Mini player', exact: true });
     const instagram = footer.getByRole('link', { name: 'Instagram', exact: true });
     const facebook = footer.getByRole('link', { name: 'Facebook', exact: true });
-    const boxes = await Promise.all([snow, instagram, facebook].map(control => control.boundingBox()));
+    const boxes = await Promise.all([snow, miniPlayer, instagram, facebook].map(control => control.boundingBox()));
     for (const box of boxes) {
       expect(box.width).toBeGreaterThanOrEqual(44);
       expect(box.height).toBeGreaterThanOrEqual(44);
-      expect(box.y + box.height / 2).toBeCloseTo(boxes[0].y + boxes[0].height / 2, 0);
     }
-    expect(boxes[0].x + boxes[0].width).toBeLessThan(boxes[1].x);
-    expect(boxes[1].x + boxes[1].width).toBeLessThan(boxes[2].x);
-    expect((boxes[0].x + boxes[2].x + boxes[2].width) / 2).toBeCloseTo(width / 2, 0);
+    expect(boxes[1].x).toBeGreaterThan(boxes[0].x);
+    expect(boxes[0].y + boxes[0].height / 2).toBeCloseTo(boxes[1].y + boxes[1].height / 2, 0);
+    expect(boxes[2].y + boxes[2].height / 2).toBeCloseTo(boxes[3].y + boxes[3].height / 2, 0);
+    if (width > 600) {
+      expect(boxes[1].x + boxes[1].width).toBeLessThan(boxes[2].x);
+      expect((boxes[0].x + boxes[3].x + boxes[3].width) / 2).toBeCloseTo(width / 2, 0);
+    } else {
+      expect(boxes[2].y).toBeGreaterThan(boxes[1].y + boxes[1].height);
+      expect((boxes[0].x + boxes[1].x + boxes[1].width) / 2).toBeCloseTo(width / 2, 0);
+      expect((boxes[2].x + boxes[3].x + boxes[3].width) / 2).toBeCloseTo(width / 2, 0);
+    }
     const copy = await footer.locator('.footer-copy').boundingBox();
     expect(copy.y).toBeGreaterThan(boxes[0].y + boxes[0].height);
     expect(copy.x + copy.width / 2).toBeCloseTo(width / 2, 0);
     const nav = await footer.locator('.footer-links').boundingBox();
     expect(nav.y + nav.height).toBeLessThan(boxes[0].y);
     const height = await footer.evaluate(el => el.getBoundingClientRect().height);
-    const maximumHeight = width === 1280 ? 220 : path === '/' ? (width === 390 ? 430 : 530) : 350;
+    // Allow one additional mobile footer row for the mini-player switch.
+    const maximumHeight = width === 1280 ? 220
+      : path === '/' ? (width === 390 ? 440 : 540)
+        : width === 320 ? 365 : 350;
     expect(height).toBeLessThan(maximumHeight);
     await checkBottomSpacing(page);
     expect(await footer.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
@@ -165,6 +176,8 @@ test('footer controls support keyboard use and keep the snow preference', async 
   await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
   const footer = page.locator('footer');
   const snow = footer.getByRole('switch', { name: 'Snow', exact: true });
+  const miniPlayer = footer.getByRole('switch', { name: 'Mini player', exact: true });
+  await expect(miniPlayer).toHaveAttribute('aria-checked', 'true');
   await footer.getByRole('button', { name: 'Cookie settings', exact: true }).focus();
   await page.keyboard.press('Tab');
   await expect(snow).toBeFocused();
@@ -174,6 +187,18 @@ test('footer controls support keyboard use and keep the snow preference', async 
   const after = before === 'true' ? 'false' : 'true';
   await expect(snow).toHaveAttribute('aria-checked', after);
   await expect(snow.locator('.effects-toggle-state')).toHaveText(after === 'true' ? 'On' : 'Off');
+  await page.keyboard.press('Tab');
+  await expect(miniPlayer).toBeFocused();
+  await expect(miniPlayer).toHaveCSS('outline-style', 'solid');
+  await page.keyboard.press('Space');
+  await expect(miniPlayer).toHaveAttribute('aria-checked', 'false');
+  await expect(page.locator('.radio-dock')).toBeHidden();
+  await page.keyboard.press('Space');
+  await expect(miniPlayer).toHaveAttribute('aria-checked', 'true');
+  await expect(page.locator('.radio-dock')).toBeVisible();
+  await page.keyboard.press('Space');
+  await expect(miniPlayer).toHaveAttribute('aria-checked', 'false');
+  await expect(page.locator('.radio-dock')).toBeHidden();
   for (const name of ['Instagram', 'Facebook']) {
     await page.keyboard.press('Tab');
     const link = footer.getByRole('link', { name, exact: true });
@@ -184,7 +209,29 @@ test('footer controls support keyboard use and keep the snow preference', async 
   }
   await page.reload();
   await expect(snow).toHaveAttribute('aria-checked', after);
+  await expect(miniPlayer).toHaveAttribute('aria-checked', 'false');
+  await expect(page.locator('.radio-dock')).toBeHidden();
   await expect(page.locator('html')).toHaveAttribute('data-effects', after === 'true' ? 'on' : 'off');
+});
+
+test('mini player returns while scrolling and hides after scrolling stops', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.addInitScript(() => localStorage.removeItem('santa-radio-mini-player-enabled'));
+  await page.clock.install();
+  await page.goto('/');
+  await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
+  const dock = page.locator('.radio-dock');
+  await expect(page.locator('footer').getByRole('switch', { name: 'Mini player', exact: true }))
+    .toHaveAttribute('aria-checked', 'true');
+  await expect(dock).toBeVisible();
+  await page.mouse.wheel(0, 240);
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(0);
+  await expect(dock).toBeVisible();
+  await page.clock.fastForward(1400);
+  await expect(dock).toBeHidden();
+  await page.mouse.wheel(0, 240);
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(240);
+  await expect(dock).toBeVisible();
 });
 
 for (const width of [320, 240]) {
