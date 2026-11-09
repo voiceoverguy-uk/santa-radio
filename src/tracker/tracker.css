@@ -358,10 +358,6 @@
 .tracker-banner .tracker-card-value { color: var(--tracker-cream); font-weight: 500; }
 .santa-tracker .tracker-preview-panel .tracker-meta { color: #c1cbbb; }
 
-/* The homepage heading shares the Pairs and Soundboard reference treatment. */
-.home-page > .tracker-banner .tracker-banner-heading .homepage-section-heading__divider-line {
-  background: #d6b55b;
-}
 .tracker-banner .tracker-banner-copy {
   min-width: 0;
 }

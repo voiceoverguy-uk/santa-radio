@@ -38,6 +38,8 @@ for (const [width, enlarged] of [[1440, false], [768, false], [390, false], [320
     await page.addStyleTag({ content: `html { scroll-behavior: auto !important; ${enlarged ? 'font-size: 200% !important;' : ''} }` });
     await page.evaluate(() => document.fonts.ready);
     const pairs = page.locator('.christmas-pairs__heading');
+    const referenceDividerLineBackgrounds = await page.locator('.homepage-santa-studio .homepage-section-heading__divider-line')
+      .evaluateAll(lines => lines.map(line => getComputedStyle(line).backgroundImage));
     const reference = {
       eyebrow: await typography(pairs.locator('.christmas-pairs__eyebrow')),
       title: await typography(pairs.locator('h2')),
@@ -98,7 +100,6 @@ for (const [width, enlarged] of [[1440, false], [768, false], [390, false], [320
         const box = line.getBoundingClientRect();
         return { x: box.x, right: box.right, width: box.width, height: box.height,
           backgroundImage: getComputedStyle(line).backgroundImage,
-          backgroundColor: getComputedStyle(line).backgroundColor,
           opacity: getComputedStyle(line).opacity };
       }));
       const starBounds = await divider.locator('svg').evaluate(element => {
@@ -107,15 +108,14 @@ for (const [width, enlarged] of [[1440, false], [768, false], [390, false], [320
       });
       expect(lineBounds[0].width).toBeGreaterThanOrEqual(42);
       expect(lineBounds[1].width).toBeGreaterThanOrEqual(42);
+      expect(Math.abs(lineBounds[0].width - lineBounds[1].width)).toBeLessThanOrEqual(1);
       expect(lineBounds[0].height).toBe(1);
       expect(lineBounds[1].height).toBe(1);
       expect(lineBounds[0].right).toBeLessThan(starBounds.x);
       expect(lineBounds[1].x).toBeGreaterThan(starBounds.right);
-      if (name === 'tracker') {
-        expect(lineBounds.every(line => line.backgroundColor === 'rgb(214, 181, 91)' && line.opacity === '1')).toBe(true);
-      } else {
-        expect(lineBounds.every(line => line.backgroundImage.includes('linear-gradient'))).toBe(true);
-      }
+      expect(Math.abs((starBounds.x + starBounds.right) / 2 - (dividerBox.x + dividerBox.width / 2))).toBeLessThanOrEqual(1);
+      expect(lineBounds.map(line => line.backgroundImage)).toEqual(referenceDividerLineBackgrounds);
+      expect(lineBounds.every(line => line.backgroundImage.includes('linear-gradient') && line.opacity === '1')).toBe(true);
       expect(await small.evaluate(element => ['::before', '::after'].every(pseudo =>
         ['none', 'normal'].includes(getComputedStyle(element, pseudo).content)))).toBe(true);
       const headingItems = [small, divider, heading, ...(subtitle !== null ? [intro] : [])];
