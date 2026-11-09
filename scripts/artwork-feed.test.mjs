@@ -232,6 +232,44 @@ test('Greg Lake replacement stays shared and advertises the replacement bytes', 
   assert.deepEqual(feed.artists['greg lake'], { path, version, url: `${path}?v=${version}` });
 });
 
+test('Elton John transparency is shared and cache-busted without changing his duet artwork', async () => {
+  const path = '/artist-artwork/elton-john.webp';
+  const artistSongs = songs.filter(song => mapping.normalizeArtistName(song.artist) === 'elton john');
+  assert.ok(artistSongs.length > 0);
+  assert.equal(mapping.artistArtwork('Elton John'), path);
+  for (const song of artistSongs) assert.equal(mapping.artistArtwork(song.artist), path);
+
+  const original = await readFile('public/artist-artwork/elton-john.jpg');
+  const supplied = await readFile('attached_assets/elton-john_1791328536891.jpg');
+  const originalVersion = createHash('sha256').update(original).digest('hex');
+  assert.equal(originalVersion, createHash('sha256').update(supplied).digest('hex'));
+  assert.equal(originalVersion, '47b8a73b7516742fca45753ad31f980999e4d6b161aa534fe1a65fd42c72265f');
+
+  const bytes = await readFile(`public${path}`);
+  assert.equal(bytes.subarray(0, 4).toString(), 'RIFF');
+  assert.equal(bytes.subarray(8, 12).toString(), 'WEBP');
+  let hasAlpha = false;
+  for (let offset = 12; offset + 8 <= bytes.length;) {
+    const chunk = bytes.toString('ascii', offset, offset + 4);
+    const length = bytes.readUInt32LE(offset + 4);
+    if (chunk === 'ALPH' || (chunk === 'VP8X' && (bytes[offset + 8] & 0x10))) hasAlpha = true;
+    offset += 8 + length + (length & 1);
+  }
+  assert.equal(hasAlpha, true, 'the delivered WebP must encode an alpha channel');
+
+  const version = createHash('sha256').update(bytes).digest('hex');
+  assert.notEqual(version, 'db7df7803a92c280a9692bb5f9618b5fbbcb208d3d25781ada6e2f8239a8a797');
+  const feed = await buildArtworkFeed(mapping);
+  assert.deepEqual(feed.artists['elton john'], { path, version, url: `${path}?v=${version}` });
+
+  const duetPath = '/artist-artwork/elton-john-ed-sheeran.webp';
+  const duet = await readFile(`public${duetPath}`);
+  assert.equal(createHash('sha256').update(duet).digest('hex'),
+    'cb19d11ff672eeb18007c6ea6105a7937e0ab7d5f481fb9d81d3a235843b9d3b');
+  assert.equal(mapping.artistArtwork('Ed Sheeran & Elton John'), duetPath);
+  assert.equal(feed.artists['ed sheeran & elton john'].path, duetPath);
+});
+
 test('Corinne Bailey Rae uses her supplied portrait in the catalogue and shared artwork feed', async () => {
   const songs = JSON.parse(await readFile('src/data/songs.json', 'utf8'));
   const artistSongs = songs.filter(song => song.artist === 'Corinne Bailey Rae');

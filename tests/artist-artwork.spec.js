@@ -80,6 +80,38 @@ test('song pages use shared artist portraits and the Santa fallback', async ({ p
   }
 });
 
+test('Elton John artwork keeps transparent corners and interior white details on mobile', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const song = songs.find(item => item.artist === 'Elton John');
+  expect(song).toBeDefined();
+  await page.goto(`/christmas-artist/${song.id}-${song.link}`);
+  const image = page.locator('.song-artwork-img');
+  await expect(image).toHaveAttribute('src', '/artist-artwork/elton-john.webp');
+  await expect.poll(() => image.evaluate(el => el.naturalWidth)).toBe(500);
+  const pixels = await image.evaluate(el => {
+    const canvas = document.createElement('canvas');
+    canvas.width = el.naturalWidth;
+    canvas.height = el.naturalHeight;
+    const context = canvas.getContext('2d');
+    context.drawImage(el, 0, 0);
+    const { data } = context.getImageData(0, 0, canvas.width, canvas.height);
+    const corners = [[0, 0], [499, 0], [0, 499], [499, 499]]
+      .map(([x, y]) => data[(y * canvas.width + x) * 4 + 3]);
+    let opaque = 0;
+    let opaqueWhite = 0;
+    for (let i = 0; i < data.length; i += 4) {
+      if (data[i + 3] > 240) {
+        opaque++;
+        if (data[i] > 235 && data[i + 1] > 235 && data[i + 2] > 235) opaqueWhite++;
+      }
+    }
+    return { corners, opaque, opaqueWhite };
+  });
+  expect(pixels.corners).toEqual([0, 0, 0, 0]);
+  expect(pixels.opaque).toBeGreaterThan(200_000);
+  expect(pixels.opaqueWhite).toBeGreaterThan(100);
+});
+
 test('all supplied portraits resolve without guessing collaborations', () => {
   const artists = ['Jose Feliciano', 'Holly Johnson', 'The Beach Boys', 'Nat King Cole', 'Jonas Brothers', 'Jona Lewie', 'Barbra Streisand', 'Bruce Springsteen', 'Robbie Williams', 'Brenda Lee', 'Dean Martin', 'Andy Williams', 'Freya Skye', 'Cliff Richard', 'Paul McCartney', 'Mariah Carey', 'Elton John', 'Ed Sheeran', 'Bing Crosby', 'Michael Bublé'];
   artists.push('Taylor Swift', 'Mel & Kim', 'Engelbert Humperdinck', 'Band Aid', 'Kelly Clarkson', 'Chris Rea', 'Ariana Grande', 'Bastille', 'Miley Cyrus', 'Dido', 'Carly Rae Jepsen', 'Darlene Love', 'Coldplay', 'Ed Sheeran & Elton John', 'Kylie Minogue', 'East 17', 'Frank Sinatra', 'Shakin Stevens', 'Elvis Presley', 'Sia');

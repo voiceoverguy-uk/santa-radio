@@ -30,6 +30,12 @@ Keep supplied uploads and legacy JPEG originals when creating optimised WebP del
 
 **How to apply:** Serve the optimised copy through the artwork mapping, but do not delete originals merely to reduce page downloads—the browser only downloads the referenced file.
 
+For white-matted artwork, remove only the edge-connected matte and decontaminate the immediate edge against white; do not key out white globally.
+
+**Why:** Snowflakes and clothing can contain important opaque white details, while JPEG edge pixels can retain a pale halo when displayed on the radio's dark background.
+
+**How to apply:** Preserve the supplied JPEG, inspect the transparent WebP composited on the dark radio background at mobile size, and confirm interior white details remain opaque.
+
 Fit non-square supplied illustrations inside the square artwork canvas without stretching or cropping the composition.
 
 **Why:** Landscape band portraits can have members near both edges; square cropping would remove them.
