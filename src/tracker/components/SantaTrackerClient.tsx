@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback, Suspense, type ReactNode } from "react";
-import { getDashboardData, isHolidaySeason, isRouteResearchSeason, getRouteResearchCopy, isChristmasInJuly, getRandomHoliday, type HolidayDestination } from "@/lib/santaRoute";
+import { useState, useEffect, useCallback, useRef, Suspense, type ReactNode } from "react";
+import { getDashboardData, isHolidaySeason, isRouteResearchSeason, isDecemberVisitSeason, getRandomDecemberTrackerVisit, getRouteResearchCopy, isChristmasInJuly, getRandomHoliday, type DecemberTrackerVisit, type HolidayDestination } from "@/lib/santaRoute";
 import { santaStops } from "@/data/santaRouteStops";
 import { additionalChristmasFacts } from "@/data/christmasFacts";
 import {
@@ -55,8 +55,11 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
   const [mounted, setMounted] = useState(false);
   const [currentFactIndex, setCurrentFactIndex] = useState(0);
   const [holiday, setHoliday] = useState<HolidayDestination | null>(null);
+  const [decemberVisit, setDecemberVisit] = useState<DecemberTrackerVisit | null>(null);
+  const decemberVisitRef = useRef<DecemberTrackerVisit | null>(null);
   const holidaySeason = effectiveTime !== null && isHolidaySeason(effectiveTime);
-  const travellingSeason = holidaySeason || (effectiveTime !== null && isRouteResearchSeason(effectiveTime));
+  const decemberVisitSeason = effectiveTime !== null && isDecemberVisitSeason(effectiveTime);
+  const travellingSeason = holidaySeason || (effectiveTime !== null && isRouteResearchSeason(effectiveTime)) || decemberVisitSeason;
 
   useEffect(() => {
     setMounted(true);
@@ -69,6 +72,20 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
     if (!effectiveTime) return;
     setHoliday(travellingSeason ? previous => previous ?? getRandomHoliday() : null);
   }, [travellingSeason]);
+
+  useEffect(() => {
+    if (!effectiveTime) return;
+    if (isDecemberVisitSeason(effectiveTime)) {
+      if (decemberVisitRef.current === null) {
+        const visit = getRandomDecemberTrackerVisit();
+        decemberVisitRef.current = visit;
+        setDecemberVisit(visit);
+      }
+    } else if (decemberVisitRef.current !== null) {
+      decemberVisitRef.current = null;
+      setDecemberVisit(null);
+    }
+  }, [effectiveTime]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -96,11 +113,21 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
   const data = getDashboardData(effectiveTime);
   const isLive = data.mode === "LIVE";
   const isComplete = data.mode === "COMPLETE";
-  const onHoliday = data.mode === "OFF_SEASON" && holidaySeason && holiday !== null;
-  const researching = data.mode === "ROUTE_RESEARCH";
+  const northPoleVisit = decemberVisitSeason && decemberVisit?.kind === "NORTH_POLE";
+  const decemberResearching = decemberVisitSeason && decemberVisit?.kind === "ROUTE_RESEARCH";
+  const onHoliday = !decemberVisitSeason && data.mode === "OFF_SEASON" && holidaySeason && holiday !== null;
+  const researching = decemberVisitSeason ? decemberResearching : data.mode === "ROUTE_RESEARCH";
   const onTrip = (onHoliday || researching) && holiday !== null;
   const inJuly = data.mode === "OFF_SEASON" && isChristmasInJuly(effectiveTime);
-  const showStatusMessage = !heading || isLive || isComplete || onTrip;
+  const showStatusMessage = !heading || isLive || isComplete || onTrip || northPoleVisit;
+
+  if (northPoleVisit && decemberVisit?.kind === "NORTH_POLE") {
+    data.statusHeadline = "Back at the North Pole";
+    data.statusSubtext = decemberVisit.message;
+    data.currentStopName = "North Pole";
+    data.currentStopFlag = "🎅";
+    data.currentStopRegion = "Arctic";
+  }
 
   if (onTrip && holiday) {
     data.holiday = holiday;
@@ -134,10 +161,12 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
       ? "Delivering Now"
       : isComplete
       ? "Journey Complete"
-      : data.mode === "PREPARING"
-      ? "Preparing for Takeoff"
+      : northPoleVisit
+      ? "At the North Pole with Head Elf"
       : researching
       ? holiday ? `Prepping the route in ${holiday.name}` : "Prepping the route"
+      : data.mode === "PREPARING"
+      ? "Preparing for Takeoff"
       : onHoliday && inJuly && holiday
       ? `🎄 Christmas in July — ${holiday.name}`
       : onHoliday && holiday
@@ -146,6 +175,8 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
 
   const statusMessage = showStatusMessage && <p className="tracker-copy tracker-status-message mt-4 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
     {isLive || isComplete
+      ? data.statusSubtext
+      : northPoleVisit
       ? data.statusSubtext
       : researching
       ? holiday ? getRouteResearchCopy(holiday) : data.statusSubtext
@@ -175,7 +206,7 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
 
           <div className="tracker-stage mt-8 w-full">
           <div className="tracker-stage-map w-full">
-            <SantaMap effectiveTime={effectiveTime} mapPosition={data.mapPosition} onHoliday={onHoliday} researchDestination={researching ? holiday : null} liveStatusLabel={isLive ? statusLabel : undefined} />
+            <SantaMap effectiveTime={effectiveTime} mapPosition={data.mapPosition} onHoliday={onHoliday} researchDestination={researching ? holiday : null} northPoleVisitMessage={northPoleVisit ? data.statusSubtext : undefined} liveStatusLabel={isLive ? statusLabel : undefined} />
           </div>
           <div className="tracker-stage-body">
 
@@ -261,14 +292,14 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy }: SantaTra
             <h2 id="tracker-dashboard-title" className="tracker-section-title text-lg sm:text-xl mb-4">
               Updating Estimated Dashboard
             </h2>
-            <SantaStats effectiveTime={effectiveTime} holiday={onTrip ? holiday : undefined} />
+            <SantaStats effectiveTime={effectiveTime} holiday={onTrip ? holiday : undefined} routeResearch={researching} northPoleVisit={northPoleVisit} />
           </section>
           </div>
       </TrackerHero>
 
       <section className="px-4 sm:px-6 pb-12">
         <div className="max-w-6xl mx-auto">
-          <SantaStory effectiveTime={effectiveTime} holiday={onTrip ? holiday : undefined} />
+          <SantaStory effectiveTime={effectiveTime} holiday={onTrip ? holiday : undefined} routeResearch={researching} />
         </div>
       </section>
 

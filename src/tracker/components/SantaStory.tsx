@@ -8,6 +8,7 @@ import { getDashboardData, getRouteResearchCopy, isDecemberPrep, isHolidaySeason
 interface SantaStoryProps {
   effectiveTime: Date;
   holiday?: HolidayDestination | null;
+  routeResearch?: boolean;
 }
 
 const MONTHS = [
@@ -444,11 +445,11 @@ function WorkshopDispatch({ message }: { message: string }) {
   );
 }
 
-export default function SantaStory({ effectiveTime, holiday }: SantaStoryProps) {
+export default function SantaStory({ effectiveTime, holiday, routeResearch = false }: SantaStoryProps) {
   const data = getDashboardData(effectiveTime);
-  const inDecemberPrep = isDecemberPrep(effectiveTime);
+  const inDecemberPrep = isDecemberPrep(effectiveTime) && !routeResearch;
   const inJuly = data.state === "OFF_SEASON" && isChristmasInJuly(effectiveTime);
-  const onHoliday = data.state === "OFF_SEASON" && isHolidaySeason(effectiveTime) && !!holiday;
+  const onHoliday = !routeResearch && data.state === "OFF_SEASON" && isHolidaySeason(effectiveTime) && !!holiday;
 
   const ctx = getDateContext(effectiveTime);
   const holidayPostcards = holidayPostcardEntries.map((entry) =>
@@ -497,7 +498,10 @@ export default function SantaStory({ effectiveTime, holiday }: SantaStoryProps) 
   let story = "";
   let label = "";
 
-  switch (data.state) {
+  if (routeResearch && holiday) {
+    story = `${getRouteResearchCopy(holiday)} These make-believe research trips are separate from the estimated Christmas Eve delivery route.`;
+    label = "Route Research Report";
+  } else switch (data.state) {
     case "ROUTE_RESEARCH":
       story = `${holiday ? getRouteResearchCopy(holiday) : data.statusSubtext} These make-believe research trips are separate from the estimated Christmas Eve delivery route.`;
       label = "Route Research Report";

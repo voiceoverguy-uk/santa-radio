@@ -18,12 +18,13 @@ interface SantaMapProps {
   mapPosition: MapPosition;
   onHoliday?: boolean;
   researchDestination?: HolidayDestination | null;
+  northPoleVisitMessage?: string;
   liveStatusLabel?: string;
 }
 
 type View = "follow" | "world" | string;
 
-export default function SantaMap({ effectiveTime, mapPosition, onHoliday, researchDestination, liveStatusLabel }: SantaMapProps) {
+export default function SantaMap({ effectiveTime, mapPosition, onHoliday, researchDestination, northPoleVisitMessage, liveStatusLabel }: SantaMapProps) {
   const titleId = useId();
   const descriptionId = useId();
   const mapRef = useRef<HTMLDivElement>(null);
@@ -48,7 +49,7 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
   const currentId = getCurrentStopId(effectiveTime);
   const live = !!currentId && !onHoliday && !researchDestination;
   const mode = getSeasonalTrackerMode(effectiveTime);
-  const artwork = getSantaMarkerArtwork(mode, mapPosition.lng, getJourneySleighDirection(effectiveTime));
+  const artwork = getSantaMarkerArtwork(northPoleVisitMessage ? "OFF_SEASON" : mode, mapPosition.lng, getJourneySleighDirection(effectiveTime));
 
   useEffect(() => {
     if (!artworkViewerOpen) {
@@ -92,7 +93,7 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
   const currentStop = currentIdx >= 0 ? ordered[currentIdx] : undefined;
   const nextStop = live ? ordered[currentIdx + 1] : undefined;
 
-  const [view, setView] = useState<View>("follow");
+  const [view, setView] = useState<View>("world");
   const effectiveView = view;
   const santaArtworkScale = effectiveView === "follow" ? 1.5 : 1;
 
@@ -179,10 +180,12 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
           aria-labelledby={titleId}
           aria-describedby={descriptionId}
         >
-          <title id={titleId}>{researchDestination ? `Santa's route research map: ${researchDestination.name}` : onHoliday ? "Santa's holiday location map" : "Santa's estimated journey map"}</title>
+          <title id={titleId}>{researchDestination ? `Santa's route research map: ${researchDestination.name}` : northPoleVisitMessage ? "Santa helping Head Elf at the North Pole" : onHoliday ? "Santa's holiday location map" : "Santa's estimated journey map"}</title>
           <desc id={descriptionId}>
             {researchDestination
               ? `${getRouteResearchCopy(researchDestination)} The Santa marker shows his research location, not a Christmas Eve delivery stop. Faint dots mark the separate estimated Christmas Eve route. Subtle shading marks the night side of Earth at ${effectiveTime.toISOString()} UTC.`
+              : northPoleVisitMessage
+              ? `${northPoleVisitMessage} The Santa marker shows his position at the North Pole. Faint dots mark the separate estimated Christmas Eve route. Subtle shading marks the night side of Earth at ${effectiveTime.toISOString()} UTC.`
               : onHoliday
               ? `The Santa marker shows his current holiday location. Faint dots mark stops on the estimated Christmas Eve route. Subtle shading marks the night side of Earth at ${effectiveTime.toISOString()} UTC.`
               : `The Santa marker shows his estimated position on the world map. Subtle shading marks the night side of Earth at ${effectiveTime.toISOString()} UTC. Red dots mark visited stops, faint dots mark upcoming stops${currentStop ? `, and a glowing dot marks ${currentStop.displayLabel} as the current stop` : ""}${nextStop ? `. Next stop: ${nextStop.displayLabel}` : ""}.`}
@@ -297,6 +300,8 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
               <g
                 ref={artwork ? santaArtworkTriggerRef : undefined}
                 className={`tj-santa${artwork ? " tj-santa-trigger" : ""}`}
+                data-santa-lat={mapPosition.lat}
+                data-santa-lng={mapPosition.lng}
                 transform={`translate(${santaXY.x} ${santaXY.y})`}
                 filter={artwork ? undefined : "url(#pulse-glow)"}
                 role={artwork ? "button" : undefined}
@@ -346,6 +351,8 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
             ? `${effectiveView} · estimated delivery destinations`
             : researchDestination
             ? `Route research in ${researchDestination.name}`
+            : northPoleVisitMessage
+            ? "At the North Pole with Head Elf"
             : onHoliday
             ? "Santa's current holiday location"
             : effectiveView === "follow" && !live

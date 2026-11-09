@@ -117,7 +117,7 @@ test("rendered full map anchors an independently mirrored, proportion-preserving
       assert.match(html, new RegExp(`santa-${outfit}${lng === 0 ? "-front" : ""}\\.png`));
       assert.match(html, /preserveAspectRatio="xMidYMid meet"/);
       assert.equal(html.includes('transform="scale(-1 1)"'), lng > 0);
-      assert.match(html, /class="tj-santa" transform="translate/);
+      assert.match(html, /class="tj-santa(?: tj-santa-trigger)?" data-santa-lat="[^"]+" data-santa-lng="[^"]+" transform="translate/);
       assert.doesNotMatch(html, /Fictional estimated itinerary|GeoNames \(CC BY\)|tj-source/);
       assert.match(html, /aria-label="Map camera"/);
     }

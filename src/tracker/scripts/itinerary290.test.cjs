@@ -28,6 +28,34 @@ const preview = load("lib/santaPreview.ts");
 const camera = load("components/trackerCamera.ts");
 const raw = load("data/santaItinerary.json");
 
+test("December North Pole visits use UTC boundaries and an exact one-in-four choice", () => {
+  const messages = route.decemberNorthPoleMessages;
+  assert.equal(messages.length, 5);
+  assert.equal(route.isDecemberVisitSeason(new Date("2026-11-30T23:59:59.999Z")), false);
+  assert.equal(route.isDecemberVisitSeason(new Date("2026-12-01T00:00:00Z")), true);
+  assert.equal(route.isDecemberVisitSeason(new Date("2026-12-23T23:59:59.999Z")), true);
+  assert.equal(route.isDecemberVisitSeason(new Date("2026-12-24T00:00:00+01:00")), true);
+  assert.equal(route.isDecemberVisitSeason(new Date("2026-12-23T23:30:00-01:00")), false);
+  assert.equal(route.isDecemberVisitSeason(new Date("2026-12-24T00:00:00Z")), false);
+  assert.equal(route.isDecemberVisitSeason(new Date("2027-01-01T00:00:00Z")), false);
+
+  for (const value of [0, 0.249999]) {
+    const randomValues = [value, 0];
+    const visit = route.getRandomDecemberTrackerVisit(() => randomValues.shift());
+    assert.equal(visit.kind, "NORTH_POLE");
+    assert.equal(visit.message, messages[0]);
+  }
+  for (const value of [0.25, 0.999999]) {
+    assert.equal(route.getRandomDecemberTrackerVisit(() => value).kind, "ROUTE_RESEARCH");
+  }
+  for (let i = 0; i < messages.length; i++) {
+    const randomValues = [0, i / messages.length];
+    const visit = route.getRandomDecemberTrackerVisit(() => randomValues.shift());
+    assert.equal(visit.kind, "NORTH_POLE");
+    assert.equal(visit.message, messages[i]);
+  }
+});
+
 test("all 290 supplied destinations have unique identities, coordinates and real time zones", () => {
   assert.equal(raw.length, 290);
   assert.equal(new Set(raw.map(p => p.id)).size, 290);

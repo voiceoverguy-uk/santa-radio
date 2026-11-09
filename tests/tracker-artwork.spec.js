@@ -51,6 +51,8 @@ for (const width of [1440, 390]) {
       await page.clock.setFixedTime(new Date(date));
       await page.goto('/santa-tracker');
       const toolbar = page.locator('.tj-toolbar');
+      await expect(page.locator('.tj-camera')).toHaveAttribute('data-map-view', 'world');
+      await toolbar.getByRole('button', { name: 'Follow Santa', exact: true }).click();
       const marker = page.locator('.tj-santa [data-santa-artwork]');
       await expect(marker).toHaveAttribute('href', `/images/tracker/santa-${outfit}.png`);
       await expect(toolbar.getByRole('button', { name: 'Follow Santa', exact: true })).toHaveAttribute('aria-pressed', 'true');

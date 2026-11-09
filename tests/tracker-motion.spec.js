@@ -67,6 +67,11 @@ async function startPreview(page, startMs, speed = 300) {
   })), startMs);
   await page.reload();
   await expect(page.locator('.tj-santa')).toBeVisible();
+  await expect(page.locator('.tj-camera')).toHaveAttribute('data-map-view', 'world');
+  const previewControls = page.getByRole('button', { name: 'Preview Controls', exact: true });
+  await previewControls.click();
+  await page.locator('.tj-toolbar').getByRole('button', { name: 'Follow Santa', exact: true }).click();
+  await previewControls.click();
   // Start acceleration after loading, so slow navigation cannot skip the dwell.
   await page.getByRole('button', { name: `${speed}×`, exact: true }).click();
 }

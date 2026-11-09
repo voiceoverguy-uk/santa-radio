@@ -32,6 +32,7 @@
 - [Tracker marker direction](tracker-marker-direction.md) — GMT means longitude zero, not local time; holiday/scout face inward geographically and sleigh direction follows actual legs.
 - [Tracker marker motion](tracker-marker-motion.md) — No independent position tween; test accelerated travel with normal motion so marker drift is not hidden.
 - [Tracker dashboard layout](tracker-dashboard-layout.md) — Desktop statistics flank the map so visitors can watch the journey without scrolling to a separate dashboard.
+- [Tracker initial camera](tracker-initial-camera.md) — The standalone tracker opens in World view on every load; Follow and regional views remain visitor-selected.
 - [Tracker content boundaries](tracker-content-policy.md) — Delivery stops are not holiday-place additions; distinguish fictional antics from sourced, qualified traditions.
 - [Expanded tracker itinerary](tracker-expanded-itinerary.md) — Owner wants 290 individual destinations, regional map zoom and a clearly labeled estimate, not claims of verified live tracking.
 - [Preview test timeouts](preview-test-timeouts.md) — Whole-test timeouts can report misleading matcher values even when the captured UI state is correct.

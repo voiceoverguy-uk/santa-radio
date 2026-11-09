@@ -21,6 +21,18 @@ export type TrackerState =
   | "UK_SPECIAL_WINDOW"
   | "COMPLETE";
 
+export type DecemberTrackerVisit =
+  | { kind: "NORTH_POLE"; message: string }
+  | { kind: "ROUTE_RESEARCH" };
+
+export const decemberNorthPoleMessages = [
+  "Santa’s back at the North Pole, helping Head Elf check the big-day list while the workshop team gets everything ready.",
+  "A quick stop at the North Pole! Santa’s lending Head Elf a hand with the final checks—and making sure the team has plenty of cocoa.",
+  "Santa has popped back to the North Pole to help the elves sort the sleigh supplies and prepare for Christmas Eve.",
+  "Back at the North Pole, Santa and Head Elf are comparing notes while the workshop team puts the finishing touches on preparations.",
+  "Santa’s at the North Pole for a little teamwork: helping Head Elf organise the workshop and cheering on the busy crew.",
+] as const;
+
 export interface MapPosition {
   lat: number;
   lng: number;
@@ -77,6 +89,20 @@ export function isRouteResearchSeason(now: Date): boolean {
   const month = now.getUTCMonth();
   const day = now.getUTCDate();
   return (month === 10 && day >= 10) || (month === 11 && day <= 22);
+}
+
+export function isDecemberVisitSeason(now: Date): boolean {
+  return now.getUTCMonth() === 11 && now.getUTCDate() >= 1 && now.getUTCDate() <= 23;
+}
+
+/** Make one stable per-page choice, with an optional random source for deterministic tests. */
+export function getRandomDecemberTrackerVisit(random: () => number = Math.random): DecemberTrackerVisit {
+  if (random() >= 0.25) return { kind: "ROUTE_RESEARCH" };
+  const messageIndex = Math.min(
+    decemberNorthPoleMessages.length - 1,
+    Math.floor(random() * decemberNorthPoleMessages.length),
+  );
+  return { kind: "NORTH_POLE", message: decemberNorthPoleMessages[messageIndex] };
 }
 
 export function getRouteResearchCopy(destination: HolidayDestination): string {

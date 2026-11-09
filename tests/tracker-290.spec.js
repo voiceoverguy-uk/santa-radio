@@ -13,7 +13,9 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
     await page.goto('/santa-tracker');
     await expect(page.locator('.tracker-map [data-stop-id]')).toHaveCount(290);
     await expect(page.locator('.tracker-hero')).toContainText('estimated 290-stop');
-    await page.locator('.tj-toolbar').getByRole('button', { name: 'World', exact: true }).click();
+    await expect(page.locator('.tj-camera')).toHaveAttribute('data-map-view', 'world');
+    await expect(page.locator('.tj-toolbar').getByRole('button', { name: 'World', exact: true })).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('.tj-toolbar').getByRole('button', { name: 'Follow Santa', exact: true })).toHaveAttribute('aria-pressed', 'false');
     await expect(page.locator('.tj-legend')).toContainText('World · 290 stops');
     await page.getByLabel('Browse a region', { exact: true }).selectOption('Australia');
     await expect(page.locator('.tj-camera')).toHaveAttribute('data-map-view', 'Australia');
@@ -35,11 +37,36 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
     expect(await timeline.evaluate(el => el.clientHeight)).toBeLessThanOrEqual(500);
   });
 
+  test(`full tracker opens in World view on each page load at ${viewport.width}px`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+    await page.addInitScript(() => { Math.random = () => 0.25; });
+
+    for (const date of ['2026-03-15T12:00:00Z', '2026-12-23T12:00:00Z', '2026-12-24T14:00:00Z']) {
+      await page.clock.setFixedTime(new Date(date));
+      await page.goto('/santa-tracker');
+      const camera = page.locator('.tj-camera');
+      const world = page.locator('.tj-toolbar').getByRole('button', { name: 'World', exact: true });
+      const follow = page.locator('.tj-toolbar').getByRole('button', { name: 'Follow Santa', exact: true });
+
+      await expect(camera).toHaveAttribute('data-map-view', 'world');
+      await expect(world).toHaveAttribute('aria-pressed', 'true');
+      await expect(follow).toHaveAttribute('aria-pressed', 'false');
+
+      await follow.click();
+      await expect(camera).toHaveAttribute('data-map-view', 'follow');
+      await page.reload();
+      await expect(camera).toHaveAttribute('data-map-view', 'world');
+      await expect(world).toHaveAttribute('aria-pressed', 'true');
+    }
+  });
+
   test(`preview follows separate city visits and returns to public date at ${viewport.width}px`, async ({ page }) => {
     await page.setViewportSize(viewport);
     await page.goto('/santa-tracker/preview');
+    await expect(page.locator('.tj-camera')).toHaveAttribute('data-map-view', 'world');
     const toggle = page.getByRole('switch', { name: 'Preview mode' });
     await toggle.click();
+    await page.locator('.tj-toolbar').getByRole('button', { name: 'Follow Santa', exact: true }).click();
     const jump = page.getByLabel('Jump to destination', { exact: true });
     await expect(jump.locator('option')).toHaveCount(291);
     for (const city of ['sydney', 'tokyo', 'london', 'newyork', 'amundsenscottsouthpolestation', 'honolulu']) {
@@ -67,7 +94,7 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
     await expect(page.locator('.tj-toolbar').getByRole('button', { name: 'Follow Santa', exact: true })).toHaveAttribute('aria-pressed', 'true');
     await page.goto('/santa-tracker');
     await expect(page.locator('.tracker-preview-panel')).toHaveCount(0);
-    await expect(page.locator('.tj-legend')).toContainText("Santa's position");
+    await expect(page.locator('.tj-legend')).toContainText('World · 290 stops');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   });
 }
@@ -76,21 +103,22 @@ for (const [date, status] of [
   ['2026-03-15T12:00:00Z', /On Holiday in/],
   ['2026-07-15T12:00:00Z', /Christmas in July/],
   ['2026-11-15T12:00:00Z', /Prepping the route/],
-  ['2026-12-23T12:00:00Z', /Preparing for Takeoff/],
+  ['2026-12-23T12:00:00Z', /Prepping the route in/],
   ['2026-12-25T12:00:00Z', /Journey Complete/],
 ]) {
   test(`Follow Santa selects a close, non-live camera on ${date}`, async ({ page }) => {
     await page.clock.setFixedTime(new Date(date));
+    if (date.startsWith('2026-12-23')) await page.addInitScript(() => { Math.random = () => 0.5; });
     await page.goto('/santa-tracker');
     await expect(page.locator('.tracker-status')).toContainText(status);
 
     const toolbar = page.locator('.tj-toolbar');
     const follow = toolbar.getByRole('button', { name: 'Follow Santa', exact: true });
     await expect(follow).toBeEnabled();
-    await expect(follow).toHaveAttribute('aria-pressed', 'true');
-
-    await toolbar.getByRole('button', { name: 'World', exact: true }).click();
+    const world = toolbar.getByRole('button', { name: 'World', exact: true });
+    await expect(world).toHaveAttribute('aria-pressed', 'true');
     await expect(follow).toHaveAttribute('aria-pressed', 'false');
+
     const region = page.getByLabel('Browse a region', { exact: true });
     if (date === '2026-07-15T12:00:00Z' || date === '2026-12-25T12:00:00Z') {
       await region.selectOption('Australia');

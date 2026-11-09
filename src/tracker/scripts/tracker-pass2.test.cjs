@@ -22,7 +22,7 @@ test("holiday season wraps the year and ends at midnight UTC on 10 November", ()
   }
 });
 
-function harness(iso = "2026-11-15T12:00:00Z") {
+function harness(iso = "2026-11-15T12:00:00Z", random = Math.random) {
   const clock = new global.Date(iso).getTime();
   class FixedDate extends global.Date {
     constructor(...args) { super(...(args.length ? args : [clock])); }
@@ -45,10 +45,16 @@ function harness(iso = "2026-11-15T12:00:00Z") {
     useEffect(effect) { effects.push(effect); },
     useCallback(fn) { return fn; },
     useMemo(fn) { return fn(); },
-    useRef(initial) { return { current: initial }; },
+    useRef(initial) {
+      const slot = cursor++;
+      if (!(slot in state)) state[slot] = { current: initial };
+      return state[slot];
+    },
     useId() { return `tracker-test-${++id}`; },
   };
   const cache = new Map();
+  const math = Object.create(Math);
+  math.random = random;
   const children = {
     SantaMap: "map", SantaStats: "stats", SantaStory: "story",
     SantaTimeline: "timeline", SantaPreviewPanel: "preview-panel", NotifySignup: "signup",
@@ -67,7 +73,7 @@ function harness(iso = "2026-11-15T12:00:00Z") {
     const exports = {};
     cache.set(key, exports);
     vm.runInNewContext(source, {
-      exports, Date: FixedDate, window,
+      exports, Date: FixedDate, Math: math, URL, window,
       localStorage: { getItem: () => null, setItem() {}, removeItem() {} },
       setInterval: () => 1, clearInterval() {},
       require(spec) {
@@ -85,9 +91,10 @@ function harness(iso = "2026-11-15T12:00:00Z") {
         if (spec.startsWith("@/")) target = path.join(root, spec.slice(2));
         else if (spec.startsWith(".")) target = path.resolve(path.dirname(full), spec);
         else throw new Error(`Unexpected dependency ${spec} in ${file}`);
-        if (!path.extname(target)) target += ".tsx";
-        if (!fs.existsSync(target) && target.endsWith(".tsx")) target = target.slice(0, -1);
-        if (!fs.existsSync(target) && target.endsWith(".ts")) target = target.slice(0, -3) + ".js";
+        if (!path.extname(target)) {
+          const base = target;
+          target = [".tsx", ".ts", ".jsx", ".js"].map(extension => `${base}${extension}`).find(fs.existsSync) ?? `${base}.tsx`;
+        }
         return load(path.relative(root, target), stubChildren);
       },
     }, { filename: full });
@@ -230,7 +237,7 @@ test("homepage banner keeps its year-round heading in server and every seasonal 
     ["2026-12-24T14:00:00Z", /Delivering in/, /estimated 290-stop Christmas Eve journey/, true, "Track Santa Now"],
     ["2026-12-25T12:00:00Z", /Journey Complete/, /final stop in Honolulu finished/, true, "Open the Tracker"],
   ]) {
-    const h = harness(date);
+    const h = harness(date, () => 0.5);
     const Banner = h.load("components/SantaTrackerBanner.tsx").default;
     const render = () => h.render(React.createElement(Banner));
     function checkHeader(html) {
@@ -251,7 +258,7 @@ test("homepage banner keeps its year-round heading in server and every seasonal 
     assert.equal(/viewBox="(?:0 0 1000 500|-84 -42 1168 584)"/.test(mounted), !stats, date);
     h.resetHooks();
     const nodes = hosts(Banner());
-    const divider = nodes.find(node => node.props?.["aria-hidden"] === "true" && text(node).includes("✦"));
+    const divider = nodes.find(node => node.props?.className === "homepage-section-heading__divider" && node.props?.["aria-hidden"] === "true");
     assert.ok(divider, "the line-star-line ornament is hidden from screen readers");
   }
 });
@@ -494,12 +501,12 @@ test("homepage and standalone status agree at every annual boundary", () => {
     ["2026-11-09T23:59:59.999Z", /On Holiday in/],
     ["2026-11-10T00:00:00Z", /Prepping the route in/],
     ["2026-12-22T23:59:59.999Z", /Prepping the route in/],
-    ["2026-12-23T00:00:00Z", /Prepar/],
+      ["2026-12-23T00:00:00Z", /Prepping the route in/],
     ["2026-12-25T23:59:59.999Z", /Journey Complete/],
     ["2026-12-26T00:00:00Z", /On Holiday in/],
   ]) {
     for (const file of ["SantaTrackerClient", "SantaTrackerBanner"]) {
-      const h = harness(iso);
+      const h = harness(iso, () => 0.5);
       const Component = h.load(`components/${file}.tsx`, true).default;
       const render = () => h.render(React.createElement(Component));
       render(); h.flush(); render(); h.flush();

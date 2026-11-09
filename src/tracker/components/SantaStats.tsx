@@ -8,6 +8,8 @@ import { holidayDestinations } from "@/data/santaHolidays";
 interface SantaStatsProps {
   effectiveTime: Date;
   holiday?: HolidayDestination | null;
+  routeResearch?: boolean;
+  northPoleVisit?: boolean;
 }
 
 const holidaySpeeds = [
@@ -58,12 +60,12 @@ function useCountUp(target: number, duration: number = 800): number {
   return display;
 }
 
-export default function SantaStats({ effectiveTime, holiday }: SantaStatsProps) {
+export default function SantaStats({ effectiveTime, holiday, routeResearch = false, northPoleVisit = false }: SantaStatsProps) {
   const data = getDashboardData(effectiveTime);
   const isLive = data.mode === "LIVE";
 
-  const onHoliday = data.mode === "OFF_SEASON" && isHolidaySeason(effectiveTime) && !!holiday;
-  const researching = data.mode === "ROUTE_RESEARCH";
+  const onHoliday = !northPoleVisit && !routeResearch && data.mode === "OFF_SEASON" && isHolidaySeason(effectiveTime) && !!holiday;
+  const researching = !northPoleVisit && (routeResearch || data.mode === "ROUTE_RESEARCH");
   const onTrip = onHoliday || (researching && !!holiday);
   const inJuly = data.mode === "OFF_SEASON" && isChristmasInJuly(effectiveTime);
   const [maybeNext, setMaybeNext] = useState<HolidayDestination | null>(null);
@@ -114,6 +116,11 @@ export default function SantaStats({ effectiveTime, holiday }: SantaStatsProps) 
     data.currentStopName = holiday.name;
     data.currentStopFlag = researching ? "🧭" : inJuly ? "🎄" : "🏖️";
   }
+  if (northPoleVisit) {
+    data.currentStopName = "North Pole";
+    data.currentStopFlag = "🎅";
+    data.currentStopRegion = "Arctic";
+  }
 
   const animatedGifts = useCountUp(data.estimatedGifts);
   const animatedDistance = useCountUp(data.estimatedDistanceKm);
@@ -146,12 +153,12 @@ export default function SantaStats({ effectiveTime, holiday }: SantaStatsProps) 
     {
       icon: <Navigation size={18} />,
       label: "Next Stop",
-      value: researching ? "North Pole between trips" : onHoliday && maybeNext ? `Maybe ${maybeNext.name}?` : (data.nextStopName !== "—" ? `${data.nextStopFlag} ${data.nextStopName}` : "—"),
+      value: northPoleVisit ? "Christmas Eve departure" : researching ? "North Pole between trips" : onHoliday && maybeNext ? `Maybe ${maybeNext.name}?` : (data.nextStopName !== "—" ? `${data.nextStopFlag} ${data.nextStopName}` : "—"),
     },
     {
       icon: <Target size={18} />,
       label: "ETA",
-      value: researching ? "Quick research trip" : onHoliday ? (inJuly ? "Celebrating! 🎄" : "Relaxing...") : data.etaText,
+      value: northPoleVisit ? "Workshop preparations" : researching ? "Quick research trip" : onHoliday ? (inJuly ? "Celebrating! 🎄" : "Relaxing...") : data.etaText,
     },
     {
       icon: <Gift size={18} />,
@@ -166,7 +173,7 @@ export default function SantaStats({ effectiveTime, holiday }: SantaStatsProps) 
     {
       icon: <Globe size={18} />,
       label: "Route Stops",
-      value: researching ? "Research, not deliveries" : onHoliday ? (inJuly ? "Celebrating mid-year!" : "Research from 10 November") : `${animatedVisited} / ${data.visitedCount + data.remainingCount}`,
+      value: northPoleVisit ? "Preparing at the North Pole" : researching ? "Research, not deliveries" : onHoliday ? (inJuly ? "Celebrating mid-year!" : "Research from 10 November") : `${animatedVisited} / ${data.visitedCount + data.remainingCount}`,
     },
     {
       icon: <Zap size={18} />,

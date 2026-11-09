@@ -104,22 +104,21 @@ test('tracker start FAQ gives the estimated departure timing and disclosure', as
     'The estimated 290-stop Christmas Eve journey starts in Kiritimati at 10:00 UTC on 24 December and finishes in Honolulu, Hawaii, at 11:20 UTC on 25 December. This is Santa Radio’s itinerary using real coordinates and time zones, not verified live tracking. The countdown is to Santa’s departure, not Christmas midnight or his arrival at your home.',
   );
 });
-
 for (const [date, text] of [
   ['2026-03-15T12:00:00Z', /Holiday Postcards/],
   ['2026-07-15T12:00:00Z', /Christmas in July Postcards/],
-   ['2026-11-01T00:00:00Z', /Holiday Postcards/],
-    ['2026-11-09T23:59:59Z', /Holiday Postcards/],
-    ['2026-11-10T00:00:00Z', /Route Research Report/],
-    ['2026-12-22T23:59:59Z', /Route Research Report/],
-    ['2026-12-23T00:00:00Z', /Workshop Dispatch/],
+  ['2026-11-01T00:00:00Z', /Holiday Postcards/],
+  ['2026-11-09T23:59:59Z', /Holiday Postcards/],
+  ['2026-11-10T00:00:00Z', /Route Research Report/],
+  ['2026-12-22T23:59:59Z', /Route Research Report/],
+  ['2026-12-23T00:00:00Z', /(Workshop Dispatch|Route Research Report)/],
   ['2026-12-24T09:00:00Z', /Preparing/],
   ['2026-12-24T14:00:00Z', /Live Update/],
   ['2026-12-25T11:21:00Z', /Journey Summary/],
-   ['2026-12-25T23:59:59Z', /Journey Summary/],
-   ['2026-12-26T00:00:00Z', /Holiday Postcards/],
-   ['2027-01-01T12:00:00Z', /Holiday Postcards/],
-    ['2027-02-28T23:59:59Z', /Holiday Postcards/],
+  ['2026-12-25T23:59:59Z', /Journey Summary/],
+  ['2026-12-26T00:00:00Z', /Holiday Postcards/],
+  ['2027-01-01T12:00:00Z', /Holiday Postcards/],
+  ['2027-02-28T23:59:59Z', /Holiday Postcards/],
 ]) {
   test(`seasonal content at ${date}`, async ({ page }) => {
     await page.clock.setFixedTime(new Date(date));
@@ -130,6 +129,81 @@ for (const [date, text] of [
     await expect(page.getByRole('button', { name: 'Preview Controls' })).toHaveCount(0);
   });
 }
+
+test('December visits keep one selected location and matching status on both tracker surfaces', async ({ page }) => {
+  test.setTimeout(120000);
+  await page.addInitScript(() => {
+    const randomValue = new URLSearchParams(location.search).get('decemberVisitTest');
+    if (randomValue !== null) Math.random = () => Number(randomValue);
+  });
+
+  const northPoleMessage = 'Santa’s back at the North Pole, helping Head Elf check the big-day list while the workshop team gets everything ready.';
+  for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844 }]) {
+    await page.setViewportSize(viewport);
+    for (const date of ['2026-12-01T00:00:00Z', '2026-12-23T23:59:59Z']) {
+      await page.clock.setFixedTime(new Date(date));
+      for (const [randomValue, outcome] of [[0, 'north-pole'], [0.25, 'route-research']]) {
+        await page.goto(`/?decemberVisitTest=${randomValue}`);
+        const homepage = page.locator('.tracker-banner');
+        const homepageStatus = homepage.locator('.tracker-status');
+        const homepageMarker = homepage.locator('.tracker-banner-map [data-santa-location]');
+        if (outcome === 'north-pole') {
+          await expect(homepageStatus).toContainText('At the North Pole with Head Elf');
+          await expect(homepage).toContainText(northPoleMessage);
+          await expect(homepageMarker).toHaveAttribute('data-santa-lat', '90');
+          await expect(homepageMarker).toHaveAttribute('data-santa-lng', '0');
+        } else {
+          await expect(homepageStatus).toContainText('Prepping the route in');
+          await expect(homepage).toContainText('quick research trip');
+          await expect(homepageMarker).not.toHaveAttribute('data-santa-lat', '90');
+        }
+        const homepagePosition = await homepageMarker.evaluate(node => [
+          node.getAttribute('data-santa-lat'),
+          node.getAttribute('data-santa-lng'),
+        ]);
+        await page.clock.runFor(1500);
+        await expect(homepageStatus).toContainText(outcome === 'north-pole' ? 'At the North Pole with Head Elf' : 'Prepping the route in');
+        if (outcome === 'north-pole') await expect(homepage).toContainText(northPoleMessage);
+        else await expect(homepage).toContainText('quick research trip');
+        expect(await homepageMarker.evaluate(node => [
+          node.getAttribute('data-santa-lat'),
+          node.getAttribute('data-santa-lng'),
+        ])).toEqual(homepagePosition);
+
+        await page.goto(`/santa-tracker?decemberVisitTest=${randomValue}`);
+        const trackerStatus = page.locator('.tracker-shell .tracker-status').first();
+        const trackerMessage = page.locator('.tracker-status-message');
+        const trackerMarker = page.locator('.tj-santa');
+        if (outcome === 'north-pole') {
+          await expect(trackerStatus).toContainText('At the North Pole with Head Elf');
+          await expect(trackerMessage).toHaveText(northPoleMessage);
+          await expect(trackerMarker).toHaveAttribute('data-santa-lat', '90');
+          await expect(trackerMarker).toHaveAttribute('data-santa-lng', '0');
+          const descriptionId = await page.locator('main svg[role="img"]').getAttribute('aria-describedby');
+          await expect(page.locator(`[id="${descriptionId}"]`)).toContainText(northPoleMessage);
+        } else {
+          await expect(trackerStatus).toContainText('Prepping the route in');
+          await expect(trackerMessage).toContainText('quick research trip');
+          await expect(trackerMarker).not.toHaveAttribute('data-santa-lat', '90');
+          await expect(page.locator('.tracker-map-caption').first()).toContainText('Route research in');
+        }
+        const trackerPosition = await trackerMarker.evaluate(node => [
+          node.getAttribute('data-santa-lat'),
+          node.getAttribute('data-santa-lng'),
+        ]);
+        await page.clock.runFor(1500);
+        await expect(trackerStatus).toContainText(outcome === 'north-pole' ? 'At the North Pole with Head Elf' : 'Prepping the route in');
+        if (outcome === 'north-pole') await expect(trackerMessage).toHaveText(northPoleMessage);
+        else await expect(trackerMessage).toContainText('quick research trip');
+        expect(await trackerMarker.evaluate(node => [
+          node.getAttribute('data-santa-lat'),
+          node.getAttribute('data-santa-lng'),
+        ])).toEqual(trackerPosition);
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBeTruthy();
+      }
+    }
+  }
+});
 
 test('desktop/mobile map, typography and menu fit without horizontal overflow', async ({ page }) => {
   await page.clock.setFixedTime(new Date('2026-12-24T09:00:00Z'));
@@ -555,9 +629,12 @@ for (const [date, holiday] of [
 ]) {
   test(`homepage enlarged map preserves location and leaves the countdown in the hero at ${date}`, async ({ page }) => {
     await pauseClock(page, date);
+    if (date.startsWith('2026-12-23')) await page.addInitScript(() => { Math.random = () => 0; });
     await page.goto('/');
     const banner = page.locator('.tracker-banner');
-    const caption = holiday ? "Santa's holiday location" : "Santa's at the North Pole";
+    const caption = holiday ? "Santa's holiday location" : date.startsWith('2026-12-23')
+      ? "Santa is helping Head Elf at the North Pole"
+      : "Santa's at the North Pole";
     const map = banner.getByRole('link', { name: `Open the Santa Tracker: ${caption}` });
     await expect(map).toBeVisible();
     await expect(map.locator('.tracker-map-caption')).toHaveText(caption);
@@ -579,7 +656,7 @@ for (const [date, holiday] of [
     } else {
       expect(x).toBe(500);
       expect(y).toBe(0);
-      await expect(banner.locator('.tracker-status')).toContainText('Final Preparations Underway');
+      await expect(banner.locator('.tracker-status')).toContainText('At the North Pole with Head Elf');
     }
     await expect(banner.locator('.tracker-countdown-value')).toHaveCount(0);
     const countdown = page.locator('.hero-countdown .countdown-unit strong');
@@ -591,7 +668,7 @@ for (const [date, holiday] of [
     expect(seconds(before) - seconds(after)).toBe(1);
     expect(await position()).toEqual({ x, y });
     const stops = map.locator('[data-route-stops] circle');
-    await expect(stops).toHaveCount(60);
+    await expect(stops).toHaveCount(290);
     const positions = await stops.evaluateAll(nodes => nodes.map(node => ({
       id: node.getAttribute('data-stop-id'),
       x: node.getAttribute('cx'),
@@ -613,7 +690,7 @@ for (const [date, holiday] of [
     }
     await page.goto('/santa-tracker');
     const mainStops = page.locator('.tracker-map g[data-stop-id]');
-    await expect(mainStops).toHaveCount(60);
+    await expect(mainStops).toHaveCount(290);
     expect(await mainStops.evaluateAll(nodes => nodes.map(node => ({
       id: node.getAttribute('data-stop-id'),
       x: node.querySelector('circle').getAttribute('cx'),
@@ -658,6 +735,7 @@ for (const [realDate, simulatedDate, holiday] of [
 ]) {
   test(`preview uses ${simulatedDate} independently of public date ${realDate}`, async ({ page }) => {
     await pauseClock(page, realDate);
+    await page.addInitScript(() => { Math.random = () => 0; });
     await page.addInitScript(({ simulatedDate }) => localStorage.setItem('santa-tracker-preview', JSON.stringify({
       enabled: true, activatedAtRealMs: Date.now(), simulatedStartMs: new Date(simulatedDate).getTime(),
       speedMultiplier: 1, jumpTarget: null,
@@ -713,11 +791,12 @@ test('Christmas Eve uses the real route and estimated Speed, not holiday labels'
 
 for (const [before, after, status, content] of [
   ['2026-11-09T23:59:59Z', '2026-11-10T00:00:00Z', 'Prepping the route in', 'Route Research Report'],
-  ['2026-12-22T23:59:59Z', '2026-12-23T00:00:00Z', 'Prepar', 'Workshop Dispatch'],
+  ['2026-12-22T23:59:59Z', '2026-12-23T00:00:00Z', 'Prepping the route in', 'Route Research Report'],
   ['2026-12-25T23:59:59Z', '2026-12-26T00:00:00Z', 'On Holiday in', 'Holiday Postcards'],
 ]) {
   test(`both public trackers cross ${after} without reloading`, async ({ page }) => {
     await pauseClock(page, before);
+    if (after.startsWith('2026-12-23')) await page.addInitScript(() => { Math.random = () => 0.5; });
     await page.goto('/santa-tracker');
     await expect(page.locator('main svg[role="img"]')).toBeVisible();
     if (before.includes('12-25')) {
@@ -747,13 +826,14 @@ for (const [before, after, status, content] of [
 
 test('seasonal preview controls show every boundary independently of the public date', async ({ page }) => {
   await page.clock.setFixedTime(new Date('2026-06-15T12:00:00Z'));
+  await page.addInitScript(() => { Math.random = () => 0.5; });
   await page.goto('/santa-tracker/preview');
   await page.getByRole('switch', { name: 'Preview mode' }).click();
   for (const [label, status, content] of [
     ['9 November', 'On Holiday in', 'Holiday Postcards'],
     ['10 November', 'Prepping the route in', 'Route Research Report'],
     ['22 December', 'Prepping the route in', 'Route Research Report'],
-    ['23 December', 'Preparing for Takeoff', 'Workshop Dispatch'],
+    ['23 December', 'Prepping the route in', 'Route Research Report'],
     ['25 December', 'Journey Complete', 'Journey Summary'],
     ['26 December', 'On Holiday in', 'Holiday Postcards'],
   ]) {
