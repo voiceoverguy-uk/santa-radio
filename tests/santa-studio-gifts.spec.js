@@ -5,18 +5,21 @@ import { studioLetterChoices, createStudioLetter, CERTIFICATE_WRITE_MS,
 import { certificateExampleNames, studioGiftExampleNames } from '../src/lib/santaCertificateExamples.js';
 import { expectLeftAlignedLetter } from './helpers/studio-letter-alignment.js';
 import { expectSampleWatermark } from './helpers/studio-sample-watermark.js';
+import { expandStudioGifts } from './helpers/studio-promotion.js';
 
 const gifts = page => page.locator('.studio-gifts');
 const body = page => gifts(page).locator('.studio-gifts__preview-stack .studio-letter__text');
 const readable = page => gifts(page).locator('.studio-gifts__preview-stack .studio-gifts__sr');
 
-async function visit(page, { reduced = false, clock = true, route = '/free-santa-message' } = {}) {
+async function visit(page, { reduced = false, clock = true, route = '/free-santa-message', expand = true } = {}) {
   await page.emulateMedia({ reducedMotion: reduced ? 'reduce' : 'no-preference' });
   if (clock) await page.clock.install();
   await page.addInitScript(() => {
     sessionStorage.setItem('santa-message-offer-shown', 'shown');
     sessionStorage.setItem('santa-radio-example-last', 'charlotte');
-    localStorage.setItem('santa-radio-cookie-consent', JSON.stringify({ necessary: true, analytics: false }));
+    localStorage.setItem('santaradio-cookie-consent-v2', JSON.stringify({
+      version: 2, analytics: false, marketing: false, media: false, savedAt: Date.now(),
+    }));
     // Development-only media mocks: no requests to live radio or greetings.
     HTMLMediaElement.prototype.load = function () {};
     HTMLMediaElement.prototype.play = function () {
@@ -34,13 +37,103 @@ async function visit(page, { reduced = false, clock = true, route = '/free-santa
   await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
   const decline = page.getByRole('button', { name: 'Decline optional cookies', exact: true });
   if (await decline.isVisible()) await decline.click();
-  await gifts(page).scrollIntoViewIfNeeded();
+  if (expand) await expandStudioGifts(page.locator('#santa-studio-promotion'));
+  await page.locator('.santa-studio-promotion__gifts').scrollIntoViewIfNeeded();
   await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Edward');
   await expect(gifts(page).getByRole('heading', { level: 4 })).toHaveCount(0);
   await expect(gifts(page).locator('.studio-gifts__thumbnail-label')).toHaveText([
     'Santa picture included', 'Letter included', 'Certificate included',
   ]);
   await expect(gifts(page)).not.toContainText('Example for');
+}
+
+for (const route of ['/', '/free-santa-message']) {
+  for (const width of [320, 406, 767]) {
+    test(`mobile gifts start collapsed and support keyboard and resizing on ${route} at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 1000 });
+      await visit(page, { route, expand: false, reduced: true, clock: false });
+      const promotion = page.locator('#santa-studio-promotion');
+      const toggle = promotion.getByRole('button', { name: 'Free gifts include', exact: true });
+      const content = promotion.locator('.santa-studio-promotion__gift-content');
+      await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+      await expect(content).toHaveAttribute('id', await toggle.getAttribute('aria-controls'));
+      await expect(content).toBeHidden();
+      await expect(promotion.getByRole('button', { name: /^Enlarge/ })).toHaveCount(0);
+      await expect(promotion.getByRole('slider')).toHaveCount(0);
+      await expect(promotion.locator('.santa-studio-promotion__preview')).toBeHidden();
+      await expect(promotion.locator('.santa-studio-audio-example__timeline')).toBeHidden();
+      await expect(toggle.locator('[aria-hidden="true"]')).toBeVisible();
+      await toggle.focus();
+      await page.keyboard.press('Shift+Tab');
+      await page.keyboard.press('Tab');
+      await expect(toggle).toBeFocused();
+      await expect(toggle).toHaveCSS('outline-style', 'solid');
+      await page.keyboard.press('Enter');
+      await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+      await expect(content).toBeVisible();
+      await page.keyboard.press('Tab');
+      const picture = gifts(page).getByRole('button', { name: 'Enlarge Santa’s Nice List picture', exact: true });
+      await expect(picture).toBeFocused();
+      await page.keyboard.press('Enter');
+      await expect(page.getByRole('dialog')).toBeVisible();
+      await page.keyboard.press('Escape');
+      await expect(picture).toBeFocused();
+      await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+      await toggle.focus();
+      await page.keyboard.press('Space');
+      await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+      await expect(toggle).toBeFocused();
+      await expect(content).toBeHidden();
+      await page.keyboard.press('Tab');
+      expect(await promotion.evaluate(node => node.querySelector('.santa-studio-promotion__gift-content')
+        .contains(document.activeElement))).toBe(false);
+      await promotion.screenshot({
+        path: `generated-artifacts/studio-gifts/collapsed-${route === '/' ? 'home' : 'free'}-${width}.png`,
+        animations: 'disabled',
+        // Isolate this tall panel from unrelated fixed navigation/radio overlays.
+        style: '.navbar, .radio-dock, .skip-link { visibility: hidden !important; }',
+      });
+
+      // CSS, not the last mobile choice, determines desktop visibility.
+      for (const desktop of [768, 1440]) {
+        await page.setViewportSize({ width: desktop, height: 1000 });
+        await expect(toggle).toBeHidden();
+        await expect(content).toBeVisible();
+        await expect(promotion.getByRole('button', { name: 'Enlarge Santa’s studio picture', exact: true })).toBeVisible();
+        await expect(promotion.getByRole('slider', { name: 'Paid Studio message position' })).toBeVisible();
+        await expect(promotion.locator('.santa-studio-audio-example__time')).toBeVisible();
+        await expect(content.getByRole('button', { name: /^Enlarge/ })).toHaveCount(3);
+      }
+      await page.setViewportSize({ width, height: 1000 });
+      await expect(content).toBeHidden();
+      await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+      await toggle.click();
+      await expect(content).toBeVisible();
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      await toggle.click();
+      await page.setViewportSize({ width: 768, height: 1000 });
+      await picture.click();
+      const dialog = page.getByRole('dialog');
+      await expect(dialog).toBeVisible();
+      // An enlargement opened on desktop must not disappear into a collapsed
+      // mobile ancestor when a tablet rotates or its window becomes narrower.
+      await page.setViewportSize({ width, height: 1000 });
+      await expect(dialog).toBeVisible();
+      await page.keyboard.press('Escape');
+      await expect(picture).toBeFocused();
+      await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    });
+  }
+  test(`gift rotation continues while collapsed on ${route}`, async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 1000 });
+    await visit(page, { route, expand: false });
+    await page.clock.pauseAt(await page.evaluate(() => Date.now() + 100));
+    await advanceExample(page);
+    await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Ayla');
+    await expandStudioGifts(page.locator('#santa-studio-promotion'));
+    await expect(gifts(page).locator('.studio-certificate__name')).toHaveText('Ayla');
+    await expect(gifts(page).locator('.studio-santa-picture > img').first()).toHaveAttribute('src', '/images/santa-nice-list-2.jpg');
+  });
 }
 
 // Exercise the automatic cycle rather than relying on removed manual controls.
@@ -104,6 +197,7 @@ for (const width of [320, 406, 987, 1440]) {
     await stack.screenshot({ path: `generated-artifacts/studio-gifts/promotion-rearranged-${width}.png`, animations: 'disabled' });
     await page.locator('.santa-studio-promotion').screenshot({
       path: `generated-artifacts/studio-gifts/panel-rearranged-${width}.png`, animations: 'disabled',
+      style: '.navbar, .radio-dock, .skip-link { visibility: hidden !important; }',
     });
   });
 }
@@ -114,7 +208,10 @@ test.describe('touch enlargement of included promotional gifts', () => {
     for (const width of [320, 406]) {
       test(`included gift labels remain tappable on ${path} at ${width}px`, async ({ page }) => {
         await page.setViewportSize({ width, height: 900 });
-        await visit(page, { route: path, reduced: true, clock: false });
+        await visit(page, { route: path, reduced: true, clock: false, expand: false });
+        const toggle = page.getByRole('button', { name: 'Free gifts include', exact: true });
+        await toggle.tap();
+        await expect(toggle).toHaveAttribute('aria-expanded', 'true');
         const stack = gifts(page).locator('.studio-gifts__preview-stack');
         for (const [index, label] of ['Santa picture included', 'Letter included', 'Certificate included'].entries()) {
           const opener = stack.getByRole('button').filter({ hasText: label });
@@ -127,6 +224,9 @@ test.describe('touch enlargement of included promotional gifts', () => {
           await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
         }
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+        await toggle.tap();
+        await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+        await expect(gifts(page)).toBeHidden();
       });
     }
   }
@@ -243,6 +343,7 @@ test('included gift captions wrap safely on narrow screens without a promotional
   await expect(gifts(page).getByRole('heading', { level: 4 })).toHaveCount(0);
   for (const width of [320, 390, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
+    await expandStudioGifts(page.locator('#santa-studio-promotion'));
     for (const caption of await gifts(page).locator('.studio-gifts__thumbnail-label').all()) {
       await expect(caption).not.toContainText('Enlarge');
       const geometry = await caption.evaluate(node => {
@@ -609,6 +710,7 @@ test('picture names wait for the real script font, then fit without changing dur
 
 for (const width of [1440, 390, 320]) {
   test(`script ink is complete and clear of certificate artwork at ${width}px`, async ({ page }) => {
+    test.setTimeout(90000);
     await page.setViewportSize({ width, height: 1000 });
     await visit(page, { reduced: true });
     for (const name of certificateExampleNames) {

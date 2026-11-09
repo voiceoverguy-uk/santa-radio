@@ -1,6 +1,14 @@
 import { expect } from '@playwright/test';
 
+export async function expandStudioGifts(promotion) {
+  const toggle = promotion.getByRole('button', { name: 'Free gifts include', exact: true });
+  if (await toggle.isVisible() && await toggle.getAttribute('aria-expanded') === 'false') {
+    await toggle.click();
+  }
+}
+
 export async function expectStudioLaunchCopy(promotion) {
+  await expandStudioGifts(promotion);
   const name = await promotion.locator('.studio-gifts').getAttribute('data-demo-name');
   const recipient = await promotion.getAttribute('data-recipient');
   const possessive = `${name}’s`;

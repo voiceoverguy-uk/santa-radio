@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { mockBrevo } from './helpers/message-access.js';
 import { GIFT_EXAMPLE_INTERVAL_MS } from '../src/lib/santaStudioLetter.js';
+import { expandStudioGifts } from './helpers/studio-promotion.js';
 
 const EXAMPLES = [
   { name: 'Charlotte', cues: [9, 18, 29, 38, 44, 54, 64, 80] },
@@ -127,7 +128,7 @@ async function startSample(demo, audio, example, index) {
 async function expectHiddenExampleName(demo) {
   await expect(demo.getByRole('heading', { name: 'Paid Studio message example', exact: true })).toBeVisible();
   await expect(stopFor(demo)).toBeVisible();
-  await expect(demo.getByRole('slider', { name: 'Paid Studio message position' })).toHaveCount(1);
+  await expect(demo.locator('.santa-studio-audio-example__seek')).toHaveCount(1);
   const playerText = await demo.innerText();
   const accessibleLabels = await demo.locator('[aria-label]').evaluateAll(nodes =>
     nodes.map(node => node.getAttribute('aria-label')).join(' '));
@@ -142,10 +143,11 @@ async function expectExample(demo, audio, name) {
   await expect(audio).toHaveAttribute('src', `/audio/examples/santa-studio-${name.toLowerCase()}.mp3`);
   await expect.poll(() => audio.evaluate(element => element.readyState)).toBeGreaterThanOrEqual(1);
   expect(await audio.evaluate(element => element.duration)).toBeGreaterThan(80);
-  await expect(demo.getByRole('slider', { name: 'Paid Studio message position' })).toBeEnabled();
+  await expect(demo.locator('.santa-studio-audio-example__seek')).toBeEnabled();
 }
 
 async function expectStudioGifts(promotion, name) {
+  await expandStudioGifts(promotion);
   const gifts = promotion.locator('.studio-gifts');
   await expect(gifts).toHaveAttribute('data-demo-name', name);
   await expect(gifts.locator('.studio-gifts__thumbnail')).toHaveCount(3);
@@ -235,6 +237,7 @@ test('homepage paid Studio gifts follow each paused example without overriding a
 
 test('loading and playback failures keep the selected paid sample name private', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.setViewportSize({ width: 390, height: 900 });
   await visit(page);
   const demo = page.locator('#santa-studio-promotion .santa-studio-audio-example');
   const audio = demo.locator('audio');
@@ -262,6 +265,51 @@ test('loading and playback failures keep the selected paid sample name private',
   await expectHiddenExampleName(demo);
 });
 
+for (const path of ['/', '/free-santa-message']) {
+  test(`paid playback and recipient priority survive collapsed gifts and resizing on ${path}`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.setViewportSize({ width: 320, height: 900 });
+    await visit(page, path);
+    const promotion = page.locator('#santa-studio-promotion');
+    const toggle = promotion.getByRole('button', { name: 'Free gifts include', exact: true });
+    const content = promotion.locator('.santa-studio-promotion__gift-content');
+    const demo = promotion.locator('.santa-studio-audio-example');
+    const audio = demo.locator('audio');
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    await startSample(demo, audio, EXAMPLES[0], 0);
+    await expect(content).toBeHidden();
+    await expect(promotion.locator('.studio-gifts')).toHaveAttribute('data-demo-name', 'Charlotte');
+    await demo.getByRole('button', { name: 'Pause Charlotte’s paid Studio example' }).click();
+    await seekTo(audio, 18.5);
+    await expect(demo.locator('.santa-studio-audio-example__cue')).toHaveText('Personalised moment');
+    await expect(demo.getByRole('slider')).toHaveCount(0);
+    await expect(demo.locator('.santa-studio-audio-example__time')).toBeHidden();
+    await page.setViewportSize({ width: 768, height: 900 });
+    await expect(content).toBeVisible();
+    await expect(demo.getByRole('slider')).toBeVisible();
+    await expect(demo.locator('.santa-studio-audio-example__time')).toHaveText(/0:18 \/ 1:/);
+    await expect(demo.getByRole('button', { name: 'Resume Charlotte’s paid Studio example' })).toBeVisible();
+    await page.setViewportSize({ width: 320, height: 900 });
+    await expect(content).toBeHidden();
+    await demo.getByRole('button', { name: 'Resume Charlotte’s paid Studio example' }).click();
+    await expect.poll(() => audio.evaluate(element => element.paused)).toBe(false);
+    await toggle.click();
+    await expectStudioGifts(promotion, 'Charlotte');
+    await toggle.click();
+    await page.evaluate(async () => {
+      const { selectSantaRecipient } = await import('/src/components/useSantaRecipient.js');
+      selectSantaRecipient('Oliver');
+    });
+    await expect(promotion.locator('.studio-gifts')).toHaveAttribute('data-demo-name', 'Oliver');
+    await toggle.click();
+    await expectStudioGifts(promotion, 'Oliver');
+    await stopFor(demo).click();
+    await expectHiddenExampleName(demo);
+    await expect(promotion.locator('.studio-gifts')).toHaveAttribute('data-demo-name', 'Oliver');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  });
+}
+
 test('promotional gift rotation resumes after the paid example stops', async ({ page }) => {
   test.setTimeout(30000);
   await page.emulateMedia({ reducedMotion: 'no-preference' });
@@ -270,6 +318,7 @@ test('promotional gift rotation resumes after the paid example stops', async ({ 
 
   const promotion = page.locator('#santa-studio-promotion');
   const gifts = promotion.locator('.studio-gifts');
+  await expandStudioGifts(promotion);
   await gifts.scrollIntoViewIfNeeded();
   const demo = promotion.locator('.santa-studio-audio-example');
   const audio = demo.locator('audio');
@@ -288,6 +337,10 @@ test('promotional gift rotation resumes after the paid example stops', async ({ 
 
   await startSample(demo, audio, EXAMPLES[1], 1);
   await expect(gifts).toHaveAttribute('data-demo-name', 'Harry');
+  // A synthetic ended event alone leaves the native element playing and can
+  // race its queued playing event. Settle it before simulating the end position.
+  await audio.evaluate(element => element.pause());
+  await expect(demo.getByRole('button', { name: 'Resume Harry’s paid Studio example' })).toBeVisible();
   await audio.evaluate(element => {
     element.currentTime = element.duration;
     element.dispatchEvent(new Event('ended'));

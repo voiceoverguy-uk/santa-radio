@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { mkdirSync, readFileSync } from 'node:fs';
 import { fillAccessForm, mockBrevo } from './helpers/message-access.js';
 import { expectSampleWatermark } from './helpers/studio-sample-watermark.js';
+import { expandStudioGifts } from './helpers/studio-promotion.js';
 import { expectHaloClearance, captureHalo } from './helpers/panel-halo.js';
 
 const path = '/preview/hero-name-checker';
@@ -867,6 +868,7 @@ for (const width of [390, 1440]) {
     await choose(page, 'Erica'); // Not one of the rotating/sample names.
     await cta(page).click();
     await expect(gifts).toHaveAttribute('data-demo-name', 'Erica');
+    await expandStudioGifts(page.locator('#santa-studio-promotion'));
     await gifts.scrollIntoViewIfNeeded();
     await expect(gifts.getByRole('heading')).toHaveCount(0);
     await expect(gifts.locator('.studio-certificate__name')).toHaveText('Erica');

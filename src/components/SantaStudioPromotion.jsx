@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { WorkshopPasswordForm } from './WorkshopPasswordForm.jsx';
 import './SantaStudioPromotion.css';
@@ -10,6 +10,8 @@ import SantaStudioAudioExample from './SantaStudioAudioExample.jsx';
 export default function SantaStudioPromotion({ activeExampleName = null, availableNamesText, previewName = null, allowExamples = true }) {
   const navigate = useNavigate();
   const [paidExampleName, setPaidExampleName] = useState(null);
+  const [giftsExpanded, setGiftsExpanded] = useState(false);
+  const giftsId = useId();
   // Copy and every gift share the very same resolved recipient/rotation.
   const example = useStudioGiftExample({
     activeExampleName, paidExampleName, previewName, allowExamples,
@@ -66,7 +68,18 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
         <StudioPurchaseButton />
         <SantaStudioAudioExample onActiveExampleNameChange={setPaidExampleName} />
       </div>
-      <StudioGiftPreview example={example} variant="promotion" />
+      <div className="santa-studio-promotion__gifts" data-expanded={giftsExpanded}>
+        <button className="santa-studio-promotion__gift-toggle" type="button"
+          aria-expanded={giftsExpanded} aria-controls={giftsId}
+          onClick={() => setGiftsExpanded(value => !value)}>
+          Free gifts include
+          <span className="santa-studio-promotion__gift-arrow" aria-hidden="true">▾</span>
+        </button>
+        <div id={giftsId} className="santa-studio-promotion__gift-content">
+          <StudioGiftPreview example={example} variant="promotion"
+            onPreviewOpen={() => setGiftsExpanded(true)} />
+        </div>
+      </div>
     </section>
   );
 }

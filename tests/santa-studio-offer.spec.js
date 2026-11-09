@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { expandStudioGifts } from './helpers/studio-promotion.js';
 
 async function expectRegularPromotion(promotion) {
   // Check live text only, not document artwork, script overlays or watermarks.
@@ -46,12 +47,14 @@ for (const path of ['/', '/free-santa-message']) {
       if (await decline.isVisible()) await decline.click();
       await page.evaluate(() => document.fonts.ready);
       const promotion = page.locator('.santa-studio-promotion');
+      await expandStudioGifts(promotion);
       await expect(promotion.locator('.santa-studio-promotion__launch-countdown-remaining')).toHaveCount(0);
       await expectRegularPromotion(promotion);
       for (const selector of ['#santa-studio-title', '.santa-studio-promotion__subheading',
-        '.santa-studio-promotion__offer-price', '.studio-gifts h4']) {
+        '.santa-studio-promotion__offer-price']) {
         await expect(promotion.locator(selector)).toHaveCSS('font-weight', '400');
       }
+      await expect(promotion.locator('.studio-gifts h4')).toHaveCount(0);
       const price = promotion.locator('.santa-studio-promotion__offer');
       await expect(price).toHaveText('Price£6.50');
       await expect(price.getByText('£6.50', { exact: true })).toBeVisible();

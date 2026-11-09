@@ -121,7 +121,7 @@ function SantaPicture({ name, elapsed, picture, previousPicture = null, onDissol
 function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio, reducedMotion, onNext,
   staticPreview = false, suppliedLetter = null, reviewHeading = null, downloadReady = false,
   downloadNotice = null, giftRevision = '', downloadUnavailableNotice, variant = null, children,
-  onDownloadRequested, onGiftPreparing, requestedGifts }) {
+  onDownloadRequested, onGiftPreparing, requestedGifts, onPreviewOpen }) {
   const promotion = variant === 'promotion' && !staticPreview;
   const views = promotion ? promotionGiftViews : giftViews;
   // Deterministic SSR; randomise only once after mounting in the browser.
@@ -158,7 +158,9 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
   useEffect(() => { if (!staticPreview) setLetter(createStudioLetter(name)); }, [name, staticPreview]);
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting));
-    observer.observe(sectionRef.current);
+    // Keep the shared recipient/artwork rotation alive while mobile gifts are
+    // collapsed. The disclosure remains visible even when its content is not.
+    observer.observe(sectionRef.current.closest('.santa-studio-promotion__gifts') || sectionRef.current);
     return () => observer.disconnect();
   }, []);
   useEffect(() => {
@@ -197,6 +199,7 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
 
   const open = (event, kind) => {
     openerRef.current = event.currentTarget;
+    onPreviewOpen?.();
     setView(kind);
   };
   const changeGift = direction => {
@@ -347,9 +350,9 @@ export function useStudioGiftExample({
     reducedMotion, onNext: nextExample };
 }
 
-export function StudioGiftPreview({ example, variant = null }) {
+export function StudioGiftPreview({ example, variant = null, onPreviewOpen }) {
   const name = example.name || studioGiftExampleNames[0];
-  return <GiftExample key={name} {...example} name={name} variant={variant} />;
+  return <GiftExample key={name} {...example} name={name} variant={variant} onPreviewOpen={onPreviewOpen} />;
 }
 
 export function StudioKeepsakePreview({ name, details = {}, variation, downloadReady = false,

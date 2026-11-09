@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { expectHaloClearance, captureHalo } from './helpers/panel-halo.js';
+import { expandStudioGifts } from './helpers/studio-promotion.js';
 
 const surfaces = [
   ['/', ['.radio-dock', '.santa-message-box', '.tv-frame', '.mug-card']],
@@ -142,6 +143,7 @@ for (const width of [320, 390, 768, 1091, 1440]) {
       'rgba(230, 206, 134, 0.19) 0px 0px 0px 1px, rgba(230, 206, 134, 0.27) 0px 0px 16px 3px');
     await captureHalo(page, reference, `free-reference-${width}.png`, testInfo);
     const studio = page.locator(studioSelector);
+    await expandStudioGifts(studio);
     await studio.scrollIntoViewIfNeeded();
     await page.mouse.move(0, 0);
     const before = await studio.boundingBox();

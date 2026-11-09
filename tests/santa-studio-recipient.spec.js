@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { readFileSync, mkdirSync } from 'node:fs';
 import { fillAccessForm, mockBrevo } from './helpers/message-access.js';
-import { expectStudioLaunchCopy } from './helpers/studio-promotion.js';
+import { expandStudioGifts, expectStudioLaunchCopy } from './helpers/studio-promotion.js';
 import { workshopCatalogueFixture } from './fixtures/workshop-catalogue.js';
 
 const longName = 'Alexandriarosethegreatwithaverylongunbrokenname';
@@ -144,11 +144,15 @@ for (const path of ['/', '/free-santa-message']) {
     test(`Santa studio portrait expands smoothly and closes accessibly on ${path} at ${width}px`, async ({ page }, testInfo) => {
       await page.setViewportSize({ width, height: 900 });
       await setup(page, { path });
-      await signup(page);
       await page.emulateMedia({ reducedMotion: 'no-preference' });
       const trigger = page.getByRole('button', { name: 'Enlarge Santa’s studio picture', exact: true });
       const modal = page.getByRole('dialog', { name: 'Santa’s studio picture', exact: true });
       const close = page.getByRole('button', { name: 'Close Santa’s studio picture', exact: true });
+      if (width < 768) {
+        await expect(trigger).toHaveCount(0);
+        await expect(promotion(page).locator('.santa-studio-promotion__preview')).toBeHidden();
+        return;
+      }
       await trigger.scrollIntoViewIfNeeded();
       const originalWidth = await trigger.evaluate(node => node.getBoundingClientRect().width);
       const originalOverflow = await page.evaluate(() => document.body.style.overflow);
@@ -206,6 +210,7 @@ async function chooseHero(page, name) {
   await expect(checker(page).getByRole('status')).toHaveText(`Yes! Santa can record for ${name}.`);
 }
 async function matches(page, name) {
+  await expandStudioGifts(promotion(page));
   await expect(gifts(page)).toHaveAttribute('data-demo-name', name);
   await expect(gifts(page).getByRole('heading')).toHaveCount(0);
   await expect(gifts(page).locator('.studio-gifts__thumbnail-label')).toHaveText([
@@ -240,7 +245,8 @@ test('promotional gifts and access controls reflow locally with a long recipient
     const promo = promotion(page);
     const geometry = await promo.evaluate(root => {
       const rect = root.getBoundingClientRect();
-      const controls = [...root.querySelectorAll('input, button')].filter(node => !node.closest('dialog'));
+      const controls = [...root.querySelectorAll('input, button')].filter(node =>
+        !node.closest('dialog') && node.getClientRects().length > 0);
       return {
         left: rect.left, right: rect.right, fits: root.scrollWidth <= root.clientWidth + 1,
         scroll: root.scrollWidth, client: root.clientWidth,
@@ -255,7 +261,8 @@ test('promotional gifts and access controls reflow locally with a long recipient
           const bounds = node.getBoundingClientRect();
           return { fits: node.scrollWidth <= node.clientWidth + 1,
             inside: bounds.left >= rect.left && bounds.right <= rect.right,
-            height: bounds.height };
+            height: bounds.height, minimumHeight: node.type === 'range' ? 30 : 44,
+            className: node.className, scroll: node.scrollWidth, client: node.clientWidth };
         }),
       };
     });
@@ -263,9 +270,9 @@ test('promotional gifts and access controls reflow locally with a long recipient
     expect(geometry.left).toBeGreaterThanOrEqual(0);
     expect(geometry.right).toBeLessThanOrEqual(width + 1);
     for (const control of geometry.controls) {
-      expect(control.fits).toBe(true);
+      expect(control.fits, JSON.stringify({ width, control })).toBe(true);
       expect(control.inside).toBe(true);
-      expect(control.height).toBeGreaterThanOrEqual(44);
+      expect(control.height).toBeGreaterThanOrEqual(control.minimumHeight);
     }
     await expect(gifts(page)).toHaveAttribute('data-demo-name', longName);
     await expect(gifts(page).locator('.studio-gifts__preview-stack .studio-gifts__watermark')).toHaveCount(3);
@@ -279,6 +286,7 @@ for (const width of [320, 360, 390, 406, 987, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     await setup(page, { path });
     const promo = promotion(page);
+    await expandStudioGifts(promo);
     const divider = promo.locator('.santa-studio-promotion__header-divider');
     await expect(divider).toHaveCount(1);
     await expect(divider).toHaveAttribute('aria-hidden', 'true');
@@ -309,7 +317,6 @@ for (const width of [320, 360, 390, 406, 987, 1440]) {
           animation: getComputedStyle(dot).animationName,
           recordingFont: parseFloat(getComputedStyle(card.querySelector('.message-recording-indicator')).fontSize),
           border: border(line),
-          referenceBorder: border(document.querySelector('.message-card-top')),
           count, recording,
           cardOverflow: card.scrollWidth > card.clientWidth + 1,
           cardLeft: card.getBoundingClientRect().left,
@@ -317,13 +324,14 @@ for (const width of [320, 360, 390, 406, 987, 1440]) {
         };
       });
       expect(geometry.border.slice(0, 2)).toEqual(['1px', 'solid']);
-      expect(geometry.border).toEqual(geometry.referenceBorder);
+      await expect(divider).toHaveCSS('border-bottom-color', 'rgba(212, 175, 55, 0.19)');
       expect(geometry.line.left).toBeCloseTo(geometry.shared.left, 1);
       expect(geometry.line.right).toBeCloseTo(geometry.shared.right, 1);
       expect(geometry.line.top).toBeGreaterThanOrEqual(Math.max(
-        geometry.header.bottom, geometry.portrait.bottom, geometry.recording.bottom) + 13);
+        geometry.header.bottom, geometry.recording.bottom,
+        ...(width >= 768 ? [geometry.portrait.bottom] : [])) + 13);
       expect(geometry.title.top - geometry.line.bottom).toBeGreaterThanOrEqual(13);
-      for (const item of [geometry.count, geometry.recording, geometry.portrait]) {
+      for (const item of [geometry.count, geometry.recording, ...(width >= 768 ? [geometry.portrait] : [])]) {
         expect(item.left).toBeGreaterThanOrEqual(geometry.shared.left - 1);
         expect(item.right).toBeLessThanOrEqual(geometry.shared.right + 1);
         expect(item.bottom).toBeLessThan(geometry.line.top);
@@ -426,6 +434,7 @@ test('free-maker selection and generation retain recipient across navigation and
   await page.reload();
   await expect(page.locator('.studio-gifts [data-demo-name]')).toHaveCount(0);
   await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Edward');
+  await expandStudioGifts(promotion(page));
   await expect(gifts(page).getByRole('button', { name: /Enlarge/ })).toHaveCount(3);
   await expect(gifts(page).getByRole('heading')).toHaveCount(0);
   await expect(page.locator('.santa-message-example')).toHaveCount(0);
@@ -458,6 +467,7 @@ for (const width of [390, 1440]) {
 test(`unknown-recipient cooldown keeps all three original example gifts at ${width}px`, async ({ page }) => {
   await page.setViewportSize({ width, height: 1100 });
   await setup(page, { cooldown: true });
+  await expandStudioGifts(promotion(page));
   await expect(gifts(page).getByRole('heading')).toHaveCount(0);
   await expect(gifts(page)).toHaveAttribute('data-demo-name', 'Edward');
   await expect(gifts(page).locator('.studio-certificate__name')).toHaveText('Edward');

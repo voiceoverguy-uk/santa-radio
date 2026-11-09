@@ -3,11 +3,15 @@ name: Santa recipient preview priority
 description: Owner requires selected/generated child names instead of random examples after personalisation.
 ---
 
-The small Santa portrait in the Studio A heading should be clickable and expand slowly to about three times its original size, within the phone viewport.
+On desktop, the small Santa portrait in the Studio A heading should be clickable
+and expand slowly to about three times its original size. On phones, hide the
+header portrait and its enlargement control entirely.
 
-**Why:** The owner wants visitors to see what the small picture depicts.
+**Why:** The owner wants visitors to see what the small picture depicts, but later
+requested removing that small header portrait on mobile to reduce clutter.
 
-**How to apply:** Preserve the original heading thumbnail and artwork. Keep the larger view dismissible and honour reduced-motion preferences.
+**How to apply:** Preserve the original desktop heading thumbnail and artwork.
+Keep the larger view dismissible and honour reduced-motion preferences.
 
 If someone uses the free message or checks a name in the homepage name checker,
 the message maker should only show the name they just generated or checked.

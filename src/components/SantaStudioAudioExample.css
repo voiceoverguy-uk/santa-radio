@@ -147,6 +147,16 @@
   display: none !important;
 }
 
+@media (max-width: 767px) {
+  .santa-studio-promotion .santa-studio-audio-example {
+    container: studio-example / inline-size;
+  }
+
+  .santa-studio-promotion .santa-studio-audio-example__timeline {
+    display: none;
+  }
+}
+
 @media (max-width: 480px) {
   .santa-studio-audio-example__controls {
     display: grid;
@@ -155,6 +165,14 @@
 
   .santa-studio-audio-example__play {
     min-width: 0;
+  }
+}
+
+/* At very narrow effective widths (including enlarged phone text), do not
+   squeeze Play to zero beside Stop. Ordinary phone controls stay side by side. */
+@container studio-example (max-width: 11rem) {
+  .santa-studio-audio-example__controls {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

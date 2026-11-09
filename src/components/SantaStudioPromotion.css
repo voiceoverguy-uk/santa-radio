@@ -31,8 +31,17 @@
   min-width: 0;
 }
 
-.santa-studio-promotion > .studio-gifts {
+.santa-studio-promotion__gifts {
   grid-area: gifts;
+  min-width: 0;
+}
+
+.santa-studio-promotion__gift-toggle {
+  display: none;
+}
+
+.santa-studio-promotion__gift-content {
+  min-width: 0;
 }
 
 
@@ -445,6 +454,43 @@
 }
 
 @media (max-width: 767px) {
+  .santa-studio-promotion__preview {
+    display: none;
+  }
+
+  .santa-studio-promotion__gift-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    max-width: 100%;
+    padding: 8px 2px;
+    border: 0;
+    background: transparent;
+    color: var(--studio-ink);
+    font: inherit;
+    font-size: .9rem;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .santa-studio-promotion__gift-toggle:focus-visible {
+    outline: 3px solid #765a20;
+    outline-offset: 3px;
+  }
+
+  .santa-studio-promotion__gift-arrow {
+    font-size: 1.2em;
+  }
+
+  .santa-studio-promotion__gift-toggle[aria-expanded="true"] .santa-studio-promotion__gift-arrow {
+    transform: rotate(180deg);
+  }
+
+  .santa-studio-promotion__gifts[data-expanded="false"] .santa-studio-promotion__gift-content {
+    display: none;
+  }
+
   .santa-studio-promotion__launch-countdown-remaining {
     display: block;
   }
