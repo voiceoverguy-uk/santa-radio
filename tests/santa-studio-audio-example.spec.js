@@ -266,6 +266,52 @@ test('loading and playback failures keep the selected paid sample name private',
 });
 
 for (const path of ['/', '/free-santa-message']) {
+  test(`paid example keeps a compact ordered layout on ${path}`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await visit(page, path);
+    const demo = page.locator('#santa-studio-promotion .santa-studio-audio-example');
+    for (const width of [320, 390, 767, 768, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await expect(demo).toBeVisible();
+      const layout = await demo.evaluate(card => {
+        const rect = selector => {
+          const { x, y, width, height, bottom, right } = card.querySelector(selector).getBoundingClientRect();
+          return { x, y, width, height, bottom, right };
+        };
+        return {
+          card: { height: card.getBoundingClientRect().height, x: card.getBoundingClientRect().x,
+            right: card.getBoundingClientRect().right, bottom: card.getBoundingClientRect().bottom },
+          heading: rect('h4'),
+          controls: rect('.santa-studio-audio-example__controls'),
+          play: rect('.santa-studio-audio-example__play'),
+          stop: rect('.santa-studio-audio-example__stop'),
+          timeline: rect('.santa-studio-audio-example__timeline'),
+          cue: rect('.santa-studio-audio-example__cue'),
+          overflow: card.scrollWidth > card.clientWidth + 1,
+        };
+      });
+      expect(layout.overflow).toBe(false);
+      expect(layout.card.x).toBeGreaterThanOrEqual(0);
+      expect(layout.card.right).toBeLessThanOrEqual(width);
+      expect(layout.controls.y - layout.heading.bottom).toBeCloseTo(4, 0);
+      for (const button of [layout.play, layout.stop]) {
+        expect(button.height).toBeGreaterThanOrEqual(44);
+        expect(button.width).toBeGreaterThanOrEqual(44);
+        expect(button.right).toBeLessThanOrEqual(layout.card.right);
+      }
+      expect(layout.cue.height).toBe(0);
+      if (width >= 768) {
+        await expect(demo.getByRole('slider')).toBeVisible();
+        expect(layout.timeline.y - layout.controls.bottom).toBeCloseTo(4, 0);
+        expect(layout.card.bottom - layout.timeline.bottom).toBeCloseTo(11, 0);
+        expect(layout.card.height).toBeLessThanOrEqual(140);
+      } else {
+        await expect(demo.locator('.santa-studio-audio-example__timeline')).toBeHidden();
+        expect(layout.card.bottom - layout.controls.bottom).toBeCloseTo(11, 0);
+      }
+    }
+  });
+
   test(`paid playback and recipient priority survive collapsed gifts and resizing on ${path}`, async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.setViewportSize({ width: 320, height: 900 });
