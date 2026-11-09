@@ -78,6 +78,7 @@
 - [Studio page position](studio-age-page-position.md) — Every mobile Studio page opens with the creation panel just below navigation, including entry, review and editing.
 - [Stripe connector diagnosis](stripe-connector-compatibility.md) — Inspect response field names before treating template errors as failed provisioning; preserve the working sandbox connection.
 - [Stripe decimal readiness](stripe-decimal-readiness.md) — SDK Decimal objects serialize as strings; compare exact representations without rounding the price.
+- [Studio owner launch](studio-owner-launch.md) — Private runtime checks and owner-paid canary; secrets stay in Vercel and public checkout remains separately guarded.
 - [Preview cookie attributes](preview-cookie-attributes.md) — The preview proxy can rewrite SameSite; test server attributes separately and keep explicit request-origin checks.
 - [HTTP host verification](http-host-verification.md) — Node fetch may ignore a supplied Host; exercise canonical-host guards using node:http instead.
 - [Raw request targets](raw-request-targets.md) — Exact doubled-separator exports must survive pre-routing middleware; resolver-only checks miss failures and app-shell fallbacks.

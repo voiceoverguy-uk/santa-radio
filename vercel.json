@@ -28,6 +28,7 @@
     "api/santa-studio-checkout.js": { "installCommand": "", "maxDuration": 30 },
     "api/santa-studio-return.js": { "installCommand": "", "maxDuration": 30 },
     "api/santa-studio-email-retry.js": { "installCommand": "", "maxDuration": 60 },
+    "api/santa-workshop-usage.js": { "installCommand": "", "maxDuration": 60 },
     "api/public-page.js": {
       "installCommand": "",
       "includeFiles": "{dist/server/**,src/data/legacy-songs.js}"

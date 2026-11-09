@@ -6,6 +6,7 @@ import { liveStudioConfig, liveHeaders, sameLiveOrigin } from './studio-live-con
 import { liveStripeClient } from './studio-live-stripe.js';
 import { consumeLiveAttempt, digest, emailDigest, returnToken, queueReturnEmail, transaction } from './studio-live-store.js';
 import { cookieOptions, LIVE_ACCESS_COOKIE, tokenPattern } from './studio-live-access.js';
+import { simulateOwnerEmail } from './studio-owner-readiness.js';
 
 export async function sendStudioReturnEmail({ config, email, token, key, fetcher = fetch }) {
   // Fragment tokens never reach CDN/server access logs or Referer headers.
@@ -138,6 +139,8 @@ const constantEqual = (a, b) => typeof a === 'string' && a.length === b.length
 export function createStudioEmailRetryHandler({
   getConfig = () => liveStudioConfig(process.env, { email: true }), getPool = databasePool,
   deliver = deliverStudioReturn, fetcher = fetch,
+  getProbeConfig = () => liveStudioConfig({ ...process.env, STUDIO_EMAIL_RETRY_APPROVED: 'true' }, { email: true }),
+  simulator = simulateOwnerEmail,
 } = {}) {
   const app = express();
   app.disable('x-powered-by');
@@ -145,9 +148,16 @@ export function createStudioEmailRetryHandler({
     liveHeaders(res);
     if (req.method !== 'GET') return res.set('Allow', 'GET').status(405).end();
     try {
-      const config = getConfig();
+      const simulatorOnly = req.headers['x-studio-simulator-only'] === '1';
+      const config = simulatorOnly ? getProbeConfig() : getConfig();
       if (!constantEqual(req.headers.authorization, `Bearer ${config.cronSecret}`)) return res.status(403).end();
       const pool = getPool();
+      if (simulatorOnly) {
+        await simulator({ config, pool, fetcher });
+        await pool.query(`INSERT INTO public.santa_studio_live_worker_health(worker) VALUES('email-retry')
+          ON CONFLICT(worker) DO UPDATE SET verified_at=clock_timestamp()`);
+        return res.json({ simulatorAccepted: true, workerVerified: true });
+      }
       const result = await deliver({ config, pool });
       // A scheduled, simulated-delivery probe establishes/refreshes sender health
       // without contacting customers. At most once a day across all instances.

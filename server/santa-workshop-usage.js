@@ -4,6 +4,7 @@ import { authorize } from './name-requests.js';
 import { privateResponse } from './santa-name-security.js';
 import { workshopUsageReport } from './santa-workshop-usage-store.js';
 import { studioStorageDiagnostic } from './studio-storage-diagnostic.js';
+import { createOwnerHandler, ownerTokenRequest } from './studio-owner-handler.js';
 
 export function createWorkshopUsageHandler({
   checkAdmin = authorize, read = workshopUsageReport, diagnose = studioStorageDiagnostic,
@@ -32,6 +33,13 @@ export function createWorkshopUsageHandler({
 const app = express();
 app.disable('x-powered-by');
 app.use((_req, res, next) => { privateResponse(res); next(); });
+const ownerHandler = createOwnerHandler();
+app.use((req, res, next) => {
+  const diagnostic = new URL(req.originalUrl || req.url || '/', 'http://internal').searchParams.get('diagnostic');
+  if (diagnostic !== 'live-launch') return next();
+  if (ownerTokenRequest(req)) return ownerHandler(req, res, next);
+  return staffAuth(req, res, () => ownerHandler(req, res, next));
+});
 app.use(staffAuth);
 app.use(createWorkshopUsageHandler());
 export default app;

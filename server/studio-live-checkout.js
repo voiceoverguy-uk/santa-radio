@@ -9,12 +9,22 @@ import { digest, transaction, consumeLiveAttempt } from './studio-live-store.js'
 import { LIVE_CHECKOUT_COOKIE, LIVE_PENDING_COOKIE, cookieOptions, liveCheckoutClaim, signLiveClaim } from './studio-live-access.js';
 
 export async function startLiveCheckout({ claim, config, stripe, pool = databasePool() }) {
+  return startCheckout({ claim, config, stripe, pool }, false);
+}
+
+// Only the approved-owner handler may call this. Public checkout never accepts
+// a canary flag, and the owner handler derives one stable claim server-side.
+export async function startOwnerCanary(options) {
+  return startCheckout(options, true);
+}
+
+async function startCheckout({ claim, config, stripe, pool = databasePool() }, ownerCanary) {
   const hash = digest(claim);
   return transaction(pool, async client => {
     // Serialise creation against the operator's durable emergency switch:
     // after its disabling UPDATE commits, no new checkout can start.
     const sales = await client.query("SELECT enabled FROM public.santa_studio_live_sales_settings WHERE key='public' FOR SHARE");
-    if (sales.rows[0]?.enabled !== true) throw new Error('STUDIO_LIVE_SALES_DISABLED');
+    if (!ownerCanary && sales.rows[0]?.enabled !== true) throw new Error('STUDIO_LIVE_SALES_DISABLED');
     await client.query('INSERT INTO public.santa_studio_live_attempts(claim_sha256) VALUES($1) ON CONFLICT DO NOTHING', [hash]);
     const { rows: [attempt] } = await client.query(`SELECT checkout_session_id,generation FROM public.santa_studio_live_attempts
       WHERE claim_sha256=$1 FOR UPDATE`, [hash]);
