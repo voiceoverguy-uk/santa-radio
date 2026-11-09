@@ -36,6 +36,17 @@ behaviour without unrelated website services, and limited this handover to iPhon
 **How to apply:** Keep adaptations export-only; distinguish bundled-web guidance
 from a native port and browser/file-origin checks from actual WKWebView testing.
 
+For fresh mobile handovers, treat the current tracker source and its current
+tests as authoritative, not the tests or documentation embedded in an older
+handover generator.
+
+**Why:** Older handover templates can retain obsolete itinerary and seasonal
+expectations even when they copy newer runtime files.
+
+**How to apply:** Reconcile imported dependencies, assets and checks against the
+current source. In an export-only request, document existing runtime discrepancies
+rather than silently correcting website behavior outside the requested scope.
+
 Tracker presentation should match the actual established Santa Radio homepage and Christmas Music styling, not retain the imported blue theme. Use the site's heading/body typography, green surfaces, readable gold/cream accents, red actions and matching cards, borders and spacing; preserve intentional handwritten postcards and festive effects.
 
 **Why:** After the transfer, the owner explicitly requested brand-matching styling while leaving content, calculations, preview behaviour, radio and cross-promotion intact.

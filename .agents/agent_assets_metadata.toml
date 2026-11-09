@@ -1316,3 +1316,17 @@ mtime_ms = 1794231978412
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/0f7c917f-cdc6-4057-b7a4-05d037cacfe9/08693a00-25ca-4259-ad02-d138d3a2f276"
 storage_version_token = "1794232012580868"
 content_type = "application/octet-stream"
+
+[[outputs]]
+id = "4MGuBOKXMzokrGxMGWI8l"
+uri = "file://generated-artifacts/santa-tracker-mobile-handover/santa-tracker-mobile-handover-2026-11-09.zip"
+type = "unspecified"
+title = "Santa Tracker — iOS and Android handover"
+description = "2.96 MB ZIP: standalone production build, current tracker source and lockfile, local map and artwork, itinerary and seasonal data, fonts/licences, and WebView guidance. Verified with 22 source tests, 33 offline phone renders and ZIP/hash integrity checks."
+logical_id = "0e681847-8b65-4208-8096-2595541f09c0"
+content_hash = "sha256:a4ad481865a1a29e335ca8a56fbc06333b95b801d18a1907a8c66d9b01b77921"
+size = 2959537
+mtime_ms = 1794238050998
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:34ac2d71-37e1-4a7c-a1f8-8f607b9fd534/0e681847-8b65-4208-8096-2595541f09c0/c49cdad1-68df-468d-a243-f203dac1a59c"
+storage_version_token = "1794238088649986"
+content_type = "application/octet-stream"
