@@ -60,18 +60,27 @@ export async function verifyLiveOffer(stripe, config) {
 export function verifiedLiveSession(session, config) {
   const lines = session?.line_items, line = lines?.data?.[0], price = line?.price;
   const payment = session?.payment_intent, product = price?.product;
+  // This object is retrieved privately from the configured Stripe account by
+  // the return/webhook handlers, never accepted from a browser. Stripe owns
+  // promotion eligibility and rounding. Validate exact integer-pence totals
+  // instead of recomputing percentages or trusting a client-supplied discount.
+  const discount = session?.total_details?.amount_discount;
+  const total = session?.amount_total;
+  const amountsValid = Number.isSafeInteger(discount) && discount >= 0 && discount < 650
+    && Number.isSafeInteger(total) && total === 650 - discount
+    && (discount === 0 || session.allow_promotion_codes === true && line?.amount_discount === discount);
   return !!(session?.livemode === true && session.mode === 'payment' && session.status === 'complete'
-    && session.payment_status === 'paid' && session.amount_total === 650 && session.amount_subtotal === 650
+    && session.payment_status === 'paid' && amountsValid && session.amount_subtotal === 650
     && session.currency === 'gbp' && session.metadata?.offer === config.offer
     && /^[a-f0-9]{64}$/.test(session.metadata?.access_claim_sha256 || '')
     && lines?.has_more === false && lines.data.length === 1 && line?.quantity === 1
-    && line.amount_total === 650 && line.amount_subtotal === 650
-    && session.total_details?.amount_discount === 0 && session.total_details.amount_shipping === 0
+    && line.amount_total === total && line.amount_subtotal === 650
+    && session.total_details.amount_shipping === 0
     && session.total_details.amount_tax === 0
     && price?.id === config.priceId && price.livemode === true && price.unit_amount === 650
     && price.currency === 'gbp' && price.type === 'one_time' && !price.recurring
     && id(product) === config.productId && product?.livemode === true
     && payment?.id && payment.livemode === true && payment.status === 'succeeded'
-    && payment.amount === 650 && payment.amount_received === 650 && payment.currency === 'gbp'
+    && payment.amount === total && payment.amount_received === total && payment.currency === 'gbp'
     && payment.amount_capturable === 0);
 }

@@ -103,6 +103,41 @@ code. Provider messages are never returned.
 
 ## Limits and public launch
 
+### Stripe promotion codes
+
+New Studio Checkout Sessions set `allow_promotion_codes: true`; enter an
+existing eligible Stripe promotion code in Stripe's own discount field, not
+the Studio voucher form. No code is pre-applied, stored in source or created
+by this change. Stripe enforces its configured eligibility, expiry, redemption
+and product restrictions when the buyer applies the code.
+
+The base price remains the pinned £6.50 one-time product with quantity one.
+Confirmation privately retrieves canonical Stripe data and requires the
+£6.50 subtotal, matching line/session discount totals, no shipping/tax and a
+succeeded live PaymentIntent for exactly the discounted GBP total. Both the
+90% (65p) and 95% rounding-boundary (33p fixture) paths are covered by automated
+fixtures, including signed webhook processing, checkout return and email
+return with an old voucher. Each grants only two successful creations; the
+third is refused after email return. No live charge was used for verification.
+Zero-total/100%-off sessions remain unsupported and fail closed; this change
+supports the existing positive-payment promotions, not free entitlements.
+The validator accepts Stripe's exact integer totals (including either side
+of a half-penny rounding boundary), rather than calculating percentages itself.
+
+Previously created open Checkout Sessions do not gain the field retroactively;
+new sessions use the new setting. Completed purchases and existing allowances
+are unchanged. Sync this source and confirm the serving deployment before any
+future checkout test. Do not pay again merely to verify source preparation.
+
+There is no promotion-specific environment switch. Keep public sales closed
+during preparation. Later public launch requires explicit owner approval,
+Vercel Production `STUDIO_LIVE_SALES_ENABLED=true`, Production
+`STUDIO_LIVE_DELIVERY_APPROVED=santa-message-maker-one-child-v1`, and the database
+`santa_studio_live_sales_settings` row `key='public'` enabled, plus all existing
+live readiness checks. Environment changes require a new production deployment.
+Do not change those flags or the database switch as part of preparing this
+feature; retry approval remains independent and unchanged.
+
 ### Check an existing paid purchase without buying again
 
 After Sync Changes, confirm the new revision is serving the canonical domain.

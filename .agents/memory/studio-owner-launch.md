@@ -18,3 +18,14 @@ Readiness failures must stay diagnosable without exposing provider messages:
 return only stage, Stripe type/code, HTTP status or fixed STUDIO_* codes.
 **Why:** blanket false results hid a production-only Stripe failure while the
 workspace live key passed identical calls.
+
+Eligible Stripe promotion codes may discount the £6.50 base checkout without
+changing the two-creation entitlement. Studio vouchers remain separate.
+
+**Why:** The owner explicitly approved existing Stripe promotion-code support
+with automated/sandbox verification only and public sales kept off.
+
+**How to apply:** Let Stripe enforce code eligibility and use canonical
+discounted payment totals, not a fixed £6.50 received-amount check. Preserve
+the verified purchase allowance through email returns and old voucher state.
+Do not create live charges to verify this feature or enable sales implicitly.

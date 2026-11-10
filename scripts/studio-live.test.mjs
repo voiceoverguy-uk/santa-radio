@@ -34,16 +34,16 @@ const claim = randomBytes(32).toString('base64url');
 const id = 'cs_live_fixture1';
 const requestCookies = `${LIVE_CHECKOUT_COOKIE}=${signLiveClaim(claim, config)}; ${LIVE_PENDING_COOKIE}=${id}`;
 const req = cookie => ({ headers: { cookie } });
-function paidSession(sessionId = id) {
+function paidSession(sessionId = id, discount = 0) {
   return {
     id: sessionId, livemode: true, mode: 'payment', status: 'complete', payment_status: 'paid',
-    amount_total: 650, amount_subtotal: 650, currency: 'gbp',
+    amount_total: 650 - discount, amount_subtotal: 650, currency: 'gbp', allow_promotion_codes: true,
     metadata: { offer: config.offer, access_claim_sha256: digest(claim) },
-    total_details: { amount_discount: 0, amount_shipping: 0, amount_tax: 0 },
+    total_details: { amount_discount: discount, amount_shipping: 0, amount_tax: 0 },
     customer_details: { email: 'studio-buyer@example.invalid' },
-    payment_intent: { id: `pi_${sessionId}`, livemode: true, status: 'succeeded', amount: 650, amount_received: 650,
+    payment_intent: { id: `pi_${sessionId}`, livemode: true, status: 'succeeded', amount: 650 - discount, amount_received: 650 - discount,
       amount_capturable: 0, currency: 'gbp' },
-    line_items: { has_more: false, data: [{ quantity: 1, amount_total: 650, amount_subtotal: 650,
+    line_items: { has_more: false, data: [{ quantity: 1, amount_total: 650 - discount, amount_subtotal: 650, amount_discount: discount,
       price: { id: config.priceId, livemode: true, unit_amount: 650, currency: 'gbp', type: 'one_time',
         product: { id: config.productId, livemode: true, active: true } } }] },
   };
@@ -62,9 +62,9 @@ beforeEach(async () => {
 async function attempt(sessionId = id) {
   await pool.query('INSERT INTO public.santa_studio_live_attempts(claim_sha256,checkout_session_id) VALUES($1,$2)', [digest(claim), sessionId]);
 }
-async function purchase() {
+async function purchase(discount = 0) {
   await attempt();
-  assert.equal(await transaction(pool, client => reconcileLivePurchase(client, paidSession(), config)), true);
+  assert.equal(await transaction(pool, client => reconcileLivePurchase(client, paidSession(id, discount), config)), true);
 }
 async function count(table) {
   return Number((await pool.query(`SELECT count(*) FROM public.${table}`)).rows[0].count);
@@ -133,6 +133,37 @@ test('only complete, correct live payment and every expanded resource can author
   for (const change of changes) { const s = paidSession(); change(s); assert.equal(verifiedLiveSession(s, config), false); }
 });
 
+test('Stripe promotion totals must match the pinned offer and actual successful payment exactly', () => {
+  for (const discount of [0, 1, 325, 585, 617, 618, 649]) {
+    assert.equal(verifiedLiveSession(paidSession(id, discount), config), true);
+  }
+  for (const discount of [-1, 650, 651, 1.5, '585', undefined]) {
+    const session = paidSession(id, 585);
+    session.total_details.amount_discount = discount;
+    assert.equal(verifiedLiveSession(session, config), false);
+  }
+  for (const change of [
+    s => { s.allow_promotion_codes = false; },
+    s => { s.line_items.data[0].amount_discount = 0; },
+    s => { s.amount_total = 64; },
+    s => { s.amount_subtotal = 65; },
+    s => { s.line_items.data[0].amount_subtotal = 65; },
+    s => { s.line_items.data[0].amount_total = 650; },
+    s => { s.payment_intent.amount_received = 64; },
+    s => { s.payment_intent.amount = 650; },
+    s => { s.total_details.amount_tax = 1; },
+    s => { s.total_details.amount_shipping = 1; },
+    s => { s.line_items.data[0].quantity = 2; },
+    s => { s.payment_status = 'unpaid'; },
+    s => { s.livemode = false; },
+    s => { s.line_items.data[0].price.id = 'price_other'; },
+  ]) {
+    const session = paidSession(id, 585);
+    change(session);
+    assert.equal(verifiedLiveSession(session, config), false);
+  }
+});
+
 test('credential mode prefixes alone cannot prove the configured live account', async () => {
   for (const [balance, account] of [
     [{ livemode: false }, { id: config.accountId, charges_enabled: true }],
@@ -189,7 +220,8 @@ test('concurrent checkout uses one session and server-owned exact price, origin 
   assert.deepEqual(parameters.line_items, [{ price: config.priceId, quantity: 1 }]);
   assert.equal(parameters.mode, 'payment'); assert.equal(parameters.success_url, `${config.origin}/bespoke-personalised-message-from-santa?checkout=return`);
   assert.match(key, /^studio-live:[a-f0-9]{64}:0$/); assert.equal(parameters.customer_creation, undefined);
-  assert.equal(parameters.allow_promotion_codes, undefined);
+  assert.equal(parameters.allow_promotion_codes, true);
+  assert.equal(parameters.discounts, undefined, 'Buyer enters a code in Stripe, never a pre-applied client discount');
   checkout.status = 'complete';
   assert.equal((await startLiveCheckout({ claim, config, stripe, pool })).pending, true);
   assert.equal(creates, 1);
@@ -261,11 +293,11 @@ test('existing server-verified access survives Stripe/email outages and disabled
   assert.equal((await (await server.get()).json()).authorized, true);
 });
 
-test('a successful bound browser return verifies Stripe before issuing live HttpOnly access', async t => {
+for (const discount of [0, 585, 617]) test(`bound checkout return verifies Stripe with ${discount}p discount before issuing live access`, async t => {
   await attempt();
   const server = await serve(t, createLiveAccessHandler({
     getConfig: () => config, getPool: () => pool, consume: async () => true,
-    getStripe: async () => ({ checkout: { sessions: { retrieve: async () => paidSession() } } }),
+    getStripe: async () => ({ checkout: { sessions: { retrieve: async () => paidSession(id, discount) } } }),
   }));
   const response = await server.get();
   assert.equal((await response.json()).authorized, true);
@@ -273,10 +305,10 @@ test('a successful bound browser return verifies Stripe before issuing live Http
   assert.equal(await count('santa_studio_live_purchases'), 1);
 });
 
-test('signed raw live webhooks reconcile tab-closed payments once, wrong-mode and bad signatures never do', async t => {
+for (const discount of [0, 585, 617]) test(`signed live webhook reconciles ${discount}p discount once; invalid signatures never grant`, async t => {
   await attempt();
   const event = { id: 'evt_fixture', type: 'checkout.session.completed', livemode: true, data: { object: { id } } };
-  const stripe = { events: { retrieve: async () => event }, checkout: { sessions: { retrieve: async () => paidSession() } } };
+  const stripe = { events: { retrieve: async () => event }, checkout: { sessions: { retrieve: async () => paidSession(id, discount) } } };
   const results = await Promise.all([1, 2].map(() => processLiveStudioEvent(event, { config, stripe, pool })));
   assert.equal(results.filter(r => r.authorized).length, 1);
   assert.equal(await count('santa_studio_live_purchases'), 1);
@@ -326,11 +358,13 @@ test('return tokens redeem atomically once, do not expire purchase, and reject f
   assert.equal(await count('santa_studio_live_purchases'), 1);
 });
 
-test('emailed returns replace credentials without resetting either purchase creation', async t => {
-  await purchase();
+for (const discount of [0, 585, 617]) test(`emailed returns preserve two creations with stale voucher after ${discount}p Stripe discount`, async t => {
+  await purchase(discount);
+  await pool.query("UPDATE public.santa_studio_live_sales_settings SET enabled=false WHERE key='public'");
   const store = createStudioAllowanceStore(pool);
   const resolve = cookie => studioAllowanceIdentity(req(cookie), {
-    visitorSession: () => null, production: () => true,
+    visitorSession: () => ({ limited: false, generationKey: digest('stale-voucher'), expiresAt: Date.now() + 3600000 }),
+    production: () => true,
     livePurchase: request => livePaidPurchaseId(request, { config, pool }),
   });
   const original = await resolve(requestCookies);
@@ -339,6 +373,7 @@ test('emailed returns replace credentials without resetting either purchase crea
   const server = await serve(t, createStudioReturnHandler({
     getConfig: () => config, getEmailConfig: () => config, getPool: () => pool, consume: async () => true,
   }));
+  let returnedCookie;
   for (let turn = 0; turn < 2; turn++) {
     if (turn) await server.post({ email: 'studio-buyer@example.invalid' });
     const { rows: [email] } = await pool.query(`SELECT * FROM public.santa_studio_live_email
@@ -346,12 +381,31 @@ test('emailed returns replace credentials without resetting either purchase crea
     await pool.query('UPDATE public.santa_studio_live_email SET sent_at=now() WHERE id=$1', [email.id]);
     const response = await server.post({ token: returnToken(email.nonce, config) });
     assert.equal(response.status, 200);
-    const returned = await resolve(response.headers.get('set-cookie').split(';')[0]);
+    returnedCookie = response.headers.get('set-cookie').split(';')[0];
+    const returned = await resolve(returnedCookie);
     assert.deepEqual(returned, original);
     assert.equal((await store.status(returned)).remaining, turn ? 0 : 1);
     if (!turn) await store.succeed(returned, await store.reserve(returned, operation()));
     else await assert.rejects(store.reserve(returned, operation()), { status: 409 });
   }
+  // Exercise the HTTP generation boundary as well as the allowance store:
+  // email return plus stale unlimited voucher must not render a third MP3.
+  const choice = `c-${'a'.repeat(64)}`;
+  const categories = ['age', 'activity', 'achievement', 'treat', 'place'];
+  const message = await serve(t, createStudioMessageHandler({
+    authorize: r => hasLivePaidAccess(r, { config, pool }),
+    allowanceIdentity: r => resolve(r.headers.cookie), allowances: store,
+    limit: async () => {}, reportFailure: () => {},
+    catalogue: async () => ({ categories: Object.fromEntries(categories.map(k => [k, [{ id: choice, file: 'fixture.wav' }]])) }),
+    library: { resolve: async () => ({ id: 'fixture', name: 'Fixture' }) },
+    download: async () => assert.fail('Third creation must not download source clips'),
+    render: async () => assert.fail('Third creation must not render'),
+  }));
+  const third = await message.post({ name: 'fixture', ...Object.fromEntries(categories.map(k => [k, choice])), talent: { skip: true } },
+    { Cookie: returnedCookie, 'X-Forwarded-Proto': 'https', 'Idempotency-Key': crypto.randomUUID() });
+  assert.equal(third.status, 409);
+  assert.match((await third.json()).error, /Both creations have been used/);
+  assert.equal((await store.status(original)).remaining, 0);
 });
 
 test('fresh return requests never enumerate purchasers or depend on a new-sales switch', async t => {
