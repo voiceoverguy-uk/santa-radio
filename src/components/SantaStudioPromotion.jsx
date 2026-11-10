@@ -65,11 +65,11 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
           </div>
         </div>
         <SantaStudioAudioExample onActiveExampleNameChange={setPaidExampleName} />
+        <StudioPurchaseButton onPaidAccessChange={setPaidAccess} />
         {!paidAccess && <WorkshopPasswordForm
           variant="promotion"
           onAuthorized={onAuthorized || (() => navigate(STUDIO_PATH))}
         />}
-        <StudioPurchaseButton onPaidAccessChange={setPaidAccess} />
       </div>
       <div className="santa-studio-promotion__gifts" data-expanded={giftsExpanded}>
         <div className="santa-studio-promotion__gift-controls">

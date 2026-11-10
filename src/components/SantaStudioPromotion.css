@@ -400,23 +400,30 @@
   padding: 10px 14px;
   border: 1px solid #806023;
   border-radius: 7px;
-  background: #f7efd9;
-  color: var(--studio-ink);
-  font-size: 0.84rem;
-  font-weight: 400;
+  background: #9b111e;
+  color: #fff9e9;
+  font-size: 1rem;
+  font-weight: 700;
+  box-shadow: 0 0 12px #d5b65b55;
+  animation: studio-purchase-glow 2.8s ease-in-out infinite;
   line-height: 1.35;
   cursor: pointer;
   transition: background-color 160ms ease, transform 160ms ease;
 }
 
 .santa-studio-promotion__purchase:hover {
-  background: #e9ddc2;
+  background: #b41928;
   transform: translateY(-1px);
 }
 
 .santa-studio-promotion__purchase:focus-visible {
   outline: 3px solid #765a20;
   outline-offset: 4px;
+}
+
+@keyframes studio-purchase-glow {
+  0%, 100% { box-shadow: 0 0 8px #d5b65b55; }
+  50% { box-shadow: 0 0 20px #d5b65b99; }
 }
 
 /* Purchase notices use generated accessible IDs, not a fixed note ID. */
@@ -586,6 +593,7 @@
   }
 
   .santa-studio-promotion__purchase {
+    animation: none;
     transition: none;
   }
 

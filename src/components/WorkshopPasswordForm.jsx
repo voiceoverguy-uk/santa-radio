@@ -108,7 +108,7 @@ export function WorkshopPasswordForm({ onAuthorized, compact = false, active = t
       id={inputId}
       type="password"
       value={code}
-      placeholder="Enter a voucher code for early access"
+      placeholder="Enter voucher code"
       onChange={event => { setCode(event.target.value.slice(0, 80)); setError(''); }}
       autoComplete="off"
       autoCapitalize="off"
@@ -121,9 +121,9 @@ export function WorkshopPasswordForm({ onAuthorized, compact = false, active = t
       aria-describedby={error ? `${inputId}-error` : undefined}
     />
     {error && <p className="workshop-password-error" id={`${inputId}-error`} role="alert">{error}</p>}
-    <button type="submit" disabled={pending}>
+    {(variant !== 'promotion' || code.trim().length > 0) && <button type="submit" disabled={pending}>
       {pending ? 'Checking code…' : 'Create your bespoke message'}
-    </button>
+    </button>}
   </form>;
 }
 
