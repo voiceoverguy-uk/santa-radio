@@ -30,6 +30,7 @@ export function liveStudioConfig(env = process.env, { sales = false, email = fal
     || (env.CRON_SECRET || '').length < 32
     || env.STUDIO_EMAIL_RETRY_APPROVED !== 'true')) throw new Error('STUDIO_LIVE_DELIVERY_CONFIGURATION_REQUIRED');
   return {
+    publishableKey: /^pk_live_[A-Za-z0-9]+$/.test(env.STRIPE_LIVE_PUBLISHABLE_KEY || '') ? env.STRIPE_LIVE_PUBLISHABLE_KEY : null,
     origin: LIVE_STUDIO_ORIGIN, productId: LIVE_STUDIO_PRODUCT, priceId: LIVE_STUDIO_PRICE,
     accountId: LIVE_STUDIO_ACCOUNT, offer: LIVE_STUDIO_OFFER, secret: env.STUDIO_RETURN_SECRET,
     webhookId: env.STUDIO_LIVE_WEBHOOK_ID, webhookSecret: env.STUDIO_LIVE_WEBHOOK_SECRET,

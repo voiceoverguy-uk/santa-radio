@@ -77,4 +77,3 @@ export function regionCamera(name: string): Camera {
   const b = project(r.box[1], r.box[2]);
   return boxCamera(a.x, a.y, b.x, b.y, 0.06);
 }
-

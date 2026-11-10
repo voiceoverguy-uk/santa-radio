@@ -20,6 +20,7 @@ export async function startOwnerCanary(options) {
 
 async function startCheckout({ claim, config, stripe, pool = databasePool() }, ownerCanary) {
   const hash = digest(claim);
+  const embedded = !ownerCanary && !!config.publishableKey;
   return transaction(pool, async client => {
     // Serialise creation against the operator's durable emergency switch:
     // after its disabling UPDATE commits, no new checkout can start.
@@ -42,11 +43,16 @@ async function startCheckout({ claim, config, stripe, pool = databasePool() }, o
       await verifyLiveOffer(stripe, config);
       const generation = attempt.generation + (session ? 1 : 0);
       session = await stripe.checkout.sessions.create({
-        mode: 'payment', payment_method_types: ['card'],
+        mode: 'payment',
         allow_promotion_codes: true,
         line_items: [{ price: config.priceId, quantity: 1 }],
-        success_url: `${config.origin}${STUDIO_PATH}?checkout=return`,
-        cancel_url: `${config.origin}/?studioCheckout=cancelled#santa-studio-promotion`,
+        ...(embedded ? {
+          ui_mode: 'embedded',
+          return_url: `${config.origin}${STUDIO_PATH}?checkout=return`,
+        } : {
+          success_url: `${config.origin}${STUDIO_PATH}?checkout=return`,
+          cancel_url: `${config.origin}/?studioCheckout=cancelled#santa-studio-promotion`,
+        }),
         metadata: { offer: config.offer, access_claim_sha256: hash },
         // Stripe applies eligible promotion codes; the price and quantity stay pinned.
         custom_text: { submit: { message: '£6.50 before any eligible promotion includes two successful message creations, each with personalised gifts for one child. Download your MP3 and gifts before leaving Studio. Your email link preserves remaining allowance, not recordings.' } },
@@ -55,6 +61,12 @@ async function startCheckout({ claim, config, stripe, pool = databasePool() }, o
         || session.metadata?.offer !== config.offer) throw new Error('STUDIO_LIVE_CHECKOUT_MISMATCH');
       await client.query(`UPDATE public.santa_studio_live_attempts SET checkout_session_id=$2,generation=$3
         WHERE claim_sha256=$1`, [hash, session.id, generation]);
+    }
+    if (['embedded', 'embedded_page'].includes(session.ui_mode)) {
+      if (!embedded || typeof session.client_secret !== 'string' || !session.client_secret.startsWith(`${session.id}_secret_`)) {
+        throw new Error('STUDIO_EMBEDDED_SESSION_INVALID');
+      }
+      return { sessionId: session.id, clientSecret: session.client_secret };
     }
     const url = new URL(session.url);
     if (url.protocol !== 'https:' || url.hostname !== 'checkout.stripe.com' || url.username || url.password) throw new Error('STUDIO_CHECKOUT_URL_INVALID');
@@ -102,11 +114,12 @@ export function createLiveCheckoutHandler({
           claim = randomBytes(32).toString('base64url');
           res.cookie(LIVE_CHECKOUT_COOKIE, signLiveClaim(claim, config), cookieOptions);
         }
-        return res.json({ available: true, mode: 'live', sandbox: false, amount: 650, currency: 'gbp' });
+        return res.json({ available: true, mode: 'live', sandbox: false, amount: 650, currency: 'gbp',
+          checkoutMode: config.publishableKey ? 'embedded' : 'hosted', publishableKey: config.publishableKey || undefined });
       }
       const result = await start({ claim, config, stripe, pool });
       res.cookie(LIVE_PENDING_COOKIE, result.sessionId, cookieOptions);
-      return res.json({ url: result.url, pending: !!result.pending });
+      return res.json({ url: result.url, clientSecret: result.clientSecret, pending: !!result.pending });
     } catch {
       return res.status(503).json({ available: false, error: 'Checkout is temporarily unavailable. Voucher access is unchanged.' });
     }

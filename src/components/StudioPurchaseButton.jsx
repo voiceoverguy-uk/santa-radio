@@ -1,6 +1,6 @@
 import { useEffect, useId, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { STUDIO_PATH } from '../lib/studioRoute.js';
+import { STUDIO_PATH, STUDIO_CHECKOUT_PATH } from '../lib/studioRoute.js';
 
 export default function StudioPurchaseButton({ onPaidAccessChange }) {
   return <PurchaseButton sandbox={import.meta.env.DEV} onPaidAccessChange={onPaidAccessChange} />;
@@ -11,6 +11,7 @@ function PurchaseButton({ sandbox, onPaidAccessChange }) {
   const location = useLocation();
   const [paid, setPaid] = useState(null);
   const [refresh, setRefresh] = useState(0);
+  const [embedded, setEmbedded] = useState(false);
   const [available, setAvailable] = useState(false);
   const [checking, setChecking] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -37,6 +38,7 @@ function PurchaseButton({ sandbox, onPaidAccessChange }) {
         credentials: 'same-origin', cache: 'no-store', signal: controller.signal,
       });
       const data = await response.json();
+      setEmbedded(!sandbox && data.checkoutMode === 'embedded');
       if (!controller.signal.aborted) setAvailable(response.ok && data.available === true
         && (sandbox ? data.sandbox === true : data.mode === 'live' && data.sandbox === false
           && data.amount === 650 && data.currency === 'gbp'));
@@ -64,6 +66,7 @@ function PurchaseButton({ sandbox, onPaidAccessChange }) {
   }, []);
   const purchase = async () => {
     if (busy) return;
+    if (embedded) { navigate(STUDIO_CHECKOUT_PATH); return; }
     setBusy(true);
     setError('');
     try {

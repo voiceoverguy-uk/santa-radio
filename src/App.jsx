@@ -11,6 +11,7 @@ import SongDetail from './pages/SongDetail.jsx';
 import KaraokeLyrics from './pages/KaraokeLyrics.jsx';
 import FreeSantaMessage from './pages/FreeSantaMessage.jsx';
 import SantaMessageWorkshop from './pages/SantaMessageWorkshop.jsx';
+import StudioCheckout from './pages/StudioCheckout.jsx';
 import SubmitASong from './pages/SubmitASong.jsx';
 import ChristmasContenders from './pages/ChristmasContenders.jsx';
 import NaughtyNicePage from './naughty-or-nice/NaughtyNicePage.jsx';
@@ -39,7 +40,7 @@ import WorkshopAccessGate from './components/WorkshopAccessGate.jsx';
 import { RadioDockVisibilityProvider } from './components/RadioDockVisibility.jsx';
 import SantaTrackerStreamPage from './tracker/app/styt/page.tsx';
 import { isTrackerCapturePath } from './privacy/trackerPrivacy.js';
-import { STUDIO_PATH, STUDIO_ALIASES } from './lib/studioRoute.js';
+import { STUDIO_PATH, STUDIO_ALIASES, STUDIO_CHECKOUT_PATH } from './lib/studioRoute.js';
 
 function StudioRedirect() {
   const { search, hash, state } = useLocation();
@@ -48,6 +49,8 @@ function StudioRedirect() {
 
 function WebsiteLayout() {
   const capture = isTrackerCapturePath(useLocation().pathname);
+  const checkout = useLocation().pathname === STUDIO_CHECKOUT_PATH;
+  if (checkout) return <StudioCheckout />;
   return (
     <>
       {!capture && <><a href="#page-content" className="skip-link">Skip to content</a><Navbar /></>}

@@ -1,3 +1,4 @@
+export const STUDIO_CHECKOUT_PATH = '/message-maker-checkout';
 // Private Studio addresses are deliberately separate from public SEO aliases.
 export const STUDIO_PATH = '/bespoke-personalised-message-from-santa';
 export const STUDIO_ALIASES = ['/santa-message-workshop', '/bespoke-pesonalised-message-from-santa'];

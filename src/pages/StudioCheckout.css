@@ -1,0 +1,31 @@
+.studio-checkout { min-height: 100dvh; display: grid; grid-template-columns: 1fr 1fr; background: #fff; }
+.studio-checkout__story { position: relative; min-height: 100dvh; padding: clamp(28px, 5vw, 88px); display: flex; flex-direction: column; color: #fff8e7; background: linear-gradient(180deg, #071c1740, #071c1770 22%, #071c17e8 82%), url('/images/north-pole-hero.webp') center / cover; }
+.studio-checkout__home { align-self: flex-start; }
+.studio-checkout__home img { width: 230px; max-width: 70vw; height: auto; }
+.studio-checkout__copy { margin: auto 0; padding: 60px 0 40px; max-width: 530px; }
+.studio-checkout__eyebrow { color: #e6ce86; letter-spacing: .18em; font-size: 11px; font-weight: 700; }
+.studio-checkout__story h1 { font-family: Cinzel, Georgia, serif; font-size: clamp(30px, 3vw, 48px); line-height: 1.25; color: #fff8e7; margin: 20px 0; }
+.studio-checkout__lead { font-size: 19px; line-height: 1.6; }
+.studio-checkout__price { font-size: 44px; font-weight: 700; color: #e6ce86; margin: 28px 0 18px; }
+.studio-checkout__price span { display: inline-block; font-size: 13px; font-weight: 400; color: #fff8e7; }
+.studio-checkout__story ul { list-style: none; padding: 0; margin: 24px 0; }
+.studio-checkout__story li { padding: 8px 0 8px 25px; position: relative; line-height: 1.5; }
+.studio-checkout__story li::before { content: '✓'; position: absolute; left: 0; color: #e6ce86; }
+.studio-checkout__small { font-size: 12px; line-height: 1.6; color: #e0e7e2; max-width: 400px; }
+.studio-checkout__back { color: #fff8e7; font-size: 13px; align-self: flex-start; text-decoration: underline; text-underline-offset: 4px; }
+.studio-checkout__payment { padding: 45px clamp(20px, 4vw, 65px); color: #24332c; background: white; display: flex; justify-content: center; }
+.studio-checkout__payment-inner { width: 100%; max-width: 580px; }
+.studio-checkout__secure { font-size: 10px; letter-spacing: .14em; text-align: center; color: #597263; margin: 0 0 28px; }
+.studio-checkout__terms { color: #667069; font-size: 12px; line-height: 1.6; margin-top: 25px; }
+.studio-checkout__payment a { color: #365d49; font-size: 12px; text-decoration: underline; }
+.studio-checkout__error { padding: 24px; background: #fff8e7; border: 1px solid #d4af37; border-radius: 12px; line-height: 1.6; }
+.studio-checkout a:focus-visible, .studio-checkout button:focus-visible { outline: 3px solid #d4af37; outline-offset: 5px; }
+@media(max-width: 760px) {
+ .studio-checkout { grid-template-columns: 1fr; }
+ .studio-checkout__story { min-height: auto; padding: 28px; background-position: center 58%; }
+ .studio-checkout__home img { width: 180px; }
+ .studio-checkout__copy { padding: 35px 0 20px; }
+ .studio-checkout__story h1 { font-size: 31px; }
+ .studio-checkout__price { margin: 16px 0; }
+ .studio-checkout__payment { padding: 30px 16px; }
+}
