@@ -922,3 +922,16 @@
     max-width: min(650px, calc(100% - clamp(360px, 29.2vw, 420px) - 42px));
   }
 }
+
+/* Match the centred content edges of the Message Maker panel below. */
+@media (min-width: 1091px) {
+  .hero-name-preview__hero { padding-inline: 28px; }
+  .hero-name-preview .hero-layout {
+    max-width: 1104px;
+    grid-template-columns: minmax(280px, 1fr) minmax(160px, 220px) minmax(340px, 400px);
+    column-gap: 24px;
+  }
+  .hero-name-preview__layout { --hero-left-inset: 0px; }
+  .hero-name-preview__checker { width: 100%; }
+  .hero-name-preview__broadcast > .hero-name-preview__artwork-slot { left: 0; }
+}
