@@ -54,7 +54,7 @@ export default function StudioReturnAccess() {
       setBusy(false);
     }
   };
-  return <section aria-labelledby={`${id}-title`}>
+  return <section id="studio-return-access" aria-labelledby={`${id}-title`}>
     <h2 id={`${id}-title`}>Already purchased?</h2>
     <form className="workshop-password-form" onSubmit={submit}>
       {token ? <p>Use your private, single-use email link to reopen your paid Studio.</p> : <>

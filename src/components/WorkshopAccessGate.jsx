@@ -6,6 +6,7 @@ import { StudioAccessContext, StudioVoucherContext } from '../lib/studioAccessCo
 import StudioReturnAccess from './StudioReturnAccess.jsx';
 import HomepageSantaStudio from './HomepageSantaStudio.jsx';
 import { STUDIO_PATH } from '../lib/studioRoute.js';
+import StudioPaymentSuccess from './StudioPaymentSuccess.jsx';
 
 const ACCESS_URL = '/api/santa-workshop-access';
 const REQUEST_TIMEOUT = 15000;
@@ -23,6 +24,7 @@ export default function WorkshopAccessGate({ children }) {
   const location = useLocation();
   const returningFromCheckout = new URLSearchParams(location.search).get('checkout') === 'return';
   const [accessKind, setAccessKind] = useState('tester');
+  const [remaining, setRemaining] = useState(null);
   const [voucher, setVoucher] = useState(null);
   const [status, setStatus] = useState('checking');
   const [statusMessage, setStatusMessage] = useState('');
@@ -61,6 +63,7 @@ export default function WorkshopAccessGate({ children }) {
           if (paidResponse.ok && paid.authorized === true
             && (import.meta.env.DEV ? paid.mode !== 'live' : paid.mode === 'live')) {
             setAccessKind(paid.mode === 'live' ? 'paid-live' : 'paid-sandbox');
+            setRemaining(Number.isInteger(paid.remaining) && paid.remaining >= 0 && paid.remaining <= 2 ? paid.remaining : null);
             setVoucher(null);
             setExpiresAt(null);
             setStatusMessage('');
@@ -200,7 +203,10 @@ export default function WorkshopAccessGate({ children }) {
     return <>
       <PageSeo metadata={metadata} />
       <StudioAccessContext.Provider value={accessKind}>
-        <StudioVoucherContext.Provider value={voucher}>{children}</StudioVoucherContext.Provider>
+        <StudioVoucherContext.Provider value={voucher}>
+          {returningFromCheckout && accessKind.startsWith('paid-')
+            ? <StudioPaymentSuccess remaining={remaining} sandbox={accessKind === 'paid-sandbox'} /> : children}
+        </StudioVoucherContext.Provider>
       </StudioAccessContext.Provider>
     </>;
   }

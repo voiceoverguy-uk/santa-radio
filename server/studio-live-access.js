@@ -49,6 +49,15 @@ export async function hasLivePaidAccess(req, options) {
   return !!await livePaidPurchaseId(req, options);
 }
 
+// The allowance belongs to the verified purchase, never the browser session.
+export async function livePaidSummary(pool, purchaseId) {
+  const { rows: [row] } = await pool.query(`SELECT cardinality(operations) AS used
+    FROM public.santa_studio_creation_allowances WHERE access_key=$1`, [digest(`studio-purchase:${purchaseId}`)]);
+  const used = row?.used ?? 0;
+  if (!Number.isInteger(used) || used < 0 || used > 2) throw new Error('STUDIO_ALLOWANCE_INVALID');
+  return { authorized: true, mode: 'live', limit: 2, remaining: 2 - used };
+}
+
 export async function issueLiveAccess(res, sessionId, client) {
   const token = randomBytes(32).toString('base64url');
   await client.query(`INSERT INTO public.santa_studio_live_sessions(token_sha256,checkout_session_id) VALUES($1,$2)`,
@@ -72,7 +81,8 @@ export function createLiveAccessHandler({
       || req.headers.origin && !sameLiveOrigin(req, config)) return res.status(403).json({ authorized: false });
     try {
       const pool = getPool();
-      if (await hasLivePaidAccess(req, { config, pool })) return res.json({ authorized: true, mode: 'live' });
+      const purchaseId = await livePaidPurchaseId(req, { config, pool });
+      if (purchaseId) return res.json(await livePaidSummary(pool, purchaseId));
       const claim = liveCheckoutClaim(req, config), sessionId = singleCookie(req, LIVE_PENDING_COOKIE);
       if (!claim || !sessionPattern.test(sessionId || '')) return res.json({ authorized: false });
       if (!await consume(req, config, 'confirm', pool)) return res.status(429).json({ authorized: false });
@@ -86,7 +96,7 @@ export function createLiveAccessHandler({
         return issueLiveAccess(res, session.id, client);
       });
       grant?.();
-      return res.json({ authorized: !!grant, mode: 'live' });
+      return res.json(grant ? await livePaidSummary(pool, session.id) : { authorized: false, mode: 'live' });
     } catch {
       return res.status(503).json({ authorized: false, error: 'Payment confirmation is temporarily unavailable. Your voucher can still be used.' });
     }

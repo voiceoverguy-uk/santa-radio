@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { santaStops, getStopArrivalDate } from "@/data/santaRouteStops";
 import { getVisitedStops, getCurrentStopId, getCountdownToStart, getRouteResearchCopy, type HolidayDestination, type MapPosition } from "@/lib/santaRoute";
 import { worldMapPaths } from "@/data/worldMapPaths";
-import { MAP_REGIONS, WORLD, followCamera, positionCamera, project, regionCamera, stopRegion, type Camera } from "./trackerCamera";
+import { MAP_REGIONS, WORLD, positionCamera, project, regionCamera, stopRegion, type Camera } from "./trackerCamera";
 import { MAP_PALETTE, mapLandColor } from "./mapPalette";
 import "../tracker-journey.css";
 import { getJourneySleighDirection, getSeasonalTrackerMode } from "../lib/santaRoute";
@@ -102,7 +102,7 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
   const projectedSanta = project(mapPosition.lat, mapPosition.lng);
   const wrapPacific = effectiveView === "Pacific" || (
     effectiveView === "follow" &&
-    (currentStop ? stopRegion(currentStop) === "Pacific" : projectedSanta.x < 100 || projectedSanta.x > 900)
+    (projectedSanta.x < 100 || projectedSanta.x > 900)
   );
   const mapProject = (lat: number, lng: number) => {
     const p = project(lat, lng);
@@ -112,16 +112,12 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
   const showSanta = live || mapPosition.y < 95;
 
   let camera: Camera = WORLD;
-  if (effectiveView === "follow" && currentStop) {
-    const pts = [santaXY, mapProject(currentStop.lat, currentStop.lng)];
-    if (nextStop) pts.push(mapProject(nextStop.lat, nextStop.lng));
-    camera = followCamera(stopRegion(currentStop), pts);
-  } else if (effectiveView === "follow") {
+  if (effectiveView === "follow") {
     camera = positionCamera(santaXY);
   } else if (effectiveView !== "world" && effectiveView !== "follow") {
     camera = regionCamera(effectiveView);
   }
-  if (showSanta && (effectiveView === "follow" || effectiveView === "world" ||
+  if (showSanta && effectiveView !== "follow" && (effectiveView === "world" ||
     (Math.abs(santaXY.x - camera.cx) <= camera.w / 2 && Math.abs(santaXY.y - camera.cy) <= camera.w / 4))) {
     // Only edge clearance changes; the marker stays at its geographic anchor.
     const mx = (((artwork?.width ?? 24) * santaArtworkScale) / 2 + 3) * pixelFactor * camera.w / 1000;

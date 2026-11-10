@@ -10,6 +10,7 @@ import { STUDIO_PATH } from '../lib/studioRoute.js';
 
 export default function SantaStudioPromotion({ activeExampleName = null, availableNamesText, previewName = null, allowExamples = true, onAuthorized }) {
   const navigate = useNavigate();
+  const [paidAccess, setPaidAccess] = useState(false);
   const [paidExampleName, setPaidExampleName] = useState(null);
   const [giftsExpanded, setGiftsExpanded] = useState(false);
   const giftsId = useId();
@@ -63,11 +64,11 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
           </div>
         </div>
         <SantaStudioAudioExample onActiveExampleNameChange={setPaidExampleName} />
-        <WorkshopPasswordForm
+        {!paidAccess && <WorkshopPasswordForm
           variant="promotion"
           onAuthorized={onAuthorized || (() => navigate(STUDIO_PATH))}
-        />
-        <StudioPurchaseButton />
+        />}
+        <StudioPurchaseButton onPaidAccessChange={setPaidAccess} />
       </div>
       <div className="santa-studio-promotion__gifts" data-expanded={giftsExpanded}>
         <div className="santa-studio-promotion__gift-controls">

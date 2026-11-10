@@ -41,7 +41,7 @@ export function stopRegion(stop: SantaStop): string {
 
 export const WORLD: Camera = { cx: 500, cy: 250, w: 1000 };
 
-/** Centre a close camera on Santa's represented position when no live leg exists. */
+/** Keep Santa at the exact viewport centre, including poles and date-line crossings. */
 export function positionCamera(point: { x: number; y: number }): Camera {
   return { cx: point.x, cy: point.y, w: 200 };
 }
@@ -78,25 +78,3 @@ export function regionCamera(name: string): Camera {
   return boxCamera(a.x, a.y, b.x, b.y, 0.06);
 }
 
-/** Frame Santa's region plus Santa and the next stop; falls back to world when the leg is too long or wraps the date line. */
-export function followCamera(region: string, points: { x: number; y: number }[]): Camera {
-  if (region === "Pacific") {
-    const base = regionCamera(region);
-    if (points.every(p => Math.abs(p.x - base.cx) < base.w * .45 && Math.abs(p.y - base.cy) < base.w * .225)) return base;
-    const shifted = points.map(p => ({ x: p.x - 500, y: p.y }));
-    const xs = shifted.map(p => p.x), ys = shifted.map(p => p.y);
-    const camera = boxCamera(Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys), .3);
-    return { ...camera, cx: camera.cx + 500 };
-  }
-  const r = MAP_REGIONS.find((m) => m.name === region);
-  const base = r ? [project(r.box[3], r.box[0]), project(r.box[1], r.box[2])] : [];
-  const xs = points.map((p) => p.x);
-  if (xs.length && Math.max(...xs) - Math.min(...xs) > 500) return WORLD;
-  const all = [...points];
-  // Only include region box if it does not blow up a tight leg excessively.
-  const regionBox = base.length ? boxCamera(base[0].x, base[0].y, base[1].x, base[1].y, 0.04) : null;
-  if (regionBox && points.every((p) => Math.abs(p.x - regionBox.cx) < regionBox.w * 0.42 && Math.abs(p.y - regionBox.cy) < regionBox.w * 0.21)) return regionBox;
-  if (!all.length) return WORLD;
-  const ax = all.map((p) => p.x), ay = all.map((p) => p.y);
-  return boxCamera(Math.min(...ax), Math.min(...ay), Math.max(...ax), Math.max(...ay), 0.3);
-}
