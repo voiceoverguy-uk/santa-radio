@@ -238,7 +238,49 @@ test('all six isolated codes are accepted by the real endpoint, not the former s
   expect(legacy.status()).toBe(400);
 });
 
-test('empty, wrong, blocked, expired and unavailable code submissions stay closed with useful errors', async ({ page }) => {
+test('an empty promotion voucher stays silent, focused and does not make an access request', async ({ page }) => {
+  let calls = 0;
+  await page.route(`**${accessURL}`, route => {
+    calls++;
+    return route.fulfill({ status: 401, json: { authorized: false } });
+  });
+  await visit(page, '/');
+  const form = page.locator('.santa-studio-promotion .workshop-password-form');
+  const input = form.getByLabel(codeLabel, { exact: true });
+  await form.getByRole('button').click();
+  await expect(form.getByRole('alert')).toHaveCount(0);
+  await expect(input).not.toHaveAttribute('aria-invalid', 'true');
+  await expect(input).toBeFocused();
+  expect(calls).toBe(0);
+});
+
+test('the private tester-code form retains empty guidance without making an access request', async ({ page }) => {
+  let calls = 0;
+  await page.route(`**${accessURL}`, route => {
+    calls++;
+    return route.fulfill({ status: 401, json: { authorized: false } });
+  });
+  await visit(page, '/');
+  await page.evaluate(async () => {
+    const [React, ReactDOM, { WorkshopPasswordForm }] = await Promise.all([
+      import('/node_modules/.vite/deps/react.js'),
+      import('/node_modules/.vite/deps/react-dom_client.js'),
+      import('/src/components/WorkshopPasswordForm.jsx'),
+    ]);
+    const container = document.createElement('div');
+    container.id = 'private-tester-form-test';
+    document.body.append(container);
+    ReactDOM.default.createRoot(container).render(React.default.createElement(WorkshopPasswordForm));
+  });
+  const form = page.locator('#private-tester-form-test .workshop-password-form');
+  const input = form.getByLabel(codeLabel, { exact: true });
+  await form.getByRole('button').click();
+  await expect(form.getByRole('alert')).toHaveText('Enter your tester code to continue.');
+  await expect(input).toBeFocused();
+  expect(calls).toBe(0);
+});
+
+test('wrong, blocked, expired and unavailable code submissions stay closed with useful errors', async ({ page }) => {
   let calls = 0;
   let status = 401;
   await page.route(`**${accessURL}`, route => {
@@ -248,10 +290,6 @@ test('empty, wrong, blocked, expired and unavailable code submissions stay close
   await visit(page, '/');
   const form = page.locator('.santa-studio-promotion .workshop-password-form');
   const input = form.getByLabel(codeLabel, { exact: true });
-  await form.getByRole('button').click();
-  await expect(form.getByRole('alert')).toHaveText('Enter your tester code to continue.');
-  await expect(input).toBeFocused();
-  expect(calls).toBe(0);
   const messages = [
     [401, 'not recognised'], [403, 'cannot be used'], [429, 'Too many attempts'],
     [503, 'temporarily unavailable'], [410, 'test has ended'],

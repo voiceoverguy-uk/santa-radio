@@ -29,7 +29,8 @@ export function WorkshopPasswordForm({ onAuthorized, compact = false, active = t
     if (requestRef.current || pending) return;
     const submittedCode = code.trim();
     if (!submittedCode) {
-      setError('Enter your tester code to continue.');
+      if (variant === 'promotion') setError('');
+      else setError('Enter your tester code to continue.');
       inputRef.current?.focus();
       return;
     }
