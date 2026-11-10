@@ -2,8 +2,9 @@ import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { StudioAccessContext, StudioVoucherContext } from '../lib/studioAccessContext.js';
 
 export default function useStudioGeneration() {
-  const voucher = useContext(StudioVoucherContext);
+  const voucherContext = useContext(StudioVoucherContext);
   const accessKind = useContext(StudioAccessContext);
+  const voucher = accessKind.startsWith('paid-') ? null : voucherContext;
   const [state, setState] = useState(null);
   const [error, setError] = useState('');
   const [checking, setChecking] = useState(true);

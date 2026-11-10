@@ -95,7 +95,7 @@ test('verified live purchase survives new session credentials and signed pending
   assert.equal((await store.status(identities[2])).remaining, 1);
   assert.equal(await livePaidPurchaseId({ headers: { cookie: `${LIVE_ACCESS_COOKIE}=${'z'.repeat(43)}` } }, { config, pool }), false);
   const sandbox = token => studioAllowanceIdentity({ headers: { cookie: `santa-studio-sandbox=cs_test_fixture.${token.repeat(43)}` } },
-    { visitorSession: () => null, production: () => false });
+    { visitorSession: () => null, production: () => false, sandboxPaid: async () => true });
   assert.deepEqual(await sandbox('a'), await sandbox('b'));
 });
 
@@ -137,10 +137,10 @@ test('non-secret slot markers select only the intended voucher and survive crede
 const choiceId = n => `c-${String(n).repeat(64)}`;
 const data = { name: 'fixture', age: choiceId(1), activity: choiceId(2), achievement: choiceId(3),
   treat: choiceId(4), place: choiceId(5), talent: { skip: true } };
-async function call(handler, { operation = randomUUID(), body = data, method = 'POST', url = '/', res = new EventEmitter() } = {}) {
+async function call(handler, { operation = randomUUID(), body = data, method = 'POST', url = '/', cookie = '', res = new EventEmitter() } = {}) {
   const result = { headers: {} };
   const req = Object.assign(new EventEmitter(), { method, url, body, headers: {
-    host: 'studio.test', origin: 'https://studio.test', 'content-type': 'application/json',
+    host: 'studio.test', origin: 'https://studio.test', 'content-type': 'application/json', cookie,
     'idempotency-key': operation }, socket: { encrypted: true } });
   Object.assign(res, { setHeader: (key, value) => result.headers[key.toLowerCase()] = value,
     writeHead: (status, headers) => { res.headersSent = true; result.status = status; Object.assign(result.headers, headers); },
@@ -166,6 +166,58 @@ function handlerFixture(who, overrides = {}) {
   });
   return { handler, state };
 }
+test('paid return, rotated access/reload and Start Again keep two-success purchase allowance despite stale vouchers', async () => {
+  const purchase = `cs_live_${randomUUID().replaceAll('-', '')}`, claim = 'x'.repeat(43);
+  const paidConfig = { secret: 'fixture-secret'.repeat(4) };
+  await pool.query(`INSERT INTO public.santa_studio_live_purchases
+    (checkout_session_id,payment_intent_id,claim_sha256,email_sha256) VALUES($1,$2,$3,$4)`,
+  [purchase, randomUUID(), hash(claim), hash('fixture')]);
+  const cookies = [];
+  for (let n = 0; n < 2; n++) {
+    const grant = await issueLiveAccess({ cookie: (name, token) => cookies.push(`${name}=${token}`) }, purchase, pool);
+    grant();
+  }
+  const returningCookie = `${LIVE_CHECKOUT_COOKIE}=${signLiveClaim(claim, paidConfig)}; ${LIVE_PENDING_COOKIE}=${purchase}`;
+  // Exercise both an unlimited and limited stale voucher; neither may select
+  // the visitor allowance once the purchase is verified in the database.
+  for (const limited of [false, true]) {
+    const resolve = req => studioAllowanceIdentity(req, { production: () => true,
+      visitorSession: () => ({ limited, generationKey: hash('stale-voucher'), expiresAt: Date.now() + 3600000 }),
+      livePurchase: r => livePaidPurchaseId(r, { config: paidConfig, pool }),
+    });
+    const who = await resolve({ headers: { cookie: returningCookie } });
+    for (const cookie of cookies) assert.deepEqual(await resolve({ headers: { cookie } }), who);
+  }
+  const resolve = req => studioAllowanceIdentity(req, { production: () => true,
+    visitorSession: () => ({ limited: false, generationKey: hash('stale-voucher') }),
+    livePurchase: r => livePaidPurchaseId(r, { config: paidConfig, pool }),
+  });
+  const { handler, state } = handlerFixture(null, { allowanceIdentity: resolve });
+  assert.equal((await call(handler, { cookie: returningCookie })).status, 200);
+  const reloaded = handlerFixture(null, { allowanceIdentity: resolve });
+  assert.equal(JSON.parse((await call(reloaded.handler, { method: 'GET', cookie: cookies[0] })).bytes).remaining, 1);
+  assert.equal((await call(reloaded.handler, { cookie: cookies[1] })).status, 200);
+  assert.equal((await call(handler, { cookie: returningCookie })).status, 409);
+  assert.equal((await call(reloaded.handler, { cookie: cookies[0] })).status, 409);
+  assert.equal(state.renders + reloaded.state.renders, 2);
+  const status = JSON.parse((await call(handler, { method: 'GET', cookie: cookies[1] })).bytes);
+  assert.equal(status.remaining, 0);
+  assert.equal(status.testerCanStartAnother, false);
+});
+
+test('unverified paid claims cannot override vouchers, and paid storage errors fail closed', async () => {
+  const visitor = { limited: true, generationKey: hash('limited-fixture'), expiresAt: Date.now() + 3600000 };
+  const options = { visitorSession: () => visitor, production: () => true, livePurchase: async () => false };
+  assert.deepEqual(await studioAllowanceIdentity({ headers: {} }, options),
+    { key: visitor.generationKey, expiresAt: new Date(visitor.expiresAt) });
+  await assert.rejects(studioAllowanceIdentity({ headers: {} }, { ...options,
+    livePurchase: async () => { throw new Error('fixture unavailable'); } }), /fixture unavailable/);
+  assert.deepEqual(await studioAllowanceIdentity({ headers: {} }, { ...options, production: () => false,
+    sandboxClaim: () => ({ sessionId: 'cs_test_unverified' }), sandboxPaid: async () => false }),
+  { key: visitor.generationKey, expiresAt: new Date(visitor.expiresAt) });
+  assert.equal(await studioAllowanceIdentity({ headers: {} }, { ...options,
+    visitorSession: () => ({ ...visitor, limited: false }) }), null);
+});
 test('status failures identify the private failure stage without calling render or reporting exhaustion', async () => {
   for (const stage of ['allowance_identity', 'status_limit', 'status']) {
     const events = [];

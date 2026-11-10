@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import MessageCreationIndicator from './MessageCreationIndicator.jsx';
 import StudioPreparationRunner from './StudioPreparationRunner.jsx';
 import StudioCompletedRecording from './StudioCompletedRecording.jsx';
-import { StudioVoucherContext } from '../lib/studioAccessContext.js';
+import { StudioAccessContext, StudioVoucherContext } from '../lib/studioAccessContext.js';
 import { getWorkshopWrittenName } from '../lib/workshopNameSpelling.js';
 import { selectStudioRunnerCostume } from '../lib/studioPreparationRunner.js';
 
@@ -37,7 +37,9 @@ export default function WorkshopMessageAudio({
   showGiftDownloadHint = false, reviewMessageTarget = null, onStartAgain, showReadyAction = true,
   giftsRequested = false, giftExportPending = false, giftWrittenName, onBundlePreparing, onBundleRequested,
 }) {
-  const voucher = useContext(StudioVoucherContext);
+  const accessKind = useContext(StudioAccessContext);
+  const voucherContext = useContext(StudioVoucherContext);
+  const voucher = accessKind.startsWith('paid-') ? null : voucherContext;
   const requestRef = useRef(null);
   const urlRef = useRef(null);
   const dialogRef = useRef(null);
@@ -333,7 +335,7 @@ export default function WorkshopMessageAudio({
     <span aria-hidden="true">←</span> Start Again
   </button>;
   const voucherNotice = voucher?.unlimited && <p className="smw-voucher-entitlement">
-    You used Voucher Code: {voucher.code}. You can create messages while your access remains valid, subject to request limits.
+    Voucher access: you can create messages while your access remains valid, subject to request limits.
   </p>;
   return <>
     {/* Render a second trigger in the gifts row without duplicating recording
@@ -402,7 +404,6 @@ export default function WorkshopMessageAudio({
           onClick={reset}>Discard recording and start again</button>
       </div>
     </dialog>}
-    {url && voucher?.unlimited && <p className="smw-voucher-detail">Voucher: {voucher.code}</p>}
     {confirming && <dialog ref={dialogRef} className="smw-confirmation" aria-labelledby="smw-confirm-title"
       aria-describedby="smw-confirm-description" onCancel={event => { event.preventDefault(); closeConfirmation(); }}
       onKeyDown={trapDialogFocus}>

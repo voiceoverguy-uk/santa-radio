@@ -103,6 +103,32 @@ code. Provider messages are never returned.
 
 ## Limits and public launch
 
+### Check an existing paid purchase without buying again
+
+After Sync Changes, confirm the new revision is serving the canonical domain.
+In the same browser that completed checkout, open
+`https://www.santaradio.co.uk/bespoke-personalised-message-from-santa?checkout=return`.
+Do not click Purchase or invoke `checkStudioOwner('canary')` for this check.
+The access GET reconciles an existing pending checkout if necessary, or uses
+the existing verified purchase. Neither path creates a checkout or charge.
+
+In browser Network, check GET `/api/santa-studio-access` returns HTTP 200 with
+`authorized: true, mode: live`. Then GET `/api/santa-studio-message` reports the
+purchase's `limit: 2`, `successes`, `remaining` and `testerCanStartAnother: false`.
+Inspect those response fields only; do not copy cookies, tokens or voucher
+values. With valid paid access, an old voucher must not select the allowance
+or appear in the completion notice. Failed payment/access storage must not
+silently substitute a voucher allowance for a verified purchase.
+
+Download all currently open recordings and gifts BEFORE reloading: outputs
+remain temporary and are not recovered after refresh. Reloading or Start Again
+must not replenish the purchase's remaining count. Creating a recording to
+test Start Again consumes a remaining paid creation only on successful MP3
+preparation; read-only access/status checks consume none. Do not use a real
+remaining creation merely to retest the third-creation block: the automated
+fixture tests cover it. No existing purchase counters are reset or backfilled
+from voucher activity by this source change.
+
 ### Read-only unsent email count
 
 After Sync Changes, verify the READY deployment serving `www.santaradio.co.uk`

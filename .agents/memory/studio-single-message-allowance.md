@@ -35,3 +35,16 @@ documenting an access-code value.
 **How to apply:** Keep actual voucher values exclusively in secure configuration;
 if a credential needs rotation, coordinate the resulting session invalidation
 with the owner instead of silently changing live access.
+
+Verified website paid access takes precedence over any old voucher in the
+same browser, including when the paid allowance is exhausted. Never show
+voucher values in the customer Studio UI.
+
+**Why:** The owner found an already-paid journey selecting old voucher access
+and explicitly required the existing paid allowance to remain exactly two
+successful creations, with valid voucher-only journeys preserved.
+
+**How to apply:** Treat access selection as a server entitlement rule as well
+as browser presentation. Checkout return, reload and Start Again must keep the
+same verified purchase allowance; do not reset counters or infer paid usage
+from older voucher activity.

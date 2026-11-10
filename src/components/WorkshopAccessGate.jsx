@@ -46,17 +46,9 @@ export default function WorkshopAccessGate({ children }) {
       }, REQUEST_TIMEOUT);
 
       try {
-        const response = await fetch(ACCESS_URL, {
-          method: 'GET',
-          credentials: 'same-origin',
-          cache: 'no-store',
-          headers: { Accept: 'application/json' },
-          signal: controller.signal,
-        });
-        const data = await response.json().catch(() => ({}));
-        const testerAuthorized = response.ok && data.authorized === true
-          && Number.isFinite(data.expiresAt) && data.expiresAt > Date.now();
-        if (!testerAuthorized && !controller.signal.aborted && !disposed) {
+        // Always confirm paid access first, including checkout returns, reloads
+        // and session-change checks. A stale voucher must not skip reconciliation.
+        if (!controller.signal.aborted && !disposed) {
           const paidResponse = await fetch('/api/santa-studio-access', {
             credentials: 'same-origin', cache: 'no-store', signal: controller.signal,
           });
@@ -83,8 +75,15 @@ export default function WorkshopAccessGate({ children }) {
             setStatus('locked');
             return;
           }
-          if (!paidResponse.ok) throw new Error('Payment access could not be checked.');
         }
+        const response = await fetch(ACCESS_URL, {
+          method: 'GET',
+          credentials: 'same-origin',
+          cache: 'no-store',
+          headers: { Accept: 'application/json' },
+          signal: controller.signal,
+        });
+        const data = await response.json().catch(() => ({}));
         if (disposed) return;
         if (controller.signal.aborted) {
           if (timedOut) throw new Error('Access check timed out.');
@@ -122,8 +121,8 @@ export default function WorkshopAccessGate({ children }) {
 
         setExpiresAt(data.expiresAt);
         setAccessKind('tester');
-        setVoucher(typeof data.voucher?.unlimited === 'boolean' && typeof data.voucher.code === 'string'
-          ? data.voucher : null);
+        setVoucher(typeof data.voucher?.unlimited === 'boolean'
+          ? { unlimited: data.voucher.unlimited } : null);
         setStatusMessage('');
         setStatus('authorized');
       } catch (error) {
@@ -174,19 +173,19 @@ export default function WorkshopAccessGate({ children }) {
     return () => window.clearTimeout(timeout);
   }, [status, expiresAt]);
 
-  const onAuthorized = useCallback(({ expiresAt: authorizationExpiry, voucher: authorizedVoucher } = {}) => {
+  const onAuthorized = useCallback(({ expiresAt: authorizationExpiry } = {}) => {
     if (!Number.isFinite(authorizationExpiry) || authorizationExpiry <= Date.now()) {
       setExpiresAt(null);
       setStatusMessage('The access service returned an unexpected reply. Please try again.');
       setStatus('error');
       return;
     }
-    setExpiresAt(authorizationExpiry);
-    setAccessKind('tester');
-    setVoucher(typeof authorizedVoucher?.unlimited === 'boolean' && typeof authorizedVoucher.code === 'string'
-      ? authorizedVoucher : null);
+    // The voucher submission has set its cookie; resolve both access methods
+    // before opening the maker instead of momentarily switching a paid visitor.
+    setExpiresAt(null);
+    setVoucher(null);
     setStatusMessage('');
-    setStatus('authorized');
+    setStatus('checking');
     setAttempt(value => value + 1);
   }, []);
 

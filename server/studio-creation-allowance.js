@@ -1,7 +1,7 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { databasePool } from './name-request-store.js';
 import { workshopSession } from './santa-workshop-access.js';
-import { studioClaimFromRequest } from './santa-studio-purchase.js';
+import { studioClaimFromRequest, hasPaidStudioAccess } from './santa-studio-purchase.js';
 import { liveProduction } from './studio-live-config.js';
 import { livePaidPurchaseId } from './studio-live-access.js';
 
@@ -13,13 +13,20 @@ const problem = message => Object.assign(new Error(message), { status: 409 });
 export async function studioAllowanceIdentity(req, {
   visitorSession = workshopSession, production = liveProduction,
   livePurchase = livePaidPurchaseId, sandboxClaim = studioClaimFromRequest,
+  sandboxPaid = hasPaidStudioAccess,
 } = {}) {
+  // Verified purchase identity must win over any old voucher cookie. In
+  // particular, an exhausted purchase must not fall through to an unlimited
+  // voucher or acquire a fresh per-visitor allowance.
+  const live = production();
+  const claim = live ? null : sandboxClaim(req);
+  const purchase = live ? await livePurchase(req)
+    : claim && await sandboxPaid(req) ? claim.sessionId : false;
+  if (purchase) return { key: hash(`studio-purchase:${purchase}`), expiresAt: null };
   const visitor = visitorSession(req);
   if (visitor) return visitor.limited
     ? { key: visitor.generationKey, expiresAt: new Date(visitor.expiresAt) } : null;
-  const purchase = production() ? await livePurchase(req) : sandboxClaim(req)?.sessionId;
-  if (!purchase) throw Object.assign(new Error('Please reopen Studio to confirm your purchase.'), { status: 403 });
-  return { key: hash(`studio-purchase:${purchase}`), expiresAt: null };
+  throw Object.assign(new Error('Please reopen Studio to confirm your purchase.'), { status: 403 });
 }
 
 export const allowanceStatus = row => ({

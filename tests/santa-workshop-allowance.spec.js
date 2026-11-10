@@ -5,21 +5,26 @@ import { confirmMessage, mockStudioGeneration } from './helpers/studio-generatio
 
 async function setup(page, paid = false, unlimited = false) {
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.route('**/api/santa-workshop-access', route => route.fulfill({ json: paid ? { authorized: false } : {
+  const accessChecks = { paid: 0, voucher: 0 };
+  await page.route('**/api/santa-workshop-access', route => {
+    accessChecks.voucher++;
+    return route.fulfill({ json: {
     authorized: true, expiresAt: Date.now() + 3600000,
-    voucher: { code: 'fixture-two-creations', unlimited },
-  } }));
-  if (paid) await page.route('**/api/santa-studio-access', route => route.fulfill({
-    json: { authorized: true, mode: 'sandbox' },
-  }));
+    voucher: { code: 'fixture-two-creations', unlimited: paid || unlimited },
+  } }); });
+  await page.route('**/api/santa-studio-access', route => {
+    accessChecks.paid++;
+    return route.fulfill({ json: { authorized: paid, mode: 'sandbox' } });
+  });
   const fixture = await mockStudioGeneration(page, { limited: !unlimited });
+  fixture.accessChecks = accessChecks;
   await page.route('**/api/santa-workshop-catalogue*', route => route.fulfill({ json: workshopCatalogueFixture }));
   await page.route('**/api/santa-names', route => route.fulfill({ json: { records: [
     { id: 'dixie-variant', name: 'Dixie', variant: 'Recording 2', selectionToken: 'fixture',
       previewUrl: '/api/santa-name-preview?token=fixture' },
   ] } }));
   await page.route('**/api/radio-metadata*', route => route.fulfill({ json: { available: false } }));
-  await page.goto('/santa-message-workshop');
+  await page.goto(`/santa-message-workshop${paid ? '?checkout=return' : ''}`);
   const decline = page.getByRole('button', { name: 'Decline optional cookies' });
   if (await decline.isVisible()) await decline.click();
   return fixture;
@@ -44,12 +49,18 @@ async function gift(page, name) {
 }
 for (const width of [1365, 390]) {
   for (const paid of [false, true]) {
-    test(`exhausted ${paid ? 'paid purchase' : 'limited voucher'} cannot discard or regain allowance at ${width}px`, async ({ page }) => {
+    test(`exhausted ${paid ? 'paid purchase with stale voucher' : 'limited voucher'} cannot discard or regain allowance at ${width}px`, async ({ page }) => {
       test.setTimeout(60000);
       await page.setViewportSize({ width, height: 900 });
       const fixture = await setup(page, paid);
       await review(page); await confirmMessage(page);
       await expect(result(page)).toBeVisible();
+      await expect(page.locator('body')).not.toContainText('fixture-two-creations');
+      if (paid) {
+        expect(fixture.accessChecks.paid).toBeGreaterThan(0);
+        expect(fixture.accessChecks.voucher).toBe(0);
+        await expect(page.locator('.smw-voucher-entitlement')).toHaveCount(0);
+      }
       const again = page.getByRole('button', { name: 'Start Again', exact: true });
       await again.click();
       await review(page); await confirmMessage(page);
@@ -80,6 +91,10 @@ for (const width of [1365, 390]) {
       await expect(page.locator('.smw-remaining')).toContainText('0 of 2');
       for (const button of await page.getByRole('button', { name: 'Create message', exact: true }).all()) await expect(button).toBeDisabled();
       expect(fixture.posts).toHaveLength(2);
+      if (paid) {
+        expect(fixture.accessChecks.paid).toBeGreaterThanOrEqual(2);
+        expect(fixture.accessChecks.voucher).toBe(0);
+      }
     });
   }
   test(`unlimited access preserves the first and confirms discarding both at ${width}px`, async ({ page }) => {
