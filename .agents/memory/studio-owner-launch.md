@@ -40,3 +40,13 @@ The separately scoped owner diagnostic token was still configured.
 **How to apply:** Verify production staff authentication and its proxy before
 directing the owner to the staff UI. Use the existing private diagnostic route
 when appropriate; do not export or rotate credentials to repair sign-in.
+
+Full Vercel staff sign-in needs an external Clerk setup, not copied
+Replit-managed Preview keys or an environment-variable-only repair.
+
+**Why:** Replit's official Clerk Auth documentation confirms its managed
+authentication and production proxy are tied to Replit hosting, not Vercel.
+
+**How to apply:** Keep the existing owner-token launch checks independent.
+Treat permanent Vercel staff authentication as a separately approved setup,
+including its client/server wiring and production-domain configuration.
