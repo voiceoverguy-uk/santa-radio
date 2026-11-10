@@ -1,3 +1,7 @@
+import trackerHome from '../assets/apps/santa-tracker-home.jpg';
+import trackerWorld from '../assets/apps/santa-tracker-world.jpg';
+import trackerFollow from '../assets/apps/santa-tracker-follow.jpg';
+import trackerJourney from '../assets/apps/santa-tracker-journey.jpg';
 import naughtyNiceCheck from '../assets/apps/naughty-nice-check.jpg';
 import naughtyNiceResult from '../assets/apps/naughty-nice-result.jpg';
 import naughtyNiceElf from '../assets/apps/naughty-nice-elf.jpg';
@@ -150,6 +154,32 @@ export const christmasApps = [
       'https://itunes.apple.com/us/app/santa-voicemail/id586387813',
     ),
     features: voicemailFeatures,
+  },
+  {
+    id: 'santa-tracker-app',
+    title: 'Santa Tracker App',
+    availability: 'Coming soon',
+    subtitle: 'Follow Santa’s adventures, from route research to Christmas Eve.',
+    presentation: 'device',
+    screenshots: [
+      { label: 'North Pole dispatch', image: trackerHome, width: 603, height: 1311, alt: 'Santa Tracker home screen with Santa’s Antigua research trip and countdown to takeoff.' },
+      { label: 'World map', image: trackerWorld, width: 603, height: 1311, alt: 'Santa Tracker world map showing Santa and the estimated Christmas Eve route stops.' },
+      { label: 'Follow Santa', image: trackerFollow, width: 603, height: 1311, alt: 'Follow Santa view centred on his estimated position near Antigua.' },
+      { label: 'Estimated journey', image: trackerJourney, width: 603, height: 1311, alt: 'Searchable Christmas Eve itinerary with 290 estimated stops and region filters.' },
+    ],
+    slideshow: {
+      heading: 'Santa Tracker app screenshots',
+      regionLabel: 'Santa Tracker app previews',
+    },
+    downloads: [],
+    features: [
+      feature('Follow Santa', 'Explore the world map or zoom in\nto follow Santa’s estimated position.', 'search'),
+      feature('Countdown to takeoff', 'Count down the days, hours and\nminutes to Santa’s departure.', 'clock'),
+      feature('290 estimated stops', 'Search the Christmas Eve itinerary\nand browse stops by region.', 'link'),
+      feature('Adventures all year', 'Catch Santa preparing his route\nwith playful research-trip updates.', 'smile'),
+      feature('Postcards from Santa', 'Read seasonal postcards and\ndispatches from his travels.', 'message'),
+      feature('Explore offline', 'No account or GPS needed.\nThe tracker’s estimates work offline.', 'shield'),
+    ],
   },
   {
     id: 'naughty-or-nice',
