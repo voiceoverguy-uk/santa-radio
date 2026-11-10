@@ -10,6 +10,18 @@ const EXAMPLES = [
   { name: 'Arabella', cues: [9, 18, 29, 38, 45, 54, 64, 79] },
 ];
 
+const SAMPLE_LETTER_DETAILS = {
+  Charlotte: ['10 years old', 'athletics', 'arts and crafts', 'reading your first book',
+    'hot mulled cider', 'alcohol-free', 'left the destination blank'],
+  Harry: ['10 years old', 'golf', 'helping around the house', 'doing well at sports day',
+    'carrots for the reindeer', 'the Isle of Anglesey'],
+  Edward: ['10 years old', 'running', 'keeping active and healthy', 'patience with siblings',
+    'carrot cake', 'left the destination blank'],
+  Arabella: ['10 years old', 'singing', 'baking and cooking', 'helping cook dinner',
+    'a glass of wine', 'adults-only', 'not for children or reindeer', 'not drink it while I am flying',
+    'left the destination blank'],
+};
+
 test.beforeEach(async ({ page }) => {
   await mockBrevo(page, { success: false });
   await page.route('**/api/radio-metadata*', route => route.fulfill({
@@ -84,6 +96,7 @@ test('each fresh play randomly selects a paid Studio example with its own timed 
     if (index < EXAMPLES.length - 1) {
       await stopFor(demo).click();
       await expectHiddenExampleName(demo);
+      await expect(promotion.locator('.studio-gifts')).not.toHaveAttribute('data-sample-profile');
       await expect(cue).toHaveText('');
     } else {
       await audio.evaluate(element => {
@@ -92,6 +105,7 @@ test('each fresh play randomly selects a paid Studio example with its own timed 
       });
       await expect(cue).toHaveText('');
       await expectHiddenExampleName(demo);
+      await expect(promotion.locator('.studio-gifts')).not.toHaveAttribute('data-sample-profile');
     }
   }
 
@@ -152,6 +166,18 @@ async function expectStudioGifts(promotion, name) {
   await expandStudioGifts(promotion);
   const gifts = promotion.locator('.studio-gifts');
   await expect(gifts).toHaveAttribute('data-demo-name', name);
+  const sampleDetails = SAMPLE_LETTER_DETAILS[name];
+  if (sampleDetails) {
+    await expect(gifts).toHaveAttribute('data-sample-profile', name);
+    const accessibleLetter = gifts.locator('.studio-gifts__preview-stack .studio-gifts__sr');
+    for (const detail of sampleDetails) {
+      await expect(accessibleLetter).toContainText(new RegExp(detail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'));
+    }
+    if (name !== 'Harry') await expect(accessibleLetter).not.toContainText('Isle of Anglesey');
+    await expectPromotionalLetterFits(gifts.locator('.studio-gifts__preview-stack .studio-letter__paper'));
+  } else {
+    await expect(gifts).not.toHaveAttribute('data-sample-profile');
+  }
   await expect(gifts.locator('.studio-gifts__thumbnail')).toHaveCount(3);
   await expect(gifts.locator('.studio-certificate').first()).toHaveAttribute(
     'aria-label', `Official Nice List certificate example for ${name}`,
@@ -180,8 +206,38 @@ async function expectStudioGifts(promotion, name) {
       letter: `Santa’s letter example for ${name}`,
       certificate: `Official Nice List certificate example for ${name}`,
     }[kind]);
+    if (kind === 'letter' && sampleDetails) {
+      const accessibleLetter = dialog.locator('.studio-letter-dialog__document .studio-gifts__sr');
+      for (const detail of sampleDetails) {
+        await expect(accessibleLetter).toContainText(new RegExp(detail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'));
+      }
+      await expectPromotionalLetterFits(dialog.locator('.studio-letter-dialog__document .studio-letter__paper'));
+    }
     await promotion.page().keyboard.press('Escape');
     await expect(dialog).not.toBeVisible();
+  }
+}
+
+async function expectPromotionalLetterFits(paper) {
+  const geometry = await paper.evaluate(element => {
+    const bounds = element.getBoundingClientRect();
+    const text = element.querySelector('.studio-letter__text');
+    const nodes = [...text.querySelectorAll(':scope > p, .studio-letter__signature, .studio-letter__closing p')];
+    const lines = nodes.flatMap(node => {
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      return [...range.getClientRects()].map(rect => ({
+        left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom,
+      }));
+    });
+    return { paper: { left: bounds.left, right: bounds.right, top: bounds.top, bottom: bounds.bottom }, lines };
+  });
+  expect(geometry.lines.length).toBeGreaterThan(0);
+  for (const line of geometry.lines) {
+    expect(line.left).toBeGreaterThanOrEqual(geometry.paper.left + (geometry.paper.right - geometry.paper.left) * .055 - 1);
+    expect(line.right).toBeLessThanOrEqual(geometry.paper.right - (geometry.paper.right - geometry.paper.left) * .055 + 1);
+    expect(line.top).toBeGreaterThanOrEqual(geometry.paper.top + (geometry.paper.bottom - geometry.paper.top) * .21 - 1);
+    expect(line.bottom).toBeLessThanOrEqual(geometry.paper.top + (geometry.paper.bottom - geometry.paper.top) * .89 + 1);
   }
 }
 
@@ -218,12 +274,14 @@ test('homepage paid Studio gifts follow each paused example without overriding a
     if (index < EXAMPLES.length - 1) {
       await stopFor(demo).click();
       await expectHiddenExampleName(demo);
+      await expect(promotion.locator('.studio-gifts')).not.toHaveAttribute('data-sample-profile');
     } else {
       await audio.evaluate(element => {
         element.currentTime = element.duration;
         element.dispatchEvent(new Event('ended'));
       });
       await expectHiddenExampleName(demo);
+      await expect(promotion.locator('.studio-gifts')).not.toHaveAttribute('data-sample-profile');
     }
   }
 

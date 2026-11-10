@@ -1,7 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { studioLetterChoices, createStudioLetter, CERTIFICATE_WRITE_MS,
   SIGNATURE_WRITE_MS, GIFT_EXAMPLE_INTERVAL_MS, letterBodyDuration, letterDuration,
-  createStudioLetterVariation } from '../src/lib/santaStudioLetter.js';
+  createStudioLetterVariation, createStudioPromotionalSampleLetter,
+  studioPromotionalSampleProfiles } from '../src/lib/santaStudioLetter.js';
 import { certificateExampleNames, studioGiftExampleNames } from '../src/lib/santaCertificateExamples.js';
 import { expectLeftAlignedLetter } from './helpers/studio-letter-alignment.js';
 import { expectSampleWatermark } from './helpers/studio-sample-watermark.js';
@@ -829,6 +830,35 @@ test('letter substitutions use the verified public subset and inclusive whole-nu
     expect(letter.paragraphs[0]).toBe('Dear Ayla,');
     expect(letter.paragraphs[9]).toContain('Now, Ayla,');
   }
+});
+
+test('paid sample letters use only their supplied profiles and keep drink wording age-appropriate', () => {
+  const expected = {
+    Harry: ['golf', 'helping around the house', 'doing well at sports day',
+      'carrots for the reindeer', 'the Isle of Anglesey'],
+    Edward: ['running', 'keeping active and healthy', 'patience with siblings',
+      'carrot cake', 'left the destination blank'],
+  Arabella: ['singing', 'baking and cooking', 'helping cook dinner', 'A glass of wine',
+      'adults-only', 'not for children or reindeer', 'not drink it while I am flying',
+      'left the destination blank'],
+  Charlotte: ['athletics', 'arts and crafts', 'reading your first book', 'Hot mulled cider',
+      'check the ingredients', 'alcohol-free', 'until the sleigh is parked',
+      'left the destination blank'],
+  };
+  for (const [name, profile] of Object.entries(studioPromotionalSampleProfiles)) {
+    const letter = createStudioPromotionalSampleLetter(name, profile);
+    const text = letter.paragraphs.join('\n');
+    expect(letter.age).toBe(10);
+    expect(letter.talent).toBe(profile.talent);
+    expect(letter.effort).toBe(profile.effort);
+    expect(letter.destination).toBe(profile.place);
+    for (const detail of expected[name]) expect(text).toContain(detail);
+    if (!profile.place) expect(text).not.toContain('Isle of Anglesey');
+    expect(letter.compactParagraphs.join('\n')).toContain(profile.talent);
+    expect(letter.compactParagraphs.join('\n')).toContain(profile.achievement);
+  }
+  const ciderLetter = createStudioPromotionalSampleLetter('Charlotte', studioPromotionalSampleProfiles.Charlotte);
+  expect(ciderLetter.paragraphs.join('\n')).not.toMatch(/mulled cider.{0,50}(?:contains alcohol|is alcoholic)/i);
 });
 
 test('compact desktop card groups gifts right of voucher controls without a full-size letter stack', async ({ page }) => {

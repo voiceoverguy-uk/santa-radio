@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { studioGiftExampleNames, allCertificateExamples } from '../lib/santaCertificateExamples.js';
 import { createStudioLetter, CERTIFICATE_WRITE_MS, LETTER_CHARACTER_MS,
   SIGNATURE_WRITE_MS, GIFT_EXAMPLE_INTERVAL_MS, letterBodyDuration, letterDuration,
+  createStudioPromotionalSampleLetter, studioPromotionalSampleProfiles,
   createStudioLetterVariation } from '../lib/santaStudioLetter.js';
 import './SantaStudioGifts.css';
 import { studioLetterLayout } from '../lib/studioLetterLayout.js';
@@ -121,11 +122,14 @@ function SantaPicture({ name, elapsed, picture, previousPicture = null, onDissol
 function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio, reducedMotion, onNext,
   staticPreview = false, suppliedLetter = null, reviewHeading = null, downloadReady = false,
   downloadNotice = null, giftRevision = '', downloadUnavailableNotice, variant = null, children,
-  onDownloadRequested, onGiftPreparing, requestedGifts, onPreviewOpen }) {
+  onDownloadRequested, onGiftPreparing, requestedGifts, onPreviewOpen, sampleProfile = null }) {
   const promotion = variant === 'promotion' && !staticPreview;
   const views = promotion ? promotionGiftViews : giftViews;
   // Deterministic SSR; randomise only once after mounting in the browser.
-  const [letter, setLetter] = useState(() => suppliedLetter || createStudioLetter(name, () => 0.5));
+  const createLetter = () => sampleProfile
+    ? createStudioPromotionalSampleLetter(name, sampleProfile, () => 0.5)
+    : createStudioLetter(name, () => 0.5);
+  const [letter, setLetter] = useState(() => suppliedLetter || createLetter());
   const [elapsed, setElapsed] = useState(0);
   const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
@@ -155,7 +159,7 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
   const displayElapsed = staticPreview || reducedMotion ? duration : elapsed;
   const finished = displayElapsed >= duration;
 
-  useEffect(() => { if (!staticPreview) setLetter(createStudioLetter(name)); }, [name, staticPreview]);
+  useEffect(() => { if (!staticPreview) setLetter(createLetter()); }, [name, staticPreview, sampleProfile]);
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting));
     // Keep the shared recipient/artwork rotation alive while mobile gifts are
@@ -232,7 +236,7 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
       picture={picture} unavailableNotice={downloadUnavailableNotice} />}
   </GiftCard>;
   return <section ref={sectionRef} className="studio-gifts" aria-label="Paid Studio gift preview"
-    data-demo-name={name} data-complete={finished}
+    data-demo-name={name} data-sample-profile={sampleProfile ? name : undefined} data-complete={finished}
     onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
     onFocusCapture={() => setFocused(true)}
     onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false); }}>
@@ -334,6 +338,8 @@ export function useStudioGiftExample({
   // Gift demonstrations stay available during cooldown; audio permission is
   // separate. Only a real selection stops the example-name rotation.
   const name = previewName || (allowExamples && activeName) || studioGiftExampleNames[index];
+  const sampleProfile = !previewName && allowExamples && paidExampleName
+    ? studioPromotionalSampleProfiles[paidExampleName] || null : null;
   const nextExample = useCallback(() => {
     setPreviousPicture(reducedMotion ? null : santaPictures[pictureIndex]);
     if (!previewName) setIndex(value => (value + 1) % studioGiftExampleNames.length);
@@ -345,14 +351,15 @@ export function useStudioGiftExample({
     const next = studioGiftExampleNames.indexOf(activeName);
     if (next >= 0 && !previewName && allowExamples) setIndex(next);
   }, [activeName, previewName, allowExamples]);
-  return { name, picture: santaPictures[pictureIndex], previousPicture,
+  return { name, picture: santaPictures[pictureIndex], previousPicture, sampleProfile,
     onDissolved: finishDissolve, activeAudio: Boolean(activeName && !previewName && allowExamples),
     reducedMotion, onNext: nextExample };
 }
 
 export function StudioGiftPreview({ example, variant = null, onPreviewOpen }) {
   const name = example.name || studioGiftExampleNames[0];
-  return <GiftExample key={name} {...example} name={name} variant={variant} onPreviewOpen={onPreviewOpen} />;
+  return <GiftExample key={`${name}-${example.sampleProfile ? 'sample' : 'example'}`}
+    {...example} name={name} variant={variant} onPreviewOpen={onPreviewOpen} />;
 }
 
 export function StudioKeepsakePreview({ name, details = {}, variation, downloadReady = false,
