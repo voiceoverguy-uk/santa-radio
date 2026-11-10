@@ -1,15 +1,14 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pause, Play, RotateCcw, Star, Volume2, VolumeX } from 'lucide-react';
 import useChristmasPairs from './useChristmasPairs.js';
 import './ChristmasPairs.css';
-
-const SAMPLE_PICTURES = [
-  { id: 'puppy', label: 'Puppy', src: '/images/christmas-pairs/puppy.webp' },
-  { id: 'burger', label: 'Burger and chips', src: '/images/christmas-pairs/burger.webp' },
-  { id: 'soft-toy', label: 'Blue soft toy', src: '/images/christmas-pairs/soft-toy.webp' },
-];
+import { PAIRS_PICTURES, makePairsDeck } from '../lib/christmasPairs.js';
 
 export default function ChristmasPairs() {
+  const [samplePictures, setSamplePictures] = useState(() => PAIRS_PICTURES.slice(0, 3));
+  useEffect(() => {
+    setSamplePictures([...new Map(makePairsDeck(1).map(card => [card.picture.id, card.picture])).values()]);
+  }, []);
   const {
     state,
     best,
@@ -82,7 +81,7 @@ export default function ChristmasPairs() {
             <div className="christmas-pairs__idle">
               <p className="christmas-pairs__prompt">Take a good look...</p>
               <div className="christmas-pairs__sample" aria-hidden="true">
-                {SAMPLE_PICTURES.map((picture, index) => (
+                {samplePictures.map((picture, index) => (
                   <div className="christmas-pairs__sample-card" key={picture.id} style={{ '--sample-index': index }}>
                     <img src={picture.src} alt="" loading="lazy" />
                   </div>

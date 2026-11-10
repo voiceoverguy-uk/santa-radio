@@ -125,7 +125,7 @@ export default function NaughtyNiceWidget({ onOpenHeadElf, standalone = false } 
           <img src="/images/naughty-or-nice-logo.webp" width="1659" height="948" alt="" decoding="async" />
         </div>
         <TitleTag id="nn-widget-heading" className="nn-widget-title">Head Elf’s Naughty or Nice List Checker</TitleTag>
-        <p className="nn-intro">Enter your first name for a quick North Pole check. Then visit Head Elf for the full Christmas quiz.</p>
+        <p className="nn-intro">Enter your first name for a quick North Pole check.<br />Then visit Head Elf for the full Christmas quiz.</p>
       </div>
       <div ref={frameElement} className="nn-panel nn-widget-frame">
         {(stage === 'entry' || stage === 'starting') && <h3 className="nn-widget-form-heading">Quick Nice List Check</h3>}

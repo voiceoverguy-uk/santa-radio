@@ -519,3 +519,6 @@
   }
   .tracker-banner .tracker-banner-map { width: 100%; }
 }
+
+.tracker-banner-logo-link { display: block; border-radius: 12px; }
+.tracker-banner-logo-link:focus-visible { outline: 3px solid #d4af37; outline-offset: 5px; }

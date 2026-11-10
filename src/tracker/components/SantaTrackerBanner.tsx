@@ -131,6 +131,7 @@ export default function SantaTrackerBanner() {
         <div className={`${!isLive && !isComplete ? "tracker-banner-map-layout " : ""}tracker-banner-content flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8`}>
 
           <div className="tracker-banner-copy flex-1 text-center lg:text-left lg:max-w-lg">
+            <Link to="/santa-tracker" className="tracker-banner-logo-link" aria-label="Open the Santa Tracker">
             <img
               className="tracker-banner-logo"
               src={trackerLogo}
@@ -140,6 +141,7 @@ export default function SantaTrackerBanner() {
               loading="lazy"
               decoding="async"
             />
+            </Link>
             {(isLive || isComplete) && <div className="mb-4">{statusBadge}</div>}
 
             <p className="mt-3 text-gray-300 text-sm sm:text-base leading-relaxed max-w-lg mx-auto lg:mx-0">
@@ -160,15 +162,7 @@ export default function SantaTrackerBanner() {
                 : "Follow Santa's Christmas Eve journey in real time. Live route updates, fun facts, a countdown, and the full itinerary."}
             </p>
 
-            <div className="mt-5">
-              <Link
-                to="/santa-tracker"
-                className="tracker-action inline-flex items-center gap-2 px-6 py-3 text-sm transition-colors"
-              >
-                {isLive ? "Track Santa Now" : "Open the Tracker"}
-                <span aria-hidden="true">&rarr;</span>
-              </Link>
-            </div>
+
           </div>
 
           <div className="tracker-banner-visual flex-shrink-0 w-full lg:w-auto">
