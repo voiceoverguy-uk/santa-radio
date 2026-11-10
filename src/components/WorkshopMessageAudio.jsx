@@ -309,9 +309,17 @@ export default function WorkshopMessageAudio({
     </button>
   );
   const startAction = () => <button className="smw-button smw-button-back" type="button"
-    disabled={busy || giftExportPending || !!status?.pending || (!url && exhausted)
-      || (results.length === 1 && resetBlocked)}
+    aria-disabled={exhausted || undefined}
+    aria-haspopup={exhausted ? 'dialog' : undefined}
+    disabled={busy || giftExportPending || !!status?.pending
+      || (!exhausted && results.length === 1 && resetBlocked)}
     onClick={event => {
+      // At the limit this is an explanation-only control, never a reset.
+      if (exhausted) {
+        triggerRef.current = event.currentTarget;
+        setResetConfirmation(true);
+        return;
+      }
       if (url && results.length === 1) {
         if (resetBlocked || onStartAgain?.({ preserve: true }) === false) return;
         // Keep the result and its URL alive; only the editable operation resets.
@@ -391,17 +399,17 @@ export default function WorkshopMessageAudio({
       aria-labelledby="smw-reset-title" aria-describedby="smw-reset-warning"
       onKeyDown={trapDialogFocus}
       onCancel={event => { event.preventDefault(); cancelReset(); }}>
-      <h3 id="smw-reset-title">Have you downloaded your MP3?</h3>
-      <p id="smw-reset-warning">Check that you have saved all your MP3s and gifts on your device before continuing. Starting again clears all retained recordings and their gifts; they cannot be recovered. A download request does not confirm that a file reached your device.</p>
+      <h3 id="smw-reset-title">{exhausted ? 'You’ve used your two-message limit' : 'Have you downloaded your MP3?'}</h3>
+      <p id="smw-reset-warning">{exhausted
+        ? 'Don’t forget to download and save your MP3s and gifts before closing this tab or leaving the site. They aren’t saved for you to return to later.'
+        : 'Check that you have saved all your MP3s and gifts on your device before continuing. Starting again clears all retained recordings and their gifts; they cannot be recovered. A download request does not confirm that a file reached your device.'}</p>
       {!giftsRequested && <p>You haven’t requested all the gifts for {giftWrittenName || finishedWrittenName}. You can still request them before starting again.</p>}
-      {resetBlocked && <p role="status">{exhausted
-        ? 'Both creations have been used. You cannot start another creation. Keep this page open to play and download your current MP3 and gifts.'
-        : 'Another creation cannot be started until your Studio access and remaining creations have been confirmed. Your current recording and gifts have not been cleared. Close this dialog to retry the recording check.'}</p>}
+      {!exhausted && resetBlocked && <p role="status">Another creation cannot be started until your Studio access and remaining creations have been confirmed. Your current recording and gifts have not been cleared. Close this dialog to retry the recording check.</p>}
       <div className="smw-actions">
         <button type="button" className="smw-button smw-button-back" onClick={() => cancelReset(true)}>Back to downloads</button>
-        <button type="button" className="smw-button smw-button-next"
+        {!exhausted && <button type="button" className="smw-button smw-button-next"
           disabled={giftExportPending || busy || resetBlocked}
-          onClick={reset}>Discard recording and start again</button>
+          onClick={reset}>Discard recording and start again</button>}
       </div>
     </dialog>}
     {confirming && <dialog ref={dialogRef} className="smw-confirmation" aria-labelledby="smw-confirm-title"

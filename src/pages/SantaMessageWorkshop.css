@@ -378,8 +378,9 @@
 .smw-button:hover:not(:disabled) { transform: translateY(-2px); }
 .smw-button:focus-visible, .smw-change:focus-visible { outline: 2px solid var(--smw-gold-light); outline-offset: 4px; }
 .smw-button-back { border-color: #d4af3755; background: transparent; color: var(--smw-cream); }
-.smw-button-back:hover:not(:disabled) { border-color: var(--smw-gold); background: #d4af370d; }
+.smw-button-back:hover:not(:disabled):not([aria-disabled="true"]) { border-color: var(--smw-gold); background: #d4af370d; }
 .smw-button-back:disabled { opacity: .45; }
+.smw-button-back[aria-disabled="true"] { opacity: .45; cursor: not-allowed; }
 .smw-actions--review > .smw-button {
   width: 14rem;
   max-width: calc((100% - 14px) / 2);

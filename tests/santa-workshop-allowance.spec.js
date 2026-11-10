@@ -68,18 +68,21 @@ for (const width of [1365, 390]) {
       await expect(cards).toHaveCount(2);
       await expect(page.locator('.smw-remaining')).toContainText('0 of 2');
       const urls = await cards.locator('audio').evaluateAll(nodes => nodes.map(node => node.src));
-      await again.click();
+      await expect(again).toHaveAttribute('aria-disabled', 'true');
+      await expect(again).toHaveCSS('opacity', '0.45');
+      // Explanatory activation is allowed, but may never offer a reset.
+      await again.click({ force: true });
       const dialog = page.getByRole('dialog');
-      await expect(dialog).toContainText('Both creations have been used. You cannot start another creation.');
+      await expect(dialog).toContainText('You’ve used your two-message limit');
+      await expect(dialog).toContainText('download and save your MP3s and gifts before closing this tab or leaving the site');
       const discard = dialog.getByRole('button', { name: 'Discard recording and start again', exact: true });
-      await expect(discard).toBeDisabled();
-      // Even a programmatic click on the disabled control cannot reset access.
-      await discard.evaluate(node => node.click());
-      await expect(dialog).toBeVisible();
+      await expect(discard).toHaveCount(0);
+      await expect(dialog).not.toContainText('Starting again clears');
       await dialog.getByRole('button', { name: 'Back to downloads', exact: true }).click();
       await expect(page.getByRole('region', { name: 'Your second finished Santa message', exact: true })).toBeFocused();
       expect(await cards.locator('audio').evaluateAll(nodes => nodes.map(node => node.src))).toEqual(urls);
-      await again.click();
+      await again.focus();
+      await page.keyboard.press('Enter');
       await page.keyboard.press('Escape');
       await expect(again).toBeFocused();
       await expect(cards).toHaveCount(2);
