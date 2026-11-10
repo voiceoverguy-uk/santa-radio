@@ -1,3 +1,7 @@
+import naughtyNiceCheck from '../assets/apps/naughty-nice-check.jpg';
+import naughtyNiceResult from '../assets/apps/naughty-nice-result.jpg';
+import naughtyNiceElf from '../assets/apps/naughty-nice-elf.jpg';
+import naughtyNiceWelcome from '../assets/apps/naughty-nice-welcome.jpg';
 import santaRadio from '../assets/apps/santa-radio-ios-radio.webp';
 import santaRadioFallback from '../assets/apps/santa-radio-ios-radio.png';
 import santaRadioArtists from '../assets/apps/santa-radio-ios-artists.webp';
@@ -146,6 +150,32 @@ export const christmasApps = [
       'https://itunes.apple.com/us/app/santa-voicemail/id586387813',
     ),
     features: voicemailFeatures,
+  },
+  {
+    id: 'naughty-or-nice',
+    title: 'Naughty or Nice List Checker',
+    availability: 'Coming soon — awaiting App Store approval.',
+    subtitle: 'Which list are you on? Let Head Elf investigate!',
+    presentation: 'device',
+    screenshots: [
+      { label: 'Quick name check', image: naughtyNiceCheck, width: 603, height: 1311, alt: 'Naughty or Nice app: enter a first name for a quick North Pole check.' },
+      { label: 'Your result', image: naughtyNiceResult, width: 603, height: 1311, alt: 'Duncan’s playful 67% Nice result, with a button to check with Head Elf.' },
+      { label: 'Head Elf’s analyser', image: naughtyNiceElf, width: 603, height: 1311, alt: 'Head Elf’s festive analyser counts the answers to the ten-question quiz.' },
+      { label: 'Welcome', image: naughtyNiceWelcome, width: 603, height: 1311, alt: 'Naughty or Nice List Checker welcome screen: Which list are you on? Powered by Santa Radio.' },
+    ],
+    slideshow: {
+      heading: 'Naughty or Nice List Checker app screenshots',
+      regionLabel: 'Naughty or Nice List Checker app previews',
+    },
+    downloads: [],
+    features: [
+      feature('Quick name check', 'Enter your first name for a playful\nNorth Pole verdict.', 'search'),
+      feature('Meet Head Elf', 'Answer ten fun questions and let\nHead Elf decide which list you’re on.', 'smile'),
+      feature('Your own certificate', 'Save or share a personalised\nNaughty or Nice certificate.', 'gift'),
+      feature('North Pole magic', 'Festive voices, animated analysers\nand Head Elf’s reactions.', 'sound'),
+      feature('Santa Radio', 'Listen to Christmas music\ninside the app.', 'radio'),
+      feature('Santa Tracker', 'Visit the Santa Tracker\nfrom the app’s own navigation.', 'search'),
+    ],
   },
   {
     id: 'christmasradio',

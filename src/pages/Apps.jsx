@@ -45,6 +45,7 @@ function AppSection({ app }) {
               ))}
             </div>
             <div className="app-download-btns">
+              {app.availability && <p className="app-section-sub">{app.availability}</p>}
               {app.downloads.map(({ platform, href }) => (
                 <a
                   key={platform}
