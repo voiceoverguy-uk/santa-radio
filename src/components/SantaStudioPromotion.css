@@ -12,7 +12,7 @@
   container-type: inline-size;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-areas: "header" "details" "gifts" "offer";
+  grid-template-areas: "header" "intro" "audio" "actions" "gifts" "offer";
   gap: 14px;
   overflow: hidden;
   padding: clamp(19px, 2.4vw, 26px);
@@ -27,8 +27,7 @@
 }
 
 .santa-studio-promotion__details {
-  grid-area: details;
-  min-width: 0;
+  display: contents;
 }
 
 .santa-studio-promotion__gifts {
@@ -467,7 +466,7 @@
 @media (min-width: 768px) {
   .santa-studio-promotion {
     grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
-    grid-template-areas: "header header" "details gifts" "details offer";
+    grid-template-areas: "header header" "intro gifts" "actions audio" "actions offer";
     column-gap: clamp(24px, 4vw, 48px);
     row-gap: 14px;
   }
@@ -601,3 +600,10 @@
     transform: none;
   }
 }
+
+.santa-studio-promotion__intro { grid-area: intro; }
+.santa-studio-promotion__audio { grid-area: audio; min-width: 0; align-self: start; }
+.santa-studio-promotion__actions { grid-area: actions; min-width: 0; align-self: start; }
+.santa-studio-promotion__audio .santa-studio-audio-example { margin-top: 0; }
+.santa-studio-promotion__audio .santa-studio-audio-example__controls { flex-wrap: nowrap; }
+.santa-studio-promotion__audio .santa-studio-audio-example__play { flex-basis: 0; }

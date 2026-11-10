@@ -113,6 +113,7 @@ export default function StudioCheckout() {
           {!ready && !error && <p role="status">Preparing your secure payment form…</p>}
           {error && <div role="alert" className="studio-checkout__error"><p>{error}</p>
             <button className="btn-red" type="button" onClick={() => setAttempt(value => value + 1)}>Retry checkout</button>
+            <p><Link to="/free-santa-message#message-help">Troubleshooting &amp; cookie help</Link></p>
             <p><Link to={STUDIO_PATH}>Already paid? Open your Studio</Link></p>
           </div>}
           <div ref={container} />
