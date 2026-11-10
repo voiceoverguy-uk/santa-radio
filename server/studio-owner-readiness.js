@@ -15,6 +15,27 @@ export function ownerConfig(env = process.env) {
 }
 
 const SAFE_TOKEN = /^[a-z0-9_.-]{1,80}$/i;
+// Authenticated owner report only. Never return connection strings or roles.
+export async function ownerLaunchState(pool, env = process.env) {
+  const state = { database: null, publicSales: null,
+    salesEnvironmentEnabled: env.STUDIO_LIVE_SALES_ENABLED === 'true',
+    deliveryApproved: env.STUDIO_LIVE_DELIVERY_APPROVED === 'santa-message-maker-one-child-v1' };
+  const identifier = value => typeof value === 'string' && SAFE_TOKEN.test(value) ? value : null;
+  try {
+    const { rows: [row] } = await pool.query(`SELECT current_database() AS name,
+      current_setting('neon.project_id', true) AS project,
+      current_setting('neon.branch_id', true) AS branch,
+      current_setting('neon.endpoint_id', true) AS endpoint,
+      pg_is_in_recovery() AS recovery,
+      current_setting('transaction_read_only') AS read_only`);
+    state.database = { name: identifier(row.name), project: identifier(row.project),
+      branch: identifier(row.branch), endpoint: identifier(row.endpoint),
+      writable: row.recovery === false && row.read_only === 'off' };
+    const sales = await pool.query("SELECT enabled FROM public.santa_studio_live_sales_settings WHERE key='public'");
+    state.publicSales = { rowExists: sales.rows.length === 1, enabled: sales.rows[0]?.enabled === true };
+  } catch { state.error = 'STUDIO_LAUNCH_STATE_UNAVAILABLE'; }
+  return state;
+}
 // Fixed diagnostic fields only. Stripe messages can contain partial key text,
 // request details or account data, so they are never returned.
 export function safeCheckFailure(error) {
@@ -84,7 +105,7 @@ export async function ownerReadiness({
   });
   checks.retryApproved = env.STUDIO_EMAIL_RETRY_APPROVED === 'true';
   const canaryReady = ['database', 'stripe', 'webhookEndpoint', 'renderer', 'sender', 'worker', 'retryApproved'].every(k => checks[k]);
-  return { checks, failures, pendingEmailCount, stripeCredential: stripeCredentialShape(env.STRIPE_LIVE_SECRET_KEY), canaryReady, deliveryReady: canaryReady && checks.webhookDelivery };
+  return { checks, failures, pendingEmailCount, launch: await ownerLaunchState(pool, env), stripeCredential: stripeCredentialShape(env.STRIPE_LIVE_SECRET_KEY), canaryReady, deliveryReady: canaryReady && checks.webhookDelivery };
 }
 
 export async function probeOwnerWorker({ config = ownerConfig(), fetcher = fetch } = {}) {

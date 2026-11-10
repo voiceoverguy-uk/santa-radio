@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { createOwnerHandler, validOwnerToken } from '../server/studio-owner-handler.js';
-import { simulateOwnerEmail, ownerCanary, probeOwnerWorker, ownerReadiness, safeCheckFailure } from '../server/studio-owner-readiness.js';
+import { simulateOwnerEmail, ownerCanary, probeOwnerWorker, ownerReadiness, safeCheckFailure, ownerLaunchState } from '../server/studio-owner-readiness.js';
 import { createStudioEmailRetryHandler } from '../server/studio-live-email.js';
 import { studioTestDatabase } from './helpers/studio-live-postgres.mjs';
 import { startOwnerCanary, startLiveCheckout } from '../server/studio-live-checkout.js';
@@ -11,6 +11,30 @@ import usageApp from '../server/santa-workshop-usage.js';
 
 const config = { origin: 'http://127.0.0.1', secret: 'fixture-secret'.repeat(4), cronSecret: 'fixture-cron'.repeat(4),
   emailKey: 'fixture-not-a-real-key', emailFrom: 'santa@santaradio.co.uk' };
+test('launch state distinguishes a missing switch and reports only safe database identity', async () => {
+  const queries = [];
+  const pool = { query: async sql => {
+    queries.push(sql);
+    return sql.startsWith('SELECT current_database')
+      ? { rows: [{ name: 'neondb', project: 'project-1', branch: 'br-1', endpoint: 'ep-1', recovery: false, read_only: 'off', password: 'never-return' }] }
+      : { rows: [] };
+  } };
+  const result = await ownerLaunchState(pool, { STUDIO_LIVE_SALES_ENABLED: 'true',
+    STUDIO_LIVE_DELIVERY_APPROVED: 'santa-message-maker-one-child-v1', DATABASE_URL: 'never-return' });
+  assert.deepEqual(result.database, { name: 'neondb', project: 'project-1', branch: 'br-1', endpoint: 'ep-1', writable: true });
+  assert.deepEqual(result.publicSales, { rowExists: false, enabled: false });
+  assert.equal(result.deliveryApproved, true);
+  assert.equal(result.salesEnvironmentEnabled, true);
+  assert(!JSON.stringify(result).includes('never-return'));
+  assert(queries.every(sql => sql.startsWith('SELECT')));
+});
+test('launch state fails closed and does not leak database errors', async () => {
+  const result = await ownerLaunchState({ query: async () => { throw new Error('postgres://secret'); } }, {});
+  assert.equal(result.database, null);
+  assert.equal(result.publicSales, null);
+  assert.equal(result.error, 'STUDIO_LAUNCH_STATE_UNAVAILABLE');
+  assert(!JSON.stringify(result).includes('postgres://'));
+});
 async function serve(app, run) {
   const server = createServer(app);
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
