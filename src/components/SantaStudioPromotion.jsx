@@ -60,7 +60,7 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
             <ul className="santa-studio-promotion__benefit-list">
               <li>An official Nice List certificate</li>
               <li>A short personal letter from Santa</li>
-              <li>Santa celebrating {example.name}’s place on the Nice List</li>
+              <li>Santa picture personalised for {example.name}</li>
             </ul>
           </div>
         </div>
@@ -72,12 +72,11 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
       </div>
         <div className="santa-studio-promotion__actions">
         <StudioPurchaseButton onPaidAccessChange={setPaidAccess} />
-        {!paidAccess && <details className="santa-studio-promotion__voucher-entry">
-          <summary>Have a voucher code?</summary>
+        {!paidAccess && <div className="santa-studio-promotion__voucher-entry">
           <WorkshopPasswordForm
           variant="promotion"
           onAuthorized={onAuthorized || (() => navigate(STUDIO_PATH))}
-        /></details>}
+        /></div>}
         </div>
       </div>
       <div className="santa-studio-promotion__examples">

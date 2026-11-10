@@ -109,7 +109,7 @@ function PurchaseButton({ sandbox, onPaidAccessChange }) {
       disabled={sandbox && (checking || !available || busy)} onClick={purchase} aria-describedby={noteId}>
       {sandbox
         ? busy ? 'Opening test checkout…' : checking ? 'Checking test checkout…' : 'Purchase — £6.50 (test)'
-        : busy ? 'Opening secure checkout…' : 'Purchase — £6.50'}
+        : busy ? 'Opening secure checkout…' : 'Purchase'}
     </button>}
     <p id={noteId} role="status">
       {sandbox
