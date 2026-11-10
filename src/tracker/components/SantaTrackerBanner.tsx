@@ -4,7 +4,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import HomepageSectionHeading from "../../components/HomepageSectionHeading.jsx";
 import trackerLogo from "../../assets/home/santa-tracker-logo.webp";
-import { getDashboardData, isHolidaySeason, isRouteResearchSeason, isDecemberVisitSeason, getRandomDecemberTrackerVisit, getRouteResearchCopy, isChristmasInJuly, getRandomHoliday, type DecemberTrackerVisit, type HolidayDestination } from "@/lib/santaRoute";
+import { getInterpolatedMapPosition, getJourneySleighDirection, getDashboardData, isHolidaySeason, isRouteResearchSeason, isDecemberVisitSeason, getRandomDecemberTrackerVisit, getRouteResearchCopy, isChristmasInJuly, getRandomHoliday, type DecemberTrackerVisit, type HolidayDestination } from "@/lib/santaRoute";
+import { getJumpTime } from "../lib/santaPreview";
 import { worldMapPaths } from "@/data/worldMapPaths";
 import { santaStops } from "@/data/santaRouteStops";
 import { MAP_PALETTE, mapLandColor } from "./mapPalette";
@@ -232,19 +233,62 @@ function LiveStats({ data }: { data: ReturnType<typeof getDashboardData> }) {
 }
 
 function MiniMap({ time, holiday, researching = false, northPoleVisitMessage }: { time: Date; holiday: HolidayDestination | null; researching?: boolean; northPoleVisitMessage?: string }) {
-  const solarMinute = Math.floor(time.getTime() / 60_000);
+  const mapRef = useRef<HTMLAnchorElement>(null);
+  const [previewTime, setPreviewTime] = useState<Date | null>(null);
+  useEffect(() => {
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let visible = false;
+    let timer: ReturnType<typeof setInterval> | undefined;
+    const stop = () => {
+      clearInterval(timer);
+      timer = undefined;
+      setPreviewTime(null);
+    };
+    const start = () => {
+      stop();
+      if (!visible || document.hidden || motion.matches) return;
+      const began = performance.now();
+      // Local display clock only: never activate or save the private preview.
+      const routeStart = getJumpTime('city:berlin').getTime() - 60_000;
+      timer = setInterval(() => {
+        const elapsed = performance.now() - began;
+        // First glimpse after 8 seconds; thereafter 10 seconds in every 45.
+        const phase = (elapsed - 8000) % 45000;
+        setPreviewTime(elapsed >= 8000 && phase < 10000
+          ? new Date(routeStart + phase * 60) : null);
+      }, 50);
+    };
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      start();
+    }, { threshold: 0.5 });
+    if (mapRef.current) observer.observe(mapRef.current);
+    document.addEventListener('visibilitychange', start);
+    motion.addEventListener('change', start);
+    return () => {
+      clearInterval(timer);
+      observer.disconnect();
+      document.removeEventListener('visibilitychange', start);
+      motion.removeEventListener('change', start);
+    };
+  }, []);
+  const previewPosition = previewTime ? getInterpolatedMapPosition(previewTime) : null;
+  const mapTime = previewTime ?? time;
+  const solarMinute = Math.floor(mapTime.getTime() / 60_000);
   const solarTime = new Date(solarMinute * 60_000);
   const nightPath = useMemo(() => getNightOverlayPath(solarTime), [solarMinute]);
   const solarPosition = useMemo(() => getSolarPosition(solarTime), [solarMinute]);
-  const artwork = holiday ? getSantaMarkerArtwork(researching ? "ROUTE_RESEARCH" : "OFF_SEASON", holiday.lng) : null;
-  const santaX = holiday
+  const artwork = previewTime && previewPosition
+    ? getSantaMarkerArtwork("LIVE", previewPosition.lng, getJourneySleighDirection(previewTime))
+    : holiday ? getSantaMarkerArtwork(researching ? "ROUTE_RESEARCH" : "OFF_SEASON", holiday.lng) : null;
+  const santaX = previewPosition ? previewPosition.x * 10 : holiday
     ? ((holiday.lng + 180) / 360) * 1000
     : ((0 + 180) / 360) * 1000;
-  const santaY = holiday
+  const santaY = previewPosition ? previewPosition.y * 5 : holiday
     ? ((90 - holiday.lat) / 180) * 500
     : ((90 - 90) / 180) * 500;
 
-  const caption = researching && holiday
+  const caption = previewTime ? "Christmas Eve sneak peek · Europe · ×60 simulation" : researching && holiday
     ? `Santa's route research location: ${holiday.name}`
     : holiday
     ? `Santa's holiday location`
@@ -254,19 +298,21 @@ function MiniMap({ time, holiday, researching = false, northPoleVisitMessage }: 
 
   return (
     <Link
+      ref={mapRef}
+      data-sneak-peek={previewTime ? "true" : "false"}
       to="/santa-tracker"
       aria-label={`Open the Santa Tracker: ${caption}${researching && holiday ? `. ${getRouteResearchCopy(holiday)} Research locations are separate from Christmas Eve delivery stops.` : northPoleVisitMessage ? `. ${northPoleVisitMessage}` : ""}`}
       className="tracker-map tracker-banner-map block w-full rounded-lg border overflow-hidden"
     >
       <svg
-        viewBox={artwork ? "-84 -42 1168 584" : "0 0 1000 500"}
+        viewBox={previewTime ? `${santaX - 100} ${santaY - 50} 200 100` : artwork ? "-84 -42 1168 584" : "0 0 1000 500"}
         className="w-full"
         style={{ aspectRatio: "2 / 1" }}
         preserveAspectRatio="xMidYMid meet"
         aria-hidden="true"
       >
         <rect width="1000" height="500" fill={MAP_PALETTE.ocean} />
-        <g stroke={MAP_PALETTE.coastline} strokeWidth="0.85" strokeLinejoin="round">
+        <g stroke={MAP_PALETTE.coastline} strokeWidth={previewTime ? "0.25" : "0.85"} strokeLinejoin="round">
           {worldMapPaths.map((d, i) => (
             <path key={i} d={d} fill={mapLandColor(i)} />
           ))}
@@ -288,24 +334,24 @@ function MiniMap({ time, holiday, researching = false, northPoleVisitMessage }: 
               data-stop-id={stop.id}
               cx={((stop.lng + 180) / 360) * 1000}
               cy={((90 - stop.lat) / 180) * 500}
-              r="2.5"
+              r={previewTime ? "0.7" : "2.5"}
               fill="none"
               stroke="#bcc9bd"
-              strokeWidth="1.2"
+              strokeWidth={previewTime ? "0.35" : "1.2"}
               opacity="0.8"
             />
           ))}
         </g>
-        <circle cx={santaX} cy={santaY} r="18" fill="#D4AF37" opacity="0.3">
+        {!previewTime && <circle cx={santaX} cy={santaY} r="18" fill="#D4AF37" opacity="0.3">
           <animate attributeName="r" values="12;22;12" dur="2s" repeatCount="indefinite" />
           <animate attributeName="opacity" values="0.3;0.1;0.3" dur="2s" repeatCount="indefinite" />
-        </circle>
-        <g data-santa-location="" data-santa-lat={holiday ? holiday.lat : 90} data-santa-lng={holiday ? holiday.lng : 0} transform={`translate(${santaX} ${santaY})`}>
+        </circle>}
+        <g data-santa-location="" data-santa-lat={previewPosition?.lat ?? holiday?.lat ?? 90} data-santa-lng={previewPosition?.lng ?? holiday?.lng ?? 0} transform={`translate(${santaX} ${santaY})`}>
         {artwork ? (
-          <SantaMarker artwork={artwork} scale={2} />
+          <SantaMarker artwork={artwork} scale={previewTime ? 0.65 : 2} />
         ) : <text
-          x={santaX}
-          y={santaY}
+          x={0}
+          y={0}
           textAnchor="middle"
           dominantBaseline="central"
           fontSize="28"

@@ -522,3 +522,10 @@
 
 .tracker-banner-logo-link { display: block; border-radius: 12px; }
 .tracker-banner-logo-link:focus-visible { outline: 3px solid #d4af37; outline-offset: 5px; }
+
+@media (min-width: 1024px) {
+  .tracker-banner .tracker-banner-logo { width: 100%; max-width: 30rem; }
+}
+.tracker-banner-map[data-sneak-peek="true"] .tracker-map-caption {
+  background: #9b111e; color: #fff8e7; font-weight: 600;
+}
