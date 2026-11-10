@@ -95,7 +95,7 @@ function assertDocument(html, row) {
       assert.ok(html.includes(mug.image), 'Correct mug photograph');
     }
   } else if (row.outcome === 'redirect-apps') {
-    for (const text of ['Santa Radio App', 'Santa Messages', 'Santa Dash', 'id1021183593']) assert.ok(html.includes(text));
+    for (const text of ['Santa Radio App', 'Santa Dash', 'id1021183593']) assert.ok(html.includes(text));
   } else {
     assert.equal(row.outcome, 'redirect-tunein');
     assert.ok(html.includes('Santa Radio on TuneIn'));

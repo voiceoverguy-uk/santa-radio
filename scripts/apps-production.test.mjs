@@ -298,30 +298,7 @@ test('built Apps HTML starts on first promotional images and serves all local We
       assert.equal(geometry.overflow, false);
     }
   }
-  for (const [id, filename, width, height] of [
-    ['santamessages', 'santa-messages', 750, 1334],
-  ]) {
-    const app = html.match(new RegExp(`<section id="${id}"[\\s\\S]*?<\\/section>`))?.[0];
-    assert.ok(app, `${id} must be in the initial HTML`);
-    const image = app.match(/<img\b[^>]*>/)?.[0];
-    assert.ok(image);
-    assert.match(image, new RegExp(`width="${width}" height="${height}"`));
-    assert.match(image, /app screen/);
-    assert.match(app, /app-screenshots-device/);
-    if (id === 'santamessages') {
-      assert.match(image, /Arabella.*playback and sharing controls.*name picker.*Schedule a message/);
-      assert.match(app, /Santa has a personal message just for your child\./);
-      assert.doesNotMatch(app, /<button\b/);
-    }
-    const src = image.match(/src="([^"]+)"/)?.[1];
-    assert.match(src, new RegExp(`^/assets/${filename}-screen-.*\\.webp$`));
-    const asset = await get(src);
-    assert.equal(asset.status, 200);
-    assert.match(asset.headers.get('content-type'), /image\/webp/);
-    const bytes = Buffer.from(await asset.arrayBuffer());
-    assert.equal(bytes.toString('ascii', 8, 12), 'WEBP');
-    assert.ok(bytes.length < 500000);
-  }
+  assert.doesNotMatch(html, /id="santamessages"|id1062532143/);
   const voicemail = html.match(/<section id="santavoicemail"[\s\S]*?<\/section>/)?.[0];
   assert.ok(voicemail);
   assert.match(voicemail, /app-screenshots-voicemail/);

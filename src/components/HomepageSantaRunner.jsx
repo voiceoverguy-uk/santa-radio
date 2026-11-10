@@ -4,7 +4,7 @@ import './HomepageSantaRunner.css';
 
 const BASE = '/images/studio-runners/classic';
 const JUMP_STRIP_URL = '/images/santa-dash/classic-jump-strip.png';
-const JUMP_DURATION_MS = 550;
+const JUMP_DURATION_MS = 750;
 const MIN_DELAY_MS = 5000;
 const MAX_DELAY_MS = 12000;
 

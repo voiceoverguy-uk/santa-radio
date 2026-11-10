@@ -1,7 +1,7 @@
-/* Lane extended 24px upward for jump headroom; net flow stays 64px. */
+/* Lane extended 48px upward for jump headroom; net flow stays 64px. */
 .studio-runner-lane.homepage-santa-runner {
-  height: 88px;
-  margin-top: -24px;
+  height: 112px;
+  margin-top: -48px;
   overflow: hidden;
 }
 
@@ -13,7 +13,7 @@
 }
 
 .homepage-santa-hop.is-jumping {
-  animation: homepage-santa-hop 550ms linear 1 both;
+  animation: homepage-santa-hop 750ms linear 1 both;
 }
 
 .homepage-santa-facing {
@@ -57,12 +57,12 @@
   background-repeat: no-repeat;
   background-size: 600% 100%;
   background-position: 0% 0;
-  animation: homepage-santa-jump-frames 550ms steps(1, end) 1 both;
+  animation: homepage-santa-jump-frames 750ms steps(1, end) 1 both;
 }
 
 @keyframes homepage-santa-hop {
   0% { transform: translateY(0); animation-timing-function: cubic-bezier(.33, 0, .55, 1); }
-  50% { transform: translateY(-20px); animation-timing-function: cubic-bezier(.45, 0, .67, 1); }
+  50% { transform: translateY(-42px); animation-timing-function: cubic-bezier(.45, 0, .67, 1); }
   100% { transform: translateY(0); }
 }
 

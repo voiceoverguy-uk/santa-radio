@@ -22,7 +22,6 @@ import santaVoicemailNaughty from '../assets/apps/santa-voicemail-naughty-list-c
 import santaVoicemailNaughtyFallback from '../assets/apps/santa-voicemail-naughty-list-call.png';
 import santaVoicemailSoundboard from '../assets/apps/santa-voicemail-soundboard.webp';
 import santaVoicemailSoundboardFallback from '../assets/apps/santa-voicemail-soundboard.png';
-import santaMessages from '../assets/apps/santa-messages-screen.webp';
 import christmasRadio from '../assets/apps/christmas-radio-screen-1.webp';
 import christmasRadioPromo2 from '../assets/apps/christmas-radio-screen-2.webp';
 import christmasRadioPromo3 from '../assets/apps/christmas-radio-screen-3.webp';
@@ -147,28 +146,6 @@ export const christmasApps = [
       'https://itunes.apple.com/us/app/santa-voicemail/id586387813',
     ),
     features: voicemailFeatures,
-  },
-  {
-    id: 'santamessages',
-    title: 'Santa Messages',
-    subtitle: 'Santa has a personal message just for your child.',
-    image: santaMessages,
-    alt: 'Santa Messages app screen showing Arabella, playback and sharing controls, a name picker and Schedule a message.',
-    width: 750,
-    height: 1334,
-    presentation: 'device',
-    slideshow: standaloneDisplay('Santa Messages'),
-    downloads: downloads(
-      'https://itunes.apple.com/gb/app/santa-messages/id1062532143',
-    ),
-    features: [
-      feature("Find your child's name", 'Santa will then play a\npersonal message for your child.', 'search'),
-      feature('Share your message', 'Share your childs message on\nsocial media or by email.', 'share'),
-      feature('Over 600 names', "Loaded with top boys & girls names.\nSubmit yours if it's missing.", 'users'),
-      feature('Download price', 'Check the linked stores\nfor current pricing.', 'gift'),
-      feature('Schedule a message', 'Surprise? Set to ring your child in\n10, 30, or 60 seconds.', 'clock'),
-      feature('Santa Radio', 'Listen to Santa Radio live\ndirect from our App.', 'radio'),
-    ],
   },
   {
     id: 'christmasradio',
