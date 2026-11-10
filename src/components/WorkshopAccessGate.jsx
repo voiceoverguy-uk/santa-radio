@@ -6,6 +6,7 @@ import { StudioAccessContext, StudioVoucherContext } from '../lib/studioAccessCo
 import StudioReturnAccess from './StudioReturnAccess.jsx';
 import HomepageSantaStudio from './HomepageSantaStudio.jsx';
 import { STUDIO_PATH } from '../lib/studioRoute.js';
+import { rememberStudioPurchase } from '../lib/studioPurchaseHint.js';
 import StudioPaymentSuccess from './StudioPaymentSuccess.jsx';
 
 const ACCESS_URL = '/api/santa-workshop-access';
@@ -62,6 +63,7 @@ export default function WorkshopAccessGate({ children }) {
           }
           if (paidResponse.ok && paid.authorized === true
             && (import.meta.env.DEV ? paid.mode !== 'live' : paid.mode === 'live')) {
+            if (paid.mode === 'live') rememberStudioPurchase(true);
             setAccessKind(paid.mode === 'live' ? 'paid-live' : 'paid-sandbox');
             setRemaining(Number.isInteger(paid.remaining) && paid.remaining >= 0 && paid.remaining <= 2 ? paid.remaining : null);
             setVoucher(null);

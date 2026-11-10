@@ -6,11 +6,12 @@ import StudioPurchaseButton from './StudioPurchaseButton.jsx';
 import { StudioGiftPreview, useStudioGiftExample } from './SantaStudioGifts.jsx';
 import StudioPortraitViewer from './StudioPortraitViewer.jsx';
 import SantaStudioAudioExample from './SantaStudioAudioExample.jsx';
+import { hasStudioPurchaseHint } from '../lib/studioPurchaseHint.js';
 import { STUDIO_PATH } from '../lib/studioRoute.js';
 
 export default function SantaStudioPromotion({ activeExampleName = null, availableNamesText, previewName = null, allowExamples = true, onAuthorized }) {
   const navigate = useNavigate();
-  const [paidAccess, setPaidAccess] = useState(false);
+  const [paidAccess, setPaidAccess] = useState(() => !import.meta.env.DEV && hasStudioPurchaseHint());
   const [paidExampleName, setPaidExampleName] = useState(null);
   const [giftsExpanded, setGiftsExpanded] = useState(false);
   const giftsId = useId();

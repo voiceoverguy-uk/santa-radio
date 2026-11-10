@@ -27,6 +27,10 @@ export default function StudioCheckout() {
   const [ready, setReady] = useState(false);
   const [attempt, setAttempt] = useState(0);
   useEffect(() => {
+    if (window.location.hostname.endsWith('.vercel.app') || window.location.hostname === 'santaradio.co.uk') {
+      window.location.replace(`https://www.santaradio.co.uk${STUDIO_CHECKOUT_PATH}`);
+      return;
+    }
     let disposed = false, checkout, stage = 'purchase-check';
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 45000);
