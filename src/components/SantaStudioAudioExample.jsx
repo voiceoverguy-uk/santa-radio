@@ -28,6 +28,10 @@ function getActiveCue(time, cues) {
   return cues.find(start => time >= start && time < start + 2) ?? null;
 }
 
+function getActiveHighlightCue(time, cues) {
+  return cues.find(start => time >= start && time < start + 3) ?? null;
+}
+
 function formatTime(seconds) {
   if (!Number.isFinite(seconds)) return '--:--';
   const wholeSeconds = Math.floor(seconds);
@@ -159,12 +163,13 @@ export default function SantaStudioAudioExample({ onActiveExampleNameChange }) {
       : playbackState === 'loading'
         ? 'Loading Bespoke message example'
         : 'Play Bespoke message example';
-  const personalisedPlaying = playbackState === 'playing' && activeCue !== null;
+  const highlightCue = getActiveHighlightCue(currentTime, selectedExampleRef.current?.cues ?? []);
+  const personalisedPlaying = playbackState === 'playing' && highlightCue !== null;
 
   return (
     <section className="santa-studio-audio-example" aria-labelledby="santa-studio-audio-title">
       <h4 id="santa-studio-audio-title">
-        Paid Studio message example{activeName ? ` — ${activeName}` : ''}
+        Premium Santa Message example{activeName ? ` — ${activeName}` : ''}
       </h4>
       <div className="santa-studio-audio-example__controls">
         <button

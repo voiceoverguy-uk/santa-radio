@@ -52,7 +52,7 @@
   flex: 1 1 16em;
   background: #9b392d;
   color: #fff5df;
-  /* Cue exit must remove the highlight immediately, not fade beyond the audio. */
+  /* Media-clock highlight exit is immediate; do not fade beyond its window. */
   transition: none;
 }
 
