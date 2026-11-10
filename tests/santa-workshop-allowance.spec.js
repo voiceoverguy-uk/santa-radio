@@ -48,6 +48,62 @@ async function gift(page, name) {
   await download;
 }
 for (const width of [1365, 390]) {
+  test(`download glows stop independently for each recording at ${width}px`, async ({ page }) => {
+    test.setTimeout(90000);
+    await page.setViewportSize({ width, height: 900 });
+    const fixture = await setup(page, true);
+    await review(page); await confirmMessage(page);
+    await page.getByRole('button', { name: 'Start Again', exact: true }).click();
+    await review(page); await confirmMessage(page);
+    const bottom = page.getByRole('region', { name: 'Your finished Santa message', exact: true });
+    const top = page.getByRole('region', { name: 'Your second finished Santa message', exact: true });
+    await expect(page.locator('.smw-download-status')).toHaveCount(0);
+    for (const card of [bottom, top]) await expect(card.locator('.smw-button-download--pending')).toHaveCount(2);
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    for (const card of [bottom, top]) {
+      for (const button of await card.locator('.smw-button-download--pending').all()) {
+        await expect(button).toHaveCSS('animation-name', 'smw-download-glow');
+      }
+    }
+    const audioDownload = page.waitForEvent('download');
+    await bottom.getByRole('link', { name: 'Download Audio' }).click();
+    expect(await (await audioDownload).failure()).toBeNull();
+    await expect(bottom.locator('.smw-download-control').first().getByText('Downloaded', { exact: true })).toBeVisible();
+    await expect(bottom.locator('.smw-bundle-download .smw-download-status')).toHaveCount(0);
+    await expect(top.locator('.smw-download-status')).toHaveCount(0);
+    await expect(bottom.locator('.smw-button-download--pending')).toHaveCount(0);
+    await expect(top.locator('.smw-button-download--pending')).toHaveCount(2);
+    // A reduced-motion visitor gets a steady glow on the remaining recording.
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    for (const button of await top.locator('.smw-button-download--pending').all()) {
+      await expect(button).toHaveCSS('animation-name', 'none');
+      await expect(button).toHaveCSS('box-shadow', /12px/);
+    }
+    const bundleDownload = page.waitForEvent('download');
+    await top.getByRole('button', { name: 'Download All', exact: true }).click();
+    expect(await (await bundleDownload).failure()).toBeNull();
+    await expect(page.locator('.smw-written-name .studio-gift-download p')).toHaveText(['Downloaded', 'Downloaded', 'Downloaded']);
+    await expect(top.locator('.smw-bundle-download .smw-download-status')).toHaveText('Downloaded');
+    await expect(top.locator('.smw-download-control').first().locator('.smw-download-status')).toHaveCount(0);
+    await expect(top.locator('.smw-button-download--pending')).toHaveCount(0);
+    await expect(bottom.locator('.smw-button-download--pending')).toHaveCount(0);
+    const topAudio = page.waitForEvent('download');
+    await top.getByRole('link', { name: 'Download Audio' }).click();
+    expect(await (await topAudio).failure()).toBeNull();
+    const bottomBundle = page.waitForEvent('download');
+    await bottom.getByRole('button', { name: 'Download All', exact: true }).click();
+    expect(await (await bottomBundle).failure()).toBeNull();
+    await expect(page.locator('.smw-download-status')).toHaveCount(4);
+    await expect(page.locator('body')).not.toContainText('ZIP download requested.');
+    for (const control of await page.locator('.smw-download-control').all()) {
+      const label = control.locator('.smw-download-status');
+      await expect(label).toHaveText('Downloaded');
+      const bounds = await label.boundingBox();
+      const button = await control.locator('.smw-button').boundingBox();
+      expect(bounds.y).toBeGreaterThanOrEqual(button.y + button.height - 1);
+    }
+    expect(fixture.posts).toHaveLength(2);
+  });
   for (const paid of [false, true]) {
     test(`exhausted ${paid ? 'paid purchase with stale voucher' : 'limited voucher'} cannot discard or regain allowance at ${width}px`, async ({ page }) => {
       test.setTimeout(60000);

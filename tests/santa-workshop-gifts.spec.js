@@ -1065,7 +1065,7 @@ test('letter asset failure is retryable; picture fitting shares the review geome
   expect((await PDFDocument.load(readFileSync('generated-artifacts/studio-gifts/retry-letter.pdf'))).getPageCount()).toBe(1);
   expect(fixture.posts).toHaveLength(1);
   await expect(page.locator('.studio-gifts__card--letter .studio-gift-download p')).toContainText(
-    'Download requested. Check your browser’s downloads; keep your own copy.');
+    'Downloaded');
   for (const name of ['Élodie O’Neill-Sáenz', "Jean-Luc D'Ávila", 'Alexandria-Catherine Elizabeth Montgomery-Worthington', 'É'.repeat(160)]) {
     const result = await page.evaluate(async name => {
       const { fitSantaPictureName, santaPictureFrames } = await import('/src/lib/santaPictureLayout.js');

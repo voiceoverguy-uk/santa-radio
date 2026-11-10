@@ -48,3 +48,12 @@ successful creations, with valid voucher-only journeys preserved.
 as browser presentation. Checkout return, reload and Start Again must keep the
 same verified purchase allowance; do not reset counters or infer paid usage
 from older voucher activity.
+
+After both messages are used, Start Again should look disabled and only open
+a limit/download reminder, never a discard-and-restart confirmation.
+
+**Why:** The owner asked for a greyed-out control and a reminder to download
+and keep the files before closing the tab or leaving the site.
+
+**How to apply:** Preserve existing recordings and downloads. Pointer and
+keyboard activation may explain the limit but must not clear or reset anything.

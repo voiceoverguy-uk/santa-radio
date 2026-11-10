@@ -67,7 +67,7 @@ export default function StudioGiftDownload({ kind, ready, name, letter, picture,
       {!ready ? unavailableNotice || 'Available when your MP3 audio file has been downloaded.'
         : status === 'preparing' ? 'Preparing locally in your browser…'
           : status === 'error' ? 'Could not prepare this gift. Retry above; your audio and other gifts are unaffected. No message allowance is used.'
-             : status === 'requested' || requested ? 'Download requested. Check your browser’s downloads; keep your own copy.'
+             : status === 'requested' || requested ? 'Downloaded'
               : 'Ready. Repeat downloads do not use your message allowance.'}
     </p>
   </div>;

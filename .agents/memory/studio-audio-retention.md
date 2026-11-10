@@ -59,6 +59,29 @@ browsers blocking four automatic downloads from a single click.
 never reconstruct a bundle from current editable choices. Preparation and
 retries remain local and use no additional creation allowance.
 
+Download reminders should pulse independently for each recording until its
+audio or bundle download is requested. Downloading one must leave the other's
+reminder glowing; reduced motion gets a steady glow.
+
+**Why:** The owner wants to remind visitors to keep both temporary recordings,
+not stop all reminders after downloading just one.
+
+**How to apply:** Track each completion separately during the visit. The browser
+cannot prove a file was saved, so do not use these flags as server-side delivery
+proof or a reason to discard the recordings.
+
+Show the owner's chosen word “Downloaded” directly under each clicked Audio
+or Download All button, independently across all four buttons. Do not show
+the former long ZIP-request disclaimer after a successful request.
+After Download All, the corresponding three individual gift feedback lines
+also say “Downloaded”; individually downloaded gifts use the same wording.
+
+**Why:** The owner explicitly requested simpler, button-specific feedback.
+
+**How to apply:** Mark only the button whose download was requested; retain
+real preparation/error feedback, and do not mark failed ZIP preparation as a
+new successful download.
+
 Paid website purchases are not an exception to temporary audio handling.
 Do not permanently store generated audio or keepsakes or build a recording-retrieval service.
 The emailed link gives a verified paying customer access to BEGIN creating a message,

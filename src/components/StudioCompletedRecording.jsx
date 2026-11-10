@@ -9,6 +9,7 @@ export default function StudioCompletedRecording({ result, ordinal, visible, sec
   const audioRef = useRef(null);
   const resumeRef = useRef(null);
   const [error, setError] = useState('');
+  const [audioDownloaded, setAudioDownloaded] = useState(false);
   const finish = () => {
     const resume = resumeRef.current;
     resumeRef.current = null;
@@ -47,9 +48,12 @@ export default function StudioCompletedRecording({ result, ordinal, visible, sec
       }} onPause={finish} onEnded={finish}
       onError={() => { finish(); setError('Your browser could not play this MP3. You can still try downloading it.'); }} />
     <div className="smw-download-actions">
+      <div className="smw-download-control">
       <a className={`smw-button smw-button-download${result.requested ? '' : ' smw-button-download--pending'}`}
         href={result.url} download={getWorkshopDownloadName(result.record.name, result.spelling)}
-        onClick={onDownloadRequested}>Download Audio <span aria-hidden="true">↓</span></a>
+        onClick={() => { setAudioDownloaded(true); onDownloadRequested(); }}>Download Audio <span aria-hidden="true">↓</span></a>
+      {audioDownloaded && <span className="smw-download-status" role="status">Downloaded</span>}
+      </div>
       <StudioBundleDownload result={result} onPreparing={onBundlePreparing}
         onDownloadRequested={() => { onDownloadRequested(); onBundleRequested?.(); }} />
     </div>

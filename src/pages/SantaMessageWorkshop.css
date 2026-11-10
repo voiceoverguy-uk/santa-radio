@@ -474,14 +474,17 @@
 .smw-page .smw-create-disabled:hover:disabled { background: #40544a; color: #e3e7df; opacity: 1; box-shadow: none; }
 .smw-download-actions { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: flex-end; gap: 10px; min-width: 0; }
 .smw-download-actions > a { flex: 0 1 auto; }
+.smw-download-control { display: flex; flex-direction: column; align-items: center; gap: 4px; max-width: 100%; }
+.smw-download-status { font-size: .75rem; line-height: 1.4; color: var(--smw-gold); text-align: center; }
 .smw-bundle-download { display: contents; }
 .smw-bundle-download > p { flex: 1 0 100%; margin: 0; max-width: 32rem; font-size: .76rem; }
-.smw-bundle-download > button:disabled { opacity: .65; cursor: not-allowed; }
+.smw-bundle-download button:disabled { opacity: .65; cursor: not-allowed; }
 .smw-message-finished .smw-download-actions { max-width: 32rem; }
 .smw-message-finished .smw-download-actions .smw-button { margin-left: 0; }
 @media (max-width: 760px) {
   .smw-download-actions { justify-content: stretch; }
-  .smw-download-actions > a, .smw-bundle-download > button { flex: 1 1 100%; width: 100%; }
+  .smw-download-actions > a, .smw-download-actions .smw-download-control { flex: 1 1 100%; width: 100%; }
+  .smw-download-control > .smw-button { width: 100%; }
 }
 .smw-download-actions a { max-width: 100%; text-decoration: none; }
 /* Match the free maker's gold glow and timing without animating the red fill. */

@@ -19,11 +19,11 @@ const bundleGuidance = 'Download All includes this MP3, certificate PDF, persona
 async function checkDownloadGuidance(result, feedback = false) {
   const guidance = result.locator('.smw-bundle-download p').first();
   await expect(guidance).toHaveText(bundleGuidance);
-  await expect(result.locator('.smw-bundle-download button')).toHaveAccessibleDescription(
-    feedback ? new RegExp(bundleGuidance.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')) : bundleGuidance);
+  await expect(result.locator('.smw-bundle-download button')).toHaveAccessibleDescription(bundleGuidance);
+  if (feedback) await expect(result.locator('.smw-bundle-download .smw-download-status')).toHaveText('Downloaded');
   await expect(result.locator('.smw-retention-reminder')).toHaveCount(0);
   await expect(result.getByText('Download before leaving or refreshing — your recording isn’t saved.', { exact: true })).toHaveCount(0);
-  await expect(result.locator('p')).toHaveCount(feedback ? 2 : 1);
+  await expect(result.locator('p')).toHaveCount(1);
   expect(await guidance.evaluate(node => {
     const range = document.createRange();
     range.selectNodeContents(node);
@@ -211,8 +211,8 @@ for (const width of [320, 1365]) {
     await page.keyboard.press('Enter');
     await expect(first).toHaveAttribute('aria-pressed', 'true');
     await expect(letter(page).locator('p')).toHaveText(firstLetter);
-    await expect(page.locator('.studio-gifts__card--certificate .studio-gift-download p')).toContainText('Download requested');
-    await expect(page.locator('.studio-gifts__card--letter .studio-gift-download p')).toContainText('Download requested');
+    await expect(page.locator('.studio-gifts__card--certificate .studio-gift-download p')).toHaveText('Downloaded');
+    await expect(page.locator('.studio-gifts__card--letter .studio-gift-download p')).toHaveText('Downloaded');
     for (const [selector, name, expectedLetter] of [[first, 'Dixie Rose', firstLetter], [second, 'Arabella May', secondLetter]]) {
       await selector.focus();
       await page.keyboard.press('Space');
@@ -368,7 +368,7 @@ test('a first-message gift export survives the second MP3 finishing', async ({ p
   const first = page.getByRole('button', { name: '1st message gifts for Dixie Rose', exact: true });
   await expect(first).toBeEnabled();
   await first.click();
-  await expect(page.locator('.studio-gifts__card--certificate .studio-gift-download p')).toContainText('Download requested');
+  await expect(page.locator('.studio-gifts__card--certificate .studio-gift-download p')).toHaveText('Downloaded');
   expect(fixture.posts).toHaveLength(2);
 });
 
@@ -482,7 +482,7 @@ for (const width of [320, 1365]) {
     expect(firstPng.equals(secondPng)).toBe(false);
     await expect(firstResult.locator('.smw-bundle-download [role=status]')).toContainText('does not confirm it was saved');
     await expect(page.locator('.studio-gift-download p')).toHaveText(Array(3)
-      .fill('Download requested. Check your browser’s downloads; keep your own copy.'));
+      .fill('Downloaded'));
     expect(fixture.posts).toHaveLength(2);
     expect(fixture.state.remaining).toBe(remaining);
     expect(fixture.recoveries || 0).toBe(0);

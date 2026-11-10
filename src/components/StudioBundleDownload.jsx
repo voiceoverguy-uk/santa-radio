@@ -3,10 +3,10 @@ import { useEffect, useId, useRef, useState } from 'react';
 export default function StudioBundleDownload({ result, onPreparing, onDownloadRequested }) {
   const id = useId();
   const [status, setStatus] = useState('idle');
+  const [downloaded, setDownloaded] = useState(false);
   const feedback = status === 'preparing' ? 'Preparing the MP3 and three gifts locally in your browser…'
     : status === 'error' ? 'Could not prepare the ZIP. Retry Download All; audio and individual gift downloads are unaffected. No creation allowance is used.'
-      : status === 'requested' ? 'ZIP download requested. Check your browser’s downloads; this does not confirm it was saved.'
-        : !result.gift ? 'Completed gifts are unavailable. You can still download your audio.' : '';
+      : !result.gift ? 'Completed gifts are unavailable. You can still download your audio.' : '';
   const operation = useRef(null);
   const urls = useRef(new Map());
   useEffect(() => {
@@ -45,6 +45,7 @@ export default function StudioBundleDownload({ result, onPreparing, onDownloadRe
       document.body.append(link);
       try { link.click(); } finally { link.remove(); }
       setStatus('requested');
+      setDownloaded(true);
       onDownloadRequested?.();
     } catch {
       if (!controller.signal.aborted) setStatus('error');
@@ -56,12 +57,15 @@ export default function StudioBundleDownload({ result, onPreparing, onDownloadRe
     }
   };
   return <div className="smw-bundle-download">
-    <button type="button" className="smw-button smw-button-download"
+    <div className="smw-download-control">
+    <button type="button" className={`smw-button smw-button-download${result.requested ? '' : ' smw-button-download--pending'}`}
       onClick={download} disabled={!result.gift || status === 'preparing'}
       aria-busy={status === 'preparing'} aria-describedby={feedback ? `${id} ${id}-feedback` : id}>
       {status === 'preparing' ? 'Preparing ZIP…' : status === 'error' ? 'Retry Download All' : 'Download All'}
       <span aria-hidden="true">↓</span>
     </button>
+    {downloaded && <span className="smw-download-status" role="status">Downloaded</span>}
+    </div>
     <p id={id} role={feedback ? undefined : 'status'}>
       {result.gift
         ? 'Download All includes this MP3, certificate PDF, personalised letter PDF and Santa-picture PNG in one ZIP. Get them quickly, as your audio isn’t saved once you leave.'
