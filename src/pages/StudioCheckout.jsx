@@ -78,7 +78,9 @@ export default function StudioCheckout() {
     })().catch(cause => {
       if (!disposed) {
         console.warn('[studio-checkout]', { stage, status: cause.status || null });
-        setError(cause.status === 429
+        setError(cause.status === 409
+          ? 'Your browser couldn’t keep the essential checkout cookie. If Block All Cookies is enabled, turn it off and retry. You can keep cross-site tracking protection on.'
+          : cause.status === 429
           ? 'There have been several checkout attempts. Please wait 15 minutes before trying again. If you have already paid, open your Studio below.'
           : stage === 'stripe-form'
             ? 'Stripe’s secure payment form couldn’t load in this browser. Please retry. If you use a content blocker, allow Stripe on this page.'
