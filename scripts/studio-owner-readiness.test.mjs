@@ -26,6 +26,8 @@ test('deployed owner route rejects anonymous, voucher and invalid scoped-token a
       const text = await response.text();
       assert(!text.includes(config.secret));
       assert(!text.includes('checks'));
+      assert(!text.includes('pendingEmailCount'));
+      assert(!text.includes('outboxCount'));
     }
   });
 });
@@ -128,6 +130,8 @@ test('readiness can bootstrap without sales or webhook health, but never without
     const options = { config: c, pool: db.pool, stripe, env: { STUDIO_EMAIL_RETRY_APPROVED: 'true' },
       fetcher: async () => ({ ok: true, json: async () => ({ ready: true, offer: c.offer }) }) };
     const report = await ownerReadiness(options);
+    assert.equal(report.checks.outboxCount, true);
+    assert.equal(report.pendingEmailCount, 0);
     assert.equal(report.canaryReady, true);
     assert.equal(report.deliveryReady, false);
     assert.equal(report.checks.webhookDelivery, false);
@@ -136,7 +140,73 @@ test('readiness can bootstrap without sales or webhook health, but never without
     assert.equal((await ownerReadiness({ ...options, fetcher: async () => { throw new Error('Unavailable'); } })).canaryReady, false);
     assert.equal((await db.pool.query('SELECT enabled FROM public.santa_studio_live_sales_settings')).rows[0].enabled, false);
     assert.equal((await db.pool.query('SELECT count(*)::int n FROM public.santa_studio_live_webhook_health')).rows[0].n, 0);
+    await db.pool.query("INSERT INTO public.santa_studio_live_purchases(checkout_session_id,payment_intent_id,claim_sha256,email_sha256) VALUES('count-fixture','count-fixture',$1,$1)", ['a'.repeat(64)]);
+    for (let i = 1; i <= 3; i++) {
+      await db.pool.query(`INSERT INTO public.santa_studio_live_email
+        (id,request_key,checkout_session_id,nonce,token_sha256,token_expires_at,sent_at,next_attempt_at)
+        VALUES($1,$2,'count-fixture','private-fixture-nonce',$3,now()-interval '1 day',
+          CASE WHEN $4 THEN now() ELSE NULL END,now()+interval '1 day')`,
+      [`00000000-0000-4000-8000-00000000000${i}`, `count-fixture-${i}`, String(i).repeat(64), i === 3]);
+    }
+    const pendingReport = await ownerReadiness(options);
+    assert.equal(pendingReport.pendingEmailCount, 2, 'count unsent even if deferred or link expired; exclude sent');
+    assert.equal(pendingReport.checks.outboxCount, true);
+    assert(!JSON.stringify(pendingReport).includes('private-fixture-nonce'));
+    assert.equal(pendingReport.canaryReady, report.canaryReady, 'count does not change canary policy');
   } finally { await db.close(); }
+});
+
+test('outbox count failure is null with a distinct safe error, never zero', async () => {
+  for (const value of [undefined, '-1', '1.2', '9007199254740992', 'query-failure']) {
+    const report = await ownerReadiness({
+      config, env: {},
+      pool: { query: async sql => {
+        if (!sql.startsWith('SELECT count(*)')) return { rowCount: 0, rows: [] };
+        assert.equal(sql, 'SELECT count(*) AS count FROM public.santa_studio_live_email WHERE sent_at IS NULL');
+        if (value === 'query-failure') throw new Error('private database detail');
+        return { rows: [{ count: value }] };
+      } },
+      stripe: { prices: {}, webhookEndpoints: {} },
+      fetcher: async () => { throw new Error('fixture'); },
+    });
+    assert.equal(report.pendingEmailCount, null);
+    assert.equal(report.checks.outboxCount, false);
+    assert.deepEqual(report.failures.outboxCount, { code: 'STUDIO_OUTBOX_COUNT_UNAVAILABLE' });
+    assert(!JSON.stringify(report).includes('private database detail'));
+  }
+});
+
+test('owner count is behind authentication for GET and POST and responses are no-store', async () => {
+  const token = 'a'.repeat(43);
+  let origin, reports = 0;
+  const app = createOwnerHandler({
+    checkAdmin: async req => validOwnerToken(req, { STUDIO_OWNER_TOKEN: token }) ? 200 : 401,
+    getConfig: () => ({ ...config, origin }), consume: async () => true,
+    report: async () => { reports++; return { pendingEmailCount: 7, checks: { outboxCount: true } }; },
+    simulator: async () => assert.fail('No unauthorized action may run'),
+  });
+  await serve(app, async url => {
+    origin = url;
+    for (const method of ['GET', 'POST']) {
+      for (const extra of [{}, { Cookie: 'santa-workshop-preview=fixture' },
+        { Authorization: `Bearer studio-owner.${'b'.repeat(43)}` }]) {
+        const response = await fetch(url, { method,
+          headers: { ...extra, Origin: url, 'Content-Type': 'application/json' },
+          ...(method === 'POST' ? { body: '{"action":"simulator"}' } : {}),
+        });
+        assert.equal(response.status, 401);
+        const data = await response.json();
+        assert(!('pendingEmailCount' in data));
+        assert(!('checks' in data));
+      }
+    }
+    assert.equal(reports, 0);
+    const response = await fetch(url, { headers: { Authorization: `Bearer studio-owner.${token}` } });
+    assert.equal(response.status, 200);
+    assert.match(response.headers.get('cache-control'), /no-store/);
+    assert.equal((await response.json()).pendingEmailCount, 7);
+    assert.equal(reports, 1);
+  });
 });
 
 test('readiness reports safe Stripe failure stages and codes without messages or credentials', async () => {

@@ -65,7 +65,7 @@ async function checkStudioOwner(action) {
       }
       return;
     }
-    console.log(result); // Fixed booleans only, never credentials.
+    console.log(result); // Readiness flags, safe error codes and count only; never credentials or email rows.
   } finally {
     token = '';
   }
@@ -102,6 +102,48 @@ code. Provider messages are never returned.
    alone is not proof. No old customer event is replayed and no health is faked.
 
 ## Limits and public launch
+
+### Read-only unsent email count
+
+After Sync Changes, verify the READY deployment serving `www.santaradio.co.uk`
+contains the new source. On that website use the helper above and run
+`await checkStudioOwner()` (GET), or use Check production readiness in the
+existing approved staff panel.
+
+`pendingEmailCount` is the number of outbox rows with `sent_at IS NULL`, using
+the same `databasePool()` connection as the production worker. This includes
+backoff/future retry rows: the worker's `next_attempt_at` filter only controls
+when a row is due, not whether it is unsent. No rows, recipients or tokens are
+returned. A successful zero is `checks.outboxCount: true, pendingEmailCount: 0`.
+A failed count is `checks.outboxCount: false, pendingEmailCount: null` with
+`failures.outboxCount.code: STUDIO_OUTBOX_COUNT_UNAVAILABLE`. Never treat that
+failure as an empty outbox. The count is a point-in-time observation, not a
+queue lock or permission to enable retries. This check changes no retry/sales
+settings, sends no email and does not affect existing canary eligibility.
+
+### Live webhook checks without charging or replaying an unrelated order
+
+Run the read-only diagnostic. `checks.webhookEndpoint` verifies the live
+endpoint is enabled, has the exact canonical URL and the required event types.
+`checks.webhookDelivery` checks stored evidence of a genuine live notification
+for the configured endpoint and signing-secret fingerprint.
+
+In Stripe's live webhook delivery history, inspect an existing delivery for
+the actual Studio owner purchase, if there is one. Confirm the destination is
+`https://www.santaradio.co.uk/api/stripe/webhook`, its response was HTTP 200,
+and the event's Checkout Session belongs to this Studio offer. Do not click
+Resend for another order, create a charge, or invoke the canary just to obtain
+webhook evidence.
+
+If no such delivery exists, registration can be verified without charging,
+but successful end-to-end live payment delivery cannot yet be claimed. Stripe
+test/synthetic events, the email simulator and unsigned requests cannot prove
+it: the handler verifies the Stripe signature, requires `livemode: true`,
+and retrieves the canonical event through the configured live account.
+Leave `webhookDelivery` false until genuine evidence exists; do not insert a
+health row manually or loosen validation. Even a true webhook health flag
+does not by itself prove a paid Studio entitlement or email was delivered:
+confirm the relevant Studio event and its result separately.
 
 The renderer probe verifies packaged files, executable availability, catalogue,
 names and allowance storage—not a completed MP3 or its audio quality.

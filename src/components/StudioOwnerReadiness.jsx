@@ -3,6 +3,7 @@ import { STUDIO_PATH } from '../lib/studioRoute.js';
 
 const labels = {
   database: 'Production schema and database permissions',
+  outboxCount: 'Unsent email count available',
   stripe: 'Live Stripe account and £6.50 price',
   webhookEndpoint: 'Live webhook endpoint and events',
   renderer: 'Protected renderer prerequisites',
@@ -47,6 +48,8 @@ export default function StudioOwnerReadiness() {
     <p>The simulator refuses a non-empty outbox and never sends customer emails. Approve scheduled retries in Vercel only after this passes.</p>
     {report && <ul>{Object.entries(labels).map(([key, label]) => <li key={key}>{label}: {report.checks[key] ? 'Passed' : 'Not verified / not ready'}
       {!report.checks[key] && report.failures?.[key] && <> ({Object.entries(report.failures[key]).map(([k, v]) => `${k}: ${v}`).join(', ')})</>}</li>)}</ul>}
+    {report && <p>Unsent Studio emails: {report.checks.outboxCount && Number.isSafeInteger(report.pendingEmailCount)
+      ? report.pendingEmailCount : 'Count unavailable — do not assume zero'}. Includes emails waiting for their next retry.</p>}
     {report?.stripeCredential && !report.stripeCredential.accepted && <p>Stripe key format check: {Object.entries(report.stripeCredential).filter(([k, v]) => k !== 'accepted' && (k === 'present' ? !v : v)).map(([k]) => k === 'present' ? 'missing' : k).join(', ') || 'unsupported format'}</p>}
     <button type="button" disabled={busy || !report?.canaryReady} onClick={() => {
       if (window.confirm('Open a real £6.50 checkout for the owner? No payment is made until you complete Stripe checkout. Public sales stay off.')) run('canary');

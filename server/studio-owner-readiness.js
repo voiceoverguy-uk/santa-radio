@@ -33,10 +33,25 @@ export async function ownerReadiness({
   config = ownerConfig(), pool = databasePool(), stripe, fetcher = fetch, env = process.env,
 } = {}) {
   const checks = {}, failures = {};
+  let pendingEmailCount = null;
   const check = async (name, work) => {
     try { await work(); checks[name] = true; } catch (error) { checks[name] = false; failures[name] = safeCheckFailure(error); }
   };
   await check('database', async () => { await liveStoreReady(pool); await studioAllowanceReady(pool); });
+  await check('outboxCount', async () => {
+    try {
+      // Same pool and unsent predicate as deliverStudioReturn. Include deferred
+      // retries: next_attempt_at controls when to send, not whether mail is unsent.
+      const { rows } = await pool.query('SELECT count(*) AS count FROM public.santa_studio_live_email WHERE sent_at IS NULL');
+      const value = rows?.[0]?.count;
+      if (!/^(0|[1-9][0-9]*)$/.test(String(value))) throw new Error();
+      const count = Number(value);
+      if (!Number.isSafeInteger(count)) throw new Error();
+      pendingEmailCount = count;
+    } catch {
+      throw new Error('STUDIO_OUTBOX_COUNT_UNAVAILABLE');
+    }
+  });
   await check('stripe', async () => { stripe ||= await liveStripeClient(config); await verifyLiveOffer(stripe, config); });
   await check('webhookEndpoint', async () => {
     if (!stripe) throw new Error('STUDIO_STRIPE_CLIENT_UNAVAILABLE');
@@ -69,7 +84,7 @@ export async function ownerReadiness({
   });
   checks.retryApproved = env.STUDIO_EMAIL_RETRY_APPROVED === 'true';
   const canaryReady = ['database', 'stripe', 'webhookEndpoint', 'renderer', 'sender', 'worker', 'retryApproved'].every(k => checks[k]);
-  return { checks, failures, stripeCredential: stripeCredentialShape(env.STRIPE_LIVE_SECRET_KEY), canaryReady, deliveryReady: canaryReady && checks.webhookDelivery };
+  return { checks, failures, pendingEmailCount, stripeCredential: stripeCredentialShape(env.STRIPE_LIVE_SECRET_KEY), canaryReady, deliveryReady: canaryReady && checks.webhookDelivery };
 }
 
 export async function probeOwnerWorker({ config = ownerConfig(), fetcher = fetch } = {}) {
