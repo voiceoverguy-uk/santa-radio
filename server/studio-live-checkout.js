@@ -48,6 +48,8 @@ async function startCheckout({ claim, config, stripe, pool = databasePool() }, o
         line_items: [{ price: config.priceId, quantity: 1 }],
         ...(embedded ? {
           ui_mode: 'embedded',
+          branding_settings: { display_name: 'Santa Radio', background_color: '#ffffff',
+            button_color: '#9B111E', font_family: 'inter', border_style: 'rounded' },
           return_url: `${config.origin}${STUDIO_PATH}?checkout=return`,
         } : {
           success_url: `${config.origin}${STUDIO_PATH}?checkout=return`,
@@ -107,6 +109,16 @@ export function createLiveCheckoutHandler({
       }
       let claim = liveCheckoutClaim(req, config);
       if (req.method === 'POST' && !claim) return res.status(409).json({ error: 'Refresh this page before purchasing.' });
+      // Bootstrap only sets the signed browser claim. The POST still performs
+      // every readiness check before creating or resuming a payment session.
+      if (req.method === 'GET' && req.query.prepare === '1') {
+        if (!claim) {
+          claim = randomBytes(32).toString('base64url');
+          res.cookie(LIVE_CHECKOUT_COOKIE, signLiveClaim(claim, config), cookieOptions);
+        }
+        return res.json({ configured: true, mode: 'live', amount: 650, currency: 'gbp',
+          checkoutMode: config.publishableKey ? 'embedded' : 'hosted', publishableKey: config.publishableKey || undefined });
+      }
       const stripe = await getStripe(config);
       await readiness({ config, stripe, pool });
       if (req.method === 'GET') {
@@ -120,7 +132,8 @@ export function createLiveCheckoutHandler({
       const result = await start({ claim, config, stripe, pool });
       res.cookie(LIVE_PENDING_COOKIE, result.sessionId, cookieOptions);
       return res.json({ url: result.url, clientSecret: result.clientSecret, pending: !!result.pending });
-    } catch {
+    } catch (error) {
+      console.warn('[studio-checkout]', { code: /^[A-Z0-9_]{1,80}$/.test(error?.code || error?.message || '') ? (error.code || error.message) : 'CHECKOUT_UNAVAILABLE' });
       return res.status(503).json({ available: false, error: 'Checkout is temporarily unavailable. Voucher access is unchanged.' });
     }
   });

@@ -53,3 +53,21 @@ test('without a publishable key new checkout remains hosted',async()=>{
  assert(result.url.startsWith('https://checkout.stripe.com/'));
  const {params}=calls.find(c=>c.params);assert.equal(params.ui_mode,undefined);assert(params.success_url);assert(params.cancel_url);
 });
+
+test('fast preparation sets a claim but cannot bypass payment readiness',async()=>{
+ const {createLiveCheckoutHandler}=await import('../server/studio-live-checkout.js');
+ const {createServer}=await import('node:http');
+ let origin, stripeCalls=0,readyCalls=0,startCalls=0;
+ const app=createLiveCheckoutHandler({getConfig:()=>({...config,origin,secret:'fixture-only-secret'.repeat(3)}),
+  getPool:()=>({}),consume:async()=>true,getStripe:async()=>{stripeCalls++;return {};},
+  readiness:async()=>{readyCalls++;throw Error('FIXTURE_NOT_READY');},start:async()=>{startCalls++;}});
+ const server=createServer(app);await new Promise(r=>server.listen(0,'127.0.0.1',r));origin=`http://127.0.0.1:${server.address().port}`;
+ try {
+  const prep=await fetch(`${origin}/?prepare=1`);const body=await prep.json();
+  assert.equal(prep.status,200);assert.equal(body.configured,true);assert.equal(body.available,undefined);
+  assert.equal(stripeCalls,0);assert.equal(readyCalls,0);assert.match(prep.headers.get('cache-control'),/no-store/);
+  const cookie=prep.headers.get('set-cookie').split(';')[0];assert(cookie.startsWith('__Host-santa-studio-claim='));
+  const post=await fetch(origin,{method:'POST',headers:{Origin:origin,Cookie:cookie,'Content-Type':'application/json'},body:'{}'});
+  assert.equal(post.status,503);assert.equal(readyCalls,1);assert.equal(startCalls,0);
+ } finally {server.closeAllConnections();await new Promise(r=>server.close(r));}
+});

@@ -27,30 +27,30 @@ export default function StudioCheckout() {
   const [ready, setReady] = useState(false);
   const [attempt, setAttempt] = useState(0);
   useEffect(() => {
-    let disposed = false, checkout;
+    let disposed = false, checkout, stage = 'purchase-check';
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 45000);
     setError(''); setReady(false);
     const request = async (path, options = {}) => {
       const response = await fetch(path, { credentials: 'same-origin', cache: 'no-store', signal: controller.signal, ...options });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Checkout could not be loaded. Please retry.');
+      if (!response.ok) { const error = new Error('Checkout request failed.'); error.status = response.status; throw error; }
       return data;
     };
     (async () => {
-      const access = await request('/api/santa-studio-access');
+      const stripeReady = loadStripeScript().then(Stripe => ({ Stripe }), () => ({ failed: true }));
+      const [access, offer] = await Promise.all([
+        request('/api/santa-studio-access'), request('/api/santa-studio-checkout?prepare=1'),
+      ]);
       if (disposed) return;
       if (access.authorized === true && access.mode === 'live') { navigate(STUDIO_PATH, { replace: true }); return; }
-      const offer = await request('/api/santa-studio-checkout');
-      if (disposed) return;
-      if (!offer.available || offer.mode !== 'live' || offer.amount !== 650 || offer.currency !== 'gbp') {
+      if (!offer.configured || offer.mode !== 'live' || offer.amount !== 650 || offer.currency !== 'gbp') {
         throw new Error('Purchases are currently unavailable. Please try again later.');
       }
       if (offer.checkoutMode !== 'embedded' || !/^pk_live_[A-Za-z0-9]+$/.test(offer.publishableKey || '')) {
         throw new Error('This payment page is being prepared. Please return to Santa Radio to purchase.');
       }
-      const Stripe = await loadStripeScript();
-      if (disposed) return;
+      stage = 'payment-session';
       const session = await request('/api/santa-studio-checkout', {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}',
       });
@@ -63,12 +63,23 @@ export default function StudioCheckout() {
         window.location.assign(url.href); return;
       }
       if (typeof session.clientSecret !== 'string' || !session.clientSecret.startsWith('cs_live_')) throw new Error('Checkout could not be loaded.');
-      checkout = await Stripe(offer.publishableKey).initEmbeddedCheckout({ clientSecret: session.clientSecret });
+      stage = 'stripe-form';
+      const loaded = await stripeReady;
+      if (disposed) return;
+      if (loaded.failed) throw new Error('Stripe could not load.');
+      checkout = await loaded.Stripe(offer.publishableKey).initEmbeddedCheckout({ clientSecret: session.clientSecret });
       if (disposed) { checkout.destroy(); return; }
       checkout.mount(container.current);
       setReady(true);
-    })().catch(() => {
-      if (!disposed) setError('We couldn’t load secure checkout. Please retry, or return to Santa Radio. If you have already paid, use your Studio access link.');
+    })().catch(cause => {
+      if (!disposed) {
+        console.warn('[studio-checkout]', { stage, status: cause.status || null });
+        setError(cause.status === 429
+          ? 'There have been several checkout attempts. Please wait 15 minutes before trying again. If you have already paid, open your Studio below.'
+          : stage === 'stripe-form'
+            ? 'Stripe’s secure payment form couldn’t load in this browser. Please retry. If you use a content blocker, allow Stripe on this page.'
+            : 'We couldn’t prepare secure checkout. Please retry in a moment. If you have already paid, open your Studio below.');
+      }
     }).finally(() => clearTimeout(timeout));
     return () => { disposed = true; clearTimeout(timeout); controller.abort(); checkout?.destroy(); };
   }, [attempt, navigate]);

@@ -1,31 +1,40 @@
 .studio-checkout { min-height: 100dvh; display: grid; grid-template-columns: 1fr 1fr; background: #fff; }
-.studio-checkout__story { position: relative; min-height: 100dvh; padding: clamp(28px, 5vw, 88px); display: flex; flex-direction: column; color: #fff8e7; background: linear-gradient(180deg, #071c1740, #071c1770 22%, #071c17e8 82%), url('/images/north-pole-hero.webp') center / cover; }
-.studio-checkout__home { align-self: flex-start; }
-.studio-checkout__home img { width: 230px; max-width: 70vw; height: auto; }
-.studio-checkout__copy { margin: auto 0; padding: 60px 0 40px; max-width: 530px; }
-.studio-checkout__eyebrow { color: #e6ce86; letter-spacing: .18em; font-size: 11px; font-weight: 700; }
-.studio-checkout__story h1 { font-family: Cinzel, Georgia, serif; font-size: clamp(30px, 3vw, 48px); line-height: 1.25; color: #fff8e7; margin: 20px 0; }
-.studio-checkout__lead { font-size: 19px; line-height: 1.6; }
-.studio-checkout__price { font-size: 44px; font-weight: 700; color: #e6ce86; margin: 28px 0 18px; }
-.studio-checkout__price span { display: inline-block; font-size: 13px; font-weight: 400; color: #fff8e7; }
-.studio-checkout__story ul { list-style: none; padding: 0; margin: 24px 0; }
-.studio-checkout__story li { padding: 8px 0 8px 25px; position: relative; line-height: 1.5; }
+.studio-checkout__story { position: sticky; top: 0; align-self: start; height: 100dvh; box-sizing: border-box; padding: clamp(24px, 3vw, 48px); display: flex; flex-direction: column; color: #fff8e7; background: linear-gradient(180deg, #071c1740, #071c1770 22%, #071c17e8 82%), url('/images/north-pole-hero.webp') center / cover; overflow: auto; }
+.studio-checkout__home { align-self: flex-start; flex-shrink: 0; }
+.studio-checkout__home img { display: block; width: 180px; max-width: 60vw; height: auto; }
+.studio-checkout__copy { margin: auto 0; padding: 28px 0 20px; max-width: 540px; }
+.studio-checkout__eyebrow { color: #e6ce86; letter-spacing: .15em; font-size: 10px; font-weight: 700; margin: 0 0 12px; }
+.studio-checkout__story h1 { font-family: Cinzel, Georgia, serif; font-size: clamp(27px, 2.35vw, 36px); line-height: 1.2; color: #fff8e7; margin: 0 0 14px; }
+.studio-checkout__lead { font-size: 16px; line-height: 1.45; margin: 0 0 14px; }
+.studio-checkout__price { font-size: 34px; font-weight: 700; color: #e6ce86; margin: 14px 0; line-height: 1.2; }
+.studio-checkout__price span { display: inline-block; font-size: 12px; font-weight: 400; color: #fff8e7; }
+.studio-checkout__story ul { list-style: none; padding: 0; margin: 16px 0; font-size: 14px; }
+.studio-checkout__story li { padding: 5px 0 5px 22px; position: relative; line-height: 1.4; }
 .studio-checkout__story li::before { content: '✓'; position: absolute; left: 0; color: #e6ce86; }
-.studio-checkout__small { font-size: 12px; line-height: 1.6; color: #e0e7e2; max-width: 400px; }
-.studio-checkout__back { color: #fff8e7; font-size: 13px; align-self: flex-start; text-decoration: underline; text-underline-offset: 4px; }
-.studio-checkout__payment { padding: 45px clamp(20px, 4vw, 65px); color: #24332c; background: white; display: flex; justify-content: center; }
-.studio-checkout__payment-inner { width: 100%; max-width: 580px; }
-.studio-checkout__secure { font-size: 10px; letter-spacing: .14em; text-align: center; color: #597263; margin: 0 0 28px; }
-.studio-checkout__terms { color: #667069; font-size: 12px; line-height: 1.6; margin-top: 25px; }
+.studio-checkout__small { font-size: 11px; line-height: 1.5; color: #e0e7e2; max-width: 420px; margin: 14px 0 0; }
+.studio-checkout__back { color: #fff8e7; font-size: 12px; align-self: flex-start; text-decoration: underline; text-underline-offset: 4px; flex-shrink: 0; }
+.studio-checkout__payment { padding: 24px clamp(16px, 2vw, 36px); color: #24332c; background: white; display: flex; justify-content: center; }
+.studio-checkout__payment-inner { width: 100%; max-width: 620px; }
+.studio-checkout__secure { font-size: 10px; letter-spacing: .12em; text-align: center; color: #597263; margin: 0 0 14px; }
+.studio-checkout__terms { color: #667069; font-size: 12px; line-height: 1.5; margin: 14px 0 8px; }
 .studio-checkout__payment a { color: #365d49; font-size: 12px; text-decoration: underline; }
-.studio-checkout__error { padding: 24px; background: #fff8e7; border: 1px solid #d4af37; border-radius: 12px; line-height: 1.6; }
+.studio-checkout__error { padding: 20px; background: #fff8e7; border: 1px solid #d4af37; border-radius: 12px; line-height: 1.5; }
 .studio-checkout a:focus-visible, .studio-checkout button:focus-visible { outline: 3px solid #d4af37; outline-offset: 5px; }
+@media(max-height: 700px) and (min-width: 761px) {
+ .studio-checkout__copy { margin: 20px 0 auto; padding: 0 0 16px; }
+ .studio-checkout__story h1 { font-size: 28px; }
+}
 @media(max-width: 760px) {
- .studio-checkout { grid-template-columns: 1fr; }
- .studio-checkout__story { min-height: auto; padding: 28px; background-position: center 58%; }
- .studio-checkout__home img { width: 180px; }
- .studio-checkout__copy { padding: 35px 0 20px; }
- .studio-checkout__story h1 { font-size: 31px; }
- .studio-checkout__price { margin: 16px 0; }
- .studio-checkout__payment { padding: 30px 16px; }
+ .studio-checkout { grid-template-columns: 1fr; align-content: start; }
+ .studio-checkout__story { position: static; height: auto; padding: 20px 24px; overflow: visible; background-position: center 62%; }
+ .studio-checkout__home img { width: 145px; }
+ .studio-checkout__copy { margin: 0; padding: 18px 0 12px; max-width: none; }
+ .studio-checkout__eyebrow, .studio-checkout__lead, .studio-checkout__small { display: none; }
+ .studio-checkout__story h1 { font-size: 25px; line-height: 1.15; margin: 0 0 10px; }
+ .studio-checkout__price { font-size: 28px; margin: 10px 0; }
+ .studio-checkout__story ul { font-size: 12px; margin: 10px 0 0; }
+ .studio-checkout__story li { padding-top: 3px; padding-bottom: 3px; }
+ .studio-checkout__payment { padding: 18px 8px; }
+ .studio-checkout__secure { margin-bottom: 8px; font-size: 9px; }
+ .studio-checkout__terms, .studio-checkout__payment-inner > a { margin-left: 16px; margin-right: 16px; }
 }
