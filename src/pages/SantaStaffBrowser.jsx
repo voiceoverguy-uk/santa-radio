@@ -98,7 +98,7 @@ function RequestLedger() {
   if (!isLoaded) return <main className="staff-page"><div className="staff-wrap">
     <section className="staff-panel staff-skeleton" aria-label="Loading staff access">
       <div className="staff-loading-row" /><div className="staff-loading-row" /><div className="staff-loading-row" />
-      <p className="sr-only" role="status">Checking staff sign-in…</p>
+      <p className="staff-lede" role="status">Checking staff sign-in…</p>
     </section>
   </div></main>;
   if (!isSignedIn) return <AdminLanding />;

@@ -29,3 +29,14 @@ with automated/sandbox verification only and public sales kept off.
 discounted payment totals, not a fixed £6.50 received-amount check. Preserve
 the verified purchase allowance through email returns and old voucher state.
 Do not create live charges to verify this feature or enable sales implicitly.
+
+Do not assume that working staff sign-in in Replit Preview means the separate
+Vercel deployment has working Clerk authentication.
+
+**Why:** A live staff page attempted a direct Clerk-host script load and remained
+in its loading state when Vercel lacked the managed Clerk production bindings.
+The separately scoped owner diagnostic token was still configured.
+
+**How to apply:** Verify production staff authentication and its proxy before
+directing the owner to the staff UI. Use the existing private diagnostic route
+when appropriate; do not export or rotate credentials to repair sign-in.
