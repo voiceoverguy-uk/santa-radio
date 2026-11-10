@@ -511,3 +511,11 @@
   .santa-tracker .tracker-stats-grid > :nth-child(4), .santa-tracker .tracker-stats-grid > :nth-child(8) { grid-row: 4; }
   .santa-tracker .tracker-stats-grid > :nth-child(9) { grid-column: 1; grid-row: 5; }
 }
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .tracker-banner .tracker-banner-map-layout .tracker-banner-visual {
+    width: 100%;
+    max-width: 720px;
+  }
+  .tracker-banner .tracker-banner-map { width: 100%; }
+}

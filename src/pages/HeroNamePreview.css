@@ -678,7 +678,7 @@
   .hero-name-preview .hero-layout {
     grid-template-columns: minmax(0, 1fr) minmax(min(360px, 48vw), min(420px, 48vw));
     grid-template-areas:
-      "intro intro"
+      "intro checker"
       "description checker"
       "listening checker"
       "artwork checker";
@@ -687,7 +687,7 @@
   }
 
   .hero-name-preview__checker {
-    align-self: center;
+    align-self: start;
     width: 100%;
     justify-self: stretch;
     margin-top: 0;
@@ -707,7 +707,7 @@
   }
 
   .hero-name-preview__checker {
-    grid-row: 2 / 5;
+    grid-row: 1 / 5;
   }
 }
 
