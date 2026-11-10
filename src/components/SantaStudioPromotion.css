@@ -12,7 +12,7 @@
   container-type: inline-size;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-areas: "header" "intro" "audio" "actions" "gifts" "offer";
+  grid-template-areas: "header" "intro" "audio" "offer" "actions" "gifts";
   gap: 14px;
   overflow: hidden;
   padding: clamp(19px, 2.4vw, 26px);
@@ -466,7 +466,8 @@
 @media (min-width: 768px) {
   .santa-studio-promotion {
     grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
-    grid-template-areas: "header header" "intro gifts" "actions audio" "actions offer";
+    grid-template-areas: "header header" "details examples";
+    align-items: start;
     column-gap: clamp(24px, 4vw, 48px);
     row-gap: 14px;
   }
@@ -607,3 +608,19 @@
 .santa-studio-promotion__audio .santa-studio-audio-example { margin-top: 0; }
 .santa-studio-promotion__audio .santa-studio-audio-example__controls { flex-wrap: nowrap; }
 .santa-studio-promotion__audio .santa-studio-audio-example__play { flex-basis: 0; }
+
+.santa-studio-promotion__examples { display: contents; }
+.santa-studio-promotion__voucher-entry { margin-top: 16px; font-size: .85rem; color: var(--studio-muted); }
+.santa-studio-promotion__voucher-entry summary { cursor: pointer; padding: 6px 0; }
+.santa-studio-promotion__voucher-entry summary:focus-visible { outline: 3px solid #765a20; outline-offset: 3px; }
+.santa-studio-promotion .workshop-password-form--promotion label {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+.santa-studio-promotion .workshop-password-form--promotion { margin-top: 8px; }
+@media (min-width: 768px) {
+  .santa-studio-promotion__details { display: block; grid-area: details; min-width: 0; }
+  .santa-studio-promotion__examples { display: grid; grid-area: examples; gap: 14px; min-width: 0; }
+  .santa-studio-promotion__examples > * { grid-area: auto; }
+  .santa-studio-promotion__details .santa-studio-promotion__offer { margin-top: 16px; margin-bottom: 10px; }
+}

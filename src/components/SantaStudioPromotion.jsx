@@ -64,15 +64,23 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
             </ul>
           </div>
         </div>
-        <div className="santa-studio-promotion__audio"><SantaStudioAudioExample onActiveExampleNameChange={setPaidExampleName} /></div>
+      <div className="santa-studio-promotion__offer" role="group"
+        aria-labelledby={`${offerTitleId} ${offerAmountId}`} aria-describedby={offerTermsId}>
+        <p id={offerTitleId} className="santa-studio-promotion__offer-title">2 bespoke messages from Santa</p>
+        <p id={offerAmountId} className="santa-studio-promotion__offer-price">£6.50</p>
+        <p id={offerTermsId} className="santa-studio-promotion__offer-terms">One-off payment · Two message creations</p>
+      </div>
         <div className="santa-studio-promotion__actions">
         <StudioPurchaseButton onPaidAccessChange={setPaidAccess} />
-        {!paidAccess && <WorkshopPasswordForm
+        {!paidAccess && <details className="santa-studio-promotion__voucher-entry">
+          <summary>Have a voucher code?</summary>
+          <WorkshopPasswordForm
           variant="promotion"
           onAuthorized={onAuthorized || (() => navigate(STUDIO_PATH))}
-        />}
+        /></details>}
         </div>
       </div>
+      <div className="santa-studio-promotion__examples">
       <div className="santa-studio-promotion__gifts" data-expanded={giftsExpanded}>
         <div className="santa-studio-promotion__gift-controls">
           <button className="santa-studio-promotion__gift-toggle" type="button"
@@ -81,21 +89,13 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
             Free gifts include
             <span className="santa-studio-promotion__gift-arrow" aria-hidden="true">▾</span>
           </button>
-          <p className="santa-studio-promotion__mobile-price">
-            <span className="santa-studio-promotion__mobile-price-amount">£6.50</span>{' '}
-            <span className="santa-studio-promotion__mobile-price-caption">for 2 messages</span>
-          </p>
         </div>
         <div id={giftsId} className="santa-studio-promotion__gift-content">
           <StudioGiftPreview example={example} variant="promotion"
             onPreviewOpen={() => setGiftsExpanded(true)} />
         </div>
       </div>
-      <div className="santa-studio-promotion__offer" role="group"
-        aria-labelledby={`${offerTitleId} ${offerAmountId}`} aria-describedby={offerTermsId}>
-        <p id={offerTitleId} className="santa-studio-promotion__offer-title">2 bespoke messages from Santa</p>
-        <p id={offerAmountId} className="santa-studio-promotion__offer-price">£6.50</p>
-        <p id={offerTermsId} className="santa-studio-promotion__offer-terms">One-off payment · Two message creations</p>
+        <div className="santa-studio-promotion__audio"><SantaStudioAudioExample onActiveExampleNameChange={setPaidExampleName} /></div>
       </div>
     </section>
   );
