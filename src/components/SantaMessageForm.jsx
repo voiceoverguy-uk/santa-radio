@@ -190,6 +190,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         signal: controller.signal,
       });
       const data = await response.json().catch(() => ({}));
+      if(data.code==='NAME_CONTACT_REQUIRED'){revokeAccess();}
       if (!response.ok) throw new Error(data.error || data.message || 'Santa could not save that request. Please try again.');
       if (data.saved !== true || data.name !== requested.name ||
           typeof data.message !== 'string' || !data.message.trim()) {
@@ -455,7 +456,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
              const canRequest = !keepSignupInPlace && !!requested && !nameSearch.loading && !nameSearch.error &&
               !nameSearch.warning && suggestions.length === 0;
             const visibleRequest = canRequest && (nameRequest.key === requested.key ? nameRequest : null);
-            return canRequest ? <div className="name-request">
+            return canRequest ? <div className="name-request"><p>First names or hyphenated first names only—no surnames. Up to 5 new names every 2 hours.</p>
               <button className="name-request-button" type="button"
                 onClick={submitNameRequest}
                  disabled={['pending', 'success'].includes(visibleRequest?.status)}

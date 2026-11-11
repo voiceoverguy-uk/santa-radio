@@ -17,6 +17,7 @@ import webhook from '../server/stripe-webhook.js';
 import { createContendersHandler } from '../server/christmas-contenders.js';
 
 const key = 'test-only-hardening-signing-key-not-a-real-secret';
+process.env.SESSION_SECRET=key;
 const noLimit = async () => {};
 const adult = { FIRSTNAME: 'Test', LASTNAME: 'Fixture', EMAIL: 'adult@example.test' };
 let deliveries = 0;
@@ -71,10 +72,11 @@ test('signup grants require provider success; reject cross-site, invalid fields 
   providerSuccess = true;
   response = await post('/access', adult);
   assert.equal(response.status, 200);
-  const cookie = response.headers.get('set-cookie');
-  assert.match(cookie, /HttpOnly/);
-  assert.match(cookie, /Secure/);
-  assert.match(cookie, /SameSite=Lax/i);
+  const cookie = response.headers.getSetCookie().map(value=>value.split(';')[0]).join('; ');
+  const attributes=response.headers.getSetCookie().join('; ');
+  assert.match(attributes, /HttpOnly/);
+  assert.match(attributes, /Secure/);
+  assert.match(attributes, /SameSite=Lax/i);
   assert.ok(freeSession({ headers: { cookie } }, Date.now(), key));
   assert.doesNotMatch(cookie, /adult|example|Fixture/);
   assert.match(response.headers.get('cache-control'), /private.*no-store/);

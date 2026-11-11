@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import './SantaDashboard.css';
 import SantaRequestLedger from '../components/SantaRequestLedger.jsx';
 export default function SantaDashboard() {
+  const [dismissed,setDismissed]=useState('');
   const [ledger,setLedger]=useState(false);
   const token=useRef(''), request=useRef(0);
   const [input,setInput]=useState(''),[data,setData]=useState(null),[error,setError]=useState(''),[busy,setBusy]=useState(false);
@@ -14,11 +15,11 @@ export default function SantaDashboard() {
       const result=await response.json();if(!response.ok)throw new Error(result.error);if(version===request.current)setData(result);
     }catch(e){if(version===request.current)setError(e.message || 'Unable to load dashboard.');}finally{if(version===request.current)setBusy(false);}
   }
-  async function mark(name) {
+  async function mark(name,action='recorded') {
     setBusy(true);setError('');
     try {
-      const response=await fetch('/api/message-statistics',{method:'PATCH',headers:{'Content-Type':'application/json',Authorization:`Bearer studio-owner.${token.current}`},body:JSON.stringify({action:'recorded',name})});
-      const result=await response.json();if(!response.ok)throw new Error(result.error);await load();
+      const response=await fetch('/api/message-statistics',{method:'PATCH',headers:{'Content-Type':'application/json',Authorization:`Bearer studio-owner.${token.current}`},body:JSON.stringify({action,name})});
+      const result=await response.json();if(!response.ok)throw new Error(result.error);if(action==='dismiss')setDismissed(name);else if(action==='restore')setDismissed('');await load();
     }catch(e){setError(e.message);}finally{setBusy(false);}
   }
   if (ledger && data) return <SantaRequestLedger ownerToken={token.current} email="Studio owner" onSignOut={()=>{setLedger(false);load();}} />;
@@ -34,7 +35,7 @@ export default function SantaDashboard() {
       <section><h2>Daily free-message usage</h2>{table(['UK date','Created','Download clicks'],data.daily.filter(r=>data.since && r.day>=data.since).map(r=>[r.day,r.creations,r.downloads]))}</section>
       <section><h2>Popular recorded names</h2>{table(['First name','Created','Download clicks'],data.names.map(r=>[r.name,r.creations,r.downloads]))}</section>
       <section><h2>Christmas Contenders votes</h2>{table(['Artist','Song','Confirmed votes'],data.votes.map(r=>[r.artist,r.title,r.votes]))}</section>
-      <section><h2>Names awaiting your review</h2><p>Record and add the name to the library first, then mark it recorded. Requests never add audio automatically.</p>{data.requests===null?<p>Name requests could not load. <button onClick={()=>setLedger(true)}>Open the full request ledger</button>.</p>:table(['Name','Requests','Action'],(data.requests||[]).map(r=>[r.name,r.count,<button disabled={busy} onClick={()=>mark(r.name)}>Mark recorded</button>]))}<p><button onClick={()=>setLedger(true)}>Full request ledger and exports</button></p></section>
+      <section><h2>Names awaiting your review</h2>{dismissed&&<p role="status">Dismissed {dismissed}. <button disabled={busy} onClick={()=>mark(dismissed,'restore')}>Undo</button></p>}{data.nameNotifications?.map(row=><p key={row.state}>Name update emails — {row.state}: {row.count}</p>)}<p>Record and add the name to the library first, then mark it recorded. Requests never add audio automatically. Marking recorded queues email updates for linked requesters. Emails are processed within five minutes. Dismiss does not email anyone.</p>{data.requests===null?<p>Name requests could not load. <button onClick={()=>setLedger(true)}>Open the full request ledger</button>.</p>:table(['Name','Requests','Action'],(data.requests||[]).map(r=>[r.name,r.count,<div><button disabled={busy} onClick={()=>mark(r.name)}>Mark recorded</button> <button disabled={busy} onClick={()=>mark(r.name,'dismiss')}>Dismiss</button></div>]))}<p><button onClick={()=>setLedger(true)}>Full request ledger and exports</button></p></section>
     </>}{error&&<p role="alert">{error}</p>}
   </main>;
 }

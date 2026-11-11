@@ -1,3 +1,4 @@
+import { sealContact } from './name-request-contact.js';
 import pg from 'pg';
 let pool, prepared;
 export function databasePool() {
@@ -12,7 +13,7 @@ export async function prepareNameRequests() {
   ).catch(error => { prepared = undefined; throw error; });
   await prepared;
 }
-export async function saveNameRequest({ name, key, submissionKey, sourceRecording }, visitorKey, bucketKey, now = new Date()) {
+export async function saveNameRequest({ name, key, submissionKey, sourceRecording, contact }, visitorKey, bucketKey, now = new Date()) {
   await prepareNameRequests();
   const client = await databasePool().connect();
   try {
@@ -21,23 +22,37 @@ export async function saveNameRequest({ name, key, submissionKey, sourceRecordin
     await client.query('DELETE FROM santa_name_request_limits WHERE expires_at <= $1', [now]);
     // A stable submission token also covers a first response lost before the
     // browser receives its visitor cookie. Both aliases must be new to count.
-    const aliases = [...new Set([visitorKey, submissionKey].filter(Boolean))].sort();
+    const aliases = [...new Set([visitorKey, submissionKey, contact ? `account:${contact.identity}` : null].filter(Boolean))].sort();
     const submissionRequestKey = sourceRecording ? `${key}:recording:${sourceRecording.id}` : key;
     const submitted = await client.query(`INSERT INTO santa_name_request_submissions(visitor_key,request_key,expires_at)
       SELECT alias,$2,$3 FROM unnest($1::text[]) AS alias ORDER BY alias
       ON CONFLICT DO NOTHING RETURNING visitor_key`,
     [aliases, submissionRequestKey, new Date(now.getTime() + 7 * 86400000)]);
+    const subscribe = async () => {
+      if (!contact) return;
+      await client.query(`INSERT INTO santa_name_request_notifications(request_key,recipient_key,contact,source)
+        SELECT request_key,$2,$3,$4 FROM santa_name_requests WHERE request_key=$1 AND recorded_at IS NULL AND dismissed_at IS NULL
+        ON CONFLICT(request_key,recipient_key) DO NOTHING`,
+        [key,contact.identity,sealContact({email:contact.email}),contact.source]);
+    };
     if (submitted.rowCount !== aliases.length) {
+      await subscribe();
       await client.query('COMMIT');
       return { duplicate: true };
     }
-    const expires = new Date((Math.floor(now.getTime() / 3600000) + 1) * 3600000);
-    const limit = await client.query(`INSERT INTO santa_name_request_limits(bucket_key, expires_at)
-      VALUES($1,$2) ON CONFLICT(bucket_key) DO UPDATE SET attempts=santa_name_request_limits.attempts+1
-      WHERE santa_name_request_limits.attempts < 20 RETURNING attempts`, [bucketKey, expires]);
-    if (!limit.rowCount) {
-      const error = new Error('Please wait before requesting more names.');
-      error.status = 429; error.retryAfter = Math.max(1, Math.ceil((expires - now) / 1000)); throw error;
+    const quotaKey=`name-request-quota:${contact?.identity || visitorKey}`;
+    const limit=await client.query(`INSERT INTO santa_name_request_limits(bucket_key,attempts,expires_at)
+      VALUES($1,1,$2) ON CONFLICT(bucket_key) DO UPDATE SET
+      attempts=CASE WHEN santa_name_request_limits.expires_at<=$3 THEN 1 ELSE santa_name_request_limits.attempts+1 END,
+      expires_at=CASE WHEN santa_name_request_limits.expires_at<=$3 THEN $2 ELSE santa_name_request_limits.expires_at END
+      WHERE santa_name_request_limits.expires_at<=$3 OR santa_name_request_limits.attempts<5
+      RETURNING expires_at`,[quotaKey,new Date(now.getTime()+2*3600000),now]);
+    if(!limit.rowCount) {
+      const result=await client.query('SELECT expires_at FROM santa_name_request_limits WHERE bucket_key=$1',[quotaKey]);
+      const retryAt=new Date(result.rows[0].expires_at).getTime();
+      const time=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',hour:'2-digit',minute:'2-digit'}).format(retryAt);
+      throw Object.assign(new Error(`Your request limit has been exceeded. Check back at ${time} (UK time). You can request up to 5 new names every 2 hours.`),
+        {status:429,retryAt,retryAfter:Math.max(1,Math.ceil((retryAt-now.getTime())/1000))});
     }
     await client.query(`INSERT INTO santa_name_requests(request_key,name,first_requested_at,last_requested_at)
       VALUES($1,$2,$3,$3) ON CONFLICT(request_key) DO UPDATE SET
@@ -51,6 +66,7 @@ export async function saveNameRequest({ name, key, submissionKey, sourceRecordin
         recorded_name=EXCLUDED.recorded_name,recording_file=EXCLUDED.recording_file`,
       [key, sourceRecording.id, sourceRecording.name, sourceRecording.file]);
     }
+    await subscribe();
     await client.query('COMMIT');
     return { duplicate: false };
   } catch (error) { await client.query('ROLLBACK').catch(() => {}); throw error; }
@@ -60,7 +76,7 @@ export async function listNameRequests(page, q, status = 'outstanding', all = fa
   await prepareNameRequests();
   const completed = status === 'completed';
   const table = completed ? 'santa_name_request_history' : 'santa_name_requests';
-  const where = `strpos(request_key,$1)>0${completed ? '' : ' AND recorded_at IS NULL'}`;
+  const where = `strpos(request_key,$1)>0${completed ? '' : ' AND recorded_at IS NULL AND dismissed_at IS NULL'}`;
   const params = [q];
   const totalResult = await databasePool().query(`SELECT count(*) FROM ${table} WHERE ${where}`, params);
   const total = Number(totalResult.rows[0].count);
@@ -86,6 +102,7 @@ export async function recordNameRequest(key, now = new Date()) {
     const found = await client.query('SELECT * FROM santa_name_requests WHERE request_key=$1 FOR UPDATE', [key]);
     const row = found.rows[0];
     if (!row) throw Object.assign(new Error('This requested name was not found.'), { status: 404 });
+    if (row.dismissed_at) throw Object.assign(new Error('Restore this request before marking it recorded.'), {status:400});
     if (!row.recorded_at) {
       await client.query(`INSERT INTO santa_name_request_history
         (request_key,name,request_count,first_requested_at,last_requested_at,recorded_at,recording_suggestions)
@@ -96,8 +113,15 @@ export async function recordNameRequest(key, now = new Date()) {
       [key, row.name, row.request_count, row.first_requested_at, row.last_requested_at, now]);
       await client.query('UPDATE santa_name_requests SET recorded_at=$2 WHERE request_key=$1', [key, now]);
     }
+    await client.query("UPDATE santa_name_request_notifications SET state='pending',next_attempt_at=now() WHERE request_key=$1 AND state='waiting'",[key]);
     await client.query('COMMIT');
     return { recorded: true, duplicate: !!row.recorded_at };
   } catch (error) { await client.query('ROLLBACK').catch(() => {}); throw error; }
   finally { client.release(); }
+}
+
+export async function dismissNameRequest(key, restore=false) {
+  const result=await databasePool().query(`UPDATE santa_name_requests SET dismissed_at=$2 WHERE request_key=$1 AND recorded_at IS NULL RETURNING request_key`,[key,restore?null:new Date()]);
+  if(!result.rowCount)throw Object.assign(new Error('This pending request was not found.'),{status:404});
+  return {dismissed:!restore,restored:restore};
 }

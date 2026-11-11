@@ -1,3 +1,5 @@
+import { requestContact } from './name-request-contact.js';
+import { dismissNameRequest } from './name-request-store.js';
 import express from 'express';
 import { validOwnerToken } from './studio-owner-handler.js';
 import { randomUUID, createHmac, timingSafeEqual } from 'node:crypto';
@@ -38,7 +40,7 @@ function visitor(req, res) {
   return { visitorKey: digest(`visitor:${id}`), bucketKey: digest(`limit:${id}:${Math.floor(Date.now() / 3600000)}`) };
 }
 export function createNameRequestHandler({ checkAdmin = authorize, save = saveNameRequest, list = listNameRequests,
-  record = recordNameRequest, identify = visitor, library = santaNameLibrary, limit = consumeNameAccess } = {}) {
+  record = recordNameRequest, identify = visitor, library = santaNameLibrary, limit = consumeNameAccess, contactFor = requestContact, dismiss = dismissNameRequest } = {}) {
   return async (req, res) => {
     let stage = 'validation';
     res.set('Cache-Control', 'private, no-store');
@@ -79,12 +81,14 @@ export function createNameRequestHandler({ checkAdmin = authorize, save = saveNa
         stage = 'visitor-signing';
         const { visitorKey, bucketKey } = identify(req, res);
         if (req.body?.requestId) name.submissionKey = digest(`submission:${req.body.requestId.toLowerCase()}`);
+        const contact = await contactFor(req);
+        if(contact)name.contact=contact;
         stage = 'save';
         const result = await save(name, visitorKey, bucketKey);
         return res.json({ ...result, saved: true, name: name.name,
           message: name.sourceRecording
             ? 'Your spelling and chosen recording have been sent to Santa’s private list for review. This does not promise a new recording.'
-            : nameRequestConfirmation() });
+            : name.contact ? 'Your request has been saved. We’ll email you when it’s available. Requests are reviewed manually; a recording is not guaranteed.' : nameRequestConfirmation() });
       }
       if (req.method === 'GET' || req.method === 'PATCH') {
         stage = 'authorization';
@@ -92,9 +96,9 @@ export function createNameRequestHandler({ checkAdmin = authorize, save = saveNa
         if (allowed !== 200) return res.status(allowed).json({ error: allowed === 401 ? 'Sign in to view name requests.' : 'This account is not approved to view name requests.' });
         if (req.method === 'PATCH') {
           const name = normaliseRequestedName(req.body?.name);
-          if (!name || req.body?.action !== 'recorded') return res.status(400).json({ error: 'Choose a requested name to mark as recorded.' });
+          if (!name || !['recorded','dismiss','restore'].includes(req.body?.action)) return res.status(400).json({ error: 'Choose a requested name to mark as recorded.' });
           stage = 'record';
-          return res.json(await record(name.key));
+          return res.json(req.body.action==='recorded' ? await record(name.key) : await dismiss(name.key,req.body.action==='restore'));
         }
         const url = new URL(req.originalUrl || req.url, 'http://server');
         const page = Math.max(1, Math.min(1000000, parseInt(url.searchParams.get('page'), 10) || 1));
@@ -116,8 +120,9 @@ export function createNameRequestHandler({ checkAdmin = authorize, save = saveNa
       }
       return res.set('Allow', 'GET, POST, PATCH').status(405).json({ error: 'Method not allowed.' });
     } catch (error) {
-      if (error.status === 429) return res.set('Retry-After', String(error.retryAfter)).status(429).json({ error: error.message });
-      if (error.status === 404) return res.status(404).json({ error: error.message });
+      if(error.code==='NAME_CONTACT_REQUIRED')return res.status(401).json({error:error.message,code:error.code});
+      if (error.status === 429) return res.set('Retry-After', String(error.retryAfter)).status(429).json({ error: error.message, retryAt:error.retryAt });
+      if (error.status === 400 || error.status === 404) return res.status(error.status).json({ error: error.message });
       // Never log names, bodies, cookies, connection strings or raw error messages.
       console.error('Name request service unavailable', { stage,
         code: /^[A-Z0-9_]{1,40}$/.test(error.code || '') ? error.code : 'UNEXPECTED' });

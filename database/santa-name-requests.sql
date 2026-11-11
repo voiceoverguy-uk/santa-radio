@@ -1,4 +1,4 @@
--- Development schema only. Replit Publish applies the reviewed schema diff to production.
+-- Additive schema applied by scripts/migrate-name-requests.mjs during production builds.
 CREATE TABLE IF NOT EXISTS santa_name_requests (
   request_key text PRIMARY KEY, name text NOT NULL,
   request_count integer NOT NULL DEFAULT 1,
@@ -27,3 +27,13 @@ CREATE TABLE IF NOT EXISTS santa_name_recording_suggestions (
 );
 ALTER TABLE santa_name_request_history
   ADD COLUMN IF NOT EXISTS recording_suggestions jsonb NOT NULL DEFAULT '[]'::jsonb;
+
+ALTER TABLE santa_name_requests ADD COLUMN IF NOT EXISTS dismissed_at timestamptz;
+CREATE TABLE IF NOT EXISTS santa_name_request_notifications (
+  request_key text NOT NULL REFERENCES santa_name_requests(request_key),
+  recipient_key text NOT NULL, contact text, source text NOT NULL,
+  state text NOT NULL DEFAULT 'waiting', attempts integer NOT NULL DEFAULT 0,
+  next_attempt_at timestamptz NOT NULL DEFAULT now(), sent_at timestamptz,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY(request_key,recipient_key)
+);

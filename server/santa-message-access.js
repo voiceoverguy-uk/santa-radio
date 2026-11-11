@@ -1,3 +1,4 @@
+import { CONTACT_COOKIE, sealContact } from './name-request-contact.js';
 import express from 'express';
 import { createHmac, timingSafeEqual, randomBytes } from 'node:crypto';
 import { databasePool } from './name-request-store.js';
@@ -144,7 +145,10 @@ export function createMessageAccessHandler({ fetcher = fetch, limit = consumeNam
         return res.status(422).json({ success: false, errors,
           message: 'Your details could not be accepted. Please check them and try again.' });
       }
-      res.cookie(FREE_ACCESS_COOKIE, issue(fields.EMAIL), { httpOnly: true, secure: true, sameSite: 'lax', path: '/' });
+      const grant=issue(fields.EMAIL);
+      const contactSession=JSON.parse(Buffer.from(grant.split('.')[0],'base64url').toString('utf8'));
+      res.cookie(CONTACT_COOKIE, sealContact({email:fields.EMAIL.trim(),subject:contactSession.subject,exp:contactSession.exp}), {httpOnly:true,secure:true,sameSite:'lax',path:'/',maxAge:24*3600000});
+      res.cookie(FREE_ACCESS_COOKIE, grant, { httpOnly: true, secure: true, sameSite: 'lax', path: '/' });
       return res.json({ success: true });
     } catch (error) {
       if (error.status === 429) return res.set('Retry-After', String(error.retryAfter)).status(429).json({ success: false, message: error.message });

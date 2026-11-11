@@ -1,3 +1,4 @@
+import { sendNameNotifications } from './name-request-email.js';
 import { randomBytes, timingSafeEqual } from 'node:crypto';
 import express from 'express';
 import { STUDIO_PATH } from '../src/lib/studioRoute.js';
@@ -179,6 +180,7 @@ export function createStudioEmailRetryHandler({
       });
       if (!result.retry) await pool.query(`INSERT INTO public.santa_studio_live_worker_health(worker) VALUES('email-retry')
         ON CONFLICT(worker) DO UPDATE SET verified_at=clock_timestamp()`);
+      await sendNameNotifications().catch(()=>console.error('Name notification worker needs attention'));
       return res.status(result.retry ? 503 : 200).json({ processed: true, retry: !!result.retry });
     } catch { return res.status(503).json({ error: 'Email delivery needs attention. Queued messages remain retryable.' }); }
   });
