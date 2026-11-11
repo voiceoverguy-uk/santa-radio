@@ -48,7 +48,7 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
         <div className="santa-studio-promotion__intro">
           <h3 id="santa-studio-title" tabIndex={-1}>Santa’s <span className="santa-studio-promotion__title-line">Message Maker Studio</span></h3>
           <p className="santa-studio-promotion__subheading">
-            More Christmas magic for {example.name}
+            Let Santa mention your little one’s name and achievements
           </p>
           <p className="santa-studio-promotion__copy">
             Tell Santa about {example.name}’s age, achievements and what makes them special. Let him know which country, region or state he’s visiting, and remind him what they leave out for him.
@@ -72,6 +72,10 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
       </div>
         <div className="santa-studio-promotion__actions">
         <StudioPurchaseButton onPaidAccessChange={setPaidAccess} />
+        <p className="santa-studio-promotion__checkout-note">
+          <a href="/my-santa-messages">My Santa Messages — sign in or create an account</a>
+          <br />Use your purchase email to save and download your creations.
+        </p>
         {!paidAccess && <div className="santa-studio-promotion__voucher-entry">
           <WorkshopPasswordForm
           variant="promotion"
