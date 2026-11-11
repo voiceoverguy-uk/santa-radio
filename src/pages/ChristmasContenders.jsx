@@ -479,7 +479,7 @@ export default function ChristmasContenders() {
             <legend className="sr-only">Choose one song for your vote</legend>
             {entries.map(entry => {
               const demo = entry.mode === 'demo';
-              const selectable = !alreadyUsed && !pending && !unresolved;
+              const selectable = !alreadyUsed && !pending && !unresolved && !(demo && data?.realVotingEnabled);
               return <article className={`contender-card${demo ? '' : ' contender-card--live'}`} id={entry.anchor || entry.id} key={entry.id}>
                 <div className="contender-card__art-wrap">
                   {entry.artwork ? <img className="contender-card__art" src={entry.artwork} alt={`${entry.artist} artwork`} /> : <div className="contender-card__art contender-card__art--missing" aria-label="Artwork unavailable" />}
@@ -518,7 +518,7 @@ export default function ChristmasContenders() {
                       onChange={() => chooseEntry(entry.id)}
                     />
                     <span className="contender-select__tick" aria-hidden="true" />
-                    <span>Select song</span>
+                    <span>{demo && data?.realVotingEnabled ? 'Demo — listen only' : 'Select song'}</span>
                   </label>
                 </div>
               </article>;

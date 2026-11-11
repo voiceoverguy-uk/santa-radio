@@ -102,7 +102,7 @@ export default function StudioCheckout() {
           <h1 id="checkout-title">A little Christmas magic.<br />Just for them.</h1>
           <p className="studio-checkout__lead">Two bespoke messages, in Santa’s own voice.</p>
           <p className="studio-checkout__price">£6.50 <span>one-off payment</span></p>
-          <ul><li>2 personalised MP3 messages</li><li>A Nice List certificate, letter and Santa picture with each creation</li><li>Create now, or return later with your private access link</li></ul>
+          <ul><li>2 personalised MP3 messages</li><li>3 personalised gifts with each message: a Santa picture, letter and Nice List certificate</li><li>Create now, or return later with your private access link</li></ul>
           <p className="studio-checkout__small">Download your messages and gifts before leaving Studio. Your unused allowance is kept; recordings aren’t stored.</p>
         </div>
         <Link className="studio-checkout__back" to="/">← Back to Santa Radio</Link>

@@ -14,7 +14,7 @@ export async function competitionState(client = databasePool(), staff = false) {
     (SELECT count(*)::integer FROM christmas_contenders_ballots b WHERE b.competition=e.competition
       AND b.mode=e.mode AND b.entry_id=e.id AND b.state='confirmed') AS total
     FROM christmas_contenders_entries e WHERE e.competition=$1 ${staff ? '' : 'AND e.approved=true'} ORDER BY e.id,e.mode`, [COMPETITION])).rows;
-  return { settings, entries: entries.filter(entry => staff || !liveVotingConfigured() || entry.mode === 'live').map(entry => ({...entry, waveform: waveformCatalogue[entry.audio] || null})),
+  return { settings, entries: entries.map(entry => ({...entry, waveform: waveformCatalogue[entry.audio] || null})),
     status: votingStatus(settings), demoStatus: settings.demoAvailability,
     ready: true, serverNow: new Date().toISOString(), realVotingEnabled: liveVotingConfigured(),
     emailPolicy: 'verified-email',
