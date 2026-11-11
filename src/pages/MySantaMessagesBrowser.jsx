@@ -1,7 +1,7 @@
 import {useEffect,useState} from 'react';
 import {ClerkProvider,SignIn,SignUp,useAuth,useUser,UserButton} from '@clerk/react';
 import {clerkPublishableKey} from '../lib/clerkPublishableKey.js';
-import {Link,useLocation,useNavigate} from 'react-router-dom';
+import {Link,useLocation} from 'react-router-dom';
 function Collection(){
  const {isLoaded,isSignedIn,getToken}=useAuth(),{user}=useUser(),location=useLocation();
  const [data,setData]=useState(null),[error,setError]=useState(''),[busy,setBusy]=useState(false);
@@ -22,4 +22,4 @@ function Collection(){
  {!data.messages.length&&<p>Your saved recordings will appear here after you create them in Studio.</p>}</>}
  </>}{error&&<p role="alert">{error}</p>}<p><Link to="/">Back to Santa Radio</Link></p></div></main>;
 }
-export default function Browser(){const navigate=useNavigate();return <ClerkProvider signInUrl="/my-santa-messages" signUpUrl="/my-santa-messages/sign-up" afterSignOutUrl="/my-santa-messages" publishableKey={clerkPublishableKey(window.location.hostname,import.meta.env.VITE_CLERK_PUBLISHABLE_KEY)} proxyUrl={import.meta.env.VITE_CLERK_PROXY_URL} routerPush={to=>navigate(to)} routerReplace={to=>navigate(to,{replace:true})} appearance={{variables:{colorPrimary:'#9b111e',colorBackground:'#f5efdf',colorForeground:'#173629',borderRadius:'12px'}}}><Collection/></ClerkProvider>}
+export default function Browser(){return <ClerkProvider signInUrl="/my-santa-messages" signUpUrl="/my-santa-messages/sign-up" afterSignOutUrl="/my-santa-messages" publishableKey={clerkPublishableKey(window.location.hostname,import.meta.env.VITE_CLERK_PUBLISHABLE_KEY)} proxyUrl={import.meta.env.VITE_CLERK_PROXY_URL} routerPush={to=>window.location.assign(to)} routerReplace={to=>window.location.replace(to)} appearance={{variables:{colorPrimary:'#9b111e',colorBackground:'#f5efdf',colorForeground:'#173629',borderRadius:'12px'}}}><Collection/></ClerkProvider>}
