@@ -4,10 +4,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import HomepageSectionHeading from "../../components/HomepageSectionHeading.jsx";
 import trackerLogo from "../../assets/home/santa-tracker-logo.webp";
-import { getInterpolatedMapPosition, getJourneySleighDirection, getDashboardData, isHolidaySeason, isRouteResearchSeason, isDecemberVisitSeason, getRandomDecemberTrackerVisit, getRouteResearchCopy, isChristmasInJuly, getRandomHoliday, type DecemberTrackerVisit, type HolidayDestination } from "@/lib/santaRoute";
+import { getCurrentStopId, getInterpolatedMapPosition, getJourneySleighDirection, getDashboardData, isHolidaySeason, isRouteResearchSeason, isDecemberVisitSeason, getRandomDecemberTrackerVisit, getRouteResearchCopy, isChristmasInJuly, getRandomHoliday, type DecemberTrackerVisit, type HolidayDestination } from "@/lib/santaRoute";
 import { getJumpTime } from "../lib/santaPreview";
 import { worldMapPaths } from "@/data/worldMapPaths";
-import { santaStops } from "@/data/santaRouteStops";
+import itinerary from "../data/santaItinerary.json";
+import { santaStops, getStopArrivalDate } from "@/data/santaRouteStops";
 import { MAP_PALETTE, mapLandColor } from "./mapPalette";
 import { getSantaMarkerArtwork } from "../lib/santaMarker";
 import SantaMarker from "./SantaMarker";
@@ -234,6 +235,7 @@ function LiveStats({ data }: { data: ReturnType<typeof getDashboardData> }) {
 
 function MiniMap({ time, holiday, researching = false, northPoleVisitMessage }: { time: Date; holiday: HolidayDestination | null; researching?: boolean; northPoleVisitMessage?: string }) {
   const mapRef = useRef<HTMLAnchorElement>(null);
+  const lastPreviewCity = useRef<string | null>(null);
   const [previewTime, setPreviewTime] = useState<Date | null>(null);
   useEffect(() => {
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -249,12 +251,22 @@ function MiniMap({ time, holiday, researching = false, northPoleVisitMessage }: 
       if (!visible || document.hidden || motion.matches) return;
       const began = performance.now();
       // Local display clock only: never activate or save the private preview.
-      const routeStart = getJumpTime('city:berlin').getTime() - 60_000;
+      const cities = ['berlin', 'tokyo', 'sydney', 'dubai', 'riodejaneiro', 'newyork'];
+      let cycle = -1;
+      let routeStart = 0;
       timer = setInterval(() => {
         const elapsed = performance.now() - began;
-        // First glimpse after 8 seconds; thereafter 10 seconds in every 45.
-        const phase = (elapsed - 8000) % 45000;
-        setPreviewTime(elapsed >= 8000 && phase < 10000
+        // Fifteen-second glimpses, separated by 35 seconds of current status.
+        const phase = (elapsed - 8000) % 50000;
+        const nextCycle = Math.floor((elapsed - 8000) / 50000);
+        if (elapsed >= 8000 && nextCycle !== cycle) {
+          cycle = nextCycle;
+          const choices = cities.filter(city => city !== lastPreviewCity.current);
+          const city = choices[Math.floor(Math.random() * choices.length)];
+          lastPreviewCity.current = city;
+          routeStart = getJumpTime(`city:${city}`).getTime() - 60_000;
+        }
+        setPreviewTime(elapsed >= 8000 && phase < 15000
           ? new Date(routeStart + phase * 60) : null);
       }, 50);
     };
@@ -288,7 +300,20 @@ function MiniMap({ time, holiday, researching = false, northPoleVisitMessage }: 
     ? ((90 - holiday.lat) / 180) * 500
     : ((90 - 90) / 180) * 500;
 
-  const caption = previewTime ? "Christmas Eve sneak peek · Europe · ×60 simulation" : researching && holiday
+  const previewSecond = previewTime ? Math.floor(previewTime.getTime() / 1000) : null;
+  const previewLabel = useMemo(() => {
+    if (previewSecond === null) return '';
+    const date = new Date(previewSecond * 1000);
+    const dashboard = getDashboardData(date);
+    const schedule = [...santaStops].sort((a, b) => getStopArrivalDate(a, date.getUTCFullYear()).getTime() - getStopArrivalDate(b, date.getUTCFullYear()).getTime());
+    const currentId = getCurrentStopId(date);
+    const index = schedule.findIndex(stop => stop.id === currentId);
+    const from = itinerary.find(stop => stop.id === schedule[index]?.id)?.country;
+    const to = itinerary.find(stop => stop.id === schedule[index + 1]?.id)?.country;
+    const countries = from === to ? from : [from, to].filter(Boolean).join(' → ');
+    return `${countries ?? dashboard.currentStopRegion} · ${dashboard.currentStopName}`;
+  }, [previewSecond]);
+  const caption = previewTime ? `Christmas Eve sneak peek · ×60 simulation · ${previewLabel}` : researching && holiday
     ? `Santa's route research location: ${holiday.name}`
     : holiday
     ? `Santa's holiday location`
@@ -319,7 +344,7 @@ function MiniMap({ time, holiday, researching = false, northPoleVisitMessage }: 
         </g>
         <path
           data-night-overlay=""
-          data-solar-time={time.toISOString()}
+          data-solar-time={mapTime.toISOString()}
           data-declination={solarPosition.declinationDeg.toFixed(3)}
           data-subsolar-longitude={solarPosition.subsolarLongitudeDeg.toFixed(3)}
           d={nightPath}

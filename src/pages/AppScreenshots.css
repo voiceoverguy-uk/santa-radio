@@ -612,3 +612,21 @@
 @media (prefers-reduced-motion: reduce) {
   .apps-page .app-voicemail-controls .app-voicemail-autoplay { transition: none; }
 }
+
+.apps-page .app-screenshots-stack { container-type: inline-size; }
+.apps-page .app-preview-clock {
+  position: absolute;
+  z-index: 3;
+  top: 2%;
+  left: 9%;
+  width: 22%;
+  height: 3.6%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  color: #fff;
+  font: 600 4.8cqw/1 Arial, sans-serif;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}

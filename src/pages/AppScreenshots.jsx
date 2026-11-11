@@ -15,6 +15,7 @@ export default function AppScreenshots({
   maxWidth = 285,
   interactiveMode,
   randomOrder = false,
+  liveClock,
 }) {
   const [active, setActive] = useState(0);
   const [ready, setReady] = useState({});
@@ -179,6 +180,7 @@ export default function AppScreenshots({
               onFailure={markFailed}
             />
           ))}
+          {liveClock && <AppPreviewClock background={liveClock} />}
           {santaRadioPreview && active < santaRadioTabs.length && (
             <nav className="santa-radio-screen-hotspots" aria-label="Preview app tab screens">
               {santaRadioTabs.map((label, index) => (
@@ -251,4 +253,19 @@ export default function AppScreenshots({
       {Object.keys(videoFailed).length > 0 && <p role="status" className="app-screenshots-note">Gameplay could not play. Still previews remain available.</p>}
     </figure>
   );
+}
+
+// Decorative screenshot clock: local to the visitor, never announced repeatedly.
+function AppPreviewClock({ background }) {
+  const [time, setTime] = useState('');
+  useEffect(() => {
+    let timer;
+    const update = () => {
+      setTime(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }));
+      timer = window.setTimeout(update, 60000 - Date.now() % 60000);
+    };
+    update();
+    return () => window.clearTimeout(timer);
+  }, []);
+  return <span className="app-preview-clock" style={{ background }} aria-hidden="true">{time}</span>;
 }

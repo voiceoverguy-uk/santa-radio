@@ -168,6 +168,7 @@ export const christmasApps = [
       { label: 'Estimated journey', image: trackerJourney, width: 603, height: 1311, alt: 'Searchable Christmas Eve itinerary with 290 estimated stops and region filters.' },
     ],
     slideshow: {
+      liveClock: '#081e17',
       heading: 'Santa Tracker app screenshots',
       regionLabel: 'Santa Tracker app previews',
     },
@@ -194,6 +195,7 @@ export const christmasApps = [
       { label: 'Welcome', image: naughtyNiceWelcome, width: 603, height: 1311, alt: 'Naughty or Nice List Checker welcome screen: Which list are you on? Powered by Santa Radio.' },
     ],
     slideshow: {
+      liveClock: '#102e22',
       heading: 'Naughty or Nice List Checker app screenshots',
       regionLabel: 'Naughty or Nice List Checker app previews',
     },
@@ -223,6 +225,7 @@ export const christmasApps = [
       { label: 'Make it feel like Christmas', image: christmasRadioPromo4, fallback: christmasRadioFallback4, width: 520, height: 1130, alt: 'Christmas Radio app settings screen with AirPlay, Snowfall, Blizzard and Festive lights options.' },
     ],
     slideshow: {
+      liveClock: '#101b25',
       heading: 'Christmas Radio promotional images',
       regionLabel: 'Christmas Radio promotional images',
       imageType: 'screenshot',
