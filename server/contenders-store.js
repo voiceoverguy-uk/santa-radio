@@ -1,5 +1,6 @@
+import { liveVotingConfigured } from './contenders-live.js';
 import { randomUUID } from 'node:crypto';
-import { databasePool } from './name-request-store.js';
+import { databasePool } from './contenders-database.js';
 import { COMPETITION, votingStatus } from '../src/lib/contenders.js';
 import waveformCatalogue from '../src/lib/contender-waveforms.json' with { type: 'json' };
 import { MARKETING_CONSENT_TEXT, MARKETING_CONSENT_SOURCE } from './contender-consent.js';
@@ -13,11 +14,11 @@ export async function competitionState(client = databasePool(), staff = false) {
     (SELECT count(*)::integer FROM christmas_contenders_ballots b WHERE b.competition=e.competition
       AND b.mode=e.mode AND b.entry_id=e.id AND b.state='confirmed') AS total
     FROM christmas_contenders_entries e WHERE e.competition=$1 ${staff ? '' : 'AND e.approved=true'} ORDER BY e.id,e.mode`, [COMPETITION])).rows;
-  return { settings, entries: entries.map(entry => ({...entry, waveform: waveformCatalogue[entry.audio] || null})),
+  return { settings, entries: entries.filter(entry => staff || !liveVotingConfigured() || entry.mode === 'live').map(entry => ({...entry, waveform: waveformCatalogue[entry.audio] || null})),
     status: votingStatus(settings), demoStatus: settings.demoAvailability,
-    ready: true, serverNow: new Date().toISOString(), realVotingEnabled: false,
-    emailPolicy: 'syntax-only',
-    launchDependency: 'Real voting is not enabled in this preview. Launch requires an explicit owner-approved release, not email verification.' };
+    ready: true, serverNow: new Date().toISOString(), realVotingEnabled: liveVotingConfigured(),
+    emailPolicy: 'verified-email',
+    launchDependency: liveVotingConfigured() ? null : 'Voting is awaiting activation.' };
 }
 export async function requestLimit(bucket, maximum, now = Date.now()) {
   const expires = new Date((Math.floor(now / 3600000) + 1) * 3600000);

@@ -89,6 +89,8 @@ export default function ChristmasContenders() {
   const [serverOffset, setServerOffset] = useState(0);
   const [now, setNow] = useState(Date.now());
   const [email, setEmail] = useState('');
+  const [verification, setVerification] = useState(null);
+  const [code, setCode] = useState('');
   const [marketingOptIn, setMarketingOptIn] = useState(false);
   const [selectedEntryId, setSelectedEntryId] = useState('');
   const [pending, setPending] = useState(false);
@@ -149,12 +151,12 @@ export default function ChristmasContenders() {
           ballotStatusRef.current = viewerBallot;
           setBallotStatus(viewerBallot);
           if (viewerBallot.state === 'confirmed' || viewerBallot.state === 'invalidated') {
-            setBallotUsed(viewerBallot.state === 'invalidated' || next.settings?.repeatDemo !== true);
+            setBallotUsed(next.realVotingEnabled || viewerBallot.state === 'invalidated' || next.settings?.repeatDemo !== true);
             if (viewerBallot.state === 'confirmed' && viewerBallot.reference === previous?.reference) repeatTestStartedRef.current = false;
             setMessage(current => current?.type === 'success' ? current : {
               type: viewerBallot.state === 'confirmed' ? 'success' : 'duplicate',
               text: viewerBallot.state === 'confirmed'
-                ? 'Test vote recorded.'
+                ? (next.realVotingEnabled ? 'Thanks — your vote is in!' : 'Test vote recorded.')
                 : 'This vote can’t be used again.',
             });
           } else if (viewerBallot.state === 'pending' && ['sending', 'unknown'].includes(viewerBallot.delivery)) {
@@ -283,12 +285,19 @@ export default function ChristmasContenders() {
 
   const chooseEntry = entryId => {
     if (pending || alreadyUsed || unresolved) return;
-    setSelectedEntryId(current => current === entryId ? '' : entryId);
+    setSelectedEntryId(entryId);
+    setVerification(null); setCode('');
+    requestAnimationFrame(() => {
+      const ballot = document.getElementById('shared-ballot');
+      ballot?.scrollIntoView({behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block:'center'});
+      ballot?.focus({preventScroll:true});
+    });
     setMessage(current => current?.type === 'error' ? null : current);
   };
 
   const startBallot = async event => {
     event.preventDefault();
+    if (data?.realVotingEnabled) return submitLiveVote(event);
     if (pending || alreadyUsed || unresolved || !demoAvailable || !email.trim() || selectedEntry?.mode !== 'demo') return;
     const form = event.currentTarget;
     const website = form.elements.namedItem('website')?.value || '';
@@ -369,8 +378,30 @@ export default function ChristmasContenders() {
     }
   };
 
+  const submitLiveVote = async event => {
+    if (pending || alreadyUsed || votingState !== 'open' || selectedEntry?.mode !== 'live') return;
+    setPending(true); setMessage(null);
+    const controller = new AbortController(); requestRef.current = controller;
+    try {
+      const result = await fetchJson(API, {method:'POST', signal:controller.signal, body:JSON.stringify(verification
+        ? {mode:'live',action:'confirm-code',verificationId:verification.id,code}
+        : {mode:'live',action:'request-code',entryId:selectedEntryId,email,website:event.currentTarget.elements.namedItem('website')?.value || ''})});
+      if (!alive.current) return;
+      if (result.state === 'verification') {
+        setVerification({id:result.verificationId}); setCode('');
+        setMessage({type:'pending',text:'Check your inbox for a six-digit code. It expires in 15 minutes. Check spam too.'});
+      } else if (['success','already-voted'].includes(result.state)) {
+        setBallotUsed(true); setVerification(null);
+        setMessage({type:'success',text:result.state === 'success' ? 'Thanks — your vote is in!' : 'You’ve already voted. Your original choice is saved.'});
+        await load(false);
+      }
+    } catch (error) {
+      if (alive.current && error.name !== 'AbortError') setMessage({type:'error',text:error.message});
+    } finally { requestRef.current = null; if (alive.current) setPending(false); }
+  };
+
   const settings = data?.settings || {};
-  const repeatDemo = settings.repeatDemo === true;
+  const repeatDemo = !data?.realVotingEnabled && settings.repeatDemo === true;
   const currentServerTime = now + serverOffset;
   const opens = settings.opensAt ? new Date(settings.opensAt).getTime() : NaN;
   const closes = settings.closesAt ? new Date(settings.closesAt).getTime() : NaN;
@@ -393,9 +424,10 @@ export default function ChristmasContenders() {
   const alreadyUsed = ballotUsed || (!repeatDemo && ['confirmed', 'invalidated'].includes(data?.viewerBallot?.state));
   const unresolved = ballotStatus?.state === 'pending' && ['sending', 'unknown'].includes(ballotStatus?.delivery);
   const storageUnavailable = data?.status === 'unavailable' || data?.ready === false
-    || data?.demoStatus === 'unavailable';
+    || (!data?.realVotingEnabled && data?.demoStatus === 'unavailable');
   const demoAvailable = data?.demoStatus === 'open' && data?.ready
     && !storageUnavailable && !alreadyUsed;
+  const ballotAvailable = data?.realVotingEnabled ? votingState === 'open' && !alreadyUsed && !storageUnavailable : demoAvailable;
   const selectedEntry = entries.find(entry => entry.id === selectedEntryId) || null;
   const keepFocusClear = event => {
     const control = event.target;
@@ -418,7 +450,7 @@ export default function ChristmasContenders() {
           <p className="contenders-kicker">Christmas Contenders · 2026</p>
           <h1>Help shape the sound of Christmas</h1>
           <p className="contenders-intro">
-            Listen and choose your favourite by giving it a vote!
+            Help your favourite artist earn a place on Santa Radio this December. Listen, select a song and confirm your vote by email.
           </p>
           {votingState !== 'unavailable' && <div className={`contenders-countdown contenders-countdown--${votingState}`} role="timer" aria-live="off">
             {statusCopy}
@@ -454,7 +486,7 @@ export default function ChristmasContenders() {
                 </div>
                 <div className="contender-card__body">
                   <div className="contender-card__identity">
-                    <p className="contender-card__eyebrow">{demo ? 'Demo contender' : 'Genuine contender'}</p>
+                    <p className="contender-card__eyebrow">{demo ? 'Demo contender' : 'Christmas contender'}</p>
                     <h3>{entry.artist}</h3>
                     <p className="contender-card__title">{entry.title}</p>
                   </div>
@@ -503,7 +535,7 @@ export default function ChristmasContenders() {
         <section className="shared-ballot" id="shared-ballot" aria-labelledby="shared-ballot-title" tabIndex="-1">
           <h2 id="shared-ballot-title" className="sr-only">Your vote</h2>
           <div className="shared-ballot__form-area">
-            {storageUnavailable && <p className="ballot-unavailable">Preview — voting unavailable</p>}
+            {storageUnavailable && <p className="ballot-unavailable">Voting is temporarily unavailable. Please try again later.</p>}
             {!storageUnavailable && (alreadyUsed || ballotStatus?.state === 'confirmed') ? <div className="ballot-terminal" role="status">
               <p>{message?.text || 'You’ve already voted.'}</p>
               {repeatDemo && <button className="contender-vote-button" type="button"
@@ -532,32 +564,30 @@ export default function ChristmasContenders() {
               <input
                 id="demo-email" type="email" autoComplete="email" maxLength={254}
                 value={email} onChange={event => setEmail(event.target.value)}
-                required disabled={!demoAvailable || pending}
+                required disabled={!ballotAvailable || pending || !!verification}
               />
-              <label className="shared-ballot__opt-in">
-                <input
-                  type="checkbox"
-                  checked={marketingOptIn}
-                  onChange={event => setMarketingOptIn(event.target.checked)}
-                  disabled={!demoAvailable || pending}
-                />
-                <span>Send me occasional Santa Radio updates</span>
-              </label>
+              {verification && <>
+                <label htmlFor="vote-code">Six-digit email code</label>
+                <input id="vote-code" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6}
+                  value={code} onChange={event => setCode(event.target.value.replace(/\D/g,''))} required disabled={pending} />
+                <button className="contender-cancel-button" type="button" disabled={pending}
+                  onClick={() => {setVerification(null);setCode('');setMessage(null);}}>Change email or request another code</button>
+              </>}
               <p className="shared-ballot__privacy">
-                One vote per person. We never sell your email. <Link to="/privacy-policy">Privacy policy</Link>
+                One vote per person, confirmed by email. Voting does not subscribe you to marketing. <Link to="/privacy-policy">Privacy policy</Link>
               </p>
               <div className="contender-honeypot" aria-hidden="true">
                 <label htmlFor="demo-website">Leave this field empty</label>
                 <input id="demo-website" name="website" tabIndex={-1} autoComplete="off" />
               </div>
-              <button className="contender-vote-button" type="submit" disabled={!demoAvailable || pending || unresolved || selectedEntry?.mode !== 'demo'}>
-                {pending ? 'Submitting…' : 'Submit vote'}
+              <button className="contender-vote-button" type="submit" disabled={!ballotAvailable || pending || unresolved || !selectedEntry || (data?.realVotingEnabled ? selectedEntry.mode !== 'live' : selectedEntry.mode !== 'demo')}>
+                {pending ? 'Please wait…' : data?.realVotingEnabled ? verification ? 'Confirm my vote' : 'Email my voting code' : 'Submit test vote'}
               </button>
             </form>}
             {message && !storageUnavailable && !alreadyUsed && !unresolved && ballotStatus?.state !== 'confirmed' && <div className={`ballot-message ballot-message--${message.type}`} role={message.type === 'error' ? 'alert' : 'status'}>
               {message.text}
             </div>}
-            {!storageUnavailable && !alreadyUsed && !unresolved && data?.demoStatus === 'closed'
+            {!storageUnavailable && !alreadyUsed && !unresolved && (data?.realVotingEnabled ? votingState === 'closed' : data?.demoStatus === 'closed')
                 ? <p className="ballot-unavailable">Voting is closed.</p>
                 : null}
           </div>
@@ -569,13 +599,14 @@ export default function ChristmasContenders() {
             <h2 id="how-title">How it works</h2>
           </div>
           <div className="contenders-how__copy">
-            <p>Listen to the recordings, then choose one song for your ballot. Participation is optional.</p>
+            <p>Listen, select one song and enter your email. Confirm the code we send to permanently register your vote. You can’t change your choice after confirmation.</p>
             <ul>
               <li>Only screened, family-friendly Christmas songs are considered.</li>
-              <li>One ballot per person during November; suspicious votes may be removed.</li>
+              <li>One vote per person during November. Multiple accounts, automated voting and other attempts to manipulate the result are not allowed; suspicious votes may be removed.</li>
               <li>Voting closes {dateLabel(settings.closesAt)} (UK time).</li>
               <li>Votes inform December playlist consideration, but do not guarantee airplay; Santa Radio makes the final editorial decision.</li>
             </ul>
+            <p>Artists: use your song’s Share button to invite your fans to listen and vote. A strong response helps us discover what listeners love.</p>
             <p>Have a recording for the team to consider? Send it through the existing <Link to="/submit-a-song?mode=song">SONG submission form</Link>. Submissions are reviewed before publication and are not automatically added here.</p>
             {settings.submissionCutoff && <p>Song submission cutoff: {dateLabel(settings.submissionCutoff)}.</p>}
           </div>

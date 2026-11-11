@@ -1,5 +1,6 @@
+import { liveVotingConfigured, requestVotingCode, confirmVotingCode, rememberedLiveVote } from './contenders-live.js';
 import express from 'express';
-import { consumeNameAccess, trustedAddress, privateResponse } from './santa-name-security.js';
+import { trustedAddress, privateResponse } from './santa-name-security.js';
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { staffAuth } from './staff-auth.js';
 import { authorize } from './name-requests.js';
@@ -50,7 +51,8 @@ export function validateManagement(body) {
 export function createContendersHandler({ read = competitionState, vote = demoBallot, limit = requestLimit,
   digest = privateDigest, checkAdmin = authorize, manage = manageCompetition,
   staffRead = staffCompetition, remember = rememberedDemo,
-  logDiagnostic = event => console.error(JSON.stringify(event)), abuseLimit = consumeNameAccess } = {}) {
+  liveEnabled = liveVotingConfigured, requestCode = requestVotingCode, confirmCode = confirmVotingCode, rememberLive = rememberedLiveVote,
+  logDiagnostic = event => console.error(JSON.stringify(event)), abuseLimit = null } = {}) {
   return async (req, res) => {
     res.set('Cache-Control', 'no-store').set('X-Robots-Tag', 'noindex');
     const staff = req.method === 'PATCH' || req.query?.staff === '1';
@@ -68,16 +70,26 @@ export function createContendersHandler({ read = competitionState, vote = demoBa
         const allowed = await checkAdmin(req);
         if (allowed !== 200) return res.status(allowed).json({error:'Approved staff access is required.'});
       }
-      await abuseLimit(req, req.method === 'GET' ? 'contenderRead' : 'contenderWrite');
+      if (abuseLimit) await abuseLimit(req, req.method === 'GET' ? 'contenderRead' : 'contenderWrite');
       const source = trustedAddress(req);
       stage = 'request_signing';
       const bucket = digest(`limit:${req.method}:${source}:${Math.floor(Date.now()/3600000)}`);
       stage = 'rate_limit_storage';
       await limit(bucket, req.method === 'GET' ? 300 : 30);
+      if (req.method === 'POST') await limit(digest(`global-write:${Math.floor(Date.now()/3600000)}`), 1000);
       if (req.method === 'GET') {
         stage = 'competition_state';
         const data = await (staff ? staffRead() : read());
         if (!staff) {
+          if (liveEnabled()) {
+            const raw = (req.headers.cookie || '').split(';').map(c => c.trim()).find(c => c.startsWith('contenders-live='))?.slice(16);
+            const [key, signature] = (raw || '').split('.');
+            if (/^[a-f0-9]{64}$/.test(key || '') && /^[a-f0-9]{64}$/.test(signature || '') &&
+              timingSafeEqual(Buffer.from(signature), Buffer.from(digest(`live-cookie:${key}`)))) {
+              data.viewerBallot = await rememberLive(key);
+            }
+            return res.json(data);
+          }
           stage = 'ballot_cookie';
           const cookie = (req.headers.cookie || '').split(';').map(c => c.trim()).find(c => c.startsWith('contenders-demo='))?.slice(16);
           const [key,signature] = (cookie || '').split('.');
@@ -97,6 +109,19 @@ export function createContendersHandler({ read = competitionState, vote = demoBa
         return res.json(await staffRead());
       }
       const b = req.body;
+      if (b?.mode === 'live') {
+        if (!liveEnabled()) return res.status(503).json({ error: 'Voting is temporarily unavailable.' });
+        if (b.website || !['request-code','confirm-code'].includes(b.action)) return res.status(400).json({error:'Check your vote details.'});
+        stage = 'live_vote';
+        if (b.action === 'request-code') {
+          if (!/^[a-z0-9][a-z0-9-]{0,79}$/.test(b.entryId || '')) return res.status(400).json({error:'Choose a song.'});
+          return res.json(await requestCode({email:b.email,entryId:b.entryId,digest,limit}));
+        }
+        const result = await confirmCode({id:b.verificationId,code:b.code,digest});
+        res.append('Set-Cookie', `contenders-live=${result.voterKey}.${digest(`live-cookie:${result.voterKey}`)}; Path=/api/christmas-contenders; HttpOnly; SameSite=Lax; Max-Age=2592000${req.secure || req.headers['x-forwarded-proto'] === 'https' ? '; Secure' : ''}`);
+        return res.json({state:result.state});
+      }
+
       if (!b || b.mode !== 'demo') return res.status(503).json({error:'Real voting is not enabled in this preview. No ballot was created.'});
       const identity = normalizeVotingEmail(b.email);
       if (!['submit','prepare','confirm'].includes(b.action) || typeof b.entryId !== 'string' ||

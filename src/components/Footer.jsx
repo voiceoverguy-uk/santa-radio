@@ -23,7 +23,7 @@ export default function Footer() {
         <span>&middot;</span>
         <Link to="/submit-a-song?mode=song">Submit your song</Link>
         <span>&middot;</span>
-        <Link to="/christmas-contenders">Christmas Contenders · Preview</Link>
+        <Link to="/christmas-contenders">Christmas Contenders</Link>
         <span>&middot;</span>
         <Link to="/apps">Download the app</Link>
         <span>&middot;</span>
