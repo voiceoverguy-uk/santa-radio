@@ -148,6 +148,7 @@ export function resolvePublicRequest(raw) {
   if (target) return { status: 308, location: target + url.search };
   if (normalized !== path && (paths.has(normalized) || normalized === '/preview/hero-name-checker' || normalized === '/santa-tracker/preview'))
     return { status: 308, location: normalized + url.search };
+  if (/^\/s[tr]yt\/?$/i.test(path) && path !== '/styt') return { status: 308, location: '/styt' + url.search };
   if (normalized === '/styt') {
     if (path !== normalized) return { status: 308, location: normalized + url.search };
     return { status: 200, noindex: true };
