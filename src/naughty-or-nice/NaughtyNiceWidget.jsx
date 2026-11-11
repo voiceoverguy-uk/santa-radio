@@ -114,7 +114,7 @@ export default function NaughtyNiceWidget({ onOpenHeadElf, standalone = false } 
     };
   }, [cancelPanel, cancel, audio.stop]);
   const restart = () => { cancelPanel(); cancel(); audio.stop(); clearCheckerName(); setScore(null); setName(''); setStage('entry'); setEntryKey(value => value + 1); };
-  return <section id="nice-list" ref={section} tabIndex={-1} className="nn-widget" aria-labelledby="nn-quiz-intro-heading" onFocusCapture={event => {
+  return <section id="nice-list" ref={section} tabIndex={-1} className={`nn-widget${standalone ? " nn-widget--standalone" : ""}`} aria-labelledby="nn-quiz-intro-heading" onFocusCapture={event => {
     // Pointer focus must not scroll a corner button away before pointer-up.
     if (event.target !== section.current && event.target.matches(':focus-visible')) keepCheckerFocusVisible(event);
   }}>

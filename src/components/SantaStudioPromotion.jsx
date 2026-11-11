@@ -48,14 +48,14 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
         <div className="santa-studio-promotion__intro">
           <h3 id="santa-studio-title" tabIndex={-1}>Santa’s <span className="santa-studio-promotion__title-line">Message Maker Studio</span></h3>
           <p className="santa-studio-promotion__subheading">
-            A little more Christmas magic for {example.name}
+            More Christmas magic for {example.name}
           </p>
           <p className="santa-studio-promotion__copy">
-            Create a personalised message from Santa, with {example.name}’s age, achievements and the things that make them special for an extra personal touch.
+            Tell Santa about {example.name}’s age, achievements and what makes them special. Remind Santa what they leave out for him, too.
           </p>
           <div className="santa-studio-promotion__benefits">
             <p className="santa-studio-promotion__benefits-lead">
-              Each creation includes a personalised MP3 and three gifts for one child:
+              Create messages for 2 children — each gets a personalised, shareable audio message and three gifts:
             </p>
             <ul className="santa-studio-promotion__benefit-list">
               <li>An official Nice List certificate</li>

@@ -1,7 +1,7 @@
 import { useEffect, useId, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { STUDIO_PATH, STUDIO_CHECKOUT_PATH } from '../lib/studioRoute.js';
-import { hasStudioPurchaseHint, rememberStudioPurchase } from '../lib/studioPurchaseHint.js';
+import { hasStudioPurchaseHint, studioRemainingHint, rememberStudioPurchase } from '../lib/studioPurchaseHint.js';
 
 export default function StudioPurchaseButton({ onPaidAccessChange }) {
   return <PurchaseButton sandbox={import.meta.env.DEV} onPaidAccessChange={onPaidAccessChange} />;
@@ -10,7 +10,7 @@ export default function StudioPurchaseButton({ onPaidAccessChange }) {
 function PurchaseButton({ sandbox, onPaidAccessChange }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [paid, setPaid] = useState(() => !sandbox && hasStudioPurchaseHint() ? { remembered: true } : null);
+  const [paid, setPaid] = useState(() => !sandbox && hasStudioPurchaseHint() ? { remembered: true, remaining: studioRemainingHint() } : null);
   const [refresh, setRefresh] = useState(0);
   const [available, setAvailable] = useState(false);
   const [checking, setChecking] = useState(true);
@@ -30,10 +30,10 @@ function PurchaseButton({ sandbox, onPaidAccessChange }) {
       if (!access.ok) throw new Error('We couldn’t check your purchase. Please retry before paying again.');
       const entitlement = await access.json();
       if (controller.signal.aborted) return;
-      const recognized = entitlement.authorized === true && (sandbox ? entitlement.mode !== 'live' : entitlement.mode === 'live');
+      const recognized = entitlement.remaining !== 0 && entitlement.authorized === true && (sandbox ? entitlement.mode !== 'live' : entitlement.mode === 'live');
       setPaid(recognized ? entitlement : null);
       onPaidAccessChange?.(recognized);
-      if (!sandbox) rememberStudioPurchase(recognized);
+      if (!sandbox) rememberStudioPurchase(recognized, entitlement.remaining);
       if (recognized) { setAvailable(false); return; }
       if (!sandbox) return;
       const response = await fetch('/api/santa-studio-checkout', {
@@ -58,10 +58,14 @@ function PurchaseButton({ sandbox, onPaidAccessChange }) {
     const recheck = () => { if (!document.hidden) setRefresh(value => value + 1); };
     window.addEventListener('focus', recheck);
     window.addEventListener('pageshow', recheck);
+    document.addEventListener('visibilitychange', recheck);
+    window.addEventListener('storage', recheck);
     window.addEventListener('santa-workshop-access-change', recheck);
     return () => {
       window.removeEventListener('focus', recheck);
       window.removeEventListener('pageshow', recheck);
+      document.removeEventListener('visibilitychange', recheck);
+      window.removeEventListener('storage', recheck);
       window.removeEventListener('santa-workshop-access-change', recheck);
     };
   }, []);
@@ -97,11 +101,10 @@ function PurchaseButton({ sandbox, onPaidAccessChange }) {
   };
   if (paid) return <div className="santa-studio-promotion__checkout-note">
     <button className="santa-studio-promotion__purchase" type="button" onClick={() => navigate(STUDIO_PATH)}>
-      {paid.remaining === 0 ? 'Open your Studio' : 'Create your bespoke message'}
+      {paid.remaining === 1 ? '1 bespoke message remains' : 'Create your messages'}
     </button>
     <p role="status">{paid.remembered ? 'Welcome back. ' : 'Payment confirmed. '}{Number.isInteger(paid.remaining)
-      ? paid.remaining === 0 ? 'Both messages have been created. No further payment is needed to reopen Studio.'
-        : `${paid.remaining} of 2 messages remaining. You don’t need to pay again.`
+      ? `${paid.remaining} of 2 messages remaining. You don’t need to pay again.`
       : 'Open Studio to check your remaining messages.'}</p>
   </div>;
   return <div className="santa-studio-promotion__checkout-note">

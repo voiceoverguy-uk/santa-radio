@@ -4,10 +4,11 @@ import { startLiveCheckout } from '../server/studio-live-checkout.js';
 import { digest } from '../server/studio-live-store.js';
 const claim = 'fixture-claim', hash = digest(claim);
 const config = { origin: 'https://www.santaradio.co.uk', offer: 'fixture', priceId: 'price_fixture', productId: 'prod_fixture', publishableKey: 'pk_live_fixture' };
-function fixture(existing) {
+function fixture(existing, spent = false) {
   const calls = [];
   const pool = {connect:async()=>({release(){},query:async(sql,args)=>{
     calls.push({sql,args});
+    if(sql.includes('cardinality(a.operations)=2')) return {rows:spent ? [{checkout_session_id:existing.id}] : []};
     if(sql.includes('SELECT enabled')) return {rows:[{enabled:true}]};
     if(sql.includes('SELECT checkout_session_id')) return {rows:[{checkout_session_id:existing?.id,generation:0}]};
     return {rows:[]};
@@ -70,4 +71,14 @@ test('fast preparation sets a claim but cannot bypass payment readiness',async()
   const post=await fetch(origin,{method:'POST',headers:{Origin:origin,Cookie:cookie,'Content-Type':'application/json'},body:'{}'});
   assert.equal(post.status,503);assert.equal(readyCalls,1);assert.equal(startCalls,0);
  } finally {server.closeAllConnections();await new Promise(r=>server.close(r));}
+});
+
+test('a verified exhausted purchase starts a new session with a fresh idempotency generation', async () => {
+ const existing={id:'cs_live_existing',status:'complete',livemode:true,metadata:{offer:config.offer,access_claim_sha256:hash}};
+ const {pool,stripe,calls}=fixture(existing,true);
+ const result=await startLiveCheckout({claim,config,pool,stripe});
+ assert.equal(result.sessionId,'cs_live_fixture');
+ assert.equal(calls.find(c=>c.params).options.idempotencyKey,`studio-live:${hash}:1`);
+ const check=calls.find(c=>c.sql?.includes('cardinality(a.operations)=2'));
+ assert.deepEqual(check.args,[existing.id,digest(`studio-purchase:${existing.id}`),hash]);
 });

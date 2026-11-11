@@ -36,10 +36,17 @@ async function startCheckout({ claim, config, stripe, pool = databasePool() }, o
         || session.metadata?.offer !== config.offer || session.metadata?.access_claim_sha256 !== hash) {
         throw new Error('STUDIO_LIVE_CHECKOUT_MISMATCH');
       }
-      if (session.status === 'complete') return { sessionId: session.id, pending: true };
-      if (!['open', 'expired'].includes(session.status)) throw new Error('STUDIO_LIVE_CHECKOUT_STATUS_INVALID');
+      if (session.status === 'complete') {
+        const spent = await client.query(`SELECT p.checkout_session_id
+          FROM public.santa_studio_live_purchases p
+          JOIN public.santa_studio_creation_allowances a ON a.access_key=$2
+          WHERE p.checkout_session_id=$1 AND p.claim_sha256=$3 AND cardinality(a.operations)=2`,
+          [session.id, digest(`studio-purchase:${session.id}`), hash]);
+        if (!spent.rows.length) return { sessionId: session.id, pending: true };
+      }
+      if (!['open', 'expired', 'complete'].includes(session.status)) throw new Error('STUDIO_LIVE_CHECKOUT_STATUS_INVALID');
     }
-    if (!session || session.status === 'expired') {
+    if (!session || session.status === 'expired' || session.status === 'complete') {
       await verifyLiveOffer(stripe, config);
       const generation = attempt.generation + (session ? 1 : 0);
       session = await stripe.checkout.sessions.create({

@@ -109,6 +109,7 @@ export const christmasApps = [
       regionLabel: 'Santa Radio current iOS app screenshots',
       presentation: 'device',
       interactiveMode: 'santa-radio',
+      liveClock: '#102e22',
     },
     downloads: downloads(
       'https://apps.apple.com/us/app/santa-radio/id1021183593',
@@ -149,6 +150,7 @@ export const christmasApps = [
       heading: 'Santa Voicemail app screenshots',
       regionLabel: 'Santa Voicemail Home, calls and Soundboard previews',
       deviceStyle: 'voicemail',
+      liveClock: '#102e22',
     },
     downloads: downloads(
       'https://itunes.apple.com/us/app/santa-voicemail/id586387813',

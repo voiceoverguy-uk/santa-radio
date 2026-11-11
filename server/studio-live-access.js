@@ -82,9 +82,11 @@ export function createLiveAccessHandler({
     try {
       const pool = getPool();
       const purchaseId = await livePaidPurchaseId(req, { config, pool });
-      if (purchaseId) return res.json(await livePaidSummary(pool, purchaseId));
+      const prior = purchaseId ? await livePaidSummary(pool, purchaseId) : null;
+      const pendingId = singleCookie(req, LIVE_PENDING_COOKIE);
+      if (prior && (prior.remaining > 0 || !pendingId || pendingId === purchaseId)) return res.json(prior);
       const claim = liveCheckoutClaim(req, config), sessionId = singleCookie(req, LIVE_PENDING_COOKIE);
-      if (!claim || !sessionPattern.test(sessionId || '')) return res.json({ authorized: false });
+      if (!claim || !sessionPattern.test(sessionId || '')) return res.json(prior || { authorized: false });
       if (!await consume(req, config, 'confirm', pool)) return res.status(429).json({ authorized: false });
       const stripe = await getStripe(config);
       const session = await stripe.checkout.sessions.retrieve(sessionId, { expand: ['payment_intent', 'line_items.data.price.product'] });
@@ -96,7 +98,7 @@ export function createLiveAccessHandler({
         return issueLiveAccess(res, session.id, client);
       });
       grant?.();
-      return res.json(grant ? await livePaidSummary(pool, session.id) : { authorized: false, mode: 'live' });
+      return res.json(grant ? await livePaidSummary(pool, session.id) : prior || { authorized: false, mode: 'live' });
     } catch {
       return res.status(503).json({ authorized: false, error: 'Payment confirmation is temporarily unavailable. Your voucher can still be used.' });
     }

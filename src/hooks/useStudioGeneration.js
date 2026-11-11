@@ -1,4 +1,5 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { rememberStudioPurchase } from '../lib/studioPurchaseHint.js';
 import { StudioAccessContext, StudioVoucherContext } from '../lib/studioAccessContext.js';
 
 export default function useStudioGeneration() {
@@ -55,6 +56,7 @@ export default function useStudioGeneration() {
       }
       if (!alive.current || request !== latestRequest.current) return null;
       setState(data);
+      if (accessKind === 'paid-live') rememberStudioPurchase(data.remaining > 0, data.remaining);
       setError('');
       setAccessExpired(false);
       setRetryable(false);

@@ -47,7 +47,7 @@ export default function StudioCheckout() {
         request('/api/santa-studio-access'), request('/api/santa-studio-checkout?prepare=1'),
       ]);
       if (disposed) return;
-      if (access.authorized === true && access.mode === 'live') { navigate(STUDIO_PATH, { replace: true }); return; }
+      if (access.authorized === true && access.mode === 'live' && access.remaining !== 0) { navigate(STUDIO_PATH, { replace: true }); return; }
       if (!offer.configured || offer.mode !== 'live' || offer.amount !== 650 || offer.currency !== 'gbp') {
         throw new Error('Purchases are currently unavailable. Please try again later.');
       }

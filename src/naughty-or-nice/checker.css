@@ -712,3 +712,9 @@ progress.nn-progress::-moz-progress-bar { background: var(--nn-red); }
     margin-inline: auto;
   }
 }
+
+/* Standalone introduction starts below the fixed navigation. */
+.nn-widget.nn-widget--standalone { padding-top: 112px; }
+@media (max-width: 767px) {
+  .nn-widget.nn-widget--standalone { padding-top: 88px; }
+}
