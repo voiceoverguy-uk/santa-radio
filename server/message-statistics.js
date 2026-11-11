@@ -1,6 +1,6 @@
 import { dismissNameRequest, databasePool } from './name-request-store.js';
 import express from 'express';
-import { brevoStatistics } from './brevo-statistics.js';
+import { websiteEmailStatistics } from './website-email-statistics.js';
 import { paidStatistics } from './paid-statistics.js';
 import { songSubmissionStatistics } from './song-submission-statistics.js';
 import { validOwnerToken } from './studio-owner-handler.js';
@@ -9,7 +9,7 @@ import { listNameRequests, recordNameRequest } from './name-request-store.js';
 import { normaliseRequestedName } from '../src/lib/santaNameRequests.js';
 import { getClerkProxyHost } from './middlewares/clerkProxyMiddleware.js';
 export function createStatisticsHandler({ allowed=validOwnerToken, report=statisticsReport, download=recordDownload,
-  requests=listNameRequests, complete=recordNameRequest, dismiss=dismissNameRequest, paid=paidStatistics, brevo=brevoStatistics, songs=songSubmissionStatistics }={}) {
+  requests=listNameRequests, complete=recordNameRequest, dismiss=dismissNameRequest, paid=paidStatistics, emails=websiteEmailStatistics, songs=songSubmissionStatistics }={}) {
   return async (req,res) => {
     res.set('Cache-Control','private, no-store').set('CDN-Cache-Control','no-store').set('X-Robots-Tag','noindex, nofollow');
     try {
@@ -34,8 +34,8 @@ export function createStatisticsHandler({ allowed=validOwnerToken, report=statis
         if(!['recorded','dismiss','restore'].includes(req.body?.action)||!name) return res.status(400).json({error:'Choose a requested name.'});
         if(req.body.action==='recorded')await complete(name.key);else await dismiss(name.key,req.body.action==='restore');return res.json({ok:true});
       }
-      const [data,paidResult,brevoResult]=await Promise.all([report(),paid().catch(()=>null),brevo().catch(()=>null)]);
-      data.paid=paidResult; data.brevo=brevoResult;
+      const [data,paidResult,emailResult]=await Promise.all([report(),paid().catch(()=>null),emails().catch(()=>null)]);
+      data.paid=paidResult; data.brevo=null; data.websiteEmails=emailResult;
       try { data.requests=(await requests(1,'','outstanding',false)).requests; }
       catch { data.requests=null; }
       try { data.nameNotifications=(await databasePool().query("SELECT state,count(*)::integer AS count FROM santa_name_request_notifications WHERE state IN ('pending','sending','review') GROUP BY state")).rows; } catch { data.nameNotifications=null; }
