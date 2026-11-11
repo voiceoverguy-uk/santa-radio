@@ -38,3 +38,10 @@
  .studio-checkout__secure { margin-bottom: 8px; font-size: 9px; }
  .studio-checkout__terms, .studio-checkout__payment-inner > a { margin-left: 16px; margin-right: 16px; }
 }
+
+/* Centre the story content within its half of a wide desktop checkout. */
+@media (min-width: 1100px) {
+  .studio-checkout__story {
+    padding-inline: max(48px, calc(25vw - 270px));
+  }
+}
