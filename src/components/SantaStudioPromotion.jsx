@@ -94,7 +94,7 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
             onPreviewOpen={() => setGiftsExpanded(true)} />
         </div>
       </div>
-        <div className="santa-studio-promotion__audio"><SantaStudioAudioExample onActiveExampleNameChange={setPaidExampleName} /></div>
+        <div className="santa-studio-promotion__audio"><SantaStudioAudioExample compact onActiveExampleNameChange={setPaidExampleName} /></div>
       </div>
     </section>
   );

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { STUDIO_PATH } from '../lib/studioRoute.js';
 import './StudioPaymentSuccess.css';
 
-export default function StudioPaymentSuccess({ remaining, sandbox = false }) {
+export default function StudioPaymentSuccess({ remaining, firstName = '', sandbox = false }) {
   const title = useRef(null);
   useEffect(() => { title.current?.focus(); window.scrollTo(0, 0); }, []);
   return <main className="studio-success">
@@ -14,7 +14,7 @@ export default function StudioPaymentSuccess({ remaining, sandbox = false }) {
         <p className="studio-success__eyebrow">A LITTLE NORTH POLE MAGIC</p>
         <span className="studio-success__tick" aria-hidden="true">✓</span>
         <h1 ref={title} tabIndex={-1} id="studio-success-title">{sandbox ? 'Test payment confirmed' : 'Payment successful'}</h1>
-        <p className="studio-success__lead">Thank you! Your Message Maker purchase is confirmed.</p>
+        <p className="studio-success__lead">{firstName ? `Hi ${firstName}, thank you for your purchase!` : 'Thank you! Your Message Maker purchase is confirmed.'}</p>
         <p>Your purchase includes <strong>2 personalised messages from Santa</strong>, each with a Nice List certificate, a letter and a Santa picture.</p>
         <p className="studio-success__allowance" role="status">{remaining === null
           ? 'Your remaining messages will be checked when you open Studio.'
@@ -25,7 +25,7 @@ export default function StudioPaymentSuccess({ remaining, sandbox = false }) {
         </Link>
         <div className="studio-success__return">
           <h2>Come back whenever you’re ready</h2>
-          <p>On this browser, use “Create your bespoke message” in the Message Maker section of our homepage. You won’t need to pay again.</p>
+          <p>On this browser, use “Create your messages” or the remaining-message button in the Message Maker section of our homepage. You won’t need to pay again.</p>
           <p>On another device, or if this browser no longer recognises you, use your private email link or “Already purchased?” on the Studio page to request a fresh link.</p>
           <p className="studio-success__download">Download each MP3 and its gifts before leaving Studio. Your unused messages are kept; completed recordings aren’t stored.</p>
         </div>

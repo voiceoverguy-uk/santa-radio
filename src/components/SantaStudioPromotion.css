@@ -627,10 +627,14 @@
 
 @media (min-width: 768px) {
   .santa-studio-promotion__details { display: flex; flex-direction: column; align-self: stretch; padding-bottom: 16px; }
-  .santa-studio-promotion__details .santa-studio-promotion__offer { margin-top: auto; padding-top: 20px; }
+  .santa-studio-promotion__details .santa-studio-promotion__offer { margin-top: 0; padding-top: 16px; }
   .santa-studio-promotion__intro { margin-bottom: 24px; }
   .santa-studio-promotion__actions { align-self: stretch; }
   .santa-studio-promotion__offer { width: 100%; }
   .santa-studio-promotion__offer-price { font-size: clamp(2.4rem, 4vw, 3rem); }
   .santa-studio-promotion__offer-title { font-size: clamp(1.1rem, 1.6vw, 1.3rem); }
+}
+
+@media (min-width: 768px) {
+  .santa-studio-promotion__examples { width: 100%; max-width: 400px; justify-self: end; }
 }

@@ -58,3 +58,32 @@ for (const [used, paid, expected] of [[2,true,2],[2,false,0],[1,true,1]]) {
     }finally{server.closeAllConnections();await new Promise(r=>server.close(r));}
   });
 }
+
+ test('purchaser greeting uses only the dedicated adult name field', async () => {
+  const { purchaserFirstName } = await import('../server/studio-live-access.js');
+  assert.equal(purchaserFirstName({custom_fields:[{key:'purchaser_first_name',text:{value:' Brenda '}}]}),'Brenda');
+  assert.equal(purchaserFirstName({customer_details:{name:'Someone Else'}}),'');
+  assert.equal(purchaserFirstName({custom_fields:[{key:'child_name',text:{value:'Child'}}]}),'');
+  assert.equal(purchaserFirstName({custom_fields:[{key:'purchaser_first_name',text:{value:'a'.repeat(100)}}]}).length,80);
+ });
+
+for (const scenario of ['paid', 'unpaid', 'offline']) test(`personalised greeting requires verified payment: ${scenario}`, async () => {
+  let origin, calls=0;
+  const token='g'.repeat(43);
+  const pool={query:async(sql,args)=>sql.includes('JOIN public.santa_studio_live_purchases')
+    ? {rowCount:args[0]===digest(token)?1:0,rows:args[0]===digest(token)?[{checkout_session_id:'cs_live_greeting'}]:[]}
+    : {rows:[{used:0}]}};
+  const app=createLiveAccessHandler({getConfig:()=>({origin,offer:'fixture'}),getPool:()=>pool,consume:async()=>true,
+    getStripe:async()=>({checkout:{sessions:{retrieve:async()=>{
+      calls++; if(scenario==='offline')throw Error('offline');
+      return {id:'cs_live_greeting',livemode:true,payment_status:scenario,metadata:{offer:'fixture'},custom_fields:[{key:'purchaser_first_name',text:{value:'Brenda'}}]};
+    }}}})});
+  const server=createServer(app);await new Promise(r=>server.listen(0,'127.0.0.1',r));origin=`http://127.0.0.1:${server.address().port}`;
+  try {
+    const result=await (await fetch(origin+'?greeting=1',{headers:{Cookie:`${LIVE_ACCESS_COOKIE}=${token}`}})).json();
+    assert.equal(result.authorized,true);assert.equal(result.remaining,2);
+    assert.equal(result.firstName,scenario==='paid'?'Brenda':undefined);
+    const unknown=await (await fetch(origin+'?greeting=1&firstName=Injected')).json();
+    assert.equal(unknown.authorized,false);assert.equal(unknown.firstName,undefined);assert.equal(calls,1);
+  }finally{server.closeAllConnections();await new Promise(r=>server.close(r));}
+});

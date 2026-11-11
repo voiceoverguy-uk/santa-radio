@@ -26,6 +26,7 @@ export default function WorkshopAccessGate({ children }) {
   const returningFromCheckout = new URLSearchParams(location.search).get('checkout') === 'return';
   const [accessKind, setAccessKind] = useState('tester');
   const [remaining, setRemaining] = useState(null);
+  const [purchaserName, setPurchaserName] = useState('');
   const [voucher, setVoucher] = useState(null);
   const [status, setStatus] = useState('checking');
   const [statusMessage, setStatusMessage] = useState('');
@@ -52,7 +53,7 @@ export default function WorkshopAccessGate({ children }) {
         // Always confirm paid access first, including checkout returns, reloads
         // and session-change checks. A stale voucher must not skip reconciliation.
         if (!controller.signal.aborted && !disposed) {
-          const paidResponse = await fetch('/api/santa-studio-access', {
+          const paidResponse = await fetch(`/api/santa-studio-access${returningFromCheckout ? '?greeting=1' : ''}`, {
             credentials: 'same-origin', cache: 'no-store', signal: controller.signal,
           });
           const paid = await paidResponse.json().catch(() => ({}));
@@ -66,6 +67,7 @@ export default function WorkshopAccessGate({ children }) {
             if (paid.mode === 'live') rememberStudioPurchase(paid.remaining !== 0, paid.remaining);
             setAccessKind(paid.mode === 'live' ? 'paid-live' : 'paid-sandbox');
             setRemaining(Number.isInteger(paid.remaining) && paid.remaining >= 0 && paid.remaining <= 2 ? paid.remaining : null);
+            setPurchaserName(typeof paid.firstName === 'string' ? paid.firstName.slice(0, 80) : '');
             setVoucher(null);
             setExpiresAt(null);
             setStatusMessage('');
@@ -207,7 +209,7 @@ export default function WorkshopAccessGate({ children }) {
       <StudioAccessContext.Provider value={accessKind}>
         <StudioVoucherContext.Provider value={voucher}>
           {returningFromCheckout && accessKind.startsWith('paid-')
-            ? <StudioPaymentSuccess remaining={remaining} sandbox={accessKind === 'paid-sandbox'} /> : children}
+            ? <StudioPaymentSuccess firstName={purchaserName} remaining={remaining} sandbox={accessKind === 'paid-sandbox'} /> : children}
         </StudioVoucherContext.Provider>
       </StudioAccessContext.Provider>
     </>;

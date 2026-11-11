@@ -28,6 +28,9 @@ test('embedded checkout pins the offer, uses secure return and never creates hos
  assert.equal(params.return_url,`${config.origin}/bespoke-personalised-message-from-santa?checkout=return`);
  assert.equal(params.success_url,undefined); assert.equal(params.cancel_url,undefined);
  assert.equal(params.allow_promotion_codes,true);
+ assert.equal(params.custom_fields[0].key,'purchaser_first_name');
+ assert.equal(params.custom_fields[0].optional,false);
+ assert.equal(params.custom_fields[0].text.maximum_length,80);
  assert.deepEqual(params.line_items,[{price:config.priceId,quantity:1}]);
  assert.equal(params.metadata.access_claim_sha256,hash);
  assert.equal(options.idempotencyKey,`studio-live:${hash}:0`);

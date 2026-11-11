@@ -52,6 +52,7 @@ async function startCheckout({ claim, config, stripe, pool = databasePool() }, o
       session = await stripe.checkout.sessions.create({
         mode: 'payment',
         allow_promotion_codes: true,
+        custom_fields: [{ key: 'purchaser_first_name', label: { type: 'custom', custom: 'Your first name (adult purchasing)' }, type: 'text', optional: false, text: { minimum_length: 1, maximum_length: 80 } }],
         line_items: [{ price: config.priceId, quantity: 1 }],
         ...(embedded ? {
           ui_mode: 'embedded',

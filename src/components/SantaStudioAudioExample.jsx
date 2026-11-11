@@ -38,7 +38,7 @@ function formatTime(seconds) {
   return `${Math.floor(wholeSeconds / 60)}:${String(wholeSeconds % 60).padStart(2, '0')}`;
 }
 
-export default function SantaStudioAudioExample({ onActiveExampleNameChange }) {
+export default function SantaStudioAudioExample({ onActiveExampleNameChange, compact = false }) {
   const audioRef = useRef(null);
   const playRequestRef = useRef(0);
   const startedRef = useRef(false);
@@ -195,7 +195,7 @@ export default function SantaStudioAudioExample({ onActiveExampleNameChange }) {
           Stop
         </button>
       </div>
-      <div className="santa-studio-audio-example__timeline">
+      {!compact && <div className="santa-studio-audio-example__timeline">
         <input
           id="santa-studio-audio-seek"
           className="santa-studio-audio-example__seek"
@@ -212,7 +212,7 @@ export default function SantaStudioAudioExample({ onActiveExampleNameChange }) {
         <span className="santa-studio-audio-example__time" aria-hidden="true">
           {formatTime(currentTime)} / {formatTime(duration)}
         </span>
-      </div>
+      </div>}
       <p className="santa-studio-audio-example__cue" role="status" aria-live="polite" aria-atomic="true">
         {activeCue !== null ? 'Personalised moment' : ''}
       </p>

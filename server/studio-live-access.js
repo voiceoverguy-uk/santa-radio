@@ -66,6 +66,12 @@ export async function issueLiveAccess(res, sessionId, client) {
   return () => res.cookie(LIVE_ACCESS_COOKIE, token, cookieOptions);
 }
 
+export function purchaserFirstName(session) {
+  const value = session?.custom_fields?.find(field => field.key === 'purchaser_first_name')?.text?.value;
+  if (typeof value !== 'string') return '';
+  return value.replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, 80);
+}
+
 export function createLiveAccessHandler({
   getConfig = liveStudioConfig, getStripe = liveStripeClient, getPool = databasePool,
   consume = consumeLiveAttempt,
@@ -82,11 +88,24 @@ export function createLiveAccessHandler({
     try {
       const pool = getPool();
       const purchaseId = await livePaidPurchaseId(req, { config, pool });
+      const reply = async (summary, id, knownSession) => {
+        if (req.query.greeting === '1' && summary?.authorized && id) {
+          try {
+            const session = knownSession || await (await getStripe(config)).checkout.sessions.retrieve(id);
+            if (session.id === id && session.livemode === true && session.payment_status === 'paid'
+              && session.metadata?.offer === config.offer) {
+              const firstName = purchaserFirstName(session);
+              if (firstName) return res.json({ ...summary, firstName });
+            }
+          } catch { /* A greeting lookup must never prevent paid access. */ }
+        }
+        return res.json(summary);
+      };
       const prior = purchaseId ? await livePaidSummary(pool, purchaseId) : null;
       const pendingId = singleCookie(req, LIVE_PENDING_COOKIE);
-      if (prior && (prior.remaining > 0 || !pendingId || pendingId === purchaseId)) return res.json(prior);
+      if (prior && (prior.remaining > 0 || !pendingId || pendingId === purchaseId)) return reply(prior, purchaseId);
       const claim = liveCheckoutClaim(req, config), sessionId = singleCookie(req, LIVE_PENDING_COOKIE);
-      if (!claim || !sessionPattern.test(sessionId || '')) return res.json(prior || { authorized: false });
+      if (!claim || !sessionPattern.test(sessionId || '')) return reply(prior || { authorized: false }, purchaseId);
       if (!await consume(req, config, 'confirm', pool)) return res.status(429).json({ authorized: false });
       const stripe = await getStripe(config);
       const session = await stripe.checkout.sessions.retrieve(sessionId, { expand: ['payment_intent', 'line_items.data.price.product'] });
@@ -98,7 +117,7 @@ export function createLiveAccessHandler({
         return issueLiveAccess(res, session.id, client);
       });
       grant?.();
-      return res.json(grant ? await livePaidSummary(pool, session.id) : prior || { authorized: false, mode: 'live' });
+      return reply(grant ? await livePaidSummary(pool, session.id) : prior || { authorized: false, mode: 'live' }, grant ? session.id : purchaseId, grant ? session : undefined);
     } catch {
       return res.status(503).json({ authorized: false, error: 'Payment confirmation is temporarily unavailable. Your voucher can still be used.' });
     }
