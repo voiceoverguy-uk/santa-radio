@@ -10,3 +10,10 @@ test('sender supplies HTML and plain text to the email provider',async()=>{
  await sendVotingCode({email:'test@example.com',code:'001234',id:'test-only'},async(_url,options)=>{body=JSON.parse(options.body);return{ok:true,json:async()=>({id:'test'})}}, {CONTENDERS_LIVE_ENABLED:'true',RESEND_API_KEY:'test-only',STUDIO_EMAIL_SENDER_APPROVED:'true',STUDIO_EMAIL_FROM:'santa@santaradio.co.uk'});
  assert.match(body.html,/001234/);assert.match(body.text,/001234/);assert.equal(body.to[0],'test@example.com');
 });
+
+test('chosen song appears in both formats and is escaped in HTML', () => {
+  const result = votingCodeEmail('123456', { artist: 'A & B', title: '<Christmas>' });
+  assert.match(result.text, /A & B — <Christmas>/);
+  assert.match(result.html, /A &amp; B — &lt;Christmas&gt;/);
+  assert.ok(!result.html.includes('<Christmas>'));
+});

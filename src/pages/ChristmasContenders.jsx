@@ -156,7 +156,7 @@ export default function ChristmasContenders() {
             setMessage(current => current?.type === 'success' ? current : {
               type: viewerBallot.state === 'confirmed' ? 'success' : 'duplicate',
               text: viewerBallot.state === 'confirmed'
-                ? (next.realVotingEnabled ? 'Thanks — your vote is in!' : 'Test vote recorded.')
+                ? (next.realVotingEnabled ? (() => { const voted = next.entries?.find(entry => entry.id === viewerBallot.entryId); return voted ? `Thanks — your vote for ${voted.artist} — ${voted.title} is in!` : 'Thanks — your vote is in!'; })() : 'Test vote recorded.')
                 : 'This vote can’t be used again.',
             });
           } else if (viewerBallot.state === 'pending' && ['sending', 'unknown'].includes(viewerBallot.delivery)) {
@@ -388,11 +388,11 @@ export default function ChristmasContenders() {
         : {mode:'live',action:'request-code',entryId:selectedEntryId,email,website:event.currentTarget.elements.namedItem('website')?.value || ''})});
       if (!alive.current) return;
       if (result.state === 'verification') {
-        setVerification({id:result.verificationId}); setCode('');
+        setVerification({id:result.verificationId, entryId:selectedEntryId}); setCode('');
         setMessage({type:'pending',text:'Check your inbox for a six-digit code. It expires in 15 minutes. Check spam too.'});
       } else if (['success','already-voted'].includes(result.state)) {
         setBallotUsed(true); setVerification(null);
-        setMessage({type:'success',text:result.state === 'success' ? 'Thanks — your vote is in!' : 'You’ve already voted. Your original choice is saved.'});
+        setMessage({type:'success',text:result.state === 'success' ? (() => { const voted = entries.find(entry => entry.id === verification?.entryId); return voted ? `Thanks — your vote for ${voted.artist} — ${voted.title} is in!` : 'Thanks — your vote is in!'; })() : 'You’ve already voted. Your original choice is saved.'});
         await load(false);
       }
     } catch (error) {

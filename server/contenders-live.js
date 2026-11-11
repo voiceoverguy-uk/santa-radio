@@ -19,7 +19,7 @@ export function voterIdentity(value) {
   }
   return local ? `${local}@${domain}` : null;
 }
-export async function sendVotingCode({ email, code, id }, fetcher = fetch, env = process.env) {
+export async function sendVotingCode({ email, code, id, artist, title }, fetcher = fetch, env = process.env) {
   if (!liveVotingConfigured(env)) throw problem('Voting is temporarily unavailable.', 503);
   const response = await fetcher('https://api.resend.com/emails', {
     method: 'POST', redirect: 'error', signal: AbortSignal.timeout(8000),
@@ -27,16 +27,17 @@ export async function sendVotingCode({ email, code, id }, fetcher = fetch, env =
       'Idempotency-Key': `contenders-code:${id}` },
     body: JSON.stringify({ from: 'Santa Radio <santa@santaradio.co.uk>', to: [email],
       subject: 'Your Santa Radio voting code',
-      ...votingCodeEmail(code) }),
+      ...votingCodeEmail(code, { artist, title }) }),
   });
   if (!response.ok || typeof (await response.json()).id !== 'string') throw problem('We couldn’t send your code. Please try again shortly.', 503);
 }
 async function openEntry(client, entryId) {
   const settings = (await client.query('SELECT settings FROM christmas_contenders_settings WHERE competition=$1 FOR SHARE', [COMPETITION])).rows[0]?.settings;
   if (!settings || votingStatus(settings) !== 'open') throw problem('Voting is not open.', 409);
-  const entry = await client.query(`SELECT id FROM christmas_contenders_entries
+  const entry = await client.query(`SELECT id,artist,title FROM christmas_contenders_entries
     WHERE competition=$1 AND mode='live' AND id=$2 AND approved=true FOR SHARE`, [COMPETITION, entryId]);
   if (!entry.rowCount) throw problem('Please select an available song.', 409);
+  return entry.rows[0];
 }
 export async function requestVotingCode({ email, entryId, digest, limit, send = sendVotingCode }, pool = databasePool()) {
   const address = normalizeVotingEmail(email), identity = voterIdentity(email);
@@ -47,9 +48,10 @@ export async function requestVotingCode({ email, entryId, digest, limit, send = 
     (SELECT id FROM christmas_contenders_verifications WHERE expires_at < now() LIMIT 100)`);
   const id = randomUUID(), code = String(randomInt(0, 1000000)).padStart(6, '0');
   const client = await pool.connect();
+  let selectedSong;
   try {
     await client.query('BEGIN');
-    await openEntry(client, entryId);
+    selectedSong = await openEntry(client, entryId);
     await client.query(`INSERT INTO christmas_contenders_verifications
       (id,competition,voter_key,entry_id,code_hash,expires_at)
       VALUES($1,$2,$3,$4,$5,now()+interval '15 minutes')`,
@@ -59,7 +61,7 @@ export async function requestVotingCode({ email, entryId, digest, limit, send = 
   finally { client.release(); }
   // No email address, code or outbound payload is persisted or logged.
   // If delivery is uncertain, the uncounted challenge expires; a user can request a new one.
-  await send({ email: address, code, id });
+  await send({ email: address, code, id, artist: selectedSong.artist, title: selectedSong.title });
   return { state: 'verification', verificationId: id };
 }
 export async function confirmVotingCode({ id, code, digest }, pool = databasePool()) {
