@@ -2,13 +2,14 @@ import { dismissNameRequest, databasePool } from './name-request-store.js';
 import express from 'express';
 import { brevoStatistics } from './brevo-statistics.js';
 import { paidStatistics } from './paid-statistics.js';
+import { songSubmissionStatistics } from './song-submission-statistics.js';
 import { validOwnerToken } from './studio-owner-handler.js';
 import { verifyReceipt, recordDownload, statisticsReport } from './message-statistics-store.js';
 import { listNameRequests, recordNameRequest } from './name-request-store.js';
 import { normaliseRequestedName } from '../src/lib/santaNameRequests.js';
 import { getClerkProxyHost } from './middlewares/clerkProxyMiddleware.js';
 export function createStatisticsHandler({ allowed=validOwnerToken, report=statisticsReport, download=recordDownload,
-  requests=listNameRequests, complete=recordNameRequest, dismiss=dismissNameRequest, paid=paidStatistics, brevo=brevoStatistics }={}) {
+  requests=listNameRequests, complete=recordNameRequest, dismiss=dismissNameRequest, paid=paidStatistics, brevo=brevoStatistics, songs=songSubmissionStatistics }={}) {
   return async (req,res) => {
     res.set('Cache-Control','private, no-store').set('CDN-Cache-Control','no-store').set('X-Robots-Tag','noindex, nofollow');
     try {
@@ -23,6 +24,11 @@ export function createStatisticsHandler({ allowed=validOwnerToken, report=statis
         await download(id); return res.json({ok:true});
       }
       if(!allowed(req)) return res.status(401).json({error:'Enter your private Studio owner token to view this dashboard.'});
+      if(req.method==='GET' && req.query?.view==='songs') {
+        const raw=req.query.offset ?? '0';
+        if(typeof raw!=='string' || !/^\d{1,7}$/.test(raw)) return res.status(400).json({error:'Invalid page.'});
+        return res.json(await songs({offset:Number(raw)}).catch(()=>({error:'service_unavailable'})));
+      }
       if(req.method==='PATCH') {
         const name=normaliseRequestedName(req.body?.name);
         if(!['recorded','dismiss','restore'].includes(req.body?.action)||!name) return res.status(400).json({error:'Choose a requested name.'});
