@@ -16,7 +16,7 @@ test('staff documents and callbacks are packaged, private, noindex and routed be
     assert.ok(!sitemap.includes(entry));
     const html = await readFile(`dist/server/pages${entry}/index.html`, 'utf8');
     assert.equal(html, await readFile(`dist${entry}/index.html`, 'utf8'));
-    for (const path of [entry, `${entry}/`, ...(entry !== '/request-names'
+    for (const path of [entry, `${entry}/`, ...(['/sign-in', '/sign-up', '/my-santa-messages'].includes(entry)
       ? [`${entry}/sso-callback`, `${entry}/factor-one`, `${entry}/verify-email-address`] : [])]) {
       const edgeRoute = config.routes.slice(0, filesystem).find(route =>
         route.dest && new RegExp(`^${route.src}$`).test(path));
