@@ -245,10 +245,10 @@ export default function SubmitASong() {
                   {buildSponsorshipMessage(fields).length} / 500 characters sent to Brevo
                 </p>
               </> : <>
+                {field('SONG_REQUEST', 'Message', { textarea: true, limit: 500, help: 'song-message-help song-message-count' })}
                 <p className="song-guidance" id="song-message-help">{isSong
                   ? 'Include the artist name, song title, a listening link (such as YouTube, SoundCloud or Spotify), a short bio or description, and a link to any promotion of Santa Radio. Keep the whole message within 500 characters and check both links work.'
                   : 'Tell us about your enquiry. Keep your message within 500 characters and share only necessary details.'}</p>
-                {field('SONG_REQUEST', 'Message', { textarea: true, limit: 500, help: 'song-message-help song-message-count' })}
                 <p className="song-character-count" id="song-message-count" role={isSong && buildSongMessage(fields).length > 500 ? 'alert' : undefined}>{isSong ? buildSongMessage(fields).length : fields.SONG_REQUEST.length} / 500 characters{isSong && ' in the complete message sent to Brevo'}</p>
               </>}
               {isSong && <>
