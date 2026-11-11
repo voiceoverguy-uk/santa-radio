@@ -189,7 +189,7 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy, mapOnly = 
       : "Follow Santa as Christmas Eve midnight sweeps across the globe. From Kiritimati to Honolulu, watch his estimated 290-stop journey unfold in real time."}
   </p>;
 
-  const map = <SantaMap effectiveTime={effectiveTime} mapPosition={data.mapPosition} onHoliday={onHoliday} researchDestination={researching ? holiday : null} northPoleVisitMessage={northPoleVisit ? data.statusSubtext : undefined} liveStatusLabel={!mapOnly && isLive ? statusLabel : undefined} />;
+  const map = <SantaMap autoCycleView={mapOnly} effectiveTime={effectiveTime} mapPosition={data.mapPosition} onHoliday={onHoliday} researchDestination={researching ? holiday : null} northPoleVisitMessage={northPoleVisit ? data.statusSubtext : undefined} liveStatusLabel={!mapOnly && isLive ? statusLabel : undefined} />;
   if (mapOnly) return map;
 
   return (

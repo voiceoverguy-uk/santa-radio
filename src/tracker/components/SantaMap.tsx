@@ -20,11 +20,12 @@ interface SantaMapProps {
   researchDestination?: HolidayDestination | null;
   northPoleVisitMessage?: string;
   liveStatusLabel?: string;
+  autoCycleView?: boolean;
 }
 
 type View = "follow" | "world" | string;
 
-export default function SantaMap({ effectiveTime, mapPosition, onHoliday, researchDestination, northPoleVisitMessage, liveStatusLabel }: SantaMapProps) {
+export default function SantaMap({ effectiveTime, mapPosition, onHoliday, researchDestination, northPoleVisitMessage, liveStatusLabel, autoCycleView = false }: SantaMapProps) {
   const titleId = useId();
   const descriptionId = useId();
   const mapRef = useRef<HTMLDivElement>(null);
@@ -96,6 +97,13 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
   const nextStop = live ? ordered[currentIdx + 1] : undefined;
 
   const [view, setView] = useState<View>("world");
+  useEffect(() => {
+    if (!autoCycleView) return;
+    const timer = window.setInterval(() => {
+      setView(current => current === "follow" ? "world" : "follow");
+    }, 15_000);
+    return () => window.clearInterval(timer);
+  }, [autoCycleView]);
   const effectiveView = view;
   const santaArtworkScale = effectiveView === "follow" ? 1.5 : 1;
 
