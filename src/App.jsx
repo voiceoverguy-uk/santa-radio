@@ -1,3 +1,4 @@
+import SantaDashboard from './pages/SantaDashboard.jsx';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar.jsx';
 import Footer from './components/Footer.jsx';
@@ -72,6 +73,7 @@ function WebsiteLayout() {
         <Route path="/free-santa-message" element={<FreeSantaMessage />} />
         <Route path={STUDIO_PATH} element={<WorkshopAccessGate><SantaMessageWorkshop /></WorkshopAccessGate>} />
         {STUDIO_ALIASES.map(path => <Route key={path} path={path} element={<StudioRedirect />} />)}
+        <Route path="/santa-dashboard" element={<SantaDashboard />} />
         <Route path="/request-names" element={<SantaStaffShell mode="admin" />} />
         <Route path="/sign-in/*" element={<SantaStaffShell mode="sign-in" />} />
         <Route path="/sign-up/*" element={<SantaStaffShell mode="sign-up" />} />

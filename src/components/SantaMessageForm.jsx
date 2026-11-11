@@ -247,6 +247,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
     requestRef.current = controller;
     setBusy(true);
     try {
+      let statisticsReceipt = "";
       const blob = await allowance.create(async outro => {
         // Search and creation use private POST bodies. Cache lookup and
         // underlying audio URLs remain entirely on the server.
@@ -273,12 +274,13 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         if (!response.headers.get('content-type')?.startsWith('audio/mpeg')) {
           throw new Error('The message service did not return an MP3. Please try again shortly.');
         }
+        statisticsReceipt = response.headers.get('X-Message-Receipt') || "";
         const blob = await response.blob();
         if (!blob.size) throw new Error('The message service returned an empty recording. Please try again.');
         return blob;
       }, controller.signal);
       if (requestRef.current === controller) {
-        remember(recording, blob);
+        remember({ ...recording, statisticsReceipt }, blob);
       }
     } catch (error) {
       if (requestRef.current === controller && error.name !== 'AbortError') setValidation(error.message);
@@ -321,7 +323,13 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
       <div className="message-download-links">
         <a className={`message-download${clickedDownloads.has(message.key) ? '' : ' message-download--pending'}`}
           href={message.url} download={santaMessageDownloadName(message.name)}
-          onClick={() => setClickedDownloads(previous => new Set([...previous, message.key]))}>
+          onClick={() => {
+            setClickedDownloads(previous => new Set([...previous, message.key]));
+            if (message.statisticsReceipt) fetch('/api/message-statistics', {
+              method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true,
+              body: JSON.stringify({ receipt: message.statisticsReceipt }),
+            }).catch(() => {});
+          }}>
           Download your audio <span aria-hidden="true">↓</span>
         </a>
       </div>

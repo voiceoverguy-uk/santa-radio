@@ -1,0 +1,62 @@
+import { randomUUID, createHmac, timingSafeEqual } from 'node:crypto';
+import { databasePool } from './contenders-database.js';
+const WEEK = 7 * 86400000;
+const signature = (body, secret) => createHmac('sha256', secret).update(`message-statistics:${body}`).digest('hex');
+export function receiptToken(id, now = Date.now(), secret = process.env.SESSION_SECRET) {
+  if (!secret || secret.length < 32) throw new Error('Statistics signing unavailable');
+  const body = `${id}.${now + WEEK}`;
+  return `${body}.${signature(body, secret)}`;
+}
+export function verifyReceipt(token, now = Date.now(), secret = process.env.SESSION_SECRET) {
+  if (!secret || typeof token !== 'string' || token.length > 200) return null;
+  const [id, expires, sig] = token.split('.');
+  if (!/^[a-f0-9-]{36}$/.test(id || '') || !/^\d{13}$/.test(expires || '') || !/^[a-f0-9]{64}$/.test(sig || '')
+    || Number(expires) <= now || Number(expires) > now + WEEK) return null;
+  return timingSafeEqual(Buffer.from(sig), Buffer.from(signature(`${id}.${expires}`, secret))) ? id : null;
+}
+export async function recordCreation(name, pool = databasePool(), now = new Date()) {
+  const id = randomUUID();
+  const token = receiptToken(id, now.getTime());
+  // One atomic statement: counters and the receipt either both persist or neither does.
+  await pool.query(`WITH receipt AS (
+    INSERT INTO santa_message_receipts(id,name,created_at) VALUES($1,$2,$3) RETURNING name,created_at
+  ) INSERT INTO santa_message_daily(day,name,creations)
+    SELECT (created_at AT TIME ZONE 'Europe/London')::date,name,1 FROM receipt
+    ON CONFLICT(day,name) DO UPDATE SET creations=santa_message_daily.creations+1`, [id,name,now]);
+  return token;
+}
+export async function recordDownload(id, pool = databasePool(), now = new Date()) {
+  // Count the first download click per recording. Replays/retries do not inflate totals.
+  const result = await pool.query(`WITH clicked AS (
+    UPDATE santa_message_receipts SET downloaded_at=$2 WHERE id=$1 AND downloaded_at IS NULL
+      AND created_at > $2::timestamptz-interval '7 days' RETURNING name
+  ) INSERT INTO santa_message_daily(day,name,download_clicks)
+    SELECT ($2::timestamptz AT TIME ZONE 'Europe/London')::date,name,1 FROM clicked
+    ON CONFLICT(day,name) DO UPDATE SET download_clicks=santa_message_daily.download_clicks+1 RETURNING name`, [id,now]);
+  return result.rowCount > 0;
+}
+export async function statisticsReport(pool = databasePool()) {
+  // Short-lived random receipts are solely for deduplication; retain only aggregates long term.
+  await pool.query("DELETE FROM santa_message_receipts WHERE created_at < now()-interval '7 days'");
+  const [daily,names,votes,since] = await Promise.all([
+    pool.query(`SELECT days.day::date::text AS day, COALESCE(sum(s.creations),0)::integer AS creations, COALESCE(sum(s.download_clicks),0)::integer AS downloads
+      FROM generate_series((now() AT TIME ZONE 'Europe/London')::date-29,(now() AT TIME ZONE 'Europe/London')::date,interval '1 day') AS days(day)
+      LEFT JOIN santa_message_daily s ON s.day=days.day::date GROUP BY days.day ORDER BY days.day DESC`),
+    pool.query(`SELECT name,sum(creations)::integer AS creations,sum(download_clicks)::integer AS downloads
+      FROM santa_message_daily WHERE day >= (now() AT TIME ZONE 'Europe/London')::date-29
+      GROUP BY name ORDER BY creations DESC,name LIMIT 30`),
+    pool.query(`SELECT e.artist,e.title,count(b.id)::integer AS votes FROM christmas_contenders_entries e
+      LEFT JOIN christmas_contenders_ballots b ON b.competition=e.competition AND b.entry_id=e.id AND b.mode=e.mode AND b.state='confirmed'
+      WHERE e.mode='live' AND e.approved GROUP BY e.competition,e.id,e.artist,e.title ORDER BY votes DESC,e.artist`),
+    pool.query('SELECT min(day)::text AS since FROM santa_message_daily'),
+  ]);
+  return {daily:daily.rows,names:names.rows,votes:votes.rows,since:since.rows[0].since,updatedAt:new Date().toISOString()};
+}
+export async function safeRecordCreation(name) {
+  let timer;
+  try { return await Promise.race([recordCreation(name), new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error('Statistics deadline')), 1200);
+  })]); }
+  catch { console.warn('[message-statistics] recording unavailable'); return ''; }
+  finally { clearTimeout(timer); }
+}

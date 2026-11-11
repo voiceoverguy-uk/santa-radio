@@ -1,3 +1,4 @@
+import WorkshopMissingName from './WorkshopMissingName.jsx';
 import { useEffect, useId, useRef, useState } from 'react';
 import useBrowserSantaNameSearch from './useBrowserSantaNameSearch.js';
 import { santaNameKey } from '../lib/santaNameSearch.js';
@@ -210,6 +211,8 @@ export default function WorkshopNamePicker({ selected, initialName = '', onSelec
             && <p className="smw-name-refine">Showing up to 10 matches. Add more letters to refine the list.</p>}
         </>
       )}
+
+      {requestState.status === 'ready' && !search.warning && query.trim().length >= 2 && !selected && !matchingRecords.some(record => santaNameKey(record.name) === santaNameKey(query)) && <WorkshopMissingName key={query.trim().toLowerCase()} name={query} />}
 
       {selected && (
         <div className="smw-name-status">

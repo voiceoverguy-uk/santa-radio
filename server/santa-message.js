@@ -1,3 +1,4 @@
+import { safeRecordCreation } from './message-statistics-store.js';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
@@ -22,7 +23,7 @@ let active = 0;
 export function createSantaMessageHandler(library = santaNameLibrary, cache = null, {
   limit = consumeNameAccess, verify = verifyNameToken,
   authorize = authorizeFreeMessage, reserve = reserveFreeMessage, finish = finishFreeMessage,
-  now = () => new Date(),
+  now = () => new Date(), trackCreation = safeRecordCreation,
   render = renderArgs, bells = join(sources, 'sleighbells.mp3'),
 } = {}) {
 return async function santaMessage(req, res) {
@@ -102,6 +103,8 @@ return async function santaMessage(req, res) {
     const asciiFilename = downloadName.normalize('NFKD').replace(/\p{M}/gu, '').replace(/[^\x20-\x7e]/g, '_');
     await finish(lease, true);
     allowanceFinished = true;
+    const statisticsReceipt = await trackCreation(recording.name);
+    if (statisticsReceipt) res.setHeader('X-Message-Receipt', statisticsReceipt);
     res.writeHead(200, {
       'Content-Type': 'audio/mpeg',
       'Content-Length': audio.length,
