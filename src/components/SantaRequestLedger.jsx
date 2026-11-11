@@ -19,7 +19,7 @@ async function checkResponse(response) {
 }
 
 // Authentication remains in SantaStaffBrowser; every API operation also verifies it.
-export default function SantaRequestLedger({ email, onSignOut }) {
+export default function SantaRequestLedger({ email, onSignOut, ownerToken }) {
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [status, setStatus] = useState('outstanding');
@@ -50,7 +50,7 @@ export default function SantaRequestLedger({ email, onSignOut }) {
     let active = true;
     setLoading(true); setError(null); setActionError('');
     const params = new URLSearchParams({ page: String(page), q: debouncedQuery, status });
-    fetch(`/api/name-requests?${params}`, { credentials: 'include', cache: 'no-store', signal: controller.signal })
+    fetch(`/api/name-requests?${params}`, { credentials: 'include', headers: ownerToken ? { Authorization: `Bearer studio-owner.${ownerToken}` } : {}, cache: 'no-store', signal: controller.signal })
       .then(async response => {
         await checkResponse(response);
         const data = await response.json();
@@ -67,7 +67,7 @@ export default function SantaRequestLedger({ email, onSignOut }) {
       .catch(fetchError => { if (active && fetchError.name !== 'AbortError') setError(fetchError); })
       .finally(() => { clearTimeout(timeout); if (active) setLoading(false); });
     return () => { active = false; clearTimeout(timeout); controller.abort(); };
-  }, [page, debouncedQuery, status, retry]);
+  }, [page, debouncedQuery, status, retry, ownerToken]);
 
   const pageCount = useMemo(() => result ? Math.max(1, Math.ceil(result.total / result.pageSize)) : 1, [result]);
   const record = async name => {
@@ -79,7 +79,7 @@ export default function SantaRequestLedger({ email, onSignOut }) {
     setActionError(''); setNotice('');
     try {
       const response = await fetch('/api/name-requests', { method: 'PATCH', credentials: 'include',
-        headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, action: 'recorded' }),
+        headers: { 'Content-Type': 'application/json', ...(ownerToken ? { Authorization: `Bearer studio-owner.${ownerToken}` } : {}) }, body: JSON.stringify({ name, action: 'recorded' }),
         signal: controller.signal });
       await checkResponse(response);
       const data = await response.json();
@@ -105,7 +105,7 @@ export default function SantaRequestLedger({ email, onSignOut }) {
     try {
       const params = new URLSearchParams({ status, q: debouncedQuery, download: 'txt' });
       const response = await fetch(`/api/name-requests?${params}`, {
-        credentials: 'include', cache: 'no-store', signal: controller.signal });
+        credentials: 'include', headers: ownerToken ? { Authorization: `Bearer studio-owner.${ownerToken}` } : {}, cache: 'no-store', signal: controller.signal });
       await checkResponse(response);
       if (!response.headers.get('Content-Type')?.startsWith('text/plain')) throw new Error('The server did not return a TXT list. Please retry.');
       const blob = await response.blob();
@@ -128,7 +128,7 @@ export default function SantaRequestLedger({ email, onSignOut }) {
     <img className="staff-brand" src="/images/santa-radio-logo.png" alt="Santa Radio" width="827" height="190" />
     <section className="staff-panel" aria-labelledby="ledger-title">
       <div className="staff-account"><span>Signed in as <strong>{email || 'staff account'}</strong></span>
-        <button className="staff-text-action" type="button" onClick={onSignOut}>Sign out</button></div>
+        <button className="staff-text-action" type="button" onClick={onSignOut}>{ownerToken ? 'Back to dashboard' : 'Sign out'}</button></div>
       <p className="staff-kicker">A quiet little list from the message desk</p>
       <h1 id="ledger-title">Name requests</h1>
       <p className="staff-lede">Outstanding names appear most requested first. Mark a name Recorded after adding its recording.

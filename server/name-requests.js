@@ -1,4 +1,5 @@
 import express from 'express';
+import { validOwnerToken } from './studio-owner-handler.js';
 import { randomUUID, createHmac, timingSafeEqual } from 'node:crypto';
 import { getAuth } from '@clerk/express';
 import { createClerkClient } from '@clerk/backend';
@@ -17,6 +18,7 @@ export function approvedAdmin(user) {
     primary.emailAddress?.toLowerCase() === 'admin@santaradio.co.uk';
 }
 export async function authorize(req) {
+  if (validOwnerToken(req)) return 200;
   const { userId } = getAuth(req);
   if (!userId) return 401;
   const user = await createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY }).users.getUser(userId);
@@ -127,7 +129,7 @@ const app = express();
 app.disable('x-powered-by');
 app.use((_req, res, next) => { privateResponse(res); next(); });
 const auth = staffAuth;
-app.use((req, res, next) => ['GET', 'PATCH'].includes(req.method) ? auth(req, res, next) : next());
+app.use((req, res, next) => ['GET', 'PATCH'].includes(req.method) && !validOwnerToken(req) ? auth(req, res, next) : next());
 app.use(express.json({ limit: '2kb', inflate: false }));
 app.use(createNameRequestHandler());
 app.use((error, _req, res, _next) => res.status(error.status === 413 ? 413 : 400).json({ error: 'Please send a valid, short name request.' }));

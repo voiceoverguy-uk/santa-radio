@@ -1,7 +1,9 @@
 import { useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import './SantaDashboard.css';
+import SantaRequestLedger from '../components/SantaRequestLedger.jsx';
 export default function SantaDashboard() {
+  const [ledger,setLedger]=useState(false);
   const token=useRef(''), request=useRef(0);
   const [input,setInput]=useState(''),[data,setData]=useState(null),[error,setError]=useState(''),[busy,setBusy]=useState(false);
   async function load(event) {
@@ -19,6 +21,7 @@ export default function SantaDashboard() {
       const result=await response.json();if(!response.ok)throw new Error(result.error);await load();
     }catch(e){setError(e.message);}finally{setBusy(false);}
   }
+  if (ledger && data) return <SantaRequestLedger ownerToken={token.current} email="Studio owner" onSignOut={()=>{setLedger(false);load();}} />;
   const totals=data?.daily.reduce((sum,row)=>({creations:sum.creations+row.creations,downloads:sum.downloads+row.downloads}),{creations:0,downloads:0});
   const table=(headers,rows)=><div className="santa-dashboard__table"><table><thead><tr>{headers.map(h=><th key={h} scope="col">{h}</th>)}</tr></thead><tbody>{rows.length?rows.map((row,i)=><tr key={i}>{row.map((cell,j)=><td key={j}>{cell}</td>)}</tr>):<tr><td colSpan={headers.length}>No activity recorded yet.</td></tr>}</tbody></table></div>;
   return <main className="santa-dashboard"><Helmet><title>Santa Radio · Private dashboard</title><meta name="robots" content="noindex, nofollow" /></Helmet>
@@ -31,7 +34,7 @@ export default function SantaDashboard() {
       <section><h2>Daily free-message usage</h2>{table(['UK date','Created','Download clicks'],data.daily.filter(r=>data.since && r.day>=data.since).map(r=>[r.day,r.creations,r.downloads]))}</section>
       <section><h2>Popular recorded names</h2>{table(['First name','Created','Download clicks'],data.names.map(r=>[r.name,r.creations,r.downloads]))}</section>
       <section><h2>Christmas Contenders votes</h2>{table(['Artist','Song','Confirmed votes'],data.votes.map(r=>[r.artist,r.title,r.votes]))}</section>
-      <section><h2>Names awaiting your review</h2><p>Record and add the name to the library first, then mark it recorded. Requests never add audio automatically.</p>{data.requests===null?<p>Name requests could not load. <a href="/request-names">Open the full request ledger</a>.</p>:table(['Name','Requests','Action'],(data.requests||[]).map(r=>[r.name,r.count,<button disabled={busy} onClick={()=>mark(r.name)}>Mark recorded</button>]))}<p><a href="/request-names">Full request ledger and exports</a></p></section>
+      <section><h2>Names awaiting your review</h2><p>Record and add the name to the library first, then mark it recorded. Requests never add audio automatically.</p>{data.requests===null?<p>Name requests could not load. <button onClick={()=>setLedger(true)}>Open the full request ledger</button>.</p>:table(['Name','Requests','Action'],(data.requests||[]).map(r=>[r.name,r.count,<button disabled={busy} onClick={()=>mark(r.name)}>Mark recorded</button>]))}<p><button onClick={()=>setLedger(true)}>Full request ledger and exports</button></p></section>
     </>}{error&&<p role="alert">{error}</p>}
   </main>;
 }
