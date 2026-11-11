@@ -11,7 +11,7 @@ test('list failures are retryable; concurrent checkers share one names-only down
   let requests = 0;
   const request = async url => {
     requests++;
-    assert.equal(url, '/names-data/test-version.json');
+    assert.equal(url, '/names-data/latest.json');
     return Response.json(['Danny', 'Daniel', 'Zoë', 'O’Connor']);
   };
   const [one, two] = await Promise.all([loadBrowserSantaNames(request), loadBrowserSantaNames(request)]);

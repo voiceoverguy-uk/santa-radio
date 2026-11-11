@@ -1,4 +1,7 @@
 import { readFile } from 'node:fs/promises';
+import { santaNameLibrary } from '../santa-name-library.js';
+import { santaNameKey } from '../../src/lib/santaNameSearch.js';
+import { validateSnapshot } from './snapshot.js';
 
 const root = new URL('./', import.meta.url);
 const assetPath = /^\/names-data\/(names-[a-f0-9]{64}\.json)$/;
@@ -21,7 +24,7 @@ function encodingFor(header = '') {
   return null;
 }
 
-export function createNamesDemoHandler({ directory = root } = {}) {
+export function createNamesDemoHandler({ directory = root, library = santaNameLibrary } = {}) {
   return async (req, res) => {
     const fail = (status, message) => {
       res.setHeader('Cache-Control', 'private, no-store');
@@ -40,11 +43,36 @@ export function createNamesDemoHandler({ directory = root } = {}) {
       return fail(405, 'Use GET or HEAD.');
     }
     try {
+      if (url.pathname === '/names-data/latest.json') {
+        let names;
+        let fallback = false;
+        try {
+          const records = await library.catalogue();
+          const unique = new Map();
+          for (const record of records) {
+            const name = record.name.normalize('NFC').trim();
+            if (!unique.has(santaNameKey(name))) unique.set(santaNameKey(name), name);
+          }
+          names = validateSnapshot({ version: 1, names: [...unique.values()].sort() });
+        } catch {
+          // Cold instances can still serve the validated deployment copy during an outage.
+          const manifest = JSON.parse(await readFile(new URL('./asset-manifest.json', directory), 'utf8'));
+          if (!filenamePattern.test(manifest.filename)) throw new Error('Invalid asset pointer');
+          names = validateSnapshot({ version: 1, names: JSON.parse(await readFile(
+            new URL(`./assets/${manifest.filename}`, directory), 'utf8')) });
+          fallback = true;
+        }
+        res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+        res.setHeader('CDN-Cache-Control', `public, s-maxage=${fallback ? 10 : 60}`);
+        res.setHeader('Vercel-CDN-Cache-Control', `public, s-maxage=${fallback ? 10 : 60}`);
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+        return res.end(req.method === 'HEAD' ? undefined : JSON.stringify(names));
+      }
       if (url.pathname === '/names') {
         const manifest = JSON.parse(await readFile(new URL('./asset-manifest.json', directory), 'utf8'));
         if (!filenamePattern.test(manifest.filename)) throw new Error('Invalid asset pointer');
         const html = (await readFile(new URL('./page.html', directory), 'utf8'))
-          .replaceAll('__NAMES_ASSET_URL__', `/names-data/${manifest.filename}`);
+          .replaceAll('__NAMES_ASSET_URL__', '/names-data/latest.json');
         res.setHeader('Cache-Control', 'private, no-store, max-age=0');
         res.setHeader('CDN-Cache-Control', 'no-store');
         res.setHeader('Vercel-CDN-Cache-Control', 'no-store');

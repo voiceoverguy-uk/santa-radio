@@ -3,7 +3,6 @@ import assert from 'node:assert/strict';
 import { readFile, mkdtemp, rm, writeFile, cp } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { pathToFileURL } from 'node:url';
-import { execFileSync } from 'node:child_process';
 import { brotliDecompressSync, gunzipSync } from 'node:zlib';
 import { snapshotUrl, validateSnapshot } from '../server/names-demo/snapshot.js';
 import { createNamesDemoHandler, namesDemoMiddleware } from '../server/names-demo/handler.js';
@@ -58,10 +57,10 @@ test('precompressed Brotli/gzip and identity responses are equivalent and public
   assert.equal((await request(handler, { method: 'HEAD' })).body, '');
 });
 
-test('page points at current hashed asset and cannot be cached with an obsolete version', async () => {
+test('page points at automatically refreshed names feed and cannot be cached with an obsolete version', async () => {
   const page = await request(handler, { url: '/names' });
   assert.equal(page.status, 200);
-  assert.ok(page.body.includes(asset));
+  assert.ok(page.body.includes('/names-data/latest.json'));
   assert.doesNotMatch(page.body, /__NAMES_ASSET_URL__|\/api\/names-demo|snapshot\.json|stagcommunications/);
   assert.match(page.headers['cache-control'], /no-store/);
   assert.equal(page.headers['vercel-cdn-cache-control'], 'no-store');
@@ -83,38 +82,29 @@ test('deterministic preparation changes URLs only when names change and retains 
   assert.equal((await request(createNamesDemoHandler({ directory: root }), { url: `/names-data/${first.filename}` })).status, 200);
   await cp(new URL('./page.html', directory), new URL('./page.html', root));
   const newPage = await request(createNamesDemoHandler({ directory: root }), { url: '/names' });
-  assert.ok(newPage.body.includes(changed.filename));
+  assert.ok(newPage.body.includes('/names-data/latest.json'));
   assert.ok(!newPage.body.includes(first.filename));
 });
 
-test('two detached fresh runtime copies serve page/list with fetch forbidden and no database or credentials', async t => {
-  const dir = await mkdtemp(`${tmpdir()}/names-demo-runtime-`);
-  t.after(() => rm(dir, { recursive: true, force: true }));
-  for (const path of ['handler.js', 'page.html', 'asset-manifest.json', 'assets']) {
-    await cp(new URL(path, directory), `${dir}/${path}`, { recursive: true });
-  }
-  // Deliberately do not copy the private snapshot, modules, origin config or node_modules.
-  const probe = `
-    let calls = 0;
-    globalThis.fetch = () => { calls++; throw new Error('Origin forbidden'); };
-    const { default: handler } = await import(${JSON.stringify(pathToFileURL(`${dir}/handler.js`).href)});
-    const invoke = async url => {
-      const res = { headers: {}, setHeader(k,v) { this.headers[k]=v; }, writeHead(s) { this.status=s; return this; }, end(b) { this.body=b; return this; } };
-      await handler({method:'GET',url,headers:{}},res); if(res.status!==200) throw new Error('Bad response'); return res.body;
-    };
-    const page = await invoke('/names');
-    if(!page.includes(${JSON.stringify(asset)})) throw new Error('Wrong version');
-    const names = JSON.parse(await invoke(${JSON.stringify(asset)}));
-    if(names.length!==${prepared.names} || calls!==0) throw new Error('Unexpected data or origin access');
-    console.log(JSON.stringify({originCalls:calls,names:names.length}));
-  `;
-  for (let i = 0; i < 2; i++) {
-    const result = JSON.parse(execFileSync(process.execPath, ['--experimental-default-type=module', '--input-type=module', '-e', probe], {
-      encoding: 'utf8', env: { PATH: process.env.PATH },
-    }));
-    assert.equal(result.originCalls, 0);
-    assert.equal(result.names, prepared.names);
-  }
+test('live names update without a rebuild, remain names-only, and fall back safely', async () => {
+  let records = [{ name: 'Danny', file: 'secret.wav', id: 'private-id' }];
+  const live = createNamesDemoHandler({ library: { catalogue: async () => records } });
+  const get = () => request(live, { url: '/names-data/latest.json' });
+  assert.deepEqual(JSON.parse((await get()).body), ['Danny']);
+  records.push({ name: 'Daisy', file: 'private.wav' }, { name: 'danny' });
+  const updated = await get();
+  assert.deepEqual(JSON.parse(updated.body), ['Daisy', 'Danny']);
+  assert.doesNotMatch(updated.body, /secret|file|private|id/);
+  assert.match(updated.headers['cache-control'], /max-age=0.*must-revalidate/);
+  assert.equal(updated.headers['vercel-cdn-cache-control'], 'public, s-maxage=60');
+  records = [{ name: 'https://invalid.example' }];
+  const fallback = await get();
+  assert.deepEqual(JSON.parse(fallback.body), JSON.parse((await request(handler)).body));
+  assert.equal(fallback.headers['vercel-cdn-cache-control'], 'public, s-maxage=10');
+  const offline = createNamesDemoHandler({ library: { catalogue: async () => { throw new Error('offline'); } } });
+  assert.equal((await request(offline, { url: '/names-data/latest.json' })).status, 200);
+  assert.equal((await request(live, { url: '/names-data/latest.json?file=secret' })).status, 403);
+  assert.equal((await request(live, { url: '/names-data/latest.json', method: 'POST' })).status, 405);
 });
 
 test('retired search routes do not query a database or expose extra data', async () => {

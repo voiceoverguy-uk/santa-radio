@@ -2,7 +2,7 @@ import { santaNameKey } from './santaNameSearch.js';
 
 let pending;
 
-// One versioned, names-only download shared by every checker in this tab.
+// One automatically refreshed, names-only download shared by every checker in this tab.
 // A failed load is not cached: the existing Retry controls can try again.
 export function loadBrowserSantaNames(request = fetch) {
   if (!pending) {
@@ -10,7 +10,7 @@ export function loadBrowserSantaNames(request = fetch) {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 15000);
       try {
-        const response = await request(__SANTA_NAMES_ASSET_URL__, { signal: controller.signal });
+        const response = await request('/names-data/latest.json', { signal: controller.signal, cache: 'no-cache' });
         if (!response.ok) throw new Error('The names list could not be loaded. Please retry.');
         const names = await response.json();
         if (!Array.isArray(names) || !names.length || names.some(name =>

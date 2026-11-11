@@ -13,11 +13,11 @@ import { issueNameToken, verifyNameToken } from '../server/santa-name-security.j
 
 const key = 'isolated-test-only-signing-key-never-a-live-secret';
 const request = ip => ({ headers: {}, socket: { remoteAddress: ip } });
-const DAY = 86400000;
+const DAY = 240000;
 const manifest = names => Buffer.from(JSON.stringify({ version: 2, names: names.map(([name, file, aliases]) =>
   ({ name, file, id: filenameId(file), ...(aliases ? { aliases } : {}) })) }));
 
-test('persistent daily snapshot coordinates instances, preserves good data and propagates forced additions/removals', async () => {
+test('persistent automatically refreshed snapshot coordinates instances, preserves good data and propagates forced additions/removals', async () => {
   await withNameDatabase(async pool => {
     let now = Date.now(), calls = 0, broken = false;
     let bytes = manifest([['Anna', 'Anna.mp3'], ['Élodie', 'Élodie.mp3', ['Ellie']]]);
@@ -39,7 +39,7 @@ test('persistent daily snapshot coordinates instances, preserves good data and p
     await a.search('Anna'); assert.equal(calls, 1);
     now += 2;
     await Promise.all([a.search('Anna'), b.search('Anna')]);
-    assert.equal(calls, 2, 'one daily origin refresh across instances');
+    assert.equal(calls, 2, 'one scheduled origin refresh across instances');
     bytes = manifest([['Anna', 'Anna.mp3'], ['Danny', 'Danny.mp3'], ['Anna', 'anna.wav']]);
     assert.equal((await storeA.refresh({ force: true })).published, true);
     const hint = await consumeNameAccess(request('refresh-test'), 'search', { pool, now, key });

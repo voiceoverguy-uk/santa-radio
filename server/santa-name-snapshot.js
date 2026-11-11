@@ -1,14 +1,14 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { databasePool } from './name-request-store.js';
 
-const DAY_MS = 24 * 60 * 60_000;
+const REFRESH_MS = 4 * 60_000; // Plus up to one minute of public CDN caching.
 const RETRY_MS = 60_000;
 const LEASE_MS = 30_000; // Origin reads have a hard ten-second timeout.
 const metadataSql = `version, record_count, refreshed_at, next_refresh_at, retry_after,
   lease_until, last_attempt_at, last_error`;
 const milliseconds = value => value ? new Date(value).getTime() : 0;
 const hintFor = row => ({ version: row.version,
-  nextRefreshAt: milliseconds(row.next_refresh_at), retryAfter: milliseconds(row.retry_after) });
+  nextRefreshAt: Math.min(milliseconds(row.next_refresh_at), milliseconds(row.refreshed_at) + REFRESH_MS), retryAfter: milliseconds(row.retry_after) });
 const unavailable = code => Object.assign(new Error('Private recorded-name index unavailable.'), { code });
 
 // This module is server-only. It never returns payloads through an HTTP route.
@@ -53,7 +53,7 @@ export function createNameSnapshotStore({ pool = databasePool, now = Date.now, p
       WHERE catalogue_key='recorded-names'
         AND (lease_until IS NULL OR lease_until <= $3)
         AND ($4 OR retry_after IS NULL OR retry_after <= $3)
-        AND ($4 OR version IS NULL OR next_refresh_at <= $3)
+        AND ($4 OR version IS NULL OR next_refresh_at <= $3 OR refreshed_at <= $3::timestamptz - interval '4 minutes')
       RETURNING lease_token`, [owner, new Date(now() + LEASE_MS), timestamp, force]);
     if (!claimed.rowCount) return { published: false, reason: 'fresh-or-refresh-in-progress' };
     try {
@@ -66,7 +66,7 @@ export function createNameSnapshotStore({ pool = databasePool, now = Date.now, p
         lease_token=NULL, lease_until=NULL, retry_after=NULL, last_error=NULL
         WHERE catalogue_key='recorded-names' AND lease_token=$6 AND lease_until > $4
         RETURNING version`, [bytes.toString('utf8'), version, records.length, new Date(now()),
-        new Date(now() + DAY_MS), owner]);
+        new Date(now() + REFRESH_MS), owner]);
       if (!published.rowCount) throw unavailable('INDEX_LEASE_LOST');
       cached = { version, records };
       return { published: true, total: records.length };

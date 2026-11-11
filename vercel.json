@@ -97,7 +97,7 @@
       "dest": "/api/names-demo"
     },
     {
-      "src": "/names-data/(names-[a-f0-9]{64}\\.json)",
+      "src": "/names-data/(latest\\.json|names-[a-f0-9]{64}\\.json)",
       "dest": "/api/names-demo"
     },
     {
