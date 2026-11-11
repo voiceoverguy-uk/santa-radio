@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useMemo, useState, useRef, useEffect } from "react";
-import { createPortal } from "react-dom";
+import { createPortal, flushSync } from "react-dom";
 import { santaStops, getStopArrivalDate } from "@/data/santaRouteStops";
 import { getVisitedStops, getCurrentStopId, getCountdownToStart, getRouteResearchCopy, type HolidayDestination, type MapPosition } from "@/lib/santaRoute";
 import { worldMapPaths } from "@/data/worldMapPaths";
@@ -29,6 +29,51 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
   const titleId = useId();
   const descriptionId = useId();
   const mapRef = useRef<HTMLDivElement>(null);
+  const [expanded, setExpanded] = useState(false);
+  const fullscreenButtonRef = useRef<HTMLButtonElement>(null);
+  const nativeFullscreen = useRef(false);
+  const closeExpanded = () => {
+    if (document.fullscreenElement === mapRef.current) void document.exitFullscreen().catch(() => {});
+    setExpanded(false);
+    requestAnimationFrame(() => fullscreenButtonRef.current?.focus());
+  };
+  const toggleExpanded = () => {
+    if (expanded) { closeExpanded(); return; }
+    flushSync(() => setExpanded(true));
+    const element = mapRef.current;
+    if (element?.requestFullscreen) {
+      void element.requestFullscreen().then(() => { nativeFullscreen.current = true; }).catch(() => {});
+    }
+  };
+  useEffect(() => {
+    if (!expanded) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    fullscreenButtonRef.current?.focus();
+    const onFullscreenChange = () => {
+      if (nativeFullscreen.current && !document.fullscreenElement) {
+        nativeFullscreen.current = false;
+        closeExpanded();
+      }
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") { event.preventDefault(); closeExpanded(); }
+      if (event.key === "Tab") {
+        const controls = Array.from(mapRef.current?.querySelectorAll<HTMLElement>('button, select, [tabindex="0"]') || []);
+        const first = controls[0], last = controls[controls.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+      }
+    };
+    document.addEventListener("fullscreenchange", onFullscreenChange);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("fullscreenchange", onFullscreenChange);
+      document.removeEventListener("keydown", onKeyDown);
+      nativeFullscreen.current = false;
+    };
+  }, [expanded]);
   const santaArtworkTriggerRef = useRef<SVGGElement>(null);
   const artworkViewerRef = useRef<HTMLDivElement>(null);
   const wasArtworkViewerOpen = useRef(false);
@@ -40,7 +85,7 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
     const observer = new ResizeObserver(([entry]) => setPixelFactor(1000 / Math.min(1000, Math.max(280, entry.contentRect.width))));
     observer.observe(element);
     return () => observer.disconnect();
-  }, []);
+  }, [expanded]);
   const year = effectiveTime.getUTCFullYear();
   const solarMinute = Math.floor(effectiveTime.getTime() / 60_000);
   const solarTime = new Date(solarMinute * 60_000);
@@ -175,9 +220,16 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
     ? live && currentStop ? `Following Santa · ${stopRegion(currentStop)}` : "Santa's position"
     : effectiveView === "world" ? `World · ${santaStops.length} stops` : effectiveView;
 
-  return (
-    <div ref={mapRef} className="tracker-map relative w-full overflow-hidden rounded-2xl border">
+  const mapContent = (
+    <div role={expanded ? "dialog" : undefined} aria-modal={expanded || undefined} aria-label={expanded ? "Full-screen Santa map" : undefined} ref={mapRef} className="tracker-map relative w-full overflow-hidden rounded-2xl border">
       <div className="tj-map-viewport relative w-full" style={{ aspectRatio: "2 / 1" }}>
+        {!autoCycleView && <button ref={fullscreenButtonRef} type="button" className="tj-fullscreen-button"
+          onClick={toggleExpanded} aria-label={expanded ? "Exit full screen" : "Full screen"} title={expanded ? "Exit full screen" : "Full screen"}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <path d={expanded ? "M4 9h5V4M20 15h-5v5M9 9 3 3m12 12 6 6" : "M9 3H3v6m12 12h6v-6M3 3l6 6m12 12-6-6"} />
+          </svg>
+        </button>}
+        {expanded && <span className="tj-rotate-hint">Turn your phone sideways for a wider view</span>}
         <svg
           viewBox="0 0 1000 500"
           className="absolute inset-0 w-full h-full"
@@ -447,10 +499,11 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
             style={{ width: `min(47vw, ${47 * artwork.width / artwork.height}dvh)` }}
           />
         </div>,
-        document.body,
+        expanded && mapRef.current ? mapRef.current : document.body,
       )}
     </div>
   );
+  return expanded ? createPortal(<div className="santa-tracker tracker-fullscreen">{mapContent}</div>, document.body) : mapContent;
 }
 
 function MAP_W_OVER(c: Camera) {
