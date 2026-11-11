@@ -1,3 +1,4 @@
+import { votingCodeEmail } from './contenders-voting-email.js';
 import { randomInt, randomUUID, timingSafeEqual } from 'node:crypto';
 import { databasePool } from './contenders-database.js';
 import { COMPETITION, votingStatus } from '../src/lib/contenders.js';
@@ -26,7 +27,7 @@ export async function sendVotingCode({ email, code, id }, fetcher = fetch, env =
       'Idempotency-Key': `contenders-code:${id}` },
     body: JSON.stringify({ from: 'Santa Radio <santa@santaradio.co.uk>', to: [email],
       subject: 'Your Santa Radio voting code',
-      text: `Your Christmas Contenders voting code is ${code}.\n\nEnter it on the Santa Radio voting page within 15 minutes to confirm your chosen song. Your vote is not counted until you confirm.\n\nOne vote per person. This does not subscribe you to marketing. If you did not request this code, ignore this email.\n\nSanta Radio\nhttps://www.santaradio.co.uk/christmas-contenders` }),
+      ...votingCodeEmail(code) }),
   });
   if (!response.ok || typeof (await response.json()).id !== 'string') throw problem('We couldn’t send your code. Please try again shortly.', 503);
 }
