@@ -9,8 +9,8 @@ import { useSantaMessageAccess } from './SantaMessageAccessProvider.jsx';
 import useSantaMessageAllowance from './useSantaMessageAllowance.js';
 import useSantaMessageHistory from './useSantaMessageHistory.js';
 import useSantaRecipient, { selectSantaRecipient } from './useSantaRecipient.js';
-import useSantaNames from './useSantaNames.js';
-import useHostedSantaNameSearch from './useHostedSantaNameSearch.js';
+import useBrowserSantaNameSearch from './useBrowserSantaNameSearch.js';
+import { resolveBrowserSantaName } from '../lib/browserSantaNames.js';
 import useSantaNameCounter from './useSantaNameCounter.js';
 import SantaCooldownNotice from './SantaCooldownNotice.jsx';
 import SantaCooldownUpsell from './SantaCooldownUpsell.jsx';
@@ -39,6 +39,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const hasPrefilledName = Boolean((pendingName?.name || initialName) &&
     santaNameKey(pendingName?.name || initialName) === santaNameKey(name));
   const [selectedRecord, setSelectedRecord] = useState(null);
+  const [recordingChoices, setRecordingChoices] = useState([]);
   const [exampleName, setExampleName] = useState('Olivia');
   const [activeExampleName, setActiveExampleName] = useState(null);
   const selectedRecipient = useSantaRecipient();
@@ -56,9 +57,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const requestRef = useRef(null);
   const nameRequestRef = useRef(null);
   const [nameRequest, setNameRequest] = useState({ key: '', status: 'idle', message: '' });
-  const normalNameSearch = useSantaNames(keepSignupInPlace ? '' : name, hasAccess && !keepSignupInPlace);
-  const privateNameSearch = useHostedSantaNameSearch(name, keepSignupInPlace);
-  const nameSearch = keepSignupInPlace ? privateNameSearch : normalNameSearch;
+  const nameSearch = useBrowserSantaNameSearch(name);
   const retryNameSearch = () => {
     setSuggesting(true);
     nameSearch.refresh();
@@ -68,7 +67,8 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const availableNamesText = displayedNameCount !== null
     ? `${displayedNameCount.toLocaleString('en-GB')} ${displayedNameCount === 1 ? 'name' : 'names'} available`
     : 'Recorded names available to search';
-  const suggestions = nameSearch.records;
+  const suggestions = recordingChoices.length && santaNameKey(recordingChoices[0].name) === santaNameKey(name)
+    ? recordingChoices : nameSearch.records;
   const verifiedSelectedRecord = selectedRecord && selectedRecord.name === name.trim()
     ? selectedRecord : null;
   const exactMatches = !nameSearch.loading && !nameSearch.error
@@ -96,14 +96,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const exploreBespoke = event => {
     if (freeGreetingKey) setDismissedInvitations(previous => new Set([...previous, freeGreetingKey]));
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-    event.preventDefault();
     if (freeRecipient) selectSantaRecipient(freeRecipient);
-    requestAnimationFrame(() => {
-      const studio = document.getElementById('santa-studio-promotion');
-      if (!studio) return;
-      studio.querySelector('#santa-studio-title')?.focus({ preventScroll: true });
-      scrollToSantaMessageDesk(studio);
-    });
   };
 
   useEffect(() => {
@@ -159,6 +152,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
     setBusy(false);
     audioRef.current?.pause();
     setName(value);
+    setRecordingChoices([]);
     setSelectedRecord(null);
     setValidation('');
     setActiveOption(-1);
@@ -232,7 +226,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
     resumeRadioRef.current = null;
     setSuggesting(false);
     audioRef.current?.pause();
-    const recording = resolvedRecord;
+    let recording = resolvedRecord;
     if (!recording) {
       setValidation(name.trim()
         ? nameSearch.error || nameSearch.warning || (nameSearch.loading
@@ -247,6 +241,16 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
     requestRef.current = controller;
     setBusy(true);
     try {
+      if (recording.displayOnly) {
+        const records = await resolveBrowserSantaName(recording.name, { signal: controller.signal });
+        if (records.length !== 1) {
+          setRecordingChoices(records);
+          setSelectedRecord(null);
+          setSuggesting(true);
+          throw new Error('Please choose which recording you would like from the suggestions.');
+        }
+        recording = records[0];
+      }
       let statisticsReceipt = "";
       const blob = await allowance.create(async outro => {
         // Search and creation use private POST bodies. Cache lookup and
@@ -431,7 +435,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
               : exactMatch ? `Santa is ready to record for ${exactMatch.name}.`
               : ''}
           </span>
-          {nameSearch.loading && name.trim() && <p className="message-search-status" role="status">Checking Santa’s hosted name list…</p>}
+          {nameSearch.loading && name.trim() && <p className="message-search-status" role="status">Loading Santa’s name list…</p>}
           {nameSearch.warning && <div className="message-search-notice" role="status">
             <p>{nameSearch.warning}</p>
             <p>Only existing local recordings are known right now; this list may be incomplete.</p>

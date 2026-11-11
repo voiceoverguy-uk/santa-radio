@@ -53,10 +53,8 @@ export async function statisticsReport(pool = databasePool()) {
   return {daily:daily.rows,names:names.rows,votes:votes.rows,since:since.rows[0].since,updatedAt:new Date().toISOString()};
 }
 export async function safeRecordCreation(name) {
-  let timer;
-  try { return await Promise.race([recordCreation(name), new Promise((_, reject) => {
-    timer = setTimeout(() => reject(new Error('Statistics deadline')), 1200);
-  })]); }
+  // Return the receipt whenever the insert succeeds. Racing a short timer could
+  // count a creation but discard its receipt while Neon was waking up.
+  try { return await recordCreation(name); }
   catch { console.warn('[message-statistics] recording unavailable'); return ''; }
-  finally { clearTimeout(timer); }
 }
