@@ -325,6 +325,19 @@
   min-height: 10rem;
   aspect-ratio: auto !important;
 }
+.santa-tracker.tracker-capture .tracker-map-caption {
+  left: clamp(12px, 1.5vw, 28px);
+  bottom: clamp(12px, 1.5vw, 28px);
+  max-width: calc(100% - 56px);
+  padding: .5em .75em;
+  font-size: clamp(20px, 2.2vw, 44px);
+  font-weight: 700;
+  line-height: 1.25;
+  color: #fff5d6;
+  background: #081e17ed;
+  border: 1px solid #d4af3780;
+  border-radius: 12px;
+}
 .tracker-capture .tj-toolbar { flex: 0 0 auto; }
 .tracker-capture-loading { margin: auto; color: var(--tracker-muted); }
 @media (min-width: 768px) {
