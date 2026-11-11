@@ -626,7 +626,7 @@
 }
 
 @media (min-width: 768px) {
-  .santa-studio-promotion__details { display: flex; flex-direction: column; align-self: stretch; }
+  .santa-studio-promotion__details { display: flex; flex-direction: column; align-self: stretch; padding-bottom: 16px; }
   .santa-studio-promotion__details .santa-studio-promotion__offer { margin-top: auto; padding-top: 20px; }
   .santa-studio-promotion__intro { margin-bottom: 24px; }
   .santa-studio-promotion__actions { align-self: stretch; }

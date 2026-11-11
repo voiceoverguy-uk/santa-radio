@@ -51,7 +51,7 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
             More Christmas magic for {example.name}
           </p>
           <p className="santa-studio-promotion__copy">
-            Tell Santa about {example.name}’s age, achievements and what makes them special. Remind Santa what they leave out for him, too.
+            Tell Santa about {example.name}’s age, achievements and what makes them special. Let him know which country, region or state he’s visiting, and remind him what they leave out for him.
           </p>
           <div className="santa-studio-promotion__benefits">
             <p className="santa-studio-promotion__benefits-lead">
