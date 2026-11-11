@@ -1,12 +1,12 @@
 import { ClerkProvider, SignIn, SignUp, useAuth, useClerk, useUser } from '@clerk/react';
-import { publishableKeyFromHost } from '@clerk/react/internal';
+import { clerkPublishableKey } from '../lib/clerkPublishableKey.js';
 import { Link, useNavigate } from 'react-router-dom';
 import './SantaStaffBrowser.css';
 import SantaRequestLedger from '../components/SantaRequestLedger.jsx';
 import ContendersStaff from '../components/ContendersStaff.jsx';
 import SchoolVoucherUsage from '../components/SchoolVoucherUsage.jsx';
 
-const clerkPubKey = publishableKeyFromHost(
+const clerkPubKey = clerkPublishableKey(
   window.location.hostname,
   import.meta.env.VITE_CLERK_PUBLISHABLE_KEY,
 );

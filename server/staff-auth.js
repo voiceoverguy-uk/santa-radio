@@ -1,10 +1,10 @@
 import { clerkMiddleware } from '@clerk/express';
-import { publishableKeyFromHost } from '@clerk/shared/keys';
+import { clerkPublishableKey } from '../src/lib/clerkPublishableKey.js';
 import { getClerkProxyHost } from './middlewares/clerkProxyMiddleware.js';
 import { privateResponse } from './santa-name-security.js';
 
 const clerk = clerkMiddleware(req => ({
-  publishableKey: publishableKeyFromHost(getClerkProxyHost(req) ?? '', process.env.CLERK_PUBLISHABLE_KEY),
+  publishableKey: clerkPublishableKey(getClerkProxyHost(req) ?? '', process.env.CLERK_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY),
 }));
 export function staffAuth(req, res, next) {
   privateResponse(res);

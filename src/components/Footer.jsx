@@ -25,6 +25,8 @@ export default function Footer() {
         <span>&middot;</span>
         <Link to="/christmas-contenders">Christmas Contenders</Link>
         <span>&middot;</span>
+        <Link to="/my-santa-messages">My Santa Messages</Link>
+        <span>&middot;</span>
         <Link to="/apps">Download the app</Link>
         <span>&middot;</span>
         <Link to="/links">Links</Link>

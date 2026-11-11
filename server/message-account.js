@@ -1,7 +1,7 @@
 import express from 'express';
 import { clerkMiddleware, getAuth } from '@clerk/express';
 import { createClerkClient } from '@clerk/backend';
-import { publishableKeyFromHost } from '@clerk/shared/keys';
+import { clerkPublishableKey } from '../src/lib/clerkPublishableKey.js';
 import { getClerkProxyHost } from './middlewares/clerkProxyMiddleware.js';
 import { get, del, issueSignedToken } from '@vercel/blob';
 import { handleUploadPresigned } from '@vercel/blob/client';
@@ -72,7 +72,7 @@ app.use((req,res,next)=> {
  if (!req.headers.authorization && !/(?:^|;\s*)__session(?:_[^=;]+)?=/.test(req.headers.cookie || '')) return res.status(401).json({error:'Please sign in.'});
  next();
 });
-app.use(clerkMiddleware(req=>({publishableKey:publishableKeyFromHost(getClerkProxyHost(req) || '',process.env.CLERK_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY)})));
+app.use(clerkMiddleware(req=>({publishableKey:clerkPublishableKey(getClerkProxyHost(req) || '',process.env.CLERK_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY)})));
 app.use(async(req,res)=> {
  try {
   const {userId}=getAuth(req);

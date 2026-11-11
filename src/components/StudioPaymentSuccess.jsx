@@ -20,6 +20,7 @@ export default function StudioPaymentSuccess({ remaining, firstName = '', sandbo
           ? 'Your remaining messages will be checked when you open Studio.'
           : remaining === 0 ? 'Both messages from this purchase have been created.'
             : `You can now create ${remaining} ${remaining === 1 ? 'message' : 'messages'}.`}</p>
+        {!sandbox && <p><Link to="/my-santa-messages">Sign in to save your messages and gifts</Link> using your purchase email before you start creating.</p>}
         <Link className="btn-red studio-success__start" to={STUDIO_PATH} replace>
           {remaining === 0 ? 'Open your Studio' : 'Create your bespoke message'}
         </Link>
@@ -27,7 +28,7 @@ export default function StudioPaymentSuccess({ remaining, firstName = '', sandbo
           <h2>Come back whenever you’re ready</h2>
           <p>On this browser, use “Create your messages” or the remaining-message button in the Message Maker section of our homepage. You won’t need to pay again.</p>
           <p>On another device, or if this browser no longer recognises you, use your private email link or “Already purchased?” on the Studio page to request a fresh link.</p>
-          <p className="studio-success__download">Download each MP3 and its gifts before leaving Studio. Your unused messages are kept; completed recordings aren’t stored.</p>
+          <p className="studio-success__download">Sign in before creating to save new recordings and gifts until 31 January after Christmas. Without an account, download everything before leaving Studio. Previously unsaved recordings cannot be recovered.</p>
         </div>
         <Link className="studio-success__later" to="/">Back to Santa Radio — I’ll create them later</Link>
       </div>

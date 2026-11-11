@@ -1,4 +1,5 @@
 import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { StudioAccessContext } from '../lib/studioAccessContext.js';
 import { STUDIO_PATH } from '../lib/studioRoute.js';
 import useWorkshopSounds from '../hooks/useWorkshopSounds.js';
@@ -565,6 +566,8 @@ export default function SantaMessageWorkshop() {
             </div>
           </aside>}
         </header>
+
+        {accessKind === 'paid-live' && <p className="smw-allowance">Want to keep your creations online? <Link to="/my-santa-messages" target="_blank" rel="noreferrer">Sign in to My Santa Messages</Link> with your purchase email before creating a recording. Then return to this Studio tab.</p>}
 
         <section className="smw-builder" ref={builderRef} aria-labelledby="smw-builder-title">
           {generation.state?.limit === 2 && <p className="smw-allowance smw-remaining" role="status">

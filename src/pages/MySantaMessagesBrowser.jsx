@@ -1,6 +1,6 @@
 import {useEffect,useState} from 'react';
 import {ClerkProvider,SignIn,SignUp,useAuth,useUser,UserButton} from '@clerk/react';
-import {publishableKeyFromHost} from '@clerk/react/internal';
+import {clerkPublishableKey} from '../lib/clerkPublishableKey.js';
 import {Link,useLocation,useNavigate} from 'react-router-dom';
 function Collection(){
  const {isLoaded,isSignedIn,getToken}=useAuth(),{user}=useUser(),location=useLocation();
@@ -12,7 +12,7 @@ function Collection(){
  async function resume(purchaseId){setBusy(true);try{await api('resume',{purchaseId});window.location.assign('/bespoke-personalised-message-from-santa')}catch(e){setError(e.message);setBusy(false)}}
  return <main className="my-santa-preview"><div className="my-santa-wrap">
  <header className="my-santa-heading"><img src="/images/santa-studio-headphones.webp" alt="Santa in his studio"/><div><p className="my-santa-kicker">YOUR CHRISTMAS COLLECTION</p><h1>My Santa Messages</h1><p>Your recordings and personalised gifts, together.</p></div></header>
- {!isLoaded?<p>Loading sign-in…</p>:!isSignedIn?<section className="my-santa-welcome"><h2>Keep your Christmas magic</h2><p>Use the same email address you used to purchase. Sign in before creating your messages to save them here.</p>{location.pathname.endsWith('/sign-up')?<SignUp routing="path" path="/my-santa-messages/sign-up" signInUrl="/my-santa-messages" forceRedirectUrl="/my-santa-messages"/>:<SignIn routing="path" path="/my-santa-messages" signUpUrl="/my-santa-messages/sign-up" forceRedirectUrl="/my-santa-messages"/>}</section>:<>
+ {!isLoaded?<p>Loading sign-in…</p>:!isSignedIn?<section className="my-santa-welcome"><h2>Keep your Christmas magic</h2><p>Use the same email address you used to purchase. Sign in before creating your messages to save them here.</p>{/^\/my-santa-messages\/sign-up(?:\/|$)/.test(location.pathname)?<SignUp routing="path" path="/my-santa-messages/sign-up" signInUrl="/my-santa-messages" forceRedirectUrl="/my-santa-messages"/>:<SignIn routing="path" path="/my-santa-messages" signUpUrl="/my-santa-messages/sign-up" forceRedirectUrl="/my-santa-messages"/>}</section>:<>
  <div className="my-santa-toolbar"><h2>Welcome{user?.firstName?`, ${user.firstName}`:''}</h2><UserButton/><button disabled={busy} onClick={refresh}>Refresh collection</button></div>
  <p className="my-santa-retention">Messages and gifts stay until January 31 after their Christmas season. Download them before the date shown to keep them forever. Previously unsaved recordings cannot be recovered.</p>
  {data&&<><section className="my-santa-summary"><div><strong>{data.messages.length}</strong><span>saved messages</span></div><div><strong>{data.credits.reduce((sum,p)=>sum+p.remaining,0)}</strong><span>messages remaining</span></div></section>
@@ -22,4 +22,4 @@ function Collection(){
  {!data.messages.length&&<p>Your saved recordings will appear here after you create them in Studio.</p>}</>}
  </>}{error&&<p role="alert">{error}</p>}<p><Link to="/">Back to Santa Radio</Link></p></div></main>;
 }
-export default function Browser(){const navigate=useNavigate();return <ClerkProvider publishableKey={publishableKeyFromHost(window.location.hostname,import.meta.env.VITE_CLERK_PUBLISHABLE_KEY)} proxyUrl={import.meta.env.VITE_CLERK_PROXY_URL} routerPush={to=>navigate(to)} routerReplace={to=>navigate(to,{replace:true})} appearance={{variables:{colorPrimary:'#9b111e',colorBackground:'#f5efdf',colorForeground:'#173629',borderRadius:'12px'}}}><Collection/></ClerkProvider>}
+export default function Browser(){const navigate=useNavigate();return <ClerkProvider publishableKey={clerkPublishableKey(window.location.hostname,import.meta.env.VITE_CLERK_PUBLISHABLE_KEY)} proxyUrl={import.meta.env.VITE_CLERK_PROXY_URL} routerPush={to=>navigate(to)} routerReplace={to=>navigate(to,{replace:true})} appearance={{variables:{colorPrimary:'#9b111e',colorBackground:'#f5efdf',colorForeground:'#173629',borderRadius:'12px'}}}><Collection/></ClerkProvider>}
