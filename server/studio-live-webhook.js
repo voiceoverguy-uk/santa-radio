@@ -5,6 +5,7 @@ import { liveStripeClient } from './studio-live-stripe.js';
 import { databasePool } from './name-request-store.js';
 import { reconcileLivePurchase, transaction, digest } from './studio-live-store.js';
 import { deliverStudioReturn } from './studio-live-email.js';
+import { syncPaidStudioContact } from './studio-paid-contacts.js';
 
 export async function processLiveStudioEvent(event, { config, stripe, pool = databasePool() }) {
   // A correct signature is necessary, but also bind health/reconciliation to
@@ -21,7 +22,11 @@ export async function processLiveStudioEvent(event, { config, stripe, pool = dat
   return transaction(pool, async client => {
     const inserted = await client.query(`INSERT INTO public.santa_studio_live_events(event_id)
       VALUES($1) ON CONFLICT DO NOTHING RETURNING event_id`, [event.id]);
-    if (!inserted.rowCount) return { duplicate: true };
+    if (!inserted.rowCount) {
+      // A committed payment may still need its idempotent contact sync retried.
+      const saved = session ? await client.query('SELECT 1 FROM public.santa_studio_live_purchases WHERE checkout_session_id=$1', [session.id]) : null;
+      return { duplicate: true, sessionId: saved?.rowCount ? session.id : null };
+    }
     let authorized = false;
     if (session) {
       if (session.id !== canonical.data.object.id) throw new Error('STUDIO_LIVE_EVENT_SESSION_MISMATCH');
@@ -37,7 +42,7 @@ export async function processLiveStudioEvent(event, { config, stripe, pool = dat
 export function createLiveWebhookHandler({
   getConfig = liveStudioConfig, getStripe = liveStripeClient, getPool = databasePool,
   verify = (body, signature, secret) => Stripe.webhooks.constructEvent(body, signature, secret),
-  process = processLiveStudioEvent, deliver = deliverStudioReturn,
+  process = processLiveStudioEvent, deliver = deliverStudioReturn, syncContact = syncPaidStudioContact,
 } = {}) {
   const app = express();
   app.disable('x-powered-by');
@@ -66,9 +71,12 @@ export function createLiveWebhookHandler({
       // roll back successful payment. The scheduled worker retries delivery.
       if (result.sessionId) {
         try {
-          const emailConfig = liveStudioConfig(process.env, { email: true });
+          const emailConfig = liveStudioConfig(globalThis.process.env, { email: true });
           await deliver({ config: emailConfig, stripe, pool, sessionId: result.sessionId });
         } catch { /* Durable outbox remains pending; no raw provider logging. */ }
+        // Failure returns 503 for Stripe's webhook retry, after paid access commits.
+        // Duplicate deliveries retry this idempotent sync without granting twice.
+        await syncContact({ config, stripe, pool, sessionId: result.sessionId });
       }
       return res.json({ received: true });
     } catch { return res.status(503).json({ error: 'Payment notification could not be processed. Please retry.' }); }

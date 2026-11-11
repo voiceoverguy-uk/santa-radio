@@ -23,7 +23,7 @@
       "includeFiles": "{server/santa-audio/studio/**,server/santa-audio/names/**,server/santa-audio/sleighbells.mp3,node_modules/ffmpeg-static/**}"
     },
     "api/santa-message-access.js": { "installCommand": "", "maxDuration": 20 },
-    "api/stripe/webhook.js": { "installCommand": "", "maxDuration": 30 },
+    "api/stripe/webhook.js": { "installCommand": "", "maxDuration": 60 },
     "api/santa-studio-access.js": { "installCommand": "", "maxDuration": 30 },
     "api/santa-studio-checkout.js": { "installCommand": "", "maxDuration": 30 },
     "api/santa-studio-return.js": { "installCommand": "", "maxDuration": 30 },
