@@ -1,3 +1,4 @@
+import messageAccount from './server/message-account.js';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
@@ -72,6 +73,7 @@ const metadataPlugin = {
     server.middlewares.use('/api/radio-metadata', radioMetadata);
     server.middlewares.use('/api/radio-top-ten', radioTopTen);
     server.middlewares.use('/api/santa-mobile', santaMobile);
+    server.middlewares.use('/api/my-santa-messages', messageAccount);
     server.middlewares.use('/api/santa-studio-message', studioMessage);
     server.middlewares.use('/api/santa-workshop-usage', workshopUsage);
     server.middlewares.use('/api/santa-message', santaMessage);
@@ -114,6 +116,7 @@ const metadataPlugin = {
     server.middlewares.use('/api/radio-metadata', radioMetadata);
     server.middlewares.use('/api/radio-top-ten', radioTopTen);
     server.middlewares.use('/api/santa-mobile', santaMobile);
+    server.middlewares.use('/api/my-santa-messages', messageAccount);
     server.middlewares.use('/api/santa-studio-message', studioMessage);
     server.middlewares.use('/api/santa-workshop-usage', workshopUsage);
     server.middlewares.use('/api/santa-message', santaMessage);
@@ -130,6 +133,7 @@ export default defineConfig(async ({ isSsrBuild }) => ({
   // first download in Preview cannot trigger a reload and discard the session.
   optimizeDeps: { include: ['pdf-lib', '@pdf-lib/fontkit'] },
   define: {
+    'import.meta.env.VITE_CLERK_PUBLISHABLE_KEY': JSON.stringify(process.env.VITE_CLERK_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || ''),
     __SANTA_AUDIO_RECIPE__: JSON.stringify(santaAudioRecipeVersion()),
     __SANTA_NAMES_ASSET_URL__: JSON.stringify(`/names-data/${JSON.parse(
       await readFile(new URL('./server/names-demo/asset-manifest.json', import.meta.url), 'utf8')

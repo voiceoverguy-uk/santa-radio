@@ -1,3 +1,4 @@
+import messageAccount from './server/message-account.js';
 import { createServer } from 'node:http';
 import { createReadStream } from 'node:fs';
 import { stat, realpath, readFile } from 'node:fs/promises';
@@ -74,6 +75,7 @@ const server = createServer(async (req, res) => {
     if (pathname === '/api/radio-metadata') return await radioMetadata(req, res);
     if (pathname === '/api/radio-top-ten') return await radioTopTen(req, res);
     if (pathname === '/api/santa-mobile') return await santaMobile(req, res);
+    if (pathname === '/api/my-santa-messages') return await messageAccount(req, res);
     if (pathname === '/api/santa-studio-message') return await studioMessage(req, res);
     if (pathname === '/api/santa-workshop-usage') return workshopUsage(req, res);
     if (pathname === '/api/santa-message') return await santaMessage(req, res);

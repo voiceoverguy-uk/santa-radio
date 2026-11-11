@@ -1,3 +1,4 @@
+import { archiveRecording } from './message-account-store.js';
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -72,6 +73,7 @@ export function createStudioMessageHandler({
   executionMs = 110000,
   reportFailure = studioServiceFailure,
   allowanceIdentity = studioAllowanceIdentity, allowances = studioAllowanceStore,
+  archive = archiveRecording,
 } = {}) {
   let active = 0;
   return async (req, res) => {
@@ -196,7 +198,10 @@ export function createStudioMessageHandler({
       // Success boundary: full MP3 prepared and response about to be sent.
       // Disconnects after this commit are inherently uncertain, not proof of
       // browser receipt. Never roll back a committed slot after a send error.
+      const archiveId = await archive(req, audio, req.headers['idempotency-key'], recording.name || data.name, controller.signal);
+      controller.signal.throwIfAborted();
       if (reservation) await allowances.succeed(identity, reservation);
+      if (archiveId) res.setHeader('X-Studio-Archive', archiveId);
       controller.signal.throwIfAborted();
       audioResponse(audio, { record: {
         id: recording.id, name: recording.name || '', variant: recording.variant || '',

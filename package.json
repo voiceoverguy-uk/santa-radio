@@ -80,7 +80,8 @@
     "stripe": "^23.0.1",
     "stripe-replit-sync": "^1.0.0",
     "tailwindcss": "^4.2.1",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "@vercel/blob": "^2.9.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",

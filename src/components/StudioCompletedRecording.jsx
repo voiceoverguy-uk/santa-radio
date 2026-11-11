@@ -1,3 +1,4 @@
+import StudioAccountSave from './StudioAccountSave.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { useRadio } from './RadioProvider.jsx';
 import { getWorkshopDownloadName } from '../lib/workshopNameSpelling.js';
@@ -57,6 +58,7 @@ export default function StudioCompletedRecording({ result, ordinal, visible, sec
       <StudioBundleDownload result={result} onPreparing={onBundlePreparing}
         onDownloadRequested={() => { onDownloadRequested(); onBundleRequested?.(); }} />
     </div>
+    <StudioAccountSave result={result} />
     {error && <p role="alert">{error}</p>}
   </section>;
 }
