@@ -51,7 +51,7 @@
 .message-suggestions li:hover, .message-suggestions li[aria-selected="true"] { background: #dfd3b7; }
 .message-submit:disabled { opacity: .65; cursor: not-allowed; }
 .message-name-input:disabled { opacity: .7; cursor: not-allowed; }
-.message-cooldown-status { color: #d0dacd; font-size: .84rem; line-height: 1.65; margin: 0 0 20px; }
+.message-cooldown-status { color: #ffe5a0; font-size: 1.05rem; font-weight: 700; line-height: 1.6; margin: 0 0 20px; padding: 16px 18px; border: 1px solid #d4af3766; border-radius: 12px; background: #d4af3710; box-shadow: 0 0 20px #d4af3724, inset 0 0 16px #d4af370a; text-shadow: 0 0 12px #f5d88945; }
 .message-retry:disabled { opacity: .7; cursor: default; }
 .message-name-input[aria-invalid="true"] { border-color: #eea49a; }
 .message-name-hint { display: block; color: #becdbc; font-size: .76rem; margin: 10px 0 18px; line-height: 1.6; }
