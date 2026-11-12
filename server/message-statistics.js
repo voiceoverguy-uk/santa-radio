@@ -1,3 +1,4 @@
+import { requestRecordingStatus } from './request-recording-status.js';
 import { dismissNameRequest, databasePool } from './name-request-store.js';
 import express from 'express';
 import { websiteEmailStatistics } from './website-email-statistics.js';
@@ -9,7 +10,7 @@ import { listNameRequests, recordNameRequest } from './name-request-store.js';
 import { normaliseRequestedName } from '../src/lib/santaNameRequests.js';
 import { getClerkProxyHost } from './middlewares/clerkProxyMiddleware.js';
 export function createStatisticsHandler({ allowed=validOwnerToken, report=statisticsReport, download=recordDownload,
-  requests=listNameRequests, complete=recordNameRequest, dismiss=dismissNameRequest, paid=paidStatistics, emails=websiteEmailStatistics, songs=songSubmissionStatistics }={}) {
+  requests=listNameRequests, complete=recordNameRequest, dismiss=dismissNameRequest, paid=paidStatistics, emails=websiteEmailStatistics, songs=songSubmissionStatistics, recordingStatus=requestRecordingStatus }={}) {
   return async (req,res) => {
     res.set('Cache-Control','private, no-store').set('CDN-Cache-Control','no-store').set('X-Robots-Tag','noindex, nofollow');
     try {
@@ -36,7 +37,7 @@ export function createStatisticsHandler({ allowed=validOwnerToken, report=statis
       }
       const [data,paidResult,emailResult]=await Promise.all([report(),paid().catch(()=>null),emails().catch(()=>null)]);
       data.paid=paidResult; data.brevo=null; data.websiteEmails=emailResult;
-      try { data.requests=(await requests(1,'','outstanding',false)).requests; }
+      try { data.requests=await recordingStatus((await requests(1,'','outstanding',false)).requests); }
       catch { data.requests=null; }
       try { data.nameNotifications=(await databasePool().query("SELECT state,count(*)::integer AS count FROM santa_name_request_notifications WHERE state IN ('pending','sending','review') GROUP BY state")).rows; } catch { data.nameNotifications=null; }
       return res.json(data);
