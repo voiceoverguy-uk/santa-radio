@@ -32,7 +32,7 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
           <span className="santa-studio-promotion__seal" aria-hidden="true">S</span>
           <div className="santa-studio-promotion__heading">
             <p className="santa-studio-promotion__eyebrow">THE NORTH POLE RECORDING STUDIO</p>
-            <p className="santa-studio-promotion__name-count" role="status" aria-live="off">{availableNamesText}</p>
+            <p className="santa-studio-promotion__name-count">A little North Pole magic, made personal</p>
           </div>
         </div>
         <span className="message-recording-indicator santa-studio-promotion__recording" title="North Pole recording studio">
@@ -46,50 +46,52 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
       </header>
       <div className="santa-studio-promotion__details">
         <div className="santa-studio-promotion__intro">
-          <h3 id="santa-studio-title" tabIndex={-1}>Santa’s <span className="santa-studio-promotion__title-line">Message Maker Studio</span></h3>
+          <h3 id="santa-studio-title" tabIndex={-1}>Imagine their face<br />when Santa knows…</h3>
           <p className="santa-studio-promotion__subheading">
-            Let Santa mention your little one’s name and achievements
+            Their name. Their proudest moments. Even Santa’s favourite treat.
           </p>
           <p className="santa-studio-promotion__copy">
-            Tell Santa about {example.name}’s age, achievements and what makes them special. Let him know which country, region or state he’s visiting, and remind him what they leave out for him.
+            Go beyond a name with a message that celebrates what makes your child special. Tell Santa their age, achievements and where they live. You can even tell him what they’re leaving out on Christmas Eve.
           </p>
           <div className="santa-studio-promotion__benefits">
             <p className="santa-studio-promotion__benefits-lead">
-              Create messages for 2 children — each gets a personalised, shareable audio message and three personalised gifts:
+              Two personalised audio messages, with three keepsakes for each child:
             </p>
             <ul className="santa-studio-promotion__benefit-list">
               <li>A personalised Nice List certificate</li>
               <li>A personalised letter from Santa</li>
-              <li>Santa picture personalised for {example.name}</li>
+              <li>A Santa picture with their name</li>
             </ul>
           </div>
         </div>
       <div className="santa-studio-promotion__offer" role="group"
         aria-labelledby={`${offerTitleId} ${offerAmountId}`} aria-describedby={offerTermsId}>
-        <p id={offerTitleId} className="santa-studio-promotion__offer-title">2 bespoke messages from Santa</p>
-        <p id={offerAmountId} className="santa-studio-promotion__offer-price">£6.50</p>
-        <p id={offerTermsId} className="santa-studio-promotion__offer-terms">One-off payment · Two message creations</p>
+        <p id={offerTitleId} className="santa-studio-promotion__offer-title">Christmas magic for two children</p>
+        <p id={offerAmountId} className="santa-studio-promotion__offer-price">£6.50 <small>total</small></p>
+        <p id={offerTermsId} className="santa-studio-promotion__offer-terms">Two message creations · One-off payment</p>
       </div>
         <div className="santa-studio-promotion__actions">
         <StudioPurchaseButton onPaidAccessChange={setPaidAccess} />
         <p className="santa-studio-promotion__checkout-note">
-          <a href="/my-santa-messages">My Santa Messages — sign in or create an account</a>
+          <a href="/my-santa-messages">My Santa Messages · sign in or create an account</a>
           <br />Use your purchase email to save and download your creations.
         </p>
-        {!paidAccess && <div className="santa-studio-promotion__voucher-entry">
+        {!paidAccess && <details className="santa-studio-promotion__voucher-entry">
+          <summary>Have a voucher code?</summary>
           <WorkshopPasswordForm
           variant="promotion"
           onAuthorized={onAuthorized || (() => navigate(STUDIO_PATH))}
-        /></div>}
+        /></details>}
         </div>
       </div>
       <div className="santa-studio-promotion__examples">
+        <div className="santa-studio-promotion__audio"><SantaStudioAudioExample compact onActiveExampleNameChange={setPaidExampleName} /></div>
       <div className="santa-studio-promotion__gifts" data-expanded={giftsExpanded}>
         <div className="santa-studio-promotion__gift-controls">
           <button className="santa-studio-promotion__gift-toggle" type="button"
             aria-expanded={giftsExpanded} aria-controls={giftsId}
             onClick={() => setGiftsExpanded(value => !value)}>
-            Free gifts include
+            Your personalised keepsakes
             <span className="santa-studio-promotion__gift-arrow" aria-hidden="true">▾</span>
           </button>
         </div>
@@ -98,7 +100,6 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
             onPreviewOpen={() => setGiftsExpanded(true)} />
         </div>
       </div>
-        <div className="santa-studio-promotion__audio"><SantaStudioAudioExample compact onActiveExampleNameChange={setPaidExampleName} /></div>
       </div>
     </section>
   );

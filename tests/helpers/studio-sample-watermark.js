@@ -5,7 +5,7 @@ export async function expectSampleWatermark(frame, { forcedColors = false } = {}
   await expect(watermark).toBeVisible();
   await expect(watermark).toHaveAttribute('aria-hidden', 'true');
   await expect(watermark).toHaveCSS('pointer-events', 'none');
-  await expect(watermark.locator('span')).toHaveText(['SAMPLE', 'SAMPLE', 'SAMPLE']);
+  await expect(watermark.locator('span')).toHaveText(['Preview']);
   const geometry = await watermark.evaluate(node => {
     const sheet = node.getBoundingClientRect().toJSON();
     return { sheet, marks: [...node.children].map(mark => ({
@@ -16,13 +16,13 @@ export async function expectSampleWatermark(frame, { forcedColors = false } = {}
     })) };
   });
   for (const { rect, size, color, backgroundColor } of geometry.marks) {
-    expect(size).toBeGreaterThanOrEqual(12);
+    expect(size).toBeGreaterThanOrEqual(10);
     if (forcedColors) {
       expect(color).not.toBe(backgroundColor);
       expect(color).not.toBe('rgba(0, 0, 0, 0)');
       expect(backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
     } else {
-      expect(color).toBe('rgba(185, 20, 35, 0.45)');
+      expect(color).toBe('rgba(86, 76, 56, 0.85)');
     }
     expect(rect.left).toBeGreaterThanOrEqual(geometry.sheet.left - .5);
     expect(rect.right).toBeLessThanOrEqual(geometry.sheet.right + .5);

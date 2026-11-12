@@ -638,3 +638,12 @@
 @media (min-width: 768px) {
   .santa-studio-promotion__examples { width: 100%; max-width: 400px; justify-self: end; }
 }
+
+/* Approved offer presentation. */
+.santa-studio-promotion h3 { font-size: clamp(26px,3vw,36px); line-height: 1.2; }
+.santa-studio-promotion__subheading { font-family: inherit; font-size: 16px; line-height: 1.5; margin-top: 8px; }
+.santa-studio-promotion__copy { font-size: 15px; margin-top: 8px; }
+.santa-studio-promotion__benefits { font-size: 14px; margin-top: 10px; }
+.santa-studio-promotion__offer-title { font-size: 16px; }
+.santa-studio-promotion__offer-price small { display: block; text-align: right; font: 12px Arial,sans-serif; color: #56675a; }
+.santa-studio-promotion__examples { align-content: start; }

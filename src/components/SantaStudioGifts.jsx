@@ -17,7 +17,7 @@ const promotionGiftViews = ['picture', 'letter', 'certificate'];
 
 function SampleWatermark() {
   return <div className="studio-gifts__watermark" aria-hidden="true">
-    {[0, 1, 2].map(row => <span key={row}>SAMPLE</span>)}
+    <span>Preview</span>
   </div>;
 }
 

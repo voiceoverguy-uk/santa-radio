@@ -111,15 +111,15 @@ function PurchaseButton({ sandbox, onPaidAccessChange }) {
     {<button className="santa-studio-promotion__purchase" type="button"
       disabled={sandbox && (checking || !available || busy)} onClick={purchase} aria-describedby={noteId}>
       {sandbox
-        ? busy ? 'Opening test checkout…' : checking ? 'Checking test checkout…' : 'Purchase — £6.50 (test)'
-        : busy ? 'Opening secure checkout…' : 'Purchase'}
+        ? busy ? 'Opening test checkout…' : checking ? 'Checking test checkout…' : 'Create our Santa messages · £6.50 (test)'
+        : busy ? 'Opening secure checkout…' : 'Create our Santa messages · £6.50'}
     </button>}
     <p id={noteId} role="status">
       {sandbox
         ? available
-          ? 'Sandbox only — two successful creations for £6.50; no real money moves. Use test card 4242 4242 4242 4242, any future expiry and any three-digit CVC. Secure return emails are live-site only.'
+          ? 'Sandbox only. Two successful creations for £6.50; no real money moves. Use test card 4242 4242 4242 4242, any future expiry and any three-digit CVC. Secure return emails are live-site only.'
           : checking ? 'Checking sandbox availability…' : 'Sandbox purchases are available in the development preview only.'
-        : 'Two messages with personalised gifts. Create now or return later by email link. Download each MP3 and its gifts before leaving.'}
+        : 'Create now or return later using your email link. Download your messages and personalised keepsakes.'}
     </p>
     {new URLSearchParams(location.search).get('studioCheckout') === 'cancelled' &&
       <p role="status">{sandbox ? 'Test checkout was cancelled.' : 'Checkout was cancelled.'} No new access has been granted. You can try Purchase again.</p>}
