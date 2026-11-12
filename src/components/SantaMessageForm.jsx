@@ -456,7 +456,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
              const canRequest = !keepSignupInPlace && !!requested && !nameSearch.loading && !nameSearch.error &&
               !nameSearch.warning && suggestions.length === 0;
             const visibleRequest = canRequest && (nameRequest.key === requested.key ? nameRequest : null);
-            return canRequest ? <div className="name-request"><p>First names or hyphenated first names only—no surnames. Up to 5 new names every 2 hours.</p>
+            return canRequest ? <div className="name-request"><p>First names only. Double-barrelled first names are welcome, with a space or hyphen (for example, Amelia Rose or Lily-Mae). Please do not include a surname or full name (for example, Oliver Smith). Requests containing surnames will be declined. Up to 5 new names every 2 hours.</p>
               <button className="name-request-button" type="button"
                 onClick={submitNameRequest}
                  disabled={['pending', 'success'].includes(visibleRequest?.status)}
@@ -464,7 +464,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
                 {visibleRequest?.status === 'pending' ? 'Sending request…'
                   : visibleRequest?.status === 'error' ? 'Retry name request'
                     : visibleRequest?.status === 'success' ? 'Request saved'
-                    : 'Request this name'}
+                    : 'Request this first name'}
               </button>
               {visibleRequest?.status === 'pending' && <p className="name-request-note" id={`${inputId}-request-status`} role="status">Sending this request to Santa’s list. This won’t create a recording or use your message allowance.</p>}
               {visibleRequest?.status === 'success' && <p className="name-request-note success" id={`${inputId}-request-status`} role="status">{visibleRequest.message}</p>}

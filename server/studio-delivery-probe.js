@@ -13,26 +13,33 @@ import { studioAllowanceReady } from './studio-creation-allowance.js';
 // The response contains no names, inventory, paths, source URLs or credentials.
 export async function studioDeliveryProbe(req, res) {
   if (!req.headers['x-studio-delivery-probe']) return false;
-  let config;
+  let config, stage='configuration';
   try {
     config = liveStudioConfig();
     const expected = createHmac('sha256', config.secret).update('studio-live-delivery-probe').digest('base64url');
     const supplied = req.headers['x-studio-delivery-probe'];
     if (req.method !== 'GET' || typeof supplied !== 'string' || supplied.length !== expected.length
       || !timingSafeEqual(Buffer.from(supplied), Buffer.from(expected))) throw new Error('Probe denied');
+    stage='encoder';
     await access(ffmpeg, constants.X_OK);
+    stage='allowance';
     await studioAllowanceReady();
+    stage='source-clips';
     await Promise.all(['intro.flac', '1st.flac', '1-5.flac', '2nd.flac', '3rd.flac', '4th.flac', '5th.flac', '6th.flac']
       .map(file => access(join(studioSources, file), constants.R_OK)));
+    stage='bells';
     await access(studioBells, constants.R_OK);
+    stage='catalogue';
     const inventory = await workshopCatalogue();
     if (!['age', 'activity', 'achievement', 'treat', 'place'].every(key => inventory.categories[key]?.length)) {
       throw new Error('Catalogue unavailable');
     }
+    stage='names';
     if (!(await santaNameLibrary.count() > 0)) throw new Error('Names unavailable');
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ ready: true, offer: config.offer }));
   } catch {
+    console.warn('[studio-delivery-probe]', { stage });
     res.writeHead(503, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ ready: false }));
   }

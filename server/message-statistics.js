@@ -1,5 +1,5 @@
 import { requestRecordingStatus } from './request-recording-status.js';
-import { dismissNameRequest, databasePool } from './name-request-store.js';
+import { dismissNameRequest, rejectNameRequest, databasePool } from './name-request-store.js';
 import express from 'express';
 import { websiteEmailStatistics } from './website-email-statistics.js';
 import { paidStatistics } from './paid-statistics.js';
@@ -32,7 +32,8 @@ export function createStatisticsHandler({ allowed=validOwnerToken, report=statis
       }
       if(req.method==='PATCH') {
         const name=normaliseRequestedName(req.body?.name);
-        if(!['recorded','dismiss','restore'].includes(req.body?.action)||!name) return res.status(400).json({error:'Choose a requested name.'});
+        if(!['recorded','dismiss','restore','reject'].includes(req.body?.action)||!name) return res.status(400).json({error:'Choose a requested name.'});
+        if(req.body.action==='reject')return res.json(await rejectNameRequest(name.key));
         if(req.body.action==='recorded')await complete(name.key);else await dismiss(name.key,req.body.action==='restore');return res.json({ok:true});
       }
       const [data,paidResult,emailResult]=await Promise.all([report(),paid().catch(()=>null),emails().catch(()=>null)]);

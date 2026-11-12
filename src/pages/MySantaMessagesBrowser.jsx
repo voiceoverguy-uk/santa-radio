@@ -1,5 +1,5 @@
 import {useEffect,useState} from 'react';
-import {ClerkProvider,SignIn,SignUp,useAuth,useUser,UserButton} from '@clerk/react';
+import {ClerkProvider,SignIn,SignUp,useAuth,useUser,UserButton,SignOutButton} from '@clerk/react';
 import {clerkPublishableKey} from '../lib/clerkPublishableKey.js';
 import {Link,Navigate,useLocation} from 'react-router-dom';
 function Collection(){
@@ -16,7 +16,7 @@ function Collection(){
  return <main className="my-santa-preview my-santa-collection"><div className="my-santa-wrap">
  <header className="my-santa-heading"><img src="/images/santa-studio-headphones.webp" alt="Santa in his studio"/><div><p className="my-santa-kicker">YOUR CHRISTMAS COLLECTION</p><h1>My Santa Messages</h1><p>Your recordings and personalised gifts, together.</p></div></header>
  {!isLoaded?<p>Loading sign-in…</p>:!isSignedIn?<section className="my-santa-welcome"><h2>Keep your Christmas magic</h2><p>Use the same email address you used to purchase. Sign in before creating your messages to save them here.</p>{/^\/my-santa-messages\/sign-up(?:\/|$)/.test(location.pathname)?<SignUp routing="path" path="/my-santa-messages/sign-up" signInUrl="/my-santa-messages/sign-in" forceRedirectUrl="/my-santa-messages"/>:<SignIn routing="path" path="/my-santa-messages/sign-in" signUpUrl="/my-santa-messages/sign-up" forceRedirectUrl="/my-santa-messages"/>}</section>:<>
- <div className="my-santa-toolbar"><h2>Welcome{user?.firstName?`, ${user.firstName}`:''}</h2><div className="my-santa-account"><UserButton/></div><button className="my-santa-refresh" disabled={busy} onClick={refresh}>{busy?'Working…':'Refresh collection'}</button></div>
+ <div className="my-santa-toolbar"><h2>Welcome{user?.firstName?`, ${user.firstName}`:''}</h2><div className="my-santa-account"><UserButton/></div><SignOutButton redirectUrl="/my-santa-messages/sign-in"><button type="button" className="my-santa-logout">Log out</button></SignOutButton><button className="my-santa-refresh" disabled={busy} onClick={refresh}>{busy?'Working…':'Refresh collection'}</button></div>
  {notice&&<p className="my-santa-notice" role="status">{notice}</p>}{busy && <p role="status">Working on your collection…</p>}<p className="my-santa-retention">Messages and gifts stay until January 31 after their Christmas season. Download them before the date shown to keep them forever. Previously unsaved recordings cannot be recovered.</p>
  {data&&<><section className="my-santa-summary"><div><strong>{data.messages.length}</strong><span>saved messages</span></div><div><strong>{data.credits.reduce((sum,p)=>sum+p.remaining,0)}</strong><span>messages remaining</span></div></section>
  {data.credits.filter(p=>p.remaining>0).map(p=><p key={p.purchaseId}><button disabled={busy} onClick={()=>resume(p.purchaseId)}>Create your messages · {p.remaining} remaining</button></p>)}

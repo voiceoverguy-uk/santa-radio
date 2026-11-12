@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { sealContact, openContact, requestContact, CONTACT_COOKIE } from '../server/name-request-contact.js';
 import { issueFreeAccess, freeSession, FREE_ACCESS_COOKIE } from '../server/santa-message-access.js';
-import { nameAvailableEmail, sendNameNotifications } from '../server/name-request-email.js';
+import { nameAvailableEmail, nameRejectedEmail, sendNameNotifications } from '../server/name-request-email.js';
 process.env.SESSION_SECRET='test-only-notification-secret-'.repeat(3);
 test('contact details are encrypted, authenticated and tied to the existing free session',async()=>{
  const grant=issueFreeAccess('parent@example.test');
@@ -32,4 +32,28 @@ test('delivery removes addresses only after acceptance and holds ambiguous failu
   }});
   assert.equal(updates.at(-1).args[2],expected);
  }
+});
+
+test('rejection explains the rule, escapes the name and preserves allowance wording',()=>{
+ const email=nameRejectedEmail('<Oliver Smith>','paid');
+ assert.ok(email.html.includes('&lt;Oliver Smith&gt;'));
+ assert.ok(email.text.includes('Amelia Rose or Lily-Mae'));
+ assert.ok(email.text.includes('remaining credits are unchanged'));
+ assert.ok(email.text.includes('/bespoke-personalised-message-from-santa'));
+});
+test('queued rejection sends the rejection template rather than availability news',async()=>{
+ process.env.BREVO_API_KEY='test-only';
+ const updates=[];
+ const pool={query:async(sql,args)=>{
+  if(sql.startsWith('WITH selected'))return {rows:[{request_key:'oliver smith',recipient_key:'x',name:'Oliver Smith',source:'free',notification_kind:'rejected',contact:sealContact({email:'parent@example.test'})}],rowCount:1};
+  updates.push({sql,args});return {rows:[],rowCount:1};
+ }};
+ await sendNameNotifications({pool,fetcher:async(_url,options)=>{
+  const body=JSON.parse(options.body);
+  assert.equal(body.subject,'An update about your Santa name request');
+  assert.ok(body.textContent.includes('surname'));
+  assert.ok(!body.textContent.includes('now available'));
+  return {ok:true,status:201};
+ }});
+ assert.equal(updates.at(-1).args[2],'sent');
 });

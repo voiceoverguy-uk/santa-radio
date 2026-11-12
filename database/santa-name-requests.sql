@@ -37,3 +37,6 @@ CREATE TABLE IF NOT EXISTS santa_name_request_notifications (
   created_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY(request_key,recipient_key)
 );
+
+-- Apply before deploying the rejection notification worker.
+ALTER TABLE santa_name_request_notifications ADD COLUMN IF NOT EXISTS notification_kind text NOT NULL DEFAULT 'available' CHECK (notification_kind IN ('available','rejected'));

@@ -125,3 +125,20 @@ export async function dismissNameRequest(key, restore=false) {
   if(!result.rowCount)throw Object.assign(new Error('This pending request was not found.'),{status:404});
   return {dismissed:!restore,restored:restore};
 }
+
+// Explicit rejection queues a transactional explanation; ordinary dismiss stays silent.
+export async function rejectNameRequest(key) {
+  const client = await databasePool().connect();
+  try {
+    await client.query('BEGIN');
+    const found = await client.query('SELECT recorded_at,dismissed_at FROM santa_name_requests WHERE request_key=$1 FOR UPDATE',[key]);
+    if (!found.rows.length || found.rows[0].recorded_at) throw Object.assign(new Error('This pending request was not found.'),{status:404});
+    const notices = await client.query('SELECT state FROM santa_name_request_notifications WHERE request_key=$1 FOR UPDATE',[key]);
+    if (notices.rows.some(row=>['sending','review'].includes(row.state))) throw Object.assign(new Error('An email is sending or awaiting delivery review. Resolve that before rejecting this request.'),{status:409});
+    await client.query('UPDATE santa_name_requests SET dismissed_at=coalesce(dismissed_at,now()) WHERE request_key=$1',[key]);
+    const queued = await client.query("UPDATE santa_name_request_notifications SET notification_kind='rejected',state='pending',next_attempt_at=now() WHERE request_key=$1 AND contact IS NOT NULL AND state IN ('waiting','pending') AND notification_kind='available' RETURNING recipient_key",[key]);
+    await client.query('COMMIT');
+    return {rejected:true,notificationsQueued:queued.rowCount};
+  } catch(error) {await client.query('ROLLBACK').catch(()=>{});throw error;}
+  finally {client.release();}
+}
