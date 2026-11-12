@@ -6,6 +6,7 @@ import { isKnownRegion } from './studio-destination-passages.js';
 import { workshopRegionalFolders } from '../src/lib/workshopDestinations.js';
 import { regionalEditorialContext } from './studio-regional-stories.js';
 import { moreSportsFiles } from './workshop-more-sports.js';
+import { blobWorkshopLibrary } from './blob-workshop-library.js';
 
 export const WORKSHOP_ROOT = 'https://stagcommunications.com/santaradio/names/personalised-message/';
 export const WORKSHOP_INDEX = `${WORKSHOP_ROOT}workshop-index.php`;
@@ -173,9 +174,11 @@ async function readIndex(fetcher) {
   return parseWorkshopCatalogue(JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(Buffer.concat(chunks))));
 }
 
-export function createWorkshopCatalogue({ fetcher = fetch, clock = Date.now, ttl = 5 * 60 * 1000 } = {}) {
+export function createWorkshopCatalogue({ fetcher = fetch, clock = Date.now, ttl = 5 * 60 * 1000, blobLibrary = blobWorkshopLibrary } = {}) {
   let cached = null, expires = 0, pending = null;
   return async () => {
+    const blob = await blobLibrary.load();
+    if (blob) return { ...parseWorkshopCatalogue(blob.catalogue), source: 'blob', release: blob.release };
     if (cached && clock() < expires) return cached;
     if (!pending) {
       pending = readIndex(fetcher).then(data => {

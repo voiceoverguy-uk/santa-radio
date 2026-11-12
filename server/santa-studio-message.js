@@ -1,4 +1,5 @@
 import { archiveRecording } from './message-account-store.js';
+import { blobWorkshopLibrary } from './blob-workshop-library.js';
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -74,6 +75,7 @@ export function createStudioMessageHandler({
   reportFailure = studioServiceFailure,
   allowanceIdentity = studioAllowanceIdentity, allowances = studioAllowanceStore,
   archive = archiveRecording,
+  blobLibrary = blobWorkshopLibrary,
 } = {}) {
   let active = 0;
   return async (req, res) => {
@@ -189,11 +191,18 @@ export function createStudioMessageHandler({
         controller.signal.throwIfAborted();
         const record = selected[category];
         const url = `${WORKSHOP_ROOT}${record.file.split('/').map(encodeURIComponent).join('/')}`;
-        paths[category] = join(directory, `${category}.${record.file.split('.').at(-1).toLowerCase()}`);
-        await download(url, paths[category], controller.signal);
+        paths[category] = join(directory, `${category}.${inventory.source === 'blob' ? 'flac' : record.file.split('.').at(-1).toLowerCase()}`);
+        if (inventory.source === 'blob') {
+          await blobLibrary.download(record.file, paths[category], inventory.release, controller.signal);
+        } else await download(url, paths[category], controller.signal);
+      }
+      let fourth;
+      if (inventory.source === 'blob') {
+        fourth = join(directory, '4th.flac');
+        await blobLibrary.download('4th.wav', fourth, inventory.release, controller.signal);
       }
       stage = 'render';
-      const { audio } = await render({ name, choices: paths, directory, signal: controller.signal });
+      const { audio } = await render({ name, choices: paths, directory, signal: controller.signal, ...(fourth ? { fourth } : {}) });
       controller.signal.throwIfAborted();
       if (!audio?.length || audio.length > 4_400_000) throw new Error('Invalid rendered MP3.');
       // Success boundary: full MP3 prepared and response about to be sent.

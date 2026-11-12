@@ -168,6 +168,25 @@ test('protected Studio resolves exact ID afresh, all category IDs, private MP3 a
   await assert.rejects(stat(state.renders[0].directory), { code: 'ENOENT' });
 });
 
+test('Blob Studio reads private FLAC choices and never calls the legacy audio downloader', async () => {
+  const reads = [];
+  const { handler, state } = fixture({
+    catalogue: async () => ({ ...inventory, source: 'blob', release: 'verified-release' }),
+    download: async () => { throw Error('Legacy server must not be used'); },
+    blobLibrary: { download: async (file, target, release) => {
+      reads.push({ file, target, release }); await writeFile(target, 'verified FLAC');
+    } },
+  });
+  const result = await call(handler);
+  assert.equal(result.status, 200);
+  assert.equal(reads.length, 6);
+  assert.ok(reads.every(row => row.target.endsWith('.flac') && row.release === 'verified-release'));
+  assert.equal(reads.at(-1).file, '4th.wav');
+  assert.equal(state.renders[0].fourth, reads.at(-1).target);
+  assert.equal(state.downloads.length, 0);
+  assert.equal(Buffer.from(result.headers['x-studio-selection'], 'base64').toString().includes('trusted/'), false);
+});
+
 test('temporary creation needs no operation record and permits more than two requests without keeping a history', async () => {
   const { handler, state } = fixture();
   for (const key of [undefined, '', 'first', '../recording', 'aaaaaaaa-aaaa-1aaa-8aaa-aaaaaaaaaaaa']) {

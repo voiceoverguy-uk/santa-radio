@@ -14,11 +14,11 @@ export const STUDIO_LEAD_IN_SECONDS = 1;
 // MP3 framing fits the existing 4,400,000-byte server and browser limits.
 export const MAX_STUDIO_SECONDS = 175;
 
-export function studioOrder(name, choices, fixed = studioSources) {
+export function studioOrder(name, choices, fixed = studioSources, fourth = join(fixed, '4th.flac')) {
   return [join(fixed, 'intro.flac'), name, join(fixed, '1st.flac'), choices.age,
     ...(choices.talent ? [join(fixed, '1-5.flac'), choices.talent] : []),
     join(fixed, '2nd.flac'), choices.activity, choices.achievement,
-    join(fixed, '3rd.flac'), choices.treat, join(fixed, '4th.flac'), choices.place,
+    join(fixed, '3rd.flac'), choices.treat, fourth, choices.place,
     join(fixed, '5th.flac'), name, join(fixed, '6th.flac')];
 }
 
@@ -81,14 +81,14 @@ export function studioMixArgs(voice, bells, output) {
 }
 
 export async function renderStudioMessage({ name, choices, directory, signal,
-  fixed = studioSources, bells = studioBells }) {
-  const order = studioOrder(name, choices, fixed);
+  fixed = studioSources, bells = studioBells, fourth = join(fixed, '4th.flac') }) {
+  const order = studioOrder(name, choices, fixed, fourth);
   const prepared = new Map();
   let index = 0;
   for (const source of new Set(order)) {
     const target = join(directory, `prepared-${index++}.f32`);
     const measurement = await prepareStudioClip(source, target, { signal,
-      maxSeconds: source.startsWith(`${fixed}/`) ? 60 : 30 });
+      maxSeconds: source.startsWith(`${fixed}/`) || source === fourth ? 60 : 30 });
     prepared.set(source, { target, ...measurement });
   }
   const frames = order.reduce((sum, source) => sum + prepared.get(source).frames, 0);
