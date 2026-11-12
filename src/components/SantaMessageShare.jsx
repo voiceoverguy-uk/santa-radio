@@ -1,3 +1,4 @@
+import { trackMessageAction } from '../lib/messageEngagement.js';
 import { useRef, useState, useEffect } from 'react';
 import { ORIGIN } from '../seo/catalogue.js';
 import { santaMessageDownloadName } from '../lib/santaMessageDownloadName.js';
@@ -32,6 +33,7 @@ export function SantaGreetingShare({ message }) {
         return;
       }
       await navigator.share(data);
+      trackMessageAction(message.statisticsReceipt, 'share');
       setStatus('Greeting passed to your chosen sharing app.');
     } catch (error) {
       if (error.name !== 'AbortError') {
@@ -100,3 +102,4 @@ export default function SantaMessageShare() {
     </label>}
   </div>;
 }
+

@@ -6,11 +6,11 @@ import { websiteEmailStatistics } from './website-email-statistics.js';
 import { paidStatistics } from './paid-statistics.js';
 import { songSubmissionStatistics } from './song-submission-statistics.js';
 import { validOwnerToken } from './studio-owner-handler.js';
-import { verifyReceipt, recordDownload, statisticsReport } from './message-statistics-store.js';
+import { verifyReceipt, recordEngagement, recordDownload, statisticsReport } from './message-statistics-store.js';
 import { listNameRequests, recordNameRequest } from './name-request-store.js';
 import { normaliseRequestedName } from '../src/lib/santaNameRequests.js';
 import { getClerkProxyHost } from './middlewares/clerkProxyMiddleware.js';
-export function createStatisticsHandler({ allowed=validOwnerToken, report=statisticsReport, download=recordDownload,
+export function createStatisticsHandler({ allowed=validOwnerToken, report=statisticsReport, download=recordDownload, engagement=recordEngagement,
   requests=listNameRequests, complete=recordNameRequest, dismiss=dismissNameRequest, paid=paidStatistics, emails=websiteEmailStatistics, songs=songSubmissionStatistics, recordingStatus=requestRecordingStatus, friends=listFriendVouchers }={}) {
   return async (req,res) => {
     res.set('Cache-Control','private, no-store').set('CDN-Cache-Control','no-store').set('X-Robots-Tag','noindex, nofollow');
@@ -23,7 +23,10 @@ export function createStatisticsHandler({ allowed=validOwnerToken, report=statis
       if(req.method==='POST') {
         const id=verifyReceipt(req.body?.receipt);
         if(!id) return res.status(400).json({error:'Invalid or expired recording receipt.'});
-        await download(id); return res.json({ok:true});
+        const action = req.body?.action ?? 'download';
+        if (!['download','listen','share'].includes(action)) return res.status(400).json({error:'Invalid recording action.'});
+        if (action === 'download') await download(id); else await engagement(id, action);
+        return res.json({ok:true});
       }
       if(!allowed(req)) return res.status(401).json({error:'Enter your private Studio owner token to view this dashboard.'});
       if(req.method==='GET' && req.query?.view==='friends') return res.json(await friends());
@@ -50,3 +53,4 @@ export function createStatisticsHandler({ allowed=validOwnerToken, report=statis
 const app=express();app.disable('x-powered-by');app.use(express.json({limit:'2kb',inflate:false}));app.use(createStatisticsHandler());
 app.use((_err,_req,res,_next)=>res.status(400).json({error:'Invalid request.'}));
 export default app;
+

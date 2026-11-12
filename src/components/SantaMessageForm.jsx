@@ -1,3 +1,4 @@
+import { trackMessageAction } from '../lib/messageEngagement.js';
 import PronunciationNote from './PronunciationNote.jsx';
 import { useEffect, useId, useRef, useState } from 'react';
 import { useRadio } from './RadioProvider.jsx';
@@ -317,7 +318,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
       <audio ref={audio => {
         if (audio) audioRefs.current.set(message.key, audio);
         else audioRefs.current.delete(message.key);
-      }} src={message.url} controls preload="none" onPlay={pauseRadio} onEnded={finishMessage} onError={event => {
+      }} src={message.url} controls preload="none" onPlay={pauseRadio} onPlaying={() => trackMessageAction(message.statisticsReceipt, 'listen')} onEnded={finishMessage} onError={event => {
         if (audioRef.current === event.currentTarget) resumeRadioRef.current = null;
         setAudioErrors(previous => ({ ...previous, [message.key]: true }));
       }} aria-label={`Play Santa’s greeting for ${message.name}`} />
@@ -327,16 +328,14 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
       setAudioErrors(previous => ({ ...previous, [message.key]: false }));
       audioRefs.current.get(message.key)?.load();
     }}>Reload recording</button></div>}
+    <p>Download your message to keep the Christmas magic forever.</p>
     <div className="message-download-actions">
       <div className="message-download-links">
         <a className={`message-download${clickedDownloads.has(message.key) ? '' : ' message-download--pending'}`}
           href={message.url} download={santaMessageDownloadName(message.name)}
           onClick={() => {
             setClickedDownloads(previous => new Set([...previous, message.key]));
-            if (message.statisticsReceipt) fetch('/api/message-statistics', {
-              method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true,
-              body: JSON.stringify({ receipt: message.statisticsReceipt }),
-            }).catch(() => {});
+            trackMessageAction(message.statisticsReceipt, 'download');
           }}>
           Download your audio <span aria-hidden="true">↓</span>
         </a>
@@ -500,3 +499,4 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
     </div>
   </section>;
 }
+

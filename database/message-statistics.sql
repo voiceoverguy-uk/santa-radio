@@ -10,3 +10,8 @@ CREATE TABLE IF NOT EXISTS santa_message_receipts (
   downloaded_at timestamptz
 );
 CREATE INDEX IF NOT EXISTS santa_message_receipts_expiry ON santa_message_receipts(created_at);
+
+ALTER TABLE santa_message_receipts ADD COLUMN IF NOT EXISTS listened_at timestamptz;
+ALTER TABLE santa_message_receipts ADD COLUMN IF NOT EXISTS shared_at timestamptz;
+ALTER TABLE santa_message_daily ADD COLUMN IF NOT EXISTS listens bigint NOT NULL DEFAULT 0 CHECK (listens >= 0);
+ALTER TABLE santa_message_daily ADD COLUMN IF NOT EXISTS shares bigint NOT NULL DEFAULT 0 CHECK (shares >= 0);

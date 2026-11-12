@@ -23,7 +23,7 @@ export default function FriendVouchers({ ownerToken }) {
     return () => controller.abort();
   }, [ownerToken]);
   async function copy(row) {
-    try { await navigator.clipboard.writeText(row.code); setCopied(row.slot); }
+    try { setCopied(null); setError(''); await navigator.clipboard.writeText(row.code); setCopied(row.slot); }
     catch { setError('Could not copy automatically. Select and copy the code below.'); }
   }
   return <section>
@@ -39,8 +39,9 @@ export default function FriendVouchers({ ownerToken }) {
         <td>{row.slot}</td><td><code>{row.code}</code></td>
         <td><strong style={{ color: row.redeemedAt ? '#e6b8b8' : '#bce5c1' }}>{row.status}</strong></td>
         <td>{row.redeemedAt ? new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Europe/London' }).format(new Date(row.redeemedAt)) : 'Not redeemed'}</td>
-        <td><button disabled={!!row.redeemedAt} onClick={() => copy(row)} aria-label={`Copy voucher ${row.slot}`}>Copy</button></td>
+        <td><button disabled={!!row.redeemedAt} onClick={() => copy(row)} aria-label={`Copy voucher ${row.slot}`}>{copied === row.slot ? '✓ Copied!' : 'Copy'}</button></td>
       </tr>)}</tbody>
     </table></div>}
   </section>;
 }
+

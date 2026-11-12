@@ -25,24 +25,30 @@ export async function recordCreation(name, pool = databasePool(), now = new Date
     ON CONFLICT(day,name) DO UPDATE SET creations=santa_message_daily.creations+1`, [id,name,now]);
   return token;
 }
-export async function recordDownload(id, pool = databasePool(), now = new Date()) {
+export function recordDownload(id, pool = databasePool(), now = new Date()) {
+  return recordEngagement(id, 'download', pool, now);
+}
+export async function recordEngagement(id, action, pool = databasePool(), now = new Date()) {
+  const columns = { download: ['downloaded_at', 'download_clicks'], listen: ['listened_at', 'listens'], share: ['shared_at', 'shares'] }[action];
+  if (!columns) throw new Error('Invalid engagement action');
+  const [timestamp, counter] = columns;
   // Count the first download click per recording. Replays/retries do not inflate totals.
   const result = await pool.query(`WITH clicked AS (
-    UPDATE santa_message_receipts SET downloaded_at=$2 WHERE id=$1 AND downloaded_at IS NULL
+    UPDATE santa_message_receipts SET ${timestamp}=$2 WHERE id=$1 AND ${timestamp} IS NULL
       AND created_at > $2::timestamptz-interval '7 days' RETURNING name
-  ) INSERT INTO santa_message_daily(day,name,download_clicks)
+  ) INSERT INTO santa_message_daily(day,name,${counter})
     SELECT ($2::timestamptz AT TIME ZONE 'Europe/London')::date,name,1 FROM clicked
-    ON CONFLICT(day,name) DO UPDATE SET download_clicks=santa_message_daily.download_clicks+1 RETURNING name`, [id,now]);
+    ON CONFLICT(day,name) DO UPDATE SET ${counter}=santa_message_daily.${counter}+1 RETURNING name`, [id,now]);
   return result.rowCount > 0;
 }
 export async function statisticsReport(pool = databasePool()) {
   // Short-lived random receipts are solely for deduplication; retain only aggregates long term.
   await pool.query("DELETE FROM santa_message_receipts WHERE created_at < now()-interval '7 days'");
   const [daily,names,votes,since] = await Promise.all([
-    pool.query(`SELECT days.day::date::text AS day, COALESCE(sum(s.creations),0)::integer AS creations, COALESCE(sum(s.download_clicks),0)::integer AS downloads
+    pool.query(`SELECT days.day::date::text AS day, COALESCE(sum(s.creations),0)::integer AS creations, COALESCE(sum(s.download_clicks),0)::integer AS downloads, COALESCE(sum(s.listens),0)::integer AS listens, COALESCE(sum(s.shares),0)::integer AS shares
       FROM generate_series((now() AT TIME ZONE 'Europe/London')::date-29,(now() AT TIME ZONE 'Europe/London')::date,interval '1 day') AS days(day)
       LEFT JOIN santa_message_daily s ON s.day=days.day::date GROUP BY days.day ORDER BY days.day DESC`),
-    pool.query(`SELECT name,sum(creations)::integer AS creations,sum(download_clicks)::integer AS downloads
+    pool.query(`SELECT name,sum(creations)::integer AS creations,sum(download_clicks)::integer AS downloads,sum(listens)::integer AS listens,sum(shares)::integer AS shares
       FROM santa_message_daily WHERE day >= (now() AT TIME ZONE 'Europe/London')::date-29
       GROUP BY name ORDER BY creations DESC,name LIMIT 30`),
     pool.query(`SELECT e.artist,e.title,count(b.id)::integer AS votes FROM christmas_contenders_entries e
@@ -58,3 +64,4 @@ export async function safeRecordCreation(name) {
   try { return await recordCreation(name); }
   catch { console.warn('[message-statistics] recording unavailable'); return ''; }
 }
+

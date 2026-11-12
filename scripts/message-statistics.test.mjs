@@ -27,3 +27,20 @@ test('daily counts use UK dates, downloads deduplicate and reports contain only 
  assert.equal((await db.query('SELECT count(*)::integer AS n FROM santa_message_receipts')).rows[0].n,0);
  await db.close();
 });
+
+
+test('engagement actions count independently and duplicate retries count once', {skip:!process.env.PGLITE_TEST_MODULE}, async()=>{
+ const {PGlite}=await import(process.env.PGLITE_TEST_MODULE);const db=new PGlite();
+ const {recordEngagement}=await import('../server/message-statistics-store.js');
+ const pool={query:async(sql,args)=>{const r=await db.query(sql,args);return{rows:r.rows,rowCount:r.affectedRows??r.rows.length}}};
+ try {
+ await db.exec(await readFile(new URL('../database/message-statistics.sql',import.meta.url),'utf8'));
+ const now=new Date(); const id=verifyReceipt(await recordCreation('Test',pool,now),now.getTime());
+ for(const action of ['listen','download','share']) {
+   assert.equal(await recordEngagement(id,action,pool,now),true);
+   assert.equal(await recordEngagement(id,action,pool,now),false);
+ }
+ assert.deepEqual((await db.query('SELECT listens::int,shares::int,download_clicks::int FROM santa_message_daily')).rows,[{listens:1,shares:1,download_clicks:1}]);
+ await assert.rejects(recordEngagement(id,'bogus',pool,now));
+ } finally {await db.close();}
+});
