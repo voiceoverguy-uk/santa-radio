@@ -231,7 +231,10 @@ export function createWorkshopCatalogueHandler(load = workshopCatalogue, authori
           const { passages, ...letterContext } = record.letterContext;
           return { ...record, letterContext };
         }) }]));
-      return send(200, { ...catalogue, regionalGroups });
+      // Storage selection is server-only. Keep the existing browser contract
+      // so already-open pages continue accepting this hosted catalogue.
+      const { release, ...publicCatalogue } = catalogue;
+      return send(200, { ...publicCatalogue, source: 'hosted', regionalGroups });
     }
     catch { return send(503, { error: 'Santa’s recorded choices could not be loaded. Please try again.' }); }
   };

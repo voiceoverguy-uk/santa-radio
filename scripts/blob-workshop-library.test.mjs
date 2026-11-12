@@ -5,6 +5,7 @@ import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createBlobWorkshopLibrary, WORKSHOP_POINTER } from '../server/blob-workshop-library.js';
+import { createWorkshopCatalogueHandler } from '../server/santa-workshop-catalogue.js';
 
 const hash = data => createHash('sha256').update(data).digest('hex');
 function fixture(change = x => x) {
@@ -48,4 +49,16 @@ test('tampered audio fails before any destination is written', async () => {
 test('an absent pointer allows the explicitly retained legacy migration fallback', async () => {
   const f = fixture(); f.objects.delete(WORKSHOP_POINTER);
   assert.equal(await f.library.load(), null);
+});
+
+test('Blob catalogue preserves the existing browser source contract and selected identities', async () => {
+  const categories = { age: [{ id: 'existing-choice', file: 'AGES/5-years.wav', label: '5 years' }] };
+  const handler = createWorkshopCatalogueHandler(async () => ({ source: 'blob', release: 'private-release',
+    categories, regionalGroups: {}, counts: { age: 1 }, excludedAudioCounts: {}, needsReviewCounts: {} }), async () => true);
+  let status, body;
+  await handler({ method: 'GET', url: '/' }, { setHeader() {}, writeHead(s) { status = s; }, end(b) { body = JSON.parse(b); } });
+  assert.equal(status, 200);
+  assert.equal(body.source, 'hosted');
+  assert.deepEqual(body.categories, categories);
+  assert.equal('release' in body, false);
 });
