@@ -7,7 +7,7 @@ import { getAuth } from '@clerk/express';
 import { createClerkClient } from '@clerk/backend';
 import { staffAuth } from './staff-auth.js';
 import { getClerkProxyHost } from './middlewares/clerkProxyMiddleware.js';
-import { normaliseRequestedName, nameRequestConfirmation } from '../src/lib/santaNameRequests.js';
+import { normaliseRequestedName, normalisePronunciationNote, nameRequestConfirmation } from '../src/lib/santaNameRequests.js';
 import { saveNameRequest, listNameRequests, recordNameRequest } from './name-request-store.js';
 import { santaNameLibrary } from './santa-name-library.js';
 import { consumeNameAccess, privateResponse } from './santa-name-security.js';
@@ -56,6 +56,9 @@ export function createNameRequestHandler({ checkAdmin = authorize, save = saveNa
         await limit(req, 'request');
         const name = normaliseRequestedName(req.body?.name);
         if (!name) return res.status(400).json({ error: 'Enter a first name using letters, spaces, apostrophes or hyphens (up to 80 characters).' });
+        const pronunciation = normalisePronunciationNote(req.body?.pronunciation);
+        if (pronunciation === null) return res.status(400).json({ error: 'Pronunciation notes must be plain text, up to 120 characters.' });
+        name.pronunciation = pronunciation;
         if (req.body?.requestId !== undefined && (typeof req.body.requestId !== 'string' ||
             !/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(req.body.requestId))) {
           return res.status(400).json({ error: 'Invalid request identifier. Please refresh and try again.' });
@@ -111,12 +114,12 @@ export function createNameRequestHandler({ checkAdmin = authorize, save = saveNa
         if (!download) return res.json(result);
         const date = value => value ? new Date(value).toISOString() : '';
         const rows = result.requests.map(item => [item.name, item.count, date(item.firstRequestedAt),
-          date(item.lastRequestedAt), date(item.recordedAt),
+          date(item.lastRequestedAt), date(item.recordedAt), (item.pronunciationNotes || []).join(' | '),
           (item.recordingSuggestions || []).map(suggestion =>
             `${suggestion.name} [${suggestion.file}; ${suggestion.id}] (${suggestion.count})`).join(' | ')].join('\t'));
         return res.set('Content-Type', 'text/plain; charset=utf-8')
           .set('Content-Disposition', `attachment; filename="santa-name-requests-${status}.txt"`)
-          .send(['First name\tRequests\tFirst requested (UTC)\tLatest request (UTC)\tRecorded (UTC)\tSuggested source recordings (counts)', ...rows].join('\r\n') + '\r\n');
+          .send(['First name\tRequests\tFirst requested (UTC)\tLatest request (UTC)\tRecorded (UTC)\tPronunciation notes\tSuggested source recordings (counts)', ...rows].join('\r\n') + '\r\n');
       }
       return res.set('Allow', 'GET, POST, PATCH').status(405).json({ error: 'Method not allowed.' });
     } catch (error) {

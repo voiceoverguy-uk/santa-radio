@@ -1,3 +1,4 @@
+import PronunciationNote from './PronunciationNote.jsx';
 import { useEffect, useId, useRef, useState } from 'react';
 import { useRadio } from './RadioProvider.jsx';
 import SantaMessageExample from './SantaMessageExample.jsx';
@@ -36,6 +37,8 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const makerHeadingRef = useRef(null);
   const previousAccess = useRef(hasAccess);
   const [name, setName] = useState(initialName);
+  const [pronunciation, setPronunciation] = useState('');
+  useEffect(() => setPronunciation(''), [name]);
   const hasPrefilledName = Boolean((pendingName?.name || initialName) &&
     santaNameKey(pendingName?.name || initialName) === santaNameKey(name));
   const [selectedRecord, setSelectedRecord] = useState(null);
@@ -186,7 +189,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
       const response = await fetch('/api/name-requests', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: requested.name, requestId: token.id }),
+        body: JSON.stringify({ name: requested.name, requestId: token.id, pronunciation }),
         signal: controller.signal,
       });
       const data = await response.json().catch(() => ({}));
@@ -457,6 +460,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
               !nameSearch.warning && suggestions.length === 0;
             const visibleRequest = canRequest && (nameRequest.key === requested.key ? nameRequest : null);
             return canRequest ? <div className="name-request"><p><strong>Please request first names only.</strong> Hyphenated and two-part first names, such as Ellie-May or Ellie May, are welcome. Surnames, full names, group names and phrases won’t be considered for recording.</p><p>Up to 5 new names every 2 hours.</p>
+              <PronunciationNote key={requested.key} value={pronunciation} onChange={setPronunciation} disabled={['pending', 'success'].includes(visibleRequest?.status)} />
               <button className="name-request-button" type="button"
                 onClick={submitNameRequest}
                  disabled={['pending', 'success'].includes(visibleRequest?.status)}

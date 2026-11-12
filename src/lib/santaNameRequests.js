@@ -13,3 +13,11 @@ export function nameRequestConfirmation(date = new Date()) {
     ? 'Your request has been saved. Check back in a couple of days to see if Santa has added it.'
     : 'Your request has been saved. Check back in a week to see if Santa has added it.';
 }
+
+// Optional plain text; cap both raw and normalized input before database writes.
+export function normalisePronunciationNote(value) {
+  if (value === undefined || value === '') return '';
+  if (typeof value !== 'string' || value.length > 120 || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(value)) return null;
+  const note = value.normalize('NFC').trim().replace(/\s+/gu, ' ');
+  return note.length <= 120 ? note : null;
+}

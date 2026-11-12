@@ -6,16 +6,16 @@ export function databasePool() {
   return pool ||= new pg.Pool({ connectionString: process.env.DATABASE_URL, max: 3,
     connectionTimeoutMillis: 5000, idleTimeoutMillis: 10000, statement_timeout: 8000, query_timeout: 10000 });
 }
-export async function prepareNameRequests() {
+export async function prepareNameRequests(pool = databasePool()) {
   // Read-only readiness check, never CREATE/ALTER at request time or in production.
-  if (!prepared) prepared = databasePool().query(
+  if (!prepared) prepared = pool.query(
     'SELECT request_key, recorded_at FROM santa_name_requests LIMIT 0; SELECT id, recording_suggestions FROM santa_name_request_history LIMIT 0; SELECT request_key FROM santa_name_recording_suggestions LIMIT 0',
   ).catch(error => { prepared = undefined; throw error; });
   await prepared;
 }
-export async function saveNameRequest({ name, key, submissionKey, sourceRecording, contact }, visitorKey, bucketKey, now = new Date()) {
-  await prepareNameRequests();
-  const client = await databasePool().connect();
+export async function saveNameRequest({ name, key, submissionKey, sourceRecording, contact, pronunciation }, visitorKey, bucketKey, now = new Date(), pool = databasePool()) {
+  await prepareNameRequests(pool);
+  const client = await pool.connect();
   try {
     await client.query('BEGIN');
     await client.query('DELETE FROM santa_name_request_submissions WHERE expires_at <= $1', [now]);
@@ -58,6 +58,8 @@ export async function saveNameRequest({ name, key, submissionKey, sourceRecordin
       VALUES($1,$2,$3,$3) ON CONFLICT(request_key) DO UPDATE SET
       request_count=santa_name_requests.request_count+1,last_requested_at=EXCLUDED.last_requested_at,
       recorded_at=NULL`, [key, name, now]);
+    if (pronunciation) await client.query(`INSERT INTO santa_name_pronunciations(request_key,note)
+      VALUES($1,$2) ON CONFLICT DO NOTHING`, [key, pronunciation]);
     if (sourceRecording) {
       await client.query(`INSERT INTO santa_name_recording_suggestions
         (request_key,recording_id,recorded_name,recording_file)
@@ -72,31 +74,33 @@ export async function saveNameRequest({ name, key, submissionKey, sourceRecordin
   } catch (error) { await client.query('ROLLBACK').catch(() => {}); throw error; }
   finally { client.release(); }
 }
-export async function listNameRequests(page, q, status = 'outstanding', all = false) {
-  await prepareNameRequests();
+export async function listNameRequests(page, q, status = 'outstanding', all = false, pool = databasePool()) {
+  await prepareNameRequests(pool);
   const completed = status === 'completed';
   const table = completed ? 'santa_name_request_history' : 'santa_name_requests';
   const where = `strpos(request_key,$1)>0${completed ? '' : ' AND recorded_at IS NULL AND dismissed_at IS NULL'}`;
   const params = [q];
-  const totalResult = await databasePool().query(`SELECT count(*) FROM ${table} WHERE ${where}`, params);
+  const totalResult = await pool.query(`SELECT count(*) FROM ${table} WHERE ${where}`, params);
   const total = Number(totalResult.rows[0].count);
   page = Math.min(page, Math.max(1, Math.ceil(total / 100)));
-  const result = await databasePool().query(`SELECT ${completed ? 'id::text' : 'request_key'} AS id,
+  const result = await pool.query(`SELECT ${completed ? 'id::text' : 'request_key'} AS id,
     name, request_count AS count, first_requested_at AS "firstRequestedAt",
     last_requested_at AS "lastRequestedAt", recorded_at AS "recordedAt",
     ${completed ? 'recording_suggestions' : `(SELECT COALESCE(jsonb_agg(jsonb_build_object(
       'id',s.recording_id,'name',s.recorded_name,'file',s.recording_file,'count',s.request_count)
       ORDER BY s.request_count DESC,s.recording_id),'[]'::jsonb)
-      FROM santa_name_recording_suggestions s WHERE s.request_key=santa_name_requests.request_key)`} AS "recordingSuggestions"
+      FROM santa_name_recording_suggestions s WHERE s.request_key=santa_name_requests.request_key)`} AS "recordingSuggestions",
+    ${completed ? 'pronunciation_notes' : `(SELECT COALESCE(jsonb_agg(p.note ORDER BY p.note),'[]'::jsonb)
+      FROM santa_name_pronunciations p WHERE p.request_key=santa_name_requests.request_key)`} AS "pronunciationNotes"
     FROM ${table} WHERE ${where}
     ORDER BY ${completed ? 'recorded_at DESC,id DESC' : 'request_count DESC,last_requested_at DESC,request_key'}
     ${all ? '' : 'LIMIT 100 OFFSET $2'}`, all ? [q] : [q, (page - 1) * 100]);
   return { requests: result.rows, total, page, pageSize: 100, status };
 }
 
-export async function recordNameRequest(key, now = new Date()) {
-  await prepareNameRequests();
-  const client = await databasePool().connect();
+export async function recordNameRequest(key, now = new Date(), pool = databasePool()) {
+  await prepareNameRequests(pool);
+  const client = await pool.connect();
   try {
     await client.query('BEGIN');
     const found = await client.query('SELECT * FROM santa_name_requests WHERE request_key=$1 FOR UPDATE', [key]);
@@ -105,11 +109,12 @@ export async function recordNameRequest(key, now = new Date()) {
     if (row.dismissed_at) throw Object.assign(new Error('Restore this request before marking it recorded.'), {status:400});
     if (!row.recorded_at) {
       await client.query(`INSERT INTO santa_name_request_history
-        (request_key,name,request_count,first_requested_at,last_requested_at,recorded_at,recording_suggestions)
+        (request_key,name,request_count,first_requested_at,last_requested_at,recorded_at,recording_suggestions,pronunciation_notes)
         VALUES($1,$2,$3,$4,$5,$6,(SELECT COALESCE(jsonb_agg(jsonb_build_object(
           'id',s.recording_id,'name',s.recorded_name,'file',s.recording_file,'count',s.request_count)
           ORDER BY s.request_count DESC,s.recording_id),'[]'::jsonb)
-          FROM santa_name_recording_suggestions s WHERE s.request_key=$1))`,
+          FROM santa_name_recording_suggestions s WHERE s.request_key=$1),
+          (SELECT COALESCE(jsonb_agg(note ORDER BY note),'[]'::jsonb) FROM santa_name_pronunciations WHERE request_key=$1))`,
       [key, row.name, row.request_count, row.first_requested_at, row.last_requested_at, now]);
       await client.query('UPDATE santa_name_requests SET recorded_at=$2 WHERE request_key=$1', [key, now]);
     }

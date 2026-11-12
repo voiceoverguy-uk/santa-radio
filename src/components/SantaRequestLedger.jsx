@@ -172,6 +172,7 @@ export default function SantaRequestLedger({ email, onSignOut, ownerToken }) {
             <th scope="col">Most recent</th><th scope="col">{status === 'completed' ? 'Recorded on' : 'Action'}</th></tr></thead>
           <tbody>{result.requests.map(item => <tr key={item.id}><td>
             <div>{item.name}</div>
+            {item.pronunciationNotes?.map(note => <p key={note}><strong>Pronunciation:</strong> {note}</p>)}
             {Array.isArray(item.recordingSuggestions) && item.recordingSuggestions.length > 0 && (
               <ul className="staff-recording-suggestions">
                 {item.recordingSuggestions.map((suggestion, index) => {

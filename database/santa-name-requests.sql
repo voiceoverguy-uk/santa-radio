@@ -49,3 +49,10 @@ CREATE TABLE IF NOT EXISTS public.santa_friend_vouchers (
   claimant_sha256 char(64),
   CHECK ((redeemed_at IS NULL) = (claimant_sha256 IS NULL))
 );
+
+CREATE TABLE IF NOT EXISTS santa_name_pronunciations (
+  request_key text NOT NULL REFERENCES santa_name_requests(request_key),
+  note text NOT NULL CHECK (char_length(note) BETWEEN 1 AND 120),
+  PRIMARY KEY(request_key,note)
+);
+ALTER TABLE santa_name_request_history ADD COLUMN IF NOT EXISTS pronunciation_notes jsonb NOT NULL DEFAULT '[]'::jsonb;
