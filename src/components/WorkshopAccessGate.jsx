@@ -1,3 +1,4 @@
+import { scheduleExpiry } from '../lib/scheduleExpiry.js';
 import { useCallback, useEffect, useState } from 'react';
 import PageSeo from '../seo/PageSeo.jsx';
 import { pageMetadata } from '../seo/catalogue.js';
@@ -171,13 +172,11 @@ export default function WorkshopAccessGate({ children }) {
 
   useEffect(() => {
     if (status !== 'authorized' || !Number.isFinite(expiresAt)) return undefined;
-    const delay = Math.max(0, expiresAt - Date.now());
-    const timeout = window.setTimeout(() => {
+    return scheduleExpiry(expiresAt, () => {
       setExpiresAt(null);
       setStatusMessage('Your friends test access has expired. Enter a tester code to continue.');
       setStatus('locked');
-    }, delay);
-    return () => window.clearTimeout(timeout);
+    });
   }, [status, expiresAt]);
 
   const onAuthorized = useCallback(({ expiresAt: authorizationExpiry } = {}) => {

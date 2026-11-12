@@ -30,7 +30,7 @@ export function WorkshopPasswordForm({ onAuthorized, compact = false, active = t
     const submittedCode = code.trim();
     if (!submittedCode) {
       if (variant === 'promotion') setError('');
-      else setError('Enter your tester code to continue.');
+      else setError('Enter your voucher code to continue.');
       inputRef.current?.focus();
       return;
     }
@@ -60,10 +60,10 @@ export function WorkshopPasswordForm({ onAuthorized, compact = false, active = t
       }
       if (!response.ok) {
         const messages = {
-          400: 'Enter a valid tester code and try again.',
-          401: 'That tester code was not recognised. Please check it and try again.',
-          403: 'That tester code cannot be used for this friends test.',
-          410: 'This friends test has ended. Access is no longer available.',
+          400: 'Enter a valid voucher code and try again.',
+          401: 'That voucher code was not recognised. Please check it and try again.',
+          403: 'That voucher code cannot be used for this friends test.',
+          410: 'This voucher has expired or has already been redeemed in another browser.',
           429: 'Too many attempts. Please wait a little before trying again.',
           503: 'The access service is temporarily unavailable. Please try again.',
         };
@@ -102,11 +102,11 @@ export function WorkshopPasswordForm({ onAuthorized, compact = false, active = t
     onSubmit={submit}
     noValidate
   >
-    <label htmlFor={inputId}>{variant === 'promotion' ? 'Voucher code' : 'Tester code (required)'}</label>
+    <label htmlFor={inputId}>{variant === 'promotion' ? 'Voucher code' : 'Voucher code (required)'}</label>
     <input
       ref={inputRef}
       id={inputId}
-      type="password"
+      type="text"
       value={code}
       placeholder="Voucher code"
       onChange={event => { setCode(event.target.value.slice(0, 80)); setError(''); }}
@@ -210,7 +210,7 @@ export default function WorkshopPasswordDialog({ open, onClose }) {
       <button type="button" className="workshop-dialog-close" aria-label="Close workshop access" onClick={close}>×</button>
     </div>
     <h2 id="workshop-password-title">Santa’s message workshop</h2>
-    <p id="workshop-password-description">Enter your tester code to join the friends test.</p>
+    <p id="workshop-password-description">Enter your voucher code to join the friends test.</p>
     <WorkshopPasswordForm active={open} onAuthorized={authorized} requestControlRef={requestControlRef} />
   </dialog>;
 }
