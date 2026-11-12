@@ -1,3 +1,4 @@
+import StudioVoucherSuccess from './StudioVoucherSuccess.jsx';
 import { scheduleExpiry } from '../lib/scheduleExpiry.js';
 import { useCallback, useEffect, useState } from 'react';
 import PageSeo from '../seo/PageSeo.jsx';
@@ -29,6 +30,7 @@ export default function WorkshopAccessGate({ children }) {
   const [remaining, setRemaining] = useState(null);
   const [purchaserName, setPurchaserName] = useState('');
   const [voucher, setVoucher] = useState(null);
+  const [voucherWelcome, setVoucherWelcome] = useState(() => { try { return sessionStorage.getItem('santa-voucher-welcome') === '1'; } catch { return false; } });
   const [status, setStatus] = useState('checking');
   const [statusMessage, setStatusMessage] = useState('');
   const [expiresAt, setExpiresAt] = useState(null);
@@ -186,6 +188,7 @@ export default function WorkshopAccessGate({ children }) {
       setStatus('error');
       return;
     }
+    setVoucherWelcome(true);
     // The voucher submission has set its cookie; resolve both access methods
     // before opening the maker instead of momentarily switching a paid visitor.
     setExpiresAt(null);
@@ -207,7 +210,7 @@ export default function WorkshopAccessGate({ children }) {
       <PageSeo metadata={metadata} />
       <StudioAccessContext.Provider value={accessKind}>
         <StudioVoucherContext.Provider value={voucher}>
-          {returningFromCheckout && accessKind.startsWith('paid-')
+          {voucherWelcome && accessKind === 'tester' ? <StudioVoucherSuccess onContinue={() => { setVoucherWelcome(false); try { sessionStorage.removeItem('santa-voucher-welcome'); } catch { /* Optional welcome persistence. */ } }} /> : returningFromCheckout && accessKind.startsWith('paid-')
             ? <StudioPaymentSuccess firstName={purchaserName} remaining={remaining} sandbox={accessKind === 'paid-sandbox'} /> : children}
         </StudioVoucherContext.Provider>
       </StudioAccessContext.Provider>

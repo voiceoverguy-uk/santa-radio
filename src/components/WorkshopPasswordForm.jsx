@@ -77,6 +77,7 @@ export function WorkshopPasswordForm({ onAuthorized, compact = false, active = t
       // including submissions from the keyboard rather than the button.
       inputRef.current?.blur();
       setCode('');
+      try { sessionStorage.setItem('santa-voucher-welcome', '1'); } catch { /* Optional welcome persistence. */ }
       window.dispatchEvent(new CustomEvent('santa-workshop-access-change'));
       onAuthorized?.({ expiresAt: data.expiresAt, voucher: data.voucher });
     } catch (requestError) {
