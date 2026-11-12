@@ -1,3 +1,4 @@
+import { friendSession, friendClaim, redeemFriendVoucher, adminVoucherMatches, issueAdminVoucher } from './friend-vouchers.js';
 import express from 'express';
 import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 import { databasePool } from './name-request-store.js';
@@ -22,6 +23,8 @@ export function issueWorkshopToken(config, now = Date.now(), codeId = config.cod
 }
 
 export function workshopSession(req, config = settings(), now = Date.now()) {
+  const friend = friendSession(req);
+  if (friend) return friend;
   if (!configured(config) || config.expiresAt <= now) return null;
   const cookie = req.headers?.cookie || '';
   if (typeof cookie !== 'string' || cookie.length > 16384) return null;
@@ -115,6 +118,29 @@ export function createWorkshopAccessHandler({
   app.use(express.json({ limit: '2kb', strict: true, inflate: false }));
   app.use(async (req, res) => {
     const config = getSettings();
+    try {
+      const friend = friendSession(req);
+      if (req.method === 'GET') {
+        if ((process.env.SESSION_SECRET || "").length >= 32) friendClaim(req, res);
+        if (friend) return res.json({ authorized: true, expiresAt: friend.expiresAt, voucher: { unlimited: false, friend: !!friend.friend, admin: !!friend.admin } });
+      }
+      if (req.method === 'POST' && (adminVoucherMatches(req.body?.code) || friend?.admin && req.body?.another === true)) {
+        if (Object.keys(req.body).length !== 1) return res.status(400).json({ error: 'Invalid voucher request.' });
+        const limit = await consumeAttempt(req, config, now());
+        if (!limit.allowed) return res.status(429).json({ error: 'Please wait before starting another admin test.' });
+        if (friend?.admin && req.body?.another !== true) return res.json({ authorized: true, expiresAt: friend.expiresAt });
+        return res.json(issueAdminVoucher(req, res, friend?.admin ? { expiresAt: friend.expiresAt } : undefined));
+      }
+      if (req.method === 'POST' && typeof req.body?.code === 'string' && /^FRIEND-/i.test(req.body.code.trim())) {
+        if (Object.keys(req.body).length !== 1 || req.body.code.length > 80) return res.status(400).json({ error: 'Enter a valid voucher code.' });
+        const limit = await consumeAttempt(req, config, now());
+        if (!limit.allowed) return res.status(429).json({ error: 'Too many code attempts. Please try again in a few minutes.' });
+        const result = await redeemFriendVoucher(req, res, req.body.code);
+        return result ? res.json(result) : res.status(410).json({ error: 'This friends voucher is invalid or has already been redeemed.' });
+      }
+      if (friend && req.body?.another === true) return res.status(409).json({ error: 'Your friends voucher includes two creations. It cannot be reset.' });
+    } catch { return res.status(503).json({ error: 'Voucher access is temporarily unavailable. Please try again.' }); }
+
     if (!configured(config)) return res.status(503).json({ error: 'Tester access is not configured yet. Please try again later.' });
     const time = now();
     if (time >= config.expiresAt) return res.status(410).json({ authorized: false, error: 'This friends-only test has closed. The Studio is coming soon.' });

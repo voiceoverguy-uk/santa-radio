@@ -1,3 +1,4 @@
+import { friendSession } from './friend-vouchers.js';
 import { createHash, randomUUID } from 'node:crypto';
 import { databasePool } from './name-request-store.js';
 import { workshopSession } from './santa-workshop-access.js';
@@ -15,9 +16,12 @@ export async function studioAllowanceIdentity(req, {
   livePurchase = livePaidPurchaseId, sandboxClaim = studioClaimFromRequest,
   sandboxPaid = hasPaidStudioAccess,
 } = {}) {
-  // Verified purchase identity must win over any old voucher cookie. In
+  // Explicit bounded friend/admin grants take precedence; legacy shared vouchers
+  // never override a purchase. Verified purchase identity must win over any old voucher cookie. In
   // particular, an exhausted purchase must not fall through to an unlimited
   // voucher or acquire a fresh per-visitor allowance.
+  const friend = friendSession(req);
+  if (friend) return { key: friend.generationKey, expiresAt: new Date(friend.expiresAt) };
   const live = production();
   const claim = live ? null : sandboxClaim(req);
   const purchase = live ? await livePurchase(req)

@@ -1,3 +1,4 @@
+import { seedFriendVouchers } from '../server/friend-vouchers.js';
 // Additive, release-time migration. Never changes schema from a visitor request.
 import pg from 'pg';
 import { readFile } from 'node:fs/promises';
@@ -16,6 +17,7 @@ if (process.env.VERCEL_ENV === 'production') {
     await client.query('SELECT request_key, recorded_at FROM santa_name_requests LIMIT 0');
     await client.query('SELECT id, recording_suggestions FROM santa_name_request_history LIMIT 0');
     await client.query('SELECT request_key FROM santa_name_recording_suggestions LIMIT 0');
+    await seedFriendVouchers(client);
     await client.query('COMMIT');
     console.log('Name-request schema verified; existing requests preserved.');
   } catch (error) {

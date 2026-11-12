@@ -124,7 +124,8 @@ export function createStudioMessageHandler({
         const allowance = identity ? await withinDeadline(() => allowances.status(identity), controller.signal) : null;
         res.writeHead(200, { 'Content-Type': 'application/json' });
         return res.end(JSON.stringify({ temporary: true,
-          testerCanStartAnother: !!workshopSession(req) && (!identity || identity.expiresAt !== null),
+          admin: !!workshopSession(req)?.admin,
+          testerCanStartAnother: !!workshopSession(req) && !workshopSession(req)?.friend && (!identity || identity.expiresAt !== null),
           ...(allowance || {}) }));
       } else {
         stage = 'access';

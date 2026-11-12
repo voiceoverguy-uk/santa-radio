@@ -1,3 +1,4 @@
+import { friendSession } from './friend-vouchers.js';
 import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 import express from 'express';
 import { databasePool } from './name-request-store.js';
@@ -86,6 +87,7 @@ export function createLiveAccessHandler({
     if (req.headers.host !== new URL(config.origin).host || req.headers['sec-fetch-site'] === 'cross-site'
       || req.headers.origin && !sameLiveOrigin(req, config)) return res.status(403).json({ authorized: false });
     try {
+      if (friendSession(req)) return res.json({ authorized: false });
       const pool = getPool();
       const purchaseId = await livePaidPurchaseId(req, { config, pool });
       const reply = async (summary, id, knownSession) => {

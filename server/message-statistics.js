@@ -1,3 +1,4 @@
+import { listFriendVouchers } from './friend-vouchers.js';
 import { requestRecordingStatus } from './request-recording-status.js';
 import { dismissNameRequest, rejectNameRequest, databasePool } from './name-request-store.js';
 import express from 'express';
@@ -10,7 +11,7 @@ import { listNameRequests, recordNameRequest } from './name-request-store.js';
 import { normaliseRequestedName } from '../src/lib/santaNameRequests.js';
 import { getClerkProxyHost } from './middlewares/clerkProxyMiddleware.js';
 export function createStatisticsHandler({ allowed=validOwnerToken, report=statisticsReport, download=recordDownload,
-  requests=listNameRequests, complete=recordNameRequest, dismiss=dismissNameRequest, paid=paidStatistics, emails=websiteEmailStatistics, songs=songSubmissionStatistics, recordingStatus=requestRecordingStatus }={}) {
+  requests=listNameRequests, complete=recordNameRequest, dismiss=dismissNameRequest, paid=paidStatistics, emails=websiteEmailStatistics, songs=songSubmissionStatistics, recordingStatus=requestRecordingStatus, friends=listFriendVouchers }={}) {
   return async (req,res) => {
     res.set('Cache-Control','private, no-store').set('CDN-Cache-Control','no-store').set('X-Robots-Tag','noindex, nofollow');
     try {
@@ -25,6 +26,7 @@ export function createStatisticsHandler({ allowed=validOwnerToken, report=statis
         await download(id); return res.json({ok:true});
       }
       if(!allowed(req)) return res.status(401).json({error:'Enter your private Studio owner token to view this dashboard.'});
+      if(req.method==='GET' && req.query?.view==='friends') return res.json(await friends());
       if(req.method==='GET' && req.query?.view==='songs') {
         const raw=req.query.offset ?? '0';
         if(typeof raw!=='string' || !/^\d{1,7}$/.test(raw)) return res.status(400).json({error:'Invalid page.'});

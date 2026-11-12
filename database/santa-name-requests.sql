@@ -40,3 +40,12 @@ CREATE TABLE IF NOT EXISTS santa_name_request_notifications (
 
 -- Apply before deploying the rejection notification worker.
 ALTER TABLE santa_name_request_notifications ADD COLUMN IF NOT EXISTS notification_kind text NOT NULL DEFAULT 'available' CHECK (notification_kind IN ('available','rejected'));
+
+-- A fixed batch of twenty private, single-recipient friends vouchers.
+CREATE TABLE IF NOT EXISTS public.santa_friend_vouchers (
+  slot integer PRIMARY KEY CHECK (slot BETWEEN 1 AND 20),
+  code text NOT NULL UNIQUE,
+  redeemed_at timestamptz,
+  claimant_sha256 char(64),
+  CHECK ((redeemed_at IS NULL) = (claimant_sha256 IS NULL))
+);
