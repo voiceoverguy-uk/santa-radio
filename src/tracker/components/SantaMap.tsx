@@ -21,12 +21,15 @@ interface SantaMapProps {
   northPoleVisitMessage?: string;
   liveStatusLabel?: string;
   autoCycleView?: boolean;
+  santaInfo?: { title: string; description: string };
 }
 
 type View = "follow" | "world" | string;
 
-export default function SantaMap({ effectiveTime, mapPosition, onHoliday, researchDestination, northPoleVisitMessage, liveStatusLabel, autoCycleView = false }: SantaMapProps) {
+export default function SantaMap({ effectiveTime, mapPosition, onHoliday, researchDestination, northPoleVisitMessage, liveStatusLabel, santaInfo, autoCycleView = false }: SantaMapProps) {
   const titleId = useId();
+  const infoId = useId();
+  const [infoVisible, setInfoVisible] = useState(false);
   const descriptionId = useId();
   const mapRef = useRef<HTMLDivElement>(null);
   const [expanded, setExpanded] = useState(false);
@@ -216,6 +219,11 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
     nextStop ? { stop: nextStop, kind: "Next" } : null,
   ].filter(Boolean) as { stop: typeof ordered[number]; kind: string }[];
 
+  const info = santaInfo || {
+    title: researchDestination ? `${researchDestination.name}, ${researchDestination.country}` : currentStop?.name || "The North Pole",
+    description: researchDestination ? getRouteResearchCopy(researchDestination) : northPoleVisitMessage || currentStop?.activity || "Santa is getting ready for Christmas Eve.",
+  };
+
   const regionLabel = effectiveView === "follow"
     ? live && currentStop ? `Following Santa · ${stopRegion(currentStop)}` : "Santa's position"
     : effectiveView === "world" ? `World · ${santaStops.length} stops` : effectiveView;
@@ -364,10 +372,16 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
                 filter={artwork ? undefined : "url(#pulse-glow)"}
                 role={artwork ? "button" : undefined}
                 tabIndex={artwork ? 0 : undefined}
-                aria-label={artwork ? "Enlarge Santa's current artwork" : undefined}
+                aria-label={artwork ? `Find out what Santa is doing in ${info.title}` : undefined}
+                aria-describedby={infoVisible ? infoId : undefined}
+                onMouseEnter={() => setInfoVisible(true)}
+                onMouseLeave={() => setInfoVisible(false)}
+                onFocus={() => setInfoVisible(true)}
+                onBlur={() => setInfoVisible(false)}
                 aria-haspopup={artwork ? "dialog" : undefined}
                 onClick={artwork ? () => setArtworkViewerOpen(true) : undefined}
                 onKeyDown={artwork ? (event) => {
+                  if (event.key === "Escape") { setInfoVisible(false); event.stopPropagation(); }
                   if (event.key === "Enter" || event.key === " ") {
                     event.preventDefault();
                     event.stopPropagation();
@@ -383,6 +397,11 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
           </g>
         </svg>
 
+        {infoVisible && !artworkViewerOpen && <div id={infoId} className="tj-santa-info" role="tooltip">
+          <strong>{info.title}</strong>
+          <p>{info.description}</p>
+          <span>Tap or click Santa for a closer look</span>
+        </div>}
         {camera.w < 1000 && (
           <svg viewBox="0 0 1000 500" className="tj-minimap" aria-hidden="true">
             <rect width="1000" height="500" fill={MAP_PALETTE.ocean} />
@@ -486,18 +505,25 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
           className="tj-artwork-viewer"
           role="dialog"
           aria-modal="true"
-          aria-label="Enlarged Santa artwork. Tap or click anywhere, or press Escape, to close."
+          aria-label={`Santa in ${info.title}. Tap or click anywhere, or press Escape, to close.`}
           tabIndex={-1}
           onClick={() => setArtworkViewerOpen(false)}
         >
+          <div className="tj-santa-detail">
           <img
             data-santa-artwork-enlarged=""
             data-mirrored={String(artwork.mirrored)}
             src={artwork.src}
             alt="Santa's current seasonal artwork"
             draggable={false}
-            style={{ width: `min(47vw, ${47 * artwork.width / artwork.height}dvh)` }}
+            style={{ width: `min(70vw, ${34 * artwork.width / artwork.height}dvh)` }}
           />
+          <div className="tj-santa-detail-copy">
+            <h2>{info.title}</h2>
+            <p>{info.description}</p>
+            <span>Tap anywhere or press Escape to close</span>
+          </div>
+          </div>
         </div>,
         expanded && mapRef.current ? mapRef.current : document.body,
       )}
