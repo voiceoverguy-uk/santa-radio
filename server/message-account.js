@@ -15,6 +15,7 @@ import { emailDigest, transaction } from './studio-live-store.js';
 import { livePaidPurchaseId, livePaidSummary, issueLiveAccess } from './studio-live-access.js';
 import { accountEnabled, kinds, assetPath, committed, acceptAsset } from './message-account-store.js';
 import { privateResponse } from './santa-name-security.js';
+import { deleteSavedMessage } from './message-account-delete.js';
 const app = express();
 app.disable('x-powered-by');
 app.use(express.json({limit:'32kb'}));
@@ -33,7 +34,7 @@ app.use(async(req,res,next)=> {
   if (req.query.action==='cleanup') {
    const expected=`Bearer ${process.env.CRON_SECRET || ''}`, supplied=String(req.headers.authorization || '');
    if (!process.env.CRON_SECRET || supplied.length!==expected.length || !timingSafeEqual(Buffer.from(supplied),Buffer.from(expected))) return res.status(401).end();
-   const {rows}=await databasePool().query('SELECT id FROM santa_saved_messages WHERE expires_at<=now() LIMIT 50');
+   const {rows}=await databasePool().query("SELECT id FROM santa_saved_messages WHERE expires_at<=now()-interval '15 minutes' LIMIT 50");
    for (const row of rows) { for(const kind of Object.keys(kinds)) await del(assetPath(row.id,kind)); await databasePool().query('DELETE FROM santa_saved_messages WHERE id=$1',[row.id]); }
    return res.json({removed:rows.length});
   }
@@ -81,6 +82,11 @@ app.use(async(req,res)=> {
   const email=user.emailAddresses.find(item=>item.id===user.primaryEmailAddressId);
   if(email?.verification?.status!=='verified') return res.status(403).json({error:'Please verify your email address.'});
   const db=databasePool();
+  if(req.method==='POST' && req.query.action==='delete') {
+   if(req.body?.confirmed!==true)return res.status(400).json({error:'Confirm deletion first.'});
+   if(!await deleteSavedMessage(db,userId,req.body.id))return res.status(404).json({error:'Message not found.'});
+   return res.json({deleted:true});
+  }
   if(req.method==='POST' && req.query.action==='link') {
    const {rows}=await payments().query('SELECT checkout_session_id FROM santa_studio_live_purchases WHERE email_sha256=$1',[emailDigest(email.emailAddress,liveStudioConfig())]);
    for(const row of rows) await db.query('INSERT INTO santa_message_accounts(purchase_id,user_id) VALUES($1,$2) ON CONFLICT DO NOTHING',[row.checkout_session_id,userId]);
