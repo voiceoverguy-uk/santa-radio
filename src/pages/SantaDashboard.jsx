@@ -1,3 +1,4 @@
+import NameRecordingUploads from '../components/NameRecordingUploads.jsx';
 import { useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import './SantaDashboard.css';
@@ -5,6 +6,7 @@ import SantaRequestLedger from '../components/SantaRequestLedger.jsx';
 export default function SantaDashboard() {
   const [dismissed,setDismissed]=useState('');
   const [ledger,setLedger]=useState(false);
+  const [uploads,setUploads]=useState(false);
   const token=useRef(''), request=useRef(0);
   const [input,setInput]=useState(''),[data,setData]=useState(null),[error,setError]=useState(''),[busy,setBusy]=useState(false);
   async function load(event) {
@@ -22,13 +24,14 @@ export default function SantaDashboard() {
       const result=await response.json();if(!response.ok)throw new Error(result.error);if(action==='dismiss')setDismissed(name);else if(action==='restore')setDismissed('');await load();
     }catch(e){setError(e.message);}finally{setBusy(false);}
   }
+  if (uploads && data) return <main className="santa-dashboard"><button onClick={()=>setUploads(false)}>← Back to dashboard</button><NameRecordingUploads ownerToken={token.current}/></main>;
   if (ledger && data) return <SantaRequestLedger ownerToken={token.current} email="Studio owner" onSignOut={()=>{setLedger(false);load();}} />;
   const totals=data?.daily.reduce((sum,row)=>({creations:sum.creations+row.creations,downloads:sum.downloads+row.downloads}),{creations:0,downloads:0});
   const table=(headers,rows)=><div className="santa-dashboard__table"><table><thead><tr>{headers.map(h=><th key={h} scope="col">{h}</th>)}</tr></thead><tbody>{rows.length?rows.map((row,i)=><tr key={i}>{row.map((cell,j)=><td key={j}>{cell}</td>)}</tr>):<tr><td colSpan={headers.length}>No activity recorded yet.</td></tr>}</tbody></table></div>;
   return <main className="santa-dashboard"><Helmet><title>Santa Radio · Private dashboard</title><meta name="robots" content="noindex, nofollow" /></Helmet>
     <header><p>THE NORTH POLE DESK</p><h1>Dashboard of Effectiveness</h1><p>Purchases, messages, votes and names to record.</p></header>
     {!data?<form onSubmit={load}><label htmlFor="dashboard-token">Private Studio owner token</label><input id="dashboard-token" type="password" autoComplete="off" value={input} onChange={e=>setInput(e.target.value)} required /><button disabled={busy}>{busy?'Opening…':'Open dashboard'}</button><p>Your token stays in this page’s memory and is cleared when you leave or reload.</p></form>:<>
-      <div className="santa-dashboard__actions"><button onClick={load} disabled={busy}>{busy?'Refreshing…':'Refresh figures'}</button><button onClick={()=>{request.current++;token.current='';setData(null);setBusy(false);setError('');}}>Lock dashboard</button></div>
+      <div className="santa-dashboard__actions"><button onClick={()=>setUploads(true)}>Upload recordings</button><button onClick={load} disabled={busy}>{busy?'Refreshing…':'Refresh figures'}</button><button onClick={()=>{request.current++;token.current='';setData(null);setBusy(false);setError('');}}>Lock dashboard</button></div>
       <p>Free-message figures cover the last 30 days, by UK date. Earlier free-message activity is not reconstructed.</p>
       <div className="santa-dashboard__cards"><section><strong>{totals.creations.toLocaleString()}</strong><span>Free messages created</span></section><section><strong>{totals.downloads.toLocaleString()}</strong><span>First download clicks</span></section><section><strong>{data.votes.reduce((n,r)=>n+r.votes,0).toLocaleString()}</strong><span>Confirmed competition votes</span></section></div>
       <p>Download figures count the first click for each recording, not a confirmed file save. Failed or blocked measurement requests may be absent. Paid Studio totals are shown separately below.</p>

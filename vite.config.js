@@ -1,3 +1,4 @@
+import nameRecordingUploads from './server/name-recording-uploads.js';
 import messageAccount from './server/message-account.js';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
@@ -73,6 +74,7 @@ const metadataPlugin = {
     server.middlewares.use('/api/radio-metadata', radioMetadata);
     server.middlewares.use('/api/radio-top-ten', radioTopTen);
     server.middlewares.use('/api/santa-mobile', santaMobile);
+    server.middlewares.use('/api/name-recording-uploads', nameRecordingUploads);
     server.middlewares.use('/api/my-santa-messages', messageAccount);
     server.middlewares.use('/api/santa-studio-message', studioMessage);
     server.middlewares.use('/api/santa-workshop-usage', workshopUsage);
@@ -116,6 +118,7 @@ const metadataPlugin = {
     server.middlewares.use('/api/radio-metadata', radioMetadata);
     server.middlewares.use('/api/radio-top-ten', radioTopTen);
     server.middlewares.use('/api/santa-mobile', santaMobile);
+    server.middlewares.use('/api/name-recording-uploads', nameRecordingUploads);
     server.middlewares.use('/api/my-santa-messages', messageAccount);
     server.middlewares.use('/api/santa-studio-message', studioMessage);
     server.middlewares.use('/api/santa-workshop-usage', workshopUsage);
