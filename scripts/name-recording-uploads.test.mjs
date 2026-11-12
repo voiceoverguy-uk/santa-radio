@@ -23,3 +23,15 @@ test('upload validates, stores privately, previews and excludes other namespaces
  });
 });
 test('unconfigured storage returns an actionable error',async()=>{await withServer({allowed:()=>true,env:{}},async url=>assert.equal((await fetch(url)).status,503));});
+test('server normalizes spaces to dashes in stored name identity',()=>{assert.equal(recordingUploadPath('Ellie May','wav',wav()),recordingUploadPath('Ellie-May','wav',wav()));});
+test('library search spans storage pages and returns only 20 rows per browser page',async()=>{
+ const entries=Array.from({length:45},(_,i)=>({pathname:recordingUploadPath('Test-'+String(i).padStart(3,'0'),'wav',wav()),size:100,uploadedAt:new Date()}));
+ entries.push({pathname:recordingUploadPath('Ellie May','wav',wav()),size:100,uploadedAt:new Date()});
+ let reads=0;const storage={list:async({cursor})=>{reads++;return cursor?{blobs:entries.slice(30),hasMore:false}:{blobs:entries.slice(0,30),hasMore:true,cursor:'second'};}};
+ await withServer({allowed:()=>true,env,storage},async url=>{
+ const first=await(await fetch(url)).json();assert.equal(first.recordings.length,20);assert.equal(first.total,46);assert.equal(first.totalPages,3);
+ const second=await(await fetch(url+'?page=2')).json();assert.equal(second.recordings.length,20);assert.equal(second.page,2);assert.ok(!second.recordings.some(r=>first.recordings.some(f=>f.path===r.path)));
+ const search=await(await fetch(url+'?search=ellie%20may')).json();assert.equal(search.recordings[0].name,'Ellie-May');assert.equal(search.total,1);assert.equal(reads,2);
+ assert.equal((await fetch(url+'?page=0')).status,400);
+ });
+});
