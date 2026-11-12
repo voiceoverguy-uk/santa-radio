@@ -1,3 +1,4 @@
+import { blobNameLibrary } from './blob-name-library.js';
 import { recordingUploadName } from '../src/lib/recordingUploadName.js';
 import express from 'express';
 import { put, list, get } from '@vercel/blob';
@@ -24,7 +25,7 @@ export async function validateRecording(bytes, extension) {
   try { await createNameLibrary().download({source:'hosted',file:'upload.mp3'},join(directory,'decoded.wav'),bytes); }
   finally { await rm(directory,{recursive:true,force:true}); }
 }
-export function createNameUploads({allowed=validOwnerToken, storage={put,list,get}, validate=validateRecording, env=process.env}={}) {
+export function createNameUploads({allowed=validOwnerToken, storage={put,list,get}, validate=validateRecording, env=process.env, liveLibrary=blobNameLibrary}={}) {
   let cached, cacheUntil=0, pending, version=0;
   async function inventory() {
     if(cached && Date.now()<cacheUntil)return cached;
@@ -76,6 +77,13 @@ export function createNameUploads({allowed=validOwnerToken, storage={put,list,ge
         return res.json({name,path,status:'testing'});
       }
       if(req.query.path) {
+        if(typeof req.query.path==='string' && req.query.path.startsWith('name-library/')) {
+          const library=await liveLibrary.load();
+          const record=library?.records.find(r=>r.blobPath===req.query.path);
+          if(!record)return res.status(404).json({error:'Recording not found.'});
+          const data=await liveLibrary.sourceBytes(record);
+          return res.type(record.file.toLowerCase().endsWith('.wav')?'audio/wav':'audio/mpeg').set('X-Content-Type-Options','nosniff').send(data);
+        }
         if(typeof req.query.path!=='string'||!pathPattern.test(req.query.path)) return res.status(400).json({error:'Invalid recording.'});
         const result=await storage.get(req.query.path,{access:'private'});
         if(!result||result.statusCode===304)return res.status(404).json({error:'Recording not found.'});
@@ -84,11 +92,12 @@ export function createNameUploads({allowed=validOwnerToken, storage={put,list,ge
       }
       const search=req.query.search??'', pageText=req.query.page??'1';
       if(typeof search!=='string'||search.length>80||typeof pageText!=='string'||!/^\d{1,4}$/.test(pageText)||Number(pageText)<1)return res.status(400).json({error:'Invalid search or page.'});
-      const all=await inventory();
+      const live=req.query.scope==='testing'?null:await liveLibrary.load();
+      const all=live?live.records.map(r=>({path:r.blobPath,name:r.name,size:r.size,uploadedAt:r.uploadedAt})).sort((a,b)=>a.name.localeCompare(b.name,'en-GB')||a.path.localeCompare(b.path)):await inventory();
       const key=recordingUploadName(search).toLocaleLowerCase('en-GB');
       const matches=key?all.filter(row=>recordingUploadName(row.name).toLocaleLowerCase('en-GB').includes(key)):all;
       const totalPages=Math.max(1,Math.ceil(matches.length/20)),page=Math.min(Number(pageText),totalPages);
-      return res.json({recordings:matches.slice((page-1)*20,page*20),page,totalPages,total:matches.length,libraryTotal:all.length});
+      return res.json({mode:live?'live':'testing',recordings:matches.slice((page-1)*20,page*20),page,totalPages,total:matches.length,libraryTotal:all.length});
     }catch{if(!res.headersSent)res.status(503).json({error:'Recording storage is unavailable. Refresh the list before retrying an upload.'});}
   });
   app.use((err,_req,res,_next)=>res.status(err.type==='entity.too.large'?413:400).json({error:err.type==='entity.too.large'?'Each recording must be 3 MB or smaller.':'Invalid upload.'}));

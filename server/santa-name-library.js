@@ -1,3 +1,4 @@
+import { blobNameLibrary } from './blob-name-library.js';
 import { readFile, writeFile, rm } from 'node:fs/promises';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
@@ -97,12 +98,14 @@ export function parseNameIndex(bytes) {
 }
 
 export function createNameLibrary({ fetcher = fetch, now = Date.now, snapshotStore = null,
-  legacySchemaFallback = false } = {}) {
+  legacySchemaFallback = false, blobLibrary = blobNameLibrary } = {}) {
   let cached;
   let expires = 0;
   let failedUntil = 0;
   let pending;
   const catalogue = async hint => {
+    const blob = await blobLibrary.load();
+    if (blob) return blob.records;
     if (snapshotStore) {
       try { return await snapshotStore.load(hint); }
       catch (error) {
@@ -167,6 +170,7 @@ export function createNameLibrary({ fetcher = fetch, now = Date.now, snapshotSto
       }
     },
     async sourceBytes(record, { signal } = {}) {
+      if (record.blobPath) return blobLibrary.sourceBytes(record, { signal });
       if (record.source !== 'hosted' || !FILE.test(record.file)) throw new NameLibraryError('INVALID_RECORDING');
       const origin = privateOrigin('audio', record.file);
       const url = new URL(encodeURIComponent(record.file), NAMES_ROOT);

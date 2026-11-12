@@ -35,3 +35,12 @@ test('library search spans storage pages and returns only 20 rows per browser pa
  assert.equal((await fetch(url+'?page=0')).status,400);
  });
 });
+test('live library pages and playback stay separate from test uploads',async()=>{
+ const records=Array.from({length:25},(_,i)=>({id:String(i),name:`Áine-${i}`,file:`Áine-${i}.mp3`,blobPath:`name-library/${i}`,size:100,uploadedAt:'2026-11-12T12:00:00Z'}));
+ const liveLibrary={load:async()=>({records}),sourceBytes:async()=>Buffer.alloc(100,1)};
+ await withServer({allowed:()=>true,env,liveLibrary,storage:{list:async()=>({blobs:[],hasMore:false})}},async url=>{
+  const body=await(await fetch(url+'?page=2')).json();assert.equal(body.mode,'live');assert.equal(body.recordings.length,5);assert.equal(body.libraryTotal,25);
+  const testing=await(await fetch(url+'?scope=testing')).json();assert.equal(testing.mode,'testing');assert.equal(testing.total,0);
+  assert.equal((await fetch(url+'?path=name-library/0')).status,200);assert.equal((await fetch(url+'?path=name-library/unknown')).status,404);
+ });
+});
