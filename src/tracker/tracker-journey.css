@@ -1,6 +1,6 @@
-.tj-camera { transform-origin: 0 0; transition: transform 1100ms cubic-bezier(.65,.02,.25,1); }
-/* Follow and marker must use the same frame, including accelerated previews. */
-.tj-camera[data-map-view="follow"] { transition: none; }
+/* Use SVG coordinates for both camera and marker. CSS pixel transforms can
+   drift at browser zoom levels; tweening also trails accelerated previews. */
+.tj-camera { transition: none; }
 .tj-pin { transition: r 600ms ease, opacity 400ms ease; }
 .tj-label { paint-order: stroke; stroke: #17334A; stroke-linejoin: round; fill: #FFF8E7; font-family: 'Cinzel', Georgia, serif; pointer-events: none; }
 .tj-label-next { fill: #e6ce86; }

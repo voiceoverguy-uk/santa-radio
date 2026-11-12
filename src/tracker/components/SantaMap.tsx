@@ -264,7 +264,7 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
 
           <rect width="1000" height="500" fill={MAP_PALETTE.ocean} />
 
-          <g className="tj-camera" data-map-view={effectiveView} data-camera-width={camera.w} style={{ transform: `translate(${tx}px, ${ty}px) scale(${s})` }}>
+          <g className="tj-camera" data-map-view={effectiveView} data-camera-width={camera.w} transform={`translate(${tx} ${ty}) scale(${s})`}>
             <g stroke={MAP_PALETTE.coastline} strokeWidth={0.85 * k} strokeLinejoin="round">
               {worldMapPaths.map((d, i) => (
                 <path key={i} d={d} fill={mapLandColor(i)} />

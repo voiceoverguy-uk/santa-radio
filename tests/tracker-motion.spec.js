@@ -14,7 +14,7 @@ test.beforeEach(async ({ page }) => {
 async function watchAnchor(page, milliseconds = 2500) {
   return page.evaluate(duration => new Promise(resolve => {
     const end = performance.now() + duration;
-    const result = { frames: 0, maxError: 0, dwellFrames: 0, maxDotError: 0, moved: false, visited: [], views: [] };
+    const result = { frames: 0, maxError: 0, dwellFrames: 0, maxDotError: 0, maxCentreError: 0, moved: false, visited: [], views: [] };
     let previous = null;
     const stops = new Set();
     const views = new Set();
@@ -31,6 +31,11 @@ async function watchAnchor(page, milliseconds = 2500) {
         const expected = point.matrixTransform(camera.getScreenCTM());
         const actual = new DOMPoint(0, 0).matrixTransform(marker.getScreenCTM());
         result.maxError = Math.max(result.maxError, Math.hypot(actual.x - expected.x, actual.y - expected.y));
+        if (camera.getAttribute('data-map-view') === 'follow') {
+          const bounds = marker.ownerSVGElement.getBoundingClientRect();
+          result.maxCentreError = Math.max(result.maxCentreError,
+            Math.hypot(actual.x - bounds.x - bounds.width / 2, actual.y - bounds.y - bounds.height / 2));
+        }
         result.frames++;
         if (previous && Math.hypot(previous.x - point.x, previous.y - point.y) > .001) result.moved = true;
         previous = point;
@@ -94,8 +99,9 @@ for (const width of [1440, 390]) {
     });
     for (const scenario of scenarios) {
       await startPreview(page, scenario.time);
-      expect(await page.locator('.tj-camera').evaluate(node => getComputedStyle(node).transitionDuration)).not.toBe('0s');
+      expect(await page.locator('.tj-camera').evaluate(node => getComputedStyle(node).transitionDuration)).toBe('0s');
       const follow = await watchAnchor(page);
+      expect(follow.maxCentreError, scenario.name).toBeLessThan(1);
       expect(follow.frames, scenario.name).toBeGreaterThan(10);
       expect(follow.moved, scenario.name).toBe(true);
       expect(follow.maxError, `${scenario.name}: ${JSON.stringify(follow)}`).toBeLessThan(1);
