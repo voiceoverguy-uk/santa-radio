@@ -1,3 +1,4 @@
+import { studioAccessEmailHtml } from './studio-access-email-template.js';
 import { sendNameNotifications } from './name-request-email.js';
 import { randomBytes, timingSafeEqual } from 'node:crypto';
 import express from 'express';
@@ -16,12 +17,12 @@ export async function sendStudioReturnEmail({ config, email, token, key, fetcher
     method: 'POST', redirect: 'error', signal: AbortSignal.timeout(10000),
     headers: { Authorization: `Bearer ${config.emailKey}`, 'Content-Type': 'application/json',
       'User-Agent': 'SantaRadioStudio', 'Idempotency-Key': key },
-    // Deliberately text-only: Resend's click rewriting applies to HTML, and
-    // open tracking requires an HTML pixel. Do not add html/templates here
-    // without revisiting tracking/privacy and the secure-link delivery checks.
+    // Resend domain click/open tracking is disabled: preserve direct private links.
+    // Keep a plain-text alternative for clients that do not display HTML.
     body: JSON.stringify({
       from: `Santa Radio <${config.emailFrom}>`, to: [email], subject: 'Your private Santa Radio Studio access',
-      text: `Thank you for your Santa Radio Studio purchase. Your £6.50 purchase includes two successful message creations, each with personalised gifts for one child.\n\nOpen your private Studio:\n${link}\n\nThis link can be used once within 24 hours. Its expiry does not expire your purchase. If needed, request a fresh link on the Studio page using your purchase email. Returning preserves your remaining creation allowance; it does not reset it or recover recordings.\n\nKeep this link private. You do not need an account or voucher code.\n\nDownload your MP3, certificate, letter and Santa picture before leaving Studio. To save new recordings and gifts online, sign in with your purchase email at ${config.origin}/my-santa-messages before creating. Saved collections stay until January 31 after their Christmas season. Without an account, recordings are temporary. Previously unsaved recordings cannot be recovered.`,
+      html: studioAccessEmailHtml({ link, origin: config.origin }),
+      text: `Thank you for your Santa Radio Studio purchase. Your purchase includes two successful message creations, each with personalised gifts for one child.\n\nOpen your private Studio:\n${link}\n\nThis link can be used once within 24 hours. Its expiry does not expire your purchase. If needed, request a fresh link on the Studio page using your purchase email. Returning preserves your remaining creation allowance; it does not reset it or recover recordings.\n\nKeep this link private. You do not need an account or voucher code.\n\nDownload your MP3, certificate, letter and Santa picture before leaving Studio. To save new recordings and gifts online, sign in with your purchase email at ${config.origin}/my-santa-messages before creating. Saved collections stay until January 31 after their Christmas season. Without an account, recordings are temporary. Previously unsaved recordings cannot be recovered.`,
     }),
   });
   if (!response.ok || typeof (await response.json()).id !== 'string') throw new Error('STUDIO_RETURN_EMAIL_NOT_ACCEPTED');

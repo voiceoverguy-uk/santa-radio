@@ -430,11 +430,13 @@ test('return-email content uses a canonical fragment link without child details 
   await sendStudioReturnEmail({ config, email: 'studio-buyer@example.invalid', token: claim, key: 'fixture-key',
     fetcher: async (_url, options) => { payload = JSON.parse(options.body); headers = options.headers; return { ok: true, json: async () => ({ id: 'mail_fixture' }) }; } });
   assert.equal(payload.from, 'Santa Radio <santa@santaradio.co.uk>');
-  assert.deepEqual(Object.keys(payload).sort(), ['from', 'subject', 'text', 'to'],
-    'Security emails must remain plain text: no HTML, provider templates or tracking wrappers');
+  assert.deepEqual(Object.keys(payload).sort(), ['from', 'html', 'subject', 'text', 'to'],
+    'Styled emails retain a text alternative and avoid provider templates');
   assert.match(payload.text, /\/bespoke-personalised-message-from-santa#studio-return=/);
   assert.doesNotMatch(payload.text, /\?token=/);
-  assert.match(payload.text, /does not expire your purchase/); assert.match(payload.text, /not saved/);
+  assert.match(payload.text, /does not expire your purchase/); assert.match(payload.text, /Previously unsaved recordings cannot be recovered/);
+  assert.ok(payload.html.includes(`${config.origin}/bespoke-personalised-message-from-santa#studio-return=${claim}`));
+  assert.doesNotMatch(payload.html, /<script|<img|tracking/i);
   assert.equal(headers['Idempotency-Key'], 'fixture-key');
 });
 
