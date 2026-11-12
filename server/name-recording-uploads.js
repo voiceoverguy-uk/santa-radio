@@ -1,3 +1,4 @@
+import { liveNameUploads } from './live-name-uploads.js';
 import { blobNameLibrary } from './blob-name-library.js';
 import { recordingUploadName } from '../src/lib/recordingUploadName.js';
 import express from 'express';
@@ -25,7 +26,7 @@ export async function validateRecording(bytes, extension) {
   try { await createNameLibrary().download({source:'hosted',file:'upload.mp3'},join(directory,'decoded.wav'),bytes); }
   finally { await rm(directory,{recursive:true,force:true}); }
 }
-export function createNameUploads({allowed=validOwnerToken, storage={put,list,get}, validate=validateRecording, env=process.env, liveLibrary=blobNameLibrary}={}) {
+export function createNameUploads({allowed=validOwnerToken, storage={put,list,get}, validate=validateRecording, env=process.env, liveLibrary=blobNameLibrary, publisher=liveNameUploads}={}) {
   let cached, cacheUntil=0, pending, version=0;
   async function inventory() {
     if(cached && Date.now()<cacheUntil)return cached;
@@ -66,19 +67,21 @@ export function createNameUploads({allowed=validOwnerToken, storage={put,list,ge
   app.use(async(req,res)=>{
     try {
       if(req.method==='POST') {
+        if(req.headers['x-recording-publish']!=='live')return res.status(409).json({error:'Refresh and unlock the dashboard to upload directly to the live library.'});
         let name;try{name=recordingUploadName(decodeURIComponent(req.headers['x-recording-name'] || ''));}catch{return res.status(400).json({error:'Choose a valid name.'});}
         const extension=req.headers['x-recording-format'];const bytes=req.body;
         if(!Buffer.isBuffer(bytes)||!bytes.length||bytes.length>MAX_RECORDING_BYTES) return res.status(400).json({error:'Choose an MP3 or WAV up to 3 MB.'});
         let path;try{path=recordingUploadPath(name,extension,bytes);await validate(bytes,extension);}catch{return res.status(400).json({error:'This recording could not be validated. Use a valid MP3 or WAV, 0.05–30 seconds long.'});}
-        // Content-addressed uploads make retries safe. This namespace is never read
-        // by the live name catalogue or customer-message expiry worker.
-        await storage.put(path,bytes,{access:'private',addRandomSuffix:false,allowOverwrite:true,contentType:extension==='wav'?'audio/wav':'audio/mpeg'});
-        version++;cached=null;cacheUntil=0;
-        return res.json({name,path,status:'testing'});
+        const library=await liveLibrary.load({fresh:true});
+        if(!library)return res.status(503).json({error:'The live name library is not ready. Please retry shortly.'});
+        const same=library.records.find(r=>r.file.normalize('NFC')===`${name}.${extension}`.normalize('NFC')&&r.sha256===createHash('sha256').update(bytes).digest('hex'));
+        if(same)return res.json({name,path:same.blobPath,status:'live'});
+        const published=await publisher.publish(name,extension,bytes);
+        return res.json(published);
       }
       if(req.query.path) {
         if(typeof req.query.path==='string' && req.query.path.startsWith('name-library/')) {
-          const library=await liveLibrary.load();
+          const library=await liveLibrary.load({fresh:true});
           const record=library?.records.find(r=>r.blobPath===req.query.path);
           if(!record)return res.status(404).json({error:'Recording not found.'});
           const data=await liveLibrary.sourceBytes(record);
@@ -92,7 +95,7 @@ export function createNameUploads({allowed=validOwnerToken, storage={put,list,ge
       }
       const search=req.query.search??'', pageText=req.query.page??'1';
       if(typeof search!=='string'||search.length>80||typeof pageText!=='string'||!/^\d{1,4}$/.test(pageText)||Number(pageText)<1)return res.status(400).json({error:'Invalid search or page.'});
-      const live=req.query.scope==='testing'?null:await liveLibrary.load();
+      const live=req.query.scope==='testing'?null:await liveLibrary.load({fresh:true});
       const all=live?live.records.map(r=>({path:r.blobPath,name:r.name,size:r.size,uploadedAt:r.uploadedAt})).sort((a,b)=>a.name.localeCompare(b.name,'en-GB')||a.path.localeCompare(b.path)):await inventory();
       const key=recordingUploadName(search).toLocaleLowerCase('en-GB');
       const matches=key?all.filter(row=>recordingUploadName(row.name).toLocaleLowerCase('en-GB').includes(key)):all;

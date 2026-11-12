@@ -1,9 +1,10 @@
+import { liveNameUploads } from './live-name-uploads.js';
 import { get } from '@vercel/blob';
 import { createHash } from 'node:crypto';
 import { santaMessageDownloadName } from '../src/data/santaMessages.js';
 const hash = data => createHash('sha256').update(data).digest('hex');
 export const ACTIVE_NAME_LIBRARY = 'name-library/active.json';
-export function createBlobNameLibrary({ storage = { get }, env = process.env, now = Date.now } = {}) {
+export function createBlobNameLibrary({ storage = { get }, env = process.env, now = Date.now, uploads = liveNameUploads } = {}) {
   let cached, expires = 0, pending;
   async function bytes(path, limit, signal) {
     const response = await storage.get(path, { access: 'private', useCache: false, abortSignal: signal || AbortSignal.timeout(30000) });
@@ -13,7 +14,7 @@ export function createBlobNameLibrary({ storage = { get }, env = process.env, no
     for await (const chunk of response.stream) { size+=chunk.length; if(size>limit) throw Error('Blob size limit exceeded'); chunks.push(Buffer.from(chunk)); }
     return Buffer.concat(chunks);
   }
-  async function load() {
+  async function loadBase() {
     if (!env.BLOB_READ_WRITE_TOKEN && !env.BLOB_STORE_ID) return null;
     if (now()<expires) return cached;
     if (pending) return pending;
@@ -38,6 +39,16 @@ export function createBlobNameLibrary({ storage = { get }, env = process.env, no
       cached={release:pointer.release,records};expires=now()+60000;return cached;
     })().finally(()=>{pending=null;});
     return pending;
+  }
+  let lastBase,lastUploads,combined;
+  async function load(options) {
+    const base=await loadBase();if(!base)return null;
+    const added=await uploads.records(options);
+    if(base!==lastBase||added!==lastUploads){
+      combined={...base,records:[...base.records,...added]};
+      lastBase=base;lastUploads=added;
+    }
+    return combined;
   }
   async function sourceBytes(record,{signal}={}) {
     const library=await load();const trusted=library?.records.find(r=>r.id===record.id);
