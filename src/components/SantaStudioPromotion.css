@@ -647,3 +647,11 @@
 .santa-studio-promotion__offer-title { font-size: 16px; }
 .santa-studio-promotion__offer-price small { display: block; text-align: right; font: 12px Arial,sans-serif; color: #56675a; }
 .santa-studio-promotion__examples { align-content: start; }
+
+/* Let the text use the full left-hand column alongside the keepsake previews. */
+.santa-studio-promotion__copy,
+.santa-studio-promotion__benefits {
+  max-width: none;
+  width: 100%;
+  box-sizing: border-box;
+}
