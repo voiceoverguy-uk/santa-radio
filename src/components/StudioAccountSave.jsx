@@ -1,3 +1,4 @@
+import './StudioAccountSave.css';
 import {useEffect,useRef,useState} from 'react';
 import {Link} from 'react-router-dom';
 export default function StudioAccountSave({result}) {
@@ -21,6 +22,6 @@ export default function StudioAccountSave({result}) {
    setState('saved');
   }catch{setState('error')}
  }
- if(!result.archiveId)return <p><Link to="/my-santa-messages" target="_blank" rel="noreferrer">Sign in to save future messages in your account</Link>. Download this recording and its gifts before leaving.</p>;
- return <div><p>Your audio is saved in <Link to="/my-santa-messages">My Santa Messages</Link>.</p>{state!=='saved'&&<button type="button" disabled={state==='saving'} onClick={save}>{state==='saving'?'Saving your three gifts…':'Save certificate, letter and picture to my account'}</button>}<p role="status">{state==='saved'?'All three personalised gifts are saved with your recording.':state==='error'?'Some gifts could not be saved. Keep this tab open and retry, or download them now.':'Save your gifts here before closing Studio.'}</p></div>;
+ if(!result.archiveId)return <p><Link className="studio-account-link" to="/my-santa-messages" target="_blank" rel="noreferrer">Sign in to save future messages in your account</Link>. Download this recording and its gifts before leaving.</p>;
+ return <div><p>Your audio is saved in <Link className="studio-account-link" to="/my-santa-messages">My Santa Messages</Link>.</p>{state!=='saved'&&<button type="button" disabled={state==='saving'} onClick={save}>{state==='saving'?'Saving your three gifts…':'Save certificate, letter and picture to my account'}</button>}<p role="status">{state==='saved'?'All three personalised gifts are saved with your recording.':state==='error'?'Some gifts could not be saved. Keep this tab open and retry, or download them now.':'Save your gifts here before closing Studio.'}</p></div>;
 }

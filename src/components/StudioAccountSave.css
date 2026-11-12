@@ -1,0 +1,3 @@
+.studio-account-link { color: #fff; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 2px; }
+.studio-account-link:hover { color: #ffe3a1; }
+.studio-account-link:focus-visible { outline: 2px solid #fff; outline-offset: 4px; border-radius: 2px; }
