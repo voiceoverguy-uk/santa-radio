@@ -14,7 +14,7 @@
     }
   ],
   "functions": {
-    "api/name-recording-uploads.js": { "maxDuration": 30, "includeFiles": "node_modules/ffmpeg-static/**" },
+    "api/name-recording-uploads.js": { "installCommand": "", "maxDuration": 30, "includeFiles": "node_modules/ffmpeg-static/**" },
     "api/names-demo.js": {
       "installCommand": "",
       "maxDuration": 15,
