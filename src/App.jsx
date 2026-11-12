@@ -76,7 +76,7 @@ function WebsiteLayout() {
         {STUDIO_ALIASES.map(path => <Route key={path} path={path} element={<StudioRedirect />} />)}
         <Route path="/my-santa-messages/*" element={<MySantaMessages />} />
         <Route path="/santa-dashboard" element={<SantaDashboard />} />
-        <Route path="/request-names" element={<SantaStaffShell mode="admin" />} />
+        <Route path="/request-names" element={<Navigate to="/santa-dashboard" replace />} />
         <Route path="/sign-in/*" element={<SantaStaffShell mode="sign-in" />} />
         <Route path="/sign-up/*" element={<SantaStaffShell mode="sign-up" />} />
         <Route path="/submit-a-song" element={<SubmitASong />} />

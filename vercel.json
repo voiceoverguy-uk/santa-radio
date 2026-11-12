@@ -93,8 +93,14 @@
   },
   "routes": [
     {
-      "src": "/names",
-      "dest": "/api/names-demo"
+      "src": "/names/?",
+      "status": 308,
+      "headers": { "Location": "/free-santa-message" }
+    },
+    {
+      "src": "/request-names/?",
+      "status": 308,
+      "headers": { "Location": "/santa-dashboard" }
     },
     {
       "src": "/names-data/(latest\\.json|names-[a-f0-9]{64}\\.json)",
