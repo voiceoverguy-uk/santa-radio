@@ -1,7 +1,7 @@
 import { santaNameKey } from '../../src/lib/santaNameSearch.js';
 
 export const snapshotUrl = new URL('./snapshot.json', import.meta.url);
-const validName = /^[\p{L}\p{M}0-9][\p{L}\p{M}0-9 '’_-]{0,79}$/u;
+const validName = /^[\p{L}\p{M}0-9][\p{L}\p{M}0-9 '’_().~`#-]{0,79}$/u;
 
 export function validateSnapshot(data) {
   if (data?.version !== 1 || !Array.isArray(data.names) ||
