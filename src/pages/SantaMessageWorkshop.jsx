@@ -579,13 +579,13 @@ export default function SantaMessageWorkshop() {
                 {generation.state.remaining === 0 && completedGift && ' Keep this page open to play and download your current MP3 and gifts.'}
                 {!completedGift && generation.state.successes > 0 && ' Previous recordings are not saved or restored.'}</>}
           </p>}
-          {generation.state?.admin && generation.state.remaining === 0 && <aside className="smw-allowance">
+          {generation.state?.admin && generation.state.remaining === 0 && <aside className="smw-allowance" style={{ padding: 20, border: '1px solid #d4af37', borderRadius: 14, background: '#173d2f' }}>
             <strong>ADMIN — Two-message test complete</strong>
             <p>You’ve reached the same two-message limit as your friends. Download your recordings and gifts before starting a new test.</p>
             <button type="button" className="smw-button" disabled={generation.checking} onClick={async () => {
               if (await generation.startAnother()) window.location.reload();
             }}>{generation.checking ? 'Resetting test…' : 'ADMIN — Start a new test'}</button>
-          </aside>
+          </aside>}
           <div className="smw-builder-head">
             <div>
               <h2 id="smw-builder-title" ref={stageHeading} tabIndex="-1">
