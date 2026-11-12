@@ -7,6 +7,7 @@ export default function NameRecordingUploads({ownerToken}) {
   const [queue,setQueue]=useState([]),[saved,setSaved]=useState([]);
   const [search,setSearch]=useState(''),[appliedSearch,setAppliedSearch]=useState(''),[pageInfo,setPageInfo]=useState(null),[showQueue,setShowQueue]=useState(true);
   const [batch,setBatch]=useState(null);
+  const [completionWarnings,setCompletionWarnings]=useState([]);
   const [libraryScope,setLibraryScope]=useState('live');
   const [error,setError]=useState(''),[busy,setBusy]=useState(false),[loading,setLoading]=useState(false),[preview,setPreview]=useState(null);
   const urls=useRef(new Set()), alive=useRef(true), controller=useRef(new AbortController()), listVersion=useRef(0);
@@ -37,7 +38,7 @@ export default function NameRecordingUploads({ownerToken}) {
     if(files.length>20)setError('Please upload up to 20 recordings at a time. The first 20 are shown.');
   }
   async function upload() {
-    setBusy(true);setError('');
+    setBusy(true);setError('');setCompletionWarnings([]);
     const pending=queue.filter(r=>r.valid&&r.status!=='Saved to Blob');
     let completed=0,failed=0;
     setBatch({total:pending.length,completed:0,failed:0,finished:false});
@@ -48,6 +49,7 @@ export default function NameRecordingUploads({ownerToken}) {
       try {
         const result=await uploadNameRecording(row,ownerToken,{signal:controller.current.signal,onProgress:progress=>update({progress,status:progress===100?'Checking and publishing…':'Uploading…'})});
         update({name:result.name,status:'Saved to Blob',progress:100});completed++;
+        if(result.requestCompletion?.status==='failed' && alive.current)setCompletionWarnings(old=>[...old,`${result.name}: ${result.requestCompletion.message}`]);
       } catch(e){update({status:e.message,failed:true});failed++;}
       if(alive.current)setBatch({total:pending.length,completed,failed,finished:false});
     }
@@ -60,7 +62,7 @@ export default function NameRecordingUploads({ownerToken}) {
   }
   return <section className="name-uploads" aria-labelledby="name-upload-title">
     <div className="name-uploads__heading"><div><p className="name-uploads__eyebrow">RECORDING LIBRARY</p><h2 id="name-upload-title">Upload & listen</h2></div><span className="name-uploads__badge">Private Blob library</span></div>
-    <p>Browse and play the live Blob library below. New uploads are checked and published straight to the live name picker and iOS app. Uploading does not mark requests recorded or send emails.</p>
+    <p>Browse and play the live Blob library below. New uploads are checked and published straight to the live name picker and iOS app. After successful publication, matching pending requests are marked recorded and availability emails are queued for linked requesters, normally within five minutes. Dismissed requests are left unchanged.</p>
     <label className="name-uploads__drop" onDragOver={e=>e.preventDefault()} onDrop={e=>{e.preventDefault();if(!busy)choose(e.dataTransfer.files);}}>
       <strong>Drop recordings here, or choose files</strong><span>MP3 or WAV · up to 3 MB and 30 seconds each · 20 at a time</span>
       <input type="file" accept=".mp3,.wav,audio/mpeg,audio/wav" multiple disabled={busy} onChange={e=>{choose(e.target.files);e.target.value='';}} />
@@ -70,6 +72,7 @@ export default function NameRecordingUploads({ownerToken}) {
     {!!queue.length&&<button onClick={()=>setShowQueue(!showQueue)}>{showQueue?'Hide batch details':'Show batch details'} ({queue.length})</button>}
     {showQueue&&queue.map(row=><div className="name-uploads__row" key={row.id}><label>Name<input value={row.name} maxLength={80} disabled={busy||row.status==='Saved to Blob'} onChange={e=>setQueue(old=>old.map(r=>r.id===row.id?{...r,name:e.target.value}:r))}/></label><small>{row.file.name}</small>{row.url&&<audio controls preload="metadata" src={row.url}/>}<small>Saved name: {recordingUploadName(row.name)}.{row.ext}</small><div className="name-uploads__progress"><progress max="100" value={row.progress} aria-label={`Upload progress for ${row.name}`}/><span>{row.status==='Saved to Blob'?'✓ Saved':`${row.progress}% transferred`}</span></div><p role="status">{row.status}</p></div>)}
     {!!queue.length&&<button className="name-uploads__primary" disabled={busy||!queue.some(r=>r.valid&&r.name.trim()&&r.status!=='Saved to Blob')||queue.some(r=>r.valid&&!r.name.trim())} onClick={upload}>{busy?'Uploading recordings…':'Upload to live library'}</button>}
+    {completionWarnings.map(message=><p role="alert" key={message}>{message}</p>)}
     {error&&<p role="alert">{error}</p>}
     <div className="name-uploads__heading"><h3>{pageInfo?.mode==='live'?'Live recordings':'Saved test recordings'}</h3><button disabled={loading||busy} onClick={()=>load()}>{loading?'Loading…':'Load / refresh recordings'}</button></div>
     <div className="name-uploads__pages"><button disabled={loading} aria-pressed={libraryScope==='live'} onClick={()=>load(1,search,'live')}>Live library</button><button disabled={loading} aria-pressed={libraryScope==='testing'} onClick={()=>load(1,search,'testing')}>Test uploads</button></div>
@@ -82,3 +85,4 @@ export default function NameRecordingUploads({ownerToken}) {
     {preview&&<div className="name-uploads__player"><p>{preview.name} · saved copy</p><audio key={preview.url} controls autoPlay src={preview.url}/></div>}
   </section>;
 }
+
