@@ -73,8 +73,7 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
         <div className="santa-studio-promotion__actions">
         <StudioPurchaseButton onPaidAccessChange={setPaidAccess} />
         <p className="santa-studio-promotion__checkout-note">
-          <a href="/my-santa-messages">My Santa Messages · sign in or create an account</a>
-          <br />Use your purchase email to save and download your creations.
+          <a href="/my-santa-messages">My Santa Messages</a>
         </p>
         {!paidAccess && <details className="santa-studio-promotion__voucher-entry">
           <summary>Have a voucher code?</summary>
@@ -91,7 +90,7 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
           <button className="santa-studio-promotion__gift-toggle" type="button"
             aria-expanded={giftsExpanded} aria-controls={giftsId}
             onClick={() => setGiftsExpanded(value => !value)}>
-            Your personalised keepsakes
+            Your personalised gifts
             <span className="santa-studio-promotion__gift-arrow" aria-hidden="true">▾</span>
           </button>
         </div>

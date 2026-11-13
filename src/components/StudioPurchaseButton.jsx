@@ -119,11 +119,11 @@ function PurchaseButton({ sandbox, onPaidAccessChange }) {
         ? available
           ? 'Sandbox only. Two successful creations for £6.50; no real money moves. Use test card 4242 4242 4242 4242, any future expiry and any three-digit CVC. Secure return emails are live-site only.'
           : checking ? 'Checking sandbox availability…' : 'Sandbox purchases are available in the development preview only.'
-        : 'Create now or return later using your email link. Download your messages and personalised keepsakes.'}
+        : 'Create now or later using your email link.'}
     </p>
     {new URLSearchParams(location.search).get('studioCheckout') === 'cancelled' &&
       <p role="status">{sandbox ? 'Test checkout was cancelled.' : 'Checkout was cancelled.'} No new access has been granted. You can try Purchase again.</p>}
-    {<p><Link to={`${STUDIO_PATH}#studio-return-access`}>Already paid? Return to your Studio</Link></p>}
+    {<p><Link to={`${STUDIO_PATH}#studio-return-access`}>Already paid? Return to Studio</Link></p>}
     {error && <div role="alert"><p>{error}</p><button type="button" onClick={() => setRefresh(value => value + 1)}>Retry purchase check</button></div>}
   </div>;
 }
