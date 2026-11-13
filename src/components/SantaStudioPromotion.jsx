@@ -55,7 +55,7 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
           </p>
           <div className="santa-studio-promotion__benefits">
             <p className="santa-studio-promotion__benefits-lead">
-              Two personalised audio messages, with three keepsakes for each child:
+              Two personalised audio messages, with three gifts for each child:
             </p>
             <ul className="santa-studio-promotion__benefit-list">
               <li>A personalised Nice List certificate</li>
