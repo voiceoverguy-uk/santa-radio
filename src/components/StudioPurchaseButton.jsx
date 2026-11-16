@@ -111,8 +111,8 @@ function PurchaseButton({ sandbox, onPaidAccessChange }) {
     {<button className="santa-studio-promotion__purchase" type="button"
       disabled={sandbox && (checking || !available || busy)} onClick={purchase} aria-describedby={noteId}>
       {sandbox
-        ? busy ? 'Opening test checkout…' : checking ? 'Checking test checkout…' : 'Create our Santa messages · £6.50 (test)'
-        : busy ? 'Opening secure checkout…' : 'Create our Santa messages · £6.50'}
+        ? busy ? 'Opening test checkout…' : checking ? 'Checking test checkout…' : 'Create your Santa messages · £6.50 (test)'
+        : busy ? 'Opening secure checkout…' : 'Create your Santa messages · £6.50'}
     </button>}
     <p id={noteId} role="status">
       {sandbox
