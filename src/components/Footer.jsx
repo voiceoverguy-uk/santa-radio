@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import WorkshopPasswordDialog from './WorkshopPasswordForm.jsx';
 import { Link, useLocation } from 'react-router-dom';
 import { isStudioPath } from '../lib/studioRoute.js';
 import { useRadio } from './RadioProvider.jsx';
@@ -9,6 +11,7 @@ import { useMiniPlayerPreference } from './RadioDockVisibility.jsx';
 
 export default function Footer() {
   const { pathname } = useLocation();
+  const [friendsOpen, setFriendsOpen] = useState(false);
   const { effects, setEffects } = useRadio();
   const { enabled: miniPlayerEnabled, setEnabled: setMiniPlayerEnabled } = useMiniPlayerPreference();
   const footerRef = useFooterClearance(pathname);
@@ -24,6 +27,8 @@ export default function Footer() {
         <Link to="/submit-a-song?mode=song">Submit your song</Link>
         <span>&middot;</span>
         <Link to="/christmas-contenders">Christmas Contenders</Link>
+        <span>&middot;</span>
+        <button type="button" className="cookie-settings-link" onClick={() => setFriendsOpen(true)}>Santa Radio Friends</button>
         <span>&middot;</span>
         <Link to="/my-santa-messages">My Santa Messages</Link>
         <span>&middot;</span>
@@ -90,6 +95,7 @@ export default function Footer() {
         </div>
       </div>
       <p className="footer-copy">&copy; 2026 Santa Radio. All Rights Reserved.</p>
+      <WorkshopPasswordDialog open={friendsOpen} onClose={() => setFriendsOpen(false)} />
     </footer>
   );
 }
