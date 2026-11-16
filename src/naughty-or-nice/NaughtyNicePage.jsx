@@ -122,10 +122,10 @@ function NaughtyNiceOffice({ initialName }) {
       </div>}
       {stage === 'entry' && <div ref={entry} className="nn-stage">
         <h2>Welcome to Head Elf’s Office</h2>
-        <p>So, who is visiting Head Elf's office today?</p>
+        <p>So who is visiting today? Let me find out if Naughty or Nice</p>
         <FirstNameForm key={entryKey} initialName={name} label="Confirm first name" inlineSuggestions
           buttonText={value => value ? `Is ${value} Naughty or Nice?` : 'Is this name Naughty or Nice?'}
-          suggestionHelp="Let's see what Head Elf finds out."
+          suggestionHelp="Head Elf will ask some questions to find out."
           onSubmit={value => {
             if (!run(1800, () => { audio.stop(); setStage('questions'); })) return;
             setRound(selectQuestionRound());
