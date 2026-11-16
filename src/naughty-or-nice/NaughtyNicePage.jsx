@@ -57,6 +57,8 @@ function NaughtyNiceOffice({ initialName }) {
       setMessageOfferOpen(false);
       return undefined;
     }
+    // The app keeps the inline offer below the certificate without a popup.
+    if (window.ReactNativeWebView) return undefined;
     if (!certificateDownloaded) return undefined;
     if (audio.enabled && !outcomeAudioFinished) return undefined;
     const timer = window.setTimeout(() => setMessageOfferOpen(true), MESSAGE_OFFER_DELAY_MS);
@@ -211,12 +213,12 @@ function NaughtyNiceOffice({ initialName }) {
         <h2 ref={heading} tabIndex={-1}>{result === 'nice' ? `${name}: NICE LIST!` : 'Oh no! NAUGHTY LIST'}</h2>
         {result === 'nice' ? <p>Well Done {name} Only {christmasDays} {christmasDays === 1 ? 'day' : 'days'} to go. Keep sharing, helping and being kind. Little acts of kindness make Christmas brighter!</p>
           : <p>{name} don't panic! With {christmasDays} {christmasDays === 1 ? 'day' : 'days'} to go until Christmas there is still time to work on it and come and try again.</p>}
+        <CheckerCertificate name={name} result={result} days={christmasDays}
+          onDownload={() => setCertificateDownloaded(true)} />
         <div className="nn-message-cta">
           <p>Keep the Christmas magic going with a personal message from Santa for {name}.</p>
           <Link className="nn-primary" to="/free-santa-message">Get a FREE message from Santa</Link>
         </div>
-        <CheckerCertificate name={name} result={result} days={christmasDays}
-          onDownload={() => setCertificateDownloaded(true)} />
       </div>}
       <HomepageCornerControls audio={audio} onRestart={reset} showRestart={stage !== 'entry'} />
       </div>
