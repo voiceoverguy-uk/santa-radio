@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import PageSeo from '../seo/PageSeo.jsx';
 import { homeMetadata } from '../seo/catalogue.js';
 import { useTrackEvent } from '../privacy/useTrackEvent.js';
@@ -17,6 +18,12 @@ import './Home.css';
 
 export default function Home() {
   const navigate = useNavigate();
+  const [checkerEntry, setCheckerEntry] = useState({ name: '', id: 0 });
+  const checkNaughtyNice = name => {
+    // Keep the child's name in memory, never in a URL or browser storage.
+    setCheckerEntry(current => ({ name, id: current.id + 1 }));
+    navigate({ pathname: '/', hash: '#nice-list' }, { preventScrollReset: true });
+  };
   const continueWithName = name => {
     offerFreeSantaMessageName(name);
     navigate('/free-santa-message');
@@ -31,12 +38,12 @@ export default function Home() {
   return (
     <main id="main-content" className="home-page hero-name-preview">
       <PageSeo metadata={homeMetadata()} />
-      <HomeHero onContinue={continueWithName} />
+      <HomeHero onContinue={continueWithName} onCheckNaughtyNice={checkNaughtyNice} />
       <HomepageSantaStudio />
       <SantaTrackerBanner />
       {/* Personalised video promotion temporarily removed; SantaVideoSection and its styles are retained for restoration. */}
       <SantaDashPromo />
-      <NaughtyNiceWidget />
+      <NaughtyNiceWidget key={checkerEntry.id} initialName={checkerEntry.name} />
       <ChristmasPairs />
       <Soundboard />
       <MugshotsPreview />

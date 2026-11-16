@@ -11,7 +11,7 @@ import { NnComputer } from './OfficeScene.jsx';
 import { HOMEPAGE_ANALYSIS_MS, CHECKER_LAUNCH_MS, CHECKER_PATH, clearCheckerName, offerCheckerName, preliminaryScore } from './checkerLogic.js';
 import './checker.css';
 
-export default function NaughtyNiceWidget({ onOpenHeadElf, standalone = false } = {}) {
+export default function NaughtyNiceWidget({ onOpenHeadElf, standalone = false, initialName = '' } = {}) {
   const location = useLocation();
   const [stage, setStage] = useState('entry');
   const [name, setName] = useState('');
@@ -129,7 +129,7 @@ export default function NaughtyNiceWidget({ onOpenHeadElf, standalone = false } 
       </div>
       <div ref={frameElement} className="nn-panel nn-widget-frame">
         {(stage === 'entry' || stage === 'starting') && <h3 className="nn-widget-form-heading">Quick Nice List Check</h3>}
-        {(stage === 'entry' || stage === 'starting') && <FirstNameForm key={entryKey} label="Confirm first name" inlineSuggestions
+        {(stage === 'entry' || stage === 'starting') && <FirstNameForm key={entryKey} initialName={entryKey === 0 ? initialName : ''} label="Confirm first name" inlineSuggestions
           enteredHelp="Ready to find out?" buttonText="Lets check" disabled={stage === 'starting'} onSubmit={value => {
           if (!run(HOMEPAGE_ANALYSIS_MS + CHECKER_LAUNCH_MS, () => { cancelPanel(); setScore(preliminaryScore()); setStage('result'); reaction.reveal(); })) return;
           setName(value); setStage('starting');

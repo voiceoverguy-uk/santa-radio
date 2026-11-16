@@ -1,9 +1,10 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import useBrowserSantaNameSearch from './useBrowserSantaNameSearch.js';
 import { selectSantaRecipient } from './useSantaRecipient.js';
+import { nameError } from '../naughty-or-nice/checkerLogic.js';
 import { BLOCKED_NAME_NOTE } from '../lib/nameLanguage.js';
 
-export default function HeroNameChecker({ onContinue, onSelectedNameChange }) {
+export default function HeroNameChecker({ onContinue, onSelectedNameChange, onCheckNaughtyNice }) {
   const id = useId();
   const [name, setName] = useState('');
   const [selected, setSelected] = useState(null);
@@ -154,6 +155,11 @@ export default function HeroNameChecker({ onContinue, onSelectedNameChange }) {
         search.refresh();
       }}>Retry name search</button>}
       <button className="btn-red hero-name-checker__submit" type="submit">Create my free Santa message →</button>
+      {onCheckNaughtyNice && !nameError(name) && !search.blocked && <button
+        className="hero-name-checker__nice" type="button" onClick={() => {
+          setOpen(false);
+          onCheckNaughtyNice(name.trim());
+        }}>Check Naughty or Nice →</button>}
     </form>
   </section>;
 }

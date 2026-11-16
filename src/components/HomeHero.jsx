@@ -31,7 +31,7 @@ export function useHeroNameSelection() {
   return { pendingName, continueWithName, selectedName, setSelectedName };
 }
 
-export default function HomeHero({ preview = false, onContinue, onSelectedNameChange }) {
+export default function HomeHero({ preview = false, onContinue, onSelectedNameChange, onCheckNaughtyNice }) {
   const layoutRef = useRef(null);
   const titleRef = useRef(null);
   const checkerRef = useRef(null);
@@ -117,7 +117,7 @@ export default function HomeHero({ preview = false, onContinue, onSelectedNameCh
             <span className="hero-name-preview__seal" aria-hidden="true">S</span>
             <span className="hero-name-preview__checker-kicker">The North Pole</span>
           </div>
-          <HeroNameChecker onContinue={onContinue} onSelectedNameChange={onSelectedNameChange} />
+          <HeroNameChecker onCheckNaughtyNice={onCheckNaughtyNice} onContinue={onContinue} onSelectedNameChange={onSelectedNameChange} />
         </aside>
       </div>
     </section>
