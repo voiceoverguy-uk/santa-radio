@@ -107,6 +107,8 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
       if (wasArtworkViewerOpen.current) {
         wasArtworkViewerOpen.current = false;
         santaArtworkTriggerRef.current?.focus();
+        // Returning keyboard focus must not reopen the marker's smaller tooltip.
+        setInfoVisible(false);
       }
       return;
     }
