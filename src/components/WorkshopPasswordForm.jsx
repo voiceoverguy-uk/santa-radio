@@ -210,8 +210,8 @@ export default function WorkshopPasswordDialog({ open, onClose }) {
       <p className="workshop-dialog-kicker">A private North Pole room</p>
       <button type="button" className="workshop-dialog-close" aria-label="Close workshop access" onClick={close}>×</button>
     </div>
-    <h2 id="workshop-password-title">Santa’s message workshop</h2>
-    <p id="workshop-password-description">Enter your voucher code to join the friends test.</p>
+    <h2 id="workshop-password-title">Santa Radio Friends</h2>
+    <p id="workshop-password-description">Enter your friends voucher code to open the message maker. Discount codes are entered at Stripe checkout.</p>
     <WorkshopPasswordForm active={open} onAuthorized={authorized} requestControlRef={requestControlRef} />
   </dialog>;
 }
