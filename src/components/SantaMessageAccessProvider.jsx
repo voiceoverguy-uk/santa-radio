@@ -4,7 +4,7 @@ import { MESSAGE_ACCESS_KEY } from '../lib/santaMessageAccess.js';
 const MessageAccessContext = createContext(null);
 
 // The browser flag is presentation only; the server verifies its own HttpOnly
-// signup grant and allowance. This still does not verify email ownership.
+// email-verified grant and allowance. Older unverified grants are rejected.
 export function SantaMessageAccessProvider({ children }) {
   const [hasAccess, setHasAccess] = useState(false);
   useEffect(() => {
@@ -24,17 +24,20 @@ export function SantaMessageAccessProvider({ children }) {
   }, []);
   const [sessionRemembered, setSessionRemembered] = useState(true);
   const [greetingName, setGreetingName] = useState('');
+  const [marketingStatus, setMarketingStatus] = useState('');
   const revokeAccess = () => {
     setHasAccess(false);
     try { sessionStorage.removeItem(MESSAGE_ACCESS_KEY); } catch { /* Not an authority. */ }
   };
-  const grantAccess = firstName => {
+  const grantAccess = (firstName, status = '') => {
+    setMarketingStatus(status);
     setGreetingName(typeof firstName === 'string' ? firstName.trim() : '');
     try { sessionStorage.setItem(MESSAGE_ACCESS_KEY, 'granted'); }
     catch { setSessionRemembered(false); }
     setHasAccess(true);
   };
   return <MessageAccessContext.Provider value={{ hasAccess, grantAccess, revokeAccess, greetingName, sessionRemembered }}>
+    {marketingStatus === 'suppressed' && <p role="status" style={{ padding: '12px', textAlign: 'center' }}>Your free message is unlocked. Your existing email opt-out has been kept, so you have not been subscribed to Santa Radio news.</p>}
     {children}
   </MessageAccessContext.Provider>;
 }

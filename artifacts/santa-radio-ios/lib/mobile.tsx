@@ -95,7 +95,13 @@ function useMobileState() {
     return () => { subscription.remove(); clearAudio(); };
   }, []);
   const signup = async (fields: { FIRSTNAME: string; LASTNAME: string; EMAIL: string }) => {
-    await call('signup', { ...fields, email_address_check: '' });
+    const data = await (await call('signup', { ...fields, action: 'request-code', email_address_check: '' })).json();
+    if (data.state !== 'verification' || typeof data.verificationId !== 'string') throw new Error('We could not send your verification code.');
+    return data.verificationId as string;
+  };
+  const confirmSignup = async (verificationId: string, code: string) => {
+    const data = await (await call('signup', { action: 'confirm-code', verificationId, code })).json();
+    if (data.success !== true) throw new Error('Please check your email code.');
     await refresh();
   };
   const lookup = async (query: string, studio = false): Promise<NameResult[]> => {
@@ -158,7 +164,7 @@ function useMobileState() {
       await refresh();
     } finally { purchaseBusy.current = false; }
   };
-  return { ready, error, freeStatus, entitlement, prices, signup, lookup, createFree, loadCatalogue, createStudio, refresh, purchase, restore };
+  return { ready, error, freeStatus, entitlement, prices, signup, confirmSignup, lookup, createFree, loadCatalogue, createStudio, refresh, purchase, restore };
 }
 type AppStateValue = ReturnType<typeof useMobileState>;
 const Context = createContext<AppStateValue | null>(null);

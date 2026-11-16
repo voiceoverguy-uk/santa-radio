@@ -1,7 +1,7 @@
-// Public subscription endpoint from the owner's supplied Brevo form.
+// Legacy form URL retained for old test fixtures; verification never submits it.
 export const BREVO_FORM_URL = 'https://ca61f856.sibforms.com/serve/MUIFALS9-stwC29HOAmz9w7wZgVWtRf7GMFcM0rfGW3XphZO-64RGdnXzZP1oUuEcbL3dtq7sgOersrva7RcSXqWPNBrfDlEFJBr2iEUcVuQtYVonByHO7TpLu3DC0_mpLXM2HETM5mQwW9gf-jxEtiOXQZU56FHHA3_RfU9B-OFn4UTzsX2Dd3IEwoCyXHKmkH5ONcaOOoN9bAM';
 export const MESSAGE_ACCESS_KEY = 'santa-message-access';
-export const ACCESS_REQUEST_TIMEOUT_MS = 15000;
+export const ACCESS_REQUEST_TIMEOUT_MS = 30000;
 
 export function validateAccessFields(fields) {
   const errors = {};
@@ -33,10 +33,9 @@ export class MessageAccessError extends Error {
 }
 
 export async function submitMessageAccess(fields, signal) {
-  const body = Object.fromEntries(['FIRSTNAME', 'LASTNAME', 'EMAIL'].map(name => [name, fields[name].trim()]));
-  body.studio_check = fields.studio_check || '';
-  // The server forwards accepted adult details to the same supplied form and
-  // issues an HttpOnly grant only after the provider reports success.
+  const body = fields.action === 'confirm-code' ? { action: fields.action, verificationId: fields.verificationId, code: fields.code } : Object.fromEntries(['FIRSTNAME', 'LASTNAME', 'EMAIL'].map(name => [name, fields[name].trim()]));
+  if (fields.action !== 'confirm-code') { body.action = 'request-code'; body.marketingOptIn = fields.marketingOptIn === true; body.studio_check = fields.studio_check || ''; }
+  // Only code confirmation can issue the server's verified access cookie.
   const response = await fetch('/api/santa-message-access', {
     method: 'POST', body: JSON.stringify(body), signal, credentials: 'same-origin',
     headers: { 'Content-Type': 'application/json' },
@@ -53,7 +52,9 @@ export async function submitMessageAccess(fields, signal) {
   }
   signal.throwIfAborted();
   // An HTTP 200, a truthy string or a legacy redirect is NOT acceptance.
-  if (response.ok && data?.success === true) return;
+  if (response.ok && fields.action === 'confirm-code' && data?.success === true) return data;
+  if (response.ok && fields.action !== 'confirm-code' && data?.state === 'verification' &&
+      /^[a-f0-9-]{36}$/.test(data.verificationId || '')) return data;
   const fieldErrors = {};
   const supportedFields = ['FIRSTNAME', 'LASTNAME', 'EMAIL'];
   const submittedFields = [...supportedFields, 'email_address_check', 'locale'];

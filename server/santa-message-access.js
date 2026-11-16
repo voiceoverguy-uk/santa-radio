@@ -1,9 +1,10 @@
+import { requestFreeMessageCode, confirmFreeMessageCode, sendFreeMessageCode, verificationBinding, VERIFICATION_COOKIE } from './free-message-verification.js';
 import { CONTACT_COOKIE, sealContact } from './name-request-contact.js';
 import express from 'express';
 import { createHmac, timingSafeEqual, randomBytes } from 'node:crypto';
 import { databasePool } from './name-request-store.js';
 import { consumeNameAccess, privateResponse } from './santa-name-security.js';
-import { BREVO_FORM_URL, validateAccessFields } from '../src/lib/santaMessageAccess.js';
+import { validateAccessFields } from '../src/lib/santaMessageAccess.js';
 import { getClerkProxyHost } from './middlewares/clerkProxyMiddleware.js';
 
 export const FREE_ACCESS_COOKIE = 'santa-free-message';
@@ -16,10 +17,10 @@ const signingKey = () => {
 const mac = (value, secret) => createHmac('sha256', secret).update(value).digest('base64url');
 export function issueFreeAccess(email, now = Date.now(), secret = signingKey()) {
   const subject = mac(`free-adult:${email.trim().normalize('NFKC').toLowerCase()}`, secret);
-  // Fresh server randomness per acceptance; a submitted address cannot choose
+  // Fresh server randomness per verified acceptance; a submitted address cannot choose
   // or fix the bearer grant. Only its keyed allowance identity stays stable.
   const payload = Buffer.from(JSON.stringify({ subject, nonce: randomBytes(16).toString('base64url'),
-    exp: now + SESSION_MS })).toString('base64url');
+    verified: true, exp: now + SESSION_MS })).toString('base64url');
   return `${payload}.${mac(`free-access:${payload}`, secret)}`;
 }
 export function freeSession(req, now = Date.now(), secret = signingKey()) {
@@ -31,7 +32,7 @@ export function freeSession(req, now = Date.now(), secret = signingKey()) {
   if (!match || !timingSafeEqual(Buffer.from(match[2]), Buffer.from(mac(`free-access:${match[1]}`, secret)))) return null;
   try {
     const data = JSON.parse(Buffer.from(match[1], 'base64url').toString('utf8'));
-    return /^[A-Za-z0-9_-]{43}$/.test(data.subject) && /^[A-Za-z0-9_-]{22}$/.test(data.nonce) && Number.isSafeInteger(data.exp) &&
+    return data.verified === true && /^[A-Za-z0-9_-]{43}$/.test(data.subject) && /^[A-Za-z0-9_-]{22}$/.test(data.nonce) && Number.isSafeInteger(data.exp) &&
       data.exp > now && data.exp <= now + SESSION_MS ? data : null;
   } catch { return null; }
 }
@@ -80,7 +81,8 @@ export async function finishFreeMessage(lease, success, pool = databasePool(), n
   } else await pool.query('DELETE FROM santa_name_request_limits WHERE bucket_key=$1 AND attempts=$2', [lease.key, lease.marker]);
 }
 export function createMessageAccessHandler({ fetcher = fetch, limit = consumeNameAccess,
-  readSession = freeSession, issue = issueFreeAccess, readAllowance = availableAt } = {}) {
+  readSession = freeSession, issue = issueFreeAccess, readAllowance = availableAt,
+  requestCode = requestFreeMessageCode, confirmCode = confirmFreeMessageCode } = {}) {
   const app = express();
   app.disable('x-powered-by');
   app.use((req, res, next) => {
@@ -99,58 +101,34 @@ export function createMessageAccessHandler({ fetcher = fetch, limit = consumeNam
       }
       await limit(req, 'signup');
       const fields = req.body;
+      if (fields?.action === 'confirm-code') {
+        const confirmation = await confirmCode({ id: fields.verificationId, code: fields.code, binding: verificationBinding(req) });
+        const email = typeof confirmation === 'string' ? confirmation : confirmation.email;
+        const grant = issue(email);
+        const session = JSON.parse(Buffer.from(grant.split('.')[0], 'base64url').toString('utf8'));
+        res.cookie(CONTACT_COOKIE, sealContact({ email, subject: session.subject, exp: session.exp }),
+          { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge: SESSION_MS });
+        res.cookie(FREE_ACCESS_COOKIE, grant, { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge: SESSION_MS });
+        res.clearCookie(VERIFICATION_COOKIE, { httpOnly: true, secure: true, sameSite: 'lax', path: '/' });
+        return res.json({ success: true, marketingStatus: confirmation.marketingStatus || 'not-requested' });
+      }
       // Older websites and the native app still use the provider's old name.
       // Check BOTH independently: an empty alias must never mask a filled trap.
       const traps = ['studio_check', 'email_address_check'];
-      if (!fields || Array.isArray(fields) ||
-          Object.keys(fields).some(key => !['FIRSTNAME', 'LASTNAME', 'EMAIL', ...traps].includes(key)) ||
+      if (!fields || fields.action !== 'request-code' || Array.isArray(fields) ||
+          Object.keys(fields).some(key => !['action', 'FIRSTNAME', 'LASTNAME', 'EMAIL', 'marketingOptIn', ...traps].includes(key)) ||
           ['FIRSTNAME', 'LASTNAME', 'EMAIL'].some(key => typeof fields[key] !== 'string' || /[\u0000-\u001f\u007f]/.test(fields[key])) ||
           traps.some(key => Object.hasOwn(fields, key) && fields[key] !== '') ||
+          (fields.marketingOptIn !== undefined && typeof fields.marketingOptIn !== 'boolean') ||
           Object.keys(validateAccessFields(fields)).length) {
         return res.status(400).json({ success: false, message: 'Please check your adult contact details.' });
       }
-      const body = new FormData();
-      for (const name of ['FIRSTNAME', 'LASTNAME', 'EMAIL']) body.append(name, fields[name].trim());
-      body.append('email_address_check', ''); body.append('locale', 'en');
-      const response = await fetcher(`${BREVO_FORM_URL}?isAjax=1`, {
-        method: 'POST', body, redirect: 'error', signal: AbortSignal.timeout(12000),
-      });
-      const reader = response.body.getReader();
-      let bytes = '', length = 0;
-      const decoder = new TextDecoder();
-      try {
-        while (true) {
-          const { value, done } = await reader.read();
-          if (done) break;
-          length += value.length;
-          if (length > 16000) { await reader.cancel(); throw new Error('Provider response too large'); }
-          bytes += decoder.decode(value, { stream: true });
-        }
-        bytes += decoder.decode();
-      } finally { reader.releaseLock(); }
-      let data;
-      try { data = JSON.parse(bytes); } catch { throw new Error('Invalid provider response'); }
-      if (!response.ok || data?.success !== true) {
-        // Retain useful field/configuration errors without forwarding provider
-        // HTML, arbitrary object structure, or unbounded field names.
-        const errors = {};
-        if (data?.errors && typeof data.errors === 'object' && !Array.isArray(data.errors)) {
-          for (const [field, value] of Object.entries(data.errors).slice(0, 32)) {
-            if (!/^[A-Z][A-Z0-9_]{0,63}$/.test(field)) continue;
-            errors[field] = typeof value === 'string'
-              ? value.replace(/<[^>]*>/g, '').replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, 300)
-              : 'Please check this field.';
-          }
-        }
-        return res.status(422).json({ success: false, errors,
-          message: 'Your details could not be accepted. Please check them and try again.' });
-      }
-      const grant=issue(fields.EMAIL);
-      const contactSession=JSON.parse(Buffer.from(grant.split('.')[0],'base64url').toString('utf8'));
-      res.cookie(CONTACT_COOKIE, sealContact({email:fields.EMAIL.trim(),subject:contactSession.subject,exp:contactSession.exp}), {httpOnly:true,secure:true,sameSite:'lax',path:'/',maxAge:24*3600000});
-      res.cookie(FREE_ACCESS_COOKIE, grant, { httpOnly: true, secure: true, sameSite: 'lax', path: '/' });
-      return res.json({ success: true });
+      const challenge = await requestCode(fields, { send: args => sendFreeMessageCode(args, fetcher) });
+      res.cookie(VERIFICATION_COOKIE, challenge.binding,
+        { httpOnly: true, secure: true, sameSite: 'strict', path: '/', maxAge: 15 * 60000 });
+      return res.json({ state: 'verification', verificationId: challenge.id });
     } catch (error) {
+      if ([400, 409].includes(error.status)) return res.status(error.status).json({ success: false, message: error.message });
       if (error.status === 429) return res.set('Retry-After', String(error.retryAfter)).status(429).json({ success: false, message: error.message });
       return res.status(503).json({ success: false, message: 'The recording studio is temporarily unavailable. Please try again.' });
     }

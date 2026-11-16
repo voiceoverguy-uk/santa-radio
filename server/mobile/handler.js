@@ -1,3 +1,4 @@
+import { VERIFICATION_COOKIE } from '../free-message-verification.js';
 import { ServerResponse } from 'node:http';
 import { createMessageAccessHandler, freeSession, availableAt, FREE_ACCESS_COOKIE } from '../santa-message-access.js';
 import { createSantaNamesHandler } from '../santa-names.js';
@@ -78,7 +79,9 @@ export function createMobileHandler({
       const protocol = req.headers['x-forwarded-proto']?.split(',')[0].trim() || (req.socket?.encrypted ? 'https' : 'http');
       req.headers.origin = `${protocol}://${getClerkProxyHost(req)}`;
       req.headers['sec-fetch-site'] = 'same-origin';
-      req.headers.cookie = session.freeGrant ? `${FREE_ACCESS_COOKIE}=${session.freeGrant}` : '';
+      req.headers.cookie = session.freeGrant?.startsWith('verification:')
+        ? `${VERIFICATION_COOKIE}=${session.freeGrant.slice(13)}`
+        : session.freeGrant ? `${FREE_ACCESS_COOKIE}=${session.freeGrant}` : '';
       req.url = '/';
       const paid = async () => verify(session.customerId);
       if (action === 'status') {
@@ -90,12 +93,14 @@ export function createMobileHandler({
       }
       if (['signup', 'names', 'free', 'studio'].includes(action)) req.body = await readNameJson(req);
       if (action === 'signup') {
+        req.body.action ||= 'request-code';
         const result = await captureHandler(access, req);
         if (result.status === 200) {
           const cookies = [result.headers['set-cookie']].flat().filter(Boolean);
           const grant = cookies.find(c => c.startsWith(`${FREE_ACCESS_COOKIE}=`))?.split(';')[0].slice(FREE_ACCESS_COOKIE.length + 1);
-          if (!grant) throw new Error('Signup did not issue access');
-          await store.setFreeGrant(session, grant);
+          const pending = cookies.find(c => c.startsWith(`${VERIFICATION_COOKIE}=`))?.split(';')[0].slice(VERIFICATION_COOKIE.length + 1);
+          if (!grant && !pending) throw new Error('Signup did not issue verification or access');
+          await store.setFreeGrant(session, grant || `verification:${pending}`);
         }
         return json(result.status, decodeJson(result));
       }

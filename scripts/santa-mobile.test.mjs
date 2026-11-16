@@ -6,6 +6,7 @@ import { createMobileHandler } from '../server/mobile/handler.js';
 import { verifiedPurchases, createPurchaseVerifier } from '../server/mobile/revenuecat.js';
 import { createMessageAccessHandler, issueFreeAccess, FREE_ACCESS_COOKIE } from '../server/santa-message-access.js';
 
+process.env.SESSION_SECRET = 'test-mobile-access-key'.repeat(3);
 const customer = `sr_${'a'.repeat(48)}`;
 const products = { permanent: 'prod-permanent', single: 'prod-single' };
 const owned = (changes = {}) => ({ object: 'purchase', status: 'owned', store: 'app_store', environment: 'sandbox',
@@ -155,8 +156,10 @@ test('signup captures existing server cookie privately and does not send it to t
 });
 test('real adult signup handler can run behind the native adapter without bypassing validation', async () => {
   let providerCalls = 0;
-  const access = createMessageAccessHandler({ limit: async () => {}, fetcher: async () => {
-    providerCalls++; return new Response('{"success":true}', { status: 200, headers: { 'Content-Type': 'application/json' } });
+  const access = createMessageAccessHandler({ limit: async () => {}, requestCode: async () => {
+    providerCalls++; return { id: '00000000-0000-4000-8000-000000000001', binding: 'x'.repeat(43) };
+  }, confirmCode: async ({ binding, code }) => {
+    assert.equal(binding, 'x'.repeat(43)); assert.equal(code, '123456'); return 'parent@example.test';
   } });
   const h = await harness({ access });
   try {
@@ -169,6 +172,10 @@ test('real adult signup handler can run behind the native adapter without bypass
     assert.equal(trapped.status, 400); assert.equal(providerCalls, 0);
     const ok = await h.call('signup', { body: { FIRSTNAME: 'Test', LASTNAME: 'Parent', EMAIL: 'parent@example.test', email_address_check: '' } });
     assert.equal(ok.status, 200); assert.equal(providerCalls, 1);
+    assert.equal((await h.call('names', { body: { query: 'Ar', studio: false } })).status, 401);
+    const verification = await ok.json();
+    const confirmed = await h.call('signup', { body: { action: 'confirm-code', verificationId: verification.verificationId, code: '123456' } });
+    assert.equal(confirmed.status, 200);
     assert.equal((await h.call('names', { body: { query: 'Ar', studio: false } })).status, 200);
   } finally { await h.close(); }
 });

@@ -1,8 +1,10 @@
+import { FREE_MARKETING_COPY } from '../lib/freeMessageMarketing.js';
 import { useId } from 'react';
 import { Link } from 'react-router-dom';
 import './SantaMessageAccessCard.css';
 
 export default function SantaMessageAccessCard({
+  verification, code, onCodeChange, onRestart,
   fields,
   errors,
   error,
@@ -57,7 +59,7 @@ export default function SantaMessageAccessCard({
                 autoComplete={autocomplete}
                 maxLength={maxLength}
                 required
-                readOnly={pending}
+                readOnly={pending || !!verification}
                 aria-required="true"
                 aria-invalid={Boolean(fieldError)}
                 aria-describedby={fieldError ? errorId : undefined}
@@ -84,23 +86,36 @@ export default function SantaMessageAccessCard({
         </div>
         <input type="hidden" name="locale" value="en" />
 
+        <label className="santa-message-access__marketing">
+          <input type="checkbox" name="marketingOptIn" defaultChecked={false} disabled={pending || !!verification} />
+          <span>{FREE_MARKETING_COPY} <small>Optional — your free message is available either way.</small></span>
+        </label>
+        {verification && <div className="santa-message-access__field">
+          <p className="santa-message-access__status" role="status">We’ve emailed a code to {fields.EMAIL}. Check your inbox and junk folder. It expires in 15 minutes.</p>
+          <label htmlFor={`${id}-code`}>Six-digit email code</label>
+          <input id={`${id}-code`} name="code" type="text" inputMode="numeric" autoComplete="one-time-code"
+            maxLength={6} value={code} onChange={event => onCodeChange(event.target.value.replace(/\D/g, ''))}
+            readOnly={pending} aria-invalid={Boolean(errors?.code)} aria-describedby={errors?.code ? `${id}-code-error` : undefined} />
+          {errors?.code && <p id={`${id}-code-error`} className="santa-message-access__field-error">{errors.code}</p>}
+          <button type="button" className="santa-message-access__restart" disabled={pending} onClick={onRestart}>Change email or request another code</button>
+        </div>}
         {error && <p className="santa-message-access__error" role="alert">{error}</p>}
         {offer ? <div className="santa-offer-unlock">
           <span className="santa-offer-unlock-sparkle santa-offer-unlock-sparkle--before" aria-hidden="true" />
           <button className={submitClassName} type="submit" disabled={pending}>
             <span className="santa-offer-unlock-sheen" aria-hidden="true" />
-            {pending ? 'Opening the recording studio…' : 'Unlock my free Santa message'}
+            {pending ? 'Please wait…' : verification ? 'Confirm email & unlock my message' : 'Email my verification code'}
           </button>
           <span className="santa-offer-unlock-sparkle santa-offer-unlock-sparkle--after" aria-hidden="true" />
         </div> : <button className={submitClassName} type="submit" disabled={pending}>
-          {pending ? 'Opening the recording studio…' : 'Get my free Santa message'}
+          {pending ? 'Please wait…' : verification ? 'Confirm email & unlock my message' : 'Email my verification code'}
           {!pending && <span aria-hidden="true">→</span>}
         </button>}
-        {pending && <p className="santa-message-access__status" role="status">Opening your access to Santa’s recorded greetings.</p>}
+        {pending && <p className="santa-message-access__status" role="status">{verification ? 'Checking your email code…' : 'Sending your verification code…'}</p>}
       </form>
 
       <p className="santa-message-access__privacy">
-        Your details are stored for news or updates. Read our <Link to="/privacy-policy" onClick={onPrivacyNavigate}>privacy policy</Link>.
+        Confirm your email to unlock your free message. If you tick the box above, confirmation also signs you up for Santa Radio emails. Read our <Link to="/privacy-policy" onClick={onPrivacyNavigate}>privacy policy</Link>.
       </p>
       <p className="santa-message-access__delivery">
         {offer ? 'Create your greeting, download instantly and share - not sent by email.'

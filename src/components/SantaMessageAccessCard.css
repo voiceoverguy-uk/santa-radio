@@ -186,3 +186,11 @@
   .santa-message-access__form { gap: 14px; }
   .santa-message-access__field input { min-height: 52px; }
 }
+
+.santa-message-access__restart { background: transparent; border: 0; color: inherit; text-decoration: underline; padding: 12px 0; cursor: pointer; font: inherit; font-size: .85rem; }
+.santa-message-access__restart:disabled { opacity: .5; cursor: wait; }
+.santa-message-access input[name="code"] { letter-spacing: .35em; font-size: 1.4rem; }
+
+.santa-message-access__marketing { display: flex; align-items: flex-start; gap: 10px; font-size: .85rem; line-height: 1.5; }
+.santa-message-access__marketing input[type="checkbox"] { width: 19px; height: 19px; flex: 0 0 19px; margin: 3px 0 0; accent-color: #bd2031; }
+.santa-message-access__marketing small { display: block; margin-top: 4px; opacity: .8; }

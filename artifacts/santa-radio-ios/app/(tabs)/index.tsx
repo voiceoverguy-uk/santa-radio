@@ -18,6 +18,8 @@ export default function FreeMessage() {
   const [first, setFirst] = React.useState('');
   const [last, setLast] = React.useState('');
   const [email, setEmail] = React.useState('');
+  const [verification, setVerification] = React.useState('');
+  const [code, setCode] = React.useState('');
   const [busy, setBusy] = React.useState<'' | 'signup' | 'lookup' | 'create'>('');
   const [err, setErr] = React.useState('');
   const [privacyErr, setPrivacyErr] = React.useState('');
@@ -39,7 +41,8 @@ export default function FreeMessage() {
 
   const validSignup = adult && first.trim() && last.trim() && EMAIL_RE.test(email.trim());
   const doSignup = () => run('signup', async () => {
-    await app.signup({ FIRSTNAME: first.trim(), LASTNAME: last.trim(), EMAIL: email.trim() });
+    if (verification) await app.confirmSignup(verification, code);
+    else setVerification(await app.signup({ FIRSTNAME: first.trim(), LASTNAME: last.trim(), EMAIL: email.trim() }));
     setFirst(''); setLast(''); setEmail('');
   });
   const doLookup = () => { if (!query.trim()) return; run('lookup', async () => { setPicked(null); setResults(await app.lookup(query.trim())); }); };
@@ -86,18 +89,23 @@ export default function FreeMessage() {
         <Card delay={80}>
           <Eyebrow>Step 1 of 2 - for grown-ups</Eyebrow>
           <Title size={22}>A quick hello from a parent or carer</Title>
-          <Body muted style={{ marginVertical: 10 }}>Please use your own adult details, not a child's email. This is the same adult signup as the free website maker. Your details go to Santa Radio's mailing-list provider. There is no account or email ownership check; read the privacy notice before continuing.</Body>
+          <Body muted style={{ marginVertical: 10 }}>Please use your own adult details, not a child's email. We’ll email you a six-digit code. Confirm it to unlock the message maker. This does not subscribe you to marketing.</Body>
           <Press accessibilityRole="checkbox" accessibilityState={{ checked: adult }} accessibilityLabel="I confirm I am 18 or over and am the parent, carer or adult requesting this message" onPress={() => setAdult(a => !a)} style={s.check}>
             <View style={[s.box, adult && s.boxOn]}>{adult ? <Ionicons name="checkmark" size={16} color={brand.navyDark} /> : null}</View>
             <Text style={s.checkText}>I am 18 or over and I am the adult requesting this message.</Text>
           </Press>
-          <Field label="Your first name" value={first} onChangeText={setFirst} autoComplete="given-name" textContentType="givenName" />
-          <Field label="Your last name" value={last} onChangeText={setLast} autoComplete="family-name" textContentType="familyName" />
-          <Field label="Your email address" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" autoComplete="email" textContentType="emailAddress" error={email && !EMAIL_RE.test(email.trim()) ? 'Please check this email address.' : undefined} />
+          <Field label="Your first name" editable={!verification && !busy} value={first} onChangeText={setFirst} autoComplete="given-name" textContentType="givenName" />
+          <Field label="Your last name" editable={!verification && !busy} value={last} onChangeText={setLast} autoComplete="family-name" textContentType="familyName" />
+          <Field label="Your email address" editable={!verification && !busy} value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" autoComplete="email" textContentType="emailAddress" error={email && !EMAIL_RE.test(email.trim()) ? 'Please check this email address.' : undefined} />
           <Press accessibilityRole="link" onPress={openPrivacy} style={{ minHeight: 44, justifyContent: 'center', marginBottom: 8 }}><Text style={s.link}>Read how we use your details (privacy notice)</Text></Press>
           {privacyErr ? <Notice message={privacyErr} /> : null}
           {err ? <Notice message={err} onRetry={validSignup ? doSignup : undefined} /> : null}
-          <Button label="Continue to the message desk" icon="arrow-forward" onPress={doSignup} busy={busy === 'signup'} disabled={!validSignup} hint={!adult ? 'Confirm you are 18 or over first' : undefined} />
+          {verification ? <>
+            <Body muted>Enter the code sent to {email}. It expires in 15 minutes. Check your inbox and junk folder.</Body>
+            <Field label="Six-digit email code" value={code} onChangeText={value => setCode(value.replace(/\D/g, ''))} keyboardType="number-pad" textContentType="oneTimeCode" maxLength={6} editable={!busy} />
+            <Button label="Change email or request another code" variant="ghost" disabled={!!busy} onPress={() => { setVerification(''); setCode(''); setErr(''); }} />
+          </> : null}
+          <Button label={verification ? 'Confirm email and unlock' : 'Email my verification code'} icon="arrow-forward" onPress={doSignup} busy={busy === 'signup'} disabled={!validSignup || (!!verification && !/^\d{6}$/.test(code))} hint={!adult ? 'Confirm you are 18 or over first' : undefined} />
         </Card>
       ) : null}
 

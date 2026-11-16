@@ -14,6 +14,7 @@ if (process.env.VERCEL_ENV === 'production') {
     await client.query("SELECT pg_advisory_xact_lock(hashtext('santa-name-requests-schema'))");
     const schema = await readFile(new URL('../database/santa-name-requests.sql', import.meta.url), 'utf8');
     await client.query(schema);
+    await client.query(await readFile(new URL('../database/free-message-verification.sql', import.meta.url), 'utf8'));
     await client.query(await readFile(new URL('../database/message-statistics.sql', import.meta.url), 'utf8'));
     await client.query('SELECT request_key, recorded_at FROM santa_name_requests LIMIT 0');
     await client.query('SELECT id, recording_suggestions FROM santa_name_request_history LIMIT 0');
@@ -29,4 +30,3 @@ if (process.env.VERCEL_ENV === 'production') {
 } else {
   console.log('Name-request production migration skipped outside production.');
 }
-

@@ -11,6 +11,8 @@ export default function SantaMessageAccessForm({ variant = 'inline', onAccepted,
   const [errors, setErrors] = useState({});
   const [error, setError] = useState('');
   const [pending, setPending] = useState(false);
+  const [verification, setVerification] = useState(null);
+  const [code, setCode] = useState('');
   const formRef = useRef(null);
   const requestRef = useRef(null);
   const { grantAccess } = useSantaMessageAccess();
@@ -40,8 +42,9 @@ export default function SantaMessageAccessForm({ variant = 'inline', onAccepted,
     // autofill, and snapshot every actual value (including the trap) on submit.
     const data = new FormData(event.currentTarget);
     const submitted = Object.fromEntries(Object.keys(emptyFields).map(name => [name, data.get(name) ?? '']));
+    submitted.marketingOptIn = data.get('marketingOptIn') === 'on';
     setFields(submitted);
-    const validation = validateAccessFields(submitted);
+    const validation = verification ? (/^\d{6}$/.test(code) ? {} : { code: 'Enter the six-digit code from your email.' }) : validateAccessFields(submitted);
     setErrors(validation);
     setError('');
     if (Object.keys(validation).length) {
@@ -59,10 +62,17 @@ export default function SantaMessageAccessForm({ variant = 'inline', onAccepted,
     const timeout = setTimeout(() => { timedOut = true; controller.abort(); }, ACCESS_REQUEST_TIMEOUT_MS);
     setPending(true);
     try {
-      await submitMessageAccess(submitted, controller.signal);
+      const result = await submitMessageAccess(verification
+        ? { action: 'confirm-code', verificationId: verification, code }
+        : submitted, controller.signal);
       if (requestRef.current !== controller) return;
       controller.signal.throwIfAborted();
-      grantAccess(submitted.FIRSTNAME);
+      if (result.state === 'verification') {
+        setVerification(result.verificationId); setCode('');
+        requestAnimationFrame(() => formRef.current?.elements.namedItem('code')?.focus());
+        return;
+      }
+      grantAccess(submitted.FIRSTNAME, result.marketingStatus);
       onAccepted?.();
       setFields(emptyFields);
       // Never follow Brevo's optional legacy external redirect.
@@ -88,5 +98,10 @@ export default function SantaMessageAccessForm({ variant = 'inline', onAccepted,
       }
     }
   };
-  return <SantaMessageAccessCard {...{ fields, errors, error, pending, onChange, onSubmit, formRef, variant, onPrivacyNavigate, selectedChildName, pulseSubmit }} />;
+  const restart = () => {
+    if (pending) return;
+    setVerification(null); setCode(''); setError(''); setErrors({});
+    requestAnimationFrame(() => formRef.current?.elements.namedItem('EMAIL')?.focus());
+  };
+  return <SantaMessageAccessCard verification={verification} code={code} onCodeChange={setCode} onRestart={restart} {...{ fields, errors, error, pending, onChange, onSubmit, formRef, variant, onPrivacyNavigate, selectedChildName, pulseSubmit }} />;
 }

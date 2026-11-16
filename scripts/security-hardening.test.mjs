@@ -19,18 +19,20 @@ import { createContendersHandler } from '../server/christmas-contenders.js';
 const key = 'test-only-hardening-signing-key-not-a-real-secret';
 process.env.SESSION_SECRET=key;
 const noLimit = async () => {};
-const adult = { FIRSTNAME: 'Test', LASTNAME: 'Fixture', EMAIL: 'adult@example.test' };
+const adult = { action: 'request-code', FIRSTNAME: 'Test', LASTNAME: 'Fixture', EMAIL: 'adult@example.test' };
 let deliveries = 0;
 let providerSuccess = true;
 let providerFields;
 const access = createMessageAccessHandler({
   limit: noLimit, issue: email => issueFreeAccess(email, Date.now(), key),
   readSession: req => freeSession(req, Date.now(), key), readAllowance: async () => 0,
-  fetcher: async (_url, options) => {
+  requestCode: async fields => {
     deliveries++;
-    providerFields = Object.fromEntries(options.body);
-    return new Response(JSON.stringify({ success: providerSuccess, errors: { EMAIL: '<strong>Check email</strong>', CHILD_DATE_OF_BIRTH: 'Required' } }));
+    providerFields = fields;
+    if (!providerSuccess) throw new Error('Delivery unavailable');
+    return { id: '00000000-0000-4000-8000-000000000001', binding: 'x'.repeat(43) };
   },
+  confirmCode: async () => adult.EMAIL,
 });
 const denied = createMessageAccessHandler({
   limit: async () => { throw Object.assign(new Error('Too many requests'), { status: 429, retryAfter: 60 }); },
@@ -57,21 +59,20 @@ const post = (path, data, headers = {}) => fetch(base + path, {
   method: 'POST', headers: { 'content-type': 'application/json', origin: base, ...headers },
   body: JSON.stringify(data),
 });
-test('signup grants require provider success; reject cross-site, invalid fields and honeypots', async () => {
+test('signup grants require code confirmation; reject cross-site, invalid fields and honeypots', async () => {
   assert.equal((await post('/access', adult, { origin: 'https://other.invalid' })).status, 403);
   assert.equal((await post('/access', { ...adult, email_address_check: 'bot' })).status, 400);
   assert.equal((await post('/access', { ...adult, FIRSTNAME: '<bad>\ninput' })).status, 400);
   assert.equal(deliveries, 0);
   providerSuccess = false;
   let response = await post('/access', adult);
-  assert.equal(response.status, 422);
+  assert.equal(response.status, 503);
   assert.equal(response.headers.get('set-cookie'), null);
-  const rejected = await response.json();
-  assert.equal(rejected.errors.EMAIL, 'Check email');
-  assert.equal(rejected.errors.CHILD_DATE_OF_BIRTH, 'Required');
   providerSuccess = true;
   response = await post('/access', adult);
   assert.equal(response.status, 200);
+  assert.equal(freeSession({ headers: { cookie: response.headers.getSetCookie().join('; ') } }), null);
+  response = await post('/access', { action: 'confirm-code', verificationId: (await response.json()).verificationId, code: '123456' });
   const cookie = response.headers.getSetCookie().map(value=>value.split(';')[0]).join('; ');
   const attributes=response.headers.getSetCookie().join('; ');
   assert.match(attributes, /HttpOnly/);
@@ -83,7 +84,7 @@ test('signup grants require provider success; reject cross-site, invalid fields 
   assert.equal((await (await fetch(base + '/access', { headers: { cookie } })).json()).authorized, true);
   assert.equal((await post('/limited', adult)).status, 429);
 });
-test('neutral and legacy signup traps cannot mask one another and only an empty provider trap is forwarded', async () => {
+test('neutral and legacy signup traps cannot mask one another before requesting a code', async () => {
   const before = deliveries;
   for (const trap of ['studio_check', 'email_address_check']) {
     for (const value of ['bot', ' ', false, 0, null, [], {}]) {
@@ -100,7 +101,7 @@ test('neutral and legacy signup traps cannot mask one another and only an empty 
     const response = await post('/access', { ...adult, ...traps });
     assert.equal(response.status, 200);
     assert.ok(response.headers.get('set-cookie'));
-    assert.deepEqual(providerFields, { ...adult, email_address_check: '', locale: 'en' });
+    assert.deepEqual(providerFields, { ...adult, ...traps });
   }
   const blocked = await post('/limited', { ...adult, studio_check: '' });
   assert.equal(blocked.status, 429);
