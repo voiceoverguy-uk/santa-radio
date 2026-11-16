@@ -1,6 +1,5 @@
-import { useState } from 'react';
 import WorkshopPasswordDialog from './WorkshopPasswordForm.jsx';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { isStudioPath } from '../lib/studioRoute.js';
 import { useRadio } from './RadioProvider.jsx';
 import './Footer.css';
@@ -11,7 +10,17 @@ import { useMiniPlayerPreference } from './RadioDockVisibility.jsx';
 
 export default function Footer() {
   const { pathname } = useLocation();
-  const [friendsOpen, setFriendsOpen] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const friendsOpen = searchParams.get('friends') === '1';
+  const closeFriends = () => {
+    setSearchParams(current => {
+      const next = new URLSearchParams(current);
+      next.delete('friends');
+      return next;
+    }, { replace: true, preventScrollReset: true });
+  };
+  const friendsParams = new URLSearchParams(searchParams);
+  friendsParams.set('friends', '1');
   const { effects, setEffects } = useRadio();
   const { enabled: miniPlayerEnabled, setEnabled: setMiniPlayerEnabled } = useMiniPlayerPreference();
   const footerRef = useFooterClearance(pathname);
@@ -28,7 +37,7 @@ export default function Footer() {
         <span>&middot;</span>
         <Link to="/christmas-contenders">Christmas Contenders</Link>
         <span>&middot;</span>
-        <button type="button" className="cookie-settings-link" onClick={() => setFriendsOpen(true)}>Santa Radio Friends</button>
+        <Link to={{ pathname, search: `?${friendsParams}` }} preventScrollReset>Santa Radio Friends</Link>
         <span>&middot;</span>
         <Link to="/my-santa-messages">My Santa Messages</Link>
         <span>&middot;</span>
@@ -95,7 +104,7 @@ export default function Footer() {
         </div>
       </div>
       <p className="footer-copy">&copy; 2026 Santa Radio. All Rights Reserved.</p>
-      <WorkshopPasswordDialog open={friendsOpen} onClose={() => setFriendsOpen(false)} />
+      <WorkshopPasswordDialog open={friendsOpen} onClose={closeFriends} />
     </footer>
   );
 }
