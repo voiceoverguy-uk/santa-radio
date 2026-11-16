@@ -69,9 +69,21 @@ function NaughtyNiceOffice({ initialName }) {
       if (entryKey || visited.current) entry.current?.querySelector('input')?.focus();
     } else {
       visited.current = true;
-      heading.current?.focus();
+      heading.current?.focus({ preventScroll: stage === 'result' && Boolean(window.ReactNativeWebView) });
     }
   }, [stage, entryKey, questionIndex]);
+  useEffect(() => {
+    if (stage !== 'result' || !window.ReactNativeWebView) return;
+    // Native navigation sits outside the webview: its top edge is our safe top.
+    const frame = requestAnimationFrame(() => {
+      const panel = heading.current?.closest('.nn-panel');
+      if (panel) window.scrollTo({
+        top: Math.max(0, window.scrollY + panel.getBoundingClientRect().top - 8),
+        behavior: 'instant',
+      });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [stage]);
   const reset = () => {
     cancel(); audio.stop(); clearReaction(); setStage('entry'); setName('');
     setRound([]); setAnswers(Array(ROUND_QUESTION_COUNT).fill('')); setAllNoPrompt('');
@@ -212,7 +224,7 @@ function NaughtyNiceOffice({ initialName }) {
         <p className="nn-kicker">HEAD ELF’S VERY UNOFFICIAL VERDICT</p>
         <h2 ref={heading} tabIndex={-1}>{result === 'nice' ? `${name}: NICE LIST!` : 'Oh no! NAUGHTY LIST'}</h2>
         {result === 'nice' ? <p>Well Done {name} Only {christmasDays} {christmasDays === 1 ? 'day' : 'days'} to go. Keep sharing, helping and being kind. Little acts of kindness make Christmas brighter!</p>
-          : <p>{name} don't panic! With {christmasDays} {christmasDays === 1 ? 'day' : 'days'} to go until Christmas there is still time to work on it and come and try again.</p>}
+          : <p>{name} don't panic! With {christmasDays} {christmasDays === 1 ? 'day' : 'days'} to go until Christmas. There is still plenty of time!</p>}
         <CheckerCertificate name={name} result={result} days={christmasDays}
           onDownload={() => setCertificateDownloaded(true)} />
         <div className="nn-message-cta">
