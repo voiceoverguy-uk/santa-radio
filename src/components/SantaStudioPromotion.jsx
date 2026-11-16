@@ -1,17 +1,11 @@
 import { useId, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { WorkshopPasswordForm } from './WorkshopPasswordForm.jsx';
 import './SantaStudioPromotion.css';
 import StudioPurchaseButton from './StudioPurchaseButton.jsx';
 import { StudioGiftPreview, useStudioGiftExample } from './SantaStudioGifts.jsx';
 import StudioPortraitViewer from './StudioPortraitViewer.jsx';
 import SantaStudioAudioExample from './SantaStudioAudioExample.jsx';
-import { hasStudioPurchaseHint } from '../lib/studioPurchaseHint.js';
-import { STUDIO_PATH } from '../lib/studioRoute.js';
 
 export default function SantaStudioPromotion({ activeExampleName = null, availableNamesText, previewName = null, allowExamples = true, onAuthorized }) {
-  const navigate = useNavigate();
-  const [paidAccess, setPaidAccess] = useState(() => !import.meta.env.DEV && hasStudioPurchaseHint());
   const [paidExampleName, setPaidExampleName] = useState(null);
   const [giftsExpanded, setGiftsExpanded] = useState(false);
   const giftsId = useId();
@@ -71,16 +65,11 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
         <p id={offerTermsId} className="santa-studio-promotion__offer-terms">Two message creations · One-off payment</p>
       </div>
         <div className="santa-studio-promotion__actions">
-        <StudioPurchaseButton onPaidAccessChange={setPaidAccess} />
+        <StudioPurchaseButton />
         <p className="santa-studio-promotion__checkout-note">
           <a href="/my-santa-messages">My Santa Messages</a>
         </p>
-        {!paidAccess && <details className="santa-studio-promotion__voucher-entry">
-          <summary>Have a voucher code?</summary>
-          <WorkshopPasswordForm
-          variant="promotion"
-          onAuthorized={onAuthorized || (() => navigate(STUDIO_PATH))}
-        /></details>}
+
         </div>
       </div>
       <div className="santa-studio-promotion__examples">
