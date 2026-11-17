@@ -74,7 +74,7 @@ export default function HeroNameChecker({ onContinue, onSelectedNameChange, onCh
   const describedBy = status || validation || search.blocked ? `${id}-status` : undefined;
 
   return <section className="hero-name-checker" aria-labelledby={`${id}-title`}>
-    <h2 id={`${id}-title`}>A <span className="hero-name-checker__free-glow">FREE MESSAGE</span> <br />FROM SANTA</h2>
+    <h2 id={`${id}-title`}>START WITH A <span className="hero-name-checker__free-glow">FREE MESSAGE</span> <br />FROM SANTA</h2>
     <form noValidate onSubmit={event => {
       event.preventDefault();
       interacted.current = true;

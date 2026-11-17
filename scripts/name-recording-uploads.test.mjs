@@ -22,7 +22,7 @@ test('upload validates, stores privately, previews and excludes other namespaces
  const corrupt=await fetch(url,{method:'POST',headers,body:'invalid'});assert.equal(corrupt.status,400);assert.equal(files.size,0);assert.equal(completions,0);
  const result=await fetch(url,{method:'POST',headers,body:wav()});assert.equal(result.status,200);const saved=await result.json();assert.equal(saved.status,'live');assert.equal(savedOptions.access,'private');assert.equal(completions,0);assert.equal(saved.requestCompletion.status,'awaiting_owner');
  await fetch(url,{method:'POST',headers,body:wav()});assert.equal(files.size,2);assert.equal(completions,0);
- const listing=await (await fetch(url)).json();assert.equal(listing.recordings[0].name,'Gail');
+ const listing=await (await fetch(url)).json();assert.equal(listing.recordings[0].name,'gail');
  const audio=await fetch(url+'?path='+encodeURIComponent(saved.path));assert.equal(audio.status,200);assert.equal(audio.headers.get('content-type').split(';')[0],'audio/flac');assert.equal(Buffer.from(await audio.arrayBuffer()).toString('ascii',0,4),'fLaC');
  assert.equal((await fetch(url+'?path=santa-messages/private/audio.mp3')).status,400);
  });
@@ -36,7 +36,7 @@ test('library search spans storage pages and returns only 20 rows per browser pa
  await withServer({allowed:()=>true,env,storage},async url=>{
  const first=await(await fetch(url)).json();assert.equal(first.recordings.length,20);assert.equal(first.total,46);assert.equal(first.totalPages,3);
  const second=await(await fetch(url+'?page=2')).json();assert.equal(second.recordings.length,20);assert.equal(second.page,2);assert.ok(!second.recordings.some(r=>first.recordings.some(f=>f.path===r.path)));
- const search=await(await fetch(url+'?search=ellie%20may')).json();assert.equal(search.exactMatch,true);const partial=await(await fetch(url+'?search=ellie')).json();assert.equal(partial.exactMatch,false);assert.equal(search.recordings[0].name,'Ellie-May');assert.equal(search.total,1);assert.equal(reads,2);
+ const search=await(await fetch(url+'?search=ellie%20may')).json();assert.equal(search.exactMatch,true);const partial=await(await fetch(url+'?search=ellie')).json();assert.equal(partial.exactMatch,false);assert.equal(search.recordings[0].name,'ellie-may');assert.equal(search.total,1);assert.equal(reads,2);
  assert.equal((await fetch(url+'?page=0')).status,400);
  });
 });
@@ -56,5 +56,17 @@ test('only authorized same-site owners can hide a known recording or undo it',as
   response=await fetch(url+'?action=hide&path=unknown',{method:'PATCH',headers:{Origin:url}});assert.equal(response.status,404);assert.equal(changes.length,0);
   for(const action of ['hide','restore']){response=await fetch(url+'?action='+action+'&path=name-library/known.wav',{method:'PATCH',headers:{Origin:url}});assert.equal(response.status,200);}
   assert.deepEqual(changes,[['Eray',true],['Eray',false]]);
+ });
+});
+
+test('recording page sizes support 20, 50 and 100 without gaps and reject unsupported values',async()=>{
+ const records=Array.from({length:125},(_,i)=>({name:`name-${String(i).padStart(3,'0')}`,blobPath:`name-library/${i}`,size:100}));
+ await withServer({allowed:()=>true,env,liveLibrary:{load:async()=>({records})}},async url=>{
+  for(const size of [20,50,100]){
+   const first=await(await fetch(url+'?pageSize='+size)).json();const second=await(await fetch(url+'?pageSize='+size+'&page=2')).json();
+   assert.equal(first.pageSize,size);assert.equal(first.recordings.length,size);assert.equal(first.totalPages,Math.ceil(125/size));assert.equal(second.recordings[0].name,records[size].name);
+   const filtered=await(await fetch(url+'?pageSize='+size+'&search=name-12&page=99')).json();assert.equal(filtered.page,1);assert.equal(filtered.total,5);
+  }
+  for(const size of ['0','21','101','1000','foo'])assert.equal((await fetch(url+'?pageSize='+size)).status,400);
  });
 });

@@ -13,7 +13,7 @@ test('newly published recordings merge with the migrated library and play back',
  const uploads=createLiveNameUploads({storage:f.storage}),lib=createBlobNameLibrary({visibility:{hidden:async()=>new Set()},storage:f.storage,env:{BLOB_STORE_ID:'store'},uploads});
  assert.equal((await lib.load()).records.length,1);
  const data=Buffer.alloc(100,3);await uploads.publish('Élodie May','mp3',data);
- const active=await lib.load({fresh:true});assert.equal(active.records.length,2);const added=active.records.find(r=>r.name==='Élodie-May');assert.ok(added);assert.deepEqual(await lib.sourceBytes(added),data);
+ const active=await lib.load({fresh:true});assert.equal(active.records.length,2);const added=active.records.find(r=>r.name==='élodie-may');assert.ok(added);assert.deepEqual(await lib.sourceBytes(added),data);
 });
 
 test('hidden names disappear from public catalogue and can be restored without removing audio',async()=>{

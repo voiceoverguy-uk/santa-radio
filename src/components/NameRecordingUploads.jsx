@@ -7,6 +7,7 @@ export default function NameRecordingUploads({ownerToken}) {
   const [queue,setQueue]=useState([]),[saved,setSaved]=useState([]);
   const [search,setSearch]=useState(''),[appliedSearch,setAppliedSearch]=useState(''),[pageInfo,setPageInfo]=useState(null),[showQueue,setShowQueue]=useState(true);
   const [batch,setBatch]=useState(null);
+  const [pageSize,setPageSize]=useState(20);
   const [removed,setRemoved]=useState(null);
   const [completionWarnings,setCompletionWarnings]=useState([]);
   const [libraryScope,setLibraryScope]=useState('live');
@@ -18,11 +19,11 @@ export default function NameRecordingUploads({ownerToken}) {
     if(!response.ok) {const body=await response.json().catch(()=>({}));throw Error(body.error||'The request failed. Please try again.');}
     return response;
   }
-  async function load(page=1,query=appliedSearch,scope=libraryScope) {
+  async function load(page=1,query=appliedSearch,scope=libraryScope,size=pageSize) {
     const version=++listVersion.current;
     setLoading(true);setError('');
     try {
-      const data=await (await request(`${endpoint}?scope=${scope}&page=${page}&search=${encodeURIComponent(query)}`)).json();
+      const data=await (await request(`${endpoint}?scope=${scope}&page=${page}&pageSize=${size}&search=${encodeURIComponent(query)}`)).json();
       if(alive.current&&version===listVersion.current){setSaved(data.recordings);setPageInfo(data);setAppliedSearch(query);setLibraryScope(scope);}
     }catch(e){if(alive.current&&version===listVersion.current)setError(e.message);}
     finally{if(alive.current&&version===listVersion.current)setLoading(false);}
@@ -76,7 +77,7 @@ export default function NameRecordingUploads({ownerToken}) {
       <strong>Drop recordings here, or choose files</strong><span>MP3 or WAV · up to 3 MB and 30 seconds each · 20 at a time</span>
       <input type="file" accept=".mp3,.wav,audio/mpeg,audio/wav" multiple disabled={busy} onChange={e=>{choose(e.target.files);e.target.value='';}} />
     </label>
-    <p>WAV uploads are compressed to FLAC only when every audio sample is preserved and the file is smaller; otherwise WAV is retained. Spaces become dashes automatically: Ellie May → Ellie-May. Original files on your computer are unchanged. Uploading another version keeps existing recordings.</p>
+    <p>WAV uploads are compressed to FLAC only when every audio sample is preserved and the file is smaller; otherwise WAV is retained. Names become lowercase and spaces become hyphens automatically: Ellie May → ellie-may. Original files on your computer are unchanged. Uploading another version keeps existing recordings.</p>
     {batch&&<div className="name-uploads__summary" role="status"><strong>{batch.finished?(batch.failed?'Batch finished with errors':'✓ Upload complete'):'Uploading your batch…'}</strong><p>{batch.completed} of {batch.total} recordings published to the live library{batch.failed?` · ${batch.failed} failed — retry below`:''}.</p><progress max={batch.total||1} value={batch.completed+batch.failed} aria-label="Recordings processed"/>{!batch.finished&&<small>Keep this screen open while recordings are checked and saved.</small>}</div>}
     {!!queue.length&&<button onClick={()=>setShowQueue(!showQueue)}>{showQueue?'Hide batch details':'Show batch details'} ({queue.length})</button>}
     {showQueue&&queue.map(row=><div className="name-uploads__row" key={row.id}><label>Name<input value={row.name} maxLength={80} disabled={busy||row.status==='Saved to Blob'} onChange={e=>setQueue(old=>old.map(r=>r.id===row.id?{...r,name:e.target.value}:r))}/></label><small>{row.file.name}</small>{row.url&&<audio controls preload="metadata" src={row.url}/>}<small>Saved name: {recordingUploadName(row.name)}.{row.savedExt || row.ext}</small><div className="name-uploads__progress"><progress max="100" value={row.progress} aria-label={`Upload progress for ${row.name}`}/><span>{row.status==='Saved to Blob'?'✓ Saved':`${row.progress}% transferred`}</span></div><p role="status">{row.status}</p></div>)}
@@ -87,7 +88,8 @@ export default function NameRecordingUploads({ownerToken}) {
     <div className="name-uploads__pages"><button disabled={loading} aria-pressed={libraryScope==='live'} onClick={()=>load(1,search,'live')}>Live library</button><button disabled={loading} aria-pressed={libraryScope==='testing'} onClick={()=>load(1,search,'testing')}>Test uploads</button></div>
     <form className="name-uploads__search" onSubmit={e=>{e.preventDefault();load(1,search);}}><label htmlFor="recording-search">Find a recording<input id="recording-search" type="search" value={search} maxLength={80} placeholder="Search names, e.g. Ellie May" onChange={e=>setSearch(e.target.value)}/></label><button disabled={loading} type="submit">Search</button><button type="button" disabled={loading} onClick={()=>{setSearch('');load(1,'');}}>Show all</button></form>
     {!loading && pageInfo && appliedSearch && <p role="status"><strong>{pageInfo.exactMatch ? `Yes, ${recordingUploadName(appliedSearch).toLocaleLowerCase('en-GB')} is recorded.` : `No exact recording found for ${recordingUploadName(appliedSearch).toLocaleLowerCase('en-GB')}.`}</strong>{!pageInfo.exactMatch && saved.length > 0 && ' Partial matches are listed below.'}</p>}
-    <p>{pageInfo?`${pageInfo.total} ${appliedSearch?'matching':'saved'} recordings · page ${pageInfo.page} of ${pageInfo.totalPages}`:'Load the library or search for a name.'} · 20 per page</p>
+    <label className="name-uploads__page-size">Names per page <select value={pageSize} disabled={loading||busy} onChange={event=>{const size=Number(event.target.value);setPageSize(size);load(1,appliedSearch,libraryScope,size);}}>{[20,50,100].map(size=><option key={size} value={size}>{size}</option>)}</select></label>
+    <p>{pageInfo?`${pageInfo.total} ${appliedSearch?'matching':'saved'} recordings · page ${pageInfo.page} of ${pageInfo.totalPages}`:'Load the library or search for a name.'} · {pageInfo?.pageSize ?? pageSize} per page</p>
     {pageInfo&&!saved.length&&<p>No recordings found{appliedSearch?` for “${appliedSearch}”`:''}.</p>}
     <p>{pageInfo?.mode==='live'?'Verified Blob recordings. Original server files are retained as a backup.':'Earlier test uploads are kept here separately. New uploads go directly to the live library.'}</p>
     {removed&&<p role="status">{removed.name} removed from the live list. <button disabled={busy} onClick={()=>changeVisibility(removed,true)}>Undo removal</button></p>}

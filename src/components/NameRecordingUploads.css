@@ -3,3 +3,6 @@
 .name-uploads__progress{display:flex;align-items:center;gap:14px;margin-top:12px}.name-uploads progress{accent-color:#e7c572;height:14px;flex:1;width:100%}.name-uploads__summary{background:#ffffff0d;border:1px solid #8d9b70;border-radius:12px;padding:18px;margin:16px 0}.name-uploads__summary strong{color:#efcf79}.name-uploads__summary p{margin:8px 0}.name-uploads__progress span{font-size:.85rem;min-width:110px}
 
 .santa-dashboard .name-uploads__search{max-width:none;display:flex;align-items:end;gap:12px;padding:0;border:0;background:none}.name-uploads__search label{flex:1;margin:0}.name-uploads__search input{margin-bottom:0}.name-uploads__pages{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:18px 0}@media(max-width:600px){.santa-dashboard .name-uploads__search{flex-wrap:wrap}.name-uploads__search label{flex-basis:100%}}
+
+.name-uploads .name-uploads__page-size{display:flex;align-items:center;gap:12px;width:auto;margin:16px 0}
+.name-uploads__page-size select{background:#fff9eb;color:#173629;border:1px solid #d7bd7e;border-radius:6px;padding:8px 12px;font:inherit}

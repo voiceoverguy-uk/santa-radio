@@ -104,14 +104,16 @@ export function createNameUploads({allowed=validOwnerToken, storage={put,list,ge
         res.set('Content-Type',req.query.path.endsWith('.wav')?'audio/wav':'audio/mpeg').set('X-Content-Type-Options','nosniff');
         return await pipeline(Readable.fromWeb(result.stream),res);
       }
-      const search=req.query.search??'', pageText=req.query.page??'1';
+      const search=req.query.search??'', pageText=req.query.page??'1', pageSizeText=req.query.pageSize??'20';
+      if(typeof pageSizeText!=='string'||!['20','50','100'].includes(pageSizeText))return res.status(400).json({error:'Choose 20, 50 or 100 recordings per page.'});
+      const pageSize=Number(pageSizeText);
       if(typeof search!=='string'||search.length>80||typeof pageText!=='string'||!/^\d{1,4}$/.test(pageText)||Number(pageText)<1)return res.status(400).json({error:'Invalid search or page.'});
       const live=req.query.scope==='testing'?null:await liveLibrary.load({fresh:true});
       const all=live?live.records.map(r=>({path:r.blobPath,name:r.name,size:r.size,uploadedAt:r.uploadedAt})).sort((a,b)=>a.name.localeCompare(b.name,'en-GB')||a.path.localeCompare(b.path)):await inventory();
       const key=recordingUploadName(search).toLocaleLowerCase('en-GB');
       const matches=key?all.filter(row=>recordingUploadName(row.name).toLocaleLowerCase('en-GB').includes(key)):all;
-      const totalPages=Math.max(1,Math.ceil(matches.length/20)),page=Math.min(Number(pageText),totalPages);
-      return res.json({mode:live?'live':'testing',exactMatch:!!key&&all.some(row=>recordingUploadName(row.name).toLocaleLowerCase('en-GB')===key),recordings:matches.slice((page-1)*20,page*20),page,totalPages,total:matches.length,libraryTotal:all.length});
+      const totalPages=Math.max(1,Math.ceil(matches.length/pageSize)),page=Math.min(Number(pageText),totalPages);
+      return res.json({mode:live?'live':'testing',exactMatch:!!key&&all.some(row=>recordingUploadName(row.name).toLocaleLowerCase('en-GB')===key),recordings:matches.slice((page-1)*pageSize,page*pageSize),page,pageSize,totalPages,total:matches.length,libraryTotal:all.length});
     }catch{if(!res.headersSent)res.status(503).json({error:'Recording storage is unavailable. Refresh the list before retrying an upload.'});}
   });
   app.use((err,_req,res,_next)=>res.status(err.type==='entity.too.large'?413:400).json({error:err.type==='entity.too.large'?'Each recording must be 3 MB or smaller.':'Invalid upload.'}));
