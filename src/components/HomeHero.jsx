@@ -114,7 +114,7 @@ export default function HomeHero({ preview = false, onContinue, onSelectedNameCh
         </div>
         <aside ref={checkerRef} className="hero-name-preview__checker" aria-label={preview ? 'Santa name checker preview' : 'Santa name checker'}>
           <div className="hero-name-preview__checker-top">
-            <span className="hero-name-preview__seal" aria-hidden="true">S</span>
+            <span className="hero-name-preview__seal" aria-hidden="true">SR</span>
             <span className="hero-name-preview__checker-kicker">The North Pole</span>
           </div>
           <HeroNameChecker onCheckNaughtyNice={onCheckNaughtyNice} onContinue={onContinue} onSelectedNameChange={onSelectedNameChange} />

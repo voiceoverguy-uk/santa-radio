@@ -23,7 +23,7 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
       data-recipient={previewName || undefined}>
       <header className="santa-studio-promotion__header">
         <div className="santa-studio-promotion__topline">
-          <span className="santa-studio-promotion__seal" aria-hidden="true">S</span>
+          <span className="santa-studio-promotion__seal" aria-hidden="true">SR</span>
           <div className="santa-studio-promotion__heading">
             <p className="santa-studio-promotion__eyebrow">THE NORTH POLE RECORDING STUDIO</p>
             <p className="santa-studio-promotion__name-count">A little North Pole magic, made personal</p>
