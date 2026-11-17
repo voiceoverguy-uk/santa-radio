@@ -1,3 +1,4 @@
+import { trackCheckerDownload } from '../lib/checkerDownloadStatistics.js';
 import { useEffect, useRef, useState } from 'react';
 import CertificateName from '../components/CertificateName.jsx';
 import '../components/SantaStudioGifts.css';
@@ -67,6 +68,7 @@ export default function CheckerCertificate({ name, result, days, onDownload }) {
       const link = document.createElement('a');
       link.href = url; link.download = `Head-Elf-${naughty ? 'Naughty' : 'Nice'}-List-Certificate.pdf`;
       document.body.append(link); link.click(); link.remove();
+      trackCheckerDownload();
       onDownload?.();
     } catch (failure) {
       if (!controller.signal.aborted)

@@ -21,3 +21,8 @@ export function normalisePronunciationNote(value) {
   const note = value.normalize('NFC').trim().replace(/\s+/gu, ' ');
   return note.length <= 120 ? note : null;
 }
+
+// Recording-friendly display only; request identity stays unchanged.
+export function requestedRecordingName(value) {
+  return value.normalize('NFKC').trim().toLocaleLowerCase('en-GB').replace(/\s+/gu, '-');
+}

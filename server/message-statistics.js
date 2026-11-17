@@ -1,3 +1,5 @@
+import { recordCheckerDownload, checkerDownloadReport, validDownloadId } from './checker-download-statistics.js';
+import { consumeNameAccess } from './santa-name-security.js';
 import { listFriendVouchers } from './friend-vouchers.js';
 import { requestRecordingStatus } from './request-recording-status.js';
 import { dismissNameRequest, rejectNameRequest, databasePool } from './name-request-store.js';
@@ -11,6 +13,7 @@ import { listNameRequests, recordNameRequest } from './name-request-store.js';
 import { normaliseRequestedName } from '../src/lib/santaNameRequests.js';
 import { getClerkProxyHost } from './middlewares/clerkProxyMiddleware.js';
 export function createStatisticsHandler({ allowed=validOwnerToken, report=statisticsReport, download=recordDownload, engagement=recordEngagement,
+  checkerDownloads=checkerDownloadReport, checkerDownload=recordCheckerDownload, checkerLimit=consumeNameAccess,
   requests=listNameRequests, complete=recordNameRequest, dismiss=dismissNameRequest, paid=paidStatistics, emails=websiteEmailStatistics, songs=songSubmissionStatistics, recordingStatus=requestRecordingStatus, friends=listFriendVouchers }={}) {
   return async (req,res) => {
     res.set('Cache-Control','private, no-store').set('CDN-Cache-Control','no-store').set('X-Robots-Tag','noindex, nofollow');
@@ -21,6 +24,13 @@ export function createStatisticsHandler({ allowed=validOwnerToken, report=statis
         if (!origin || origin.host !== getClerkProxyHost(req) || req.headers['sec-fetch-site']==='cross-site') return res.status(403).json({error:'Please use the Santa Radio website.'});
       }
       if(req.method==='POST') {
+        if (req.body?.action === 'checker-pdf-download') {
+          if (!validDownloadId(req.body.eventId) || Object.keys(req.body).some(key => !['action','eventId'].includes(key)))
+            return res.status(400).json({error:'Invalid download event.'});
+          await checkerLimit(req, 'checkerDownload');
+          await checkerDownload(req.body.eventId);
+          return res.json({ok:true});
+        }
         const id=verifyReceipt(req.body?.receipt);
         if(!id) return res.status(400).json({error:'Invalid or expired recording receipt.'});
         const action = req.body?.action ?? 'download';
@@ -42,6 +52,7 @@ export function createStatisticsHandler({ allowed=validOwnerToken, report=statis
         if(req.body.action==='recorded')await complete(name.key);else await dismiss(name.key,req.body.action==='restore');return res.json({ok:true});
       }
       const [data,paidResult,emailResult]=await Promise.all([report(),paid().catch(()=>null),emails().catch(()=>null)]);
+      data.checkerDownloads=await checkerDownloads().catch(()=>null);
       data.paid=paidResult; data.brevo=null; data.websiteEmails=emailResult;
       try { data.requests=await recordingStatus((await requests(1,'','outstanding',false)).requests); }
       catch { data.requests=null; }
@@ -53,4 +64,3 @@ export function createStatisticsHandler({ allowed=validOwnerToken, report=statis
 const app=express();app.disable('x-powered-by');app.use(express.json({limit:'2kb',inflate:false}));app.use(createStatisticsHandler());
 app.use((_err,_req,res,_next)=>res.status(400).json({error:'Invalid request.'}));
 export default app;
-

@@ -12,7 +12,7 @@ export function createLiveNameUploads({storage={put,get,list},now=Date.now}={}) 
     do {
       const page=await storage.list({prefix,limit:1000,...(cursor?{cursor}:{}),abortSignal:AbortSignal.timeout(15000)});
       for(const b of page.blobs){
-        const m=b.pathname.match(/^name-library\/uploads\/catalogue\/([a-f0-9]{64})\/([a-f0-9]+)\/(\d+)\.(mp3|wav)\.json$/);
+        const m=b.pathname.match(/^name-library\/uploads\/catalogue\/([a-f0-9]{64})\/([a-f0-9]+)\/(\d+)\.(mp3|wav|flac)\.json$/);
         if(!m)continue;
         const name=Buffer.from(m[2],'hex').toString('utf8'),size=Number(m[3]);
         if(!/^[\p{L}\p{M}][\p{L}\p{M}0-9 '’_-]{0,79}$/u.test(name)||size<44||size>3*1024*1024)throw Error('Invalid live recording marker');
@@ -26,10 +26,10 @@ export function createLiveNameUploads({storage={put,get,list},now=Date.now}={}) 
   }
   async function publish(name,extension,bytes){
     name=recordingUploadName(name);
-    if(!/^[\p{L}\p{M}][\p{L}\p{M}0-9 '’_-]{0,79}$/u.test(name)||!['mp3','wav'].includes(extension))throw Error('Invalid recording name');
+    if(!/^[\p{L}\p{M}][\p{L}\p{M}0-9 '’_-]{0,79}$/u.test(name)||!['mp3','wav','flac'].includes(extension))throw Error('Invalid recording name');
     const sha=hash(bytes),encoded=Buffer.from(name.normalize('NFC')).toString('hex');
     const path=`name-library/uploads/audio/${sha}/${encoded}.${extension}`;
-    await storage.put(path,bytes,{access:'private',addRandomSuffix:false,allowOverwrite:true,contentType:extension==='wav'?'audio/wav':'audio/mpeg'});
+    await storage.put(path,bytes,{access:'private',addRandomSuffix:false,allowOverwrite:true,contentType:extension==='flac'?'audio/flac':extension==='wav'?'audio/wav':'audio/mpeg'});
     const saved=await storage.get(path,{access:'private',useCache:false,abortSignal:AbortSignal.timeout(30000)});
     if(!saved||saved.statusCode!==200)throw Error('Cannot verify uploaded audio');
     const digest=createHash('sha256');let size=0;

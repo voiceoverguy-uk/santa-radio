@@ -1,3 +1,4 @@
+import { losslessNameUpload } from './lossless-name-upload.js';
 import { completeUploadedName } from './upload-request-completion.js';
 import { liveNameUploads } from './live-name-uploads.js';
 import { blobNameLibrary } from './blob-name-library.js';
@@ -27,7 +28,7 @@ export async function validateRecording(bytes, extension) {
   try { await createNameLibrary().download({source:'hosted',file:'upload.mp3'},join(directory,'decoded.wav'),bytes); }
   finally { await rm(directory,{recursive:true,force:true}); }
 }
-export function createNameUploads({allowed=validOwnerToken, storage={put,list,get}, validate=validateRecording, env=process.env, liveLibrary=blobNameLibrary, publisher=liveNameUploads, completeRequests=completeUploadedName}={}) {
+export function createNameUploads({allowed=validOwnerToken, storage={put,list,get}, validate=validateRecording, convert=losslessNameUpload, env=process.env, liveLibrary=blobNameLibrary, publisher=liveNameUploads, completeRequests=completeUploadedName}={}) {
   let cached, cacheUntil=0, pending, version=0;
   async function inventory() {
     if(cached && Date.now()<cacheUntil)return cached;
@@ -70,9 +71,10 @@ export function createNameUploads({allowed=validOwnerToken, storage={put,list,ge
       if(req.method==='POST') {
         if(req.headers['x-recording-publish']!=='live')return res.status(409).json({error:'Refresh and unlock the dashboard to upload directly to the live library.'});
         let name;try{name=recordingUploadName(decodeURIComponent(req.headers['x-recording-name'] || ''));}catch{return res.status(400).json({error:'Choose a valid name.'});}
-        const extension=req.headers['x-recording-format'];const bytes=req.body;
+        let extension=req.headers['x-recording-format'];let bytes=req.body;
         if(!Buffer.isBuffer(bytes)||!bytes.length||bytes.length>MAX_RECORDING_BYTES) return res.status(400).json({error:'Choose an MP3 or WAV up to 3 MB.'});
         let path;try{path=recordingUploadPath(name,extension,bytes);await validate(bytes,extension);}catch{return res.status(400).json({error:'This recording could not be validated. Use a valid MP3 or WAV, 0.05–30 seconds long.'});}
+        ({bytes,extension}=await convert(bytes,extension));
         const library=await liveLibrary.load({fresh:true});
         if(!library)return res.status(503).json({error:'The live name library is not ready. Please retry shortly.'});
         const same=library.records.find(r=>r.file.normalize('NFC')===`${name}.${extension}`.normalize('NFC')&&r.sha256===createHash('sha256').update(bytes).digest('hex'));
@@ -89,7 +91,7 @@ export function createNameUploads({allowed=validOwnerToken, storage={put,list,ge
           const record=library?.records.find(r=>r.blobPath===req.query.path);
           if(!record)return res.status(404).json({error:'Recording not found.'});
           const data=await liveLibrary.sourceBytes(record);
-          return res.type(record.file.toLowerCase().endsWith('.wav')?'audio/wav':'audio/mpeg').set('X-Content-Type-Options','nosniff').send(data);
+          return res.type(record.file.toLowerCase().endsWith('.flac')?'audio/flac':record.file.toLowerCase().endsWith('.wav')?'audio/wav':'audio/mpeg').set('X-Content-Type-Options','nosniff').send(data);
         }
         if(typeof req.query.path!=='string'||!pathPattern.test(req.query.path)) return res.status(400).json({error:'Invalid recording.'});
         const result=await storage.get(req.query.path,{access:'private'});
@@ -111,4 +113,3 @@ export function createNameUploads({allowed=validOwnerToken, storage={put,list,ge
   return app;
 }
 export default createNameUploads();
-

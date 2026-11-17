@@ -1,3 +1,4 @@
+import CopyRequestedName from './CopyRequestedName.jsx';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../pages/SantaStaffBrowser.css';
@@ -171,7 +172,7 @@ export default function SantaRequestLedger({ email, onSignOut, ownerToken }) {
           <thead><tr><th scope="col">First name</th><th scope="col">Requests</th><th scope="col">First requested</th>
             <th scope="col">Most recent</th><th scope="col">{status === 'completed' ? 'Recorded on' : 'Action'}</th></tr></thead>
           <tbody>{result.requests.map(item => <tr key={item.id}><td>
-            <div>{item.name}</div>
+            <div><CopyRequestedName name={item.name} /></div>
             {item.pronunciationNotes?.map(note => <p key={note}><strong>Pronunciation:</strong> {note}</p>)}
             {Array.isArray(item.recordingSuggestions) && item.recordingSuggestions.length > 0 && (
               <ul className="staff-recording-suggestions">

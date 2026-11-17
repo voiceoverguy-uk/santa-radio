@@ -183,7 +183,7 @@ export function createNameLibrary({ fetcher = fetch, now = Date.now, snapshotSto
         validateNameWav(bytes);
         await writeFile(destination, bytes, { flag: 'wx', mode: 0o600 });
       } else {
-        await decodeNameMp3(bytes, destination, signal);
+        await decodeNameMp3(bytes, destination, signal, /\.flac$/i.test(record.file) ? 'flac' : 'mp3');
       }
     },
   };
@@ -193,13 +193,13 @@ export function createNameLibrary({ fetcher = fetch, now = Date.now, snapshotSto
 // demuxer/decoder, so a disguised playlist cannot load another URL or local file.
 // Decode at most 31 seconds: anything exceeding the 30-second limit is rejected,
 // not silently shortened. Mono 48k PCM bounds the intermediate to under 3 MiB.
-async function decodeNameMp3(bytes, destination, signal) {
-  const input = `${destination}.mp3`;
+async function decodeNameMp3(bytes, destination, signal, format = 'mp3') {
+  const input = `${destination}.${format}`;
   await writeFile(input, bytes, { flag: 'wx', mode: 0o600 });
   try {
     await execute(ffmpegPath, [
       '-hide_banner', '-nostdin', '-v', 'error', '-xerror', '-err_detect', 'explode',
-      '-protocol_whitelist', 'file,pipe', '-f', 'mp3', '-c:a', 'mp3',
+      '-protocol_whitelist', 'file,pipe', '-f', format, '-c:a', format,
       '-threads', '1', '-i', input, '-map', '0:a:0', '-vn', '-sn', '-dn',
       '-t', '31', '-ac', '1', '-ar', '48000', '-c:a', 'pcm_s16le',
       '-threads', '1', '-f', 'wav', '-n', destination,

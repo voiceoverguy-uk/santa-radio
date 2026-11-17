@@ -15,3 +15,10 @@ ALTER TABLE santa_message_receipts ADD COLUMN IF NOT EXISTS listened_at timestam
 ALTER TABLE santa_message_receipts ADD COLUMN IF NOT EXISTS shared_at timestamptz;
 ALTER TABLE santa_message_daily ADD COLUMN IF NOT EXISTS listens bigint NOT NULL DEFAULT 0 CHECK (listens >= 0);
 ALTER TABLE santa_message_daily ADD COLUMN IF NOT EXISTS shares bigint NOT NULL DEFAULT 0 CHECK (shares >= 0);
+
+-- Anonymous PDF handoffs; random ID is per download, never per person.
+CREATE TABLE IF NOT EXISTS santa_checker_downloads (
+  id uuid PRIMARY KEY,
+  day date NOT NULL
+);
+CREATE INDEX IF NOT EXISTS santa_checker_downloads_day ON santa_checker_downloads(day);

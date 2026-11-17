@@ -23,7 +23,7 @@ test('upload validates, stores privately, previews and excludes other namespaces
  const result=await fetch(url,{method:'POST',headers,body:wav()});assert.equal(result.status,200);const saved=await result.json();assert.equal(saved.status,'live');assert.equal(savedOptions.access,'private');assert.equal(completions,1);assert.equal(saved.requestCompletion.status,'complete');
  await fetch(url,{method:'POST',headers,body:wav()});assert.equal(files.size,2);assert.equal(completions,2);
  const listing=await (await fetch(url)).json();assert.equal(listing.recordings[0].name,'Gail');
- const audio=await fetch(url+'?path='+encodeURIComponent(saved.path));assert.equal(audio.status,200);assert.deepEqual(Buffer.from(await audio.arrayBuffer()),wav());
+ const audio=await fetch(url+'?path='+encodeURIComponent(saved.path));assert.equal(audio.status,200);assert.equal(audio.headers.get('content-type').split(';')[0],'audio/flac');assert.equal(Buffer.from(await audio.arrayBuffer()).toString('ascii',0,4),'fLaC');
  assert.equal((await fetch(url+'?path=santa-messages/private/audio.mp3')).status,400);
  });
 });

@@ -26,7 +26,7 @@ export function createSantaNamePreviewHandler(library = santaNameLibrary, {
       if (!record || record.source !== 'hosted') return fail(404, 'Preview unavailable for this recording.');
       const bytes = await library.sourceBytes(record);
       res.writeHead(200, {
-        'Content-Type': /\.wav$/i.test(record.file) ? 'audio/wav' : 'audio/mpeg',
+        'Content-Type': /\.flac$/i.test(record.file) ? 'audio/flac' : /\.wav$/i.test(record.file) ? 'audio/wav' : 'audio/mpeg',
         'Content-Length': bytes.length,
         'Content-Disposition': 'inline',
         'Accept-Ranges': 'none',

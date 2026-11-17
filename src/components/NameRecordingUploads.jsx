@@ -48,7 +48,7 @@ export default function NameRecordingUploads({ownerToken}) {
       update({status:'Uploading…',progress:0});
       try {
         const result=await uploadNameRecording(row,ownerToken,{signal:controller.current.signal,onProgress:progress=>update({progress,status:progress===100?'Checking and publishing…':'Uploading…'})});
-        update({name:result.name,status:'Saved to Blob',progress:100});completed++;
+        update({name:result.name,savedExt:result.path?.split('.').pop(),status:'Saved to Blob',progress:100});completed++;
         if(result.requestCompletion?.status==='failed' && alive.current)setCompletionWarnings(old=>[...old,`${result.name}: ${result.requestCompletion.message}`]);
       } catch(e){update({status:e.message,failed:true});failed++;}
       if(alive.current)setBatch({total:pending.length,completed,failed,finished:false});
@@ -67,10 +67,10 @@ export default function NameRecordingUploads({ownerToken}) {
       <strong>Drop recordings here, or choose files</strong><span>MP3 or WAV · up to 3 MB and 30 seconds each · 20 at a time</span>
       <input type="file" accept=".mp3,.wav,audio/mpeg,audio/wav" multiple disabled={busy} onChange={e=>{choose(e.target.files);e.target.value='';}} />
     </label>
-    <p>Spaces become dashes automatically: Ellie May → Ellie-May. Original files on your computer are unchanged. Uploading another version keeps existing recordings.</p>
+    <p>WAV uploads are compressed to FLAC only when every audio sample is preserved and the file is smaller; otherwise WAV is retained. Spaces become dashes automatically: Ellie May → Ellie-May. Original files on your computer are unchanged. Uploading another version keeps existing recordings.</p>
     {batch&&<div className="name-uploads__summary" role="status"><strong>{batch.finished?(batch.failed?'Batch finished with errors':'✓ Upload complete'):'Uploading your batch…'}</strong><p>{batch.completed} of {batch.total} recordings published to the live library{batch.failed?` · ${batch.failed} failed — retry below`:''}.</p><progress max={batch.total||1} value={batch.completed+batch.failed} aria-label="Recordings processed"/>{!batch.finished&&<small>Keep this screen open while recordings are checked and saved.</small>}</div>}
     {!!queue.length&&<button onClick={()=>setShowQueue(!showQueue)}>{showQueue?'Hide batch details':'Show batch details'} ({queue.length})</button>}
-    {showQueue&&queue.map(row=><div className="name-uploads__row" key={row.id}><label>Name<input value={row.name} maxLength={80} disabled={busy||row.status==='Saved to Blob'} onChange={e=>setQueue(old=>old.map(r=>r.id===row.id?{...r,name:e.target.value}:r))}/></label><small>{row.file.name}</small>{row.url&&<audio controls preload="metadata" src={row.url}/>}<small>Saved name: {recordingUploadName(row.name)}.{row.ext}</small><div className="name-uploads__progress"><progress max="100" value={row.progress} aria-label={`Upload progress for ${row.name}`}/><span>{row.status==='Saved to Blob'?'✓ Saved':`${row.progress}% transferred`}</span></div><p role="status">{row.status}</p></div>)}
+    {showQueue&&queue.map(row=><div className="name-uploads__row" key={row.id}><label>Name<input value={row.name} maxLength={80} disabled={busy||row.status==='Saved to Blob'} onChange={e=>setQueue(old=>old.map(r=>r.id===row.id?{...r,name:e.target.value}:r))}/></label><small>{row.file.name}</small>{row.url&&<audio controls preload="metadata" src={row.url}/>}<small>Saved name: {recordingUploadName(row.name)}.{row.savedExt || row.ext}</small><div className="name-uploads__progress"><progress max="100" value={row.progress} aria-label={`Upload progress for ${row.name}`}/><span>{row.status==='Saved to Blob'?'✓ Saved':`${row.progress}% transferred`}</span></div><p role="status">{row.status}</p></div>)}
     {!!queue.length&&<button className="name-uploads__primary" disabled={busy||!queue.some(r=>r.valid&&r.name.trim()&&r.status!=='Saved to Blob')||queue.some(r=>r.valid&&!r.name.trim())} onClick={upload}>{busy?'Uploading recordings…':'Upload to live library'}</button>}
     {completionWarnings.map(message=><p role="alert" key={message}>{message}</p>)}
     {error&&<p role="alert">{error}</p>}
@@ -85,4 +85,3 @@ export default function NameRecordingUploads({ownerToken}) {
     {preview&&<div className="name-uploads__player"><p>{preview.name} · saved copy</p><audio key={preview.url} controls autoPlay src={preview.url}/></div>}
   </section>;
 }
-
