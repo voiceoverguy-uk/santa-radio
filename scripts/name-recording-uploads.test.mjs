@@ -49,3 +49,12 @@ test('live library pages and playback stay separate from test uploads',async()=>
   assert.equal((await fetch(url+'?path=name-library/0')).status,200);assert.equal((await fetch(url+'?path=name-library/unknown')).status,404);
  });
 });
+test('only authorized same-site owners can hide a known recording or undo it',async()=>{
+ const changes=[];const row={name:'Eray',blobPath:'name-library/known.wav'};
+ await withServer({allowed:()=>true,env,liveLibrary:{load:async()=>({records:[row]})},visibility:{set:async(...args)=>changes.push(args)}},async url=>{
+  let response=await fetch(url+'?action=hide&path=name-library/known.wav',{method:'PATCH',headers:{Origin:'https://evil.example'}});assert.equal(response.status,403);assert.equal(changes.length,0);
+  response=await fetch(url+'?action=hide&path=unknown',{method:'PATCH',headers:{Origin:url}});assert.equal(response.status,404);assert.equal(changes.length,0);
+  for(const action of ['hide','restore']){response=await fetch(url+'?action='+action+'&path=name-library/known.wav',{method:'PATCH',headers:{Origin:url}});assert.equal(response.status,200);}
+  assert.deepEqual(changes,[['Eray',true],['Eray',false]]);
+ });
+});

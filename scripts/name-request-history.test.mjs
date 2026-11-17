@@ -14,3 +14,12 @@ test('history delete and undo affect only one completed entry, never recording o
  await assert.rejects(tidyCompletedRequest('999',false,pool),{status:404});await assert.rejects(tidyCompletedRequest('eray',false,pool),{status:400});
  }finally{await db.close();}
 });
+
+test('history cleanup requires owner authorization and same-site origin',async()=>{
+ const {createNameRequestHandler}=await import('../server/name-requests.js');
+ let calls=0;const res=()=>({statusCode:200,set(){return this;},status(n){this.statusCode=n;return this;},json(body){this.body=body;return this;}});
+ const request={method:'PATCH',headers:{host:'www.santaradio.co.uk',origin:'https://www.santaradio.co.uk'},body:{action:'delete-history',id:'1'}};
+ let response=res();await createNameRequestHandler({checkAdmin:async()=>401,tidy:async()=>{calls++;}})(request,response);assert.equal(response.statusCode,401);assert.equal(calls,0);
+ response=res();await createNameRequestHandler({checkAdmin:async()=>200,tidy:async()=>{calls++;}})({...request,headers:{host:'www.santaradio.co.uk'}},response);assert.equal(response.statusCode,403);assert.equal(calls,0);
+ response=res();await createNameRequestHandler({checkAdmin:async()=>200,tidy:async(id,restore)=>{assert.equal(id,'1');assert.equal(restore,false);calls++;return {ok:true};}})(request,response);assert.equal(response.statusCode,200);assert.equal(calls,1);
+});

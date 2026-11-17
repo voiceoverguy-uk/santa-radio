@@ -58,3 +58,4 @@ CREATE TABLE IF NOT EXISTS santa_name_pronunciations (
 ALTER TABLE santa_name_request_history ADD COLUMN IF NOT EXISTS pronunciation_notes jsonb NOT NULL DEFAULT '[]'::jsonb;
 
 ALTER TABLE santa_name_request_history ADD COLUMN IF NOT EXISTS deleted_at timestamptz;
+CREATE TABLE IF NOT EXISTS santa_hidden_recordings (name_key text PRIMARY KEY, hidden_at timestamptz NOT NULL DEFAULT now());

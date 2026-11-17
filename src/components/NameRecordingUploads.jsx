@@ -7,6 +7,7 @@ export default function NameRecordingUploads({ownerToken}) {
   const [queue,setQueue]=useState([]),[saved,setSaved]=useState([]);
   const [search,setSearch]=useState(''),[appliedSearch,setAppliedSearch]=useState(''),[pageInfo,setPageInfo]=useState(null),[showQueue,setShowQueue]=useState(true);
   const [batch,setBatch]=useState(null);
+  const [removed,setRemoved]=useState(null);
   const [completionWarnings,setCompletionWarnings]=useState([]);
   const [libraryScope,setLibraryScope]=useState('live');
   const [error,setError]=useState(''),[busy,setBusy]=useState(false),[loading,setLoading]=useState(false),[preview,setPreview]=useState(null);
@@ -25,6 +26,14 @@ export default function NameRecordingUploads({ownerToken}) {
       if(alive.current&&version===listVersion.current){setSaved(data.recordings);setPageInfo(data);setAppliedSearch(query);setLibraryScope(scope);}
     }catch(e){if(alive.current&&version===listVersion.current)setError(e.message);}
     finally{if(alive.current&&version===listVersion.current)setLoading(false);}
+  }
+  async function changeVisibility(row,restore=false) {
+    if(!restore&&!window.confirm(`Remove “${row.name}” from the live name list? The audio is kept and you can undo this.`))return;
+    setBusy(true);setError('');
+    try {
+      await request(`${endpoint}?action=${restore?'restore':'hide'}&path=${encodeURIComponent(row.path)}`,{method:'PATCH'});
+      setRemoved(restore?null:row);await load(1,appliedSearch,'live');
+    }catch(e){setError(e.message);}finally{setBusy(false);}
   }
   function choose(files) {
     setError('');setBatch(null);setShowQueue(true);
@@ -81,7 +90,8 @@ export default function NameRecordingUploads({ownerToken}) {
     <p>{pageInfo?`${pageInfo.total} ${appliedSearch?'matching':'saved'} recordings · page ${pageInfo.page} of ${pageInfo.totalPages}`:'Load the library or search for a name.'} · 20 per page</p>
     {pageInfo&&!saved.length&&<p>No recordings found{appliedSearch?` for “${appliedSearch}”`:''}.</p>}
     <p>{pageInfo?.mode==='live'?'Verified Blob recordings. Original server files are retained as a backup.':'Earlier test uploads are kept here separately. New uploads go directly to the live library.'}</p>
-    {saved.map(row=><div className="name-uploads__saved" key={row.path}><span><strong>{row.name}</strong><small>{(row.size/1024).toFixed(0)} KB · {new Date(row.uploadedAt).toLocaleDateString('en-GB')}</small></span><button onClick={()=>listen(row)}>Listen to {row.name}</button></div>)}
+    {removed&&<p role="status">{removed.name} removed from the live list. <button disabled={busy} onClick={()=>changeVisibility(removed,true)}>Undo removal</button></p>}
+    {saved.map(row=><div className="name-uploads__saved" key={row.path}><span><strong>{row.name}</strong><small>{(row.size/1024).toFixed(0)} KB · {new Date(row.uploadedAt).toLocaleDateString('en-GB')}</small></span><button onClick={()=>listen(row)}>Listen to {row.name}</button>{pageInfo?.mode==='live'&&<button disabled={busy} onClick={()=>changeVisibility(row)}>Remove from live list</button>}</div>)}
     {pageInfo&&pageInfo.totalPages>1&&<nav className="name-uploads__pages" aria-label="Recording pages"><button disabled={loading||pageInfo.page===1} onClick={()=>load(pageInfo.page-1)}>Previous</button><span>Page {pageInfo.page} of {pageInfo.totalPages}</span><button disabled={loading||pageInfo.page===pageInfo.totalPages} onClick={()=>load(pageInfo.page+1)}>Next</button></nav>}
     {preview&&<div className="name-uploads__player"><p>{preview.name} · saved copy</p><audio key={preview.url} controls autoPlay src={preview.url}/></div>}
   </section>;

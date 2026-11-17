@@ -1,10 +1,11 @@
+import { nameVisibility, visibilityKey } from './name-library-visibility.js';
 import { liveNameUploads } from './live-name-uploads.js';
 import { get } from '@vercel/blob';
 import { createHash } from 'node:crypto';
 import { santaMessageDownloadName } from '../src/data/santaMessages.js';
 const hash = data => createHash('sha256').update(data).digest('hex');
 export const ACTIVE_NAME_LIBRARY = 'name-library/active.json';
-export function createBlobNameLibrary({ storage = { get }, env = process.env, now = Date.now, uploads = liveNameUploads } = {}) {
+export function createBlobNameLibrary({ storage = { get }, env = process.env, now = Date.now, uploads = liveNameUploads, visibility = nameVisibility } = {}) {
   let cached, expires = 0, pending;
   async function bytes(path, limit, signal) {
     const response = await storage.get(path, { access: 'private', useCache: false, abortSignal: signal || AbortSignal.timeout(30000) });
@@ -40,13 +41,15 @@ export function createBlobNameLibrary({ storage = { get }, env = process.env, no
     })().finally(()=>{pending=null;});
     return pending;
   }
-  let lastBase,lastUploads,combined;
+  let lastBase,lastUploads,lastHidden,combined;
   async function load(options) {
     const base=await loadBase();if(!base)return null;
     const added=await uploads.records(options);
-    if(base!==lastBase||added!==lastUploads){
-      combined={...base,records:[...base.records,...added]};
-      lastBase=base;lastUploads=added;
+    if(options?.includeHidden)return {...base,records:[...base.records,...added]};
+    const hidden=await visibility.hidden(options);
+    if(base!==lastBase||added!==lastUploads||hidden!==lastHidden){
+      combined={...base,records:[...base.records,...added].filter(row=>!hidden.has(visibilityKey(row.name)))};
+      lastHidden=hidden;lastBase=base;lastUploads=added;
     }
     return combined;
   }

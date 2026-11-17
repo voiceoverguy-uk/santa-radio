@@ -1,3 +1,4 @@
+import { nameVisibility } from './name-library-visibility.js';
 import { losslessNameUpload } from './lossless-name-upload.js';
 import { liveNameUploads } from './live-name-uploads.js';
 import { blobNameLibrary } from './blob-name-library.js';
@@ -27,7 +28,7 @@ export async function validateRecording(bytes, extension) {
   try { await createNameLibrary().download({source:'hosted',file:'upload.mp3'},join(directory,'decoded.wav'),bytes); }
   finally { await rm(directory,{recursive:true,force:true}); }
 }
-export function createNameUploads({allowed=validOwnerToken, storage={put,list,get}, validate=validateRecording, convert=losslessNameUpload, env=process.env, liveLibrary=blobNameLibrary, publisher=liveNameUploads}={}) {
+export function createNameUploads({allowed=validOwnerToken, storage={put,list,get}, validate=validateRecording, convert=losslessNameUpload, visibility=nameVisibility, env=process.env, liveLibrary=blobNameLibrary, publisher=liveNameUploads}={}) {
   let cached, cacheUntil=0, pending, version=0;
   async function inventory() {
     if(cached && Date.now()<cacheUntil)return cached;
@@ -56,8 +57,8 @@ export function createNameUploads({allowed=validOwnerToken, storage={put,list,ge
   app.use((req,res,next)=>{
     res.set('Cache-Control','private, no-store').set('CDN-Cache-Control','no-store').set('X-Robots-Tag','noindex, nofollow');
     if(!allowed(req)) return res.status(401).json({error:'Unlock the dashboard to manage recordings.'});
-    if(!['GET','POST'].includes(req.method)) return res.status(405).json({error:'Method not allowed.'});
-    if(req.method==='POST') {
+    if(!['GET','POST','PATCH'].includes(req.method)) return res.status(405).json({error:'Method not allowed.'});
+    if(req.method!=='GET') {
       let origin; try {origin=new URL(req.headers.origin);} catch {}
       if(origin?.host!==getClerkProxyHost(req) || req.headers['sec-fetch-site']==='cross-site') return res.status(403).json({error:'Please upload from the dashboard.'});
     }
@@ -67,6 +68,14 @@ export function createNameUploads({allowed=validOwnerToken, storage={put,list,ge
   app.use(express.raw({type:'application/octet-stream',limit:MAX_RECORDING_BYTES,inflate:false}));
   app.use(async(req,res)=>{
     try {
+      if(req.method==='PATCH') {
+        if(!['hide','restore'].includes(req.query.action)||typeof req.query.path!=='string')return res.status(400).json({error:'Choose a live recording.'});
+        const library=await liveLibrary.load({fresh:true,includeHidden:true});
+        const record=library?.records.find(row=>row.blobPath===req.query.path);
+        if(!record)return res.status(404).json({error:'Recording not found.'});
+        await visibility.set(record.name,req.query.action==='hide');
+        return res.json({ok:true});
+      }
       if(req.method==='POST') {
         if(req.headers['x-recording-publish']!=='live')return res.status(409).json({error:'Refresh and unlock the dashboard to upload directly to the live library.'});
         let name;try{name=recordingUploadName(decodeURIComponent(req.headers['x-recording-name'] || ''));}catch{return res.status(400).json({error:'Choose a valid name.'});}
