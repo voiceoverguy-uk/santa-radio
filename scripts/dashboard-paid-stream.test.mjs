@@ -54,3 +54,8 @@ test('daily payment graph uses actual amounts and fills zero days in a UK-date w
  const result=await paidStatistics({pool:{query:async()=>({rows})},cache:new Map([['one',650],['two',200]]),now:new Date('2026-11-17T12:00:00Z')});
  assert.equal(result.daily.length,30);assert.deepEqual(result.daily.at(-2),{day:'2026-11-16',payments:2,grossPence:850});assert.deepEqual(result.daily.at(-1),{day:'2026-11-17',payments:0,grossPence:0});assert.equal(result.grossPence,850);
 });
+
+test('all-time payment history retains purchases older than thirty days',async()=>{
+ const result=await paidStatistics({pool:{query:async()=>({rows:[{checkout_session_id:'old',creations:1,day:'2026-08-01'}]})},cache:new Map([['old',650]]),now:new Date('2026-11-17T12:00:00Z')});
+ assert.equal(result.daily[0].day,'2026-08-01');assert.equal(result.daily[0].grossPence,650);assert.ok(result.daily.length>30);assert.equal(result.daily.slice(-30).reduce((n,r)=>n+r.grossPence,0),0);
+});

@@ -28,8 +28,10 @@ export async function paidStatistics({pool=databasePool(), stripeClient=liveStri
     result.grossPence=rows.reduce((n,r)=>n+cache.get(r.checkout_session_id),0);
   } catch { /* Counts remain available if Stripe is temporarily unavailable. */ }
   const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/London',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);
-  result.daily=result.grossPence===null || rows.some(row=>!/^\d{4}-\d{2}-\d{2}$/.test(row.day || '')) ? null : Array.from({length:30},(_,i)=>{
-    const day=new Date(Date.parse(today+'T12:00:00Z')-(29-i)*86400000).toISOString().slice(0,10);
+  const firstDay=rows.map(row=>row.day).filter(day=>/^\d{4}-\d{2}-\d{2}$/.test(day || '')).sort()[0];
+  const dayCount=firstDay ? Math.max(30,Math.round((Date.parse(today+'T12:00:00Z')-Date.parse(firstDay+'T12:00:00Z'))/86400000)+1) : 30;
+  result.daily=result.grossPence===null || rows.some(row=>!/^\d{4}-\d{2}-\d{2}$/.test(row.day || '')) ? null : Array.from({length:dayCount},(_,i)=>{
+    const day=new Date(Date.parse(today+'T12:00:00Z')-(dayCount-1-i)*86400000).toISOString().slice(0,10);
     const matching=rows.filter(row=>row.day===day);
     return {day,payments:matching.length,grossPence:matching.reduce((total,row)=>total+cache.get(row.checkout_session_id),0)};
   });
