@@ -12,3 +12,5 @@
 .santa-dashboard .payment-chart__bar{position:relative}.payment-chart__tooltip{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:3px;min-width:140px;padding:10px 14px;background:#fff5d9;color:#173629;border:1px solid #e5c66e;border-radius:8px;box-shadow:0 5px 18px #0006;pointer-events:none;z-index:5;text-align:center;font-size:.75rem;white-space:nowrap}.payment-chart__tooltip strong{font-size:1.2rem;color:#173629}.payment-chart__tooltip--start{left:0;transform:none}.payment-chart__tooltip--end{left:auto;right:0;transform:none}
 
 .dashboard-themed--elf .dashboard-themed__header{background:linear-gradient(100deg,#0d2d23,#143c2d);overflow:visible;padding-right:210px}.dashboard-themed__elf{position:absolute;right:25px;bottom:-12px;width:170px;height:auto;z-index:2;pointer-events:none}@media(max-width:640px){.dashboard-themed--elf .dashboard-themed__header{padding-right:130px}.dashboard-themed__elf{right:10px;width:115px;bottom:-8px}}
+
+.santa-dashboard tfoot { background: #0b2b20; color: #efcf79; font-weight: 700; border-top: 2px solid #a48c43; }
