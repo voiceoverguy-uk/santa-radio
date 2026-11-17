@@ -11,6 +11,10 @@
     {
       "path": "/api/santa-message-expiry",
       "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/apple-download-sync",
+      "schedule": "15 16 * * *"
     }
   ],
   "functions": {

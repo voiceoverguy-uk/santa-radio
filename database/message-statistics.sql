@@ -22,3 +22,14 @@ CREATE TABLE IF NOT EXISTS santa_checker_downloads (
   day date NOT NULL
 );
 CREATE INDEX IF NOT EXISTS santa_checker_downloads_day ON santa_checker_downloads(day);
+
+-- Aggregate Apple reports only; never store the signing key or raw account reports.
+CREATE TABLE IF NOT EXISTS santa_apple_download_days (
+  app_id text NOT NULL,
+  day date NOT NULL,
+  downloads integer NOT NULL,
+  redownloads integer NOT NULL,
+  updates integer NOT NULL,
+  fetched_at timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY (app_id, day)
+);

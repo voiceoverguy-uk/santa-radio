@@ -1,3 +1,4 @@
+import { appleDownloadReport } from './apple-download-statistics.js';
 import { recordCheckerDownload, checkerDownloadReport, validDownloadId } from './checker-download-statistics.js';
 import { consumeNameAccess } from './santa-name-security.js';
 import { listFriendVouchers } from './friend-vouchers.js';
@@ -13,7 +14,7 @@ import { listNameRequests, recordNameRequest } from './name-request-store.js';
 import { normaliseRequestedName } from '../src/lib/santaNameRequests.js';
 import { getClerkProxyHost } from './middlewares/clerkProxyMiddleware.js';
 export function createStatisticsHandler({ allowed=validOwnerToken, report=statisticsReport, download=recordDownload, engagement=recordEngagement,
-  checkerDownloads=checkerDownloadReport, checkerDownload=recordCheckerDownload, checkerLimit=consumeNameAccess,
+  appleDownloads=appleDownloadReport, checkerDownloads=checkerDownloadReport, checkerDownload=recordCheckerDownload, checkerLimit=consumeNameAccess,
   requests=listNameRequests, complete=recordNameRequest, dismiss=dismissNameRequest, paid=paidStatistics, emails=websiteEmailStatistics, songs=songSubmissionStatistics, recordingStatus=requestRecordingStatus, friends=listFriendVouchers }={}) {
   return async (req,res) => {
     res.set('Cache-Control','private, no-store').set('CDN-Cache-Control','no-store').set('X-Robots-Tag','noindex, nofollow');
@@ -52,6 +53,7 @@ export function createStatisticsHandler({ allowed=validOwnerToken, report=statis
         if(req.body.action==='recorded')await complete(name.key);else await dismiss(name.key,req.body.action==='restore');return res.json({ok:true});
       }
       const [data,paidResult,emailResult]=await Promise.all([report(),paid().catch(()=>null),emails().catch(()=>null)]);
+      data.appleDownloads=await appleDownloads().catch(()=>null);
       data.checkerDownloads=await checkerDownloads().catch(()=>null);
       data.paid=paidResult; data.brevo=null; data.websiteEmails=emailResult;
       try { data.requests=await recordingStatus((await requests(1,'','outstanding',false)).requests); }
