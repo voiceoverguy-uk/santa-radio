@@ -86,7 +86,7 @@ export default function SantaRequestLedger({ email, onSignOut, ownerToken }) {
       const data = await response.json();
       if (data.recorded !== true) throw new Error('The recorded action was not confirmed. Please retry.');
       if (alive.current) {
-        setNotice(`${name} is recorded and saved in completed history.`);
+        setNotice(`${name} is saved in completed history; availability emails are queued for linked requesters.`);
         setRetry(value => value + 1);
       }
     } catch (failure) {
@@ -132,7 +132,7 @@ export default function SantaRequestLedger({ email, onSignOut, ownerToken }) {
         <button className="staff-text-action" type="button" onClick={onSignOut}>{ownerToken ? 'Back to dashboard' : 'Sign out'}</button></div>
       <p className="staff-kicker">A quiet little list from the message desk</p>
       <h1 id="ledger-title">Name requests</h1>
-      <p className="staff-lede">Outstanding names appear most requested first. Mark a name Recorded after adding its recording.
+      <p className="staff-lede">Outstanding names appear most requested first. After uploading a recording, use Send availability email when you are ready.
         This keeps its counts and dates in completed history; it does not upload or change an audio file.</p>
       <div className="staff-list-switch" role="group" aria-label="Request list">
         {['outstanding', 'completed'].map(view => <button key={view} className={`staff-button${status === view ? ' primary' : ''}`}
@@ -194,7 +194,7 @@ export default function SantaRequestLedger({ email, onSignOut, ownerToken }) {
             <td>{formatDate(item.firstRequestedAt)}</td><td>{formatDate(item.lastRequestedAt)}</td>
             <td>{status === 'completed' ? formatDate(item.recordedAt) : <button className="staff-button" type="button"
               aria-label={`Mark ${item.name} recorded`} disabled={pending.includes(item.name)} onClick={() => record(item.name)}>
-              {pending.includes(item.name) ? 'Saving…' : 'Recorded'}</button>}</td></tr>)}</tbody>
+              {pending.includes(item.name) ? 'Saving…' : 'Send availability email'}</button>}</td></tr>)}</tbody>
         </table></div>
         <nav className="staff-pagination" aria-label="Name request pages">
           <span>Page {result.page} of {pageCount} · {result.total.toLocaleString('en-GB')} {result.total === 1 ? 'entry' : 'entries'}</span>

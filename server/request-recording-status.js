@@ -44,8 +44,9 @@ export async function requestRecordingStatus(requests, catalogue = liveCatalogue
   if (!requests.length) return requests;
   try {
     const records = await catalogue();
-    const names = new Set(records.map(record => santaNameKey(record.name)));
-    return requests.map(row => ({ ...row, recordingStatus: names.has(santaNameKey(row.name)) ? 'available' : 'not_found' }));
+    const recordingKey = name => santaNameKey(name).replace(/\s+/gu, '-');
+    const names = new Set(records.map(record => recordingKey(record.name)));
+    return requests.map(row => ({ ...row, recordingStatus: names.has(recordingKey(row.name)) ? 'available' : 'not_found' }));
   } catch {
     const result = requests.map(row => ({ ...row, recordingStatus: 'unknown' }));
     const signal = AbortSignal.timeout(6000);

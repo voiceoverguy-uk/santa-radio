@@ -1,5 +1,4 @@
 import { losslessNameUpload } from './lossless-name-upload.js';
-import { completeUploadedName } from './upload-request-completion.js';
 import { liveNameUploads } from './live-name-uploads.js';
 import { blobNameLibrary } from './blob-name-library.js';
 import { recordingUploadName } from '../src/lib/recordingUploadName.js';
@@ -28,7 +27,7 @@ export async function validateRecording(bytes, extension) {
   try { await createNameLibrary().download({source:'hosted',file:'upload.mp3'},join(directory,'decoded.wav'),bytes); }
   finally { await rm(directory,{recursive:true,force:true}); }
 }
-export function createNameUploads({allowed=validOwnerToken, storage={put,list,get}, validate=validateRecording, convert=losslessNameUpload, env=process.env, liveLibrary=blobNameLibrary, publisher=liveNameUploads, completeRequests=completeUploadedName}={}) {
+export function createNameUploads({allowed=validOwnerToken, storage={put,list,get}, validate=validateRecording, convert=losslessNameUpload, env=process.env, liveLibrary=blobNameLibrary, publisher=liveNameUploads}={}) {
   let cached, cacheUntil=0, pending, version=0;
   async function inventory() {
     if(cached && Date.now()<cacheUntil)return cached;
@@ -79,11 +78,8 @@ export function createNameUploads({allowed=validOwnerToken, storage={put,list,ge
         if(!library)return res.status(503).json({error:'The live name library is not ready. Please retry shortly.'});
         const same=library.records.find(r=>r.file.normalize('NFC')===`${name}.${extension}`.normalize('NFC')&&r.sha256===createHash('sha256').update(bytes).digest('hex'));
         const published=same ? {name,path:same.blobPath,status:'live'} : await publisher.publish(name,extension,bytes);
-        // Only notify after verified publication. A retry also repairs a previously failed queue update.
-        let requestCompletion;
-        try { requestCompletion=await completeRequests(name); }
-        catch { requestCompletion={status:'failed',message:'Recording is live, but request completion could not be confirmed. Mark it recorded in the dashboard or retry this upload.'}; }
-        return res.json({...published,requestCompletion});
+        // Publication never completes requests or sends emails; the owner chooses when.
+        return res.json({...published,requestCompletion:{status:'awaiting_owner'}});
       }
       if(req.query.path) {
         if(typeof req.query.path==='string' && req.query.path.startsWith('name-library/')) {

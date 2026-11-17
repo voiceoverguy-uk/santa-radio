@@ -62,7 +62,7 @@ export default function NameRecordingUploads({ownerToken}) {
   }
   return <section className="name-uploads" aria-labelledby="name-upload-title">
     <div className="name-uploads__heading"><div><p className="name-uploads__eyebrow">RECORDING LIBRARY</p><h2 id="name-upload-title">Upload & listen</h2></div><span className="name-uploads__badge">Private Blob library</span></div>
-    <p>Browse and play the live Blob library below. New uploads are checked and published straight to the live name picker and iOS app. After successful publication, matching pending requests are marked recorded and availability emails are queued for linked requesters, normally within five minutes. Dismissed requests are left unchanged.</p>
+    <p>Browse and play the live Blob library below. New uploads are checked and published straight to the live name picker and iOS app. Uploads do not send emails or remove requests. Return to the dashboard, refresh, and press Send availability email when you are ready.</p>
     <label className="name-uploads__drop" onDragOver={e=>e.preventDefault()} onDrop={e=>{e.preventDefault();if(!busy)choose(e.dataTransfer.files);}}>
       <strong>Drop recordings here, or choose files</strong><span>MP3 or WAV · up to 3 MB and 30 seconds each · 20 at a time</span>
       <input type="file" accept=".mp3,.wav,audio/mpeg,audio/wav" multiple disabled={busy} onChange={e=>{choose(e.target.files);e.target.value='';}} />
