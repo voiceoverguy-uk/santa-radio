@@ -19,7 +19,12 @@ export function getSantaMarkerArtwork(
       mirrored: false, width: 48, height: 32,
     };
   }
-  if (mode !== "OFF_SEASON" && mode !== "ROUTE_RESEARCH") return null;
+  if (mode === "PREPARING" || mode === "COMPLETE") {
+    return {
+      src: `/images/tracker/santa-${mode === "PREPARING" ? "route-scout" : "holiday"}-front.png`,
+      mirrored: false, width: 36, height: 40,
+    };
+  }
   const outfit = mode === "ROUTE_RESEARCH" ? "route-scout" : "holiday";
   return {
     src: `/images/tracker/santa-${outfit}${longitude === 0 ? "-front" : ""}.png`,

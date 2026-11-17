@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import HomepageSectionHeading from "../../components/HomepageSectionHeading.jsx";
 import trackerLogo from "../../assets/home/santa-tracker-logo.webp";
-import { getCurrentStopId, getInterpolatedMapPosition, getJourneySleighDirection, getDashboardData, isHolidaySeason, isRouteResearchSeason, isDecemberVisitSeason, getRandomDecemberTrackerVisit, getRouteResearchCopy, isChristmasInJuly, getRandomHoliday, type DecemberTrackerVisit, type HolidayDestination } from "@/lib/santaRoute";
+import { getSeasonalTrackerMode, getCurrentStopId, getInterpolatedMapPosition, getJourneySleighDirection, getDashboardData, isHolidaySeason, isRouteResearchSeason, isDecemberVisitSeason, getRandomDecemberTrackerVisit, getRouteResearchCopy, isChristmasInJuly, getRandomHoliday, type DecemberTrackerVisit, type HolidayDestination } from "@/lib/santaRoute";
 import { getJumpTime } from "../lib/santaPreview";
 import { worldMapPaths } from "@/data/worldMapPaths";
 import itinerary from "../data/santaItinerary.json";
@@ -292,7 +292,8 @@ function MiniMap({ time, holiday, researching = false, northPoleVisitMessage }: 
   const solarPosition = useMemo(() => getSolarPosition(solarTime), [solarMinute]);
   const artwork = previewTime && previewPosition
     ? getSantaMarkerArtwork("LIVE", previewPosition.lng, getJourneySleighDirection(previewTime))
-    : holiday ? getSantaMarkerArtwork(researching ? "ROUTE_RESEARCH" : "OFF_SEASON", holiday.lng) : null;
+    : holiday ? getSantaMarkerArtwork(researching ? "ROUTE_RESEARCH" : "OFF_SEASON", holiday.lng)
+      : getSantaMarkerArtwork(getSeasonalTrackerMode(mapTime), 0);
   const santaX = previewPosition ? previewPosition.x * 10 : holiday
     ? ((holiday.lng + 180) / 360) * 1000
     : ((0 + 180) / 360) * 1000;
