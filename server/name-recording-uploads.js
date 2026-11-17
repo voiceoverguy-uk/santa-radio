@@ -102,7 +102,7 @@ export function createNameUploads({allowed=validOwnerToken, storage={put,list,ge
       const key=recordingUploadName(search).toLocaleLowerCase('en-GB');
       const matches=key?all.filter(row=>recordingUploadName(row.name).toLocaleLowerCase('en-GB').includes(key)):all;
       const totalPages=Math.max(1,Math.ceil(matches.length/20)),page=Math.min(Number(pageText),totalPages);
-      return res.json({mode:live?'live':'testing',recordings:matches.slice((page-1)*20,page*20),page,totalPages,total:matches.length,libraryTotal:all.length});
+      return res.json({mode:live?'live':'testing',exactMatch:!!key&&all.some(row=>recordingUploadName(row.name).toLocaleLowerCase('en-GB')===key),recordings:matches.slice((page-1)*20,page*20),page,totalPages,total:matches.length,libraryTotal:all.length});
     }catch{if(!res.headersSent)res.status(503).json({error:'Recording storage is unavailable. Refresh the list before retrying an upload.'});}
   });
   app.use((err,_req,res,_next)=>res.status(err.type==='entity.too.large'?413:400).json({error:err.type==='entity.too.large'?'Each recording must be 3 MB or smaller.':'Invalid upload.'}));

@@ -36,7 +36,7 @@ test('library search spans storage pages and returns only 20 rows per browser pa
  await withServer({allowed:()=>true,env,storage},async url=>{
  const first=await(await fetch(url)).json();assert.equal(first.recordings.length,20);assert.equal(first.total,46);assert.equal(first.totalPages,3);
  const second=await(await fetch(url+'?page=2')).json();assert.equal(second.recordings.length,20);assert.equal(second.page,2);assert.ok(!second.recordings.some(r=>first.recordings.some(f=>f.path===r.path)));
- const search=await(await fetch(url+'?search=ellie%20may')).json();assert.equal(search.recordings[0].name,'Ellie-May');assert.equal(search.total,1);assert.equal(reads,2);
+ const search=await(await fetch(url+'?search=ellie%20may')).json();assert.equal(search.exactMatch,true);const partial=await(await fetch(url+'?search=ellie')).json();assert.equal(partial.exactMatch,false);assert.equal(search.recordings[0].name,'Ellie-May');assert.equal(search.total,1);assert.equal(reads,2);
  assert.equal((await fetch(url+'?page=0')).status,400);
  });
 });
