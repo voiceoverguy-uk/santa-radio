@@ -23,9 +23,9 @@ export default function HomepageSantaStudio({ directEntry = false, onAuthorized,
       <div className="container homepage-santa-studio__layout">
         <HomepageSectionHeading
           eyebrow="A unique Christmas treat."
-          title="MESSAGE FROM SANTA"
+          title="A BESPOKE SANTA MESSAGE"
           supportingLine="OUR PREMIUM EXPERIENCE"
-          subtitle="Ask Santa for a bespoke message to your little one."
+          subtitle="Let’s make it even more magical for your little one."
           titleId="homepage-santa-studio-title"
           titleTag={directEntry ? 'h1' : 'h2'}
           className="homepage-santa-studio__heading"
