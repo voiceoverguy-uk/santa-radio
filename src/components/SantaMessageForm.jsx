@@ -358,7 +358,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
       <div className="santa-message-aside">
        <div ref={makerPanelRef} className={`santa-message-box${hasAccess ? '' : ' message-access-box'}`}>
         <div className="message-card-top">
-          <span className="message-seal" aria-hidden="true">S</span>
+          <span className="message-seal" aria-hidden="true">SR</span>
           <div className="message-card-heading">
             <p className="message-postmark">The North Pole Recording Studio</p>
         <div className="message-name-status">
@@ -492,7 +492,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
       </div>
        {!dedicatedLayout && hasAccess && allowExamples && <SantaMessageExample onExampleNameChange={setActiveExampleName} />}
       </div>
-      <SantaStudioPromotion activeExampleName={activeExampleName} availableNamesText={availableNamesText}
+      <SantaStudioPromotion showPremiumIntro activeExampleName={activeExampleName} availableNamesText={availableNamesText}
         previewName={giftPreviewName} allowExamples={allowExamples} />
       {dedicatedLayout && <WorkshopExplainerCards className="message-guide-cards" variant="free-message" />}
       <SantaMessageReviews />

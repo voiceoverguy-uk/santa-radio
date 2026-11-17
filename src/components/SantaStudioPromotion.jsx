@@ -5,7 +5,7 @@ import { StudioGiftPreview, useStudioGiftExample } from './SantaStudioGifts.jsx'
 import StudioPortraitViewer from './StudioPortraitViewer.jsx';
 import SantaStudioAudioExample from './SantaStudioAudioExample.jsx';
 
-export default function SantaStudioPromotion({ activeExampleName = null, availableNamesText, previewName = null, allowExamples = true, onAuthorized }) {
+export default function SantaStudioPromotion({ activeExampleName = null, availableNamesText, previewName = null, allowExamples = true, onAuthorized, showPremiumIntro = false }) {
   const [paidExampleName, setPaidExampleName] = useState(null);
   const [giftsExpanded, setGiftsExpanded] = useState(false);
   const giftsId = useId();
@@ -21,6 +21,11 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
   return (
     <section id="santa-studio-promotion" className="santa-studio-promotion" aria-labelledby="santa-studio-title"
       data-recipient={previewName || undefined}>
+      {showPremiumIntro && <div className="santa-studio-promotion__intro">
+        <h2>A BESPOKE SANTA MESSAGE</h2>
+        <p>OUR PREMIUM EXPERIENCE</p>
+        <p>Let’s make it even more magical for your little one.</p>
+      </div>}
       <header className="santa-studio-promotion__header">
         <div className="santa-studio-promotion__topline">
           <span className="santa-studio-promotion__seal" aria-hidden="true">SR</span>

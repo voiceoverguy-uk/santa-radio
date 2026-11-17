@@ -655,3 +655,7 @@
   width: 100%;
   box-sizing: border-box;
 }
+
+.santa-studio-promotion__intro { text-align: center; margin-bottom: 24px; }
+.santa-studio-promotion__intro h2 { font-family: "Cinzel", Georgia, serif; font-size: clamp(1.25rem, 3vw, 2rem); color: #173629; }
+.santa-studio-promotion__intro p { color: #806023; margin: 8px 0; }
