@@ -157,3 +157,7 @@
 }
 
 .links-page .platform-wordmark { color: var(--gold-light); font-size: clamp(1.3rem, 3vw, 2rem); font-weight: 800; text-align: center; letter-spacing: .03em; }
+
+.links-page .partner-banner--light { background: #fff; border-radius: 8px; padding: 14px; }
+
+.links-page .platform-tunein-logo { display: block; width: 104px; height: 104px; object-fit: contain; border-radius: 18px; margin-bottom: 18px; }

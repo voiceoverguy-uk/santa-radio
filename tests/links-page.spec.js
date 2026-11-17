@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test';
 
 const partners = [
-  { name: 'Live Online Radio', url: 'https://liveonlineradio.net/santa-radio', label: 'LIVE ONLINE RADIO', description: 'Hear Santa Radio on Live Online Radio. Open our station page and press play.' },
-  { name: 'Radioguide.fm', url: 'https://www.radioguide.fm/internet-radio-england/santa-radio', label: 'RADIOGUIDE.FM', description: 'Find Santa Radio on Radioguide.fm and enjoy Christmas music wherever you listen.' },
-  { name: 'radio.net', url: 'https://uk.radio.net/s/santa', label: 'radio.net', description: 'Listen to Santa Radio through our radio.net station page.' },
-  { name: 'Internet Radio', url: 'https://www.internet-radio.com', image: '/images/links/internet-radio.gif', description: 'Explore the Internet Radio directory and search for Santa Radio.' },
+  { name: 'Live Online Radio', url: 'https://liveonlineradio.net/santa-radio', image: '/images/links/live-online-radio.png', description: 'Hear Santa Radio on Live Online Radio. Open our station page and press play.' },
+  { name: 'Radioguide.fm', url: 'https://www.radioguide.fm/internet-radio-england/santa-radio', image: '/images/links/radioguide-fm.svg', description: 'Find Santa Radio on Radioguide.fm and enjoy Christmas music wherever you listen.' },
+  { name: 'radio.net', url: 'https://uk.radio.net/s/santa', image: '/images/links/radio-net.svg', description: 'Listen to Santa Radio through our radio.net station page.' },
+  { name: 'Internet Radio', url: 'https://www.internet-radio.com', image: '/images/links/internet-radio.png', description: 'Explore the Internet Radio directory and search for Santa Radio.' },
   { name: 'Santa Guy', url: 'https://www.santaguy.co.uk', image: '/images/links/santa-guy.png', description: 'Meet the voice behind Santa Radio — Guy Harris, the voice of Santa.' },
   { name: 'Stag Communications', url: 'https://www.stagcommunications.co.uk/', image: '/images/links/stag-communications.jpg', description: 'Behind the sound: creative production and radio imaging from Stag Communications.' },
 ];

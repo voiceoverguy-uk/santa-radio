@@ -5,10 +5,10 @@ import { useCookieConsent } from '../privacy/CookieConsentProvider.jsx';
 import ExternalMediaConsent from '../components/ExternalMediaConsent.jsx';
 
 const partners = [
-  { name: 'Live Online Radio', url: 'https://liveonlineradio.net/santa-radio', label: 'LIVE ONLINE RADIO', description: 'Hear Santa Radio on Live Online Radio. Open our station page and press play.' },
-  { name: 'Radioguide.fm', url: 'https://www.radioguide.fm/internet-radio-england/santa-radio', label: 'RADIOGUIDE.FM', description: 'Find Santa Radio on Radioguide.fm and enjoy Christmas music wherever you listen.' },
-  { name: 'radio.net', url: 'https://uk.radio.net/s/santa', label: 'radio.net', description: 'Listen to Santa Radio through our radio.net station page.' },
-  { name: 'Internet Radio', url: 'https://www.internet-radio.com', image: '/images/links/internet-radio.gif', description: 'Explore the Internet Radio directory and search for Santa Radio.' },
+  { name: 'Live Online Radio', url: 'https://liveonlineradio.net/santa-radio', image: '/images/links/live-online-radio.png', description: 'Hear Santa Radio on Live Online Radio. Open our station page and press play.' },
+  { name: 'Radioguide.fm', url: 'https://www.radioguide.fm/internet-radio-england/santa-radio', image: '/images/links/radioguide-fm.svg', light: true, description: 'Find Santa Radio on Radioguide.fm and enjoy Christmas music wherever you listen.' },
+  { name: 'radio.net', url: 'https://uk.radio.net/s/santa', image: '/images/links/radio-net.svg', light: true, description: 'Listen to Santa Radio through our radio.net station page.' },
+  { name: 'Internet Radio', url: 'https://www.internet-radio.com', image: '/images/links/internet-radio.png', light: true, description: 'Explore the Internet Radio directory and search for Santa Radio.' },
   { name: 'Santa Guy', url: 'https://www.santaguy.co.uk', image: '/images/links/santa-guy.png', description: 'Meet the voice behind Santa Radio — Guy Harris, the voice of Santa.' },
   { name: 'Stag Communications', url: 'https://www.stagcommunications.co.uk/', image: '/images/links/stag-communications.jpg', description: 'Behind the sound: creative production and radio imaging from Stag Communications.' },
 ];
@@ -37,7 +37,7 @@ export default function Links() {
         <section className="links-partners" aria-label="Listening platforms and the people behind our sound">
           {partners.map((partner) => (
             <article className="partner-card" key={partner.name}>
-              <a className="partner-banner" href={partner.url} target="_blank" rel="noopener noreferrer" aria-label={`${partner.name} website (opens in a new tab)`}>
+              <a className={`partner-banner${partner.light ? ' partner-banner--light' : ''}`} href={partner.url} target="_blank" rel="noopener noreferrer" aria-label={`${partner.name} website (opens in a new tab)`}>
                 {partner.image ? <img src={partner.image} alt={`${partner.name} banner`} loading="lazy" decoding="async" /> : <span className="platform-wordmark">{partner.label}</span>}
               </a>
               <h2 className="partner-heading">{partner.name}</h2>
@@ -49,17 +49,13 @@ export default function Links() {
           ))}
         </section>
         <section className="links-tunein" aria-labelledby="links-tunein-title">
+          <img className="platform-tunein-logo" src="/images/links/tunein.webp" alt="TuneIn" loading="lazy" decoding="async" />
           <h2 className="links-section-title" id="links-tunein-title">Santa Radio on TuneIn</h2>
           <p>Listen through TuneIn, here or on their website.</p>
-          <p id="tunein-disclosure">
-            Loading the player connects your browser to TuneIn, a third-party service that may use cookies and
-            receive information such as your IP address. It will not load until you allow external media and choose to load it.
-          </p>
           <div className="tunein-actions">
             {mediaAllowed && <button
               className="tunein-load"
               type="button"
-              aria-describedby="tunein-disclosure"
               aria-expanded={tuneInLoaded}
               onClick={() => setTuneInLoaded((loaded) => !loaded)}
             >
