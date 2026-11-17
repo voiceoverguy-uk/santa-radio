@@ -11,6 +11,7 @@ import "../tracker-journey.css";
 import { getJourneySleighDirection, getSeasonalTrackerMode } from "../lib/santaRoute";
 import { getSantaMarkerArtwork } from "../lib/santaMarker";
 import SantaMarker from "./SantaMarker";
+import MapGeographyLabels from "./MapGeographyLabels";
 import { getNightOverlayPath, getSolarPosition } from "./solarLighting";
 
 interface SantaMapProps {
@@ -312,6 +313,8 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
                 <line key={`v${i}`} x1={i * 83.3} y1="0" x2={i * 83.3} y2="500" />
               ))}
             </g>
+
+            <MapGeographyLabels scale={Math.min(k, 1.7)} wrapPacific={wrapPacific} />
 
             {segments.length > 0 && (
               <>

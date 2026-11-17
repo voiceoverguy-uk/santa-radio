@@ -12,6 +12,7 @@ import { santaStops, getStopArrivalDate } from "@/data/santaRouteStops";
 import { MAP_PALETTE, mapLandColor } from "./mapPalette";
 import { getSantaMarkerArtwork } from "../lib/santaMarker";
 import SantaMarker from "./SantaMarker";
+import MapGeographyLabels from "./MapGeographyLabels";
 import { getNightOverlayPath, getSolarPosition } from "./solarLighting";
 
 export default function SantaTrackerBanner() {
@@ -353,6 +354,7 @@ function MiniMap({ time, holiday, researching = false, northPoleVisitMessage }: 
           fillOpacity="0.25"
           pointerEvents="none"
         />
+        <MapGeographyLabels scale={previewTime ? 0.28 : 1} />
         <g data-route-stops="">
           {santaStops.map((stop) => (
             <circle
@@ -387,7 +389,7 @@ function MiniMap({ time, holiday, researching = false, northPoleVisitMessage }: 
         </text>}
         </g>
       </svg>
-      <div className="tracker-map-caption px-2 py-1.5 text-[10px] text-center" aria-hidden="true">
+      <div className="tracker-map-caption" aria-hidden="true">
         {caption}
       </div>
     </Link>

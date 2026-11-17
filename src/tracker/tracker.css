@@ -385,7 +385,22 @@
 .tracker-banner .tracker-countdown-value { color: var(--tracker-gold); font-family: 'Cinzel',serif; font-weight: 400; }
 .tracker-banner .tracker-countdown-label { color: var(--tracker-muted); }
 .tracker-banner .tracker-map { background: #2F83B7; border-color: #D4AF374a; }
-.tracker-banner .tracker-map-caption { background: #081e17dd; color: #d0d9c8; }
+.tracker-banner .tracker-banner-map { position: relative; }
+.tracker-banner .tracker-map-caption {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  max-width: calc(100% - 24px);
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: #081e17dd;
+  color: #d0d9c8;
+  backdrop-filter: blur(4px);
+  font-size: clamp(12px, 1.2vw, 14px);
+  line-height: 1.4;
+  text-align: left;
+  pointer-events: none;
+}
 .tracker-banner .tracker-map:focus-visible { outline: 3px solid #D4AF37; outline-offset: 4px; }
 .tracker-banner .tracker-card-value { color: var(--tracker-cream); font-weight: 500; }
 .santa-tracker .tracker-preview-panel .tracker-meta { color: #c1cbbb; }
