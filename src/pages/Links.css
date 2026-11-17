@@ -155,3 +155,5 @@
   .links-page .links-tunein { padding: 20px; }
   .links-page .tunein-actions { align-items: flex-start; flex-direction: column; }
 }
+
+.links-page .platform-wordmark { color: var(--gold-light); font-size: clamp(1.3rem, 3vw, 2rem); font-weight: 800; text-align: center; letter-spacing: .03em; }

@@ -11,7 +11,7 @@ const footerLinks = [
   ['/submit-a-song?mode=song', 'Submit your song'],
   ['/christmas-contenders', 'Christmas Contenders · Preview'],
   ['/apps', 'Download the app'],
-  ['/links', 'Links'],
+  ['/platforms', 'Platforms'],
   ['/privacy-policy', 'Privacy Policy'],
   ['/photo-usage-and-licensing', 'Photo usage and licensing'],
 ];

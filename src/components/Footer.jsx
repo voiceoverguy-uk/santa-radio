@@ -43,7 +43,7 @@ export default function Footer() {
         <span>&middot;</span>
         <Link to="/apps">Download the app</Link>
         <span>&middot;</span>
-        <Link to="/links">Links</Link>
+        <Link to="/platforms">Platforms</Link>
         <span>&middot;</span>
         <Link to="/privacy-policy">Privacy Policy</Link>
         <span>&middot;</span>

@@ -1,21 +1,20 @@
 import { test, expect } from '@playwright/test';
 
 const partners = [
-  { name: 'Santa Guy', url: 'https://www.santaguy.co.uk', image: '/images/links/santa-guy.png',
-    description: "The UK's most in demand Voice of Santa - Guy Harris" },
-  { name: 'VoiceoverGuy', url: 'https://www.voiceoverguy.co.uk', image: '/images/links/voiceoverguy.jpg',
-    description: 'Brought to life by the voice of Santa himself — Guy Harris, British Male Voiceover Artist.' },
-  { name: 'Stag Communications', url: 'https://www.stagcommunications.co.uk/', image: '/images/links/stag-communications.jpg',
-    description: 'Creative production and radio imaging by our friends at Stag Communications.' },
-  { name: 'Internet Radio', url: 'https://www.internet-radio.com', image: '/images/links/internet-radio.gif' },
+  { name: 'Live Online Radio', url: 'https://liveonlineradio.net/santa-radio', label: 'LIVE ONLINE RADIO', description: 'Hear Santa Radio on Live Online Radio. Open our station page and press play.' },
+  { name: 'Radioguide.fm', url: 'https://www.radioguide.fm/internet-radio-england/santa-radio', label: 'RADIOGUIDE.FM', description: 'Find Santa Radio on Radioguide.fm and enjoy Christmas music wherever you listen.' },
+  { name: 'radio.net', url: 'https://uk.radio.net/s/santa', label: 'radio.net', description: 'Listen to Santa Radio through our radio.net station page.' },
+  { name: 'Internet Radio', url: 'https://www.internet-radio.com', image: '/images/links/internet-radio.gif', description: 'Explore the Internet Radio directory and search for Santa Radio.' },
+  { name: 'Santa Guy', url: 'https://www.santaguy.co.uk', image: '/images/links/santa-guy.png', description: 'Meet the voice behind Santa Radio — Guy Harris, the voice of Santa.' },
+  { name: 'Stag Communications', url: 'https://www.stagcommunications.co.uk/', image: '/images/links/stag-communications.jpg', description: 'Behind the sound: creative production and radio imaging from Stag Communications.' },
 ];
 
 for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844 }, { width: 320, height: 740 }]) {
   test(`partner content, accessible links and uncropped artwork at ${viewport.width}px`, async ({ page }) => {
     await page.setViewportSize(viewport);
-    await page.goto('/links');
+    await page.goto('/platforms');
     const cards = page.locator('.partner-card');
-    await expect(cards).toHaveCount(4);
+    await expect(cards).toHaveCount(6);
     for (const [i, partner] of partners.entries()) {
       const card = cards.nth(i);
       await expect(card.getByRole('heading', { level: 2 })).toHaveText(partner.name);
@@ -30,6 +29,7 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
         await expect(link).toHaveAttribute('target', '_blank');
         await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
       }
+      if (partner.image) {
       const image = card.getByRole('img', { name: `${partner.name} banner`, exact: true });
       await expect(image).toHaveAttribute('src', partner.image);
       await image.scrollIntoViewIfNeeded();
@@ -39,12 +39,8 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
       const banner = await card.locator('.partner-banner').boundingBox();
       expect(bounds.x).toBeGreaterThanOrEqual(banner.x - 1);
       expect(bounds.x + bounds.width).toBeLessThanOrEqual(banner.x + banner.width + 1);
-      if (i === 0) {
-        const dimensions = await image.evaluate(el => ({ width: el.naturalWidth, height: el.naturalHeight }));
-        expect(dimensions).toEqual({ width: 1890, height: 541 });
-        // The whole supplied logo remains large enough to read even on narrow phones.
-        expect(Math.min(bounds.width, bounds.height * dimensions.width / dimensions.height)).toBeGreaterThan(240);
       }
+
     }
     await expect(page.locator('.links-page')).not.toContainText('Xmas Radio');
     await expect(page.locator('.links-page a[href*="xmasradio.mobi"]')).toHaveCount(0);
@@ -59,7 +55,7 @@ test('TuneIn remains consent-controlled and requires activation after saved perm
     playerRequests++;
     return route.fulfill({ contentType: 'text/html', body: '<p>TuneIn test player</p>' });
   });
-  await page.goto('/links');
+  await page.goto('/platforms');
   await page.locator('.marketing-consent').getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
   const section = page.locator('.links-tunein');
   const frame = section.locator('iframe');

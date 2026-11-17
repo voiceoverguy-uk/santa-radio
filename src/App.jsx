@@ -82,7 +82,8 @@ function WebsiteLayout() {
         <Route path="/submit-a-song" element={<SubmitASong />} />
         <Route path="/christmas-contenders" element={<ChristmasContenders />} />
         <Route path="/naughty-or-nice-list-checker" element={<NaughtyNicePage />} />
-        <Route path="/links" element={<Links />} />
+        <Route path="/platforms" element={<Links />} />
+        <Route path="/links" element={<Navigate to="/platforms" replace />} />
         <Route path="/santa-stories" element={<SantaStories />} />
         <Route path="/santa-tracker" element={<SantaTrackerPage />} />
         <Route path="/styt" element={<SantaTrackerStreamPage />} />

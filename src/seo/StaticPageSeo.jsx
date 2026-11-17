@@ -8,7 +8,7 @@ const pages = {
   '/privacy-policy': ['Privacy Policy | Santa Radio', 'Read how Santa Radio handles privacy, website information and optional submissions.'],
   '/santa-tracker/privacy': ['The Santa Tracker iOS App Privacy Policy | Santa Radio', 'Privacy information for The Santa Tracker by Santa Radio for iOS: on-device calculations, local preview settings and separate website visits.'],
   '/submit-a-song': ['Contact Santa Radio | General Enquiries & Song Submissions', 'Get in touch with Santa Radio for general enquiries or submit a Christmas recording for airplay consideration using our shared contact form.'],
-  '/links': ['Christmas Links | Santa Radio', 'Explore the festive websites and services linked by Santa Radio.'],
+  '/platforms': ['Where to Hear Santa Radio | Listening Platforms', 'Find Santa Radio on TuneIn, Live Online Radio, Radioguide.fm and radio.net. Choose where to listen to Christmas music all year round.'],
   '/santa-stories': ['Santa Stories | Santa Radio', 'Explore Santa Radio’s Santa stories and festive listening.'],
 };
 export default function StaticPageSeo() {

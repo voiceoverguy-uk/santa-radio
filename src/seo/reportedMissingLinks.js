@@ -8,7 +8,7 @@ export const reportedMissingAliases = [
   ['/santa-messages/christmas-artist/100-the-carpenters-sleigh-ride', '/christmas-artist/100-the-carpenters-sleigh-ride'],
   ['/messages/mugshots/bez-singer', '/mugshots/bez-singer'],
   ['/free-christmas-apps', '/apps'],
-  ['/tunein', '/links'],
+  ['/tunein', '/platforms'],
   ['/mugshots/liesl-soards-radio-presenter', '/mugshots/liesl-radio-presenter'],
   ['/christmas-artist/260-elvis-presley-santa-bring-my-baby-back-to-me-', '/christmas-artist/260-elvis-presley-santa-bring-my-baby-back-to-me'],
   ['/christmas-artist/222-sammy-davis-jr--jingle-bells', '/christmas-artist/222-sammy-davis-jr-jingle-bells'],
