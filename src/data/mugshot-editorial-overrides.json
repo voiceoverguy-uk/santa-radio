@@ -3,13 +3,17 @@
     "artist": "Alex James",
     "role": "Musician & Author",
     "homepage": true,
-    "sources": ["https://www.alexjames.co/pages/about-alex"]
+    "sources": [
+      "https://www.alexjames.co/pages/about-alex"
+    ]
   },
   "gyles-brandreth-tv-personality": {
     "artist": "Gyles Brandreth",
     "role": "Broadcaster & Author",
     "homepage": true,
-    "sources": ["https://www.gylesbrandreth.net/biography"]
+    "sources": [
+      "https://www.gylesbrandreth.net/biography"
+    ]
   },
   "angry-ginge-celeb-winner": {
     "artist": "Angry Ginge",
@@ -34,13 +38,17 @@
     "artist": "Sam Ryder",
     "role": "Singer & Songwriter",
     "homepage": true,
-    "sources": ["https://www.eurovision.com/eurovision-song-contest/turin-2022/participants/sam-ryder-1/"]
+    "sources": [
+      "https://www.eurovision.com/eurovision-song-contest/turin-2022/participants/sam-ryder-1/"
+    ]
   },
   "paul-nicholas-actor": {
     "artist": "Paul Nicholas",
     "role": "Actor & Singer",
     "homepage": true,
-    "sources": ["https://futermanrose.co.uk/nicholas.html"]
+    "sources": [
+      "https://futermanrose.co.uk/nicholas.html"
+    ]
   },
   "steve-bracknall-podcaster": {
     "artist": "Steve Bracknall",
@@ -55,7 +63,9 @@
     "artist": "Paris Fury",
     "role": "Author & TV Personality",
     "homepage": false,
-    "sources": ["https://www.hachette.co.uk/contributor/paris-fury/"]
+    "sources": [
+      "https://www.hachette.co.uk/contributor/paris-fury/"
+    ]
   },
   "sharon-marshall-queen-of-soaps": {
     "artist": "Sharon Marshall",
@@ -97,13 +107,17 @@
     "artist": "Rylan",
     "role": "TV & Radio Presenter",
     "homepage": true,
-    "sources": ["https://www.ymugroup.com/talent/rylan/"]
+    "sources": [
+      "https://www.ymugroup.com/talent/rylan/"
+    ]
   },
   "emma-willis-tv-personality": {
     "artist": "Emma Willis",
     "role": "TV Presenter",
     "homepage": true,
-    "sources": ["https://www.ymugroup.com/talent/emma-willis/"]
+    "sources": [
+      "https://www.ymugroup.com/talent/emma-willis/"
+    ]
   },
   "chris-ramsey-comedian": {
     "artist": "Chris Ramsey",
@@ -131,5 +145,8 @@
   },
   "nicky-campbell-radio-presenter": {
     "homepage": true
+  },
+  "david-walliams-comedian-writer": {
+    "hidden": true
   }
 }

@@ -73,7 +73,7 @@ export function buildCatalogue(raw, overrides = biographies) {
   }
   // Empty source rows can still contribute a photo to a complete profile.
   // Exclude only after consolidation so those complete profiles survive.
-  const removed = catalogue.filter(m => !m.info.trim());
+  const removed = catalogue.filter(m => !m.info.trim() || editorialOverrides[m.song]?.hidden === true);
   const removedSlugs = new Set(removed.map(m => m.song));
   for (const [slug, target] of Object.entries(aliases)) {
     if (removedSlugs.has(target)) delete aliases[slug];
