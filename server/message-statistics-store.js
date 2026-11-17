@@ -44,7 +44,7 @@ export async function recordEngagement(id, action, pool = databasePool(), now = 
 export async function statisticsReport(pool = databasePool()) {
   // Short-lived random receipts are solely for deduplication; retain only aggregates long term.
   await pool.query("DELETE FROM santa_message_receipts WHERE created_at < now()-interval '7 days'");
-  const [daily,names,votes,since] = await Promise.all([
+  const [daily,names,votes,since,allTime] = await Promise.all([
     pool.query(`SELECT days.day::date::text AS day, COALESCE(sum(s.creations),0)::integer AS creations, COALESCE(sum(s.download_clicks),0)::integer AS downloads, COALESCE(sum(s.listens),0)::integer AS listens, COALESCE(sum(s.shares),0)::integer AS shares
       FROM generate_series((now() AT TIME ZONE 'Europe/London')::date-29,(now() AT TIME ZONE 'Europe/London')::date,interval '1 day') AS days(day)
       LEFT JOIN santa_message_daily s ON s.day=days.day::date GROUP BY days.day ORDER BY days.day DESC`),
@@ -55,8 +55,9 @@ export async function statisticsReport(pool = databasePool()) {
       LEFT JOIN christmas_contenders_ballots b ON b.competition=e.competition AND b.entry_id=e.id AND b.mode=e.mode AND b.state='confirmed'
       WHERE e.mode='live' AND e.approved GROUP BY e.competition,e.id,e.artist,e.title ORDER BY votes DESC,e.artist`),
     pool.query('SELECT min(day)::text AS since FROM santa_message_daily'),
+    pool.query('SELECT COALESCE(sum(creations),0)::integer AS creations, COALESCE(sum(download_clicks),0)::integer AS downloads, COALESCE(sum(listens),0)::integer AS listens, COALESCE(sum(shares),0)::integer AS shares FROM santa_message_daily'),
   ]);
-  return {daily:daily.rows,names:names.rows,votes:votes.rows,since:since.rows[0].since,updatedAt:new Date().toISOString()};
+  return {allTime:allTime.rows[0],daily:daily.rows,names:names.rows,votes:votes.rows,since:since.rows[0].since,updatedAt:new Date().toISOString()};
 }
 export async function safeRecordCreation(name) {
   // Return the receipt whenever the insert succeeds. Racing a short timer could
@@ -64,4 +65,3 @@ export async function safeRecordCreation(name) {
   try { return await recordCreation(name); }
   catch { console.warn('[message-statistics] recording unavailable'); return ''; }
 }
-

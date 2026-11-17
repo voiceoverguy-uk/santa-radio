@@ -33,3 +33,9 @@ CREATE TABLE IF NOT EXISTS santa_apple_download_days (
   fetched_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (app_id, day)
 );
+
+CREATE TABLE IF NOT EXISTS santa_apple_app_status (
+  app_id text PRIMARY KEY,
+  status text NOT NULL CHECK (status IN ('released','pending','unknown')),
+  checked_at timestamptz NOT NULL DEFAULT now()
+);

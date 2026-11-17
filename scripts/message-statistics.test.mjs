@@ -23,11 +23,24 @@ test('daily counts use UK dates, downloads deduplicate and reports contain only 
  assert.ok(id);await recordDownload(id,pool,new Date('2026-07-02T01:00:00Z'));await recordDownload(id,pool,new Date('2026-07-02T01:01:00Z'));
  const rows=(await db.query('SELECT day::text,creations::integer,download_clicks::integer FROM santa_message_daily')).rows;
  assert.deepEqual(rows,[{day:'2026-07-02',creations:1,download_clicks:1}]);
- const report=await statisticsReport(pool);assert.ok(Array.isArray(report.votes));assert.equal('email' in report,false);
+ const report=await statisticsReport(pool);assert.equal(report.allTime.creations,1);assert.equal(report.allTime.downloads,1);assert.equal(report.since,"2026-07-02");assert.ok(Array.isArray(report.votes));assert.equal('email' in report,false);
  assert.equal((await db.query('SELECT count(*)::integer AS n FROM santa_message_receipts')).rows[0].n,0);
  await db.close();
 });
 
+test('native completion uses the authenticated existing route and normalizes the requested name',async()=>{
+ let completed;const response={set(){return this},status(s){this.code=s;return this},json(v){this.body=v;return this}};
+ const req={method:'PATCH',headers:{origin:'https://www.santaradio.co.uk',host:'www.santaradio.co.uk'},body:{action:'recorded',name:'Elodie'}};
+ await createStatisticsHandler({allowed:()=>true,complete:async key=>{completed=key}})(req,response);
+ assert.equal(completed,'elodie');assert.deepEqual(response.body,{ok:true});
+});
+test('completion rejects unauthorized and cross-site requests before mutating names',async()=>{
+ for(const [allowed,site,expected] of [[false,'same-origin',401],[true,'cross-site',403]]) {
+ let changed=false;const response={set(){return this},status(s){this.code=s;return this},json(v){this.body=v;return this}};
+ await createStatisticsHandler({allowed:()=>allowed,complete:async()=>{changed=true}})({method:'PATCH',headers:{origin:'https://www.santaradio.co.uk',host:'www.santaradio.co.uk','sec-fetch-site':site},body:{action:'recorded',name:'Elodie'}},response);
+ assert.equal(response.code,expected);assert.equal(changed,false);
+ }
+});
 
 test('engagement actions count independently and duplicate retries count once', {skip:!process.env.PGLITE_TEST_MODULE}, async()=>{
  const {PGlite}=await import(process.env.PGLITE_TEST_MODULE);const db=new PGlite();

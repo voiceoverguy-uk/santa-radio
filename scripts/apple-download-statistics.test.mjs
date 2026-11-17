@@ -30,3 +30,19 @@ test('cron endpoint rejects unauthenticated requests before importing',async()=>
  const res={setHeader(){},status(code){this.code=code;return this;},json(value){this.value=value;return this;}};
  await handler({headers:{},method:'GET'},res);assert.equal(res.code,401);
 });
+
+test('ranking shares a reporting period, preserves Mac identity and separates pending apps',async()=>{
+ const {rankAppleApps}=await import('../server/apple-download-statistics.js');
+ const {releaseStatus}=await import('../server/apple-tracked-apps.js');
+ const now=new Date('2026-11-17T16:00:00Z');
+ const rows=reportDays(now).flatMap(day=>[
+  {appId:'1021183593',day,downloads:2,redownloads:0,updates:0},
+  {appId:'1025312198',day,downloads:3,redownloads:0,updates:0},
+  {appId:'6830570614',day,downloads:0,redownloads:0,updates:0}]);
+ const apps=rankAppleApps(rows,[{appId:'1021183593',status:'released'},{appId:'1025312198',status:'released'},{appId:'6830570614',status:'pending'}],now);
+ assert.equal(apps.length,12);assert.equal(apps[0].id,'1025312198');assert.equal(apps[0].rank,1);assert.equal(apps[1].last30Days,60);
+ assert.equal(apps.find(a=>a.id==='6830570614').rank,null);
+ assert.equal(apps.find(a=>a.id==='1196349863').last30Days,null);
+ assert.equal(releaseStatus([{attributes:{appStoreState:'WAITING_FOR_REVIEW'}},{attributes:{appStoreState:'READY_FOR_SALE'}}]),'released');
+ assert.equal(releaseStatus([{attributes:{appStoreState:'WAITING_FOR_REVIEW'}}]),'pending');
+});

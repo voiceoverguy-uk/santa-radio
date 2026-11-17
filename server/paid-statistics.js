@@ -3,8 +3,8 @@ import { liveStripeClient } from './studio-live-stripe.js';
 
 // Completed Checkout totals are immutable. Cache only amounts, never customer data.
 const amounts = new Map();
-export async function paidStatistics({pool=databasePool(), stripeClient=liveStripeClient, cache=amounts}={}) {
-  const {rows}=await pool.query(`SELECT p.checkout_session_id,
+export async function paidStatistics({pool=databasePool(), stripeClient=liveStripeClient, cache=amounts, now=new Date()}={}) {
+  const {rows}=await pool.query(`SELECT p.checkout_session_id, to_char(p.granted_at AT TIME ZONE 'Europe/London','YYYY-MM-DD') AS day,
     COALESCE(cardinality(a.operations),0)::integer AS creations
     FROM public.santa_studio_live_purchases p
     LEFT JOIN public.santa_studio_creation_allowances a
@@ -27,6 +27,12 @@ export async function paidStatistics({pool=databasePool(), stripeClient=liveStri
     }
     result.grossPence=rows.reduce((n,r)=>n+cache.get(r.checkout_session_id),0);
   } catch { /* Counts remain available if Stripe is temporarily unavailable. */ }
+  const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/London',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);
+  result.daily=result.grossPence===null || rows.some(row=>!/^\d{4}-\d{2}-\d{2}$/.test(row.day || '')) ? null : Array.from({length:30},(_,i)=>{
+    const day=new Date(Date.parse(today+'T12:00:00Z')-(29-i)*86400000).toISOString().slice(0,10);
+    const matching=rows.filter(row=>row.day===day);
+    return {day,payments:matching.length,grossPence:matching.reduce((total,row)=>total+cache.get(row.checkout_session_id),0)};
+  });
   if(cache.size>10000)cache.clear();
   return result;
 }

@@ -26,8 +26,8 @@ export default function FriendVouchers({ ownerToken }) {
     try { setCopied(null); setError(''); await navigator.clipboard.writeText(row.code); setCopied(row.slot); }
     catch { setError('Could not copy automatically. Select and copy the code below.'); }
   }
-  return <section>
-    <h2>Friends &amp; family vouchers</h2>
+  return <section className="dashboard-themed dashboard-themed--gifts">
+    <header className="dashboard-themed__header"><div className="dashboard-themed__gifts" aria-hidden="true">🎁 ✨ 🎁</div><p>A LITTLE CHRISTMAS MAGIC TO SHARE</p><h2>Friends &amp; family vouchers</h2></header>
     <p>20 single-use codes. Each unlocks two premium Santa messages for one recipient. Enter the code in the voucher box at <a href={STUDIO_PATH}>Santa’s Message Maker Studio</a>.</p>
     <p><strong>REDEEMED</strong> means the code has been claimed, not that its messages have been used. Your friend has 30 days from redemption to create their two messages in the same browser. Unused codes remain available. Download recordings and gifts before leaving Studio.</p>
     <button onClick={() => load()} disabled={busy}>{busy ? 'Checking vouchers…' : 'Refresh vouchers'}</button>
@@ -44,4 +44,3 @@ export default function FriendVouchers({ ownerToken }) {
     </table></div>}
   </section>;
 }
-
