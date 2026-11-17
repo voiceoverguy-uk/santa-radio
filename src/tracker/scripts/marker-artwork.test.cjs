@@ -36,14 +36,15 @@ test("UTC seasonal boundaries never dress preparation or completion as a trip", 
     ["2026-11-09T23:59:59.999Z", "OFF_SEASON", "holiday"],
     ["2026-11-10T00:00:00Z", "ROUTE_RESEARCH", "route-scout"],
     ["2026-12-22T23:59:59.999Z", "ROUTE_RESEARCH", "route-scout"],
-    ["2026-12-23T00:00:00Z", "PREPARING", "route-scout-front"],
-    ["2026-12-24T09:59:59.999Z", "PREPARING", "route-scout-front"],
+    ["2026-12-23T00:00:00Z", "PREPARING", "traditional-front"],
+    ["2026-12-24T09:59:59.999Z", "PREPARING", "traditional-front"],
     ["2026-12-24T10:00:00Z", "LIVE", "sleigh-left"],
     ["2026-12-25T11:19:59.999Z", "LIVE", "sleigh-left"],
-    ["2026-12-25T11:20:00Z", "COMPLETE", "holiday-front"],
-    ["2026-12-25T23:59:59.999Z", "COMPLETE", "holiday-front"],
-    ["2026-12-26T00:00:00Z", "OFF_SEASON", "holiday"],
-    ["2027-01-01T00:00:00Z", "OFF_SEASON", "holiday"],
+    ["2026-12-25T11:20:00Z", "COMPLETE", "traditional-front"],
+    ["2026-12-25T23:59:59.999Z", "COMPLETE", "traditional-front"],
+    ["2026-12-26T00:00:00Z", "COMPLETE", "traditional-front"],
+    ["2027-01-01T00:00:00Z", "COMPLETE", "traditional-front"],
+    ["2027-01-02T00:00:00Z", "OFF_SEASON", "holiday"],
   ]) {
     assert.equal(route.getSeasonalTrackerMode(new Date(iso)), mode, iso);
     const result = artwork(mode, -10);
@@ -124,16 +125,94 @@ test("rendered full map anchors an independently mirrored, proportion-preserving
   }
 });
 
-test("all six stable PNG assets retain source proportions and an RGBA alpha channel", () => {
+test("tracker PNG assets retain source proportions and an RGBA alpha channel", () => {
   const assets = fs.readdirSync(path.resolve(root, "../../public/images/tracker"));
-  assert.equal(assets.length, 6);
+  assert.equal(assets.length, 7);
   for (const name of assets) {
     const source = fs.readdirSync(path.resolve(root, "../../attached_assets")).find(file => file.startsWith(name.replace(".png", "_")));
     const png = fs.readFileSync(path.resolve(root, "../../public/images/tracker", name));
-    const original = fs.readFileSync(path.resolve(root, "../../attached_assets", source));
     const [w, h] = [png.readUInt32BE(16), png.readUInt32BE(20)];
     assert.equal(png[25], 6, name);
     assert.equal(Math.max(w, h), 256);
-    assert.ok(Math.abs(w / h - original.readUInt32BE(16) / original.readUInt32BE(20)) < 0.005, name);
+    if (name !== "santa-traditional-front.png") {
+      const original = fs.readFileSync(path.resolve(root, "../../attached_assets", source));
+      assert.ok(Math.abs(w / h - original.readUInt32BE(16) / original.readUInt32BE(20)) < 0.005, name);
+    }
   }
+});
+
+
+test("post-Christmas rest and New Year celebration follow the device timezone across UTC rollover", () => {
+  const post = load("lib/postChristmas.ts");
+  const preview = load("lib/santaPreview.ts");
+  const previousZone = process.env.TZ;
+  try {
+    for (const zone of ["Europe/London", "America/Los_Angeles", "Pacific/Kiritimati", "Asia/Kathmandu", "Australia/Eucla", "Pacific/Chatham", "America/St_Johns", "Pacific/Marquesas"]) {
+      process.env.TZ = zone;
+      const before = new Date(2026, 11, 31, 17, 59, 59);
+      const start = new Date(2026, 11, 31, 18);
+      const end = new Date(2027, 0, 1, 2, 59, 59);
+      const january = new Date(2027, 0, 2);
+      for (const date of [new Date("2026-12-25T11:20:00Z"), new Date(2026, 11, 26, 12), before]) {
+        const data = route.getDashboardData(date);
+        assert.equal(data.mode, "COMPLETE", `${zone} ${date.toISOString()}`);
+        assert.equal(data.currentStopName, "North Pole grotto");
+        assert.equal(data.mapPosition.lat, 90);
+        assert.equal(data.mapPosition.lng, 0);
+        assert.ok(post.restCaptions.includes(data.statusSubtext));
+      }
+      for (const date of [start, end]) {
+        const data = route.getDashboardData(date);
+        const city = post.getNewYearCity(date);
+        assert.equal(data.mode, "COMPLETE", zone);
+        assert.match(data.statusHeadline, /Ringing in the New Year/);
+        assert.equal(data.mapPosition.lat, city.lat);
+        assert.equal(data.mapPosition.lng, city.lng);
+        assert.equal(data.progressPercent, 100);
+        assert.equal(data.visitedCount, 290);
+        assert.deepEqual(post.getDeviceDateParts(date, city.timeZone), post.getDeviceDateParts(date));
+      }
+      assert.equal(post.getNewYearCity(start).id, post.getNewYearCity(end).id);
+      for (const date of [new Date(2027, 0, 1, 3), new Date(2027, 0, 1, 23, 59, 59)]) {
+        const resting = route.getDashboardData(date);
+        assert.equal(resting.mode, "COMPLETE", zone);
+        assert.equal(resting.currentStopName, "North Pole grotto", zone);
+        assert.equal(resting.mapPosition.lat, 90);
+        assert.equal(resting.mapPosition.lng, 0);
+        assert.ok(post.restCaptions.includes(resting.statusSubtext));
+      }
+      assert.equal(route.getSeasonalTrackerMode(january), "OFF_SEASON", zone);
+      assert.equal(route.isHolidaySeason(january), true, zone);
+      const jump = preview.getJumpTime("new-years-eve");
+      assert.equal(jump.getHours(), 18);
+      assert.equal(jump.getDate(), 31);
+      assert.equal(route.getSeasonalTrackerMode(new Date("2026-12-25T11:19:59.999Z")), "LIVE");
+    }
+    assert.equal(post.restCaptions.length, 10);
+    assert.equal(new Set(post.restCaptions).size, 10);
+    assert.equal(preview.JUMP_LABELS.filter(entry => /December/.test(entry.label)).length, 3);
+    assert.ok(!preview.JUMP_LABELS.some(entry => /November/.test(entry.label)));
+    assert.equal(route.getSeasonalTrackerMode(preview.getJumpTime("route-start")), "LIVE");
+  } finally {
+    if (previousZone === undefined) delete process.env.TZ;
+    else process.env.TZ = previousZone;
+  }
+});
+
+
+test("traditional Santa waits at the North Pole until takeoff with ten preparation captions", () => {
+  const post = load("lib/postChristmas.ts");
+  assert.equal(post.preparationCaptions.length, 10);
+  assert.equal(new Set(post.preparationCaptions).size, 10);
+  for (const iso of ["2026-12-24T00:00:00Z", "2026-12-24T09:59:59.999Z"]) {
+    const data = route.getDashboardData(new Date(iso));
+    assert.equal(data.mode, "PREPARING");
+    assert.equal(data.mapPosition.lat, 90);
+    assert.equal(data.mapPosition.lng, 0);
+    assert.match(artwork(data.mode, 0).src, /santa-traditional-front/);
+    assert.ok(post.preparationCaptions.includes(data.statusSubtext));
+  }
+  const departure = route.getDashboardData(new Date("2026-12-24T10:00:00Z"));
+  assert.equal(departure.mode, "LIVE");
+  assert.match(artwork(departure.mode, departure.mapPosition.lng).src, /santa-sleigh/);
 });

@@ -21,7 +21,7 @@ export function getSantaMarkerArtwork(
   }
   if (mode === "PREPARING" || mode === "COMPLETE") {
     return {
-      src: `/images/tracker/santa-${mode === "PREPARING" ? "route-scout" : "holiday"}-front.png`,
+      src: "/images/tracker/santa-traditional-front.png",
       mirrored: false, width: 36, height: 40,
     };
   }

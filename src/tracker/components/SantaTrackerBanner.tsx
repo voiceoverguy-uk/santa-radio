@@ -92,13 +92,13 @@ export default function SantaTrackerBanner() {
       ? data.approachingUK ? "🇬🇧 Approaching the UK!" : "🇬🇧 Delivering in the UK Now!"
       : `Delivering in ${data.currentStopRegion}`
     : isComplete
-    ? "Journey Complete"
+    ? data.statusHeadline
     : northPoleVisit
     ? "At the North Pole with Head Elf"
     : researching
     ? holiday ? `Prepping the route in ${holiday.name}` : "Prepping the route"
     : data.mode === "PREPARING"
-    ? "Final Preparations Underway"
+    ? "Getting ready at the North Pole"
     : onHoliday && inJuly && holiday
     ? `🎄 Christmas in July — ${holiday.name}`
     : onHoliday && holiday
@@ -131,7 +131,7 @@ export default function SantaTrackerBanner() {
       <div className="absolute inset-0 star-field opacity-60" />
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
         <TrackerBannerHeading />
-        <div className={`${!isLive && !isComplete ? "tracker-banner-map-layout " : ""}tracker-banner-content flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8`}>
+        <div className={`${!isLive ? "tracker-banner-map-layout " : ""}tracker-banner-content flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8`}>
 
           <div className="tracker-banner-copy flex-1 text-center lg:text-left lg:max-w-lg">
             <Link to="/santa-tracker" className="tracker-banner-logo-link" aria-label="Open the Santa Tracker">
@@ -151,13 +151,13 @@ export default function SantaTrackerBanner() {
               {isLive
                 ? `Follow Santa's estimated ${santaStops.length}-stop Christmas Eve journey, from Kiritimati to Honolulu, Hawaii, including Antarctic research stations. The estimated journey finishes at 11:20 UTC on Christmas Day.`
                 : isComplete
-                ? `Santa's estimated ${santaStops.length}-stop journey is complete! The final stop in Honolulu finished at 11:20 UTC on Christmas Day. Explore the route and festive facts.`
+                ? data.statusSubtext
                 : northPoleVisit
                 ? data.statusSubtext
                 : researching
                 ? holiday ? `Santa’s on a quick research trip to ${holiday.name}, scouting the Christmas Eve route before returning to the North Pole.` : data.statusSubtext
                 : data.mode === "PREPARING"
-                ? "Santa's back at the North Pole, checking the sleigh and gifts before his Christmas Eve departure."
+                ? data.statusSubtext
                 : onHoliday && inJuly && holiday
                 ? `It's Christmas in July! Santa's celebrating mid-year festivities while ${holiday.activity.charAt(0).toLowerCase()}${holiday.activity.slice(1)}. Only ${Math.ceil((new Date(now.getFullYear(), 11, 25).getTime() - now.getTime()) / (1000 * 60 * 60 * 24))} days until the real thing!`
                 : onHoliday && holiday
@@ -169,11 +169,11 @@ export default function SantaTrackerBanner() {
           </div>
 
           <div className="tracker-banner-visual flex-shrink-0 w-full lg:w-auto">
-            {isLive || isComplete ? (
+            {isLive ? (
               <LiveStats data={data} />
             ) : (
               <div className="tracker-banner-map-group">
-                <MiniMap time={now} holiday={onHoliday || researching ? holiday : null} researching={researching} northPoleVisitMessage={northPoleVisit ? data.statusSubtext : undefined} />
+                <MiniMap completedData={isComplete || data.mode === "PREPARING" ? data : undefined} time={now} holiday={onHoliday || researching ? holiday : null} researching={researching} northPoleVisitMessage={northPoleVisit ? data.statusSubtext : undefined} />
                 {statusBadge}
               </div>
             )}
@@ -234,11 +234,12 @@ function LiveStats({ data }: { data: ReturnType<typeof getDashboardData> }) {
   );
 }
 
-function MiniMap({ time, holiday, researching = false, northPoleVisitMessage }: { time: Date; holiday: HolidayDestination | null; researching?: boolean; northPoleVisitMessage?: string }) {
+function MiniMap({ time, holiday, researching = false, northPoleVisitMessage, completedData }: { completedData?: ReturnType<typeof getDashboardData>; time: Date; holiday: HolidayDestination | null; researching?: boolean; northPoleVisitMessage?: string }) {
   const mapRef = useRef<HTMLAnchorElement>(null);
   const lastPreviewCity = useRef<string | null>(null);
   const [previewTime, setPreviewTime] = useState<Date | null>(null);
   useEffect(() => {
+    if (completedData) { setPreviewTime(null); return; }
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
     let visible = false;
     let timer: ReturnType<typeof setInterval> | undefined;
@@ -284,14 +285,16 @@ function MiniMap({ time, holiday, researching = false, northPoleVisitMessage }: 
       document.removeEventListener('visibilitychange', start);
       motion.removeEventListener('change', start);
     };
-  }, []);
-  const previewPosition = previewTime ? getInterpolatedMapPosition(previewTime) : null;
+  }, [Boolean(completedData)]);
+  const previewPosition = completedData ? completedData.mapPosition : previewTime ? getInterpolatedMapPosition(previewTime) : null;
   const mapTime = previewTime ?? time;
   const solarMinute = Math.floor(mapTime.getTime() / 60_000);
   const solarTime = new Date(solarMinute * 60_000);
   const nightPath = useMemo(() => getNightOverlayPath(solarTime), [solarMinute]);
   const solarPosition = useMemo(() => getSolarPosition(solarTime), [solarMinute]);
-  const artwork = previewTime && previewPosition
+  const artwork = completedData
+    ? getSantaMarkerArtwork(completedData.mode, previewPosition?.lng ?? 0)
+    : previewTime && previewPosition
     ? getSantaMarkerArtwork("LIVE", previewPosition.lng, getJourneySleighDirection(previewTime))
     : holiday ? getSantaMarkerArtwork(researching ? "ROUTE_RESEARCH" : "OFF_SEASON", holiday.lng)
       : getSantaMarkerArtwork(getSeasonalTrackerMode(mapTime), 0);
@@ -315,12 +318,14 @@ function MiniMap({ time, holiday, researching = false, northPoleVisitMessage }: 
     const countries = from === to ? from : [from, to].filter(Boolean).join(' → ');
     return `${countries ?? dashboard.currentStopRegion} · ${dashboard.currentStopName}`;
   }, [previewSecond]);
-  const caption = previewTime ? `Christmas Eve sneak peek · ×60 simulation · ${previewLabel}` : researching && holiday
+  const caption = completedData ? completedData.statusHeadline : previewTime ? `Christmas Eve sneak peek · ×60 simulation · ${previewLabel}` : researching && holiday
     ? `Santa's route research location: ${holiday.name}`
     : holiday
     ? `Santa's holiday location`
     : northPoleVisitMessage
     ? "Santa is helping Head Elf at the North Pole"
+    : getSeasonalTrackerMode(time) === "PREPARING"
+    ? "Getting ready at the North Pole"
     : "Santa's at the North Pole";
 
   return (

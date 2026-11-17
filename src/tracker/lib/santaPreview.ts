@@ -2,6 +2,7 @@ import { TRACKER_CONSTANTS, santaStops, getStopArrivalDate } from "@/data/santaR
 
 export type JumpTarget =
   | `city:${string}`
+  | "new-years-eve"
   | "holiday-end"
   | "research-start"
   | "research-end"
@@ -32,6 +33,7 @@ export interface PreviewState {
 const STORAGE_KEY = "santa-tracker-preview";
 
 const JUMP_TARGETS: Record<JumpTarget, { month: number; day: number; hour: number; minute: number }> = {
+  "new-years-eve": { month: 11, day: 31, hour: 18, minute: 0 },
   "holiday-end": { month: 10, day: 9, hour: 23, minute: 59 },
   "research-start": { month: 10, day: 10, hour: 0, minute: 0 },
   "research-end": { month: 11, day: 22, hour: 23, minute: 59 },
@@ -39,7 +41,7 @@ const JUMP_TARGETS: Record<JumpTarget, { month: number; day: number; hour: numbe
   "christmas-eve-start": { month: 11, day: 24, hour: TRACKER_CONSTANTS.journeyStartUtcHour - 1, minute: 0 },
   "christmas-day-end": { month: 11, day: 25, hour: 23, minute: 59 },
   "holiday-resumes": { month: 11, day: 26, hour: 0, minute: 0 },
-  "route-start": { month: 11, day: 24, hour: 9, minute: 55 },
+  "route-start": { month: 11, day: 24, hour: TRACKER_CONSTANTS.journeyStartUtcHour, minute: 0 },
   australia: { month: 11, day: 24, hour: 13, minute: 0 },
   asia: { month: 11, day: 24, hour: 15, minute: 30 },
   "middle-east": { month: 11, day: 24, hour: 19, minute: 45 },
@@ -66,6 +68,7 @@ export function getJumpTime(target: JumpTarget): Date {
   }
   const t = JUMP_TARGETS[target as keyof typeof JUMP_TARGETS];
   if (!t) throw new Error(`Unknown preview jump: ${target}`);
+  if (target === "new-years-eve") return new Date(year, 11, 31, 18, 0, 0);
   return new Date(Date.UTC(year, t.month, t.day, t.hour, t.minute, 0));
 }
 
@@ -158,13 +161,9 @@ export function getRunFullJourneySpeed(durationMinutes: number): number {
 }
 
 export const JUMP_LABELS: { target: JumpTarget; label: string }[] = [
-  { target: "holiday-end", label: "9 November" },
-  { target: "research-start", label: "10 November" },
-  { target: "research-end", label: "22 December" },
-  { target: "preparation-start", label: "23 December" },
   { target: "christmas-eve-start", label: "24 December" },
   { target: "christmas-day-end", label: "25 December" },
-  { target: "holiday-resumes", label: "26 December" },
+  { target: "new-years-eve", label: "31 December · 6pm" },
   { target: "route-start", label: "Route Start" },
   { target: "australia", label: "Australia" },
   { target: "asia", label: "Asia" },

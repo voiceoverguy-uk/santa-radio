@@ -240,10 +240,10 @@ export function collectionMetadata(kind) {
 }
 export const trackerQuestions = [
   ['When does the Santa Tracker start?', 'The estimated 290-stop Christmas Eve journey starts in Kiritimati at 10:00 UTC on 24 December and finishes in Honolulu, Hawaii, at 11:20 UTC on 25 December. This is Santa Radio’s itinerary using real coordinates and time zones, not verified live tracking. The countdown is to Santa’s departure, not Christmas midnight or his arrival at your home.'],
-  ['Where is Santa now?', 'The updating map follows Santa’s seasonal travels separately from the estimated Christmas Eve delivery route. Santa is on holiday from 26 December through 9 November. From 10 November through 22 December he makes quick route-research trips, returning to the North Pole between trips to prepare for Christmas Eve. Final preparations start on 23 December.'],
+  ['Where is Santa now?', 'The updating map follows Santa’s seasonal travels separately from the estimated Christmas Eve delivery route. Santa is on holiday from 2 January through 9 November. From 10 November through 22 December he makes quick route-research trips, returning to the North Pole between trips to prepare for Christmas Eve. Final preparations start on 23 December.'],
   ['Is this real GPS tracking?', 'No. This is an independent festive experience created by Santa Radio, not GPS tracking or an official location feed. The route, arrival times, gifts, distance and speed are playful estimates.'],
   ['Whose local time is displayed?', 'The route clock belongs to the displayed stop’s representative location, not the visitor’s time zone. Broad regions can contain several time zones. Holiday postcard clocks are approximate.'],
-  ['What happens after Christmas Day?', 'After the estimated journey finishes, the Tracker shows its completion celebration until 26 December UTC, before returning to its seasonal display.'],
+  ['What happens after Christmas Day?', 'After deliveries finish at 11:20 UTC on Christmas Day, Santa rests at his North Pole grotto. From 6pm on 31 December until 3am on 1 January, he celebrates New Year’s Eve in a destination matching your device’s timezone. He then returns to his North Pole grotto for the rest of New Year’s Day. Holiday travels resume on 2 January.'],
   ['Can I listen while tracking Santa?', 'Yes. Use the Santa Radio player while exploring the map, or browse our Christmas music and lyrics.'],
 ];
 export function trackerMetadata() {

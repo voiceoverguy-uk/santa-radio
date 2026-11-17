@@ -104,8 +104,8 @@ for (const year of [2026, 2027, 2028]) {
     assert.equal(completed.mode, "COMPLETE");
     assert.equal(completed.visitedCount, 290);
     assert.equal(completed.remainingCount, 0);
-    assert.match(completed.statusSubtext, /Honolulu/);
-    assert.equal(route.getDashboardData(new Date(Date.UTC(year, 11, 26))).visitedCount, 0);
+    assert.equal(completed.currentStopName, "North Pole grotto");
+    assert.equal(route.getDashboardData(new Date(Date.UTC(year, 11, 26))).visitedCount, 290);
   });
 }
 
@@ -133,6 +133,6 @@ test("Christmas Eve has its own dated shortcut without changing departure or Chr
   assert.ok(preview.JUMP_LABELS.some(({ target, label }) => target === "christmas-eve-start" && label === "24 December"));
   const year = new Date().getUTCFullYear();
   assert.equal(preview.getJumpTime("christmas-eve-start").getTime(), Date.UTC(year, 11, 24, 9));
-  assert.equal(preview.getJumpTime("route-start").getTime(), Date.UTC(year, 11, 24, 9, 55));
+  assert.equal(preview.getJumpTime("route-start").getTime(), Date.UTC(year, 11, 24, 10, 0));
   assert.equal(preview.getJumpTime("christmas-day-end").getTime(), Date.UTC(year, 11, 25, 23, 59));
 });

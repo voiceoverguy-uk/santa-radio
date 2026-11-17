@@ -3,7 +3,7 @@
 import { useId, useMemo, useState, useRef, useEffect } from "react";
 import { createPortal, flushSync } from "react-dom";
 import { santaStops, getStopArrivalDate } from "@/data/santaRouteStops";
-import { getVisitedStops, getCurrentStopId, getCountdownToStart, getRouteResearchCopy, type HolidayDestination, type MapPosition } from "@/lib/santaRoute";
+import { getDashboardData, formatNumber, getChristmasEveYear, getVisitedStops, getCurrentStopId, getCountdownToStart, getRouteResearchCopy, type HolidayDestination, type MapPosition } from "@/lib/santaRoute";
 import { worldMapPaths } from "@/data/worldMapPaths";
 import { MAP_REGIONS, WORLD, positionCamera, project, regionCamera, stopRegion, type Camera } from "./trackerCamera";
 import { MAP_PALETTE, mapLandColor } from "./mapPalette";
@@ -90,7 +90,7 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
     observer.observe(element);
     return () => observer.disconnect();
   }, [expanded]);
-  const year = effectiveTime.getUTCFullYear();
+  const year = getChristmasEveYear(effectiveTime);
   const solarMinute = Math.floor(effectiveTime.getTime() / 60_000);
   const solarTime = new Date(solarMinute * 60_000);
   const nightPath = useMemo(() => getNightOverlayPath(solarTime), [solarMinute]);
@@ -99,6 +99,7 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
   const currentId = getCurrentStopId(effectiveTime);
   const live = !!currentId && !onHoliday && !researchDestination;
   const mode = getSeasonalTrackerMode(effectiveTime);
+  const expandedData = expanded && mode === "LIVE" ? getDashboardData(effectiveTime) : null;
   const showDepartureCountdown = mode !== "LIVE" && mode !== "COMPLETE";
   const departureCountdown = showDepartureCountdown ? getCountdownToStart(effectiveTime) : null;
   const artwork = getSantaMarkerArtwork(northPoleVisitMessage ? "OFF_SEASON" : mode, mapPosition.lng, getJourneySleighDirection(effectiveTime));
@@ -429,7 +430,10 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
         )}
 
         <div className="tracker-map-caption absolute bottom-3 left-3 backdrop-blur-sm rounded-lg px-3 py-1.5 text-xs">
-          {effectiveView !== "world" && effectiveView !== "follow"
+          {mode === "PREPARING" ? "Getting ready at the North Pole"
+            : mode === "COMPLETE"
+            ? santaInfo?.title === "North Pole grotto" ? "Resting at the North Pole grotto" : `Ringing in the New Year in ${santaInfo?.title ?? "the city"}`
+            : effectiveView !== "world" && effectiveView !== "follow"
             ? `${effectiveView} · estimated delivery destinations`
             : researchDestination
             ? `Route research in ${researchDestination.name}`
@@ -442,6 +446,32 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
             : "Estimated route based on local midnight across time zones"}
         </div>
       </div>
+
+      {expandedData && (
+        <dl className="tj-expanded-stats" aria-label="Santa’s estimated journey dashboard">
+          <div>
+            <dt>Current location</dt>
+            <dd>{expandedData.currentStopFlag} {expandedData.currentStopName}</dd>
+            <dd className="tj-expanded-detail">
+              {expandedData.state === "IN_TRANSIT" ? "Last stop’s time" : "Local time"} · {expandedData.localTimeAtStop}
+            </dd>
+          </div>
+          <div>
+            <dt>Next stop</dt>
+            <dd>{expandedData.nextStopFlag} {expandedData.nextStopName}</dd>
+            <dd className="tj-expanded-detail">ETA · {expandedData.etaText}</dd>
+          </div>
+          <div>
+            <dt>Estimated gifts delivered</dt>
+            <dd>{formatNumber(expandedData.estimatedGifts)}</dd>
+          </div>
+          <div>
+            <dt>Estimated distance &amp; stops</dt>
+            <dd>{formatNumber(Math.round(expandedData.estimatedDistanceKm * 0.621371))} miles</dd>
+            <dd className="tj-expanded-detail">{expandedData.visitedCount} of {expandedData.totalStops} stops</dd>
+          </div>
+        </dl>
+      )}
 
       <div className="tj-toolbar" role="toolbar" aria-label="Map camera">
         <button type="button" className="tj-btn" aria-pressed={effectiveView === "world"} onClick={() => setView("world")}>World</button>

@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, useMemo, useState, useId } from "react";
 import { santaStops, formatStopOffset, formatStopArrival, getStopArrivalDate } from "@/data/santaRouteStops";
-import { getVisitedStops, getCurrentStopId } from "@/lib/santaRoute";
+import { getChristmasEveYear, getVisitedStops, getCurrentStopId } from "@/lib/santaRoute";
 import { MAP_REGIONS, stopRegion } from "./trackerCamera";
 import "../tracker-journey.css";
 
@@ -13,7 +13,7 @@ interface SantaTimelineProps {
 type Status = "all" | "visited" | "upcoming";
 
 export default function SantaTimeline({ effectiveTime }: SantaTimelineProps) {
-  const year = effectiveTime.getUTCFullYear();
+  const year = getChristmasEveYear(effectiveTime);
   const uid = useId();
   const routeStops = useMemo(
     () => [...santaStops].sort((a, b) => getStopArrivalDate(a, year).getTime() - getStopArrivalDate(b, year).getTime()),

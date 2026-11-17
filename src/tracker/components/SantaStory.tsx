@@ -513,9 +513,8 @@ export default function SantaStory({ effectiveTime, holiday, routeResearch = fal
       break;
 
     case "PREPARING":
-      story =
-        "The moment has almost arrived. Santa has checked his list for the final time, the sleigh is polished and loaded to the brim, and Rudolph's nose is glowing brighter than ever. The elves are putting the last finishing touches on the presents as excitement fills the air at the North Pole. Soon, Santa will take to the skies and begin his incredible journey, delivering joy to every corner of the globe as Christmas Eve midnight sweeps across the world.";
-      label = "Live Update";
+      story = data.statusSubtext;
+      label = "Getting ready at the North Pole";
       break;
 
     case "LIVE_AT_STOP":
@@ -532,8 +531,8 @@ export default function SantaStory({ effectiveTime, holiday, routeResearch = fal
       break;
 
     case "COMPLETE":
-      story = `What an incredible journey! Santa has completed his make-believe Christmas Eve trip, delivering an estimated ${(data.estimatedGifts / 1_000_000_000).toFixed(1)} billion gifts across ${data.visitedCount} destinations. From Kiritimati to Honolulu, with Antarctic research stations along the route, this estimated journey lasted 25 hours and 20 minutes. The final deliveries finished at 11:20 UTC on Christmas Day. The reindeer have earned a well-deserved rest. Merry Christmas to all, and to all a good night!`;
-      label = "Journey Summary";
+      story = data.statusSubtext;
+      label = data.statusHeadline;
       break;
   }
 

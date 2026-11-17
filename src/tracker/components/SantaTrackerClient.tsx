@@ -162,13 +162,13 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy, mapOnly = 
     isLive
       ? "Delivering Now"
       : isComplete
-      ? "Journey Complete"
+      ? data.statusHeadline
       : northPoleVisit
       ? "At the North Pole with Head Elf"
       : researching
       ? holiday ? `Prepping the route in ${holiday.name}` : "Prepping the route"
       : data.mode === "PREPARING"
-      ? "Preparing for Takeoff"
+      ? "Getting ready at the North Pole"
       : onHoliday && inJuly && holiday
       ? `🎄 Christmas in July — ${holiday.name}`
       : onHoliday && holiday
@@ -176,7 +176,7 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy, mapOnly = 
       : "At the North Pole";
 
   const statusMessage = showStatusMessage && <p className="tracker-copy tracker-status-message mt-4 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
-    {isLive || isComplete
+    {isLive || isComplete || data.mode === "PREPARING"
       ? data.statusSubtext
       : northPoleVisit
       ? data.statusSubtext

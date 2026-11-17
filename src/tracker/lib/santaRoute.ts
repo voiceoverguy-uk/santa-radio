@@ -1,3 +1,4 @@
+import { getDeviceDateParts, getNewYearCity, getRestCaption, getPreparationCaption, isNewYearCelebration } from "./postChristmas";
 import {
   santaStops,
   TRACKER_CONSTANTS,
@@ -80,9 +81,7 @@ export interface DashboardData {
 }
 
 export function isHolidaySeason(now: Date): boolean {
-  const month = now.getUTCMonth();
-  const day = now.getUTCDate();
-  return month < 10 || (month === 10 && day < 10) || (month === 11 && day >= 26);
+  return getSeasonalTrackerMode(now) === "OFF_SEASON";
 }
 
 export function isRouteResearchSeason(now: Date): boolean {
@@ -127,7 +126,12 @@ export function getRandomHoliday(): HolidayDestination {
   return holidayDestinations[index];
 }
 
-function getChristmasEveYear(now: Date): number {
+export function getChristmasEveYear(now: Date): number {
+  if (Number.isFinite(now.getTime())) {
+    const local = getDeviceDateParts(now);
+    if (local.month === 12 && local.day >= 25) return local.year;
+    if (local.month === 1 && local.day === 1) return local.year - 1;
+  }
   const year = now.getUTCFullYear();
   const journeyStart = new Date(Date.UTC(year, 11, 24, TRACKER_CONSTANTS.journeyStartUtcHour, 0, 0));
   const journeyEnd = getJourneyEndTime(year);
@@ -153,6 +157,7 @@ function getStopArrivals(year: number): ScheduledStop[] {
 }
 
 export function getSeasonalTrackerMode(now: Date): SeasonalMode {
+  if (!Number.isFinite(now.getTime())) return "OFF_SEASON";
   const year = getChristmasEveYear(now);
   const journeyStart = getJourneyStartTime(year);
   const journeyEnd = getJourneyEndTime(year);
@@ -161,10 +166,9 @@ export function getSeasonalTrackerMode(now: Date): SeasonalMode {
 
   if (now >= journeyStart && now < journeyEnd) return "LIVE";
   if (now >= prepStart && now < journeyStart) return "PREPARING";
-  if (now >= journeyEnd) {
-    const dec26 = new Date(Date.UTC(year, 11, 26, 0, 0, 0));
-    if (now < dec26) return "COMPLETE";
-  }
+  const local = getDeviceDateParts(now);
+  if ((local.month === 12 && local.day >= 25 && now >= getJourneyEndTime(local.year))
+    || (local.month === 1 && local.day === 1)) return "COMPLETE";
   return isRouteResearchSeason(now) ? "ROUTE_RESEARCH" : "OFF_SEASON";
 }
 
@@ -246,6 +250,7 @@ export function getPreviousStop(now: Date): SantaStop | null {
 }
 
 export function getJourneyProgress(now: Date): number {
+  if (getSeasonalTrackerMode(now) === "COMPLETE") return 100;
   const year = getChristmasEveYear(now);
   const start = getJourneyStartTime(year).getTime();
   const end = getJourneyEndTime(year).getTime();
@@ -272,8 +277,8 @@ export function getInterpolatedMapPosition(now: Date): MapPosition {
   }
 
   if (mode === "COMPLETE") {
-    const last = santaStops[santaStops.length - 1];
-    return { lat: last.lat, lng: last.lng, ...latLngToXY(last.lat, last.lng) };
+    const place = isNewYearCelebration(now) ? getNewYearCity(now) : { lat: 90, lng: 0 };
+    return { lat: place.lat, lng: place.lng, ...latLngToXY(place.lat, place.lng) };
   }
   const year = getChristmasEveYear(now);
   const arrivals = getStopArrivals(year);
@@ -444,7 +449,8 @@ function getStatusTexts(state: TrackerState, current: SantaStop | null, next: Sa
 export function getDashboardData(now: Date): DashboardData {
   const mode = getSeasonalTrackerMode(now);
   const state = getSantaTrackerState(now);
-  const current = mode === "COMPLETE" ? santaStops[santaStops.length - 1] : getCurrentStop(now);
+  const celebrating = mode === "COMPLETE" && isNewYearCelebration(now);
+  const current = celebrating ? getNewYearCity(now) : getCurrentStop(now);
   const next = getNextStop(now);
   const progress = getJourneyProgress(now);
   const mapPosition = getInterpolatedMapPosition(now);
@@ -455,7 +461,7 @@ export function getDashboardData(now: Date): DashboardData {
   const year = getChristmasEveYear(now);
   const arrivals = getStopArrivals(year);
   const nowMs = now.getTime();
-  const visitedCount = mode === "LIVE" || mode === "COMPLETE" ? arrivals.filter((a) => nowMs >= a.arrival.getTime()).length : 0;
+  const visitedCount = mode === "COMPLETE" ? santaStops.length : mode === "LIVE" ? arrivals.filter((a) => nowMs >= a.arrival.getTime()).length : 0;
   const remainingCount = santaStops.length - visitedCount;
 
   const progressFraction = progress / 100;
@@ -486,7 +492,7 @@ export function getDashboardData(now: Date): DashboardData {
   return {
     mode,
     state,
-    currentStopName: state === "IN_TRANSIT" && next ? `En route to ${next.name}` : (current?.name || "North Pole"),
+    currentStopName: mode === "COMPLETE" && !celebrating ? "North Pole grotto" : state === "IN_TRANSIT" && next ? `En route to ${next.name}` : (current?.name || "North Pole"),
     currentStopFlag: state === "IN_TRANSIT" && next ? "✈️" : (current?.flag || "🎅"),
     currentStopRegion: state === "IN_TRANSIT" && next ? next.region : (current?.region || "Arctic"),
     localTimeAtStop: current ? formatLocalTime(getStopUtcOffset(current, now.getUTCFullYear()), now) : "—",
@@ -502,14 +508,14 @@ export function getDashboardData(now: Date): DashboardData {
     estimatedGifts,
     estimatedDistanceKm,
     speedLabel,
-    statusHeadline: headline,
-    statusSubtext: subtext,
+    statusHeadline: mode === "PREPARING" ? "Getting ready at the North Pole" : mode === "COMPLETE" ? celebrating ? `Ringing in the New Year in ${current!.name}` : "Resting at the North Pole grotto" : headline,
+    statusSubtext: mode === "PREPARING" ? getPreparationCaption() : mode === "COMPLETE" ? celebrating ? `Santa’s celebrating New Year’s Eve in ${current!.name}, ringing in the New Year from 6pm on 31 December until 3am on 1 January in your device’s timezone. Happy New Year!` : getRestCaption() : subtext,
     approachingUK,
     mapPosition,
     countdownToChristmasEve: countdownToStart,
     countdownToUK: countdownToUK,
-    currentFunFact: current?.funFact || "Santa is busy preparing at the North Pole!",
-    currentActivity: current?.activity || "",
+    currentFunFact: mode === "COMPLETE" ? celebrating ? `Santa is ringing in the New Year in ${current!.name}.` : "Santa is taking a well-earned rest at his North Pole grotto." : current?.funFact || "Santa is busy preparing at the North Pole!",
+    currentActivity: mode === "COMPLETE" ? celebrating ? "Ringing in the New Year" : "Taking a well-earned rest at the grotto" : current?.activity || "",
     activityPlace: current?.name || "",
     holiday: null,
   };
@@ -517,7 +523,8 @@ export function getDashboardData(now: Date): DashboardData {
 
 export function getVisitedStops(now: Date): Set<string> {
   const mode = getSeasonalTrackerMode(now);
-  if (mode !== "LIVE" && mode !== "COMPLETE") return new Set();
+  if (mode === "COMPLETE") return new Set(santaStops.map(stop => stop.id));
+  if (mode !== "LIVE") return new Set();
 
   const year = getChristmasEveYear(now);
   const arrivals = getStopArrivals(year);
