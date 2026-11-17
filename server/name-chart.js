@@ -1,10 +1,11 @@
 import { databasePool } from './contenders-database.js';
 export const CHART_TTL = 12 * 60 * 60 * 1000;
 export async function readNameChart(pool = databasePool()) {
-  const result = await pool.query(`SELECT lower(trim(name)) AS name, sum(download_clicks)::bigint AS downloads
+  const result = await pool.query(`SELECT lower(trim(name)) AS name, sum(creations)::bigint AS creations
     FROM santa_message_daily WHERE trim(name) <> ''
-    GROUP BY lower(trim(name)) HAVING sum(download_clicks) > 0
-    ORDER BY downloads DESC, lower(trim(name)) COLLATE "C" ASC LIMIT 25`);
+      AND day >= (now() AT TIME ZONE 'Europe/London')::date-29
+    GROUP BY lower(trim(name)) HAVING sum(creations) > 0
+    ORDER BY creations DESC, lower(trim(name)) COLLATE "C" ASC LIMIT 25`);
   return result.rows.map(({ name }, index) => ({ rank: index + 1,
     name: name.replace(/(^|[\s’'-])\p{L}/gu, letter => letter.toLocaleUpperCase('en-GB')) }));
 }
@@ -18,7 +19,7 @@ export function createNameChartHandler({ read = readNameChart, clock = Date.now 
       if (!cached || clock() >= cached.expires) {
         if (!pending) pending = read().then(names => {
           const now = clock();
-          cached = { expires: now + CHART_TTL, data: { names, updatedAt: new Date(now).toISOString(), refreshAfter: new Date(now + CHART_TTL).toISOString() } };
+          cached = { expires: now + CHART_TTL, data: { names, metric: 'recordings-created', periodDays: 30, updatedAt: new Date(now).toISOString(), refreshAfter: new Date(now + CHART_TTL).toISOString() } };
         }).finally(() => { pending = undefined; });
         await pending;
       }
