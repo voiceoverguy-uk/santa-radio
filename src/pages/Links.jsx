@@ -78,8 +78,8 @@ export default function Links() {
         </section>
         <section className="links-contact" aria-label="Get in touch">
           <p>
-            Know another platform where listeners can hear Santa Radio? Please get in touch at{' '}
-            <a href="mailto:santa@santaradio.co.uk">santa@santaradio.co.uk</a>.
+            Know another platform where listeners can hear Santa Radio? Please use our{' '}
+            <a href="/submit-a-song">contact form</a>.
           </p>
         </section>
       </div>

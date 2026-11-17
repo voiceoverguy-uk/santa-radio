@@ -50,7 +50,7 @@ export default function PrivacyPolicy() {
       <p className="eyebrow">Santa Radio</p>
       <h1>Privacy Policy</h1>
       <p className="privacy-date">Updated <time dateTime="2026-10-28">28 October 2026</time></p>
-      <p>The Santa Radio website, Santa Radio for Android and Christmas Radio UK app for iPhone and iPad are operated by VoiceoverGuy Ltd. For privacy questions, email <a href="mailto:santa@santaradio.co.uk">santa@santaradio.co.uk</a>.</p>
+      <p>The Santa Radio website, Santa Radio for Android and Christmas Radio UK app for iPhone and iPad are operated by VoiceoverGuy Ltd. For privacy questions, use our <a href="/submit-a-song">contact form</a>.</p>
       <p>This notice covers the current Santa Radio website, Christmas Radio UK for iPhone and iPad, version 35.0; Christmas Music for Shops for Android (package ID com.christmasmusicforshops.app) and Christmas Music for Shops for iPhone and iPad, version 1.0; Santa Radio for Android, version 35.0; and the upcoming Naughty or Nice List Checker for iOS (planned bundle identifier com.santaradio.nicelistchecker), which has not yet been built. The current app-specific sections below explain how each app handles information. The Checker section is interim and will be updated before release. Website features, including forms, Santa audio messages, embedded videos and optional analytics or marketing cookies, are distinct from native app features, but website content can also be displayed inside an app. The website and third-party disclosures therefore also matter for embedded web content. External services may have their own privacy notices.</p>
       <p>You can browse and listen without an account. We do not sell personal data.</p>
       <p>This policy also covers <strong>The Santa Tracker by Santa Radio for iOS</strong> in its own native-app section below, separately from the website tracker and the other apps.</p>
@@ -91,7 +91,7 @@ export default function PrivacyPolicy() {
         <p>If you open the Santa Radio website from the app, the website’s privacy information and cookie choices apply to that website visit. The website’s Google Analytics and Meta Pixel settings describe website visits, not a blanket statement about native-app SDKs or all third-party processing. Accepting website cookies does not automatically give consent for separate app tracking.</p>
 
         <h3>Privacy questions and your rights</h3>
-        <p>For questions about the app’s handling of information, or to exercise applicable data-protection rights, <a href="mailto:santa@santaradio.co.uk">email us about app privacy</a>. The rights and complaints information elsewhere in this policy also applies to the app.</p>
+        <p>For questions about the app’s handling of information, or to exercise applicable data-protection rights, <a href="/submit-a-song">contact us about app privacy</a>. The rights and complaints information elsewhere in this policy also applies to the app.</p>
       </section>
 
       <section aria-labelledby="shops-app-privacy">
@@ -122,12 +122,12 @@ export default function PrivacyPolicy() {
         <p>Links in the app open separate services, whose own privacy notices and settings apply when you visit them. The current Android app has no shop-logo submission, payment or activation flow.</p>
 
         <h3>Privacy questions and your rights</h3>
-        <p>For privacy questions or to exercise applicable data-protection rights, email <a href="mailto:santa@santaradio.co.uk">santa@santaradio.co.uk</a>. See <a href="#privacy-choices">Your choices and rights</a> for the existing rights and complaints information, including how to complain to the UK Information Commissioner’s Office.</p>
+        <p>For privacy questions or to exercise applicable data-protection rights, use our <a href="/submit-a-song">contact form</a>. See <a href="#privacy-choices">Your choices and rights</a> for the existing rights and complaints information, including how to complain to the UK Information Commissioner’s Office.</p>
       </section>
 
       <section aria-labelledby="naughty-or-nice-checker-privacy">
         <h2 id="naughty-or-nice-checker-privacy" tabIndex="-1">Naughty or Nice List Checker</h2>
-        <p>Naughty or Nice List Checker is an upcoming iOS app and has not yet been built. Its planned bundle identifier is <code>com.santaradio.nicelistchecker</code>. We’ll update this section before release to explain how the app handles information. For privacy questions about this app, email <a href="mailto:santa@santaradio.co.uk">santa@santaradio.co.uk</a>.</p>
+        <p>Naughty or Nice List Checker is an upcoming iOS app and has not yet been built. Its planned bundle identifier is <code>com.santaradio.nicelistchecker</code>. We’ll update this section before release to explain how the app handles information. For privacy questions about this app, use our <a href="/submit-a-song">contact form</a>.</p>
       </section>
 
       <section aria-labelledby="santa-tracker-ios-privacy">
@@ -160,13 +160,13 @@ export default function PrivacyPolicy() {
 
         <h3>Provider records and retention</h3>
         <p>Streaming, feed and hosting services may maintain connection and error logs or listener statistics. These provider records are separate from local app data; clearing storage or uninstalling does not control their retention or erase information already received.</p>
-        <p>The owner does not know the actual station and feed logging arrangements, retention periods, processing locations or international-transfer safeguards. We do not state precise periods or assume particular provider contracts or legal bases where these have not been confirmed. For questions about these arrangements, email <a href="mailto:santa@santaradio.co.uk">santa@santaradio.co.uk</a>. A provider’s general privacy notice may not describe the settings or arrangements for this service.</p>
+        <p>The owner does not know the actual station and feed logging arrangements, retention periods, processing locations or international-transfer safeguards. We do not state precise periods or assume particular provider contracts or legal bases where these have not been confirmed. For questions about these arrangements, use our <a href="/submit-a-song">contact form</a>. A provider’s general privacy notice may not describe the settings or arrangements for this service.</p>
 
         <h3>Children and external forms</h3>
         <p>The intended audience includes all ages, including children. Parents or carers should handle external forms involving children. The review of applicable children’s privacy requirements, including COPPA, GDPR and Google Play Families requirements, remains open; the intended audience and this notice are not a claim of compliance or certification.</p>
 
         <h3>Privacy questions and your rights</h3>
-        <p>For questions about the app’s handling of information, or to exercise applicable data-protection rights, <a href="mailto:santa@santaradio.co.uk">email us about app privacy</a>. See <a href="#privacy-choices">Your choices and rights</a> for the applicable rights and complaints information. We can help identify relevant services and coordinate requests with providers where appropriate; a provider holding records separately may also need to handle your request directly.</p>
+        <p>For questions about the app’s handling of information, or to exercise applicable data-protection rights, <a href="/submit-a-song">contact us about app privacy</a>. See <a href="#privacy-choices">Your choices and rights</a> for the applicable rights and complaints information. We can help identify relevant services and coordinate requests with providers where appropriate; a provider holding records separately may also need to handle your request directly.</p>
       </section>
 
       <h2>Other Santa Radio and tvOS apps</h2>
@@ -190,11 +190,11 @@ export default function PrivacyPolicy() {
       <p>An adult or parent provides their first name, surname and email address to access our personalised Santa audio message maker. We send a six-digit verification code to the email address through Brevo. Access opens only after the correct code is confirmed. Codes expire after 15 minutes and allow up to five incorrect attempts. Request limits help prevent abuse. Marketing is optional. If you tick the separate Santa Radio news box, confirming your code also confirms your request for relevant Santa Radio news, Christmas treats and reminders. Leaving it unticked does not affect access to your free message. Your details are not sent to the audio generator.</p>
       <p>You then choose a child’s first name from the available prerecorded clips. That selection is sent to our message generator to mix the greeting. This is a personalised MP3 assembled from existing recordings, not a microphone recording made by you or your child. You can listen to and download the MP3 on this website; we do not email the generated recording. The generator removes its temporary working copy when the request finishes; copies you download remain under your control.</p>
       <p>We temporarily store encrypted adult contact details, your optional marketing choice and a protected code fingerprint for verification. Successful challenges are deleted; expired challenges are removed during later code requests. A secure cookie remembers verified access for up to 24 hours. A separate encrypted contact cookie supports requested name-availability notifications. Brevo processes the address and code email for delivery. If you opt in and verify your email, we add your name and email to the Santa Message Form list in Brevo and keep a protected email fingerprint, the consent wording, confirmation time and signup outcome as a consent record. Existing email opt-outs and suppressions are respected.</p>
-      <p>You can unsubscribe from optional Santa Radio emails at any time using the link in an email or by contacting santa@santaradio.co.uk. Contact us if you have questions about the details submitted for message access or your consent record.</p>
+      <p>You can unsubscribe from optional Santa Radio emails at any time using the link in an email or through our <a href="/submit-a-song">contact form</a>. Contact us if you have questions about the details submitted for message access or your consent record.</p>
 
       <h2>My Santa Messages accounts</h2>
       <p>If you choose an account, Clerk handles sign-in and email verification. We link confirmed Studio purchases using your verified purchase email. Neon stores the account identifier, purchase links, message names, file references and expiry dates. Signing in does not subscribe you to marketing or reset your message allowance.</p>
-      <p>Messages created after linking your purchase can be saved in private Vercel Blob storage, together with personalised certificates, letters and Santa pictures. These files may contain the child’s first name and the details you chose for their message. Access requires your account. Collections are available through January 31 after their Christmas season, then access ends and scheduled deletion removes the stored files. Copies you download remain under your control. Contact santa@santaradio.co.uk if you would like your account or saved files removed sooner.</p>
+      <p>Messages created after linking your purchase can be saved in private Vercel Blob storage, together with personalised certificates, letters and Santa pictures. These files may contain the child’s first name and the details you chose for their message. Access requires your account. Collections are available through January 31 after their Christmas season, then access ends and scheduled deletion removes the stored files. Copies you download remain under your control. Use our <a href="/submit-a-song">contact form</a> if you would like your account or saved files removed sooner.</p>
       <h2>Optional Santa Radio news</h2>
       <p>You can choose the optional news checkbox when requesting a free Santa message. After you confirm your email code, we use Brevo to send relevant Santa Radio news, Christmas treats and reminders. Sending an enquiry, voting or submitting a song does not subscribe you.</p>
       <p>We will keep subscription details until you unsubscribe. You can withdraw consent at any time by unsubscribing or emailing us. We may keep a minimal suppression record to respect your opt-out.</p>
