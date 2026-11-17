@@ -2,11 +2,12 @@ import { test, expect } from '@playwright/test';
 
 const partners = [
   { name: 'Live Online Radio', url: 'https://liveonlineradio.net/santa-radio', image: '/images/links/live-online-radio.png', description: 'Hear Santa Radio on Live Online Radio. Open our station page and press play.' },
-  { name: 'Radioguide.fm', url: 'https://www.radioguide.fm/internet-radio-england/santa-radio', image: '/images/links/radioguide-fm.svg', description: 'Find Santa Radio on Radioguide.fm and enjoy Christmas music wherever you listen.' },
-  { name: 'radio.net', url: 'https://uk.radio.net/s/santa', image: '/images/links/radio-net.svg', description: 'Listen to Santa Radio through our radio.net station page.' },
-  { name: 'Internet Radio', url: 'https://www.internet-radio.com', image: '/images/links/internet-radio.png', description: 'Explore the Internet Radio directory and search for Santa Radio.' },
+  { name: 'Radioguide.fm', url: 'https://www.radioguide.fm/internet-radio-england/santa-radio', image: '/images/links/radioguide-fm.svg', light: true, description: 'Find Santa Radio on Radioguide.fm and enjoy Christmas music wherever you listen.' },
+  { name: 'radio.net', url: 'https://uk.radio.net/s/santa', image: '/images/links/radio-net.svg', light: true, description: 'Listen to Santa Radio through our radio.net station page.' },
+  { name: 'Internet Radio', url: 'https://www.internet-radio.com', image: '/images/links/internet-radio.png', light: true, description: 'Explore the Internet Radio directory and search for Santa Radio.' },
   { name: 'Santa Guy', url: 'https://www.santaguy.co.uk', image: '/images/links/santa-guy.png', description: 'Meet the voice behind Santa Radio — Guy Harris, the voice of Santa.' },
-  { name: 'Stag Communications', url: 'https://www.stagcommunications.co.uk/', image: '/images/links/stag-communications.jpg', description: 'Behind the sound: creative production and radio imaging from Stag Communications.' },
+  { name: 'Stag Communications', url: 'https://www.stagcommunications.co.uk/', image: '/images/links/stag-communications.png', description: 'Behind the sound: creative production and radio imaging from Stag Communications.' },
+  { name: 'VoiceoverGuy', url: 'https://www.voiceoverguy.co.uk', image: '/images/links/voiceoverguy.jpg', description: 'British male voiceover artist Guy Harris — the voice behind Santa Radio.' },
 ];
 
 for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844 }, { width: 320, height: 740 }]) {
@@ -14,7 +15,7 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
     await page.setViewportSize(viewport);
     await page.goto('/platforms');
     const cards = page.locator('.partner-card');
-    await expect(cards).toHaveCount(6);
+    await expect(cards).toHaveCount(8);
     for (const [i, partner] of partners.entries()) {
       const card = cards.nth(i);
       await expect(card.getByRole('heading', { level: 2 })).toHaveText(partner.name);
@@ -59,6 +60,7 @@ test('TuneIn remains consent-controlled and requires activation after saved perm
   await page.locator('.marketing-consent').getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
   const section = page.locator('.links-tunein');
   const frame = section.locator('iframe');
+  await section.getByText('Play here with TuneIn', { exact: true }).click();
   await expect(section.getByRole('heading', { name: 'Santa Radio on TuneIn', exact: true })).toBeVisible();
   await expect(section.getByRole('link', { name: 'Open Santa Radio on TuneIn (opens in a new tab)', exact: true })).toHaveAttribute('href', 'https://tunein.com/radio/Santa-Radio-s252505/');
   await expect(frame).toHaveCount(0);

@@ -161,3 +161,8 @@
 .links-page .partner-banner--light { background: #fff; border-radius: 8px; padding: 14px; }
 
 .links-page .platform-tunein-logo { display: block; width: 104px; height: 104px; object-fit: contain; border-radius: 18px; margin-bottom: 18px; }
+
+.links-page .links-partners .links-tunein { padding: 20px; background: #153628; }
+.links-page .partner-banner .platform-tunein-logo { margin: 0; }
+.links-page .tunein-inline-player { margin-top: auto; }
+.links-page .tunein-inline-player summary { cursor: pointer; color: var(--gold-light); font-size: .8rem; padding: 10px 0; }
