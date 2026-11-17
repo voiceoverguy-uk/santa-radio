@@ -104,3 +104,12 @@
 .name-chart-section .nc-top{line-height:1.2}
 .name-chart-section .nc-top b{font-family:Arial,Helvetica,sans-serif}
 
+
+.name-chart-section .nc-movement{margin-left:auto;flex-shrink:0;min-width:44px;text-align:right;font-size:16px;font-weight:900;white-space:nowrap}
+.name-chart-section .nc-movement--up{color:#16dfd0}
+.name-chart-section .nc-movement--down{color:#ff65aa}
+.name-chart-section .nc-movement--same,.name-chart-section .nc-movement--pending{color:#c2baca}
+.name-chart-section .nc-movement--new{color:#ffdc36;font-size:11px;letter-spacing:.5px}
+.name-chart-section .nc-movement-key{margin:0;padding:0 26px 20px;color:#eee6f3;font-size:12px;line-height:1.7}
+.name-chart-section .nc-movement-key span{display:block;color:#c2baca;font-size:11px}
+@media(max-width:650px){.name-chart-section .nc-row{gap:7px}.name-chart-section .nc-number{width:30px;font-size:23px}.name-chart-section .nc-name{font-size:14px}.name-chart-section .nc-movement{min-width:27px;font-size:13px}.name-chart-section .nc-movement--new{font-size:9px}.name-chart-section .nc-movement-key{padding:0 14px 16px}}

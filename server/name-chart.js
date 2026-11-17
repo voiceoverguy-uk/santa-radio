@@ -1,13 +1,37 @@
 import { databasePool } from './contenders-database.js';
 export const CHART_TTL = 12 * 60 * 60 * 1000;
+// Reconstruct both rankings from retained daily counters; compare before limiting to 25.
+export const NAME_CHART_QUERY = `WITH bounds AS (
+  SELECT (now() AT TIME ZONE 'Europe/London')::date AS today
+), totals AS (
+  SELECT lower(trim(name)) AS name,
+    COALESCE(sum(creations) FILTER (WHERE day >= today-29 AND day <= today),0) AS current_total,
+    COALESCE(sum(creations) FILTER (WHERE day >= today-36 AND day <= today-7),0) AS previous_total
+  FROM santa_message_daily CROSS JOIN bounds
+  WHERE trim(name) <> '' AND day >= today-36 AND day <= today
+  GROUP BY lower(trim(name))
+), current_ranks AS (
+  SELECT name, row_number() OVER (ORDER BY current_total DESC,name COLLATE "C" ASC) AS rank
+  FROM totals WHERE current_total > 0
+), previous_ranks AS (
+  SELECT name, row_number() OVER (ORDER BY previous_total DESC,name COLLATE "C" ASC) AS rank
+  FROM totals WHERE previous_total > 0
+)
+SELECT current_ranks.name, current_ranks.rank, previous_ranks.rank AS previous_rank,
+  EXISTS(SELECT 1 FROM previous_ranks) AS comparison_available
+FROM current_ranks LEFT JOIN previous_ranks USING(name)
+ORDER BY current_ranks.rank LIMIT 25`;
 export async function readNameChart(pool = databasePool()) {
-  const result = await pool.query(`SELECT lower(trim(name)) AS name, sum(creations)::bigint AS creations
-    FROM santa_message_daily WHERE trim(name) <> ''
-      AND day >= (now() AT TIME ZONE 'Europe/London')::date-29
-    GROUP BY lower(trim(name)) HAVING sum(creations) > 0
-    ORDER BY creations DESC, lower(trim(name)) COLLATE "C" ASC LIMIT 25`);
-  return result.rows.map(({ name }, index) => ({ rank: index + 1,
-    name: name.replace(/(^|[\s’'-])\p{L}/gu, letter => letter.toLocaleUpperCase('en-GB')) }));
+  const result = await pool.query(NAME_CHART_QUERY);
+  return result.rows.map(({ name, rank, previous_rank, comparison_available }) => {
+    const position = Number(rank);
+    const previousRank = previous_rank == null ? null : Number(previous_rank);
+    const change = previousRank == null ? null : previousRank - position;
+    return { rank: position,
+      name: name.replace(/(^|[\s’'-])\p{L}/gu, letter => letter.toLocaleUpperCase('en-GB')),
+      previousRank, change,
+      movement: !comparison_available ? 'pending' : previousRank == null ? 'new' : change > 0 ? 'up' : change < 0 ? 'down' : 'same' };
+  });
 }
 export function createNameChartHandler({ read = readNameChart, clock = Date.now } = {}) {
   let cached, pending;
@@ -19,7 +43,7 @@ export function createNameChartHandler({ read = readNameChart, clock = Date.now 
       if (!cached || clock() >= cached.expires) {
         if (!pending) pending = read().then(names => {
           const now = clock();
-          cached = { expires: now + CHART_TTL, data: { names, metric: 'recordings-created', periodDays: 30, updatedAt: new Date(now).toISOString(), refreshAfter: new Date(now + CHART_TTL).toISOString() } };
+          cached = { expires: now + CHART_TTL, data: { names, metric: 'recordings-created', periodDays: 30, comparisonDays: 7, updatedAt: new Date(now).toISOString(), refreshAfter: new Date(now + CHART_TTL).toISOString() } };
         }).finally(() => { pending = undefined; });
         await pending;
       }
