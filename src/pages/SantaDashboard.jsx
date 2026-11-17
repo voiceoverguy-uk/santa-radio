@@ -1,3 +1,4 @@
+import DashboardBackButton from '../components/DashboardBackButton.jsx';
 import CopyRequestedName from '../components/CopyRequestedName.jsx';
 import FriendVouchers from '../components/FriendVouchers.jsx';
 import NameRecordingUploads from '../components/NameRecordingUploads.jsx';
@@ -30,7 +31,7 @@ export default function SantaDashboard() {
       const result=await response.json();if(!response.ok)throw new Error(result.error);if(action==='reject')setRejectionNotice(`${name} was declined. ${result.notificationsQueued} notification(s) queued. ${result.notificationsQueued ? 'Emails are processed by the notification worker.' : 'No new notification was queued; an email may already be queued/sent, or no saved contact is available.'}`);if(action==='dismiss')setDismissed(name);else if(action==='restore')setDismissed('');await load();
     }catch(e){setError(e.message);}finally{setBusy(false);}
   }
-  if (uploads && data) return <main className="santa-dashboard"><button onClick={()=>setUploads(false)}>← Back to dashboard</button><NameRecordingUploads ownerToken={token.current}/></main>;
+  if (uploads && data) return <main className="santa-dashboard"><DashboardBackButton onClick={()=>setUploads(false)} /><NameRecordingUploads ownerToken={token.current}/></main>;
   if (ledger && data) return <SantaRequestLedger ownerToken={token.current} email="Studio owner" onSignOut={()=>{setLedger(false);load();}} />;
   const namePages=Math.max(1,Math.ceil((data?.names.length||0)/namePageSize));
   const currentNamePage=Math.min(namePage,namePages);

@@ -78,7 +78,7 @@ export async function listNameRequests(page, q, status = 'outstanding', all = fa
   await prepareNameRequests(pool);
   const completed = status === 'completed';
   const table = completed ? 'santa_name_request_history' : 'santa_name_requests';
-  const where = `strpos(request_key,$1)>0${completed ? '' : ' AND recorded_at IS NULL AND dismissed_at IS NULL'}`;
+  const where = `strpos(request_key,$1)>0${completed ? ' AND deleted_at IS NULL' : ' AND recorded_at IS NULL AND dismissed_at IS NULL'}`;
   const params = [q];
   const totalResult = await pool.query(`SELECT count(*) FROM ${table} WHERE ${where}`, params);
   const total = Number(totalResult.rows[0].count);

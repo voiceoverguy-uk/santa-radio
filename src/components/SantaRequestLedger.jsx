@@ -1,3 +1,4 @@
+import DashboardBackButton from './DashboardBackButton.jsx';
 import CopyRequestedName from './CopyRequestedName.jsx';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -30,6 +31,8 @@ export default function SantaRequestLedger({ email, onSignOut, ownerToken }) {
   const [error, setError] = useState(null);
   const [actionError, setActionError] = useState('');
   const [notice, setNotice] = useState('');
+  const [deleted, setDeleted] = useState(null);
+  const [tidying, setTidying] = useState(false);
   const [retry, setRetry] = useState(0);
   const [pending, setPending] = useState([]);
   const [downloading, setDownloading] = useState(false);
@@ -97,6 +100,19 @@ export default function SantaRequestLedger({ email, onSignOut, ownerToken }) {
       if (alive.current) setPending([...actions.current.keys()]);
     }
   };
+  const tidy = async (item, restore = false) => {
+    setTidying(true); setActionError('');
+    try {
+      const response = await fetch('/api/name-requests', {method:'PATCH', credentials:'include',
+        headers:{'Content-Type':'application/json',...(ownerToken ? {Authorization:`Bearer studio-owner.${ownerToken}`} : {})},
+        body:JSON.stringify({action:restore?'restore-history':'delete-history',id:item.id}),signal:AbortSignal.timeout(25000)});
+      await checkResponse(response);
+      setDeleted(restore ? null : item); setRetry(value=>value+1);
+      setNotice(restore ? `${item.name} restored to history.` : `${item.name} removed from history. Its recording and emails are unchanged.`);
+    } catch(error) { setActionError(error.message); }
+    finally { setTidying(false); }
+  };
+
   const download = async () => {
     if (actions.current.has('download')) return;
     const controller = new AbortController();
@@ -129,7 +145,7 @@ export default function SantaRequestLedger({ email, onSignOut, ownerToken }) {
     <img className="staff-brand" src="/images/santa-radio-logo.png" alt="Santa Radio" width="827" height="190" />
     <section className="staff-panel" aria-labelledby="ledger-title">
       <div className="staff-account"><span>Signed in as <strong>{email || 'staff account'}</strong></span>
-        <button className="staff-text-action" type="button" onClick={onSignOut}>{ownerToken ? 'Back to dashboard' : 'Sign out'}</button></div>
+        {ownerToken ? <DashboardBackButton onClick={onSignOut} /> : <button className="staff-text-action" type="button" onClick={onSignOut}>Sign out</button>}</div>
       <p className="staff-kicker">A quiet little list from the message desk</p>
       <h1 id="ledger-title">Name requests</h1>
       <p className="staff-lede">Outstanding names appear most requested first. After uploading a recording, use Send availability email when you are ready.
@@ -152,7 +168,7 @@ export default function SantaRequestLedger({ email, onSignOut, ownerToken }) {
         <button type="button" className="staff-button" onClick={download} disabled={loading || !!error || !result || downloading}>
           {downloading ? 'Downloading…' : 'Download TXT'}</button>
       </div>
-      {notice && <p className="staff-feedback" role="status">{notice}</p>}
+      {notice && <p className="staff-feedback" role="status">{notice} {deleted && <button type="button" disabled={tidying} onClick={()=>tidy(deleted,true)}>Undo deletion</button>}</p>}
       {actionError && <p className="staff-error" role="alert">{actionError}</p>}
       {loading && <div className="staff-skeleton" role="status" aria-label="Loading name requests"><div className="staff-loading-row" /></div>}
       {!loading && error && <div className="staff-error" role="alert"><p>{error.message}</p>
@@ -192,7 +208,7 @@ export default function SantaRequestLedger({ email, onSignOut, ownerToken }) {
           </td>
             <td className="staff-count">{item.count.toLocaleString('en-GB')}</td>
             <td>{formatDate(item.firstRequestedAt)}</td><td>{formatDate(item.lastRequestedAt)}</td>
-            <td>{status === 'completed' ? formatDate(item.recordedAt) : <button className="staff-button" type="button"
+            <td>{status === 'completed' ? <div>{formatDate(item.recordedAt)} <button type="button" className="staff-button" disabled={tidying} onClick={()=>tidy(item)}>Delete from history</button></div> : <button className="staff-button" type="button"
               aria-label={`Mark ${item.name} recorded`} disabled={pending.includes(item.name)} onClick={() => record(item.name)}>
               {pending.includes(item.name) ? 'Saving…' : 'Send availability email'}</button>}</td></tr>)}</tbody>
         </table></div>

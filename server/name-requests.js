@@ -1,3 +1,4 @@
+import { tidyCompletedRequest } from './name-request-history.js';
 import { requestContact } from './name-request-contact.js';
 import { dismissNameRequest } from './name-request-store.js';
 import express from 'express';
@@ -40,7 +41,7 @@ function visitor(req, res) {
   return { visitorKey: digest(`visitor:${id}`), bucketKey: digest(`limit:${id}:${Math.floor(Date.now() / 3600000)}`) };
 }
 export function createNameRequestHandler({ checkAdmin = authorize, save = saveNameRequest, list = listNameRequests,
-  record = recordNameRequest, identify = visitor, library = santaNameLibrary, limit = consumeNameAccess, contactFor = requestContact, dismiss = dismissNameRequest } = {}) {
+  tidy = tidyCompletedRequest, record = recordNameRequest, identify = visitor, library = santaNameLibrary, limit = consumeNameAccess, contactFor = requestContact, dismiss = dismissNameRequest } = {}) {
   return async (req, res) => {
     let stage = 'validation';
     res.set('Cache-Control', 'private, no-store');
@@ -98,6 +99,10 @@ export function createNameRequestHandler({ checkAdmin = authorize, save = saveNa
         const allowed = await checkAdmin(req);
         if (allowed !== 200) return res.status(allowed).json({ error: allowed === 401 ? 'Sign in to view name requests.' : 'This account is not approved to view name requests.' });
         if (req.method === 'PATCH') {
+          if (['delete-history','restore-history'].includes(req.body?.action)) {
+            if (!req.headers.origin || req.headers['sec-fetch-site']==='cross-site') return res.status(403).json({error:'Please use the dashboard.'});
+            return res.json(await tidy(req.body.id, req.body.action==='restore-history'));
+          }
           const name = normaliseRequestedName(req.body?.name);
           if (!name || !['recorded','dismiss','restore'].includes(req.body?.action)) return res.status(400).json({ error: 'Choose a requested name to mark as recorded.' });
           stage = 'record';
