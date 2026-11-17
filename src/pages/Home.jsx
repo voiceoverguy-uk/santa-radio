@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import HomeHero from '../components/HomeHero.jsx';
 import { offerFreeSantaMessageName } from '../lib/freeSantaMessageHandoff.js';
 import SantaTrackerBanner from '../tracker/components/SantaTrackerBanner.tsx';
+import NameChart from '../components/NameChart.jsx';
 import Soundboard from '../components/Soundboard.jsx';
 import NaughtyNiceWidget from '../naughty-or-nice/NaughtyNiceWidget.jsx';
 import ChristmasPairs from '../components/ChristmasPairs.jsx';
@@ -45,6 +46,7 @@ export default function Home() {
       <SantaDashPromo />
       <NaughtyNiceWidget key={checkerEntry.id} initialName={checkerEntry.name} />
       <ChristmasPairs />
+      <NameChart />
       <Soundboard />
       <MugshotsPreview />
       <YouTubeSection />

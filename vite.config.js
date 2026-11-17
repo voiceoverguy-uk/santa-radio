@@ -1,3 +1,4 @@
+import nameChart from './server/name-chart.js';
 import nameRecordingUploads from './server/name-recording-uploads.js';
 import messageAccount from './server/message-account.js';
 import { defineConfig } from 'vite';
@@ -73,6 +74,7 @@ const metadataPlugin = {
     server.middlewares.use('/api/christmas-contenders', christmasContenders);
     server.middlewares.use('/api/radio-metadata', radioMetadata);
     server.middlewares.use('/api/radio-top-ten', radioTopTen);
+    server.middlewares.use('/api/name-chart', nameChart);
     server.middlewares.use('/api/santa-mobile', santaMobile);
     server.middlewares.use('/api/name-recording-uploads', nameRecordingUploads);
     server.middlewares.use('/api/my-santa-messages', messageAccount);
@@ -117,6 +119,7 @@ const metadataPlugin = {
     server.middlewares.use('/api/christmas-contenders', christmasContenders);
     server.middlewares.use('/api/radio-metadata', radioMetadata);
     server.middlewares.use('/api/radio-top-ten', radioTopTen);
+    server.middlewares.use('/api/name-chart', nameChart);
     server.middlewares.use('/api/santa-mobile', santaMobile);
     server.middlewares.use('/api/name-recording-uploads', nameRecordingUploads);
     server.middlewares.use('/api/my-santa-messages', messageAccount);
