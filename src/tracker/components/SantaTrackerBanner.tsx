@@ -296,11 +296,11 @@ function MiniMap({ time, holiday, researching = false, northPoleVisitMessage, co
   const nightPath = useMemo(() => getNightOverlayPath(solarTime), [solarMinute]);
   const solarPosition = useMemo(() => getSolarPosition(solarTime), [solarMinute]);
   const artwork = completedData
-    ? getSantaMarkerArtwork(completedData.mode, previewPosition?.lng ?? 0)
+    ? getSantaMarkerArtwork(completedData.mode, previewPosition?.lng ?? 0, "left", mapTime)
     : previewTime && previewPosition
     ? getSantaMarkerArtwork("LIVE", previewPosition.lng, getJourneySleighDirection(previewTime))
     : holiday ? getSantaMarkerArtwork(researching ? "ROUTE_RESEARCH" : "OFF_SEASON", holiday.lng)
-      : getSantaMarkerArtwork(getSeasonalTrackerMode(mapTime), 0);
+      : getSantaMarkerArtwork(getSeasonalTrackerMode(mapTime), 0, "left", mapTime);
   const santaX = previewPosition ? previewPosition.x * 10 : holiday
     ? ((holiday.lng + 180) / 360) * 1000
     : ((0 + 180) / 360) * 1000;

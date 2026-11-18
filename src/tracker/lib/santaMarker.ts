@@ -1,4 +1,5 @@
-import type { SeasonalMode } from "./santaRoute";
+import { getChristmasEveYear, getJourneyEndTime, type SeasonalMode } from "./santaRoute";
+import { isNewYearCelebration } from "./postChristmas";
 
 export interface SantaMarkerArtwork {
   src: string;
@@ -12,11 +13,20 @@ export function getSantaMarkerArtwork(
   mode: SeasonalMode,
   longitude: number,
   sleighDirection: "left" | "right" = "left",
+  effectiveTime?: Date,
 ): SantaMarkerArtwork | null {
   if (mode === "LIVE") {
     return {
       src: `/images/tracker/santa-sleigh${sleighDirection === "left" ? "-left" : ""}.png`,
       mirrored: false, width: 48, height: 32,
+    };
+  }
+  if (mode === "COMPLETE" && effectiveTime && !isNewYearCelebration(effectiveTime)) {
+    const elapsed = effectiveTime.getTime() - getJourneyEndTime(getChristmasEveYear(effectiveTime)).getTime();
+    const shattered = elapsed >= 0 && elapsed < 8 * 60 * 60 * 1000;
+    return {
+      src: `/images/tracker/santa-${shattered ? "shattered" : "armchair"}.png`,
+      mirrored: false, width: 40, height: 44,
     };
   }
   if (mode === "PREPARING" || mode === "COMPLETE") {

@@ -148,7 +148,7 @@ function getJourneyStartTime(year: number): Date {
   return new Date(Date.UTC(year, 11, 24, TRACKER_CONSTANTS.journeyStartUtcHour, 0, 0));
 }
 
-function getJourneyEndTime(year: number): Date {
+export function getJourneyEndTime(year: number): Date {
   return new Date(Date.UTC(year, 11, 24) + TRACKER_CONSTANTS.journeyEndUtcHour * 3600000);
 }
 

@@ -127,16 +127,18 @@ test("rendered full map anchors an independently mirrored, proportion-preserving
 
 test("tracker PNG assets retain source proportions and an RGBA alpha channel", () => {
   const assets = fs.readdirSync(path.resolve(root, "../../public/images/tracker"));
-  assert.equal(assets.length, 7);
+  assert.equal(assets.length, 9);
   for (const name of assets) {
     const source = fs.readdirSync(path.resolve(root, "../../attached_assets")).find(file => file.startsWith(name.replace(".png", "_")));
     const png = fs.readFileSync(path.resolve(root, "../../public/images/tracker", name));
     const [w, h] = [png.readUInt32BE(16), png.readUInt32BE(20)];
     assert.equal(png[25], 6, name);
     assert.equal(Math.max(w, h), 256);
-    if (name !== "santa-traditional-front.png") {
+    if (source) {
       const original = fs.readFileSync(path.resolve(root, "../../attached_assets", source));
       assert.ok(Math.abs(w / h - original.readUInt32BE(16) / original.readUInt32BE(20)) < 0.005, name);
+    } else {
+      assert.ok(["santa-traditional-front.png", "santa-shattered.png", "santa-armchair.png"].includes(name));
     }
   }
 });
@@ -233,5 +235,38 @@ test("map clears delivery lines and visited pin styling immediately after the fi
     assert.equal(html.includes("stroke-dasharray"), hasRoute, iso);
     assert.equal(html.includes('fill="#b62332"'), hasRoute, iso);
     assert.match(html, /data-santa-artwork/);
+  }
+});
+
+
+test("rest sprites switch exactly eight hours after delivery and preserve the New Year outfit", () => {
+  const previousZone = process.env.TZ;
+  process.env.TZ = "Europe/London";
+  try {
+    for (const [iso, sprite] of [
+      ["2026-12-25T11:19:59.999Z", "sleigh"],
+      ["2026-12-25T11:20:00Z", "shattered"],
+      ["2026-12-25T19:19:59.999Z", "shattered"],
+      ["2026-12-25T19:20:00Z", "armchair"],
+      ["2026-12-31T17:59:59Z", "armchair"],
+      ["2026-12-31T18:00:00Z", "traditional-front"],
+      ["2027-01-01T02:59:59Z", "traditional-front"],
+      ["2027-01-01T03:00:00Z", "armchair"],
+      ["2027-01-01T23:59:59Z", "armchair"],
+      ["2027-01-02T00:00:00Z", "holiday-front"],
+    ]) {
+      const date = new Date(iso);
+      const data = route.getDashboardData(date);
+      const marker = artwork(data.mode, 0, "left", date);
+      assert.ok(marker.src.includes(`santa-${sprite}`), iso);
+      assert.equal(marker.mirrored, false);
+      const html = renderToStaticMarkup(React.createElement(SantaMap, {
+        effectiveTime: date, mapPosition: data.mapPosition,
+      }));
+      assert.ok(html.includes(`santa-${sprite}`), iso);
+    }
+  } finally {
+    if (previousZone === undefined) delete process.env.TZ;
+    else process.env.TZ = previousZone;
   }
 });

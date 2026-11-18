@@ -105,7 +105,7 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
   const expandedData = expanded && mode === "LIVE" ? getDashboardData(effectiveTime) : null;
   const showDepartureCountdown = mode !== "LIVE" && mode !== "COMPLETE";
   const departureCountdown = showDepartureCountdown ? getCountdownToStart(effectiveTime) : null;
-  const artwork = getSantaMarkerArtwork(northPoleVisitMessage ? "OFF_SEASON" : mode, mapPosition.lng, getJourneySleighDirection(effectiveTime));
+  const artwork = getSantaMarkerArtwork(northPoleVisitMessage ? "OFF_SEASON" : mode, mapPosition.lng, getJourneySleighDirection(effectiveTime), effectiveTime);
 
   useEffect(() => {
     if (!artworkViewerOpen) {
