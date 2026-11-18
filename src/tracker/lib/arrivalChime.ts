@@ -1,14 +1,12 @@
 import { getChristmasEveYear, getCurrentStopId, getSeasonalTrackerMode } from "./santaRoute";
-import { getNewYearCity, isNewYearCelebration } from "./postChristmas";
 
 export interface ArrivalSample { time: number; realTime: number; key: string | null; resetKey: number; speed: number }
 
-export function getArrivalKey(date: Date, includeParty: boolean): string | null {
+export function getArrivalKey(date: Date): string | null {
   if (getSeasonalTrackerMode(date) === "LIVE") {
     const id = getCurrentStopId(date);
     return id ? `delivery:${getChristmasEveYear(date)}:${id}` : null;
   }
-  if (includeParty && isNewYearCelebration(date)) return `party:${getNewYearCity(date).id}`;
   return null;
 }
 

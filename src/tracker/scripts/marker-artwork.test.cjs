@@ -546,13 +546,13 @@ test("arrival chimes follow continuous delivery arrivals at 1x and 10x only", ()
   const { getArrivalKey, shouldChime } = load("lib/arrivalChime.ts");
   const schedule = getScheduledStops(2026);
   const arrival = schedule[10].arrival.getTime();
-  assert.notEqual(getArrivalKey(new Date(arrival - 1), false), getArrivalKey(new Date(arrival), false));
-  assert.equal(getArrivalKey(new Date("2026-11-18T12:00:00Z"), false), null);
-  assert.equal(getArrivalKey(route.getJourneyEndTime(2026), false), null);
-  assert.equal(getArrivalKey(new Date(2026, 11, 31, 19), false), null);
+  assert.notEqual(getArrivalKey(new Date(arrival - 1)), getArrivalKey(new Date(arrival)));
+  assert.equal(getArrivalKey(new Date("2026-11-18T12:00:00Z")), null);
+  assert.equal(getArrivalKey(route.getJourneyEndTime(2026)), null);
+  assert.equal(getArrivalKey(new Date(2026, 11, 31, 19)), null);
   for (const speed of [1, 10, 60, 300]) {
-    const before = { time: arrival - 1, realTime: 1000, key: getArrivalKey(new Date(arrival - 1), false), speed, resetKey: 1 };
-    const after = { time: arrival + speed * 1000 - 1, realTime: 2000, key: getArrivalKey(new Date(arrival), false), speed, resetKey: 1 };
+    const before = { time: arrival - 1, realTime: 1000, key: getArrivalKey(new Date(arrival - 1)), speed, resetKey: 1 };
+    const after = { time: arrival + speed * 1000 - 1, realTime: 2000, key: getArrivalKey(new Date(arrival)), speed, resetKey: 1 };
     assert.equal(shouldChime(before, after), speed === 1 || speed === 10);
     assert.equal(shouldChime(null, after), false, "no initial-load chime");
     assert.equal(shouldChime(after, { ...after, time: after.time + 1000, realTime: 3000 }), false, "no duplicate");
@@ -563,12 +563,11 @@ test("arrival chimes follow continuous delivery arrivals at 1x and 10x only", ()
   }
 });
 
-test("party arrival keys change with the city, ending when Santa returns to rest", () => {
-  const { getArrivalKey } = load("lib/arrivalChime.ts");
-  const before = new Date(2026, 11, 31, 18, 9, 59);
-  const arrival = new Date(2026, 11, 31, 18, 10, 0);
-  assert.match(getArrivalKey(before, true), /^party:/);
-  assert.notEqual(getArrivalKey(before, true), getArrivalKey(arrival, true));
-  assert.equal(getArrivalKey(arrival, true), getArrivalKey(new Date(2026, 11, 31, 18, 19, 59), true));
-  assert.equal(getArrivalKey(new Date(2027, 0, 1, 3), true), null);
+test("New Year party cities and the following rest period never trigger arrival chimes", () => {
+  const { getArrivalKey, shouldChime } = load("lib/arrivalChime.ts");
+  for (const time of [new Date(2026, 11, 31, 18), new Date(2026, 11, 31, 18, 10), new Date(2026, 11, 31, 23, 59), new Date(2027, 0, 1, 0, 10), new Date(2027, 0, 1, 3)]) {
+    assert.equal(getArrivalKey(time), null);
+    assert.equal(shouldChime({time: time.getTime() - 1000, realTime: 1000, key: null, resetKey: 0, speed: 1},
+      {time: time.getTime(), realTime: 2000, key: getArrivalKey(time), resetKey: 0, speed: 1}), false);
+  }
 });

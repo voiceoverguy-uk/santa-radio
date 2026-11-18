@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { getArrivalKey, shouldChime, type ArrivalSample } from "../lib/arrivalChime";
 
-export default function useArrivalChime(date: Date, speed: number, resetKey: number, includeParty: boolean) {
+export default function useArrivalChime(date: Date, speed: number, resetKey: number) {
   const [enabled, setEnabled] = useState(false);
   const audio = useRef<HTMLAudioElement | null>(null);
   const previous = useRef<ArrivalSample | null>(null);
   const lastPlayed = useRef(0);
 
   useEffect(() => {
-    const sample = { time: date.getTime(), realTime: Date.now(), key: getArrivalKey(date, includeParty), resetKey, speed };
+    const sample = { time: date.getTime(), realTime: Date.now(), key: getArrivalKey(date), resetKey, speed };
     if (![1, 10].includes(speed)) audio.current?.pause();
     const arrival = shouldChime(previous.current, sample);
     previous.current = sample;
@@ -16,7 +16,7 @@ export default function useArrivalChime(date: Date, speed: number, resetKey: num
     lastPlayed.current = sample.realTime;
     audio.current.currentTime = 0;
     void audio.current.play().catch(() => setEnabled(false));
-  }, [date, speed, resetKey, includeParty, enabled]);
+  }, [date, speed, resetKey, enabled]);
 
   useEffect(() => () => { audio.current?.pause(); }, []);
 

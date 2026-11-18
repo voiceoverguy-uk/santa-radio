@@ -34,7 +34,7 @@ interface SantaMapProps {
 type View = "follow" | "world" | string;
 
 export default function SantaMap({ chimeSpeed = 1, chimeResetKey = 0, effectiveTime, mapPosition, onHoliday, researchDestination, northPoleVisitMessage, liveStatusLabel, santaInfo, autoCycleView = false, initiallyExpanded = false, onExpandedClose }: SantaMapProps) {
-  const chime = useArrivalChime(effectiveTime, chimeSpeed, chimeResetKey, true);
+  const chime = useArrivalChime(effectiveTime, chimeSpeed, chimeResetKey);
   const places = useMapPlaceTooltip();
   // Keep enlarged targets from covering the centres of neighbouring places.
   const placeClearance = useMemo(() => new Map(santaStops.map(stop => {
