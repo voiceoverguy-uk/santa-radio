@@ -30,6 +30,7 @@
 /* Dedicated /free-santa-message arrangement */
 .message-layout--dedicated { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); row-gap: 28px; }
 .message-layout--dedicated > * { min-width: 0; }
+.message-free-logo { display: block; width: 100%; max-width: 520px; height: auto; margin: 0 auto 24px; }
 .message-layout--dedicated .message-intro > .santa-message-example { margin: 22px 0 0; }
 .message-layout--dedicated > .message-guide-cards { grid-column: 1 / -1; margin: 0; }
 .message-layout--dedicated .message-guide-cards > .smw-explainer-card { min-width: 0; overflow-wrap: anywhere; }

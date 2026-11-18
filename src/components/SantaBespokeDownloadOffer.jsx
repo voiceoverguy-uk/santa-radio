@@ -58,6 +58,8 @@ function BespokeDialog({ name, onClose }) {
     <p style={{ textAlign: 'center', fontWeight: 700 }}>Discount code emailed after submission</p>
     <Link className="btn-red" style={{ display: 'block', textAlign: 'center', marginTop: 18 }} to="/leave-a-review"
       onClick={onClose}>Write a review →</Link>
+    <Link to="/bespoke-personalised-message-from-santa" style={{ display: 'block', textAlign: 'center', marginTop: 16, textDecoration: 'underline' }}
+      onClick={onClose}>Explore bespoke Santa messages →</Link>
     <button type="button" className="santa-offer-later" onClick={onClose}>No thanks</button>
     <SantaOfferHolly className="santa-offer-holly santa-offer-holly--bottom" />
   </dialog>, document.body);

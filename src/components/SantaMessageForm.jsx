@@ -352,14 +352,19 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
     <SantaBespokeDownloadOffer download={bespokeDownload} />
     <div className={`container message-layout${dedicatedLayout ? ' message-layout--dedicated' : ''}`}>
       <div className="message-intro">
+        {dedicatedLayout && hasAccess ? <>
+          <img className="message-free-logo" src="/images/free-santa-message-microphone.png" alt="Free Santa Message — Santa Radio" width="1680" height="936" />
+          <SantaVoiceTagline />
+        </> : <>
         <p className="eyebrow">A little North Pole experiment</p>
         <div className="message-intro-divider" aria-hidden="true">★</div>
         <h2 className="santa-message-heading">FREE Personalised message from Santa</h2>
         <SantaVoiceTagline />
         {!dedicatedLayout && !hasAccess && allowExamples && <SantaMessageExample onExampleNameChange={setActiveExampleName} />}
         <p className="message-free-intro">No Artificial Intelligence here. A human recorded message from Santa, aka Father Christmas to your little Human.{' '}<br />Add your contact details, search for a recorded name, create and instantly download your short FREE personalised message from Santa.</p>
-        <p className="message-studio-intro">Or, choose a bespoke message from Santa with festive goodies. See below.</p>
+        {!dedicatedLayout && <p className="message-studio-intro">Or, choose a bespoke message from Santa with festive goodies. See below.</p>}
         {dedicatedLayout && allowExamples && <SantaMessageExample pulse onExampleNameChange={setActiveExampleName} />}
+        </>}
       </div>
       <div className="santa-message-aside">
        <div ref={makerPanelRef} className={`santa-message-box${hasAccess ? '' : ' message-access-box'}`}>
@@ -498,8 +503,8 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
       </div>
        {!dedicatedLayout && hasAccess && allowExamples && <SantaMessageExample onExampleNameChange={setActiveExampleName} />}
       </div>
-      <SantaStudioPromotion showPremiumIntro activeExampleName={activeExampleName} availableNamesText={availableNamesText}
-        previewName={giftPreviewName} allowExamples={allowExamples} />
+      {!dedicatedLayout && <SantaStudioPromotion showPremiumIntro activeExampleName={activeExampleName} availableNamesText={availableNamesText}
+        previewName={giftPreviewName} allowExamples={allowExamples} />}
       {dedicatedLayout && <WorkshopExplainerCards className="message-guide-cards" variant="free-message" />}
       <SantaMessageReviews />
     </div>
