@@ -366,14 +366,18 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   return <section className="santa-message-section" id="santa-messages">
     <SantaBespokeDownloadOffer download={bespokeDownload} />
     <div className={`container message-layout${dedicatedLayout ? ' message-layout--dedicated' : ''}`}>
-      <div className={`message-intro${dedicatedLayout && hasAccess ? ' message-intro--logo-only' : ''}`}>
-        {dedicatedLayout && hasAccess ? <>
+      <div className={`message-intro${dedicatedLayout && hasAccess ? ' message-intro--logo-only' : dedicatedLayout ? ' message-intro--signup' : ''}`}>
+        {dedicatedLayout ? <>
           <div className="message-free-logo-wrap">
             <img className="message-free-logo" src="/images/free-santa-message-microphone.png" alt="Free Santa Message — Santa Radio" width="1680" height="936" />
             <span className="message-free-sparkle message-free-sparkle--one" aria-hidden="true">✦</span>
             <span className="message-free-sparkle message-free-sparkle--two" aria-hidden="true">✧</span>
             <span className="message-free-sparkle message-free-sparkle--three" aria-hidden="true">✦</span>
           </div>
+          {!hasAccess && <>
+            <h2 className="santa-message-heading">A FREE PERSONALISED MESSAGE FROM SANTA</h2>
+            <p className="message-free-intro">No Artificial Intelligence! Just Santa, aka Father Christmas with a message to your little one.</p>
+          </>}
         </> : <>
         <p className="eyebrow">A little North Pole experiment</p>
         <div className="message-intro-divider" aria-hidden="true">★</div>
@@ -385,7 +389,6 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
 
         </>}
         {dedicatedLayout && <>
-          {!hasAccess && <div className="message-free-logo-wrap"><img className="message-free-logo" src="/images/free-santa-message-microphone.png" alt="Free Santa Message — Santa Radio" width="1680" height="936" /></div>}
           <SantaMessageVideoExample recipientName={name} />
         </>}
       </div>

@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('countdown follows the saved deadline through reload and unlocks at zero', async ({ page }) => {
   await page.clock.install({ time: new Date('2026-11-18T22:00:00Z') });
+  await page.clock.pauseAt(new Date('2026-11-18T22:00:00Z'));
   await page.route('**/api/santa-message-access', route => route.fulfill({ json: { authorized: true } }));
   await page.addInitScript(() => {
     if (!localStorage.getItem('santa-message-allowance')) localStorage.setItem('santa-message-allowance', JSON.stringify({used: 1, availableAt: Date.now() + 65000, cooldownMs: 7200000}));
