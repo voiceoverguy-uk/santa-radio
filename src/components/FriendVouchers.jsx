@@ -4,6 +4,7 @@ import { STUDIO_PATH } from '../lib/studioRoute.js';
 export default function FriendVouchers({ ownerToken }) {
   const [rows, setRows] = useState(null), [error, setError] = useState('');
   const [busy, setBusy] = useState(false), [copied, setCopied] = useState(null);
+  const [visibleCount, setVisibleCount] = useState(10);
   async function load(signal) {
     setBusy(true); setError('');
     try {
@@ -35,12 +36,13 @@ export default function FriendVouchers({ ownerToken }) {
     {copied && <p role="status">Voucher {copied} copied.</p>}
     {rows && <div className="santa-dashboard__table"><table>
       <thead><tr><th scope="col">#</th><th scope="col">Code</th><th scope="col">Status</th><th scope="col">Redeemed · UK time</th><th scope="col">Copy</th></tr></thead>
-      <tbody>{rows.map(row => <tr key={row.slot}>
+      <tbody>{rows.slice(0, visibleCount).map(row => <tr key={row.slot}>
         <td>{row.slot}</td><td><code>{row.code}</code></td>
         <td><strong style={{ color: row.redeemedAt ? '#e6b8b8' : '#bce5c1' }}>{row.redeemedAt ? 'REDEEMED' : row.status}</strong></td>
         <td>{row.redeemedAt ? new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Europe/London' }).format(new Date(row.redeemedAt)) : 'Not redeemed'}</td>
         <td><button disabled={!!row.redeemedAt} onClick={() => copy(row)} aria-label={`Copy voucher ${row.slot}`}>{copied === row.slot ? '✓ Copied!' : 'Copy'}</button></td>
       </tr>)}</tbody>
     </table></div>}
+    {rows && <div className="santa-dashboard__pagination"><span>Showing {Math.min(visibleCount, rows.length)} of {rows.length} codes</span>{visibleCount < rows.length && <button onClick={() => setVisibleCount(count => count + 10)}>Show more</button>}{visibleCount > 10 && <button onClick={() => setVisibleCount(10)}>Show fewer</button>}</div>}
   </section>;
 }
