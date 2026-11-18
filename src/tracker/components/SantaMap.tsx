@@ -197,7 +197,7 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
   const k = pixelFactor / Math.pow(s, 0.85); // readable pins and labels on phone as well as desktop
 
   // Route segments, split at the date line instead of crossing the world.
-  const visitedOrdered = ordered.filter((st) => visited.has(st.id));
+  const visitedOrdered = mode === "LIVE" ? ordered.filter((st) => visited.has(st.id)) : [];
   const segments: string[] = [];
   for (let i = 1; i < visitedOrdered.length; i++) {
     const a = mapProject(visitedOrdered[i - 1].lat, visitedOrdered[i - 1].lng);
@@ -335,7 +335,7 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
 
             {ordered.map((stop) => {
               const { x: sx, y: sy } = mapProject(stop.lat, stop.lng);
-              const isVisited = visited.has(stop.id);
+              const isVisited = mode === "LIVE" && visited.has(stop.id);
               const isCurrent = stop.id === currentId;
               const isNext = stop.id === nextStop?.id;
               return (
@@ -432,7 +432,7 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
           </svg>
         )}
 
-        <div className="tracker-map-caption absolute bottom-3 left-3 backdrop-blur-sm rounded-lg px-3 py-1.5 text-xs">
+        <div className="tracker-map-caption absolute bottom-3 left-3 backdrop-blur-sm rounded-lg px-3 py-1.5 text-xs" data-delivery-caption={mode === "LIVE" ? "true" : undefined}>
           {mode === "PREPARING" ? "Getting ready at the North Pole"
             : mode === "COMPLETE"
             ? santaInfo?.title === "North Pole grotto" ? "Resting at the North Pole grotto" : `Ringing in the New Year in ${santaInfo?.title ?? "the city"}`

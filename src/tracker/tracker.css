@@ -589,3 +589,12 @@
 .tracker-map:fullscreen .tj-rotate-hint {
   top: calc(92px + env(safe-area-inset-top, 0px));
 }
+
+
+.tracker-fullscreen .tracker-map-caption[data-delivery-caption="true"],
+.tracker-map:fullscreen .tracker-map-caption[data-delivery-caption="true"] {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 400;
+}

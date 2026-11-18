@@ -216,3 +216,22 @@ test("traditional Santa waits at the North Pole until takeoff with ten preparati
   assert.equal(departure.mode, "LIVE");
   assert.match(artwork(departure.mode, departure.mapPosition.lng).src, /santa-sleigh/);
 });
+
+
+test("map clears delivery lines and visited pin styling immediately after the final delivery", () => {
+  for (const [iso, hasRoute] of [
+    ["2026-12-25T11:19:59.999Z", true],
+    ["2026-12-25T11:20:00Z", false],
+    ["2026-12-31T20:00:00Z", false],
+    ["2027-01-01T12:00:00Z", false],
+  ]) {
+    const effectiveTime = new Date(iso);
+    const data = route.getDashboardData(effectiveTime);
+    const html = renderToStaticMarkup(React.createElement(SantaMap, {
+      effectiveTime, mapPosition: data.mapPosition,
+    }));
+    assert.equal(html.includes("stroke-dasharray"), hasRoute, iso);
+    assert.equal(html.includes('fill="#b62332"'), hasRoute, iso);
+    assert.match(html, /data-santa-artwork/);
+  }
+});
