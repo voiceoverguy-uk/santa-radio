@@ -7,3 +7,6 @@
 .santa-dashboard .dashboard-todos__filter { margin: 16px 0; }
 .santa-dashboard .dashboard-todos input[type="checkbox"] { appearance: auto; display: inline-block; flex: 0 0 24px; width: 24px; height: 24px; margin: 0; padding: 0; accent-color: #efcf79; cursor: pointer; }
 .santa-dashboard .dashboard-todos input[type="checkbox"]:focus-visible { outline: 3px solid #efcf79; outline-offset: 4px; }
+
+.dashboard-todos__actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 8px 0 18px; }
+.santa-dashboard .dashboard-todos textarea { width: 100%; box-sizing: border-box; }

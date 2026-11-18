@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 export default function DashboardTodos({ownerToken}) {
   const [tasks,setTasks]=useState([]),[title,setTitle]=useState(''),[busy,setBusy]=useState(false),[error,setError]=useState('');
   const [loaded,setLoaded]=useState(false),[showCompleted,setShowCompleted]=useState(false);
+  const [editing,setEditing]=useState(null),[draft,setDraft]=useState('');
   const alive=useRef(true),submission=useRef(null);
   async function request(body) {
     setBusy(true);setError('');
@@ -20,7 +21,15 @@ export default function DashboardTodos({ownerToken}) {
     {error&&<p role="alert">{error}</p>}{busy&&<p role="status">Updating to-do list…</p>}
     <p>{tasks.length-completed} to do · {completed} completed</p>
     <label className="dashboard-todos__filter"><span>Show completed</span><input type="checkbox" checked={showCompleted} onChange={e=>setShowCompleted(e.target.checked)}/></label>
-    {tasks.filter(t=>showCompleted||!t.completedAt).map(task=><label key={task.id} className="dashboard-todos__item"><span style={{textDecoration:task.completedAt?'line-through':'none'}}>{task.title}</span><input type="checkbox" checked={!!task.completedAt} disabled={busy} onChange={e=>request({action:'complete',id:task.id,completed:String(e.target.checked)})}/></label>)}
+    {tasks.filter(t=>showCompleted||!t.completedAt).map(task=><div key={task.id} className="dashboard-todos__task">
+      {editing===task.id ? <form onSubmit={async e=>{e.preventDefault();if(await request({action:'edit',id:task.id,title:draft}))setEditing(null);}}>
+        <label htmlFor={`task-edit-${task.id}`}>Edit task</label><textarea id={`task-edit-${task.id}`} autoFocus value={draft} onChange={e=>setDraft(e.target.value)} maxLength={300} rows={3} disabled={busy}/>
+        <div className="dashboard-todos__actions"><button disabled={busy||!draft.trim()}>Save changes</button><button type="button" disabled={busy} onClick={()=>setEditing(null)}>Cancel</button></div>
+      </form> : <>
+        <label className="dashboard-todos__item"><span style={{textDecoration:task.completedAt?'line-through':'none'}}>{task.title}</span><input type="checkbox" checked={!!task.completedAt} disabled={busy} onChange={e=>request({action:'complete',id:task.id,completed:String(e.target.checked)})}/></label>
+        <div className="dashboard-todos__actions"><button type="button" disabled={busy} aria-label={`Edit ${task.title}`} onClick={()=>{setEditing(task.id);setDraft(task.title);}}>Edit</button><button type="button" disabled={busy} aria-label={`Delete ${task.title}`} onClick={()=>{if(window.confirm(`Are you sure you want to delete “${task.title}”? This cannot be undone.`))request({action:'delete',id:task.id});}}>Delete</button></div>
+      </>}
+    </div>)}
     {loaded&&!tasks.length&&<p>No tasks yet. Add your first idea above.</p>}
     <button type="button" disabled={busy} onClick={()=>request()}>Refresh list</button>
   </section>;

@@ -13,6 +13,11 @@ test('tasks persist, repeated adds deduplicate, completion can be undone',{skip:
  assert.equal((await dashboardTodos({action:'add',id,title:'Add an idea'},pool)).tasks.length,1);
  assert.ok((await dashboardTodos({action:'complete',id,completed:'true'},pool)).tasks[0].completedAt);
  assert.equal((await dashboardTodos({action:'complete',id,completed:'false'},pool)).tasks[0].completedAt,null);
+ await dashboardTodos({action:'complete',id,completed:'true'},pool);
+ const edited=await dashboardTodos({action:'edit',id,title:'Updated idea'},pool);assert.equal(edited.tasks[0].title,'Updated idea');assert.ok(edited.tasks[0].completedAt);
+ await assert.rejects(dashboardTodos({action:'edit',id,title:' '},pool),{status:400});
+ assert.equal((await dashboardTodos({action:'delete',id},pool)).tasks.length,0);
+ assert.equal((await dashboardTodos({action:'delete',id},pool)).tasks.length,0);
  await assert.rejects(dashboardTodos({action:'add',id,title:' '},pool),{status:400});
  await assert.rejects(dashboardTodos({action:'complete',id,completed:'maybe'},pool),{status:400});
  }finally{await db.close()}
