@@ -127,7 +127,7 @@ test("rendered full map anchors an independently mirrored, proportion-preserving
 
 test("tracker PNG assets retain source proportions and an RGBA alpha channel", () => {
   const assets = fs.readdirSync(path.resolve(root, "../../public/images/tracker"));
-  assert.equal(assets.length, 9);
+  assert.equal(assets.length, 10);
   for (const name of assets) {
     const source = fs.readdirSync(path.resolve(root, "../../attached_assets")).find(file => file.startsWith(name.replace(".png", "_")));
     const png = fs.readFileSync(path.resolve(root, "../../public/images/tracker", name));
@@ -138,7 +138,7 @@ test("tracker PNG assets retain source proportions and an RGBA alpha channel", (
       const original = fs.readFileSync(path.resolve(root, "../../attached_assets", source));
       assert.ok(Math.abs(w / h - original.readUInt32BE(16) / original.readUInt32BE(20)) < 0.005, name);
     } else {
-      assert.ok(["santa-traditional-front.png", "santa-shattered.png", "santa-armchair.png"].includes(name));
+      assert.ok(["santa-traditional-front.png", "santa-shattered.png", "santa-armchair.png", "santa-party.png"].includes(name));
     }
   }
 });
@@ -249,8 +249,8 @@ test("rest sprites switch exactly eight hours after delivery and preserve the Ne
       ["2026-12-25T19:19:59.999Z", "shattered"],
       ["2026-12-25T19:20:00Z", "armchair"],
       ["2026-12-31T17:59:59Z", "armchair"],
-      ["2026-12-31T18:00:00Z", "traditional-front"],
-      ["2027-01-01T02:59:59Z", "traditional-front"],
+      ["2026-12-31T18:00:00Z", "party"],
+      ["2027-01-01T02:59:59Z", "party"],
       ["2027-01-01T03:00:00Z", "armchair"],
       ["2027-01-01T23:59:59Z", "armchair"],
       ["2027-01-02T00:00:00Z", "holiday-front"],

@@ -21,7 +21,13 @@ export function getSantaMarkerArtwork(
       mirrored: false, width: 48, height: 32,
     };
   }
-  if (mode === "COMPLETE" && effectiveTime && !isNewYearCelebration(effectiveTime)) {
+  if (mode === "COMPLETE" && effectiveTime && isNewYearCelebration(effectiveTime)) {
+    return {
+      src: "/images/tracker/santa-party.png",
+      mirrored: false, width: 36, height: 40,
+    };
+  }
+  if (mode === "COMPLETE" && effectiveTime) {
     const elapsed = effectiveTime.getTime() - getJourneyEndTime(getChristmasEveYear(effectiveTime)).getTime();
     const shattered = elapsed >= 0 && elapsed < 8 * 60 * 60 * 1000;
     return {
