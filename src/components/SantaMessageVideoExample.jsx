@@ -1,3 +1,4 @@
+import SantaVideoPlayer from './SantaVideoPlayer.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { useRadio } from './RadioProvider.jsx';
 
@@ -28,9 +29,9 @@ export default function SantaMessageVideoExample({ recipientName = '' }) {
     return () => { resume.current?.(); resume.current = null; };
   }, []);
   return <figure className="fsm-video-preview">
-    <video key={example.src} controls playsInline preload="none"
+    <SantaVideoPlayer key={example.src} preload="none"
       poster={example.poster} src={example.src}
-      aria-label={`Play an example Santa video message for ${example.name}`}
+      label={`Play an example Santa video message for ${example.name}`}
       onPlay={() => {
         document.querySelectorAll('.message-result audio, .message-result video').forEach(media => media.pause());
         if (!resume.current) resume.current = radio?.pauseForMessage();

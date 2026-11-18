@@ -1,10 +1,15 @@
-import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
+import SantaVideoPlayer from './SantaVideoPlayer.jsx';
+import { useEffect, useRef, useState } from 'react';
 import { createSantaVideo } from '../lib/createSantaVideo.js';
 import { trackMessageAction } from '../lib/messageEngagement.js';
 import './SantaFreeVideo.css';
 import { SantaGreetingShare } from './SantaMessageShare.jsx';
 
-export default function SantaFreeVideo({ message, onDownload, onPlay, onEnded }) {
+export default function SantaFreeVideo({ message, onDownload, onPlay, onEnded, previewTarget, onReady }) {
+  const readyCallback = useRef(onReady);
+  readyCallback.current = onReady;
+  const [hideProgress, setHideProgress] = useState(false);
   const [url, setUrl] = useState('');
   const [videoBlob, setVideoBlob] = useState(null);
   const [progress, setProgress] = useState(null);
@@ -16,24 +21,30 @@ export default function SantaFreeVideo({ message, onDownload, onPlay, onEnded })
     if (cancelled) return;
     const controller = new AbortController();
     let objectUrl;
-    setUrl(''); setVideoBlob(null); setProgress(null); setError(''); setStatus('Preparing your Christmas video…');
+    setHideProgress(false); setUrl(''); setVideoBlob(null); setProgress(null); setError(''); setStatus('Preparing your Christmas video…');
     createSantaVideo({ audio: message.blob, name: message.name, signal: controller.signal, onProgress: value => { if (!controller.signal.aborted) setProgress(value); }, onStatus: text => { if (!controller.signal.aborted) setStatus(text); } })
       .then(blob => {
         if (controller.signal.aborted) return;
-        setVideoBlob(blob); objectUrl = URL.createObjectURL(blob); setUrl(objectUrl); setStatus('Your Christmas video is ready.');
+        setVideoBlob(blob); objectUrl = URL.createObjectURL(blob); setUrl(objectUrl); setStatus('Your Christmas video is ready.'); readyCallback.current?.();
       }).catch(() => {
         if (!controller.signal.aborted) { setError('Your video could not be prepared on this device. Please try again.'); setStatus(''); }
       });
     return () => { controller.abort(); if (objectUrl) URL.revokeObjectURL(objectUrl); };
   }, [message.blob, message.name, attempt, cancelled]);
+  useEffect(() => {
+    if (!url) return;
+    const timer = setTimeout(() => setHideProgress(true), 3000);
+    return () => clearTimeout(timer);
+  }, [url]);
+  const player = <SantaVideoPlayer src={url} preload="auto" glow label={`Santa’s video message for ${message.name}`} onPlay={onPlay} onPause={onEnded} onEnded={onEnded} onPlaying={() => trackMessageAction(message.statisticsReceipt, 'listen')} />;
   const filename = `Santa-message-for-${message.name.replace(/[^\p{L}\p{N} _-]/gu, '').trim() || 'you'}.mp4`;
   return <div className="santa-free-video">
-    {!error && !cancelled && <div className="santa-free-video__progress"><progress aria-label="MP4 creation progress" max="1" value={progress ?? undefined} /><span>{progress === null ? 'Preparing…' : `${Math.floor(progress * 100)}%`}</span></div>}
-    <p role="status" aria-live="polite">{cancelled ? 'Video preparation cancelled. You can try again below.' : status}</p>
+    {!error && !cancelled && !hideProgress && <div className="santa-free-video__progress"><progress aria-label="MP4 creation progress" max="1" value={progress ?? undefined} /><span>{progress === null ? 'Preparing…' : `${Math.floor(progress * 100)}%`}</span></div>}
+    {!hideProgress && <p role="status" aria-live="polite">{cancelled ? 'Video preparation cancelled. You can try again below.' : status}</p>}
     {url && !cancelled && <>
-      <video controls playsInline preload="metadata" src={url} aria-label={`Santa’s video message for ${message.name}`} onPlay={onPlay} onEnded={onEnded} onPlaying={() => trackMessageAction(message.statisticsReceipt, 'listen')} />
+      {previewTarget ? createPortal(player, previewTarget) : player}
       <div className="santa-free-video__actions">
-      <a className="message-download" href={url} download={filename} onClick={() => {
+      <a className="btn-red santa-free-video__download" href={url} download={filename} onClick={() => {
         trackMessageAction(message.statisticsReceipt, 'mp4-download');
         trackMessageAction(message.statisticsReceipt, 'download');
         onDownload?.();

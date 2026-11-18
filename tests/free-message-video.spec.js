@@ -24,12 +24,25 @@ test('completed free greeting provides a personalised MP4 and measures only down
     await maker.getByRole('combobox').fill('Oliver');
     await maker.getByRole('option').first().click();
     await maker.getByRole('button', { name: 'Create message', exact: true }).click();
-    const video = maker.locator('.santa-free-video video');
+    const video = page.locator('.fsm-personal-video video');
     const link = maker.getByRole('link', { name: 'Download your message' });
     await expect(link).toBeVisible({ timeout: 90000 });
     await expect(video).toBeVisible();
+    await expect(page.locator('.fsm-video-preview')).toHaveCount(0);
+    expect(await video.evaluate(el => el.controls)).toBe(false);
+    await page.getByRole('button', { name: 'Play Santa’s video message for Oliver', exact: true }).click();
+    await expect.poll(() => video.evaluate(el => el.currentTime)).toBeGreaterThan(0);
+    await page.getByRole('button', { name: 'Pause Santa’s video message for Oliver', exact: true }).click();
+    const sizes = await page.evaluate(() => {
+      const nav = document.querySelector('.nav-message'), download = document.querySelector('.santa-free-video__download');
+      return { nav: nav.getBoundingClientRect().height, download: download.getBoundingClientRect().height, navFont: getComputedStyle(nav).fontSize, downloadFont: getComputedStyle(download).fontSize };
+    });
+    expect(sizes.download).toBe(sizes.nav);
+    expect(sizes.downloadFont).toBe(sizes.navFont);
+    await expect(page.locator('.message-creation-indicator')).toHaveCount(0);
     expect(events.filter(event => event.action === 'mp4-download')).toHaveLength(0);
     await expect(maker.getByRole('progressbar', { name: 'MP4 creation progress' })).toHaveAttribute('value', '1');
+    await page.locator('.fsm-personal-video').screenshot({ path: '/tmp/santa-personal-player.png' });
     const downloadPromise = page.waitForEvent('download');
     await link.click();
     const download = await downloadPromise;
@@ -46,5 +59,7 @@ test('completed free greeting provides a personalised MP4 and measures only down
     await maker.getByRole('button', { name: 'Share this greeting', exact: true }).click({ force: true });
     await expect.poll(() => page.evaluate(() => window.sharedFile?.type)).toBe('video/mp4');
     expect(await page.evaluate(() => window.sharedFile.name)).toBe('Santa-message-for-Oliver.mp4');
+    await expect(maker.getByRole('progressbar', { name: 'MP4 creation progress' })).toHaveCount(0, { timeout: 5000 });
+    await expect(video).toBeVisible();
   } finally { rmSync(folder, { recursive: true, force: true }); }
 });

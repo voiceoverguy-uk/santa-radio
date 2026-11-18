@@ -7,7 +7,6 @@ import PronunciationNote from './PronunciationNote.jsx';
 import { useEffect, useId, useRef, useState } from 'react';
 import { useRadio } from './RadioProvider.jsx';
 import SantaMessageExample from './SantaMessageExample.jsx';
-import MessageCreationIndicator from './MessageCreationIndicator.jsx';
 import SantaMessageAccessForm from './SantaMessageAccessForm.jsx';
 import useSantaNameTotal from './useSantaNameTotal.js';
 import { SantaGreetingShare } from './SantaMessageShare.jsx';
@@ -41,6 +40,8 @@ const AUDIO_ONLY_DELIVERY_ENABLED = false;
 export default function SantaMessageForm({ showDetailLink = true, initialName = '', pendingName, keepSignupInPlace = false, selectedChildName = '', layout = 'default' }) {
   const requestsOpen = useNameRequestSeason();
   const [bespokeDownload, setBespokeDownload] = useState(null);
+  const [videoPreviewTarget, setVideoPreviewTarget] = useState(null);
+  const [readyVideoKey, setReadyVideoKey] = useState(null);
   const makerPanelRef = useInlineMakerRadioVisibility();
   const dedicatedLayout = layout === 'dedicated';
   const { hasAccess, greetingName, sessionRemembered, revokeAccess } = useSantaMessageAccess();
@@ -325,7 +326,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const renderResults = () => messages.map((message, index) => <div key={message.key} className="message-result" ref={index === messages.length - 1 ? resultRef : null} tabIndex={-1} aria-label={`Santa’s greeting for ${message.name}`}>
     <p className="message-postmark">A greeting is waiting</p>
     <h4>To {message.name} from Santa</h4>
-    <SantaFreeVideo message={message} onPlay={pauseRadio} onEnded={finishMessage} onDownload={() => {
+    <SantaFreeVideo message={message} previewTarget={dedicatedLayout && index === messages.length - 1 ? videoPreviewTarget : null} onReady={() => setReadyVideoKey(message.key)} onPlay={pauseRadio} onEnded={finishMessage} onDownload={() => {
       setClickedDownloads(previous => new Set([...previous, message.key]));
       if (!studioPrelaunch && message.statisticsReceipt) setBespokeDownload(previous => previous || { name: message.name, key: message.key, receipt: message.statisticsReceipt });
     }} />
@@ -389,7 +390,8 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
 
         </>}
         {dedicatedLayout && <>
-          <SantaMessageVideoExample recipientName={name} />
+          {readyVideoKey !== messages.at(-1)?.key && <SantaMessageVideoExample recipientName={name} />}
+          <div className="fsm-personal-video" ref={setVideoPreviewTarget} hidden={!messages.length || readyVideoKey !== messages.at(-1)?.key} />
         </>}
       </div>
       <div className="santa-message-aside">
@@ -516,7 +518,6 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
           <button className="btn-red message-submit" type="submit" disabled={busy || allowance.pending || coolingDown || searchPending}>{busy ? 'Santa Recording...' : 'Create message'} <span aria-hidden="true">→</span></button>
           {busy && <div className="message-creation-status">
             <p role="status" className="message-name-hint">Santa is recording a personal message for {resolvedRecord?.name || name.trim()}. Hang on!</p>
-            <MessageCreationIndicator />
           </div>}
           {!busy && allowance.pending && <p role="status" className="message-name-hint">Another message is being created. Please wait for it to finish.</p>}
         </form>

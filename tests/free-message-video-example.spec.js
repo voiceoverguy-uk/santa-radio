@@ -7,7 +7,7 @@ for (const width of [390, 1280]) {
     await page.route('**/api/message-statistics', route => { events.push(route.request().postData()); return route.fulfill({ json: { ok: true } }); });
     await page.goto('/free-santa-message');
     await page.getByRole('button', { name: 'Decline optional cookies', exact: true }).click();
-    const video = page.getByLabel(/Play an example Santa video message for (Charlotte|Arabella|Harry)/);
+    const video = page.locator('.fsm-video-preview video');
     await expect(video).toBeVisible();
     expect(await page.evaluate(() => window.scrollY)).toBeLessThan(100);
     const preview = await video.boundingBox(), logo = await page.locator('.message-free-logo').boundingBox();
@@ -20,7 +20,7 @@ for (const width of [390, 1280]) {
     await video.evaluate(el => el.pause());
     expect(events).toHaveLength(0);
     const first = await video.getAttribute('src');
-    await expect(page.locator('.fsm-video-preview figcaption, .fsm-video-preview button, .fsm-video-preview a')).toHaveCount(0);
+    await expect(page.locator('.fsm-video-preview figcaption, .fsm-video-preview a')).toHaveCount(0);
     await video.dispatchEvent('ended');
     await expect(video).not.toHaveAttribute('src', first);
     expect(await video.evaluate(el => el.paused)).toBe(true);
