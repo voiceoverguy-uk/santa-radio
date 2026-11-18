@@ -598,3 +598,10 @@
   font-size: 12px;
   font-weight: 400;
 }
+
+@media (max-width: 767px) {
+  .tracker-banner .tracker-banner-map-group > .relative {
+    width: min(100%, 24rem);
+  }
+  .tracker-banner .tracker-banner-map { width: 100%; }
+}
