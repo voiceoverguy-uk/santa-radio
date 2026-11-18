@@ -60,7 +60,7 @@ test('fresh homepage TV loads without recording consent or flashing an off notic
   expect(requests).toHaveLength(1);
   await webcam.getByRole('button', { name: 'Enable external media', exact: true }).click();
   await expect(video).toHaveAttribute('src',
-    'https://www.youtube.com/embed/mMrHniQJNCM?si=O7nNcINykyWwgyXC&autoplay=0&mute=1&controls=1&playsinline=1');
+    `https://www.youtube.com/embed/mMrHniQJNCM?si=O7nNcINykyWwgyXC&autoplay=${page.viewportSize().width >= 1024 ? 1 : 0}&mute=1&controls=1&playsinline=1`);
   expect(await stored(page)).toMatchObject({ analytics: false, marketing: false, media: true });
   await expect(webcam.getByRole('button', { name: /^(Pause video|Resume muted video)$/ })).toHaveCount(0);
   await expect(placeholderLink).toHaveCount(0);

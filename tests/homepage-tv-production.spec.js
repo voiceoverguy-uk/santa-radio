@@ -71,3 +71,22 @@ for (const media of [null, false, true]) {
     expect(errors).toEqual([]);
   });
 }
+
+
+for (const width of [1440, 390]) {
+  test(`webcam requests muted autoplay only on desktop, width ${width}`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.addInitScript(() => localStorage.setItem('santaradio-cookie-consent-v2',
+      JSON.stringify({ version: 2, analytics: false, marketing: false, media: true, savedAt: Date.now() })));
+    await page.route('https://www.youtube.com/embed/**', route => route.fulfill({ contentType: 'text/html', body: 'Test provider' }));
+    await page.goto(origin, { waitUntil: 'domcontentloaded' });
+    const frame = page.locator('.youtube-section iframe');
+    await expect(frame).toHaveAttribute('src', /[?&]autoplay=0(?:&|$)/);
+    await page.locator('.youtube-section .tv-screen').scrollIntoViewIfNeeded();
+    await expect(frame).toHaveAttribute('src', new RegExp(`[?&]autoplay=${width >= 1024 ? 1 : 0}(?:&|$)`));
+    await expect(frame).toHaveAttribute('src', /[?&]mute=1(?:&|$)/);
+    await expect(frame).toHaveAttribute('allow', /autoplay/);
+    await expect(frame).toHaveAttribute('allowfullscreen', '');
+    await expect(page.locator('.webcam-play-help')).toContainText(width >= 1024 ? 'Plays automatically on desktop' : 'Tap play to watch');
+  });
+}

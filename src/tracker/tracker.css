@@ -428,6 +428,9 @@
   gap: 14px;
   width: 100%;
 }
+.tracker-banner .tracker-banner-map-group > .relative {
+  width: 100%;
+}
 .tracker-banner .tracker-banner-map-group .tracker-status {
   max-width: 100%;
   text-align: center;
