@@ -7,8 +7,9 @@ export default function WorkshopMissingName({name}) {
   const requestsOpen = useNameRequestSeason();
   const [state,setState]=useState('idle'),[message,setMessage]=useState('');
   const [pronunciation,setPronunciation]=useState('');
+  const [expanded,setExpanded]=useState(false);
   const current=useRef(name);current.current=name;
-  useEffect(()=>{setState('idle');setMessage('');setPronunciation('');},[name]);
+  useEffect(()=>{setState('idle');setMessage('');setPronunciation('');setExpanded(false);},[name]);
   const requested=normaliseRequestedName(name);
   if(!requested || !requestsOpen)return null;
   async function submit() {
@@ -20,5 +21,17 @@ export default function WorkshopMissingName({name}) {
       if(current.current===name){setState('success');setMessage(result.message);}
     }catch(error){if(current.current!==name)return;setState('error');setMessage(error.name==='TimeoutError'?'The request timed out. Please try again.':error.message);}
   }
-  return <div className="smw-stage-note"><p>Can’t find the right recording? Ask Santa to add “{requested.name}”.</p><p><strong>Please request first names only.</strong> Hyphenated and two-part first names, such as Ellie-May or Ellie May, are welcome. Surnames, full names, group names and phrases won’t be considered for recording.</p><p>Up to 5 new names every 2 hours.</p>{state!=='success'&&<PronunciationNote key={name} value={pronunciation} onChange={setPronunciation} disabled={state==='pending'} />}{state!=='success'&&<button type="button" className="smw-name-retry" disabled={state==='pending'} onClick={submit}>{state==='pending'?'Sending request…':'Request this first name'}</button>}{message&&<p role={state==='error'?'alert':'status'}>{message}</p>}<p>Requests are reviewed manually. You can return later using your Studio access link.</p></div>;
+  return <div className="smw-stage-note">
+    {!expanded && state !== 'success' && <button type="button" className="smw-name-retry" onClick={() => setExpanded(true)} aria-expanded={false}>Request this first name</button>}
+    {expanded && state !== 'success' && <>
+      <p><strong>Request “{requested.name}”</strong></p>
+      <p>First names only—hyphenated or two-part first names are welcome. No surnames.</p>
+      <PronunciationNote key={name} value={pronunciation} onChange={setPronunciation} disabled={state==='pending'} initiallyOpen />
+      <p>Allow up to 48 hours for the name to become available.</p>
+      <button type="button" className="smw-name-retry" disabled={state==='pending'} onClick={submit}>{state==='pending'?'Sending request…':'Send name request'}</button>
+      <button type="button" className="smw-name-retry" disabled={state==='pending'} onClick={() => setExpanded(false)}>Cancel</button>
+    </>}
+    {message && <p role={state==='error'?'alert':'status'}>{message}</p>}
+    {state==='success' && <p>Allow up to 48 hours. Return using your Studio access link to check the name.</p>}
+  </div>;
 }

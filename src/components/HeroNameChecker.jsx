@@ -1,3 +1,4 @@
+import { santaNameDisplay } from '../lib/santaNameSearch.js';
 import { useEffect, useId, useRef, useState } from 'react';
 import useBrowserSantaNameSearch from './useBrowserSantaNameSearch.js';
 import { selectSantaRecipient } from './useSantaRecipient.js';
@@ -143,7 +144,7 @@ export default function HeroNameChecker({ onContinue, onSelectedNameChange, onCh
             }}
             onPointerCancel={() => { touch.current = null; }}
             onClick={event => { if (!suppressClick.current || event.detail === 0) choose(record); }}>
-            {record.name}{record.variant && <small> — {record.variant}</small>}
+            {santaNameDisplay(record.name)}{record.variant && <small> — {record.variant}</small>}
           </li>)}
         </ul>}
       </div>

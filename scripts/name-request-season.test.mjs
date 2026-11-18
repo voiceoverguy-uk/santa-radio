@@ -3,11 +3,11 @@ import assert from 'node:assert/strict';
 import { nameRequestsOpen } from '../src/lib/nameRequestSeason.js';
 import { createNameRequestHandler } from '../server/name-requests.js';
 
-test('requests open October 1 and close Christmas Day at UK midnight every year', () => {
+test('requests open November 1 and close Christmas Day at UK midnight every year', () => {
   for (const year of [2026, 2027, 2028]) {
     for (const [date, open] of [
-      [`${year}-09-30T22:59:59Z`, false],
-      [`${year}-09-30T23:00:00Z`, true],
+      [`${year}-10-31T23:59:59Z`, false],
+      [`${year}-11-01T00:00:00Z`, true],
       [`${year}-12-24T23:59:59Z`, true],
       [`${year}-12-25T00:00:00Z`, false],
       [`${year}-01-01T12:00:00Z`, false],

@@ -1,6 +1,6 @@
 import { useId, useState } from 'react';
-export default function PronunciationNote({ value, onChange, disabled = false }) {
-  const [open, setOpen] = useState(false);
+export default function PronunciationNote({ value, onChange, disabled = false, initiallyOpen = false }) {
+  const [open, setOpen] = useState(initiallyOpen);
   const id = useId();
   return <div className="name-pronunciation">
     <button type="button" className="message-retry" aria-expanded={open} aria-controls={id}

@@ -23,7 +23,7 @@ import SantaVoiceTagline from './SantaVoiceTagline.jsx';
 import SantaStudioPromotion from './SantaStudioPromotion.jsx';
 import WorkshopExplainerCards from './WorkshopExplainerCards.jsx';
 import SantaMessageReviews from './SantaMessageReviews.jsx';
-import { santaNameKey } from '../lib/santaNameSearch.js';
+import { santaNameKey, santaNameDisplay } from '../lib/santaNameSearch.js';
 import { santaMessageDownloadName } from '../lib/santaMessageDownloadName.js';
 import { randomSantaExample, santaNamePlaceholder } from '../lib/santaNamePlaceholder.js';
 import { normaliseRequestedName } from '../lib/santaNameRequests.js';
@@ -445,7 +445,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
               }}
               onClick={event => {
                 if (!suppressTouchClickRef.current || event.detail === 0) selectName(suggestion);
-              }}>{suggestion.name}{suggestion.variant && <small> — {suggestion.variant}</small>}</li>)}
+              }}>{santaNameDisplay(suggestion.name)}{suggestion.variant && <small> — {suggestion.variant}</small>}</li>)}
           </ul>}
           </div>
           <span className="message-name-hint" id={`${inputId}-hint`} aria-live="polite">

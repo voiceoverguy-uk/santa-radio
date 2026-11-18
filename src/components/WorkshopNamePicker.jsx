@@ -1,7 +1,7 @@
 import WorkshopMissingName from './WorkshopMissingName.jsx';
 import { useEffect, useId, useRef, useState } from 'react';
 import useBrowserSantaNameSearch from './useBrowserSantaNameSearch.js';
-import { santaNameKey } from '../lib/santaNameSearch.js';
+import { santaNameKey, santaNameDisplay } from '../lib/santaNameSearch.js';
 import WorkshopNamePreview from './WorkshopNamePreview.jsx';
 import './WorkshopNamePicker.css';
 
@@ -157,7 +157,7 @@ export default function WorkshopNamePicker({ selected, initialName = '', onSelec
                   onMouseDown={event => event.preventDefault()}
                   onClick={() => chooseRecord(record)}
                 >
-                  <span>{record.name}</span>
+                  <span>{santaNameDisplay(record.name)}</span>
                   {record.variant && <small>{record.variant}</small>}
                 </li>
               );
@@ -197,13 +197,7 @@ export default function WorkshopNamePicker({ selected, initialName = '', onSelec
         <>
           {query.trim().length >= 2 && matchingRecords.length === 0 && !search.warning && (
             <div className="smw-name-empty" role="status">
-              <p>Santa has not recorded “{query.trim()}” yet. Try another spelling or refine your search.</p>
-              <p className="smw-name-soundalike">
-                As this is a recorded message, could a name spelt differently sound the same?
-                Try that spelling and choose a suitable recording. You can change the written
-                spelling at the end for the certificate name and MP3 filename. This won’t change
-                the name Santa says.
-              </p>
+              <p><strong>Name not found.</strong> Try a name that sounds the same, then change the written spelling in the final step. Santa will still say the recording you choose.</p>
             </div>
           )}
           {matchingRecords.length > 0
@@ -216,7 +210,7 @@ export default function WorkshopNamePicker({ selected, initialName = '', onSelec
 
       {selected && (
         <div className="smw-name-status">
-          <span aria-live="polite">Selected name: <strong>{selected.name}{selected.variant ? ` — ${selected.variant}` : ''}</strong></span>
+          <span aria-live="polite">Selected name: <strong>{santaNameDisplay(selected.name)}{selected.variant ? ` — ${selected.variant}` : ''}</strong></span>
           {previewCache && resolution.record && <WorkshopNamePreview record={resolution.record} cache={previewCache} />}
         </div>
       )}
