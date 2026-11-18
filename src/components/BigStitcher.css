@@ -1,3 +1,4 @@
+@import "./CandyCaneProgress.css";
 .big-stitcher { border: 1px solid #bfcfca; border-top: 5px solid #17664f; }
 .big-stitcher header p { color: #efcf79; font-weight: 700; letter-spacing: .12em; font-size: .85rem; }
 .santa-dashboard .big-stitcher__drop { width: 100%; display: grid; gap: .65rem; padding: 2rem 1rem; border: 2px dashed #17664f; border-radius: 12px; background: #edf7f1; color: #153e32; text-align: center; }

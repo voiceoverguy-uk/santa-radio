@@ -1,0 +1,28 @@
+/* Native progress semantics and measured values, with a festive candy cane fill. */
+.santa-free-video__progress progress,
+.big-stitcher__progress progress {
+  appearance: none;
+  -webkit-appearance: none;
+  min-width: 0;
+  height: 16px;
+  overflow: hidden;
+  border: 1px solid #e8cb83;
+  border-radius: 999px;
+  background: #092e23;
+  box-shadow: 0 0 0 2px #e8cb8312;
+}
+.santa-free-video__progress progress::-webkit-progress-bar,
+.big-stitcher__progress progress::-webkit-progress-bar {
+  background: #092e23;
+  border-radius: 999px;
+}
+.santa-free-video__progress progress::-webkit-progress-value,
+.big-stitcher__progress progress::-webkit-progress-value {
+  background: repeating-linear-gradient(120deg, #fff8ee 0 9px, #c92337 9px 18px);
+  border-radius: 999px;
+}
+.santa-free-video__progress progress::-moz-progress-bar,
+.big-stitcher__progress progress::-moz-progress-bar {
+  background: repeating-linear-gradient(120deg, #fff8ee 0 9px, #c92337 9px 18px);
+  border-radius: 999px;
+}

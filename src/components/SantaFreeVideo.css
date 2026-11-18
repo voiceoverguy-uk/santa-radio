@@ -1,3 +1,4 @@
+@import "./CandyCaneProgress.css";
 .santa-free-video { margin: 1rem 0 1.5rem; }
 .santa-free-video video { display: block; width: 100%; aspect-ratio: 16/9; border-radius: 12px; margin: 0 0 1rem; background: #082a1e; }
 .santa-free-video .message-download { display: inline-flex; }
