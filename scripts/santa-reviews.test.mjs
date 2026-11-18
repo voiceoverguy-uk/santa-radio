@@ -10,7 +10,8 @@ test('all ratings qualify and trimmed fifty-character boundary is enforced',()=>
  assert.ok(validateSantaReview({...valid,body:' '.repeat(20)+'x'.repeat(49)+'  '}).error);
  assert.equal(validateSantaReview({...valid,body:'x'.repeat(50)}).body.length,50);
  for(const rating of [0,6,1.5,'5'])assert.ok(validateSantaReview({...valid,rating}).error);
- assert.ok(validateSantaReview({...valid,body:'x'.repeat(2001)}).error);
+ assert.equal(validateSantaReview({...valid,body:'x'.repeat(200)}).body.length,200);
+ assert.ok(validateSantaReview({...valid,body:'x'.repeat(201)}).error);
  assert.ok(validateSantaReview({...valid,consent:true}).error);
  assert.equal(validateSantaReview({...valid,rewardEmail:false}).rewardEmail,false);
 });
@@ -56,4 +57,18 @@ test('real session lookup preserves Express headers and refuses unverified visit
  const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));
  try{const response=await fetch(`http://127.0.0.1:${server.address().port}`);assert.equal(response.status,401);assert.match((await response.json()).error,/verify your adult email/);}
  finally{server.closeAllConnections();await new Promise(r=>server.close(r));}
+});
+
+test('display-copy edits preserve original and require publication consent',async()=>{
+ const queries=[];let sends=0;
+ const app=createReviewsHandler({owner:()=>true,send:async()=>{sends++;},pool:()=>({query:async(sql,args)=>{queries.push({sql,args});return{rowCount:1,rows:[]}}})});
+ const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));
+ const url=`http://127.0.0.1:${server.address().port}`;const headers={'Content-Type':'application/json',Origin:url};
+ const patch=data=>fetch(url,{method:'PATCH',headers,body:JSON.stringify({id:'11111111-1111-1111-1111-111111111111',...data})});
+ try {
+  assert.equal((await patch({action:'edit',displayBody:'short'})).status,400);assert.equal(queries.length,0);
+  assert.equal((await patch({action:'edit',displayBody:valid.body})).status,200);
+  assert.match(queries[0].sql,/SET display_body=\$2/);assert.match(queries[0].sql,/AND consent/);assert.doesNotMatch(queries[0].sql,/SET body|rating=/);assert.equal(queries[0].args[1],valid.body);
+  assert.equal((await patch({action:'restore'})).status,200);assert.match(queries[1].sql,/display_body=NULL/);assert.equal(sends,0);
+ } finally {server.closeAllConnections();await new Promise(r=>server.close(r));}
 });

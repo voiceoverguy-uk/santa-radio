@@ -258,7 +258,8 @@ function MiniMap({ time, holiday, researching = false, northPoleVisitMessage, co
       if (!visible || document.hidden || motion.matches) return;
       const began = performance.now();
       // Local display clock only: never activate or save the private preview.
-      const cities = ['berlin', 'tokyo', 'sydney', 'dubai', 'riodejaneiro', 'newyork'];
+      // New Year party destinations, plus Honolulu for a Pacific glimpse.
+      const cities = ["london", "sydney", "newyork", "paris", "berlin", "tokyo", "hongkong", "singapore", "bangkok", "dubai", "capetown", "riodejaneiro", "lasvegas", "edinburgh", "auckland", "melbourne", "seoul", "amsterdam", "barcelona", "rome", "lisbon", "losangeles", "miami", "buenosaires", "honolulu"];
       let cycle = -1;
       let routeStart = 0;
       timer = setInterval(() => {

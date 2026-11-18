@@ -54,8 +54,8 @@ function BespokeDialog({ name, onClose }) {
     <SantaOfferHolly className="santa-offer-holly santa-offer-holly--top" />
     <p className="santa-offer-kicker">A LITTLE THANK YOU</p>
     <h2 id={title}>Tell us about your Santa message</h2>
-    <p id={description}>Leave an honest review and get 20% off a bespoke Santa message package.</p>
-    <p style={{ textAlign: 'center', fontWeight: 700 }}>Emailed after submission · All star ratings qualify</p>
+    <p id={description} style={{ textAlign: 'center' }}>Why not leave a review?<br />Get 20% off a bespoke Santa message.</p>
+    <p style={{ textAlign: 'center', fontWeight: 700 }}>Discount code emailed after submission</p>
     <Link className="btn-red" style={{ display: 'block', textAlign: 'center', marginTop: 18 }} to="/leave-a-review"
       onClick={onClose}>Write a review →</Link>
     <button type="button" className="santa-offer-later" onClick={onClose}>No thanks</button>

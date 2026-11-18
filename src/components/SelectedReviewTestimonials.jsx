@@ -11,7 +11,17 @@ export default function SelectedReviewTestimonials({ fallback = null }) {
       .then(response => response.ok ? response.json() : null)
       .then(data => {
         if (!active || !Array.isArray(data?.reviews)) return;
-        setReviews(data.reviews.slice(0, 3));
+        const chosen = data.reviews.slice(0, 3);
+        for (let i = chosen.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [chosen[i], chosen[j]] = [chosen[j], chosen[i]];
+        }
+        try {
+          const previousOrder = localStorage.getItem('santa-approved-review-order');
+          if (chosen.length > 1 && chosen.map(review => review.id).join(',') === previousOrder) chosen.push(chosen.shift());
+          localStorage.setItem('santa-approved-review-order', chosen.map(review => review.id).join(','));
+        } catch { /* Random order still works without storage. */ }
+        setReviews(chosen);
         try { localStorage.setItem(ROTATION_KEY, String(data.nextOffset || 0)); } catch { /* Storage is optional. */ }
       }).catch(() => {});
     return () => { active = false; };
@@ -22,8 +32,7 @@ export default function SelectedReviewTestimonials({ fallback = null }) {
     <p className="selected-reviews__note">Selected reviews. Reviewers were offered 20% off for honest feedback, whatever their rating.</p>
     <div className="selected-reviews__grid">{reviews.map(review => <figure className="selected-reviews__card" key={review.id}>
       <p className="selected-reviews__stars" role="img" aria-label={`${review.rating} out of 5 stars`}>{'★'.repeat(review.rating)}{'☆'.repeat(5-review.rating)}</p>
-      <blockquote>{review.body}</blockquote>
-      <figcaption>— {review.displayName}</figcaption>
+      <blockquote>{review.body} <span className="selected-reviews__author">— {review.displayName}</span></blockquote>
     </figure>)}</div>
   </section>;
 }

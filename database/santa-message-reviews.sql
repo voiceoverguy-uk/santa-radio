@@ -18,3 +18,5 @@ CREATE TABLE IF NOT EXISTS santa_message_reviews (
 CREATE INDEX IF NOT EXISTS santa_message_reviews_created ON santa_message_reviews(created_at DESC);
 
 ALTER TABLE santa_message_reviews ADD COLUMN IF NOT EXISTS reward_email_requested boolean NOT NULL DEFAULT true;
+
+ALTER TABLE santa_message_reviews ADD COLUMN IF NOT EXISTS display_body text CHECK (display_body IS NULL OR char_length(display_body) BETWEEN 50 AND 200);

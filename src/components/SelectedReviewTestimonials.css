@@ -1,9 +1,9 @@
-.selected-reviews { width: min(100%, 1120px); margin: 32px auto 0; padding: 0 20px; }
+.selected-reviews { grid-column: 1 / -1; width: 100%; min-width: 0; margin: 32px auto 0; padding: 0; }
 .selected-reviews h2 { color: #f0d785; text-align: center; font-size: clamp(1.4rem, 3vw, 2rem); }
 .selected-reviews__note { text-align: center; color: #e6e1cf; font-size: .85rem; margin: 10px auto 22px; max-width: 650px; }
-.selected-reviews__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.selected-reviews__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; }
 .selected-reviews__card { margin: 0; padding: 24px; border: 1px solid #ac9352; border-radius: 16px; background: linear-gradient(145deg, #173f30, #0c2a20); color: #faf2dc; box-shadow: 0 8px 22px #001b1826; display: flex; flex-direction: column; min-width: 0; }
 .selected-reviews__stars { color: #f0d785; letter-spacing: .16em; font-size: 1.2rem; margin: 0 0 14px; }
-.selected-reviews__card blockquote { margin: 0 0 20px; line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; }
-.selected-reviews__card figcaption { margin-top: auto; color: #eed58c; font-weight: 600; }
-@media (max-width: 700px) { .selected-reviews__grid { grid-template-columns: 1fr; gap: 14px; } .selected-reviews { padding: 0 12px; } }
+.selected-reviews__card blockquote { margin: 0; line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; }
+.selected-reviews__author { color: #eed58c; font-weight: 600; }
+@media (max-width: 700px) { .selected-reviews__grid { grid-template-columns: 1fr; gap: 14px; } .selected-reviews { padding: 0; } }

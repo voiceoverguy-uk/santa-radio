@@ -8,7 +8,7 @@ import { verifyReceipt } from './message-statistics-store.js';
 import { consumeNameAccess } from './santa-name-security.js';
 import { validateSantaReview } from '../src/lib/santaReviewValidation.js';
 
-const fields = 'id,display_name AS "displayName",rating,body,consent,reward_email_requested AS "rewardEmail",state,email_state AS "emailState",featured,created_at AS "createdAt"';
+const fields = 'id,display_name AS "displayName",rating,body,display_body AS "displayBody",consent,reward_email_requested AS "rewardEmail",state,email_state AS "emailState",featured,created_at AS "createdAt"';
 export function reviewRewardEmail() {
   const url = 'https://www.santaradio.co.uk/bespoke-personalised-message-from-santa';
   const text = `Thank you for your honest review. We’ve received your review.\n\nYour 20% discount code: REVIEW20\n\nEnter REVIEW20 in the promotion-code box at Stripe Checkout for 20% off the £6.50 bespoke Santa message package (£5.20 after discount). Includes two message creations and personalised digital gifts.\n\n${url}\n\nThis reward is for your feedback, regardless of your star rating. This is the one-off reward email you requested, not a newsletter signup.\nSanta Radio`;
@@ -59,7 +59,7 @@ export function createReviewsHandler({ pool = databasePool, contact = requestCon
         if (!count) return res.json({reviews:[],nextOffset:0});
         const requested = /^\d{1,9}$/.test(String(req.query.offset || '0')) ? Number(req.query.offset || 0) : 0;
         const offset = requested % count;
-        const select = `SELECT id,display_name AS "displayName",rating,body FROM santa_message_reviews WHERE ${filter} ORDER BY created_at,id`;
+        const select = `SELECT id,display_name AS "displayName",rating,COALESCE(display_body,body) AS body FROM santa_message_reviews WHERE ${filter} ORDER BY created_at,id`;
         const rows = (await db.query(`${select} LIMIT 3 OFFSET $1`,[offset])).rows;
         const remaining = Math.min(3,count) - rows.length;
         if (remaining > 0) rows.push(...(await db.query(`${select} LIMIT $1`,[remaining])).rows);
@@ -77,7 +77,12 @@ export function createReviewsHandler({ pool = databasePool, contact = requestCon
         if (!/^[a-f0-9-]{36}$/.test(id || '')) return res.status(400).json({error:'Choose a review.'});
         if (action === 'retry') return res.json(await send(id,{pool:pool()}));
         let result;
-        if (action === 'approve') result = await pool().query("UPDATE santa_message_reviews SET state='approved',reviewed_at=now(),featured=true WHERE id=$1 AND consent AND state IN ('pending','approved')",[id]);
+        if (action === 'edit') {
+          const displayBody = typeof req.body.displayBody === 'string' ? req.body.displayBody.trim() : '';
+          if ([...displayBody].length < 50 || [...displayBody].length > 200) return res.status(400).json({error:'Please use between 50 and 200 characters for the display copy.'});
+          result = await pool().query("UPDATE santa_message_reviews SET display_body=$2 WHERE id=$1 AND consent AND state IN ('pending','approved')",[id,displayBody]);
+        } else if (action === 'restore') result = await pool().query('UPDATE santa_message_reviews SET display_body=NULL WHERE id=$1',[id]);
+        else if (action === 'approve') result = await pool().query("UPDATE santa_message_reviews SET state='approved',reviewed_at=now(),featured=true WHERE id=$1 AND consent AND state IN ('pending','approved')",[id]);
         else if (action === 'reject') result = await pool().query("UPDATE santa_message_reviews SET state='rejected',reviewed_at=now(),featured=false WHERE id=$1 AND state='pending'",[id]);
         else if (action === 'feature') result = await pool().query("UPDATE santa_message_reviews SET featured=true WHERE id=$1 AND state='approved' AND consent",[id]);
         else if (action === 'unfeature') result = await pool().query('UPDATE santa_message_reviews SET featured=false WHERE id=$1',[id]);
