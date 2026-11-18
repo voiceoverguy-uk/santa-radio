@@ -443,7 +443,7 @@ test("rest cards keep fixed positions, stable daily totals and a local-clock Bed
     assert.equal(rotated.find(metric => metric.key === item.key).count, item.count);
     assert.ok(getSeasonalStats(new Date("2026-12-26T23:59:59Z"), "rest").find(metric => metric.key === item.key).count >= item.count);
   }
-  assert.equal(getRestDetails(date).cocoa, getRestDetails(new Date("2026-12-26T23:59:59Z")).cocoa);
+  assert.ok(getRestDetails(new Date("2026-12-26T23:59:59Z")).cocoa >= getRestDetails(date).cocoa);
   const previousZone = process.env.TZ;
   try {
     for (const zone of ["Europe/London", "America/New_York", "Pacific/Auckland"]) {
@@ -613,6 +613,35 @@ test("every seasonal counter progresses reproducibly, resets daily, and holds it
     }
     process.env.TZ = "Europe/London";
     assert.ok(getSeasonalStats(new Date("2026-12-25T11:20:00Z"), "rest").every(x => x.count === 0), "rest totals start after deliveries finish");
+  } finally {
+    if (originalZone === undefined) delete process.env.TZ; else process.env.TZ = originalZone;
+  }
+});
+
+
+test("rest cocoa rises during waking hours, survives refresh, and resets on the local day", () => {
+  const { getRestDetails } = load("lib/seasonalStats.ts");
+  const originalZone = process.env.TZ;
+  try {
+    for (const zone of ["Europe/London", "America/Los_Angeles", "Pacific/Kiritimati"]) {
+      process.env.TZ = zone;
+      for (const [year, month, day] of [[2026, 11, 26], [2027, 0, 1]]) {
+        let previous = 0;
+        for (let hour = 0; hour <= 23; hour++) {
+          const date = new Date(year, month, day, hour);
+          const cocoa = getRestDetails(date).cocoa;
+          assert.equal(cocoa, getRestDetails(new Date(date)).cocoa, "refresh stable");
+          assert.ok(Number.isInteger(cocoa) && cocoa >= previous, `${zone} ${hour}`);
+          if (hour <= 7) assert.equal(cocoa, 0);
+          previous = cocoa;
+        }
+        assert.ok(previous >= 3 && previous <= 9, "sensible daily total");
+        assert.equal(getRestDetails(new Date(year, month, day, 22)).cocoa, previous, "bedtime pauses cocoa");
+        assert.equal(getRestDetails(new Date(year, month, day + 1)).cocoa, 0, "local midnight resets");
+      }
+    }
+    process.env.TZ = "Europe/London";
+    assert.equal(getRestDetails(new Date("2026-12-25T11:20:00Z")).cocoa, 0, "starts after deliveries finish");
   } finally {
     if (originalZone === undefined) delete process.env.TZ; else process.env.TZ = originalZone;
   }

@@ -41,15 +41,9 @@ export function getSeasonalStats(date: Date, phase: "preparation" | "holiday" | 
     progress = elapsed / (9 * 3600);
   } else {
     // Small activities finish occasionally during Santa's waking day, rather than racing upwards.
-    let start = (phase === "holiday" ? 8 : 7) * 3600;
-    if (phase === "rest" && local.month === 12) {
-      const midnight = new Date(local.year, local.month - 1, local.day).getTime();
-      const tomorrow = new Date(local.year, local.month - 1, local.day + 1).getTime();
-      const finished = getJourneyEndTime(local.year).getTime();
-      if (finished >= midnight && finished < tomorrow) start = Math.max(start, (finished - midnight) / 1000);
-    }
+    const start = (phase === "holiday" ? 8 : 7) * 3600;
     const end = 22 * 3600;
-    progress = start >= end ? 0 : (secondsToday - start) / (end - start);
+    progress = phase === "rest" ? getRestDayProgress(date, local) : (secondsToday - start) / (end - start);
   }
   progress = Math.max(0, Math.min(1, progress));
   return metrics[phase].map((metric, index) => {
@@ -65,15 +59,28 @@ export function getSeasonalStats(date: Date, phase: "preparation" | "holiday" | 
 }
 
 
+function getRestDayProgress(date: Date, local = getDeviceDateParts(date)) {
+  let start = 7 * 3600;
+  if (local.month === 12) {
+    const midnight = new Date(local.year, local.month - 1, local.day).getTime();
+    const tomorrow = new Date(local.year, local.month - 1, local.day + 1).getTime();
+    const finished = getJourneyEndTime(local.year).getTime();
+    if (finished >= midnight && finished < tomorrow) start = Math.max(start, (finished - midnight) / 1000);
+  }
+  const secondsToday = local.hour * 3600 + local.minute * 60 + date.getSeconds();
+  const end = 22 * 3600;
+  return start >= end ? 0 : Math.max(0, Math.min(1, (secondsToday - start) / (end - start)));
+}
+
 export function getRestDetails(date: Date) {
   const local = getDeviceDateParts(date);
   const rooms = ["Kitchen", "Bathroom", "Shower", "Armchair"];
   const sleeping = local.hour >= 22 || local.hour < 7;
-  const day = Math.floor(date.getTime() / 86400000);
+  const day = Math.floor(Date.UTC(local.year, local.month - 1, local.day) / 86400000);
   const cocoaSeed = (Math.imul(day, 1664525) + 5 * 1013904223) >>> 0;
   return {
     nextStop: sleeping ? "Bed" : rooms[Math.floor((local.hour * 60 + local.minute) / 10) % rooms.length],
-    cocoa: 3 + cocoaSeed % 7,
+    cocoa: Math.round((3 + cocoaSeed % 7) * getRestDayProgress(date, local)),
     clock: `${local.hour % 12 || 12}:${String(local.minute).padStart(2, "0")} ${local.hour >= 12 ? "PM" : "AM"}`,
   };
 }
