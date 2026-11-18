@@ -173,29 +173,32 @@ function MacAppShowcase({ app }) {
   );
 }
 
+const appOrder = ['santaradio', 'christmasradio', 'santatext', 'santadash', 'naughty-or-nice', 'santa-tracker-app', 'santavoicemail'];
+const orderedApps = [...christmasApps].sort((a, b) => {
+  const rank = id => appOrder.includes(id) ? appOrder.indexOf(id) : appOrder.length;
+  return rank(a.id) - rank(b.id);
+});
+
 export default function Apps() {
   return (
     <main className="apps-page">
-      <PageSeo metadata={appsMetadata([...christmasApps, macAppListing])} />
+      <PageSeo metadata={appsMetadata([...orderedApps, macAppListing])} />
       <div className="apps-hero">
         <div className="apps-hero-content">
           <h1 className="apps-hero-title">Christmas Apps</h1>
           <p className="apps-hero-desc">Christmas music, Santa messages and festive games.<br />Check the linked stores for current pricing.</p>
         </div>
       </div>
-      {christmasApps.map((app, index) => (
+      {orderedApps.map((app, index) => (
         <div key={app.id}>
           {index > 0 && <div className="apps-divider" aria-hidden="true" />}
           <AppSection app={app} />
-          {index === 0 && (
-            <>
-              <AppleWatchShowcase />
-              <AppleTvShowcase />
-              <MacAppShowcase app={macAppListing} />
-            </>
-          )}
+
         </div>
       ))}
+      <AppleWatchShowcase />
+      <AppleTvShowcase />
+      <MacAppShowcase app={macAppListing} />
     </main>
   );
 }

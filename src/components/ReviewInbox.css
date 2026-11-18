@@ -1,3 +1,7 @@
 .review-inbox button, .santa-dashboard .review-inbox button { padding: 4px 9px; min-height: 28px; font-size: .8rem; line-height: 1.3; margin: 3px 4px 3px 0; }
 .review-inbox .santa-dashboard__actions { gap: 6px; flex-wrap: wrap; }
 @media (pointer: coarse) { .review-inbox button, .santa-dashboard .review-inbox button { min-height: 40px; } }
+
+.santa-dashboard .review-inbox button.review-publish--unpublished { background: #247447; color: #fff9e9; border-color: #77ad78; }
+.santa-dashboard .review-inbox button.review-publish--unpublished:hover:not(:disabled) { background: #2d8954; }
+.santa-dashboard .review-inbox button.review-publish--live { background: #a31121; color: #fff9e9; border-color: #c66c59; }
