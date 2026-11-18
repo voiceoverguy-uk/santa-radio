@@ -5,6 +5,8 @@
 }
 .homepage-santa-studio__layout > * { min-width: 0; margin-block: 0; }
 .homepage-lifetime-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; padding-block: 8px 48px; text-align: center; }
+.home-page .homepage-lifetime-stats { position: relative; z-index: 1; margin-top: -80px; padding-top: 0; padding-bottom: 64px; }
+@media (max-width: 767px) { .home-page .homepage-lifetime-stats { margin-top: -32px; padding-bottom: 40px; } }
 .homepage-lifetime-stats p { display: grid; gap: 8px; margin: 0; }
 .homepage-lifetime-stats svg { width: 30px; height: 30px; margin: 0 auto 4px; color: var(--gold-light); stroke-width: 1.5; }
 .homepage-lifetime-stats strong { color: var(--gold-light); font-family: Georgia, serif; font-size: clamp(1.65rem, 3vw, 2.5rem); font-weight: 400; }
