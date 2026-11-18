@@ -1,0 +1,9 @@
+.santa-dashboard .dashboard-todos form { max-width: none; box-sizing: border-box; }
+.santa-dashboard .dashboard-todos textarea { font: inherit; line-height: 1.5; padding: 12px; border-radius: 8px; background: #fff9eb; color: #173629; }
+.santa-dashboard .dashboard-todos__item,
+.santa-dashboard .dashboard-todos__filter { display: flex; align-items: center; justify-content: space-between; gap: 24px; width: 100%; box-sizing: border-box; }
+.santa-dashboard .dashboard-todos__item { padding: 18px 16px; margin: 12px 0; background: #0c2b2180; border: 1px solid #a48c4355; border-radius: 10px; cursor: pointer; }
+.santa-dashboard .dashboard-todos__item span { flex: 1; min-width: 0; font-size: 1.1rem; line-height: 1.6; overflow-wrap: anywhere; text-align: left; }
+.santa-dashboard .dashboard-todos__filter { margin: 16px 0; }
+.santa-dashboard .dashboard-todos input[type="checkbox"] { appearance: auto; display: inline-block; flex: 0 0 24px; width: 24px; height: 24px; margin: 0; padding: 0; accent-color: #efcf79; cursor: pointer; }
+.santa-dashboard .dashboard-todos input[type="checkbox"]:focus-visible { outline: 3px solid #efcf79; outline-offset: 4px; }
