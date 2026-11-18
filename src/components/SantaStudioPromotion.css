@@ -659,3 +659,25 @@
 .santa-studio-promotion__intro { text-align: center; margin-bottom: 24px; }
 .santa-studio-promotion__intro h2 { font-family: "Cinzel", Georgia, serif; font-size: clamp(1.25rem, 3vw, 2rem); color: #173629; }
 .santa-studio-promotion__intro p { color: #806023; margin: 8px 0; }
+
+/* Make the collapsed gift previews easy to discover on touch screens. */
+@media (max-width: 767px) {
+  .santa-studio-promotion__gift-toggle {
+    width: 100%; min-height: 52px; padding: 13px 16px;
+    justify-content: space-between; border: 2px solid #b28a30;
+    border-radius: 10px; background: linear-gradient(135deg, #fff5d6, #efd38a);
+    color: #173629; font-weight: 700;
+    box-shadow: 0 0 12px #d4af3740;
+  }
+  .santa-studio-promotion__gift-toggle[aria-expanded="false"] {
+    animation: santa-gifts-glow 2.8s ease-in-out infinite;
+  }
+  .santa-studio-promotion__gift-arrow { font-size: 1.25rem; }
+}
+@keyframes santa-gifts-glow {
+  0%, 100% { box-shadow: 0 0 0 0 #d4af3730, 0 0 8px #d4af3730; }
+  50% { box-shadow: 0 0 0 5px #d4af3718, 0 0 22px #d4af3770; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .santa-studio-promotion__gift-toggle[aria-expanded="false"] { animation: none; }
+}
