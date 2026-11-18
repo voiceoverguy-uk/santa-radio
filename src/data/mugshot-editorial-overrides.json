@@ -148,5 +148,671 @@
   },
   "david-walliams-comedian-writer": {
     "hidden": true
+  },
+  "hugh-bonneville-actor": {
+    "homepage": true
+  },
+  "hayley-mills-actress": {
+    "homepage": true
+  },
+  "patrick-duffy-actor": {
+    "homepage": true
+  },
+  "philip-glenister-actor": {
+    "homepage": true
+  },
+  "ainsley-harriott-presenter-chef": {
+    "homepage": true
+  },
+  "fiona-bruce-tv-presenter": {
+    "homepage": true
+  },
+  "fern-britton-presenter": {
+    "homepage": true
+  },
+  "gok-wan-tv-personality": {
+    "homepage": true
+  },
+  "helen-skelton-presenter": {
+    "homepage": true
+  },
+  "helen-skelton-blue-peter-tv-presenter": {
+    "homepage": true
+  },
+  "john-bishop-comedian": {
+    "homepage": true
+  },
+  "mo-gilligan-comedian": {
+    "homepage": true
+  },
+  "alex-horne-comedian": {
+    "homepage": true
+  },
+  "rhod-gilbert-comedian": {
+    "homepage": true
+  },
+  "ronan-keating-singer": {
+    "homepage": true,
+    "searchAliases": [
+      "Boyzone"
+    ]
+  },
+  "jools-holland-musician": {
+    "homepage": true
+  },
+  "heather-small-singer": {
+    "homepage": true
+  },
+  "paul-heaton-singer-beautiful-south": {
+    "homepage": true
+  },
+  "ali-campbell-ub40-singer": {
+    "homepage": true
+  },
+  "pep-guardiola-man-city-manager": {
+    "homepage": true
+  },
+  "carlo-ancelotti-everton-football-manager": {
+    "homepage": true
+  },
+  "jamie-vardy-leicester-city-england-footballer": {
+    "homepage": true
+  },
+  "alex-scott-footballer": {
+    "homepage": true,
+    "categories": [
+      "tv-film",
+      "athletics"
+    ]
+  },
+  "ellie-simonds-swimmer": {
+    "homepage": true
+  },
+  "steve-davis-snoker-player": {
+    "homepage": true
+  },
+  "stephen-hendry-snooker-player": {
+    "homepage": true,
+    "role": "Snooker Player"
+  },
+  "adam-woodyatt-eastenders-actor": {
+    "homepage": true,
+    "searchAliases": [
+      "EastEnders"
+    ]
+  },
+  "steve-mcfadden-actor-phil-mitchell": {
+    "homepage": true,
+    "searchAliases": [
+      "EastEnders"
+    ]
+  },
+  "shane-richie-actor-singer": {
+    "homepage": true,
+    "searchAliases": [
+      "EastEnders"
+    ]
+  },
+  "dame-darcey-bussell-dancer": {
+    "homepage": true,
+    "searchAliases": [
+      "Strictly Come Dancing",
+      "Strictly"
+    ]
+  },
+  "motsi-mabuse-strictly-judge-dancer": {
+    "homepage": true,
+    "searchAliases": [
+      "Strictly Come Dancing",
+      "Strictly"
+    ]
+  },
+  "scott-mills-radio-presenter": {
+    "homepage": true
+  },
+  "jordan-north-dj": {
+    "homepage": true
+  },
+  "rick-wakeman-music": {
+    "homepage": true
+  },
+  "matt-willis-singer-busted": {
+    "homepage": true
+  },
+  "jimmy-white-snooker-player": {
+    "homepage": true
+  },
+  "tim-peake-astronaut": {
+    "homepage": true
+  },
+  "edele-lynch-actress": {
+    "role": "Singer",
+    "categories": [
+      "music",
+      "dance",
+      "acting"
+    ],
+    "searchAliases": [
+      "B*Witched",
+      "Bewitched"
+    ]
+  },
+  "mark-labbett-the-chase": {
+    "role": "Quizzer & TV Personality",
+    "searchAliases": [
+      "The Chase",
+      "The Beast"
+    ]
+  },
+  "russell-howard-comedian": {
+    "role": "Comedian"
+  },
+  "shaun-wallace": {
+    "role": "Quizzer & TV Personality",
+    "searchAliases": [
+      "The Chase",
+      "The Dark Destroyer"
+    ]
+  },
+  "shaun-wallace-dark-destroyer": {
+    "role": "Quizzer & TV Personality"
+  },
+  "michaela-tabb-snooker-ref": {
+    "role": "Snooker & Pool Referee"
+  },
+  "clinton-baptise-psychic": {
+    "role": "Comedy Character"
+  },
+  "big-shaun-musician": {
+    "role": "Musician — Everly Pregnant Brothers"
+  },
+  "iain-stirling-love-island-voice": {
+    "role": "Comedian & TV Narrator"
+  },
+  "lisa-armstrong-make-up-artist": {
+    "role": "Make-up Artist",
+    "categories": [
+      "tv-film",
+      "music"
+    ]
+  },
+  "sydnie-christmas-bgt-winner": {
+    "role": "Singer"
+  },
+  "barry-hearn-snooker-chairman": {
+    "role": "Sports Promoter"
+  },
+  "paul-burrell-royal-butler": {
+    "categories": [
+      "writing",
+      "tv-film"
+    ]
+  },
+  "red-arrows-entertainers": {
+    "categories": [
+      "entertainment"
+    ]
+  },
+  "samantha-bumford": {
+    "categories": [
+      "entertainment"
+    ]
+  },
+  "terry-waite-journalist-writer": {
+    "categories": [
+      "writing"
+    ]
+  },
+  "uefa-trophy": {
+    "categories": [
+      "football"
+    ]
+  },
+  "ade-adepitan-paralympion": {
+    "categories": [
+      "sport"
+    ]
+  },
+  "harry-aikines-aryeetey-gladiator": {
+    "categories": [
+      "athletics"
+    ]
+  },
+  "viper-gladiator": {
+    "categories": [
+      "sport"
+    ]
+  },
+  "simon-reeve-author": {
+    "categories": [
+      "tv-film"
+    ]
+  },
+  "anne-hegerty-tv-personality": {
+    "searchAliases": [
+      "The Chase"
+    ],
+    "role": "TV Personality"
+  },
+  "faye-tozer-singer-dancer": {
+    "searchAliases": [
+      "Steps"
+    ]
+  },
+  "lee-latchford-evans-steps-singer": {
+    "searchAliases": [
+      "Steps"
+    ]
+  },
+  "colin-baker-actor-dr-who": {
+    "searchAliases": [
+      "Doctor Who"
+    ]
+  },
+  "sylvester-mc-coy-actor": {
+    "searchAliases": [
+      "Doctor Who"
+    ]
+  },
+  "tosin-cole-doctor-who-assistant": {
+    "searchAliases": [
+      "Doctor Who"
+    ]
+  },
+  "shirley-ballas-dancer": {
+    "searchAliases": [
+      "Strictly Come Dancing",
+      "Strictly"
+    ]
+  },
+  "craig-revel-horwood-dancer-presenter": {
+    "searchAliases": [
+      "Strictly Come Dancing",
+      "Strictly"
+    ]
+  },
+  "bruno-tonioli-dancer": {
+    "searchAliases": [
+      "Strictly Come Dancing",
+      "Strictly"
+    ]
+  },
+  "amy-dowden-dancer": {
+    "searchAliases": [
+      "Strictly Come Dancing",
+      "Strictly"
+    ]
+  },
+  "dianne-buswell-dancer": {
+    "searchAliases": [
+      "Strictly Come Dancing",
+      "Strictly"
+    ]
+  },
+  "johannes-radebe-dancer": {
+    "searchAliases": [
+      "Strictly Come Dancing",
+      "Strictly"
+    ]
+  },
+  "janette-manara-dancer": {
+    "searchAliases": [
+      "Strictly Come Dancing",
+      "Strictly"
+    ]
+  },
+  "karen-hauer-dancer": {
+    "searchAliases": [
+      "Strictly Come Dancing",
+      "Strictly"
+    ]
+  },
+  "katya-jones-dancer": {
+    "searchAliases": [
+      "Strictly Come Dancing",
+      "Strictly"
+    ]
+  },
+  "kevin-clifton-dancer": {
+    "searchAliases": [
+      "Strictly Come Dancing",
+      "Strictly"
+    ]
+  },
+  "neil-jones-dancer": {
+    "searchAliases": [
+      "Strictly Come Dancing",
+      "Strictly"
+    ]
+  },
+  "jowita-przystal-dancer": {
+    "searchAliases": [
+      "Strictly Come Dancing",
+      "Strictly"
+    ]
+  },
+  "kai-widdrington-dancer": {
+    "searchAliases": [
+      "Strictly Come Dancing",
+      "Strictly"
+    ]
+  },
+  "lauren-oakley-dancer": {
+    "searchAliases": [
+      "Strictly Come Dancing",
+      "Strictly"
+    ]
+  },
+  "pasha-kovalev-dancer": {
+    "searchAliases": [
+      "Strictly Come Dancing",
+      "Strictly"
+    ]
+  },
+  "joanne-clifton-dancer": {
+    "searchAliases": [
+      "Strictly Come Dancing",
+      "Strictly"
+    ]
+  },
+  "andrew-lancel-corrie-actor": {
+    "searchAliases": [
+      "Coronation Street"
+    ]
+  },
+  "tristan-gemmill-corrie-actor": {
+    "searchAliases": [
+      "Coronation Street"
+    ]
+  },
+  "jennie-mcalpine-actress": {
+    "searchAliases": [
+      "Coronation Street"
+    ]
+  },
+  "colson-smith-actor": {
+    "searchAliases": [
+      "Coronation Street"
+    ]
+  },
+  "brooke-vincent-actress": {
+    "searchAliases": [
+      "Coronation Street"
+    ]
+  },
+  "catherine-tyldesley-actor": {
+    "searchAliases": [
+      "Coronation Street"
+    ]
+  },
+  "emma-barton-actress": {
+    "searchAliases": [
+      "EastEnders"
+    ]
+  },
+  "james-bye-actor": {
+    "searchAliases": [
+      "EastEnders"
+    ]
+  },
+  "jamie-borthwick-actor": {
+    "searchAliases": [
+      "EastEnders"
+    ]
+  },
+  "ali-carter-snooker-player": {
+    "role": "Snooker Player"
+  },
+  "anthony-mcgill-snooker-player": {
+    "role": "Snooker Player"
+  },
+  "ashley-james-tv-personality": {
+    "role": "TV Personality"
+  },
+  "barney-walsh-tv-personailty": {
+    "role": "TV Personality"
+  },
+  "ben-fogle-tv-personality": {
+    "role": "TV Personality"
+  },
+  "ben-shephard-tv-presenter": {
+    "role": "TV Presenter"
+  },
+  "chris-smith-radio-presenter": {
+    "role": "Radio Presenter"
+  },
+  "christine-lampard-tv-personality": {
+    "role": "TV Personality"
+  },
+  "deidre-sanders-tv-personaility": {
+    "role": "TV Personality"
+  },
+  "dennis-taylor-snooker-player": {
+    "role": "Snooker Player"
+  },
+  "dennis-taylor-steve-davis-snooker-player": {
+    "role": "Snooker Player"
+  },
+  "dominic-dale-snooker-player": {
+    "role": "Snooker Player"
+  },
+  "ellie-goldstien-tv-personality": {
+    "role": "TV Personality"
+  },
+  "james-cahill-snooker-player": {
+    "role": "English Snooker Player"
+  },
+  "jason-mohammed-bbc-sport": {
+    "role": "Radio Presenter"
+  },
+  "jessica-forrester-tv-personality": {
+    "role": "TV Personality"
+  },
+  "john-parrott-snooker-player": {
+    "role": "English Snooker Player"
+  },
+  "johnny-ball-tv-presenter": {
+    "role": "TV Personality"
+  },
+  "kat-deeley-tv-presenter": {
+    "role": "TV Presenter"
+  },
+  "kate-garraway-tv-presenter": {
+    "role": "TV Presenter"
+  },
+  "kelle-bryan-tv-presenter": {
+    "role": "TV Presenter"
+  },
+  "ken-docherty-snooker-player": {
+    "role": "Irish Snooker Player"
+  },
+  "mark-riley-radio-presenter": {
+    "role": "Radio Presenter"
+  },
+  "molly-mae-love-island": {
+    "role": "TV Personality"
+  },
+  "neil-robertson-snooker-player": {
+    "role": "Australian Snooker Player"
+  },
+  "paul-hendy-presenter": {
+    "role": "TV Presenter"
+  },
+  "peter-ebdon-snooker": {
+    "role": "English professional Snooker Player"
+  },
+  "ruby-wax-tv-personality": {
+    "role": "TV Personality"
+  },
+  "sally-nugent-tv-presenter": {
+    "role": "TV Presenter"
+  },
+  "shaun-murphy-snooker-player": {
+    "role": "English Snooker Player"
+  },
+  "steve-wilson-tv-presenter": {
+    "role": "TV Presenter"
+  },
+  "terry-giffiths-snooker-player": {
+    "role": "Snooker Player"
+  },
+  "vicky-pattison-tv-personality": {
+    "role": "TV Personality"
+  },
+  "zippy-tv-personality": {
+    "role": "TV Personality"
+  },
+  "tom-read-wilson-tv-receptionist": {
+    "role": "TV Presenter, Actor & Author",
+    "homepage": true,
+    "categories": [
+      "tv-film",
+      "acting",
+      "writing"
+    ],
+    "searchAliases": [
+      "Tom Read-Wilson",
+      "Celebs Go Dating"
+    ],
+    "sources": [
+      "https://www.unitedagents.co.uk/cv/17455/acting"
+    ]
+  },
+  "rob-beckett-comedian": {
+    "role": "Comedian & TV Presenter",
+    "homepage": true,
+    "categories": [
+      "comedy",
+      "tv-film",
+      "online"
+    ],
+    "searchAliases": [
+      "Parenting Hell",
+      "Celebs Go Dating"
+    ],
+    "sources": [
+      "https://robbeckettcomedy.com/about/"
+    ]
+  },
+  "liam-halewood-youtuber": {
+    "role": "Singer, Entertainer & YouTuber",
+    "homepage": false,
+    "categories": [
+      "music",
+      "entertainment",
+      "online"
+    ],
+    "searchAliases": [],
+    "sources": [
+      "https://www.smcentertainment.co.uk/entertainers/liam-halewood/"
+    ]
+  },
+  "james-dreyfus-actor": {
+    "role": "Actor",
+    "homepage": true,
+    "categories": [
+      "acting",
+      "comedy"
+    ],
+    "searchAliases": [
+      "Gimme Gimme Gimme",
+      "The Thin Blue Line",
+      "Notting Hill"
+    ],
+    "sources": [
+      "https://www.comedy.co.uk/people/james_dreyfus/"
+    ]
+  },
+  "ed-balls-mp": {
+    "role": "Broadcaster & Former MP",
+    "homepage": true,
+    "categories": [
+      "politics",
+      "tv-film",
+      "writing",
+      "online"
+    ],
+    "searchAliases": [
+      "Good Morning Britain",
+      "Strictly",
+      "Strictly Come Dancing",
+      "Political Currency"
+    ],
+    "sources": [
+      "https://www.edballs.co.uk/ed-full-biog"
+    ]
+  },
+  "paul-zerdin-ventriloquist": {
+    "role": "Ventriloquist & Comedian",
+    "homepage": true,
+    "categories": [
+      "comedy",
+      "entertainment",
+      "tv-film"
+    ],
+    "searchAliases": [
+      "Ventriloquism",
+      "America’s Got Talent",
+      "Americas Got Talent",
+      "AGT"
+    ],
+    "sources": [
+      "https://paulzerdin.com/"
+    ]
+  },
+  "debbie-mcgee-tv-personality": {
+    "role": "TV Personality & Dancer",
+    "homepage": true,
+    "categories": [
+      "tv-film",
+      "dance",
+      "entertainment"
+    ],
+    "searchAliases": [
+      "Strictly",
+      "Strictly Come Dancing",
+      "Paul Daniels",
+      "Magic"
+    ],
+    "sources": [
+      "https://www.intertalentgroup.com/client/debbie-mcgee/"
+    ]
+  },
+  "james-cartwright-actor": {
+    "role": "Actor",
+    "homepage": false,
+    "categories": [
+      "acting",
+      "radio"
+    ],
+    "searchAliases": [
+      "The Archers",
+      "Coronation Street",
+      "Harrison Burns",
+      "Theo Silverton"
+    ],
+    "sources": [
+      "https://absolutelymagazines.com/james-cartwright-on-coronation-street-the-archers-and-downton-abbey/"
+    ]
+  },
+  "tracy-ann-oberman-actress": {
+    "role": "Actress & Writer",
+    "homepage": true,
+    "categories": [
+      "acting",
+      "writing",
+      "radio",
+      "comedy"
+    ],
+    "searchAliases": [
+      "Tracy Ann Oberman",
+      "Tracey Ann Oberman",
+      "EastEnders",
+      "Friday Night Dinner",
+      "Doctor Who"
+    ],
+    "sources": [
+      "https://www.shakespearesglobe.com/bio/tracy-ann-oberman/"
+    ]
   }
 }

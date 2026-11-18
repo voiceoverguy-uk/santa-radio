@@ -3043,7 +3043,7 @@
   {
     "artist": "JB",
     "song": "jb-singer",
-    "image": "/mugshot-images/jb-singer.jpg",
+    "image": "/mugshot-images/jb-singer-ecurb.webp",
     "link": "Singer",
     "info": "JB Gill is a singer and former member of the boyband JLS, who rose to fame on The X Factor in 2008. Since the band’s success, he’s moved into farming, presenting, and children’s TV, while continuing to be a public figure across British media.",
     "credit": "Bruce Davis – Celebrity Stalker",
@@ -5537,9 +5537,9 @@
   {
     "artist": "Rob Beckett",
     "song": "rob-beckett-comedian",
-    "image": "/mugshot-images/rob-beckett-comedian.jpg",
-    "link": "Stand-up comedian",
-    "info": "Robert Anthony Beckett is an English stand-up comedian and presenter. He was a co-host on the ITV2 spin-off show I'm a Celebrity...Get Me Out of Here! NOW! from 2012 to 2014. Since 2016, Beckett has been a team captain on the E4 panel show 8 Out of 10 Cats and the narrator of the reality series Celebs Go Dating.",
+    "image": "/mugshot-images/rob-beckett-comedian.webp",
+    "link": "Comedian & TV Presenter",
+    "info": "Rob Beckett is a British stand-up comedian and television presenter known for his energetic performances and observational humour. Alongside his touring comedy, he has narrated Celebs Go Dating and appeared across entertainment and panel shows. He also co-hosts the Parenting Hell podcast with Josh Widdicombe, sharing candid conversations about family life and the everyday chaos of bringing up children.",
     "credit": "Photo: Bruce Davis",
     "socialUrl": "https://x.com/robbeckettcomic",
     "homepage": true
@@ -6870,7 +6870,7 @@
   {
     "artist": "Tony Blackburn",
     "song": "tony-blackburn-radio-presenter",
-    "image": "/mugshot-images/tony-blackburn-radio-presenter.jpg",
+    "image": "/mugshot-images/tony-blackburn-radio-presenter-restored.webp",
     "link": "Radio Personality",
     "info": "Anthony Kenneth Blackburn is an English disc jockey, singer and TV presenter. He first achieved fame broadcasting on the pirate stations Radio Caroline and Radio London in the 1960s, before joining the BBC, on the BBC Light Programme.",
     "credit": "Photo: Bruce Davis",
@@ -7429,6 +7429,86 @@
     "info": "Emma Willis is a television presenter known for guiding viewers through some of Britain's biggest entertainment shows. Her broadcasting career includes Big Brother, The Voice UK and The Circle, alongside radio work with Stephen Mulhern on Heart. She has also explored a very different setting in Emma Willis: Delivering Babies, training as a maternity care assistant for the documentary series. From live television to personal stories, Emma has built a varied career in front of the camera. She adds another familiar face and a warm touch of television sparkle to the Santa Radio Mugshots collection! 🎄",
     "credit": "Bruce Davis",
     "socialUrl": "https://x.com/EmmaWillis",
+    "homepage": true
+  },
+  {
+    "artist": "Tom Read Wilson",
+    "song": "tom-read-wilson-tv-receptionist",
+    "credit": "",
+    "socialUrl": "",
+    "link": "TV Presenter, Actor & Author",
+    "image": "/mugshot-images/tom-read-wilson-tv-receptionist.webp",
+    "info": "Tom Read Wilson is a television presenter, actor and author best known as the charming client co-ordinator on Celebs Go Dating. A musical-theatre graduate of the Royal Academy of Music, he has performed on stage and developed a following for his love of language. His television appearances and word-focused podcast combine playful humour, thoughtful conversation and an unmistakably warm delivery.",
+    "homepage": true
+  },
+  {
+    "artist": "Liam Halewood",
+    "song": "liam-halewood-youtuber",
+    "credit": "",
+    "socialUrl": "",
+    "link": "Singer, Entertainer & YouTuber",
+    "image": "/mugshot-images/liam-halewood-youtuber.webp",
+    "info": "Liam Halewood is a singer and entertainer whose lively performances bring together familiar songs and an outgoing stage presence. Originally working in hairdressing, he followed his ambition to perform and built a career entertaining live audiences. His work centres on engaging with a crowd, combining vocals, personality and a varied repertoire to create an upbeat atmosphere wherever he appears.",
+    "homepage": false
+  },
+  {
+    "artist": "James Dreyfus",
+    "song": "james-dreyfus-actor",
+    "credit": "",
+    "socialUrl": "",
+    "link": "Actor",
+    "image": "/mugshot-images/james-dreyfus-actor.webp",
+    "info": "James Dreyfus is a British actor best known for playing Constable Kevin Goody in The Thin Blue Line and Tom Farrell in Gimme Gimme Gimme. His screen work also includes Notting Hill and the television comedy Mount Pleasant. Alongside those familiar roles, he has worked extensively in theatre, bringing his distinctive comic timing and character performances to both stage and screen.",
+    "homepage": true
+  },
+  {
+    "artist": "Ed Balls",
+    "song": "ed-balls-mp",
+    "credit": "",
+    "socialUrl": "",
+    "link": "Broadcaster & Former MP",
+    "image": "/mugshot-images/ed-balls-mp.webp",
+    "info": "Ed Balls is a broadcaster, author and former Labour politician who served as a Cabinet minister and Shadow Chancellor. Since leaving Parliament, he has become familiar to television audiences through documentaries, Good Morning Britain and his memorable appearance on Strictly Come Dancing. He also co-hosts the Political Currency podcast with George Osborne, combining political experience with conversation about public life.",
+    "homepage": true
+  },
+  {
+    "artist": "Paul Zerdin",
+    "song": "paul-zerdin-ventriloquist",
+    "credit": "",
+    "socialUrl": "",
+    "link": "Ventriloquist & Comedian",
+    "image": "/mugshot-images/paul-zerdin-ventriloquist.webp",
+    "info": "Paul Zerdin is a British ventriloquist and comedian who won America’s Got Talent in 2015. His act combines stand-up humour with a cast of puppet characters, including Sam, Albert and Baby, each with a personality of their own. His success has taken him from British stages to a Las Vegas residency, alongside touring shows and television appearances on both sides of the Atlantic.",
+    "homepage": true
+  },
+  {
+    "artist": "Debbie McGee",
+    "song": "debbie-mcgee-tv-personality",
+    "credit": "",
+    "socialUrl": "",
+    "link": "TV Personality & Dancer",
+    "image": "/mugshot-images/debbie-mcgee-tv-personality.webp",
+    "info": "Debbie McGee is a television personality and performer whose career spans dance, magic and entertainment. She became widely known through her stage and television partnership with magician Paul Daniels, following an earlier career in ballet. Her appearance on Strictly Come Dancing introduced her dancing to another generation of viewers, and she has continued to appear across television entertainment and quiz programmes.",
+    "homepage": true
+  },
+  {
+    "artist": "James Cartwright",
+    "song": "james-cartwright-actor",
+    "credit": "",
+    "socialUrl": "",
+    "link": "Actor",
+    "image": "/mugshot-images/james-cartwright-actor.webp",
+    "info": "James Cartwright is a British actor whose work spans television, film, theatre and radio. He is known to listeners of The Archers as police officer Harrison Burns and to Coronation Street viewers as Theo Silverton. His screen credits also include The Story of Tracy Beaker, reflecting a career that has moved between children’s television, drama and long-running British soaps.",
+    "homepage": false
+  },
+  {
+    "artist": "Tracy-Ann Oberman",
+    "song": "tracy-ann-oberman-actress",
+    "credit": "",
+    "socialUrl": "",
+    "link": "Actress & Writer",
+    "image": "/mugshot-images/tracy-ann-oberman-actress.webp",
+    "info": "Tracy-Ann Oberman is a British actress and writer with a career across television, theatre, film and radio. She is widely recognised for EastEnders and Friday Night Dinner, with further screen appearances including Doctor Who, It’s a Sin and Ridley Road. Her stage work includes the West End and National Theatre, alongside writing and presenting projects that reflect her range as a performer.",
     "homepage": true
   }
 ]

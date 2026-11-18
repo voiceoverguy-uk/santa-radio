@@ -2,6 +2,7 @@
 // remain recoverable. Only reviewed identities share a public profile.
 import biographies from './mugshot-biographies.json' with { type: 'json' };
 import editorialOverrides from './mugshot-editorial-overrides.json' with { type: 'json' };
+import { profileCategories } from './mugshot-categories.js';
 import { normalizePhotoCredit } from './mugshot-credit.js';
 export const identityAliases = {
   'brendan-o-carroll-mrs-brown': 'brendan-o-carroll-actor-mrs-brown',
@@ -82,6 +83,9 @@ export function buildCatalogue(raw, overrides = biographies) {
   for (const profile of retained) {
     const editorial = editorialOverrides[profile.song];
     if (typeof editorial?.homepage === 'boolean') profile.homepage = editorial.homepage;
+    profile.categories = profileCategories(profile, editorial?.categories || []);
+    profile.searchAliases = editorial?.searchAliases || [];
+    profile.searchNames = [...new Set([...profile.searchNames, ...(editorial?.searchNames || [])])];
   }
   retained.sort((a, b) =>
     Number(b.homepage === true) - Number(a.homepage === true) ||

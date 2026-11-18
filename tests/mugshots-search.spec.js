@@ -52,9 +52,10 @@ test('selected matches are ranked before truncation without taking reserved tale
   })).concat({ song: 'selected', artist: 'Zed', searchNames: ['An Actor'], link: 'Actor', homepage: true }), 'actor');
   expect(twoTalents).toHaveLength(8);
   expect(twoTalents.filter(item => item.type === 'name')).toHaveLength(6);
-  expect(twoTalents[0].slug).toBe('selected');
+  expect(twoTalents[0].category).toBe('acting');
+  expect(twoTalents.find(item => item.type === 'name').slug).toBe('selected');
   expect(twoTalents.filter(item => item.type === 'talent').map(item => item.label))
-    .toEqual(['Actor', 'Actor / Presenter']);
+    .toEqual(['Actor']);
 });
 
 test('the real ry query puts matching selected names ahead of unselected prefixes', () => {
@@ -150,7 +151,7 @@ test('live queries, mouse selection, role selection, aliases, no matches and cle
   await expect(page).toHaveURL(/\/mugshots\/all$/);
   await search.fill('dan');
   await page.getByRole('option', { name: 'Talent Dance / Dancer' }).click();
-  const dancers = catalogue.filter(profile => /\bdanc(?:e|er)s?\b/i.test(profile.link));
+  const dancers = catalogue.filter(profile => profile.categories.includes('dance'));
   await expect(cards).toHaveCount(dancers.length);
   await expect(page.getByRole('status')).toContainText(`${dancers.length} results`);
   await page.getByRole('button', { name: 'A–Z', exact: true }).click();
@@ -170,7 +171,7 @@ test('live queries, mouse selection, role selection, aliases, no matches and cle
   await expect(cards).toHaveCount(1);
   await search.fill('no-such-famous-face-1099');
   await expect(cards).toHaveCount(0);
-  await expect(page.getByText('No matching names or talents.', { exact: true })).toBeVisible();
+  await expect(page.getByText('No matching names, categories or talents.', { exact: true })).toBeVisible();
   await expect(page.getByRole('status')).toContainText('0 results');
   await page.getByRole('button', { name: 'Clear search', exact: true }).click();
   await expect(search).toHaveValue('');
@@ -254,7 +255,7 @@ for (const width of [320, 1440]) {
       await page.getByRole('option', { name: 'Talent Dance / Dancer' }).tap();
       await expect(search).toHaveValue('Dance / Dancer');
       await expect(search).toHaveAttribute('aria-expanded', 'false');
-      await expect(cardsOn(page)).toHaveCount(catalogue.filter(profile => /\bdanc(?:e|er)s?\b/i.test(profile.link)).length);
+      await expect(cardsOn(page)).toHaveCount(catalogue.filter(profile => profile.categories.includes('dance')).length);
     }
     await context.close();
   });

@@ -40,7 +40,7 @@ export default function MugshotDetail() {
           <div className="container mugshot-detail-content">
             <h1 ref={heading} tabIndex={-1}>Celebrity Not Found</h1>
             <p>Sorry, we couldn't find that celebrity mugshot.</p>
-            <Link to="/mugshots/all" className="back-link">← Back to all Mug Shots</Link>
+            <Link to="/mugshots/all" className="back-link">← Back to all Celebrity Mugshots</Link>
           </div>
         </div>
       </main>
@@ -92,7 +92,7 @@ export default function MugshotDetail() {
               <p className="mugshot-detail-desc">
                 {biography || `${celeb.artist} posing with the iconic Santa Radio mug as part of our Celebrity Mug Shots Hall of Fame!`}
               </p>
-              <Link to="/mugshots/all" className="back-link">← Back to all Mug Shots</Link>
+              <Link to="/mugshots/all" className="back-link">← Back to all Celebrity Mugshots</Link>
             </div>
           </div>
         </div>

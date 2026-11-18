@@ -1,6 +1,7 @@
-// Search only retained catalogue names, aliases and published role text.
-export const normalizeSearch = value => value.trim().toLocaleLowerCase('en');
-const namesOf = profile => [...new Set([profile.artist, ...(profile.searchNames || [])])];
+import { matchingCategories, profileCategories, normalizeCategoryText } from './mugshot-categories.js';
+// Search published profiles through names, curated aliases, roles and categories.
+export const normalizeSearch = value => normalizeCategoryText(value);
+const namesOf = profile => [...new Set([profile.artist, ...(profile.searchNames || []), ...(profile.searchAliases || [])])];
 
 // These are spelling/number variants, not additional talent classifications.
 const families = [
@@ -13,16 +14,18 @@ function matchingFamily(query) {
 }
 
 export function matchesMugshot(profile, query, selection = null) {
+  if (selection?.type === 'category') return profileCategories(profile).includes(selection.category);
   if (selection?.type === 'name') return profile.song === selection.slug;
   if (selection?.type === 'talent') {
     const family = families.find(item => item.id === selection.family);
-    return family ? family.pattern.test(profile.link) :
+    return family ? (family.id === 'dance' ? profileCategories(profile).includes('dance') : family.pattern.test(profile.link)) :
       normalizeSearch(profile.link).includes(selection.query);
   }
   const q = normalizeSearch(query);
   if (!q) return true;
   return namesOf(profile).some(name => normalizeSearch(name).includes(q)) ||
     normalizeSearch(profile.link).includes(q) ||
+    matchingCategories(q).some(category => profileCategories(profile).includes(category.id)) ||
     Boolean(matchingFamily(q)?.pattern.test(profile.link));
 }
 
@@ -56,7 +59,15 @@ export function mugshotSuggestions(catalogue, query) {
     talents.push({ id: `talent-${encodeURIComponent(normalized)}`, type: 'talent', query: normalized, label, rank: rank(normalized, q) });
   }
   // Reserve space for both kinds, even for a broad query with many names.
-  const chosenTalents = talents.sort(compare).slice(0, 2);
-  const chosenNames = [...new Map(names.map(item => [item.slug, item])).values()].slice(0, 8 - chosenTalents.length);
-  return [...chosenNames, ...chosenTalents];
+  const categoryOptions = matchingCategories(q, true)
+    .filter(category => category.id !== 'dance' || !familyMatches.some(family => family.id === 'dance'))
+    .map(category => ({ id: `category-${category.id}`, type: 'category', category: category.id, label: category.label,
+      count: catalogue.filter(profile => profileCategories(profile).includes(category.id)).length }))
+    .filter(category => category.count > 0)
+    .sort((a, b) => Number(Boolean(matchingCategories(q).find(c => c.id === b.category))) -
+      Number(Boolean(matchingCategories(q).find(c => c.id === a.category))));
+  const chosenCategories = categoryOptions.slice(0, 2);
+  const chosenTalents = talents.sort(compare).slice(0, 2 - chosenCategories.length);
+  const chosenNames = [...new Map(names.map(item => [item.slug, item])).values()].slice(0, 8 - chosenTalents.length - chosenCategories.length);
+  return [...chosenCategories, ...chosenNames, ...chosenTalents];
 }

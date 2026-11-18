@@ -159,7 +159,7 @@ export default function MugShots() {
               aria-describedby="mugshots-search-help mugshots-result-status"
               aria-label="Find a famous face"
               className="mugshots-search"
-              placeholder="Search by name or talent…"
+              placeholder="Search names, sport, music, TV…"
               value={search}
               onChange={handleSearch}
               onFocus={() => { if (!selection) setSuggestionsOpen(true); }}
@@ -172,17 +172,17 @@ export default function MugShots() {
                 }}>×</button>}
               <span id="mugshots-search-help" className="mugshots-search-sr">Results filter as you type. Use up and down arrows to explore suggestions, Enter to select and Escape to dismiss.</span>
               {menuOpen && <div className="mugshots-suggestions-panel">
-                <ul id="mugshots-suggestions" role="listbox" aria-label="Name and talent suggestions" ref={listRef}>
+                <ul id="mugshots-suggestions" role="listbox" aria-label="Name, category and talent suggestions" ref={listRef}>
                   {suggestions.map((suggestion, index) => <li key={suggestion.id}
                     id={`mugshots-${suggestion.id}`} role="option" aria-selected={index === activeIndex}
                     onPointerDown={event => event.preventDefault()}
                     onClick={() => selectSuggestion(suggestion)}
                   >
-                    <span className="mugshots-suggestion-kind">{suggestion.type === 'name' ? 'Name' : 'Talent'}</span>
-                    <span>{suggestion.label}</span>
+                    <span className="mugshots-suggestion-kind">{suggestion.type === 'name' ? 'Name' : suggestion.type === 'category' ? 'Category' : 'Talent'}</span>
+                    <span>{suggestion.label}{suggestion.type === 'category' && <small> ({suggestion.count})</small>}</span>
                   </li>)}
                 </ul>
-                {!suggestions.length && <p className="mugshots-suggestions-empty">No matching names or talents.</p>}
+                {!suggestions.length && <p className="mugshots-suggestions-empty">No matching names, categories or talents.</p>}
               </div>}
             </div>
             <div className="mugshots-sort" role="group" aria-label="Mugshot order">

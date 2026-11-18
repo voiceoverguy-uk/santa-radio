@@ -1,0 +1,92 @@
+[
+  {
+    "artist": "Tom Read Wilson",
+    "slug": "tom-read-wilson-tv-receptionist",
+    "updated": false,
+    "homepage": true,
+    "words": 60,
+    "source": "https://www.unitedagents.co.uk/cv/17455/acting",
+    "inputBytes": 209644,
+    "webpBytes": 173034
+  },
+  {
+    "artist": "Rob Beckett",
+    "slug": "rob-beckett-comedian",
+    "updated": true,
+    "homepage": true,
+    "words": 59,
+    "source": "https://robbeckettcomedy.com/about/",
+    "inputBytes": 2209229,
+    "webpBytes": 115652
+  },
+  {
+    "artist": "Liam Halewood",
+    "slug": "liam-halewood-youtuber",
+    "updated": false,
+    "homepage": false,
+    "words": 59,
+    "source": "https://www.smcentertainment.co.uk/entertainers/liam-halewood/",
+    "inputBytes": 136871,
+    "webpBytes": 93470
+  },
+  {
+    "artist": "James Dreyfus",
+    "slug": "james-dreyfus-actor",
+    "updated": false,
+    "homepage": true,
+    "words": 61,
+    "source": "https://www.comedy.co.uk/people/james_dreyfus/",
+    "inputBytes": 186098,
+    "webpBytes": 149430
+  },
+  {
+    "artist": "Ed Balls",
+    "slug": "ed-balls-mp",
+    "updated": false,
+    "homepage": true,
+    "words": 60,
+    "source": "https://www.edballs.co.uk/ed-full-biog",
+    "inputBytes": 173036,
+    "webpBytes": 122826
+  },
+  {
+    "artist": "Paul Zerdin",
+    "slug": "paul-zerdin-ventriloquist",
+    "updated": false,
+    "homepage": true,
+    "words": 63,
+    "source": "https://paulzerdin.com/",
+    "inputBytes": 203661,
+    "webpBytes": 159924
+  },
+  {
+    "artist": "Debbie McGee",
+    "slug": "debbie-mcgee-tv-personality",
+    "updated": false,
+    "homepage": true,
+    "words": 61,
+    "source": "https://www.intertalentgroup.com/client/debbie-mcgee/",
+    "inputBytes": 174025,
+    "webpBytes": 132890
+  },
+  {
+    "artist": "James Cartwright",
+    "slug": "james-cartwright-actor",
+    "updated": false,
+    "homepage": false,
+    "words": 59,
+    "source": "https://absolutelymagazines.com/james-cartwright-on-coronation-street-the-archers-and-downton-abbey/",
+    "inputBytes": 134200,
+    "webpBytes": 89306
+  },
+  {
+    "artist": "Tracy-Ann Oberman",
+    "slug": "tracy-ann-oberman-actress",
+    "updated": false,
+    "homepage": true,
+    "words": 62,
+    "source": "https://www.shakespearesglobe.com/bio/tracy-ann-oberman/",
+    "inputBytes": 203477,
+    "webpBytes": 168450
+  }
+]

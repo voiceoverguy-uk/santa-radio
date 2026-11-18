@@ -8,6 +8,8 @@ export interface Mugshot {
   socialUrl?: string;
   homepage?: boolean;
   searchNames: string[];
+  categories: string[];
+  searchAliases: string[];
 }
 
 import mugshotsJson from './mugshots.json';
