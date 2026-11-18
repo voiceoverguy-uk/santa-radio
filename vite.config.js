@@ -154,7 +154,7 @@ const metadataPlugin = {
 export default defineConfig(async ({ isSsrBuild }) => ({
   // Gift exporters are intentionally lazy. Prebundle their dependencies so a
   // first download in Preview cannot trigger a reload and discard the session.
-  optimizeDeps: { include: ['pdf-lib', '@pdf-lib/fontkit'] },
+  optimizeDeps: { include: ['pdf-lib', '@pdf-lib/fontkit'], exclude: ['@ffmpeg/ffmpeg', '@ffmpeg/core'] },
   define: {
     'import.meta.env.VITE_CLERK_PUBLISHABLE_KEY': JSON.stringify(process.env.VITE_CLERK_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || ''),
     __SANTA_AUDIO_RECIPE__: JSON.stringify(santaAudioRecipeVersion()),

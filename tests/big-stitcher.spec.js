@@ -1,0 +1,74 @@
+import { test, expect } from '@playwright/test';
+import { execFileSync } from 'node:child_process';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import ffmpeg from 'ffmpeg-static';
+
+test('dashboard combines dropped media and a name into a playable MP4', async ({ page }) => {
+  test.setTimeout(120000);
+  const folder = mkdtempSync(join(tmpdir(), 'big-stitcher-'));
+  try {
+    const audio = join(folder, 'tone.mp3'), image = join(folder, 'picture.png');
+    execFileSync(ffmpeg, ['-v', 'error', '-f', 'lavfi', '-i', 'sine=frequency=440:duration=2', audio]);
+    execFileSync(ffmpeg, ['-v', 'error', '-f', 'lavfi', '-i', 'color=c=teal:s=640x480', '-frames:v', '1', image]);
+    await page.route('**/api/message-statistics*', route => route.fulfill({ json: {
+      names: [], daily: [], votes: [], requests: [], tasks: [], reviews: [], vouchers: [],
+    } }));
+    await page.goto('/santa-dashboard');
+    const declineCookies = page.getByRole('button', { name: 'Decline optional cookies' });
+    await declineCookies.click();
+    await page.getByLabel('Private Studio owner token').fill('local-test');
+    await page.getByRole('button', { name: 'Open dashboard' }).click();
+    const box = page.locator('.big-stitcher');
+    await expect(box.getByRole('button', { name: 'Create MP4' })).toBeDisabled();
+    const transfer = await page.evaluateHandle(({ audio, image }) => {
+      const transfer = new DataTransfer();
+      transfer.items.add(new File([new Uint8Array(audio)], 'tone.mp3', { type: 'audio/mpeg' }));
+      transfer.items.add(new File([new Uint8Array(image)], 'picture.png', { type: 'image/png' }));
+      return transfer;
+    }, { audio: [...readFileSync(audio)], image: [...readFileSync(image)] });
+    await box.getByRole('button', { name: /Drop your MP3/ }).dispatchEvent('drop', { dataTransfer: transfer });
+    await box.getByLabel('Name on the image').fill('Oliver');
+    await expect(box.getByRole('button', { name: 'Create MP4' })).toBeEnabled();
+    await box.getByRole('button', { name: 'Create MP4' }).click();
+    await expect(box.getByRole('link', { name: 'Download MP4' })).toBeVisible({ timeout: 90000 });
+    const downloadPromise = page.waitForEvent('download');
+    await box.getByRole('link', { name: 'Download MP4' }).click();
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toBe('Oliver.mp4');
+    const output = join(folder, 'result.mp4');
+    await download.saveAs(output);
+    execFileSync(ffmpeg, ['-hide_banner', '-i', output, '-map', '0:a:0', '-f', 'null', '-'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+    expect(readFileSync(output).includes(Buffer.from('ftypisom'))).toBeTruthy();
+    const metadata = await box.locator('video').evaluate(video => ({ duration: video.duration, width: video.videoWidth, height: video.videoHeight }));
+    expect(metadata.duration).toBeGreaterThanOrEqual(2);
+    expect(metadata.duration).toBeLessThan(5);
+    expect(metadata.width).toBe(640);
+    expect(metadata.height).toBe(480);
+    // The burnt-in dark name band and white letters survive video encoding.
+    const pixels = execFileSync(ffmpeg, ['-v', 'error', '-i', output, '-frames:v', '1', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-']);
+    const band = pixels.subarray(640 * 410 * 3);
+    expect([...band].filter(value => value > 220).length).toBeGreaterThan(100);
+    await box.screenshot({ path: '/tmp/big-stitcher-preview.png' });
+    await box.getByLabel('Name on the image').fill('Amelia');
+    await expect(box.getByRole('link', { name: 'Download MP4' })).toHaveCount(0);
+    await box.getByRole('button', { name: 'Remove audio' }).click();
+    await expect(box.getByRole('button', { name: 'Create MP4' })).toBeDisabled();
+    await box.locator('input[type=file]').setInputFiles({ name: 'wrong.txt', mimeType: 'text/plain', buffer: Buffer.from('invalid') });
+    await expect(box.getByRole('alert')).toContainText('Choose an MP3');
+    await box.getByRole('button', { name: 'Use Santa Radio image' }).click();
+    await expect(box).toContainText('Santa Radio Christmas · 16:9 (default)');
+    await box.locator('input[type=file]').setInputFiles(audio);
+    let releaseEncoder;
+    const encoderGate = new Promise(resolve => { releaseEncoder = resolve; });
+    await page.route('**/assets/*.wasm', async route => { await encoderGate; await route.continue().catch(() => {}); });
+    await box.getByRole('button', { name: 'Create MP4' }).click();
+    await box.getByRole('button', { name: 'Cancel', exact: true }).click();
+    releaseEncoder();
+    await expect(box.getByRole('status')).toContainText('Cancelled');
+    await box.getByRole('button', { name: 'Create MP4' }).click();
+    await expect(box.getByRole('link', { name: 'Download MP4' })).toHaveAttribute('download', 'Amelia.mp4', { timeout: 90000 });
+    await expect.poll(() => box.locator('video').evaluate(video => video.videoWidth / video.videoHeight)).toBeCloseTo(16 / 9);
+  } finally { rmSync(folder, { recursive: true, force: true }); }
+});
