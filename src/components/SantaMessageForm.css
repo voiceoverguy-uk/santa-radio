@@ -125,3 +125,7 @@
 .message-share-link input { display: block; width: 100%; min-width: 0; margin-top: 6px; padding: 10px; border: 1px solid #d4af3770; border-radius: 6px; background: #081e17; color: #f6ecd8; font: inherit; }
 .santa-message-section :is(input,button,a,[tabindex]):focus-visible { outline: 3px solid #e7c877; outline-offset: 5px; }
 @media(max-width:767px) { .santa-message-section { padding: 54px 0; } .message-layout { grid-template-columns: 1fr; gap: 30px; } .message-layout > .santa-message-box { margin-top: 0; } .santa-message-box { padding: 26px 22px; } .north-pole-letter { width: 240px; margin: 20px auto 0; } }
+
+/* Centre the free-message logo beside the greeting form. */
+.message-layout--dedicated > .message-intro.message-intro--logo-only { align-self: center; padding-top: 0; }
+.message-intro--logo-only .message-free-logo-wrap { margin: 0 auto; }

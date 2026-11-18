@@ -351,7 +351,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   return <section className="santa-message-section" id="santa-messages">
     <SantaBespokeDownloadOffer download={bespokeDownload} />
     <div className={`container message-layout${dedicatedLayout ? ' message-layout--dedicated' : ''}`}>
-      <div className="message-intro">
+      <div className={`message-intro${dedicatedLayout && hasAccess ? ' message-intro--logo-only' : ''}`}>
         {dedicatedLayout && hasAccess ? <>
           <div className="message-free-logo-wrap">
             <img className="message-free-logo" src="/images/free-santa-message-microphone.png" alt="Free Santa Message — Santa Radio" width="1680" height="936" />
@@ -359,9 +359,6 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
             <span className="message-free-sparkle message-free-sparkle--two" aria-hidden="true">✧</span>
             <span className="message-free-sparkle message-free-sparkle--three" aria-hidden="true">✦</span>
           </div>
-          <SantaVoiceTagline />
-          <p className="message-free-invitation">Find out if {name.trim() || selectedChildName || 'your little one'} is on the naughty or nice list.</p>
-          <p className="message-free-invitation">A quick check in with Santa to find out.</p>
         </> : <>
         <p className="eyebrow">A little North Pole experiment</p>
         <div className="message-intro-divider" aria-hidden="true">★</div>
