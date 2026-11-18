@@ -1,3 +1,4 @@
+import shopsSettings from '../assets/apps/shops-settings.jpg';
 import shopsLoading from '../assets/apps/shops-loading.jpg';
 import shopsHome from '../assets/apps/shops-home.jpg';
 import shopsStopped from '../assets/apps/shops-stopped.jpg';
@@ -113,6 +114,7 @@ export const christmasApps = [
       { label: 'Shop Logo', image: shopsLogo, width: 603, height: 1311, alt: 'Christmas Music for Shops logo screen explaining the planned shop branding upgrade, marked coming soon.' },
       { label: 'Info', image: shopsInfo, width: 603, height: 1311, alt: 'Christmas Music for Shops information screen with playback instructions and music licensing information.' },
       { label: 'Santa Radio', image: shopsRadio, width: 603, height: 1311, alt: 'Santa Radio screen with festive Santa artwork and a Santa Dash App Store banner.' },
+      { label: 'Settings', image: shopsSettings, width: 603, height: 1311, alt: 'Christmas Music for Shops display settings for the app logo, artist and song title, artwork, Christmas countdown, snow, lights and keeping the screen awake.' },
     ],
     slideshow: {
       heading: 'Christmas Music for Shops app preview',

@@ -210,13 +210,12 @@ export default function AppScreenshots({
           {liveClock && <AppPreviewClock background={liveClock} />}
           {shopsPreview && active !== 0 && active !== 3 && (
             <nav className="shops-screen-hotspots" aria-label="Explore Christmas Music for Shops tabs">
-              {[['Listen', 1], ['Settings', null], ['Shop Logo', 4], ['Info', 5], ['Santa Radio', 6]].map(([label, index]) => (
+              {[['Listen', 1], ['Settings', 7], ['Shop Logo', 4], ['Info', 5], ['Santa Radio', 6]].map(([label, index]) => (
                 <button key={label} type="button"
-                  aria-label={index === null ? 'Settings preview unavailable' : `Preview ${label} screen`}
-                  title={index === null ? 'Settings screenshot not supplied yet' : `Preview ${label}`}
-                  disabled={index === null}
-                  aria-pressed={index !== null && (active === index || (index === 1 && active === 2))}
-                  aria-busy={pendingSelection === index && index !== null}
+                  aria-label={`Preview ${label} screen`}
+                  title={`Preview ${label}`}
+                  aria-pressed={active === index || (index === 1 && active === 2)}
+                  aria-busy={pendingSelection === index}
                   onClick={() => selectScreen(index)} />
               ))}
             </nav>
@@ -319,7 +318,6 @@ export default function AppScreenshots({
           <p>Tap the phone’s tabs to explore. Previews return Home after 4 seconds.</p>
           <button type="button" onClick={() => selectScreen(1)}>Home</button>
           <button type="button" onClick={() => selectScreen(3)}>Preview dock display</button>
-          <p className="shops-settings-note">Settings preview coming soon.</p>
         </div>
       )}
       {askSantaPreview && <p className="ask-santa-preview-hint">Tap the phone’s tabs to explore the app.</p>}
