@@ -333,3 +333,64 @@ test("geography labels include a North Pole name beside the resting Santa sprite
   assert.match(html, />North Pole<\/tspan>/);
   assert.match(html, /font-family="inherit"/);
 });
+
+
+test("prep cards keep daily counts on refresh and rotate the two pairs every minute", () => {
+  const { getSeasonalStats } = load("lib/seasonalStats.ts");
+  const date = new Date("2026-11-18T07:30:00Z");
+  const first = getSeasonalStats(date, "preparation", 0);
+  const second = getSeasonalStats(date, "preparation", 60000);
+  assert.deepEqual(Array.from(first, metric => metric.key), ["towns", "chimneys", "cocoa", "names"]);
+  assert.deepEqual(Array.from(second, metric => metric.key), ["cocoa", "names", "towns", "chimneys"]);
+  for (const item of first) {
+    assert.equal(second.find(metric => metric.key === item.key).count, item.count);
+    assert.equal(getSeasonalStats(new Date("2026-11-18T23:59:59Z"), "preparation", 0).find(metric => metric.key === item.key).count, item.count);
+    assert.ok(Number.isInteger(item.count) && item.count > 0);
+  }
+  assert.notDeepEqual(getSeasonalStats(new Date("2026-11-19T00:00:00Z"), "preparation", 0).map(item => item.count), first.map(item => item.count));
+});
+
+test("only prep phases replace the four right-hand delivery cards", () => {
+  const SantaStats = load("components/SantaStats.tsx").default;
+  for (const [iso, preparing] of [
+    ["2026-11-09T12:00:00Z", false],
+    ["2026-11-18T12:00:00Z", true],
+    ["2026-12-23T12:00:00Z", true],
+    ["2026-12-24T09:59:59Z", true],
+    ["2026-12-24T10:00:00Z", false],
+    ["2026-12-26T12:00:00Z", false],
+  ]) {
+    const html = renderToStaticMarkup(React.createElement(SantaStats, { effectiveTime: new Date(iso) }));
+    assert.equal(html.includes("Cocoa stops today"), preparing, iso);
+    assert.equal(html.includes("Names checked twice"), preparing, iso);
+    assert.equal(html.includes("Estimated Gifts"), !preparing, iso);
+    assert.match(html, /Current Location/);
+    assert.match(html, /Next Stop/);
+  }
+});
+
+
+test("holiday cards share refresh-stable daily counts and pair rotation throughout the holiday season", () => {
+  const { getSeasonalStats } = load("lib/seasonalStats.ts");
+  const SantaStats = load("components/SantaStats.tsx").default;
+  const holiday = load("data/santaHolidays.ts").holidayDestinations[0];
+  const day = new Date("2027-01-02T12:00:00Z");
+  const first = getSeasonalStats(day, "holiday", 0);
+  const second = getSeasonalStats(day, "holiday", 60000);
+  assert.deepEqual(Array.from(first, metric => metric.key), ["coladas", "sandcastles", "postcards", "icecreams"]);
+  assert.deepEqual(Array.from(second, metric => metric.key), ["postcards", "icecreams", "coladas", "sandcastles"]);
+  for (const metric of first) {
+    assert.equal(second.find(item => item.key === metric.key).count, metric.count);
+    assert.equal(getSeasonalStats(new Date("2027-01-02T23:59:59Z"), "holiday", 0).find(item => item.key === metric.key).count, metric.count);
+  }
+  for (const iso of ["2027-01-02T12:00:00Z", "2027-07-15T12:00:00Z", "2026-11-09T12:00:00Z"]) {
+    const html = renderToStaticMarkup(React.createElement(SantaStats, { effectiveTime: new Date(iso), holiday }));
+    for (const metric of first) assert.ok(html.includes(metric.label), iso);
+    assert.ok(!html.includes("Towns explored today"), iso);
+    assert.ok(!html.includes("Estimated Gifts"), iso);
+  }
+  for (const iso of ["2027-01-01T12:00:00Z", "2026-11-10T12:00:00Z", "2026-12-24T10:00:00Z"]) {
+    const html = renderToStaticMarkup(React.createElement(SantaStats, { effectiveTime: new Date(iso), holiday }));
+    assert.ok(!html.includes("Piña coladas sipped"), iso);
+  }
+});

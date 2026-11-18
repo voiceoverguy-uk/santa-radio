@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { MapPin, Clock, Navigation, Gift, Plane, Globe, Target, Zap } from "lucide-react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { MapPin, Clock, Navigation, Gift, Plane, Globe, Target, Zap, Home, Coffee, ListChecks, GlassWater, Castle, Mail, IceCreamCone } from "lucide-react";
 import { getDashboardData, formatNumber, isHolidaySeason, isChristmasInJuly, type HolidayDestination } from "@/lib/santaRoute";
+import { getSeasonalStats } from "../lib/seasonalStats";
 import { holidayDestinations } from "@/data/santaHolidays";
 
 interface SantaStatsProps {
@@ -11,11 +12,6 @@ interface SantaStatsProps {
   routeResearch?: boolean;
   northPoleVisit?: boolean;
 }
-
-const holidaySpeeds = [
-  "Slow", "Horizontal", "Easy", "Very leisurely", "Cruising",
-  "Taking it easy", "Snoozing", "In no rush",
-];
 
 function useCountUp(target: number, duration: number = 800): number {
   const [display, setDisplay] = useState(target);
@@ -69,48 +65,10 @@ export default function SantaStats({ effectiveTime, holiday, routeResearch = fal
   const onTrip = onHoliday || (researching && !!holiday);
   const inJuly = data.mode === "OFF_SEASON" && isChristmasInJuly(effectiveTime);
   const [maybeNext, setMaybeNext] = useState<HolidayDestination | null>(null);
-  const [speedIndex, setSpeedIndex] = useState(0);
-
-  useEffect(() => {
-    setSpeedIndex(0);
-    if (!onHoliday) return;
-    const interval = setInterval(() => {
-      setSpeedIndex((previous) => (previous + 1) % holidaySpeeds.length);
-    }, 6000);
-    return () => clearInterval(interval);
-  }, [onHoliday]);
-
   useEffect(() => {
     const others = holidayDestinations.filter(d => d.name !== holiday?.name);
     setMaybeNext(others[Math.floor(Math.random() * others.length)]);
   }, [holiday]);
-
-  const offSeasonGifts = [
-    "Still receiving lists", "Reading lists", "Checking twice", "Workshop approving",
-    "Wrapping presents", "Elves on overtime", "Testing toys", "Quality control",
-    "Sorting the nice list", "Counting requests",
-  ];
-  const julyGifts = [
-    "Mid-year list check", "Half-year stocktake", "Testing summer toys",
-    "July wish review", "Checking the nice list", "Wrapping practice",
-  ];
-  const offSeasonDistance = [
-    "Sleigh in the garage", "Reindeer resting", "Polishing the sleigh", "Route planning",
-    "Feeding reindeer", "Waxing the runners", "Map pinned to the wall", "GPS calibrating",
-  ];
-  const julyDistance = [
-    "Sleigh mid-year MOT", "Reindeer on holiday too", "Route rehearsal",
-    "Compass calibrating", "Halfway there!", "Summer service complete",
-  ];
-  const activeGifts = inJuly ? julyGifts : offSeasonGifts;
-  const activeDistance = inJuly ? julyDistance : offSeasonDistance;
-  const [funGifts, setFunGifts] = useState(activeGifts[0]);
-  const [funDistance, setFunDistance] = useState(activeDistance[0]);
-
-  useEffect(() => {
-    setFunGifts(activeGifts[Math.floor(Math.random() * activeGifts.length)]);
-    setFunDistance(activeDistance[Math.floor(Math.random() * activeDistance.length)]);
-  }, []);
 
   if (onTrip && holiday) {
     data.currentStopName = holiday.name;
@@ -138,7 +96,7 @@ export default function SantaStats({ effectiveTime, holiday, routeResearch = fal
     return `${h12}:${String(m).padStart(2, "0")} ${period}`;
   }
 
-  const cards = [
+  const cards: { icon: ReactNode; label: string; value: string; ukGlow?: boolean; note?: string }[] = [
     {
       icon: <MapPin size={18} />,
       label: "Current Location",
@@ -163,12 +121,12 @@ export default function SantaStats({ effectiveTime, holiday, routeResearch = fal
     {
       icon: <Gift size={18} />,
       label: "Estimated Gifts",
-      value: isLive || data.mode === "COMPLETE" ? formatNumber(animatedGifts) : onHoliday ? funGifts : "—",
+      value: isLive || data.mode === "COMPLETE" ? formatNumber(animatedGifts) : "—",
     },
     {
       icon: <Plane size={18} />,
       label: "Estimated Distance",
-      value: isLive || data.mode === "COMPLETE" ? `${formatNumber(Math.round(animatedDistance * 0.621371))} miles` : onHoliday ? funDistance : "—",
+      value: isLive || data.mode === "COMPLETE" ? `${formatNumber(Math.round(animatedDistance * 0.621371))} miles` : "—",
     },
     {
       icon: <Globe size={18} />,
@@ -178,9 +136,29 @@ export default function SantaStats({ effectiveTime, holiday, routeResearch = fal
     {
       icon: <Zap size={18} />,
       label: "Estimated Speed",
-      value: onHoliday ? holidaySpeeds[speedIndex] : data.speedLabel,
+      value: data.speedLabel,
     },
   ];
+
+  const preparing = data.mode === "ROUTE_RESEARCH" || data.mode === "PREPARING";
+  if (preparing || onHoliday) {
+    const icons = {
+      towns: <Globe size={18} />,
+      chimneys: <Home size={18} />,
+      cocoa: <Coffee size={18} />,
+      names: <ListChecks size={18} />,
+      coladas: <GlassWater size={18} />,
+      sandcastles: <Castle size={18} />,
+      postcards: <Mail size={18} />,
+      icecreams: <IceCreamCone size={18} />,
+    };
+    cards.splice(4, 4, ...getSeasonalStats(effectiveTime, preparing ? "preparation" : "holiday").map(metric => ({
+      icon: icons[metric.key],
+      label: metric.label,
+      value: metric.count.toLocaleString("en-GB"),
+      note: metric.note,
+    })));
+  }
 
   if (data.approachingUK) {
     cards.push({
@@ -214,6 +192,7 @@ export default function SantaStats({ effectiveTime, holiday, routeResearch = fal
           <div className="tracker-card-value text-sm sm:text-base break-words tabular-nums">
             {card.value}
           </div>
+          {card.note && <p className="tracker-meta mt-1 text-xs leading-snug">{card.note}</p>}
         </div>
       ))}
     </div>
