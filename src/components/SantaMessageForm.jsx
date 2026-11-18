@@ -1,4 +1,5 @@
 import SantaFreeVideo from './SantaFreeVideo.jsx';
+import SantaMessageVideoExample from './SantaMessageVideoExample.jsx';
 import SantaBespokeDownloadOffer from './SantaBespokeDownloadOffer.jsx';
 import useNameRequestSeason from '../hooks/useNameRequestSeason.js';
 import { trackMessageAction } from '../lib/messageEngagement.js';
@@ -382,6 +383,10 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         <p className="message-free-intro">No Artificial Intelligence here. A human recorded message from Santa, aka Father Christmas to your little Human.{' '}<br />Add your contact details, search for a recorded name, create and instantly download your short FREE personalised message from Santa.</p>
         {!dedicatedLayout && <p className="message-studio-intro">Or, choose a bespoke message from Santa with festive goodies. See below.</p>}
 
+        </>}
+        {dedicatedLayout && <>
+          {!hasAccess && <div className="message-free-logo-wrap"><img className="message-free-logo" src="/images/free-santa-message-microphone.png" alt="Free Santa Message — Santa Radio" width="1680" height="936" /></div>}
+          <SantaMessageVideoExample />
         </>}
       </div>
       <div className="santa-message-aside">

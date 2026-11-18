@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 for (const width of [390, 1280]) {
-  test(`free page leads with a playable example at ${width}px`, async ({ page }) => {
+  test(`free page shows a compact playable example below the logo at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 950 });
     const events = [];
     await page.route('**/api/santa-message-access', route => route.fulfill({ json: { authorized: false } }));
@@ -10,8 +10,10 @@ for (const width of [390, 1280]) {
     const video = page.getByLabel(/Play an example Santa video message for (Charlotte|Arabella|Harry)/);
     await expect(video).toBeVisible();
     expect(await page.evaluate(() => window.scrollY)).toBeLessThan(100);
-    const preview = await video.boundingBox(), form = await page.locator('.santa-message-box').boundingBox();
-    expect(preview.y).toBeLessThan(form.y);
+    const preview = await video.boundingBox(), logo = await page.locator('.message-free-logo').boundingBox();
+    expect(preview.y).toBeGreaterThanOrEqual(logo.y + logo.height);
+    expect(preview.width).toBeLessThanOrEqual(422);
+    await expect(page.locator('.fsm-hero video')).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
     await video.evaluate(el => el.play());
     await expect.poll(() => video.evaluate(el => el.currentTime)).toBeGreaterThan(0);
