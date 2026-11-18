@@ -126,7 +126,7 @@ test("rendered full map anchors an independently mirrored, proportion-preserving
 });
 
 test("tracker PNG assets retain source proportions and an RGBA alpha channel", () => {
-  const assets = fs.readdirSync(path.resolve(root, "../../public/images/tracker"));
+  const assets = fs.readdirSync(path.resolve(root, "../../public/images/tracker")).filter(name => name.startsWith("santa-"));
   assert.equal(assets.length, 10);
   for (const name of assets) {
     const source = fs.readdirSync(path.resolve(root, "../../attached_assets")).find(file => file.startsWith(name.replace(".png", "_")));
@@ -335,19 +335,19 @@ test("geography labels include a North Pole name beside the resting Santa sprite
 });
 
 
-test("prep cards keep daily counts on refresh and rotate the two pairs every minute", () => {
+test("prep cards keep their positions and refresh-stable counts", () => {
   const { getSeasonalStats } = load("lib/seasonalStats.ts");
   const date = new Date("2026-11-18T07:30:00Z");
-  const first = getSeasonalStats(date, "preparation", 0);
-  const second = getSeasonalStats(date, "preparation", 60000);
+  const first = getSeasonalStats(date, "preparation");
+  const second = getSeasonalStats(date, "preparation");
   assert.deepEqual(Array.from(first, metric => metric.key), ["towns", "chimneys", "cocoa", "names"]);
-  assert.deepEqual(Array.from(second, metric => metric.key), ["cocoa", "names", "towns", "chimneys"]);
+  assert.deepEqual(Array.from(second, metric => metric.key), ["towns", "chimneys", "cocoa", "names"]);
   for (const item of first) {
     assert.equal(second.find(metric => metric.key === item.key).count, item.count);
-    assert.equal(getSeasonalStats(new Date("2026-11-18T23:59:59Z"), "preparation", 0).find(metric => metric.key === item.key).count, item.count);
+    if (item.key !== "names") assert.equal(getSeasonalStats(new Date("2026-11-18T23:59:59Z"), "preparation").find(metric => metric.key === item.key).count, item.count);
     assert.ok(Number.isInteger(item.count) && item.count > 0);
   }
-  assert.notDeepEqual(getSeasonalStats(new Date("2026-11-19T00:00:00Z"), "preparation", 0).map(item => item.count), first.map(item => item.count));
+  assert.notDeepEqual(getSeasonalStats(new Date("2026-11-19T00:00:00Z"), "preparation").map(item => item.count), first.map(item => item.count));
 });
 
 test("only prep phases replace the four right-hand delivery cards", () => {
@@ -370,18 +370,18 @@ test("only prep phases replace the four right-hand delivery cards", () => {
 });
 
 
-test("holiday cards share refresh-stable daily counts and pair rotation throughout the holiday season", () => {
+test("holiday cards keep fixed positions and refresh-stable daily counts", () => {
   const { getSeasonalStats } = load("lib/seasonalStats.ts");
   const SantaStats = load("components/SantaStats.tsx").default;
   const holiday = load("data/santaHolidays.ts").holidayDestinations[0];
   const day = new Date("2027-01-02T12:00:00Z");
-  const first = getSeasonalStats(day, "holiday", 0);
-  const second = getSeasonalStats(day, "holiday", 60000);
+  const first = getSeasonalStats(day, "holiday");
+  const second = getSeasonalStats(day, "holiday");
   assert.deepEqual(Array.from(first, metric => metric.key), ["coladas", "sandcastles", "postcards", "icecreams"]);
-  assert.deepEqual(Array.from(second, metric => metric.key), ["postcards", "icecreams", "coladas", "sandcastles"]);
+  assert.deepEqual(Array.from(second, metric => metric.key), ["coladas", "sandcastles", "postcards", "icecreams"]);
   for (const metric of first) {
     assert.equal(second.find(item => item.key === metric.key).count, metric.count);
-    assert.equal(getSeasonalStats(new Date("2027-01-02T23:59:59Z"), "holiday", 0).find(item => item.key === metric.key).count, metric.count);
+    assert.equal(getSeasonalStats(new Date("2027-01-02T23:59:59Z"), "holiday").find(item => item.key === metric.key).count, metric.count);
   }
   for (const iso of ["2027-01-02T12:00:00Z", "2027-07-15T12:00:00Z", "2026-11-09T12:00:00Z"]) {
     const html = renderToStaticMarkup(React.createElement(SantaStats, { effectiveTime: new Date(iso), holiday }));
@@ -396,7 +396,7 @@ test("holiday cards share refresh-stable daily counts and pair rotation througho
 });
 
 
-test("New Year party cards rotate in pairs with refresh-stable totals across midnight and city changes", () => {
+test("New Year party cards keep fixed positions and refresh-stable totals across midnight and city changes", () => {
   const { getSeasonalStats } = load("lib/seasonalStats.ts");
   const SantaStats = load("components/SantaStats.tsx").default;
   const previousZone = process.env.TZ;
@@ -404,14 +404,14 @@ test("New Year party cards rotate in pairs with refresh-stable totals across mid
     for (const zone of ["Europe/London", "America/Los_Angeles", "Pacific/Kiritimati"]) {
       process.env.TZ = zone;
       const start = new Date(2026, 11, 31, 18);
-      const first = getSeasonalStats(start, "party", 0);
-      const rotated = getSeasonalStats(start, "party", 60000);
+      const first = getSeasonalStats(start, "party");
+      const rotated = getSeasonalStats(start, "party");
       assert.deepEqual(Array.from(first, metric => metric.key), ["autographs", "dance", "selfies", "snacks"]);
-      assert.deepEqual(Array.from(rotated, metric => metric.key), ["selfies", "snacks", "autographs", "dance"]);
+      assert.deepEqual(Array.from(rotated, metric => metric.key), ["autographs", "dance", "selfies", "snacks"]);
       for (const item of first) {
         assert.equal(rotated.find(metric => metric.key === item.key).count, item.count);
         for (const date of [new Date(2026, 11, 31, 18, 10), new Date(2027, 0, 1), new Date(2027, 0, 1, 2, 59)]) {
-          assert.equal(getSeasonalStats(date, "party", 0).find(metric => metric.key === item.key).count, item.count, zone);
+          assert.equal(getSeasonalStats(date, "party").find(metric => metric.key === item.key).count, item.count, zone);
         }
       }
       for (const [date, partying] of [
@@ -432,16 +432,16 @@ test("New Year party cards rotate in pairs with refresh-stable totals across mid
 });
 
 
-test("rest cards rotate with stable daily totals and a local-clock Bed window", () => {
+test("rest cards keep fixed positions, stable daily totals and a local-clock Bed window", () => {
   const { getSeasonalStats, getRestDetails } = load("lib/seasonalStats.ts");
   const date = new Date("2026-12-26T12:00:00Z");
-  const first = getSeasonalStats(date, "rest", 0);
-  const rotated = getSeasonalStats(date, "rest", 60000);
+  const first = getSeasonalStats(date, "rest");
+  const rotated = getSeasonalStats(date, "rest");
   assert.deepEqual(Array.from(first, item => item.key), ["thanks", "specials", "naps", "biscuits"]);
-  assert.deepEqual(Array.from(rotated, item => item.key), ["naps", "biscuits", "thanks", "specials"]);
+  assert.deepEqual(Array.from(rotated, item => item.key), ["thanks", "specials", "naps", "biscuits"]);
   for (const item of first) {
     assert.equal(rotated.find(metric => metric.key === item.key).count, item.count);
-    assert.equal(getSeasonalStats(new Date("2026-12-26T23:59:59Z"), "rest", 0).find(metric => metric.key === item.key).count, item.count);
+    assert.equal(getSeasonalStats(new Date("2026-12-26T23:59:59Z"), "rest").find(metric => metric.key === item.key).count, item.count);
   }
   assert.equal(getRestDetails(date).cocoa, getRestDetails(new Date("2026-12-26T23:59:59Z")).cocoa);
   const previousZone = process.env.TZ;
@@ -508,4 +508,36 @@ test("preview date buttons open the requested phase boundaries and January follo
     if (previousZone === undefined) delete process.env.TZ;
     else process.env.TZ = previousZone;
   }
+});
+
+
+test("seasonal card order stays fixed across time and names rise two per second from a daily baseline", () => {
+  const { getSeasonalStats } = load("lib/seasonalStats.ts");
+  const start = new Date("2026-11-18T09:30:00Z");
+  for (const phase of ["preparation", "holiday", "party", "rest"]) {
+    const first = getSeasonalStats(start, phase);
+    const later = getSeasonalStats(new Date(start.getTime() + 61000), phase);
+    assert.deepEqual(Array.from(first, metric => metric.key), Array.from(later, metric => metric.key));
+  }
+  const namesAt = iso => getSeasonalStats(new Date(iso), "preparation").find(metric => metric.key === "names").count;
+  assert.equal(namesAt("2026-11-18T09:30:01Z") - namesAt("2026-11-18T09:30:00Z"), 2);
+  assert.equal(namesAt("2026-11-18T09:31:00Z") - namesAt("2026-11-18T09:30:00Z"), 120);
+  assert.equal(namesAt("2026-11-18T09:30:00Z"), namesAt("2026-11-18T09:30:00Z"));
+  const midnight = namesAt("2026-11-19T00:00:00Z");
+  assert.ok(midnight >= 804 && midnight <= 6408);
+  assert.ok(midnight < namesAt("2026-11-18T23:59:59Z"));
+});
+
+test("place markers reuse a small transparent mince pie and accessible city labels", () => {
+  const icon = fs.readFileSync(path.resolve(root, "../../public/images/tracker/mince-pie.png"));
+  assert.equal(icon.readUInt32BE(16), 64);
+  assert.equal(icon.readUInt32BE(20), 64);
+  assert.equal(icon[25], 6);
+  const html = renderToStaticMarkup(React.createElement(SantaMap, {
+    effectiveTime: new Date("2026-11-18T09:30:00Z"),
+    mapPosition: { lat: 20, lng: 0, x: 50, y: 40 }, onHoliday: false,
+  }));
+  assert.equal((html.match(/href="\/images\/tracker\/mince-pie.png"/g) || []).length, 290);
+  assert.match(html, /role="button" tabindex="0" aria-label="Cairo, Egypt"/);
+  assert.doesNotMatch(html, /<title>Cairo, Egypt<\/title>/);
 });

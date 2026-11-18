@@ -27,26 +27,25 @@ const metrics = {
   ],
 } as const;
 
-/** Daily totals survive refreshes and destination changes; a party keeps its totals past midnight. */
-export function getSeasonalStats(date: Date, phase: "preparation" | "holiday" | "party" | "rest", rotationTimeMs = Date.now()) {
+/** Fixed card slots use deterministic counts. Names advance with time and party totals span midnight. */
+export function getSeasonalStats(date: Date, phase: "preparation" | "holiday" | "party" | "rest") {
   let day = Math.floor(date.getTime() / 86400000);
   if (phase === "party") {
     const local = getDeviceDateParts(date);
     const celebrationYear = local.month === 1 ? local.year - 1 : local.year;
     day = Math.floor(Date.UTC(celebrationYear, 11, 31) / 86400000);
   }
-  const stats = metrics[phase].map((metric, index) => {
+  const secondsToday = Math.floor((date.getTime() - Math.floor(date.getTime() / 86400000) * 86400000) / 1000);
+  return metrics[phase].map((metric, index) => {
     const seed = (Math.imul(day, 1664525) + (index + 1) * 1013904223) >>> 0;
+    const dailyCount = metric.min + seed % (metric.max - metric.min + 1);
     return {
       key: metric.key,
       label: metric.label,
-      count: metric.min + seed % (metric.max - metric.min + 1),
+      count: metric.key === "names" ? dailyCount + secondsToday * 2 : dailyCount,
       note: metric.note,
     };
   });
-  return Math.floor(rotationTimeMs / 60000) % 2 === 0
-    ? stats
-    : [...stats.slice(2), ...stats.slice(0, 2)];
 }
 
 

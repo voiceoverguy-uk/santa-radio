@@ -14,6 +14,7 @@ import { getSantaMarkerArtwork } from "../lib/santaMarker";
 import SantaMarker from "./SantaMarker";
 import SantaMap from "./SantaMap";
 import MapGeographyLabels from "./MapGeographyLabels";
+import MapPlaceTooltip, { useMapPlaceTooltip } from "./MapPlaceTooltip";
 import { getNightOverlayPath, getSolarPosition } from "./solarLighting";
 
 export default function SantaTrackerBanner() {
@@ -236,6 +237,7 @@ function LiveStats({ data }: { data: ReturnType<typeof getDashboardData> }) {
 }
 
 function MiniMap({ time, holiday, researching = false, northPoleVisitMessage, completedData }: { completedData?: ReturnType<typeof getDashboardData>; time: Date; holiday: HolidayDestination | null; researching?: boolean; northPoleVisitMessage?: string }) {
+  const places = useMapPlaceTooltip();
   const mapRef = useRef<HTMLAnchorElement>(null);
   const expandButtonRef = useRef<HTMLButtonElement>(null);
   const [expanded, setExpanded] = useState(false);
@@ -332,7 +334,7 @@ function MiniMap({ time, holiday, researching = false, northPoleVisitMessage, co
     : "Santa's at the North Pole";
 
   return (
-    <div className="relative">
+    <div ref={places.containerRef} className="relative">
     <Link
       ref={mapRef}
       data-sneak-peek={previewTime ? "true" : "false"}
@@ -365,19 +367,18 @@ function MiniMap({ time, holiday, researching = false, northPoleVisitMessage, co
         />
         <MapGeographyLabels scale={previewTime ? 0.28 : 1} />
         <g data-route-stops="">
-          {santaStops.map((stop) => (
-            <circle
-              key={stop.id}
-              data-stop-id={stop.id}
-              cx={((stop.lng + 180) / 360) * 1000}
-              cy={((90 - stop.lat) / 180) * 500}
-              r={previewTime ? "0.7" : "2.5"}
-              fill="none"
-              stroke="#bcc9bd"
-              strokeWidth={previewTime ? "0.35" : "1.2"}
-              opacity="0.8"
-            />
-          ))}
+          {santaStops.map((stop) => {
+            const x = ((stop.lng + 180) / 360) * 1000;
+            const y = ((90 - stop.lat) / 180) * 500;
+            const size = previewTime ? 1.5 : 6;
+            return <g key={stop.id} data-stop-id={stop.id}
+              onPointerEnter={event => { if (event.pointerType !== "touch") places.show(stop, event.currentTarget); }}
+              onPointerLeave={places.hide}>
+              <image href="/images/tracker/mince-pie.png" x={x - size / 2} y={y - size / 2}
+                width={size} height={size} preserveAspectRatio="xMidYMid meet" pointerEvents="none" />
+              <circle cx={x} cy={y} r={size} fill="transparent" />
+            </g>;
+          })}
         </g>
         {!previewTime && <circle cx={santaX} cy={santaY} r="18" fill="#D4AF37" opacity="0.3">
           <animate attributeName="r" values="12;22;12" dur="2s" repeatCount="indefinite" />
@@ -402,6 +403,7 @@ function MiniMap({ time, holiday, researching = false, northPoleVisitMessage, co
         {caption}
       </div>
     </Link>
+    <MapPlaceTooltip tooltip={places} />
     <button ref={expandButtonRef} type="button" className="tj-fullscreen-button"
       aria-label="Expand homepage map" title="Expand map"
       onClick={() => setExpanded(true)}>

@@ -12,6 +12,7 @@ import { getJourneySleighDirection, getSeasonalTrackerMode } from "../lib/santaR
 import { getSantaMarkerArtwork } from "../lib/santaMarker";
 import SantaMarker from "./SantaMarker";
 import MapGeographyLabels from "./MapGeographyLabels";
+import MapPlaceTooltip, { useMapPlaceTooltip } from "./MapPlaceTooltip";
 import { getNightOverlayPath, getSolarPosition } from "./solarLighting";
 
 interface SantaMapProps {
@@ -30,6 +31,17 @@ interface SantaMapProps {
 type View = "follow" | "world" | string;
 
 export default function SantaMap({ effectiveTime, mapPosition, onHoliday, researchDestination, northPoleVisitMessage, liveStatusLabel, santaInfo, autoCycleView = false, initiallyExpanded = false, onExpandedClose }: SantaMapProps) {
+  const places = useMapPlaceTooltip();
+  // Keep enlarged targets from covering the centres of neighbouring places.
+  const placeClearance = useMemo(() => new Map(santaStops.map(stop => {
+    const point = project(stop.lat, stop.lng);
+    const nearest = Math.min(...santaStops.filter(other => other.id !== stop.id).map(other => {
+      const next = project(other.lat, other.lng);
+      const dx = Math.abs(point.x - next.x);
+      return Math.hypot(Math.min(dx, 1000 - dx), point.y - next.y);
+    }));
+    return [stop.id, nearest * 0.48];
+  })), []);
   const titleId = useId();
   const infoId = useId();
   const [infoVisible, setInfoVisible] = useState(false);
@@ -194,6 +206,9 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
   const s = MAP_W_OVER(camera);
   const tx = 500 - camera.cx * s;
   const ty = 250 - camera.cy * s;
+  const pinScale = pixelFactor / s;
+  const pinSize = Math.min(12, 5 + 3 * Math.log2(Math.max(1, s))) * pinScale;
+  const hitSize = (s > 1.5 ? 18 : 8) * pinScale;
   const k = pixelFactor / Math.pow(s, 0.85); // readable pins and labels on phone as well as desktop
 
   // Route segments, split at the date line instead of crossing the world.
@@ -235,9 +250,11 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
     ? live && currentStop ? `Following Santa · ${stopRegion(currentStop)}` : "Santa's position"
     : effectiveView === "world" ? `World · ${santaStops.length} stops` : effectiveView;
 
+  useEffect(() => places.hide(), [effectiveView, expanded, places.hide]);
+
   const mapContent = (
     <div role={expanded ? "dialog" : undefined} aria-modal={expanded || undefined} aria-label={expanded ? "Full-screen Santa map" : undefined} ref={mapRef} className="tracker-map relative w-full overflow-hidden rounded-2xl border">
-      <div className="tj-map-viewport relative w-full" style={{ aspectRatio: "2 / 1" }}>
+      <div ref={places.containerRef} className="tj-map-viewport relative w-full" style={{ aspectRatio: "2 / 1" }} onClick={places.hide}>
         {!autoCycleView && <button ref={fullscreenButtonRef} type="button" className="tj-fullscreen-button"
           onClick={toggleExpanded} aria-label={expanded ? "Exit full screen" : "Full screen"} title={expanded ? "Exit full screen" : "Full screen"}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
@@ -339,8 +356,17 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
               const isCurrent = stop.id === currentId;
               const isNext = stop.id === nextStop?.id;
               return (
-                <g key={stop.id} data-stop-id={stop.id} data-active={isCurrent ? "true" : undefined}>
-                  <title>{stop.name}</title>
+                <g key={stop.id} className="tj-place-marker" data-place-marker="" data-stop-id={stop.id} data-active={isCurrent ? "true" : undefined}
+                  role="button" tabIndex={0} aria-label={stop.name}
+                  aria-describedby={places.place?.stop.id === stop.id ? places.id : undefined}
+                  onPointerEnter={event => { if (event.pointerType !== "touch") places.show(stop, event.currentTarget); }}
+                  onPointerLeave={event => { if (event.pointerType !== "touch") places.hide(); }}
+                  onFocus={event => places.show(stop, event.currentTarget)} onBlur={places.hide}
+                  onClick={event => { event.stopPropagation(); places.show(stop, event.currentTarget); }}
+                  onKeyDown={event => {
+                    if (event.key === "Enter" || event.key === " ") { event.preventDefault(); places.show(stop, event.currentTarget); }
+                    if (event.key === "Escape" && places.place) { event.stopPropagation(); places.hide(); }
+                  }}>
                   {isCurrent && (
                     <>
                       <circle cx={sx} cy={sy} r={12 * k} fill="url(#glow)">
@@ -350,10 +376,10 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
                     </>
                   )}
                   {isNext && <circle cx={sx} cy={sy} r={3.4 * k} fill="none" stroke={MAP_PALETTE.route} strokeWidth={1.8 * k} />}
-                  {isVisited && !isCurrent && <circle className="tj-pin" cx={sx} cy={sy} r={2.2 * k} fill="#b62332" stroke="#e6ce86" strokeWidth={0.5 * k} />}
-                  {!isVisited && !isCurrent && !isNext && (
-                    <circle className="tj-pin" cx={sx} cy={sy} r={1.8 * k} fill="#17334A55" stroke="#FFF8E7" strokeWidth={0.8 * k} opacity="0.9" />
-                  )}
+                  {isVisited && !isCurrent && <circle className="tj-pin" cx={sx} cy={sy} r={pinSize / 2 + pinScale} fill="#b62332" stroke="#e6ce86" strokeWidth={0.5 * k} />}
+                  <image href="/images/tracker/mince-pie.png" x={sx - pinSize / 2} y={sy - pinSize / 2}
+                    width={pinSize} height={pinSize} preserveAspectRatio="xMidYMid meet" pointerEvents="none" aria-hidden="true" />
+                  <circle className="tj-place-hit" cx={sx} cy={sy} r={Math.min(hitSize / 2, placeClearance.get(stop.id) ?? hitSize / 2)} fill="transparent" strokeWidth={pinScale} />
                 </g>
               );
             })}
@@ -432,6 +458,7 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
           </svg>
         )}
 
+        <MapPlaceTooltip tooltip={places} />
         <div className="tracker-map-caption absolute bottom-3 left-3 backdrop-blur-sm rounded-lg px-3 py-1.5 text-xs" data-delivery-caption={mode === "LIVE" ? "true" : undefined}>
           {mode === "PREPARING" ? "Getting ready at the North Pole"
             : mode === "COMPLETE"

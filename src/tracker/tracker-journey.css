@@ -148,3 +148,26 @@
   .tj-expanded-stats dt { font-size: 10px; margin-bottom: 2px; }
   .tj-expanded-stats dd, .tj-expanded-stats .tj-expanded-detail { font-size: 11px; }
 }
+
+
+.tj-place-marker { cursor: pointer; outline: none; }
+.tj-place-marker:focus-visible .tj-place-hit { stroke: #fff8e7; }
+.tj-place-marker:is(:hover, :focus-visible) image { filter: drop-shadow(0 0 2px #fff8e7); }
+.tj-place-tooltip {
+  position: absolute;
+  z-index: 6;
+  max-width: calc(100% - 24px);
+  padding: 12px 16px;
+  border: 1px solid #e5c96f;
+  border-radius: 12px;
+  color: #fff8e7;
+  background: #0b2c20f5;
+  box-shadow: 0 6px 22px #0005;
+  backdrop-filter: blur(6px);
+  pointer-events: none;
+  text-align: left;
+  font-family: Inter, sans-serif;
+}
+.tj-place-tooltip-name { display: flex; align-items: center; gap: 8px; font-size: 16px; line-height: 1.35; }
+.tj-place-tooltip-name > span { font-size: 22px; flex-shrink: 0; }
+.tj-place-tooltip-region { margin-top: 4px; color: #d0d9c8; font-size: 12px; line-height: 1.4; }
