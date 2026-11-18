@@ -1,3 +1,4 @@
+import useNameRequestSeason from '../hooks/useNameRequestSeason.js';
 import { trackMessageAction } from '../lib/messageEngagement.js';
 import PronunciationNote from './PronunciationNote.jsx';
 import { useEffect, useId, useRef, useState } from 'react';
@@ -32,6 +33,7 @@ import './SantaMessageForm.css';
 import { useInlineMakerRadioVisibility } from './RadioDockVisibility.jsx';
 
 export default function SantaMessageForm({ showDetailLink = true, initialName = '', pendingName, keepSignupInPlace = false, selectedChildName = '', layout = 'default' }) {
+  const requestsOpen = useNameRequestSeason();
   const makerPanelRef = useInlineMakerRadioVisibility();
   const dedicatedLayout = layout === 'dedicated';
   const { hasAccess, greetingName, sessionRemembered, revokeAccess } = useSantaMessageAccess();
@@ -455,7 +457,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
           </p>}
           {(() => {
             const requested = normaliseRequestedName(name);
-             const canRequest = !keepSignupInPlace && !!requested && !nameSearch.loading && !nameSearch.error &&
+             const canRequest = requestsOpen && !keepSignupInPlace && !!requested && !nameSearch.loading && !nameSearch.error &&
               !nameSearch.warning && suggestions.length === 0;
             const visibleRequest = canRequest && (nameRequest.key === requested.key ? nameRequest : null);
             return canRequest ? <div className="name-request"><p><strong>Please request first names only.</strong> Hyphenated and two-part first names, such as Ellie-May or Ellie May, are welcome. Surnames, full names, group names and phrases won’t be considered for recording.</p><p>Up to 5 new names every 2 hours.</p>
@@ -499,4 +501,3 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
     </div>
   </section>;
 }
-

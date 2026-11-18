@@ -163,7 +163,7 @@ export function homeMetadata() {
   return pageMetadata({
     path: '/',
     title: 'Santa Radio | Christmas Radio & Online Christmas Music',
-    description: 'Listen to Christmas radio and online Christmas music 24/7 on Santa Radio, hosted by the UK’s Voice of Santa. Enjoy festive favourites all year round.',
+    description: 'Listen to Santa Radio—100% Christmas music, hosted by Santa, 24/7. Enjoy festive favourites and create free personalised Santa messages for your little ones.',
   });
 }
 

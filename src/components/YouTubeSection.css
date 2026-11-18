@@ -69,3 +69,10 @@
     padding: 12px 12px 0;
   }
 }
+
+/* Explicit sizing also works when Safari does not resolve percentage heights
+   against the aspect-ratio container. Keep YouTube's native play controls usable. */
+.tv-screen { position: relative; }
+.tv-screen > iframe { position: absolute; inset: 0; width: 100%; height: 100%; display: block; border: 0; }
+.webcam-play-help { text-align: center; margin: 16px auto 0; }
+.webcam-play-help a { color: #f5d779; text-decoration: underline; }

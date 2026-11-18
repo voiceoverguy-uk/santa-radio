@@ -1,3 +1,4 @@
+import { nameRequestsOpen, NAME_REQUESTS_CLOSED } from '../src/lib/nameRequestSeason.js';
 import { tidyCompletedRequest } from './name-request-history.js';
 import { requestContact } from './name-request-contact.js';
 import { dismissNameRequest } from './name-request-store.js';
@@ -41,7 +42,7 @@ function visitor(req, res) {
   return { visitorKey: digest(`visitor:${id}`), bucketKey: digest(`limit:${id}:${Math.floor(Date.now() / 3600000)}`) };
 }
 export function createNameRequestHandler({ checkAdmin = authorize, save = saveNameRequest, list = listNameRequests,
-  tidy = tidyCompletedRequest, record = recordNameRequest, identify = visitor, library = santaNameLibrary, limit = consumeNameAccess, contactFor = requestContact, dismiss = dismissNameRequest } = {}) {
+  tidy = tidyCompletedRequest, record = recordNameRequest, identify = visitor, library = santaNameLibrary, limit = consumeNameAccess, contactFor = requestContact, dismiss = dismissNameRequest, now = () => new Date() } = {}) {
   return async (req, res) => {
     let stage = 'validation';
     res.set('Cache-Control', 'private, no-store');
@@ -54,6 +55,7 @@ export function createNameRequestHandler({ checkAdmin = authorize, save = saveNa
         if (origin && new URL(origin).host !== getClerkProxyHost(req)) return res.status(403).json({ error: 'Please use this website to manage name requests.' });
       }
       if (req.method === 'POST') {
+        if (!nameRequestsOpen(now())) return res.status(403).json({ error: NAME_REQUESTS_CLOSED, code: 'NAME_REQUESTS_CLOSED' });
         await limit(req, 'request');
         const name = normaliseRequestedName(req.body?.name);
         if (!name) return res.status(400).json({ error: 'Enter a first name using letters, spaces, apostrophes or hyphens (up to 80 characters).' });

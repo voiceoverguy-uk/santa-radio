@@ -1,14 +1,16 @@
+import useNameRequestSeason from '../hooks/useNameRequestSeason.js';
 import PronunciationNote from './PronunciationNote.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { normaliseRequestedName } from '../lib/santaNameRequests.js';
 import { nameRequestToken } from '../lib/santaNameRequestTokens.js';
 export default function WorkshopMissingName({name}) {
+  const requestsOpen = useNameRequestSeason();
   const [state,setState]=useState('idle'),[message,setMessage]=useState('');
   const [pronunciation,setPronunciation]=useState('');
   const current=useRef(name);current.current=name;
   useEffect(()=>{setState('idle');setMessage('');setPronunciation('');},[name]);
   const requested=normaliseRequestedName(name);
-  if(!requested)return null;
+  if(!requested || !requestsOpen)return null;
   async function submit() {
     setState('pending');setMessage('');
     try {

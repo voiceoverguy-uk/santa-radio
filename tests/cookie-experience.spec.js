@@ -44,6 +44,9 @@ test('fresh homepage TV loads without recording consent or flashing an off notic
   const placeholderLink = webcam.getByRole('link', { name: 'Open on YouTube instead (new tab)', exact: true });
   await expect(webcam.locator('.video-disclosure')).toHaveCount(0);
   await expect(video).toHaveCount(1);
+  await expect(video).not.toHaveAttribute('inert', '');
+  await expect(video).toHaveCSS('pointer-events', 'auto');
+  await expect(webcam.getByRole('link', { name: 'Open on YouTube (new tab)', exact: true })).toBeVisible();
   await expect(webcam.getByRole('button', { name: /^(Pause video|Resume muted video)$/ })).toHaveCount(0);
   await expect(webcam.locator('.external-media-placeholder')).toHaveCount(0);
   expect(await page.evaluate(() => window.__tvOffFlashed)).toBe(false);
@@ -57,7 +60,7 @@ test('fresh homepage TV loads without recording consent or flashing an off notic
   expect(requests).toHaveLength(1);
   await webcam.getByRole('button', { name: 'Enable external media', exact: true }).click();
   await expect(video).toHaveAttribute('src',
-    'https://www.youtube.com/embed/mMrHniQJNCM?si=O7nNcINykyWwgyXC&autoplay=1&mute=1&controls=0&disablekb=1&playsinline=1&fs=0');
+    'https://www.youtube.com/embed/mMrHniQJNCM?si=O7nNcINykyWwgyXC&autoplay=0&mute=1&controls=1&playsinline=1');
   expect(await stored(page)).toMatchObject({ analytics: false, marketing: false, media: true });
   await expect(webcam.getByRole('button', { name: /^(Pause video|Resume muted video)$/ })).toHaveCount(0);
   await expect(placeholderLink).toHaveCount(0);

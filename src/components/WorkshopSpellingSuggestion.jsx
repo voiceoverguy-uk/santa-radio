@@ -1,3 +1,4 @@
+import useNameRequestSeason from '../hooks/useNameRequestSeason.js';
 import { useEffect, useId, useRef, useState } from 'react';
 import './WorkshopSpellingSuggestion.css';
 import { normaliseRequestedName } from '../lib/santaNameRequests.js';
@@ -5,6 +6,7 @@ import { normaliseRequestedName } from '../lib/santaNameRequests.js';
 const REQUEST_TIMEOUT_MS = 20000;
 
 export default function WorkshopSpellingSuggestion({ name, recordingId, recordedName }) {
+  const requestsOpen = useNameRequestSeason();
   const instanceId = useId();
   const pairKey = JSON.stringify([name, recordingId]);
   const pairKeyRef = useRef(pairKey);
@@ -133,6 +135,8 @@ export default function WorkshopSpellingSuggestion({ name, recordingId, recorded
       if (inFlight.current.get(pairKey) === controller) inFlight.current.delete(pairKey);
     }
   };
+
+  if (!requestsOpen) return null;
 
   const isPending = status.state === 'pending';
   const isSuccess = status.state === 'success';
