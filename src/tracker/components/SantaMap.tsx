@@ -18,6 +18,7 @@ import { getNightOverlayPath, getSolarPosition } from "./solarLighting";
 
 interface SantaMapProps {
   effectiveTime: Date;
+  christmasPreviewSpeed?: number;
   chimeSpeed?: number;
   chimeResetKey?: number;
   mapPosition: MapPosition;
@@ -33,7 +34,7 @@ interface SantaMapProps {
 
 type View = "follow" | "world" | string;
 
-export default function SantaMap({ chimeSpeed = 1, chimeResetKey = 0, effectiveTime, mapPosition, onHoliday, researchDestination, northPoleVisitMessage, liveStatusLabel, santaInfo, autoCycleView = false, initiallyExpanded = false, onExpandedClose }: SantaMapProps) {
+export default function SantaMap({ christmasPreviewSpeed, chimeSpeed = 1, chimeResetKey = 0, effectiveTime, mapPosition, onHoliday, researchDestination, northPoleVisitMessage, liveStatusLabel, santaInfo, autoCycleView = false, initiallyExpanded = false, onExpandedClose }: SantaMapProps) {
   const chime = useArrivalChime(effectiveTime, chimeSpeed, chimeResetKey);
   const places = useMapPlaceTooltip();
   // Keep enlarged targets from covering the centres of neighbouring places.
@@ -265,6 +266,9 @@ export default function SantaMap({ chimeSpeed = 1, chimeResetKey = 0, effectiveT
             <path d={expanded ? "M4 9h5V4M20 15h-5v5M9 9 3 3m12 12 6 6" : "M9 3H3v6m12 12h6v-6M3 3l6 6m12 12-6-6"} />
           </svg>
         </button>}
+        {expanded && christmasPreviewSpeed && <div className="tj-preview-notice" role="status">
+          <strong>Christmas Eve preview</strong><span>{christmasPreviewSpeed}× simulation</span>
+        </div>}
         {expanded && <span className="tj-rotate-hint">Turn your phone sideways for a wider view</span>}
         <svg
           viewBox="0 0 1000 500"
@@ -276,6 +280,7 @@ export default function SantaMap({ chimeSpeed = 1, chimeResetKey = 0, effectiveT
         >
           <title id={titleId}>{researchDestination ? `Santa's route research map: ${researchDestination.name}` : northPoleVisitMessage ? "Santa helping Head Elf at the North Pole" : onHoliday ? "Santa's holiday location map" : "Santa's estimated journey map"}</title>
           <desc id={descriptionId}>
+            {christmasPreviewSpeed ? `Christmas Eve preview at ${christmasPreviewSpeed} times normal speed. ` : ""}
             {researchDestination
               ? `${getRouteResearchCopy(researchDestination)} The Santa marker shows his research location, not a Christmas Eve delivery stop. Faint dots mark the separate estimated Christmas Eve route. Subtle shading marks the night side of Earth at ${effectiveTime.toISOString()} UTC.`
               : northPoleVisitMessage
@@ -533,7 +538,7 @@ export default function SantaMap({ chimeSpeed = 1, chimeResetKey = 0, effectiveT
           })}
         </select>
         <button type="button" className="tj-btn" aria-pressed={chime.enabled} disabled={!chime.enabled && ![1, 10].includes(chimeSpeed)} onClick={chime.toggle} title="Play a chime when Santa arrives. Preview sounds play at 1× and 10× only.">Arrival chime: {chime.enabled ? "On" : "Off"}</button>
-        {live ? <span className="tj-live"><span className="tj-live-dot" />Estimated live</span> : null}
+        {live ? <span className="tj-live"><span className="tj-live-dot" />{christmasPreviewSpeed ? "Christmas Eve preview" : "Estimated live"}</span> : null}
         <div className="tj-map-summary">
           {departureCountdown ? (
             <div className="tj-departure" role="group" aria-label="Countdown to Santa's Departure" aria-describedby={`${titleId}-departure-target`} aria-live="off" title="Estimated departure · 24 December, 10:00 UTC">

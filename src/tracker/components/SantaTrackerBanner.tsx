@@ -412,6 +412,8 @@ function MiniMap({ time, holiday, researching = false, northPoleVisitMessage, co
       </svg>
     </button>
     {expanded && <SantaMap initiallyExpanded
+      christmasPreviewSpeed={previewTime ? 60 : undefined}
+      chimeSpeed={previewTime ? 60 : 1}
       onExpandedClose={() => {
         setExpanded(false);
         requestAnimationFrame(() => expandButtonRef.current?.focus());
@@ -421,7 +423,7 @@ function MiniMap({ time, holiday, researching = false, northPoleVisitMessage, co
       onHoliday={!!holiday && !researching && !previewTime}
       researchDestination={researching && !previewTime ? holiday : null}
       northPoleVisitMessage={northPoleVisitMessage}
-      santaInfo={{ title: completedData?.currentStopName ?? holiday?.name ?? "North Pole", description: completedData?.statusSubtext ?? caption }}
+      santaInfo={{ title: previewTime ? "Christmas Eve preview" : completedData?.currentStopName ?? holiday?.name ?? "North Pole", description: completedData?.statusSubtext ?? caption }}
     />}
     </div>
   );
