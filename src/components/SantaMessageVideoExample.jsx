@@ -1,21 +1,44 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRadio } from './RadioProvider.jsx';
 
+export const VIDEO_EXAMPLES = ['Charlotte', 'Arabella', 'Harry'].map(name => ({
+  name,
+  src: `/video/examples/santa-message-${name.toLowerCase()}-supplied-v1.mp4`,
+  poster: `/images/santa-message-${name.toLowerCase()}-supplied-v1.jpg`,
+}));
+export function nextVideoExample(previous, random = Math.random) {
+  const choices = VIDEO_EXAMPLES.filter(example => example.name !== previous);
+  return choices[Math.min(choices.length - 1, Math.floor(Math.max(0, random()) * choices.length))];
+}
+const ROTATION_KEY = 'santa-video-example-last';
 export default function SantaMessageVideoExample() {
   const radio = useRadio();
-  const resume = useRef(null);
+  const resume = useRef(null), video = useRef(null);
+  const [example, setExample] = useState(VIDEO_EXAMPLES[0]);
   const finish = () => { const restore = resume.current; resume.current = null; restore?.(); };
-  useEffect(() => () => { resume.current?.(); resume.current = null; }, []);
+  const choose = previous => {
+    const next = nextVideoExample(previous);
+    setExample(next);
+    try { sessionStorage.setItem(ROTATION_KEY, next.name); } catch { /* Rotation still works without storage. */ }
+  };
+  useEffect(() => {
+    let previous;
+    try { previous = sessionStorage.getItem(ROTATION_KEY); } catch { /* Optional browser storage. */ }
+    choose(previous);
+    return () => { resume.current?.(); resume.current = null; };
+  }, []);
   return <figure className="fsm-video-preview">
-    <video controls playsInline preload="none"
-      poster="/images/santa-message-harry-video-poster.jpg"
-      src="/video/examples/santa-message-harry.mp4"
-      aria-label="Play an example Santa video message for Harry"
+    <video key={example.src} ref={video} controls playsInline preload="none"
+      poster={example.poster} src={example.src}
+      aria-label={`Play an example Santa video message for ${example.name}`}
       onPlay={() => {
         document.querySelectorAll('.message-result audio, .message-result video').forEach(media => media.pause());
         if (!resume.current) resume.current = radio?.pauseForMessage();
-      }} onPause={finish} onEnded={finish} onError={finish} />
-    <figcaption>Watch an example — a message for Harry. Yours will feature your chosen name.</figcaption>
-    <a className="btn-red" href="#santa-messages">Create your free message</a>
+      }} onPause={finish} onEnded={() => { finish(); choose(example.name); }} onError={finish} />
+    <figcaption>Watch an example — a message for {example.name}. Yours will feature your chosen name.</figcaption>
+    <div className="fsm-video-preview__actions">
+      <a className="btn-red" href="#santa-messages">Create your free message</a>
+      <button type="button" onClick={() => { video.current?.pause(); finish(); choose(example.name); }}>Another example</button>
+    </div>
   </figure>;
 }
