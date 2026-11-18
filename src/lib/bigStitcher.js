@@ -28,10 +28,10 @@ export function drawStitcherImage(canvas, image, name, branded = false) {
   ctx.font = `${Math.min(canvas.width * 0.038, band * 0.2)}px Georgia, serif`;
   ctx.fillText(name.trim() ? 'A message from Santa to' : 'A message from Santa', canvas.width / 2, canvas.height - band * (name.trim() ? 0.72 : 0.5));
   let size = Math.min(canvas.width * 0.075, band * 0.42);
-  ctx.font = `bold ${size}px Arial, sans-serif`;
+  ctx.font = `italic ${size}px Georgia, serif`;
   while (ctx.measureText(name.trim()).width > canvas.width * 0.9 && size > 1) {
     size -= 1;
-    ctx.font = `bold ${size}px Arial, sans-serif`;
+    ctx.font = `italic ${size}px Georgia, serif`;
   }
   ctx.fillStyle = '#fff';
   ctx.fillText(name.trim(), canvas.width / 2, canvas.height - band * 0.3);

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { drawStitcherImage, selectStitcherFiles, stitcherArguments } from '../lib/bigStitcher.js';
 import './BigStitcher.css';
+import { audioDuration, encodingProgress } from '../lib/videoProgress.js';
 
 function useMediaUrl(file) {
   const [url, setUrl] = useState('');
@@ -17,6 +18,7 @@ export default function BigStitcher() {
   const [files, setFiles] = useState({});
   const [name, setName] = useState('');
   const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState(null);
   const [status, setStatus] = useState('');
   const [error, setError] = useState('');
   const [dragging, setDragging] = useState(false);
@@ -24,7 +26,7 @@ export default function BigStitcher() {
   const [output, setOutput] = useState(null);
   const canvas = useRef(null), picker = useRef(null), encoder = useRef(null), run = useRef(0);
   const uploadedImageUrl = useMediaUrl(files.image), audioUrl = useMediaUrl(files.audio), outputUrl = useMediaUrl(output);
-  const imageUrl = uploadedImageUrl || '/images/big-stitcher-christmas-v1.png';
+  const imageUrl = uploadedImageUrl || '/images/big-stitcher-christmas-v3.png';
   const branded = !files.image;
   useEffect(() => () => { run.current++; encoder.current?.terminate(); }, []);
   useEffect(() => {
@@ -53,27 +55,31 @@ export default function BigStitcher() {
   async function stitch() {
     if (busy || !ready || !files.audio) return;
     const version = ++run.current;
-    setBusy(true); setError(''); setOutput(null); setStatus('Loading the video maker…');
+    setBusy(true); setProgress(null); setError(''); setOutput(null); setStatus('Loading the video maker…');
     let ffmpeg;
     try {
       const [{ FFmpeg }, { default: coreURL }, { default: wasmURL }] = await Promise.all([
         import('@ffmpeg/ffmpeg'), import('@ffmpeg/core?url'), import('@ffmpeg/core/wasm?url'),
       ]);
       if (version !== run.current) return;
+      const duration = await audioDuration(files.audio);
+      if (version !== run.current) return;
       ffmpeg = new FFmpeg(); encoder.current = ffmpeg;
+      ffmpeg.on('progress', ({ time }) => { if (version === run.current) setProgress(encodingProgress(time, duration)); });
       await ffmpeg.load({ coreURL, wasmURL });
       if (version !== run.current) return;
-      setStatus('Stitching your MP4… Keep this tab open.');
+      setProgress(duration > 0 ? 0 : null); setStatus('Stitching your MP4… Keep this tab open.');
       const png = await new Promise(resolve => canvas.current.toBlob(resolve, 'image/png'));
       if (!png) throw new Error('Unable to prepare the image. Please try another image.');
       await ffmpeg.writeFile('image.png', new Uint8Array(await png.arrayBuffer()));
       await ffmpeg.writeFile('audio.mp3', new Uint8Array(await files.audio.arrayBuffer()));
       const result = await ffmpeg.exec(stitcherArguments);
       if (result !== 0) throw new Error('The MP3 could not be converted. Check that it plays correctly and try again.');
+      if (version === run.current) { setProgress(0.97); setStatus('Finishing your MP4…'); }
       const data = await ffmpeg.readFile('output.mp4');
       if (version !== run.current) return;
       setOutput(new Blob([data], { type: 'video/mp4' }));
-      setStatus('Your MP4 is ready to preview and download.');
+      setProgress(1); setStatus('Your MP4 is ready to preview and download.');
     } catch (e) {
       if (version === run.current) { setError(e.message || 'The video maker could not finish. Try a smaller file or reload and try again.'); setStatus(''); }
     } finally {
@@ -99,6 +105,7 @@ export default function BigStitcher() {
     {audioUrl && <audio controls src={audioUrl} aria-label="Selected MP3 preview" />}
     <div className="big-stitcher__actions"><button type="button" disabled={busy || !ready || !files.audio} onClick={stitch}>{busy ? 'Making your MP4…' : 'Create MP4'}</button>{busy && <button type="button" onClick={cancel}>Cancel</button>}</div>
     <p className="big-stitcher__note">Your files stay in this browser. The first conversion downloads the video maker (about 32 MB). Large recordings take longer; keep this tab open.</p>
+    {(busy || outputUrl) && <div className="big-stitcher__progress"><progress aria-label="MP4 creation progress" max="1" value={progress ?? undefined} /><span>{progress === null ? 'Loading video maker…' : `${Math.floor(progress * 100)}%`}</span></div>}
     <p role="status" aria-live="polite">{status}</p>{error && <p role="alert">{error}</p>}
     {outputUrl && <div className="big-stitcher__result"><video controls src={outputUrl} aria-label="Finished MP4 preview" /><a href={outputUrl} download={filename}>Download MP4</a></div>}
   </section>;

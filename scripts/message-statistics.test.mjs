@@ -49,11 +49,20 @@ test('engagement actions count independently and duplicate retries count once', 
  try {
  await db.exec(await readFile(new URL('../database/message-statistics.sql',import.meta.url),'utf8'));
  const now=new Date(); const id=verifyReceipt(await recordCreation('Test',pool,now),now.getTime());
- for(const action of ['listen','download','share']) {
+ for(const action of ['listen','download','mp4-download','share']) {
    assert.equal(await recordEngagement(id,action,pool,now),true);
    assert.equal(await recordEngagement(id,action,pool,now),false);
  }
- assert.deepEqual((await db.query('SELECT listens::int,shares::int,download_clicks::int FROM santa_message_daily')).rows,[{listens:1,shares:1,download_clicks:1}]);
+ assert.deepEqual((await db.query('SELECT listens::int,shares::int,download_clicks::int,mp4_download_clicks::int FROM santa_message_daily')).rows,[{listens:1,shares:1,download_clicks:1,mp4_download_clicks:1}]);
  await assert.rejects(recordEngagement(id,'bogus',pool,now));
  } finally {await db.close();}
 });
+
+ test('MP4 download route accepts a signed receipt and rejects invalid receipts', async()=>{
+   const token=receiptToken('11111111-1111-4111-8111-111111111111');
+   for(const [receipt,expected] of [[token,200],['invalid',400]]) {
+     let recorded; const response={code:200,set(){return this},status(s){this.code=s;return this},json(v){this.body=v;return this}};
+     await createStatisticsHandler({engagement:async(id,action)=>{recorded=action}})({method:'POST',headers:{origin:'https://www.santaradio.co.uk',host:'www.santaradio.co.uk'},body:{receipt,action:'mp4-download'}},response);
+     assert.equal(response.code,expected); assert.equal(recorded,expected===200?'mp4-download':undefined);
+   }
+ });

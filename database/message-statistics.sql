@@ -39,3 +39,7 @@ CREATE TABLE IF NOT EXISTS santa_apple_app_status (
   status text NOT NULL CHECK (status IN ('released','pending','unknown')),
   checked_at timestamptz NOT NULL DEFAULT now()
 );
+
+-- MP4 clicks are counted independently, once per valid recording receipt.
+ALTER TABLE santa_message_receipts ADD COLUMN IF NOT EXISTS mp4_downloaded_at timestamptz;
+ALTER TABLE santa_message_daily ADD COLUMN IF NOT EXISTS mp4_download_clicks bigint NOT NULL DEFAULT 0 CHECK (mp4_download_clicks >= 0);

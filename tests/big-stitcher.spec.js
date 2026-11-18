@@ -33,6 +33,7 @@ test('dashboard combines dropped media and a name into a playable MP4', async ({
     await expect(box.getByRole('button', { name: 'Create MP4' })).toBeEnabled();
     await box.getByRole('button', { name: 'Create MP4' }).click();
     await expect(box.getByRole('link', { name: 'Download MP4' })).toBeVisible({ timeout: 90000 });
+    await expect(box.getByRole('progressbar', { name: 'MP4 creation progress' })).toHaveAttribute('value', '1');
     const downloadPromise = page.waitForEvent('download');
     await box.getByRole('link', { name: 'Download MP4' }).click();
     const download = await downloadPromise;

@@ -36,7 +36,7 @@ export function createStatisticsHandler({ allowed=validOwnerToken, todos=dashboa
         const id=verifyReceipt(req.body?.receipt);
         if(!id) return res.status(400).json({error:'Invalid or expired recording receipt.'});
         const action = req.body?.action ?? 'download';
-        if (!['download','listen','share'].includes(action)) return res.status(400).json({error:'Invalid recording action.'});
+        if (!['download','mp4-download','listen','share'].includes(action)) return res.status(400).json({error:'Invalid recording action.'});
         if (action === 'download') await download(id); else await engagement(id, action);
         return res.json({ok:true});
       }
@@ -71,4 +71,3 @@ export function createStatisticsHandler({ allowed=validOwnerToken, todos=dashboa
 const app=express();app.disable('x-powered-by');app.use(express.json({limit:'2kb',inflate:false}));app.use(createStatisticsHandler());
 app.use((_err,_req,res,_next)=>res.status(400).json({error:'Invalid request.'}));
 export default app;
-
