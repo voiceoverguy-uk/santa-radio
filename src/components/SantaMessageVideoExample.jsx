@@ -13,7 +13,7 @@ export function nextVideoExample(previous, random = Math.random) {
 const ROTATION_KEY = 'santa-video-example-last';
 export default function SantaMessageVideoExample() {
   const radio = useRadio();
-  const resume = useRef(null), video = useRef(null);
+  const resume = useRef(null);
   const [example, setExample] = useState(VIDEO_EXAMPLES[0]);
   const finish = () => { const restore = resume.current; resume.current = null; restore?.(); };
   const choose = previous => {
@@ -28,17 +28,12 @@ export default function SantaMessageVideoExample() {
     return () => { resume.current?.(); resume.current = null; };
   }, []);
   return <figure className="fsm-video-preview">
-    <video key={example.src} ref={video} controls playsInline preload="none"
+    <video key={example.src} controls playsInline preload="none"
       poster={example.poster} src={example.src}
       aria-label={`Play an example Santa video message for ${example.name}`}
       onPlay={() => {
         document.querySelectorAll('.message-result audio, .message-result video').forEach(media => media.pause());
         if (!resume.current) resume.current = radio?.pauseForMessage();
       }} onPause={finish} onEnded={() => { finish(); choose(example.name); }} onError={finish} />
-    <figcaption>Watch an example — a message for {example.name}. Yours will feature your chosen name.</figcaption>
-    <div className="fsm-video-preview__actions">
-      <a className="btn-red" href="#santa-messages">Create your free message</a>
-      <button type="button" onClick={() => { video.current?.pause(); finish(); choose(example.name); }}>Another example</button>
-    </div>
   </figure>;
 }

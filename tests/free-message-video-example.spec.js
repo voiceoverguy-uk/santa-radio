@@ -20,11 +20,9 @@ for (const width of [390, 1280]) {
     await video.evaluate(el => el.pause());
     expect(events).toHaveLength(0);
     const first = await video.getAttribute('src');
-    await page.getByRole('button', { name: 'Another example' }).click();
-    await expect(video).not.toHaveAttribute('src', first);
-    const second = await video.getAttribute('src');
+    await expect(page.locator('.fsm-video-preview figcaption, .fsm-video-preview button, .fsm-video-preview a')).toHaveCount(0);
     await video.dispatchEvent('ended');
-    await expect(video).not.toHaveAttribute('src', second);
+    await expect(video).not.toHaveAttribute('src', first);
     expect(await video.evaluate(el => el.paused)).toBe(true);
     await page.screenshot({ path: `/tmp/free-video-example-${width}.png` });
   });

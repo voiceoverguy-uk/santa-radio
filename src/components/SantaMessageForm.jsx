@@ -412,7 +412,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         {!!messages.length && <div className="message-wait-downloads">
           {renderResults()}
         </div>}
-        {coolingDown && <SantaCooldownNotice availableAt={allowance.availableAt} />}
+        {coolingDown && <SantaCooldownNotice secondsLeft={allowance.secondsLeft} />}
         {coolingDown && !allowance.remembered && <p className="message-name-hint" role="status">Your browser can’t remember the message allowance. The limit works while this page is open, but leaving or refreshing may reset it.</p>}
         {!coolingDown && <>
         <p className="form-desc">Hey {greetingName || 'there'}, {hasPrefilledName
