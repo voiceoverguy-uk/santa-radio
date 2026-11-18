@@ -3,10 +3,6 @@
 .name-chart-section .preview{max-width:1160px;margin:auto}
 .name-chart-section .context{text-align:center;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#adbeb1;margin:0 0 28px}
 .name-chart-section .nc-chart{background:#14131c;border:2px solid #fff5d8;box-shadow:10px 10px 0 #030f0c;position:relative;overflow:hidden}
-.name-chart-section .nc-topline{display:flex;justify-content:space-between;align-items:center;padding:17px 26px;border-bottom:2px solid #fff5d8;font-size:12px;font-weight:900;letter-spacing:2px}
-.name-chart-section .nc-brand{font-size:18px;letter-spacing:-.8px}
-.name-chart-section .nc-brand span{color:#ffdc36}
-.name-chart-section .nc-edition{color:#16dfd0}
 .name-chart-section .nc-heading{padding:25px 28px 21px;display:flex;align-items:center;justify-content:space-between;gap:20px;position:relative}
 .name-chart-section .nc-heading:after{content:'';position:absolute;right:220px;top:0;width:90px;height:100%;transform:skew(-22deg);background:repeating-linear-gradient(90deg,transparent 0 9px,#ffffff12 9px 12px)}
 .name-chart-section .nc-kicker{font-size:12px;letter-spacing:3px;font-weight:900;color:#ffdc36;margin:0 0 6px}
@@ -15,7 +11,7 @@
 .name-chart-section .nc-top{font-size:20px;font-weight:900;font-style:italic;text-align:center;background:#ffdc36;color:#14131c;transform:rotate(5deg);padding:10px 18px;box-shadow:6px 6px 0 #ed3699;z-index:1}
 .name-chart-section .nc-top b{display:block;font-size:74px;line-height:.85;letter-spacing:-6px;padding-right:5px}
 .name-chart-section .nc-subtitle{margin:17px 0 0;color:#ded9e3;font-size:15px}
-.name-chart-section .nc-bar{background:#ed3699;color:#14131c;display:flex;justify-content:space-between;padding:9px 27px;font-size:11px;font-weight:900;letter-spacing:2px}
+.name-chart-section .nc-bar{background:#ed3699;color:#14131c;display:flex;justify-content:flex-end;padding:9px 27px;font-size:11px;font-weight:900;letter-spacing:2px}
 .name-chart-section .nc-columns{display:grid;grid-template-columns:1fr 1fr;gap:26px;padding:20px 26px 24px}
 .name-chart-section .nc-list{list-style:none;margin:0;padding:0}
 .name-chart-section .nc-row{display:flex;align-items:center;min-height:61px;border-bottom:1px solid #45424c;gap:17px}
@@ -46,15 +42,11 @@
 .name-chart-section .nc-number{width:36px;font-size:25px}
 .name-chart-section .nc-name{font-size:16px}
 .name-chart-section .nc-tag{display:none}
-.name-chart-section .nc-topline{padding:13px;font-size:9px;letter-spacing:1px}
 .name-chart-section .nc-bar{padding:9px 14px;font-size:8px;letter-spacing:1px}
 .name-chart-section .nc-footer{align-items:flex-start;flex-direction:column;padding:18px}
 .name-chart-section .context{font-size:9px;letter-spacing:2px}
 }
 .name-chart-section .nc-chart:before{content:'';display:block;height:9px;background:repeating-linear-gradient(135deg,#fff5d8 0 12px,#f03874 12px 24px,#fff5d8 24px 36px,#16ae86 36px 48px)}
-.name-chart-section .nc-brand{position:relative;padding-right:59px}
-.name-chart-section .nc-holly{position:absolute;width:57px;height:42px;right:0;top:-15px;transform:rotate(-8deg)}
-.name-chart-section .nc-edition{color:#ffdc36}
 .name-chart-section .nc-heading{padding-top:33px;padding-bottom:28px;background:radial-gradient(ellipse at 80% 0%,#29394360,transparent 65%)}
 .name-chart-section .nc-heading>div:not(.nc-snow){position:relative;z-index:1}
 .name-chart-section .nc-snow{position:absolute;inset:0;pointer-events:none;overflow:hidden}
@@ -69,9 +61,7 @@
 .name-chart-section .nc-top{min-width:137px}
 .name-chart-section .nc-footer{border-bottom:6px solid transparent;border-image:repeating-linear-gradient(135deg,#fff5d8 0 12px,#f03874 12px 24px,#fff5d8 24px 36px,#16ae86 36px 48px) 6}
 
-@media(max-width:650px){.name-chart-section .nc-edition{font-size:8px;letter-spacing:.6px}
-.name-chart-section .nc-brand{padding-right:42px}
-.name-chart-section .nc-holly{width:41px;top:-12px}
+@media(max-width:650px){
 .name-chart-section .nc-top{min-width:80px}
 .name-chart-section .nc-christmas{font-size:8px;letter-spacing:0}
 .name-chart-section .nc-heading{gap:12px}
@@ -95,7 +85,6 @@
 .name-chart-section .nc-name{font-size:16px}
 .name-chart-section .nc-row{min-height:60px}
 .name-chart-section .nc-bar{gap:10px}
-.name-chart-section .nc-bar span{max-width:55%}
 }
 
 
