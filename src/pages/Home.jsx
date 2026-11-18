@@ -43,8 +43,8 @@ export default function Home() {
       <HomeHero onContinue={continueWithName} onCheckNaughtyNice={checkNaughtyNice} />
         <div id="santa-radio-milestones" className="container homepage-lifetime-stats" aria-label="Santa Radio over 11 years" style={{ scrollMarginTop: '110px' }}>
           <p><Sparkles aria-hidden="true" /><strong>11 years</strong><span>of Christmas magic</span></p>
-          <p><Download aria-hidden="true" /><strong>500,000+</strong><span>app downloads</span></p>
-          <p><Headphones aria-hidden="true" /><strong>5 million+</strong><span>listeners over 11 years</span></p>
+          <p><Download aria-hidden="true" /><strong>500K+</strong><span>app downloads</span></p>
+          <p><Headphones aria-hidden="true" /><strong>5M+</strong><span>listeners over 11 years</span></p>
         </div>
       <HomepageSantaStudio />
       <SantaTrackerBanner />

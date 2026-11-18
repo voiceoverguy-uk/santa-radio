@@ -9,7 +9,6 @@ function SantaCooldownUpsell({
   onExplore,
 }) {
   const named = Boolean(name);
-  const possessive = named ? `${name}’s` : 'a little one’s';
 
   const heading = named
     ? `A little more magic for ${name}?`
@@ -17,15 +16,13 @@ function SantaCooldownUpsell({
 
   const copy = prelaunch
     ? 'Make it even more magical with Santa’s Message Maker Studio for a bespoke message and bonus digital gifts.'
-    : `Make it extra special with a bespoke message from Santa, personalised with ${possessive} age, achievements and the things that make them special. Your paid package also includes three personalised digital gifts at no extra cost: a Nice List certificate, a short letter from Santa and Santa’s Nice List picture.`;
+    : 'Make it extra special with a bespoke message from Santa. Including personalised digital gifts at no extra cost.';
 
   const buttonLabel = prelaunch
     ? named
       ? `Preview ${name}’s bespoke message package`
       : 'Preview the bespoke message package'
-    : named
-      ? `Explore ${name}’s bespoke message`
-      : 'Explore bespoke Santa messages';
+    : 'Click for more →';
 
   return (
     <section

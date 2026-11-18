@@ -57,13 +57,13 @@ export default function HeroNameChecker({ onContinue, onSelectedNameChange, onCh
     selectSantaRecipient(record.name);
     interacted.current = true;
     setValidation('');
-    setName(record.name);
+    setName(santaNameDisplay(record.name));
     setSelected(record);
     setOpen(false);
     setActive(-1);
   };
   const status = search.blocked ? BLOCKED_NAME_NOTE
-    : selected ? `Yes! Santa can record for ${selected.name}.`
+    : selected ? `Yes! Santa can record for ${santaNameDisplay(selected.name)}.`
     : search.loading ? 'Checking Santa’s recorded names…'
       : search.error ? search.error
         : name.trim().length === 1 ? 'Enter at least two letters to search Santa’s recorded names.'

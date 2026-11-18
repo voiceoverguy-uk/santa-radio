@@ -9,7 +9,7 @@ export default function WorkshopNamePicker({ selected, initialName = '', onSelec
   const generatedId = useId();
   const inputId = `smw-name-search-${generatedId}`;
   const listboxId = `${inputId}-results`;
-  const [query, setQuery] = useState(() => selected?.name || initialName);
+  const [query, setQuery] = useState(() => santaNameDisplay(selected?.name || initialName));
   const pendingPrefill = useRef(!selected && Boolean(initialName));
   const search = useBrowserSantaNameSearch(query);
   const resolvingVariants = resolution.status === 'variants';
@@ -29,7 +29,7 @@ export default function WorkshopNamePicker({ selected, initialName = '', onSelec
   }, []);
 
   useEffect(() => {
-    if (selected?.name) setQuery(selected.name);
+    if (selected?.name) setQuery(santaNameDisplay(selected.name));
   }, [selected?.id, selected?.name]);
   useEffect(() => {
     if (!pendingPrefill.current || search.loading || search.error || resolution.status === 'loading') return;
@@ -58,7 +58,7 @@ export default function WorkshopNamePicker({ selected, initialName = '', onSelec
   function chooseRecord(record) {
     pendingPrefill.current = false;
     window.clearTimeout(blurTimer.current);
-    setQuery(record.name);
+    setQuery(santaNameDisplay(record.name));
     setActiveIndex(-1);
     setIsOpen(false);
     onSelect(record);

@@ -1,3 +1,4 @@
+import SantaFreeVideo from './SantaFreeVideo.jsx';
 import SantaBespokeDownloadOffer from './SantaBespokeDownloadOffer.jsx';
 import useNameRequestSeason from '../hooks/useNameRequestSeason.js';
 import { trackMessageAction } from '../lib/messageEngagement.js';
@@ -41,7 +42,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const { hasAccess, greetingName, sessionRemembered, revokeAccess } = useSantaMessageAccess();
   const makerHeadingRef = useRef(null);
   const previousAccess = useRef(hasAccess);
-  const [name, setName] = useState(initialName);
+  const [name, setName] = useState(santaNameDisplay(initialName));
   const [pronunciation, setPronunciation] = useState('');
   useEffect(() => setPronunciation(''), [name]);
   const hasPrefilledName = Boolean((pendingName?.name || initialName) &&
@@ -224,7 +225,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
     }
   };
   const selectName = record => {
-    updateName(record.name);
+    updateName(santaNameDisplay(record.name));
     setSelectedRecord(record);
     selectSantaRecipient(record.name);
     setSuggesting(false);
@@ -302,6 +303,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
     }
   };
   const pauseRadio = event => {
+    if (audioRef.current && audioRef.current !== event.currentTarget) audioRef.current.pause();
     audioRef.current = event.currentTarget;
     for (const audio of audioRefs.current.values()) {
       if (audio !== event.currentTarget) audio.pause();
@@ -318,6 +320,11 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const renderResults = () => messages.map((message, index) => <div key={message.key} className="message-result" ref={index === messages.length - 1 ? resultRef : null} tabIndex={-1} aria-label={`Santa’s greeting for ${message.name}`}>
     <p className="message-postmark">A greeting is waiting</p>
     <h4>To {message.name} from Santa</h4>
+    <SantaFreeVideo message={message} onPlay={pauseRadio} onEnded={finishMessage} onDownload={() => {
+      setClickedDownloads(previous => new Set([...previous, message.key]));
+      if (!studioPrelaunch && message.statisticsReceipt) setBespokeDownload(previous => previous || { name: message.name, key: message.key, receipt: message.statisticsReceipt });
+    }} />
+    <p>Audio-only version</p>
     <div className="message-player-row">
       <audio ref={audio => {
         if (audio) audioRefs.current.set(message.key, audio);
@@ -449,8 +456,8 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
           </ul>}
           </div>
           <span className="message-name-hint" id={`${inputId}-hint`} aria-live="polite">
-            {verifiedSelectedRecord ? `${verifiedSelectedRecord.name} is selected.`
-              : exactMatch ? `Santa is ready to record for ${exactMatch.name}.`
+            {verifiedSelectedRecord ? `${santaNameDisplay(verifiedSelectedRecord.name)} is selected.`
+              : exactMatch ? `Santa is ready to record for ${santaNameDisplay(exactMatch.name)}.`
               : ''}
           </span>
           {nameSearch.loading && name.trim() && <p className="message-search-status" role="status">Loading Santa’s name list…</p>}
