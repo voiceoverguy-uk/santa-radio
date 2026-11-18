@@ -1,3 +1,4 @@
+import SelectedReviewTestimonials from './SelectedReviewTestimonials.jsx';
 import { useEffect, useState } from "react";
 import { Pause, Play, Star } from "lucide-react";
 import "./SantaMessageReviews.css";
@@ -10,7 +11,7 @@ const reviews = [
   { quote: "A proper treat, not seen anything like this. Super Easy.", attribution: "Paul, Tadely, Berkshire" },
 ];
 
-function SantaMessageReviews() {
+function LegacyMessageReviews() {
   const [activeReview, setActiveReview] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
@@ -35,6 +36,7 @@ function SantaMessageReviews() {
   </>;
 
   return (
+    <>
     <section className="santa-message-reviews" aria-label="Customer reviews">
       <div className="santa-message-reviews__stage">
         <div className="santa-message-reviews__reserve" aria-hidden="true">
@@ -58,8 +60,10 @@ function SantaMessageReviews() {
       >
         {isPaused ? <Play size={12} aria-hidden="true" /> : <Pause size={12} aria-hidden="true" />}
       </button>
-    </section>
+    </section></>
   );
 }
 
-export default SantaMessageReviews;
+export default function SantaMessageReviews() {
+  return <SelectedReviewTestimonials fallback={<LegacyMessageReviews />} />;
+}

@@ -8,10 +8,11 @@ import { STUDIO_PATH, STUDIO_ALIASES, isStudioPath } from '../lib/studioRoute.js
 export const staticPages = ['/', '/apps', '/privacy-policy', '/santa-tracker/privacy', mugPhotoTermsPath, '/christmas-music', '/mugshots/all', '/free-santa-message', '/submit-a-song', '/christmas-contenders', '/naughty-or-nice-list-checker', '/platforms', '/santa-stories', '/santa-tracker'];
 export const canonicalPaths = [...staticPages, ...songs.map(songPath), ...mugs.map(mugPath), ...songs.map(s => `/christmas-karaoke-lyrics/${s.id}-${s.link}`)];
 // Private entry documents are packaged, but never added to the public sitemap.
-export const staffEntryPaths = ['/my-santa-messages', '/santa-dashboard', '/request-names', '/sign-in', '/sign-up'];
+export const staffEntryPaths = ['/leave-a-review', '/my-santa-messages', '/santa-dashboard', '/request-names', '/sign-in', '/sign-up'];
 export function staffDocumentPath(path) {
   const normalized = path.replace(/\/+$/, '');
   if (normalized === '/my-santa-messages' || normalized.startsWith('/my-santa-messages/')) return '/my-santa-messages';
+  if (normalized === '/leave-a-review') return '/leave-a-review';
   if (normalized === '/santa-dashboard') return '/santa-dashboard';
   if (normalized === '/request-names') return '/request-names';
   // Clerk owns path-based verification, factor and OAuth callback screens.

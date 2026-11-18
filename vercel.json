@@ -138,7 +138,7 @@
       "dest": "/api/__clerk/[...path]"
     },
     {
-      "src": "/(my-santa-messages|santa-dashboard|request-names|sign-in|sign-up)(/.*)?",
+      "src": "/(leave-a-review|my-santa-messages|santa-dashboard|request-names|sign-in|sign-up)(/.*)?",
       "dest": "/api/public-page?__sr_route=/$1$2"
     },
     {

@@ -1,3 +1,4 @@
+import SantaReview from './pages/SantaReview.jsx';
 import MySantaMessages from './pages/MySantaMessages.jsx';
 import SantaDashboard from './pages/SantaDashboard.jsx';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
@@ -60,6 +61,7 @@ function WebsiteLayout() {
       {!capture && <Snowfall />}
       <div id="page-content" tabIndex={-1}><Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/leave-a-review" element={<SantaReview />} />
         <Route path="/preview/hero-name-checker" element={<HeroNamePreview />} />
         <Route path="/apps" element={<Apps />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />

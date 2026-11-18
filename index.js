@@ -1,3 +1,4 @@
+import santaReviews from './server/santa-reviews.js';
 import nameChart from './server/name-chart.js';
 import nameRecordingUploads from './server/name-recording-uploads.js';
 import messageAccount from './server/message-account.js';
@@ -81,6 +82,7 @@ const server = createServer(async (req, res) => {
     if (pathname === '/api/name-recording-uploads') return await nameRecordingUploads(req,res);
     if (pathname === '/api/my-santa-messages') return await messageAccount(req, res);
     if (pathname === '/api/santa-studio-message') return await studioMessage(req, res);
+    if (pathname === '/api/santa-reviews') return santaReviews(req, res);
     if (pathname === '/api/santa-workshop-usage') return workshopUsage(req, res);
     if (pathname === '/api/santa-message') return await santaMessage(req, res);
     if (pathname === '/api/santa-message-access') return messageAccess(req, res);

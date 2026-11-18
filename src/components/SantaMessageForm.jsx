@@ -1,3 +1,4 @@
+import SantaBespokeDownloadOffer from './SantaBespokeDownloadOffer.jsx';
 import useNameRequestSeason from '../hooks/useNameRequestSeason.js';
 import { trackMessageAction } from '../lib/messageEngagement.js';
 import PronunciationNote from './PronunciationNote.jsx';
@@ -34,6 +35,7 @@ import { useInlineMakerRadioVisibility } from './RadioDockVisibility.jsx';
 
 export default function SantaMessageForm({ showDetailLink = true, initialName = '', pendingName, keepSignupInPlace = false, selectedChildName = '', layout = 'default' }) {
   const requestsOpen = useNameRequestSeason();
+  const [bespokeDownload, setBespokeDownload] = useState(null);
   const makerPanelRef = useInlineMakerRadioVisibility();
   const dedicatedLayout = layout === 'dedicated';
   const { hasAccess, greetingName, sessionRemembered, revokeAccess } = useSantaMessageAccess();
@@ -338,6 +340,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
           onClick={() => {
             setClickedDownloads(previous => new Set([...previous, message.key]));
             trackMessageAction(message.statisticsReceipt, 'download');
+            if (!studioPrelaunch && message.statisticsReceipt) setBespokeDownload(previous => previous || { name: message.name, key: message.key, receipt: message.statisticsReceipt });
           }}>
           Download your audio <span aria-hidden="true">↓</span>
         </a>
@@ -346,6 +349,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   </div>);
 
   return <section className="santa-message-section" id="santa-messages">
+    <SantaBespokeDownloadOffer download={bespokeDownload} />
     <div className={`container message-layout${dedicatedLayout ? ' message-layout--dedicated' : ''}`}>
       <div className="message-intro">
         <p className="eyebrow">A little North Pole experiment</p>

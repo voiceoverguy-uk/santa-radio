@@ -16,6 +16,7 @@ if (process.env.VERCEL_ENV === 'production') {
     await client.query(schema);
     await client.query(await readFile(new URL('../database/free-message-verification.sql', import.meta.url), 'utf8'));
     await client.query(await readFile(new URL('../database/message-statistics.sql', import.meta.url), 'utf8'));
+    await client.query(await readFile(new URL('../database/santa-message-reviews.sql', import.meta.url), 'utf8'));
     await client.query('SELECT request_key, recorded_at FROM santa_name_requests LIMIT 0');
     await client.query('SELECT id, recording_suggestions FROM santa_name_request_history LIMIT 0');
     await client.query('SELECT request_key FROM santa_name_recording_suggestions LIMIT 0');
