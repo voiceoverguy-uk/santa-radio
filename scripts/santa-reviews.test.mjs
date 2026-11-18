@@ -72,3 +72,10 @@ test('display-copy edits preserve original and require publication consent',asyn
   assert.equal((await patch({action:'restore'})).status,200);assert.match(queries[1].sql,/display_body=NULL/);assert.equal(sends,0);
  } finally {server.closeAllConnections();await new Promise(r=>server.close(r));}
 });
+
+test('compact dashboard requests five reviews and detects the next page',async()=>{
+ let params;const app=createReviewsHandler({owner:()=>true,pool:()=>({query:async(_sql,args)=>{params=args;return{rows:Array.from({length:6},(_,id)=>({id}))}}})});
+ const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));
+ try{const r=await fetch(`http://127.0.0.1:${server.address().port}?view=admin&limit=5&offset=5`);const data=await r.json();assert.equal(data.reviews.length,5);assert.equal(data.more,true);assert.deepEqual(params,[5,6]);}
+ finally{server.closeAllConnections();await new Promise(r=>server.close(r));}
+});

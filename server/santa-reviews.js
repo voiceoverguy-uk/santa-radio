@@ -11,8 +11,33 @@ import { validateSantaReview } from '../src/lib/santaReviewValidation.js';
 const fields = 'id,display_name AS "displayName",rating,body,display_body AS "displayBody",consent,reward_email_requested AS "rewardEmail",state,email_state AS "emailState",featured,created_at AS "createdAt"';
 export function reviewRewardEmail() {
   const url = 'https://www.santaradio.co.uk/bespoke-personalised-message-from-santa';
-  const text = `Thank you for your honest review. We’ve received your review.\n\nYour 20% discount code: REVIEW20\n\nEnter REVIEW20 in the promotion-code box at Stripe Checkout for 20% off the £6.50 bespoke Santa message package (£5.20 after discount). Includes two message creations and personalised digital gifts.\n\n${url}\n\nThis reward is for your feedback, regardless of your star rating. This is the one-off reward email you requested, not a newsletter signup.\nSanta Radio`;
-  return { text, html: `<!doctype html><html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>Your Santa message discount</title></head><body style="font-family:Arial,sans-serif;background:#f6ecd8;color:#173b2c;padding:24px"><main style="max-width:560px;margin:auto;background:white;padding:28px;border-radius:12px"><h1>Thank you for your review</h1><p>We’ve received your review. Here’s your 20% discount:</p><p style="font-size:30px;font-weight:bold;letter-spacing:2px">REVIEW20</p><p>Enter this code at <strong>Stripe Checkout</strong> for the bespoke Santa message package.</p><p><strong>£5.20 with your discount</strong> (usually £6.50). Two message creations and personalised digital gifts.</p><p><a href="${url}" style="background:#9b111e;color:white;padding:14px 18px;display:inline-block;border-radius:8px">Explore bespoke messages</a></p><p style="font-size:13px">This reward is for honest feedback, regardless of your star rating. You requested this one-off reward email; it does not subscribe you to marketing.</p><p>Santa Radio</p></main></body></html>` };
+  const text = `Thank you for your honest review. We’ve received your review.\n\nYour 20% discount code: REVIEW20\n\nEnter REVIEW20 in the promotion-code box at Stripe Checkout for 20% off a bespoke Santa message. Includes two personalised messages, with magical digital gifts.\n\n${url}\n\nThis reward is for your feedback, regardless of your star rating. This is the one-off reward email you requested, not a newsletter signup.\nSanta Radio`;
+  return { text, html: `<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>A little thank you from Santa Radio</title></head>
+<body style="margin:0;padding:0;background:#f3ecd9;font-family:Arial,Helvetica,sans-serif;color:#153d2d;">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;">A little extra Christmas magic: your 20% discount is inside.</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3ecd9;"><tr><td align="center" style="padding:28px 12px;">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;border:1px solid #c7aa62;border-radius:18px;overflow:hidden;background:#fffaf0;">
+<tr><td align="center" bgcolor="#10382b" style="padding:30px 24px 25px;background:#10382b;">
+<a href="https://www.santaradio.co.uk/" style="text-decoration:none;"><img src="https://www.santaradio.co.uk/images/santa-radio-logo.png" width="230" alt="Santa Radio" style="display:block;width:230px;max-width:100%;height:auto;border:0;"></a>
+<p style="margin:23px 0 12px;font-size:11px;letter-spacing:3px;color:#e7cb7a;">A LITTLE NORTH POLE THANK YOU</p>
+<h1 style="margin:0;color:#fff5d9;font-family:Georgia,serif;font-size:32px;line-height:1.2;font-weight:normal;">More Christmas magic,<br>just for you.</h1>
+<p style="margin:17px 0 0;font-size:20px;letter-spacing:7px;color:#e7cb7a;" aria-hidden="true">✦ &nbsp; ✦ &nbsp; ✦</p>
+</td></tr>
+<tr><td align="center" style="padding:28px 26px 14px;"><p style="margin:0;font-size:17px;line-height:1.6;">Thank you for sharing your Santa message experience.<br>Here’s <strong>20% off a bespoke Santa message.</strong></p></td></tr>
+<tr><td style="padding:8px 26px 22px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px dashed #b89a50;border-radius:12px;background:#f3e7c4;"><tr><td align="center" style="padding:22px 12px;">
+<p style="margin:0 0 8px;font-size:11px;letter-spacing:2px;color:#735e2d;">YOUR CHRISTMAS TREAT</p>
+<p style="margin:0;font-size:34px;line-height:1.3;letter-spacing:4px;font-weight:bold;color:#10382b;">REVIEW20</p>
+<p style="margin:9px 0 0;font-size:13px;line-height:1.5;">Enter your code at checkout.</p>
+</td></tr></table></td></tr>
+<tr><td align="center" style="padding:0 26px 26px;">
+<table role="presentation" cellpadding="0" cellspacing="0"><tr><td align="center" bgcolor="#a31121" style="background:#a31121;border-radius:8px;border:1px solid #b89548;"><a href="${url}" style="display:inline-block;padding:17px 24px;color:#ffffff;font-size:16px;font-weight:bold;text-decoration:none;">Make more Christmas magic &rarr;</a></td></tr></table>
+<p style="margin:16px 0 0;font-size:14px;line-height:1.6;">Two personalised messages, with magical digital gifts.</p>
+<p style="margin:21px 0 0;font-family:Georgia,serif;font-size:18px;color:#496345;">With a little North Pole sparkle,<br><strong>Santa Radio</strong></p>
+</td></tr>
+<tr><td align="center" style="padding:19px 26px;border-top:1px solid #e7d8ad;background:#eee4cd;"><p style="margin:0;font-size:11px;line-height:1.6;color:#5c6658;">Your thank-you discount is for feedback, regardless of your star rating.<br>This is the one-off email you requested, not a newsletter subscription.</p></td></tr>
+</table></td></tr></table></body></html>` };
 }
 export async function emailReviewReward(id, { pool = databasePool(), fetcher = fetch, apiKey = process.env.BREVO_API_KEY } = {}) {
   const optedOut = await pool.query("UPDATE santa_message_reviews SET contact=NULL WHERE id=$1 AND NOT reward_email_requested RETURNING id", [id]);
@@ -69,8 +94,9 @@ export function createReviewsHandler({ pool = databasePool, contact = requestCon
         if (!owner(req)) return res.status(401).json({ error:'Owner access required.' });
         if (req.method === 'GET') {
           const offset = /^\d{1,6}$/.test(String(req.query.offset || '0')) ? Number(req.query.offset || 0) : 0;
-          const rows = await pool().query(`SELECT ${fields} FROM santa_message_reviews ORDER BY created_at DESC LIMIT 51 OFFSET $1`, [offset]);
-          return res.json({ reviews: rows.rows.slice(0,50), more: rows.rows.length > 50 });
+          const pageSize = req.query.limit === '5' ? 5 : 50; // Older dashboard apps still paginate in groups of fifty.
+          const rows = await pool().query(`SELECT ${fields} FROM santa_message_reviews ORDER BY created_at DESC LIMIT $2 OFFSET $1`, [offset, pageSize + 1]);
+          return res.json({ reviews: rows.rows.slice(0,pageSize), more: rows.rows.length > pageSize });
         }
         if (req.method !== 'PATCH') return res.status(405).json({error:'Method not allowed.'});
         const { id, action } = req.body || {};
