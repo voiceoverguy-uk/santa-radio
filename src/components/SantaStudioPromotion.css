@@ -681,3 +681,13 @@
 @media (prefers-reduced-motion: reduce) {
   .santa-studio-promotion__gift-toggle[aria-expanded="false"] { animation: none; }
 }
+
+.santa-studio-promotion__availability {
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px 14px;
+  padding: 18px 20px; margin: 0 0 24px; border: 1px solid #b18a35; border-radius: 12px;
+  background: linear-gradient(120deg, #173d2e, #24533d); color: #fff5d8; text-align: center;
+  box-shadow: 0 3px 14px #80602318;
+}
+.santa-studio-promotion__availability strong { color: #f3d681; font-size: clamp(2rem, 6vw, 3rem); line-height: 1.15; font-variant-numeric: tabular-nums; }
+.santa-studio-promotion__availability span { font-size: 1.05rem; font-weight: 600; }
+@media(max-width: 767px) { .santa-studio-promotion__availability { flex-direction: column; padding: 16px; } }

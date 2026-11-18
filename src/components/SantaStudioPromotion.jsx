@@ -1,3 +1,4 @@
+import useSantaNameTotal from './useSantaNameTotal.js';
 import { useId, useState } from 'react';
 import './SantaStudioPromotion.css';
 import StudioPurchaseButton from './StudioPurchaseButton.jsx';
@@ -6,6 +7,7 @@ import StudioPortraitViewer from './StudioPortraitViewer.jsx';
 import SantaStudioAudioExample from './SantaStudioAudioExample.jsx';
 
 export default function SantaStudioPromotion({ activeExampleName = null, availableNamesText, previewName = null, allowExamples = true, onAuthorized, showPremiumIntro = false }) {
+  const liveNameTotal = useSantaNameTotal();
   const [paidExampleName, setPaidExampleName] = useState(null);
   const [giftsExpanded, setGiftsExpanded] = useState(false);
   const giftsId = useId();
@@ -25,6 +27,10 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
         <h2>A BESPOKE SANTA MESSAGE</h2>
         <p>OUR PREMIUM EXPERIENCE</p>
         <p>Let’s make it even more magical for your little one.</p>
+      </div>}
+      {liveNameTotal !== null && liveNameTotal > 0 && <div className="santa-studio-promotion__availability">
+        <strong>{liveNameTotal.toLocaleString('en-GB')}</strong>
+        <span>{liveNameTotal === 1 ? 'name instantly available' : 'names instantly available'}</span>
       </div>}
       <header className="santa-studio-promotion__header">
         <div className="santa-studio-promotion__topline">
