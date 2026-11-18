@@ -11,7 +11,7 @@ export function nextVideoExample(previous, random = Math.random) {
   return choices[Math.min(choices.length - 1, Math.floor(Math.max(0, random()) * choices.length))];
 }
 const ROTATION_KEY = 'santa-video-example-last';
-export default function SantaMessageVideoExample() {
+export default function SantaMessageVideoExample({ recipientName = '' }) {
   const radio = useRadio();
   const resume = useRef(null);
   const [example, setExample] = useState(VIDEO_EXAMPLES[0]);
@@ -35,5 +35,6 @@ export default function SantaMessageVideoExample() {
         document.querySelectorAll('.message-result audio, .message-result video').forEach(media => media.pause());
         if (!resume.current) resume.current = radio?.pauseForMessage();
       }} onPause={finish} onEnded={() => { finish(); choose(example.name); }} onError={finish} />
+    {recipientName.trim() && <figcaption>Create a message for {recipientName.trim()} from Santa</figcaption>}
   </figure>;
 }

@@ -27,3 +27,18 @@ for (const width of [390, 1280]) {
     await page.screenshot({ path: `/tmp/free-video-example-${width}.png` });
   });
 }
+
+test('preview caption appears only for the name entered in the current visit', async ({ page }) => {
+  await page.route('**/api/santa-message-access', route => route.fulfill({ json: { authorized: true } }));
+  await page.goto('/free-santa-message');
+  const caption = page.locator('.fsm-video-preview figcaption');
+  await expect(caption).toHaveCount(0);
+  await page.getByRole('combobox').fill('Oliver');
+  await expect(caption).toHaveText('Create a message for Oliver from Santa');
+  await page.getByRole('combobox').fill('');
+  await expect(caption).toHaveCount(0);
+  await page.goto('/free-santa-message?name=Charlotte');
+  await expect(caption).toHaveText('Create a message for Charlotte from Santa');
+  await page.goto('/free-santa-message');
+  await expect(caption).toHaveCount(0);
+});

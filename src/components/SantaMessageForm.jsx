@@ -386,7 +386,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         </>}
         {dedicatedLayout && <>
           {!hasAccess && <div className="message-free-logo-wrap"><img className="message-free-logo" src="/images/free-santa-message-microphone.png" alt="Free Santa Message — Santa Radio" width="1680" height="936" /></div>}
-          <SantaMessageVideoExample />
+          <SantaMessageVideoExample recipientName={name} />
         </>}
       </div>
       <div className="santa-message-aside">

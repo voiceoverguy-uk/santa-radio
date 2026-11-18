@@ -70,3 +70,5 @@
 .fsm-video-preview { width: 100%; max-width: 420px; margin: 20px auto 0; text-align: center; }
 .fsm-video-preview video { display: block; width: 100%; aspect-ratio: 16/9; border: 1px solid #c2a258; border-radius: 14px; background: #082a1e; }
 @media (max-width: 767px) { .fsm-hero { padding: 38px 16px 28px; } .fsm-video-preview { margin-top: 20px; } }
+
+.fsm-video-preview figcaption { margin: 12px 0 0; color: #e4decf; font-size: .95rem; line-height: 1.5; }
