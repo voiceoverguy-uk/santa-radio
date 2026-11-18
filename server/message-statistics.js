@@ -1,3 +1,4 @@
+import { dashboardTodos } from './dashboard-todos.js';
 import { appleDownloadReport } from './apple-download-statistics.js';
 import { recordCheckerDownload, checkerDownloadReport, validDownloadId } from './checker-download-statistics.js';
 import { consumeNameAccess } from './santa-name-security.js';
@@ -13,7 +14,7 @@ import { verifyReceipt, recordEngagement, recordDownload, statisticsReport } fro
 import { listNameRequests, recordNameRequest } from './name-request-store.js';
 import { normaliseRequestedName } from '../src/lib/santaNameRequests.js';
 import { getClerkProxyHost } from './middlewares/clerkProxyMiddleware.js';
-export function createStatisticsHandler({ allowed=validOwnerToken, report=statisticsReport, download=recordDownload, engagement=recordEngagement,
+export function createStatisticsHandler({ allowed=validOwnerToken, todos=dashboardTodos, report=statisticsReport, download=recordDownload, engagement=recordEngagement,
   appleDownloads=appleDownloadReport, checkerDownloads=checkerDownloadReport, checkerDownload=recordCheckerDownload, checkerLimit=consumeNameAccess,
   requests=listNameRequests, complete=recordNameRequest, dismiss=dismissNameRequest, paid=paidStatistics, emails=websiteEmailStatistics, songs=songSubmissionStatistics, recordingStatus=requestRecordingStatus, friends=listFriendVouchers }={}) {
   return async (req,res) => {
@@ -40,6 +41,10 @@ export function createStatisticsHandler({ allowed=validOwnerToken, report=statis
         return res.json({ok:true});
       }
       if(!allowed(req)) return res.status(401).json({error:'Enter your private Studio owner token to view this dashboard.'});
+      if(req.query?.view==='todos') {
+        try { return res.json(await todos(req.method==='PATCH'?req.body:undefined)); }
+        catch(error) { if([400,404].includes(error.status))return res.status(error.status).json({error:error.message}); throw error; }
+      }
       if(req.method==='GET' && req.query?.view==='friends') return res.json(await friends());
       if(req.method==='GET' && req.query?.view==='songs') {
         const raw=req.query.offset ?? '0';
@@ -66,3 +71,4 @@ export function createStatisticsHandler({ allowed=validOwnerToken, report=statis
 const app=express();app.disable('x-powered-by');app.use(express.json({limit:'2kb',inflate:false}));app.use(createStatisticsHandler());
 app.use((_err,_req,res,_next)=>res.status(400).json({error:'Invalid request.'}));
 export default app;
+

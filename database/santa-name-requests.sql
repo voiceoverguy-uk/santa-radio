@@ -59,3 +59,8 @@ ALTER TABLE santa_name_request_history ADD COLUMN IF NOT EXISTS pronunciation_no
 
 ALTER TABLE santa_name_request_history ADD COLUMN IF NOT EXISTS deleted_at timestamptz;
 CREATE TABLE IF NOT EXISTS santa_hidden_recordings (name_key text PRIMARY KEY, hidden_at timestamptz NOT NULL DEFAULT now());
+
+CREATE TABLE IF NOT EXISTS santa_dashboard_todos (
+  id uuid PRIMARY KEY, title text NOT NULL CHECK (char_length(title) BETWEEN 1 AND 300),
+  created_at timestamptz NOT NULL DEFAULT now(), completed_at timestamptz
+);
