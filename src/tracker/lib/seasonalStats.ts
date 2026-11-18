@@ -1,4 +1,5 @@
 import { getDeviceDateParts } from "./postChristmas";
+import { getJourneyEndTime } from "./santaRoute";
 
 const metrics = {
   preparation: [
@@ -27,22 +28,37 @@ const metrics = {
   ],
 } as const;
 
-/** Fixed card slots use deterministic counts. Names advance with time and party totals span midnight. */
+/** Fixed slots and clock-based totals make refreshes and preview jumps reproducible. */
 export function getSeasonalStats(date: Date, phase: "preparation" | "holiday" | "party" | "rest") {
-  let day = Math.floor(date.getTime() / 86400000);
+  const local = getDeviceDateParts(date);
+  let day = Math.floor(Date.UTC(local.year, local.month - 1, local.day) / 86400000);
+  const secondsToday = local.hour * 3600 + local.minute * 60 + date.getSeconds();
+  let progress: number;
   if (phase === "party") {
-    const local = getDeviceDateParts(date);
     const celebrationYear = local.month === 1 ? local.year - 1 : local.year;
     day = Math.floor(Date.UTC(celebrationYear, 11, 31) / 86400000);
+    const elapsed = local.month === 1 ? secondsToday + 6 * 3600 : secondsToday - 18 * 3600;
+    progress = elapsed / (9 * 3600);
+  } else {
+    // Small activities finish occasionally during Santa's waking day, rather than racing upwards.
+    let start = (phase === "holiday" ? 8 : 7) * 3600;
+    if (phase === "rest" && local.month === 12) {
+      const midnight = new Date(local.year, local.month - 1, local.day).getTime();
+      const tomorrow = new Date(local.year, local.month - 1, local.day + 1).getTime();
+      const finished = getJourneyEndTime(local.year).getTime();
+      if (finished >= midnight && finished < tomorrow) start = Math.max(start, (finished - midnight) / 1000);
+    }
+    const end = 22 * 3600;
+    progress = start >= end ? 0 : (secondsToday - start) / (end - start);
   }
-  const secondsToday = Math.floor((date.getTime() - Math.floor(date.getTime() / 86400000) * 86400000) / 1000);
+  progress = Math.max(0, Math.min(1, progress));
   return metrics[phase].map((metric, index) => {
     const seed = (Math.imul(day, 1664525) + (index + 1) * 1013904223) >>> 0;
-    const dailyCount = metric.min + seed % (metric.max - metric.min + 1);
+    const dailyTotal = metric.min + seed % (metric.max - metric.min + 1);
     return {
       key: metric.key,
       label: metric.label,
-      count: metric.key === "names" ? dailyCount + secondsToday * 2 : dailyCount,
+      count: metric.key === "names" ? dailyTotal + secondsToday * 2 : Math.round(dailyTotal * progress),
       note: metric.note,
     };
   });

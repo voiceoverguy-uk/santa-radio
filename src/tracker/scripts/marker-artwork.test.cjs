@@ -344,8 +344,8 @@ test("prep cards keep their positions and refresh-stable counts", () => {
   assert.deepEqual(Array.from(second, metric => metric.key), ["towns", "chimneys", "cocoa", "names"]);
   for (const item of first) {
     assert.equal(second.find(metric => metric.key === item.key).count, item.count);
-    if (item.key !== "names") assert.equal(getSeasonalStats(new Date("2026-11-18T23:59:59Z"), "preparation").find(metric => metric.key === item.key).count, item.count);
-    assert.ok(Number.isInteger(item.count) && item.count > 0);
+    assert.ok(getSeasonalStats(new Date("2026-11-18T23:59:59Z"), "preparation").find(metric => metric.key === item.key).count >= item.count);
+    assert.ok(Number.isInteger(item.count) && item.count >= 0);
   }
   assert.notDeepEqual(getSeasonalStats(new Date("2026-11-19T00:00:00Z"), "preparation").map(item => item.count), first.map(item => item.count));
 });
@@ -381,7 +381,7 @@ test("holiday cards keep fixed positions and refresh-stable daily counts", () =>
   assert.deepEqual(Array.from(second, metric => metric.key), ["coladas", "sandcastles", "postcards", "icecreams"]);
   for (const metric of first) {
     assert.equal(second.find(item => item.key === metric.key).count, metric.count);
-    assert.equal(getSeasonalStats(new Date("2027-01-02T23:59:59Z"), "holiday").find(item => item.key === metric.key).count, metric.count);
+    assert.ok(getSeasonalStats(new Date("2027-01-02T23:59:59Z"), "holiday").find(item => item.key === metric.key).count >= metric.count);
   }
   for (const iso of ["2027-01-02T12:00:00Z", "2027-07-15T12:00:00Z", "2026-11-09T12:00:00Z"]) {
     const html = renderToStaticMarkup(React.createElement(SantaStats, { effectiveTime: new Date(iso), holiday }));
@@ -411,7 +411,7 @@ test("New Year party cards keep fixed positions and refresh-stable totals across
       for (const item of first) {
         assert.equal(rotated.find(metric => metric.key === item.key).count, item.count);
         for (const date of [new Date(2026, 11, 31, 18, 10), new Date(2027, 0, 1), new Date(2027, 0, 1, 2, 59)]) {
-          assert.equal(getSeasonalStats(date, "party").find(metric => metric.key === item.key).count, item.count, zone);
+          assert.ok(getSeasonalStats(date, "party").find(metric => metric.key === item.key).count >= item.count, zone);
         }
       }
       for (const [date, partying] of [
@@ -441,7 +441,7 @@ test("rest cards keep fixed positions, stable daily totals and a local-clock Bed
   assert.deepEqual(Array.from(rotated, item => item.key), ["thanks", "specials", "naps", "biscuits"]);
   for (const item of first) {
     assert.equal(rotated.find(metric => metric.key === item.key).count, item.count);
-    assert.equal(getSeasonalStats(new Date("2026-12-26T23:59:59Z"), "rest").find(metric => metric.key === item.key).count, item.count);
+    assert.ok(getSeasonalStats(new Date("2026-12-26T23:59:59Z"), "rest").find(metric => metric.key === item.key).count >= item.count);
   }
   assert.equal(getRestDetails(date).cocoa, getRestDetails(new Date("2026-12-26T23:59:59Z")).cocoa);
   const previousZone = process.env.TZ;
@@ -569,5 +569,51 @@ test("New Year party cities and the following rest period never trigger arrival 
     assert.equal(getArrivalKey(time), null);
     assert.equal(shouldChime({time: time.getTime() - 1000, realTime: 1000, key: null, resetKey: 0, speed: 1},
       {time: time.getTime(), realTime: 2000, key: getArrivalKey(time), resetKey: 0, speed: 1}), false);
+  }
+});
+
+
+test("every seasonal counter progresses reproducibly, resets daily, and holds its card position", () => {
+  const { getSeasonalStats } = load("lib/seasonalStats.ts");
+  const originalZone = process.env.TZ;
+  try {
+    for (const zone of ["Europe/London", "America/Los_Angeles", "Pacific/Kiritimati"]) {
+      process.env.TZ = zone;
+      for (const phase of ["preparation", "holiday", "rest"]) {
+        const morning = new Date(2026, 11, 26, phase === "holiday" ? 8 : 7);
+        const first = getSeasonalStats(morning, phase);
+        let previous = first;
+        for (let hour = morning.getHours(); hour <= 23; hour++) {
+          const time = new Date(2026, 11, 26, hour);
+          const current = getSeasonalStats(time, phase);
+          assert.deepEqual(Array.from(current, x => x.key), Array.from(first, x => x.key));
+          assert.deepEqual(Array.from(current, x => x.count), Array.from(getSeasonalStats(new Date(time), phase), x => x.count));
+          current.forEach((metric, i) => assert.ok(metric.count >= previous[i].count, `${phase} ${metric.key} ${zone} ${hour}`));
+          previous = current;
+        }
+        previous.forEach((metric, i) => assert.ok(metric.count > first[i].count, `${phase} ${metric.key} rises`));
+        getSeasonalStats(new Date(2026, 11, 27), phase).forEach(metric => {
+          if (metric.key !== "names") assert.equal(metric.count, 0, "fresh daily totals");
+        });
+        if (phase === "rest") assert.deepEqual(Array.from(getSeasonalStats(new Date(2026, 11, 26, 22), phase), x => x.count), Array.from(previous, x => x.count), "rest activities pause at bedtime");
+      }
+      let previous = getSeasonalStats(new Date(2026, 11, 31, 18), "party");
+      assert.ok(previous.every(x => x.count === 0));
+      for (let step = 1; step <= 18; step++) {
+        const time = new Date(2026, 11, 31, 18, step * 30);
+        const current = getSeasonalStats(time, "party");
+        current.forEach((metric, i) => assert.ok(metric.count >= previous[i].count, `party ${zone}`));
+        assert.deepEqual(Array.from(current, x => x.count), Array.from(getSeasonalStats(new Date(time), "party"), x => x.count));
+        previous = current;
+      }
+      assert.ok(previous.every(x => x.count > 0));
+      const justBefore = getSeasonalStats(new Date(2026, 11, 31, 23, 59, 59), "party");
+      const midnight = getSeasonalStats(new Date(2027, 0, 1), "party");
+      midnight.forEach((metric, i) => assert.ok(metric.count >= justBefore[i].count && metric.count <= justBefore[i].count + 1));
+    }
+    process.env.TZ = "Europe/London";
+    assert.ok(getSeasonalStats(new Date("2026-12-25T11:20:00Z"), "rest").every(x => x.count === 0), "rest totals start after deliveries finish");
+  } finally {
+    if (originalZone === undefined) delete process.env.TZ; else process.env.TZ = originalZone;
   }
 });
