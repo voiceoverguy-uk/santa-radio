@@ -190,7 +190,7 @@ test('tracker HTML metadata uses the coordinated card and keeps seasonal and pre
   assert.doesNotMatch(preview, /application\/ld\+json/);
   assert.equal(getTrackerMetadata(new Date('2026-07-15T12:00:00Z')).title.absolute, 'Christmas in July | Santa Tracker — Santa Radio');
   assert.match(getTrackerMetadata(new Date('2026-07-15T12:00:00Z')).description, /Christmas in July/);
-  assert.equal(getTrackerMetadata(new Date('2026-08-15T12:00:00Z')).title.absolute, "Santa Tracker | Track Santa's Journey — Santa Radio");
+  assert.equal(getTrackerMetadata(new Date('2026-08-15T12:00:00Z')).title.absolute, 'Santa Tracker | Track Santa All Year Round | Santa Radio');
 });
 
 test('Santa message initial HTML targets audio searches with consistent metadata and breadcrumbs', async () => {
@@ -223,7 +223,7 @@ test('homepage uses consistent search targeting in initial content, metadata and
   }
   for (const name of ['og:title', 'twitter:title']) assert.equal(decode(headValue(html, name)), m.title);
   assert.ok(!html.includes('UK\\u2019s'), 'literal escaped apostrophe must not return');
-  assert.ok(m.description.includes('UK’s'));
+  assert.match(m.description, /100% Christmas music, hosted by Santa/);
   assert.match(html, /<p class="hero-description hero-name-preview__description"><span class="hero-name-preview__copy--wide">Your Christmas radio station all year round 24\/7 along with festive treats, amazing free apps, games and FREE personalised messages from Santa\.<\/span><span class="hero-name-preview__copy--phone">Festive treats, amazing free apps, games and FREE personalised messages from Santa\.<\/span><\/p>/);
   assert.ok(html.includes('Check the name - let Santa create magic.'));
   assert.equal((html.match(/<h1\b/g) || []).length, 1);

@@ -3,7 +3,7 @@ import rawMugs from '../data/mugshots.json' with { type: 'json' };
 import { buildCatalogue } from '../data/mugshot-catalogue.js';
 import { artistArtwork, fallbackArtwork } from '../data/artistArtwork.js';
 import { songArtwork } from '../data/songArtwork.js';
-import { TRACKER_IMAGE } from '../tracker/lib/trackerBrand.js';
+import { TRACKER_IMAGE, TRACKER_TITLE, TRACKER_DESCRIPTION } from '../tracker/lib/trackerBrand.js';
 
 export const ORIGIN = 'https://www.santaradio.co.uk';
 export const absolute = path => new URL(path, ORIGIN).href;
@@ -186,7 +186,7 @@ export function appsMetadata(apps) {
   return pageMetadata({
     path: '/apps',
     title: 'Christmas Apps — App Store Downloads | Santa Radio',
-    description: 'Explore Santa Radio’s Christmas apps, including music, Santa messages and festive games. Find App Store download links and device showcases.',
+    description: 'Discover Santa Radio’s Christmas apps: festive radio, Santa messages, games and a year-round Santa Tracker. Find downloads for your supported devices.',
     ...sectionShareCards.apps,
     collection: true,
     crumbs: appsBreadcrumbs,
@@ -233,12 +233,15 @@ export function collectionMetadata(kind) {
   const music = kind === 'music', rows = music ? songs : [...mugs].sort((a, b) => a.artist.localeCompare(b.artist, 'en-GB'));
   const path = music ? '/christmas-music' : '/mugshots/all';
   return pageMetadata({ path, title: music ? 'Christmas Song Lyrics & Artists — Santa Radio' : 'Celebrity Mug Photos — Santa Radio',
-    description: music ? `Browse ${songs.length} Christmas recordings, with lyrics, artist background and illustrated artwork. Find a song or performer in Santa Radio’s music catalogue.` : `Explore ${mugs.length} friendly celebrity photographs with Santa Radio mugs, including biographies and credited photographs. These are mug photos, not criminal mugshots.`,
+    description: music ? `Find Christmas song lyrics and artists in Santa Radio’s catalogue of ${songs.length} recordings. Explore festive favourites, music videos and artist stories.` : `Who’s holding a Santa Radio mug? Browse ${mugs.length} celebrity mug photos, from singers and actors to TV favourites, with biographies and photo credits.`,
     ...(music ? sectionShareCards.music : sectionShareCards.mugs),
     collection: true, crumbs: [['Home', '/'], [music ? 'Christmas Music' : 'Mug Shots', path]],
     nodes: [{ '@type': 'ItemList', '@id': `${absolute(path)}#list`, numberOfItems: rows.length, itemListElement: rows.map((row, i) => ({ '@type': 'ListItem', position: i + 1, name: music ? `${row.song} — ${row.artist}` : row.artist, url: absolute(music ? songPath(row) : mugPath(row)) })) }] });
 }
 export const trackerQuestions = [
+  ['Can I track Santa all year round?', 'Yes. Santa Radio’s free Santa Tracker is open all year. Follow Santa’s holiday adventures, route-research trips and North Pole preparations, then join his estimated Christmas Eve journey around the world.'],
+  ['How do I use the Santa Tracker map?', 'Open the map on your phone, tablet or computer to see Santa’s current seasonal adventure. Explore the Christmas Eve route and its stops, check the countdown to departure, and listen to Santa Radio while you follow along.'],
+  ['Is the Santa Tracker free?', 'Yes. You can use the web tracker without paying or creating an account. Santa Radio’s Christmas music is also free to listen to.'],
   ['When does the Santa Tracker start?', 'The estimated 290-stop Christmas Eve journey starts in Kiritimati at 10:00 UTC on 24 December and finishes in Honolulu, Hawaii, at 11:20 UTC on 25 December. This is Santa Radio’s itinerary using real coordinates and time zones, not verified live tracking. The countdown is to Santa’s departure, not Christmas midnight or his arrival at your home.'],
   ['Where is Santa now?', 'The updating map follows Santa’s seasonal travels separately from the estimated Christmas Eve delivery route. Santa is on holiday from 2 January through 9 November. From 10 November through 22 December he makes quick route-research trips, returning to the North Pole between trips to prepare for Christmas Eve. Final preparations start on 23 December.'],
   ['Is this real GPS tracking?', 'No. This is an independent festive experience created by Santa Radio, not GPS tracking or an official location feed. The route, arrival times, gifts, distance and speed are playful estimates.'],
@@ -247,8 +250,8 @@ export const trackerQuestions = [
   ['Can I listen while tracking Santa?', 'Yes. Use the Santa Radio player while exploring the map, or browse our Christmas music and lyrics.'],
 ];
 export function trackerMetadata() {
-  return pageMetadata({ path: '/santa-tracker', title: "Santa Tracker | Track Santa's Journey — Santa Radio",
-    description: 'Track Santa on Santa Radio’s estimated Christmas Eve journey. Explore the countdown to departure, updating map, holiday postcards and Christmas questions.',
+  return pageMetadata({ path: '/santa-tracker', title: TRACKER_TITLE,
+    description: TRACKER_DESCRIPTION,
     ...sectionShareCards.tracker,
     crumbs: [['Home', '/'], ['Santa Tracker', '/santa-tracker']] });
 }

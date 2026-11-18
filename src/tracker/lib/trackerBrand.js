@@ -6,14 +6,17 @@ export const TRACKER_IMAGE = `${TRACKER_ORIGIN}/images/santa-tracker-share-v2.jp
 export const TRACKER_IMAGE_ALT = 'Santa Radio — Santa Tracker. Track Santa. The real Santa Radio Tracker map screen against the North Pole scene.';
 export const SANTA_VOICE_URL = 'https://www.santaguy.co.uk/hire-santa-voice';
 
+export const TRACKER_TITLE = 'Santa Tracker | Track Santa All Year Round | Santa Radio';
+export const TRACKER_DESCRIPTION = 'Where is Santa now? Track Santa all year with our free interactive map, holiday adventures and Christmas Eve countdown. Enjoy Christmas music as you explore.';
+
 export function getTrackerMetadata(now = new Date()) {
   const inJuly = now.getUTCMonth() === 6;
   const title = inJuly
     ? 'Christmas in July | Santa Tracker — Santa Radio'
-    : "Santa Tracker | Track Santa's Journey — Santa Radio";
+    : TRACKER_TITLE;
   const description = inJuly
     ? "It's Christmas in July! See what Santa's up to mid-year — festive fun, holiday postcards, and countdown to the big night. Track Santa on Santa Radio."
-    : "Follow Santa's estimated Christmas Eve journey around the world, with a countdown, updating world map, festive facts and family fun from Santa Radio.";
+    : TRACKER_DESCRIPTION;
   return {
     title: { absolute: title },
     description,

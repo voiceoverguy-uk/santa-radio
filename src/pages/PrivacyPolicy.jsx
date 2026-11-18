@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
 import './PrivacyPolicy.css';
 import CookiePolicySection from './CookiePolicySection.jsx';
 import SantaTrackerPrivacyContent from './SantaTrackerPrivacyContent.jsx';
@@ -41,11 +40,6 @@ export default function PrivacyPolicy() {
   }, []);
 
   return <main className="privacy-page">
-    <Helmet>
-      <title>Privacy Policy — Santa Radio</title>
-      <meta name="description" content="Privacy information for the Santa Radio website, The Santa Tracker for iOS, Santa Radio for Android, Christmas Radio UK and Christmas Music for Shops, including app storage, embedded content and privacy choices." />
-      <link rel="canonical" href="https://www.santaradio.co.uk/privacy-policy" />
-    </Helmet>
     <article className="privacy-content">
       <p className="eyebrow">Santa Radio</p>
       <h1>Privacy Policy</h1>

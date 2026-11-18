@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
 import './Links.css';
 import { useCookieConsent } from '../privacy/CookieConsentProvider.jsx';
 import ExternalMediaConsent from '../components/ExternalMediaConsent.jsx';
@@ -20,10 +19,6 @@ export default function Links() {
 
   return (
     <main className="links-page">
-      <Helmet>
-        <title>Where to Hear Santa Radio</title>
-        <meta name="description" content="Find Santa Radio on your favourite listening platforms, including TuneIn, Live Online Radio, Radioguide.fm and radio.net. Christmas music all year round." />
-      </Helmet>
       <header className="links-hero">
         <div className="links-hero-content">
           <p className="links-eyebrow">Christmas music, wherever you listen</p>
