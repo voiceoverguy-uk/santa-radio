@@ -23,7 +23,7 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
   return (
     <section id="santa-studio-promotion" className="santa-studio-promotion" aria-labelledby="santa-studio-title"
       data-recipient={previewName || undefined}>
-      {showPremiumIntro && <div className="santa-studio-promotion__intro">
+      {showPremiumIntro && <div className="santa-studio-promotion__premium-intro">
         <h2>A BESPOKE SANTA MESSAGE</h2>
         <p>OUR PREMIUM EXPERIENCE</p>
         <p>Let’s make it even more magical for your little one.</p>
