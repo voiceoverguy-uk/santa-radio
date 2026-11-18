@@ -172,9 +172,9 @@ test("post-Christmas rest and New Year celebration follow the device timezone ac
         assert.equal(data.mapPosition.lng, city.lng);
         assert.equal(data.progressPercent, 100);
         assert.equal(data.visitedCount, 290);
-        assert.deepEqual(post.getDeviceDateParts(date, city.timeZone), post.getDeviceDateParts(date));
+        assert.ok(post.newYearPartyCities.some(place => place.id === city.id));
       }
-      assert.equal(post.getNewYearCity(start).id, post.getNewYearCity(end).id);
+      assert.equal(post.getNewYearCity(start).id, post.getNewYearCity(new Date(start.getTime() + 60000)).id);
       for (const date of [new Date(2027, 0, 1, 3), new Date(2027, 0, 1, 23, 59, 59)]) {
         const resting = route.getDashboardData(date);
         assert.equal(resting.mode, "COMPLETE", zone);
@@ -269,4 +269,67 @@ test("rest sprites switch exactly eight hours after delivery and preserve the Ne
     if (previousZone === undefined) delete process.env.TZ;
     else process.env.TZ = previousZone;
   }
+});
+
+
+test("New Year captions describe Santa’s party antics and location without technical timing copy", () => {
+  const post = load("lib/postChristmas.ts");
+  assert.equal(post.partyCaptions.length, 10);
+  assert.equal(new Set(post.partyCaptions).size, 10);
+  for (const caption of post.partyCaptions) {
+    assert.ok(caption.includes("{city}"));
+    assert.doesNotMatch(caption, /device|time.?zone|6pm|3am/i);
+  }
+  const previousZone = process.env.TZ;
+  process.env.TZ = "Europe/London";
+  try {
+    const data = route.getDashboardData(new Date("2026-12-31T20:00:00Z"));
+    assert.ok(data.statusSubtext.includes(data.currentStopName));
+    assert.doesNotMatch(data.statusSubtext, /device|time.?zone|6pm|3am/i);
+    assert.ok(post.partyCaptions.some(caption => caption.replace("{city}", data.currentStopName) === data.statusSubtext));
+  } finally {
+    if (previousZone === undefined) delete process.env.TZ;
+    else process.env.TZ = previousZone;
+  }
+});
+
+
+test("New Year party tour visits twenty-four major cities in shuffled ten-minute stops", () => {
+  const post = load("lib/postChristmas.ts");
+  const previousZone = process.env.TZ;
+  process.env.TZ = "Europe/London";
+  try {
+    assert.equal(post.newYearPartyCities.length, 24);
+    for (const id of ["london", "sydney", "newyork"]) {
+      assert.ok(post.newYearPartyCities.some(city => city.id === id));
+    }
+    const start = new Date("2026-12-31T18:00:00Z");
+    const cities = [];
+    for (let i = 0; i < 24; i++) {
+      const time = start.getTime() + i * 10 * 60000;
+      const city = post.getNewYearCity(new Date(time));
+      cities.push(city.id);
+      assert.equal(post.getNewYearCity(new Date(time + 599999)).id, city.id);
+      const data = route.getDashboardData(new Date(time));
+      assert.equal(data.currentStopName, city.name);
+      assert.equal(data.mapPosition.lat, city.lat);
+      assert.equal(data.mapPosition.lng, city.lng);
+      assert.ok(data.statusSubtext.includes(city.name));
+    }
+    assert.equal(new Set(cities).size, 24);
+    assert.notEqual(post.getNewYearCity(new Date("2026-12-31T23:59:59Z")).id,
+      post.getNewYearCity(new Date("2027-01-01T00:00:00Z")).id);
+  } finally {
+    if (previousZone === undefined) delete process.env.TZ;
+    else process.env.TZ = previousZone;
+  }
+});
+
+
+test("geography labels include a North Pole name beside the resting Santa sprite", () => {
+  const GeographyLabels = load("components/MapGeographyLabels.tsx").default;
+  const html = renderToStaticMarkup(React.createElement(GeographyLabels));
+  assert.match(html, /aria-label="North Pole"/);
+  assert.match(html, />North Pole<\/tspan>/);
+  assert.match(html, /font-family="inherit"/);
 });

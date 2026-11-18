@@ -1,4 +1,4 @@
-import { getDeviceDateParts, getNewYearCity, getRestCaption, getPreparationCaption, isNewYearCelebration } from "./postChristmas";
+import { getDeviceDateParts, getNewYearCity, getRestCaption, getPreparationCaption, getNewYearCaption, isNewYearCelebration } from "./postChristmas";
 import {
   santaStops,
   TRACKER_CONSTANTS,
@@ -509,7 +509,7 @@ export function getDashboardData(now: Date): DashboardData {
     estimatedDistanceKm,
     speedLabel,
     statusHeadline: mode === "PREPARING" ? "Getting ready at the North Pole" : mode === "COMPLETE" ? celebrating ? `Ringing in the New Year in ${current!.name}` : "Resting at the North Pole grotto" : headline,
-    statusSubtext: mode === "PREPARING" ? getPreparationCaption() : mode === "COMPLETE" ? celebrating ? `Santa’s celebrating New Year’s Eve in ${current!.name}, ringing in the New Year from 6pm on 31 December until 3am on 1 January in your device’s timezone. Happy New Year!` : getRestCaption() : subtext,
+    statusSubtext: mode === "PREPARING" ? getPreparationCaption() : mode === "COMPLETE" ? celebrating ? getNewYearCaption(current!.name) : getRestCaption() : subtext,
     approachingUK,
     mapPosition,
     countdownToChristmasEve: countdownToStart,

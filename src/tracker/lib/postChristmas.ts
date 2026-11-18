@@ -1,4 +1,4 @@
-import { santaStops, type SantaStop } from "../data/santaRouteStops";
+import { santaStops } from "../data/santaRouteStops";
 
 export const restCaptions = [
   "Santa’s resting in his North Pole grotto with his slippers on and a lovely mug of cocoa.",
@@ -26,39 +26,45 @@ export const preparationCaptions = [
   "A final wave to the workshop team! Santa’s at the North Pole, getting ready to climb into his sleigh.",
 ] as const;
 
-function shuffledCaptions(captions: readonly string[]): string[] {
-  const order = [...captions];
+export const partyCaptions = [
+  "Santa’s doing the Macarena in {city}. His knees have requested a quieter song.",
+  "Santa’s leading a conga line in {city}. Rudolph keeps trying to overtake him.",
+  "Santa’s showing off his dance moves in {city}. The elves are pretending they don’t know him.",
+  "Santa’s attempting the YMCA in {city}. His beard keeps getting in the way of the Y.",
+  "Santa’s on the dance floor in {city}. That gold party hat has a mind of its own.",
+  "Santa’s celebrating in {city}. He’s asked the DJ for one more song. Seven times.",
+  "Santa’s enjoying his big night out in {city}. Someone’s mistaken his party blower for a tiny trumpet.",
+  "Santa’s throwing some shapes in {city}. Head Elf says most of them look like mince pies.",
+  "Santa’s having a boogie in {city}. His boots are jingling louder than the music.",
+  "Santa’s partying in {city}. He’s just discovered the buffet and promised the dance floor he’ll be right back.",
+] as const;
+
+function shuffled<T>(items: readonly T[]): T[] {
+  const order = [...items];
   for (let i = order.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [order[i], order[j]] = [order[j], order[i]];
   }
   return order;
 }
-const captionOrder = shuffledCaptions(restCaptions);
-const preparationOrder = shuffledCaptions(preparationCaptions);
+const captionOrder = shuffled(restCaptions);
+const preparationOrder = shuffled(preparationCaptions);
+const partyOrder = shuffled(partyCaptions);
+export function getNewYearCaption(city: string): string {
+  return partyOrder[Math.floor(Date.now() / 30000) % partyOrder.length].replace("{city}", city);
+}
 export function getPreparationCaption(): string {
   return preparationOrder[Math.floor(Date.now() / 30000) % preparationOrder.length];
 }
 
-// Additional inhabited offsets absent from the delivery itinerary.
-// Coordinates and IANA zone identifiers follow the system IANA zone.tab catalogue.
-const additionalCities: SantaStop[] = [
-  ["Pago Pago", "Pacific/Pago_Pago", -14.2667, -170.7],
-  ["Eucla", "Australia/Eucla", -31.7167, 128.8667],
-  ["Nuuk", "America/Nuuk", 64.1833, -51.7333],
-  ["St John’s", "America/St_Johns", 47.5667, -52.7167],
-  ["Yangon", "Asia/Yangon", 16.7833, 96.1667],
-  ["Praia", "Atlantic/Cape_Verde", 14.9167, -23.5167],
-  ["Chatham Islands", "Pacific/Chatham", -43.95, -176.55],
-  ["Marquesas Islands", "Pacific/Marquesas", -9, -139.5],
-].map(([name, timeZone, lat, lng]) => ({
-  ...santaStops[0], id: String(timeZone), name: String(name), displayLabel: String(name),
-  timeZone: String(timeZone), lat: Number(lat), lng: Number(lng),
-  flag: "🎉", region: String(timeZone).split("/")[0],
-}));
-const celebrationDestinations = [...santaStops, ...additionalCities];
-
-const celebrationCities = new Map<string, SantaStop>();
+const partyCityIds = [
+  "london", "sydney", "newyork", "paris", "berlin", "tokyo", "hongkong",
+  "singapore", "bangkok", "dubai", "capetown", "riodejaneiro", "lasvegas",
+  "edinburgh", "auckland", "melbourne", "seoul", "amsterdam", "barcelona",
+  "rome", "lisbon", "losangeles", "miami", "buenosaires",
+];
+export const newYearPartyCities = santaStops.filter(stop => partyCityIds.includes(stop.id));
+const partyTour = shuffled(newYearPartyCities);
 
 export function getRestCaption(): string {
   return captionOrder[Math.floor(Date.now() / 30000) % captionOrder.length];
@@ -78,28 +84,11 @@ export function isNewYearCelebration(now: Date): boolean {
     || (local.month === 1 && local.day === 1 && local.hour < 3);
 }
 
-/** Prefer the device's IANA zone, then cities sharing its local date and clock. */
-export function getNewYearCity(now: Date): SantaStop {
-  const zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const local = getDeviceDateParts(now, zone);
-  const celebrationYear = local.month === 1 ? local.year - 1 : local.year;
-  const key = `${zone}:${celebrationYear}`;
-  const existing = celebrationCities.get(key);
-  if (existing) return existing;
-  let cities = celebrationDestinations.filter(stop => stop.timeZone === zone);
-  if (cities.length === 0) {
-    cities = celebrationDestinations.filter(stop => {
-      const city = getDeviceDateParts(now, stop.timeZone ?? "UTC");
-      return city.year === local.year && city.month === local.month && city.day === local.day
-        && city.hour === local.hour && city.minute === local.minute;
-    });
-  }
-  // Include the fractional-hour offsets when choosing a celebration destination.
-  // A repeatable annual draw keeps Santa in the same city after a reload.
-  let seed = 0;
-  for (const character of key) seed = (Math.imul(seed, 31) + character.charCodeAt(0)) >>> 0;
-  const city = cities[seed % cities.length];
-  if (!city) throw new Error(`No New Year city matches device timezone ${zone}`);
-  celebrationCities.set(key, city);
-  return city;
+/** Hold each city for ten local-clock minutes, continuing the tour through midnight. */
+export function getNewYearCity(now: Date) {
+  const local = getDeviceDateParts(now);
+  const minutes = local.month === 1
+    ? 6 * 60 + local.hour * 60 + local.minute
+    : (local.hour - 18) * 60 + local.minute;
+  return partyTour[Math.floor(Math.max(0, minutes) / 10) % partyTour.length];
 }

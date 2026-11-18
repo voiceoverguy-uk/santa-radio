@@ -1,4 +1,5 @@
 const labels = [
+  { name: "North Pole", lat: 90, lng: 0, offsetX: 72, offsetY: 14 },
   { name: "North America", lat: 48, lng: -105, lines: ["North", "America"] },
   { name: "South America", lat: -18, lng: -59, lines: ["South", "America"] },
   { name: "Europe", lat: 53, lng: 20 },
@@ -25,8 +26,8 @@ export default function MapGeographyLabels({ scale = 1, wrapPacific = false }: {
       stroke="#173c46" strokeWidth={2 * scale} strokeOpacity={0.55}
       strokeLinejoin="round" paintOrder="stroke" fill="#fff8e7" fillOpacity={0.8}>
       {labels.map(label => {
-        const x = (label.lng + 180) / 360 * 1000;
-        const y = (90 - label.lat) / 180 * 500;
+        const x = (label.lng + 180) / 360 * 1000 + (label.offsetX ?? 0) * scale;
+        const y = (90 - label.lat) / 180 * 500 + (label.offsetY ?? 0) * scale;
         const lines = label.lines ?? [label.name];
         return (
           <text key={`${label.name}-${label.lng}`} aria-label={label.name}

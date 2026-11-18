@@ -214,6 +214,7 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy, mapOnly = 
             <br />
             <span className="tracker-heading-accent">Around the World</span>
           </h1>}
+          <p className="tracker-copy mt-3 text-sm sm:text-base">Check in on Santa, all year round.</p>
 
           <div className="tracker-stage mt-8 w-full">
           <div className="tracker-stage-map w-full">
@@ -332,6 +333,7 @@ function TrackerSkeleton({ heading, introCopy, mapOnly }: Pick<SantaTrackerProps
           {/* Reserve the existing status badge's space without inventing a status. */}
           <div aria-hidden="true" className="h-8 mb-6" />
           {heading}
+          <p className="tracker-copy mt-3 text-sm sm:text-base">Check in on Santa, all year round.</p>
           {introCopy}
           <div role="status" className="tracker-meta mt-8 text-sm">
             Loading Santa Tracker...
