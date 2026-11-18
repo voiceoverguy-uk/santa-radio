@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react';
 import { createSantaVideo } from '../lib/createSantaVideo.js';
 import { trackMessageAction } from '../lib/messageEngagement.js';
 import './SantaFreeVideo.css';
+import { SantaGreetingShare } from './SantaMessageShare.jsx';
 
 export default function SantaFreeVideo({ message, onDownload, onPlay, onEnded }) {
   const [url, setUrl] = useState('');
+  const [videoBlob, setVideoBlob] = useState(null);
   const [progress, setProgress] = useState(null);
   const [status, setStatus] = useState('Preparing your Christmas video…');
   const [error, setError] = useState('');
@@ -14,27 +16,30 @@ export default function SantaFreeVideo({ message, onDownload, onPlay, onEnded })
     if (cancelled) return;
     const controller = new AbortController();
     let objectUrl;
-    setUrl(''); setError(''); setStatus('Preparing your Christmas video…');
+    setUrl(''); setVideoBlob(null); setProgress(null); setError(''); setStatus('Preparing your Christmas video…');
     createSantaVideo({ audio: message.blob, name: message.name, signal: controller.signal, onProgress: value => { if (!controller.signal.aborted) setProgress(value); }, onStatus: text => { if (!controller.signal.aborted) setStatus(text); } })
       .then(blob => {
         if (controller.signal.aborted) return;
-        objectUrl = URL.createObjectURL(blob); setUrl(objectUrl); setStatus('Your Christmas video is ready.');
+        setVideoBlob(blob); objectUrl = URL.createObjectURL(blob); setUrl(objectUrl); setStatus('Your Christmas video is ready.');
       }).catch(() => {
-        if (!controller.signal.aborted) { setError('Your video could not be prepared on this device. Try again, or keep your audio recording below.'); setStatus(''); }
+        if (!controller.signal.aborted) { setError('Your video could not be prepared on this device. Please try again.'); setStatus(''); }
       });
     return () => { controller.abort(); if (objectUrl) URL.revokeObjectURL(objectUrl); };
   }, [message.blob, message.name, attempt, cancelled]);
   const filename = `Santa-message-for-${message.name.replace(/[^\p{L}\p{N} _-]/gu, '').trim() || 'you'}.mp4`;
   return <div className="santa-free-video">
     {!error && !cancelled && <div className="santa-free-video__progress"><progress aria-label="MP4 creation progress" max="1" value={progress ?? undefined} /><span>{progress === null ? 'Preparing…' : `${Math.floor(progress * 100)}%`}</span></div>}
-    <p role="status" aria-live="polite">{cancelled ? 'Video preparation cancelled. Your audio is still available below.' : status}</p>
+    <p role="status" aria-live="polite">{cancelled ? 'Video preparation cancelled. You can try again below.' : status}</p>
     {url && !cancelled && <>
       <video controls playsInline preload="metadata" src={url} aria-label={`Santa’s video message for ${message.name}`} onPlay={onPlay} onEnded={onEnded} onPlaying={() => trackMessageAction(message.statisticsReceipt, 'listen')} />
+      <div className="santa-free-video__actions">
       <a className="message-download" href={url} download={filename} onClick={() => {
         trackMessageAction(message.statisticsReceipt, 'mp4-download');
         trackMessageAction(message.statisticsReceipt, 'download');
         onDownload?.();
-      }}>Download your MP4 video</a>
+      }}>Download your message</a>
+      <SantaGreetingShare message={{ ...message, blob: videoBlob }} filename={filename} />
+      </div>
     </>}
     {!url && !error && !cancelled && <button type="button" onClick={() => setCancelled(true)}>Cancel video preparation</button>}
     {error && <p role="alert">{error}</p>}

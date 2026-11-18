@@ -25,7 +25,7 @@ test('completed free greeting provides a personalised MP4 and measures only down
     await maker.getByRole('option').first().click();
     await maker.getByRole('button', { name: 'Create message', exact: true }).click();
     const video = maker.locator('.santa-free-video video');
-    const link = maker.getByRole('link', { name: 'Download your MP4 video' });
+    const link = maker.getByRole('link', { name: 'Download your message' });
     await expect(link).toBeVisible({ timeout: 90000 });
     await expect(video).toBeVisible();
     expect(events.filter(event => event.action === 'mp4-download')).toHaveLength(0);
@@ -41,6 +41,10 @@ test('completed free greeting provides a personalised MP4 and measures only down
     await link.click({ force: true });
     expect(events.filter(event => event.action === 'mp4-download')).toHaveLength(1);
     await expect.poll(() => video.evaluate(el => el.videoWidth / el.videoHeight)).toBeCloseTo(16 / 9);
-    await expect(maker.getByRole('link', { name: 'Download your audio' })).toBeVisible();
+    await expect(maker.getByRole('link', { name: 'Download your audio' })).toHaveCount(0);
+    await page.evaluate(() => { Object.defineProperty(navigator, 'canShare', { configurable: true, value: () => true }); Object.defineProperty(navigator, 'share', { configurable: true, value: async data => { window.sharedFile = { name: data.files[0].name, type: data.files[0].type, size: data.files[0].size }; } }); });
+    await maker.getByRole('button', { name: 'Share this greeting', exact: true }).click({ force: true });
+    await expect.poll(() => page.evaluate(() => window.sharedFile?.type)).toBe('video/mp4');
+    expect(await page.evaluate(() => window.sharedFile.name)).toBe('Santa-message-for-Oliver.mp4');
   } finally { rmSync(folder, { recursive: true, force: true }); }
 });

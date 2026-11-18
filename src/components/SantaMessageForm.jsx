@@ -34,6 +34,9 @@ import './SantaNameRequest.css';
 import './SantaMessageForm.css';
 import { useInlineMakerRadioVisibility } from './RadioDockVisibility.jsx';
 
+// Keep the previous audio delivery available for future reuse.
+const AUDIO_ONLY_DELIVERY_ENABLED = false;
+
 export default function SantaMessageForm({ showDetailLink = true, initialName = '', pendingName, keepSignupInPlace = false, selectedChildName = '', layout = 'default' }) {
   const requestsOpen = useNameRequestSeason();
   const [bespokeDownload, setBespokeDownload] = useState(null);
@@ -325,6 +328,8 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
       setClickedDownloads(previous => new Set([...previous, message.key]));
       if (!studioPrelaunch && message.statisticsReceipt) setBespokeDownload(previous => previous || { name: message.name, key: message.key, receipt: message.statisticsReceipt });
     }} />
+    {/* Retained for a future audio-only delivery option. */}
+    {AUDIO_ONLY_DELIVERY_ENABLED && <>
     <p>Audio-only version</p>
     <div className="message-player-row">
       <audio ref={audio => {
@@ -354,6 +359,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         </a>
       </div>
     </div>
+    </>}
   </div>);
 
   return <section className="santa-message-section" id="santa-messages">

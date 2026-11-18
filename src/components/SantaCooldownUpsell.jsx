@@ -16,7 +16,7 @@ function SantaCooldownUpsell({
 
   const copy = prelaunch
     ? 'Make it even more magical with Santa’s Message Maker Studio for a bespoke message and bonus digital gifts.'
-    : 'Make it extra special with a bespoke message from Santa. Including personalised digital gifts at no extra cost.';
+    : 'Make it extra special with a bespoke message from Santa. Including personalised digital gifts.';
 
   const buttonLabel = prelaunch
     ? named

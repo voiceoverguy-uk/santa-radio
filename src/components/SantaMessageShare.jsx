@@ -12,7 +12,7 @@ const shareData = {
 
 // File sharing is deliberately separate from the public-maker invitation.
 // Keep this synchronous until navigator.share so the click's activation survives.
-export function SantaGreetingShare({ message }) {
+export function SantaGreetingShare({ message, filename }) {
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState('');
   const [failed, setFailed] = useState(false);
@@ -25,11 +25,11 @@ export function SantaGreetingShare({ message }) {
     setStatus('');
     setFailed(false);
     try {
-      const file = new File([message.blob], santaMessageDownloadName(message.name), { type: 'audio/mpeg' });
+      const file = new File([message.blob], filename || santaMessageDownloadName(message.name), { type: filename ? 'video/mp4' : 'audio/mpeg' });
       const data = { files: [file] };
       if (typeof navigator.share !== 'function' ||
           typeof navigator.canShare !== 'function' || !navigator.canShare(data)) {
-        setStatus('This browser can’t share MP3 files directly. Use the download link above, then attach the MP3 in your messaging app.');
+        setStatus('This browser can’t share files directly. Download your message, then attach it in your messaging app.');
         return;
       }
       await navigator.share(data);
@@ -38,7 +38,7 @@ export function SantaGreetingShare({ message }) {
     } catch (error) {
       if (error.name !== 'AbortError') {
         setFailed(true);
-        setStatus('Your greeting couldn’t be shared. Please try again, or use the download link above and attach the MP3 in your messaging app.');
+        setStatus('Your greeting couldn’t be shared. Please try again, or download your message and attach it in your messaging app.');
       }
     } finally {
       sharing.current = false;

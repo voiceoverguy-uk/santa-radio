@@ -6,3 +6,9 @@
 
 .santa-free-video__progress { display: flex; gap: 1rem; align-items: center; }
 .santa-free-video__progress progress { flex: 1; height: 18px; accent-color: #c19a39; }
+
+.santa-free-video__actions { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 10px; }
+.santa-free-video__actions .message-download { width: auto; max-width: none; min-height: 38px; padding: 9px 15px; border-radius: 6px; font-size: .875rem; font-weight: 600; line-height: 1.3; letter-spacing: normal; text-transform: none; box-shadow: none; }
+.santa-free-video__actions .message-share { margin: 0; }
+.santa-free-video__actions .message-share-icon { width: 38px; height: 38px; min-height: 38px; margin: 0; padding: 7px; border-radius: 6px; }
+.santa-free-video__actions .message-share-status { max-width: 100%; text-align: left; }
