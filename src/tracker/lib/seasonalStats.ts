@@ -1,9 +1,17 @@
+import { getDeviceDateParts } from "./postChristmas";
+
 const metrics = {
   preparation: [
     { key: "towns", label: "Towns explored today", min: 4, max: 12, note: "Only got lost twice." },
     { key: "chimneys", label: "Chimneys inspected", min: 18, max: 72, note: "One was a tight squeeze." },
     { key: "cocoa", label: "Cocoa stops today", min: 3, max: 9, note: "Purely for research." },
     { key: "names", label: "Names checked twice", min: 804, max: 6408, note: "And counting." },
+  ],
+  party: [
+    { key: "autographs", label: "Autographs signed", min: 18, max: 84, note: "Mostly on napkins." },
+    { key: "dance", label: "Dance moves completed", min: 24, max: 128, note: "The Macarena counts as eight." },
+    { key: "selfies", label: "Selfies posed for", min: 12, max: 96, note: "Someone always blinks." },
+    { key: "snacks", label: "Party snacks sampled", min: 8, max: 28, note: "The buffet is under close supervision." },
   ],
   holiday: [
     { key: "coladas", label: "Piña coladas sipped", min: 1, max: 4, note: "Keeping the tiny umbrellas." },
@@ -13,9 +21,14 @@ const metrics = {
   ],
 } as const;
 
-/** A shared UTC-day seed keeps the playful totals consistent across refreshes and destinations. */
-export function getSeasonalStats(date: Date, phase: "preparation" | "holiday", rotationTimeMs = Date.now()) {
-  const day = Math.floor(date.getTime() / 86400000);
+/** Daily totals survive refreshes and destination changes; a party keeps its totals past midnight. */
+export function getSeasonalStats(date: Date, phase: "preparation" | "holiday" | "party", rotationTimeMs = Date.now()) {
+  let day = Math.floor(date.getTime() / 86400000);
+  if (phase === "party") {
+    const local = getDeviceDateParts(date);
+    const celebrationYear = local.month === 1 ? local.year - 1 : local.year;
+    day = Math.floor(Date.UTC(celebrationYear, 11, 31) / 86400000);
+  }
   const stats = metrics[phase].map((metric, index) => {
     const seed = (Math.imul(day, 1664525) + (index + 1) * 1013904223) >>> 0;
     return {

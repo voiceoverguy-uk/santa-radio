@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { MapPin, Clock, Navigation, Gift, Plane, Globe, Target, Zap, Home, Coffee, ListChecks, GlassWater, Castle, Mail, IceCreamCone } from "lucide-react";
+import { MapPin, Clock, Navigation, Gift, Plane, Globe, Target, Zap, Home, Coffee, ListChecks, GlassWater, Castle, Mail, IceCreamCone, PenLine, Music2, Camera, Cookie } from "lucide-react";
 import { getDashboardData, formatNumber, isHolidaySeason, isChristmasInJuly, type HolidayDestination } from "@/lib/santaRoute";
+import { isNewYearCelebration } from "../lib/postChristmas";
 import { getSeasonalStats } from "../lib/seasonalStats";
 import { holidayDestinations } from "@/data/santaHolidays";
 
@@ -141,7 +142,8 @@ export default function SantaStats({ effectiveTime, holiday, routeResearch = fal
   ];
 
   const preparing = data.mode === "ROUTE_RESEARCH" || data.mode === "PREPARING";
-  if (preparing || onHoliday) {
+  const partying = data.mode === "COMPLETE" && isNewYearCelebration(effectiveTime);
+  if (preparing || onHoliday || partying) {
     const icons = {
       towns: <Globe size={18} />,
       chimneys: <Home size={18} />,
@@ -151,8 +153,13 @@ export default function SantaStats({ effectiveTime, holiday, routeResearch = fal
       sandcastles: <Castle size={18} />,
       postcards: <Mail size={18} />,
       icecreams: <IceCreamCone size={18} />,
+      autographs: <PenLine size={18} />,
+      dance: <Music2 size={18} />,
+      selfies: <Camera size={18} />,
+      snacks: <Cookie size={18} />,
     };
-    cards.splice(4, 4, ...getSeasonalStats(effectiveTime, preparing ? "preparation" : "holiday").map(metric => ({
+    const phase = preparing ? "preparation" : partying ? "party" : "holiday";
+    cards.splice(4, 4, ...getSeasonalStats(effectiveTime, phase).map(metric => ({
       icon: icons[metric.key],
       label: metric.label,
       value: metric.count.toLocaleString("en-GB"),

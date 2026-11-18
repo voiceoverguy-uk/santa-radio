@@ -394,3 +394,39 @@ test("holiday cards share refresh-stable daily counts and pair rotation througho
     assert.ok(!html.includes("Piña coladas sipped"), iso);
   }
 });
+
+
+test("New Year party cards rotate in pairs with refresh-stable totals across midnight and city changes", () => {
+  const { getSeasonalStats } = load("lib/seasonalStats.ts");
+  const SantaStats = load("components/SantaStats.tsx").default;
+  const previousZone = process.env.TZ;
+  try {
+    for (const zone of ["Europe/London", "America/Los_Angeles", "Pacific/Kiritimati"]) {
+      process.env.TZ = zone;
+      const start = new Date(2026, 11, 31, 18);
+      const first = getSeasonalStats(start, "party", 0);
+      const rotated = getSeasonalStats(start, "party", 60000);
+      assert.deepEqual(Array.from(first, metric => metric.key), ["autographs", "dance", "selfies", "snacks"]);
+      assert.deepEqual(Array.from(rotated, metric => metric.key), ["selfies", "snacks", "autographs", "dance"]);
+      for (const item of first) {
+        assert.equal(rotated.find(metric => metric.key === item.key).count, item.count);
+        for (const date of [new Date(2026, 11, 31, 18, 10), new Date(2027, 0, 1), new Date(2027, 0, 1, 2, 59)]) {
+          assert.equal(getSeasonalStats(date, "party", 0).find(metric => metric.key === item.key).count, item.count, zone);
+        }
+      }
+      for (const [date, partying] of [
+        [new Date(2026, 11, 31, 17, 59, 59), false],
+        [start, true],
+        [new Date(2027, 0, 1, 2, 59, 59), true],
+        [new Date(2027, 0, 1, 3), false],
+      ]) {
+        const html = renderToStaticMarkup(React.createElement(SantaStats, { effectiveTime: date }));
+        for (const item of first) assert.equal(html.includes(item.label), partying, `${zone} ${date.toISOString()}`);
+        assert.equal(html.includes("Estimated Gifts"), !partying);
+      }
+    }
+  } finally {
+    if (previousZone === undefined) delete process.env.TZ;
+    else process.env.TZ = previousZone;
+  }
+});
