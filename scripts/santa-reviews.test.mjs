@@ -50,3 +50,10 @@ test('submission sends only requested rewards; publication approval never sends'
   assert.equal((await fetch(url,{method:'PATCH',headers,body:JSON.stringify({id:'11111111-1111-1111-1111-111111111111',action:'approve'})})).status,200);assert.equal(sends,1);assert.match(queries.at(-1).sql,/AND consent/);assert.match(queries.at(-1).sql,/featured=true/);
  }finally{server.closeAllConnections();await new Promise(r=>server.close(r));}
 });
+
+test('real session lookup preserves Express headers and refuses unverified visitors',async()=>{
+ const app=createReviewsHandler({pool:()=>{throw Error('must not access database')}});
+ const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));
+ try{const response=await fetch(`http://127.0.0.1:${server.address().port}`);assert.equal(response.status,401);assert.match((await response.json()).error,/verify your adult email/);}
+ finally{server.closeAllConnections();await new Promise(r=>server.close(r));}
+});

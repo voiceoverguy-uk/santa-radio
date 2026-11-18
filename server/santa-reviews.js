@@ -85,7 +85,9 @@ export function createReviewsHandler({ pool = databasePool, contact = requestCon
         return result.rowCount ? res.json({ok:true,message:'Review updated.'}) : res.status(409).json({error:'This review is no longer eligible for that action. Refresh the list.'});
       }
       // The encrypted contact belongs to the existing email-verified free-message session.
-      const adult = await contact({...req, body:{...req.body,source:'free'}});
+      const contactRequest = Object.create(req);
+      contactRequest.body = {...req.body, source:'free'};
+      const adult = await contact(contactRequest);
       if (!adult) return res.status(401).json({error:'Please verify your adult email through the free message page first.'});
       if (req.method === 'GET') {
         const existing = await pool().query('SELECT state,reward_email_requested FROM santa_message_reviews WHERE recipient_key=$1',[adult.identity]);
