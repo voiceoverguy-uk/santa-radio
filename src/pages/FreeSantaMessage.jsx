@@ -1,3 +1,4 @@
+import SantaMessageVideoExample from '../components/SantaMessageVideoExample.jsx';
 import { useEffect, useState } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import PageSeo from '../seo/PageSeo.jsx';
@@ -26,6 +27,8 @@ export default function FreeSantaMessage() {
   useEffect(() => {
     // Reset the previous page's scroll position before fonts and form layout settle.
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    // Ordinary visitors see the playable example first; name handoffs still open the maker.
+    if (!requestedName && !location.hash) return;
     let cancelled = false;
     let frame;
     let stopSettling;
@@ -57,7 +60,7 @@ export default function FreeSantaMessage() {
       stopListening();
       window.history.scrollRestoration = restoration;
     };
-  }, [location.key, location.hash]);
+  }, [location.key, location.hash, requestedName]);
   return (
     <main>
       <PageSeo metadata={messageMetadata()} />
@@ -65,7 +68,8 @@ export default function FreeSantaMessage() {
         <div className="fsm-hero-content">
           <p className="fsm-kicker">Special delivery from the North Pole</p>
           <h1 className="fsm-sub">Free Personalised Santa Message</h1>
-          <p className="fsm-desc">Create a free message from Santa with your child’s name. Choose a name, ask Santa to record it, then enjoy your personalised Santa audio greeting to download and keep.</p>
+          <p className="fsm-desc">Create a free message from Santa with your child’s name. Choose a name, ask Santa to record it, then preview and download a personalised MP4 video with their name and Santa’s voice.</p>
+          <SantaMessageVideoExample />
         </div>
       </div>
       <SantaMessageForm key={requestedName} showDetailLink={false} initialName={requestedName}

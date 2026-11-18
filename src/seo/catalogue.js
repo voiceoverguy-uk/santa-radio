@@ -173,8 +173,8 @@ export const messageBreadcrumbs = [['Home', '/'], ['Santa Message', '/free-santa
 export function messageMetadata() {
   return pageMetadata({
     path: '/free-santa-message',
-    title: 'Free Personalised Santa Message (MP3 Audio) | Santa Radio',
-    description: 'Create a free personalised message from Santa with your child’s name. Choose a recorded name, listen to the Santa audio greeting and download your MP3.',
+    title: 'Free Personalised Santa Message (MP4 Video & MP3) | Santa Radio',
+    description: 'Create a free personalised message from Santa with your child’s name. Choose a recorded name, preview your personalised Christmas video and download the MP4 or audio-only MP3.',
     ...sectionShareCards.message,
     crumbs: messageBreadcrumbs,
   });

@@ -193,17 +193,17 @@ test('tracker HTML metadata uses the coordinated card and keeps seasonal and pre
   assert.equal(getTrackerMetadata(new Date('2026-08-15T12:00:00Z')).title.absolute, 'Santa Tracker | Track Santa All Year Round | Santa Radio');
 });
 
-test('Santa message initial HTML targets audio searches with consistent metadata and breadcrumbs', async () => {
+test('Santa message initial HTML targets video and audio searches with consistent metadata and breadcrumbs', async () => {
   const html = await readFile('dist/free-santa-message/index.html', 'utf8');
   const m = messageMetadata();
   assert.equal(decode(html.match(/<title[^>]*>(.*?)<\/title>/s)?.[1]), m.title);
-  assert.match(m.title, /Santa Message.*MP3 Audio/);
+  assert.match(m.title, /Santa Message.*MP4 Video.*MP3/);
   for (const name of ['description', 'og:description', 'twitter:description'])
     assert.equal(decode(headValue(html, name)), m.description);
   for (const name of ['og:title', 'twitter:title'])
     assert.equal(decode(headValue(html, name)), m.title);
   assert.match(html, /Create a free message from Santa/);
-  assert.ok(html.includes('personalised Santa audio greeting'));
+  assert.ok(html.includes('personalised MP4 video'));
   assert.ok(html.includes(`rel="canonical" href="${ORIGIN}/free-santa-message"`));
   const graphs = readGraphs(html);
   assert.equal(graphs.filter(node => node['@type'] === 'WebPage').length, 1);

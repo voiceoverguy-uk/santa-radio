@@ -303,6 +303,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
     }
   };
   const pauseRadio = event => {
+    document.querySelector('.fsm-video-preview video')?.pause();
     if (audioRef.current && audioRef.current !== event.currentTarget) audioRef.current.pause();
     audioRef.current = event.currentTarget;
     for (const audio of audioRefs.current.values()) {
@@ -374,7 +375,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         {!dedicatedLayout && !hasAccess && allowExamples && <SantaMessageExample onExampleNameChange={setActiveExampleName} />}
         <p className="message-free-intro">No Artificial Intelligence here. A human recorded message from Santa, aka Father Christmas to your little Human.{' '}<br />Add your contact details, search for a recorded name, create and instantly download your short FREE personalised message from Santa.</p>
         {!dedicatedLayout && <p className="message-studio-intro">Or, choose a bespoke message from Santa with festive goodies. See below.</p>}
-        {dedicatedLayout && (!hasAccess || allowExamples) && <SantaMessageExample pulse onExampleNameChange={setActiveExampleName} />}
+
         </>}
       </div>
       <div className="santa-message-aside">
