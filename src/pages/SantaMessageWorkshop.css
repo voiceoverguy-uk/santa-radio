@@ -621,3 +621,6 @@
   .smw-choice, .smw-button, .smw-header-continue, .smw-talent-categories button { transition: none; }
   .smw-catalogue-skeleton { animation: none; }
 }
+
+.smw-message-finished > .santa-video-player { max-width: 680px; margin: 20px auto; }
+.smw-download-actions .message-share-icon { flex: 0 0 44px; width: 44px; height: 44px; }

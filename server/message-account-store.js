@@ -5,11 +5,11 @@ import { databasePool as payments } from './name-request-store.js';
 import { livePaidPurchaseId } from './studio-live-access.js';
 import { digest } from './studio-live-store.js';
 export const accountEnabled = () => process.env.STUDIO_ACCOUNTS_ENABLED === 'true';
-export const kinds = { audio: 'audio/mpeg', certificate: 'application/pdf', letter: 'application/pdf', picture: 'image/png' };
+export const kinds = { video: 'video/mp4', audio: 'audio/mpeg', certificate: 'application/pdf', letter: 'application/pdf', picture: 'image/png' };
 export function expiryFor(now = new Date()) {
  return new Date(Date.UTC(now.getUTCFullYear() + (now.getUTCMonth() === 0 ? 0 : 1), 1, 1));
 }
-export const assetPath = (id, kind) => `santa-messages/${id}/${kind}.${kind === 'audio' ? 'mp3' : kind === 'picture' ? 'png' : 'pdf'}`;
+export const assetPath = (id, kind) => `santa-messages/${id}/${kind}.${kind === 'video' ? 'mp4' : kind === 'audio' ? 'mp3' : kind === 'picture' ? 'png' : 'pdf'}`;
 export async function committed(row) {
  const result = await payments().query('SELECT 1 FROM santa_studio_creation_allowances WHERE access_key=$1 AND $2::uuid=ANY(operations)', [digest(`studio-purchase:${row.purchase_id}`), row.operation_id]);
  return result.rowCount === 1;
@@ -36,6 +36,6 @@ export async function archiveRecording(req, audio, operation, name, signal) {
 export async function acceptAsset(row, kind) {
  const path = assetPath(row.id, kind);
  const blob = await head(path);
- if (blob.contentType !== kinds[kind] || blob.size > 16*1024*1024) throw new Error('Invalid gift');
+ if (blob.contentType !== kinds[kind] || blob.size <= 0 || blob.size > (kind === 'video' ? 64 : 16)*1024*1024) throw new Error('Invalid gift');
  await databasePool().query(`UPDATE santa_saved_messages SET assets=assets || $2::jsonb WHERE id=$1 AND expires_at>now()`, [row.id,JSON.stringify({[kind]:path})]);
 }

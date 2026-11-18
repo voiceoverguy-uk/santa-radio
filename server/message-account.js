@@ -46,10 +46,10 @@ app.use(async(req,res,next)=> {
    return res.json(await handleUploadPresigned({request:req,body:req.body,
     getSignedToken:async(path,payload)=> {
      const {id,kind}=JSON.parse(payload || '{}');
-     if (!['certificate','letter','picture'].includes(kind)) throw new Error('Invalid gift');
+     if (!['video','certificate','letter','picture'].includes(kind)) throw new Error('Invalid gift');
      const row=await giftRow(req,id);
      if (path!==assetPath(row.id,kind)) throw new Error('Invalid path');
-     const constraints={pathname:path,operations:['put'],allowedContentTypes:[kinds[kind]],maximumSizeInBytes:16*1024*1024,validUntil:Math.min(Date.now()+600000,new Date(row.expires_at).getTime())};
+     const constraints={pathname:path,operations:['put'],allowedContentTypes:[kinds[kind]],maximumSizeInBytes:(kind==='video'?64:16)*1024*1024,validUntil:Math.min(Date.now()+600000,new Date(row.expires_at).getTime())};
      return {token:await issueSignedToken(constraints),urlOptions:{addRandomSuffix:false,allowOverwrite:false,ttlDays:Math.max(1,Math.ceil((new Date(row.expires_at)-Date.now())/86400000)),tokenPayload:JSON.stringify({id,kind})}};
     },
     onUploadCompleted:async({blob,tokenPayload})=> {
@@ -62,7 +62,7 @@ app.use(async(req,res,next)=> {
   }
   if(req.query.action==='gift' && req.method==='POST') {
    const {id,kind}=req.body;
-   if(!['certificate','letter','picture'].includes(kind)) return res.status(400).end();
+   if(!['video','certificate','letter','picture'].includes(kind)) return res.status(400).end();
    const row=await giftRow(req,id);
    try {await acceptAsset(row,kind); return res.json({saved:true});} catch {return res.json({saved:false});}
   }
@@ -107,7 +107,7 @@ app.use(async(req,res)=> {
    if(!row?.assets[kind] || !await committed(row)) return res.status(404).end();
    const file=await get(assetPath(id,kind),{access:'private'});
    if(file?.statusCode!==200) return res.status(404).end();
-   res.set('Content-Type',kinds[kind]);res.set('Content-Disposition',`attachment; filename="Santa-${kind}.${kind==='audio'?'mp3':kind==='picture'?'png':'pdf'}"`);
+   res.set('Content-Type',kinds[kind]);res.set('Content-Disposition',`attachment; filename="Santa-${kind}.${kind==='video'?'mp4':kind==='audio'?'mp3':kind==='picture'?'png':'pdf'}"`);
    await pipeline(Readable.fromWeb(file.stream),res); return;
   }
   const {rows:purchases}=await db.query('SELECT purchase_id FROM santa_message_accounts WHERE user_id=$1',[userId]);

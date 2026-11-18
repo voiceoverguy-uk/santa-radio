@@ -5,7 +5,7 @@ const id='00000000-0000-4000-8000-000000000001';
 test('delete checks ownership, expires first, and removes every asset including unfinished gifts',async()=>{
  const events=[];
  const db={query:async(sql,args)=>{assert.match(sql,/a.user_id=\$2/);assert.match(sql,/LEAST\(m.expires_at,now\(\)\)/);assert.deepEqual(args,[id,'owner']);events.push('expire');return{rows:[{id}]}}};
- assert.equal(await deleteSavedMessage(db,'owner',id,async paths=>{events.push('delete');assert.deepEqual(paths,[`santa-messages/${id}/audio.mp3`,`santa-messages/${id}/certificate.pdf`,`santa-messages/${id}/letter.pdf`,`santa-messages/${id}/picture.png`])}),true);
+ assert.equal(await deleteSavedMessage(db,'owner',id,async paths=>{events.push('delete');assert.deepEqual(paths,[`santa-messages/${id}/video.mp4`,`santa-messages/${id}/audio.mp3`,`santa-messages/${id}/certificate.pdf`,`santa-messages/${id}/letter.pdf`,`santa-messages/${id}/picture.png`])}),true);
  assert.deepEqual(events,['expire','delete']);
 });
 test('unknown owner and malformed identifiers cannot delete files',async()=>{

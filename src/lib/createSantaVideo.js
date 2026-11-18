@@ -3,7 +3,7 @@ import { drawStitcherImage, stitcherArguments } from './bigStitcher.js';
 export const SANTA_VIDEO_ARTWORK = '/images/big-stitcher-christmas-v3.png';
 // Keep memory bounded when several completed greetings are shown together.
 let queue = Promise.resolve();
-export function createSantaVideo({ audio, name, signal, onStatus = () => {}, onProgress = () => {} }) {
+export function createSantaVideo({ audio, name, artwork = SANTA_VIDEO_ARTWORK, signal, onStatus = () => {}, onProgress = () => {} }) {
   const job = queue.catch(() => {}).then(async () => {
     signal?.throwIfAborted();
     let ffmpeg;
@@ -13,7 +13,7 @@ export function createSantaVideo({ audio, name, signal, onStatus = () => {}, onP
       onProgress(null); onStatus('Preparing your personalised Christmas video…');
       const duration = await audioDuration(audio, signal);
       const image = new Image();
-      image.src = SANTA_VIDEO_ARTWORK;
+      image.src = artwork;
       await image.decode();
       signal?.throwIfAborted();
       const canvas = document.createElement('canvas');

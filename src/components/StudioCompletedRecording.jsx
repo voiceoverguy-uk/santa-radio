@@ -1,64 +1,73 @@
 import StudioAccountSave from './StudioAccountSave.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { useRadio } from './RadioProvider.jsx';
-import { getWorkshopDownloadName } from '../lib/workshopNameSpelling.js';
 import StudioBundleDownload from './StudioBundleDownload.jsx';
+import SantaVideoPlayer from './SantaVideoPlayer.jsx';
+import { SantaGreetingShare } from './SantaMessageShare.jsx';
+import { createStudioVideo, studioVideoFilename } from '../lib/studioVideo.js';
+import './SantaFreeVideo.css';
 
-// A visit-local result owns its playback, independently of the editable draft.
-export default function StudioCompletedRecording({ result, ordinal, visible, sectionRef, onDownloadRequested, onBundlePreparing, onBundleRequested }) {
+// The captured recording and gift details own the name and age, never the next draft.
+export default function StudioCompletedRecording({ result, ordinal, visible, sectionRef, onDownloadRequested, onBundlePreparing, onBundleRequested, onVideoReady }) {
   const radio = useRadio();
-  const audioRef = useRef(null);
-  const resumeRef = useRef(null);
+  const section = useRef(null), resume = useRef(null), playingVideo = useRef(null);
+  const callbacks = useRef({ onVideoReady, onBundlePreparing });
+  callbacks.current = { onVideoReady, onBundlePreparing };
+  const [url, setUrl] = useState('');
+  const [progress, setProgress] = useState(null);
+  const [status, setStatus] = useState('Preparing your premium Christmas video…');
   const [error, setError] = useState('');
-  const [audioDownloaded, setAudioDownloaded] = useState(false);
-  const finish = () => {
-    const resume = resumeRef.current;
-    resumeRef.current = null;
-    resume?.();
-  };
+  const [attempt, setAttempt] = useState(0);
+  const [hideProgress, setHideProgress] = useState(false);
+  const [downloaded, setDownloaded] = useState(false);
+  const finish = () => { const restore = resume.current; resume.current = null; restore?.(); };
   useEffect(() => {
-    // Capture the element: React clears refs before passive unmount cleanup.
-    // A detached media element can otherwise continue playing between stages.
-    const audio = audioRef.current;
-    const stop = () => { audio?.pause(); finish(); };
-    const otherPlayback = event => {
-      if (event.target !== audioRef.current) {
-        resumeRef.current = null;
-        audioRef.current?.pause();
-      }
-    };
-    document.addEventListener('play', otherPlayback, true);
+    if (result.videoBlob) return;
+    const controller = new AbortController();
+    setError(''); setProgress(null); setHideProgress(false);
+    callbacks.current.onBundlePreparing?.(true);
+    createStudioVideo(result, { signal: controller.signal, onProgress: value => { if (!controller.signal.aborted) setProgress(value); }, onStatus: text => { if (!controller.signal.aborted) setStatus(text); } })
+      .then(blob => { if (!controller.signal.aborted) callbacks.current.onVideoReady?.(blob); })
+      .catch(() => { if (!controller.signal.aborted) setError('Your video could not be prepared. Retry below — Santa’s recording is kept here and no extra message credit is used.'); })
+      .finally(() => { if (!controller.signal.aborted) callbacks.current.onBundlePreparing?.(false); });
+    return () => { controller.abort(); callbacks.current.onBundlePreparing?.(false); };
+  }, [result.audioBlob, result.videoBlob, attempt]);
+  useEffect(() => {
+    if (!result.videoBlob) return;
+    const objectUrl = URL.createObjectURL(result.videoBlob);
+    setUrl(objectUrl); setProgress(1); setStatus('Your personalised Christmas video is ready.');
+    const timer = setTimeout(() => setHideProgress(true), 3000);
+    return () => { clearTimeout(timer); URL.revokeObjectURL(objectUrl); };
+  }, [result.videoBlob]);
+  useEffect(() => {
+    const stop = () => { playingVideo.current?.pause(); finish(); };
     document.addEventListener('studio-stop-audio', stop);
-    return () => {
-      document.removeEventListener('play', otherPlayback, true);
-      document.removeEventListener('studio-stop-audio', stop);
-      stop();
-    };
+    return () => { document.removeEventListener('studio-stop-audio', stop); stop(); };
   }, []);
-  useEffect(() => {
-    if (!visible) { audioRef.current?.pause(); finish(); }
-  }, [visible]);
-  return <section className="smw-message-result smw-message-finished" ref={sectionRef}
-    tabIndex={-1} aria-label={ordinal === 1 ? 'Your finished Santa message' : 'Your second finished Santa message'}>
+  useEffect(() => { if (!visible) { section.current?.querySelector('video')?.pause(); finish(); } }, [visible]);
+  return <section className="smw-message-result smw-message-finished" ref={node => {
+    section.current = node;
+    if (typeof sectionRef === 'function') sectionRef(node); else if (sectionRef) sectionRef.current = node;
+  }} tabIndex={-1} aria-label={ordinal === 1 ? 'Your finished Santa message' : 'Your second finished Santa message'}>
     <h4>{ordinal === 1 ? 'First' : 'Second'} Santa message for {result.writtenName}</h4>
-    <audio ref={audioRef} src={result.url} controls preload="metadata"
-      aria-label={`Play ${ordinal === 1 ? 'first' : 'second'} Santa message for ${result.writtenName}`}
-      onPlay={event => {
-        for (const other of document.querySelectorAll('audio')) if (other !== event.currentTarget) other.pause();
-        resumeRef.current = radio?.pauseForMessage?.() || null;
-      }} onPause={finish} onEnded={finish}
-      onError={() => { finish(); setError('Your browser could not play this MP3. You can still try downloading it.'); }} />
-    <div className="smw-download-actions">
-      <div className="smw-download-control">
-      <a className={`smw-button smw-button-download${result.requested ? '' : ' smw-button-download--pending'}`}
-        href={result.url} download={getWorkshopDownloadName(result.record.name, result.spelling)}
-        onClick={() => { setAudioDownloaded(true); onDownloadRequested(); }}>Download Audio <span aria-hidden="true">↓</span></a>
-      {audioDownloaded && <span className="smw-download-status" role="status">Downloaded</span>}
+    {!hideProgress && !error && <><div className="santa-free-video__progress"><progress aria-label="Premium MP4 creation progress" max="1" value={progress ?? undefined} /><span>{progress === null ? 'Preparing…' : `${Math.floor(progress * 100)}%`}</span></div><p role="status">{status}</p></>}
+    {error && <div role="alert"><p>{error}</p><button type="button" onClick={() => setAttempt(value => value + 1)}>Retry video preparation</button></div>}
+    {url && <>
+      <SantaVideoPlayer src={url} preload="auto" glow label={`Santa’s premium video message for ${result.writtenName}`} onPlay={event => {
+        playingVideo.current = event.currentTarget;
+        for (const other of document.querySelectorAll('audio, video')) if (other !== event.currentTarget) other.pause();
+        resume.current = radio?.pauseForMessage?.() || null;
+      }} onPause={finish} onEnded={finish} />
+      <div className="smw-download-actions">
+        <div className="smw-download-control">
+          <a className={`smw-button smw-button-download${result.requested ? '' : ' smw-button-download--pending'}`} href={url} download={studioVideoFilename(result)}
+            onClick={() => { setDownloaded(true); onDownloadRequested(); }}>Download your message <span aria-hidden="true">↓</span></a>
+          {downloaded && <span className="smw-download-status" role="status">Downloaded</span>}
+        </div>
+        <SantaGreetingShare message={{ name: result.writtenName, blob: result.videoBlob }} filename={studioVideoFilename(result)} />
+        <StudioBundleDownload result={result} onPreparing={onBundlePreparing} onDownloadRequested={() => { onDownloadRequested(); onBundleRequested?.(); }} />
       </div>
-      <StudioBundleDownload result={result} onPreparing={onBundlePreparing}
-        onDownloadRequested={() => { onDownloadRequested(); onBundleRequested?.(); }} />
-    </div>
-    <StudioAccountSave result={result} />
-    {error && <p role="alert">{error}</p>}
+      <StudioAccountSave result={result} />
+    </>}
   </section>;
 }

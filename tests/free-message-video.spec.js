@@ -8,6 +8,7 @@ import ffmpeg from 'ffmpeg-static';
 test('completed free greeting provides a personalised MP4 and measures only download clicks', async ({ page }) => {
   test.setTimeout(120000);
   page.setDefaultTimeout(20000);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   const folder = mkdtempSync(join(tmpdir(), 'free-video-'));
   try {
     const audio = join(folder, 'test.mp3');

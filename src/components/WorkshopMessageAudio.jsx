@@ -1,6 +1,5 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import MessageCreationIndicator from './MessageCreationIndicator.jsx';
 import StudioPreparationRunner from './StudioPreparationRunner.jsx';
 import StudioCompletedRecording from './StudioCompletedRecording.jsx';
 import { StudioAccessContext, StudioVoucherContext } from '../lib/studioAccessContext.js';
@@ -122,7 +121,7 @@ export default function WorkshopMessageAudio({
   const exhausted = limited && status.remaining === 0 && !generation.error && !generation.checking;
   const resetBlocked = !status || generation.checking || !!generation.error || exhausted || !!status?.pending;
   const disabled = !complete || busy || !status || !!generation.error || generation.checking || status?.pending || exhausted;
-  // Share readiness only after the entire MP3 has been received, never merely
+  // Share readiness only after the entire video message has been received, never merely
   // on a successful HTTP header or a promotional preview.
   useEffect(() => { onPhaseChange?.(error ? 'error' : phase); }, [phase, error, onPhaseChange]);
 
@@ -163,7 +162,7 @@ export default function WorkshopMessageAudio({
     }
     if (!/^audio\/mpeg(?:;|$)/i.test(response.headers.get('content-type') || '')
       || Number(response.headers.get('content-length')) > MAX_BYTES || !response.body) {
-      throw new Error('The message service did not return a valid MP3. Please try again.');
+      throw new Error('The message service did not return a valid recording. Please try again.');
     }
     const reader = response.body.getReader();
     const chunks = [];
@@ -354,7 +353,7 @@ export default function WorkshopMessageAudio({
     {!url && startAction()}
     {!url && messageAction()}
     {!url && showGiftDownloadHint && <p className="smw-catalogue-review-note smw-gift-download-hint">
-      Create your MP3 to unlock these three personalised gift downloads.
+      Create your video message to unlock these three personalised gift downloads.
     </p>}
     {!url && voucherNotice}
     {!url && exhausted && <p className="smw-allowance" role="status">Both creations have been used. Create message is unavailable for this access.</p>}
@@ -371,10 +370,9 @@ export default function WorkshopMessageAudio({
     </p>}
     <div className="smw-delivery" ref={deliveryRef} tabIndex={-1} role="group" aria-label="Message preparation and recording">
     {busy && <div className="smw-message-result smw-message-preparing">
-      <p role="status" aria-live="polite">{phase === 'receiving' ? 'Receiving your finished MP3…' : preparationMessage}</p>
+      <p role="status" aria-live="polite">{phase === 'receiving' ? 'Receiving Santa’s recording…' : preparationMessage}</p>
       <div className="smw-preparation-row">
         <div className="smw-preparation-controls">
-          <MessageCreationIndicator />
           <button className="smw-change" type="button" onClick={cancel}>Cancel preparation</button>
         </div>
         <StudioPreparationRunner key={creationAttempt} costume={runnerCostume} />
@@ -385,6 +383,10 @@ export default function WorkshopMessageAudio({
     {/* Reverse presentation only: ordinals and the latest target stay chronological. */}
     {results.map((result, index) => <StudioCompletedRecording key={result.url} result={result}
       ordinal={index + 1} visible={visible}
+      onVideoReady={videoBlob => {
+        const next = resultsRef.current.map(item => item.url === result.url ? { ...item, videoBlob } : item);
+        resultsRef.current = next; setResults(next);
+      }}
       onBundlePreparing={pending => onBundlePreparing?.(result.url, pending)}
       onBundleRequested={() => onBundleRequested?.(result.gift)}
       onDownloadRequested={() => {
@@ -399,10 +401,10 @@ export default function WorkshopMessageAudio({
       aria-labelledby="smw-reset-title" aria-describedby="smw-reset-warning"
       onKeyDown={trapDialogFocus}
       onCancel={event => { event.preventDefault(); cancelReset(); }}>
-      <h3 id="smw-reset-title">{exhausted ? 'You’ve used your two-message limit' : 'Have you downloaded your MP3?'}</h3>
+      <h3 id="smw-reset-title">{exhausted ? 'You’ve used your two-message limit' : 'Have you downloaded your video message?'}</h3>
       <p id="smw-reset-warning">{exhausted
-        ? 'Don’t forget to download and save your MP3s and gifts before closing this tab or leaving the site. They aren’t saved for you to return to later.'
-        : 'Check that you have saved all your MP3s and gifts on your device before continuing. Starting again clears all retained recordings and their gifts; they cannot be recovered. A download request does not confirm that a file reached your device.'}</p>
+        ? 'Don’t forget to download and save your video messages and gifts before closing this tab or leaving the site. They aren’t saved for you to return to later.'
+        : 'Check that you have saved all your video messages and gifts on your device before continuing. Starting again clears all retained recordings and their gifts; they cannot be recovered. A download request does not confirm that a file reached your device.'}</p>
       {!giftsRequested && <p>You haven’t requested all the gifts for {giftWrittenName || finishedWrittenName}. You can still request them before starting again.</p>}
       {!exhausted && resetBlocked && <p role="status">Another creation cannot be started until your Studio access and remaining creations have been confirmed. Your current recording and gifts have not been cleared. Close this dialog to retry the recording check.</p>}
       <div className="smw-actions">
@@ -416,7 +418,7 @@ export default function WorkshopMessageAudio({
       aria-describedby="smw-confirm-description" onCancel={event => { event.preventDefault(); closeConfirmation(); }}
       onKeyDown={trapDialogFocus}>
       <h3 id="smw-confirm-title">Ready to create your message?</h3>
-      <p id="smw-confirm-description">Please check your choices, you can’t edit this message once it’s created. Play and save your MP3 before leaving this page. We don’t keep a copy.</p>
+      <p id="smw-confirm-description">Please check your choices, you can’t edit this message once it’s created. Play and save your video message before leaving this page. We don’t keep a copy.</p>
       <div className="smw-actions">
         <button type="button" className="smw-button smw-button-back" onClick={() => closeConfirmation()}>Go back and edit</button>
         <button type="button" className="smw-button smw-button-next" disabled={disabled} onClick={create}>Create message</button>

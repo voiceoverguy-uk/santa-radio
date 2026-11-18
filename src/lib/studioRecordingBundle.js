@@ -2,17 +2,17 @@
 import { zipSync } from 'fflate';
 import { personaliseNiceListCertificate, certificateDownloadFilename } from './niceListCertificate.js';
 import { exportStudioLetter, exportStudioPicture, studioGiftFilename } from './studioGiftExports.js';
-import { getWorkshopDownloadName } from './workshopNameSpelling.js';
+import { studioVideoFilename } from './studioVideo.js';
 
 export function studioBundleFilename(name) {
   const safeName = certificateDownloadFilename(name)
     .slice('Santa-Radio-Nice-List-Certificate-'.length, -4);
-  return `Santa-Radio-Audio-And-Gifts-${safeName}.zip`;
+  return `Santa-Radio-Video-And-Gifts-${safeName}.zip`;
 }
 
 export async function prepareStudioRecordingBundle(result, signal) {
-  const { gift, audioBlob } = result;
-  if (!gift || !audioBlob) throw new Error('Completed gifts unavailable');
+  const { gift, videoBlob } = result;
+  if (!gift || !videoBlob) throw new Error('Completed gifts unavailable');
   signal.throwIfAborted();
   // Sequential exports bound peak memory and allow cancellation between renderers.
   const files = {};
@@ -21,12 +21,12 @@ export async function prepareStudioRecordingBundle(result, signal) {
     files[filename] = new Uint8Array(await blob.arrayBuffer());
     signal.throwIfAborted();
   };
-  await add(getWorkshopDownloadName(result.record.name, result.spelling), audioBlob);
+  await add(studioVideoFilename(result), videoBlob);
   await add(certificateDownloadFilename(gift.writtenName),
     await personaliseNiceListCertificate(gift.writtenName));
   await add(studioGiftFilename('letter', gift.writtenName), await exportStudioLetter(gift.letter));
   await add(studioGiftFilename('picture', gift.writtenName),
     await exportStudioPicture(gift.writtenName, gift.picture));
-  // MP3/PNG/PDF are already compressed. STORE avoids CPU-heavy recompression.
+  // MP4/PNG/PDF are already compressed. STORE avoids CPU-heavy recompression.
   return new Blob([zipSync(files, { level: 0 })], { type: 'application/zip' });
 }

@@ -4,9 +4,9 @@ export default function StudioBundleDownload({ result, onPreparing, onDownloadRe
   const id = useId();
   const [status, setStatus] = useState('idle');
   const [downloaded, setDownloaded] = useState(false);
-  const feedback = status === 'preparing' ? 'Preparing the MP3 and three gifts locally in your browser…'
-    : status === 'error' ? 'Could not prepare the ZIP. Retry Download All; audio and individual gift downloads are unaffected. No creation allowance is used.'
-      : !result.gift ? 'Completed gifts are unavailable. You can still download your audio.' : '';
+  const feedback = status === 'preparing' ? 'Preparing the MP4 and three gifts locally in your browser…'
+    : status === 'error' ? 'Could not prepare the ZIP. Retry Download All; video and individual gift downloads are unaffected. No creation allowance is used.'
+      : !result.gift ? 'Completed gifts are unavailable. You can still download your video.' : '';
   const operation = useRef(null);
   const urls = useRef(new Map());
   useEffect(() => {
@@ -24,7 +24,7 @@ export default function StudioBundleDownload({ result, onPreparing, onDownloadRe
     return () => { window.removeEventListener('pagehide', clear); clear(); };
   }, []);
   const download = async () => {
-    if (operation.current || !result.gift) return;
+    if (operation.current || !result.gift || !result.videoBlob) return;
     const controller = new AbortController();
     operation.current = controller;
     onPreparing?.(true);
@@ -59,7 +59,7 @@ export default function StudioBundleDownload({ result, onPreparing, onDownloadRe
   return <div className="smw-bundle-download">
     <div className="smw-download-control">
     <button type="button" className={`smw-button smw-button-download${result.requested ? '' : ' smw-button-download--pending'}`}
-      onClick={download} disabled={!result.gift || status === 'preparing'}
+      onClick={download} disabled={!result.gift || !result.videoBlob || status === 'preparing'}
       aria-busy={status === 'preparing'} aria-describedby={feedback ? `${id} ${id}-feedback` : id}>
       {status === 'preparing' ? 'Preparing ZIP…' : status === 'error' ? 'Retry Download All' : 'Download All'}
       <span aria-hidden="true">↓</span>
@@ -68,8 +68,8 @@ export default function StudioBundleDownload({ result, onPreparing, onDownloadRe
     </div>
     <p id={id} role={feedback ? undefined : 'status'}>
       {result.gift
-        ? 'Download All includes this MP3, certificate PDF, personalised letter PDF and Santa-picture PNG in one ZIP. Get them quickly, as your audio isn’t saved once you leave.'
-        : 'Get them quickly, as your audio isn’t saved once you leave.'}
+        ? 'Download All includes this MP4, certificate PDF, personalised letter PDF and Santa-picture PNG in one ZIP. Get them quickly, as your video isn’t saved once you leave.'
+        : 'Get them quickly, as your video isn’t saved once you leave.'}
     </p>
     {feedback && <p id={`${id}-feedback`} role={status === 'error' ? 'alert' : 'status'}>{feedback}</p>}
   </div>;

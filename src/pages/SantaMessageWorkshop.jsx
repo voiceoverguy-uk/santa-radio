@@ -346,12 +346,12 @@ export default function SantaMessageWorkshop() {
     || Object.values(preparingBundles).some(Boolean);
   const giftNotice = completedGift
         ? !giftMatches
-          ? 'Gift previews reflect your updated choices. Create your new MP3 to unlock these downloads.'
+          ? 'Gift previews reflect your updated choices. Create your new video message to unlock these downloads.'
           : undefined
         : giftPreparing
-          ? 'Preparing your MP3. Gift downloads unlock together only after it is successfully ready.'
+          ? 'Preparing your video message. Gift downloads unlock together only after it is successfully ready.'
           : audioPhase === 'error'
-            ? 'MP3 preparation or playback failed. Gift downloads are disabled; retry your message.'
+            ? 'video message preparation or playback failed. Gift downloads are disabled; retry your message.'
             : undefined;
 
   useEffect(() => {
@@ -547,7 +547,7 @@ export default function SantaMessageWorkshop() {
       <PageSeo metadata={pageMetadata({
         path: STUDIO_PATH,
          title: 'Santa’s Message Maker Studio | Santa Radio',
-         description: 'Create your personalised recorded Santa greeting and download your MP3 and gifts.',
+         description: 'Create your personalised recorded Santa greeting and download your video message and gifts.',
         noindex: true,
       })} />
 
@@ -576,7 +576,7 @@ export default function SantaMessageWorkshop() {
               : <>{generation.state.remaining} of 2 creations remaining.
                 {generation.state.pending && ' A message is being prepared.'}
                 {generation.state.remaining === 0 && ' Both creations have been used.'}
-                {generation.state.remaining === 0 && completedGift && ' Keep this page open to play and download your current MP3 and gifts.'}
+                {generation.state.remaining === 0 && completedGift && ' Keep this page open to play and download your current video message and gifts.'}
                 {!completedGift && generation.state.successes > 0 && ' Previous recordings are not saved or restored.'}</>}
           </p>}
           {generation.state?.admin && generation.state.remaining === 0 && <aside className="smw-allowance" style={{ padding: 20, border: '1px solid #d4af37', borderRadius: 14, background: '#173d2f' }}>

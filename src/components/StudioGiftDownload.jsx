@@ -64,9 +64,9 @@ export default function StudioGiftDownload({ kind, ready, name, letter, picture,
         : status === 'error' ? `Retry ${labels[kind].toLowerCase()}` : labels[kind]}
     </button>
     <p id={id} role={status === 'error' ? 'alert' : 'status'}>
-      {!ready ? unavailableNotice || 'Available when your MP3 audio file has been downloaded.'
+      {!ready ? unavailableNotice || 'Available when your video message has been downloaded.'
         : status === 'preparing' ? 'Preparing locally in your browser…'
-          : status === 'error' ? 'Could not prepare this gift. Retry above; your audio and other gifts are unaffected. No message allowance is used.'
+          : status === 'error' ? 'Could not prepare this gift. Retry above; your message and other gifts are unaffected. No message allowance is used.'
              : status === 'requested' || requested ? 'Downloaded'
               : 'Ready. Repeat downloads do not use your message allowance.'}
     </p>
