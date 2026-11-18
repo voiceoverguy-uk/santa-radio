@@ -467,11 +467,12 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
           <div>
             <dt>Estimated gifts delivered</dt>
             <dd>{formatNumber(expandedData.estimatedGifts)}</dd>
+            <dd className="tj-expanded-detail">{expandedData.visitedCount} of {expandedData.totalStops} stops</dd>
           </div>
           <div>
-            <dt>Estimated distance &amp; stops</dt>
+            <dt>Estimated distance &amp; speed</dt>
             <dd>{formatNumber(Math.round(expandedData.estimatedDistanceKm * 0.621371))} miles</dd>
-            <dd className="tj-expanded-detail">{expandedData.visitedCount} of {expandedData.totalStops} stops</dd>
+            <dd className="tj-expanded-detail">{expandedData.speedLabel}</dd>
           </div>
         </dl>
       )}
