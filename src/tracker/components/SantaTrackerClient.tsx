@@ -195,7 +195,7 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy, mapOnly = 
       : onHoliday && holiday ? `Santa’s taking a well-earned break! He’s currently ${holiday.activity.charAt(0).toLowerCase()}${holiday.activity.slice(1)}.`
       : [data.statusSubtext, isLive ? data.currentActivity : ""].filter(Boolean).join(" "),
   };
-  const map = <SantaMap santaInfo={santaInfo} autoCycleView={mapOnly} effectiveTime={effectiveTime} mapPosition={data.mapPosition} onHoliday={onHoliday} researchDestination={researching ? holiday : null} northPoleVisitMessage={northPoleVisit ? data.statusSubtext : undefined} liveStatusLabel={!mapOnly && isLive ? statusLabel : undefined} />;
+  const map = <SantaMap chimeSpeed={showPreview && previewState.enabled ? previewState.speedMultiplier : 1} chimeResetKey={showPreview && previewState.enabled ? previewState.activatedAtRealMs : 0} santaInfo={santaInfo} autoCycleView={mapOnly} effectiveTime={effectiveTime} mapPosition={data.mapPosition} onHoliday={onHoliday} researchDestination={researching ? holiday : null} northPoleVisitMessage={northPoleVisit ? data.statusSubtext : undefined} liveStatusLabel={!mapOnly && isLive ? statusLabel : undefined} />;
   if (mapOnly) return map;
 
   return (

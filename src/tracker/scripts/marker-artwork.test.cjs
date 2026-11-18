@@ -541,3 +541,34 @@ test("place markers reuse a small transparent mince pie and accessible city labe
   assert.match(html, /role="button" tabindex="0" aria-label="Cairo, Egypt"/);
   assert.doesNotMatch(html, /<title>Cairo, Egypt<\/title>/);
 });
+
+test("arrival chimes follow continuous delivery arrivals at 1x and 10x only", () => {
+  const { getArrivalKey, shouldChime } = load("lib/arrivalChime.ts");
+  const schedule = getScheduledStops(2026);
+  const arrival = schedule[10].arrival.getTime();
+  assert.notEqual(getArrivalKey(new Date(arrival - 1), false), getArrivalKey(new Date(arrival), false));
+  assert.equal(getArrivalKey(new Date("2026-11-18T12:00:00Z"), false), null);
+  assert.equal(getArrivalKey(route.getJourneyEndTime(2026), false), null);
+  assert.equal(getArrivalKey(new Date(2026, 11, 31, 19), false), null);
+  for (const speed of [1, 10, 60, 300]) {
+    const before = { time: arrival - 1, realTime: 1000, key: getArrivalKey(new Date(arrival - 1), false), speed, resetKey: 1 };
+    const after = { time: arrival + speed * 1000 - 1, realTime: 2000, key: getArrivalKey(new Date(arrival), false), speed, resetKey: 1 };
+    assert.equal(shouldChime(before, after), speed === 1 || speed === 10);
+    assert.equal(shouldChime(null, after), false, "no initial-load chime");
+    assert.equal(shouldChime(after, { ...after, time: after.time + 1000, realTime: 3000 }), false, "no duplicate");
+    assert.equal(shouldChime(before, { ...after, resetKey: 2 }), false, "no preview-jump chime");
+    assert.equal(shouldChime(before, { ...after, realTime: 10000 }), false, "no background catch-up");
+    assert.equal(shouldChime(before, { ...after, time: before.time - 1000 }), false, "no rewind");
+    assert.equal(shouldChime(before, { ...after, time: before.time + 600000 }), false, "no clock jump");
+  }
+});
+
+test("party arrival keys change with the city, ending when Santa returns to rest", () => {
+  const { getArrivalKey } = load("lib/arrivalChime.ts");
+  const before = new Date(2026, 11, 31, 18, 9, 59);
+  const arrival = new Date(2026, 11, 31, 18, 10, 0);
+  assert.match(getArrivalKey(before, true), /^party:/);
+  assert.notEqual(getArrivalKey(before, true), getArrivalKey(arrival, true));
+  assert.equal(getArrivalKey(arrival, true), getArrivalKey(new Date(2026, 11, 31, 18, 19, 59), true));
+  assert.equal(getArrivalKey(new Date(2027, 0, 1, 3), true), null);
+});

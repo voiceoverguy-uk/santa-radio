@@ -13,10 +13,13 @@ import { getSantaMarkerArtwork } from "../lib/santaMarker";
 import SantaMarker from "./SantaMarker";
 import MapGeographyLabels from "./MapGeographyLabels";
 import MapPlaceTooltip, { useMapPlaceTooltip } from "./MapPlaceTooltip";
+import useArrivalChime from "./useArrivalChime";
 import { getNightOverlayPath, getSolarPosition } from "./solarLighting";
 
 interface SantaMapProps {
   effectiveTime: Date;
+  chimeSpeed?: number;
+  chimeResetKey?: number;
   mapPosition: MapPosition;
   onHoliday?: boolean;
   researchDestination?: HolidayDestination | null;
@@ -30,7 +33,8 @@ interface SantaMapProps {
 
 type View = "follow" | "world" | string;
 
-export default function SantaMap({ effectiveTime, mapPosition, onHoliday, researchDestination, northPoleVisitMessage, liveStatusLabel, santaInfo, autoCycleView = false, initiallyExpanded = false, onExpandedClose }: SantaMapProps) {
+export default function SantaMap({ chimeSpeed = 1, chimeResetKey = 0, effectiveTime, mapPosition, onHoliday, researchDestination, northPoleVisitMessage, liveStatusLabel, santaInfo, autoCycleView = false, initiallyExpanded = false, onExpandedClose }: SantaMapProps) {
+  const chime = useArrivalChime(effectiveTime, chimeSpeed, chimeResetKey, true);
   const places = useMapPlaceTooltip();
   // Keep enlarged targets from covering the centres of neighbouring places.
   const placeClearance = useMemo(() => new Map(santaStops.map(stop => {
@@ -528,6 +532,7 @@ export default function SantaMap({ effectiveTime, mapPosition, onHoliday, resear
             return <option key={r.name} value={r.name}>{r.name} ({n})</option>;
           })}
         </select>
+        <button type="button" className="tj-btn" aria-pressed={chime.enabled} disabled={!chime.enabled && ![1, 10].includes(chimeSpeed)} onClick={chime.toggle} title="Play a chime when Santa arrives. Preview sounds play at 1× and 10× only.">Arrival chime: {chime.enabled ? "On" : "Off"}</button>
         {live ? <span className="tj-live"><span className="tj-live-dot" />Estimated live</span> : null}
         <div className="tj-map-summary">
           {departureCountdown ? (
