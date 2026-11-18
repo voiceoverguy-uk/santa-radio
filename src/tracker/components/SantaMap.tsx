@@ -22,23 +22,26 @@ interface SantaMapProps {
   northPoleVisitMessage?: string;
   liveStatusLabel?: string;
   autoCycleView?: boolean;
+  initiallyExpanded?: boolean;
+  onExpandedClose?: () => void;
   santaInfo?: { title: string; description: string };
 }
 
 type View = "follow" | "world" | string;
 
-export default function SantaMap({ effectiveTime, mapPosition, onHoliday, researchDestination, northPoleVisitMessage, liveStatusLabel, santaInfo, autoCycleView = false }: SantaMapProps) {
+export default function SantaMap({ effectiveTime, mapPosition, onHoliday, researchDestination, northPoleVisitMessage, liveStatusLabel, santaInfo, autoCycleView = false, initiallyExpanded = false, onExpandedClose }: SantaMapProps) {
   const titleId = useId();
   const infoId = useId();
   const [infoVisible, setInfoVisible] = useState(false);
   const descriptionId = useId();
   const mapRef = useRef<HTMLDivElement>(null);
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(initiallyExpanded);
   const fullscreenButtonRef = useRef<HTMLButtonElement>(null);
   const nativeFullscreen = useRef(false);
   const closeExpanded = () => {
     if (document.fullscreenElement === mapRef.current) void document.exitFullscreen().catch(() => {});
     setExpanded(false);
+    onExpandedClose?.();
     requestAnimationFrame(() => fullscreenButtonRef.current?.focus());
   };
   const toggleExpanded = () => {

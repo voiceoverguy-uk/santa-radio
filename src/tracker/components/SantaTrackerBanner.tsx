@@ -12,6 +12,7 @@ import { santaStops, getStopArrivalDate } from "@/data/santaRouteStops";
 import { MAP_PALETTE, mapLandColor } from "./mapPalette";
 import { getSantaMarkerArtwork } from "../lib/santaMarker";
 import SantaMarker from "./SantaMarker";
+import SantaMap from "./SantaMap";
 import MapGeographyLabels from "./MapGeographyLabels";
 import { getNightOverlayPath, getSolarPosition } from "./solarLighting";
 
@@ -236,6 +237,8 @@ function LiveStats({ data }: { data: ReturnType<typeof getDashboardData> }) {
 
 function MiniMap({ time, holiday, researching = false, northPoleVisitMessage, completedData }: { completedData?: ReturnType<typeof getDashboardData>; time: Date; holiday: HolidayDestination | null; researching?: boolean; northPoleVisitMessage?: string }) {
   const mapRef = useRef<HTMLAnchorElement>(null);
+  const expandButtonRef = useRef<HTMLButtonElement>(null);
+  const [expanded, setExpanded] = useState(false);
   const lastPreviewCity = useRef<string | null>(null);
   const [previewTime, setPreviewTime] = useState<Date | null>(null);
   useEffect(() => {
@@ -329,6 +332,7 @@ function MiniMap({ time, holiday, researching = false, northPoleVisitMessage, co
     : "Santa's at the North Pole";
 
   return (
+    <div className="relative">
     <Link
       ref={mapRef}
       data-sneak-peek={previewTime ? "true" : "false"}
@@ -398,5 +402,25 @@ function MiniMap({ time, holiday, researching = false, northPoleVisitMessage, co
         {caption}
       </div>
     </Link>
+    <button ref={expandButtonRef} type="button" className="tj-fullscreen-button"
+      aria-label="Expand homepage map" title="Expand map"
+      onClick={() => setExpanded(true)}>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+        <path d="M9 3H3v6m12 12h6v-6M3 3l6 6m12 12-6-6" />
+      </svg>
+    </button>
+    {expanded && <SantaMap initiallyExpanded
+      onExpandedClose={() => {
+        setExpanded(false);
+        requestAnimationFrame(() => expandButtonRef.current?.focus());
+      }}
+      effectiveTime={mapTime}
+      mapPosition={{ lat: previewPosition?.lat ?? holiday?.lat ?? 90, lng: previewPosition?.lng ?? holiday?.lng ?? 0, x: santaX / 10, y: santaY / 5 }}
+      onHoliday={!!holiday && !researching && !previewTime}
+      researchDestination={researching && !previewTime ? holiday : null}
+      northPoleVisitMessage={northPoleVisitMessage}
+      santaInfo={{ title: completedData?.currentStopName ?? holiday?.name ?? "North Pole", description: completedData?.statusSubtext ?? caption }}
+    />}
+    </div>
   );
 }

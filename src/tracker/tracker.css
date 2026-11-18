@@ -567,3 +567,25 @@
 .tracker-fullscreen .tj-toolbar { flex-shrink: 0; padding-bottom: max(8px, env(safe-area-inset-bottom)); }
 .tj-rotate-hint { position: absolute; z-index: 4; top: 70px; left: 12px; right: 12px; padding: 8px 12px; color: #fff5d6; background: #081e17dd; border-radius: 8px; text-align: center; font-size: 13px; }
 @media (orientation: landscape) { .tj-rotate-hint { display: none; } }
+
+
+.tracker-fullscreen .tj-fullscreen-button,
+.tracker-map:fullscreen .tj-fullscreen-button {
+  top: calc(28px + env(safe-area-inset-top, 0px));
+  left: calc(28px + env(safe-area-inset-left, 0px));
+}
+.tracker-fullscreen .tracker-map-caption,
+.tracker-map:fullscreen .tracker-map-caption {
+  bottom: 24px;
+  left: 24px;
+  max-width: calc(100% - 48px);
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-size: clamp(16px, 1.6vw, 24px);
+  font-weight: 500;
+  line-height: 1.4;
+}
+.tracker-fullscreen .tj-rotate-hint,
+.tracker-map:fullscreen .tj-rotate-hint {
+  top: calc(92px + env(safe-area-inset-top, 0px));
+}
