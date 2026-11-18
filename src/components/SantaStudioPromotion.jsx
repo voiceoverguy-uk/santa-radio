@@ -28,10 +28,6 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
         <p>OUR PREMIUM EXPERIENCE</p>
         <p>Let’s make it even more magical for your little one.</p>
       </div>}
-      {liveNameTotal !== null && liveNameTotal > 0 && <div className="santa-studio-promotion__availability">
-        <strong>{liveNameTotal.toLocaleString('en-GB')}</strong>
-        <span>{liveNameTotal === 1 ? 'name instantly available' : 'names instantly available'}</span>
-      </div>}
       <header className="santa-studio-promotion__header">
         <div className="santa-studio-promotion__topline">
           <span className="santa-studio-promotion__seal" aria-hidden="true">SR</span>
@@ -77,6 +73,10 @@ export default function SantaStudioPromotion({ activeExampleName = null, availab
       </div>
         <div className="santa-studio-promotion__actions">
         <StudioPurchaseButton />
+      {liveNameTotal !== null && liveNameTotal > 0 && <div className="santa-studio-promotion__availability">
+        <strong>{liveNameTotal.toLocaleString('en-GB')}</strong>
+        <span>{liveNameTotal === 1 ? 'name instantly available' : 'names instantly available'}</span>
+      </div>}
         <p className="santa-studio-promotion__checkout-note">
           <a href="/my-santa-messages">My Santa Messages</a>
         </p>
