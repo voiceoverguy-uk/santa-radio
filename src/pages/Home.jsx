@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Sparkles, Download, Headphones } from 'lucide-react';
 import PageSeo from '../seo/PageSeo.jsx';
 import { homeMetadata } from '../seo/catalogue.js';
 import { useTrackEvent } from '../privacy/useTrackEvent.js';
@@ -40,6 +41,11 @@ export default function Home() {
     <main id="main-content" className="home-page hero-name-preview">
       <PageSeo metadata={homeMetadata()} />
       <HomeHero onContinue={continueWithName} onCheckNaughtyNice={checkNaughtyNice} />
+        <div id="santa-radio-milestones" className="container homepage-lifetime-stats" aria-label="Santa Radio over 11 years" style={{ scrollMarginTop: '110px' }}>
+          <p><Sparkles aria-hidden="true" /><strong>11 years</strong><span>of Christmas magic</span></p>
+          <p><Download aria-hidden="true" /><strong>500,000+</strong><span>app downloads</span></p>
+          <p><Headphones aria-hidden="true" /><strong>5 million+</strong><span>listeners over 11 years</span></p>
+        </div>
       <HomepageSantaStudio />
       <SantaTrackerBanner />
       {/* Personalised video promotion temporarily removed; SantaVideoSection and its styles are retained for restoration. */}

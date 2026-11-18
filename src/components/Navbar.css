@@ -31,6 +31,24 @@
 .nav-radio { display: inline-flex; align-items: center; gap: 6px; padding: 0; border: 0; background: transparent; font: inherit; text-align: left; }
 .navbar-links .nav-message { padding: 9px 18px; font-size: .9rem; white-space: nowrap; color: var(--cream); }
 .navbar-links .nav-message:hover { transform: none; }
+.navbar-links .nav-message { overflow: hidden; isolation: isolate; }
+.navbar-links .nav-message::before {
+  content: "";
+  position: absolute;
+  inset-block: -30%;
+  left: -38%;
+  width: 23%;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 52%), transparent);
+  opacity: 0;
+  pointer-events: none;
+  animation: nav-message-sheen 5.8s ease-in-out infinite;
+}
+@keyframes nav-message-sheen {
+  0%, 18% { opacity: 0; transform: translateX(0) skewX(-18deg); }
+  23% { opacity: .72; }
+  38%, 100% { opacity: 0; transform: translateX(650%) skewX(-18deg); }
+}
+@media (prefers-reduced-motion: reduce) { .navbar-links .nav-message::before { animation: none; } }
 .navbar-links [data-highlighted] > .nav-message { color: var(--gold-light); border-color: var(--gold-light); }
 .navbar-links .nav-message[aria-current="page"] { border-color: var(--gold-light); }
 .hamburger { display: none; border: 1px solid #D4AF3750; background: #0b251e80; border-radius: 8px; padding: 12px; flex-direction: column; gap: 5px; }

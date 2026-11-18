@@ -29,7 +29,6 @@ export default function SelectedReviewTestimonials({ fallback = null }) {
   if (!reviews.length) return fallback;
   return <section className="selected-reviews" aria-labelledby="selected-reviews-title">
     <h2 id="selected-reviews-title">A little Christmas magic, shared</h2>
-    <p className="selected-reviews__note">Selected reviews. Reviewers were offered 20% off for honest feedback, whatever their rating.</p>
     <div className="selected-reviews__grid">{reviews.map(review => <figure className="selected-reviews__card" key={review.id}>
       <p className="selected-reviews__stars" role="img" aria-label={`${review.rating} out of 5 stars`}>{'★'.repeat(review.rating)}{'☆'.repeat(5-review.rating)}</p>
       <blockquote>{review.body} <span className="selected-reviews__author">— {review.displayName}</span></blockquote>

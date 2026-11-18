@@ -57,6 +57,23 @@ const metadataPlugin = {
   name: 'radio-metadata',
   configureServer(server) {
     server.middlewares.use(browserSecurity);
+    // Show current public testimonials in local previews without connecting
+    // local review submissions or dashboard actions to production.
+    server.middlewares.use('/api/santa-reviews', async (req, res) => {
+      const query = new URL(req.url, 'http://localhost').searchParams;
+      if (req.method !== 'GET' || query.get('view') !== 'featured') {
+        res.writeHead(405); res.end(); return;
+      }
+      try {
+        const offset = Math.max(0, Number.parseInt(query.get('offset'), 10) || 0);
+        const response = await fetch(`https://www.santaradio.co.uk/api/santa-reviews?view=featured&offset=${offset}`, { signal: AbortSignal.timeout(10000) });
+        res.writeHead(response.status, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
+        res.end(await response.text());
+      } catch {
+        res.writeHead(502, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Public reviews are temporarily unavailable in this preview.' }));
+      }
+    });
     server.middlewares.use(namesDemoMiddleware);
     server.middlewares.use(createAuditionMiddleware({ development: true }));
     server.middlewares.use(createFreeBellsAudition({ development: true }));
