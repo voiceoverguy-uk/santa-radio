@@ -353,8 +353,15 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
     <div className={`container message-layout${dedicatedLayout ? ' message-layout--dedicated' : ''}`}>
       <div className="message-intro">
         {dedicatedLayout && hasAccess ? <>
-          <img className="message-free-logo" src="/images/free-santa-message-microphone.png" alt="Free Santa Message — Santa Radio" width="1680" height="936" />
+          <div className="message-free-logo-wrap">
+            <img className="message-free-logo" src="/images/free-santa-message-microphone.png" alt="Free Santa Message — Santa Radio" width="1680" height="936" />
+            <span className="message-free-sparkle message-free-sparkle--one" aria-hidden="true">✦</span>
+            <span className="message-free-sparkle message-free-sparkle--two" aria-hidden="true">✧</span>
+            <span className="message-free-sparkle message-free-sparkle--three" aria-hidden="true">✦</span>
+          </div>
           <SantaVoiceTagline />
+          <p className="message-free-invitation">Find out if {name.trim() || selectedChildName || 'your little one'} is on the naughty or nice list.</p>
+          <p className="message-free-invitation">A quick check in with Santa to find out.</p>
         </> : <>
         <p className="eyebrow">A little North Pole experiment</p>
         <div className="message-intro-divider" aria-hidden="true">★</div>
@@ -363,7 +370,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         {!dedicatedLayout && !hasAccess && allowExamples && <SantaMessageExample onExampleNameChange={setActiveExampleName} />}
         <p className="message-free-intro">No Artificial Intelligence here. A human recorded message from Santa, aka Father Christmas to your little Human.{' '}<br />Add your contact details, search for a recorded name, create and instantly download your short FREE personalised message from Santa.</p>
         {!dedicatedLayout && <p className="message-studio-intro">Or, choose a bespoke message from Santa with festive goodies. See below.</p>}
-        {dedicatedLayout && allowExamples && <SantaMessageExample pulse onExampleNameChange={setActiveExampleName} />}
+        {dedicatedLayout && (!hasAccess || allowExamples) && <SantaMessageExample pulse onExampleNameChange={setActiveExampleName} />}
         </>}
       </div>
       <div className="santa-message-aside">

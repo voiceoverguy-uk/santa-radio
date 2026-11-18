@@ -30,7 +30,15 @@
 /* Dedicated /free-santa-message arrangement */
 .message-layout--dedicated { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); row-gap: 28px; }
 .message-layout--dedicated > * { min-width: 0; }
-.message-free-logo { display: block; width: 100%; max-width: 520px; height: auto; margin: 0 auto 24px; }
+.message-free-logo-wrap { position: relative; width: 100%; max-width: 520px; margin: 0 auto 24px; }
+.message-free-logo { display: block; width: 100%; height: auto; }
+.message-free-invitation { margin-top: 12px; }
+.message-free-sparkle { position: absolute; pointer-events: none; color: #fff4be; line-height: 1; font-size: clamp(12px, 2vw, 22px); text-shadow: 0 0 8px #ffd76b; animation: free-logo-sparkle 3.6s ease-in-out infinite; }
+.message-free-sparkle--one { left: 36%; top: 39%; }
+.message-free-sparkle--two { left: 61%; top: 43%; animation-delay: -1.2s; }
+.message-free-sparkle--three { left: 55%; top: 36%; animation-delay: -2.4s; font-size: 13px; }
+@keyframes free-logo-sparkle { 0%, 100% { opacity: .15; transform: scale(.6) rotate(-12deg); } 45% { opacity: 1; transform: scale(1.15) rotate(12deg); } 70% { opacity: .3; transform: scale(.8); } }
+@media (prefers-reduced-motion: reduce) { .message-free-sparkle { animation: none; opacity: .65; } }
 .message-layout--dedicated .message-intro > .santa-message-example { margin: 22px 0 0; }
 .message-layout--dedicated > .message-guide-cards { grid-column: 1 / -1; margin: 0; }
 .message-layout--dedicated .message-guide-cards > .smw-explainer-card { min-width: 0; overflow-wrap: anywhere; }
