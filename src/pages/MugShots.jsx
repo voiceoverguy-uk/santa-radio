@@ -36,6 +36,7 @@ export default function MugShots() {
   const [automaticLoading, setAutomaticLoading] = useState(true);
   const [fallbackFocused, setFallbackFocused] = useState(false);
   const [order, setOrder] = useState('random');
+  const [mugPosition] = useState(() => Math.floor(Math.random() * 8));
   const [randomOrder] = useState(() => {
     const shuffled = [...mugshotsData];
     for (let i = shuffled.length - 1; i > 0; i--) {
@@ -54,8 +55,17 @@ export default function MugShots() {
 
   const filtered = useMemo(() => {
     const ordered = order === 'random' ? randomOrder : alphabetical;
-    return ordered.filter(c => matchesMugshot(c, search, selection));
-  }, [search, selection, order, randomOrder, alphabetical]);
+    const matches = ordered.filter(c => matchesMugshot(c, search, selection));
+    if (!search.trim() && !selection) {
+      const feature = matches.find(c => c.song === 'the-legendary-mug');
+      if (feature) {
+        const celebrities = matches.filter(c => c !== feature);
+        celebrities.splice(Math.min(mugPosition, celebrities.length), 0, feature);
+        return celebrities;
+      }
+    }
+    return matches;
+  }, [search, selection, order, randomOrder, alphabetical, mugPosition]);
 
   const visible = filtered.slice(0, page * ITEMS_PER_PAGE);
   const hasMore = page * ITEMS_PER_PAGE < filtered.length;
@@ -135,7 +145,7 @@ export default function MugShots() {
             radio, music, comedy and sport. No A.I. here!
           </p>
           <p className="mugshots-count">
-            <span className="count-num">{mugshotsData.length}</span> mugshots and counting
+            <span className="count-num">{mugshotsData.filter(m => m.kind !== 'feature').length}</span> mugshots and counting
           </p>
           <div className="mugshots-controls">
             <label className="mugshots-search-label" htmlFor="mugshots-search">Find a famous face</label>

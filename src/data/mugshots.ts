@@ -1,5 +1,6 @@
 export interface Mugshot {
   artist: string;
+  kind?: 'feature';
   link: string;
   image: string;
   song: string;

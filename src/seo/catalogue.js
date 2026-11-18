@@ -139,8 +139,9 @@ export function performanceKind(song) {
   const entity = identity(song.artist, song.info);
   return entity?.['@type'] === 'MusicGroup' ? 'Music group' : entity?.['@type'] === 'Person' ? 'Individual performer' : 'Catalogue performer credit';
 }
-export const mugDescription = mug => `${mug.artist}${mug.link ? ` (${mug.link})` : ''}, pictured with a Santa Radio mug. View the photograph${mug.credit ? `, credited to ${mug.credit}` : ''}, and biography.`;
+export const mugDescription = mug => mug.kind === 'feature' ? 'Meet the Legendary Mug and discover its travels around the country with Ecurb the Elf, collecting genuine celebrity photographs for Santa Radio.' : `${mug.artist}${mug.link ? ` (${mug.link})` : ''}, pictured with a Santa Radio mug. View the photograph${mug.credit ? `, credited to ${mug.credit}` : ''}, and biography.`;
 export function mugImageAlt(mug) {
+  if (mug.kind === 'feature') return 'The Santa Radio Legendary Mug on a festive plinth with Christmas lights';
   if (mug.artist === 'Steve Bracknall') return 'Chris McClure as Steve Bracknall with a Santa Radio mug';
   return `${mug.artist} with a Santa Radio mug`;
 }
@@ -216,7 +217,7 @@ export function songMetadata(song) {
 }
 export function mugMetadata(mug) {
   const path = mugPath(mug), url = absolute(path);
-  const entities = mug.artist === 'Matt Edmondson & Mollie King'
+  const entities = mug.kind === 'feature' ? [] : mug.artist === 'Matt Edmondson & Mollie King'
     ? ['Matt Edmondson', 'Mollie King'].map(name => ({ '@type': 'Person', '@id': entityId(name), name }))
     : mug.artist === 'Steve Bracknall'
       ? [{ '@type': 'Character', '@id': `${ORIGIN}/#character-steve-bracknall`, name: mug.artist, description: mug.info }]
