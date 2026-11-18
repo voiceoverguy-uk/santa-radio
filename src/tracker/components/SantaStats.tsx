@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { MapPin, Clock, Navigation, Gift, Plane, Globe, Target, Zap, Home, Coffee, ListChecks, GlassWater, Castle, Mail, IceCreamCone, PenLine, Music2, Camera, Cookie } from "lucide-react";
+import { MapPin, Clock, Navigation, Gift, Plane, Globe, Target, Zap, Home, Coffee, ListChecks, GlassWater, Castle, Mail, IceCreamCone, PenLine, Music2, Camera, Cookie, MailOpen, Tv, Bed } from "lucide-react";
 import { getDashboardData, formatNumber, isHolidaySeason, isChristmasInJuly, type HolidayDestination } from "@/lib/santaRoute";
 import { isNewYearCelebration } from "../lib/postChristmas";
-import { getSeasonalStats } from "../lib/seasonalStats";
+import { getSeasonalStats, getRestDetails } from "../lib/seasonalStats";
 import { holidayDestinations } from "@/data/santaHolidays";
 
 interface SantaStatsProps {
@@ -60,6 +60,9 @@ function useCountUp(target: number, duration: number = 800): number {
 export default function SantaStats({ effectiveTime, holiday, routeResearch = false, northPoleVisit = false }: SantaStatsProps) {
   const data = getDashboardData(effectiveTime);
   const isLive = data.mode === "LIVE";
+  const partying = data.mode === "COMPLETE" && isNewYearCelebration(effectiveTime);
+  const resting = data.mode === "COMPLETE" && !partying;
+  const rest = resting ? getRestDetails(effectiveTime) : null;
 
   const onHoliday = !northPoleVisit && !routeResearch && data.mode === "OFF_SEASON" && isHolidaySeason(effectiveTime) && !!holiday;
   const researching = !northPoleVisit && (routeResearch || data.mode === "ROUTE_RESEARCH");
@@ -106,18 +109,19 @@ export default function SantaStats({ effectiveTime, holiday, routeResearch = fal
     },
     {
       icon: <Clock size={18} />,
-      label: researching ? "Research Clock (approx.)" : onHoliday ? "Postcard Clock (approx.)" : data.state === "IN_TRANSIT" ? "Last Stop’s Local Time" : "Stop’s Local Time",
-      value: onTrip ? getHolidayLocalTime() : data.localTimeAtStop === "—" ? "—" : `${data.localTimeAtStop} · ${data.localClockPlace}`,
+      label: rest ? "Grotto clock" : researching ? "Research Clock (approx.)" : onHoliday ? "Postcard Clock (approx.)" : data.state === "IN_TRANSIT" ? "Last Stop’s Local Time" : "Stop’s Local Time",
+      value: rest ? rest.clock : onTrip ? getHolidayLocalTime() : data.localTimeAtStop === "—" ? "—" : `${data.localTimeAtStop} · ${data.localClockPlace}`,
     },
     {
       icon: <Navigation size={18} />,
       label: "Next Stop",
-      value: northPoleVisit ? "Christmas Eve departure" : researching ? "North Pole between trips" : onHoliday && maybeNext ? `Maybe ${maybeNext.name}?` : (data.nextStopName !== "—" ? `${data.nextStopFlag} ${data.nextStopName}` : "—"),
+      value: rest ? rest.nextStop : northPoleVisit ? "Christmas Eve departure" : researching ? "North Pole between trips" : onHoliday && maybeNext ? `Maybe ${maybeNext.name}?` : (data.nextStopName !== "—" ? `${data.nextStopFlag} ${data.nextStopName}` : "—"),
     },
     {
-      icon: <Target size={18} />,
-      label: "ETA",
-      value: northPoleVisit ? "Workshop preparations" : researching ? "Quick research trip" : onHoliday ? (inJuly ? "Celebrating! 🎄" : "Relaxing...") : data.etaText,
+      icon: rest ? <Coffee size={18} /> : <Target size={18} />,
+      label: rest ? "Mugs of cocoa enjoyed" : "ETA",
+      note: rest ? "Mrs Claus has stopped counting." : undefined,
+      value: rest ? rest.cocoa.toLocaleString("en-GB") : northPoleVisit ? "Workshop preparations" : researching ? "Quick research trip" : onHoliday ? (inJuly ? "Celebrating! 🎄" : "Relaxing...") : data.etaText,
     },
     {
       icon: <Gift size={18} />,
@@ -142,8 +146,7 @@ export default function SantaStats({ effectiveTime, holiday, routeResearch = fal
   ];
 
   const preparing = data.mode === "ROUTE_RESEARCH" || data.mode === "PREPARING";
-  const partying = data.mode === "COMPLETE" && isNewYearCelebration(effectiveTime);
-  if (preparing || onHoliday || partying) {
+  if (preparing || onHoliday || partying || resting) {
     const icons = {
       towns: <Globe size={18} />,
       chimneys: <Home size={18} />,
@@ -157,8 +160,12 @@ export default function SantaStats({ effectiveTime, holiday, routeResearch = fal
       dance: <Music2 size={18} />,
       selfies: <Camera size={18} />,
       snacks: <Cookie size={18} />,
+      thanks: <MailOpen size={18} />,
+      specials: <Tv size={18} />,
+      naps: <Bed size={18} />,
+      biscuits: <Cookie size={18} />,
     };
-    const phase = preparing ? "preparation" : partying ? "party" : "holiday";
+    const phase = preparing ? "preparation" : partying ? "party" : resting ? "rest" : "holiday";
     cards.splice(4, 4, ...getSeasonalStats(effectiveTime, phase).map(metric => ({
       icon: icons[metric.key],
       label: metric.label,

@@ -193,7 +193,7 @@ test("post-Christmas rest and New Year celebration follow the device timezone ac
     assert.equal(post.restCaptions.length, 10);
     assert.equal(new Set(post.restCaptions).size, 10);
     assert.equal(preview.JUMP_LABELS.filter(entry => /December/.test(entry.label)).length, 3);
-    assert.ok(!preview.JUMP_LABELS.some(entry => /November/.test(entry.label)));
+    assert.ok(preview.JUMP_LABELS.some(entry => entry.target === "research-start" && entry.label === "10 November"));
     assert.equal(route.getSeasonalTrackerMode(preview.getJumpTime("route-start")), "LIVE");
   } finally {
     if (previousZone === undefined) delete process.env.TZ;
@@ -363,7 +363,7 @@ test("only prep phases replace the four right-hand delivery cards", () => {
     const html = renderToStaticMarkup(React.createElement(SantaStats, { effectiveTime: new Date(iso) }));
     assert.equal(html.includes("Cocoa stops today"), preparing, iso);
     assert.equal(html.includes("Names checked twice"), preparing, iso);
-    assert.equal(html.includes("Estimated Gifts"), !preparing, iso);
+    assert.equal(html.includes("Estimated Gifts"), !preparing && route.getSeasonalTrackerMode(new Date(iso)) !== "COMPLETE", iso);
     assert.match(html, /Current Location/);
     assert.match(html, /Next Stop/);
   }
@@ -422,8 +422,87 @@ test("New Year party cards rotate in pairs with refresh-stable totals across mid
       ]) {
         const html = renderToStaticMarkup(React.createElement(SantaStats, { effectiveTime: date }));
         for (const item of first) assert.equal(html.includes(item.label), partying, `${zone} ${date.toISOString()}`);
-        assert.equal(html.includes("Estimated Gifts"), !partying);
+        assert.equal(html.includes("Thank-you cards read"), !partying);
       }
+    }
+  } finally {
+    if (previousZone === undefined) delete process.env.TZ;
+    else process.env.TZ = previousZone;
+  }
+});
+
+
+test("rest cards rotate with stable daily totals and a local-clock Bed window", () => {
+  const { getSeasonalStats, getRestDetails } = load("lib/seasonalStats.ts");
+  const date = new Date("2026-12-26T12:00:00Z");
+  const first = getSeasonalStats(date, "rest", 0);
+  const rotated = getSeasonalStats(date, "rest", 60000);
+  assert.deepEqual(Array.from(first, item => item.key), ["thanks", "specials", "naps", "biscuits"]);
+  assert.deepEqual(Array.from(rotated, item => item.key), ["naps", "biscuits", "thanks", "specials"]);
+  for (const item of first) {
+    assert.equal(rotated.find(metric => metric.key === item.key).count, item.count);
+    assert.equal(getSeasonalStats(new Date("2026-12-26T23:59:59Z"), "rest", 0).find(metric => metric.key === item.key).count, item.count);
+  }
+  assert.equal(getRestDetails(date).cocoa, getRestDetails(new Date("2026-12-26T23:59:59Z")).cocoa);
+  const previousZone = process.env.TZ;
+  try {
+    for (const zone of ["Europe/London", "America/New_York", "Pacific/Auckland"]) {
+      process.env.TZ = zone;
+      for (const [hour, minute, sleeping] of [[21, 59, false], [22, 0, true], [0, 0, true], [6, 59, true], [7, 0, false]]) {
+        const detail = getRestDetails(new Date(2026, 11, 26, hour, minute));
+        assert.equal(detail.nextStop === "Bed", sleeping, `${zone} ${hour}:${minute}`);
+        assert.match(detail.clock, /AM|PM/);
+        if (!sleeping) assert.ok(["Kitchen", "Bathroom", "Shower", "Armchair"].includes(detail.nextStop));
+      }
+    }
+  } finally {
+    if (previousZone === undefined) delete process.env.TZ;
+    else process.env.TZ = previousZone;
+  }
+});
+
+test("rest boxes cover both North Pole breaks and yield to party and holiday cards", () => {
+  const SantaStats = load("components/SantaStats.tsx").default;
+  const previousZone = process.env.TZ;
+  process.env.TZ = "Europe/London";
+  try {
+    for (const [iso, resting] of [
+      ["2026-12-25T11:19:59Z", false], ["2026-12-25T11:20:00Z", true],
+      ["2026-12-31T17:59:59Z", true], ["2026-12-31T18:00:00Z", false],
+      ["2027-01-01T02:59:59Z", false], ["2027-01-01T03:00:00Z", true],
+      ["2027-01-01T23:59:59Z", true], ["2027-01-02T00:00:00Z", false],
+    ]) {
+      const html = renderToStaticMarkup(React.createElement(SantaStats, { effectiveTime: new Date(iso) }));
+      for (const label of ["Thank-you cards read", "Christmas specials watched", "Naps taken", "Biscuits dunked", "Mugs of cocoa enjoyed", "Grotto clock"]) {
+        assert.equal(html.includes(label), resting, `${iso} ${label}`);
+      }
+      assert.match(html, /Current Location/);
+      assert.match(html, /Next Stop/);
+    }
+  } finally {
+    if (previousZone === undefined) delete process.env.TZ;
+    else process.env.TZ = previousZone;
+  }
+});
+
+test("preview date buttons open the requested phase boundaries and January follows the Christmas preview", () => {
+  const preview = load("lib/santaPreview.ts");
+  const year = new Date().getUTCFullYear();
+  const previousZone = process.env.TZ;
+  try {
+    for (const zone of ["Europe/London", "America/Los_Angeles", "Pacific/Auckland"]) {
+      process.env.TZ = zone;
+      assert.equal(preview.getJumpTime("research-start").getTime(), Date.UTC(year, 10, 10));
+      assert.equal(preview.getJumpTime("christmas-eve-start").getTime(), Date.UTC(year, 11, 24, 10));
+      assert.equal(preview.getJumpTime("christmas-day-end").getTime(), route.getJourneyEndTime(year).getTime());
+      assert.equal(preview.getJumpTime("new-years-eve").getTime(), new Date(year, 11, 31, 18).getTime());
+      assert.equal(preview.getJumpTime("new-year-rest").getTime(), new Date(year + 1, 0, 1, 3).getTime());
+      assert.equal(preview.getJumpTime("holiday-start").getTime(), new Date(year + 1, 0, 2).getTime());
+      for (const [target, mode] of [["research-start", "ROUTE_RESEARCH"], ["christmas-eve-start", "LIVE"], ["christmas-day-end", "COMPLETE"], ["new-year-rest", "COMPLETE"], ["holiday-start", "OFF_SEASON"]]) {
+        assert.equal(route.getSeasonalTrackerMode(preview.getJumpTime(target)), mode, `${zone} ${target}`);
+        assert.ok(preview.JUMP_LABELS.some(button => button.target === target));
+      }
+      assert.ok(Math.abs(preview.getRunFullJourneySpeed(2) * 120000 - (25 * 60 + 20) * 60000) < 0.1);
     }
   } finally {
     if (previousZone === undefined) delete process.env.TZ;

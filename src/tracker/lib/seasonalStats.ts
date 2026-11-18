@@ -7,6 +7,12 @@ const metrics = {
     { key: "cocoa", label: "Cocoa stops today", min: 3, max: 9, note: "Purely for research." },
     { key: "names", label: "Names checked twice", min: 804, max: 6408, note: "And counting." },
   ],
+  rest: [
+    { key: "thanks", label: "Thank-you cards read", min: 24, max: 180, note: "Every one gets a smile." },
+    { key: "specials", label: "Christmas specials watched", min: 1, max: 5, note: "He knows all the lines." },
+    { key: "naps", label: "Naps taken", min: 2, max: 6, note: "Just resting his eyes." },
+    { key: "biscuits", label: "Biscuits dunked", min: 4, max: 14, note: "One didn’t make it." },
+  ],
   party: [
     { key: "autographs", label: "Autographs signed", min: 18, max: 84, note: "Mostly on napkins." },
     { key: "dance", label: "Dance moves completed", min: 24, max: 128, note: "The Macarena counts as eight." },
@@ -22,7 +28,7 @@ const metrics = {
 } as const;
 
 /** Daily totals survive refreshes and destination changes; a party keeps its totals past midnight. */
-export function getSeasonalStats(date: Date, phase: "preparation" | "holiday" | "party", rotationTimeMs = Date.now()) {
+export function getSeasonalStats(date: Date, phase: "preparation" | "holiday" | "party" | "rest", rotationTimeMs = Date.now()) {
   let day = Math.floor(date.getTime() / 86400000);
   if (phase === "party") {
     const local = getDeviceDateParts(date);
@@ -41,4 +47,18 @@ export function getSeasonalStats(date: Date, phase: "preparation" | "holiday" | 
   return Math.floor(rotationTimeMs / 60000) % 2 === 0
     ? stats
     : [...stats.slice(2), ...stats.slice(0, 2)];
+}
+
+
+export function getRestDetails(date: Date) {
+  const local = getDeviceDateParts(date);
+  const rooms = ["Kitchen", "Bathroom", "Shower", "Armchair"];
+  const sleeping = local.hour >= 22 || local.hour < 7;
+  const day = Math.floor(date.getTime() / 86400000);
+  const cocoaSeed = (Math.imul(day, 1664525) + 5 * 1013904223) >>> 0;
+  return {
+    nextStop: sleeping ? "Bed" : rooms[Math.floor((local.hour * 60 + local.minute) / 10) % rooms.length],
+    cocoa: 3 + cocoaSeed % 7,
+    clock: `${local.hour % 12 || 12}:${String(local.minute).padStart(2, "0")} ${local.hour >= 12 ? "PM" : "AM"}`,
+  };
 }

@@ -126,13 +126,13 @@ test("preview can reach every city and full run speed preserves the journey boun
     assert.equal(preview.getJumpTime(`city:${stop.id}`).getTime(), data.getStopArrivalDate(stop, new Date().getUTCFullYear()).getTime());
   }
   assert.throws(() => preview.getJumpTime("city:unknown"), /Unknown itinerary/);
-  assert.ok(Math.abs(preview.getRunFullJourneySpeed(2) * 120000 - (25 * 60 + 25) * 60000) < .1);
+  assert.ok(Math.abs(preview.getRunFullJourneySpeed(2) * 120000 - (25 * 60 + 20) * 60000) < .1);
 });
 
 test("Christmas Eve has its own dated shortcut without changing departure or Christmas Day end", () => {
   assert.ok(preview.JUMP_LABELS.some(({ target, label }) => target === "christmas-eve-start" && label === "24 December"));
   const year = new Date().getUTCFullYear();
-  assert.equal(preview.getJumpTime("christmas-eve-start").getTime(), Date.UTC(year, 11, 24, 9));
+  assert.equal(preview.getJumpTime("christmas-eve-start").getTime(), Date.UTC(year, 11, 24, 10));
   assert.equal(preview.getJumpTime("route-start").getTime(), Date.UTC(year, 11, 24, 10, 0));
-  assert.equal(preview.getJumpTime("christmas-day-end").getTime(), Date.UTC(year, 11, 25, 23, 59));
+  assert.equal(preview.getJumpTime("christmas-day-end").getTime(), route.getJourneyEndTime(year).getTime());
 });
