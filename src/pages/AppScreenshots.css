@@ -630,3 +630,97 @@
   font-variant-numeric: tabular-nums;
   pointer-events: none;
 }
+
+/* Coordinates follow the supplied 1206 × 2622 screenshots. */
+.apps-page .ask-santa-hotspots {
+  position: absolute;
+  z-index: 3;
+  inset: 90.5% 5.2% 2.4%;
+  display: grid;
+  grid-template-columns: 20% 23% 30% 27%;
+}
+.apps-page .ask-santa-hotspots button,
+.apps-page .ask-santa-home-hotspot,
+.apps-page .ask-santa-download-hotspot {
+  border: 0;
+  padding: 0;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+}
+.apps-page .ask-santa-home-hotspot,
+.apps-page .ask-santa-download-hotspot { position: absolute; z-index: 3; }
+.apps-page .ask-santa-home-hotspot { left: 4%; top: 10%; width: 16%; height: 7.4%; }
+.apps-page .ask-santa-download-hotspot { left: 7%; top: 75.8%; width: 86%; height: 10.7%; }
+.apps-page .ask-santa-hotspots button:focus-visible,
+.apps-page .ask-santa-home-hotspot:focus-visible,
+.apps-page .ask-santa-download-hotspot:focus-visible {
+  outline: 2px solid #f4d991;
+  outline-offset: -2px;
+  background: #fff8dc22;
+}
+.apps-page .ask-santa-preview-hint {
+  margin: 18px 0 0;
+  color: #f2e6c8;
+  font-size: .875rem;
+  text-align: center;
+}
+
+.apps-page .shops-screen-hotspots {
+  position: absolute;
+  z-index: 3;
+  inset: 91.1% 2% 3.1%;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+}
+.apps-page .shops-screen-hotspots button,
+.apps-page .shops-welcome-hotspot,
+.apps-page .shops-play-hotspot,
+.apps-page .shops-display-hotspot,
+.apps-page .shops-dash-hotspot {
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+}
+.apps-page .shops-screen-hotspots button:disabled { cursor: default; }
+.apps-page .shops-welcome-hotspot,
+.apps-page .shops-play-hotspot,
+.apps-page .shops-display-hotspot,
+.apps-page .shops-dash-hotspot { position: absolute; z-index: 3; }
+.apps-page .shops-welcome-hotspot { inset: 67% 4% 3.5%; }
+.apps-page .shops-play-hotspot { inset: 77.2% 29% 16.8%; border-radius: 999px; }
+.apps-page .shops-display-hotspot { inset: 10% 0 0; }
+.apps-page .shops-dash-hotspot { inset: 86.5% 59% 10.4% 4%; }
+.apps-page .shops-screen-hotspots button:focus-visible,
+.apps-page .shops-welcome-hotspot:focus-visible,
+.apps-page .shops-play-hotspot:focus-visible,
+.apps-page .shops-display-hotspot:focus-visible,
+.apps-page .shops-dash-hotspot:focus-visible,
+.apps-page .shops-preview-controls button:focus-visible {
+  outline: 2px solid #f4d991;
+  outline-offset: -2px;
+  background: #fff8dc22;
+}
+.apps-page .shops-preview-controls {
+  margin-top: 18px;
+  text-align: center;
+  color: #f2e6c8;
+  font-size: .875rem;
+  line-height: 1.5;
+}
+.apps-page .shops-preview-controls p { margin: 8px 0; }
+.apps-page .shops-preview-controls button {
+  min-height: 44px;
+  margin: 4px;
+  padding: 7px 12px;
+  border: 1px solid #d7bd78;
+  border-radius: 6px;
+  background: #0c2a1c;
+  color: #f2e6c8;
+  font: inherit;
+  cursor: pointer;
+}
+/* Keep screenshot controls legible when a visitor switches screens. */
+.apps-page .app-screenshots-shops .app-screenshot-slide { transition: none; }

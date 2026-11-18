@@ -18,6 +18,8 @@ export default function AppScreenshots({
   liveClock,
 }) {
   const [active, setActive] = useState(0);
+  const [shopSelection, setShopSelection] = useState(0);
+  const [shopReturning, setShopReturning] = useState(false);
   const [ready, setReady] = useState({});
   const [failed, setFailed] = useState({});
   const [pendingSelection, setPendingSelection] = useState(null);
@@ -34,6 +36,8 @@ export default function AppScreenshots({
   const figureRef = useRef(null);
   const mixedMedia = slides.some(slide => slide.video);
   const santaRadioPreview = interactiveMode === 'santa-radio';
+  const shopsPreview = interactiveMode === 'christmas-shops';
+  const askSantaPreview = interactiveMode === 'just-ask-santa';
   const voicemailPreview = deviceStyle === 'voicemail';
   const darkLandscapeDevice = deviceStyle === 'dark-landscape';
   const artworkPresentation = !darkLandscapeDevice && (presentation === 'artwork' || imageType !== 'screenshot');
@@ -63,7 +67,7 @@ export default function AppScreenshots({
     if (mixedMedia && reducedMotion) setActive(0);
   }, [mixedMedia, reducedMotion]);
 
-  const rotating = slides.length > 1 && autoplayEnabled && !reducedMotion && !hovered && !focused && !hidden && (!mixedMedia || inViewport);
+  const rotating = !shopsPreview && !askSantaPreview && slides.length > 1 && autoplayEnabled && !reducedMotion && !hovered && !focused && !hidden && (!mixedMedia || inViewport);
   const advance = useCallback(() => {
     const candidates = randomOrder
       ? slides.map((_, index) => index).filter(index => index !== active && ready[index] && !failed[index] && !videoFailed[index])
@@ -93,6 +97,24 @@ export default function AppScreenshots({
     return () => window.clearTimeout(timer);
   }, [active, ready, failed, rotating, slides, randomOrder, advance, videoFailed, completedVideo]);
 
+  // Shop tab previews get four full seconds after their image has decoded.
+  // Returning Home is independent of hover/focus; the ambient loop is not.
+  useEffect(() => {
+    if (!shopsPreview || pendingSelection !== null || !ready[active] || hidden) return;
+    if (shopReturning) {
+      const timer = window.setTimeout(() => {
+        setActive(1);
+        setShopReturning(false);
+      }, 4000);
+      return () => window.clearTimeout(timer);
+    }
+    if (!autoplayEnabled || reducedMotion || hovered || focused) return;
+    const next = active === 0 ? 1 : 0;
+    if (!ready[next]) return;
+    const timer = window.setTimeout(() => setActive(next), 5000);
+    return () => window.clearTimeout(timer);
+  }, [shopsPreview, shopReturning, shopSelection, pendingSelection, ready, active, hidden, autoplayEnabled, reducedMotion, hovered, focused]);
+
   const markReady = useCallback(index => {
     setReady(previous => previous[index] ? previous : { ...previous, [index]: true });
   }, []);
@@ -111,11 +133,16 @@ export default function AppScreenshots({
     }
   }, [failed, pendingSelection, ready]);
   const selectScreen = index => {
-    if (!santaRadioPreview) {
+    if (!santaRadioPreview && !askSantaPreview && !shopsPreview) {
       setActive(index);
       return;
     }
-    setAutoplayEnabled(false);
+    if (shopsPreview) {
+      setShopSelection(value => value + 1);
+      setShopReturning(true);
+    } else {
+      setAutoplayEnabled(false);
+    }
     setSelectionFailure(null);
     if (ready[index]) {
       setActive(index);
@@ -132,7 +159,7 @@ export default function AppScreenshots({
     <figure
       ref={figureRef}
       data-mixed-media={mixedMedia || undefined}
-      className={`app-screenshots ${artworkPresentation ? 'app-screenshots-artwork' : 'app-screenshots-device'}${slides[0].width > slides[0].height ? ' app-screenshots-landscape' : ''}${!artworkPresentation && deviceStyle === 'classic' ? ' app-screenshots-classic' : ''}${darkLandscapeDevice ? ' app-screenshots-dark-landscape' : ''}${santaRadioPreview ? ' app-screenshots-santa-radio' : ''}${voicemailPreview ? ' app-screenshots-voicemail' : ''}`}
+      className={`app-screenshots ${artworkPresentation ? 'app-screenshots-artwork' : 'app-screenshots-device'}${slides[0].width > slides[0].height ? ' app-screenshots-landscape' : ''}${!artworkPresentation && deviceStyle === 'classic' ? ' app-screenshots-classic' : ''}${darkLandscapeDevice ? ' app-screenshots-dark-landscape' : ''}${santaRadioPreview ? ' app-screenshots-santa-radio' : ''}${shopsPreview ? ' app-screenshots-shops' : ''}${voicemailPreview ? ' app-screenshots-voicemail' : ''}`}
       role="region"
       aria-roledescription={slides.length > 1 ? 'carousel' : undefined}
       aria-label={regionLabel}
@@ -146,7 +173,7 @@ export default function AppScreenshots({
     >
       <figcaption className="app-screenshots-heading">{heading}</figcaption>
       <div className="app-screenshots-frame">
-        {(santaRadioPreview || randomOrder) && !reducedMotion && (
+        {(santaRadioPreview || shopsPreview || randomOrder) && !reducedMotion && (
           <button
             type="button"
             className="santa-radio-autoplay"
@@ -181,6 +208,61 @@ export default function AppScreenshots({
             />
           ))}
           {liveClock && <AppPreviewClock background={liveClock} />}
+          {shopsPreview && active !== 0 && active !== 3 && (
+            <nav className="shops-screen-hotspots" aria-label="Explore Christmas Music for Shops tabs">
+              {[['Listen', 1], ['Settings', null], ['Shop Logo', 4], ['Info', 5], ['Santa Radio', 6]].map(([label, index]) => (
+                <button key={label} type="button"
+                  aria-label={index === null ? 'Settings preview unavailable' : `Preview ${label} screen`}
+                  title={index === null ? 'Settings screenshot not supplied yet' : `Preview ${label}`}
+                  disabled={index === null}
+                  aria-pressed={index !== null && (active === index || (index === 1 && active === 2))}
+                  aria-busy={pendingSelection === index && index !== null}
+                  onClick={() => selectScreen(index)} />
+              ))}
+            </nav>
+          )}
+          {shopsPreview && active === 0 && (
+            <button type="button" className="shops-welcome-hotspot"
+              aria-label="Continue to Christmas Music for Shops Home preview" onClick={() => selectScreen(1)} />
+          )}
+          {shopsPreview && (active === 1 || active === 2) && (
+            <button type="button" className="shops-play-hotspot"
+              aria-label={active === 1 ? 'Preview stopped playback screen' : 'Preview playing screen'}
+              onClick={() => selectScreen(active === 1 ? 2 : 1)} />
+          )}
+          {shopsPreview && active === 3 && (
+            <button type="button" className="shops-display-hotspot"
+              aria-label="Return to Shops Home preview" onClick={() => selectScreen(1)} />
+          )}
+          {shopsPreview && active === 6 && (
+            <a className="shops-dash-hotspot"
+              href="https://itunes.apple.com/gb/app/santa-dash-from-santa-guy/id1057048397"
+              target="_blank" rel="noopener noreferrer"
+              aria-label="Download Santa Dash on the App Store (opens in a new tab)" />
+          )}
+
+          {askSantaPreview && active !== 2 && (
+            <nav className="ask-santa-hotspots" aria-label="Explore Just Ask Santa screens">
+              {slides.map((slide, index) => (
+                <button key={slide.label} type="button"
+                  aria-label={`Preview ${slide.label} screen`}
+                  aria-pressed={active === index}
+                  aria-busy={pendingSelection === index}
+                  onClick={() => selectScreen(index)} />
+              ))}
+            </nav>
+          )}
+          {askSantaPreview && active === 2 && (
+            <button type="button" className="ask-santa-home-hotspot"
+              aria-label="Return to Ask Santa Home preview" onClick={() => selectScreen(0)} />
+          )}
+          {askSantaPreview && active === 3 && (
+            <a className="ask-santa-download-hotspot"
+              href="https://itunes.apple.com/gb/app/santa-dash-from-santa-guy/id1057048397"
+              target="_blank" rel="noopener noreferrer"
+              aria-label="Download Santa Dash on the App Store (opens in a new tab)" />
+          )}
+
           {santaRadioPreview && active < santaRadioTabs.length && (
             <nav className="santa-radio-screen-hotspots" aria-label="Preview app tab screens">
               {santaRadioTabs.map((label, index) => (
@@ -232,7 +314,16 @@ export default function AppScreenshots({
           )}
         </div>
       )}
-      {santaRadioPreview && (
+      {shopsPreview && (
+        <div className="shops-preview-controls">
+          <p>Tap the phone’s tabs to explore. Previews return Home after 4 seconds.</p>
+          <button type="button" onClick={() => selectScreen(1)}>Home</button>
+          <button type="button" onClick={() => selectScreen(3)}>Preview dock display</button>
+          <p className="shops-settings-note">Settings preview coming soon.</p>
+        </div>
+      )}
+      {askSantaPreview && <p className="ask-santa-preview-hint">Tap the phone’s tabs to explore the app.</p>}
+      {(santaRadioPreview || askSantaPreview || shopsPreview) && (
         <div className="santa-radio-preview-feedback-only">
           <div className="santa-radio-preview-status" aria-live="polite">
             <span className="santa-radio-current-screen">{slides[active]?.label}</span>

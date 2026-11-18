@@ -1,3 +1,14 @@
+import shopsLoading from '../assets/apps/shops-loading.jpg';
+import shopsHome from '../assets/apps/shops-home.jpg';
+import shopsStopped from '../assets/apps/shops-stopped.jpg';
+import shopsDisplay from '../assets/apps/shops-display.jpg';
+import shopsLogo from '../assets/apps/shops-logo.jpg';
+import shopsInfo from '../assets/apps/shops-info.jpg';
+import shopsRadio from '../assets/apps/shops-radio.jpg';
+import askSantaHome from '../assets/apps/just-ask-santa-home.jpg';
+import askSantaRadio from '../assets/apps/just-ask-santa-radio.jpg';
+import askSantaMessage from '../assets/apps/just-ask-santa-message.jpg';
+import askSantaDash from '../assets/apps/just-ask-santa-dash.jpg';
 import trackerHome from '../assets/apps/santa-tracker-home.jpg';
 import trackerWorld from '../assets/apps/santa-tracker-world.jpg';
 import trackerFollow from '../assets/apps/santa-tracker-follow.jpg';
@@ -89,6 +100,63 @@ const voicemailCall = (label, image, fallback, recipient) => ({
 });
 
 export const christmasApps = [
+  {
+    id: 'christmas-music-for-shops',
+    title: 'Christmas Music for Shops',
+    subtitle: 'Simple, effective Christmas music for your shop or store.',
+    presentation: 'device',
+    screenshots: [
+      { label: 'Welcome', image: shopsLoading, width: 603, height: 1311, alt: 'Christmas Music for Shops welcome screen with a warmly lit Christmas shop and golden musical notes.' },
+      { label: 'Home', image: shopsHome, width: 603, height: 1311, alt: 'Christmas Music for Shops Home screen showing Santa’s Coming For Us by Sia, artwork, playback controls and bottom tabs.' },
+      { label: 'Ready to listen', image: shopsStopped, width: 603, height: 1311, alt: 'Christmas Music for Shops Listen screen with the Play live radio button.' },
+      { label: 'Display while playing', image: shopsDisplay, width: 603, height: 1311, alt: 'Christmas Music for Shops dock display with artist artwork, song title and artist, and the controls hidden.' },
+      { label: 'Shop Logo', image: shopsLogo, width: 603, height: 1311, alt: 'Christmas Music for Shops logo screen explaining the planned shop branding upgrade, marked coming soon.' },
+      { label: 'Info', image: shopsInfo, width: 603, height: 1311, alt: 'Christmas Music for Shops information screen with playback instructions and music licensing information.' },
+      { label: 'Santa Radio', image: shopsRadio, width: 603, height: 1311, alt: 'Santa Radio screen with festive Santa artwork and a Santa Dash App Store banner.' },
+    ],
+    slideshow: {
+      heading: 'Christmas Music for Shops app preview',
+      regionLabel: 'Christmas Music for Shops interactive screenshots',
+      interactiveMode: 'christmas-shops',
+    },
+    downloads: downloads('https://apps.apple.com/app/christmas-music-for-shops/id6832399619'),
+    features: [
+      feature('Christmas music 24/7', 'The Christmas music of Santa Radio,\nready for your shop all day.', 'radio'),
+      feature('No adverts or pop-ups', 'A simple, uncluttered interface\nthat keeps the music centre stage.', 'shield'),
+      feature('Your choice of display', 'Keep it minimal or show the artist,\nsong title and artist image.', 'camera'),
+      feature('Made for your dock', 'Sit your device in a dock for\na festive display customers can see.', 'phone'),
+      feature('Controls fade away', 'Enjoy the display while music plays.\nTap to bring the controls back.', 'play'),
+      feature('Simple to use', 'Open the app, tap Play\nand bring Christmas to your shop.', 'smile'),
+    ],
+  },
+
+  {
+    id: 'just-ask-santa',
+    title: 'Just Ask Santa',
+    subtitle: 'A question. A shake. A little Christmas magic.',
+    presentation: 'device',
+    screenshots: [
+      { label: 'Ask Santa', image: askSantaHome, width: 603, height: 1311, alt: 'Just Ask Santa Home screen with a magical red ball and four bottom navigation buttons.' },
+      { label: 'Radio', image: askSantaRadio, width: 603, height: 1311, alt: 'Just Ask Santa Radio screen with Christmas music and a Play Santa Radio button.' },
+      { label: 'Message from Santa', image: askSantaMessage, width: 603, height: 1311, alt: 'Just Ask Santa personalised message screen showing the North Pole Recording Studio.' },
+      { label: 'Santa Dash', image: askSantaDash, width: 603, height: 1311, alt: 'Just Ask Santa companion game screen with a Santa Dash App Store button.' },
+    ],
+    slideshow: {
+      heading: 'Just Ask Santa app preview',
+      regionLabel: 'Just Ask Santa interactive screenshots',
+      interactiveMode: 'just-ask-santa',
+    },
+    downloads: downloads('https://apps.apple.com/app/just-ask-santa/id6830570614'),
+    features: [
+      feature('Just ask Santa', 'Think of a yes-or-no question.\nMagic 8 Ball fun with a festive twist.', 'smile'),
+      feature('Shake for an answer', 'Shake your device to hear\nSanta’s answer.', 'phone'),
+      feature('Tap for magic', 'You can also tap the button\nto check with Santa.', 'play'),
+      feature('Message from Santa', 'Get a free personalised,\ndownloadable message from Santa.', 'message'),
+      feature('Santa Radio', 'Enjoy Christmas music\ninside the app.', 'radio'),
+      feature('Discover Santa Dash', 'Tap through to the App Store\nand download the companion game.', 'game'),
+    ],
+  },
+
   {
     id: 'santaradio',
     title: 'Santa Radio App',
