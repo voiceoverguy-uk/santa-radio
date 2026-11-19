@@ -135,7 +135,7 @@ test('free mixer preserves every voice sample at +1 second, with a continuous be
   } finally { await rm(dir, { recursive: true, force: true }); }
 });
 
-test('Studio real mixer: exact delayed speech, bells raised from +4 to +6 dB, complete ending and fades', async () => {
+test('Studio real mixer: exact delayed speech, bells raised from +6 to +8 dB, complete ending and fades', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'studio-mix-timing-'));
   try {
     const voice = join(dir, 'voice.f32');
@@ -147,14 +147,14 @@ test('Studio real mixer: exact delayed speech, bells raised from +4 to +6 dB, co
     const graphIndex = args.indexOf('-filter_complex');
     const inputs = args.slice(0, graphIndex);
     const [voiceBranch, bellBranch, mixBranch] = args[graphIndex + 1].split(';');
-    assert.match(bellBranch, /loudnorm=I=-34:TP=-9:LRA=7,volume=6dB,/);
+    assert.match(bellBranch, /loudnorm=I=-34:TP=-9:LRA=7,volume=8dB,/);
     const delayed = pcm([...inputs.slice(0, inputs.indexOf('-stream_loop')),
       '-af', voiceBranch.replace('[0:a]', '').replace('[speech]', '')]);
     assert.deepEqual(delayed, Buffer.concat([Buffer.alloc(48000 * 8), speech]),
       'Exactly one second on both channels, then every original voice sample and pause unchanged');
     const seconds = delayed.length / 8 / 48000;
     const bells = [];
-    for (const branch of [bellBranch.replace('volume=6dB,', 'volume=4dB,'), bellBranch]) {
+    for (const branch of [bellBranch.replace('volume=8dB,', 'volume=6dB,'), bellBranch]) {
       // Exercise the production branch before the shared peak limiter.
       // Decode beyond the speech duration to allow for the MP3's timestamp
       // offset, then compare exactly the PCM frames consumed by amix.
@@ -174,7 +174,7 @@ test('Studio real mixer: exact delayed speech, bells raised from +4 to +6 dB, co
       if (i < 48000 * 8) leadEnergy += after ** 2;
     }
     assert.ok(Math.abs(10 * Math.log10(newEnergy / oldEnergy) - 2) < 0.00001);
-    assert.ok(gainError / newEnergy < 1e-12, 'A further constant +2 dB over the previous +4 dB bell track');
+    assert.ok(gainError / newEnergy < 1e-12, 'A further constant +2 dB over the previous +6 dB bell track');
     assert.ok(leadEnergy > 0.001, 'Bells play during the voice-free first second');
     const prePeak = pcm([...inputs, '-filter_complex',
       `${voiceBranch};${bellBranch};${mixBranch.split(',areverse')[0]}[out]`, '-map', '[out]']);
