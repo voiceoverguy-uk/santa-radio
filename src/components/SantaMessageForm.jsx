@@ -24,6 +24,7 @@ import SantaVoiceTagline from './SantaVoiceTagline.jsx';
 import SantaStudioPromotion from './SantaStudioPromotion.jsx';
 import WorkshopExplainerCards from './WorkshopExplainerCards.jsx';
 import SantaMessageReviews from './SantaMessageReviews.jsx';
+import SelectedReviewTestimonials from './SelectedReviewTestimonials.jsx';
 import { santaNameKey, santaNameDisplay } from '../lib/santaNameSearch.js';
 import { santaMessageDownloadName } from '../lib/santaMessageDownloadName.js';
 import { randomSantaExample, santaNamePlaceholder } from '../lib/santaNamePlaceholder.js';
@@ -377,7 +378,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
           </div>
           {!hasAccess && <>
             <h2 className="santa-message-heading">A FREE PERSONALISED MESSAGE FROM SANTA</h2>
-            <p className="message-free-intro">No Artificial Intelligence! Just Santa, aka Father Christmas with a message to your little one.</p>
+            <p className="message-free-intro">No Artificial Intelligence! Just a human Santa, aka Father Christmas with a message to your little one.</p>
           </>}
         </> : <>
         <p className="eyebrow">A little North Pole experiment</p>
@@ -533,7 +534,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
       {!dedicatedLayout && <SantaStudioPromotion showPremiumIntro activeExampleName={activeExampleName} availableNamesText={availableNamesText}
         previewName={giftPreviewName} allowExamples={allowExamples} />}
       {dedicatedLayout && <WorkshopExplainerCards className="message-guide-cards" variant="free-message" />}
-      <SantaMessageReviews />
+      {dedicatedLayout ? <SelectedReviewTestimonials /> : <SantaMessageReviews />}
     </div>
   </section>;
 }

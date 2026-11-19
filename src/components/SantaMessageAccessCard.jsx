@@ -37,9 +37,7 @@ export default function SantaMessageAccessCard({
       {!offer && <h3 id={`${id}-title`} tabIndex={-1}>ENTER SANTA'S RECORDING STUDIO</h3>}
       <p className="santa-message-access__intro">
         {offer ? 'These are your details. You’ll choose your child’s recorded name next.'
-          : selectedChildName
-            ? <>Add your details and access a free personalised downloadable message for {selectedChildName} from Santa.</>
-            : 'Add your details and access a free personalised downloadable message from Santa.'}
+          : 'Add details for a free personalised Santa message'}
       </p>
 
       <form className="santa-message-access__form" ref={formRef} onSubmit={onSubmit} noValidate>
@@ -88,7 +86,7 @@ export default function SantaMessageAccessCard({
 
         <label className="santa-message-access__marketing">
           <input type="checkbox" name="marketingOptIn" defaultChecked={false} disabled={pending || !!verification} />
-          <span>{FREE_MARKETING_COPY} <small>Optional — your free message is available either way.</small></span>
+          <span>{FREE_MARKETING_COPY} <Link to="/privacy-policy" onClick={onPrivacyNavigate}>Privacy policy</Link>. <small>Optional — your free message is available either way.</small></span>
         </label>
         {verification && <div className="santa-message-access__field">
           <p className="santa-message-access__status" role="status">We’ve emailed a code to {fields.EMAIL}. Check your inbox and junk folder. It expires in 15 minutes.</p>
@@ -114,13 +112,9 @@ export default function SantaMessageAccessCard({
         {pending && <p className="santa-message-access__status" role="status">{verification ? 'Checking your email code…' : 'Sending your verification code…'}</p>}
       </form>
 
-      <p className="santa-message-access__privacy">
+      {!offer && (pending || verification) && <p className="santa-message-access__privacy">
         Confirm your email to unlock your free message. If you tick the box above, confirmation also signs you up for Santa Radio emails. Read our <Link to="/privacy-policy" onClick={onPrivacyNavigate}>privacy policy</Link>.
-      </p>
-      <p className="santa-message-access__delivery">
-        {offer ? 'Create your greeting, download instantly and share - not sent by email.'
-          : 'Create your greeting, download and share - it won’t be sent by email.'}
-      </p>
+      </p>}
     </section>
   );
 }

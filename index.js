@@ -65,6 +65,13 @@ const server = createServer(async (req, res) => {
     let pathname;
     try { pathname = decodeURIComponent(publicRequestUrl(req.url, 'http://server').pathname); }
     catch { res.writeHead(400).end('Invalid path'); return; }
+    // Opt-in local preview: public aggregates/reviews only, never customer data or credentials.
+    if (!process.env.VERCEL && process.env.LOCAL_PUBLIC_DATA === '1' && req.method === 'GET' &&
+        (pathname === '/api/santa-name-count' || (pathname === '/api/santa-reviews' && new URL(req.url, 'http://local').searchParams.get('view') === 'featured'))) {
+      const upstream = await fetch(new URL(pathname + new URL(req.url, 'http://local').search, 'https://www.santaradio.co.uk'), { signal: AbortSignal.timeout(15000) });
+      res.writeHead(upstream.status, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
+      return res.end(await upstream.text());
+    }
     if (['/message-test','/message-test/','/api/message-test'].includes(pathname)) return messageTest(req,res);
     if (pathname === auditionPath || pathname.startsWith(`${auditionPath}/`)) {
       return unavailableAudition(req, res, () => res.writeHead(404).end('Audition unavailable.'));

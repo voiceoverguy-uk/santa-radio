@@ -79,3 +79,12 @@
 .message-intro--signup .message-free-intro { max-width: 420px; margin: 0 auto; line-height: 1.65; }
 
 .fsm-personal-video { width: 100%; max-width: 420px; margin: 20px auto 0; }
+
+/* One three-second turn per card, repeating every nine seconds. */
+.message-guide-cards .smw-explainer-card { position: relative; overflow: hidden; isolation: isolate; animation: free-step-glow 9s linear infinite; }
+.message-guide-cards .smw-explainer-card::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(110deg, transparent 30%, #ffe7a338 50%, transparent 70%); transform: translateX(-120%); animation: free-step-shimmer 9s linear infinite; }
+.message-guide-cards .smw-explainer-card:nth-child(2), .message-guide-cards .smw-explainer-card:nth-child(2)::after { animation-delay: 3s; }
+.message-guide-cards .smw-explainer-card:nth-child(3), .message-guide-cards .smw-explainer-card:nth-child(3)::after { animation-delay: 6s; }
+@keyframes free-step-glow { 0%,33.333%,100% { box-shadow: none; } 5%,28% { border-color: #efd17d; box-shadow: 0 0 22px #edce7455, inset 0 0 18px #edce7418; } }
+@keyframes free-step-shimmer { 0% { transform: translateX(-120%); opacity: 0; } 3% { opacity: 1; } 30%,33.333%,100% { transform: translateX(120%); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .message-guide-cards .smw-explainer-card, .message-guide-cards .smw-explainer-card::after { animation: none; } }
