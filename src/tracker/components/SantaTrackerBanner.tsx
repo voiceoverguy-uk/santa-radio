@@ -18,6 +18,7 @@ import MapPlaceTooltip, { useMapPlaceTooltip } from "./MapPlaceTooltip";
 import { getNightOverlayPath, getSolarPosition } from "./solarLighting";
 
 export default function SantaTrackerBanner() {
+  const [sneakPeek, setSneakPeek] = useState(false);
   const [now, setNow] = useState<Date | null>(null);
   const [holiday, setHoliday] = useState<HolidayDestination | null>(null);
   const [decemberVisit, setDecemberVisit] = useState<DecemberTrackerVisit | null>(null);
@@ -120,10 +121,10 @@ export default function SantaTrackerBanner() {
     : "bg-green-400";
 
   const statusBadge = (
-    <div className="tracker-status inline-flex items-center gap-2 rounded-full px-3 py-1.5">
+    <div className={`tracker-status inline-flex items-center gap-2 rounded-full px-3 py-1.5${sneakPeek ? " tracker-status--sneak-peek" : ""}`}>
       <span className={`w-2 h-2 rounded-full flex-shrink-0 ${dotColor}`} />
       <span className="text-xs font-medium text-gray-200 uppercase tracking-wider">
-        {statusLabel}
+        {sneakPeek ? "Christmas Eve Sneak Peak" : statusLabel}
       </span>
     </div>
   );
@@ -175,7 +176,7 @@ export default function SantaTrackerBanner() {
               <LiveStats data={data} />
             ) : (
               <div className="tracker-banner-map-group">
-                <MiniMap completedData={isComplete || data.mode === "PREPARING" ? data : undefined} time={now} holiday={onHoliday || researching ? holiday : null} researching={researching} northPoleVisitMessage={northPoleVisit ? data.statusSubtext : undefined} />
+                <MiniMap onSneakPeekChange={setSneakPeek} completedData={isComplete || data.mode === "PREPARING" ? data : undefined} time={now} holiday={onHoliday || researching ? holiday : null} researching={researching} northPoleVisitMessage={northPoleVisit ? data.statusSubtext : undefined} />
                 {statusBadge}
               </div>
             )}
@@ -236,13 +237,15 @@ function LiveStats({ data }: { data: ReturnType<typeof getDashboardData> }) {
   );
 }
 
-function MiniMap({ time, holiday, researching = false, northPoleVisitMessage, completedData }: { completedData?: ReturnType<typeof getDashboardData>; time: Date; holiday: HolidayDestination | null; researching?: boolean; northPoleVisitMessage?: string }) {
+function MiniMap({ time, holiday, researching = false, northPoleVisitMessage, completedData, onSneakPeekChange }: { onSneakPeekChange: (active: boolean) => void; completedData?: ReturnType<typeof getDashboardData>; time: Date; holiday: HolidayDestination | null; researching?: boolean; northPoleVisitMessage?: string }) {
   const places = useMapPlaceTooltip();
   const mapRef = useRef<HTMLAnchorElement>(null);
   const expandButtonRef = useRef<HTMLButtonElement>(null);
   const [expanded, setExpanded] = useState(false);
   const lastPreviewCity = useRef<string | null>(null);
   const [previewTime, setPreviewTime] = useState<Date | null>(null);
+  const isSneakPeek = previewTime !== null;
+  useEffect(() => { onSneakPeekChange(isSneakPeek); }, [isSneakPeek, onSneakPeekChange]);
   useEffect(() => {
     if (completedData) { setPreviewTime(null); return; }
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)');

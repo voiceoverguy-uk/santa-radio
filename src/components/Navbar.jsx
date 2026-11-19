@@ -26,7 +26,7 @@ export default function Navbar() {
     if (/^\/free-santa-message\/?$/.test(location.pathname) &&
         !event.defaultPrevented && event.button === 0 &&
         !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
-      scrollToSantaMessageDesk();
+      scrollToSantaMessageDesk(document.querySelector('#santa-messages'));
     }
   };
   useEffect(() => {
@@ -115,7 +115,7 @@ export default function Navbar() {
             ? <a href={link.to} target="_blank" rel="noopener noreferrer" title={`${link.label} (opens in a new tab)`} onClick={() => setMenuOpen(false)}>{link.label}</a>
             : <Link to={link.to} aria-current={isActive(link.to) ? (link.to.includes('#') ? 'location' : 'page') : undefined} className={isActive(link.to) ? 'active' : ''} onClick={link.to === '/' ? goHome : () => setMenuOpen(false)}>{link.label}</Link>
           }</li>)}
-          <li data-nav-key="/free-santa-message" data-highlighted={highlight.target === '/free-santa-message' ? 'true' : undefined}><Link to="/free-santa-message" className="btn-red nav-message" aria-current={isActive('/free-santa-message') ? 'page' : undefined} onClick={openMessageDesk}>FREE Santa Message</Link></li>
+          <li data-nav-key="/free-santa-message" data-highlighted={highlight.target === '/free-santa-message' ? 'true' : undefined}><Link to="/free-santa-message#santa-messages" className="btn-red nav-message" aria-current={isActive('/free-santa-message') ? 'page' : undefined} onClick={openMessageDesk}>FREE Santa Message</Link></li>
         </ul>
       </div>
     </nav>

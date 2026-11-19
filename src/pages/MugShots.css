@@ -443,3 +443,5 @@
     transition: none;
   }
 }
+
+.mugshots-page-logo { display: block; width: min(100%, 430px); height: auto; margin: 0 auto 20px; }

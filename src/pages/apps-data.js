@@ -120,6 +120,7 @@ export const christmasApps = [
       heading: 'Christmas Music for Shops app preview',
       regionLabel: 'Christmas Music for Shops interactive screenshots',
       interactiveMode: 'christmas-shops',
+      liveClock: '#102e22',
     },
     downloads: downloads('https://apps.apple.com/app/christmas-music-for-shops/id6832399619'),
     features: [
@@ -147,6 +148,7 @@ export const christmasApps = [
       heading: 'Just Ask Santa app preview',
       regionLabel: 'Just Ask Santa interactive screenshots',
       interactiveMode: 'just-ask-santa',
+      liveClock: '#0a232c',
     },
     downloads: downloads('https://apps.apple.com/app/just-ask-santa/id6830570614'),
     features: [

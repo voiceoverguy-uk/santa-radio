@@ -17,6 +17,7 @@ export default function AppScreenshots({
   randomOrder = false,
   liveClock,
 }) {
+  const [radioInteraction, setRadioInteraction] = useState(0);
   const [active, setActive] = useState(0);
   const [shopSelection, setShopSelection] = useState(0);
   const [shopReturning, setShopReturning] = useState(false);
@@ -115,6 +116,12 @@ export default function AppScreenshots({
     return () => window.clearTimeout(timer);
   }, [shopsPreview, shopReturning, shopSelection, pendingSelection, ready, active, hidden, autoplayEnabled, reducedMotion, hovered, focused]);
 
+  useEffect(() => {
+    if (!santaRadioPreview || autoplayEnabled || active === 0 || pendingSelection !== null || !ready[active] || hidden) return;
+    const timer = window.setTimeout(() => setActive(0), 4000);
+    return () => window.clearTimeout(timer);
+  }, [santaRadioPreview, autoplayEnabled, active, pendingSelection, ready, hidden, radioInteraction]);
+
   const markReady = useCallback(index => {
     setReady(previous => previous[index] ? previous : { ...previous, [index]: true });
   }, []);
@@ -158,6 +165,8 @@ export default function AppScreenshots({
   return (
     <figure
       ref={figureRef}
+      onPointerDownCapture={() => { if (santaRadioPreview) setRadioInteraction(value => value + 1); }}
+      onKeyDownCapture={() => { if (santaRadioPreview) setRadioInteraction(value => value + 1); }}
       data-mixed-media={mixedMedia || undefined}
       className={`app-screenshots ${artworkPresentation ? 'app-screenshots-artwork' : 'app-screenshots-device'}${slides[0].width > slides[0].height ? ' app-screenshots-landscape' : ''}${!artworkPresentation && deviceStyle === 'classic' ? ' app-screenshots-classic' : ''}${darkLandscapeDevice ? ' app-screenshots-dark-landscape' : ''}${santaRadioPreview ? ' app-screenshots-santa-radio' : ''}${shopsPreview ? ' app-screenshots-shops' : ''}${voicemailPreview ? ' app-screenshots-voicemail' : ''}`}
       role="region"
@@ -315,7 +324,7 @@ export default function AppScreenshots({
       )}
       {shopsPreview && (
         <div className="shops-preview-controls">
-          <p>Tap the phone’s tabs to explore. Previews return Home after 4 seconds.</p>
+          <p>Tap the phone’s tabs to explore.</p>
           <button type="button" onClick={() => selectScreen(1)}>Home</button>
           <button type="button" onClick={() => selectScreen(3)}>Preview dock display</button>
         </div>

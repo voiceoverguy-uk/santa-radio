@@ -29,8 +29,8 @@ export default function Music() {
       <PageSeo metadata={collectionMetadata('music')} />
       <div className="music-hero starry-bg">
         <div className="music-hero-content">
-          <h1 className="music-sub-title">Christmas Song Lyrics &amp; Artists</h1>
-          <p className="music-sub-desc">Browse Hundreds of Christmas Songs</p>
+          <h1 className="music-logo-heading"><img className="music-page-logo" src="/images/santa-radio-music-logo-v1.webp" alt="Santa Radio — The Music" width="1680" height="945" /></h1>
+          <p className="music-sub-desc">Christmas songs, lyrics & artists</p>
           <p className="music-description">
             {songsData.length} Christmas songs with lyrics, artist info and linked videos.
             Browse Christmas classics, pop hits and hidden gems.

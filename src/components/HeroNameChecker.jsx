@@ -109,7 +109,7 @@ export default function HeroNameChecker({ onContinue, onSelectedNameChange, onCh
           aria-activedescendant={expanded && active >= 0 && options[active] ? `${id}-option-${active}` : undefined}
            aria-describedby={describedBy}
           aria-invalid={search.blocked || !!validation}
-          onChange={event => { interacted.current = true; setName(event.target.value); setSelected(null); setValidation(''); setActive(-1); setOpen(true); }}
+          onChange={event => { interacted.current = true; setName(event.target.value.replace(/^(\s*)(\p{L})/u, (_, space, letter) => space + letter.toLocaleUpperCase())); setSelected(null); setValidation(''); setActive(-1); setOpen(true); }}
           onFocus={() => { if (!selected) setOpen(true); }}
           onBlur={() => { if (!touch.current) setOpen(false); }}
           onKeyDown={event => {

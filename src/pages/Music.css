@@ -244,3 +244,6 @@
   padding-top: 50px;
 }
 
+
+.music-logo-heading { margin: 0 auto 20px; }
+.music-page-logo { display: block; width: min(100%, 430px); height: auto; margin: 0 auto; }

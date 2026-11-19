@@ -138,7 +138,7 @@ export default function MugShots() {
       <div className="mugshots-page-hero starry-bg">
         <div className="mugshots-hero-content">
           <p className="mugshots-eyebrow">THE SANTA RADIO HALL OF FAME</p>
-          <h1 className="mugshots-page-title">Celebrity Mugshots</h1>
+          <h1 className="mugshots-page-title"><img className="mugshots-page-logo" src="/images/santa-radio-mugshots-logo-v1.webp" alt="Santa Radio Celebrity Mugshots" width="1680" height="945" /></h1>
           <p className="mugshots-page-sub">Famous faces. One festive mug.</p>
           <p className="mugshots-page-desc">
             Ecurb the Elf has been out meeting famous faces with our Santa Radio mug.{' '}<br />Explore the collection from TV,
