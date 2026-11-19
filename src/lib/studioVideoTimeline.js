@@ -34,6 +34,7 @@ export function studioVideoTimeline(result) {
 
 
   return [
+    { id: 'intro', text: 'A message from Santa to ', start: 3 },
     { id: 'name', text: (result.writtenName || '').trim(), start: 10 },
     { id: 'age', text: ` aged ${studioAge(result)}`, start: 18, end: approvedStart + 9 },
     ...strengthCaptions,
@@ -69,14 +70,12 @@ export function drawStudioVideoFrames(image, result) {
   // Reserve the age's final width from the start so the name never jumps or overlaps.
   const x = (width - metrics.prefixWidth - metrics.nameWidth - metrics.ageWidth) / 2;
   const top = Math.round(height * .815), stripTop = Math.round(height * .75), stripHeight = height - stripTop;
-  ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-  ctx.font = `italic ${nameSize}px Georgia, serif`; ctx.fillStyle = '#fff9ed'; ctx.fillText(prefix, x, top);
   const layers = timeline.map(caption => {
     const canvas = makeCanvas(width, stripHeight), text = canvas.getContext('2d');
     text.textBaseline = 'middle'; text.fillStyle = '#fff9ed';
-    if (caption.id === 'name' || caption.id === 'age') {
+    if (caption.id === 'intro' || caption.id === 'name' || caption.id === 'age') {
       text.font = `italic ${nameSize}px Georgia, serif`;
-      text.fillText(caption.text, x + metrics.prefixWidth + (caption.id === 'age' ? metrics.nameWidth : 0), top - stripTop);
+      text.fillText(caption.text, x + (caption.id === 'intro' ? 0 : metrics.prefixWidth) + (caption.id === 'age' ? metrics.nameWidth : 0), top - stripTop);
     } else {
       let size = 34; text.font = `italic ${size}px Georgia, serif`;
       while (text.measureText(caption.text).width > width * .72 && size > 9) { size -= .5; text.font = `italic ${size}px Georgia, serif`; }

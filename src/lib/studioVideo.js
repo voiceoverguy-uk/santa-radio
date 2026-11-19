@@ -7,8 +7,9 @@ export function studioVideoRecipient(result) { return `${result.writtenName} age
 export async function createStudioVideoPoster(result) {
   const image = new Image(); image.src = STUDIO_VIDEO_ARTWORK; await image.decode();
   const { base, layers } = drawStudioVideoFrames(image, result);
-  const name = layers.find(layer => layer.id === 'name');
-  if (name) base.getContext('2d').drawImage(name.canvas, 0, name.y);
+  for (const layer of layers.filter(layer => ['intro', 'name'].includes(layer.id))) {
+    base.getContext('2d').drawImage(layer.canvas, 0, layer.y);
+  }
   return base.toDataURL('image/png');
 }
 export function createStudioVideo(result, options) {
