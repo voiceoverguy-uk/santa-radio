@@ -13,10 +13,11 @@ try{
   for(const name of ['Kids','Dad']){
    const root=page.locator(`[data-demo-player="${name}"]`),range=root.locator('input'),knob=root.locator('.seek-knob');
    await root.locator('img').evaluateAll(imgs=>Promise.all(imgs.map(i=>i.decode())));
-   assert.equal(await root.locator('video').evaluate(v=>v.controls),false);assert.equal(await root.locator('audio').count(),0);assert.equal(await knob.count(),1);assert.equal(await range.evaluate(e=>getComputedStyle(e).opacity),'0');
+   assert.equal(await root.locator('.video-reveal').getAttribute('aria-hidden'),'true');assert.equal(await root.locator('video').evaluate(v=>v.controls),false);assert.equal(await root.locator('audio').count(),0);assert.equal(await knob.count(),1);assert.equal(await range.evaluate(e=>getComputedStyle(e).opacity),'0');
    await root.locator('.player-skin').screenshot({path:`/private/tmp/${name}-player-play-${width}.png`});
    await root.getByRole('button',{name:`Play ${name} example`,exact:true}).click();
    await page.waitForFunction(n=>document.querySelector(`[data-demo-player="${n}"] video`).currentTime>0.15,name);
+   assert.equal(await root.locator('.video-reveal').getAttribute('aria-hidden'),'false');await root.locator('.video-expand').click();assert.equal(await root.locator('.video-expand').getAttribute('aria-expanded'),'true');await root.locator('.video-expand').click();
    assert.equal(await root.locator('.pause-art').evaluate(e=>getComputedStyle(e).opacity),'1');
    assert.equal(await root.locator('.play-art').evaluate(e=>getComputedStyle(e).opacity),'1');
    await root.locator('.player-skin').screenshot({path:`/private/tmp/${name}-player-pause-${width}.png`});
@@ -34,10 +35,10 @@ try{
    await range.focus();await range.press('Home');await page.waitForFunction(n=>document.querySelector(`[data-demo-player="${n}"] video`).currentTime<.1,name);
    await range.press('ArrowRight');assert.ok(Number(await range.inputValue())>0);
    await root.getByRole('button',{name:`Mute ${name} example`,exact:true}).click();assert.equal(await root.locator('video').evaluate(a=>a.muted),true);
-   await root.getByRole('button',{name:`Unmute ${name} example`,exact:true}).click();
+   await root.getByRole('button',{name:`Unmute ${name} example`,exact:true}).click();await page.waitForTimeout(10500);assert.equal(await root.locator('.video-reveal').getAttribute('aria-hidden'),'true');
   }
   await page.getByRole('button',{name:'Play Kids example',exact:true}).click();await page.getByRole('button',{name:'Play Dad example',exact:true}).click();assert.equal(await page.locator('[data-demo-player="Kids"] video').evaluate(a=>a.paused),true);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
-  await page.screenshot({path:`/private/tmp/video-players-${width}.png`,fullPage:true});await page.close();console.log(`Passed ${width}px: artwork states, one knob, drag seeking, keyboard, mute, exclusive playback and copy`);
+  await page.waitForTimeout(650);await page.screenshot({path:`/private/tmp/video-players-${width}.png`,fullPage:true});await page.close();console.log(`Passed ${width}px: artwork states, one knob, drag seeking, keyboard, mute, exclusive playback and copy`);
  }
 }finally{await browser.close();}

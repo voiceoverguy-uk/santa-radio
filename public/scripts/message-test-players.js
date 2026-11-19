@@ -5,7 +5,15 @@ const time=n=>`${Math.floor((n||0)/60)}:${String(Math.floor((n||0)%60)).padStart
 players.forEach(player=>{
  const video=player.querySelector('video'),play=player.querySelector('[data-play]'),mute=player.querySelector('[data-mute]'),seek=player.querySelector('input'),knob=player.querySelector('.seek-knob'),clock=player.querySelector('[data-time]'),status=player.querySelector('[data-status]'),name=player.dataset.demoPlayer;
  const hint=player.querySelector('.personalisation-hint'),cues=personalisationCues[name]||[];
- let frame=0,scrubbing=false;
+ const reveal=player.querySelector('.video-reveal'),expand=player.querySelector('.video-expand'),offer=player.closest('.offer');
+ let frame=0,scrubbing=false,hideTimer;
+ const setExpanded=value=>{offer.classList.toggle('expanded',value);expand.setAttribute('aria-expanded',String(value));expand.setAttribute('aria-label',`${value?'Reduce':'Enlarge'} ${name} video`);expand.textContent=value?'⤡':'⤢';};
+ const show=()=>{clearTimeout(hideTimer);player.classList.add('video-visible');reveal.inert=false;reveal.setAttribute('aria-hidden','false');};
+ const scheduleHide=()=>{clearTimeout(hideTimer);if(video.paused&&player.classList.contains('video-visible'))hideTimer=setTimeout(()=>{if(!video.paused)return;if(reveal.contains(document.activeElement))play.focus({preventScroll:true});setExpanded(false);player.classList.remove('video-visible');reveal.inert=true;reveal.setAttribute('aria-hidden','true');},10000);};
+ ['pointerdown','keydown','input'].forEach(event=>player.addEventListener(event,scheduleHide));
+ expand.addEventListener('click',()=>{setExpanded(!offer.classList.contains('expanded'));scheduleHide();});
+ video.addEventListener('play',show);video.addEventListener('pause',scheduleHide);video.addEventListener('ended',scheduleHide);
+
  const paintHint=position=>{const start=cues.find(t=>position>=t&&position<t+3.5);const opacity=start===undefined?0:position-start<=3?1:1-(position-start-3)/.5;hint.style.opacity=String(Math.max(0,opacity));hint.setAttribute('aria-hidden',String(opacity===0));};
  mute.setAttribute('aria-label',`Mute ${name} example`);
  const duration=()=>Number.isFinite(video.duration)?video.duration:0;
