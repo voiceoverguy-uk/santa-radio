@@ -21,6 +21,11 @@ try{
    assert.equal(await root.locator('.play-art').evaluate(e=>getComputedStyle(e).opacity),'1');
    await root.locator('.player-skin').screenshot({path:`/private/tmp/${name}-player-pause-${width}.png`});
    await root.getByRole('button',{name:`Pause ${name} example`,exact:true}).click();
+   const cue=name==='Kids'?10:7.69;
+   for(const [offset,expected] of [[.2,1],[3.25,.5],[3.6,0],[-1,0]]){
+    await root.locator('video').evaluate((v,t)=>{v.currentTime=t;v.dispatchEvent(new Event('timeupdate'));},cue+offset);
+    assert.ok(Math.abs(Number(await root.locator('.personalisation-hint').evaluate(e=>e.style.opacity))-expected)<.02);
+   }
    const box=await root.locator('.seek-wrap').boundingBox();
    await page.mouse.move(box.x+2,box.y+box.height/2);await page.mouse.down();await page.mouse.move(box.x+box.width*.6,box.y+box.height/2,{steps:8});await page.mouse.up();
    await page.waitForFunction(n=>{const a=document.querySelector(`[data-demo-player="${n}"] video`);return a.currentTime/a.duration>.55&&a.currentTime/a.duration<.65},name);
