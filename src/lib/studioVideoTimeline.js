@@ -35,11 +35,12 @@ export function studioVideoTimeline(result) {
 
   return [
     { id: 'name', text: (result.writtenName || '').trim(), start: 10 },
-    { id: 'age', text: ` aged ${studioAge(result)}`, start: 18 },
+    { id: 'age', text: ` aged ${studioAge(result)}`, start: 18, end: approvedStart + 9 },
     ...strengthCaptions,
     ...(details.treats ? [{ id: 'treat', text: `Thank you for leaving out ${details.treats}`, start: treatStart, end: Math.min(treatStart + 4, placeStart - 1) }] : []),
     ...(details.destination ? [{ id: 'destination', text: `Santa on the way to ${details.destination}`, start: placeStart, end: Math.min(placeStart + 6, approvedStart) }] : []),
-    { id: 'approved', text: 'Nice List Approved!', start: approvedStart, end: approvedStart + 10 },
+    { id: 'approved', text: 'Nice List Approved!', start: approvedStart, end: approvedStart + 9 },
+    { id: 'christmas', text: 'Merry Christmas', start: approvedStart + 9 },
   ];
 }
 export function studioCaptionOpacity(caption, time) {
