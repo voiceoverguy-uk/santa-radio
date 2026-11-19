@@ -20,6 +20,7 @@ if (process.env.VERCEL_ENV === 'production') {
     await client.query('SELECT request_key, recorded_at FROM santa_name_requests LIMIT 0');
     await client.query('SELECT id, recording_suggestions FROM santa_name_request_history LIMIT 0');
     await client.query('SELECT request_key FROM santa_name_recording_suggestions LIMIT 0');
+    await client.query(await readFile(new URL('../database/dad-studio.sql', import.meta.url), 'utf8'));
     await seedFriendVouchers(client);
     await client.query('COMMIT');
     console.log('Name-request schema verified; existing requests preserved.');

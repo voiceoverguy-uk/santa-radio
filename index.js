@@ -1,3 +1,7 @@
+import dadMessage from './api/dad-studio-message.js';
+import dadAccess from './api/dad-studio-access.js';
+import dadCheckout from './api/dad-studio-checkout.js';
+import dadReturn from './api/dad-studio-return.js';
 import santaReviews from './server/santa-reviews.js';
 import nameChart from './server/name-chart.js';
 import nameRecordingUploads from './server/name-recording-uploads.js';
@@ -70,6 +74,10 @@ const server = createServer(async (req, res) => {
     if (pathname === '/names' || pathname === '/api/names-demo' || pathname.startsWith('/names-data/')) return namesDemo(req, res);
     if (pathname === '/api/christmas-contenders') return christmasContenders(req, res);
     if (pathname === '/api/stripe/webhook') return stripeWebhook(req, res);
+    if (pathname === '/api/dad-studio-message') return dadMessage(req,res);
+    if (pathname === '/api/dad-studio-access') return dadAccess(req,res);
+    if (pathname === '/api/dad-studio-checkout') return dadCheckout(req,res);
+    if (pathname === '/api/dad-studio-return') return dadReturn(req,res);
     if (pathname === '/api/santa-studio-access') return studioPaidAccess(req, res);
     if (pathname === '/api/santa-studio-checkout') return studioCheckout(req, res);
     if (pathname === '/api/santa-studio-return') return studioReturn(req, res);

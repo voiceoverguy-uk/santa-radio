@@ -1,0 +1,54 @@
+{
+  "categories": {
+    "age": [
+      {
+        "id": "d-521fe81ba14ce459407a69f219cbfab4d76781483a48ddb7778f283a59c2c7cd",
+        "label": "40 years old",
+        "number": 40,
+        "unit": "year"
+      }
+    ],
+    "habit": [
+      {
+        "id": "d-a981073c41227bab4a2f35b4f004f829e08878c984a28cb95a07e368c3ca917b",
+        "label": "asking for a cuppa the moment somebody sits down"
+      },
+      {
+        "id": "d-059371df54fd59d829bdc148a567d7ee26a456982247b254347574231bba61f5",
+        "label": "asking who that is halfway through the film"
+      },
+      {
+        "id": "d-d1cfc14da44a1f5a75447943978a8dc40dd5d25a1f6dff5946055b4616926a17",
+        "label": "balancing another plate on the washing-up pile"
+      }
+    ],
+    "viewing": [
+      {
+        "id": "d-3c4da0927d7450ce7f1b614a105fd885780899a8e0e095458f62b2e214d8dc92",
+        "label": "Grand Theft Auto Six"
+      },
+      {
+        "id": "d-23bf7166e37e5c9199899507b41ba148434346dba1d169858acc8ee26b554c7f",
+        "label": "Match of the Day"
+      },
+      {
+        "id": "d-657308e69a559981afa5f36c9e19f32bae3afcb2cda4922fcd14d8f471bdcb17",
+        "label": "a Netflix documentary about prisons"
+      }
+    ],
+    "treat": [
+      {
+        "id": "d-6b1f0b0df2ccecdf3904d062c3cabf47016cf9cefd7eb0218a6819d60f0f0424",
+        "label": "air fryer manual and six frozen chips"
+      },
+      {
+        "id": "d-7fc513d97c1e597c43c5095c0574d73a415b288ca96f6d7e6ba6dd041890cd81",
+        "label": "bathroom scale with a red ribbon"
+      },
+      {
+        "id": "d-0cdd970993d7087642ad4310e0cd0f3e3a7f759cbc5e068cdc882d959a031c6c",
+        "label": "bill for the roof tiles"
+      }
+    ]
+  }
+}

@@ -1,3 +1,6 @@
+import {DAD_OFFER, liveStudioConfig as dadConfig} from './dad-live-config.js';
+import {reconcileLivePurchase as reconcileDad} from './dad-live-store.js';
+import {deliverStudioReturn as deliverDad} from './dad-live-email.js';
 import express from 'express';
 import Stripe from 'stripe';
 import { liveStudioConfig, liveHeaders } from './studio-live-config.js';
@@ -19,6 +22,11 @@ export async function processLiveStudioEvent(event, { config, stripe, pool = dat
   if (relevant) session = await stripe.checkout.sessions.retrieve(canonical.data.object.id, {
     expand: ['payment_intent', 'line_items.data.price.product'],
   });
+  if (session?.metadata?.offer === DAD_OFFER) {
+    if (session.id !== canonical.data.object.id) throw Error('DAD_SESSION_MISMATCH');
+    const authorized = await transaction(pool, client => reconcileDad(client, session, dadConfig()));
+    return {authorized, dad:true, sessionId:authorized?session.id:null};
+  }
   return transaction(pool, async client => {
     const inserted = await client.query(`INSERT INTO public.santa_studio_live_events(event_id)
       VALUES($1) ON CONFLICT DO NOTHING RETURNING event_id`, [event.id]);
@@ -72,11 +80,11 @@ export function createLiveWebhookHandler({
       if (result.sessionId) {
         try {
           const emailConfig = liveStudioConfig(globalThis.process.env, { email: true });
-          await deliver({ config: emailConfig, stripe, pool, sessionId: result.sessionId });
+          await (result.dad ? deliverDad : deliver)({ config: result.dad ? dadConfig(globalThis.process.env,{email:true}) : emailConfig, stripe, pool, sessionId: result.sessionId });
         } catch { /* Durable outbox remains pending; no raw provider logging. */ }
         // Failure returns 503 for Stripe's webhook retry, after paid access commits.
         // Duplicate deliveries retry this idempotent sync without granting twice.
-        await syncContact({ config, stripe, pool, sessionId: result.sessionId });
+        if (!result.dad) await syncContact({ config, stripe, pool, sessionId: result.sessionId });
       }
       return res.json({ received: true });
     } catch { return res.status(503).json({ error: 'Payment notification could not be processed. Please retry.' }); }

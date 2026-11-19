@@ -18,7 +18,11 @@
     }
   ],
   "functions": {
-    "api/name-recording-uploads.js": { "installCommand": "", "maxDuration": 30, "includeFiles": "node_modules/ffmpeg-static/**" },
+    "api/name-recording-uploads.js": {
+      "installCommand": "",
+      "maxDuration": 30,
+      "includeFiles": "node_modules/ffmpeg-static/**"
+    },
     "api/names-demo.js": {
       "installCommand": "",
       "maxDuration": 15,
@@ -92,6 +96,15 @@
       "installCommand": "",
       "maxDuration": 20
     },
+    "api/dad-studio-message.js": {
+      "installCommand": "",
+      "maxDuration": 120,
+      "includeFiles": "{server/santa-audio/studio/**,server/santa-audio/names/**,server/santa-audio/sleighbells.mp3,node_modules/ffmpeg-static/**}"
+    },
+    "api/dad-studio-checkout.js": {
+      "installCommand": "",
+      "maxDuration": 30
+    },
     "api/**/*.js": {
       "installCommand": ""
     }
@@ -100,12 +113,16 @@
     {
       "src": "/names/?",
       "status": 308,
-      "headers": { "Location": "/free-santa-message" }
+      "headers": {
+        "Location": "/free-santa-message"
+      }
     },
     {
       "src": "/request-names/?",
       "status": 308,
-      "headers": { "Location": "/santa-dashboard" }
+      "headers": {
+        "Location": "/santa-dashboard"
+      }
     },
     {
       "src": "/names-data/(latest\\.json|names-[a-f0-9]{64}\\.json)",

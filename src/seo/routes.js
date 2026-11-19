@@ -127,6 +127,7 @@ export function resolvePublicRequest(raw) {
   try { path = decodeURIComponent(url.pathname); } catch { return { status: 400 }; }
   // Never redirect hosts: preview, audio feeds, integrations and API calls stay same-origin.
   const normalized = path === '//' ? path : path.length > 1 ? path.replace(/\/+$/, '') : path;
+  if (normalized === '/dad-message-maker') return path === normalized ? {status:200,noindex:true} : {status:308,location:normalized+url.search};
   if (isStudioPath(normalized)) {
     // No fragment in Location: browsers inherit their original fragment.
     if (STUDIO_ALIASES.includes(normalized) || path !== STUDIO_PATH) {

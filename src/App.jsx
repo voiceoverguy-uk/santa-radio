@@ -15,6 +15,7 @@ import KaraokeLyrics from './pages/KaraokeLyrics.jsx';
 import FreeSantaMessage from './pages/FreeSantaMessage.jsx';
 import SantaMessageWorkshop from './pages/SantaMessageWorkshop.jsx';
 import StudioCheckout from './pages/StudioCheckout.jsx';
+import DadMessageStudio from './pages/DadMessageStudio.jsx';
 import SubmitASong from './pages/SubmitASong.jsx';
 import ChristmasContenders from './pages/ChristmasContenders.jsx';
 import NaughtyNicePage from './naughty-or-nice/NaughtyNicePage.jsx';
@@ -74,6 +75,7 @@ function WebsiteLayout() {
         <Route path="/christmas-karaoke-lyrics/:slug" element={<KaraokeLyrics />} />
         <Route path="/artist" element={<ArtistDetail />} />
         <Route path="/free-santa-message" element={<FreeSantaMessage />} />
+        <Route path="/dad-message-maker" element={<DadMessageStudio />} />
         <Route path={STUDIO_PATH} element={<WorkshopAccessGate><SantaMessageWorkshop /></WorkshopAccessGate>} />
         {STUDIO_ALIASES.map(path => <Route key={path} path={path} element={<StudioRedirect />} />)}
         <Route path="/my-santa-messages/*" element={<MySantaMessages />} />

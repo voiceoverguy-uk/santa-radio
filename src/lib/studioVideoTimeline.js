@@ -51,11 +51,11 @@ export function studioCaptionOpacity(caption, time) {
 }
 const makeCanvas = (width, height) => { const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height; return canvas; };
 const png = canvas => new Promise((resolve, reject) => canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('Could not prepare the video captions.')), 'image/png'));
-export function drawStudioVideoFrames(image, result) {
+export function drawStudioVideoFrames(image, result, customTimeline) {
   const width = STUDIO_VIDEO_WIDTH, height = STUDIO_VIDEO_HEIGHT;
   const base = makeCanvas(width, height), ctx = base.getContext('2d');
   ctx.drawImage(image, 0, 0, width, height);
-  const timeline = studioVideoTimeline(result);
+  const timeline = customTimeline || studioVideoTimeline(result);
   const prefix = 'A message from Santa to ', name = result.writtenName.trim(), age = timeline.find(caption => caption.id === 'age').text;
   let nameSize = 40;
   const measure = () => {

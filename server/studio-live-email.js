@@ -1,3 +1,4 @@
+import {deliverStudioReturn as deliverDad} from './dad-live-email.js';
 import { studioAccessEmailHtml } from './studio-access-email-template.js';
 import { sendNameNotifications } from './name-request-email.js';
 import { randomBytes, timingSafeEqual } from 'node:crypto';
@@ -161,6 +162,7 @@ export function createStudioEmailRetryHandler({
         return res.json({ simulatorAccepted: true, workerVerified: true });
       }
       const result = await deliver({ config, pool });
+      if (process.env.DAD_STUDIO_PRODUCT_ID) await deliverDad({pool});
       // A scheduled, simulated-delivery probe establishes/refreshes sender health
       // without contacting customers. At most once a day across all instances.
       if (!result.sent) await transaction(pool, async client => {
