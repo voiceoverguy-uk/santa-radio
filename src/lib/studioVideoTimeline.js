@@ -13,6 +13,7 @@ export function studioVideoTimeline(result) {
   const talent = details.talent || details.activity;
   const strengths = [talent, details.achievement].filter(Boolean).join(' and ');
   return [
+    { id: 'name', text: (result.writtenName || '').trim(), start: 10 },
     { id: 'age', text: ` aged ${studioAge(result)}`, start: 18 },
     ...(strengths ? [{ id: 'strengths', text: `Great at ${strengths}`, start: 38, end: 50 }] : []),
     ...(details.treats ? [{ id: 'treat', text: `Thank you for leaving out ${details.treats}`, start: 57, end: 61 }] : []),
@@ -32,7 +33,7 @@ export function drawStudioVideoFrames(image, result) {
   const base = makeCanvas(width, height), ctx = base.getContext('2d');
   ctx.drawImage(image, 0, 0, width, height);
   const timeline = studioVideoTimeline(result);
-  const prefix = 'A message from Santa to ', name = result.writtenName.trim(), age = timeline[0].text;
+  const prefix = 'A message from Santa to ', name = result.writtenName.trim(), age = timeline.find(caption => caption.id === 'age').text;
   let nameSize = 40;
   const measure = () => {
     ctx.font = `italic ${nameSize}px Georgia, serif`; const prefixWidth = ctx.measureText(prefix).width;
@@ -48,13 +49,12 @@ export function drawStudioVideoFrames(image, result) {
   const top = Math.round(height * .815), stripTop = Math.round(height * .75), stripHeight = height - stripTop;
   ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
   ctx.font = `italic ${nameSize}px Georgia, serif`; ctx.fillStyle = '#fff9ed'; ctx.fillText(prefix, x, top);
-  ctx.font = `italic ${nameSize}px Georgia, serif`; ctx.fillStyle = '#fff9ed'; ctx.fillText(name, x + metrics.prefixWidth, top);
   const layers = timeline.map(caption => {
     const canvas = makeCanvas(width, stripHeight), text = canvas.getContext('2d');
     text.textBaseline = 'middle'; text.fillStyle = '#fff9ed';
-    if (caption.id === 'age') {
+    if (caption.id === 'name' || caption.id === 'age') {
       text.font = `italic ${nameSize}px Georgia, serif`;
-      text.fillText(caption.text, x + metrics.prefixWidth + metrics.nameWidth, top - stripTop);
+      text.fillText(caption.text, x + metrics.prefixWidth + (caption.id === 'age' ? metrics.nameWidth : 0), top - stripTop);
     } else {
       let size = 34; text.font = `italic ${size}px Georgia, serif`;
       while (text.measureText(caption.text).width > width * .72 && size > 9) { size -= .5; text.font = `italic ${size}px Georgia, serif`; }

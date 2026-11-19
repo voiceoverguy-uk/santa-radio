@@ -5,19 +5,20 @@ const result={writtenName:'Harry',gift:{details:{age:'7 years old',talent:'Footb
 test('paid captions use the saved selections and requested cue times',()=>{
  const lines=studioVideoTimeline(result);
  assert.deepEqual(lines.map(({id,start,end})=>({id,start,end})),[
- {id:'age',start:18,end:undefined},{id:'strengths',start:38,end:50},{id:'treat',start:57,end:61},{id:'destination',start:70,end:76},{id:'approved',start:85,end:90}]);
- assert.equal(lines[1].text,'Great at Football and Helping at home');
- assert.equal(lines[2].text,'Thank you for leaving out mince pies');
- assert.equal(lines[3].text,'Santa on the way to Yorkshire, England');
- assert.equal(studioVideoTimeline({gift:{details:{age:'6 months old',activity:'Teamwork',achievement:'Reading'}}})[1].text,'Great at Teamwork and Reading');
+ {id:'name',start:10,end:undefined},{id:'age',start:18,end:undefined},{id:'strengths',start:38,end:50},{id:'treat',start:57,end:61},{id:'destination',start:70,end:76},{id:'approved',start:85,end:90}]);
+ assert.equal(lines[2].text,'Great at Football and Helping at home');
+ assert.equal(lines[3].text,'Thank you for leaving out mince pies');
+ assert.equal(lines[4].text,'Santa on the way to Yorkshire, England');
+ assert.equal(studioVideoTimeline({gift:{details:{age:'6 months old',activity:'Teamwork',achievement:'Reading'}}})[2].text,'Great at Teamwork and Reading');
  assert.equal(studioAge({gift:{details:{age:'6 months old'}}}),'6 months');
 });
 test('lower lines never overlap and the name/age remain above the changing captions',()=>{
  const lines=studioVideoTimeline(result);
- for(let t=0;t<100;t+=.05)assert.ok(lines.slice(1).filter(c=>studioCaptionOpacity(c,t)>0).length<=1);
- assert.equal(studioCaptionOpacity(lines[0],17.9),0);assert.equal(studioCaptionOpacity(lines[0],19),1);assert.equal(studioCaptionOpacity(lines[0],90),1);
- for(const t of [50,51,56.9,61,62,69.9,76,84.9,90,91])assert.equal(lines.slice(1).filter(c=>studioCaptionOpacity(c,t)>0).length,0);
- assert.equal(studioCaptionOpacity(lines[4],86),1);
+ assert.equal(studioCaptionOpacity(lines[0],9.9),0);assert.equal(studioCaptionOpacity(lines[0],11),1);
+ for(let t=0;t<100;t+=.05)assert.ok(lines.slice(2).filter(c=>studioCaptionOpacity(c,t)>0).length<=1);
+ assert.equal(studioCaptionOpacity(lines[1],17.9),0);assert.equal(studioCaptionOpacity(lines[1],19),1);assert.equal(studioCaptionOpacity(lines[1],90),1);
+ for(const t of [50,51,56.9,61,62,69.9,76,84.9,90,91])assert.equal(lines.slice(2).filter(c=>studioCaptionOpacity(c,t)>0).length,0);
+ assert.equal(studioCaptionOpacity(lines[5],86),1);
 });
 test('export bounds bitrate, preserves audio, and stops at recording duration',()=>{
  const args=studioTimelineArguments(studioVideoTimeline(result).map(c=>({...c,y:540})),90);
