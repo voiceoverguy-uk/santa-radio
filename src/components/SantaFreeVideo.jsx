@@ -1,6 +1,7 @@
 import { createPortal } from 'react-dom';
 import SantaVideoPlayer from './SantaVideoPlayer.jsx';
 import { useEffect, useRef, useState } from 'react';
+import { santaNameDisplay } from '../lib/santaNameSearch.js';
 import { createSantaVideo } from '../lib/createSantaVideo.js';
 import { trackMessageAction } from '../lib/messageEngagement.js';
 import './SantaFreeVideo.css';
@@ -22,7 +23,7 @@ export default function SantaFreeVideo({ message, onDownload, onPlay, onEnded, p
     const controller = new AbortController();
     let objectUrl;
     setHideProgress(false); setUrl(''); setVideoBlob(null); setProgress(null); setError(''); setStatus('Preparing your Christmas video…');
-    createSantaVideo({ audio: message.blob, name: message.name, signal: controller.signal, onProgress: value => { if (!controller.signal.aborted) setProgress(value); }, onStatus: text => { if (!controller.signal.aborted) setStatus(text); } })
+    createSantaVideo({ audio: message.blob, name: santaNameDisplay(message.name), signal: controller.signal, onProgress: value => { if (!controller.signal.aborted) setProgress(value); }, onStatus: text => { if (!controller.signal.aborted) setStatus(text); } })
       .then(blob => {
         if (controller.signal.aborted) return;
         setVideoBlob(blob); objectUrl = URL.createObjectURL(blob); setUrl(objectUrl); setStatus('Your Christmas video is ready.'); readyCallback.current?.();

@@ -15,3 +15,40 @@
 .santa-free-video__actions .santa-free-video__download { padding-inline: 18px; font-size: .9rem; font-weight: 500; text-decoration: none; }
 .santa-free-video__actions .message-share-icon { width: 44px; height: 44px; min-height: 44px; }
 .santa-free-video > .santa-video-player { margin-bottom: 16px; }
+
+/* A clear, full-width next step once the finished video is available. */
+.santa-free-video__actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 48px;
+  width: 100%;
+  align-items: stretch;
+  gap: 10px;
+}
+.santa-free-video__actions .message-share { display: contents; }
+.santa-free-video__actions .santa-free-video__download {
+  grid-column: 1;
+  grid-row: 1;
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  padding: 12px 14px;
+  text-align: center;
+  font-weight: 700;
+  border: 1px solid #f3d58d;
+  animation: santa-ready-download-glow 1.8s ease-in-out infinite;
+}
+.santa-free-video__actions .message-share-icon {
+  grid-column: 2;
+  grid-row: 1;
+  width: 48px;
+  height: 100%;
+  min-height: 48px;
+}
+.santa-free-video__actions .message-share-status { grid-column: 1 / -1; margin: 0; }
+@keyframes santa-ready-download-glow {
+  0%, 100% { box-shadow: 0 0 0 2px #f3d58d70, 0 0 16px #e9bd5590; filter: brightness(1); }
+  50% { box-shadow: 0 0 0 5px #f3d58d50, 0 0 30px #e9bd55d0; filter: brightness(1.2); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .santa-free-video__actions .santa-free-video__download { animation: none; box-shadow: 0 0 0 2px #f3d58d70, 0 0 20px #e9bd55a0; }
+}
