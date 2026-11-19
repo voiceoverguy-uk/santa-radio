@@ -2,6 +2,7 @@ export interface Mugshot {
   artist: string;
   kind?: 'feature';
   link: string;
+  cardLabel?: string;
   image: string;
   song: string;
   info?: string;

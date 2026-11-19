@@ -447,3 +447,7 @@
 .mugshots-page-logo { display: block; width: min(100%, 490px); height: auto; margin: 0 auto 20px; }
 
 .mugshots-collection-page .mugshots-grid .mugshot-card--legendary { border-color: #f1ce6b; box-shadow: 0 0 22px #efca6880, inset 0 0 10px #efca6830; }
+
+.mugshots-collection-page .mugshot-info .mugshot-card-role { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.mugshots-page-sub .mugshots-live-count { color: #f0d785; }

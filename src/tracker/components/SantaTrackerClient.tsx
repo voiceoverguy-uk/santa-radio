@@ -273,14 +273,14 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy, mapOnly = 
             <h2 id="tracker-dashboard-title" className="tracker-section-title text-lg sm:text-xl mb-4">
               Updating Estimated Dashboard
             </h2>
-            <SantaStats effectiveTime={effectiveTime} holiday={onTrip ? holiday : undefined} postcardsOnly={researching} northPoleVisit={northPoleVisit} />
+            <SantaStats effectiveTime={effectiveTime} holiday={onTrip ? holiday : undefined} northPoleVisit={northPoleVisit} />
           </section>
           </div>
       </TrackerHero>
 
       <section className="tracker-story-section px-4 sm:px-6 pb-12">
         <div className="max-w-6xl mx-auto">
-          <SantaStory effectiveTime={effectiveTime} holiday={onTrip ? holiday : undefined} postcardsOnly={researching} />
+          <SantaStory effectiveTime={effectiveTime} holiday={onTrip ? holiday : undefined} />
         </div>
       </section>
 

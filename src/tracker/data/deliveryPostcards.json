@@ -1,0 +1,392 @@
+[
+  {
+    "message": "I'm out delivering presents! Please leave a little space by the tree. My turning circle is ambitious."
+  },
+  {
+    "message": "Another chimney, another graceful entrance. Nobody needs to see the rehearsal footage."
+  },
+  {
+    "message": "The sleigh is full of Christmas magic. My pockets are increasingly full of biscuit crumbs."
+  },
+  {
+    "message": "I'm on my rounds! Rudolph is navigating and loudly reviewing the carrot selection."
+  },
+  {
+    "message": "Presents delivered, stockings filled, one squeaky floorboard successfully negotiated. Mostly."
+  },
+  {
+    "message": "I'm out and about spreading Christmas cheer. And a very small amount of chimney soot."
+  },
+  {
+    "message": "Quick postcard from the sleigh: all going well. My hat has only tried to escape twice."
+  },
+  {
+    "message": "The delivery team is flying along. The reindeer have requested that I stop singing directions."
+  },
+  {
+    "message": "I'm busy delivering your surprises. Head Elf says waving at every snowman is slowing us down."
+  },
+  {
+    "message": "Another stop ticked off! I'd stay for a chat, but there's a sackful of magic waiting."
+  },
+  {
+    "region": "Pacific",
+    "message": "Pacific deliveries are under way. I told Rudolph to watch the islands. He says he's watching all of them, which explains the weaving."
+  },
+  {
+    "region": "Pacific",
+    "message": "There's a lot of ocean between these stops. I've told the inflatable reindeer it's still only decoration."
+  },
+  {
+    "region": "Pacific",
+    "message": "The Pacific looks magnificent from up here. My map is mostly blue and one very important biscuit crumb."
+  },
+  {
+    "region": "Pacific",
+    "message": "I asked Head Elf for island-hopping tips. He said 'use the sleigh'. Excellent briefing."
+  },
+  {
+    "region": "Pacific",
+    "message": "Pacific route check complete. The presents are dry. My attempt to wave while drinking cocoa was less successful."
+  },
+  {
+    "region": "New Zealand",
+    "message": "New Zealand on the route! I've told the sleigh this is a delivery run, not a scenic tour. It's taking its time replying."
+  },
+  {
+    "region": "New Zealand",
+    "message": "The New Zealand parcels are ready. Rudolph has labelled his snack bag 'essential expedition equipment'."
+  },
+  {
+    "region": "New Zealand",
+    "message": "I'm checking the next New Zealand stop. The elves packed a spare hat but no instructions for looking graceful."
+  },
+  {
+    "region": "New Zealand",
+    "message": "Beautiful views on the New Zealand leg. I may have said 'ooh' over the radio more often than actual directions."
+  },
+  {
+    "region": "New Zealand",
+    "message": "New Zealand delivery check: sack secure, boots ready, beard still trying to navigate independently."
+  },
+  {
+    "region": "Australia",
+    "message": "Australian deliveries! I've loosened the scarf. Mrs Claus says that doesn't count as a summer wardrobe."
+  },
+  {
+    "region": "Australia",
+    "message": "The Australian leg is a reminder that a red velvet suit was not designed by a weather expert."
+  },
+  {
+    "region": "Australia",
+    "message": "I've packed extra water for Australia. Rudolph has packed extra opinions about my hat."
+  },
+  {
+    "region": "Australia",
+    "message": "Australia on the map, parcels in the sack, sunglasses somewhere under thirty-seven gift tags."
+  },
+  {
+    "region": "Australia",
+    "message": "The elves suggested lightweight boots for Australia. They sent my normal boots with fewer bells."
+  },
+  {
+    "region": "East Asia",
+    "message": "East Asia deliveries are under way. Head Elf has made the route book neat enough to frighten my handwriting."
+  },
+  {
+    "region": "East Asia",
+    "message": "I'm checking the next East Asian stop. Rudolph is checking whether my spare gloves contain biscuits."
+  },
+  {
+    "region": "East Asia",
+    "message": "The East Asia sack is perfectly organised. I have been asked not to 'improve' it."
+  },
+  {
+    "region": "East Asia",
+    "message": "A quick note from the East Asia leg: the ribbon has escaped again. It appears to be enjoying the journey."
+  },
+  {
+    "region": "East Asia",
+    "message": "East Asia route update: everything is on schedule, except my beard, which is still at the previous page."
+  },
+  {
+    "region": "Southeast Asia",
+    "message": "Southeast Asia on the route. The scarf has officially requested reassignment to the luggage compartment."
+  },
+  {
+    "region": "Southeast Asia",
+    "message": "The Southeast Asia parcels are ready. I've checked the tags twice and my snack pocket considerably more."
+  },
+  {
+    "region": "Southeast Asia",
+    "message": "I'm following the Southeast Asia route notes. The cocoa ring around the important bit is entirely my contribution."
+  },
+  {
+    "region": "Southeast Asia",
+    "message": "Southeast Asia delivery duty: one cheerful Santa, eight focused reindeer and a very warm hat."
+  },
+  {
+    "region": "Southeast Asia",
+    "message": "A quick pause on the Southeast Asia leg to straighten the sack. The teddy bears have voted against my parking."
+  },
+  {
+    "region": "South Asia",
+    "message": "South Asia deliveries are under way. Head Elf has put the instructions in large print. A subtle message."
+  },
+  {
+    "region": "South Asia",
+    "message": "Checking the South Asia parcels. One toy drum has been auditioning for the sleigh orchestra all night."
+  },
+  {
+    "region": "South Asia",
+    "message": "The South Asia route book is open. So is the biscuit tin. I can multitask when properly motivated."
+  },
+  {
+    "region": "South Asia",
+    "message": "A note from the South Asia leg: I have found my glasses. They were helping hold my hat on."
+  },
+  {
+    "region": "South Asia",
+    "message": "South Asia delivery check complete. The spare ribbon is now a belt, which was not in the original plan."
+  },
+  {
+    "region": "Central Asia",
+    "message": "Central Asia on the route. There's plenty of room on the map, but somehow none in my pockets."
+  },
+  {
+    "region": "Central Asia",
+    "message": "The Central Asia sack is ready. Rudolph says the route would be simpler if I stopped pointing with a biscuit."
+  },
+  {
+    "region": "Central Asia",
+    "message": "I'm checking the Central Asia leg. The compass is fine; my sense of where I put it needs attention."
+  },
+  {
+    "region": "Central Asia",
+    "message": "Central Asia deliveries: beautiful views, careful navigation and one very determined loose jingle."
+  },
+  {
+    "region": "Central Asia",
+    "message": "A quick postcard from the Central Asia leg. I asked for silence while I read the map. Eight reindeer sighed in unison."
+  },
+  {
+    "region": "Middle East",
+    "message": "The Middle East parcels are ready. My sunglasses have finally justified their place in the emergency kit."
+  },
+  {
+    "region": "Middle East",
+    "message": "Middle East route check: water packed, scarf loosened, hat still refusing all practical suggestions."
+  },
+  {
+    "region": "Middle East",
+    "message": "I'm following the Middle East delivery notes. Head Elf has underlined 'do not stop to polish the bells'."
+  },
+  {
+    "region": "Middle East",
+    "message": "A quick message from the Middle East leg: the sleigh is running beautifully. I am running mostly on snacks."
+  },
+  {
+    "region": "Middle East",
+    "message": "Middle East deliveries are under way. The elves have labelled my cocoa 'Santa fuel'. Very professional."
+  },
+  {
+    "region": "Europe",
+    "message": "European deliveries are under way. The route book has more tabs than Head Elf's computer."
+  },
+  {
+    "region": "Europe",
+    "message": "The Europe sack is ready. I've put my spare gloves somewhere sensible, which means they're lost."
+  },
+  {
+    "region": "Europe",
+    "message": "Europe on the route! I asked the satnav for festive directions. It has added a jingle to every turn."
+  },
+  {
+    "region": "Europe",
+    "message": "Checking the next European stop. Rudolph says my 'shortcut' looks suspiciously like a bakery detour."
+  },
+  {
+    "region": "Europe",
+    "message": "A quick postcard from the Europe leg. My boots are quiet. Unfortunately, the knees supplied their own sound effects."
+  },
+  {
+    "region": "Africa",
+    "message": "African deliveries are under way. I've promised the team this is not the moment for another hat adjustment."
+  },
+  {
+    "region": "Africa",
+    "message": "The Africa sack is ready. Head Elf has counted the parcels; I've counted the emergency biscuits. Both vital."
+  },
+  {
+    "region": "Africa",
+    "message": "Africa on the route. I'm admiring the view while Rudolph reminds me that admiring isn't a navigation method."
+  },
+  {
+    "region": "Africa",
+    "message": "A quick note from the Africa leg: the sleigh is sparkling. I suspect the elves used the fancy polish."
+  },
+  {
+    "region": "Africa",
+    "message": "Checking the next African stop. The presents are beautifully wrapped. The same cannot be said for my scarf."
+  },
+  {
+    "region": "South America",
+    "message": "South American deliveries are under way. The sack is organised and I have been told to leave it that way."
+  },
+  {
+    "region": "South America",
+    "message": "The South America route notes are ready. Head Elf has drawn a tiny warning beside my proposed snack stops."
+  },
+  {
+    "region": "South America",
+    "message": "South America on the map. Rudolph is flying beautifully; I'm trying to unfold a map without wearing it."
+  },
+  {
+    "region": "South America",
+    "message": "A quick postcard from the South America leg. The view is spectacular. The photograph is mostly mitten."
+  },
+  {
+    "region": "South America",
+    "message": "Checking the next South American stop. The toy parrot keeps repeating my directions. We now have two navigators."
+  },
+  {
+    "region": "Central America",
+    "message": "Central America deliveries! The route is carefully planned. My pocket full of crumbs is entirely spontaneous."
+  },
+  {
+    "region": "Central America",
+    "message": "The Central America parcels are ready. I've checked every bow, including the one accidentally tied to my sleeve."
+  },
+  {
+    "region": "Central America",
+    "message": "A quick note from the Central America leg: Rudolph has requested a co-pilot who doesn't point with snacks."
+  },
+  {
+    "region": "Central America",
+    "message": "Central America on the map. Head Elf says my handwriting looks like sleigh tracks. I call it branding."
+  },
+  {
+    "region": "Central America",
+    "message": "Checking the next Central American stop. The sack is getting lighter and my emergency biscuit supply agrees."
+  },
+  {
+    "region": "North America",
+    "message": "North American deliveries are under way. There's a lot of map left, but Rudolph has his determined ears on."
+  },
+  {
+    "region": "North America",
+    "message": "The North America sack is ready. I've been practising my quiet landing face. It looks suspiciously like panic."
+  },
+  {
+    "region": "North America",
+    "message": "North America on the route! Head Elf has reminded me that 'roughly over there' is not a coordinate."
+  },
+  {
+    "region": "North America",
+    "message": "A postcard from the North America leg: the sleigh is doing brilliantly. My hat is clinging on for the credit."
+  },
+  {
+    "region": "North America",
+    "message": "Checking the next North American stop. The last toy robot has offered to drive. I've declined politely."
+  },
+  {
+    "region": "Antarctica",
+    "message": "Antarctic research-station deliveries! Finally, weather that understands my choice of coat."
+  },
+  {
+    "region": "Antarctica",
+    "message": "Antarctica on the route. I waved at a penguin. No reply. Clearly a very serious member of staff."
+  },
+  {
+    "region": "Antarctica",
+    "message": "The Antarctic parcels are ready. Rudolph says this is the first time all night he hasn't questioned my scarf."
+  },
+  {
+    "region": "Antarctica",
+    "message": "A quick Antarctic note: lovely scenery, excellent coat weather, absolutely nowhere to hide a bright red sleigh."
+  },
+  {
+    "region": "Antarctica",
+    "message": "Delivering to the Antarctic research stations. I've asked the scientists whether they can explain where my spare glove went."
+  },
+  {
+    "countryCode": "GB",
+    "message": "UK parcels ready. I've put the kettle on my mental checklist. Mrs Claus says it's not a delivery stop."
+  },
+  {
+    "countryCode": "GB",
+    "message": "The UK leg is going well. I'm resisting the urge to judge every chimney's architectural merits."
+  },
+  {
+    "countryCode": "FR",
+    "message": "France on the route. I packed a phrasebook, but somehow every page now opens at 'pastry'."
+  },
+  {
+    "countryCode": "FR",
+    "message": "The French parcels are ready. My attempt at an elegant entrance was undermined by a squeaky boot."
+  },
+  {
+    "countryCode": "DE",
+    "message": "Germany on the route. Head Elf has made a very precise schedule. My biscuit breaks are being reviewed."
+  },
+  {
+    "countryCode": "DE",
+    "message": "The German parcels are sorted. I asked for a festive flourish; the elves gave my clipboard a bow."
+  },
+  {
+    "countryCode": "JP",
+    "message": "Japan on the route. I've checked the gift tags twice. The toy robot has checked my work and looks smug."
+  },
+  {
+    "countryCode": "JP",
+    "message": "The Japanese parcels are ready. Rudolph has politely requested that I stop narrating every turn."
+  },
+  {
+    "countryCode": "AU",
+    "message": "Australia on the route. I suggested shorts with the red coat. Mrs Claus ended the video call."
+  },
+  {
+    "countryCode": "AU",
+    "message": "The Australian parcels are sorted. I've marked my sunglasses 'not a present' after last year's near miss."
+  },
+  {
+    "countryCode": "NZ",
+    "message": "New Zealand on the route. I packed a camera for the views. The memory card is already full of beard."
+  },
+  {
+    "countryCode": "NZ",
+    "message": "The New Zealand parcels are ready. I told Rudolph to make a grand entrance. He suggested a careful landing instead."
+  },
+  {
+    "countryCode": "US",
+    "message": "USA parcels ready. I've checked the route twice and the size of my snack supply three times."
+  },
+  {
+    "countryCode": "US",
+    "message": "The United States leg is going well. The sleigh has cup holders; I consider that essential expedition planning."
+  },
+  {
+    "countryCode": "CA",
+    "message": "Canada on the route. My spare mittens are enjoying their moment of professional relevance."
+  },
+  {
+    "countryCode": "CA",
+    "message": "The Canadian parcels are ready. I asked Rudolph for a smooth landing. He asked me to sit still for once."
+  },
+  {
+    "countryCode": "BR",
+    "message": "Brazil on the route. The sleigh bells have started a rhythm and I'm under strict instructions not to dance at the controls."
+  },
+  {
+    "countryCode": "BR",
+    "message": "The Brazilian parcels are sorted. My cheerful wave nearly became an unscheduled glove delivery."
+  },
+  {
+    "countryCode": "ZA",
+    "message": "South Africa on the route. I've remembered the sunglasses and forgotten which pocket contains them."
+  },
+  {
+    "countryCode": "ZA",
+    "message": "The South African parcels are ready. Rudolph says my hat adjustment has become a full-time occupation."
+  }
+]

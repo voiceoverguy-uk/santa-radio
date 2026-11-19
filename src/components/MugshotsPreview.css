@@ -308,3 +308,5 @@
     transform: none;
   }
 }
+
+.mugshots-preview .mug-info .mugshot-card-role { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

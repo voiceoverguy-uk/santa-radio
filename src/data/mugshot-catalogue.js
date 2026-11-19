@@ -1,5 +1,6 @@
 // Keep the original import intact: historical URLs and alternative photographs
 // remain recoverable. Only reviewed identities share a public profile.
+import cardLabels from './mugshot-card-labels.json' with { type: 'json' };
 import biographies from './mugshot-biographies.json' with { type: 'json' };
 import editorialOverrides from './mugshot-editorial-overrides.json' with { type: 'json' };
 import { profileCategories } from './mugshot-categories.js';
@@ -84,6 +85,7 @@ export function buildCatalogue(raw, overrides = biographies) {
     const editorial = editorialOverrides[profile.song];
     if (typeof editorial?.homepage === 'boolean') profile.homepage = editorial.homepage;
     profile.categories = profileCategories(profile, editorial?.categories || []);
+    profile.cardLabel = cardLabels[profile.song] || profile.link;
     profile.searchAliases = editorial?.searchAliases || [];
     profile.searchNames = [...new Set([...profile.searchNames, ...(editorial?.searchNames || [])])];
   }

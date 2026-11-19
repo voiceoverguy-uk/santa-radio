@@ -1,15 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import { getDeliveryPostcards } from "../lib/deliveryPostcards";
+import seasonalPostcards from "../data/seasonalPostcards.json";
+import { getPostcardSeason } from "../lib/postcardSeason";
 import { Share2 } from "lucide-react";
 import { TRACKER_URL } from "@/lib/trackerBrand";
-import { getDashboardData, getRouteResearchCopy, isDecemberPrep, isHolidaySeason, isChristmasInJuly, type HolidayDestination } from "@/lib/santaRoute";
+import { getDashboardData, getRouteResearchCopy, isChristmasInJuly, type HolidayDestination } from "@/lib/santaRoute";
 
 interface SantaStoryProps {
   effectiveTime: Date;
   holiday?: HolidayDestination | null;
   routeResearch?: boolean;
-  postcardsOnly?: boolean;
 }
 
 const MONTHS = [
@@ -173,68 +175,7 @@ const christmasInJulyPostcards = [
   "Christmas in July is nearly over. Back to regular holiday mode tomorrow. It's been magical.",
 ];
 
-const workshopDispatches = [
-  "The sticky-tape dispenser has vanished. We found it attached to the search party.",
-  "An elf labelled the label drawer. We are now looking for the label-drawer label.",
-  "The toy dinosaurs passed inspection. They refused to use their indoor roars.",
-  "I tested a jack-in-the-box. I knew exactly what would happen. Still dropped my biscuit.",
-  "The ribbon cupboard sprang open. We are calling it an unexpected festive expansion.",
-  "The sleigh horn now plays a carol. Reversing out of the garage takes three verses.",
-  "We have counted every wheel on every toy car. The elves would like a different game.",
-  "Mrs Claus fitted a biscuit alarm to my desk. It goes off whenever I say 'just one'.",
-  "The workshop is in full swing. I can hear wrapping paper from three rooms away. It never stops.",
-  "Rudolph's been doing nose warm-ups since 5am. The other reindeer are pretending not to be impressed.",
-  "The naughty list is longer than expected this year. I've had to order more ink.",
-  "An elf just asked me if we can add same-day delivery. I said we've been doing that for centuries.",
-  "The sleigh's been serviced, polished, and given a fresh coat of paint. She's never looked better.",
-  "Mrs Claus has started a countdown calendar for me. It's mostly reminders to eat properly.",
-  "I've checked the list twice. Then a third time. Then Mrs Claus told me to put it down.",
-  "The toy department hit a new record today. I'd tell you the number, but it's classified.",
-  "Rudolph's been practising sharp turns in the training field. Two snowmen didn't make it.",
-  "Someone left a mince pie on my desk. Gone in twelve seconds. New personal best.",
-  "The wrapping station is running three shifts. Elf overtime has been approved. Again.",
-  "I tried on the suit today. Fits perfectly. Mrs Claus let out a small cheer.",
-  "The letter room is overflowing. We've had to open a second sorting office. And a third.",
-  "Blitzen has been doing extra cardio. Dasher says he's showing off. He absolutely is.",
-  "I tested the new toy drone. It flew into the Christmas tree. Twice. Back to development.",
-  "The elves have started singing carols during their shifts. Productivity is up 12%.",
-  "I've been reviewing chimney access reports from around the world. Some of them are... creative.",
-  "Mrs Claus made her famous hot chocolate today. Morale has never been higher.",
-  "The GPS on the sleigh has been updated. 195 countries, every rooftop mapped. We're ready.",
-  "An elf suggested we switch to electric. I told him the reindeer would be offended.",
-  "The boot polisher broke. Emergency repairs underway. Cannot fly in scuffed boots. Standards.",
-  "I've been doing practice runs in the simulator. Nailed the London rooftops. Mostly.",
-  "The gift inventory check is complete. 2.5 billion presents accounted for. Give or take.",
-  "Comet has developed a slight competitive streak with Cupid. Training laps are getting intense.",
-  "The elves decorated the workshop breakroom. It looks like a glitter bomb went off. I love it.",
-  "Prancer insists on a warm-up playlist before flights. Currently it's all 80s power ballads.",
-  "I found an elf asleep in a pile of teddy bears. Can't blame him, to be fair.",
-  "The sack has been magically expanded for the 847th year running. Never gets old.",
-  "Mrs Claus has started her famous Christmas biscuits. The workshop smells incredible.",
-  "Weather report from the Met Elves: clear skies expected worldwide. Fingers crossed.",
-  "The reindeer had their final health check. All nine in peak condition. Rudolph's nose: dazzling.",
-  "I've memorised every child's name on the nice list. Yes, all of them. It's a Santa thing.",
-  "The workshop floor is covered in ribbon. We've stopped trying to clean it up.",
-  "An elf asked if Santa gets nervous. I said no. I lied. A little bit. Every year.",
-  "Donner has been doing altitude training. He says he's fine. He's breathing quite heavily.",
-  "I've written my Christmas Eve speech for the elves. Mrs Claus says it's my best one yet.",
-  "The backup bells for the sleigh arrived today. You can never have too many jingle bells.",
-  "Quality control rejected a batch of toy robots. The eyes were too googly. Fair enough.",
-  "I've been stretching daily. Chimneys aren't getting any wider, and neither am I.",
-  "The navigation team has plotted the optimal route. It involves 43 million course corrections.",
-  "Vixen has been practising her landing technique. Graceful as ever. Dancer is taking notes.",
-  "The elves held a dress rehearsal of the loading sequence. 4.2 seconds. New record.",
-  "I caught an elf testing a trampoline meant for a child in Bristol. He was having the time of his life.",
-  "Mrs Claus has laid out my thermal underlayers. Seven pairs of socks. She knows the drill.",
-  "The final toy shipment arrived from Workshop B. We are fully stocked. This is not a drill.",
-  "I've polished my glasses, trimmed the beard, and practised my Ho Ho Ho. I'm ready.",
-  "The elves have hung a 'Days Until Launch' banner. The number is getting very small.",
-  "Rudolph did a full-power nose test today. Lit up the entire runway. Spectacular.",
-  "Every present has been wrapped, tagged, and loaded. The sack is practically humming with excitement.",
-  "The countdown is nearly over. The world is waiting. And honestly? I can't wait either.",
-];
-
-function HolidayPostcard({ message, holiday, isJuly }: { message: string; holiday: HolidayDestination; isJuly?: boolean }) {
+function SantaPostcard({ message, holiday, caption }: { message: string; holiday: Pick<HolidayDestination, "name" | "emoji">; caption: string }) {
   const postcardRef = useRef<HTMLDivElement>(null);
   const [sharing, setSharing] = useState(false);
   const [shareError, setShareError] = useState("");
@@ -413,7 +354,7 @@ function HolidayPostcard({ message, holiday, isJuly }: { message: string; holida
       {shareError && <p role="alert" className="mt-2 text-center text-sm text-santa-gold">{shareError}</p>}
       <div className="flex items-center justify-center gap-3 mt-3">
         <p className="text-xs font-medium text-santa-gold uppercase tracking-wider">
-          {isJuly ? "🎄 Christmas in July Postcards" : `${new Date().getFullYear()} Holiday Postcards`}
+          {caption}
         </p>
         <button
           onClick={handleShare}
@@ -429,71 +370,43 @@ function HolidayPostcard({ message, holiday, isJuly }: { message: string; holida
   );
 }
 
-function WorkshopDispatch({ message }: { message: string }) {
-  return (
-    <div className="max-w-3xl mx-auto">
-      <div className="tracker-story-card relative p-6 sm:p-8">
-        <div className="tracker-story-label absolute -top-3 left-6 px-3 py-1 rounded-full">
-          <span className="text-xs font-medium text-santa-gold uppercase tracking-wider">
-            🎄 Workshop Dispatch
-          </span>
-        </div>
-        <p className="tracker-copy leading-relaxed text-sm sm:text-base mt-2 transition-opacity duration-700">
-          {message}
-        </p>
-      </div>
-    </div>
-  );
-}
-
-export default function SantaStory({ effectiveTime, holiday, routeResearch = false, postcardsOnly = false }: SantaStoryProps) {
+export default function SantaStory({ effectiveTime, holiday, routeResearch = false }: SantaStoryProps) {
   const data = getDashboardData(effectiveTime);
-  const inDecemberPrep = isDecemberPrep(effectiveTime) && !routeResearch;
-  const inJuly = data.state === "OFF_SEASON" && isChristmasInJuly(effectiveTime);
-  const onHoliday = !!holiday && (postcardsOnly || (!routeResearch && data.state === "OFF_SEASON" && isHolidaySeason(effectiveTime)));
-
+  const season = getPostcardSeason(effectiveTime);
+  const inJuly = season === "holiday" && isChristmasInJuly(effectiveTime);
   const ctx = getDateContext(effectiveTime);
-  const holidayPostcards = holidayPostcardEntries.map((entry) =>
+  const holidayPostcards = [...holidayPostcardEntries, ...seasonalPostcards.holidayExtra].map((entry) =>
     typeof entry === "function" ? entry(ctx) : entry
   );
-  const activePostcards = inJuly ? christmasInJulyPostcards : holidayPostcards;
-
+  const delivery = season === "delivery" ? getDeliveryPostcards(effectiveTime) : null;
+  const rotationKey = `${season}:${delivery?.key || ""}`;
+  const activePostcards = season === "holiday"
+    ? (inJuly ? [...christmasInJulyPostcards, ...holidayPostcards] : holidayPostcards)
+    : delivery?.messages || seasonalPostcards[season];
   const [postcardIndex, setPostcardIndex] = useState(0);
-  const [dispatchIndex, setDispatchIndex] = useState(0);
-  const [storyMounted, setStoryMounted] = useState(false);
 
   useEffect(() => {
-    setPostcardIndex(Math.floor(Math.random() * activePostcards.length));
-    setDispatchIndex(Math.floor(Math.random() * workshopDispatches.length));
-    setStoryMounted(true);
-  }, [activePostcards.length]);
-
-  useEffect(() => {
-    if (!onHoliday || !storyMounted) return;
+    setPostcardIndex(season === "delivery" ? 0 : Math.floor(Math.random() * activePostcards.length));
+    if (routeResearch || activePostcards.length < 2) return;
     const interval = setInterval(() => {
       setPostcardIndex((prev) => (prev + 1) % activePostcards.length);
     }, 15000);
     return () => clearInterval(interval);
-  }, [onHoliday, storyMounted, activePostcards.length]);
+  }, [season, rotationKey, routeResearch, activePostcards.length]);
 
-  useEffect(() => {
-    if (!inDecemberPrep || !storyMounted) return;
-    const interval = setInterval(() => {
-      setDispatchIndex((prev) => (prev + 1) % workshopDispatches.length);
-    }, 15000);
-    return () => clearInterval(interval);
-  }, [inDecemberPrep, storyMounted]);
-
-  if (inDecemberPrep && !postcardsOnly) {
-    return <WorkshopDispatch message={workshopDispatches[dispatchIndex]} />;
-  }
-
-  if (onHoliday && holiday) {
-    return (
-      <div className="max-w-3xl mx-auto relative">
-        <HolidayPostcard message={activePostcards[postcardIndex]} holiday={holiday} isJuly={inJuly} />
-      </div>
-    );
+  if (!routeResearch) {
+    const captions = {
+      planning: "Route Planning Postcards", workshop: "Workshop Postcard",
+      delivery: "Christmas Delivery Postcards", rest: "North Pole Christmas Break",
+      party: "New Year's Eve Postcards", recovery: "New Year's Day Postcards",
+      holiday: inJuly ? "Christmas in July Postcards" : `${ctx.year} Holiday Postcards`,
+    };
+    const origin = season === "holiday" || season === "planning"
+      ? holiday || { name: "the North Pole", emoji: "🎄" }
+      : season === "party" || season === "delivery"
+        ? { name: data.currentStopName, emoji: data.currentStopFlag }
+        : { name: "the North Pole", emoji: "🎄" };
+    return <SantaPostcard message={activePostcards[postcardIndex % activePostcards.length]} holiday={origin} caption={captions[season]} />;
   }
 
   let story = "";

@@ -40,7 +40,7 @@ export default function MugshotsPreview() {
                 </span>
                 <span className="mug-info">
                 <strong>{celeb.artist}</strong>
-                <span>{celeb.link}</span>
+                <span className="mugshot-card-role">{celeb.cardLabel || celeb.link}</span>
                 <span className="mugshots-card-arrow" aria-hidden="true">›</span>
                 </span>
               </span>

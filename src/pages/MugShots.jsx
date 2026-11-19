@@ -97,7 +97,7 @@ export default function MugShots() {
   }, [filtered, page, hasMore]);
 
   const handleSearch = (e) => {
-    setSearch(e.target.value);
+    setSearch(e.target.value.replace(/^(\s*)\p{L}/u, letter => letter.toLocaleUpperCase('en-GB')));
     setSelection(null);
     setSuggestionsOpen(true);
     setActiveIndex(-1);
@@ -138,7 +138,7 @@ export default function MugShots() {
       <div className="mugshots-page-hero starry-bg">
         <div className="mugshots-hero-content">
           <h1 className="mugshots-page-title"><img className="mugshots-page-logo" src="/images/santa-radio-mugshots-logo-v1.webp" alt="Santa Radio Celebrity Mugshots" width="1680" height="945" /></h1>
-          <p className="mugshots-page-sub">{mugshotsData.filter(m => m.kind !== 'feature').length.toLocaleString('en-GB')} Famous Faces. One Festive Mug.</p>
+          <p className="mugshots-page-sub"><span className="mugshots-live-count">{mugshotsData.filter(m => m.kind !== 'feature').length.toLocaleString('en-GB')}</span> Famous Faces. One Festive Mug.</p>
           <p className="mugshots-page-desc">
             Ecurb the Elf has been out meeting famous faces with our Santa Radio mug.{' '}<br />Explore the collection from TV,
             radio, music, comedy and sport. No A.I. here!
@@ -158,6 +158,7 @@ export default function MugShots() {
               type="text"
               role="combobox"
               autoComplete="off"
+              autoCapitalize="sentences"
               aria-autocomplete="list"
               aria-expanded={menuOpen}
               aria-controls={menuOpen ? 'mugshots-suggestions' : undefined}
@@ -239,7 +240,7 @@ export default function MugShots() {
               </div>
               <div className="mugshot-info">
                 <strong>{celeb.artist}</strong>
-                <span>{celeb.link}</span>
+                <span className="mugshot-card-role">{celeb.cardLabel || celeb.link}</span>
               </div>
             </Link>
           ))}

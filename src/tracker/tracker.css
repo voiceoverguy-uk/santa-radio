@@ -618,3 +618,10 @@
 .santa-tracker .tracker-inline-report { width: 100%; margin: 8px auto 24px; }
 .santa-tracker .tracker-stage-body > .tracker-copy-divider { flex: none; align-self: center; width: min(80%, 26rem); min-height: 12px; }
 .santa-tracker .tracker-stage-body > .tracker-copy-divider::before, .santa-tracker .tracker-stage-body > .tracker-copy-divider::after { flex: 1 0 30%; min-width: 30%; }
+
+/* Give Santa's handwriting room to read on larger screens. */
+@media (min-width: 768px) {
+  .santa-tracker .tracker-postcard { max-width: 768px; }
+  .santa-tracker .tracker-postcard .postcard-ink { font-size: 28px !important; }
+  .santa-tracker .tracker-postcard .postcard-secondary-ink { font-size: 12px; }
+}
