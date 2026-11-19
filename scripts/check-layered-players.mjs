@@ -35,7 +35,7 @@ try{
    await range.focus();await range.press('Home');await page.waitForFunction(n=>document.querySelector(`[data-demo-player="${n}"] video`).currentTime<.1,name);
    await range.press('ArrowRight');assert.ok(Number(await range.inputValue())>0);
    await root.getByRole('button',{name:`Mute ${name} example`,exact:true}).click();assert.equal(await root.locator('video').evaluate(a=>a.muted),true);
-   await root.getByRole('button',{name:`Unmute ${name} example`,exact:true}).click();await page.waitForTimeout(10500);assert.equal(await root.locator('.video-reveal').getAttribute('aria-hidden'),'true');
+   await root.getByRole('button',{name:`Unmute ${name} example`,exact:true}).click();await page.waitForTimeout(3500);assert.equal(await root.locator('.video-reveal').getAttribute('aria-hidden'),'true');
   }
   await page.getByRole('button',{name:'Play Kids example',exact:true}).click();await page.getByRole('button',{name:'Play Dad example',exact:true}).click();assert.equal(await page.locator('[data-demo-player="Kids"] video').evaluate(a=>a.paused),true);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);

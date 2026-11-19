@@ -9,7 +9,7 @@ players.forEach(player=>{
  let frame=0,scrubbing=false,hideTimer;
  const setExpanded=value=>{offer.classList.toggle('expanded',value);expand.setAttribute('aria-expanded',String(value));expand.setAttribute('aria-label',`${value?'Reduce':'Enlarge'} ${name} video`);expand.textContent=value?'⤡':'⤢';};
  const show=()=>{clearTimeout(hideTimer);player.classList.add('video-visible');reveal.inert=false;reveal.setAttribute('aria-hidden','false');};
- const scheduleHide=()=>{clearTimeout(hideTimer);if(video.paused&&player.classList.contains('video-visible'))hideTimer=setTimeout(()=>{if(!video.paused)return;if(reveal.contains(document.activeElement))play.focus({preventScroll:true});setExpanded(false);player.classList.remove('video-visible');reveal.inert=true;reveal.setAttribute('aria-hidden','true');},10000);};
+ const scheduleHide=()=>{clearTimeout(hideTimer);if(video.paused&&player.classList.contains('video-visible'))hideTimer=setTimeout(()=>{if(!video.paused)return;if(reveal.contains(document.activeElement))play.focus({preventScroll:true});setExpanded(false);player.classList.remove('video-visible');reveal.inert=true;reveal.setAttribute('aria-hidden','true');},3000);};
  ['pointerdown','keydown','input'].forEach(event=>player.addEventListener(event,scheduleHide));
  expand.addEventListener('click',()=>{setExpanded(!offer.classList.contains('expanded'));scheduleHide();});
  video.addEventListener('play',show);video.addEventListener('pause',scheduleHide);video.addEventListener('ended',scheduleHide);

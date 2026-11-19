@@ -1,0 +1,21 @@
+const giftDialog=document.querySelector('.gift-dialog'),giftOpen=document.querySelector('[data-gift-open]');
+if(giftDialog&&giftOpen){
+ const input=giftDialog.querySelector('[data-gift-name]'),display=giftDialog.querySelector('.gift-display'),caption=giftDialog.querySelector('[data-gift-caption]');
+ const titles=['Nice List certificate','Letter from Santa','Personalised Santa picture'];let index=0,generation=0,closeTimer;
+ const clean=value=>typeof value==='string'?value.normalize('NFC').replace(/[\u0000-\u001f\u007f]/g,'').trim().slice(0,80):'';
+ const selected=()=>{try{const entry=JSON.parse(sessionStorage.getItem('santa-preview-recipient')||'null');return entry&&Date.now()-entry.at<7200000?clean(entry.name):'';}catch{return '';}};
+ const font=document.fonts.load('italic 40px GiftLora');
+ const images=new Map();const image=src=>{if(!images.has(src))images.set(src,new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=reject;i.src=src;}));return images.get(src);};
+ async function render(){const token=++generation,name=clean(input.value)||'Charlotte';caption.textContent=`${index+1} / 3 — ${titles[index]}`;display.replaceChildren();
+  if(index===1){await image('/images/santa-radio-letterhead.webp').catch(()=>null);if(token!==generation)return;const article=document.createElement('article');article.className='gift-letter';article.setAttribute('aria-label',`Example letter for ${name}`);
+   for(const text of [`Dear ${name},`,`A very merry Christmas to you from the North Pole! The elves are busy wrapping presents, the reindeer are getting ready, and I am looking forward to my Christmas Eve journey.`,`I hear you have been trying hard this year. Keep being kind, helping others and sharing your wonderful smile.`,`Your personalised letter will celebrate the little things that make you special, using the details chosen for your message.`,`With Christmas wishes,`,`Santa Claus`]){const p=document.createElement('p');p.textContent=text;article.append(p);}display.append(article);return;}
+  try{const isCertificate=index===0;const art=await image(isCertificate?'/certificates/examples/blank-master.webp':'/images/santa-nice-list.jpg');await font;if(token!==generation)return;
+   const canvas=document.createElement('canvas');canvas.width=art.naturalWidth;canvas.height=art.naturalHeight;canvas.setAttribute('role','img');canvas.setAttribute('aria-label',`${titles[index]} for ${name}`);const ctx=canvas.getContext('2d');ctx.drawImage(art,0,0);ctx.textAlign='center';ctx.textBaseline='middle';let size=canvas.width*(isCertificate?.076:.09);const max=canvas.width*(isCertificate?.74:.31);ctx.font=`italic ${size}px GiftLora`;while(ctx.measureText(name).width>max&&size>10){size--;ctx.font=`italic ${size}px GiftLora`;}
+   ctx.fillStyle=isCertificate?'#f1d995':'#19392d';ctx.fillText(name,canvas.width*(isCertificate?.5:1075.5/1536),canvas.height*(isCertificate?.425:655.5/1024));display.append(canvas);
+  }catch{if(token===generation)display.textContent='This gift preview could not load. Please try again.';}
+ }
+ function close(){if(giftDialog.classList.contains('closing'))return;giftDialog.classList.add('closing');closeTimer=setTimeout(()=>{giftDialog.close();giftDialog.classList.remove('closing');giftOpen.focus({preventScroll:true});},matchMedia('(prefers-reduced-motion: reduce)').matches?0:350);}
+ giftOpen.addEventListener('click',()=>{clearTimeout(closeTimer);giftDialog.classList.remove('closing');input.value=selected()||input.value||'Charlotte';index=0;render();giftDialog.showModal();});
+ giftDialog.querySelector('[data-gift-close]').addEventListener('click',close);giftDialog.addEventListener('cancel',e=>{e.preventDefault();close();});giftDialog.addEventListener('click',e=>{if(e.target===giftDialog){const b=giftDialog.getBoundingClientRect();if(e.clientX<b.left||e.clientX>b.right||e.clientY<b.top||e.clientY>b.bottom)close();}});
+ const move=delta=>{index=(index+delta+3)%3;render();};giftDialog.querySelector('[data-gift-prev]').addEventListener('click',()=>move(-1));giftDialog.querySelector('[data-gift-next]').addEventListener('click',()=>move(1));giftDialog.addEventListener('keydown',e=>{if(e.target===input)return;if(e.key==='ArrowRight'){e.preventDefault();move(1);}if(e.key==='ArrowLeft'){e.preventDefault();move(-1);}});input.addEventListener('input',render);
+}
