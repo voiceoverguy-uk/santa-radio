@@ -183,7 +183,7 @@ export default function WorkshopMessageAudio({
       URL.revokeObjectURL(urlRef.current);
       resultsRef.current = resultsRef.current.filter(result => result.url !== urlRef.current);
     }
-    const result = { archiveId: response.headers.get('X-Studio-Archive'), url: objectUrl, audioBlob, clipStarts: completed.clipStarts, record: { ...completed.record }, spelling: completedSpelling,
+    const result = { archiveId: response.headers.get('X-Studio-Archive'), url: objectUrl, audioBlob, clipStarts: completed.clipStarts, clipEnds: completed.clipEnds, record: { ...completed.record }, spelling: completedSpelling,
       writtenName: getWorkshopWrittenName(completed.record.name, completedSpelling) };
     result.gift = readyCallbackRef.current?.(completed) || null;
     resultsRef.current = [...resultsRef.current, result];

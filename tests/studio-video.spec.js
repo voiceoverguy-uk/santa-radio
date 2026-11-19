@@ -24,6 +24,8 @@ for (const width of [390, 1280]) test(`paid result plays and downloads premium M
     await page.route('**/api/santa-workshop-catalogue*', r=>r.fulfill({json:workshopCatalogueFixture}));
     await page.route('**/api/santa-names',r=>r.fulfill({json:{records:[{id:'dixie-variant',name:'Dixie',selectionToken:'fixture',previewUrl:'/api/santa-name-preview?token=fixture'}]}}));
     const fixture=await mockStudioGeneration(page,{limited:true});
+    const originalSelection=fixture.selection;
+    fixture.selection=choices=>({...originalSelection(choices),clipStarts:{treat:56,place:69},clipEnds:{talent:28,activity:36,achievement:43}});
     const audio=join(folder,'fixture.mp3');execFileSync(ffmpeg,['-v','error','-f','lavfi','-i','sine=frequency=440:duration=2',audio]);fixture.audio=readFileSync(audio);
     await page.goto('/bespoke-personalised-message-from-santa');
     const decline=page.getByRole('button',{name:'Decline optional cookies',exact:true});if(await decline.isVisible())await decline.click();
@@ -47,7 +49,7 @@ for (const width of [390, 1280]) test(`paid result plays and downloads premium M
     expect(fixture.posts).toHaveLength(1);
     const link=result.getByRole('link',{name:'Download your message'});
     await expect(link).toBeVisible({timeout:90000});
-    expect(await page.evaluate(()=>window.paidCaptionText)).toContain('Great at Tennis and Completing a jigsaw puzzle');
+    expect(await page.evaluate(()=>window.paidCaptionText)).toEqual(expect.arrayContaining(['Great at Tennis', 'Trying hard at Teamwork', 'Completing a jigsaw puzzle']));
     await expect(result.locator('audio')).toHaveCount(0);
     const giftBox = page.locator('.smw-written-name');
     expect((await result.boundingBox()).y + (await result.boundingBox()).height).toBeLessThanOrEqual((await giftBox.boundingBox()).y);

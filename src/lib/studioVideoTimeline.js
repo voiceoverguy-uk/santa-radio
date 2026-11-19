@@ -16,11 +16,26 @@ export function studioVideoTimeline(result) {
     ? result.clipStarts[key] + 1 : fallback;
   const treatStart = cue('treat', 57), placeStart = cue('place', 70);
   const approvedStart = placeStart + 15;
+  const selectedStrengths = [
+    { id: 'talent', text: details.talent ? `Great at ${details.talent}` : '' },
+    { id: 'activity', text: details.activity ? `Trying hard at ${details.activity}` : '' },
+    { id: 'achievement', text: details.achievement || '' },
+  ].filter(caption => caption.text);
+  const hasMeasuredStrengths = selectedStrengths.length > 0 && selectedStrengths.every(caption =>
+    Number.isFinite(result.clipEnds?.[caption.id]) && result.clipEnds[caption.id] >= 0);
+  const strengthCaptions = hasMeasuredStrengths
+    ? selectedStrengths.map((caption, index) => ({ ...caption,
+      start: result.clipEnds[caption.id],
+      end: Math.min(index + 1 < selectedStrengths.length
+        ? result.clipEnds[selectedStrengths[index + 1].id] : treatStart - 1, treatStart - 1),
+    })).filter(caption => caption.end > caption.start)
+    : strengths ? [{ id: 'strengths', text: `Great at ${strengths}`, start: 38, end: Math.min(50, treatStart - 1) }] : [];
+
 
   return [
     { id: 'name', text: (result.writtenName || '').trim(), start: 10 },
     { id: 'age', text: ` aged ${studioAge(result)}`, start: 18 },
-    ...(strengths ? [{ id: 'strengths', text: `Great at ${strengths}`, start: 38, end: Math.min(50, treatStart - 1) }] : []),
+    ...strengthCaptions,
     ...(details.treats ? [{ id: 'treat', text: `Thank you for leaving out ${details.treats}`, start: treatStart, end: Math.min(treatStart + 4, placeStart - 1) }] : []),
     ...(details.destination ? [{ id: 'destination', text: `Santa on the way to ${details.destination}`, start: placeStart, end: placeStart + 6 }] : []),
     { id: 'approved', text: 'Nice List Approved!', start: approvedStart, end: approvedStart + 5 },
