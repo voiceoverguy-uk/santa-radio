@@ -1,3 +1,4 @@
+import messageTest from './server/message-test.js';
 import dadMessage from './api/dad-studio-message.js';
 import dadAccess from './api/dad-studio-access.js';
 import dadCheckout from './api/dad-studio-checkout.js';
@@ -64,6 +65,7 @@ const server = createServer(async (req, res) => {
     let pathname;
     try { pathname = decodeURIComponent(publicRequestUrl(req.url, 'http://server').pathname); }
     catch { res.writeHead(400).end('Invalid path'); return; }
+    if (['/message-test','/message-test/','/api/message-test'].includes(pathname)) return messageTest(req,res);
     if (pathname === auditionPath || pathname.startsWith(`${auditionPath}/`)) {
       return unavailableAudition(req, res, () => res.writeHead(404).end('Audition unavailable.'));
     }

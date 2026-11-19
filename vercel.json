@@ -111,6 +111,10 @@
   },
   "routes": [
     {
+      "src": "/message-test/?",
+      "dest": "/api/message-test"
+    },
+    {
       "src": "/names/?",
       "status": 308,
       "headers": {
