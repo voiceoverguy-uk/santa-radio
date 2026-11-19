@@ -10,7 +10,7 @@ export function selectStitcherFiles(files) {
   return selected;
 }
 
-export function drawStitcherImage(canvas, image, name, branded = false) {
+export function drawStitcherImage(canvas, image, name, branded = false, captionStage = 'complete') {
   const scale = Math.min(1, 1920 / Math.max(image.naturalWidth, image.naturalHeight));
   canvas.width = branded ? 1920 : Math.max(2, Math.round(image.naturalWidth * scale / 2) * 2);
   canvas.height = branded ? 1080 : Math.max(2, Math.round(image.naturalHeight * scale / 2) * 2);
@@ -18,7 +18,7 @@ export function drawStitcherImage(canvas, image, name, branded = false) {
   ctx.fillStyle = '#101820';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-  if (!name.trim() && !branded) return;
+  if (captionStage === 'blank' || (!name.trim() && !branded)) return;
   const band = canvas.height * (branded ? 0.25 : 0.22);
   ctx.fillStyle = branded ? '#0b3025' : 'rgba(0,0,0,0.75)';
   if (!branded) ctx.fillRect(0, canvas.height - band, canvas.width, band);
@@ -26,7 +26,8 @@ export function drawStitcherImage(canvas, image, name, branded = false) {
   ctx.textBaseline = 'middle';
   ctx.fillStyle = branded ? '#efd18a' : '#fff';
   ctx.font = `${Math.min(canvas.width * 0.038, band * 0.2)}px Georgia, serif`;
-  ctx.fillText(name.trim() ? 'A message from Santa to' : 'A message from Santa', canvas.width / 2, canvas.height - band * (name.trim() ? 0.72 : 0.5));
+  ctx.fillText(captionStage === 'intro' ? 'A message from Santa to...' : name.trim() ? 'A message from Santa to' : 'A message from Santa', canvas.width / 2, canvas.height - band * (name.trim() ? 0.72 : 0.5));
+  if (captionStage === 'intro') return;
   let size = Math.min(canvas.width * 0.075, band * 0.42);
   ctx.font = `italic ${size}px Georgia, serif`;
   while (ctx.measureText(name.trim()).width > canvas.width * 0.9 && size > 1) {
@@ -38,3 +39,14 @@ export function drawStitcherImage(canvas, image, name, branded = false) {
 }
 
 export const stitcherArguments = ['-loop', '1', '-framerate', '2', '-i', 'image.png', '-i', 'audio.mp3', '-map', '0:v:0', '-map', '1:a:0', '-c:v', 'libx264', '-preset', 'ultrafast', '-tune', 'stillimage', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '192k', '-shortest', '-movflags', '+faststart', 'output.mp4'];
+
+// Full-frame reveals keep the same artwork and text positions throughout playback.
+export const freeMessageVideoArguments = [
+  '-loop', '1', '-framerate', '2', '-i', 'blank.png',
+  '-loop', '1', '-framerate', '2', '-i', 'intro.png',
+  '-loop', '1', '-framerate', '2', '-i', 'complete.png', '-i', 'audio.mp3',
+  '-filter_complex', "[0:v][1:v]overlay=enable='gte(t,3)'[intro];[intro][2:v]overlay=enable='gte(t,10)',format=yuv420p[video]",
+  '-map', '[video]', '-map', '3:a:0', '-c:v', 'libx264', '-preset', 'ultrafast',
+  '-tune', 'stillimage', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '192k',
+  '-shortest', '-movflags', '+faststart', 'output.mp4',
+];
