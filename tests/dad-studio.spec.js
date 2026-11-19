@@ -17,6 +17,10 @@ for(const width of [390,1280])test(`Dad Studio selects artwork last and exports 
  await page.getByRole('button',{name:'Play Santa’s message for Jack',exact:true}).click();await expect.poll(()=>page.locator('.dad-panel video').evaluate(el=>el.currentTime)).toBeGreaterThan(0);
  expect(await page.locator('.dad-panel video').evaluate(el=>[el.videoWidth,el.videoHeight])).toEqual([1280,720]);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
- const pending=page.waitForEvent('download');await link.click();const download=await pending;expect(download.suggestedFilename()).toBe('Jack-Santa.mp4');await download.saveAs(test.info().outputPath('dad-preview.mp4'));
+ const pending=page.waitForEvent('download');await link.click();const download=await pending;expect(download.suggestedFilename()).toBe('dad-message-from-santa-to-Jack.mp4');await download.saveAs(test.info().outputPath('dad-preview.mp4'));
+ const openingPixels=execFileSync(ffmpeg,['-v','error','-i',test.info().outputPath('dad-preview.mp4'),'-vf','crop=1080:55:100:565','-frames:v','1','-pix_fmt','rgb24','-f','rawvideo','pipe:1']);let openingText=0;
+ for(let i=0;i<openingPixels.length;i+=3)if(openingPixels[i]>200&&openingPixels[i+1]>200&&openingPixels[i+2]>180)openingText++;
+ expect(openingText).toBeGreaterThan(1000);
+
  await expect(page.getByRole('progressbar',{name:'Creating your video'})).toHaveCount(0,{timeout:5000});await page.screenshot({path:`/private/tmp/dad-finished-${width}.png`,fullPage:true});
 });

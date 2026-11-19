@@ -56,7 +56,7 @@ export function drawStudioVideoFrames(image, result, customTimeline) {
   const base = makeCanvas(width, height), ctx = base.getContext('2d');
   ctx.drawImage(image, 0, 0, width, height);
   const timeline = customTimeline || studioVideoTimeline(result);
-  const prefix = 'A message from Santa to ', name = result.writtenName.trim(), age = timeline.find(caption => caption.id === 'age').text;
+  const prefix = timeline.find(caption => caption.id === 'intro')?.text || 'A message from Santa to ', name = result.writtenName.trim(), age = timeline.find(caption => caption.id === 'age').text;
   let nameSize = 40;
   const measure = () => {
     ctx.font = `italic ${nameSize}px Georgia, serif`; const prefixWidth = ctx.measureText(prefix).width;
