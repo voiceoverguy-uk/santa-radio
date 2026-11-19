@@ -217,6 +217,10 @@
       "dest": "/api/public-page?__sr_route=/$1"
     },
     {
+      "src": "/dad-message-maker/?",
+      "dest": "/api/public-page?__sr_route=/dad-message-maker"
+    },
+    {
       "handle": "filesystem"
     },
     {
