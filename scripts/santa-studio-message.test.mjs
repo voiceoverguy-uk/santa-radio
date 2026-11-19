@@ -401,6 +401,7 @@ test('real FFmpeg: pause-preserving constant gain, repeated name PCM, audible mi
     }
     assert.equal(frames, order.reduce((sum, source) => sum + prepared.get(source).frames, 0));
     assert.equal(order.filter(source => source === paths.name).length, 2);
+    assert.equal(clipStarts.secondName, 1 + order.slice(0, order.lastIndexOf(paths.name)).reduce((sum, source) => sum + prepared.get(source).frames, 0) / 48000);
     const namePcm = await readFile(prepared.get(paths.name).target);
     assert.equal(namePcm.length / 8 / 48000, 1.5);
     for (let offset = 52800 * 8; offset < namePcm.length; offset += 4) {

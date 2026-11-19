@@ -46,12 +46,22 @@ test('selected sport or funny choice, activity and achievement appear at their o
     clipEnds: {talent: 28 + shift, activity: 36 + shift, achievement: 43 + shift}};
    const lines = studioVideoTimeline(measured);
    assert.equal(lines.find(c => c.id === 'activity').start, 36 + shift);
-   assert.equal(lines.find(c => c.id === 'activity').text, 'Trying hard at Teamwork');
+   assert.equal(lines.find(c => c.id === 'activity').text, talent ? 'And… trying hard at Teamwork' : 'Trying hard at Teamwork');
    assert.equal(lines.find(c => c.id === 'achievement').start, 43 + shift);
    assert.equal(lines.find(c => c.id === 'achievement').text, 'Helping at home');
    assert.equal(lines.some(c => c.id === 'talent'), Boolean(talent));
    if (talent) assert.equal(lines.find(c => c.id === 'talent').start, 28 + shift);
    for (let t = 0; t < 120; t += .05) assert.ok(lines.slice(2).filter(c => studioCaptionOpacity(c,t)>0).length <= 1);
   }
+ }
+});
+
+test('Nice List follows the second name clip and lasts five seconds', () => {
+ for (const secondName of [74.25, 103.75]) {
+  const lines = studioVideoTimeline({...result, clipStarts: {treat:50,place:70,secondName}});
+  const approved = lines.find(c => c.id === 'approved');
+  assert.equal(approved.start, secondName);
+  assert.equal(approved.end, secondName + 5);
+  assert.ok(lines.find(c => c.id === 'destination').end <= approved.start);
  }
 });

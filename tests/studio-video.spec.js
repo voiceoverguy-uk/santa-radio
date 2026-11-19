@@ -49,7 +49,7 @@ for (const width of [390, 1280]) test(`paid result plays and downloads premium M
     expect(fixture.posts).toHaveLength(1);
     const link=result.getByRole('link',{name:'Download your message'});
     await expect(link).toBeVisible({timeout:90000});
-    expect(await page.evaluate(()=>window.paidCaptionText)).toEqual(expect.arrayContaining(['Great at Tennis', 'Trying hard at Teamwork', 'Completing a jigsaw puzzle']));
+    expect(await page.evaluate(()=>window.paidCaptionText)).toEqual(expect.arrayContaining(['Great at Tennis', 'And… trying hard at Teamwork', 'Completing a jigsaw puzzle']));
     await expect(result.locator('audio')).toHaveCount(0);
     const giftBox = page.locator('.smw-written-name');
     expect((await result.boundingBox()).y + (await result.boundingBox()).height).toBeLessThanOrEqual((await giftBox.boundingBox()).y);

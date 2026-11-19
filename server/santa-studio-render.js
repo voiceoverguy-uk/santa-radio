@@ -92,8 +92,9 @@ export async function renderStudioMessage({ name, choices, directory, signal,
     prepared.set(source, { target, ...measurement });
   }
   const clipStarts = {}, clipEnds = {};
-  let cursorFrames = STUDIO_LEAD_IN_SECONDS * RATE;
+  let cursorFrames = STUDIO_LEAD_IN_SECONDS * RATE, nameCount = 0;
   for (const source of order) {
+    if (source === name && ++nameCount === 2) clipStarts.secondName = cursorFrames / RATE;
     for (const key of ['talent', 'activity', 'achievement', 'treat', 'place']) {
       if (source === choices[key] && clipStarts[key] === undefined) {
         clipStarts[key] = cursorFrames / RATE;
