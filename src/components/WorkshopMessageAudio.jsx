@@ -1,24 +1,11 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import StudioPreparationRunner from './StudioPreparationRunner.jsx';
 import StudioCompletedRecording from './StudioCompletedRecording.jsx';
 import { StudioAccessContext, StudioVoucherContext } from '../lib/studioAccessContext.js';
 import { getWorkshopWrittenName } from '../lib/workshopNameSpelling.js';
-import { selectStudioRunnerCostume } from '../lib/studioPreparationRunner.js';
 
 const MAX_BYTES = 4_400_000;
-const PREPARATION_MESSAGES = [
-  'Santa is recording. Give him a moment — the elves keep distracting him.',
-  'Santa is busy recording, although the smell of cookies isn’t helping. Hang on a moment…',
-  'Santa is recording your message. An elf just sneezed halfway through, so we’re going again.',
-  'Santa is at the microphone. We’re just waiting for Rudolph to stop chewing.',
-  'Your message is coming. Santa said “ho ho ho” so loudly, his headphones fell off.',
-  'Santa is recording. The elves have promised to be quiet. We’ll believe it when we hear it.',
-  'One moment — Santa is finishing your message. Someone opened a biscuit tin and we lost him briefly.',
-  'Santa is recording your message. Mrs Claus has reminded him this is not the time for a nap.',
-  'Hang on a moment — Santa’s checking his lines. Twice, obviously.',
-  'Santa is busy recording. We’ve hidden the mince pies until he’s finished.',
-];
+
 
 function trapDialogFocus(event) {
   if (event.key !== 'Tab') return;
@@ -62,9 +49,7 @@ export default function WorkshopMessageAudio({
   const [resetConfirmation, setResetConfirmation] = useState(false);
   const resetDialogRef = useRef(null);
   const operationRef = useRef(null);
-  const [preparationMessage, setPreparationMessage] = useState('');
   const [creationAttempt, setCreationAttempt] = useState(0);
-  const [runnerCostume, setRunnerCostume] = useState('classic');
   const writtenName = getWorkshopWrittenName(record?.name || '', spelling);
   const finishedWrittenName = results.at(-1)?.writtenName || writtenName;
   const busy = phase === 'preparing' || phase === 'receiving';
@@ -258,8 +243,6 @@ export default function WorkshopMessageAudio({
     setError('');
     const controller = new AbortController();
     requestRef.current = controller;
-    setPreparationMessage(PREPARATION_MESSAGES[Math.floor(Math.random() * PREPARATION_MESSAGES.length)]);
-    setRunnerCostume(selectStudioRunnerCostume());
     setPhase('preparing');
     const payload = { name: record.id, ...Object.fromEntries(
       ['age', 'activity', 'achievement', 'treat', 'place'].map(key => [key, choices[key]]),
@@ -370,12 +353,12 @@ export default function WorkshopMessageAudio({
     </p>}
     <div className="smw-delivery" ref={deliveryRef} tabIndex={-1} role="group" aria-label="Message preparation and recording">
     {busy && <div className="smw-message-result smw-message-preparing">
-      <p role="status" aria-live="polite">{phase === 'receiving' ? 'Receiving Santa’s recording…' : preparationMessage}</p>
+      <p role="status" aria-live="polite">Creating your Santa video…</p>
       <div className="smw-preparation-row">
         <div className="smw-preparation-controls">
           <button className="smw-change" type="button" onClick={cancel}>Cancel preparation</button>
         </div>
-        <StudioPreparationRunner key={creationAttempt} costume={runnerCostume} />
+        <div className="santa-free-video__progress"><progress aria-label="Premium MP4 creation progress" max="1" /><span>Preparing…</span></div>
       </div>
     </div>}
     {error && <div className="smw-message-result" role="alert"><p>{error}</p>

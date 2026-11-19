@@ -320,7 +320,7 @@ export default function SantaMessageWorkshop() {
     if (giftChoices.region && (!region || !regionalContext)) return null;
     const country = catalogueState.catalogue?.categories.place.find(record => record.id === giftChoices.place);
     const destination = region ? `${region.label}, ${country.label}` : country?.label;
-    return { ...Object.fromEntries([
+    return { talent: giftChoices.talent?.skip ? '' : catalogueState.catalogue?.categories?.[giftChoices.talent?.category]?.find(record => record.id === giftChoices.talent?.id)?.label || '', ...Object.fromEntries([
     ['age', 'age'], ['activity', 'activity'], ['achievement', 'achievement'],
     ['destination', 'place'], ['treats', 'treat'],
   ].map(([key, category]) => {
