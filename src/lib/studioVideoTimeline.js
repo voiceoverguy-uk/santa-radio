@@ -14,8 +14,8 @@ export function studioVideoTimeline(result) {
   const strengths = [talent, details.achievement].filter(Boolean).join(' and ');
   return [
     { id: 'age', text: ` aged ${studioAge(result)}`, start: 18 },
-    ...(strengths ? [{ id: 'strengths', text: `Great at ${strengths}`, start: 30, end: 50 }] : []),
-    ...(details.treats ? [{ id: 'treat', text: `Thank you for leaving out ${details.treats}`, start: 50, end: 61 }] : []),
+    ...(strengths ? [{ id: 'strengths', text: `Great at ${strengths}`, start: 38, end: 50 }] : []),
+    ...(details.treats ? [{ id: 'treat', text: `Thank you for leaving out ${details.treats}`, start: 54, end: 61 }] : []),
     ...(details.destination ? [{ id: 'destination', text: `Santa on the way to ${details.destination}`, start: 65, end: 76 }] : []),
     { id: 'approved', text: 'Nice List Approved!', start: 80 },
   ];
@@ -33,21 +33,21 @@ export function drawStudioVideoFrames(image, result) {
   ctx.drawImage(image, 0, 0, width, height);
   const timeline = studioVideoTimeline(result);
   const prefix = 'A message from Santa to ', name = result.writtenName.trim(), age = timeline[0].text;
-  let nameSize = 42, prefixSize = 30;
+  let nameSize = 40;
   const measure = () => {
-    ctx.font = `${prefixSize}px Georgia, serif`; const prefixWidth = ctx.measureText(prefix).width;
+    ctx.font = `italic ${nameSize}px Georgia, serif`; const prefixWidth = ctx.measureText(prefix).width;
     ctx.font = `italic ${nameSize}px Georgia, serif`;
     return { prefixWidth, nameWidth: ctx.measureText(name).width, ageWidth: ctx.measureText(age).width };
   };
   let metrics = measure();
-  while (metrics.prefixWidth + metrics.nameWidth + metrics.ageWidth > width * .8 && nameSize > 10) {
-    nameSize -= .5; prefixSize = nameSize * 30 / 42; metrics = measure();
+  while (metrics.prefixWidth + metrics.nameWidth + metrics.ageWidth > width * .84 && nameSize > 10) {
+    nameSize -= .5; metrics = measure();
   }
   // Reserve the age's final width from the start so the name never jumps or overlaps.
-  const x = (width - metrics.prefixWidth - metrics.nameWidth - metrics.ageWidth) / 2;
+  const x = width * .08;
   const top = Math.round(height * .815), stripTop = Math.round(height * .75), stripHeight = height - stripTop;
   ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-  ctx.font = `${prefixSize}px Georgia, serif`; ctx.fillStyle = '#efd18a'; ctx.fillText(prefix, x, top);
+  ctx.font = `italic ${nameSize}px Georgia, serif`; ctx.fillStyle = '#fff9ed'; ctx.fillText(prefix, x, top);
   ctx.font = `italic ${nameSize}px Georgia, serif`; ctx.fillStyle = '#fff9ed'; ctx.fillText(name, x + metrics.prefixWidth, top);
   const layers = timeline.map(caption => {
     const canvas = makeCanvas(width, stripHeight), text = canvas.getContext('2d');
@@ -58,7 +58,7 @@ export function drawStudioVideoFrames(image, result) {
     } else {
       let size = 34; text.font = `italic ${size}px Georgia, serif`;
       while (text.measureText(caption.text).width > width * .72 && size > 9) { size -= .5; text.font = `italic ${size}px Georgia, serif`; }
-      text.textAlign = 'center'; text.fillStyle = caption.id === 'approved' ? '#efd18a' : '#fff9ed';
+      text.textAlign = 'center'; text.fillStyle = '#fff9ed';
       text.fillText(caption.text, width / 2, Math.round(height * .912) - stripTop);
     }
     return { ...caption, canvas, y: stripTop };
