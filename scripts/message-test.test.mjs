@@ -13,7 +13,7 @@ test('gate protects content; password issues signed session; tampering and cross
  assert.equal((await request('POST','password=wrong')).statusCode,401);
  assert.equal((await request('POST','password=headelf','','https://evil.example')).statusCode,403);
  const login=await request('POST','password=headelf');assert.equal(login.statusCode,303);assert.match(login.headers['Set-Cookie'],/HttpOnly/);
- const cookie=login.headers['Set-Cookie'].split(';')[0];const page=await request('GET','',cookie);assert.match(page.body,/Kids’ Message/);assert.match(page.body,/Dad’s Message/);assert.match(page.body,/Purchases opening soon/);
+ const cookie=login.headers['Set-Cookie'].split(';')[0];const page=await request('GET','',cookie);assert.match(page.body,/Kids’ Message/);assert.match(page.body,/Dad’s Message/);assert.match(page.body,/Purchases opening soon/);assert.match(page.body,/data-demo-player="Kids"/);assert.match(page.body,/data-demo-player="Dad"/);assert.match(page.body,/dad-adam-demo-v1.mp3/);assert.match(page.body,/santa-premium-charlotte-demo-v1.mp3/);assert.doesNotMatch(page.body,/dad-studio-jack.mp3/);
  assert.match((await request('GET','',cookie+'0')).body,/type="password"/);
  assert.match((await request('GET','',cookie+'; '+cookie)).body,/type="password"/);
 });

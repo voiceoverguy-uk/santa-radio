@@ -1,6 +1,6 @@
 import {drawStudioVideoFrames,studioTimelineArguments} from './studioVideoTimeline.js';
 import {createSantaVideo} from './createSantaVideo.js';
-export const DAD_ARTWORK=[{id:'armchair',label:'King of the remote',src:'/images/dad-armchair.png'},{id:'diy',label:'Some assembly required',src:'/images/dad-diy.png'},{id:'dinner',label:'The Christmas food coma',src:'/images/dad-dinner.png'},{id:'chef',label:'Chef’s special',src:'/images/dad-chef.png'},{id:'dancer',label:'Dad’s greatest hits',src:'/images/dad-dancer.png'}];
+export const DAD_ARTWORK=[{id:'armchair',label:'King of the remote',src:'/images/dad-armchair-framed-v1.png'},{id:'diy',label:'Some assembly required',src:'/images/dad-diy-framed-v1.png'},{id:'dinner',label:'The Christmas food coma',src:'/images/dad-dinner-framed-v1.png'},{id:'chef',label:'Chef’s special',src:'/images/dad-chef-framed-v1.png'},{id:'dancer',label:'Dad’s greatest hits',src:'/images/dad-dancer-framed-v1.png'}];
 export const dadVideoFilename = result => `dad-message-from-santa-to-${result.writtenName.trim().replace(/[\x00-\x1f\x7f/\\:*?"<>|]/g, '').replace(/\s+/g, '-')}.mp4`;
 export function dadTimeline(result){
  const s=result.clipStarts,e=result.clipEnds;
