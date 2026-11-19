@@ -129,7 +129,7 @@ function fixture(overrides = {}) {
       download: async (_record, target) => writeFile(target, 'name'),
     },
     download: async (url, target) => { state.downloads.push(url); await writeFile(target, 'clip'); },
-    render: async args => { state.renders.push(args); return { audio: Buffer.from('mp3') }; },
+    render: async args => { state.renders.push(args); return { audio: Buffer.from('mp3'), clipStarts: { treat: 56.25, place: 69.5 } }; },
     ...overrides,
   });
   return { state, handler };
@@ -160,6 +160,7 @@ test('protected Studio resolves exact ID afresh, all category IDs, private MP3 a
   assert.equal(result.headers['content-type'], 'audio/mpeg');
   const selection = JSON.parse(Buffer.from(result.headers['x-studio-selection'], 'base64').toString('utf8'));
   assert.deepEqual(selection.choices, body);
+  assert.deepEqual(selection.clipStarts, { treat: 56.25, place: 69.5 });
   assert.equal(selection.record.id, body.name);
   assert.equal(Object.hasOwn(selection.choices, 'region'), false);
   assert.match(result.headers['cache-control'], /private, no-store/);
@@ -388,10 +389,14 @@ test('real FFmpeg: pause-preserving constant gain, repeated name PCM, audible mi
       await execute(ffmpeg, ['-v', 'error', '-f', 'lavfi', '-i', `sine=frequency=${320 + index * 110}:duration=1`,
         '-af', 'apad=pad_dur=0.5', '-c:a', 'pcm_s16le', '-n', paths[key]]);
     }
-    const { audio, frames, renderedFrames, prepared, order } = await renderStudioMessage({
+    const { audio, clipStarts, frames, renderedFrames, prepared, order } = await renderStudioMessage({
       name: paths.name, choices: paths, directory, signal: AbortSignal.timeout(100000),
     });
     assert.ok(audio.length > 100000);
+    for (const key of ['treat', 'place']) {
+      const preceding = order.slice(0, order.indexOf(paths[key]));
+      assert.equal(clipStarts[key], 1 + preceding.reduce((sum, source) => sum + prepared.get(source).frames, 0) / 48000);
+    }
     assert.equal(frames, order.reduce((sum, source) => sum + prepared.get(source).frames, 0));
     assert.equal(order.filter(source => source === paths.name).length, 2);
     const namePcm = await readFile(prepared.get(paths.name).target);

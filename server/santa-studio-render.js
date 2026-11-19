@@ -91,6 +91,14 @@ export async function renderStudioMessage({ name, choices, directory, signal,
       maxSeconds: source.startsWith(`${fixed}/`) || source === fourth ? 60 : 30 });
     prepared.set(source, { target, ...measurement });
   }
+  const clipStarts = {};
+  let cursorFrames = STUDIO_LEAD_IN_SECONDS * RATE;
+  for (const source of order) {
+    for (const key of ['treat', 'place']) {
+      if (source === choices[key] && clipStarts[key] === undefined) clipStarts[key] = cursorFrames / RATE;
+    }
+    cursorFrames += prepared.get(source).frames;
+  }
   const frames = order.reduce((sum, source) => sum + prepared.get(source).frames, 0);
   if (frames / RATE > MAX_STUDIO_SECONDS) throw new Error('Message exceeds duration budget.');
   const voice = join(directory, 'speech.f32');
@@ -106,5 +114,5 @@ export async function renderStudioMessage({ name, choices, directory, signal,
   if (mixed.stderr) throw new Error('Mix decode failed.');
   const audio = await readFile(output);
   if (!audio.length || audio.length > 4_400_000) throw new Error('Invalid output size.');
-  return { audio, frames, renderedFrames: frames + STUDIO_LEAD_IN_SECONDS * RATE, prepared, order };
+  return { audio, clipStarts, frames, renderedFrames: frames + STUDIO_LEAD_IN_SECONDS * RATE, prepared, order };
 }

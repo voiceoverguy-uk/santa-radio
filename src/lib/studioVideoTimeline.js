@@ -12,13 +12,18 @@ export function studioVideoTimeline(result) {
   const details = result.gift?.details || {};
   const talent = details.talent || details.activity;
   const strengths = [talent, details.achievement].filter(Boolean).join(' and ');
+  const cue = (key, fallback) => Number.isFinite(result.clipStarts?.[key]) && result.clipStarts[key] >= 0
+    ? result.clipStarts[key] + 1 : fallback;
+  const treatStart = cue('treat', 57), placeStart = cue('place', 70);
+  const approvedStart = placeStart + 15;
+
   return [
     { id: 'name', text: (result.writtenName || '').trim(), start: 10 },
     { id: 'age', text: ` aged ${studioAge(result)}`, start: 18 },
-    ...(strengths ? [{ id: 'strengths', text: `Great at ${strengths}`, start: 38, end: 50 }] : []),
-    ...(details.treats ? [{ id: 'treat', text: `Thank you for leaving out ${details.treats}`, start: 57, end: 61 }] : []),
-    ...(details.destination ? [{ id: 'destination', text: `Santa on the way to ${details.destination}`, start: 70, end: 76 }] : []),
-    { id: 'approved', text: 'Nice List Approved!', start: 85, end: 90 },
+    ...(strengths ? [{ id: 'strengths', text: `Great at ${strengths}`, start: 38, end: Math.min(50, treatStart - 1) }] : []),
+    ...(details.treats ? [{ id: 'treat', text: `Thank you for leaving out ${details.treats}`, start: treatStart, end: Math.min(treatStart + 4, placeStart - 1) }] : []),
+    ...(details.destination ? [{ id: 'destination', text: `Santa on the way to ${details.destination}`, start: placeStart, end: placeStart + 6 }] : []),
+    { id: 'approved', text: 'Nice List Approved!', start: approvedStart, end: approvedStart + 5 },
   ];
 }
 export function studioCaptionOpacity(caption, time) {

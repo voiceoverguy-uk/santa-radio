@@ -25,3 +25,15 @@ test('export bounds bitrate, preserves audio, and stops at recording duration',(
  assert.ok(args.includes('128k'));assert.ok(args.includes('350k'));assert.equal(args[args.indexOf('-t')+1],'90');
  const filter=args[args.indexOf('-filter_complex')+1];assert.match(filter,/fade=t=in:st=18/);assert.match(filter,/fade=t=out:st=49.25/);assert.match(filter,/overlay=0:540/);
 });
+
+test('treat and country captions follow each rendered clip, including longer choices', () => {
+ for (const [treat, place] of [[45.25, 59.75], [68.125, 91.5]]) {
+  const lines = studioVideoTimeline({...result, clipStarts: {treat, place}});
+  const get = id => lines.find(line => line.id === id);
+  assert.equal(get('treat').start, treat + 1);
+  assert.equal(get('destination').start, place + 1);
+  assert.equal(get('approved').start, place + 16);
+  assert.equal(get('approved').end - get('approved').start, 5);
+  for (let t = 0; t < 120; t += .05) assert.ok(lines.slice(2).filter(c => studioCaptionOpacity(c,t)>0).length <= 1);
+ }
+});

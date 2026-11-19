@@ -202,7 +202,7 @@ export function createStudioMessageHandler({
         await blobLibrary.download('4th.wav', fourth, inventory.release, controller.signal);
       }
       stage = 'render';
-      const { audio } = await render({ name, choices: paths, directory, signal: controller.signal, ...(fourth ? { fourth } : {}) });
+      const { audio, clipStarts } = await render({ name, choices: paths, directory, signal: controller.signal, ...(fourth ? { fourth } : {}) });
       controller.signal.throwIfAborted();
       if (!audio?.length || audio.length > 4_400_000) throw new Error('Invalid rendered MP3.');
       // Success boundary: full MP3 prepared and response about to be sent.
@@ -215,7 +215,7 @@ export function createStudioMessageHandler({
       controller.signal.throwIfAborted();
       audioResponse(audio, { record: {
         id: recording.id, name: recording.name || '', variant: recording.variant || '',
-      }, choices: data });
+      }, choices: data, clipStarts });
     } catch (error) {
       if (!error.status || error.status >= 500) {
         try { reportFailure(error, stage); } catch { /* Diagnostics never affect access. */ }
