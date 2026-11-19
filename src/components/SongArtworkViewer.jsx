@@ -5,13 +5,13 @@ export default function SongArtworkViewer({ song, compact = false }) {
   const trigger = useRef(null);
   const dialog = useRef(null);
   const backdropPress = useRef(false);
-  const [artwork, setArtwork] = useState(null);
+  const [open, setOpen] = useState(false);
   const description = song?.song
     ? `${song.song} by ${song.artist}`
     : song?.artist || 'Santa Radio live';
 
   useEffect(() => {
-    if (!artwork) return;
+    if (!open) return;
     const modal = dialog.current;
     const previousOverflow = document.body.style.overflow;
     modal.showModal();
@@ -20,7 +20,7 @@ export default function SongArtworkViewer({ song, compact = false }) {
       modal.close();
       document.body.style.overflow = previousOverflow;
     };
-  }, [artwork]);
+  }, [open]);
 
   return <>
     <button
@@ -29,11 +29,7 @@ export default function SongArtworkViewer({ song, compact = false }) {
       className={`song-artwork-enlarge${compact ? ' song-artwork-enlarge--compact' : ''}`}
       aria-label={`Enlarge artwork for ${description}`}
       aria-haspopup="dialog"
-      onClick={() => {
-        // Use the displayed image, including any fallback selected after a load error.
-        const image = trigger.current.querySelector('img');
-        setArtwork({ src: image.currentSrc || image.src, alt: image.alt, artist: song?.artist, title: song?.song });
-      }}
+      onClick={() => setOpen(true)}
     >
       <SongArtwork song={song} width="512" height="512" className="song-artwork-img" />
       {!compact && <span className="song-artwork-hint" aria-hidden="true">Enlarge artwork</span>}
@@ -43,7 +39,7 @@ export default function SongArtworkViewer({ song, compact = false }) {
       className="song-artwork-dialog"
       aria-label={`Artwork for ${description}`}
       onClose={() => {
-        setArtwork(null);
+        setOpen(false);
         trigger.current?.focus({ preventScroll: true });
       }}
       onPointerDown={event => {
@@ -59,11 +55,11 @@ export default function SongArtworkViewer({ song, compact = false }) {
           onClick={() => dialog.current.close()} aria-label="Close enlarged artwork">
           Close <span aria-hidden="true">×</span>
         </button>
-        {artwork && <figure className="song-artwork-framed">
-          <img src={artwork.src} alt={artwork.alt} className="song-artwork-enlarged" />
+        {open && <figure className="song-artwork-framed">
+          <SongArtwork song={song} className="song-artwork-enlarged" />
           <figcaption className="song-artwork-caption">
-            <strong>{artwork.artist || 'Santa Radio'}</strong>
-            {artwork.title && <span>{artwork.title}</span>}
+            <strong>{song?.artist || 'Santa Radio'}</strong>
+            {song?.song && <span>{song.song}</span>}
           </figcaption>
         </figure>}
       </div>
