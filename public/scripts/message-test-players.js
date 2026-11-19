@@ -14,7 +14,7 @@ players.forEach(player=>{
  expand.addEventListener('click',()=>{setExpanded(!offer.classList.contains('expanded'));scheduleHide();});
  video.addEventListener('play',show);video.addEventListener('pause',scheduleHide);video.addEventListener('ended',scheduleHide);
 
- const paintHint=position=>{const start=cues.find(t=>position>=t&&position<t+3.5);const opacity=start===undefined?0:position-start<=3?1:1-(position-start-3)/.5;hint.style.opacity=String(Math.max(0,opacity));hint.setAttribute('aria-hidden',String(opacity===0));};
+ const paintHint=position=>{const start=cues.find(t=>position>=t&&position<t+3.5);const opacity=start===undefined?0:position-start<=3?1:1-(position-start-3)/.5;hint.style.opacity=String(Math.max(0,opacity));hint.classList.toggle('is-cue',opacity>0);hint.setAttribute('aria-hidden',String(opacity===0));};
  mute.setAttribute('aria-label',`Mute ${name} example`);
  const duration=()=>Number.isFinite(video.duration)?video.duration:0;
  const paint=(position=video.currentTime)=>{paintHint(position);const total=duration();seek.disabled=!total;seek.max=String(total||1);if(!scrubbing)seek.value=String(position);knob.style.left=`${total?Math.max(0,Math.min(100,position/total*100)):0}%`;clock.textContent=`${time(position)} / ${time(total)}`;seek.setAttribute('aria-valuetext',`${time(position)} of ${time(total)}`);};
