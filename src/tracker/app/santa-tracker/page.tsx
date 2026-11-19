@@ -11,10 +11,7 @@ export default function SantaTrackerPage() {
     <SantaTrackerClient heading={<>
       <h1 className="tracker-heading text-3xl sm:text-4xl lg:text-5xl tracking-tight">Track Santa<br /><span className="tracker-heading-accent">All Year Round</span></h1>
     </>} introCopy={<>
-      <p className="tracker-copy mt-3 max-w-2xl mx-auto text-sm sm:text-base">Where is Santa now? Follow Santa all year with our free interactive Santa Tracker. Discover his holiday adventures, route-research trips and North Pole preparations, then join the magic of Christmas Eve.</p>
-      <p className="tracker-copy mt-3 max-w-2xl mx-auto text-sm sm:text-base">Follow Santa’s estimated 290-stop Christmas Eve journey, from Kiritimati through cities around the world and Antarctic research stations, finishing in Honolulu, Hawaii. The journey runs from 10:00 UTC on 24 December to 11:20 UTC on 25 December.</p>
-      <p className="tracker-copy mt-2 text-xs">A make-believe itinerary using real destination coordinates and Christmas-time local clocks—not verified live tracking. Browse every region now, or follow Santa automatically during the journey.</p>
-      <p className="tracker-copy mt-2 text-sm">The countdown is on until departure. Keep up with Santa’s seasonal travels, route preparations and festive facts. Keep checking back!</p>
+      <p className="tracker-copy mt-3 max-w-2xl mx-auto text-sm sm:text-base">Follow Santa all year with our FREE interactive Santa Tracker. Discover his holiday adventures, route-research trips and North Pole preparations, then join the magic of Christmas Eve where you can follow Santa’s 290-stop Christmas Eve journey, from Kiritimati through cities around the world, Antarctic research stations and finishing in Honolulu, Hawaii. The journey runs from 10:00 UTC on 24 December to 11:20 UTC on 25 December.</p>
     </>} />
     <section className="tracker-questions" aria-labelledby="tracker-questions-heading">
       <h2 id="tracker-questions-heading">How to track Santa all year</h2>

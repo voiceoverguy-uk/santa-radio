@@ -278,7 +278,7 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy, mapOnly = 
           </div>
       </TrackerHero>
 
-      <section className="px-4 sm:px-6 pb-12">
+      <section className="tracker-story-section px-4 sm:px-6 pb-12">
         <div className="max-w-6xl mx-auto">
           <SantaStory effectiveTime={effectiveTime} holiday={onTrip ? holiday : undefined} routeResearch={researching} />
         </div>
