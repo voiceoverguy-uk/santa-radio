@@ -60,3 +60,8 @@
   .studio-runner-travel img { animation: none; }
   .studio-runner-travel { left: 50%; transform: translateX(-50%); }
 }
+
+.smw-message-finished > .studio-runner-lane {
+  grid-column: 1 / -1;
+  width: 100%;
+}

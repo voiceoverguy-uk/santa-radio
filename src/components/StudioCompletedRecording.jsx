@@ -1,3 +1,4 @@
+import StudioPreparationRunner from './StudioPreparationRunner.jsx';
 import StudioAccountSave from './StudioAccountSave.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { useRadio } from './RadioProvider.jsx';
@@ -20,7 +21,7 @@ export default function StudioCompletedRecording({ result, ordinal, visible, sec
       .then(image => { if (active) setPoster(image); })
       .catch(() => { if (active) setPoster(STUDIO_VIDEO_ARTWORK); });
     return () => { active = false; };
-  }, [result.writtenName, result.gift]);
+  }, [result.writtenName, result.gift, result.videoBlob]);
   const [url, setUrl] = useState('');
   const [progress, setProgress] = useState(null);
   const [status, setStatus] = useState('Preparing your premium Christmas video…');
@@ -58,7 +59,7 @@ export default function StudioCompletedRecording({ result, ordinal, visible, sec
     if (typeof sectionRef === 'function') sectionRef(node); else if (sectionRef) sectionRef.current = node;
   }} tabIndex={-1} aria-label={ordinal === 1 ? 'Your finished Santa message' : 'Your second finished Santa message'}>
     <h4>{ordinal === 1 ? 'First' : 'Second'} Santa message for {result.writtenName}</h4>
-    {!hideProgress && !error && <><div className="santa-free-video__progress"><progress aria-label="Premium MP4 creation progress" max="1" value={progress ?? undefined} /><span>{progress === null ? 'Preparing…' : `${Math.floor(progress * 100)}%`}</span></div><p role="status">{status}</p></>}
+    {!hideProgress && !error && <><div className="santa-free-video__progress"><progress aria-label="Premium MP4 creation progress" max="1" value={progress ?? undefined} /><span>{progress === null ? 'Preparing…' : `${Math.floor(progress * 100)}%`}</span></div><p role="status">{status}</p>{!result.videoBlob && <StudioPreparationRunner costume="classic" />}</>}
     {error && <div role="alert"><p>{error}</p><button type="button" onClick={() => setAttempt(value => value + 1)}>Retry video preparation</button></div>}
     {url && <>
       <SantaVideoPlayer poster={poster || STUDIO_VIDEO_ARTWORK} src={url} preload="auto" glow label={`Santa’s premium video message for ${result.writtenName}`} onPlay={event => {

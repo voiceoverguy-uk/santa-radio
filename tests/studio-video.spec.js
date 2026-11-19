@@ -56,10 +56,11 @@ for (const width of [390, 1280]) test(`paid result plays and downloads premium M
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
     await expect(result).not.toContainText('MP3');
     const video=result.locator('video');expect(await video.evaluate(el=>el.controls)).toBe(false);
+    await expect(video).toHaveAttribute('poster', /^data:image\/png/);
+    await result.locator('.santa-video-player').screenshot({path:`/tmp/studio-premium-poster-${width}.png`});
     await result.getByRole('button',{name:'Play Santa’s premium video message for Dixie Rose',exact:true}).click();
     await expect.poll(()=>video.evaluate(el=>el.currentTime)).toBeGreaterThan(0);
     await result.getByRole('button',{name:'Pause Santa’s premium video message for Dixie Rose',exact:true}).click();
-    await result.locator('.santa-video-player').screenshot({path:'/tmp/studio-premium-video.png'});
     const pending=page.waitForEvent('download');await link.click();const download=await pending;
     expect(download.suggestedFilename()).toMatch(/Dixie[ -]Rose.*\.mp4$/i);
     expect(await video.evaluate(el=>[el.videoWidth,el.videoHeight])).toEqual([1280,720]);

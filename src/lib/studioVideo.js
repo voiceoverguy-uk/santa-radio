@@ -6,7 +6,10 @@ export const studioVideoFilename = result => getWorkshopDownloadName(result.reco
 export function studioVideoRecipient(result) { return `${result.writtenName} aged ${studioAge(result)}`; }
 export async function createStudioVideoPoster(result) {
   const image = new Image(); image.src = STUDIO_VIDEO_ARTWORK; await image.decode();
-  return drawStudioVideoFrames(image, result).base.toDataURL('image/png');
+  const { base, layers } = drawStudioVideoFrames(image, result);
+  const name = layers.find(layer => layer.id === 'name');
+  if (name) base.getContext('2d').drawImage(name.canvas, 0, name.y);
+  return base.toDataURL('image/png');
 }
 export function createStudioVideo(result, options) {
   return createSantaVideo({ ...options, audio: result.audioBlob, name: result.writtenName,

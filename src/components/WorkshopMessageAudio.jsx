@@ -1,3 +1,4 @@
+import StudioPreparationRunner from './StudioPreparationRunner.jsx';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import StudioCompletedRecording from './StudioCompletedRecording.jsx';
@@ -337,6 +338,7 @@ export default function WorkshopMessageAudio({
         </div>
         <div className="santa-free-video__progress"><progress aria-label="Premium MP4 creation progress" max="1" /><span>Preparing…</span></div>
       </div>
+      <StudioPreparationRunner costume="classic" />
     </div>}
     {error && <div className="smw-message-result" role="alert"><p>{error}</p>
     </div>}
