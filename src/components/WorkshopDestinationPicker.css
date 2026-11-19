@@ -193,3 +193,30 @@
     width: fit-content;
   }
 }
+
+/* Keep every available county and state prompt equally noticeable. */
+.smw-destination-picker button.smw-destination-picker__region-action {
+  color: #fff0b8;
+  text-shadow: 0 0 8px #edcc6a99;
+  animation: smw-region-prompt-glow 2s ease-in-out infinite;
+}
+
+@keyframes smw-region-prompt-glow {
+  0%, 100% {
+    text-shadow: 0 0 5px #edcc6a66;
+    box-shadow: 0 0 0 0 #d4af3700;
+    background-color: #d4af3708;
+  }
+  50% {
+    text-shadow: 0 0 12px #ffe6a3cc;
+    box-shadow: 0 0 15px 2px #d4af3740;
+    background-color: #d4af371c;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .smw-destination-picker button.smw-destination-picker__region-action {
+    animation: none;
+    box-shadow: 0 0 10px #d4af3730;
+  }
+}
