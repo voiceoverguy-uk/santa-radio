@@ -251,3 +251,5 @@ html[data-effects="off"] .hero-snow,html[data-effects="off"] .hero-aurora { disp
   .hero-countdown .countdown-unit,.partnership-strip__button,.santa-dash-promo__download { transition: none; }
 }
 @media (prefers-reduced-motion: reduce) { .hero-snow,.hero-aurora { display: none; } }
+
+@media(max-width:680px){.hero-countdown{margin-inline:auto!important;width:min(100%,400px)}.hero-countdown .countdown{justify-content:center;margin-inline:auto}}

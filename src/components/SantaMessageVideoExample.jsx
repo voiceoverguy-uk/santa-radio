@@ -1,4 +1,4 @@
-import SantaVideoPlayer from './SantaVideoPlayer.jsx';
+import FoldingVideoPlayer from './FoldingVideoPlayer.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { useRadio } from './RadioProvider.jsx';
 
@@ -29,13 +29,13 @@ export default function SantaMessageVideoExample({ recipientName = '' }) {
     return () => { resume.current?.(); resume.current = null; };
   }, []);
   return <figure className="fsm-video-preview">
-    <SantaVideoPlayer key={example.src} preload="none"
+    <FoldingVideoPlayer key={example.src} preload="none"
       poster={example.poster} src={example.src}
       label={`Play an example Santa video message for ${example.name}`}
       onPlay={() => {
         document.querySelectorAll('.message-result audio, .message-result video').forEach(media => media.pause());
         if (!resume.current) resume.current = radio?.pauseForMessage();
-      }} onPause={finish} onEnded={() => { finish(); choose(example.name); }} onError={finish} />
+      }} onPause={finish} onEnded={finish} onError={finish} />
     {recipientName.trim() && <figcaption>Create a message for {recipientName.trim()} from Santa</figcaption>}
   </figure>;
 }
