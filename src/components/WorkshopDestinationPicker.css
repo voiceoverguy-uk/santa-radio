@@ -103,7 +103,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   gap: 8px;
   margin-top: 0;
 }
@@ -140,7 +140,7 @@
 
 .smw-destination-picker__country .smw-choice-wheel-footer-row:has(> .smw-destination-picker__actions) {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) auto;
 }
 
 .smw-destination-picker__country .smw-choice-wheel-footer-row > .smw-destination-picker__actions {
@@ -161,9 +161,18 @@
 }
 
 @media (max-width: 760px) {
-  .smw-destination-picker__country .smw-choice-wheel-footer-row:has(> .smw-destination-picker__actions) > .smw-choice-wheel-status,
-  .smw-destination-picker__country .smw-choice-wheel-footer-row > .smw-destination-picker__actions {
-    grid-column: 1 / -1;
+  .smw-destination-picker__country .smw-choice-wheel-footer-row:has(> .smw-destination-picker__actions) {
+    gap: 0 8px;
+    align-items: center;
+  }
+
+  .smw-destination-picker__country .smw-choice-wheel-status {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .smw-destination-picker button.smw-destination-picker__region-action {
+    padding-inline: 0;
   }
 
   .smw-destination-picker__actions {

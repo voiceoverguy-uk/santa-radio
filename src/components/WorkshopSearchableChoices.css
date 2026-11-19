@@ -19,7 +19,7 @@
   color: var(--smw-evergreen);
   background: var(--smw-cream);
   font: inherit;
-  font-size: .9rem;
+  font-size: max(16px, 1rem);
 }
 .smw-choice-search input::placeholder { color: #8a8a8a; opacity: 1; }
 .smw-choice-search input:focus-visible { outline: 2px solid var(--smw-gold-light); outline-offset: 2px; }
