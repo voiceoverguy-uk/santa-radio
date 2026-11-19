@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useRadio } from './RadioProvider.jsx';
+import { websiteNowPlayingTrack } from '../lib/websiteNowPlayingTrack.js';
 import { matchLiveSong } from '../data/matchLiveSong.js';
 import { songPath } from '../seo/catalogue.js';
 import SongArtworkViewer from './SongArtworkViewer.jsx';
@@ -8,7 +9,7 @@ import './NowPlayingArtwork.css';
 export default function NowPlayingArtwork() {
   const { status, metadata } = useRadio();
   const isMetadataReady = metadata?.currentStatus === 'ready';
-  const current = isMetadataReady ? metadata?.current : null;
+  const current = isMetadataReady ? websiteNowPlayingTrack(metadata?.current) : null;
   const artist = typeof current?.artist === 'string' ? current.artist.trim() : '';
   const title = typeof current?.title === 'string' ? current.title.trim() : '';
   const matchedSong = isMetadataReady && current ? matchLiveSong(current).song : null;
