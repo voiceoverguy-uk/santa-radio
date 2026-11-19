@@ -14,8 +14,8 @@ try {
   assert.equal(await page.locator('.santa-message-access__privacy').count(),0);
   assert.match(await page.locator('.message-free-intro').innerText(),/Just a human Santa/);
   assert.equal(await page.locator('.santa-message-access__intro').innerText(),'Add details for a free personalised Santa message');
-  const delays=await page.locator('.message-guide-cards .smw-explainer-card').evaluateAll(els=>els.map(el=>getComputedStyle(el).animationDelay));
-  assert.deepEqual(delays,['0s','3s','6s']);
+  assert.equal(await page.locator('.free-bespoke-banner').getAttribute('href'),'/#bespoke-santa-messages');
+  assert.equal(await page.locator('.message-guide-cards').count(),0);
   await page.locator('input[name=FIRSTNAME]').fill('Preview');await page.locator('input[name=LASTNAME]').fill('Test');await page.locator('input[name=EMAIL]').fill('preview@example.com');
   await page.locator('.santa-message-access__submit').click();
   await page.locator('input[name=code]').waitFor();await page.locator('.santa-message-access__privacy').waitFor();

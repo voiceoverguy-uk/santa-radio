@@ -304,31 +304,6 @@ export default function AppScreenshots({
           </span>
         )}
       </div>
-      {voicemailPreview && (
-        <div className="app-voicemail-controls">
-          <span aria-live={rotating ? 'off' : 'polite'} aria-atomic="true">
-            {slides[active].label} · {active + 1} of {slides.length}
-          </span>
-          {!reducedMotion && (
-            <button
-              type="button"
-              className="app-voicemail-autoplay"
-              aria-label={autoplayEnabled ? 'Pause automatic screen previews' : 'Resume automatic screen previews'}
-              aria-pressed={autoplayEnabled}
-              onClick={() => setAutoplayEnabled(value => !value)}
-            >
-              {autoplayEnabled ? 'Pause previews' : 'Resume previews'}
-            </button>
-          )}
-        </div>
-      )}
-      {shopsPreview && (
-        <div className="shops-preview-controls">
-          <p>Tap the phone’s tabs to explore.</p>
-          <button type="button" onClick={() => selectScreen(1)}>Home</button>
-          <button type="button" onClick={() => selectScreen(3)}>Preview dock display</button>
-        </div>
-      )}
       {askSantaPreview && <p className="ask-santa-preview-hint">Tap the phone’s tabs to explore the app.</p>}
       {(santaRadioPreview || askSantaPreview || shopsPreview) && (
         <div className="santa-radio-preview-feedback-only">

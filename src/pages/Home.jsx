@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Sparkles, Download, Headphones } from 'lucide-react';
 import PageSeo from '../seo/PageSeo.jsx';
 import { homeMetadata } from '../seo/catalogue.js';
 import { useTrackEvent } from '../privacy/useTrackEvent.js';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import HomeHero from '../components/HomeHero.jsx';
 import { offerFreeSantaMessageName } from '../lib/freeSantaMessageHandoff.js';
 import SantaTrackerBanner from '../tracker/components/SantaTrackerBanner.tsx';
@@ -20,6 +20,18 @@ import './Home.css';
 
 export default function Home() {
   const navigate = useNavigate();
+  const location = useLocation();
+  useEffect(() => {
+    if (location.hash !== '#bespoke-santa-messages') return;
+    let cancelled = false;
+    let frame;
+    document.fonts.ready.then(() => {
+      if (cancelled) return;
+      frame = requestAnimationFrame(() => document.getElementById('bespoke-santa-messages')?.scrollIntoView({ behavior: 'instant', block: 'start' }));
+    });
+    return () => { cancelled = true; cancelAnimationFrame(frame); };
+  }, [location.key, location.hash]);
+
   const [checkerEntry, setCheckerEntry] = useState({ name: '', id: 0 });
   const checkNaughtyNice = name => {
     // Keep the child's name in memory, never in a URL or browser storage.

@@ -137,15 +137,11 @@ export default function MugShots() {
       <PageSeo metadata={collectionMetadata('mugs')} />
       <div className="mugshots-page-hero starry-bg">
         <div className="mugshots-hero-content">
-          <p className="mugshots-eyebrow">THE SANTA RADIO HALL OF FAME</p>
           <h1 className="mugshots-page-title"><img className="mugshots-page-logo" src="/images/santa-radio-mugshots-logo-v1.webp" alt="Santa Radio Celebrity Mugshots" width="1680" height="945" /></h1>
-          <p className="mugshots-page-sub">Famous faces. One festive mug.</p>
+          <p className="mugshots-page-sub">{mugshotsData.filter(m => m.kind !== 'feature').length.toLocaleString('en-GB')} Famous Faces. One Festive Mug.</p>
           <p className="mugshots-page-desc">
             Ecurb the Elf has been out meeting famous faces with our Santa Radio mug.{' '}<br />Explore the collection from TV,
             radio, music, comedy and sport. No A.I. here!
-          </p>
-          <p className="mugshots-count">
-            <span className="count-num">{mugshotsData.filter(m => m.kind !== 'feature').length}</span> mugshots and counting
           </p>
           <div className="mugshots-controls">
             <label className="mugshots-search-label" htmlFor="mugshots-search">Find a famous face</label>
@@ -218,7 +214,7 @@ export default function MugShots() {
       <div className="mugshots-grid-section starry-bg">
         <div id="mugshots-grid" className="container mugshots-grid">
           {visible.map((celeb, i) => (
-            <Link key={celeb.song || celeb.artist} to={`/mugshots/${celeb.song}`} className="mugshot-card"
+            <Link key={celeb.song || celeb.artist} to={`/mugshots/${celeb.song}`} className={`mugshot-card${celeb.song === 'the-legendary-mug' ? ' mugshot-card--legendary' : ''}`}
               onFocus={i === visible.length - 1 ? revealNextBatch : undefined}>
               <div className="mugshot-photo-frame">
               <img

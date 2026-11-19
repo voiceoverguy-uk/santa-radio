@@ -339,3 +339,19 @@
     max-width: 250px;
   }
 }
+
+.song-artwork-framed {
+  margin: 0; padding: 7px; max-width: 100%;
+  border: 3px solid #d5b457; border-radius: 10px;
+  background: linear-gradient(135deg, #f5df90, #a77b25 32%, #f3d77f 65%, #9e741e);
+  box-shadow: 0 0 0 1px #f7e4a0, 0 0 25px #d4af3740;
+}
+.song-artwork-framed .song-artwork-enlarged {
+  max-height: calc(100dvh - 250px); max-width: min(100%, 1100px);
+  border: 1px solid #8b6926; border-radius: 3px;
+}
+.song-artwork-caption {
+  display: flex; flex-direction: column; gap: 5px; padding: 14px 20px;
+  background: #103225; color: #f5e9ca; text-align: center;
+}
+.song-artwork-caption strong { color: #f0d785; font-size: 1.15rem; }

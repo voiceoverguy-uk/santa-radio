@@ -31,10 +31,6 @@ export default function Music() {
         <div className="music-hero-content">
           <h1 className="music-logo-heading"><img className="music-page-logo" src="/images/santa-radio-music-logo-v1.webp" alt="Santa Radio — The Music" width="1680" height="945" /></h1>
           <p className="music-sub-desc">Christmas songs, lyrics & artists</p>
-          <p className="music-description">
-            {songsData.length} Christmas songs with lyrics, artist info and linked videos.
-            Browse Christmas classics, pop hits and hidden gems.
-          </p>
           <div className="music-browse-controls">
           <div className="music-search-wrap">
           <svg className="music-search-symbol" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="10" cy="10" r="6" /><path d="m15 15 6 6" /></svg>

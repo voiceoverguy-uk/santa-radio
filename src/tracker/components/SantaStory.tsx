@@ -9,6 +9,7 @@ interface SantaStoryProps {
   effectiveTime: Date;
   holiday?: HolidayDestination | null;
   routeResearch?: boolean;
+  postcardsOnly?: boolean;
 }
 
 const MONTHS = [
@@ -445,11 +446,11 @@ function WorkshopDispatch({ message }: { message: string }) {
   );
 }
 
-export default function SantaStory({ effectiveTime, holiday, routeResearch = false }: SantaStoryProps) {
+export default function SantaStory({ effectiveTime, holiday, routeResearch = false, postcardsOnly = false }: SantaStoryProps) {
   const data = getDashboardData(effectiveTime);
   const inDecemberPrep = isDecemberPrep(effectiveTime) && !routeResearch;
   const inJuly = data.state === "OFF_SEASON" && isChristmasInJuly(effectiveTime);
-  const onHoliday = !routeResearch && data.state === "OFF_SEASON" && isHolidaySeason(effectiveTime) && !!holiday;
+  const onHoliday = !!holiday && (postcardsOnly || (!routeResearch && data.state === "OFF_SEASON" && isHolidaySeason(effectiveTime)));
 
   const ctx = getDateContext(effectiveTime);
   const holidayPostcards = holidayPostcardEntries.map((entry) =>
@@ -483,7 +484,7 @@ export default function SantaStory({ effectiveTime, holiday, routeResearch = fal
     return () => clearInterval(interval);
   }, [inDecemberPrep, storyMounted]);
 
-  if (inDecemberPrep) {
+  if (inDecemberPrep && !postcardsOnly) {
     return <WorkshopDispatch message={workshopDispatches[dispatchIndex]} />;
   }
 

@@ -194,3 +194,5 @@
 .santa-message-access__marketing { display: flex; align-items: flex-start; gap: 10px; font-size: .85rem; line-height: 1.5; }
 .santa-message-access__marketing input[type="checkbox"] { width: 19px; height: 19px; flex: 0 0 19px; margin: 3px 0 0; accent-color: #bd2031; }
 .santa-message-access__marketing small { display: block; margin-top: 4px; opacity: .8; }
+
+.santa-message-access__marketing a { font-size: calc(1em - 2pt); color: #f0d785; text-decoration: underline; text-underline-offset: 2px; }

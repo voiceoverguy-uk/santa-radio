@@ -261,3 +261,5 @@ html[data-effects="off"] .hero-snow,html[data-effects="off"] .hero-aurora { disp
 @keyframes home-action-glow { 0%,50%,100% { box-shadow: 0 0 3px #edce7422; } 20%,35% { box-shadow: 0 0 22px #edce7480; } }
 @keyframes home-action-shimmer { 0%,10% { transform: translateX(-130%); } 40%,100% { transform: translateX(130%); } }
 @media (prefers-reduced-motion: reduce) { .home-page :is(.mugshots-gallery-button, .contact-btn), .home-page :is(.mugshots-gallery-button, .contact-btn)::after { animation: none; } }
+
+#bespoke-santa-messages { scroll-margin-top: 90px; }

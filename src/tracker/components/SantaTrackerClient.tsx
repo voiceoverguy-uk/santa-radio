@@ -228,7 +228,7 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy, mapOnly = 
             </span>
           </div>}
 
-          {onTrip && statusMessage}
+          {researching ? <div className="tracker-inline-report text-left"><SantaStory effectiveTime={effectiveTime} holiday={holiday} routeResearch /></div> : onTrip && statusMessage}
 
           {onTrip && introCopy && showStatusMessage && (
             <div className="tracker-copy-divider" aria-hidden="true">
@@ -273,14 +273,14 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy, mapOnly = 
             <h2 id="tracker-dashboard-title" className="tracker-section-title text-lg sm:text-xl mb-4">
               Updating Estimated Dashboard
             </h2>
-            <SantaStats effectiveTime={effectiveTime} holiday={onTrip ? holiday : undefined} routeResearch={researching} northPoleVisit={northPoleVisit} />
+            <SantaStats effectiveTime={effectiveTime} holiday={onTrip ? holiday : undefined} postcardsOnly={researching} northPoleVisit={northPoleVisit} />
           </section>
           </div>
       </TrackerHero>
 
       <section className="tracker-story-section px-4 sm:px-6 pb-12">
         <div className="max-w-6xl mx-auto">
-          <SantaStory effectiveTime={effectiveTime} holiday={onTrip ? holiday : undefined} routeResearch={researching} />
+          <SantaStory effectiveTime={effectiveTime} holiday={onTrip ? holiday : undefined} postcardsOnly={researching} />
         </div>
       </section>
 
@@ -290,9 +290,7 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy, mapOnly = 
             Santa&apos;s Estimated Journey Timeline
           </h2>
           <p className="tracker-copy text-center text-xs mb-6">
-            60 estimated stops across 37 Christmas UTC offsets, from the Pacific Islands to American Samoa.
-            <br />
-            Times use local midnight at a representative place, not every year-round time zone. Santa&apos;s activities are make-believe.
+            The journey runs from 10:00 UTC on 24 December to 11:20 UTC on 25 December.
           </p>
           <SantaTimeline effectiveTime={effectiveTime} />
         </div>

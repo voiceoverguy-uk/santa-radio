@@ -22,7 +22,6 @@ import SantaCooldownUpsell from './SantaCooldownUpsell.jsx';
 import useSantaStudioLaunch from './useSantaStudioLaunch.js';
 import SantaVoiceTagline from './SantaVoiceTagline.jsx';
 import SantaStudioPromotion from './SantaStudioPromotion.jsx';
-import WorkshopExplainerCards from './WorkshopExplainerCards.jsx';
 import SantaMessageReviews from './SantaMessageReviews.jsx';
 import SelectedReviewTestimonials from './SelectedReviewTestimonials.jsx';
 import { santaNameKey, santaNameDisplay } from '../lib/santaNameSearch.js';
@@ -378,7 +377,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
           </div>
           {!hasAccess && <>
             <h2 className="santa-message-heading">A FREE PERSONALISED MESSAGE FROM SANTA</h2>
-            <p className="message-free-intro">No Artificial Intelligence! Just a human Santa, aka Father Christmas with a message to your little one.</p>
+            <p className="message-free-intro">No Artificial Intelligence! Just a human Santa, aka Father Christmas with a video message to your little one.</p>
           </>}
         </> : <>
         <p className="eyebrow">A little North Pole experiment</p>
@@ -533,7 +532,11 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
       </div>
       {!dedicatedLayout && <SantaStudioPromotion showPremiumIntro activeExampleName={activeExampleName} availableNamesText={availableNamesText}
         previewName={giftPreviewName} allowExamples={allowExamples} />}
-      {dedicatedLayout && <WorkshopExplainerCards className="message-guide-cards" variant="free-message" />}
+      {dedicatedLayout && <a className="free-bespoke-banner" href="/#bespoke-santa-messages">
+        <img src="/images/kids-message-logo-v1.png" alt="Kids’ Message from Santa" width="1680" height="945" loading="lazy" />
+        <span className="free-bespoke-banner__copy"><span className="free-bespoke-banner__eyebrow">Our bespoke Santa messages</span><strong>More Christmas magic for your little ones… and Dad!</strong><span>Two personalised Kids’ messages with digital gifts, or a NEW message for Dad the whole family can smile at.</span><span className="free-bespoke-banner__cta">Explore the bespoke experience →</span></span>
+        <img src="/images/dad-message-logo-v4.png" alt="NEW Dad’s Message from Santa" width="1680" height="945" loading="lazy" />
+      </a>}
       {dedicatedLayout ? <SelectedReviewTestimonials /> : <SantaMessageReviews />}
     </div>
   </section>;

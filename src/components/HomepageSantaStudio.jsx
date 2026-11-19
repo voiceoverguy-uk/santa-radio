@@ -19,7 +19,7 @@ export default function HomepageSantaStudio({ directEntry = false, onAuthorized,
     : 'Recorded names available to search';
 
   return (
-    <section className="santa-message-section homepage-santa-studio" aria-labelledby="homepage-santa-studio-title">
+    <section id="bespoke-santa-messages" className="santa-message-section homepage-santa-studio" aria-labelledby="homepage-santa-studio-title">
       <div className="container homepage-santa-studio__layout">
         <HomepageSectionHeading
           eyebrow="A unique Christmas treat."

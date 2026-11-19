@@ -49,7 +49,7 @@ export default function FreeSantaMessage() {
         const card = document.querySelector('#santa-messages .santa-message-box');
         const heading = card?.querySelector('h3');
         heading?.focus({ preventScroll: true });
-        stopSettling = settleSantaMessageDeskAfterEntry(location.hash === '#santa-messages' ? document.querySelector('#santa-messages') : card);
+        stopSettling = settleSantaMessageDeskAfterEntry(location.hash === '#santa-messages' ? document.querySelector('#santa-messages .message-layout') : card);
       });
     });
     return () => {

@@ -26,7 +26,7 @@ export default function Navbar() {
     if (/^\/free-santa-message\/?$/.test(location.pathname) &&
         !event.defaultPrevented && event.button === 0 &&
         !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
-      scrollToSantaMessageDesk(document.querySelector('#santa-messages'));
+      scrollToSantaMessageDesk(document.querySelector('#santa-messages .message-layout'));
     }
   };
   useEffect(() => {

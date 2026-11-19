@@ -1,6 +1,6 @@
 .music-hero {
   text-align: center;
-  padding: 60px 20px 80px;
+  padding: 35px 20px 80px;
   position: relative;
 }
 
@@ -237,6 +237,7 @@
 }
 
 .music-page .music-hero {
+  padding-top: 35px;
   border-bottom-color: rgba(199, 172, 111, .16);
 }
 
@@ -246,4 +247,6 @@
 
 
 .music-logo-heading { margin: 0 auto 20px; }
-.music-page-logo { display: block; width: min(100%, 430px); height: auto; margin: 0 auto; }
+.music-page-logo { display: block; width: min(100%, 490px); height: auto; margin: 0 auto; }
+
+@media (max-width: 767px) { .music-page .music-hero { padding-top: 33px; } }

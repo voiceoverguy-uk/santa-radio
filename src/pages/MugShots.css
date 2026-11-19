@@ -444,4 +444,6 @@
   }
 }
 
-.mugshots-page-logo { display: block; width: min(100%, 430px); height: auto; margin: 0 auto 20px; }
+.mugshots-page-logo { display: block; width: min(100%, 490px); height: auto; margin: 0 auto 20px; }
+
+.mugshots-collection-page .mugshots-grid .mugshot-card--legendary { border-color: #f1ce6b; box-shadow: 0 0 22px #efca6880, inset 0 0 10px #efca6830; }

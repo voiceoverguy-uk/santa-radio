@@ -614,3 +614,7 @@
 }
 
 .santa-tracker .tracker-story-section { padding-top: 28px; }
+
+.santa-tracker .tracker-inline-report { width: 100%; margin: 8px auto 24px; }
+.santa-tracker .tracker-stage-body > .tracker-copy-divider { flex: none; align-self: center; width: min(80%, 26rem); min-height: 12px; }
+.santa-tracker .tracker-stage-body > .tracker-copy-divider::before, .santa-tracker .tracker-stage-body > .tracker-copy-divider::after { flex: 1 0 30%; min-width: 30%; }

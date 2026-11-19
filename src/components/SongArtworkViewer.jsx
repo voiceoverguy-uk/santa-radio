@@ -32,7 +32,7 @@ export default function SongArtworkViewer({ song, compact = false }) {
       onClick={() => {
         // Use the displayed image, including any fallback selected after a load error.
         const image = trigger.current.querySelector('img');
-        setArtwork({ src: image.currentSrc || image.src, alt: image.alt });
+        setArtwork({ src: image.currentSrc || image.src, alt: image.alt, artist: song?.artist, title: song?.song });
       }}
     >
       <SongArtwork song={song} width="512" height="512" className="song-artwork-img" />
@@ -59,7 +59,13 @@ export default function SongArtworkViewer({ song, compact = false }) {
           onClick={() => dialog.current.close()} aria-label="Close enlarged artwork">
           Close <span aria-hidden="true">×</span>
         </button>
-        {artwork && <img src={artwork.src} alt={artwork.alt} className="song-artwork-enlarged" />}
+        {artwork && <figure className="song-artwork-framed">
+          <img src={artwork.src} alt={artwork.alt} className="song-artwork-enlarged" />
+          <figcaption className="song-artwork-caption">
+            <strong>{artwork.artist || 'Santa Radio'}</strong>
+            {artwork.title && <span>{artwork.title}</span>}
+          </figcaption>
+        </figure>}
       </div>
     </dialog>
   </>;

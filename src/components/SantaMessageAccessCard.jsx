@@ -37,7 +37,7 @@ export default function SantaMessageAccessCard({
       {!offer && <h3 id={`${id}-title`} tabIndex={-1}>ENTER SANTA'S RECORDING STUDIO</h3>}
       <p className="santa-message-access__intro">
         {offer ? 'These are your details. You’ll choose your child’s recorded name next.'
-          : 'Add details for a free personalised Santa message'}
+          : <>Add details for a free personalised Santa message{selectedChildName ? ` to ${selectedChildName}` : ''}</>}
       </p>
 
       <form className="santa-message-access__form" ref={formRef} onSubmit={onSubmit} noValidate>
