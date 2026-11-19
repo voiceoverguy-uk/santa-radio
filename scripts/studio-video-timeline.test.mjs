@@ -5,7 +5,7 @@ const result={writtenName:'Harry',gift:{details:{age:'7 years old',talent:'Footb
 test('paid captions use the saved selections and requested cue times',()=>{
  const lines=studioVideoTimeline(result);
  assert.deepEqual(lines.map(({id,start,end})=>({id,start,end})),[
- {id:'name',start:10,end:undefined},{id:'age',start:18,end:undefined},{id:'strengths',start:38,end:50},{id:'treat',start:57,end:61},{id:'destination',start:70,end:76},{id:'approved',start:85,end:90}]);
+ {id:'name',start:10,end:undefined},{id:'age',start:18,end:undefined},{id:'strengths',start:38,end:50},{id:'treat',start:57,end:61},{id:'destination',start:70,end:76},{id:'approved',start:85,end:95}]);
  assert.equal(lines[2].text,'Great at Football and Helping at home');
  assert.equal(lines[3].text,'Thank you for leaving out mince pies');
  assert.equal(lines[4].text,'Santa on the way to Yorkshire, England');
@@ -17,7 +17,7 @@ test('lower lines never overlap and the name/age remain above the changing capti
  assert.equal(studioCaptionOpacity(lines[0],9.9),0);assert.equal(studioCaptionOpacity(lines[0],11),1);
  for(let t=0;t<100;t+=.05)assert.ok(lines.slice(2).filter(c=>studioCaptionOpacity(c,t)>0).length<=1);
  assert.equal(studioCaptionOpacity(lines[1],17.9),0);assert.equal(studioCaptionOpacity(lines[1],19),1);assert.equal(studioCaptionOpacity(lines[1],90),1);
- for(const t of [50,51,56.9,61,62,69.9,76,84.9,90,91])assert.equal(lines.slice(2).filter(c=>studioCaptionOpacity(c,t)>0).length,0);
+ for(const t of [50,51,56.9,61,62,69.9,76,84.9,95,96])assert.equal(lines.slice(2).filter(c=>studioCaptionOpacity(c,t)>0).length,0);
  assert.equal(studioCaptionOpacity(lines[5],86),1);
 });
 test('export bounds bitrate, preserves audio, and stops at recording duration',()=>{
@@ -33,7 +33,7 @@ test('treat and country captions follow each rendered clip, including longer cho
   assert.equal(get('treat').start, treat + 1);
   assert.equal(get('destination').start, place + 1);
   assert.equal(get('approved').start, place + 16);
-  assert.equal(get('approved').end - get('approved').start, 5);
+  assert.equal(get('approved').end - get('approved').start, 10);
   for (let t = 0; t < 120; t += .05) assert.ok(lines.slice(2).filter(c => studioCaptionOpacity(c,t)>0).length <= 1);
  }
 });
@@ -56,12 +56,12 @@ test('selected sport or funny choice, activity and achievement appear at their o
  }
 });
 
-test('Nice List follows the second name clip and lasts five seconds', () => {
+test('Nice List follows the second name clip and lasts ten seconds', () => {
  for (const secondName of [74.25, 103.75]) {
   const lines = studioVideoTimeline({...result, clipStarts: {treat:50,place:70,secondName}});
   const approved = lines.find(c => c.id === 'approved');
   assert.equal(approved.start, secondName);
-  assert.equal(approved.end, secondName + 5);
+  assert.equal(approved.end, secondName + 10);
   assert.ok(lines.find(c => c.id === 'destination').end <= approved.start);
  }
 });

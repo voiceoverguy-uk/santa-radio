@@ -39,7 +39,7 @@ export function studioVideoTimeline(result) {
     ...strengthCaptions,
     ...(details.treats ? [{ id: 'treat', text: `Thank you for leaving out ${details.treats}`, start: treatStart, end: Math.min(treatStart + 4, placeStart - 1) }] : []),
     ...(details.destination ? [{ id: 'destination', text: `Santa on the way to ${details.destination}`, start: placeStart, end: Math.min(placeStart + 6, approvedStart) }] : []),
-    { id: 'approved', text: 'Nice List Approved!', start: approvedStart, end: approvedStart + 5 },
+    { id: 'approved', text: 'Nice List Approved!', start: approvedStart, end: approvedStart + 10 },
   ];
 }
 export function studioCaptionOpacity(caption, time) {
