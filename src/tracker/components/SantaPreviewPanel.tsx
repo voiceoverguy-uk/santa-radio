@@ -81,7 +81,7 @@ export default function SantaPreviewPanel({
 
   const simTime = effectiveTime.toISOString().replace("T", " ").substring(0, 19) + " UTC";
 
-  const speeds = [1, 10, 60, 300];
+  const speeds = [0, 1, 10, 60, 300];
 
   return (
     <div className="tracker-preview-panel fixed bottom-4 left-4 z-50 max-w-sm" aria-label="Development journey preview">
@@ -147,7 +147,7 @@ export default function SantaPreviewPanel({
                           : "tracker-preview-control"
                         }`}
                       >
-                        {s}×
+                        {s === 0 ? "Pause" : `${s}×`}
                       </button>
                     ))}
                   </div>

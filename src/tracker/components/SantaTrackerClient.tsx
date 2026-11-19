@@ -7,6 +7,7 @@ import { additionalChristmasFacts } from "@/data/christmasFacts";
 import {
   type PreviewState,
   getEffectiveTime,
+  activatePreview,
   loadPreviewState,
   getDefaultPreviewState,
 } from "@/lib/santaPreview";
@@ -64,7 +65,8 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy, mapOnly = 
 
   useEffect(() => {
     setMounted(true);
-    const initialPreview = showPreview ? loadPreviewState() : getDefaultPreviewState();
+    const postcardPreview = showPreview && new URLSearchParams(window.location.search).get("postcards") === "1";
+    const initialPreview = postcardPreview ? activatePreview("route-start", 0) : showPreview ? loadPreviewState() : getDefaultPreviewState();
     setPreviewState(initialPreview);
     setEffectiveTime(showPreview ? getEffectiveTime(initialPreview) : new Date());
   }, [showPreview]);
@@ -102,6 +104,12 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy, mapOnly = 
     }, 6000);
     return () => clearInterval(interval);
   }, [mapOnly]);
+
+  useEffect(() => {
+    if (mounted && effectiveTime && showPreview && new URLSearchParams(window.location.search).get("postcards") === "1") {
+      document.getElementById("tracker-postcards")?.scrollIntoView({ block: "start" });
+    }
+  }, [mounted, showPreview, effectiveTime === null]);
 
   const handlePreviewChange = useCallback((state: PreviewState) => {
     setPreviewState(state);
@@ -278,8 +286,10 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy, mapOnly = 
           </div>
       </TrackerHero>
 
-      <section className="tracker-story-section px-4 sm:px-6 pb-12">
-        <div className="max-w-6xl mx-auto">
+      <section id="tracker-postcards" className="tracker-story-section px-4 sm:px-6 pb-12">
+        {showPreview && <div className="max-w-6xl mx-auto mb-4"><h2 className="tracker-section-title">Christmas Eve Postcard Preview</h2><p className="tracker-copy">Choose a destination, pause to read its postcards, or run the journey to watch them change. This preview does not change the live tracker.</p></div>}
+        <div className={`max-w-6xl mx-auto ${showPreview ? "tracker-postcard-preview-layout" : ""}`}>
+          {showPreview && <SantaPreviewPanel previewState={previewState} onPreviewChange={handlePreviewChange} effectiveTime={effectiveTime} />}
           <SantaStory effectiveTime={effectiveTime} holiday={onTrip ? holiday : undefined} />
         </div>
       </section>
@@ -310,13 +320,7 @@ function SantaTrackerInner({ showPreview = false, heading, introCopy, mapOnly = 
         </div>
       </section>
 
-      {showPreview && (
-        <SantaPreviewPanel
-          previewState={previewState}
-          onPreviewChange={handlePreviewChange}
-          effectiveTime={effectiveTime}
-        />
-      )}
+
     </div>
   );
 }

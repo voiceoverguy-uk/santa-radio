@@ -625,3 +625,11 @@
   .santa-tracker .tracker-postcard .postcard-ink { font-size: 28px !important; }
   .santa-tracker .tracker-postcard .postcard-secondary-ink { font-size: 12px; }
 }
+
+.santa-tracker #tracker-postcards { scroll-margin-top: 100px; }
+.santa-tracker .tracker-postcard-preview-layout { display: grid; gap: 24px; align-items: start; }
+.santa-tracker .tracker-postcard-preview-layout > * { min-width: 0; width: 100%; }
+.santa-tracker .tracker-postcard-preview-layout .tracker-preview-panel { position: static; width: 100%; max-width: none; max-height: none; overflow: visible; }
+@media (min-width: 1000px) {
+  .santa-tracker .tracker-postcard-preview-layout { grid-template-columns: 320px minmax(0, 1fr); }
+}
