@@ -62,3 +62,18 @@ test('Blob catalogue preserves the existing browser source contract and selected
   assert.deepEqual(body.categories, categories);
   assert.equal('release' in body, false);
 });
+
+test('a new manifest can reuse checksum-verified audio from an earlier release', async () => {
+ const oldRelease = 'b'.repeat(64);
+ let oldPath;
+ const f = fixture(m => { oldPath = m.records[0].path.replace(m.release, oldRelease); m.records[0].path = oldPath; });
+ f.objects.set(oldPath, f.audio);
+ const directory = await mkdtemp(join(tmpdir(), 'workshop-reuse-'));
+ try {
+  await f.library.download('AGES/5-years.wav', join(directory, 'age.flac'), f.release);
+  assert.deepEqual(await readFile(join(directory, 'age.flac')), f.audio);
+  f.objects.set(oldPath, Buffer.alloc(100,8));
+  await assert.rejects(f.library.download('AGES/5-years.wav', join(directory, 'bad.flac'), f.release), /checksum/);
+ } finally { await rm(directory, {recursive:true,force:true}); }
+ await assert.rejects(fixture(m => { m.records[0].path = m.records[0].path.replace(m.records[0].sha256, 'c'.repeat(64)); }).library.load(), /Invalid workshop recording/);
+});

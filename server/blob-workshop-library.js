@@ -38,7 +38,9 @@ export function createBlobWorkshopLibrary({ storage = { get }, env = process.env
         if (typeof row.file !== 'string' || row.file.includes('..') || /[\\\x00-\x1f]/.test(row.file)
           || records.has(row.file) || !/^[a-f0-9]{64}$/.test(row.sha256)
           || !Number.isSafeInteger(row.size) || row.size < 42 || row.size > 50 * 1024 * 1024
-          || row.path !== `workshop-library/releases/${pointer.release}/audio/${row.sha256}.flac`) throw Error('Invalid workshop recording');
+          || typeof row.path !== 'string'
+          || !/^workshop-library\/releases\/[a-f0-9]{64}\/audio\/[a-f0-9]{64}\.flac$/.test(row.path)
+          || !row.path.endsWith(`/audio/${row.sha256}.flac`)) throw Error('Invalid workshop recording');
         records.set(row.file, row);
       }
       if (!manifest.catalogue?.categories) throw Error('Missing workshop catalogue');
