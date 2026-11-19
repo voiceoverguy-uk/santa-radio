@@ -502,6 +502,7 @@
     box-shadow: 0 0 12px #d4af3738;
   }
 }
+.smw-delivery-slot:has(.smw-message-result) { margin-bottom: 20px; }
 .smw-delivery { flex: 1 0 100%; min-width: 0; }
 .smw-delivery:empty { display: none; }
 .smw-delivery:focus { outline: none; }

@@ -5,7 +5,7 @@ const result={writtenName:'Harry',gift:{details:{age:'7 years old',talent:'Footb
 test('paid captions use the saved selections and requested cue times',()=>{
  const lines=studioVideoTimeline(result);
  assert.deepEqual(lines.map(({id,start,end})=>({id,start,end})),[
- {id:'age',start:18,end:undefined},{id:'strengths',start:38,end:50},{id:'treat',start:54,end:61},{id:'destination',start:65,end:76},{id:'approved',start:80,end:undefined}]);
+ {id:'age',start:18,end:undefined},{id:'strengths',start:38,end:50},{id:'treat',start:57,end:61},{id:'destination',start:70,end:76},{id:'approved',start:85,end:90}]);
  assert.equal(lines[1].text,'Great at Football and Helping at home');
  assert.equal(lines[2].text,'Thank you for leaving out mince pies');
  assert.equal(lines[3].text,'Santa on the way to Yorkshire, England');
@@ -16,8 +16,8 @@ test('lower lines never overlap and the name/age remain above the changing capti
  const lines=studioVideoTimeline(result);
  for(let t=0;t<100;t+=.05)assert.ok(lines.slice(1).filter(c=>studioCaptionOpacity(c,t)>0).length<=1);
  assert.equal(studioCaptionOpacity(lines[0],17.9),0);assert.equal(studioCaptionOpacity(lines[0],19),1);assert.equal(studioCaptionOpacity(lines[0],90),1);
- for(const t of [50,51,53.9,61,62,64.9,76,79.9])assert.equal(lines.slice(1).filter(c=>studioCaptionOpacity(c,t)>0).length,0);
- assert.equal(studioCaptionOpacity(lines[4],81),1);
+ for(const t of [50,51,56.9,61,62,69.9,76,84.9,90,91])assert.equal(lines.slice(1).filter(c=>studioCaptionOpacity(c,t)>0).length,0);
+ assert.equal(studioCaptionOpacity(lines[4],86),1);
 });
 test('export bounds bitrate, preserves audio, and stops at recording duration',()=>{
  const args=studioTimelineArguments(studioVideoTimeline(result).map(c=>({...c,y:540})),90);

@@ -35,7 +35,7 @@ for (const width of [390, 1280]) test(`paid result plays and downloads premium M
       await page.getByRole('option',{name:answer,exact:true}).click();await page.locator('.smw-actions .smw-button-next').click();
     }
     await page.getByRole('button',{name:'Edit certificate name',exact:true}).click();
-    await page.getByRole('textbox',{name:'Name spelling',exact:true}).fill('Dixie Rose');
+    await page.getByRole('textbox',{name:'Name spelling',exact:true}).fill('dixie rose');
     await page.getByRole('button',{name:'Use this spelling',exact:true}).click();
     let failArtwork=true;
     await page.route('**/images/studio-santa-video-v2.png', route => failArtwork ? route.abort('failed') : route.continue());
@@ -49,6 +49,8 @@ for (const width of [390, 1280]) test(`paid result plays and downloads premium M
     await expect(link).toBeVisible({timeout:90000});
     expect(await page.evaluate(()=>window.paidCaptionText)).toContain('Great at Tennis and Completing a jigsaw puzzle');
     await expect(result.locator('audio')).toHaveCount(0);
+    const giftBox = page.locator('.smw-written-name');
+    expect((await result.boundingBox()).y + (await result.boundingBox()).height).toBeLessThanOrEqual((await giftBox.boundingBox()).y);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
     await expect(result).not.toContainText('MP3');
     const video=result.locator('video');expect(await video.evaluate(el=>el.controls)).toBe(false);

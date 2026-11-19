@@ -242,6 +242,7 @@ export default function SantaMessageWorkshop() {
   const [nameReadOnly, setNameReadOnly] = useState(false);
   const [audioPhase, setAudioPhase] = useState('idle');
   const [reviewMessageTarget, setReviewMessageTarget] = useState(null);
+  const [deliveryTarget, setDeliveryTarget] = useState(null);
   const [error, setError] = useState('');
   const [editing, setEditing] = useState(false);
   const [correction, setCorrection] = useState(false);
@@ -856,6 +857,7 @@ export default function SantaMessageWorkshop() {
                   onClick={nameResolution.retry}>Retry recording lookup</button>}
                 <button type="button" className="smw-change" onClick={() => editStage(0)}>Check name recording</button>
               </div>}
+              <div ref={setDeliveryTarget} className="smw-delivery-slot" />
               {retainedGifts.length === 2 && <div className="smw-gift-selector" role="group" aria-label="Choose completed message gifts">
                 {retainedGifts.map((gift, index) => <button type="button" key={gift.revision}
                   aria-pressed={selectedGiftIndex === index}
@@ -934,6 +936,7 @@ export default function SantaMessageWorkshop() {
                   giftWrittenName={retainedGifts.map(gift => gift.writtenName).join(' and ')}
                   showReadyAction={nameReadOnly}
                   reviewMessageTarget={reviewMessageTarget}
+                  deliveryTarget={deliveryTarget}
                   showGiftDownloadHint={!giftNotice}
                   tester={accessKind === 'tester' && generation.state?.testerCanStartAnother === true}
                   onCorrection={() => setCorrection(true)} visible={isReview}

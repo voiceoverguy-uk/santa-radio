@@ -107,3 +107,9 @@ test('legitimate names do not fail on partial word matches', () => {
     assert.equal(validateWorkshopSpelling(name), '', name);
   }
 });
+
+test('written names capitalise initials without losing existing internal capitals', () => {
+  assert.equal(getWorkshopWrittenName('deadpool', ''), 'Deadpool');
+  assert.equal(getWorkshopWrittenName('Example', 'mary-jane é lodie'), 'Mary-Jane É Lodie');
+  assert.equal(getWorkshopWrittenName('Example', 'McKenzie O’Neill'), 'McKenzie O’Neill');
+});

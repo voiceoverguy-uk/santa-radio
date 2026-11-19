@@ -15,7 +15,8 @@ export function validateWorkshopSpelling(value) {
 }
 
 export function getWorkshopWrittenName(recordedName, spelling) {
-  return spelling && !validateWorkshopSpelling(spelling) ? normaliseSpelling(spelling) : recordedName;
+  const name = spelling && !validateWorkshopSpelling(spelling) ? normaliseSpelling(spelling) : recordedName;
+  return name.replace(/(^|[\s&’‘'-])(\p{L})/gu, (_, separator, initial) => separator + initial.toLocaleUpperCase('en-GB'));
 }
 
 export function getWorkshopDownloadName(recordedName, spelling) {

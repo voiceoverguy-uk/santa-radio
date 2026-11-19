@@ -20,7 +20,7 @@ function trapDialogFocus(event) {
 
 export default function WorkshopMessageAudio({
   record, choices, spelling, complete, generation, correction, tester = false, onCorrection, visible, onPhaseChange, onReady,
-  showGiftDownloadHint = false, reviewMessageTarget = null, onStartAgain, showReadyAction = true,
+  showGiftDownloadHint = false, reviewMessageTarget = null, deliveryTarget = null, onStartAgain, showReadyAction = true,
   giftsRequested = false, giftExportPending = false, giftWrittenName, onBundlePreparing, onBundleRequested,
 }) {
   const accessKind = useContext(StudioAccessContext);
@@ -327,30 +327,7 @@ export default function WorkshopMessageAudio({
   const voucherNotice = voucher?.unlimited && <p className="smw-voucher-entitlement">
     Voucher access: you can create messages while your access remains valid, subject to request limits.
   </p>;
-  return <>
-    {/* Render a second trigger in the gifts row without duplicating recording
-        state, requests or the confirmation dialog owned by this component. */}
-    {reviewMessageTarget && createPortal(url && showReadyAction
-      ? <button className="smw-button smw-button-next" type="button" onClick={showRecording}>READY</button>
-      : messageAction(), reviewMessageTarget)}
-    {!url && startAction()}
-    {!url && messageAction()}
-    {!url && showGiftDownloadHint && <p className="smw-catalogue-review-note smw-gift-download-hint">
-      Create your video message to unlock these three personalised gift downloads.
-    </p>}
-    {!url && voucherNotice}
-    {!url && exhausted && <p className="smw-allowance" role="status">Both creations have been used. Create message is unavailable for this access.</p>}
-    {(generation.checking || generation.error || !status) && <p className="smw-allowance" role={generation.error ? 'alert' : 'status'} aria-live={generation.error ? 'assertive' : 'polite'}>
-      {generation.checking ? 'Checking your Studio access…' : generation.error
-        ? generation.error
-        : 'Your Studio access has not been confirmed.'}
-      {generation.error && generation.accessExpired && <> <button type="button" className="smw-change"
-      onClick={() => window.location.reload()}>
-      Reload Studio</button></>}
-      {generation.error && !generation.accessExpired && <> <button type="button"
-        className="smw-change" disabled={generation.checking} onClick={() => generation.refresh()}>
-        Retry recording check</button></>}
-    </p>}
+  const delivery = (
     <div className="smw-delivery" ref={deliveryRef} tabIndex={-1} role="group" aria-label="Message preparation and recording">
     {busy && <div className="smw-message-result smw-message-preparing">
       <p role="status" aria-live="polite">Creating your Santa video…</p>
@@ -378,6 +355,32 @@ export default function WorkshopMessageAudio({
       }}
       sectionRef={index === results.length - 1 ? finishedRef : undefined} />).reverse()}
     </div>
+  );
+  return <>
+    {/* Render a second trigger in the gifts row without duplicating recording
+        state, requests or the confirmation dialog owned by this component. */}
+    {reviewMessageTarget && createPortal(url && showReadyAction
+      ? <button className="smw-button smw-button-next" type="button" onClick={showRecording}>READY</button>
+      : messageAction(), reviewMessageTarget)}
+    {!url && startAction()}
+    {!url && messageAction()}
+    {!url && showGiftDownloadHint && <p className="smw-catalogue-review-note smw-gift-download-hint">
+      Create your video message to unlock these three personalised gift downloads.
+    </p>}
+    {!url && voucherNotice}
+    {!url && exhausted && <p className="smw-allowance" role="status">Both creations have been used. Create message is unavailable for this access.</p>}
+    {(generation.checking || generation.error || !status) && <p className="smw-allowance" role={generation.error ? 'alert' : 'status'} aria-live={generation.error ? 'assertive' : 'polite'}>
+      {generation.checking ? 'Checking your Studio access…' : generation.error
+        ? generation.error
+        : 'Your Studio access has not been confirmed.'}
+      {generation.error && generation.accessExpired && <> <button type="button" className="smw-change"
+      onClick={() => window.location.reload()}>
+      Reload Studio</button></>}
+      {generation.error && !generation.accessExpired && <> <button type="button"
+        className="smw-change" disabled={generation.checking} onClick={() => generation.refresh()}>
+        Retry recording check</button></>}
+    </p>}
+    {deliveryTarget && createPortal(delivery, deliveryTarget)}
     {url && startAction()}
     {url && messageAction()}
     {resetConfirmation && <dialog ref={resetDialogRef} className="smw-confirmation"

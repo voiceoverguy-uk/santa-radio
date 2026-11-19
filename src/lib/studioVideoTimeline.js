@@ -15,9 +15,9 @@ export function studioVideoTimeline(result) {
   return [
     { id: 'age', text: ` aged ${studioAge(result)}`, start: 18 },
     ...(strengths ? [{ id: 'strengths', text: `Great at ${strengths}`, start: 38, end: 50 }] : []),
-    ...(details.treats ? [{ id: 'treat', text: `Thank you for leaving out ${details.treats}`, start: 54, end: 61 }] : []),
-    ...(details.destination ? [{ id: 'destination', text: `Santa on the way to ${details.destination}`, start: 65, end: 76 }] : []),
-    { id: 'approved', text: 'Nice List Approved!', start: 80 },
+    ...(details.treats ? [{ id: 'treat', text: `Thank you for leaving out ${details.treats}`, start: 57, end: 61 }] : []),
+    ...(details.destination ? [{ id: 'destination', text: `Santa on the way to ${details.destination}`, start: 70, end: 76 }] : []),
+    { id: 'approved', text: 'Nice List Approved!', start: 85, end: 90 },
   ];
 }
 export function studioCaptionOpacity(caption, time) {
@@ -40,11 +40,11 @@ export function drawStudioVideoFrames(image, result) {
     return { prefixWidth, nameWidth: ctx.measureText(name).width, ageWidth: ctx.measureText(age).width };
   };
   let metrics = measure();
-  while (metrics.prefixWidth + metrics.nameWidth + metrics.ageWidth > width * .84 && nameSize > 10) {
+  while (metrics.prefixWidth + metrics.nameWidth + metrics.ageWidth > width * .80 && nameSize > 10) {
     nameSize -= .5; metrics = measure();
   }
   // Reserve the age's final width from the start so the name never jumps or overlaps.
-  const x = width * .08;
+  const x = (width - metrics.prefixWidth - metrics.nameWidth - metrics.ageWidth) / 2;
   const top = Math.round(height * .815), stripTop = Math.round(height * .75), stripHeight = height - stripTop;
   ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
   ctx.font = `italic ${nameSize}px Georgia, serif`; ctx.fillStyle = '#fff9ed'; ctx.fillText(prefix, x, top);
