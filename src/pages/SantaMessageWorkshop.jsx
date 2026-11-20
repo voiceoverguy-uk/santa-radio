@@ -297,7 +297,7 @@ export default function SantaMessageWorkshop() {
   const keyboardFocus = useRef(false);
   const nameEntryAligned = useRef(false);
   const stageHeading = useRef(null);
-  const previousStageIndex = useRef(null);
+  const previousWorkshopView = useRef(null);
   const stage = stages[stageIndex];
   const isReview = stageIndex === stages.length;
   const isNameAndAge = stage?.key === 'name';
@@ -426,22 +426,14 @@ export default function SantaMessageWorkshop() {
   }, [catalogueRetry]);
 
   useBrowserLayoutEffect(() => {
-    if (previousStageIndex.current === stageIndex) return;
-    const firstLoad = previousStageIndex.current === null;
-    previousStageIndex.current = stageIndex;
-    // Keep the first-step artwork visible on entry, including on phones.
-    if (firstLoad && isNameAndAge) return;
-    // Reposition once, before paint. A second write on the next frame can
-    // visibly fight Safari's keyboard/viewport adjustment.
+    const view = `${stageIndex}:${deliveryStep}`;
+    if (previousWorkshopView.current === view) return;
+    const firstLoad = previousWorkshopView.current === null;
+    previousWorkshopView.current = view;
     alignWorkshopBuilder(builderRef.current);
+    if (firstLoad) return;
     stageHeading.current?.focus({ preventScroll: true });
-  }, [isNameAndAge, stageIndex]);
-
-  useBrowserLayoutEffect(() => {
-    if (deliveryStep === 'review') return;
-    alignWorkshopBuilder(builderRef.current);
-    stageHeading.current?.focus({ preventScroll: true });
-  }, [deliveryStep]);
+  }, [deliveryStep, stageIndex]);
 
   const choose = (key, value) => {
     if (!audioEditingAllowed || (locked && ['name', 'place', 'region'].includes(key))) return;
@@ -560,52 +552,17 @@ export default function SantaMessageWorkshop() {
         noindex: true,
       })} />
 
-      <div className={`smw-shell${isNameAndAge ? ' smw-shell--name-and-age' : ''}`}>
+      <div className="smw-shell">
         <h1 className="smw-visually-hidden">Santa’s Message Maker Studio</h1>
-        {accessKind === 'paid-sandbox' && <aside className="smw-preview-note" aria-label="Sandbox test notice">
-          <span className="smw-preview-mark" aria-hidden="true">
-            <svg viewBox="0 0 20 20" focusable="false"><path d="m10 1.5 2.2 6.3 6.3 2.2-6.3 2.2-2.2 6.3-2.2-6.3-6.3-2.2 6.3-2.2L10 1.5Z" /></svg>
-          </span>
-          <div>
-            <p>Sandbox test payment confirmed — no real money moved. You can test the individual Studio message and gifts. Secure return emails are live-site only.</p>
-          </div>
-        </aside>}
-
-        {accessKind === 'paid-live' && <p className="smw-allowance">Want to keep your creations online? <Link to="/my-santa-messages" target="_blank" rel="noreferrer">Sign in to My Santa Messages</Link> with your purchase email before creating a recording. Then return to this Studio tab.</p>}
-
-        <div className={isNameAndAge ? 'smw-start-layout' : undefined}>
-        {isNameAndAge && <div className="smw-start-artwork">
-          <img className="smw-start-logo" src="/images/kids-message-logo-v1.png" alt="Kids’ Message from Santa" width="1681" height="936" />
-          <figure className="smw-start-preview">
-            <img src={STUDIO_VIDEO_ARTWORK} alt="Santa in the finished video message" width="1672" height="941" />
-            {chosenName && <figcaption>A message for {chosenName.name}{selectedAge && ` (${selectedAge.label})`}</figcaption>}
-          </figure>
-        </div>}
-        <section className={`smw-builder${isNameAndAge ? ' smw-builder--name-and-age' : ''}`} ref={builderRef} aria-labelledby="smw-builder-title">
-          {generation.state?.limit === 2 && <p className="smw-allowance smw-remaining" role="status">
-            {generation.checking ? 'Checking your remaining creations…' : generation.error
-              ? 'Your remaining allowance could not be checked. Retry the recording check before creating.'
-              : <>{generation.state.remaining} of 2 creations remaining.
-                {generation.state.pending && ' A message is being prepared.'}
-                {generation.state.remaining === 0 && ' Both creations have been used.'}
-                {generation.state.remaining === 0 && completedGift && ' Keep this page open to play and download your current video message and gifts.'}
-                {!completedGift && generation.state.successes > 0 && ' Previous recordings are not saved or restored.'}</>}
-          </p>}
-          {generation.state?.admin && generation.state.remaining === 0 && <aside className="smw-allowance" style={{ padding: 20, border: '1px solid #d4af37', borderRadius: 14, background: '#173d2f' }}>
-            <strong>ADMIN — Two-message test complete</strong>
-            <p>You’ve reached the same two-message limit as your friends. Download your recordings and gifts before starting a new test.</p>
-            <button type="button" className="smw-button" disabled={generation.checking} onClick={async () => {
-              if (await generation.startAnother()) window.location.reload();
-            }}>{generation.checking ? 'Resetting test…' : 'ADMIN — Start a new test'}</button>
-          </aside>}
-          {isNameAndAge && <p className="smw-start-kicker">The North Pole Recording Studio</p>}
+        <section className="smw-builder" ref={builderRef} aria-labelledby="smw-builder-title">
+          <p className="smw-start-kicker">The North Pole Recording Studio</p>
           <div className="smw-builder-head">
             <div>
               <h2 id="smw-builder-title" ref={stageHeading} tabIndex="-1">
                 {isReview ? ({ review: 'Review Time', scene: 'Choose the scene', result: 'Your Santa message' })[deliveryStep] : stage.heading}
               </h2>
             </div>
-            <span className={`smw-step-count${canContinue ? ' smw-step-count--actionable' : ''}`} aria-live="polite">
+            <span className="smw-step-count" hidden={canContinue} aria-live="polite">
               {isReview ? `Step ${deliveryStep === 'review' ? stages.length + 1 : stages.length + 2} of ${stages.length + 2}` : `Step ${stageIndex + 1} of ${stages.length}`}
             </span>
             {canContinue && <button className="smw-header-continue" type="button" onClick={continueToNext}
@@ -631,13 +588,46 @@ export default function SantaMessageWorkshop() {
             ))}
           </ol>
           </>}
+          {generation.state?.limit === 2 && <p className="smw-allowance smw-remaining" role="status">
+            {generation.checking ? 'Checking your remaining creations…' : generation.error
+              ? 'Your remaining allowance could not be checked. Retry the recording check before creating.'
+              : <>{generation.state.remaining} of 2 creations remaining.
+                {generation.state.pending && ' A message is being prepared.'}
+                {generation.state.remaining === 0 && ' Both creations have been used.'}
+                {generation.state.remaining === 0 && completedGift && ' Keep this page open to play and download your current video message and gifts.'}
+                {!completedGift && generation.state.successes > 0 && ' Previous recordings are not saved or restored.'}</>}
+          </p>}
+          {generation.state?.admin && generation.state.remaining === 0 && <aside className="smw-allowance" style={{ padding: 20, border: '1px solid #d4af37', borderRadius: 14, background: '#173d2f' }}>
+            <strong>ADMIN — Two-message test complete</strong>
+            <p>You’ve reached the same two-message limit as your friends. Download your recordings and gifts before starting a new test.</p>
+            <button type="button" className="smw-button" disabled={generation.checking} onClick={async () => {
+              if (await generation.startAnother()) window.location.reload();
+            }}>{generation.checking ? 'Resetting test…' : 'ADMIN — Start a new test'}</button>
+          </aside>}
+          {accessKind === 'paid-sandbox' && <aside className="smw-preview-note" aria-label="Sandbox test notice">
+            <span className="smw-preview-mark" aria-hidden="true">
+              <svg viewBox="0 0 20 20" focusable="false"><path d="m10 1.5 2.2 6.3 6.3 2.2-6.3 2.2-2.2 6.3-2.2-6.3-6.3-2.2 6.3-2.2L10 1.5Z" /></svg>
+            </span>
+            <div>
+              <p>Sandbox test payment confirmed — no real money moved. You can test the individual Studio message and gifts. Secure return emails are live-site only.</p>
+            </div>
+          </aside>}
+
+          {accessKind === 'paid-live' && <p className="smw-allowance">Want to keep your creations online? <Link to="/my-santa-messages" target="_blank" rel="noreferrer">Sign in to My Santa Messages</Link> with your purchase email before creating a recording. Then return to this Studio tab.</p>}
           {!isReview ? (
-            <div className="smw-stage" key={stage.key}>
+            <div className={`smw-stage${isNameAndAge ? ' smw-start-layout' : ''}`} key={stage.key}>
               {locked && <p role="status" className="smw-stage-note">
                 {['name', 'place'].includes(stage.key)
                   ? 'The recorded name and full destination are locked to your first message.'
                   : !audioEditingAllowed ? 'Use “Edit and regenerate once” on the review to make your one correction.' : 'You are editing your one correction.'}
               </p>}
+                {isNameAndAge && <div className="smw-start-artwork">
+                  <img className="smw-start-logo" src="/images/kids-message-logo-v1.png" alt="Kids’ Message from Santa" width="1681" height="936" />
+                  <figure className="smw-start-preview">
+                    <img src={STUDIO_VIDEO_ARTWORK} alt="Santa in the finished video message" width="1672" height="941" />
+                    {chosenName && <figcaption>A message for {chosenName.name}{selectedAge && ` (${selectedAge.label})`}</figcaption>}
+                  </figure>
+                </div>}
               <fieldset className="smw-stage-fields" disabled={!audioEditingAllowed || (locked && stage.key === 'place')}>
               {stage.key === 'activity' && (
                 <div className="smw-talent-step">
@@ -980,7 +970,6 @@ export default function SantaMessageWorkshop() {
             </p>
           )}
         </section>
-        </div>
       </div>
     </main>
   );
