@@ -59,8 +59,8 @@ export default function StudioCompletedRecording({ result, ordinal, visible, sec
     if (typeof sectionRef === 'function') sectionRef(node); else if (sectionRef) sectionRef.current = node;
   }} tabIndex={-1} aria-label={ordinal === 1 ? 'Your finished Santa message' : 'Your second finished Santa message'}>
     <h4>{ordinal === 1 ? 'First' : 'Second'} Santa message for {result.writtenName}</h4>
-    {!hideProgress && !error && <><div className="santa-free-video__progress"><progress aria-label="Premium MP4 creation progress" max="1" value={progress ?? undefined} /><span>{progress === null ? 'Preparing…' : `${Math.floor(progress * 100)}%`}</span></div><p role="status">{status}</p>{!result.videoBlob && <StudioPreparationRunner costume="classic" />}</>}
-    {error && <div role="alert"><p>{error}</p><button type="button" onClick={() => setAttempt(value => value + 1)}>Retry video preparation</button></div>}
+    {!hideProgress && !error && <div className="smw-finished-preparation"><div className="santa-free-video__progress"><progress aria-label="Premium MP4 creation progress" max="1" value={progress ?? undefined} /><span>{progress === null ? 'Preparing…' : `${Math.floor(progress * 100)}%`}</span></div><p role="status">{status}</p>{!result.videoBlob && <StudioPreparationRunner costume="classic" />}</div>}
+    {error && <div className="smw-finished-preparation" role="alert"><p>{error}</p><button type="button" onClick={() => setAttempt(value => value + 1)}>Retry video preparation</button></div>}
     {url && <>
       <SantaVideoPlayer poster={poster || result.artwork || STUDIO_VIDEO_ARTWORK} src={url} preload="auto" glow label={`Santa’s premium video message for ${result.writtenName}`} onPlay={event => {
         playingVideo.current = event.currentTarget;
@@ -80,7 +80,7 @@ export default function StudioCompletedRecording({ result, ordinal, visible, sec
           <StudioBundleDownload result={result} onPreparing={onBundlePreparing} onDownloadRequested={() => { onDownloadRequested(); onBundleRequested?.(); }} />
         </div>
       </div>
-      <StudioAccountSave result={result} />
+      <div className="smw-finished-account"><StudioAccountSave result={result} /></div>
     </>}
   </section>;
 }

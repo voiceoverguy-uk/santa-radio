@@ -432,12 +432,15 @@
 .smw-message-result audio { display: block; width: 100%; max-width: 100%; margin: 16px 0; }
 .smw-message-finished {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
   align-items: center;
   gap: 8px 20px;
   border-color: #d4af37a6;
 }
-.smw-message-finished h4 { grid-column: 1 / -1; margin-bottom: 4px; }
+.smw-message-finished h4,
+.smw-finished-preparation,
+.smw-finished-account { grid-column: 1 / -1; }
+.smw-message-finished h4 { margin-bottom: 4px; }
 .smw-message-finished audio { min-width: 0; margin: 0; }
 .smw-message-finished .smw-button-download { padding-inline: 16px; font-size: .82rem; }
 .smw-message-finished .smw-retention-reminder { grid-column: 1 / -1; }
