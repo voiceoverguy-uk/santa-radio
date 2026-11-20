@@ -46,6 +46,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const dedicatedLayout = layout === 'dedicated';
   const { hasAccess, greetingName, sessionRemembered, revokeAccess } = useSantaMessageAccess();
   const makerHeadingRef = useRef(null);
+  const completedPreviewRef = useRef(null);
   const previousAccess = useRef(hasAccess);
   const [name, setName] = useState(santaNameDisplay(initialName));
   const [pronunciation, setPronunciation] = useState('');
@@ -152,6 +153,16 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
     setAudioErrors(previous => Object.fromEntries(messages.map(message => [message.key, previous[message.key] || false])));
     return () => stopSettling?.();
   }, [messages]);
+  useEffect(() => {
+    if (!dedicatedLayout || !readyVideoKey || !completedPreviewRef.current) return;
+    // Wait for the portal and its personalised poster to be committed before
+    // positioning the finished logo/video section beneath the navigation.
+    let stopSettling;
+    const frame = requestAnimationFrame(() => {
+      stopSettling = settleSantaMessageDeskAfterEntry(completedPreviewRef.current);
+    });
+    return () => { cancelAnimationFrame(frame); stopSettling?.(); };
+  }, [dedicatedLayout, readyVideoKey]);
   useEffect(() => () => {
     requestRef.current?.abort();
     nameRequestRef.current?.abort();
@@ -371,7 +382,7 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
     <div className={`container message-layout${dedicatedLayout ? ' message-layout--dedicated' : ''}`}>
       <div className={`message-intro${dedicatedLayout && hasAccess ? ' message-intro--logo-only' : dedicatedLayout ? ' message-intro--signup' : ''}`}>
         {dedicatedLayout ? <>
-          <div className="message-free-logo-wrap">
+          <div className="message-free-logo-wrap" ref={completedPreviewRef}>
             <img className="message-free-logo" src="/images/free-santa-message-microphone.png" alt="Free Santa Message — Santa Radio" width="1680" height="936" />
             <span className="message-free-sparkle message-free-sparkle--one" aria-hidden="true">✦</span>
             <span className="message-free-sparkle message-free-sparkle--two" aria-hidden="true">✧</span>
