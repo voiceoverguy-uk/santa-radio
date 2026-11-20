@@ -19,33 +19,37 @@ export function studioVideoTimeline(result) {
   const nameStart = Math.max(3, cue('name', 10, 0));
   const ageStart = Math.max(nameStart, cue('age', 18, 0));
   const treatStart = cue('treat', 57), placeStart = cue('place', 70);
+  const destinationStart = placeStart - 2;
   const approvedStart = Number.isFinite(result.clipStarts?.secondName) && result.clipStarts.secondName >= 0
-    ? result.clipStarts.secondName : placeStart + 15;
+    ? Math.max(0, result.clipStarts.secondName - 2) : placeStart + 13;
   const selectedStrengths = [
     { id: 'talent', text: details.talent ? `Great at ${details.talent}` : '' },
-    { id: 'activity', text: details.activity ? `${details.talent ? 'And… trying' : 'Trying'} hard at ${details.activity}` : '' },
+    { id: 'activity', text: details.activity ? `Well done for trying hard at ${details.activity}` : '' },
     { id: 'achievement', text: details.achievement || '' },
   ].filter(caption => caption.text);
   const hasMeasuredStrengths = selectedStrengths.length > 0 && selectedStrengths.every(caption =>
     Number.isFinite(result.clipEnds?.[caption.id]) && result.clipEnds[caption.id] >= 0);
   const strengthCaptions = hasMeasuredStrengths
     ? selectedStrengths.map((caption, index) => ({ ...caption,
-      start: result.clipEnds[caption.id],
+      start: result.clipEnds[caption.id] - 2,
       end: Math.min(index + 1 < selectedStrengths.length
-        ? result.clipEnds[selectedStrengths[index + 1].id] : treatStart - 1, treatStart - 1),
+        ? result.clipEnds[selectedStrengths[index + 1].id] - 2 : treatStart - 1, treatStart - 1),
     })).filter(caption => caption.end > caption.start)
     : strengths ? [{ id: 'strengths', text: `Great at ${strengths}`, start: 38, end: Math.min(50, treatStart - 1) }] : [];
 
   const choiceCaptions = [
     ...strengthCaptions,
-    ...(details.treats ? [{ id: 'treat', text: `Thank you for leaving out ${details.treats}`, start: treatStart, end: Math.min(treatStart + 4, placeStart - 1) }] : []),
-    ...(details.destination ? [{ id: 'destination', text: `Santa on the way to ${details.destination}`, start: placeStart, end: Math.min(placeStart + 6, approvedStart) }] : []),
+    ...(details.treats ? [{ id: 'treat', text: `Thank you for leaving out ${details.treats}`, start: treatStart, end: destinationStart }] : []),
+    ...(details.destination ? [{ id: 'destination', text: `Christmas Eve, Santa will be visiting ${details.destination}`, start: destinationStart, end: approvedStart }] : []),
   ];
   const badgeStart = ageStart + 3;
   const name = (result.writtenName || '').trim();
   const introduction = `A message from Santa to ${name}`;
   const personalisedCaptions = choiceCaptions
-    .map(caption => ({ ...caption, start: Math.max(caption.start, badgeStart) }))
+    .map(caption => {
+      const start = Math.max(caption.start, badgeStart);
+      return { ...caption, start, end: Math.min(caption.end, start + 4 + CAPTION_FADE) };
+    })
     .filter(caption => caption.end > caption.start);
   return [
     { id: 'incoming', text: 'Incoming message from Santa', start: 0, end: 3, blink: true },
@@ -53,7 +57,7 @@ export function studioVideoTimeline(result) {
     { id: 'age', text: `${introduction}\nAged ${studioAge(result)}`, start: ageStart, end: badgeStart },
     { id: 'name-badge', text: name, start: badgeStart },
     ...personalisedCaptions,
-    { id: 'approved', text: 'Nice List Approved!', start: approvedStart, end: approvedStart + 9 },
+    { id: 'approved', text: name ? `${name}, Nice List Approved!` : 'Nice List Approved!', start: approvedStart, end: approvedStart + 9 },
     { id: 'christmas', text: 'Merry Christmas', start: approvedStart + 9 },
   ];
 }

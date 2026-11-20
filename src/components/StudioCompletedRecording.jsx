@@ -9,7 +9,7 @@ import { createStudioVideo, createStudioVideoPoster, studioVideoFilename, STUDIO
 import './SantaFreeVideo.css';
 
 // The captured recording and gift details own the name and age, never the next draft.
-export default function StudioCompletedRecording({ result, keepsakes, ordinal, visible, sectionRef, onDownloadRequested, onBundlePreparing, onBundleRequested, onVideoReady }) {
+export default function StudioCompletedRecording({ result, keepsakes, footer, ordinal, visible, sectionRef, onDownloadRequested, onBundlePreparing, onBundleRequested, onVideoReady }) {
   const radio = useRadio();
   const section = useRef(null), resume = useRef(null), playingVideo = useRef(null);
   const callbacks = useRef({ onVideoReady, onBundlePreparing });
@@ -78,6 +78,7 @@ export default function StudioCompletedRecording({ result, keepsakes, ordinal, v
       </div>
       <div className="smw-finished-account"><StudioAccountSave result={result} /></div>
       {keepsakes && <div className="smw-finished-keepsakes">{keepsakes}</div>}
+      {footer}
     </>}
   </section>;
 }

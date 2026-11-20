@@ -22,7 +22,7 @@ function trapDialogFocus(event) {
 
 export default function WorkshopMessageAudio({
   record, choices, spelling, ageLabel, complete, generation, correction, tester = false, onCorrection, visible, onPhaseChange, onReady,
-  deliveryTarget = null, onStartAgain, keepsakes,
+  deliveryTarget = null, onStartAgain, remainingNotice, keepsakes,
   giftsRequested = false, giftExportPending = false, giftWrittenName, onBundlePreparing, onBundleRequested, deliveryStep, onDeliveryStep,
 }) {
   const accessKind = useContext(StudioAccessContext);
@@ -324,6 +324,10 @@ export default function WorkshopMessageAudio({
     {/* Reverse presentation only: ordinals and the latest target stay chronological. */}
     {deliveryStep === 'result' && results.filter(result => result.artwork).map((result, index) => <StudioCompletedRecording key={result.url} result={result}
       keepsakes={index === results.length - 1 ? keepsakes : null}
+      footer={index === results.length - 1 && url ? <div className="smw-finished-footer">
+        {remainingNotice}
+        {startAction()}
+      </div> : null}
       ordinal={index + 1} visible={visible}
       onVideoReady={videoBlob => {
         const next = resultsRef.current.map(item => item.url === result.url ? { ...item, videoBlob } : item);
@@ -355,7 +359,6 @@ export default function WorkshopMessageAudio({
         Retry recording check</button></>}
     </p>}
     {deliveryTarget && createPortal(delivery, deliveryTarget)}
-    {deliveryStep === 'result' && url && startAction()}
     {deliveryStep === 'result' && url && messageAction()}
     {resetConfirmation && <dialog ref={resetDialogRef} className="smw-confirmation"
       aria-labelledby="smw-reset-title" aria-describedby="smw-reset-warning"

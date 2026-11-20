@@ -327,8 +327,8 @@ export default function SantaMessageWorkshop() {
   const hasCurrentStageChoice = isNameAndAge
     ? !!chosenName && hasCatalogueOptions && !!selectedAge
     : stage?.key === 'talent'
-      ? choices.talent?.skip === true || (choices.talent?.category === talentCategory
-        && catalogueOptions.some(record => record.id === choices.talent.id))
+      ? choices.talent?.category === talentCategory
+        && hasCatalogueOptions && catalogueOptions.some(record => record.id === choices.talent.id)
       : !!stage && hasCatalogueOptions && catalogueOptions.some(record => record.id === choices[stage.key]);
   const currentStep = isReview && deliveryStep !== 'review' ? progressLabels.length : stageIndex + 1;
   const canContinue = !isReview && hasCurrentStageChoice && (stage?.key !== 'place' || destinationValid);
@@ -460,10 +460,8 @@ export default function SantaMessageWorkshop() {
   };
 
   const continueToNext = () => {
-    if (stage.key === 'talent') {
-      if (!audioEditingAllowed) return;
-      if (!hasCurrentStageChoice) choose('talent', { skip: true });
-    } else if (!canContinue) {
+    if (!audioEditingAllowed) return;
+    if (!canContinue) {
       setError(stage.key === 'name'
         ? `Please choose ${chosenName ? 'their age' : 'their name'} before continuing.`
         : `Please choose ${stage.label.toLowerCase()} before continuing.`);
@@ -845,15 +843,15 @@ export default function SantaMessageWorkshop() {
                 : stage.note}</p>}
               </fieldset>
               <p className="smw-validation" id="smw-validation" role="alert">{error}</p>
-              <div className="smw-actions">
+              {(!isNameAndAge || editing) && <div className="smw-actions">
                 {(stageIndex > 0 || editing) && <button className="smw-button smw-button-back" type="button" onClick={goBack}>
                   <span aria-hidden="true">←</span> Back
                 </button>}
-                <button className="smw-button smw-button-next" type="button" onClick={continueToNext}
-                  disabled={isNameAndAge ? !hasCurrentStageChoice : stage.key === 'talent' ? !audioEditingAllowed : !hasCatalogueOptions}>
+                {!isNameAndAge && <button className="smw-button smw-button-next" type="button" onClick={continueToNext}
+                  disabled={!audioEditingAllowed || !canContinue}>
                   {editing ? 'Return to review' : stageIndex === stages.length - 1 ? 'Review my choices' : 'Continue'} <span aria-hidden="true">→</span>
-                </button>
-              </div>
+                </button>}
+              </div>}
             </div>
           ) : (
             <div className="smw-review" key="review">
@@ -869,9 +867,7 @@ export default function SantaMessageWorkshop() {
                             {selectedName && <WorkshopNamePreview key={selectedName.id} record={selectedName} cache={namePreviewCache} />}
                           </span>
                         : item.key === 'talent'
-                          ? <span className="smw-summary-answer">{choices.talent?.skip
-                              ? 'Skipped'
-                              : choices.talent
+                          ? <span className="smw-summary-answer">{choices.talent?.category
                                 ? `${choices.talent.category === 'sports' ? 'Sports & activities' : 'Something funny'} — ${
                                   catalogueState.catalogue?.categories?.[choices.talent.category]
                                     ?.find(record => record.id === choices.talent.id)?.label || 'This choice is no longer available.'}`
@@ -922,6 +918,15 @@ export default function SantaMessageWorkshop() {
                   }}
                   giftsRequested={retainedGifts.every(gift =>
                     ['certificate', 'letter', 'picture'].every(kind => requestedGifts[gift.revision]?.[kind]))}
+                  remainingNotice={deliveryStep === 'result' && generation.state?.limit === 2 && <p className="smw-allowance smw-remaining" role="status">
+                      {generation.checking ? 'Checking your remaining creations…' : generation.error
+                        ? 'Your remaining allowance could not be checked. Retry the recording check before creating.'
+                        : <>{generation.state.remaining} of 2 creations remaining.
+                          {generation.state.pending && ' A message is being prepared.'}
+                          {generation.state.remaining === 0 && ' Both creations have been used.'}
+                          {generation.state.remaining === 0 && completedGift && ' Keep this page open to play and download your current video message and gifts.'}
+                          {!completedGift && generation.state.successes > 0 && ' Previous recordings are not saved or restored.'}</>}
+                  </p>}
                   keepsakes={deliveryStep === 'result' ? keepsakes : null}
                   giftWrittenName={retainedGifts.map(gift => gift.writtenName).join(' and ')}
                   deliveryStep={deliveryStep} onDeliveryStep={setDeliveryStep}
@@ -965,9 +970,9 @@ export default function SantaMessageWorkshop() {
                   }}
                   complete={!!selectedName && destinationValid && regionalEditorial.ready && catalogueCategories.every(key =>
                     catalogueState.catalogue?.categories?.[key]?.some(record => record.id === choices[key]))
-                    && (choices.talent?.skip === true || (choices.talent?.category
-                      && catalogueState.catalogue?.categories?.[choices.talent.category]
-                        ?.some(record => record.id === choices.talent.id)))}
+                    && !!choices.talent?.category
+                    && catalogueState.catalogue?.categories?.[choices.talent.category]
+                      ?.some(record => record.id === choices.talent.id)}
                 />
               </div>
           {workshopSoundNotice && (
@@ -975,15 +980,7 @@ export default function SantaMessageWorkshop() {
               {workshopSoundNotice}
             </p>
           )}
-          {deliveryStep === 'result' && generation.state?.limit === 2 && <p className="smw-allowance smw-remaining" role="status">
-            {generation.checking ? 'Checking your remaining creations…' : generation.error
-              ? 'Your remaining allowance could not be checked. Retry the recording check before creating.'
-              : <>{generation.state.remaining} of 2 creations remaining.
-                {generation.state.pending && ' A message is being prepared.'}
-                {generation.state.remaining === 0 && ' Both creations have been used.'}
-                {generation.state.remaining === 0 && completedGift && ' Keep this page open to play and download your current video message and gifts.'}
-                {!completedGift && generation.state.successes > 0 && ' Previous recordings are not saved or restored.'}</>}
-          </p>}
+
         </section>
       </div>
     </main>
