@@ -734,3 +734,21 @@
 }
 .smw-scene-dialog__arrow:last-child { left: auto; right: 8px; }
 .smw-scene-dialog .smw-actions { margin-top: 12px; }
+
+.smw-finished-downloads { min-width: 0; }
+.smw-finished-logo { display: none; }
+@media (min-width: 761px) {
+  .smw-finished-downloads {
+    align-self: end;
+    display: grid;
+    justify-items: end;
+    gap: clamp(12px, 2vw, 24px);
+    margin-bottom: 20px;
+  }
+  .smw-finished-logo {
+    display: block;
+    justify-self: center;
+    width: min(100%, 230px);
+    height: auto;
+  }
+}

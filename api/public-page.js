@@ -2,7 +2,7 @@ import { isPreviewPath, previewAuthorized, previewGate, previewHeaders } from '.
 import { readFile } from 'node:fs/promises';
 import { resolvePublicRequest } from '../src/seo/routes.js';
 import { publicPageHtml } from '../server/public-html.js';
-import { isStudioPath } from '../src/lib/studioRoute.js';
+import { isStudioPath, STUDIO_CHECKOUT_PATH } from '../src/lib/studioRoute.js';
 // Vercel runs this only for document routes. Existing API/artwork endpoints stay intact.
 export default async function handler(req, res) {
   if (!['GET', 'HEAD'].includes(req.method)) { res.setHeader('Allow', 'GET, HEAD'); return res.status(405).end(); }
@@ -16,7 +16,7 @@ export default async function handler(req, res) {
     previewHeaders(res);
     if (!previewAuthorized(req)) return previewGate(res,{postcards:source.searchParams.get('postcards')==='1',head:req.method==='HEAD'});
   }
-  const studio = isStudioPath(path);
+  const studio = isStudioPath(path) || path.replace(/\/$/, '') === STUDIO_CHECKOUT_PATH;
   if (studio) {
     res.setHeader('Cache-Control', 'private, no-store');
     res.setHeader('CDN-Cache-Control', 'no-store');

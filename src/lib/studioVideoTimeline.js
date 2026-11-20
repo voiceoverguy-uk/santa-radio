@@ -13,8 +13,10 @@ export function studioVideoTimeline(result) {
   const details = result.gift?.details || {};
   const talent = details.talent || details.activity;
   const strengths = [talent, details.achievement].filter(Boolean).join(' and ');
-  const cue = (key, fallback) => Number.isFinite(result.clipStarts?.[key]) && result.clipStarts[key] >= 0
-    ? result.clipStarts[key] + 1 : fallback;
+  const cue = (key, fallback, offset = 1) => Number.isFinite(result.clipStarts?.[key]) && result.clipStarts[key] >= 0
+    ? result.clipStarts[key] + offset : fallback;
+  const nameStart = Math.max(3, cue('name', 3, 0));
+  const ageStart = Math.max(nameStart, cue('age', 18, 0));
   const treatStart = cue('treat', 57), placeStart = cue('place', 70);
   const approvedStart = Number.isFinite(result.clipStarts?.secondName) && result.clipStarts.secondName >= 0
     ? result.clipStarts.secondName : placeStart + 15;
@@ -35,9 +37,10 @@ export function studioVideoTimeline(result) {
 
 
   return [
+    { id: 'incoming', text: 'Incoming message from Santa', start: 0, end: 3, blink: true },
     { id: 'intro', text: 'A message from Santa to ', start: 3 },
-    { id: 'name', text: (result.writtenName || '').trim(), start: 10 },
-    { id: 'age', text: ` aged ${studioAge(result)}`, start: 18, end: approvedStart + 9 },
+    { id: 'name', text: (result.writtenName || '').trim(), start: nameStart },
+    { id: 'age', text: ` aged ${studioAge(result)}`, start: ageStart, end: approvedStart + 9 },
     ...strengthCaptions,
     ...(details.treats ? [{ id: 'treat', text: `Thank you for leaving out ${details.treats}`, start: treatStart, end: Math.min(treatStart + 4, placeStart - 1) }] : []),
     ...(details.destination ? [{ id: 'destination', text: `Santa on the way to ${details.destination}`, start: placeStart, end: Math.min(placeStart + 6, approvedStart) }] : []),
@@ -47,11 +50,48 @@ export function studioVideoTimeline(result) {
 }
 export function studioCaptionOpacity(caption, time) {
   if (time < caption.start || (caption.end !== undefined && time >= caption.end)) return 0;
+  if (caption.blink) return time % 1 < 0.7 ? 1 : 0;
   return Math.min(1, (time - caption.start) / CAPTION_FADE,
     caption.end === undefined ? 1 : (caption.end - time) / CAPTION_FADE);
 }
 const makeCanvas = (width, height) => { const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height; return canvas; };
 const png = canvas => new Promise((resolve, reject) => canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('Could not prepare the video captions.')), 'image/png'));
+function drawHolly(ctx, x, y, direction) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(direction, 1);
+  for (const angle of [-1.13, -0.4, 0.36]) {
+    ctx.save();
+    ctx.rotate(angle);
+    const leaf = ctx.createLinearGradient(-12, 0, 11, 0);
+    leaf.addColorStop(0, '#193c22');
+    leaf.addColorStop(1, '#5f8d45');
+    ctx.fillStyle = leaf;
+    ctx.strokeStyle = '#a4b775';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.quadraticCurveTo(-7, -10, -12, -14);
+    ctx.quadraticCurveTo(-5, -16, -11, -26);
+    ctx.quadraticCurveTo(-3, -26, 0, -41);
+    ctx.quadraticCurveTo(3, -26, 11, -26);
+    ctx.quadraticCurveTo(5, -16, 12, -14);
+    ctx.quadraticCurveTo(7, -10, 0, 0);
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+  }
+  for (const [dx, dy] of [[-7, 2], [7, 0], [0, 9]]) {
+    const berry = ctx.createRadialGradient(dx - 2, dy - 3, 1, dx, dy, 7);
+    berry.addColorStop(0, '#fb7972');
+    berry.addColorStop(1, '#961629');
+    ctx.fillStyle = berry;
+    ctx.beginPath();
+    ctx.arc(dx, dy, 7, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
+}
 export function drawStudioVideoFrames(image, result, customTimeline) {
   const width = STUDIO_VIDEO_WIDTH, height = STUDIO_VIDEO_HEIGHT;
   const base = makeCanvas(width, height), ctx = base.getContext('2d');
@@ -86,6 +126,8 @@ export function drawStudioVideoFrames(image, result, customTimeline) {
   } else {
     ctx.drawImage(image, 0, 0, width, height);
   }
+  drawHolly(ctx, 38, height - 31, 1);
+  drawHolly(ctx, width - 38, height - 31, -1);
   const timeline = customTimeline || studioVideoTimeline(result);
   const prefix = timeline.find(caption => caption.id === 'intro')?.text || 'A message from Santa to ', name = result.writtenName.trim(), age = timeline.find(caption => caption.id === 'age').text;
   let nameSize = 40;
@@ -104,7 +146,12 @@ export function drawStudioVideoFrames(image, result, customTimeline) {
   const layers = timeline.map(caption => {
     const canvas = makeCanvas(width, stripHeight), text = canvas.getContext('2d');
     text.textBaseline = 'middle'; text.fillStyle = '#fff9ed';
-    if (caption.id === 'intro' || caption.id === 'name' || caption.id === 'age') {
+    if (caption.id === 'incoming') {
+      text.font = 'bold 40px "Courier New", monospace';
+      text.fillStyle = '#baffad';
+      text.textAlign = 'center';
+      text.fillText(caption.text, width / 2, stripHeight / 2);
+    } else if (caption.id === 'intro' || caption.id === 'name' || caption.id === 'age') {
       text.font = `italic ${nameSize}px Georgia, serif`;
       text.fillText(caption.text, x + (caption.id === 'intro' ? 0 : metrics.prefixWidth) + (caption.id === 'age' ? metrics.nameWidth : 0), top - stripTop);
     } else {

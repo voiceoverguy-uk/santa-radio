@@ -9,8 +9,8 @@ const execute = promisify(execFile);
 export const studioSources = fileURLToPath(new URL('./santa-audio/studio/', import.meta.url));
 export const studioBells = fileURLToPath(new URL('./santa-audio/studio/sleigh-bells.mp3', import.meta.url));
 const RATE = 48000, FRAME = 8;
-export const STUDIO_LEAD_IN_SECONDS = 1;
-// The source-speech budget is unchanged. At 192 kb/s, even 176 seconds plus
+export const STUDIO_LEAD_IN_SECONDS = 3;
+// The source-speech budget is unchanged. At 192 kb/s, even 178 seconds plus
 // MP3 framing fits the existing 4,400,000-byte server and browser limits.
 export const MAX_STUDIO_SECONDS = 175;
 
@@ -94,8 +94,12 @@ export async function renderStudioMessage({ name, choices, directory, signal,
   const clipStarts = {}, clipEnds = {};
   let cursorFrames = STUDIO_LEAD_IN_SECONDS * RATE, nameCount = 0;
   for (const source of order) {
-    if (source === name && ++nameCount === 2) clipStarts.secondName = cursorFrames / RATE;
-    for (const key of ['talent', 'activity', 'achievement', 'treat', 'place']) {
+    if (source === name) {
+      const key = ++nameCount === 1 ? 'name' : 'secondName';
+      clipStarts[key] = cursorFrames / RATE;
+      clipEnds[key] = (cursorFrames + prepared.get(source).frames) / RATE;
+    }
+    for (const key of ['age', 'talent', 'activity', 'achievement', 'treat', 'place']) {
       if (source === choices[key] && clipStarts[key] === undefined) {
         clipStarts[key] = cursorFrames / RATE;
         clipEnds[key] = (cursorFrames + prepared.get(source).frames) / RATE;

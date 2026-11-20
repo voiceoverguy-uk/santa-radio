@@ -351,11 +351,11 @@ test('recipe preserves clip order and voice gain, adds one-second lead-in and to
     'achievement.wav', '3rd.flac', 'treat.wav', '4th.flac', 'place.wav', '5th.flac', 'variant-2.wav', '6th.flac',
   ]);
   const graph = studioMixArgs('speech', 'bells', 'output').join(' ');
-  assert.match(graph, /\[0:a\]adelay=48000S:all=1\[speech\]/);
+  assert.match(graph, /\[0:a\]adelay=144000S:all=1\[speech\]/);
   assert.match(graph, /loudnorm=I=-34:TP=-9:LRA=7,volume=8dB,aresample=48000,afade=t=in:d=1\[bells\]/);
   assert.match(graph, /\[speech\]\[bells\]amix=inputs=2:duration=first:normalize=0/);
   assert.match(graph, /areverse,afade=t=in:d=1,areverse,alimiter=limit=0.89:level=false:latency=true/);
-  assert.equal(STUDIO_LEAD_IN_SECONDS, 1);
+  assert.equal(STUDIO_LEAD_IN_SECONDS, 3);
   assert.equal(MAX_STUDIO_SECONDS, 175, 'Do not weaken the source-duration safeguard');
   assert.ok((MAX_STUDIO_SECONDS + STUDIO_LEAD_IN_SECONDS) * 192000 / 8 + 4096 < 4_400_000);
   assert.match(graph, /latency=true/);
@@ -394,14 +394,14 @@ test('real FFmpeg: pause-preserving constant gain, repeated name PCM, audible mi
       name: paths.name, choices: paths, directory, signal: AbortSignal.timeout(100000),
     });
     assert.ok(audio.length > 100000);
-    for (const key of ['activity', 'achievement', 'treat', 'place']) {
+    for (const key of ['name', 'activity', 'achievement', 'treat', 'place']) {
       const preceding = order.slice(0, order.indexOf(paths[key]));
-      assert.equal(clipStarts[key], 1 + preceding.reduce((sum, source) => sum + prepared.get(source).frames, 0) / 48000);
-      assert.equal(clipEnds[key], 1 + [...preceding, paths[key]].reduce((sum, source) => sum + prepared.get(source).frames, 0) / 48000);
+      assert.equal(clipStarts[key], STUDIO_LEAD_IN_SECONDS + preceding.reduce((sum, source) => sum + prepared.get(source).frames, 0) / 48000);
+      assert.equal(clipEnds[key], STUDIO_LEAD_IN_SECONDS + [...preceding, paths[key]].reduce((sum, source) => sum + prepared.get(source).frames, 0) / 48000);
     }
     assert.equal(frames, order.reduce((sum, source) => sum + prepared.get(source).frames, 0));
     assert.equal(order.filter(source => source === paths.name).length, 2);
-    assert.equal(clipStarts.secondName, 1 + order.slice(0, order.lastIndexOf(paths.name)).reduce((sum, source) => sum + prepared.get(source).frames, 0) / 48000);
+    assert.equal(clipStarts.secondName, STUDIO_LEAD_IN_SECONDS + order.slice(0, order.lastIndexOf(paths.name)).reduce((sum, source) => sum + prepared.get(source).frames, 0) / 48000);
     const namePcm = await readFile(prepared.get(paths.name).target);
     assert.equal(namePcm.length / 8 / 48000, 1.5);
     for (let offset = 52800 * 8; offset < namePcm.length; offset += 4) {
@@ -419,12 +419,12 @@ test('real FFmpeg: pause-preserving constant gain, repeated name PCM, audible mi
     const decoded = (await execute(ffmpeg, ['-v', 'error', '-i', output,
       '-ar', '48000', '-ac', '2', '-f', 'f32le', 'pipe:1'],
     { encoding: 'buffer', maxBuffer: 80 * 1024 * 1024 })).stdout;
-    assert.equal(renderedFrames, frames + 48000);
-    assert.ok(Math.abs(decoded.length / 8 - renderedFrames) <= 3, 'Exactly one extra second, no timeline drift or limiter latency');
+    assert.equal(renderedFrames, frames + STUDIO_LEAD_IN_SECONDS * 48000);
+    assert.ok(Math.abs(decoded.length / 8 - renderedFrames) <= 3, 'Exactly three extra seconds, no timeline drift or limiter latency');
     let peak = 0;
     for (let offset = 0; offset < decoded.length; offset += 4) peak = Math.max(peak, Math.abs(decoded.readFloatLE(offset)));
     assert.ok(peak < 0.95, `Decoded peak ${peak}`);
-    const firstNameStart = 48000 + prepared.get(order[0]).frames;
+    const firstNameStart = STUDIO_LEAD_IN_SECONDS * 48000 + prepared.get(order[0]).frames;
     const quietStart = (firstNameStart + 48000 * 1.2) * 8;
     let bellsEnergy = 0;
     for (let offset = quietStart; offset < quietStart + 4800 * 8; offset += 4) bellsEnergy += decoded.readFloatLE(offset) ** 2;

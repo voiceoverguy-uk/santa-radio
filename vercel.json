@@ -222,6 +222,10 @@
       "dest": "/api/public-page?__sr_route=/$1"
     },
     {
+      "src": "/message-maker-checkout/?",
+      "dest": "/api/public-page?__sr_route=/message-maker-checkout"
+    },
+    {
       "src": "/dad-message-maker/?",
       "dest": "/api/public-page?__sr_route=/dad-message-maker"
     },
