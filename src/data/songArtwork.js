@@ -4,6 +4,11 @@ import { normalizeTrackText } from './matchLiveSong.js';
 // Exact-recording assignments shared by the website and public artwork feed.
 // Verify the catalogue ID, artist and title before assigning a supplied image.
 export const songPortraits = Object.freeze({
+  302: Object.freeze({
+    artist: 'Kylie Minogue',
+    title: 'White December',
+    path: '/artist-artwork/kylie-minogue-white-december.webp',
+  }),
   47: Object.freeze({
     artist: 'Elton John',
     title: 'Step Into Christmas',

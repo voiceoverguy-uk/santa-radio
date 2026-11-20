@@ -31,3 +31,12 @@ test('all catalogue credits stay unchanged; reversed matches recover only verifi
  }
  console.log(`Checked ${songs.length} catalogue entries; ${corrected} verified reversed matches recovered.`);
 });
+
+test('verified live title variants use canonical recording artwork', async () => {
+ const { songArtwork } = await import('../src/data/songArtwork.js');
+ const track = websiteNowPlayingTrack({artist:'Robbie Williams',title:'Bad Sharon ft.'});
+ const matched = matchLiveSong(track).song;
+ assert.equal(matched.id,559);
+ assert.equal(songArtwork(matched),'/artist-artwork/robbie-williams-bad-sharon.webp');
+ assert.equal(track.title,'Bad Sharon ft.');
+});

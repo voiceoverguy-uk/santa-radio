@@ -15,7 +15,7 @@ export default function NowPlayingArtwork() {
   const matchedSong = isMetadataReady && current ? matchLiveSong(current).song : null;
   const hasArtistArtwork = isMetadataReady && artist.length > 0;
   const artworkSong = matchedSong
-    ? { ...matchedSong, artist: artist || matchedSong.artist, song: title || matchedSong.song }
+    ? matchedSong
     : hasArtistArtwork ? { artist, song: title } : null;
 
   if (status !== 'playing') return null;
