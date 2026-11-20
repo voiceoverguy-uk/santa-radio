@@ -3,11 +3,11 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { STUDIO_PATH, STUDIO_CHECKOUT_PATH } from '../lib/studioRoute.js';
 import { hasStudioPurchaseHint, studioRemainingHint, rememberStudioPurchase } from '../lib/studioPurchaseHint.js';
 
-export default function StudioPurchaseButton({ onPaidAccessChange }) {
-  return <PurchaseButton sandbox={import.meta.env.DEV} onPaidAccessChange={onPaidAccessChange} />;
+export default function StudioPurchaseButton({ onPaidAccessChange, label }) {
+  return <PurchaseButton sandbox={import.meta.env.DEV} onPaidAccessChange={onPaidAccessChange} label={label} />;
 }
 
-function PurchaseButton({ sandbox, onPaidAccessChange }) {
+function PurchaseButton({ sandbox, onPaidAccessChange, label }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [paid, setPaid] = useState(() => !sandbox && hasStudioPurchaseHint() ? { remembered: true, remaining: studioRemainingHint() } : null);
@@ -112,7 +112,7 @@ function PurchaseButton({ sandbox, onPaidAccessChange }) {
       disabled={sandbox && (checking || !available || busy)} onClick={purchase} aria-describedby={noteId}>
       {sandbox
         ? busy ? 'Opening test checkout…' : checking ? 'Checking test checkout…' : 'Create your Santa messages · £6.50 (test)'
-        : busy ? 'Opening secure checkout…' : 'Create your Santa messages · £6.50'}
+        : busy ? 'Opening secure checkout…' : (label || 'Create your Santa messages · £6.50')}
     </button>}
     <p id={noteId} role="status">
       {sandbox

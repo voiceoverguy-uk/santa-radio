@@ -1,6 +1,6 @@
 import {drawStudioVideoFrames,studioTimelineArguments} from './studioVideoTimeline.js';
 import {createSantaVideo} from './createSantaVideo.js';
-export const DAD_ARTWORK=[{id:'armchair',label:'King of the remote',src:'/images/dad-armchair-framed-v1.png'},{id:'diy',label:'Assemble required',src:'/images/dad-diy-framed-v1.png'},{id:'dinner',label:'Christmas food coma',src:'/images/dad-dinner-framed-v1.png'},{id:'chef',label:'Chef’s special',src:'/images/dad-chef-framed-v1.png'},{id:'dancer',label:'Dad’s greatest hits',src:'/images/dad-dancer-framed-v1.png'}];
+export const DAD_ARTWORK=[{id:'armchair',label:'King of the remote',src:'/images/dad-armchair-framed-v1.png'},{id:'diy',label:'Assemble required',src:'/images/dad-diy-framed-v1.png'},{id:'dinner',label:'Christmas food coma',src:'/images/dad-dinner-framed-v1.png'},{id:'chef',label:'Chef’s special',src:'/images/dad-chef-framed-v1.png'},{id:'dancer',label:'Dad’s greatest hits',src:'/images/dad-dancer-framed-v1.png'},{id:'lights',label:'A tangled Christmas',src:'/images/dad-lights-framed-v1.webp'}];
 export const dadVideoFilename = result => `dad-message-from-santa-to-${result.writtenName.trim().replace(/[\x00-\x1f\x7f/\\:*?"<>|]/g, '').replace(/\s+/g, '-')}.mp4`;
 export function dadTimeline(result){
  const s=result.clipStarts,e=result.clipEnds;

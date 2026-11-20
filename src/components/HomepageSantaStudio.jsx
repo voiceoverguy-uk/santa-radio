@@ -1,4 +1,5 @@
 import HomepageSectionHeading from './HomepageSectionHeading.jsx';
+import BespokeMessageOffers from './BespokeMessageOffers.jsx';
 import SantaStudioPromotion from './SantaStudioPromotion.jsx';
 import SantaMessageReviews from './SantaMessageReviews.jsx';
 import useSantaRecipient from './useSantaRecipient.js';
@@ -23,17 +24,17 @@ export default function HomepageSantaStudio({ directEntry = false, onAuthorized,
       <div className="container homepage-santa-studio__layout">
         <HomepageSectionHeading
           eyebrow="A unique Christmas treat."
-          title="A BESPOKE SANTA MESSAGE"
+          title={directEntry ? "A BESPOKE SANTA MESSAGE" : "THE BESPOKE SANTA MESSAGES"}
           supportingLine="OUR PREMIUM EXPERIENCE"
-          subtitle="Let’s make it even more magical for your little one."
+          subtitle={directEntry ? "Let’s make it even more magical for your little one." : undefined}
           titleId="homepage-santa-studio-title"
           titleTag={directEntry ? 'h1' : 'h2'}
           className="homepage-santa-studio__heading"
         />
         {accessFeedback}
-        <SantaStudioPromotion availableNamesText={availableNamesText}
+        {!directEntry ? <BespokeMessageOffers previewName={previewName}/> : <SantaStudioPromotion availableNamesText={availableNamesText}
           previewName={previewName} allowExamples={!previewName && !messages.length}
-          onAuthorized={onAuthorized} />
+          onAuthorized={onAuthorized} />}
         {children}
         {!directEntry && <SantaMessageReviews />}
       </div>
