@@ -12,6 +12,7 @@ interface SantaStoryProps {
   effectiveTime: Date;
   holiday?: HolidayDestination | null;
   routeResearch?: boolean;
+  preview?: boolean;
 }
 
 const MONTHS = [
@@ -370,7 +371,7 @@ function SantaPostcard({ message, holiday, caption }: { message: string; holiday
   );
 }
 
-export default function SantaStory({ effectiveTime, holiday, routeResearch = false }: SantaStoryProps) {
+export default function SantaStory({ effectiveTime, holiday, routeResearch = false, preview = false }: SantaStoryProps) {
   const data = getDashboardData(effectiveTime);
   const season = getPostcardSeason(effectiveTime);
   const inJuly = season === "holiday" && isChristmasInJuly(effectiveTime);
@@ -406,7 +407,13 @@ export default function SantaStory({ effectiveTime, holiday, routeResearch = fal
       : season === "party" || season === "delivery"
         ? { name: data.currentStopName, emoji: data.currentStopFlag }
         : { name: "the North Pole", emoji: "🎄" };
-    return <SantaPostcard message={activePostcards[postcardIndex % activePostcards.length]} holiday={origin} caption={captions[season]} />;
+    return <div>
+      <SantaPostcard message={activePostcards[postcardIndex % activePostcards.length]} holiday={origin} caption={captions[season]} />
+      {preview && <div className="tracker-postcard-next">
+        <span>Postcard {(postcardIndex % activePostcards.length) + 1} of {activePostcards.length}</span>
+        <button type="button" disabled={activePostcards.length < 2} onClick={() => setPostcardIndex(index => (index + 1) % activePostcards.length)}>Next postcard →</button>
+      </div>}
+    </div>;
   }
 
   let story = "";
