@@ -99,6 +99,8 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
   const radio = useRadio();
   const allowance = useSantaMessageAllowance();
   const coolingDown = allowance.secondsLeft > 0;
+  // Keep the generation view focused on progress until the latest video is ready.
+  const showCooldown = coolingDown && !busy && (!messages.length || readyVideoKey === messages.at(-1)?.key);
   const allowExamples = !giftPreviewName && !messages.length && !coolingDown && !allowance.pending;
   const { prelaunch: studioPrelaunch } = useSantaStudioLaunch();
   // This invitation belongs to the free greeting, even if a newer hero choice
@@ -417,8 +419,8 @@ export default function SantaMessageForm({ showDetailLink = true, initialName = 
         {!!messages.length && <div className="message-wait-downloads">
           {renderResults()}
         </div>}
-        {coolingDown && <SantaCooldownNotice secondsLeft={allowance.secondsLeft} />}
-        {coolingDown && !allowance.remembered && <p className="message-name-hint" role="status">Your browser can’t remember the message allowance. The limit works while this page is open, but leaving or refreshing may reset it.</p>}
+        {showCooldown && <SantaCooldownNotice secondsLeft={allowance.secondsLeft} />}
+        {showCooldown && !allowance.remembered && <p className="message-name-hint" role="status">Your browser can’t remember the message allowance. The limit works while this page is open, but leaving or refreshing may reset it.</p>}
         {!coolingDown && <>
         <p className="form-desc">Hey {greetingName || 'there'}, {hasPrefilledName
           ? 'check the name and create message.'
