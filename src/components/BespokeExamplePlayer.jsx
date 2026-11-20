@@ -2,7 +2,7 @@ import {useEffect,useRef,useState} from 'react';
 const time = value => `${Math.floor((value || 0)/60)}:${String(Math.floor((value || 0)%60)).padStart(2,'0')}`;
 export default function BespokeExamplePlayer({kind}) {
  const ref=useRef(null),[open,setOpen]=useState(false),[playing,setPlaying]=useState(false),[muted,setMuted]=useState(false),[position,setPosition]=useState(0),[duration,setDuration]=useState(0),[error,setError]=useState('');
- const src=kind==='dad'?'/videos/examples/dad-simon-v1.mp4':'/videos/examples/santa-premium-charlotte-v2.mp4';
+ const src=kind==='dad'?'/videos/examples/dad-simon-v2.mp4':'/videos/examples/santa-premium-charlotte-v2.mp4';
  useEffect(()=>{if(!open||playing)return;const timer=setTimeout(()=>setOpen(false),3000);return()=>clearTimeout(timer);},[open,playing,position]);
  const cue=(kind==='dad'?[7.69,20.75,43.5,64,78.75,102.25]:[10,18,30.5,40,46,58,68.5,84.75]).some(start=>position>=start&&position<start+3.5);
  async function toggle(){const video=ref.current;if(!video)return;if(!video.paused){video.pause();return;}setOpen(true);setError('');document.querySelectorAll('video,audio').forEach(other=>{if(other!==video)other.pause();});try{await video.play();}catch{setError('Please tap Play to try again.');}}
