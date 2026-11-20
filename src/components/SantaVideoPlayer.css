@@ -14,3 +14,11 @@
 .santa-video-player .santa-video-player__expand { position: absolute; top: 10px; left: 10px; z-index: 2; display: grid; place-items: center; width: 40px; height: 40px; min-height: 40px; padding: 8px; border: 1px solid #edcc83; border-radius: 8px; background: #082a1ee6; color: #fff9eb; cursor: pointer; }
 .santa-video-player__expand svg { width: 22px; height: 22px; }
 .santa-video-player.santa-video-player--expanded { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(var(--expanded-video-width), calc(100vw - 32px), calc((100dvh - 64px) * 16 / 9)); z-index: 10000; box-shadow: 0 0 0 100vmax #000b, 0 0 28px #d8ae4b80; }
+
+.santa-video-player--festive .santa-video-player__toggle{position:absolute;top:57%;left:88%;transform:translate(-50%,-50%);display:block;width:clamp(48px,7vw,76px);height:clamp(48px,7vw,76px);min-height:44px;padding:0;margin:0;border:0;border-radius:6px;background:transparent url('/images/dad-player-play-v2.png') 9.89% 56.25% / 635.3% 225%;animation:none;box-shadow:0 3px 8px #0008}
+.santa-video-player--festive .santa-video-player__toggle[data-playing="true"]{background-image:url('/images/dad-player-pause-v2.png')}
+.santa-video-player--festive .santa-video-player__toggle svg,.santa-video-player--festive .santa-video-player__control-label{display:none}
+
+.santa-video-player--festive .santa-video-player__toggle[data-attention="true"]{animation:dad-play-invitation 2.8s ease-in-out infinite;filter:drop-shadow(0 0 10px #ffd66c)}
+@keyframes dad-play-invitation{0%,45%,100%{transform:translate(-50%,-50%) rotate(0deg);filter:drop-shadow(0 0 7px #ffd66c)}55%,75%{transform:translate(-50%,-50%) rotate(-7deg) scale(1.06);filter:drop-shadow(0 0 17px #ffd66c)}65%,85%{transform:translate(-50%,-50%) rotate(7deg) scale(1.06)}}
+@media(prefers-reduced-motion:reduce){.santa-video-player--festive .santa-video-player__toggle[data-attention="true"]{animation:none}}

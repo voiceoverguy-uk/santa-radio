@@ -5,7 +5,7 @@ import { santaNameKey, santaNameDisplay } from '../lib/santaNameSearch.js';
 import WorkshopNamePreview from './WorkshopNamePreview.jsx';
 import './WorkshopNamePicker.css';
 
-export default function WorkshopNamePicker({ selected, initialName = '', onSelect, resolution, invalid, previewCache }) {
+export default function WorkshopNamePicker({ selected, initialName = '', onSelect, resolution, invalid, previewCache, showAvailableCount = false, capitaliseFirstLetter = false }) {
   const generatedId = useId();
   const inputId = `smw-name-search-${generatedId}`;
   const listboxId = `${inputId}-results`;
@@ -49,7 +49,8 @@ export default function WorkshopNamePicker({ selected, initialName = '', onSelec
 
   function handleSearchChange(event) {
     pendingPrefill.current = false;
-    setQuery(event.target.value);
+    const value = event.target.value;
+    setQuery(capitaliseFirstLetter ? value.replace(/^(\s*)\p{L}/u, letter => letter.toLocaleUpperCase('en-GB')) : value);
     setActiveIndex(-1);
     setIsOpen(true);
     if (selected) onSelect(null);
@@ -110,7 +111,7 @@ export default function WorkshopNamePicker({ selected, initialName = '', onSelec
 
   return (
     <div className="smw-name-picker">
-      <label className="smw-name-search-label" htmlFor={inputId}>Search recorded names</label>
+      <label className="smw-name-search-label" htmlFor={inputId}>{showAvailableCount && search.availableCount !== null ? `Search ${search.availableCount.toLocaleString('en-GB')} available names` : 'Search recorded names'}</label>
       <div className="smw-name-combobox">
         <input
           ref={inputRef}
@@ -134,6 +135,7 @@ export default function WorkshopNamePicker({ selected, initialName = '', onSelec
           onKeyDown={handleKeyDown}
           placeholder="Start typing a name"
           autoComplete="off"
+          autoCapitalize={capitaliseFirstLetter ? "words" : "off"}
           aria-autocomplete="list"
           aria-expanded={showListbox}
           aria-controls={listboxId}

@@ -1,3 +1,4 @@
+import { isStudioPath } from '../lib/studioRoute.js';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { EMPTY_CHOICES, SETTINGS_EVENT } from '../privacy/cookieConsent.js';
@@ -85,6 +86,7 @@ export default function MarketingConsent() {
     closeSettings();
   };
   const complete = choice !== null && typeof choice.analytics === 'boolean';
+  if ((isStudioPath(pathname) || pathname.replace(/\/+$/, '') === '/free-santa-message') && !settingsOpen) return null;
   if (isTrackerCapturePath(pathname) || !ready || (complete && !settingsOpen && !storageWarning)) return null;
   if (complete && !settingsOpen && storageWarning) {
     return <section className="marketing-consent" style={{ '--audio-player-height': `${playerClearance}px` }}

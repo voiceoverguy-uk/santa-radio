@@ -93,8 +93,10 @@ export function studioTimelineArguments(layers, duration) {
   const filters = [`[0:v]fps=${STUDIO_VIDEO_FPS}[base]`]; let previous = 'base';
   layers.forEach((layer, index) => {
     const fadeOut = layer.end === undefined ? '' : `,fade=t=out:st=${layer.end - CAPTION_FADE}:d=${CAPTION_FADE}:alpha=1`;
-    filters.push(`[${index + 1}:v]fps=${STUDIO_VIDEO_FPS},format=rgba,fade=t=in:st=${layer.start}:d=${CAPTION_FADE}:alpha=1${fadeOut}[text${index}]`);
-    filters.push(`[${previous}][text${index}]overlay=0:${layer.y}:format=auto[frame${index}]`);
+    const fade = layer.blink ? '' : `,fade=t=in:st=${layer.start}:d=${CAPTION_FADE}:alpha=1${fadeOut}`;
+    const blink = layer.blink ? `:enable='gte(t,${layer.start})*lt(t,${layer.end})*lt(mod(t,1),0.7)'` : '';
+    filters.push(`[${index + 1}:v]fps=${STUDIO_VIDEO_FPS},format=rgba${fade}[text${index}]`);
+    filters.push(`[${previous}][text${index}]overlay=0:${layer.y}:format=auto${blink}[frame${index}]`);
     previous = `frame${index}`;
   });
   filters.push(`[${previous}]format=yuv420p[video]`);

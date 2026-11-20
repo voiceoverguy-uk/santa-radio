@@ -1,47 +1,83 @@
-import {drawStudioVideoFrames,studioTimelineArguments} from './studioVideoTimeline.js';
+import {dadTreatWording} from './dadChoiceWording.js';
+import {studioTimelineArguments} from './studioVideoTimeline.js';
 import {createSantaVideo} from './createSantaVideo.js';
-export const DAD_ARTWORK=[{id:'armchair',label:'King of the remote',src:'/images/dad-armchair-framed-v1.png'},{id:'diy',label:'Assemble required',src:'/images/dad-diy-framed-v1.png'},{id:'dinner',label:'Christmas food coma',src:'/images/dad-dinner-framed-v1.png'},{id:'chef',label:'Chef’s special',src:'/images/dad-chef-framed-v1.png'},{id:'dancer',label:'Dad’s greatest hits',src:'/images/dad-dancer-framed-v1.png'},{id:'lights',label:'A tangled Christmas',src:'/images/dad-lights-framed-v1.webp'}];
+export const DAD_ARTWORK=[{id:'armchair',label:'King of the remote',src:'/images/dad-armchair-framed-v2.png'},{id:'diy',label:'Assembly required',src:'/images/dad-diy-framed-v2.png'},{id:'dinner',label:'Christmas food coma',src:'/images/dad-dinner-framed-v2.png'},{id:'chef',label:'Chef’s special',src:'/images/dad-chef-framed-v2.png'},{id:'dancer',label:'Dad’s greatest hits',src:'/images/dad-dancer-framed-v2.png'},{id:'lights',label:'All tangled up',src:'/images/dad-lights-framed-v2.png'}];
 export const dadVideoFilename = result => `dad-message-from-santa-to-${result.writtenName.trim().replace(/[\x00-\x1f\x7f/\\:*?"<>|]/g, '').replace(/\s+/g, '-')}.mp4`;
+export function dadViewingCaption(value){
+ const summaries={
+ 'an auction programme where you guess what everything’s worth':'Auction programmes where you always guess the price',
+ 'a repeat of a quiz show where you remember all the answers':'Quiz repeats where you know every answer',
+ 'a panel of four blokes arguing about a penalty':'Four blokes arguing about a penalty',
+ 'a detective drama you’ve already seen twice':'Detective dramas you’ve already seen twice',
+ 'a gangster film you can quote word for word':'Gangster films you know word for word',
+ 'a video of somebody reversing a caravan':'Watching someone reverse a caravan',
+ 'a bloke on YouTube pressure-washing a patio':'Watching someone pressure-wash a patio',
+ 'the weather in a place you’re going to next month':'Next month’s holiday weather',
+ 'the exact same programme, but from the beginning':'The same programme, from the beginning',
+ 'an old penalty shoot-out you’re still annoyed about':'That penalty shoot-out you’re still annoyed about'
+ };
+ return `Your TV choices are questionable!\n${(summaries[value]||value.replace(/^./u,c=>c.toUpperCase())).replace(/[.!?]+$/u,'')}?`;
+}
+export function dadTreatCaption(value){
+ const treat=dadTreatWording(value);
+ if(/^a note saying, /i.test(treat))return `You left Santa a note:\n${treat.replace(/^a note saying, /i,'')}`;
+ if(/^a note asking me to /i.test(treat))return `You left Santa a note\nasking him to ${treat.replace(/^a note asking me to /i,'')}`;
+ return `Thanks for leaving Santa\n${treat}… NOT!`;
+}
 export function dadTimeline(result){
- const s=result.clipStarts,e=result.clipEnds;
- return [{id:'intro',text:'Santa message for ',start:0},
- {id:'name',text:result.writtenName,start:0},
- {id:'age',text:` aged ${result.age}`,start:s.age,end:s.secondName+8},
- {id:'habit',text:`Especially good at ${result.habit}`,start:e.habit,end:s.viewing},
- {id:'viewing',text:`Then it's ${result.viewing}`,start:e.viewing,end:s.treat},
- {id:'treat',text:`Thank you for leaving ${result.treat}`,start:s.treat+1,end:s.secondName-1},
- {id:'approved',text:'Nice List Approved… just!',start:s.secondName,end:s.secondName+8},
- {id:'christmas',text:'Merry Christmas!',start:s.secondName+8}];
+ const s=result.clipStarts;
+ const christmasStart=(result.clipEnds?.secondName ?? s.secondName+1.2)+1.5;
+ return [{id:'incoming',text:'Incoming message from Santa',start:0,end:5,blink:true},
+ {id:'name',text:result.writtenName,start:s.name,end:s.age},
+ {id:'age',text:`${result.writtenName}\nAged ${result.age}`,start:s.age,end:s.habit},
+ {id:'habit',text:`You’re especially good at ${result.habit}`,start:s.habit,end:s.viewing},
+ {id:'viewing',text:dadViewingCaption(result.viewing),start:s.viewing,end:s.treat},
+ {id:'treat',text:dadTreatCaption(result.treat),start:s.treat,end:s.secondName-1},
+ {id:'approved',text:'Nice List Approved… just!',start:s.secondName,end:christmasStart},
+ {id:'christmas',text:'Merry Christmas!',start:christmasStart,end:christmasStart+2},
+ {id:'christmas-extra',text:'Merry Christmas!\n… and all that!',start:christmasStart+2}];
+}
+export function wrapDadCaption(context,text,maxWidth){
+ if(text.includes('\n'))return text.split('\n').flatMap(part=>wrapDadCaption(context,part,maxWidth));
+ const words=text.trim().split(/\s+/);const lines=[];let line='';
+ for(const word of words){const next=line?`${line} ${word}`:word;if(line&&context.measureText(next).width>maxWidth){lines.push(line);line=word;}else line=next;}if(line)lines.push(line);return lines;
 }
 function frames(image,result){
- const {base,layers}=drawStudioVideoFrames(image,result,dadTimeline(result));
- // Burn the recipient into every frame: sharing apps usually use the first
- // video frame, and do not receive the separate browser poster image.
- for(const layer of layers.filter(l=>['intro','name'].includes(l.id)))base.getContext('2d').drawImage(layer.canvas,0,layer.y);
- return {base,layers:layers.filter(l=>!['intro','name'].includes(l.id))};
+ const width=1280,height=720;
+ const canvas=(h)=>{const c=document.createElement('canvas');c.width=width;c.height=h;return c;};
+ const base=canvas(height),ctx=base.getContext('2d');ctx.drawImage(image,0,0,width,height);
+ // Name first appears in the caption panel, then moves above it for the jokes.
+ const badge=canvas(86),badgeCtx=badge.getContext('2d');
+ let titleSize=42;badgeCtx.font=`bold ${titleSize}px Georgia, serif`;
+ while(badgeCtx.measureText(result.writtenName).width>700&&titleSize>24){titleSize--;badgeCtx.font=`bold ${titleSize}px Georgia, serif`;}
+ const x=65,w=badgeCtx.measureText(result.writtenName).width+100;
+ const green=badgeCtx.createLinearGradient(0,5,0,76);green.addColorStop(0,'#31523a');green.addColorStop(.5,'#123d29');green.addColorStop(1,'#071e16');
+ badgeCtx.fillStyle=green;badgeCtx.beginPath();badgeCtx.roundRect(x,5,w,70,12);badgeCtx.fill();
+ badgeCtx.strokeStyle='#d9b85f';badgeCtx.lineWidth=3;badgeCtx.stroke();
+ badgeCtx.strokeStyle='#8f702d';badgeCtx.lineWidth=1;badgeCtx.strokeRect(x+10,14,w-20,52);
+ // Holly leaves and berries frame the name without relying on emoji fonts.
+ for(const cx of [x+22,x+w-22]){
+  badgeCtx.fillStyle='#4a793c';
+  for(const direction of [-1,1]){badgeCtx.beginPath();badgeCtx.ellipse(cx+direction*5,33,5,13,direction*.6,0,Math.PI*2);badgeCtx.fill();}
+  badgeCtx.fillStyle='#b21b2c';for(const [dx,dy]of [[-4,43],[4,43],[0,49]]){badgeCtx.beginPath();badgeCtx.arc(cx+dx,dy,4,0,Math.PI*2);badgeCtx.fill();}
+ }
+ badgeCtx.fillStyle='#fff2c9';badgeCtx.textAlign='center';badgeCtx.textBaseline='middle';badgeCtx.shadowColor='#000';badgeCtx.shadowBlur=3;badgeCtx.fillText(result.writtenName,x+w/2,41);
+ const recipientLayers=[{id:'name-badge',text:result.writtenName,start:result.clipStarts.habit,canvas:badge,y:430}];
+ const layers=dadTimeline(result).map(caption=>{
+  const layer=canvas(180),text=layer.getContext('2d');let size=48,lines;
+  do{text.font=caption.id==='incoming'?`bold ${size}px "Courier New", monospace`:`bold ${size}px Georgia, serif`;lines=wrapDadCaption(text,caption.text,1000);if(lines.length<=2&&lines.every(line=>text.measureText(line).width<=1000))break;size--;}while(size>24);
+  text.textAlign='center';text.textBaseline='middle';text.fillStyle=caption.id==='incoming'?'#baffad':'#fff9ed';text.shadowColor='#001b12';text.shadowBlur=3;
+  const spacing=size*1.2,first=88-(lines.length-1)*spacing/2;
+  lines.forEach((line,i)=>text.fillText(line,width/2,first+i*spacing));
+  return {...caption,canvas:layer,y:540};
+ });return {base,layers:[...recipientLayers,...layers]};
 }
-export async function dadPoster(result){const image=new Image();image.src=result.artwork;await image.decode();const {base,layers}=frames(image,result);for(const layer of layers.filter(l=>['intro','name'].includes(l.id)))base.getContext('2d').drawImage(layer.canvas,0,layer.y);return base.toDataURL('image/png');}
+export async function dadPoster(result){const image=new Image();image.src=result.artwork;await image.decode();return frames(image,result).base.toDataURL('image/png');}
 function createDadVideoVariant(result,options,shareCover=false){return createSantaVideo({...options,onStatus:message=>options?.onStatus?.(message.startsWith('Adding Santa’s voice')?'Hang on! So much to do! Nearly there...':message),audio:result.audioBlob,name:result.writtenName,artwork:result.artwork,prepareFrames:async(image,duration)=>{
  const {base,layers}=frames(image,result),included=layers.filter(l=>l.start<duration&&(!l.end||l.end>l.start));
  const png=c=>new Promise((resolve,reject)=>c.toBlob(b=>b?resolve(b):reject(Error('Could not draw captions')),'image/png'));
  const files=[{name:'image.png',blob:await png(base)}];for(const layer of included)files.push({name:`${layer.id}.png`,blob:await png(layer.canvas)});
- if(!shareCover)return {files,args:studioTimelineArguments(included,duration)};
- const cover=document.createElement('canvas');cover.width=base.width;cover.height=base.height;
- const ctx=cover.getContext('2d');ctx.drawImage(image,0,0,cover.width,cover.height);
- ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#fff9ed';ctx.shadowColor='rgba(0,0,0,.65)';ctx.shadowBlur=3;ctx.shadowOffsetY=2;
- ctx.font='900 38px Arial, sans-serif';ctx.fillText('Message for Dad',cover.width/2,cover.height*.802);
- let size=72;ctx.font=`900 ${size}px Arial, sans-serif`;
- while(ctx.measureText(result.writtenName).width>cover.width*.70&&size>16){size-=1;ctx.font=`900 ${size}px Arial, sans-serif`;}
- ctx.fillText(result.writtenName,cover.width/2,cover.height*.9);
- const end=Math.min(2,duration||2),fade=Math.min(.35,end/2);
- files.push({name:'share-cover.png',blob:await png(cover)});
- const shareLayer={id:'share-cover',y:0,start:0,end};
- const args=studioTimelineArguments([...included,shareLayer],duration),filterIndex=args.indexOf('-filter_complex')+1;
- // This cover is visible from frame zero; only its exit fades. The usual
- // timed captions and soundtrack remain exactly the same underneath.
- const input=included.length+1;
- args[filterIndex]=args[filterIndex].replace(new RegExp(`(\\[${input}:v\\]fps=12,format=rgba),fade=t=in:st=0:d=0\\.75:alpha=1,fade=t=out:st=[^:]+:d=0\\.75:alpha=1`),`$1,fade=t=out:st=${end-fade}:d=${fade}:alpha=1`);
- return {files,args};
+ return {files,args:studioTimelineArguments(included,duration)};
 }});}
 
 export const createDadVideo=(result,options)=>createDadVideoVariant(result,options);

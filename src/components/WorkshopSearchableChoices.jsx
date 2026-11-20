@@ -14,7 +14,7 @@ const searchLabels = {
   funny: ['Search funny talents', 'Search hosted choices'],
 };
 
-export default function WorkshopSearchableChoices({ category, label, options, value, onChange, invalid, onTick, onSoundInteraction, wording, searchLabel: searchLabelOverride, placeholder: placeholderOverride, selectedText: selectedTextOverride, wheelFooter }) {
+export default function WorkshopSearchableChoices({ category, label, options, value, onChange, invalid, onTick, onSoundInteraction, wording, searchLabel: searchLabelOverride, placeholder: placeholderOverride, selectedText: selectedTextOverride, wheelFooter, showClearButton = true }) {
   const [query, setQuery] = useState('');
   const inputId = useId();
   const inputRef = useRef(null);
@@ -32,10 +32,10 @@ export default function WorkshopSearchableChoices({ category, label, options, va
             aria-controls={`${inputId}-results`}
             autoComplete="off" spellCheck={false} placeholder={placeholder}
             onChange={event => setQuery(event.target.value)} />
-          <button type="button" disabled={!query} onClick={() => {
+          {showClearButton && <button type="button" disabled={!query} onClick={() => {
             setQuery('');
             inputRef.current?.focus({ preventScroll: true });
-          }}>Clear</button>
+          }}>Clear</button>}
         </div>
       </div>
       <div className="smw-filtered-wheel" id={`${inputId}-results`}>

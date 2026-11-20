@@ -65,3 +65,16 @@
   grid-column: 1 / -1;
   width: 100%;
 }
+
+.studio-runner-pose{display:block;transform-origin:50% 85%}
+.studio-runner-stumbles .studio-runner-pose{animation:studio-runner-stumble 14s ease-in-out infinite}
+@keyframes studio-runner-stumble{
+ 0%,18%,29%,65%,77%,100%{transform:rotate(0) translateY(0)}
+ 20%{transform:rotate(24deg) translateY(-3px)}
+ 22%{transform:rotate(70deg) translateY(5px)}
+ 25%{transform:rotate(-12deg) translateY(-6px)}
+ 67%{transform:rotate(-28deg) translateY(-2px)}
+ 70%{transform:rotate(-65deg) translateY(5px)}
+ 73%{transform:rotate(14deg) translateY(-7px)}
+}
+@media(prefers-reduced-motion:reduce){.studio-runner-stumbles .studio-runner-pose{animation:none}}

@@ -1,13 +1,13 @@
 import './StudioPreparationRunner.css';
 
-export default function StudioPreparationRunner({ costume }) {
+export default function StudioPreparationRunner({ costume, stumbles = false }) {
   const base = `/images/studio-runners/${costume}`;
   return (
-    <div className="studio-runner-lane" aria-hidden="true">
-      <picture className="studio-runner-travel">
+    <div className={`studio-runner-lane${stumbles ? ' studio-runner-stumbles' : ''}`} aria-hidden="true">
+      <div className="studio-runner-travel"><picture className="studio-runner-pose">
         <source media="(prefers-reduced-motion: reduce)" srcSet={`${base}-still.png`} />
         <img src={`${base}.webp`} alt="" width="60" height="64" draggable="false" />
-      </picture>
+      </picture></div>
     </div>
   );
 }

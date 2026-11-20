@@ -19,7 +19,7 @@ export default function useBrowserSantaNameSearch(query) {
   const blocked = isBlockedName(query);
   const records = useMemo(() => blocked ? [] : matchBrowserSantaNames(state.names, query),
     [state.names, query, blocked]);
-  return { records, blocked, hostedCount: null, warning: '', error: state.error,
+  return { records, blocked, hostedCount: null, availableCount: state.loading || state.error ? null : state.names.length, warning: '', error: state.error,
     loading: !blocked && [...query.trim()].length >= 2 && state.loading,
     refresh: () => setAttempt(value => value + 1) };
 }

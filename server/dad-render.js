@@ -9,9 +9,9 @@ const execute = promisify(execFile);
 export const studioSources = fileURLToPath(new URL('./santa-audio/studio/', import.meta.url));
 export const studioBells = fileURLToPath(new URL('./santa-audio/studio/sleigh-bells.mp3', import.meta.url));
 const RATE = 48000, FRAME = 8;
-export const STUDIO_LEAD_IN_SECONDS = 1;
-// The source-speech budget is unchanged. At 192 kb/s, even 176 seconds plus
-// MP3 framing fits the existing 4,400,000-byte server and browser limits.
+export const STUDIO_LEAD_IN_SECONDS = 4;
+// The complete Dad render, including the four-second bells lead-in, stays
+// within the existing duration and 4,400,000-byte output limits.
 export const MAX_STUDIO_SECONDS = 175;
 
 export function studioOrder(name, choices, fixed = studioSources, fourth = join(fixed, '4th.flac')) {
@@ -89,7 +89,7 @@ export async function renderDadMessage({name,choices,fixed,directory,signal,bell
   const target=join(directory,`prepared-${index++}.f32`);
   prepared.set(source,{target,...await prepareStudioClip(source,target,{signal})});
  }
- let cursor=48000, names=0; const clipStarts={},clipEnds={};
+ let cursor=STUDIO_LEAD_IN_SECONDS * RATE, names=0; const clipStarts={},clipEnds={};
  for(const source of order){
   const key=source===name?(++names===1?'name':'secondName'):Object.keys(choices).find(k=>choices[k]===source);
   if(key){clipStarts[key]=cursor/48000;clipEnds[key]=(cursor+prepared.get(source).frames)/48000;}
