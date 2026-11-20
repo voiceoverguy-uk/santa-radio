@@ -1,3 +1,4 @@
+import {DAD_LAUNCH_AT} from '../lib/dadLaunch.js';
 import {dadDisplayCategories} from '../lib/dadChoiceWording.js';
 import DadCertificate from '../components/DadCertificate.jsx';
 import {DAD_PREPARATION_MESSAGES} from '../lib/dadPreparationMessages.js';
@@ -63,7 +64,19 @@ export default function DadMessageStudio(){
  const [audioState,setAudioState]=useState('idle'),[editingReview,setEditingReview]=useState(false),[sceneChosen,setSceneChosen]=useState(false);
  const [shareResult,setShareResult]=useState(null),[sharing,setSharing]=useState(false),[shareProgress,setShareProgress]=useState(null);const shareJob=useRef(null),shareURL=useRef(null),shareFlight=useRef(false);
  const load=async()=>{try{await request('/api/dad-studio-access');}catch{}try{const data=await request('/api/dad-studio-message');setAccess({...data,categories:data.categories?dadDisplayCategories(data.categories):data.categories});}catch(e){setAccess({authorized:false});}};
- useEffect(()=>{const boot=async()=>{const token=new URLSearchParams(location.hash.slice(1)).get('studio-return');if(token){history.replaceState(null,'',location.pathname);try{await request('/api/dad-studio-return',{token});}catch(e){setError(e.message);}}await load();try{const setup=await request('/api/dad-studio-checkout?prepare=1');setSales(setup.configured===true);}catch{};};boot();return()=>{job.current?.abort();shareJob.current?.abort();if(shareURL.current)URL.revokeObjectURL(shareURL.current);clearTimeout(hideTimer.current);if(videoURL.current)URL.revokeObjectURL(videoURL.current);};},[]);
+ useEffect(()=>{const boot=async()=>{const token=new URLSearchParams(location.hash.slice(1)).get('studio-return');if(token){history.replaceState(null,'',location.pathname);try{await request('/api/dad-studio-return',{token});}catch(e){setError(e.message);}}await load();};boot();return()=>{job.current?.abort();shareJob.current?.abort();if(shareURL.current)URL.revokeObjectURL(shareURL.current);clearTimeout(hideTimer.current);if(videoURL.current)URL.revokeObjectURL(videoURL.current);};},[]);
+ useEffect(()=>{
+  let cancelled=false,timer;const controller=new AbortController();
+  const refresh=async()=>{try{
+   const response=await fetch('/api/dad-studio-checkout?prepare=1',{credentials:'same-origin',signal:controller.signal});
+   const setup=await response.json();if(cancelled)return;
+   setSales(response.ok&&setup.configured===true);
+   if(setup.opensAt&&!setup.configured)timer=setTimeout(refresh,Math.min(2147483647,Math.max(1000,setup.opensAt-Date.now()+100)));
+  }catch{if(!cancelled){setSales(false);if(Date.now()<DAD_LAUNCH_AT)timer=setTimeout(refresh,Math.min(2147483647,DAD_LAUNCH_AT-Date.now()+100));}}};
+  const onVisible=()=>{if(document.visibilityState==='visible'){clearTimeout(timer);refresh();}};
+  refresh();document.addEventListener('visibilitychange',onVisible);
+  return()=>{cancelled=true;clearTimeout(timer);controller.abort();document.removeEventListener('visibilitychange',onVisible);};
+ },[]);
  const checkout=async()=>{setBusy(true);setError('');try{await request('/api/dad-studio-checkout?prepare=1');const r=await request('/api/dad-studio-checkout',{});if(r.pending){await load();setNotice('Checking your payment. Please wait a moment and refresh if needed.');}else if(r.url&&new URL(r.url).hostname==='checkout.stripe.com')location.assign(r.url);else throw Error('Checkout is not ready yet.');}catch(e){setError(e.message);}finally{setBusy(false);}};
  const prepareAudio=async()=>{
   if(audioFlight.current||saved.current||!confirmed.current)return;

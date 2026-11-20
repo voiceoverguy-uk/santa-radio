@@ -1,4 +1,5 @@
 import {useEffect,useRef,useState} from 'react';
+import {DAD_LAUNCH_AT} from '../lib/dadLaunch.js';
 import DadEarlyAccess from './DadEarlyAccess.jsx';
 import StudioReturnAccess from './StudioReturnAccess.jsx';
 import StudioPurchaseButton from './StudioPurchaseButton.jsx';
@@ -7,12 +8,12 @@ import DadCertificate from './DadCertificate.jsx';
 import BespokeExamplePlayer from './BespokeExamplePlayer.jsx';
 import './BespokeMessageOffers.css';
 const names=['Harry','Arabella','Charlotte','Layla','Freya','Jack','Bob'];
-const launch=Date.parse('2026-11-21T09:00:00Z');
+const launch=DAD_LAUNCH_AT;
 function DadLaunch(){
  const [now,setNow]=useState(null);
  useEffect(()=>{setNow(Date.now());const timer=setInterval(()=>setNow(Date.now()),1000);return()=>clearInterval(timer);},[]);
  const seconds=now===null?null:Math.max(0,Math.floor((launch-now)/1000));
- return <div className="bespoke-launch"><strong>Available 9am Saturday 21st November</strong>{seconds!==null&&seconds>0?<p aria-label="Time until Dad messages open">{Math.floor(seconds/86400)} {Math.floor(seconds/86400)===1?'day':'days'} · {Math.floor(seconds/3600)%24} hours · {Math.floor(seconds/60)%60} minutes · {seconds%60} seconds</p>:seconds===0?<p>It’s opening time — explore Dad’s Studio for availability.</p>:null}</div>;
+ return <div className="bespoke-launch"><strong>Available 9am Saturday 21st November</strong>{seconds!==null&&seconds>0?<p aria-label="Time until Dad messages open">{Math.floor(seconds/86400)} {Math.floor(seconds/86400)===1?'day':'days'} · {Math.floor(seconds/3600)%24} hours · {Math.floor(seconds/60)%60} minutes · {seconds%60} seconds</p>:seconds===0?<p>Dad’s messages are now available.</p>:null}</div>;
 }
 export default function BespokeMessageOffers({previewName}) {
  const [sample,setSample]=useState('Harry'),[stored,setStored]=useState(''),[gifts,setGifts]=useState(false);

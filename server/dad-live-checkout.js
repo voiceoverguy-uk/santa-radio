@@ -1,3 +1,4 @@
+import {DAD_LAUNCH_AT, dadSalesOpen} from '../src/lib/dadLaunch.js';
 import express from 'express';
 import { STUDIO_PATH } from '../src/lib/dadRoute.js';
 import { randomBytes } from 'node:crypto';
@@ -19,6 +20,7 @@ export async function startOwnerCanary(options) {
 }
 
 async function startCheckout({ claim, config, stripe, pool = databasePool() }, ownerCanary) {
+  if (!ownerCanary && !dadSalesOpen()) throw new Error('DAD_SALES_NOT_OPEN');
   const hash = digest(claim);
   const embedded = false;
   return transaction(pool, async client => {
@@ -86,7 +88,7 @@ async function startCheckout({ claim, config, stripe, pool = databasePool() }, o
 
 export function createLiveCheckoutHandler({
   getConfig = () => liveStudioConfig(process.env, { sales: true }), getStripe = liveStripeClient,
-  getPool = databasePool, readiness = studioLiveReadiness, consume = consumeLiveAttempt, start = startLiveCheckout,
+  getPool = databasePool, readiness = studioLiveReadiness, consume = consumeLiveAttempt, start = startLiveCheckout, now = Date.now,
 } = {}) {
   const app = express();
   app.disable('x-powered-by');
@@ -99,6 +101,7 @@ export function createLiveCheckoutHandler({
       || req.method === 'POST' && !sameLiveOrigin(req, req.studioConfig)) {
       return res.status(403).json({ available: false, error: 'Start Purchase from the Santa Radio website.' });
     }
+    if (req.method === 'POST' && !dadSalesOpen(now())) return res.status(503).json({available:false, opensAt:DAD_LAUNCH_AT, error:'Dad messages are available from 9am Saturday 21st November.'});
     if (req.method === 'POST' && !req.is('application/json')) return res.status(415).json({ error: 'Expected JSON.' });
     next();
   });
@@ -106,6 +109,7 @@ export function createLiveCheckoutHandler({
   app.use(async (req, res) => {
     const config = req.studioConfig;
     try {
+      if (req.method === 'GET' && req.query.prepare === '1' && !dadSalesOpen(now())) return res.json({configured:false, available:false, opensAt:DAD_LAUNCH_AT});
       const pool = getPool();
       // Readiness requests consume a budget too: do not let public polling
       // fan out unlimited upstream Stripe/probe requests.
@@ -115,6 +119,8 @@ export function createLiveCheckoutHandler({
       if (req.method === 'POST' && (!req.body || Object.keys(req.body).length)) {
         return res.status(400).json({ error: 'Purchase details are set by the server.' });
       }
+      const sales = await pool.query("SELECT enabled FROM public.santa_dad_live_sales_settings WHERE key='public'");
+      if (sales.rows[0]?.enabled !== true) throw new Error('DAD_SALES_DISABLED');
       let claim = liveCheckoutClaim(req, config);
       if (req.method === 'POST' && !claim) return res.status(409).json({ error: 'Refresh this page before purchasing.' });
       // Bootstrap only sets the signed browser claim. The POST still performs
@@ -134,7 +140,7 @@ export function createLiveCheckoutHandler({
           claim = randomBytes(32).toString('base64url');
           res.cookie(LIVE_CHECKOUT_COOKIE, signLiveClaim(claim, config), cookieOptions);
         }
-        return res.json({ available: true, mode: 'live', sandbox: false, amount: 500, currency: 'gbp',
+        return res.json({ available: dadSalesOpen(now()), ready: true, opensAt: DAD_LAUNCH_AT, mode: 'live', sandbox: false, amount: 500, currency: 'gbp',
           checkoutMode: 'hosted', publishableKey: config.publishableKey || undefined });
       }
       const result = await start({ claim, config, stripe, pool });
