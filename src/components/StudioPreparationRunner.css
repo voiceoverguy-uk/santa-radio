@@ -78,3 +78,15 @@
  73%{transform:rotate(14deg) translateY(-7px)}
 }
 @media(prefers-reduced-motion:reduce){.studio-runner-stumbles .studio-runner-pose{animation:none}}
+
+@media (prefers-reduced-motion: no-preference) {
+  .studio-runner-lane--hops { height: 78px; }
+  .studio-runner-lane--hops .studio-runner-travel {
+    animation: studio-runner-cross 7s linear infinite alternate, studio-runner-hop 5s linear infinite;
+  }
+}
+
+@keyframes studio-runner-hop {
+  0%, 76%, 88%, 100% { translate: 0 0; }
+  81% { translate: 0 -13px; }
+}

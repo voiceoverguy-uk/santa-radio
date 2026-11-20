@@ -123,7 +123,7 @@ function PurchaseButton({ sandbox, onPaidAccessChange, label, onReturnRequest })
     </p>
     {new URLSearchParams(location.search).get('studioCheckout') === 'cancelled' &&
       <p role="status">{sandbox ? 'Test checkout was cancelled.' : 'Checkout was cancelled.'} No new access has been granted. You can try Purchase again.</p>}
-    {<p>{onReturnRequest ? <button className="bespoke-return-link" type="button" onClick={onReturnRequest}>Already paid? Return to Studio</button> : <Link to={`${STUDIO_PATH}#studio-return-access`}>Already paid? Return to Studio</Link>}</p>}
+    {<p>{onReturnRequest ? <button className="bespoke-return-link" type="button" aria-haspopup="dialog" onClick={onReturnRequest}>Already paid? Enter your email</button> : <Link to={`${STUDIO_PATH}#studio-return-access`}>Already paid? Return to Studio</Link>}</p>}
     {error && <div role="alert"><p>{error}</p><button type="button" onClick={() => setRefresh(value => value + 1)}>Retry purchase check</button></div>}
   </div>;
 }

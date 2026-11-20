@@ -681,3 +681,16 @@
   .studio-gifts__preview-stack--promotion .studio-gifts__thumbnail { transition: none; }
   .studio-gifts__preview-stack--promotion .studio-gifts__thumbnail:not(:disabled):hover { transform: none; }
 }
+
+.studio-letter-dialog--offer { font: 1rem/1.5 system-ui, sans-serif; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .studio-letter-dialog--offer[open] {
+    animation: studio-gift-reveal .7s ease both;
+  }
+}
+
+@keyframes studio-gift-reveal {
+  from { opacity: 0; transform: translateY(24px); clip-path: inset(0 0 100% 0); }
+  to { opacity: 1; transform: translateY(0); clip-path: inset(0); }
+}

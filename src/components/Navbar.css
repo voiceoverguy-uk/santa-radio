@@ -165,3 +165,11 @@
     animation: none;
   }
 }
+
+#root:has(#dad-return-home-dialog) .navbar.is-scroll-hidden {
+  transform: none;
+}
+
+#root:has(#dad-return-home-dialog) .navbar-logo-image {
+  filter: drop-shadow(0 0 7px #ffd574cc);
+}

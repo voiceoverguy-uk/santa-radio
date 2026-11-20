@@ -86,7 +86,7 @@ async function finishChoices(page) {
   await next(page);
   await page.getByRole('listbox').press('Home');
   await next(page);
-  await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+  await page.locator('.smw-stage .smw-button-next').click();
   for (let index = 0; index < 4; index++) {
     await page.getByRole('listbox').press('Home');
     await next(page);

@@ -86,3 +86,33 @@
 .dad-scene-info p{position:absolute;right:0;top:100%;z-index:3;width:230px;max-width:65vw;margin:4px 0 0;padding:10px 12px;border:1px solid #b99b4f;border-radius:6px;background:#fff8e7;color:#15372b;font:400 12px/1.5 sans-serif;box-shadow:0 3px 12px #0005}
 
 .dad-intro-art{min-width:0}.dad-intro-logo{display:block;width:80%;max-width:420px;height:auto;margin:0 auto 28px}
+
+.dad-scene-thumbnail {
+  display: block;
+  position: relative;
+  container-type: inline-size;
+}
+.dad-scene-thumbnail img { display: block; }
+.dad-scene-thumbnail__label {
+  position: absolute;
+  inset: 75% 7% 5%;
+  display: grid;
+  place-items: center;
+  color: #fff2ce;
+  font: 700 clamp(9px, 5.5cqi, 18px)/1.1 'Cinzel', Georgia, serif;
+  text-align: center;
+  text-shadow: 0 2px 3px #000;
+}
+
+.dad-return-home-dialog {
+  width: min(440px, calc(100% - 32px));
+  margin: auto;
+  padding: 24px;
+  border: 1px solid #b99b4f;
+  border-radius: 12px;
+  background: #0e2e23;
+  color: #fff9ed;
+}
+.dad-return-home-dialog::backdrop { background: #03150de6; }
+.dad-return-home-dialog h2 { margin: 0; color: #efda9a; }
+.dad-return-home-dialog .dad-actions { flex-wrap: wrap; }

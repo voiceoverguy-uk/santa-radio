@@ -55,3 +55,22 @@ export const dadTreatWording = value => TREAT_WORDING[value] || value;
 export function dadDisplayCategories(categories) {
  return Object.fromEntries(Object.entries(categories).map(([key, rows]) => [key, rows.map(row => ({...row, label: key === "treat" ? dadTreatWording(row.label) : row.label}))]));
 }
+
+const conciseChoices = new Map([
+  ['asking for a cuppa the moment somebody sits down', 'Asking for a cuppa as you sit down'],
+  ['asking who that is halfway through the film', 'Asking who’s who mid-film'],
+  ['balancing another plate on the washing up pile', 'Adding to the washing-up pile'],
+  ['saying you don t want chips and then eating everyone else s', 'Stealing everyone else’s chips'],
+  ['saying you re on your way before you ve left', 'Saying you’re on your way before leaving'],
+]);
+
+export function dadScrollerLabel(label) {
+  const limit = 42;
+  if (label.length <= limit) return label;
+  const key = label.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+  const shortLabel = conciseChoices.get(key);
+  if (shortLabel) return shortLabel;
+  const prefix = label.slice(0, limit - 1);
+  const boundary = prefix.lastIndexOf(' ');
+  return `${boundary >= limit / 2 ? prefix.slice(0, boundary) : prefix.trimEnd()}…`;
+}

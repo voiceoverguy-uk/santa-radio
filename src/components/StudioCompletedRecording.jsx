@@ -19,9 +19,9 @@ export default function StudioCompletedRecording({ result, ordinal, visible, sec
     let active = true;
     createStudioVideoPoster(result)
       .then(image => { if (active) setPoster(image); })
-      .catch(() => { if (active) setPoster(STUDIO_VIDEO_ARTWORK); });
+      .catch(() => { if (active) setPoster(result.artwork || STUDIO_VIDEO_ARTWORK); });
     return () => { active = false; };
-  }, [result.writtenName, result.gift, result.videoBlob]);
+  }, [result.writtenName, result.gift, result.videoBlob, result.artwork]);
   const [url, setUrl] = useState('');
   const [progress, setProgress] = useState(null);
   const [status, setStatus] = useState('Preparing your premium Christmas video…');
@@ -62,7 +62,7 @@ export default function StudioCompletedRecording({ result, ordinal, visible, sec
     {!hideProgress && !error && <><div className="santa-free-video__progress"><progress aria-label="Premium MP4 creation progress" max="1" value={progress ?? undefined} /><span>{progress === null ? 'Preparing…' : `${Math.floor(progress * 100)}%`}</span></div><p role="status">{status}</p>{!result.videoBlob && <StudioPreparationRunner costume="classic" />}</>}
     {error && <div role="alert"><p>{error}</p><button type="button" onClick={() => setAttempt(value => value + 1)}>Retry video preparation</button></div>}
     {url && <>
-      <SantaVideoPlayer poster={poster || STUDIO_VIDEO_ARTWORK} src={url} preload="auto" glow label={`Santa’s premium video message for ${result.writtenName}`} onPlay={event => {
+      <SantaVideoPlayer poster={poster || result.artwork || STUDIO_VIDEO_ARTWORK} src={url} preload="auto" glow label={`Santa’s premium video message for ${result.writtenName}`} onPlay={event => {
         playingVideo.current = event.currentTarget;
         for (const other of document.querySelectorAll('audio, video')) if (other !== event.currentTarget) other.pause();
         resume.current = radio?.pauseForMessage?.() || null;

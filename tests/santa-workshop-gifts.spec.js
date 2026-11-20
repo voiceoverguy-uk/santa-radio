@@ -47,14 +47,12 @@ async function review(page, { destination = 'The Enchanted Forest', talent = nul
   if (await decline.isVisible()) await decline.click();
   await page.getByRole('combobox', { name: 'Search recorded names', exact: true }).fill('Dixie');
   await page.getByRole('option', { name: /Dixie/ }).first().click();
-  await page.locator('.smw-button-next').click();
   for (const answer of ['9 years old', 'Teamwork', 'Completing a jigsaw puzzle', 'Bûche de Noël', destination]) {
-    const skip = page.getByRole('button', { name: 'Skip this section', exact: true });
-    if (await skip.isVisible()) {
+    if (await page.getByRole('button', { name: 'Sports & activities', exact: true }).isVisible()) {
       if (talent) {
         await page.getByRole('option', { name: talent, exact: true }).click();
         await page.locator('.smw-button-next').click();
-      } else await skip.click();
+      } else await page.locator('.smw-stage .smw-button-next').click();
     }
     if (answer === 'The Enchanted Forest') await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
     await page.getByRole('option', { name: answer, exact: true }).click();
@@ -784,11 +782,10 @@ test('completed gifts stay downloadable when allowance checks fail', async ({ pa
     await page.reload();
     await page.getByRole('combobox', { name: 'Search recorded names', exact: true }).fill('Dixie');
     await page.getByRole('option', { name: /Dixie/ }).first().click();
-    await page.locator('.smw-button-next').click();
     for (const answer of ['9 years old', 'Teamwork', 'Completing a jigsaw puzzle', 'Bûche de Noël', 'The Enchanted Forest']) {
       if (answer === 'The Enchanted Forest') await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
-      if (await page.getByRole('button', { name: 'Skip this section', exact: true }).isVisible()) {
-        await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+      if (await page.getByRole('button', { name: 'Sports & activities', exact: true }).isVisible()) {
+        await page.locator('.smw-stage .smw-button-next').click();
       }
       await page.getByRole('option', { name: answer, exact: true }).click();
       await page.locator('.smw-button-next').click();

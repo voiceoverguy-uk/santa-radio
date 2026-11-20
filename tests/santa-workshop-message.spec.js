@@ -361,7 +361,7 @@ for (const viewport of [{ width: 1365, height: 900 }, { width: 390, height: 844 
       await expect(page.getByRole('alert')).toHaveCount(0);
       await page.getByRole('button', { name: 'Start Again', exact: true }).click();
       await expect(page.getByRole('dialog')).toHaveCount(0);
-      for (let step = 0; step < 7; step++) await page.locator('.smw-button-next:visible').click();
+      for (let step = 0; step < 6; step++) await page.locator('.smw-button-next:visible').click();
       await expect(upper).toHaveText('Create message →');
       await expect(ready).toHaveCount(0);
       await expect(audio).toHaveCount(1);
@@ -520,11 +520,10 @@ async function openReview(page, { live = false, allowance = null, tester = false
   const nameOption = page.getByRole('option', { name: live ? /^Arabella/ : /Dixie/ }).first();
   await expect(nameOption).toBeVisible({ timeout: 15000 });
   await nameOption.click();
-  await page.locator('.smw-button-next').click();
   for (const answer of answers) {
     if (answer === 'The Enchanted Forest') await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
-    if (await page.getByRole('button', { name: 'Skip this section', exact: true }).isVisible()) {
-      await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+    if (await page.getByRole('button', { name: 'Sports & activities', exact: true }).isVisible()) {
+      await page.locator('.smw-stage .smw-button-next').click();
     }
     const search = page.getByRole('searchbox');
     if (await search.count()) await checkPlaceholder(search);
@@ -595,7 +594,7 @@ for (const width of [320, 390, 1365]) {
     await expect(page.getByRole('combobox', { name: 'Search recorded names', exact: true })).toBeVisible();
     expect(fixture.posts).toHaveLength(0);
     // Reset navigation preserves choices; returning to review still creates normally.
-    for (let step = 0; step < 7; step++) await page.locator('.smw-button-next:visible').click();
+    for (let step = 0; step < 6; step++) await page.locator('.smw-button-next:visible').click();
     let release;
     fixture.hold = new Promise(resolve => { release = resolve; });
     await confirmMessage(page);
@@ -902,11 +901,11 @@ for (const width of [390, 1365]) {
     const allowance = structuredClone(fixture.state);
     await page.getByRole('button', { name: 'Start Again', exact: true }).click();
     await expect(page.getByRole('dialog')).toHaveCount(0);
-    await expect(page.locator('.smw-step-count')).toHaveText('Step 1 of 7');
+    await expect(page.locator('.smw-step-count')).toHaveText('Step 1 of 6');
     await expect(page.getByRole('heading', { name: 'What name should Santa say?', exact: true })).toBeVisible();
     await expect(page.getByRole('combobox', { name: 'Search recorded names', exact: true })).toBeEnabled();
-    for (let step = 1; step <= 7; step++) {
-      await expect(page.locator('.smw-step-count')).toHaveText(`Step ${step} of 7`);
+    for (let step = 1; step <= 6; step++) {
+      await expect(page.locator('.smw-step-count')).toHaveText(`Step ${step} of 6`);
       if (step > 1) await expect(page.locator('.smw-actions:not([hidden])').getByRole('button', { name: 'Back', exact: true })).toBeVisible();
       await page.locator('.smw-button-next:visible').click();
     }

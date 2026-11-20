@@ -19,6 +19,18 @@ export default function Navbar() {
     setHiddenOnScroll(false);
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   };
+  const openHomeFromLogo = event => {
+    if (!event.defaultPrevented && event.button === 0 &&
+        !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
+      const reminder = document.getElementById('dad-return-home-dialog');
+      if (reminder) {
+        event.preventDefault();
+        reminder.showModal();
+        return;
+      }
+    }
+    goHome(event);
+  };
   const openMessageDesk = event => {
     setMenuOpen(false);
     // Repeat visits to the current route don't remount its entry effect.
@@ -102,7 +114,7 @@ export default function Navbar() {
   return (
     <nav ref={navRef} className={`navbar ${scrolled || location.pathname !== '/' ? 'solid' : ''} ${hiddenOnScroll && !menuOpen ? 'is-scroll-hidden' : ''}`} aria-label="Main navigation">
       <div className="navbar-inner">
-        <Link to="/" onClick={goHome} className="navbar-logo" aria-label="Santa Radio home"><img className="navbar-logo-image" src="/images/santa-radio-gold-nav.webp" alt="Santa Radio" width="630" height="188" /></Link>
+        <Link to="/" onClick={openHomeFromLogo} className="navbar-logo" aria-label="Santa Radio home"><img className="navbar-logo-image" src="/images/santa-radio-gold-nav.webp" alt="Santa Radio" width="630" height="188" /></Link>
         {!isStudio && <RadioButton className="nav-radio-icon" iconOnly />}
         <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-controls="main-menu" aria-label={menuOpen ? 'Close menu' : 'Open menu'}><span /><span /><span /></button>
         <ul id="main-menu" ref={highlight.menuRef} style={highlight.style} {...highlight.handlers}

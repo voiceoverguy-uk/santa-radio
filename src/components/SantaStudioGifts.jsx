@@ -123,6 +123,7 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
   staticPreview = false, suppliedLetter = null, reviewHeading = null, downloadReady = false,
   downloadNotice = null, giftRevision = '', downloadUnavailableNotice, variant = null, children,
   onDownloadRequested, onGiftPreparing, requestedGifts, onPreviewOpen, sampleProfile = null }) {
+  const popup = variant === 'offer-popup';
   const promotion = variant === 'promotion' && !staticPreview;
   const views = promotion ? promotionGiftViews : giftViews;
   // Deterministic SSR; randomise only once after mounting in the browser.
@@ -141,6 +142,7 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
   const dialogRef = useRef(null);
   const openerRef = useRef(null);
   const closeRef = useRef(null);
+  const swipeStart = useRef(null);
   const rawLetter = staticPreview && suppliedLetter ? suppliedLetter : letter;
   const letterKey = JSON.stringify(rawLetter);
   const [prepared, setPrepared] = useState(null);
@@ -152,7 +154,7 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
     setLetterError(null);
     import('../lib/prepareStudioLetter.js').then(({ prepareStudioLetter }) => prepareStudioLetter(rawLetter))
       .then(result => { if (!cancelled) setPrepared({ key: letterKey, letter: result }); })
-      .catch(() => { if (!cancelled) setLetterError('This complete letter could not be fitted safely. Please retry the letter preview; your audio and other gifts are unaffected.'); });
+      .catch(() => { if (!cancelled) setLetterError('The letter preview couldn’t load. Your message and other gifts are still available.'); });
     return () => { cancelled = true; };
   }, [letterKey, fitAttempt]);
   const duration = letterDuration(displayLetter || rawLetter);
@@ -161,6 +163,7 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
 
   useEffect(() => { if (!staticPreview) setLetter(createLetter()); }, [name, staticPreview, sampleProfile]);
   useEffect(() => {
+    if (!sectionRef.current) return;
     const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting));
     // Keep the shared recipient/artwork rotation alive while mobile gifts are
     // collapsed. The disclosure remains visible even when its content is not.
@@ -201,6 +204,23 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
     return () => dialog.removeEventListener('close', close);
   }, []);
 
+  useEffect(() => {
+    if (!popup || !previewOpen) return;
+    const dialog = dialogRef.current;
+    let timer;
+    const reset = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => dialog.close(), 5000);
+    };
+    const events = ['pointermove', 'pointerdown', 'click', 'keydown', 'wheel', 'scroll', 'touchmove'];
+    for (const event of events) dialog.addEventListener(event, reset, true);
+    reset();
+    return () => {
+      clearTimeout(timer);
+      for (const event of events) dialog.removeEventListener(event, reset, true);
+    };
+  }, [popup, previewOpen]);
+
   const open = (event, kind) => {
     openerRef.current = event.currentTarget;
     onPreviewOpen?.();
@@ -235,6 +255,62 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
       onDownloadRequested={onDownloadRequested} onPreparing={onGiftPreparing}
       picture={picture} unavailableNotice={downloadUnavailableNotice} />}
   </GiftCard>;
+  const giftDialog = (
+    <dialog ref={dialogRef} className={`studio-letter-dialog${popup ? ' studio-letter-dialog--offer' : ''}${view === 'letter' ? ' studio-letter-dialog--letter' : ''}`}
+      aria-label={`${name}’s ${view || 'gift'} example`}
+      onKeyDown={event => {
+        if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+        if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+          event.preventDefault();
+          changeGift(event.key === 'ArrowLeft' ? -1 : 1);
+        }
+      }}
+      onTouchStart={popup ? event => {
+        const touch = event.touches[0];
+        swipeStart.current = event.touches.length === 1 ? [touch.clientX, touch.clientY] : null;
+      } : undefined}
+      onTouchEnd={popup ? event => {
+        const start = swipeStart.current;
+        swipeStart.current = null;
+        if (!start || event.touches.length) return;
+        const touch = event.changedTouches[0];
+        const x = touch.clientX - start[0];
+        const y = touch.clientY - start[1];
+        if (Math.abs(x) >= 48 && Math.abs(x) > Math.abs(y)) changeGift(x > 0 ? -1 : 1);
+      } : undefined}
+      onCancel={() => dialogRef.current.close()}>
+      <div className="studio-letter-dialog__toolbar">
+        <div className="studio-letter-dialog__navigation" role="group" aria-label="Browse gift previews">
+          <button type="button" aria-label="Previous gift" title="Previous gift" onClick={() => changeGift(-1)}>
+            <ArrowLeft size={22} aria-hidden="true" />
+          </button>
+          <button type="button" aria-label="Next gift" title="Next gift" onClick={() => changeGift(1)}>
+            <ArrowRight size={22} aria-hidden="true" />
+          </button>
+        </div>
+        <span className="studio-gifts__sr" role="status" aria-live="polite">
+          {view ? `${view === 'picture' ? 'Santa picture' : view === 'letter' ? 'Santa letter' : 'Nice List certificate'}, ${views.indexOf(view) + 1} of 3` : ''}
+        </span>
+        <button ref={closeRef} type="button" onClick={() => dialogRef.current.close()}>Close preview</button>
+      </div>
+      <div className="studio-letter-dialog__content" role="region" aria-label="Enlarged gift preview"
+        tabIndex={0} onScroll={() => setReading(true)}>
+        <div className={`studio-letter-dialog__document studio-letter-dialog__document--${view || 'picture'}`}
+          onContextMenu={event => event.preventDefault()} onDragStart={event => event.preventDefault()}>
+          {view === 'certificate' ? <Certificate name={name} elapsed={duration} />
+             : view === 'letter' ? (popup && !displayLetter
+                ? <p role="status">{letterError || 'Preparing the letter…'}</p>
+                : <Letter letter={displayLetter} elapsed={duration} />)
+              : <SantaPicture name={name} picture={picture} elapsed={duration} />}
+          <SampleWatermark />
+        </div>
+      </div>
+    </dialog>
+  );
+  if (popup) return <>
+    <button type="button" aria-haspopup="dialog" onClick={event => open(event, 'certificate')}>Preview the gifts ↗</button>
+    {giftDialog}
+  </>;
   return <section ref={sectionRef} className="studio-gifts" aria-label="Paid Studio gift preview"
     data-demo-name={name} data-sample-profile={sampleProfile ? name : undefined} data-complete={finished}
     onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
@@ -271,41 +347,7 @@ function GiftExample({ name, picture, previousPicture, onDissolved, activeAudio,
         {renderGift('picture')}
       </>}
     </div>
-    <dialog ref={dialogRef} className={`studio-letter-dialog${view === 'letter' ? ' studio-letter-dialog--letter' : ''}`}
-      aria-label={`${name}’s ${view || 'gift'} example`}
-      onKeyDown={event => {
-        if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
-        if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-          event.preventDefault();
-          changeGift(event.key === 'ArrowLeft' ? -1 : 1);
-        }
-      }}
-      onCancel={() => dialogRef.current.close()}>
-      <div className="studio-letter-dialog__toolbar">
-        <div className="studio-letter-dialog__navigation" role="group" aria-label="Browse gift previews">
-          <button type="button" aria-label="Previous gift" title="Previous gift" onClick={() => changeGift(-1)}>
-            <ArrowLeft size={22} aria-hidden="true" />
-          </button>
-          <button type="button" aria-label="Next gift" title="Next gift" onClick={() => changeGift(1)}>
-            <ArrowRight size={22} aria-hidden="true" />
-          </button>
-        </div>
-        <span className="studio-gifts__sr" role="status" aria-live="polite">
-          {view ? `${view === 'picture' ? 'Santa picture' : view === 'letter' ? 'Santa letter' : 'Nice List certificate'}, ${views.indexOf(view) + 1} of 3` : ''}
-        </span>
-        <button ref={closeRef} type="button" onClick={() => dialogRef.current.close()}>Close preview</button>
-      </div>
-      <div className="studio-letter-dialog__content" role="region" aria-label="Enlarged gift preview"
-        tabIndex={0} onScroll={() => setReading(true)}>
-        <div className={`studio-letter-dialog__document studio-letter-dialog__document--${view || 'picture'}`}
-          onContextMenu={event => event.preventDefault()} onDragStart={event => event.preventDefault()}>
-          {view === 'certificate' ? <Certificate name={name} elapsed={duration} />
-             : view === 'letter' ? <Letter letter={displayLetter} elapsed={duration} />
-              : <SantaPicture name={name} picture={picture} elapsed={duration} />}
-          <SampleWatermark />
-        </div>
-      </div>
-    </dialog>
+    {giftDialog}
   </section>;
 }
 

@@ -60,11 +60,10 @@ test(`live HTTPS categories ${initialWidth}: mobile flow and full-list desktop a
   const initialStorage = await storage();
   await page.getByRole('combobox', { name: 'Search recorded names' }).fill('Dem');
   await page.getByRole('option', { name: 'Demrie', exact: true }).click();
-  await page.locator('.smw-button-next').click();
   const selected = ['7 months old', 'Reading', 'Helping your mummy', 'Pfeffernüsse', 'United Arab Emirates'];
   const keys = ['age', 'activity', 'achievement', 'treat', 'place'];
   for (const [index, label] of selected.entries()) {
-    if (index === 1) await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+    if (index === 1) await page.locator('.smw-stage .smw-button-next').click();
     const wheel = page.getByRole('listbox');
     await expect(wheel.getByRole('option')).toHaveCount(index === 4
       ? catalogue.categories.place.filter(record => record.kind === 'place').length

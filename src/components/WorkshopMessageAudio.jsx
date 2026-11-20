@@ -1,3 +1,4 @@
+import StudioScenePicker from './StudioScenePicker.jsx';
 import StudioPreparationRunner from './StudioPreparationRunner.jsx';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -21,19 +22,16 @@ function trapDialogFocus(event) {
 
 export default function WorkshopMessageAudio({
   record, choices, spelling, complete, generation, correction, tester = false, onCorrection, visible, onPhaseChange, onReady,
-  showGiftDownloadHint = false, reviewMessageTarget = null, deliveryTarget = null, onStartAgain, showReadyAction = true,
-  giftsRequested = false, giftExportPending = false, giftWrittenName, onBundlePreparing, onBundleRequested,
+  reviewMessageTarget = null, deliveryTarget = null, onStartAgain, showReadyAction = true,
+  giftsRequested = false, giftExportPending = false, giftWrittenName, onBundlePreparing, onBundleRequested, deliveryStep, onDeliveryStep,
 }) {
   const accessKind = useContext(StudioAccessContext);
   const voucherContext = useContext(StudioVoucherContext);
   const voucher = accessKind.startsWith('paid-') ? null : voucherContext;
   const requestRef = useRef(null);
   const urlRef = useRef(null);
-  const dialogRef = useRef(null);
   const triggerRef = useRef(null);
-  const deliveryRef = useRef(null);
   const finishedRef = useRef(null);
-  const deliveryScrollPending = useRef(false);
   const receivedSelection = useRef(null);
   const readyCallbackRef = useRef(onReady);
   const spellingRef = useRef(spelling);
@@ -46,11 +44,10 @@ export default function WorkshopMessageAudio({
   const [results, setResults] = useState([]);
   const resultsRef = useRef([]);
   const [error, setError] = useState('');
-  const [confirming, setConfirming] = useState(false);
+  const [scene, setScene] = useState(null);
   const [resetConfirmation, setResetConfirmation] = useState(false);
   const resetDialogRef = useRef(null);
   const operationRef = useRef(null);
-  const [creationAttempt, setCreationAttempt] = useState(0);
   const writtenName = getWorkshopWrittenName(record?.name || '', spelling);
   const finishedWrittenName = results.at(-1)?.writtenName || writtenName;
   const busy = phase === 'preparing' || phase === 'receiving';
@@ -82,20 +79,6 @@ export default function WorkshopMessageAudio({
       behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
     });
   };
-  useEffect(() => {
-    if (!deliveryScrollPending.current) return;
-    deliveryScrollPending.current = false;
-    const frame = requestAnimationFrame(() => {
-      const delivery = deliveryRef.current;
-      if (!delivery) return;
-      delivery.focus({ preventScroll: true });
-      const headerBottom = Math.max(0, document.querySelector('.navbar')?.getBoundingClientRect().bottom || 0);
-      const top = delivery.getBoundingClientRect().top + window.scrollY - headerBottom - 16;
-      window.scrollTo({ top: Math.max(0, top),
-        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
-    });
-    return () => cancelAnimationFrame(frame);
-  }, [creationAttempt]);
   const status = generation.state;
   const epoch = status?.accessEpoch || generation.epoch || 0;
   useEffect(() => {
@@ -197,13 +180,6 @@ export default function WorkshopMessageAudio({
   };
 
   useEffect(() => {
-    if (!confirming) return;
-    const dialog = dialogRef.current;
-    dialog.showModal();
-    dialog.querySelector('button')?.focus();
-    return () => { if (dialog.open) dialog.close(); };
-  }, [confirming]);
-  useEffect(() => {
     if (!resetConfirmation) return;
     resetDialogRef.current?.showModal();
     resetDialogRef.current?.querySelector('button')?.focus();
@@ -218,15 +194,17 @@ export default function WorkshopMessageAudio({
   };
   const reset = () => {
     if (giftExportPending || busy || resetBlocked) return;
-    if (onStartAgain?.({ preserve: false }) === false) return;
+    const preserve = results.length === 1;
+    if (onStartAgain?.({ preserve }) === false) return;
     setResetConfirmation(false);
-    clearRecording();
+    if (preserve) {
+      // Keep the first creation available when the next message is ready.
+      urlRef.current = null;
+      setUrl('');
+      setPhase('idle');
+      setError('');
+    } else clearRecording();
     operationRef.current = null;
-  };
-  const closeConfirmation = (restoreFocus = true) => {
-    dialogRef.current?.close();
-    setConfirming(false);
-    if (restoreFocus) requestAnimationFrame(() => triggerRef.current?.focus({ preventScroll: true }));
   };
   const cancel = () => {
     requestRef.current?.abort();
@@ -237,9 +215,8 @@ export default function WorkshopMessageAudio({
   };
   const create = async () => {
     if (requestRef.current || disabled) return;
-    closeConfirmation(false);
-    deliveryScrollPending.current = true;
-    setCreationAttempt(attempt => attempt + 1);
+    if (deliveryStep !== 'scene') setScene(null);
+    onDeliveryStep('scene');
     document.dispatchEvent(new Event('studio-stop-audio'));
     setError('');
     const controller = new AbortController();
@@ -284,34 +261,25 @@ export default function WorkshopMessageAudio({
   if (!visible) return null;
   const messageAction = () => (limited && url) ? null : (
     <button className={`smw-button smw-button-next${disabled ? ' smw-create-disabled' : ''}`}
-      type="button" onClick={event => {
-        triggerRef.current = event.currentTarget;
-        setConfirming(true);
-      }} disabled={disabled} aria-busy={busy}>
-      {busy ? 'Recording message' : phase === 'error' && complete ? 'Retry message' : 'Create message'} <span aria-hidden="true">→</span>
+      type="button" onClick={create} disabled={disabled}>
+      {deliveryStep === 'scene' ? 'Retry recording' : 'Confirm and choose a picture'} <span aria-hidden="true">→</span>
     </button>
   );
+  const finishScene = () => {
+    if (!scene || phase !== 'ready' || !urlRef.current) return;
+    const next = resultsRef.current.map(result => result.url === urlRef.current
+      ? { ...result, artwork: scene } : result);
+    resultsRef.current = next;
+    setResults(next);
+    onDeliveryStep('result');
+  };
   const startAction = () => <button className="smw-button smw-button-back" type="button"
     aria-disabled={exhausted || undefined}
-    aria-haspopup={exhausted ? 'dialog' : undefined}
+    aria-haspopup={exhausted || url ? 'dialog' : undefined}
     disabled={busy || giftExportPending || !!status?.pending
       || (!exhausted && results.length === 1 && resetBlocked)}
     onClick={event => {
-      // At the limit this is an explanation-only control, never a reset.
-      if (exhausted) {
-        triggerRef.current = event.currentTarget;
-        setResetConfirmation(true);
-        return;
-      }
-      if (url && results.length === 1) {
-        if (resetBlocked || onStartAgain?.({ preserve: true }) === false) return;
-        // Keep the result and its URL alive; only the editable operation resets.
-        urlRef.current = null;
-        setUrl('');
-        setPhase('idle');
-        setError('');
-        operationRef.current = null;
-      } else if (url && results.length === 2) {
+      if (exhausted || url) {
         triggerRef.current = event.currentTarget;
         setResetConfirmation(true);
       } else {
@@ -329,9 +297,9 @@ export default function WorkshopMessageAudio({
     Voucher access: you can create messages while your access remains valid, subject to request limits.
   </p>;
   const delivery = (
-    <div className="smw-delivery" ref={deliveryRef} tabIndex={-1} role="group" aria-label="Message preparation and recording">
+    <div className="smw-delivery" tabIndex={-1} role="group" aria-label="Message preparation and recording">
     {busy && <div className="smw-message-result smw-message-preparing">
-      <p role="status" aria-live="polite">Creating your Santa video…</p>
+      <p role="status" aria-live="polite">Santa is preparing your recording…</p>
       <div className="smw-preparation-row">
         <div className="smw-preparation-controls">
           <button className="smw-change" type="button" onClick={cancel}>Cancel preparation</button>
@@ -342,8 +310,17 @@ export default function WorkshopMessageAudio({
     </div>}
     {error && <div className="smw-message-result" role="alert"><p>{error}</p>
     </div>}
+    {deliveryStep === 'scene' && <>
+      {phase === 'ready' && <p role="status">… almost ready…</p>}
+      <StudioScenePicker selected={scene} onSelect={setScene} />
+      <div className="smw-actions">
+        {!busy && phase !== 'ready' && messageAction()}
+        <button type="button" className="smw-button smw-button-next"
+          disabled={!scene || phase !== 'ready'} onClick={finishScene}>Create my Message →</button>
+      </div>
+    </>}
     {/* Reverse presentation only: ordinals and the latest target stay chronological. */}
-    {results.map((result, index) => <StudioCompletedRecording key={result.url} result={result}
+    {deliveryStep === 'result' && results.filter(result => result.artwork).map((result, index) => <StudioCompletedRecording key={result.url} result={result}
       ordinal={index + 1} visible={visible}
       onVideoReady={videoBlob => {
         const next = resultsRef.current.map(item => item.url === result.url ? { ...item, videoBlob } : item);
@@ -359,17 +336,11 @@ export default function WorkshopMessageAudio({
     </div>
   );
   return <>
-    {/* Render a second trigger in the gifts row without duplicating recording
-        state, requests or the confirmation dialog owned by this component. */}
-    {reviewMessageTarget && createPortal(url && showReadyAction
-      ? <button className="smw-button smw-button-next" type="button" onClick={showRecording}>READY</button>
-      : messageAction(), reviewMessageTarget)}
-    {!url && startAction()}
-    {!url && messageAction()}
-    {!url && showGiftDownloadHint && <p className="smw-catalogue-review-note smw-gift-download-hint">
-      Create your video message to unlock these three personalised gift downloads.
-    </p>}
-    {!url && voucherNotice}
+    {deliveryStep === 'result' && reviewMessageTarget && url && showReadyAction &&
+      createPortal(<button className="smw-button smw-button-next" type="button" onClick={showRecording}>READY</button>, reviewMessageTarget)}
+    {deliveryStep === 'review' && startAction()}
+    {deliveryStep === 'review' && messageAction()}
+    {deliveryStep === 'review' && voucherNotice}
     {!url && exhausted && <p className="smw-allowance" role="status">Both creations have been used. Create message is unavailable for this access.</p>}
     {(generation.checking || generation.error || !status) && <p className="smw-allowance" role={generation.error ? 'alert' : 'status'} aria-live={generation.error ? 'assertive' : 'polite'}>
       {generation.checking ? 'Checking your Studio access…' : generation.error
@@ -383,34 +354,27 @@ export default function WorkshopMessageAudio({
         Retry recording check</button></>}
     </p>}
     {deliveryTarget && createPortal(delivery, deliveryTarget)}
-    {url && startAction()}
-    {url && messageAction()}
+    {deliveryStep === 'result' && url && startAction()}
+    {deliveryStep === 'result' && url && messageAction()}
     {resetConfirmation && <dialog ref={resetDialogRef} className="smw-confirmation"
       aria-labelledby="smw-reset-title" aria-describedby="smw-reset-warning"
       onKeyDown={trapDialogFocus}
       onCancel={event => { event.preventDefault(); cancelReset(); }}>
-      <h3 id="smw-reset-title">{exhausted ? 'You’ve used your two-message limit' : 'Have you downloaded your video message?'}</h3>
+      <h3 id="smw-reset-title">Have you saved everything?</h3>
       <p id="smw-reset-warning">{exhausted
-        ? 'Don’t forget to download and save your video messages and gifts before closing this tab or leaving the site. They aren’t saved for you to return to later.'
-        : 'Check that you have saved all your video messages and gifts on your device before continuing. Starting again clears all retained recordings and their gifts; they cannot be recovered. A download request does not confirm that a file reached your device.'}</p>
+        ? 'You’ve used both message credits. Save your videos and gifts before leaving this page.'
+        : results.length === 1
+          ? 'Save your video and gifts before starting your next message.'
+          : 'Check that you have saved all your video messages and gifts on your device before continuing. Starting again clears all retained recordings and their gifts; they cannot be recovered. A download request does not confirm that a file reached your device.'}</p>
       {!giftsRequested && <p>You haven’t requested all the gifts for {giftWrittenName || finishedWrittenName}. You can still request them before starting again.</p>}
       {!exhausted && resetBlocked && <p role="status">Another creation cannot be started until your Studio access and remaining creations have been confirmed. Your current recording and gifts have not been cleared. Close this dialog to retry the recording check.</p>}
       <div className="smw-actions">
         <button type="button" className="smw-button smw-button-back" onClick={() => cancelReset(true)}>Back to downloads</button>
         {!exhausted && <button type="button" className="smw-button smw-button-next"
           disabled={giftExportPending || busy || resetBlocked}
-          onClick={reset}>Discard recording and start again</button>}
+          onClick={reset}>{results.length === 1 ? 'Start next message' : 'Discard recordings and start again'}</button>}
       </div>
     </dialog>}
-    {confirming && <dialog ref={dialogRef} className="smw-confirmation" aria-labelledby="smw-confirm-title"
-      aria-describedby="smw-confirm-description" onCancel={event => { event.preventDefault(); closeConfirmation(); }}
-      onKeyDown={trapDialogFocus}>
-      <h3 id="smw-confirm-title">Ready to create your message?</h3>
-      <p id="smw-confirm-description">Please check your choices, you can’t edit this message once it’s created. Play and save your video message before leaving this page. We don’t keep a copy.</p>
-      <div className="smw-actions">
-        <button type="button" className="smw-button smw-button-back" onClick={() => closeConfirmation()}>Go back and edit</button>
-        <button type="button" className="smw-button smw-button-next" disabled={disabled} onClick={create}>Create message</button>
-      </div>
-    </dialog>}
+
   </>;
 }

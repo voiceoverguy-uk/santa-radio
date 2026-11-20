@@ -139,36 +139,33 @@ test('Studio hides progress captions only on mobile, retaining the bars and curr
   await page.locator('.smw-builder').screenshot({ path: 'test-results/workshop-progress-mobile.png' });
 });
 
-test('Studio ends after the three-step explainer without an inventory note on desktop or mobile', async ({ page }) => {
+test('Studio omits the guide and inventory note on desktop and mobile', async ({ page }) => {
   for (const width of [390, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     await open(page);
     await expect(page.locator('.smw-footer-note')).toHaveCount(0);
     await expect(page.locator('.smw-page')).not.toContainText('Names come from Santa’s hosted recording library');
     await expect(page.locator('.smw-page')).not.toContainText('Files flagged for review are not selectable.');
-    await expect(page.locator('.smw-shell > :last-child')).toHaveClass('smw-explainer');
-    await expect(page.locator('.smw-explainer-card')).toHaveCount(3);
+    await expect(page.locator('.smw-explainer')).toHaveCount(0);
     await expect(page.getByRole('combobox', { name: 'Search recorded names', exact: true })).toBeVisible();
     if (width === 1440) {
-      await expect(page.getByRole('heading', { name: 'A little Christmas magic, in three steps' })).toBeVisible();
-      await expect(page.locator('.footer')).toBeVisible();
+      await expect(page.locator('.footer')).toBeHidden();
     } else {
       // Preserve the existing compact mobile layout.
-      await expect(page.locator('.smw-explainer')).toBeHidden();
       await expect(page.locator('.footer')).toBeHidden();
     }
     await photograph(page, `generated-artifacts/workshop/inventory-note-removed-${width}.png`);
   }
 });
 
-test('Studio hides the radio dock at every size, keeps desktop footer and restores the dock elsewhere', async ({ page }) => {
+test('Studio hides the radio dock and footer at every size and restores both elsewhere', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await open(page);
   await expect(page.locator('.radio-dock')).toBeHidden();
   await expect(page.locator('.footer')).toBeHidden();
   await page.setViewportSize({ width: 1440, height: 1000 });
   await expect(page.locator('.radio-dock')).toBeHidden();
-  await expect(page.locator('.footer')).toBeVisible();
+  await expect(page.locator('.footer')).toBeHidden();
   // Neither an expanded player nor a trailing slash should restore the dock.
   await page.locator('.radio-dock').evaluate(node => node.classList.remove('is-minimized'));
   await expect(page.locator('.radio-dock')).toBeHidden();
@@ -196,9 +193,68 @@ async function openAgeStage(page) {
   await open(page);
   await page.getByRole('combobox', { name: 'Search recorded names', exact: true }).fill('Dem');
   await page.getByRole('option', { name: 'Demrie', exact: true }).click();
-  await page.locator('.smw-button-next').click();
-  await expect(page.locator('.smw-step-count')).toHaveText('Step 2 of 7');
+  await expect(page.locator('.smw-step-count')).toHaveText('Step 1 of 6');
 }
+
+test('Studio confirms its summary and opens six picture choices while one recording prepares', async ({ page }) => {
+  let releaseRecording;
+  const recording = new Promise(resolve => { releaseRecording = resolve; });
+  let requests = 0;
+  await page.route('**/api/santa-studio-message', async route => {
+    if (route.request().method() === 'GET') {
+      return route.fulfill({ json: { temporary: true, limit: 2, remaining: 2, successes: 0, pending: false } });
+    }
+    requests++;
+    await recording;
+    return route.fulfill({ contentType: 'audio/mpeg', body: 'test recording' });
+  });
+  try {
+    await openAgeStage(page);
+    await browseToAge(page, '9 years old');
+    const next = page.locator('.smw-stage .smw-button-next');
+    await next.click();
+    await next.click();
+    for (let index = 0; index < 4; index++) {
+      await page.getByRole('listbox').press('Home');
+      await next.click();
+    }
+    await expect(page.locator('.smw-summary-row')).toHaveCount(7);
+    await expect(page.locator('.studio-gifts')).toHaveCount(0);
+    await page.getByRole('button', { name: 'Confirm and choose a picture' }).click();
+    await expect(page.getByRole('heading', { name: 'Choose the scene' })).toBeVisible();
+    const scenes = page.getByRole('group', { name: 'Choose a picture' });
+    await expect(scenes.getByRole('button')).toHaveCount(6);
+    await expect(scenes.locator('.smw-scene-brand strong')).toHaveText(Array(6).fill('SantaRadio.co.uk'));
+    await expect(scenes.locator('.smw-scene-brand em')).toHaveText(Array(6).fill('Your Message From Santa'));
+    await expect(scenes.locator('.smw-scene-caption')).toHaveCount(6);
+    await expect.poll(() => scenes.locator('img').evaluateAll(images =>
+      images.every(image => image.complete && image.naturalWidth > 0))).toBe(true);
+    await expect.poll(() => requests).toBe(1);
+    await expect(page.locator('.smw-progress, .smw-step-labels')).toHaveCount(0);
+    await scenes.getByRole('button', { name: 'Santa’s workshop', exact: true }).click();
+    const preview = page.getByRole('dialog', { name: 'Santa’s workshop', exact: true });
+    await expect(preview).toBeVisible();
+    await preview.getByRole('button', { name: 'Previous picture' }).click();
+    const stables = page.getByRole('dialog', { name: 'The reindeer stables', exact: true });
+    await expect(stables).toBeVisible();
+    await stables.getByRole('button', { name: 'Next picture' }).click();
+    await preview.press('ArrowLeft');
+    await stables.getByRole('button', { name: 'Use this picture' }).click();
+    const selected = scenes.getByRole('button', { name: 'The reindeer stables' });
+    await expect(selected).toHaveAttribute('aria-pressed', 'true');
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await expect(selected).toHaveCSS('animation-name', 'smw-scene-glow');
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await expect(selected).toHaveCSS('animation-name', 'none');
+    const create = page.getByRole('button', { name: 'Create my Message' });
+    await expect(create).toBeDisabled();
+    releaseRecording();
+    await expect(create).toBeEnabled();
+    expect(requests).toBe(1);
+  } finally {
+    releaseRecording();
+  }
+});
 
 for (const width of [320, 390, 768, 1024, 1440]) {
   test(`header Continue follows valid choices through Studio at ${width}px`, async ({ page }) => {
@@ -207,7 +263,7 @@ for (const width of [320, 390, 768, 1024, 1440]) {
     const shortcut = page.locator('.smw-header-continue');
     const badge = page.locator('.smw-step-count');
     const questions = [
-      'What name should Santa say?', 'How old are they?', 'What are they especially good at?',
+      'Name and age', 'What are they especially good at?',
       'What have they been trying hard at?', 'What deserves an extra celebration?',
       'What might they leave Santa?', 'Where is Santa visiting?',
     ];
@@ -217,8 +273,8 @@ for (const width of [320, 390, 768, 1024, 1440]) {
       await expect(page.getByRole('heading', { name: questions[step - 1], exact: true })).toHaveCount(1);
       await expect(page.locator('.smw-stage-number, .smw-builder-head .smw-section-kicker')).toHaveCount(0);
       await expect(page.locator('.smw-builder')).not.toContainText('A few lovely details');
-      await expect(page.locator('.smw-progress-segment')).toHaveCount(7);
-      await expect(page.getByRole('progressbar')).toHaveAttribute('aria-valuemax', '7');
+      await expect(page.locator('.smw-progress-segment')).toHaveCount(6);
+      await expect(page.getByRole('progressbar')).toHaveAttribute('aria-valuemax', '6');
       await expect(page.getByRole('progressbar')).toHaveAttribute('aria-valuenow', String(step));
       const header = await page.locator('.smw-builder-head').boundingBox();
       const progress = await page.getByRole('progressbar').boundingBox();
@@ -244,25 +300,33 @@ for (const width of [320, 390, 768, 1024, 1440]) {
     await expectQuestionHeader(1);
     await expect(shortcut).toHaveCount(0);
     const search = page.getByRole('combobox', { name: 'Search recorded names', exact: true });
+    const artwork = page.locator('.smw-start-artwork img');
+    await expect(artwork).toHaveCount(2);
+    await expect.poll(() => artwork.evaluateAll(images => images.every(image => image.complete && image.naturalWidth > 0))).toBe(true);
+    await expect(page.locator('.smw-activity-wording')).toHaveCount(0);
+    await expect(page.getByRole('listbox', { name: 'Their age', exact: true })).toHaveCount(0);
     await search.fill('Dem');
     await expect(shortcut).toHaveCount(0);
     await page.getByRole('option', { name: 'Demrie', exact: true }).click();
     await search.fill('De');
     await expect(shortcut).toHaveCount(0);
     await page.getByRole('option', { name: 'Demrie', exact: true }).click();
+    await expect(shortcut).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: 'Their age', exact: true })).toBeVisible();
+    await page.getByRole('listbox', { name: 'Their age', exact: true }).press('Home');
     if (width === 1440) await page.locator('.smw-builder-head').screenshot({
       path: 'generated-artifacts/studio-desktop-header-continue.png', animations: 'disabled',
     });
     await next();
-    for (let step = 2; step <= 7; step++) {
+    for (let step = 2; step <= 6; step++) {
       await expectQuestionHeader(step);
-      await expect(badge).toHaveText(`Step ${step} of 7`);
+      await expect(badge).toHaveText(`Step ${step} of 6`);
       if (step === 6 && [390, 1440].includes(width)) await page.locator('.smw-builder').screenshot({
         path: `generated-artifacts/studio-question-header-${width}.png`, animations: 'disabled',
       });
-      if (step === 3) {
+      if (step === 2) {
         await expect(shortcut).toHaveCount(0);
-        await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+        await page.locator('.smw-stage .smw-button-next').click();
       } else {
         await page.getByRole('option').first().click();
         await next();
@@ -270,9 +334,9 @@ for (const width of [320, 390, 768, 1024, 1440]) {
     }
     await expect(page.locator('.smw-summary')).toBeVisible();
     await expect(shortcut).toHaveCount(0);
-    await expect(badge).toHaveText('Step 8 of 8');
+    await expect(badge).toHaveText('Step 7 of 8');
     await expect(badge).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Time to Review', exact: true })).toHaveCount(1);
+    await expect(page.getByRole('heading', { name: 'Review Time', exact: true })).toHaveCount(1);
     await expect(page.locator('.smw-review-description')).toHaveText('Confirm your selections. Modify any if needed.');
     await expect(page.locator('.smw-builder')).not.toContainText('A little Christmas magic, all together');
     await expect(page.locator('.smw-builder')).not.toContainText('Your Christmas creation');
@@ -285,7 +349,9 @@ for (const width of [320, 390, 768, 1024, 1440]) {
     if ([390, 1440].includes(width)) await page.locator('.smw-builder-head').screenshot({
       path: `generated-artifacts/studio-review-header-${width}.png`, animations: 'disabled',
     });
-    await page.locator('.smw-summary .smw-change').first().click();
+    await page.getByRole('button', { name: 'Change Age', exact: true }).click();
+    await expect(page.getByRole('combobox', { name: 'Search recorded names', exact: true })).toHaveValue('Demrie');
+    await page.getByRole('listbox', { name: 'Their age', exact: true }).press('End');
     await expect(shortcut).toHaveText('Return to review →');
     await next();
     await expect(page.locator('.smw-summary')).toBeVisible();
@@ -293,23 +359,25 @@ for (const width of [320, 390, 768, 1024, 1440]) {
 }
 
 for (const width of [320, 390, 430]) {
-  test(`every Studio page starts below the mobile header at ${width}px`, async ({ page }) => {
+  test(`Studio navigation keeps the builder visible below the mobile header at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
     await open(page);
     const expectPanelPosition = async () => {
-      await expect.poll(() => page.evaluate(() => Math.abs(
-        document.querySelector('.smw-builder').getBoundingClientRect().top
-        - document.querySelector('.navbar').getBoundingClientRect().bottom - 6,
-      ))).toBeLessThanOrEqual(1);
+      await expect.poll(() => page.evaluate(() => {
+        const builder = document.querySelector('.smw-builder').getBoundingClientRect();
+        const header = document.querySelector('.navbar').getBoundingClientRect();
+        return builder.top >= header.bottom - 1 && builder.top < innerHeight / 3;
+      })).toBe(true);
     };
-    await expectPanelPosition();
+    await expect(page.locator('.smw-start-artwork')).toBeVisible();
     await page.getByRole('combobox', { name: 'Search recorded names', exact: true }).fill('Dem');
     await page.getByRole('option', { name: 'Demrie', exact: true }).click();
+    await browseToAge(page, '9 years old');
     await page.locator('.smw-button-next:visible').click();
-    for (let step = 2; step <= 7; step++) {
-      await expect(page.locator('.smw-step-count')).toHaveText(`Step ${step} of 7`);
+    for (let step = 2; step <= 6; step++) {
+      await expect(page.locator('.smw-step-count')).toHaveText(`Step ${step} of 6`);
       await expectPanelPosition();
-      if (step === 3) await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+      if (step === 2) await page.locator('.smw-stage .smw-button-next').click();
       else {
         await page.getByRole('option').first().click();
         await page.locator('.smw-button-next:visible').click();
@@ -320,7 +388,7 @@ for (const width of [320, 390, 430]) {
     // Edit every choice and return to review; each entry uses the same framing.
     for (let index = 0; index < 7; index++) {
       await page.locator('.smw-summary .smw-change').nth(index).click();
-      await expect(page.locator('.smw-step-count')).toHaveText(`Step ${index + 1} of 7`);
+      if (index < 2) await expect(page.locator('#smw-builder-title')).toHaveText('Name and age');
       await expectPanelPosition();
       await page.getByRole('button', { name: 'Return to review', exact: true }).click();
       await expect(page.locator('.smw-summary')).toBeVisible();
@@ -328,7 +396,7 @@ for (const width of [320, 390, 430]) {
     }
   });
 
-  test(`age page opens directly below the mobile header at ${width}px`, async ({ page }) => {
+  test(`returning to Name and age aligns the builder below the mobile header at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
     await openAgeStage(page);
     const expectAgePosition = async () => {
@@ -337,41 +405,40 @@ for (const width of [320, 390, 430]) {
         const header = document.querySelector('.navbar').getBoundingClientRect();
         return Math.abs(panel.top - header.bottom - 6);
       })).toBeLessThanOrEqual(1);
-      await expect(page.getByRole('heading', { name: 'How old are they?', exact: true })).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Their age', exact: true })).toBeVisible();
     };
-    await expectAgePosition();
     // Returning from another page must use the same starting position.
     await browseToAge(page, '9 years old');
     await page.locator('.smw-button-next:visible').click();
-    await expect(page.locator('.smw-step-count')).toHaveText('Step 3 of 7');
+    await expect(page.locator('.smw-step-count')).toHaveText('Step 2 of 6');
     await page.locator('.smw-button-back:visible').click();
-    await expect(page.locator('.smw-step-count')).toHaveText('Step 2 of 7');
+    await expect(page.locator('.smw-step-count')).toHaveText('Step 1 of 6');
     await expectAgePosition();
   });
 }
 
 for (const width of [390, 1440]) {
-  test(`name wording follows the confirmed selection and clears while editing at ${width}px`, async ({ page }) => {
+  test(`artwork caption follows the confirmed name and clears while editing at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await open(page);
     const input = page.getByRole('combobox', { name: 'Search recorded names', exact: true });
-    const suffix = page.locator('.smw-wording-selection');
-    const quote = page.locator('.smw-activity-wording-quote');
-    await expect(suffix).toHaveCount(0);
+    const caption = page.locator('.smw-start-preview figcaption');
+    await expect(caption).toHaveCount(0);
     await input.fill('Dem');
-    await expect(suffix).toHaveCount(0);
+    await expect(caption).toHaveCount(0);
     await page.getByRole('option', { name: 'Demrie', exact: true }).click();
-    await expect(quote).toHaveText('Ho ho ho, hello, Santa here… I’ve a very special message for… ah yes… Demrie');
-    await expect(suffix).toHaveCSS('color', 'rgb(155, 17, 30)');
+    await expect(caption).toHaveText('A message for Demrie');
     await input.fill('Zar');
-    await expect(suffix).toHaveCount(0);
+    await expect(caption).toHaveCount(0);
     await page.getByRole('option', { name: 'Zara', exact: true }).click();
-    await expect(quote).toHaveText('Ho ho ho, hello, Santa here… I’ve a very special message for… ah yes… Zara');
+    await expect(caption).toHaveText('A message for Zara');
+    await browseToAge(page, '9 years old');
+    await expect(caption).toHaveText('A message for Zara (9 years old)');
     await page.locator('.smw-button-next').click();
-    await expect(quote).toContainText('ah yes… Zara.');
+    await expect(caption).toHaveCount(0);
     await page.locator('.smw-button-back').click();
-    await expect(suffix).toHaveText('Zara');
+    await expect(caption).toHaveText('A message for Zara (9 years old)');
     await page.locator('.smw-builder').screenshot({ path: `generated-artifacts/studio-selected-name-${width}.jpg` });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   });
@@ -528,7 +595,7 @@ test('recorded name preview can cancel a refresh and recover from a failed refre
 });
 
 for (const width of [390, 1440]) {
-  test(`selected age, activity, celebration, grammatical treat and country complete Santa wording in red at ${width}px`, async ({ page }) => {
+  test(`activity, celebration, grammatical treat and country complete Santa wording in red at ${width}px`, async ({ page }) => {
     test.setTimeout(60000);
     await page.setViewportSize({ width, height: 1000 });
     await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -550,19 +617,17 @@ for (const width of [390, 1440]) {
     await openAgeStage(page);
     await expect(suffix).toHaveCount(0);
     await browseToAge(page, '7 years old');
-    await expect(quote).toContainText('I believe you are… 7 years old');
-    await expect(suffix).toHaveText('7 years old');
-    await expect(suffix).toHaveCSS('color', 'rgb(155, 17, 30)');
+    await expect(page.locator('.smw-age-wheel-status')).toHaveText('Selected: 7 years old');
     await page.getByRole('listbox', { name: 'Their age', exact: true }).press('ArrowDown');
-    await expect(suffix).toHaveText('8 years old');
+    await expect(page.locator('.smw-age-wheel-status')).toHaveText('Selected: 8 years old');
     await page.locator('.smw-builder').screenshot({ path: `generated-artifacts/studio-selected-age-${width}.jpg` });
     await page.locator('.smw-button-next').click();
-    await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+    await page.locator('.smw-stage .smw-button-next').click();
     for (let step = 3; step <= 5; step++) {
       await expect(suffix).toHaveCount(0);
       await page.getByRole('listbox').press('Home');
       if (step === 3) {
-        await expect(quote).toContainText('trying especially hard at... Teamwork');
+        await expect(quote).toContainText('… Also trying especially hard at… Teamwork');
         await expect(suffix).toHaveCSS('color', 'rgb(155, 17, 30)');
         await page.getByRole('listbox').press('ArrowDown');
         await expect(suffix).toHaveText('Playing a musical instrument');
@@ -573,7 +638,7 @@ for (const width of [390, 1440]) {
         await page.locator('.smw-button-back').click();
         await page.locator('.smw-button-back').click();
         await page.locator('.smw-button-next').click();
-        await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+        await page.locator('.smw-stage .smw-button-next').click();
         await expect(suffix).toHaveText('Playing a musical instrument');
         await page.locator('.smw-builder').screenshot({ path: `generated-artifacts/studio-selected-activity-${width}.jpg` });
       } else if (step === 5) {
@@ -590,7 +655,7 @@ for (const width of [390, 1440]) {
         await page.getByRole('button', { name: 'Clear', exact: true }).click();
         await page.locator('.smw-builder').screenshot({ path: `generated-artifacts/studio-treat-grammar-${width}.jpg` });
       } else if (step === 4) {
-        await expect(quote).toContainText('how amazing you’ve been at… Completing a jigsaw puzzle');
+        await expect(quote).toContainText('I’ve heard you’ve been amazing at… Completing a jigsaw puzzle');
         await expect(suffix).toHaveText('Completing a jigsaw puzzle');
         await expect(suffix).toHaveCSS('color', 'rgb(155, 17, 30)');
         await page.getByRole('listbox').press('ArrowDown');
@@ -631,7 +696,7 @@ async function complete(page, keyboard = false, checkHeader = async () => {}) {
   for (let index = 0; index < answers.length; index++) {
     if (index === 2) {
       await checkHeader();
-      await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+      await page.locator('.smw-stage .smw-button-next').click();
     }
     await checkHeader();
     await expect(page.locator('.smw-step-count')).toHaveText(`Step ${index + 1 + (index >= 2 ? 1 : 0)} of 7`);
@@ -773,7 +838,7 @@ for (const width of [390, 1440]) {
 test('destination guidance follows the active country or fantasy category', async ({ page }) => {
   await openAgeStage(page);
   for (let step = 2; step < 6; step++) {
-    if (step === 3) await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+    if (step === 3) await page.locator('.smw-stage .smw-button-next').click();
     await expect(page.locator('.smw-step-count')).toHaveText(`Step ${step + (step >= 3 ? 1 : 0)} of 7`);
     await page.getByRole('option').first().click();
     await page.locator('.smw-button-next').click();
@@ -812,10 +877,10 @@ for (const viewport of [
     if (!viewport.enlarged) await page.screenshot({ path: `test-results/workshop-age-wording-${viewport.width}.png` });
     await page.getByRole('listbox', { name: 'Their age', exact: true }).press('Home');
     await page.locator('.smw-button-next').click();
-    await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+    await page.locator('.smw-stage .smw-button-next').click();
     await expect(page.locator('.smw-step-count')).toHaveText('Step 4 of 7');
     const card = page.getByRole('complementary', { name: 'Santa will say:', exact: true });
-    await expect(card).toContainText("And i've heard you've been super good, in fact rather amazing this year, trying especially hard at...");
+    await expect(card).toContainText("… Also trying especially hard at…");
     const wordLayout = await card.locator('.smw-activity-wording-quote').evaluate(node => {
       const style = getComputedStyle(node);
       const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
@@ -865,7 +930,7 @@ for (const viewport of [
     await expect(page.getByRole('complementary', { name: 'Santa will say…', exact: true })).toBeVisible();
     const celebration = page.getByRole('complementary', { name: 'Santa will say…', exact: true }).filter({ hasText: 'I was also delighted to hear' });
     await expect(page.locator('#smw-builder-title')).toHaveText('What deserves an extra celebration?');
-    await expect(celebration).toContainText('I was also delighted to hear how amazing you’ve been at…');
+    await expect(celebration).toContainText('… I’ve heard you’ve been amazing at…');
     await expect(celebration).not.toContainText('Preview wording only.');
     const achievement = page.getByRole('listbox', { name: 'Achievement', exact: true });
     await expect(achievement).toHaveAccessibleName('Achievement');
@@ -894,8 +959,8 @@ for (const viewport of [
     await page.locator('.smw-button-next').click();
     await expect(page.locator('.smw-step-count')).toHaveText('Step 6 of 7');
     await expect(celebration).toHaveCount(0);
-    const treatCard = page.getByRole('complementary', { name: 'Santa will say…', exact: true }).filter({ hasText: 'We do like a little treat' });
-    await expect(treatCard).toContainText('We do like a little treat when we arrive on Christmas Eve… and… I know you like to leave me…');
+    const treatCard = page.getByRole('complementary', { name: 'Santa will say…', exact: true }).filter({ hasText: 'I know you like to leave me' });
+    await expect(treatCard).toContainText('… I know you like to leave me…');
     await expect(treatCard).not.toContainText('Preview wording only.');
     await expect(page.locator('.smw-choice-wheel-count')).toHaveCount(0);
     await expect(page.locator('.smw-sound-toggle')).toHaveCount(0);
@@ -937,7 +1002,7 @@ for (const viewport of [
     }))).toBe(true);
     await expect(page.locator('.smw-choice-wheel-count')).toHaveCount(0);
     const destinationCard = page.getByRole('complementary', { name: 'Santa will say…', exact: true }).filter({ hasText: 'Head Elf' });
-    await expect(destinationCard).toContainText('Anyway, as I sit here reading this, Head Elf has just reminded me where we’re coming to… Ah yes…');
+    await expect(destinationCard).toContainText('… Remind me where we’re visiting… Ah yes…');
     await expect(destinationCard).not.toContainText('Preview wording only.');
     const destinationWheel = page.getByRole('listbox', { name: 'Countries & real places', exact: true });
     await expect(destinationWheel.locator('[aria-selected=true]')).toHaveCount(0);
@@ -1086,7 +1151,7 @@ for (const viewport of [
     await page.getByRole('option', { name: 'Demrie', exact: true }).click();
     for (let stage = 1; stage <= 6; stage++) {
       await page.locator('.smw-button-next').click();
-      if (stage === 2) await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+      if (stage === 2) await page.locator('.smw-stage .smw-button-next').click();
       if (stage <= 5) {
         await expect(page.locator('.smw-step-count')).toHaveText(`Step ${stage + 1 + (stage >= 2 ? 1 : 0)} of 7`);
         await checkAnchor();
@@ -1143,7 +1208,7 @@ for (const width of [390, 1440]) {
     const wheel = page.getByRole('listbox', { name: 'Trying hard at', exact: true });
     await expect(wheel.getByRole('option', { name: 'Teamwork', exact: true })).toHaveAttribute('aria-selected', 'true');
     const quote = page.locator('.smw-activity-wording-quote');
-    const speech = "And i've heard you've been super good, in fact rather amazing this year, trying especially hard at...";
+    const speech = "… Also trying especially hard at…";
     await expect(quote).toHaveText(`${speech} Teamwork`);
     await wheel.getByRole('option', { name: 'Playing a musical instrument', exact: true }).click();
     await expect(quote).toHaveText(`${speech} Playing a musical instrument`);
@@ -1164,11 +1229,11 @@ for (const width of [320, 390, 1440]) {
     await openAgeStage(page);
     await browseToAge(page, '9 years old');
     await page.locator('.smw-button-next:visible').click();
-    await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+    await page.locator('.smw-stage .smw-button-next').click();
     await expect(page.locator('.smw-step-count')).toHaveText('Step 4 of 7');
     const quote = page.locator('.smw-activity-wording-quote');
     const selected = quote.locator('.smw-wording-selection');
-    const introduction = "And i've heard you've been super good, in fact rather amazing this year, trying especially hard at...";
+    const introduction = "… Also trying especially hard at…";
     for (const [category, activity] of [['Trying hard at', 'Teamwork'], ['More Sports', 'Swimming']]) {
       await page.getByRole('button', { name: category, exact: true }).click();
       await expect(quote).toHaveText(introduction);
@@ -1555,7 +1620,7 @@ test('long-text categories use wider wheels with validation, scrolling and retai
   const ageWidth = await page.locator('.smw-age-wheel').evaluate(node => node.getBoundingClientRect().width);
   await browseToAge(page, '9 years old');
   await page.locator('.smw-button-next').click();
-  await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+  await page.locator('.smw-stage .smw-button-next').click();
   const selections = ['Playing a musical instrument', 'Planting and caring for a garden', 'Turrón', 'Camelot'];
   for (const [index, selection] of selections.entries()) {
     if (selection === 'Camelot') await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
@@ -1935,15 +2000,13 @@ test('desktop and phone review has larger white answers, labels increased by two
   };
   await page.setViewportSize({ width: 1440, height: 1100 });
   await open(page);
-  await expect(page.locator('.smw-explainer')).toBeVisible();
+  await expect(page.locator('.smw-explainer')).toHaveCount(0);
   await expect(page.locator('.smw-preview-note')).toHaveCount(0);
   await expect(page.getByText("It's the little details that matter...", { exact: true })).toHaveCount(0);
   await expect(page.getByText('You’re in the friends-only Message Maker Studio test.', { exact: false })).toHaveCount(0);
   await expectStudioHeader(page);
   await expect(page.locator('.smw-footer-note')).toHaveCount(0);
   await photograph(page, 'generated-artifacts/workshop/desktop-clean.png');
-  const cards = await page.locator('.smw-explainer-card').evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect().top));
-  expect(new Set(cards).size).toBe(1);
   await expect(page.locator('nav a[href="/santa-message-workshop"], footer a[href="/santa-message-workshop"]')).toHaveCount(0);
   await complete(page);
   await checkAnswerAppearance();
@@ -1960,7 +2023,7 @@ test('desktop and phone review has larger white answers, labels increased by two
   await expect(page.locator('.smw-preview-note')).toHaveCount(0);
   await expectStudioHeader(page);
   await photograph(page, 'generated-artifacts/workshop/mobile-clean.png');
-  await expect(page.locator('.smw-explainer')).toBeHidden();
+  await expect(page.locator('.smw-explainer')).toHaveCount(0);
   await expect(page.locator('.smw-footer-note')).toHaveCount(0);
   await expect(page.locator('.smw-builder')).toBeVisible();
   await expect(page.locator('.footer')).toBeHidden();

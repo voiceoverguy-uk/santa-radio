@@ -14,12 +14,18 @@ const searchLabels = {
   funny: ['Search funny talents', 'Search hosted choices'],
 };
 
-export default function WorkshopSearchableChoices({ category, label, options, value, onChange, invalid, onTick, onSoundInteraction, wording, searchLabel: searchLabelOverride, placeholder: placeholderOverride, selectedText: selectedTextOverride, wheelFooter, showClearButton = true }) {
+export default function WorkshopSearchableChoices({ category, label, options, value, onChange, invalid, onTick, onSoundInteraction, wording, searchLabel: searchLabelOverride, placeholder: placeholderOverride, selectedText: selectedTextOverride, wheelFooter, showClearButton = true, getOptionLabel }) {
   const [query, setQuery] = useState('');
   const inputId = useId();
   const inputRef = useRef(null);
-  const matches = filterWorkshopChoices(options, query);
-  const currentSelectionLabel = options.find(option => option.id === value)?.label || '';
+  const matches = filterWorkshopChoices(options, query, getOptionLabel);
+  const selectedOption = options.find(option => option.id === value);
+  const currentSelectionLabel = selectedOption?.label || '';
+  const wheelSelectionLabel = selectedOption && getOptionLabel
+    ? getOptionLabel(selectedOption.label) : currentSelectionLabel;
+  const wheelOptions = getOptionLabel
+    ? matches.map(option => ({ ...option, label: getOptionLabel(option.label) }))
+    : matches;
   const [defaultSearchLabel, defaultPlaceholder] = searchLabels[category];
   const searchLabel = searchLabelOverride || defaultSearchLabel;
   const placeholder = placeholderOverride || defaultPlaceholder;
@@ -41,8 +47,8 @@ export default function WorkshopSearchableChoices({ category, label, options, va
       <div className="smw-filtered-wheel" id={`${inputId}-results`}>
         {matches.length ? <WorkshopChoiceWheel
           key={workshopSearchTerms(query).join(' ')}
-          showCount={false} label={label} options={matches} value={value}
-          currentSelectionLabel={currentSelectionLabel}
+          showCount={false} label={label} options={wheelOptions} value={value}
+          currentSelectionLabel={wheelSelectionLabel}
           onChange={onChange} invalid={invalid} onTick={onTick} onSoundInteraction={onSoundInteraction}
           footer={wheelFooter}
         /> : <div className="smw-choice-wheel-field smw-search-empty" role="status">
@@ -51,7 +57,7 @@ export default function WorkshopSearchableChoices({ category, label, options, va
           </div>
           <div className={wheelFooter ? 'smw-choice-wheel-footer-row' : undefined}>
           <p className="smw-choice-wheel-status">
-            {currentSelectionLabel ? `Selected: ${currentSelectionLabel}` : 'No option selected yet.'}
+            {wheelSelectionLabel ? `Selected: ${wheelSelectionLabel}` : 'No option selected yet.'}
           </p>
           {wheelFooter}
           </div>

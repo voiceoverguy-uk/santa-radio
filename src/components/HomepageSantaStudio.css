@@ -31,3 +31,13 @@
 @media (max-width: 767px) {
   .homepage-santa-studio__layout { gap: 24px; }
 }
+
+.home-page #bespoke-santa-messages {
+  background-color: #141510;
+  background-image:
+    linear-gradient(180deg, #0b1713b8, #10150db3 38%, #0b1713cc),
+    url('/images/bespoke-christmas-wallpaper.webp');
+  background-size: 100% 100%, 460px auto;
+  background-position: center, center top;
+  background-repeat: no-repeat, repeat;
+}

@@ -2,6 +2,7 @@
 export const STUDIO_VIDEO_WIDTH = 1280;
 export const STUDIO_VIDEO_HEIGHT = 720;
 export const STUDIO_VIDEO_FPS = 12;
+export const STUDIO_SCENE_BRAND = ['SantaRadio.co.uk', 'Your Message From Santa'];
 export const CAPTION_FADE = 0.75;
 export function studioAge(result) {
   const age = String(result.gift?.details?.age || '').replace(/\s+old$/i, '').replace(/\s+years?$/i, '').trim();
@@ -54,7 +55,37 @@ const png = canvas => new Promise((resolve, reject) => canvas.toBlob(blob => blo
 export function drawStudioVideoFrames(image, result, customTimeline) {
   const width = STUDIO_VIDEO_WIDTH, height = STUDIO_VIDEO_HEIGHT;
   const base = makeCanvas(width, height), ctx = base.getContext('2d');
-  ctx.drawImage(image, 0, 0, width, height);
+  if (result.artwork && result.artwork !== '/images/studio-santa-video-framed-v1.png') {
+    const sceneHeight = Math.round(height * .75);
+    const scale = Math.max(width / image.naturalWidth, sceneHeight / image.naturalHeight);
+    const cropWidth = width / scale, cropHeight = sceneHeight / scale;
+    ctx.drawImage(image, (image.naturalWidth - cropWidth) / 2, (image.naturalHeight - cropHeight) / 2,
+      cropWidth, cropHeight, 0, 0, width, sceneHeight);
+    const brandShade = ctx.createLinearGradient(0, 0, 480, 0);
+    brandShade.addColorStop(0, '#071b12f2');
+    brandShade.addColorStop(1, '#071b1200');
+    ctx.fillStyle = brandShade;
+    ctx.fillRect(0, 0, 480, 105);
+    ctx.fillStyle = '#f4d68d';
+    ctx.textBaseline = 'top';
+    ctx.font = 'bold 41px Georgia, serif';
+    ctx.fillText(STUDIO_SCENE_BRAND[0], 26, 16);
+    ctx.font = 'italic 29px Georgia, serif';
+    ctx.fillText(STUDIO_SCENE_BRAND[1], 26, 60);
+
+    const band = ctx.createLinearGradient(0, sceneHeight, 0, height);
+    band.addColorStop(0, '#19392b');
+    band.addColorStop(1, '#0b241a');
+    ctx.fillStyle = band;
+    ctx.fillRect(0, sceneHeight, width, height - sceneHeight);
+    ctx.strokeStyle = '#d6ae61';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(2, 2, width - 4, height - 4);
+    ctx.fillStyle = '#d6ae61';
+    ctx.fillRect(0, sceneHeight, width, 3);
+  } else {
+    ctx.drawImage(image, 0, 0, width, height);
+  }
   const timeline = customTimeline || studioVideoTimeline(result);
   const prefix = timeline.find(caption => caption.id === 'intro')?.text || 'A message from Santa to ', name = result.writtenName.trim(), age = timeline.find(caption => caption.id === 'age').text;
   let nameSize = 40;

@@ -126,7 +126,7 @@ test('native wheel and touch scrolling tick on centre crossings, not on settleme
   expect(ageTicks).toBeGreaterThanOrEqual(1);
   expect(ageTicks).toBeLessThanOrEqual(2);
   await page.locator('.smw-button-next').click();
-  await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+  await page.locator('.smw-stage .smw-button-next').click();
   const activity = page.getByRole('listbox', { name: 'Trying hard at', exact: true });
   await activity.dispatchEvent('touchstart');
   await activity.evaluate(node => {

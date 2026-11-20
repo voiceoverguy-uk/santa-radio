@@ -66,7 +66,7 @@ for (const category of ['age', 'activity']) {
     if (category === 'activity') {
       await page.getByRole('listbox').press('End');
       await page.locator('.smw-button-next').click();
-      await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+      await page.locator('.smw-stage .smw-button-next').click();
       await page.addStyleTag({ content: 'html { font-size: 200%; }' });
     }
     const wheel = page.getByRole('listbox');
@@ -105,7 +105,7 @@ for (const category of ['age', 'activity']) {
 test('all mobile choice wheels use compact heights and closer, tappable options', async ({ page }) => {
   await openAge(page);
   for (let step = 0; step < 5; step++) {
-    if (step === 1) await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+    if (step === 1) await page.locator('.smw-stage .smw-button-next').click();
     const wheel = page.getByRole('listbox');
     const dimensions = await wheel.evaluate(node => ({
       height: node.clientHeight,
@@ -149,7 +149,7 @@ test('mobile step changes reposition once and keep short steps clear of the bott
   await check();
   for (let step = 0; step < 5; step++) {
     if (step === 1) {
-      await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+      await page.locator('.smw-stage .smw-button-next').click();
       await check();
     }
     await page.getByRole('listbox').press('End');
@@ -188,7 +188,7 @@ test('all mobile category searches avoid iPhone focus zoom without disabling pin
   await openAge(page);
   await page.getByRole('listbox').press('End');
   await page.locator('.smw-button-next').click();
-  await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+  await page.locator('.smw-stage .smw-button-next').click();
   for (const label of ['Search activities', 'Search achievements', 'Search treats', 'Search locations']) {
     const input = page.getByRole('searchbox', { name: label, exact: true });
     await expect(input).toBeVisible();

@@ -8,6 +8,7 @@ export default function DadCertificate({name = 'Dad', downloadable = false}) {
   const [error, setError] = useState('');
   const recipient = name.trim() || 'Dad';
   useEffect(() => {
+    if (!downloadable) return;
     let cancelled = false, objectURL;
     setUrl(''); setError('');
     (async () => {
@@ -34,14 +35,14 @@ export default function DadCertificate({name = 'Dad', downloadable = false}) {
       objectURL = URL.createObjectURL(blob); setUrl(objectURL);
     })().catch(() => {if (!cancelled) setError('The certificate could not load. Please switch the name option to retry.');});
     return () => {cancelled = true; if (objectURL) URL.revokeObjectURL(objectURL);};
-  }, [style, recipient]);
+  }, [downloadable, style, recipient]);
   return <section className="dad-certificate" aria-labelledby={`${id}-title`}>
     <h3 id={`${id}-title`}>His Nice-ish List certificate</h3>
-    <fieldset><legend>What name should Santa put on it?</legend>
-      <label><input type="radio" name={id} checked={style === 'dad'} onChange={() => setStyle('dad')}/> Hand-drawn “Dad”</label>
-      <label><input type="radio" name={id} checked={style === 'name'} onChange={() => setStyle('name')}/> {recipient} in handwritten lettering</label>
-    </fieldset>
-    {url ? <img src={url} alt={`Nice-ish List certificate for ${style === 'dad' ? 'Dad' : recipient}`} width="1491" height="1055"/> : <p role="status">{error || 'Preparing his certificate…'}</p>}
-    {downloadable && url && <a className="dad-primary" href={url} download={`Santa-certificate-${style === 'dad' ? 'Dad' : recipient.replace(/[^\p{L}\p{N}-]/gu, '-')}.png`}>Download his certificate ↓</a>}
+    {downloadable && <fieldset><legend>What name would you like on your certificate?</legend>
+      <label><input type="radio" name={id} checked={style === 'dad'} onChange={() => setStyle('dad')}/> Dad</label>
+      <label><input type="radio" name={id} checked={style === 'name'} onChange={() => setStyle('name')}/> {recipient}</label>
+      {url && <a className="dad-primary" href={url} download={`Santa-certificate-${style === 'dad' ? 'Dad' : recipient.replace(/[^\p{L}\p{N}-]/gu, '-')}.png`}>Download his certificate ↓</a>}
+    </fieldset>}
+    {!downloadable ? <img src="/certificates/dad/dad-hand-drawn.webp" alt="Nice-ish List certificate for Dad" width="1491" height="1055"/> : url ? <img src={url} alt={`Nice-ish List certificate for ${style === 'dad' ? 'Dad' : recipient}`} width="1491" height="1055"/> : <p role="status">{error || 'Preparing his certificate…'}</p>}
   </section>;
 }

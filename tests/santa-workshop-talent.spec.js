@@ -4,7 +4,7 @@ import { unlockWorkshop } from './helpers/workshop-access.js';
 import { workshopCatalogueFixture, workshopTalentPreviewCatalogueFixture, workshopMoreSportsFixture } from './fixtures/workshop-catalogue.js';
 import { confirmMessage, mockStudioGeneration } from './helpers/studio-generation.js';
 
-const helper = 'Now, my Head Elf tells me you have quite a talent! Apparently, there’s something you’re especially good at… In particular...';
+const helper = 'I hear you are especially good at…';
 const quote = page => page.locator('.smw-activity-wording-quote');
 async function expectTalentPreview(page, label = '') {
   await expect(quote(page)).toHaveText(label ? `${helper} ${label}` : helper);
@@ -41,11 +41,10 @@ async function openTalent(page, catalogue = workshopCatalogueFixture) {
   if (await decline.isVisible()) await decline.click();
   await page.getByRole('combobox', { name: 'Search recorded names', exact: true }).fill('Dixie');
   await page.getByRole('option', { name: /Dixie/ }).click();
-  await next(page).click();
   await page.getByRole('listbox', { name: 'Their age', exact: true }).press('Home');
   await next(page).click();
   await expect(page.getByRole('heading', { name: 'What are they especially good at?', exact: true })).toBeFocused();
-  await expect(page.locator('.smw-step-count')).toHaveText('Step 3 of 7');
+  await expect(page.locator('.smw-step-count')).toHaveText('Step 2 of 6');
 }
 async function finish(page) {
   const expectedSelections = ['Teamwork', 'Completing a jigsaw puzzle', 'a bûche de Noël', 'The Enchanted Forest'];
@@ -56,8 +55,8 @@ async function finish(page) {
     await expect(quote(page).locator('.smw-wording-selection')).toHaveText(` ${expectedSelections[index++]}`);
     await next(page).click();
   }
-  await expect(page.locator('.smw-step-count')).toHaveText('Step 8 of 8');
-  await expect(page.getByRole('heading', { name: 'Time to Review', exact: true })).toBeVisible();
+  await expect(page.locator('.smw-step-count')).toHaveText('Step 7 of 7');
+  await expect(page.getByRole('heading', { name: 'Review Time', exact: true })).toBeVisible();
   await expect(page.locator('.smw-summary-row')).toHaveCount(7);
 }
 
@@ -134,7 +133,7 @@ for (const width of [320, 1440]) {
 
 test('More Sports absent hosted membership is honest and never fabricated', async ({ page }) => {
   await openTalent(page);
-  await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+  await page.locator('.smw-stage .smw-button-next').click();
   await page.getByRole('button', { name: 'More Sports', exact: true }).click();
   await expect(page.getByRole('status').filter({ hasText: 'More Sports recordings are unavailable' })).toBeVisible();
   await expect(page.getByRole('option')).toHaveCount(0);
@@ -148,10 +147,9 @@ for (const width of [320, 390, 471, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     await openTalent(page, workshopTalentPreviewCatalogueFixture);
     const actions = page.locator('.smw-stage .smw-actions');
-    await expect(actions.getByRole('button')).toHaveText(['← Back', 'Skip this section', 'Continue →']);
+    await expect(actions.getByRole('button')).toHaveText(['← Back', 'Continue →']);
     const back = actions.getByRole('button', { name: 'Back', exact: true });
     const proceed = actions.getByRole('button', { name: 'Continue', exact: true });
-    const skip = actions.getByRole('button', { name: 'Skip this section', exact: true });
     const expectFooterFits = async () => {
       const boxes = await actions.getByRole('button').evaluateAll(buttons =>
         buttons.map(button => {
@@ -169,31 +167,28 @@ for (const width of [320, 390, 471, 1440]) {
           expect(boxes[i].x).toBeGreaterThan(boxes[i - 1].right);
         }
       }
-      expect(boxes[2].right).toBeCloseTo(footer.x + footer.width, 0);
-      expect(boxes[2].bottom).toBeCloseTo(footer.y + footer.height, 0);
-      if (width === 1440) expect(boxes[2].y).toBeCloseTo(boxes[0].y, 0);
-      if (width === 320) expect(boxes[2].y).toBeGreaterThan(boxes[0].y);
+      expect(boxes[1].right).toBeCloseTo(footer.x + footer.width, 0);
+      expect(boxes[1].bottom).toBeLessThanOrEqual(footer.y + footer.height + 1);
+      if (width === 1440) expect(boxes[1].y).toBeLessThan(boxes[0].bottom);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
     };
-    await expect(proceed).toBeDisabled();
-    await expect(skip).toBeEnabled();
-    await expectFooterFits();
-    await back.focus();
-    await page.keyboard.press('Tab');
-    await expect(skip).toBeFocused();
-    await page.getByRole('option').first().click();
     await expect(proceed).toBeEnabled();
     await expectFooterFits();
     await back.focus();
     await page.keyboard.press('Tab');
-    await expect(skip).toBeFocused();
+    await expect(proceed).toBeFocused();
+    await page.getByRole('option').first().click();
+    await expect(proceed).toBeEnabled();
+    await expectFooterFits();
+    await back.focus();
     await page.keyboard.press('Tab');
     await expect(proceed).toBeFocused();
     await actions.screenshot({ path: `generated-artifacts/talent-button-order-${width}.png` });
     await proceed.click();
     await expect(page.getByRole('heading', { name: 'What have they been trying hard at?', exact: true })).toBeVisible();
     await page.locator('.smw-stage .smw-button-back').click();
-    await skip.click();
+    await page.getByRole('button', { name: 'Something funny', exact: true }).click();
+    await proceed.click();
     await expect(page.getByRole('heading', { name: 'What have they been trying hard at?', exact: true })).toBeVisible();
   });
 }
@@ -299,7 +294,8 @@ for (const width of [320, 1440]) {
     for (const button of await page.locator('.studio-gift-download button').all()) await expect(button).toBeEnabled();
     await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();
     await page.getByRole('button', { name: 'Change Talent', exact: true }).click();
-    await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+    await page.getByRole('button', { name: 'Something funny', exact: true }).click();
+    await page.locator('.smw-stage .smw-button-next').click();
     for (const button of await page.locator('.studio-gift-download button').all()) await expect(button).toBeDisabled();
     await confirmMessage(page);
     for (const button of await page.locator('.studio-gift-download button').all()) await expect(button).toBeEnabled();
@@ -315,12 +311,12 @@ test('original or empty hosted groups offer deliberate skip, never fixture choic
   await openTalent(page, original);
   await expect(page.getByRole('option')).toHaveCount(0);
   await expect(page.getByText('There are no selectable talent choices in this hosted category right now.')).toBeVisible();
-  await expect(next(page)).toBeDisabled();
+  await expect(next(page)).toBeEnabled();
   await expectTalentPreview(page);
   await page.getByRole('button', { name: 'Something funny', exact: true }).click();
   await expect(page.getByRole('option')).toHaveCount(0);
   await expectTalentPreview(page);
-  await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+  await page.locator('.smw-stage .smw-button-next').click();
   await finish(page);
   await expect(page.locator('.smw-summary-row').nth(2)).toContainText('Skipped');
   await expect(page.locator('.smw-actions--review').getByRole('button', { name: 'Create message', exact: true })).toBeEnabled();

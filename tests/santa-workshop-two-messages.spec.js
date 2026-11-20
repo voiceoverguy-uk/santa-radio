@@ -59,10 +59,9 @@ async function setup(page, limited = true) {
 async function compose(page, second = false) {
   await page.getByRole('combobox', { name: 'Search recorded names', exact: true }).fill(second ? 'Arabella' : 'Dixie');
   await page.getByRole('option', { name: second ? 'Arabella' : 'Dixie', exact: true }).click();
-  await page.locator('.smw-actions .smw-button-next').click();
   for (const answer of ['9 years old', null, second ? 'Playing a musical instrument' : 'Teamwork',
     'Completing a jigsaw puzzle', 'Bûche de Noël', 'England']) {
-    if (answer === null) { await page.getByRole('button', { name: 'Skip this section' }).click(); continue; }
+    if (answer === null) { await page.locator('.smw-stage .smw-button-next').click(); continue; }
     await page.getByRole('option', { name: answer, exact: true }).click();
     await page.locator('.smw-actions .smw-button-next').click();
   }

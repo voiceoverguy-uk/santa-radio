@@ -1,3 +1,5 @@
+#root:has(:is(.smw-builder, .dad-studio)) > .footer.is-studio-footer { display: none; }
+
 @media (max-width: 760px) {
   .footer.is-studio-footer { display: none; }
 }

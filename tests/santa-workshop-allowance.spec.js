@@ -33,9 +33,8 @@ async function review(page) {
   const search = page.getByRole('combobox', { name: 'Search recorded names', exact: true });
   await search.fill('Dixie');
   await page.getByRole('option', { name: 'Dixie', exact: true }).click();
-  await page.locator('.smw-actions .smw-button-next').click();
   for (const answer of ['9 years old', null, 'Teamwork', 'Completing a jigsaw puzzle', 'Bûche de Noël', 'The Enchanted Forest']) {
-    if (answer === null) { await page.getByRole('button', { name: 'Skip this section' }).click(); continue; }
+    if (answer === null) { await page.locator('.smw-stage .smw-button-next').click(); continue; }
     if (answer === 'The Enchanted Forest') await page.getByRole('button', { name: 'Fantasy & space', exact: true }).click();
     await page.getByRole('option', { name: answer, exact: true }).click();
     await page.locator('.smw-actions .smw-button-next').click();
@@ -165,7 +164,7 @@ for (const width of [1365, 390]) {
     await expect(page.getByRole('combobox', { name: 'Search recorded names', exact: true })).toBeVisible();
     await expect(page.getByRole('dialog')).toHaveCount(0);
     // Unlimited navigation retains the draft choices before any MP3 exists.
-    for (let n = 0; n < 7; n++) await page.locator('.smw-actions .smw-button-next').click();
+    for (let n = 0; n < 6; n++) await page.locator('.smw-actions .smw-button-next').click();
     await confirmMessage(page);
     const audio = result(page).locator('audio');
     await expect(audio).toBeVisible();
@@ -176,7 +175,7 @@ for (const width of [1365, 390]) {
     expect(await (await download).failure()).toBeNull();
     await again.click();
     await expect(page.getByRole('dialog')).toHaveCount(0);
-    for (let n = 0; n < 7; n++) await page.locator('.smw-actions .smw-button-next').click();
+    for (let n = 0; n < 6; n++) await page.locator('.smw-actions .smw-button-next').click();
     await confirmMessage(page);
     await expect(page.locator('.smw-message-finished')).toHaveCount(2);
     await again.click();
@@ -188,7 +187,7 @@ for (const width of [1365, 390]) {
     await page.getByRole('button', { name: 'Discard recording and start again', exact: true }).click();
     await expect(page.getByRole('combobox', { name: 'Search recorded names', exact: true })).toBeVisible();
     await expect(result(page)).toHaveCount(0);
-    for (let n = 0; n < 7; n++) await page.locator('.smw-actions .smw-button-next').click();
+    for (let n = 0; n < 6; n++) await page.locator('.smw-actions .smw-button-next').click();
     for (const button of await page.locator('.studio-gift-download button').all()) await expect(button).toBeDisabled();
     expect(fixture.posts).toHaveLength(2);
   });
@@ -245,7 +244,7 @@ for (const width of [1365, 390]) {
     await page.evaluate(() => window.dispatchEvent(new Event('focus')));
     await expect(page.getByRole('alert')).toContainText('enter your access code again');
     await expect(page.getByRole('dialog')).toHaveCount(0);
-    await expect(page.getByRole('heading', { name: 'Time to Review', exact: true })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Review Time', exact: true })).toBeVisible();
     await expect(result(page)).toHaveCount(0);
     for (const button of await page.locator('.studio-gift-download button').all()) await expect(button).toBeDisabled();
     expect(fixture.posts).toHaveLength(1);

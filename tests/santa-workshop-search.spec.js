@@ -37,9 +37,8 @@ async function openRegionalStage(page, inventory = workshopRegionalCatalogueFixt
   if (await decline.isVisible()) await decline.click();
   await page.getByRole('combobox', { name: 'Search recorded names', exact: true }).fill('Arabella');
   await page.getByRole('option', { name: 'Arabella', exact: true }).click();
-  await page.locator('.smw-button-next').click();
   for (const label of ['8 years old', 'Art', 'Being brave', 'Map']) {
-    if (label === 'Art') await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+    if (label === 'Art') await page.locator('.smw-stage .smw-button-next').click();
     await page.getByRole('option', { name: label, exact: true }).click();
     await page.locator('.smw-button-next').click();
   }
@@ -749,7 +748,7 @@ for (const viewport of [{ width: 1365, height: 900 }, { width: 320, height: 568 
     await expect(page.getByRole('search')).toHaveCount(0);
     await page.getByRole('listbox', { name: 'Their age', exact: true }).press('Home');
     await page.locator('.smw-button-next').click();
-    await page.getByRole('button', { name: 'Skip this section', exact: true }).click();
+    await page.locator('.smw-stage .smw-button-next').click();
     const storage = () => page.evaluate(() => ({ local: { ...localStorage }, session: { ...sessionStorage } }));
     const before = await storage();
     page.on('request', request => { if (request.method() === 'POST') posts.push(request.url()); });
@@ -822,7 +821,7 @@ for (const viewport of [{ width: 1365, height: 900 }, { width: 320, height: 568 
       expect(catalogueRequests).toBe(countBeforeTyping);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
       if (index === 5) {
-        await expect(page.getByRole('complementary', { name: 'Santa will say…', exact: true })).toContainText('We do like a little treat when we arrive on Christmas Eve… and… I know you like to leave me…');
+        await expect(page.getByRole('complementary', { name: 'Santa will say…', exact: true })).toContainText('… I know you like to leave me…');
         await expect(page.getByRole('complementary', { name: 'Santa will say…', exact: true })).not.toContainText('carrot');
       }
       if (index === 3) await page.locator('.smw-searchable-layout').screenshot({ path: `generated-artifacts/workshop/search-${viewport.width}.png` });
