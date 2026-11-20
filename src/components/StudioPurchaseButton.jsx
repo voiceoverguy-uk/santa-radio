@@ -3,11 +3,11 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { STUDIO_PATH, STUDIO_CHECKOUT_PATH } from '../lib/studioRoute.js';
 import { hasStudioPurchaseHint, studioRemainingHint, rememberStudioPurchase } from '../lib/studioPurchaseHint.js';
 
-export default function StudioPurchaseButton({ onPaidAccessChange, label }) {
-  return <PurchaseButton sandbox={import.meta.env.DEV} onPaidAccessChange={onPaidAccessChange} label={label} />;
+export default function StudioPurchaseButton({ onPaidAccessChange, label, onReturnRequest }) {
+  return <PurchaseButton sandbox={import.meta.env.DEV} onPaidAccessChange={onPaidAccessChange} label={label} onReturnRequest={onReturnRequest} />;
 }
 
-function PurchaseButton({ sandbox, onPaidAccessChange, label }) {
+function PurchaseButton({ sandbox, onPaidAccessChange, label, onReturnRequest }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [paid, setPaid] = useState(() => !sandbox && hasStudioPurchaseHint() ? { remembered: true, remaining: studioRemainingHint() } : null);
@@ -123,7 +123,7 @@ function PurchaseButton({ sandbox, onPaidAccessChange, label }) {
     </p>
     {new URLSearchParams(location.search).get('studioCheckout') === 'cancelled' &&
       <p role="status">{sandbox ? 'Test checkout was cancelled.' : 'Checkout was cancelled.'} No new access has been granted. You can try Purchase again.</p>}
-    {<p><Link to={`${STUDIO_PATH}#studio-return-access`}>Already paid? Return to Studio</Link></p>}
+    {<p>{onReturnRequest ? <button className="bespoke-return-link" type="button" onClick={onReturnRequest}>Already paid? Return to Studio</button> : <Link to={`${STUDIO_PATH}#studio-return-access`}>Already paid? Return to Studio</Link>}</p>}
     {error && <div role="alert"><p>{error}</p><button type="button" onClick={() => setRefresh(value => value + 1)}>Retry purchase check</button></div>}
   </div>;
 }

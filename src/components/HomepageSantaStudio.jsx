@@ -25,7 +25,7 @@ export default function HomepageSantaStudio({ directEntry = false, onAuthorized,
         <HomepageSectionHeading
           eyebrow="A unique Christmas treat."
           title={directEntry ? "A BESPOKE SANTA MESSAGE" : "THE BESPOKE SANTA MESSAGES"}
-          supportingLine="OUR PREMIUM EXPERIENCE"
+          supportingLine={<>OUR <span className="bespoke-premium-glow">PREMIUM</span> EXPERIENCE</>}
           subtitle={directEntry ? "Let’s make it even more magical for your little one." : undefined}
           titleId="homepage-santa-studio-title"
           titleTag={directEntry ? 'h1' : 'h2'}
