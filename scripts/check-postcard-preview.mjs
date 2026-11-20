@@ -5,6 +5,7 @@ const origin=process.env.TEST_ORIGIN||'http://127.0.0.1:5009';
 try {for(const width of [390,1466]){
  const p=await browser.newPage({viewport:{width,height:1265}});
  await p.goto(origin+'/santa-tracker/preview?postcards=1');
+ if(await p.getByLabel('Password',{exact:true}).count()){assert.ok(process.env.TEST_PREVIEW_PASSWORD,'TEST_PREVIEW_PASSWORD is required');await p.getByLabel('Password',{exact:true}).fill(process.env.TEST_PREVIEW_PASSWORD);await p.getByRole('button',{name:'Unlock preview'}).click();}
  await p.locator('.tracker-postcard').waitFor();
  await p.getByRole('button',{name:'Pause',exact:true}).waitFor();
  assert.equal(await p.getByRole('button',{name:'Pause',exact:true}).getAttribute('aria-pressed'),'true');

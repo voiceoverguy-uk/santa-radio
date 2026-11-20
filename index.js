@@ -1,3 +1,4 @@
+import trackerPreviewAccess, { isPreviewPath, previewAuthorized, previewGate, previewHeaders } from './server/tracker-preview-access.js';
 import messageTest from './server/message-test.js';
 import dadMessage from './api/dad-studio-message.js';
 import dadAccess from './api/dad-studio-access.js';
@@ -65,6 +66,11 @@ const server = createServer(async (req, res) => {
     let pathname;
     try { pathname = decodeURIComponent(publicRequestUrl(req.url, 'http://server').pathname); }
     catch { res.writeHead(400).end('Invalid path'); return; }
+    if (pathname === '/api/tracker-preview-access') return trackerPreviewAccess(req,res);
+    if (isPreviewPath(pathname)) {
+      previewHeaders(res);
+      if (!previewAuthorized(req)) return previewGate(res,{postcards:new URL(req.url,'http://local').searchParams.get('postcards')==='1',head:req.method==='HEAD'});
+    }
     // Opt-in local preview: public aggregates/reviews only, never customer data or credentials.
     if (!process.env.VERCEL && process.env.LOCAL_PUBLIC_DATA === '1' && req.method === 'GET' &&
         (pathname === '/api/santa-name-count' || (pathname === '/api/santa-reviews' && new URL(req.url, 'http://local').searchParams.get('view') === 'featured'))) {

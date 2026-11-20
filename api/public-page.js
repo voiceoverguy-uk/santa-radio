@@ -1,3 +1,4 @@
+import { isPreviewPath, previewAuthorized, previewGate, previewHeaders } from '../server/tracker-preview-access.js';
 import { readFile } from 'node:fs/promises';
 import { resolvePublicRequest } from '../src/seo/routes.js';
 import { publicPageHtml } from '../server/public-html.js';
@@ -10,6 +11,11 @@ export default async function handler(req, res) {
   source.searchParams.delete('__sr_route');
   const raw = path + (source.searchParams.size ? `?${source.searchParams}` : '');
   const route = resolvePublicRequest(raw);
+  const preview = isPreviewPath(path);
+  if (preview) {
+    previewHeaders(res);
+    if (!previewAuthorized(req)) return previewGate(res,{postcards:source.searchParams.get('postcards')==='1',head:req.method==='HEAD'});
+  }
   const studio = isStudioPath(path);
   if (studio) {
     res.setHeader('Cache-Control', 'private, no-store');
@@ -20,7 +26,7 @@ export default async function handler(req, res) {
   if (route.location) { res.setHeader('Location', route.location); return res.status(route.status).end(); }
   if (!studio && (route.noindex || route.status !== 200)) res.setHeader('X-Robots-Tag', route.documentPath ? 'noindex, nofollow' : 'noindex, follow');
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  const privatePage = Boolean(route.documentPath) || studio;
+  const privatePage = Boolean(route.documentPath) || studio || preview;
   res.setHeader('Cache-Control', privatePage ? 'private, no-store' : 'public, max-age=0, must-revalidate');
   if (privatePage) {
     res.setHeader('CDN-Cache-Control', 'no-store');
