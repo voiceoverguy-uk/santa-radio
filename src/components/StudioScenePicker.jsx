@@ -10,9 +10,9 @@ const sceneInset = {
   height: `${100 * STUDIO_SCENE_INSET.height / STUDIO_VIDEO_HEIGHT}%`,
 };
 
-function ScenePicture({ scene, caption }) {
+export function StudioScenePicture({ scene, caption, alt = '' }) {
   return <span className="smw-scene-picture" style={{ backgroundImage: `url(${STUDIO_VIDEO_ARTWORK})` }}>
-    <img className="smw-scene-art" src={scene.src} alt="" width="1280" height="540" style={sceneInset} />
+    <img className="smw-scene-art" src={scene.src} alt={alt} width="1280" height="540" style={sceneInset} />
     {caption && <span className="smw-scene-caption">{caption}</span>}
   </span>;
 }
@@ -32,7 +32,7 @@ export default function StudioScenePicker({ selected, onSelect, recipientCaption
           setIndex(position);
           dialogRef.current.showModal();
         }}>
-        <ScenePicture scene={option} caption={option.label} />
+        <StudioScenePicture scene={option} caption={option.label} />
       </button>)}
     </div>
     <dialog ref={dialogRef} className="smw-scene-dialog" aria-labelledby={titleId} onKeyDown={event => {
@@ -47,7 +47,7 @@ export default function StudioScenePicker({ selected, onSelect, recipientCaption
         <button type="button" className="smw-change" onClick={() => dialogRef.current.close()}>Close preview</button>
       </div>
       <div className="smw-scene-dialog__picture">
-        <ScenePicture scene={scene} caption={recipientCaption} />
+        <StudioScenePicture scene={scene} caption={recipientCaption} />
         <button type="button" className="smw-scene-dialog__arrow" aria-label="Previous picture" onClick={() => browse(-1)}>
           <ChevronLeft aria-hidden="true" />
         </button>
