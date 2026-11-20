@@ -13,7 +13,7 @@ html:has(.smw-page) { scrollbar-gutter: stable; }
   --smw-gold-light: #e6ce86;
   --smw-crimson: #9b111e;
   --smw-safe-bottom: env(safe-area-inset-bottom, 0px);
-  min-height: 100dvh;
+  min-height: calc(100svh + 70px);
   padding: 38px 24px 280px;
   color: var(--smw-cream);
   background-color: var(--smw-evergreen-deep);
@@ -68,7 +68,6 @@ html:has(.smw-page) { scrollbar-gutter: stable; }
 .smw-builder {
   display: flex;
   flex-direction: column;
-  min-height: calc(100svh - var(--smw-header-clearance, 108px) - 24px);
   padding: 25px clamp(19px, 4vw, 42px) 29px;
   border: clamp(7px, 1vw, 12px) solid transparent;
   border-radius: 20px;
@@ -448,21 +447,13 @@ html:has(.smw-page) { scrollbar-gutter: stable; }
 .smw-message-result audio { display: block; width: 100%; max-width: 100%; margin: 16px 0; }
 .smw-message-finished {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
-  align-items: center;
-  gap: 8px 20px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
   border-color: #d4af37a6;
 }
-.smw-message-finished h4,
-.smw-finished-preparation,
-.smw-finished-account { grid-column: 1 / -1; }
 .smw-message-finished h4 { margin-bottom: 4px; }
 .smw-message-finished audio { min-width: 0; margin: 0; }
 .smw-message-finished .smw-button-download { padding-inline: 16px; font-size: .82rem; }
-.smw-message-finished .smw-retention-reminder { grid-column: 1 / -1; }
-@media (max-width: 760px) {
-  .smw-message-finished { grid-template-columns: minmax(0, 1fr); gap: 12px; }
-}
 .smw-stage-fields { min-width: 0; padding: 0; margin: 0; border: 0; }
 .smw-stage-fields:disabled { opacity: .65; }
 .smw-change:disabled { color: #b9c9b9; opacity: .55; cursor: not-allowed; }
@@ -473,9 +464,8 @@ html:has(.smw-page) { scrollbar-gutter: stable; }
 .smw-download-control { display: flex; flex-direction: column; align-items: center; gap: 4px; max-width: 100%; }
 .smw-download-status { font-size: .75rem; line-height: 1.4; color: var(--smw-gold); text-align: center; }
 .smw-bundle-download { display: contents; }
-.smw-bundle-download > p { flex: 1 0 100%; margin: 0; max-width: 32rem; font-size: .76rem; }
+.smw-bundle-download > p { flex: 1 0 100%; margin: 0; font-size: .76rem; }
 .smw-bundle-download button:disabled { opacity: .65; cursor: not-allowed; }
-.smw-message-finished .smw-download-actions { max-width: 32rem; }
 .smw-message-finished .smw-download-actions .smw-button { margin-left: 0; }
 @media (max-width: 760px) {
   .smw-download-actions { justify-content: stretch; }
@@ -556,11 +546,9 @@ html:has(.smw-page) { scrollbar-gutter: stable; }
   /* Keep horizontal drags from panning the page; retain vertical scrolling
      and the visitor's ability to pinch-zoom. */
   .smw-page { touch-action: pan-y pinch-zoom; }
-  .smw-page { min-height: 0; padding: 25px 17px max(16px, env(safe-area-inset-bottom)); }
+  .smw-page { padding: 25px 17px max(16px, env(safe-area-inset-bottom)); }
   .smw-preview-note { padding: 14px 17px; }
-  /* Shorter steps must still leave enough document below the panel's top.
-     svh stays stable while Safari's address bar opens/closes; dvh does not. */
-  .smw-builder { min-height: calc(100svh - var(--smw-header-clearance, 108px) - max(16px, env(safe-area-inset-bottom))); padding: 20px 17px 22px; border-radius: 20px; }
+  .smw-builder { padding: 20px 17px 22px; border-radius: 20px; }
   .smw-step-labels { display: none; }
   .smw-step-labels li { font-size: .57rem; }
   .smw-stage, .smw-review { padding-top: 14px; }
@@ -596,16 +584,7 @@ html:has(.smw-page) { scrollbar-gutter: stable; }
   gap: clamp(14px, 3vw, 30px);
 }
 .smw-start-logo { display: block; width: 82%; height: auto; }
-.smw-start-preview { position: relative; width: 100%; margin: 0; }
-.smw-start-preview img { display: block; width: 100%; height: auto; border-radius: 12px; }
-.smw-start-preview figcaption {
-  position: absolute;
-  inset: 81% 8% auto;
-  color: var(--smw-cream);
-  font: 600 clamp(.75rem, 1.6vw, 1.25rem)/1.2 'Cinzel', serif;
-  text-align: center;
-  overflow-wrap: anywhere;
-}
+.smw-start-artwork .smw-scene-picture { width: 100%; border-radius: 12px; }
 .smw-start-kicker {
   margin: 0 0 8px;
   color: var(--smw-gold-light);
@@ -643,8 +622,8 @@ html:has(.smw-page) { scrollbar-gutter: stable; }
   .smw-catalogue-skeleton { animation: none; }
 }
 
-.smw-message-finished > .santa-video-player { max-width: 680px; margin: 20px auto; }
-.smw-download-actions .message-share-icon { flex: 0 0 44px; width: 44px; height: 44px; }
+.smw-message-finished > .santa-video-player { margin-block: 12px; }
+.smw-download-actions .message-share-icon { flex: 0 0 44px; width: 44px; height: 44px; margin-inline-end: auto; }
 
 .smw-scene-options {
   display: grid;
@@ -744,26 +723,7 @@ html:has(.smw-page) { scrollbar-gutter: stable; }
 .smw-scene-dialog__arrow:last-child { left: auto; right: 8px; }
 .smw-scene-dialog .smw-actions { margin-top: 12px; }
 
-.smw-finished-downloads { min-width: 0; }
-.smw-finished-logo { display: none; }
-@media (min-width: 761px) {
-  .smw-finished-downloads {
-    align-self: center;
-    display: grid;
-    justify-items: end;
-    gap: clamp(12px, 2vw, 24px);
-    margin-bottom: 20px;
-  }
-  .smw-finished-logo {
-    display: block;
-    justify-self: center;
-    width: min(100%, 355px);
-    height: auto;
-  }
-}
-
 .smw-finished-keepsakes {
-  grid-column: 1 / -1;
   min-width: 0;
   border-top: 1px solid #d4af3748;
   padding-top: 16px;

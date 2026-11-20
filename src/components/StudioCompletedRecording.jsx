@@ -67,18 +67,14 @@ export default function StudioCompletedRecording({ result, keepsakes, ordinal, v
         for (const other of document.querySelectorAll('audio, video')) if (other !== event.currentTarget) other.pause();
         resume.current = radio?.pauseForMessage?.() || null;
       }} onPause={finish} onEnded={finish} />
-      <div className="smw-finished-downloads">
-        <img className="smw-finished-logo" src="/images/kids-message-logo-v1.png"
-          alt="Kids’ Message from Santa" width="1681" height="936" />
-        <div className="smw-download-actions">
-          <div className="smw-download-control">
-            <a className={`smw-button smw-button-download${result.requested ? '' : ' smw-button-download--pending'}`} href={url} download={studioVideoFilename(result)}
-              onClick={() => { setDownloaded(true); onDownloadRequested(); }}>Download your message <span aria-hidden="true">↓</span></a>
-            {downloaded && <span className="smw-download-status" role="status">Downloaded</span>}
-          </div>
-          <SantaGreetingShare message={{ name: result.writtenName, blob: result.videoBlob }} filename={studioVideoFilename(result)} />
-          <StudioBundleDownload result={result} onPreparing={onBundlePreparing} onDownloadRequested={() => { onDownloadRequested(); onBundleRequested?.(); }} />
+      <div className="smw-download-actions">
+        <SantaGreetingShare message={{ name: result.writtenName, blob: result.videoBlob }} filename={studioVideoFilename(result)} />
+        <div className="smw-download-control">
+          <a className={`smw-button smw-button-download${result.requested ? '' : ' smw-button-download--pending'}`} href={url} download={studioVideoFilename(result)}
+            onClick={() => { setDownloaded(true); onDownloadRequested(); }}>Download your message <span aria-hidden="true">↓</span></a>
+          {downloaded && <span className="smw-download-status" role="status">Downloaded</span>}
         </div>
+        <StudioBundleDownload result={result} onPreparing={onBundlePreparing} onDownloadRequested={() => { onDownloadRequested(); onBundleRequested?.(); }} />
       </div>
       <div className="smw-finished-account"><StudioAccountSave result={result} /></div>
       {keepsakes && <div className="smw-finished-keepsakes">{keepsakes}</div>}

@@ -104,7 +104,7 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
         }}>
         <dl className="smw-written-name-previews">
           <div className="smw-written-name-preview">
-            <dt>Certificate, picture and letter name preview</dt>
+            <dt>Gift name</dt>
             <dd>
               <span ref={valueRef} className="smw-written-name-value" tabIndex={-1}>{previewName}</span>
               {!nameReadOnly && <button
@@ -115,12 +115,15 @@ export default function WorkshopNameSpelling({ recordedName, spelling, recording
                 aria-label="Edit certificate name"
                 aria-expanded={isEditing}
                 aria-controls={`${fieldId}-editor`}
-                title="Edit certificate name"
+                aria-describedby={`${fieldId}-gift-name-tip`}
               >
                 <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
                   <path d="m16 4 4 4M4 20l4-1 12-12a2.83 2.83 0 0 0-4-4L4 15z" />
                 </svg>
               </button>}
+              {!nameReadOnly && <span className="smw-gift-name-tip" id={`${fieldId}-gift-name-tip`} role="tooltip">
+                Edit how the name will look on the certificate, letter and picture
+              </span>}
             </dd>
           </div>
         </dl>

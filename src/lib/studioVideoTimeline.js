@@ -40,16 +40,19 @@ export function studioVideoTimeline(result) {
     ...strengthCaptions,
     ...(details.treats ? [{ id: 'treat', text: `Thank you for leaving out ${details.treats}`, start: treatStart, end: Math.min(treatStart + 4, placeStart - 1) }] : []),
     ...(details.destination ? [{ id: 'destination', text: `Santa on the way to ${details.destination}`, start: placeStart, end: Math.min(placeStart + 6, approvedStart) }] : []),
-  ].filter(caption => caption.end > caption.start);
-  const badgeStart = Math.max(nameStart + CAPTION_FADE, Math.min(approvedStart, ...choiceCaptions.map(caption => caption.start)));
+  ];
+  const badgeStart = ageStart + 3;
   const name = (result.writtenName || '').trim();
+  const introduction = `A message from Santa to ${name}`;
+  const personalisedCaptions = choiceCaptions
+    .map(caption => ({ ...caption, start: Math.max(caption.start, badgeStart) }))
+    .filter(caption => caption.end > caption.start);
   return [
     { id: 'incoming', text: 'Incoming message from Santa', start: 0, end: 3, blink: true },
-    { id: 'intro', text: 'A message from Santa to ', start: nameStart, end: badgeStart },
-    { id: 'name', text: name, start: nameStart, end: badgeStart },
-    ...(ageStart < badgeStart ? [{ id: 'age', text: ` aged ${studioAge(result)}`, start: ageStart, end: badgeStart }] : []),
+    ...(nameStart < ageStart ? [{ id: 'name', text: introduction, start: nameStart, end: ageStart }] : []),
+    { id: 'age', text: `${introduction}\nAged ${studioAge(result)}`, start: ageStart, end: badgeStart },
     { id: 'name-badge', text: name, start: badgeStart },
-    ...choiceCaptions,
+    ...personalisedCaptions,
     { id: 'approved', text: 'Nice List Approved!', start: approvedStart, end: approvedStart + 9 },
     { id: 'christmas', text: 'Merry Christmas', start: approvedStart + 9 },
   ];
@@ -117,6 +120,49 @@ function drawStudioRecipientBadge(name, maxTextWidth) {
  badgeCtx.fillStyle='#fff2c9';badgeCtx.textAlign='center';badgeCtx.textBaseline='middle';badgeCtx.shadowColor='#000';badgeCtx.shadowBlur=3;badgeCtx.fillText(name,x+w/2,41);
  return badge;
 }
+export function wrapVideoCaption(context, text, maxWidth) {
+  return text.split('\n').flatMap(paragraph => {
+    const lines = [];
+    let line = '';
+    for (const word of paragraph.trim().split(/\s+/)) {
+      const next = line ? `${line} ${word}` : word;
+      if (line && context.measureText(next).width > maxWidth) {
+        lines.push(line);
+        line = word;
+      } else {
+        line = next;
+      }
+    }
+    if (line) lines.push(line);
+    return lines;
+  });
+}
+
+export function drawVideoCaption(caption, { panelTop = 540, panelHeight = 180, shadowOffsetY = 0 } = {}) {
+  const canvas = makeCanvas(STUDIO_VIDEO_WIDTH, panelHeight);
+  const text = canvas.getContext('2d');
+  const incoming = caption.id === 'incoming';
+  const maxWidth = 1000;
+  let size = 48;
+  let lines;
+  while (true) {
+    text.font = incoming ? `bold ${size}px "Courier New", monospace` : `bold ${size}px Georgia, serif`;
+    lines = wrapVideoCaption(text, caption.text, maxWidth);
+    if (size === 24 || (lines.length <= 2 && lines.every(line => text.measureText(line).width <= maxWidth))) break;
+    size--;
+  }
+  text.textAlign = 'center';
+  text.textBaseline = 'middle';
+  text.fillStyle = incoming ? '#baffad' : '#fff9ed';
+  text.shadowColor = '#001b12';
+  text.shadowBlur = 3;
+  text.shadowOffsetY = shadowOffsetY;
+  const spacing = Math.min(size * 1.2, (panelHeight - size * 2) / Math.max(1, lines.length - 1));
+  const first = panelHeight / 2 - 2 - (lines.length - 1) * spacing / 2;
+  lines.forEach((line, index) => text.fillText(line, STUDIO_VIDEO_WIDTH / 2, first + index * spacing, maxWidth));
+  return { ...caption, canvas, y: panelTop };
+}
+
 export async function drawStudioVideoFrames(image, result, customTimeline) {
   const width = STUDIO_VIDEO_WIDTH, height = STUDIO_VIDEO_HEIGHT;
   const base = makeCanvas(width, height), ctx = base.getContext('2d');
@@ -133,40 +179,9 @@ export async function drawStudioVideoFrames(image, result, customTimeline) {
     drawHolly(ctx, width - 38, height - 31, -1);
   }
   const timeline = customTimeline || studioVideoTimeline(result);
-  const prefix = timeline.find(caption => caption.id === 'intro')?.text || 'A message from Santa to ', name = result.writtenName.trim(), age = timeline.find(caption => caption.id === 'age')?.text || '';
-  let nameSize = 48;
-  const measure = () => {
-    ctx.font = `italic ${nameSize}px Georgia, serif`; const prefixWidth = ctx.measureText(prefix).width;
-    ctx.font = `italic ${nameSize}px Georgia, serif`;
-    return { prefixWidth, nameWidth: ctx.measureText(name).width, ageWidth: ctx.measureText(age).width };
-  };
-  let metrics = measure();
-  while (metrics.prefixWidth + metrics.nameWidth + metrics.ageWidth > width * .80 && nameSize > 10) {
-    nameSize -= .5; metrics = measure();
-  }
-  // Reserve the age's final width from the start so the name never jumps or overlaps.
-  const x = (width - metrics.prefixWidth - metrics.nameWidth - metrics.ageWidth) / 2;
-  const top = Math.round(height * .85), stripTop = Math.round(height * .75), stripHeight = height - stripTop;
   const layers = timeline.map(caption => {
-    if (caption.id === 'name-badge') return { ...caption, canvas: drawStudioRecipientBadge(name, 230), y: 430 };
-    const canvas = makeCanvas(width, stripHeight), text = canvas.getContext('2d');
-    text.textBaseline = 'middle'; text.fillStyle = '#fff9ed';
-    text.shadowColor = '#071710'; text.shadowBlur = 4;
-    if (caption.id === 'incoming') {
-      text.font = 'bold 48px "Courier New", monospace';
-      text.fillStyle = '#baffad';
-      text.textAlign = 'center';
-      text.fillText(caption.text, width / 2, top - stripTop);
-    } else if (caption.id === 'intro' || caption.id === 'name' || caption.id === 'age') {
-      text.font = `italic ${nameSize}px Georgia, serif`;
-      text.fillText(caption.text, x + (caption.id === 'intro' ? 0 : metrics.prefixWidth) + (caption.id === 'age' ? metrics.nameWidth : 0), top - stripTop);
-    } else {
-      let size = 42; text.font = `italic ${size}px Georgia, serif`;
-      while (text.measureText(caption.text).width > width * .72 && size > 9) { size -= .5; text.font = `italic ${size}px Georgia, serif`; }
-      text.textAlign = 'center'; text.fillStyle = '#fff9ed';
-      text.fillText(caption.text, width / 2, top - stripTop);
-    }
-    return { ...caption, canvas, y: stripTop };
+    if (caption.id === 'name-badge') return { ...caption, canvas: drawStudioRecipientBadge(caption.text, 230), y: 430 };
+    return drawVideoCaption(caption, { panelTop: 517, panelHeight: 190, shadowOffsetY: 2 });
   });
   return { base, layers };
 }

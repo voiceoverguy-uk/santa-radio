@@ -185,6 +185,30 @@
   align-self: center;
 }
 
+.smw-written-name-preview dd { position: relative; }
+.smw-gift-name-tip {
+  position: absolute;
+  z-index: 3;
+  inset: auto 0 100% auto;
+  width: max-content;
+  max-width: min(100%, 17rem);
+  padding: 9px 12px;
+  border: 1px solid #d4af377a;
+  border-radius: 8px;
+  background: #102d23;
+  color: #fff3d7;
+  box-shadow: 0 6px 18px #0005;
+  font-size: .78rem;
+  word-break: normal;
+  opacity: 0;
+  pointer-events: none;
+}
+.smw-written-name-edit:is(:hover, :focus-visible) + .smw-gift-name-tip,
+.smw-gift-name-tip:hover {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 .smw-studio-preview {
   min-width: 0;
   margin-top: 14px;

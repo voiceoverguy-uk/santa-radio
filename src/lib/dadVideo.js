@@ -1,5 +1,5 @@
 import {dadTreatWording} from './dadChoiceWording.js';
-import {studioTimelineArguments} from './studioVideoTimeline.js';
+import {drawVideoCaption, studioTimelineArguments} from './studioVideoTimeline.js';
 import {createSantaVideo} from './createSantaVideo.js';
 export const DAD_ARTWORK=[{id:'armchair',label:'King of the remote',src:'/images/dad-armchair-framed-v2.png'},{id:'diy',label:'Assembly required',src:'/images/dad-diy-framed-v2.png'},{id:'dinner',label:'Christmas food coma',src:'/images/dad-dinner-framed-v2.png'},{id:'chef',label:'Chef’s special',src:'/images/dad-chef-framed-v2.png'},{id:'dancer',label:'Dad’s greatest hits',src:'/images/dad-dancer-framed-v2.png'},{id:'lights',label:'All tangled up',src:'/images/dad-lights-framed-v2.png'}];
 export const dadVideoFilename = result => `dad-message-from-santa-to-${result.writtenName.trim().replace(/[\x00-\x1f\x7f/\\:*?"<>|]/g, '').replace(/\s+/g, '-')}.mp4`;
@@ -37,11 +37,6 @@ export function dadTimeline(result){
  {id:'christmas',text:'Merry Christmas!',start:christmasStart,end:christmasStart+2},
  {id:'christmas-extra',text:'Merry Christmas!\n… and all that!',start:christmasStart+2}];
 }
-export function wrapDadCaption(context,text,maxWidth){
- if(text.includes('\n'))return text.split('\n').flatMap(part=>wrapDadCaption(context,part,maxWidth));
- const words=text.trim().split(/\s+/);const lines=[];let line='';
- for(const word of words){const next=line?`${line} ${word}`:word;if(line&&context.measureText(next).width>maxWidth){lines.push(line);line=word;}else line=next;}if(line)lines.push(line);return lines;
-}
 function frames(image,result){
  const width=1280,height=720;
  const canvas=(h)=>{const c=document.createElement('canvas');c.width=width;c.height=h;return c;};
@@ -63,14 +58,8 @@ function frames(image,result){
  }
  badgeCtx.fillStyle='#fff2c9';badgeCtx.textAlign='center';badgeCtx.textBaseline='middle';badgeCtx.shadowColor='#000';badgeCtx.shadowBlur=3;badgeCtx.fillText(result.writtenName,x+w/2,41);
  const recipientLayers=[{id:'name-badge',text:result.writtenName,start:result.clipStarts.habit,canvas:badge,y:430}];
- const layers=dadTimeline(result).map(caption=>{
-  const layer=canvas(180),text=layer.getContext('2d');let size=48,lines;
-  do{text.font=caption.id==='incoming'?`bold ${size}px "Courier New", monospace`:`bold ${size}px Georgia, serif`;lines=wrapDadCaption(text,caption.text,1000);if(lines.length<=2&&lines.every(line=>text.measureText(line).width<=1000))break;size--;}while(size>24);
-  text.textAlign='center';text.textBaseline='middle';text.fillStyle=caption.id==='incoming'?'#baffad':'#fff9ed';text.shadowColor='#001b12';text.shadowBlur=3;
-  const spacing=size*1.2,first=88-(lines.length-1)*spacing/2;
-  lines.forEach((line,i)=>text.fillText(line,width/2,first+i*spacing));
-  return {...caption,canvas:layer,y:540};
- });return {base,layers:[...recipientLayers,...layers]};
+ const layers=dadTimeline(result).map(caption=>drawVideoCaption(caption));
+ return {base,layers:[...recipientLayers,...layers]};
 }
 export async function dadPoster(result){const image=new Image();image.src=result.artwork;await image.decode();return frames(image,result).base.toDataURL('image/png');}
 function createDadVideoVariant(result,options,shareCover=false){return createSantaVideo({...options,onStatus:message=>options?.onStatus?.(message.startsWith('Adding Santa’s voice')?'Hang on! So much to do! Nearly there...':message),audio:result.audioBlob,name:result.writtenName,artwork:result.artwork,prepareFrames:async(image,duration)=>{

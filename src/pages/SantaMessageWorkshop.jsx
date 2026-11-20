@@ -23,7 +23,8 @@ import WorkshopDestinationPicker from '../components/WorkshopDestinationPicker.j
 import { selectedWorkshopRegion, workshopRegionalFolders, workshopDestinationCategory, workshopDestinationLabel } from '../lib/workshopDestinations.js';
 import './SantaMessageWorkshop.css';
 import useStudioGeneration from '../hooks/useStudioGeneration.js';
-import { STUDIO_VIDEO_ARTWORK } from '../lib/studioVideo.js';
+import { STUDIO_VIDEO_SCENES } from '../lib/studioVideo.js';
+import { StudioScenePicture } from '../components/StudioScenePicker.jsx';
 import { studioSelectionIdentity } from '../lib/studioSelectionIdentity.js';
 import useWorkshopNameResolution from '../hooks/useWorkshopNameResolution.js';
 import { StudioKeepsakePreview } from '../components/SantaStudioGifts.jsx';
@@ -34,7 +35,6 @@ function alignWorkshopBuilder(builder) {
   if (!builder) return;
   const gap = window.matchMedia('(max-width: 760px)').matches ? 6 : 16;
   const headerBottom = document.querySelector('.navbar')?.getBoundingClientRect().bottom || 0;
-  builder.style.setProperty('--smw-header-clearance', `${headerBottom + gap}px`);
   const builderTop = builder.getBoundingClientRect().top;
   const top = builderTop + window.scrollY - headerBottom - gap;
   window.scrollTo({ top: Math.max(0, top), behavior: 'instant' });
@@ -211,6 +211,21 @@ export default function SantaMessageWorkshop() {
   // Carry only an intentional selection through same-tab navigation, never a
   // rotating example or a name saved in browser storage.
   const [initialRecipient] = useState(() => recipient || '');
+  const [openingSceneIndex, setOpeningSceneIndex] = useState(0);
+  const countedSceneVisit = useRef(false);
+  useEffect(() => {
+    if (countedSceneVisit.current) return;
+    countedSceneVisit.current = true;
+    try {
+      const key = 'santa-studio-opening-scene';
+      const stored = Number(sessionStorage.getItem(key));
+      const index = Number.isInteger(stored) && stored >= 0 && stored < STUDIO_VIDEO_SCENES.length ? stored : 0;
+      setOpeningSceneIndex(index);
+      sessionStorage.setItem(key, String((index + 1) % STUDIO_VIDEO_SCENES.length));
+    } catch {
+      // The first scene remains available when browser storage is blocked.
+    }
+  }, []);
   const [stageIndex, setStageIndex] = useState(0);
   const [storedChoices, setChoices] = useState(emptyChoices);
   const [talentCategory, setTalentCategory] = useState('sports');
@@ -672,10 +687,9 @@ export default function SantaMessageWorkshop() {
               </p>}
                 {isNameAndAge && <div className="smw-start-artwork">
                   <img className="smw-start-logo" src="/images/kids-message-logo-v1.png" alt="Kids’ Message from Santa" width="1681" height="936" />
-                  <figure className="smw-start-preview">
-                    <img src={STUDIO_VIDEO_ARTWORK} alt="Santa in the finished video message" width="1672" height="941" />
-                    {chosenName && <figcaption>A message for {chosenName.name}{selectedAge && ` (${selectedAge.label})`}</figcaption>}
-                  </figure>
+                  <StudioScenePicture scene={STUDIO_VIDEO_SCENES[openingSceneIndex]}
+                    alt={STUDIO_VIDEO_SCENES[openingSceneIndex].label}
+                    caption={chosenName ? `A message for ${chosenName.name}${selectedAge ? ` (${selectedAge.label})` : ''}` : undefined} />
                 </div>}
               <fieldset className="smw-stage-fields" disabled={!audioEditingAllowed || (locked && stage.key === 'place')}>
               {stage.key === 'activity' && (
