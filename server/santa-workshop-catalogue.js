@@ -117,12 +117,8 @@ export function parseWorkshopCatalogue(input) {
       if (key === 'place' && record.letterContext.needsReview) record.isCountry = false;
       records.push(record);
     }
-    // Different source files never become one choice, even if their labels match.
-    const labelCounts = new Map();
-    for (const record of records) labelCounts.set(record.label, (labelCounts.get(record.label) || 0) + 1);
-    for (const record of records) if (labelCounts.get(record.label) > 1) {
-      record.label += ` (${record.file.slice(folder.length + 1)})`;
-    }
+    // Recording IDs preserve distinct source files. Customer-facing labels must
+    // not expose filenames when two recordings share the same display name.
     records.sort((a, b) => key === 'age'
       ? (a.number * (a.unit === 'year' ? 12 : 1) - b.number * (b.unit === 'year' ? 12 : 1)) ||
         a.unit.localeCompare(b.unit) || a.file.localeCompare(b.file)

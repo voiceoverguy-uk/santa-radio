@@ -241,13 +241,15 @@ test('future state and county WAV/MP3 uploads keep exact identities and neutral 
   assert.equal(output.categories.place.find(item => item.file.endsWith('east-riding-of-yorkshire.mp3')).label, 'East Riding of Yorkshire');
 });
 
-test('duplicate display labels stay separate choices with exact filenames', () => {
+test('duplicate display labels stay clean while recording identities remain separate', () => {
   const data = inventory();
   data.categories.age.push(record('AGES/1-years-old.wav'));
   const parsed = parseWorkshopCatalogue(data);
   const variants = parsed.categories.age.filter(item => item.number === 1 && item.unit === 'year');
   assert.equal(variants.length, 2);
-  assert.equal(new Set(variants.map(item => item.label)).size, 2);
+  assert.equal(new Set(variants.map(item => item.label)).size, 1);
+  assert.ok(variants.every(item => !/\.(mp3|wav)/i.test(item.label)));
+  assert.equal(new Set(variants.map(item => item.id)).size, 2);
   assert.notEqual(variants[0].id, variants[1].id);
 });
 
