@@ -4,6 +4,16 @@ import { normalizeTrackText } from './matchLiveSong.js';
 // Exact-recording assignments shared by the website and public artwork feed.
 // Verify the catalogue ID, artist and title before assigning a supplied image.
 export const songPortraits = Object.freeze({
+  47: Object.freeze({
+    artist: 'Elton John',
+    title: 'Step Into Christmas',
+    path: '/artist-artwork/elton-john-step-into-christmas.webp',
+  }),
+  509: Object.freeze({
+    artist: 'Ed Sheeran & Elton John',
+    title: 'Merry Christmas',
+    path: '/artist-artwork/ed-sheeran-and-elton-john-merry-christmas.webp',
+  }),
   343: Object.freeze({
     artist: 'Bing Crosby',
     title: 'Here Comes Santa Claus',
