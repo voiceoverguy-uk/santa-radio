@@ -111,8 +111,9 @@
   },
   "routes": [
     {
-      "src": "/message-test/?",
-      "dest": "/api/message-test"
+      "src": "/(?:api/)?message-test/?",
+      "status": 410,
+      "headers": { "X-Robots-Tag": "noindex, nofollow" }
     },
     {
       "src": "/names/?",
